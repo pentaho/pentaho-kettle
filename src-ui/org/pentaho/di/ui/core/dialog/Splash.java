@@ -15,8 +15,8 @@ import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.laf.LAFManager;
 import org.pentaho.di.ui.util.ImageUtil;
+import org.pentaho.di.laf.BasePropertyHandler;
 
 /**
  * Displays the Kettle splash screen
@@ -32,12 +32,13 @@ public class Splash
 	{
 		Rectangle displayBounds = display.getPrimaryMonitor().getBounds();
 
-		final Image kettle_image = ImageUtil.getImage(display, LAFManager.getLAFProp("splash_image")); // "kettle_splash.png"
-        final Image kettle_icon  = ImageUtil.getImage(display, LAFManager.getLAFProp("spoon_icon")); // "spoon32.png");
+		final Image kettle_image = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("splash_image")); // "kettle_splash.png"
+        final Image kettle_icon  = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("spoon_icon")); // "spoon32.png");
         
         splash = new Shell(display, SWT.NONE /*SWT.ON_TOP*/);
         splash.setImage(kettle_icon);
-        splash.setText(LAFManager.getLAFProp("splash_text")); // "Pentaho Data Integration"
+        //TODO: move to BaseMessage to track i18n
+        splash.setText(BasePropertyHandler.getProperty("splash_text")); // "Pentaho Data Integration"
         
 		FormLayout splashLayout = new FormLayout();
 		splash.setLayout(splashLayout);

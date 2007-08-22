@@ -3,6 +3,7 @@ package org.pentaho.di.core.row;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.math.BigDecimal;
+import java.net.SocketTimeoutException;
 import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -322,8 +323,9 @@ public interface ValueMetaInterface extends Cloneable
      * @return a new data object
      * @throws KettleFileException in case a I/O error occurs
      * @throws KettleEOFException When we have read all the data there is to read
+     * @throws SocketTimeoutException In case there is a timeout (when set on a socket) during reading
      */
-    public Object readData(DataInputStream inputStream) throws KettleFileException, KettleEOFException;
+    public Object readData(DataInputStream inputStream) throws KettleFileException, KettleEOFException, SocketTimeoutException;
     
     /**
      * Compare 2 values of the same data type

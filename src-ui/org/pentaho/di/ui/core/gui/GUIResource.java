@@ -32,6 +32,7 @@ import org.pentaho.di.trans.StepPlugin;
 import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.util.ImageUtil;
+import org.pentaho.di.laf.BasePropertyHandler;
 
 /**
  * This is a singleton class that contains allocated Fonts, Colors, etc. All
@@ -410,22 +411,22 @@ public class GUIResource
 
 	private void loadCommonImages()
 	{
-		imageHop = ImageUtil.getImageAsResource(display,org.pentaho.di.laf.LAFManager.getLAFProp("HOP_image")); // "ui/images/HOP.png"
-		imageConnection = ImageUtil.getImageAsResource(display, org.pentaho.di.laf.LAFManager.getLAFProp("CNC_image")); // , "ui/images/CNC.png"
-		imageKettleLogo = ImageUtil.getImageAsResource(display, org.pentaho.di.laf.LAFManager.getLAFProp("Logo_lrg_image")); // , "ui/images/logo_kettle_lrg.png"
-		imageBanner = ImageUtil.getImageAsResource(display, org.pentaho.di.laf.LAFManager.getLAFProp("Banner_bg_image")); // , "ui/images/bg_banner.png"
-		imageBol = ImageUtil.getImageAsResource(display, org.pentaho.di.laf.LAFManager.getLAFProp("BOL_image")); // , "ui/images/BOL.png"
-		imageKettle = ImageUtil.getImageAsResource(display, org.pentaho.di.laf.LAFManager.getLAFProp("Logo_image")); // , "ui/images/kettle_logo.png"
-		imageCredits = ImageUtil.getImageAsResource(display, org.pentaho.di.laf.LAFManager.getLAFProp("Credits_image")); // , "ui/images/credits.png"
-		imageStart = ImageUtil.getImageAsResource(display, org.pentaho.di.laf.LAFManager.getLAFProp("STR_image")); // , "ui/images/STR.png"
-		imageDummy = ImageUtil.getImageAsResource(display, org.pentaho.di.laf.LAFManager.getLAFProp("DUM_image")); // , "ui/images/DUM.png"
-		imageSpoon = ImageUtil.getImageAsResource(display, org.pentaho.di.laf.LAFManager.getLAFProp("Spoon_image")); // , "ui/images/spoon32.png"
-		imageChef = ImageUtil.getImageAsResource(display, org.pentaho.di.laf.LAFManager.getLAFProp("Chef_image")); // , "ui/images/chef.png"
-		imageSplash = ImageUtil.getImageAsResource(display, org.pentaho.di.laf.LAFManager.getLAFProp("splash_image")); // , "ui/images/kettle_splash.png"
-		imagePentaho = ImageUtil.getImageAsResource(display, org.pentaho.di.laf.LAFManager.getLAFProp("CorpLogo_image")); // , "ui/images/PentahoLogo.png"
-		imageVariable = ImageUtil.getImageAsResource(display, org.pentaho.di.laf.LAFManager.getLAFProp("Variable_image")); // , "ui/images/variable.png"
-		imageEditOptionButton = ImageUtil.getImageAsResource(display, org.pentaho.di.laf.LAFManager.getLAFProp("EditOption_image")); // , "ui/images/edit_option.png"
-		imageResetOptionButton = ImageUtil.getImageAsResource(display, org.pentaho.di.laf.LAFManager.getLAFProp("ResetOption_image")); // , "ui/images/reset_option.png"
+		imageHop = ImageUtil.getImageAsResource(display,BasePropertyHandler.getProperty("HOP_image")); // "ui/images/HOP.png"
+		imageConnection = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("CNC_image")); // , "ui/images/CNC.png"
+		imageKettleLogo = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Logo_lrg_image")); // , "ui/images/logo_kettle_lrg.png"
+		imageBanner = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Banner_bg_image")); // , "ui/images/bg_banner.png"
+		imageBol = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("BOL_image")); // , "ui/images/BOL.png"
+		imageKettle = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Logo_image")); // , "ui/images/kettle_logo.png"
+		imageCredits = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Credits_image")); // , "ui/images/credits.png"
+		imageStart = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("STR_image")); // , "ui/images/STR.png"
+		imageDummy = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("DUM_image")); // , "ui/images/DUM.png"
+		imageSpoon = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Spoon_image")); // , "ui/images/spoon32.png"
+		imageChef = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Chef_image")); // , "ui/images/chef.png"
+		imageSplash = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("splash_image")); // , "ui/images/kettle_splash.png"
+		imagePentaho = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("CorpLogo_image")); // , "ui/images/PentahoLogo.png"
+		imageVariable = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Variable_image")); // , "ui/images/variable.png"
+		imageEditOptionButton = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("EditOption_image")); // , "ui/images/edit_option.png"
+		imageResetOptionButton = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("ResetOption_image")); // , "ui/images/reset_option.png"
 
 		imageStartSmall = new Image(display, 16, 16);
 		GC gc = new GC(imageStartSmall);
@@ -439,20 +440,20 @@ public class GUIResource
 		// Makes transparent images "on the fly"
 		//
 		imageSpoonGraph = ImageUtil.makeImageTransparent(display, ImageUtil.getImageAsResource(display,
-				org.pentaho.di.laf.LAFManager.getLAFProp("SpoonIcon_image")), new RGB(255, 255, 255)); // , "ui/images/spoongraph.png"
+				BasePropertyHandler.getProperty("SpoonIcon_image")), new RGB(255, 255, 255)); // , "ui/images/spoongraph.png"
 		imageJobGraph = ImageUtil.makeImageTransparent(display, ImageUtil.getImageAsResource(display, 
-				org.pentaho.di.laf.LAFManager.getLAFProp("ChefIcon_image")), // , "ui/images/chefgraph.png"
+				BasePropertyHandler.getProperty("ChefIcon_image")), // , "ui/images/chefgraph.png"
 				new RGB(255, 255, 255));
 		imageLogoSmall = ImageUtil.makeImageTransparent(display, ImageUtil.getImageAsResource(display,
-				org.pentaho.di.laf.LAFManager.getLAFProp("Logo_sml_image")), new RGB(255, 255, 255)); // , "ui/images/kettle_logo_small.png"
+				BasePropertyHandler.getProperty("Logo_sml_image")), new RGB(255, 255, 255)); // , "ui/images/kettle_logo_small.png"
 		imageArrow = ImageUtil.makeImageTransparent(display, ImageUtil.getImageAsResource(display, 
-				org.pentaho.di.laf.LAFManager.getLAFProp("ArrowIcon_image")), // , "ui/images/arrow.png"
+				BasePropertyHandler.getProperty("ArrowIcon_image")), // , "ui/images/arrow.png"
 				new RGB(255, 255, 255));
 		imageBanner = ImageUtil.makeImageTransparent(display, ImageUtil.getImageAsResource(display, 
-				org.pentaho.di.laf.LAFManager.getLAFProp("Banner_bg_image")), // , "ui/images/bg_banner.png"
+				BasePropertyHandler.getProperty("Banner_bg_image")), // , "ui/images/bg_banner.png"
 				new RGB(255, 255, 255));
 	}
-
+	
 	/**
 	 * Load all step images from files.
 	 * 

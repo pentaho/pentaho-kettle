@@ -3,6 +3,7 @@ package org.pentaho.di.core.row;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.math.BigDecimal;
+import java.net.SocketTimeoutException;
 import java.util.Date;
 import java.util.List;
 
@@ -220,8 +221,9 @@ public interface RowMetaInterface extends Cloneable
      * @param inputStream the inputstream to read from
      * @return a new row of data
      * @throws KettleFileException in case a I/O error occurs
+     * @throws SocketTimeoutException In case there is a timeout during reading.
      */
-    public Object[] readData(DataInputStream inputStream) throws KettleFileException;
+    public Object[] readData(DataInputStream inputStream) throws KettleFileException, SocketTimeoutException;
 
     /**
      * Clear the row metadata

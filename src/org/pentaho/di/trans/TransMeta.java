@@ -210,6 +210,9 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
     /** The slave-step-copy/partition distribution.  Only used for slave transformations in a clustering environment. */
     private SlaveStepCopyPartitionDistribution slaveStepCopyPartitionDistribution;
     
+    /** Just a flag indicating that this is a slave transformation - internal use only, no GUI option */
+    private boolean slaveTransformation;
+    
     // //////////////////////////////////////////////////////////////////////////
 
     public static final int     TYPE_UNDO_CHANGE   = 1;
@@ -2586,6 +2589,9 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
         // The slave-step-copy/partition distribution.  Only used for slave transformations in a clustering environment.
         retval.append("   ").append(slaveStepCopyPartitionDistribution.getXML());
 
+        // Is this a slave transformation or not?
+        retval.append("   ").append(XMLHandler.addTagValue("slave_transformation", slaveTransformation));
+
         retval.append("</").append(XML_TAG+">").append(Const.CR); //$NON-NLS-1$
 
         return retval.toString();
@@ -3060,6 +3066,10 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
             else {
             	slaveStepCopyPartitionDistribution = new SlaveStepCopyPartitionDistribution(); // leave empty
             }
+            
+            // Is this a slave transformation?
+            //
+            slaveTransformation = "Y".equalsIgnoreCase(XMLHandler.getTagValue(transnode, "slave_transformation"));
             
             log.logDebug(toString(), Messages.getString("TransMeta.Log.NumberOfStepsReaded") + nrSteps()); //$NON-NLS-1$
             log.logDebug(toString(), Messages.getString("TransMeta.Log.NumberOfHopsReaded") + nrTransHops()); //$NON-NLS-1$
@@ -5791,5 +5801,13 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
 			if (stepMeta.getClusterSchema()!=null) return true;
 		}
 		return false;
+	}
+
+	public boolean isSlaveTransformation() {
+		return slaveTransformation;
+	}
+
+	public void setSlaveTransformation(boolean slaveTransformation) {
+		this.slaveTransformation = slaveTransformation;
 	}
 }

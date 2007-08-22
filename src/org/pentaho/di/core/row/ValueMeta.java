@@ -6,6 +6,7 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.net.SocketTimeoutException;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
@@ -1588,7 +1589,7 @@ public class ValueMeta implements ValueMetaInterface
         
     }
     
-    public Object readData(DataInputStream inputStream) throws KettleFileException, KettleEOFException
+    public Object readData(DataInputStream inputStream) throws KettleFileException, KettleEOFException, SocketTimeoutException
     {
         try
         {
@@ -1623,6 +1624,10 @@ public class ValueMeta implements ValueMetaInterface
         catch(EOFException e)
         {
         	throw new KettleEOFException(e);
+        }
+        catch(SocketTimeoutException e)
+        {
+        	throw e;
         }
         catch(IOException e)
         {

@@ -25,6 +25,7 @@ package org.pentaho.di.trans.steps.cubeinput;
 
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.util.zip.GZIPInputStream;
 
 import org.pentaho.di.core.Const;
@@ -73,6 +74,10 @@ public class CubeInput extends BaseStep implements StepInterface
 		{
 			setOutputDone();
 			return false;
+		} 
+		catch (SocketTimeoutException e) 
+		{
+			throw new KettleException(e); // shouldn't happen on files
 		}
 
         if (checkFeedback(linesInput)) logBasic(Messages.getString("CubeInput.Log.LineNumber")+linesInput); //$NON-NLS-1$

@@ -257,6 +257,7 @@ public class RepositoriesMeta
 	{
 		try
 		{
+			//TODO fix default repository creation to use LAF parameters
 			FileOutputStream fos = new FileOutputStream(new File(Const.getKettleUserRepositoriesFile()));
 			fos.write(getXML().getBytes());
 			fos.close();

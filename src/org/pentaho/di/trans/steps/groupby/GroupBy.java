@@ -22,6 +22,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 
 import org.pentaho.di.core.Const;
@@ -459,7 +460,15 @@ public class GroupBy extends BaseStep implements StepInterface
             }
             
             // Read one row from the file!
-            Object[] row=data.inputRowMeta.readData(data.dis);
+            Object[] row;
+			try 
+			{
+				row = data.inputRowMeta.readData(data.dis);
+			} 
+			catch (SocketTimeoutException e) 
+			{
+				throw new KettleFileException(e); // Shouldn't happen on files
+			}
             data.rowsOnFile--;
             
             return row;

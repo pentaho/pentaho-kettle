@@ -7,6 +7,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
@@ -14,6 +15,7 @@ import java.util.zip.GZIPOutputStream;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleEOFException;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -390,6 +392,23 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 	}
 	*/
 	
+	private Object[] getRowOfData(RowMetaInterface rowMeta) throws KettleFileException
+	{
+		Object[] rowData = null;
+
+		while (!baseStep.isStopped() && rowData==null) {
+			try {
+				rowData = rowMeta.readData(inputStream);
+			}
+			catch(SocketTimeoutException e)
+			{
+				rowData = null; // try again.
+			}
+		}
+
+		return rowData;
+	}
+	
 	public RowSet openReaderSocket(final BaseStep baseStep) throws IOException, KettleException {
 		this.baseStep = baseStep;
 		
@@ -415,6 +434,9 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
         {
         	try {
 				socket = new Socket(realHostname, portNumber);
+				
+				socket.setSoTimeout(1000);
+				
 				connected=true;
 				
                 if (compressingStreams)
@@ -464,13 +486,26 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
         Runnable runnable = new Runnable() {
 			public void run() {
 				try {
+					
 					// First read the row meta data from the socket...
 					//
-					RowMetaInterface rowMeta = new RowMeta(inputStream);
+					RowMetaInterface rowMeta=null;
+					while (!baseStep.isStopped() && rowMeta==null) {
+						try {
+							rowMeta = new RowMeta(inputStream);
+						}
+						catch(SocketTimeoutException e) {
+							rowMeta=null;
+						}
+					}
+					
+					if (rowMeta==null) {
+						throw new KettleEOFException(); // leave now.
+					}
 					
 					// And a first row of data...
 					//
-					Object[] rowData = rowMeta.readData(inputStream);
+					Object[] rowData = getRowOfData(rowMeta);
 					
 					// Now get the data itself, row by row...
 					//
@@ -482,7 +517,7 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 
 						baseStep.putRowTo(rowMeta, rowData, rowSet);
 						baseStep.linesWritten--;
-						rowData = rowMeta.readData(inputStream);
+						rowData = getRowOfData(rowMeta);
 					}
 				}
 				catch(KettleEOFException e) {

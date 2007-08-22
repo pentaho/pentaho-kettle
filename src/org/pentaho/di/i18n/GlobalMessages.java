@@ -16,29 +16,46 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.trans.StepLoader;
 
-
-public class GlobalMessages
+public class GlobalMessages extends AbstractMessageHandler
 {
-    private static final ThreadLocal<Locale> threadLocales         = new ThreadLocal<Locale>();
+	private static String packageNM = GlobalMessages.class.getPackage().getName();
+	
+	protected static final ThreadLocal<Locale> threadLocales         = new ThreadLocal<Locale>();
 
-    private static final LanguageChoice  langChoice        = LanguageChoice.getInstance();
+    protected static final LanguageChoice  langChoice        = LanguageChoice.getInstance();
 
-    private static final String      SYSTEM_BUNDLE_PACKAGE = GlobalMessages.class.getPackage().getName();
+    protected static final String      SYSTEM_BUNDLE_PACKAGE = GlobalMessages.class.getPackage().getName();
 
-    private static final String      BUNDLE_NAME           = "messages.messages";                                  //$NON-NLS-1$
+    protected static final String      BUNDLE_NAME           = "messages.messages";                                  //$NON-NLS-1$
 
-    private static final Map<String,ResourceBundle>         locales               = Collections.synchronizedMap(new HashMap<String,ResourceBundle>());
+    protected static final Map<String,ResourceBundle>         locales               = Collections.synchronizedMap(new HashMap<String,ResourceBundle>());
 
     public static final String[] localeCodes = { "en_US", "nl_NL", "zh_CN", "es_ES", "fr_FR", "de_DE", "pt_BR" };
     
     public static final String[] localeDescr = { "English (US)", "Nederlands", "Simplified Chinese", "Espa\u00F1ol", "Fran\u00E7ais", "Deutsch", "Portuguese (Brazil)" };
+ 
+    protected static GlobalMessages GMinstance = null;
+    
+    /**
+     * TODO: extend from abstract class to ensure singleton status and migrate
+     * instantiation to class controlled private
+     */
+    public GlobalMessages() {
+    }
+    
+    public synchronized static MessageHandler getInstance() {
+    	if (GMinstance == null) {
+    		GMinstance = new GlobalMessages();
+    	}
+    	return (MessageHandler)GMinstance;
+    }
     
     protected static Map<String, ResourceBundle> getLocales()
     {
         return locales;
     }
 
-    public static Locale getLocale()
+    public synchronized static Locale getLocale()
     {
         Locale rtn = threadLocales.get();
         if (rtn != null) { return rtn; }
@@ -47,12 +64,12 @@ public class GlobalMessages
         return langChoice.getDefaultLocale();
     }
 
-    public static void setLocale(Locale newLocale)
+    public synchronized static void setLocale(Locale newLocale)
     {
         threadLocales.set(newLocale);
     }
     
-    private static String getLocaleString(Locale locale)
+    protected static String getLocaleString(Locale locale)
     {
         String locString = locale.toString();
         if (locString.length()==5 && locString.charAt(2)=='_') // Force upper-lowercase format
@@ -63,17 +80,17 @@ public class GlobalMessages
         return locString;
     }
 
-    private static String buildHashKey(Locale locale, String packageName)
+    protected static String buildHashKey(Locale locale, String packageName)
     {
         return packageName + "_" + getLocaleString(locale);
     }
 
-    private static String buildBundleName(String packageName)
+    protected static String buildBundleName(String packageName)
     {
         return packageName + "." + BUNDLE_NAME;
     }
 
-    private static ResourceBundle getBundle(Locale locale, String packageName) throws MissingResourceException
+    protected static ResourceBundle getBundle(Locale locale, String packageName) throws MissingResourceException
     {
     	String filename = buildHashKey(locale, packageName);
     	filename = "/"+filename.replace('.', '/') + ".properties";
@@ -106,7 +123,11 @@ public class GlobalMessages
     		throw new MissingResourceException("Unable to find properties file ["+filename+"] : "+e.toString(), locale.toString(), packageName);
     	}
     }
-
+    
+    /**
+     * @deprecated  As of build 4512, replaced by {@link #getInstance() and #getString(String)}
+     */
+    @Deprecated
     public static String getSystemString(String key)
     {
         try
@@ -148,7 +169,11 @@ public class GlobalMessages
         }
         */
     }
-
+    
+    /**
+     * @deprecated  As of build 4512, replaced by {@link #getInstance() and #getString(String, String)}
+     */
+    @Deprecated
     public static String getSystemString(String key, String param1)
     {
         try
@@ -169,6 +194,10 @@ public class GlobalMessages
         }
     }
 
+    /**
+     * @deprecated  As of build 4512, replaced by {@link #getInstance() and #getString(String, String, String)}
+     */
+    @Deprecated
     public static String getSystemString(String key, String param1, String param2)
     {
         try
@@ -189,6 +218,10 @@ public class GlobalMessages
         }
     }
     
+    /**
+     * @deprecated  As of build 4512, replaced by {@link #getInstance() and #getString(String, String, String, String)}
+     */
+    @Deprecated
     public static String getSystemString(String key, String param1, String param2, String param3)
     {
         try
@@ -209,6 +242,10 @@ public class GlobalMessages
         }
     }
 
+    /**
+     * @deprecated  As of build 4512, replaced by {@link #getInstance() and #getString(String, String, String, String, String)}
+     */
+    @Deprecated
     public static String getSystemString(String key, String param1, String param2, String param3, String param4)
     {
         try
@@ -229,6 +266,10 @@ public class GlobalMessages
         }
     }
 
+    /**
+     * @deprecated  As of build 4512, replaced by {@link #getInstance() and #getString(String, String, String, String, String, String)}
+     */
+    @Deprecated
     public static String getSystemString(String key, String param1, String param2, String param3, String param4, String param5)
     {
         try
@@ -249,6 +290,10 @@ public class GlobalMessages
         }
     }
 
+    /**
+     * @deprecated  As of build 4512, replaced by {@link #getInstance() and #getString(String, String, String, String, String, String, String)}
+     */
+    @Deprecated
     public static String getSystemString(String key, String param1, String param2, String param3, String param4, String param5, String param6)
     {
         try
@@ -269,7 +314,7 @@ public class GlobalMessages
         }
     }
     
-    private static String findString(String packageName, Locale locale, String key, Object[] parameters) throws MissingResourceException
+    protected String findString(String packageName, Locale locale, String key, Object[] parameters) throws MissingResourceException
     {
         try
         {
@@ -287,7 +332,7 @@ public class GlobalMessages
         }
     }
     
-    private static String calculateString(String packageName, String key, Object[] parameters)
+    protected String calculateString(String packageName, String key, Object[] parameters)
     {
         String string=null;
         
@@ -309,48 +354,54 @@ public class GlobalMessages
         
         string = "!"+key+"!";
         String message = "Message not found in the preferred and failover locale: key=["+key+"], package="+packageName;
-        LogWriter.getInstance().logError("i18n", Const.getStackTracker(new KettleException(message)));
+        LogWriter.getInstance().logDetailed("i18n", Const.getStackTracker(new KettleException(message)));
 
         return string;
     }
     
-    public static String getString(String packageName, String key) 
+    public String getString(String key) 
+    {
+        Object[] parameters = null;
+        return calculateString(packageNM, key, parameters);
+    }
+    
+    public String getString(String packageName, String key) 
     {
         Object[] parameters = new Object[] {};
         return calculateString(packageName, key, parameters);
     }
 
-    public static String getString(String packageName, String key, String param1)
+    public String getString(String packageName, String key, String param1)
     {
         Object[] parameters = new Object[] { param1 };
         return calculateString(packageName, key, parameters);
     }
 
-    public static String getString(String packageName, String key, String param1, String param2)
+    public String getString(String packageName, String key, String param1, String param2)
     {
         Object[] parameters = new Object[] { param1, param2 };
         return calculateString(packageName, key, parameters);
     }
 
-    public static String getString(String packageName, String key, String param1, String param2, String param3)
+    public String getString(String packageName, String key, String param1, String param2, String param3)
     {
         Object[] parameters = new Object[] { param1, param2, param3 };
         return calculateString(packageName, key, parameters);
     }
     
-    public static String getString(String packageName, String key, String param1, String param2, String param3,String param4)
+    public String getString(String packageName, String key, String param1, String param2, String param3,String param4)
     {
         Object[] parameters = new Object[] { param1, param2, param3, param4 };
         return calculateString(packageName, key, parameters);
     }
     
-    public static String getString(String packageName, String key, String param1, String param2, String param3, String param4, String param5)
+    public String getString(String packageName, String key, String param1, String param2, String param3, String param4, String param5)
     {
         Object[] parameters = new Object[] { param1, param2, param3, param4, param5 };
         return calculateString(packageName, key, parameters);
     }
     
-    public static String getString(String packageName, String key, String param1, String param2, String param3,String param4,String param5,String param6)
+    public String getString(String packageName, String key, String param1, String param2, String param3,String param4,String param5,String param6)
     {
         Object[] parameters = new Object[] { param1, param2, param3, param4, param5, param6 };
         return calculateString(packageName, key, parameters);

@@ -180,10 +180,10 @@ import org.pentaho.di.ui.job.dialog.JobSaveProgressDialog;
 import org.pentaho.di.ui.partition.dialog.PartitionSchemaDialog;
 import org.pentaho.di.ui.repository.dialog.RepositoriesDialog;
 import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog;
-import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog.RepositoryExplorerCallback;
-import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog.RepositoryObjectReference;
 import org.pentaho.di.ui.repository.dialog.SelectObjectDialog;
 import org.pentaho.di.ui.repository.dialog.UserDialog;
+import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog.RepositoryExplorerCallback;
+import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog.RepositoryObjectReference;
 import org.pentaho.di.ui.spoon.delegates.SpoonDelegates;
 import org.pentaho.di.ui.spoon.dialog.AnalyseImpactProgressDialog;
 import org.pentaho.di.ui.spoon.dialog.CheckTransProgressDialog;
@@ -226,7 +226,6 @@ import org.w3c.dom.Node;
  */
 public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterface, OverwritePrompter
 {
-	
 	public static final String STRING_TRANSFORMATIONS = Messages.getString("Spoon.STRING_TRANSFORMATIONS"); // Transformations
     public static final String STRING_JOBS            = Messages.getString("Spoon.STRING_JOBS");            // Jobs
     public static final String STRING_BUILDING_BLOCKS = Messages.getString("Spoon.STRING_BUILDING_BLOCKS"); // Building blocks

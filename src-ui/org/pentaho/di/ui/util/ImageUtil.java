@@ -37,15 +37,16 @@ public class ImageUtil
     }
     
     public static Image getImageAsResource(Display display, String location) {
-    	try
-    	{
-    		return new Image(display,VFS.getManager().resolveFile(base,location).getContent().getInputStream());
-    	}
-    	catch(FileSystemException e)
-    	{
-    		e.printStackTrace();
-    		return new Image(display,ImageUtil.class.getClassLoader().getResourceAsStream(location));
-    	}
+    	ClassLoader cl = ImageUtil.class.getClassLoader();
+		java.io.InputStream s = cl.getResourceAsStream(location);
+		if (s != null) {
+			return new Image(display,s);
+		}
+		try {
+			return new Image(display,VFS.getManager().resolveFile(base,location).getContent().getInputStream());
+		} catch (FileSystemException e) {
+			throw new RuntimeException("Unable to load image with name ["+location+"]", e);
+		}
     }
     
     public static Image getImage(Display display,String location)

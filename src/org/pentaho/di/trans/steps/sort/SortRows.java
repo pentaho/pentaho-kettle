@@ -23,6 +23,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -300,6 +301,10 @@ public class SortRows extends BaseStep implements StepInterface
 					data.fis.remove(smallest);
 
 					if (gzfi != null) data.gzis.remove(smallest);
+				} 
+				catch (SocketTimeoutException e) 
+				{
+					throw new KettleValueException(e); // should never happen on local files
 				}
 			}
 		}

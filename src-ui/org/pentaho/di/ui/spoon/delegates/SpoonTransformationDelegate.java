@@ -182,7 +182,7 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 			int idx = spoon.tabfolder.indexOf(tabItem);
 
 			// OK, also see if we need to open a new history window.
-			if (transMeta.getLogConnection() != null && !Const.isEmpty(transMeta.getLogTable()))
+			if (transMeta.getLogConnection() != null && !Const.isEmpty(transMeta.getLogTable()) && !transMeta.isSlaveTransformation())
 			{
 				addTransHistory(transMeta, false);
 			}
@@ -850,7 +850,14 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 		
 		if (transMeta.isUsingAtLeastOneClusterSchema()) {
 			executionConfiguration.setExecutingLocally(false);
+			executionConfiguration.setExecutingRemotely(false);
 			executionConfiguration.setExecutingClustered(true);
+		}
+		else
+		{
+			executionConfiguration.setExecutingLocally(true);
+			executionConfiguration.setExecutingRemotely(false);
+			executionConfiguration.setExecutingClustered(false);
 		}
 
 		Object data[] = spoon.variables.getData();

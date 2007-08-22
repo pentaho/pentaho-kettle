@@ -23,6 +23,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -196,6 +197,13 @@ public class JoinRows extends BaseStep implements StepInterface
 					rowData = data.fileRowMeta[filenr].readData(data.dataInputStream[filenr]);
 				}
 				catch(KettleFileException e)
+				{
+					logError(Messages.getString("JoinRows.Log.UnableToReadDataFromTempFile")+filenr+" ["+data.file[filenr]+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+					setErrors(1);
+					stopAll();
+					return null;
+				} 
+				catch (SocketTimeoutException e) 
 				{
 					logError(Messages.getString("JoinRows.Log.UnableToReadDataFromTempFile")+filenr+" ["+data.file[filenr]+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 					setErrors(1);

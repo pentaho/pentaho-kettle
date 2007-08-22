@@ -49,7 +49,7 @@ import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.i18n.GlobalMessages;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobEntryLoader;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.ui.job.dialog.Messages;
@@ -217,11 +217,12 @@ public class JobDialog extends Dialog
 
 		// THE BUTTONS
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(GlobalMessages.getSystemString("System.Button.OK"));
+		wOK.setText(BaseMessages.getString("System.Button.OK"));
+		wOK.setText(BaseMessages.getString("System.Button.OK"));
 		wSQL=new Button(shell, SWT.PUSH);
-		wSQL.setText(GlobalMessages.getSystemString("System.Button.SQL"));
+		wSQL.setText(BaseMessages.getString("System.Button.SQL"));
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(GlobalMessages.getSystemString("System.Button.Cancel"));
+		wCancel.setText(BaseMessages.getString("System.Button.Cancel"));
 
 		//BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wSQL, wCancel }, margin, wSharedObjectsFile);
 		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wSQL, wCancel }, Const.MARGIN, null);
@@ -556,7 +557,7 @@ public class JobDialog extends Dialog
 		wlLogconnection.setLayoutData(fdlLogconnection);
 
 		wbLogconnection=new Button(wLogComp, SWT.PUSH);
-		wbLogconnection.setText(GlobalMessages.getSystemString("System.Button.Edit"));
+		wbLogconnection.setText(BaseMessages.getString("System.Button.Edit"));
 		fdbLogconnection=new FormData();
 		fdbLogconnection.top   = new FormAttachment(wDirectory, margin*4);
 		fdbLogconnection.right = new FormAttachment(100, 0);

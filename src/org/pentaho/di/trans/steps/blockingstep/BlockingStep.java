@@ -22,6 +22,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.SocketTimeoutException;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -199,6 +200,13 @@ public class BlockingStep extends BaseStep implements StepInterface {
 				try
 				{
 					data.rowbuffer.add(0, data.outputRowMeta.readData(di));
+				}
+				catch(SocketTimeoutException e)
+				{
+		            logError(Messages.getString("System.Log.UnexpectedError")+" : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+		            logError(Const.getStackTracker(e));
+		            setErrors(1);
+		            stopAll();
 				}
 				catch(KettleFileException fe) // empty file or EOF mostly
 				{

@@ -205,6 +205,8 @@ public class TransSplitter
     private TransMeta getOriginalCopy(boolean isSlaveTrans, ClusterSchema clusterSchema, SlaveServer slaveServer) throws KettleException
     {
         TransMeta transMeta = new TransMeta();
+        transMeta.setSlaveTransformation(true);
+        
         if (isSlaveTrans)
         {
             transMeta.setName(getSlaveTransName(originalTransformation.getName(), clusterSchema, slaveServer));

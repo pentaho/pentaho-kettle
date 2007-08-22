@@ -7,6 +7,7 @@ import java.io.DataOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -435,7 +436,7 @@ public class RowMeta implements RowMetaInterface
 
     }
     
-    public RowMeta(DataInputStream inputStream) throws KettleFileException, KettleEOFException
+    public RowMeta(DataInputStream inputStream) throws KettleFileException, KettleEOFException, SocketTimeoutException
     {
         this();
         
@@ -443,6 +444,10 @@ public class RowMeta implements RowMetaInterface
         try
         {
             nr = inputStream.readInt();
+        }
+        catch(SocketTimeoutException e)
+        {
+        	throw e;
         }
         catch (EOFException e) 
         {
@@ -458,7 +463,7 @@ public class RowMeta implements RowMetaInterface
         }
     }
 
-    public Object[] readData(DataInputStream inputStream) throws KettleFileException, KettleEOFException
+    public Object[] readData(DataInputStream inputStream) throws KettleFileException, KettleEOFException, SocketTimeoutException
     {
         Object[] data = new Object[size()];
         for (int i=0;i<size();i++)
