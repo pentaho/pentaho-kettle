@@ -8,6 +8,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -25,8 +26,6 @@ import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.ui.spoon.job.JobGraph;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.sql.ExecSQLMeta;
@@ -34,6 +33,8 @@ import org.pentaho.di.trans.steps.sql.Messages;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
+import org.pentaho.di.ui.spoon.job.JobGraph;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
 {
@@ -168,45 +169,62 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
 		wSQL.setLayoutData(fdSQL);
 
 		// Execute for each row?
+    
+    // For the "execute for each row" and "variable substitution" labels, find their maximum width
+    // and use that in the alignment
 		wlEachRow = new Label(shell, SWT.RIGHT);
 		wlEachRow.setText(Messages.getString("ExecSQLDialog.EachRow.Label")); //$NON-NLS-1$
-		props.setLook(wlEachRow);
+    wlEachRow.pack();
+    wlVariables = new Label(shell, SWT.RIGHT);
+    wlVariables.setText(Messages.getString("ExecSQLDialog.ReplaceVariables")); //$NON-NLS-1$
+    wlVariables.pack();
+    Rectangle rEachRow = wlEachRow.getBounds();
+    Rectangle rVariables = wlVariables.getBounds();
+    int width = Math.max(rEachRow.width, rVariables.width) + margin;
+
+    // Setup the "execute for each row" label
+    props.setLook(wlEachRow);
 		fdlEachRow = new FormData();
-		fdlEachRow.left = new FormAttachment(0, 0);
-		fdlEachRow.right = new FormAttachment(middle, -margin);
+		fdlEachRow.left = new FormAttachment(0, margin);
+		fdlEachRow.right = new FormAttachment(0, width);
 		fdlEachRow.top = new FormAttachment(wSQL, margin);
 		wlEachRow.setLayoutData(fdlEachRow);
+    
+    // Setup the "execute for each row" checkbox
 		wEachRow = new Button(shell, SWT.CHECK);
 		props.setLook(wEachRow);
 		fdEachRow = new FormData();
-		fdEachRow.left = new FormAttachment(middle, 0);
+		fdEachRow.left = new FormAttachment(wlEachRow, margin);
 		fdEachRow.top = new FormAttachment(wSQL, margin);
-		fdEachRow.right = new FormAttachment(100, 0);
+		fdEachRow.right = new FormAttachment(middle, 0);
 		wEachRow.setLayoutData(fdEachRow);
 
-		// substitute variables 
-        wlVariables = new Label(shell, SWT.RIGHT);
-        wlVariables.setText(Messages.getString("ExecSQLDialog.ReplaceVariables")); //$NON-NLS-1$
-        props.setLook(wlVariables);
-        fdlVariables = new FormData();
-        fdlVariables.left = new FormAttachment(0, 0);
-        fdlVariables.right = new FormAttachment(middle, -margin);
-        fdlVariables.top  = new FormAttachment(wEachRow, margin);
-        wlVariables.setLayoutData(fdlVariables);
-        wVariables = new Button(shell, SWT.CHECK);
-        props.setLook(wVariables);
-        fdVariables = new FormData();
-        fdVariables.left = new FormAttachment(middle, 0);
-        fdVariables.top  = new FormAttachment(wEachRow, margin);
-        fdVariables.right = new FormAttachment(100, 0);
-        wVariables.setLayoutData(fdVariables);
-        //wVariables.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent arg0) { setSQLToolTip(); } });
+		// Setup the "variable substitution" label 
+    props.setLook(wlVariables);
+    fdlVariables = new FormData();
+    fdlVariables.left = new FormAttachment(0, margin);
+    fdlVariables.right = new FormAttachment(0, width);
+    fdlVariables.top  = new FormAttachment(wEachRow, margin);
+    wlVariables.setLayoutData(fdlVariables);
+    
+    // Setup the "variable substitution" checkbox
+    wVariables = new Button(shell, SWT.CHECK);
+    props.setLook(wVariables);
+    fdVariables = new FormData();
+    fdVariables.left = new FormAttachment(wlVariables, margin);
+    fdVariables.top  = new FormAttachment(wEachRow, margin);
+    fdVariables.right = new FormAttachment(middle, 0);
+    wVariables.setLayoutData(fdVariables);
+    //wVariables.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent arg0) { setSQLToolTip(); } });
+
+    // Setup the "Parameters" label
 		wlFields = new Label(shell, SWT.NONE);
 		wlFields.setText(Messages.getString("ExecSQLDialog.Fields.Label")); //$NON-NLS-1$
 		props.setLook(wlFields);
 		fdlFields = new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
-		fdlFields.top = new FormAttachment(wEachRow, margin);
+    fdlFields.right = new FormAttachment(middle, 0);
+    fdlFields.top = new FormAttachment(wlVariables, margin);
 		wlFields.setLayoutData(fdlFields);
 
 		final int FieldsRows = input.getArguments().length;
@@ -232,14 +250,14 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
 		fdlInsertField = new FormData();
 		fdlInsertField.left = new FormAttachment(wFields, margin);
 		fdlInsertField.right = new FormAttachment(middle * 2, -margin);
-        fdlInsertField.top  = new FormAttachment(wVariables, margin);
+    fdlInsertField.top  = new FormAttachment(wVariables, margin);
 		wlInsertField.setLayoutData(fdlInsertField);
 		wInsertField = new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wInsertField);
 		wInsertField.addModifyListener(lsMod);
 		fdInsertField = new FormData();
 		fdInsertField.left = new FormAttachment(middle * 2, 0);
-        fdInsertField.top  = new FormAttachment(wVariables, margin);
+    fdInsertField.top  = new FormAttachment(wVariables, margin);
 		fdInsertField.right = new FormAttachment(100, 0);
 		wInsertField.setLayoutData(fdInsertField);
 
@@ -380,6 +398,7 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
 		if (input.getDatabaseMeta() != null)
 			wConnection.setText(input.getDatabaseMeta().getName());
 		wEachRow.setSelection(input.isExecutedEachInputRow());
+    wVariables.setSelection(input.isReplaceVariables());
 
 		if (input.getUpdateField() != null)
 			wUpdateField.setText(input.getUpdateField());
@@ -438,19 +457,17 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
 		input.setSql(wSQL.getText());
 		input.setDatabaseMeta(transMeta.findDatabase(wConnection.getText()));
 		input.setExecutedEachInputRow(wEachRow.getSelection());
-		input.setVariableReplacementActive(wVariables.getSelection());
+    input.setVariableReplacementActive(wVariables.getSelection());
 
 		input.setInsertField(wInsertField.getText());
 		input.setUpdateField(wUpdateField.getText());
 		input.setDeleteField(wDeleteField.getText());
 		input.setReadField(wReadField.getText());
 		
-    input.setVariableReplacementActive(wVariables.getSelection());
-
 		int nrargs = wFields.nrNonEmpty();
 		input.allocate(nrargs);
 
-		log.logDebug(toString(), Messages.getString("ExecSQLDialog.Log.FoundArguments", +nrargs + "")); //$NON-NLS-1$
+		log.logDebug(toString(), Messages.getString("ExecSQLDialog.Log.FoundArguments", +nrargs + "")); //$NON-NLS-1$ //$NON-NLS-2$
 		for (int i = 0; i < nrargs; i++)
 		{
 			TableItem item = wFields.getNonEmpty(i);
