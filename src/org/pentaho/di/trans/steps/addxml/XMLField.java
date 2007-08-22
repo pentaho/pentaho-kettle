@@ -15,7 +15,8 @@
  
 
 package org.pentaho.di.trans.steps.addxml;
-import be.ibridge.kettle.core.value.Value;
+
+import org.pentaho.di.core.row.ValueMeta;
 
 /**
  * Describes a single field in an XML output file
@@ -112,7 +113,7 @@ public class XMLField implements Cloneable
 
     public String getTypeDesc()
     {
-        return Value.getTypeDesc(type);
+        return ValueMeta.getTypeDesc(type);
     }
     
     public void setType(int type)
@@ -122,7 +123,7 @@ public class XMLField implements Cloneable
     
     public void setType(String typeDesc)
     {
-        this.type = Value.getType(typeDesc);
+        this.type = ValueMeta.getType(typeDesc);
     }
     
     public String getFormat()
