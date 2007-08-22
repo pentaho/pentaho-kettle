@@ -100,11 +100,12 @@ public class ByteArrayHashMap extends AbstractHashedMap {
     }
   }
   
+  @SuppressWarnings("unchecked")
   public List<byte[]> getKeys() {
     List<byte[]> rtn = new ArrayList<byte[]>(this.size());
-    Set kSet = this.keySet();
-    for (Iterator it = kSet.iterator(); it.hasNext(); ) {
-      rtn.add((byte[])it.next());
+    Set<byte[]> kSet = this.keySet();
+    for (Iterator<byte[]> it = kSet.iterator(); it.hasNext(); ) {
+      rtn.add(it.next());
     }
     return rtn;
   }
