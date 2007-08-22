@@ -21,6 +21,7 @@
 
 package org.pentaho.di.trans.steps.getfilenames;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -397,16 +398,13 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
 
   @Override
   public List<ResourceReference> getResourceDependencies(TransMeta transMeta, StepMeta stepInfo) {
-     List<ResourceReference> references = super.getResourceDependencies(transMeta, stepInfo);
-     
+     List<ResourceReference> references = new ArrayList<ResourceReference>(5);
+     ResourceReference reference = new ResourceReference(stepInfo);
+     references.add(reference);
+
      String[] textFiles = getFilePaths(transMeta);
      if ( textFiles!=null ) {
-       ResourceReference reference = null;
        for (int i=0; i<textFiles.length; i++) {
-         if (reference == null) {
-           reference = new ResourceReference(stepInfo);
-           references.add(reference);
-         }
          reference.getEntries().add( new ResourceEntry(textFiles[i], ResourceType.FILE));
        }
      }

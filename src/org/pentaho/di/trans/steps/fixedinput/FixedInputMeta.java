@@ -15,6 +15,7 @@
  
 package org.pentaho.di.trans.steps.fixedinput;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -405,14 +406,14 @@ public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface
 	
 	@Override
 	public List<ResourceReference> getResourceDependencies(TransMeta transMeta, StepMeta stepInfo) {
-		 List<ResourceReference> references = super.getResourceDependencies(transMeta, stepInfo);
+		 List<ResourceReference> references = new ArrayList<ResourceReference>(5);
 		 
+     ResourceReference reference = new ResourceReference(stepInfo);
+     references.add(reference);
 		 if (!Const.isEmpty(filename)) {
 			 // Add the filename to the references, including a reference to this step meta data.
 			 //
-			 ResourceReference reference = new ResourceReference(stepInfo);
 			 reference.getEntries().add( new ResourceEntry(transMeta.environmentSubstitute(filename), ResourceType.FILE));
-       references.add(reference);
 		 }
 		 return references;
 	}

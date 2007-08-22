@@ -723,21 +723,19 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
 	
   @Override
   public List<ResourceReference> getResourceDependencies(TransMeta transMeta, StepMeta stepInfo) {
-     List<ResourceReference> references = super.getResourceDependencies(transMeta, stepInfo);
+     List<ResourceReference> references = new ArrayList<ResourceReference>(5);
      String realFilename = transMeta.environmentSubstitute(fileName);
      String realTransname = transMeta.environmentSubstitute(transName);
+     ResourceReference reference = new ResourceReference(stepInfo);
+     references.add(reference);
      
      if (!Const.isEmpty(realFilename)) {
        // Add the filename to the references, including a reference to this step meta data.
        //
-       ResourceReference reference = new ResourceReference(stepInfo);
-       references.add(reference);
        reference.getEntries().add( new ResourceEntry(realFilename, ResourceType.ACTIONFILE));
      } else if (!Const.isEmpty(realTransname)) {
        // Add the filename to the references, including a reference to this step meta data.
        //
-       ResourceReference reference = new ResourceReference(stepInfo);
-       references.add(reference);
        reference.getEntries().add( new ResourceEntry(realTransname, ResourceType.ACTIONFILE));
        references.add(reference);
      }

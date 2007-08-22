@@ -21,6 +21,7 @@
 
 package org.pentaho.di.trans.steps.xmlinput;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -675,7 +676,9 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface
 
     @Override
     public List<ResourceReference> getResourceDependencies(TransMeta transMeta, StepMeta stepInfo) {
-       List<ResourceReference> references = super.getResourceDependencies(transMeta, stepInfo);
+       List<ResourceReference> references = new ArrayList<ResourceReference>(5);
+       ResourceReference reference = new ResourceReference(stepInfo);
+       references.add(reference);
 
        //
        // Get the file path list from the FileInputList
@@ -686,12 +689,7 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface
        String[] textFiles = FileInputList.createFilePathList(transMeta, fileName, fileMask, required, subdirs);
        
        if ( textFiles!=null ) {
-         ResourceReference reference = null;
          for (int i=0; i<textFiles.length; i++) {
-           if (reference == null) {
-             reference = new ResourceReference(stepInfo);
-             references.add(reference);
-           }
            reference.getEntries().add( new ResourceEntry(textFiles[i], ResourceType.FILE));
          }
        }

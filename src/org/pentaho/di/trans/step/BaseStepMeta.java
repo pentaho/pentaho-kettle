@@ -283,7 +283,10 @@ public class BaseStepMeta implements Cloneable
      * @return a list of all the resource dependencies that the step is depending on
      */
     public List<ResourceReference> getResourceDependencies(TransMeta transMeta, StepMeta stepInfo) {
-    	return new ArrayList<ResourceReference>(5); // Lower the initial capacity - unusual to have more than 1 actually
+      List<ResourceReference> references = new ArrayList<ResourceReference>(5); // Lower the initial capacity - unusual to have more than 1 actually
+      ResourceReference reference = new ResourceReference(stepInfo);
+      references.add(reference);
+      return references;
     }
     
     public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface) throws KettleException {
