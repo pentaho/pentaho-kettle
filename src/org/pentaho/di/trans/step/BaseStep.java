@@ -506,7 +506,7 @@ public class BaseStep extends Thread implements VariableSpace
         		//
         		for (int i=0;i<stepMeta.getRemoteInputSteps().size();i++) {
     	        	RemoteStep remoteStep = stepMeta.getRemoteInputSteps().get(i);
-    	        	if (i==stepcopy) {
+    	        	if (remoteStep.getTargetStepCopyNr()==stepcopy) {
 	    	        	RemoteStep copy = (RemoteStep) remoteStep.clone();
 	    	        	remoteInputSteps.add(copy);
     	        	}
@@ -777,7 +777,50 @@ public class BaseStep extends Thread implements VariableSpace
         			}
         		}
         		
-        		// 
+        		// Accept sockets for all remote steps
+        		//
+        		/*
+        		Thread[] acceptThreads = new Thread[remoteOutputSteps.size()];
+        		final Exception[] acceptExceptions = new Exception[remoteOutputSteps.size()];
+        		for (int i=0;i<remoteOutputSteps.size();i++) {
+        			final RemoteStep remoteStep = remoteOutputSteps.get(i);
+        			final int index = i;
+        			
+        			Runnable acceptRunnable = new Runnable() {
+						public void run() {
+							try {
+								acceptExceptions[index]=null;
+								remoteStep.openClientWriterSocket();
+							}
+							catch(Exception e) {
+								acceptExceptions[index] = e;
+							}
+						}
+					};
+					acceptThreads[i] = new Thread(acceptRunnable);
+					acceptThreads[i].start();
+        		}
+        		
+        		// Wait for all these to join with the remote site...
+        		//
+        		for (int i=0;i<acceptThreads.length;i++) {
+        			try {
+						acceptThreads[i].join();
+					} catch (InterruptedException e) {
+						
+					}
+        		}
+        		
+        		// See if there were any exceptions...
+        		for (int i=0;i<acceptThreads.length;i++) {
+        			if (acceptExceptions[i]!=null) {
+        				throw new KettleStepException("Unexpected problem during socket accept for remote output step '"+remoteOutputSteps.get(i)+"'", acceptExceptions[i]);
+        			}
+        		}
+        		*/
+        		
+        		// Start threads: one per remote step to funnel the data through...
+        		//
         		for (RemoteStep remoteStep : remoteOutputSteps) {
         			try {
         				if (remoteStep.getTargetSlaveServerName()==null) {
@@ -1161,7 +1204,6 @@ public class BaseStep extends Thread implements VariableSpace
         		for (RemoteStep remoteStep : remoteInputSteps) {
         			try {
 						RowSet rowSet = remoteStep.openReaderSocket(this);
-						logDetailed("Opened a reader socket to remote step: "+remoteStep);
 						inputRowSets.add(rowSet);
 					} catch (Exception e) {
 						throw new KettleStepException("Error opening reader socket to remote step '"+remoteStep+"'", e);
@@ -1201,7 +1243,7 @@ public class BaseStep extends Thread implements VariableSpace
     		// Timeout almost immediately if nothing is there to read.
     		// We will then switch to the next row set to read from...
     		//
-        	row = inputRowSet.getRowWait(1, TimeUnit.MILLISECONDS);
+        	row = inputRowSet.getRowWait(2, TimeUnit.MILLISECONDS);
         	if (row!=null) {
         		linesRead++;
         		blockPointer++;
@@ -1212,7 +1254,7 @@ public class BaseStep extends Thread implements VariableSpace
         		// the input stream and move on to the next one...
         		//
         		if (inputRowSet.isDone()) {
-        			row = inputRowSet.getRowWait(1, TimeUnit.MILLISECONDS);
+        			row = inputRowSet.getRowWait(2, TimeUnit.MILLISECONDS);
         			if (row==null) {
         				inputRowSets.remove(currentInputRowSetNr);
         				if (inputRowSets.size()==0) return null; // We're completely done.

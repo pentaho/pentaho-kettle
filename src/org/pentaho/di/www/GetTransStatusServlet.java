@@ -143,6 +143,8 @@ public class GetTransStatusServlet extends HttpServlet
                         out.print("<a href=\"/kettle/stopTrans?name="+transName+"\">Stop this transformation</a>");
                         out.print("<p>");
                     }
+                    out.print("<a href=\"/kettle/cleanupTrans?name="+transName+"\">Cleanup this transformation</a>");
+                    out.print("<p>");
                     
                     out.println("<table border=\"1\">");
                     out.print("<tr> <th>Step name</th> <th>Copy Nr</th> <th>Read</th> <th>Written</th> <th>Input</th> <th>Output</th> " +

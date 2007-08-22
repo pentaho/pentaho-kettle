@@ -2043,7 +2043,8 @@ public class Trans implements VariableSpace
                     else {
                         log.logDetailed(logSubject, "Master transformation has finished.");
                     }
-                    errors+=transStatus.getNrStepErrors();
+                    Result result = transStatus.getResult(transSplitter.getOriginalTransformation());
+                    errors+=result.getNrErrors();
                 }
                 catch(Exception e)
                 {
@@ -2101,12 +2102,7 @@ public class Trans implements VariableSpace
             }
         }
         
-        if (errors>0) {
-        	log.logMinimal(logSubject, "All transformations in the cluster have finished without errors.");
-        }
-        else {
-        	log.logMinimal(logSubject, "The transformations in the cluster have finished with "+errors+" errors.");
-        }
+        log.logMinimal(logSubject, "All transformations in the cluster have finished.");
         
         // All transformations have finished, with or without error.
         // Now run a cleanup on all the transformation on the master and the slaves.
