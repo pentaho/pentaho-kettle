@@ -484,7 +484,6 @@ public class TransPainter
         gc.setFont(GUIResource.getInstance().getFontGraph());
         gc.drawText(name, namePosition.x, namePosition.y, SWT.DRAW_TRANSPARENT);
 
-        boolean clustered=false;
         boolean partitioned=false;
         
         StepPartitioningMeta meta = stepMeta.getStepPartitioningMeta();
@@ -494,7 +493,6 @@ public class TransPainter
         }
         if (stepMeta.getClusterSchema()!=null)
         {
-            clustered=true;
             String message = "C";
             message+="x"+stepMeta.getClusterSchema().findNrSlaves();
             
@@ -502,7 +500,7 @@ public class TransPainter
             gc.setForeground(black);
             gc.drawText(message, screen.x + 3 + iconsize, screen.y - 8);
         }
-        if (stepMeta.getCopies() > 1  && !partitioned && !clustered)
+        if (stepMeta.getCopies() > 1  && !partitioned)
         {
             gc.setBackground(background);
             gc.setForeground(black);
