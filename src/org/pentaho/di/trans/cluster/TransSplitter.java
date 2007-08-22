@@ -1074,17 +1074,16 @@ public class TransSplitter
 			if (slaveSchema!=null) {
 				stepPartitioningMeta.setPartitionSchema(slaveSchema);
 			}
+			// Always just start a single copy on the slave server...
+			// Otherwise the confusion w.r.t. to partitioning & re-partitioning would be complete.
+			//
+			copy.setCopies(1);
 		}
 
 		// Remove the clustering information on the slave transformation step
 		// We don't need it anymore, it only confuses.
 		//
 		copy.setClusterSchema(null); 
-
-		// Always just start a single copy on the slave server...
-		// Otherwise the confusion w.r.t. to partitioning & re-partitioning would be complete.
-		//
-		copy.setCopies(1);
 		
 		transMeta.addStep(copy);
 		return copy;
