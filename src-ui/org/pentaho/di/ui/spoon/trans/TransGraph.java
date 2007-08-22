@@ -1797,6 +1797,9 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 
     private void setToolTip(int x, int y)
     {
+    	if (!spoon.getProperties().showToolTips())
+			return;
+    	
     	String newTip = null;
         Image  tipImage = null;
         

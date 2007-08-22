@@ -55,6 +55,10 @@ import org.pentaho.di.ui.core.gui.WindowProperty;
 public class PropsUI extends Props
 {
 	
+	private static final String NO = "N";
+
+	private static final String YES = "Y";
+
 	private static Display display;
 		
 	protected List<LastUsedFile> lastUsedFiles;
@@ -70,6 +74,8 @@ public class PropsUI extends Props
     private static final String STRING_SHOW_BRANDING_GRAPHICS = "ShowBrandingGraphics";
 
     private static final String STRING_ONLY_SHOW_ACTIVE_FILE = "OnlyShowActiveFileInTree";
+    
+    private static final String SHOW_TOOL_TIPS = "ShowToolTips";
 
 	/**
 	 * Initialize the properties: load from disk.
@@ -223,7 +229,7 @@ public class PropsUI extends Props
 			properties.setProperty("ScreenName"+nr, name);
 			
 			WindowProperty winprop = screens.get(name);
-			properties.setProperty(STRING_SIZE_MAX+nr, winprop.isMaximized()?"Y":"N");
+			properties.setProperty(STRING_SIZE_MAX+nr, winprop.isMaximized()?YES:NO);
 			if (winprop.getRectangle()!=null)
 			{
 				properties.setProperty(STRING_SIZE_X+nr, ""+winprop.getX());
@@ -245,7 +251,7 @@ public class PropsUI extends Props
 		String name = properties.getProperty("ScreenName"+nr);
 		while (name!=null)
 		{
-			boolean max = "Y".equalsIgnoreCase(properties.getProperty(STRING_SIZE_MAX+nr));
+			boolean max = YES.equalsIgnoreCase(properties.getProperty(STRING_SIZE_MAX+nr));
 			int x = Const.toInt(properties.getProperty(STRING_SIZE_X+nr),   0);
 			int y = Const.toInt(properties.getProperty(STRING_SIZE_Y+nr),   0);
 			int w = Const.toInt(properties.getProperty(STRING_SIZE_W+nr), 320);
@@ -277,7 +283,7 @@ public class PropsUI extends Props
             properties.setProperty("filetype"+(i+1), Const.NVL(lastUsedFile.getFileType(), LastUsedFile.FILE_TYPE_TRANSFORMATION));
 			properties.setProperty("lastfile"+(i+1), Const.NVL(lastUsedFile.getFilename(), ""));
 			properties.setProperty("lastdir"+(i+1),  Const.NVL(lastUsedFile.getDirectory(), ""));
-			properties.setProperty("lasttype"+(i+1), lastUsedFile.isSourceRepository()?"Y":"N");
+			properties.setProperty("lasttype"+(i+1), lastUsedFile.isSourceRepository()?YES:NO);
 			properties.setProperty("lastrepo"+(i+1), Const.NVL(lastUsedFile.getRepositoryName(), ""));
 		}
 	}
@@ -318,7 +324,7 @@ public class PropsUI extends Props
             String fileType = properties.getProperty("filetype"+(i+1), LastUsedFile.FILE_TYPE_TRANSFORMATION); // default: transformation
             String filename = properties.getProperty("lastfile"+(i+1), "");
             String directory = properties.getProperty("lastdir"+(i+1), "");
-            boolean sourceRepository = "Y".equalsIgnoreCase(properties.getProperty("lasttype"+(i+1), "N"));
+            boolean sourceRepository = YES.equalsIgnoreCase(properties.getProperty("lasttype"+(i+1), NO));
             String repositoryName = properties.getProperty("lastrepo"+(i+1));
             
             lastUsedFiles.add(new LastUsedFile(fileType, filename, directory, sourceRepository, repositoryName));
@@ -738,101 +744,101 @@ public class PropsUI extends Props
 
 	public void setShowTips(boolean show)
 	{
-		properties.setProperty(STRING_SHOW_TIPS,  show?"Y":"N");
+		properties.setProperty(STRING_SHOW_TIPS,  show?YES:NO);
 	}
 	
 	public boolean showTips()
 	{
 		String show=properties.getProperty(STRING_SHOW_TIPS);
-		return !"N".equalsIgnoreCase(show);
+		return !NO.equalsIgnoreCase(show);
 	}
 
 	public void setOpenLastFile(boolean open)
 	{
-		properties.setProperty(STRING_OPEN_LAST_FILE, open?"Y":"N");
+		properties.setProperty(STRING_OPEN_LAST_FILE, open?YES:NO);
 	}
 
 	public boolean openLastFile()
 	{
 		String open=properties.getProperty(STRING_OPEN_LAST_FILE);
-		return !"N".equalsIgnoreCase(open);
+		return !NO.equalsIgnoreCase(open);
 	}
 
 	public void setAutoSave(boolean autosave)
 	{
-		properties.setProperty(STRING_AUTO_SAVE, autosave?"Y":"N");
+		properties.setProperty(STRING_AUTO_SAVE, autosave?YES:NO);
 	}
 
 	public boolean getAutoSave()
 	{
 		String autosave=properties.getProperty(STRING_AUTO_SAVE);
-		return "Y".equalsIgnoreCase(autosave); // Default = OFF
+		return YES.equalsIgnoreCase(autosave); // Default = OFF
 	}
 
 	public void setSaveConfirmation(boolean saveconf)
 	{
-		properties.setProperty(STRING_SAVE_CONF, saveconf?"Y":"N");
+		properties.setProperty(STRING_SAVE_CONF, saveconf?YES:NO);
 	}
 
 	public boolean getSaveConfirmation()
 	{
 		String saveconf=properties.getProperty(STRING_SAVE_CONF);
-		return "Y".equalsIgnoreCase(saveconf); // Default = OFF
+		return YES.equalsIgnoreCase(saveconf); // Default = OFF
 	}
 
 	public void setAutoSplit(boolean autosplit)
 	{
-		properties.setProperty(STRING_AUTO_SPLIT, autosplit?"Y":"N");
+		properties.setProperty(STRING_AUTO_SPLIT, autosplit?YES:NO);
 	}
 
 	public boolean getAutoSplit()
 	{
 		String autosplit=properties.getProperty(STRING_AUTO_SPLIT);
-		return "Y".equalsIgnoreCase(autosplit); // Default = OFF
+		return YES.equalsIgnoreCase(autosplit); // Default = OFF
 	}
 
     public boolean showRepositoriesDialogAtStartup()
     {
-        String show = properties.getProperty(STRING_START_SHOW_REPOSITORIES, "Y");
-        return "Y".equalsIgnoreCase(show); // Default: show warning before tool exit.
+        String show = properties.getProperty(STRING_START_SHOW_REPOSITORIES, YES);
+        return YES.equalsIgnoreCase(show); // Default: show warning before tool exit.
     }
     
     public void setExitWarningShown(boolean show)
     {
-        properties.setProperty(STRING_SHOW_EXIT_WARNING, show?"Y":"N");
+        properties.setProperty(STRING_SHOW_EXIT_WARNING, show?YES:NO);
     }
 
     public boolean isAntiAliasingEnabled()
     {
-        String anti = properties.getProperty(STRING_ANTI_ALIASING, "N");
-        return "Y".equalsIgnoreCase(anti); // Default: don't do anti-aliasing
+        String anti = properties.getProperty(STRING_ANTI_ALIASING, NO);
+        return YES.equalsIgnoreCase(anti); // Default: don't do anti-aliasing
     }
     
     public void setAntiAliasingEnabled(boolean anti)
     {
-        properties.setProperty(STRING_ANTI_ALIASING, anti?"Y":"N");
+        properties.setProperty(STRING_ANTI_ALIASING, anti?YES:NO);
     }
 
     public boolean showExitWarning()
     {
-        String show = properties.getProperty(STRING_SHOW_EXIT_WARNING, "Y");
-        return "Y".equalsIgnoreCase(show); // Default: show repositories dialog at startup
+        String show = properties.getProperty(STRING_SHOW_EXIT_WARNING, YES);
+        return YES.equalsIgnoreCase(show); // Default: show repositories dialog at startup
     }
     
     public void setRepositoriesDialogAtStartupShown(boolean show)
     {
-        properties.setProperty(STRING_START_SHOW_REPOSITORIES, show?"Y":"N");
+        properties.setProperty(STRING_START_SHOW_REPOSITORIES, show?YES:NO);
     }
     
     public boolean isOSLookShown()
     {
-        String show = properties.getProperty(STRING_SHOW_OS_LOOK, "N");
-        return "Y".equalsIgnoreCase(show); // Default: don't show gray dialog boxes, show Kettle look.
+        String show = properties.getProperty(STRING_SHOW_OS_LOOK, NO);
+        return YES.equalsIgnoreCase(show); // Default: don't show gray dialog boxes, show Kettle look.
     }
     
     public void setOSLookShown(boolean show)
     {
-        properties.setProperty(STRING_SHOW_OS_LOOK, show?"Y":"N");
+        properties.setProperty(STRING_SHOW_OS_LOOK, show?YES:NO);
     }
     
     
@@ -963,24 +969,24 @@ public class PropsUI extends Props
     
     public boolean showCopyOrDistributeWarning()
     {
-        String show = properties.getProperty(STRING_SHOW_COPY_OR_DISTRIBUTE_WARNING, "Y");
-        return "Y".equalsIgnoreCase(show);
+        String show = properties.getProperty(STRING_SHOW_COPY_OR_DISTRIBUTE_WARNING, YES);
+        return YES.equalsIgnoreCase(show);
     }
     
     public void setShowCopyOrDistributeWarning(boolean show)
     {
-        properties.setProperty(STRING_SHOW_COPY_OR_DISTRIBUTE_WARNING, show?"Y":"N");
+        properties.setProperty(STRING_SHOW_COPY_OR_DISTRIBUTE_WARNING, show?YES:NO);
     }
     
     public boolean showWelcomePageOnStartup()
     {
-        String show = properties.getProperty(STRING_SHOW_WELCOME_PAGE_ON_STARTUP, "Y");
-        return "Y".equalsIgnoreCase(show);
+        String show = properties.getProperty(STRING_SHOW_WELCOME_PAGE_ON_STARTUP, YES);
+        return YES.equalsIgnoreCase(show);
     }
     
     public void setShowWelcomePageOnStartup(boolean show)
     {
-        properties.setProperty(STRING_SHOW_WELCOME_PAGE_ON_STARTUP, show?"Y":"N");
+        properties.setProperty(STRING_SHOW_WELCOME_PAGE_ON_STARTUP, show?YES:NO);
     }
     
     public int getJobsDialogStyle()
@@ -1032,23 +1038,33 @@ public class PropsUI extends Props
     
     public boolean isBrandingActive()
     {
-        String show = properties.getProperty(STRING_SHOW_BRANDING_GRAPHICS, "N");
-        return "Y".equalsIgnoreCase(show);
+        String show = properties.getProperty(STRING_SHOW_BRANDING_GRAPHICS, NO);
+        return YES.equalsIgnoreCase(show);
     }
     
     public void setBrandingActive(boolean active)
     {
-        properties.setProperty(STRING_SHOW_BRANDING_GRAPHICS, active?"Y":"N");
+        properties.setProperty(STRING_SHOW_BRANDING_GRAPHICS, active?YES:NO);
     }
 
     public boolean isOnlyActiveFileShownInTree()
     {
-        String show = properties.getProperty(STRING_ONLY_SHOW_ACTIVE_FILE, "Y");
-        return "Y".equalsIgnoreCase(show);
+        String show = properties.getProperty(STRING_ONLY_SHOW_ACTIVE_FILE, YES);
+        return YES.equalsIgnoreCase(show);
     }
     
     public void setOnlyActiveFileShownInTree(boolean show)
     {
-        properties.setProperty(STRING_ONLY_SHOW_ACTIVE_FILE, show?"Y":"N");
+        properties.setProperty(STRING_ONLY_SHOW_ACTIVE_FILE, show?YES:NO);
+    }
+    
+    public boolean showToolTips()
+    {
+    	return YES.equalsIgnoreCase(properties.getProperty(SHOW_TOOL_TIPS,YES));
+    }
+    
+    public void setShowToolTips(boolean show)
+    {
+        properties.setProperty(SHOW_TOOL_TIPS, show?YES:NO);
     }
 }

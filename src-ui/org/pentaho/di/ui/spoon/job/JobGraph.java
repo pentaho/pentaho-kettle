@@ -258,7 +258,8 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
                 lastclick = new Point(real.x, real.y);
 
 				// Clear the tooltip!
-				setToolTipText(null);
+				if (spoon.getProperties().showToolTips())
+					setToolTipText(null);
 
 				// Set the pop-up menu
 				if (e.button==3)
@@ -1451,6 +1452,9 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 	
 	protected void setToolTip(int x, int y) 
 	{
+		if (!spoon.getProperties().showToolTips())
+			return;
+		
         String newTip=null;
         
 		final JobEntryCopy je = jobMeta.getJobEntryCopy(x, y, iconsize);

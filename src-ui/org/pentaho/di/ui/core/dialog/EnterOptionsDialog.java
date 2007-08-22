@@ -211,6 +211,8 @@ public class EnterOptionsDialog extends Dialog
 
     private int margin;
 
+	private Button tooltipBtn;
+
     /**
      * @deprecated Use CT without <i>props</i> parameter instead
      */
@@ -1335,6 +1337,25 @@ public class EnterOptionsDialog extends Dialog
                 }
             }
         });
+        
+        //Tooltips
+        Label tooltipLbl =new Label(wGeneralComp, SWT.RIGHT);
+        tooltipLbl.setText(Messages.getString("EnterOptionsDialog.ToolTipsEnabled.Label"));
+        props.setLook(tooltipLbl);
+        FormData fdlToolTipData = new FormData();
+        fdlToolTipData.left = new FormAttachment(0, 0);
+        fdlToolTipData.top  = new FormAttachment(wClearCustom, margin);
+        fdlToolTipData.right= new FormAttachment(middle, -margin);
+        tooltipLbl.setLayoutData(fdlToolTipData);
+        tooltipBtn =new Button(wGeneralComp, SWT.CHECK);
+        props.setLook(tooltipBtn);
+        tooltipBtn.setSelection(props.showToolTips());
+        FormData toolTipBtnData = new FormData();
+        toolTipBtnData.left = new FormAttachment(middle, 0);
+        toolTipBtnData.top  = new FormAttachment(wClearCustom, margin);
+        toolTipBtnData.right= new FormAttachment(100, 0);
+        tooltipBtn.setLayoutData(toolTipBtnData);
+       
 
         fdGeneralComp = new FormData();
         fdGeneralComp.left  = new FormAttachment(0, 0);
@@ -1489,6 +1510,7 @@ public class EnterOptionsDialog extends Dialog
         props.setExitWarningShown                    ( wExitWarning.getSelection()  );
         props.setOSLookShown                         ( wOriginalLook.getSelection() );
         props.setBrandingActive                      ( wBranding.getSelection()     );
+        props.setShowToolTips						 ( tooltipBtn.getSelection()	);
 
         int defaultLocaleIndex = wDefaultLocale.getSelectionIndex();
         if ( defaultLocaleIndex < 0 || 
