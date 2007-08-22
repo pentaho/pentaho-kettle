@@ -60,9 +60,6 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 
 	private static final String YES = "Y";
 
-	public final static String trimTypeDesc[] = { Messages.getString("TextFileInputMeta.TrimType.None"), Messages.getString("TextFileInputMeta.TrimType.Left"),
-			Messages.getString("TextFileInputMeta.TrimType.Right"), Messages.getString("TextFileInputMeta.TrimType.Both") };
-
 	private static final String STRING_BASE64_PREFIX = "Base64: ";
 
     public static final int FILE_FORMAT_DOS   = 0;
@@ -931,7 +928,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 				field.setPosition(Const.toInt(XMLHandler.getTagValue(fnode, "position"), -1));
 				field.setLength(Const.toInt(XMLHandler.getTagValue(fnode, "length"), -1));
 				field.setPrecision(Const.toInt(XMLHandler.getTagValue(fnode, "precision"), -1));
-				field.setTrimType(getTrimTypeByCode(XMLHandler.getTagValue(fnode, "trim_type")));
+				field.setTrimType(ValueMeta.getTrimTypeByCode(XMLHandler.getTagValue(fnode, "trim_type")));
 				field.setRepeated(YES.equalsIgnoreCase(XMLHandler.getTagValue(fnode, "repeat")));
 
 				inputFields[i] = field;
@@ -1075,7 +1072,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 				field.setPosition((int) rep.getStepAttributeInteger(id_step, i, "field_position"));
 				field.setLength((int) rep.getStepAttributeInteger(id_step, i, "field_length"));
 				field.setPrecision((int) rep.getStepAttributeInteger(id_step, i, "field_precision"));
-				field.setTrimType(getTrimTypeByCode(rep.getStepAttributeString(id_step, i, "field_trim_type")));
+				field.setTrimType(ValueMeta.getTrimTypeByCode(rep.getStepAttributeString(id_step, i, "field_trim_type")));
 				field.setRepeated(rep.getStepAttributeBoolean(id_step, i, "field_repeat"));
 
 				inputFields[i] = field;
@@ -1202,42 +1199,6 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			throw new KettleException("Unable to save step information to the repository for id_step=" + id_step, e);
 		}
-	}
-
-	public final static int getTrimTypeByCode(String tt)
-	{
-		if (tt == null) return 0;
-
-		for (int i = 0; i < Const.trimTypeCode.length; i++)
-		{
-			if (Const.trimTypeCode[i].equalsIgnoreCase(tt)) return i;
-		}
-		return 0;
-	}
-
-	public final static int getTrimTypeByDesc(String tt)
-	{
-		if (tt == null) return 0;
-
-		for (int i = 0; i < trimTypeDesc.length; i++)
-		{
-			if (trimTypeDesc[i].equalsIgnoreCase(tt)) return i;
-		}
-
-        // If this fails, try to match using the code.
-        return getTrimTypeByCode(tt);
-	}
-
-	public final static String getTrimTypeCode(int i)
-	{
-		if (i < 0 || i >= Const.trimTypeCode.length) return Const.trimTypeCode[0];
-		return Const.trimTypeCode[i];
-	}
-
-	public final static String getTrimTypeDesc(int i)
-	{
-		if (i < 0 || i >= trimTypeDesc.length) return trimTypeDesc[0];
-		return trimTypeDesc[i];
 	}
 
 	public String[] getFilePaths(VariableSpace space)

@@ -964,7 +964,7 @@ public class BaseStep extends Thread implements VariableSpace
 		        			try
 		        			{
 			        			int partNr = distribution.getPartition(outputRowSet.getRemoteSlaveServerName(), nextPartitionSchemaName, outputRowSet.getDestinationStepCopy());
-			        			if (partNr==-1) {
+			        			if (partNr<0) {
 			        				throw new KettleStepException("Unable to find partition using rowset data, slave="+outputRowSet.getRemoteSlaveServerName()+", partition schema="+nextStepPartitioningMeta.getPartitionSchema().getName()+", copy="+outputRowSet.getDestinationStepCopy());
 			        			}
 			        			partitionNrRowSetList[partNr] = outputRowSet;

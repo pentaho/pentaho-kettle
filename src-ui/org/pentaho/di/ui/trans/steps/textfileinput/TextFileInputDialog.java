@@ -1889,7 +1889,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
              new ColumnInfo(Messages.getString("TextFileInputDialog.GroupColumn.Column"),      ColumnInfo.COLUMN_TYPE_TEXT,    false),
              new ColumnInfo(Messages.getString("TextFileInputDialog.NullIfColumn.Column"),    ColumnInfo.COLUMN_TYPE_TEXT,    false),
              new ColumnInfo(Messages.getString("TextFileInputDialog.IfNullColumn.Column"),    ColumnInfo.COLUMN_TYPE_TEXT,    false),
-             new ColumnInfo(Messages.getString("TextFileInputDialog.TrimTypeColumn.Column"),  ColumnInfo.COLUMN_TYPE_CCOMBO,  TextFileInputMeta.trimTypeDesc, true ),
+             new ColumnInfo(Messages.getString("TextFileInputDialog.TrimTypeColumn.Column"),  ColumnInfo.COLUMN_TYPE_CCOMBO,  ValueMeta.trimTypeDesc, true ),
              new ColumnInfo(Messages.getString("TextFileInputDialog.RepeatColumn.Column"),     ColumnInfo.COLUMN_TYPE_CCOMBO,  new String[] { Messages.getString("System.Combo.Yes"), Messages.getString("System.Combo.No") }, true )
             };
         
@@ -2229,7 +2229,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 			field.setGroupSymbol( item.getText(9) );
 			field.setNullString( item.getText(10) );
             field.setIfNullValue(item.getText(11));
-			field.setTrimType( TextFileInputMeta.getTrimTypeByDesc(item.getText(12)) );
+			field.setTrimType( ValueMeta.getTrimTypeByDesc(item.getText(12)) );
 			field.setRepeated( Messages.getString("System.Combo.Yes").equalsIgnoreCase(item.getText(13)) );		
 			
 			meta.getInputFields()[i] = field;

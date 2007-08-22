@@ -181,6 +181,7 @@ public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface
 				field.setName( rep.getStepAttributeString(id_step, i, "field_name") );
 				field.setType( ValueMeta.getType(rep.getStepAttributeString(id_step, i, "field_type")) );
 				field.setFormat( rep.getStepAttributeString(id_step, i, "field_format") );
+				field.setTrimType( ValueMeta.getTrimTypeByCode(rep.getStepAttributeString(id_step, i, "field_trim_type")) );
 				field.setCurrency( rep.getStepAttributeString(id_step, i, "field_currency") );
 				field.setDecimal( rep.getStepAttributeString(id_step, i, "field_decimal") );
 				field.setGrouping( rep.getStepAttributeString(id_step, i, "field_group") );
@@ -212,6 +213,7 @@ public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_name", fieldDefinition[i].getName());
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_type", ValueMeta.getTypeDesc(fieldDefinition[i].getType()));
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_format", fieldDefinition[i].getFormat());
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_trim_type", ValueMeta.getTrimTypeCode(fieldDefinition[i].getTrimType()));
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_currency", fieldDefinition[i].getCurrency());
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_decimal", fieldDefinition[i].getDecimal());
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_group", fieldDefinition[i].getGrouping());
@@ -233,6 +235,7 @@ public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface
 			
 			ValueMetaInterface valueMeta = new ValueMeta(field.getName(), field.getType());
 			valueMeta.setConversionMask(field.getFormat());
+			valueMeta.setTrimType(field.getTrimType());
 			valueMeta.setLength(field.getLength());
 			valueMeta.setPrecision(field.getPrecision());
 			valueMeta.setConversionMask(field.getFormat());

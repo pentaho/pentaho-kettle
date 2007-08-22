@@ -61,7 +61,6 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
-import org.pentaho.di.trans.steps.textfileinput.TextFileInputMeta;
 import org.pentaho.di.trans.steps.textfileoutput.Messages;
 import org.pentaho.di.trans.steps.textfileoutput.TextFileField;
 import org.pentaho.di.trans.steps.textfileoutput.TextFileOutputMeta;
@@ -849,7 +848,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		colinf[5]=new ColumnInfo(Messages.getString("TextFileOutputDialog.CurrencyColumn.Column"),   ColumnInfo.COLUMN_TYPE_TEXT,   false);
 		colinf[6]=new ColumnInfo(Messages.getString("TextFileOutputDialog.DecimalColumn.Column"),    ColumnInfo.COLUMN_TYPE_TEXT,   false);
 		colinf[7]=new ColumnInfo(Messages.getString("TextFileOutputDialog.GroupColumn.Column"),      ColumnInfo.COLUMN_TYPE_TEXT,   false);
-		colinf[8]=new ColumnInfo(Messages.getString("TextFileOutputDialog.TrimTypeColumn.Column"),  ColumnInfo.COLUMN_TYPE_CCOMBO,  TextFileInputMeta.trimTypeDesc, true );
+		colinf[8]=new ColumnInfo(Messages.getString("TextFileOutputDialog.TrimTypeColumn.Column"),  ColumnInfo.COLUMN_TYPE_CCOMBO,  ValueMeta.trimTypeDesc, true );
 		colinf[9]=new ColumnInfo(Messages.getString("TextFileOutputDialog.NullColumn.Column"),       ColumnInfo.COLUMN_TYPE_TEXT,   false);
 		
 		wFields=new TableView(transMeta, wFieldsComp, 
@@ -1114,7 +1113,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 			field.setCurrencySymbol( item.getText(6) );
 			field.setDecimalSymbol( item.getText(7) );
 			field.setGroupingSymbol( item.getText(8) );
-			field.setTrimType( TextFileInputMeta.getTrimTypeByDesc(item.getText(9)));
+			field.setTrimType( ValueMeta.getTrimTypeByDesc(item.getText(9)));
 			field.setNullString( item.getText(10) );
 			tfoi.getOutputFields()[i]  = field;
 		}
@@ -1191,7 +1190,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 			
 			item.setText(4, "");
 			item.setText(5, "");
-			item.setText(9,Const.trimTypeCode[3]);
+			item.setText(9, ValueMeta.getTrimTypeDesc(ValueMetaInterface.TRIM_TYPE_BOTH));
 			
 			int type = ValueMeta.getType(item.getText(2));
 			switch(type)

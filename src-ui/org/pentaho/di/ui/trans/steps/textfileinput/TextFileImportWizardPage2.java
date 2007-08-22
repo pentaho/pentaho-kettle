@@ -46,7 +46,6 @@ import org.pentaho.di.core.gui.TextFileInputFieldInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.trans.steps.textfileinput.Messages;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputField;
-import org.pentaho.di.trans.steps.textfileinput.TextFileInputMeta;
 import org.pentaho.di.ui.core.PropsUI;
 
 public class TextFileImportWizardPage2 extends WizardPage
@@ -281,9 +280,9 @@ public class TextFileImportWizardPage2 extends WizardPage
 		wlTrimtype.setLayoutData(fdlTrimtype);
 		wTrimtype=new CCombo(composite, SWT.BORDER | SWT.READ_ONLY);
         props.setLook(wTrimtype);
-		for (int i=0;i< TextFileInputMeta.trimTypeDesc.length;i++)
+		for (int i=0;i< ValueMeta.trimTypeDesc.length;i++)
 		{
-			wTrimtype.add( TextFileInputMeta.trimTypeDesc[i] );
+			wTrimtype.add( ValueMeta.trimTypeDesc[i] );
 		}		
 		fdTrimtype=new FormData();
 		fdTrimtype.left = new FormAttachment(middle, margin);
@@ -662,7 +661,7 @@ public class TextFileImportWizardPage2 extends WizardPage
                     int idx = wFields.getSelectionIndex();
                     if (idx>=0)
                     {
-                        int trimType = TextFileInputMeta.getTrimTypeByDesc(wTrimtype.getText());
+                        int trimType = ValueMeta.getTrimTypeByDesc(wTrimtype.getText());
                         TextFileInputField field = (TextFileInputField)fields.get(idx);
                         field.setTrimType(trimType);
                     }

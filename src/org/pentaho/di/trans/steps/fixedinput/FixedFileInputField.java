@@ -40,6 +40,8 @@ public class FixedFileInputField implements Cloneable, XMLInterface {
 	private int precision;
 
 	private String format;
+	
+	private int trimType;
 
 	private String decimal;
 
@@ -53,12 +55,14 @@ public class FixedFileInputField implements Cloneable, XMLInterface {
 		name = XMLHandler.getTagValue(fnode, "name");
 		type = ValueMeta.getType(XMLHandler.getTagValue(fnode, "type"));
 		format = XMLHandler.getTagValue(fnode, "format");
+		trimType = ValueMeta.getTrimTypeByCode( XMLHandler.getTagValue(fnode, "trim_type") );
 		currency = XMLHandler.getTagValue(fnode, "currency");
 		decimal = XMLHandler.getTagValue(fnode, "decimal");
 		grouping = XMLHandler.getTagValue(fnode, "group");
 		width = Const.toInt(XMLHandler.getTagValue(fnode, "width"), -1);
 		length = Const.toInt(XMLHandler.getTagValue(fnode, "length"), -1);
 		precision = Const.toInt(XMLHandler.getTagValue(fnode, "precision"), -1);
+
 	}
 
 	public FixedFileInputField() {
@@ -76,6 +80,7 @@ public class FixedFileInputField implements Cloneable, XMLInterface {
 		retval.append("        " + XMLHandler.addTagValue("name", name));
 		retval.append("        " + XMLHandler.addTagValue("type", ValueMeta.getTypeDesc(type)));
 		retval.append("        " + XMLHandler.addTagValue("format", format));
+		retval.append("        " + XMLHandler.addTagValue("trim_type", ValueMeta.getTrimTypeCode(trimType)));
 		retval.append("        " + XMLHandler.addTagValue("currency", currency));
 		retval.append("        " + XMLHandler.addTagValue("decimal", decimal));
 		retval.append("        " + XMLHandler.addTagValue("group", grouping));
@@ -520,5 +525,13 @@ public class FixedFileInputField implements Cloneable, XMLInterface {
 		
 		// Unknown length!
 		return -1;
+	}
+
+	public int getTrimType() {
+		return trimType;
+	}
+
+	public void setTrimType(int trimType) {
+		this.trimType = trimType;
 	}	
 }

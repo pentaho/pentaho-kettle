@@ -20,6 +20,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleEOFException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.Messages;
 
 public class ValueMeta implements ValueMetaInterface
 {
@@ -57,7 +58,18 @@ public class ValueMeta implements ValueMetaInterface
     private boolean identicalFormat;
 
 	private ValueMetaInterface nativeMetadata;
-    
+	
+	/**
+	 * The trim type codes
+	 */
+	public final static String trimTypeCode[] = { "none", "left", "right", "both" };
+
+	/** 
+	 * The trim description
+	 */
+	public final static String trimTypeDesc[] = { Messages.getString("ValueMeta.TrimType.None"), Messages.getString("ValueMeta.TrimType.Left"),
+		Messages.getString("ValueMeta.TrimType.Right"), Messages.getString("ValueMeta.TrimType.Both") };
+	
     public ValueMeta()
     {
         this(null, ValueMetaInterface.TYPE_NONE, -1, -1);
@@ -103,6 +115,9 @@ public class ValueMeta implements ValueMetaInterface
             valueMeta.decimalFormat = null;
             if (dateFormatLocale!=null) valueMeta.dateFormatLocale = (Locale) dateFormatLocale.clone();
             if (storageMetadata!=null) valueMeta.storageMetadata = (ValueMetaInterface) storageMetadata.clone();
+            
+            valueMeta.compareStorageAndActualFormat();
+            
             return valueMeta;
         }
         catch (CloneNotSupportedException e)
@@ -923,12 +938,18 @@ public class ValueMeta implements ValueMetaInterface
             
             if (isOutputPaddingEnabled() && getLength()>0)
             {
-                return ValueDataUtil.rightPad(string, getLength());
+                string = ValueDataUtil.rightPad(string, getLength());
             }
-            else
-            {
-                return string;
+            
+            switch(getTrimType()) {
+            case TRIM_TYPE_NONE : break;
+            case TRIM_TYPE_RIGHT : string = ValueDataUtil.rightTrim(string); break;
+            case TRIM_TYPE_LEFT  : string = ValueDataUtil.leftTrim(string); break;
+            case TRIM_TYPE_BOTH  : string = ValueDataUtil.trim(string); break;
+            default: break;
             }
+            
+            return string;
         }
         catch(ClassCastException e)
         {
@@ -2448,48 +2469,58 @@ public class ValueMeta implements ValueMetaInterface
 			identicalFormat = true;
 		} 
 		else {
-			// If there is a string encoding set and it's the same encoding in the binary string, then we don't have to convert
-			// If there are no encodings set, then we're certain we don't have to convert as well.
+			
+			// If a trim type is set, we need to at least try to trim the strings.
+			// In that case, we have to set the identical format off.
 			//
-			if (getStringEncoding()!=null && getStringEncoding().equals(storageMetadata.getStringEncoding()) || 
-				getStringEncoding()==null && storageMetadata.getStringEncoding()==null) {
-				
-				// However, perhaps the conversion mask changed since we read the binary string?
-				// The output can be different from the input.  If the mask is different, we need to do conversions.
-				// Otherwise, we can just ignore it...
+			if (trimType!=TRIM_TYPE_NONE) {
+				identicalFormat = false;
+			}
+			else {
+			
+				// If there is a string encoding set and it's the same encoding in the binary string, then we don't have to convert
+				// If there are no encodings set, then we're certain we don't have to convert as well.
 				//
-				if (isDate()) {
-					if ( (getConversionMask()!=null && getConversionMask().equals(storageMetadata.getConversionMask())) ||
-						(getConversionMask()==null && storageMetadata.getConversionMask()==null) ) {
-						identicalFormat = true;
-					}
-					else {
-						identicalFormat = false;
-					}
-				}
-				else if (isNumeric()) {
-					// For the same reasons as above, if the conversion mask, the decimal or the grouping symbol changes
-					// we need to convert from the binary strings to the target data type and then back to a string in the required format.
+				if (getStringEncoding()!=null && getStringEncoding().equals(storageMetadata.getStringEncoding()) || 
+					getStringEncoding()==null && storageMetadata.getStringEncoding()==null) {
+					
+					// However, perhaps the conversion mask changed since we read the binary string?
+					// The output can be different from the input.  If the mask is different, we need to do conversions.
+					// Otherwise, we can just ignore it...
 					//
-					if ( (getConversionMask()!=null && getConversionMask().equals(storageMetadata.getConversionMask()) ||
-							(getConversionMask()==null && storageMetadata.getConversionMask()==null))
-					   ) {
-						if ( (getGroupingSymbol()!=null && getGroupingSymbol().equals(storageMetadata.getGroupingSymbol())) || 
-								(getConversionMask()==null && storageMetadata.getConversionMask()==null) ) {
-							if ( (getDecimalFormat()!=null && getDecimalFormat().equals(storageMetadata.getDecimalFormat())) || 
-									(getDecimalFormat()==null && storageMetadata.getDecimalFormat()==null) ) {
-								identicalFormat = true;
-							}
-							else {
-								identicalFormat = false;
-							}
-						} 
+					if (isDate()) {
+						if ( (getConversionMask()!=null && getConversionMask().equals(storageMetadata.getConversionMask())) ||
+							(getConversionMask()==null && storageMetadata.getConversionMask()==null) ) {
+							identicalFormat = true;
+						}
 						else {
 							identicalFormat = false;
 						}
 					}
-					else {
-						identicalFormat = false;
+					else if (isNumeric()) {
+						// For the same reasons as above, if the conversion mask, the decimal or the grouping symbol changes
+						// we need to convert from the binary strings to the target data type and then back to a string in the required format.
+						//
+						if ( (getConversionMask()!=null && getConversionMask().equals(storageMetadata.getConversionMask()) ||
+								(getConversionMask()==null && storageMetadata.getConversionMask()==null))
+						   ) {
+							if ( (getGroupingSymbol()!=null && getGroupingSymbol().equals(storageMetadata.getGroupingSymbol())) || 
+									(getConversionMask()==null && storageMetadata.getConversionMask()==null) ) {
+								if ( (getDecimalFormat()!=null && getDecimalFormat().equals(storageMetadata.getDecimalFormat())) || 
+										(getDecimalFormat()==null && storageMetadata.getDecimalFormat()==null) ) {
+									identicalFormat = true;
+								}
+								else {
+									identicalFormat = false;
+								}
+							} 
+							else {
+								identicalFormat = false;
+							}
+						}
+						else {
+							identicalFormat = false;
+						}
 					}
 				}
 			}
@@ -2509,4 +2540,41 @@ public class ValueMeta implements ValueMetaInterface
 	public void setTrimType(int trimType) {
 		this.trimType = trimType;
 	}
+	
+	public final static int getTrimTypeByCode(String tt)
+	{
+		if (tt == null) return 0;
+
+		for (int i = 0; i < trimTypeCode.length; i++)
+		{
+			if (trimTypeCode[i].equalsIgnoreCase(tt)) return i;
+		}
+		return 0;
+	}
+
+	public final static int getTrimTypeByDesc(String tt)
+	{
+		if (tt == null) return 0;
+
+		for (int i = 0; i < trimTypeDesc.length; i++)
+		{
+			if (trimTypeDesc[i].equalsIgnoreCase(tt)) return i;
+		}
+
+        // If this fails, try to match using the code.
+        return getTrimTypeByCode(tt);
+	}
+
+	public final static String getTrimTypeCode(int i)
+	{
+		if (i < 0 || i >= trimTypeCode.length) return trimTypeCode[0];
+		return trimTypeCode[i];
+	}
+
+	public final static String getTrimTypeDesc(int i)
+	{
+		if (i < 0 || i >= trimTypeDesc.length) return trimTypeDesc[0];
+		return trimTypeDesc[i];
+	}
+	
 }

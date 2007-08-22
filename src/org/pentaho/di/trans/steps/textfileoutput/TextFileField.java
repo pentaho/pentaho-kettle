@@ -16,7 +16,6 @@
 package org.pentaho.di.trans.steps.textfileoutput;
 
 import org.pentaho.di.core.row.ValueMeta;
-import org.pentaho.di.trans.steps.textfileinput.TextFileInputMeta;
 
 /**
  * Describes a single field in a text file
@@ -27,7 +26,7 @@ import org.pentaho.di.trans.steps.textfileinput.TextFileInputMeta;
  */
 public class TextFileField implements Cloneable
 {
-	private String name;
+	private String name; 
 
 	private int type;
 
@@ -208,11 +207,11 @@ public class TextFileField implements Cloneable
 
 	public String getTrimTypeCode()
 	{
-		return TextFileInputMeta.getTrimTypeCode(trimType);
+		return ValueMeta.getTrimTypeCode(trimType);
 	}
 
 	public String getTrimTypeDesc()
 	{
-		return TextFileInputMeta.getTrimTypeDesc(trimType);
+		return ValueMeta.getTrimTypeDesc(trimType);
 	}
 }

@@ -295,12 +295,13 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
              new ColumnInfo(Messages.getString("FixedInputDialog.NameColumn.Column"),       ColumnInfo.COLUMN_TYPE_TEXT,    false),
              new ColumnInfo(Messages.getString("FixedInputDialog.TypeColumn.Column"),       ColumnInfo.COLUMN_TYPE_CCOMBO,  ValueMeta.getTypes(), true ),
              new ColumnInfo(Messages.getString("FixedInputDialog.FormatColumn.Column"),     ColumnInfo.COLUMN_TYPE_CCOMBO,  Const.getConversionFormats()),
-             new ColumnInfo(Messages.getString("FixedInputDialog.WidthColumn.Column"),     ColumnInfo.COLUMN_TYPE_TEXT,    false),
+             new ColumnInfo(Messages.getString("FixedInputDialog.WidthColumn.Column"),      ColumnInfo.COLUMN_TYPE_TEXT,    false),
              new ColumnInfo(Messages.getString("FixedInputDialog.LengthColumn.Column"),     ColumnInfo.COLUMN_TYPE_TEXT,    false),
              new ColumnInfo(Messages.getString("FixedInputDialog.PrecisionColumn.Column"),  ColumnInfo.COLUMN_TYPE_TEXT,    false),
              new ColumnInfo(Messages.getString("FixedInputDialog.CurrencyColumn.Column"),   ColumnInfo.COLUMN_TYPE_TEXT,    false),
              new ColumnInfo(Messages.getString("FixedInputDialog.DecimalColumn.Column"),    ColumnInfo.COLUMN_TYPE_TEXT,    false),
              new ColumnInfo(Messages.getString("FixedInputDialog.GroupColumn.Column"),      ColumnInfo.COLUMN_TYPE_TEXT,    false),
+             new ColumnInfo(Messages.getString("FixedInputDialog.TrimColumn.Column"),       ColumnInfo.COLUMN_TYPE_CCOMBO,  ValueMeta.trimTypeDesc),
             };
         
         wFields=new TableView(transMeta, shell, 
@@ -379,6 +380,7 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
 			item.setText(colnr++, Const.NVL(field.getCurrency(), ""));
 			item.setText(colnr++, Const.NVL(field.getDecimal(), ""));
 			item.setText(colnr++, Const.NVL(field.getGrouping(), ""));
+			item.setText(colnr++, ValueMeta.getTrimTypeCode(field.getTrimType()));
 		}
 		wFields.removeEmptyRows();
 		wFields.setRowNums();
@@ -431,6 +433,7 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
 			field.setCurrency( item.getText(colnr++) );
 			field.setDecimal( item.getText(colnr++) );
 			field.setGrouping( item.getText(colnr++) );
+			field.setTrimType( ValueMeta.getTrimTypeByDesc(item.getText(colnr++)) ); 
 
 			fixedInputMeta.getFieldDefinition()[i] = field;
 		}
