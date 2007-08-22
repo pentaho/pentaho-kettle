@@ -23,6 +23,7 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
+import java.util.ResourceBundle;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
@@ -37,10 +38,10 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.core.LastUsedFile;
 import org.pentaho.di.core.ObjectUsageCount;
 import org.pentaho.di.core.Props;
+import org.pentaho.di.laf.BasePropertyHandler;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 
@@ -168,7 +169,7 @@ public class PropsUI extends Props
         lastUsedFiles = new ArrayList<LastUsedFile>();
 		screens = new Hashtable<String,WindowProperty>();
 
-		properties.setProperty(STRING_LOG_LEVEL,  getLogLevel());
+ 		properties.setProperty(STRING_LOG_LEVEL,  getLogLevel());
 		properties.setProperty(STRING_LOG_FILTER, getLogFilter());
 		
 		if (display!=null)
@@ -214,7 +215,24 @@ public class PropsUI extends Props
 			properties.setProperty(STRING_MAX_UNDO,      ""+getMaxUndo());
 			
 			setSashWeights(getSashWeights());
+      // Set Default Look for all dialogs and sizes.
+      String prop = BasePropertyHandler.getProperty("Default_UI_Properties_Resource", "org.pentaho.di.ui.core.default"); //$NON-NLS-1$ //$NON-NLS-2$
+      try {
+        ResourceBundle bundle = ResourceBundle.getBundle(prop);
+        if (bundle != null) {
+          Enumeration<String> enumer = bundle.getKeys();
+          String theKey;
+          while (enumer.hasMoreElements()) {
+            theKey = enumer.nextElement();
+            properties.setProperty(theKey, bundle.getString(theKey));
+          }
+        }
+      } catch (Exception ex) {
+        // don't throw an exception, but log it.
+        ex.printStackTrace();
+      }
 		}
+    
 	}
 	
 	public void storeScreens()

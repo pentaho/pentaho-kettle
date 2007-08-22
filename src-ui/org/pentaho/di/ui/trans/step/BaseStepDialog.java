@@ -53,6 +53,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
+import org.pentaho.di.laf.BasePropertyHandler;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.TransMeta;
@@ -164,8 +165,8 @@ public class BaseStepDialog extends Dialog {
    * Position the specified buttons at the bottom of the parent composite.
    * Also, make the buttons all the same width: the width of the largest button.
    * <P>
-   * The default alignment for buttons in the system will be used. This is set as a system
-   * property with the key <code>org.pentaho.di.buttonPosition</code> and has the valid values
+   * The default alignment for buttons in the system will be used. This is set as an LAF
+   * property with the key <code>Button_Position</code> and has the valid values
    * of <code>left, center, right</code> with <code>center</code> being the default.
    * 
    * @param buttons The buttons to position.
@@ -207,7 +208,7 @@ public class BaseStepDialog extends Dialog {
 
   /**
    * Returns the default alignment for the buttons. This is set in the 
-   * system properties with the key <code>org.pentaho.di.buttonPosition</code>.
+   * LAF properties with the key <code>Button_Position</code>.
    * The valid values are:<UL>
    * <LI><code>left</code>
    * <LI><code>center</code>
@@ -218,7 +219,7 @@ public class BaseStepDialog extends Dialog {
    * @return a constant which indicates the button alignment
    */
   protected static int getButtonAlignment() {
-    String buttonAlign = System.getProperty("org.pentaho.di.buttonPosition", "center").toLowerCase(); //$NON-NLS-1$ //$NON-NLS-2$
+    String buttonAlign = BasePropertyHandler.getProperty("Button_Position", "center").toLowerCase(); //$NON-NLS-1$ //$NON-NLS-2$
     if ("center".equals(buttonAlign)) { //$NON-NLS-1$
       return BUTTON_ALIGNMENT_CENTER;
     } else if ("left".equals(buttonAlign)) { //$NON-NLS-1$
