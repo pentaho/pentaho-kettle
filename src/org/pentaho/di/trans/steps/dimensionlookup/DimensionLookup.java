@@ -30,7 +30,7 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleValueException;
-import org.pentaho.di.core.hash.ByteArrayHashIndex;
+import org.pentaho.di.core.hash.ByteArrayHashMap;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
@@ -171,7 +171,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
                     data.cacheKeyRowMeta.addValueMeta((ValueMetaInterface) key.clone());
                 }
                 
-                data.cache = new ByteArrayHashIndex(meta.getCacheSize()>0 ? meta.getCacheSize() : 5000, data.cacheKeyRowMeta);
+                data.cache = new ByteArrayHashMap(meta.getCacheSize()>0 ? meta.getCacheSize() : 5000, data.cacheKeyRowMeta);
             
                 // VALUE : tk, version, fields, from date, to date 
                 //
@@ -1025,7 +1025,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
 	private void addToCache(Object[] keyValues, Object[] returnValues) throws KettleValueException
     {
         // store it in the cache if needed.
-        data.cache.putAgain(RowMeta.extractData(data.cacheKeyRowMeta, keyValues), RowMeta.extractData(data.cacheValueRowMeta, returnValues));
+        data.cache.put(RowMeta.extractData(data.cacheKeyRowMeta, keyValues), RowMeta.extractData(data.cacheValueRowMeta, returnValues));
         
         // check if the size is not too big...
         // Allow for a buffer overrun of 20% and then remove those 20% in one go.

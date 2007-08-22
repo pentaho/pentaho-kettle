@@ -19,7 +19,7 @@ import java.sql.PreparedStatement;
 import java.util.Date;
 
 import org.pentaho.di.core.database.Database;
-import org.pentaho.di.core.hash.ByteArrayHashIndex;
+import org.pentaho.di.core.hash.ByteArrayHashMap;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
@@ -42,7 +42,7 @@ public class DimensionLookupData extends BaseStepData implements StepDataInterfa
 	public int     fieldnrs[];    // nrs in row of the fields
 	public int     datefieldnr;   // Nr of datefield field in row
 
-    public ByteArrayHashIndex cache;
+    public ByteArrayHashMap cache;
 
     public long smallestCacheKey;
 

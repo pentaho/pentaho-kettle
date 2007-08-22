@@ -25,7 +25,7 @@ import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleValueException;
-import org.pentaho.di.core.hash.ByteArrayHashIndex;
+import org.pentaho.di.core.hash.ByteArrayHashMap;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -299,15 +299,15 @@ public class StreamLookup extends BaseStep implements StepInterface
                 {
                     Long key = keyMeta.getInteger(keyData, 0);
                     Long value = valueMeta.getInteger(valueData, 0);
-                    data.longIndex.putAgain(key, value);
+                    data.longIndex.put(key, value);
                 }
                 else
                 {
                     if (data.hashIndex==null) 
                     { 
-                        data.hashIndex = new ByteArrayHashIndex(keyMeta);
+                        data.hashIndex = new ByteArrayHashMap(keyMeta);
                     }
-                    data.hashIndex.putAgain(RowMeta.extractData(keyMeta, keyData), RowMeta.extractData(valueMeta, valueData));
+                    data.hashIndex.put(RowMeta.extractData(keyMeta, keyData), RowMeta.extractData(valueMeta, valueData));
                 }
             }
         }
