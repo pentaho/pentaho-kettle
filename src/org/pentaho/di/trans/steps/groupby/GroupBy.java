@@ -126,7 +126,7 @@ public class GroupBy extends BaseStep implements StepInterface
         	// What is the output looking like?
         	// 
         	data.inputRowMeta = getInputRowMeta();
-        	data.outputRowMeta = (RowMetaInterface) data.inputRowMeta.clone();
+        	data.outputRowMeta = data.inputRowMeta.clone();
         	meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
         	
         	// Do all the work we can beforehand

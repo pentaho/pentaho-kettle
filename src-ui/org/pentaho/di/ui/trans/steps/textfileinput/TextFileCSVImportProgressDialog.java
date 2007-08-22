@@ -130,7 +130,7 @@ public class TextFileCSVImportProgressDialog
         RowMetaInterface outputRowMeta = new RowMeta();
         meta.getFields(outputRowMeta, null, null, null, transMeta);
 
-        RowMetaInterface convertRowMeta = (RowMetaInterface) outputRowMeta.clone();
+        RowMetaInterface convertRowMeta = outputRowMeta.clone();
         for (int i=0;i<convertRowMeta.size();i++) convertRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);
 
         // How many null values?

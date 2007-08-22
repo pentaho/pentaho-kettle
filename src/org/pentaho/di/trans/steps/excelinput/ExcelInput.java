@@ -179,7 +179,7 @@ public class ExcelInput extends BaseStep implements StepInterface
                 //
 				if (sourceMeta!=null  && sourceMeta.getType() != targetMeta.getType() && r[rowcolumn]!=null)
 				{
-                    ValueMetaInterface sourceMetaCopy = (ValueMetaInterface)sourceMeta.clone();
+                    ValueMetaInterface sourceMetaCopy = sourceMeta.clone();
                     sourceMetaCopy.setConversionMask(field.getFormat());
                     sourceMetaCopy.setGroupingSymbol(field.getGroupSymbol());
                     sourceMetaCopy.setDecimalSymbol(field.getDecimalSymbol());

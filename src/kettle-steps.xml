@@ -740,5 +740,18 @@
 		</tooltip>
 		<image-uri>ui/images/XIN.png</image-uri>
 	</step>
+
+	
+	<step id="AggregateRows">
+		<description>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.AggregateRows")
+		</description>
+		<class-name>org.pentaho.di.trans.steps.aggregaterows.AggregateRowsMeta</class-name>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@DEPRECATED.getName()</category>
+		<tooltip>ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.AggregateRows")
+		</tooltip>
+		<image-uri>ui/images/AGG.png</image-uri>
+	</step>
+	
 	
 </steps>

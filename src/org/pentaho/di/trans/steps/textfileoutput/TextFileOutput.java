@@ -77,7 +77,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
         if (r!=null && first)
         {
             first=false;
-            data.outputRowMeta = (RowMetaInterface)getInputRowMeta().clone();
+            data.outputRowMeta = getInputRowMeta().clone();
             meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
             
             if (!meta.isFileAppended() && ( meta.isHeaderEnabled() || meta.isFooterEnabled())) // See if we have to write a header-line)

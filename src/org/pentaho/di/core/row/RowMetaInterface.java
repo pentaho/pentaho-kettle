@@ -160,7 +160,7 @@ public interface RowMetaInterface extends Cloneable
     /**
      * @return a copy of this RowMetaInterface object
      */
-    public Object clone();
+    public RowMetaInterface clone();
     
     public String getString(Object[] dataRow, String valueName, String defaultValue) throws KettleValueException;
     public Long getInteger(Object[] dataRow, String valueName, Long defaultValue) throws KettleValueException;

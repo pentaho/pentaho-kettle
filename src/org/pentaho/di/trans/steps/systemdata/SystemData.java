@@ -269,7 +269,7 @@ public class SystemData extends BaseStep implements StepInterface
             if (first)
             {
                 first=false;
-                data.outputRowMeta = (RowMetaInterface) getInputRowMeta().clone();
+                data.outputRowMeta = getInputRowMeta().clone();
                 meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
             }
 

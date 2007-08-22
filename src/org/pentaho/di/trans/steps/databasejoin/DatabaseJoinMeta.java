@@ -573,7 +573,7 @@ public class DatabaseJoinMeta extends BaseStepMeta implements StepMetaInterface
 
 		// Find the lookupfields...
 		//
-		RowMetaInterface out = (RowMetaInterface) prev.clone();
+		RowMetaInterface out = prev.clone();
 		getFields(out, stepMeta.getName(), new RowMetaInterface[] { info, }, null, transMeta );
 		
 		if (out!=null)

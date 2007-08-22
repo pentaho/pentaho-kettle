@@ -1480,7 +1480,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
                                 ValueMetaInterface vprev = prev.searchValueMeta(keyStream[i]);
 								if (vprev != null)
 								{
-                                    ValueMetaInterface field = (ValueMetaInterface) vprev.clone();
+                                    ValueMetaInterface field = vprev.clone();
 									field.setName(keyLookup[i]);
 									fields.addValueMeta(field);
 								}
@@ -1500,7 +1500,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
                                 ValueMetaInterface vprev = prev.searchValueMeta(fieldStream[i]);
 								if (vprev != null)
 								{
-									ValueMetaInterface field = (ValueMetaInterface) vprev.clone();
+									ValueMetaInterface field = vprev.clone();
 									field.setName(fieldLookup[i]);
 									fields.addValueMeta(field);
 								}

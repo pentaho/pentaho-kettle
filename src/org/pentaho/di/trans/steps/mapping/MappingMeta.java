@@ -242,7 +242,7 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
         		// The row metadata, what we pass to the mapping input step definition.getOutputStep(), is "row"
         		// However, we do need to re-map some fields...
         		// 
-        		inputRowMeta = (RowMetaInterface) row.clone();
+        		inputRowMeta = row.clone();
         		for (MappingValueRename valueRename : definition.getValueRenames()) {
         			ValueMetaInterface valueMeta = inputRowMeta.searchValueMeta(valueRename.getSourceValueName());
         			if (valueMeta==null) {
@@ -260,7 +260,7 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
         	    if (infoStepIndex<0) {
         	    	throw new KettleStepException(Messages.getString("MappingMeta.Exception.UnableToFindMetadataInfo", definition.getInputStepname()));
         	    }
-        	    inputRowMeta = (RowMetaInterface) info[infoStepIndex].clone();
+        	    inputRowMeta = info[infoStepIndex].clone();
         	}
         	
     		// What is this mapping input step?

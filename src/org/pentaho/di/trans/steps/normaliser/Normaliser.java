@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
-import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -63,7 +62,7 @@ public class Normaliser extends BaseStep implements StepInterface
             first = false;
             
             data.inputRowMeta = getInputRowMeta();
-            data.outputRowMeta = (RowMetaInterface) data.inputRowMeta.clone();
+            data.outputRowMeta = data.inputRowMeta.clone();
             meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
             
 			// Get a unique list of occurrences...

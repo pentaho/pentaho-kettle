@@ -16,13 +16,13 @@
 
 package org.pentaho.di.trans.steps.regexeval;
 
-import java.util.regex.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
-import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -70,7 +70,7 @@ public class RegexEval extends BaseStep implements StepInterface
 		if (first) // we just got started
 		{
 			first=false;
-			data.outputRowMeta = (RowMetaInterface) getInputRowMeta().clone();
+			data.outputRowMeta = getInputRowMeta().clone();
 			meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
 			
 			// Check if a Field (matcher) is given

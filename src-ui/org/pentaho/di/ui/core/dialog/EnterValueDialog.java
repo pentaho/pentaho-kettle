@@ -329,7 +329,7 @@ public class EnterValueDialog extends Dialog
 		valueMeta.setLength( Const.toInt( wLength.getText(), -1) );
 		valueMeta.setPrecision( Const.toInt( wPrecision.getText(), -1) );
         
-        ValueMetaInterface stringValueMeta = (ValueMetaInterface) valueMeta.clone();
+        ValueMetaInterface stringValueMeta = valueMeta.clone();
         stringValueMeta.setType(ValueMetaInterface.TYPE_STRING);
         
         Object targetData = valueMeta.convertData(stringValueMeta, valueData);

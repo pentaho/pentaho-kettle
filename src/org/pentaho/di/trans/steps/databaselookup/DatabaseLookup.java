@@ -252,7 +252,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface
             first=false;
             
             // create the output metadata
-            data.outputRowMeta = (RowMetaInterface)getInputRowMeta().clone();
+            data.outputRowMeta = getInputRowMeta().clone();
             meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
 
             if (meta.isCached())
@@ -347,7 +347,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface
             {
                 if (data.keynrs[i]>=0)
                 {
-                    ValueMetaInterface value = (ValueMetaInterface) getInputRowMeta().getValueMeta(data.keynrs[i]).clone();
+                    ValueMetaInterface value = getInputRowMeta().getValueMeta(data.keynrs[i]).clone();
                     
                     // Try to convert type if needed in a clone, we don't want to
                     // change the type in the original row
@@ -372,7 +372,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface
             
             for (int i=0;i<meta.getReturnValueField().length;i++)
             {
-                ValueMetaInterface v = (ValueMetaInterface) data.outputRowMeta.getValueMeta(getInputRowMeta().size()+i).clone();
+                ValueMetaInterface v = data.outputRowMeta.getValueMeta(getInputRowMeta().size()+i).clone();
                 data.returnMeta.addValueMeta(v);
             }
         }

@@ -27,7 +27,6 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleValueException;
-import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaAndData;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.trans.Trans;
@@ -96,7 +95,7 @@ public class XMLOutput extends BaseStep implements StepInterface
 			stopAll();
 			return false;
 		}
-		data.outputRowMeta = (RowMetaInterface) getInputRowMeta().clone();
+		data.outputRowMeta = getInputRowMeta().clone();
 		meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
 		putRow(data.outputRowMeta, r); // in case we want it to go further...
 
@@ -114,7 +113,7 @@ public class XMLOutput extends BaseStep implements StepInterface
 		{
 			if (first)
 			{
-				data.previousMeta = (RowMetaInterface) getInputRowMeta().clone();
+				data.previousMeta = getInputRowMeta().clone();
 
 				first = false;
 

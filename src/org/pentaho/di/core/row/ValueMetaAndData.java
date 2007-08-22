@@ -82,7 +82,7 @@ public class ValueMetaAndData
         {
             vmad.valueData = null; // TODO: should we really do this?  Is it safe?
         }
-        vmad.valueMeta = (ValueMetaInterface) valueMeta.clone();
+        vmad.valueMeta = valueMeta.clone();
         
         return vmad;
     }
@@ -135,7 +135,7 @@ public class ValueMetaAndData
      */
     public String getXML()
     {
-        ValueMetaInterface meta = (ValueMetaInterface) valueMeta.clone();
+        ValueMetaInterface meta = valueMeta.clone();
         meta.setDecimalSymbol(".");
         meta.setGroupingSymbol(null);
         meta.setCurrencySymbol(null);

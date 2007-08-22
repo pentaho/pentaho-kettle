@@ -19,7 +19,6 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -63,7 +62,7 @@ public class RowsFromResult extends BaseStep implements StepInterface
         
 		linesRead++;
 		data = (RowsFromResultData) sdi;
-		data.outputRowMeta = (RowMetaInterface) getInputRowMeta().clone();
+		data.outputRowMeta = getInputRowMeta().clone();
 		meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
 		putRow(data.outputRowMeta, r); // copy row to possible alternate
 										// rowset(s).

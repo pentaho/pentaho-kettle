@@ -112,7 +112,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
             
             data.schemaTable = meta.getDatabaseMeta().getQuotedSchemaTableCombination(meta.getSchemaName(), meta.getTableName());
             
-            data.outputRowMeta = (RowMetaInterface) getInputRowMeta().clone();
+            data.outputRowMeta = getInputRowMeta().clone();
             meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
                         
             // Lookup values
@@ -168,7 +168,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
                 for (int i=0;i<data.keynrs.length;i++)
                 {
                     ValueMetaInterface key = getInputRowMeta().getValueMeta(data.keynrs[i]);
-                    data.cacheKeyRowMeta.addValueMeta((ValueMetaInterface) key.clone());
+                    data.cacheKeyRowMeta.addValueMeta( key.clone());
                 }
                 
                 data.cache = new ByteArrayHashMap(meta.getCacheSize()>0 ? meta.getCacheSize() : 5000, data.cacheKeyRowMeta);
@@ -564,7 +564,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
                 if (!Const.isEmpty(meta.getFieldLookup()[i]))
                 {
                     sql+=", "+databaseMeta.quoteField(meta.getFieldLookup()[i]);
-                    ValueMetaInterface valueMeta = (ValueMetaInterface) rowMeta.getValueMeta( data.fieldnrs[i] ).clone();
+                    ValueMetaInterface valueMeta = rowMeta.getValueMeta( data.fieldnrs[i] ).clone();
                     
                     if (!Const.isEmpty( meta.getFieldStream()[i] ) && !meta.getFieldLookup()[i].equals(meta.getFieldStream()[i]))
                     {

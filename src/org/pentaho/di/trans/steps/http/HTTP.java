@@ -160,7 +160,7 @@ public class HTTP extends BaseStep implements StepInterface
 		
 		if ( first )
 		{
-			data.outputRowMeta = (RowMetaInterface)getInputRowMeta().clone();
+			data.outputRowMeta = getInputRowMeta().clone();
 			meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
 		}
 		    

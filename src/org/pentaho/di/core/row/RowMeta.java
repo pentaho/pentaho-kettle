@@ -28,13 +28,13 @@ public class RowMeta implements RowMetaInterface
         valueMetaList = new ArrayList<ValueMetaInterface>();
     }
     
-    public Object clone()
+    public RowMeta clone()
     {
         RowMeta rowMeta = new RowMeta();
         for (int i=0;i<size();i++)
         {
             ValueMetaInterface valueMeta = getValueMeta(i);
-            rowMeta.addValueMeta( (ValueMetaInterface)valueMeta.clone() );
+            rowMeta.addValueMeta( valueMeta.clone() );
         }
         return rowMeta;
     }

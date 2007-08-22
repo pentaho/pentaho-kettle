@@ -723,7 +723,7 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface
                 	for (int i = 0; i < keyLookup.length; i++) {
 						ValueMetaInterface v = prev.searchValueMeta(keyStream[i]);
 						if (v != null) {
-							ValueMetaInterface tableField = (ValueMetaInterface) v.clone();
+							ValueMetaInterface tableField = v.clone();
 							tableField.setName(keyLookup[i]);
 							tableFields.addValueMeta(tableField);
 						} else {
@@ -739,7 +739,7 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface
                     {
                     	ValueMetaInterface vk=tableFields.searchValueMeta(updateStream[i]);
                     	if (vk==null) { // do not add again when already added as key fields
-                    		ValueMetaInterface tableField = (ValueMetaInterface) v.clone();
+                    		ValueMetaInterface tableField = v.clone();
                     		tableField.setName(updateLookup[i]);
                     		tableFields.addValueMeta(tableField);
                     	}

@@ -21,7 +21,6 @@ import java.util.zip.GZIPOutputStream;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -86,7 +85,7 @@ public class CubeOutput extends BaseStep implements StepInterface
 		{	
 			if (first)
 			{
-				data.outputMeta= (RowMetaInterface) getInputRowMeta().clone();
+				data.outputMeta = getInputRowMeta().clone();
 				// Write meta-data to the cube file...
 				data.outputMeta.writeMeta(data.dos);
 				first=false;

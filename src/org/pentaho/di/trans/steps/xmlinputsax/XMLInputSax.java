@@ -19,7 +19,6 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowMeta;
-import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -59,7 +58,7 @@ public class XMLInputSax extends BaseStep implements StepInterface
 			
 			// For String to <type> conversions, we allocate a conversion meta data row as well...
 			//
-			data.convertRowMeta = (RowMetaInterface)data.outputRowMeta.clone();
+			data.convertRowMeta = data.outputRowMeta.clone();
 			for (int i=0;i<data.convertRowMeta.size();i++) {
 				data.convertRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);
 			}

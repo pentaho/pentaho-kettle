@@ -104,7 +104,7 @@ public class FlattenerMeta extends BaseStepMeta implements StepMetaInterface
             
             for (int i=0;i<targetField.length;i++)
             {
-                ValueMetaInterface value = (ValueMetaInterface) v.clone();
+                ValueMetaInterface value = v.clone();
                 value.setName(targetField[i]);
                 value.setOrigin(name);
                 

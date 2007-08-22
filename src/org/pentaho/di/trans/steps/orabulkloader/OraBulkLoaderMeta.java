@@ -647,7 +647,7 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
                     ValueMetaInterface v = prev.searchValueMeta(fieldStream[i]);
                     if (v!=null)
                     {
-                        ValueMetaInterface tableField = (ValueMetaInterface)v.clone();
+                        ValueMetaInterface tableField = v.clone();
                         tableField.setName(fieldTable[i]);
                         tableFields.addValueMeta(tableField);
                     }

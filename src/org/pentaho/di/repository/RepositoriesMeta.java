@@ -277,6 +277,6 @@ public class RepositoriesMeta
 	
 	public String toString()
 	{
-		return "Kettle";
+		return getClass().getSimpleName();
 	}
 }

@@ -106,7 +106,7 @@ public class ValueMeta implements ValueMetaInterface
         this.identicalFormat = true;
     }
     
-    public Object clone()
+    public ValueMeta clone()
     {
         try
         {
@@ -114,7 +114,7 @@ public class ValueMeta implements ValueMetaInterface
             valueMeta.dateFormat = null;
             valueMeta.decimalFormat = null;
             if (dateFormatLocale!=null) valueMeta.dateFormatLocale = (Locale) dateFormatLocale.clone();
-            if (storageMetadata!=null) valueMeta.storageMetadata = (ValueMetaInterface) storageMetadata.clone();
+            if (storageMetadata!=null) valueMeta.storageMetadata = storageMetadata.clone();
             
             valueMeta.compareStorageAndActualFormat();
             
@@ -762,7 +762,7 @@ public class ValueMeta implements ValueMetaInterface
         	Object nativeType = convertData(storageMetadata, binary);
         	
         	if (nativeMetadata==null) {
-        		nativeMetadata = (ValueMetaInterface) this.clone();
+        		nativeMetadata = this.clone();
         		nativeMetadata.setStorageType(STORAGE_TYPE_NORMAL);
         	}
         	
@@ -772,7 +772,7 @@ public class ValueMeta implements ValueMetaInterface
         		// storageMetadata thinks it's in binary[] format, so we need to change this somehow.
         		// We cache this conversion metadata for re-use..
         		//
-        		stringMetadata = (ValueMetaInterface) storageMetadata.clone();
+        		stringMetadata = storageMetadata.clone();
         		stringMetadata.setStorageType(STORAGE_TYPE_NORMAL);
         	}
         	return (String)stringMetadata.convertData(nativeMetadata, nativeType);

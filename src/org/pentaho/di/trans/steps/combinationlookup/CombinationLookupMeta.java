@@ -793,7 +793,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 									if ( v != null )
 									{
 										String name = keyLookup[i];
-									    ValueMetaInterface newValue = (ValueMetaInterface) v.clone();
+									    ValueMetaInterface newValue = v.clone();
 									    newValue.setName(name);
 
         								if ( name.equals(vkeyfield.getName()) ||
@@ -855,7 +855,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
                                     ValueMetaInterface v = prev.searchValueMeta(keyField[i]);
 									if ( v != null )
 									{
-                                        ValueMetaInterface newValue = (ValueMetaInterface)v.clone();
+                                        ValueMetaInterface newValue = v.clone();
 									    newValue.setName(keyLookup[i]);
 
 									    // Does the corresponding name exist in the table

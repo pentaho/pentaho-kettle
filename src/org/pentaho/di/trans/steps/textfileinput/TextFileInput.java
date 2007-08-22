@@ -763,7 +763,7 @@ public class TextFileInput extends BaseStep implements StepInterface
             
             // Create convert meta-data objects that will contain Date & Number formatters
             //
-            data.convertRowMeta = (RowMetaInterface)data.outputRowMeta.clone();
+            data.convertRowMeta = data.outputRowMeta.clone();
             for (int i=0;i<data.convertRowMeta.size();i++) data.convertRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);
 
             if (meta.isAcceptingFilenames())

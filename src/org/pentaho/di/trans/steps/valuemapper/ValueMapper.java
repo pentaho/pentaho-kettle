@@ -20,7 +20,6 @@ import java.util.Hashtable;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
-import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -65,8 +64,8 @@ public class ValueMapper extends BaseStep implements StepInterface
 		{
 		    first=false;
 		    
-		    data.previousMeta = (RowMetaInterface) getInputRowMeta().clone();
-		    data.outputMeta = (RowMetaInterface) data.previousMeta.clone();
+		    data.previousMeta = getInputRowMeta().clone();
+		    data.outputMeta = data.previousMeta.clone();
 		    meta.getFields(data.outputMeta, getStepname(), null, null, this);
 		    data.keynr     = data.previousMeta.indexOfValue(meta.getFieldToUse());
             if (data.keynr<0)

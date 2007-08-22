@@ -17,7 +17,6 @@ package org.pentaho.di.trans.steps.nullif;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.Trans;
@@ -64,7 +63,7 @@ public class NullIf extends BaseStep implements StepInterface
 		if (first)
 		{
 		    first=false;
-            data.outputRowMeta = (RowMetaInterface) getInputRowMeta().clone(); 
+            data.outputRowMeta = getInputRowMeta().clone(); 
 		    data.keynr     = new int[meta.getFieldValue().length];
 		    data.nullValue = new Object[meta.getFieldValue().length];
 		    data.nullValueMeta = new ValueMeta[meta.getFieldValue().length];

@@ -19,7 +19,6 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowDataUtil;
-import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -51,7 +50,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 		if (first)
 		{
 			// get the RowMeta
-			data.previousMeta = (RowMetaInterface) getInputRowMeta().clone();
+			data.previousMeta = getInputRowMeta().clone();
 			
 			// search field
 			data.fieldnr=data.previousMeta.indexOfValue(meta.getSplitField());
@@ -73,7 +72,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 			}
 
 			// prepare the outputMeta
-			data.outputMeta=(RowMetaInterface) getInputRowMeta().clone();
+			data.outputMeta= getInputRowMeta().clone();
 			meta.getFields(data.outputMeta, getStepname(), null, null, this);
 		}
 		

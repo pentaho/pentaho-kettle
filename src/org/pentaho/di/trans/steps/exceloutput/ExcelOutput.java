@@ -33,7 +33,6 @@ import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -72,7 +71,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
 		r=getRow();       // This also waits for a row to be finished.
 		if (first) {
 			// get the RowMeta
-			data.previousMeta = (RowMetaInterface) getInputRowMeta().clone();
+			data.previousMeta = getInputRowMeta().clone();
 			//do not set first=false, below is another part that uses first
 		}
 		

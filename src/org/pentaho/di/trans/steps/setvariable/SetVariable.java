@@ -18,7 +18,6 @@ package org.pentaho.di.trans.steps.setvariable;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
-import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -63,7 +62,7 @@ public class SetVariable extends BaseStep implements StepInterface
 		{
 		    first=false;
 		    
-		    data.outputMeta = (RowMetaInterface)getInputRowMeta().clone();
+		    data.outputMeta = getInputRowMeta().clone();
             
             logBasic("Setting environment variables...");
 

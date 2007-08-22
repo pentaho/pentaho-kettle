@@ -249,7 +249,7 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 	 */
 	public String getModifyColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
-        ValueMetaInterface tmpColumn = (ValueMetaInterface) v.clone(); 
+        ValueMetaInterface tmpColumn = v.clone(); 
         int threeoh = v.getName().length()>=30 ? 30 : v.getName().length();
         
         tmpColumn.setName(v.getName().substring(0,threeoh)+"_KTL"); // should always be less then 35

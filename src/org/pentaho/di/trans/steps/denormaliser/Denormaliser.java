@@ -65,7 +65,7 @@ public class Denormaliser extends BaseStep implements StepInterface
 		if (first)
 		{
 			data.inputRowMeta = getInputRowMeta();
-			data.outputRowMeta = (RowMetaInterface) data.inputRowMeta.clone();
+			data.outputRowMeta = data.inputRowMeta.clone();
 			meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
 			
             data.keyFieldNr = data.inputRowMeta.indexOfValue( meta.getKeyField() );

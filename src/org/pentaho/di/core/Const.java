@@ -40,6 +40,7 @@ import java.util.Locale;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.laf.BasePropertyHandler;
 
 /**
  * This class is used to define a number of default values for various settings throughout Kettle.
@@ -932,7 +933,7 @@ public class Const
 	 */
 	public static final String getKettleDirectory()
 	{
-		return USER_HOME_DIRECTORY + FILE_SEPARATOR + ".kettle";
+		return USER_HOME_DIRECTORY + FILE_SEPARATOR + BasePropertyHandler.getProperty("userBaseDir",".kettle");
 	}
 	
     
@@ -1724,5 +1725,22 @@ public class Const
     	}
     }
     
-    
+    /**
+	 * implemented to help prevent errors in matching up pluggable LAF directories and paths/files
+	 * eliminating malformed URLs - duplicate file separators or missing file separators.
+	 * 
+	 * @param dir
+	 * @param file
+	 * @return concatenated string representing a file url
+	 */
+	public static String safeAppendDirectory(String dir, String file) {
+		boolean dirHasSeparator = ((dir.lastIndexOf(FILE_SEPARATOR)) == dir.length());
+		boolean fileHasSeparator = (file.indexOf(FILE_SEPARATOR) != 0);
+		if ((dirHasSeparator && !fileHasSeparator) || (!dirHasSeparator && fileHasSeparator))
+			return dir + file;
+		if (dirHasSeparator && fileHasSeparator)
+			return dir + file.substring(1);
+		return dir + FILE_SEPARATOR + file;
+	}
+
 }

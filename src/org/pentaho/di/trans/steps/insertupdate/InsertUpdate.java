@@ -182,7 +182,7 @@ public class InsertUpdate extends BaseStep implements StepInterface
         {
             first=false;
             
-            data.outputRowMeta = (RowMetaInterface)getInputRowMeta().clone();
+            data.outputRowMeta = getInputRowMeta().clone();
             meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
             
             data.schemaTable = meta.getDatabaseMeta().getQuotedSchemaTableCombination(environmentSubstitute(meta.getSchemaName()), 
@@ -238,7 +238,7 @@ public class InsertUpdate extends BaseStep implements StepInterface
                 if (insValue==null) // Don't add twice!
                 {
                     // we already checked that this value exists so it's probably safe to ignore lookup failure...
-                    ValueMetaInterface insertValue = (ValueMetaInterface) getInputRowMeta().searchValueMeta( meta.getUpdateStream()[i] ).clone();
+                    ValueMetaInterface insertValue = getInputRowMeta().searchValueMeta( meta.getUpdateStream()[i] ).clone();
                     insertValue.setName(meta.getUpdateLookup()[i]);
                     data.insertRowMeta.addValueMeta( insertValue );
                 }

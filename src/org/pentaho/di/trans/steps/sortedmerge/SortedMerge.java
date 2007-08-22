@@ -24,7 +24,6 @@ import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleValueException;
-import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -78,7 +77,7 @@ public class SortedMerge extends BaseStep implements StepInterface
                 	// Which is not yet sorted, we'll get to that later.
                 	//
                 	data.sortedBuffer.add( new RowSetRow(rowSet, rowSet.getRowMeta(), row) );
-                	if (data.rowMeta==null) data.rowMeta = (RowMetaInterface) rowSet.getRowMeta().clone();
+                	if (data.rowMeta==null) data.rowMeta = rowSet.getRowMeta().clone();
                 	
                     // What fields do we compare on and in what order?
                     

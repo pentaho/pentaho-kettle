@@ -20,7 +20,6 @@ import java.util.List;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -65,7 +64,7 @@ public class MappingOutput extends BaseStep implements StepInterface
         {
             first=false;
             
-            data.outputRowMeta = (RowMetaInterface)getInputRowMeta().clone();
+            data.outputRowMeta = getInputRowMeta().clone();
             meta.setOutputValueRenames(data.outputValueRenames);
             meta.setInputValueRenames(data.inputValueRenames);
             meta.getFields(data.outputRowMeta, getStepname(), null, null, this);

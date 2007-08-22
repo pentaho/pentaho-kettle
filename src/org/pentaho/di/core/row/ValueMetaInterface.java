@@ -233,7 +233,7 @@ public interface ValueMetaInterface extends Cloneable
     /**
      * @return a copy of this value meta object
      */
-    public Object clone();
+    public ValueMetaInterface clone();
     
     /**
      * Checks wheter or not the value is a String.

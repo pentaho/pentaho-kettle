@@ -102,8 +102,8 @@ public class MergeJoin extends BaseStep implements StepInterface
             // just for speed: oneMeta+twoMeta
             //
             data.outputRowMeta=new RowMeta(); 
-            data.outputRowMeta.mergeRowMeta( (RowMetaInterface)data.oneMeta.clone() );
-            data.outputRowMeta.mergeRowMeta( (RowMetaInterface)data.twoMeta.clone() );
+            data.outputRowMeta.mergeRowMeta( data.oneMeta.clone() );
+            data.outputRowMeta.mergeRowMeta( data.twoMeta.clone() );
 
             if (data.one!=null)
             {

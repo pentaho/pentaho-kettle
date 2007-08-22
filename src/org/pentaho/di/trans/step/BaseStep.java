@@ -99,7 +99,6 @@ public class BaseStep extends Thread implements VariableSpace
 
             new StepPluginMeta(WebServiceMeta.class, "WebServiceLookup", Messages.getString("BaseStep.TypeLongDesc.WebServiceLookup"), Messages.getString("BaseStep.TypeTooltipDesc.WebServiceLookup"), "WSL.png", CATEGORY_EXPERIMENTAL),
             new StepPluginMeta(FormulaMeta.class, "Formula", Messages.getString("BaseStep.TypeLongDesc.Formula"), Messages.getString("BaseStep.TypeTooltipDesc.Formula"), "FRM.png", CATEGORY_EXPERIMENTAL),
-            new StepPluginMeta(AggregateRowsMeta.class, "AggregateRows", Messages.getString("BaseStep.TypeLongDesc.AggregateRows"), Messages.getString("BaseStep.TypeTooltipDesc.AggregateRows", Const.CR), "AGG.png", CATEGORY_DEPRECATED),
                               
       };*/
 
@@ -730,7 +729,7 @@ public class BaseStep extends Thread implements VariableSpace
         	if (previewBuffer.size() < previewSize) {
 	            try
 	            {
-	                if (previewRowMeta==null) previewRowMeta=(RowMetaInterface)rowMeta.clone();
+	                if (previewRowMeta==null) previewRowMeta=rowMeta.clone();
 	                previewBuffer.add(rowMeta.cloneRow(row));
 	            }
 	            catch (KettleValueException e)
@@ -1083,7 +1082,7 @@ public class BaseStep extends Thread implements VariableSpace
 
         if (errorRowMeta==null)
         {
-            errorRowMeta = (RowMetaInterface) rowMeta.clone();
+            errorRowMeta = rowMeta.clone();
             
             RowMetaInterface add = stepErrorMeta.getErrorRowMeta(nrErrors, errorDescriptions, fieldNames, errorCodes);
             errorRowMeta.addRowMeta(add);
@@ -1320,7 +1319,7 @@ public class BaseStep extends Thread implements VariableSpace
     	
         if (inputReferenceRow == null)
         {
-            inputReferenceRow = (RowMetaInterface) row.clone(); // copy it!
+            inputReferenceRow = row.clone(); // copy it!
             
             // Check for double field names.
             // 

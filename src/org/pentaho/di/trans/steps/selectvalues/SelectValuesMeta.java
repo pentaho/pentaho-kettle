@@ -406,7 +406,7 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
 				
 				if (v!=null)  // We found the value
 				{
-					v = (ValueMetaInterface) v.clone();
+					v = v.clone();
 					// Do we need to rename ?
 					if (!v.getName().equals(selectRename[i]) && selectRename[i]!=null && selectRename[i].length()>0)
 					{

@@ -196,7 +196,7 @@ public class Constant extends BaseStep implements StepInterface
         	// additional constant fields.
         	
         	data.firstRow = false;
-            data.outputMeta = (RowMetaInterface)getInputRowMeta().clone();
+            data.outputMeta = getInputRowMeta().clone();
         	
         	RowMetaInterface constants = data.constants.getRowMeta();        	
         	data.outputMeta.mergeRowMeta(constants);

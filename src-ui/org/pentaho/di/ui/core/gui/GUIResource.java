@@ -420,7 +420,7 @@ public class GUIResource
 		imageCredits = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Credits_image")); // , "ui/images/credits.png"
 		imageStart = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("STR_image")); // , "ui/images/STR.png"
 		imageDummy = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("DUM_image")); // , "ui/images/DUM.png"
-		imageSpoon = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Spoon_image")); // , "ui/images/spoon32.png"
+		imageSpoon = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("spoon_image")); // , "ui/images/spoon32.png"
 		imageChef = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Chef_image")); // , "ui/images/chef.png"
 		imageSplash = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("splash_image")); // , "ui/images/kettle_splash.png"
 		imagePentaho = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("CorpLogo_image")); // , "ui/images/PentahoLogo.png"

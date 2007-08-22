@@ -69,8 +69,8 @@ public class TableOutput extends BaseStep implements StepInterface
         if (first)
         {
             first=false;
-            data.outputRowMeta = (RowMetaInterface) getInputRowMeta().clone();
-            data.insertRowMeta = (RowMetaInterface) getInputRowMeta().clone();
+            data.outputRowMeta = getInputRowMeta().clone();
+            data.insertRowMeta = getInputRowMeta().clone();
         }
         
 		try

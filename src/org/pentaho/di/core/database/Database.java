@@ -3344,7 +3344,7 @@ public class Database implements VariableSpace
 			for (int i=0;i<q;i++)
 			{
 				ValueMetaInterface inf=inform.getValueMeta(i);
-				ValueMetaInterface v = (ValueMetaInterface) inf.clone();
+				ValueMetaInterface v = inf.clone();
 				par.addValueMeta(v);
 			}
 		}

@@ -147,7 +147,7 @@ public class StreamLookup extends BaseStep implements StepInterface
             {
                 firstRun=false;
                 
-                data.infoMeta = (RowMetaInterface)rowSet.getRowMeta().clone();
+                data.infoMeta = rowSet.getRowMeta().clone();
                 data.keyMeta = new RowMeta();
                 data.valueMeta = new RowMeta();
             
@@ -165,7 +165,7 @@ public class StreamLookup extends BaseStep implements StepInterface
                 // Save the data types of the keys to optionally convert input rows later on...
                 if (data.keyTypes==null)
                 {
-                    data.keyTypes=(RowMetaInterface) data.keyMeta.clone();
+                    data.keyTypes=data.keyMeta.clone();
                 }
 			
     			for (int v=0;v<meta.getValue().length;v++)
@@ -409,10 +409,10 @@ public class StreamLookup extends BaseStep implements StepInterface
                     if (log.isDetailed()) logDetailed(Messages.getString("StreamLookup.Log.FieldInfo",meta.getKeystream()[i],""+data.keynrs[i])); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                 }
                 
-                data.lookupMeta.addValueMeta( (ValueMetaInterface) getInputRowMeta().getValueMeta(data.keynrs[i]).clone() );
+                data.lookupMeta.addValueMeta( getInputRowMeta().getValueMeta(data.keynrs[i]).clone() );
             }
             
-            data.outputRowMeta = (RowMetaInterface) getInputRowMeta().clone();
+            data.outputRowMeta = getInputRowMeta().clone();
             meta.getFields(data.outputRowMeta, getStepname(), new RowMetaInterface[] { data.infoMeta }, null, this);
             
             // Handle the NULL values (not found...)

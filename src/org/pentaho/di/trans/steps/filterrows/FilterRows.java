@@ -74,7 +74,7 @@ public class FilterRows extends BaseStep implements StepInterface
         
         if (first)
         {
-            data.outputRowMeta = (RowMetaInterface) getInputRowMeta().clone();
+            data.outputRowMeta = getInputRowMeta().clone();
             meta.getFields(getInputRowMeta(), getStepname(), null, null, this);
             
             // Cache the position of the RowSet for the output.

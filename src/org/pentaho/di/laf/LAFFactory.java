@@ -29,6 +29,7 @@ public class LAFFactory {
 		handlerRef.put(PropertyHandler.class.getName(), _defPropertyHandler);
 	}
 	
+	@SuppressWarnings("unchecked")
 	protected static synchronized <V extends Handler>LAFDelegate<V> getDelegate(Class<V> handler) {
 		LAFDelegate<V> l = (LAFDelegate<V>) delegateRegistry.get(handler);
 		if (l==null) {

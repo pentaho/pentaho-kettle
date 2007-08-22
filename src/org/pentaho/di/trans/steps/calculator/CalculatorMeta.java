@@ -179,7 +179,7 @@ public class CalculatorMeta extends BaseStepMeta implements StepMetaInterface
 
     public RowMetaInterface getAllFields(RowMetaInterface inputRowMeta)
     {
-        RowMetaInterface rowMeta = (RowMetaInterface) inputRowMeta.clone();
+        RowMetaInterface rowMeta = inputRowMeta.clone();
         
         for (int i=0;i<calculation.length;i++)
         {

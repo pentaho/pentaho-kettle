@@ -85,7 +85,7 @@ public class SelectValues extends BaseStep implements StepInterface
                 
                 // Create the meta-data values too...
 				//
-                ValueMetaInterface valueMeta = (ValueMetaInterface) rowMeta.getValueMeta( data.fieldnrs[i] ).clone();
+                ValueMetaInterface valueMeta = rowMeta.getValueMeta( data.fieldnrs[i] ).clone();
                 
                 // Optionally change the name
                 //
@@ -202,7 +202,7 @@ public class SelectValues extends BaseStep implements StepInterface
 
 			// System.out.println("Fields to remove: "+info.dname.length);
 			data.removenrs=new int[meta.getDeleteName().length];
-			data.outputMeta = (RowMetaInterface) rowMeta.clone();
+			data.outputMeta = rowMeta.clone();
             
 			for (int i=0;i<data.removenrs.length;i++) 
 			{
@@ -271,7 +271,7 @@ public class SelectValues extends BaseStep implements StepInterface
 			data.firstmetadata=false;
 
 			data.metanrs=new int[meta.getMetaName().length];
-            data.outputMeta = (RowMetaInterface) rowMeta.clone();
+            data.outputMeta = rowMeta.clone();
 			
 			for (int i=0;i<data.metanrs.length;i++) 
 			{

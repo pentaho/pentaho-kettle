@@ -24,7 +24,6 @@ import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -56,7 +55,7 @@ public class DatabaseJoin extends BaseStep implements StepInterface
 		{
 			first=false;
 
-			data.outputRowMeta = (RowMetaInterface) rowMeta.clone();
+			data.outputRowMeta = rowMeta.clone();
 			meta.getFields(data.outputRowMeta, getStepname(), new RowMetaInterface[] { meta.getTableFields(), }, null, this);
 			
 			data.lookupRowMeta = new RowMeta();
@@ -73,7 +72,7 @@ public class DatabaseJoin extends BaseStep implements StepInterface
 					throw new KettleStepException(Messages.getString("DatabaseJoin.Exception.FieldNotFound",meta.getParameterField()[i])); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 				
-				data.lookupRowMeta.addValueMeta( (ValueMetaInterface) rowMeta.getValueMeta(data.keynrs[i]).clone() );
+				data.lookupRowMeta.addValueMeta( rowMeta.getValueMeta(data.keynrs[i]).clone() );
 			}
 		}
 		

@@ -73,7 +73,7 @@ public class RowGenerator extends BaseStep implements StepInterface
                 valueMeta.setGroupingSymbol(meta.getGroup()[i]);
                 valueMeta.setDecimalSymbol(meta.getDecimal()[i]);
 
-                ValueMetaInterface stringMeta = (ValueMetaInterface) valueMeta.clone();
+                ValueMetaInterface stringMeta = valueMeta.clone();
                 stringMeta.setType(ValueMetaInterface.TYPE_STRING);
                 
                 String stringValue = meta.getValue()[i];

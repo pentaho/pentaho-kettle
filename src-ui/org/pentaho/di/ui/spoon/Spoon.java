@@ -130,6 +130,7 @@ import org.pentaho.di.job.entries.trans.JobEntryTrans;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.laf.BasePropertyHandler;
 import org.pentaho.di.pan.CommandLineOption;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.pkg.JarfileGenerator;
@@ -297,7 +298,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 	private static final String STRING_WELCOME_TAB_NAME = Messages.getString("Spoon.Title.STRING_WELCOME");
 
-	private static final String FILE_WELCOME_PAGE = Messages.getString("Spoon.Title.STRING_DOCUMENT_WELCOME"); // "docs/English/welcome/kettle_document_map.html";
+	private static final String FILE_WELCOME_PAGE = Const.safeAppendDirectory(BasePropertyHandler.getProperty("documentationDirBase","docs/"), Messages.getString("Spoon.Title.STRING_DOCUMENT_WELCOME")); // "docs/English/welcome/kettle_document_map.html";
 
   private static final String UNDO_MENUITEM = "edit-undo"; //$NON-NLS-1$
   private static final String REDO_MENUITEM = "edit-redo"; //$NON-NLS-1$
@@ -4946,10 +4947,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 		// Before anything else, check the runtime version!!!
 		String version = Const.JAVA_VERSION;
-		if ("1.4".compareToIgnoreCase(version) > 0)
+		if ("1.5".compareToIgnoreCase(version) > 0)
 		{
 			System.out.println("The System is running on Java version " + version);
-			System.out.println("Unfortunately, it needs version 1.4 or higher to run.");
+			System.out.println("Unfortunately, it needs version 1.5 or higher to run.");
 			return;
 		}
 
@@ -4966,19 +4967,19 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			log = LogWriter.getInstance(optionLogfile.toString(), true, LogWriter.LOG_LEVEL_BASIC);
 		}
 
-        if (log.getRealFilename()!=null) log.logBasic(APP_NAME, Messages.getString("Spoon.Log.LoggingToFile")+log.getRealFilename());//"Logging goes to "
+        if (log.getRealFilename()!=null) log.logBasic(toString(), Messages.getString("Spoon.Log.LoggingToFile")+log.getRealFilename());//"Logging goes to "
 
 		if (!Const.isEmpty(optionLoglevel))
 		{
 			log.setLogLevel(optionLoglevel.toString());
-            log.logBasic(APP_NAME, Messages.getString("Spoon.Log.LoggingAtLevel")+log.getLogLevelDesc());//"Logging is at level : "
+            log.logBasic(toString(), Messages.getString("Spoon.Log.LoggingAtLevel")+log.getLogLevelDesc());//"Logging is at level : "
 		}
 
 		/* Load the plugins etc. */
 		StepLoader stloader = StepLoader.getInstance();
 		if (!stloader.read())
 		{
-            log.logError(APP_NAME, Messages.getString("Spoon.Log.ErrorLoadingAndHaltSystem"));//Error loading steps & plugins... halting Spoon!
+            log.logError(toString(), Messages.getString("Spoon.Log.ErrorLoadingAndHaltSystem"));//Error loading steps & plugins... halting Spoon!
 			return;
 		}
 
@@ -4986,7 +4987,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		JobEntryLoader jeloader = JobEntryLoader.getInstance();
 		if (!jeloader.read())
 		{
-			log.logError("Spoon", "Error loading job entries & plugins... halting Kitchen!");
+			log.logError(toString(), "Error loading job entries & plugins... halting Kitchen!");
 			return;
 		}
 
@@ -4998,7 +4999,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		setDestroy(true);
 		GUIFactory.setThreadDialogs( new ThreadGuiResources() );
 
-        log.logBasic(APP_NAME, Messages.getString("Spoon.Log.MainWindowCreated"));//Main window is created.
+        log.logBasic(toString(), Messages.getString("Spoon.Log.MainWindowCreated"));//Main window is created.
         
 
 	}
@@ -5041,10 +5042,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 							// Define and connect to the repository...
 							setRepository(new Repository(log, repositoryMeta, userinfo));
                         } else {
-                            log.logError(APP_NAME, Messages.getString("Spoon.Log.NoRepositoryRrovided"));//"No repository provided, can't load transformation."
+                            log.logError(toString(), Messages.getString("Spoon.Log.NoRepositoryRrovided"));//"No repository provided, can't load transformation."
 						}
                     } else {
-                        log.logError(APP_NAME, Messages.getString("Spoon.Log.NoRepositoriesDefined"));//"No repositories defined on this system."
+                        log.logError(toString(), Messages.getString("Spoon.Log.NoRepositoriesDefined"));//"No repositories defined on this system."
 					}
 
 				}
@@ -5069,7 +5070,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 					setRepository(new Repository(log, repositoryMeta, userinfo));
                 } 
             } else {
-                log.logError(APP_NAME, Messages.getString("Spoon.Log.NoRepositoriesDefined"));//"No repositories defined on this system."
+                log.logError(toString(), Messages.getString("Spoon.Log.NoRepositoriesDefined"));//"No repositories defined on this system."
 			}
         }
 		return true;
@@ -5109,7 +5110,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
                                 			(Const.isEmpty(optionTransname) ? 0 : 1);
 								if (t > 1)
 								{
-                                        log.logError(APP_NAME, Messages.getString("Spoon.Log.MutuallyExcusive")); // "More then one mutually exclusive options /file, /job and /trans are specified."                              		
+                                        log.logError(toString(), Messages.getString("Spoon.Log.MutuallyExcusive")); // "More then one mutually exclusive options /file, /job and /trans are specified."                              		
                                 	}
                                 	else if (t == 1)
 								{
@@ -5124,7 +5125,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
                                 			RepositoryDirectory repdir = rep.getDirectoryTree().findDirectory(optionDirname.toString());
 										if (repdir == null)
 										{
-                                				log.logError(APP_NAME, Messages.getString("Spoon.Log.UnableFindDirectory", optionDirname.toString())); //"Can't find directory ["+dirname+"] in the repository."
+                                				log.logError(toString(), Messages.getString("Spoon.Log.UnableFindDirectory", optionDirname.toString())); //"Can't find directory ["+dirname+"] in the repository."
                                 			}
                                 			else {
 											if (!Const.isEmpty(optionTransname))
@@ -5150,19 +5151,19 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 								}
                                 else
 							{
-                                    log.logError(APP_NAME, Messages.getString("Spoon.Log.UnableVerifyUser"));//"Can't verify username and password."
+                                    log.logError(toString(), Messages.getString("Spoon.Log.UnableVerifyUser"));//"Can't verify username and password."
 								rep.disconnect();
 								rep = null;
 							}
                             }
                             else
 						{
-                                log.logError(APP_NAME, Messages.getString("Spoon.Log.UnableConnectToRepository"));//"Can't connect to the repository."
+                                log.logError(toString(), Messages.getString("Spoon.Log.UnableConnectToRepository"));//"Can't connect to the repository."
 						}
                         }
                     else
 					{
-                        log.logError(APP_NAME, Messages.getString("Spoon.Log.NoRepositoriesDefined"));//"No repositories defined on this system."
+                        log.logError(toString(), Messages.getString("Spoon.Log.NoRepositoriesDefined"));//"No repositories defined on this system."
                     }
 					}
                 else
@@ -5184,7 +5185,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 				if (props.openLastFile())
 				{
-                    log.logDetailed(APP_NAME, Messages.getString("Spoon.Log.TryingOpenLastUsedFile"));//"Trying to open the last file used."
+                    log.logDetailed(toString(), Messages.getString("Spoon.Log.TryingOpenLastUsedFile"));//"Trying to open the last file used."
 
 					List<LastUsedFile> lastUsedFiles = props.getLastUsedFiles();
 
@@ -5199,8 +5200,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         }
         catch(KettleException ke)
 		{
-            log.logError(APP_NAME, Messages.getString("Spoon.Log.ErrorOccurred")+Const.CR+ke.getMessage());//"An error occurred: "
-			log.logError(APP_NAME, Const.getStackTracker(ke));
+            log.logError(toString(), Messages.getString("Spoon.Log.ErrorOccurred")+Const.CR+ke.getMessage());//"An error occurred: "
+			log.logError(toString(), Const.getStackTracker(ke));
 			rep = null;
 		}
 
@@ -5227,13 +5228,13 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
             }
             catch(Throwable e)
 			{
-                log.logError(APP_NAME, Messages.getString("Spoon.Log.UnexpectedErrorOccurred")+Const.CR+e.getMessage());//"An unexpected error occurred in Spoon: probable cause: please close all windows before stopping Spoon! "
-				log.logError(APP_NAME, Const.getStackTracker(e));
+                log.logError(toString(), Messages.getString("Spoon.Log.UnexpectedErrorOccurred")+Const.CR+e.getMessage());//"An unexpected error occurred in Spoon: probable cause: please close all windows before stopping Spoon! "
+				log.logError(toString(), Const.getStackTracker(e));
 
 			}
 			dispose();
 
-            log.logBasic(APP_NAME, APP_NAME+" "+Messages.getString("Spoon.Log.AppHasEnded"));//" has ended."
+            log.logBasic(toString(), APP_NAME+" "+Messages.getString("Spoon.Log.AppHasEnded"));//" has ended."
 
 			// Close the logfile
 			log.close();
@@ -5297,11 +5298,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
     public void run( ArrayList<String> args ) {
     	try {
-    		//check the -D switch... something like -Dorg.pentaho.di.laf.alt="somefile.properties"
-    		String altprop = System.getProperty("org.pentaho.di.laf.alt");
-    		if (altprop!=null) {
-    			org.pentaho.di.laf.LAFManager.getInstance().loadProps(altprop);
-    		}
 			createSplash();
 			getCommandLineArgs(args);
 			createSpoon();
@@ -5342,7 +5338,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 						// Are we loading a transformation or a job?
 						if (lastUsedFile.isTransformation())
 						{
-                            log.logDetailed(APP_NAME, Messages.getString("Spoon.Log.AutoLoadingTransformation",lastUsedFile.getFilename(), lastUsedFile.getDirectory()));//"Auto loading transformation ["+lastfiles[0]+"] from repository directory ["+lastdirs[0]+"]"
+                            log.logDetailed(toString(), Messages.getString("Spoon.Log.AutoLoadingTransformation",lastUsedFile.getFilename(), lastUsedFile.getDirectory()));//"Auto loading transformation ["+lastfiles[0]+"] from repository directory ["+lastdirs[0]+"]"
                             TransLoadProgressDialog tlpd = new TransLoadProgressDialog(shell, rep, lastUsedFile.getFilename(), repdir);
                             TransMeta transMeta = tlpd.open(); // = new TransInfo(log, win.rep, lastfiles[0], repdir);
 							if (transMeta != null)

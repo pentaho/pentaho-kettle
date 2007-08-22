@@ -3,7 +3,6 @@
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
-import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -53,7 +52,7 @@ public class Flattener extends BaseStep implements StepInterface
 		if (first)
 		{
 			data.inputRowMeta = getInputRowMeta();
-			data.outputRowMeta = (RowMetaInterface) data.inputRowMeta.clone();
+			data.outputRowMeta = data.inputRowMeta.clone();
 			meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
 			
             data.fieldNr = data.inputRowMeta.indexOfValue( meta.getFieldName() );

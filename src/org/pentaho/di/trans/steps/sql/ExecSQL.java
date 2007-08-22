@@ -9,7 +9,6 @@ import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
-import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaAndData;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -100,7 +99,7 @@ public class ExecSQL extends BaseStep implements StepInterface
 		{
 			first = false;
 			
-			data.outputRowMeta = (RowMetaInterface) getInputRowMeta().clone();
+			data.outputRowMeta = getInputRowMeta().clone();
 			meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
 
 			// Find the indexes of the arguments

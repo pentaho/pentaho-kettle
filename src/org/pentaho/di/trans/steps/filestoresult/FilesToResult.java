@@ -20,7 +20,6 @@ import java.io.IOException;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.trans.Trans;
@@ -106,7 +105,7 @@ public class FilesToResult extends BaseStep implements StepInterface
 		}
 
 		// Copy to any possible next steps...
-		data.outputRowMeta = (RowMetaInterface) getInputRowMeta().clone();
+		data.outputRowMeta = getInputRowMeta().clone();
 		meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
 		putRow(data.outputRowMeta, r); // copy row to possible alternate
 		// rowset(s).

@@ -20,7 +20,6 @@ import org.pentaho.di.core.Result;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -60,7 +59,7 @@ public class FilesFromResult extends BaseStep implements StepInterface
 
 		ResultFile resultFile = (ResultFile) data.resultFilesList.get((int) linesRead);
 		RowMetaAndData r = resultFile.getRow();
-		data.outputRowMeta = (RowMetaInterface) getInputRowMeta().clone();
+		data.outputRowMeta = getInputRowMeta().clone();
 		smi.getFields(data.outputRowMeta, getStepname(), null, null, this);
 		linesRead++;
 

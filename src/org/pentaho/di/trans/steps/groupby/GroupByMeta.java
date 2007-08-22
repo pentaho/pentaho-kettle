@@ -337,7 +337,7 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		// Loop over the aggregate names.
 		// Keep the fields to group over and the aggregates
-		RowMetaInterface rowOrig = (RowMetaInterface)r.clone();
+		RowMetaInterface rowOrig = r.clone();
 		
         if (!passAllRows)
         {

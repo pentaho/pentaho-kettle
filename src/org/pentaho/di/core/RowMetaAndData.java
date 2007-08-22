@@ -34,7 +34,7 @@ public class RowMetaAndData implements Cloneable
     public RowMetaAndData clone()
     {
         RowMetaAndData c = new RowMetaAndData();
-        c.rowMeta = (RowMetaInterface) rowMeta.clone();
+        c.rowMeta = rowMeta.clone();
         try
         {
             c.data = rowMeta.cloneRow(data);

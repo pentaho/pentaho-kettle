@@ -316,7 +316,7 @@ public class JoinRows extends BaseStep implements StepInterface
                 if (data.fileRowMeta[data.filenr]==null)
 	    		{
 		    		// The first row is used as meta-data, clone it for safety
-                    data.fileRowMeta[data.filenr] = (RowMetaInterface) rowSet.getRowMeta().clone();
+                    data.fileRowMeta[data.filenr] = rowSet.getRowMeta().clone();
 	    		}
 
                 data.fileRowMeta[data.filenr].writeData(data.dataOutputStream[data.filenr], rowData);

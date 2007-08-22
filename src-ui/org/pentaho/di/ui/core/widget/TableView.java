@@ -1099,7 +1099,7 @@ public class TableView extends Composite
                 rowMeta.addValueMeta(valueMeta);
             }
             
-            RowMetaInterface sourceRowMeta = (RowMetaInterface) rowMeta.clone();
+            RowMetaInterface sourceRowMeta = rowMeta.clone();
             // Set it all to string...
             for (int i=0;i<sourceRowMeta.size();i++) sourceRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);
             
