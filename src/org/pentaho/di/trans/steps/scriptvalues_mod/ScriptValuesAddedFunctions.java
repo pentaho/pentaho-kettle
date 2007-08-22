@@ -1209,6 +1209,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 
     public static String substr(Context actualContext, Scriptable actualObject, Object[] ArgList, Function FunctionContext){
         String sRC="";
+        
         if ( ArgList.length == 2 ) 
         {
             try
@@ -1228,11 +1229,19 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
         {
             try
             {
+            	int to;
+            	int strLen;
+            	
                 if(isNull(ArgList[0])) return null;
                 else if(isUndefined(ArgList[0])) return (String)Context.getUndefinedValue();
                 sRC = Context.toString(ArgList[0]);
                 int from = (int)Math.round(Context.toNumber(ArgList[1]));
-                int to   = (int)Math.round(Context.toNumber(ArgList[2]));
+                int len   = (int)Math.round(Context.toNumber(ArgList[2]));
+                
+                to = from + len + 1;
+                strLen = sRC.length();
+                if ( to > strLen )
+                	to = strLen;
                 sRC = sRC.substring(from, to);
             }
             catch(Exception e)
