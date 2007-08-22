@@ -86,7 +86,8 @@ public class AddXML extends BaseStep implements StepInterface
         	data.outputRowMeta = (RowMetaInterface) getInputRowMeta().clone();
         	meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
         	
-        	// Cache the fieldname indexes
+        	// Cache the field name indexes
+        	//
         	data.fieldIndexes = new int[meta.getOutputFields().length];
         	for (int i=0;i<data.fieldIndexes.length;i++)
         	{
@@ -144,19 +145,19 @@ public class AddXML extends BaseStep implements StepInterface
         return true;
     }
 
-    private String formatField(ValueMetaInterface v, Object valueData, XMLField field) throws KettleValueException
+    private String formatField(ValueMetaInterface valueMeta, Object valueData, XMLField field) throws KettleValueException
     {
         String retval="";
         if(field == null)
             return "";
 
-        if(v == null || v.isNull(valueData)) 
+        if(valueMeta == null || valueMeta.isNull(valueData)) 
         {
             String defaultNullValue = field.getNullString();
             return Const.isEmpty(defaultNullValue) ? "" : defaultNullValue ;
         }
 
-        if (v.isNumeric())
+        if (valueMeta.isNumeric())
         {
             // Formatting
             if ( !Const.isEmpty(field.getFormat()) )
@@ -197,23 +198,23 @@ public class AddXML extends BaseStep implements StepInterface
 
             data.df.setDecimalFormatSymbols(data.dfs);
 
-            if (v.isBigNumber())
+            if (valueMeta.isBigNumber())
             {
-                retval=data.df.format(v.getBigNumber(valueData));
+                retval=data.df.format(valueMeta.getBigNumber(valueData));
             }
-            else if (v.isNumber())
+            else if (valueMeta.isNumber())
             {
-                retval=data.df.format(v.getNumber(valueData));
+                retval=data.df.format(valueMeta.getNumber(valueData));
             }
             else // Integer
             {
-                retval=data.df.format(v.getInteger(valueData));
+                retval=data.df.format(valueMeta.getInteger(valueData));
             }
         }
         else
-        if (v.isDate())
+        if (valueMeta.isDate())
         {
-            if (field!=null && !Const.isEmpty(field.getFormat()) && v.getDate(valueData)!=null)
+            if (field!=null && !Const.isEmpty(field.getFormat()) && valueMeta.getDate(valueData)!=null)
             {
                 if (!Const.isEmpty(field.getFormat()))
                 {
@@ -224,11 +225,11 @@ public class AddXML extends BaseStep implements StepInterface
                     data.daf.applyPattern( data.defaultDateFormat.toLocalizedPattern() );
                 }
                 data.daf.setDateFormatSymbols(data.dafs);
-                retval= data.daf.format(v.getDate(valueData));
+                retval= data.daf.format(valueMeta.getDate(valueData));
             }
             else
             {
-                if (v.isNull(valueData)) 
+                if (valueMeta.isNull(valueData)) 
                 {
                     if (field!=null && !Const.isEmpty(field.getNullString()))
                     {
@@ -237,18 +238,18 @@ public class AddXML extends BaseStep implements StepInterface
                 }
                 else
                 {
-                    retval=v.toString();
+                    retval=valueMeta.getString(valueData);
                 }
             }
         }
         else
-        if (v.isString())
+        if (valueMeta.isString())
         {
-            retval=v.toString();
+            retval=valueMeta.getString(valueData);
         }
-        else if (v.isBinary())
+        else if (valueMeta.isBinary())
         {
-            if (v.isNull(valueData))
+            if (valueMeta.isNull(valueData))
             {
                 if (!Const.isEmpty(field.getNullString()))
                 {
@@ -263,7 +264,7 @@ public class AddXML extends BaseStep implements StepInterface
             {                   
                 try 
                 {
-                    retval=new String(v.getBinary(valueData), "UTF-8");
+                    retval=new String(valueMeta.getBinary(valueData), "UTF-8");
                 } 
                 catch (UnsupportedEncodingException e) 
                 {
@@ -275,7 +276,7 @@ public class AddXML extends BaseStep implements StepInterface
         }        
         else // Boolean
         {
-            retval=v.toString();
+            retval=valueMeta.getString(valueData);
         }
 
         return retval;
