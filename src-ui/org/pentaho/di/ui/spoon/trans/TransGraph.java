@@ -1826,6 +1826,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
             if (stepPlugin!=null)
             {
                 newTip+=Const.CR+Const.CR+stepPlugin.getTooltip(LanguageChoice.getInstance().getDefaultLocale().toString());
+                tipImage = GUIResource.getInstance().getImagesSteps().get(stepPlugin.getID()[0]);
             }
             
             // Add the partitioning info
@@ -1838,8 +1839,6 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
             if (stepMeta.getTargetStepPartitioningMeta()!=null) {
             	newTip+=Const.CR+Const.CR+Messages.getString("SpoonGraph.Step.Tooltip.NextPartitioning")+stepMeta.getTargetStepPartitioningMeta().toString();
             }
-            
-            tipImage = GUIResource.getInstance().getImagesSteps().get(stepPlugin.getID()[0]);
         }
         else
         {
