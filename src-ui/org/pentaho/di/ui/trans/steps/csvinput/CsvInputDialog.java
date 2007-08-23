@@ -52,7 +52,9 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.TransPreviewFactory;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.csvinput.CsvInputMeta;
@@ -63,10 +65,12 @@ import org.pentaho.di.trans.steps.textfileinput.TextFileInputMeta;
 import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.ComboValuesSelectionListener;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
+import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.trans.steps.textfileinput.TextFileCSVImportProgressDialog;
 
@@ -272,10 +276,12 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
 		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
+		wPreview=new Button(shell, SWT.PUSH);
+		wPreview.setText(Messages.getString("System.Button.Preview")); //$NON-NLS-1$
 		wGet=new Button(shell, SWT.PUSH);
 		wGet.setText(Messages.getString("System.Button.GetFields")); //$NON-NLS-1$
 
-		setButtonPositions(new Button[] { wOK, wCancel, wGet, }, margin, null);
+		setButtonPositions(new Button[] { wOK, wCancel, wPreview, wGet, }, margin, null);
 
 
 		// Fields
@@ -289,6 +295,7 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
              new ColumnInfo(Messages.getString("CsvInputDialog.CurrencyColumn.Column"),   ColumnInfo.COLUMN_TYPE_TEXT,    false),
              new ColumnInfo(Messages.getString("CsvInputDialog.DecimalColumn.Column"),    ColumnInfo.COLUMN_TYPE_TEXT,    false),
              new ColumnInfo(Messages.getString("CsvInputDialog.GroupColumn.Column"),      ColumnInfo.COLUMN_TYPE_TEXT,    false),
+             new ColumnInfo(Messages.getString("CsvInputDialog.TrimTypeColumn.Column"),   ColumnInfo.COLUMN_TYPE_CCOMBO,  ValueMeta.trimTypeDesc),
             };
         
         colinf[2].setComboValuesSelectionListener(new ComboValuesSelectionListener() {
@@ -327,11 +334,13 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
 		// Add listeners
 		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel(); } };
 		lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
+		lsPreview  = new Listener() { public void handleEvent(Event e) { preview(); } };
 		lsGet      = new Listener() { public void handleEvent(Event e) { getCSV(); } };
 
-		wCancel.addListener(SWT.Selection, lsCancel);
-		wOK.addListener    (SWT.Selection, lsOK    );
-		wGet.addListener   (SWT.Selection, lsGet   );
+		wCancel.addListener (SWT.Selection, lsCancel );
+		wOK.addListener     (SWT.Selection, lsOK     );
+		wPreview.addListener(SWT.Selection, lsPreview);
+		wGet.addListener    (SWT.Selection, lsGet    );
 		
 		lsDef=new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { ok(); } };
 		
@@ -415,6 +424,7 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
 			item.setText(colnr++, Const.NVL(field.getCurrencySymbol(), ""));
 			item.setText(colnr++, Const.NVL(field.getDecimalSymbol(), ""));
 			item.setText(colnr++, Const.NVL(field.getGroupSymbol(), ""));
+			item.setText(colnr++, Const.NVL(field.getTrimTypeDesc(), ""));
 		}
 		wFields.removeEmptyRows();
 		wFields.setRowNums();
@@ -455,6 +465,7 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
 			inputMeta.getInputFields()[i].setCurrencySymbol( item.getText(colnr++) );
 			inputMeta.getInputFields()[i].setDecimalSymbol( item.getText(colnr++) );
 			inputMeta.getInputFields()[i].setGroupSymbol( item.getText(colnr++) );
+			inputMeta.getInputFields()[i].setTrimType(ValueMeta.getTrimTypeByDesc( item.getText(colnr++) ));
 		}
 		wFields.removeEmptyRows();
 		wFields.setRowNums();
@@ -571,4 +582,40 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
 			}
 		}
 	}
+	
+    // Preview the data
+    private void preview()
+    {
+        // Create the XML input step
+        CsvInputMeta oneMeta = new CsvInputMeta();
+        getInfo(oneMeta);
+        
+        TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(transMeta, oneMeta, wStepname.getText());
+        
+        EnterNumberDialog numberDialog = new EnterNumberDialog(shell, 500, org.pentaho.di.trans.steps.textfileinput.Messages.getString("TextFileInputDialog.PreviewSize.DialogTitle"), org.pentaho.di.trans.steps.textfileinput.Messages.getString("TextFileInputDialog.PreviewSize.DialogMessage"));
+        int previewSize = numberDialog.open();
+        if (previewSize>0)
+        {
+            TransPreviewProgressDialog progressDialog = new TransPreviewProgressDialog(shell, previewMeta, new String[] { wStepname.getText() }, new int[] { previewSize } );
+            progressDialog.open();
+
+            Trans trans = progressDialog.getTrans();
+            String loggingText = progressDialog.getLoggingText();
+
+            if (!progressDialog.isCancelled())
+            {
+                if (trans.getResult()!=null && trans.getResult().getNrErrors()>0)
+                {
+                	EnterTextDialog etd = new EnterTextDialog(shell, Messages.getString("System.Dialog.PreviewError.Title"),  
+                			Messages.getString("System.Dialog.PreviewError.Message"), loggingText, true );
+                	etd.setReadOnly();
+                	etd.open();
+                }
+            }
+            
+            PreviewRowsDialog prd =new PreviewRowsDialog(shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog.getPreviewRowsMeta(wStepname.getText()), progressDialog.getPreviewRows(wStepname.getText()), loggingText);
+            prd.open();
+        }
+    }
+
 }

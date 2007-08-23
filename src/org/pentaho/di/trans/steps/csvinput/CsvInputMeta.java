@@ -75,19 +75,6 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
 	
 	private TextFileInputField[] inputFields;
 	
-	/*
-	// TODO: wrap these field* members in a new class...
-	//
-	private String[] fieldNames;
-	private int      fieldTypes[];
-	private int      fieldLength[];
-	private int      fieldPrecision[];
-	private String   fieldFormat[];
-	private String   fieldDecimal[];
-	private String   fieldGrouping[];
-	private String   fieldCurrency[];
-	*/
-
 	public CsvInputMeta()
 	{
 		super(); // allocate BaseStepMeta
@@ -144,6 +131,7 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
 				inputFields[i].setGroupSymbol( XMLHandler.getTagValue(fnode, "group") );
 				inputFields[i].setLength( Const.toInt(XMLHandler.getTagValue(fnode, "length"), -1) );
 				inputFields[i].setPrecision( Const.toInt(XMLHandler.getTagValue(fnode, "precision"), -1) );
+				inputFields[i].setTrimType( ValueMeta.getTrimTypeByCode( XMLHandler.getTagValue(fnode, "trim_type") ) );
 			}
 		}
 		catch (Exception e)
@@ -181,6 +169,7 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
 			retval.append("        " + XMLHandler.addTagValue("group", field.getGroupSymbol()));
 			retval.append("        " + XMLHandler.addTagValue("length", field.getLength()));
 			retval.append("        " + XMLHandler.addTagValue("precision", field.getPrecision()));
+			retval.append("        " + XMLHandler.addTagValue("trim_type", ValueMeta.getTrimTypeCode(field.getTrimType())));
 			retval.append("        </field>" + Const.CR);
 		}
 		retval.append("      </fields>" + Const.CR);
@@ -216,6 +205,7 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
 				inputFields[i].setGroupSymbol( rep.getStepAttributeString(id_step, i, "field_group") );
 				inputFields[i].setLength( (int) rep.getStepAttributeInteger(id_step, i, "field_length") );
 				inputFields[i].setPrecision( (int) rep.getStepAttributeInteger(id_step, i, "field_precision") );
+				inputFields[i].setTrimType( ValueMeta.getTrimTypeByCode( rep.getStepAttributeString(id_step, i, "field_trim_type")) );
 			}
 		}
 		catch (Exception e)
@@ -247,6 +237,7 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_group", field.getGroupSymbol());
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_length", field.getLength());
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_precision", field.getPrecision());
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_trim_type", ValueMeta.getTrimTypeCode( field.getTrimType()));
 			}
 		}
 		catch (Exception e)
@@ -261,13 +252,14 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
 			TextFileInputField field = inputFields[i];
 			
 			ValueMetaInterface valueMeta = new ValueMeta(field.getName(), field.getType());
-			valueMeta.setConversionMask(field.getFormat());
-			valueMeta.setLength(field.getLength());
-			valueMeta.setPrecision(field.getPrecision());
-			valueMeta.setConversionMask(field.getFormat());
-			valueMeta.setDecimalSymbol(field.getDecimalSymbol());
-			valueMeta.setGroupingSymbol(field.getGroupSymbol());
-			valueMeta.setCurrencySymbol(field.getCurrencySymbol());
+			valueMeta.setConversionMask( field.getFormat() );
+			valueMeta.setLength( field.getLength() );
+			valueMeta.setPrecision( field.getPrecision() );
+			valueMeta.setConversionMask( field.getFormat() );
+			valueMeta.setDecimalSymbol( field.getDecimalSymbol() );
+			valueMeta.setGroupingSymbol( field.getGroupSymbol() );
+			valueMeta.setCurrencySymbol( field.getCurrencySymbol() );
+			valueMeta.setTrimType( field.getTrimType() );
 			if (lazyConversionActive) valueMeta.setStorageType(ValueMetaInterface.STORAGE_TYPE_BINARY_STRING);
 			
 			// In case we want to convert Strings...

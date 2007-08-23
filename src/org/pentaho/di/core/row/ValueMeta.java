@@ -485,13 +485,15 @@ public class ValueMeta implements ValueMetaInterface
     {
         if (Const.isEmpty(string)) return null;
         
+        string = trim(string); // see if  trimming needs to be performed before conversion
+
         try
         {
             return getDateFormat().parse(string);
         }
         catch (ParseException e)
         {
-            throw new KettleValueException("Unable to convert string ["+string+"] to a date", e);
+            throw new KettleValueException(toString()+" : couldn't convert string ["+string+"] to a date", e);
         }
     }
 
@@ -545,7 +547,7 @@ public class ValueMeta implements ValueMetaInterface
         }
         catch(Exception e)
         {
-            throw new KettleValueException("Couldn't convert Number to String ", e);
+            throw new KettleValueException(toString()+" : couldn't convert Number to String ", e);
         }
     }
     
@@ -553,13 +555,15 @@ public class ValueMeta implements ValueMetaInterface
     {
         if (string==null) return null;
         
+        string = trim(string); // see if  trimming needs to be performed before conversion
+
         try
         {
             return new Double( getDecimalFormat().parse(string).doubleValue() );
         }
         catch(Exception e)
         {
-            throw new KettleValueException("Couldn't convert String to number ", e);
+            throw new KettleValueException(toString()+" : couldn't convert String to number ", e);
         }
     }
     
@@ -625,13 +629,15 @@ public class ValueMeta implements ValueMetaInterface
         }
         catch(Exception e)
         {
-            throw new KettleValueException("Couldn't convert Long to String ", e);
+            throw new KettleValueException(toString()+" : couldn't convert Long to String ", e);
         }
     }
     
     private synchronized Long convertStringToInteger(String string) throws KettleValueException
     {
         if (Const.isEmpty(string)) return null;
+        
+        string = trim(string); // see if  trimming needs to be performed before conversion
 
         try
         {
@@ -639,7 +645,7 @@ public class ValueMeta implements ValueMetaInterface
         }
         catch(Exception e)
         {
-            throw new KettleValueException("Couldn't convert String to Integer", e);
+            throw new KettleValueException(toString()+" : couldn't convert String to Integer", e);
         }
     }
     
@@ -660,6 +666,8 @@ public class ValueMeta implements ValueMetaInterface
     private synchronized BigDecimal convertStringToBigNumber(String string) throws KettleValueException
     {
         if (string==null) return null;
+
+        string = trim(string); // see if  trimming needs to be performed before conversion
 
         /*
         if (!".".equalsIgnoreCase(decimalSymbol))
@@ -748,7 +756,7 @@ public class ValueMeta implements ValueMetaInterface
                 }
                 catch(UnsupportedEncodingException e)
                 {
-                    throw new KettleValueException("Unable to convert binary value to String with specified string encoding ["+stringEncoding+"]", e);
+                    throw new KettleValueException(toString()+" : couldn't convert binary value to String with specified string encoding ["+stringEncoding+"]", e);
                 }
             }
 
@@ -793,7 +801,7 @@ public class ValueMeta implements ValueMetaInterface
             }
             catch(UnsupportedEncodingException e)
             {
-                throw new KettleValueException("Unable to convert String to Binary with specified string encoding ["+stringEncoding+"]", e);
+                throw new KettleValueException(toString()+" : couldn't convert String to Binary with specified string encoding ["+stringEncoding+"]", e);
             }
         }
     }
@@ -830,7 +838,7 @@ public class ValueMeta implements ValueMetaInterface
                 System.arraycopy(origin, 0, target, 0, origin.length);
                 return target;
 
-            default: throw new KettleValueException("Unable to make copy of value type: "+getType());
+            default: throw new KettleValueException(toString()+": unable to make copy of value type: "+getType());
             }
         }
         else {
@@ -858,8 +866,9 @@ public class ValueMeta implements ValueMetaInterface
                 case STORAGE_TYPE_NORMAL:         string = (String)object; break;
                 case STORAGE_TYPE_BINARY_STRING:  string = convertBinaryStringToString((byte[])object); break;
                 case STORAGE_TYPE_INDEXED:        string = (String) index[((Integer)object).intValue()];  break;
-                default: throw new KettleValueException("Unknown storage type "+storageType+" specified.");
+                default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
                 }
+                string = trim(string);
                 break;
                 
             case TYPE_DATE:
@@ -868,7 +877,7 @@ public class ValueMeta implements ValueMetaInterface
                 case STORAGE_TYPE_NORMAL:         string = convertDateToString((Date)object); break;
                 case STORAGE_TYPE_BINARY_STRING:  string = convertBinaryStringToString((byte[])object); break;
                 case STORAGE_TYPE_INDEXED:        string = convertDateToString((Date)index[((Integer)object).intValue()]); break;
-                default: throw new KettleValueException("Unknown storage type "+storageType+" specified.");
+                default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
                 }
                 break;
     
@@ -878,7 +887,7 @@ public class ValueMeta implements ValueMetaInterface
                 case STORAGE_TYPE_NORMAL:         string = convertNumberToString((Double)object); break;
                 case STORAGE_TYPE_BINARY_STRING:  string = convertBinaryStringToString((byte[])object); break;
                 case STORAGE_TYPE_INDEXED:        string = convertNumberToString((Double)index[((Integer)object).intValue()]); break;
-                default: throw new KettleValueException("Unknown storage type "+storageType+" specified.");
+                default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
                 }
                 break;
     
@@ -888,7 +897,7 @@ public class ValueMeta implements ValueMetaInterface
                 case STORAGE_TYPE_NORMAL:         string = convertIntegerToString((Long)object); break;
                 case STORAGE_TYPE_BINARY_STRING:  string = convertBinaryStringToString((byte[])object); break;
                 case STORAGE_TYPE_INDEXED:        string = convertIntegerToString((Long)index[((Integer)object).intValue()]); break;
-                default: throw new KettleValueException("Unknown storage type "+storageType+" specified.");
+                default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
                 }
                 break;
     
@@ -898,7 +907,7 @@ public class ValueMeta implements ValueMetaInterface
                 case STORAGE_TYPE_NORMAL:         string = convertBigNumberToString((BigDecimal)object); break;
                 case STORAGE_TYPE_BINARY_STRING:  string = convertBinaryStringToString((byte[])object); break;
                 case STORAGE_TYPE_INDEXED:        string = convertBigNumberToString((BigDecimal)index[((Integer)object).intValue()]); break;
-                default: throw new KettleValueException("Unknown storage type "+storageType+" specified.");
+                default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
                 }
                 break;
     
@@ -908,7 +917,7 @@ public class ValueMeta implements ValueMetaInterface
                 case STORAGE_TYPE_NORMAL:         string = convertBooleanToString((Boolean)object); break;
                 case STORAGE_TYPE_BINARY_STRING:  string = convertBinaryStringToString((byte[])object); break;
                 case STORAGE_TYPE_INDEXED:        string = convertBooleanToString((Boolean)index[((Integer)object).intValue()]); break;
-                default: throw new KettleValueException("Unknown storage type "+storageType+" specified.");
+                default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
                 }
                 break;
     
@@ -918,7 +927,7 @@ public class ValueMeta implements ValueMetaInterface
                 case STORAGE_TYPE_NORMAL:         string = convertBinaryStringToString((byte[])object); break;
                 case STORAGE_TYPE_BINARY_STRING:  string = convertBinaryStringToString((byte[])object); break;
                 case STORAGE_TYPE_INDEXED:        string = convertBinaryStringToString((byte[])index[((Integer)object).intValue()]); break;
-                default: throw new KettleValueException("Unknown storage type "+storageType+" specified.");
+                default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
                 }
                 break;
     
@@ -928,36 +937,39 @@ public class ValueMeta implements ValueMetaInterface
                 case STORAGE_TYPE_NORMAL:         string = object.toString();  break; // just go for the default toString()
                 case STORAGE_TYPE_BINARY_STRING:  string = convertBinaryStringToString((byte[])object); break;
                 case STORAGE_TYPE_INDEXED:        string = index[((Integer)object).intValue()].toString();  break; // just go for the default toString()
-                default: throw new KettleValueException("Unknown storage type "+storageType+" specified.");
+                default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
                 }
                 break;
     
             default: 
-                throw new KettleValueException("Unknown type "+type+" specified.");
+                throw new KettleValueException(toString()+" : Unknown type "+type+" specified.");
             }
             
             if (isOutputPaddingEnabled() && getLength()>0)
             {
                 string = ValueDataUtil.rightPad(string, getLength());
             }
-            
-            switch(getTrimType()) {
-            case TRIM_TYPE_NONE : break;
-            case TRIM_TYPE_RIGHT : string = ValueDataUtil.rightTrim(string); break;
-            case TRIM_TYPE_LEFT  : string = ValueDataUtil.leftTrim(string); break;
-            case TRIM_TYPE_BOTH  : string = ValueDataUtil.trim(string); break;
-            default: break;
-            }
-            
+
             return string;
         }
         catch(ClassCastException e)
         {
-            throw new KettleValueException("There was a data type error: the data type of "+object.getClass().getName()+" object ["+object+"] does not correspond to value meta ["+toStringMeta()+"]");
+            throw new KettleValueException(toString()+" : There was a data type error: the data type of "+object.getClass().getName()+" object ["+object+"] does not correspond to value meta ["+toStringMeta()+"]");
         }
     }
 
-    public Double getNumber(Object object) throws KettleValueException
+    private String trim(String string) {
+        switch(getTrimType()) {
+        case TRIM_TYPE_NONE : break;
+        case TRIM_TYPE_RIGHT : string = ValueDataUtil.rightTrim(string); break;
+        case TRIM_TYPE_LEFT  : string = ValueDataUtil.leftTrim(string); break;
+        case TRIM_TYPE_BOTH  : string = ValueDataUtil.trim(string); break;
+        default: break;
+        }
+        return string;
+	}
+
+	public Double getNumber(Object object) throws KettleValueException
     {
         if (object==null) // NULL 
         {
@@ -971,7 +983,7 @@ public class ValueMeta implements ValueMetaInterface
             case STORAGE_TYPE_NORMAL:         return (Double)object;
             case STORAGE_TYPE_BINARY_STRING:  return convertStringToNumber(convertBinaryStringToString((byte[])object));
             case STORAGE_TYPE_INDEXED:        return (Double)index[((Integer)object).intValue()];
-            default: throw new KettleValueException("Unknown storage type "+storageType+" specified.");
+            default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
             }
         case TYPE_STRING:
             switch(storageType)
@@ -979,7 +991,7 @@ public class ValueMeta implements ValueMetaInterface
             case STORAGE_TYPE_NORMAL:         return convertStringToNumber((String)object);
             case STORAGE_TYPE_BINARY_STRING:  return convertStringToNumber(convertBinaryStringToString((byte[])object));
             case STORAGE_TYPE_INDEXED:        return convertStringToNumber((String) index[((Integer)object).intValue()]); 
-            default: throw new KettleValueException("Unknown storage type "+storageType+" specified.");
+            default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
             }
         case TYPE_DATE:
             switch(storageType)
@@ -987,7 +999,7 @@ public class ValueMeta implements ValueMetaInterface
             case STORAGE_TYPE_NORMAL:         return convertDateToNumber((Date)object);
             case STORAGE_TYPE_BINARY_STRING:  return convertDateToNumber(convertStringToDate(convertBinaryStringToString((byte[])object)));
             case STORAGE_TYPE_INDEXED:        return new Double( ((Date)index[((Integer)object).intValue()]).getTime() );  
-            default: throw new KettleValueException("Unknown storage type "+storageType+" specified.");
+            default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
             }
         case TYPE_INTEGER:
             switch(storageType)
@@ -995,7 +1007,7 @@ public class ValueMeta implements ValueMetaInterface
             case STORAGE_TYPE_NORMAL:         return new Double( ((Long)object).doubleValue() );
             case STORAGE_TYPE_BINARY_STRING:  return convertStringToNumber(convertBinaryStringToString((byte[])object)).doubleValue();
             case STORAGE_TYPE_INDEXED:        return new Double( ((Long)index[((Integer)object).intValue()]).doubleValue() );
-            default: throw new KettleValueException("Unknown storage type "+storageType+" specified.");
+            default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
             }
         case TYPE_BIGNUMBER:
             switch(storageType)
@@ -1003,7 +1015,7 @@ public class ValueMeta implements ValueMetaInterface
             case STORAGE_TYPE_NORMAL:         return new Double( ((BigDecimal)object).doubleValue() );
             case STORAGE_TYPE_BINARY_STRING:  return convertStringToBigNumber(convertBinaryStringToString((byte[])object)).doubleValue();
             case STORAGE_TYPE_INDEXED:        return new Double( ((BigDecimal)index[((Integer)object).intValue()]).doubleValue() );
-            default: throw new KettleValueException("Unknown storage type "+storageType+" specified.");
+            default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
             }
         case TYPE_BOOLEAN:
             switch(storageType)
@@ -1011,14 +1023,14 @@ public class ValueMeta implements ValueMetaInterface
             case STORAGE_TYPE_NORMAL:         return convertBooleanToNumber( (Boolean)object );
             case STORAGE_TYPE_BINARY_STRING:  return convertBooleanToNumber( convertStringToBoolean(convertBinaryStringToString((byte[])object)) );
             case STORAGE_TYPE_INDEXED:        return convertBooleanToNumber( (Boolean)index[((Integer)object).intValue()] );
-            default: throw new KettleValueException("Unknown storage type "+storageType+" specified.");
+            default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
             }
         case TYPE_BINARY:
-            throw new KettleValueException("I don't know how to convert binary values to numbers.");
+            throw new KettleValueException(toString()+" : I don't know how to convert binary values to numbers.");
         case TYPE_SERIALIZABLE:
-            throw new KettleValueException("I don't know how to convert serializable values to numbers.");
+            throw new KettleValueException(toString()+" : I don't know how to convert serializable values to numbers.");
         default:
-            throw new KettleValueException("Unknown type "+type+" specified.");
+            throw new KettleValueException(toString()+" : Unknown type "+type+" specified.");
         }
     }
 
@@ -1036,7 +1048,7 @@ public class ValueMeta implements ValueMetaInterface
             case STORAGE_TYPE_NORMAL:         return (Long)object;
             case STORAGE_TYPE_BINARY_STRING:  return convertStringToInteger(convertBinaryStringToString((byte[])object));
             case STORAGE_TYPE_INDEXED:        return (Long)index[((Integer)object).intValue()];
-            default: throw new KettleValueException("Unknown storage type "+storageType+" specified.");
+            default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
             }
         case TYPE_STRING:
             switch(storageType)
@@ -1044,7 +1056,7 @@ public class ValueMeta implements ValueMetaInterface
             case STORAGE_TYPE_NORMAL:         return convertStringToInteger((String)object);
             case STORAGE_TYPE_BINARY_STRING:  return convertStringToInteger(convertBinaryStringToString((byte[])object));
             case STORAGE_TYPE_INDEXED:        return convertStringToInteger((String) index[((Integer)object).intValue()]); 
-            default: throw new KettleValueException("Unknown storage type "+storageType+" specified.");
+            default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
             }
         case TYPE_NUMBER:
             switch(storageType)
@@ -1052,7 +1064,7 @@ public class ValueMeta implements ValueMetaInterface
             case STORAGE_TYPE_NORMAL:         return new Long( ((Double)object).longValue() );
             case STORAGE_TYPE_BINARY_STRING:  return convertStringToNumber(convertBinaryStringToString((byte[])object)).longValue();
             case STORAGE_TYPE_INDEXED:        return new Long( ((Double)index[((Integer)object).intValue()]).longValue() );
-            default: throw new KettleValueException("Unknown storage type "+storageType+" specified.");
+            default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
             }
         case TYPE_DATE:
             switch(storageType)
@@ -1060,7 +1072,7 @@ public class ValueMeta implements ValueMetaInterface
             case STORAGE_TYPE_NORMAL:         return convertDateToInteger( (Date)object);
             case STORAGE_TYPE_BINARY_STRING:  return convertStringToDate(convertBinaryStringToString((byte[])object)).getTime();
             case STORAGE_TYPE_INDEXED:        return convertDateToInteger( (Date)index[((Integer)object).intValue()]);  
-            default: throw new KettleValueException("Unknown storage type "+storageType+" specified.");
+            default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
             }
         case TYPE_BIGNUMBER:
             switch(storageType)
@@ -1068,7 +1080,7 @@ public class ValueMeta implements ValueMetaInterface
             case STORAGE_TYPE_NORMAL:         return new Long( ((BigDecimal)object).longValue() );
             case STORAGE_TYPE_BINARY_STRING:  return convertStringToBigNumber(convertBinaryStringToString((byte[])object)).longValue();
             case STORAGE_TYPE_INDEXED:        return new Long( ((BigDecimal)index[((Integer)object).intValue()]).longValue() );
-            default: throw new KettleValueException("Unknown storage type "+storageType+" specified.");
+            default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
             }
         case TYPE_BOOLEAN:
             switch(storageType)
@@ -1076,14 +1088,14 @@ public class ValueMeta implements ValueMetaInterface
             case STORAGE_TYPE_NORMAL:         return convertBooleanToInteger( (Boolean)object );
             case STORAGE_TYPE_BINARY_STRING:  return convertBooleanToInteger( convertStringToBoolean(convertBinaryStringToString((byte[])object)) );
             case STORAGE_TYPE_INDEXED:        return convertBooleanToInteger( (Boolean)index[((Integer)object).intValue()] );
-            default: throw new KettleValueException("Unknown storage type "+storageType+" specified.");
+            default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
             }
         case TYPE_BINARY:
-            throw new KettleValueException("I don't know how to convert binary values to integers.");
+            throw new KettleValueException(toString()+" : I don't know how to convert binary values to integers.");
         case TYPE_SERIALIZABLE:
-            throw new KettleValueException("I don't know how to convert serializable values to integers.");
+            throw new KettleValueException(toString()+" : I don't know how to convert serializable values to integers.");
         default:
-            throw new KettleValueException("Unknown type "+type+" specified.");
+            throw new KettleValueException(toString()+" : Unknown type "+type+" specified.");
         }
     }
 
@@ -1101,7 +1113,7 @@ public class ValueMeta implements ValueMetaInterface
             case STORAGE_TYPE_NORMAL:         return (BigDecimal)object;
             case STORAGE_TYPE_BINARY_STRING:  return convertStringToBigNumber(convertBinaryStringToString((byte[])object));
             case STORAGE_TYPE_INDEXED:        return (BigDecimal)index[((Integer)object).intValue()];
-            default: throw new KettleValueException("Unknown storage type "+storageType+" specified.");
+            default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
             }
         case TYPE_STRING:
             switch(storageType)
@@ -1109,7 +1121,7 @@ public class ValueMeta implements ValueMetaInterface
             case STORAGE_TYPE_NORMAL:         return convertStringToBigNumber( (String)object );
             case STORAGE_TYPE_BINARY_STRING:  return convertStringToBigNumber( convertBinaryStringToString((byte[])object) );
             case STORAGE_TYPE_INDEXED:        return convertStringToBigNumber((String) index[((Integer)object).intValue()]); 
-            default: throw new KettleValueException("Unknown storage type "+storageType+" specified.");
+            default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
             }
         case TYPE_INTEGER:
             switch(storageType)
@@ -1117,7 +1129,7 @@ public class ValueMeta implements ValueMetaInterface
             case STORAGE_TYPE_NORMAL:         return new BigDecimal( ((Long)object).doubleValue() );
             case STORAGE_TYPE_BINARY_STRING:  return new BigDecimal( convertStringToInteger( convertBinaryStringToString((byte[])object) ) );
             case STORAGE_TYPE_INDEXED:        return new BigDecimal( ((Long)index[((Integer)object).intValue()]).doubleValue() );
-            default: throw new KettleValueException("Unknown storage type "+storageType+" specified.");
+            default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
             }
         case TYPE_NUMBER:
             switch(storageType)
@@ -1125,7 +1137,7 @@ public class ValueMeta implements ValueMetaInterface
             case STORAGE_TYPE_NORMAL:         return new BigDecimal( ((Double)object).doubleValue() );
             case STORAGE_TYPE_BINARY_STRING:  return new BigDecimal( convertStringToNumber( convertBinaryStringToString((byte[])object) ) );
             case STORAGE_TYPE_INDEXED:        return new BigDecimal( ((Double)index[((Integer)object).intValue()]).doubleValue() );
-            default: throw new KettleValueException("Unknown storage type "+storageType+" specified.");
+            default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
             }
         case TYPE_DATE:
             switch(storageType)
@@ -1133,7 +1145,7 @@ public class ValueMeta implements ValueMetaInterface
             case STORAGE_TYPE_NORMAL:         return convertDateToBigNumber( (Date)object );
             case STORAGE_TYPE_BINARY_STRING:  return convertDateToBigNumber( convertStringToDate( convertBinaryStringToString((byte[])object) ) );
             case STORAGE_TYPE_INDEXED:        return convertDateToBigNumber( (Date)index[((Integer)object).intValue()] );  
-            default: throw new KettleValueException("Unknown storage type "+storageType+" specified.");
+            default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
             }
         case TYPE_BOOLEAN:
             switch(storageType)
@@ -1141,14 +1153,14 @@ public class ValueMeta implements ValueMetaInterface
             case STORAGE_TYPE_NORMAL:         return convertBooleanToBigNumber( (Boolean)object );
             case STORAGE_TYPE_BINARY_STRING:  return convertBooleanToBigNumber( convertStringToBoolean( convertBinaryStringToString((byte[])object) ) );
             case STORAGE_TYPE_INDEXED:        return convertBooleanToBigNumber( (Boolean)index[((Integer)object).intValue()] );
-            default: throw new KettleValueException("Unknown storage type "+storageType+" specified.");
+            default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
             }
         case TYPE_BINARY:
-            throw new KettleValueException("I don't know how to convert binary values to integers.");
+            throw new KettleValueException(toString()+" : I don't know how to convert binary values to integers.");
         case TYPE_SERIALIZABLE:
-            throw new KettleValueException("I don't know how to convert serializable values to integers.");
+            throw new KettleValueException(toString()+" : I don't know how to convert serializable values to integers.");
         default:
-            throw new KettleValueException("Unknown type "+type+" specified.");
+            throw new KettleValueException(toString()+" : Unknown type "+type+" specified.");
         }
     }
     
@@ -1166,15 +1178,15 @@ public class ValueMeta implements ValueMetaInterface
             case STORAGE_TYPE_NORMAL:         return (Boolean)object;
             case STORAGE_TYPE_BINARY_STRING:  return convertStringToBoolean( convertBinaryStringToString((byte[])object) );
             case STORAGE_TYPE_INDEXED:        return (Boolean)index[((Integer)object).intValue()];
-            default: throw new KettleValueException("Unknown storage type "+storageType+" specified.");
+            default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
             }
         case TYPE_STRING:
             switch(storageType)
             {
-            case STORAGE_TYPE_NORMAL:         return convertStringToBoolean( (String)object );
+            case STORAGE_TYPE_NORMAL:         return convertStringToBoolean( trim((String)object) );
             case STORAGE_TYPE_BINARY_STRING:  return convertStringToBoolean( convertBinaryStringToString((byte[])object) );
-            case STORAGE_TYPE_INDEXED:        return convertStringToBoolean( (String) index[((Integer)object).intValue()] ); 
-            default: throw new KettleValueException("Unknown storage type "+storageType+" specified.");
+            case STORAGE_TYPE_INDEXED:        return convertStringToBoolean( trim((String) index[((Integer)object).intValue()] )); 
+            default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
             }
         case TYPE_INTEGER:
             switch(storageType)
@@ -1182,7 +1194,7 @@ public class ValueMeta implements ValueMetaInterface
             case STORAGE_TYPE_NORMAL:         return convertIntegerToBoolean( (Long)object );
             case STORAGE_TYPE_BINARY_STRING:  return convertIntegerToBoolean( convertStringToInteger( convertBinaryStringToString((byte[])object) ) );
             case STORAGE_TYPE_INDEXED:        return convertIntegerToBoolean( (Long)index[((Integer)object).intValue()] );
-            default: throw new KettleValueException("Unknown storage type "+storageType+" specified.");
+            default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
             }
         case TYPE_NUMBER:
             switch(storageType)
@@ -1190,7 +1202,7 @@ public class ValueMeta implements ValueMetaInterface
             case STORAGE_TYPE_NORMAL:         return convertNumberToBoolean( (Double)object );
             case STORAGE_TYPE_BINARY_STRING:  return convertNumberToBoolean( convertStringToNumber( convertBinaryStringToString((byte[])object) ) );
             case STORAGE_TYPE_INDEXED:        return convertNumberToBoolean( (Double)index[((Integer)object).intValue()] );
-            default: throw new KettleValueException("Unknown storage type "+storageType+" specified.");
+            default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
             }
         case TYPE_BIGNUMBER:
             switch(storageType)
@@ -1198,16 +1210,16 @@ public class ValueMeta implements ValueMetaInterface
             case STORAGE_TYPE_NORMAL:         return convertBigNumberToBoolean( (BigDecimal)object );
             case STORAGE_TYPE_BINARY_STRING:  return convertBigNumberToBoolean( convertStringToBigNumber( convertBinaryStringToString((byte[])object) ) );
             case STORAGE_TYPE_INDEXED:        return convertBigNumberToBoolean( (BigDecimal)index[((Integer)object).intValue()] );
-            default: throw new KettleValueException("Unknown storage type "+storageType+" specified.");
+            default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
             }
         case TYPE_DATE:
-            throw new KettleValueException("I don't know how to convert date values to booleans.");
+            throw new KettleValueException(toString()+" : I don't know how to convert date values to booleans.");
         case TYPE_BINARY:
-            throw new KettleValueException("I don't know how to convert binary values to booleans.");
+            throw new KettleValueException(toString()+" : I don't know how to convert binary values to booleans.");
         case TYPE_SERIALIZABLE:
-            throw new KettleValueException("I don't know how to convert serializable values to booleans.");
+            throw new KettleValueException(toString()+" : I don't know how to convert serializable values to booleans.");
         default:
-            throw new KettleValueException("Unknown type "+type+" specified.");
+            throw new KettleValueException(toString()+" : Unknown type "+type+" specified.");
         }
     }
     
@@ -1225,7 +1237,7 @@ public class ValueMeta implements ValueMetaInterface
             case STORAGE_TYPE_NORMAL:         return (Date)object;
             case STORAGE_TYPE_BINARY_STRING:  return convertStringToDate( convertBinaryStringToString((byte[])object) );
             case STORAGE_TYPE_INDEXED:        return (Date)index[((Integer)object).intValue()];  
-            default: throw new KettleValueException("Unknown storage type "+storageType+" specified.");
+            default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
             }
         case TYPE_STRING:
             switch(storageType)
@@ -1233,7 +1245,7 @@ public class ValueMeta implements ValueMetaInterface
             case STORAGE_TYPE_NORMAL:         return convertStringToDate( (String)object );
             case STORAGE_TYPE_BINARY_STRING:  return convertStringToDate( convertBinaryStringToString((byte[])object) );
             case STORAGE_TYPE_INDEXED:        return convertStringToDate( (String) index[((Integer)object).intValue()] ); 
-            default: throw new KettleValueException("Unknown storage type "+storageType+" specified.");
+            default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
             }
         case TYPE_NUMBER:
             switch(storageType)
@@ -1241,7 +1253,7 @@ public class ValueMeta implements ValueMetaInterface
             case STORAGE_TYPE_NORMAL:         return convertNumberToDate((Double)object);
             case STORAGE_TYPE_BINARY_STRING:  return convertNumberToDate( convertStringToNumber( convertBinaryStringToString((byte[])object) ) );
             case STORAGE_TYPE_INDEXED:        return convertNumberToDate((Double)index[((Integer)object).intValue()]);
-            default: throw new KettleValueException("Unknown storage type "+storageType+" specified.");
+            default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
             }
         case TYPE_INTEGER:
             switch(storageType)
@@ -1249,7 +1261,7 @@ public class ValueMeta implements ValueMetaInterface
             case STORAGE_TYPE_NORMAL:         return convertIntegerToDate((Long)object);
             case STORAGE_TYPE_BINARY_STRING:  return convertIntegerToDate( convertStringToInteger( convertBinaryStringToString((byte[])object) ) );
             case STORAGE_TYPE_INDEXED:        return convertIntegerToDate((Long)index[((Integer)object).intValue()]);
-            default: throw new KettleValueException("Unknown storage type "+storageType+" specified.");
+            default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
             }
         case TYPE_BIGNUMBER:
             switch(storageType)
@@ -1257,17 +1269,17 @@ public class ValueMeta implements ValueMetaInterface
             case STORAGE_TYPE_NORMAL:         return convertBigNumberToDate((BigDecimal)object);
             case STORAGE_TYPE_BINARY_STRING:  return convertBigNumberToDate( convertStringToBigNumber( convertBinaryStringToString((byte[])object) ) );
             case STORAGE_TYPE_INDEXED:        return convertBigNumberToDate((BigDecimal)index[((Integer)object).intValue()]);
-            default: throw new KettleValueException("Unknown storage type "+storageType+" specified.");
+            default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
             }
         case TYPE_BOOLEAN:
-            throw new KettleValueException("I don't know how to convert a boolean to a date.");
+            throw new KettleValueException(toString()+" : I don't know how to convert a boolean to a date.");
         case TYPE_BINARY:
-            throw new KettleValueException("I don't know how to convert a binary value to date.");
+            throw new KettleValueException(toString()+" : I don't know how to convert a binary value to date.");
         case TYPE_SERIALIZABLE:
-            throw new KettleValueException("I don't know how to convert a serializable value to date.");
+            throw new KettleValueException(toString()+" : I don't know how to convert a serializable value to date.");
             
         default: 
-            throw new KettleValueException("Unknown type "+type+" specified.");
+            throw new KettleValueException(toString()+" : Unknown type "+type+" specified.");
         }
     }
 
@@ -1285,31 +1297,31 @@ public class ValueMeta implements ValueMetaInterface
             case STORAGE_TYPE_NORMAL:         return (byte[])object;
             case STORAGE_TYPE_BINARY_STRING:  return (byte[])object;
             case STORAGE_TYPE_INDEXED:        return (byte[])index[((Integer)object).intValue()];  
-            default: throw new KettleValueException("Unknown storage type "+storageType+" specified.");
+            default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
             }
         case TYPE_DATE:
-            throw new KettleValueException("I don't know how to convert a date to binary.");
+            throw new KettleValueException(toString()+" : I don't know how to convert a date to binary.");
         case TYPE_STRING:
             switch(storageType)
             {
             case STORAGE_TYPE_NORMAL:         return convertStringToBinaryString( (String)object );
             case STORAGE_TYPE_BINARY_STRING:  return (byte[])object;
             case STORAGE_TYPE_INDEXED:        return convertStringToBinaryString( (String) index[((Integer)object).intValue()] ); 
-            default: throw new KettleValueException("Unknown storage type "+storageType+" specified.");
+            default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
             }
         case TYPE_NUMBER:
-            throw new KettleValueException("I don't know how to convert a number to binary.");
+            throw new KettleValueException(toString()+" : I don't know how to convert a number to binary.");
         case TYPE_INTEGER:
-            throw new KettleValueException("I don't know how to convert an integer to binary.");
+            throw new KettleValueException(toString()+" : I don't know how to convert an integer to binary.");
         case TYPE_BIGNUMBER:
-            throw new KettleValueException("I don't know how to convert a bignumber to binary.");
+            throw new KettleValueException(toString()+" : I don't know how to convert a bignumber to binary.");
         case TYPE_BOOLEAN:
-            throw new KettleValueException("I don't know how to convert a boolean to binary.");
+            throw new KettleValueException(toString()+" : I don't know how to convert a boolean to binary.");
         case TYPE_SERIALIZABLE:
-            throw new KettleValueException("I don't know how to convert a serializable to binary.");
+            throw new KettleValueException(toString()+" : I don't know how to convert a serializable to binary.");
             
         default: 
-            throw new KettleValueException("Unknown type "+type+" specified.");
+            throw new KettleValueException(toString()+" : Unknown type "+type+" specified.");
         }
     }
     
@@ -1330,7 +1342,7 @@ public class ValueMeta implements ValueMetaInterface
                 case STORAGE_TYPE_NORMAL:         return convertStringToBinaryString((String)object);
                 case STORAGE_TYPE_BINARY_STRING:  return (byte[])object;
                 case STORAGE_TYPE_INDEXED:        return convertStringToBinaryString((String) index[((Integer)object).intValue()]);
-                default: throw new KettleValueException("Unknown storage type "+storageType+" specified.");
+                default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
                 }
                 
             case TYPE_DATE:
@@ -1339,7 +1351,7 @@ public class ValueMeta implements ValueMetaInterface
                 case STORAGE_TYPE_NORMAL:         return convertStringToBinaryString(convertDateToString((Date)object));
                 case STORAGE_TYPE_BINARY_STRING:  return (byte[])object;
                 case STORAGE_TYPE_INDEXED:        return convertStringToBinaryString(convertDateToString((Date)index[((Integer)object).intValue()]));
-                default: throw new KettleValueException("Unknown storage type "+storageType+" specified.");
+                default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
                 }
     
             case TYPE_NUMBER:
@@ -1348,7 +1360,7 @@ public class ValueMeta implements ValueMetaInterface
                 case STORAGE_TYPE_NORMAL:         return convertStringToBinaryString(convertNumberToString((Double)object));
                 case STORAGE_TYPE_BINARY_STRING:  return (byte[])object;
                 case STORAGE_TYPE_INDEXED:        return convertStringToBinaryString(convertNumberToString((Double)index[((Integer)object).intValue()]));
-                default: throw new KettleValueException("Unknown storage type "+storageType+" specified.");
+                default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
                 }
     
             case TYPE_INTEGER:
@@ -1357,7 +1369,7 @@ public class ValueMeta implements ValueMetaInterface
                 case STORAGE_TYPE_NORMAL:         return convertStringToBinaryString(convertIntegerToString((Long)object));
                 case STORAGE_TYPE_BINARY_STRING:  return (byte[])object;
                 case STORAGE_TYPE_INDEXED:        return convertStringToBinaryString(convertIntegerToString((Long)index[((Integer)object).intValue()]));
-                default: throw new KettleValueException("Unknown storage type "+storageType+" specified.");
+                default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
                 }
     
             case TYPE_BIGNUMBER:
@@ -1366,7 +1378,7 @@ public class ValueMeta implements ValueMetaInterface
                 case STORAGE_TYPE_NORMAL:         return convertStringToBinaryString(convertBigNumberToString((BigDecimal)object));
                 case STORAGE_TYPE_BINARY_STRING:  return (byte[])object;
                 case STORAGE_TYPE_INDEXED:        return convertStringToBinaryString(convertBigNumberToString((BigDecimal)index[((Integer)object).intValue()]));
-                default: throw new KettleValueException("Unknown storage type "+storageType+" specified.");
+                default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
                 }
     
             case TYPE_BOOLEAN:
@@ -1375,7 +1387,7 @@ public class ValueMeta implements ValueMetaInterface
                 case STORAGE_TYPE_NORMAL:         return convertStringToBinaryString(convertBooleanToString((Boolean)object));
                 case STORAGE_TYPE_BINARY_STRING:  return (byte[])object;
                 case STORAGE_TYPE_INDEXED:        return convertStringToBinaryString(convertBooleanToString((Boolean)index[((Integer)object).intValue()]));
-                default: throw new KettleValueException("Unknown storage type "+storageType+" specified.");
+                default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
                 }
     
             case TYPE_BINARY:
@@ -1384,7 +1396,7 @@ public class ValueMeta implements ValueMetaInterface
                 case STORAGE_TYPE_NORMAL:         return (byte[])object;
                 case STORAGE_TYPE_BINARY_STRING:  return (byte[])object;
                 case STORAGE_TYPE_INDEXED:        return (byte[])index[((Integer)object).intValue()];
-                default: throw new KettleValueException("Unknown storage type "+storageType+" specified.");
+                default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
                 }
     
             case TYPE_SERIALIZABLE:
@@ -1393,16 +1405,16 @@ public class ValueMeta implements ValueMetaInterface
                 case STORAGE_TYPE_NORMAL:         return convertStringToBinaryString(object.toString());
                 case STORAGE_TYPE_BINARY_STRING:  return (byte[])object;
                 case STORAGE_TYPE_INDEXED:        return convertStringToBinaryString( index[((Integer)object).intValue()].toString() );
-                default: throw new KettleValueException("Unknown storage type "+storageType+" specified.");
+                default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
                 }
     
             default: 
-                throw new KettleValueException("Unknown type "+type+" specified.");
+                throw new KettleValueException(toString()+" : Unknown type "+type+" specified.");
             }
         }
         catch(ClassCastException e)
         {
-            throw new KettleValueException("There was a data type error: the data type of "+object.getClass().getName()+" object ["+object+"] does not correspond to value meta ["+toStringMeta()+"]");
+            throw new KettleValueException(toString()+" : There was a data type error: the data type of "+object.getClass().getName()+" object ["+object+"] does not correspond to value meta ["+toStringMeta()+"]");
         }
     }
     
@@ -1582,7 +1594,7 @@ public class ValueMeta implements ValueMetaInterface
                     case TYPE_BIGNUMBER  : writeBigNumber(outputStream, (BigDecimal)object); break;
                     case TYPE_BOOLEAN    : writeBoolean(outputStream, (Boolean)object); break;
                     case TYPE_BINARY     : writeBinary(outputStream, (byte[])object); break;
-                    default: throw new KettleFileException("Unable to serialize data type "+getType());
+                    default: throw new KettleFileException(toString()+" : Unable to serialize data type "+getType());
                     }
                     break;
                     
@@ -1599,13 +1611,13 @@ public class ValueMeta implements ValueMetaInterface
                     writeInteger(outputStream, (Integer)object); // just an index 
                     break;
                     
-                default: throw new KettleFileException("Unknown storage type "+getStorageType());
+                default: throw new KettleFileException(toString()+" : Unknown storage type "+getStorageType());
                 }
             }
         }
         catch(IOException e)
         {
-            throw new KettleFileException("Unable to write value data to output stream", e);
+            throw new KettleFileException(toString()+" : Unable to write value data to output stream", e);
         }
         
     }
@@ -1630,7 +1642,7 @@ public class ValueMeta implements ValueMetaInterface
                 case TYPE_BIGNUMBER  : return readBigNumber(inputStream);
                 case TYPE_BOOLEAN    : return readBoolean(inputStream);
                 case TYPE_BINARY     : return readBinary(inputStream);
-                default: throw new KettleFileException("Unable to de-serialize data of type "+getType());
+                default: throw new KettleFileException(toString()+" : Unable to de-serialize data of type "+getType());
                 }
             
             case STORAGE_TYPE_BINARY_STRING:
@@ -1639,7 +1651,7 @@ public class ValueMeta implements ValueMetaInterface
             case STORAGE_TYPE_INDEXED:
                 return readSmallInteger(inputStream); // just an index: 4-bytes should be enough.
                 
-            default: throw new KettleFileException("Unknown storage type "+getStorageType());
+            default: throw new KettleFileException(toString()+" : Unknown storage type "+getStorageType());
             }
         }
         catch(EOFException e)
@@ -1652,7 +1664,7 @@ public class ValueMeta implements ValueMetaInterface
         }
         catch(IOException e)
         {
-            throw new KettleFileException("Unable to read value data from input stream", e);
+            throw new KettleFileException(toString()+" : Unable to read value data from input stream", e);
         }
     }
 
@@ -1843,7 +1855,7 @@ public class ValueMeta implements ValueMetaInterface
 	                        case TYPE_BIGNUMBER: writeBigNumber(outputStream, (BigDecimal)index[i]); break; 
 	                        case TYPE_BOOLEAN:   writeBoolean(outputStream, (Boolean)index[i]); break; 
 	                        case TYPE_BINARY:    writeBinary(outputStream, (byte[])index[i]); break;
-	                        default: throw new KettleFileException("Unable to serialize indexe storage type for data type "+getType());
+	                        default: throw new KettleFileException(toString()+" : Unable to serialize indexe storage type for data type "+getType());
 	                        }
 	                    }
 	                }
@@ -1904,7 +1916,7 @@ public class ValueMeta implements ValueMetaInterface
         }
         catch(IOException e)
         {
-            throw new KettleFileException("Unable to write value metadata to output stream", e);
+            throw new KettleFileException(toString()+" : Unable to write value metadata to output stream", e);
         }
     }
     
@@ -1943,7 +1955,7 @@ public class ValueMeta implements ValueMetaInterface
 	                        case TYPE_BIGNUMBER: index[i] = readBigNumber(inputStream); break; 
 	                        case TYPE_BOOLEAN:   index[i] = readBoolean(inputStream); break; 
 	                        case TYPE_BINARY:    index[i] = readBinary(inputStream); break;
-	                        default: throw new KettleFileException("Unable to de-serialize indexed storage type for data type "+getType());
+	                        default: throw new KettleFileException(toString()+" : Unable to de-serialize indexed storage type for data type "+getType());
 	                        }
 	                    }
 	                }
@@ -2012,7 +2024,7 @@ public class ValueMeta implements ValueMetaInterface
         }
         catch(IOException e)
         {
-            throw new KettleFileException("Unable to read value metadata from input stream", e);
+            throw new KettleFileException(toString()+" : Unable to read value metadata from input stream", e);
         }
     }
 
@@ -2187,7 +2199,7 @@ public class ValueMeta implements ValueMetaInterface
             }
             break;
         default: 
-            throw new KettleValueException("Comparing values can not be done with data type : "+getType());
+            throw new KettleValueException(toString()+" : Comparing values can not be done with data type : "+getType());
         }
         
         if (isSortedDescending())
@@ -2238,7 +2250,7 @@ public class ValueMeta implements ValueMetaInterface
         case TYPE_BOOLEAN   : return meta2.getBoolean(data2);
         case TYPE_BINARY    : return meta2.getBinary(data2);
         default: 
-            throw new KettleValueException("I can't convert the specified value to data type : "+getType());
+            throw new KettleValueException(toString()+" : I can't convert the specified value to data type : "+getType());
         }
     }
 
@@ -2411,7 +2423,7 @@ public class ValueMeta implements ValueMetaInterface
            case TYPE_BOOLEAN      : value.setValue( getBoolean(data).booleanValue() ); break;
            case TYPE_BIGNUMBER    : value.setValue( getBigNumber(data) ); break;
            case TYPE_BINARY       : value.setValue( getBinary(data) ); break;
-           default: throw new KettleValueException("We can't convert data type "+getTypeDesc()+" to an original (V2) Value");
+           default: throw new KettleValueException(toString()+" : We can't convert data type "+getTypeDesc()+" to an original (V2) Value");
            }
        }
        return value;
@@ -2432,7 +2444,7 @@ public class ValueMeta implements ValueMetaInterface
        // So we just verify type and value.type
        //
        if (type!=value.getType()) {
-    	   throw new KettleValueException("The data type of the supplied Value object ("+value.getTypeDesc()+") and the current value metadata ("+getTypeDesc()+") is not the same");
+    	   throw new KettleValueException(toString()+" : The data type of the supplied Value object ("+value.getTypeDesc()+") and the current value metadata ("+getTypeDesc()+") is not the same");
        }
        
        switch(value.getType())
@@ -2444,7 +2456,7 @@ public class ValueMeta implements ValueMetaInterface
        case Value.VALUE_TYPE_BOOLEAN      : return value.getBoolean();
        case Value.VALUE_TYPE_BIGNUMBER    : return value.getBigNumber();
        case Value.VALUE_TYPE_BINARY       : return value.getBytes();
-       default: throw new KettleValueException("We can't convert original data type "+value.getTypeDesc()+" to a primitive data type");
+       default: throw new KettleValueException(toString()+" : We can't convert original data type "+value.getTypeDesc()+" to a primitive data type");
        }
     }
 
