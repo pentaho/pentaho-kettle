@@ -363,7 +363,7 @@
 	  -->
 
 	
-	<target name="copy2webstart" depends="init, kettle" description="Copy resources to webstart">
+	<target name="copy2webstart" depends="init, kettle, kettle-ui" description="Copy resources to webstart">
     	<echo>Copying resources to webstart...</echo>
 
 		<copy todir="${webstart}/libext">
