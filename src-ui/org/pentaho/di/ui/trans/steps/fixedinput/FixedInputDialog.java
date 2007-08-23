@@ -41,6 +41,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
@@ -75,6 +76,7 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
 	private FixedInputMeta inputMeta;
 	
 	private TextVar      wFilename;
+	private Button       wbbFilename; // Browse for a file
 	private TextVar      wLineWidth;
 	private Button       wLineFeedPresent;
 	private TextVar      wBufferSize;
@@ -143,6 +145,19 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
 		
 		// Filename...
 		//
+		// The filename browse button
+		//
+        wbbFilename=new Button(shell, SWT.PUSH| SWT.CENTER);
+        props.setLook(wbbFilename);
+        wbbFilename.setText(Messages.getString("System.Button.Browse"));
+        wbbFilename.setToolTipText(Messages.getString("System.Tooltip.BrowseForFileOrDirAndAdd"));
+        FormData fdbFilename = new FormData();
+        fdbFilename.top  = new FormAttachment(lastControl, margin);
+        fdbFilename.right= new FormAttachment(100, 0);
+        wbbFilename.setLayoutData(fdbFilename);
+
+        // The field itself...
+        //
 		Label wlFilename = new Label(shell, SWT.RIGHT);
 		wlFilename.setText(Messages.getString("FixedInputDialog.Filename.Label")); //$NON-NLS-1$
  		props.setLook(wlFilename);
@@ -157,7 +172,7 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
 		FormData fdFilename = new FormData();
 		fdFilename.top  = new FormAttachment(lastControl, margin);
 		fdFilename.left = new FormAttachment(middle, 0);
-		fdFilename.right= new FormAttachment(100, 0);
+		fdFilename.right= new FormAttachment(wbbFilename, -margin);
 		wFilename.setLayoutData(fdFilename);
 		lastControl = wFilename;
 		
@@ -333,6 +348,35 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
 		lsDef=new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { ok(); } };
 		
 		wStepname.addSelectionListener( lsDef );
+		wFilename.addSelectionListener( lsDef );
+		wLineWidth.addSelectionListener( lsDef );
+		wBufferSize.addSelectionListener( lsDef );
+		
+		// Listen to the browse button next to the file name
+		wbbFilename.addSelectionListener(
+				new SelectionAdapter()
+				{
+					public void widgetSelected(SelectionEvent e) 
+					{
+						FileDialog dialog = new FileDialog(shell, SWT.OPEN);
+						dialog.setFilterExtensions(new String[] { "*.txt", "*" });
+						if (wFilename.getText()!=null)
+						{
+							String fname = transMeta.environmentSubstitute(wFilename.getText());
+							dialog.setFileName( fname );
+						}
+						
+						dialog.setFilterNames(new String[] {Messages.getString("System.FileType.TextFiles"), Messages.getString("System.FileType.AllFiles")});
+						
+						if (dialog.open()!=null)
+						{
+							String str = dialog.getFilterPath()+System.getProperty("file.separator")+dialog.getFileName();
+							wFilename.setText(str);
+						}
+					}
+				}
+			);
+
 		
 		// Detect X or ALT-F4 or something that kills this window...
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );

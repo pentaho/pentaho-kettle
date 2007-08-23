@@ -10,7 +10,7 @@ package org.pentaho.di.core.row;
  *
  */
 public class RowDataUtil {
-	public static int OVER_ALLOCATE_SIZE = 5;
+	public static int OVER_ALLOCATE_SIZE = 10;
 
 	/**
 	 * Allocate a new Object array. However, over allocate by a constant factor to make adding values faster.
