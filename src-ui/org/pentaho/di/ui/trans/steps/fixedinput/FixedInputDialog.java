@@ -65,6 +65,7 @@ import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
+import org.pentaho.di.ui.core.widget.ComboValuesSelectionListener;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
@@ -318,6 +319,24 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
              new ColumnInfo(Messages.getString("FixedInputDialog.GroupColumn.Column"),      ColumnInfo.COLUMN_TYPE_TEXT,    false),
              new ColumnInfo(Messages.getString("FixedInputDialog.TrimColumn.Column"),       ColumnInfo.COLUMN_TYPE_CCOMBO,  ValueMeta.trimTypeDesc),
             };
+        
+        colinf[2].setComboValuesSelectionListener(new ComboValuesSelectionListener() {
+    		
+			public String[] getComboValues(TableItem tableItem, int rowNr, int colNr) {
+				String[] comboValues = new String[] { };
+				int type = ValueMeta.getType( tableItem.getText(colNr-1) );
+				switch(type) {
+				case ValueMetaInterface.TYPE_DATE: comboValues = Const.getDateFormats(); break;
+				case ValueMetaInterface.TYPE_INTEGER: 
+				case ValueMetaInterface.TYPE_BIGNUMBER:
+				case ValueMetaInterface.TYPE_NUMBER: comboValues = Const.getNumberFormats(); break;
+				default: break;
+				}
+				return comboValues;
+			}
+		
+		});
+
         
         wFields=new TableView(transMeta, shell, 
                               SWT.FULL_SELECTION | SWT.MULTI, 

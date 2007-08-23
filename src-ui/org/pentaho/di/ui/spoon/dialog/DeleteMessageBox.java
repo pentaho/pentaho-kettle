@@ -1,6 +1,5 @@
 package org.pentaho.di.ui.spoon.dialog;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -60,7 +59,7 @@ public class DeleteMessageBox extends MessageBox {
     StringBuffer sb = new StringBuffer();
     sb.append(text).append(Const.CR);
     if (stepList != null) {
-      for (Iterator it = stepList.iterator(); it.hasNext(); ) {
+      for (Iterator<String> it = stepList.iterator(); it.hasNext(); ) {
         sb.append("  - ").append(it.next()).append(Const.CR); //$NON-NLS-1$
       }
     }

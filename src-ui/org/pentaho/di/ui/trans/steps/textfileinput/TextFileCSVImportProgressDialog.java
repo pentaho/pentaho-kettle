@@ -129,7 +129,7 @@ public class TextFileCSVImportProgressDialog
         RowMetaInterface outputRowMeta = new RowMeta();
         meta.getFields(outputRowMeta, null, null, null, transMeta);
         
-        // Remove the storage metadata (don't go for lazy conversion during scan)
+        // Remove the storage meta-data (don't go for lazy conversion during scan)
         for (ValueMetaInterface valueMeta : outputRowMeta.getValueMetaList()) {
         	valueMeta.setStorageMetadata(null);
         	valueMeta.setStorageType(ValueMetaInterface.STORAGE_TYPE_NORMAL);
@@ -251,6 +251,11 @@ public class TextFileCSVImportProgressDialog
             if (log.isDebug()) debug = "convert line #" + linenr + " to row";
             RowMetaInterface rowMeta = new RowMeta();
             meta.getFields(rowMeta, "stepname", null, null, transMeta);
+            // Remove the storage meta-data (don't go for lazy conversion during scan)
+            for (ValueMetaInterface valueMeta : rowMeta.getValueMetaList()) {
+            	valueMeta.setStorageMetadata(null);
+            	valueMeta.setStorageType(ValueMetaInterface.STORAGE_TYPE_NORMAL);
+            }
             
             Object[] r = TextFileInput.convertLineToRow(new TextFileLine(line, fileLineNumber, null), strinfo, outputRowMeta, convertRowMeta, meta.getFilePaths(transMeta)[0], rownumber, null);
 

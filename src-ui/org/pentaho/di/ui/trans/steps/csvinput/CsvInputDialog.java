@@ -64,6 +64,7 @@ import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
+import org.pentaho.di.ui.core.widget.ComboValuesSelectionListener;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
@@ -289,6 +290,24 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
              new ColumnInfo(Messages.getString("CsvInputDialog.DecimalColumn.Column"),    ColumnInfo.COLUMN_TYPE_TEXT,    false),
              new ColumnInfo(Messages.getString("CsvInputDialog.GroupColumn.Column"),      ColumnInfo.COLUMN_TYPE_TEXT,    false),
             };
+        
+        colinf[2].setComboValuesSelectionListener(new ComboValuesSelectionListener() {
+    		
+			public String[] getComboValues(TableItem tableItem, int rowNr, int colNr) {
+				String[] comboValues = new String[] { };
+				int type = ValueMeta.getType( tableItem.getText(colNr-1) );
+				switch(type) {
+				case ValueMetaInterface.TYPE_DATE: comboValues = Const.getDateFormats(); break;
+				case ValueMetaInterface.TYPE_INTEGER: 
+				case ValueMetaInterface.TYPE_BIGNUMBER:
+				case ValueMetaInterface.TYPE_NUMBER: comboValues = Const.getNumberFormats(); break;
+				default: break;
+				}
+				return comboValues;
+			}
+		
+		});
+
         
         wFields=new TableView(transMeta, shell, 
                               SWT.FULL_SELECTION | SWT.MULTI, 
@@ -519,6 +538,8 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
                 String message = pd.open();
                 if (message!=null)
                 {
+                	wFields.removeAll();
+                	
                     // OK, what's the result of our search?
                     getData(meta);
                     wFields.removeEmptyRows();
@@ -549,21 +570,5 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
 			{					
 			}
 		}
-	}
-
-	private String readLine(InputStreamReader reader) throws IOException {
-		StringBuffer line = new StringBuffer(250);
-		
-		int c = reader.read();
-		while (c=='\n' || c=='\r') { // left over from last line...
-			c=reader.read();
-		}
-		
-		while (c!='\n' && c!='\r') {
-			line.append((char)c);
-			c=reader.read();
-		}
-		
-		return line.toString();
 	}
 }
