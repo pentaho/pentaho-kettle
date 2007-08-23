@@ -30,7 +30,6 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.steps.textfileinput.Messages;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInput;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputField;
-import org.pentaho.di.trans.steps.textfileinput.TextFileInputMeta;
 import org.pentaho.di.trans.steps.textfileinput.TextFileLine;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 
@@ -45,7 +44,7 @@ public class TextFileCSVImportProgressDialog
 {
     private Shell             shell;
 
-    private TextFileInputMeta meta;
+    private InputFileMetaInterface     meta;
 
     private int               samples;
     
@@ -65,7 +64,7 @@ public class TextFileCSVImportProgressDialog
      * Creates a new dialog that will handle the wait while we're finding out what tables, views etc we can reach in the
      * database.
      */
-    public TextFileCSVImportProgressDialog(Shell shell, TextFileInputMeta meta, TransMeta transMeta, InputStreamReader reader, int samples, int clearFields )
+    public TextFileCSVImportProgressDialog(Shell shell, InputFileMetaInterface meta, TransMeta transMeta, InputStreamReader reader, int samples, int clearFields )
     {
         this.shell       = shell;
         this.meta        = meta;
@@ -129,6 +128,12 @@ public class TextFileCSVImportProgressDialog
         
         RowMetaInterface outputRowMeta = new RowMeta();
         meta.getFields(outputRowMeta, null, null, null, transMeta);
+        
+        // Remove the storage metadata (don't go for lazy conversion during scan)
+        for (ValueMetaInterface valueMeta : outputRowMeta.getValueMetaList()) {
+        	valueMeta.setStorageMetadata(null);
+        	valueMeta.setStorageType(ValueMetaInterface.STORAGE_TYPE_NORMAL);
+        }
 
         RowMetaInterface convertRowMeta = outputRowMeta.clone();
         for (int i=0;i<convertRowMeta.size();i++) convertRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);
@@ -206,7 +211,7 @@ public class TextFileCSVImportProgressDialog
             numberFormatCount[i] = Const.getNumberFormats().length;
         }
 
-        TextFileInputMeta strinfo = (TextFileInputMeta) meta.clone();
+        InputFileMetaInterface strinfo = (InputFileMetaInterface) meta.clone();
         for (int i = 0; i < nrfields; i++)
             strinfo.getInputFields()[i].setType(ValueMetaInterface.TYPE_STRING);
 

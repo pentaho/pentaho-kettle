@@ -20,6 +20,13 @@
 
 package org.pentaho.di.ui.trans.steps.csvinput;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.text.DecimalFormat;
+
+import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.provider.local.LocalFile;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -41,16 +48,26 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
+import org.pentaho.di.trans.steps.csvinput.CsvInputMeta;
+import org.pentaho.di.trans.steps.csvinput.Messages;
+import org.pentaho.di.trans.steps.textfileinput.TextFileInput;
+import org.pentaho.di.trans.steps.textfileinput.TextFileInputField;
+import org.pentaho.di.trans.steps.textfileinput.TextFileInputMeta;
+import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
+import org.pentaho.di.ui.core.dialog.EnterTextDialog;
+import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
-import org.pentaho.di.trans.steps.csvinput.CsvInputMeta;
-import org.pentaho.di.trans.steps.csvinput.Messages;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.trans.steps.textfileinput.TextFileCSVImportProgressDialog;
 
 public class CsvInputDialog extends BaseStepDialog implements StepDialogInterface
 {
@@ -254,8 +271,10 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
 		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
+		wGet=new Button(shell, SWT.PUSH);
+		wGet.setText(Messages.getString("System.Button.GetFields")); //$NON-NLS-1$
 
-		setButtonPositions(new Button[] { wOK, wCancel }, margin, null);
+		setButtonPositions(new Button[] { wOK, wCancel, wGet, }, margin, null);
 
 
 		// Fields
@@ -289,9 +308,11 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
 		// Add listeners
 		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel(); } };
 		lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
-		
+		lsGet      = new Listener() { public void handleEvent(Event e) { getCSV(); } };
+
 		wCancel.addListener(SWT.Selection, lsCancel);
 		wOK.addListener    (SWT.Selection, lsOK    );
+		wGet.addListener   (SWT.Selection, lsGet   );
 		
 		lsDef=new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { ok(); } };
 		
@@ -345,10 +366,14 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
 		return stepname;
 	}
 	
+	public void getData()
+	{
+		getData(inputMeta);
+	}
 	/**
 	 * Copy information from the meta-data input to the dialog fields.
 	 */ 
-	public void getData()
+	public void getData(CsvInputMeta inputMeta)
 	{
 		wStepname.setText(stepname);
 		wFilename.setText(Const.NVL(inputMeta.getFilename(), ""));
@@ -358,17 +383,19 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
 		wLazyConversion.setSelection(inputMeta.isLazyConversionActive());
 		wHeaderPresent.setSelection(inputMeta.isHeaderPresent());
 
-		for (int i=0;i<inputMeta.getFieldNames().length;i++) {
+		for (int i=0;i<inputMeta.getInputFields().length;i++) {
+			TextFileInputField field = inputMeta.getInputFields()[i];
+			
 			TableItem item = new TableItem(wFields.table, SWT.NONE);
 			int colnr=1;
-			item.setText(colnr++, Const.NVL(inputMeta.getFieldNames()[i], ""));
-			item.setText(colnr++, ValueMeta.getTypeDesc(inputMeta.getFieldTypes()[i]));
-			item.setText(colnr++, Const.NVL(inputMeta.getFieldFormat()[i], ""));
-			item.setText(colnr++, inputMeta.getFieldLength()[i]>=0?Integer.toString(inputMeta.getFieldLength()[i]):"") ;
-			item.setText(colnr++, inputMeta.getFieldPrecision()[i]>=0?Integer.toString(inputMeta.getFieldPrecision()[i]):"") ;
-			item.setText(colnr++, Const.NVL(inputMeta.getFieldCurrency()[i], ""));
-			item.setText(colnr++, Const.NVL(inputMeta.getFieldDecimal()[i], ""));
-			item.setText(colnr++, Const.NVL(inputMeta.getFieldGrouping()[i], ""));
+			item.setText(colnr++, Const.NVL(field.getName(), ""));
+			item.setText(colnr++, ValueMeta.getTypeDesc(field.getType()));
+			item.setText(colnr++, Const.NVL(field.getFormat(), ""));
+			item.setText(colnr++, field.getLength()>=0?Integer.toString(field.getLength()):"") ;
+			item.setText(colnr++, field.getPrecision()>=0?Integer.toString(field.getPrecision()):"") ;
+			item.setText(colnr++, Const.NVL(field.getCurrencySymbol(), ""));
+			item.setText(colnr++, Const.NVL(field.getDecimalSymbol(), ""));
+			item.setText(colnr++, Const.NVL(field.getGroupSymbol(), ""));
 		}
 		wFields.removeEmptyRows();
 		wFields.setRowNums();
@@ -384,9 +411,7 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
 		dispose();
 	}
 	
-	private void ok()
-	{
-		stepname = wStepname.getText(); // return value
+	private void getInfo(CsvInputMeta inputMeta) {
 		
 		inputMeta.setFilename(wFilename.getText());
 		inputMeta.setDelimiter(wDelimiter.getText());
@@ -400,21 +425,145 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
 
 		for (int i=0;i<nrNonEmptyFields;i++) {
 			TableItem item = wFields.getNonEmpty(i);
+			inputMeta.getInputFields()[i] = new TextFileInputField();
+			
 			int colnr=1;
-			inputMeta.getFieldNames()[i] = item.getText(colnr++);
-			inputMeta.getFieldTypes()[i] = ValueMeta.getType( item.getText(colnr++) );
-			inputMeta.getFieldFormat()[i] = item.getText(colnr++);
-			inputMeta.getFieldLength()[i] = Const.toInt(item.getText(colnr++), -1);
-			inputMeta.getFieldPrecision()[i] = Const.toInt(item.getText(colnr++), -1);
-			inputMeta.getFieldCurrency()[i] = item.getText(colnr++);
-			inputMeta.getFieldDecimal()[i] = item.getText(colnr++);
-			inputMeta.getFieldGrouping()[i] = item.getText(colnr++);
+			inputMeta.getInputFields()[i].setName( item.getText(colnr++) );
+			inputMeta.getInputFields()[i].setType( ValueMeta.getType( item.getText(colnr++) ) );
+			inputMeta.getInputFields()[i].setFormat( item.getText(colnr++) );
+			inputMeta.getInputFields()[i].setLength( Const.toInt(item.getText(colnr++), -1) );
+			inputMeta.getInputFields()[i].setPrecision( Const.toInt(item.getText(colnr++), -1) );
+			inputMeta.getInputFields()[i].setCurrencySymbol( item.getText(colnr++) );
+			inputMeta.getInputFields()[i].setDecimalSymbol( item.getText(colnr++) );
+			inputMeta.getInputFields()[i].setGroupSymbol( item.getText(colnr++) );
 		}
 		wFields.removeEmptyRows();
 		wFields.setRowNums();
 		wFields.optWidth(true);
 		
 		inputMeta.setChanged();
+	}
+	
+	private void ok()
+	{
+		getInfo(inputMeta);
+		stepname = wStepname.getText();
 		dispose();
+	}
+	
+	// Get the data layout
+	private void getCSV() 
+	{
+		InputStream inputStream = null;
+		try
+		{
+			CsvInputMeta meta = new CsvInputMeta();
+			getInfo(meta);
+			
+			String filename = transMeta.environmentSubstitute(meta.getFilename());
+			
+			FileObject fileObject = KettleVFS.getFileObject(filename);
+			if (!(fileObject instanceof LocalFile)) {
+				// We can only use NIO on local files at the moment, so that's what we limit ourselves to.
+				//
+				throw new KettleException(Messages.getString("CsvInput.Log.OnlyLocalFilesAreSupported"));
+			}
+			
+			wFields.table.removeAll();
+			
+			inputStream = KettleVFS.getInputStream(fileObject);
+	        
+            InputStreamReader reader = new InputStreamReader(inputStream);
+            
+            // Read a line of data to determine the number of rows...
+            //
+            String line = TextFileInput.getLine(log, reader, TextFileInputMeta.FILE_FORMAT_MIXED, new StringBuffer(1000));
+            
+            // Split the string, header or data into parts...
+            //
+            String[] fieldNames = line.split(meta.getDelimiter()); 
+            
+            if (!meta.isHeaderPresent()) {
+            	// Don't use field names from the header...
+            	// Generate field names F1 ... F10
+            	//
+            	DecimalFormat df = new DecimalFormat("000"); // $NON-NLS-1$
+            	for (int i=0;i<fieldNames.length;i++) {
+            		fieldNames[i] = "Field_"+df.format(i); // $NON-NLS-1$
+            	}
+            }
+            
+            // Update the GUI
+            //
+            for (int i=0;i<fieldNames.length;i++) {
+            	TableItem item = new TableItem(wFields.table, SWT.NONE);
+            	item.setText(1, fieldNames[i]);
+            	item.setText(2, ValueMeta.getTypeDesc(ValueMetaInterface.TYPE_STRING));
+            }
+            wFields.removeEmptyRows();
+            wFields.setRowNums();
+            wFields.optWidth(true);
+            
+            // Now we can continue reading the rows of data and we can guess the 
+            // Sample a few lines to determine the correct type of the fields...
+            // 
+            String shellText = org.pentaho.di.trans.steps.textfileinput.Messages.getString("TextFileInputDialog.LinesToSample.DialogTitle");
+            String lineText = org.pentaho.di.trans.steps.textfileinput.Messages.getString("TextFileInputDialog.LinesToSample.DialogMessage");
+            EnterNumberDialog end = new EnterNumberDialog(shell, 100, shellText, lineText);
+            int samples = end.open();
+            if (samples >= 0)
+            {
+                getInfo(meta);
+
+		        TextFileCSVImportProgressDialog pd = new TextFileCSVImportProgressDialog(shell, meta, transMeta, reader, samples, SWT.YES);
+                String message = pd.open();
+                if (message!=null)
+                {
+                    // OK, what's the result of our search?
+                    getData(meta);
+                    wFields.removeEmptyRows();
+                    wFields.setRowNums();
+                    wFields.optWidth(true);
+
+					EnterTextDialog etd = new EnterTextDialog(shell, Messages.getString("TextFileInputDialog.ScanResults.DialogTitle"), Messages.getString("TextFileInputDialog.ScanResults.DialogMessage"), message, true);
+					etd.setReadOnly();
+					etd.open();
+                }
+            }
+		}
+		catch(IOException e)
+		{
+            new ErrorDialog(shell, Messages.getString("TextFileInputDialog.IOError.DialogTitle"), Messages.getString("TextFileInputDialog.IOError.DialogMessage"), e);
+		}
+        catch(KettleException e)
+        {
+            new ErrorDialog(shell, Messages.getString("System.Dialog.Error.Title"), Messages.getString("TextFileInputDialog.ErrorGettingFileDesc.DialogMessage"), e);
+        }
+		finally
+		{
+			try
+			{
+				inputStream.close();
+			}
+			catch(Exception e)
+			{					
+			}
+		}
+	}
+
+	private String readLine(InputStreamReader reader) throws IOException {
+		StringBuffer line = new StringBuffer(250);
+		
+		int c = reader.read();
+		while (c=='\n' || c=='\r') { // left over from last line...
+			c=reader.read();
+		}
+		
+		while (c!='\n' && c!='\r') {
+			line.append((char)c);
+			c=reader.read();
+		}
+		
+		return line.toString();
 	}
 }

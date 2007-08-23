@@ -45,6 +45,9 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.steps.textfileinput.TextFileInputField;
+import org.pentaho.di.trans.steps.textfileinput.TextFileInputMeta;
+import org.pentaho.di.ui.trans.steps.textfileinput.InputFileMetaInterface;
 import org.w3c.dom.Node;
 
 
@@ -57,7 +60,7 @@ import org.w3c.dom.Node;
 
 @Step(name="CsvInput",image="ui/images/TFI.png",tooltip="BaseStep.TypeTooltipDesc.CsvInput",description="BaseStep.TypeLongDesc.CsvInput",
 		category=StepCategory.INPUT)
-public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface
+public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, InputFileMetaInterface
 {
 	private String filename;
 	
@@ -70,6 +73,9 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface
 	
 	private boolean lazyConversionActive;
 	
+	private TextFileInputField[] inputFields;
+	
+	/*
 	// TODO: wrap these field* members in a new class...
 	//
 	private String[] fieldNames;
@@ -80,7 +86,7 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface
 	private String   fieldDecimal[];
 	private String   fieldGrouping[];
 	private String   fieldCurrency[];
-	
+	*/
 
 	public CsvInputMeta()
 	{
@@ -126,16 +132,18 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface
 
 			for (int i = 0; i < nrfields; i++)
 			{
+				inputFields[i] = new TextFileInputField();
+				
 				Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i);
 
-				fieldNames[i] = XMLHandler.getTagValue(fnode, "name");
-				fieldTypes[i] = ValueMeta.getType(XMLHandler.getTagValue(fnode, "type"));
-				fieldFormat[i] = XMLHandler.getTagValue(fnode, "format");
-				fieldCurrency[i] = XMLHandler.getTagValue(fnode, "currency");
-				fieldDecimal[i] = XMLHandler.getTagValue(fnode, "decimal");
-				fieldGrouping[i] = XMLHandler.getTagValue(fnode, "group");
-				fieldLength[i] = Const.toInt(XMLHandler.getTagValue(fnode, "length"), -1);
-				fieldPrecision[i] = Const.toInt(XMLHandler.getTagValue(fnode, "precision"), -1);
+				inputFields[i].setName( XMLHandler.getTagValue(fnode, "name") );
+				inputFields[i].setType(  ValueMeta.getType(XMLHandler.getTagValue(fnode, "type")) );
+				inputFields[i].setFormat( XMLHandler.getTagValue(fnode, "format") );
+				inputFields[i].setCurrencySymbol( XMLHandler.getTagValue(fnode, "currency") );
+				inputFields[i].setDecimalSymbol( XMLHandler.getTagValue(fnode, "decimal") );
+				inputFields[i].setGroupSymbol( XMLHandler.getTagValue(fnode, "group") );
+				inputFields[i].setLength( Const.toInt(XMLHandler.getTagValue(fnode, "length"), -1) );
+				inputFields[i].setPrecision( Const.toInt(XMLHandler.getTagValue(fnode, "precision"), -1) );
 			}
 		}
 		catch (Exception e)
@@ -145,14 +153,7 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface
 	}
 	
 	public void allocate(int nrFields) {
-		fieldNames = new String[nrFields];
-		fieldTypes = new int[nrFields];
-		fieldLength = new int[nrFields];
-		fieldPrecision = new int[nrFields];
-		fieldFormat = new String[nrFields];
-		fieldDecimal = new String[nrFields];
-		fieldGrouping = new String[nrFields];
-		fieldCurrency = new String[nrFields];
+		inputFields = new TextFileInputField[nrFields];
 	}
 
 	public String getXML()
@@ -167,17 +168,19 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface
 		retval.append("    " + XMLHandler.addTagValue("lazy_conversion", lazyConversionActive));
 
 		retval.append("    <fields>" + Const.CR);
-		for (int i = 0; i < fieldNames.length; i++)
+		for (int i = 0; i < inputFields.length; i++)
 		{
+			TextFileInputField field = inputFields[i];
+			
 			retval.append("      <field>" + Const.CR);
-			retval.append("        " + XMLHandler.addTagValue("name", fieldNames[i]));
-			retval.append("        " + XMLHandler.addTagValue("type", ValueMeta.getTypeDesc(fieldTypes[i])));
-			retval.append("        " + XMLHandler.addTagValue("format", fieldFormat[i]));
-			retval.append("        " + XMLHandler.addTagValue("currency", fieldCurrency[i]));
-			retval.append("        " + XMLHandler.addTagValue("decimal", fieldDecimal[i]));
-			retval.append("        " + XMLHandler.addTagValue("group", fieldGrouping[i]));
-			retval.append("        " + XMLHandler.addTagValue("length", fieldLength[i]));
-			retval.append("        " + XMLHandler.addTagValue("precision", fieldPrecision[i]));
+			retval.append("        " + XMLHandler.addTagValue("name", field.getName()));
+			retval.append("        " + XMLHandler.addTagValue("type", ValueMeta.getTypeDesc(field.getType())));
+			retval.append("        " + XMLHandler.addTagValue("format", field.getFormat()));
+			retval.append("        " + XMLHandler.addTagValue("currency", field.getCurrencySymbol()));
+			retval.append("        " + XMLHandler.addTagValue("decimal", field.getDecimalSymbol()));
+			retval.append("        " + XMLHandler.addTagValue("group", field.getGroupSymbol()));
+			retval.append("        " + XMLHandler.addTagValue("length", field.getLength()));
+			retval.append("        " + XMLHandler.addTagValue("precision", field.getPrecision()));
 			retval.append("        </field>" + Const.CR);
 		}
 		retval.append("      </fields>" + Const.CR);
@@ -203,14 +206,16 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface
 
 			for (int i = 0; i < nrfields; i++)
 			{
-				fieldNames[i] = rep.getStepAttributeString(id_step, i, "field_name");
-				fieldTypes[i] = ValueMeta.getType(rep.getStepAttributeString(id_step, i, "field_type"));
-				fieldFormat[i] = rep.getStepAttributeString(id_step, i, "field_format");
-				fieldCurrency[i] = rep.getStepAttributeString(id_step, i, "field_currency");
-				fieldDecimal[i] = rep.getStepAttributeString(id_step, i, "field_decimal");
-				fieldGrouping[i] = rep.getStepAttributeString(id_step, i, "field_group");
-				fieldLength[i] = (int) rep.getStepAttributeInteger(id_step, i, "field_length");
-				fieldPrecision[i] = (int) rep.getStepAttributeInteger(id_step, i, "field_precision");
+				inputFields[i] = new TextFileInputField();
+				
+				inputFields[i].setName( rep.getStepAttributeString(id_step, i, "field_name") );
+				inputFields[i].setType( ValueMeta.getType(rep.getStepAttributeString(id_step, i, "field_type")) );
+				inputFields[i].setFormat( rep.getStepAttributeString(id_step, i, "field_format") );
+				inputFields[i].setCurrencySymbol( rep.getStepAttributeString(id_step, i, "field_currency") );
+				inputFields[i].setDecimalSymbol( rep.getStepAttributeString(id_step, i, "field_decimal") );
+				inputFields[i].setGroupSymbol( rep.getStepAttributeString(id_step, i, "field_group") );
+				inputFields[i].setLength( (int) rep.getStepAttributeInteger(id_step, i, "field_length") );
+				inputFields[i].setPrecision( (int) rep.getStepAttributeInteger(id_step, i, "field_precision") );
 			}
 		}
 		catch (Exception e)
@@ -230,16 +235,18 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "header", headerPresent);
 			rep.saveStepAttribute(id_transformation, id_step, "lazy_conversion", lazyConversionActive);
 
-			for (int i = 0; i < fieldNames.length; i++)
+			for (int i = 0; i < inputFields.length; i++)
 			{
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_name", fieldNames[i]);
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_type", ValueMeta.getTypeDesc(fieldTypes[i]));
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_format", fieldFormat[i]);
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_currency", fieldCurrency[i]);
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_decimal", fieldDecimal[i]);
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_group", fieldGrouping[i]);
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_length", fieldLength[i]);
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_precision", fieldPrecision[i]);
+				TextFileInputField field = inputFields[i];
+				
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_name", field.getName());
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_type", ValueMeta.getTypeDesc(field.getType()));
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_format", field.getFormat());
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_currency", field.getCurrencySymbol());
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_decimal", field.getDecimalSymbol());
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_group", field.getGroupSymbol());
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_length", field.getLength());
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_precision", field.getPrecision());
 			}
 		}
 		catch (Exception e)
@@ -250,15 +257,17 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface
 	
 	public void getFields(RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException
 	{
-		for (int i=0;i<fieldNames.length;i++) {
-			ValueMetaInterface valueMeta = new ValueMeta(fieldNames[i], fieldTypes[i]);
-			valueMeta.setConversionMask(fieldFormat[i]);
-			valueMeta.setLength(fieldLength[i]);
-			valueMeta.setPrecision(fieldPrecision[i]);
-			valueMeta.setConversionMask(fieldFormat[i]);
-			valueMeta.setDecimalSymbol(fieldDecimal[i]);
-			valueMeta.setGroupingSymbol(fieldGrouping[i]);
-			valueMeta.setCurrencySymbol(fieldCurrency[i]);
+		for (int i=0;i<inputFields.length;i++) {
+			TextFileInputField field = inputFields[i];
+			
+			ValueMetaInterface valueMeta = new ValueMeta(field.getName(), field.getType());
+			valueMeta.setConversionMask(field.getFormat());
+			valueMeta.setLength(field.getLength());
+			valueMeta.setPrecision(field.getPrecision());
+			valueMeta.setConversionMask(field.getFormat());
+			valueMeta.setDecimalSymbol(field.getDecimalSymbol());
+			valueMeta.setGroupingSymbol(field.getGroupSymbol());
+			valueMeta.setCurrencySymbol(field.getCurrencySymbol());
 			if (lazyConversionActive) valueMeta.setStorageType(ValueMetaInterface.STORAGE_TYPE_BINARY_STRING);
 			
 			// In case we want to convert Strings...
@@ -310,20 +319,6 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface
 	public StepDataInterface getStepData()
 	{
 		return new CsvInputData();
-	}
-
-	/**
-	 * @return the fieldNames
-	 */
-	public String[] getFieldNames() {
-		return fieldNames;
-	}
-
-	/**
-	 * @param fieldNames the fieldNames to set
-	 */
-	public void setFieldNames(String[] fieldNames) {
-		this.fieldNames = fieldNames;
 	}
 
 	/**
@@ -383,104 +378,6 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface
 	}
 
 	/**
-	 * @return the fieldTypes
-	 */
-	public int[] getFieldTypes() {
-		return fieldTypes;
-	}
-
-	/**
-	 * @return the fieldFormat
-	 */
-	public String[] getFieldFormat() {
-		return fieldFormat;
-	}
-
-	/**
-	 * @param fieldTypes the fieldTypes to set
-	 */
-	public void setFieldTypes(int[] fieldTypes) {
-		this.fieldTypes = fieldTypes;
-	}
-
-	/**
-	 * @param fieldFormat the fieldFormat to set
-	 */
-	public void setFieldFormat(String[] fieldFormat) {
-		this.fieldFormat = fieldFormat;
-	}
-
-	/**
-	 * @return the fieldDecimal
-	 */
-	public String[] getFieldDecimal() {
-		return fieldDecimal;
-	}
-
-	/**
-	 * @return the fieldGrouping
-	 */
-	public String[] getFieldGrouping() {
-		return fieldGrouping;
-	}
-
-	/**
-	 * @return the fieldCurrency
-	 */
-	public String[] getFieldCurrency() {
-		return fieldCurrency;
-	}
-
-	/**
-	 * @param fieldDecimal the fieldDecimal to set
-	 */
-	public void setFieldDecimal(String[] fieldDecimal) {
-		this.fieldDecimal = fieldDecimal;
-	}
-
-	/**
-	 * @param fieldGrouping the fieldGrouping to set
-	 */
-	public void setFieldGrouping(String[] fieldGrouping) {
-		this.fieldGrouping = fieldGrouping;
-	}
-
-	/**
-	 * @param fieldCurrency the fieldCurrency to set
-	 */
-	public void setFieldCurrency(String[] fieldCurrency) {
-		this.fieldCurrency = fieldCurrency;
-	}
-
-	/**
-	 * @return the fieldLength
-	 */
-	public int[] getFieldLength() {
-		return fieldLength;
-	}
-
-	/**
-	 * @return the fieldPrecision
-	 */
-	public int[] getFieldPrecision() {
-		return fieldPrecision;
-	}
-
-	/**
-	 * @param fieldLength the fieldLength to set
-	 */
-	public void setFieldLength(int[] fieldLength) {
-		this.fieldLength = fieldLength;
-	}
-
-	/**
-	 * @param fieldPrecision the fieldPrecision to set
-	 */
-	public void setFieldPrecision(int[] fieldPrecision) {
-		this.fieldPrecision = fieldPrecision;
-	}
-
-	/**
 	 * @return the headerPresent
 	 */
 	public boolean isHeaderPresent() {
@@ -509,18 +406,89 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface
 	}
 
 
-  @Override
-  public List<ResourceReference> getResourceDependencies(TransMeta transMeta, StepMeta stepInfo) {
-     List<ResourceReference> references = new ArrayList<ResourceReference>(5);
-     
-     ResourceReference reference = new ResourceReference(stepInfo);
-     references.add(reference);
-     if (!Const.isEmpty(filename)) {
-       // Add the filename to the references, including a reference to this step meta data.
-       //
-       reference.getEntries().add( new ResourceEntry(transMeta.environmentSubstitute(filename), ResourceType.FILE));
-     }
-     return references;
-  }
-  
+    @Override
+	public List<ResourceReference> getResourceDependencies(TransMeta transMeta, StepMeta stepInfo) {
+		List<ResourceReference> references = new ArrayList<ResourceReference>(5);
+
+		ResourceReference reference = new ResourceReference(stepInfo);
+		references.add(reference);
+		if (!Const.isEmpty(filename)) {
+			// Add the filename to the references, including a reference to this
+			// step meta data.
+			//
+			reference.getEntries().add(new ResourceEntry(transMeta.environmentSubstitute(filename), ResourceType.FILE));
+		}
+		return references;
+	}
+
+	/**
+	 * @return the inputFields
+	 */
+	public TextFileInputField[] getInputFields() {
+		return inputFields;
+	}
+
+	/**
+	 * @param inputFields
+	 *            the inputFields to set
+	 */
+	public void setInputFields(TextFileInputField[] inputFields) {
+		this.inputFields = inputFields;
+	}
+
+	public int getFileFormatTypeNr() {
+		return TextFileInputMeta.FILE_FORMAT_MIXED; // TODO: check this
+	}
+
+	public String[] getFilePaths(VariableSpace space) {
+		return new String[] { space.environmentSubstitute(filename), };
+	}
+
+	public int getNrHeaderLines() {
+		return 1;
+	}
+
+	public boolean hasHeader() {
+		return isHeaderPresent();
+	}
+
+	public String getErrorCountField() {
+		return null;
+	}
+
+	public String getErrorFieldsField() {
+		return null;
+	}
+
+	public String getErrorTextField() {
+		return null;
+	}
+
+	public String getEscapeCharacter() {
+		return null;
+	}
+
+	public String getFileType() {
+		return "CSV";
+	}
+
+	public String getSeparator() {
+		return delimiter;
+	}
+
+	public boolean includeFilename() {
+		return false;
+	}
+
+	public boolean includeRowNumber() {
+		return false;
+	}
+
+	public boolean isErrorIgnored() {
+		return false;
+	}
+
+	public boolean isErrorLineSkipped() {
+		return false;
+	}  
 }

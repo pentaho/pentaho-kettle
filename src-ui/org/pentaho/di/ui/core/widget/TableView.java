@@ -2007,7 +2007,10 @@ public class TableView extends Composite
 		combo.addModifyListener(lsModCombo);
 		combo.addFocusListener(lsFocusCombo);
 		String opt[] = colinfo.getComboValues();
-
+		if (colinfo.getComboValuesSelectionListener()!=null) {
+			opt = colinfo.getComboValuesSelectionListener().getComboValues(row, rownr, colnr);
+		}
+		
 		for (int i=0;i<opt.length;i++) combo.add(opt[i]);
 		combo.setText(row.getText(colnr));
 		if (lsMod!=null) combo.addModifyListener(lsMod);	

@@ -74,6 +74,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.gui.TextFileInputFieldInterface;
 import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransPreviewFactory;
@@ -92,6 +93,7 @@ import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
+import org.pentaho.di.ui.core.widget.ComboValuesSelectionListener;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
@@ -1894,6 +1896,22 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
             };
         
         colinf[12].setToolTip(Messages.getString("TextFileInputDialog.RepeatColumn.Tooltip"));
+        colinf[2].setComboValuesSelectionListener(new ComboValuesSelectionListener() {
+		
+			public String[] getComboValues(TableItem tableItem, int rowNr, int colNr) {
+				String[] comboValues = new String[] { };
+				int type = ValueMeta.getType( tableItem.getText(colNr-1) );
+				switch(type) {
+				case ValueMetaInterface.TYPE_DATE: comboValues = Const.getDateFormats(); break;
+				case ValueMetaInterface.TYPE_INTEGER: 
+				case ValueMetaInterface.TYPE_BIGNUMBER:
+				case ValueMetaInterface.TYPE_NUMBER: comboValues = Const.getNumberFormats(); break;
+				default: break;
+				}
+				return comboValues;
+			}
+		
+		});
         
         wFields=new TableView(transMeta, wFieldsComp, 
                               SWT.FULL_SELECTION | SWT.MULTI, 

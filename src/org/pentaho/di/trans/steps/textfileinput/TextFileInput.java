@@ -50,6 +50,7 @@ import org.pentaho.di.trans.step.errorhandling.CompositeFileErrorHandler;
 import org.pentaho.di.trans.step.errorhandling.FileErrorHandler;
 import org.pentaho.di.trans.step.errorhandling.FileErrorHandlerContentLineNumber;
 import org.pentaho.di.trans.step.errorhandling.FileErrorHandlerMissingFiles;
+import org.pentaho.di.ui.trans.steps.textfileinput.InputFileMetaInterface;
 
 
 /**
@@ -379,7 +380,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 	}
     
 	
-	public static final String[] convertLineToStrings(String line, TextFileInputMeta inf) throws KettleException
+	public static final String[] convertLineToStrings(String line, InputFileMetaInterface inf) throws KettleException
 	{
 		String[] strings = new String[inf.getInputFields().length];
         int fieldnr;
@@ -595,7 +596,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 		return strings;
 	}
     
-    public static final Object[] convertLineToRow(TextFileLine textFileLine, TextFileInputMeta info, RowMetaInterface outputRowMeta, RowMetaInterface convertRowMeta, String fname, long rowNr, FileErrorHandler errorHandler) throws KettleException
+    public static final Object[] convertLineToRow(TextFileLine textFileLine, InputFileMetaInterface info, RowMetaInterface outputRowMeta, RowMetaInterface convertRowMeta, String fname, long rowNr, FileErrorHandler errorHandler) throws KettleException
     {
         if (textFileLine == null || textFileLine.line == null || textFileLine.line.length() == 0) return null;
         Object[] r = RowDataUtil.allocateRowData(outputRowMeta.size()); // over-allocate a bit in the row producing steps...

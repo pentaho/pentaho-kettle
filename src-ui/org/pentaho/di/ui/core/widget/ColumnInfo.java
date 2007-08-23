@@ -55,6 +55,8 @@ public class ColumnInfo
     private boolean usingVariables;
     private boolean passwordField;
     
+    private ComboValuesSelectionListener comboValuesSelectionListener;
+    
     /**
      * Creates a column info class for use with the TableView class.
      * 
@@ -299,4 +301,18 @@ public class ColumnInfo
     {
         this.passwordField = password;
     }
+
+	/**
+	 * @return the comboValuesSelectionListener
+	 */
+	public ComboValuesSelectionListener getComboValuesSelectionListener() {
+		return comboValuesSelectionListener;
+	}
+
+	/**
+	 * @param comboValuesSelectionListener the comboValuesSelectionListener to set
+	 */
+	public void setComboValuesSelectionListener(ComboValuesSelectionListener comboValuesSelectionListener) {
+		this.comboValuesSelectionListener = comboValuesSelectionListener;
+	}
 }
