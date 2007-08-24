@@ -1,8 +1,7 @@
-package org.pentaho.di.ui.trans.steps.textfileinput;
+package org.pentaho.di.trans.steps.textfileinput;
 
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.di.trans.steps.textfileinput.TextFileInputField;
 
 public interface InputFileMetaInterface extends StepMetaInterface {
 

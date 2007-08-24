@@ -52,7 +52,6 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.di.ui.trans.steps.textfileinput.InputFileMetaInterface;
 import org.w3c.dom.Node;
 
 public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface, InputFileMetaInterface
