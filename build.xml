@@ -6,6 +6,10 @@
 
 	  <tstamp prefix="start"/>
 	
+        <tstamp>
+           <format property="compile.timestamp" pattern="yyyy-MM-dd HH.mm.ss" />
+        </tstamp>
+        
 	  <!-- set global properties for this build -->
 		<property file="build.properties"/>
 		  
@@ -203,7 +207,13 @@
 	    	 basedir="${classes}" 
 	    	 includes="**/* ../build_version.txt"
 	  	     excludes="**/Thumbs.db **/kettle.jar"
-	  		/>
+	  		>
+                <manifest>
+                    <attribute name="Implementation-Title" value="Kettle 3.0 Engine" />
+                    <attribute name="Implementation-Version" value="3.0 (${compile.timestamp})" />
+                    <attribute name="Implementation-Vendor" value="Pentaho" />
+                </manifest>
+        </jar>
 	  	
 
 	  </target>	
@@ -213,9 +223,13 @@
 	  	<jar jarfile="${lib}/kettle-ui-swt-3.0.jar" 
 	    	 basedir="${classes-ui}" 
 	    	 includes="**/* ../build_version.txt"
-	  	     excludes="**/Thumbs.db **/kettle.jar"
-	  		/>
-	  	
+	  	     excludes="**/Thumbs.db **/kettle.jar">
+                <manifest>
+                    <attribute name="Implementation-Title" value="Kettle 3.0 UI" />
+                    <attribute name="Implementation-Version" value="3.0 (${compile.timestamp})" />
+                    <attribute name="Implementation-Vendor" value="Pentaho" />
+                </manifest>
+	  	</jar>
 
 	  </target>	
 
