@@ -1,0 +1,40 @@
+Pentaho Data Integration Release Notes for: 2.5.1
+
+This is a bug fix release to the Pentaho Data Integration 2.5.0
+
+** Known issues 
+    * See http://jira.pentaho.org/browse/PDI?report=com.atlassian.jira.plugin.system.project:openissues-panel
+    
+The following bug fixes were backported from the 3.0.0 code line:
+
+- Execute Database Procedure (worker), NPE fix for bug #5604 - Matt - 2007-MAY-14
+- Text File Input (worker), file handling fix for bug #5493 - Matt - 2007-MAY-14
+- Database handling of SQL Server (.., instance name), .. fix for bug #5618 - Matt - 2007-MAY-14
+- VFS bug fix in setting internal variables (relative path handling) - Matt - 2007-MAY-14
+- Correctly load statistics columns from xml for Execute SQL step (fix for bug #5434) - Sven B - 2007-May-16
+- Fix for #5643 "Update date Ignore lookup failure" - Sven B - 2007-May-21
+- patch for #5619 (from Arie Nagel) applied in deletefile entry - Sven B - 2007-May-21
+- patch for #5693 in textfileinput, lenient date parsing now works correctly - Sven B - 2007-May-25
+- patch for missing variables in hostname/password of database connections, they wouldn't show up as used
+  variables when you executed the transformation - Sven B - 2007-Jun-8
+- fix for bug #5708 (duplicate to 5758 and 5769) clustered mode in job - Jens - 2007-Jun-15
+- Fix for bug #5771: throw an exception in getRowFrom() when called for unknown hop - Sven B - 2007-Jun-15
+- Fix for WaitForFile bug: the old version would check the file once and afterwards would return
+  the cached result - Sven B - 2007-Jun-20
+- patch for missing variables in servername of database connections, they wouldn't show up as used
+  variables when you executed the transformation - Jay G - 2007-Jun-18
+- patch to update javascript highlighting to include default keyword - Jay G - 2007-Jun-18
+- Fix for #5795 - Appending to an existing file is not working - Samatar S - 2007-Jul-2
+- Fix for #5891 - Make JNDI variable sensitive.
+- Fix for #5930 - patch for batch update bug by Jason Mosser - Sven B - 24-jun-2007
+- Fix for fileexists - backport of VFS functioniality in fileexists job entry - Sven B - 8-Aug-2007
+- Fix for performance problem when using text files with very large number of fields (>1000): TableView fix with index caching. Bug #6008, Matt C. 10-Aug-2007
+- Fixes for VFS and Access Output, backported from version 3.0
+- PDI-48: Excel output doesn't release file handle - Sven B - 15-Aug-2007
+- PDI-53: Subjob failing does not automatically fail job (e.g. on missing start in subjob) - Sven B - 16-Aug-2007
+- Fixup for #5797 : make text input release its file handle on failure - Sven B - 16-Aug-2007
+- PDI-50: Str2num in Javascript steps fails on leading spaces. when using str2num with 1 argument the argument is left trimmed - Sven B - 18-Aug-2007    
+- Fix for PDI-64 : When you send an email with a google account (SSL), PDI raise an exception  
+- CRQ 5966: Add ability to write to log specifying log level, message and value.
+- CRQ 6026: Regex evaluation.  Create a step which use Regular expression to evaluate a field.
+    
