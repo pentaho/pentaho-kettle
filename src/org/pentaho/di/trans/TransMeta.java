@@ -27,6 +27,7 @@ import java.util.Map;
 
 import org.apache.commons.vfs.FileName;
 import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.FileSystemException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
@@ -69,6 +70,7 @@ import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
+import org.pentaho.di.job.Messages;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
@@ -2585,7 +2587,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
             }
         }
         retval.append("  ").append(XMLHandler.closeTag(XML_TAG_STEP_ERROR_HANDLING)).append(Const.CR);
-        
+
         // The slave-step-copy/partition distribution.  Only used for slave transformations in a clustering environment.
         retval.append("   ").append(slaveStepCopyPartitionDistribution.getXML());
 
@@ -5748,37 +5750,43 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
     }
     
 	public String exportResources(VariableSpace space,  Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface) throws KettleException {
-		String filename = resourceNamingInterface.nameResource(getName(), getDirectory().getPath(), "ktr");
-		ResourceDefinition definition = definitions.get(filename);
-		if (definition==null) {
-			// If we do this once, it will be plenty :-)
-			//
-			TransMeta transMeta = (TransMeta) this.clone();
-			// transMeta.copyVariablesFrom(space);
-			
-			// Add used resources, modify transMeta accordingly
-			// Go through the list of steps, etc.
-			// These critters change the steps in the cloned TransMeta 
-			// At the end we make a new XML version of it in "exported" format...
-			
-			// loop over steps, databases will be exported to XML anyway. 
-			//
-			for (StepMeta stepMeta : transMeta.getSteps()) {
-				stepMeta.exportResources(space, definitions, resourceNamingInterface);
-			}
-
-			// Change the filename, calling this sets internal variables inside of the transformation.
-			//
-			transMeta.setFilename(filename);
-
-			// At the end, add ourselves to the map...
-			//
-			String transMetaContent = transMeta.getXML();
-			
-			definition = new ResourceDefinition(filename, transMetaContent);
-			definitions.put(filename, definition);
-		}
-		
+	  try {
+      FileObject fileObject = KettleVFS.getFileObject(getFilename());
+      String filename = resourceNamingInterface.nameResource(fileObject.getName().getBaseName(), fileObject.getParent().getName().getPath(), "kjb");
+  		ResourceDefinition definition = definitions.get(filename);
+  		if (definition==null) {
+  			// If we do this once, it will be plenty :-)
+  			//
+  			TransMeta transMeta = (TransMeta) this.clone();
+  			// transMeta.copyVariablesFrom(space);
+  			
+  			// Add used resources, modify transMeta accordingly
+  			// Go through the list of steps, etc.
+  			// These critters change the steps in the cloned TransMeta 
+  			// At the end we make a new XML version of it in "exported" format...
+  			
+  			// loop over steps, databases will be exported to XML anyway. 
+  			//
+  			for (StepMeta stepMeta : transMeta.getSteps()) {
+  				stepMeta.exportResources(space, definitions, resourceNamingInterface);
+  			}
+  
+  			// Change the filename, calling this sets internal variables inside of the transformation.
+  			//
+  			transMeta.setFilename(filename);
+  
+  			// At the end, add ourselves to the map...
+  			//
+  			String transMetaContent = transMeta.getXML();
+  			
+  			definition = new ResourceDefinition(filename, transMetaContent);
+  			definitions.put(fileObject.getName().getPath(), definition);
+  		}
+    } catch (FileSystemException e) {
+      throw new KettleException(Messages.getString("TransMeta.Exception.ErrorOpeningOrValidatingTheXMLFile", getFilename()), e);
+    } catch (IOException e) {
+      throw new KettleException(Messages.getString("TransMeta.Exception.ErrorOpeningOrValidatingTheXMLFile", getFilename()), e);
+    }
 		return filename;
 	}
 

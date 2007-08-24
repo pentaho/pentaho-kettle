@@ -23,6 +23,7 @@ import java.util.Map;
 
 import org.apache.commons.vfs.FileName;
 import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.FileSystemException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -2509,7 +2510,7 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
 		}
 		return defaultValue;
 	}
-
+	
 	public void initializeVariablesFrom(VariableSpace parent) 
 	{
 		variables.initializeVariablesFrom(parent);	
@@ -2585,31 +2586,38 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
   
 	public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface namingInterface) throws KettleException {
 		
-		String filename = namingInterface.nameResource(getName(), this.filename, "kjb");
-		ResourceDefinition definition = definitions.get(filename);
-		if (definition==null) {
-			// If we do this once, it will be plenty :-)
-			//
-			JobMeta jobMeta = (JobMeta) this.clone();
-			
-			// Add used resources, modify transMeta accordingly
-			// Go through the list of steps, etc.
-			// These critters change the steps in the cloned TransMeta 
-			// At the end we make a new XML version of it in "exported" format...
-			
-			// loop over steps, databases will be exported to XML anyway. 
-			//
-			for (JobEntryCopy jobEntry: jobMeta.jobcopies) {
-				jobEntry.getEntry().exportResources(jobMeta, definitions, namingInterface);
-			}
-			
-			// At the end, add ourselves to the map...
-			//
-			String transMetaContent = jobMeta.getXML();
-			
-			definition = new ResourceDefinition(filename, transMetaContent);
-			definitions.put(filename, definition);
-		}
+    try {
+      FileObject fileObject = KettleVFS.getFileObject(getFilename());
+      String name = namingInterface.nameResource(fileObject.getName().getBaseName(), fileObject.getParent().getName().getPath(), "kjb");
+      ResourceDefinition definition = definitions.get(name);
+      if (definition==null) {
+      	// If we do this once, it will be plenty :-)
+      	//
+      	JobMeta jobMeta = (JobMeta) this.clone();
+      	
+      	// Add used resources, modify transMeta accordingly
+      	// Go through the list of steps, etc.
+      	// These critters change the steps in the cloned TransMeta 
+      	// At the end we make a new XML version of it in "exported" format...
+      	
+      	// loop over steps, databases will be exported to XML anyway. 
+      	//
+      	for (JobEntryCopy jobEntry: jobMeta.jobcopies) {
+      		jobEntry.getEntry().exportResources(jobMeta, definitions, namingInterface);
+      	}
+      	
+      	// At the end, add ourselves to the map...
+      	//
+      	String transMetaContent = jobMeta.getXML();
+      	
+      	definition = new ResourceDefinition(name, transMetaContent);
+      	definitions.put(fileObject.getName().getPath(), definition);
+      }
+    } catch (FileSystemException e) {
+      throw new KettleException(Messages.getString("JobMeta.Exception.AnErrorOccuredReadingJob", getFilename()), e);
+    } catch (IOException e) {
+      throw new KettleException(Messages.getString("JobMeta.Exception.AnErrorOccuredReadingJob", getFilename()), e);
+    }
 		
 		return filename;
 	}
