@@ -307,7 +307,7 @@ public class AccessInput extends BaseStep implements StepInterface
 		}
 		catch(Exception e)
 		{
-			logError("Unexpected error : "+e.toString());
+			logError("Unexpected error : ");
 			logError(Const.getStackTracker(e));
 			setErrors(1);
 			stopAll();

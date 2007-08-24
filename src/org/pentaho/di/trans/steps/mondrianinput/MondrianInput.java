@@ -13,10 +13,14 @@
  **                                                                   **
  **********************************************************************/
  
-package org.pentaho.di.trans.steps.dummytrans;
+
+package org.pentaho.di.trans.steps.mondrianinput;
+
+import java.util.List;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -26,51 +30,72 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
- * Do nothing.  Pass all input data to the next steps.
+ * Reads information from a database table by using freehand SQL
  * 
  * @author Matt
- * @since 2-jun-2003
+ * @since 8-apr-2003
  */
-public class DummyTrans extends BaseStep implements StepInterface
+public class MondrianInput extends BaseStep implements StepInterface
 {
-	private DummyTransMeta meta;
-	private DummyTransData data;
+	private MondrianInputMeta meta;
+	private MondrianData data;
 	
-	public DummyTrans(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans)
+	public MondrianInput(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans)
 	{
 		super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
 	}
 	
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{
-		meta=(DummyTransMeta)smi;
-		data=(DummyTransData)sdi;
-
-		Object[] r=getRow();    // get row, set busy!
-		if (r==null)  // no more input to be expected...
+		if (first) // we just got started
 		{
-			setOutputDone();
-			return false;
-		}
-		
-		putRow(getInputRowMeta(), r);     // copy row to possible alternate rowset(s).
+			first=false;
 
-        if (checkFeedback(linesRead)) logBasic(Messages.getString("DummyTrans.Log.LineNumber")+linesRead); //$NON-NLS-1$
+			data.mondrianHelper = new MondrianHelper(meta.getDatabaseMeta(), meta.getCatalog(), meta.getSQL());
+			data.mondrianHelper.openQuery();
+			data.mondrianHelper.createRectangularOutput();
 			
+			data.outputRowMeta = data.mondrianHelper.getOutputRowMeta().clone(); //
+			
+			data.rowNumber = 0;
+		}
+
+        if (data.rowNumber>=data.mondrianHelper.getRows().size())
+        {
+            setOutputDone(); // signal end to receiver(s)
+            return false; // end of data or error.
+        }
+        
+        List<Object> row = data.mondrianHelper.getRows().get(data.rowNumber++);
+        Object[] outputRowData = RowDataUtil.allocateRowData(row.size());
+        for (int i=0;i<row.size();i++) {
+        	outputRowData[i] = row.get(i);
+        }
+        
+        putRow(data.outputRowMeta, outputRowData);
+        
 		return true;
 	}
+    
+	public void dispose(StepMetaInterface smi, StepDataInterface sdi)
+	{
+		logBasic("Finished reading query, closing connection.");
+		
+	    data.mondrianHelper.close();
 
+	    super.dispose(smi, sdi);
+	}
 
 	public boolean init(StepMetaInterface smi, StepDataInterface sdi)
 	{
-		meta=(DummyTransMeta)smi;
-		data=(DummyTransData)sdi;
-		
+		meta=(MondrianInputMeta)smi;
+		data=(MondrianData)sdi;
+
 		if (super.init(smi, sdi))
 		{
-		    // Add init code here.
-		    return true;
+			return true;
 		}
+		
 		return false;
 	}
 	

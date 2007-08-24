@@ -109,6 +109,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
     setID(-1L);
     setJobEntryType(JobEntryType.FTP);
     setControlEncoding(DEFAULT_CONTROL_ENCODING);
+    binaryMode=true;
   }
 
   public JobEntryFTP()
