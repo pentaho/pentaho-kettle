@@ -45,13 +45,11 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.w3c.dom.Node;
 
 
-
-
-/*
- * Created on 13-mei-2003
- *
+/**
+ * Meta data for the Add Sequence step.
+ * 
+ * Created on 13-may-2003
  */
-
 public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 {
 	private String       valuename;	
@@ -67,12 +65,7 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 	private long         incrementBy;
 	private long         maxValue;
     
-
-	public AddSequenceMeta()
-	{
-		super();
-	}
-
+	
 	/**
 	 * @return Returns the connection.
 	 */
@@ -216,19 +209,19 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			valuename  = XMLHandler.getTagValue(stepnode, "valuename"); //$NON-NLS-1$
+			valuename    = XMLHandler.getTagValue(stepnode, "valuename"); //$NON-NLS-1$
 			
-			useDatabase = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "use_database")); //$NON-NLS-1$ //$NON-NLS-2$
+			useDatabase  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "use_database")); //$NON-NLS-1$ //$NON-NLS-2$
 			String conn  = XMLHandler.getTagValue(stepnode, "connection"); //$NON-NLS-1$
-			database   = DatabaseMeta.findDatabase(databases, conn);
-            schemaName        = XMLHandler.getTagValue(stepnode, "schema"); //$NON-NLS-1$
-			sequenceName      = XMLHandler.getTagValue(stepnode, "seqname"); //$NON-NLS-1$
+			database     = DatabaseMeta.findDatabase(databases, conn);
+            schemaName   = XMLHandler.getTagValue(stepnode, "schema"); //$NON-NLS-1$
+			sequenceName = XMLHandler.getTagValue(stepnode, "seqname"); //$NON-NLS-1$
 			
-			useCounter  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "use_counter")); //$NON-NLS-1$ //$NON-NLS-2$
-            counterName = XMLHandler.getTagValue(stepnode, "counter_name"); //$NON-NLS-1$
-			startAt     = Const.toLong(XMLHandler.getTagValue(stepnode, "start_at"), 1); //$NON-NLS-1$
-			incrementBy = Const.toLong(XMLHandler.getTagValue(stepnode, "increment_by"), 1); //$NON-NLS-1$
-			maxValue    = Const.toLong(XMLHandler.getTagValue(stepnode, "max_value"), 999999999L); //$NON-NLS-1$
+			useCounter   = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "use_counter")); //$NON-NLS-1$ //$NON-NLS-2$
+            counterName  = XMLHandler.getTagValue(stepnode, "counter_name"); //$NON-NLS-1$
+			startAt      = Const.toLong(XMLHandler.getTagValue(stepnode, "start_at"), 1); //$NON-NLS-1$
+			incrementBy  = Const.toLong(XMLHandler.getTagValue(stepnode, "increment_by"), 1); //$NON-NLS-1$
+			maxValue     = Const.toLong(XMLHandler.getTagValue(stepnode, "max_value"), 999999999L); //$NON-NLS-1$
 		}
 		catch(Exception e)
 		{
@@ -238,18 +231,18 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 	
 	public void setDefault()
 	{
-		valuename  = "valuename"; //$NON-NLS-1$
+		valuename    = "valuename"; //$NON-NLS-1$
 		
-		useDatabase = false;
-        schemaName    = ""; //$NON-NLS-1$
-		sequenceName    = "SEQ_"; //$NON-NLS-1$
-		database = null;
+		useDatabase  = false;
+        schemaName   = ""; //$NON-NLS-1$
+		sequenceName = "SEQ_"; //$NON-NLS-1$
+		database     = null;
 		
-		useCounter  = true;
-        counterName = null;
-		startAt     = 1L;
-		incrementBy = 1L;
-		maxValue    = 9999999L;
+		useCounter   = true;
+        counterName  = null;
+		startAt      = 1L;
+		incrementBy  = 1L;
+		maxValue     = 9999999L;
 	}
 
 	public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException
@@ -263,19 +256,19 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 
 	public String getXML()
 	{
-        StringBuffer retval = new StringBuffer();
+        StringBuffer retval = new StringBuffer(300);
 		
-		retval.append("      "+XMLHandler.addTagValue("valuename", valuename)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("      "+XMLHandler.addTagValue("use_database", useDatabase)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("      "+XMLHandler.addTagValue("connection", database==null?"":database.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        retval.append("      "+XMLHandler.addTagValue("schema", schemaName)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("      "+XMLHandler.addTagValue("seqname", sequenceName)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("      ").append(XMLHandler.addTagValue("valuename", valuename)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("      ").append(XMLHandler.addTagValue("use_database", useDatabase)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("      ").append(XMLHandler.addTagValue("connection", database==null?"":database.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        retval.append("      ").append(XMLHandler.addTagValue("schema", schemaName)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("      ").append(XMLHandler.addTagValue("seqname", sequenceName)); //$NON-NLS-1$ //$NON-NLS-2$
 
-		retval.append("      "+XMLHandler.addTagValue("use_counter", useCounter)); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("      "+XMLHandler.addTagValue("counter_name", counterName)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("      "+XMLHandler.addTagValue("start_at", startAt)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("      "+XMLHandler.addTagValue("increment_by", incrementBy)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("      "+XMLHandler.addTagValue("max_value", maxValue)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("      ").append(XMLHandler.addTagValue("use_counter", useCounter)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("      ").append(XMLHandler.addTagValue("counter_name", counterName)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("      ").append(XMLHandler.addTagValue("start_at", startAt)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("      ").append(XMLHandler.addTagValue("increment_by", incrementBy)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("      ").append(XMLHandler.addTagValue("max_value", maxValue)); //$NON-NLS-1$ //$NON-NLS-2$
 		
 		return retval.toString();
 	}
@@ -284,13 +277,13 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			valuename          =      rep.getStepAttributeString (id_step, "valuename"); //$NON-NLS-1$
+			valuename          =   rep.getStepAttributeString (id_step, "valuename"); //$NON-NLS-1$
 	
-			useDatabase        =      rep.getStepAttributeBoolean(id_step, "use_database");  //$NON-NLS-1$
-			long id_connection =    rep.getStepAttributeInteger(id_step, "id_connection");  //$NON-NLS-1$
-			database = DatabaseMeta.findDatabase( databases, id_connection);
-            schemaName         =      rep.getStepAttributeString (id_step, "schema"); //$NON-NLS-1$
-			sequenceName       =      rep.getStepAttributeString (id_step, "seqname"); //$NON-NLS-1$
+			useDatabase        =   rep.getStepAttributeBoolean(id_step, "use_database");  //$NON-NLS-1$
+			long id_connection =   rep.getStepAttributeInteger(id_step, "id_connection");  //$NON-NLS-1$
+			database           =   DatabaseMeta.findDatabase( databases, id_connection);
+            schemaName         =   rep.getStepAttributeString (id_step, "schema"); //$NON-NLS-1$
+			sequenceName       =   rep.getStepAttributeString (id_step, "seqname"); //$NON-NLS-1$
 	
 			useCounter      =      rep.getStepAttributeBoolean(id_step, "use_counter");  //$NON-NLS-1$
             counterName     =      rep.getStepAttributeString (id_step, "counter_name");  //$NON-NLS-1$
@@ -373,7 +366,7 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 			remarks.add(cr);
 		}
 	}
-	
+
 	
 	public SQLStatement getSQLStatements(TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev)
 	{
@@ -415,7 +408,6 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 
 		return retval;
 	}
-
 	
 	public StepInterface getStep(StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta, Trans trans)
 	{
