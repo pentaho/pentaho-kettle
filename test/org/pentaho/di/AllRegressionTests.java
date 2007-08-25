@@ -11,6 +11,7 @@ import org.pentaho.di.core.row.RowTest;
 import org.pentaho.di.core.row.ValueDataUtilTest;
 import org.pentaho.di.core.row.ValueMetaTest;
 import org.pentaho.di.trans.HopTest;
+import org.pentaho.di.trans.steps.addsequence.AddSequenceTest;
 import org.pentaho.di.trans.steps.append.AppendTest;
 import org.pentaho.di.trans.steps.blockingstep.BlockingStepTest;
 import org.pentaho.di.trans.steps.combinationlookup.CombinationLookupTest;
@@ -56,6 +57,7 @@ public class AllRegressionTests
         suite.addTestSuite(SortRowsTest.class);
         suite.addTestSuite(ValueMapperTest.class);
         suite.addTestSuite(NullIfTest.class);
+        suite.addTestSuite(AddSequenceTest.class);        
         suite.addTestSuite(CombinationLookupTest.class);
         suite.addTestSuite(JavaScriptStringTest.class);        
 
