@@ -70,7 +70,9 @@ public class AddSequence extends BaseStep implements StepInterface
 			}
 		} else if (meta.isDatabaseUsed()) {
 			try {
-				next = data.getDb().getNextSequenceValue(meta.getSchemaName(), meta.getSequenceName(), meta.getValuename());
+				next = data.getDb().getNextSequenceValue(environmentSubstitute(meta.getSchemaName()), 
+						                                 environmentSubstitute(meta.getSequenceName()), 
+						                                 meta.getValuename());
 			} catch (KettleDatabaseException dbe) {
 				throw new KettleStepException(Messages.getString(
 						"AddSequence.Exception.ErrorReadingSequence", meta.getSequenceName()), dbe); //$NON-NLS-1$ //$NON-NLS-2$

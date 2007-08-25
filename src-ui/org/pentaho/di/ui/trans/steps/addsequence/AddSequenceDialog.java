@@ -43,6 +43,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
@@ -66,10 +67,10 @@ public class AddSequenceDialog extends BaseStepDialog implements StepDialogInter
     private Button       wbnConnection, wbeConnection;
 
     private Label        wlSchema;
-    private Text         wSchema;
+    private TextVar      wSchema;
 
 	private Label        wlSeqname;
-	private Text         wSeqname;
+	private TextVar      wSeqname;
 
 	private Label        wlUseCounter;
 	private Button       wUseCounter;
@@ -216,7 +217,7 @@ public class AddSequenceDialog extends BaseStepDialog implements StepDialogInter
         fdlSchema.top  = new FormAttachment(wConnection, margin);
         wlSchema.setLayoutData(fdlSchema);
 
-        wSchema=new Text(gDatabase, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wSchema=new TextVar(transMeta, gDatabase, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wSchema);
         wSchema.addModifyListener(lsMod);
         FormData fdSchema = new FormData();
@@ -235,7 +236,7 @@ public class AddSequenceDialog extends BaseStepDialog implements StepDialogInter
 		fdlSeqname.right= new FormAttachment(middle, -margin);
 		fdlSeqname.top  = new FormAttachment(wSchema, margin);
 		wlSeqname.setLayoutData(fdlSeqname);
-		wSeqname=new Text(gDatabase, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wSeqname=new TextVar(transMeta, gDatabase, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		wSeqname.setText(""); //$NON-NLS-1$
  		props.setLook(wSeqname);
 		wSeqname.addModifyListener(lsMod);
