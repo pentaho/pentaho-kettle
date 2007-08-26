@@ -97,14 +97,14 @@ public class BlockingStepDialog extends BaseStepDialog implements StepDialogInte
         formLayout.marginHeight = Const.FORM_MARGIN;
 
         shell.setLayout(formLayout);
-        shell.setText(BaseMessages.getString(getClass().getPackage().getName(), "BlockingStepDialog.Shell.Title")); //$NON-NLS-1$
+        shell.setText(Messages.getString("BlockingStepDialog.Shell.Title")); //$NON-NLS-1$
         
         int middle = props.getMiddlePct();
         int margin = Const.MARGIN;
         
         // Stepname line
         wlStepname=new Label(shell, SWT.RIGHT);
-        wlStepname.setText(BaseMessages.getString(getClass().getPackage().getName(), "BlockingStepDialog.Stepname.Label")); //$NON-NLS-1$
+        wlStepname.setText(Messages.getString("BlockingStepDialog.Stepname.Label")); //$NON-NLS-1$
         props.setLook(wlStepname);
         fdlStepname=new FormData();
         fdlStepname.left = new FormAttachment(0, 0);
