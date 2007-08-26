@@ -1134,10 +1134,6 @@ public class Trans implements VariableSpace
 					{
 						Long id_batch = ldb.getNextValue(transMeta.getCounters(), transMeta.getLogTable(), "ID_BATCH");
 						setBatchId( id_batch.longValue() );
-                        if (getPassedBatchId()<=0) 
-                        {
-                            setPassedBatchId( id_batch.longValue() );
-                        }
 					}
 				}
 

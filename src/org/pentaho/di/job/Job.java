@@ -481,7 +481,7 @@ public class Job extends Thread implements VariableSpace
                 Long id_batch = new Long(1);
                 if (jobMeta.isBatchIdUsed())
                 {
-                    ldb.getNextValue(null, jobMeta.getLogTable(), "ID_JOB");
+                    id_batch = ldb.getNextValue(null, jobMeta.getLogTable(), "ID_JOB");
                     setBatchId( id_batch.longValue() );
                     if (getPassedBatchId()<=0) 
                     {
