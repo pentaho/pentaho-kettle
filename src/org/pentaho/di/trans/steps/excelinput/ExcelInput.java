@@ -360,7 +360,7 @@ public class ExcelInput extends BaseStep implements StepInterface
 		// We are done processing if the filenr >= number of files.
 		if (data.filenr >= data.files.nrOfFiles())
 		{
-			if (log.isDetailed()) logDetailed("No more files to be processes! (" + data.filenr + " files done)");
+			if (log.isDetailed()) logDetailed("No more files to be processed! (" + data.filenr + " files done)");
 			setOutputDone(); // signal end to receiver(s)
 			return false; // end of data or error.
 		}
