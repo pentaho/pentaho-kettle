@@ -1121,10 +1121,10 @@ Alert("Trimmed input:" + str2);</sample>
 //
 var str1= "Hello Pentaho!";
 var str2= substr(str1, 6);
-var str3= substr(str1, 6, 13);
+var str3= substr(str1, 6, 7);
 Alert("Input : " + str1);
 Alert("From position 6: " + str2);
-Alert("From position 6 until 13 : " + str3);
+Alert("From position 6 for 7 long : " + str3);
 </sample>
       <type>0</type>
       <Arguments>
