@@ -1,5 +1,8 @@
 package org.pentaho.di.ui.util;
 
+import java.io.IOException;
+import java.net.URL;
+
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.VFS;
@@ -37,10 +40,18 @@ public class ImageUtil
     }
     
     public static Image getImageAsResource(Display display, String location) {
-    	ClassLoader cl = ImageUtil.class.getClassLoader();
-		java.io.InputStream s = cl.getResourceAsStream(location);
-		if (s != null) {
-			return new Image(display,s);
+    	// assume the classloader for the active thread
+    	ClassLoader cl = Thread.currentThread().getContextClassLoader();
+		URL res = cl.getResource(location);
+		if (res != null) {
+			try {
+				java.io.InputStream s = res.openStream();
+				if (s != null) {
+					return new Image(display,s);
+				}
+			} catch (IOException e) {
+				//do nothing. just move on to trying to load via file system
+			}
 		}
 		try {
 			return new Image(display,VFS.getManager().resolveFile(base,location).getContent().getInputStream());
