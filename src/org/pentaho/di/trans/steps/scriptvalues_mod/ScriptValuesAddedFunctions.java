@@ -1238,6 +1238,10 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
                 int from = (int)Math.round(Context.toNumber(ArgList[1]));
                 int len   = (int)Math.round(Context.toNumber(ArgList[2]));
                 
+                if ( from < 0 ) 
+                {
+                	throw Context.reportRuntimeError("start smaller than 0");
+                }
                 if ( len < 0 ) len = 0;    // Make it compatible with Javascript substr
                 
                 to = from + len;
