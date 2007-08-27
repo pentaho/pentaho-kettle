@@ -296,7 +296,21 @@ public interface RowMetaInterface extends Cloneable
      * @throws KettleValueException
      */
     public int compare(Object[] rowData1, Object[] rowData2, int fieldnrs1[], int fieldnrs2[]) throws KettleValueException;
-    
+
+    /**
+     * Compare 2 rows with each other using certain values in the rows and
+     * also considering the specified ascending clauses of the value metadata.
+
+     * @param rowData1 The first row of data
+     * @param rowMeta2 the metadat of the second row of data
+     * @param rowData2 The second row of data
+	 * @param fieldnrs1 The indexes of the values to compare in the first row
+     * @param fieldnrs2 The indexes of the values to compare with in the second row
+     * @return 0 if the rows are considered equal, -1 is data1 is smaller, 1 if data2 is smaller.
+     * @throws KettleValueException
+     */
+    public int compare(Object[] rowData1, RowMetaInterface rowMeta2, Object[] rowData2, int fieldnrs1[], int fieldnrs2[]) throws KettleValueException;
+
     /**
      * Compare 2 rows with each other using all values in the rows and
      * also considering the specified ascending clauses of the value metadata.

@@ -180,7 +180,7 @@ public class MergeJoin extends BaseStep implements StepInterface
             }
             else
         	{
-                int cmp = data.oneMeta.compare(data.one, data.two, data.keyNrs2);
+                int cmp = data.oneMeta.compare(data.one, data.twoMeta, data.two, data.keyNrs1, data.keyNrs2);
                 compare = cmp>0?1 : cmp<0?-1 : 0;
             }
         }
