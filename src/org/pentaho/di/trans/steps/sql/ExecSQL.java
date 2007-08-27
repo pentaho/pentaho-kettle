@@ -10,7 +10,6 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.ValueMeta;
-import org.pentaho.di.core.row.ValueMetaAndData;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -134,23 +133,27 @@ public class ExecSQL extends BaseStep implements StepInterface
 		int numMarkers = data.markerPositions.size();
 		if (numMarkers > 0) {
 			StringBuffer buf = new StringBuffer(data.sql);
-		// Replace the values in the SQL string...
-			for (int i=0;i<numMarkers;i++)
-		{
-			ValueMetaAndData value = (ValueMetaAndData)row[data.argumentIndexes[data.markerPositions.size() - i - 1]];
-			int pos = ((Integer) data.markerPositions.get(i)).intValue();
-			buf.replace(pos, pos + 1, value.getValueData().toString()); // replace the '?'
-			// with the String
-			// in the row.
+			
+			// Replace the values in the SQL string...
+			//
+			for (int i=0;i<numMarkers;i++) {
+				// Get the appropriate value from the input row...
+				//
+				int index = data.argumentIndexes[data.markerPositions.size() - i - 1];
+				ValueMetaInterface valueMeta = getInputRowMeta().getValueMeta( index );
+				Object valueData = row[ index ];
+			
+				// replace the '?' with the String in the row.
+				//
+				int pos = data.markerPositions.get(i);
+				buf.replace(pos, pos + 1, valueMeta.getString(valueData)); 
 			}
 			sql = buf.toString();
 		}
-		else 
-		{
+		else  {
 			sql = data.sql;
 		}
-		if (log.isRowLevel())
-			logRowlevel(Messages.getString("ExecSQL.Log.ExecutingSQLScript") + Const.CR + data.sql); //$NON-NLS-1$
+		if (log.isRowLevel()) logRowlevel(Messages.getString("ExecSQL.Log.ExecutingSQLScript") + Const.CR + data.sql); //$NON-NLS-1$
 		data.result = data.db.execStatements(sql.toString());
 
 		RowMetaAndData add = getResultRow(data.result, meta.getUpdateField(), meta.getInsertField(), meta.getDeleteField(), meta.getReadField());
