@@ -75,7 +75,14 @@ public class MergeJoin extends BaseStep implements StepInterface
             // Find the RowSet to read from
             //
             data.oneRowSet = findInputRowSet(meta.getStepName1());
+            if (data.oneRowSet==null) {
+            	throw new KettleException( Messages.getString("MergeJoin.Exception.UnableToFindSpecifiedStep", meta.getStepName1()) );
+            }
+
             data.twoRowSet = findInputRowSet(meta.getStepName2());
+            if (data.twoRowSet==null) {
+            	throw new KettleException( Messages.getString("MergeJoin.Exception.UnableToFindSpecifiedStep", meta.getStepName2()) );
+            }
             
             data.one=getRowFrom(data.oneRowSet);
             if (data.one!=null) 
