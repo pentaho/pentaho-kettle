@@ -52,6 +52,7 @@ import be.ibridge.kettle.job.entry.waitforfile.JobEntryWaitForFile;
 import be.ibridge.kettle.job.entry.abort.JobEntryAbort;
 import be.ibridge.kettle.job.entry.ping.JobEntryPing;
 import be.ibridge.kettle.job.entry.writetolog.JobEntryWriteToLog;
+import be.ibridge.kettle.job.entry.copyfiles.JobEntryCopyFiles;
 import be.ibridge.kettle.repository.Repository;
 
 
@@ -93,6 +94,7 @@ public interface JobEntryInterface
 	public static final int TYPE_JOBENTRY_GET_POP= 25;
 	public static final int TYPE_JOBENTRY_PING= 26;
 	public static final int TYPE_WRITE_TO_LOG= 27;
+	public static final int TYPE_COPY_FILES= 28;
 
 	public final static String typeCode[] =
 		{
@@ -124,6 +126,7 @@ public interface JobEntryInterface
 			"GET_POP",
 			"PING",
 			"WRITE_TO_LOG",	
+			"COPY_FILES",	
 		};
 
 	public final static String typeDesc[] =
@@ -156,6 +159,7 @@ public interface JobEntryInterface
 			Messages.getString("JobEntry.GetPOP.TypeDesc"),
 			Messages.getString("JobEntry.Ping.TypeDesc"),
 			Messages.getString("JobEntry.WriteToLog.TypeDesc"),
+			Messages.getString("JobEntry.CopyFiles.TypeDesc"),
 		};
 
 	public final static String icon_filename[] = 
@@ -188,6 +192,7 @@ public interface JobEntryInterface
 			"GETPOP.png",
 			"PNG.png",
 			"WTL.png",
+			"CPY.png",
 		};
 	
 	public final static String type_tooltip_desc[] = 
@@ -220,6 +225,7 @@ public interface JobEntryInterface
 			Messages.getString("JobEntry.GetPOP.Tooltip"),
 			Messages.getString("JobEntry.Ping.Tooltip"),
 			Messages.getString("JobEntry.WriteToLog.Tooltip"),
+			Messages.getString("JobEntry.CopyFiles.Tooltip"),
  		};
 	
 	public final static Class type_classname[] = 
@@ -252,6 +258,7 @@ public interface JobEntryInterface
 			JobEntryGetPOP.class,
 			JobEntryPing.class,
 			JobEntryWriteToLog.class,
+			JobEntryCopyFiles.class,
 		};
 
 	public Result execute(Result prev_result, int nr, Repository rep, Job parentJob) throws KettleException;
