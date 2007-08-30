@@ -41,7 +41,9 @@ public enum JobEntryType
 	SUCCESS(Messages.getString("JobEntry.Success.TypeDesc")),
 	XSD_VALIDATOR(Messages.getString("JobEntry.XSDValidator.TypeDesc")),
 	XACTION(Messages.getString("JobEntry.XAction.TypeDesc")),
-	WRITE_TO_LOG(Messages.getString("JobEntry.WriteToLog.TypeDesc"));
+	WRITE_TO_LOG(Messages.getString("JobEntry.WriteToLog.TypeDesc")),
+	COPY_FILES(Messages.getString("JobEntry.CopyFiles.TypeDesc"));
+	
 	
 	private String description;
 	
