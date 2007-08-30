@@ -122,13 +122,7 @@ public class JobEntryAbortDialog extends Dialog implements JobEntryDialogInterfa
         int middle = props.getMiddlePct();
         int margin = Const.MARGIN;
 
-        wOK = new Button(shell, SWT.PUSH);
-        wOK.setText(Messages.getString("System.Button.OK"));
-        wCancel = new Button(shell, SWT.PUSH);
-        wCancel.setText(Messages.getString("System.Button.Cancel"));
 
-        // at the bottom
-        BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, null);
 
         // Filename line
         wlName = new Label(shell, SWT.RIGHT);
@@ -167,6 +161,14 @@ public class JobEntryAbortDialog extends Dialog implements JobEntryDialogInterfa
 		fdMessageAbort.top = new FormAttachment(wName, margin);
 		fdMessageAbort.right = new FormAttachment(100, 0);
 		wMessageAbort.setLayoutData(fdMessageAbort);
+		
+        wOK = new Button(shell, SWT.PUSH);
+        wOK.setText(Messages.getString("System.Button.OK"));
+        wCancel = new Button(shell, SWT.PUSH);
+        wCancel.setText(Messages.getString("System.Button.Cancel"));
+
+        // at the bottom
+        BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wMessageAbort);
 	
 		// Add listeners
         lsCancel = new Listener()
