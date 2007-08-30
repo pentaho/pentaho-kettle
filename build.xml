@@ -455,6 +455,8 @@
 			  <include name="**/*.jar"/>
     		  <include name="**/*.properties"/>
 			  <include name="**/repositories.xml"/>
+              <include name="**/*.xul"/>
+              <include name="images/*"/>
   			  <include name="kettle_logo.png"/>
               <exclude name="${keystore}"/>
               <exclude name="kettle.war"/>
