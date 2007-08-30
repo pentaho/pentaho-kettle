@@ -38,7 +38,7 @@ import java.util.Properties;
 import javax.sql.DataSource;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.pentaho.core.util.DatasourceHelper;
+import be.ibridge.kettle.core.util.DatasourceHelper;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Counter;
