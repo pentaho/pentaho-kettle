@@ -53,7 +53,7 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.databasejoin.DatabaseJoinMeta;
-import org.pentaho.di.trans.steps.databaselookup.Messages;
+import org.pentaho.di.trans.steps.databasejoin.Messages;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
