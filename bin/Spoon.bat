@@ -49,6 +49,19 @@ goto :eof
 
 :extlibe
 
+REM **********************
+REM   Collect arguments
+REM **********************
+
+set _cmdline=
+:TopArg
+if %1!==! goto EndArg
+set _cmdline=%_cmdline% %1
+shift
+goto TopArg
+:EndArg
+
+
 REM *****************
 REM   SWT Libraries
 REM *****************
@@ -70,4 +83,4 @@ REM ***************
 REM ** Run...    **
 REM ***************
 
-start javaw %OPT% org.pentaho.di.ui.spoon.Spoon %1 %2 %3 %4 %5 %6 %7 %8 %9
+start javaw %OPT% org.pentaho.di.ui.spoon.Spoon %_cmdline%

@@ -59,6 +59,18 @@ set CLASSPATH=%CLASSPATH%;libswt\runtime.jar
 set CLASSPATH=%CLASSPATH%;libswt\jface.jar
 set CLASSPATH=%CLASSPATH%;libswt\win32\swt.jar
 
+REM **********************
+REM   Collect arguments
+REM **********************
+
+set _cmdline=
+:TopArg
+if %1!==! goto EndArg
+set _cmdline=%_cmdline% %1
+shift
+goto TopArg
+:EndArg
+
 REM ******************************************************************
 REM ** Set java runtime options                                     **
 REM ** Change 512m to higher values in case you run out of memory.  **
@@ -70,4 +82,4 @@ REM ***************
 REM ** Run...    **
 REM ***************
 
-java %OPT% org.pentaho.di.kitchen.Kitchen %1 %2 %3 %4 %5 %6 %7 %8 %9
+java %OPT% org.pentaho.di.kitchen.Kitchen %_cmdline%

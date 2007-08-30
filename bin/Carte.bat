@@ -43,6 +43,18 @@ goto :eof
 
 :extlibe
 
+REM **********************
+REM   Collect arguments
+REM **********************
+
+set _cmdline=
+:TopArg
+if %1!==! goto EndArg
+set _cmdline=%_cmdline% %1
+shift
+goto TopArg
+:EndArg
+
 
 REM ******************************************************************
 REM ** Set java runtime options                                     **
@@ -55,5 +67,5 @@ REM ***************
 REM ** Run...    **
 REM ***************
 
-java %OPT% org.pentaho.di.www.Carte %1 %2 %3 %4 %5 %6 %7 %8 %9
+java %OPT% org.pentaho.di.www.Carte %_cmdline%
 
