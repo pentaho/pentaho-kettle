@@ -374,4 +374,16 @@
 		</tooltip>
 		<image-uri>ui/images/WTL.png</image-uri>
 	</job>
+		<job id="COPY_FILES">
+		<type>
+			ognl:@org.pentaho.di.job.JobEntryType@COPY_FILES
+		</type>
+		<class-name>
+			org.pentaho.di.job.entries.copyfiles.JobEntryCopyFiles
+		</class-name>
+		<tooltip>
+			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.CopyFiles.Tooltip")
+		</tooltip>
+		<image-uri>ui/images/CPY.png</image-uri>
+	</job>
 </jobs>
