@@ -758,7 +758,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
     	  
 		 msg.setHeader("X-Priority",priority_int); //(String)int between 1= high and 3 = low.
 		 msg.setHeader("Importance", importance);
-		 //seems to be needed for MSoutlook.
+		 //seems to be needed for MS Outlook.
 		 //where it returns a string of high /normal /low.
       }
 
