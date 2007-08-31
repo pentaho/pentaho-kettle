@@ -46,6 +46,7 @@ import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.ResultFile;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.LabelText;
@@ -164,15 +165,25 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
 
     private FormData fdlComment, fdComment;
 
-    private Label wlOnlyComment, wlUseHTML;
+    private Label wlOnlyComment, wlUseHTML, wlUsePriority;
 
-    private Button wOnlyComment, wUseHTML;
+    private Button wOnlyComment, wUseHTML,wUsePriority;
 
-    private FormData fdlOnlyComment, fdOnlyComment, fdlUseHTML, fdUseHTML;
+    private FormData fdlOnlyComment, fdOnlyComment, fdlUseHTML, fdUseHTML, fdUsePriority;
     
     private Label        wlEncoding;
     private CCombo       wEncoding;
     private FormData     fdlEncoding, fdEncoding;
+    
+    private Label        wlPriority;
+    private CCombo       wPriority;
+    private FormData     fdlPriority, fdPriority;
+    
+    
+    private Label        wlImportance;
+    private CCombo       wImportance;
+    private FormData     fdlImportance, fdImportance;
+
 
     private Button wOK, wCancel;
 
@@ -584,14 +595,14 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
         props.setLook(wlAddDate);
         fdlAddDate = new FormData();
         fdlAddDate.left = new FormAttachment(0, 0);
-        fdlAddDate.top = new FormAttachment(0, 2*margin);
+        fdlAddDate.top = new FormAttachment(0,margin);
         fdlAddDate.right = new FormAttachment(middle, -margin);
         wlAddDate.setLayoutData(fdlAddDate);
         wAddDate = new Button(wMessageSettingsGroup, SWT.CHECK);
         props.setLook(wAddDate);
         fdAddDate = new FormData();
         fdAddDate.left = new FormAttachment(middle, margin);
-        fdAddDate.top = new FormAttachment(0, 2*margin);
+        fdAddDate.top = new FormAttachment(0, margin);
         fdAddDate.right = new FormAttachment(100, 0);
         wAddDate.setLayoutData(fdAddDate);
         wAddDate.addSelectionListener(new SelectionAdapter()
@@ -689,6 +700,77 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
             }
         );
 
+        // Use Priority ?
+        wlUsePriority = new Label(wMessageSettingsGroup, SWT.RIGHT);
+        wlUsePriority.setText(Messages.getString("JobMail.UsePriority.Label"));
+        props.setLook(wlUsePriority);
+        fdlPriority = new FormData();
+        fdlPriority.left = new FormAttachment(0, 0);
+        fdlPriority.top = new FormAttachment(wEncoding, margin );
+        fdlPriority.right = new FormAttachment(middle, -margin);
+        wlUsePriority.setLayoutData(fdlPriority);
+        wUsePriority = new Button(wMessageSettingsGroup, SWT.CHECK);
+        wUsePriority.setToolTipText(Messages.getString("JobMail.UsePriority.Tooltip"));
+        props.setLook(wUsePriority);
+        fdUsePriority = new FormData();
+        fdUsePriority.left = new FormAttachment(middle, margin);
+        fdUsePriority.top = new FormAttachment(wEncoding, margin );
+        fdUsePriority.right = new FormAttachment(100, 0);
+        wUsePriority.setLayoutData(fdUsePriority);
+        wUsePriority.addSelectionListener(new SelectionAdapter()
+        {
+            public void widgetSelected(SelectionEvent e)
+            {
+            	activeUsePriority();
+            	jobEntry.setChanged();
+            }
+        });
+        
+        // Priority
+        wlPriority = new Label(wMessageSettingsGroup, SWT.RIGHT);
+        wlPriority.setText(Messages.getString("JobMail.Priority.Label"));
+        props.setLook(wlPriority);
+        fdlPriority = new FormData();
+        fdlPriority.left = new FormAttachment(0, 0);
+        fdlPriority.right = new FormAttachment(middle, -margin);
+        fdlPriority.top = new FormAttachment(wUsePriority, margin);
+        wlPriority.setLayoutData(fdlPriority);
+        wPriority = new CCombo(wMessageSettingsGroup, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
+        wPriority.add(Messages.getString("JobMail.Priority.Low.Label"));
+        wPriority.add(Messages.getString("JobMail.Priority.Normal.Label"));
+        wPriority.add(Messages.getString("JobMail.Priority.High.Label"));
+        wPriority.select(1); // +1: starts at -1
+        props.setLook(wPriority);
+        fdPriority = new FormData();
+        fdPriority.left = new FormAttachment(middle, 0);
+        fdPriority.top = new FormAttachment(wUsePriority, margin);
+        fdPriority.right = new FormAttachment(100, 0);
+        wPriority.setLayoutData(fdPriority);
+
+        // Importance
+        wlImportance = new Label(wMessageSettingsGroup, SWT.RIGHT);
+        wlImportance.setText(Messages.getString("JobMail.Importance.Label"));
+        props.setLook(wlImportance);
+        fdlImportance = new FormData();
+        fdlImportance.left = new FormAttachment(0, 0);
+        fdlImportance.right = new FormAttachment(middle, -margin);
+        fdlImportance.top = new FormAttachment(wPriority, margin);
+        wlImportance.setLayoutData(fdlImportance);
+        wImportance = new CCombo(wMessageSettingsGroup, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
+        wImportance.add(Messages.getString("JobMail.Priority.Low.Label"));
+        wImportance.add(Messages.getString("JobMail.Priority.Normal.Label"));
+        wImportance.add(Messages.getString("JobMail.Priority.High.Label"));
+   
+        wImportance.select(1); // +1: starts at -1
+        
+        props.setLook(wImportance);
+        fdImportance = new FormData();
+        fdImportance.left = new FormAttachment(middle, 0);
+        fdImportance.top = new FormAttachment(wPriority, margin);
+        fdImportance.right = new FormAttachment(100, 0);
+        wImportance.setLayoutData(fdImportance);
+        
+        
         fdMessageSettingsGroup = new FormData();
     	fdMessageSettingsGroup.left = new FormAttachment(0, margin);
       	fdMessageSettingsGroup.top = new FormAttachment(wName, margin);
@@ -990,7 +1072,7 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
         getData();
 
         SetEnabledEncoding();
-        
+        activeUsePriority();
         BaseStepDialog.setSize(shell);
 
         shell.open();
@@ -1003,7 +1085,13 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
         }
         return jobEntry;
     }
-
+	private void activeUsePriority()
+	{
+		wlPriority.setEnabled(wUsePriority.getSelection());
+		wPriority.setEnabled(wUsePriority.getSelection());
+		wlImportance.setEnabled(wUsePriority.getSelection());
+		wImportance.setEnabled(wUsePriority.getSelection());
+	}
     private void SetEnabledEncoding ()
     {
         wEncoding.setEnabled(wUseHTML.getSelection());
@@ -1089,7 +1177,55 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
         
         }
         
-
+        wUsePriority.setSelection(jobEntry.isUsePriority());
+        
+        // Priority
+        
+        if (jobEntry.getPriority()!=null)
+        {
+	        if (jobEntry.getPriority().equals("low")) 
+	        {
+	        	wPriority.select(0); // Low
+	        }
+	        else if (jobEntry.getPriority().equals("normal")) 
+	        {	
+	        	wPriority.select(1); // Normal
+	        
+	        }
+		    else 
+		    {	
+		    	wPriority.select(2);  // Default High
+		    
+		    }
+        }
+        else
+        {
+        	wPriority.select(3);  // Default High
+        }
+        
+        // Importance
+        if (jobEntry.getImportance()!=null)
+        {
+	        if (jobEntry.getImportance().equals("low")) 
+	        {
+	        	wImportance.select(0); // Low
+	        }
+	        else if (jobEntry.getImportance().equals("normal")) 
+	        {	
+	        	wImportance.select(1); // Normal
+	        
+	        }
+		    else 
+		    {	
+		    	wImportance.select(2);  // Default High
+		    
+		    }
+        }
+        else
+        {
+        	wImportance.select(3);  // Default High
+        }
+        
         setFlags();
     }
 
@@ -1127,8 +1263,39 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
         jobEntry.setUsingSecureAuthentication(wUseSecAuth.getSelection());
         jobEntry.setOnlySendComment(wOnlyComment.getSelection());
         jobEntry.setUseHTML(wUseHTML.getSelection());
+        jobEntry.setUsePriority(wUsePriority.getSelection());
         
         jobEntry.setEncoding(wEncoding.getText());
+        jobEntry.setPriority(wPriority.getText());
+        
+        // Priority
+        if (wPriority.getSelectionIndex()==0)
+        {
+        	jobEntry.setPriority("low");
+        }
+        else if (wPriority.getSelectionIndex()==1)
+        {
+        	jobEntry.setPriority("normal");
+        }
+        else
+        {
+        	jobEntry.setPriority("high");
+        }
+            
+        // Importance
+        if (wImportance.getSelectionIndex()==0)
+        {
+        	jobEntry.setImportance("low");
+        }
+        else if (wImportance.getSelectionIndex()==1)
+        {
+        	jobEntry.setImportance("normal");
+        }
+        else
+        {
+        	jobEntry.setImportance("high");
+        }
+                  
 
         dispose();
     }
