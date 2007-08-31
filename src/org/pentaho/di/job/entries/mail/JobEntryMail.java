@@ -120,8 +120,14 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
   private boolean useHTML;
 
   private boolean usingSecureAuthentication;
+  
+  private boolean usePriority;
 
   private String port;
+  
+  private String priority;
+  
+  private String importance;
 
   /** The encoding to use for reading: null or empty string means system default encoding */
   private String encoding;
@@ -179,7 +185,13 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 
     retval.append("      ").append(XMLHandler.addTagValue("only_comment", onlySendComment));
     retval.append("      ").append(XMLHandler.addTagValue("use_HTML", useHTML));
+    retval.append("      ").append(XMLHandler.addTagValue("use_Priority", usePriority));
+    
     retval.append("    " + XMLHandler.addTagValue("encoding", encoding));
+    retval.append("    " + XMLHandler.addTagValue("priority", priority));
+    retval.append("    " + XMLHandler.addTagValue("importance", importance));
+    
+    
 
     retval.append("      <filetypes>");
     if (fileType != null)
@@ -222,8 +234,15 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 
       setOnlySendComment("Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "only_comment")));
       setUseHTML("Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "use_HTML")));
+      
+      setUsePriority("Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "use_Priority")));
+      
 
       setEncoding(XMLHandler.getTagValue(entrynode, "encoding"));
+      setPriority(XMLHandler.getTagValue(entrynode, "priority"));
+      setImportance(XMLHandler.getTagValue(entrynode, "importance"));
+      
+      
 
       Node ftsnode = XMLHandler.getSubNode(entrynode, "filetypes");
       int nrTypes = XMLHandler.countNodes(ftsnode, "filetype");
@@ -263,6 +282,10 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
       contactPhone = rep.getJobEntryAttributeString(id_jobentry, "contact_phone");
       comment = rep.getJobEntryAttributeString(id_jobentry, "comment");
       encoding = rep.getJobEntryAttributeString(id_jobentry, "encoding");
+      priority = rep.getJobEntryAttributeString(id_jobentry, "priority");
+      importance = rep.getJobEntryAttributeString(id_jobentry, "importance");
+      
+      
       includingFiles = rep.getJobEntryAttributeBoolean(id_jobentry, "include_files");
 
       usingAuthentication = rep.getJobEntryAttributeBoolean(id_jobentry, "use_auth");
@@ -272,6 +295,8 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 
       onlySendComment = rep.getJobEntryAttributeBoolean(id_jobentry, "only_comment");
       useHTML = rep.getJobEntryAttributeBoolean(id_jobentry, "use_HTML");
+      usePriority = rep.getJobEntryAttributeBoolean(id_jobentry, "use_Priority");
+      
 
       int nrTypes = rep.countNrJobEntryAttributes(id_jobentry, "file_type");
       allocate(nrTypes);
@@ -310,6 +335,10 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
       rep.saveJobEntryAttribute(id_job, getID(), "contact_phone", contactPhone);
       rep.saveJobEntryAttribute(id_job, getID(), "comment", comment);
       rep.saveJobEntryAttribute(id_job, getID(), "encoding", encoding);
+      rep.saveJobEntryAttribute(id_job, getID(), "priority", priority);
+      rep.saveJobEntryAttribute(id_job, getID(), "importance", importance);
+      
+      
       rep.saveJobEntryAttribute(id_job, getID(), "include_files", includingFiles);
       rep.saveJobEntryAttribute(id_job, getID(), "use_auth", usingAuthentication);
       rep.saveJobEntryAttribute(id_job, getID(), "use_secure_auth", usingSecureAuthentication);
@@ -318,6 +347,8 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 
       rep.saveJobEntryAttribute(id_job, getID(), "only_comment", onlySendComment);
       rep.saveJobEntryAttribute(id_job, getID(), "use_HTML", useHTML);
+      rep.saveJobEntryAttribute(id_job, getID(), "use_Priority", usePriority);
+      
 
       if (fileType != null)
       {
@@ -585,6 +616,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
   {
     return encoding;
   }
+  
 
   /**
    * @param encoding the encoding to set
@@ -594,6 +626,60 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
     this.encoding = encoding;
   }
 
+  
+  
+  
+  /**
+   * @param usePriority the usePriority to set
+   */
+  public void setUsePriority(boolean usePriorityin)
+  {
+    this.usePriority = usePriorityin;
+  }
+  
+  /**
+   * @return the usePriority flag
+   */
+  public boolean isUsePriority()
+  {
+    return usePriority;
+  }
+  
+  
+  /**
+   * @return the priority
+   */
+  public String getPriority()
+  {
+    return priority;
+  }
+  
+  /**
+   * @param importance the importance to set
+   */
+  public void setImportance(String importancein)
+  {
+    this.importance = importancein;
+  }
+
+  
+  /**
+   * @return the importance
+   */
+  public String getImportance()
+  {
+    return importance;
+  }
+  
+  /**
+   * @param priority the priority to set
+   */
+  public void setPriority(String priorityin)
+  {
+    this.priority = priorityin;
+  }
+
+  
   public Result execute(Result result, int nr, Repository rep, Job parentJob)
   {
     LogWriter log = LogWriter.getInstance();
@@ -619,7 +705,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
       protocol = "smtps";
       // required to get rid of a SSL exception :
       //  nested exception is:
-  	  //  javax.net.ssl.SSLException: Unsupported record version Unknown-50.49
+  	  //  javax.net.ssl.SSLException: Unsupported record version Unknown
       props.put("mail.smtps.quitwait", "false");
     }
 
@@ -656,6 +742,25 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
     {
       // create a message
       Message msg = new MimeMessage(session);
+      
+      // set message priority
+      if (usePriority)
+      {
+    	  String priority_int="1";
+    	  if (priority.equals("low"))
+    	  {
+    		  priority_int="3";
+    	  }
+    	  if (priority.equals("normal"))
+    	  {
+    		  priority_int="2";
+    	  }
+    	  
+		 msg.setHeader("X-Priority",priority_int); //(String)int between 1= high and 3 = low.
+		 msg.setHeader("Importance", importance);
+		 //seems to be needed for MSoutlook.
+		 //where it returns a string of high /normal /low.
+      }
 
       String email_address = environmentSubstitute(replyAddress);
       if (!Const.isEmpty(email_address))
