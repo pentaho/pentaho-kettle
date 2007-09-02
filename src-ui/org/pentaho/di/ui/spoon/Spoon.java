@@ -4987,7 +4987,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		JobEntryLoader jeloader = JobEntryLoader.getInstance();
 		if (!jeloader.read())
 		{
-			log.logError(toString(), "Error loading job entries & plugins... halting Kitchen!");
+			log.logError(toString(), "Error loading job entries & plugins... halting Spoon!");
 			return;
 		}
 
