@@ -16,7 +16,6 @@
 
 package org.pentaho.di.trans.steps.exceloutput;
 
-import java.io.File;
 import java.util.Locale;
 
 import jxl.Workbook;
@@ -413,8 +412,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
 
             // Create the workboook
             if (!meta.isTemplateEnabled())
-            {
-				
+            {				
 				// Create a new Workbook
 				data.workbook = Workbook.createWorkbook(file.getContent().getOutputStream(), ws);
 
@@ -422,10 +420,12 @@ public class ExcelOutput extends BaseStep implements StepInterface
 				data.sheet = data.workbook.createSheet("Sheet1", 0);    
 
             } else {
-								
+
+            	FileObject fo = KettleVFS.getFileObject(environmentSubstitute(meta.getTemplateFileName()));
 				// create the openFile from the template
+
 				Workbook tmpWorkbook=Workbook.getWorkbook(
-						new File(environmentSubstitute(meta.getTemplateFileName())));
+						                  fo.getContent().getInputStream(), ws);
 				data.workbook = Workbook.createWorkbook(file.getContent().getOutputStream(), tmpWorkbook);
 				
             	tmpWorkbook.close();
@@ -435,7 +435,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
             	data.templateColumns = data.sheet.getColumns();
             }
 			
-            // Renamme Sheet
+            // Rename Sheet
 			if (!Const.isEmpty(meta.getSheetname(this))) 
 			{
 				data.sheet.setName(meta.getSheetname(this)); 
