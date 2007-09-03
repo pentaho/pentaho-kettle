@@ -23,6 +23,8 @@ import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notNullV
 
 import java.io.IOException;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSelectInfo;
@@ -42,6 +44,7 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.job.entries.copyfiles.Messages;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.job.entry.validator.ValidatorContext;
@@ -58,11 +61,8 @@ import org.w3c.dom.Node;
  * @since 06-05-2007
  */
 public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobEntryInterface {
-  private boolean ignoreErrors;
 
   public boolean argFromPrevious;
-
-  public boolean deleteFolder;
 
   public boolean includeSubfolders;
 
@@ -72,10 +72,9 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
 
   public JobEntryDeleteFiles(String n) {
     super(n, ""); //$NON-NLS-1$
-    ignoreErrors = false;
     argFromPrevious = false;
     arguments = null;
-    deleteFolder = false;
+
     includeSubfolders = false;
     setID(-1L);
     setJobEntryType(JobEntryType.DELETE_FILES);
@@ -98,9 +97,7 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
     StringBuffer retval = new StringBuffer(300);
 
     retval.append(super.getXML());
-    retval.append("      ").append(XMLHandler.addTagValue("ignore_errors", ignoreErrors)); //$NON-NLS-1$ //$NON-NLS-2$
     retval.append("      ").append(XMLHandler.addTagValue("arg_from_previous", argFromPrevious)); //$NON-NLS-1$ //$NON-NLS-2$
-    retval.append("      ").append(XMLHandler.addTagValue("delete_folder", deleteFolder)); //$NON-NLS-1$ //$NON-NLS-2$
     retval.append("      ").append(XMLHandler.addTagValue("include_subfolders", includeSubfolders)); //$NON-NLS-1$ //$NON-NLS-2$
 
     retval.append("      <fields>").append(Const.CR); //$NON-NLS-1$
@@ -120,9 +117,7 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
   public void loadXML(Node entrynode, List<DatabaseMeta> databases, Repository rep) throws KettleXMLException {
     try {
       super.loadXML(entrynode, databases);
-      ignoreErrors = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "ignore_errors")); //$NON-NLS-1$ //$NON-NLS-2$
       argFromPrevious = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "arg_from_previous")); //$NON-NLS-1$ //$NON-NLS-2$
-      deleteFolder = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "delete_folder")); //$NON-NLS-1$ //$NON-NLS-2$
       includeSubfolders = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "include_subfolders")); //$NON-NLS-1$ //$NON-NLS-2$
 
       Node fields = XMLHandler.getSubNode(entrynode, "fields"); //$NON-NLS-1$
@@ -147,9 +142,7 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
   public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases) throws KettleException {
     try {
       super.loadRep(rep, id_jobentry, databases);
-      ignoreErrors = rep.getJobEntryAttributeBoolean(id_jobentry, "ignore_errors"); //$NON-NLS-1$
       argFromPrevious = rep.getJobEntryAttributeBoolean(id_jobentry, "arg_from_previous"); //$NON-NLS-1$
-      deleteFolder = rep.getJobEntryAttributeBoolean(id_jobentry, "delete_folder"); //$NON-NLS-1$
       includeSubfolders = rep.getJobEntryAttributeBoolean(id_jobentry, "include_subfolders"); //$NON-NLS-1$
 
       // How many arguments?
@@ -172,9 +165,7 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
     try {
       super.saveRep(rep, id_job);
 
-      rep.saveJobEntryAttribute(id_job, getID(), "ignore_errors", ignoreErrors); //$NON-NLS-1$
       rep.saveJobEntryAttribute(id_job, getID(), "arg_from_previous", argFromPrevious); //$NON-NLS-1$
-      rep.saveJobEntryAttribute(id_job, getID(), "delete_folder", deleteFolder); //$NON-NLS-1$
       rep.saveJobEntryAttribute(id_job, getID(), "include_subfolders", includeSubfolders); //$NON-NLS-1$
 
       // save the arguments...
@@ -249,10 +240,7 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
 
       }
     }
-    if (!rcode && ignoreErrors) {
-      result.setResult(false);
-      result.setNrErrors(1);
-    }
+   
     //  String realFilefoldername = environmentSubstitute(filename);
     //  String realwilcard = environmentSubstitute(wildcard);
 
@@ -281,12 +269,14 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
 
       if (filefolder.exists()) {
         // the file or folder exists
-        if (filefolder.getType() == FileType.FOLDER) {
+        if (filefolder.getType() == FileType.FOLDER) 
+        {
           // It's a folder
           if (log.isDetailed())
             log.logDetailed(toString(), Messages.getString("JobEntryDeleteFiles.ProcessingFolder", realFilefoldername)); //$NON-NLS-1$
           // Delete Files
-          int Nr = filefolder.delete(new TextFileSelector(realwilcard));
+          
+          int Nr = filefolder.delete(new TextFileSelector(filefolder.toString(),realwilcard));
 
           if (log.isDetailed())
             log.logDetailed(toString(), Messages.getString("JobEntryDeleteFiles.TotalDeleted", String.valueOf(Nr))); //$NON-NLS-1$
@@ -323,56 +313,126 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
     return rcode;
   }
 
-  private class TextFileSelector implements FileSelector {
-    LogWriter log = LogWriter.getInstance();
 
-    String fileExtension;
+	private class TextFileSelector implements FileSelector 
+	{
+		LogWriter log = LogWriter.getInstance();
+		String file_wildcard=null,source_folder=null;
+		
+		public TextFileSelector(String sourcefolderin,String filewildcard) 
+		 {
+			
+			 if ( !Const.isEmpty(sourcefolderin))
+			 {
+				 source_folder=sourcefolderin;
+			 }
+			
+			 if ( !Const.isEmpty(filewildcard))
+			 {
+				 file_wildcard=filewildcard;
+			 }
+		 }
+		 
+		public boolean includeFile(FileSelectInfo info) 
+		{
+			boolean returncode=false;
+			FileObject file_name=null;
+			try
+			{
+				
+				if (!info.getFile().toString().equals(source_folder))
+				{
+					// Pass over the Base folder itself
+					
+					String short_filename= info.getFile().getName().getBaseName();
+					
+					if (!info.getFile().getParent().equals(info.getBaseFolder()))
+					 {
+						
+						// Not in the Base Folder..Only if include sub folders  
+						 if (includeSubfolders && (info.getFile().getType() == FileType.FILE) && GetFileWildcard(short_filename,file_wildcard))
+						 {
+							returncode= true; 				
+							 
+						 }
+					 }
+					 else
+					 {
+						// In the Base Folder...
+						 
+						 if ((info.getFile().getType() == FileType.FILE) && GetFileWildcard(short_filename,file_wildcard))
+						 {
+							returncode= true; 				
+							 
+						 }
+						
+					 }
+					
+				}
+				
+			}
+			catch (Exception e) 
+			{
+				
 
-    public TextFileSelector(String extension) {
-      if (!Const.isEmpty(extension)) {
-        fileExtension = extension.replace('.', ' ').replace('*', ' ').replace('$', ' ').trim();
-      }
-    }
+				log.logError(Messages.getString("JobCopyFiles.Error.Exception.CopyProcessError") , Messages.getString("JobCopyFiles.Error.Exception.CopyProcess1") 
+					+ " ["+info.getFile().toString()+ "] " + Messages.getString("JobCopyFiles.Error.Exception.CopyProcess1") + " ["  
+					+ file_name.toString() + "] " + Messages.getString("JobCopyFiles.Error.Exception.CopyProcess3") + e.getMessage());
+				
+				 returncode= false;
+			}
+			finally 
+			{
+				if ( file_name != null )
+				{
+					try  
+					{
+						file_name.close();
+						
+					}
+					catch ( IOException ex ) {};
+				}
+				
+				
+				
+			}
+			
+			
+			return returncode;
+		}
 
-    public boolean includeFile(FileSelectInfo info) {
-      boolean rcode = false;
-      try {
-        String extension = info.getFile().getName().getExtension();
-        if (extension.equals(fileExtension) || Const.isEmpty(fileExtension)) {
-          if (info.getFile().getType() == FileType.FOLDER) {
-            if (deleteFolder && includeSubfolders) {
-              rcode = true;
-            } else {
-              rcode = false;
-            }
-          } else {
-            rcode = true;
-          }
-        } else {
-          rcode = false;
+		public boolean traverseDescendents(FileSelectInfo info) 
+		{
+			return true;
+		}
+	}
+  
+	/**********************************************************
+	 * 
+	 * @param selectedfile
+	 * @param wildcard
+	 * @return True if the selectedfile matches the wildcard
+	 **********************************************************/
+	private boolean GetFileWildcard(String selectedfile, String wildcard)
+	{
+		Pattern pattern = null;
+		boolean getIt=true;
+	
+        if (!Const.isEmpty(wildcard))
+        {
+        	 pattern = Pattern.compile(wildcard);
+			// First see if the file matches the regular expression!
+			if (pattern!=null)
+			{
+				Matcher matcher = pattern.matcher(selectedfile);
+				getIt = matcher.matches();
+			}
         }
-      } catch (Exception e) {
-        log.logError(toString(), Messages.getString("JobEntryDeleteFiles.GeneralException", e.getMessage())); //$NON-NLS-1$
-      }
-      return rcode;
-    }
+		
+		return getIt;
+	}
 
-    public boolean traverseDescendents(FileSelectInfo info) {
-      return includeSubfolders;
-    }
-  }
 
-  public boolean isIgnoreErrors() {
-    return ignoreErrors;
-  }
-
-  public void setIgnoreErrors(boolean ignoreErrors) {
-    this.ignoreErrors = ignoreErrors;
-  }
-
-  public void setDeleteFolder(boolean deleteFolder) {
-    this.deleteFolder = deleteFolder;
-  }
 
   public void setIncludeSubfolders(boolean includeSubfolders) {
     this.includeSubfolders = includeSubfolders;
@@ -424,10 +484,7 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
     return arguments;
   }
 
-  public boolean isDeleteFolder()
-  {
-    return deleteFolder;
-  }
+
 
   public String[] getFilemasks()
   {
