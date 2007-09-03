@@ -32,4 +32,4 @@ OPT="-Xmx256m -cp $CLASSPATH -Djava.library.path=$LIBPATH -DKETTLE_HOME=$KETTLE_
 # ** Run...    **
 # ***************
 
-java $OPT org.pentaho.di.www.Carte "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9"
+java $OPT org.pentaho.di.www.Carte "${1+$@}"
