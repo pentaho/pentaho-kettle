@@ -478,8 +478,11 @@ public class ExcelOutput extends BaseStep implements StepInterface
 		
 		try
 		{
-			data.workbook.write();
-            data.workbook.close();
+			if ( data.workbook != null )
+			{
+			    data.workbook.write();
+                data.workbook.close();
+			}
             data.formats.clear();
 
             // Explicitly call garbage collect to have file handle
