@@ -63,14 +63,6 @@ public class JobEntryDeleteFilesDialog extends JobEntryDialog implements JobEntr
 	private TextVar      wFilename;
 	private FormData     fdlFilename, fdbFilename, fdFilename;
 	
-    private Label        wlIgnoreErrors;
-    private Button       wIgnoreErrors;
-    private FormData     fdlIgnoreErrors, fdIgnoreErrors;
-
-	private Label        wlDeleteFolder;
-	private Button       wDeleteFolder;
-	private FormData     fdlDeleteFolder, fdDeleteFolder;
-
 	private Label        wlIncludeSubfolders;
 	private Button       wIncludeSubfolders;
 	private FormData     fdlIncludeSubfolders, fdIncludeSubfolders;
@@ -195,65 +187,16 @@ public class JobEntryDeleteFilesDialog extends JobEntryDialog implements JobEntr
 			public void widgetSelected(SelectionEvent e)
 			{
 				jobEntry.setChanged();
-				UseSubFolder();
 			}
 		});
 		
-		// DeleteFolder Option : If selected, files won't be deleted
-		wlDeleteFolder = new Label(wSettings, SWT.RIGHT);
-		wlDeleteFolder.setText(Messages.getString("JobDeleteFiles.DeleteFolder.Label"));
-		props.setLook(wlDeleteFolder);
-		fdlDeleteFolder = new FormData();
-		fdlDeleteFolder.left = new FormAttachment(0, 0);
-		fdlDeleteFolder.top = new FormAttachment(wIncludeSubfolders, margin);
-		fdlDeleteFolder.right = new FormAttachment(middle, -margin);
-		wlDeleteFolder.setLayoutData(fdlDeleteFolder);
-		wDeleteFolder = new Button(wSettings, SWT.CHECK);
-		props.setLook(wDeleteFolder);
-		wDeleteFolder.setToolTipText(Messages.getString("JobDeleteFiles.DeleteFolder.Tooltip"));
-		fdDeleteFolder = new FormData();
-		fdDeleteFolder.left = new FormAttachment(middle, 0);
-		fdDeleteFolder.top = new FormAttachment(wIncludeSubfolders, margin);
-		fdDeleteFolder.right = new FormAttachment(100, 0);
-		wDeleteFolder.setLayoutData(fdDeleteFolder);
-		wDeleteFolder.addSelectionListener(new SelectionAdapter()
-		{
-			public void widgetSelected(SelectionEvent e)
-			{
-				jobEntry.setChanged();
-			}
-		});
-
-		wlIgnoreErrors = new Label(wSettings, SWT.RIGHT);
-		wlIgnoreErrors.setText(Messages.getString("JobDeleteFiles.IgnoreErrors.Label"));
-		props.setLook(wlIgnoreErrors);
-		fdlIgnoreErrors = new FormData();
-		fdlIgnoreErrors.left = new FormAttachment(0, 0);
-		fdlIgnoreErrors.top = new FormAttachment(wDeleteFolder, margin);
-		fdlIgnoreErrors.right = new FormAttachment(middle, -margin);
-		wlIgnoreErrors.setLayoutData(fdlIgnoreErrors);
-		wIgnoreErrors = new Button(wSettings, SWT.CHECK);
-		props.setLook(wIgnoreErrors);
-		wIgnoreErrors.setToolTipText(Messages.getString("JobDeleteFiles.IgnoreErrors.Tooltip"));
-		fdIgnoreErrors = new FormData();
-		fdIgnoreErrors.left = new FormAttachment(middle, 0);
-		fdIgnoreErrors.top = new FormAttachment(wDeleteFolder, margin);
-		fdIgnoreErrors.right = new FormAttachment(100, 0);
-		wIgnoreErrors.setLayoutData(fdIgnoreErrors);
-		wIgnoreErrors.addSelectionListener(new SelectionAdapter()
-		{
-			public void widgetSelected(SelectionEvent e)
-			{
-				jobEntry.setChanged();
-			}
-		});
 	
 		wlPrevious = new Label(wSettings, SWT.RIGHT);
 		wlPrevious.setText(Messages.getString("JobDeleteFiles.Previous.Label"));
 		props.setLook(wlPrevious);
 		fdlPrevious = new FormData();
 		fdlPrevious.left = new FormAttachment(0, 0);
-		fdlPrevious.top = new FormAttachment(wIgnoreErrors, margin );
+		fdlPrevious.top = new FormAttachment(wIncludeSubfolders, margin );
 		fdlPrevious.right = new FormAttachment(middle, -margin);
 		wlPrevious.setLayoutData(fdlPrevious);
 		wPrevious = new Button(wSettings, SWT.CHECK);
@@ -262,7 +205,7 @@ public class JobEntryDeleteFilesDialog extends JobEntryDialog implements JobEntr
 		wPrevious.setToolTipText(Messages.getString("JobDeleteFiles.Previous.Tooltip"));
 		fdPrevious = new FormData();
 		fdPrevious.left = new FormAttachment(middle, 0);
-		fdPrevious.top = new FormAttachment(wIgnoreErrors, margin );
+		fdPrevious.top = new FormAttachment(wIncludeSubfolders, margin );
 		fdPrevious.right = new FormAttachment(100, 0);
 		wPrevious.setLayoutData(fdPrevious);
 		wPrevious.addSelectionListener(new SelectionAdapter()
@@ -510,7 +453,6 @@ public class JobEntryDeleteFilesDialog extends JobEntryDialog implements JobEntr
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
 
 		getData();
-		UseSubFolder();
 
 		BaseStepDialog.setSize(shell);
 
@@ -528,11 +470,7 @@ public class JobEntryDeleteFilesDialog extends JobEntryDialog implements JobEntr
 		props.setScreen(winprop);
 		shell.dispose();
 	}
-	private void UseSubFolder()
-	{
-		wlDeleteFolder.setEnabled(wIncludeSubfolders.getSelection());
-		wDeleteFolder.setEnabled(wIncludeSubfolders.getSelection());
-	}
+	
 
 	/**
 	 * Copy information from the meta-data input to the dialog fields.
@@ -541,7 +479,6 @@ public class JobEntryDeleteFilesDialog extends JobEntryDialog implements JobEntr
 	{
 		if (jobEntry.getName()    != null) wName.setText( jobEntry.getName() );
 		wName.selectAll();
-		wIgnoreErrors.setSelection(jobEntry.isIgnoreErrors());
 		
 		if (jobEntry.arguments != null)
 		{
@@ -556,8 +493,7 @@ public class JobEntryDeleteFilesDialog extends JobEntryDialog implements JobEntr
 			wFields.setRowNums();
 			wFields.optWidth(true);
 		}
-		wPrevious.setSelection(jobEntry.argFromPrevious);
-		wDeleteFolder.setSelection(jobEntry.deleteFolder);
+		wPrevious.setSelection(jobEntry.argFromPrevious);		
 		wIncludeSubfolders.setSelection(jobEntry.includeSubfolders);
 
 	}
@@ -572,8 +508,6 @@ public class JobEntryDeleteFilesDialog extends JobEntryDialog implements JobEntr
 	private void ok()
 	{
 		jobEntry.setName(wName.getText());
-		jobEntry.setIgnoreErrors(wIgnoreErrors.getSelection());
-		jobEntry.setDeleteFolder(wDeleteFolder.getSelection());
 		jobEntry.setIncludeSubfolders(wIncludeSubfolders.getSelection());
 
 		int nritems = wFields.nrNonEmpty();
