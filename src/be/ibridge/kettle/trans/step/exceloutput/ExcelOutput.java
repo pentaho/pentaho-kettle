@@ -421,10 +421,12 @@ public class ExcelOutput extends BaseStep implements StepInterface
 				data.sheet = data.workbook.createSheet("Sheet1", 0);    
 
             } else {
-								
-				// create the workbook from the template
+            	FileObject fo = KettleVFS.getFileObject(StringUtil.environmentSubstitute(meta.getTemplateFileName()));
+				// create the openFile from the template
+
 				Workbook tmpWorkbook=Workbook.getWorkbook(
-						new File(StringUtil.environmentSubstitute(meta.getTemplateFileName())));
+						                  fo.getContent().getInputStream(), ws);
+
 				data.workbook = Workbook.createWorkbook(file.getContent().getOutputStream(), tmpWorkbook);
 				
             	tmpWorkbook.close();
