@@ -503,7 +503,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
                             // If so, ask to split the hop!
                             if (split_hop)
                             {
-                                TransHopMeta hi = findHop(icon.x + iconsize / 2, icon.y + iconsize / 2);
+                                TransHopMeta hi = findHop(icon.x + iconsize / 2, icon.y + iconsize / 2, selected_step);
                                 if (hi != null)
                                 {
                                     int id = 0;
@@ -518,16 +518,29 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 
                                     if ( (id&0xFF) == 0) // Means: "Yes" button clicked!
                                     {
-                                        TransHopMeta newhop1 = new TransHopMeta(hi.getFromStep(), selected_step);
-                                        transMeta.addTransHop(newhop1);
-                                        spoon.addUndoNew(transMeta, new TransHopMeta[] { newhop1 }, new int[] { transMeta.indexOfTransHop(newhop1) }, true);
-                                        TransHopMeta newhop2 = new TransHopMeta(selected_step, hi.getToStep());
-                                        transMeta.addTransHop(newhop2);
-                                        spoon.addUndoNew(transMeta, new TransHopMeta[] { newhop2 }, new int[] { transMeta.indexOfTransHop(newhop2) }, true);
-                                        int idx = transMeta.indexOfTransHop(hi);
-                                        spoon.addUndoDelete(transMeta, new TransHopMeta[] { hi }, new int[] { idx }, true);
-                                        transMeta.removeTransHop(idx);
-                                        spoon.refreshTree();
+                                    	// Only split A-->--B by putting C in between IF...
+                                    	// C-->--A or B-->--C don't exists...
+                                    	// A ==> hi.getFromStep()
+                                    	// B ==> hi.getToStep();
+                                    	// C ==> selected_step
+                                    	//
+                                    	if (transMeta.findTransHop(selected_step, hi.getFromStep())==null && transMeta.findTransHop(hi.getToStep(), selected_step)==null)
+                                    	{
+	                                        TransHopMeta newhop1 = new TransHopMeta(hi.getFromStep(), selected_step);
+	                                        transMeta.addTransHop(newhop1);
+	                                        spoon.addUndoNew(transMeta, new TransHopMeta[] { newhop1 }, new int[] { transMeta.indexOfTransHop(newhop1) }, true);
+	                                        TransHopMeta newhop2 = new TransHopMeta(selected_step, hi.getToStep());
+	                                        transMeta.addTransHop(newhop2);
+	                                        spoon.addUndoNew(transMeta, new TransHopMeta[] { newhop2 }, new int[] { transMeta.indexOfTransHop(newhop2) }, true);
+	                                        int idx = transMeta.indexOfTransHop(hi);
+	                                        spoon.addUndoDelete(transMeta, new TransHopMeta[] { hi }, new int[] { idx }, true);
+	                                        transMeta.removeTransHop(idx);
+	                                        spoon.refreshTree();
+                                    	}
+                                    	else
+                                    	{
+                                    		// Silently discard this hop-split attempt. 
+                                    	}
                                     }
                                 }
                                 split_hop = false;
@@ -660,10 +673,11 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 
                             // See if we have a hop-split candidate
                             //
-                            TransHopMeta hi = findHop(icon.x + iconsize / 2, icon.y + iconsize / 2);
+                            TransHopMeta hi = findHop(icon.x + iconsize / 2, icon.y + iconsize / 2, selected_step);
                             if (hi != null)
                             {
-
+                            	// OK, we want to split the hop in 2
+                            	// 
                                 if (!hi.getFromStep().equals(selected_step) && !hi.getToStep().equals(selected_step))
                                 {
                                     split_hop = true;
@@ -1251,9 +1265,25 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         return screen2real(p.x, p.y);
     }
 
-    // See if location (x,y) is on a line between two steps: the hop!
-    // return the HopInfo if so, otherwise: null
+    /**
+     *  See if location (x,y) is on a line between two steps: the hop!
+     *  @param x
+     *  @param y
+     *  @return the transformation hop on the specified location, otherwise: null 
+     */
     private TransHopMeta findHop(int x, int y)
+    {
+    	return findHop(x, y, null);
+    }
+    
+    /**
+     *  See if location (x,y) is on a line between two steps: the hop!
+     *  @param x
+     *  @param y
+     *  @param exclude the step to exclude from the hops (from or to location). Specify null if no step is to be excluded.
+     *  @return the transformation hop on the specified location, otherwise: null 
+     */
+    private TransHopMeta findHop(int x, int y, StepMeta exclude)
     {
         int i;
         TransHopMeta online = null;
@@ -1264,6 +1294,10 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
             StepMeta ts = hi.getToStep();
 
             if (fs == null || ts == null) return null;
+            
+            // If either the "from" or "to" step is excluded, skip this hop.
+            //
+            if (exclude!=null && ( exclude.equals(fs) || exclude.equals(ts))) continue;
 
             int line[] = getLine(fs, ts);
 

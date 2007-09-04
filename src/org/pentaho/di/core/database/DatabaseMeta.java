@@ -387,7 +387,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 				}
 				else
 				{
-					throw new KettleException("No database type was specified [id_database_type="+id_database_type+"]");
+					// throw new KettleException("No database type was specified [id_database_type="+id_database_type+"]");
 				}
 
 				setID(id_database);
@@ -962,6 +962,14 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
 	public String getURL(String partitionId) throws KettleDatabaseException
 	{
+		// First see if we're not doing any JNDI...
+		// 
+		if (getAccessType()==TYPE_ACCESS_JNDI) {
+			// We can't really determine the URL here.
+			//
+			//
+		}
+		
         String baseUrl;
         if (isPartitioned() && !Const.isEmpty(partitionId))
         {
@@ -1586,6 +1594,15 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 	public String quoteField(String field)
 	{
         if (Const.isEmpty(field)) return null;
+        
+        if (isForcingIdentifiersToLowerCase())
+        {
+        	field=field.toLowerCase();
+        }
+        else if (isForcingIdentifiersToUpperCase()) 
+        {
+        	field=field.toUpperCase();
+        }
         
         // If the field already contains quotes, we don't touch it anymore, just return the same string...
         if (field.indexOf(getStartQuote())>=0 || field.indexOf(getEndQuote())>=0)
@@ -2220,6 +2237,38 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     public void setQuoteAllFields(boolean quoteAllFields)
     {
         databaseInterface.setQuoteAllFields(quoteAllFields);
+    }
+    
+    /**
+     * @return true if all identifiers should be forced to lower case
+     */
+    public boolean isForcingIdentifiersToLowerCase()
+    {
+    	return databaseInterface.isForcingIdentifiersToLowerCase();
+    }
+    
+    /**
+     * @param forceLowerCase true if all identifiers should be forced to lower case
+     */
+    public void setForcingIdentifiersToLowerCase(boolean forceLowerCase)
+    {
+    	databaseInterface.setForcingIdentifiersToLowerCase(forceLowerCase);
+    }
+    
+    /**
+     * @return true if all identifiers should be forced to upper case
+     */
+    public boolean isForcingIdentifiersToUpperCase()
+    {
+    	return databaseInterface.isForcingIdentifiersToUpperCase();
+    }
+    
+    /**
+     * @param forceLowerCase true if all identifiers should be forced to upper case
+     */
+    public void setForcingIdentifiersToUpperCase(boolean forceUpperCase)
+    {
+    	databaseInterface.setForcingIdentifiersToUpperCase(forceUpperCase);
     }
 
     /**

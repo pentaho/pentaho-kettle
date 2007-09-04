@@ -20,40 +20,37 @@ import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.andValid
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.fileExistsValidator;
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notNullValidator;
 
-import java.io.*;
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.TreeSet;
 
-import org.w3c.dom.Node;
-
+import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.FileSelectInfo;
+import org.apache.commons.vfs.FileSelector;
+import org.apache.commons.vfs.FileType;
+import org.pentaho.di.core.CheckResultInterface;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.ResultFile;
-
-import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.RowMetaAndData;
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
-import org.pentaho.di.job.entry.validator.ValidatorContext;
 import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.job.entry.validator.ValidatorContext;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.core.vfs.KettleVFS;
-import org.apache.commons.vfs.FileObject;
-import org.apache.commons.vfs.FileType;
-import org.apache.commons.vfs.FileSelector;
-import org.apache.commons.vfs.FileSelectInfo;
-import org.pentaho.di.core.logging.LogWriter;
+import org.w3c.dom.Node;
 
 
 
@@ -74,8 +71,8 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 	public  String  source_filefolder[];
 	public  String  destination_filefolder[];
 	public  String  wildcard[];
-	TreeSet list_files_remove = new TreeSet();
-	TreeSet list_add_result = new TreeSet();
+	TreeSet<String> list_files_remove = new TreeSet<String>();
+	TreeSet<String> list_add_result = new TreeSet<String>();
 	int NbrFail=0;
 	
 	public JobEntryCopyFiles(String n)
@@ -180,9 +177,7 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 		}
 	}
 
-	public void loadRep(Repository rep, long id_jobentry, ArrayList databases)
-		throws KettleException
-	{
+    public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases) throws KettleException {
 		try
 		{
 			super.loadRep(rep, id_jobentry, databases);
@@ -440,7 +435,7 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 					if (remove_source_files && !list_files_remove.isEmpty())
 					{
 
-						 for (Iterator iter = list_files_remove.iterator(); iter.hasNext();)
+						 for (Iterator<String> iter = list_files_remove.iterator(); iter.hasNext();)
 				        {
 				            String fileremoventry = (String) iter.next();
 				            // Remove ONLY Files
@@ -474,7 +469,7 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 					if (add_result_filesname && !list_add_result.isEmpty())
 					{
 
-						 for (Iterator iter = list_add_result.iterator(); iter.hasNext();)
+						 for (Iterator<String> iter = list_add_result.iterator(); iter.hasNext();)
 				        {
 				            String fileaddentry = (String) iter.next();
 				            // Add ONLY Files

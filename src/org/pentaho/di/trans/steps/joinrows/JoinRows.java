@@ -31,7 +31,6 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
-import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.Trans;
@@ -142,9 +141,9 @@ public class JoinRows extends BaseStep implements StepInterface
      * Get a row of data from the indicated rowset or buffer (memory/disk) 
      * @param filenr The rowset or buffer to read a row from
      * @return a row of data
-     * @throws KettleValueException 
+     * @throws KettleException in case something goes wrong 
      */
-	public Object[] getRowData(int filenr) throws KettleValueException
+	public Object[] getRowData(int filenr) throws KettleException
 	{
 		data.restart[filenr] = false;
 					 

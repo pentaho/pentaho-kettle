@@ -315,6 +315,16 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		}
 
 		public void cleanup() {
+		}
+
+		public void pauseRunning() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		public void resumeRunning() {
+			// TODO Auto-generated method stub
+			
 		}	
 	}
 	

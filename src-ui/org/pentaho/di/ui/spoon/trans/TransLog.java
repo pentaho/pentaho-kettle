@@ -88,8 +88,10 @@ public class TransLog extends Composite implements TabItemInterface
     public static final long UPDATE_TIME_VIEW = 1000L;
 	public static final long UPDATE_TIME_LOG = 2000L;
 	public static final long REFRESH_TIME = 100L;
-
+	
 	public final static String START_TEXT = Messages.getString("SpoonLog.Button.StartTransformation"); //$NON-NLS-1$
+	public final static String PAUSE_TEXT = Messages.getString("SpoonLog.Button.PauseTransformation"); //$NON-NLS-1$
+	public final static String RESUME_TEXT = Messages.getString("SpoonLog.Button.ResumeTransformation"); //$NON-NLS-1$
 	public final static String STOP_TEXT = Messages.getString("SpoonLog.Button.StopTransformation"); //$NON-NLS-1$
 
 	private Display display;
@@ -102,6 +104,7 @@ public class TransLog extends Composite implements TabItemInterface
 	private Button wSafeMode;
 	private Text wText;
 	private Button wStart;
+	private Button wPause;
     private Button wStop;
 	private Button wPreview;
 	private Button wError;
@@ -110,7 +113,7 @@ public class TransLog extends Composite implements TabItemInterface
 	private long lastUpdateView;
 	private long lastUpdateLog;
 
-	private FormData fdText, fdSash, fdStart, fdPreview, fdError, fdClear, fdLog, fdOnlyActive, fdSafeMode;
+	private FormData fdText, fdSash, fdStart, fdPause, fdPreview, fdError, fdClear, fdLog, fdOnlyActive, fdSafeMode;
 
 	private boolean running;
     private boolean preview;
@@ -118,7 +121,7 @@ public class TransLog extends Composite implements TabItemInterface
 
 	public boolean preview_shown = false;
 
-	private SelectionListener lsStart, lsStop, lsPreview, lsError, lsClear, lsLog;
+	private SelectionListener lsStart, lsPause, lsStop, lsPreview, lsError, lsClear, lsLog;
 
 	private StringBuffer message;
 
@@ -131,7 +134,9 @@ public class TransLog extends Composite implements TabItemInterface
     private boolean halted;
     private boolean halting;
 
-    private FormData fdStop;    
+    private FormData fdStop;
+
+	private boolean pauzing;    
 
 	public TransLog(Composite parent, final Spoon spoon, final TransMeta transMeta)
 	{
@@ -201,7 +206,11 @@ public class TransLog extends Composite implements TabItemInterface
 		wStart = new Button(this, SWT.PUSH);
 		wStart.setText(START_TEXT);
         wStart.setEnabled(true);
-        
+
+		wPause= new Button(this, SWT.PUSH);
+		wPause.setText(PAUSE_TEXT);
+        wPause.setEnabled(false);
+
         wStop= new Button(this, SWT.PUSH);
         wStop.setText(STOP_TEXT);
         wStop.setEnabled(false);
@@ -231,8 +240,13 @@ public class TransLog extends Composite implements TabItemInterface
 		fdStart.bottom = new FormAttachment(100, 0);
 		wStart.setLayoutData(fdStart);
 
+		fdPause= new FormData();
+        fdPause.left = new FormAttachment(wStart, 10);
+		fdPause.bottom = new FormAttachment(100, 0);
+		wPause.setLayoutData(fdPause);
+
         fdStop = new FormData();
-        fdStop.left = new FormAttachment(wStart, 10);
+        fdStop.left = new FormAttachment(wPause, 10);
         fdStop.bottom = new FormAttachment(100, 0);
         wStop.setLayoutData(fdStop);
 
@@ -351,6 +365,14 @@ public class TransLog extends Composite implements TabItemInterface
 			}
 		};
 
+		lsPause = new SelectionAdapter()
+		{
+			public void widgetSelected(SelectionEvent e)
+			{
+				pauseResume();
+			}
+		};
+
         lsStop = new SelectionAdapter()
         {
             public void widgetSelected(SelectionEvent e)
@@ -385,6 +407,7 @@ public class TransLog extends Composite implements TabItemInterface
 
 		wError.addSelectionListener(lsError);
 		wStart.addSelectionListener(lsStart);
+		wPause.addSelectionListener(lsPause);
         wStop.addSelectionListener(lsStop);
 		wPreview.addSelectionListener(lsPreview);
 		wClear.addSelectionListener(lsClear);
@@ -431,6 +454,7 @@ public class TransLog extends Composite implements TabItemInterface
                 }
                 
                 wStart.setEnabled(true);
+                wPause.setEnabled(false);
                 wStop.setEnabled(false);
             }
         }
@@ -516,6 +540,7 @@ public class TransLog extends Composite implements TabItemInterface
                         
 						log.logMinimal(Spoon.APP_NAME, Messages.getString("SpoonLog.Log.StartedExecutionOfTransformation")); //$NON-NLS-1$
 						wStart.setEnabled(false);
+						wPause.setEnabled(true);
                         wStop.setEnabled(true);
 						readLog();
 					}
@@ -571,6 +596,7 @@ public class TransLog extends Composite implements TabItemInterface
                 new ErrorDialog(shell, Messages.getString("SpoonLog.Dialog.ErrorWritingLogRecord.Title"), Messages.getString("SpoonLog.Dialog.ErrorWritingLogRecord.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
             }
             wStart.setEnabled(true);
+            wPause.setEnabled(false);
             wStop.setEnabled(false);
             running = false;
             initialized = false;
@@ -585,7 +611,33 @@ public class TransLog extends Composite implements TabItemInterface
         }
     }
     
+    public synchronized void pauseResume()
+    {
+        if (running)
+        {
+        	if (!pauzing)
+        	{
+                pauzing = true;
+                trans.pauseRunning();
 
+                wPause.setText(RESUME_TEXT);
+                wStart.setEnabled(false);
+                wPause.setEnabled(true);
+                wStop.setEnabled(true);
+        	}
+        	else
+        	{
+                pauzing = false;
+                trans.resumeRunning();
+
+                wPause.setText(PAUSE_TEXT);
+                wStart.setEnabled(false);
+                wPause.setEnabled(true);
+                wStop.setEnabled(true);
+        	}
+        }
+    }
+    
 	private synchronized void prepareTrans(final Thread parentThread, final String[] args)
     {
         Runnable runnable = new Runnable()
@@ -805,6 +857,7 @@ public class TransLog extends Composite implements TabItemInterface
 				readLog();
 				running = !running;
                 wStart.setEnabled(false);
+                wPause.setEnabled(true);
                 wStop.setEnabled(true);
     		}
     		catch (Exception e)

@@ -396,14 +396,18 @@ public class RepositoryDialog
 				
 				try
 				{
-					upgrade = rep.getDatabase().checkTableExists("R_USER"); //$NON-NLS-1$
+					String userTableName = rep.getDatabaseMeta().quoteField( Repository.TABLE_R_USER );
+					upgrade = rep.getDatabase().checkTableExists( userTableName ); //$NON-NLS-1$
 					if (upgrade) cu=Messages.getString("RepositoryDialog.Dialog.CreateUpgrade.Upgrade"); //$NON-NLS-1$
 				}
 				catch(KettleDatabaseException dbe)
 				{
+					// Roll back the connection: this is required for certain databases like PGSQL
+					// Otherwise we can't execute any other DDL statement.
+					//
 				    rep.rollback();
-				    // Don't show the error anymore, just go ahead and create the damn thing!
-					// ErrorDialog ed = new ErrorDialog(shell, props, "ERROR", "An unexpected error occured trying to check the existence of table R_USER in the repository."+Const.CR+"We consider the table to be non-existent and we will try to create the repository. ", dbe);
+
+				    // Don't show an error anymore, just go ahead and propose to create the repository!
 				}
 				
 				MessageBox qmb = new MessageBox(shell, SWT.ICON_WARNING | SWT.YES | SWT.NO);
@@ -424,6 +428,7 @@ public class RepositoryDialog
 							try
 							{
 								// OK, what's the admin password?
+								//
 								UserInfo ui = new UserInfo(rep, "admin"); //$NON-NLS-1$
 								
 								if (pwd.equalsIgnoreCase( ui.getPassword() ) )
@@ -499,6 +504,7 @@ public class RepositoryDialog
 					try
 					{
 						// OK, what's the admin password?
+						//
 						UserInfo ui = new UserInfo(rep, "admin"); //$NON-NLS-1$
 						
 						if (pwd.equalsIgnoreCase( ui.getPassword() ) )

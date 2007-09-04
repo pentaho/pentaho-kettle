@@ -88,15 +88,25 @@ public interface StepInterface
 	public void stopAll();
 
 	/**
+	 * Pause a running step
+	 */
+	public void pauseRunning();
+
+	/**
+	 * Resume a running step
+	 */
+	public void resumeRunning();
+
+	/**
 	 *  Run is where the action happens in a step...
 	 */
-	public void     run();
+	public void run();
 	
 	/**
 	 * Get the name of the step.
 	 * @return the name of the step
 	 */
-	public String   getStepname();
+	public String getStepname();
     
     /**
      * @return the type ID of the step...

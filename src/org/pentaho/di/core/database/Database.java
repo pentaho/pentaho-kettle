@@ -1079,7 +1079,7 @@ public class Database implements VariableSpace
 		{
 			keys=ps.getGeneratedKeys(); // 1 row of keys
 			ResultSetMetaData resultSetMetaData = keys.getMetaData();
-			RowMetaInterface rowMeta = getRowInfo(resultSetMetaData);
+			RowMetaInterface rowMeta = getRowInfo(resultSetMetaData, false, false);
 
 			return new RowMetaAndData(rowMeta, getRow(keys, resultSetMetaData, rowMeta));
 		}
@@ -1679,7 +1679,7 @@ public class Database implements VariableSpace
             // MySQL Hack only. It seems too much for the cursor type of operation on MySQL, to have another cursor opened
             // to get the length of a String field.  So, on MySQL, we ingore the length of Strings in result rows.
             // 
-			rowMeta = getRowInfo(res.getMetaData(), databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_MYSQL);
+			rowMeta = getRowInfo(res.getMetaData(), databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_MYSQL, false);
 		}
 		catch(SQLException ex)
 		{
@@ -1747,7 +1747,7 @@ public class Database implements VariableSpace
              // MySQL Hack only. It seems too much for the cursor type of operation on MySQL, to have another cursor opened
             // to get the length of a String field.  So, on MySQL, we ingore the length of Strings in result rows.
             // 
-            rowMeta = getRowInfo(res.getMetaData(), databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_MYSQL);
+            rowMeta = getRowInfo(res.getMetaData(), databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_MYSQL, false);
 		}
 		catch(SQLException ex)
 		{
@@ -2181,7 +2181,7 @@ public class Database implements VariableSpace
 				debug = "exec query";
 				ResultSet r=sel_stmt.executeQuery(databaseMeta.stripCR(sql));
                 debug = "getQueryFields get row info";
-				fields = getRowInfo(r.getMetaData());
+				fields = getRowInfo(r.getMetaData(), false, false);
 				debug="close resultset";
 				r.close();
 				debug="close statement";
@@ -2207,7 +2207,7 @@ public class Database implements VariableSpace
 				debug="executeQuery()";
 				ResultSet r = ps.executeQuery();
 				debug="getRowInfo";
-				fields=getRowInfo(ps.getMetaData());
+				fields=getRowInfo(ps.getMetaData(), false, false);
 				debug="close resultset";
 				r.close();
 				debug="close preparedStatement";
@@ -2251,17 +2251,13 @@ public class Database implements VariableSpace
 		}
 	}
 
-    private RowMetaInterface getRowInfo(ResultSetMetaData rm) throws KettleDatabaseException
-    {
-        return getRowInfo(rm, false);
-    }
-
 	/**
 	 * Build the row using ResultSetMetaData rsmd
      * @param rm The resultset metadata to inquire
      * @param ignoreLength true if you want to ignore the length (workaround for MySQL bug/problem)
+     * @param lazyConversion true if lazy conversion needs to be enabled where possible
 	 */
-	private RowMetaInterface getRowInfo(ResultSetMetaData rm, boolean ignoreLength) throws KettleDatabaseException
+	private RowMetaInterface getRowInfo(ResultSetMetaData rm, boolean ignoreLength, boolean lazyConversion) throws KettleDatabaseException
 	{
         if (rm==null) return null;
 		
@@ -2269,6 +2265,8 @@ public class Database implements VariableSpace
 		
 		try
 		{
+			// TODO If we do lazy conversion, we need to find out about the encoding
+			//
             int fieldNr = 1;
 			int nrcols=rm.getColumnCount();	
 			for (int i=1;i<=nrcols;i++)
@@ -2283,7 +2281,7 @@ public class Database implements VariableSpace
                     fieldNr++;
                 }
                 
-				ValueMetaInterface v = getValueFromSQLType(name, rm, i, ignoreLength);
+				ValueMetaInterface v = getValueFromSQLType(name, rm, i, ignoreLength, lazyConversion);
 				rowMeta.addValueMeta(v);			
 			}
 			return rowMeta;
@@ -2294,24 +2292,21 @@ public class Database implements VariableSpace
 		}
 	}
 
-	public ValueMetaInterface getValueFromSQLType(String name, ResultSetMetaData rm, int i, boolean ignoreLength) throws SQLException
+	private ValueMetaInterface getValueFromSQLType(String name, ResultSetMetaData rm, int index, boolean ignoreLength, boolean lazyConversion) throws SQLException
     {
         int length=-1; 
         int precision=-1;
         int valtype=ValueMetaInterface.TYPE_NONE;
         boolean isClob = false;
 
-        int type = rm.getColumnType(i);
+        int type = rm.getColumnType(index);
         switch(type)
         {
         case java.sql.Types.CHAR:
         case java.sql.Types.VARCHAR: 
         case java.sql.Types.LONGVARCHAR:  // Character Large Object
             valtype=ValueMetaInterface.TYPE_STRING;
-            if (!ignoreLength) length=rm.getColumnDisplaySize(i);
-            // System.out.println("Display of "+name+" = "+precision);
-            // System.out.println("Precision of "+name+" = "+rm.getPrecision(i));
-            // System.out.println("Scale of "+name+" = "+rm.getScale(i));
+            if (!ignoreLength) length=rm.getColumnDisplaySize(index);
             break;
             
         case java.sql.Types.CLOB:  
@@ -2350,8 +2345,8 @@ public class Database implements VariableSpace
         case java.sql.Types.REAL:
         case java.sql.Types.NUMERIC:
             valtype=ValueMetaInterface.TYPE_NUMBER;
-            length=rm.getPrecision(i); 
-            precision=rm.getScale(i);
+            length=rm.getPrecision(index); 
+            precision=rm.getScale(index);
             if (length    >=126) length=-1;
             if (precision >=126) precision=-1;
             
@@ -2421,10 +2416,10 @@ public class Database implements VariableSpace
             valtype=ValueMetaInterface.TYPE_BINARY;
             
             if (databaseMeta.getDatabaseType() == DatabaseMeta.TYPE_DATABASE_DB2 &&
-                (2 * rm.getPrecision(i)) == rm.getColumnDisplaySize(i)) 
+                (2 * rm.getPrecision(index)) == rm.getColumnDisplaySize(index)) 
             {
                 // set the length for "CHAR(X) FOR BIT DATA"
-                length = rm.getPrecision(i);
+                length = rm.getPrecision(index);
             }
             else
             if (databaseMeta.getDatabaseType() == DatabaseMeta.TYPE_DATABASE_ORACLE &&
@@ -2433,7 +2428,7 @@ public class Database implements VariableSpace
             {
                 // set the length for Oracle "RAW" or "LONGRAW" data types
                 valtype = ValueMetaInterface.TYPE_STRING;
-                length = rm.getColumnDisplaySize(i);
+                length = rm.getColumnDisplaySize(index);
             }
             else
             {
@@ -2444,19 +2439,27 @@ public class Database implements VariableSpace
 
         default:
             valtype=ValueMetaInterface.TYPE_STRING;
-            precision=rm.getScale(i);                    
+            precision=rm.getScale(index);                    
             break;
         }
-
+        
         // Grab the comment as a description to the field as well.
-        String comments=rm.getColumnLabel(i);
+        String comments=rm.getColumnLabel(index);
 
         ValueMetaInterface v=new ValueMeta(name, valtype);
         v.setLength(length);
         v.setPrecision(precision);
         v.setComments(comments);
         v.setLargeTextField(isClob);
-        
+
+        // See if we need to enable lazy conversion...
+        //
+        if (lazyConversion && valtype==ValueMetaInterface.TYPE_STRING) {
+        	v.setStorageType(ValueMetaInterface.STORAGE_TYPE_BINARY_STRING);
+        	// TODO set some encoding to go with this.
+        }
+
+
         return v;
     }
 
@@ -2510,11 +2513,22 @@ public class Database implements VariableSpace
 	}
 
 	/**
-	 * Get a row from the resultset.
+	 * Get a row from the resultset.  Do not use lazy conversion
 	 * @param rs The resultset to get the row from
 	 * @return one row or null if no row was found on the resultset or if an error occurred.
 	 */
 	public Object[] getRow(ResultSet rs) throws KettleDatabaseException
+	{
+		return getRow(rs, false);
+	}
+	
+	/**
+	 * Get a row from the resultset.
+	 * @param rs The resultset to get the row from
+	 * @param lazyConversion set to true if strings need to have lazy conversion enabled
+	 * @return one row or null if no row was found on the resultset or if an error occurred.
+	 */
+	public Object[] getRow(ResultSet rs, boolean lazyConversion) throws KettleDatabaseException
 	{
         if (rowMeta==null)
         {
@@ -2528,7 +2542,7 @@ public class Database implements VariableSpace
                 throw new KettleDatabaseException("Unable to retrieve metadata from resultset", e);
             }
 
-            rowMeta = getRowInfo(rsmd);
+            rowMeta = getRowInfo(rsmd, false, lazyConversion);
         }
 
 		return getRow(rs, null, rowMeta);
@@ -2558,7 +2572,16 @@ public class Database implements VariableSpace
 					case ValueMetaInterface.TYPE_NUMBER    : data[i] = new Double( rs.getDouble(i+1) ); break;
                     case ValueMetaInterface.TYPE_BIGNUMBER : data[i] = rs.getBigDecimal(i+1); break;
 					case ValueMetaInterface.TYPE_INTEGER   : data[i] = new Long( rs.getLong(i+1) ); break;
-					case ValueMetaInterface.TYPE_STRING    : data[i] = rs.getString(i+1); break;
+					case ValueMetaInterface.TYPE_STRING    : 
+						{
+							if (val.isStorageBinaryString()) {
+								data[i] = rs.getBytes(i+1);
+							}
+							else {
+								data[i] = rs.getString(i+1);
+							}
+						}
+						break;
 					case ValueMetaInterface.TYPE_BINARY    : 
                         {
                             if (databaseMeta.supportsGetBlob())
@@ -2911,7 +2934,7 @@ public class Database implements VariableSpace
 			res = ps.executeQuery();
 			
 			debug = "getRowInfo()";
-			rowMeta = getRowInfo(res.getMetaData());
+			rowMeta = getRowInfo(res.getMetaData(), false, false);
 			
 			debug = "getRow(res)";
 			Object[] ret = getRow(res);
@@ -3200,7 +3223,7 @@ public class Database implements VariableSpace
 		
 		for( int i=0; i<md.getColumnCount(); i++ ) {
            	String name = md.getColumnName(i+1);
-           	ValueMetaInterface valueMeta = getValueFromSQLType( name, md, i+1, true );
+           	ValueMetaInterface valueMeta = getValueFromSQLType( name, md, i+1, true, false );
            	meta.addValueMeta( valueMeta );
 		}
 
@@ -3614,7 +3637,7 @@ public class Database implements VariableSpace
 			ResultSet res = pstmt.executeQuery();
 			if (res!=null)
 			{
-				rowMeta = getRowInfo(res.getMetaData());
+				rowMeta = getRowInfo(res.getMetaData(), false, false);
 				row = getRow(res);
 				res.close();
 			}
@@ -4021,7 +4044,16 @@ public class Database implements VariableSpace
      */
     public void lockTables(String tableNames[]) throws KettleDatabaseException
     {
-        String sql = databaseMeta.getSQLLockTables(tableNames);
+    	if (Const.isEmpty(tableNames)) return;
+    	
+    	// Quote table names too...
+    	//
+    	String[] quotedTableNames = new String[tableNames.length];
+    	for (int i=0;i<tableNames.length;i++) quotedTableNames[i] = databaseMeta.quoteField(tableNames[i]);
+    	
+    	// Get the SQL to lock the (quoted) tables
+    	//
+        String sql = databaseMeta.getSQLLockTables(quotedTableNames);
         if (sql!=null)
         {
             execStatements(sql);
@@ -4035,7 +4067,16 @@ public class Database implements VariableSpace
      */
     public void unlockTables(String tableNames[]) throws KettleDatabaseException
     {
-        String sql = databaseMeta.getSQLUnlockTables(tableNames);
+    	if (Const.isEmpty(tableNames)) return;
+    	
+    	// Quote table names too...
+    	//
+    	String[] quotedTableNames = new String[tableNames.length];
+    	for (int i=0;i<tableNames.length;i++) quotedTableNames[i] = databaseMeta.quoteField(tableNames[i]);
+    	
+    	// Get the SQL to unlock the (quoted) tables
+    	//
+        String sql = databaseMeta.getSQLUnlockTables(quotedTableNames);
         if (sql!=null)
         {
             execStatement(sql);

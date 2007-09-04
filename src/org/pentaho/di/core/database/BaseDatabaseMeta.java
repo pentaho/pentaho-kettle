@@ -122,7 +122,17 @@ public abstract class BaseDatabaseMeta implements Cloneable, VariableSpace
      * A flag to determine if we should quote all fields
      */
     public static final String ATTRIBUTE_QUOTE_ALL_FIELDS = "QUOTE_ALL_FIELDS";
-    
+
+    /**
+     * A flag to determine if we should force all identifiers to lower case
+     */
+    public static final String ATTRIBUTE_FORCE_IDENTIFIERS_TO_LOWERCASE = "FORCE_IDENTIFIERS_TO_LOWERCASE";
+
+    /**
+     * A flag to determine if we should force all identifiers to UPPER CASE
+     */
+    public static final String ATTRIBUTE_FORCE_IDENTIFIERS_TO_UPPERCASE = "FORCE_IDENTIFIERS_TO_UPPERCASE";
+
     
     public static final DatabaseConnectionPoolParameter[] poolingParameters = new DatabaseConnectionPoolParameter[]
         {
@@ -1175,6 +1185,40 @@ public abstract class BaseDatabaseMeta implements Cloneable, VariableSpace
     public void setQuoteAllFields(boolean quoteAllFields)
     {
         attributes.setProperty(ATTRIBUTE_QUOTE_ALL_FIELDS, quoteAllFields?"Y":"N");
+    }
+    
+    /**
+     * @return true if all identifiers should be forced to lower case
+     */
+    public boolean isForcingIdentifiersToLowerCase()
+    {
+        String forceLowerCase = attributes.getProperty(ATTRIBUTE_FORCE_IDENTIFIERS_TO_LOWERCASE, "N"); // DEFAULT TO NO!!
+        return "Y".equalsIgnoreCase(forceLowerCase);
+    }
+    
+    /**
+     * @param forceLowerCase true if all identifiers should be forced to lower case
+     */
+    public void setForcingIdentifiersToLowerCase(boolean forceLowerCase)
+    {
+        attributes.setProperty(ATTRIBUTE_FORCE_IDENTIFIERS_TO_LOWERCASE, forceLowerCase?"Y":"N");
+    }
+    
+    /**
+     * @return true if all identifiers should be forced to upper case
+     */
+    public boolean isForcingIdentifiersToUpperCase()
+    {
+        String forceUpperCase = attributes.getProperty(ATTRIBUTE_FORCE_IDENTIFIERS_TO_UPPERCASE, "N"); // DEFAULT TO NO!!
+        return "Y".equalsIgnoreCase(forceUpperCase);
+    }
+    
+    /**
+     * @param forceLowerCase true if all identifiers should be forced to upper case
+     */
+    public void setForcingIdentifiersToUpperCase(boolean forceUpperCase)
+    {
+        attributes.setProperty(ATTRIBUTE_FORCE_IDENTIFIERS_TO_UPPERCASE, forceUpperCase?"Y":"N");
     }
 
 	public void copyVariablesFrom(VariableSpace space) 

@@ -57,6 +57,7 @@ import org.pentaho.di.trans.step.StepMetaDataCombi;
 import org.pentaho.di.trans.step.StepPartitioningMeta;
 import org.pentaho.di.trans.steps.mappinginput.MappingInput;
 import org.pentaho.di.trans.steps.mappingoutput.MappingOutput;
+import org.pentaho.di.ui.spoon.delegates.SpoonTransformationDelegate;
 import org.pentaho.di.www.AddTransServlet;
 import org.pentaho.di.www.PrepareExecutionTransServlet;
 import org.pentaho.di.www.SlaveServerTransStatus;
@@ -2355,5 +2356,23 @@ public class Trans implements VariableSpace
 	 */
 	public void setPreviewSizes(int[] previewSizes) {
 		this.previewSizes = previewSizes;
-	}       
+	}
+
+	/**
+	 * Pause the transformation (pause all steps)
+	 */
+	public void pauseRunning() {
+		for (StepMetaDataCombi combi : steps) {
+			combi.step.pauseRunning();
+		}
+	}
+	
+	/**
+	 * Resume running the transformation after a pause (resume all steps)
+	 */
+	public void resumeRunning() {
+		for (StepMetaDataCombi combi : steps) {
+			combi.step.resumeRunning();
+		}
+	} 
 }

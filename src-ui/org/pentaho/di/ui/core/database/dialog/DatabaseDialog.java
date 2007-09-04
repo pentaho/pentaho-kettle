@@ -180,6 +180,8 @@ public class DatabaseDialog extends Dialog
     private Label          wlQuoteAllFields;
 
     private Button         wQuoteAllFields;
+    private Button         wForceIdentifiersLowerCase;
+    private Button         wForceIdentifiersUpperCase;
 
     public DatabaseDialog(Shell parent, DatabaseMeta databaseMeta)
     {
@@ -1286,6 +1288,42 @@ public class DatabaseDialog extends Dialog
         fdStreamResult.right = new FormAttachment(95, 0);
         wQuoteAllFields.setLayoutData(fdStreamResult);
 
+        // ForceIdentifiersLowerCase
+        Label wlForceIdentifiersLowerCase = new Label(wAdvancedComp, SWT.RIGHT);
+        wlForceIdentifiersLowerCase.setText(Messages.getString("DatabaseDialog.label.AdvancedForceIdentifiersLowerCase")); //$NON-NLS-1$
+        props.setLook(wlForceIdentifiersLowerCase);
+        FormData fdlForceIdentifiersLowerCase = new FormData();
+        fdlForceIdentifiersLowerCase.top = new FormAttachment(wQuoteAllFields, margin);
+        fdlForceIdentifiersLowerCase.left = new FormAttachment(0, 0);
+        fdlForceIdentifiersLowerCase.right = new FormAttachment(middle, -margin);
+        wlForceIdentifiersLowerCase.setLayoutData(fdlForceIdentifiersLowerCase);
+
+        wForceIdentifiersLowerCase = new Button(wAdvancedComp, SWT.CHECK);
+        props.setLook(wForceIdentifiersLowerCase);
+        FormData fdForceIdentifiersLowerCase = new FormData();
+        fdForceIdentifiersLowerCase.top = new FormAttachment(wQuoteAllFields, margin);
+        fdForceIdentifiersLowerCase.left = new FormAttachment(middle, 0);
+        fdForceIdentifiersLowerCase.right = new FormAttachment(95, 0);
+        wForceIdentifiersLowerCase.setLayoutData(fdForceIdentifiersLowerCase);
+        
+        // ForceIdentifiersUpperCase
+        Label wlForceIdentifiersUpperCase = new Label(wAdvancedComp, SWT.RIGHT);
+        wlForceIdentifiersUpperCase.setText(Messages.getString("DatabaseDialog.label.AdvancedForceIdentifiersUpperCase")); //$NON-NLS-1$
+        props.setLook(wlForceIdentifiersUpperCase);
+        FormData fdlForceIdentifiersUpperCase = new FormData();
+        fdlForceIdentifiersUpperCase.top = new FormAttachment(wForceIdentifiersLowerCase, margin);
+        fdlForceIdentifiersUpperCase.left = new FormAttachment(0, 0);
+        fdlForceIdentifiersUpperCase.right = new FormAttachment(middle, -margin);
+        wlForceIdentifiersUpperCase.setLayoutData(fdlForceIdentifiersUpperCase);
+
+        wForceIdentifiersUpperCase = new Button(wAdvancedComp, SWT.CHECK);
+        props.setLook(wForceIdentifiersUpperCase);
+        FormData fdForceIdentifiersUpperCase = new FormData();
+        fdForceIdentifiersUpperCase.top = new FormAttachment(wForceIdentifiersLowerCase, margin);
+        fdForceIdentifiersUpperCase.left = new FormAttachment(middle, 0);
+        fdForceIdentifiersUpperCase.right = new FormAttachment(95, 0);
+        wForceIdentifiersUpperCase.setLayoutData(fdForceIdentifiersUpperCase);
+        
         FormData fdAdvancedComp = new FormData();
         fdAdvancedComp.left = new FormAttachment(0, 0);
         fdAdvancedComp.top = new FormAttachment(0, 0);
@@ -1381,6 +1419,8 @@ public class DatabaseDialog extends Dialog
         wStreamResult.setSelection(databaseMeta.isStreamingResults());
 
         wQuoteAllFields.setSelection(databaseMeta.isQuoteAllFields());
+        wForceIdentifiersLowerCase.setSelection(databaseMeta.isForcingIdentifiersToLowerCase());
+        wForceIdentifiersUpperCase.setSelection(databaseMeta.isForcingIdentifiersToUpperCase());
 
         getOptionsData();
         checkPasswordVisible(wPassword.getTextWidget());
@@ -1660,6 +1700,8 @@ public class DatabaseDialog extends Dialog
 
         // Advanced Settings...
         databaseMeta.setQuoteAllFields(wQuoteAllFields.getSelection());
+        databaseMeta.setForcingIdentifiersToLowerCase(wForceIdentifiersLowerCase.getSelection());
+        databaseMeta.setForcingIdentifiersToUpperCase(wForceIdentifiersUpperCase.getSelection());
 
         // Generic settings...
         databaseMeta.getAttributes().put(GenericDatabaseMeta.ATRRIBUTE_CUSTOM_URL, wURL.getText());
@@ -1776,9 +1818,7 @@ public class DatabaseDialog extends Dialog
         }
         catch (KettleException e)
         {
-            new ErrorDialog(
-                    shell,
-                    Messages.getString("DatabaseDialog.ErrorParameters.title"), Messages.getString("DatabaseDialog.ErrorConnectionInfo.description"), e); //$NON-NLS-1$ //$NON-NLS-2$
+            new ErrorDialog(shell, Messages.getString("DatabaseDialog.ErrorParameters.title"), Messages.getString("DatabaseDialog.ErrorConnectionInfo.description"), e); //$NON-NLS-1$ //$NON-NLS-2$
         }
     }
 
@@ -1814,16 +1854,11 @@ public class DatabaseDialog extends Dialog
                     try
                     {
                         db.connect(partitioningInformation[i].getPartitionId());
-                        report
-                                .append(Messages.getString(
-                                        "DatabaseDialog.report.ConnectionWithPartOk", dbinfo.getName(), partitioningInformation[i].getPartitionId()) + Const.CR); //$NON-NLS-1$
+                        report.append(Messages.getString("DatabaseDialog.report.ConnectionWithPartOk", dbinfo.getName(), partitioningInformation[i].getPartitionId()) + Const.CR); //$NON-NLS-1$
                     }
                     catch (KettleException e)
                     {
-                        report
-                                .append(Messages
-                                        .getString(
-                                                "DatabaseDialog.report.ConnectionWithPartError", dbinfo.getName(), partitioningInformation[i].getPartitionId(), e.toString()) + Const.CR); //$NON-NLS-1$
+                        report.append(Messages.getString("DatabaseDialog.report.ConnectionWithPartError", dbinfo.getName(), partitioningInformation[i].getPartitionId(), e.toString()) + Const.CR); //$NON-NLS-1$
                         report.append(Const.getStackTracker(e) + Const.CR);
                     }
                     finally
@@ -1858,11 +1893,10 @@ public class DatabaseDialog extends Dialog
                 report.append(Const.CR);
             }
 
-            EnterTextDialog dialog = new EnterTextDialog(
-                    shell,
-                    Messages.getString("DatabaseDialog.ConnectionReport.title"), Messages.getString("DatabaseDialog.ConnectionReport.description"), report.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+            EnterTextDialog dialog = new EnterTextDialog(shell, Messages.getString("DatabaseDialog.ConnectionReport.title"), Messages.getString("DatabaseDialog.ConnectionReport.description"), report.toString()); //$NON-NLS-1$ //$NON-NLS-2$
             dialog.setReadOnly();
             dialog.setFixed(true);
+            dialog.setModal();
             dialog.open();
         }
         else
@@ -1889,8 +1923,7 @@ public class DatabaseDialog extends Dialog
         }
         catch (KettleException e)
         {
-            new ErrorDialog(shell,
-                    Messages.getString("DatabaseDialog.ErrorParameters,title"), Messages.getString("DatabaseDialog.ErrorParameters.description"), e); //$NON-NLS-1$ //$NON-NLS-2$
+            new ErrorDialog(shell, Messages.getString("DatabaseDialog.ErrorParameters,title"), Messages.getString("DatabaseDialog.ErrorParameters.description"), e); //$NON-NLS-1$ //$NON-NLS-2$
         }
     }
 

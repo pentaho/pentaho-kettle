@@ -702,5 +702,25 @@ public interface DatabaseInterface extends Cloneable
      * @param quoteAllFields true if all fields in DB should be quoted.
      */
     public void setQuoteAllFields(boolean quoteAllFields);
-
+    
+    /**
+     * @return true if all identifiers should be forced to lower case
+     */
+    public boolean isForcingIdentifiersToLowerCase();
+    
+    /**
+     * @param forceLowerCase true if all identifiers should be forced to lower case
+     */
+    public void setForcingIdentifiersToLowerCase(boolean forceLowerCase);
+    
+    /**
+     * @return true if all identifiers should be forced to upper case
+     */
+    public boolean isForcingIdentifiersToUpperCase();
+    
+    /**
+     * @param forceLowerCase true if all identifiers should be forced to upper case
+     */
+    public void setForcingIdentifiersToUpperCase(boolean forceUpperCase);
+    
 }

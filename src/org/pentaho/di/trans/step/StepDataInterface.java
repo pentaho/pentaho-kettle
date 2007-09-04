@@ -36,6 +36,7 @@ public interface StepDataInterface
     public static final int STATUS_STOPPED       = 5; // Stopped because of user request of error
 	public static final int STATUS_DISPOSED      = 6; // cleaned out, step is gone
     public static final int STATUS_HALTED        = 7; // Not launching because init failed 
+	public static final int STATUS_PAUSED        = 8; // Paused
     
 	public void setStatus(int status);
 	public int getStatus();

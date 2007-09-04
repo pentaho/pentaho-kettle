@@ -475,21 +475,45 @@ public class SpoonDBDelegate extends SpoonDelegate
 	public void newConnection()
 	{
 		HasDatabasesInterface hasDatabasesInterface = spoon.getActiveHasDatabasesInterface();
-		if (hasDatabasesInterface == null)
+		if (hasDatabasesInterface == null && spoon.rep==null)
+		{
 			return;
+		}
 
 		DatabaseMeta databaseMeta = new DatabaseMeta();
 		DatabaseDialog con = new DatabaseDialog(spoon.getShell(), databaseMeta);
 		String con_name = con.open();
 		if (!Const.isEmpty(con_name))
 		{
-			databaseMeta.verifyAndModifyDatabaseName(hasDatabasesInterface.getDatabases(), null);
-			hasDatabasesInterface.addDatabase(databaseMeta);
-			spoon.addUndoNew((UndoInterface) hasDatabasesInterface,
-					new DatabaseMeta[] { (DatabaseMeta) databaseMeta.clone() },
-					new int[] { hasDatabasesInterface.indexOfDatabase(databaseMeta) });
-			saveConnection(databaseMeta);
-			spoon.refreshTree();
+			if (hasDatabasesInterface!=null)
+			{
+				databaseMeta.verifyAndModifyDatabaseName(hasDatabasesInterface.getDatabases(), null);
+				hasDatabasesInterface.addDatabase(databaseMeta);
+				spoon.addUndoNew((UndoInterface) hasDatabasesInterface,
+						new DatabaseMeta[] { (DatabaseMeta) databaseMeta.clone() },
+						new int[] { hasDatabasesInterface.indexOfDatabase(databaseMeta) });
+				saveConnection(databaseMeta);
+				spoon.refreshTree();
+			}
+			else
+			{
+				// Save it in the repository...
+				try 
+				{
+					if (!spoon.rep.userinfo.isReadonly())
+					{
+						databaseMeta.saveRep(spoon.rep);
+					}
+					else
+					{
+						throw new KettleException(Messages.getString("Spoon.Dialog.Exception.ReadOnlyRepositoryUser"));
+					}
+				} 
+				catch (KettleException e) 
+				{
+					new ErrorDialog(spoon.getShell(), Messages.getString("Spoon.Dialog.ErrorSavingConnection.Title"), Messages.getString("Spoon.Dialog.ErrorSavingConnection.Message", databaseMeta.getName()), e);
+				}
+			}
 		}
 	}
 

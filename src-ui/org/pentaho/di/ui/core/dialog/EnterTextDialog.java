@@ -57,7 +57,7 @@ public class EnterTextDialog extends Dialog
     private Button wOK, wCancel;
     private Listener lsOK, lsCancel;
 
-    private Shell shell;
+    private Shell parent, shell;
     private SelectionAdapter lsDef;
     private PropsUI props;
     private String text;
@@ -65,24 +65,6 @@ public class EnterTextDialog extends Dialog
     private boolean readonly, modal, singleLine;
     private String origText;
 
-    /**
-     * @deprecated Use version without <i>props</i> parameter
-     */
-    public EnterTextDialog(Shell parent, PropsUI props, String title, String message, String description, boolean fixed)
-    {
-        this(parent, title, message, description, fixed);
-        this.props = props;
-    }
-    
-    /**
-     * @deprecated Use version without <i>props</i> parameter
-     */
-    public EnterTextDialog(Shell parent, PropsUI props, String title, String message, String description)
-    {
-        this(parent, title, message, description);
-        this.props = props;
-    }
-    
     /**
      * Dialog to allow someone to show or enter a text
      * 
@@ -109,6 +91,7 @@ public class EnterTextDialog extends Dialog
     public EnterTextDialog(Shell parent, String title, String message, String text)
     {
         super(parent, SWT.NONE);
+        this.parent = parent;
         props = PropsUI.getInstance();
         this.title = title;
         this.message = message;
@@ -135,9 +118,10 @@ public class EnterTextDialog extends Dialog
 
     public String open()
     {
-        Shell parent = getParent();
         Display display = parent.getDisplay();
-
+        
+        modal |= Const.isLinux(); // On Linux, this dialog seems to behave strangely except when shown modal
+        
         shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN |  (modal?SWT.APPLICATION_MODAL:SWT.NONE));
         props.setLook(shell);
 
@@ -233,8 +217,14 @@ public class EnterTextDialog extends Dialog
 
     public void getData()
     {
-        if (text != null)
-            wDesc.setText(text);
+        if (text != null) wDesc.setText(text);
+        
+        if (readonly) {
+        	wOK.setFocus();
+        }
+        else {
+        	wDesc.setFocus();
+        }
     }
 
     public void checkCancel(ShellEvent e) {

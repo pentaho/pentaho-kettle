@@ -127,6 +127,7 @@ public class BaseStep extends Thread implements VariableSpace
             Messages.getString("BaseStep.status.Stopped"),
             Messages.getString("BaseStep.status.Disposed"), 
             Messages.getString("BaseStep.status.Halted"), 
+            Messages.getString("BaseStep.status.Paused"), 
     	};
 
     private TransMeta                    transMeta;
@@ -192,6 +193,8 @@ public class BaseStep extends Thread implements VariableSpace
     public RowSet errorRowSet;
 
     public AtomicBoolean                 stopped;
+
+    public AtomicBoolean                 paused;
 
     public boolean                       waiting;
 
@@ -322,6 +325,7 @@ public class BaseStep extends Thread implements VariableSpace
         first = true;
 
         stopped = new AtomicBoolean(false);;
+        paused = new AtomicBoolean(false);;
         init = false;
 
         linesRead = 0L; // Keep some statistics!
@@ -714,8 +718,19 @@ public class BaseStep extends Thread implements VariableSpace
      */
     public void putRow(RowMetaInterface rowMeta, Object[] row) throws KettleStepException
     {
+    	// Are we pausing the step? If so, stall forever...
+    	//
+    	while (paused.get() && !stopped.get()) {
+    		try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				throw new KettleStepException(e);
+			}
+    	}
+    	
 	    // Have all threads started?
 	    // Are we running yet?  If not, wait a bit until all threads have been started.
+    	//
 	    if(this.checkTransRunning == false){
 	    	while (!trans.isRunning() && !stopped.get())
 	        {
@@ -1029,6 +1044,16 @@ public class BaseStep extends Thread implements VariableSpace
      */
     public void putRowTo(RowMetaInterface rowMeta, Object[] row, RowSet rowSet) throws KettleStepException
     {
+    	// Are we pausing the step? If so, stall forever...
+    	//
+    	while (paused.get() && !stopped.get()) {
+    		try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				throw new KettleStepException(e);
+			}
+    	}
+    	
         if (previewSize > 0 && previewBuffer.size() < previewSize)
         {
             try
@@ -1045,7 +1070,7 @@ public class BaseStep extends Thread implements VariableSpace
         //
         for (int i = 0; i < rowListeners.size(); i++)
         {
-            RowListener rowListener = (RowListener) rowListeners.get(i);
+            RowListener rowListener = rowListeners.get(i);
             rowListener.rowWrittenEvent(rowMeta, row);
         }
 
@@ -1175,6 +1200,16 @@ public class BaseStep extends Thread implements VariableSpace
      */
     public Object[] getRow() throws KettleException
     {
+    	// Are we pausing the step? If so, stall forever...
+    	//
+    	while (paused.get() && !stopped.get()) {
+    		try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				throw new KettleStepException(e);
+			}
+    	}
+    	
 	    if (stopped.get())
 	    {
 	        if (log.isDebug()) logDebug(Messages.getString("BaseStep.Log.StopLookingForMoreRows")); //$NON-NLS-1$
@@ -1368,8 +1403,18 @@ public class BaseStep extends Thread implements VariableSpace
         }
     }
     
-    public Object[] getRowFrom(RowSet rowSet) {
+    public Object[] getRowFrom(RowSet rowSet) throws KettleStepException {
         
+    	// Are we pausing the step? If so, stall forever...
+    	//
+    	while (paused.get() && !stopped.get()) {
+    		try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				throw new KettleStepException(e);
+			}
+    	}
+    	
         Object[] rowData = rowSet.getRow();
         while (rowData==null && !rowSet.isDone() && !stopped.get())
         {
@@ -1730,7 +1775,12 @@ public class BaseStep extends Thread implements VariableSpace
     {
         return stopped.get();
     }
-    
+
+    public boolean isPaused()
+    {
+        return paused.get();
+    }
+
 	public void setStopped(boolean stopped) {
 		this.stopped.set(stopped);
 	}
@@ -1739,6 +1789,22 @@ public class BaseStep extends Thread implements VariableSpace
 		this.stopped = stopped;
 	}
 	
+	public void pauseRunning() {
+		setPaused(true);
+	}
+	
+	public void resumeRunning() {
+		setPaused(false);
+	}
+	
+	public void setPaused(boolean paused) {
+		this.paused.set(paused);
+	}
+
+	public void setPaused(AtomicBoolean paused) {
+		this.paused = paused;
+	}
+
     public boolean isInitialising()
     {
         return init;
@@ -2039,6 +2105,7 @@ public class BaseStep extends Thread implements VariableSpace
 
     public int getStatus()
     {
+        if (isPaused()) return StepDataInterface.STATUS_PAUSED;
         if (isAlive()) return StepDataInterface.STATUS_RUNNING;
         if (isStopped()) return StepDataInterface.STATUS_STOPPED;
 

@@ -68,15 +68,6 @@ public class ErrorDialog extends Dialog
 	private Shell  shell;
 	private SelectionAdapter lsDef;
 	private PropsUI props;
-	
-    /**
-     * @deprecated Use CT without <i>props</i> parameter
-     */
-    public ErrorDialog(Shell parent, PropsUI props, String title, String message)
-    {
-        this(parent, title, message, null);
-        this.props = props;
-    }
     
 	public ErrorDialog(Shell parent, String title, String message, Exception exception)
 	{

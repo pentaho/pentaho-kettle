@@ -46,21 +46,20 @@ import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.ResultFile;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.job.entries.mail.JobEntryMail;
+import org.pentaho.di.job.entries.mail.Messages;
+import org.pentaho.di.job.entry.JobEntryDialogInterface;
+import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.LabelText;
 import org.pentaho.di.ui.core.widget.LabelTextVar;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.job.dialog.JobDialog;
-import org.pentaho.di.ui.job.entry.JobEntryDialog; 
-import org.pentaho.di.job.entry.JobEntryDialogInterface;
-import org.pentaho.di.job.entry.JobEntryInterface;
-import org.pentaho.di.repository.Repository;
+import org.pentaho.di.ui.job.entry.JobEntryDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.trans.steps.textfileinput.VariableButtonListenerFactory;
-import org.pentaho.di.job.entries.mail.JobEntryMail;
-import org.pentaho.di.job.entries.mail.Messages;
 
 
 /**

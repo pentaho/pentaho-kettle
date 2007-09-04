@@ -45,25 +45,14 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.DBCache;
-import org.pentaho.di.core.Props;
 import org.pentaho.di.core.database.Catalog;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.DatabaseMetaInformation;
 import org.pentaho.di.core.database.Schema;
-import org.pentaho.di.ui.core.database.dialog.EditDatabaseTable;
-import org.pentaho.di.ui.core.database.dialog.GetDatabaseInfoProgressDialog;
-import org.pentaho.di.ui.core.database.dialog.GetPreviewTableProgressDialog;
-import org.pentaho.di.ui.core.database.dialog.GetQueryFieldsProgressDialog;
-import org.pentaho.di.ui.core.database.dialog.GetTableSizeProgressDialog;
-import org.pentaho.di.ui.core.database.dialog.Messages;
-import org.pentaho.di.ui.core.database.dialog.SQLEditor;
 import org.pentaho.di.core.exception.KettleDatabaseException;
-import org.pentaho.di.ui.core.gui.GUIResource;
-import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
@@ -71,6 +60,9 @@ import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
 import org.pentaho.di.ui.core.dialog.StepFieldsDialog;
+import org.pentaho.di.ui.core.gui.GUIResource;
+import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 
 
@@ -96,7 +88,7 @@ public class DatabaseExplorerDialog extends Dialog
 	private static final String STRING_VIEWS    = Messages.getString("DatabaseExplorerDialog.Views.Label");
 	private static final String STRING_SYNONYMS = Messages.getString("DatabaseExplorerDialog.Synonyms.Label");
 	
-	private Shell     shell;
+	private Shell     parent, shell;
 	private Tree      wTree;
 	private TreeItem  tiTree;
 	 
@@ -124,43 +116,20 @@ public class DatabaseExplorerDialog extends Dialog
     private String activeSchemaTable;
     private Button bTruncate;
 
-    /** @deprecated */
-    public DatabaseExplorerDialog(Shell par, Props pr, int style, DatabaseMeta conn, ArrayList<DatabaseMeta> databases)
-    {
-        this(par, style, conn, databases);
-    }
-
-    /** @deprecated */
-    public DatabaseExplorerDialog(Shell par, Props pr, int style, DatabaseMeta conn, List<DatabaseMeta> databases)
-    {
-        this(par, style, conn, databases);
-    }
-
-    /** @deprecated */
-    public DatabaseExplorerDialog(Shell par, Props pr, int style, DatabaseMeta conn, ArrayList<DatabaseMeta> databases, boolean look)
-    {
-        this(par, style, conn, databases, look);
-    }
-    
-    /** @deprecated */
-    public DatabaseExplorerDialog(Shell par, Props pr, int style, DatabaseMeta conn, List<DatabaseMeta> databases, boolean look)
-    {
-        this(par, style, conn, databases, look);
-    }
-    
-	public DatabaseExplorerDialog(Shell par, int style, DatabaseMeta conn, List<DatabaseMeta> databases)
+	public DatabaseExplorerDialog(Shell parent, int style, DatabaseMeta conn, List<DatabaseMeta> databases)
 	{
-		this(par, style, conn, databases, false, false);
+		this(parent, style, conn, databases, false, false);
 	}
 
-    public DatabaseExplorerDialog(Shell par, int style, DatabaseMeta conn, List<DatabaseMeta> databases, boolean look)
+    public DatabaseExplorerDialog(Shell parent, int style, DatabaseMeta conn, List<DatabaseMeta> databases, boolean look)
     {
-        this(par, style, conn, databases, look, false);
+        this(parent, style, conn, databases, look, false);
     }
     
-    public DatabaseExplorerDialog(Shell par, int style, DatabaseMeta conn, List<DatabaseMeta> databases, boolean look, boolean splitSchemaAndTable)
+    public DatabaseExplorerDialog(Shell parent, int style, DatabaseMeta conn, List<DatabaseMeta> databases, boolean look, boolean splitSchemaAndTable)
     {
-        super(par, style);
+        super(parent, style);
+        this.parent = parent;
         this.dbMeta=conn;
         this.databases = databases;
         this.justLook=look;
@@ -172,7 +141,6 @@ public class DatabaseExplorerDialog extends Dialog
         props=PropsUI.getInstance();
         log=LogWriter.getInstance();
         dbcache = DBCache.getInstance();
-        
     }
 
 	public void setSelectedTable(String selectedTable)
@@ -184,8 +152,12 @@ public class DatabaseExplorerDialog extends Dialog
 	{
 		tableName = null;
 
-		Shell parent = getParent();
-		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
+		if (Const.isLinux()) {
+			shell = new Shell(parent, SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
+		}
+		else {
+			shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
+		}
  		props.setLook(shell);
 		shell.setImage(GUIResource.getInstance().getImageConnection());
 

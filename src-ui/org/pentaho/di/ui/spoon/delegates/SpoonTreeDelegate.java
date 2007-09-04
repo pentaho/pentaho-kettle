@@ -41,7 +41,7 @@ public class SpoonTreeDelegate extends SpoonDelegate
 	 * @return The object that is selected in the tree or null if we couldn't
 	 *         figure it out. (titles etc. == null)
 	 */
-	public TreeSelection[] getTreeObjects(final Tree tree, Tree selectionTree, Tree coreObjectsTree)
+	public TreeSelection[] getTreeObjects(final Tree tree, Tree selectionTree, Tree coreObjectsTree, Tree sharedObjectsTree)
 	{
 		List<TreeSelection> objects = new ArrayList<TreeSelection>();
 
@@ -60,42 +60,29 @@ public class SpoonTreeDelegate extends SpoonDelegate
 				case 0:
 					break;
 				case 1: // ------complete-----
-					if (path[0].equals(Spoon.STRING_TRANSFORMATIONS)) // the
-																				// top
-																				// level
-					// Transformations
-					// entry
+					if (path[0].equals(Spoon.STRING_TRANSFORMATIONS)) // the top level Transformations entry
 					{
 						object = new TreeSelection(path[0], TransMeta.class);
 					}
-					if (path[0].equals(Spoon.STRING_JOBS)) // the top
-																	// level
-																	// Jobs
-					// entry
+					if (path[0].equals(Spoon.STRING_JOBS)) // the top level Jobs entry
 					{
 						object = new TreeSelection(path[0], JobMeta.class);
 					}
 					break;
 
 				case 2: // ------complete-----
-					if (path[0].equals(Spoon.STRING_BUILDING_BLOCKS)) // the
-																				// top
-																				// level
-					// Transformations
-					// entry
+					if (path[0].equals(Spoon.STRING_BUILDING_BLOCKS)) // the top level Transformations entry
 					{
 						if (path[1].equals(Spoon.STRING_TRANS_BASE))
 						{
 							object = new TreeSelection(path[1], StepPlugin.class);
 						}
 					}
-					if (path[0].equals(Spoon.STRING_TRANSFORMATIONS)) // Transformations
-					// title
+					if (path[0].equals(Spoon.STRING_TRANSFORMATIONS)) // Transformations title
 					{
 						object = new TreeSelection(path[1], spoon.delegates.trans.getTransformation(path[1]));
 					}
-					if (path[0].equals(Spoon.STRING_JOBS)) // Jobs
-																	// title
+					if (path[0].equals(Spoon.STRING_JOBS)) // Jobs title
 					{
 						object = new TreeSelection(path[1], spoon.delegates.jobs.getJob(path[1]));
 					}
@@ -119,8 +106,7 @@ public class SpoonTreeDelegate extends SpoonDelegate
 						if (path[2].equals(Spoon.STRING_CLUSTERS))
 							object = new TreeSelection(path[2], ClusterSchema.class, transMeta);
 					}
-					if (path[0].equals(Spoon.STRING_JOBS)) // Jobs
-																	// title
+					if (path[0].equals(Spoon.STRING_JOBS)) // Jobs title
 					{
 						JobMeta jobMeta = spoon.delegates.jobs.getJob(path[1]);
 						if (path[2].equals(Spoon.STRING_CONNECTIONS))
@@ -131,10 +117,7 @@ public class SpoonTreeDelegate extends SpoonDelegate
 					break;
 
 				case 4: // ------complete-----
-					if (path[0].equals(Spoon.STRING_TRANSFORMATIONS)) // The
-																				// name
-																				// of a
-					// transformation
+					if (path[0].equals(Spoon.STRING_TRANSFORMATIONS)) // The name of a transformation
 					{
 						TransMeta transMeta = spoon.delegates.trans.getTransformation(path[1]);
 						if (path[2].equals(Spoon.STRING_CONNECTIONS))
@@ -152,8 +135,7 @@ public class SpoonTreeDelegate extends SpoonDelegate
 							object = new TreeSelection(path[3], transMeta.findClusterSchema(path[3]),
 									transMeta);
 					}
-					if (path[0].equals(Spoon.STRING_JOBS)) // The name
-																	// of a job
+					if (path[0].equals(Spoon.STRING_JOBS)) // The name of a job
 					{
 						JobMeta jobMeta = spoon.delegates.jobs.getJob(path[1]);
 						if (jobMeta != null && path[2].equals(Spoon.STRING_CONNECTIONS))
@@ -164,10 +146,7 @@ public class SpoonTreeDelegate extends SpoonDelegate
 					break;
 
 				case 5:
-					if (path[0].equals(Spoon.STRING_TRANSFORMATIONS)) // The
-																				// name
-																				// of a
-					// transformation
+					if (path[0].equals(Spoon.STRING_TRANSFORMATIONS)) // The name of a transformation
 					{
 						TransMeta transMeta = spoon.delegates.trans.getTransformation(path[1]);
 						if (transMeta != null && path[2].equals(Spoon.STRING_CLUSTERS))
@@ -221,8 +200,7 @@ public class SpoonTreeDelegate extends SpoonDelegate
 				case 3: // Steps
 					if (path[0].equals(Spoon.STRING_TRANS_BASE))
 					{
-						object = new TreeSelection(path[2], StepLoader.getInstance()
-								.findStepPluginWithDescription(path[2]));
+						object = new TreeSelection(path[2], StepLoader.getInstance().findStepPluginWithDescription(path[2]));
 					}
 					break;
 				default:
@@ -235,11 +213,42 @@ public class SpoonTreeDelegate extends SpoonDelegate
 				}
 			}
 		}
+		if (tree.equals(sharedObjectsTree))
+		{
+			TreeItem[] selection = sharedObjectsTree.getSelection();
+			for (int s = 0; s < selection.length; s++)
+			{
+				TreeItem treeItem = selection[s];
+				String[] path = ConstUI.getTreeStrings(treeItem);
+
+				TreeSelection object = null;
+
+				switch (path.length)
+				{
+				case 0:
+					break;
+				case 1: // // the top level database connections entry
+					break;
+				case 2: 
+					if (path[0].equals(Spoon.STRING_CONNECTIONS)) // click on a shared database connection... 
+					{
+						DatabaseMeta databaseMeta = DatabaseMeta.findDatabase(spoon.getSharedDatabases(), path[1]);
+						object = new TreeSelection(path[1], databaseMeta);
+					}
+					break;
+				}
+				
+				if (object != null)
+				{
+					objects.add(object);
+				}
+			}
+		}
 
 		return objects.toArray(new TreeSelection[objects.size()]);
 	}
 
-	public void addDragSourceToTree(final Tree tree,final Tree selectionTree,final Tree coreObjectsTree)
+	public void addDragSourceToTree(final Tree tree,final Tree selectionTree,final Tree coreObjectsTree, final Tree sharedObjectsTree)
 	{
 		// Drag & Drop for steps
 		Transfer[] ttypes = new Transfer[] { XMLTransfer.getInstance() };
@@ -254,7 +263,7 @@ public class SpoonTreeDelegate extends SpoonDelegate
 
 			public void dragSetData(DragSourceEvent event)
 			{
-				TreeSelection[] treeObjects = getTreeObjects(tree,selectionTree,coreObjectsTree);
+				TreeSelection[] treeObjects = getTreeObjects(tree,selectionTree,coreObjectsTree, sharedObjectsTree);
 				if (treeObjects.length == 0)
 				{
 					event.doit = false;

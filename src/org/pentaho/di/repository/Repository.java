@@ -52,6 +52,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.JobEntryLoader;
+import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.JobPlugin;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.trans.StepLoader;
@@ -69,19 +70,374 @@ import org.pentaho.di.trans.TransMeta;
  */
 public class Repository
 {
+	public static final String TABLE_R_VERSION                = "R_VERSION";
+	public static final String FIELD_VERSION_ID_VERSION    = "ID_VERSION";
+	public static final String FIELD_VERSION_MAJOR_VERSION = "MAJOR_VERSION";
+	public static final String FIELD_VERSION_MINOR_VERSION = "MINOR_VERSION";
+	public static final String FIELD_VERSION_IS_UPGRADE    = "IS_UPGRADE";
+	public static final String FIELD_VERSION_UPGRADE_DATE  = "UPGRADE_DATE";
+	
+	public static final String TABLE_R_REPOSITORY_LOG         = "R_REPOSITORY_LOG";
+	public static final String FIELD_REPOSITORY_LOG_ID_REPOSITORY_LOG = "ID_REPOSITORY_LOG";
+	public static final String FIELD_REPOSITORY_LOG_REP_VERSION       = "REP_VERSION";
+	public static final String FIELD_REPOSITORY_LOG_LOG_DATE          = "LOG_DATE";
+	public static final String FIELD_REPOSITORY_LOG_LOG_USER          = "LOG_USER";
+	public static final String FIELD_REPOSITORY_LOG_OPERATION_DESC    = "OPERATION_DESC";
+
+	public static final String TABLE_R_DATABASE_TYPE          = "R_DATABASE_TYPE";
+	public static final String FIELD_DATABASE_TYPE_ID_DATABASE_TYPE = "ID_DATABASE_TYPE";
+	public static final String FIELD_DATABASE_TYPE_CODE             = "CODE";
+	public static final String FIELD_DATABASE_TYPE_DESCRIPTION      = "DESCRIPTION";
+
+	public static final String TABLE_R_DATABASE_CONTYPE       = "R_DATABASE_CONTYPE";
+	public static final String FIELD_DATABASE_CONTYPE_ID_DATABASE_CONTYPE = "ID_DATABASE_CONTYPE";
+	public static final String FIELD_DATABASE_CONTYPE_CODE                = "CODE";
+	public static final String FIELD_DATABASE_CONTYPE_DESCRIPTION         = "DESCRIPTION";
+	
+	public static final String TABLE_R_DATABASE               = "R_DATABASE";
+	public static final String FIELD_DATABASE_ID_DATABASE         = "ID_DATABASE";
+	public static final String FIELD_DATABASE_NAME                = "NAME";
+	public static final String FIELD_DATABASE_ID_DATABASE_TYPE    = "ID_DATABASE_TYPE";
+	public static final String FIELD_DATABASE_ID_DATABASE_CONTYPE = "ID_DATABASE_CONTYPE";
+	public static final String FIELD_DATABASE_HOST_NAME           = "HOST_NAME";
+	public static final String FIELD_DATABASE_DATABASE_NAME       = "DATABASE_NAME";
+	public static final String FIELD_DATABASE_PORT                = "PORT";
+	public static final String FIELD_DATABASE_USERNAME            = "USERNAME";
+	public static final String FIELD_DATABASE_DATA_TBS            = "DATA_TBS";
+	public static final String FIELD_DATABASE_PASSWORD            = "PASSWORD";
+	public static final String FIELD_DATABASE_SERVERNAME          = "SERVERNAME";
+	public static final String FIELD_DATABASE_INDEX_TBS           = "INDEX_TBS";
+	
+	public static final String TABLE_R_DATABASE_ATTRIBUTE     = "R_DATABASE_ATTRIBUTE";
+	public static final String FIELD_DATABASE_ATTRIBUTE_ID_DATABASE_ATTRIBUTE = "ID_DATABASE_ATTRIBUTE";
+	public static final String FIELD_DATABASE_ATTRIBUTE_ID_DATABASE           = "ID_DATABASE";
+	public static final String FIELD_DATABASE_ATTRIBUTE_CODE                  = "CODE";
+	public static final String FIELD_DATABASE_ATTRIBUTE_VALUE_STR             = "VALUE_STR";
+
+	public static final String TABLE_R_NOTE                   = "R_NOTE";
+	public static final String FIELD_NOTE_ID_NOTE             = "ID_NOTE";
+	public static final String FIELD_NOTE_VALUE_STR           = "VALUE_STR";
+	public static final String FIELD_NOTE_GUI_LOCATION_X      = "GUI_LOCATION_X";
+	public static final String FIELD_NOTE_GUI_LOCATION_Y      = "GUI_LOCATION_Y";
+	public static final String FIELD_NOTE_GUI_LOCATION_WIDTH  = "GUI_LOCATION_WIDTH";
+	public static final String FIELD_NOTE_GUI_LOCATION_HEIGHT = "GUI_LOCATION_HEIGHT";
+
+	public static final String TABLE_R_TRANSFORMATION         = "R_TRANSFORMATION";
+	public static final String FIELD_TRANSFORMATION_ID_TRANSFORMATION    = "ID_TRANSFORMATION";
+	public static final String FIELD_TRANSFORMATION_ID_DIRECTORY         = "ID_DIRECTORY";
+	public static final String FIELD_TRANSFORMATION_NAME                 = "NAME";
+	public static final String FIELD_TRANSFORMATION_DESCRIPTION          = "DESCRIPTION";
+	public static final String FIELD_TRANSFORMATION_EXTENDED_DESCRIPTION = "EXTENDED_DESCRIPTION";
+	public static final String FIELD_TRANSFORMATION_TRANS_VERSION        = "TRANS_VERSION";
+	public static final String FIELD_TRANSFORMATION_TRANS_STATUS         = "TRANS_STATUS";
+	public static final String FIELD_TRANSFORMATION_ID_STEP_READ         = "ID_STEP_READ";
+	public static final String FIELD_TRANSFORMATION_ID_STEP_WRITE        = "ID_STEP_WRITE";
+	public static final String FIELD_TRANSFORMATION_ID_STEP_INPUT        = "ID_STEP_INPUT";
+	public static final String FIELD_TRANSFORMATION_ID_STEP_OUTPUT       = "ID_STEP_OUTPUT";
+	public static final String FIELD_TRANSFORMATION_ID_STEP_UPDATE       = "ID_STEP_UPDATE";
+	public static final String FIELD_TRANSFORMATION_ID_DATABASE_LOG      = "ID_DATABASE_LOG";
+	public static final String FIELD_TRANSFORMATION_TABLE_NAME_LOG       = "TABLE_NAME_LOG";
+	public static final String FIELD_TRANSFORMATION_USE_BATCHID          = "USE_BATCHID";
+	public static final String FIELD_TRANSFORMATION_USE_LOGFIELD         = "USE_LOGFIELD";
+	public static final String FIELD_TRANSFORMATION_ID_DATABASE_MAXDATE  = "ID_DATABASE_MAXDATE";
+	public static final String FIELD_TRANSFORMATION_TABLE_NAME_MAXDATE   = "TABLE_NAME_MAXDATE";
+	public static final String FIELD_TRANSFORMATION_FIELD_NAME_MAXDATE   = "FIELD_NAME_MAXDATE";
+	public static final String FIELD_TRANSFORMATION_OFFSET_MAXDATE       = "OFFSET_MAXDATE";
+	public static final String FIELD_TRANSFORMATION_DIFF_MAXDATE         = "DIFF_MAXDATE";
+	public static final String FIELD_TRANSFORMATION_CREATED_USER         = "CREATED_USER";
+	public static final String FIELD_TRANSFORMATION_CREATED_DATE         = "CREATED_DATE";
+	public static final String FIELD_TRANSFORMATION_MODIFIED_USER        = "MODIFIED_USER";
+	public static final String FIELD_TRANSFORMATION_MODIFIED_DATE        = "MODIFIED_DATE";
+	public static final String FIELD_TRANSFORMATION_SIZE_ROWSET          = "SIZE_ROWSET";
+
+	public static final String TABLE_R_DIRECTORY              = "R_DIRECTORY";
+    public static final String FIELD_DIRECTORY_ID_DIRECTORY        = "ID_DIRECTORY";
+	public static final String FIELD_DIRECTORY_ID_DIRECTORY_PARENT = "ID_DIRECTORY_PARENT";
+	public static final String FIELD_DIRECTORY_DIRECTORY_NAME      = "DIRECTORY_NAME";
+	
+	public static final String TABLE_R_TRANS_ATTRIBUTE        = "R_TRANS_ATTRIBUTE";
+	public static final String FIELD_TRANS_ATTRIBUTE_ID_TRANS_ATTRIBUTE = "ID_TRANS_ATTRIBUTE";
+	public static final String FIELD_TRANS_ATTRIBUTE_ID_TRANSFORMATION = "ID_TRANSFORMATION";
+	public static final String FIELD_TRANS_ATTRIBUTE_NR = "NR";
+	public static final String FIELD_TRANS_ATTRIBUTE_CODE = "CODE";
+	public static final String FIELD_TRANS_ATTRIBUTE_VALUE_NUM = "VALUE_NUM";
+	public static final String FIELD_TRANS_ATTRIBUTE_VALUE_STR = "VALUE_STR";
+
+	public static final String TABLE_R_DEPENDENCY             = "R_DEPENDENCY";
+	public static final String FIELD_DEPENDENCY_ID_DEPENDENCY = "ID_DEPENDENCY";
+	public static final String FIELD_DEPENDENCY_ID_TRANSFORMATION = "ID_TRANSFORMATION";
+	public static final String FIELD_DEPENDENCY_ID_DATABASE = "ID_DATABASE";
+	public static final String FIELD_DEPENDENCY_TABLE_NAME = "TABLE_NAME";
+	public static final String FIELD_DEPENDENCY_FIELD_NAME = "FIELD_NAME";
+
+	public static final String TABLE_R_TRANS_STEP_CONDITION   = "R_TRANS_STEP_CONDITION";
+	public static final String FIELD_TRANS_STEP_CONDITION_ID_TRANSFORMATION = "ID_TRANSFORMATION";
+	public static final String FIELD_TRANS_STEP_CONDITION_ID_STEP = "ID_STEP";
+	public static final String FIELD_TRANS_STEP_CONDITION_ID_CONDITION = "ID_CONDITION";
+	
+	public static final String TABLE_R_CONDITION              = "R_CONDITION";
+	public static final String FIELD_CONDITION_ID_CONDITION = "ID_CONDITION";
+	public static final String FIELD_CONDITION_ID_CONDITION_PARENT = "ID_CONDITION_PARENT";
+	public static final String FIELD_CONDITION_NEGATED = "NEGATED";
+	public static final String FIELD_CONDITION_OPERATOR = "OPERATOR";
+	public static final String FIELD_CONDITION_LEFT_NAME = "LEFT_NAME";
+	public static final String FIELD_CONDITION_CONDITION_FUNCTION = "CONDITION_FUNCTION";
+	public static final String FIELD_CONDITION_RIGHT_NAME = "RIGHT_NAME";
+	public static final String FIELD_CONDITION_ID_VALUE_RIGHT = "ID_VALUE_RIGHT";
+
+	public static final String TABLE_R_VALUE                  = "R_VALUE";
+	public static final String FIELD_VALUE_ID_VALUE = "ID_VALUE";
+	public static final String FIELD_VALUE_NAME = "NAME";
+	public static final String FIELD_VALUE_VALUE_TYPE = "VALUE_TYPE";
+	public static final String FIELD_VALUE_VALUE_STR = "VALUE_STR";
+	public static final String FIELD_VALUE_IS_NULL = "IS_NULL";
+
+	public static final String TABLE_R_TRANS_HOP              = "R_TRANS_HOP";
+	public static final String FIELD_TRANS_HOP_ID_TRANS_HOP = "ID_TRANS_HOP";
+	public static final String FIELD_TRANS_HOP_ID_TRANSFORMATION = "ID_TRANSFORMATION";
+	public static final String FIELD_TRANS_HOP_ID_STEP_FROM = "ID_STEP_FROM";
+	public static final String FIELD_TRANS_HOP_ID_STEP_TO = "ID_STEP_TO";
+	public static final String FIELD_TRANS_HOP_ENABLED = "ENABLED";
+
+	public static final String TABLE_R_STEP_TYPE              = "R_STEP_TYPE";
+	public static final String FIELD_STEP_TYPE_ID_STEP_TYPE = "ID_STEP_TYPE";
+	public static final String FIELD_STEP_TYPE_CODE = "CODE";
+	public static final String FIELD_STEP_TYPE_DESCRIPTION = "DESCRIPTION";
+	public static final String FIELD_STEP_TYPE_HELPTEXT = "HELPTEXT";
+	
+	public static final String TABLE_R_STEP                   = "R_STEP";
+	public static final String FIELD_STEP_ID_STEP = "ID_STEP";
+	public static final String FIELD_STEP_ID_TRANSFORMATION = "ID_TRANSFORMATION";
+	public static final String FIELD_STEP_NAME = "NAME";
+	public static final String FIELD_STEP_DESCRIPTION = "DESCRIPTION";
+	public static final String FIELD_STEP_ID_STEP_TYPE = "ID_STEP_TYPE";
+	public static final String FIELD_STEP_DISTRIBUTE = "DISTRIBUTE";
+	public static final String FIELD_STEP_COPIES = "COPIES";
+	public static final String FIELD_STEP_GUI_LOCATION_X = "GUI_LOCATION_X";
+	public static final String FIELD_STEP_GUI_LOCATION_Y = "GUI_LOCATION_Y";
+	public static final String FIELD_STEP_GUI_DRAW = "GUI_DRAW";
+
+	public static final String TABLE_R_STEP_ATTRIBUTE         = "R_STEP_ATTRIBUTE";
+	public static final String FIELD_STEP_ATTRIBUTE_ID_STEP_ATTRIBUTE = "ID_STEP_ATTRIBUTE";
+	public static final String FIELD_STEP_ATTRIBUTE_ID_TRANSFORMATION = "ID_TRANSFORMATION";
+	public static final String FIELD_STEP_ATTRIBUTE_ID_STEP = "ID_STEP";
+	public static final String FIELD_STEP_ATTRIBUTE_CODE = "CODE";
+	public static final String FIELD_STEP_ATTRIBUTE_NR = "NR";
+	public static final String FIELD_STEP_ATTRIBUTE_VALUE_NUM = "VALUE_NUM";
+	public static final String FIELD_STEP_ATTRIBUTE_VALUE_STR = "VALUE_STR";
+
+	public static final String TABLE_R_TRANS_NOTE             = "R_TRANS_NOTE";
+	public static final String FIELD_TRANS_NOTE_ID_TRANSFORMATION = "ID_TRANSFORMATION";
+	public static final String FIELD_TRANS_NOTE_ID_NOTE = "ID_NOTE";
+
+	public static final String TABLE_R_JOB                    = "R_JOB";
+	public static final String FIELD_JOB_ID_JOB = "ID_JOB";
+	public static final String FIELD_JOB_ID_DIRECTORY = "ID_DIRECTORY";
+	public static final String FIELD_JOB_NAME = "NAME";
+	public static final String FIELD_JOB_DESCRIPTION = "DESCRIPTION";
+	public static final String FIELD_JOB_EXTENDED_DESCRIPTION = "EXTENDED_DESCRIPTION";
+	public static final String FIELD_JOB_JOB_VERSION = "JOB_VERSION";
+	public static final String FIELD_JOB_JOB_STATUS = "JOB_STATUS";
+	public static final String FIELD_JOB_ID_DATABASE_LOG = "ID_DATABASE_LOG";
+	public static final String FIELD_JOB_TABLE_NAME_LOG = "TABLE_NAME_LOG";
+	public static final String FIELD_JOB_CREATED_USER = "CREATED_USER";
+	public static final String FIELD_JOB_CREATED_DATE = "CREATED_DATE";
+	public static final String FIELD_JOB_MODIFIED_USER = "MODIFIED_USER";
+	public static final String FIELD_JOB_MODIFIED_DATE = "MODIFIED_DATE";
+	public static final String FIELD_JOB_USE_BATCH_ID = "USE_BATCH_ID";
+	public static final String FIELD_JOB_PASS_BATCH_ID = "PASS_BATCH_ID";
+	public static final String FIELD_JOB_USE_LOGFIELD = "USE_LOGFIELD";
+	public static final String FIELD_JOB_SHARED_FILE = "SHARED_FILE";
+
+	public static final String TABLE_R_LOGLEVEL               = "R_LOGLEVEL";
+	public static final String FIELD_LOGLEVEL_ID_LOGLEVEL = "ID_LOGLEVEL";
+	public static final String FIELD_LOGLEVEL_CODE = "CODE";
+	public static final String FIELD_LOGLEVEL_DESCRIPTION = "DESCRIPTION";
+	
+	public static final String TABLE_R_LOG                    = "R_LOG";
+	public static final String FIELD_LOG_ID_LOG = "ID_LOG";
+	public static final String FIELD_LOG_NAME = "NAME";
+	public static final String FIELD_LOG_ID_LOGLEVEL = "ID_LOGLEVEL";
+	public static final String FIELD_LOG_LOGTYPE = "LOGTYPE";
+	public static final String FIELD_LOG_FILENAME = "FILENAME";
+	public static final String FIELD_LOG_FILEEXTENTION = "FILEEXTENTION";
+	public static final String FIELD_LOG_ADD_DATE = "ADD_DATE";
+	public static final String FIELD_LOG_ADD_TIME = "ADD_TIME";
+	public static final String FIELD_LOG_ID_DATABASE_LOG = "ID_DATABASE_LOG";
+	public static final String FIELD_LOG_TABLE_NAME_LOG = "TABLE_NAME_LOG";
+
+	public static final String TABLE_R_JOBENTRY               = "R_JOBENTRY";
+	public static final String FIELD_JOBENTRY_ID_JOBENTRY = "ID_JOBENTRY";
+	public static final String FIELD_JOBENTRY_ID_JOB = "ID_JOB";
+	public static final String FIELD_JOBENTRY_ID_JOBENTRY_TYPE = "ID_JOBENTRY_TYPE";
+	public static final String FIELD_JOBENTRY_NAME = "NAME";
+	public static final String FIELD_JOBENTRY_DESCRIPTION = "DESCRIPTION";
+
+	public static final String TABLE_R_JOBENTRY_COPY          = "R_JOBENTRY_COPY";
+	public static final String FIELD_JOBENTRY_COPY_ID_JOBENTRY_COPY = "ID_JOBENTRY_COPY";
+	public static final String FIELD_JOBENTRY_COPY_ID_JOBENTRY = "ID_JOBENTRY";
+	public static final String FIELD_JOBENTRY_COPY_ID_JOB = "ID_JOB";
+	public static final String FIELD_JOBENTRY_COPY_ID_JOBENTRY_TYPE = "ID_JOBENTRY_TYPE";
+	public static final String FIELD_JOBENTRY_COPY_NR = "NR";
+	public static final String FIELD_JOBENTRY_COPY_GUI_LOCATION_X = "GUI_LOCATION_X";
+	public static final String FIELD_JOBENTRY_COPY_GUI_LOCATION_Y = "GUI_LOCATION_Y";
+	public static final String FIELD_JOBENTRY_COPY_GUI_DRAW = "GUI_DRAW";
+	public static final String FIELD_JOBENTRY_COPY_PARALLEL = "PARALLEL";
+
+	public static final String TABLE_R_JOBENTRY_TYPE          = "R_JOBENTRY_TYPE";
+	public static final String FIELD_JOBENTRY_TYPE_ID_JOBENTRY_TYPE = "ID_JOBENTRY_TYPE";
+	public static final String FIELD_JOBENTRY_TYPE_CODE = "CODE";
+	public static final String FIELD_JOBENTRY_TYPE_DESCRIPTION = "DESCRIPTION";
+
+	public static final String TABLE_R_JOBENTRY_ATTRIBUTE     = "R_JOBENTRY_ATTRIBUTE";
+	public static final String FIELD_JOBENTRY_ATTRIBUTE_ID_JOBENTRY_ATTRIBUTE = "ID_JOBENTRY_ATTRIBUTE";
+	public static final String FIELD_JOBENTRY_ATTRIBUTE_ID_JOB = "ID_JOB";
+	public static final String FIELD_JOBENTRY_ATTRIBUTE_ID_JOBENTRY = "ID_JOBENTRY";
+	public static final String FIELD_JOBENTRY_ATTRIBUTE_NR = "NR";
+	public static final String FIELD_JOBENTRY_ATTRIBUTE_CODE = "CODE";
+	public static final String FIELD_JOBENTRY_ATTRIBUTE_VALUE_NUM = "VALUE_NUM";
+	public static final String FIELD_JOBENTRY_ATTRIBUTE_VALUE_STR = "VALUE_STR";
+
+	public static final String TABLE_R_JOB_HOP                = "R_JOB_HOP";
+	public static final String FIELD_JOB_HOP_ID_JOB_HOP = "ID_JOB_HOP";
+	public static final String FIELD_JOB_HOP_ID_JOB = "ID_JOB";
+	public static final String FIELD_JOB_HOP_ID_JOBENTRY_COPY_FROM = "ID_JOBENTRY_COPY_FROM";
+	public static final String FIELD_JOB_HOP_ID_JOBENTRY_COPY_TO = "ID_JOBENTRY_COPY_TO";
+	public static final String FIELD_JOB_HOP_ENABLED = "ENABLED";
+	public static final String FIELD_JOB_HOP_EVALUATION = "EVALUATION";
+	public static final String FIELD_JOB_HOP_UNCONDITIONAL = "UNCONDITIONAL";
+
+	public static final String TABLE_R_JOB_NOTE               = "R_JOB_NOTE";
+	public static final String FIELD_JOB_NOTE_ID_JOB = "ID_JOB";
+	public static final String FIELD_JOB_NOTE_ID_NOTE = "ID_NOTE";
+	
+	public static final String TABLE_R_PROFILE                = "R_PROFILE";
+	public static final String FIELD_PROFILE_ID_PROFILE = "ID_PROFILE";
+	public static final String FIELD_PROFILE_NAME = "NAME";
+	public static final String FIELD_PROFILE_DESCRIPTION = "DESCRIPTION";
+
+	public static final String TABLE_R_USER                   = "R_USER";
+	public static final String FIELD_USER_ID_USER = "ID_USER";
+	public static final String FIELD_USER_ID_PROFILE = "ID_PROFILE";
+	public static final String FIELD_USER_LOGIN = "LOGIN";
+	public static final String FIELD_USER_PASSWORD = "PASSWORD";
+	public static final String FIELD_USER_NAME = "NAME";
+	public static final String FIELD_USER_DESCRIPTION = "DESCRIPTION";
+	public static final String FIELD_USER_ENABLED = "ENABLED";
+
+	public static final String TABLE_R_PERMISSION             = "R_PERMISSION";
+	public static final String FIELD_PERMISSION_ID_PERMISSION = "ID_PERMISSION";
+	public static final String FIELD_PERMISSION_CODE = "CODE";
+	public static final String FIELD_PERMISSION_DESCRIPTION = "DESCRIPTION";
+
+	public static final String TABLE_R_PROFILE_PERMISSION     = "R_PROFILE_PERMISSION";
+	public static final String FIELD_PROFILE_PERMISSION_ID_PROFILE = "ID_PROFILE";
+	public static final String FIELD_PROFILE_PERMISSION_ID_PERMISSION = "ID_PERMISSION";
+
+	public static final String TABLE_R_STEP_DATABASE          = "R_STEP_DATABASE";
+	public static final String FIELD_STEP_DATABASE_ID_TRANSFORMATION = "ID_TRANSFORMATION";
+	public static final String FIELD_STEP_DATABASE_ID_STEP = "ID_STEP";
+	public static final String FIELD_STEP_DATABASE_ID_DATABASE = "ID_DATABASE";
+
+	public static final String TABLE_R_PARTITION_SCHEMA       = "R_PARTITION_SCHEMA";
+	public static final String FIELD_PARTITION_SCHEMA_ID_PARTITION_SCHEMA = "ID_PARTITION_SCHEMA";
+	public static final String FIELD_PARTITION_SCHEMA_NAME = "NAME";
+	public static final String FIELD_PARTITION_SCHEMA_DYNAMIC_DEFINITION = "DYNAMIC_DEFINITION";
+	public static final String FIELD_PARTITION_SCHEMA_PARTITIONS_PER_SLAVE = "PARTITIONS_PER_SLAVE";
+	
+	public static final String TABLE_R_PARTITION              = "R_PARTITION";
+	public static final String FIELD_PARTITION_ID_PARTITION = "ID_PARTITION";
+	public static final String FIELD_PARTITION_ID_PARTITION_SCHEMA = "ID_PARTITION_SCHEMA";
+	public static final String FIELD_PARTITION_PARTITION_ID = "PARTITION_ID";
+	
+	public static final String TABLE_R_TRANS_PARTITION_SCHEMA = "R_TRANS_PARTITION_SCHEMA";
+	public static final String FIELD_TRANS_PARTITION_SCHEMA_ID_TRANS_PARTITION_SCHEMA = "ID_TRANS_PARTITION_SCHEMA";
+	public static final String FIELD_TRANS_PARTITION_SCHEMA_ID_TRANSFORMATION = "TRANSFORMATION";
+	public static final String FIELD_TRANS_PARTITION_SCHEMA_ID_PARTITION_SCHEMA = "ID_PARTITION_SCHEMA";
+
+	public static final String TABLE_R_CLUSTER                = "R_CLUSTER";
+	public static final String FIELD_CLUSTER_ID_CLUSTER = "ID_CLUSTER";
+	public static final String FIELD_CLUSTER_NAME = "NAME";
+	public static final String FIELD_CLUSTER_BASE_PORT = "BASE_PORT";
+	public static final String FIELD_CLUSTER_SOCKETS_BUFFER_SIZE = "SOCKETS_BUFFER_SIZE";
+	public static final String FIELD_CLUSTER_SOCKETS_FLUSH_INTERVAL = "SOCKETS_FLUSH_INTERVAL";
+	public static final String FIELD_CLUSTER_SOCKETS_COMPRESSED = "SOCKETS_COMPRESSED";
+
+	public static final String TABLE_R_SLAVE                  = "R_SLAVE";
+	public static final String FIELD_SLAVE_ID_SLAVE = "ID_SLAVE";
+	public static final String FIELD_SLAVE_NAME = "NAME";
+	public static final String FIELD_SLAVE_HOST_NAME = "HOST_NAME";
+	public static final String FIELD_SLAVE_PORT = "PORT";
+	public static final String FIELD_SLAVE_USERNAME = "USERNAME";
+	public static final String FIELD_SLAVE_PASSWORD = "PASSWORD";
+	public static final String FIELD_SLAVE_PROXY_HOST_NAME = "PROXY_HOST_NAME";
+	public static final String FIELD_SLAVE_PROXY_PORT = "PROXY_PORT";
+	public static final String FIELD_SLAVE_NON_PROXY_HOSTS = "NON_PROXY_HOSTS";
+	public static final String FIELD_SLAVE_MASTER = "MASTER";
+
+	public static final String TABLE_R_CLUSTER_SLAVE          = "R_CLUSTER_SLAVE";
+	public static final String FIELD_CLUSTER_SLAVE_ID_CLUSTER_SLAVE = "ID_CLUSTER_SLAVE";
+	public static final String FIELD_CLUSTER_SLAVE_ID_CLUSTER = "ID_CLUSTER";
+	public static final String FIELD_CLUSTER_SLAVE_ID_SLAVE = "ID_SLAVE";
+
+	public static final String TABLE_R_TRANS_CLUSTER          = "R_TRANS_CLUSTER";
+	public static final String FIELD_TRANS_CLUSTER_ID_TRANS_CLUSTER = "ID_TRANS_CLUSTER";
+	public static final String FIELD_TRANS_CLUSTER_ID_TRANSFORMATION = "ID_TRANSFORMATION";
+	public static final String FIELD_TRANS_CLUSTER_ID_CLUSTER = "ID_CLUSTER";
+
+	public static final String TABLE_R_TRANS_SLAVE            = "R_TRANS_SLAVE";
+	public static final String FIELD_TRANS_SLAVE_ID_TRANS_SLAVE = "ID_TRANS_SLAVE";
+	public static final String FIELD_TRANS_SLAVE_ID_TRANSFORMATION = "ID_TRANSFORMATION";
+	public static final String FIELD_TRANS_SLAVE_ID_SLAVE = "ID_SLAVE";
+
+
     private final String repositoryTableNames[] = new String[] 
          { 
-            "R_REPOSITORY_LOG", "R_VERSION",
-            "R_DATABASE_TYPE", "R_DATABASE_CONTYPE", "R_DATABASE", "R_DATABASE_ATTRIBUTE", "R_NOTE",
-            "R_TRANSFORMATION", "R_DIRECTORY", "R_TRANS_ATTRIBUTE", "R_DEPENDENCY", "R_TRANS_STEP_CONDITION",
-            "R_CONDITION", "R_VALUE", "R_TRANS_HOP", "R_STEP_TYPE", "R_STEP", "R_STEP_ATTRIBUTE", "R_TRANS_NOTE",
-            "R_JOB", "R_LOGLEVEL", "R_LOG", "R_JOBENTRY", "R_JOBENTRY_COPY", "R_JOBENTRY_TYPE",
-            "R_JOBENTRY_ATTRIBUTE", "R_JOB_HOP", "R_JOB_NOTE", "R_PROFILE", "R_USER",
-            "R_PERMISSION", "R_PROFILE_PERMISSION", "R_STEP_DATABASE",
-            "R_PARTITION_SCHEMA", "R_PARTITION", "R_TRANS_PARTITION_SCHEMA", 
-            "R_CLUSTER", "R_SLAVE", "R_CLUSTER_SLAVE", "R_TRANS_CLUSTER", "R_TRANS_SLAVE",
+    		  TABLE_R_CLUSTER
+    		, TABLE_R_CLUSTER_SLAVE
+    		, TABLE_R_CONDITION
+    		, TABLE_R_DATABASE
+    		, TABLE_R_DATABASE_ATTRIBUTE
+    		, TABLE_R_DATABASE_CONTYPE
+    		, TABLE_R_DATABASE_TYPE
+    		, TABLE_R_DEPENDENCY
+    		, TABLE_R_DIRECTORY
+    		, TABLE_R_JOB
+    		, TABLE_R_JOBENTRY
+    		, TABLE_R_JOBENTRY_ATTRIBUTE
+    		, TABLE_R_JOBENTRY_COPY
+    		, TABLE_R_JOBENTRY_TYPE
+    		, TABLE_R_JOB_HOP
+    		, TABLE_R_JOB_NOTE
+    		, TABLE_R_LOG
+    		, TABLE_R_LOGLEVEL
+    		, TABLE_R_NOTE
+    		, TABLE_R_PARTITION
+    		, TABLE_R_PARTITION_SCHEMA
+    		, TABLE_R_PERMISSION
+    		, TABLE_R_PROFILE
+    		, TABLE_R_PROFILE_PERMISSION
+    		, TABLE_R_REPOSITORY_LOG
+    		, TABLE_R_SLAVE
+    		, TABLE_R_STEP
+    		, TABLE_R_STEP_ATTRIBUTE
+    		, TABLE_R_STEP_DATABASE
+    		, TABLE_R_STEP_TYPE
+    		, TABLE_R_TRANSFORMATION
+    		, TABLE_R_TRANS_ATTRIBUTE
+    		, TABLE_R_TRANS_CLUSTER
+    		, TABLE_R_TRANS_HOP
+    		, TABLE_R_TRANS_NOTE
+    		, TABLE_R_TRANS_PARTITION_SCHEMA
+    		, TABLE_R_TRANS_SLAVE
+    		, TABLE_R_TRANS_STEP_CONDITION
+    		, TABLE_R_USER
+    		, TABLE_R_VALUE
+    		, TABLE_R_VERSION
          };
-    
+
+    private final static int[] KEY_POSITIONS = new int[] {0, 1, 2};
+
     public static final int REQUIRED_MAJOR_VERSION = 2;
     public static final int REQUIRED_MINOR_VERSION = 90;
     
@@ -114,6 +470,13 @@ public class Repository
     private static final int REP_STRING_LENGTH      = 2000000;
     private static final int REP_STRING_CODE_LENGTH =     255;
     
+	private static final String TRANS_ATTRIBUTE_ID_STEP_REJECTED = "ID_STEP_REJECTED";
+	private static final String TRANS_ATTRIBUTE_UNIQUE_CONNECTIONS = "UNIQUE_CONNECTIONS";
+	private static final String TRANS_ATTRIBUTE_FEEDBACK_SHOWN = "FEEDBACK_SHOWN";
+	private static final String TRANS_ATTRIBUTE_FEEDBACK_SIZE = "FEEDBACK_SIZE";
+	private static final String TRANS_ATTRIBUTE_USING_THREAD_PRIORITIES = "USING_THREAD_PRIORITIES";
+	private static final String TRANS_ATTRIBUTE_SHARED_FILE = "SHARED_FILE";
+		
     private static Repository currentRepository;
 
 	public Repository(LogWriter log, RepositoryMeta repinfo, UserInfo userinfo)
@@ -278,7 +641,7 @@ public class Repository
         RowMetaAndData lastUpgrade = null;
         try
         {
-            lastUpgrade = database.getOneRow("SELECT * FROM R_VERSION ORDER BY UPGRADE_DATE DESC");
+            lastUpgrade = database.getOneRow("SELECT "+quote(FIELD_VERSION_MAJOR_VERSION)+", "+quote(FIELD_VERSION_MINOR_VERSION)+", "+quote(FIELD_VERSION_UPGRADE_DATE)+" FROM "+quote(TABLE_R_VERSION)+" ORDER BY "+quote(FIELD_VERSION_UPGRADE_DATE)+" DESC");
         }
         catch(Exception e)
         {
@@ -286,7 +649,7 @@ public class Repository
             // this means the R_VERSION table doesn't exist.
             // This table was introduced in version 2.3.0
             //
-            log.logBasic(toString(), "There was an error getting information from the version table R_VERSION.");
+            log.logBasic(toString(), "There was an error getting information from the version table "+quote(TABLE_R_VERSION)+".");
             log.logBasic(toString(), "This table was introduced in version 2.3.0. so we assume the version is 2.2.2");
             log.logBasic(toString(), "Stack trace: "+Const.getStackTracker(e));
 
@@ -298,8 +661,8 @@ public class Repository
 
         if (lastUpgrade != null)
         {
-            majorVersion = (int)lastUpgrade.getInteger("MAJOR_VERSION", -1);
-            minorVersion = (int)lastUpgrade.getInteger("MINOR_VERSION", -1);
+            majorVersion = (int)lastUpgrade.getInteger(FIELD_VERSION_MAJOR_VERSION, -1);
+            minorVersion = (int)lastUpgrade.getInteger(FIELD_VERSION_MINOR_VERSION, -1);
         }
             
         if (majorVersion < REQUIRED_MAJOR_VERSION || ( majorVersion==REQUIRED_MAJOR_VERSION && minorVersion<REQUIRED_MINOR_VERSION))
@@ -343,7 +706,6 @@ public class Repository
 		catch (KettleException dbe)
 		{
 			log.logError(toString(), "Error disconnecting from database : " + dbe.getMessage());
-			//return false;
 		}
 		finally
 		{
@@ -365,7 +727,8 @@ public class Repository
 		{
 			if (!database.isAutoCommit()) database.commit();
 			
-			// Also, clear the counters, reducing the risc of collisions!
+			// Also, clear the counters, reducing the risk of collisions!
+			//
 			Counters.getInstance().clear();
 		}
 		catch (KettleException dbe)
@@ -380,7 +743,8 @@ public class Repository
 		{
 			database.rollback();
 			
-			// Also, clear the counters, reducing the risc of collisions!
+			// Also, clear the counters, reducing the risk of collisions!
+			//
 			Counters.getInstance().clear();
 		}
 		catch (KettleException dbe)
@@ -407,10 +771,10 @@ public class Repository
 	
 	public synchronized void fillStepAttributesBuffer(long id_transformation) throws KettleException
 	{
-	    String sql = "SELECT ID_STEP, CODE, NR, VALUE_NUM, VALUE_STR "+
-	                 "FROM R_STEP_ATTRIBUTE "+
-	                 "WHERE ID_TRANSFORMATION = "+id_transformation+" "+
-	                 "ORDER BY ID_STEP, CODE, NR"
+	    String sql = "SELECT "+quote(FIELD_STEP_ATTRIBUTE_ID_STEP)+", "+quote(FIELD_STEP_ATTRIBUTE_CODE)+", "+quote(FIELD_STEP_ATTRIBUTE_NR)+", "+quote(FIELD_STEP_ATTRIBUTE_VALUE_NUM)+", "+quote(FIELD_STEP_ATTRIBUTE_VALUE_STR)+" "+
+	                 "FROM "+quote(TABLE_R_STEP_ATTRIBUTE) +" "+
+	                 "WHERE "+quote(FIELD_STEP_ATTRIBUTE_ID_TRANSFORMATION)+" = "+id_transformation+" "+
+	                 "ORDER BY "+quote(FIELD_STEP_ATTRIBUTE_ID_STEP)+", "+quote(FIELD_STEP_ATTRIBUTE_CODE)+", "+quote(FIELD_STEP_ATTRIBUTE_NR)
 	                 ;
 	    
 	    stepAttributesBuffer = database.getRows(sql, -1);
@@ -418,24 +782,26 @@ public class Repository
         
 	    // must use java-based sort to ensure compatibility with binary search
 	    // database ordering may or may not be case-insensitive
+	    //
         Collections.sort(stepAttributesBuffer, new StepAttributeComparator());  // in case db sort does not match our sort
 	}
 	
 	private synchronized RowMetaAndData searchStepAttributeInBuffer(long id_step, String code, long nr) throws KettleValueException
 	{
-	    int idx = searchStepAttributeIndexInBuffer(id_step, code, nr);
-	    if (idx<0) return null;
+	    int index = searchStepAttributeIndexInBuffer(id_step, code, nr);
+	    if (index<0) return null;
 	    
 	    // Get the row
-        Object[] r = stepAttributesBuffer.get(idx);
+	    //
+        Object[] r = stepAttributesBuffer.get(index);
+        
 	    // and remove it from the list...
-        // stepAttributesBuffer.remove(idx);
+        // stepAttributesBuffer.remove(index);
 	    
 	    return new RowMetaAndData(stepAttributesRowMeta, r);
 	}
 	
-    private final static int[] KEY_POSITIONS = new int[] {0, 1, 2};
-    
+	
     private class StepAttributeComparator implements Comparator<Object[]> {
 
     	public int compare(Object[] r1, Object[] r2) 
@@ -460,10 +826,12 @@ public class Repository
         int index = Collections.binarySearch(stepAttributesBuffer, key, new StepAttributeComparator());
 
         if (index>=stepAttributesBuffer.size() || index<0) return -1;
+        
         // 
-        // Check this...  If it is not, we didn't find it!
+        // Check this...  If it is not in there, we didn't find it!
         // stepAttributesRowMeta.compare returns 0 when there are conversion issues
         // so the binarySearch could have 'found' a match when there really isn't one
+        //
         Object[] look = stepAttributesBuffer.get(index);
         
         if (stepAttributesRowMeta.compare(look, key, KEY_POSITIONS)==0)
@@ -477,6 +845,7 @@ public class Repository
 	private synchronized int searchNrStepAttributes(long id_step, String code) throws KettleValueException
 	{
 	    // Search the index of the first step attribute with the specified code...
+		//
 	    int idx = searchStepAttributeIndexInBuffer(id_step, code, 0L);
 	    if (idx<0) return 0;
 	    
@@ -485,7 +854,9 @@ public class Repository
         
         if (idx+offset>=stepAttributesBuffer.size())
         {
-            return 1; // Only 1, the last of the attributes buffer.
+        	// Only 1, the last of the attributes buffer.
+        	//
+            return 1; 
         }
         Object[] look = (Object[])stepAttributesBuffer.get(idx+offset);
         RowMetaInterface rowMeta = stepAttributesRowMeta;
@@ -495,7 +866,9 @@ public class Repository
 	    
 	    while (lookID==id_step && code.equalsIgnoreCase( lookCode ) )
 	    {
-	        nr = rowMeta.getInteger(look, 2).intValue() + 1; // Find the maximum
+	    	// Find the maximum
+	    	//
+	        nr = rowMeta.getInteger(look, 2).intValue() + 1; 
 	        offset++;
             if (idx+offset<stepAttributesBuffer.size())
             {
@@ -518,113 +891,112 @@ public class Repository
 
 	public synchronized long getJobID(String name, long id_directory) throws KettleException
 	{
-		return getIDWithValue("R_JOB", "ID_JOB", "NAME", name, "ID_DIRECTORY", id_directory);
+		return getIDWithValue(quote(TABLE_R_JOB), quote(FIELD_JOB_ID_JOB), quote(FIELD_JOB_NAME), name, quote(FIELD_JOB_ID_DIRECTORY), id_directory);
 	}
 
 	public synchronized long getTransformationID(String name, long id_directory) throws KettleException
 	{
-		return getIDWithValue("R_TRANSFORMATION", "ID_TRANSFORMATION", "NAME", name, "ID_DIRECTORY", id_directory);
+		return getIDWithValue(quote(TABLE_R_TRANSFORMATION), quote(FIELD_TRANSFORMATION_ID_TRANSFORMATION), quote(FIELD_TRANSFORMATION_NAME), name, quote(FIELD_TRANSFORMATION_ID_DIRECTORY), id_directory);
 	}
 
 	public synchronized long getNoteID(String note) throws KettleException
 	{
-		return getIDWithValue("R_NOTE", "ID_NOTE", "VALUE_STR", note);
+		return getIDWithValue(quote(TABLE_R_NOTE), quote(FIELD_NOTE_ID_NOTE), quote(FIELD_NOTE_VALUE_STR), note);
 	}
 
 	public synchronized long getDatabaseID(String name) throws KettleException
 	{
-		return getIDWithValue("R_DATABASE", "ID_DATABASE", "NAME", name);
+		return getIDWithValue(quote(TABLE_R_DATABASE), quote(FIELD_DATABASE_ID_DATABASE), quote(FIELD_DATABASE_NAME), name);
 	}
     
     public synchronized long getPartitionSchemaID(String name) throws KettleException
     {
-        return getIDWithValue("R_PARTITION_SCHEMA", "ID_PARTITION_SCHEMA", "NAME", name);
+        return getIDWithValue(quote(TABLE_R_PARTITION_SCHEMA), quote(FIELD_PARTITION_SCHEMA_ID_PARTITION_SCHEMA), quote(FIELD_PARTITION_SCHEMA_NAME), name);
     }
 
     public synchronized long getSlaveID(String name) throws KettleException
     {
-        return getIDWithValue("R_SLAVE", "ID_SLAVE", "NAME", name);
+        return getIDWithValue(quote(TABLE_R_SLAVE), quote(FIELD_SLAVE_ID_SLAVE), quote(FIELD_SLAVE_NAME), name);
     }
 
     public synchronized long getClusterID(String name) throws KettleException
     {
-        return getIDWithValue("R_CLUSTER", "ID_CLUSTER", "NAME", name);
+        return getIDWithValue(quote(TABLE_R_CLUSTER), quote(FIELD_CLUSTER_ID_CLUSTER), quote(FIELD_CLUSTER_NAME), name);
     }
 
 	public synchronized long getDatabaseTypeID(String code) throws KettleException
 	{
-		return getIDWithValue("R_DATABASE_TYPE", "ID_DATABASE_TYPE", "CODE", code);
+		return getIDWithValue(quote(TABLE_R_DATABASE_TYPE), quote(FIELD_DATABASE_TYPE_ID_DATABASE_TYPE), quote(FIELD_DATABASE_TYPE_CODE), code);
 	}
 
 	public synchronized long getDatabaseConTypeID(String code) throws KettleException
 	{
-		return getIDWithValue("R_DATABASE_CONTYPE", "ID_DATABASE_CONTYPE", "CODE", code);
+		return getIDWithValue(quote(TABLE_R_DATABASE_CONTYPE), quote(FIELD_DATABASE_CONTYPE_ID_DATABASE_CONTYPE), quote(FIELD_DATABASE_CONTYPE_CODE), code);
 	}
 
 	public synchronized long getStepTypeID(String code) throws KettleException
 	{
-		return getIDWithValue("R_STEP_TYPE", "ID_STEP_TYPE", "CODE", code);
+		return getIDWithValue(quote(TABLE_R_STEP_TYPE), quote(FIELD_STEP_TYPE_ID_STEP_TYPE), quote(FIELD_STEP_TYPE_CODE), code);
 	}
 
 	public synchronized long getJobEntryID(String name, long id_job) throws KettleException
 	{
-		return getIDWithValue("R_JOBENTRY", "ID_JOBENTRY", "NAME", name, "ID_JOB", id_job);
+		return getIDWithValue(quote(TABLE_R_JOBENTRY), quote(FIELD_JOBENTRY_ID_JOBENTRY), quote(FIELD_JOBENTRY_NAME), name, quote(FIELD_JOBENTRY_ID_JOB), id_job);
 	}
 
 	public synchronized long getJobEntryTypeID(String code) throws KettleException
 	{
-		return getIDWithValue("R_JOBENTRY_TYPE", "ID_JOBENTRY_TYPE", "CODE", code);
+		return getIDWithValue(quote(TABLE_R_JOBENTRY_TYPE), quote(FIELD_JOBENTRY_TYPE_ID_JOBENTRY_TYPE), quote(FIELD_JOBENTRY_TYPE_CODE), code);
 	}
 
 	public synchronized long getStepID(String name, long id_transformation) throws KettleException
 	{
-		return getIDWithValue("R_STEP", "ID_STEP", "NAME", name, "ID_TRANSFORMATION", id_transformation);
+		return getIDWithValue(quote(TABLE_R_STEP), quote(FIELD_STEP_ID_STEP), quote(FIELD_STEP_NAME), name, quote(FIELD_STEP_ID_TRANSFORMATION), id_transformation);
 	}
 
 	public synchronized long getUserID(String login) throws KettleException
 	{
-		return getIDWithValue("R_USER", "ID_USER", "LOGIN", login);
+		return getIDWithValue(quote(TABLE_R_USER), quote(FIELD_USER_ID_USER), quote(FIELD_USER_LOGIN), login);
 	}
 
 	public synchronized long getProfileID(String profilename) throws KettleException
 	{
-		return getIDWithValue("R_PROFILE", "ID_PROFILE", "NAME", profilename);
+		return getIDWithValue(quote(TABLE_R_PROFILE), quote(FIELD_PROFILE_ID_PROFILE), quote(FIELD_PROFILE_NAME), profilename);
 	}
 
 	public synchronized long getPermissionID(String code) throws KettleException
 	{
-		return getIDWithValue("R_PERMISSION", "ID_PERMISSION", "CODE", code);
+		return getIDWithValue(quote(TABLE_R_PERMISSION), quote(FIELD_PERMISSION_ID_PERMISSION), quote(FIELD_PERMISSION_CODE), code);
 	}
 
-	public synchronized long getTransHopID(long id_transformation, long id_step_from, long id_step_to)
-			throws KettleException
+	public synchronized long getTransHopID(long id_transformation, long id_step_from, long id_step_to) throws KettleException
 	{
-		String lookupkey[] = new String[] { "ID_TRANSFORMATION", "ID_STEP_FROM", "ID_STEP_TO" };
+		String lookupkey[] = new String[] { quote(FIELD_TRANS_HOP_ID_TRANSFORMATION), quote(FIELD_TRANS_HOP_ID_STEP_FROM), quote(FIELD_TRANS_HOP_ID_STEP_TO), };
 		long key[] = new long[] { id_transformation, id_step_from, id_step_to };
 
-		return getIDWithValue("R_TRANS_HOP", "ID_TRANS_HOP", lookupkey, key);
+		return getIDWithValue(quote(TABLE_R_TRANS_HOP), quote(FIELD_TRANS_HOP_ID_TRANS_HOP), lookupkey, key);
 	}
 
 	public synchronized long getJobHopID(long id_job, long id_jobentry_copy_from, long id_jobentry_copy_to)
 			throws KettleException
 	{
-		String lookupkey[] = new String[] { "ID_JOB", "ID_JOBENTRY_COPY_FROM", "ID_JOBENTRY_COPY_TO" };
+		String lookupkey[] = new String[] { quote(FIELD_JOB_HOP_ID_JOB), quote(FIELD_JOB_HOP_ID_JOBENTRY_COPY_FROM), quote(FIELD_JOB_HOP_ID_JOBENTRY_COPY_TO), };
 		long key[] = new long[] { id_job, id_jobentry_copy_from, id_jobentry_copy_to };
 
-		return getIDWithValue("R_JOB_HOP", "ID_JOB_HOP", lookupkey, key);
+		return getIDWithValue(quote(TABLE_R_JOB_HOP), quote(FIELD_JOB_HOP_ID_JOB_HOP), lookupkey, key);
 	}
 
 	public synchronized long getDependencyID(long id_transformation, long id_database, String tablename) throws KettleException
 	{
-		String lookupkey[] = new String[] { "ID_TRANSFORMATION", "ID_DATABASE" };
+		String lookupkey[] = new String[] { quote(FIELD_DEPENDENCY_ID_TRANSFORMATION), quote(FIELD_DEPENDENCY_ID_DATABASE), };
 		long key[] = new long[] { id_transformation, id_database };
 
-		return getIDWithValue("R_DEPENDENCY", "ID_DEPENDENCY", "TABLE_NAME", tablename, lookupkey, key);
+		return getIDWithValue(quote(TABLE_R_DEPENDENCY), quote(FIELD_DEPENDENCY_ID_DEPENDENCY), quote(FIELD_DEPENDENCY_TABLE_NAME), tablename, lookupkey, key);
 	}
 
 	public synchronized long getRootDirectoryID() throws KettleException
 	{
-		RowMetaAndData result = database.getOneRow("SELECT ID_DIRECTORY FROM R_DIRECTORY WHERE ID_DIRECTORY_PARENT = 0");
+		RowMetaAndData result = database.getOneRow("SELECT "+quote(FIELD_DIRECTORY_ID_DIRECTORY)+" FROM "+quote(TABLE_R_DIRECTORY)+" WHERE "+quote(FIELD_DIRECTORY_ID_DIRECTORY_PARENT)+" = 0");
 		if (result != null && result.isNumeric(0))
 			return result.getInteger(0, -1);
 		return -1;
@@ -634,7 +1006,7 @@ public class Repository
 	{
 		int retval = 0;
 
-		String sql = "SELECT COUNT(*) FROM R_DIRECTORY WHERE ID_DIRECTORY_PARENT = " + id_directory;
+		String sql = "SELECT COUNT(*) FROM "+quote(TABLE_R_DIRECTORY)+" WHERE "+quote(FIELD_DIRECTORY_ID_DIRECTORY_PARENT)+" = " + id_directory;
 		RowMetaAndData r = database.getOneRow(sql);
 		if (r != null)
 		{
@@ -646,14 +1018,14 @@ public class Repository
 
 	public synchronized long[] getSubDirectoryIDs(long id_directory) throws KettleException
 	{
-		return getIDs("SELECT ID_DIRECTORY FROM R_DIRECTORY WHERE ID_DIRECTORY_PARENT = " + id_directory+" ORDER BY DIRECTORY_NAME");
+		return getIDs("SELECT "+quote(FIELD_DIRECTORY_ID_DIRECTORY)+" FROM "+quote(TABLE_R_DIRECTORY)+" WHERE "+quote(FIELD_DIRECTORY_ID_DIRECTORY_PARENT)+" = " + id_directory+" ORDER BY "+quote(FIELD_DIRECTORY_DIRECTORY_NAME));
 	}
 
 	private synchronized long getIDWithValue(String tablename, String idfield, String lookupfield, String value) throws KettleException
 	{
 		RowMetaAndData par = new RowMetaAndData();
 		par.addValue(new ValueMeta("value", ValueMetaInterface.TYPE_STRING), value);
-		RowMetaAndData result = database.getOneRow("SELECT " + databaseMeta.quoteField(idfield) + " FROM " + databaseMeta.quoteField(tablename)+ " WHERE " + databaseMeta.quoteField(lookupfield) + " = ?", par.getRowMeta(), par.getData());
+		RowMetaAndData result = database.getOneRow("SELECT " + idfield + " FROM " + tablename+ " WHERE " + lookupfield + " = ?", par.getRowMeta(), par.getData());
 
 		if (result != null && result.getRowMeta() != null && result.getData() != null && result.isNumeric(0))
 			return result.getInteger(0, 0);
@@ -665,8 +1037,8 @@ public class Repository
 		RowMetaAndData par = new RowMetaAndData();
         par.addValue(new ValueMeta("value", ValueMetaInterface.TYPE_STRING), value);
         par.addValue(new ValueMeta("key", ValueMetaInterface.TYPE_INTEGER), new Long(key));
-		RowMetaAndData result = database.getOneRow("SELECT " + databaseMeta.quoteField(idfield) + " FROM " + databaseMeta.quoteField(tablename) + " WHERE " + databaseMeta.quoteField( lookupfield ) + " = ? AND "
-									+ databaseMeta.quoteField(lookupkey) + " = ?", par.getRowMeta(), par.getData());
+		RowMetaAndData result = database.getOneRow("SELECT " + idfield + " FROM " + tablename + " WHERE " + lookupfield + " = ? AND "
+									+ lookupkey + " = ?", par.getRowMeta(), par.getData());
 
 		if (result != null && result.getRowMeta() != null && result.getData() != null && result.isNumeric(0))
 			return result.getInteger(0, 0);
@@ -676,7 +1048,7 @@ public class Repository
 	private synchronized long getIDWithValue(String tablename, String idfield, String lookupkey[], long key[]) throws KettleException
 	{
 		RowMetaAndData par = new RowMetaAndData();
-		String sql = "SELECT " + databaseMeta.quoteField(idfield) + " FROM " + databaseMeta.quoteField(tablename) + " ";
+		String sql = "SELECT " + idfield + " FROM " + tablename + " ";
 
 		for (int i = 0; i < lookupkey.length; i++)
 		{
@@ -685,7 +1057,7 @@ public class Repository
 			else
 				sql += "AND   ";
 			par.addValue(new ValueMeta(lookupkey[i], ValueMetaInterface.TYPE_INTEGER), new Long(key[i]));
-			sql += databaseMeta.quoteField(lookupkey[i]) + " = ? ";
+			sql += lookupkey[i] + " = ? ";
 		}
 		RowMetaAndData result = database.getOneRow(sql, par.getRowMeta(), par.getData());
 		if (result != null && result.getRowMeta() != null && result.getData() != null && result.isNumeric(0))
@@ -698,12 +1070,12 @@ public class Repository
 		RowMetaAndData par = new RowMetaAndData();
         par.addValue(new ValueMeta(lookupfield, ValueMetaInterface.TYPE_STRING), value);
         
-		String sql = "SELECT " + databaseMeta.quoteField(idfield) + " FROM " + databaseMeta.quoteField(tablename) + " WHERE " + databaseMeta.quoteField(lookupfield) + " = ? ";
+		String sql = "SELECT " + idfield + " FROM " + tablename + " WHERE " + lookupfield + " = ? ";
 
 		for (int i = 0; i < lookupkey.length; i++)
 		{
 			par.addValue( new ValueMeta(lookupkey[i], ValueMetaInterface.TYPE_STRING), new Long(key[i]) );
-			sql += "AND " + databaseMeta.quoteField(lookupkey[i]) + " = ? ";
+			sql += "AND " + lookupkey[i] + " = ? ";
 		}
 
 		RowMetaAndData result = database.getOneRow(sql, par.getRowMeta(), par.getData());
@@ -714,22 +1086,22 @@ public class Repository
 
 	public synchronized String getDatabaseTypeCode(long id_database_type) throws KettleException
 	{
-		return getStringWithID("R_DATABASE_TYPE", "ID_DATABASE_TYPE", id_database_type, "CODE");
+		return getStringWithID(quote(TABLE_R_DATABASE_TYPE), quote(FIELD_DATABASE_TYPE_ID_DATABASE_TYPE), id_database_type, quote(FIELD_DATABASE_TYPE_CODE));
 	}
 
 	public synchronized String getDatabaseConTypeCode(long id_database_contype) throws KettleException
 	{
-		return getStringWithID("R_DATABASE_CONTYPE", "ID_DATABASE_CONTYPE", id_database_contype, "CODE");
+		return getStringWithID(quote(TABLE_R_DATABASE_CONTYPE), quote(FIELD_DATABASE_CONTYPE_ID_DATABASE_CONTYPE), id_database_contype, quote(FIELD_DATABASE_CONTYPE_CODE));
 	}
 
 	public synchronized String getStepTypeCode(long id_database_type) throws KettleException
 	{
-		return getStringWithID("R_STEP_TYPE", "ID_STEP_TYPE", id_database_type, "CODE");
+		return getStringWithID(quote(TABLE_R_STEP_TYPE), quote(FIELD_STEP_TYPE_ID_STEP_TYPE), id_database_type, quote(FIELD_STEP_TYPE_CODE));
 	}
 
 	private synchronized String getStringWithID(String tablename, String keyfield, long id, String fieldname) throws KettleException
 	{
-		String sql = "SELECT " + databaseMeta.quoteField(fieldname) + " FROM " + databaseMeta.quoteField(tablename) + " WHERE " + databaseMeta.quoteField(keyfield) + " = ?";
+		String sql = "SELECT " + fieldname + " FROM " + tablename + " WHERE " + keyfield + " = ?";
 		RowMetaAndData par = new RowMetaAndData();
 		par.addValue(new ValueMeta(keyfield, ValueMetaInterface.TYPE_INTEGER), new Long(id));
 		RowMetaAndData result = database.getOneRow(sql, par.getRowMeta(), par.getData());
@@ -746,26 +1118,25 @@ public class Repository
 
 	public synchronized void moveTransformation(String transname, long id_directory_from, long id_directory_to) throws KettleException
 	{
-        String nameField = databaseMeta.quoteField("NAME");
-		String sql = "UPDATE R_TRANSFORMATION SET ID_DIRECTORY = ? WHERE "+nameField+" = ? AND ID_DIRECTORY = ?";
+        String nameField = quote(FIELD_TRANSFORMATION_NAME);
+		String sql = "UPDATE "+quote(TABLE_R_TRANSFORMATION)+" SET "+quote(FIELD_TRANSFORMATION_ID_DIRECTORY)+" = ? WHERE "+nameField+" = ? AND "+quote(FIELD_TRANSFORMATION_ID_DIRECTORY)+" = ?";
 
 		RowMetaAndData par = new RowMetaAndData();
-		par.addValue(new ValueMeta("ID_DIRECTORY", ValueMetaInterface.TYPE_INTEGER), new Long(id_directory_to));
-		par.addValue(new ValueMeta("NAME",  ValueMetaInterface.TYPE_STRING), transname);
-		par.addValue(new ValueMeta("ID_DIRECTORY", ValueMetaInterface.TYPE_INTEGER), new Long(id_directory_from));
+		par.addValue(new ValueMeta(FIELD_TRANSFORMATION_ID_DIRECTORY, ValueMetaInterface.TYPE_INTEGER), new Long(id_directory_to));
+		par.addValue(new ValueMeta(FIELD_TRANSFORMATION_NAME,  ValueMetaInterface.TYPE_STRING), transname);
+		par.addValue(new ValueMeta(FIELD_TRANSFORMATION_ID_DIRECTORY, ValueMetaInterface.TYPE_INTEGER), new Long(id_directory_from));
 
 		database.execStatement(sql, par.getRowMeta(), par.getData());
 	}
 
 	public synchronized void moveJob(String jobname, long id_directory_from, long id_directory_to) throws KettleException
 	{
-        String nameField = databaseMeta.quoteField("NAME");
-		String sql = "UPDATE R_JOB SET ID_DIRECTORY = ? WHERE "+nameField+" = ? AND ID_DIRECTORY = ?";
+		String sql = "UPDATE "+quote(TABLE_R_JOB)+" SET "+quote(FIELD_JOB_ID_DIRECTORY)+" = ? WHERE "+quote(FIELD_JOB_NAME)+" = ? AND "+quote(FIELD_JOB_ID_DIRECTORY)+" = ?";
 
 		RowMetaAndData par = new RowMetaAndData();
-		par.addValue(new ValueMeta("ID_DIRECTORY", ValueMetaInterface.TYPE_INTEGER), new Long(id_directory_to));
-		par.addValue(new ValueMeta("NAME",  ValueMetaInterface.TYPE_STRING), jobname);
-		par.addValue(new ValueMeta("ID_DIRECTORY", ValueMetaInterface.TYPE_INTEGER), new Long(id_directory_from));
+		par.addValue(new ValueMeta(FIELD_JOB_ID_DIRECTORY, ValueMetaInterface.TYPE_INTEGER), new Long(id_directory_to));
+		par.addValue(new ValueMeta(FIELD_JOB_NAME,  ValueMetaInterface.TYPE_STRING), jobname);
+		par.addValue(new ValueMeta(FIELD_JOB_ID_DIRECTORY, ValueMetaInterface.TYPE_INTEGER), new Long(id_directory_from));
 
 		database.execStatement(sql, par.getRowMeta(), par.getData());
 	}
@@ -776,167 +1147,167 @@ public class Repository
 
 	public synchronized long getNextTransformationID() throws KettleException
 	{
-		return getNextID("R_TRANSFORMATION", "ID_TRANSFORMATION");
+		return getNextID(quote(TABLE_R_TRANSFORMATION), quote(FIELD_TRANSFORMATION_ID_TRANSFORMATION));
 	}
 
 	public synchronized long getNextJobID() throws KettleException
 	{
-		return getNextID("R_JOB", "ID_JOB");
+		return getNextID(quote(TABLE_R_JOB), quote(FIELD_JOB_ID_JOB));
 	}
 
 	public synchronized long getNextNoteID() throws KettleException
 	{
-		return getNextID("R_NOTE", "ID_NOTE");
+		return getNextID(quote(TABLE_R_NOTE), quote(FIELD_NOTE_ID_NOTE));
 	}
     
     public synchronized long getNextLogID() throws KettleException
     {
-        return getNextID("R_REPOSITORY_LOG", "ID_REPOSITORY_LOG");
+        return getNextID(quote(TABLE_R_REPOSITORY_LOG), quote(FIELD_REPOSITORY_LOG_ID_REPOSITORY_LOG));
     }
 
 	public synchronized long getNextDatabaseID() throws KettleException
 	{
-		return getNextID("R_DATABASE", "ID_DATABASE");
+		return getNextID(quote(TABLE_R_DATABASE), quote(FIELD_DATABASE_ID_DATABASE));
 	}
 
 	public synchronized long getNextDatabaseTypeID() throws KettleException
 	{
-		return getNextID("R_DATABASE_TYPE", "ID_DATABASE_TYPE");
+		return getNextID(quote(TABLE_R_DATABASE_TYPE), quote(FIELD_DATABASE_TYPE_ID_DATABASE_TYPE));
 	}
 
 	public synchronized long getNextDatabaseConnectionTypeID() throws KettleException
 	{
-		return getNextID("R_DATABASE_CONTYPE", "ID_DATABASE_CONTYPE");
+		return getNextID(quote(TABLE_R_DATABASE_CONTYPE), quote(FIELD_DATABASE_CONTYPE_ID_DATABASE_CONTYPE));
 	}
 
 	public synchronized long getNextLoglevelID() throws KettleException
 	{
-		return getNextID("R_LOGLEVEL", "ID_LOGLEVEL");
+		return getNextID(quote(TABLE_R_LOGLEVEL), quote(FIELD_LOGLEVEL_ID_LOGLEVEL));
 	}
 
 	public synchronized long getNextStepTypeID() throws KettleException
 	{
-		return getNextID("R_STEP_TYPE", "ID_STEP_TYPE");
+		return getNextID(quote(TABLE_R_STEP_TYPE), quote(FIELD_STEP_TYPE_ID_STEP_TYPE));
 	}
 
 	public synchronized long getNextStepID() throws KettleException
 	{
-		return getNextID("R_STEP", "ID_STEP");
+		return getNextID(quote(TABLE_R_STEP), quote(FIELD_STEP_ID_STEP));
 	}
 
 	public synchronized long getNextJobEntryID() throws KettleException
 	{
-		return getNextID("R_JOBENTRY", "ID_JOBENTRY");
+		return getNextID(quote(TABLE_R_JOBENTRY), quote(FIELD_JOBENTRY_ID_JOBENTRY));
 	}
 
 	public synchronized long getNextJobEntryTypeID() throws KettleException
 	{
-		return getNextID("R_JOBENTRY_TYPE", "ID_JOBENTRY_TYPE");
+		return getNextID(quote(TABLE_R_JOBENTRY_TYPE), quote(FIELD_JOBENTRY_TYPE_ID_JOBENTRY_TYPE));
 	}
 
 	public synchronized long getNextJobEntryCopyID() throws KettleException
 	{
-		return getNextID("R_JOBENTRY_COPY", "ID_JOBENTRY_COPY");
+		return getNextID(quote(TABLE_R_JOBENTRY_COPY), quote(FIELD_JOBENTRY_COPY_ID_JOBENTRY_COPY));
 	}
 
 	public synchronized long getNextStepAttributeID() throws KettleException
 	{
-		return getNextID("R_STEP_ATTRIBUTE", "ID_STEP_ATTRIBUTE");
+		return getNextID(quote(TABLE_R_STEP_ATTRIBUTE), quote(FIELD_STEP_ATTRIBUTE_ID_STEP_ATTRIBUTE));
 	}
 
     public synchronized long getNextTransAttributeID() throws KettleException
     {
-        return getNextID("R_TRANS_ATTRIBUTE", "ID_TRANS_ATTRIBUTE");
+        return getNextID(quote(TABLE_R_TRANS_ATTRIBUTE), quote(FIELD_TRANS_ATTRIBUTE_ID_TRANS_ATTRIBUTE));
     }
     
     public synchronized long getNextDatabaseAttributeID() throws KettleException
     {
-        return getNextID("R_DATABASE_ATTRIBUTE", "ID_DATABASE_ATTRIBUTE");
+        return getNextID(quote(TABLE_R_DATABASE_ATTRIBUTE), quote(FIELD_DATABASE_ATTRIBUTE_ID_DATABASE_ATTRIBUTE));
     }
 
 	public synchronized long getNextTransHopID() throws KettleException
 	{
-		return getNextID("R_TRANS_HOP", "ID_TRANS_HOP");
+		return getNextID(quote(TABLE_R_TRANS_HOP), quote(FIELD_TRANS_HOP_ID_TRANS_HOP));
 	}
 
 	public synchronized long getNextJobHopID() throws KettleException
 	{
-		return getNextID("R_JOB_HOP", "ID_JOB_HOP");
+		return getNextID(quote(TABLE_R_JOB_HOP), quote(FIELD_JOB_HOP_ID_JOB_HOP));
 	}
 
 	public synchronized long getNextDepencencyID() throws KettleException
 	{
-		return getNextID("R_DEPENDENCY", "ID_DEPENDENCY");
+		return getNextID(quote(TABLE_R_DEPENDENCY), quote(FIELD_DEPENDENCY_ID_DEPENDENCY));
 	}
     
     public synchronized long getNextPartitionSchemaID() throws KettleException
     {
-        return getNextID("R_PARTITION_SCHEMA", "ID_PARTITION_SCHEMA");
+        return getNextID(quote(TABLE_R_PARTITION_SCHEMA), quote(FIELD_PARTITION_SCHEMA_ID_PARTITION_SCHEMA));
     }
 
     public synchronized long getNextPartitionID() throws KettleException
     {
-        return getNextID("R_PARTITION", "ID_PARTITION");
+        return getNextID(quote(TABLE_R_PARTITION), quote(FIELD_PARTITION_ID_PARTITION));
     }
 
     public synchronized long getNextTransformationPartitionSchemaID() throws KettleException
     {
-        return getNextID("R_TRANS_PARTITION_SCHEMA", "ID_TRANS_PARTITION_SCHEMA");
+        return getNextID(quote(TABLE_R_TRANS_PARTITION_SCHEMA), quote(FIELD_TRANS_PARTITION_SCHEMA_ID_TRANS_PARTITION_SCHEMA));
     }
     
     public synchronized long getNextClusterID() throws KettleException
     {
-        return getNextID("R_CLUSTER", "ID_CLUSTER");
+        return getNextID(quote(TABLE_R_CLUSTER), quote(FIELD_CLUSTER_ID_CLUSTER));
     }
 
     public synchronized long getNextSlaveServerID() throws KettleException
     {
-        return getNextID("R_SLAVE", "ID_SLAVE");
+        return getNextID(quote(TABLE_R_SLAVE), quote(FIELD_SLAVE_ID_SLAVE));
     }
     
     public synchronized long getNextClusterSlaveID() throws KettleException
     {
-        return getNextID("R_CLUSTER_SLAVE", "ID_CLUSTER_SLAVE");
+        return getNextID(quote(TABLE_R_CLUSTER_SLAVE), quote(FIELD_CLUSTER_SLAVE_ID_CLUSTER_SLAVE));
     }
     
     public synchronized long getNextTransformationSlaveID() throws KettleException
     {
-        return getNextID("R_TRANS_SLAVE", "ID_TRANS_SLAVE");
+        return getNextID(quote(TABLE_R_TRANS_SLAVE), quote(FIELD_TRANS_SLAVE_ID_TRANS_SLAVE));
     }
     
     public synchronized long getNextTransformationClusterID() throws KettleException
     {
-        return getNextID("R_TRANS_CLUSTER", "ID_TRANS_CLUSTER");
+        return getNextID(quote(TABLE_R_TRANS_CLUSTER), quote(FIELD_TRANS_CLUSTER_ID_TRANS_CLUSTER));
     }
     
 	public synchronized long getNextConditionID() throws KettleException
 	{
-		return getNextID("R_CONDITION", "ID_CONDITION");
+		return getNextID(quote(TABLE_R_CONDITION), quote(FIELD_CONDITION_ID_CONDITION));
 	}
 
 	public synchronized long getNextValueID() throws KettleException
 	{
-		return getNextID("R_VALUE", "ID_VALUE");
+		return getNextID(quote(TABLE_R_VALUE), quote(FIELD_VALUE_ID_VALUE));
 	}
 
 	public synchronized long getNextUserID() throws KettleException
 	{
-		return getNextID("R_USER", "ID_USER");
+		return getNextID(quote(TABLE_R_USER), quote(FIELD_USER_ID_USER));
 	}
 
 	public synchronized long getNextProfileID() throws KettleException
 	{
-		return getNextID("R_PROFILE", "ID_PROFILE");
+		return getNextID(quote(TABLE_R_PROFILE), quote(FIELD_PROFILE_ID_PROFILE));
 	}
 
 	public synchronized long getNextPermissionID() throws KettleException
 	{
-		return getNextID("R_PERMISSION", "ID_PERMISSION");
+		return getNextID(quote(TABLE_R_PERMISSION), quote(FIELD_PERMISSION_ID_PERMISSION));
 	}
 
 	public synchronized long getNextJobEntryAttributeID() throws KettleException
 	{
-	    return getNextID("R_JOBENTRY_ATTRIBUTE", "ID_JOBENTRY_ATTRIBUTE");
+	    return getNextID(TABLE_R_JOBENTRY_ATTRIBUTE, quote(FIELD_JOBENTRY_ATTRIBUTE_ID_JOBENTRY_ATTRIBUTE));
 	}
 	
 	public synchronized long getNextID(String tableName, String fieldName) throws KettleException
@@ -963,19 +1334,18 @@ public class Repository
 
 	public synchronized long getNextDirectoryID() throws KettleException
 	{
-		return getNextID("R_DIRECTORY", "ID_DIRECTORY");
+		return getNextID(quote(TABLE_R_DIRECTORY), quote(FIELD_DIRECTORY_ID_DIRECTORY));
 	}
 
 	private synchronized long getNextTableID(String tablename, String idfield) throws KettleException
 	{
 		long retval = -1;
 
-		RowMetaAndData r = database.getOneRow("SELECT MAX(" + databaseMeta.quoteField(idfield) + ") FROM " + databaseMeta.quoteField(tablename));
+		RowMetaAndData r = database.getOneRow("SELECT MAX(" + idfield + ") FROM " + tablename);
 		if (r != null)
 		{
 			Long id = r.getInteger(0);
 			
-			// log.logBasic(toString(), "result row for "+idfield+" is : "+r.toString()+", id = "+id.toString()+" int="+id.getInteger()+" num="+id.getNumber());
 			if (id == null)
 			{
 				if (log.isDebug()) log.logDebug(toString(), "no max(" + idfield + ") found in table " + tablename);
@@ -985,8 +1355,6 @@ public class Repository
 			{
                 if (log.isDebug()) log.logDebug(toString(), "max(" + idfield + ") found in table " + tablename + " --> " + idfield + " number: " + id);
 				retval = id.longValue() + 1L;
-				
-				// log.logBasic(toString(), "Got next id for "+tablename+"."+idfield+" from the database: "+retval);
 			}
 		}
 		return retval;
@@ -1000,50 +1368,50 @@ public class Repository
     {
 		RowMetaAndData table = new RowMetaAndData();
 
-		table.addValue(new ValueMeta("ID_TRANSFORMATION", ValueMetaInterface.TYPE_INTEGER), new Long(transMeta.getId()));
-		table.addValue(new ValueMeta("NAME", ValueMetaInterface.TYPE_STRING), transMeta.getName());
-		table.addValue(new ValueMeta("DESCRIPTION", ValueMetaInterface.TYPE_STRING), transMeta.getDescription());
-		table.addValue(new ValueMeta("EXTENDED_DESCRIPTION", ValueMetaInterface.TYPE_STRING), transMeta.getExtendedDescription());
-		table.addValue(new ValueMeta("TRANS_VERSION", ValueMetaInterface.TYPE_STRING), transMeta.getTransversion());
-		table.addValue(new ValueMeta("TRANS_STATUS", ValueMetaInterface.TYPE_INTEGER), new Long(transMeta.getTransstatus()  <0 ? -1L : transMeta.getTransstatus()));
-		table.addValue(new ValueMeta("ID_STEP_READ", ValueMetaInterface.TYPE_INTEGER), new Long(transMeta.getReadStep()  ==null ? -1L : transMeta.getReadStep().getID()));
-		table.addValue(new ValueMeta("ID_STEP_WRITE", ValueMetaInterface.TYPE_INTEGER), new Long(transMeta.getWriteStep() ==null ? -1L : transMeta.getWriteStep().getID()));
-		table.addValue(new ValueMeta("ID_STEP_INPUT", ValueMetaInterface.TYPE_INTEGER), new Long(transMeta.getInputStep() ==null ? -1L : transMeta.getInputStep().getID()));
-		table.addValue(new ValueMeta("ID_STEP_OUTPUT", ValueMetaInterface.TYPE_INTEGER), new Long(transMeta.getOutputStep()==null ? -1L : transMeta.getOutputStep().getID()));
-		table.addValue(new ValueMeta("ID_STEP_UPDATE", ValueMetaInterface.TYPE_INTEGER), new Long(transMeta.getUpdateStep()==null ? -1L : transMeta.getUpdateStep().getID()));
-		table.addValue(new ValueMeta("ID_DATABASE_LOG", ValueMetaInterface.TYPE_INTEGER), new Long(transMeta.getLogConnection()==null ? -1L : transMeta.getLogConnection().getID()));
-		table.addValue(new ValueMeta("TABLE_NAME_LOG", ValueMetaInterface.TYPE_STRING), transMeta.getLogTable());
-		table.addValue(new ValueMeta("USE_BATCHID", ValueMetaInterface.TYPE_BOOLEAN), new Boolean(transMeta.isBatchIdUsed()));
-		table.addValue(new ValueMeta("USE_LOGFIELD", ValueMetaInterface.TYPE_BOOLEAN), new Boolean(transMeta.isLogfieldUsed()));
-		table.addValue(new ValueMeta("ID_DATABASE_MAXDATE", ValueMetaInterface.TYPE_INTEGER), new Long(transMeta.getMaxDateConnection()==null ? -1L : transMeta.getMaxDateConnection().getID()));
-		table.addValue(new ValueMeta("TABLE_NAME_MAXDATE", ValueMetaInterface.TYPE_STRING), transMeta.getMaxDateTable());
-		table.addValue(new ValueMeta("FIELD_NAME_MAXDATE", ValueMetaInterface.TYPE_STRING), transMeta.getMaxDateField());
-		table.addValue(new ValueMeta("OFFSET_MAXDATE", ValueMetaInterface.TYPE_NUMBER), new Double(transMeta.getMaxDateOffset()));
-		table.addValue(new ValueMeta("DIFF_MAXDATE", ValueMetaInterface.TYPE_NUMBER), new Double(transMeta.getMaxDateDifference()));
+		table.addValue(new ValueMeta(FIELD_TRANSFORMATION_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER), new Long(transMeta.getId()));
+		table.addValue(new ValueMeta(FIELD_TRANSFORMATION_NAME, ValueMetaInterface.TYPE_STRING), transMeta.getName());
+		table.addValue(new ValueMeta(FIELD_TRANSFORMATION_DESCRIPTION, ValueMetaInterface.TYPE_STRING), transMeta.getDescription());
+		table.addValue(new ValueMeta(FIELD_TRANSFORMATION_EXTENDED_DESCRIPTION, ValueMetaInterface.TYPE_STRING), transMeta.getExtendedDescription());
+		table.addValue(new ValueMeta(FIELD_TRANSFORMATION_TRANS_VERSION, ValueMetaInterface.TYPE_STRING), transMeta.getTransversion());
+		table.addValue(new ValueMeta(FIELD_TRANSFORMATION_TRANS_STATUS, ValueMetaInterface.TYPE_INTEGER), new Long(transMeta.getTransstatus()  <0 ? -1L : transMeta.getTransstatus()));
+		table.addValue(new ValueMeta(FIELD_TRANSFORMATION_ID_STEP_READ, ValueMetaInterface.TYPE_INTEGER), new Long(transMeta.getReadStep()  ==null ? -1L : transMeta.getReadStep().getID()));
+		table.addValue(new ValueMeta(FIELD_TRANSFORMATION_ID_STEP_WRITE, ValueMetaInterface.TYPE_INTEGER), new Long(transMeta.getWriteStep() ==null ? -1L : transMeta.getWriteStep().getID()));
+		table.addValue(new ValueMeta(FIELD_TRANSFORMATION_ID_STEP_INPUT, ValueMetaInterface.TYPE_INTEGER), new Long(transMeta.getInputStep() ==null ? -1L : transMeta.getInputStep().getID()));
+		table.addValue(new ValueMeta(FIELD_TRANSFORMATION_ID_STEP_OUTPUT, ValueMetaInterface.TYPE_INTEGER), new Long(transMeta.getOutputStep()==null ? -1L : transMeta.getOutputStep().getID()));
+		table.addValue(new ValueMeta(FIELD_TRANSFORMATION_ID_STEP_UPDATE, ValueMetaInterface.TYPE_INTEGER), new Long(transMeta.getUpdateStep()==null ? -1L : transMeta.getUpdateStep().getID()));
+		table.addValue(new ValueMeta(FIELD_TRANSFORMATION_ID_DATABASE_LOG, ValueMetaInterface.TYPE_INTEGER), new Long(transMeta.getLogConnection()==null ? -1L : transMeta.getLogConnection().getID()));
+		table.addValue(new ValueMeta(FIELD_TRANSFORMATION_TABLE_NAME_LOG, ValueMetaInterface.TYPE_STRING), transMeta.getLogTable());
+		table.addValue(new ValueMeta(FIELD_TRANSFORMATION_USE_BATCHID, ValueMetaInterface.TYPE_BOOLEAN), new Boolean(transMeta.isBatchIdUsed()));
+		table.addValue(new ValueMeta(FIELD_TRANSFORMATION_USE_LOGFIELD, ValueMetaInterface.TYPE_BOOLEAN), new Boolean(transMeta.isLogfieldUsed()));
+		table.addValue(new ValueMeta(FIELD_TRANSFORMATION_ID_DATABASE_MAXDATE, ValueMetaInterface.TYPE_INTEGER), new Long(transMeta.getMaxDateConnection()==null ? -1L : transMeta.getMaxDateConnection().getID()));
+		table.addValue(new ValueMeta(FIELD_TRANSFORMATION_TABLE_NAME_MAXDATE, ValueMetaInterface.TYPE_STRING), transMeta.getMaxDateTable());
+		table.addValue(new ValueMeta(FIELD_TRANSFORMATION_FIELD_NAME_MAXDATE, ValueMetaInterface.TYPE_STRING), transMeta.getMaxDateField());
+		table.addValue(new ValueMeta(FIELD_TRANSFORMATION_OFFSET_MAXDATE, ValueMetaInterface.TYPE_NUMBER), new Double(transMeta.getMaxDateOffset()));
+		table.addValue(new ValueMeta(FIELD_TRANSFORMATION_DIFF_MAXDATE, ValueMetaInterface.TYPE_NUMBER), new Double(transMeta.getMaxDateDifference()));
 
-		table.addValue(new ValueMeta("CREATED_USER", ValueMetaInterface.TYPE_STRING),        transMeta.getCreatedUser());
-		table.addValue(new ValueMeta("CREATED_DATE", ValueMetaInterface.TYPE_DATE), transMeta.getCreatedDate());
+		table.addValue(new ValueMeta(FIELD_TRANSFORMATION_CREATED_USER, ValueMetaInterface.TYPE_STRING),        transMeta.getCreatedUser());
+		table.addValue(new ValueMeta(FIELD_TRANSFORMATION_CREATED_DATE, ValueMetaInterface.TYPE_DATE), transMeta.getCreatedDate());
 		
-		table.addValue(new ValueMeta("MODIFIED_USER", ValueMetaInterface.TYPE_STRING), transMeta.getModifiedUser());
-		table.addValue(new ValueMeta("MODIFIED_DATE", ValueMetaInterface.TYPE_DATE), transMeta.getModifiedDate());
-		table.addValue(new ValueMeta("SIZE_ROWSET", ValueMetaInterface.TYPE_INTEGER), new Long(transMeta.getSizeRowset()));
-		table.addValue(new ValueMeta("ID_DIRECTORY", ValueMetaInterface.TYPE_INTEGER), new Long(transMeta.getDirectory().getID()));
+		table.addValue(new ValueMeta(FIELD_TRANSFORMATION_MODIFIED_USER, ValueMetaInterface.TYPE_STRING), transMeta.getModifiedUser());
+		table.addValue(new ValueMeta(FIELD_TRANSFORMATION_MODIFIED_DATE, ValueMetaInterface.TYPE_DATE), transMeta.getModifiedDate());
+		table.addValue(new ValueMeta(FIELD_TRANSFORMATION_SIZE_ROWSET, ValueMetaInterface.TYPE_INTEGER), new Long(transMeta.getSizeRowset()));
+		table.addValue(new ValueMeta(FIELD_TRANSFORMATION_ID_DIRECTORY, ValueMetaInterface.TYPE_INTEGER), new Long(transMeta.getDirectory().getID()));
 
-		database.prepareInsert(table.getRowMeta(), "R_TRANSFORMATION");
+		database.prepareInsert(table.getRowMeta(), TABLE_R_TRANSFORMATION);
 		database.setValuesInsert(table);
 		database.insertRow();
 		database.closeInsert();
 
         if (transMeta.getRejectedStep()!=null)
         {
-            insertTransAttribute(transMeta.getId(), 0, "ID_STEP_REJECTED", transMeta.getRejectedStep().getID(), null);
+            insertTransAttribute(transMeta.getId(), 0, TRANS_ATTRIBUTE_ID_STEP_REJECTED, transMeta.getRejectedStep().getID(), null);
         }
 
-        insertTransAttribute(transMeta.getId(), 0, "UNIQUE_CONNECTIONS", 0, transMeta.isUsingUniqueConnections()?"Y":"N");
-        insertTransAttribute(transMeta.getId(), 0, "FEEDBACK_SHOWN", 0, transMeta.isFeedbackShown()?"Y":"N");
-        insertTransAttribute(transMeta.getId(), 0, "FEEDBACK_SIZE", transMeta.getFeedbackSize(), "");
-		insertTransAttribute(transMeta.getId(), 0, "USING_THREAD_PRIORITIES", 0, transMeta.isUsingThreadPriorityManagment()?"Y":"N");
-        insertTransAttribute(transMeta.getId(), 0, "SHARED_FILE", 0, transMeta.getSharedObjectsFile());
+        insertTransAttribute(transMeta.getId(), 0, TRANS_ATTRIBUTE_UNIQUE_CONNECTIONS, 0, transMeta.isUsingUniqueConnections()?"Y":"N");
+        insertTransAttribute(transMeta.getId(), 0, TRANS_ATTRIBUTE_FEEDBACK_SHOWN, 0, transMeta.isFeedbackShown()?"Y":"N");
+        insertTransAttribute(transMeta.getId(), 0, TRANS_ATTRIBUTE_FEEDBACK_SIZE, transMeta.getFeedbackSize(), "");
+		insertTransAttribute(transMeta.getId(), 0, TRANS_ATTRIBUTE_USING_THREAD_PRIORITIES, 0, transMeta.isUsingThreadPriorityManagment()?"Y":"N");
+        insertTransAttribute(transMeta.getId(), 0, TRANS_ATTRIBUTE_SHARED_FILE, 0, transMeta.getSharedObjectsFile());
         
 		// Save the logging connection link...
 		if (transMeta.getLogConnection()!=null) insertStepDatabase(transMeta.getId(), -1L, transMeta.getLogConnection().getID());
@@ -1059,30 +1427,30 @@ public class Repository
 	{
 		RowMetaAndData table = new RowMetaAndData();
 
-		table.addValue(new ValueMeta("ID_JOB", ValueMetaInterface.TYPE_INTEGER), new Long(id_job));
-		table.addValue(new ValueMeta("ID_DIRECTORY", ValueMetaInterface.TYPE_INTEGER), new Long(id_directory));
-		table.addValue(new ValueMeta("NAME", ValueMetaInterface.TYPE_STRING), name);
-		table.addValue(new ValueMeta("DESCRIPTION", ValueMetaInterface.TYPE_STRING), description);
-		table.addValue(new ValueMeta("EXTENDED_DESCRIPTION", ValueMetaInterface.TYPE_STRING), extended_description);
-		table.addValue(new ValueMeta("JOB_VERSION", ValueMetaInterface.TYPE_STRING), version);
-		table.addValue(new ValueMeta("JOB_STATUS", ValueMetaInterface.TYPE_INTEGER), new Long(status  <0 ? -1L : status));
+		table.addValue(new ValueMeta(FIELD_JOB_ID_JOB, ValueMetaInterface.TYPE_INTEGER), new Long(id_job));
+		table.addValue(new ValueMeta(FIELD_JOB_ID_DIRECTORY, ValueMetaInterface.TYPE_INTEGER), new Long(id_directory));
+		table.addValue(new ValueMeta(FIELD_JOB_NAME, ValueMetaInterface.TYPE_STRING), name);
+		table.addValue(new ValueMeta(FIELD_JOB_DESCRIPTION, ValueMetaInterface.TYPE_STRING), description);
+		table.addValue(new ValueMeta(FIELD_JOB_EXTENDED_DESCRIPTION, ValueMetaInterface.TYPE_STRING), extended_description);
+		table.addValue(new ValueMeta(FIELD_JOB_JOB_VERSION, ValueMetaInterface.TYPE_STRING), version);
+		table.addValue(new ValueMeta(FIELD_JOB_JOB_STATUS, ValueMetaInterface.TYPE_INTEGER), new Long(status  <0 ? -1L : status));
 
-		table.addValue(new ValueMeta("ID_DATABASE_LOG", ValueMetaInterface.TYPE_INTEGER), new Long(id_database_log));
-		table.addValue(new ValueMeta("TABLE_NAME_LOG", ValueMetaInterface.TYPE_STRING), table_name_log);
+		table.addValue(new ValueMeta(FIELD_JOB_ID_DATABASE_LOG, ValueMetaInterface.TYPE_INTEGER), new Long(id_database_log));
+		table.addValue(new ValueMeta(FIELD_JOB_TABLE_NAME_LOG, ValueMetaInterface.TYPE_STRING), table_name_log);
 
-		table.addValue(new ValueMeta("CREATED_USER", ValueMetaInterface.TYPE_STRING), created_user);
-		table.addValue(new ValueMeta("CREATED_DATE", ValueMetaInterface.TYPE_DATE), created_date);
-		table.addValue(new ValueMeta("MODIFIED_USER", ValueMetaInterface.TYPE_STRING), modified_user);
-		table.addValue(new ValueMeta("MODIFIED_DATE", ValueMetaInterface.TYPE_DATE), modified_date);
-        table.addValue(new ValueMeta("USE_BATCH_ID", ValueMetaInterface.TYPE_BOOLEAN), new Boolean(useBatchId));
-        table.addValue(new ValueMeta("PASS_BATCH_ID", ValueMetaInterface.TYPE_BOOLEAN), new Boolean(batchIdPassed));
-        table.addValue(new ValueMeta("USE_LOGFIELD", ValueMetaInterface.TYPE_BOOLEAN), new Boolean(logfieldUsed));
-        table.addValue(new ValueMeta("SHARED_FILE", ValueMetaInterface.TYPE_STRING), sharedObjectsFile);
+		table.addValue(new ValueMeta(FIELD_JOB_CREATED_USER, ValueMetaInterface.TYPE_STRING), created_user);
+		table.addValue(new ValueMeta(FIELD_JOB_CREATED_DATE, ValueMetaInterface.TYPE_DATE), created_date);
+		table.addValue(new ValueMeta(FIELD_JOB_MODIFIED_USER, ValueMetaInterface.TYPE_STRING), modified_user);
+		table.addValue(new ValueMeta(FIELD_JOB_MODIFIED_DATE, ValueMetaInterface.TYPE_DATE), modified_date);
+        table.addValue(new ValueMeta(FIELD_JOB_USE_BATCH_ID, ValueMetaInterface.TYPE_BOOLEAN), new Boolean(useBatchId));
+        table.addValue(new ValueMeta(FIELD_JOB_PASS_BATCH_ID, ValueMetaInterface.TYPE_BOOLEAN), new Boolean(batchIdPassed));
+        table.addValue(new ValueMeta(FIELD_JOB_USE_LOGFIELD, ValueMetaInterface.TYPE_BOOLEAN), new Boolean(logfieldUsed));
+        table.addValue(new ValueMeta(FIELD_JOB_SHARED_FILE, ValueMetaInterface.TYPE_STRING), sharedObjectsFile);
 
-		database.prepareInsert(table.getRowMeta(), "R_JOB");
+		database.prepareInsert(table.getRowMeta(), TABLE_R_JOB);
 		database.setValuesInsert(table);
 		database.insertRow();
-        if (log.isDebug()) log.logDebug(toString(), "Inserted new record into table R_JOB with data : " + table);
+        if (log.isDebug()) log.logDebug(toString(), "Inserted new record into table "+quote(TABLE_R_JOB)+" with data : " + table);
 		database.closeInsert();
 	}
 
@@ -1092,14 +1460,14 @@ public class Repository
 
 		RowMetaAndData table = new RowMetaAndData();
 
-		table.addValue(new ValueMeta("ID_NOTE", ValueMetaInterface.TYPE_INTEGER), new Long(id));
-		table.addValue(new ValueMeta("VALUE_STR", ValueMetaInterface.TYPE_STRING), note);
-		table.addValue(new ValueMeta("GUI_LOCATION_X", ValueMetaInterface.TYPE_INTEGER), new Long(gui_location_x));
-		table.addValue(new ValueMeta("GUI_LOCATION_Y", ValueMetaInterface.TYPE_INTEGER), new Long(gui_location_y));
-		table.addValue(new ValueMeta("GUI_LOCATION_WIDTH", ValueMetaInterface.TYPE_INTEGER), new Long(gui_location_width));
-		table.addValue(new ValueMeta("GUI_LOCATION_HEIGHT", ValueMetaInterface.TYPE_INTEGER), new Long(gui_location_height));
+		table.addValue(new ValueMeta(FIELD_NOTE_ID_NOTE, ValueMetaInterface.TYPE_INTEGER), new Long(id));
+		table.addValue(new ValueMeta(FIELD_NOTE_VALUE_STR, ValueMetaInterface.TYPE_STRING), note);
+		table.addValue(new ValueMeta(FIELD_NOTE_GUI_LOCATION_X, ValueMetaInterface.TYPE_INTEGER), new Long(gui_location_x));
+		table.addValue(new ValueMeta(FIELD_NOTE_GUI_LOCATION_Y, ValueMetaInterface.TYPE_INTEGER), new Long(gui_location_y));
+		table.addValue(new ValueMeta(FIELD_NOTE_GUI_LOCATION_WIDTH, ValueMetaInterface.TYPE_INTEGER), new Long(gui_location_width));
+		table.addValue(new ValueMeta(FIELD_NOTE_GUI_LOCATION_HEIGHT, ValueMetaInterface.TYPE_INTEGER), new Long(gui_location_height));
 
-		database.prepareInsert(table.getRowMeta(), "R_NOTE");
+		database.prepareInsert(table.getRowMeta(), TABLE_R_NOTE);
 		database.setValuesInsert(table);
 		database.insertRow();
 		database.closeInsert();
@@ -1112,13 +1480,13 @@ public class Repository
         long id = getNextLogID();
 
         RowMetaAndData table = new RowMetaAndData();
-        table.addValue(new ValueMeta("ID_REPOSITORY_LOG", ValueMetaInterface.TYPE_INTEGER), new Long(id));
-        table.addValue(new ValueMeta("REP_VERSION", ValueMetaInterface.TYPE_STRING), getVersion());
-        table.addValue(new ValueMeta("LOG_DATE", ValueMetaInterface.TYPE_DATE), new Date());
-        table.addValue(new ValueMeta("LOG_USER", ValueMetaInterface.TYPE_STRING), userinfo!=null?userinfo.getLogin():"admin");
-        table.addValue(new ValueMeta("OPERATION_DESC", ValueMetaInterface.TYPE_STRING), description);
+        table.addValue(new ValueMeta(FIELD_REPOSITORY_LOG_ID_REPOSITORY_LOG, ValueMetaInterface.TYPE_INTEGER), new Long(id));
+        table.addValue(new ValueMeta(FIELD_REPOSITORY_LOG_REP_VERSION, ValueMetaInterface.TYPE_STRING), getVersion());
+        table.addValue(new ValueMeta(FIELD_REPOSITORY_LOG_LOG_DATE, ValueMetaInterface.TYPE_DATE), new Date());
+        table.addValue(new ValueMeta(FIELD_REPOSITORY_LOG_LOG_USER, ValueMetaInterface.TYPE_STRING), userinfo!=null?userinfo.getLogin():"admin");
+        table.addValue(new ValueMeta(FIELD_REPOSITORY_LOG_OPERATION_DESC, ValueMetaInterface.TYPE_STRING), description);
 
-        database.prepareInsert(table.getRowMeta(), "R_REPOSITORY_LOG");
+        database.prepareInsert(table.getRowMeta(), TABLE_R_REPOSITORY_LOG);
         database.setValuesInsert(table);
         database.insertRow();
         database.closeInsert();
@@ -1130,10 +1498,10 @@ public class Repository
 	{
 		RowMetaAndData table = new RowMetaAndData();
 
-		table.addValue(new ValueMeta("ID_TRANSFORMATION", ValueMetaInterface.TYPE_INTEGER), new Long(id_transformation));
-		table.addValue(new ValueMeta("ID_NOTE", ValueMetaInterface.TYPE_INTEGER), new Long(id_note));
+		table.addValue(new ValueMeta(FIELD_TRANS_NOTE_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER), new Long(id_transformation));
+		table.addValue(new ValueMeta(FIELD_TRANS_NOTE_ID_NOTE, ValueMetaInterface.TYPE_INTEGER), new Long(id_note));
 
-		database.prepareInsert(table.getRowMeta(), "R_TRANS_NOTE");
+		database.prepareInsert(table.getRowMeta(), TABLE_R_TRANS_NOTE);
 		database.setValuesInsert(table);
 		database.insertRow();
 		database.closeInsert();
@@ -1143,10 +1511,10 @@ public class Repository
 	{
 		RowMetaAndData table = new RowMetaAndData();
 
-		table.addValue(new ValueMeta("ID_JOB", ValueMetaInterface.TYPE_INTEGER), new Long(id_job));
-		table.addValue(new ValueMeta("ID_NOTE", ValueMetaInterface.TYPE_INTEGER), new Long(id_note));
+		table.addValue(new ValueMeta(FIELD_JOB_NOTE_ID_JOB, ValueMetaInterface.TYPE_INTEGER), new Long(id_job));
+		table.addValue(new ValueMeta(FIELD_JOB_NOTE_ID_NOTE, ValueMetaInterface.TYPE_INTEGER), new Long(id_note));
 
-		database.prepareInsert(table.getRowMeta(), "R_JOB_NOTE");
+		database.prepareInsert(table.getRowMeta(), TABLE_R_JOB_NOTE);
 		database.setValuesInsert(table);
 		database.insertRow();
 		database.closeInsert();
@@ -1164,12 +1532,12 @@ public class Repository
 		{
 			id_database_type = getNextDatabaseTypeID();
 
-			String tablename = "R_DATABASE_TYPE";
+			String tablename = TABLE_R_DATABASE_TYPE;
 			RowMetaInterface tableMeta = new RowMeta();
             
-            tableMeta.addValueMeta(new ValueMeta("ID_DATABASE_TYPE", ValueMetaInterface.TYPE_INTEGER, 5, 0));
-            tableMeta.addValueMeta(new ValueMeta("CODE", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-            tableMeta.addValueMeta(new ValueMeta("DESCRIPTION", ValueMetaInterface.TYPE_STRING, REP_STRING_LENGTH, 0));
+            tableMeta.addValueMeta(new ValueMeta(FIELD_DATABASE_TYPE_ID_DATABASE_TYPE, ValueMetaInterface.TYPE_INTEGER, 5, 0));
+            tableMeta.addValueMeta(new ValueMeta(FIELD_DATABASE_TYPE_CODE, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+            tableMeta.addValueMeta(new ValueMeta(FIELD_DATABASE_TYPE_DESCRIPTION, ValueMetaInterface.TYPE_STRING, REP_STRING_LENGTH, 0));
 
 			database.prepareInsert(tableMeta, tablename);
 
@@ -1188,20 +1556,20 @@ public class Repository
 		long id_database_contype = getDatabaseConTypeID(access);
 
 		RowMetaAndData table = new RowMetaAndData();
-		table.addValue(new ValueMeta("ID_DATABASE", ValueMetaInterface.TYPE_INTEGER), new Long(id));
-		table.addValue(new ValueMeta("NAME", ValueMetaInterface.TYPE_STRING), name);
-		table.addValue(new ValueMeta("ID_DATABASE_TYPE", ValueMetaInterface.TYPE_INTEGER), new Long(id_database_type));
-		table.addValue(new ValueMeta("ID_DATABASE_CONTYPE", ValueMetaInterface.TYPE_INTEGER), new Long(id_database_contype));
-		table.addValue(new ValueMeta("HOST_NAME", ValueMetaInterface.TYPE_STRING), host);
-		table.addValue(new ValueMeta("DATABASE_NAME", ValueMetaInterface.TYPE_STRING), dbname);
-		table.addValue(new ValueMeta("PORT", ValueMetaInterface.TYPE_INTEGER), new Long(Const.toInt(port, -1)));
-		table.addValue(new ValueMeta("USERNAME", ValueMetaInterface.TYPE_STRING), user);
-		table.addValue(new ValueMeta("PASSWORD", ValueMetaInterface.TYPE_STRING), Encr.encryptPasswordIfNotUsingVariables(pass));
-		table.addValue(new ValueMeta("SERVERNAME", ValueMetaInterface.TYPE_STRING), servername);
-		table.addValue(new ValueMeta("DATA_TBS", ValueMetaInterface.TYPE_STRING), data_tablespace);
-		table.addValue(new ValueMeta("INDEX_TBS", ValueMetaInterface.TYPE_STRING), index_tablespace);
+		table.addValue(new ValueMeta(FIELD_DATABASE_ID_DATABASE, ValueMetaInterface.TYPE_INTEGER), new Long(id));
+		table.addValue(new ValueMeta(FIELD_DATABASE_NAME, ValueMetaInterface.TYPE_STRING), name);
+		table.addValue(new ValueMeta(FIELD_DATABASE_ID_DATABASE_TYPE, ValueMetaInterface.TYPE_INTEGER), new Long(id_database_type));
+		table.addValue(new ValueMeta(FIELD_DATABASE_ID_DATABASE_CONTYPE, ValueMetaInterface.TYPE_INTEGER), new Long(id_database_contype));
+		table.addValue(new ValueMeta(FIELD_DATABASE_HOST_NAME, ValueMetaInterface.TYPE_STRING), host);
+		table.addValue(new ValueMeta(FIELD_DATABASE_DATABASE_NAME, ValueMetaInterface.TYPE_STRING), dbname);
+		table.addValue(new ValueMeta(FIELD_DATABASE_PORT, ValueMetaInterface.TYPE_INTEGER), new Long(Const.toInt(port, -1)));
+		table.addValue(new ValueMeta(FIELD_DATABASE_USERNAME, ValueMetaInterface.TYPE_STRING), user);
+		table.addValue(new ValueMeta(FIELD_DATABASE_PASSWORD, ValueMetaInterface.TYPE_STRING), Encr.encryptPasswordIfNotUsingVariables(pass));
+		table.addValue(new ValueMeta(FIELD_DATABASE_SERVERNAME, ValueMetaInterface.TYPE_STRING), servername);
+		table.addValue(new ValueMeta(FIELD_DATABASE_DATA_TBS, ValueMetaInterface.TYPE_STRING), data_tablespace);
+		table.addValue(new ValueMeta(FIELD_DATABASE_INDEX_TBS, ValueMetaInterface.TYPE_STRING), index_tablespace);
 
-		database.prepareInsert(table.getRowMeta(), "R_DATABASE");
+		database.prepareInsert(table.getRowMeta(), TABLE_R_DATABASE);
 		database.setValuesInsert(table);
 		database.insertRow();
 		database.closeInsert();
@@ -1219,18 +1587,18 @@ public class Repository
 
 		RowMetaAndData table = new RowMetaAndData();
 
-		table.addValue(new ValueMeta("ID_STEP", ValueMetaInterface.TYPE_INTEGER), new Long(id));
-		table.addValue(new ValueMeta("ID_TRANSFORMATION", ValueMetaInterface.TYPE_INTEGER), new Long(id_transformation));
-		table.addValue(new ValueMeta("NAME", ValueMetaInterface.TYPE_STRING), name);
-		table.addValue(new ValueMeta("DESCRIPTION", ValueMetaInterface.TYPE_STRING), description);
-		table.addValue(new ValueMeta("ID_STEP_TYPE", ValueMetaInterface.TYPE_INTEGER), new Long(id_step_type));
-		table.addValue(new ValueMeta("DISTRIBUTE", ValueMetaInterface.TYPE_BOOLEAN), new Boolean(distribute));
-		table.addValue(new ValueMeta("COPIES", ValueMetaInterface.TYPE_INTEGER), new Long(copies));
-		table.addValue(new ValueMeta("GUI_LOCATION_X", ValueMetaInterface.TYPE_INTEGER), new Long(gui_location_x));
-		table.addValue(new ValueMeta("GUI_LOCATION_Y", ValueMetaInterface.TYPE_INTEGER), new Long(gui_location_y));
-		table.addValue(new ValueMeta("GUI_DRAW", ValueMetaInterface.TYPE_BOOLEAN), new Boolean(gui_draw));
+		table.addValue(new ValueMeta(FIELD_STEP_ID_STEP, ValueMetaInterface.TYPE_INTEGER), new Long(id));
+		table.addValue(new ValueMeta(FIELD_STEP_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER), new Long(id_transformation));
+		table.addValue(new ValueMeta(FIELD_STEP_NAME, ValueMetaInterface.TYPE_STRING), name);
+		table.addValue(new ValueMeta(FIELD_STEP_DESCRIPTION, ValueMetaInterface.TYPE_STRING), description);
+		table.addValue(new ValueMeta(FIELD_STEP_ID_STEP_TYPE, ValueMetaInterface.TYPE_INTEGER), new Long(id_step_type));
+		table.addValue(new ValueMeta(FIELD_STEP_DISTRIBUTE, ValueMetaInterface.TYPE_BOOLEAN), new Boolean(distribute));
+		table.addValue(new ValueMeta(FIELD_STEP_COPIES, ValueMetaInterface.TYPE_INTEGER), new Long(copies));
+		table.addValue(new ValueMeta(FIELD_STEP_GUI_LOCATION_X, ValueMetaInterface.TYPE_INTEGER), new Long(gui_location_x));
+		table.addValue(new ValueMeta(FIELD_STEP_GUI_LOCATION_Y, ValueMetaInterface.TYPE_INTEGER), new Long(gui_location_y));
+		table.addValue(new ValueMeta(FIELD_STEP_GUI_DRAW, ValueMetaInterface.TYPE_BOOLEAN), new Boolean(gui_draw));
 
-		database.prepareInsert(table.getRowMeta(), "R_STEP");
+		database.prepareInsert(table.getRowMeta(), TABLE_R_STEP);
 		database.setValuesInsert(table);
 		database.insertRow();
 		database.closeInsert();
@@ -1245,13 +1613,13 @@ public class Repository
 
 		RowMetaAndData table = new RowMetaAndData();
 
-		table.addValue(new ValueMeta("ID_STEP_ATTRIBUTE", ValueMetaInterface.TYPE_INTEGER), new Long(id));
-		table.addValue(new ValueMeta("ID_TRANSFORMATION", ValueMetaInterface.TYPE_INTEGER), new Long(id_transformation));
-		table.addValue(new ValueMeta("ID_STEP", ValueMetaInterface.TYPE_INTEGER), new Long(id_step));
-		table.addValue(new ValueMeta("NR", ValueMetaInterface.TYPE_INTEGER), new Long(nr));
-		table.addValue(new ValueMeta("CODE", ValueMetaInterface.TYPE_STRING), code);
-		table.addValue(new ValueMeta("VALUE_NUM", ValueMetaInterface.TYPE_NUMBER), new Double(value_num));
-		table.addValue(new ValueMeta("VALUE_STR", ValueMetaInterface.TYPE_STRING), value_str);
+		table.addValue(new ValueMeta(FIELD_STEP_ATTRIBUTE_ID_STEP_ATTRIBUTE, ValueMetaInterface.TYPE_INTEGER), new Long(id));
+		table.addValue(new ValueMeta(FIELD_STEP_ATTRIBUTE_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER), new Long(id_transformation));
+		table.addValue(new ValueMeta(FIELD_STEP_ATTRIBUTE_ID_STEP, ValueMetaInterface.TYPE_INTEGER), new Long(id_step));
+		table.addValue(new ValueMeta(FIELD_STEP_ATTRIBUTE_NR, ValueMetaInterface.TYPE_INTEGER), new Long(nr));
+		table.addValue(new ValueMeta(FIELD_STEP_ATTRIBUTE_CODE, ValueMetaInterface.TYPE_STRING), code);
+		table.addValue(new ValueMeta(FIELD_STEP_ATTRIBUTE_VALUE_NUM, ValueMetaInterface.TYPE_NUMBER), new Double(value_num));
+		table.addValue(new ValueMeta(FIELD_STEP_ATTRIBUTE_VALUE_STR, ValueMetaInterface.TYPE_STRING), value_str);
 
 		/* If we have prepared the insert, we don't do it again.
 		 * We asume that all the step insert statements come one after the other.
@@ -1259,18 +1627,11 @@ public class Repository
 		
 		if (psStepAttributesInsert == null)
 		{
-		    String sql = database.getInsertStatement("R_STEP_ATTRIBUTE", table.getRowMeta());
+		    String sql = database.getInsertStatement(TABLE_R_STEP_ATTRIBUTE, table.getRowMeta());
 		    psStepAttributesInsert = database.prepareSQL(sql);
 		}
 		database.setValues(table, psStepAttributesInsert);
 		database.insertRow(psStepAttributesInsert, true);
-		
-		/*
-		database.prepareInsert(table.getRowMeta(), "R_STEP_ATTRIBUTE");
-		database.setValuesInsert(table);
-		database.insertRow();
-		database.closeInsert();
-		*/
 		
         if (log.isDebug()) log.logDebug(toString(), "saved attribute ["+code+"]");
 		
@@ -1283,12 +1644,12 @@ public class Repository
 
         RowMetaAndData table = new RowMetaAndData();
 
-        table.addValue(new ValueMeta("ID_TRANS_ATTRIBUTE", ValueMetaInterface.TYPE_INTEGER), new Long(id));
-        table.addValue(new ValueMeta("ID_TRANSFORMATION", ValueMetaInterface.TYPE_INTEGER), new Long(id_transformation));
-        table.addValue(new ValueMeta("NR", ValueMetaInterface.TYPE_INTEGER), new Long(nr));
-        table.addValue(new ValueMeta("CODE", ValueMetaInterface.TYPE_STRING), code);
-        table.addValue(new ValueMeta("VALUE_NUM", ValueMetaInterface.TYPE_INTEGER), new Long(value_num));
-        table.addValue(new ValueMeta("VALUE_STR", ValueMetaInterface.TYPE_STRING), value_str);
+        table.addValue(new ValueMeta(FIELD_TRANS_ATTRIBUTE_ID_TRANS_ATTRIBUTE, ValueMetaInterface.TYPE_INTEGER), new Long(id));
+        table.addValue(new ValueMeta(FIELD_TRANS_ATTRIBUTE_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER), new Long(id_transformation));
+        table.addValue(new ValueMeta(FIELD_TRANS_ATTRIBUTE_NR, ValueMetaInterface.TYPE_INTEGER), new Long(nr));
+        table.addValue(new ValueMeta(FIELD_TRANS_ATTRIBUTE_CODE, ValueMetaInterface.TYPE_STRING), code);
+        table.addValue(new ValueMeta(FIELD_TRANS_ATTRIBUTE_VALUE_NUM, ValueMetaInterface.TYPE_INTEGER), new Long(value_num));
+        table.addValue(new ValueMeta(FIELD_TRANS_ATTRIBUTE_VALUE_STR, ValueMetaInterface.TYPE_STRING), value_str);
 
         /* If we have prepared the insert, we don't do it again.
          * We asume that all the step insert statements come one after the other.
@@ -1296,7 +1657,7 @@ public class Repository
         
         if (psTransAttributesInsert == null)
         {
-            String sql = database.getInsertStatement("R_TRANS_ATTRIBUTE", table.getRowMeta());
+            String sql = database.getInsertStatement(TABLE_R_TRANS_ATTRIBUTE, table.getRowMeta());
             psTransAttributesInsert = database.prepareSQL(sql);
         }
         database.setValues(table, psTransAttributesInsert);
@@ -1318,11 +1679,11 @@ public class Repository
 		{
 			RowMetaAndData table = new RowMetaAndData();
 
-			table.addValue(new ValueMeta("ID_TRANSFORMATION", ValueMetaInterface.TYPE_INTEGER), new Long(id_transformation));
-			table.addValue(new ValueMeta("ID_STEP", ValueMetaInterface.TYPE_INTEGER), new Long(id_step));
-			table.addValue(new ValueMeta("ID_DATABASE", ValueMetaInterface.TYPE_INTEGER), new Long(id_database));
+			table.addValue(new ValueMeta(FIELD_STEP_DATABASE_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER), new Long(id_transformation));
+			table.addValue(new ValueMeta(FIELD_STEP_DATABASE_ID_STEP, ValueMetaInterface.TYPE_INTEGER), new Long(id_step));
+			table.addValue(new ValueMeta(FIELD_STEP_DATABASE_ID_DATABASE, ValueMetaInterface.TYPE_INTEGER), new Long(id_database));
 
-			database.insertRow("R_STEP_DATABASE", table.getRowMeta(), table.getData());
+			database.insertRow(TABLE_R_STEP_DATABASE, table.getRowMeta(), table.getData());
 		}
 	}
 	
@@ -1332,15 +1693,15 @@ public class Repository
 
         RowMetaAndData table = new RowMetaAndData();
 
-        table.addValue(new ValueMeta("ID_DATABASE_ATTRIBUTE", ValueMetaInterface.TYPE_INTEGER), new Long(id));
-        table.addValue(new ValueMeta("ID_DATABASE", ValueMetaInterface.TYPE_INTEGER), new Long(id_database));
-        table.addValue(new ValueMeta("CODE", ValueMetaInterface.TYPE_STRING), code);
-        table.addValue(new ValueMeta("VALUE_STR", ValueMetaInterface.TYPE_STRING), value_str);
+        table.addValue(new ValueMeta(FIELD_DATABASE_ATTRIBUTE_ID_DATABASE_ATTRIBUTE, ValueMetaInterface.TYPE_INTEGER), new Long(id));
+        table.addValue(new ValueMeta(FIELD_DATABASE_ATTRIBUTE_ID_DATABASE, ValueMetaInterface.TYPE_INTEGER), new Long(id_database));
+        table.addValue(new ValueMeta(FIELD_DATABASE_ATTRIBUTE_CODE, ValueMetaInterface.TYPE_STRING), code);
+        table.addValue(new ValueMeta(FIELD_DATABASE_ATTRIBUTE_VALUE_STR, ValueMetaInterface.TYPE_STRING), value_str);
 
         /* If we have prepared the insert, we don't do it again.
          * We asume that all the step insert statements come one after the other.
          */
-        database.prepareInsert(table.getRowMeta(), "R_DATABASE_ATTRIBUTE");
+        database.prepareInsert(table.getRowMeta(), TABLE_R_DATABASE_ATTRIBUTE);
         database.setValuesInsert(table);
         database.insertRow();
         database.closeInsert();
@@ -1358,15 +1719,15 @@ public class Repository
 
 		RowMetaAndData table = new RowMetaAndData();
 
-		table.addValue(new ValueMeta("ID_JOBENTRY_ATTRIBUTE", ValueMetaInterface.TYPE_INTEGER), new Long(id));
-		table.addValue(new ValueMeta("ID_JOB", ValueMetaInterface.TYPE_INTEGER), new Long(id_job));
-		table.addValue(new ValueMeta("ID_JOBENTRY", ValueMetaInterface.TYPE_INTEGER), new Long(id_jobentry));
-		table.addValue(new ValueMeta("NR", ValueMetaInterface.TYPE_INTEGER), new Long(nr));
-		table.addValue(new ValueMeta("CODE", ValueMetaInterface.TYPE_STRING), code);
-		table.addValue(new ValueMeta("VALUE_NUM", ValueMetaInterface.TYPE_NUMBER), new Double(value_num));
-		table.addValue(new ValueMeta("VALUE_STR", ValueMetaInterface.TYPE_STRING), value_str);
+		table.addValue(new ValueMeta(FIELD_JOBENTRY_ATTRIBUTE_ID_JOBENTRY_ATTRIBUTE, ValueMetaInterface.TYPE_INTEGER), new Long(id));
+		table.addValue(new ValueMeta(FIELD_JOBENTRY_ATTRIBUTE_ID_JOB, ValueMetaInterface.TYPE_INTEGER), new Long(id_job));
+		table.addValue(new ValueMeta(FIELD_JOBENTRY_ATTRIBUTE_ID_JOBENTRY, ValueMetaInterface.TYPE_INTEGER), new Long(id_jobentry));
+		table.addValue(new ValueMeta(FIELD_JOBENTRY_ATTRIBUTE_NR, ValueMetaInterface.TYPE_INTEGER), new Long(nr));
+		table.addValue(new ValueMeta(FIELD_JOBENTRY_ATTRIBUTE_CODE, ValueMetaInterface.TYPE_STRING), code);
+		table.addValue(new ValueMeta(FIELD_JOBENTRY_ATTRIBUTE_VALUE_NUM, ValueMetaInterface.TYPE_NUMBER), new Double(value_num));
+		table.addValue(new ValueMeta(FIELD_JOBENTRY_ATTRIBUTE_VALUE_STR, ValueMetaInterface.TYPE_STRING), value_str);
 
-		database.prepareInsert(table.getRowMeta(), "R_JOBENTRY_ATTRIBUTE");
+		database.prepareInsert(table.getRowMeta(), TABLE_R_JOBENTRY_ATTRIBUTE);
 		database.setValuesInsert(table);
 		database.insertRow();
 		database.closeInsert();
@@ -1381,13 +1742,13 @@ public class Repository
 
 		RowMetaAndData table = new RowMetaAndData();
 
-		table.addValue(new ValueMeta("ID_TRANS_HOP", ValueMetaInterface.TYPE_INTEGER), new Long(id));
-		table.addValue(new ValueMeta("ID_TRANSFORMATION", ValueMetaInterface.TYPE_INTEGER), new Long(id_transformation));
-		table.addValue(new ValueMeta("ID_STEP_FROM", ValueMetaInterface.TYPE_INTEGER), new Long(id_step_from));
-		table.addValue(new ValueMeta("ID_STEP_TO", ValueMetaInterface.TYPE_INTEGER), new Long(id_step_to));
-		table.addValue(new ValueMeta("ENABLED", ValueMetaInterface.TYPE_BOOLEAN), new Boolean(enabled));
+		table.addValue(new ValueMeta(FIELD_TRANS_HOP_ID_TRANS_HOP, ValueMetaInterface.TYPE_INTEGER), new Long(id));
+		table.addValue(new ValueMeta(FIELD_TRANS_HOP_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER), new Long(id_transformation));
+		table.addValue(new ValueMeta(FIELD_TRANS_HOP_ID_STEP_FROM, ValueMetaInterface.TYPE_INTEGER), new Long(id_step_from));
+		table.addValue(new ValueMeta(FIELD_TRANS_HOP_ID_STEP_TO, ValueMetaInterface.TYPE_INTEGER), new Long(id_step_to));
+		table.addValue(new ValueMeta(FIELD_TRANS_HOP_ENABLED, ValueMetaInterface.TYPE_BOOLEAN), new Boolean(enabled));
 
-		database.prepareInsert(table.getRowMeta(), "R_TRANS_HOP");
+		database.prepareInsert(table.getRowMeta(), TABLE_R_TRANS_HOP);
 		database.setValuesInsert(table);
 		database.insertRow();
 		database.closeInsert();
@@ -1402,15 +1763,15 @@ public class Repository
 
 		RowMetaAndData table = new RowMetaAndData();
 
-		table.addValue(new ValueMeta("ID_JOB_HOP", ValueMetaInterface.TYPE_INTEGER), new Long(id));
-		table.addValue(new ValueMeta("ID_JOB", ValueMetaInterface.TYPE_INTEGER), new Long(id_job));
-		table.addValue(new ValueMeta("ID_JOBENTRY_COPY_FROM", ValueMetaInterface.TYPE_INTEGER), new Long(id_jobentry_copy_from));
-		table.addValue(new ValueMeta("ID_JOBENTRY_COPY_TO", ValueMetaInterface.TYPE_INTEGER), new Long(id_jobentry_copy_to));
-		table.addValue(new ValueMeta("ENABLED", ValueMetaInterface.TYPE_BOOLEAN), new Boolean(enabled));
-		table.addValue(new ValueMeta("EVALUATION", ValueMetaInterface.TYPE_BOOLEAN), new Boolean(evaluation));
-		table.addValue(new ValueMeta("UNCONDITIONAL", ValueMetaInterface.TYPE_BOOLEAN), new Boolean(unconditional));
+		table.addValue(new ValueMeta(FIELD_JOB_HOP_ID_JOB_HOP, ValueMetaInterface.TYPE_INTEGER), new Long(id));
+		table.addValue(new ValueMeta(FIELD_JOB_HOP_ID_JOB, ValueMetaInterface.TYPE_INTEGER), new Long(id_job));
+		table.addValue(new ValueMeta(FIELD_JOB_HOP_ID_JOBENTRY_COPY_FROM, ValueMetaInterface.TYPE_INTEGER), new Long(id_jobentry_copy_from));
+		table.addValue(new ValueMeta(FIELD_JOB_HOP_ID_JOBENTRY_COPY_TO, ValueMetaInterface.TYPE_INTEGER), new Long(id_jobentry_copy_to));
+		table.addValue(new ValueMeta(FIELD_JOB_HOP_ENABLED, ValueMetaInterface.TYPE_BOOLEAN), new Boolean(enabled));
+		table.addValue(new ValueMeta(FIELD_JOB_HOP_EVALUATION, ValueMetaInterface.TYPE_BOOLEAN), new Boolean(evaluation));
+		table.addValue(new ValueMeta(FIELD_JOB_HOP_UNCONDITIONAL, ValueMetaInterface.TYPE_BOOLEAN), new Boolean(unconditional));
 
-		database.prepareInsert(table.getRowMeta(), "R_JOB_HOP");
+		database.prepareInsert(table.getRowMeta(), TABLE_R_JOB_HOP);
 		database.setValuesInsert(table);
 		database.insertRow();
 		database.closeInsert();
@@ -1425,13 +1786,13 @@ public class Repository
 
 		RowMetaAndData table = new RowMetaAndData();
 
-		table.addValue(new ValueMeta("ID_DEPENDENCY", ValueMetaInterface.TYPE_INTEGER), new Long(id));
-		table.addValue(new ValueMeta("ID_TRANSFORMATION", ValueMetaInterface.TYPE_INTEGER), new Long(id_transformation));
-		table.addValue(new ValueMeta("ID_DATABASE", ValueMetaInterface.TYPE_INTEGER), new Long(id_database));
-		table.addValue(new ValueMeta("TABLE_NAME", ValueMetaInterface.TYPE_STRING), tablename);
-		table.addValue(new ValueMeta("FIELD_NAME", ValueMetaInterface.TYPE_STRING), fieldname);
+		table.addValue(new ValueMeta(FIELD_DEPENDENCY_ID_DEPENDENCY, ValueMetaInterface.TYPE_INTEGER), new Long(id));
+		table.addValue(new ValueMeta(FIELD_DEPENDENCY_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER), new Long(id_transformation));
+		table.addValue(new ValueMeta(FIELD_DEPENDENCY_ID_DATABASE, ValueMetaInterface.TYPE_INTEGER), new Long(id_database));
+		table.addValue(new ValueMeta(FIELD_DEPENDENCY_TABLE_NAME, ValueMetaInterface.TYPE_STRING), tablename);
+		table.addValue(new ValueMeta(FIELD_DEPENDENCY_FIELD_NAME, ValueMetaInterface.TYPE_STRING), fieldname);
 
-		database.prepareInsert(table.getRowMeta(), "R_DEPENDENCY");
+		database.prepareInsert(table.getRowMeta(), TABLE_R_DEPENDENCY);
 		database.setValuesInsert(table);
 		database.insertRow();
 		database.closeInsert();
@@ -1445,12 +1806,12 @@ public class Repository
 
         RowMetaAndData table = new RowMetaAndData();
 
-        table.addValue(new ValueMeta("ID_PARTITION_SCHEMA", ValueMetaInterface.TYPE_INTEGER), new Long(id));
-        table.addValue(new ValueMeta("NAME", ValueMetaInterface.TYPE_STRING), partitionSchema.getName());
-        table.addValue(new ValueMeta("DYNAMIC_DEFINITION", ValueMetaInterface.TYPE_BOOLEAN), partitionSchema.isDynamicallyDefined());
-        table.addValue(new ValueMeta("PARTITIONS_PER_SLAVE", ValueMetaInterface.TYPE_STRING), partitionSchema.getNumberOfPartitionsPerSlave());
+        table.addValue(new ValueMeta(FIELD_PARTITION_SCHEMA_ID_PARTITION_SCHEMA, ValueMetaInterface.TYPE_INTEGER), new Long(id));
+        table.addValue(new ValueMeta(FIELD_PARTITION_SCHEMA_NAME, ValueMetaInterface.TYPE_STRING), partitionSchema.getName());
+        table.addValue(new ValueMeta(FIELD_PARTITION_SCHEMA_DYNAMIC_DEFINITION, ValueMetaInterface.TYPE_BOOLEAN), partitionSchema.isDynamicallyDefined());
+        table.addValue(new ValueMeta(FIELD_PARTITION_SCHEMA_PARTITIONS_PER_SLAVE, ValueMetaInterface.TYPE_STRING), partitionSchema.getNumberOfPartitionsPerSlave());
 
-        database.prepareInsert(table.getRowMeta(), "R_PARTITION_SCHEMA");
+        database.prepareInsert(table.getRowMeta(), TABLE_R_PARTITION_SCHEMA);
         database.setValuesInsert(table);
         database.insertRow();
         database.closeInsert();
@@ -1461,10 +1822,10 @@ public class Repository
     public synchronized void updatePartitionSchema(PartitionSchema partitionSchema) throws KettleException
     {
         RowMetaAndData table = new RowMetaAndData();
-        table.addValue(new ValueMeta("NAME", ValueMetaInterface.TYPE_STRING), partitionSchema.getName());
-        table.addValue(new ValueMeta("DYNAMIC_DEFINITION", ValueMetaInterface.TYPE_BOOLEAN), partitionSchema.isDynamicallyDefined());
-        table.addValue(new ValueMeta("PARTITIONS_PER_SLAVE", ValueMetaInterface.TYPE_STRING), partitionSchema.getNumberOfPartitionsPerSlave());
-        updateTableRow("R_PARTITION_SCHEMA", "ID_PARTITION_SCHEMA", table, partitionSchema.getId());
+        table.addValue(new ValueMeta(FIELD_PARTITION_SCHEMA_NAME, ValueMetaInterface.TYPE_STRING), partitionSchema.getName());
+        table.addValue(new ValueMeta(FIELD_PARTITION_SCHEMA_DYNAMIC_DEFINITION, ValueMetaInterface.TYPE_BOOLEAN), partitionSchema.isDynamicallyDefined());
+        table.addValue(new ValueMeta(FIELD_PARTITION_SCHEMA_PARTITIONS_PER_SLAVE, ValueMetaInterface.TYPE_STRING), partitionSchema.getNumberOfPartitionsPerSlave());
+        updateTableRow(TABLE_R_PARTITION_SCHEMA, FIELD_PARTITION_SCHEMA_ID_PARTITION_SCHEMA, table, partitionSchema.getId());
     }
 
     public synchronized long insertPartition(long id_partition_schema, String partition_id) throws KettleException
@@ -1473,11 +1834,11 @@ public class Repository
 
         RowMetaAndData table = new RowMetaAndData();
 
-        table.addValue(new ValueMeta("ID_PARTITION", ValueMetaInterface.TYPE_INTEGER), new Long(id));
-        table.addValue(new ValueMeta("ID_PARTITION_SCHEMA", ValueMetaInterface.TYPE_INTEGER), new Long(id_partition_schema));
-        table.addValue(new ValueMeta("PARTITION_ID", ValueMetaInterface.TYPE_STRING), partition_id);
+        table.addValue(new ValueMeta(FIELD_PARTITION_ID_PARTITION, ValueMetaInterface.TYPE_INTEGER), new Long(id));
+        table.addValue(new ValueMeta(FIELD_PARTITION_ID_PARTITION_SCHEMA, ValueMetaInterface.TYPE_INTEGER), new Long(id_partition_schema));
+        table.addValue(new ValueMeta(FIELD_PARTITION_PARTITION_ID, ValueMetaInterface.TYPE_STRING), partition_id);
 
-        database.prepareInsert(table.getRowMeta(), "R_PARTITION");
+        database.prepareInsert(table.getRowMeta(), TABLE_R_PARTITION);
         database.setValuesInsert(table);
         database.insertRow();
         database.closeInsert();
@@ -1491,11 +1852,11 @@ public class Repository
 
         RowMetaAndData table = new RowMetaAndData();
 
-        table.addValue(new ValueMeta("ID_TRANS_PARTITION_SCHEMA", ValueMetaInterface.TYPE_INTEGER), new Long(id));
-        table.addValue(new ValueMeta("ID_TRANSFORMATION", ValueMetaInterface.TYPE_INTEGER), new Long(id_transformation));
-        table.addValue(new ValueMeta("ID_PARTITION_SCHEMA", ValueMetaInterface.TYPE_INTEGER), new Long(id_partition_schema));
+        table.addValue(new ValueMeta(FIELD_TRANS_PARTITION_SCHEMA_ID_TRANS_PARTITION_SCHEMA, ValueMetaInterface.TYPE_INTEGER), new Long(id));
+        table.addValue(new ValueMeta(FIELD_TRANS_PARTITION_SCHEMA_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER), new Long(id_transformation));
+        table.addValue(new ValueMeta(FIELD_TRANS_PARTITION_SCHEMA_ID_PARTITION_SCHEMA, ValueMetaInterface.TYPE_INTEGER), new Long(id_partition_schema));
 
-        database.prepareInsert(table.getRowMeta(), "R_TRANS_PARTITION_SCHEMA");
+        database.prepareInsert(table.getRowMeta(), TABLE_R_TRANS_PARTITION_SCHEMA);
         database.setValuesInsert(table);
         database.insertRow();
         database.closeInsert();
@@ -1509,14 +1870,14 @@ public class Repository
 
         RowMetaAndData table = new RowMetaAndData();
 
-        table.addValue(new ValueMeta("ID_CLUSTER", ValueMetaInterface.TYPE_INTEGER), new Long(id));
-        table.addValue(new ValueMeta("NAME", ValueMetaInterface.TYPE_STRING), clusterSchema.getName());
-        table.addValue(new ValueMeta("BASE_PORT", ValueMetaInterface.TYPE_STRING), clusterSchema.getBasePort());
-        table.addValue(new ValueMeta("SOCKETS_BUFFER_SIZE", ValueMetaInterface.TYPE_STRING), clusterSchema.getSocketsBufferSize());
-        table.addValue(new ValueMeta("SOCKETS_FLUSH_INTERVAL", ValueMetaInterface.TYPE_STRING), clusterSchema.getSocketsFlushInterval());
-        table.addValue(new ValueMeta("SOCKETS_COMPRESSED", ValueMetaInterface.TYPE_BOOLEAN), new Boolean(clusterSchema.isSocketsCompressed()));
+        table.addValue(new ValueMeta(FIELD_CLUSTER_ID_CLUSTER, ValueMetaInterface.TYPE_INTEGER), new Long(id));
+        table.addValue(new ValueMeta(FIELD_CLUSTER_NAME, ValueMetaInterface.TYPE_STRING), clusterSchema.getName());
+        table.addValue(new ValueMeta(FIELD_CLUSTER_BASE_PORT, ValueMetaInterface.TYPE_STRING), clusterSchema.getBasePort());
+        table.addValue(new ValueMeta(FIELD_CLUSTER_SOCKETS_BUFFER_SIZE, ValueMetaInterface.TYPE_STRING), clusterSchema.getSocketsBufferSize());
+        table.addValue(new ValueMeta(FIELD_CLUSTER_SOCKETS_FLUSH_INTERVAL, ValueMetaInterface.TYPE_STRING), clusterSchema.getSocketsFlushInterval());
+        table.addValue(new ValueMeta(FIELD_CLUSTER_SOCKETS_COMPRESSED, ValueMetaInterface.TYPE_BOOLEAN), new Boolean(clusterSchema.isSocketsCompressed()));
 
-        database.prepareInsert(table.getRowMeta(), "R_CLUSTER");
+        database.prepareInsert(table.getRowMeta(), TABLE_R_CLUSTER);
         database.setValuesInsert(table);
         database.insertRow();
         database.closeInsert();
@@ -1530,18 +1891,18 @@ public class Repository
 
         RowMetaAndData table = new RowMetaAndData();
 
-        table.addValue(new ValueMeta("ID_SLAVE", ValueMetaInterface.TYPE_INTEGER), new Long(id));
-        table.addValue(new ValueMeta("NAME", ValueMetaInterface.TYPE_STRING), slaveServer.getName());
-        table.addValue(new ValueMeta("HOST_NAME", ValueMetaInterface.TYPE_STRING), slaveServer.getHostname());
-        table.addValue(new ValueMeta("PORT", ValueMetaInterface.TYPE_STRING), slaveServer.getPort());
-        table.addValue(new ValueMeta("USERNAME", ValueMetaInterface.TYPE_STRING), slaveServer.getUsername());
-        table.addValue(new ValueMeta("PASSWORD", ValueMetaInterface.TYPE_STRING), slaveServer.getPassword());
-        table.addValue(new ValueMeta("PROXY_HOST_NAME", ValueMetaInterface.TYPE_STRING), slaveServer.getProxyHostname());
-        table.addValue(new ValueMeta("PROXY_PORT", ValueMetaInterface.TYPE_STRING), slaveServer.getProxyPort());
-        table.addValue(new ValueMeta("NON_PROXY_HOSTS", ValueMetaInterface.TYPE_STRING), slaveServer.getNonProxyHosts());
-        table.addValue(new ValueMeta("MASTER", ValueMetaInterface.TYPE_BOOLEAN), new Boolean(slaveServer.isMaster()));
+        table.addValue(new ValueMeta(FIELD_SLAVE_ID_SLAVE, ValueMetaInterface.TYPE_INTEGER), new Long(id));
+        table.addValue(new ValueMeta(FIELD_SLAVE_NAME, ValueMetaInterface.TYPE_STRING), slaveServer.getName());
+        table.addValue(new ValueMeta(FIELD_SLAVE_HOST_NAME, ValueMetaInterface.TYPE_STRING), slaveServer.getHostname());
+        table.addValue(new ValueMeta(FIELD_SLAVE_PORT, ValueMetaInterface.TYPE_STRING), slaveServer.getPort());
+        table.addValue(new ValueMeta(FIELD_SLAVE_USERNAME, ValueMetaInterface.TYPE_STRING), slaveServer.getUsername());
+        table.addValue(new ValueMeta(FIELD_SLAVE_PASSWORD, ValueMetaInterface.TYPE_STRING), slaveServer.getPassword());
+        table.addValue(new ValueMeta(FIELD_SLAVE_PROXY_HOST_NAME, ValueMetaInterface.TYPE_STRING), slaveServer.getProxyHostname());
+        table.addValue(new ValueMeta(FIELD_SLAVE_PROXY_PORT, ValueMetaInterface.TYPE_STRING), slaveServer.getProxyPort());
+        table.addValue(new ValueMeta(FIELD_SLAVE_NON_PROXY_HOSTS, ValueMetaInterface.TYPE_STRING), slaveServer.getNonProxyHosts());
+        table.addValue(new ValueMeta(FIELD_SLAVE_MASTER, ValueMetaInterface.TYPE_BOOLEAN), new Boolean(slaveServer.isMaster()));
 
-        database.prepareInsert(table.getRowMeta(), "R_SLAVE");
+        database.prepareInsert(table.getRowMeta(), TABLE_R_SLAVE);
         database.setValuesInsert(table);
         database.insertRow();
         database.closeInsert();
@@ -1552,17 +1913,17 @@ public class Repository
     public synchronized void updateSlave(SlaveServer slaveServer) throws KettleException
     {
         RowMetaAndData table = new RowMetaAndData();
-        table.addValue(new ValueMeta("NAME", ValueMetaInterface.TYPE_STRING), slaveServer.getName());
-        table.addValue(new ValueMeta("HOST_NAME", ValueMetaInterface.TYPE_STRING), slaveServer.getHostname());
-        table.addValue(new ValueMeta("PORT", ValueMetaInterface.TYPE_STRING), slaveServer.getPort());
-        table.addValue(new ValueMeta("USERNAME", ValueMetaInterface.TYPE_STRING), slaveServer.getUsername());
-        table.addValue(new ValueMeta("PASSWORD", ValueMetaInterface.TYPE_STRING), slaveServer.getPassword());
-        table.addValue(new ValueMeta("PROXY_HOST_NAME", ValueMetaInterface.TYPE_STRING), slaveServer.getProxyHostname());
-        table.addValue(new ValueMeta("PROXY_PORT", ValueMetaInterface.TYPE_STRING), slaveServer.getProxyPort());
-        table.addValue(new ValueMeta("NON_PROXY_HOSTS", ValueMetaInterface.TYPE_STRING), slaveServer.getNonProxyHosts());
-        table.addValue(new ValueMeta("MASTER", ValueMetaInterface.TYPE_BOOLEAN), new Boolean(slaveServer.isMaster()));
+        table.addValue(new ValueMeta(FIELD_SLAVE_NAME, ValueMetaInterface.TYPE_STRING), slaveServer.getName());
+        table.addValue(new ValueMeta(FIELD_SLAVE_HOST_NAME, ValueMetaInterface.TYPE_STRING), slaveServer.getHostname());
+        table.addValue(new ValueMeta(FIELD_SLAVE_PORT, ValueMetaInterface.TYPE_STRING), slaveServer.getPort());
+        table.addValue(new ValueMeta(FIELD_SLAVE_USERNAME, ValueMetaInterface.TYPE_STRING), slaveServer.getUsername());
+        table.addValue(new ValueMeta(FIELD_SLAVE_PASSWORD, ValueMetaInterface.TYPE_STRING), slaveServer.getPassword());
+        table.addValue(new ValueMeta(FIELD_SLAVE_PROXY_HOST_NAME, ValueMetaInterface.TYPE_STRING), slaveServer.getProxyHostname());
+        table.addValue(new ValueMeta(FIELD_SLAVE_PROXY_PORT, ValueMetaInterface.TYPE_STRING), slaveServer.getProxyPort());
+        table.addValue(new ValueMeta(FIELD_SLAVE_NON_PROXY_HOSTS, ValueMetaInterface.TYPE_STRING), slaveServer.getNonProxyHosts());
+        table.addValue(new ValueMeta(FIELD_SLAVE_MASTER, ValueMetaInterface.TYPE_BOOLEAN), new Boolean(slaveServer.isMaster()));
 
-        updateTableRow("R_SLAVE", "ID_SLAVE", table, slaveServer.getId());
+        updateTableRow(TABLE_R_SLAVE, FIELD_SLAVE_ID_SLAVE, table, slaveServer.getId());
     }
     
     public synchronized long insertClusterSlave(ClusterSchema clusterSchema, SlaveServer slaveServer) throws KettleException
@@ -1571,11 +1932,11 @@ public class Repository
 
         RowMetaAndData table = new RowMetaAndData();
 
-        table.addValue(new ValueMeta("ID_CLUSTER_SLAVE", ValueMetaInterface.TYPE_INTEGER), new Long(id));
-        table.addValue(new ValueMeta("ID_CLUSTER", ValueMetaInterface.TYPE_INTEGER), new Long(clusterSchema.getId()));
-        table.addValue(new ValueMeta("ID_SLAVE", ValueMetaInterface.TYPE_INTEGER), new Long(slaveServer.getId()));
+        table.addValue(new ValueMeta(FIELD_CLUSTER_SLAVE_ID_CLUSTER_SLAVE, ValueMetaInterface.TYPE_INTEGER), new Long(id));
+        table.addValue(new ValueMeta(FIELD_CLUSTER_SLAVE_ID_CLUSTER, ValueMetaInterface.TYPE_INTEGER), new Long(clusterSchema.getId()));
+        table.addValue(new ValueMeta(FIELD_CLUSTER_SLAVE_ID_SLAVE, ValueMetaInterface.TYPE_INTEGER), new Long(slaveServer.getId()));
 
-        database.prepareInsert(table.getRowMeta(), "R_CLUSTER_SLAVE");
+        database.prepareInsert(table.getRowMeta(), TABLE_R_CLUSTER_SLAVE);
         database.setValuesInsert(table);
         database.insertRow();
         database.closeInsert();
@@ -1589,11 +1950,11 @@ public class Repository
 
         RowMetaAndData table = new RowMetaAndData();
 
-        table.addValue(new ValueMeta("ID_TRANS_CLUSTER", ValueMetaInterface.TYPE_INTEGER), new Long(id));
-        table.addValue(new ValueMeta("ID_TRANSFORMATION", ValueMetaInterface.TYPE_INTEGER), new Long(id_transformation));
-        table.addValue(new ValueMeta("ID_CLUSTER", ValueMetaInterface.TYPE_INTEGER), new Long(id_cluster));
+        table.addValue(new ValueMeta(FIELD_TRANS_CLUSTER_ID_TRANS_CLUSTER, ValueMetaInterface.TYPE_INTEGER), new Long(id));
+        table.addValue(new ValueMeta(FIELD_TRANS_CLUSTER_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER), new Long(id_transformation));
+        table.addValue(new ValueMeta(FIELD_TRANS_CLUSTER_ID_CLUSTER, ValueMetaInterface.TYPE_INTEGER), new Long(id_cluster));
 
-        database.prepareInsert(table.getRowMeta(), "R_TRANS_CLUSTER");
+        database.prepareInsert(table.getRowMeta(), TABLE_R_TRANS_CLUSTER);
         database.setValuesInsert(table);
         database.insertRow();
         database.closeInsert();
@@ -1607,11 +1968,11 @@ public class Repository
 
         RowMetaAndData table = new RowMetaAndData();
 
-        table.addValue(new ValueMeta("ID_TRANS_SLAVE", ValueMetaInterface.TYPE_INTEGER), new Long(id));
-        table.addValue(new ValueMeta("ID_TRANSFORMATION", ValueMetaInterface.TYPE_INTEGER), new Long(id_transformation));
-        table.addValue(new ValueMeta("ID_SLAVE", ValueMetaInterface.TYPE_INTEGER), new Long(id_slave));
+        table.addValue(new ValueMeta(FIELD_TRANS_SLAVE_ID_TRANS_SLAVE, ValueMetaInterface.TYPE_INTEGER), new Long(id));
+        table.addValue(new ValueMeta(FIELD_TRANS_SLAVE_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER), new Long(id_transformation));
+        table.addValue(new ValueMeta(FIELD_TRANS_SLAVE_ID_SLAVE, ValueMetaInterface.TYPE_INTEGER), new Long(id_slave));
 
-        database.prepareInsert(table.getRowMeta(), "R_TRANS_SLAVE");
+        database.prepareInsert(table.getRowMeta(), TABLE_R_TRANS_SLAVE);
         database.setValuesInsert(table);
         database.insertRow();
         database.closeInsert();
@@ -1624,15 +1985,15 @@ public class Repository
 	{
 		long id = getNextConditionID();
 
-		String tablename = "R_CONDITION";
+		String tablename = TABLE_R_CONDITION;
 		RowMetaAndData table = new RowMetaAndData();
-		table.addValue(new ValueMeta("ID_CONDITION", ValueMetaInterface.TYPE_INTEGER), new Long(id));
-		table.addValue(new ValueMeta("ID_CONDITION_PARENT", ValueMetaInterface.TYPE_INTEGER), new Long(id_condition_parent));
-		table.addValue(new ValueMeta("NEGATED", ValueMetaInterface.TYPE_BOOLEAN), new Boolean(condition.isNegated()));
-		table.addValue(new ValueMeta("OPERATOR", ValueMetaInterface.TYPE_STRING), condition.getOperatorDesc());
-		table.addValue(new ValueMeta("LEFT_NAME", ValueMetaInterface.TYPE_STRING), condition.getLeftValuename());
-		table.addValue(new ValueMeta("CONDITION_FUNCTION", ValueMetaInterface.TYPE_STRING), condition.getFunctionDesc());
-		table.addValue(new ValueMeta("RIGHT_NAME", ValueMetaInterface.TYPE_STRING), condition.getRightValuename());
+		table.addValue(new ValueMeta(FIELD_CONDITION_ID_CONDITION, ValueMetaInterface.TYPE_INTEGER), new Long(id));
+		table.addValue(new ValueMeta(FIELD_CONDITION_ID_CONDITION_PARENT, ValueMetaInterface.TYPE_INTEGER), new Long(id_condition_parent));
+		table.addValue(new ValueMeta(FIELD_CONDITION_NEGATED, ValueMetaInterface.TYPE_BOOLEAN), new Boolean(condition.isNegated()));
+		table.addValue(new ValueMeta(FIELD_CONDITION_OPERATOR, ValueMetaInterface.TYPE_STRING), condition.getOperatorDesc());
+		table.addValue(new ValueMeta(FIELD_CONDITION_LEFT_NAME, ValueMetaInterface.TYPE_STRING), condition.getLeftValuename());
+		table.addValue(new ValueMeta(FIELD_CONDITION_CONDITION_FUNCTION, ValueMetaInterface.TYPE_STRING), condition.getFunctionDesc());
+		table.addValue(new ValueMeta(FIELD_CONDITION_RIGHT_NAME, ValueMetaInterface.TYPE_STRING), condition.getRightValuename());
 
 		long id_value = -1L;
 		ValueMetaAndData v = condition.getRightExact();
@@ -1642,7 +2003,7 @@ public class Repository
 			id_value = insertValue(v.getValueMeta().getName(), v.getValueMeta().getTypeDesc(), v.getValueMeta().getString(v.getValueData()), v.getValueMeta().isNull(v.getValueData()), condition.getRightExactID());
 			condition.setRightExactID(id_value);
 		}
-		table.addValue(new ValueMeta("ID_VALUE_RIGHT", ValueMetaInterface.TYPE_INTEGER), new Long(id_value));
+		table.addValue(new ValueMeta(FIELD_CONDITION_ID_VALUE_RIGHT, ValueMetaInterface.TYPE_INTEGER), new Long(id_value));
 
 		database.prepareInsert(table.getRowMeta(), tablename);
 
@@ -1656,11 +2017,11 @@ public class Repository
 	public synchronized void insertTransStepCondition(long id_transformation, long id_step, long id_condition)
 			throws KettleException
 	{
-		String tablename = "R_TRANS_STEP_CONDITION";
+		String tablename = TABLE_R_TRANS_STEP_CONDITION;
 		RowMetaAndData table = new RowMetaAndData();
-		table.addValue(new ValueMeta("ID_TRANSFORMATION", ValueMetaInterface.TYPE_INTEGER), new Long(id_transformation));
-		table.addValue(new ValueMeta("ID_STEP", ValueMetaInterface.TYPE_INTEGER), new Long(id_step));
-		table.addValue(new ValueMeta("ID_CONDITION", ValueMetaInterface.TYPE_INTEGER), new Long(id_condition));
+		table.addValue(new ValueMeta(FIELD_TRANS_STEP_CONDITION_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER), new Long(id_transformation));
+		table.addValue(new ValueMeta(FIELD_TRANS_STEP_CONDITION_ID_STEP, ValueMetaInterface.TYPE_INTEGER), new Long(id_step));
+		table.addValue(new ValueMeta(FIELD_TRANS_STEP_CONDITION_ID_CONDITION, ValueMetaInterface.TYPE_INTEGER), new Long(id_condition));
 
 		database.prepareInsert(table.getRowMeta(), tablename);
 		database.setValuesInsert(table);
@@ -1672,11 +2033,11 @@ public class Repository
 	{
 		long id = getNextDirectoryID();
 
-		String tablename = "R_DIRECTORY";
+		String tablename = TABLE_R_DIRECTORY;
 		RowMetaAndData table = new RowMetaAndData();
-		table.addValue(new ValueMeta("ID_DIRECTORY", ValueMetaInterface.TYPE_INTEGER), new Long(id));
-		table.addValue(new ValueMeta("ID_DIRECTORY_PARENT", ValueMetaInterface.TYPE_INTEGER), new Long(id_directory_parent));
-		table.addValue(new ValueMeta("DIRECTORY_NAME", ValueMetaInterface.TYPE_STRING), dir.getDirectoryName());
+		table.addValue(new ValueMeta(FIELD_DIRECTORY_ID_DIRECTORY, ValueMetaInterface.TYPE_INTEGER), new Long(id));
+		table.addValue(new ValueMeta(FIELD_DIRECTORY_ID_DIRECTORY_PARENT, ValueMetaInterface.TYPE_INTEGER), new Long(id_directory_parent));
+		table.addValue(new ValueMeta(FIELD_DIRECTORY_DIRECTORY_NAME, ValueMetaInterface.TYPE_STRING), dir.getDirectoryName());
 
 		database.prepareInsert(table.getRowMeta(), tablename);
 
@@ -1689,16 +2050,16 @@ public class Repository
 
 	public synchronized void deleteDirectory(long id_directory) throws KettleException
 	{
-		String sql = "DELETE FROM R_DIRECTORY WHERE ID_DIRECTORY = " + id_directory;
+		String sql = "DELETE FROM "+quote(TABLE_R_DIRECTORY)+" WHERE "+quote(FIELD_DIRECTORY_ID_DIRECTORY)+" = " + id_directory;
 		database.execStatement(sql);
 	}
 
 	public synchronized void renameDirectory(long id_directory, String name) throws KettleException
 	{
 		RowMetaAndData r = new RowMetaAndData();
-		r.addValue(new ValueMeta("DIRECTORY_NAME", ValueMetaInterface.TYPE_STRING), name);
+		r.addValue(new ValueMeta(FIELD_DIRECTORY_DIRECTORY_NAME, ValueMetaInterface.TYPE_STRING), name);
 
-		String sql = "UPDATE R_DIRECTORY SET DIRECTORY_NAME = ? WHERE ID_DIRECTORY = " + id_directory;
+		String sql = "UPDATE "+quote(TABLE_R_DIRECTORY)+" SET "+quote(FIELD_DIRECTORY_DIRECTORY_NAME)+" = ? WHERE "+quote(FIELD_DIRECTORY_ID_DIRECTORY)+" = " + id_directory;
 
 		log.logBasic(toString(), "sql = [" + sql + "]");
 		log.logBasic(toString(), "row = [" + r + "]");
@@ -1708,18 +2069,17 @@ public class Repository
 
 	public synchronized long lookupValue(String name, String type, String value_str, boolean isnull) throws KettleException
 	{
-		String tablename = "R_VALUE";
 		RowMetaAndData table = new RowMetaAndData();
-		table.addValue(new ValueMeta("NAME", ValueMetaInterface.TYPE_STRING), name);
-		table.addValue(new ValueMeta("VALUE_TYPE", ValueMetaInterface.TYPE_STRING), type);
-		table.addValue(new ValueMeta("VALUE_STR", ValueMetaInterface.TYPE_STRING), value_str);
-		table.addValue(new ValueMeta("IS_NULL", ValueMetaInterface.TYPE_BOOLEAN), new Boolean(isnull));
+		table.addValue(new ValueMeta(FIELD_VALUE_NAME, ValueMetaInterface.TYPE_STRING), name);
+		table.addValue(new ValueMeta(FIELD_VALUE_VALUE_TYPE, ValueMetaInterface.TYPE_STRING), type);
+		table.addValue(new ValueMeta(FIELD_VALUE_VALUE_STR, ValueMetaInterface.TYPE_STRING), value_str);
+		table.addValue(new ValueMeta(FIELD_VALUE_IS_NULL, ValueMetaInterface.TYPE_BOOLEAN), new Boolean(isnull));
 
-		String sql = "SELECT " + database.getDatabaseMeta().quoteField("ID_VALUE") + " FROM " + tablename + " ";
-		sql += "WHERE " + database.getDatabaseMeta().quoteField("NAME") + "       = ? ";
-		sql += "AND   " + database.getDatabaseMeta().quoteField("VALUE_TYPE") + " = ? ";
-		sql += "AND   " + database.getDatabaseMeta().quoteField("VALUE_STR") + "  = ? ";
-		sql += "AND   " + database.getDatabaseMeta().quoteField("IS_NULL") + "    = ? ";
+		String sql = "SELECT " + quote(FIELD_VALUE_ID_VALUE) + " FROM " + quote(TABLE_R_VALUE) + " ";
+		sql += "WHERE " + quote(FIELD_VALUE_NAME) + "       = ? ";
+		sql += "AND   " + quote(FIELD_VALUE_VALUE_TYPE) + " = ? ";
+		sql += "AND   " + quote(FIELD_VALUE_VALUE_STR) + "  = ? ";
+		sql += "AND   " + quote(FIELD_VALUE_IS_NULL) + "    = ? ";
 
 		RowMetaAndData result = database.getOneRow(sql, table.getRowMeta(), table.getData());
 		if (result != null && result.isNumeric(0))
@@ -1738,13 +2098,13 @@ public class Repository
 			id_value = getNextValueID();
 
 			// Let's see if the same value is not yet available?
-			String tablename = "R_VALUE";
+			String tablename = TABLE_R_VALUE;
 			RowMetaAndData table = new RowMetaAndData();
-			table.addValue(new ValueMeta("ID_VALUE", ValueMetaInterface.TYPE_INTEGER), new Long(id_value));
-			table.addValue(new ValueMeta("NAME", ValueMetaInterface.TYPE_STRING), name);
-			table.addValue(new ValueMeta("VALUE_TYPE", ValueMetaInterface.TYPE_STRING), type);
-			table.addValue(new ValueMeta("VALUE_STR", ValueMetaInterface.TYPE_STRING), value_str);
-			table.addValue(new ValueMeta("IS_NULL", ValueMetaInterface.TYPE_BOOLEAN), new Boolean(isnull));
+			table.addValue(new ValueMeta(FIELD_VALUE_ID_VALUE, ValueMetaInterface.TYPE_INTEGER), new Long(id_value));
+			table.addValue(new ValueMeta(FIELD_VALUE_NAME, ValueMetaInterface.TYPE_STRING), name);
+			table.addValue(new ValueMeta(FIELD_VALUE_VALUE_TYPE, ValueMetaInterface.TYPE_STRING), type);
+			table.addValue(new ValueMeta(FIELD_VALUE_VALUE_STR, ValueMetaInterface.TYPE_STRING), value_str);
+			table.addValue(new ValueMeta(FIELD_VALUE_IS_NULL, ValueMetaInterface.TYPE_BOOLEAN), new Boolean(isnull));
 
 			database.prepareInsert(table.getRowMeta(), tablename);
 			database.setValuesInsert(table);
@@ -1766,13 +2126,13 @@ public class Repository
 
 		RowMetaAndData table = new RowMetaAndData();
 
-		table.addValue(new ValueMeta("ID_JOBENTRY", ValueMetaInterface.TYPE_INTEGER), new Long(id));
-		table.addValue(new ValueMeta("ID_JOB", ValueMetaInterface.TYPE_INTEGER), new Long(id_job));
-		table.addValue(new ValueMeta("ID_JOBENTRY_TYPE", ValueMetaInterface.TYPE_INTEGER), new Long(id_jobentry_type));
-		table.addValue(new ValueMeta("NAME", ValueMetaInterface.TYPE_STRING), name);
-		table.addValue(new ValueMeta("DESCRIPTION", ValueMetaInterface.TYPE_STRING), description);
+		table.addValue(new ValueMeta(FIELD_JOBENTRY_ID_JOBENTRY, ValueMetaInterface.TYPE_INTEGER), new Long(id));
+		table.addValue(new ValueMeta(FIELD_JOBENTRY_ID_JOB, ValueMetaInterface.TYPE_INTEGER), new Long(id_job));
+		table.addValue(new ValueMeta(FIELD_JOBENTRY_ID_JOBENTRY_TYPE, ValueMetaInterface.TYPE_INTEGER), new Long(id_jobentry_type));
+		table.addValue(new ValueMeta(FIELD_JOBENTRY_NAME, ValueMetaInterface.TYPE_STRING), name);
+		table.addValue(new ValueMeta(FIELD_JOBENTRY_DESCRIPTION, ValueMetaInterface.TYPE_STRING), description);
 
-		database.prepareInsert(table.getRowMeta(), "R_JOBENTRY");
+		database.prepareInsert(table.getRowMeta(), TABLE_R_JOBENTRY);
 		database.setValuesInsert(table);
 		database.insertRow();
 		database.closeInsert();
@@ -1787,17 +2147,17 @@ public class Repository
 
 		RowMetaAndData table = new RowMetaAndData();
 
-		table.addValue(new ValueMeta("ID_JOBENTRY_COPY", ValueMetaInterface.TYPE_INTEGER), new Long(id));
-		table.addValue(new ValueMeta("ID_JOBENTRY", ValueMetaInterface.TYPE_INTEGER), new Long(id_jobentry));
-		table.addValue(new ValueMeta("ID_JOB", ValueMetaInterface.TYPE_INTEGER), new Long(id_job));
-		table.addValue(new ValueMeta("ID_JOBENTRY_TYPE", ValueMetaInterface.TYPE_INTEGER), new Long(id_jobentry_type));
-		table.addValue(new ValueMeta("NR", ValueMetaInterface.TYPE_INTEGER), new Long(nr));
-		table.addValue(new ValueMeta("GUI_LOCATION_X", ValueMetaInterface.TYPE_INTEGER), new Long(gui_location_x));
-		table.addValue(new ValueMeta("GUI_LOCATION_Y", ValueMetaInterface.TYPE_INTEGER), new Long(gui_location_y));
-		table.addValue(new ValueMeta("GUI_DRAW", ValueMetaInterface.TYPE_BOOLEAN), new Boolean(gui_draw));
-		table.addValue(new ValueMeta("PARALLEL", ValueMetaInterface.TYPE_BOOLEAN), new Boolean(parallel));
+		table.addValue(new ValueMeta(FIELD_JOBENTRY_COPY_ID_JOBENTRY_COPY, ValueMetaInterface.TYPE_INTEGER), new Long(id));
+		table.addValue(new ValueMeta(FIELD_JOBENTRY_COPY_ID_JOBENTRY, ValueMetaInterface.TYPE_INTEGER), new Long(id_jobentry));
+		table.addValue(new ValueMeta(FIELD_JOBENTRY_COPY_ID_JOB, ValueMetaInterface.TYPE_INTEGER), new Long(id_job));
+		table.addValue(new ValueMeta(FIELD_JOBENTRY_COPY_ID_JOBENTRY_TYPE, ValueMetaInterface.TYPE_INTEGER), new Long(id_jobentry_type));
+		table.addValue(new ValueMeta(FIELD_JOBENTRY_COPY_NR, ValueMetaInterface.TYPE_INTEGER), new Long(nr));
+		table.addValue(new ValueMeta(FIELD_JOBENTRY_COPY_GUI_LOCATION_X, ValueMetaInterface.TYPE_INTEGER), new Long(gui_location_x));
+		table.addValue(new ValueMeta(FIELD_JOBENTRY_COPY_GUI_LOCATION_Y, ValueMetaInterface.TYPE_INTEGER), new Long(gui_location_y));
+		table.addValue(new ValueMeta(FIELD_JOBENTRY_COPY_GUI_DRAW, ValueMetaInterface.TYPE_BOOLEAN), new Boolean(gui_draw));
+		table.addValue(new ValueMeta(FIELD_JOBENTRY_COPY_PARALLEL, ValueMetaInterface.TYPE_BOOLEAN), new Boolean(parallel));
 
-		database.prepareInsert(table.getRowMeta(), "R_JOBENTRY_COPY");
+		database.prepareInsert(table.getRowMeta(), TABLE_R_JOBENTRY_COPY);
 		database.setValuesInsert(table);
 		database.insertRow();
 		database.closeInsert();
@@ -1825,19 +2185,19 @@ public class Repository
 		long id_database_contype = getDatabaseConTypeID(access);
 
 		RowMetaAndData table = new RowMetaAndData();
-		table.addValue(new ValueMeta("NAME", ValueMetaInterface.TYPE_STRING), name);
-		table.addValue(new ValueMeta("ID_DATABASE_TYPE", ValueMetaInterface.TYPE_INTEGER), new Long(id_database_type));
-		table.addValue(new ValueMeta("ID_DATABASE_CONTYPE", ValueMetaInterface.TYPE_INTEGER), new Long(id_database_contype));
-		table.addValue(new ValueMeta("HOST_NAME", ValueMetaInterface.TYPE_STRING), host);
-		table.addValue(new ValueMeta("DATABASE_NAME", ValueMetaInterface.TYPE_STRING), dbname);
-		table.addValue(new ValueMeta("PORT", ValueMetaInterface.TYPE_INTEGER), new Long(Const.toInt(port, -1)));
-		table.addValue(new ValueMeta("USERNAME", ValueMetaInterface.TYPE_STRING), user);
-		table.addValue(new ValueMeta("PASSWORD", ValueMetaInterface.TYPE_STRING), Encr.encryptPasswordIfNotUsingVariables(pass));
-		table.addValue(new ValueMeta("SERVERNAME", ValueMetaInterface.TYPE_STRING), servername);
-		table.addValue(new ValueMeta("DATA_TBS", ValueMetaInterface.TYPE_STRING), data_tablespace);
-		table.addValue(new ValueMeta("INDEX_TBS", ValueMetaInterface.TYPE_STRING), index_tablespace);
+		table.addValue(new ValueMeta(FIELD_DATABASE_NAME, ValueMetaInterface.TYPE_STRING), name);
+		table.addValue(new ValueMeta(FIELD_DATABASE_ID_DATABASE_TYPE, ValueMetaInterface.TYPE_INTEGER), new Long(id_database_type));
+		table.addValue(new ValueMeta(FIELD_DATABASE_ID_DATABASE_CONTYPE, ValueMetaInterface.TYPE_INTEGER), new Long(id_database_contype));
+		table.addValue(new ValueMeta(FIELD_DATABASE_HOST_NAME, ValueMetaInterface.TYPE_STRING), host);
+		table.addValue(new ValueMeta(FIELD_DATABASE_DATABASE_NAME, ValueMetaInterface.TYPE_STRING), dbname);
+		table.addValue(new ValueMeta(FIELD_DATABASE_PORT, ValueMetaInterface.TYPE_INTEGER), new Long(Const.toInt(port, -1)));
+		table.addValue(new ValueMeta(FIELD_DATABASE_USERNAME, ValueMetaInterface.TYPE_STRING), user);
+		table.addValue(new ValueMeta(FIELD_DATABASE_PASSWORD, ValueMetaInterface.TYPE_STRING), Encr.encryptPasswordIfNotUsingVariables(pass));
+		table.addValue(new ValueMeta(FIELD_DATABASE_SERVERNAME, ValueMetaInterface.TYPE_STRING), servername);
+		table.addValue(new ValueMeta(FIELD_DATABASE_DATA_TBS, ValueMetaInterface.TYPE_STRING), data_tablespace);
+		table.addValue(new ValueMeta(FIELD_DATABASE_INDEX_TBS, ValueMetaInterface.TYPE_STRING), index_tablespace);
 
-		updateTableRow("R_DATABASE", "ID_DATABASE", table, id_database);
+		updateTableRow(TABLE_R_DATABASE, FIELD_DATABASE_ID_DATABASE, table, id_database);
 	}
 
 	public synchronized void updateTableRow(String tablename, String idfield, RowMetaAndData values, long id) throws KettleException
@@ -1883,7 +2243,7 @@ public class Repository
 	{
 		int retval = 0;
 
-		String sql = "SELECT COUNT(*) FROM R_JOB";
+		String sql = "SELECT COUNT(*) FROM "+quote(TABLE_R_JOB);
 		RowMetaAndData r = database.getOneRow(sql);
 		if (r != null)
 		{
@@ -1897,7 +2257,7 @@ public class Repository
 	{
 		int retval = 0;
 
-		String sql = "SELECT COUNT(*) FROM R_TRANSFORMATION WHERE ID_DIRECTORY = " + id_directory;
+		String sql = "SELECT COUNT(*) FROM "+quote(TABLE_R_TRANSFORMATION)+" WHERE "+quote(FIELD_TRANSFORMATION_ID_DIRECTORY)+" = " + id_directory;
 		RowMetaAndData r = database.getOneRow(sql);
 		if (r != null)
 		{
@@ -1911,7 +2271,7 @@ public class Repository
 	{
 		int retval = 0;
 
-		String sql = "SELECT COUNT(*) FROM R_JOB WHERE ID_DIRECTORY = " + id_directory;
+		String sql = "SELECT COUNT(*) FROM "+quote(TABLE_R_JOB)+" WHERE "+quote(FIELD_JOB_ID_DIRECTORY)+" = " + id_directory;
 		RowMetaAndData r = database.getOneRow(sql);
 		if (r != null)
 		{
@@ -1925,7 +2285,7 @@ public class Repository
 	{
 		int retval = 0;
 
-		String sql = "SELECT COUNT(*) FROM R_DIRECTORY WHERE ID_DIRECTORY_PARENT = " + id_directory;
+		String sql = "SELECT COUNT(*) FROM "+quote(TABLE_R_DIRECTORY)+" WHERE "+quote(FIELD_DIRECTORY_ID_DIRECTORY_PARENT)+" = " + id_directory;
 		RowMetaAndData r = database.getOneRow(sql);
 		if (r != null)
 		{
@@ -1939,7 +2299,7 @@ public class Repository
 	{
 		int retval = 0;
 
-		String sql = "SELECT COUNT(*) FROM R_TRANS_STEP_CONDITION WHERE ID_TRANSFORMATION = " + id_transforamtion;
+		String sql = "SELECT COUNT(*) FROM "+quote(TABLE_R_TRANS_STEP_CONDITION)+" WHERE "+quote(FIELD_TRANS_STEP_CONDITION_ID_TRANSFORMATION)+" = " + id_transforamtion;
 		RowMetaAndData r = database.getOneRow(sql);
 		if (r != null)
 		{
@@ -1953,7 +2313,7 @@ public class Repository
 	{
 		int retval = 0;
 
-		String sql = "SELECT COUNT(*) FROM R_STEP_DATABASE WHERE ID_TRANSFORMATION = " + id_transforamtion;
+		String sql = "SELECT COUNT(*) FROM "+quote(TABLE_R_STEP_DATABASE)+" WHERE "+quote(FIELD_STEP_DATABASE_ID_TRANSFORMATION)+" = " + id_transforamtion;
 		RowMetaAndData r = database.getOneRow(sql);
 		if (r != null)
 		{
@@ -1967,7 +2327,7 @@ public class Repository
 	{
 		int retval = 0;
 
-		String sql = "SELECT COUNT(*) FROM R_CONDITION WHERE ID_CONDITION_PARENT = " + id_condition;
+		String sql = "SELECT COUNT(*) FROM "+quote(TABLE_R_CONDITION)+" WHERE "+quote(FIELD_CONDITION_ID_CONDITION_PARENT)+" = " + id_condition;
 		RowMetaAndData r = database.getOneRow(sql);
 		if (r != null)
 		{
@@ -1981,7 +2341,7 @@ public class Repository
 	{
 		int retval = 0;
 
-		String sql = "SELECT COUNT(*) FROM R_TRANS_NOTE WHERE ID_TRANSFORMATION = " + id_transformation;
+		String sql = "SELECT COUNT(*) FROM "+quote(TABLE_R_TRANS_NOTE)+" WHERE "+quote(FIELD_TRANS_NOTE_ID_TRANSFORMATION)+" = " + id_transformation;
 		RowMetaAndData r = database.getOneRow(sql);
 		if (r != null)
 		{
@@ -1995,7 +2355,7 @@ public class Repository
 	{
 		int retval = 0;
 
-		String sql = "SELECT COUNT(*) FROM R_JOB_NOTE WHERE ID_JOB = " + id_job;
+		String sql = "SELECT COUNT(*) FROM "+quote(TABLE_R_JOB_NOTE)+" WHERE "+quote(FIELD_JOB_ID_JOB)+" = " + id_job;
 		RowMetaAndData r = database.getOneRow(sql);
 		if (r != null)
 		{
@@ -2009,7 +2369,7 @@ public class Repository
 	{
 		int retval = 0;
 
-		String sql = "SELECT COUNT(*) FROM R_DATABASE";
+		String sql = "SELECT COUNT(*) FROM "+quote(TABLE_R_DATABASE);
 		RowMetaAndData r = database.getOneRow(sql);
 		if (r != null)
 		{
@@ -2023,7 +2383,7 @@ public class Repository
     {
         int retval = 0;
 
-        String sql = "SELECT COUNT(*) FROM R_DATABASE_ATTRIBUTE WHERE ID_DATABASE = "+id_database;
+        String sql = "SELECT COUNT(*) FROM "+quote(TABLE_R_DATABASE_ATTRIBUTE)+" WHERE "+quote(FIELD_DATABASE_ATTRIBUTE_ID_DATABASE)+" = "+id_database;
         RowMetaAndData r = database.getOneRow(sql);
         if (r != null)
         {
@@ -2037,7 +2397,7 @@ public class Repository
 	{
 		int retval = 0;
 
-		String sql = "SELECT COUNT(*) FROM R_STEP WHERE ID_TRANSFORMATION = " + id_transformation;
+		String sql = "SELECT COUNT(*) FROM "+quote(TABLE_R_STEP)+" WHERE "+quote(FIELD_STEP_ID_TRANSFORMATION)+" = " + id_transformation;
 		RowMetaAndData r = database.getOneRow(sql);
 		if (r != null)
 		{
@@ -2051,7 +2411,7 @@ public class Repository
 	{
 		int retval = 0;
 
-		String sql = "SELECT COUNT(*) FROM R_STEP_DATABASE WHERE ID_DATABASE = " + id_database;
+		String sql = "SELECT COUNT(*) FROM "+quote(TABLE_R_STEP_DATABASE)+" WHERE "+quote(FIELD_STEP_DATABASE_ID_DATABASE)+" = " + id_database;
 		RowMetaAndData r = database.getOneRow(sql);
 		if (r != null)
 		{
@@ -2065,7 +2425,7 @@ public class Repository
 	{
 		int retval = 0;
 
-		String sql = "SELECT COUNT(*) FROM R_STEP_ATTRIBUTE WHERE ID_STEP = " + id_step;
+		String sql = "SELECT COUNT(*) FROM "+quote(TABLE_R_STEP_ATTRIBUTE)+" WHERE "+quote(FIELD_STEP_ATTRIBUTE_ID_STEP)+" = " + id_step;
 		RowMetaAndData r = database.getOneRow(sql);
 		if (r != null)
 		{
@@ -2079,7 +2439,7 @@ public class Repository
 	{
 		int retval = 0;
 
-		String sql = "SELECT COUNT(*) FROM R_TRANS_HOP WHERE ID_TRANSFORMATION = " + id_transformation;
+		String sql = "SELECT COUNT(*) FROM "+quote(TABLE_R_TRANS_HOP)+" WHERE "+quote(FIELD_TRANS_HOP_ID_TRANSFORMATION)+" = " + id_transformation;
 		RowMetaAndData r = database.getOneRow(sql);
 		if (r != null)
 		{
@@ -2093,7 +2453,7 @@ public class Repository
 	{
 		int retval = 0;
 
-		String sql = "SELECT COUNT(*) FROM R_JOB_HOP WHERE ID_JOB = " + id_job;
+		String sql = "SELECT COUNT(*) FROM "+quote(TABLE_R_JOB_HOP)+" WHERE "+quote(FIELD_JOB_HOP_ID_JOB)+" = " + id_job;
 		RowMetaAndData r = database.getOneRow(sql);
 		if (r != null)
 		{
@@ -2107,7 +2467,7 @@ public class Repository
 	{
 		int retval = 0;
 
-		String sql = "SELECT COUNT(*) FROM R_DEPENDENCY WHERE ID_TRANSFORMATION = " + id_transformation;
+		String sql = "SELECT COUNT(*) FROM "+quote(TABLE_R_DEPENDENCY)+" WHERE "+quote(FIELD_DEPENDENCY_ID_TRANSFORMATION)+" = " + id_transformation;
 		RowMetaAndData r = database.getOneRow(sql);
 		if (r != null)
 		{
@@ -2121,7 +2481,7 @@ public class Repository
 	{
 		int retval = 0;
 
-		String sql = "SELECT COUNT(*) FROM R_JOBENTRY WHERE ID_JOB = " + id_job;
+		String sql = "SELECT COUNT(*) FROM "+quote(TABLE_R_JOBENTRY)+" WHERE "+quote(FIELD_JOBENTRY_ID_JOB)+" = " + id_job;
 		RowMetaAndData r = database.getOneRow(sql);
 		if (r != null)
 		{
@@ -2135,7 +2495,7 @@ public class Repository
 	{
 		int retval = 0;
 
-		String sql = "SELECT COUNT(*) FROM R_JOBENTRY_COPY WHERE ID_JOB = " + id_job + " AND ID_JOBENTRY = "
+		String sql = "SELECT COUNT(*) FROM "+quote(TABLE_R_JOBENTRY_COPY)+" WHERE "+quote(FIELD_JOBENTRY_COPY_ID_JOB)+" = " + id_job + " AND "+quote(FIELD_JOBENTRY_COPY_ID_JOBENTRY)+" = "
 						+ id_jobentry;
 		RowMetaAndData r = database.getOneRow(sql);
 		if (r != null)
@@ -2150,7 +2510,7 @@ public class Repository
 	{
 		int retval = 0;
 
-		String sql = "SELECT COUNT(*) FROM R_JOBENTRY_COPY WHERE ID_JOB = " + id_job;
+		String sql = "SELECT COUNT(*) FROM "+quote(TABLE_R_JOBENTRY_COPY)+" WHERE "+quote(FIELD_JOBENTRY_COPY_ID_JOB)+" = " + id_job;
 		RowMetaAndData r = database.getOneRow(sql);
 		if (r != null)
 		{
@@ -2164,7 +2524,7 @@ public class Repository
 	{
 		int retval = 0;
 
-		String sql = "SELECT COUNT(*) FROM R_USER";
+		String sql = "SELECT COUNT(*) FROM "+quote(TABLE_R_USER);
 		RowMetaAndData r = database.getOneRow(sql);
 		if (r != null)
 		{
@@ -2178,7 +2538,7 @@ public class Repository
 	{
 		int retval = 0;
 
-		String sql = "SELECT COUNT(*) FROM R_PROFILE_PERMISSION WHERE ID_PROFILE = " + id_profile;
+		String sql = "SELECT COUNT(*) FROM "+quote(TABLE_R_PROFILE_PERMISSION)+" WHERE "+quote(FIELD_PROFILE_PERMISSION_ID_PROFILE)+" = " + id_profile;
 		RowMetaAndData r = database.getOneRow(sql);
 		if (r != null)
 		{
@@ -2192,7 +2552,7 @@ public class Repository
 	{
 		int retval = 0;
 
-		String sql = "SELECT COUNT(*) FROM R_PROFILE";
+		String sql = "SELECT COUNT(*) FROM "+quote(TABLE_R_PROFILE);
 		RowMetaAndData r = database.getOneRow(sql);
 		if (r != null)
 		{
@@ -2204,18 +2564,17 @@ public class Repository
 
 	public synchronized String[] getTransformationNames(long id_directory) throws KettleException
 	{
-		String nameField = databaseMeta.quoteField("NAME");
-		return getStrings("SELECT "+nameField+" FROM R_TRANSFORMATION WHERE ID_DIRECTORY = " + id_directory + " ORDER BY "+nameField);
+		return getStrings("SELECT "+quote(FIELD_TRANSFORMATION_NAME)+" FROM "+quote(TABLE_R_TRANSFORMATION)+" WHERE "+quote(FIELD_TRANSFORMATION_ID_DIRECTORY)+" = " + id_directory + " ORDER BY "+quote(FIELD_TRANSFORMATION_NAME));
 	}
     
     public List<RepositoryObject> getJobObjects(long id_directory) throws KettleException
     {
-        return getRepositoryObjects("R_JOB", RepositoryObject.STRING_OBJECT_TYPE_JOB, id_directory);
+        return getRepositoryObjects(quote(TABLE_R_JOB), RepositoryObject.STRING_OBJECT_TYPE_JOB, id_directory);
     }
 
     public List<RepositoryObject> getTransformationObjects(long id_directory) throws KettleException
     {
-        return getRepositoryObjects("R_TRANSFORMATION", RepositoryObject.STRING_OBJECT_TYPE_TRANSFORMATION, id_directory);
+        return getRepositoryObjects(quote(TABLE_R_TRANSFORMATION), RepositoryObject.STRING_OBJECT_TYPE_TRANSFORMATION, id_directory);
     }
 
     /**
@@ -2226,11 +2585,9 @@ public class Repository
      */
     private synchronized List<RepositoryObject> getRepositoryObjects(String tableName, String objectType, long id_directory) throws KettleException
     {
-        String nameField = databaseMeta.quoteField("NAME");
-        
-        String sql = "SELECT "+nameField+", MODIFIED_USER, MODIFIED_DATE, DESCRIPTION " +
+        String sql = "SELECT "+quote(FIELD_TRANSFORMATION_NAME)+", "+quote(FIELD_TRANSFORMATION_MODIFIED_USER)+", "+quote(FIELD_TRANSFORMATION_MODIFIED_DATE)+", "+quote(FIELD_TRANSFORMATION_DESCRIPTION)+" " +
                 "FROM "+tableName+" " +
-                "WHERE ID_DIRECTORY = " + id_directory + " "
+                "WHERE "+quote(FIELD_TRANSFORMATION_ID_DIRECTORY)+" = " + id_directory + " "
                 ;
 
         List<RepositoryObject> repositoryObjects = new ArrayList<RepositoryObject>();
@@ -2264,92 +2621,87 @@ public class Repository
 
 	public synchronized String[] getJobNames(long id_directory) throws KettleException
 	{
-		String nameField = databaseMeta.quoteField("NAME");
-        return getStrings("SELECT "+nameField+" FROM R_JOB WHERE ID_DIRECTORY = " + id_directory + " ORDER BY "+nameField);
+        return getStrings("SELECT "+quote(FIELD_JOB_NAME)+" FROM "+quote(TABLE_R_JOB)+" WHERE "+quote(FIELD_JOB_ID_DIRECTORY)+" = " + id_directory + " ORDER BY "+quote(FIELD_JOB_NAME));
 	}
 
 	public synchronized String[] getDirectoryNames(long id_directory) throws KettleException
 	{
-        return getStrings("SELECT DIRECTORY_NAME FROM R_DIRECTORY WHERE ID_DIRECTORY_PARENT = " + id_directory + " ORDER BY DIRECTORY_NAME");
+        return getStrings("SELECT "+quote(FIELD_DIRECTORY_DIRECTORY_NAME)+" FROM "+quote(TABLE_R_DIRECTORY)+" WHERE "+quote(FIELD_DIRECTORY_ID_DIRECTORY_PARENT)+" = " + id_directory + " ORDER BY "+quote(FIELD_DIRECTORY_DIRECTORY_NAME));
 	}
 
 	public synchronized String[] getJobNames() throws KettleException
 	{
-        String nameField = databaseMeta.quoteField("NAME");
-        return getStrings("SELECT "+nameField+" FROM R_JOB ORDER BY "+nameField);
+        return getStrings("SELECT "+quote(FIELD_JOB_NAME)+" FROM "+quote(TABLE_R_JOB)+" ORDER BY "+quote(FIELD_JOB_NAME));
 	}
 
 	public long[] getSubConditionIDs(long id_condition) throws KettleException
 	{
-        return getIDs("SELECT ID_CONDITION FROM R_CONDITION WHERE ID_CONDITION_PARENT = " + id_condition);
+        return getIDs("SELECT "+quote(FIELD_CONDITION_ID_CONDITION)+" FROM "+quote(TABLE_R_CONDITION)+" WHERE "+quote(FIELD_CONDITION_ID_CONDITION_PARENT)+" = " + id_condition);
 	}
 
 	public long[] getTransNoteIDs(long id_transformation) throws KettleException
 	{
-        return getIDs("SELECT ID_NOTE FROM R_TRANS_NOTE WHERE ID_TRANSFORMATION = " + id_transformation);
+        return getIDs("SELECT "+quote(FIELD_TRANS_NOTE_ID_NOTE)+" FROM "+quote(TABLE_R_TRANS_NOTE)+" WHERE "+quote(FIELD_TRANS_NOTE_ID_TRANSFORMATION)+" = " + id_transformation);
 	}
 
 	public long[] getConditionIDs(long id_transformation) throws KettleException
 	{
-        return getIDs("SELECT ID_CONDITION FROM R_TRANS_STEP_CONDITION WHERE ID_TRANSFORMATION = " + id_transformation);
+        return getIDs("SELECT "+quote(FIELD_TRANS_STEP_CONDITION_ID_CONDITION)+" FROM "+quote(TABLE_R_TRANS_STEP_CONDITION)+" WHERE "+quote(FIELD_TRANS_STEP_CONDITION_ID_TRANSFORMATION)+" = " + id_transformation);
 	}
 
 	public long[] getDatabaseIDs(long id_transformation) throws KettleException
 	{
-        return getIDs("SELECT ID_DATABASE FROM R_STEP_DATABASE WHERE ID_TRANSFORMATION = " + id_transformation);
+        return getIDs("SELECT "+quote(FIELD_STEP_DATABASE_ID_DATABASE)+" FROM "+quote(TABLE_R_STEP_DATABASE)+" WHERE "+quote(FIELD_STEP_DATABASE_ID_TRANSFORMATION)+" = " + id_transformation);
 	}
 
 	public long[] getJobNoteIDs(long id_job) throws KettleException
 	{
-        return getIDs("SELECT ID_NOTE FROM R_JOB_NOTE WHERE ID_JOB = " + id_job);
+        return getIDs("SELECT "+quote(FIELD_JOB_NOTE_ID_NOTE)+" FROM "+quote(TABLE_R_JOB_NOTE)+" WHERE "+quote(FIELD_JOB_NOTE_ID_JOB)+" = " + id_job);
 	}
 
 	public long[] getDatabaseIDs() throws KettleException
 	{
-        String nameField = databaseMeta.quoteField("NAME");
-        return getIDs("SELECT ID_DATABASE FROM R_DATABASE ORDER BY "+nameField);
+        return getIDs("SELECT "+quote(FIELD_DATABASE_ID_DATABASE)+" FROM "+quote(TABLE_R_DATABASE)+" ORDER BY "+quote(FIELD_DATABASE_ID_DATABASE));
 	}
     
     public long[] getDatabaseAttributeIDs(long id_database) throws KettleException
     {
-        return getIDs("SELECT ID_DATABASE_ATTRIBUTE FROM R_DATABASE_ATTRIBUTE WHERE ID_DATABASE = "+id_database);
+        return getIDs("SELECT "+quote(FIELD_DATABASE_ATTRIBUTE_ID_DATABASE_ATTRIBUTE)+" FROM "+quote(TABLE_R_DATABASE_ATTRIBUTE)+" WHERE "+quote(FIELD_DATABASE_ATTRIBUTE_ID_DATABASE)+" = "+id_database);
     }
     
     public long[] getPartitionSchemaIDs() throws KettleException
     {
-        String nameField = databaseMeta.quoteField("NAME");
-        return getIDs("SELECT ID_PARTITION_SCHEMA FROM R_PARTITION_SCHEMA ORDER BY "+nameField);
+        return getIDs("SELECT "+quote(FIELD_PARTITION_SCHEMA_ID_PARTITION_SCHEMA)+" FROM "+quote(TABLE_R_PARTITION_SCHEMA)+" ORDER BY "+quote(FIELD_PARTITION_SCHEMA_NAME));
     }
     
     public long[] getPartitionIDs(long id_partition_schema) throws KettleException
     {
-        return getIDs("SELECT ID_PARTITION FROM R_PARTITION WHERE ID_PARTITION_SCHEMA = " + id_partition_schema);
+        return getIDs("SELECT "+quote(FIELD_PARTITION_ID_PARTITION)+" FROM "+quote(TABLE_R_PARTITION)+" WHERE "+quote(FIELD_PARTITION_ID_PARTITION_SCHEMA)+" = " + id_partition_schema);
     }
 
     public long[] getTransformationPartitionSchemaIDs(long id_transformation) throws KettleException
     {
-        return getIDs("SELECT ID_TRANS_PARTITION_SCHEMA FROM R_TRANS_PARTITION_SCHEMA WHERE ID_TRANSFORMATION = "+id_transformation);
+        return getIDs("SELECT "+quote(FIELD_TRANS_PARTITION_SCHEMA_ID_TRANS_PARTITION_SCHEMA)+" FROM "+quote(TABLE_R_TRANS_PARTITION_SCHEMA)+" WHERE "+quote(FIELD_TRANS_PARTITION_SCHEMA_ID_TRANSFORMATION)+" = "+id_transformation);
     }
     
     public long[] getTransformationClusterSchemaIDs(long id_transformation) throws KettleException
     {
-        return getIDs("SELECT ID_TRANS_CLUSTER FROM R_TRANS_CLUSTER WHERE ID_TRANSFORMATION = " + id_transformation);
+        return getIDs("SELECT ID_TRANS_CLUSTER FROM "+quote(TABLE_R_TRANS_CLUSTER)+" WHERE ID_TRANSFORMATION = " + id_transformation);
     }
     
     public long[] getClusterIDs() throws KettleException
     {
-        String nameField = databaseMeta.quoteField("NAME");
-        return getIDs("SELECT ID_CLUSTER FROM R_CLUSTER ORDER BY "+nameField); 
+        return getIDs("SELECT "+quote(FIELD_CLUSTER_ID_CLUSTER)+" FROM "+quote(TABLE_R_CLUSTER)+" ORDER BY "+quote(FIELD_CLUSTER_NAME)); 
     }
 
     public long[] getSlaveIDs() throws KettleException
     {
-        return getIDs("SELECT ID_SLAVE FROM R_SLAVE");
+        return getIDs("SELECT "+quote(FIELD_SLAVE_ID_SLAVE)+" FROM "+quote(TABLE_R_SLAVE));
     }
 
     public long[] getSlaveIDs(long id_cluster_schema) throws KettleException
     {
-        return getIDs("SELECT ID_SLAVE FROM R_CLUSTER_SLAVE WHERE ID_CLUSTER = " + id_cluster_schema);
+        return getIDs("SELECT "+quote(FIELD_CLUSTER_SLAVE_ID_SLAVE)+" FROM "+quote(TABLE_R_CLUSTER_SLAVE)+" WHERE "+quote(FIELD_CLUSTER_SLAVE_ID_CLUSTER)+" = " + id_cluster_schema);
     }
     
     private long[] getIDs(String sql) throws KettleException
@@ -2416,42 +2768,42 @@ public class Repository
 
 	public synchronized String[] getDatabaseNames() throws KettleException
 	{
-		String nameField = databaseMeta.quoteField("NAME");
-		return getStrings("SELECT "+nameField+" FROM R_DATABASE ORDER BY "+nameField);
+		String nameField = quote(FIELD_DATABASE_NAME);
+		return getStrings("SELECT "+nameField+" FROM "+quote(TABLE_R_DATABASE)+" ORDER BY "+nameField);
 	}
     
     public synchronized String[] getPartitionSchemaNames() throws KettleException
     {
-        String nameField = databaseMeta.quoteField("NAME");
-        return getStrings("SELECT "+nameField+" FROM R_PARTITION_SCHEMA ORDER BY "+nameField);
+        String nameField = quote(FIELD_PARTITION_SCHEMA_NAME);
+        return getStrings("SELECT "+nameField+" FROM "+quote(TABLE_R_PARTITION_SCHEMA)+" ORDER BY "+nameField);
     }
     
     public synchronized String[] getSlaveNames() throws KettleException
     {
-        String nameField = databaseMeta.quoteField("NAME");
-        return getStrings("SELECT "+nameField+" FROM R_SLAVE ORDER BY "+nameField);
+        String nameField = quote(FIELD_SLAVE_NAME);
+        return getStrings("SELECT "+nameField+" FROM "+quote(TABLE_R_SLAVE)+" ORDER BY "+nameField);
     }
     
     public synchronized String[] getClusterNames() throws KettleException
     {
-        String nameField = databaseMeta.quoteField("NAME");
-        return getStrings("SELECT "+nameField+" FROM R_CLUSTER ORDER BY "+nameField);
+        String nameField = quote(FIELD_CLUSTER_NAME);
+        return getStrings("SELECT "+nameField+" FROM "+quote(TABLE_R_CLUSTER)+" ORDER BY "+nameField);
     }
 
 	public long[] getStepIDs(long id_transformation) throws KettleException
 	{
-		return getIDs("SELECT ID_STEP FROM R_STEP WHERE ID_TRANSFORMATION = " + id_transformation);
+		return getIDs("SELECT "+quote(FIELD_STEP_ID_STEP)+" FROM "+quote(TABLE_R_STEP)+" WHERE "+quote(FIELD_STEP_ID_TRANSFORMATION)+" = " + id_transformation);
 	}
 
 	public synchronized String[] getTransformationsUsingDatabase(long id_database) throws KettleException
 	{
-		String sql = "SELECT DISTINCT ID_TRANSFORMATION FROM R_STEP_DATABASE WHERE ID_DATABASE = " + id_database;
+		String sql = "SELECT DISTINCT "+quote(FIELD_STEP_DATABASE_ID_TRANSFORMATION)+" FROM "+quote(TABLE_R_STEP_DATABASE)+" WHERE "+quote(FIELD_STEP_DATABASE_ID_DATABASE)+" = " + id_database;
         return getTransformationsWithIDList( database.getRows(sql, 100), database.getReturnRowMeta() );
 	}
     
     public synchronized String[] getClustersUsingSlave(long id_slave) throws KettleException
     {
-        String sql = "SELECT DISTINCT ID_CLUSTER FROM R_CLUSTER_SLAVE WHERE ID_SLAVE = " + id_slave;
+        String sql = "SELECT DISTINCT "+quote(FIELD_CLUSTER_SLAVE_ID_CLUSTER)+" FROM "+quote(TABLE_R_CLUSTER_SLAVE)+" WHERE "+quote(FIELD_CLUSTER_SLAVE_ID_SLAVE)+" = " + id_slave;
 
         List<Object[]> list = database.getRows(sql, 100);
         RowMetaInterface rowMeta = database.getReturnRowMeta();
@@ -2459,13 +2811,13 @@ public class Repository
 
         for (int i=0;i<list.size();i++)
         {
-            long id_cluster_schema = rowMeta.getInteger(list.get(i), "ID_CLUSTER", -1L); 
+            long id_cluster_schema = rowMeta.getInteger(list.get(i), quote(FIELD_CLUSTER_SLAVE_ID_CLUSTER), -1L); 
             if (id_cluster_schema > 0)
             {
                 RowMetaAndData transRow =  getClusterSchema(id_cluster_schema);
                 if (transRow!=null)
                 {
-                    String clusterName = transRow.getString("NAME", "<name not found>");
+                    String clusterName = transRow.getString(quote(FIELD_CLUSTER_NAME), "<name not found>");
                     if (clusterName!=null) clusterList.add(clusterName);
                 }
             }
@@ -2476,19 +2828,20 @@ public class Repository
 
     public synchronized String[] getTransformationsUsingSlave(long id_slave) throws KettleException
     {
-        String sql = "SELECT DISTINCT ID_TRANSFORMATION FROM R_TRANS_SLAVE WHERE ID_SLAVE = " + id_slave;
+        String sql = "SELECT DISTINCT "+quote(FIELD_TRANS_SLAVE_ID_TRANSFORMATION)+" FROM "+quote(TABLE_R_TRANS_SLAVE)+" WHERE "+quote(FIELD_TRANS_SLAVE_ID_SLAVE)+" = " + id_slave;
         return getTransformationsWithIDList( database.getRows(sql, 100), database.getReturnRowMeta() );
     }
     
     public synchronized String[] getTransformationsUsingPartitionSchema(long id_partition_schema) throws KettleException
     {
-        String sql = "SELECT DISTINCT ID_TRANSFORMATION FROM R_TRANS_PARTITION_SCHEMA WHERE ID_PARTITION_SCHEMA = " + id_partition_schema;
+        String sql = "SELECT DISTINCT "+quote(FIELD_TRANS_PARTITION_SCHEMA_ID_TRANSFORMATION)+
+                     " FROM "+quote(TABLE_R_TRANS_PARTITION_SCHEMA)+" WHERE "+quote(FIELD_TRANS_PARTITION_SCHEMA_ID_PARTITION_SCHEMA)+" = " + id_partition_schema;
         return getTransformationsWithIDList( database.getRows(sql, 100), database.getReturnRowMeta() );
     }
     
     public synchronized String[] getTransformationsUsingCluster(long id_cluster) throws KettleException
     {
-        String sql = "SELECT DISTINCT ID_TRANSFORMATION FROM R_TRANS_CLUSTER WHERE ID_CLUSTER = " + id_cluster;
+        String sql = "SELECT DISTINCT "+quote(FIELD_TRANS_CLUSTER_ID_TRANSFORMATION)+" FROM "+quote(TABLE_R_TRANS_CLUSTER)+" WHERE "+quote(FIELD_TRANS_CLUSTER_ID_CLUSTER)+" = " + id_cluster;
         return getTransformationsWithIDList( database.getRows(sql, 100), database.getReturnRowMeta() );
     }
 
@@ -2497,14 +2850,14 @@ public class Repository
         String[] transList = new String[list.size()];
         for (int i=0;i<list.size();i++)
         {
-            long id_transformation = rowMeta.getInteger( list.get(i), "ID_TRANSFORMATION", -1L); 
+            long id_transformation = rowMeta.getInteger( list.get(i), quote(FIELD_TRANSFORMATION_ID_TRANSFORMATION), -1L); 
             if (id_transformation > 0)
             {
                 RowMetaAndData transRow =  getTransformation(id_transformation);
                 if (transRow!=null)
                 {
-                    String transName = transRow.getString("NAME", "<name not found>");
-                    long id_directory = transRow.getInteger("ID_DIRECTORY", -1L);
+                    String transName = transRow.getString(quote(FIELD_TRANSFORMATION_NAME), "<name not found>");
+                    long id_directory = transRow.getInteger(quote(FIELD_TRANSFORMATION_ID_DIRECTORY), -1L);
                     RepositoryDirectory dir = directoryTree.findDirectory(id_directory);
                     
                     transList[i]=dir.getPathObjectCombination(transName);
@@ -2517,79 +2870,80 @@ public class Repository
 
     public long[] getTransHopIDs(long id_transformation) throws KettleException
 	{
-		return getIDs("SELECT ID_TRANS_HOP FROM R_TRANS_HOP WHERE ID_TRANSFORMATION = " + id_transformation);
+		return getIDs("SELECT "+quote(FIELD_TRANS_HOP_ID_TRANS_HOP)+" FROM "+quote(TABLE_R_TRANS_HOP)+" WHERE "+quote(FIELD_TRANS_HOP_ID_TRANSFORMATION)+" = " + id_transformation);
 	}
 
 	public long[] getJobHopIDs(long id_job) throws KettleException
 	{
-		return getIDs("SELECT ID_JOB_HOP FROM R_JOB_HOP WHERE ID_JOB = " + id_job);
+		return getIDs("SELECT "+quote(FIELD_JOB_HOP_ID_JOB_HOP)+" FROM "+quote(TABLE_R_JOB_HOP)+" WHERE "+quote(FIELD_JOB_HOP_ID_JOB)+" = " + id_job);
 	}
 
 	public long[] getTransDependencyIDs(long id_transformation) throws KettleException
 	{
-		return getIDs("SELECT ID_DEPENDENCY FROM R_DEPENDENCY WHERE ID_TRANSFORMATION = " + id_transformation);
+		return getIDs("SELECT "+quote(FIELD_DEPENDENCY_ID_DEPENDENCY)+" FROM "+quote(TABLE_R_DEPENDENCY)+" WHERE "+quote(FIELD_DEPENDENCY_ID_TRANSFORMATION)+" = " + id_transformation);
 	}
 
 	public long[] getUserIDs() throws KettleException
 	{
-		return getIDs("SELECT ID_USER FROM R_USER");
+		return getIDs("SELECT "+quote(FIELD_USER_ID_USER)+" FROM "+quote(TABLE_R_USER));
 	}
 
 	public synchronized String[] getUserLogins() throws KettleException
 	{
-		String loginField = databaseMeta.quoteField("LOGIN");
-		return getStrings("SELECT "+loginField+" FROM R_USER ORDER BY "+loginField);
+		String loginField = quote(FIELD_USER_LOGIN);
+		return getStrings("SELECT "+loginField+" FROM "+quote(TABLE_R_USER)+" ORDER BY "+loginField);
 	}
 
 	public long[] getPermissionIDs(long id_profile) throws KettleException
 	{
-		return getIDs("SELECT ID_PERMISSION FROM R_PROFILE_PERMISSION WHERE ID_PROFILE = " + id_profile);
+		return getIDs("SELECT "+quote(FIELD_PROFILE_PERMISSION_ID_PERMISSION)+" FROM "+quote(TABLE_R_PROFILE_PERMISSION)+" WHERE "+quote(FIELD_PROFILE_PERMISSION_ID_PROFILE)+" = " + id_profile);
 	}
 
 	public long[] getJobEntryIDs(long id_job) throws KettleException
 	{
-		return getIDs("SELECT ID_JOBENTRY FROM R_JOBENTRY WHERE ID_JOB = " + id_job);
+		return getIDs("SELECT "+quote(FIELD_JOBENTRY_ID_JOBENTRY)+" FROM "+quote(TABLE_R_JOBENTRY)+" WHERE "+quote(FIELD_JOBENTRY_ID_JOB)+" = " + id_job);
 	}
 
 	public long[] getJobEntryCopyIDs(long id_job) throws KettleException
 	{
-		return getIDs("SELECT ID_JOBENTRY_COPY FROM R_JOBENTRY_COPY WHERE ID_JOB = " + id_job);
+		return getIDs("SELECT "+quote(FIELD_JOBENTRY_COPY_ID_JOBENTRY_COPY)+" FROM "+quote(TABLE_R_JOBENTRY_COPY)+" WHERE "+quote(FIELD_JOBENTRY_COPY_ID_JOB)+" = " + id_job);
 	}
 
 	public long[] getJobEntryCopyIDs(long id_job, long id_jobentry) throws KettleException
 	{
-		return getIDs("SELECT ID_JOBENTRY_COPY FROM R_JOBENTRY_COPY WHERE ID_JOB = " + id_job + " AND ID_JOBENTRY = " + id_jobentry);
+		return getIDs("SELECT "+quote(FIELD_JOBENTRY_COPY_ID_JOBENTRY_COPY)+
+				" FROM "+quote(TABLE_R_JOBENTRY_COPY)+" WHERE "+quote(FIELD_JOBENTRY_COPY_ID_JOB)+" = " + id_job + " AND "+quote(FIELD_JOBENTRY_COPY_ID_JOBENTRY)+" = " + id_jobentry);
 	}
 
 	public synchronized String[] getProfiles() throws KettleException
 	{
-		String nameField = databaseMeta.quoteField("NAME");
-		return getStrings("SELECT "+nameField+" FROM R_PROFILE ORDER BY "+nameField);
+		String nameField = quote(FIELD_PROFILE_NAME);
+		return getStrings("SELECT "+nameField+" FROM "+quote(TABLE_R_PROFILE)+" ORDER BY "+nameField);
 	}
 
 	public RowMetaAndData getNote(long id_note) throws KettleException
 	{
-		return getOneRow("R_NOTE", "ID_NOTE", id_note);
+		return getOneRow(quote(TABLE_R_NOTE), quote(FIELD_NOTE_ID_NOTE), id_note);
 	}
 
 	public RowMetaAndData getDatabase(long id_database) throws KettleException
 	{
-		return getOneRow("R_DATABASE", "ID_DATABASE", id_database);
+		return getOneRow(quote(TABLE_R_DATABASE), quote(FIELD_DATABASE_ID_DATABASE), id_database);
 	}
 
     public RowMetaAndData getDatabaseAttribute(long id_database_attribute) throws KettleException
     {
-        return getOneRow("R_DATABASE_ATTRIBUTE", "ID_DATABASE_ATTRIBUTE", id_database_attribute);
+        return getOneRow(quote(TABLE_R_DATABASE_ATTRIBUTE), quote(FIELD_DATABASE_ATTRIBUTE_ID_DATABASE_ATTRIBUTE), id_database_attribute);
     }
 
     public Collection<RowMetaAndData> getDatabaseAttributes() throws KettleDatabaseException, KettleValueException
     {
     	List<RowMetaAndData> attrs = new ArrayList<RowMetaAndData>();
-    	List<Object[]> rows = database.getRows("SELECT * FROM " + "R_DATABASE_ATTRIBUTE",0);
+    	List<Object[]> rows = database.getRows("SELECT * FROM " + quote(TABLE_R_DATABASE_ATTRIBUTE),0);
     	for (Object[] row : rows) 
     	{
     		RowMetaAndData rowWithMeta = new RowMetaAndData(database.getReturnRowMeta(), row);
-    		long id = rowWithMeta.getInteger("ID_DATABASE_ATTRIBUTE", 0);
+    		long id = rowWithMeta.getInteger(quote(FIELD_DATABASE_ATTRIBUTE_ID_DATABASE_ATTRIBUTE), 0);
     		if (id >0) {
     			attrs.add(rowWithMeta);
     		}
@@ -2599,118 +2953,117 @@ public class Repository
     
 	public RowMetaAndData getCondition(long id_condition) throws KettleException
 	{
-		return getOneRow("R_CONDITION", "ID_CONDITION", id_condition);
+		return getOneRow(quote(TABLE_R_CONDITION), quote(FIELD_CONDITION_ID_CONDITION), id_condition);
 	}
 
 	public RowMetaAndData getValue(long id_value) throws KettleException
 	{
-		return getOneRow("R_VALUE", "ID_VALUE", id_value);
+		return getOneRow(quote(TABLE_R_VALUE), quote(FIELD_VALUE_ID_VALUE), id_value);
 	}
 
 	public RowMetaAndData getStep(long id_step) throws KettleException
 	{
-		return getOneRow("R_STEP", "ID_STEP", id_step);
+		return getOneRow(quote(TABLE_R_STEP), quote(FIELD_STEP_ID_STEP), id_step);
 	}
 
 	public RowMetaAndData getStepType(long id_step_type) throws KettleException
 	{
-		return getOneRow("R_STEP_TYPE", "ID_STEP_TYPE", id_step_type);
+		return getOneRow(quote(TABLE_R_STEP_TYPE), quote(FIELD_STEP_TYPE_ID_STEP_TYPE), id_step_type);
 	}
 
 	public RowMetaAndData getStepAttribute(long id_step_attribute) throws KettleException
 	{
-		return getOneRow("R_STEP_ATTRIBUTE", "ID_STEP_ATTRIBUTE", id_step_attribute);
+		return getOneRow(quote(TABLE_R_STEP_ATTRIBUTE), quote(FIELD_STEP_ATTRIBUTE_ID_STEP_ATTRIBUTE), id_step_attribute);
 	}
 
 	public RowMetaAndData getStepDatabase(long id_step) throws KettleException
 	{
-		return getOneRow("R_STEP_DATABASE", "ID_STEP", id_step);
+		return getOneRow(quote(TABLE_R_STEP_DATABASE), quote(FIELD_STEP_DATABASE_ID_STEP), id_step);
 	}
 
 	public RowMetaAndData getTransHop(long id_trans_hop) throws KettleException
 	{
-		return getOneRow("R_TRANS_HOP", "ID_TRANS_HOP", id_trans_hop);
+		return getOneRow(quote(TABLE_R_TRANS_HOP), quote(FIELD_TRANS_HOP_ID_TRANS_HOP), id_trans_hop);
 	}
 
 	public RowMetaAndData getJobHop(long id_job_hop) throws KettleException
 	{
-		return getOneRow("R_JOB_HOP", "ID_JOB_HOP", id_job_hop);
+		return getOneRow(quote(TABLE_R_JOB_HOP), quote(FIELD_JOB_HOP_ID_JOB_HOP), id_job_hop);
 	}
 
 	public RowMetaAndData getTransDependency(long id_dependency) throws KettleException
 	{
-		return getOneRow("R_DEPENDENCY", "ID_DEPENDENCY", id_dependency);
+		return getOneRow(quote(TABLE_R_DEPENDENCY), quote(FIELD_DEPENDENCY_ID_DEPENDENCY), id_dependency);
 	}
 
 	public RowMetaAndData getTransformation(long id_transformation) throws KettleException
 	{
-		return getOneRow("R_TRANSFORMATION", "ID_TRANSFORMATION", id_transformation);
+		return getOneRow(quote(TABLE_R_TRANSFORMATION), quote(FIELD_TRANSFORMATION_ID_TRANSFORMATION), id_transformation);
 	}
 
 	public RowMetaAndData getUser(long id_user) throws KettleException
 	{
-		return getOneRow("R_USER", "ID_USER", id_user);
+		return getOneRow(quote(TABLE_R_USER), quote(FIELD_USER_ID_USER), id_user);
 	}
 
 	public RowMetaAndData getProfile(long id_profile) throws KettleException
 	{
-		return getOneRow("R_PROFILE", "ID_PROFILE", id_profile);
+		return getOneRow(quote(TABLE_R_PROFILE), quote(FIELD_PROFILE_ID_PROFILE), id_profile);
 	}
 
 	public RowMetaAndData getPermission(long id_permission) throws KettleException
 	{
-		return getOneRow("R_PERMISSION", "ID_PERMISSION", id_permission);
+		return getOneRow(quote(TABLE_R_PERMISSION), quote(FIELD_PERMISSION_ID_PERMISSION), id_permission);
 	}
 
 	public RowMetaAndData getJob(long id_job) throws KettleException
 	{
-		return getOneRow("R_JOB", "ID_JOB", id_job);
+		return getOneRow(quote(TABLE_R_JOB), quote(FIELD_JOB_ID_JOB), id_job);
 	}
 
 	public RowMetaAndData getJobEntry(long id_jobentry) throws KettleException
 	{
-		return getOneRow("R_JOBENTRY", "ID_JOBENTRY", id_jobentry);
+		return getOneRow(quote(TABLE_R_JOBENTRY), quote(FIELD_JOBENTRY_ID_JOBENTRY), id_jobentry);
 	}
 
 	public RowMetaAndData getJobEntryCopy(long id_jobentry_copy) throws KettleException
 	{
-		return getOneRow("R_JOBENTRY_COPY", "ID_JOBENTRY_COPY", id_jobentry_copy);
+		return getOneRow(quote(TABLE_R_JOBENTRY_COPY), quote(FIELD_JOBENTRY_COPY_ID_JOBENTRY_COPY), id_jobentry_copy);
 	}
 
 	public RowMetaAndData getJobEntryType(long id_jobentry_type) throws KettleException
 	{
-		return getOneRow("R_JOBENTRY_TYPE", "ID_JOBENTRY_TYPE", id_jobentry_type);
+		return getOneRow(quote(TABLE_R_JOBENTRY_TYPE), quote(FIELD_JOBENTRY_ID_JOBENTRY_TYPE), id_jobentry_type);
 	}
 
 	public RowMetaAndData getDirectory(long id_directory) throws KettleException
 	{
-		return getOneRow("R_DIRECTORY", "ID_DIRECTORY", id_directory);
+		return getOneRow(quote(TABLE_R_DIRECTORY), quote(FIELD_DIRECTORY_ID_DIRECTORY), id_directory);
 	}
 	
     public RowMetaAndData getPartitionSchema(long id_partition_schema) throws KettleException
     {
-        return getOneRow("R_PARTITION_SCHEMA", "ID_PARTITION_SCHEMA", id_partition_schema);
+        return getOneRow(quote(TABLE_R_PARTITION_SCHEMA), quote(FIELD_PARTITION_SCHEMA_ID_PARTITION_SCHEMA), id_partition_schema);
     }
     
     public RowMetaAndData getPartition(long id_partition) throws KettleException
     {
-        return getOneRow("R_PARTITION", "ID_PARTITION", id_partition);
+        return getOneRow(quote(TABLE_R_PARTITION), quote(FIELD_PARTITION_ID_PARTITION), id_partition);
     }
 
     public RowMetaAndData getClusterSchema(long id_cluster_schema) throws KettleException
     {
-        return getOneRow("R_CLUSTER", "ID_CLUSTER", id_cluster_schema);
+        return getOneRow(quote(TABLE_R_CLUSTER), quote(FIELD_CLUSTER_ID_CLUSTER), id_cluster_schema);
     }
 
     public RowMetaAndData getSlaveServer(long id_slave) throws KettleException
     {
-        return getOneRow("R_SLAVE", "ID_SLAVE", id_slave);
+        return getOneRow(quote(TABLE_R_SLAVE), quote(FIELD_SLAVE_ID_SLAVE), id_slave);
     }
 
 	private RowMetaAndData getOneRow(String tablename, String keyfield, long id) throws KettleException
 	{
-		String sql = "SELECT * FROM " + tablename + " WHERE " 
-			+ database.getDatabaseMeta().quoteField(keyfield) + " = " + id;
+		String sql = "SELECT * FROM " + tablename + " WHERE " + keyfield + " = " + id;
 
 		return database.getOneRow(sql);
 	}
@@ -2758,14 +3111,17 @@ public class Repository
 
 	public synchronized void setLookupStepAttribute() throws KettleException
 	{
-		String sql = "SELECT VALUE_STR, VALUE_NUM FROM R_STEP_ATTRIBUTE WHERE ID_STEP = ?  AND CODE = ?  AND NR = ? ";
+		String sql = "SELECT "+quote(FIELD_STEP_ATTRIBUTE_VALUE_STR)+", "+quote(FIELD_STEP_ATTRIBUTE_VALUE_NUM)+
+			" FROM "+quote(TABLE_R_STEP_ATTRIBUTE)+
+			" WHERE "+quote(FIELD_STEP_ATTRIBUTE_ID_STEP)+" = ?  AND "+quote(FIELD_STEP_ATTRIBUTE_CODE)+" = ?  AND "+quote(FIELD_STEP_ATTRIBUTE_NR)+" = ? ";
 
 		psStepAttributesLookup = database.prepareSQL(sql);
 	}
     
     public synchronized void setLookupTransAttribute() throws KettleException
     {
-        String sql = "SELECT VALUE_STR, VALUE_NUM FROM R_TRANS_ATTRIBUTE WHERE ID_TRANSFORMATION = ?  AND CODE = ?  AND NR = ? ";
+        String sql = "SELECT "+quote(FIELD_TRANS_ATTRIBUTE_VALUE_STR)+", "+quote(FIELD_TRANS_ATTRIBUTE_VALUE_NUM)+
+        	" FROM "+quote(TABLE_R_TRANS_ATTRIBUTE)+" WHERE "+quote(FIELD_TRANS_ATTRIBUTE_ID_TRANSFORMATION)+" = ?  AND "+quote(FIELD_TRANS_ATTRIBUTE_CODE)+" = ? AND "+FIELD_TRANS_ATTRIBUTE_NR+" = ? ";
 
         psTransAttributesLookup = database.prepareSQL(sql);
     }
@@ -2805,9 +3161,9 @@ public class Repository
 	private RowMetaAndData getStepAttributeRow(long id_step, int nr, String code) throws KettleException
 	{
 		RowMetaAndData par = new RowMetaAndData();
-		par.addValue(new ValueMeta("ID_STEP", ValueMetaInterface.TYPE_INTEGER), new Long(id_step));
-		par.addValue(new ValueMeta("CODE", ValueMetaInterface.TYPE_STRING), code);
-		par.addValue(new ValueMeta("NR", ValueMetaInterface.TYPE_INTEGER), new Long(nr));
+		par.addValue(new ValueMeta(FIELD_STEP_ATTRIBUTE_ID_STEP, ValueMetaInterface.TYPE_INTEGER), new Long(id_step));
+		par.addValue(new ValueMeta(FIELD_STEP_ATTRIBUTE_CODE, ValueMetaInterface.TYPE_STRING), code);
+		par.addValue(new ValueMeta(FIELD_STEP_ATTRIBUTE_NR, ValueMetaInterface.TYPE_INTEGER), new Long(nr));
 
 		database.setValues(par.getRowMeta(), par.getData(), psStepAttributesLookup);
 
@@ -2818,9 +3174,9 @@ public class Repository
     public RowMetaAndData getTransAttributeRow(long id_transformation, int nr, String code) throws KettleException
     {
         RowMetaAndData par = new RowMetaAndData();
-        par.addValue(new ValueMeta("ID_TRANSFORMATION", ValueMetaInterface.TYPE_INTEGER), new Long(id_transformation));
-        par.addValue(new ValueMeta("CODE", ValueMetaInterface.TYPE_STRING), code);
-        par.addValue(new ValueMeta("NR", ValueMetaInterface.TYPE_INTEGER), new Long(nr));
+        par.addValue(new ValueMeta(FIELD_TRANS_ATTRIBUTE_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER), new Long(id_transformation));
+        par.addValue(new ValueMeta(FIELD_TRANS_ATTRIBUTE_CODE, ValueMetaInterface.TYPE_STRING), code);
+        par.addValue(new ValueMeta(FIELD_TRANS_ATTRIBUTE_NR, ValueMetaInterface.TYPE_INTEGER), new Long(nr));
 
         database.setValues(par, psTransAttributesLookup);
         Object[] r = database.getLookup(psTransAttributesLookup);
@@ -2835,7 +3191,7 @@ public class Repository
 		else                            r = getStepAttributeRow(id_step, nr, code);
 		if (r == null)
 			return 0;
-		return r.getInteger("VALUE_NUM", 0L);
+		return r.getInteger(FIELD_STEP_ATTRIBUTE_VALUE_NUM, 0L);
 	}
 
 	public synchronized String getStepAttributeString(long id_step, int nr, String code) throws KettleException
@@ -2845,7 +3201,7 @@ public class Repository
 		else                            r = getStepAttributeRow(id_step, nr, code);
 		if (r == null)
 			return null;
-		return r.getString("VALUE_STR", null);
+		return r.getString(FIELD_STEP_ATTRIBUTE_VALUE_STR, null);
 	}
 
 	public boolean getStepAttributeBoolean(long id_step, int nr, String code, boolean def) throws KettleException
@@ -2855,7 +3211,7 @@ public class Repository
 		else                            r = getStepAttributeRow(id_step, nr, code);
 		
 		if (r == null) return def;
-        String v = r.getString("VALUE_STR", null);
+        String v = r.getString(FIELD_STEP_ATTRIBUTE_VALUE_STR, null);
         if (v==null || Const.isEmpty(v)) return def;
 		return ValueMeta.convertStringToBoolean(v).booleanValue();
 	}
@@ -2867,7 +3223,7 @@ public class Repository
         else                            r = getStepAttributeRow(id_step, nr, code);
         if (r == null)
             return false;
-        return ValueMeta.convertStringToBoolean(r.getString("VALUE_STR", null)).booleanValue();
+        return ValueMeta.convertStringToBoolean(r.getString(FIELD_STEP_ATTRIBUTE_VALUE_STR, null)).booleanValue();
     }
 
 	public synchronized long getStepAttributeInteger(long id_step, String code) throws KettleException
@@ -2894,10 +3250,10 @@ public class Repository
 	    }
 	    else
 	    {
-			String sql = "SELECT COUNT(*) FROM R_STEP_ATTRIBUTE WHERE ID_STEP = ? AND CODE = ?";
+			String sql = "SELECT COUNT(*) FROM "+quote(TABLE_R_STEP_ATTRIBUTE)+" WHERE "+quote(FIELD_STEP_ATTRIBUTE_ID_STEP)+" = ? AND "+quote(FIELD_STEP_ATTRIBUTE_CODE)+" = ?";
 			RowMetaAndData table = new RowMetaAndData();
-			table.addValue(new ValueMeta("ID_STEP", ValueMetaInterface.TYPE_INTEGER), new Long(id_step));
-			table.addValue(new ValueMeta("CODE", ValueMetaInterface.TYPE_STRING), code);
+			table.addValue(new ValueMeta(FIELD_STEP_ATTRIBUTE_ID_STEP, ValueMetaInterface.TYPE_INTEGER), new Long(id_step));
+			table.addValue(new ValueMeta(FIELD_STEP_ATTRIBUTE_CODE, ValueMetaInterface.TYPE_STRING), code);
 			RowMetaAndData r = database.getOneRow(sql, table.getRowMeta(), table.getData());
 			if (r == null) return 0;
             return (int) r.getInteger(0, 0L);
@@ -2912,7 +3268,7 @@ public class Repository
         r = getTransAttributeRow(id_transformation, nr, code);
         if (r == null)
             return null;
-        return r.getString("VALUE_STR", null);
+        return r.getString(FIELD_TRANS_ATTRIBUTE_VALUE_STR, null);
     }
 
     public synchronized boolean getTransAttributeBoolean(long id_transformation, int nr, String code) throws KettleException
@@ -2921,7 +3277,7 @@ public class Repository
         r = getTransAttributeRow(id_transformation, nr, code);
         if (r == null)
             return false;
-        return r.getBoolean("VALUE_STR", false);
+        return r.getBoolean(FIELD_TRANS_ATTRIBUTE_VALUE_STR, false);
     }
 
     public synchronized double getTransAttributeNumber(long id_transformation, int nr, String code) throws KettleException
@@ -2930,7 +3286,7 @@ public class Repository
         r = getTransAttributeRow(id_transformation, nr, code);
         if (r == null)
             return 0.0;
-        return r.getNumber("VALUE_NUM", 0.0);
+        return r.getNumber(FIELD_TRANS_ATTRIBUTE_VALUE_NUM, 0.0);
     }
 
     public synchronized long getTransAttributeInteger(long id_transformation, int nr, String code) throws KettleException
@@ -2939,15 +3295,15 @@ public class Repository
         r = getTransAttributeRow(id_transformation, nr, code);
         if (r == null)
             return 0L;
-        return r.getInteger("VALUE_NUM", 0L);
+        return r.getInteger(FIELD_TRANS_ATTRIBUTE_VALUE_NUM, 0L);
     }
     
     public synchronized int countNrTransAttributes(long id_transformation, String code) throws KettleException
     {
-        String sql = "SELECT COUNT(*) FROM R_TRANS_ATTRIBUTE WHERE ID_TRANSFORMATION = ? AND CODE = ?";
+        String sql = "SELECT COUNT(*) FROM "+quote(TABLE_R_TRANS_ATTRIBUTE)+" WHERE "+quote(FIELD_TRANS_ATTRIBUTE_ID_TRANSFORMATION)+" = ? AND "+quote(FIELD_TRANS_ATTRIBUTE_CODE)+" = ?";
         RowMetaAndData table = new RowMetaAndData();
-        table.addValue(new ValueMeta("ID_STEP", ValueMetaInterface.TYPE_INTEGER), new Long(id_transformation));
-        table.addValue(new ValueMeta("CODE", ValueMetaInterface.TYPE_STRING), code);
+        table.addValue(new ValueMeta(FIELD_TRANS_ATTRIBUTE_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER), new Long(id_transformation));
+        table.addValue(new ValueMeta(FIELD_TRANS_ATTRIBUTE_CODE, ValueMetaInterface.TYPE_STRING), code);
         RowMetaAndData r = database.getOneRow(sql, table.getRowMeta(), table.getData());
         if (r == null)
             return 0;
@@ -2957,11 +3313,15 @@ public class Repository
 
     public synchronized List<Object[]> getTransAttributes(long id_transformation, String code, long nr) throws KettleException
     {
-        String sql = "SELECT * FROM R_TRANS_ATTRIBUTE WHERE ID_TRANSFORMATION = ? AND CODE = ? AND NR = ? ORDER BY VALUE_NUM";
+        String sql = "SELECT *"+
+        	" FROM "+quote(TABLE_R_TRANS_ATTRIBUTE)+
+        	" WHERE "+quote(FIELD_TRANS_ATTRIBUTE_ID_TRANSFORMATION)+" = ? AND "+quote(FIELD_TRANS_ATTRIBUTE_CODE)+" = ? AND "+quote(FIELD_TRANS_ATTRIBUTE_NR)+" = ?"+
+        	" ORDER BY "+quote(FIELD_TRANS_ATTRIBUTE_VALUE_NUM);
+        
         RowMetaAndData table = new RowMetaAndData();
-        table.addValue(new ValueMeta("ID_STEP", ValueMetaInterface.TYPE_INTEGER), new Long(id_transformation));
-        table.addValue(new ValueMeta("CODE", ValueMetaInterface.TYPE_STRING), code);
-        table.addValue(new ValueMeta("NR", ValueMetaInterface.TYPE_INTEGER), new Long(nr));
+        table.addValue(new ValueMeta(FIELD_TRANS_ATTRIBUTE_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER), new Long(id_transformation));
+        table.addValue(new ValueMeta(FIELD_TRANS_ATTRIBUTE_CODE, ValueMetaInterface.TYPE_STRING), code);
+        table.addValue(new ValueMeta(FIELD_TRANS_ATTRIBUTE_NR, ValueMetaInterface.TYPE_INTEGER), new Long(nr));
         
         return database.getRows(sql, 0);
     }
@@ -3016,7 +3376,9 @@ public class Repository
 
 	public synchronized void setLookupJobEntryAttribute() throws KettleException
 	{
-		String sql = "SELECT VALUE_STR, VALUE_NUM FROM R_JOBENTRY_ATTRIBUTE WHERE ID_JOBENTRY = ?  AND CODE = ?  AND NR = ? ";
+		String sql = "SELECT "+quote(FIELD_JOBENTRY_ATTRIBUTE_VALUE_STR)+", "+quote(FIELD_JOBENTRY_ATTRIBUTE_VALUE_NUM)+
+		" FROM "+quote(TABLE_R_JOBENTRY_ATTRIBUTE)+
+		" WHERE "+quote(FIELD_JOBENTRY_ATTRIBUTE_ID_JOBENTRY)+" = ? AND "+quote(FIELD_JOBENTRY_ATTRIBUTE_CODE)+" = ?  AND "+quote(FIELD_JOBENTRY_ATTRIBUTE_NR)+" = ? ";
 
 		pstmt_entry_attributes = database.prepareSQL(sql);
 	}
@@ -3030,9 +3392,9 @@ public class Repository
 	private RowMetaAndData getJobEntryAttributeRow(long id_jobentry, int nr, String code) throws KettleException
 	{
 		RowMetaAndData par = new RowMetaAndData();
-		par.addValue(new ValueMeta("ID_JOBENTRY", ValueMetaInterface.TYPE_INTEGER), new Long(id_jobentry));
-		par.addValue(new ValueMeta("CODE", ValueMetaInterface.TYPE_STRING), code);
-		par.addValue(new ValueMeta("NR", ValueMetaInterface.TYPE_INTEGER), new Long(nr));
+		par.addValue(new ValueMeta(FIELD_JOBENTRY_ATTRIBUTE_ID_JOBENTRY, ValueMetaInterface.TYPE_INTEGER), new Long(id_jobentry));
+		par.addValue(new ValueMeta(FIELD_JOBENTRY_ATTRIBUTE_CODE, ValueMetaInterface.TYPE_STRING), code);
+		par.addValue(new ValueMeta(FIELD_JOBENTRY_ATTRIBUTE_NR, ValueMetaInterface.TYPE_INTEGER), new Long(nr));
 
 		database.setValues(par.getRowMeta(), par.getData(), pstmt_entry_attributes);
 		Object[] rowData = database.getLookup(pstmt_entry_attributes);
@@ -3044,7 +3406,7 @@ public class Repository
 		RowMetaAndData r = getJobEntryAttributeRow(id_jobentry, nr, code);
 		if (r == null)
 			return 0;
-		return r.getInteger("VALUE_NUM", 0L);
+		return r.getInteger(FIELD_JOBENTRY_ATTRIBUTE_VALUE_NUM, 0L);
 	}
 
 	public double getJobEntryAttributeNumber(long id_jobentry, int nr, String code) throws KettleException
@@ -3052,7 +3414,7 @@ public class Repository
 		RowMetaAndData r = getJobEntryAttributeRow(id_jobentry, nr, code);
 		if (r == null)
 			return 0.0;
-		return r.getNumber("VALUE_NUM", 0.0);
+		return r.getNumber(FIELD_JOBENTRY_ATTRIBUTE_VALUE_NUM, 0.0);
 	}
 
 	public synchronized String getJobEntryAttributeString(long id_jobentry, int nr, String code) throws KettleException
@@ -3060,7 +3422,7 @@ public class Repository
 		RowMetaAndData r = getJobEntryAttributeRow(id_jobentry, nr, code);
 		if (r == null)
 			return null;
-		return r.getString("VALUE_STR", null);
+		return r.getString(FIELD_JOBENTRY_ATTRIBUTE_VALUE_STR, null);
 	}
 
 	public boolean getJobEntryAttributeBoolean(long id_jobentry, int nr, String code) throws KettleException
@@ -3072,7 +3434,7 @@ public class Repository
 	{
 		RowMetaAndData r = getJobEntryAttributeRow(id_jobentry, nr, code);
 		if (r == null) return def;
-        String v = r.getString("VALUE_STR", null);
+        String v = r.getString(FIELD_JOBENTRY_ATTRIBUTE_VALUE_STR, null);
         if (v==null || Const.isEmpty(v)) return def;
         return ValueMeta.convertStringToBoolean(v).booleanValue();
 	}
@@ -3104,10 +3466,10 @@ public class Repository
 
 	public synchronized int countNrJobEntryAttributes(long id_jobentry, String code) throws KettleException
 	{
-		String sql = "SELECT COUNT(*) FROM R_JOBENTRY_ATTRIBUTE WHERE ID_JOBENTRY = ? AND CODE = ?";
+		String sql = "SELECT COUNT(*) FROM "+quote(TABLE_R_JOBENTRY_ATTRIBUTE)+" WHERE "+quote(FIELD_JOBENTRY_ATTRIBUTE_ID_JOBENTRY)+" = ? AND "+quote(FIELD_JOBENTRY_ATTRIBUTE_CODE)+" = ?";
 		RowMetaAndData table = new RowMetaAndData();
-		table.addValue(new ValueMeta("ID_JOBENTRY", ValueMetaInterface.TYPE_INTEGER), new Long(id_jobentry));
-		table.addValue(new ValueMeta("CODE", ValueMetaInterface.TYPE_STRING), code);
+		table.addValue(new ValueMeta(FIELD_JOBENTRY_ATTRIBUTE_ID_JOBENTRY, ValueMetaInterface.TYPE_INTEGER), new Long(id_jobentry));
+		table.addValue(new ValueMeta(FIELD_JOBENTRY_ATTRIBUTE_CODE, ValueMetaInterface.TYPE_STRING), code);
 		RowMetaAndData r = database.getOneRow(sql, table.getRowMeta(), table.getData());
 		if (r == null) return 0;
 		return (int) r.getInteger(0, 0L);
@@ -3119,7 +3481,7 @@ public class Repository
 
 	public synchronized void delSteps(long id_transformation) throws KettleException
 	{
-		String sql = "DELETE FROM R_STEP WHERE ID_TRANSFORMATION = " + id_transformation;
+		String sql = "DELETE FROM "+quote(TABLE_R_STEP)+" WHERE "+quote(FIELD_STEP_ID_TRANSFORMATION)+" = " + id_transformation;
 		database.execStatement(sql);
 	}
 
@@ -3140,7 +3502,7 @@ public class Repository
 		}
 		else
 		{
-			String sql = "DELETE FROM R_CONDITION WHERE ID_CONDITION = " + id_condition;
+			String sql = "DELETE FROM "+quote(TABLE_R_CONDITION)+" WHERE "+quote(FIELD_CONDITION_ID_CONDITION)+" = " + id_condition;
 			database.execStatement(sql);
 		}
 	}
@@ -3152,7 +3514,7 @@ public class Repository
 		{
 			delCondition(ids[i]);
 		}
-		String sql = "DELETE FROM R_TRANS_STEP_CONDITION WHERE ID_TRANSFORMATION = " + id_transformation;
+		String sql = "DELETE FROM "+quote(TABLE_R_TRANS_STEP_CONDITION)+" WHERE "+quote(FIELD_TRANS_STEP_CONDITION_ID_TRANSFORMATION)+" = " + id_transformation;
 		database.execStatement(sql);
 	}
 
@@ -3163,43 +3525,43 @@ public class Repository
 	 */
 	public synchronized void delStepDatabases(long id_transformation) throws KettleException
 	{
-		String sql = "DELETE FROM R_STEP_DATABASE WHERE ID_TRANSFORMATION = " + id_transformation;
+		String sql = "DELETE FROM "+quote(TABLE_R_STEP_DATABASE)+" WHERE "+quote(FIELD_STEP_DATABASE_ID_TRANSFORMATION)+" = " + id_transformation;
 		database.execStatement(sql);
 	}
 
 	public synchronized void delJobEntries(long id_job) throws KettleException
 	{
-		String sql = "DELETE FROM R_JOBENTRY WHERE ID_JOB = " + id_job;
+		String sql = "DELETE FROM "+quote(TABLE_R_JOBENTRY)+" WHERE "+quote(FIELD_JOBENTRY_ID_JOB)+" = " + id_job;
 		database.execStatement(sql);
 	}
 
 	public synchronized void delJobEntryCopies(long id_job) throws KettleException
 	{
-		String sql = "DELETE FROM R_JOBENTRY_COPY WHERE ID_JOB = " + id_job;
+		String sql = "DELETE FROM "+quote(TABLE_R_JOBENTRY_COPY)+" WHERE "+quote(FIELD_JOBENTRY_COPY_ID_JOB)+" = " + id_job;
 		database.execStatement(sql);
 	}
 
 	public synchronized void delDependencies(long id_transformation) throws KettleException
 	{
-		String sql = "DELETE FROM R_DEPENDENCY WHERE ID_TRANSFORMATION = " + id_transformation;
+		String sql = "DELETE FROM "+quote(TABLE_R_DEPENDENCY)+" WHERE "+quote(FIELD_DEPENDENCY_ID_TRANSFORMATION)+" = " + id_transformation;
 		database.execStatement(sql);
 	}
 
 	public synchronized void delStepAttributes(long id_transformation) throws KettleException
 	{
-		String sql = "DELETE FROM R_STEP_ATTRIBUTE WHERE ID_TRANSFORMATION = " + id_transformation;
+		String sql = "DELETE FROM "+quote(TABLE_R_STEP_ATTRIBUTE)+" WHERE "+quote(FIELD_STEP_ATTRIBUTE_ID_TRANSFORMATION)+" = " + id_transformation;
 		database.execStatement(sql);
 	}
 
     public synchronized void delTransAttributes(long id_transformation) throws KettleException
     {
-        String sql = "DELETE FROM R_TRANS_ATTRIBUTE WHERE ID_TRANSFORMATION = " + id_transformation;
+        String sql = "DELETE FROM "+quote(TABLE_R_TRANS_ATTRIBUTE)+" WHERE "+quote(FIELD_TRANS_ATTRIBUTE_ID_TRANSFORMATION)+" = " + id_transformation;
         database.execStatement(sql);
     }
     
     public synchronized void delPartitionSchemas(long id_transformation) throws KettleException
     {
-        String sql = "DELETE FROM R_TRANS_PARTITION_SCHEMA WHERE ID_TRANSFORMATION = " + id_transformation;
+        String sql = "DELETE FROM "+quote(TABLE_R_TRANS_PARTITION_SCHEMA)+" WHERE "+quote(FIELD_TRANS_PARTITION_SCHEMA_ID_TRANSFORMATION)+" = " + id_transformation;
         database.execStatement(sql);
     }
 
@@ -3207,43 +3569,43 @@ public class Repository
     {
         // First see if the partition is used by a step, transformation etc.
         // 
-        database.execStatement("DELETE FROM R_PARTITION WHERE ID_PARTITION_SCHEMA = " + id_partition_schema);
+        database.execStatement("DELETE FROM "+quote(TABLE_R_PARTITION)+" WHERE "+quote(FIELD_PARTITION_ID_PARTITION_SCHEMA)+" = " + id_partition_schema);
     }
     
     public synchronized void delClusterSlaves(long id_cluster) throws KettleException
     {
-        String sql = "DELETE FROM R_CLUSTER_SLAVE WHERE ID_CLUSTER = " + id_cluster;
+        String sql = "DELETE FROM "+quote(TABLE_R_CLUSTER_SLAVE)+" WHERE "+quote(FIELD_CLUSTER_SLAVE_ID_CLUSTER)+" = " + id_cluster;
         database.execStatement(sql);
     }
     
     public synchronized void delTransformationClusters(long id_transformation) throws KettleException
     {
-        String sql = "DELETE FROM R_TRANS_CLUSTER WHERE ID_TRANSFORMATION = " + id_transformation;
+        String sql = "DELETE FROM "+quote(TABLE_R_TRANS_CLUSTER)+" WHERE "+quote(FIELD_TRANS_CLUSTER_ID_TRANSFORMATION)+" = " + id_transformation;
         database.execStatement(sql);
     }
 
     public synchronized void delTransformationSlaves(long id_transformation) throws KettleException
     {
-        String sql = "DELETE FROM R_TRANS_SLAVE WHERE ID_TRANSFORMATION = " + id_transformation;
+        String sql = "DELETE FROM "+quote(TABLE_R_TRANS_SLAVE)+" WHERE "+quote(FIELD_TRANS_SLAVE_ID_TRANSFORMATION)+" = " + id_transformation;
         database.execStatement(sql);
     }
 
 
 	public synchronized void delJobEntryAttributes(long id_job) throws KettleException
 	{
-		String sql = "DELETE FROM R_JOBENTRY_ATTRIBUTE WHERE ID_JOB = " + id_job;
+		String sql = "DELETE FROM "+quote(TABLE_R_JOBENTRY_ATTRIBUTE)+" WHERE "+quote(FIELD_JOBENTRY_ATTRIBUTE_ID_JOB)+" = " + id_job;
 		database.execStatement(sql);
 	}
 
 	public synchronized void delTransHops(long id_transformation) throws KettleException
 	{
-		String sql = "DELETE FROM R_TRANS_HOP WHERE ID_TRANSFORMATION = " + id_transformation;
+		String sql = "DELETE FROM "+quote(TABLE_R_TRANS_HOP)+" WHERE "+quote(FIELD_TRANS_HOP_ID_TRANSFORMATION)+" = " + id_transformation;
 		database.execStatement(sql);
 	}
 
 	public synchronized void delJobHops(long id_job) throws KettleException
 	{
-		String sql = "DELETE FROM R_JOB_HOP WHERE ID_JOB = " + id_job;
+		String sql = "DELETE FROM "+quote(TABLE_R_JOB_HOP)+" WHERE "+quote(FIELD_JOB_HOP_ID_JOB)+" = " + id_job;
 		database.execStatement(sql);
 	}
 
@@ -3253,11 +3615,11 @@ public class Repository
 
 		for (int i = 0; i < ids.length; i++)
 		{
-			String sql = "DELETE FROM R_NOTE WHERE ID_NOTE = " + ids[i];
+			String sql = "DELETE FROM "+quote(TABLE_R_NOTE)+" WHERE "+quote(FIELD_NOTE_ID_NOTE)+" = " + ids[i];
 			database.execStatement(sql);
 		}
 
-		String sql = "DELETE FROM R_TRANS_NOTE WHERE ID_TRANSFORMATION = " + id_transformation;
+		String sql = "DELETE FROM "+quote(TABLE_R_TRANS_NOTE)+" WHERE "+quote(FIELD_TRANS_NOTE_ID_TRANSFORMATION)+" = " + id_transformation;
 		database.execStatement(sql);
 	}
 
@@ -3267,23 +3629,23 @@ public class Repository
 
 		for (int i = 0; i < ids.length; i++)
 		{
-			String sql = "DELETE FROM R_NOTE WHERE ID_NOTE = " + ids[i];
+			String sql = "DELETE FROM "+quote(TABLE_R_NOTE)+" WHERE "+quote(FIELD_NOTE_ID_NOTE)+" = " + ids[i];
 			database.execStatement(sql);
 		}
 
-		String sql = "DELETE FROM R_JOB_NOTE WHERE ID_JOB = " + id_job;
+		String sql = "DELETE FROM "+quote(TABLE_R_JOB_NOTE)+" WHERE "+quote(FIELD_JOB_NOTE_ID_JOB)+" = " + id_job;
 		database.execStatement(sql);
 	}
 
 	public synchronized void delTrans(long id_transformation) throws KettleException
 	{
-		String sql = "DELETE FROM R_TRANSFORMATION WHERE ID_TRANSFORMATION = " + id_transformation;
+		String sql = "DELETE FROM "+quote(TABLE_R_TRANSFORMATION)+" WHERE "+quote(FIELD_TRANSFORMATION_ID_TRANSFORMATION)+" = " + id_transformation;
 		database.execStatement(sql);
 	}
 
 	public synchronized void delJob(long id_job) throws KettleException
 	{
-		String sql = "DELETE FROM R_JOB WHERE ID_JOB = " + id_job;
+		String sql = "DELETE FROM "+quote(TABLE_R_JOB)+" WHERE "+quote(FIELD_JOB_ID_JOB)+" = " + id_job;
 		database.execStatement(sql);
 	}
 
@@ -3292,6 +3654,7 @@ public class Repository
 		// First, see if the database connection is still used by other connections...
 		// If so, generate an error!!
 		// We look in table R_STEP_DATABASE to see if there are any steps using this database.
+		//
 		String[] transList = getTransformationsUsingDatabase(id_database);
         
 		// TODO: add check for jobs too.
@@ -3299,7 +3662,7 @@ public class Repository
 		
 		if (transList.length==0)
 		{
-			String sql = "DELETE FROM R_DATABASE WHERE ID_DATABASE = " + id_database;
+			String sql = "DELETE FROM "+quote(TABLE_R_DATABASE)+" WHERE "+quote(FIELD_DATABASE_ID_DATABASE)+" = " + id_database;
 			database.execStatement(sql);
 		}
 		else
@@ -3317,37 +3680,37 @@ public class Repository
     
     public synchronized void delDatabaseAttributes(long id_database) throws KettleException
     {
-        String sql = "DELETE FROM R_DATABASE_ATTRIBUTE WHERE ID_DATABASE = " + id_database;
+        String sql = "DELETE FROM "+quote(TABLE_R_DATABASE_ATTRIBUTE)+" WHERE "+quote(FIELD_DATABASE_ATTRIBUTE_ID_DATABASE)+" = " + id_database;
         database.execStatement(sql);
     }
 
 	public synchronized void delTransStepCondition(long id_transformation) throws KettleException
 	{
-		String sql = "DELETE FROM R_TRANS_STEP_CONDITION WHERE ID_TRANSFORMATION = " + id_transformation;
+		String sql = "DELETE FROM "+quote(TABLE_R_TRANS_STEP_CONDITION)+" WHERE "+quote(FIELD_TRANS_STEP_CONDITION_ID_TRANSFORMATION)+" = " + id_transformation;
 		database.execStatement(sql);
 	}
 
 	public synchronized void delValue(long id_value) throws KettleException
 	{
-		String sql = "DELETE FROM R_VALUE WHERE ID_VALUE = " + id_value;
+		String sql = "DELETE FROM "+quote(TABLE_R_VALUE)+" WHERE "+quote(FIELD_VALUE_ID_VALUE)+" = " + id_value;
 		database.execStatement(sql);
 	}
 
 	public synchronized void delUser(long id_user) throws KettleException
 	{
-		String sql = "DELETE FROM R_USER WHERE ID_USER = " + id_user;
+		String sql = "DELETE FROM "+quote(TABLE_R_USER)+" WHERE "+quote(FIELD_USER_ID_USER)+" = " + id_user;
 		database.execStatement(sql);
 	}
 
 	public synchronized void delProfile(long id_profile) throws KettleException
 	{
-		String sql = "DELETE FROM R_PROFILE WHERE ID_PROFILE = " + id_profile;
+		String sql = "DELETE FROM "+quote(TABLE_R_PROFILE)+" WHERE "+quote(FIELD_PROFILE_ID_PROFILE)+" = " + id_profile;
 		database.execStatement(sql);
 	}
 
 	public synchronized void delProfilePermissions(long id_profile) throws KettleException
 	{
-		String sql = "DELETE FROM R_PROFILE_PERMISSION WHERE ID_PROFILE = " + id_profile;
+		String sql = "DELETE FROM "+quote(TABLE_R_PROFILE_PERMISSION)+" WHERE "+quote(FIELD_PROFILE_PERMISSION_ID_PROFILE)+" = " + id_profile;
 		database.execStatement(sql);
 	}
     
@@ -3357,13 +3720,14 @@ public class Repository
         // If so, generate an error!!
         // We look in table R_TRANS_SLAVE to see if there are any transformations using this slave.
         // We obviously also look in table R_CLUSTER_SLAVE to see if there are any clusters that use this slave.
+    	//
         String[] transList = getTransformationsUsingSlave(id_slave);
         String[] clustList = getClustersUsingSlave(id_slave);
 
         if (transList.length==0 && clustList.length==0)
         {
-            database.execStatement("DELETE FROM R_SLAVE WHERE ID_SLAVE = " + id_slave);
-            database.execStatement("DELETE FROM R_TRANS_SLAVE WHERE ID_SLAVE = " + id_slave);
+            database.execStatement("DELETE FROM "+quote(TABLE_R_SLAVE)+" WHERE "+quote(FIELD_SLAVE_ID_SLAVE)+" = " + id_slave);
+            database.execStatement("DELETE FROM "+quote(TABLE_R_TRANS_SLAVE)+" WHERE "+quote(FIELD_TRANS_SLAVE_ID_SLAVE)+" = " + id_slave);
         }
         else
         {
@@ -3402,8 +3766,8 @@ public class Repository
 
         if (transList.length==0)
         {
-            database.execStatement("DELETE FROM R_PARTITION WHERE ID_PARTITION_SCHEMA = " + id_partition_schema);
-            database.execStatement("DELETE FROM R_PARTITION_SCHEMA WHERE ID_PARTITION_SCHEMA = " + id_partition_schema);
+            database.execStatement("DELETE FROM "+quote(TABLE_R_PARTITION)+" WHERE "+quote(FIELD_PARTITION_ID_PARTITION_SCHEMA)+" = " + id_partition_schema);
+            database.execStatement("DELETE FROM "+quote(TABLE_R_PARTITION_SCHEMA)+" WHERE "+quote(FIELD_PARTITION_SCHEMA_ID_PARTITION_SCHEMA)+" = " + id_partition_schema);
         }
         else
         {
@@ -3431,7 +3795,7 @@ public class Repository
 
         if (transList.length==0)
         {
-            database.execStatement("DELETE FROM R_CLUSTER WHERE ID_CLUSTER = " + id_cluster);
+            database.execStatement("DELETE FROM "+quote(TABLE_R_CLUSTER)+" WHERE "+quote(FIELD_CLUSTER_ID_CLUSTER)+" = " + id_cluster);
         }
         else
         {
@@ -3468,48 +3832,44 @@ public class Repository
 
 	public synchronized void renameTransformation(long id_transformation, String newname) throws KettleException
 	{
-        String nameField = databaseMeta.quoteField("NAME");
-		String sql = "UPDATE R_TRANSFORMATION SET "+nameField+" = ? WHERE ID_TRANSFORMATION = ?";
+		String sql = "UPDATE "+quote(TABLE_R_TRANSFORMATION)+" SET "+quote(FIELD_TRANSFORMATION_NAME)+" = ? WHERE "+quote(FIELD_TRANSFORMATION_ID_TRANSFORMATION)+" = ?";
 
 		RowMetaAndData table = new RowMetaAndData();
-		table.addValue(new ValueMeta("NAME",  ValueMetaInterface.TYPE_STRING), newname);
-		table.addValue(new ValueMeta("ID_TRANSFORMATION",  ValueMetaInterface.TYPE_INTEGER), new Long(id_transformation));
+		table.addValue(new ValueMeta(FIELD_TRANSFORMATION_NAME,  ValueMetaInterface.TYPE_STRING), newname);
+		table.addValue(new ValueMeta(FIELD_TRANSFORMATION_ID_TRANSFORMATION,  ValueMetaInterface.TYPE_INTEGER), new Long(id_transformation));
 
 		database.execStatement(sql, table.getRowMeta(), table.getData());
 	}
 
 	public synchronized void renameUser(long id_user, String newname) throws KettleException
 	{
-        String nameField = databaseMeta.quoteField("NAME");
-		String sql = "UPDATE R_USER SET "+nameField+" = ? WHERE ID_USER = ?";
+		String sql = "UPDATE "+quote(TABLE_R_USER)+" SET "+quote(FIELD_USER_NAME)+" = ? WHERE "+quote(FIELD_USER_ID_USER)+" = ?";
 
 		RowMetaAndData table = new RowMetaAndData();
-		table.addValue(new ValueMeta("NAME", ValueMetaInterface.TYPE_STRING), newname);
-		table.addValue(new ValueMeta("ID_USER", ValueMetaInterface.TYPE_INTEGER), new Long(id_user));
+		table.addValue(new ValueMeta(FIELD_USER_NAME, ValueMetaInterface.TYPE_STRING), newname);
+		table.addValue(new ValueMeta(FIELD_USER_ID_USER, ValueMetaInterface.TYPE_INTEGER), new Long(id_user));
 
 		database.execStatement(sql, table.getRowMeta(), table.getData());
 	}
 
 	public synchronized void renameProfile(long id_profile, String newname) throws KettleException
 	{
-        String nameField = databaseMeta.quoteField("NAME");
-		String sql = "UPDATE R_PROFILE SET "+nameField+" = ? WHERE ID_PROFILE = ?";
+		String sql = "UPDATE "+quote(TABLE_R_PROFILE)+" SET "+quote(FIELD_PROFILE_NAME)+" = ? WHERE "+quote(FIELD_PROFILE_ID_PROFILE)+" = ?";
 
 		RowMetaAndData table = new RowMetaAndData();
-		table.addValue(new ValueMeta("NAME", ValueMetaInterface.TYPE_STRING), newname);
-		table.addValue(new ValueMeta("ID_PROFILE", ValueMetaInterface.TYPE_INTEGER), new Long(id_profile));
+		table.addValue(new ValueMeta(FIELD_PROFILE_NAME, ValueMetaInterface.TYPE_STRING), newname);
+		table.addValue(new ValueMeta(FIELD_PROFILE_ID_PROFILE, ValueMetaInterface.TYPE_INTEGER), new Long(id_profile));
 
 		database.execStatement(sql, table.getRowMeta(), table.getData());
 	}
 
 	public synchronized void renameDatabase(long id_database, String newname) throws KettleException
 	{
-        String nameField = databaseMeta.quoteField("NAME");
-		String sql = "UPDATE R_DATABASE SET "+nameField+" = ? WHERE ID_DATABASE = ?";
+		String sql = "UPDATE "+quote(TABLE_R_DATABASE)+" SET "+quote(FIELD_DATABASE_NAME)+" = ? WHERE "+quote(FIELD_DATABASE_ID_DATABASE)+" = ?";
 
 		RowMetaAndData table = new RowMetaAndData();
-		table.addValue(new ValueMeta("NAME", ValueMetaInterface.TYPE_STRING), newname);
-		table.addValue(new ValueMeta("ID_DATABASE", ValueMetaInterface.TYPE_INTEGER), new Long(id_database));
+		table.addValue(new ValueMeta(FIELD_DATABASE_NAME, ValueMetaInterface.TYPE_STRING), newname);
+		table.addValue(new ValueMeta(FIELD_DATABASE_ID_DATABASE, ValueMetaInterface.TYPE_INTEGER), new Long(id_database));
 
 		database.execStatement(sql, table.getRowMeta(), table.getData());
 	}
@@ -3530,12 +3890,11 @@ public class Repository
 
 	public synchronized void renameJob(long id_job, String newname) throws KettleException
 	{
-        String nameField = databaseMeta.quoteField("NAME");
-		String sql = "UPDATE R_JOB SET "+nameField+" = ? WHERE ID_JOB = ?";
+		String sql = "UPDATE "+quote(TABLE_R_JOB)+" SET "+quote(FIELD_JOB_NAME)+" = ? WHERE "+quote(FIELD_JOB_ID_JOB)+" = ?";
 
 		RowMetaAndData table = new RowMetaAndData();
-		table.addValue(new ValueMeta("NAME", ValueMetaInterface.TYPE_STRING), newname);
-		table.addValue(new ValueMeta("ID_JOB", ValueMetaInterface.TYPE_INTEGER), new Long(id_job));
+		table.addValue(new ValueMeta(FIELD_JOB_NAME, ValueMetaInterface.TYPE_STRING), newname);
+		table.addValue(new ValueMeta(FIELD_JOB_ID_JOB, ValueMetaInterface.TYPE_INTEGER), new Long(id_job));
 
 		database.execStatement(sql, table.getRowMeta(), table.getData());
 	}
@@ -3570,14 +3929,14 @@ public class Repository
         // Log the operations we do in the repository.
         //
         table = new RowMeta();
-        tablename = "R_REPOSITORY_LOG";
+        tablename = quote(TABLE_R_REPOSITORY_LOG);
         if (monitor!=null) monitor.subTask("Checking table "+tablename);
-        table.addValueMeta(new ValueMeta("ID_REPOSITORY_LOG", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-        table.addValueMeta(new ValueMeta("REP_VERSION",    ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-        table.addValueMeta(new ValueMeta("LOG_DATE",       ValueMetaInterface.TYPE_DATE));
-        table.addValueMeta(new ValueMeta("LOG_USER",       ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-        table.addValueMeta(new ValueMeta("OPERATION_DESC", ValueMetaInterface.TYPE_STRING, REP_STRING_LENGTH, 0));
-        sql = database.getDDL(tablename, table, null, false, "ID_REPOSITORY_LOG", false);
+        table.addValueMeta(new ValueMeta(FIELD_REPOSITORY_LOG_ID_REPOSITORY_LOG, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+        table.addValueMeta(new ValueMeta(FIELD_REPOSITORY_LOG_REP_VERSION,    ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+        table.addValueMeta(new ValueMeta(FIELD_REPOSITORY_LOG_LOG_DATE,       ValueMetaInterface.TYPE_DATE));
+        table.addValueMeta(new ValueMeta(FIELD_REPOSITORY_LOG_LOG_USER,       ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+        table.addValueMeta(new ValueMeta(FIELD_REPOSITORY_LOG_OPERATION_DESC, ValueMetaInterface.TYPE_STRING, REP_STRING_LENGTH, 0));
+        sql = database.getDDL(tablename, table, null, false, FIELD_REPOSITORY_LOG_ID_REPOSITORY_LOG, false);
         
         if (sql != null && sql.length() > 0)
         {
@@ -3606,14 +3965,14 @@ public class Repository
         // Let's start with the version table
         //
         table = new RowMeta();
-        tablename = "R_VERSION";
+        tablename = quote(TABLE_R_VERSION);
         if (monitor!=null) monitor.subTask("Checking table "+tablename);
-        table.addValueMeta(new ValueMeta("ID_VERSION",       ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-        table.addValueMeta(new ValueMeta("MAJOR_VERSION",    ValueMetaInterface.TYPE_INTEGER, 3, 0));
-        table.addValueMeta(new ValueMeta("MINOR_VERSION",    ValueMetaInterface.TYPE_INTEGER, 3, 0));
-        table.addValueMeta(new ValueMeta("UPGRADE_DATE",     ValueMetaInterface.TYPE_DATE, 0, 0));
-        table.addValueMeta(new ValueMeta("IS_UPGRADE",       ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
-        sql = database.getDDL(tablename, table, null, false, "ID_VERSION", false);
+        table.addValueMeta(new ValueMeta(FIELD_VERSION_ID_VERSION,       ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+        table.addValueMeta(new ValueMeta(FIELD_VERSION_MAJOR_VERSION,    ValueMetaInterface.TYPE_INTEGER, 3, 0));
+        table.addValueMeta(new ValueMeta(FIELD_VERSION_MINOR_VERSION,    ValueMetaInterface.TYPE_INTEGER, 3, 0));
+        table.addValueMeta(new ValueMeta(FIELD_VERSION_UPGRADE_DATE,     ValueMetaInterface.TYPE_DATE, 0, 0));
+        table.addValueMeta(new ValueMeta(FIELD_VERSION_IS_UPGRADE,       ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
+        sql = database.getDDL(tablename, table, null, false, FIELD_VERSION_ID_VERSION, false);
 
         if (sql != null && sql.length() > 0)
         {
@@ -3638,13 +3997,13 @@ public class Repository
         try
         {
             Object[] data = new Object[] {
-                    new Long(getNextID(tablename, "ID_VERSION")),
+                    new Long(getNextID(tablename, FIELD_VERSION_ID_VERSION)),
                     new Long(REQUIRED_MAJOR_VERSION),
                     new Long(REQUIRED_MINOR_VERSION),
                     new Date(),
                     new Boolean(upgrade),
                 };
-            database.execStatement("INSERT INTO R_VERSION VALUES(?, ?, ?, ?, ?)", table, data);
+            database.execStatement("INSERT INTO "+quote(TABLE_R_VERSION)+" VALUES(?, ?, ?, ?, ?)", table, data);
         }
         catch(KettleException e)
         {
@@ -3658,12 +4017,12 @@ public class Repository
 		//
 		boolean ok_database_type = true;
 		table = new RowMeta();
-		tablename = "R_DATABASE_TYPE";
+		tablename = quote(TABLE_R_DATABASE_TYPE);
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
-		table.addValueMeta(new ValueMeta("ID_DATABASE_TYPE", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta("CODE",             ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta("DESCRIPTION",      ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-		sql = database.getDDL(tablename, table, null, false, "ID_DATABASE_TYPE", false);
+		table.addValueMeta(new ValueMeta(FIELD_DATABASE_TYPE_ID_DATABASE_TYPE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_DATABASE_TYPE_CODE,             ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(FIELD_DATABASE_TYPE_DESCRIPTION,      ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+		sql = database.getDDL(tablename, table, null, false, FIELD_DATABASE_TYPE_ID_DATABASE_TYPE, false);
 
 		if (sql != null && sql.length() > 0)
 		{
@@ -3696,8 +4055,8 @@ public class Repository
 			for (int i = 1; i < code.length; i++)
 			{
 				RowMetaAndData lookup = null;
-                if (upgrade) lookup = database.getOneRow("SELECT ID_DATABASE_TYPE FROM " + tablename + " WHERE " 
-                		+ database.getDatabaseMeta().quoteField("CODE") +" = '" + code[i] + "'");
+                if (upgrade) lookup = database.getOneRow("SELECT "+quote(FIELD_DATABASE_TYPE_ID_DATABASE_TYPE)+" FROM " + tablename + " WHERE " 
+                		+ quote(FIELD_DATABASE_TYPE_CODE) +" = '" + code[i] + "'");
 				if (lookup == null)
 				{
 					long nextid = getNextDatabaseTypeID();
@@ -3728,12 +4087,12 @@ public class Repository
 		// 
 		boolean ok_database_contype = true;
 		table = new RowMeta();
-		tablename = "R_DATABASE_CONTYPE";
+		tablename = quote(TABLE_R_DATABASE_CONTYPE);
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
-		table.addValueMeta(new ValueMeta("ID_DATABASE_CONTYPE", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta("CODE", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta("DESCRIPTION", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-		sql = database.getDDL(tablename, table, null, false, "ID_DATABASE_CONTYPE", false);
+		table.addValueMeta(new ValueMeta(FIELD_DATABASE_CONTYPE_ID_DATABASE_CONTYPE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_DATABASE_CONTYPE_CODE, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(FIELD_DATABASE_CONTYPE_DESCRIPTION, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+		sql = database.getDDL(tablename, table, null, false, FIELD_DATABASE_CONTYPE_ID_DATABASE_CONTYPE, false);
 
 		if (sql != null && sql.length() > 0)
 		{
@@ -3759,8 +4118,8 @@ public class Repository
 			for (int i = 0; i < code.length; i++)
 			{
                 RowMetaAndData lookup = null;
-                if (upgrade) lookup = database.getOneRow("SELECT ID_DATABASE_CONTYPE FROM " + tablename + " WHERE " 
-                		+ database.getDatabaseMeta().quoteField("CODE") + " = '" + code[i] + "'");
+                if (upgrade) lookup = database.getOneRow("SELECT "+quote(FIELD_DATABASE_CONTYPE_ID_DATABASE_CONTYPE)+" FROM " + tablename + " WHERE " 
+                		+ quote(FIELD_DATABASE_CONTYPE_CODE) + " = '" + code[i] + "'");
 				if (lookup == null)
 				{
 					long nextid = getNextDatabaseConnectionTypeID();
@@ -3793,15 +4152,15 @@ public class Repository
 		//
 		// Create table...
 		table = new RowMeta();
-		tablename = "R_NOTE";
+		tablename = quote(TABLE_R_NOTE);
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
-		table.addValueMeta(new ValueMeta("ID_NOTE", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta("VALUE_STR", ValueMetaInterface.TYPE_STRING, REP_STRING_LENGTH, 0));
-		table.addValueMeta(new ValueMeta("GUI_LOCATION_X", ValueMetaInterface.TYPE_INTEGER, 6, 0));
-		table.addValueMeta(new ValueMeta("GUI_LOCATION_Y", ValueMetaInterface.TYPE_INTEGER, 6, 0));
-		table.addValueMeta(new ValueMeta("GUI_LOCATION_WIDTH", ValueMetaInterface.TYPE_INTEGER, 6, 0));
-		table.addValueMeta(new ValueMeta("GUI_LOCATION_HEIGHT", ValueMetaInterface.TYPE_INTEGER, 6, 0));
-		sql = database.getDDL(tablename, table, null, false, "ID_NOTE", false);
+		table.addValueMeta(new ValueMeta(FIELD_NOTE_ID_NOTE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_NOTE_VALUE_STR, ValueMetaInterface.TYPE_STRING, REP_STRING_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(FIELD_NOTE_GUI_LOCATION_X, ValueMetaInterface.TYPE_INTEGER, 6, 0));
+		table.addValueMeta(new ValueMeta(FIELD_NOTE_GUI_LOCATION_Y, ValueMetaInterface.TYPE_INTEGER, 6, 0));
+		table.addValueMeta(new ValueMeta(FIELD_NOTE_GUI_LOCATION_WIDTH, ValueMetaInterface.TYPE_INTEGER, 6, 0));
+		table.addValueMeta(new ValueMeta(FIELD_NOTE_GUI_LOCATION_HEIGHT, ValueMetaInterface.TYPE_INTEGER, 6, 0));
+		sql = database.getDDL(tablename, table, null, false, FIELD_NOTE_ID_NOTE, false);
         
 		if (sql != null && sql.length() > 0)
 		{
@@ -3821,21 +4180,21 @@ public class Repository
 		//
 		// Create table...
 		table = new RowMeta();
-		tablename = "R_DATABASE";
+		tablename = quote(TABLE_R_DATABASE);
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
-		table.addValueMeta(new ValueMeta("ID_DATABASE", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta("NAME", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta("ID_DATABASE_TYPE", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta("ID_DATABASE_CONTYPE", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta("HOST_NAME", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta("DATABASE_NAME", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta("PORT", ValueMetaInterface.TYPE_INTEGER, 7, 0));
-		table.addValueMeta(new ValueMeta("USERNAME", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta("PASSWORD", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta("SERVERNAME", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta("DATA_TBS", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta("INDEX_TBS", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-		sql = database.getDDL(tablename, table, null, false, "ID_DATABASE", false);
+		table.addValueMeta(new ValueMeta(FIELD_DATABASE_ID_DATABASE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_DATABASE_NAME, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(FIELD_DATABASE_ID_DATABASE_TYPE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_DATABASE_ID_DATABASE_CONTYPE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_DATABASE_HOST_NAME, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(FIELD_DATABASE_DATABASE_NAME, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(FIELD_DATABASE_PORT, ValueMetaInterface.TYPE_INTEGER, 7, 0));
+		table.addValueMeta(new ValueMeta(FIELD_DATABASE_USERNAME, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(FIELD_DATABASE_PASSWORD, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(FIELD_DATABASE_SERVERNAME, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(FIELD_DATABASE_DATA_TBS, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(FIELD_DATABASE_INDEX_TBS, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+		sql = database.getDDL(tablename, table, null, false, FIELD_DATABASE_ID_DATABASE, false);
         
 		if (sql != null && sql.length() > 0)
 		{
@@ -3855,13 +4214,13 @@ public class Repository
         //
         // Create table...
         table = new RowMeta();
-        tablename = "R_DATABASE_ATTRIBUTE";
+        tablename = quote(TABLE_R_DATABASE_ATTRIBUTE);
         if (monitor!=null) monitor.subTask("Checking table "+tablename);
-        table.addValueMeta(new ValueMeta("ID_DATABASE_ATTRIBUTE", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-        table.addValueMeta(new ValueMeta("ID_DATABASE", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-        table.addValueMeta(new ValueMeta("CODE", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-        table.addValueMeta(new ValueMeta("VALUE_STR", ValueMetaInterface.TYPE_STRING, REP_STRING_LENGTH, 0));
-        sql = database.getDDL(tablename, table, null, false, "ID_DATABASE_ATTRIBUTE", false);
+        table.addValueMeta(new ValueMeta(FIELD_DATABASE_ATTRIBUTE_ID_DATABASE_ATTRIBUTE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+        table.addValueMeta(new ValueMeta(FIELD_DATABASE_ATTRIBUTE_ID_DATABASE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+        table.addValueMeta(new ValueMeta(FIELD_DATABASE_ATTRIBUTE_CODE, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+        table.addValueMeta(new ValueMeta(FIELD_DATABASE_ATTRIBUTE_VALUE_STR, ValueMetaInterface.TYPE_STRING, REP_STRING_LENGTH, 0));
+        sql = database.getDDL(tablename, table, null, false, FIELD_DATABASE_ATTRIBUTE_ID_DATABASE_ATTRIBUTE, false);
         
         if (sql != null && sql.length() > 0)
         {
@@ -3872,7 +4231,7 @@ public class Repository
             try
             {
                 indexname = "IDX_" + tablename.substring(2) + "_AK";
-                keyfield = new String[] { "ID_DIRECTORY_PARENT", "DIRECTORY_NAME" };
+                keyfield = new String[] { FIELD_DATABASE_ATTRIBUTE_ID_DATABASE, FIELD_DATABASE_ATTRIBUTE_CODE, };
                 if (!database.checkIndexExists(tablename, keyfield))
                 {
                     sql = database.getCreateIndexStatement(tablename, indexname, keyfield, false, true, false, false);
@@ -3899,12 +4258,12 @@ public class Repository
 		//
 		// Create table...
 		table = new RowMeta();
-		tablename = "R_DIRECTORY";
+		tablename = quote(TABLE_R_DIRECTORY);
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
-		table.addValueMeta(new ValueMeta("ID_DIRECTORY",        ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta("ID_DIRECTORY_PARENT", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta("DIRECTORY_NAME",      ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-		sql = database.getDDL(tablename, table, null, false, "ID_DIRECTORY", false);
+		table.addValueMeta(new ValueMeta(FIELD_DIRECTORY_ID_DIRECTORY,        ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_DIRECTORY_ID_DIRECTORY_PARENT, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_DIRECTORY_DIRECTORY_NAME,      ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+		sql = database.getDDL(tablename, table, null, false, FIELD_DIRECTORY_ID_DIRECTORY, false);
 
 		if (sql != null && sql.length() > 0)
 		{
@@ -3915,7 +4274,7 @@ public class Repository
 			try
 			{
 				indexname = "IDX_" + tablename.substring(2) + "_AK";
-				keyfield = new String[] { "ID_DIRECTORY_PARENT", "DIRECTORY_NAME" };
+				keyfield = new String[] { FIELD_DIRECTORY_ID_DIRECTORY_PARENT, FIELD_DIRECTORY_DIRECTORY_NAME };
 				if (!database.checkIndexExists(tablename, keyfield))
 				{
 					sql = database.getCreateIndexStatement(tablename, indexname, keyfield, false, true, false, false);
@@ -3942,35 +4301,35 @@ public class Repository
 		//
 		// Create table...
 		table = new RowMeta();
-		tablename = "R_TRANSFORMATION";
+		tablename = quote(TABLE_R_TRANSFORMATION);
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
-		table.addValueMeta(new ValueMeta("ID_TRANSFORMATION", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta("ID_DIRECTORY", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta("NAME", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta("DESCRIPTION", ValueMetaInterface.TYPE_STRING, REP_STRING_LENGTH, 0));
-		table.addValueMeta(new ValueMeta("EXTENDED_DESCRIPTION", ValueMetaInterface.TYPE_STRING, REP_STRING_LENGTH, 0));
-		table.addValueMeta(new ValueMeta("TRANS_VERSION", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta("TRANS_STATUS", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta("ID_STEP_READ", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta("ID_STEP_WRITE", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta("ID_STEP_INPUT", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta("ID_STEP_OUTPUT", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta("ID_STEP_UPDATE", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta("ID_DATABASE_LOG", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta("TABLE_NAME_LOG", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta("USE_BATCHID", ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
-		table.addValueMeta(new ValueMeta("USE_LOGFIELD", ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
-		table.addValueMeta(new ValueMeta("ID_DATABASE_MAXDATE", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta("TABLE_NAME_MAXDATE", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta("FIELD_NAME_MAXDATE", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta("OFFSET_MAXDATE", ValueMetaInterface.TYPE_NUMBER, 12, 2));
-		table.addValueMeta(new ValueMeta("DIFF_MAXDATE", ValueMetaInterface.TYPE_NUMBER, 12, 2));
-		table.addValueMeta(new ValueMeta("CREATED_USER", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta("CREATED_DATE", ValueMetaInterface.TYPE_DATE, 20, 0));
-		table.addValueMeta(new ValueMeta("MODIFIED_USER", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta("MODIFIED_DATE", ValueMetaInterface.TYPE_DATE, 20, 0));
-		table.addValueMeta(new ValueMeta("SIZE_ROWSET", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		sql = database.getDDL(tablename, table, null, false, "ID_TRANSFORMATION", false);
+		table.addValueMeta(new ValueMeta(FIELD_TRANSFORMATION_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_TRANSFORMATION_ID_DIRECTORY, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_TRANSFORMATION_NAME, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(FIELD_TRANSFORMATION_DESCRIPTION, ValueMetaInterface.TYPE_STRING, REP_STRING_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(FIELD_TRANSFORMATION_EXTENDED_DESCRIPTION, ValueMetaInterface.TYPE_STRING, REP_STRING_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(FIELD_TRANSFORMATION_TRANS_VERSION, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(FIELD_TRANSFORMATION_TRANS_STATUS, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_TRANSFORMATION_ID_STEP_READ, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_TRANSFORMATION_ID_STEP_WRITE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_TRANSFORMATION_ID_STEP_INPUT, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_TRANSFORMATION_ID_STEP_OUTPUT, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_TRANSFORMATION_ID_STEP_UPDATE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_TRANSFORMATION_ID_DATABASE_LOG, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_TRANSFORMATION_TABLE_NAME_LOG, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(FIELD_TRANSFORMATION_USE_BATCHID, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
+		table.addValueMeta(new ValueMeta(FIELD_TRANSFORMATION_USE_LOGFIELD, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
+		table.addValueMeta(new ValueMeta(FIELD_TRANSFORMATION_ID_DATABASE_MAXDATE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_TRANSFORMATION_TABLE_NAME_MAXDATE, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(FIELD_TRANSFORMATION_FIELD_NAME_MAXDATE, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(FIELD_TRANSFORMATION_OFFSET_MAXDATE, ValueMetaInterface.TYPE_NUMBER, 12, 2));
+		table.addValueMeta(new ValueMeta(FIELD_TRANSFORMATION_DIFF_MAXDATE, ValueMetaInterface.TYPE_NUMBER, 12, 2));
+		table.addValueMeta(new ValueMeta(FIELD_TRANSFORMATION_CREATED_USER, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(FIELD_TRANSFORMATION_CREATED_DATE, ValueMetaInterface.TYPE_DATE, 20, 0));
+		table.addValueMeta(new ValueMeta(FIELD_TRANSFORMATION_MODIFIED_USER, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(FIELD_TRANSFORMATION_MODIFIED_DATE, ValueMetaInterface.TYPE_DATE, 20, 0));
+		table.addValueMeta(new ValueMeta(FIELD_TRANSFORMATION_SIZE_ROWSET, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		sql = database.getDDL(tablename, table, null, false, FIELD_TRANSFORMATION_ID_TRANSFORMATION, false);
 
         if (sql != null && sql.length() > 0)
 		{
@@ -3984,7 +4343,7 @@ public class Repository
 		}
 
 		// In case of an update, the added column R_TRANSFORMATION.ID_DIRECTORY == NULL!!!
-		database.execStatement("UPDATE " + tablename + " SET ID_DIRECTORY=0 WHERE ID_DIRECTORY IS NULL");
+		database.execStatement("UPDATE " + tablename + " SET "+quote(FIELD_TRANSFORMATION_ID_DIRECTORY)+"=0 WHERE "+quote(FIELD_TRANSFORMATION_ID_DIRECTORY)+" IS NULL");
 
 		if (monitor!=null) monitor.worked(1);
 
@@ -3994,15 +4353,15 @@ public class Repository
 		//
 		// Create table...
 		table = new RowMeta();
-		tablename = "R_TRANS_ATTRIBUTE";
+		tablename = quote(TABLE_R_TRANS_ATTRIBUTE);
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
-		table.addValueMeta(new ValueMeta("ID_TRANS_ATTRIBUTE", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta("ID_TRANSFORMATION", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta("NR", ValueMetaInterface.TYPE_INTEGER, 6, 0));
-		table.addValueMeta(new ValueMeta("CODE", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta("VALUE_NUM", ValueMetaInterface.TYPE_INTEGER, 18, 0));
-		table.addValueMeta(new ValueMeta("VALUE_STR", ValueMetaInterface.TYPE_STRING, REP_STRING_LENGTH, 0));
-		sql = database.getDDL(tablename, table, null, false, "ID_TRANS_ATTRIBUTE", false);
+		table.addValueMeta(new ValueMeta(FIELD_TRANS_ATTRIBUTE_ID_TRANS_ATTRIBUTE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_TRANS_ATTRIBUTE_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_TRANS_ATTRIBUTE_NR, ValueMetaInterface.TYPE_INTEGER, 6, 0));
+		table.addValueMeta(new ValueMeta(FIELD_TRANS_ATTRIBUTE_CODE, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(FIELD_TRANS_ATTRIBUTE_VALUE_NUM, ValueMetaInterface.TYPE_INTEGER, 18, 0));
+		table.addValueMeta(new ValueMeta(FIELD_TRANS_ATTRIBUTE_VALUE_STR, ValueMetaInterface.TYPE_STRING, REP_STRING_LENGTH, 0));
+		sql = database.getDDL(tablename, table, null, false, FIELD_TRANS_ATTRIBUTE_ID_TRANS_ATTRIBUTE, false);
 
 		if (sql != null && sql.length() > 0)
 		{
@@ -4013,7 +4372,7 @@ public class Repository
 			try
 			{
 				indexname = "IDX_TRANS_ATTRIBUTE_LOOKUP";
-				keyfield = new String[] { "ID_TRANSFORMATION", "CODE", "NR" };
+				keyfield = new String[] { FIELD_TRANS_ATTRIBUTE_ID_TRANSFORMATION, FIELD_TRANS_ATTRIBUTE_CODE, FIELD_TRANS_ATTRIBUTE_NR };
 
 				if (!database.checkIndexExists(tablename, keyfield))
 				{
@@ -4041,14 +4400,14 @@ public class Repository
 		//
 		// Create table...
 		table = new RowMeta();
-		tablename = "R_DEPENDENCY";
+		tablename = quote(TABLE_R_DEPENDENCY);
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
-		table.addValueMeta(new ValueMeta("ID_DEPENDENCY", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta("ID_TRANSFORMATION", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta("ID_DATABASE", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta("TABLE_NAME", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta("FIELD_NAME", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-		sql = database.getDDL(tablename, table, null, false, "ID_DEPENDENCY", false);
+		table.addValueMeta(new ValueMeta(FIELD_DEPENDENCY_ID_DEPENDENCY, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_DEPENDENCY_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_DEPENDENCY_ID_DATABASE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_DEPENDENCY_TABLE_NAME, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(FIELD_DEPENDENCY_FIELD_NAME, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+		sql = database.getDDL(tablename, table, null, false, FIELD_DEPENDENCY_ID_DEPENDENCY, false);
 
 		if (sql != null && sql.length() > 0)
 		{
@@ -4068,13 +4427,13 @@ public class Repository
         //
         // Create table...
         table = new RowMeta();
-        tablename = "R_PARTITION_SCHEMA";
+        tablename = quote(TABLE_R_PARTITION_SCHEMA);
         if (monitor!=null) monitor.subTask("Checking table "+tablename);
-        table.addValueMeta(new ValueMeta("ID_PARTITION_SCHEMA", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-        table.addValueMeta(new ValueMeta("NAME", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-        table.addValueMeta(new ValueMeta("DYNAMIC_DEFINITION", ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
-        table.addValueMeta(new ValueMeta("PARTITIONS_PER_SLAVE", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-        sql = database.getDDL(tablename, table, null, false, "ID_PARTITION_SCHEMA", false);
+        table.addValueMeta(new ValueMeta(FIELD_PARTITION_SCHEMA_ID_PARTITION_SCHEMA, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+        table.addValueMeta(new ValueMeta(FIELD_PARTITION_SCHEMA_NAME, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+        table.addValueMeta(new ValueMeta(FIELD_PARTITION_SCHEMA_DYNAMIC_DEFINITION, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
+        table.addValueMeta(new ValueMeta(FIELD_PARTITION_SCHEMA_PARTITIONS_PER_SLAVE, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+        sql = database.getDDL(tablename, table, null, false, FIELD_PARTITION_SCHEMA_ID_PARTITION_SCHEMA, false);
 
         if (sql != null && sql.length() > 0)
         {
@@ -4094,12 +4453,12 @@ public class Repository
         //
         // Create table...
         table = new RowMeta();
-        tablename = "R_PARTITION";
+        tablename = quote(TABLE_R_PARTITION);
         if (monitor!=null) monitor.subTask("Checking table "+tablename);
-        table.addValueMeta(new ValueMeta("ID_PARTITION", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-        table.addValueMeta(new ValueMeta("ID_PARTITION_SCHEMA", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-        table.addValueMeta(new ValueMeta("PARTITION_ID", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-        sql = database.getDDL(tablename, table, null, false, "ID_PARTITION", false);
+        table.addValueMeta(new ValueMeta(FIELD_PARTITION_ID_PARTITION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+        table.addValueMeta(new ValueMeta(FIELD_PARTITION_ID_PARTITION_SCHEMA, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+        table.addValueMeta(new ValueMeta(FIELD_PARTITION_PARTITION_ID, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+        sql = database.getDDL(tablename, table, null, false, FIELD_PARTITION_ID_PARTITION, false);
 
         if (sql != null && sql.length() > 0)
         {
@@ -4119,12 +4478,12 @@ public class Repository
         //
         // Create table...
         table = new RowMeta();
-        tablename = "R_TRANS_PARTITION_SCHEMA";
+        tablename = quote(TABLE_R_TRANS_PARTITION_SCHEMA);
         if (monitor!=null) monitor.subTask("Checking table "+tablename);
-        table.addValueMeta(new ValueMeta("ID_TRANS_PARTITION_SCHEMA", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-        table.addValueMeta(new ValueMeta("ID_TRANSFORMATION", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-        table.addValueMeta(new ValueMeta("ID_PARTITION_SCHEMA", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-        sql = database.getDDL(tablename, table, null, false, "ID_TRANS_PARTITION_SCHEMA", false);
+        table.addValueMeta(new ValueMeta(FIELD_TRANS_PARTITION_SCHEMA_ID_TRANS_PARTITION_SCHEMA, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+        table.addValueMeta(new ValueMeta(FIELD_TRANS_PARTITION_SCHEMA_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+        table.addValueMeta(new ValueMeta(FIELD_TRANS_PARTITION_SCHEMA_ID_PARTITION_SCHEMA, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+        sql = database.getDDL(tablename, table, null, false, FIELD_TRANS_PARTITION_SCHEMA_ID_TRANS_PARTITION_SCHEMA, false);
 
         if (sql != null && sql.length() > 0)
         {
@@ -4145,15 +4504,15 @@ public class Repository
         //
         // Create table...
         table = new RowMeta();
-        tablename = "R_CLUSTER";
+        tablename = quote(TABLE_R_CLUSTER);
         if (monitor!=null) monitor.subTask("Checking table "+tablename);
-        table.addValueMeta(new ValueMeta("ID_CLUSTER", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-        table.addValueMeta(new ValueMeta("NAME", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-        table.addValueMeta(new ValueMeta("BASE_PORT", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-        table.addValueMeta(new ValueMeta("SOCKETS_BUFFER_SIZE", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-        table.addValueMeta(new ValueMeta("SOCKETS_FLUSH_INTERVAL", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-        table.addValueMeta(new ValueMeta("SOCKETS_COMPRESSED", ValueMetaInterface.TYPE_BOOLEAN, 0, 0));
-        sql = database.getDDL(tablename, table, null, false, "ID_CLUSTER", false);
+        table.addValueMeta(new ValueMeta(FIELD_CLUSTER_ID_CLUSTER, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+        table.addValueMeta(new ValueMeta(FIELD_CLUSTER_NAME, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+        table.addValueMeta(new ValueMeta(FIELD_CLUSTER_BASE_PORT, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+        table.addValueMeta(new ValueMeta(FIELD_CLUSTER_SOCKETS_BUFFER_SIZE, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+        table.addValueMeta(new ValueMeta(FIELD_CLUSTER_SOCKETS_FLUSH_INTERVAL, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+        table.addValueMeta(new ValueMeta(FIELD_CLUSTER_SOCKETS_COMPRESSED, ValueMetaInterface.TYPE_BOOLEAN, 0, 0));
+        sql = database.getDDL(tablename, table, null, false, FIELD_CLUSTER_ID_CLUSTER, false);
 
         if (sql != null && sql.length() > 0)
         {
@@ -4173,19 +4532,19 @@ public class Repository
         //
         // Create table...
         table = new RowMeta();
-        tablename = "R_SLAVE";
+        tablename = quote(TABLE_R_SLAVE);
         if (monitor!=null) monitor.subTask("Checking table "+tablename);
-        table.addValueMeta(new ValueMeta("ID_SLAVE", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-        table.addValueMeta(new ValueMeta("NAME", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-        table.addValueMeta(new ValueMeta("HOST_NAME", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-        table.addValueMeta(new ValueMeta("PORT", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-        table.addValueMeta(new ValueMeta("USERNAME", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-        table.addValueMeta(new ValueMeta("PASSWORD", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-        table.addValueMeta(new ValueMeta("PROXY_HOST_NAME", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-        table.addValueMeta(new ValueMeta("PROXY_PORT", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-        table.addValueMeta(new ValueMeta("NON_PROXY_HOSTS", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-        table.addValueMeta(new ValueMeta("MASTER", ValueMetaInterface.TYPE_BOOLEAN));
-        sql = database.getDDL(tablename, table, null, false, "ID_SLAVE", false);
+        table.addValueMeta(new ValueMeta(FIELD_SLAVE_ID_SLAVE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+        table.addValueMeta(new ValueMeta(FIELD_SLAVE_NAME, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+        table.addValueMeta(new ValueMeta(FIELD_SLAVE_HOST_NAME, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+        table.addValueMeta(new ValueMeta(FIELD_SLAVE_PORT, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+        table.addValueMeta(new ValueMeta(FIELD_SLAVE_USERNAME, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+        table.addValueMeta(new ValueMeta(FIELD_SLAVE_PASSWORD, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+        table.addValueMeta(new ValueMeta(FIELD_SLAVE_PROXY_HOST_NAME, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+        table.addValueMeta(new ValueMeta(FIELD_SLAVE_PROXY_PORT, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+        table.addValueMeta(new ValueMeta(FIELD_SLAVE_NON_PROXY_HOSTS, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+        table.addValueMeta(new ValueMeta(FIELD_SLAVE_MASTER, ValueMetaInterface.TYPE_BOOLEAN));
+        sql = database.getDDL(tablename, table, null, false, FIELD_SLAVE_ID_SLAVE, false);
 
         if (sql != null && sql.length() > 0)
         {
@@ -4205,12 +4564,12 @@ public class Repository
         //
         // Create table...
         table = new RowMeta();
-        tablename = "R_CLUSTER_SLAVE";
+        tablename = quote(TABLE_R_CLUSTER_SLAVE);
         if (monitor!=null) monitor.subTask("Checking table "+tablename);
-        table.addValueMeta(new ValueMeta("ID_CLUSTER_SLAVE", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-        table.addValueMeta(new ValueMeta("ID_CLUSTER", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-        table.addValueMeta(new ValueMeta("ID_SLAVE", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-        sql = database.getDDL(tablename, table, null, false, "ID_CLUSTER_SLAVE", false);
+        table.addValueMeta(new ValueMeta(FIELD_CLUSTER_SLAVE_ID_CLUSTER_SLAVE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+        table.addValueMeta(new ValueMeta(FIELD_CLUSTER_SLAVE_ID_CLUSTER, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+        table.addValueMeta(new ValueMeta(FIELD_CLUSTER_SLAVE_ID_SLAVE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+        sql = database.getDDL(tablename, table, null, false, FIELD_CLUSTER_SLAVE_ID_CLUSTER_SLAVE, false);
 
         if (sql != null && sql.length() > 0)
         {
@@ -4230,12 +4589,12 @@ public class Repository
         //
         // Create table...
         table = new RowMeta();
-        tablename = "R_TRANS_SLAVE";
+        tablename = quote(TABLE_R_TRANS_SLAVE);
         if (monitor!=null) monitor.subTask("Checking table "+tablename);
-        table.addValueMeta(new ValueMeta("ID_TRANS_SLAVE", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-        table.addValueMeta(new ValueMeta("ID_TRANSFORMATION", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-        table.addValueMeta(new ValueMeta("ID_SLAVE", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-        sql = database.getDDL(tablename, table, null, false, "ID_TRANS_SLAVE", false);
+        table.addValueMeta(new ValueMeta(FIELD_TRANS_SLAVE_ID_TRANS_SLAVE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+        table.addValueMeta(new ValueMeta(FIELD_TRANS_SLAVE_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+        table.addValueMeta(new ValueMeta(FIELD_TRANS_SLAVE_ID_SLAVE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+        sql = database.getDDL(tablename, table, null, false, FIELD_TRANS_SLAVE_ID_TRANS_SLAVE, false);
 
         if (sql != null && sql.length() > 0)
         {
@@ -4256,12 +4615,12 @@ public class Repository
         //
         // Create table...
         table = new RowMeta();
-        tablename = "R_TRANS_CLUSTER";
+        tablename = quote(TABLE_R_TRANS_CLUSTER);
         if (monitor!=null) monitor.subTask("Checking table "+tablename);
-        table.addValueMeta(new ValueMeta("ID_TRANS_CLUSTER", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-        table.addValueMeta(new ValueMeta("ID_TRANSFORMATION", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-        table.addValueMeta(new ValueMeta("ID_CLUSTER", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-        sql = database.getDDL(tablename, table, null, false, "ID_TRANS_CLUSTER", false);
+        table.addValueMeta(new ValueMeta(FIELD_TRANS_CLUSTER_ID_TRANS_CLUSTER, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+        table.addValueMeta(new ValueMeta(FIELD_TRANS_CLUSTER_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+        table.addValueMeta(new ValueMeta(FIELD_TRANS_CLUSTER_ID_CLUSTER, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+        sql = database.getDDL(tablename, table, null, false, FIELD_TRANS_CLUSTER_ID_TRANS_CLUSTER, false);
 
         if (sql != null && sql.length() > 0)
         {
@@ -4281,12 +4640,12 @@ public class Repository
         //
         // Create table...
         table = new RowMeta();
-        tablename = "R_TRANS_SLAVE";
+        tablename = quote(TABLE_R_TRANS_SLAVE);
         if (monitor!=null) monitor.subTask("Checking table "+tablename);
-        table.addValueMeta(new ValueMeta("ID_TRANS_SLAVE", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-        table.addValueMeta(new ValueMeta("ID_TRANSFORMATION", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-        table.addValueMeta(new ValueMeta("ID_SLAVE", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-        sql = database.getDDL(tablename, table, null, false, "ID_TRANS_SLAVE", false);
+        table.addValueMeta(new ValueMeta(FIELD_TRANS_SLAVE_ID_TRANS_SLAVE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+        table.addValueMeta(new ValueMeta(FIELD_TRANS_SLAVE_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+        table.addValueMeta(new ValueMeta(FIELD_TRANS_SLAVE_ID_SLAVE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+        sql = database.getDDL(tablename, table, null, false, FIELD_TRANS_SLAVE_ID_TRANS_SLAVE, false);
 
         if (sql != null && sql.length() > 0)
         {
@@ -4305,14 +4664,14 @@ public class Repository
 		//
 		// Create table...
 		table = new RowMeta();
-		tablename = "R_TRANS_HOP";
+		tablename = quote(TABLE_R_TRANS_HOP);
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
-		table.addValueMeta(new ValueMeta("ID_TRANS_HOP", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta("ID_TRANSFORMATION", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta("ID_STEP_FROM", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta("ID_STEP_TO", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta("ENABLED", ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
-		sql = database.getDDL(tablename, table, null, false, "ID_TRANS_HOP", false);
+		table.addValueMeta(new ValueMeta(FIELD_TRANS_HOP_ID_TRANS_HOP, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_TRANS_HOP_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_TRANS_HOP_ID_STEP_FROM, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_TRANS_HOP_ID_STEP_TO, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_TRANS_HOP_ENABLED, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
+		sql = database.getDDL(tablename, table, null, false, FIELD_TRANS_HOP_ID_TRANS_HOP, false);
 
 		if (sql != null && sql.length() > 0)
 		{
@@ -4330,11 +4689,11 @@ public class Repository
 		// R_TRANS_STEP_CONDITION
 		//
 		table = new RowMeta();
-		tablename = "R_TRANS_STEP_CONDITION";
+		tablename = quote(TABLE_R_TRANS_STEP_CONDITION);
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
-		table.addValueMeta(new ValueMeta("ID_TRANSFORMATION", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta("ID_STEP", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta("ID_CONDITION", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_TRANS_STEP_CONDITION_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_TRANS_STEP_CONDITION_ID_STEP, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_TRANS_STEP_CONDITION_ID_CONDITION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		sql = database.getDDL(tablename, table, null, false, null, false);
 
 		if (sql != null && sql.length() > 0) // Doesn't exists: create the table...
@@ -4353,17 +4712,17 @@ public class Repository
 		// R_CONDITION
 		//
 		table = new RowMeta();
-		tablename = "R_CONDITION";
+		tablename = quote(TABLE_R_CONDITION);
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
-		table.addValueMeta(new ValueMeta("ID_CONDITION", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta("ID_CONDITION_PARENT", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta("NEGATED", ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
-		table.addValueMeta(new ValueMeta("OPERATOR", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta("LEFT_NAME", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta("CONDITION_FUNCTION", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta("RIGHT_NAME", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta("ID_VALUE_RIGHT", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		sql = database.getDDL(tablename, table, null, false, "ID_CONDITION", false);
+		table.addValueMeta(new ValueMeta(FIELD_CONDITION_ID_CONDITION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_CONDITION_ID_CONDITION_PARENT, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_CONDITION_NEGATED, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
+		table.addValueMeta(new ValueMeta(FIELD_CONDITION_OPERATOR, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(FIELD_CONDITION_LEFT_NAME, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(FIELD_CONDITION_CONDITION_FUNCTION, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(FIELD_CONDITION_RIGHT_NAME, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(FIELD_CONDITION_ID_VALUE_RIGHT, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		sql = database.getDDL(tablename, table, null, false, FIELD_CONDITION_ID_CONDITION, false);
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
 		{
@@ -4380,15 +4739,15 @@ public class Repository
 		///////////////////////////////////////////////////////////////////////////////
 		// R_VALUE
 		//
-		tablename = "R_VALUE";
+		tablename = quote(TABLE_R_VALUE);
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
 		table = new RowMeta();
-		table.addValueMeta(new ValueMeta("ID_VALUE", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta("NAME", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta("VALUE_TYPE", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta("VALUE_STR", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta("IS_NULL", ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
-		sql = database.getDDL(tablename, table, null, false, "ID_VALUE", false);
+		table.addValueMeta(new ValueMeta(FIELD_VALUE_ID_VALUE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_VALUE_NAME, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(FIELD_VALUE_VALUE_TYPE, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(FIELD_VALUE_VALUE_STR, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(FIELD_VALUE_IS_NULL, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
+		sql = database.getDDL(tablename, table, null, false, FIELD_VALUE_ID_VALUE, false);
 
 		if (sql != null && sql.length() > 0) // Doesn't exists: create the table...
 		{
@@ -4409,12 +4768,12 @@ public class Repository
 		// Create table...
 		boolean ok_step_type = true;
 		table = new RowMeta();
-		tablename = "R_STEP_TYPE";
+		tablename = quote(TABLE_R_STEP_TYPE);
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
-		table.addValueMeta(new ValueMeta("ID_STEP_TYPE", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta("CODE", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta("DESCRIPTION", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta("HELPTEXT", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(FIELD_STEP_TYPE_ID_STEP_TYPE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_STEP_TYPE_CODE, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(FIELD_STEP_TYPE_DESCRIPTION, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(FIELD_STEP_TYPE_HELPTEXT, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
 		sql = database.getDDL(tablename, table, null, false, "ID_STEP_TYPE", false);
 
 		if (sql != null && sql.length() > 0) // Doesn't exists: create the table...
@@ -4441,19 +4800,19 @@ public class Repository
 		//
 		// Create table
 		table = new RowMeta();
-		tablename = "R_STEP";
+		tablename = quote(TABLE_R_STEP);
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
-		table.addValueMeta(new ValueMeta("ID_STEP", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta("ID_TRANSFORMATION", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta("NAME", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta("DESCRIPTION", ValueMetaInterface.TYPE_STRING, REP_STRING_LENGTH, 0));
-		table.addValueMeta(new ValueMeta("ID_STEP_TYPE", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta("DISTRIBUTE", ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
-		table.addValueMeta(new ValueMeta("COPIES", ValueMetaInterface.TYPE_INTEGER, 3, 0));
-		table.addValueMeta(new ValueMeta("GUI_LOCATION_X", ValueMetaInterface.TYPE_INTEGER, 6, 0));
-		table.addValueMeta(new ValueMeta("GUI_LOCATION_Y", ValueMetaInterface.TYPE_INTEGER, 6, 0));
-		table.addValueMeta(new ValueMeta("GUI_DRAW", ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
-		sql = database.getDDL(tablename, table, null, false, "ID_STEP", false);
+		table.addValueMeta(new ValueMeta(FIELD_STEP_ID_STEP, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_STEP_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_STEP_NAME, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(FIELD_STEP_DESCRIPTION, ValueMetaInterface.TYPE_STRING, REP_STRING_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(FIELD_STEP_ID_STEP_TYPE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_STEP_DISTRIBUTE, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
+		table.addValueMeta(new ValueMeta(FIELD_STEP_COPIES, ValueMetaInterface.TYPE_INTEGER, 3, 0));
+		table.addValueMeta(new ValueMeta(FIELD_STEP_GUI_LOCATION_X, ValueMetaInterface.TYPE_INTEGER, 6, 0));
+		table.addValueMeta(new ValueMeta(FIELD_STEP_GUI_LOCATION_Y, ValueMetaInterface.TYPE_INTEGER, 6, 0));
+		table.addValueMeta(new ValueMeta(FIELD_STEP_GUI_DRAW, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
+		sql = database.getDDL(tablename, table, null, false, FIELD_STEP_ID_STEP, false);
 
 		if (sql != null && sql.length() > 0) // Doesn't exists: create the table...
 		{
@@ -4472,17 +4831,17 @@ public class Repository
 		// R_STEP_ATTRIBUTE
 		//
 		// Create table...
-		tablename = "R_STEP_ATTRIBUTE";
+		tablename = quote(TABLE_R_STEP_ATTRIBUTE);
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
 		table = new RowMeta();
-		table.addValueMeta(new ValueMeta("ID_STEP_ATTRIBUTE", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta("ID_TRANSFORMATION", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta("ID_STEP", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta("NR", ValueMetaInterface.TYPE_INTEGER, 6, 0));
-		table.addValueMeta(new ValueMeta("CODE", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta("VALUE_NUM", ValueMetaInterface.TYPE_INTEGER, 18, 0));
-		table.addValueMeta(new ValueMeta("VALUE_STR", ValueMetaInterface.TYPE_STRING, REP_STRING_LENGTH, 0));
-        sql = database.getDDL(tablename, table, null, false, "ID_STEP_ATTRIBUTE", false);
+		table.addValueMeta(new ValueMeta(FIELD_STEP_ATTRIBUTE_ID_STEP_ATTRIBUTE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_STEP_ATTRIBUTE_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_STEP_ATTRIBUTE_ID_STEP, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_STEP_ATTRIBUTE_NR, ValueMetaInterface.TYPE_INTEGER, 6, 0));
+		table.addValueMeta(new ValueMeta(FIELD_STEP_ATTRIBUTE_CODE, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(FIELD_STEP_ATTRIBUTE_VALUE_NUM, ValueMetaInterface.TYPE_INTEGER, 18, 0));
+		table.addValueMeta(new ValueMeta(FIELD_STEP_ATTRIBUTE_VALUE_STR, ValueMetaInterface.TYPE_STRING, REP_STRING_LENGTH, 0));
+        sql = database.getDDL(tablename, table, null, false, FIELD_STEP_ATTRIBUTE_ID_STEP_ATTRIBUTE, false);
         
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
 		{
@@ -4493,7 +4852,7 @@ public class Repository
 			try
 			{
 				indexname = "IDX_" + tablename.substring(2) + "_LOOKUP";
-				keyfield = new String[] { "ID_STEP", "CODE", "NR" };
+				keyfield = new String[] { FIELD_STEP_ATTRIBUTE_ID_STEP, FIELD_STEP_ATTRIBUTE_CODE, FIELD_STEP_ATTRIBUTE_NR, };
 				if (!database.checkIndexExists(tablename, keyfield))
 				{
 					sql = database.getCreateIndexStatement(tablename, indexname, keyfield, false, true, false, false);
@@ -4521,12 +4880,12 @@ public class Repository
 		// That way investigating dependencies becomes easier to program.
 		//
 		// Create table...
-		tablename = "R_STEP_DATABASE";
+		tablename = quote(TABLE_R_STEP_DATABASE);
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
 		table = new RowMeta();
-		table.addValueMeta(new ValueMeta("ID_TRANSFORMATION", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta("ID_STEP", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta("ID_DATABASE", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_STEP_DATABASE_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_STEP_DATABASE_ID_STEP, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_STEP_DATABASE_ID_DATABASE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		sql = database.getDDL(tablename, table, null, false, null, false);
         
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
@@ -4538,7 +4897,7 @@ public class Repository
 			try
 			{
 				indexname = "IDX_" + tablename.substring(2) + "_LU1";
-				keyfield = new String[] { "ID_TRANSFORMATION" };
+				keyfield = new String[] { FIELD_STEP_DATABASE_ID_TRANSFORMATION, };
 				if (!database.checkIndexExists(tablename, keyfield))
 				{
 					sql = database.getCreateIndexStatement(tablename, indexname, keyfield, false, false, false, false);
@@ -4555,7 +4914,7 @@ public class Repository
 			try
 			{
 				indexname = "IDX_" + tablename.substring(2) + "_LU2";
-				keyfield = new String[] { "ID_DATABASE" };
+				keyfield = new String[] { FIELD_STEP_DATABASE_ID_DATABASE, };
 				if (!database.checkIndexExists(tablename, keyfield))
 				{
 					sql = database.getCreateIndexStatement(tablename, indexname, keyfield, false, false, false, false);
@@ -4581,10 +4940,10 @@ public class Repository
 		//
 		// Create table...
 		table = new RowMeta();
-		tablename = "R_TRANS_NOTE";
+		tablename = quote(TABLE_R_TRANS_NOTE);
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
-		table.addValueMeta(new ValueMeta("ID_TRANSFORMATION", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta("ID_NOTE", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_TRANS_NOTE_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_TRANS_NOTE_ID_NOTE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		sql = database.getDDL(tablename, table, null, false, null, false);
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
@@ -4605,13 +4964,13 @@ public class Repository
 		//
 		// Create table...
 		boolean ok_loglevel = true;
-		tablename = "R_LOGLEVEL";
+		tablename = quote(TABLE_R_LOGLEVEL);
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
 		table = new RowMeta();
-		table.addValueMeta(new ValueMeta("ID_LOGLEVEL", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta("CODE", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta("DESCRIPTION", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-		sql = database.getDDL(tablename, table, null, false, "ID_LOGLEVEL", false);
+		table.addValueMeta(new ValueMeta(FIELD_LOGLEVEL_ID_LOGLEVEL, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_LOGLEVEL_CODE, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(FIELD_LOGLEVEL_DESCRIPTION, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+		sql = database.getDDL(tablename, table, null, false, FIELD_LOGLEVEL_ID_LOGLEVEL, false);
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
 		{
@@ -4637,16 +4996,16 @@ public class Repository
 			for (int i = 1; i < code.length; i++)
 			{
                 RowMetaAndData lookup = null;
-                if (upgrade) lookup = database.getOneRow("SELECT ID_LOGLEVEL FROM " + tablename + " WHERE " 
+                if (upgrade) lookup = database.getOneRow("SELECT "+quote(FIELD_LOGLEVEL_ID_LOGLEVEL)+" FROM " + tablename + " WHERE " 
                 		+ database.getDatabaseMeta().quoteField("CODE") + " = '" + code[i] + "'");
 				if (lookup == null)
 				{
 					long nextid = getNextLoglevelID();
 
 					RowMetaAndData tableData = new RowMetaAndData();
-                    tableData.addValue(new ValueMeta("ID_LOGLEVEL", ValueMetaInterface.TYPE_INTEGER), new Long(nextid));
-                    tableData.addValue(new ValueMeta("CODE", ValueMetaInterface.TYPE_STRING), code[i]);
-                    tableData.addValue(new ValueMeta("DESCRIPTION", ValueMetaInterface.TYPE_STRING), desc[i]);
+                    tableData.addValue(new ValueMeta(FIELD_LOGLEVEL_ID_LOGLEVEL, ValueMetaInterface.TYPE_INTEGER), new Long(nextid));
+                    tableData.addValue(new ValueMeta(FIELD_LOGLEVEL_CODE, ValueMetaInterface.TYPE_STRING), code[i]);
+                    tableData.addValue(new ValueMeta(FIELD_LOGLEVEL_DESCRIPTION, ValueMetaInterface.TYPE_STRING), desc[i]);
 
 					database.setValuesInsert(tableData.getRowMeta(), tableData.getData());
 					database.insertRow();
@@ -4671,19 +5030,19 @@ public class Repository
 		//
 		// Create table...
 		table = new RowMeta();
-		tablename = "R_LOG";
+		tablename = quote(TABLE_R_LOG);
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
-		table.addValueMeta(new ValueMeta("ID_LOG", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta("NAME", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta("ID_LOGLEVEL", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta("LOGTYPE", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta("FILENAME", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta("FILEEXTENTION", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta("ADD_DATE", ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
-		table.addValueMeta(new ValueMeta("ADD_TIME", ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
-		table.addValueMeta(new ValueMeta("ID_DATABASE_LOG", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta("TABLE_NAME_LOG", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-		sql = database.getDDL(tablename, table, null, false, "ID_LOG", false);
+		table.addValueMeta(new ValueMeta(FIELD_LOG_ID_LOG, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_LOG_NAME, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(FIELD_LOG_ID_LOGLEVEL, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_LOG_LOGTYPE, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(FIELD_LOG_FILENAME, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(FIELD_LOG_FILEEXTENTION, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(FIELD_LOG_ADD_DATE, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
+		table.addValueMeta(new ValueMeta(FIELD_LOG_ADD_TIME, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
+		table.addValueMeta(new ValueMeta(FIELD_LOG_ID_DATABASE_LOG, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_LOG_TABLE_NAME_LOG, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+		sql = database.getDDL(tablename, table, null, false, FIELD_LOG_ID_LOG, false);
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
 		{
@@ -4703,26 +5062,26 @@ public class Repository
 		//
 		// Create table...
 		table = new RowMeta();
-		tablename = "R_JOB";
+		tablename = quote(TABLE_R_JOB);
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
-		table.addValueMeta(new ValueMeta("ID_JOB", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta("ID_DIRECTORY", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta("NAME", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-        table.addValueMeta(new ValueMeta("DESCRIPTION", ValueMetaInterface.TYPE_STRING, REP_STRING_LENGTH, 0));
-        table.addValueMeta(new ValueMeta("EXTENDED_DESCRIPTION", ValueMetaInterface.TYPE_STRING, REP_STRING_LENGTH, 0));
-        table.addValueMeta(new ValueMeta("JOB_VERSION", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-        table.addValueMeta(new ValueMeta("JOB_STATUS", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta("ID_DATABASE_LOG", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta("TABLE_NAME_LOG", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-        table.addValueMeta(new ValueMeta("CREATED_USER", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-        table.addValueMeta(new ValueMeta("CREATED_DATE", ValueMetaInterface.TYPE_DATE, 20, 0));
-		table.addValueMeta(new ValueMeta("MODIFIED_USER", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta("MODIFIED_DATE", ValueMetaInterface.TYPE_DATE, 20, 0));
-        table.addValueMeta(new ValueMeta("USE_BATCH_ID", ValueMetaInterface.TYPE_BOOLEAN, 0, 0));
-        table.addValueMeta(new ValueMeta("PASS_BATCH_ID", ValueMetaInterface.TYPE_BOOLEAN, 0, 0));
-        table.addValueMeta(new ValueMeta("USE_LOGFIELD", ValueMetaInterface.TYPE_BOOLEAN, 0, 0));
-        table.addValueMeta(new ValueMeta("SHARED_FILE", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0)); // 255 max length for now.
-		sql = database.getDDL(tablename, table, null, false, "ID_JOB", false);
+		table.addValueMeta(new ValueMeta(FIELD_JOB_ID_JOB, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_JOB_ID_DIRECTORY, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_JOB_NAME, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+        table.addValueMeta(new ValueMeta(FIELD_JOB_DESCRIPTION, ValueMetaInterface.TYPE_STRING, REP_STRING_LENGTH, 0));
+        table.addValueMeta(new ValueMeta(FIELD_JOB_EXTENDED_DESCRIPTION, ValueMetaInterface.TYPE_STRING, REP_STRING_LENGTH, 0));
+        table.addValueMeta(new ValueMeta(FIELD_JOB_JOB_VERSION, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+        table.addValueMeta(new ValueMeta(FIELD_JOB_JOB_STATUS, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_JOB_ID_DATABASE_LOG, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_JOB_TABLE_NAME_LOG, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+        table.addValueMeta(new ValueMeta(FIELD_JOB_CREATED_USER, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+        table.addValueMeta(new ValueMeta(FIELD_JOB_CREATED_DATE, ValueMetaInterface.TYPE_DATE, 20, 0));
+		table.addValueMeta(new ValueMeta(FIELD_JOB_MODIFIED_USER, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(FIELD_JOB_MODIFIED_DATE, ValueMetaInterface.TYPE_DATE, 20, 0));
+        table.addValueMeta(new ValueMeta(FIELD_JOB_USE_BATCH_ID, ValueMetaInterface.TYPE_BOOLEAN, 0, 0));
+        table.addValueMeta(new ValueMeta(FIELD_JOB_PASS_BATCH_ID, ValueMetaInterface.TYPE_BOOLEAN, 0, 0));
+        table.addValueMeta(new ValueMeta(FIELD_JOB_USE_LOGFIELD, ValueMetaInterface.TYPE_BOOLEAN, 0, 0));
+        table.addValueMeta(new ValueMeta(FIELD_JOB_SHARED_FILE, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0)); // 255 max length for now.
+		sql = database.getDDL(tablename, table, null, false, FIELD_JOB_ID_JOB, false);
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
 		{
@@ -4743,12 +5102,12 @@ public class Repository
 		// Create table...
 		boolean ok_jobentry_type = true;
 		table = new RowMeta();
-		tablename = "R_JOBENTRY_TYPE";
+		tablename = quote(TABLE_R_JOBENTRY_TYPE);
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
-		table.addValueMeta(new ValueMeta("ID_JOBENTRY_TYPE", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta("CODE", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta("DESCRIPTION", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-		sql = database.getDDL(tablename, table, null, false, "ID_JOBENTRY_TYPE", false);
+		table.addValueMeta(new ValueMeta(FIELD_JOBENTRY_TYPE_ID_JOBENTRY_TYPE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_JOBENTRY_TYPE_CODE, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(FIELD_JOBENTRY_TYPE_DESCRIPTION, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+		sql = database.getDDL(tablename, table, null, false, FIELD_JOBENTRY_TYPE_ID_JOBENTRY_TYPE, false);
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
 		{
@@ -4777,14 +5136,14 @@ public class Repository
 		//
 		// Create table...
 		table = new RowMeta();
-		tablename = "R_JOBENTRY";
+		tablename = quote(TABLE_R_JOBENTRY);
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
-		table.addValueMeta(new ValueMeta("ID_JOBENTRY", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta("ID_JOB", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta("ID_JOBENTRY_TYPE", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta("NAME", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta("DESCRIPTION", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-		sql = database.getDDL(tablename, table, null, false, "ID_JOBENTRY", false);
+		table.addValueMeta(new ValueMeta(FIELD_JOBENTRY_ID_JOBENTRY, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_JOBENTRY_ID_JOB, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_JOBENTRY_ID_JOBENTRY_TYPE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_JOBENTRY_NAME, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(FIELD_JOBENTRY_DESCRIPTION, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+		sql = database.getDDL(tablename, table, null, false, FIELD_JOBENTRY_ID_JOBENTRY, false);
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
 		{
@@ -4804,18 +5163,18 @@ public class Repository
 		//
 		// Create table...
 		table = new RowMeta();
-		tablename = "R_JOBENTRY_COPY";
+		tablename = quote(TABLE_R_JOBENTRY_COPY);
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
-		table.addValueMeta(new ValueMeta("ID_JOBENTRY_COPY", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta("ID_JOBENTRY", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta("ID_JOB", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta("ID_JOBENTRY_TYPE", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta("NR", ValueMetaInterface.TYPE_INTEGER, 4, 0));
-		table.addValueMeta(new ValueMeta("GUI_LOCATION_X", ValueMetaInterface.TYPE_INTEGER, 6, 0));
-		table.addValueMeta(new ValueMeta("GUI_LOCATION_Y", ValueMetaInterface.TYPE_INTEGER, 6, 0));
-		table.addValueMeta(new ValueMeta("GUI_DRAW", ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
-		table.addValueMeta(new ValueMeta("PARALLEL", ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
-		sql = database.getDDL(tablename, table, null, false, "ID_JOBENTRY_COPY", false);
+		table.addValueMeta(new ValueMeta(FIELD_JOBENTRY_COPY_ID_JOBENTRY_COPY, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_JOBENTRY_COPY_ID_JOBENTRY, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_JOBENTRY_COPY_ID_JOB, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_JOBENTRY_COPY_ID_JOBENTRY_TYPE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_JOBENTRY_COPY_NR, ValueMetaInterface.TYPE_INTEGER, 4, 0));
+		table.addValueMeta(new ValueMeta(FIELD_JOBENTRY_COPY_GUI_LOCATION_X, ValueMetaInterface.TYPE_INTEGER, 6, 0));
+		table.addValueMeta(new ValueMeta(FIELD_JOBENTRY_COPY_GUI_LOCATION_Y, ValueMetaInterface.TYPE_INTEGER, 6, 0));
+		table.addValueMeta(new ValueMeta(FIELD_JOBENTRY_COPY_GUI_DRAW, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
+		table.addValueMeta(new ValueMeta(FIELD_JOBENTRY_COPY_PARALLEL, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
+		sql = database.getDDL(tablename, table, null, false, FIELD_JOBENTRY_COPY_ID_JOBENTRY_COPY, false);
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
 		{
@@ -4835,16 +5194,16 @@ public class Repository
 		//
 		// Create table...
 		table = new RowMeta();
-		tablename = "R_JOBENTRY_ATTRIBUTE";
+		tablename = quote(TABLE_R_JOBENTRY_ATTRIBUTE);
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
-		table.addValueMeta(new ValueMeta("ID_JOBENTRY_ATTRIBUTE", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta("ID_JOB", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta("ID_JOBENTRY", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta("NR", ValueMetaInterface.TYPE_INTEGER, 6, 0));
-		table.addValueMeta(new ValueMeta("CODE", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta("VALUE_NUM", ValueMetaInterface.TYPE_NUMBER, 13, 2));
-		table.addValueMeta(new ValueMeta("VALUE_STR", ValueMetaInterface.TYPE_STRING, REP_STRING_LENGTH, 0));
-		sql = database.getDDL(tablename, table, null, false, "ID_JOBENTRY_ATTRIBUTE", false);
+		table.addValueMeta(new ValueMeta(FIELD_JOBENTRY_ATTRIBUTE_ID_JOBENTRY_ATTRIBUTE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_JOBENTRY_ATTRIBUTE_ID_JOB, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_JOBENTRY_ATTRIBUTE_ID_JOBENTRY, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_JOBENTRY_ATTRIBUTE_NR, ValueMetaInterface.TYPE_INTEGER, 6, 0));
+		table.addValueMeta(new ValueMeta(FIELD_JOBENTRY_ATTRIBUTE_CODE, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(FIELD_JOBENTRY_ATTRIBUTE_VALUE_NUM, ValueMetaInterface.TYPE_NUMBER, 13, 2));
+		table.addValueMeta(new ValueMeta(FIELD_JOBENTRY_ATTRIBUTE_VALUE_STR, ValueMetaInterface.TYPE_STRING, REP_STRING_LENGTH, 0));
+		sql = database.getDDL(tablename, table, null, false, FIELD_JOBENTRY_ATTRIBUTE_ID_JOBENTRY_ATTRIBUTE, false);
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
 		{
@@ -4855,7 +5214,7 @@ public class Repository
 			try
 			{
 				indexname = "IDX_" + tablename.substring(2) + "_LOOKUP";
-				keyfield = new String[] { "ID_JOBENTRY_ATTRIBUTE", "CODE", "NR" };
+				keyfield = new String[] { FIELD_JOBENTRY_ATTRIBUTE_ID_JOBENTRY_ATTRIBUTE, FIELD_JOBENTRY_ATTRIBUTE_CODE, FIELD_JOBENTRY_ATTRIBUTE_NR, };
 	
 				if (!database.checkIndexExists(tablename, keyfield))
 				{
@@ -4883,16 +5242,16 @@ public class Repository
 		//
 		// Create table...
 		table = new RowMeta();
-		tablename = "R_JOB_HOP";
+		tablename = quote(TABLE_R_JOB_HOP);
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
-		table.addValueMeta(new ValueMeta("ID_JOB_HOP", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta("ID_JOB", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta("ID_JOBENTRY_COPY_FROM", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta("ID_JOBENTRY_COPY_TO", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta("ENABLED", ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
-		table.addValueMeta(new ValueMeta("EVALUATION", ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
-		table.addValueMeta(new ValueMeta("UNCONDITIONAL", ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
-		sql = database.getDDL(tablename, table, null, false, "ID_JOB_HOP", false);
+		table.addValueMeta(new ValueMeta(FIELD_JOB_HOP_ID_JOB_HOP, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_JOB_HOP_ID_JOB, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_JOB_HOP_ID_JOBENTRY_COPY_FROM, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_JOB_HOP_ID_JOBENTRY_COPY_TO, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_JOB_HOP_ENABLED, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
+		table.addValueMeta(new ValueMeta(FIELD_JOB_HOP_EVALUATION, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
+		table.addValueMeta(new ValueMeta(FIELD_JOB_HOP_UNCONDITIONAL, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
+		sql = database.getDDL(tablename, table, null, false, FIELD_JOB_HOP_ID_JOB_HOP, false);
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
 		{
@@ -4912,10 +5271,10 @@ public class Repository
 		//
 		// Create table...
 		table = new RowMeta();
-		tablename = "R_JOB_NOTE";
+		tablename = quote(TABLE_R_JOB_NOTE);
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
-		table.addValueMeta(new ValueMeta("ID_JOB", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta("ID_NOTE", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_JOB_NOTE_ID_JOB, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_JOB_NOTE_ID_NOTE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		sql = database.getDDL(tablename, table, null, false, null, false);
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
@@ -4944,13 +5303,13 @@ public class Repository
         Map<String, Long> profiles = new Hashtable<String, Long>();
         
 		boolean ok_profile = true;
-		tablename = "R_PROFILE";
+		tablename = quote(TABLE_R_PROFILE);
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
 		table = new RowMeta();
-		table.addValueMeta(new ValueMeta("ID_PROFILE", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta("NAME", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta("DESCRIPTION", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-		sql = database.getDDL(tablename, table, null, false, "ID_PROFILE", false);
+		table.addValueMeta(new ValueMeta(FIELD_PROFILE_ID_PROFILE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_PROFILE_NAME, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(FIELD_PROFILE_DESCRIPTION, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+		sql = database.getDDL(tablename, table, null, false, FIELD_PROFILE_ID_PROFILE, false);
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
 		{
@@ -4976,16 +5335,16 @@ public class Repository
 			for (int i = 0; i < code.length; i++)
 			{
                 RowMetaAndData lookup = null;
-                if (upgrade) lookup = database.getOneRow("SELECT ID_PROFILE FROM " + tablename + " WHERE "
-                		+ database.getDatabaseMeta().quoteField("NAME") + " = '" + code[i] + "'");
+                if (upgrade) lookup = database.getOneRow("SELECT "+quote(FIELD_PROFILE_ID_PROFILE)+" FROM " + tablename + " WHERE "
+                		+ quote(FIELD_PROFILE_NAME) + " = '" + code[i] + "'");
 				if (lookup == null)
 				{
 					long nextid = getNextProfileID();
 
 					RowMetaAndData tableData = new RowMetaAndData();
-                    tableData.addValue(new ValueMeta("ID_PROFILE", ValueMetaInterface.TYPE_INTEGER), new Long(nextid));
-                    tableData.addValue(new ValueMeta("NAME", ValueMetaInterface.TYPE_STRING), code[i]);
-                    tableData.addValue(new ValueMeta("DESCRIPTION", ValueMetaInterface.TYPE_STRING), desc[i]);
+                    tableData.addValue(new ValueMeta(FIELD_PROFILE_ID_PROFILE, ValueMetaInterface.TYPE_INTEGER), new Long(nextid));
+                    tableData.addValue(new ValueMeta(FIELD_PROFILE_NAME, ValueMetaInterface.TYPE_STRING), code[i]);
+                    tableData.addValue(new ValueMeta(FIELD_PROFILE_DESCRIPTION, ValueMetaInterface.TYPE_STRING), desc[i]);
 
 					database.setValuesInsert(tableData);
 					database.insertRow();
@@ -5014,16 +5373,16 @@ public class Repository
         Map<String, Long> users = new Hashtable<String, Long>();
 		boolean ok_user = true;
 		table = new RowMeta();
-		tablename = "R_USER";
+		tablename = quote(TABLE_R_USER);
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
-		table.addValueMeta(new ValueMeta("ID_USER", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta("ID_PROFILE", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta("LOGIN", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta("PASSWORD", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta("NAME", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta("DESCRIPTION", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta("ENABLED", ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
-		sql = database.getDDL(tablename, table, null, false, "ID_USER", false);
+		table.addValueMeta(new ValueMeta(FIELD_USER_ID_USER, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_USER_ID_PROFILE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_USER_LOGIN, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(FIELD_USER_PASSWORD, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(FIELD_USER_NAME, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(FIELD_USER_DESCRIPTION, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(FIELD_USER_ENABLED, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
+		sql = database.getDDL(tablename, table, null, false, FIELD_USER_ID_USER, false);
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
 		{
@@ -5052,8 +5411,8 @@ public class Repository
 			for (int i = 0; i < user.length; i++)
 			{
                 RowMetaAndData lookup = null;
-                if (upgrade) lookup = database.getOneRow("SELECT ID_USER FROM " + tablename + " WHERE "
-                		+ database.getDatabaseMeta().quoteField("LOGIN") + " = '" + user[i] + "'");
+                if (upgrade) lookup = database.getOneRow("SELECT "+quote(FIELD_USER_ID_USER)+" FROM " + tablename + " WHERE "
+                		+ quote(FIELD_USER_LOGIN) + " = '" + user[i] + "'");
 				if (lookup == null)
 				{
 					long nextid = getNextUserID();
@@ -5064,13 +5423,13 @@ public class Repository
                     if (profileID!=null) id_profile = profileID.longValue();
                     
 					RowMetaAndData tableData = new RowMetaAndData();
-                    tableData.addValue(new ValueMeta("ID_USER", ValueMetaInterface.TYPE_INTEGER), new Long(nextid));
-                    tableData.addValue(new ValueMeta("ID_PROFILE", ValueMetaInterface.TYPE_INTEGER), new Long(id_profile));
-                    tableData.addValue(new ValueMeta("LOGIN", ValueMetaInterface.TYPE_STRING), user[i]);
-                    tableData.addValue(new ValueMeta("PASSWORD", ValueMetaInterface.TYPE_STRING), password);
-                    tableData.addValue(new ValueMeta("NAME", ValueMetaInterface.TYPE_STRING), code[i]);
-                    tableData.addValue(new ValueMeta("DESCRIPTION", ValueMetaInterface.TYPE_STRING), desc[i]);
-                    tableData.addValue(new ValueMeta("ENABLED", ValueMetaInterface.TYPE_BOOLEAN), new Boolean(true));
+                    tableData.addValue(new ValueMeta(FIELD_USER_ID_USER, ValueMetaInterface.TYPE_INTEGER), new Long(nextid));
+                    tableData.addValue(new ValueMeta(FIELD_USER_ID_PROFILE, ValueMetaInterface.TYPE_INTEGER), new Long(id_profile));
+                    tableData.addValue(new ValueMeta(FIELD_USER_LOGIN, ValueMetaInterface.TYPE_STRING), user[i]);
+                    tableData.addValue(new ValueMeta(FIELD_USER_PASSWORD, ValueMetaInterface.TYPE_STRING), password);
+                    tableData.addValue(new ValueMeta(FIELD_USER_NAME, ValueMetaInterface.TYPE_STRING), code[i]);
+                    tableData.addValue(new ValueMeta(FIELD_USER_DESCRIPTION, ValueMetaInterface.TYPE_STRING), desc[i]);
+                    tableData.addValue(new ValueMeta(FIELD_USER_ENABLED, ValueMetaInterface.TYPE_BOOLEAN), new Boolean(true));
 
 					database.setValuesInsert(tableData);
 					database.insertRow();
@@ -5098,12 +5457,12 @@ public class Repository
         Map<String, Long> permissions = new Hashtable<String, Long>();
 		boolean ok_permission = true;
 		table = new RowMeta();
-		tablename = "R_PERMISSION";
+		tablename = quote(TABLE_R_PERMISSION);
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
-		table.addValueMeta(new ValueMeta("ID_PERMISSION", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta("CODE", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta("DESCRIPTION", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-		sql = database.getDDL(tablename, table, null, false, "ID_PERMISSION", false);
+		table.addValueMeta(new ValueMeta(FIELD_PERMISSION_ID_PERMISSION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_PERMISSION_CODE, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(FIELD_PERMISSION_DESCRIPTION, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+		sql = database.getDDL(tablename, table, null, false, FIELD_PERMISSION_ID_PERMISSION, false);
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
 		{
@@ -5129,16 +5488,16 @@ public class Repository
 			for (int i = 1; i < code.length; i++)
 			{
                 RowMetaAndData lookup = null;
-                if (upgrade) lookup = database.getOneRow("SELECT ID_PERMISSION FROM " + tablename + " WHERE " 
-                		+ database.getDatabaseMeta().quoteField("CODE") + " = '" + code[i] + "'");
+                if (upgrade) lookup = database.getOneRow("SELECT "+quote(FIELD_PERMISSION_ID_PERMISSION)+" FROM " + tablename + " WHERE " 
+                		+ quote(FIELD_PERMISSION_CODE) + " = '" + code[i] + "'");
 				if (lookup == null)
 				{
 					long nextid = getNextPermissionID();
 
                     RowMetaAndData tableData = new RowMetaAndData();
-                    tableData.addValue(new ValueMeta("ID_PERMISSION", ValueMetaInterface.TYPE_INTEGER), new Long(nextid));
-                    tableData.addValue(new ValueMeta("CODE", ValueMetaInterface.TYPE_STRING), code[i]);
-                    tableData.addValue(new ValueMeta("DESCRIPTION", ValueMetaInterface.TYPE_STRING), desc[i]);
+                    tableData.addValue(new ValueMeta(FIELD_PERMISSION_ID_PERMISSION, ValueMetaInterface.TYPE_INTEGER), new Long(nextid));
+                    tableData.addValue(new ValueMeta(FIELD_PERMISSION_CODE, ValueMetaInterface.TYPE_STRING), code[i]);
+                    tableData.addValue(new ValueMeta(FIELD_PERMISSION_DESCRIPTION, ValueMetaInterface.TYPE_STRING), desc[i]);
 
 					database.setValuesInsert(tableData);
 					database.insertRow();
@@ -5166,10 +5525,10 @@ public class Repository
 		// Create table...
 		boolean ok_profile_permission = true;
 		table = new RowMeta();
-		tablename = "R_PROFILE_PERMISSION";
+		tablename = quote(TABLE_R_PROFILE_PERMISSION);
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
-		table.addValueMeta(new ValueMeta("ID_PROFILE", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta("ID_PERMISSION", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_PROFILE_PERMISSION_ID_PROFILE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+		table.addValueMeta(new ValueMeta(FIELD_PROFILE_PERMISSION_ID_PERMISSION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		sql = database.getDDL(tablename, table, null, false, null, false);
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
@@ -5181,7 +5540,7 @@ public class Repository
 			try
 			{
 				indexname = "IDX_" + tablename.substring(2) + "_PK";
-				keyfield = new String[] { "ID_PROFILE", "ID_PERMISSION" };
+				keyfield = new String[] { FIELD_PROFILE_PERMISSION_ID_PROFILE, FIELD_PROFILE_PERMISSION_ID_PERMISSION, };
 				if (!database.checkIndexExists(tablename, keyfield))
 				{
 					sql = database.getCreateIndexStatement(tablename, indexname, keyfield, false, true, false, false);
@@ -5230,13 +5589,16 @@ public class Repository
 				RowMetaAndData lookup = null;
                 if (upgrade) 
                 {
-                    String lookupSQL = "SELECT ID_PROFILE FROM " + tablename + " WHERE ID_PROFILE=" + id_profile + " AND ID_PERMISSION=" + id_permission;
+                    String lookupSQL = "SELECT "+quote(FIELD_PROFILE_PERMISSION_ID_PROFILE)+
+                                   " FROM " + tablename + 
+                                   " WHERE "+quote(FIELD_PROFILE_PERMISSION_ID_PROFILE)+"=" + id_profile + " AND +"+quote(FIELD_PROFILE_PERMISSION_ID_PERMISSION)+"=" + id_permission;
                     if (log.isDetailed()) log.logDetailed(toString(), "Executing SQL: "+lookupSQL);
                     lookup = database.getOneRow(lookupSQL);
                 }
 				if (lookup == null) // if the combination is not yet there, insert...
 				{
-                    String insertSQL="INSERT INTO "+tablename+"(ID_PROFILE, ID_PERMISSION) VALUES("+id_profile+","+id_permission+")";
+                    String insertSQL="INSERT INTO "+tablename+"("+quote(FIELD_PROFILE_PERMISSION_ID_PROFILE)+", "+quote(FIELD_PROFILE_PERMISSION_ID_PERMISSION)+")"
+                    			+" VALUES("+id_profile+","+id_permission+")";
 					database.execStatement(insertSQL);
                     if (log.isDetailed()) log.logDetailed(toString(), "insertSQL = ["+insertSQL+"]");
 				}
@@ -5266,12 +5628,14 @@ public class Repository
                 if (permissionID!=null) id_permission = permissionID.longValue();
 
                 RowMetaAndData lookup = null;
-                if (upgrade) lookup = database.getOneRow("SELECT ID_PROFILE FROM " + tablename + " WHERE ID_PROFILE=" + id_profile + " AND ID_PERMISSION=" + id_permission);
+                if (upgrade) lookup = database.getOneRow("SELECT "+quote(FIELD_PROFILE_PERMISSION_ID_PROFILE)+
+                			" FROM " + tablename + 
+                			" WHERE "+quote(FIELD_PROFILE_PERMISSION_ID_PROFILE)+"=" + id_profile + " AND "+quote(FIELD_PROFILE_PERMISSION_ID_PERMISSION)+"=" + id_permission);
 				if (lookup == null) // if the combination is not yet there, insert...
 				{
 					RowMetaAndData tableData = new RowMetaAndData();
-                    tableData.addValue(new ValueMeta("ID_PROFILE", ValueMetaInterface.TYPE_INTEGER), new Long(id_profile));
-                    tableData.addValue(new ValueMeta("ID_PERMISSION", ValueMetaInterface.TYPE_INTEGER), new Long(id_permission));
+                    tableData.addValue(new ValueMeta(FIELD_PROFILE_PERMISSION_ID_PROFILE, ValueMetaInterface.TYPE_INTEGER), new Long(id_profile));
+                    tableData.addValue(new ValueMeta(FIELD_PROFILE_PERMISSION_ID_PERMISSION, ValueMetaInterface.TYPE_INTEGER), new Long(id_permission));
 
 					database.setValuesInsert(tableData);
 					database.insertRow();
@@ -5318,14 +5682,14 @@ public class Repository
 		}
         log.logBasic(toString(), "Dropped all "+repositoryTableNames.length+" repository tables.");
         
-        // perform commit, for some DB's drop is not autocommit.
+        // perform commit, for some DB's drop is not auto commit.
         if (!database.isAutoCommit()) database.commit(); 
         
 		return true;
 	}
 
 	/**
-	 * Update the list in R_STEP_TYPE using the steploader StepPlugin entries
+	 * Update the list in R_STEP_TYPE using the StepLoader StepPlugin entries
 	 * 
 	 * @throws KettleException if the update didn't go as planned.
 	 */
@@ -5342,12 +5706,12 @@ public class Repository
 				id = getNextStepTypeID();
 
 				RowMetaAndData table = new RowMetaAndData();
-				table.addValue(new ValueMeta("ID_STEP_TYPE", ValueMetaInterface.TYPE_INTEGER), new Long(id));
-				table.addValue(new ValueMeta("CODE", ValueMetaInterface.TYPE_STRING), sp.getID()[0]);
-				table.addValue(new ValueMeta("DESCRIPTION", ValueMetaInterface.TYPE_STRING), sp.getDescription());
-				table.addValue(new ValueMeta("HELPTEXT", ValueMetaInterface.TYPE_STRING), sp.getTooltip());
+				table.addValue(new ValueMeta(FIELD_STEP_TYPE_ID_STEP_TYPE, ValueMetaInterface.TYPE_INTEGER), new Long(id));
+				table.addValue(new ValueMeta(FIELD_STEP_TYPE_CODE, ValueMetaInterface.TYPE_STRING), sp.getID()[0]);
+				table.addValue(new ValueMeta(FIELD_STEP_TYPE_DESCRIPTION, ValueMetaInterface.TYPE_STRING), sp.getDescription());
+				table.addValue(new ValueMeta(FIELD_STEP_TYPE_HELPTEXT, ValueMetaInterface.TYPE_STRING), sp.getTooltip());
 
-				database.prepareInsert(table.getRowMeta(), "R_STEP_TYPE");
+				database.prepareInsert(table.getRowMeta(), TABLE_R_STEP_TYPE);
 
 				database.setValuesInsert(table);
 				database.insertRow();
@@ -5379,11 +5743,11 @@ public class Repository
                 id = getNextJobEntryTypeID();
 
                 RowMetaAndData table = new RowMetaAndData();
-                table.addValue(new ValueMeta("ID_JOBENTRY_TYPE", ValueMetaInterface.TYPE_INTEGER), new Long(id));
-                table.addValue(new ValueMeta("CODE", ValueMetaInterface.TYPE_STRING), type_desc);
-                table.addValue(new ValueMeta("DESCRIPTION", ValueMetaInterface.TYPE_STRING), type_desc_long);
+                table.addValue(new ValueMeta(FIELD_JOBENTRY_TYPE_ID_JOBENTRY_TYPE, ValueMetaInterface.TYPE_INTEGER), new Long(id));
+                table.addValue(new ValueMeta(FIELD_JOBENTRY_TYPE_CODE, ValueMetaInterface.TYPE_STRING), type_desc);
+                table.addValue(new ValueMeta(FIELD_JOBENTRY_TYPE_DESCRIPTION, ValueMetaInterface.TYPE_STRING), type_desc_long);
 
-                database.prepareInsert(table.getRowMeta(), "R_JOBENTRY_TYPE");
+                database.prepareInsert(table.getRowMeta(), TABLE_R_JOBENTRY_TYPE);
 
                 database.setValuesInsert(table);
                 database.insertRow();
@@ -5441,7 +5805,7 @@ public class Repository
         }
         else
         {
-            database.lockTables( new String[] { "R_REPOSITORY_LOG" } );
+            database.lockTables( new String[] { TABLE_R_REPOSITORY_LOG } );
         }
     }
     
@@ -5453,7 +5817,7 @@ public class Repository
         }
         else
         {
-            database.unlockTables(new String[] { "R_REPOSITORY_LOG" });
+            database.unlockTables(new String[] { TABLE_R_REPOSITORY_LOG });
         }
     }
     
@@ -5504,9 +5868,6 @@ public class Repository
     {
         StringBuffer xml = new StringBuffer();
         
-        /*
-         * TODO: re-enable job export from repository ...
-         * 
         // Loop over all the directory id's
         long dirids[] = dirTree.getDirectoryIDs();
         System.out.println("Going through "+dirids.length+" directories in directory ["+dirTree.getPath()+"]");
@@ -5538,7 +5899,6 @@ public class Repository
             // OK, then export the jobs in the sub-directories as well!
             if (repdir.getID()!=dirTree.getID()) exportJobs(null, repdir);
         }
-         */
 
         return xml.toString();
     }
@@ -5641,5 +6001,16 @@ public class Repository
 	 */
 	public void setStepAttributesRowMeta(RowMetaInterface stepAttributesRowMeta) {
 		this.stepAttributesRowMeta = stepAttributesRowMeta;
+	}
+	
+	private String quote(String identifier) {
+		return databaseMeta.quoteField(identifier);
+	}
+
+	/**
+	 * @return the databaseMeta
+	 */
+	public DatabaseMeta getDatabaseMeta() {
+		return databaseMeta;
 	}
 }

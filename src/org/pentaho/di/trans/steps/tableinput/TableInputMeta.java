@@ -66,7 +66,9 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
     private boolean executeEachInputRow;
     
     private boolean variableReplacementActive;
-    
+
+    private boolean lazyConversionActive;
+
 	public TableInputMeta()
 	{
 		super();
@@ -175,6 +177,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 			lookupFromStepname        = XMLHandler.getTagValue(stepnode, "lookup");
             executeEachInputRow       = "Y".equals(XMLHandler.getTagValue(stepnode, "execute_each_row"));
             variableReplacementActive = "Y".equals(XMLHandler.getTagValue(stepnode, "variables_active"));
+            lazyConversionActive      = "Y".equals(XMLHandler.getTagValue(stepnode, "lazy_conversion_active"));
 		}
 		catch(Exception e)
 		{
@@ -280,6 +283,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 		retval.append("    "+XMLHandler.addTagValue("lookup",     getLookupStepname()));
         retval.append("    "+XMLHandler.addTagValue("execute_each_row",   executeEachInputRow));
         retval.append("    "+XMLHandler.addTagValue("variables_active",   variableReplacementActive));
+        retval.append("    "+XMLHandler.addTagValue("lazy_conversion_active",   lazyConversionActive));
         
 		return retval.toString();
 	}
@@ -297,6 +301,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 			lookupFromStepname        =      rep.getStepAttributeString (id_step, "lookup"); 
             executeEachInputRow       =      rep.getStepAttributeBoolean(id_step, "execute_each_row");
             variableReplacementActive =      rep.getStepAttributeBoolean(id_step, "variables_active");
+            lazyConversionActive      =      rep.getStepAttributeBoolean(id_step, "lazy_conversion_active");
 		}
 		catch(Exception e)
 		{
@@ -315,6 +320,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "lookup",           getLookupStepname());
             rep.saveStepAttribute(id_transformation, id_step, "execute_each_row", executeEachInputRow);
             rep.saveStepAttribute(id_transformation, id_step, "variables_active", variableReplacementActive);
+            rep.saveStepAttribute(id_transformation, id_step, "lazy_conversion_active", lazyConversionActive);
 			
 			// Also, save the step-database relationship!
 			if (databaseMeta!=null) rep.insertStepDatabase(id_transformation, id_step, databaseMeta.getID());
@@ -526,4 +532,18 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
     {
         this.variableReplacementActive = variableReplacementActive;
     }
+
+	/**
+	 * @return the lazyConversionActive
+	 */
+	public boolean isLazyConversionActive() {
+		return lazyConversionActive;
+	}
+
+	/**
+	 * @param lazyConversionActive the lazyConversionActive to set
+	 */
+	public void setLazyConversionActive(boolean lazyConversionActive) {
+		this.lazyConversionActive = lazyConversionActive;
+	}
 }

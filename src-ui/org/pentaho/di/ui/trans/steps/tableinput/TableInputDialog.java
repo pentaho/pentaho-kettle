@@ -87,6 +87,10 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
     private Button       wVariables;
     private FormData     fdlVariables, fdVariables; 
 
+    private Label        wlLazyConversion;
+    private Button       wLazyConversion;
+    private FormData     fdlLazyConversion, fdLazyConversion; 
+
 	private Button wbTable;
 	private FormData fdbTable;
 	private Listener lsbTable;
@@ -224,7 +228,8 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 		fdDatefrom.bottom = new FormAttachment(wEachRow, -margin);
 		wDatefrom.setLayoutData(fdDatefrom);
 
-        // Execute for each row?
+        // Replace variables in SQL?
+		//
         wlVariables = new Label(shell, SWT.RIGHT);
         wlVariables.setText(Messages.getString("TableInputDialog.ReplaceVariables")); //$NON-NLS-1$
         props.setLook(wlVariables);
@@ -241,6 +246,25 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
         fdVariables.bottom = new FormAttachment(wDatefrom, -margin);
         wVariables.setLayoutData(fdVariables);
         wVariables.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent arg0) { setSQLToolTip(); } });
+
+        // Replace variables in SQL?
+		//
+        wlLazyConversion = new Label(shell, SWT.RIGHT);
+        wlLazyConversion.setText(Messages.getString("TableInputDialog.LazyConversion")); //$NON-NLS-1$
+        props.setLook(wlLazyConversion);
+        fdlLazyConversion = new FormData();
+        fdlLazyConversion.left = new FormAttachment(0, 0);
+        fdlLazyConversion.right = new FormAttachment(middle, -margin);
+        fdlLazyConversion.bottom = new FormAttachment(wVariables, -margin);
+        wlLazyConversion.setLayoutData(fdlLazyConversion);
+        wLazyConversion = new Button(shell, SWT.CHECK);
+        props.setLook(wLazyConversion);
+        fdLazyConversion = new FormData();
+        fdLazyConversion.left = new FormAttachment(middle, 0);
+        fdLazyConversion.right = new FormAttachment(100, 0);
+        fdLazyConversion.bottom = new FormAttachment(wVariables, -margin);
+        wLazyConversion.setLayoutData(fdLazyConversion);
+        wLazyConversion.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent arg0) { setSQLToolTip(); } });
 
 		// Table line...
 		wlSQL=new Label(shell, SWT.NONE);
@@ -266,7 +290,7 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 		fdSQL.left  = new FormAttachment(0, 0);
 		fdSQL.top   = new FormAttachment(wbTable, margin );
 		fdSQL.right = new FormAttachment(100, 0);
-		fdSQL.bottom= new FormAttachment(wVariables, 0 );
+		fdSQL.bottom= new FormAttachment(wLazyConversion, -margin );
 		wSQL.setLayoutData(fdSQL);
 		wSQL.addModifyListener(new ModifyListener()
             {
@@ -345,6 +369,7 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
         }
         
         wVariables.setSelection(input.isVariableReplacementActive());
+        wLazyConversion.setSelection(input.isLazyConversionActive());
                
 		wStepname.selectAll();
         setSQLToolTip();
@@ -389,6 +414,7 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
         meta.setLookupFromStep( transMeta.findStep( wDatefrom.getText() ) );
         meta.setExecuteEachInputRow(wEachRow.getSelection());
         meta.setVariableReplacementActive(wVariables.getSelection());
+        meta.setLazyConversionActive(wLazyConversion.getSelection());
     }
     
 	private void ok()

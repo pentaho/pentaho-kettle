@@ -1885,7 +1885,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
         }
         catch (KettleDatabaseException dbe)
         {
-            // Oops, rollback!
+            // Oops, roll back!
             rep.rollback();
 
             log.logError(toString(), Messages.getString("TransMeta.Log.ErrorSavingTransformationToRepository") + Const.CR + dbe.getMessage()); //$NON-NLS-1$

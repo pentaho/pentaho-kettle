@@ -361,6 +361,9 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
         return false;
     }
     
+    public boolean needsToLockAllTables() {
+    	return true;
+    }
     
     /**
      * @return extra help text on the supported options on the selected database platform.

@@ -128,7 +128,7 @@ public class TableInput extends BaseStep implements StepInterface
         {
             if (data.thisrow!=null) // We can expect more rows
             {
-                data.nextrow=data.db.getRow(data.rs); 
+                data.nextrow=data.db.getRow(data.rs, meta.isLazyConversionActive()); 
                 if (data.nextrow!=null) linesInput++;
             }
         }
