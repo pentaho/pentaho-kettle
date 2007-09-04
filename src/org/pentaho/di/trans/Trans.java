@@ -1801,7 +1801,7 @@ public class Trans implements VariableSpace
     /**
      * executes an existing transSplitter, with tranformation already split.
      * 
-     * @see SpoonTransformationDelegate
+     * @see Spoon-Transformation-Delegate
      * 
      * @param transSplitter
      * @param executionConfiguration
