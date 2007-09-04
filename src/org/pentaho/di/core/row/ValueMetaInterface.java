@@ -47,7 +47,6 @@ public interface ValueMetaInterface extends Cloneable
 
     
     
-    
     /** The storage type is the same as the indicated value type */
     public static final int STORAGE_TYPE_NORMAL        =  0; 
     
@@ -82,6 +81,9 @@ public interface ValueMetaInterface extends Cloneable
     /** Indicating that the string content should be LEFT AND RIGHT trimmed if conversion is to occur to another data type */
     public static final int TRIM_TYPE_BOTH  = 3;
     
+    
+    /** Default integer length for hardcoded metadata integers */
+    public static final int DEFAULT_INTEGER_LENGTH = 10;
 
     public String   getName();
     public void     setName(String name);

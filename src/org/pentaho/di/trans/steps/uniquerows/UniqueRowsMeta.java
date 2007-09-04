@@ -200,8 +200,7 @@ public class UniqueRowsMeta extends BaseStepMeta implements StepMetaInterface
 		if (countRows)
 		{
 			ValueMetaInterface v = new ValueMeta(countField, ValueMetaInterface.TYPE_INTEGER);
-			v.setLength(9);
-            v.setPrecision(0);
+			v.setLength(ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0);
 			v.setOrigin(name);
 			row.addValueMeta(v);
 		}

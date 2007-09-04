@@ -248,8 +248,7 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 	public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException
 	{
 		ValueMetaInterface v=new ValueMeta(valuename, ValueMetaInterface.TYPE_INTEGER);
-		v.setLength(9);
-        v.setPrecision(0);
+		v.setLength(ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0);
 		v.setOrigin(name);
 		row.addValueMeta( v );
 	}

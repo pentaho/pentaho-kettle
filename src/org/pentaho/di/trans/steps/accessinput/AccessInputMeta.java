@@ -504,13 +504,12 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface
 			v.setLength(100, -1);
 			v.setOrigin(name);
 			r.addValueMeta(v);
-		}
-		
+		}		
 		
 		if (includeRowNumber)
 		{
-			ValueMetaInterface v = new ValueMeta(space.environmentSubstitute(rowNumberField), ValueMeta.TYPE_NUMBER);
-			v.setLength(7, 0);
+			ValueMetaInterface v = new ValueMeta(space.environmentSubstitute(rowNumberField), ValueMeta.TYPE_INTEGER);
+			v.setLength(ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0);
 			v.setOrigin(name);
 			r.addValueMeta(v);
 		}

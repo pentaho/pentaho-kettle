@@ -301,8 +301,7 @@ public class SystemDataMeta extends BaseStepMeta implements StepMetaInterface
             case TYPE_SYSTEM_INFO_JOB_BATCH_ID:
             case TYPE_SYSTEM_INFO_KETTLE_BUILD_VERSION:
 				v = new ValueMeta(fieldName[i], ValueMetaInterface.TYPE_INTEGER);
-                v.setLength(9);
-                v.setPrecision(0);
+				v.setLength(ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0);
 				break;
 				
 			case TYPE_SYSTEM_INFO_TRANS_NAME :

@@ -404,7 +404,7 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
             if (addingLineNrInGroup && !Const.isEmpty(lineNrInGroupField))
             {
             	ValueMetaInterface lineNr = new ValueMeta(lineNrInGroupField, ValueMetaInterface.TYPE_INTEGER);
-                lineNr.setLength(9);
+            	lineNr.setLength(ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0);
                 lineNr.setOrigin(origin);
                 r.addValueMeta(lineNr);
             }

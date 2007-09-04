@@ -45,28 +45,28 @@ public class ExecSQL extends BaseStep implements StepInterface
 		if (upd != null && upd.length() > 0)
 		{
 			ValueMeta meta = new ValueMeta(upd, ValueMetaInterface.TYPE_INTEGER);
-			meta.setLength(9);
+			meta.setLength(ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0);
 			resultRow.addValue(meta, new Long(result.getNrLinesUpdated()));
 		}
 
 		if (ins != null && ins.length() > 0)
 		{
 			ValueMeta meta = new ValueMeta(ins, ValueMetaInterface.TYPE_INTEGER);
-			meta.setLength(9);
+			meta.setLength(ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0);
 			resultRow.addValue(meta, new Long(result.getNrLinesOutput()));
 		}
 
 		if (del != null && del.length() > 0)
 		{
 			ValueMeta meta = new ValueMeta(del, ValueMetaInterface.TYPE_INTEGER);
-			meta.setLength(9);
+			meta.setLength(ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0);
 			resultRow.addValue(meta, new Long(result.getNrLinesDeleted()));
 		}
 
 		if (read != null && read.length() > 0)
 		{
 			ValueMeta meta = new ValueMeta(read, ValueMetaInterface.TYPE_INTEGER);
-			meta.setLength(9);
+			meta.setLength(ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0);
 			resultRow.addValue(meta, new Long(result.getNrLinesRead()));
 		}
 
