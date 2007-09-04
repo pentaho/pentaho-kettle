@@ -44,7 +44,6 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
-import org.pentaho.di.job.entries.copyfiles.Messages;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.job.entry.validator.ValidatorContext;
@@ -187,13 +186,12 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
     List<RowMetaAndData> rows = result.getRows();
     RowMetaAndData resultRow = null;
 
-    boolean rcode = true;
+    int NrErrFiles = 0;
 
     String args[] = arguments;
     String fmasks[] = filemasks;
     result.setResult(true);
 
-    rcode = true;
 
     if (argFromPrevious) {
       log.logDetailed(toString(), Messages.getString(
@@ -202,6 +200,7 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
 
     if (argFromPrevious && rows != null) // Copy the input row to the (command line) arguments
     {
+
       for (int iteration = 0; iteration < rows.size(); iteration++) {
         resultRow = rows.get(iteration);
         args = new String[resultRow.size()];
@@ -210,41 +209,37 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
         args[iteration] = resultRow.getString(0, null);
         fmasks[iteration] = resultRow.getString(1, null);
 
-        if (rcode) {
           // ok we can process this file/folder
           log.logDetailed(toString(), Messages.getString(
               "JobEntryDeleteFiles.ProcessingRow", args[iteration], fmasks[iteration])); //$NON-NLS-1$
 
           if (!ProcessFile(args[iteration], fmasks[iteration])) {
-            rcode = false;
+        	  NrErrFiles = NrErrFiles++;
           }
-        } else {
-          log.logDetailed(toString(), Messages.getString(
-              "JobEntryDeleteFiles.IgnoringRow", args[iteration], fmasks[iteration])); //$NON-NLS-1$
-        }
+       
       }
     } else if (arguments != null) {
+
       for (int i = 0; i < arguments.length; i++) {
-        if (rcode) {
+        
           // ok we can process this file/folder
           log.logDetailed(toString(), Messages.getString(
               "JobEntryDeleteFiles.ProcessingArg", arguments[i], filemasks[i])); //$NON-NLS-1$
           if (!ProcessFile(arguments[i], filemasks[i])) {
-            rcode = false;
+        	  NrErrFiles = NrErrFiles++;
           }
-        } else {
-          log
-              .logDetailed(toString(), Messages
-                  .getString("JobEntryDeleteFiles.IgnoringArg", arguments[i], filemasks[i])); //$NON-NLS-1$
-        }
+        
 
       }
     }
    
-    //  String realFilefoldername = environmentSubstitute(filename);
-    //  String realwilcard = environmentSubstitute(wildcard);
-
-    result.setResult(rcode);
+ 
+    if (NrErrFiles>0)
+    {
+    	result.setResult(false);
+    	result.setNrErrors(NrErrFiles);
+    }
+    
 
     return result;
   }
@@ -352,6 +347,10 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
 						// Not in the Base Folder..Only if include sub folders  
 						 if (includeSubfolders && (info.getFile().getType() == FileType.FILE) && GetFileWildcard(short_filename,file_wildcard))
 						 {
+							if (log.isDetailed())
+							{ 
+								log.logDetailed(toString(), Messages.getString("JobEntryDeleteFiles.DeletingFile",info.getFile().toString())); //$NON-NLS-1$
+							}
 							returncode= true; 				
 							 
 						 }
@@ -362,6 +361,10 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
 						 
 						 if ((info.getFile().getType() == FileType.FILE) && GetFileWildcard(short_filename,file_wildcard))
 						 {
+							if (log.isDetailed())
+							{ 
+								log.logDetailed(toString(), Messages.getString("JobEntryDeleteFiles.DeletingFile",info.getFile().toString())); //$NON-NLS-1$
+							}
 							returncode= true; 				
 							 
 						 }
