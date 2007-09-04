@@ -19,6 +19,7 @@ import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
@@ -59,9 +60,9 @@ public class JobEntryDeleteFilesDialog extends JobEntryDialog implements JobEntr
     private FormData     fdlName, fdName;
 
 	private Label        wlFilename;
-	private Button       wbFilename;
+	private Button       wbFilename,wbDirectory;
 	private TextVar      wFilename;
-	private FormData     fdlFilename, fdbFilename, fdFilename;
+	private FormData     fdlFilename, fdbFilename, fdFilename,fdbDirectory;
 	
 	private Label        wlIncludeSubfolders;
 	private Button       wIncludeSubfolders;
@@ -248,13 +249,51 @@ public class JobEntryDeleteFilesDialog extends JobEntryDialog implements JobEntr
 		fdlFilename.top  = new FormAttachment(wSettings, 2*margin);
 		fdlFilename.right= new FormAttachment(middle, -margin);
 		wlFilename.setLayoutData(fdlFilename);
+		
+		
+		
+		// Browse Source folders button ...
+		wbDirectory=new Button(shell, SWT.PUSH| SWT.CENTER);
+		props.setLook(wbDirectory);
+		wbDirectory.setText(Messages.getString("JobDeleteFiles.BrowseFolders.Label"));
+		fdbDirectory=new FormData();
+		fdbDirectory.right= new FormAttachment(100, -margin);
+		fdbDirectory.top  = new FormAttachment(wSettings, margin);
+		wbDirectory.setLayoutData(fdbDirectory);
+		
+		wbDirectory.addSelectionListener
+		(
+			new SelectionAdapter()
+			{
+				public void widgetSelected(SelectionEvent e)
+				{
+					DirectoryDialog ddialog = new DirectoryDialog(shell, SWT.OPEN);
+					if (wFilename.getText()!=null)
+					{
+						ddialog.setFilterPath(jobMeta.environmentSubstitute(wFilename.getText()) );
+					}
+					
+					 // Calling open() will open and run the dialog.
+			        // It will return the selected directory, or
+			        // null if user cancels
+			        String dir = ddialog.open();
+			        if (dir != null) {
+			          // Set the text box to the new selection
+			        	wFilename.setText(dir);
+			        }
+					
+				}
+			}
+		);
+				
 
 		wbFilename=new Button(shell, SWT.PUSH| SWT.CENTER);
 		props.setLook(wbFilename);
-		wbFilename.setText(Messages.getString("System.Button.Browse"));
+		wbFilename.setText(Messages.getString("JobDeleteFiles.BrowseFiles.Label"));
 		fdbFilename=new FormData();
 		fdbFilename.right= new FormAttachment(100, 0);
 		fdbFilename.top  = new FormAttachment(wSettings, margin);
+		fdbFilename.right= new FormAttachment(wbDirectory, -margin);
 		wbFilename.setLayoutData(fdbFilename);
 
 		wbaFilename=new Button(shell, SWT.PUSH| SWT.CENTER);
