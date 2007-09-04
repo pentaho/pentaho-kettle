@@ -704,7 +704,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		if (includeRowNumber)
 		{
-            ValueMetaInterface v = new ValueMeta(rowNumberField, ValueMetaInterface.TYPE_NUMBER);
+            ValueMetaInterface v = new ValueMeta(rowNumberField, ValueMetaInterface.TYPE_INTEGER);
 			v.setLength(7);
             v.setPrecision(0);
 			v.setOrigin(name);

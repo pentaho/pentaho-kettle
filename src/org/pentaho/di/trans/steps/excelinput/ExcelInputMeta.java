@@ -638,7 +638,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		if (sheetRowNumberField!=null && sheetRowNumberField.length()>0)
 		{
-            ValueMetaInterface v = new ValueMeta(sheetRowNumberField, ValueMetaInterface.TYPE_NUMBER);
+            ValueMetaInterface v = new ValueMeta(sheetRowNumberField, ValueMetaInterface.TYPE_INTEGER);
 			v.setLength(7);
             v.setPrecision(0);
 			v.setOrigin(name);
@@ -646,7 +646,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		if (rowNumberField!=null && rowNumberField.length()>0)
 		{
-            ValueMetaInterface v = new ValueMeta(rowNumberField, ValueMetaInterface.TYPE_NUMBER);
+            ValueMetaInterface v = new ValueMeta(rowNumberField, ValueMetaInterface.TYPE_INTEGER);
             v.setLength(7);
             v.setPrecision(0);
 			v.setOrigin(name);
