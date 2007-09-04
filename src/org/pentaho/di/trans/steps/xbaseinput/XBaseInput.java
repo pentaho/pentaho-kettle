@@ -188,6 +188,9 @@ public class XBaseInput extends BaseStep implements StepInterface
         {
             data.xbi=new XBase(data.file_dbf.getContent().getInputStream());
             data.xbi.setDbfFile(data.file_dbf.getName().getURI());
+            if (!Const.isEmpty(meta.getCharactersetName())) {
+            	data.xbi.getReader().setCharactersetName(meta.getCharactersetName());
+            }
             data.xbi.open();
             
             logBasic(Messages.getString("XBaseInput.Log.OpenedXBaseFile")+" : ["+data.xbi+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$

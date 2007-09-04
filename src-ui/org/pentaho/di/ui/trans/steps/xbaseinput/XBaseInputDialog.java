@@ -104,6 +104,9 @@ public class XBaseInputDialog extends BaseStepDialog implements StepDialogInterf
     private Text         wInclFilenameField;
     private FormData     fdlInclFilenameField, fdInclFilenameField;
 
+    private Label        wlCharactersetName;
+    private Text         wCharactersetName;
+    private FormData     fdlCharactersetName, fdCharactersetName;
     
 	private XBaseInputMeta input;
 	private boolean backupChanged, backupAddRownr;
@@ -367,6 +370,26 @@ public class XBaseInputDialog extends BaseStepDialog implements StepDialogInterf
         fdInclFilenameField.right= new FormAttachment(100, 0);
         wInclFilenameField.setLayoutData(fdInclFilenameField);
 
+        // #CRQ-6087
+        //
+        wlCharactersetName=new Label(shell, SWT.RIGHT);
+        wlCharactersetName.setText(Messages.getString("XBaseInputDialog.CharactersetName.Label"));
+        props.setLook(wlCharactersetName);
+        fdlCharactersetName=new FormData();
+        fdlCharactersetName.left = new FormAttachment(0, 0);
+        fdlCharactersetName.right  = new FormAttachment(middle, -margin);
+        fdlCharactersetName.top  = new FormAttachment(wInclFilename, margin);
+        wlCharactersetName.setLayoutData(fdlCharactersetName);
+        wCharactersetName=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wCharactersetName.setToolTipText(Messages.getString("XBaseInputDialog.CharactersetName.Tooltip"));
+        props.setLook(wCharactersetName);
+        wCharactersetName.addModifyListener(lsMod);
+        fdCharactersetName=new FormData();
+        fdCharactersetName.left = new FormAttachment(middle, 0);
+        fdCharactersetName.top  = new FormAttachment(wInclFilename, margin);
+        fdCharactersetName.right= new FormAttachment(100, 0);
+        wCharactersetName.setLayoutData(fdCharactersetName);
+
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
 		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
@@ -380,7 +403,7 @@ public class XBaseInputDialog extends BaseStepDialog implements StepDialogInterf
 		// Add listeners
 		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel(); } };
         lsPreview  = new Listener() { public void handleEvent(Event e) { preview(); } };
-		lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
+		lsOK       = new Listener() { public void handleEvent(Event e) { ok(); } };
 		
 		wCancel.addListener(SWT.Selection, lsCancel);
         wPreview.addListener (SWT.Selection, lsPreview);

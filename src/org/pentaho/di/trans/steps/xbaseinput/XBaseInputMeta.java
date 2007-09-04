@@ -72,6 +72,9 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface
 
     /** The name of the field in the output containing the filename */
     private String filenameField;
+    
+    /** The character set / encoding used in the string or memo fields */
+    private String charactersetName;
 
 
 	public XBaseInputMeta()
@@ -262,6 +265,7 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface
             
             includeFilename    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "include"));
             filenameField      = XMLHandler.getTagValue(stepnode, "include_field");
+            charactersetName   = XMLHandler.getTagValue(stepnode, "charset_name");
             
             acceptingFilenames = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "accept_filenames")); //$NON-NLS-1$
             acceptingField     = XMLHandler.getTagValue(stepnode, "accept_field"); //$NON-NLS-1$
@@ -368,7 +372,7 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface
 
         retval.append("    " + XMLHandler.addTagValue("include", includeFilename));
         retval.append("    " + XMLHandler.addTagValue("include_field", filenameField));
-
+        retval.append("    " + XMLHandler.addTagValue("charset_name", charactersetName));
 
         retval.append("    " + XMLHandler.addTagValue("accept_filenames", acceptingFilenames));
         retval.append("    " + XMLHandler.addTagValue("accept_field", acceptingField));
@@ -388,6 +392,7 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface
             
             includeFilename = rep.getStepAttributeBoolean(id_step, "include");
             filenameField = rep.getStepAttributeString(id_step, "include_field");
+            charactersetName = rep.getStepAttributeString(id_step, "charset_name");
 
             acceptingFilenames = rep.getStepAttributeBoolean(id_step, "accept_filenames");
             acceptingField     = rep.getStepAttributeString (id_step, "accept_field");
@@ -412,6 +417,7 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface
             
             rep.saveStepAttribute(id_transformation, id_step, "include", includeFilename);
             rep.saveStepAttribute(id_transformation, id_step, "include_field", filenameField);
+            rep.saveStepAttribute(id_transformation, id_step, "charset_name", charactersetName);
 
             rep.saveStepAttribute(id_transformation, id_step, "accept_filenames", acceptingFilenames); //$NON-NLS-1$
             rep.saveStepAttribute(id_transformation, id_step, "accept_field", acceptingField); //$NON-NLS-1$
@@ -460,8 +466,6 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface
                 xbi.close();
             }
         }
-
-		
 	}
 
 	public StepInterface getStep(StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr, Trans trans)
@@ -489,5 +493,19 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface
     {
         return new String[] { "javadbf.jar", };
     }
+
+	/**
+	 * @return the charactersetName
+	 */
+	public String getCharactersetName() {
+		return charactersetName;
+	}
+
+	/**
+	 * @param charactersetName the charactersetName to set
+	 */
+	public void setCharactersetName(String charactersetName) {
+		this.charactersetName = charactersetName;
+	}
 
 }

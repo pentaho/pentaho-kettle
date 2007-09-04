@@ -307,4 +307,11 @@ public class XBase
     {
         this.dbfFile = dbfFile;
     }
+
+	/**
+	 * @return the reader
+	 */
+	public DBFReader getReader() {
+		return reader;
+	}
 }
