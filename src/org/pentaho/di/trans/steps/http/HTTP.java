@@ -20,13 +20,13 @@ import java.io.InputStream;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.util.URIUtil;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueDataUtil;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -118,32 +118,37 @@ public class HTTP extends BaseStep implements StepInterface
         }
     }
 
-    private String determineUrl(RowMetaInterface outputRowMeta, Object[] row) throws KettleValueException
+    private String determineUrl(RowMetaInterface outputRowMeta, Object[] row) throws KettleValueException, KettleException
     {
-        StringBuffer url = new StringBuffer(meta.getUrl()); // the base URL
-        
-        for (int i=0;i<data.argnrs.length;i++)
-        {
-            if (i==0)
-            {
-                url.append('?');
-            }
-            else
-            {
-                url.append('&');
-            }
-            url.append(meta.getArgumentParameter()[i]);
-            url.append('=');
-            
-            String s = outputRowMeta.getString(row, data.argnrs[i]);
-            if ( s != null )
-            	s = ValueDataUtil.replace(s, " ", "%20");
-            url.append(s);
-        }
-        
-        // TODO: maybe do some more replacement of "forbidden" characters
-        
-        return url.toString();
+    	try
+    	{
+	        StringBuffer url = new StringBuffer(meta.getUrl()); // the base URL
+	        
+	        for (int i=0;i<data.argnrs.length;i++)
+	        {
+	        	if (i==0 && url.indexOf("?")<0)
+	            {
+	                url.append('?');
+	            }
+	            else
+	            {
+	                url.append('&');
+	            }
+	
+	        	url.append(URIUtil.encodeWithinQuery(meta.getArgumentParameter()[i]));
+	        	url.append('=');
+	            String s = outputRowMeta.getString(row, data.argnrs[i]);
+	            if ( s != null )
+	            	s = URIUtil.encodeWithinQuery(s);
+	            url.append(s);
+	        }
+	        
+	        return url.toString();
+	    }
+	    catch(Exception e)
+	    {
+	        throw new KettleException("Unable to create URL.", e);
+	    }
     }
 
     public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
