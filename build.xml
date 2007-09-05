@@ -206,7 +206,7 @@
 	  	<jar jarfile="${lib}/kettle-engine-3.0.jar" 
 	    	 basedir="${classes}" 
 	    	 includes="**/* ../build_version.txt"
-	  	     excludes="**/Thumbs.db **/kettle.jar"
+	  	     excludes="**/Thumbs.db **/kettle.jar **/derbyOld **/derbyNew"
 	  		>
                 <manifest>
                     <attribute name="Implementation-Title" value="Kettle 3.0 Engine" />
@@ -642,6 +642,8 @@
 	  	<delete dir="${api}"/>
 	  	<delete dir="${webstart}"/>
 	  	<delete dir="libvars"/>
+	  	<delete dir="test/derbyOld"/>
+	  	<delete dir="test/derbyNew"/>
 	  	<delete>
 	        <fileset dir=".">
 			  <include name="*.zip"/>
