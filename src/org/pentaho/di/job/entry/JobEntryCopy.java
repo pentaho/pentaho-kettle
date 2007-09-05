@@ -152,8 +152,7 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 	 * @param databases
 	 *            A list with all defined databases
 	 */
-	public JobEntryCopy(LogWriter log, Repository rep, long id_job, long id_jobentry_copy,
-			List<JobEntryInterface> jobentries, List<DatabaseMeta> databases) throws KettleException
+	public JobEntryCopy(LogWriter log, Repository rep, long id_job, long id_jobentry_copy, List<JobEntryInterface> jobentries, List<DatabaseMeta> databases) throws KettleException
 	{
 		try
 		{
@@ -194,6 +193,8 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 
 							// Load the attributes for that jobentry
 							entry.loadRep(rep, id_jobentry, databases);
+							entry.setID(id_jobentry);
+							
 							jobentries.add(entry);
 						} else
 						{
@@ -307,8 +308,7 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 
 	public boolean equals(Object o)
 	{
-		if (o == null)
-			return false;
+		if (o == null) return false;
 		JobEntryCopy je = (JobEntryCopy) o;
 		return je.entry.getName().equalsIgnoreCase(entry.getName()) && je.getNr() == getNr();
 	}
