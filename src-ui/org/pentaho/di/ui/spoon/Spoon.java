@@ -291,7 +291,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	private XulMenuBar menuBar;
 
 	private Tree selectionTree;
-	private Tree sharedObjectsTree;
 	private Tree coreObjectsTree;
 
 	private static final String APPL_TITLE = APP_NAME;
@@ -331,8 +330,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	private List<Object[]> menuListeners = new ArrayList<Object[]>();
 
 	private Map<String, Menu> menuMap = new HashMap<String, Menu>();
-	
-	private List<DatabaseMeta> sharedDatabases;
 
     /**
      * This is the main procedure for Spoon.
@@ -1166,7 +1163,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	}
 
 	private static final String STRING_SPOON_MAIN_TREE = Messages.getString("Spoon.MainTree.Label");
-	private static final String STRING_SPOON_SHARED_OBJECTS_TREE = Messages.getString("Spoon.SharedObjectsTree.Label");
     private static final String STRING_SPOON_CORE_OBJECTS_TREE= Messages.getString("Spoon.CoreObjectsTree.Label");
 
 	private void addTree()
@@ -1229,37 +1225,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 		// Set a listener on the tree
 		addDragSourceToTree(selectionTree);
-
-		////////////////////////////////////////////////////////////////////////////////////////////////////
-		//
-		// Now set up the shared objects tree.
-		//
-		sharedObjectsTree = new Tree(mainExpandBar, SWT.SINGLE | SWT.BORDER);
-		props.setLook(sharedObjectsTree);
-		sharedObjectsTree.setLayout(new FillLayout());
-
-		ExpandItem sharedItem = new ExpandItem(mainExpandBar, SWT.NONE);
-		sharedItem.setControl(sharedObjectsTree);
-		sharedItem.setHeight(shell.getBounds().height);
-		setHeaderImage(sharedItem, GUIResource.getInstance().getImageLogoSmall(), STRING_SPOON_SHARED_OBJECTS_TREE, 0);
-
-		// Add a tree memory as well...
-		//
-		TreeMemory.addTreeListener(sharedObjectsTree, STRING_SPOON_SHARED_OBJECTS_TREE);
-
-		sharedObjectsTree.addSelectionListener(new SelectionAdapter() 
-			{ 
-				public void widgetSelected(SelectionEvent e) 
-				{ 
-					setMenu(sharedObjectsTree); 
-				} 
-			}
-		);
-		sharedObjectsTree.addSelectionListener(new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e){ doubleClickedInTree(sharedObjectsTree); } });
-
-		// Keyboard shortcuts!
-		sharedObjectsTree.addKeyListener(defKeys);
-		sharedObjectsTree.addKeyListener(modKeys);
 	
 		// Handle behavior for the main expand bar
 		//
@@ -1380,70 +1345,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
             expandItem.setText(string);
 			}
 		 */
-	}
-	
-	private void refreshSharedObjects()
-	{
-		GUIResource guiResource = GUIResource.getInstance();
-		
-		// Draw the shared objects:
-		// - database connections
-		// - TODO cluster schemas
-		// - TODO partition schema
-
-		sharedDatabases = new ArrayList<DatabaseMeta>();
-
-		HasDatabasesInterface databasesInterface = getActiveHasDatabasesInterface();
-		if (databasesInterface!=null) 
-		{
-			// What are the shared database connections?
-			//
-			for (DatabaseMeta databaseMeta : databasesInterface.getDatabases()) {
-				if (databaseMeta.isShared()) {
-					sharedDatabases.add(databaseMeta);
-				}
-			}
-		}
-		
-		// Also pick up the databases from the repository (if any)
-		//
-		if (rep!=null)
-		{
-			try {
-				sharedDatabases.addAll(rep.readDatabases());
-			} catch (KettleException e) {
-				log.logError(toString(), "Unexpected repository error", e);
-			}
-		}
-		
-		// Clear the tree..
-		//
-		sharedObjectsTree.removeAll();
-
-		// OK, lets display the shared databases
-		//
-		if (sharedDatabases.size()>0) 
-		{
-			TreeItem databasesItem = new TreeItem(sharedObjectsTree, SWT.NONE);
-			databasesItem.setText(STRING_CONNECTIONS);
-			databasesItem.setImage(GUIResource.getInstance().getImageConnection());
-			TreeMemory.getInstance().storeExpanded(STRING_SPOON_SHARED_OBJECTS_TREE, databasesItem, true);
-			
-			// Draw the connections themselves below it.
-			for (DatabaseMeta databaseMeta : sharedDatabases)
-			{
-				TreeItem tiDb = new TreeItem(databasesItem, SWT.NONE);
-				tiDb.setText(databaseMeta.getName());
-				tiDb.setImage(guiResource.getImageConnection());
-				if (databaseMeta.isShared()) 
-				{
-					tiDb.setFont(guiResource.getFontBold());
-				}
-			}
-			
-		}
-		
-		TreeMemory.setExpandedFromMemory(sharedObjectsTree, STRING_SPOON_SHARED_OBJECTS_TREE);
 	}
 
 	private void refreshCoreObjectsHistory()
@@ -1790,13 +1691,13 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	 */
 	public TreeSelection[] getTreeObjects(final Tree tree)
 	{
-		return delegates.tree.getTreeObjects(tree, selectionTree, coreObjectsTree, sharedObjectsTree);
+		return delegates.tree.getTreeObjects(tree, selectionTree, coreObjectsTree);
 	}
 
 
 	private void addDragSourceToTree(final Tree tree)
 	{
-		delegates.tree.addDragSourceToTree(tree, selectionTree, coreObjectsTree, sharedObjectsTree);
+		delegates.tree.addDragSourceToTree(tree, selectionTree, coreObjectsTree);
 
 	}
 
@@ -4070,7 +3971,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		// Set the expanded state of the complete tree.
 		TreeMemory.setExpandedFromMemory(selectionTree, STRING_SPOON_MAIN_TREE);
 
-		refreshSharedObjects();
 		refreshCoreObjectsHistory();
 
 		selectionTree.setFocus();
@@ -6173,13 +6073,5 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		
 		return "Y".equalsIgnoreCase(answer.toString());
 	}
-
-	/**
-	 * @return the sharedDatabases
-	 */
-	public List<DatabaseMeta> getSharedDatabases() {
-		return sharedDatabases;
-	}
-
 	
 }

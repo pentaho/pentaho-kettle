@@ -41,7 +41,7 @@ public class SpoonTreeDelegate extends SpoonDelegate
 	 * @return The object that is selected in the tree or null if we couldn't
 	 *         figure it out. (titles etc. == null)
 	 */
-	public TreeSelection[] getTreeObjects(final Tree tree, Tree selectionTree, Tree coreObjectsTree, Tree sharedObjectsTree)
+	public TreeSelection[] getTreeObjects(final Tree tree, Tree selectionTree, Tree coreObjectsTree)
 	{
 		List<TreeSelection> objects = new ArrayList<TreeSelection>();
 
@@ -213,42 +213,11 @@ public class SpoonTreeDelegate extends SpoonDelegate
 				}
 			}
 		}
-		if (tree.equals(sharedObjectsTree))
-		{
-			TreeItem[] selection = sharedObjectsTree.getSelection();
-			for (int s = 0; s < selection.length; s++)
-			{
-				TreeItem treeItem = selection[s];
-				String[] path = ConstUI.getTreeStrings(treeItem);
-
-				TreeSelection object = null;
-
-				switch (path.length)
-				{
-				case 0:
-					break;
-				case 1: // // the top level database connections entry
-					break;
-				case 2: 
-					if (path[0].equals(Spoon.STRING_CONNECTIONS)) // click on a shared database connection... 
-					{
-						DatabaseMeta databaseMeta = DatabaseMeta.findDatabase(spoon.getSharedDatabases(), path[1]);
-						object = new TreeSelection(path[1], databaseMeta);
-					}
-					break;
-				}
-				
-				if (object != null)
-				{
-					objects.add(object);
-				}
-			}
-		}
 
 		return objects.toArray(new TreeSelection[objects.size()]);
 	}
 
-	public void addDragSourceToTree(final Tree tree,final Tree selectionTree,final Tree coreObjectsTree, final Tree sharedObjectsTree)
+	public void addDragSourceToTree(final Tree tree,final Tree selectionTree,final Tree coreObjectsTree)
 	{
 		// Drag & Drop for steps
 		Transfer[] ttypes = new Transfer[] { XMLTransfer.getInstance() };
@@ -263,7 +232,7 @@ public class SpoonTreeDelegate extends SpoonDelegate
 
 			public void dragSetData(DragSourceEvent event)
 			{
-				TreeSelection[] treeObjects = getTreeObjects(tree,selectionTree,coreObjectsTree, sharedObjectsTree);
+				TreeSelection[] treeObjects = getTreeObjects(tree,selectionTree,coreObjectsTree);
 				if (treeObjects.length == 0)
 				{
 					event.doit = false;
