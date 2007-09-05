@@ -41,6 +41,8 @@ align="vertical" >
                     <menuitem value="edit-copy-steps" acceltext="CTRL-C"  accesskey="ctrl-c" label="%Spoon.Menu.Edit.CopyToClipboard"/>
                     <menuitem value="edit-paste-steps" acceltext="CTRL-V"  accesskey="ctrl-v" label="%Spoon.Menu.Edit.PasteFromClipboard"/>
 					<menuseparator/>
+                    <menuitem value="explore-database" label="%Spoon.Menu.ExploreConnection"/>
+					<menuseparator/>
                     <menuitem value="edit-options" label="%Spoon.Menu.Edit.Options"/>
                </menupopup>
           </menu>
@@ -116,10 +118,10 @@ align="vertical" >
 			<toolbarbutton value="trans-replay"  label="%Spoon.Menu.Transformation.Replay" image="ui/images/replay.png" tooltiptext="%Spoon.Tooltip.ReplayTranformation"/>
 			<toolbarseparator />
 			<toolbarbutton value="trans-verify" label="%Spoon.Menu.Transformation.Verify" image="ui/images/check.png" tooltiptext="%Spoon.Tooltip.VerifyTranformation"/>
-			<toolbarseparator />
 			<toolbarbutton value="trans-impact" label="%Spoon.Menu.Transformation.Impact" image="ui/images/impact.png" tooltiptext="%Spoon.Tooltip.AnalyzeTranformation"/>
-			<toolbarseparator />
 			<toolbarbutton value="trans-get-sql" label="%Spoon.Menu.Transformation.GetSQL" image="ui/images/SQLbutton.png" tooltiptext="%Spoon.Tooltip.GenerateSQLForTranformation"/>
+			<toolbarseparator />
+			<toolbarbutton value="explore-database" label="%Spoon.Menu.ExploreConnection" image="ui/images/DLU.png" tooltiptext="%Spoon.Tooltip.ExploreConnection"/>
 		</toolbar>
 	</toolbox>
 

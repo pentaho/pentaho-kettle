@@ -6013,4 +6013,21 @@ public class Repository
 	public DatabaseMeta getDatabaseMeta() {
 		return databaseMeta;
 	}
+	
+	/**
+	 * Read all the databases defined in the repository
+	 * @return a list of all the databases defined in the repository
+	 * @throws KettleException
+	 */
+	public List<DatabaseMeta> readDatabases() throws KettleException
+	{
+		List<DatabaseMeta> databases = new ArrayList<DatabaseMeta>();
+		long[] ids = getDatabaseIDs();
+		for (int i=0;i<ids.length;i++) 
+		{
+			DatabaseMeta databaseMeta = new DatabaseMeta(this, ids[i]);
+			databases.add(databaseMeta);
+		}
+		return databases;
+	}
 }

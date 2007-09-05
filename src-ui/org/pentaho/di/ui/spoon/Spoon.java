@@ -1410,12 +1410,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		if (rep!=null)
 		{
 			try {
-				long[] ids = rep.getDatabaseIDs();
-				for (int i=0;i<ids.length;i++) 
-				{
-					DatabaseMeta databaseMeta = new DatabaseMeta(rep, ids[i]);
-					sharedDatabases.add(databaseMeta);
-				}
+				sharedDatabases.addAll(rep.readDatabases());
 			} catch (KettleException e) {
 				log.logError(toString(), "Unexpected repository error", e);
 			}
@@ -1956,6 +1951,41 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		if ("database-inst-clear-cache".equals(id)){
 			final DatabaseMeta databaseMeta = (DatabaseMeta) selectionObject;
 			delegates.db.clearDBCache(databaseMeta);
+		}
+	}
+	
+	public void exploreDatabase() {
+		// Show a minimal window to allow you to quickly select the database connection to explore
+		//
+		List<DatabaseMeta> databases = new ArrayList<DatabaseMeta>();
+		
+		HasDatabasesInterface databasesInterface = getActiveHasDatabasesInterface();
+		if (databasesInterface!=null) {
+			databases.addAll(databasesInterface.getDatabases());
+		}
+		
+		if (rep!=null) {
+			try {
+				databases.addAll(rep.readDatabases());
+			} catch (KettleException e) {
+				log.logError(toString(), "Unexpected repository error", e);
+			}
+		}
+		
+		if (databases.size()==0) return;
+		
+		// OK, get a list of all the database names...
+		// 
+		String[] databaseNames = new String[databases.size()];
+		for (int i=0;i<databases.size();i++) databaseNames[i] = databases.get(i).getName();
+		
+		// show the shell...
+		//
+		EnterSelectionDialog dialog = new EnterSelectionDialog(shell, databaseNames, Messages.getString("Spoon.ExploreDB.SelectDB.Title"), Messages.getString("Spoon.ExploreDB.SelectDB.Message"));
+		String name = dialog.open();
+		if (name!=null) {
+			selectionObject = DatabaseMeta.findDatabase(databases, name);
+			exploreDB();
 		}
 	}
 
