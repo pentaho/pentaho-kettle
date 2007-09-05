@@ -221,6 +221,8 @@ public class TextFileOutput extends BaseStep implements StepInterface
     {
     	int length = v.getLength();
     	   	
+    	if (string==null) return new byte[] {};
+    	
     	if( length > -1 && length < string.length() ) {
     		// we need to truncate
     		String tmp = string.substring(0, length);
