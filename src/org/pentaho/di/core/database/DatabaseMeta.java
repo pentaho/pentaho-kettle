@@ -1486,10 +1486,10 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 	public String getSchemaTableCombination(String schemaName, String tableName)
 	{
         if (Const.isEmpty(schemaName)) return tableName; // no need to look further
+        if (isUsingDoubleDecimalAsSchemaTableSeparator()) return schemaName+".."+tableName;
 		return databaseInterface.getSchemaTableCombination(schemaName, tableName);
 	}
-
-
+	
 	public boolean isClob(ValueMetaInterface v)
 	{
 		boolean retval=true;
@@ -2397,5 +2397,43 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 	public void injectVariables(Map<String,String> prop) 
 	{
 		variables.injectVariables(prop);		
-	}    
+	}
+	
+    /**
+     * @return the SQL Server instance
+     */
+    public String getSQLServerInstance()
+    {
+        // This is also covered/persisted by JDBC option MS SQL Server / instancename / <somevalue>
+        // We want to return <somevalue>
+        // --> MSSQL.instancename
+        return (String) getExtraOptions().get("MSSQL.instance");
+    }
+    
+    /**
+     * @param instanceName the SQL Server instance
+     */
+    public void setSQLServerInstance(String instanceName)
+    {
+        // This is also covered/persisted by JDBC option MS SQL Server / instancename / <somevalue>
+        // We want to return set <somevalue>
+        // --> MSSQL.instancename
+        addExtraOption("MSSQL", "instance", instanceName);
+    }
+    
+    /**
+     * @return true if the Microsoft SQL server uses two decimals (..) to separate schema and table (default==false).
+     */
+    public boolean isUsingDoubleDecimalAsSchemaTableSeparator()
+    {
+        return databaseInterface.isUsingDoubleDecimalAsSchemaTableSeparator();
+    }
+    
+    /**
+     * @param useStreaming true if we want the database to stream results (normally this is an option just for MySQL).
+     */
+    public void setUsingDoubleDecimalAsSchemaTableSeparator(boolean useDoubleDecimalSeparator)
+    {
+        databaseInterface.setUsingDoubleDecimalAsSchemaTableSeparator(useDoubleDecimalSeparator);
+    }
 }

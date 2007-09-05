@@ -723,4 +723,13 @@ public interface DatabaseInterface extends Cloneable
      */
     public void setForcingIdentifiersToUpperCase(boolean forceUpperCase);
     
+    /**
+     * @return true if we use a double decimal separator to specify schema/table combinations on MS-SQL server
+     */
+    public boolean isUsingDoubleDecimalAsSchemaTableSeparator();
+
+    /**
+     * @param useDoubleDecimalSeparator true if we should use a double decimal separator to specify schema/table combinations on MS-SQL server
+     */
+    public void setUsingDoubleDecimalAsSchemaTableSeparator(boolean useDoubleDecimalSeparator);
 }

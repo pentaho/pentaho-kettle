@@ -119,6 +119,11 @@ public abstract class BaseDatabaseMeta implements Cloneable, VariableSpace
     public static final String ATTRIBUTE_USE_RESULT_STREAMING = "STREAM_RESULTS";
 
     /**
+     * A flag to determine if we should use a double decimal separator to specify schema/table combinations on MS-SQL server
+     */
+    public static final String ATTRIBUTE_MSSQL_DOUBLE_DECIMAL_SEPARATOR = "MSSQL_DOUBLE_DECIMAL_SEPARATOR";
+
+    /**
      * A flag to determine if we should quote all fields
      */
     public static final String ATTRIBUTE_QUOTE_ALL_FIELDS = "QUOTE_ALL_FIELDS";
@@ -1287,4 +1292,22 @@ public abstract class BaseDatabaseMeta implements Cloneable, VariableSpace
 	{
 		variables.injectVariables(prop);		
 	}    
+	
+    
+    /**
+     * @return true if we use a double decimal separator to specify schema/table combinations on MS-SQL server
+     */
+    public boolean isUsingDoubleDecimalAsSchemaTableSeparator()
+    {
+        String usePool = attributes.getProperty(ATTRIBUTE_MSSQL_DOUBLE_DECIMAL_SEPARATOR, "N"); // DEFAULT TO YES!!
+        return "Y".equalsIgnoreCase(usePool);
+    }
+    
+    /**
+     * @param useDoubleDecimalSeparator true if we should use a double decimal separator to specify schema/table combinations on MS-SQL server
+     */
+    public void setUsingDoubleDecimalAsSchemaTableSeparator(boolean useDoubleDecimalSeparator)
+    {
+        attributes.setProperty(ATTRIBUTE_MSSQL_DOUBLE_DECIMAL_SEPARATOR, useDoubleDecimalSeparator?"Y":"N");
+    }
 }
