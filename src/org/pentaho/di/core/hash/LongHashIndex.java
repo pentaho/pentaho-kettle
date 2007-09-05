@@ -109,17 +109,36 @@ public class LongHashIndex {
 	}
     
     private final void resize() {
-		if (size++ >= resizeThresHold) {
+    	// Increase the size of the index...
+    	//
+    	size++;
+    	
+    	// See if we've reached our resize threshold...
+    	//
+		if (size >= resizeThresHold) {
+			
 			LongHashIndexEntry[] oldIndex = index;
 			
+			// Double the size to keep the size of the index a factor of 2...
+			// Allocate the new array...
+			//
 			int newSize = 2 * index.length;
 
 			LongHashIndexEntry[] newIndex = new LongHashIndexEntry[newSize];
 
+			// Loop over the old index and re-distribute the entries
+			// We want to make sure that the calculation 
+			//     entry.hashCode & ( size - 1) 
+			// ends up in the right location after re-sizing...
+			//
 			for (int i = 0; i < oldIndex.length; i++) {
 				LongHashIndexEntry entry = oldIndex[i];
 				if (entry != null) {
 					oldIndex[i] = null;
+					
+					// Make sure we follow all the linked entries...
+					// This is a bit of extra work, TODO: see how we can avoid it!
+					// 
 					do {
 						LongHashIndexEntry next = entry.nextEntry;
 						int indexPointer = entry.hashCode & (newSize - 1);
@@ -127,10 +146,16 @@ public class LongHashIndex {
 						newIndex[indexPointer] = entry;
 						entry = next;
 					} 
-					while (entry != null);
+					while (entry != null); 
 				}
 			}
+			
+			// Replace the old index with the new one we just created...
+			//
 			index = newIndex;
+			
+			// Also change the resize threshold...
+			//
 			resizeThresHold = (int) (newSize * STANDARD_LOAD_FACTOR);
 		}
 	}
