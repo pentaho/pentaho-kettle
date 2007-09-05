@@ -1548,7 +1548,7 @@ public class Database implements VariableSpace
 								while (row!=null)
 								{
 									result.setNrLinesRead(result.getNrLinesRead()+1);
-									if (log.isDetailed()) log.logDetailed(toString(), row.toString()); // TODO: add method to convert row to string
+									if (log.isDetailed()) log.logDetailed(toString(), rowMeta.getString(row));
                                     row = getRow(rs);
 								}
 								
@@ -1557,6 +1557,8 @@ public class Database implements VariableSpace
 							{
                                 if (log.isDebug()) log.logDebug(toString(), "Error executing query: "+Const.CR+sql);
 							}
+						} catch (KettleValueException e) {
+							throw new KettleDatabaseException(e); // just pass the error upwards.
 						}
 						finally 
 						{

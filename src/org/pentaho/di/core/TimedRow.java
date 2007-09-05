@@ -29,7 +29,17 @@ public class TimedRow
     
     public String toString()
     {
-        return row.toString();
+    	StringBuffer str = new StringBuffer();
+    	for (int i=0;i<row.length;i++) {
+    		if (i>0) str.append(", ");
+    		if (row[i]==null) {
+    			str.append("null");
+    		}
+    		else {
+    			str.append(row[i].toString());
+    		}
+    	}
+        return str.toString();
     }
     
     /**

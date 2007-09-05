@@ -22,7 +22,7 @@ public class RunScriptValuesMod extends RunTestCase
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
-                rowCount*5
+                rowCount*1000*5
             );
         timedTransRunner.init();
         timedTransRunner.runOldEngine(true);
@@ -44,7 +44,7 @@ public class RunScriptValuesMod extends RunTestCase
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
-                rowCount*5
+                rowCount*1000*5
             );
         timedTransRunner.init();
         boolean ok = timedTransRunner.runNewEngine(true);

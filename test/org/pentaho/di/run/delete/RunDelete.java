@@ -32,7 +32,7 @@ public class RunDelete extends RunTestCase
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
-                rowCount
+                rowCount*1000
             );
         assertTrue( timedTransRunner.runOldAndNew() );
 

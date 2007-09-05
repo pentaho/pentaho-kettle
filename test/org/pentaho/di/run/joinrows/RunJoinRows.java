@@ -22,7 +22,7 @@ public class RunJoinRows extends RunTestCase
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
-                rowCount/10
+                rowCount*100
             );
         assertTrue( timedTransRunner.runOldAndNew() );
         
@@ -40,7 +40,7 @@ public class RunJoinRows extends RunTestCase
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
-                rowCount/10
+                rowCount*100
             );
         assertTrue( timedTransRunner.runOldAndNew() );
         

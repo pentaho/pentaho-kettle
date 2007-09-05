@@ -80,7 +80,7 @@ public class RunDimensionLookup extends RunTestCase
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
-                (int) (rowCount/5)
+                (int) (rowCount*1000/5)
             );
         assertTrue( timedTransRunner.runOldAndNew() );
         
@@ -98,7 +98,7 @@ public class RunDimensionLookup extends RunTestCase
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
-                (int) (rowCount*2.5)
+                (int) (rowCount*1000*2.5)
             );
         assertTrue( timedTransRunner.runOldAndNew() );
 
@@ -116,7 +116,7 @@ public class RunDimensionLookup extends RunTestCase
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
-                (int) (rowCount*2.5)
+                (int) (rowCount*1000*2.5)
             );
         assertTrue( timedTransRunner.runOldAndNew() );
 
@@ -134,7 +134,7 @@ public class RunDimensionLookup extends RunTestCase
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
-                (int) (rowCount*2.5)
+                (int) (rowCount*1000*2.5)
             );
         assertTrue( timedTransRunner.runOldAndNew() );
 
@@ -152,7 +152,7 @@ public class RunDimensionLookup extends RunTestCase
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
-                (int) (rowCount*2.5)
+                (int) (rowCount*1000*2.5)
             );
         assertTrue( timedTransRunner.runOldAndNew() );
 
@@ -170,7 +170,7 @@ public class RunDimensionLookup extends RunTestCase
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
-                (int) (rowCount*2.5)
+                (int) (rowCount*1000*2.5)
             );
         assertTrue( timedTransRunner.runOldAndNew() );
 

@@ -22,7 +22,7 @@ public class RunTextFileOutput extends RunTestCase
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
-                rowCount
+                rowCount*1000
             );
         
         timedTransRunner.init();
@@ -44,7 +44,7 @@ public class RunTextFileOutput extends RunTestCase
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
-                rowCount
+                rowCount*1000
             );
         
         timedTransRunner.init();
@@ -66,7 +66,7 @@ public class RunTextFileOutput extends RunTestCase
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
-                rowCount
+                rowCount*1000
             );
         
         timedTransRunner.init();

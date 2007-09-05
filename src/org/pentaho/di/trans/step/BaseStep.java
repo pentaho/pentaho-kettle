@@ -1374,21 +1374,21 @@ public class BaseStep extends Thread implements VariableSpace
         }
     }
 
-    public static void safeModeChecking(RowMetaInterface referenceRow, RowMetaInterface row) throws KettleRowException
+    public static void safeModeChecking(RowMetaInterface referenceRowMeta, RowMetaInterface rowMeta) throws KettleRowException
     {
         // See if the row we got has the same layout as the reference row.
         // First check the number of fields
-        if (referenceRow.size() != row.size())
+        if (referenceRowMeta.size() != rowMeta.size())
         {
-            throw new KettleRowException(Messages.getString("BaseStep.SafeMode.Exception.VaryingSize", ""+referenceRow.size(), ""+row.size(), row.toString()));
+            throw new KettleRowException(Messages.getString("BaseStep.SafeMode.Exception.VaryingSize", ""+referenceRowMeta.size(), ""+rowMeta.size(), rowMeta.toString()));
         }
         else
         {
             // Check field by field for the position of the names...
-            for (int i = 0; i < referenceRow.size(); i++)
+            for (int i = 0; i < referenceRowMeta.size(); i++)
             {
-                ValueMetaInterface referenceValue = referenceRow.getValueMeta(i);
-                ValueMetaInterface compareValue = row.getValueMeta(i);
+                ValueMetaInterface referenceValue = referenceRowMeta.getValueMeta(i);
+                ValueMetaInterface compareValue = rowMeta.getValueMeta(i);
 
                 if (!referenceValue.getName().equalsIgnoreCase(compareValue.getName()))
                 {

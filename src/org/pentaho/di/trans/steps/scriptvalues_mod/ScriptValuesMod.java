@@ -367,7 +367,7 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
                 if (meta.isCompatible()) {
 	                for (int i = 0 ; i < data.values_used.length ; i++) {
 	                	ValueMetaInterface valueMeta = rowMeta.getValueMeta(data.fields_used[i]);
-	                	outputRow[data.fields_used[i]] = valueMeta.getValueData(data.values_used[i]);
+                		outputRow[data.fields_used[i]] = valueMeta.getValueData(data.values_used[i]);
 	                }
                 }
                 

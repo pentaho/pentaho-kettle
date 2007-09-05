@@ -22,7 +22,7 @@ public class RunCalculator extends RunTestCase
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
-                rowCount*10
+                rowCount*1000
             );
         assertTrue( timedTransRunner.runOldAndNew() );
         
@@ -41,7 +41,7 @@ public class RunCalculator extends RunTestCase
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
-                rowCount*10
+                rowCount*1000
             );
         assertTrue( timedTransRunner.runOldAndNew() );
         
@@ -59,7 +59,7 @@ public class RunCalculator extends RunTestCase
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
-                rowCount*10
+                rowCount*1000
             );
         assertTrue( timedTransRunner.runOldAndNew() );
         
@@ -77,7 +77,7 @@ public class RunCalculator extends RunTestCase
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
-                rowCount*10
+                rowCount*1000
             );
         assertTrue( timedTransRunner.runOldAndNew() );
         
@@ -95,7 +95,7 @@ public class RunCalculator extends RunTestCase
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
-                rowCount*10
+                rowCount*1000
             );
         assertTrue( timedTransRunner.runOldAndNew() );
         
@@ -114,7 +114,7 @@ public class RunCalculator extends RunTestCase
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
-                rowCount*10
+                rowCount*1000
             );
         assertTrue( timedTransRunner.runOldAndNew() );
         

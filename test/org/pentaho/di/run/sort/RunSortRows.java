@@ -24,7 +24,7 @@ public class RunSortRows extends RunTestCase
                 ERROR_LEVEL, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
-                rowCount
+                rowCount*1000
             );
         assertTrue( timedTransRunner.runOldAndNew() );
         
@@ -42,7 +42,7 @@ public class RunSortRows extends RunTestCase
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
-                rowCount
+                rowCount*1000
             );
         assertTrue( timedTransRunner.runOldAndNew() );
         
@@ -60,7 +60,7 @@ public class RunSortRows extends RunTestCase
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
-                rowCount
+                rowCount*1000
             );
         assertTrue( timedTransRunner.runOldAndNew() );
         
@@ -78,7 +78,7 @@ public class RunSortRows extends RunTestCase
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
-                rowCount
+                rowCount*1000
             );
         assertTrue( timedTransRunner.runOldAndNew() );
         
@@ -96,7 +96,7 @@ public class RunSortRows extends RunTestCase
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
-                rowCount
+                rowCount*1000
             );
         assertTrue( timedTransRunner.runOldAndNew() );
         
@@ -114,7 +114,7 @@ public class RunSortRows extends RunTestCase
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
-                rowCount
+                rowCount*1000
             );
         assertTrue( timedTransRunner.runOldAndNew() );
         
@@ -132,7 +132,7 @@ public class RunSortRows extends RunTestCase
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
-                rowCount
+                rowCount*1000
             );
         assertTrue( timedTransRunner.runOldAndNew() );
         
@@ -151,7 +151,7 @@ public class RunSortRows extends RunTestCase
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
-                rowCount
+                rowCount*1000
             );
         assertTrue( timedTransRunner.runOldAndNew() );
         
@@ -169,7 +169,7 @@ public class RunSortRows extends RunTestCase
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
-                rowCount
+                rowCount*1000
             );
         
         timedTransRunner.init();

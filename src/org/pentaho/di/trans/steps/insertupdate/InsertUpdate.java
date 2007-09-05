@@ -89,7 +89,7 @@ public class InsertUpdate extends BaseStep implements StepInterface
 			 * INSERT ROW
 			 *
 			 */
-			if (log.isRowLevel()) logRowlevel(Messages.getString("InsertUpdate.InsertRow")+row.toString()); //$NON-NLS-1$
+			if (log.isRowLevel()) logRowlevel(Messages.getString("InsertUpdate.InsertRow")+rowMeta.getString(row)); //$NON-NLS-1$
 
 			// The values to insert are those in the update section (all fields should be specified)
             // For the others, we have no definite mapping!
@@ -112,7 +112,7 @@ public class InsertUpdate extends BaseStep implements StepInterface
 		{
 			if (!meta.isUpdateBypassed())
 			{
-				if (log.isRowLevel()) logRowlevel(Messages.getString("InsertUpdate.Log.FoundRowForUpdate")+row.toString()); //$NON-NLS-1$
+				if (log.isRowLevel()) logRowlevel(Messages.getString("InsertUpdate.Log.FoundRowForUpdate")+rowMeta.getString(row)); //$NON-NLS-1$
 				
                 /* Row was found:
                  *  
@@ -157,7 +157,7 @@ public class InsertUpdate extends BaseStep implements StepInterface
 			}
 			else
 			{
-				if (log.isRowLevel()) logRowlevel(Messages.getString("InsertUpdate.Log.UpdateBypassed")+row.toString()); //$NON-NLS-1$
+				if (log.isRowLevel()) logRowlevel(Messages.getString("InsertUpdate.Log.UpdateBypassed")+rowMeta.getString(row)); //$NON-NLS-1$
 				linesSkipped++;
 			}
 		}

@@ -168,7 +168,7 @@ public class RegexEval extends BaseStep implements StepInterface
 		// Add result field to input stream
 		Object[] outputRowData2 =RowDataUtil.addValueData(row, getInputRowMeta().size(),b);
 		
-		if (log.isRowLevel()) logRowlevel(Messages.getString("RegexEval.Log.ReadRow") + " " +  row.toString()); 
+		if (log.isRowLevel()) logRowlevel(Messages.getString("RegexEval.Log.ReadRow") + " " +  getInputRowMeta().getString(row)); 
 		
 		putRow(data.outputRowMeta, outputRowData2);  // copy row to output rowset(s);
        

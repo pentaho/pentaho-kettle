@@ -22,7 +22,7 @@ public class RunMergeJoin extends RunTestCase
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
-                rowCount/100
+                rowCount*10
             );
         assertTrue( timedTransRunner.runOldAndNew() );
         
@@ -40,7 +40,7 @@ public class RunMergeJoin extends RunTestCase
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
-                rowCount/100
+                rowCount*10
             );
         assertTrue( timedTransRunner.runOldAndNew() );
         

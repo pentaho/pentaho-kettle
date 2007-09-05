@@ -242,7 +242,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
 			}
 			catch(Exception e) // TODO : remove exception??
 			{
-				throw new KettleStepException(Messages.getString("DimensionLookup.Exception.ErrorDetectedInGettingKey",i+"",data.keynrs[i]+"/"+rowMeta.size(),row.toString())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+				throw new KettleStepException(Messages.getString("DimensionLookup.Exception.ErrorDetectedInGettingKey",i+"",data.keynrs[i]+"/"+rowMeta.size(),rowMeta.getString(row))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 			}
 		}
 		if (data.datefieldnr>=0) valueDate = rowMeta.getDate(row, data.datefieldnr);
