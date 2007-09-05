@@ -2441,21 +2441,20 @@ public class ValueMeta implements ValueMetaInterface
        if (value==null || value.isNull()) return null;
        
        // So far the old types and the new types map to the same thing.
-       // So we just verify type and value.type
+       // For compatibility we just ask the old-style value to convert to the new one.
+       // In the old transformation this would happen sooner or later anyway.
+       // It doesn't throw exceptions or complain either (unfortunately).
        //
-       if (type!=value.getType()) {
-    	   throw new KettleValueException(toString()+" : The data type of the supplied Value object ("+value.getTypeDesc()+") and the current value metadata ("+getTypeDesc()+") is not the same");
-       }
        
-       switch(value.getType())
+       switch(getType())
        {
-       case Value.VALUE_TYPE_STRING       : return value.getString();
-       case Value.VALUE_TYPE_NUMBER       : return value.getNumber();
-       case Value.VALUE_TYPE_INTEGER      : return value.getInteger();
-       case Value.VALUE_TYPE_DATE         : return value.getDate();
-       case Value.VALUE_TYPE_BOOLEAN      : return value.getBoolean();
-       case Value.VALUE_TYPE_BIGNUMBER    : return value.getBigNumber();
-       case Value.VALUE_TYPE_BINARY       : return value.getBytes();
+       case ValueMetaInterface.TYPE_STRING       : return value.getString();
+       case ValueMetaInterface.TYPE_NUMBER       : return value.getNumber();
+       case ValueMetaInterface.TYPE_INTEGER      : return value.getInteger();
+       case ValueMetaInterface.TYPE_DATE         : return value.getDate();
+       case ValueMetaInterface.TYPE_BOOLEAN      : return value.getBoolean();
+       case ValueMetaInterface.TYPE_BIGNUMBER    : return value.getBigNumber();
+       case ValueMetaInterface.TYPE_BINARY       : return value.getBytes();
        default: throw new KettleValueException(toString()+" : We can't convert original data type "+value.getTypeDesc()+" to a primitive data type");
        }
     }
