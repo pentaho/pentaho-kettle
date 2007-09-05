@@ -576,7 +576,7 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_length",    selectLength[i]); //$NON-NLS-1$
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_precision", selectPrecision[i]); //$NON-NLS-1$
 			}
-			rep.saveStepAttribute(id_transformation, id_step, "field_precision", selectingAndSortingUnspecifiedFields); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "select_unspecified", selectingAndSortingUnspecifiedFields); //$NON-NLS-1$
 	
 			for (int i=0;i<deleteName.length;i++)
 			{

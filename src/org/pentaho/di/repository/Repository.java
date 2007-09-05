@@ -465,6 +465,8 @@ public class Repository
 	private int					majorVersion;
 	private int					minorVersion;
     private DatabaseMeta        databaseMeta;
+    
+	private boolean             useBatchProcessing;
 
     /** The maximum length of a text field in a Kettle repository : 2.000.000 is enough for everyone ;-) */ 
     private static final int REP_STRING_LENGTH      = 2000000;
@@ -486,6 +488,8 @@ public class Repository
 		this.userinfo = userinfo;
 
 		steploader = StepLoader.getInstance();
+		
+		useBatchProcessing = true; // defaults to true;
 		
 		database = new Database(repinfo.getConnection());
 		databaseMeta = database.getDatabaseMeta();
@@ -1631,7 +1635,7 @@ public class Repository
 		    psStepAttributesInsert = database.prepareSQL(sql);
 		}
 		database.setValues(table, psStepAttributesInsert);
-		database.insertRow(psStepAttributesInsert, true);
+		database.insertRow(psStepAttributesInsert, useBatchProcessing);
 		
         if (log.isDebug()) log.logDebug(toString(), "saved attribute ["+code+"]");
 		
@@ -1661,7 +1665,7 @@ public class Repository
             psTransAttributesInsert = database.prepareSQL(sql);
         }
         database.setValues(table, psTransAttributesInsert);
-        database.insertRow(psTransAttributesInsert, true);
+        database.insertRow(psTransAttributesInsert, useBatchProcessing);
         
         if (log.isDebug()) log.logDebug(toString(), "saved transformation attribute ["+code+"]");
         
@@ -3143,7 +3147,7 @@ public class Repository
 	{
 	    if (psStepAttributesInsert!=null)
 	    {
-		    database.insertFinished(psStepAttributesInsert, true); // batch mode!
+		    database.insertFinished(psStepAttributesInsert, useBatchProcessing); // batch mode!
 			psStepAttributesInsert = null;
 	    }
 	}
@@ -3152,7 +3156,7 @@ public class Repository
     {
         if (psTransAttributesInsert!=null)
         {
-            database.insertFinished(psTransAttributesInsert, true); // batch mode!
+            database.insertFinished(psTransAttributesInsert, useBatchProcessing); // batch mode!
             psTransAttributesInsert = null;
         }
     }
@@ -6029,5 +6033,19 @@ public class Repository
 			databases.add(databaseMeta);
 		}
 		return databases;
+	}
+
+	/**
+	 * @return the useBatchProcessing
+	 */
+	public boolean isUseBatchProcessing() {
+		return useBatchProcessing;
+	}
+
+	/**
+	 * @param useBatchProcessing the useBatchProcessing to set
+	 */
+	public void setUseBatchProcessing(boolean useBatchProcessing) {
+		this.useBatchProcessing = useBatchProcessing;
 	}
 }
