@@ -295,7 +295,7 @@
 	        <!-- simple-jndi -->
 	  		<mkdir dir="${distrib}/simple-jndi"/>
 	  		<copy todir="${distrib}/simple-jndi">
-	  			<fileset dir="${pwd}" 
+	  			<fileset dir="${simple-jndi}" 
 	  				     includes="**/*.properties"
 	  			         excludes="**/*.vpn" />
 	  			</copy>
