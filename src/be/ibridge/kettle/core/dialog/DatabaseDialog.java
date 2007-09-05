@@ -84,9 +84,9 @@ public class DatabaseDialog extends Dialog
 
     private CTabFolder     wTabFolder;
 
-    private CTabItem       wDbTab, wPoolTab, wOracleTab, wIfxTab, wMySQLTab, wSAPTab, wGenericTab, wOptionsTab, wSQLTab, wClusterTab, wAdvancedTab;
+    private CTabItem       wDbTab, wPoolTab, wOracleTab, wIfxTab, wMySQLTab, wMSSQLTab, wSAPTab, wGenericTab, wOptionsTab, wSQLTab, wClusterTab, wAdvancedTab;
 
-    private Composite      wDbComp, wPoolComp, wOracleComp, wIfxComp, wMySQLComp, wSAPComp, wGenericComp, wOptionsComp, wSQLComp, wClusterComp, wAdvancedComp;
+    private Composite      wDbComp, wPoolComp, wOracleComp, wIfxComp, wMySQLComp, wMSSQLComp, wSAPComp, wGenericComp, wOptionsComp, wSQLComp, wClusterComp, wAdvancedComp;
 
     private Shell          shell;
 
@@ -173,6 +173,14 @@ public class DatabaseDialog extends Dialog
     private Label          wlQuoteAllFields;
 
     private Button         wQuoteAllFields;
+
+	private Label wlInstanceName;
+
+	private Text wInstanceName;
+
+	private Label wlDoubleDecimalSeparator;
+
+	private Button wDoubleDecimalSeparator;
  
 
     /**
@@ -267,6 +275,7 @@ public class DatabaseDialog extends Dialog
         addMySQLTab();
         addOracleTab();
         addInformixTab();
+        addMSSQLTab();
         addSAPTab();
         addGenericTab();
         addOptionsTab();
@@ -896,6 +905,70 @@ public class DatabaseDialog extends Dialog
         wMySQLComp.layout();
         wMySQLTab.setControl(wMySQLComp);
     }
+    
+    private void addMSSQLTab()
+    {
+        // ////////////////////////
+        // START OF MSSQL TAB///
+        // /
+        wMSSQLTab = new CTabItem(wTabFolder, SWT.NONE);
+        wMSSQLTab.setText(Messages.getString("DatabaseDialog.MSSQLTab.title")); //$NON-NLS-1$
+
+        FormLayout MSSQLLayout = new FormLayout();
+        MSSQLLayout.marginWidth = Const.FORM_MARGIN;
+        MSSQLLayout.marginHeight = Const.FORM_MARGIN;
+
+        wMSSQLComp = new Composite(wTabFolder, SWT.NONE);
+        props.setLook(wMSSQLComp);
+        wMSSQLComp.setLayout(MSSQLLayout);
+
+        // InstanceName
+        wlInstanceName = new Label(wMSSQLComp, SWT.RIGHT);
+        wlInstanceName.setText(Messages.getString("DatabaseDialog.label.SQLServerInstance")); //$NON-NLS-1$
+        props.setLook(wlInstanceName);
+        FormData fdlInstanceName = new FormData();
+        fdlInstanceName.top = new FormAttachment(0, margin);
+        fdlInstanceName.left = new FormAttachment(0, 0);
+        fdlInstanceName.right = new FormAttachment(middle, -margin);
+        wlInstanceName.setLayoutData(fdlInstanceName);
+
+        wInstanceName = new Text(wMSSQLComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wInstanceName);
+        wInstanceName.addModifyListener(lsMod);
+        FormData fdInstanceName = new FormData();
+        fdInstanceName.top = new FormAttachment(0, margin);
+        fdInstanceName.left = new FormAttachment(middle, 0);
+        fdInstanceName.right = new FormAttachment(95, 0);
+        wInstanceName.setLayoutData(fdInstanceName);
+
+        // double decimal separator between schema and table (..)
+        wlDoubleDecimalSeparator = new Label(wMSSQLComp, SWT.RIGHT);
+        wlDoubleDecimalSeparator.setText(Messages.getString("DatabaseDialog.label.UseDoubleDecimalSeparator")); //$NON-NLS-1$
+        props.setLook(wlDoubleDecimalSeparator);
+        FormData fdlDoubleDecimalSeparator = new FormData();
+        fdlDoubleDecimalSeparator.top = new FormAttachment(wInstanceName, margin);
+        fdlDoubleDecimalSeparator.left = new FormAttachment(0, 0);
+        fdlDoubleDecimalSeparator.right = new FormAttachment(middle, -margin);
+        wlDoubleDecimalSeparator.setLayoutData(fdlDoubleDecimalSeparator);
+
+        wDoubleDecimalSeparator = new Button(wMSSQLComp, SWT.CHECK);
+        props.setLook(wDoubleDecimalSeparator);
+        FormData fdDoubleDecimalSeparator = new FormData();
+        fdDoubleDecimalSeparator.top = new FormAttachment(wInstanceName, margin);
+        fdDoubleDecimalSeparator.left = new FormAttachment(middle, 0);
+        fdDoubleDecimalSeparator.right = new FormAttachment(95, 0);
+        wDoubleDecimalSeparator.setLayoutData(fdDoubleDecimalSeparator);
+
+        FormData fdMSSQLComp = new FormData();
+        fdMSSQLComp.left = new FormAttachment(0, 0);
+        fdMSSQLComp.top = new FormAttachment(0, 0);
+        fdMSSQLComp.right = new FormAttachment(100, 0);
+        fdMSSQLComp.bottom = new FormAttachment(100, 0);
+        wMSSQLComp.setLayoutData(fdMSSQLComp);
+
+        wMSSQLComp.layout();
+        wMSSQLTab.setControl(wMSSQLComp);
+    }
 
     private void addSAPTab()
     {
@@ -1376,6 +1449,10 @@ public class DatabaseDialog extends Dialog
 
         getPoolingData();
 
+        // SQL Server options...
+        wDoubleDecimalSeparator.setSelection( databaseMeta.isUsingDoubleDecimalAsSchemaTableSeparator());
+        if (databaseMeta.getSQLServerInstance()!=null) wInstanceName.setText( databaseMeta.getSQLServerInstance() );
+
         wConn.setFocus();
         wConn.selectAll();
 
@@ -1676,6 +1753,11 @@ public class DatabaseDialog extends Dialog
                 databaseMeta.getAttributes().put(typedParameter, value);
             }
         }
+
+        // The SQL Server instance name overrides the option.
+        // Empty doesn't clears the option, we have mercy.
+        if (!Const.isEmpty(wInstanceName.getText())) databaseMeta.setSQLServerInstance( wInstanceName.getText() ); 
+        databaseMeta.setUsingDoubleDecimalAsSchemaTableSeparator( wDoubleDecimalSeparator.getSelection() );
 
         // The SQL to execute...
         databaseMeta.setConnectSQL(wSQL.getText());
