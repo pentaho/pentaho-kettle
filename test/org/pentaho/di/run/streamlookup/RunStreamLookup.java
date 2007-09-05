@@ -22,7 +22,7 @@ public class RunStreamLookup extends RunTestCase
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
-                rowCount*10
+                rowCount*10000
             );
         
         assertTrue( timedTransRunner.runOldAndNew() );
@@ -41,7 +41,7 @@ public class RunStreamLookup extends RunTestCase
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
-                rowCount*10
+                rowCount*10000
             );
         
         assertTrue( timedTransRunner.runOldAndNew() );
@@ -60,7 +60,7 @@ public class RunStreamLookup extends RunTestCase
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
-                rowCount*10
+                rowCount*10000
             );
         
         assertTrue( timedTransRunner.runOldAndNew() );

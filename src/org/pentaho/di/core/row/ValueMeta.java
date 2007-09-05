@@ -621,9 +621,9 @@ public class ValueMeta implements ValueMetaInterface
 
         try
         {
-            if (Const.isEmpty(conversionMask) && Const.isEmpty(decimalSymbol) && Const.isEmpty(groupingSymbol)) 
+            if (Const.isEmpty(conversionMask)) 
             {
-                return number.toString();
+                return Long.toString(number); // number.toString() is not backward compatible.
             }
             return getDecimalFormat().format(number);
         }

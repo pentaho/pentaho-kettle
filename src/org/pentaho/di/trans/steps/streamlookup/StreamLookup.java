@@ -25,7 +25,7 @@ import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleValueException;
-import org.pentaho.di.core.hash.ByteArrayHashMap;
+import org.pentaho.di.core.hash.ByteArrayHashIndex;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -52,7 +52,7 @@ public class StreamLookup extends BaseStep implements StepInterface
 {
 	private StreamLookupMeta meta;
 	private StreamLookupData data;
-	private int lookupColumnIndex = -1;
+
 
 	public StreamLookup(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans)
 	{
@@ -205,22 +205,20 @@ public class StreamLookup extends BaseStep implements StepInterface
 		// See if we need to stop.
 		if (isStopped()) return null;
 
-		if( lookupColumnIndex == -1 ) 
+		if( data.lookupColumnIndex == null ) 
 		{
-			String names[] = rowMeta.getFieldNames();
+			String names[] = data.lookupMeta.getFieldNames();
+			data.lookupColumnIndex = new int[names.length];
+			
 			for( int i=0; i<names.length; i++ ) 
 			{
-				if( names[i].equals( data.lookupMeta.getValueMeta(0).getName() ) ) 
+				data.lookupColumnIndex[i] = rowMeta.indexOfValue(names[i]);
+				if ( data.lookupColumnIndex[i] < 0 ) 
 				{
-					lookupColumnIndex = i;
-					break;
+					// we should not get here
+					throw new KettleStepException( "The lookup column '"+names[i]+"' could not be found" );
 				}
 			}
-		}
-		if( lookupColumnIndex == - 1 ) 
-		{
-			// we should not get here
-			throw new KettleStepException( "The lookup column could not be found" );
 		}
 		
 		// Copy value references to lookup table.
@@ -253,7 +251,8 @@ public class StreamLookup extends BaseStep implements StepInterface
 		{
 			if (meta.getKeystream().length>0)
 			{
-				Object lookupData[] = new Object[] { row[ lookupColumnIndex ] };
+				Object lookupData[] = new Object[data.lookupColumnIndex.length];
+				for (int i=0;i<lookupData.length;i++) lookupData[i] = row[data.lookupColumnIndex[i]];
 				add=getFromCache(data.lookupMeta, lookupData);
 			}
 			else
@@ -305,7 +304,7 @@ public class StreamLookup extends BaseStep implements StepInterface
                 {
                     if (data.hashIndex==null) 
                     { 
-                        data.hashIndex = new ByteArrayHashMap(keyMeta);
+                        data.hashIndex = new ByteArrayHashIndex(keyMeta);
                     }
                     data.hashIndex.put(RowMeta.extractData(keyMeta, keyData), RowMeta.extractData(valueMeta, valueData));
                 }
@@ -345,9 +344,16 @@ public class StreamLookup extends BaseStep implements StepInterface
                 }
                 else
                 {
-                    byte[] value = data.hashIndex.get(RowMeta.extractData(keyMeta, keyData));
-                    if (value==null) return null;
-                    return RowMeta.getRow(data.valueMeta, value);
+                	try
+                	{
+	                    byte[] value = data.hashIndex.get(RowMeta.extractData(keyMeta, keyData));
+	                    if (value==null) return null;
+	                    return RowMeta.getRow(data.valueMeta, value);
+                	}
+                	catch(Exception e) {
+                		logError("Oops", e);
+                		throw new RuntimeException(e);
+                	}
                 }
             }
         }

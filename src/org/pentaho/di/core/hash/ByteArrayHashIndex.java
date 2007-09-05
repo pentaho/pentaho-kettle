@@ -72,7 +72,7 @@ public class ByteArrayHashIndex {
 		while (check!=null) {
 			searchEmptySpot = true;
 			
-			// If there is an identical entry in there, we replace the entry
+			// If there is an identical entry in there, we replace the value.
 			// And then we just return...
 			//
 			if (check.hashCode == hashCode && check.equalsKey(key)) {
@@ -136,18 +136,39 @@ public class ByteArrayHashIndex {
 				ByteArrayHashIndexEntry entry = oldIndex[i];
 				if (entry != null) {
 					oldIndex[i] = null;
-					
+					entry.nextEntry = null; // we assume there is plenty of room in the new index...
+
 					// Make sure we follow all the linked entries...
-					// This is a bit of extra work, TODO: see how we can avoid it!
+					// TODO This is a lot of extra work, see how we can avoid it!
 					// 
-					do {
-						ByteArrayHashIndexEntry next = entry.nextEntry;
-						int indexPointer = entry.hashCode & (newSize - 1);
-						entry.nextEntry = newIndex[indexPointer];
-						newIndex[indexPointer] = entry;
-						entry = next;
-					} 
-					while (entry != null); 
+					int newIndexPointer = entry.hashCode & (newSize - 1);
+					
+					// Make sure on this new index pointer, we have room to put the entry
+					//
+					ByteArrayHashIndexEntry check = newIndex[newIndexPointer]; 
+					if (check==null) {
+						// Yes, plenty of room
+						//
+						newIndex[newIndexPointer]=check;
+					}
+					else {
+						// No, we need to look for a nice spot to put the hash entry...
+						//
+						ByteArrayHashIndexEntry previousCheck = null;
+						while (check!=null) {
+							previousCheck = check;
+							check = check.nextEntry;
+						}
+						while (newIndex[newIndexPointer]!=null) {
+							newIndexPointer++;
+							if (newIndexPointer>=newSize) newIndexPointer=0;
+						}
+						// OK, now that we have a nice spot to put the entry, link the previous check entry to this one...
+						//
+						previousCheck.nextEntry = entry;
+						newIndex[newIndexPointer] = entry;
+					}
+					newIndex[newIndexPointer] = entry;
 				}
 			}
 			

@@ -24,7 +24,8 @@ import java.util.Map;
 
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleValueException;
-import org.pentaho.di.core.hash.ByteArrayHashMap;
+import org.pentaho.di.core.hash.ByteArrayHashIndex;
+import org.pentaho.di.core.hash.LongHashIndex;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
@@ -68,19 +69,21 @@ public class StreamLookupData extends BaseStepData implements StepDataInterface
 
     public Comparator<KeyValue> comparator;
 
-    public ByteArrayHashMap hashIndex;
-    public Map<Long,Long> longIndex;
+    public ByteArrayHashIndex hashIndex;
+    public LongHashIndex longIndex;
 
     public RowMetaInterface lookupMeta;
 
     public RowMetaInterface infoMeta;
+   
+	public int[] lookupColumnIndex;
 	
 	public StreamLookupData()
 	{
         super();
         look = new HashMap<RowMetaAndData, Object[]>();
         hashIndex = null;
-        longIndex = new HashMap<Long,Long>();
+        longIndex = new LongHashIndex();
         list = new ArrayList<KeyValue>();
         
         comparator = new Comparator<KeyValue>()
