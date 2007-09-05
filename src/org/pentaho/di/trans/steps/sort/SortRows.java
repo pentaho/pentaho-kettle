@@ -353,7 +353,7 @@ public class SortRows extends BaseStep implements StepInterface
 			Object[] previousRow = null;
 			while (r!=null  && !isStopped())
 			{
-				if (log.isRowLevel()) logRowlevel("Read row: "+r.toString());
+				if (log.isRowLevel()) logRowlevel("Read row: "+getInputRowMeta().getString(r));
 				
 				// Do another verification pass for unique rows...
 				//

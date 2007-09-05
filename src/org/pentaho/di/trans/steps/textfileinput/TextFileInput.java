@@ -1039,7 +1039,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 				}
 			}
 
-			if (log.isRowLevel()) logRowlevel("Putting row: " + r.toString());			
+			if (log.isRowLevel()) logRowlevel("Putting row: " + data.outputRowMeta.getString(r));			
 			putRow(data.outputRowMeta, r);
 
 			if ( linesInput >= meta.getRowLimit() && meta.getRowLimit() >0 )

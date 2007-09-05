@@ -289,7 +289,7 @@ public class BlockingStep extends BaseStep implements StepInterface {
     			r=getBuffer();
     			while (r!=null  && !isStopped())
     			{
-    				if (log.isRowLevel()) logRowlevel("Read row: "+r.toString());
+    				if (log.isRowLevel()) logRowlevel("Read row: "+getInputRowMeta().getString(r));
     				
     				putRow(data.outputRowMeta, r); // copy row to possible alternate rowset(s).
 
