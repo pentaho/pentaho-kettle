@@ -1151,6 +1151,19 @@ public class JobMeta implements Cloneable, Comparable, XMLInterface, UndoInterfa
                     if (monitor != null) monitor.subTask(Messages.getString("JobMeta.Monitor.ReadingJobEntryNr") + (i + 1) + "/" + (jecids.length)); //$NON-NLS-1$ //$NON-NLS-2$
 
                     JobEntryCopy jec = new JobEntryCopy(log, rep, getID(), jecids[i], jobentries, databases);
+                    
+    				// Also set the copy number...
+    				// We count the number of job entry copies that use the job entry
+                    //
+                    int copyNr = 0;
+                    for (int c=0;c<nrJobEntries();c++) {
+                    	JobEntryCopy copy = getJobEntry(c);
+                    	if (jec.getEntry()==copy.getEntry()) {
+                    		copyNr++;
+                    	}
+                    }
+                    jec.setNr(copyNr);
+                    
                     int idx = indexOfJobEntry(jec);
                     if (idx < 0)
                     {
