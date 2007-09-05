@@ -21,13 +21,9 @@
 
 package org.pentaho.di.trans.steps.xmlinputsax;
 
-import java.io.File;
-import java.io.FilenameFilter;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
@@ -37,6 +33,7 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
@@ -575,78 +572,21 @@ public class XMLInputSaxMeta extends BaseStepMeta implements StepMetaInterface
 			throw new KettleException("Unable to save step information to the repository for id_step="+id_step, e);
 		}
 	}
-	
 
-	public String[] getFiles(VariableSpace space)
+	public String[] getFilePaths(VariableSpace space)
 	{
-		String files[]=null;
-		
-		// Replace possible environment variables...
-		final String realfile[] = space.environmentSubstitute(fileName);
-		final String realmask[] = space.environmentSubstitute(fileMask);
-		
-		List<String> filelist = new ArrayList<String>();
-		
-		for (int i=0;i<realfile.length;i++)
-		{
-			final String onefile = realfile[i];
-			final String onemask = realmask[i];
-			
-			if (onemask!=null && onemask.length()>0) // A directory & a wildcard
-			{
-				File file = new File(onefile);
-				try
-				{
-					files = file.list(new FilenameFilter() { public boolean accept(File dir, String name)
-							{ return Pattern.matches(onemask, name); } } );
-					
-					for (int j = 0; j < files.length; j++)
-					{
-						if (!onefile.endsWith(Const.FILE_SEPARATOR))
-						{
-							files[j] = onefile+Const.FILE_SEPARATOR+files[j];
-						}
-						else
-						{
-							files[j] = onefile+files[j];
-						}
-					}
-				}
-				catch(Exception e)
-				{
-					files=null;
-				}
-			}
-			else // A normal file...
-			{
-				// Check if it exists...
-				File file = new File(onefile);
-				if (file.exists() && file.isFile() && file.canRead() )
-				{
-					files = new String[] { onefile };
-				}
-				else // File is not accessible to us.
-				{
-					files = null;
-				}
-			}
-
-			// Add to our list...
-			if (files!=null)
-			for (int x=0;x<files.length;x++)
-			{				
-				filelist.add(files[x]);
-			}
-		}
-        
-        // Sort the list: quicksort
-        Collections.sort(filelist);
-
-		// OK, return the list in filelist...
-		files = (String[])filelist.toArray(new String[filelist.size()]);
-
-		return files;
+		String[] fileRequired = new String[fileName.length];
+		for (int i=0;i<fileRequired.length;i++) fileRequired[i]="N"; // $NON-NLS-1$
+		return FileInputList.createFilePathList(space, fileName, fileMask, fileRequired);
 	}
+
+	public FileInputList getTextFileList(VariableSpace space)
+	{
+		String[] fileRequired = new String[fileName.length];
+		for (int i=0;i<fileRequired.length;i++) fileRequired[i]="N"; // $NON-NLS-1$
+		return FileInputList.createFileList(space, fileName, fileMask, fileRequired);
+	}
+
 	
 	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
 	{
@@ -664,7 +604,7 @@ public class XMLInputSaxMeta extends BaseStepMeta implements StepMetaInterface
 			remarks.add(cr);
 		}
 		
-		String files[] = getFiles(transMeta);
+		String files[] = getFilePaths(transMeta);
 		if (files==null || files.length==0)
 		{
 			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, "No files can be found to read.", stepinfo);
@@ -793,7 +733,7 @@ public class XMLInputSaxMeta extends BaseStepMeta implements StepMetaInterface
        ResourceReference reference = new ResourceReference(stepInfo);
        references.add(reference);
        
-       String[] textFiles = getFiles(transMeta);
+       String[] textFiles = getFilePaths(transMeta);
        if ( textFiles!=null ) {
          for (int i=0; i<textFiles.length; i++) {
            reference.getEntries().add( new ResourceEntry(textFiles[i], ResourceType.FILE));

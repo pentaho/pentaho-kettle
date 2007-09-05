@@ -155,8 +155,7 @@ public class XMLInputSax extends BaseStep implements StepInterface
 
 		} catch (Exception e)
 		{
-			logError("Couldn't open file #" + data.filenr + " : " + data.filename + " --> " + e.toString()
-					+ e.getMessage() + e.getLocalizedMessage());
+			logError("Couldn't open file #" + data.filenr + " : " + data.filename, e);
 			stopAll();
 			setErrors(1);
 			return false;
@@ -171,7 +170,7 @@ public class XMLInputSax extends BaseStep implements StepInterface
 
 		if (super.init(smi, sdi))
 		{
-			data.files = meta.getFiles(this);
+			data.files = meta.getFilePaths(getTransMeta());
 			if (data.files == null || data.files.length == 0)
 			{
 				logError("No file(s) specified! Stop processing.");

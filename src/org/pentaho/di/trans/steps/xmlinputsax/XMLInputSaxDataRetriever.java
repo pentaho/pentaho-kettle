@@ -97,7 +97,14 @@ public class XMLInputSaxDataRetriever extends DefaultHandler
 
 		this.emptyRow = buildEmptyRow();
 
-		System.arraycopy(emptyRow, 0, this.row, 0, emptyRow.length);
+		try
+		{
+			this.row = new Object[emptyRow.length];
+			System.arraycopy(emptyRow, 0, this.row, 0, emptyRow.length);
+		}
+		catch(NullPointerException e){
+			throw e;
+		}
 
 	}
 
@@ -217,7 +224,7 @@ public class XMLInputSaxDataRetriever extends DefaultHandler
             {
     			rootFound = false;
     			rowSet.add( row );
-    			this.row = null;
+    			this.row = new Object[emptyRow.length];
     			System.arraycopy(emptyRow, 0, this.row, 0, emptyRow.length);
             }			
 		} else

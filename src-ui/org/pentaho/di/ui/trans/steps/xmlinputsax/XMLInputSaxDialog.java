@@ -325,11 +325,10 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
 		wbShowFiles.setLayoutData(fdbShowFiles);
 
 		ColumnInfo[] colinfo = new ColumnInfo[2];
-		colinfo[0] = new ColumnInfo(
-				Messages.getString("XMLInputSaxDialog.Column.FileDirectory.Label"), ColumnInfo.COLUMN_TYPE_TEXT, false); //$NON-NLS-1$
-		colinfo[1] = new ColumnInfo(
-				Messages.getString("XMLInputSaxDialog.Column.Wildcard.Label"), ColumnInfo.COLUMN_TYPE_TEXT, false); //$NON-NLS-1$
+		colinfo[0] = new ColumnInfo( Messages.getString("XMLInputSaxDialog.Column.FileDirectory.Label"), ColumnInfo.COLUMN_TYPE_TEXT, false); //$NON-NLS-1$
+		colinfo[1] = new ColumnInfo( Messages.getString("XMLInputSaxDialog.Column.Wildcard.Label"), ColumnInfo.COLUMN_TYPE_TEXT, false); //$NON-NLS-1$
 
+		colinfo[0].setUsingVariables(true);
 		colinfo[1].setToolTip(Messages.getString("XMLInputSaxDialog.Column.FileDirectory.ToolTip")); //$NON-NLS-1$
 
 		wFilenameList = new TableView(transMeta, wFileComp, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, colinfo, 2,
@@ -711,7 +710,7 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
 				{
 					XMLInputSaxMeta tfii = new XMLInputSaxMeta();
 					getInfo(tfii);
-					String files[] = tfii.getFiles(transMeta);
+					String files[] = tfii.getFilePaths(transMeta);
 					if (files != null && files.length > 0)
 					{
 						EnterSelectionDialog esd = new EnterSelectionDialog(
@@ -1053,10 +1052,10 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
 
 			// Keep the list of positions
 
-			for (int f = 0; f < meta.getFiles(transMeta).length; f++)
+			String[] filePaths = meta.getFilePaths(transMeta);
+			for (int f = 0; f < filePaths.length; f++)
 			{
-				XMLInputSaxFieldRetriever fieldRetreiver = new XMLInputSaxFieldRetriever(meta.getFiles(transMeta)[f],
-						meta);
+				XMLInputSaxFieldRetriever fieldRetreiver = new XMLInputSaxFieldRetriever(filePaths[f], meta);
 
 				fields = fieldRetreiver.getFields();
 
