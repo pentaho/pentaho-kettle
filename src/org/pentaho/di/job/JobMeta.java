@@ -1112,7 +1112,6 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
             {
                 // Load the notes...
                 long noteids[] = rep.getJobNoteIDs(getID());
-                long jeids[] = rep.getJobEntryIDs(getID());
                 long jecids[] = rep.getJobEntryCopyIDs(getID());
                 long hopid[] = rep.getJobHopIDs(getID());
 
