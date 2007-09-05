@@ -898,14 +898,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		redoAction(getActiveUndoInterface());
 	}
 
-    public void editUnselectAll( ) {
-		editUnselectAll(getActiveTransformation());
-	}
-
-    public void editSelectAll( ) {
-		editSelectAll(getActiveTransformation());
-	}
-
     public void copySteps() {
 		TransMeta transMeta = getActiveTransformation();
 		copySelected(transMeta, transMeta.getSelectedSteps(), transMeta.getSelectedNotes());
@@ -3676,16 +3668,22 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		mb.open();
 	}
 
-	public void editUnselectAll(TransMeta transMeta)
+	public void editUnselectAll()
 	{
-		transMeta.unselectAll();
-		// spoongraph.redraw();
+		TransMeta transMeta = getActiveTransformation();
+		if (transMeta!=null) transMeta.unselectAll();
+		
+		JobMeta jobMeta = getActiveJob();
+		if (jobMeta!=null) jobMeta.unselectAll();
 	}
 
-	public void editSelectAll(TransMeta transMeta)
+	public void editSelectAll()
 	{
-		transMeta.selectAll();
-		// spoongraph.redraw();
+		TransMeta transMeta = getActiveTransformation();
+		if (transMeta!=null) transMeta.selectAll();
+		
+		JobMeta jobMeta = getActiveJob();
+		if (jobMeta!=null) jobMeta.selectAll();
 	}
 
 	public void editOptions()
