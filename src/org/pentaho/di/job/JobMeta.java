@@ -1093,8 +1093,7 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
      * @param jobname The name of the job
      * @param repdir The directory in which the job resides.
      * @throws KettleException
-     */
-    public JobMeta(LogWriter log, Repository rep, String jobname, RepositoryDirectory repdir, IProgressMonitor monitor) throws KettleException
+     */    public JobMeta(LogWriter log, Repository rep, String jobname, RepositoryDirectory repdir, IProgressMonitor monitor) throws KettleException
     {
         this.log = log;
 
@@ -1113,6 +1112,7 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
             {
                 // Load the notes...
                 long noteids[] = rep.getJobNoteIDs(getID());
+                long jeids[] = rep.getJobEntryIDs(getID());
                 long jecids[] = rep.getJobEntryCopyIDs(getID());
                 long hopid[] = rep.getJobHopIDs(getID());
 
@@ -1175,7 +1175,7 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
                     if (indexOfNote(ni) < 0) addNote(ni);
                     if (monitor != null) monitor.worked(1);
                 }
-
+                
                 // Load the job entries...
                 log.logDetailed(toString(), "Loading " + jecids.length + " job entries"); //$NON-NLS-1$ //$NON-NLS-2$
                 for (int i = 0; i < jecids.length; i++)
@@ -1183,6 +1183,17 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
                     if (monitor != null) monitor.subTask(Messages.getString("JobMeta.Monitor.ReadingJobEntryNr") + (i + 1) + "/" + (jecids.length)); //$NON-NLS-1$ //$NON-NLS-2$
 
                     JobEntryCopy jec = new JobEntryCopy(log, rep, getID(), jecids[i], jobentries, databases);
+    				// Also set the copy number...
+    				// We count the number of job entry copies that use the job entry
+                    //
+                    int copyNr = 0;
+                    for (JobEntryCopy copy : jobcopies) {
+                    	if (jec.getEntry()==copy.getEntry()) {
+                    		copyNr++;
+                    	}
+                    }
+                    jec.setNr(copyNr);
+
                     int idx = indexOfJobEntry(jec);
                     if (idx < 0)
                     {
