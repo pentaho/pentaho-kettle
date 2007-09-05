@@ -19,6 +19,7 @@ import java.io.InputStream;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.httpclient.util.URIUtil;
 import org.apache.commons.httpclient.methods.GetMethod;
 
 import be.ibridge.kettle.core.Const;
@@ -77,8 +78,8 @@ public class HTTP extends BaseStep implements StepInterface
 	
 	private Value callHttpService(Row row) throws KettleException
     {
-        String url = determineUrl(row);
-        try
+      	String url = determineUrl(row);
+      	try
         {
             logDetailed("Connecting to : ["+url+"]");
             
@@ -120,28 +121,32 @@ public class HTTP extends BaseStep implements StepInterface
         }
     }
 
-    private String determineUrl(Row row)
+    private String determineUrl(Row row) throws KettleException
     {
-        StringBuffer url = new StringBuffer(meta.getUrl()); // the base URL
-        
-        for (int i=0;i<data.argnrs.length;i++)
-        {
-            if (i==0)
-            {
-                url.append('?');
-            }
-            else
-            {
-                url.append('&');
-            }
-            url.append(meta.getArgumentParameter()[i]);
-            url.append('=');
-            
-            Value v = new Value(row.getValue(data.argnrs[i])).replace(" ", "%20");
-            url.append(v.toString(false));
-        }
-        
-        return url.toString();
+    	try
+    	{
+	        StringBuffer url = new StringBuffer(meta.getUrl()); // the base URL
+	        
+	        for (int i=0;i<data.argnrs.length;i++)
+	        {
+	            if (i==0 && url.indexOf("?")<0)
+	            {
+	                url.append('?');
+	            }
+	            else
+	            {
+	                url.append('&');
+	            }
+	        	url.append(URIUtil.encodeWithinQuery(meta.getArgumentParameter()[i]));
+	        	url.append('=');
+				url.append(URIUtil.encodeWithinQuery(row.getValue(data.argnrs[i]).toString(false)));
+	        }
+	        return url.toString();
+	    }
+	    catch(Exception e)
+	    {
+	        throw new KettleException("Unable to create URL.", e);
+	    }
     }
 
     public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
