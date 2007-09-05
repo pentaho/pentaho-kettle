@@ -155,7 +155,7 @@ public class ByteArrayHashIndex {
 			//
 			index = newIndex;
 			
-			// Also change the resize treshold...
+			// Also change the resize threshold...
 			//
 			resizeThresHold = (int) (newSize * STANDARD_LOAD_FACTOR);
 		}
