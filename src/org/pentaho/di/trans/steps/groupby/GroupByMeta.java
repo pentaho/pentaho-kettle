@@ -275,16 +275,16 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
 	
 			for (int i=0;i<sizegroup;i++)
 			{
-				Node fnode = XMLHandler.getSubNodeByNr(groupn, "field", i); //$NON-NLS-1$
-				groupField[i]  = XMLHandler.getTagValue(fnode, "name");		 //$NON-NLS-1$
+				Node fnode    = XMLHandler.getSubNodeByNr(groupn, "field", i); //$NON-NLS-1$
+				groupField[i] = XMLHandler.getTagValue(fnode, "name");		 //$NON-NLS-1$
 			}
 	
 			for (int i=0;i<nrfields;i++)
 			{
-				Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i); //$NON-NLS-1$
+				Node fnode         = XMLHandler.getSubNodeByNr(fields, "field", i); //$NON-NLS-1$
 				aggregateField[i]  = XMLHandler.getTagValue(fnode, "aggregate");		 //$NON-NLS-1$
 				subjectField[i]    = XMLHandler.getTagValue(fnode, "subject");		 //$NON-NLS-1$
-				aggregateType[i]       = getType(XMLHandler.getTagValue(fnode, "type"));	 //$NON-NLS-1$
+				aggregateType[i]   = getType(XMLHandler.getTagValue(fnode, "type"));	 //$NON-NLS-1$
 			}
 		}
 		catch(Exception e)
@@ -371,7 +371,7 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
 				{
 					case TYPE_GROUP_SUM             : value_type = subj.getType(); break;
 					case TYPE_GROUP_AVERAGE         :
-					case TYPE_GROUP_COUNT_ALL       : value_type = ValueMetaInterface.TYPE_NUMBER; break;
+					case TYPE_GROUP_COUNT_ALL       : value_type = ValueMetaInterface.TYPE_INTEGER; break;
                     case TYPE_GROUP_FIRST           : 
                     case TYPE_GROUP_LAST            : 
                     case TYPE_GROUP_FIRST_INCL_NULL : 
@@ -382,10 +382,15 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
 					default: break;
 				}
                 
-                if (aggregateType[i]!=TYPE_GROUP_COUNT_ALL)
+                if (aggregateType[i]==TYPE_GROUP_COUNT_ALL)
                 {
-                    length = subj.getLength();
-                    precision = subj.getPrecision();
+                    length    = ValueMetaInterface.DEFAULT_INTEGER_LENGTH;
+                    precision = 0;
+                }
+                else
+                {
+                    length    = subj.getLength();
+                    precision = subj.getPrecision();                	
                 }
                 
 				if (value_type != ValueMetaInterface.TYPE_NONE)

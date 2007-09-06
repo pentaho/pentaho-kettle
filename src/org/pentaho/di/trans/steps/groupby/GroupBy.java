@@ -321,7 +321,6 @@ public class GroupBy extends BaseStep implements StepInterface
 			{
 				case GroupByMeta.TYPE_GROUP_SUM            : 
 				case GroupByMeta.TYPE_GROUP_AVERAGE        :
-				case GroupByMeta.TYPE_GROUP_COUNT_ALL      :
                     vMeta = new ValueMeta(meta.getAggregateField()[i], subjMeta.isNumeric()?subjMeta.getType():ValueMetaInterface.TYPE_NUMBER);
                     switch(subjMeta.getType())
                     {
@@ -330,9 +329,13 @@ public class GroupBy extends BaseStep implements StepInterface
                     case ValueMetaInterface.TYPE_NUMBER:    
                     default:                         v=new Double(0.0); break;
                     }
+					break; 					
+				case GroupByMeta.TYPE_GROUP_COUNT_ALL       :
+                    vMeta = new ValueMeta(meta.getAggregateField()[i], ValueMetaInterface.TYPE_INTEGER);
+                    v=new Long(0L);                   
 					break; 
-				case GroupByMeta.TYPE_GROUP_FIRST :
-				case GroupByMeta.TYPE_GROUP_LAST  :
+				case GroupByMeta.TYPE_GROUP_FIRST           :
+				case GroupByMeta.TYPE_GROUP_LAST            :
 				case GroupByMeta.TYPE_GROUP_FIRST_INCL_NULL :
 				case GroupByMeta.TYPE_GROUP_LAST_INCL_NULL  :					
 				case GroupByMeta.TYPE_GROUP_MIN             : 
@@ -340,7 +343,7 @@ public class GroupBy extends BaseStep implements StepInterface
 					vMeta = new ValueMeta(meta.getAggregateField()[i], subjMeta.getType());
 					v = subj; 
 					break;
-                case GroupByMeta.TYPE_GROUP_CONCAT_COMMA   :
+                case GroupByMeta.TYPE_GROUP_CONCAT_COMMA    :
                     vMeta = new ValueMeta(meta.getAggregateField()[i], ValueMetaInterface.TYPE_STRING);
                     v = new String(""); //$NON-NLS-1$
                     break; 
