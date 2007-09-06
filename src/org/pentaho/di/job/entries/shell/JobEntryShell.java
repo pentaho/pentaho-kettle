@@ -540,7 +540,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
             	env.put(variables[i], getVariable(variables[i]));
             }
 
-            if ( ! Const.isEmpty(Const.rtrim(getWorkDirectory())))
+            if ( getWorkDirectory() != null && ! Const.isEmpty(Const.rtrim(getWorkDirectory())))
             {
             	File file = new File(getWorkDirectory());
             	procBuilder.directory(file);
