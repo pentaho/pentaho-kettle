@@ -60,8 +60,6 @@
 	<classpathentry kind="lib" path="libext/webservices/wstx-asl-3.2.0.jar"/>
 	<classpathentry kind="lib" path="libext/commons/commons-vfs-1.0.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/derbyclient.jar"/>
-	<classpathentry kind="lib" path="libext/jaxp-api.jar"/>
-	<classpathentry kind="lib" path="libext/jaxp-ri.jar"/>
 	<classpathentry kind="lib" path="libext/ldapjdk.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/derby.jar"/>
 	<classpathentry kind="src" path="extra"/>
