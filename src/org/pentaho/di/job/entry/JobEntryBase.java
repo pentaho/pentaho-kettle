@@ -67,7 +67,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   private long id;
 
-  private VariableSpace variables = new Variables();
+  protected VariableSpace variables = new Variables();
 
   public JobEntryBase()
   {
