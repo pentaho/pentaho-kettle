@@ -5751,8 +5751,8 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
 	public String exportResources(VariableSpace space,  Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface) throws KettleException {
 	  try {
       FileObject fileObject = KettleVFS.getFileObject(getFilename());
-      String filename = resourceNamingInterface.nameResource(fileObject.getName().getBaseName(), fileObject.getParent().getName().getPath(), "kjb");
-  		ResourceDefinition definition = definitions.get(filename);
+      String exportFileName = resourceNamingInterface.nameResource(fileObject.getName().getBaseName(), fileObject.getParent().getName().getPath(), "ktr"); //$NON-NLS-1$
+  		ResourceDefinition definition = definitions.get(exportFileName);
   		if (definition==null) {
   			// If we do this once, it will be plenty :-)
   			//
@@ -5772,19 +5772,19 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
   
   			// Change the filename, calling this sets internal variables inside of the transformation.
   			//
-  			transMeta.setFilename(filename);
+  			transMeta.setFilename(exportFileName);
   
   			// At the end, add ourselves to the map...
   			//
   			String transMetaContent = transMeta.getXML();
   			
-  			definition = new ResourceDefinition(filename, transMetaContent);
+  			definition = new ResourceDefinition(exportFileName, transMetaContent);
   			definitions.put(fileObject.getName().getPath(), definition);
   		}
     } catch (FileSystemException e) {
-      throw new KettleException(Messages.getString("TransMeta.Exception.ErrorOpeningOrValidatingTheXMLFile", getFilename()), e);
+      throw new KettleException(Messages.getString("TransMeta.Exception.ErrorOpeningOrValidatingTheXMLFile", getFilename()), e); //$NON-NLS-1$
     } catch (IOException e) {
-      throw new KettleException(Messages.getString("TransMeta.Exception.ErrorOpeningOrValidatingTheXMLFile", getFilename()), e);
+      throw new KettleException(Messages.getString("TransMeta.Exception.ErrorOpeningOrValidatingTheXMLFile", getFilename()), e); //$NON-NLS-1$
     }
 		return filename;
 	}
