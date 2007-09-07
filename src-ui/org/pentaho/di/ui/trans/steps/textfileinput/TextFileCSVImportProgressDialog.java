@@ -224,6 +224,7 @@ public class TextFileCSVImportProgressDialog
         
         // If the file has a header we overwrite the first line
         // However, if it doesn't have a header, take a new line
+        //
         if (meta.hasHeader()) 
         {
             line = TextFileInput.getLine(log, reader, fileFormatType, lineBuffer);

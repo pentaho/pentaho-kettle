@@ -780,6 +780,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 	
 	// Generate code for create table...
 	// Conversions done by Database
+	//
 	private void sql()
 	{
 		try

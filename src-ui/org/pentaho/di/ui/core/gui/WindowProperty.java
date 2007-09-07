@@ -138,13 +138,13 @@ public class WindowProperty
         // Perhaps we can correct this too?
         boolean moveLeft=false;
         boolean moveUp  =false;
-        if (shLoc.x + shRect.width > diRect.width)
+        if (shLoc.x + shRect.width > diRect.x + diRect.width)
         {
             shLoc.x = diRect.width - shRect.width - 50; // Move left...
             if (shLoc.x<0) shLoc.x = 0;
             moveLeft=true;
         }
-        if (shLoc.y + shRect.height > diRect.height)
+        if (shLoc.y + shRect.height > diRect.y + diRect.height)
         {
             shLoc.y = diRect.height- shRect.height - 50; // Move up...
             if (shLoc.y<0) shLoc.y = 0;
