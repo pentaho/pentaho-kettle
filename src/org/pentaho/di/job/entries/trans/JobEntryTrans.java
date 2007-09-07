@@ -41,6 +41,7 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.Log4jFileAppender;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
@@ -643,27 +644,36 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 		return result;
 	}
 
+	
 	private TransMeta getTransMeta(Repository rep) throws KettleException
+	{
+		return getTransMeta(rep,null);
+	}
+	
+	private TransMeta getTransMeta(Repository rep,VariableSpace vars) throws KettleException
     {
         LogWriter log = LogWriter.getInstance();
 
         TransMeta transMeta = null;
         if (!Const.isEmpty(getFilename())) // Load from an XML file
-        {
-            log.logBasic(toString(), "Loading transformation from XML file ["+environmentSubstitute(getFilename())+"]");
-            transMeta = new TransMeta(environmentSubstitute(getFilename()));
+        {        	
+        	String filename = vars!=null?vars.environmentSubstitute(getFilename()):environmentSubstitute(getFilename());
+            log.logBasic(toString(), "Loading transformation from XML file ["+filename+"]");
+            transMeta = new TransMeta(filename);
         }
         else
         if (!Const.isEmpty(getTransname()) && getDirectory() != null)  // Load from the repository
         {
-            log.logBasic(toString(), "Loading transformation from repository ["+environmentSubstitute(getTransname())+"] in directory ["+getDirectory()+"]");
+        	String filename = vars!=null?vars.environmentSubstitute(getTransname()):environmentSubstitute(getTransname());
+        	
+            log.logBasic(toString(), "Loading transformation from repository ["+filename+"] in directory ["+getDirectory()+"]");
 
             if ( rep != null )
             {
             	//
             	// It only makes sense to try to load from the repository when the repository is also filled in.
             	//
-                transMeta = new TransMeta(rep, environmentSubstitute(getTransname()), getDirectory());
+                transMeta = new TransMeta(rep, filename, getDirectory());
             }
             else
             {
@@ -774,7 +784,12 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 			//
 			// First load the transformation metadata...
 			//
-			TransMeta transMeta = getTransMeta(null);
+			//Had to add this to support variable replacement here as well. asilva 9/07/07
+			Variables vars = new Variables();
+			vars.copyVariablesFrom(this);
+			vars.copyVariablesFrom(space);
+			TransMeta transMeta = getTransMeta(null,vars);
+			
 
 			// Also go down into the transformation and export the files there. (mapping recursively down)
 			//
