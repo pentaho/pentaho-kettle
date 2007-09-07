@@ -33,6 +33,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.steps.getfilenames.Messages;
 
 /**
  * Read all Access files, convert them to rows and writes these to one or more output streams.
@@ -55,10 +56,8 @@ public class GetFilesRowsCount extends BaseStep implements StepInterface
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{
 		char separator='\n';
-			
 		
-		
-		 if (data.filenr >= data.files.size())
+    	if (data.filenr >= data.files.size())
         {
             setOutputDone();
             return false;
@@ -99,11 +98,7 @@ public class GetFilesRowsCount extends BaseStep implements StepInterface
             	 
             	if (log.isDetailed()) log.logDetailed(Messages.getString("GetFilesRowsCount.Log.Separator.Title"), Messages.getString("GetFilesRowsCount.Log.Separatoris.Infos") + " " +separator);
     		}
-    		
-    		
-            
-        }
-	
+        }	
 		
 		for (int i=0;i<data.files.size();i++)
 		{	
@@ -124,20 +119,17 @@ public class GetFilesRowsCount extends BaseStep implements StepInterface
 					data.lineStringBuffer.setLength(0);
 					
 					 while (c >= 0)
-	                    {
-						 	c = data.isr.read();
+	                 {
+					     c = data.isr.read();
 
-	                        if (c == separator)
-	    					{
-	                        	// Move Row number pointer ahead
-	                        	data.rownr ++;
-	                        	
-	    					}
-	                        
-	                    }
+	                     if (c == separator)
+	                     {
+	                         // Move Row number pointer ahead
+	                       	 data.rownr ++;	                        	
+	    				 }	                        
+	                 }
 					 data.filesnr++;
-				}
-				
+				}				
 			}
 			catch (Exception e)
 			{
@@ -180,9 +172,6 @@ public class GetFilesRowsCount extends BaseStep implements StepInterface
         //setOutputDone();  // signal end to receiver(s)
         return true;  // This is the end of this step. 
 	}		
-	
-	
-	
 
 	public boolean init(StepMetaInterface smi, StepDataInterface sdi)
 	{
@@ -208,29 +197,28 @@ public class GetFilesRowsCount extends BaseStep implements StepInterface
 	
 	public void dispose(StepMetaInterface smi, StepDataInterface sdi)
 	{
-		meta=(GetFilesRowsCountMeta)smi;
-		data=(GetFilesRowsCountData)sdi;
+		meta = (GetFilesRowsCountMeta)smi;
+		data = (GetFilesRowsCountData)sdi;
 
 		super.dispose(smi, sdi);
 	}
 	
 	//
 	// Run is were the action happens!
-	//
 	public void run()
-	{			    
-		try
-		{
-			logBasic(Messages.getString("GetFilesRowsCount.Log.StartingRun"));		
+	{	
+        try
+        {
+        	logBasic(Messages.getString("System.Log.StartingToRun")); //$NON-NLS-1$
 			
 			while (processRow(meta, data) && !isStopped());
 		}
-		catch(Exception e)
+		catch(Throwable t)
 		{
-			logError("Unexpected error : ");
-			logError(Const.getStackTracker(e));
-			setErrors(1);
-			stopAll();
+        	logError(Messages.getString("System.Log.UnexpectedError")+" : "); //$NON-NLS-1$ //$NON-NLS-2$
+            logError(Const.getStackTracker(t));
+            setErrors(1);
+            stopAll();
 		}
 		finally
 		{
