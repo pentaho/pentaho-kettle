@@ -90,7 +90,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 				if (JobMeta.STRING_SPECIAL_START.equals(type_desc)
 						|| JobMeta.STRING_SPECIAL_DUMMY.equals(type_desc))
 				{
-					jobPlugin = jobLoader.findJobEntriesWithID(JobMeta.STRING_SPECIAL);
+					jobPlugin = jobLoader.findJobEntriesWithDescription(JobMeta.STRING_SPECIAL);
 				}
 			}
 
@@ -182,7 +182,9 @@ public class SpoonJobDelegate extends SpoonDelegate
 					Repository.class, JobMeta.class };
 			Object[] paramArgs = new Object[] { spoon.getShell(), jei, spoon.getRepository(), jobMeta };
 			Constructor<?> dialogConstructor;
-			dialogClass = JobEntryLoader.getInstance().loadClass(jei.getJobEntryType().getDescription(),dialogClassName);
+			dialogClass = jei.getPluginID()!=null?
+					JobEntryLoader.getInstance().loadClassByID(jei.getPluginID(),dialogClassName):
+						JobEntryLoader.getInstance().loadClass(jei.getJobEntryType().getDescription(), dialogClassName);
 			dialogConstructor = dialogClass.getConstructor(paramClasses);
 			return (JobEntryDialogInterface) dialogConstructor.newInstance(paramArgs);
 		} catch (Throwable t)
@@ -236,6 +238,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 			JobEntryDialogInterface d = getJobEntryDialog(jei, jobMeta);
 			if (d != null)
 			{
+				
 				if (d.open() != null)
 				{
 					entry_changed = true;
