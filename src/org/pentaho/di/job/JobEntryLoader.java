@@ -15,6 +15,8 @@
 
 package org.pentaho.di.job;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -22,17 +24,21 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
-import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemException;
-import org.apache.commons.vfs.FileSystemManager;
-import org.apache.commons.vfs.VFS;
+import org.pentaho.di.core.PDIClassLoader;
 import org.pentaho.di.core.config.ConfigManager;
 import org.pentaho.di.core.config.KettleConfig;
 import org.pentaho.di.core.exception.KettleConfigException;
 import org.pentaho.di.core.exception.KettleStepLoaderException;
 import org.pentaho.di.core.plugins.PluginLoader;
 import org.pentaho.di.job.entry.JobEntryInterface;
+import org.springframework.core.io.FileSystemResourceLoader;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.core.io.support.ResourcePatternResolver;
 
 /**
  * Takes care of loading job-entries or job-entry plugins.
@@ -165,6 +171,17 @@ public class JobEntryLoader
 		}
 	}
 
+	public Class<?> loadClassByID(String id, String className) throws KettleStepLoaderException
+	{
+		try
+		{
+			return loadClass(findJobEntriesWithID(id), className);
+		} catch (Exception e)
+		{
+			throw new KettleStepLoaderException(e);
+		}
+	}
+
 	public JobEntryInterface getJobEntryClass(JobPlugin sp) throws KettleStepLoaderException
 	{
 		if (sp != null)
@@ -188,13 +205,16 @@ public class JobEntryLoader
 					// this.getClass().getProtectionDomain();
 
 					// Load the class.
+					// Thread.currentThread().setContextClassLoader(ucl);
 					cl = ucl.loadClass(sp.getClassname());
 				}
 					break;
 				default:
 					throw new KettleStepLoaderException("Unknown plugin type : " + sp.getType());
 				}
+
 				JobEntryInterface res = (JobEntryInterface) cl.newInstance();
+
 				if (sp.getType() == JobPlugin.TYPE_PLUGIN)
 				{
 					res.setPluginID(sp.getID());
@@ -231,21 +251,36 @@ public class JobEntryLoader
 	private ClassLoader getClassLoader(JobPlugin sp) throws FileSystemException, MalformedURLException
 	{
 		String jarfiles[] = sp.getJarfiles();
-		URL urls[] = new URL[jarfiles.length];
+		List<URL> classpath = new ArrayList<URL>();
+		//safe to use filesystem because at this point it is all local
+		//and we are using this so we can do things like */lib/*.jar and so forth, as with ant
+		ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver(new FileSystemResourceLoader());
 		for (int i = 0; i < jarfiles.length; i++)
 		{
-			// use VFS HERE
-			FileSystemManager mgr = VFS.getManager();
-			FileObject jarfile = mgr.resolveFile(jarfiles[i]);
-			urls[i] = new URL(jarfile.getName().getURI());
+			try
+			{
+				Resource[] paths = resolver.getResources(jarfiles[i]);
+				for (Resource path : paths)
+				{
+					classpath.add(path.getURL());
+				}
+			} catch (IOException e)
+			{
+				e.printStackTrace();
+				continue;
+			}
 		}
+
+		URL urls[] = classpath.toArray(new URL[] {});
 
 		// Load the class!!
 		// 
 		// First get the class loader: get the one that's the
 		// webstart classloader, not the thread classloader
 		//
-		ClassLoader classLoader = getClass().getClassLoader();
+		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+
+		// ClassLoader classLoader = getClass().getClassLoader();
 
 		// Construct a new URLClassLoader based on this one...
 		URLClassLoader ucl = (URLClassLoader) classLoaders.get(sp.getID());
@@ -253,8 +288,7 @@ public class JobEntryLoader
 		{
 			synchronized (classLoaders)
 			{
-				ucl = new URLClassLoader(urls, classLoader);
-
+				ucl = new PDIClassLoader(urls, classLoader);
 				classLoaders.put(sp.getID(), ucl); // save for later use...
 			}
 		}
@@ -338,6 +372,17 @@ public class JobEntryLoader
 		return null;
 	}
 
+	public JobPlugin findJobEntriesWithClassName(String cn)
+	{
+		for (int i = 0; i < pluginList.size(); i++)
+		{
+			JobPlugin sp = (JobPlugin) pluginList.get(i);
+			if (sp.getClassname().equalsIgnoreCase(cn))
+				return sp;
+		}
+		return null;
+	}
+
 	public JobPlugin findJobEntriesWithDescription(String description)
 	{
 		for (int i = 0; i < pluginList.size(); i++)
@@ -382,5 +427,51 @@ public class JobEntryLoader
 	public void setInitialized(boolean initialized)
 	{
 		this.initialized = initialized;
+	}
+
+	/**
+	 * Search through all jarfiles in all steps and try to find a certain file
+	 * in it.
+	 * 
+	 * @param filename
+	 * @return an inputstream for the given file.
+	 */
+	public InputStream getInputStreamForFile(String filename)
+	{
+		JobPlugin[] jobplugins = getJobEntriesWithType(JobPlugin.TYPE_PLUGIN);
+		for (JobPlugin jobPlugin : jobplugins)
+		{
+			try
+			{
+				String[] jarfiles = jobPlugin.getJarfiles();
+				if (jarfiles != null)
+				{
+					for (int j = 0; j < jarfiles.length; j++)
+					{
+						JarFile jarFile = new JarFile(jarfiles[j]);
+						JarEntry jarEntry;
+						if (filename.startsWith("/"))
+						{
+							jarEntry = jarFile.getJarEntry(filename.substring(1));
+						} else
+						{
+							jarEntry = jarFile.getJarEntry(filename);
+						}
+						if (jarEntry != null)
+						{
+							InputStream inputStream = jarFile.getInputStream(jarEntry);
+							if (inputStream != null)
+							{
+								return inputStream;
+							}
+						}
+					}
+				}
+			} catch (Exception e)
+			{
+				// Just look for the next one...
+			}
+		}
+		return null;
 	}
 }
