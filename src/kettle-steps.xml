@@ -763,5 +763,15 @@
 		</tooltip>
 		<image-uri>ui/images/MON.png</image-uri>
 	</step>
+	<step id="GetFilesRowsCount">
+		<description>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.GetFilesRowsCount")
+		</description>
+		<class-name>org.pentaho.di.trans.steps.getfilesrowscount.GetFilesRowsCountMeta</class-name>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<tooltip>ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.GetFilesRowsCount")
+		</tooltip>
+		<image-uri>ui/images/FRC.png</image-uri>
+	</step>
 	
 </steps>
