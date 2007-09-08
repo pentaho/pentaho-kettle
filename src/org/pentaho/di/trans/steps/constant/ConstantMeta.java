@@ -65,8 +65,6 @@ public class ConstantMeta extends BaseStepMeta implements StepMetaInterface
 		super(); // allocate BaseStepMeta
 	}
 	
-	
-	
     /**
      * @return Returns the currency.
      */
@@ -224,9 +222,9 @@ public class ConstantMeta extends BaseStepMeta implements StepMetaInterface
 		fieldFormat    = new String[nrfields];
 		fieldLength    = new int[nrfields];
 		fieldPrecision = new int[nrfields];
-		currency    = new String[nrfields];
-		decimal     = new String[nrfields];
-		group       = new String[nrfields];
+		currency       = new String[nrfields];
+		decimal        = new String[nrfields];
+		group          = new String[nrfields];
 		value          = new String[nrfields];
 	}
 	
@@ -243,10 +241,10 @@ public class ConstantMeta extends BaseStepMeta implements StepMetaInterface
 			retval.fieldName[i]   = fieldName[i];
 			retval.fieldType[i]   = fieldType[i];
 			retval.fieldFormat[i] = fieldFormat[i];
-			retval.currency[i] = currency[i];
-			retval.decimal[i]  = decimal[i];
-			retval.group[i]    = group[i];
-			retval.value[i]        = value[i];
+			retval.currency[i]    = currency[i];
+			retval.decimal[i]     = decimal[i];
+			retval.group[i]       = group[i];
+			retval.value[i]       = value[i];
 			fieldLength[i]        = fieldLength[i]; 
 			fieldPrecision[i]     = fieldPrecision[i]; 
 		}
@@ -273,12 +271,12 @@ public class ConstantMeta extends BaseStepMeta implements StepMetaInterface
 				fieldName[i]   = XMLHandler.getTagValue(fnode, "name");
 				fieldType[i]   = XMLHandler.getTagValue(fnode, "type");
 				fieldFormat[i] = XMLHandler.getTagValue(fnode, "format");
-				currency[i] = XMLHandler.getTagValue(fnode, "currency");
-				decimal[i]  = XMLHandler.getTagValue(fnode, "decimal");
-				group[i]    = XMLHandler.getTagValue(fnode, "group");
-				value[i]        = XMLHandler.getTagValue(fnode, "nullif");
-				slength         = XMLHandler.getTagValue(fnode, "length");
-				sprecision      = XMLHandler.getTagValue(fnode, "precision");
+				currency[i]    = XMLHandler.getTagValue(fnode, "currency");
+				decimal[i]     = XMLHandler.getTagValue(fnode, "decimal");
+				group[i]       = XMLHandler.getTagValue(fnode, "group");
+				value[i]       = XMLHandler.getTagValue(fnode, "nullif");
+				slength        = XMLHandler.getTagValue(fnode, "length");
+				sprecision     = XMLHandler.getTagValue(fnode, "precision");
 				
 				fieldLength[i]    = Const.toInt(slength, -1);
 				fieldPrecision[i] = Const.toInt(sprecision, -1);
@@ -305,10 +303,10 @@ public class ConstantMeta extends BaseStepMeta implements StepMetaInterface
 			fieldFormat[i]    = "\u00A40,000,000.00;\u00A4-0,000,000.00";
 			fieldLength[i]    = 9;
 			fieldPrecision[i] = 2;
-			currency[i]    = decimalFormat.getDecimalFormatSymbols().getCurrencySymbol();
-			decimal[i]     = new String(new char[] { decimalFormat.getDecimalFormatSymbols().getDecimalSeparator() } );
-			group[i]       = new String(new char[] { decimalFormat.getDecimalFormatSymbols().getGroupingSeparator() } );
-			value[i]       = "-";
+			currency[i]       = decimalFormat.getDecimalFormatSymbols().getCurrencySymbol();
+			decimal[i]        = new String(new char[] { decimalFormat.getDecimalFormatSymbols().getDecimalSeparator() } );
+			group[i]          = new String(new char[] { decimalFormat.getDecimalFormatSymbols().getGroupingSeparator() } );
+			value[i]          = "-";
 		}
 
 	}
@@ -442,5 +440,4 @@ public class ConstantMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		return new ConstantData();
 	}
-
 }
