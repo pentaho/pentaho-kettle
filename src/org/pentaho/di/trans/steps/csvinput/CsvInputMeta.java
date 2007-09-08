@@ -51,7 +51,6 @@ import org.pentaho.di.trans.steps.textfileinput.TextFileInputMeta;
 import org.w3c.dom.Node;
 
 
-
 /**
  * @since 2007-07-05
  * @author matt
@@ -146,33 +145,33 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
 
 	public String getXML()
 	{
-		StringBuffer retval = new StringBuffer();
+		StringBuffer retval = new StringBuffer(500);
 
-		retval.append("    " + XMLHandler.addTagValue("filename", filename));
-		retval.append("    " + XMLHandler.addTagValue("separator", delimiter));
-		retval.append("    " + XMLHandler.addTagValue("enclosure", enclosure));
-		retval.append("    " + XMLHandler.addTagValue("header", headerPresent));
-		retval.append("    " + XMLHandler.addTagValue("buffer_size", bufferSize));
-		retval.append("    " + XMLHandler.addTagValue("lazy_conversion", lazyConversionActive));
+		retval.append("    ").append(XMLHandler.addTagValue("filename", filename));
+		retval.append("    ").append(XMLHandler.addTagValue("separator", delimiter));
+		retval.append("    ").append(XMLHandler.addTagValue("enclosure", enclosure));
+		retval.append("    ").append(XMLHandler.addTagValue("header", headerPresent));
+		retval.append("    ").append(XMLHandler.addTagValue("buffer_size", bufferSize));
+		retval.append("    ").append(XMLHandler.addTagValue("lazy_conversion", lazyConversionActive));
 
-		retval.append("    <fields>" + Const.CR);
+		retval.append("    <fields>").append(Const.CR);
 		for (int i = 0; i < inputFields.length; i++)
 		{
 			TextFileInputField field = inputFields[i];
 			
-			retval.append("      <field>" + Const.CR);
-			retval.append("        " + XMLHandler.addTagValue("name", field.getName()));
-			retval.append("        " + XMLHandler.addTagValue("type", ValueMeta.getTypeDesc(field.getType())));
-			retval.append("        " + XMLHandler.addTagValue("format", field.getFormat()));
-			retval.append("        " + XMLHandler.addTagValue("currency", field.getCurrencySymbol()));
-			retval.append("        " + XMLHandler.addTagValue("decimal", field.getDecimalSymbol()));
-			retval.append("        " + XMLHandler.addTagValue("group", field.getGroupSymbol()));
-			retval.append("        " + XMLHandler.addTagValue("length", field.getLength()));
-			retval.append("        " + XMLHandler.addTagValue("precision", field.getPrecision()));
-			retval.append("        " + XMLHandler.addTagValue("trim_type", ValueMeta.getTrimTypeCode(field.getTrimType())));
-			retval.append("        </field>" + Const.CR);
+			retval.append("      <field>").append(Const.CR);
+			retval.append("        ").append(XMLHandler.addTagValue("name", field.getName()));
+			retval.append("        ").append(XMLHandler.addTagValue("type", ValueMeta.getTypeDesc(field.getType())));
+			retval.append("        ").append(XMLHandler.addTagValue("format", field.getFormat()));
+			retval.append("        ").append(XMLHandler.addTagValue("currency", field.getCurrencySymbol()));
+			retval.append("        ").append(XMLHandler.addTagValue("decimal", field.getDecimalSymbol()));
+			retval.append("        ").append(XMLHandler.addTagValue("group", field.getGroupSymbol()));
+			retval.append("        ").append(XMLHandler.addTagValue("length", field.getLength()));
+			retval.append("        ").append(XMLHandler.addTagValue("precision", field.getPrecision()));
+			retval.append("        ").append(XMLHandler.addTagValue("trim_type", ValueMeta.getTrimTypeCode(field.getTrimType())));
+			retval.append("      </field>").append(Const.CR);
 		}
-		retval.append("      </fields>" + Const.CR);
+		retval.append("    </fields>").append(Const.CR);
 
 		return retval.toString();
 	}
