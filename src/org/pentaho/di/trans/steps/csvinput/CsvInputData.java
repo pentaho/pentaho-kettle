@@ -28,7 +28,6 @@ import org.pentaho.di.trans.step.StepDataInterface;
 /**
  * @author Matt
  * @since 24-jan-2005
- *
  */
 public class CsvInputData extends BaseStepData implements StepDataInterface
 {
@@ -70,9 +69,7 @@ public class CsvInputData extends BaseStepData implements StepDataInterface
 		byte[] newByteBuffer = new byte[newSize];
 		
 		// copy over the old data...
-		for (int i=0;i<bufferSize;i++) {
-			newByteBuffer[i] = byteBuffer[i+startBuffer];
-		}
+		System.arraycopy(byteBuffer, startBuffer, newByteBuffer, 0, bufferSize);
 		
 		// replace the old byte buffer...
 		byteBuffer = newByteBuffer;
