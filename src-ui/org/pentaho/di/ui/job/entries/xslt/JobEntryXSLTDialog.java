@@ -25,6 +25,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
@@ -73,6 +74,9 @@ public class JobEntryXSLTDialog extends JobEntryDialog implements JobEntryDialog
 	private Button       wbxslFilename;
 	private TextVar      wxslFilename;
 	private FormData     fdlxslFilename, fdbxslFilename, fdxslFilename;
+	
+	private Button wbOutputDirectory;
+	private FormData     fdbOutputDirectory;
 
 	private Label wlOutputFilename;
 	private TextVar wOutputFilename;
@@ -96,6 +100,10 @@ public class JobEntryXSLTDialog extends JobEntryDialog implements JobEntryDialog
     
 	private Group wFileResult;
     private FormData fdFileResult;
+    
+    private Label        wlXSLTFactory;
+    private CCombo       wXSLTFactory;
+    private FormData     fdlXSLTFactory, fdXSLTFactory;
     
     
 	private Label        wlAddFileToResult;
@@ -268,13 +276,73 @@ public class JobEntryXSLTDialog extends JobEntryDialog implements JobEntryDialog
 			}
 		);
 	
+		
+		
+		 // XSLTFactory
+        wlXSLTFactory=new Label(shell, SWT.RIGHT);
+        wlXSLTFactory.setText(Messages.getString("JobEntryXSLT.XSLTFactory.Label"));
+        props.setLook(wlXSLTFactory);
+        fdlXSLTFactory=new FormData();
+        fdlXSLTFactory.left = new FormAttachment(0, 0);
+        fdlXSLTFactory.top  = new FormAttachment(wxslFilename, margin);
+        fdlXSLTFactory.right= new FormAttachment(middle, -margin);
+        wlXSLTFactory.setLayoutData(fdlXSLTFactory);
+        wXSLTFactory=new CCombo(shell, SWT.BORDER | SWT.READ_ONLY);
+        wXSLTFactory.setEditable(true);
+        props.setLook(wXSLTFactory);
+        wXSLTFactory.addModifyListener(lsMod);
+        fdXSLTFactory=new FormData();
+        fdXSLTFactory.left = new FormAttachment(middle, 0);
+        fdXSLTFactory.top  = new FormAttachment(wxslFilename,margin);
+        fdXSLTFactory.right= new FormAttachment(100, 0);
+        wXSLTFactory.setLayoutData(fdXSLTFactory);
+        wXSLTFactory.add("JAXP");
+        wXSLTFactory.add("SAXON");
+		
+		
+		// Browse Source folders button ...
+		wbOutputDirectory=new Button(shell, SWT.PUSH| SWT.CENTER);
+		props.setLook(wbOutputDirectory);
+		wbOutputDirectory.setText(Messages.getString("System.Button.Browse"));
+		fdbOutputDirectory=new FormData();
+		fdbOutputDirectory.right= new FormAttachment(100, 0);
+		fdbOutputDirectory.top  = new FormAttachment(wXSLTFactory, margin);
+		wbOutputDirectory.setLayoutData(fdbOutputDirectory);
+		
+		wbOutputDirectory.addSelectionListener
+		(
+			new SelectionAdapter()
+			{
+				public void widgetSelected(SelectionEvent e)
+				{
+					DirectoryDialog ddialog = new DirectoryDialog(shell, SWT.OPEN);
+					if (wOutputFilename.getText()!=null)
+					{
+						ddialog.setFilterPath(jobMeta.environmentSubstitute(wOutputFilename.getText()) );
+					}
+					
+					 // Calling open() will open and run the dialog.
+			        // It will return the selected directory, or
+			        // null if user cancels
+			        String dir = ddialog.open();
+			        if (dir != null) {
+			          // Set the text box to the new selection
+			        	wOutputFilename.setText(dir);
+			        }
+					
+				}
+			}
+		);
+		
+		
+		
 		// OutputFilename
 		wlOutputFilename = new Label(shell, SWT.RIGHT);
 		wlOutputFilename.setText(Messages.getString("JobEntryXSLT.OutputFilename.Label"));
 		props.setLook(wlOutputFilename);
 		fdlOutputFilename = new FormData();
 		fdlOutputFilename.left = new FormAttachment(0, 0);
-		fdlOutputFilename.top = new FormAttachment(wxslFilename, margin);
+		fdlOutputFilename.top = new FormAttachment(wXSLTFactory, margin);
 		fdlOutputFilename.right = new FormAttachment(middle, -margin);
 		wlOutputFilename.setLayoutData(fdlOutputFilename);
 		wOutputFilename = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
@@ -282,8 +350,8 @@ public class JobEntryXSLTDialog extends JobEntryDialog implements JobEntryDialog
 		wOutputFilename.addModifyListener(lsMod);
 		fdOutputFilename = new FormData();
 		fdOutputFilename.left = new FormAttachment(middle, 0);
-		fdOutputFilename.top = new FormAttachment(wxslFilename, margin);
-		fdOutputFilename.right = new FormAttachment(100, 0);
+		fdOutputFilename.top = new FormAttachment(wXSLTFactory, margin);
+		fdOutputFilename.right = new FormAttachment(wbOutputDirectory, -margin);
 		wOutputFilename.setLayoutData(fdOutputFilename);
 
 
@@ -302,12 +370,12 @@ public class JobEntryXSLTDialog extends JobEntryDialog implements JobEntryDialog
 
 		//IF File Exists
 		wlIfFileExists = new Label(shell, SWT.RIGHT);
-		wlIfFileExists.setText(Messages.getString("JobEntryXSLT.IfZipFileExists.Label"));
+		wlIfFileExists.setText(Messages.getString("JobEntryXSLT.IfFileExists.Label"));
 		props.setLook(wlIfFileExists);
 		fdlIfFileExists = new FormData();
 		fdlIfFileExists.left = new FormAttachment(0, 0);
 		fdlIfFileExists.right = new FormAttachment(middle, 0);
-		fdlIfFileExists.top = new FormAttachment(wOutputFilename, margin);
+		fdlIfFileExists.top = new FormAttachment(wOutputFilename, 2*margin);
 		wlIfFileExists.setLayoutData(fdlIfFileExists);
 		wIfFileExists = new CCombo(shell, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
 		wIfFileExists.add(Messages.getString("JobEntryXSLT.Create_NewFile_IfFileExists.Label"));
@@ -318,13 +386,13 @@ public class JobEntryXSLTDialog extends JobEntryDialog implements JobEntryDialog
 		props.setLook(wIfFileExists);
 		fdIfFileExists= new FormData();
 		fdIfFileExists.left = new FormAttachment(middle, 0);
-		fdIfFileExists.top = new FormAttachment(wOutputFilename, margin);
+		fdIfFileExists.top = new FormAttachment(wOutputFilename, 2*margin);
 		fdIfFileExists.right = new FormAttachment(100, 0);
 		wIfFileExists.setLayoutData(fdIfFileExists);
 
 		fdIfFileExists = new FormData();
 		fdIfFileExists.left = new FormAttachment(middle, 0);
-		fdIfFileExists.top = new FormAttachment(wOutputFilename, margin);
+		fdIfFileExists.top = new FormAttachment(wOutputFilename, 2*margin);
 		fdIfFileExists.right = new FormAttachment(100, 0);
 		wIfFileExists.setLayoutData(fdIfFileExists);
 
@@ -373,7 +441,6 @@ public class JobEntryXSLTDialog extends JobEntryDialog implements JobEntryDialog
 	     fdFileResult = new FormData();
 	     fdFileResult.left = new FormAttachment(0, margin);
 	     fdFileResult.top = new FormAttachment(wIfFileExists, margin);
-	     //fdFileResult.bottom = new FormAttachment(wOK, -margin);
 	     fdFileResult.right = new FormAttachment(100, -margin);
 	     wFileResult.setLayoutData(fdFileResult);
 	     // ///////////////////////////////////////////////////////////
@@ -445,6 +512,13 @@ public class JobEntryXSLTDialog extends JobEntryDialog implements JobEntryDialog
 		}
 		
 		wAddFileToResult.setSelection(jobEntry.isAddFileToResult());
+		if (jobEntry.getXSLTFactory()!= null) 
+		{
+			wXSLTFactory.setText(jobEntry.getXSLTFactory());
+		}
+		{
+			wXSLTFactory.setText("JAXP");
+		}
 
 	}
 
@@ -464,6 +538,7 @@ public class JobEntryXSLTDialog extends JobEntryDialog implements JobEntryDialog
 		jobEntry.iffileexists = wIfFileExists.getSelectionIndex();
 		
 		jobEntry.setAddFileToResult(wAddFileToResult.getSelection());
+		jobEntry.setXSLTFactory(wXSLTFactory.getText());
 
 		dispose();
 	}
