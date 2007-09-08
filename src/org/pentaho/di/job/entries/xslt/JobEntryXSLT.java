@@ -29,6 +29,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+//import net.sf.saxon.FeatureKeys;
+//import net.sf.saxon.value.StringValue;
 import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
@@ -75,6 +77,7 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 	private String outputfilename;
 	public int iffileexists;
 	private boolean addfiletoresult;
+	private String xsltfactory;
 
 
 	public JobEntryXSLT(String n)
@@ -85,6 +88,7 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 		outputfilename=null;
 		iffileexists=1;
 		addfiletoresult = false;
+		xsltfactory="JAXP";
 		setID(-1L);
 		setJobEntryType(JobEntryType.XSLT);
 	}
@@ -115,6 +119,8 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 		retval.append("      ").append(XMLHandler.addTagValue("outputfilename", outputfilename));
 		retval.append("      ").append(XMLHandler.addTagValue("iffileexists",  iffileexists));
 		retval.append("      ").append(XMLHandler.addTagValue("addfiletoresult",  addfiletoresult));
+		retval.append("      ").append(XMLHandler.addTagValue("xsltfactory", xsltfactory));
+		
 
 
 		return retval.toString();
@@ -131,6 +137,8 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 			outputfilename = XMLHandler.getTagValue(entrynode, "outputfilename");
 			iffileexists = Const.toInt(XMLHandler.getTagValue(entrynode, "iffileexists"), -1);
 			addfiletoresult = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "addfiletoresult"));
+			xsltfactory = XMLHandler.getTagValue(entrynode, "xsltfactory");
+			
 
 		}
 		catch(KettleXMLException xe)
@@ -150,6 +158,8 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 			outputfilename = rep.getJobEntryAttributeString(id_jobentry, "outputfilename");
 			iffileexists=(int) rep.getJobEntryAttributeInteger(id_jobentry, "iffileexists");
 			addfiletoresult=rep.getJobEntryAttributeBoolean(id_jobentry, "addfiletoresult");
+			xsltfactory = rep.getJobEntryAttributeString(id_jobentry, "xsltfactory");
+			
 		}
 		catch(KettleException dbe)
 		{
@@ -169,6 +179,8 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 			rep.saveJobEntryAttribute(id_job, getID(), "outputfilename", outputfilename);
 			rep.saveJobEntryAttribute(id_job, getID(), "iffileexists", iffileexists);
 			rep.saveJobEntryAttribute(id_job, getID(), "addfiletoresult", addfiletoresult);
+			rep.saveJobEntryAttribute(id_job, getID(), "xsltfactory", xsltfactory);
+			
 		}
 		catch(KettleDatabaseException dbe)
 		{
@@ -176,6 +188,16 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 		}
 	}
 
+	public String getXSLTFactory()
+	{
+		return xsltfactory;
+	}
+	
+	public void setXSLTFactory(String xsltfactoryin)
+	{
+		xsltfactory=xsltfactoryin;
+	}
+	
     public String getRealxmlfilename()
     {
         return environmentSubstitute(getxmlFilename());
@@ -244,7 +266,7 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 
 						 if (outputfile.exists() && iffileexists==0)
 							{
-								// the zip file exists and user want to create new one with unique name
+								// the output file exists and user want to create new one with unique name
 								//Format Date
 
 								DateFormat dateFormat = new SimpleDateFormat("mmddyyyy_hhmmss");
@@ -269,18 +291,29 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 
 							}
 
-						//String xmlSystemXML = new File(realxmlfilename).toURL().toExternalForm(  );
-						//String xsltSystemXSL = new File(realxslfilename).toURL().toExternalForm(  );
-
+						
 						// Create transformer factory
-						TransformerFactory factory = TransformerFactory.newInstance();
-
+						TransformerFactory factory = TransformerFactory.newInstance();	
+						
+						if (xsltfactory.equals("SAXON"))
+						{
+							// Set the TransformerFactory to the SAXON implementation.
+							factory = new net.sf.saxon.TransformerFactoryImpl(); 
+							
+						}
+						
+						if (log.isDetailed()) log.logDetailed(Messages.getString("JobEntryXSL.Log.TransformerFactoryInfos"),Messages.getString("JobEntryXSL.Log.TransformerFactory",factory.getClass().getName()));
+				
+								
 						// Use the factory to create a template containing the xsl file
-						Templates template = factory.newTemplates(new StreamSource(	new FileInputStream(realxslfilename)));
+						Templates template = factory.newTemplates(new StreamSource(	new FileInputStream(realxslfilename))); 
 
 						// Use the template to create a transformer
 						Transformer xformer = template.newTransformer();
-
+						
+						if (log.isDetailed()) log.logDetailed(Messages.getString("JobEntryXSL.Log.TransformerClassInfos"),Messages.getString("JobEntryXSL.Log.TransformerClass",xformer.getClass().getName()));
+											
+						
 						// Prepare the input and output files
 						Source source = new StreamSource(new FileInputStream(realxmlfilename));
 						StreamResult resultat = new StreamResult(new FileOutputStream(realoutputfilename));
@@ -290,10 +323,11 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 						
 						if (isAddFileToResult())
 						{
-							// Add zip filename to output files
+							// Add output filename to output files
 		                	ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(realoutputfilename), parentJob.getName(), toString());
 		                    result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
 						}
+						
 
 						// Everything is OK
 						result.setResult( true );
@@ -351,6 +385,12 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 			    	xlsfile.close();
 				if ( outputfile != null )
 					outputfile.close();
+				
+				// file object is not properly garbaged collected and thus the file cannot
+				// be deleted anymore. This is a known problem in the JVM.
+
+				System.gc();
+				
 
 		    }
 			catch ( IOException e ) { }
