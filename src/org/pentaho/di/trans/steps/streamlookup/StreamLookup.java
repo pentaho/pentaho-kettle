@@ -141,7 +141,7 @@ public class StreamLookup extends BaseStep implements StepInterface
         Object[] rowData=getRowFrom(rowSet); // rows are originating from "lookup_from"
 		while (rowData!=null)
 		{
-            if (log.isRowLevel()) logRowlevel(Messages.getString("StreamLookup.Log.ReadLookupRow")+rowData.toString()); //$NON-NLS-1$
+            if (log.isRowLevel()) logRowlevel(Messages.getString("StreamLookup.Log.ReadLookupRow")+rowSet.getRowMeta().getString(rowData)); //$NON-NLS-1$
 
             if (firstRun)
             {
@@ -373,11 +373,7 @@ public class StreamLookup extends BaseStep implements StepInterface
 	        data.readLookupValues = false;
 	        
 			logBasic(Messages.getString("StreamLookup.Log.ReadingLookupValuesFromStep")+meta.getLookupFromStep()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
-			if (readLookupValues()) // Read values in lookup table (look)
-			{
-				logBasic(Messages.getString("StreamLookup.Log.ReadValuesInMemory",data.look.size()+"")); //$NON-NLS-1$ //$NON-NLS-2$
-			}
-			else
+			if (! readLookupValues()) // Read values in lookup table (look)
 			{
 				logError(Messages.getString("StreamLookup.Log.UnableToReadDataFromLookupStream")); //$NON-NLS-1$
 				setErrors(1);
