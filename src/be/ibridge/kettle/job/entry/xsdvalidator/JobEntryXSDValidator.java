@@ -234,9 +234,6 @@ public class JobEntryXSDValidator extends JobEntryBase implements Cloneable, Job
 		
 		}
 	
-		catch (SAXException ex) {
-			log.logError(toString(),"Error :" + ex.getMessage());
-		}
 		catch ( Exception e )
 		{
 
