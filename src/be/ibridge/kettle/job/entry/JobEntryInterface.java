@@ -54,6 +54,7 @@ import be.ibridge.kettle.job.entry.ping.JobEntryPing;
 import be.ibridge.kettle.job.entry.writetolog.JobEntryWriteToLog;
 import be.ibridge.kettle.job.entry.copyfiles.JobEntryCopyFiles;
 import be.ibridge.kettle.job.entry.xsdvalidator.JobEntryXSDValidator;
+import be.ibridge.kettle.job.entry.dtdvalidator.JobEntryDTDValidator;
 import be.ibridge.kettle.repository.Repository;
 
 
@@ -97,6 +98,7 @@ public interface JobEntryInterface
 	public static final int TYPE_WRITE_TO_LOG= 27;
 	public static final int TYPE_COPY_FILES= 28;
 	public static final int TYPE_JOBENTRY_XSD_VALIDATOR= 29;
+	public static final int TYPE_JOBENTRY_DTD_VALIDATOR= 30;
 
 	public final static String typeCode[] =
 		{
@@ -129,7 +131,8 @@ public interface JobEntryInterface
 			"PING",
 			"WRITE_TO_LOG",	
 			"COPY_FILES",	
-			"XSD_VALIDATOR",	
+			"XSD_VALIDATOR",
+			"DTD_VALIDATOR",
 		};
 
 	public final static String typeDesc[] =
@@ -164,6 +167,7 @@ public interface JobEntryInterface
 			Messages.getString("JobEntry.WriteToLog.TypeDesc"),
 			Messages.getString("JobEntry.CopyFiles.TypeDesc"),
 			Messages.getString("JobEntry.XSDValidator.TypeDesc"),
+			Messages.getString("JobEntry.DTDValidator.TypeDesc"),
 		};
 
 	public final static String icon_filename[] = 
@@ -198,6 +202,7 @@ public interface JobEntryInterface
 			"WTL.png",
 			"CPY.png",
 			"XSD.png",
+			"DTD.png",
 		};
 	
 	public final static String type_tooltip_desc[] = 
@@ -232,6 +237,7 @@ public interface JobEntryInterface
 			Messages.getString("JobEntry.WriteToLog.Tooltip"),
 			Messages.getString("JobEntry.CopyFiles.Tooltip"),
 			Messages.getString("JobEntry.XSDValidator.Tooltip"),
+			Messages.getString("JobEntry.DTDValidator.Tooltip"),
  		};
 	
 	public final static Class type_classname[] = 
@@ -266,6 +272,7 @@ public interface JobEntryInterface
 			JobEntryWriteToLog.class,
 			JobEntryCopyFiles.class,
 			JobEntryXSDValidator.class,
+			JobEntryDTDValidator.class,
 		};
 
 	public Result execute(Result prev_result, int nr, Repository rep, Job parentJob) throws KettleException;
