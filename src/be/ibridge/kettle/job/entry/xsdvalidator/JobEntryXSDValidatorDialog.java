@@ -34,14 +34,10 @@ import be.ibridge.kettle.job.JobMeta;
 import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.core.widget.TextVar;
 import be.ibridge.kettle.job.dialog.JobDialog;
-//import be.ibridge.kettle.job.JobEntryDialog; 
 import be.ibridge.kettle.job.entry.JobEntryDialogInterface;
 import be.ibridge.kettle.job.entry.JobEntryInterface;
-import be.ibridge.kettle.job.entry.xslt.JobEntryXSLT;
-//import org.pentaho.di.repository.Repository;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
-//import org.pentaho.di.job.entries.xsdvalidator.JobEntryXSDValidator;
-//import org.pentaho.di.job.entries.xsdvalidator.Messages;
+
 
 /**
  * This dialog allows you to edit the XSD Validator job entry settings.
