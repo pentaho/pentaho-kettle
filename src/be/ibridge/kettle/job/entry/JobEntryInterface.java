@@ -53,6 +53,7 @@ import be.ibridge.kettle.job.entry.abort.JobEntryAbort;
 import be.ibridge.kettle.job.entry.ping.JobEntryPing;
 import be.ibridge.kettle.job.entry.writetolog.JobEntryWriteToLog;
 import be.ibridge.kettle.job.entry.copyfiles.JobEntryCopyFiles;
+import be.ibridge.kettle.job.entry.xsdvalidator.JobEntryXSDValidator;
 import be.ibridge.kettle.repository.Repository;
 
 
@@ -95,6 +96,7 @@ public interface JobEntryInterface
 	public static final int TYPE_JOBENTRY_PING= 26;
 	public static final int TYPE_WRITE_TO_LOG= 27;
 	public static final int TYPE_COPY_FILES= 28;
+	public static final int TYPE_JOBENTRY_XSD_VALIDATOR= 29;
 
 	public final static String typeCode[] =
 		{
@@ -127,6 +129,7 @@ public interface JobEntryInterface
 			"PING",
 			"WRITE_TO_LOG",	
 			"COPY_FILES",	
+			"XSD_VALIDATOR",	
 		};
 
 	public final static String typeDesc[] =
@@ -160,6 +163,7 @@ public interface JobEntryInterface
 			Messages.getString("JobEntry.Ping.TypeDesc"),
 			Messages.getString("JobEntry.WriteToLog.TypeDesc"),
 			Messages.getString("JobEntry.CopyFiles.TypeDesc"),
+			Messages.getString("JobEntry.XSDValidator.TypeDesc"),
 		};
 
 	public final static String icon_filename[] = 
@@ -193,6 +197,7 @@ public interface JobEntryInterface
 			"PNG.png",
 			"WTL.png",
 			"CPY.png",
+			"XSD.png",
 		};
 	
 	public final static String type_tooltip_desc[] = 
@@ -226,6 +231,7 @@ public interface JobEntryInterface
 			Messages.getString("JobEntry.Ping.Tooltip"),
 			Messages.getString("JobEntry.WriteToLog.Tooltip"),
 			Messages.getString("JobEntry.CopyFiles.Tooltip"),
+			Messages.getString("JobEntry.XSDValidator.Tooltip"),
  		};
 	
 	public final static Class type_classname[] = 
@@ -259,6 +265,7 @@ public interface JobEntryInterface
 			JobEntryPing.class,
 			JobEntryWriteToLog.class,
 			JobEntryCopyFiles.class,
+			JobEntryXSDValidator.class,
 		};
 
 	public Result execute(Result prev_result, int nr, Repository rep, Job parentJob) throws KettleException;
