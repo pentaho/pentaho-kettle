@@ -1,6 +1,7 @@
-package be.ibridge.kettle.job.entry.dtdvalidator;
+package org.pentaho.di.job.entries.dtdvalidator;
 
-import be.ibridge.kettle.i18n.BaseMessages;
+
+import org.pentaho.di.i18n.BaseMessages;
 
 public class Messages
 {
