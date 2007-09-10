@@ -632,6 +632,10 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
                                                         throw new RuntimeException("JavaScript conversion to BigNumber not implemented for "+classType.toString());
                                                     }
 
+                    case ValueMetaInterface.TYPE_BINARY:
+                    	{
+                    		return (byte[])result;
+                    	}
                     default:
                         throw new RuntimeException("JavaScript conversion not implemented for type" + meta.getType()[i]);
 
