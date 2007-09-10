@@ -786,7 +786,6 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 			//
 			//Had to add this to support variable replacement here as well. asilva 9/07/07
 			Variables vars = new Variables();
-			vars.copyVariablesFrom(this);
 			vars.copyVariablesFrom(space);
 			TransMeta transMeta = getTransMeta(null,vars);
 			
