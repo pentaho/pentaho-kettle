@@ -61,8 +61,6 @@ import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
 
-import be.ibridge.kettle.job.entry.dtdvalidator.Messages;
-
 
 /**
  * This defines a 'dtdvalidator' job entry. 

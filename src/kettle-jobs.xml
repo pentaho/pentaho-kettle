@@ -391,7 +391,7 @@
 			ognl:@org.pentaho.di.job.JobEntryType@DTD_VALIDATOR
 		</type>
 		<class-name>
-			org.pentaho.di.job.entries.dtdvalidator.JobEntryDTDvalidator
+			org.pentaho.di.job.entries.dtdvalidator.JobEntryDTDValidator
 		</class-name>
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.DTDValidator.Tooltip")
