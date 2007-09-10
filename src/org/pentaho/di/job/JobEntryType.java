@@ -42,8 +42,8 @@ public enum JobEntryType
 	XSD_VALIDATOR(Messages.getString("JobEntry.XSDValidator.TypeDesc")),
 	XACTION(Messages.getString("JobEntry.XAction.TypeDesc")),
 	WRITE_TO_LOG(Messages.getString("JobEntry.WriteToLog.TypeDesc")),
-	COPY_FILES(Messages.getString("JobEntry.CopyFiles.TypeDesc"));
-	
+	COPY_FILES(Messages.getString("JobEntry.CopyFiles.TypeDesc")),
+	DTD_VALIDATOR(Messages.getString("JobEntry.DTDValidator.TypeDesc"));
 	
 	private String description;
 	
