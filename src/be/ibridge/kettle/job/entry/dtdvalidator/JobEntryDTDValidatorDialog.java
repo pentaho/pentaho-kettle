@@ -71,6 +71,11 @@ public class JobEntryDTDValidatorDialog extends Dialog implements JobEntryDialog
 	private Button       wbdtdFilename;
 	private TextVar      wdtdFilename;
 	private FormData     fdldtdFilename, fdbdtdFilename, fddtdFilename;
+	
+	//  Intern DTD
+	private Label        wlDTDIntern;
+	private Button       wDTDIntern;
+	private FormData     fdlDTDIntern, fdDTDIntern;
 
 
 	private Button wOK, wCancel;
@@ -80,6 +85,7 @@ public class JobEntryDTDValidatorDialog extends Dialog implements JobEntryDialog
 	private Shell       	shell;
 	private Props       	props;
 
+	
 
 	private SelectionAdapter lsDef;
 	
@@ -197,6 +203,36 @@ public class JobEntryDTDValidatorDialog extends Dialog implements JobEntryDialog
 				}
 			}
 		);
+		
+		
+		
+		//DTD Intern ?
+		wlDTDIntern = new Label(shell, SWT.RIGHT);
+		wlDTDIntern.setText(Messages.getString("JobEntryDTDValidator.DTDIntern.Label"));
+		props.setLook(wlDTDIntern);
+		fdlDTDIntern = new FormData();
+		fdlDTDIntern.left = new FormAttachment(0, 0);
+		fdlDTDIntern.top = new FormAttachment(wxmlFilename, margin);
+		fdlDTDIntern.right = new FormAttachment(middle, -margin);
+		wlDTDIntern.setLayoutData(fdlDTDIntern);
+		wDTDIntern = new Button(shell, SWT.CHECK);
+		props.setLook(wDTDIntern);
+		wDTDIntern.setToolTipText(Messages.getString("JobEntryDTDValidator.DTDIntern.Tooltip"));
+		fdDTDIntern = new FormData();
+		fdDTDIntern.left = new FormAttachment(middle, 0);
+		fdDTDIntern.top = new FormAttachment(wxmlFilename, margin);
+		fdDTDIntern.right = new FormAttachment(100, 0);
+		wDTDIntern.setLayoutData(fdDTDIntern);
+		wDTDIntern.addSelectionListener(new SelectionAdapter()
+		{
+			public void widgetSelected(SelectionEvent e)
+			{
+				ActiveDTDFilename();
+				jobEntry.setChanged();
+			}
+		});
+        
+		
 
 		// DTD Filename
 		wldtdFilename=new Label(shell, SWT.RIGHT);
@@ -204,7 +240,7 @@ public class JobEntryDTDValidatorDialog extends Dialog implements JobEntryDialog
  		props.setLook(wldtdFilename);
 		fdldtdFilename=new FormData();
 		fdldtdFilename.left = new FormAttachment(0, 0);
-		fdldtdFilename.top  = new FormAttachment(wxmlFilename, margin);
+		fdldtdFilename.top  = new FormAttachment(wDTDIntern, margin);
 		fdldtdFilename.right= new FormAttachment(middle, -margin);
 		wldtdFilename.setLayoutData(fdldtdFilename);
 		wbdtdFilename=new Button(shell, SWT.PUSH| SWT.CENTER);
@@ -212,14 +248,14 @@ public class JobEntryDTDValidatorDialog extends Dialog implements JobEntryDialog
 		wbdtdFilename.setText(Messages.getString("System.Button.Browse"));
 		fdbdtdFilename=new FormData();
 		fdbdtdFilename.right= new FormAttachment(100, 0);
-		fdbdtdFilename.top  = new FormAttachment(wxmlFilename, 0);
+		fdbdtdFilename.top  = new FormAttachment(wDTDIntern, 0);
 		wbdtdFilename.setLayoutData(fdbdtdFilename);
 		wdtdFilename=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wdtdFilename);
 		wdtdFilename.addModifyListener(lsMod);
 		fddtdFilename=new FormData();
 		fddtdFilename.left = new FormAttachment(middle, 0);
-		fddtdFilename.top  = new FormAttachment(wxmlFilename, margin);
+		fddtdFilename.top  = new FormAttachment(wDTDIntern, margin);
 		fddtdFilename.right= new FormAttachment(wbdtdFilename, -margin);
 		wdtdFilename.setLayoutData(fddtdFilename);
 
@@ -281,7 +317,8 @@ public class JobEntryDTDValidatorDialog extends Dialog implements JobEntryDialog
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
 
 		getData();
-
+		ActiveDTDFilename();
+		
 		BaseStepDialog.setSize(shell);
 
 		shell.open();
@@ -298,6 +335,13 @@ public class JobEntryDTDValidatorDialog extends Dialog implements JobEntryDialog
 		props.setScreen(winprop);
 		shell.dispose();
 	}
+	
+	private void ActiveDTDFilename()
+	{
+		wldtdFilename.setEnabled(!wDTDIntern.getSelection());
+		wdtdFilename.setEnabled(!wDTDIntern.getSelection());
+		wbdtdFilename.setEnabled(!wDTDIntern.getSelection());
+	}
 
 	/**
 	 * Copy information from the meta-data input to the dialog fields.
@@ -307,7 +351,8 @@ public class JobEntryDTDValidatorDialog extends Dialog implements JobEntryDialog
 		if (jobEntry.getName()    != null) wName.setText( jobEntry.getName() );
 		wName.selectAll();
 		if (jobEntry.getxmlFilename()!= null) wxmlFilename.setText( jobEntry.getxmlFilename() );
-		if (jobEntry.getdtdFilename()!= null) wdtdFilename.setText( jobEntry.getdtdFilename() );		
+		if (jobEntry.getdtdFilename()!= null) wdtdFilename.setText( jobEntry.getdtdFilename() );	
+		wDTDIntern.setSelection(jobEntry.getDTDIntern());
 		
 
 	}
@@ -324,6 +369,8 @@ public class JobEntryDTDValidatorDialog extends Dialog implements JobEntryDialog
 		jobEntry.setName(wName.getText());
 		jobEntry.setxmlFilename(wxmlFilename.getText());
 		jobEntry.setdtdFilename(wdtdFilename.getText());
+		
+		jobEntry.setDTDIntern(wDTDIntern.getSelection());
 
 
 		dispose();

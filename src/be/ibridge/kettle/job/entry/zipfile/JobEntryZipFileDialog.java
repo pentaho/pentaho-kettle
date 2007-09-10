@@ -439,7 +439,7 @@ public class JobEntryZipFileDialog extends Dialog implements JobEntryDialogInter
 			}
 		});
         
-        
+		
         fdFileResult = new FormData();
         fdFileResult.left = new FormAttachment(0, margin);
         fdFileResult.top = new FormAttachment(wMovetoDirectory, margin);

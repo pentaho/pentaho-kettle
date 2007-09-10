@@ -60,6 +60,7 @@ public class JobEntryDTDValidator extends JobEntryBase implements Cloneable, Job
 {
 	private String xmlfilename;
 	private String dtdfilename;
+	private boolean dtdintern;
 
 
 
@@ -68,6 +69,7 @@ public class JobEntryDTDValidator extends JobEntryBase implements Cloneable, Job
 		super(n, "");
      	xmlfilename=null;
      	dtdfilename=null;
+     	dtdintern=false;
 
 		setID(-1L);
 		setType(JobEntryInterface.TYPE_JOBENTRY_DTD_VALIDATOR);
@@ -96,6 +98,8 @@ public class JobEntryDTDValidator extends JobEntryBase implements Cloneable, Job
 		retval.append(super.getXML());
 		retval.append("      ").append(XMLHandler.addTagValue("xmlfilename", xmlfilename));
 		retval.append("      ").append(XMLHandler.addTagValue("dtdfilename", dtdfilename));
+		retval.append("      ").append(XMLHandler.addTagValue("dtdintern",  dtdintern));
+		
 
 		return retval.toString();
 	}
@@ -108,6 +112,7 @@ public class JobEntryDTDValidator extends JobEntryBase implements Cloneable, Job
 			super.loadXML(entrynode, databases);
 			xmlfilename = XMLHandler.getTagValue(entrynode, "xmlfilename");
 			dtdfilename = XMLHandler.getTagValue(entrynode, "dtdfilename");
+			dtdintern = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "dtdintern"));
 
 
 		}
@@ -125,6 +130,7 @@ public class JobEntryDTDValidator extends JobEntryBase implements Cloneable, Job
 			super.loadRep(rep, id_jobentry, databases);
 			xmlfilename = rep.getJobEntryAttributeString(id_jobentry, "xmlfilename");
 			dtdfilename = rep.getJobEntryAttributeString(id_jobentry, "dtdfilename");
+			dtdintern=rep.getJobEntryAttributeBoolean(id_jobentry, "dtdintern");
 
 		}
 		catch(KettleException dbe)
@@ -142,6 +148,7 @@ public class JobEntryDTDValidator extends JobEntryBase implements Cloneable, Job
 
 			rep.saveJobEntryAttribute(id_job, getID(), "xmlfilename", xmlfilename);
 			rep.saveJobEntryAttribute(id_job, getID(), "DTDfilename", dtdfilename);
+			rep.saveJobEntryAttribute(id_job, getID(), "dtdintern", dtdintern);
 
 		}
 		catch(KettleDatabaseException dbe)
@@ -219,19 +226,34 @@ public class JobEntryDTDValidator extends JobEntryBase implements Cloneable, Job
 					}
 					
 					int xmlStartDTD = xmlStringbuffer.indexOf("<!DOCTYPE");
-					if (xmlStartDTD != -1) 
+					 
+					if (dtdintern)
 					{
 						// DTD find in the XML document
-						
-						//int EndDTD = xmlStringbuffer.indexOf(">",	xmlStartDTD);
-						//String DocTypeDTD = xmlStringbuffer.substring(xmlStartDTD, EndDTD + 1);
-						//xmlStringbuffer.replace(xmlStartDTD,EndDTD + 1, "");
-	
+						if (xmlStartDTD != -1)
+						{
+							log.logBasic(toString(),  Messages.getString("JobEntryDTDValidator.ERRORDTDFound.Label", realxmlfilename));
+						}
+						else
+						{
+							log.logBasic(toString(),  Messages.getString("JobEntryDTDValidator.ERRORDTDNotFound.Label", realxmlfilename));
+						}
+							
+					
 						
 					}
 					else
 					{
 						// DTD in external document
+						// If we find an intern declaration, we remove it
+						if (xmlStartDTD != -1)
+						{
+							int EndDTD = xmlStringbuffer.indexOf(">",xmlStartDTD);
+							String DocTypeDTD = xmlStringbuffer.substring(xmlStartDTD, EndDTD + 1);
+							xmlStringbuffer.replace(xmlStartDTD,EndDTD + 1, "");
+			
+						}
+						
 						
 						String xmlRootnodeDTD = xmlDocDTD.getDocumentElement().getNodeName();
 							
@@ -244,15 +266,26 @@ public class JobEntryDTDValidator extends JobEntryBase implements Cloneable, Job
 						xmlStringbuffer.replace(0, xmloffsetDTD,RefDTD);
 					}
 						
-					DocBuilderFactory.setValidating(true);
-
-					// Let's parse now ...
-										
-					xmlDocDTD = DocBuilder.parse(new ByteArrayInputStream(xmlStringbuffer.toString().getBytes(encoding)));
-					
-
-					// Everything is OK
-					result.setResult( true );
+					if (dtdintern && xmlStartDTD == -1)
+					{
+						result.setResult( false );
+						result.setNrErrors(1);
+					}
+					else
+					{
+						DocBuilderFactory.setValidating(true);
+						
+						// Let's parse now ...
+											
+						xmlDocDTD = DocBuilder.parse(new ByteArrayInputStream(xmlStringbuffer.toString().getBytes(encoding)));
+	
+						log.logBasic(Messages.getString("JobEntryDTDValidator.DTDValidatorOK.Subject"),
+								Messages.getString("JobEntryDTDValidator.DTDValidatorOK.Label",		
+										realxmlfilename));
+						
+						// Everything is OK
+						result.setResult( true );
+					}
 					
 				}
 				else
@@ -338,5 +371,15 @@ public class JobEntryDTDValidator extends JobEntryBase implements Cloneable, Job
 	public String getdtdFilename()
 	{
 		return dtdfilename;
+	}
+	
+	public boolean getDTDIntern()
+	{
+		return dtdintern;
+	}
+	
+	public void setDTDIntern(boolean dtdinternin)
+	{
+		this.dtdintern=dtdinternin;
 	}
 }
