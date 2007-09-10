@@ -174,6 +174,10 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
     private CCombo       wEncoding;
     private FormData     fdlEncoding, fdEncoding;
     
+    private Label        wlSecureConnectionType;
+    private CCombo       wSecureConnectionType;
+    private FormData     fdlSecureConnectionType, fdSecureConnectionType;
+    
     private Label        wlPriority;
     private CCombo       wPriority;
     private FormData     fdlPriority, fdPriority;
@@ -480,8 +484,8 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
         {
             public void widgetSelected(SelectionEvent e)
             {
+            	setUseAuth();
                 jobEntry.setChanged();
-                setFlags();
             }
         });
 
@@ -507,30 +511,63 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
         fdAuthPass.right = new FormAttachment(100, 0);
         wAuthPass.setLayoutData(fdAuthPass);
 
-        // Use authentication?
+        // Use secure authentication?
         wlUseSecAuth = new Label(wAuthentificationGroup, SWT.RIGHT);
         wlUseSecAuth.setText(Messages.getString("JobMail.UseSecAuthentication.Label"));
         props.setLook(wlUseSecAuth);
         fdlUseSecAuth = new FormData();
         fdlUseSecAuth.left = new FormAttachment(0, 0);
-        fdlUseSecAuth.top = new FormAttachment(wAuthPass, margin);
+        fdlUseSecAuth.top = new FormAttachment(wAuthPass, 2*margin);
         fdlUseSecAuth.right = new FormAttachment(middle, -margin);
         wlUseSecAuth.setLayoutData(fdlUseSecAuth);
         wUseSecAuth = new Button(wAuthentificationGroup, SWT.CHECK);
         props.setLook(wUseSecAuth);
         fdUseSecAuth = new FormData();
         fdUseSecAuth.left = new FormAttachment(middle, margin);
-        fdUseSecAuth.top = new FormAttachment(wAuthPass, margin);
+        fdUseSecAuth.top = new FormAttachment(wAuthPass, 2*margin);
         fdUseSecAuth.right = new FormAttachment(100, 0);
         wUseSecAuth.setLayoutData(fdUseSecAuth);
         wUseSecAuth.addSelectionListener(new SelectionAdapter()
         {
             public void widgetSelected(SelectionEvent e)
             {
+            	setSecureConnectiontype();
                 jobEntry.setChanged();
-                setFlags();
+                
             }
         });
+        
+        // SecureConnectionType
+        wlSecureConnectionType=new Label(wAuthentificationGroup, SWT.RIGHT);
+        wlSecureConnectionType.setText(Messages.getString("JobMail.SecureConnectionType.Label"));
+        props.setLook(wlSecureConnectionType);
+        fdlSecureConnectionType=new FormData();
+        fdlSecureConnectionType.left = new FormAttachment(0, 0);
+        fdlSecureConnectionType.top  = new FormAttachment(wUseSecAuth, margin);
+        fdlSecureConnectionType.right= new FormAttachment(middle, -margin);
+        wlSecureConnectionType.setLayoutData(fdlSecureConnectionType);
+        wSecureConnectionType=new CCombo(wAuthentificationGroup, SWT.BORDER | SWT.READ_ONLY);
+        wSecureConnectionType.setEditable(true);
+        props.setLook(wSecureConnectionType);
+        wSecureConnectionType.addModifyListener(lsMod);
+        fdSecureConnectionType=new FormData();
+        fdSecureConnectionType.left = new FormAttachment(middle, margin);
+        fdSecureConnectionType.top  = new FormAttachment(wUseSecAuth,margin);
+        fdSecureConnectionType.right= new FormAttachment(100, 0);
+        wSecureConnectionType.setLayoutData(fdSecureConnectionType);
+        wSecureConnectionType.add("SSL");
+        wSecureConnectionType.add("TLS");
+        wSecureConnectionType.addSelectionListener(new SelectionAdapter()
+        {
+            public void widgetSelected(SelectionEvent e)
+            {
+            	setSecureConnectiontype();
+                jobEntry.setChanged();
+                
+            }
+        });
+
+        
  		
       	fdAuthentificationGroup = new FormData();
       	fdAuthentificationGroup.left = new FormAttachment(0, margin);
@@ -1072,6 +1109,8 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
 
         SetEnabledEncoding();
         activeUsePriority();
+        setFlags();
+        setUseAuth();
         BaseStepDialog.setSize(shell);
 
         shell.open();
@@ -1097,7 +1136,11 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
         wlEncoding.setEnabled(wUseHTML.getSelection());
         	
     }
-    
+    protected void setSecureConnectiontype()
+    {
+    	wSecureConnectionType.setEnabled(wUseSecAuth.getSelection());
+    	wlSecureConnectionType.setEnabled(wUseSecAuth.getSelection());
+    }
     protected void setFlags()
     {
         wlTypes.setEnabled(wIncludeFiles.getSelection());
@@ -1106,11 +1149,25 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
         wZipFiles.setEnabled(wIncludeFiles.getSelection());
         wZipFilename.setEnabled(wIncludeFiles.getSelection() && wZipFiles.getSelection());
 
+
+    }
+	protected void setUseAuth()
+	{
         wAuthUser.setEnabled(wUseAuth.getSelection());
         wAuthPass.setEnabled(wUseAuth.getSelection());
         wUseSecAuth.setEnabled(wUseAuth.getSelection());
-    }
-
+        wlUseSecAuth.setEnabled(wUseAuth.getSelection());
+        if (!wUseAuth.getSelection())
+        {
+        	wSecureConnectionType.setEnabled(false);
+        	wlSecureConnectionType.setEnabled(false);
+        }
+        else
+        {
+        	setSecureConnectiontype();
+        }
+        
+	}
     public void dispose()
     {
         WindowProperty winprop = new WindowProperty(shell);
@@ -1172,10 +1229,17 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
         	wEncoding.setText(""+jobEntry.getEncoding());
         }else {
         	
-        	wEncoding.setText("UTF-8");
-        
+        	wEncoding.setText("UTF-8");}
+        	
+        // Secure connection type	
+        if (jobEntry.getSecureConnectionType() !=null)
+        {
+        	wSecureConnectionType.setText(jobEntry.getSecureConnectionType());
         }
-        
+        else
+        {
+        	wSecureConnectionType.setText("SSL");
+        }
         wUsePriority.setSelection(jobEntry.isUsePriority());
         
         // Priority
@@ -1225,7 +1289,7 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
         	wImportance.select(3);  // Default High
         }
         
-        setFlags();
+        
     }
 
     private void cancel()
@@ -1295,7 +1359,9 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
         	jobEntry.setImportance("high");
         }
                   
-
+        // Secure Connection type
+        jobEntry.setSecureConnectionType(wSecureConnectionType.getText());
+      
         dispose();
     }
     

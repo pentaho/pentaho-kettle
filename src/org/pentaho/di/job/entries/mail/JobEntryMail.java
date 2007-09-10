@@ -128,6 +128,8 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
   private String priority;
   
   private String importance;
+  
+  private String secureconnectiontype;
 
   /** The encoding to use for reading: null or empty string means system default encoding */
   private String encoding;
@@ -191,6 +193,9 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
     retval.append("    " + XMLHandler.addTagValue("priority", priority));
     retval.append("    " + XMLHandler.addTagValue("importance", importance));
     
+    retval.append("    " + XMLHandler.addTagValue("secureconnectiontype", secureconnectiontype));
+    
+    
     
 
     retval.append("      <filetypes>");
@@ -241,7 +246,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
       setEncoding(XMLHandler.getTagValue(entrynode, "encoding"));
       setPriority(XMLHandler.getTagValue(entrynode, "priority"));
       setImportance(XMLHandler.getTagValue(entrynode, "importance"));
-      
+      setSecureConnectionType(XMLHandler.getTagValue(entrynode, "secureconnectiontype"));
       
 
       Node ftsnode = XMLHandler.getSubNode(entrynode, "filetypes");
@@ -296,8 +301,9 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
       onlySendComment = rep.getJobEntryAttributeBoolean(id_jobentry, "only_comment");
       useHTML = rep.getJobEntryAttributeBoolean(id_jobentry, "use_HTML");
       usePriority = rep.getJobEntryAttributeBoolean(id_jobentry, "use_Priority");
-      
+      secureconnectiontype = rep.getJobEntryAttributeString(id_jobentry, "secureconnectiontype");
 
+      
       int nrTypes = rep.countNrJobEntryAttributes(id_jobentry, "file_type");
       allocate(nrTypes);
 
@@ -348,6 +354,8 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
       rep.saveJobEntryAttribute(id_job, getID(), "only_comment", onlySendComment);
       rep.saveJobEntryAttribute(id_job, getID(), "use_HTML", useHTML);
       rep.saveJobEntryAttribute(id_job, getID(), "use_Priority", usePriority);
+      rep.saveJobEntryAttribute(id_job, getID(), "secureconnectiontype", secureconnectiontype);
+      
       
 
       if (fileType != null)
@@ -617,6 +625,23 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
     return encoding;
   }
   
+  
+  /**
+   * @return the secure connection type
+   */
+  public String getSecureConnectionType()
+  {
+    return secureconnectiontype;
+  }
+  
+  /**
+   * @param secureconnectiontype the secureconnectiontype to set
+   */
+  public void setSecureConnectionType(String secureconnectiontypein)
+  {
+    this.secureconnectiontype=secureconnectiontypein;
+  }
+  
 
   /**
    * @param encoding the encoding to set
@@ -702,11 +727,21 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
     String protocol = "smtp";
     if (usingSecureAuthentication)
     {
-      protocol = "smtps";
-      // required to get rid of a SSL exception :
-      //  nested exception is:
-  	  //  javax.net.ssl.SSLException: Unsupported record version Unknown
-      props.put("mail.smtps.quitwait", "false");
+    	if (secureconnectiontype.equals("TLS"))
+    	{
+    		// Allow TLS authentication
+    		props.put("mail.smtp.starttls.enable","true"); 
+    	}
+    	else
+    	{
+    		
+    		 protocol = "smtps";
+    	      // required to get rid of a SSL exception :
+    	      //  nested exception is:
+    	  	  //  javax.net.ssl.SSLException: Unsupported record version Unknown
+    	      props.put("mail.smtps.quitwait", "false");
+    	}
+     
     }
 
     props.put("mail." + protocol + ".host", environmentSubstitute(server));
