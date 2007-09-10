@@ -306,28 +306,42 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
     
     @Override
     public Object clone() {
-    	
-    	try {
-			TransMeta transMeta = (TransMeta) super.clone();
-			transMeta.clear();
-			
-			for (DatabaseMeta db : databases) transMeta.addDatabase((DatabaseMeta)db.clone());
-			for (StepMeta step : steps) transMeta.addStep((StepMeta) step.clone());
-			for (TransHopMeta hop : hops) transMeta.addTransHop((TransHopMeta) hop.clone());
-			for (NotePadMeta note : notes) transMeta.addNote((NotePadMeta)note.clone());
-			for (TransDependency dep : dependencies) transMeta.addDependency((TransDependency)dep.clone());
-			for (SlaveServer slave : slaveServers) transMeta.getSlaveServers().add((SlaveServer)slave.clone());
-			for (ClusterSchema schema : clusterSchemas) transMeta.getClusterSchemas().add((ClusterSchema)schema.clone());
-			for (PartitionSchema schema : partitionSchemas) transMeta.getPartitionSchemas().add((PartitionSchema)schema.clone());
-			
-			return transMeta;
-		} catch (CloneNotSupportedException e) {
-			e.printStackTrace();
-			return null;
-		}
-    	
+      return realClone(true);
     }
 
+    public Object realClone(boolean doClear) {
+      
+      try {
+        TransMeta transMeta = (TransMeta) super.clone();
+        if (doClear) {
+          transMeta.clear();
+        } else {
+          // Clear out the things we're replacing below
+          transMeta.databases = new ArrayList<DatabaseMeta>();
+          transMeta.steps = new ArrayList<StepMeta>();
+          transMeta.hops = new ArrayList<TransHopMeta>();
+          transMeta.notes = new ArrayList<NotePadMeta>();
+          transMeta.dependencies = new ArrayList<TransDependency>();
+          transMeta.partitionSchemas = new ArrayList<PartitionSchema>();
+          transMeta.slaveServers = new ArrayList<SlaveServer>();
+          transMeta.clusterSchemas = new ArrayList<ClusterSchema>();
+        }
+        for (DatabaseMeta db : databases) transMeta.addDatabase((DatabaseMeta)db.clone());
+        for (StepMeta step : steps) transMeta.addStep((StepMeta) step.clone());
+        for (TransHopMeta hop : hops) transMeta.addTransHop((TransHopMeta) hop.clone());
+        for (NotePadMeta note : notes) transMeta.addNote((NotePadMeta)note.clone());
+        for (TransDependency dep : dependencies) transMeta.addDependency((TransDependency)dep.clone());
+        for (SlaveServer slave : slaveServers) transMeta.getSlaveServers().add((SlaveServer)slave.clone());
+        for (ClusterSchema schema : clusterSchemas) transMeta.getClusterSchemas().add((ClusterSchema)schema.clone());
+        for (PartitionSchema schema : partitionSchemas) transMeta.getPartitionSchemas().add((PartitionSchema)schema.clone());
+        
+        return transMeta;
+      } catch (CloneNotSupportedException e) {
+        e.printStackTrace();
+        return null;
+      }
+    }
+    
     /**
      * Get the database ID in the repository for this object.
      *
@@ -5756,7 +5770,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
   		if (definition==null) {
   			// If we do this once, it will be plenty :-)
   			//
-  			TransMeta transMeta = (TransMeta) this.clone();
+  			TransMeta transMeta = (TransMeta) this.realClone(false);
   			// transMeta.copyVariablesFrom(space);
   			
   			// Add used resources, modify transMeta accordingly
