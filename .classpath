@@ -81,5 +81,6 @@
 	<classpathentry kind="lib" path="libext/mondrian/saxon8-xom.jar"/>
 	<classpathentry kind="lib" path="libext/mondrian/commons-math-1.0.jar"/>
 	<classpathentry kind="lib" path="libext/mondrian/javacup.jar"/>
+	<classpathentry kind="lib" path="libext/spring/spring-core.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
