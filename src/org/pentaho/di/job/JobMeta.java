@@ -308,10 +308,24 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
 
     public Object clone()
     {
+      return realClone(true);
+    }
+    
+    public Object realClone(boolean doClear)
+    {
         try
         {
             JobMeta jobMeta = (JobMeta) super.clone();
-            jobMeta.clear();
+            if (doClear) {
+              jobMeta.clear();
+            } else {
+              jobMeta.jobcopies = new ArrayList<JobEntryCopy>();
+              jobMeta.jobentries = new ArrayList<JobEntryInterface>();
+              jobMeta.jobhops = new ArrayList<JobHopMeta>();
+              jobMeta.notes = new ArrayList<NotePadMeta>();
+              jobMeta.databases = new ArrayList<DatabaseMeta>();
+
+            }
             
             for (JobEntryInterface entry : jobentries) jobMeta.jobentries.add((JobEntryInterface)entry.clone());
             for (JobEntryCopy entry : jobcopies) jobMeta.jobcopies.add((JobEntryCopy)entry.clone_deep());
@@ -2603,7 +2617,7 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
       if (definition==null) {
       	// If we do this once, it will be plenty :-)
       	//
-      	JobMeta jobMeta = (JobMeta) this.clone();
+      	JobMeta jobMeta = (JobMeta) this.realClone(false);
       	
       	// Add used resources, modify transMeta accordingly
       	// Go through the list of steps, etc.
