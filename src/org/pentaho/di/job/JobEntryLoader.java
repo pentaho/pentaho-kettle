@@ -278,7 +278,7 @@ public class JobEntryLoader
 		// First get the class loader: get the one that's the
 		// webstart classloader, not the thread classloader
 		//
-		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+		ClassLoader classLoader = getClass().getClassLoader();
 
 		// ClassLoader classLoader = getClass().getClassLoader();
 
