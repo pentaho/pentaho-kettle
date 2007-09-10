@@ -61,6 +61,8 @@ import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
 
+import be.ibridge.kettle.job.entry.dtdvalidator.Messages;
+
 
 /**
  * This defines a 'dtdvalidator' job entry. 
@@ -201,12 +203,13 @@ public class JobEntryDTDValidator extends JobEntryBase implements Cloneable, Job
 
 		{
 		
-			if (xmlfilename!=null && dtdfilename!=null)
+			if (xmlfilename!=null &&  ((dtdfilename!=null && !dtdintern) || (dtdintern))   )
 			{
 				xmlfile = KettleVFS.getFileObject(realxmlfilename);
-				DTDfile = KettleVFS.getFileObject(realDTDfilename);
 				
-				if ( xmlfile.exists() && DTDfile.exists() )
+				
+				if ( xmlfile.exists())   
+					
 				{	
 					
 					//URL xmlFile = new URL (KettleVFS.getFilename(xmlfile));
@@ -261,27 +264,36 @@ public class JobEntryDTDValidator extends JobEntryBase implements Cloneable, Job
 					{
 						// DTD in external document
 						// If we find an intern declaration, we remove it
-						if (xmlStartDTD != -1)
+						DTDfile = KettleVFS.getFileObject(realDTDfilename);
+						
+						if (DTDfile.exists())
 						{
-							int EndDTD = xmlStringbuffer.indexOf(">",xmlStartDTD);
-							String DocTypeDTD = xmlStringbuffer.substring(xmlStartDTD, EndDTD + 1);
-							xmlStringbuffer.replace(xmlStartDTD,EndDTD + 1, "");
-			
-						}
-						
-						
-						String xmlRootnodeDTD = xmlDocDTD.getDocumentElement().getNodeName();
+							if (xmlStartDTD != -1)
+							{
+								int EndDTD = xmlStringbuffer.indexOf(">",xmlStartDTD);
+								//String DocTypeDTD = xmlStringbuffer.substring(xmlStartDTD, EndDTD + 1);
+								xmlStringbuffer.replace(xmlStartDTD,EndDTD + 1, "");
+				
+							}
 							
-						String RefDTD = "<?xml version='"
-							+ xmlDocDTD.getXmlVersion() + "' encoding='"
-							+ encoding + "'?>\n<!DOCTYPE " + xmlRootnodeDTD
-							+ " SYSTEM '" + KettleVFS.getFilename(DTDfile) + "'>\n";
-
-						int xmloffsetDTD = xmlStringbuffer.indexOf("<"+ xmlRootnodeDTD);
-						xmlStringbuffer.replace(0, xmloffsetDTD,RefDTD);
+							
+							String xmlRootnodeDTD = xmlDocDTD.getDocumentElement().getNodeName();
+								
+							String RefDTD = "<?xml version='"
+								+ xmlDocDTD.getXmlVersion() + "' encoding='"
+								+ encoding + "'?>\n<!DOCTYPE " + xmlRootnodeDTD
+								+ " SYSTEM '" + KettleVFS.getFilename(DTDfile) + "'>\n";
+	
+							int xmloffsetDTD = xmlStringbuffer.indexOf("<"+ xmlRootnodeDTD);
+							xmlStringbuffer.replace(0, xmloffsetDTD,RefDTD);
+						}
+						else
+						{
+							log.logError(Messages.getString("JobEntryDTDValidator.ERRORDTDFileNotExists.Subject"), Messages.getString("JobEntryDTDValidator.ERRORDTDFileNotExists.Msg",realDTDfilename));
+						}
 					}
 						
-					if (dtdintern && xmlStartDTD == -1)
+					if ((dtdintern && xmlStartDTD == -1 || (!dtdintern && !DTDfile.exists())))
 					{
 						result.setResult( false );
 						result.setNrErrors(1);
@@ -310,11 +322,7 @@ public class JobEntryDTDValidator extends JobEntryBase implements Cloneable, Job
 					{
 						log.logError(toString(),  Messages.getString("JobEntryDTDValidator.FileDoesNotExist.Label",	realxmlfilename));
 					}
-					if(!DTDfile.exists())
-					{
-						log.logError(toString(),  Messages.getString("JobEntryDTDValidator.FileDoesNotExist1.Label") + 
-							realDTDfilename +  Messages.getString("JobEntryDTDValidator.FileDoesNotExist2.Label"));
-					}
+					
 					result.setResult( false );
 					result.setNrErrors(1);
 				}
