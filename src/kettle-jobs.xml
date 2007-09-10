@@ -386,4 +386,16 @@
 		</tooltip>
 		<image-uri>ui/images/CPY.png</image-uri>
 	</job>
+	<job id="DTD_VALIDATOR">
+		<type>
+			ognl:@org.pentaho.di.job.JobEntryType@DTD_VALIDATOR
+		</type>
+		<class-name>
+			org.pentaho.di.job.entries.dtdvalidator.JobEntryDTDvalidator
+		</class-name>
+		<tooltip>
+			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.DTDValidator.Tooltip")
+		</tooltip>
+		<image-uri>ui/images/DTD.png</image-uri>
+	</job>
 </jobs>
