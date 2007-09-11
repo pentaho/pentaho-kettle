@@ -32,6 +32,7 @@ import org.pentaho.di.trans.steps.sql.ExecSQLMeta;
 import org.pentaho.di.trans.steps.sql.Messages;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
+import org.pentaho.di.ui.core.widget.StyledTextComp;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.spoon.job.JobGraph;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
@@ -42,7 +43,7 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
 
 	private Label wlSQL;
 
-	private Text wSQL;
+	private StyledTextComp wSQL;
 
 	private FormData fdlSQL, fdSQL;
 
@@ -158,7 +159,7 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
 		fdlSQL.top = new FormAttachment(wConnection, margin * 2);
 		wlSQL.setLayoutData(fdlSQL);
 
-		wSQL = new Text(shell, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
+		wSQL = new StyledTextComp(shell, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "");
 		props.setLook(wSQL, Props.WIDGET_STYLE_FIXED);
 		wSQL.addModifyListener(lsMod);
 		fdSQL = new FormData();
