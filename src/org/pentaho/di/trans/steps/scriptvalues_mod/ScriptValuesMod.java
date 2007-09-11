@@ -634,7 +634,7 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
 
                     case ValueMetaInterface.TYPE_BINARY:
                     	{
-                    		return (byte[])result;
+                    		return Context.jsToJava(result, byte[].class);
                     	}
                     default:
                         throw new RuntimeException("JavaScript conversion not implemented for type" + meta.getType()[i]);
