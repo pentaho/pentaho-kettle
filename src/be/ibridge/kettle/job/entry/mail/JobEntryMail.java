@@ -20,6 +20,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.zip.ZipEntry;
@@ -925,15 +926,17 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 
       if (includingFiles && result != null)
       {
-        List<ResultFile> resultFiles = result.getResultFilesList();
+        List/*<ResultFile>*/ resultFiles = result.getResultFilesList();
         if (resultFiles != null && resultFiles.size() > 0)
         {
           if (!zipFiles)
           {
             // Add all files to the message...
             //
-            for (ResultFile resultFile : resultFiles)
+            //for (ResultFile resultFile : resultFiles)
+        	for (Iterator it = resultFiles.iterator(); it.hasNext();)
             {
+        	  ResultFile resultFile = (ResultFile) it.next();
               FileObject file = resultFile.getFile();
               if (file != null && file.exists())
               {
@@ -970,8 +973,10 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
             {
               zipOutputStream = new ZipOutputStream(new FileOutputStream(masterZipfile));
 
-              for (ResultFile resultFile : resultFiles)
+              //for (ResultFile resultFile : resultFiles)
+          	  for (Iterator it = resultFiles.iterator(); it.hasNext();)
               {
+          	    ResultFile resultFile = (ResultFile) it.next();
                 boolean found = false;
                 for (int i = 0; i < fileType.length; i++)
                 {
