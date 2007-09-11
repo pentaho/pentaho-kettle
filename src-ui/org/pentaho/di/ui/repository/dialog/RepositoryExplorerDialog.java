@@ -191,8 +191,6 @@ public class RepositoryExplorerDialog extends Dialog
 	private Repository     rep;
 	private UserInfo       userinfo;
 	
-	private Color dircolor;
-	
 	private String debug;
     
     private int sortColumn;
@@ -235,7 +233,6 @@ public class RepositoryExplorerDialog extends Dialog
         
         try
         {
-    		dircolor = GUIResource.getInstance().getColorDirectory();
     		
             debug="open new independent shell"; //$NON-NLS-1$
             Shell parent = getParent();
@@ -1358,7 +1355,7 @@ public class RepositoryExplorerDialog extends Dialog
 				tiTrans.setText(STRING_TRANSFORMATIONS);
 				
 				TreeItem newCat = new TreeItem(tiTrans, SWT.NONE);
-                
+	    		Color dircolor = GUIResource.getInstance().getColorDirectory();
 				RepositoryDirectoryUI.getTreeWithNames(newCat, rep, dircolor, sortColumn, ascending, true, false, rep.getDirectoryTree());
 			}
 			
@@ -1369,6 +1366,7 @@ public class RepositoryExplorerDialog extends Dialog
 				tiJob.setText(STRING_JOBS);
 	
 				TreeItem newJob = new TreeItem(tiJob, SWT.NONE);
+	    		Color dircolor = GUIResource.getInstance().getColorDirectory();
 				RepositoryDirectoryUI.getTreeWithNames(newJob, rep, dircolor, sortColumn, ascending, false, true, rep.getDirectoryTree());
 			}
 	
@@ -2865,6 +2863,7 @@ public class RepositoryExplorerDialog extends Dialog
             else if (parent.equals(STRING_SLAVES)) cat = ITEM_CATEGORY_SLAVE;
             else if (parent.equals(STRING_CLUSTERS)) cat = ITEM_CATEGORY_CLUSTER;
                  
+			final Color dircolor = GUIResource.getInstance().getColorDirectory();
             if (path[1].equals(STRING_TRANSFORMATIONS))
             {
                 if (ti.getForeground().equals(dircolor)) 
