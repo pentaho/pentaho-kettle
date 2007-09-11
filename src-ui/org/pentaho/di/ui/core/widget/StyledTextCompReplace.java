@@ -205,6 +205,10 @@ public void open() {
 			}
 		});
 		
+		if (text.getSelectionText() != null) {
+			searchText.setText(text.getSelectionText());
+			replaceText.setFocus();
+		}
 		
 		sShell.open();
 		Display display = parent.getDisplay();
