@@ -19,6 +19,8 @@ import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.SWT;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Iterator;
+
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -1379,9 +1381,10 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
             gotEncodings = true;
             
             wEncoding.removeAll();
-            java.util.List<Charset> values = new ArrayList<Charset>(Charset.availableCharsets().values());
-            for (Charset charSet:values)
+            java.util.List values = new ArrayList(Charset.availableCharsets().values());
+            for (Iterator it=values.iterator(); it.hasNext();)
             {
+            	Charset charSet = (Charset) it.next();
                 wEncoding.add( charSet.displayName() );
             }
             
