@@ -41,6 +41,7 @@ public class StyledTextCompFind extends org.eclipse.swt.widgets.Dialog {
 	private Button btnCancel;
 	
 	private Button btnIgnoreCase;
+	private Button btnWrapSearch;	
 	private Button optForward; 
 	
 	public StyledTextCompFind(Shell parent, StyledText text, String strHeader){
@@ -96,8 +97,15 @@ public class StyledTextCompFind extends org.eclipse.swt.widgets.Dialog {
 		btnIgnoreCase.setText("&Case Sensitive");
 		frmData = new FormData();
 		frmData.left = new FormAttachment(5,0);
-		frmData.top  = new FormAttachment(72, 0);
+		frmData.top  = new FormAttachment(54, 0);
 		btnIgnoreCase.setLayoutData(frmData);
+		
+		btnWrapSearch = new Button(sShell, SWT.CHECK);
+		btnWrapSearch.setText("&Wrap Search");
+		frmData = new FormData();
+		frmData.left = new FormAttachment(5,0);
+		frmData.top  = new FormAttachment(70, 0);
+		btnWrapSearch.setLayoutData(frmData);
 		
 		Group grpDir = new Group(sShell, SWT.SHADOW_IN);
 		grpDir.setText("Direction");
@@ -140,6 +148,13 @@ public class StyledTextCompFind extends org.eclipse.swt.widgets.Dialog {
 			}
 		});
 		
+		if (text.getSelectionText() != null) {
+			String tt = text.getSelectionText();
+			if (tt.indexOf('\n') < 0)
+			{
+				searchText.setText(text.getSelectionText());
+			}
+		}
 		
 		sShell.open();
 		Display display = parent.getDisplay();
@@ -163,11 +178,21 @@ public class StyledTextCompFind extends org.eclipse.swt.widgets.Dialog {
 		
 		if (optForward.getSelection()) {
 			start = textString.indexOf(searchString, offset);
-			
-		}else if (text.getSelectionRange().y > searchString.length()) {
+			if ((start < 0) && btnWrapSearch.getSelection())  {
+				start = textString.indexOf(searchString, 0);
+			}			
+		}
+		else if (text.getSelectionRange().y > searchString.length()) {
 			start = textString.lastIndexOf(searchString, offset - 1);
-		}else {
+			if ((start < 0) && btnWrapSearch.getSelection())  {
+				start = textString.lastIndexOf(searchString);
+			}			
+		}
+		else {
 			start = textString.lastIndexOf(searchString, offset - text.getSelectionRange().y - 1);
+			if ((start < 0) && btnWrapSearch.getSelection())  {
+				start = textString.lastIndexOf(searchString);
+			}			
 		}
 		if (start > -1) {
 			text.setSelection(start, start + searchString.length());
