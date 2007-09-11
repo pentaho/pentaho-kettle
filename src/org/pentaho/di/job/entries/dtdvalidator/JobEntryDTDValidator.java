@@ -21,25 +21,18 @@ import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.andValid
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.fileExistsValidator;
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlankValidator;
 
-
-import java.io.IOException;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.util.ArrayList;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.List;
 
-import org.w3c.dom.Document;
-
-import java.net.URL;
-import java.io.BufferedReader;
-import java.lang.StringBuffer;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
-import java.io.ByteArrayInputStream;
-import java.io.InputStreamReader;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.commons.vfs.FileObject;
-import org.w3c.dom.Node;
-
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
@@ -60,6 +53,8 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 
 
 /**
@@ -137,7 +132,7 @@ public class JobEntryDTDValidator extends JobEntryBase implements Cloneable, Job
 		}
 	}
 
-	public void loadRep(Repository rep, long id_jobentry, ArrayList databases)
+	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases)
 		throws KettleException
 	{
 		try
