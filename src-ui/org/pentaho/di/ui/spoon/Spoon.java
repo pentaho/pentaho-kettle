@@ -3794,11 +3794,14 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 					for (int i = 0; i < transMeta.nrSteps(); i++)
 					{
 						StepMeta stepMeta = transMeta.getStep(i);
+						StepPlugin stepPlugin = StepLoader.getInstance().findStepPluginWithID(stepMeta.getStepID());
 						TreeItem tiStep = new TreeItem(tiStepTitle, SWT.NONE);
 						tiStep.setText(stepMeta.getName());
                         if (stepMeta.isShared()) tiStep.setFont(guiResource.getFontBold());
                         if (!stepMeta.isDrawn()) tiStep.setForeground(guiResource.getColorDarkGray());
-						tiStep.setImage(guiResource.getImageBol());
+                        Image stepIcon = guiResource.getImagesStepsSmall().get(stepPlugin.getID()[0]);
+                        if (stepIcon==null) stepIcon=guiResource.getImageBol();
+						tiStep.setImage(stepIcon);
 					}
 
 					// /////////////////////////////////////////////////////
