@@ -60,6 +60,7 @@ import org.pentaho.di.ui.core.database.dialog.DatabaseExplorerDialog;
 import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
+import org.pentaho.di.ui.core.widget.StyledTextComp;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 
 public class TableInputDialog extends BaseStepDialog implements StepDialogInterface
@@ -67,7 +68,7 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 	private CCombo       wConnection;
 
 	private Label        wlSQL;
-	private Text         wSQL;
+	private StyledTextComp         wSQL;
 	private FormData     fdlSQL, fdSQL;
 
 	private Label        wlDatefrom;
@@ -283,7 +284,7 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 		fdbTable.top   = new FormAttachment(wConnection, margin*2);
 		wbTable.setLayoutData(fdbTable);
 
-		wSQL=new Text(shell, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
+		wSQL=new StyledTextComp(shell, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "");
  		props.setLook(wSQL, Props.WIDGET_STYLE_FIXED);
 		wSQL.addModifyListener(lsMod);
 		fdSQL=new FormData();
