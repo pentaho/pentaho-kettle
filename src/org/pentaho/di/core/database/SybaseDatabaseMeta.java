@@ -107,6 +107,15 @@ public class SybaseDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 	{
 		return false;
 	}
+	
+
+	/**
+	 * @return true if this database needs a transaction to perform a query (auto-commit turned off).
+	 */
+	public boolean isRequiringTransactionsOnQueries()
+	{
+		return false;
+	}
 
 	/**
 	 * Generates the SQL statement to add a column to the specified table

@@ -20,7 +20,6 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.database.Database;
-import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
@@ -272,7 +271,7 @@ public class TableInput extends BaseStep implements StepInterface
                     data.db.connect(getPartitionID());
                 }
 
-                if (meta.getDatabaseMeta().getDatabaseType()!=DatabaseMeta.TYPE_DATABASE_SYBASE)
+                if (meta.getDatabaseMeta().isRequiringTransactionsOnQueries())
                 {
                     data.db.setCommit(100); // needed for PGSQL it seems...
                 }

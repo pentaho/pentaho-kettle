@@ -1310,4 +1310,12 @@ public abstract class BaseDatabaseMeta implements Cloneable, VariableSpace
     {
         attributes.setProperty(ATTRIBUTE_MSSQL_DOUBLE_DECIMAL_SEPARATOR, useDoubleDecimalSeparator?"Y":"N");
     }
+    
+	/**
+	 * @return true if this database needs a transaction to perform a query (auto-commit turned off).
+	 */
+	public boolean isRequiringTransactionsOnQueries()
+	{
+		return true;
+	}
 }

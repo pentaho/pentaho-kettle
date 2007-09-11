@@ -201,6 +201,11 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
      * Connection to an Apache Derby database
      */
     public static final int TYPE_DATABASE_DERBY       =  27;
+    
+    /**
+     * Connection to a BMC Remedy Action Request System 
+     */
+    public static final int TYPE_DATABASE_REMEDY_AR_SYSTEM = 28;
 
     
     
@@ -2437,4 +2442,13 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     {
         databaseInterface.setUsingDoubleDecimalAsSchemaTableSeparator(useDoubleDecimalSeparator);
     }
+    
+
+	/**
+	 * @return true if this database needs a transaction to perform a query (auto-commit turned off).
+	 */
+	public boolean isRequiringTransactionsOnQueries()
+	{
+		return databaseInterface.isRequiringTransactionsOnQueries();
+	}
 }

@@ -59,6 +59,7 @@ public interface DatabaseInterface extends Cloneable
             UniVerseDatabaseMeta.class,
             SQLiteDatabaseMeta.class,
             DerbyDatabaseMeta.class,
+            RemedyActionRequestSystemDatabaseMeta.class,
 		};
 	
 	/**
@@ -732,4 +733,9 @@ public interface DatabaseInterface extends Cloneable
      * @param useDoubleDecimalSeparator true if we should use a double decimal separator to specify schema/table combinations on MS-SQL server
      */
     public void setUsingDoubleDecimalAsSchemaTableSeparator(boolean useDoubleDecimalSeparator);
+    
+	/**
+	 * @return true if this database needs a transaction to perform a query (auto-commit turned off).
+	 */
+	public boolean isRequiringTransactionsOnQueries();
 }
