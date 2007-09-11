@@ -14,7 +14,6 @@
  **********************************************************************/
  
 package be.ibridge.kettle.job.entry.fileexists;
-import java.io.File;
 import java.util.ArrayList;
 
 import org.eclipse.swt.widgets.Shell;
