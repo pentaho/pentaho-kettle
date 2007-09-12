@@ -148,6 +148,12 @@ public class XBaseInput extends BaseStep implements StepInterface
 
         if (checkFeedback(linesInput)) logBasic(Messages.getString("XBaseInput.Log.LineNr")+linesInput); //$NON-NLS-1$
 
+        if (meta.getRowLimit()>0 && linesInput>=meta.getRowLimit())  // limit has been reached: stop now.
+        {
+            setOutputDone();
+            return false;
+        }
+        
 		return true;
 	}
 	
