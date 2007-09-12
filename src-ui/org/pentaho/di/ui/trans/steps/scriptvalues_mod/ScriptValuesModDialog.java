@@ -350,7 +350,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		}
 
 		public String getVariable(String variableName, String defaultValue) {
-			return null;
+			return defaultValue;
 		}
 
 		public String getVariable(String variableName) {
