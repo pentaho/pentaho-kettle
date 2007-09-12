@@ -32,3 +32,4 @@ The following bug where fixes backported from the 3.0.0-M1 series to 2.5.1:
 
 The following bug where fixes backported from the 3.0.0-M1 series to 2.5.2:
 - PDI-130: Use VFS to access the excel template file - Sven B - 3-Sep-2007
+- PDI-156: Size limit parameter in the XBase input step doesn't work - 12-Sep-2007.

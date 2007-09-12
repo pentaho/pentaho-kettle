@@ -12,7 +12,7 @@
  ** info@kettle.be                                                    **
  **                                                                   **
  **********************************************************************/
- 
+
 package be.ibridge.kettle.trans.step.xbaseinput;
 
 import java.io.IOException;
@@ -35,7 +35,7 @@ import be.ibridge.kettle.trans.step.StepMetaInterface;
 
 /**
  * Reads data from an XBase (dBase, foxpro, ...) file.
- * 
+ *
  * @author Matt
  * @since 8-sep-2004
  */
@@ -43,29 +43,29 @@ public class XBaseInput extends BaseStep implements StepInterface
 {
 	private XBaseInputMeta meta;
 	private XBaseInputData data;
-		
+
 	public XBaseInput(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans)
 	{
 		super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
 	}
-	
+
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{
 		meta=(XBaseInputMeta)smi;
 		data=(XBaseInputData)sdi;
-        
+
         Row row = null;
 
         // See if we need to get a list of files from input...
         if (first) // we just got started
         {
             first = false;
-            
+
             if (meta.isAcceptingFilenames())
             {
                 // Read the files from the specified input stream...
                 data.files.getFiles().clear();
-                
+
                 int idx = -1;
                 Row fileRow = getRowFrom(meta.getAcceptingStepName());
                 while (fileRow!=null)
@@ -90,11 +90,11 @@ public class XBaseInput extends BaseStep implements StepInterface
                     {
                         throw new KettleException(e);
                     }
-                    
+
                     // Grab another row
                     fileRow = getRowFrom(meta.getAcceptingStepName());
                 }
-                
+
                 if (data.files.nrOfFiles()==0)
                 {
                     logBasic(Messages.getString("XBaseInput.Log.Error.NoFilesSpecified"));
@@ -107,20 +107,20 @@ public class XBaseInput extends BaseStep implements StepInterface
             //
             openNextFile();
         }
-        
+
         row = data.xbi.getRow(data.fields);
         while (row==null && data.fileNr < data.files.nrOfFiles()) // No more rows left in this file
         {
             openNextFile();
             row = data.xbi.getRow(data.fields);
         }
-        
-        if (row==null) 
-        {           
+
+        if (row==null)
+        {
             setOutputDone();  // signal end to receiver(s)
             return false; // end of data or error.
         }
-        
+
         // OK, so we have read a line: increment the input counter
 		linesInput++;
 
@@ -145,9 +145,15 @@ public class XBaseInput extends BaseStep implements StepInterface
 
         if (checkFeedback(linesInput)) logBasic(Messages.getString("XBaseInput.Log.LineNr")+linesInput); //$NON-NLS-1$
 
+		if (meta.getRowLimit()>0 && linesInput>=meta.getRowLimit())  // limit has been reached: stop now.
+		{
+		    setOutputDone();
+		    return false;
+		}
+
 		return true;
 	}
-	
+
 	public boolean init(StepMetaInterface smi, StepDataInterface sdi)
 	{
 		meta=(XBaseInputMeta)smi;
@@ -157,7 +163,7 @@ public class XBaseInput extends BaseStep implements StepInterface
 	    {
             data.files  = meta.getTextFileList();
             data.fileNr = 0;
-            
+
             if (data.files.nrOfFiles()==0 && !meta.isAcceptingFilenames())
             {
                 logError(Messages.getString("XBaseInput.Log.Error.NoFilesSpecified"));
@@ -167,7 +173,7 @@ public class XBaseInput extends BaseStep implements StepInterface
 	    }
 		return false;
 	}
-	
+
 	private void openNextFile() throws KettleException
     {
         // Close the last file before opening the next...
@@ -176,20 +182,20 @@ public class XBaseInput extends BaseStep implements StepInterface
             logBasic(Messages.getString("XBaseInput.Log.FinishedReadingRecords")); //$NON-NLS-1$
             data.xbi.close();
         }
-        
+
         // Replace possible environment variables...
         data.file_dbf = data.files.getFile(data.fileNr);
         data.fileNr++;
-                
+
         try
         {
             data.xbi=new XBase(data.file_dbf.getContent().getInputStream());
             data.xbi.setDbfFile(data.file_dbf.getName().getURI());
             data.xbi.open();
-            
+
             logBasic(Messages.getString("XBaseInput.Log.OpenedXBaseFile")+" : ["+data.xbi+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             data.fields = data.xbi.getFields();
-            
+
             // Add this to the result file names...
             ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, data.file_dbf, getTransMeta().getName(), getStepname());
             resultFile.setComment(Messages.getString("XBaseInput.ResultFile.Comment"));
@@ -205,14 +211,14 @@ public class XBaseInput extends BaseStep implements StepInterface
     public void dispose(StepMetaInterface smi, StepDataInterface sdi)
 	{
         closeLastFile();
-        
+
 		super.dispose(smi, sdi);
 	}
 
 	private void closeLastFile()
     {
         logBasic(Messages.getString("XBaseInput.Log.FinishedReadingRecords")); //$NON-NLS-1$
-        data.xbi.close();    
+        data.xbi.close();
     }
 
     //
