@@ -32,4 +32,10 @@ The following bug where fixes backported from the 3.0.0-M1 series to 2.5.1:
 
 The following bug where fixes backported from the 3.0.0-M1 series to 2.5.2:
 - PDI-130: Use VFS to access the excel template file - Sven B - 3-Sep-2007
-- PDI-156: Size limit parameter in the XBase input step doesn't work - 12-Sep-2007.
+- PDI-133: Http client parameter handling - Jens Bleuel - 5-Sep-2007
+- PDI-28: Selecting wrong job entry name corrupts repository - Matt - 5-Sep-2007
+- PDI-121: Instance name in separate SQL Server database dialog tab - Matt - 5-Sep-2007
+- XSD Validator job entry introduction - Samatar Hassan - 9-Sep-2007
+- DTD Validator job entry introduction - Samatar Hassan - 10-Sep-2007
+- Implement find in Table input dialog - Jay 'Brassrat' Goldman - 11-Sep-2007
+- PDI-156: Size limit parameter in the XBase input step doesn't work - 12-Sep-2007
