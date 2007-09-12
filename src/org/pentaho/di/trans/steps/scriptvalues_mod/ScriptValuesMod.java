@@ -57,7 +57,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  * @author Matt
  * @since 5-April-2003
  */
-public class ScriptValuesMod extends BaseStep implements StepInterface {
+public class ScriptValuesMod extends BaseStep implements StepInterface, ScriptValuesModInterface {
 	private ScriptValuesMetaMod meta;
 	private ScriptValuesModData data;
 		

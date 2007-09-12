@@ -30,6 +30,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import org.eclipse.swt.SWT;
@@ -98,6 +99,7 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.RowListener;
@@ -108,6 +110,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.scriptvalues_mod.Messages;
 import org.pentaho.di.trans.steps.scriptvalues_mod.ScriptValuesAddedFunctions;
 import org.pentaho.di.trans.steps.scriptvalues_mod.ScriptValuesMetaMod;
+import org.pentaho.di.trans.steps.scriptvalues_mod.ScriptValuesModInterface;
 import org.pentaho.di.trans.steps.scriptvalues_mod.ScriptValuesScript;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
@@ -201,7 +204,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 	/**
 	 * Dummy class used for test().
 	 */
-	public class ScriptValuesModDummy implements StepInterface
+	public class ScriptValuesModDummy implements StepInterface, ScriptValuesModInterface
 	{
 		public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException {
 			return false;
@@ -241,6 +244,10 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 			return 0;
 		}
 
+		public long getLinesRejected() {
+			return 0;
+		}		
+		
 		public List<RowSet> getOutputRowSets() {
 			return null;
 		}
@@ -318,13 +325,52 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		}
 
 		public void pauseRunning() {
-			// TODO Auto-generated method stub
-			
 		}
 
 		public void resumeRunning() {
-			// TODO Auto-generated method stub
-			
+		}
+
+		public void copyVariablesFrom(VariableSpace space) {
+		}
+
+		public String environmentSubstitute(String aString) {
+			return null;
+		}
+
+		public String[] environmentSubstitute(String[] string) {
+			return null;
+		}
+
+		public boolean getBooleanValueOfVariable(String variableName, boolean defaultValue) {
+			return false;
+		}
+
+		public VariableSpace getParentVariableSpace() {
+			return null;
+		}
+
+		public String getVariable(String variableName, String defaultValue) {
+			return null;
+		}
+
+		public String getVariable(String variableName) {
+			return null;
+		}
+
+		public void initializeVariablesFrom(VariableSpace parent) {
+		}
+
+		public void injectVariables(Map<String, String> prop) {
+		}
+
+		public String[] listVariables() {
+			return null;
+		}
+
+		public void setVariable(String variableName, String variableValue) {
+		}
+
+		public void shareVariablesWith(VariableSpace space) {
 		}	
 	}
 	

@@ -161,7 +161,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 		if(ArgList.length==1){
 			try{
 				Object scmO = actualObject.get("_step_", actualObject);
-				ScriptValuesMod scm = (ScriptValuesMod)Context.jsToJava(scmO, ScriptValuesMod.class);
+				ScriptValuesModInterface scm = (ScriptValuesModInterface)Context.jsToJava(scmO, ScriptValuesModInterface.class);
 				String strType = Context.toString(ArgList[0]);
 				
 				if(strType.toLowerCase().equals("i")) return (double)scm.getLinesInput();
@@ -1356,10 +1356,10 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 		if(ArgList.length==3){
 		    try{
 				Object scmo = actualObject.get("_step_", actualObject);
-				Object scmO = Context.jsToJava(scmo, ScriptValuesMod.class);
-				if ( scmO instanceof ScriptValuesMod)
+				Object scmO = Context.jsToJava(scmo, ScriptValuesModInterface.class);
+				if ( scmO instanceof ScriptValuesModInterface)
 				{
-				    ScriptValuesMod scm = (ScriptValuesMod)scmO;			
+					ScriptValuesModInterface scm = (ScriptValuesModInterface)scmO;			
 
   			        sArg1 = Context.toString(ArgList[0]);
 				    sArg2 = Context.toString(ArgList[1]);
