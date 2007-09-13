@@ -73,6 +73,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
   {
     name = null;
     description = null;
+    type=JobEntryType.NONE;
   }
 
   public JobEntryBase(String name, String description)
@@ -80,6 +81,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
     setName(name);
     setDescription(description);
     setID(-1L);
+    type=JobEntryType.NONE;
   }
 
   public JobEntryBase(JobEntryBase jeb)
