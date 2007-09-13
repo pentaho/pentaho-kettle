@@ -98,9 +98,9 @@ public class StreamLookup extends BaseStep implements StepInterface
 			case ValueMetaInterface.TYPE_BOOLEAN: 
 				if ("TRUE".equalsIgnoreCase(meta.getValueDefault()[i]) || //$NON-NLS-1$
 				    "Y".equalsIgnoreCase(meta.getValueDefault()[i]) )  //$NON-NLS-1$
-				    data.nullIf[i] = new Boolean(true); 
+				    data.nullIf[i] = Boolean.TRUE; 
 				else
-				    data.nullIf[i] = new Boolean(false); 
+				    data.nullIf[i] = Boolean.FALSE; 
 				;
 				break;
 			case ValueMetaInterface.TYPE_BIGNUMBER: 

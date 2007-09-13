@@ -11,7 +11,7 @@ public class RowTest extends TestCase
     public void testNormalStringConversion() throws Exception
     {
         SimpleDateFormat fmt = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS");
-        Object[] rowData1 = new Object[] { "sampleString", fmt.parse("2007/05/07 13:04:13.203"), new Double(9123.00), new Long(12345), new BigDecimal("123456789012345678.9349"), new Boolean(true), };
+        Object[] rowData1 = new Object[] { "sampleString", fmt.parse("2007/05/07 13:04:13.203"), new Double(9123.00), new Long(12345), new BigDecimal("123456789012345678.9349"), Boolean.TRUE, };
         RowMetaInterface rowMeta1 = createTestRowMetaNormalStringConversion1();
         
         assertEquals("sampleString", rowMeta1.getString(rowData1, 0));        
@@ -22,7 +22,7 @@ public class RowTest extends TestCase
         assertEquals("Y", rowMeta1.getString(rowData1, 5));
         
         fmt = new SimpleDateFormat("yyyyMMddHHmmss");
-        Object[] rowData2 = new Object[] { null, fmt.parse("20070507130413"), new Double(9123.9), new Long(12345), new BigDecimal("123456789012345678.9349"), new Boolean(false), };
+        Object[] rowData2 = new Object[] { null, fmt.parse("20070507130413"), new Double(9123.9), new Long(12345), new BigDecimal("123456789012345678.9349"), Boolean.FALSE, };
         RowMetaInterface rowMeta2 = createTestRowMetaNormalStringConversion2();
         
         assertTrue( rowMeta2.getString(rowData2, 0)==null);        

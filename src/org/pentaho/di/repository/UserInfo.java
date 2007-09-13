@@ -154,8 +154,8 @@ public class UserInfo
 		r.addValue( new ValueMeta("PASSWORD", ValueMetaInterface.TYPE_STRING), Encr.encryptPassword(password) );
 		r.addValue( new ValueMeta("NAME", ValueMetaInterface.TYPE_STRING), name );
 		r.addValue( new ValueMeta("DESCRIPTION", ValueMetaInterface.TYPE_STRING), description );
-		r.addValue( new ValueMeta("ENABLED", ValueMetaInterface.TYPE_BOOLEAN), new Boolean(enabled) );
-		r.addValue( new ValueMeta("ID_PROFILE", ValueMetaInterface.TYPE_INTEGER), new Long(profile.getID()) );
+		r.addValue( new ValueMeta("ENABLED", ValueMetaInterface.TYPE_BOOLEAN), Boolean.valueOf(enabled) );
+		r.addValue( new ValueMeta("ID_PROFILE", ValueMetaInterface.TYPE_INTEGER), Long.valueOf(profile.getID()) );
 
 		return r;
 	}

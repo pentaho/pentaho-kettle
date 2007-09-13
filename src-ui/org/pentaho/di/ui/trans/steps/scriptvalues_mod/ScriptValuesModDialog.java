@@ -1144,10 +1144,10 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
                         //
 					    if (valueMeta.isDate()) valueData = new Date();
 					    if (valueMeta.isString()) valueData = "test value test value test value test value test value test value test value test value test value test value"; //$NON-NLS-1$
-                        if (valueMeta.isInteger()) valueData = new Long(0L);
+                        if (valueMeta.isInteger()) valueData = Long.valueOf(0L);
                         if (valueMeta.isNumber()) valueData = new Double(0.0);
                         if (valueMeta.isBigNumber()) valueData = new BigDecimal(0.0);
-                        if (valueMeta.isBoolean()) valueData = new Boolean(true);
+                        if (valueMeta.isBoolean()) valueData = Boolean.TRUE;
                         if (valueMeta.isBinary()) valueData = new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, };
                         
                         row[i]=valueData;

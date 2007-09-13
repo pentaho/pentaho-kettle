@@ -254,13 +254,13 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface
 
 	public void allocate(int nrkeys, int nrvalues)
 	{
-		keyStream          = new String[nrkeys];
+		keyStream    = new String[nrkeys];
 		keyLookup    = new String[nrkeys];
 		keyCondition = new String[nrkeys];
-		keyStream2         = new String[nrkeys];
-		updateLookup        = new String[nrvalues];
-		updateStream    = new String[nrvalues];
-		update    = new Boolean[nrvalues];
+		keyStream2   = new String[nrkeys];
+		updateLookup = new String[nrvalues];
+		updateStream = new String[nrvalues];
+		update       = new Boolean[nrvalues];
 	}
 
 	public Object clone()
@@ -273,17 +273,17 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface
 		
 		for (int i=0;i<nrkeys;i++)
 		{
-			retval.keyStream         [i] = keyStream[i];
+			retval.keyStream   [i] = keyStream[i];
 			retval.keyLookup   [i] = keyLookup[i];
 			retval.keyCondition[i] = keyCondition[i];
-			retval.keyStream2        [i] = keyStream2[i];
+			retval.keyStream2  [i] = keyStream2[i];
 		}
 
 		for (int i=0;i<nrvalues;i++)
 		{
-			retval.updateLookup[i]        = updateLookup[i];
-			retval.updateStream[i]    = updateStream[i];
-			retval.update[i]    = update[i];
+			retval.updateLookup[i] = updateLookup[i];
+			retval.updateStream[i] = updateStream[i];
+			retval.update[i]       = update[i];
 		}
 		return retval;
 	}
@@ -296,17 +296,17 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface
 			String csize;
 			int nrkeys, nrvalues;
 			
-			String con = XMLHandler.getTagValue(stepnode, "connection"); //$NON-NLS-1$
-			databaseMeta = DatabaseMeta.findDatabase(databases, con);
-			csize      = XMLHandler.getTagValue(stepnode, "commit"); //$NON-NLS-1$
-			commitSize=Const.toInt(csize, 0);
-            schemaName      = XMLHandler.getTagValue(stepnode, "lookup", "schema"); //$NON-NLS-1$ //$NON-NLS-2$
+			String con     = XMLHandler.getTagValue(stepnode, "connection"); //$NON-NLS-1$
+			databaseMeta   = DatabaseMeta.findDatabase(databases, con);
+			csize          = XMLHandler.getTagValue(stepnode, "commit"); //$NON-NLS-1$
+			commitSize     = Const.toInt(csize, 0);
+            schemaName     = XMLHandler.getTagValue(stepnode, "lookup", "schema"); //$NON-NLS-1$ //$NON-NLS-2$
 			tableName      = XMLHandler.getTagValue(stepnode, "lookup", "table"); //$NON-NLS-1$ //$NON-NLS-2$
 			updateBypassed = "Y".equalsIgnoreCase( XMLHandler.getTagValue(stepnode, "update_bypassed")); //$NON-NLS-1$ //$NON-NLS-2$
 	
 			Node lookup = XMLHandler.getSubNode(stepnode, "lookup"); //$NON-NLS-1$
-			nrkeys    = XMLHandler.countNodes(lookup, "key"); //$NON-NLS-1$
-			nrvalues  = XMLHandler.countNodes(lookup, "value"); //$NON-NLS-1$
+			nrkeys      = XMLHandler.countNodes(lookup, "key"); //$NON-NLS-1$
+			nrvalues    = XMLHandler.countNodes(lookup, "value"); //$NON-NLS-1$
 			
 			allocate(nrkeys, nrvalues);
 			
@@ -314,18 +314,18 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface
 			{
 				Node knode = XMLHandler.getSubNodeByNr(lookup, "key", i); //$NON-NLS-1$
 				
-				keyStream         [i] = XMLHandler.getTagValue(knode, "name"); //$NON-NLS-1$
-				keyLookup   [i] = XMLHandler.getTagValue(knode, "field"); //$NON-NLS-1$
-				keyCondition[i] = XMLHandler.getTagValue(knode, "condition"); //$NON-NLS-1$
+				keyStream       [i] = XMLHandler.getTagValue(knode, "name"); //$NON-NLS-1$
+				keyLookup       [i] = XMLHandler.getTagValue(knode, "field"); //$NON-NLS-1$
+				keyCondition    [i] = XMLHandler.getTagValue(knode, "condition"); //$NON-NLS-1$
 				if (keyCondition[i]==null) keyCondition[i]="="; //$NON-NLS-1$
-				keyStream2        [i] = XMLHandler.getTagValue(knode, "name2"); //$NON-NLS-1$
+				keyStream2      [i] = XMLHandler.getTagValue(knode, "name2"); //$NON-NLS-1$
 			}
 	
 			for (int i=0;i<nrvalues;i++)
 			{
 				Node vnode = XMLHandler.getSubNodeByNr(lookup, "value", i); //$NON-NLS-1$
 				
-				updateLookup[i]        = XMLHandler.getTagValue(vnode, "name"); //$NON-NLS-1$
+				updateLookup[i]    = XMLHandler.getTagValue(vnode, "name"); //$NON-NLS-1$
 				updateStream[i]    = XMLHandler.getTagValue(vnode, "rename"); //$NON-NLS-1$
 				if (updateStream[i]==null) updateStream[i]=updateLookup[i]; // default: the same name!
 				String updateValue = XMLHandler.getTagValue(vnode, "update"); //$NON-NLS-1$

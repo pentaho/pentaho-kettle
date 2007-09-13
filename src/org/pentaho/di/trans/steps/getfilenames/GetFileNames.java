@@ -92,16 +92,16 @@ public class GetFileNames extends BaseStep implements StepInterface
                     outputRow[outputIndex++] = file.getType().toString();
 
                     // exists
-                    outputRow[outputIndex++] = new Boolean(file.exists());
+                    outputRow[outputIndex++] = Boolean.valueOf(file.exists());
 
                     // ishidden
-                    outputRow[outputIndex++] = new Boolean(file.isHidden());
+                    outputRow[outputIndex++] = Boolean.valueOf(file.isHidden());
 
                     // isreadable
-                    outputRow[outputIndex++] = new Boolean(file.isReadable());
+                    outputRow[outputIndex++] = Boolean.valueOf(file.isReadable());
 
                     // iswriteable
-                    outputRow[outputIndex++] = new Boolean(file.isWriteable());
+                    outputRow[outputIndex++] = Boolean.valueOf(file.isWriteable());
 
                     // lastmodifiedtime
                     outputRow[outputIndex++] = new Date( file.getContent().getLastModifiedTime() );

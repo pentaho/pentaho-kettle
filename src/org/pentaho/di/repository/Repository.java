@@ -1385,8 +1385,8 @@ public class Repository
 		table.addValue(new ValueMeta(FIELD_TRANSFORMATION_ID_STEP_UPDATE, ValueMetaInterface.TYPE_INTEGER), new Long(transMeta.getUpdateStep()==null ? -1L : transMeta.getUpdateStep().getID()));
 		table.addValue(new ValueMeta(FIELD_TRANSFORMATION_ID_DATABASE_LOG, ValueMetaInterface.TYPE_INTEGER), new Long(transMeta.getLogConnection()==null ? -1L : transMeta.getLogConnection().getID()));
 		table.addValue(new ValueMeta(FIELD_TRANSFORMATION_TABLE_NAME_LOG, ValueMetaInterface.TYPE_STRING), transMeta.getLogTable());
-		table.addValue(new ValueMeta(FIELD_TRANSFORMATION_USE_BATCHID, ValueMetaInterface.TYPE_BOOLEAN), new Boolean(transMeta.isBatchIdUsed()));
-		table.addValue(new ValueMeta(FIELD_TRANSFORMATION_USE_LOGFIELD, ValueMetaInterface.TYPE_BOOLEAN), new Boolean(transMeta.isLogfieldUsed()));
+		table.addValue(new ValueMeta(FIELD_TRANSFORMATION_USE_BATCHID, ValueMetaInterface.TYPE_BOOLEAN), Boolean.valueOf(transMeta.isBatchIdUsed()));
+		table.addValue(new ValueMeta(FIELD_TRANSFORMATION_USE_LOGFIELD, ValueMetaInterface.TYPE_BOOLEAN), Boolean.valueOf(transMeta.isLogfieldUsed()));
 		table.addValue(new ValueMeta(FIELD_TRANSFORMATION_ID_DATABASE_MAXDATE, ValueMetaInterface.TYPE_INTEGER), new Long(transMeta.getMaxDateConnection()==null ? -1L : transMeta.getMaxDateConnection().getID()));
 		table.addValue(new ValueMeta(FIELD_TRANSFORMATION_TABLE_NAME_MAXDATE, ValueMetaInterface.TYPE_STRING), transMeta.getMaxDateTable());
 		table.addValue(new ValueMeta(FIELD_TRANSFORMATION_FIELD_NAME_MAXDATE, ValueMetaInterface.TYPE_STRING), transMeta.getMaxDateField());
@@ -1446,9 +1446,9 @@ public class Repository
 		table.addValue(new ValueMeta(FIELD_JOB_CREATED_DATE, ValueMetaInterface.TYPE_DATE), created_date);
 		table.addValue(new ValueMeta(FIELD_JOB_MODIFIED_USER, ValueMetaInterface.TYPE_STRING), modified_user);
 		table.addValue(new ValueMeta(FIELD_JOB_MODIFIED_DATE, ValueMetaInterface.TYPE_DATE), modified_date);
-        table.addValue(new ValueMeta(FIELD_JOB_USE_BATCH_ID, ValueMetaInterface.TYPE_BOOLEAN), new Boolean(useBatchId));
-        table.addValue(new ValueMeta(FIELD_JOB_PASS_BATCH_ID, ValueMetaInterface.TYPE_BOOLEAN), new Boolean(batchIdPassed));
-        table.addValue(new ValueMeta(FIELD_JOB_USE_LOGFIELD, ValueMetaInterface.TYPE_BOOLEAN), new Boolean(logfieldUsed));
+        table.addValue(new ValueMeta(FIELD_JOB_USE_BATCH_ID, ValueMetaInterface.TYPE_BOOLEAN), Boolean.valueOf(useBatchId));
+        table.addValue(new ValueMeta(FIELD_JOB_PASS_BATCH_ID, ValueMetaInterface.TYPE_BOOLEAN), Boolean.valueOf(batchIdPassed));
+        table.addValue(new ValueMeta(FIELD_JOB_USE_LOGFIELD, ValueMetaInterface.TYPE_BOOLEAN), Boolean.valueOf(logfieldUsed));
         table.addValue(new ValueMeta(FIELD_JOB_SHARED_FILE, ValueMetaInterface.TYPE_STRING), sharedObjectsFile);
 
 		database.prepareInsert(table.getRowMeta(), TABLE_R_JOB);
@@ -1596,11 +1596,11 @@ public class Repository
 		table.addValue(new ValueMeta(FIELD_STEP_NAME, ValueMetaInterface.TYPE_STRING), name);
 		table.addValue(new ValueMeta(FIELD_STEP_DESCRIPTION, ValueMetaInterface.TYPE_STRING), description);
 		table.addValue(new ValueMeta(FIELD_STEP_ID_STEP_TYPE, ValueMetaInterface.TYPE_INTEGER), new Long(id_step_type));
-		table.addValue(new ValueMeta(FIELD_STEP_DISTRIBUTE, ValueMetaInterface.TYPE_BOOLEAN), new Boolean(distribute));
+		table.addValue(new ValueMeta(FIELD_STEP_DISTRIBUTE, ValueMetaInterface.TYPE_BOOLEAN), Boolean.valueOf(distribute));
 		table.addValue(new ValueMeta(FIELD_STEP_COPIES, ValueMetaInterface.TYPE_INTEGER), new Long(copies));
 		table.addValue(new ValueMeta(FIELD_STEP_GUI_LOCATION_X, ValueMetaInterface.TYPE_INTEGER), new Long(gui_location_x));
 		table.addValue(new ValueMeta(FIELD_STEP_GUI_LOCATION_Y, ValueMetaInterface.TYPE_INTEGER), new Long(gui_location_y));
-		table.addValue(new ValueMeta(FIELD_STEP_GUI_DRAW, ValueMetaInterface.TYPE_BOOLEAN), new Boolean(gui_draw));
+		table.addValue(new ValueMeta(FIELD_STEP_GUI_DRAW, ValueMetaInterface.TYPE_BOOLEAN), Boolean.valueOf(gui_draw));
 
 		database.prepareInsert(table.getRowMeta(), TABLE_R_STEP);
 		database.setValuesInsert(table);
@@ -1746,11 +1746,11 @@ public class Repository
 
 		RowMetaAndData table = new RowMetaAndData();
 
-		table.addValue(new ValueMeta(FIELD_TRANS_HOP_ID_TRANS_HOP, ValueMetaInterface.TYPE_INTEGER), new Long(id));
-		table.addValue(new ValueMeta(FIELD_TRANS_HOP_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER), new Long(id_transformation));
-		table.addValue(new ValueMeta(FIELD_TRANS_HOP_ID_STEP_FROM, ValueMetaInterface.TYPE_INTEGER), new Long(id_step_from));
-		table.addValue(new ValueMeta(FIELD_TRANS_HOP_ID_STEP_TO, ValueMetaInterface.TYPE_INTEGER), new Long(id_step_to));
-		table.addValue(new ValueMeta(FIELD_TRANS_HOP_ENABLED, ValueMetaInterface.TYPE_BOOLEAN), new Boolean(enabled));
+		table.addValue(new ValueMeta(FIELD_TRANS_HOP_ID_TRANS_HOP, ValueMetaInterface.TYPE_INTEGER), Long.valueOf(id));
+		table.addValue(new ValueMeta(FIELD_TRANS_HOP_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER), Long.valueOf(id_transformation));
+		table.addValue(new ValueMeta(FIELD_TRANS_HOP_ID_STEP_FROM, ValueMetaInterface.TYPE_INTEGER), Long.valueOf(id_step_from));
+		table.addValue(new ValueMeta(FIELD_TRANS_HOP_ID_STEP_TO, ValueMetaInterface.TYPE_INTEGER), Long.valueOf(id_step_to));
+		table.addValue(new ValueMeta(FIELD_TRANS_HOP_ENABLED, ValueMetaInterface.TYPE_BOOLEAN), Boolean.valueOf(enabled));
 
 		database.prepareInsert(table.getRowMeta(), TABLE_R_TRANS_HOP);
 		database.setValuesInsert(table);
@@ -1767,13 +1767,13 @@ public class Repository
 
 		RowMetaAndData table = new RowMetaAndData();
 
-		table.addValue(new ValueMeta(FIELD_JOB_HOP_ID_JOB_HOP, ValueMetaInterface.TYPE_INTEGER), new Long(id));
-		table.addValue(new ValueMeta(FIELD_JOB_HOP_ID_JOB, ValueMetaInterface.TYPE_INTEGER), new Long(id_job));
-		table.addValue(new ValueMeta(FIELD_JOB_HOP_ID_JOBENTRY_COPY_FROM, ValueMetaInterface.TYPE_INTEGER), new Long(id_jobentry_copy_from));
-		table.addValue(new ValueMeta(FIELD_JOB_HOP_ID_JOBENTRY_COPY_TO, ValueMetaInterface.TYPE_INTEGER), new Long(id_jobentry_copy_to));
-		table.addValue(new ValueMeta(FIELD_JOB_HOP_ENABLED, ValueMetaInterface.TYPE_BOOLEAN), new Boolean(enabled));
-		table.addValue(new ValueMeta(FIELD_JOB_HOP_EVALUATION, ValueMetaInterface.TYPE_BOOLEAN), new Boolean(evaluation));
-		table.addValue(new ValueMeta(FIELD_JOB_HOP_UNCONDITIONAL, ValueMetaInterface.TYPE_BOOLEAN), new Boolean(unconditional));
+		table.addValue(new ValueMeta(FIELD_JOB_HOP_ID_JOB_HOP, ValueMetaInterface.TYPE_INTEGER), Long.valueOf(id));
+		table.addValue(new ValueMeta(FIELD_JOB_HOP_ID_JOB, ValueMetaInterface.TYPE_INTEGER), Long.valueOf(id_job));
+		table.addValue(new ValueMeta(FIELD_JOB_HOP_ID_JOBENTRY_COPY_FROM, ValueMetaInterface.TYPE_INTEGER), Long.valueOf(id_jobentry_copy_from));
+		table.addValue(new ValueMeta(FIELD_JOB_HOP_ID_JOBENTRY_COPY_TO, ValueMetaInterface.TYPE_INTEGER), Long.valueOf(id_jobentry_copy_to));
+		table.addValue(new ValueMeta(FIELD_JOB_HOP_ENABLED, ValueMetaInterface.TYPE_BOOLEAN), Boolean.valueOf(enabled));
+		table.addValue(new ValueMeta(FIELD_JOB_HOP_EVALUATION, ValueMetaInterface.TYPE_BOOLEAN), Boolean.valueOf(evaluation));
+		table.addValue(new ValueMeta(FIELD_JOB_HOP_UNCONDITIONAL, ValueMetaInterface.TYPE_BOOLEAN), Boolean.valueOf(unconditional));
 
 		database.prepareInsert(table.getRowMeta(), TABLE_R_JOB_HOP);
 		database.setValuesInsert(table);
@@ -1874,12 +1874,12 @@ public class Repository
 
         RowMetaAndData table = new RowMetaAndData();
 
-        table.addValue(new ValueMeta(FIELD_CLUSTER_ID_CLUSTER, ValueMetaInterface.TYPE_INTEGER), new Long(id));
+        table.addValue(new ValueMeta(FIELD_CLUSTER_ID_CLUSTER, ValueMetaInterface.TYPE_INTEGER), Long.valueOf(id));
         table.addValue(new ValueMeta(FIELD_CLUSTER_NAME, ValueMetaInterface.TYPE_STRING), clusterSchema.getName());
         table.addValue(new ValueMeta(FIELD_CLUSTER_BASE_PORT, ValueMetaInterface.TYPE_STRING), clusterSchema.getBasePort());
         table.addValue(new ValueMeta(FIELD_CLUSTER_SOCKETS_BUFFER_SIZE, ValueMetaInterface.TYPE_STRING), clusterSchema.getSocketsBufferSize());
         table.addValue(new ValueMeta(FIELD_CLUSTER_SOCKETS_FLUSH_INTERVAL, ValueMetaInterface.TYPE_STRING), clusterSchema.getSocketsFlushInterval());
-        table.addValue(new ValueMeta(FIELD_CLUSTER_SOCKETS_COMPRESSED, ValueMetaInterface.TYPE_BOOLEAN), new Boolean(clusterSchema.isSocketsCompressed()));
+        table.addValue(new ValueMeta(FIELD_CLUSTER_SOCKETS_COMPRESSED, ValueMetaInterface.TYPE_BOOLEAN), Boolean.valueOf(clusterSchema.isSocketsCompressed()));
 
         database.prepareInsert(table.getRowMeta(), TABLE_R_CLUSTER);
         database.setValuesInsert(table);
@@ -1895,7 +1895,7 @@ public class Repository
 
         RowMetaAndData table = new RowMetaAndData();
 
-        table.addValue(new ValueMeta(FIELD_SLAVE_ID_SLAVE, ValueMetaInterface.TYPE_INTEGER), new Long(id));
+        table.addValue(new ValueMeta(FIELD_SLAVE_ID_SLAVE, ValueMetaInterface.TYPE_INTEGER), Long.valueOf(id));
         table.addValue(new ValueMeta(FIELD_SLAVE_NAME, ValueMetaInterface.TYPE_STRING), slaveServer.getName());
         table.addValue(new ValueMeta(FIELD_SLAVE_HOST_NAME, ValueMetaInterface.TYPE_STRING), slaveServer.getHostname());
         table.addValue(new ValueMeta(FIELD_SLAVE_PORT, ValueMetaInterface.TYPE_STRING), slaveServer.getPort());
@@ -1904,7 +1904,7 @@ public class Repository
         table.addValue(new ValueMeta(FIELD_SLAVE_PROXY_HOST_NAME, ValueMetaInterface.TYPE_STRING), slaveServer.getProxyHostname());
         table.addValue(new ValueMeta(FIELD_SLAVE_PROXY_PORT, ValueMetaInterface.TYPE_STRING), slaveServer.getProxyPort());
         table.addValue(new ValueMeta(FIELD_SLAVE_NON_PROXY_HOSTS, ValueMetaInterface.TYPE_STRING), slaveServer.getNonProxyHosts());
-        table.addValue(new ValueMeta(FIELD_SLAVE_MASTER, ValueMetaInterface.TYPE_BOOLEAN), new Boolean(slaveServer.isMaster()));
+        table.addValue(new ValueMeta(FIELD_SLAVE_MASTER, ValueMetaInterface.TYPE_BOOLEAN), Boolean.valueOf(slaveServer.isMaster()));
 
         database.prepareInsert(table.getRowMeta(), TABLE_R_SLAVE);
         database.setValuesInsert(table);
@@ -1925,7 +1925,7 @@ public class Repository
         table.addValue(new ValueMeta(FIELD_SLAVE_PROXY_HOST_NAME, ValueMetaInterface.TYPE_STRING), slaveServer.getProxyHostname());
         table.addValue(new ValueMeta(FIELD_SLAVE_PROXY_PORT, ValueMetaInterface.TYPE_STRING), slaveServer.getProxyPort());
         table.addValue(new ValueMeta(FIELD_SLAVE_NON_PROXY_HOSTS, ValueMetaInterface.TYPE_STRING), slaveServer.getNonProxyHosts());
-        table.addValue(new ValueMeta(FIELD_SLAVE_MASTER, ValueMetaInterface.TYPE_BOOLEAN), new Boolean(slaveServer.isMaster()));
+        table.addValue(new ValueMeta(FIELD_SLAVE_MASTER, ValueMetaInterface.TYPE_BOOLEAN), Boolean.valueOf(slaveServer.isMaster()));
 
         updateTableRow(TABLE_R_SLAVE, FIELD_SLAVE_ID_SLAVE, table, slaveServer.getId());
     }
@@ -1991,9 +1991,9 @@ public class Repository
 
 		String tablename = TABLE_R_CONDITION;
 		RowMetaAndData table = new RowMetaAndData();
-		table.addValue(new ValueMeta(FIELD_CONDITION_ID_CONDITION, ValueMetaInterface.TYPE_INTEGER), new Long(id));
-		table.addValue(new ValueMeta(FIELD_CONDITION_ID_CONDITION_PARENT, ValueMetaInterface.TYPE_INTEGER), new Long(id_condition_parent));
-		table.addValue(new ValueMeta(FIELD_CONDITION_NEGATED, ValueMetaInterface.TYPE_BOOLEAN), new Boolean(condition.isNegated()));
+		table.addValue(new ValueMeta(FIELD_CONDITION_ID_CONDITION, ValueMetaInterface.TYPE_INTEGER), Long.valueOf(id));
+		table.addValue(new ValueMeta(FIELD_CONDITION_ID_CONDITION_PARENT, ValueMetaInterface.TYPE_INTEGER), Long.valueOf(id_condition_parent));
+		table.addValue(new ValueMeta(FIELD_CONDITION_NEGATED, ValueMetaInterface.TYPE_BOOLEAN), Boolean.valueOf(condition.isNegated()));
 		table.addValue(new ValueMeta(FIELD_CONDITION_OPERATOR, ValueMetaInterface.TYPE_STRING), condition.getOperatorDesc());
 		table.addValue(new ValueMeta(FIELD_CONDITION_LEFT_NAME, ValueMetaInterface.TYPE_STRING), condition.getLeftValuename());
 		table.addValue(new ValueMeta(FIELD_CONDITION_CONDITION_FUNCTION, ValueMetaInterface.TYPE_STRING), condition.getFunctionDesc());
@@ -2077,7 +2077,7 @@ public class Repository
 		table.addValue(new ValueMeta(FIELD_VALUE_NAME, ValueMetaInterface.TYPE_STRING), name);
 		table.addValue(new ValueMeta(FIELD_VALUE_VALUE_TYPE, ValueMetaInterface.TYPE_STRING), type);
 		table.addValue(new ValueMeta(FIELD_VALUE_VALUE_STR, ValueMetaInterface.TYPE_STRING), value_str);
-		table.addValue(new ValueMeta(FIELD_VALUE_IS_NULL, ValueMetaInterface.TYPE_BOOLEAN), new Boolean(isnull));
+		table.addValue(new ValueMeta(FIELD_VALUE_IS_NULL, ValueMetaInterface.TYPE_BOOLEAN), Boolean.valueOf(isnull));
 
 		String sql = "SELECT " + quote(FIELD_VALUE_ID_VALUE) + " FROM " + quote(TABLE_R_VALUE) + " ";
 		sql += "WHERE " + quote(FIELD_VALUE_NAME) + "       = ? ";
@@ -2104,11 +2104,11 @@ public class Repository
 			// Let's see if the same value is not yet available?
 			String tablename = TABLE_R_VALUE;
 			RowMetaAndData table = new RowMetaAndData();
-			table.addValue(new ValueMeta(FIELD_VALUE_ID_VALUE, ValueMetaInterface.TYPE_INTEGER), new Long(id_value));
+			table.addValue(new ValueMeta(FIELD_VALUE_ID_VALUE, ValueMetaInterface.TYPE_INTEGER), Long.valueOf(id_value));
 			table.addValue(new ValueMeta(FIELD_VALUE_NAME, ValueMetaInterface.TYPE_STRING), name);
 			table.addValue(new ValueMeta(FIELD_VALUE_VALUE_TYPE, ValueMetaInterface.TYPE_STRING), type);
 			table.addValue(new ValueMeta(FIELD_VALUE_VALUE_STR, ValueMetaInterface.TYPE_STRING), value_str);
-			table.addValue(new ValueMeta(FIELD_VALUE_IS_NULL, ValueMetaInterface.TYPE_BOOLEAN), new Boolean(isnull));
+			table.addValue(new ValueMeta(FIELD_VALUE_IS_NULL, ValueMetaInterface.TYPE_BOOLEAN), Boolean.valueOf(isnull));
 
 			database.prepareInsert(table.getRowMeta(), tablename);
 			database.setValuesInsert(table);
@@ -2158,8 +2158,8 @@ public class Repository
 		table.addValue(new ValueMeta(FIELD_JOBENTRY_COPY_NR, ValueMetaInterface.TYPE_INTEGER), new Long(nr));
 		table.addValue(new ValueMeta(FIELD_JOBENTRY_COPY_GUI_LOCATION_X, ValueMetaInterface.TYPE_INTEGER), new Long(gui_location_x));
 		table.addValue(new ValueMeta(FIELD_JOBENTRY_COPY_GUI_LOCATION_Y, ValueMetaInterface.TYPE_INTEGER), new Long(gui_location_y));
-		table.addValue(new ValueMeta(FIELD_JOBENTRY_COPY_GUI_DRAW, ValueMetaInterface.TYPE_BOOLEAN), new Boolean(gui_draw));
-		table.addValue(new ValueMeta(FIELD_JOBENTRY_COPY_PARALLEL, ValueMetaInterface.TYPE_BOOLEAN), new Boolean(parallel));
+		table.addValue(new ValueMeta(FIELD_JOBENTRY_COPY_GUI_DRAW, ValueMetaInterface.TYPE_BOOLEAN), Boolean.valueOf(gui_draw));
+		table.addValue(new ValueMeta(FIELD_JOBENTRY_COPY_PARALLEL, ValueMetaInterface.TYPE_BOOLEAN), Boolean.valueOf(parallel));
 
 		database.prepareInsert(table.getRowMeta(), TABLE_R_JOBENTRY_COPY);
 		database.setValuesInsert(table);
@@ -4001,11 +4001,11 @@ public class Repository
         try
         {
             Object[] data = new Object[] {
-                    new Long(getNextID(tablename, FIELD_VERSION_ID_VERSION)),
-                    new Long(REQUIRED_MAJOR_VERSION),
-                    new Long(REQUIRED_MINOR_VERSION),
+                    Long.valueOf(getNextID(tablename, FIELD_VERSION_ID_VERSION)),
+                    Long.valueOf(REQUIRED_MAJOR_VERSION),
+                    Long.valueOf(REQUIRED_MINOR_VERSION),
                     new Date(),
-                    new Boolean(upgrade),
+                    Boolean.valueOf(upgrade),
                 };
             database.execStatement("INSERT INTO "+quote(TABLE_R_VERSION)+" VALUES(?, ?, ?, ?, ?)", table, data);
         }
@@ -5427,13 +5427,13 @@ public class Repository
                     if (profileID!=null) id_profile = profileID.longValue();
                     
 					RowMetaAndData tableData = new RowMetaAndData();
-                    tableData.addValue(new ValueMeta(FIELD_USER_ID_USER, ValueMetaInterface.TYPE_INTEGER), new Long(nextid));
-                    tableData.addValue(new ValueMeta(FIELD_USER_ID_PROFILE, ValueMetaInterface.TYPE_INTEGER), new Long(id_profile));
+                    tableData.addValue(new ValueMeta(FIELD_USER_ID_USER, ValueMetaInterface.TYPE_INTEGER), Long.valueOf(nextid));
+                    tableData.addValue(new ValueMeta(FIELD_USER_ID_PROFILE, ValueMetaInterface.TYPE_INTEGER), Long.valueOf(id_profile));
                     tableData.addValue(new ValueMeta(FIELD_USER_LOGIN, ValueMetaInterface.TYPE_STRING), user[i]);
                     tableData.addValue(new ValueMeta(FIELD_USER_PASSWORD, ValueMetaInterface.TYPE_STRING), password);
                     tableData.addValue(new ValueMeta(FIELD_USER_NAME, ValueMetaInterface.TYPE_STRING), code[i]);
                     tableData.addValue(new ValueMeta(FIELD_USER_DESCRIPTION, ValueMetaInterface.TYPE_STRING), desc[i]);
-                    tableData.addValue(new ValueMeta(FIELD_USER_ENABLED, ValueMetaInterface.TYPE_BOOLEAN), new Boolean(true));
+                    tableData.addValue(new ValueMeta(FIELD_USER_ENABLED, ValueMetaInterface.TYPE_BOOLEAN), Boolean.valueOf(true));
 
 					database.setValuesInsert(tableData);
 					database.insertRow();

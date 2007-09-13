@@ -30,7 +30,7 @@ public class RowDataUtilTest extends TestCase
 	
     public void testResizeArray() throws KettleValueException
     {
-    	Object arr1[]    = new Object[] { "test", new Boolean(true), new Long(100), new Long(101), new String("test1")};
+    	Object arr1[]    = new Object[] { "test", Boolean.TRUE, new Long(100), new Long(101), new String("test1")};
     	Object nullArr[] = new Object[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null };
     	
     	// -------  Normal cases

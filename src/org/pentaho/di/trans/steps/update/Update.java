@@ -119,7 +119,7 @@ public class Update extends BaseStep implements StepInterface
                 if (log.isDetailed()) log.logDetailed(toString(), Messages.getString("Update.Log.KeyCouldNotFound")+data.lookupParameterRowMeta.getString(lookupRow)); //$NON-NLS-1$
                 if (!Const.isEmpty( meta.getIgnoreFlagField())) // set flag field!
                 {
-                    outputRow[rowMeta.size()] = new Boolean(false);
+                    outputRow[rowMeta.size()] = Boolean.FALSE;
                 }
             }
 		}
@@ -169,7 +169,7 @@ public class Update extends BaseStep implements StepInterface
             
             if (!Const.isEmpty(meta.getIgnoreFlagField())) // add flag field!
             {
-                row[rowMeta.size()] = new Boolean(true);
+                row[rowMeta.size()] = Boolean.TRUE;
             }
 		}
         
@@ -343,10 +343,9 @@ public class Update extends BaseStep implements StepInterface
         }
 
         try
-        {
-            String s = sql.toString();
-            log.logDetailed(toString(), "Setting update preparedStatement to ["+s+"]");
-            data.prepStatementUpdate=data.db.getConnection().prepareStatement(databaseMeta.stripCR(s));
+        {            
+            log.logDetailed(toString(), "Setting update preparedStatement to ["+sql+"]");
+            data.prepStatementUpdate=data.db.getConnection().prepareStatement(databaseMeta.stripCR(sql));
         }
         catch(SQLException ex) 
         {

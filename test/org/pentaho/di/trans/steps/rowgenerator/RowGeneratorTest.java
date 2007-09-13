@@ -72,7 +72,7 @@ public class RowGeneratorTest extends TestCase
 		
 		RowMetaInterface rm = createRowMetaInterface();
 		
-		Object[] r1 = new Object[] { "string_value", new Boolean(true), 
+		Object[] r1 = new Object[] { "string_value", Boolean.TRUE, 
 				                     new Long(20L)};
 		
 		list.add(new RowMetaAndData(rm, r1));

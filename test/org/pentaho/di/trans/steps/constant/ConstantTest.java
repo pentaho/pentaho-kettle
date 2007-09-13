@@ -85,10 +85,10 @@ public class ConstantTest extends TestCase
 		
 		RowMetaInterface rm = createResultRowMetaInterface();
 		
-		Object[] r1  = new Object[] { new Boolean(true), new Boolean(false), new Boolean(false),
-				                      new Boolean(true), new Boolean(false), new Boolean(false), null,
+		Object[] r1  = new Object[] { Boolean.TRUE, Boolean.FALSE, Boolean.FALSE,
+				                      Boolean.TRUE, Boolean.FALSE, Boolean.FALSE, null,
 				                      "AAAAAAAAAAAAAA", "   ", null,
-				                      new Long(-100L), new Long(0L), new Long(212L), null,
+				                      Long.valueOf(-100L), Long.valueOf(0L), Long.valueOf(212L), null,
 				                      new Double(-100.2), new Double(0.0), new Double(212.23), null};
 		
 		list.add(new RowMetaAndData(rm, r1));

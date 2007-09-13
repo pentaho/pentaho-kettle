@@ -76,7 +76,7 @@ public class ValueDataUtil
         case ValueMetaInterface.TYPE_INTEGER   : 
             return new Long( metaA.getInteger(dataA).longValue()+metaB.getInteger(dataB).longValue());
         case ValueMetaInterface.TYPE_BOOLEAN   : 
-            return new Boolean( metaA.getBoolean(dataA).booleanValue() || metaB.getBoolean(dataB).booleanValue());
+            return Boolean.valueOf( metaA.getBoolean(dataA).booleanValue() || metaB.getBoolean(dataB).booleanValue());
         case ValueMetaInterface.TYPE_BIGNUMBER : 
             return metaA.getBigNumber(dataA).add( metaB.getBigNumber(dataB));
             

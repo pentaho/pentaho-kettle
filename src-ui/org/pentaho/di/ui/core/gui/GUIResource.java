@@ -1098,6 +1098,6 @@ public class GUIResource
 		MessageDialogWithToggle md = new MessageDialogWithToggle(shell, dialogTitle, image, message,
 				imageType, buttonLabels, defaultIndex, toggleMessage, toggleState);
 		int idx = md.open();
-		return new Object[] { new Integer(idx), new Boolean(md.getToggleState()) };
+		return new Object[] { Integer.valueOf(idx), Boolean.valueOf(md.getToggleState()) };
 	}
 }

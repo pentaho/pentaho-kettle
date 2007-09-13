@@ -115,7 +115,7 @@ public class ExcelInput extends BaseStep implements StepInterface
 			if (CellType.BOOLEAN.equals(cellType) ||
 				CellType.BOOLEAN_FORMULA.equals(cellType))
 			{
-				r[rowcolumn] = new Boolean( ((BooleanCell)cell).getValue() );
+				r[rowcolumn] = Boolean.valueOf( ((BooleanCell)cell).getValue() );
                 sourceMeta = data.valueMetaBoolean;
 			}
 			else

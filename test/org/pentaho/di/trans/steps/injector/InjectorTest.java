@@ -79,15 +79,15 @@ public class InjectorTest extends TestCase
 		
 		Object[] r1 = new Object[] { "KETTLE1", new Long(123L), 
                                      new Double(10.5D), new Date(),
-                                     new Boolean(true), new BigDecimal(123.45),
+                                     Boolean.TRUE, new BigDecimal(123.45),
                                      new BigDecimal(123.60) };
 		Object[] r2 = new Object[] { "KETTLE2", new Long(500L), 
                                      new Double(20.0D), new Date(),
-                                     new Boolean(false), new BigDecimal(123.45),
+                                     Boolean.FALSE, new BigDecimal(123.45),
                                      new BigDecimal(123.60) };
 		Object[] r3 = new Object[] { "KETTLE3", new Long(501L), 
                                      new Double(21.0D), new Date(),
-                                     new Boolean(false), new BigDecimal(123.45),
+                                     Boolean.FALSE, new BigDecimal(123.45),
                                      new BigDecimal(123.70) };
 		
 		list.add(new RowMetaAndData(rm, r1));
