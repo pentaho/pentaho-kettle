@@ -1183,4 +1183,25 @@ Alert(getVariable(strVarName, ""));</sample>
       </Arguments>
    </jsFunction>
    
+	<jsFunction name="LuhnCheck">
+      <help>Check if the given Value is a valid Card Number.</help>
+      <sample>// Returns true, if the given value is a valid card number 
+// 
+// Usage:
+// LuhnCheck(var);
+// 1: var - The Variable to check.
+//
+// 2007-09-11
+//
+var str1 = "1234556754";      
+Alert(LuhnCheck(str1));
+      </sample>
+      <type>4</type>
+      <Arguments>
+         <argument id="1">var</argument>
+      </Arguments>
+   </jsFunction>
+   
 </jsFunctions>
+
+
