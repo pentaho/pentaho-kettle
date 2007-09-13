@@ -40,12 +40,15 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.nullif.Messages;
 import org.pentaho.di.trans.steps.nullif.NullIfMeta;
+import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
 
@@ -59,7 +62,7 @@ public class NullIfDialog extends BaseStepDialog implements StepDialogInterface
 	private Label        wlFields;
 	private TableView    wFields;
 	private FormData     fdlFields, fdFields;
-	
+		
 	private NullIfMeta input;
 
 	public NullIfDialog(Shell parent, Object in, TransMeta transMeta, String sname)
@@ -149,17 +152,21 @@ public class NullIfDialog extends BaseStepDialog implements StepDialogInterface
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
 		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
+		wGet=new Button(shell, SWT.PUSH);
+		wGet.setText(Messages.getString("System.Button.GetFields")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
 
-		setButtonPositions(new Button[] { wOK, wCancel }, margin, wFields);
+		setButtonPositions(new Button[] { wOK, wCancel, wGet }, margin, wFields);
 
 		// Add listeners
 		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel(); } };
+		lsGet      = new Listener() { public void handleEvent(Event e) { get();    } };
 		lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
 		
 		wCancel.addListener(SWT.Selection, lsCancel);
-		wOK.addListener    (SWT.Selection, lsOK    );
+		wGet.addListener   (SWT.Selection, lsGet    );
+		wOK.addListener    (SWT.Selection, lsOK    );		
 		
 		lsDef=new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { ok(); } };
 		
@@ -229,4 +236,20 @@ public class NullIfDialog extends BaseStepDialog implements StepDialogInterface
 		}
 		dispose();
 	}
+	
+	private void get()
+	{
+		try
+		{
+			RowMetaInterface r = transMeta.getPrevStepFields(stepname);
+			if (r!=null)
+			{
+                BaseStepDialog.getFieldsFromPrevious(r, wFields, 1, new int[] { 1 }, null, -1, -1, null);
+			}
+		}
+		catch(KettleException ke)
+		{
+			new ErrorDialog(shell, Messages.getString("System.Dialog.GetFieldsFailed.Title"), Messages.getString("System.Dialog.GetFieldsFailed.Message"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+		}
+	}	
 }

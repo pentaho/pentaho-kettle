@@ -58,7 +58,7 @@ public class NullIf extends BaseStep implements StepInterface
 			return false;
 		}
 		
-		if (log.isRowLevel()) logRowlevel(Messages.getString("NullIf.Log.ConvertFieldValuesToNullForRow")+r); //$NON-NLS-1$
+		if (log.isRowLevel()) logRowlevel(Messages.getString("NullIf.Log.ConvertFieldValuesToNullForRow")+data.outputRowMeta.getString(r)); //$NON-NLS-1$
 		
 		if (first)
 		{
