@@ -339,7 +339,7 @@ public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		List<CheckResultInterface> remarks = new ArrayList<CheckResultInterface>();
 		RowMetaAndData rowMetaAndData = RowGenerator.buildRow(this, remarks);
-		if (remarks.size()>0) {
+		if (!remarks.isEmpty()) {
 			StringBuffer stringRemarks = new StringBuffer();
 			for (CheckResultInterface remark : remarks) {
 				stringRemarks.append(remark.toString()).append(Const.CR);

@@ -190,7 +190,7 @@ public class RowGenerator extends BaseStep implements StepInterface
             // Create a row (constants) with all the values in it...
             List<CheckResultInterface> remarks = new ArrayList<CheckResultInterface>(); // stores the errors...
             RowMetaAndData outputRow = buildRow(meta, remarks);
-            if (remarks.size()>0) 
+            if (!remarks.isEmpty()) 
             { 
                 for (int i=0;i<remarks.size();i++)
                 {

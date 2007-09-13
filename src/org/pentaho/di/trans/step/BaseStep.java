@@ -395,7 +395,7 @@ public class BaseStep extends Thread implements VariableSpace
             this.slaveNr = Integer.parseInt(slaveNr);
             this.clusterSize = Integer.parseInt(clusterSize);
             
-            logDetailed("Running on slave server #"+slaveNr+"/"+clusterSize+"."); 
+            if (log.isDetailed()) logDetailed("Running on slave server #"+slaveNr+"/"+clusterSize+"."); 
         }
         else
         {
@@ -475,7 +475,7 @@ public class BaseStep extends Thread implements VariableSpace
 	        	RemoteStep copy = (RemoteStep) remoteStep.clone();
 	        	try {
 	        		copy.openServerSocket(this);
-	        		logDetailed("Opened a server socket connection to "+copy);
+	        		if (log.isDetailed()) logDetailed("Opened a server socket connection to "+copy);
 	        	}
 	        	catch(Exception e) {
 	            	log.logError(toString(), "Unable to open server socket during step initialisation: "+copy.toString(), e);
@@ -841,7 +841,7 @@ public class BaseStep extends Thread implements VariableSpace
             				throw new KettleStepException("The target slave server name is not defined for remote output step: "+remoteStep);
         				}
 						RowSet rowSet = remoteStep.openWriterSocket();
-						logDetailed("Opened a writer socket to remote step: "+remoteStep);
+						if (log.isDetailed()) logDetailed("Opened a writer socket to remote step: "+remoteStep);
 						outputRowSets.add(rowSet);
 					} catch (IOException e) {
 						throw new KettleStepException("Error opening writer socket to remote step '"+remoteStep+"'", e);
@@ -852,7 +852,7 @@ public class BaseStep extends Thread implements VariableSpace
         	}
         }
 
-	    if (outputRowSets.size() == 0)
+	    if (outputRowSets.isEmpty())
 	    {
 	        // No more output rowsets!
 	    	// Still update the nr of lines written.
@@ -1031,6 +1031,8 @@ public class BaseStep extends Thread implements VariableSpace
                 }
             }
             break;
+        default:
+        	throw new KettleStepException("Internal error: invalid repartitioning type: " + repartitioning);
         }
     }
 
@@ -1114,10 +1116,7 @@ public class BaseStep extends Thread implements VariableSpace
         }
         
         Object[] errorRowData = new Object[errorRowMeta.size()];
-        for (int i=0;i<rowMeta.size();i++)
-        {
-            errorRowData[i] = row[i];
-        }
+        System.arraycopy(row, 0, errorRowMeta, 0, rowMeta.size());
         
         // Also add the error fields...
         stepErrorMeta.addErrorRowData(errorRowData, rowMeta.size(), nrErrors, errorDescriptions, fieldNames, errorCodes);
@@ -1249,7 +1248,7 @@ public class BaseStep extends Thread implements VariableSpace
  
 	    // If everything is finished, we can stop immediately!
 	    //
-	    if (inputRowSets.size() == 0)
+	    if (inputRowSets.isEmpty())
 	    {
 	        return null;
 	    }
@@ -1291,7 +1290,7 @@ public class BaseStep extends Thread implements VariableSpace
         			row = inputRowSet.getRowWait(2, TimeUnit.MILLISECONDS);
         			if (row==null) {
         				inputRowSets.remove(currentInputRowSetNr);
-        				if (inputRowSets.size()==0) return null; // We're completely done.
+        				if (inputRowSets.isEmpty()) return null; // We're completely done.
         			}
         			else {
         				linesRead++;
@@ -1308,7 +1307,7 @@ public class BaseStep extends Thread implements VariableSpace
         	// Try the next input row set(s) until we find a row set that still has rows...
         	// The getRowFrom() method removes row sets from the input row sets list.
         	//
-            if (inputRowSets.size()==0) return null; // We're done.
+            if (inputRowSets.isEmpty()) return null; // We're done.
         	
         	nextInputStream();
             inputRowSet = currentInputStream();
@@ -1531,17 +1530,17 @@ public class BaseStep extends Thread implements VariableSpace
 
         currentInputRowSetNr = 0; // we start with input[0];
 
-        logDetailed(Messages.getString("BaseStep.Log.StepInfo", String.valueOf(nrInput), String.valueOf(nrOutput))); //$NON-NLS-1$ //$NON-NLS-2$
+        if (log.isDetailed()) logDetailed(Messages.getString("BaseStep.Log.StepInfo", String.valueOf(nrInput), String.valueOf(nrOutput))); //$NON-NLS-1$ //$NON-NLS-2$
 
         for (int i = 0; i < nrInput; i++)
         {
             prevSteps[i] = transMeta.findPrevStep(stepMeta, i, true); // sir.getHopFromWithTo(stepname, i);
-            logDetailed(Messages.getString("BaseStep.Log.GotPreviousStep", stepname, String.valueOf(i), prevSteps[i].getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            if (log.isDetailed()) logDetailed(Messages.getString("BaseStep.Log.GotPreviousStep", stepname, String.valueOf(i), prevSteps[i].getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
             // Looking at the previous step, you can have either 1 rowset to look at or more then one.
             int prevCopies = prevSteps[i].getCopies();
             int nextCopies = stepMeta.getCopies();
-            logDetailed(Messages.getString("BaseStep.Log.InputRowInfo", String.valueOf(prevCopies), String.valueOf(nextCopies))); //$NON-NLS-1$ //$NON-NLS-2$
+            if (log.isDetailed()) logDetailed(Messages.getString("BaseStep.Log.InputRowInfo", String.valueOf(prevCopies), String.valueOf(nextCopies))); //$NON-NLS-1$ //$NON-NLS-2$
 
             int nrCopies;
             int dispatchType;
@@ -1605,7 +1604,7 @@ public class BaseStep extends Thread implements VariableSpace
                 if (rowSet != null)
                 {
                     inputRowSets.add(rowSet);
-                    logDetailed(Messages.getString("BaseStep.Log.FoundInputRowset", rowSet.getName())); //$NON-NLS-1$ //$NON-NLS-2$
+                    if (log.isDetailed()) logDetailed(Messages.getString("BaseStep.Log.FoundInputRowset", rowSet.getName())); //$NON-NLS-1$ //$NON-NLS-2$
                 }
                 else
                 {
@@ -1626,7 +1625,7 @@ public class BaseStep extends Thread implements VariableSpace
             int prevCopies = stepMeta.getCopies();
             int nextCopies = nextSteps[i].getCopies();
 
-            logDetailed(Messages.getString("BaseStep.Log.OutputRowInfo", String.valueOf(prevCopies), String.valueOf(nextCopies))); //$NON-NLS-1$ //$NON-NLS-2$
+            if (log.isDetailed()) logDetailed(Messages.getString("BaseStep.Log.OutputRowInfo", String.valueOf(prevCopies), String.valueOf(nextCopies))); //$NON-NLS-1$ //$NON-NLS-2$
 
             int nrCopies;
             int dispatchType;
@@ -1690,7 +1689,7 @@ public class BaseStep extends Thread implements VariableSpace
                 if (rowSet != null)
                 {
                     outputRowSets.add(rowSet);
-                    logDetailed(Messages.getString("BaseStep.Log.FoundOutputRowset", rowSet.getName())); //$NON-NLS-1$ //$NON-NLS-2$
+                    if (log.isDetailed()) logDetailed(Messages.getString("BaseStep.Log.FoundOutputRowset", rowSet.getName())); //$NON-NLS-1$ //$NON-NLS-2$
                 }
                 else
                 {
@@ -1708,7 +1707,7 @@ public class BaseStep extends Thread implements VariableSpace
         	nextStepPartitioningMeta = stepMeta.getTargetStepPartitioningMeta();
         }
 
-        logDetailed(Messages.getString("BaseStep.Log.FinishedDispatching")); //$NON-NLS-1$
+        if (log.isDetailed()) logDetailed(Messages.getString("BaseStep.Log.FinishedDispatching")); //$NON-NLS-1$
     }
 
     public void logMinimal(String s)

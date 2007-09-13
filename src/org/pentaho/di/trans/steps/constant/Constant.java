@@ -157,7 +157,7 @@ public class Constant extends BaseStep implements StepInterface
                         break;
                         
                     case ValueMetaInterface.TYPE_BOOLEAN:
-                        rowData[i] = new Boolean( "Y".equalsIgnoreCase(stringValue) || "TRUE".equalsIgnoreCase(stringValue) );
+                        rowData[i] = Boolean.valueOf( "Y".equalsIgnoreCase(stringValue) || "TRUE".equalsIgnoreCase(stringValue) );
                         break;
                         
                     case ValueMetaInterface.TYPE_BINARY:                    
@@ -228,7 +228,7 @@ public class Constant extends BaseStep implements StepInterface
             // Create a row (constants) with all the values in it...
             List<CheckResultInterface> remarks = new ArrayList<CheckResultInterface>(); // stores the errors...
             data.constants = buildRow(meta, data, remarks);           
-		    if (remarks.size()==0) 
+		    if (remarks.isEmpty()) 
             { 
 		        return true;
             }

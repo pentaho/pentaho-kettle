@@ -389,9 +389,8 @@ public class InsertUpdate extends BaseStep implements StepInterface
 
         try
         {
-            String s = sql.toString();
-            log.logDetailed(toString(), "Setting update preparedStatement to ["+s+"]");
-            data.prepStatementUpdate=data.db.getConnection().prepareStatement(databaseMeta.stripCR(s));
+            log.logDetailed(toString(), "Setting update preparedStatement to ["+sql+"]");
+            data.prepStatementUpdate=data.db.getConnection().prepareStatement(databaseMeta.stripCR(sql));
         }
         catch(SQLException ex) 
         {

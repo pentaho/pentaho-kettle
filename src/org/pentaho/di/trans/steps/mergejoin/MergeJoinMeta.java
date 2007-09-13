@@ -350,7 +350,7 @@ public class MergeJoinMeta extends BaseStepMeta implements StepMetaInterface
         List<String> list = new ArrayList<String>();
         if (stepMeta1!=null) list.add(stepMeta1.getName());
         if (stepMeta2!=null) list.add(stepMeta2.getName());
-        if (list.size()==0) return null;
+        if (list.isEmpty()) return null;
         return list.toArray(new String[list.size()]);
     }
 

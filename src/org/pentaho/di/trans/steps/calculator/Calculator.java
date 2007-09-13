@@ -149,7 +149,7 @@ public class Calculator extends BaseStep implements StepInterface
                                 
                 if (function.isRemovedFromResult())
                 {
-                    tempIndexes.add(new Integer(getInputRowMeta().size()+i));
+                    tempIndexes.add(Integer.valueOf(getInputRowMeta().size()+i));
                 }
             }
             

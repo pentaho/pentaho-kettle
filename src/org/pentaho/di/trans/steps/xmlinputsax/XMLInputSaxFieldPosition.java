@@ -108,7 +108,7 @@ public class XMLInputSaxFieldPosition
      */
     public XMLInputSaxFieldPosition(String encoded) throws KettleValueException
     {
-        int equalIndex = encoded.indexOf("=");
+        int equalIndex = encoded.indexOf('=');
         if (equalIndex<0)
         {
             throw new KettleValueException("Sorry, this is not a valid XML Field Position (no equal sign in code: '"+encoded+"')");
