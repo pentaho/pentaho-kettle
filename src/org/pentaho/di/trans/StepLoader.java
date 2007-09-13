@@ -810,11 +810,13 @@ public class StepLoader
      */
     public String getStepPluginID(StepMetaInterface sii)
     {
-        for (int i = 0; i < nrStepsWithType(StepPlugin.TYPE_ALL); i++)
-        {
-            StepPlugin sp = getStepWithType(StepPlugin.TYPE_ALL, i);
-            if (sp.getClassname() == sii.getClass().getName()) return sp.getID()[0]; // return the first = default
-        }
+    	for (StepPlugin sp : pluginList) 
+    	{
+    		if (sp.getClassname().equals( sii.getClass().getName() )) {
+    			return sp.getID()[0]; // return the first = default
+    		}
+    	}
+
         return null;
     }
     
@@ -826,10 +828,11 @@ public class StepLoader
      */
     public StepPlugin getStepPlugin(StepMetaInterface sii)
     {
-        for (int i = 0; i < nrStepsWithType(StepPlugin.TYPE_ALL); i++)
+        for (StepPlugin sp : pluginList)
         {
-            StepPlugin sp = getStepWithType(StepPlugin.TYPE_ALL, i);
-            if (sp.getClassname() == sii.getClass().getName()) return sp; // return the first = default
+            if (sp.getClassname().equals( sii.getClass().getName() )) {
+            	return sp; // OK, we found the plugin
+            }
         }
         return null;
     }
