@@ -203,9 +203,8 @@ public class Delete extends BaseStep implements StepInterface
 
         try
         {
-            String s = sql.toString();
-            log.logDetailed(toString(), "Setting delete preparedStatement to ["+s+"]");
-            data.prepStatementDelete=data.db.getConnection().prepareStatement(databaseMeta.stripCR(s));
+            log.logDetailed(toString(), "Setting delete preparedStatement to ["+sql+"]");
+            data.prepStatementDelete=data.db.getConnection().prepareStatement(databaseMeta.stripCR(sql));
         }
         catch(SQLException ex) 
         {

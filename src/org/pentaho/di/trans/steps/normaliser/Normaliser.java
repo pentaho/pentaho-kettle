@@ -87,7 +87,7 @@ public class Normaliser extends BaseStep implements StepInterface
 			{
 				ValueMetaInterface v = data.inputRowMeta.getValueMeta(i);
 				if (Const.indexOfString(v.getName(), meta.getFieldName())<0) {
-					data.copy_fieldnrs.add(new Integer(i));
+					data.copy_fieldnrs.add(Integer.valueOf(i));
 				}
 			}
 			

@@ -345,7 +345,7 @@ public class GroupBy extends BaseStep implements StepInterface
 					break;
                 case GroupByMeta.TYPE_GROUP_CONCAT_COMMA    :
                     vMeta = new ValueMeta(meta.getAggregateField()[i], ValueMetaInterface.TYPE_STRING);
-                    v = new String(""); //$NON-NLS-1$
+                    v = ""; //$NON-NLS-1$
                     break; 
 				default: 
 					// TODO raise an error here because we cannot continue successfully maybe the UI should validate this

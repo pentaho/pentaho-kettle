@@ -499,7 +499,7 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 		String password = wPassword.getText();
 		java.util.List<String> list = new ArrayList<String>();
 		StringUtil.getUsedVariables(password, list, true);
-		if (list.size() == 0)
+		if (list.isEmpty())
 		{
 			wPassword.setEchoChar('*');
 		}

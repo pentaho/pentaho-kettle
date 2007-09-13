@@ -49,7 +49,7 @@ public class SlaveStepCopyPartitionDistribution {
 		}
 		
 		public int hashCode() {
-			return slaveServerName.hashCode() ^ partitionSchemaName.hashCode() ^ new Integer(stepCopyNr).hashCode();
+			return slaveServerName.hashCode() ^ partitionSchemaName.hashCode() ^ Integer.valueOf(stepCopyNr).hashCode();
 		}
 
 		public int compareTo(SlaveStepCopy o) {
@@ -142,7 +142,7 @@ public class SlaveStepCopyPartitionDistribution {
 					nr++;
 				}
 			}
-			partitionNr=new Integer(nr);
+			partitionNr=Integer.valueOf(nr);
 			addPartition(slaveServerName, partitionSchemaName, stepCopyNr, nr);
 		}
 		return partitionNr.intValue();

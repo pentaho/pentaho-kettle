@@ -46,7 +46,6 @@ public class BaseMessages implements LAFChangeListener<MessageHandler> {
 	}
 	
 	public static String getString(String key) {
-		System.out.println(key);
 		return getInstanceHandler().getString(key);
 	}
 	

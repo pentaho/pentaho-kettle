@@ -459,7 +459,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
         String password = wPassword.getText();
         java.util.List<String> list = new ArrayList<String>();
         StringUtil.getUsedVariables(password, list, true);
-        if (list.size() == 0)
+        if (list.isEmpty())
         {
             wPassword.setEchoChar('*');
         }

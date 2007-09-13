@@ -1584,7 +1584,6 @@ public class TableView extends Composite
 	{
 		ArrayList<String> strings = new ArrayList<String>();
 
-		int linenr=0;
 		int pos =0;
 		int start = 0;
 		while (pos<text.length())
@@ -1596,7 +1595,6 @@ public class TableView extends Composite
 				String line = text.substring(start, pos);
 				strings.add(line);
 				
-				linenr++;
 				pos+=Const.CR.length();
 				start = pos;
 			}
@@ -1613,8 +1611,7 @@ public class TableView extends Composite
 		ArrayList<String> fields = new ArrayList<String>();
 		
 		int pos2 = 0;
-		int start2 = 0;
-		int colnr  = 1;
+		int start2 = 0;	
 		while (pos2<line.length())
 		{
 			// Search for the end of the field: "\t"
@@ -1623,7 +1620,6 @@ public class TableView extends Composite
 		
 			fields.add(field);
 				
-			colnr++;
 			pos2++;
 			start2=pos2;
 		}
@@ -2528,7 +2524,7 @@ public class TableView extends Composite
 	// get previous undo, change position
 	private TransAction previousUndo()
 	{
-		if (undo.size()==0 || undo_position<0) return null;  // No undo left!
+		if (undo.isEmpty() || undo_position<0) return null;  // No undo left!
 		
 		TransAction retval = undo.get(undo_position);
 
@@ -2540,7 +2536,7 @@ public class TableView extends Composite
 	// View previous undo, don't change position
 	private TransAction viewPreviousUndo()
 	{
-		if (undo.size()==0 || undo_position<0) return null;  // No undo left!
+		if (undo.isEmpty() || undo_position<0) return null;  // No undo left!
 		
 		TransAction retval = undo.get(undo_position);
 		
@@ -2626,7 +2622,7 @@ public class TableView extends Composite
 				boolean keep = cond.evaluate(r.getRowMeta(), r.getData());
 				if (keep)
 				{
-					tokeep.add( new Integer(i) );
+					tokeep.add( Integer.valueOf(i) );
 				}
 			}
 

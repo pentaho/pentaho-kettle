@@ -10,7 +10,7 @@ public class GlobalMessageUtil {
 
 
   public static String formatErrorMessage(String key, String msg) {
-    String s2 = key.substring(0, key.indexOf(".")+"ERROR_0000".length()+1); //$NON-NLS-1$ //$NON-NLS-2$
+    String s2 = key.substring(0, key.indexOf('.')+"ERROR_0000".length()+1); //$NON-NLS-1$ //$NON-NLS-2$
     return BaseMessages.getString("MESSUTIL.ERROR_FORMAT_MASK", s2, msg); //$NON-NLS-1$
   }
 

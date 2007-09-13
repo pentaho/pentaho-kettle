@@ -512,10 +512,10 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 
 			// Adding some Constants to the JavaScript
 			try {
-				jsscope.put("SKIP_TRANSFORMATION", jsscope, new Integer(ScriptValuesMod.SKIP_TRANSFORMATION));
-				jsscope.put("ABORT_TRANSFORMATION", jsscope, new Integer(ScriptValuesMod.ABORT_TRANSFORMATION));
-				jsscope.put("ERROR_TRANSFORMATION", jsscope, new Integer(ScriptValuesMod.ERROR_TRANSFORMATION));
-				jsscope.put("CONTINUE_TRANSFORMATION", jsscope, new Integer(ScriptValuesMod.CONTINUE_TRANSFORMATION));
+				jsscope.put("SKIP_TRANSFORMATION", jsscope, Integer.valueOf(ScriptValuesMod.SKIP_TRANSFORMATION));
+				jsscope.put("ABORT_TRANSFORMATION", jsscope, Integer.valueOf(ScriptValuesMod.ABORT_TRANSFORMATION));
+				jsscope.put("ERROR_TRANSFORMATION", jsscope, Integer.valueOf(ScriptValuesMod.ERROR_TRANSFORMATION));
+				jsscope.put("CONTINUE_TRANSFORMATION", jsscope, Integer.valueOf(ScriptValuesMod.CONTINUE_TRANSFORMATION));
 			} catch (Exception ex) {
 				error_message="Couldn't add Transformation Constants! Error:"+Const.CR+ex.toString(); //$NON-NLS-1$
 				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepinfo);

@@ -122,7 +122,7 @@ public class ExecSQL extends BaseStep implements StepInterface
 			while (pos >= 0)
 			{
 				if (data.sql.charAt(pos) == '?')
-					data.markerPositions.add(new Integer(pos)); // save the
+					data.markerPositions.add(Integer.valueOf(pos)); // save the
 				// marker
 				// position
 				pos--;
@@ -154,7 +154,7 @@ public class ExecSQL extends BaseStep implements StepInterface
 			sql = data.sql;
 		}
 		if (log.isRowLevel()) logRowlevel(Messages.getString("ExecSQL.Log.ExecutingSQLScript") + Const.CR + data.sql); //$NON-NLS-1$
-		data.result = data.db.execStatements(sql.toString());
+		data.result = data.db.execStatements(sql);
 
 		RowMetaAndData add = getResultRow(data.result, meta.getUpdateField(), meta.getInsertField(), meta.getDeleteField(), meta.getReadField());
 		

@@ -353,7 +353,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
 				{
                     String fieldName = meta.getOutputFields()[i].getName();
                     ValueMetaInterface vMeta=new ValueMeta(fieldName, ValueMetaInterface.TYPE_STRING);
-                    writeField(new String(fieldName), vMeta, null, i, true);
+                    writeField(fieldName, vMeta, null, i, true);
 				}
 			}
 			else
@@ -363,7 +363,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
 				{
 					String fieldName = data.previousMeta.getFieldNames()[i];
 					ValueMetaInterface vMeta=new ValueMeta(fieldName, ValueMetaInterface.TYPE_STRING);
-                    writeField(new String(fieldName), vMeta, null, i, true);
+                    writeField(fieldName, vMeta, null, i, true);
 				}
 			}
 		}

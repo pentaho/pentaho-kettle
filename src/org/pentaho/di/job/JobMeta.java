@@ -1820,7 +1820,7 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
     // get previous undo, change position
     public TransAction previousUndo()
     {
-        if (undo.size() == 0 || undo_position < 0) return null; // No undo left!
+        if (undo.isEmpty() || undo_position < 0) return null; // No undo left!
 
         TransAction retval = undo.get(undo_position);
 
@@ -1836,7 +1836,7 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
      */
     public TransAction viewThisUndo()
     {
-        if (undo.size() == 0 || undo_position < 0) return null; // No undo left!
+        if (undo.isEmpty() || undo_position < 0) return null; // No undo left!
 
         TransAction retval = undo.get(undo_position);
 
@@ -1846,7 +1846,7 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
     // View previous undo, don't change position
     public TransAction viewPreviousUndo()
     {
-        if (undo.size() == 0 || undo_position < 0) return null; // No undo left!
+        if (undo.isEmpty() || undo_position < 0) return null; // No undo left!
 
         TransAction retval = undo.get(undo_position);
 

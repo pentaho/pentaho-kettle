@@ -152,7 +152,7 @@ public class ScriptValuesMod extends BaseStep implements StepInterface, ScriptVa
             }
 
             // Adding the Name of the Transformation to the Context
-            data.scope.put("_TransformationName_", data.scope, new String(this.getName()));
+            data.scope.put("_TransformationName_", data.scope, this.getName());
 
             try
             {
@@ -231,10 +231,10 @@ public class ScriptValuesMod extends BaseStep implements StepInterface, ScriptVa
                 try
                 {
 
-                    data.scope.put("SKIP_TRANSFORMATION", data.scope, new Integer(SKIP_TRANSFORMATION));
-                    data.scope.put("ABORT_TRANSFORMATION", data.scope, new Integer(ABORT_TRANSFORMATION));
-                    data.scope.put("ERROR_TRANSFORMATION", data.scope, new Integer(ERROR_TRANSFORMATION));
-                    data.scope.put("CONTINUE_TRANSFORMATION", data.scope, new Integer(CONTINUE_TRANSFORMATION));
+                    data.scope.put("SKIP_TRANSFORMATION", data.scope, Integer.valueOf(SKIP_TRANSFORMATION));
+                    data.scope.put("ABORT_TRANSFORMATION", data.scope, Integer.valueOf(ABORT_TRANSFORMATION));
+                    data.scope.put("ERROR_TRANSFORMATION", data.scope, Integer.valueOf(ERROR_TRANSFORMATION));
+                    data.scope.put("CONTINUE_TRANSFORMATION", data.scope, Integer.valueOf(CONTINUE_TRANSFORMATION));
 
                 }
                 catch (Exception ex)
@@ -629,7 +629,7 @@ public class ScriptValuesMod extends BaseStep implements StepInterface, ScriptVa
                                                     }
                                                     else
                                                     {
-                                                        throw new RuntimeException("JavaScript conversion to BigNumber not implemented for "+classType.toString());
+                                                        throw new RuntimeException("JavaScript conversion to BigNumber not implemented for "+classType);
                                                     }
 
                     case ValueMetaInterface.TYPE_BINARY:

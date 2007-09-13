@@ -91,7 +91,7 @@ public class Denormaliser extends BaseStep implements StepInterface
 					return false;
 				}
                 data.fieldNameIndex[i] = idx;
-                subjects.put(new Integer(idx), new Integer(idx));
+                subjects.put(Integer.valueOf(idx), Integer.valueOf(idx));
                 
                 // See if by accident, the value fieldname isn't the same as the key fieldname.
                 // This is not supported of-course and given the complexity of the step, you can miss:
@@ -112,7 +112,7 @@ public class Denormaliser extends BaseStep implements StepInterface
                 {
                     indexes = new ArrayList<Integer>(2);
                 }
-                indexes.add(new Integer(i)); // Add the index to the list...
+                indexes.add(Integer.valueOf(i)); // Add the index to the list...
 				data.keyValue.put(keyValue, indexes); // store the list
 			}
             
@@ -133,7 +133,7 @@ public class Denormaliser extends BaseStep implements StepInterface
 			}
             
             List<Integer> removeList = new ArrayList<Integer>();
-            removeList.add(new Integer(data.keyFieldNr));
+            removeList.add(Integer.valueOf(data.keyFieldNr));
             for (int i=0;i<data.fieldNrs.length;i++)
             {
                 removeList.add(data.fieldNrs[i]);

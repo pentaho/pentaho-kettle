@@ -474,9 +474,8 @@ public class CombinationLookup extends BaseStep implements StepInterface
         
         try
         {
-            String sqlStatement = sql.toString();
-            if (log.isDebug()) log.logDebug(toString(), "preparing combi-lookup statement:"+Const.CR+sqlStatement);
-            data.prepStatementLookup=data.db.getConnection().prepareStatement(databaseMeta.stripCR(sqlStatement));
+            if (log.isDebug()) log.logDebug(toString(), "preparing combi-lookup statement:"+Const.CR+sql);
+            data.prepStatementLookup=data.db.getConnection().prepareStatement(databaseMeta.stripCR(sql));
             if (databaseMeta.supportsSetMaxRows())
             {
                 data.prepStatementLookup.setMaxRows(1); // alywas get only 1 line back!

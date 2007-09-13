@@ -307,7 +307,6 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 
         Result result = previousResult;
 		result.setResult( false );
-		long filesRetrieved = 0;
 
 		log.logDetailed(toString(), "Start of SFTP job entry");
 
@@ -392,7 +391,6 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 
 					String localFilename = realLocalDirectory+Const.FILE_SEPARATOR+filelist[i];
 					sftpclient.put(localFilename, filelist[i]);
-					filesRetrieved++;
 
 					// Add to the result files...JKU:  no idea if this is needed!!!
 					// ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, new File(localFilename), parentJob.getJobname(), toString());

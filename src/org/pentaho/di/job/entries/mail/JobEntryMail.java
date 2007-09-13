@@ -930,7 +930,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
       if (includingFiles && result != null)
       {
         List<ResultFile> resultFiles = result.getResultFilesList();
-        if (resultFiles != null && resultFiles.size() > 0)
+        if (resultFiles != null && !resultFiles.isEmpty())
         {
           if (!zipFiles)
           {

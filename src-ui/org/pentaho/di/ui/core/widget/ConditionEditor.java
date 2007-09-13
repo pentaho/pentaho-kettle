@@ -1096,7 +1096,7 @@ public class ConditionEditor extends Composite
 	
 	private boolean isInUp(Point screen)
 	{
-		if (parents.size()==0) return false; // not displayed!
+		if (parents.isEmpty()) return false; // not displayed!
 		
 		return Real2Screen(size_up).contains(screen);
 	}
