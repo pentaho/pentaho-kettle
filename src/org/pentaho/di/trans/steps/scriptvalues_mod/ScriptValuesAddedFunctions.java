@@ -88,7 +88,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
         "rpad", "week", "month", "year", "str2RegExp","fileExists", "touch", "isRegExp", "date2str",
         "str2date", "sendMail", "replace", "decode", "isNum","isDate", "lower", "upper", "str2num",
         "num2str", "Alert", "setEnvironmentVar", "getEnvironmentVar", "LoadScriptFile", "LoadScriptFromTab", 
-        "print", "println", "resolveIP", "trim", "substr", "getVariable", "setVariable" ,"LuhnCheck",
+        "print", "println", "resolveIP", "trim", "substr", "getVariable", "setVariable" ,"LuhnCheck","getDigitsOnly"
         };
 	
 	// This is only used for reading, so no concurrency problems.
@@ -100,6 +100,28 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 	// fisc_date, isNull
 	// 
 	
+
+	public static String getDigitsOnly(Context actualContext, Scriptable actualObject, Object[] ArgList, Function FunctionContext)
+	  {
+		if(ArgList.length==1)
+		{
+		    StringBuffer digitsOnly = new StringBuffer ();
+		    char c;
+		    for (int i = 0; i < Context.toString(ArgList[0]).length (); i++) {
+		      c = Context.toString(ArgList[0]).charAt (i);
+		      if (Character.isDigit (c)) {
+		        digitsOnly.append (c);
+		      }
+		    }
+		    return digitsOnly.toString ();
+		}
+		else
+		{
+			throw Context.reportRuntimeError("The function call getDigitsOnly requires 1 argument.");
+
+		}
+	  }
+	
 	public static boolean LuhnCheck(Context actualContext, Scriptable actualObject, Object[] ArgList, Function FunctionContext){
 
 	    boolean returnCode=false;
@@ -108,35 +130,39 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 		{
 			if (!isNull(ArgList) && !isUndefined(ArgList))
 			{
-			    int sum = 0;
-			    int digit = 0;
-			    int addend = 0;
-			    boolean timesTwo = false;
-				String digitsOnly = getDigitsOnly (Context.toString(ArgList[0]));
-		
-			    for (int i = digitsOnly.length () - 1; i >= 0; i--) 
-			    {
-			        digit = Integer.parseInt (digitsOnly.substring (i, i + 1));
-			        if (timesTwo) 
-			        {
-			            addend = digit * 2;
-			            if (addend > 9) 
-			            {
-			                addend -= 9;
-			            }
-			        }
-			        else 
-			        {
-			            addend = digit;
-			        }
-			        sum += addend;
-			        timesTwo = !timesTwo;
-		      
-			        int modulus = sum % 10;
-			      
+				try{
+				    int sum = 0;
+				    int digit = 0;
+				    int addend = 0;
+				    boolean timesTwo = false;
+					String argstring =  Context.toString(ArgList[0]);
+			
+				    for (int i = argstring.length () - 1; i >= 0; i--) 
+				    {
+				        digit = Integer.parseInt (argstring.substring (i, i + 1));
+				        if (timesTwo) 
+				        {
+				            addend = digit * 2;
+				            if (addend > 9)
+				            {
+				                addend -= 9;
+				            }
+				        }
+				        else 
+				        {
+				            addend = digit;
+				        }
+				        sum += addend;
+				        timesTwo = !timesTwo;
+				    }
+				    
+				    int modulus = sum % 10;
 			        if (modulus==0) returnCode=true;
-			      
-			    }
+				}catch(Exception e){
+					//No Need to throw exception
+					// This means that input can not be parsed to Integer
+				}
+				
 		    }			    
 		}
 		else
@@ -147,23 +173,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 		return returnCode;
 	}
 	
-    //--------------------------------
-    // Filter out non-digit characters
-	//--------------------------------
-	private static String getDigitsOnly (String s) {
-	    StringBuffer digitsOnly = new StringBuffer ();
-	    char c;
-	    
-	    for (int i = 0; i < s.length (); i++) 
-	    {
-	        c = s.charAt (i);
-	        if (Character.isDigit (c)) 
-	        {
-	            digitsOnly.append (c);
-	        }
-	    }
-	    return digitsOnly.toString();
-    }
+    
 	  
 	public static Object getTransformationName(Context actualContext, Scriptable actualObject, Object[] ArgList, Function FunctionContext){
 		try{
