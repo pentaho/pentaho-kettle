@@ -1202,6 +1202,27 @@ Alert(LuhnCheck(str1));
       </Arguments>
    </jsFunction>
    
+   
+   	<jsFunction name="getDigitsOnly">
+      <help>Get only digit from a String.</help>
+      <sample>// Returns String that contain digit value 
+// 
+// Usage:
+// getDigitsOnly(var);
+// 1: var - The Variable to check.
+//
+// 2007-09-11
+//
+var str1 = "abc123cde";      
+Alert(getDigitsOnly(str1));
+      </sample>
+      <type>4</type>
+      <Arguments>
+         <argument id="1">var</argument>
+      </Arguments>
+   </jsFunction>
+   
+
 </jsFunctions>
 
 
