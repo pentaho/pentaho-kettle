@@ -84,7 +84,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 	public static final int SPECIAL_FUNCTION = 4;	
 		
 	public static  String[] jsFunctionList = {
-        "appendToFile", "getTransformationName","writeToLog","getFiscalDate", "getProcessCount", 
+        "appendToFile", "getTransformationName","writeToLog","LuhnCheck","getFiscalDate", "getProcessCount", 
         "ceil","floor", "abs", "getDayNumber", "isWorkingDay", "fireToDB", "getNextWorkingDay", 
         "quarter", "dateDiff", "dateAdd", "fillString","isCodepage", "ltrim", "rtrim", "lpad", 
         "rpad", "week", "month", "year", "str2RegExp","fileExists", "touch", "isRegExp", "date2str",
@@ -98,6 +98,70 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 	// date2num, num2date,  
 	// fisc_date, isNull
 	// 
+	
+	public static boolean LuhnCheck(Context actualContext, Scriptable actualObject, Object[] ArgList, Function FunctionContext){
+
+	    boolean retour=false;
+	    
+		if(ArgList.length==1)
+		{
+			if (!isNull(ArgList) && !isUndefined(ArgList))
+			{
+			    int sum = 0;
+			    int digit = 0;
+			    int addend = 0;
+			    boolean timesTwo = false;
+				String digitsOnly = getDigitsOnly (Context.toString(ArgList[0]));
+	
+		
+			    for (int i = digitsOnly.length () - 1; i >= 0; i--) 
+			    {
+			      digit = Integer.parseInt (digitsOnly.substring (i, i + 1));
+			      if (timesTwo) {
+			        addend = digit * 2;
+			        if (addend > 9) 
+			        {
+			          addend -= 9;
+			        }
+			      }
+			      else 
+			      {
+			        addend = digit;
+			      }
+			      sum += addend;
+			      timesTwo = !timesTwo;
+		      
+			      int modulus = sum % 10;
+			      
+			     if(modulus==0) retour=true;
+			      
+			      }
+			    }
+			    
+		}
+		else
+		{
+			throw Context.reportRuntimeError("The function call LuhnCheck requires 1 argument.");
+
+		}
+		return retour;
+	}
+	
+	 //--------------------------------
+	  // Filter out non-digit characters
+	  //--------------------------------
+
+	  private static String getDigitsOnly (String s) {
+	    StringBuffer digitsOnly = new StringBuffer ();
+	    char c;
+	    for (int i = 0; i < s.length (); i++) {
+	      c = s.charAt (i);
+	      if (Character.isDigit (c)) {
+	        digitsOnly.append (c);
+	      }
+	    }
+	    return digitsOnly.toString ();
+	  }	
 	
 	public static Object getTransformationName(Context actualContext, Scriptable actualObject, Object[] ArgList, Function FunctionContext){
 		try{
