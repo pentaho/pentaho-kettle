@@ -334,8 +334,8 @@ public class TextFileCSVImportProgressDialog
                                     if (containsDot && containsComma) // Both appear!
                                     {
                                         // What's the last occurance: decimal point!
-                                        int indexDot = fieldValue.indexOf(".");
-                                        int indexComma = fieldValue.indexOf(",");
+                                        int indexDot = fieldValue.indexOf('.');
+                                        int indexComma = fieldValue.indexOf(',');
                                         if (indexDot > indexComma)
                                         {
                                             dfs2.setDecimalSeparator('.');

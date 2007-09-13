@@ -192,7 +192,7 @@ public class ValueMapper extends BaseStep implements StepInterface
                     if (Const.isEmpty(tgt))
                     {
                     	// allow target to be set to null since 3.0
-                    	data.hashtable.put(src, new String());  
+                    	data.hashtable.put(src, "");  
                     }
                 }
             }

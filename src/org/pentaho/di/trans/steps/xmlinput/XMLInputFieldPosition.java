@@ -70,7 +70,7 @@ public class XMLInputFieldPosition implements Cloneable
      */
     public XMLInputFieldPosition(String encoded) throws KettleValueException
     {
-        int equalIndex = encoded.indexOf("=");
+        int equalIndex = encoded.indexOf('=');
         if (equalIndex<0)
         {
             throw new KettleValueException(Messages.getString("XMLInputFieldPosition.Exception.InvalidXMLFieldPosition", encoded));

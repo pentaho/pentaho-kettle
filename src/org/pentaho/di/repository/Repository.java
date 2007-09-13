@@ -70,14 +70,14 @@ import org.pentaho.di.trans.TransMeta;
  */
 public class Repository
 {
-	public static final String TABLE_R_VERSION                = "R_VERSION";
+	public static final String TABLE_R_VERSION             = "R_VERSION";
 	public static final String FIELD_VERSION_ID_VERSION    = "ID_VERSION";
 	public static final String FIELD_VERSION_MAJOR_VERSION = "MAJOR_VERSION";
 	public static final String FIELD_VERSION_MINOR_VERSION = "MINOR_VERSION";
 	public static final String FIELD_VERSION_IS_UPGRADE    = "IS_UPGRADE";
 	public static final String FIELD_VERSION_UPGRADE_DATE  = "UPGRADE_DATE";
 	
-	public static final String TABLE_R_REPOSITORY_LOG         = "R_REPOSITORY_LOG";
+	public static final String TABLE_R_REPOSITORY_LOG                 = "R_REPOSITORY_LOG";
 	public static final String FIELD_REPOSITORY_LOG_ID_REPOSITORY_LOG = "ID_REPOSITORY_LOG";
 	public static final String FIELD_REPOSITORY_LOG_REP_VERSION       = "REP_VERSION";
 	public static final String FIELD_REPOSITORY_LOG_LOG_DATE          = "LOG_DATE";
@@ -5433,7 +5433,7 @@ public class Repository
                     tableData.addValue(new ValueMeta(FIELD_USER_PASSWORD, ValueMetaInterface.TYPE_STRING), password);
                     tableData.addValue(new ValueMeta(FIELD_USER_NAME, ValueMetaInterface.TYPE_STRING), code[i]);
                     tableData.addValue(new ValueMeta(FIELD_USER_DESCRIPTION, ValueMetaInterface.TYPE_STRING), desc[i]);
-                    tableData.addValue(new ValueMeta(FIELD_USER_ENABLED, ValueMetaInterface.TYPE_BOOLEAN), Boolean.valueOf(true));
+                    tableData.addValue(new ValueMeta(FIELD_USER_ENABLED, ValueMetaInterface.TYPE_BOOLEAN), Boolean.TRUE);
 
 					database.setValuesInsert(tableData);
 					database.insertRow();

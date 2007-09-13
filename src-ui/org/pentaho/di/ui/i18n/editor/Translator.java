@@ -144,11 +144,11 @@ public class Translator
                 Integer num = directories.get(path);
                 if (num!=null) 
                 { 
-                    num = new Integer(num.intValue()+1); 
+                    num = Integer.valueOf(num.intValue()+1); 
                 }
                 else
                 {
-                    num = new Integer(1);
+                    num = Integer.valueOf(1);
                 }
                 directories.put(path, num);
                 
@@ -607,7 +607,7 @@ public class Translator
 
     public String getClassname(String key)
     {
-        int idxDot = key.indexOf(".");
+        int idxDot = key.indexOf('.');
         if (idxDot<0) return "";
         return key.substring(0, idxDot);
     }

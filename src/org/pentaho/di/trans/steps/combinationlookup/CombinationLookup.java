@@ -568,7 +568,7 @@ public class CombinationLookup extends BaseStep implements StepInterface
                 
                 sql += " )";
     
-                String sqlStatement = sql.toString();
+                String sqlStatement = sql;
                 try
                 {
                     debug="First: prepare statement";

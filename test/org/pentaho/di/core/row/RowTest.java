@@ -46,11 +46,11 @@ public class RowTest extends TestCase
 
         RowMetaInterface rowMeta = createTestRowMetaIndexedStringConversion1(colors, dates);
 
-        Object[] rowData1 = new Object[] { new Integer(0), new Integer(0), }; 
-        Object[] rowData2 = new Object[] { new Integer(1), new Integer(1), }; 
-        Object[] rowData3 = new Object[] { new Integer(2), new Integer(2), }; 
-        Object[] rowData4 = new Object[] { new Integer(3), new Integer(3), }; 
-        Object[] rowData5 = new Object[] { new Integer(4), new Integer(0), }; 
+        Object[] rowData1 = new Object[] { Integer.valueOf(0), Integer.valueOf(0), }; 
+        Object[] rowData2 = new Object[] { Integer.valueOf(1), Integer.valueOf(1), }; 
+        Object[] rowData3 = new Object[] { Integer.valueOf(2), Integer.valueOf(2), }; 
+        Object[] rowData4 = new Object[] { Integer.valueOf(3), Integer.valueOf(3), }; 
+        Object[] rowData5 = new Object[] { Integer.valueOf(4), Integer.valueOf(0), }; 
         
         assertEquals("Green", rowMeta.getString(rowData1, 0));
         assertEquals("2007/05/07 13:04:13.203", rowMeta.getString(rowData1, 1));

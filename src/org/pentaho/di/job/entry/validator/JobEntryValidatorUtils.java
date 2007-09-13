@@ -199,10 +199,10 @@ public class JobEntryValidatorUtils
     String value = ValidatorUtils.getValueAsString(source, propertyName);
     log.logBasic(JobEntryValidatorUtils.class.getSimpleName(), "fetched value [" + value + "]");
     String substr = null;
-    if (null != value)
+    if (value != null)
     {
-      substr = value.toString().substring(0, Math.min(SUBSTRING_LENGTH, value.toString().length()));
-      if (value.toString().length() > SUBSTRING_LENGTH)
+      substr = value.substring(0, Math.min(SUBSTRING_LENGTH, value.length()));
+      if (value.length() > SUBSTRING_LENGTH)
       {
         substr += "..."; //$NON-NLS-1$
       }

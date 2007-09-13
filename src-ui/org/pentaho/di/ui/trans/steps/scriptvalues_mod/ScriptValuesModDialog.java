@@ -1087,7 +1087,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		}
 		
 		// Adding the Name of the Transformation to the Context
-		jsscope.put("_TransformationName_", jsscope, new String(this.stepname));
+		jsscope.put("_TransformationName_", jsscope, this.stepname);
 		
 		ScriptValuesModDummy dummyStep = new ScriptValuesModDummy();
 		Scriptable jsvalue = Context.toObject(dummyStep, jsscope);
@@ -1122,10 +1122,10 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 
 				// Adding some Constants to the JavaScript
 				try {
-					jsscope.put("SKIP_TRANSFORMATION", jsscope, new Integer(SKIP_TRANSFORMATION));
-					jsscope.put("ABORT_TRANSFORMATION", jsscope, new Integer(ABORT_TRANSFORMATION));
-					jsscope.put("ERROR_TRANSFORMATION", jsscope, new Integer(ERROR_TRANSFORMATION));
-					jsscope.put("CONTINUE_TRANSFORMATION", jsscope, new Integer(CONTINUE_TRANSFORMATION));
+					jsscope.put("SKIP_TRANSFORMATION", jsscope, Integer.valueOf(SKIP_TRANSFORMATION));
+					jsscope.put("ABORT_TRANSFORMATION", jsscope, Integer.valueOf(ABORT_TRANSFORMATION));
+					jsscope.put("ERROR_TRANSFORMATION", jsscope, Integer.valueOf(ERROR_TRANSFORMATION));
+					jsscope.put("CONTINUE_TRANSFORMATION", jsscope, Integer.valueOf(CONTINUE_TRANSFORMATION));
 				} catch (Exception ex) {
 					errorMessage="Couldn't add Transformation Constants! Error:"+Const.CR+ex.toString(); //$NON-NLS-1$
 					retval = false;

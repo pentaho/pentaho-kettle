@@ -181,7 +181,7 @@ public class TransSplitter
         {
             p = port.intValue()+1;
         }
-        clusterPortMap.put(clusterSchema, new Integer(p));
+        clusterPortMap.put(clusterSchema, Integer.valueOf(p));
         return p;
     }
     

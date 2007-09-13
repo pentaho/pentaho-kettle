@@ -1549,7 +1549,7 @@ public class DatabaseDialog extends Dialog
             // 
             // For example MySQL.defaultFetchSize
 
-            int dotIndex = parameter.indexOf("."); //$NON-NLS-1$
+            int dotIndex = parameter.indexOf('.'); //$NON-NLS-1$
             if (dotIndex >= 0 && wConnType.getSelectionCount() == 1)
             {
                 String databaseTypeString = parameter.substring(0, dotIndex);

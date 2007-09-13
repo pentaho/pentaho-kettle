@@ -1798,7 +1798,7 @@ public class ValueMeta implements ValueMetaInterface
     
     private Integer readSmallInteger(DataInputStream inputStream) throws IOException
     {
-        Integer i = new Integer( inputStream.readInt() );
+        Integer i = Integer.valueOf( inputStream.readInt() );
         // System.out.println("Read index integer("+getName()+") ["+i+"]");
         return i;
     }
