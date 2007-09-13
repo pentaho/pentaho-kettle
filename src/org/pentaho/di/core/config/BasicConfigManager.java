@@ -33,7 +33,7 @@ public abstract class BasicConfigManager<T> implements ConfigManager<T>
 	{
 		Collection<T> coll = load();
 		
-		if (coll.size()==0)
+		if (coll.isEmpty())
 			return (Collection<E>)coll;
 		
 		for (T obj:coll)

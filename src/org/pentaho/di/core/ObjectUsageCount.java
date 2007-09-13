@@ -37,7 +37,7 @@ public class ObjectUsageCount implements Comparator<ObjectUsageCount>, Comparabl
     
     public int compareTo(ObjectUsageCount count)
     {
-        return new Integer(count.getNrUses()).compareTo(new Integer(getNrUses()));
+        return Integer.valueOf(count.getNrUses()).compareTo(Integer.valueOf(getNrUses()));
     }
     
     public void reset()

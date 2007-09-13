@@ -1135,7 +1135,7 @@ public class Const
         for (int i=0;i<lookup.length;i++)
         {
             int idx = indexOfString(lookup[i], array);
-            if (idx>=0) indexesList.add(new Integer(idx));
+            if (idx>=0) indexesList.add(Integer.valueOf(idx));
         }
         int[] indexes = new int[indexesList.size()];
         for (int i=0;i<indexesList.size();i++) indexes[i] = (indexesList.get(i)).intValue();
@@ -1597,7 +1597,7 @@ public class Const
         }
         else
         {
-            idx = sFullPath.lastIndexOf("/"); // URL, VFS
+            idx = sFullPath.lastIndexOf('/'); // URL, VFS
             if (idx != -1)
             {
                 return sFullPath.substring(idx + 1);
@@ -1720,7 +1720,8 @@ public class Const
     		return ltrim(string);
     	case ValueMetaInterface.TRIM_TYPE_RIGHT:
     		return rtrim(string);
-    	case ValueMetaInterface.TRIM_TYPE_NONE:default:
+    	case ValueMetaInterface.TRIM_TYPE_NONE:
+    	default:
     		return string;
     	}
     }

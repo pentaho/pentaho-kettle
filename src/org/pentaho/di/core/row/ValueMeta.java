@@ -695,7 +695,7 @@ public class ValueMeta implements ValueMetaInterface
     
     public static Boolean convertStringToBoolean(String string)
     {
-        return new Boolean( "Y".equalsIgnoreCase(string) || "TRUE".equalsIgnoreCase(string) || "YES".equalsIgnoreCase(string) || "1".equals(string) );
+        return Boolean.valueOf( "Y".equalsIgnoreCase(string) || "TRUE".equalsIgnoreCase(string) || "YES".equalsIgnoreCase(string) || "1".equals(string) );
     }
     
     // BOOLEAN + NUMBER
@@ -707,19 +707,19 @@ public class ValueMeta implements ValueMetaInterface
     
     private Boolean convertNumberToBoolean(Double number)
     {
-        return new Boolean( number.intValue() != 0 );
+        return Boolean.valueOf( number.intValue() != 0 );
     }
 
     // BOOLEAN + INTEGER
 
     private Long convertBooleanToInteger(Boolean bool)
     {
-        return new Long( bool.booleanValue() ? 1L : 0L );
+        return Long.valueOf( bool.booleanValue() ? 1L : 0L );
     }
 
     private Boolean convertIntegerToBoolean(Long number)
     {
-        return new Boolean( number.longValue() != 0 );
+        return Boolean.valueOf( number.longValue() != 0 );
     }
     
     // BOOLEAN + BIGNUMBER
@@ -731,7 +731,7 @@ public class ValueMeta implements ValueMetaInterface
     
     private Boolean convertBigNumberToBoolean(BigDecimal number)
     {
-        return new Boolean( number.intValue() != 0 );
+        return Boolean.valueOf( number.intValue() != 0 );
     }    
     
     private String convertBinaryStringToString(byte[] binary) throws KettleValueException
@@ -1762,7 +1762,7 @@ public class ValueMeta implements ValueMetaInterface
     
     private Boolean readBoolean(DataInputStream inputStream) throws IOException
     {
-        Boolean bool = new Boolean( inputStream.readBoolean() );
+        Boolean bool = Boolean.valueOf( inputStream.readBoolean() );
         // System.out.println("Read boolean("+getName()+") ["+bool+"]");
         return bool;
     }

@@ -131,7 +131,7 @@ public class Encr
         String encrPassword = "";
         List<String> varList = new ArrayList<String>();
         StringUtil.getUsedVariables(password, varList, true);
-        if (varList.size()==0)
+        if (varList.isEmpty())
         {
             encrPassword = PASSWORD_ENCRYPTED_PREFIX+Encr.encryptPassword(password);
         }

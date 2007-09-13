@@ -23,7 +23,7 @@ public class SnapAllignDistribute
     
     public void snaptogrid(int size)
     {
-        if (elements.size() == 0) return;
+        if (elements.isEmpty()) return;
 
         // First look for the minimum x coordinate...
 
@@ -67,7 +67,7 @@ public class SnapAllignDistribute
 
     public void allignleft()
     {
-        if (elements.size() == 0) return;
+        if (elements.isEmpty()) return;
 
         GUIPositionInterface elemArray[] = elements.toArray(new GUIPositionInterface[elements.size()]);
         
@@ -101,7 +101,7 @@ public class SnapAllignDistribute
 
     public void allignright()
     {
-        if (elements.size() == 0) return;
+        if (elements.isEmpty()) return;
 
         GUIPositionInterface elemArray[] = elements.toArray(new GUIPositionInterface[elements.size()]);
         
@@ -135,7 +135,7 @@ public class SnapAllignDistribute
 
     public void alligntop()
     {
-        if (elements.size() == 0) return;
+        if (elements.isEmpty()) return;
 
         GUIPositionInterface elemArray[] = elements.toArray(new GUIPositionInterface[elements.size()]);
         
@@ -168,7 +168,7 @@ public class SnapAllignDistribute
 
     public void allignbottom()
     {
-        if (elements.size() == 0) return;
+        if (elements.isEmpty()) return;
 
         GUIPositionInterface elemArray[] = elements.toArray(new GUIPositionInterface[elements.size()]);
         
@@ -279,7 +279,6 @@ public class SnapAllignDistribute
         int order[] = new int[elements.size()];
 
         // First look for the minimum & maximum y coordinate...
-        int selnr = 0;
         for (int i = 0; i < elements.size(); i++)
         {
             GUIPositionInterface element = elements.get(i);
@@ -288,7 +287,6 @@ public class SnapAllignDistribute
             if (p.y < min) min = p.y;
             if (p.y > max) max = p.y;
             order[i] = i;
-            selnr++;
         }
 
         // Difficult to keep the steps in the correct order.

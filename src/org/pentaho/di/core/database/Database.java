@@ -1126,7 +1126,7 @@ public class Database implements VariableSpace
 				rs = pstmt_seq.executeQuery();
 			    if (rs.next())
 			    {
-				    retval = new Long( rs.getLong(1) );
+				    retval = Long.valueOf( rs.getLong(1) );
 			    }
 			}
 			finally 
@@ -2570,10 +2570,10 @@ public class Database implements VariableSpace
                     
 					switch(val.getType())
 					{
-					case ValueMetaInterface.TYPE_BOOLEAN   : data[i] = new Boolean( rs.getBoolean(i+1) ); break;
+					case ValueMetaInterface.TYPE_BOOLEAN   : data[i] = Boolean.valueOf( rs.getBoolean(i+1) ); break;
 					case ValueMetaInterface.TYPE_NUMBER    : data[i] = new Double( rs.getDouble(i+1) ); break;
                     case ValueMetaInterface.TYPE_BIGNUMBER : data[i] = rs.getBigDecimal(i+1); break;
-					case ValueMetaInterface.TYPE_INTEGER   : data[i] = new Long( rs.getLong(i+1) ); break;
+					case ValueMetaInterface.TYPE_INTEGER   : data[i] = Long.valueOf( rs.getLong(i+1) ); break;
 					case ValueMetaInterface.TYPE_STRING    : 
 						{
 							if (val.isStorageBinaryString()) {
@@ -3495,19 +3495,19 @@ public class Database implements VariableSpace
             
             Object[] data = new Object[] {
                     status,
-                    new Long(read),
-                    new Long(written),
-                    new Long(input),
-                    new Long(output),
-                    new Long(updated),
-                    new Long(errors),
+                    Long.valueOf(read),
+                    Long.valueOf(written),
+                    Long.valueOf(input),
+                    Long.valueOf(output),
+                    Long.valueOf(updated),
+                    Long.valueOf(errors),
                     startdate,
                     enddate,
                     logdate,
                     depdate,
                     replayDate,
                     log_string,
-                    new Long(id),
+                    Long.valueOf(id),
                 };
             
             execStatement(sql, rowMeta, data);
@@ -3565,7 +3565,7 @@ public class Database implements VariableSpace
     				if (use_id)
     				{
     					rowMeta.addValueMeta( new ValueMeta("ID_BATCH", ValueMetaInterface.TYPE_INTEGER));
-                        data.add(new Long(id));
+                        data.add(Long.valueOf(id));
     				}
     				rowMeta.addValueMeta( new ValueMeta("TRANSNAME", ValueMetaInterface.TYPE_STRING));
                     data.add(name);
@@ -3575,18 +3575,18 @@ public class Database implements VariableSpace
     				if (use_id)
     				{
     					rowMeta.addValueMeta( new ValueMeta("ID_JOB", ValueMetaInterface.TYPE_INTEGER));
-                        data.add(new Long(id));
+                        data.add(Long.valueOf(id));
     				}
     				rowMeta.addValueMeta( new ValueMeta("JOBNAME", ValueMetaInterface.TYPE_STRING));
                     data.add(name);
     			}
     			rowMeta.addValueMeta( new ValueMeta("STATUS",          ValueMetaInterface.TYPE_STRING )); data.add(status);
-    			rowMeta.addValueMeta( new ValueMeta("LINES_READ",      ValueMetaInterface.TYPE_INTEGER)); data.add(new Long(read));
-    			rowMeta.addValueMeta( new ValueMeta("LINES_WRITTEN",   ValueMetaInterface.TYPE_INTEGER)); data.add(new Long(written));
-    			rowMeta.addValueMeta( new ValueMeta("LINES_UPDATED",   ValueMetaInterface.TYPE_INTEGER)); data.add(new Long(updated));
-    			rowMeta.addValueMeta( new ValueMeta("LINES_INPUT",     ValueMetaInterface.TYPE_INTEGER)); data.add(new Long(input));
-    			rowMeta.addValueMeta( new ValueMeta("LINES_OUTPUT",    ValueMetaInterface.TYPE_INTEGER)); data.add(new Long(output));
-    			rowMeta.addValueMeta( new ValueMeta("ERRORS",          ValueMetaInterface.TYPE_INTEGER)); data.add(new Long(errors));
+    			rowMeta.addValueMeta( new ValueMeta("LINES_READ",      ValueMetaInterface.TYPE_INTEGER)); data.add(Long.valueOf(read));
+    			rowMeta.addValueMeta( new ValueMeta("LINES_WRITTEN",   ValueMetaInterface.TYPE_INTEGER)); data.add(Long.valueOf(written));
+    			rowMeta.addValueMeta( new ValueMeta("LINES_UPDATED",   ValueMetaInterface.TYPE_INTEGER)); data.add(Long.valueOf(updated));
+    			rowMeta.addValueMeta( new ValueMeta("LINES_INPUT",     ValueMetaInterface.TYPE_INTEGER)); data.add(Long.valueOf(input));
+    			rowMeta.addValueMeta( new ValueMeta("LINES_OUTPUT",    ValueMetaInterface.TYPE_INTEGER)); data.add(Long.valueOf(output));
+    			rowMeta.addValueMeta( new ValueMeta("ERRORS",          ValueMetaInterface.TYPE_INTEGER)); data.add(Long.valueOf(errors));
     			rowMeta.addValueMeta( new ValueMeta("STARTDATE",       ValueMetaInterface.TYPE_DATE   )); data.add(startdate);
     			rowMeta.addValueMeta( new ValueMeta("ENDDATE",         ValueMetaInterface.TYPE_DATE   )); data.add(enddate);
     			rowMeta.addValueMeta( new ValueMeta("LOGDATE",         ValueMetaInterface.TYPE_DATE   )); data.add(logdate);
@@ -3692,7 +3692,7 @@ public class Database implements VariableSpace
                     throw new KettleDatabaseException("Error getting the first long value from the max value returned from table : "+schemaTable);
                 }
 				counter = new Counter(previous+1, 1);
-				nextValue = new Long( counter.next() );
+				nextValue = Long.valueOf( counter.next() );
 				if (counters!=null) counters.put(lookup, counter);
 			}
 			else
@@ -3702,7 +3702,7 @@ public class Database implements VariableSpace
 		}
 		else
 		{
-			nextValue = new Long( counter.next() );
+			nextValue = Long.valueOf( counter.next() );
 		}
         
         return nextValue;
@@ -4230,7 +4230,7 @@ public class Database implements VariableSpace
 				Object v =null;
 				switch (resulttype) {
 				case ValueMetaInterface.TYPE_BOOLEAN:
-					v=new Boolean(cstmt.getBoolean(pos));
+					v=Boolean.valueOf(cstmt.getBoolean(pos));
 					break;
 				case ValueMetaInterface.TYPE_NUMBER:
 					v=new Double(cstmt.getDouble(pos));
@@ -4239,7 +4239,7 @@ public class Database implements VariableSpace
 					v=cstmt.getBigDecimal(pos);
 					break;
 				case ValueMetaInterface.TYPE_INTEGER:
-					v=new Long(cstmt.getLong(pos));
+					v=Long.valueOf(cstmt.getLong(pos));
 					break;
 				case ValueMetaInterface.TYPE_STRING:
 					v=cstmt.getString(pos);
@@ -4258,7 +4258,7 @@ public class Database implements VariableSpace
 					Object v=null;
 					switch (argtype[i]) {
 					case ValueMetaInterface.TYPE_BOOLEAN:
-						v=new Boolean(cstmt.getBoolean(pos + i));
+						v=Boolean.valueOf(cstmt.getBoolean(pos + i));
 						break;
 					case ValueMetaInterface.TYPE_NUMBER:
 						v=new Double(cstmt.getDouble(pos + i));
@@ -4267,7 +4267,7 @@ public class Database implements VariableSpace
 						v=cstmt.getBigDecimal(pos + i);
 						break;
 					case ValueMetaInterface.TYPE_INTEGER:
-						v=new Long(cstmt.getLong(pos + i));
+						v=Long.valueOf(cstmt.getLong(pos + i));
 						break;
 					case ValueMetaInterface.TYPE_STRING:
 						v=cstmt.getString(pos + i);

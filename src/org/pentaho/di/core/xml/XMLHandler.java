@@ -940,7 +940,7 @@ public class XMLHandler
             if (elements.indexOf(nodeName)<0) elements.add(nodeName); 
         }
         
-        if (elements.size()==0) return null;
+        if (elements.isEmpty()) return null;
         
         return elements.toArray(new String[elements.size()]);
     }
