@@ -1184,7 +1184,7 @@ Alert(getVariable(strVarName, ""));</sample>
    </jsFunction>
    
 	<jsFunction name="LuhnCheck">
-      <help>Check if the given Value is a valid Card Number.</help>
+      <help>Check if the given Value is a valid Card Number using the Luhn algorithm.</help>
       <sample>// Returns true, if the given value is a valid card number 
 // 
 // Usage:
@@ -1193,8 +1193,11 @@ Alert(getVariable(strVarName, ""));</sample>
 //
 // 2007-09-11
 //
-var str1 = "1234556754";      
-Alert(LuhnCheck(str1));
+var str1 = "4444333322221111";      
+Alert(str1 + ": " + LuhnCheck(str1));
+
+var str2 = "4444333322221110";      
+Alert(str2 + ": " + LuhnCheck(str2));
       </sample>
       <type>4</type>
       <Arguments>
