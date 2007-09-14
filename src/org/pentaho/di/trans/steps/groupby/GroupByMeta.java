@@ -25,6 +25,7 @@ import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -335,33 +336,35 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
 
 	public void getFields(RowMetaInterface r, String origin, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space)
 	{
-		// Loop over the aggregate names.
-		// Keep the fields to group over and the aggregates
-		RowMetaInterface rowOrig = r.clone();
-		
+		// re-assemble a new row of metadata
+		//
+    	RowMetaInterface fields = new RowMeta();
+
         if (!passAllRows)
         {
-    		// Remove those that are not in group[] (or subject in case we want all rows...)
-    		for (int i=r.size()-1;i>=0;i--)
-    		{
-                String fieldName = rowOrig.getFieldNames()[i]; //###JB
-                
-    			boolean found=false;
-    			for (int j=0;j<groupField.length && !found;j++)
-    			{
-    				if (fieldName.equalsIgnoreCase(groupField[j])) found=true;
-    			}
-    			if (!found) r.removeValueMeta(i);
-    		}
+        	// Add the grouping fields in the correct order...
+        	//
+        	for (int i=0;i<groupField.length;i++) {
+        		ValueMetaInterface valueMeta = r.searchValueMeta(groupField[i]);
+        		if (valueMeta!=null) {
+        			fields.addValueMeta(valueMeta);
+        		}
+        	}
+        }
+        else
+        {
+        	// Add all the original fields from the incoming row meta
+        	//
+        	fields.addRowMeta(r);
         }
 		
 		// Re-add aggregates
+        //
 		for (int i=0;i<subjectField.length;i++)
 		{
-			ValueMetaInterface subj = rowOrig.searchValueMeta(subjectField[i]);
+			ValueMetaInterface subj = r.searchValueMeta(subjectField[i]);
 			if (subj!=null)
 			{
-				// System.out.println("found subject #"+i+" --> "+subj);
 				String value_name = aggregateField[i];
 				int value_type = ValueMetaInterface.TYPE_NONE;
                 int length = -1;
@@ -398,7 +401,7 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
 					ValueMetaInterface v = new ValueMeta(value_name, value_type);
 					v.setOrigin(origin);
                     v.setLength(length, precision);
-                    r.addValueMeta(v);
+                    fields.addValueMeta(v);
 				}
 			}
 		}
@@ -411,11 +414,14 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
             	ValueMetaInterface lineNr = new ValueMeta(lineNrInGroupField, ValueMetaInterface.TYPE_INTEGER);
             	lineNr.setLength(ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0);
                 lineNr.setOrigin(origin);
-                r.addValueMeta(lineNr);
+                fields.addValueMeta(lineNr);
             }
         }
-
-		return;
+        
+        // Now that we have all the fields we want, we should clear the original row and replace the values...
+        //
+        r.clear();
+        r.addRowMeta(fields);
 	}
 
 	public String getXML()
