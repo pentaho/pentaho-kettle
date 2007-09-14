@@ -43,7 +43,8 @@ public enum JobEntryType
 	XACTION(Messages.getString("JobEntry.XAction.TypeDesc")),
 	WRITE_TO_LOG(Messages.getString("JobEntry.WriteToLog.TypeDesc")),
 	COPY_FILES(Messages.getString("JobEntry.CopyFiles.TypeDesc")),
-	DTD_VALIDATOR(Messages.getString("JobEntry.DTDValidator.TypeDesc"));
+	DTD_VALIDATOR(Messages.getString("JobEntry.DTDValidator.TypeDesc")),
+	FTP_PUT(Messages.getString("JobEntry.FTPPUT.TypeDesc"));
 	
 	private String description;
 	
