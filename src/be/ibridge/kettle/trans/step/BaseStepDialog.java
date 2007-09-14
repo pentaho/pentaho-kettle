@@ -576,9 +576,12 @@ public class BaseStepDialog extends Dialog
                 {
                     tableItem.setText(nameColumn[c], Const.NVL(v.getName(), ""));
                 }
-                for (int c=0;c<dataTypeColumn.length;c++)
+                if ( dataTypeColumn != null )
                 {
-                    tableItem.setText(dataTypeColumn[c], v.getTypeDesc());
+                    for (int c=0;c<dataTypeColumn.length;c++)
+                    {
+                        tableItem.setText(dataTypeColumn[c], v.getTypeDesc());
+                    }
                 }
                 if (lengthColumn>0)
                 {

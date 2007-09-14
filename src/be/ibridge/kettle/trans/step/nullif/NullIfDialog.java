@@ -42,6 +42,9 @@ import org.eclipse.swt.widgets.Text;
 
 import be.ibridge.kettle.core.ColumnInfo;
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.Row;
+import be.ibridge.kettle.core.dialog.ErrorDialog;
+import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.widget.TableView;
 import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
@@ -148,16 +151,20 @@ public class NullIfDialog extends BaseStepDialog implements StepDialogInterface
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
 		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
+		wGet=new Button(shell, SWT.PUSH);
+		wGet.setText(Messages.getString("System.Button.GetFields")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
 
-		setButtonPositions(new Button[] { wOK, wCancel }, margin, wFields);
+		setButtonPositions(new Button[] { wOK, wCancel, wGet }, margin, wFields);
 
 		// Add listeners
 		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel(); } };
+		lsGet      = new Listener() { public void handleEvent(Event e) { get();     } };
 		lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
 		
 		wCancel.addListener(SWT.Selection, lsCancel);
+		wGet.addListener   (SWT.Selection, lsGet   );
 		wOK.addListener    (SWT.Selection, lsOK    );
 		
 		lsDef=new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { ok(); } };
@@ -228,4 +235,20 @@ public class NullIfDialog extends BaseStepDialog implements StepDialogInterface
 		}
 		dispose();
 	}
+	
+	private void get()
+	{
+		try
+		{
+			Row r = transMeta.getPrevStepFields(stepname);
+			if (r!=null)
+			{
+                BaseStepDialog.getFieldsFromPrevious(r, wFields, 1, new int[] { 1 }, null, -1, -1, null);
+			}
+		}
+		catch(KettleException ke)
+		{
+			new ErrorDialog(shell, Messages.getString("System.Dialog.GetFieldsFailed.Title"), Messages.getString("System.Dialog.GetFieldsFailed.Message"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+		}
+	}	
 }
