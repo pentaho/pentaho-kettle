@@ -5795,12 +5795,12 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
   			definition = new ResourceDefinition(exportFileName, transMetaContent);
   			definitions.put(fileObject.getName().getPath(), definition);
   		}
+      return exportFileName;
     } catch (FileSystemException e) {
       throw new KettleException(Messages.getString("TransMeta.Exception.ErrorOpeningOrValidatingTheXMLFile", getFilename()), e); //$NON-NLS-1$
     } catch (IOException e) {
       throw new KettleException(Messages.getString("TransMeta.Exception.ErrorOpeningOrValidatingTheXMLFile", getFilename()), e); //$NON-NLS-1$
     }
-		return filename;
 	}
 
 	/**
