@@ -14,11 +14,13 @@
  **********************************************************************/
  
 package be.ibridge.kettle.job.entry.ftpput;
+
 import java.io.File;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 
 import org.eclipse.swt.widgets.Shell;
 import org.w3c.dom.Node;
@@ -557,70 +559,6 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
 				}
 			}
 			
-			/*
-			
-			// Create sftp client to host ...
-			//sftpclient = new FTPPUT(InetAddress.getByName(realServerName), Const.toInt(realServerPort, 22), realUsername);
-			log.logDetailed(toString(), "Opened SFTP connection to server ["+realServerName+"] on port ["+realServerPort+"] with username ["+realUsername+"]");
-	
-			// login to ftp host ...
-			//sftpclient.login(realPassword);
-			// Passwords should not appear in log files. 
-			//log.logDetailed(toString(), "logged in using password "+realPassword); // Logging this seems a bad idea! Oh well.
-
-			// move to spool dir ...
-			if (!Const.isEmpty(realSftpDirString))
-			{
-				sftpclient.chdir(realSftpDirString);
-				log.logDetailed(toString(), "Changed to directory ["+realSftpDirString+"]");
-			}
-			
-			// Get all the files in the current directory...
-			//String[] filelist = sftpclient.dir();
-			log.logDetailed(toString(), "Found "+filelist.length+" files in the remote directory");
-
-			Pattern pattern = null;
-			if (!Const.isEmpty(realWildcard)) 
-			{
-				pattern = Pattern.compile(realWildcard);
-				
-			}
-			
-			// Get the files in the list...
-			for (int i=0;i<filelist.length && !parentJob.isStopped();i++)
-			{
-				boolean getIt = true;
-				
-				// First see if the file matches the regular expression!
-				if (pattern!=null)
-				{
-					Matcher matcher = pattern.matcher(filelist[i]);
-					getIt = matcher.matches();
-				}
-				
-				if (getIt)
-				{
-					log.logDebug(toString(), "Getting file ["+filelist[i]+"] to directory ["+realTargetDirectory+"]");
-
-					String targetFilename = realTargetDirectory+Const.FILE_SEPARATOR+filelist[i]; 
-					//sftpclient.get(targetFilename, filelist[i]);
-					filesRetrieved++; 
-					
-					// Add to the result files...
-					ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(targetFilename), parentJob.getJobname(), toString());
-                    result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
-
-					log.logDetailed(toString(), "Transferred file ["+filelist[i]+"]");
-					
-					// Delete the file if this is needed!
-					if (remove) 
-					{
-						//sftpclient.delete(filelist[i]);
-						log.logDetailed(toString(), "Deleted file ["+filelist[i]+"]");
-					}
-				}
-			}*/
-
 			result.setResult( true );
 			if (log.isDetailed()) log.logDebug(toString(), "We have put " + filesput);
 		}
@@ -655,4 +593,8 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
     public JobEntryDialogInterface getDialog(Shell shell,JobEntryInterface jei,JobMeta jobMeta,String jobName,Repository rep) {
         return new JobEntryFTPPUTDialog(shell,this,jobMeta);
     }
+    
+   
+    
+    
 }
