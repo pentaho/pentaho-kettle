@@ -355,33 +355,35 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
 
 	public Row getFields(Row r, String name, Row info)
 	{
-		// Loop over the aggregate names.
-		// Keep the fields to group over and the aggregates
-		Row row = new Row(r);
-		
+		// re-assemble a new row 
+		//
+    	Row fields = new Row();
+
         if (!passAllRows)
         {
-    		// Remove those that are not in group[] (or subject in case we want all rows...)
-    		for (int i=r.size()-1;i>=0;i--)
-    		{
-                String fieldName = row.getValue(i).getName();
-                
-    			boolean found=false;
-    			for (int j=0;j<groupField.length && !found;j++)
-    			{
-    				if (fieldName.equalsIgnoreCase(groupField[j])) found=true;
-    			}
-    			if (!found) r.removeValue(i);
-    		}
+        	// Add the grouping fields in the correct order...
+        	//
+        	for (int i=0;i<groupField.length;i++) {
+        		Value valueMeta = r.searchValue(groupField[i]);
+        		if (valueMeta!=null) {
+        			fields.addValue(valueMeta);
+        		}
+        	}
+        }
+        else
+        {
+        	// Add all the original fields from the incoming row meta
+        	//
+        	fields.addRow(r);
         }
 		
 		// Re-add aggregates
+        //
 		for (int i=0;i<subjectField.length;i++)
 		{
-			Value subj = row.searchValue(subjectField[i]);
+			Value subj = r.searchValue(subjectField[i]);
 			if (subj!=null)
 			{
-				// System.out.println("found subject #"+i+" --> "+subj);
 				String value_name = aggregateField[i];
 				int value_type = Value.VALUE_TYPE_NONE;
                 int length = -1;
@@ -391,7 +393,7 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
 				{
 					case TYPE_GROUP_SUM             : value_type = subj.getType(); break;
 					case TYPE_GROUP_AVERAGE         :
-					case TYPE_GROUP_COUNT_ALL       : value_type = Value.VALUE_TYPE_NUMBER; break;
+					case TYPE_GROUP_COUNT_ALL       : value_type = Value.VALUE_TYPE_INTEGER; break;
                     case TYPE_GROUP_FIRST           : 
                     case TYPE_GROUP_LAST            : 
                     case TYPE_GROUP_FIRST_INCL_NULL : 
@@ -402,10 +404,15 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
 					default: break;
 				}
                 
-                if (aggregateType[i]!=TYPE_GROUP_COUNT_ALL)
+                if (aggregateType[i]==TYPE_GROUP_COUNT_ALL)
                 {
-                    length = subj.getLength();
-                    precision = subj.getPrecision();
+                    length    = 10;
+                    precision = 0;
+                }
+                else
+                {
+                    length    = subj.getLength();
+                    precision = subj.getPrecision();                	
                 }
                 
 				if (value_type != Value.VALUE_TYPE_NONE)
@@ -413,7 +420,7 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
 					Value v = new Value(value_name, value_type);
 					v.setOrigin(name);
                     v.setLength(length, precision);
-					r.addValue(v);
+                    fields.addValue(v);
 				}
 			}
 		}
@@ -423,14 +430,19 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
             // If we pass all rows, we can add a line nr in the group...
             if (addingLineNrInGroup && !Const.isEmpty(lineNrInGroupField))
             {
-                Value lineNr = new Value(lineNrInGroupField, Value.VALUE_TYPE_INTEGER);
-                lineNr.setLength(9);
+            	Value lineNr = new Value(lineNrInGroupField, Value.VALUE_TYPE_INTEGER);
+            	lineNr.setLength(10, 0);
                 lineNr.setOrigin(name);
-                r.addValue(lineNr);
+                fields.addValue(lineNr);
             }
         }
-
-		return row;
+        
+        // Now that we have all the fields we want, we should clear the original row and replace the values...
+        //
+        r.clear();
+        r.addRow(fields);
+        
+        return r;
 	}
 
 	public String getXML()
