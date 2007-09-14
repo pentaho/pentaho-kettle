@@ -57,9 +57,7 @@ public class NullIf extends BaseStep implements StepInterface
 			setOutputDone();
 			return false;
 		}
-		
-		if (log.isRowLevel()) logRowlevel(Messages.getString("NullIf.Log.ConvertFieldValuesToNullForRow")+data.outputRowMeta.getString(r)); //$NON-NLS-1$
-		
+				
 		if (first)
 		{
 		    first=false;
@@ -82,6 +80,8 @@ public class NullIf extends BaseStep implements StepInterface
 		        data.nullValue[i] = data.nullValueMeta[i].convertData(new ValueMeta(null, ValueMetaInterface.TYPE_STRING), meta.getFieldValue()[i]);
 		    }
 		}
+
+		if (log.isRowLevel()) logRowlevel(Messages.getString("NullIf.Log.ConvertFieldValuesToNullForRow")+data.outputRowMeta.getString(r)); //$NON-NLS-1$
 		
 		for (int i=0;i<meta.getFieldValue().length;i++)
 		{
