@@ -398,4 +398,20 @@
 		</tooltip>
 		<image-uri>ui/images/DTD.png</image-uri>
 	</job>
+	
+	
+		<job id="FTP_PUT">
+		<type>
+			ognl:@org.pentaho.di.job.JobEntryType@FTP_PUT
+		</type>
+		<class-name>
+			org.pentaho.di.job.entries.ftpput.JobEntryFTPPUT
+		</class-name>
+		<tooltip>
+			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.FTPPUT.Tooltip")
+		</tooltip>
+		<image-uri>ui/images/PFP.png</image-uri>
+	</job>
+	
+	
 </jobs>
