@@ -31,6 +31,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
@@ -335,7 +336,7 @@ public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface
 		rowLimit="10";
 	}
 	
-	public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException
+	public void getFields(RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException
 	{
 		List<CheckResultInterface> remarks = new ArrayList<CheckResultInterface>();
 		RowMetaAndData rowMetaAndData = RowGenerator.buildRow(this, remarks);
@@ -346,6 +347,11 @@ public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface
 			}
 			throw new KettleStepException(stringRemarks.toString());
 		}
+		
+		for (ValueMetaInterface valueMeta : rowMetaAndData.getRowMeta().getValueMetaList()) {
+			valueMeta.setOrigin(origin);
+		}
+		
 		row.mergeRowMeta(rowMetaAndData.getRowMeta());
 	}
 	
