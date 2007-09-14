@@ -232,7 +232,7 @@ public class WebService extends BaseStep implements StepInterface
 
     private void requestSOAP() throws KettleStepException
     {
-        // désactivation des logs
+        // dï¿½sactivation des logs
         Level saveLogLevel = Logger.getRootLogger().getLevel();
         Logger.getRootLogger().setLevel(Level.ERROR);
 
@@ -361,14 +361,108 @@ public class WebService extends BaseStep implements StepInterface
             Row r = null;
             boolean processing = false;
             boolean oneValueRowProcessing = false;
-            for (int event = vReader.next(); event != XMLStreamConstants.END_DOCUMENT; event = vReader.next())
+            for (int event = vReader.next(); vReader.hasNext(); event = vReader.next())
             {
                 switch (event)
                 {
                     case XMLStreamConstants.START_ELEMENT:
+// Start new code
+                    	//START_ELEMENT= 1
+                        System.out.print("START_ELEMENT / ");
+                        System.out.print(vReader.getAttributeCount());
+                        System.out.print(" / ");
+                        System.out.println(vReader.getNamespaceCount());
                         // If we start the xml element named like the return type,
                         // we start a new row
-                        if ((meta.getOutFieldArgumentName() == null && meta.getOutFieldContainerName().equals(vReader.getLocalName())))
+                        System.out.print("vReader.getLocalName = ");
+                        System.out.println(vReader.getLocalName());
+                        if (meta.getOutFieldArgumentName() == null)
+                        {
+                        	//getOutFieldArgumentName() == null
+                        	if (oneValueRowProcessing)
+                            {
+                                WebServiceField field = meta.getFieldOutFromWsName(vReader.getLocalName());
+                                if (field != null)
+                                {
+                                    r = new Row();
+                                    Value value = new Value(field.getName(), field.getType());
+                                    setValue(vReader.getElementText(), value, field);
+                                    r.addValue(value);
+                                    putRow(r);
+                                    oneValueRowProcessing = false;
+                                }
+                                else
+                                {
+                                	if (meta.getOutFieldContainerName().equals(vReader.getLocalName()))
+                                	{
+                                		// meta.getOutFieldContainerName() = vReader.getLocalName()
+                                        System.out.print("OutFieldContainerName = ");
+                                        System.out.println(meta.getOutFieldContainerName());
+                                        oneValueRowProcessing = true;
+                                	}
+                                }
+                            }
+                        }
+                        else
+                        {
+                        	//getOutFieldArgumentName() != null
+                            System.out.print("OutFieldArgumentName = ");
+                            System.out.println(meta.getOutFieldArgumentName());
+                            if (meta.getOutFieldArgumentName().equals(vReader.getLocalName()))
+                            {
+                                System.out.print("vReader.getLocalName = ");
+                                System.out.print("OutFieldArgumentName = ");
+                                System.out.println(vReader.getLocalName());
+                                if (processing)
+                                {
+                                	WebServiceField field = meta.getFieldOutFromWsName(vReader.getLocalName());
+                                    if (field != null)
+                                    {
+                                        Value value = r.searchValue(field.getName());
+                                        if (value != null)
+                                        {
+                                            setValue(vReader.getElementText(), value, field);
+                                        }
+                                    }
+                                    processing = false;
+                                }
+                                else
+                                {
+                                	r = new Row();
+                                    WebServiceField field = meta.getFieldOutFromWsName(vReader.getLocalName());
+                                    if (meta.getFieldsOut().size() == 1 && field != null)
+                                    {
+                                        Value value = new Value(field.getName(), field.getType());
+                                        setValue(vReader.getElementText(), value, field);
+                                        r.addValue(value);
+                                        putRow(r);
+                                    }
+                                    else
+                                    {
+                                        for (Iterator itrField = meta.getFieldsOut().iterator(); itrField.hasNext();)
+                                        {
+                                            WebServiceField curField = (WebServiceField) itrField.next();
+                                            if (curField.getName() != null && !"".equals(curField.getName()))
+                                            {
+                                                r.addValue(new Value(curField.getName(), curField.getType()));
+                                            }
+                                        }
+                                        processing = true;
+                                    }
+                                }
+                            	
+                            }
+                            else
+                            {
+                                System.out.print("vReader.getLocalName = ");
+                                System.out.println(vReader.getLocalName());
+                                System.out.print("OutFieldArgumentName = ");
+                                System.out.println(meta.getOutFieldArgumentName());
+                            }
+                        }
+
+//End new code                        
+/*                        if ((meta.getOutFieldArgumentName() == null && meta.getOutFieldContainerName().equals(vReader.getLocalName())))
                         {
                             oneValueRowProcessing = true;
                         }
@@ -419,9 +513,11 @@ public class WebService extends BaseStep implements StepInterface
                                 r.addValue(value);
                                 putRow(r);
                             }
-                        }
+                        } */
                         break;
                     case XMLStreamConstants.END_ELEMENT:
+                    	//END_ELEMENT= 2
+                        System.out.println("END_ELEMENT");
                         // If we end the xml element named as the return type, we
                         // finish a row
                         if ((meta.getOutFieldArgumentName() == null && meta.getOperationName().equals(vReader.getLocalName())))
@@ -433,6 +529,59 @@ public class WebService extends BaseStep implements StepInterface
                             putRow(r);
                             processing = false;
                         }
+                        break;
+                    case XMLStreamConstants.PROCESSING_INSTRUCTION:
+                    	//PROCESSING_INSTRUCTION= 3
+                        System.out.println("PROCESSING_INSTRUCTION");
+                        break;
+                    case XMLStreamConstants.CHARACTERS:
+                    	//CHARACTERS= 4
+                        System.out.println("CHARACTERS");
+                        break;
+                    case XMLStreamConstants.COMMENT:
+                    	//COMMENT= 5
+                        System.out.println("COMMENT");
+                        break;
+                    case XMLStreamConstants.SPACE:
+                    	//PROCESSING_INSTRUCTION= 6
+                        System.out.println("PROCESSING_INSTRUCTION");
+                        break;
+                    case XMLStreamConstants.START_DOCUMENT:
+                    	//START_DOCUMENT= 7
+                        System.out.println("START_DOCUMENT");
+                        System.out.println(vReader.getText());
+                        break;
+                    case XMLStreamConstants.END_DOCUMENT:
+                    	//END_DOCUMENT= 8
+                        System.out.println("END_DOCUMENT");
+                        break;
+                    case XMLStreamConstants.ENTITY_REFERENCE:
+                    	//ENTITY_REFERENCE= 9
+                        System.out.println("ENTITY_REFERENCE");
+                        break;
+                    case XMLStreamConstants.ATTRIBUTE:
+                    	//ATTRIBUTE= 10
+                        System.out.println("ATTRIBUTE");
+                        break;
+                    case XMLStreamConstants.DTD:
+                    	//DTD= 11
+                        System.out.println("DTD");
+                        break;
+                    case XMLStreamConstants.CDATA:
+                    	//CDATA= 12
+                        System.out.println("CDATA");
+                        break;
+                    case XMLStreamConstants.NAMESPACE:
+                    	//NAMESPACE= 13
+                        System.out.println("NAMESPACE");
+                        break;
+                    case XMLStreamConstants.NOTATION_DECLARATION:
+                    	//NOTATION_DECLARATION= 14
+                        System.out.println("NOTATION_DECLARATION");
+                        break;
+                    case XMLStreamConstants.ENTITY_DECLARATION:
+                    	//ENTITY_DECLARATION= 15
+                        System.out.println("ENTITY_DECLARATION");
                         break;
                     default:
                         break;
