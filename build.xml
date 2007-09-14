@@ -49,8 +49,7 @@
 	           deprecation="true"
 	    	   debug="true"
 	    	   excludes="be/ibridge/kettle/schema/**/* be/ibridge/kettle/menu/**/*"
-	    	   memorymaximumsize="256M"
-	    	   fork="true"
+
 	    	>
 	    	<src path="${src}"/>
 	    	
