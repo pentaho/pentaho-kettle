@@ -32,6 +32,7 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
@@ -51,6 +52,8 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.job.entries.ftpput.JobEntryFTPPUT;
 import org.pentaho.di.job.entries.ftpput.Messages;
+
+import be.ibridge.kettle.core.util.StringUtil;
 
 
 /**
@@ -165,6 +168,9 @@ public class JobEntryFTPPUTDialog extends JobEntryDialog implements JobEntryDial
     	                                  "UTF-16BE",
     	                                  "UTF-16LE",
     	                                  "UTF-16" }; 
+    
+    private Button wbScpDirectory;
+    private FormData fdbScpDirectory;
 
 
     
@@ -305,6 +311,18 @@ public class JobEntryFTPPUTDialog extends JobEntryDialog implements JobEntryDial
         fdlScpDirectory.top = new FormAttachment(wPassword, margin);
         fdlScpDirectory.right = new FormAttachment(middle, -margin);
         wlScpDirectory.setLayoutData(fdlScpDirectory);
+        
+        
+        // Browse folders button ...
+		wbScpDirectory=new Button(shell, SWT.PUSH| SWT.CENTER);
+		props.setLook(wbScpDirectory);
+		wbScpDirectory.setText(Messages.getString("JobFTPPUT.BrowseFolders.Label"));
+		fdbScpDirectory=new FormData();
+		fdbScpDirectory.right= new FormAttachment(100, 0);
+		fdbScpDirectory.top  = new FormAttachment(wPassword, margin);
+		wbScpDirectory.setLayoutData(fdbScpDirectory);
+        
+        
         wScpDirectory = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER, Messages
             .getString("JobFTPPUT.RemoteDir.Tooltip"));
         props.setLook(wScpDirectory);
@@ -312,7 +330,7 @@ public class JobEntryFTPPUTDialog extends JobEntryDialog implements JobEntryDial
         fdScpDirectory = new FormData();
         fdScpDirectory.left = new FormAttachment(middle, 0);
         fdScpDirectory.top = new FormAttachment(wPassword, margin);
-        fdScpDirectory.right = new FormAttachment(100, 0);
+        fdScpDirectory.right = new FormAttachment(wbScpDirectory, -margin);
         wScpDirectory.setLayoutData(fdScpDirectory);
 
         // TargetDirectory line
@@ -482,6 +500,32 @@ public class JobEntryFTPPUTDialog extends JobEntryDialog implements JobEntryDial
                 ok();
             }
         };
+        
+        wbScpDirectory.addSelectionListener
+		(
+			new SelectionAdapter()
+			{
+				public void widgetSelected(SelectionEvent e)
+				{
+					DirectoryDialog ddialog = new DirectoryDialog(shell, SWT.OPEN);
+					if (wScpDirectory.getText()!=null)
+					{
+						ddialog.setFilterPath(StringUtil.environmentSubstitute(wScpDirectory.getText()) );
+					}
+					
+					 // Calling open() will open and run the dialog.
+			        // It will return the selected directory, or
+			        // null if user cancels
+			        String dir = ddialog.open();
+			        if (dir != null) {
+			          // Set the text box to the new selection
+			        	wScpDirectory.setText(dir);
+			        }
+					
+				}
+			}
+		);
+		
 
         wCancel.addListener(SWT.Selection, lsCancel);
         wOK.addListener(SWT.Selection, lsOK);
