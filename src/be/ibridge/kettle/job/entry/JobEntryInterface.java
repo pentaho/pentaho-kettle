@@ -56,6 +56,7 @@ import be.ibridge.kettle.job.entry.copyfiles.JobEntryCopyFiles;
 import be.ibridge.kettle.job.entry.xsdvalidator.JobEntryXSDValidator;
 import be.ibridge.kettle.job.entry.dtdvalidator.JobEntryDTDValidator;
 import be.ibridge.kettle.job.entry.ftpput.JobEntryFTPPUT;
+import be.ibridge.kettle.job.entry.deletefiles.JobEntryDeleteFiles;
 import be.ibridge.kettle.repository.Repository;
 
 
@@ -101,6 +102,7 @@ public interface JobEntryInterface
 	public static final int TYPE_JOBENTRY_XSD_VALIDATOR= 29;
 	public static final int TYPE_JOBENTRY_DTD_VALIDATOR= 30;
 	public static final int TYPE_JOBENTRY_FTPPUT= 31;
+	public static final int TYPE_JOBENTRY_DELETE_FILES= 32;
 
 	public final static String typeCode[] =
 		{
@@ -136,6 +138,7 @@ public interface JobEntryInterface
 			"XSD_VALIDATOR",
 			"DTD_VALIDATOR",
 			"FTP_PUT",
+			"DELETE_FILES",
 		};
 
 	public final static String typeDesc[] =
@@ -172,6 +175,7 @@ public interface JobEntryInterface
 			Messages.getString("JobEntry.XSDValidator.TypeDesc"),
 			Messages.getString("JobEntry.DTDValidator.TypeDesc"),
 			Messages.getString("JobEntry.FTPPUT.TypeDesc"),
+			Messages.getString("JobEntry.DeleteFiles.TypeDesc"),
 		};
 
 	public final static String icon_filename[] = 
@@ -208,6 +212,7 @@ public interface JobEntryInterface
 			"XSD.png",
 			"DTD.png",
 			"PFP.png",
+			"DFS.png",
 		};
 	
 	public final static String type_tooltip_desc[] = 
@@ -244,6 +249,7 @@ public interface JobEntryInterface
 			Messages.getString("JobEntry.XSDValidator.Tooltip"),
 			Messages.getString("JobEntry.DTDValidator.Tooltip"),
 			Messages.getString("JobEntry.FTPPUT.Tooltip"),
+			Messages.getString("JobEntry.DeleteFiles.Tooltip"),
  		};
 	
 	public final static Class type_classname[] = 
@@ -280,6 +286,7 @@ public interface JobEntryInterface
 			JobEntryXSDValidator.class,
 			JobEntryDTDValidator.class,
 			JobEntryFTPPUT.class,
+			JobEntryDeleteFiles.class,
 		};
 
 	public Result execute(Result prev_result, int nr, Repository rep, Job parentJob) throws KettleException;
