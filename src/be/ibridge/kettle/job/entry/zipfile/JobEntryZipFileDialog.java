@@ -22,6 +22,7 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Dialog;
+import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
@@ -109,6 +110,9 @@ public class JobEntryZipFileDialog extends Dialog implements JobEntryDialogInter
 	private Label        wlAddFileToResult;
 	private Button       wAddFileToResult;
 	private FormData     fdlAddFileToResult, fdAddFileToResult;
+	
+    private Button wbSourceDirectory;
+    private FormData fdbSourceDirectory;
 
 	private boolean changed;
 
@@ -177,6 +181,17 @@ public class JobEntryZipFileDialog extends Dialog implements JobEntryDialogInter
 		fdlSourceDirectory.top = new FormAttachment(wName, margin);
 		fdlSourceDirectory.right = new FormAttachment(middle, -margin);
 		wlSourceDirectory.setLayoutData(fdlSourceDirectory);
+		
+        
+        // Browse folders button ...
+		wbSourceDirectory=new Button(shell, SWT.PUSH| SWT.CENTER);
+		props.setLook(wbSourceDirectory);
+		wbSourceDirectory.setText(Messages.getString("JobZipFiles.BrowseFolders.Label"));
+		fdbSourceDirectory=new FormData();
+		fdbSourceDirectory.right= new FormAttachment(100, 0);
+		fdbSourceDirectory.top  = new FormAttachment(wName, margin);
+		wbSourceDirectory.setLayoutData(fdbSourceDirectory);
+		
 		wSourceDirectory = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER, Messages
 			.getString("JobZipFiles.SourceDir.Tooltip"));
 		props.setLook(wSourceDirectory);
@@ -184,7 +199,7 @@ public class JobEntryZipFileDialog extends Dialog implements JobEntryDialogInter
 		fdSourceDirectory = new FormData();
 		fdSourceDirectory.left = new FormAttachment(middle, 0);
 		fdSourceDirectory.top = new FormAttachment(wName, margin);
-		fdSourceDirectory.right = new FormAttachment(100, 0);
+		fdSourceDirectory.right = new FormAttachment(wbSourceDirectory, -margin);
 		wSourceDirectory.setLayoutData(fdSourceDirectory);
 		
 		// Wildcard line
@@ -465,6 +480,33 @@ public class JobEntryZipFileDialog extends Dialog implements JobEntryDialogInter
 
 		lsDef=new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { ok(); } };
 
+		
+		  wbSourceDirectory.addSelectionListener
+			(
+				new SelectionAdapter()
+				{
+					public void widgetSelected(SelectionEvent e)
+					{
+						DirectoryDialog ddialog = new DirectoryDialog(shell, SWT.OPEN);
+						if (wSourceDirectory.getText()!=null)
+						{
+							ddialog.setFilterPath(StringUtil.environmentSubstitute(wSourceDirectory.getText()) );
+						}
+						
+						 // Calling open() will open and run the dialog.
+				        // It will return the selected directory, or
+				        // null if user cancels
+				        String dir = ddialog.open();
+				        if (dir != null) {
+				          // Set the text box to the new selection
+				        	wSourceDirectory.setText(dir);
+				        }
+						
+					}
+				}
+			);
+			
+		
 		wName.addSelectionListener( lsDef );
 		wZipFilename.addSelectionListener( lsDef );
 
