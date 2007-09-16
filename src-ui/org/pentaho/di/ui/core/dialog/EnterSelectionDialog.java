@@ -34,6 +34,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
+import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.ui.core.dialog.Messages;
@@ -128,6 +129,7 @@ public class EnterSelectionDialog extends Dialog
 
 		shell = new Shell(parent, SWT.DIALOG_TRIM | (modal?SWT.APPLICATION_MODAL:SWT.NONE) | SWT.RESIZE | SWT.MIN | SWT.MAX );
  		props.setLook(shell);
+ 		
 
 		FormLayout formLayout = new FormLayout ();
 		formLayout.marginWidth  = Const.FORM_MARGIN;
@@ -135,6 +137,7 @@ public class EnterSelectionDialog extends Dialog
 
 		shell.setLayout(formLayout);
 		shell.setText(shellText);
+		shell.setImage(GUIResource.getInstance().getImageSpoon());
 		
 		int margin = Const.MARGIN;
 
@@ -165,7 +168,7 @@ public class EnterSelectionDialog extends Dialog
         {
             props.setLook(wSelection);
         }
-
+		
 
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
@@ -219,8 +222,9 @@ public class EnterSelectionDialog extends Dialog
 		getData();
 		
 		BaseStepDialog.setSize(shell);
-
+		
 		shell.open();
+		
 		while (!shell.isDisposed())
 		{
 				if (!display.readAndDispatch()) display.sleep();
