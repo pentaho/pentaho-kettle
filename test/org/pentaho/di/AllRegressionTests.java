@@ -4,6 +4,13 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.pentaho.di.blackbox.BlackBoxTests;
+import org.pentaho.di.compatibility.ValueBigNumberTest;
+import org.pentaho.di.compatibility.ValueBooleanTest;
+import org.pentaho.di.compatibility.ValueDateTest;
+import org.pentaho.di.compatibility.ValueIntegerTest;
+import org.pentaho.di.compatibility.ValueNumberTest;
+import org.pentaho.di.compatibility.ValueStringTest;
+import org.pentaho.di.compatibility.ValueTest;
 import org.pentaho.di.core.CounterTest;
 import org.pentaho.di.core.CountersTest;
 import org.pentaho.di.core.RowSetTest;
@@ -48,7 +55,15 @@ public class AllRegressionTests
         // So adding testcases in the right order is important.
         //
         
+        suite.addTestSuite(ValueStringTest.class);
+        suite.addTestSuite(ValueIntegerTest.class);
+        suite.addTestSuite(ValueNumberTest.class);
+        suite.addTestSuite(ValueBigNumberTest.class);
+        suite.addTestSuite(ValueDateTest.class);
+        suite.addTestSuite(ValueBooleanTest.class);
+        suite.addTestSuite(ValueTest.class);
         suite.addTestSuite(ConstTest.class);
+        
         suite.addTestSuite(ValueMetaTest.class);
         suite.addTestSuite(RowDataUtilTest.class);
         suite.addTestSuite(ValueDataUtilTest.class);
