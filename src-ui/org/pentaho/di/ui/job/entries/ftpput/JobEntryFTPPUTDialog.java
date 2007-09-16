@@ -57,11 +57,10 @@ import be.ibridge.kettle.core.util.StringUtil;
 
 
 /**
- * This dialog allows you to edit the SQL job entry settings. (select the connection and the sql
- * script to be executed)
+ * This dialog allows you to edit the FTP Put job entry settings
  * 
- * @author Matt
- * @since 19-06-2003
+ * @author Samatar
+ * @since 15-09-2007
  */
 public class JobEntryFTPPUTDialog extends JobEntryDialog implements JobEntryDialogInterface
 {
