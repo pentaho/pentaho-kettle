@@ -38,6 +38,7 @@ import be.ibridge.kettle.trans.step.StepDialogInterface;
 import be.ibridge.kettle.trans.step.StepInterface;
 import be.ibridge.kettle.trans.step.StepMeta;
 import be.ibridge.kettle.trans.step.StepMetaInterface;
+import be.ibridge.kettle.trans.step.systemdata.Messages;
 
 
 /*
@@ -59,8 +60,9 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface
 	private boolean unicode;
 	private boolean unix;
 
+	public final static int VALIDATE_EMAIL     =  0;
+	public final static int VALIDATE_DATE      =  1;
 	
-
 	
 	public RegexEvalMeta()
 	{

@@ -47,6 +47,7 @@ import org.eclipse.swt.widgets.Text;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.Row;
+import be.ibridge.kettle.core.dialog.EnterSelectionDialog;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.value.Value;
@@ -94,6 +95,9 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
 	private CTabItem     wGeneralTab,wContentTab;
 	private Composite    wGeneralComp,wContentComp;
 	private FormData     fdGeneralComp,fdContentComp;
+	
+	private Button wbExpReg;
+	private FormData fdbExpReg;
 	
 	
 	public RegexEvalDialog(Shell parent, Object in, TransMeta transMeta, String sname)
@@ -243,6 +247,19 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
 		// / END OF STEP SETTINGS GROUP
 		// ///////////////////////////////////////////////////////////
 		
+		
+		wbExpReg=new Button(wGeneralComp, SWT.PUSH| SWT.CENTER);
+ 		props.setLook(wbExpReg);
+ 		wbExpReg.setText(Messages.getString("RegexEvalDialog.Samples.Label"));
+ 		wbExpReg.setToolTipText(Messages.getString("RegexEvalDialog.Samples.Tooltip"));
+ 		fdbExpReg=new FormData();
+ 		fdbExpReg.right= new FormAttachment(100, 0);
+ 		fdbExpReg.top  = new FormAttachment(wStepSettings, margin);
+ 		wbExpReg.setLayoutData(fdbExpReg);
+
+ 		wbExpReg.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { getRegExpHelp(); } } );
+
+		
 
 		
 		// Script line
@@ -251,7 +268,7 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
  		props.setLook(wlScript);
 		fdlScript=new FormData();
 		fdlScript.left = new FormAttachment(0, 0);
-		fdlScript.top  = new FormAttachment(wStepSettings, margin);
+		fdlScript.top  = new FormAttachment(wbExpReg, margin);
 		wlScript.setLayoutData(fdlScript);
 		wScript=new Text(wGeneralComp, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
 		wScript.setText(Messages.getString("RegexEvalDialog.Script.Label")); //$NON-NLS-1$
@@ -535,7 +552,66 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
 		return stepname;
 	}
 	
-	
+	private void getRegExpHelp()
+	{
+		try
+		{
+
+			String[] ListExp =  {"Validate an Email Address", "Validate an IP Address",
+					"Validate Alphabets",
+					"Validate AlphaNumeric",
+					"Validate Positive Integers",
+					"Validate both Positive and Negative Integers",
+					"Validate Floating Point Numbers",
+					"Validate a Date (yyyy-mm-dd)"};
+			
+			
+			EnterSelectionDialog dialog = new EnterSelectionDialog(shell, ListExp, Messages.getString("RegexEvalDialog.SamplesListe.Title"), Messages.getString("RegexEvalDialog.SamplesListe"));
+		    String list = dialog.open();
+		    if (list!=null)
+		    {
+		    	if (list.equals("Validate an Email Address"))
+    			{
+    				wScript.setText("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}$");
+    			}
+		    	if (list.equals("Validate an IP Address"))
+    			{
+    				wScript.setText("\\b\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\b");
+    			}
+		    	if (list.equals("Validate Alphabets"))
+    			{
+    				wScript.setText("[a-zA-Z]");
+    			}
+		    	if (list.equals("Validate AlphaNumeric"))
+    			{
+    				wScript.setText("[a-zA-Z0-9]");
+    			}
+		    	if (list.equals("Validate both Positive and Negative Integers"))
+    			{
+    				wScript.setText("^-[0-9]+$|^[0-9]+$");
+    			}
+		    	if (list.equals("Validate Positive Integers"))
+    			{
+    				wScript.setText("0*[1-9][0-9]*");
+    			}
+		    	if (list.equals("Validate Floating Point Numbers"))
+    			{
+    				wScript.setText("[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?");
+    			}
+		    	if (list.equals("Validate a Date (yyyy-mm-dd)"))
+    			{
+    				wScript.setText("(19|20)\\d\\d[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])");
+    			}
+		    	
+		    	
+		    }
+		}
+		catch(Throwable e)
+	   {
+	       new ErrorDialog(shell,Messages.getString("RegexEvalDialog.ErrorGettingSample"), Messages.getString("RegexEvalDialog.ErrorGettingSample.Exception"), new Exception(e));
+	   }
+	 
+}
 	 private void setMatcher()
 	 {
 		 try{
