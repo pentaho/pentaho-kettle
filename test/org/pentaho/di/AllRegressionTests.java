@@ -11,6 +11,7 @@ import org.pentaho.di.compatibility.ValueIntegerTest;
 import org.pentaho.di.compatibility.ValueNumberTest;
 import org.pentaho.di.compatibility.ValueStringTest;
 import org.pentaho.di.compatibility.ValueTest;
+import org.pentaho.di.core.ConstTest;
 import org.pentaho.di.core.CounterTest;
 import org.pentaho.di.core.CountersTest;
 import org.pentaho.di.core.RowSetTest;
@@ -32,8 +33,6 @@ import org.pentaho.di.trans.steps.scriptvalues_mod.JavaScriptSpecialTest;
 import org.pentaho.di.trans.steps.scriptvalues_mod.JavaScriptStringTest;
 import org.pentaho.di.trans.steps.sort.SortRowsTest;
 import org.pentaho.di.trans.steps.valuemapper.ValueMapperTest;
-
-import be.ibridge.kettle.core.ConstTest;
 
 
 /**
