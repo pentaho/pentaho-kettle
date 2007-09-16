@@ -34,6 +34,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
+import be.ibridge.kettle.core.GUIResource;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Props;
@@ -127,6 +128,7 @@ public class EnterSelectionDialog extends Dialog
 
 		shell = new Shell(parent, SWT.DIALOG_TRIM | (modal?SWT.APPLICATION_MODAL:SWT.NONE) | SWT.RESIZE | SWT.MIN | SWT.MAX );
  		props.setLook(shell);
+		shell.setImage(GUIResource.getInstance().getImageSpoon());
 
 		FormLayout formLayout = new FormLayout ();
 		formLayout.marginWidth  = Const.FORM_MARGIN;
