@@ -53,7 +53,6 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.job.entries.ftpput.JobEntryFTPPUT;
 import org.pentaho.di.job.entries.ftpput.Messages;
 
-import be.ibridge.kettle.core.util.StringUtil;
 
 
 /**
@@ -509,7 +508,7 @@ public class JobEntryFTPPUTDialog extends JobEntryDialog implements JobEntryDial
 					DirectoryDialog ddialog = new DirectoryDialog(shell, SWT.OPEN);
 					if (wScpDirectory.getText()!=null)
 					{
-						ddialog.setFilterPath(StringUtil.environmentSubstitute(wScpDirectory.getText()) );
+						ddialog.setFilterPath(jobMeta.environmentSubstitute(wScpDirectory.getText()) );
 					}
 					
 					 // Calling open() will open and run the dialog.
