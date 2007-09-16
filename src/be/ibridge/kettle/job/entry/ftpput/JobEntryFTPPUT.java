@@ -46,8 +46,8 @@ import be.ibridge.kettle.repository.Repository;
 /**
  * This defines an FTP put job entry.
  * 
- * @author Matt
- * @since 05-11-2003
+ * @author Samatar
+ * @since 15-09-2007
  *
  */
 public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryInterface

@@ -14,7 +14,7 @@
  **********************************************************************/
 
 /*
- * Created on 19-jun-2003
+ * Created on 15-09-2007
  *
  */
 
@@ -54,11 +54,10 @@ import be.ibridge.kettle.job.entry.JobEntryInterface;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 
 /**
- * This dialog allows you to edit the FTP Put job entry settings. (select the connection and the sql
- * script to be executed)
+ * This dialog allows you to edit the FTP Put job entry settings.
  * 
- * @author Matt
- * @since 19-06-2003
+ * @author Samatar
+ * @since 15-09-2007
  */
 public class JobEntryFTPPUTDialog extends Dialog implements JobEntryDialogInterface
 {
