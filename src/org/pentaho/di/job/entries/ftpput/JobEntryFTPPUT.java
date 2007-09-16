@@ -161,7 +161,7 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
 		}
 		catch(KettleXMLException xe)
 		{
-			throw new KettleXMLException("Unable to load job entry of type 'SFTP' from XML node", xe);			
+			throw new KettleXMLException(Messages.getString("JobFTPPUT.Log.UnableToLoadFromXml"), xe);			
 		}
 	}
 
@@ -195,7 +195,7 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
 		}
 		catch(KettleException dbe)
 		{
-			throw new KettleException("Unable to load job entry of type 'SFTP' from the repository for id_jobentry="+id_jobentry, dbe);
+			throw new KettleException(Messages.getString("JobFTPPUT.UnableToLoadFromRepo", String.valueOf(id_jobentry)), dbe);
 		}
 	}
 	
@@ -222,7 +222,9 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException("Unable to save job entry of type 'SFTP' to the repository for id_job="+id_job, dbe);
+			throw new KettleException(Messages.getString("JobFTPPUT.UnableToSaveToRepo", String.valueOf(id_job)), dbe); //$NON-NLS-1$
+			   
+		
 		}
 	}
 	
@@ -438,14 +440,14 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
 		long filesput = 0;
 
 
-		log.logDetailed(toString(), "Start of SFTP job entry");
+		log.logDetailed(toString(), Messages.getString("JobFTPPUT.Log.Starting"));
         
         // String substitution..
         String realServerName      = environmentSubstitute(serverName);
         String realServerPort      = environmentSubstitute(serverPort);
         String realUsername        = environmentSubstitute(userName);
         String realPassword        = environmentSubstitute(password);
-        String realRemoteDirectoty = environmentSubstitute(sftpDirectory);
+        String realRemoteDirectory = environmentSubstitute(sftpDirectory);
         String realWildcard        = environmentSubstitute(wildcard);
         String realLocalDirectory  = environmentSubstitute(targetDirectory);
         
@@ -459,26 +461,26 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
             ftpclient.setRemoteAddr(InetAddress.getByName(realServerName));
             ftpclient.setRemotePort(Const.toInt(realServerPort, 21));
             
-            if (log.isDetailed()) log.logDetailed(toString(), "Opened FTP connection to server ["+realServerName+"]");
+            if (log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobFTPPUT.Log.OpenConnection",realServerName));
 
 			// set activeConnection connectmode ...
             if (activeConnection)
             {
                 ftpclient.setConnectMode(FTPConnectMode.ACTIVE);
-                if (log.isDetailed()) log.logDetailed(toString(), "set active ftp connection mode");
+                if (log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobFTPPUT.Log.SetActiveConnection"));
             }
             else
             {
                 ftpclient.setConnectMode(FTPConnectMode.PASV);
-                if (log.isDetailed()) log.logDetailed(toString(), "set passive ftp connection mode");
+                if (log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobFTPPUT.Log.SetPassiveConnection"));
             }
 			
         	// Set the timeout
 			ftpclient.setTimeout(timeout);
-			if (log.isDetailed()) log.logDetailed(toString(), "set timeout to "+timeout);
+			if (log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobFTPPUT.Log.SetTimeout",""+timeout));
 			
 			ftpclient.setControlEncoding(controlEncoding);
-			if (log.isDetailed()) log.logDetailed(toString(), "set control encoding to "+controlEncoding);
+			if (log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobFTPPUT.Log.SetEncoding",controlEncoding));
 
 			// login to ftp host ...
             ftpclient.connect();
@@ -486,13 +488,13 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
 				
 			
 			//  Remove password from logging, you don't know where it ends up.
-			if (log.isDetailed()) log.logDetailed(toString(), "logged in with user "+realUsername);
+			if (log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobFTPPUT.Log.Logged",realUsername));
 
 			// move to spool dir ...
-			if (!Const.isEmpty(realRemoteDirectoty))
+			if (!Const.isEmpty(realRemoteDirectory))
 			{
-				ftpclient.chdir(realRemoteDirectoty);
-				if (log.isDetailed()) log.logDetailed(toString(), "Changed to directory ["+realRemoteDirectoty+"]");
+				ftpclient.chdir(realRemoteDirectory);
+				if (log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobFTPPUT.Log.ChangedDirectory",realRemoteDirectory));
 			}
 			
 			// Get all the files in the local directory...
@@ -522,7 +524,7 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
 			myFileList.toArray(filelist);
 			
 			
-			if (log.isDetailed()) log.logDetailed(toString(), "Found "+filelist.length+" files in the local directory");
+			if (log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobFTPPUT.Log.FoundFileLocalDirectory",""+filelist.length,realLocalDirectory));
 			
 			Pattern pattern = null;
 			if (!Const.isEmpty(realWildcard)) 
@@ -548,7 +550,7 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
 				{
 					if (!ftpclient.exists(filelist[i]) || (ftpclient.exists(filelist[i]) && !onlyPuttingNewFiles))
 					{
-						if (log.isDebug()) log.logDebug(toString(), "putting file ["+filelist[i]+"] to directory ["+realRemoteDirectoty+"]");
+						if (log.isDebug()) log.logDebug(toString(), Messages.getString("JobFTPPUT.Log.PuttingFileToRemoteDirectory",filelist[i],realRemoteDirectory));
 						
 						String localFilename = realLocalDirectory+Const.FILE_SEPARATOR+filelist[i]; 
 						ftpclient.put(localFilename, filelist[i]);
@@ -559,19 +561,19 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
 						if (remove) 
 						{
 							children[i].delete();
-							if (log.isDetailed()) log.logDetailed(toString(), "deleted local file ["+filelist[i]+"]");
+							if (log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobFTPPUT.Log.DeletedFile",filelist[i]));
 						}
 					}
 				}
 			}
 		
 			result.setResult( true );
-			if (log.isDetailed()) log.logDebug(toString(), "We have put " + filesput);
+			if (log.isDetailed()) log.logDebug(toString(), Messages.getString("JobFTPPUT.Log.WeHavePut",""+filesput));
 		}
 		catch(Exception e)
 		{
 			result.setNrErrors(1);
-			log.logError(toString(), "Error getting files from SFTP : "+e.getMessage());
+			log.logError(toString(), Messages.getString("JobFTPPUT.Log.ErrorPuttingFiles",e.getMessage()));
             log.logError(toString(), Const.getStackTracker(e));
 		} finally 
 		{
@@ -583,7 +585,7 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
 	                }
 	                catch(Exception e)
 	                {
-	                    log.logError(toString(), "Error quiting FTP connection: "+e.getMessage());
+	                    log.logError(toString(), Messages.getString("JobFTPPUT.Log.ErrorQuitingFTP",e.getMessage()));
 	                }
 	            }
 		}
