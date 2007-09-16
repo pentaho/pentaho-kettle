@@ -4,6 +4,8 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.pentaho.di.blackbox.BlackBoxTests;
+import org.pentaho.di.core.CounterTest;
+import org.pentaho.di.core.CountersTest;
 import org.pentaho.di.core.RowSetTest;
 import org.pentaho.di.core.database.DatabaseTest;
 import org.pentaho.di.core.row.RowDataUtilTest;
@@ -23,6 +25,8 @@ import org.pentaho.di.trans.steps.scriptvalues_mod.JavaScriptSpecialTest;
 import org.pentaho.di.trans.steps.scriptvalues_mod.JavaScriptStringTest;
 import org.pentaho.di.trans.steps.sort.SortRowsTest;
 import org.pentaho.di.trans.steps.valuemapper.ValueMapperTest;
+
+import be.ibridge.kettle.core.ConstTest;
 
 
 /**
@@ -44,13 +48,16 @@ public class AllRegressionTests
         // So adding testcases in the right order is important.
         //
         
+        suite.addTestSuite(ConstTest.class);
         suite.addTestSuite(ValueMetaTest.class);
         suite.addTestSuite(RowDataUtilTest.class);
         suite.addTestSuite(ValueDataUtilTest.class);
         suite.addTestSuite(DatabaseTest.class);
         suite.addTestSuite(RowTest.class);
         suite.addTestSuite(RowSetTest.class);
-        suite.addTestSuite(HopTest.class);
+        suite.addTestSuite(HopTest.class);        
+        suite.addTestSuite(CounterTest.class);
+        suite.addTestSuite(CountersTest.class);
         
         suite.addTestSuite(InjectorTest.class);
         suite.addTestSuite(RowGeneratorTest.class);

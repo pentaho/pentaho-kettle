@@ -548,6 +548,7 @@ public class Const
 	 * @return The left trimmed String
 	 */
     public static String ltrim(String source) {
+    	if ( source == null ) return null;
         return source.replaceAll("^\\s+", "");
     }
 
@@ -557,6 +558,7 @@ public class Const
 	 * @return The trimmed string.
 	 */
     public static String rtrim(String source) {
+    	if ( source == null ) return null;    	
         return source.replaceAll("\\s+$", "");
     }
 
