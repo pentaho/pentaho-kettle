@@ -548,8 +548,12 @@ public class Const
 	 * @return The left trimmed String
 	 */
     public static String ltrim(String source) {
-    	if ( source == null ) return null;
-        return source.replaceAll("^\\s+", "");
+        if (source==null) return null;
+		int from = 0;
+		while (from < source.length() && isSpace(source.charAt(from)))
+			from++;
+
+		return source.substring(from);    	
     }
 
     /**
@@ -558,10 +562,14 @@ public class Const
 	 * @return The trimmed string.
 	 */
     public static String rtrim(String source) {
-    	if ( source == null ) return null;    	
-        return source.replaceAll("\\s+$", "");
-    }
+		if (source==null) return null;
+		
+		int max = source.length();
+		while (max > 0 && isSpace(source.charAt(max - 1)))
+			max--;
 
+		return source.substring(0, max);
+    }
 
 	/**
 	 * Trims a string: removes the leading and trailing spaces of a String.
@@ -570,7 +578,20 @@ public class Const
 	 */
 	public static final String trim(String str)
 	{
-		return rtrim(ltrim(str));
+		if (str==null) return null;
+		
+		int max = str.length() - 1;
+		int min = 0;	
+
+		while (min <= max && isSpace(str.charAt(min)))
+			min++;
+		while (max >= 0 && isSpace(str.charAt(max)))
+			max--;
+
+		if (max < min)
+			return "";
+
+		return str.substring(min, max + 1);
 	}
 
 	/**
