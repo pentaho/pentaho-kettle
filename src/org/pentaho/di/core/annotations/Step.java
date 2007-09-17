@@ -33,5 +33,7 @@ public @interface Step
 	String image();
 
 	StepCategory category();
+	
+	String i18nPackageName() default "";
 
 }
