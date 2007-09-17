@@ -19,18 +19,15 @@ package be.ibridge.kettle.job.entry.deletefiles;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.TreeSet;
 
 import org.eclipse.swt.widgets.Shell;
 import org.w3c.dom.Node;
 
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Result;
-import be.ibridge.kettle.core.ResultFile;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.XMLHandler;
@@ -43,7 +40,6 @@ import be.ibridge.kettle.job.JobMeta;
 import be.ibridge.kettle.job.entry.JobEntryBase;
 import be.ibridge.kettle.job.entry.JobEntryDialogInterface;
 import be.ibridge.kettle.job.entry.JobEntryInterface;
-import be.ibridge.kettle.job.entry.copyfiles.JobEntryCopyFilesDialog;
 import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.core.vfs.KettleVFS;
 import org.apache.commons.vfs.FileObject;
@@ -206,12 +202,13 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
     {
 
       for (int iteration = 0; iteration < rows.size(); iteration++) {
-        resultRow = rows.get(iteration);
+    	  resultRow = (Row) rows.get(iteration);
         args = new String[resultRow.size()];
         fmasks = new String[resultRow.size()];
 
-        args[iteration] = resultRow.getString(0, null);
-        fmasks[iteration] = resultRow.getString(1, null);
+
+        args[iteration] = resultRow.getValue(0).getString();
+        fmasks[iteration] = resultRow.getValue(1).getString();        
 
           // ok we can process this file/folder
           log.logDetailed(toString(), Messages.getString(
