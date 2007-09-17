@@ -41,5 +41,6 @@ The following bug where fixes backported from the 3.0.0-M1 series to 2.5.2:
 - PDI-156: Size limit parameter in the XBase input step doesn't work - 12-Sep-2007
 - PDI-157: Add Luhn check function to Java script Mod -Samatar - 13-Sep-2007
 - PDI-165: Group by: row metadata wrong when order of group by fields is not the same as input - Matt - 14-Sep-2007
-- PDI-161; Get fields for Null if step - Sven B - 14-Sep-2007
-- PDI-102; Add Put FTP job entry - Samatar - 14-Sep-2007
+- PDI-161: Get fields for Null if step - Sven B - 14-Sep-2007
+- PDI-102: Add Put FTP job entry - Samatar - 14-Sep-2007
+- PDI-180: Cube input/output properly support variable substitution - 17-Sep-2007

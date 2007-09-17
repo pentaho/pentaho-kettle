@@ -43,6 +43,7 @@ import org.eclipse.swt.widgets.Text;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
+import be.ibridge.kettle.core.widget.TextVar;
 import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 import be.ibridge.kettle.trans.step.BaseStepMeta;
@@ -53,7 +54,7 @@ public class CubeOutputDialog extends BaseStepDialog implements StepDialogInterf
 {
 	private Label        wlFilename;
 	private Button       wbFilename;
-	private Text         wFilename;
+	private TextVar      wFilename;
 	private FormData     fdlFilename, fdbFilename, fdFilename;
 
 	private CubeOutputMeta input;
@@ -131,7 +132,7 @@ public class CubeOutputDialog extends BaseStepDialog implements StepDialogInterf
 		fdbFilename.right= new FormAttachment(100, 0);
 		fdbFilename.top  = new FormAttachment(wStepname, margin+5);
 		wbFilename.setLayoutData(fdbFilename);
-		wFilename=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wFilename=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wFilename);
 		wFilename.addModifyListener(lsMod);
 		fdFilename=new FormData();

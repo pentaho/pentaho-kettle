@@ -16,14 +16,15 @@
 package be.ibridge.kettle.trans.step.cubeoutput;
 
 import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.zip.GZIPOutputStream;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Row;
+import be.ibridge.kettle.core.vfs.KettleVFS;
 import be.ibridge.kettle.core.exception.KettleException;
+import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.step.BaseStep;
@@ -117,8 +118,8 @@ public class CubeOutput extends BaseStep implements StepInterface
 		{
 			try
 			{
-				File fil=new File(meta.getFilename());
-				data.fos=new GZIPOutputStream(new FileOutputStream(fil));
+				OutputStream os = KettleVFS.getOutputStream(StringUtil.environmentSubstitute(meta.getFilename()), false);
+				data.fos=new GZIPOutputStream(os);
 				data.dos=new DataOutputStream(data.fos);
 			
 				return true;

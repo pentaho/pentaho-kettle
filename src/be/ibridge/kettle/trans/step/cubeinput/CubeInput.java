@@ -24,8 +24,6 @@
 package be.ibridge.kettle.trans.step.cubeinput;
 
 import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.zip.GZIPInputStream;
 
@@ -34,6 +32,8 @@ import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.exception.KettleEOFException;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleFileException;
+import be.ibridge.kettle.core.util.StringUtil;
+import be.ibridge.kettle.core.vfs.KettleVFS;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.step.BaseStep;
@@ -100,8 +100,8 @@ public class CubeInput extends BaseStep implements StepInterface
 		{
 			try
 			{
-				File f = new File(meta.getFilename());
-				data.fis = new GZIPInputStream(new FileInputStream(f));
+				data.is  = KettleVFS.getInputStream(StringUtil.environmentSubstitute(meta.getFilename()));			
+				data.fis = new GZIPInputStream(data.is);
 				data.dis = new DataInputStream(data.fis);
 				
 				try
@@ -132,6 +132,7 @@ public class CubeInput extends BaseStep implements StepInterface
 		{
 			data.dis.close();
 			data.fis.close();
+			data.is.close();
 		}
 		catch(IOException e)
 		{

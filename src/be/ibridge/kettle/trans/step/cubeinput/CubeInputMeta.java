@@ -17,9 +17,8 @@
 package be.ibridge.kettle.trans.step.cubeinput;
 
 import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.zip.GZIPInputStream;
@@ -35,7 +34,9 @@ import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleFileException;
 import be.ibridge.kettle.core.exception.KettleStepException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
+import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.core.value.Value;
+import be.ibridge.kettle.core.vfs.KettleVFS;
 import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
@@ -121,8 +122,8 @@ public class CubeInputMeta extends BaseStepMeta implements StepMetaInterface
 
 	public void setDefault()
 	{
-		filename = ""; //$NON-NLS-1$
-		rowLimit   = 0;
+		filename = "file"; //$NON-NLS-1$
+		rowLimit = 0;
 	}
 	
 	public Row getFields(Row r, String name, Row info)
@@ -135,10 +136,11 @@ public class CubeInputMeta extends BaseStepMeta implements StepMetaInterface
 		
 		GZIPInputStream fis = null;
 		DataInputStream dis = null;
+		InputStream is = null;
 		try
 		{
-			File f = new File(filename);
-			fis = new GZIPInputStream(new FileInputStream(f));
+			is  = KettleVFS.getInputStream(StringUtil.environmentSubstitute(filename));
+			fis = new GZIPInputStream(is);
 			dis = new DataInputStream(fis);
 	
 			Row add = getMetaData(dis);		

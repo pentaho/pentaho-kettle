@@ -16,6 +16,7 @@
 package be.ibridge.kettle.trans.step.cubeinput;
 
 import java.io.DataInputStream;
+import java.io.InputStream;
 import java.util.zip.GZIPInputStream;
 
 import be.ibridge.kettle.core.Row;
@@ -29,6 +30,7 @@ import be.ibridge.kettle.trans.step.StepDataInterface;
  */
 public class CubeInputData extends BaseStepData implements StepDataInterface
 {
+	public InputStream     is;
 	public GZIPInputStream fis;
 	public DataInputStream dis;
 
