@@ -17,9 +17,8 @@
 package org.pentaho.di.trans.steps.cubeinput;
 
 import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
@@ -37,6 +36,7 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
@@ -125,8 +125,8 @@ public class CubeInputMeta extends BaseStepMeta implements StepMetaInterface
 
 	public void setDefault()
 	{
-		filename = ""; //$NON-NLS-1$
-		rowLimit   = 0;
+		filename = "file"; //$NON-NLS-1$
+		rowLimit = 0;
 	}
 	
 	public void getFields(RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space)
@@ -136,8 +136,8 @@ public class CubeInputMeta extends BaseStepMeta implements StepMetaInterface
 		DataInputStream dis = null;
 		try
 		{
-			File f = new File(filename);
-			fis = new GZIPInputStream(new FileInputStream(f));
+			InputStream is = KettleVFS.getInputStream(space.environmentSubstitute(filename));
+			fis = new GZIPInputStream(is);
 			dis = new DataInputStream(fis);
 	
 			RowMetaInterface add = new RowMeta(dis);		

@@ -590,6 +590,9 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
         {
             result.setResult( true );
         }
+        
+		// Hint the VM to release handles.
+		System.gc();
 
         return result;
 	}

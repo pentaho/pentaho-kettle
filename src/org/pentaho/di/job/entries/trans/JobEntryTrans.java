@@ -641,6 +641,9 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 			result.setResult( false );
 		}
 
+		// Hint the VM to release handles.
+		System.gc();
+		
 		return result;
 	}
 
