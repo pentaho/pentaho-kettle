@@ -206,7 +206,7 @@ public class JobEntryDTDValidator extends JobEntryBase implements Cloneable, Job
 				{	
 					
 					//URL xmlFile = new URL (KettleVFS.getFilename(xmlfile));
-					URL xmlFile = new File(KettleVFS.getFilename(xmlfile)).toURL();
+					URL xmlFile = new File(KettleVFS.getFilename(xmlfile)).toURI().toURL();
 					
 					// open XML File
 					BufferedReader xmlBufferedReader = new BufferedReader(new InputStreamReader(xmlFile.openStream()));
