@@ -42,7 +42,7 @@ public class AnnotatedStepsConfigManager<T extends StepPluginMeta> extends Basic
 			
 			String packageName = step.i18nPackageName();
 			// if (Const.isEmpty(packageName)) packageName = clazz.getPackage().getName();
-			if (Const.isEmpty(packageName)) packageName = org.pentaho.di.trans.step.Messages.class.getName();
+			if (Const.isEmpty(packageName)) packageName = org.pentaho.di.trans.step.Messages.class.getPackage().getName();
 			
 			String description = BaseMessages.getString(step.i18nPackageName(), step.description());
 			if (description.startsWith("!") && description.endsWith("!")) description=Messages.getString(step.description());
