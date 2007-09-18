@@ -45,7 +45,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, VariableSpace
     private VariableSpace variables = new Variables();
     
     /**
-     * The port number of the database as string: allows for parameterisation.
+     * The port number of the database as string: allows for parameterization.
      */
     public static final String ATTRIBUTE_PORT_NUMBER            = "PORT_NUMBER"; 
 

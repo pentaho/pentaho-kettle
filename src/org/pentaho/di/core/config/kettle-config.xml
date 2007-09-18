@@ -7,7 +7,7 @@
 		</config-class>
 		<!-- the packages to scan for the annotation.  Even though this is not required, it is advisable to enter a value here to
 		avoid full classpath scanning.  Different packages can be separated by commas. Lastly, the scan IS RECURSIVE. -->
-		<property name="packages" value="org.pentaho.di.trans" />
+		<property name="packages" value="org.pentaho.di.trans,plugin" />
 	</config>
 
 	<!--  This reads the steps from the XML File defined below (configURL) -->

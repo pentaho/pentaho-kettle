@@ -207,6 +207,10 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
      */
     public static final int TYPE_DATABASE_REMEDY_AR_SYSTEM = 28;
 
+    /**
+     * Connection to a Palo MOLAP Server
+     */
+    public static final int TYPE_DATABASE_PALO = 29;
     
     
 	/**
@@ -234,6 +238,11 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
      */
     public static final int TYPE_ACCESS_JNDI        =  4;
     
+    /**
+     * Connect to the database using a custom built protocol.
+     */
+    public static final int TYPE_ACCESS_CUSTOM        =  5;
+    
     
 	/**
 	 * Short description of the access type, used in XML and the repository.
@@ -244,7 +253,8 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 			"ODBC",
 			"OCI",
             "Plugin",
-			"JNDI"
+			"JNDI",
+			"CUSTOM",
 		};
 
 	/**
@@ -256,7 +266,8 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 			"ODBC",
 			"OCI",
             "Plugin specific access method",
-			"JNDI"
+			"JNDI",
+			"Custom",
 		};
 
 	/**
@@ -270,7 +281,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     public static final String EMPTY_OPTIONS_STRING = "><EMPTY><";
         
 	/**
-	 * Construct a new database connections.  Note that not all these parameters are not allways mandatory.
+	 * Construct a new database connections.  Note that not all these parameters are not always mandatory.
 	 * 
 	 * @param name The database name
 	 * @param type The type of database

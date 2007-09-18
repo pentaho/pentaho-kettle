@@ -60,6 +60,7 @@ public interface DatabaseInterface extends Cloneable
             SQLiteDatabaseMeta.class,
             DerbyDatabaseMeta.class,
             RemedyActionRequestSystemDatabaseMeta.class,
+            PALODatabaseMeta.class,
 		};
 	
 	/**

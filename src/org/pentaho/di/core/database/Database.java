@@ -117,7 +117,7 @@ public class Database implements VariableSpace
     
     
 	/**
-	 * Construnct a new Database Connection
+	 * Construct a new Database Connection
 	 * @param inf The Database Connection Info to construct the connection with.
 	 */
 	public Database(DatabaseMeta inf)
@@ -3854,8 +3854,7 @@ public class Database implements VariableSpace
 		}
 	}
 		
-	public String[] getTablenames()
-		throws KettleDatabaseException
+	public String[] getTablenames() throws KettleDatabaseException
 	{
 		String schemaname = null;
 		if (databaseMeta.useSchemaNameForTableList()) schemaname = databaseMeta.getUsername().toUpperCase();
