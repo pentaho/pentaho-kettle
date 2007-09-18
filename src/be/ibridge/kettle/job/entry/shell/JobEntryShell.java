@@ -300,10 +300,21 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
             log.setLogLevel(loglevel);
         }
 
+		// "Translate" the arguments for later
+		String substArgs[] = null;
+		if ( arguments != null )
+		{
+			substArgs = new String[arguments.length];
+			for ( int idx = 0; idx < arguments.length; idx++ )
+			{
+			    substArgs[idx] = StringUtil.environmentSubstitute(arguments[idx]);
+			}
+		}      
+        
 		result.setEntryNr( nr );
 		
         int iteration = 0;
-        String args[] = arguments;
+        String args[] = substArgs;
         Row resultRow = null;
         boolean first = true;
         List rows = result.getRows();
