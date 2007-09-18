@@ -73,7 +73,7 @@ public class Delete extends BaseStep implements StepInterface
         
         data.db.setValues(data.deleteParameterRowMeta, deleteRow, data.prepStatementDelete);
         		
-		if (log.isDebug()) logDebug(Messages.getString("Delete.Log.SetValuesForDelete",data.deleteParameterRowMeta.getString(deleteRow),""+row)); //$NON-NLS-1$ //$NON-NLS-2$
+		if (log.isDebug()) logDebug(Messages.getString("Delete.Log.SetValuesForDelete",data.deleteParameterRowMeta.getString(deleteRow),rowMeta.getString(row))); //$NON-NLS-1$
 
 		data.db.insertRow(data.prepStatementDelete);
 		linesUpdated++;
@@ -203,7 +203,7 @@ public class Delete extends BaseStep implements StepInterface
 
         try
         {
-            log.logDetailed(toString(), "Setting delete preparedStatement to ["+sql+"]");
+        	if (log.isDetailed()) log.logDetailed(toString(), "Setting delete preparedStatement to ["+sql+"]");
             data.prepStatementDelete=data.db.getConnection().prepareStatement(databaseMeta.stripCR(sql));
         }
         catch(SQLException ex) 

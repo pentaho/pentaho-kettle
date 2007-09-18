@@ -51,7 +51,6 @@ import org.w3c.dom.Node;
  * @author Tom, Matt
  * @since 28-March-2006
  */
-
 public class DeleteMeta extends BaseStepMeta implements StepMetaInterface
 {
     /** The target schema name */
@@ -216,16 +215,16 @@ public class DeleteMeta extends BaseStepMeta implements StepMetaInterface
 	public Object clone()
 	{
 		DeleteMeta retval = (DeleteMeta)super.clone();
-		int nrkeys    = keyStream.length;
+		int nrkeys = keyStream.length;
 
 		retval.allocate(nrkeys);
 		
 		for (int i=0;i<nrkeys;i++)
 		{
-			retval.keyStream         [i] = keyStream[i];
+			retval.keyStream   [i] = keyStream[i];
 			retval.keyLookup   [i] = keyLookup[i];
 			retval.keyCondition[i] = keyCondition[i];
-			retval.keyStream2        [i] = keyStream2[i];
+			retval.keyStream2  [i] = keyStream2[i];
 		}
 
 		return retval;
@@ -239,15 +238,15 @@ public class DeleteMeta extends BaseStepMeta implements StepMetaInterface
 			String csize;
 			int nrkeys;
 			
-			String con = XMLHandler.getTagValue(stepnode, "connection"); //$NON-NLS-1$
+			String con   = XMLHandler.getTagValue(stepnode, "connection"); //$NON-NLS-1$
 			databaseMeta = DatabaseMeta.findDatabase(databases, con);
-			csize      = XMLHandler.getTagValue(stepnode, "commit"); //$NON-NLS-1$
-			commitSize=Const.toInt(csize, 0);
-            schemaName  = XMLHandler.getTagValue(stepnode, "lookup", "schema"); //$NON-NLS-1$ //$NON-NLS-2$
-			tableName   = XMLHandler.getTagValue(stepnode, "lookup", "table"); //$NON-NLS-1$ //$NON-NLS-2$
+			csize        = XMLHandler.getTagValue(stepnode, "commit"); //$NON-NLS-1$
+			commitSize   = Const.toInt(csize, 0);
+            schemaName   = XMLHandler.getTagValue(stepnode, "lookup", "schema"); //$NON-NLS-1$ //$NON-NLS-2$
+			tableName    = XMLHandler.getTagValue(stepnode, "lookup", "table"); //$NON-NLS-1$ //$NON-NLS-2$
 	
-			Node lookup = XMLHandler.getSubNode(stepnode, "lookup"); //$NON-NLS-1$
-			nrkeys    = XMLHandler.countNodes(lookup, "key"); //$NON-NLS-1$
+			Node lookup  = XMLHandler.getSubNode(stepnode, "lookup"); //$NON-NLS-1$
+			nrkeys       = XMLHandler.countNodes(lookup, "key"); //$NON-NLS-1$
 			
 			allocate(nrkeys);
 			
@@ -255,11 +254,11 @@ public class DeleteMeta extends BaseStepMeta implements StepMetaInterface
 			{
 				Node knode = XMLHandler.getSubNodeByNr(lookup, "key", i); //$NON-NLS-1$
 				
-				keyStream         [i] = XMLHandler.getTagValue(knode, "name"); //$NON-NLS-1$
+				keyStream   [i] = XMLHandler.getTagValue(knode, "name"); //$NON-NLS-1$
 				keyLookup   [i] = XMLHandler.getTagValue(knode, "field"); //$NON-NLS-1$
 				keyCondition[i] = XMLHandler.getTagValue(knode, "condition"); //$NON-NLS-1$
 				if (keyCondition[i]==null) keyCondition[i]="="; //$NON-NLS-1$
-				keyStream2        [i] = XMLHandler.getTagValue(knode, "name2"); //$NON-NLS-1$
+				keyStream2  [i] = XMLHandler.getTagValue(knode, "name2"); //$NON-NLS-1$
 			}
 	
 		}
@@ -285,32 +284,32 @@ public class DeleteMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			keyLookup[i]   = "age"; //$NON-NLS-1$
 			keyCondition[i]= "BETWEEN"; //$NON-NLS-1$
-			keyStream[i]         = "age_from"; //$NON-NLS-1$
-			keyStream2[i]        = "age_to"; //$NON-NLS-1$
+			keyStream[i]   = "age_from"; //$NON-NLS-1$
+			keyStream2[i]  = "age_to"; //$NON-NLS-1$
 		}
 	}
 
 	public String getXML()
 	{
-		StringBuffer retval=new StringBuffer();
+		StringBuffer retval=new StringBuffer(500);
 		
-		retval.append("    "+XMLHandler.addTagValue("connection", databaseMeta==null?"":databaseMeta.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		retval.append("    "+XMLHandler.addTagValue("commit", commitSize)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    <lookup>"+Const.CR); //$NON-NLS-1$
-        retval.append("      "+XMLHandler.addTagValue("schema", schemaName)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("      "+XMLHandler.addTagValue("table", tableName)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    ").append(XMLHandler.addTagValue("connection", databaseMeta==null?"":databaseMeta.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		retval.append("    ").append(XMLHandler.addTagValue("commit", commitSize)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    <lookup>").append(Const.CR); //$NON-NLS-1$
+        retval.append("      ").append(XMLHandler.addTagValue("schema", schemaName)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("      ").append(XMLHandler.addTagValue("table", tableName)); //$NON-NLS-1$ //$NON-NLS-2$
 
 		for (int i=0;i<keyStream.length;i++)
 		{
-			retval.append("      <key>"+Const.CR); //$NON-NLS-1$
-			retval.append("        "+XMLHandler.addTagValue("name", keyStream[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        "+XMLHandler.addTagValue("field", keyLookup[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        "+XMLHandler.addTagValue("condition", keyCondition[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        "+XMLHandler.addTagValue("name2", keyStream2[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        </key>"+Const.CR); //$NON-NLS-1$
+			retval.append("      <key>").append(Const.CR); //$NON-NLS-1$
+			retval.append("        ").append(XMLHandler.addTagValue("name", keyStream[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        ").append(XMLHandler.addTagValue("field", keyLookup[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        ").append(XMLHandler.addTagValue("condition", keyCondition[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        ").append(XMLHandler.addTagValue("name2", keyStream2[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("      </key>").append(Const.CR); //$NON-NLS-1$
 		}
 
-		retval.append("      </lookup>"+Const.CR); //$NON-NLS-1$
+		retval.append("    </lookup>").append(Const.CR); //$NON-NLS-1$
 
 		return retval.toString();
 	}
@@ -321,11 +320,11 @@ public class DeleteMeta extends BaseStepMeta implements StepMetaInterface
 		try
 		{
 			long id_connection =   rep.getStepAttributeInteger(id_step, "id_connection");  //$NON-NLS-1$
-			databaseMeta = DatabaseMeta.findDatabase( databases, id_connection);
+			databaseMeta = DatabaseMeta.findDatabase(databases, id_connection);
 			
 			commitSize     = (int)rep.getStepAttributeInteger(id_step, "commit"); //$NON-NLS-1$
-            schemaName     =      rep.getStepAttributeString(id_step, "schema"); //$NON-NLS-1$
-			tableName      =      rep.getStepAttributeString(id_step, "table"); //$NON-NLS-1$
+            schemaName     =      rep.getStepAttributeString(id_step,  "schema"); //$NON-NLS-1$
+			tableName      =      rep.getStepAttributeString(id_step,  "table"); //$NON-NLS-1$
             
 			int nrkeys   = rep.countNrStepAttributes(id_step, "key_name"); //$NON-NLS-1$
 			
@@ -672,5 +671,4 @@ public class DeleteMeta extends BaseStepMeta implements StepMetaInterface
     {
         return true;
     }
-
 }
