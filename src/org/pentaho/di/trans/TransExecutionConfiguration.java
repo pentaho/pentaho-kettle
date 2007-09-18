@@ -16,6 +16,7 @@ import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.trans.debug.TransDebugMeta;
 import org.w3c.dom.Node;
 
 
@@ -24,7 +25,6 @@ public class TransExecutionConfiguration implements Cloneable
     public static final String XML_TAG = "transformation_execution_configuration";
     
     private boolean executingLocally;
-    private boolean     localPreviewing;
     
     private boolean executingRemotely;
     private SlaveServer remoteServer;
@@ -38,11 +38,11 @@ public class TransExecutionConfiguration implements Cloneable
     private Map<String, String> arguments;
     private Map<String, String> variables;
     
-    private String[] previewSteps;
-    private int[]    previewSizes;
     private Date     replayDate;
     private boolean  safeModeEnabled;
     private int      logLevel;
+    
+    private TransDebugMeta transDebugMeta;
 
     public TransExecutionConfiguration()
     {
@@ -56,8 +56,7 @@ public class TransExecutionConfiguration implements Cloneable
         arguments = new HashMap<String, String>();
         variables = new HashMap<String, String>();
         
-        previewSteps = new String[0];
-        previewSizes = new int[0];
+        transDebugMeta = null;
         
         logLevel = LogWriter.LOG_LEVEL_BASIC;
     }
@@ -128,22 +127,6 @@ public class TransExecutionConfiguration implements Cloneable
     public void setClusterStarting(boolean notExecuting)
     {
         this.clusterStarting = notExecuting;
-    }
-
-    /**
-     * @return the previewTransformation
-     */
-    public boolean isLocalPreviewing()
-    {
-        return localPreviewing;
-    }
-
-    /**
-     * @param previewTransformation the previewTransformation to set
-     */
-    public void setLocalPreviewing(boolean previewTransformation)
-    {
-        this.localPreviewing = previewTransformation;
     }
 
     /**
@@ -282,8 +265,8 @@ public class TransExecutionConfiguration implements Cloneable
                 	newVariables.put(varname, Const.NVL(variables.get(varname), sp.getProperty(varname, "")));
                 }
             }
-            
-            variables = newVariables;
+            // variables.clear();
+            variables.putAll(newVariables);
         }
     }
     
@@ -292,44 +275,6 @@ public class TransExecutionConfiguration implements Cloneable
         // OK, see if we need to ask for some arguments first...
         //
         arguments = transMeta.getUsedArguments(commandLineArguments);
-    }
-
-    public void setPreviewStepSizes(String[] previewSteps, int[] previewSizes)
-    {
-        this.previewSteps = previewSteps;
-        this.previewSizes = previewSizes;
-    }
-
-    /**
-     * @return the previewSizes
-     */
-    public int[] getPreviewSizes()
-    {
-        return previewSizes;
-    }
-
-    /**
-     * @param previewSizes the previewSizes to set
-     */
-    public void setPreviewSizes(int[] previewSizes)
-    {
-        this.previewSizes = previewSizes;
-    }
-
-    /**
-     * @return the previewSteps
-     */
-    public String[] getPreviewSteps()
-    {
-        return previewSteps;
-    }
-
-    /**
-     * @param previewSteps the previewSteps to set
-     */
-    public void setPreviewSteps(String[] previewSteps)
-    {
-        this.previewSteps = previewSteps;
     }
 
     /**
@@ -387,7 +332,6 @@ public class TransExecutionConfiguration implements Cloneable
         xml.append("  <"+XML_TAG+">").append(Const.CR);
         
         xml.append("    ").append(XMLHandler.addTagValue("exec_local", executingLocally));
-        xml.append("    ").append(XMLHandler.addTagValue("local_preview", localPreviewing));
         
         xml.append("    ").append(XMLHandler.addTagValue("exec_remote", executingRemotely));
         if (remoteServer!=null)
@@ -429,20 +373,9 @@ public class TransExecutionConfiguration implements Cloneable
         }
         xml.append("    </arguments>").append(Const.CR);
 
-        // The requested preview sizes for the selected steps...
+        // IMPORTANT remote debugging is not yet supported
         //
-        xml.append("    <preview>").append(Const.CR);
-        if (previewSteps!=null && previewSizes!=null)
-        {
-            for (int i=0;i<previewSteps.length;i++)
-            {
-                xml.append("      <step> ");
-                xml.append(XMLHandler.addTagValue("name", previewSteps[i], false));
-                xml.append(XMLHandler.addTagValue("size", previewSizes[i], false));
-                xml.append(" </step>").append(Const.CR);
-            }
-        }
-        xml.append("    </preview>").append(Const.CR);
+        // xml.append(transDebugMeta.getXML());
         
         xml.append("    ").append(XMLHandler.addTagValue("replay_date", replayDate));
         xml.append("    ").append(XMLHandler.addTagValue("safe_mode", safeModeEnabled));
@@ -457,7 +390,6 @@ public class TransExecutionConfiguration implements Cloneable
     	this();
     	
         executingLocally = "Y".equalsIgnoreCase(XMLHandler.getTagValue(trecNode, "exec_local"));
-        localPreviewing = "Y".equalsIgnoreCase(XMLHandler.getTagValue(trecNode, "local_preview"));
 
         executingRemotely = "Y".equalsIgnoreCase(XMLHandler.getTagValue(trecNode, "exec_remote"));
         Node remoteHostNode = XMLHandler.getSubNode(trecNode, SlaveServer.XML_TAG);
@@ -498,24 +430,8 @@ public class TransExecutionConfiguration implements Cloneable
         	}
         }
         
-        // Read the preview sizes for the selected steps as well...
+        // IMPORTANT: remote preview and remote debugging is NOT yet supported.
         //
-        Node previewNode = XMLHandler.getSubNode(trecNode, "preview");
-        if (previewSteps!=null && previewSizes!=null)
-        {
-            int nr = XMLHandler.countNodes(previewNode, "step");
-            previewSteps = new String[nr];
-            previewSizes = new int[nr];
-            
-            for (int i=0;i<nr;i++)
-            {
-                Node stepNode = XMLHandler.getSubNodeByNr(previewNode, "step", i);
-            
-                previewSteps[i] = XMLHandler.getTagValue(stepNode, "name");
-                previewSizes[i] = Const.toInt(XMLHandler.getTagValue(stepNode, "size"), 0);
-            }
-        }
-
 
         replayDate = XMLHandler.stringToDate( XMLHandler.getTagValue(trecNode, "replay_date") );
         safeModeEnabled = "Y".equalsIgnoreCase(XMLHandler.getTagValue(trecNode, "safe_mode"));
@@ -539,5 +455,19 @@ public class TransExecutionConfiguration implements Cloneable
         
         return values;
     }
+
+	/**
+	 * @return the transDebugMeta
+	 */
+	public TransDebugMeta getTransDebugMeta() {
+		return transDebugMeta;
+	}
+
+	/**
+	 * @param transDebugMeta the transDebugMeta to set
+	 */
+	public void setTransDebugMeta(TransDebugMeta transDebugMeta) {
+		this.transDebugMeta = transDebugMeta;
+	}
 
 }

@@ -51,20 +51,23 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
-import org.pentaho.di.ui.spoon.trans.TransHistoryRefresher;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.debug.BreakPointListener;
+import org.pentaho.di.trans.debug.StepDebugMeta;
+import org.pentaho.di.trans.debug.TransDebugMeta;
 import org.pentaho.di.trans.step.BaseStep;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepStatus;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
+import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.spoon.Messages;
@@ -116,10 +119,7 @@ public class TransLog extends Composite implements TabItemInterface
 	private FormData fdText, fdSash, fdStart, fdPause, fdPreview, fdError, fdClear, fdLog, fdOnlyActive, fdSafeMode;
 
 	private boolean running;
-    private boolean preview;
     private boolean initialized;
-
-	public boolean preview_shown = false;
 
 	private SelectionListener lsStart, lsPause, lsStop, lsPreview, lsError, lsClear, lsLog;
 
@@ -136,7 +136,7 @@ public class TransLog extends Composite implements TabItemInterface
 
     private FormData fdStop;
 
-	private boolean pauzing;    
+	private boolean pausing;    
 
 	public TransLog(Composite parent, final Spoon spoon, final TransMeta transMeta)
 	{
@@ -148,7 +148,6 @@ public class TransLog extends Composite implements TabItemInterface
 		display = shell.getDisplay();
 
 		running = false;
-		preview = false;
 		lastUpdateView = 0L;
 		lastUpdateLog = 0L;
 
@@ -361,7 +360,7 @@ public class TransLog extends Composite implements TabItemInterface
 		{
 			public void widgetSelected(SelectionEvent e)
 			{
-				spoon.executeTransformation(transMeta, true, false, false, false, null);
+				spoon.executeTransformation(transMeta, true, false, false, false, false, null);
 			}
 		};
 
@@ -385,7 +384,7 @@ public class TransLog extends Composite implements TabItemInterface
 		{
 			public void widgetSelected(SelectionEvent e)
 			{
-				spoon.executeTransformation(transMeta, true, false, false, true, null);
+				spoon.executeTransformation(transMeta, true, false, false, true, false, null);
 			}
 		};
 
@@ -602,11 +601,6 @@ public class TransLog extends Composite implements TabItemInterface
             initialized = false;
             halted = false;
             halting = false;
-            if (preview)
-            {
-                preview = false;
-                showPreview();
-            }
             transMeta.setInternalKettleVariables(); // set the original vars back as they may be changed by a mapping
         }
     }
@@ -615,9 +609,9 @@ public class TransLog extends Composite implements TabItemInterface
     {
         if (running)
         {
-        	if (!pauzing)
+        	if (!pausing)
         	{
-                pauzing = true;
+                pausing = true;
                 trans.pauseRunning();
 
                 wPause.setText(RESUME_TEXT);
@@ -627,7 +621,7 @@ public class TransLog extends Composite implements TabItemInterface
         	}
         	else
         	{
-                pauzing = false;
+                pausing = false;
                 trans.resumeRunning();
 
                 wPause.setText(PAUSE_TEXT);
@@ -644,7 +638,12 @@ public class TransLog extends Composite implements TabItemInterface
         {
             public void run()
             {
-                initialized = trans.prepareExecution(args);
+                try {
+					trans.prepareExecution(args);
+					initialized = true;
+				} catch (KettleException e) {
+					initialized = false;
+				}
                 halted = trans.hasHaltedSteps();
             }
         };
@@ -732,6 +731,8 @@ public class TransLog extends Composite implements TabItemInterface
 
 	private TransHistoryRefresher spoonHistoryRefresher;
 
+	private TransDebugMeta lastTransDebugMeta;
+
 	private void refreshView()
 	{
 		boolean insert = true;
@@ -743,11 +744,9 @@ public class TransLog extends Composite implements TabItemInterface
 
 		Table table = wFields.table;
 
-		boolean doPreview = trans != null && trans.previewComplete() && preview;
-
 		long time = new Date().getTime();
 		long msSinceLastUpdate = time - lastUpdateView;
-		if ((trans != null && msSinceLastUpdate > UPDATE_TIME_VIEW) || doPreview)
+		if ( trans != null  &&  msSinceLastUpdate > UPDATE_TIME_VIEW )
 		{
             lastUpdateView = time;
 			int nrSteps = trans.nrSteps();
@@ -817,22 +816,17 @@ public class TransLog extends Composite implements TabItemInterface
 			if (table.getItemCount() == 0) new TableItem(table, SWT.NONE);
 		}
 
-		if (doPreview)
-		{
-			// System.out.println("preview is complete, show preview dialog!");
-			trans.stopAll();
-			showPreview();
-		}
-
 		refresh_busy = false;
 	}
 
-	public synchronized void preview(TransExecutionConfiguration executionConfiguration)
+	public synchronized void debug(TransExecutionConfiguration executionConfiguration, TransDebugMeta transDebugMeta)
 	{
         if (!running)
         {
     		try
     		{
+    			this.lastTransDebugMeta = transDebugMeta;
+    			
                 log.setLogLevel(executionConfiguration.getLogLevel());
     			log.logDetailed(toString(), Messages.getString("SpoonLog.Log.DoPreview")); //$NON-NLS-1$
                 String[] args=null;
@@ -843,17 +837,29 @@ public class TransLog extends Composite implements TabItemInterface
                 }
                 setVariables(executionConfiguration);
 
-				// SB: don't set it to the first tabfolder
-                // spoon.tabfolder.setSelection(1);
-                // 
+                // Create a new transformation to execution
+                //
 				trans = new Trans(transMeta);
-				trans.setPreview(true);
-				trans.setPreviewSteps(executionConfiguration.getPreviewSteps());
-				trans.setPreviewSizes(executionConfiguration.getPreviewSizes());
-				trans.setPreview(true);
                 trans.setSafeModeEnabled(executionConfiguration.isSafeModeEnabled());
-				trans.execute(args);
-				preview = true;
+				trans.prepareExecution(args);
+				
+				// Add the row listeners to the allocated threads
+				//
+				transDebugMeta.addRowListenersToTransformation(trans);
+				
+				// What method should we call back when a break-point is hit?
+				//
+				transDebugMeta.addBreakPointListers(new BreakPointListener() {
+						public void breakPointHit(TransDebugMeta transDebugMeta, StepDebugMeta stepDebugMeta, RowMetaInterface rowBufferMeta, List<Object[]> rowBuffer) {
+							showPreview(transDebugMeta, stepDebugMeta, rowBufferMeta, rowBuffer);
+						}
+					}
+				);
+
+				// Start the threads for the steps...
+				//
+				trans.startThreads();
+
 				readLog();
 				running = !running;
                 wStart.setEnabled(false);
@@ -888,36 +894,27 @@ public class TransLog extends Composite implements TabItemInterface
 		return args;
 	}
 
-	public void showPreview()
+	public void showPreview(final TransDebugMeta transDebugMeta, final StepDebugMeta stepDebugMeta, final RowMetaInterface rowBufferMeta, final List<Object[]> rowBuffer)
 	{
-		if (preview_shown) return;
-		if (trans == null || !trans.isFinished()) return;
+		display.asyncExec(new Runnable() {
+		
+			public void run() {
+				
+				// The transformation is now paused, indicate this in the log dialog...
+				//
+				pausing=true;
+				wPause.setText(RESUME_TEXT);
+				
+				PreviewRowsDialog previewRowsDialog = new PreviewRowsDialog(shell, transMeta, SWT.APPLICATION_MODAL, stepDebugMeta.getStepMeta().getName(), rowBufferMeta, rowBuffer);
+				previewRowsDialog.open();
 
-		// Drop out of preview mode!
-		preview = false;
-
-		BaseStep rt;
-		int i;
-
-		List<List<Object[]>> buffers = new ArrayList<List<Object[]>>();
-        List<RowMetaInterface> rowMetas = new ArrayList<RowMetaInterface>();
-		List<String> names = new ArrayList<String>();
-		for (i = 0; i < trans.nrSteps(); i++)
-		{
-			rt = trans.getRunThread(i);
-			if (rt.previewSize > 0)
-			{
-				buffers.add(rt.previewBuffer);
-                rowMetas.add(rt.getPreviewRowMeta());
-				names.add(rt.getStepname());
-				log.logBasic(toString(), Messages.getString("SpoonLog.Log.Step") + rt.getStepname() + " --> " + rt.previewBuffer.size() + Messages.getString("SpoonLog.Log.Rows")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				// clear the row buffer.
+				// That way if you click resume, you get the next N rows for the step :-)
+				//
+				rowBuffer.clear();
 			}
-		}
-		// OK, now we're ready to show it all!
-		EnterPreviewRowsDialog psd = new EnterPreviewRowsDialog(shell, SWT.NONE, names, rowMetas, buffers);
-		preview_shown = true;
-		psd.open();
-		preview_shown = false;
+		
+		});
 	}
 
 	private void clearLog()
@@ -1041,7 +1038,7 @@ public class TransLog extends Composite implements TabItemInterface
 
     public boolean canBeClosed()
     {
-        return !running && !preview;
+        return !running;
     }
     
     public Object getManagedObject()
@@ -1069,4 +1066,32 @@ public class TransLog extends Composite implements TabItemInterface
     {
         return true;
     }
+
+	/**
+	 * @return the lastTransDebugMeta
+	 */
+	public TransDebugMeta getLastTransDebugMeta() {
+		return lastTransDebugMeta;
+	}
+
+	public void showLastPreviewResults() {
+		if (lastTransDebugMeta==null || lastTransDebugMeta.getStepDebugMetaMap().isEmpty()) return;
+		
+		List<String> stepnames = new ArrayList<String>();
+		List<RowMetaInterface> rowMetas = new ArrayList<RowMetaInterface>();
+		List<List<Object[]>> rowBuffers = new ArrayList<List<Object[]>>();
+
+		// Assemble the buffers etc in the old style...
+		//
+		for (StepMeta stepMeta : lastTransDebugMeta.getStepDebugMetaMap().keySet() ) {
+			StepDebugMeta stepDebugMeta = lastTransDebugMeta.getStepDebugMetaMap().get(stepMeta);
+			
+			stepnames.add(stepMeta.getName());
+			rowMetas.add(stepDebugMeta.getRowBufferMeta());
+			rowBuffers.add(stepDebugMeta.getRowBuffer());
+		}
+		
+		EnterPreviewRowsDialog dialog = new EnterPreviewRowsDialog(shell, SWT.NONE, stepnames, rowMetas, rowBuffers);
+		dialog.open();
+	}
 }

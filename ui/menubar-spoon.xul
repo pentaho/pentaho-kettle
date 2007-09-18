@@ -114,6 +114,7 @@ align="vertical" >
 			<toolbarseparator />
 			<toolbarbutton value="tool-run" image="images/run.png" tooltiptext="%Spoon.Tooltip.RunTranformation"/>
 			<toolbarbutton value="tool-preview" image="images/preview.png" tooltiptext="%Spoon.Tooltip.PreviewTranformation"/>
+			<toolbarbutton value="tool-debug" image="images/debug.png" tooltiptext="%Spoon.Tooltip.DebugTranformation"/>
 			<toolbarbutton value="tool-replay" image="images/replay.png" tooltiptext="%Spoon.Tooltip.ReplayTranformation"/>
 			<toolbarseparator />
 			<toolbarbutton value="tool-verify" image="images/check.png" tooltiptext="%Spoon.Tooltip.VerifyTranformation"/>

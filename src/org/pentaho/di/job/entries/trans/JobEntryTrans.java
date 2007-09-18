@@ -563,14 +563,13 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
                     trans.setParentJob(parentJob);
                     trans.shareVariablesWith(this);
 
-        			// Execute!
-        			if (!trans.execute(args))
-        			{
-                        log.logError(toString(), "Unable to prepare for execution of the transformation");
-        				result.setNrErrors(1);
-        			}
-        			else
-        			{
+                    try {
+            			// Start execution...
+                    	//
+                    	trans.execute(args);
+
+                    	// Wait until we're done with it...
+                    	//
         				while (!trans.isFinished() && !parentJob.isStopped() && trans.getErrors() == 0)
         				{
         					try { Thread.sleep(100);}
@@ -601,7 +600,11 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
                         	ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_LOG, KettleVFS.getFileObject(getLogFilename()), parentJob.getName(), toString());
                             result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
         				}
-        			}
+                    }
+                    catch (KettleException e) {
+                        log.logError(toString(), "Unable to prepare for execution of the transformation");
+        				result.setNrErrors(1);
+					}
                 }
     		}
     		catch(Exception e)

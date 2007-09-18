@@ -441,9 +441,10 @@ public class BlackBoxTests extends TestCase {
 			}
 */
 		    // allocate & run the required sub-threads
-			boolean ok = trans.execute(null); 
-            if (!ok)
-            {
+			try {
+				trans.execute(null); 
+			}
+			catch (Exception e) {
             	addFailure("Unable to prepare and initialize this transformation: " + getPath(fileName));
                 log.logError("BlackBoxTest", "Unable to prepare and initialize this transformation: " + getPath(fileName));
                 return false;

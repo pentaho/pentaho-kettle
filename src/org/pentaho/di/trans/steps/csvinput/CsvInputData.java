@@ -46,6 +46,7 @@ public class CsvInputData extends BaseStepData implements StepDataInterface
 	
 	public int preferredBufferSize;
 	public String filename;
+	public long fileSize;
 			
 	/**
 	 * 

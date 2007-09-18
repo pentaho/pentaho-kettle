@@ -77,6 +77,8 @@ public class StreamLookupData extends BaseStepData implements StepDataInterface
     public RowMetaInterface infoMeta;
    
 	public int[] lookupColumnIndex;
+
+	public boolean metadataVerifiedIntegerPair;
 	
 	public StreamLookupData()
 	{
@@ -85,6 +87,7 @@ public class StreamLookupData extends BaseStepData implements StepDataInterface
         hashIndex = null;
         longIndex = new LongHashIndex();
         list = new ArrayList<KeyValue>();
+        metadataVerifiedIntegerPair=false;
         
         comparator = new Comparator<KeyValue>()
         {

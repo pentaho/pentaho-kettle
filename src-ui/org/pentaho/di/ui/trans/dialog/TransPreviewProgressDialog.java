@@ -6,18 +6,23 @@
 package org.pentaho.di.ui.trans.dialog;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.Log4jStringAppender;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.ui.trans.dialog.Messages;
+import org.pentaho.di.trans.debug.BreakPointListener;
+import org.pentaho.di.trans.debug.StepDebugMeta;
+import org.pentaho.di.trans.debug.TransDebugMeta;
+import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 
 
@@ -37,6 +42,7 @@ public class TransPreviewProgressDialog
     
     private boolean cancelled;
     private String loggingText;
+	private TransDebugMeta transDebugMeta;
     
     /**
      * Creates a new dialog that will handle the wait while previewing a transformation...
@@ -102,13 +108,9 @@ public class TransPreviewProgressDialog
         return transMeta;
     }
     
-    private void doPreview(IProgressMonitor progressMonitor)
+    private void doPreview(final IProgressMonitor progressMonitor)
     {
         LogWriter log = LogWriter.getInstance();
-        
-        // How many rows do we need?
-        int nrRows=0;
-        for (int i=0 ; i<previewSize.length ; i++) nrRows+=previewSize[i];
         
         progressMonitor.beginTask(Messages.getString("TransPreviewProgressDialog.Monitor.BeginTask.Title"), 100); //$NON-NLS-1$
         
@@ -120,23 +122,64 @@ public class TransPreviewProgressDialog
         trans = new Trans(transMeta);
         
         trans.initializeVariablesFrom(null);
-        trans.setPreview(true);
-        trans.setPreviewSteps(previewStepNames);
-        trans.setPreviewSizes(previewSize);        
-        trans.execute(null);
+        
+        // Prepare the execution...
+        //
+        try {
+			trans.prepareExecution(null);
+		} catch (KettleException e) {
+			new ErrorDialog(shell, Messages.getString("System.Dialog.Error.Title"), Messages.getString("TransPreviewProgressDialog.Exception.ErrorPreparingTransformation"), e);
+			
+			// It makes no sense to continue, so just stop running...
+			//
+			return;
+		}
+        
+        // Add the preview / debugging information...
+        //
+        transDebugMeta = new TransDebugMeta(transMeta);
+        for (int i=0;i<previewStepNames.length;i++) {
+        	StepMeta stepMeta = transMeta.findStep(previewStepNames[i]);
+        	StepDebugMeta stepDebugMeta = new StepDebugMeta(stepMeta);
+        	stepDebugMeta.setReadingFirstRows(true);
+        	stepDebugMeta.setRowCount(previewSize[i]);
+        	transDebugMeta.getStepDebugMetaMap().put(stepMeta, stepDebugMeta);
+        }
+        
+        // set the appropriate listeners on the transformation...
+        //
+        transDebugMeta.addRowListenersToTransformation(trans);
+        
+        // Fire off the step threads... start running!
+        //
+        trans.startThreads();
         
         int previousPct = 0;
-        while (!trans.previewComplete() && !trans.isFinished() && !progressMonitor.isCanceled())
+        final List<String> previewComplete = new ArrayList<String>();
+        
+        while (previewComplete.size()<previewStepNames.length && !trans.isFinished() && !progressMonitor.isCanceled())
         {
+			// We add a break-point that is called every time we have a step with a full preview row buffer
+        	// That makes it easy and fast to see if we have all the rows we need
+        	//
+			transDebugMeta.addBreakPointListers(new BreakPointListener() {
+					public void breakPointHit(TransDebugMeta transDebugMeta, StepDebugMeta stepDebugMeta, RowMetaInterface rowBufferMeta, List<Object[]> rowBuffer) {
+						String stepName =  stepDebugMeta.getStepMeta().getName();
+						previewComplete.add(stepName);
+						progressMonitor.subTask( Messages.getString("TransPreviewProgressDialog.SubTask.StepPreviewFinished", stepName) );
+					}
+				}
+			);
+			
             // How many rows are done?
             int nrDone = 0;
-            for (int i=0 ; i<previewSize.length ; i++)
-            {
-                List<Object[]> buffer = trans.getPreviewRows(previewStepNames[i], 0);
-                nrDone+=buffer.size();
+            int nrTotal = 0;
+            for (StepDebugMeta stepDebugMeta : transDebugMeta.getStepDebugMetaMap().values()) {
+            	nrDone+=stepDebugMeta.getRowBuffer().size();
+            	nrTotal+=stepDebugMeta.getRowCount();
             }
             
-            int pct = 100*nrDone/nrRows;
+            int pct = 100*nrDone/nrTotal;
             
             int worked = pct - previousPct;
             
@@ -168,7 +211,13 @@ public class TransPreviewProgressDialog
      */
     public List<Object[]> getPreviewRows(String stepname)
     {
-        return trans.getPreviewRows(stepname, 0);
+    	for (StepMeta stepMeta : transDebugMeta.getStepDebugMetaMap().keySet()) {
+    		if (stepMeta.getName().equals(stepname)) {
+    			StepDebugMeta stepDebugMeta = transDebugMeta.getStepDebugMetaMap().get(stepMeta);
+    			return stepDebugMeta.getRowBuffer();
+    		}
+    	}
+        return null;
     }
     
     /**
@@ -177,11 +226,17 @@ public class TransPreviewProgressDialog
      */
     public RowMetaInterface getPreviewRowsMeta(String stepname)
     {
-        return trans.getPreviewRowsMeta(stepname, 0);
+    	for (StepMeta stepMeta : transDebugMeta.getStepDebugMetaMap().keySet()) {
+    		if (stepMeta.getName().equals(stepname)) {
+    			StepDebugMeta stepDebugMeta = transDebugMeta.getStepDebugMetaMap().get(stepMeta);
+    			return stepDebugMeta.getRowBufferMeta();
+    		}
+    	}
+        return null;
     }
 
     /**
-     * @return true is the preview was cancelled by the user
+     * @return true is the preview was canceled by the user
      */
     public boolean isCancelled()
     {
@@ -204,4 +259,11 @@ public class TransPreviewProgressDialog
     {
        return trans; 
     }
+
+	/**
+	 * @return the transDebugMeta
+	 */
+	public TransDebugMeta getTransDebugMeta() {
+		return transDebugMeta;
+	}
 }

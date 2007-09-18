@@ -30,9 +30,63 @@ public class StringUtil
 
 	public static final String WINDOWS_CLOSE = "%%";
   
-  public static final String CRLF = "\r\n"; //$NON-NLS-1$
+    public static final String CRLF = "\r\n"; //$NON-NLS-1$
 
-  public static final String INDENTCHARS = "                    "; //$NON-NLS-1$
+    public static final String INDENTCHARS = "                    "; //$NON-NLS-1$
+    
+    public static final String[] SYSTEM_PROPERTIES = new String[] {
+    	 "java.version",
+    	 "java.vendor",
+    	 "java.vendor.url",
+    	 "java.home",
+    	 "java.vm.specification.version",
+    	 "java.vm.specification.vendor",
+    	 "java.vm.specification.name",
+    	 "java.vm.version",
+    	 "java.vm.vendor",
+    	 "java.vm.name",
+    	 "java.specification.version",
+    	 "java.specification.vendor",
+    	 "java.specification.name",
+    	 "java.class.version",
+    	 "java.class.path",
+    	 "java.library.path",
+    	 "java.io.tmpdir",
+    	 "java.compiler",
+    	 "java.ext.dirs",
+    	 
+    	 "os.name",
+    	 "os.arch",
+    	 "os.version",
+    	 
+    	 "file.separator",
+    	 "path.separator",
+    	 "line.separator",
+    	 
+    	 "user.name",
+    	 "user.home",
+    	 "user.dir",
+    	 "user.country",
+    	 "user.language",
+    	 "user.timezone",
+    	 
+    	 "org.apache.commons.logging.Log",
+    	 "org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient",
+    	 "org.apache.commons.logging.simplelog.showdatetime",
+    	 "org.eclipse.swt.browser.XULRunnerInitialized",
+    	 "org.eclipse.swt.browser.XULRunnerPath",
+    	 
+    	 "sun.arch.data.model",
+    	 "sun.boot.class.path",
+    	 "sun.boot.library.path",
+    	 "sun.cpu.endian",
+    	 "sun.cpu.isalist",
+    	 "sun.io.unicode.encoding",
+    	 "sun.java.launcher",
+    	 "sun.jnu.encoding",
+    	 "sun.management.compiler",
+    	 "sun.os.patch.level",
+      };
   
 	private static final Pattern ALL_LETTERS = Pattern.compile("([a-z])");
 
@@ -223,8 +277,11 @@ public class StringUtil
 
 					if (Const.indexOfString(variable, list) < 0)
 					{
-						// Optionally filter out set environment variables
-						if (includeSystemVariables || System.getProperty(variable) == null)
+						// Either we include the system variables (all)
+						// Or the variable is not a system variable
+						// Or it's a system variable but the value has not been set (and we offer the user the option to set it)
+						//
+						if (includeSystemVariables || !isSystemVariable(variable) || System.getProperty(variable)==null)
 						{
 							list.add(variable);
 						}
@@ -235,6 +292,11 @@ public class StringUtil
 			}
 			p++;
 		}
+	}
+	
+	public static boolean isSystemVariable(String aString)
+	{
+		return Const.indexOfString(aString, SYSTEM_PROPERTIES)>=0; 
 	}
 
 	public static void getUsedVariables(String aString, List<String> list, boolean includeSystemVariables)

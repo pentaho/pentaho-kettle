@@ -49,7 +49,7 @@ import org.w3c.dom.Node;
  * Created on 03-apr-2006
  */
 @Step(name="ValueMapper",image="ui/images/VMP.png",tooltip="BaseStep.TypeTooltipDesc.MapValues",description="BaseStep.TypeLongDesc.ValueMapper",
-		category=StepCategory.TRANSFORM)
+		category=StepCategory.CATEGORY_TRANSFORM)
 public class ValueMapperMeta extends BaseStepMeta implements StepMetaInterface
 {
     private String fieldToUse;

@@ -82,8 +82,9 @@ public class PrepareExecutionTransServlet extends HttpServlet
                 log.addAppender(appender);
                 transformationMap.addAppender(transName, appender);
                 
-                if (trans.prepareExecution(null))
-                {
+                try {
+                	trans.prepareExecution(null);
+
                     if (useXML)
                     {
                         out.println(WebResult.OK.getXML());
@@ -94,8 +95,8 @@ public class PrepareExecutionTransServlet extends HttpServlet
                         out.println("<a href=\"/kettle/transStatus?name="+transName+"\">Back to the transformation status page</a><p>");
                     }
                 }
-                else
-                {
+                catch (Exception e) {
+                	
                     if (useXML)
                     {
                         out.println(new WebResult(WebResult.STRING_ERROR, "Initialisation of transformation failed: "+Const.CR+appender.getBuffer().toString()));

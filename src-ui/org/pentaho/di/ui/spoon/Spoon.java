@@ -151,6 +151,7 @@ import org.pentaho.di.trans.StepPlugin;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.debug.TransDebugMeta;
 import org.pentaho.di.trans.step.BaseStep;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
@@ -200,6 +201,7 @@ import org.pentaho.di.ui.spoon.trans.TransHistory;
 import org.pentaho.di.ui.spoon.trans.TransLog;
 import org.pentaho.di.ui.spoon.wizards.CopyTableWizardPage1;
 import org.pentaho.di.ui.spoon.wizards.CopyTableWizardPage2;
+import org.pentaho.di.ui.trans.debug.TransDebugDialog;
 import org.pentaho.di.ui.trans.dialog.TransHopDialog;
 import org.pentaho.di.ui.trans.dialog.TransLoadProgressDialog;
 import org.pentaho.di.ui.util.ImageUtil;
@@ -315,6 +317,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	private ExpandBar expandBar;
 
 	private TransExecutionConfiguration executionConfiguration;
+	private TransExecutionConfiguration previewExecutionConfiguration;
+	private TransExecutionConfiguration debugExecutionConfiguration;
 
 	// private TreeItem tiTrans, tiJobs;
 
@@ -408,6 +412,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		loadSettings();
 
 		executionConfiguration = new TransExecutionConfiguration();
+		previewExecutionConfiguration = new TransExecutionConfiguration();
+		debugExecutionConfiguration = new TransExecutionConfiguration();
 
 		// Clean out every time we start, auto-loading etc, is not a good idea
 		// If they are needed that often, set them in the kettle.properties file
@@ -423,51 +429,78 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 		// widgets = new WidgetContainer();
 
-		defKeys = new KeyAdapter()
-		{
-			public void keyPressed(KeyEvent e)
-			{
+		defKeys = new KeyAdapter() {
+			public void keyPressed(KeyEvent e) {
 
 				boolean ctrl = ((e.stateMask & SWT.CONTROL) != 0);
 				boolean alt = ((e.stateMask & SWT.ALT) != 0);
 
 				String key = null;
 
-                    switch( e.keyCode ) {
-                    case SWT.ESC: key = "esc"; break; //$NON-NLS-1$
-                    case SWT.F1: key = "f1"; break; //$NON-NLS-1$
-                    case SWT.F2: key = "f2"; break; //$NON-NLS-1$
-                    case SWT.F3: key = "f3"; break; //$NON-NLS-1$
-                    case SWT.F4: key = "f4"; break; //$NON-NLS-1$
-                    case SWT.F5: key = "f5"; break; //$NON-NLS-1$
-                    case SWT.F6: key = "f6"; break; //$NON-NLS-1$
-                    case SWT.F7: key = "f7"; break; //$NON-NLS-1$
-                    case SWT.F8: key = "f8"; break; //$NON-NLS-1$
-                    case SWT.F9: key = "f9"; break; //$NON-NLS-1$
-                    case SWT.F10: key = "f10"; break; //$NON-NLS-1$
-                    case SWT.F11: key = "f12"; break; //$NON-NLS-1$
-                    case SWT.F12: key = "f12"; break; //$NON-NLS-1$
-                    case SWT.ARROW_UP: key = "up"; break; //$NON-NLS-1$
-                    case SWT.ARROW_DOWN: key = "down"; break; //$NON-NLS-1$
-                    case SWT.ARROW_LEFT: key = "left"; break; //$NON-NLS-1$
-                    case SWT.ARROW_RIGHT: key = "right"; break; //$NON-NLS-1$
-                    case SWT.HOME: key = "home"; break; //$NON-NLS-1$
-                    default: ;
-                    }
-                    if( key == null && ctrl) {
+				switch (e.keyCode) {
+				case SWT.ESC:
+					key = "esc";break; //$NON-NLS-1$
+				case SWT.F1:
+					key = "f1";break; //$NON-NLS-1$
+				case SWT.F2:
+					key = "f2";break; //$NON-NLS-1$
+				case SWT.F3:
+					key = "f3";break; //$NON-NLS-1$
+				case SWT.F4:
+					key = "f4";break; //$NON-NLS-1$
+				case SWT.F5:
+					key = "f5";break; //$NON-NLS-1$
+				case SWT.F6:
+					key = "f6";break; //$NON-NLS-1$
+				case SWT.F7:
+					key = "f7";break; //$NON-NLS-1$
+				case SWT.F8:
+					key = "f8";break; //$NON-NLS-1$
+				case SWT.F9:
+					key = "f9";break; //$NON-NLS-1$
+				case SWT.F10:
+					key = "f10";break; //$NON-NLS-1$
+				case SWT.F11:
+					key = "f12";break; //$NON-NLS-1$
+				case SWT.F12:
+					key = "f12";break; //$NON-NLS-1$
+				case SWT.ARROW_UP:
+					key = "up";break; //$NON-NLS-1$
+				case SWT.ARROW_DOWN:
+					key = "down";break; //$NON-NLS-1$
+				case SWT.ARROW_LEFT:
+					key = "left";break; //$NON-NLS-1$
+				case SWT.ARROW_RIGHT:
+					key = "right";break; //$NON-NLS-1$
+				case SWT.HOME:
+					key = "home";break; //$NON-NLS-1$
+				default:
+					;
+				}
+				if (key == null && ctrl) {
 					// get the character
-                    		if(e.character >= '0' && e.character <= '9' ) {
+					if (e.character >= '0' && e.character <= '9') {
 						char c = e.character;
-						key = new String(new char[] { c });
-                    		} else {
+						key = new String(new char[] {
+							c
+						});
+					} else {
 						char c = (char) ('a' + (e.character - 1));
-						key = new String(new char[] { c });
+						key = new String(new char[] {
+							c
+						});
 					}
-                    } else 
-                    if( key == null )
-                    {
+				} else if (key == null) {
 					char c = e.character;
-					key = new String(new char[] { c });
+					key = new String(new char[] {
+						c
+					});
+				}
+				
+				// TODO: remove after testing...
+				//
+				if (e.keyCode==SWT.F5 && shift && !ctrl) {
+					testDebugWindow();
 				}
 
 				menuBar.handleAccessKey(key, alt, ctrl);
@@ -950,11 +983,15 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	}
 
     public void executeTransformation() {
-		executeTransformation(getActiveTransformation(), true, false, false, false, null);
+		executeTransformation(getActiveTransformation(), true, false, false, false, false, null);
 	}
 
     public void previewTransformation() {
-		executeTransformation(getActiveTransformation(), true, false, false, true, null);
+		executeTransformation(getActiveTransformation(), true, false, false, true, false, null);
+	}
+
+    public void debugTransformation() {
+		executeTransformation(getActiveTransformation(), true, false, false, false, true, null);
 	}
 
     public void checkTrans() {
@@ -970,9 +1007,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	}
 
     public void showLastTransPreview() {
-		TransLog spoonLog = getActiveTransLog();
-    		if (spoonLog!=null) {
-			spoonLog.showPreview();
+		TransLog transLog = getActiveTransLog();
+    	if (transLog!=null) {
+			transLog.showLastPreviewResults();
 		}
 	}
 
@@ -1550,6 +1587,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 					String pluginName = baseEntries[i].getDescription();
 					String pluginDescription = baseEntries[i].getTooltip();
 					boolean isPlugin = baseEntries[i].isPlugin();
+					
+					if (stepimg==null) {
+						System.out.println("WTF");
+					}
 
                     addExpandBarItemLine(item, composite, stepimg, pluginName, pluginDescription, isPlugin, baseEntries[i]);
 				}
@@ -5776,28 +5817,32 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	}
 
 	public void runFile(){
-		executeFile(true, false, false, false, null);
+		executeFile(true, false, false, false, false, null);
 	}
 
 	public void previewFile(){
-		executeFile(true, false, false, true, null);
+		executeFile(true, false, false, true, false, null);
+	}
+	
+	public void debugFile() {
+		executeFile(true, false, false, false, true, null);
 	}
 
-	public void executeFile(boolean local, boolean remote, boolean cluster, boolean preview, Date replayDate)
+	public void executeFile(boolean local, boolean remote, boolean cluster, boolean preview, boolean debug, Date replayDate)
 	{
 		TransMeta transMeta = getActiveTransformation();
-		if (transMeta != null)	executeTransformation(transMeta, local, remote, cluster, preview, replayDate);
+		if (transMeta != null)	executeTransformation(transMeta, local, remote, cluster, preview, debug, replayDate);
 
 		JobMeta jobMeta = getActiveJob();
-		if (jobMeta != null)executeJob(jobMeta, local, remote, cluster, preview, replayDate);
+		if (jobMeta != null) executeJob(jobMeta, local, remote, cluster, preview, replayDate);
 
 	}
 
-    public void executeTransformation(TransMeta transMeta, boolean local, boolean remote, boolean cluster, boolean preview, Date replayDate)
+    public void executeTransformation(TransMeta transMeta, boolean local, boolean remote, boolean cluster, boolean preview, boolean debug, Date replayDate)
 	{
 		try
 		{
-			delegates.trans.executeTransformation(transMeta, local, remote, cluster, preview, replayDate);
+			delegates.trans.executeTransformation(transMeta, local, remote, cluster, preview, debug, replayDate);
 		} catch (Exception e)
 		{
 			new ErrorDialog(shell, "Split transformation", "There was an error during transformation split",
@@ -6075,4 +6120,50 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		return "Y".equalsIgnoreCase(answer.toString());
 	}
 	
+	public void testDebugWindow() {
+		System.out.println("Test Debug Window");
+		TransMeta transMeta = getActiveTransformation();
+		if (transMeta!=null) {
+			TransDebugMeta transDebugMeta = new TransDebugMeta(transMeta);
+			TransDebugDialog dialog = new TransDebugDialog(shell, transDebugMeta);
+			if (dialog.open()) {
+				System.out.println("OK");
+			}
+		}
+	}
+
+	/**
+	 * @return the previewExecutionConfiguration
+	 */
+	public TransExecutionConfiguration getPreviewExecutionConfiguration() {
+		return previewExecutionConfiguration;
+	}
+
+	/**
+	 * @param previewExecutionConfiguration the previewExecutionConfiguration to set
+	 */
+	public void setPreviewExecutionConfiguration(TransExecutionConfiguration previewExecutionConfiguration) {
+		this.previewExecutionConfiguration = previewExecutionConfiguration;
+	}
+
+	/**
+	 * @return the debugExecutionConfiguration
+	 */
+	public TransExecutionConfiguration getDebugExecutionConfiguration() {
+		return debugExecutionConfiguration;
+	}
+
+	/**
+	 * @param debugExecutionConfiguration the debugExecutionConfiguration to set
+	 */
+	public void setDebugExecutionConfiguration(TransExecutionConfiguration debugExecutionConfiguration) {
+		this.debugExecutionConfiguration = debugExecutionConfiguration;
+	}
+
+	/**
+	 * @param executionConfiguration the executionConfiguration to set
+	 */
+	public void setExecutionConfiguration(TransExecutionConfiguration executionConfiguration) {
+		this.executionConfiguration = executionConfiguration;
+	}
 }

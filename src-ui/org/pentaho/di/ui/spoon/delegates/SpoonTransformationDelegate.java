@@ -25,7 +25,10 @@ import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.cluster.TransSplitter;
+import org.pentaho.di.trans.debug.StepDebugMeta;
+import org.pentaho.di.trans.debug.TransDebugMeta;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.ShowMessageDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.spoon.Messages;
@@ -36,6 +39,7 @@ import org.pentaho.di.ui.spoon.trans.TransGraph;
 import org.pentaho.di.ui.spoon.trans.TransHistory;
 import org.pentaho.di.ui.spoon.trans.TransHistoryRefresher;
 import org.pentaho.di.ui.spoon.trans.TransLog;
+import org.pentaho.di.ui.trans.debug.TransDebugDialog;
 import org.pentaho.di.ui.trans.dialog.TransExecutionConfigurationDialog;
 import org.pentaho.xul.swt.tab.TabItem;
 
@@ -47,11 +51,23 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 	 * under a number [1], [2] etc.
 	 */
 	private Map<String, TransMeta> transformationMap;
+	
+	/**
+	 * Remember the debugging configuration per transformation
+	 */
+	private Map<TransMeta, TransDebugMeta> transDebugMetaMap;
+
+	/**
+	 * Remember the preview configuration per transformation
+	 */
+	private Map<TransMeta, TransDebugMeta> transPreviewMetaMap;
 
 	public SpoonTransformationDelegate(Spoon spoon)
 	{
 		super(spoon);
 		transformationMap = new Hashtable<String, TransMeta>();
+		transDebugMetaMap = new Hashtable<TransMeta, TransDebugMeta>();
+		transPreviewMetaMap = new Hashtable<TransMeta, TransDebugMeta>();
 	}
 
 	/**
@@ -836,28 +852,85 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 		}
 	}
 
-	public void executeTransformation(TransMeta transMeta, boolean local, boolean remote, boolean cluster, boolean preview,
-			Date replayDate) throws KettleException {
-		if (transMeta == null)
-			return;
-
-		TransExecutionConfiguration executionConfiguration = spoon.getExecutionConfiguration();
-
-		// THIS IS USELESS NOTHING WAS SELECTED YET
-		// executionConfiguration.setExecutingLocally(local);
-		// executionConfiguration.setExecutingRemotely(remote);
-		// executionConfiguration.setExecutingClustered(cluster);
+	public void executeTransformation(TransMeta transMeta, boolean local, boolean remote, boolean cluster, boolean preview, boolean debug, Date replayDate) throws KettleException {
 		
-		if (transMeta.isUsingAtLeastOneClusterSchema()) {
-			executionConfiguration.setExecutingLocally(false);
-			executionConfiguration.setExecutingRemotely(false);
-			executionConfiguration.setExecutingClustered(true);
+		if (transMeta == null) {
+			return;
 		}
-		else
-		{
-			executionConfiguration.setExecutingLocally(true);
-			executionConfiguration.setExecutingRemotely(false);
-			executionConfiguration.setExecutingClustered(false);
+		
+		// See if we need to ask for debugging information...
+		//
+		TransDebugMeta transDebugMeta = null;
+		TransExecutionConfiguration executionConfiguration = null;
+		
+		if (preview) {
+			executionConfiguration = spoon.getPreviewExecutionConfiguration();
+		}
+		else if (debug) {
+			executionConfiguration = spoon.getDebugExecutionConfiguration();
+		}
+		else {
+			executionConfiguration = spoon.getExecutionConfiguration();
+		}
+		
+		if (debug) {
+			// See if we have debugging information stored somewhere?
+			//
+			transDebugMeta = transDebugMetaMap.get(transMeta);
+			if (transDebugMeta==null) {
+				transDebugMeta = new TransDebugMeta(transMeta);
+				transDebugMetaMap.put(transMeta, transDebugMeta);
+			}
+		}
+		else if (preview) {
+			// See if we have preview information stored somewhere?
+			//
+			transDebugMeta = transPreviewMetaMap.get(transMeta);
+			if (transDebugMeta==null) {
+				transDebugMeta = new TransDebugMeta(transMeta);
+				
+				transPreviewMetaMap.put(transMeta, transDebugMeta);
+			}
+			
+			// Set the default number of preview rows on all selected steps...
+			//
+			StepMeta[] selectedSteps = transMeta.getSelectedSteps();
+			if (selectedSteps.length>0) {
+				transDebugMeta.getStepDebugMetaMap().clear();
+				for (StepMeta stepMeta : transMeta.getSelectedSteps()) {
+					StepDebugMeta stepDebugMeta = new StepDebugMeta(stepMeta);
+					stepDebugMeta.setRowCount(PropsUI.getInstance().getDefaultPreviewSize());
+					stepDebugMeta.setReadingFirstRows(true);
+					transDebugMeta.getStepDebugMetaMap().put(stepMeta, stepDebugMeta);
+				}
+			}
+		}
+		
+		if (debug || preview) {
+			TransDebugDialog transDebugDialog = new TransDebugDialog(spoon.getShell(), transDebugMeta);
+			if (transDebugDialog.open()) {
+				executionConfiguration.setExecutingLocally(true);
+				executionConfiguration.setExecutingRemotely(false);
+				executionConfiguration.setExecutingClustered(false);
+			}
+			else {
+				// If we cancel the debug dialog, we don't go further with the execution either.
+				//
+				return;
+			}
+		}
+		else {
+			if (transMeta.isUsingAtLeastOneClusterSchema()) {
+				executionConfiguration.setExecutingLocally(false);
+				executionConfiguration.setExecutingRemotely(false);
+				executionConfiguration.setExecutingClustered(true);
+			}
+			else
+			{
+				executionConfiguration.setExecutingLocally(true);
+				executionConfiguration.setExecutingRemotely(false);
+				executionConfiguration.setExecutingClustered(false);
+			}
 		}
 
 		Object data[] = spoon.variables.getData();
@@ -867,27 +940,29 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 			variableMap.put(fields[idx], data[idx].toString());
 		}
 
+		executionConfiguration.setVariables(variableMap);
 		executionConfiguration.getUsedVariables(transMeta);
 		executionConfiguration.getUsedArguments(transMeta, spoon.getArguments());
-		executionConfiguration.setVariables(variableMap);
 		executionConfiguration.setReplayDate(replayDate);
-		executionConfiguration.setLocalPreviewing(preview);
 
 		executionConfiguration.setLogLevel(spoon.getLog().getLogLevel());
-		// executionConfiguration.setSafeModeEnabled( transLog!=null &&
-		// transLog.isSafeModeChecked() );
 
 		TransExecutionConfigurationDialog dialog = new TransExecutionConfigurationDialog(spoon.getShell(), executionConfiguration, transMeta);
 		if (dialog.open()) {
-			addTransLog(transMeta, !executionConfiguration.isLocalPreviewing());
+			addTransLog(transMeta, executionConfiguration.isExecutingLocally());
 			TransLog transLog = spoon.getActiveTransLog();
 
+			// Is this a local execution?
+			//
 			if (executionConfiguration.isExecutingLocally()) {
-				if (executionConfiguration.isLocalPreviewing()) {
-					transLog.preview(executionConfiguration);
+				if (debug || preview) {
+					transLog.debug(executionConfiguration, transDebugMeta);
 				} else {
 					transLog.start(executionConfiguration);
 				}
+				
+			// Are we executing remotely?
+			//
 			} else if (executionConfiguration.isExecutingRemotely()) {
 				if (executionConfiguration.getRemoteServer() != null) {
 					spoon.delegates.slaves.sendXMLToSlaveServer(transMeta, executionConfiguration);
@@ -898,6 +973,9 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 					mb.setText(Messages.getString("Spoon.Dialog.NoRemoteServerSpecified.Title"));
 					mb.open();
 				}
+				
+			// Are we executing clustered?
+			//
 			} else if (executionConfiguration.isExecutingClustered()) {
 				splitTrans(transMeta, executionConfiguration);
 			}

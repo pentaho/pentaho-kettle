@@ -392,12 +392,14 @@ public class Pan
 			}
 			
 		    // allocate & run the required sub-threads
-			boolean ok = trans.execute((String[])args.toArray(new String[args.size()])); 
-            if (!ok)
-            {
+			try {
+				trans.execute((String[])args.toArray(new String[args.size()]));
+			}
+			catch(KettleException e) {
                 System.out.println("Unable to prepare and initialize this transformation");
                 System.exit(3);
-            }
+			}
+
 			trans.waitUntilFinished();
 			trans.endProcessing("end");
 

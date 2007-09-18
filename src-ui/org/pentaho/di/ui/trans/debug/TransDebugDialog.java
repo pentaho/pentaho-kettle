@@ -1,0 +1,363 @@
+package org.pentaho.di.ui.trans.debug;
+
+import java.util.Hashtable;
+import java.util.Map;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.layout.FormAttachment;
+import org.eclipse.swt.layout.FormData;
+import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Dialog;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.TableItem;
+import org.pentaho.di.core.Condition;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.row.RowMeta;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.trans.debug.StepDebugMeta;
+import org.pentaho.di.trans.debug.TransDebugMeta;
+import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.ui.core.PropsUI;
+import org.pentaho.di.ui.core.gui.GUIResource;
+import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.ui.core.widget.ColumnInfo;
+import org.pentaho.di.ui.core.widget.ConditionEditor;
+import org.pentaho.di.ui.core.widget.LabelText;
+import org.pentaho.di.ui.core.widget.TableView;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
+
+/**
+ * Allows you to edit/enter the transformation debugging information 
+ * 
+ * @author matt
+ * @since  2007-09-14
+ * @since  version 3.0 RC1
+ */
+public class TransDebugDialog extends Dialog {
+
+	private Display display;
+    private Shell parent;
+    private Shell shell;
+    private PropsUI props;
+    private boolean retval;
+
+    private Button wOK, wCancel;
+    
+    private TableView wSteps;
+    
+    private TransDebugMeta transDebugMeta;
+	private Composite wComposite;
+	private LabelText wRowCount;
+	private int margin;
+	private int middle;
+	private Button wFirstRows;
+	private Button wPauseBreakPoint;
+	private Condition condition;
+	private RowMetaInterface stepInputFields;
+	private ConditionEditor wCondition;
+	private Label wlCondition;
+	private Map<StepMeta, StepDebugMeta> stepDebugMetaMap;
+	private int previousIndex; 
+    
+    public TransDebugDialog(Shell parent, TransDebugMeta transDebugMeta) {
+    	super(parent);
+    	this.parent = parent;
+    	this.transDebugMeta = transDebugMeta;
+    	props = PropsUI.getInstance();
+    	
+    	// Keep our own map of step debugging information...
+    	//
+    	stepDebugMetaMap = new Hashtable<StepMeta, StepDebugMeta>();
+    	stepDebugMetaMap.putAll(transDebugMeta.getStepDebugMetaMap());
+    	
+    	previousIndex=-1;
+    }
+ 
+    public boolean open() {
+    	
+        display = parent.getDisplay();
+        shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL | SWT.RESIZE | SWT.MAX | SWT.MIN);
+        props.setLook(shell);
+		shell.setImage(GUIResource.getInstance().getImageTransGraph());
+        
+        FormLayout formLayout = new FormLayout ();
+        formLayout.marginWidth  = Const.FORM_MARGIN;
+        formLayout.marginHeight = Const.FORM_MARGIN;
+
+        shell.setLayout(formLayout);
+        shell.setText(Messages.getString("TransDebugDialog.Shell.Title")); //$NON-NLS-1$
+
+        margin = Const.MARGIN;
+        middle = props.getMiddlePct();
+        
+        wOK = new Button(shell, SWT.PUSH);
+        wOK.setText(Messages.getString("System.Button.OK"));
+        wOK.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { ok(); }});
+        wCancel = new Button(shell, SWT.PUSH);
+        wCancel.setText(Messages.getString("System.Button.Cancel"));
+        wCancel.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { cancel(); }});
+        
+        BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, null);
+    	
+        // Add the list of steps
+        //
+        ColumnInfo[] stepColumns = {
+				new ColumnInfo(Messages.getString("TransDebugDialog.Column.StepName"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), // name, non-numeric, readonly
+			};
+
+		int nrSteps = transDebugMeta.getTransMeta().nrSteps();
+		wSteps = new TableView(transDebugMeta.getTransMeta(), shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.SINGLE, stepColumns, nrSteps, true, null, props);
+		FormData fdSteps = new FormData();
+		fdSteps.left = new FormAttachment(0, 0);
+		fdSteps.right = new FormAttachment(middle, -margin);
+		fdSteps.top = new FormAttachment(0, margin);
+		fdSteps.bottom = new FormAttachment(wOK, -margin * 2);
+		wSteps.setLayoutData(fdSteps);
+        wSteps.table.setHeaderVisible(false);
+        
+        // If someone clicks on a row, we want to refresh the right pane...
+        //
+        wSteps.table.addSelectionListener(new SelectionAdapter() {
+		
+			public void widgetSelected(SelectionEvent e) {
+				// Before we show anything, make sure to save the content of the screen...
+				//
+				getStepDebugMeta();
+				
+				// Now show the information...
+				//
+				showStepDebugInformation();
+			}
+		
+		});
+        
+        // Now add the composite on which we will dynamically place a number of widgets, based on the selected step...
+        //
+        wComposite = new Composite(shell, SWT.BORDER);
+        props.setLook(wComposite);
+        
+        FormData fdComposite = new FormData();
+        fdComposite.left   = new FormAttachment(middle, 0);
+        fdComposite.right  = new FormAttachment(100, 0);
+        fdComposite.top    = new FormAttachment(0, margin);
+        fdComposite.bottom = new FormAttachment(wOK, -margin*2);
+        wComposite.setLayoutData(fdComposite);
+        
+        // Give the composite a layout...
+        FormLayout compositeLayout = new FormLayout ();
+        compositeLayout.marginWidth  = Const.FORM_MARGIN;
+        compositeLayout.marginHeight = Const.FORM_MARGIN;
+        wComposite.setLayout(compositeLayout);
+        
+        getData();
+        
+        BaseStepDialog.setSize(shell);
+        
+        // Set the focus on the OK button
+        wOK.setFocus();
+        
+        shell.open();
+        while (!shell.isDisposed())
+        {
+            if (!display.readAndDispatch()) display.sleep();
+        }
+    	return retval;
+    }
+    
+    private void getData() {
+    	GUIResource resource = GUIResource.getInstance();
+    	
+    	// Add the list of steps...
+    	//
+    	int maxIconSize=0;
+    	int indexSelected = -1;
+    	for (int i=0;i<transDebugMeta.getTransMeta().getSteps().size();i++) {
+    		StepMeta stepMeta = transDebugMeta.getTransMeta().getStep(i);
+    		TableItem item = new TableItem(wSteps.table, SWT.NONE);
+    		Image image = resource.getImagesSteps().get(stepMeta.getStepID());
+    		item.setImage(0, image);
+    		item.setText(0, "");
+    		item.setText(1, stepMeta.getName());
+    		
+    		if (image.getBounds().width>maxIconSize) maxIconSize=image.getBounds().width;
+    		
+    		StepDebugMeta stepDebugMeta = transDebugMeta.getStepDebugMetaMap().get(stepMeta);
+    		if (stepDebugMeta!=null) {
+    			// We have debugging information so we mark the row
+    			//
+    			item.setBackground(resource.getColorLightPentaho());
+    			if (indexSelected<0) indexSelected=i;
+    		}
+    	}
+    	
+    	wSteps.removeEmptyRows();
+    	wSteps.table.getColumn(0).setWidth(maxIconSize+10);
+    	wSteps.table.getColumn(0).setAlignment(SWT.CENTER);
+    	
+    	// OK, select the first used step debug line...
+    	//
+    	if (indexSelected>=0) {
+    		wSteps.table.setSelection(indexSelected);
+    		showStepDebugInformation();
+    	}
+    	
+	}
+    
+    /**
+     * Grab the step debugging information from the dialog.
+     * Store it in our private map
+     */
+    private void getStepDebugMeta() {
+    	int index = wSteps.getSelectionIndex();
+    	if (previousIndex>=0)
+    	{
+	    	// Is there anything on the composite to save yet?
+	    	//
+	    	if (wComposite.getChildren().length==0) return;
+	    	
+	    	StepMeta stepMeta = transDebugMeta.getTransMeta().getStep(previousIndex);
+	    	StepDebugMeta stepDebugMeta = new StepDebugMeta(stepMeta);
+	    	stepDebugMeta.setCondition(condition);
+	    	stepDebugMeta.setPausingOnBreakPoint(wPauseBreakPoint.getSelection());
+	    	stepDebugMeta.setReadingFirstRows(wFirstRows.getSelection());
+	    	stepDebugMeta.setRowCount(Const.toInt(wRowCount.getText(), -1));
+	    	
+	    	stepDebugMetaMap.put(stepMeta, stepDebugMeta);
+    	}	    	
+	    previousIndex = index;
+    }
+    
+    private void getInfo(TransDebugMeta meta) {
+    	meta.getStepDebugMetaMap().clear();
+    	meta.getStepDebugMetaMap().putAll(stepDebugMetaMap);
+	}
+
+	private void ok() {
+    	retval=true;
+    	getStepDebugMeta();
+    	getInfo(transDebugMeta);
+    	dispose();
+    }
+    
+	private void dispose() {
+    	props.setScreen(new WindowProperty(shell));
+    	shell.dispose();
+    }
+    
+    private void cancel() {
+    	dispose();
+    }
+    
+    private void showStepDebugInformation() {
+    	int[] selectionIndices = wSteps.table.getSelectionIndices();
+    	if (selectionIndices==null || selectionIndices.length!=1) return;
+    	
+    	// What step did we click on?
+    	//
+    	StepMeta stepMeta = transDebugMeta.getTransMeta().getStep(selectionIndices[0]);
+    	
+    	// What is the step debugging metadata?
+    	// --> This can be null (most likely scenario)
+    	//
+    	StepDebugMeta stepDebugMeta = stepDebugMetaMap.get(stepMeta);
+    	
+    	// Now that we have all the information to display, let's put some widgets on our composite.
+    	// Before we go there, let's clear everything that was on there...
+    	//
+    	for (Control control : wComposite.getChildren()) control.dispose();
+
+    	// At the top we'll put a few common items like first[x], etc.
+    	//
+    	
+    	// The row count (e.g. number of rows to keep)
+    	//
+    	wRowCount = new LabelText(wComposite, Messages.getString("TransDebugDialog.RowCount.Label"), Messages.getString("TransDebugDialog.RowCount.ToolTip"));
+    	FormData fdRowCount = new FormData();
+    	fdRowCount.left   = new FormAttachment(0, 0);
+        fdRowCount.right  = new FormAttachment(100, 0);
+        fdRowCount.top    = new FormAttachment(0, 0);
+        wRowCount.setLayoutData(fdRowCount);
+
+    	// Do we retrieve the first rows passing?
+    	//
+    	wFirstRows = new Button(wComposite, SWT.CHECK);
+    	props.setLook(wFirstRows);
+    	wFirstRows.setText(Messages.getString("TransDebugDialog.FirstRows.Label"));
+    	wFirstRows.setToolTipText(Messages.getString("TransDebugDialog.FirstRows.ToolTip"));
+    	FormData fdFirstRows = new FormData();
+    	fdFirstRows.left   = new FormAttachment(middle, 0);
+        fdFirstRows.right  = new FormAttachment(100, 0);
+        fdFirstRows.top    = new FormAttachment(wRowCount, margin);
+        wFirstRows.setLayoutData(fdFirstRows);
+
+    	// Do we pause on break point, when the condition is met?
+    	//
+    	wPauseBreakPoint = new Button(wComposite, SWT.CHECK);
+    	props.setLook(wPauseBreakPoint);
+    	wPauseBreakPoint.setText(Messages.getString("TransDebugDialog.PauseBreakPoint.Label"));
+    	wPauseBreakPoint.setToolTipText(Messages.getString("TransDebugDialog.PauseBreakPoint.ToolTip"));
+    	FormData fdPauseBreakPoint = new FormData();
+    	fdPauseBreakPoint.left   = new FormAttachment(middle, 0);
+        fdPauseBreakPoint.right  = new FormAttachment(100, 0);
+        fdPauseBreakPoint.top    = new FormAttachment(wFirstRows, margin);
+        wPauseBreakPoint.setLayoutData(fdPauseBreakPoint);
+        
+        // The condition to pause for...
+        //
+        condition = null;
+        if (stepDebugMeta!=null) condition = stepDebugMeta.getCondition();
+        if (condition==null) condition = new Condition();
+        
+        // The input fields...
+        try {
+			stepInputFields = transDebugMeta.getTransMeta().getStepFields(stepMeta);
+		} catch (KettleStepException e) {
+			stepInputFields = new RowMeta();
+		}
+        
+		wlCondition = new Label(wComposite, SWT.RIGHT);
+		props.setLook(wlCondition);
+		wlCondition.setText(Messages.getString("TransDebugDialog.Condition.Label"));
+		wlCondition.setToolTipText(Messages.getString("TransDebugDialog.Condition.ToolTip"));
+        FormData fdlCondition = new FormData();
+    	fdlCondition.left   = new FormAttachment(0, 0);
+        fdlCondition.right  = new FormAttachment(middle, -margin);
+        fdlCondition.top    = new FormAttachment(wPauseBreakPoint, margin);
+        wlCondition.setLayoutData(fdlCondition);
+        
+        wCondition = new ConditionEditor(wComposite, SWT.BORDER, condition, stepInputFields);
+        FormData fdCondition = new FormData();
+    	fdCondition.left   = new FormAttachment(middle, 0);
+        fdCondition.right  = new FormAttachment(100, 0);
+        fdCondition.top    = new FormAttachment(wPauseBreakPoint, margin);
+        fdCondition.bottom = new FormAttachment(100, 0);
+        wCondition.setLayoutData(fdCondition);
+
+        getStepDebugData(stepDebugMeta);
+        
+        wComposite.layout(true, true);
+    }
+
+	private void getStepDebugData(StepDebugMeta stepDebugMeta) {
+		if (stepDebugMeta==null) return;
+		
+		if (stepDebugMeta.getRowCount()>0) {
+			wRowCount.setText(Integer.toString(stepDebugMeta.getRowCount()));  
+		}
+		else {
+			wRowCount.setText("");
+		}
+		
+		wFirstRows.setSelection(stepDebugMeta.isReadingFirstRows());
+		wPauseBreakPoint.setSelection(stepDebugMeta.isPausingOnBreakPoint());
+	}
+}

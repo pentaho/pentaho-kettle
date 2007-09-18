@@ -49,7 +49,7 @@ import org.w3c.dom.Node;
  * Created on 4-apr-2003
  */
 @Step(name="RowGenerator",image="ui/images/GEN.png",tooltip="BaseStep.TypeTooltipDesc.GenerateRows",description="BaseStep.TypeLongDesc.GenerateRows",
-		category=StepCategory.INPUT)
+		category=StepCategory.CATEGORY_INPUT)
 public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface
 {
 	private  String rowLimit;

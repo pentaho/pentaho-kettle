@@ -166,9 +166,14 @@ public class TimedTransRunner
         
         // OK, now run this transFormation.
         Trans trans = new Trans(newTransMeta);
-        if( !trans.prepareExecution(null) ) {
-        	return false;
+        
+        try {
+        	trans.prepareExecution(null);
         }
+        catch (Exception e) {
+        	LogWriter.getInstance().logError(trans.getName(), "Error preparing / initializing transformation", e);
+        	return false;
+		}
         
         if (!Const.isEmpty(newRowListenerStep))
         {

@@ -24,20 +24,16 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.ui.core.gui.GUIResource;
-import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.core.row.ValueMeta;
-import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.ui.trans.dialog.Messages;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.gui.GUIResource;
+import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 
 
@@ -55,12 +51,10 @@ public class TransExecutionConfigurationDialog extends Dialog
     
     private TransExecutionConfiguration configuration;
     private TransMeta transMeta;
-    private List<StepMeta> executedSteps;
 
     private Button wExecLocal;
     private Button wExecRemote;
     private Button wExecCluster;
-    private Button wPreview;
     private Button wSafeMode;
     private Button wPrepareExecution;
     private Button wPostTransformation;
@@ -68,7 +62,6 @@ public class TransExecutionConfigurationDialog extends Dialog
     private Button wShowTransformations;
     private CCombo wRemoteHost;
     private Label wlRemoteHost;
-    private TableView wPreviewSteps;
     private Text wReplayDate;
     private TableView wArguments;
     private Label wlArguments;
@@ -79,16 +72,13 @@ public class TransExecutionConfigurationDialog extends Dialog
     private Label wlLogLevel;
     private CCombo wLogLevel;
     
-    
     public TransExecutionConfigurationDialog(Shell parent, TransExecutionConfiguration configuration, TransMeta transMeta)
     {
         super(parent);
         this.parent = parent;
         this.configuration = configuration;
         this.transMeta  = transMeta;
-        
-        this.executedSteps = transMeta.getTransHopSteps(false);
-        
+                
         props = PropsUI.getInstance();
         
         simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
@@ -242,33 +232,6 @@ public class TransExecutionConfigurationDialog extends Dialog
         // Replay date, arguments & variables
         //
 
-        wPreview = new Button(shell, SWT.CHECK);
-        wPreview.setText(Messages.getString("TransExecutionConfigurationDialog.Preview.Label")); //$NON-NLS-1$
-        wPreview.setToolTipText(Messages.getString("TransExecutionConfigurationDialog.Preview.Tooltip")); //$NON-NLS-1$ //$NON-NLS-2$
-        props.setLook(wPreview);
-        FormData fdPreview = new FormData();
-        fdPreview.left  = new FormAttachment(  0, 0);
-        fdPreview.right = new FormAttachment( 50, 0);
-        fdPreview.top   = new FormAttachment(gLocal, margin*2);
-        wPreview.setLayoutData(fdPreview);
-        wPreview.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { enableFields(); }});
-        
-        ColumnInfo[] cPreviewSteps = {
-              new ColumnInfo( Messages.getString("TransExecutionConfigurationDialog.PreviewColumn.Stepname"), ColumnInfo.COLUMN_TYPE_TEXT, false, true ), //Stepname
-              new ColumnInfo( Messages.getString("TransExecutionConfigurationDialog.PreviewColumn.PreviewSize"), ColumnInfo.COLUMN_TYPE_TEXT, false, false), //Preview size
-            };
-        ValueMetaInterface previewSizeMeta = new ValueMeta("size", ValueMetaInterface.TYPE_INTEGER);
-        previewSizeMeta.setConversionMask("0");
-        cPreviewSteps[1].setValueMeta(previewSizeMeta);
-                
-        wPreviewSteps = new TableView(transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, cPreviewSteps, executedSteps.size(), false, null, props);
-        FormData fdPreviewSteps = new FormData();
-        fdPreviewSteps.left   = new FormAttachment(  0, 0);
-        fdPreviewSteps.top    = new FormAttachment(wPreview, margin);
-        fdPreviewSteps.right  = new FormAttachment( 50, -margin);
-        fdPreviewSteps.bottom = new FormAttachment( 60, 0);
-        wPreviewSteps.setLayoutData(fdPreviewSteps);
-        
         wSafeMode = new Button(shell, SWT.CHECK);
         wSafeMode.setText(Messages.getString("TransExecutionConfigurationDialog.SafeMode.Label")); //$NON-NLS-1$
         wSafeMode.setToolTipText(Messages.getString("TransExecutionConfigurationDialog.SafeMode.Tooltip")); //$NON-NLS-1$ //$NON-NLS-2$
@@ -276,7 +239,7 @@ public class TransExecutionConfigurationDialog extends Dialog
         FormData fdSafeMode = new FormData();
         fdSafeMode.left  = new FormAttachment( 50, margin);
         fdSafeMode.right = new FormAttachment(100, 0);
-        fdSafeMode.top   = new FormAttachment(wPreview, margin);
+        fdSafeMode.top   = new FormAttachment(gLocal, margin*2);
         wSafeMode.setLayoutData(fdSafeMode);
         wSafeMode.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { enableFields(); }});
 
@@ -330,7 +293,7 @@ public class TransExecutionConfigurationDialog extends Dialog
         FormData fdlArguments = new FormData();
         fdlArguments.left   = new FormAttachment(0, 0);
         fdlArguments.right  = new FormAttachment(50, 0);
-        fdlArguments.top    = new FormAttachment(wPreviewSteps, margin*2);
+        fdlArguments.top    = new FormAttachment(wReplayDate, margin*2);
         wlArguments.setLayoutData(fdlArguments);
 
         ColumnInfo[] cArguments = {
@@ -355,7 +318,7 @@ public class TransExecutionConfigurationDialog extends Dialog
         FormData fdlVariables = new FormData();
         fdlVariables.left   = new FormAttachment(50, margin);
         fdlVariables.right  = new FormAttachment(100, 0);
-        fdlVariables.top    = new FormAttachment(wPreviewSteps, margin*2);
+        fdlVariables.top    = new FormAttachment(wReplayDate, margin*2);
         wlVariables.setLayoutData(fdlVariables);
 
         ColumnInfo[] cVariables = {
@@ -366,12 +329,12 @@ public class TransExecutionConfigurationDialog extends Dialog
         int nrVariables = configuration.getVariables() !=null ? configuration.getVariables().size() : 0; 
         wVariables = new TableView(transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, cVariables, nrVariables, true, null, props);
         FormData fdVariables = new FormData();
-        fdVariables.left   = new FormAttachment(50, margin);
+        fdVariables.left   = new FormAttachment(0, 0);
         fdVariables.right  = new FormAttachment(100, 0);
         fdVariables.top    = new FormAttachment(wlVariables, margin);
         fdVariables.bottom = new FormAttachment(wOK, -margin*2);
         wVariables.setLayoutData(fdVariables);
-
+        
         getData();
         
         BaseStepDialog.setSize(shell);
@@ -429,74 +392,6 @@ public class TransExecutionConfigurationDialog extends Dialog
         wArguments.optWidth(true);
     }
 
-    /**
-     * Copy information from the meta-data input to the dialog fields.
-     */ 
-    private void getPreviewStepsData()
-    {
-        String prSteps[] = props.getLastPreview();
-        int    prSizes[] = props.getLastPreviewSize();
-        
-        boolean sizesSet=false;
-        int selectedSteps = 0;
-        for (int i=0;i<executedSteps.size();i++)
-        {
-            StepMeta stepMeta = (StepMeta) executedSteps.get(i);
-            if (stepMeta.isSelected()) selectedSteps++;
-        }
-        
-        if (selectedSteps==0)
-        {
-            for (int i=0;i<executedSteps.size();i++)
-            {
-                StepMeta stepMeta = (StepMeta) executedSteps.get(i);
-                
-                TableItem item = wPreviewSteps.table.getItem(i);
-                String name = stepMeta.getName();
-                item.setText(1, name);
-                item.setText(2, "0");
-    
-                // Remember the last time...?
-                for (int x=0;x<prSteps.length;x++)
-                {
-                    if (prSteps[x].equalsIgnoreCase(name)) 
-                    {
-                        item.setText(2, Integer.toString(prSizes[x]));
-                        sizesSet=true;
-                    } 
-                }
-            }
-        }
-        else
-        {       
-            // No previous selection: set the selected steps to the default preview size
-            //
-            for (int i=0;i<executedSteps.size();i++)
-            {
-                StepMeta stepMeta = (StepMeta) executedSteps.get(i);
-                
-                TableItem item = wPreviewSteps.table.getItem(i);
-                String name = stepMeta.getName();
-                item.setText(1, name);
-                item.setText(2, "");
-    
-                // Is the step selected?
-                if (stepMeta.isSelected())
-                {
-                    item.setText(2, Integer.toString(props.getDefaultPreviewSize()));
-                    sizesSet=true;
-                }
-            }
-        }
-        
-        if (sizesSet)
-        {
-            wPreviewSteps.sortTable(2, true);
-        }
-        wPreviewSteps.setRowNums();
-        wPreviewSteps.optWidth(true);
-    }
-
     private void cancel()
     {
         dispose();
@@ -520,7 +415,6 @@ public class TransExecutionConfigurationDialog extends Dialog
         wExecLocal.setSelection(configuration.isExecutingLocally());
         wExecRemote.setSelection(configuration.isExecutingRemotely());
         wExecCluster.setSelection(configuration.isExecutingClustered());
-        wPreview.setSelection(configuration.isLocalPreviewing());
         wSafeMode.setSelection(configuration.isSafeModeEnabled());
         wPrepareExecution.setSelection(configuration.isClusterPreparing());
         wPostTransformation.setSelection(configuration.isClusterPosting());
@@ -529,7 +423,6 @@ public class TransExecutionConfigurationDialog extends Dialog
         wRemoteHost.setText( configuration.getRemoteServer()==null ? "" : configuration.getRemoteServer().toString() );
         wLogLevel.setText( LogWriter.getInstance().getLogLevelDesc() );
         if (configuration.getReplayDate()!=null) wReplayDate.setText(simpleDateFormat.format(configuration.getReplayDate()));
-        getPreviewStepsData();
         getArgumentsData();
         getVariablesData();
         
@@ -553,11 +446,7 @@ public class TransExecutionConfigurationDialog extends Dialog
             configuration.setExecutingClustered(wExecCluster.getSelection());
             
             // Local data
-            configuration.setLocalPreviewing(wPreview.getSelection());
-            if (wPreview.getSelection()) // only overwrite preview data if we selected to do so
-            {
-                getInfoPreview();
-            }
+            // --> preview handled in debug transformation meta dialog
             
             // Remote data
             if (wExecRemote.getSelection())
@@ -620,54 +509,13 @@ public class TransExecutionConfigurationDialog extends Dialog
         }
         configuration.setArguments(map);
     }
-
-    
-    private void getInfoPreview()
-    {
-        int sels=0;
-        for (int i=0;i<wPreviewSteps.table.getItemCount();i++)
-        {
-            TableItem ti = wPreviewSteps.table.getItem(i);
-            int size =  Const.toInt(ti.getText(2), 0);
-            if (size > 0) 
-            {
-                sels++;
-            } 
-        }
-        
-        String[] previewSteps=new String[sels];
-        int[]    previewSizes=new int   [sels];
-
-        sels=0;     
-        for (int i=0;i<wPreviewSteps.table.getItemCount();i++)
-        {
-            TableItem ti = wPreviewSteps.table.getItem(i);
-            int size=Const.toInt(ti.getText(2), 0);
-
-            if (size > 0) 
-            {
-                previewSteps[sels]=ti.getText(1);
-                previewSizes[sels]=size;
-
-                sels++;
-            } 
-        }
-        
-        configuration.setPreviewStepSizes(previewSteps, previewSizes);
-        props.setLastPreview(previewSteps, previewSizes);
-    }
     
     private void enableFields()
     {
-        boolean enableLocal = wExecLocal.getSelection();
-        boolean enablePreview = enableLocal && wPreview.getSelection();
+        // boolean enableLocal = wExecLocal.getSelection();
         boolean enableRemote = wExecRemote.getSelection();
         boolean enableCluster = wExecCluster.getSelection();
-        
-        wPreview.setEnabled(enableLocal);
-        wPreviewSteps.setEnabled(enablePreview);
-        wPreviewSteps.table.setEnabled(enablePreview);
-        
+                
         // wlReplayDate.setEnabled(enableLocal);
         // wReplayDate.setEnabled(enableLocal);
         // wlArguments.setEnabled(enableLocal);

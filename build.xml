@@ -48,8 +48,6 @@
 	    	   source="5"
 	           deprecation="true"
 	    	   debug="true"
-	    	   excludes="be/ibridge/kettle/schema/**/* be/ibridge/kettle/menu/**/*"
-
 	    	>
 	    	<src path="${src}"/>
 	    	

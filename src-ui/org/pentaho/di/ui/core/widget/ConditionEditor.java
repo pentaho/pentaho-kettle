@@ -47,7 +47,6 @@ import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Condition;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
@@ -130,14 +129,13 @@ public class ConditionEditor extends Composite
 	private String messageString;
     private Menu mPop;
 	
-	public ConditionEditor(Composite composite, int arg1, Condition co, Props pr, RowMetaInterface inputFields)
+	public ConditionEditor(Composite composite, int arg1, Condition co, RowMetaInterface inputFields)
 	{
 		super(composite, arg1 | SWT.NO_BACKGROUND | SWT.V_SCROLL | SWT.H_SCROLL);
 		
 		widget = this;
 		
 		this.active_condition = co;
-		// this.props            = pr;
 		this.fields           = inputFields;
 
 		imageAdd = ImageUtil.getImage(composite.getDisplay(),"ui/images/eq_add.png");//new Image(composite.getDisplay(), getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "eq_add.png"));

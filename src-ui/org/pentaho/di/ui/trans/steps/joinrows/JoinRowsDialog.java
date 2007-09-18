@@ -283,7 +283,7 @@ public class JoinRowsDialog extends BaseStepDialog implements StepDialogInterfac
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, null);
 
-		wCondition = new ConditionEditor(shell, SWT.BORDER, condition, props, inputfields);
+		wCondition = new ConditionEditor(shell, SWT.BORDER, condition, inputfields);
 		
 		fdCondition=new FormData();
 		fdCondition.left  = new FormAttachment(0, 0);

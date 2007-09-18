@@ -22,6 +22,7 @@ import java.util.List;
 import junit.framework.TestCase;
 
 import org.pentaho.di.core.RowMetaAndData;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -999,8 +1000,15 @@ public class ValueMapperTest extends TestCase
         // Now execute the transformation...
         Trans trans = new Trans(transMeta);
 
-        boolean prepare = trans.prepareExecution(null);
-         assertTrue( prepare );       
+        boolean prepare;
+        try {
+        	trans.prepareExecution(null);
+        	prepare=true;
+        }
+        catch (KettleException e) {
+			prepare=false;
+		}
+        assertTrue( prepare );       
         StepInterface si = trans.getStepInterface(dummyStepname1, 0);
         RowStepCollector dummyRc1 = new RowStepCollector();
         si.addRowListener(dummyRc1);

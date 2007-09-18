@@ -56,7 +56,7 @@ import org.w3c.dom.Node;
  */
 
 @Step(name="FixedInput",image="ui/images/TFI.png",tooltip="BaseStep.TypeTooltipDesc.FixedInput",description="BaseStep.TypeLongDesc.FixedInput",
-		category=StepCategory.INPUT)
+		category=StepCategory.CATEGORY_INPUT)
 public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface
 {
 	private String filename;

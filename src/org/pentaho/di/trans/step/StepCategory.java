@@ -5,25 +5,41 @@ package org.pentaho.di.trans.step;
  * @author Alex Silva
  *
  */
-public enum StepCategory
+public class StepCategory
 {
-	INPUT(Messages.getString("BaseStep.Category.Input")),
-    OUTPUT(Messages.getString("BaseStep.Category.Output")),
-    TRANSFORM (Messages.getString("BaseStep.Category.Transform")),
-    SCRIPTING (Messages.getString("BaseStep.Category.Scripting")),
-    LOOKUP(Messages.getString("BaseStep.Category.Lookup")),
-    JOINS (Messages.getString("BaseStep.Category.Joins")),
-    DATA_WAREHOUSE(Messages.getString("BaseStep.Category.DataWarehouse")),
-    JOB   (Messages.getString("BaseStep.Category.Job")),
-    MAPPING   (Messages.getString("BaseStep.Category.Mapping")),
-    INLINE(Messages.getString("BaseStep.Category.Inline")),
-    EXPERIMENTAL(Messages.getString("BaseStep.Category.Experimental")),
-    DEPRECATED(Messages.getString("BaseStep.Category.Deprecated"));
-
+	public static final StepCategory INPUT          = new StepCategory(Messages.getString("BaseStep.Category.Input"));
+	public static final StepCategory OUTPUT         = new StepCategory(Messages.getString("BaseStep.Category.Output"));
+	public static final StepCategory TRANSFORM      = new StepCategory(Messages.getString("BaseStep.Category.Transform"));
+	public static final StepCategory SCRIPTING      = new StepCategory(Messages.getString("BaseStep.Category.Scripting"));
+	public static final StepCategory LOOKUP         = new StepCategory(Messages.getString("BaseStep.Category.Lookup"));
+	public static final StepCategory JOINS          = new StepCategory(Messages.getString("BaseStep.Category.Joins"));
+	public static final StepCategory DATA_WAREHOUSE = new StepCategory(Messages.getString("BaseStep.Category.DataWarehouse"));
+	public static final StepCategory JOB            = new StepCategory(Messages.getString("BaseStep.Category.Job"));
+	public static final StepCategory MAPPING        = new StepCategory(Messages.getString("BaseStep.Category.Mapping"));
+	public static final StepCategory INLINE         = new StepCategory(Messages.getString("BaseStep.Category.Inline"));
+	public static final StepCategory EXPERIMENTAL   = new StepCategory(Messages.getString("BaseStep.Category.Experimental"));
+	public static final StepCategory DEPRECATED     = new StepCategory(Messages.getString("BaseStep.Category.Deprecated"));
+	
+	public static final int CATEGORY_USER_DEFINED   = -1;
+	public static final int CATEGORY_INPUT          =  0;
+	public static final int CATEGORY_OUTPUT         =  1;
+	public static final int CATEGORY_TRANSFORM      =  2;
+	public static final int CATEGORY_SCRIPTING      =  3;
+	public static final int CATEGORY_LOOKUP         =  4;
+	public static final int CATEGORY_JOINS          =  5;
+	public static final int CATEGORY_DATA_WAREHOUSE =  6;
+	public static final int CATEGORY_JOB            =  7;
+	public static final int CATEGORY_MAPPING        =  8;
+	public static final int CATEGORY_INLINE         =  9;
+	public static final int CATEGORY_EXPERIMENTAL   = 10;
+	public static final int CATEGORY_DEPRECATED     = 11;
+	
+	public static final StepCategory[] STANDARD_CATEGORIES = new StepCategory[] { INPUT, OUTPUT, TRANSFORM, SCRIPTING, 
+		LOOKUP, JOINS, DATA_WAREHOUSE, JOB, MAPPING, INLINE, EXPERIMENTAL, DEPRECATED, };
 
 	private String name;
 	
-	private StepCategory(String name)
+	public StepCategory(String name)
 	{
 		this.name = name;
 	}

@@ -36,7 +36,6 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleTransException;
 import org.pentaho.di.core.logging.Log4jStringAppender;
 import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
@@ -84,14 +83,14 @@ public class Trans implements VariableSpace
     private Job parentJob;
 
 	/**
-	 * Indicates that we are running in preview mode...
-	 */
-	private boolean preview;
-
-	/**
 	 * Indicates that we want to monitor the running transformation in a GUI
 	 */
 	private boolean monitored;
+	
+	/**
+	 * Indicates that we are running in preview mode...
+	 */
+	private boolean preview;
 
 	private Date      startDate, endDate, currentDate, logDate, depDate;
     private Date      jobStartDate, jobEndDate;
@@ -134,9 +133,6 @@ public class Trans implements VariableSpace
     public static final String STRING_INITIALIZING = "Initializing";
     public static final String STRING_WAITING      = "Waiting";
 
-	private String previewSteps[];
-	private int    previewSizes[];
-
 	private boolean safeModeEnabled;
 
     private Log4jStringAppender stringAppender;
@@ -156,9 +152,6 @@ public class Trans implements VariableSpace
 	public Trans(TransMeta transMeta)
 	{
 		this.transMeta=transMeta;
-		preview=false;
-		previewSteps=null;
-		previewSizes=null;
         
 		log.logDetailed(toString(), Messages.getString("Trans.Log.TransformationIsPreloaded")); //$NON-NLS-1$
 		log.logDebug(toString(), Messages.getString("Trans.Log.NumberOfStepsToRun",String.valueOf(transMeta.nrSteps()) ,String.valueOf(transMeta.nrTransHops()))); //$NON-NLS-1$ //$NON-NLS-2$
@@ -174,10 +167,6 @@ public class Trans implements VariableSpace
 
 	public Trans(VariableSpace parentVariableSpace, Repository rep, String name, String dirname, String filename) throws KettleException
 	{
-		preview=false;
-		previewSteps=null;
-		previewSizes=null;
-        
 		try
 		{
 			if (rep!=null)
@@ -207,25 +196,21 @@ public class Trans implements VariableSpace
 
     /**
      * Execute this transformation.
-     * @return true if the execution went well, false if an error occurred.
+     * @throws KettleException in case the transformation could not be prepared (initialized)
      */
-    public boolean execute(String[] arguments)
+    public void execute(String[] arguments) throws KettleException
     {
-        if (prepareExecution(arguments))
-        {
-            startThreads();
-            return true;
-        }
-        return false;
+        prepareExecution(arguments);
+        startThreads();
     }
 
 
     /**
      * Prepare the execution of the transformation.
      * @param arguments the arguments to use for this transformation
-     * @return true if the execution preparation went well, false if an error occurred.
+     * @throws KettleException in case the transformation could not be prepared (initialized)
      */
-    public boolean prepareExecution(String[] arguments)
+    public void prepareExecution(String[] arguments) throws KettleException
     {
         preparing=true;
 		startDate = null;
@@ -451,34 +436,7 @@ public class Trans implements VariableSpace
         }
 
 		// Now (optionally) write start log record!
-		try
-		{
-			beginProcessing();
-		}
-		catch(KettleTransException kte)
-		{
-			log.logError(toString(), kte.getMessage());
-			return false;
-		}
-
-		// Set preview sizes
-		if (preview && previewSteps!=null)
-		{
-			for (int i=0;i<steps.size();i++)
-			{
-				StepMetaDataCombi sid = steps.get(i);
-
-				BaseStep rt=(BaseStep)sid.step;
-				for (int x=0;x<previewSteps.length;x++)
-				{
-					if (previewSteps[x].equalsIgnoreCase(rt.getStepname()) && rt.getCopy()==0)
-					{
-						rt.previewSize=previewSizes[x];
-						rt.previewBuffer=new ArrayList<Object[]>();
-					}
-				}
-			}
-		}
+		beginProcessing();
 
         // Set the partition-to-rowset mapping
         //
@@ -582,10 +540,8 @@ public class Trans implements VariableSpace
         
 		if (!ok)
 		{
-            log.logError(toString(), Messages.getString("Trans.Log.FailToInitializeAtLeastOneStep")); //$NON-NLS-1$
-
             // Halt the other threads as well, signal end-of-the line to the outside world...
-            // Also explicitely call dispose() to clean up resources opened during init();
+            // Also explicitly call dispose() to clean up resources opened during init();
             //
             for (int i=0;i<initThreads.length;i++)
             {
@@ -603,12 +559,11 @@ public class Trans implements VariableSpace
                     combi.data.setStatus(StepDataInterface.STATUS_STOPPED);
                 }
             }
-            return false;
+            
+            throw new KettleException(Messages.getString("Trans.Log.FailToInitializeAtLeastOneStep")); //$NON-NLS-1
 		}
         
         readyToStart=true;
-
-        return true;
 	}
 
     /**
@@ -1227,8 +1182,6 @@ public class Trans implements VariableSpace
 	//
 	public boolean endProcessing(String status) throws KettleException
 	{
-		if (preview) return true;
-
 		Result result = getResult();
 
 		logDate     = new Date();
@@ -1280,26 +1233,6 @@ public class Trans implements VariableSpace
 		return true;
 	}
 
-	public boolean previewComplete()
-	{
-		if (steps==null) return true;
-
-		// if (!preview || !isFinished()) return false;
-
-		for (int i=0;i<nrSteps();i++)
-		{
-			BaseStep rt = getRunThread(i);
-			if (rt.previewSize>0)
-			{
-				if (rt.isAlive() && rt.previewBuffer.size() < rt.previewSize)
-				{
-					return false;
-				}
-			}
-		}
-		return true;
-	}
-
 	public BaseStep findRunThread(String stepname)
 	{
 		if (steps==null) return null;
@@ -1311,6 +1244,23 @@ public class Trans implements VariableSpace
 			if (rt.getStepname().equalsIgnoreCase(stepname)) return rt;
 		}
 		return null;
+	}
+	
+	public List<BaseStep> findBaseSteps(String stepname)
+	{
+		List<BaseStep> baseSteps = new ArrayList<BaseStep>();
+		
+		if (steps==null) return baseSteps;
+
+		for (int i=0;i<steps.size();i++)
+		{
+			StepMetaDataCombi sid = steps.get(i);
+			BaseStep rt = (BaseStep)sid.step;
+			if (rt.getStepname().equalsIgnoreCase(stepname)) {
+				baseSteps.add(rt);
+			}
+		}
+		return baseSteps;
 	}
     
     public StepDataInterface findDataInterface(String name)
@@ -1341,22 +1291,6 @@ public class Trans implements VariableSpace
 	public Date getEndDate()
 	{
 		return endDate;
-	}
-
-	/**
-	 * @return Returns the preview.
-	 */
-	public boolean isPreview()
-	{
-		return preview;
-	}
-
-	/**
-	 * @param preview The preview to set.
-	 */
-	public void setPreview(boolean preview)
-	{
-		this.preview = preview;
 	}
 
 	/**
@@ -1474,38 +1408,6 @@ public class Trans implements VariableSpace
 	        }
 		}
         return list.toArray(new MappingOutput[list.size()]);
-    }
-
-    /**
-     * Return the preview rows buffer of a step
-     * @param stepname the name of the step to preview
-     * @param copyNr the step copy number
-     * @return an ArrayList of rows
-     */
-    public List<Object[]> getPreviewRows(String stepname, int copyNr)
-    {
-        BaseStep baseStep = getRunThread(stepname, copyNr);
-        if (baseStep!=null)
-        {
-            return baseStep.previewBuffer;
-        }
-        return null;
-    }
-    
-    /**
-     * Return a description of the the preview rows buffer of a step
-     * @param stepname the name of the step to preview
-     * @param copyNr  the step copy number
-     * @return a description of the the preview rows buffer of a step
-     */
-    public RowMetaInterface getPreviewRowsMeta(String stepname, int copyNr)
-    {
-        BaseStep baseStep = getRunThread(stepname, copyNr);
-        if (baseStep!=null)
-        {
-            return baseStep.getPreviewRowMeta();
-        }
-        return null;
     }
 
     /**
@@ -2330,34 +2232,6 @@ public class Trans implements VariableSpace
 	}
 
 	/**
-	 * @return the previewSteps
-	 */
-	public String[] getPreviewSteps() {
-		return previewSteps;
-	}
-
-	/**
-	 * @param previewSteps the previewSteps to set
-	 */
-	public void setPreviewSteps(String[] previewSteps) {
-		this.previewSteps = previewSteps;
-	}
-
-	/**
-	 * @return the previewSizes
-	 */
-	public int[] getPreviewSizes() {
-		return previewSizes;
-	}
-
-	/**
-	 * @param previewSizes the previewSizes to set
-	 */
-	public void setPreviewSizes(int[] previewSizes) {
-		this.previewSizes = previewSizes;
-	}
-
-	/**
 	 * Pause the transformation (pause all steps)
 	 */
 	public void pauseRunning() {
@@ -2373,5 +2247,19 @@ public class Trans implements VariableSpace
 		for (StepMetaDataCombi combi : steps) {
 			combi.step.resumeRunning();
 		}
+	}
+
+	/**
+	 * @return the preview
+	 */
+	public boolean isPreview() {
+		return preview;
+	}
+
+	/**
+	 * @param preview the preview to set
+	 */
+	public void setPreview(boolean preview) {
+		this.preview = preview;
 	} 
 }

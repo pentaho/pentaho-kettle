@@ -2161,7 +2161,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
      */
     public PartitionDatabaseMeta[] getPartitioningInformation()
     {
-    	if (!isPartitioned()) return null;
+    	if (!isPartitioned()) return new PartitionDatabaseMeta[] {};
         return databaseInterface.getPartitioningInformation();
     }
     

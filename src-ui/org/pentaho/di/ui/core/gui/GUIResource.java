@@ -157,7 +157,7 @@ public class GUIResource
 
 	/**
 	 * GUIResource also contains the clipboard as it has to be allocated only
-	 * once! I don't want to put it in a seperate singleton just for this one
+	 * once! I don't want to put it in a separate singleton just for this one
 	 * member.
 	 */
 	private static Clipboard clipboard;
@@ -337,7 +337,7 @@ public class GUIResource
 				try
 				{
 					//InputStream stream = getClass().getResourceAsStream(filename);
-					image = ImageUtil.getImage(display, filename);//new Image(display, stream);
+					image = ImageUtil.getImage(display, filename); // new Image(display, stream);
 				} catch (Exception e)
 				{
 					log.logError("Kettle", "Unable to find required step image file or image format not supported (e.g. interlaced) [" + filename + " : " + e.toString());
@@ -479,8 +479,7 @@ public class GUIResource
 					continue;
 			} catch (KettleStepLoaderException e)
 			{
-				log.logError("Kettle", "Unable to create job entry from plugin [" + plugins[i] + "] : "
-						+ e.toString());
+				log.logError("Kettle", "Unable to create job entry from plugin [" + plugins[i] + "]", e);
 				continue;
 			}
 

@@ -111,7 +111,7 @@ public class PreviewRowsDialog extends Dialog
         this.message = message;
     }
 
-    public Object open()
+    public String open()
     {
         Shell parent = getParent();
         Display display = parent.getDisplay();

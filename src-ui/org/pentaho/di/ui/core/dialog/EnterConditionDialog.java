@@ -86,7 +86,7 @@ public class EnterConditionDialog extends Dialog
 		shell.setLayout (formLayout);
  		
  		// Condition widget
-		wCond = new ConditionEditor(shell, SWT.NONE, condition, props, fields);
+		wCond = new ConditionEditor(shell, SWT.NONE, condition, fields);
  		props.setLook(wCond, Props.WIDGET_STYLE_FIXED);
  		
  		if (!getData()) return null;

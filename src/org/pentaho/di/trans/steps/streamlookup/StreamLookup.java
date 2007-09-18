@@ -296,6 +296,14 @@ public class StreamLookup extends BaseStep implements StepInterface
             {
                 if (meta.isUsingIntegerPair())
                 {
+                	if (!data.metadataVerifiedIntegerPair) {
+                		data.metadataVerifiedIntegerPair=true;
+                		if (keyMeta.size()!=1 || valueMeta.size()!=1 || !keyMeta.getValueMeta(0).isInteger() || !valueMeta.getValueMeta(0).isInteger()) {
+
+                			throw new KettleValueException(Messages.getString("StreamLookup.Exception.CanNotUseIntegerPairAlgorithm"));
+                		}
+                	}
+                	
                     Long key = keyMeta.getInteger(keyData, 0);
                     Long value = valueMeta.getInteger(valueData, 0);
                     data.longIndex.put(key, value);

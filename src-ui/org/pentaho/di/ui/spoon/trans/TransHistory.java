@@ -231,7 +231,7 @@ public class TransHistory extends Composite implements TabItemInterface
 						Date replayDate;
                         if (Const.isEmpty(dateString)) replayDate = new Date();
                         else replayDate = df.parse(dateString);
-						spoon.executeTransformation(transMeta, true, false, false, false, replayDate);
+						spoon.executeTransformation(transMeta, true, false, false, false, false, replayDate);
 					} catch (ParseException e1) {
 						new ErrorDialog(shell, 
 								Messages.getString("SpoonHistory.Error.ReplayingTransformation2"), //$NON-NLS-1$

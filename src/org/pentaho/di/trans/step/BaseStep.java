@@ -140,10 +140,6 @@ public class BaseStep extends Thread implements VariableSpace
 
     private Trans                        trans;
 
-    public List<Object[]>                previewBuffer;
-
-    public int                           previewSize;
-
     /**  nr of lines read from previous step(s) */
     public long                          linesRead;
     
@@ -739,21 +735,6 @@ public class BaseStep extends Thread implements VariableSpace
 	    	this.checkTransRunning = true;
 	    }
 
-        if (previewSize > 0)
-        {
-        	if (previewBuffer.size() < previewSize) {
-	            try
-	            {
-	                if (previewRowMeta==null) previewRowMeta=rowMeta.clone();
-	                previewBuffer.add(rowMeta.cloneRow(row));
-	            }
-	            catch (KettleValueException e)
-	            {
-	                throw new KettleStepException("Unable to clone row while adding rows to the preview buffer", e);
-	            }
-        	}
-        }
-
         // call all row listeners...
         //
         for (int i = 0; i < rowListeners.size(); i++)
@@ -790,48 +771,6 @@ public class BaseStep extends Thread implements VariableSpace
         				throw new KettleStepException("Variable '"+Const.INTERNAL_VARIABLE_SLAVE_SERVER_NAME+"' is not defined.");
         			}
         		}
-        		
-        		// Accept sockets for all remote steps
-        		//
-        		/*
-        		Thread[] acceptThreads = new Thread[remoteOutputSteps.size()];
-        		final Exception[] acceptExceptions = new Exception[remoteOutputSteps.size()];
-        		for (int i=0;i<remoteOutputSteps.size();i++) {
-        			final RemoteStep remoteStep = remoteOutputSteps.get(i);
-        			final int index = i;
-        			
-        			Runnable acceptRunnable = new Runnable() {
-						public void run() {
-							try {
-								acceptExceptions[index]=null;
-								remoteStep.openClientWriterSocket();
-							}
-							catch(Exception e) {
-								acceptExceptions[index] = e;
-							}
-						}
-					};
-					acceptThreads[i] = new Thread(acceptRunnable);
-					acceptThreads[i].start();
-        		}
-        		
-        		// Wait for all these to join with the remote site...
-        		//
-        		for (int i=0;i<acceptThreads.length;i++) {
-        			try {
-						acceptThreads[i].join();
-					} catch (InterruptedException e) {
-						
-					}
-        		}
-        		
-        		// See if there were any exceptions...
-        		for (int i=0;i<acceptThreads.length;i++) {
-        			if (acceptExceptions[i]!=null) {
-        				throw new KettleStepException("Unexpected problem during socket accept for remote output step '"+remoteOutputSteps.get(i)+"'", acceptExceptions[i]);
-        			}
-        		}
-        		*/
         		
         		// Start threads: one per remote step to funnel the data through...
         		//
@@ -1056,18 +995,6 @@ public class BaseStep extends Thread implements VariableSpace
 			}
     	}
     	
-        if (previewSize > 0 && previewBuffer.size() < previewSize)
-        {
-            try
-            {
-                previewBuffer.add(rowMeta.cloneRow(row));
-            }
-            catch (KettleValueException e)
-            {
-                throw new KettleStepException("Unable to clone row while adding rows to the preview buffer", e);
-            }
-        }
-
         // call all row listeners...
         //
         for (int i = 0; i < rowListeners.size(); i++)
@@ -1103,7 +1030,7 @@ public class BaseStep extends Thread implements VariableSpace
         linesWritten++;
     }
 
-    public void putError(RowMetaInterface rowMeta, Object[] row, long nrErrors, String errorDescriptions, String fieldNames, String errorCodes)
+    public void putError(RowMetaInterface rowMeta, Object[] row, long nrErrors, String errorDescriptions, String fieldNames, String errorCodes) throws KettleStepException
     {
         StepErrorMeta stepErrorMeta = stepMeta.getStepErrorMeta();
 
@@ -1377,6 +1304,7 @@ public class BaseStep extends Thread implements VariableSpace
     {
         // See if the row we got has the same layout as the reference row.
         // First check the number of fields
+    	//
         if (referenceRowMeta.size() != rowMeta.size())
         {
             throw new KettleRowException(Messages.getString("BaseStep.SafeMode.Exception.VaryingSize", ""+referenceRowMeta.size(), ""+rowMeta.size(), rowMeta.toString()));

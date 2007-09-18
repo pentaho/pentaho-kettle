@@ -54,7 +54,7 @@ import org.w3c.dom.Node;
  *
  */
 @Step(name="CubeInput",image="ui/images/CIP.png",tooltip="BaseStep.TypeTooltipDesc.Cubeinput",description="BaseStep.TypeLongDesc.CubeInput",
-		category=StepCategory.INPUT)
+		category=StepCategory.CATEGORY_INPUT)
 public class CubeInputMeta extends BaseStepMeta implements StepMetaInterface
 {
 	private String filename;

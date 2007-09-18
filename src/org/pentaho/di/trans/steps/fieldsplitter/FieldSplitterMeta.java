@@ -94,7 +94,7 @@ import org.w3c.dom.Node;
 </CODE>
 **/
 @Step(name="FieldSplitter",image="ui/images/SPL.png",tooltip="BaseStep.TypeTooltipDesc.SplitFields",description="BaseStep.TypeLongDesc.SplitFields",
-		category=StepCategory.TRANSFORM)
+		category=StepCategory.CATEGORY_TRANSFORM)
 public class FieldSplitterMeta extends BaseStepMeta implements StepMetaInterface
 {
     /** Field to split */

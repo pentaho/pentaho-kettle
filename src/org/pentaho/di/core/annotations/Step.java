@@ -6,8 +6,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.pentaho.di.trans.step.StepCategory;
-
 
 /**
  * An alternate way of defining steps. Classes annotated with "Step" are
@@ -32,7 +30,9 @@ public @interface Step
 
 	String image();
 
-	StepCategory category();
+	int category();
+	
+	String categoryDescription() default "";
 	
 	String i18nPackageName() default "";
 

@@ -110,8 +110,11 @@ public class Mapping extends BaseStep implements StepInterface
         // This will allow the correct variables to be passed.
         // Otherwise the parent is the init() thread which will be gone once the init is done.
         //
-        if (!data.mappingTrans.prepareExecution(getTransMeta().getArguments())) {
-        	throw new KettleException(Messages.getString("Mapping.Exception.UnableToPrepareExecutionOfMapping"));
+        try {
+        	data.mappingTrans.prepareExecution(getTransMeta().getArguments());
+        }
+        catch(KettleException e) {
+        	throw new KettleException(Messages.getString("Mapping.Exception.UnableToPrepareExecutionOfMapping"), e);
         }
         
         // Before we add rowsets and all, we should note that the mapping step did not receive ANY input and output rowsets.
