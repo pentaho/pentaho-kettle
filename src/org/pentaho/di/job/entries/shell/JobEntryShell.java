@@ -60,7 +60,6 @@ import org.w3c.dom.Node;
  *
  * @author Matt
  * @since 01-10-2003, rewritten on 18-06-2004
- *
  */
 public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryInterface
 {
@@ -121,7 +120,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 		for (int i=0;i<arguments.length;i++)
 		{
 			// THIS IS A VERY BAD WAY OF READING/SAVING AS IT MAKES
-			// THE XML "DUBIOUS". DON'T REUSE IT.
+			// THE XML "DUBIOUS". DON'T REUSE IT. (Sven B)
 			retval.append("      ").append(XMLHandler.addTagValue("argument"+i, arguments[i]));
 		}
 
@@ -323,8 +322,19 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 
 		result.setEntryNr( nr );
 
+		// "Translate" the arguments for later
+		String substArgs[] = null;
+		if ( arguments != null )
+		{
+			substArgs = new String[arguments.length];
+			for ( int idx = 0; idx < arguments.length; idx++ )
+			{
+			    substArgs[idx] = environmentSubstitute(arguments[idx]);
+			}
+		}
+		
         int iteration = 0;
-        String args[] = arguments;
+        String args[] = substArgs;
         RowMetaAndData resultRow = null;
         boolean first = true;
         List<RowMetaAndData> rows = result.getRows();
@@ -648,7 +658,4 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
   {
     return logfile;
   }
-
-
-
 }

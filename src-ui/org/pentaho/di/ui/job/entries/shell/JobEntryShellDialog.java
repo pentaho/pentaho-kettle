@@ -494,7 +494,8 @@ public class JobEntryShellDialog extends JobEntryDialog implements JobEntryDialo
 
         ColumnInfo[] colinf = new ColumnInfo[FieldsCols];
         colinf[0] = new ColumnInfo(Messages.getString("JobShell.Fields.Argument.Label"),
-            ColumnInfo.COLUMN_TYPE_TEXT, false);
+                                   ColumnInfo.COLUMN_TYPE_TEXT, false);
+        colinf[0].setUsingVariables(true);
 
         wFields = new TableView(jobMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf,
                                 FieldsRows, lsMod, props);
