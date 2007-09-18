@@ -14,6 +14,7 @@ import java.util.ResourceBundle;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.job.JobEntryLoader;
 import org.pentaho.di.trans.StepLoader;
 
 public class GlobalMessages extends AbstractMessageHandler
@@ -106,6 +107,10 @@ public class GlobalMessages extends AbstractMessageHandler
                     inputStream = StepLoader.getInstance().getInputStreamForFile(filename);
                 }
                 
+                if (inputStream==null) // job plugins
+                {
+                	inputStream = JobEntryLoader.getInstance().getInputStreamForFile(filename);
+                }
             	if (inputStream!=null)
             	{
             		bundle = new PropertyResourceBundle(inputStream);
