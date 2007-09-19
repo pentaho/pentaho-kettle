@@ -279,14 +279,6 @@ public class DeleteMeta extends BaseStepMeta implements StepMetaInterface
 		int nrkeys   = 0;
 		
 		allocate(nrkeys);
-		
-		for (int i=0;i<nrkeys;i++)
-		{
-			keyLookup[i]   = "age"; //$NON-NLS-1$
-			keyCondition[i]= "BETWEEN"; //$NON-NLS-1$
-			keyStream[i]   = "age_from"; //$NON-NLS-1$
-			keyStream2[i]  = "age_to"; //$NON-NLS-1$
-		}
 	}
 
 	public String getXML()
@@ -647,8 +639,6 @@ public class DeleteMeta extends BaseStepMeta implements StepMetaInterface
         }
     }
 
-
-
     /**
      * @return the schemaName
      */
@@ -656,8 +646,6 @@ public class DeleteMeta extends BaseStepMeta implements StepMetaInterface
     {
         return schemaName;
     }
-
-
 
     /**
      * @param schemaName the schemaName to set
