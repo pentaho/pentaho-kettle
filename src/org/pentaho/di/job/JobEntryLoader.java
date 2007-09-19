@@ -388,7 +388,7 @@ public class JobEntryLoader
 		for (int i = 0; i < pluginList.size(); i++)
 		{
 			JobPlugin sp = (JobPlugin) pluginList.get(i);
-			if (sp.getDescription().equalsIgnoreCase(description))
+			if (sp.getDescription().equalsIgnoreCase(description) || sp.getID().equalsIgnoreCase(description))
 				return sp;
 		}
 		return null;

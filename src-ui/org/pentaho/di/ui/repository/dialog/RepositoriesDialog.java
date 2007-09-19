@@ -97,6 +97,9 @@ public class RepositoriesDialog
 
     private Button wOK, wNorep, wCancel;
     private Listener lsOK, lsNorep, lsCancel;
+    
+    private Button wShow;
+    private FormData fdShow;
 
     private SelectionListener lsDef;
     private KeyListener lsRepo, lsJmp;
@@ -223,6 +226,19 @@ public class RepositoriesDialog
 
         BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel , wNorep}, Const.MARGIN, null);
 
+        // Don't show this dialog at startup...
+        //
+        wShow = new Button(shell, SWT.CHECK);
+        wShow.setText(Messages.getString("RepositoriesDialog.Button.Show"));
+        wShow.setToolTipText(Messages.getString("RepositoriesDialog.Button.Show.ToolTip"));
+        props.setLook(wShow);
+        fdShow = new FormData();
+        // fdHide.left  = new FormAttachment(wOK, 0);
+        fdShow.right = new FormAttachment(100, -right);
+        fdShow.bottom = new FormAttachment(wOK, -margin*3);
+        wShow.setLayoutData(fdShow);
+
+
         // Password
         wPassword = new LabelText(shell, Messages.getString("RepositoriesDialog.Label.Password"), Messages.getString("RepositoriesDialog.Label.Password"), middle, margin);
         props.setLook(wPassword);
@@ -230,7 +246,7 @@ public class RepositoriesDialog
         fdPassword = new FormData();
         fdPassword.left = new FormAttachment(0, 0);
         fdPassword.right = new FormAttachment(100, -right);
-        fdPassword.bottom = new FormAttachment(wOK, -margin * 3);
+        fdPassword.bottom = new FormAttachment(wShow, -margin);
         wPassword.setLayoutData(fdPassword);
 
         // Username
@@ -272,7 +288,7 @@ public class RepositoriesDialog
 
         props.setLook(wRepository);
         fdRepository = new FormData();
-        fdRepository.left = new FormAttachment(middle, -margin);
+        fdRepository.left = new FormAttachment(middle, -margin+2);
         fdRepository.right = new FormAttachment(wnRepository, -margin);
         fdRepository.top = new FormAttachment(wnRepository, 0, SWT.TOP);
         fdRepository.bottom = new FormAttachment(wnRepository, 0, SWT.BOTTOM);
@@ -410,6 +426,7 @@ public class RepositoriesDialog
 
     public void dispose()
     {
+        props.setRepositoriesDialogAtStartupShown(wShow.getSelection());
         props.setScreen(new WindowProperty(shell));
         shell.dispose();
     }
@@ -448,7 +465,8 @@ public class RepositoriesDialog
             if (idx >= 0)
                 wRepository.select(idx);
         }
-
+        
+        wShow.setSelection(props.showRepositoriesDialogAtStartup());
     }
 
     private void norep()
