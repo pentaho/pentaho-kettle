@@ -121,7 +121,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 					if (JobMeta.STRING_SPECIAL_DUMMY.equals(type_desc))
 					{
 						((JobEntrySpecial) jei).setDummy(true);
-						jei.setName(JobMeta.STRING_SPECIAL_DUMMY);
+						// jei.setName(JobMeta.STRING_SPECIAL_DUMMY);  // Don't overwrite the name
 					}
 				}
 
