@@ -419,7 +419,13 @@ public class Const
 	/**
 	 * The default undo level for Kettle
 	 */
-	public static final int MAX_UNDO = 100;	
+	public static final int MAX_UNDO = 100;
+
+	/**
+	 * You can set this environment variable to make Kettle scan additional packages for annotated plugins.
+	 * The packages are comma (,) delimited and the base specification is in the kettle-config.xml file
+	 */
+	public static final String KETTLE_PLUGIN_PACKAGES = "KETTLE_PLUGIN_PACKAGES";	
 
     /** 
      *  rounds double f to any number of places after decimal point

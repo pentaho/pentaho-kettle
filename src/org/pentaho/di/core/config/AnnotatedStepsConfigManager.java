@@ -31,7 +31,16 @@ public class AnnotatedStepsConfigManager<T extends StepPluginMeta> extends Basic
 	public Collection<T> load() throws KettleConfigException
 	{
 		ResolverUtil<StepPluginMeta> resolver = new ResolverUtil<StepPluginMeta>();
-		resolver.find(new ResolverUtil.AnnotatedWith(Step.class), packages != null ? packages.split(",") : new String[] {});
+		
+		// If there is a system wide property set with name KETTLE_PLUGIN_PACKAGES we search those packages as well
+		//
+		String allPackages = packages;
+		String extraPackages = System.getProperty(Const.KETTLE_PLUGIN_PACKAGES);
+		if (!Const.isEmpty(extraPackages)) {
+			allPackages+=","+extraPackages;
+		}
+		
+		resolver.find(new ResolverUtil.AnnotatedWith(Step.class), allPackages != null ? allPackages.split(",") : new String[] {});
 		
 		Collection<StepPluginMeta> steps = new LinkedHashSet<StepPluginMeta>(resolver.size());
 		for (Class<?> clazz : resolver.getClasses())
@@ -56,7 +65,7 @@ public class AnnotatedStepsConfigManager<T extends StepPluginMeta> extends Basic
 			if (description.startsWith("!") && description.endsWith("!")) description=Messages.getString(step.description());
 			if (description.startsWith("!") && description.endsWith("!")) description=BaseMessages.getString(altPackageName, step.description());
 			
-			// Determine the i18n tooltip text for the step (the extended description)
+			// Determine the i18n tool tip text for the step (the extended description)
 			//
 			String tooltip = BaseMessages.getString(packageName, step.tooltip());
 			if (tooltip.startsWith("!") && tooltip.endsWith("!")) tooltip=Messages.getString(step.tooltip());
