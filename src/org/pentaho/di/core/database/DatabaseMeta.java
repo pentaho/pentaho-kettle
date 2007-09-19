@@ -213,6 +213,12 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     public static final int TYPE_DATABASE_PALO = 29;
     
     
+    /**
+	 * Connection to a SybaseIQ ASE database
+	 */
+	public static final int TYPE_DATABASE_SYBASEIQ      = 30;
+    
+    
 	/**
 	 * Connect natively through JDBC thin driver to the database.
 	 */

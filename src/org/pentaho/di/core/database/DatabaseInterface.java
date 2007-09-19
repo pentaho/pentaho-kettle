@@ -42,6 +42,7 @@ public interface DatabaseInterface extends Cloneable
 			CacheDatabaseMeta.class,
 			InformixDatabaseMeta.class,
 			SybaseDatabaseMeta.class,
+			SybaseIQDatabaseMeta.class,
 			GuptaDatabaseMeta.class,
 			DbaseDatabaseMeta.class,
 			FirebirdDatabaseMeta.class,
