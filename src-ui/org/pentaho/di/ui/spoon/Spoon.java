@@ -392,9 +392,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		layout.marginHeight = 0;
 		shell.setLayout(layout);
 
-		addFileListener(new TransFileListener(), "ktr", TransMeta.XML_TAG);
+		addFileListener(new TransFileListener(), Const.STRING_TRANS_DEFAULT_EXT, TransMeta.XML_TAG);
 
-		addFileListener(new JobFileListener(), "kjb", JobMeta.XML_TAG);
+		addFileListener(new JobFileListener(), Const.STRING_JOB_DEFAULT_EXT, JobMeta.XML_TAG);
 
 		// INIT Data structure
 		if (ti != null)
@@ -3647,7 +3647,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			listener = fileExtensionMap.get(extension);
 		}
     	if( listener == null ) {
-			listener = fileExtensionMap.get(meta.getDefaultExtension());
+    		String xt = meta.getDefaultExtension();    		
+			listener = fileExtensionMap.get(xt);
 		}
 
     	if( listener != null ) {
