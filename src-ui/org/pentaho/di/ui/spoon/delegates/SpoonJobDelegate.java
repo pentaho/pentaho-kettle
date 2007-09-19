@@ -90,7 +90,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 				if (JobMeta.STRING_SPECIAL_START.equals(type_desc)
 						|| JobMeta.STRING_SPECIAL_DUMMY.equals(type_desc))
 				{
-					jobPlugin = jobLoader.findJobEntriesWithDescription(JobMeta.STRING_SPECIAL);
+					jobPlugin = jobLoader.findJobEntriesWithID(JobMeta.STRING_SPECIAL);					
 				}
 			}
 
