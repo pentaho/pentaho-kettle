@@ -316,7 +316,7 @@ public class Const
     private static String STRING_TRANS_AND_JOB_FILTER_NAMES[];
 
 	/** The extension of a Kettle transformation XML file */
-	public static final String STRING_TRANS_DEFAULT_EXT = ".ktr";
+	public static final String STRING_TRANS_DEFAULT_EXT = "ktr";
 
 	/** The possible extensions a transformation XML file can have. */
 	public static final String STRING_TRANS_FILTER_EXT[] = new String[] { "*.ktr;*.xml", "*.xml", "*.*" };
@@ -325,7 +325,7 @@ public class Const
 	private static String STRING_TRANS_FILTER_NAMES[];
 
 	/** The extension of a Kettle job XML file */
-	public static final String STRING_JOB_DEFAULT_EXT = ".kjb";
+	public static final String STRING_JOB_DEFAULT_EXT = "kjb";
 
 	/** The possible extensions a job XML file can have. */
 	public static final String STRING_JOB_FILTER_EXT[] = new String[] { "*.kjb;*.xml", "*.xml", "*.*" };
