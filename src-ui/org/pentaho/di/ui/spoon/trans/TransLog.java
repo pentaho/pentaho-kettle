@@ -455,6 +455,13 @@ public class TransLog extends Composite implements TabItemInterface
                 wStart.setEnabled(true);
                 wPause.setEnabled(false);
                 wStop.setEnabled(false);
+                
+                // OK, also see if we had a debugging session going on.
+                // If so and we didn't hit a breakpoint yet, display the show preview dialog...
+                //
+                if (lastTransDebugMeta!=null && lastTransDebugMeta.getTotalNumberOfHits()==0) {
+                	showLastPreviewResults();
+                }
             }
         }
     }

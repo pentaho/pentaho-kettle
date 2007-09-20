@@ -74,6 +74,7 @@ public class VariableButtonListenerFactory
         }
                 
         EnterSelectionDialog esd = new EnterSelectionDialog(shell, str, Messages.getString("System.Dialog.SelectEnvironmentVar.Title"), Messages.getString("System.Dialog.SelectEnvironmentVar.Message"));
+        esd.clearModal();
         if (esd.open()!=null)
         {
             int nr = esd.getSelectionNr();

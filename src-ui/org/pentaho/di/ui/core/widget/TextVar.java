@@ -1,7 +1,13 @@
 package org.pentaho.di.ui.core.widget;
 
+import java.util.Arrays;
+
 import org.eclipse.jface.fieldassist.ControlDecoration;
+import org.eclipse.jface.window.DefaultToolTip;
+import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.FocusAdapter;
+import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
@@ -13,16 +19,20 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.List;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.ui.core.PropsUI;
+import org.pentaho.di.ui.core.gui.GUIResource;
 
 
 /**
@@ -95,7 +105,7 @@ public class TextVar extends Composite
         props.setLook(wText);
         wText.addModifyListener(getModifyListenerTooltipText(wText));
         SelectionAdapter lsVar = VariableButtonListenerFactory.getSelectionAdapter(this, wText, getCaretPositionInterface, insertTextInterface, space);
-        wText.addKeyListener(getControlSpaceKeyListener(wText, lsVar));
+        wText.addKeyListener(getControlSpaceKeyListener(space, wText, lsVar));
         
         FormData fdText = new FormData();
         fdText.top   = new FormAttachment(0, 0);
@@ -160,7 +170,7 @@ public class TextVar extends Composite
         };
     }
     
-    public static final KeyListener getControlSpaceKeyListener(final Text textField, final SelectionListener lsVar)
+    public static final KeyListener getControlSpaceKeyListener(final VariableSpace space, final Text textField, final SelectionListener lsVar)
     {
         return new KeyAdapter()
         {
@@ -169,14 +179,70 @@ public class TextVar extends Composite
                 // CTRL-<SPACE> --> Insert a variable
                 if (e.character == ' ' && (( e.stateMask&SWT.CONTROL)!=0) && (( e.stateMask&SWT.ALT)==0) ) 
                 { 
-                    Event event = new Event();
-                    event.widget = textField;
-                    SelectionEvent selectionEvent = new SelectionEvent(event);
-                    lsVar.widgetSelected(selectionEvent);
-                    e.doit=false;
+                	// Drop down a list of variables...
+                	//
+            		Rectangle bounds = textField.getBounds();
+            		
+            		// Calculate the exact location...
+            		Point location = textField.getLocation();
+            		Composite parent = textField.getParent();
+            		while (parent!=null) {
+            			
+            			location.x+=parent.getLocation().x+parent.getBorderWidth();
+            			location.y+=parent.getLocation().y+parent.getBorderWidth();
+            			
+            			parent = parent.getParent();
+            		}
+            		
+            		final Shell shell = new Shell(textField.getShell(), SWT.NONE);
+            		shell.setSize(bounds.width, 200);
+            		shell.setLocation(location.x+5, location.y+bounds.height+bounds.height);
+            		shell.setLayout(new FillLayout());
+            		final List list = new List(shell, SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL);
+            		props.setLook(list);
+            		list.setItems(getVariableNames(space));
+					final DefaultToolTip toolTip = new DefaultToolTip(list, ToolTip.RECREATE, true);
+					toolTip.setImage(GUIResource.getInstance().getImageSpoon());
+			        toolTip.setHideOnMouseDown(true);
+			        toolTip.setRespectMonitorBounds(true);
+			        toolTip.setRespectDisplayBounds(true);
+			        toolTip.setPopupDelay(350);
+
+            		list.addSelectionListener(new SelectionAdapter() {
+            			// Enter or double-click: picks the variable
+            			//
+						public void widgetDefaultSelected(SelectionEvent arg0) {
+							if (list.getSelectionCount()<=0) return;
+							textField.insert("${"+list.getSelection()[0]+"}");
+							shell.dispose();
+						}
+						
+						// Select a variable name: display the value in a tool tip
+						//
+						public void widgetSelected(SelectionEvent event) {
+							if (list.getSelectionCount()<=0) return;
+							String name = list.getSelection()[0];
+							String value = space.getVariable(name);
+							Rectangle shellBounds = shell.getBounds();
+							String message = Messages.getString("TextVar.VariableValue.Message", name, value);
+							if (name.startsWith(Const.INTERNAL_VARIABLE_PREFIX)) message+=Messages.getString("TextVar.InternalVariable.Message");
+							toolTip.setText(message);
+							toolTip.hide();
+							toolTip.show(new Point(shellBounds.width, 0));
+						}
+					});
+            		shell.addFocusListener(new FocusAdapter() { public void focusLost(FocusEvent event) { shell.dispose(); } });
+            		list.addFocusListener(new FocusAdapter() { public void focusLost(FocusEvent event) { shell.dispose(); } });
+            		shell.open();
                 };
             }
         };
+    }
+    
+    public static final String[] getVariableNames(VariableSpace space) {
+    	String variableNames[] = space.listVariables();
+        Arrays.sort(variableNames);
+        return variableNames;
     }
 
     /**

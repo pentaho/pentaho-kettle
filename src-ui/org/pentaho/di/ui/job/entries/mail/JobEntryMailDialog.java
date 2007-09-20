@@ -862,7 +862,7 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
         fdComment.bottom = new FormAttachment(100, -margin);
         wComment.setLayoutData(fdComment);
         SelectionAdapter lsVar = VariableButtonListenerFactory.getSelectionAdapter(shell, wComment, jobMeta);
-        wComment.addKeyListener(TextVar.getControlSpaceKeyListener(wComment, lsVar));
+        wComment.addKeyListener(TextVar.getControlSpaceKeyListener(jobMeta, wComment, lsVar));
         
         fdMessageGroup = new FormData();
         fdMessageGroup.left = new FormAttachment(0, margin);

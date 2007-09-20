@@ -164,4 +164,15 @@ public class TransDebugMeta {
 			stepDebugMeta.addBreakPointListener(breakPointListener);
 		}
 	}
+	
+	/**
+	 * @return the number of times the break-point listeners got called.  This is the total for all the steps.
+	 */
+	public int getTotalNumberOfHits() {
+		int total=0;
+		for (StepDebugMeta stepDebugMeta : stepDebugMetaMap.values()) {
+			total+=stepDebugMeta.getNumberOfHits();
+		}
+		return total;
+	}
 }

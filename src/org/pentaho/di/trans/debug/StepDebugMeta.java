@@ -32,9 +32,12 @@ public class StepDebugMeta {
 	private RowMetaInterface rowBufferMeta;
 	private List<Object[]> rowBuffer; 	
 	
+	private int numberOfHits;
+	
 	public StepDebugMeta() {
 		rowBuffer = new ArrayList<Object[]>();
 		breakPointListers = new ArrayList<BreakPointListener>();
+		numberOfHits=0;
 	}
 
 	public StepDebugMeta(StepMeta stepMeta) {
@@ -93,6 +96,7 @@ public class StepDebugMeta {
 		for (BreakPointListener listener : breakPointListers) {
 			listener.breakPointHit(transDebugMeta, this, rowBufferMeta, rowBuffer);
 		}
+		numberOfHits++;
 	}
 	
 	/**
@@ -163,5 +167,19 @@ public class StepDebugMeta {
 	 */
 	public void setRowBuffer(List<Object[]> rowBuffer) {
 		this.rowBuffer = rowBuffer;
+	}
+
+	/**
+	 * @return the number of times the break-point listeners got called
+	 */
+	public int getNumberOfHits() {
+		return numberOfHits;
+	}
+
+	/**
+	 * @param numberOfHits the number of times the break-point listeners got called
+	 */
+	public void setNumberOfHits(int numberOfHits) {
+		this.numberOfHits = numberOfHits;
 	}
 }

@@ -229,13 +229,8 @@ public class JobEntryWriteToLogDialog extends JobEntryDialog implements JobEntry
 		fdLogMessage.bottom =new FormAttachment(wOK, -margin);
         wLogMessage.setLayoutData(fdLogMessage);
 
-
-
 		SelectionAdapter lsVar = VariableButtonListenerFactory.getSelectionAdapter(shell, wLogMessage, jobMeta);
-		wLogMessage.addKeyListener(TextVar.getControlSpaceKeyListener(wLogMessage, lsVar));
-
-
-
+		wLogMessage.addKeyListener(TextVar.getControlSpaceKeyListener(jobMeta, wLogMessage, lsVar));
 
         // Add listeners
         lsCancel = new Listener()
