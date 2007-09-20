@@ -133,6 +133,7 @@ public class TransLog extends Composite implements TabItemInterface
 
     private boolean halted;
     private boolean halting;
+    private boolean debug;
 
     private FormData fdStop;
 
@@ -148,6 +149,7 @@ public class TransLog extends Composite implements TabItemInterface
 		display = shell.getDisplay();
 
 		running = false;
+		debug = false;
 		lastUpdateView = 0L;
 		lastUpdateLog = 0L;
 
@@ -459,9 +461,10 @@ public class TransLog extends Composite implements TabItemInterface
                 // OK, also see if we had a debugging session going on.
                 // If so and we didn't hit a breakpoint yet, display the show preview dialog...
                 //
-                if (lastTransDebugMeta!=null && lastTransDebugMeta.getTotalNumberOfHits()==0) {
+                if (debug && lastTransDebugMeta!=null && lastTransDebugMeta.getTotalNumberOfHits()==0) {
                 	showLastPreviewResults();
                 }
+            	debug=false;
             }
         }
     }
@@ -869,6 +872,8 @@ public class TransLog extends Composite implements TabItemInterface
 
 				readLog();
 				running = !running;
+    			debug=true;
+
                 wStart.setEnabled(false);
                 wPause.setEnabled(true);
                 wStop.setEnabled(true);
