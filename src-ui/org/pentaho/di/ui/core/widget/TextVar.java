@@ -231,7 +231,6 @@ public class TextVar extends Composite
 							toolTip.show(new Point(shellBounds.width, 0));
 						}
 					});
-            		shell.addFocusListener(new FocusAdapter() { public void focusLost(FocusEvent event) { shell.dispose(); } });
             		list.addFocusListener(new FocusAdapter() { public void focusLost(FocusEvent event) { shell.dispose(); } });
             		shell.open();
                 };
