@@ -223,6 +223,18 @@ public class TextVar extends Composite
 							toolTip.show(new Point(shellBounds.width, 0));
 						}
 					});
+            		
+            		list.addKeyListener(new KeyAdapter() {
+					
+						public void keyPressed(KeyEvent e) {
+							if (e.keyCode == SWT.CR) {
+								if (list.getSelectionCount()<=0) return;
+								textField.insert("${"+list.getSelection()[0]+"}");
+								shell.dispose();
+							}
+						}
+					
+					});
             		list.addFocusListener(new FocusAdapter() { public void focusLost(FocusEvent event) { shell.dispose(); } });
             		shell.open();
                 };
