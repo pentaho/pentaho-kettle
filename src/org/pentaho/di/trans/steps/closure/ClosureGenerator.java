@@ -104,6 +104,7 @@ public class ClosureGenerator extends BaseStep implements StepInterface
 				}
 		    }
 			
+			setOutputDone();
 			return false;
 		}
 		
