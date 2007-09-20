@@ -146,6 +146,7 @@ public class StreamLookup extends BaseStep implements StepInterface
             if (firstRun)
             {
                 firstRun=false;
+                data.hasLookupRows=true;
                 
                 data.infoMeta = rowSet.getRowMeta().clone();
                 data.keyMeta = new RowMeta();
@@ -245,26 +246,29 @@ public class StreamLookup extends BaseStep implements StepInterface
             }
         }
         
-        Object[] add;
+        Object[] add = null;
         
-		try
-		{
-			if (meta.getKeystream().length>0)
-			{
-				Object lookupData[] = new Object[data.lookupColumnIndex.length];
-				for (int i=0;i<lookupData.length;i++) lookupData[i] = row[data.lookupColumnIndex[i]];
-				add=getFromCache(data.lookupMeta, lookupData);
-			}
-			else
-			{
-				// Just take the first element in the hashtable...
-				throw new KettleStepException(Messages.getString("StreamLookup.Log.GotRowWithoutKeys")); //$NON-NLS-1$
-			}
-		}
-		catch(Exception e)
-		{
-			throw new KettleStepException(e);
-		}
+        if ( data.hasLookupRows )  
+        {
+		    try
+		    {
+  			    if (meta.getKeystream().length>0)
+			    {
+				    Object lookupData[] = new Object[data.lookupColumnIndex.length];
+				    for (int i=0;i<lookupData.length;i++) lookupData[i] = row[data.lookupColumnIndex[i]];
+				    add=getFromCache(data.lookupMeta, lookupData);
+			    }
+			    else
+			    {
+				    // Just take the first element in the hashtable...
+				    throw new KettleStepException(Messages.getString("StreamLookup.Log.GotRowWithoutKeys")); //$NON-NLS-1$
+			    }
+		    }
+		    catch(Exception e)
+		    {
+			    throw new KettleStepException(e);
+		    }
+        }
 		
 		if (add==null) // nothing was found, unknown code: add null-values
 		{

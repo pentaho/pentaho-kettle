@@ -51,9 +51,6 @@ public class StreamLookupData extends BaseStepData implements StepDataInterface
     /** The metadata we send out */
     public RowMetaInterface outputRowMeta;
     
-	/** First row in lookup-set */
-	//public Row    firstrow;
-	
 	/**default string converted to values...*/
 	public Object nullIf[];
 	
@@ -80,6 +77,9 @@ public class StreamLookupData extends BaseStepData implements StepDataInterface
 
 	public boolean metadataVerifiedIntegerPair;
 	
+	// Did we read rows from the lookup hop.
+	public boolean hasLookupRows;
+	
 	public StreamLookupData()
 	{
         super();
@@ -88,6 +88,7 @@ public class StreamLookupData extends BaseStepData implements StepDataInterface
         longIndex = new LongHashIndex();
         list = new ArrayList<KeyValue>();
         metadataVerifiedIntegerPair=false;
+        hasLookupRows=false;
         
         comparator = new Comparator<KeyValue>()
         {
