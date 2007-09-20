@@ -50,9 +50,9 @@ public class FilterRows extends BaseStep implements StepInterface
 		}
 		catch(Exception e)
 		{
-			String message = Messages.getString("FilterRows.Exception.UnexpectedErrorFoundInEvaluationFuction")+e.toString();  //$NON-NLS-1$
+			String message = Messages.getString("FilterRows.Exception.UnexpectedErrorFoundInEvaluationFuction");  //$NON-NLS-1$
 			logError(message);
-			logError(Messages.getString("FilterRows.Log.ErrorOccurredForRow")+row); //$NON-NLS-1$
+			logError(Messages.getString("FilterRows.Log.ErrorOccurredForRow")+rowMeta.getString(row)); //$NON-NLS-1$
 			logError(Const.getStackTracker(e));
 			throw new KettleException(message, e);
 		}

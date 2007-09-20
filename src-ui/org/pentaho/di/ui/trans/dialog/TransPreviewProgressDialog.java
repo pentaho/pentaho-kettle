@@ -121,14 +121,17 @@ public class TransPreviewProgressDialog
         // This transformation is ready to run in preview!
         trans = new Trans(transMeta);
         
-        trans.initializeVariablesFrom(null);
-        
         // Prepare the execution...
         //
         try {
 			trans.prepareExecution(null);
-		} catch (KettleException e) {
-			new ErrorDialog(shell, Messages.getString("System.Dialog.Error.Title"), Messages.getString("TransPreviewProgressDialog.Exception.ErrorPreparingTransformation"), e);
+		} catch (final KettleException e) {
+			shell.getDisplay().asyncExec(new Runnable() {
+				public void run() {
+					new ErrorDialog(shell, Messages.getString("System.Dialog.Error.Title"), Messages.getString("TransPreviewProgressDialog.Exception.ErrorPreparingTransformation"), e);
+				}
+			});
+			
 			
 			// It makes no sense to continue, so just stop running...
 			//
@@ -211,6 +214,8 @@ public class TransPreviewProgressDialog
      */
     public List<Object[]> getPreviewRows(String stepname)
     {
+    	if (transDebugMeta==null) return null;
+    	
     	for (StepMeta stepMeta : transDebugMeta.getStepDebugMetaMap().keySet()) {
     		if (stepMeta.getName().equals(stepname)) {
     			StepDebugMeta stepDebugMeta = transDebugMeta.getStepDebugMetaMap().get(stepMeta);
@@ -226,6 +231,8 @@ public class TransPreviewProgressDialog
      */
     public RowMetaInterface getPreviewRowsMeta(String stepname)
     {
+    	if (transDebugMeta==null) return null;
+    	
     	for (StepMeta stepMeta : transDebugMeta.getStepDebugMetaMap().keySet()) {
     		if (stepMeta.getName().equals(stepname)) {
     			StepDebugMeta stepDebugMeta = transDebugMeta.getStepDebugMetaMap().get(stepMeta);

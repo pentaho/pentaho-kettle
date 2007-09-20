@@ -422,10 +422,11 @@ public class Condition implements Cloneable, XMLInterface
 //                  throw new KettleException("Unable to find value for field ["+left_valuename+"] in the input row!");
 //              }
 
-                if (field2==null && function!=FUNC_NULL && function!=FUNC_NOT_NULL)
-                {
-                    throw new KettleException("Unable to find value for field ["+right_valuename+"] in the input row!");
-                }
+//              This condition goes too as field2 can indeed be null, just not fieldMeta2
+//              if (field2==null && function!=FUNC_NULL && function!=FUNC_NOT_NULL)
+//              {
+//                  throw new KettleException("Unable to find value for field ["+right_valuename+"] in the input row!");
+//              }
 
                 // Evaluate
 				switch(function)

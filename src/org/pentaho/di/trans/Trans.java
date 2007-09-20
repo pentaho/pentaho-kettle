@@ -251,7 +251,7 @@ public class Trans implements VariableSpace
 			log.logBasic(toString(), Messages.getString("Trans.Log.ThisIsNotAReplayTransformation")); //$NON-NLS-1$
 		}
 
-		setInternalKettleVariables(this);
+		// setInternalKettleVariables(this);  Let's not do this.
 		
 		steps	 = new ArrayList<StepMetaDataCombi>();
 		rowsets	 = new ArrayList<RowSet>();

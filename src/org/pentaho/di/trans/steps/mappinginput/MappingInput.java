@@ -98,10 +98,7 @@ public class MappingInput extends BaseStep implements StepInterface
 			//
             data.outputRowMeta = getInputRowMeta().clone();
             meta.setInputRowMeta(getInputRowMeta());
-            
-            // Now change the field names according to the mapping specification...
-            // That means that all fields go through unchanged, unless specified.
-            // 
+
             if (meta.isSelectingAndSortingUnspecifiedFields()) {
             	//
             	// Create a list of the indexes to select to get the right order or fields on the output.
@@ -111,17 +108,19 @@ public class MappingInput extends BaseStep implements StepInterface
             		data.fieldNrs[i] = getInputRowMeta().indexOfValue(data.outputRowMeta.getValueMeta(i).getName());
             	}
             }
-            else {
-                for (MappingValueRename valueRename : data.valueRenames) {
-                	ValueMetaInterface valueMeta = data.outputRowMeta.searchValueMeta(valueRename.getSourceValueName());
-                	if (valueMeta==null) {
-                		throw new KettleStepException(Messages.getString("MappingInput.Exception.UnableToFindMappedValue", valueRename.getSourceValueName()));
-                	}
-                	valueMeta.setName(valueRename.getTargetValueName());
-                }
+
+            // Now change the field names according to the mapping specification...
+            // That means that all fields go through unchanged, unless specified.
+            // 
+            for (MappingValueRename valueRename : data.valueRenames) {
+            	ValueMetaInterface valueMeta = data.outputRowMeta.searchValueMeta(valueRename.getSourceValueName());
+            	if (valueMeta==null) {
+            		throw new KettleStepException(Messages.getString("MappingInput.Exception.UnableToFindMappedValue", valueRename.getSourceValueName()));
+            	}
+            	valueMeta.setName(valueRename.getTargetValueName());
             }
 
-            meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
+            // meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
 		}
 		
 		if (meta.isSelectingAndSortingUnspecifiedFields()) {
