@@ -182,22 +182,11 @@ public class TextVar extends Composite
                 	// Drop down a list of variables...
                 	//
             		Rectangle bounds = textField.getBounds();
+            		Point location = GUIResource.calculateControlPosition(textField);
             		
-            		// Calculate the exact location...
-            		//
-            		Point location = textField.getLocation();
-            		Composite parent = textField.getParent();
-            		while (parent!=null) {
-            			
-            			location.x+=parent.getLocation().x;
-            			location.y+=parent.getLocation().y;
-            			
-            			parent = parent.getParent();
-            		}
-            		
-            		final Shell shell = new Shell(textField.getShell(), SWT.BORDER | SWT.RESIZE);
+            		final Shell shell = new Shell(textField.getShell(), SWT.NONE);
             		shell.setSize(bounds.width, 200);
-            		shell.setLocation(location.x, location.y+bounds.height);
+            		shell.setLocation(location.x, location.y);
             		shell.setLayout(new FillLayout());
             		final List list = new List(shell, SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL);
             		props.setLook(list);
