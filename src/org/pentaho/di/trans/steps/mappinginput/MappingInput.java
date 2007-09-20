@@ -22,7 +22,6 @@ import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
-import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -97,9 +96,8 @@ public class MappingInput extends BaseStep implements StepInterface
             // --> getInputRowMeta() is not corresponding to what we're outputting.
 			// In essence, we need to rename a couple of fields...
 			//
-            data.outputRowMeta = new RowMeta();
+            data.outputRowMeta = getInputRowMeta().clone();
             meta.setInputRowMeta(getInputRowMeta());
-            meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
             
             // Now change the field names according to the mapping specification...
             // That means that all fields go through unchanged, unless specified.
@@ -122,6 +120,8 @@ public class MappingInput extends BaseStep implements StepInterface
                 	valueMeta.setName(valueRename.getTargetValueName());
                 }
             }
+
+            meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
 		}
 		
 		if (meta.isSelectingAndSortingUnspecifiedFields()) {
