@@ -184,19 +184,20 @@ public class TextVar extends Composite
             		Rectangle bounds = textField.getBounds();
             		
             		// Calculate the exact location...
+            		//
             		Point location = textField.getLocation();
             		Composite parent = textField.getParent();
             		while (parent!=null) {
             			
-            			location.x+=parent.getLocation().x+parent.getBorderWidth();
-            			location.y+=parent.getLocation().y+parent.getBorderWidth();
+            			location.x+=parent.getLocation().x;
+            			location.y+=parent.getLocation().y;
             			
             			parent = parent.getParent();
             		}
             		
-            		final Shell shell = new Shell(textField.getShell(), SWT.NONE);
+            		final Shell shell = new Shell(textField.getShell(), SWT.BORDER | SWT.RESIZE);
             		shell.setSize(bounds.width, 200);
-            		shell.setLocation(location.x+5, location.y+bounds.height+bounds.height);
+            		shell.setLocation(location.x, location.y+bounds.height);
             		shell.setLayout(new FillLayout());
             		final List list = new List(shell, SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL);
             		props.setLook(list);
