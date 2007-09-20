@@ -15,8 +15,11 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
@@ -27,12 +30,12 @@ import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.job.JobEntryLoader;
 import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobPlugin;
+import org.pentaho.di.laf.BasePropertyHandler;
 import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.StepPlugin;
 import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.util.ImageUtil;
-import org.pentaho.di.laf.BasePropertyHandler;
 
 /**
  * This is a singleton class that contains allocated Fonts, Colors, etc. All
@@ -1098,5 +1101,34 @@ public class GUIResource
 				imageType, buttonLabels, defaultIndex, toggleMessage, toggleState);
 		int idx = md.open();
 		return new Object[] { Integer.valueOf(idx), Boolean.valueOf(md.getToggleState()) };
+	}
+
+	public static Point calculateControlPosition(Control control) {
+		// Calculate the exact location...
+		//
+		Point location = control.getLocation();
+		
+		Composite parent = control.getParent();
+		while (parent!=null) {
+			
+			Composite newParent = parent.getParent();
+			if (newParent!=null) {
+				location.x+=parent.getLocation().x;
+				location.y+=parent.getLocation().y;
+			}
+			else {
+				if (parent instanceof Shell) {
+					// Top level shell.
+					Shell shell = (Shell)parent;
+					Rectangle bounds = shell.getBounds();
+					Rectangle clientArea = shell.getClientArea();
+					location.x += bounds.width-clientArea.width;
+					location.y += bounds.height-clientArea.height;
+				}
+			}
+			parent = newParent;
+		}
+		
+		return location;
 	}
 }
