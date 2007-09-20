@@ -256,7 +256,7 @@ public class PreviewRowsDialog extends Dialog
                         }
                     }
                 }
-                wFields.optWidth(true, 200);
+                if (!wFields.isDisposed()) wFields.optWidth(true, 200);
             }
         });
     }

@@ -206,7 +206,7 @@ public class StreamLookup extends BaseStep implements StepInterface
 		// See if we need to stop.
 		if (isStopped()) return null;
 
-		if( data.lookupColumnIndex == null ) 
+		if ( data.lookupColumnIndex == null ) 
 		{
 			String names[] = data.lookupMeta.getFieldNames();
 			data.lookupColumnIndex = new int[names.length];
@@ -223,7 +223,9 @@ public class StreamLookup extends BaseStep implements StepInterface
 		}
 		
 		// Copy value references to lookup table.
-        Object[] lu = RowDataUtil.resizeArray(row, data.keynrs.length);
+		//
+        Object[] lu = new Object[data.keynrs.length];
+        for (int i=0;i<data.keynrs.length;i++) lu[i] = row[data.keynrs[i]];
 
         // Handle conflicting types (Number-Integer-String conversion to lookup type in hashtable)
         if (data.keyTypes!=null)
@@ -236,7 +238,9 @@ public class StreamLookup extends BaseStep implements StepInterface
                 {
                     try
                     {
-                        lu[i] = inputValue.convertData(lookupValue, lu[i]);
+                    	// Change the input value to match the lookup value
+                    	//
+                        lu[i] = lookupValue.convertData(inputValue, lu[i]);
                     }
                     catch (KettleValueException e)
                     {
@@ -248,27 +252,25 @@ public class StreamLookup extends BaseStep implements StepInterface
         
         Object[] add = null;
         
-        if ( data.hasLookupRows )  
-        {
-		    try
-		    {
-  			    if (meta.getKeystream().length>0)
-			    {
-				    Object lookupData[] = new Object[data.lookupColumnIndex.length];
-				    for (int i=0;i<lookupData.length;i++) lookupData[i] = row[data.lookupColumnIndex[i]];
-				    add=getFromCache(data.lookupMeta, lookupData);
-			    }
-			    else
-			    {
-				    // Just take the first element in the hashtable...
-				    throw new KettleStepException(Messages.getString("StreamLookup.Log.GotRowWithoutKeys")); //$NON-NLS-1$
-			    }
-		    }
-		    catch(Exception e)
-		    {
-			    throw new KettleStepException(e);
-		    }
-        }
+		if (data.hasLookupRows) 
+		{
+			try
+			{
+				if (meta.getKeystream().length>0)
+				{
+					add=getFromCache(data.keyTypes, lu);
+				}
+				else
+				{
+					// Just take the first element in the hashtable...
+					throw new KettleStepException(Messages.getString("StreamLookup.Log.GotRowWithoutKeys")); //$NON-NLS-1$
+				}
+			}
+			catch(Exception e)
+			{
+				throw new KettleStepException(e);
+			}
+		}
 		
 		if (add==null) // nothing was found, unknown code: add null-values
 		{
