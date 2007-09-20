@@ -62,6 +62,7 @@ public interface DatabaseInterface extends Cloneable
             DerbyDatabaseMeta.class,
             RemedyActionRequestSystemDatabaseMeta.class,
             PALODatabaseMeta.class,
+            SybaseIQDatabaseMeta.class,
 		};
 	
 	/**

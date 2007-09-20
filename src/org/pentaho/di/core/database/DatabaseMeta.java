@@ -212,7 +212,6 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
      */
     public static final int TYPE_DATABASE_PALO = 29;
     
-    
     /**
 	 * Connection to a SybaseIQ ASE database
 	 */
@@ -1244,7 +1243,9 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 		
 		for (int i=0;i<di.length;i++)
 		{
-			if (di[i].getDatabaseType() == dbtype) return di[i].getDatabaseTypeDesc();
+			if (di[i].getDatabaseType() == dbtype) {
+				return di[i].getDatabaseTypeDesc();
+			}
 		}
 		
 		return null;

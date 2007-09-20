@@ -1466,7 +1466,7 @@ public class DatabaseDialog extends Dialog
         wConn.setText(NVL(databaseMeta == null ? "" : databaseMeta.getName(), "")); //$NON-NLS-1$ //$NON-NLS-2$
         wConnType.select(databaseMeta.getDatabaseType() - 1);
         wConnType.showSelection();
-        previousDatabaseType = DatabaseMeta.getDatabaseTypeCode(wConnType.getSelectionIndex() + 1);
+        previousDatabaseType = DatabaseMeta.getDatabaseTypeCode(wConnType.getSelectionIndex());
 
         setAccessList();
 
@@ -1594,7 +1594,7 @@ public class DatabaseDialog extends Dialog
     public void enableFields()
     {
         // See if we need to refresh the access list...
-        String type = DatabaseMeta.getDatabaseTypeCode(wConnType.getSelectionIndex() + 1);
+        String type = DatabaseMeta.getDatabaseTypeCode(wConnType.getSelectionIndex());
         if (!type.equalsIgnoreCase(previousDatabaseType)) setAccessList();
         previousDatabaseType = type;
 
@@ -1684,7 +1684,7 @@ public class DatabaseDialog extends Dialog
 
     public void setPortNumber()
     {
-        String type = DatabaseMeta.getDatabaseTypeCode(wConnType.getSelectionIndex() + 1);
+        String type = DatabaseMeta.getDatabaseTypeCode(wConnType.getSelectionIndex());
 
         // What port should we select?
         String acce = wConnAcc.getItem(wConnAcc.getSelectionIndex());
