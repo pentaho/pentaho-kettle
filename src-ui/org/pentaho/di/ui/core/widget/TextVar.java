@@ -179,6 +179,8 @@ public class TextVar extends Composite
                 // CTRL-<SPACE> --> Insert a variable
                 if (e.character == ' ' && (( e.stateMask&SWT.CONTROL)!=0) && (( e.stateMask&SWT.ALT)==0) ) 
                 { 
+                	e.doit = false;
+                	
                 	// Drop down a list of variables...
                 	//
             		Rectangle bounds = textField.getBounds();
