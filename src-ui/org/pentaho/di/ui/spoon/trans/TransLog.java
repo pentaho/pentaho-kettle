@@ -912,18 +912,27 @@ public class TransLog extends Composite implements TabItemInterface
 		
 			public void run() {
 				
+				if (isDisposed() || wPause.isDisposed()) return;
+				
 				// The transformation is now paused, indicate this in the log dialog...
 				//
 				pausing=true;
 				wPause.setText(RESUME_TEXT);
 				
 				PreviewRowsDialog previewRowsDialog = new PreviewRowsDialog(shell, transMeta, SWT.APPLICATION_MODAL, stepDebugMeta.getStepMeta().getName(), rowBufferMeta, rowBuffer);
+				previewRowsDialog.setProposingToGetMoreRows(true);
 				previewRowsDialog.open();
 
-				// clear the row buffer.
-				// That way if you click resume, you get the next N rows for the step :-)
-				//
-				rowBuffer.clear();
+				if (previewRowsDialog.isAskingForMoreRows()) {
+					// clear the row buffer.
+					// That way if you click resume, you get the next N rows for the step :-)
+					//
+					rowBuffer.clear();
+
+					// Resume running: find more rows...
+					//
+					pauseResume();
+				}
 			}
 		
 		});

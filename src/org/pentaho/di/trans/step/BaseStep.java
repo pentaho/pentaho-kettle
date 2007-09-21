@@ -737,11 +737,13 @@ public class BaseStep extends Thread implements VariableSpace
 
         // call all row listeners...
         //
-        for (int i = 0; i < rowListeners.size(); i++)
-        {
-            RowListener rowListener = (RowListener) rowListeners.get(i);
-            rowListener.rowWrittenEvent(rowMeta, row);
-        }
+	    synchronized (this) {
+	        for (int i = 0; i < rowListeners.size(); i++)
+	        {
+	            RowListener rowListener = (RowListener) rowListeners.get(i);
+	            rowListener.rowWrittenEvent(rowMeta, row);
+	        }
+		}
 
         // Keep adding to terminator_rows buffer...
         //

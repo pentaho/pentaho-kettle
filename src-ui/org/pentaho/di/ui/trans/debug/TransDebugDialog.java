@@ -44,13 +44,17 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
  */
 public class TransDebugDialog extends Dialog {
 
+	public static final int DEBUG_CANCEL = 0;
+	public static final int DEBUG_LAUNCH = 1;
+	public static final int DEBUG_CONFIG = 2;
+	
 	private Display display;
     private Shell parent;
     private Shell shell;
     private PropsUI props;
-    private boolean retval;
+    private int retval;
 
-    private Button wOK, wCancel;
+    private Button wOK, wCancel, wLaunch;
     
     private TableView wSteps;
     
@@ -80,9 +84,11 @@ public class TransDebugDialog extends Dialog {
     	stepDebugMetaMap.putAll(transDebugMeta.getStepDebugMetaMap());
     	
     	previousIndex=-1;
+    	
+    	retval = DEBUG_CANCEL;
     }
  
-    public boolean open() {
+    public int open() {
     	
         display = parent.getDisplay();
         shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL | SWT.RESIZE | SWT.MAX | SWT.MIN);
@@ -100,14 +106,20 @@ public class TransDebugDialog extends Dialog {
         middle = props.getMiddlePct();
         
         wOK = new Button(shell, SWT.PUSH);
-        wOK.setText(Messages.getString("System.Button.OK"));
-        wOK.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { ok(); }});
+        wOK.setText(Messages.getString("TransDebugDialog.Configure.Label"));
+        wOK.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { ok(true); }});
+        wLaunch= new Button(shell, SWT.PUSH);
+        wLaunch.setText(Messages.getString("TransDebugDialog.Launch.Label"));
+        wLaunch.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { ok(false); }});
         wCancel = new Button(shell, SWT.PUSH);
         wCancel.setText(Messages.getString("System.Button.Cancel"));
         wCancel.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { cancel(); }});
         
-        BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, null);
+        BaseStepDialog.positionBottomButtons(shell, new Button[] { wLaunch, wOK, wCancel }, margin, null);
     	
+        wOK.setToolTipText(Messages.getString("TransDebugDialog.Configure.ToolTip"));
+        wLaunch.setToolTipText(Messages.getString("TransDebugDialog.Launch.ToolTip"));
+        
         // Add the list of steps
         //
         ColumnInfo[] stepColumns = {
@@ -163,7 +175,8 @@ public class TransDebugDialog extends Dialog {
         BaseStepDialog.setSize(shell);
         
         // Set the focus on the OK button
-        wOK.setFocus();
+        //
+        wLaunch.setFocus();
         
         shell.open();
         while (!shell.isDisposed())
@@ -241,19 +254,25 @@ public class TransDebugDialog extends Dialog {
     	meta.getStepDebugMetaMap().putAll(stepDebugMetaMap);
 	}
 
-	private void ok() {
-    	retval=true;
+	private void ok(boolean config) {
+		if (config) {
+	    	retval=DEBUG_CONFIG;
+		}
+		else {
+	    	retval=DEBUG_LAUNCH;
+		}
     	getStepDebugMeta();
     	getInfo(transDebugMeta);
     	dispose();
     }
-    
+
 	private void dispose() {
     	props.setScreen(new WindowProperty(shell));
     	shell.dispose();
     }
     
     private void cancel() {
+    	retval=DEBUG_CANCEL;
     	dispose();
     }
     

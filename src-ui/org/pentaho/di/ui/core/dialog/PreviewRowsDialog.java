@@ -15,6 +15,7 @@
 
 package org.pentaho.di.ui.core.dialog;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
@@ -44,7 +45,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.core.PropsUI;
-import org.pentaho.di.ui.core.database.dialog.Messages;
+import org.pentaho.di.ui.core.dialog.Messages;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
 
@@ -64,10 +65,8 @@ public class PreviewRowsDialog extends Dialog
     private FormData fdlFields, fdFields;
 
     private Button wClose;
-    private Listener lsClose;
-
+    private Button wNext;
     private Button wLog;
-    private Listener lsLog;
 
     private Shell shell;
     private List<Object[]> buffer;
@@ -78,6 +77,10 @@ public class PreviewRowsDialog extends Dialog
     private int hscroll, vscroll;
     private int hmax, vmax;
     private String loggingText;
+    
+    private boolean proposingToGetMoreRows;
+
+    private boolean askingForMoreRows;
 
     private RowMetaInterface rowMeta;
     
@@ -111,7 +114,7 @@ public class PreviewRowsDialog extends Dialog
         this.message = message;
     }
 
-    public String open()
+    public void open()
     {
         Shell parent = getParent();
         Display display = parent.getDisplay();
@@ -150,7 +153,7 @@ public class PreviewRowsDialog extends Dialog
             ShowMessageDialog dialog = new ShowMessageDialog(shell, SWT.OK | SWT.ICON_WARNING, Messages.getString("PreviewRowsDialog.NoRows.Text"), Messages.getString("PreviewRowsDialog.NoRows.Message"));
             dialog.open();
             shell.dispose();
-            return null;
+            return;
         }
 
         int FieldsRows = buffer.size();
@@ -173,24 +176,32 @@ public class PreviewRowsDialog extends Dialog
         fdFields.right = new FormAttachment(100, 0);
         fdFields.bottom = new FormAttachment(100, -50);
         wFields.setLayoutData(fdFields);
-
+        
+        List<Button> buttons = new ArrayList<Button>();
+        
         wClose = new Button(shell, SWT.PUSH);
         wClose.setText(Messages.getString("System.Button.Close"));
-
-        wLog = new Button(shell, SWT.PUSH);
-        wLog.setText(Messages.getString("PreviewRowsDialog.Button.ShowLog"));
-
-        if (loggingText == null || loggingText.length() == 0)
-            wLog.setEnabled(false);
-
-        // Add listeners
-        lsClose = new Listener() { public void handleEvent(Event e) { close(); } };
-        lsLog   = new Listener() { public void handleEvent(Event e) { log(); } };
+        wClose.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { close(); } });
+        buttons.add(wClose);
         
-        wClose.addListener(SWT.Selection, lsClose    );
-        wLog.addListener(SWT.Selection, lsLog );
+        if (!Const.isEmpty(loggingText)) {
+	        wLog = new Button(shell, SWT.PUSH);
+	        wLog.setText(Messages.getString("PreviewRowsDialog.Button.ShowLog"));
+	        wLog.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { log(); } });
+	        buttons.add(wLog);
+        }
 
-        BaseStepDialog.positionBottomButtons(shell, new Button[] { wClose, wLog }, margin, null);
+        if (proposingToGetMoreRows) {
+	        wNext = new Button(shell, SWT.PUSH);
+	        wNext.setText(Messages.getString("PreviewRowsDialog.Button.Next.Label"));
+	        wNext.setToolTipText(Messages.getString("PreviewRowsDialog.Button.Next.ToolTip"));
+	        wNext.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { askingForMoreRows=true; close(); } });
+	        buttons.add(wNext);
+        }
+
+        // Position the buttons...
+        //
+        BaseStepDialog.positionBottomButtons(shell, buttons.toArray(new Button[buttons.size()]), margin, null);
 
         // Detect X or ALT-F4 or something that kills this window...
         shell.addShellListener( new ShellAdapter() { public void shellClosed(ShellEvent e) { close(); } } );
@@ -205,7 +216,6 @@ public class PreviewRowsDialog extends Dialog
         {
             if (!display.readAndDispatch()) display.sleep();
         }
-        return stepname;
     }
 
     public void dispose()
@@ -335,4 +345,25 @@ public class PreviewRowsDialog extends Dialog
     {
         vmax = m;
     }
+
+    /**
+     * @return true if the user is asking to grab the next rows with preview
+     */
+	public boolean isAskingForMoreRows() {
+		return askingForMoreRows;
+	}
+
+	/**
+	 * @return true if the dialog is proposing to ask for more rows
+	 */
+	public boolean isProposingToGetMoreRows() {
+		return proposingToGetMoreRows;
+	}
+
+	/**
+	 * @param proposingToGetMoreRows Set to true if you want to display a button asking for more preview rows.
+	 */
+	public void setProposingToGetMoreRows(boolean proposingToGetMoreRows) {
+		this.proposingToGetMoreRows = proposingToGetMoreRows;
+	}
 }

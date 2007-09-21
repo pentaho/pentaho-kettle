@@ -38,6 +38,7 @@ public class StepDebugMeta {
 		rowBuffer = new ArrayList<Object[]>();
 		breakPointListers = new ArrayList<BreakPointListener>();
 		numberOfHits=0;
+		readingFirstRows=true;
 	}
 
 	public StepDebugMeta(StepMeta stepMeta) {

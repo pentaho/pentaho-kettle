@@ -895,7 +895,7 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 			// Set the default number of preview rows on all selected steps...
 			//
 			StepMeta[] selectedSteps = transMeta.getSelectedSteps();
-			if (selectedSteps.length>0) {
+			if (selectedSteps!=null && selectedSteps.length>0) {
 				transDebugMeta.getStepDebugMetaMap().clear();
 				for (StepMeta stepMeta : transMeta.getSelectedSteps()) {
 					StepDebugMeta stepDebugMeta = new StepDebugMeta(stepMeta);
@@ -906,9 +906,12 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 			}
 		}
 		
+		int debugAnswer = TransDebugDialog.DEBUG_CONFIG;
+		
 		if (debug || preview) {
 			TransDebugDialog transDebugDialog = new TransDebugDialog(spoon.getShell(), transDebugMeta);
-			if (transDebugDialog.open()) {
+			debugAnswer = transDebugDialog.open();
+			if (debugAnswer!=TransDebugDialog.DEBUG_CANCEL) {
 				executionConfiguration.setExecutingLocally(true);
 				executionConfiguration.setExecutingRemotely(false);
 				executionConfiguration.setExecutingClustered(false);
@@ -947,8 +950,14 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 
 		executionConfiguration.setLogLevel(spoon.getLog().getLogLevel());
 
-		TransExecutionConfigurationDialog dialog = new TransExecutionConfigurationDialog(spoon.getShell(), executionConfiguration, transMeta);
-		if (dialog.open()) {
+		boolean execConfigAnswer = true;
+		
+		if (debugAnswer == TransDebugDialog.DEBUG_CONFIG) {
+			TransExecutionConfigurationDialog dialog = new TransExecutionConfigurationDialog(spoon.getShell(), executionConfiguration, transMeta);
+			execConfigAnswer = dialog.open();
+		}
+		
+		if (execConfigAnswer) {
 			addTransLog(transMeta, executionConfiguration.isExecutingLocally());
 			TransLog transLog = spoon.getActiveTransLog();
 

@@ -151,7 +151,6 @@ import org.pentaho.di.trans.StepPlugin;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.debug.TransDebugMeta;
 import org.pentaho.di.trans.step.BaseStep;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
@@ -201,7 +200,6 @@ import org.pentaho.di.ui.spoon.trans.TransHistory;
 import org.pentaho.di.ui.spoon.trans.TransLog;
 import org.pentaho.di.ui.spoon.wizards.CopyTableWizardPage1;
 import org.pentaho.di.ui.spoon.wizards.CopyTableWizardPage2;
-import org.pentaho.di.ui.trans.debug.TransDebugDialog;
 import org.pentaho.di.ui.trans.dialog.TransHopDialog;
 import org.pentaho.di.ui.trans.dialog.TransLoadProgressDialog;
 import org.pentaho.di.ui.util.ImageUtil;
@@ -495,12 +493,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 					key = new String(new char[] {
 						c
 					});
-				}
-				
-				// TODO: remove after testing...
-				//
-				if (e.keyCode==SWT.F5 && shift && !ctrl) {
-					testDebugWindow();
 				}
 
 				menuBar.handleAccessKey(key, alt, ctrl);
@@ -6121,18 +6113,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		return "Y".equalsIgnoreCase(answer.toString());
 	}
 	
-	public void testDebugWindow() {
-		System.out.println("Test Debug Window");
-		TransMeta transMeta = getActiveTransformation();
-		if (transMeta!=null) {
-			TransDebugMeta transDebugMeta = new TransDebugMeta(transMeta);
-			TransDebugDialog dialog = new TransDebugDialog(shell, transDebugMeta);
-			if (dialog.open()) {
-				System.out.println("OK");
-			}
-		}
-	}
-
 	/**
 	 * @return the previewExecutionConfiguration
 	 */
