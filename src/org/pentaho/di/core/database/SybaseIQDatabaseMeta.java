@@ -7,7 +7,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 /**
  * Contains Sybase IQ specific information through static final members 
  * 
- * @author fumigateAnt, ¡ıª¥”ø <liuhuaiyong@gmail.com>
+ * @author fumigateAnt, liuhuaiyong <liuhuaiyong@gmail.com>
  * @since  18-09-2007
  */
 public class SybaseIQDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface
