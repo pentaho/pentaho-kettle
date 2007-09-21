@@ -444,7 +444,7 @@ public class Condition implements Cloneable, XMLInterface
                         }
                         else
                         {
-                            retval = Pattern.matches(fieldMeta2.getString(field), fieldMeta.getString(field));
+                            retval = Pattern.matches(fieldMeta2.getString(field2), fieldMeta.getString(field));
                         }
                         break;
 					case FUNC_NULL          : retval = (fieldMeta.isNull(field));           break;
