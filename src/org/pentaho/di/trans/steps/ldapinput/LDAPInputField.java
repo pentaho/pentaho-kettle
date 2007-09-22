@@ -43,7 +43,7 @@ public class LDAPInputField implements Cloneable
     
     
 	private String 	  name;
-	private String 	  attribut;
+	private String 	  attribute;
 
 	
     private int 	  type;
@@ -62,7 +62,7 @@ public class LDAPInputField implements Cloneable
 	public LDAPInputField(String fieldname)
 	{
 		this.name           = fieldname;
-		this.attribut      = "";
+		this.attribute      = "";
 		this.length         = -1;
 		this.type           = ValueMetaInterface.TYPE_STRING;
 		this.format         = "";
@@ -147,15 +147,15 @@ public class LDAPInputField implements Cloneable
 		return name;
 	}
 	
-	public String getAttribut()
+	public String getAttribute()
 	{
-		return attribut;
+		return attribute;
 	}
 	
 	
-	public void setAttribut(String fieldattribut)
+	public void setAttribute(String fieldattribute)
 	{
-		this.attribut = fieldattribut;
+		this.attribute = fieldattribute;
 	}
 	public void setName(String fieldname)
 	{
