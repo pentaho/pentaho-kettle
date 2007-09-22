@@ -104,7 +104,7 @@ public class LDAPInput extends BaseStep implements StepInterface
 		   // Get user selection attributes
 		   for (int i=0;i<meta.getInputFields().length;i++)
 		   {
-		    	attrReturned[i]=meta.getInputFields()[i].getAttribute();
+		    	attrReturned[i]=environmentSubstitute(meta.getInputFields()[i].getAttribute());
 			
 		   }
         }
@@ -158,7 +158,7 @@ public class LDAPInput extends BaseStep implements StepInterface
 					for (int i=0;i<meta.getInputFields().length;i++)
 					{
 						// Get attribute value
-		            	attr = attributes.get(meta.getInputFields()[i].getAttribute()); 
+		            	attr = attributes.get(environmentSubstitute(meta.getInputFields()[i].getAttribute())); 
 		                if (attr!=null) attrvalue=(String) attr.get();
 		               
 						// DO Trimming!
