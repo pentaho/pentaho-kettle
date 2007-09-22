@@ -30,7 +30,7 @@ The following bug where fixes backported from the 3.0.0-M1 series to 2.5.1:
 - CRQ 5966: Add ability to write to log specifying log level, message and value.
 - CRQ 6026: Regex evaluation.  Create a step which use Regular expression to evaluate a field.
 
-The following bug where fixes backported from the 3.0.0-M1 series to 2.5.2:
+The following bug where fixes backported from the 3.0.0-RC1 series to 2.5.2:
 - PDI-130: Use VFS to access the excel template file - Sven B - 3-Sep-2007
 - PDI-133: Http client parameter handling - Jens Bleuel - 5-Sep-2007
 - PDI-28: Selecting wrong job entry name corrupts repository - Matt - 5-Sep-2007
@@ -45,3 +45,4 @@ The following bug where fixes backported from the 3.0.0-M1 series to 2.5.2:
 - PDI-102: Add Put FTP job entry - Samatar - 14-Sep-2007
 - PDI-180: Cube input/output properly support variable substitution - Sven B - 17-Sep-2007
 - PDI-189: Support variable substution in arguments of Shell job entry - Sven B - 18-Sep-2007
+- PDI-185: Make weekdays work in javascript - Sven B - 22-Sep-2007
