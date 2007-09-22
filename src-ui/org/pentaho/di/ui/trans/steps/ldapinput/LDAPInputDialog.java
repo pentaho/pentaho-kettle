@@ -790,8 +790,6 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 	        SearchResult searchAttr = (SearchResult) results.next();
 	        
 	        Attributes listattributes = searchAttr.getAttributes(); 
-	        
-	        log.logBasic("Class--------------------------------------",searchAttr.getName());
 	       
 	        NamingEnumeration ne = listattributes.getAll();
 		   
