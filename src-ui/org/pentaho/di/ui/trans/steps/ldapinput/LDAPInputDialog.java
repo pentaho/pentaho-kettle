@@ -566,7 +566,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
          Messages.getString("LDAPInputDialog.FieldsTable.Name.Column"),
          ColumnInfo.COLUMN_TYPE_TEXT,
          false),
-         new ColumnInfo(Messages.getString("LDAPInputDialog.FieldsTable.Attribut.Column"),ColumnInfo.COLUMN_TYPE_TEXT,false),
+         new ColumnInfo(Messages.getString("LDAPInputDialog.FieldsTable.Attribute.Column"),ColumnInfo.COLUMN_TYPE_TEXT,false),
 		 new ColumnInfo(Messages.getString("LDAPInputDialog.FieldsTable.Type.Column"),ColumnInfo.COLUMN_TYPE_CCOMBO,ValueMeta.getTypes(),true ),
 		 new ColumnInfo(Messages.getString("LDAPInputDialog.FieldsTable.Format.Column"),
          ColumnInfo.COLUMN_TYPE_CCOMBO,formats),
@@ -606,7 +606,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		colinf[0].setUsingVariables(true);
 		colinf[0].setToolTip(Messages.getString("LDAPInputDialog.FieldsTable.Name.Column.Tooltip"));
 		colinf[1].setUsingVariables(true);
-		colinf[1].setToolTip(Messages.getString("LDAPInputDialog.FieldsTable.Attribut.Column.Tooltip"));
+		colinf[1].setToolTip(Messages.getString("LDAPInputDialog.FieldsTable.Attribute.Column.Tooltip"));
 		
 		wFields=new TableView(transMeta,wFieldsComp, 
 						      SWT.FULL_SELECTION | SWT.MULTI, 
@@ -786,7 +786,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 	         // Set search
 	         results = ctx.search(searchbase,filter, controls);
 	        
-	        // Get all attributs
+	        // Get all attributes
 	        SearchResult searchAttr = (SearchResult) results.next();
 	        
 	        Attributes listattributes = searchAttr.getAttributes(); 
@@ -928,7 +928,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
             {
     			TableItem item  = wFields.table.getItem(i);
     			String name     = field.getName();
-    			String xpath	= field.getAttribut();
+    			String xpath	= field.getAttribute();
     			String type     = field.getTypeDesc();
     			String format   = field.getFormat();
     			String length   = ""+field.getLength();
@@ -1010,7 +1010,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 			TableItem item  = wFields.getNonEmpty(i);
             
 			field.setName( item.getText(1) );
-			field.setAttribut(item.getText(2));
+			field.setAttribute(item.getText(2));
 			field.setType(ValueMeta.getType(item.getText(3)));
 			field.setFormat( item.getText(4) );
 			field.setLength( Const.toInt(item.getText(5), -1) );
