@@ -48,8 +48,8 @@ public class LogWriter
 {
 	private static LogWriter logWriter;
 	
-	public static final int LOG_LEVEL_ERROR      =  0;
-	public static final int LOG_LEVEL_NOTHING    =  1;
+	public static final int LOG_LEVEL_NOTHING    =  0;
+	public static final int LOG_LEVEL_ERROR      =  1;	
 	public static final int LOG_LEVEL_MINIMAL    =  2;
 	public static final int LOG_LEVEL_BASIC      =  3;
 	public static final int LOG_LEVEL_DETAILED   =  4;
@@ -57,9 +57,9 @@ public class LogWriter
 	public static final int LOG_LEVEL_ROWLEVEL   =  6;
 	
 	public static final String logLevelDescription[] = 
-		{
-			Messages.getString("LogWriter.Level.Error"),
+		{			
 			Messages.getString("LogWriter.Level.Nothing"),
+			Messages.getString("LogWriter.Level.Error"),
 			Messages.getString("LogWriter.Level.Minimal"),
 			Messages.getString("LogWriter.Level.Basic"),
 			Messages.getString("LogWriter.Level.Detailed"),
@@ -69,8 +69,8 @@ public class LogWriter
 
 	public static final String log_level_desc_long[] = 
 		{
-			Messages.getString("LogWriter.Level.Error.LongDesc"),
-            Messages.getString("LogWriter.Level.Nothing.LongDesc"),
+	        Messages.getString("LogWriter.Level.Nothing.LongDesc"),
+   	        Messages.getString("LogWriter.Level.Error.LongDesc"),            
             Messages.getString("LogWriter.Level.Minimal.LongDesc"),
             Messages.getString("LogWriter.Level.Basic.LongDesc"),
             Messages.getString("LogWriter.Level.Detailed.LongDesc"),

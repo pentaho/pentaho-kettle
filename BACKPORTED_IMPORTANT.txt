@@ -45,4 +45,5 @@ The following bug where fixes backported from the 3.0.0-RC1 series to 2.5.2:
 - PDI-102: Add Put FTP job entry - Samatar - 14-Sep-2007
 - PDI-180: Cube input/output properly support variable substitution - Sven B - 17-Sep-2007
 - PDI-189: Support variable substution in arguments of Shell job entry - Sven B - 18-Sep-2007
-- PDI-185: Make weekdays work in javascript - Sven B - 22-Sep-2007
+- PDI-185: Make weekdays work in javascript - Sven B - 22-Sep-2007- 
+- PDI-197: Save the right log level in job job entry and trans job entry - Sven B - 22-Sep-2007

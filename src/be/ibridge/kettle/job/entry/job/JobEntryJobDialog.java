@@ -434,7 +434,7 @@ public class JobEntryJobDialog extends Dialog implements JobEntryDialogInterface
         wLoglevel = new CCombo(wLogging, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
         for (int i = 0; i < LogWriter.logLevelDescription.length; i++)
             wLoglevel.add(LogWriter.logLevelDescription[i]);
-        wLoglevel.select(jobEntry.loglevel + 1); // +1: starts at -1
+        wLoglevel.select(jobEntry.loglevel); 
 
         props.setLook(wLoglevel);
         fdLoglevel = new FormData();
@@ -711,7 +711,7 @@ public class JobEntryJobDialog extends Dialog implements JobEntryDialogInterface
         wAddDate.setSelection(jobEntry.addDate);
         wAddTime.setSelection(jobEntry.addTime);
 
-        wLoglevel.select(jobEntry.loglevel + 1);
+        wLoglevel.select(jobEntry.loglevel);
     }
 
     private void cancel()
@@ -756,7 +756,7 @@ public class JobEntryJobDialog extends Dialog implements JobEntryDialogInterface
         jobEntry.addTime = wAddTime.getSelection();
         jobEntry.logfile = wLogfile.getText();
         jobEntry.logext = wLogext.getText();
-        jobEntry.loglevel = wLoglevel.getSelectionIndex() - 1;
+        jobEntry.loglevel = wLoglevel.getSelectionIndex();
     	jobEntry.argFromPrevious = wPrevious.getSelection();
         jobEntry.execPerRow = wEveryRow.getSelection();
         dispose();
