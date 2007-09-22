@@ -722,10 +722,12 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 			
 			if(ctx!=null)
 			{
+				
 				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION );
 				mb.setMessage(Messages.getString("LDAPInputDialog.Connected.OK") +Const.CR); //$NON-NLS-1$
 				mb.setText(Messages.getString("LDAPInputDialog.Connected.Title.Ok")); //$NON-NLS-1$
 				mb.open();
+				
 			}
 			else
 			{	
@@ -772,11 +774,6 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
     		DirContext ctx = connectServerLdap(hostname,username, password,basedn);
 			
 		     
-		     if (ctx==null)
-		     {
-		    	 log.logError("Connection", "ERROR");
-		     }
-		     
 		     log.logBasic("Connection", "Connected to server [{0}]",hostname);
 		     log.logBasic("Class", "Class name [{0}]",ctx.getClass().getName());
 		     // Get the schema tree root
@@ -793,6 +790,8 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 	        SearchResult searchAttr = (SearchResult) results.next();
 	        
 	        Attributes listattributes = searchAttr.getAttributes(); 
+	        
+	        log.logBasic("Class--------------------------------------",searchAttr.getName());
 	       
 	        NamingEnumeration ne = listattributes.getAll();
 		   

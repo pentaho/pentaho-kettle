@@ -773,5 +773,16 @@
 		</tooltip>
 		<image-uri>ui/images/FRC.png</image-uri>
 	</step>
+	<step id="LDAPInput">
+		<description>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.LDAPInput")
+		</description>
+		<class-name>org.pentaho.di.trans.steps.ldapinput.LDAPInputMeta</class-name>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@INPUT.getName()</category>
+		<tooltip>ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.LDAPInput")
+		</tooltip>
+		<image-uri>ui/images/LIP.png</image-uri>
+	</step>
+
 	
 </steps>
