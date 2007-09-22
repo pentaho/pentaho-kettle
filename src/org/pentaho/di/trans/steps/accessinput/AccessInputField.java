@@ -44,7 +44,6 @@ public class AccessInputField implements Cloneable
     
 	private String 	  name;
 	private String 	  Column;
-	private AccessInputFieldPosition[] fieldPosition;
 	
     private int 	  type;
     private int       length;
@@ -59,11 +58,10 @@ public class AccessInputField implements Cloneable
     private String    samples[];
 
     
-	public AccessInputField(String fieldname, AccessInputFieldPosition[] AccessInputFieldPositions)
+	public AccessInputField(String fieldname)
 	{
 		this.name           = fieldname;
 		this.Column      = "";
-		this.fieldPosition  = AccessInputFieldPositions;
 		this.length         = -1;
 		this.type           = ValueMetaInterface.TYPE_STRING;
 		this.format         = "";
@@ -77,7 +75,7 @@ public class AccessInputField implements Cloneable
     
     public AccessInputField()
     {
-        this(null, null);
+        this(null);
     }
 
   
@@ -122,15 +120,7 @@ public class AccessInputField implements Cloneable
 		try
 		{
 			AccessInputField retval = (AccessInputField) super.clone();
-            
-            if (fieldPosition!=null)
-            {
-                retval.setFieldPosition( new AccessInputFieldPosition[fieldPosition.length] );
-                for (int i=0;i<fieldPosition.length;i++)
-                {
-                    retval.getFieldPosition()[i] = (AccessInputFieldPosition)fieldPosition[i].clone();
-                }
-            }
+          
             
 			return retval;
 		}
@@ -140,21 +130,6 @@ public class AccessInputField implements Cloneable
 		}
 	}	
     
-	/**
-     * @return Returns the AccessInputFieldPositions.
-     */
-    public AccessInputFieldPosition[] getFieldPosition()
-    {
-        return fieldPosition;
-    }
-
-    /**
-     * @param AccessInputFieldPositions The AccessInputFieldPositions to set.
-     */
-    public void setFieldPosition(AccessInputFieldPosition[] AccessInputFieldPositions)
-    {
-        this.fieldPosition = AccessInputFieldPositions;
-    }
 
     public int getLength()
 	{
