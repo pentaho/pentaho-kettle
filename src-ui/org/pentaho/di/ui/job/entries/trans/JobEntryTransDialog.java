@@ -441,7 +441,7 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 		wLoglevel = new CCombo(wLogging, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
 		for (int i = 0; i < LogWriter.logLevelDescription.length; i++)
 			wLoglevel.add(LogWriter.logLevelDescription[i]);
-		wLoglevel.select(jobEntry.loglevel + 1); // +1: starts at -1
+		wLoglevel.select(jobEntry.loglevel);
 
 		props.setLook(wLoglevel);
 		fdLoglevel = new FormData();
@@ -799,7 +799,7 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 		wClearFiles.setSelection(jobEntry.clearResultFiles);
 		wCluster.setSelection(jobEntry.isClustering());
 
-		wLoglevel.select(jobEntry.loglevel + 1);
+		wLoglevel.select(jobEntry.loglevel);
 	}
 
 	private void cancel()
@@ -839,7 +839,7 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 		}
 		jobEntry.logfile = wLogfile.getText();
 		jobEntry.logext = wLogext.getText();
-		jobEntry.loglevel = wLoglevel.getSelectionIndex() - 1;
+		jobEntry.loglevel = wLoglevel.getSelectionIndex();
 
 		jobEntry.argFromPrevious = wPrevious.getSelection();
 		jobEntry.execPerRow = wEveryRow.getSelection();
