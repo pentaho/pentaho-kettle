@@ -498,6 +498,8 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 							int day = endDate.get(Calendar.DAY_OF_WEEK);
 							if ((day != Calendar.SATURDAY) && (day != Calendar.SUNDAY))	iRC++;
 							endDate.add(Calendar.DATE, iOffset);
+							endL = endDate.getTimeInMillis() + endDate.getTimeZone().getOffset( endDate.getTimeInMillis() );
+							startL = startDate.getTimeInMillis() + startDate.getTimeZone().getOffset( startDate.getTimeInMillis() );
 						}
 						return new Double(iRC);
 					}else if(strType.toLowerCase().equals("w")){
