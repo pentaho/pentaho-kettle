@@ -1,0 +1,599 @@
+ /**********************************************************************
+ **                                                                   **
+ **               This code belongs to the KETTLE project.            **
+ **                                                                   **
+ ** Kettle, from version 2.2 on, is released into the public domain   **
+ ** under the Lesser GNU Public License (LGPL).                       **
+ **                                                                   **
+ ** For more details, please read the document LICENSE.txt, included  **
+ ** in this project                                                   **
+ **                                                                   **
+ ** http://www.kettle.be                                              **
+ ** info@kettle.be                                                    **
+ **                                                                   **
+ **********************************************************************/
+
+/* 
+ * 
+ * Created on 4-apr-2003
+ * 
+ */
+
+package org.pentaho.di.trans.steps.ldapinput;
+
+import java.util.List;
+import java.util.Map;
+
+import org.w3c.dom.Node;
+
+import org.pentaho.di.core.CheckResult;
+import org.pentaho.di.core.CheckResultInterface;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.Counter;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.encryption.Encr;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.repository.Repository;
+import org.pentaho.di.trans.Trans;
+import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.step.BaseStepMeta;
+import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.StepInterface;
+import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaInterface;
+
+public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
+{	
+
+
+	/** Flag indicating that a row number field should be included in the output */
+	private  boolean includeRowNumber;
+	
+	/** The name of the field in the output containing the row number*/
+	private  String  rowNumberField;
+	
+	
+	/** The maximum number or lines to read */
+	private  long  rowLimit;
+
+	/** The Host name*/
+	private  String  Host;
+	
+	/** The User name*/
+	private  String  UserName;
+	
+	/** The Password to use in LDAP authentication*/
+	private String Password;
+	
+	/** The Base DN*/
+	private  String  BaseDn;
+	
+	/** The Filter string*/
+	private  String  FilterString;
+	
+	/** The Search Base*/
+	private  String  SearchBase;
+	
+	/** The fields to import... */
+	private LDAPInputField inputFields[];
+	
+	private static final String YES = "Y";
+	
+    public final static String type_trim_code[] = { "none", "left", "right", "both" };
+    
+	public LDAPInputMeta()
+	{
+		super(); // allocate BaseStepMeta
+	}
+	
+	
+		
+	/**
+     * @return Returns the input fields.
+     */
+    public LDAPInputField[] getInputFields()
+    {
+        return inputFields;
+    }
+    
+    /**
+     * @param inputFields The input fields to set.
+     */
+    public void setInputFields(LDAPInputField[] inputFields)
+    {
+        this.inputFields = inputFields;
+    }
+
+    
+    /**
+     * @return Returns the includeRowNumber.
+     */
+    public boolean includeRowNumber()
+    {
+        return includeRowNumber;
+    }
+ 
+    
+    /**
+     * @param includeRowNumber The includeRowNumber to set.
+     */
+    public void setIncludeRowNumber(boolean includeRowNumber)
+    {
+        this.includeRowNumber = includeRowNumber;
+    }
+  
+   
+    /**
+     * @return Returns the host name.
+     */
+    public String getHost()
+    {
+    	return Host;
+    }
+    
+    /**
+     * @param host The host to set.
+     */
+    public void setHost(String hostin)
+    {
+    	this.Host=hostin;
+    }
+    
+    
+    /**
+     * @return Returns the user name.
+     */
+    public String getUserName()
+    {
+    	return UserName;
+    }
+    
+    /**
+     * @param username The username to set.
+     */
+    public void setUserName(String usernamein)
+    {
+    	this.UserName=usernamein;
+    }
+    
+    /**
+     * @param password The password to set.
+     */
+    public void setPassword(String passwordin)
+    {
+    	this.Password=passwordin;
+    }
+    
+    /**
+     * @return Returns the password.
+     */
+    public String getPassword()
+    {
+    	return Password;
+    }
+    
+  
+    
+
+    
+    /**
+     * @return Returns the Base Dn.
+     */
+    public String getBaseDn()
+    {
+    	return BaseDn;
+    }
+    
+    
+    /**
+     * @param basedn The basedn to set.
+     */
+    public void setBaseDn(String basednin)
+    {
+    	this.BaseDn=basednin;
+    }
+    
+    
+    /**
+     * @return Returns the filter string.
+     */
+    public String getFilterString()
+    {
+    	return FilterString;
+    }
+    
+    /**
+     * @param filter string The filter string to set.
+     */
+    public void setFilterString(String filterstringin)
+    {
+    	this.FilterString=filterstringin;
+    }
+    
+    
+    
+    /**
+     * @return Returns the search string.
+     */
+    public String getSearchBase()
+    {
+    	return SearchBase;
+    }
+    
+    /**
+     * @param Search Base The filter Search Base to set.
+     */
+    public void setSearchBase(String searchbasein)
+    {
+    	this.SearchBase=searchbasein;
+    }
+    
+    
+    
+    /**
+     * @return Returns the rowLimit.
+     */
+    public long getRowLimit()
+    {
+        return rowLimit;
+    }
+    
+    /**
+     * @param rowLimit The rowLimit to set.
+     */
+    public void setRowLimit(long rowLimit)
+    {
+        this.rowLimit = rowLimit;
+    }
+
+    /**
+     * @return Returns the rowNumberField.
+     */
+    public String getRowNumberField()
+    {
+        return rowNumberField;
+    }
+    
+
+    
+    
+    /**
+     * @param rowNumberField The rowNumberField to set.
+     */
+    public void setRowNumberField(String rowNumberField)
+    {
+        this.rowNumberField = rowNumberField;
+    }
+    
+    
+ 
+      
+    
+    public void loadXML(Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters)
+	throws KettleXMLException
+	{
+    	readData(stepnode);
+	}
+
+	public Object clone()
+	{
+		LDAPInputMeta retval = (LDAPInputMeta)super.clone();
+		
+		int nrFields = inputFields.length;
+
+		retval.allocate(nrFields);
+		
+		for (int i=0;i<nrFields;i++)
+		{
+            if (inputFields[i]!=null)
+            {
+                retval.inputFields[i] = (LDAPInputField)inputFields[i].clone();
+            }
+		}
+		
+		return retval;
+	}
+    
+    public String getXML()
+    {
+        StringBuffer retval=new StringBuffer();
+        
+        retval.append("    "+XMLHandler.addTagValue("rownum",          includeRowNumber));
+        retval.append("    "+XMLHandler.addTagValue("rownum_field",    rowNumberField));
+        retval.append("    "+XMLHandler.addTagValue("host",    Host));
+        retval.append("    "+XMLHandler.addTagValue("username",    UserName));
+        retval.append("    "+XMLHandler.addTagValue("password", Encr.encryptPasswordIfNotUsingVariables(Password)));
+
+        retval.append("    "+XMLHandler.addTagValue("basedn",    BaseDn));
+        retval.append("    "+XMLHandler.addTagValue("filterstring",    FilterString));
+        retval.append("    "+XMLHandler.addTagValue("searchbase",    SearchBase));
+         
+        /*
+		 * Describe the fields to read
+		 */
+		retval.append("    <fields>").append(Const.CR);
+		for (int i=0;i<inputFields.length;i++)
+		{
+			retval.append("      <field>").append(Const.CR);
+			retval.append("        ").append(XMLHandler.addTagValue("name",      inputFields[i].getName()) );
+			retval.append("        ").append(XMLHandler.addTagValue("attribut",      inputFields[i].getAttribut()));
+			retval.append("        ").append(XMLHandler.addTagValue("type",      inputFields[i].getTypeDesc()) );
+            retval.append("        ").append(XMLHandler.addTagValue("format", inputFields[i].getFormat()));
+            retval.append("        ").append(XMLHandler.addTagValue("length",    inputFields[i].getLength()) );
+            retval.append("        ").append(XMLHandler.addTagValue("precision", inputFields[i].getPrecision()));
+            retval.append("        ").append(XMLHandler.addTagValue("currency", inputFields[i].getCurrencySymbol()));
+            retval.append("        ").append(XMLHandler.addTagValue("decimal", inputFields[i].getDecimalSymbol()));
+            retval.append("        ").append(XMLHandler.addTagValue("group", inputFields[i].getGroupSymbol()));
+			retval.append("        ").append(XMLHandler.addTagValue("trim_type", inputFields[i].getTrimTypeCode() ) );
+			retval.append("        ").append(XMLHandler.addTagValue("repeat",    inputFields[i].isRepeated()) );
+
+			retval.append("      </field>").append(Const.CR);
+		}
+		retval.append("    </fields>").append(Const.CR);
+        
+        
+        retval.append("    "+XMLHandler.addTagValue("limit", rowLimit));
+
+        return retval.toString();
+    }
+
+	private void readData(Node stepnode) throws KettleXMLException
+	{
+		try
+		{
+
+			includeRowNumber  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "rownum"));
+			rowNumberField    = XMLHandler.getTagValue(stepnode, "rownum_field");
+			Host    = XMLHandler.getTagValue(stepnode, "host");
+			UserName    = XMLHandler.getTagValue(stepnode, "username");
+			setPassword(Encr.decryptPasswordOptionallyEncrypted(XMLHandler.getTagValue(stepnode, "password")));
+
+			BaseDn    = XMLHandler.getTagValue(stepnode, "basedn");
+			FilterString    = XMLHandler.getTagValue(stepnode, "filterstring");
+			SearchBase = XMLHandler.getTagValue(stepnode, "searchbase");
+	
+			Node fields     = XMLHandler.getSubNode(stepnode,  "fields");
+			int nrFields    = XMLHandler.countNodes(fields,    "field");
+	
+			allocate(nrFields);
+			
+
+			for (int i=0;i<nrFields;i++)
+			{
+				Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i);
+				inputFields[i] = new LDAPInputField();
+				
+				inputFields[i].setName( XMLHandler.getTagValue(fnode, "name") );
+				inputFields[i].setAttribut(XMLHandler.getTagValue(fnode, "attribut") );
+				inputFields[i].setType( ValueMeta.getType(XMLHandler.getTagValue(fnode, "type")) );
+				inputFields[i].setLength( Const.toInt(XMLHandler.getTagValue(fnode, "length"), -1) );
+				inputFields[i].setPrecision( Const.toInt(XMLHandler.getTagValue(fnode, "precision"), -1) );
+				String srepeat      = XMLHandler.getTagValue(fnode, "repeat");
+				inputFields[i].setTrimType( getTrimTypeByCode(XMLHandler.getTagValue(fnode, "trim_type")) );
+				
+				if (srepeat!=null) inputFields[i].setRepeated( YES.equalsIgnoreCase(srepeat) ); 
+				else               inputFields[i].setRepeated( false );
+				
+				inputFields[i].setFormat(XMLHandler.getTagValue(fnode, "format"));
+				inputFields[i].setCurrencySymbol(XMLHandler.getTagValue(fnode, "currency"));
+				inputFields[i].setDecimalSymbol(XMLHandler.getTagValue(fnode, "decimal"));
+				inputFields[i].setGroupSymbol(XMLHandler.getTagValue(fnode, "group"));
+
+			}
+			
+			// Is there a limit on the number of rows we process?
+			rowLimit = Const.toLong(XMLHandler.getTagValue(stepnode, "limit"), 0L);
+		}
+		catch(Exception e)
+		{
+			throw new KettleXMLException("Unable to load step info from XML", e);
+		}
+	}
+	
+	public void allocate(int nrfields)
+	{
+
+		inputFields = new LDAPInputField[nrfields];        
+	}
+	
+	public void setDefault()
+	{
+
+		includeRowNumber = false;
+		rowNumberField   = "";
+		Host="";
+		UserName="";
+		Password="";
+		BaseDn="";
+		FilterString="";
+		SearchBase="";
+		
+
+		int nrFields =0;
+
+		allocate(nrFields);	
+	
+		for (int i=0;i<nrFields;i++)
+		{
+		    inputFields[i] = new LDAPInputField("field"+(i+1));
+		}
+
+		rowLimit=0;
+	}
+	public void getFields(RowMetaInterface r, String name, RowMetaInterface info[], StepMeta nextStep, VariableSpace space) throws KettleStepException
+	{
+		
+		int i;
+		for (i=0;i<inputFields.length;i++)
+		{
+		    LDAPInputField field = inputFields[i];       
+	        
+			int type=field.getType();
+			if (type==ValueMeta.TYPE_NONE) type=ValueMeta.TYPE_STRING;
+			ValueMetaInterface v=new ValueMeta(space.environmentSubstitute(field.getName()), type);
+			v.setLength(field.getLength(), field.getPrecision());
+			v.setOrigin(name);
+			r.addValueMeta(v);
+	        
+		}
+		
+		
+			
+		
+		if (includeRowNumber)
+		{
+			ValueMetaInterface v = new ValueMeta(space.environmentSubstitute(rowNumberField), ValueMeta.TYPE_INTEGER);
+			v.setLength(ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0);
+			v.setOrigin(name);
+			r.addValueMeta(v);
+		}
+	}
+	
+	  public final static int getTrimTypeByCode(String tt)
+		{
+			if (tt!=null) 
+			{		
+			    for (int i=0;i<type_trim_code.length;i++)
+			    {
+				    if (type_trim_code[i].equalsIgnoreCase(tt)) return i;
+			    }
+			}
+			return 0;
+		}
+	
+	
+	public void readRep(Repository rep, long id_step, List<DatabaseMeta> databases, Map<String, Counter> counters)
+	throws KettleException
+	{
+	
+		try
+		{
+			
+			includeRowNumber  = rep.getStepAttributeBoolean(id_step, "rownum");
+			rowNumberField    = rep.getStepAttributeString (id_step, "rownum_field");
+			Host    = rep.getStepAttributeString (id_step, "host");
+			UserName    = rep.getStepAttributeString (id_step, "username");
+			Password = Encr.decryptPasswordOptionallyEncrypted(rep.getJobEntryAttributeString(id_step, "password"));
+
+			BaseDn    = rep.getStepAttributeString (id_step, "basedn");
+			FilterString    = rep.getStepAttributeString (id_step, "filterstring");
+			SearchBase    = rep.getStepAttributeString (id_step, "searchbase");
+			
+			rowLimit          = rep.getStepAttributeInteger(id_step, "limit");
+	
+			int nrFields      = rep.countNrStepAttributes(id_step, "field_name");
+            
+			allocate(nrFields);
+
+		
+			for (int i=0;i<nrFields;i++)
+			{
+			    LDAPInputField field = new LDAPInputField();
+			    
+				field.setName( rep.getStepAttributeString (id_step, i, "field_name") );
+				field.setAttribut( rep.getStepAttributeString (id_step, i, "field_attribut") );
+				field.setType(ValueMeta.getType( rep.getStepAttributeString (id_step, i, "field_type") ) );
+				field.setFormat( rep.getStepAttributeString (id_step, i, "field_format") );
+				field.setCurrencySymbol( rep.getStepAttributeString (id_step, i, "field_currency") );
+				field.setDecimalSymbol( rep.getStepAttributeString (id_step, i, "field_decimal") );
+				field.setGroupSymbol( rep.getStepAttributeString (id_step, i, "field_group") );
+				field.setLength( (int)rep.getStepAttributeInteger(id_step, i, "field_length") );
+				field.setPrecision( (int)rep.getStepAttributeInteger(id_step, i, "field_precision") );
+				field.setTrimType( LDAPInputField.getTrimTypeByCode( rep.getStepAttributeString (id_step, i, "field_trim_type") ));
+				field.setRepeated( rep.getStepAttributeBoolean(id_step, i, "field_repeat") );
+
+				inputFields[i] = field;
+			}
+        }
+		catch(Exception e)
+		{
+			throw new KettleException(Messages.getString("LDAPInputMeta.Exception.ErrorReadingRepository"), e);
+		}
+	}
+	
+	public void saveRep(Repository rep, long id_transformation, long id_step)
+		throws KettleException
+	{
+		try
+		{
+
+			rep.saveStepAttribute(id_transformation, id_step, "rownum",          includeRowNumber);
+			rep.saveStepAttribute(id_transformation, id_step, "rownum_field",    rowNumberField);
+			rep.saveStepAttribute(id_transformation, id_step, "host",    Host);
+			rep.saveStepAttribute(id_transformation, id_step, "username", UserName);
+			rep.saveJobEntryAttribute(id_transformation, id_step, "password", Encr.encryptPasswordIfNotUsingVariables(Password));
+
+			rep.saveStepAttribute(id_transformation, id_step, "basedn",   BaseDn);
+			rep.saveStepAttribute(id_transformation, id_step, "filterstring",   FilterString);
+			rep.saveStepAttribute(id_transformation, id_step, "searchbase",  SearchBase);
+			rep.saveStepAttribute(id_transformation, id_step, "limit",           rowLimit);
+
+			for (int i=0;i<inputFields.length;i++)
+			{
+			    LDAPInputField field = inputFields[i];
+			    
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_name",          field.getName());
+				rep.saveStepAttribute(id_transformation, id_step, i, "fied_attribut",       field.getAttribut());
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_type",          field.getTypeDesc());
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_format",        field.getFormat());
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_currency",      field.getCurrencySymbol());
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_decimal",       field.getDecimalSymbol());
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_group",         field.getGroupSymbol());
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_length",        field.getLength());
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_precision",     field.getPrecision());
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_trim_type",     field.getTrimTypeCode());
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_repeat",        field.isRepeated());
+
+			}
+		}
+		catch(Exception e)
+		{
+			throw new KettleException(Messages.getString("LDAPInputMeta.Exception.ErrorSavingToRepository", ""+id_step), e);
+		}
+	}
+	
+
+	
+	
+	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	{
+	
+		CheckResult cr;
+
+		// See if we get input...
+		if (input.length>0)
+		{		
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("LDAPInputMeta.CheckResult.NoInputExpected"), stepMeta);
+			remarks.add(cr);
+		}
+		else
+		{
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("LDAPInputMeta.CheckResult.NoInput"), stepMeta);
+			remarks.add(cr);
+		}
+		
+      
+		
+	
+		
+	}
+	
+	public StepInterface getStep(StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr, Trans trans)
+	{
+		return new LDAPInput(stepMeta, stepDataInterface, cnr, tr, trans);
+	}
+	
+	public StepDataInterface getStepData()
+	{
+		return new LDAPInputData();
+	}
+
+	
+}
