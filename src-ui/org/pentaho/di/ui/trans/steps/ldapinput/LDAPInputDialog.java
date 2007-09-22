@@ -1,0 +1,1087 @@
+/**********************************************************************
+ **                                                                   **
+ **               This code belongs to the KETTLE project.            **
+ **                                                                   **
+ ** Kettle, from version 2.2 on, is released into the public domain   **
+ ** under the Lesser GNU Public License (LGPL).                       **
+ **                                                                   **
+ ** For more details, please read the document LICENSE.txt, included  **
+ ** in this project                                                   **
+ **                                                                   **
+ ** http://www.kettle.be                                              **
+ ** info@kettle.be                                                    **
+ **                                                                   **
+ **********************************************************************/
+
+/*
+ * Created on 21-09-2007
+ *
+ */
+
+package org.pentaho.di.ui.trans.steps.ldapinput;
+
+import java.text.SimpleDateFormat;
+import java.util.Hashtable;
+
+import javax.naming.Context;
+import javax.naming.NamingEnumeration;
+import javax.naming.NamingException;
+import javax.naming.directory.Attributes;
+import javax.naming.directory.BasicAttribute;
+import javax.naming.directory.DirContext;
+import javax.naming.directory.InitialDirContext;
+import javax.naming.directory.SearchControls;
+import javax.naming.directory.SearchResult;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.ShellAdapter;
+import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.layout.FormAttachment;
+import org.eclipse.swt.layout.FormData;
+import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.MessageBox;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.Text;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.Props;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.trans.Trans;
+import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.TransPreviewFactory;
+import org.pentaho.di.trans.step.BaseStepMeta;
+import org.pentaho.di.trans.step.StepDialogInterface;
+import org.pentaho.di.trans.steps.ldapinput.LDAPInputField;
+import org.pentaho.di.trans.steps.ldapinput.LDAPInputMeta;
+import org.pentaho.di.trans.steps.ldapinput.Messages;
+import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
+import org.pentaho.di.ui.core.dialog.EnterTextDialog;
+import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
+import org.pentaho.di.ui.core.widget.ColumnInfo;
+import org.pentaho.di.ui.core.widget.TableView;
+import org.pentaho.di.ui.core.widget.TextVar;
+import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.trans.steps.textfileinput.VariableButtonListenerFactory;
+
+public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterface
+{
+	private CTabFolder   wTabFolder;
+	private FormData     fdTabFolder;
+	
+	private CTabItem     wGeneralTab, wContentTab, wFieldsTab;
+
+	private Composite    wGeneralComp, wContentComp, wFieldsComp;
+	private FormData     fdGeneralComp, fdContentComp, fdFieldsComp;
+
+	private Label        wlInclRownum;
+	private Button       wInclRownum;
+	private FormData     fdlInclRownum, fdRownum;
+
+	private Label        wlInclRownumField;
+	private TextVar      wInclRownumField;
+	private FormData     fdlInclRownumField, fdInclRownumField;
+	
+	
+	private Label        wlLimit;
+	private Text         wLimit;
+	private FormData     fdlLimit, fdLimit;
+   
+	private TableView    wFields;
+	private FormData     fdFields;
+
+	private LDAPInputMeta input;
+	
+	private Group wAdditionalGroup;
+	private FormData fdAdditionalGroup;
+    
+	private Group wConnectionGroup;
+	private FormData fdConnectionGroup;
+	
+	private Group wSearchGroup;
+	private FormData fdSearchGroup;
+	
+	
+	private Label        wlHost;
+	private TextVar      wHost;
+	private FormData     fdlHost, fdHost;
+	
+	private Label        wlUserName;
+	private TextVar      wUserName;
+	private FormData     fdlUserName, fdUserName;
+	
+	private Label        wlPassword;
+	private TextVar      wPassword;
+	private FormData     fdlPassword, fdPassword;
+	
+	private Label        wlBaseDn;
+	private TextVar      wBaseDn;
+	private FormData     fdlBaseDn, fdBaseDn;
+	
+	private Button wTest;
+	private FormData fdTest;
+	
+	
+	private Label        wlSearchBase;
+	private TextVar      wSearchBase;
+	private FormData     fdlSearchBase, fdSearchBase;
+	
+    private Label wlFilterString;
+    private Text wFilterString;
+    private FormData fdlFilterString, fdFilterString;
+    
+    private Listener lsTest;
+	
+	public static final int dateLengths[] = new int[]
+	{
+		23, 19, 14, 10, 10, 10, 10, 8, 8, 8, 8, 6, 6
+	};
+
+	public LDAPInputDialog(Shell parent, Object in, TransMeta transMeta, String sname)
+	{
+		super(parent, (BaseStepMeta)in, transMeta, sname);
+		input=(LDAPInputMeta)in;
+	}
+
+	public String open()
+	{
+		Shell parent = getParent();
+		Display display = parent.getDisplay();
+
+		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
+ 		props.setLook(shell);
+        setShellImage(shell, input);
+
+		ModifyListener lsMod = new ModifyListener() 
+		{
+			public void modifyText(ModifyEvent e) 
+			{
+				input.setChanged();
+			}
+		};
+		changed = input.hasChanged();
+		
+		FormLayout formLayout = new FormLayout ();
+		formLayout.marginWidth  = Const.FORM_MARGIN;
+		formLayout.marginHeight = Const.FORM_MARGIN;
+
+		shell.setLayout(formLayout);
+		shell.setText(Messages.getString("LDAPInputDialog.DialogTitle"));
+		
+		int middle = props.getMiddlePct();
+		int margin = Const.MARGIN;
+
+		// Stepname line
+		wlStepname=new Label(shell, SWT.RIGHT);
+		wlStepname.setText(Messages.getString("System.Label.StepName"));
+ 		props.setLook(wlStepname);
+		fdlStepname=new FormData();
+		fdlStepname.left = new FormAttachment(0, 0);
+		fdlStepname.top  = new FormAttachment(0, margin);
+		fdlStepname.right= new FormAttachment(middle, -margin);
+		wlStepname.setLayoutData(fdlStepname);
+		wStepname=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wStepname.setText(stepname);
+ 		props.setLook(wStepname);
+		wStepname.addModifyListener(lsMod);
+		fdStepname=new FormData();
+		fdStepname.left = new FormAttachment(middle, 0);
+		fdStepname.top  = new FormAttachment(0, margin);
+		fdStepname.right= new FormAttachment(100, 0);
+		wStepname.setLayoutData(fdStepname);
+
+		wTabFolder = new CTabFolder(shell, SWT.BORDER);
+ 		props.setLook(wTabFolder, Props.WIDGET_STYLE_TAB);
+
+		//////////////////////////
+		// START OF GENERAL TAB   ///
+		//////////////////////////
+		wGeneralTab=new CTabItem(wTabFolder, SWT.NONE);
+		wGeneralTab.setText(Messages.getString("LDAPInputDialog.General.Tab"));
+		
+		wGeneralComp = new Composite(wTabFolder, SWT.NONE);
+ 		props.setLook(wGeneralComp);
+
+		FormLayout fileLayout = new FormLayout();
+		fileLayout.marginWidth  = 3;
+		fileLayout.marginHeight = 3;
+		wGeneralComp.setLayout(fileLayout);
+		
+		// /////////////////////////////////
+		// START OF Connection GROUP
+		// /////////////////////////////////
+
+		wConnectionGroup = new Group(wGeneralComp, SWT.SHADOW_NONE);
+		props.setLook(wConnectionGroup);
+		wConnectionGroup.setText(Messages.getString("LDAPInputDialog.Group.ConnectionGroup.Label"));
+		
+		FormLayout connectiongroupLayout = new FormLayout();
+		connectiongroupLayout.marginWidth = 10;
+		connectiongroupLayout.marginHeight = 10;
+		wConnectionGroup.setLayout(connectiongroupLayout);
+
+		// Host line
+		wlHost=new Label(wConnectionGroup, SWT.RIGHT);
+		wlHost.setText(Messages.getString("LDAPInputDialog.Host.Label"));
+ 		props.setLook(wlHost);
+		fdlHost=new FormData();
+		fdlHost.left = new FormAttachment(0, 0);
+		fdlHost.top  = new FormAttachment(wStepname, margin);
+		fdlHost.right= new FormAttachment(middle, -margin);
+		wlHost.setLayoutData(fdlHost);
+		wHost=new TextVar(transMeta, wConnectionGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wHost.setToolTipText(Messages.getString("LDAPInputDialog.Host.Tooltip"));
+		props.setLook(wHost);
+		wHost.addModifyListener(lsMod);
+		fdHost=new FormData();
+		fdHost.left = new FormAttachment(middle, 0);
+		fdHost.top  = new FormAttachment(wStepname, margin);
+		fdHost.right= new FormAttachment(100, 0);
+		wHost.setLayoutData(fdHost);
+		
+		// UserName line
+		wlUserName=new Label(wConnectionGroup, SWT.RIGHT);
+		wlUserName.setText(Messages.getString("LDAPInputDialog.Username.Label"));
+ 		props.setLook(wlUserName);
+		fdlUserName=new FormData();
+		fdlUserName.left = new FormAttachment(0, 0);
+		fdlUserName.top  = new FormAttachment(wHost, margin);
+		fdlUserName.right= new FormAttachment(middle, -margin);
+		wlUserName.setLayoutData(fdlUserName);
+		wUserName=new TextVar(transMeta, wConnectionGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+ 		props.setLook(wUserName);
+		wUserName.setToolTipText(Messages.getString("LDAPInputDialog.Username.Tooltip"));
+		wUserName.addModifyListener(lsMod);
+		fdUserName=new FormData();
+		fdUserName.left = new FormAttachment(middle, 0);
+		fdUserName.top  = new FormAttachment(wHost, margin);
+		fdUserName.right= new FormAttachment(100, 0);
+		wUserName.setLayoutData(fdUserName);
+
+		// Password line
+		wlPassword=new Label(wConnectionGroup, SWT.RIGHT);
+		wlPassword.setText(Messages.getString("LDAPInputDialog.Password.Label"));
+ 		props.setLook(wlPassword);
+		fdlPassword=new FormData();
+		fdlPassword.left = new FormAttachment(0, 0);
+		fdlPassword.top  = new FormAttachment(wUserName, margin);
+		fdlPassword.right= new FormAttachment(middle, -margin);
+		wlPassword.setLayoutData(fdlPassword);
+		wPassword=new TextVar(transMeta, wConnectionGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wPassword.setToolTipText(Messages.getString("LDAPInputDialog.Password.Tooltip"));
+ 		props.setLook(wPassword);
+        wPassword.setEchoChar('*');
+        wPassword.addModifyListener(lsMod);
+		fdPassword=new FormData();
+		fdPassword.left = new FormAttachment(middle, 0);
+		fdPassword.top  = new FormAttachment(wUserName, margin);
+		fdPassword.right= new FormAttachment(100, 0);
+		wPassword.setLayoutData(fdPassword);
+		
+		// BaseDn line
+		wlBaseDn=new Label(wConnectionGroup, SWT.RIGHT);
+		wlBaseDn.setText(Messages.getString("LDAPInputDialog.BaseDn.Label"));
+ 		props.setLook(wlBaseDn);
+		fdlBaseDn=new FormData();
+		fdlBaseDn.left = new FormAttachment(0, 0);
+		fdlBaseDn.top  = new FormAttachment(wPassword, margin);
+		fdlBaseDn.right= new FormAttachment(middle, -margin);
+		wlBaseDn.setLayoutData(fdlBaseDn);
+		wBaseDn=new TextVar(transMeta, wConnectionGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+ 		props.setLook(wBaseDn);
+		wBaseDn.setToolTipText(Messages.getString("LDAPInputDialog.BaseDn.Tooltip"));
+		wBaseDn.addModifyListener(lsMod);
+		fdBaseDn=new FormData();
+		fdBaseDn.left = new FormAttachment(middle, 0);
+		fdBaseDn.top  = new FormAttachment(wPassword, margin);
+		fdBaseDn.right= new FormAttachment(100, 0);
+		wBaseDn.setLayoutData(fdBaseDn);
+		
+		// Test LDAP connection button
+		wTest=new Button(wConnectionGroup,SWT.PUSH);
+		wTest.setText(Messages.getString("LDAPInputDialog.TestConnection.Label"));
+ 		props.setLook(wTest);
+		fdTest=new FormData();
+		wTest.setToolTipText(Messages.getString("LDAPInputDialog.TestConnection.Tooltip"));
+		//fdTest.left = new FormAttachment(middle, 0);
+		fdTest.top  = new FormAttachment(wBaseDn, margin);
+		fdTest.right= new FormAttachment(100, 0);
+		wTest.setLayoutData(fdTest);
+		
+		
+		fdConnectionGroup = new FormData();
+		fdConnectionGroup.left = new FormAttachment(0, margin);
+		fdConnectionGroup.top = new FormAttachment(0, margin);
+		fdConnectionGroup.right = new FormAttachment(100, -margin);
+		wConnectionGroup.setLayoutData(fdConnectionGroup);
+		
+		// ///////////////////////////////////////////////////////////
+		// / END OF CONNECTION  GROUP
+		// ///////////////////////////////////////////////////////////
+		
+		// /////////////////////////////////
+		// START OF Search GROUP
+		// /////////////////////////////////
+
+		wSearchGroup = new Group(wGeneralComp, SWT.SHADOW_NONE);
+		props.setLook(wSearchGroup);
+		wSearchGroup.setText(Messages.getString("LDAPInputDialog.Group.SearchGroup.Label"));
+		
+		FormLayout searchgroupLayout = new FormLayout();
+		searchgroupLayout.marginWidth = 10;
+		searchgroupLayout.marginHeight = 10;
+		wSearchGroup.setLayout(searchgroupLayout);
+		
+		// SearchBase line
+		wlSearchBase=new Label(wSearchGroup, SWT.RIGHT);
+		wlSearchBase.setText(Messages.getString("LDAPInputDialog.SearchBase.Label"));
+ 		props.setLook(wlSearchBase);
+		fdlSearchBase=new FormData();
+		fdlSearchBase.left = new FormAttachment(0, 0);
+		fdlSearchBase.top  = new FormAttachment(wConnectionGroup, margin);
+		fdlSearchBase.right= new FormAttachment(middle, -margin);
+		wlSearchBase.setLayoutData(fdlSearchBase);
+		wSearchBase=new TextVar(transMeta, wSearchGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+ 		props.setLook(wSearchBase);
+		wSearchBase.setToolTipText(Messages.getString("LDAPInputDialog.SearchBase.Tooltip"));
+		wSearchBase.addModifyListener(lsMod);
+		fdSearchBase=new FormData();
+		fdSearchBase.left = new FormAttachment(middle, 0);
+		fdSearchBase.top  = new FormAttachment(wConnectionGroup, margin);
+		fdSearchBase.right= new FormAttachment(100, 0);
+		wSearchBase.setLayoutData(fdSearchBase);
+		
+		
+		// Filter String
+        wlFilterString = new Label(wSearchGroup, SWT.RIGHT);
+        wlFilterString.setText(Messages.getString("LDAPInputDialog.FilterString.Label"));
+        props.setLook(wlFilterString);
+        fdlFilterString = new FormData();
+        fdlFilterString.left = new FormAttachment(0, 0);
+        fdlFilterString.top = new FormAttachment(wSearchBase, 2*margin);
+        fdlFilterString.right = new FormAttachment(middle, -margin);
+        wlFilterString.setLayoutData(fdlFilterString);
+
+        wFilterString = new Text(wSearchGroup, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
+        wFilterString.setToolTipText(Messages.getString("LDAPInputDialog.FilterString.Tooltip"));
+        props.setLook(wFilterString);
+        wFilterString.addModifyListener(lsMod);
+        fdFilterString = new FormData();
+        fdFilterString.left = new FormAttachment(middle, 0);
+        fdFilterString.top = new FormAttachment(wSearchBase, 2*margin);
+        fdFilterString.right = new FormAttachment(100, 0);
+        fdFilterString.bottom = new FormAttachment(100, -margin);
+        wFilterString.setLayoutData(fdFilterString);
+        SelectionAdapter lsVar = VariableButtonListenerFactory.getSelectionAdapter(wSearchGroup, wFilterString, transMeta);
+        wFilterString.addKeyListener(TextVar.getControlSpaceKeyListener(transMeta, wFilterString, lsVar));
+        
+		
+		
+		fdSearchGroup = new FormData();
+		fdSearchGroup.left = new FormAttachment(0, margin);
+		fdSearchGroup.top = new FormAttachment(wConnectionGroup, margin);
+		fdSearchGroup.right = new FormAttachment(100, -margin);
+		fdSearchGroup.bottom = new FormAttachment(100, -margin);
+		wSearchGroup.setLayoutData(fdSearchGroup);
+		
+		// ///////////////////////////////////////////////////////////
+		// / END OF Search  GROUP
+		// ///////////////////////////////////////////////////////////
+
+	
+		fdGeneralComp=new FormData();
+		fdGeneralComp.left  = new FormAttachment(0, 0);
+		fdGeneralComp.top   = new FormAttachment(0, 0);
+		fdGeneralComp.right = new FormAttachment(100, 0);
+		fdGeneralComp.bottom= new FormAttachment(100, 0);
+		wGeneralComp.setLayoutData(fdGeneralComp);
+	
+		wGeneralComp.layout();
+		wGeneralTab.setControl(wGeneralComp);
+		
+		/////////////////////////////////////////////////////////////
+		/// END OF GENERAL TAB
+		/////////////////////////////////////////////////////////////
+
+		//////////////////////////
+		// START OF CONTENT TAB///
+		///
+		wContentTab=new CTabItem(wTabFolder, SWT.NONE);
+		wContentTab.setText(Messages.getString("LDAPInputDialog.Content.Tab"));
+
+		FormLayout contentLayout = new FormLayout ();
+		contentLayout.marginWidth  = 3;
+		contentLayout.marginHeight = 3;
+		
+		wContentComp = new Composite(wTabFolder, SWT.NONE);
+ 		props.setLook(wContentComp);
+		wContentComp.setLayout(contentLayout);
+		
+
+        
+ 
+		// /////////////////////////////////
+		// START OF Additional Fields GROUP
+		// /////////////////////////////////
+
+		wAdditionalGroup = new Group(wContentComp, SWT.SHADOW_NONE);
+		props.setLook(wAdditionalGroup);
+		wAdditionalGroup.setText(Messages.getString("LDAPInputDialog.Group.AdditionalGroup.Label"));
+		
+		FormLayout additionalgroupLayout = new FormLayout();
+		additionalgroupLayout.marginWidth = 10;
+		additionalgroupLayout.marginHeight = 10;
+		wAdditionalGroup.setLayout(additionalgroupLayout);
+
+		
+	
+		
+		wlInclRownum=new Label(wAdditionalGroup, SWT.RIGHT);
+		wlInclRownum.setText(Messages.getString("LDAPInputDialog.InclRownum.Label"));
+ 		props.setLook(wlInclRownum);
+		fdlInclRownum=new FormData();
+		fdlInclRownum.left = new FormAttachment(0, 0);
+		fdlInclRownum.top  = new FormAttachment(0, margin);
+		fdlInclRownum.right= new FormAttachment(middle, -margin);
+		wlInclRownum.setLayoutData(fdlInclRownum);
+		wInclRownum=new Button(wAdditionalGroup, SWT.CHECK );
+ 		props.setLook(wInclRownum);
+		wInclRownum.setToolTipText(Messages.getString("LDAPInputDialog.InclRownum.Tooltip"));
+		fdRownum=new FormData();
+		fdRownum.left = new FormAttachment(middle, 0);
+		fdRownum.top  = new FormAttachment(0, margin);
+		wInclRownum.setLayoutData(fdRownum);
+
+		wlInclRownumField=new Label(wAdditionalGroup, SWT.RIGHT);
+		wlInclRownumField.setText(Messages.getString("LDAPInputDialog.InclRownumField.Label"));
+ 		props.setLook(wlInclRownumField);
+		fdlInclRownumField=new FormData();
+		fdlInclRownumField.left = new FormAttachment(wInclRownum, margin);
+		fdlInclRownumField.top  = new FormAttachment(0, margin);
+		wlInclRownumField.setLayoutData(fdlInclRownumField);
+		wInclRownumField=new TextVar(transMeta,wAdditionalGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+ 		props.setLook(wInclRownumField);
+		wInclRownumField.addModifyListener(lsMod);
+		fdInclRownumField=new FormData();
+		fdInclRownumField.left = new FormAttachment(wlInclRownumField, margin);
+		fdInclRownumField.top  = new FormAttachment(0, margin);
+		fdInclRownumField.right= new FormAttachment(100, 0);
+		wInclRownumField.setLayoutData(fdInclRownumField);
+		
+		
+
+		
+		fdAdditionalGroup = new FormData();
+		fdAdditionalGroup.left = new FormAttachment(0, margin);
+		fdAdditionalGroup.top = new FormAttachment(0, margin);
+		fdAdditionalGroup.right = new FormAttachment(100, -margin);
+		wAdditionalGroup.setLayoutData(fdAdditionalGroup);
+		
+		// ///////////////////////////////////////////////////////////
+		// / END OF DESTINATION ADDRESS  GROUP
+		// ///////////////////////////////////////////////////////////
+		
+		
+		wlLimit=new Label(wContentComp, SWT.RIGHT);
+		wlLimit.setText(Messages.getString("LDAPInputDialog.Limit.Label"));
+ 		props.setLook(wlLimit);
+		fdlLimit=new FormData();
+		fdlLimit.left = new FormAttachment(0, 0);
+		fdlLimit.top  = new FormAttachment(wAdditionalGroup, 2*margin);
+		fdlLimit.right= new FormAttachment(middle, -margin);
+		wlLimit.setLayoutData(fdlLimit);
+		wLimit=new Text(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+ 		props.setLook(wLimit);
+		wLimit.addModifyListener(lsMod);
+		fdLimit=new FormData();
+		fdLimit.left = new FormAttachment(middle, 0);
+		fdLimit.top  = new FormAttachment(wAdditionalGroup, 2*margin);
+		fdLimit.right= new FormAttachment(100, 0);
+		wLimit.setLayoutData(fdLimit);
+       
+		fdContentComp = new FormData();
+		fdContentComp.left  = new FormAttachment(0, 0);
+		fdContentComp.top   = new FormAttachment(0, 0);
+		fdContentComp.right = new FormAttachment(100, 0);
+		fdContentComp.bottom= new FormAttachment(100, 0);
+		wContentComp.setLayoutData(fdContentComp);
+
+		wContentComp.layout();
+		wContentTab.setControl(wContentComp);
+
+		// ///////////////////////////////////////////////////////////
+		// / END OF CONTENT TAB
+		// ///////////////////////////////////////////////////////////
+
+
+		// Fields tab...
+		//
+		wFieldsTab = new CTabItem(wTabFolder, SWT.NONE);
+		wFieldsTab.setText(Messages.getString("LDAPInputDialog.Fields.Tab"));
+		
+		FormLayout fieldsLayout = new FormLayout ();
+		fieldsLayout.marginWidth  = Const.FORM_MARGIN;
+		fieldsLayout.marginHeight = Const.FORM_MARGIN;
+		
+		wFieldsComp = new Composite(wTabFolder, SWT.NONE);
+		wFieldsComp.setLayout(fieldsLayout);
+ 		props.setLook(wFieldsComp);
+		
+ 		wGet=new Button(wFieldsComp, SWT.PUSH);
+		wGet.setText(Messages.getString("LDAPInputDialog.GetFields.Button"));
+		fdGet=new FormData();
+		fdGet.left=new FormAttachment(50, 0);
+		fdGet.bottom =new FormAttachment(100, 0);
+		wGet.setLayoutData(fdGet);
+		
+		final int FieldsRows=input.getInputFields().length;
+		
+		// Prepare a list of possible formats...
+		String dats[] = Const.getDateFormats();
+		String nums[] = Const.getNumberFormats();
+		int totsize = dats.length + nums.length;
+		String formats[] = new String[totsize];
+		for (int x=0;x<dats.length;x++) formats[x] = dats[x];
+		for (int x=0;x<nums.length;x++) formats[dats.length+x] = nums[x];
+		
+		
+		ColumnInfo[] colinf=new ColumnInfo[]
+            {
+			 new ColumnInfo(
+         Messages.getString("LDAPInputDialog.FieldsTable.Name.Column"),
+         ColumnInfo.COLUMN_TYPE_TEXT,
+         false),
+         new ColumnInfo(Messages.getString("LDAPInputDialog.FieldsTable.Attribut.Column"),ColumnInfo.COLUMN_TYPE_TEXT,false),
+		 new ColumnInfo(Messages.getString("LDAPInputDialog.FieldsTable.Type.Column"),ColumnInfo.COLUMN_TYPE_CCOMBO,ValueMeta.getTypes(),true ),
+		 new ColumnInfo(Messages.getString("LDAPInputDialog.FieldsTable.Format.Column"),
+         ColumnInfo.COLUMN_TYPE_CCOMBO,formats),
+         new ColumnInfo(
+         Messages.getString("LDAPInputDialog.FieldsTable.Length.Column"),
+         ColumnInfo.COLUMN_TYPE_TEXT,
+         false),
+			 new ColumnInfo(
+         Messages.getString("LDAPInputDialog.FieldsTable.Precision.Column"),
+         ColumnInfo.COLUMN_TYPE_TEXT,
+         false),
+			 new ColumnInfo(
+         Messages.getString("LDAPInputDialog.FieldsTable.Currency.Column"),
+         ColumnInfo.COLUMN_TYPE_TEXT,
+         false),
+			 new ColumnInfo(
+         Messages.getString("LDAPInputDialog.FieldsTable.Decimal.Column"),
+         ColumnInfo.COLUMN_TYPE_TEXT,
+         false),
+			 new ColumnInfo(
+         Messages.getString("LDAPInputDialog.FieldsTable.Group.Column"),
+         ColumnInfo.COLUMN_TYPE_TEXT,
+         false),
+			 new ColumnInfo(
+         Messages.getString("LDAPInputDialog.FieldsTable.TrimType.Column"),
+         ColumnInfo.COLUMN_TYPE_CCOMBO,
+         formats,//LDAPInputField.trimTypeDesc,
+         true ),
+			 new ColumnInfo(
+         Messages.getString("LDAPInputDialog.FieldsTable.Repeat.Column"),
+         ColumnInfo.COLUMN_TYPE_CCOMBO,
+         new String[] { Messages.getString("System.Combo.Yes"), Messages.getString("System.Combo.No") },
+         true ),
+     
+    };
+		
+		colinf[0].setUsingVariables(true);
+		colinf[0].setToolTip(Messages.getString("LDAPInputDialog.FieldsTable.Name.Column.Tooltip"));
+		colinf[1].setUsingVariables(true);
+		colinf[1].setToolTip(Messages.getString("LDAPInputDialog.FieldsTable.Attribut.Column.Tooltip"));
+		
+		wFields=new TableView(transMeta,wFieldsComp, 
+						      SWT.FULL_SELECTION | SWT.MULTI, 
+						      colinf, 
+						      FieldsRows,  
+						      lsMod,
+							  props
+						      );
+
+		fdFields=new FormData();
+		fdFields.left  = new FormAttachment(0, 0);
+		fdFields.top   = new FormAttachment(0, 0);
+		fdFields.right = new FormAttachment(100, 0);
+		fdFields.bottom= new FormAttachment(wGet, -margin);
+		wFields.setLayoutData(fdFields);
+
+		fdFieldsComp=new FormData();
+		fdFieldsComp.left  = new FormAttachment(0, 0);
+		fdFieldsComp.top   = new FormAttachment(0, 0);
+		fdFieldsComp.right = new FormAttachment(100, 0);
+		fdFieldsComp.bottom= new FormAttachment(100, 0);
+		wFieldsComp.setLayoutData(fdFieldsComp);
+		
+		wFieldsComp.layout();
+		wFieldsTab.setControl(wFieldsComp);
+		
+		fdTabFolder = new FormData();
+		fdTabFolder.left  = new FormAttachment(0, 0);
+		fdTabFolder.top   = new FormAttachment(wStepname, margin);
+		fdTabFolder.right = new FormAttachment(100, 0);
+		fdTabFolder.bottom= new FormAttachment(100, -50);
+		wTabFolder.setLayoutData(fdTabFolder);
+		
+		wOK=new Button(shell, SWT.PUSH);
+		wOK.setText(Messages.getString("System.Button.OK"));
+
+		wPreview=new Button(shell, SWT.PUSH);
+		wPreview.setText(Messages.getString("LDAPInputDialog.Button.PreviewRows"));
+		
+		wCancel=new Button(shell, SWT.PUSH);
+		wCancel.setText(Messages.getString("System.Button.Cancel"));
+		
+		setButtonPositions(new Button[] { wOK, wPreview, wCancel }, margin, wTabFolder);
+
+		// Add listeners
+		lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
+		lsGet      = new Listener() { public void handleEvent(Event e) { get();      } };
+		lsTest     = new Listener() { public void handleEvent(Event e) { test(); } };
+		lsPreview  = new Listener() { public void handleEvent(Event e) { preview();   } };
+		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel();     } };
+		
+		wOK.addListener     (SWT.Selection, lsOK     );
+		wGet.addListener    (SWT.Selection, lsGet    );
+		wTest.addListener    (SWT.Selection, lsTest    );		
+		wPreview.addListener(SWT.Selection, lsPreview);
+		wCancel.addListener (SWT.Selection, lsCancel );
+		
+		lsDef=new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { ok(); } };
+		
+		wStepname.addSelectionListener( lsDef );
+		wLimit.addSelectionListener( lsDef );
+		wInclRownumField.addSelectionListener( lsDef );
+
+		
+		
+			
+		// Enable/disable the right fields to allow a row number to be added to each row...
+		wInclRownum.addSelectionListener(new SelectionAdapter() 
+			{
+				public void widgetSelected(SelectionEvent e) 
+				{
+					setIncludeRownum();
+				}
+			}
+		);
+		
+		
+		
+		
+	
+		
+		// Detect X or ALT-F4 or something that kills this window...
+		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
+
+		wTabFolder.setSelection(0);
+
+		// Set the shell size, based upon previous time...
+		setSize();
+		getData(input);
+		input.setChanged(changed);
+	
+		wFields.optWidth(true);
+		
+		shell.open();
+		while (!shell.isDisposed())
+		{
+				if (!display.readAndDispatch()) display.sleep();
+		}
+		return stepname;
+	}
+	private void test()
+	{
+		try
+        {
+		
+			LDAPInputMeta meta = new LDAPInputMeta();
+			getInfo(meta);
+			
+			DirContext ctx = connectServerLdap(transMeta.environmentSubstitute(meta.getHost()),
+					transMeta.environmentSubstitute(meta.getUserName()), 
+					transMeta.environmentSubstitute(meta.getPassword()),
+					transMeta.environmentSubstitute(meta.getBaseDn()));
+			
+			if(ctx!=null)
+			{
+				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION );
+				mb.setMessage(Messages.getString("LDAPInputDialog.Connected.OK") +Const.CR); //$NON-NLS-1$
+				mb.setText(Messages.getString("LDAPInputDialog.Connected.Title.Ok")); //$NON-NLS-1$
+				mb.open();
+			}
+			else
+			{	
+				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
+				mb.setMessage(Messages.getString("LDAPInputDialog.Connected.NOK.DirecttoryContextNull"));
+				mb.setText(Messages.getString("LDAPInputDialog.Connected.Title.Error")); //$NON-NLS-1$
+				mb.open(); 
+				
+			}
+			
+				
+		}
+		catch(Exception e)
+		{
+			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
+			mb.setMessage(Messages.getString("LDAPInputDialog.Connected.NOK",e.getMessage()));
+			mb.setText(Messages.getString("LDAPInputDialog.Connected.Title.Error")); //$NON-NLS-1$
+			mb.open(); 
+		} 
+	}
+
+	private void get()
+	{
+        try
+        {
+		
+    		LDAPInputMeta meta = new LDAPInputMeta();
+    		getInfo(meta);
+            
+            // Clear Fields Grid
+            wFields.removeAll();
+
+    		String basedn=transMeta.environmentSubstitute(meta.getBaseDn());
+    		String hostname=transMeta.environmentSubstitute(meta.getHost());
+    		String username=transMeta.environmentSubstitute(meta.getUserName());
+    		String password=transMeta.environmentSubstitute(meta.getPassword());
+            //Set the filter string.  The more exact of the search string
+    		String filter=transMeta.environmentSubstitute(meta.getFilterString());
+    		//Set the Search base.This is the place where the search will
+    		String searchbase=transMeta.environmentSubstitute(meta.getSearchBase());
+    	
+    		NamingEnumeration<SearchResult> results=null;
+    		
+    		DirContext ctx = connectServerLdap(hostname,username, password,basedn);
+			
+		     
+		     if (ctx==null)
+		     {
+		    	 log.logError("Connection", "ERROR");
+		     }
+		     
+		     log.logBasic("Connection", "Connected to server [{0}]",hostname);
+		     log.logBasic("Class", "Class name [{0}]",ctx.getClass().getName());
+		     // Get the schema tree root
+		     DirContext schema = ctx.getSchema("");
+		     
+		     log.logBasic("Schema tree root", ""+schema.list(""));
+		     
+		     SearchControls controls = new SearchControls();
+	         controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+	         // Set search
+	         results = ctx.search(searchbase,filter, controls);
+	        
+	        // Get all attributs
+	        SearchResult searchAttr = (SearchResult) results.next();
+	        
+	        Attributes listattributes = searchAttr.getAttributes(); 
+	       
+	        NamingEnumeration ne = listattributes.getAll();
+		   
+	        BasicAttribute Attr = null;
+	        
+	        while (ne.hasMore()) 
+	        {
+	        	Attr = (BasicAttribute) ne.next();
+	    	    
+	    		String fieldName = Attr.getID();
+				
+				// Get Column Name
+	            TableItem item = new TableItem(wFields.table, SWT.NONE);
+	            item.setText(1, fieldName);
+	            item.setText(2, fieldName);
+	            
+	            String attributeValue=Attr.getID();
+	            // Try to get the Type
+	            if(IsDate(attributeValue))
+        		{
+        			item.setText(3, "Date");
+        		}
+	            else if(IsInteger(attributeValue))
+        		{
+        			item.setText(3, "Integer");
+        		}
+	            else if(IsNumber(attributeValue))
+        		{
+        			item.setText(3, "Number");
+        		}	
+	           
+	            else
+	            {
+	            	item.setText(3, "String");	    		            
+	            }  
+	    	    
+	        }
+	        
+	        
+         
+            wFields.removeEmptyRows();
+            wFields.setRowNums();
+            wFields.optWidth(true);            
+        }
+        catch(KettleException e)
+        {
+            new ErrorDialog(shell, Messages.getString("LDAPInputDialog.ErrorGettingColums.DialogTitle"), Messages.getString("LDAPInputDialog.ErrorGettingColums.DialogMessage"), e);
+        }
+    	catch(Exception e)
+		{
+    		 new ErrorDialog(shell, Messages.getString("LDAPInputDialog.ErrorGettingColums.DialogTitle"), Messages.getString("LDAPInputDialog.ErrorGettingColums.DialogMessage"), e);
+
+		}  
+	}
+	 public InitialDirContext connectServerLdap(String hostname,String username, String password,String basedn) throws NamingException {
+
+	        Hashtable<String, String> env = new Hashtable<String, String>();
+
+	        env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
+	        env.put(Context.PROVIDER_URL, "ldap://"+hostname);
+	        env.put(Context.SECURITY_AUTHENTICATION, "simple" );
+	        env.put(Context.SECURITY_PRINCIPAL, "cn=" + username+"," + basedn);
+	        env.put(Context.SECURITY_CREDENTIALS, password); 
+	       
+
+	        return new InitialDirContext(env);
+	    }
+	private boolean IsInteger(String str)
+	{
+		  try 
+		  {
+		    Integer.parseInt(str);
+		  }
+		  catch(NumberFormatException e)   {return false; }
+		  return true;
+	}
+	
+	private boolean IsNumber(String str)
+	{
+		  try 
+		  {
+		     Float.parseFloat(str);
+		  }
+		  catch(Exception e)   {return false; }
+		  return true;
+	}
+	
+	private boolean IsDate(String str)
+	{
+		  // TODO: What about other dates? Maybe something for a CRQ
+		  try 
+		  {
+		        SimpleDateFormat fdate = new SimpleDateFormat("yy-mm-dd");
+		        fdate.parse(str);
+		  }
+		  catch(Exception e)   {return false; }
+		  return true;
+	}
+
+	public void setIncludeRownum()
+	{
+		wlInclRownumField.setEnabled(wInclRownum.getSelection());
+		wInclRownumField.setEnabled(wInclRownum.getSelection());
+	}
+	
+
+
+
+	/**
+	 * Read the data from the LDAPInputMeta object and show it in this dialog.
+	 * 
+	 * @param in The LDAPInputMeta object to obtain the data from.
+	 */
+	public void getData(LDAPInputMeta in)
+	{
+		
+		wInclRownum.setSelection(in.includeRowNumber());
+		if (in.getRowNumberField()!=null) wInclRownumField.setText(in.getRowNumberField());
+		wLimit.setText(""+in.getRowLimit());
+
+		if (in.getHost() != null)  wHost.setText(in.getHost());
+		if (in.getUserName() != null)  wUserName.setText(in.getUserName());
+	    if (in.getPassword() != null)  wPassword.setText(in.getPassword());
+		if (in.getBaseDn() != null)  wBaseDn.setText(in.getBaseDn());
+		
+		if (in.getFilterString() != null)  wFilterString.setText(in.getFilterString());
+		if (in.getSearchBase()!= null)  wSearchBase.setText(in.getSearchBase());
+		
+		
+		log.logDebug(toString(), Messages.getString("LDAPInputDialog.Log.GettingFieldsInfo"));
+		for (int i=0;i<in.getInputFields().length;i++)
+		{
+		    LDAPInputField field = in.getInputFields()[i];
+		    
+            if (field!=null)
+            {
+    			TableItem item  = wFields.table.getItem(i);
+    			String name     = field.getName();
+    			String xpath	= field.getAttribut();
+    			String type     = field.getTypeDesc();
+    			String format   = field.getFormat();
+    			String length   = ""+field.getLength();
+    			String prec     = ""+field.getPrecision();
+    			String curr     = field.getCurrencySymbol();
+    			String group    = field.getGroupSymbol();
+    			String decim    = field.getDecimalSymbol();
+    			String trim     = field.getTrimTypeDesc();
+    			String rep      = field.isRepeated()?Messages.getString("System.Combo.Yes"):Messages.getString("System.Combo.No");
+    			
+                if (name    !=null) item.setText( 1, name);
+                if (xpath   !=null) item.setText( 2, xpath);
+    			if (type    !=null) item.setText( 3, type);
+    			if (format  !=null) item.setText( 4, format);
+    			if (length  !=null && !"-1".equals(length)) item.setText( 5, length);
+    			if (prec    !=null && !"-1".equals(prec)) item.setText( 6, prec);
+    			if (curr    !=null) item.setText( 7, curr);
+    			if (decim   !=null) item.setText( 8, decim);
+    			if (group   !=null) item.setText( 9, group);
+    			if (trim    !=null) item.setText(10, trim);
+    			if (rep     !=null) item.setText(11, rep);                
+            }
+		}
+        
+        wFields.removeEmptyRows();
+        wFields.setRowNums();
+        wFields.optWidth(true);
+
+		setIncludeRownum();
+
+		wStepname.selectAll();
+	}
+
+	private void cancel()
+	{
+		stepname=null;
+		input.setChanged(changed);
+		dispose();
+	}
+	
+	private void ok()
+	{
+        try
+        {
+            getInfo(input);
+        }
+        catch(KettleException e)
+        {
+            new ErrorDialog(shell, Messages.getString("LDAPInputDialog.ErrorParsingData.DialogTitle"), Messages.getString("LDAPInputDialog.ErrorParsingData.DialogMessage"), e);
+        }
+		dispose();
+	}
+	
+	private void getInfo(LDAPInputMeta in) throws KettleException
+	{
+		stepname = wStepname.getText(); // return value
+
+		// copy info to TextFileInputMeta class (input)
+		in.setRowLimit( Const.toLong(wLimit.getText(), 0L) );
+		
+		in.setIncludeRowNumber( wInclRownum.getSelection() );
+		in.setRowNumberField( wInclRownumField.getText() );
+		in.setHost( wHost.getText() );
+		in.setUserName( wUserName.getText() );
+		in.setPassword(wPassword.getText());
+		in.setBaseDn( wBaseDn.getText() );
+		in.setFilterString( wFilterString.getText() );
+		in.setSearchBase( wSearchBase.getText() );
+		
+		int nrFields    = wFields.nrNonEmpty();
+         
+		in.allocate(nrFields);
+
+
+		for (int i=0;i<nrFields;i++)
+		{
+		    LDAPInputField field = new LDAPInputField();
+		    
+			TableItem item  = wFields.getNonEmpty(i);
+            
+			field.setName( item.getText(1) );
+			field.setAttribut(item.getText(2));
+			field.setType(ValueMeta.getType(item.getText(3)));
+			field.setFormat( item.getText(4) );
+			field.setLength( Const.toInt(item.getText(5), -1) );
+			field.setPrecision( Const.toInt(item.getText(6), -1) );
+			field.setCurrencySymbol( item.getText(7) );
+			field.setDecimalSymbol( item.getText(8) );
+			field.setGroupSymbol( item.getText(9) );
+			field.setTrimType( LDAPInputField.getTrimTypeByDesc(item.getText(10)) );
+			field.setRepeated( Messages.getString("System.Combo.Yes").equalsIgnoreCase(item.getText(11)) );		
+            
+			in.getInputFields()[i] = field;
+		}	
+	}
+	
+
+	
+		
+	// Preview the data
+	private void preview()
+	{
+        try
+        {
+            // Create the XML input step
+            LDAPInputMeta oneMeta = new LDAPInputMeta();
+            getInfo(oneMeta);
+        
+
+        
+            TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(transMeta, oneMeta, wStepname.getText());
+            
+            EnterNumberDialog numberDialog = new EnterNumberDialog(shell, 500, Messages.getString("LDAPInputDialog.NumberRows.DialogTitle"), Messages.getString("LDAPInputDialog.NumberRows.DialogMessage"));
+            int previewSize = numberDialog.open();
+            if (previewSize>0)
+            {
+                TransPreviewProgressDialog progressDialog = new TransPreviewProgressDialog(shell, previewMeta, new String[] { wStepname.getText() }, new int[] { previewSize } );
+                progressDialog.open();
+                
+                if (!progressDialog.isCancelled())
+                {
+                    Trans trans = progressDialog.getTrans();
+                    String loggingText = progressDialog.getLoggingText();
+                    
+                    if (trans.getResult()!=null && trans.getResult().getNrErrors()>0)
+                    {
+                    	EnterTextDialog etd = new EnterTextDialog(shell, Messages.getString("System.Dialog.PreviewError.Title"),  
+                    			Messages.getString("System.Dialog.PreviewError.Message"), loggingText, true );
+                    	etd.setReadOnly();
+                    	etd.open();
+                    }
+                             
+                    PreviewRowsDialog prd = new PreviewRowsDialog(shell, transMeta, SWT.NONE, wStepname.getText(),
+							progressDialog.getPreviewRowsMeta(wStepname.getText()), progressDialog
+									.getPreviewRows(wStepname.getText()), loggingText);
+					prd.open();
+                    
+                }
+            }
+        }
+        catch(KettleException e)
+        {
+            new ErrorDialog(shell, Messages.getString("LDAPInputDialog.ErrorPreviewingData.DialogTitle"), Messages.getString("LDAPInputDialog.ErrorPreviewingData.DialogMessage"), e);
+       }
+	}
+	
+	public String toString()
+	{
+		return this.getClass().getName();
+	}
+	
+	
+}
