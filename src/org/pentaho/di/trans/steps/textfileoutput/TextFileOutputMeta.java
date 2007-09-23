@@ -778,6 +778,10 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
                 v.setGroupingSymbol(field.getGroupingSymbol());
                 v.setCurrencySymbol(field.getCurrencySymbol());
                 v.setOutputPaddingEnabled( isPadded() );
+                if ( ! Const.isEmpty(getEncoding()) )
+                {
+            		v.setStringEncoding(getEncoding());
+        		}
 			}
 		}
 	}

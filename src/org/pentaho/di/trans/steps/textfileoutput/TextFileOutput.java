@@ -262,17 +262,21 @@ public class TextFileOutput extends BaseStep implements StepInterface
         	if( length > string.length() ) 
         	{
         		// we need to pad this
+        		
+        		// Also for PDI-170: not all encoding use single characters, so we need to cope
+        		// with this.
         		byte filler[] = " ".getBytes();
-        		int size = filler.length*length;
+        		int size = text.length + filler.length*(length - string.length());
         		byte bytes[] = new byte[size];
+        		System.arraycopy( text, 0, bytes, 0, text.length );
         		if( filler.length == 1 ) {
-            		java.util.Arrays.fill( bytes, filler[0] );
+            		java.util.Arrays.fill( bytes, text.length, size, filler[0] );
         		} 
         		else 
         		{
         			// need to copy the filler array in lots of times
-        		}
-        		System.arraycopy( text, 0, bytes, 0, text.length );
+        			// TODO: this was not finished.
+        		}        		        		
         		return bytes;
         	}
         	else
