@@ -52,6 +52,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 {	
 
+	/** Flag indicating that we use authentication for connection */
+	private boolean useAuthentication;
 
 	/** Flag indicating that a row number field should be included in the output */
 	private  boolean includeRowNumber;
@@ -72,8 +74,8 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 	/** The Password to use in LDAP authentication*/
 	private String Password;
 	
-	/** The Base DN*/
-	private  String  BaseDn;
+	/** The Port*/
+	private  String  Port;
 	
 	/** The Filter string*/
 	private  String  FilterString;
@@ -93,7 +95,21 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 		super(); // allocate BaseStepMeta
 	}
 	
+	/**
+     * @return Returns the input useAuthentication.
+     */
+	public boolean UseAuthentication()
+	{
+		return useAuthentication;
+	}
 	
+	 /**
+     * @param useAuthentication The useAuthentication to set.
+     */
+	public void setUseAuthentication(boolean useauthenticationin)
+	{
+		this.useAuthentication=useauthenticationin;
+	}
 		
 	/**
      * @return Returns the input fields.
@@ -184,20 +200,20 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 
     
     /**
-     * @return Returns the Base Dn.
+     * @return Returns the Port.
      */
-    public String getBaseDn()
+    public String getPort()
     {
-    	return BaseDn;
+    	return Port;
     }
     
     
     /**
-     * @param basedn The basedn to set.
+     * @param port The port to set.
      */
-    public void setBaseDn(String basednin)
+    public void setBaseDn(String portin)
     {
-    	this.BaseDn=basednin;
+    	this.Port=portin;
     }
     
     
@@ -305,13 +321,15 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
     {
         StringBuffer retval=new StringBuffer();
         
+        
+        retval.append("    "+XMLHandler.addTagValue("useauthentication",  useAuthentication));
         retval.append("    "+XMLHandler.addTagValue("rownum",          includeRowNumber));
         retval.append("    "+XMLHandler.addTagValue("rownum_field",    rowNumberField));
         retval.append("    "+XMLHandler.addTagValue("host",    Host));
         retval.append("    "+XMLHandler.addTagValue("username",    UserName));
         retval.append("    "+XMLHandler.addTagValue("password", Encr.encryptPasswordIfNotUsingVariables(Password)));
 
-        retval.append("    "+XMLHandler.addTagValue("basedn",    BaseDn));
+        retval.append("    "+XMLHandler.addTagValue("port",    Port));
         retval.append("    "+XMLHandler.addTagValue("filterstring",    FilterString));
         retval.append("    "+XMLHandler.addTagValue("searchbase",    SearchBase));
          
@@ -348,14 +366,16 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-
+			
+			
+			useAuthentication  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "useauthentication"));
 			includeRowNumber  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "rownum"));
 			rowNumberField    = XMLHandler.getTagValue(stepnode, "rownum_field");
 			Host    = XMLHandler.getTagValue(stepnode, "host");
 			UserName    = XMLHandler.getTagValue(stepnode, "username");
 			setPassword(Encr.decryptPasswordOptionallyEncrypted(XMLHandler.getTagValue(stepnode, "password")));
 
-			BaseDn    = XMLHandler.getTagValue(stepnode, "basedn");
+			Port    = XMLHandler.getTagValue(stepnode, "port");
 			FilterString    = XMLHandler.getTagValue(stepnode, "filterstring");
 			SearchBase = XMLHandler.getTagValue(stepnode, "searchbase");
 	
@@ -406,13 +426,14 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 	public void setDefault()
 	{
 
+		useAuthentication=false;
 		includeRowNumber = false;
 		rowNumberField   = "";
 		Host="";
 		UserName="";
 		Password="";
-		BaseDn="";
-		FilterString="";
+		Port="389";
+		FilterString="objectclass=*";
 		SearchBase="";
 		
 
@@ -476,13 +497,14 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 		try
 		{
 			
+			useAuthentication  = rep.getStepAttributeBoolean(id_step, "useauthentication");
 			includeRowNumber  = rep.getStepAttributeBoolean(id_step, "rownum");
 			rowNumberField    = rep.getStepAttributeString (id_step, "rownum_field");
 			Host    = rep.getStepAttributeString (id_step, "host");
 			UserName    = rep.getStepAttributeString (id_step, "username");
 			Password = Encr.decryptPasswordOptionallyEncrypted(rep.getJobEntryAttributeString(id_step, "password"));
 
-			BaseDn    = rep.getStepAttributeString (id_step, "basedn");
+			Port    = rep.getStepAttributeString (id_step, "port");
 			FilterString    = rep.getStepAttributeString (id_step, "filterstring");
 			SearchBase    = rep.getStepAttributeString (id_step, "searchbase");
 			
@@ -523,14 +545,15 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-
+			
+			rep.saveStepAttribute(id_transformation, id_step, "useauthentication",  useAuthentication);
 			rep.saveStepAttribute(id_transformation, id_step, "rownum",          includeRowNumber);
 			rep.saveStepAttribute(id_transformation, id_step, "rownum_field",    rowNumberField);
 			rep.saveStepAttribute(id_transformation, id_step, "host",    Host);
 			rep.saveStepAttribute(id_transformation, id_step, "username", UserName);
 			rep.saveJobEntryAttribute(id_transformation, id_step, "password", Encr.encryptPasswordIfNotUsingVariables(Password));
 
-			rep.saveStepAttribute(id_transformation, id_step, "basedn",   BaseDn);
+			rep.saveStepAttribute(id_transformation, id_step, "port",   Port);
 			rep.saveStepAttribute(id_transformation, id_step, "filterstring",   FilterString);
 			rep.saveStepAttribute(id_transformation, id_step, "searchbase",  SearchBase);
 			rep.saveStepAttribute(id_transformation, id_step, "limit",           rowLimit);

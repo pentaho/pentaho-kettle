@@ -60,7 +60,7 @@ public class LDAPInput extends BaseStep implements StepInterface
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{
     	
-		String basedn=environmentSubstitute(meta.getBaseDn());
+		String port=environmentSubstitute(meta.getPort());
 		String hostname=environmentSubstitute(meta.getHost());
 		String username=environmentSubstitute(meta.getUserName());
 		String password=environmentSubstitute(meta.getPassword());
@@ -113,7 +113,7 @@ public class LDAPInput extends BaseStep implements StepInterface
 		{	
 
 			// Try to connect to LDAP server
-             ctx = connectServerLdap(hostname,username, password,basedn);
+             ctx = connectServerLdap(hostname,username, password,port);
 
 		     
 		     if (ctx==null)
@@ -121,7 +121,7 @@ public class LDAPInput extends BaseStep implements StepInterface
 		    	 log.logError("Connection", "ERROR");
 		     }
 		     
-		     log.logBasic("Connection", "Connected to server [{0}]",hostname);
+		     log.logBasic("Connection", "Connected to server [{0}] with username [{1]}",hostname,username);
 		     if (log.isDetailed()) log.logDetailed("Class", "Class name [{0}]",ctx.getClass().getName());
 		     // Get the schema tree root
 		     DirContext schema = ctx.getSchema("");
@@ -135,6 +135,19 @@ public class LDAPInput extends BaseStep implements StepInterface
 		    
 		     // Limit returned attributes to user selection
 		     controls.setReturningAttributes(attrReturned);
+		     
+		     
+		     if(Const.isEmpty(searchbase))
+		     {
+			     // get Search Base
+			     Attributes attrs = ctx.getAttributes("", new String[] { "namingContexts" });
+				 Attribute attr = attrs.get("namingContexts");
+				  
+				 searchbase=attr.get().toString();
+				 if (log.isDetailed())  log.logBasic("Search Base","Search Base found [{0}]",searchbase );
+				 
+	
+		     } 
 		
 	         controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
 	         
@@ -256,8 +269,8 @@ public class LDAPInput extends BaseStep implements StepInterface
         return false;     // This is the end of this step.
 	}		
 	
-	 public InitialDirContext connectServerLdap(String hostname,String username, String password,String basedn) throws NamingException {
-
+	 public InitialDirContext connectServerLdap(String hostname,String username, String password,String port) throws NamingException {
+		 //TODO : Add SSL Authentication
 			/*
 			//---
 			//SSL
@@ -273,11 +286,13 @@ public class LDAPInput extends BaseStep implements StepInterface
 	        Hashtable<String, String> env = new Hashtable<String, String>();
 
 	        env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
-	        env.put(Context.PROVIDER_URL, "ldap://"+hostname);
+	        env.put(Context.PROVIDER_URL, "ldap://"+hostname + ":" + Const.toInt(port, 389));
 	        env.put(Context.SECURITY_AUTHENTICATION, "simple" );
-	        env.put(Context.SECURITY_PRINCIPAL, "cn=" + username+"," + basedn);
-	        env.put(Context.SECURITY_CREDENTIALS, password); 
-	       
+	        if (meta.UseAuthentication())
+	        {
+	        	env.put(Context.SECURITY_PRINCIPAL, username);
+	        	env.put(Context.SECURITY_CREDENTIALS, password); 
+	        }
 
 	        return new InitialDirContext(env);
 	    }

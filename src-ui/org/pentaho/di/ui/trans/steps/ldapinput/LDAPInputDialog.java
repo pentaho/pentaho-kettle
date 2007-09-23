@@ -27,6 +27,7 @@ import javax.naming.Context;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.directory.Attributes;
+import javax.naming.directory.Attribute;
 import javax.naming.directory.BasicAttribute;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.InitialDirContext;
@@ -92,6 +93,10 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 	private Label        wlInclRownum;
 	private Button       wInclRownum;
 	private FormData     fdlInclRownum, fdRownum;
+	
+	private Label        wlusingAuthentication;
+	private Button       wusingAuthentication;
+	private FormData     fdlusingAuthentication, fdusingAuthentication;
 
 	private Label        wlInclRownumField;
 	private TextVar      wInclRownumField;
@@ -129,9 +134,9 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 	private TextVar      wPassword;
 	private FormData     fdlPassword, fdPassword;
 	
-	private Label        wlBaseDn;
-	private TextVar      wBaseDn;
-	private FormData     fdlBaseDn, fdBaseDn;
+	private Label        wlPort;
+	private TextVar      wPort;
+	private FormData     fdlPort, fdPort;
 	
 	private Button wTest;
 	private FormData fdTest;
@@ -254,13 +259,62 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		fdHost.right= new FormAttachment(100, 0);
 		wHost.setLayoutData(fdHost);
 		
+		// Port line
+		wlPort=new Label(wConnectionGroup, SWT.RIGHT);
+		wlPort.setText(Messages.getString("LDAPInputDialog.Port.Label"));
+ 		props.setLook(wlPort);
+		fdlPort=new FormData();
+		fdlPort.left = new FormAttachment(0, 0);
+		fdlPort.top  = new FormAttachment(wHost, margin);
+		fdlPort.right= new FormAttachment(middle, -margin);
+		wlPort.setLayoutData(fdlPort);
+		wPort=new TextVar(transMeta, wConnectionGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+ 		props.setLook(wPort);
+		wPort.setToolTipText(Messages.getString("LDAPInputDialog.Port.Tooltip"));
+		wPort.addModifyListener(lsMod);
+		fdPort=new FormData();
+		fdPort.left = new FormAttachment(middle, 0);
+		fdPort.top  = new FormAttachment(wHost, margin);
+		fdPort.right= new FormAttachment(100, 0);
+		wPort.setLayoutData(fdPort);
+		
+		// using authentication ?
+		wlusingAuthentication=new Label(wConnectionGroup, SWT.RIGHT);
+		wlusingAuthentication.setText(Messages.getString("LDAPInputDialog.usingAuthentication.Label"));
+ 		props.setLook(wlusingAuthentication);
+		fdlusingAuthentication=new FormData();
+		fdlusingAuthentication.left = new FormAttachment(0, 0);
+		fdlusingAuthentication.top  = new FormAttachment(wPort, margin);
+		fdlusingAuthentication.right= new FormAttachment(middle, -margin);
+		wlusingAuthentication.setLayoutData(fdlusingAuthentication);
+		wusingAuthentication=new Button(wConnectionGroup, SWT.CHECK );
+ 		props.setLook(wusingAuthentication);
+		wusingAuthentication.setToolTipText(Messages.getString("LDAPInputDialog.usingAuthentication.Tooltip"));
+		fdRownum=new FormData();
+		fdRownum.left = new FormAttachment(middle, 0);
+		fdRownum.top  = new FormAttachment(wPort, margin);
+		wusingAuthentication.setLayoutData(fdRownum);
+		
+		wusingAuthentication.addSelectionListener(new SelectionAdapter() 
+		{
+			public void widgetSelected(SelectionEvent e) 
+			{
+				useAuthentication();
+			}
+		}
+	);
+	
+	
+	
+	
+		
 		// UserName line
 		wlUserName=new Label(wConnectionGroup, SWT.RIGHT);
 		wlUserName.setText(Messages.getString("LDAPInputDialog.Username.Label"));
  		props.setLook(wlUserName);
 		fdlUserName=new FormData();
 		fdlUserName.left = new FormAttachment(0, 0);
-		fdlUserName.top  = new FormAttachment(wHost, margin);
+		fdlUserName.top  = new FormAttachment(wusingAuthentication, margin);
 		fdlUserName.right= new FormAttachment(middle, -margin);
 		wlUserName.setLayoutData(fdlUserName);
 		wUserName=new TextVar(transMeta, wConnectionGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
@@ -269,7 +323,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		wUserName.addModifyListener(lsMod);
 		fdUserName=new FormData();
 		fdUserName.left = new FormAttachment(middle, 0);
-		fdUserName.top  = new FormAttachment(wHost, margin);
+		fdUserName.top  = new FormAttachment(wusingAuthentication, margin);
 		fdUserName.right= new FormAttachment(100, 0);
 		wUserName.setLayoutData(fdUserName);
 
@@ -293,24 +347,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		fdPassword.right= new FormAttachment(100, 0);
 		wPassword.setLayoutData(fdPassword);
 		
-		// BaseDn line
-		wlBaseDn=new Label(wConnectionGroup, SWT.RIGHT);
-		wlBaseDn.setText(Messages.getString("LDAPInputDialog.BaseDn.Label"));
- 		props.setLook(wlBaseDn);
-		fdlBaseDn=new FormData();
-		fdlBaseDn.left = new FormAttachment(0, 0);
-		fdlBaseDn.top  = new FormAttachment(wPassword, margin);
-		fdlBaseDn.right= new FormAttachment(middle, -margin);
-		wlBaseDn.setLayoutData(fdlBaseDn);
-		wBaseDn=new TextVar(transMeta, wConnectionGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
- 		props.setLook(wBaseDn);
-		wBaseDn.setToolTipText(Messages.getString("LDAPInputDialog.BaseDn.Tooltip"));
-		wBaseDn.addModifyListener(lsMod);
-		fdBaseDn=new FormData();
-		fdBaseDn.left = new FormAttachment(middle, 0);
-		fdBaseDn.top  = new FormAttachment(wPassword, margin);
-		fdBaseDn.right= new FormAttachment(100, 0);
-		wBaseDn.setLayoutData(fdBaseDn);
+
 		
 		// Test LDAP connection button
 		wTest=new Button(wConnectionGroup,SWT.PUSH);
@@ -319,7 +356,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		fdTest=new FormData();
 		wTest.setToolTipText(Messages.getString("LDAPInputDialog.TestConnection.Tooltip"));
 		//fdTest.left = new FormAttachment(middle, 0);
-		fdTest.top  = new FormAttachment(wBaseDn, margin);
+		fdTest.top  = new FormAttachment(wPassword, margin);
 		fdTest.right= new FormAttachment(100, 0);
 		wTest.setLayoutData(fdTest);
 		
@@ -683,6 +720,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 			}
 		);
 		
+
 		
 		
 		
@@ -696,6 +734,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		// Set the shell size, based upon previous time...
 		setSize();
 		getData(input);
+		useAuthentication();
 		input.setChanged(changed);
 	
 		wFields.optWidth(true);
@@ -718,7 +757,17 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 			DirContext ctx = connectServerLdap(transMeta.environmentSubstitute(meta.getHost()),
 					transMeta.environmentSubstitute(meta.getUserName()), 
 					transMeta.environmentSubstitute(meta.getPassword()),
-					transMeta.environmentSubstitute(meta.getBaseDn()));
+					transMeta.environmentSubstitute(meta.getPort()));
+			
+		    if(Const.isEmpty(wSearchBase.getText()))
+		     {
+			     // get Search Base
+			     Attributes attrs = ctx.getAttributes("", new String[] { "namingContexts" });
+				 Attribute attr = attrs.get("namingContexts");
+				 
+				 // Update Search Base
+				 wSearchBase.setText(attr.get().toString());
+		     } 
 			
 			if(ctx!=null)
 			{
@@ -760,7 +809,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
             // Clear Fields Grid
             wFields.removeAll();
 
-    		String basedn=transMeta.environmentSubstitute(meta.getBaseDn());
+    		String port=transMeta.environmentSubstitute(meta.getPort());
     		String hostname=transMeta.environmentSubstitute(meta.getHost());
     		String username=transMeta.environmentSubstitute(meta.getUserName());
     		String password=transMeta.environmentSubstitute(meta.getPassword());
@@ -771,7 +820,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
     	
     		NamingEnumeration<SearchResult> results=null;
     		
-    		DirContext ctx = connectServerLdap(hostname,username, password,basedn);
+    		DirContext ctx = connectServerLdap(hostname,username, password,port);
 			
 		     
 		     log.logBasic("Connection", "Connected to server [{0}]",hostname);
@@ -779,7 +828,8 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		     // Get the schema tree root
 		     DirContext schema = ctx.getSchema("");
 		     
-		     log.logBasic("Schema tree root", ""+schema.list(""));
+		     if (log.isDetailed()) log.logDetailed("Schema tree root", ""+schema.list(""));
+		      
 		     
 		     SearchControls controls = new SearchControls();
 	         controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
@@ -844,15 +894,18 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 
 		}  
 	}
-	 public InitialDirContext connectServerLdap(String hostname,String username, String password,String basedn) throws NamingException {
+	 public InitialDirContext connectServerLdap(String hostname,String username, String password,String port) throws NamingException {
 
 	        Hashtable<String, String> env = new Hashtable<String, String>();
 
 	        env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
-	        env.put(Context.PROVIDER_URL, "ldap://"+hostname);
+	        env.put(Context.PROVIDER_URL, "ldap://"+hostname + ":" +  Const.toInt(port,389));
 	        env.put(Context.SECURITY_AUTHENTICATION, "simple" );
-	        env.put(Context.SECURITY_PRINCIPAL, "cn=" + username+"," + basedn);
-	        env.put(Context.SECURITY_CREDENTIALS, password); 
+	        if(wusingAuthentication.getSelection())
+	        {
+		        env.put(Context.SECURITY_PRINCIPAL, username);
+		        env.put(Context.SECURITY_CREDENTIALS, password); 
+	        }
 	       
 
 	        return new InitialDirContext(env);
@@ -907,13 +960,16 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 	{
 		
 		wInclRownum.setSelection(in.includeRowNumber());
+		wusingAuthentication.setSelection(in.UseAuthentication());
+		
+		
 		if (in.getRowNumberField()!=null) wInclRownumField.setText(in.getRowNumberField());
 		wLimit.setText(""+in.getRowLimit());
 
 		if (in.getHost() != null)  wHost.setText(in.getHost());
 		if (in.getUserName() != null)  wUserName.setText(in.getUserName());
 	    if (in.getPassword() != null)  wPassword.setText(in.getPassword());
-		if (in.getBaseDn() != null)  wBaseDn.setText(in.getBaseDn());
+		if (in.getPort() != null)  wPort.setText(in.getPort());
 		
 		if (in.getFilterString() != null)  wFilterString.setText(in.getFilterString());
 		if (in.getSearchBase()!= null)  wSearchBase.setText(in.getSearchBase());
@@ -990,11 +1046,14 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		in.setRowLimit( Const.toLong(wLimit.getText(), 0L) );
 		
 		in.setIncludeRowNumber( wInclRownum.getSelection() );
+		in.setUseAuthentication( wusingAuthentication.getSelection() );
+		
+		
 		in.setRowNumberField( wInclRownumField.getText() );
 		in.setHost( wHost.getText() );
 		in.setUserName( wUserName.getText() );
 		in.setPassword(wPassword.getText());
-		in.setBaseDn( wBaseDn.getText() );
+		in.setBaseDn( wPort.getText() );
 		in.setFilterString( wFilterString.getText() );
 		in.setSearchBase( wSearchBase.getText() );
 		
@@ -1025,7 +1084,13 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		}	
 	}
 	
-
+	private void useAuthentication()
+	{
+		wUserName.setEnabled(wusingAuthentication.getSelection());
+		wlUserName.setEnabled(wusingAuthentication.getSelection());
+		wPassword.setEnabled(wusingAuthentication.getSelection());
+		wlPassword.setEnabled(wusingAuthentication.getSelection());
+	}
 	
 		
 	// Preview the data
