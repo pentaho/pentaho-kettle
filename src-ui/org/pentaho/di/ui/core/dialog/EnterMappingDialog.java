@@ -23,6 +23,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.layout.FormAttachment;
+import org.pentaho.di.ui.core.gui.GUIResource;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
@@ -154,6 +155,8 @@ public class EnterMappingDialog extends Dialog
 
         shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MIN | SWT.MAX);
         props.setLook(shell);
+        
+        shell.setImage(GUIResource.getInstance().getImageSpoon());
 
         FormLayout formLayout = new FormLayout();
         formLayout.marginWidth = Const.FORM_MARGIN;

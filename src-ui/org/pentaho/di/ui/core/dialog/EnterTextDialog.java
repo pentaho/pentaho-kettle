@@ -16,6 +16,7 @@
 package org.pentaho.di.ui.core.dialog;
 
 import org.eclipse.swt.SWT;
+import org.pentaho.di.ui.core.gui.GUIResource;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
@@ -124,6 +125,7 @@ public class EnterTextDialog extends Dialog
         
         shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN |  (modal?SWT.APPLICATION_MODAL:SWT.NONE));
         props.setLook(shell);
+        shell.setImage(GUIResource.getInstance().getImageSpoon());
 
         FormLayout formLayout = new FormLayout();
         formLayout.marginWidth = Const.FORM_MARGIN;

@@ -17,6 +17,7 @@
 
 package org.pentaho.di.ui.core.dialog;
 import org.eclipse.swt.SWT;
+import org.pentaho.di.ui.core.gui.GUIResource;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -106,6 +107,7 @@ public class EnterValueDialog extends Dialog
 
 		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE );
  		props.setLook(shell);
+ 		shell.setImage(GUIResource.getInstance().getImageSpoon());
 
 		FormLayout formLayout = new FormLayout ();
 		formLayout.marginWidth  = Const.FORM_MARGIN;

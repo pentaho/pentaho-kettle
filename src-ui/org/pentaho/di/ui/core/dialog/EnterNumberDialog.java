@@ -22,6 +22,7 @@ import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
+import org.pentaho.di.ui.core.gui.GUIResource;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Display;
@@ -89,6 +90,7 @@ public class EnterNumberDialog extends Dialog
 
         shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL | SWT.RESIZE);
         props.setLook(shell);
+        shell.setImage(GUIResource.getInstance().getImageSpoon());
 
         FormLayout formLayout = new FormLayout ();
         formLayout.marginWidth = Const.FORM_MARGIN;
