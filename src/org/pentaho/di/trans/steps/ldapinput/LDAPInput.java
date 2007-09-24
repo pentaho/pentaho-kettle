@@ -227,16 +227,16 @@ public class LDAPInput extends BaseStep implements StepInterface
 		        
 		     
 			    ctx.close();
-			    log.logBasic("Deconnection","Deconnection done");
+			    log.logBasic(Messages.getString("LDAPInput.log.Deconnection"),Messages.getString("LDAPInput.log.Deconnection.Done"));
 			     
-			    if(log.isDebug()) log.logDebug("row", outputRowData.toString());
+			    if(log.isDebug()) log.logDebug(Messages.getString("LDAPInput.log.ReadRow"), outputRowData.toString());
 		
-			    if ((linesInput > 0) && (linesInput % Const.ROWS_UPDATE) == 0) logBasic("linenr " + linesInput);
+			    if ((linesInput > 0) && (linesInput % Const.ROWS_UPDATE) == 0) logBasic(Messages.getString("LDAPInput.log.LineRow") + linesInput);
 			     
 		} 
 		catch(Exception e)
 		{
-			logError("Exception", e);
+			logError(Messages.getString("LDAPInput.log.Exception"), e);
 			stopAll();
 			setErrors(1);
 		} 

@@ -413,7 +413,7 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException("Unable to load step info from XML", e);
+			throw new KettleXMLException(Messages.getString("LDAPInputMeta.UnableToLoadFromXML"), e);
 		}
 	}
 	
