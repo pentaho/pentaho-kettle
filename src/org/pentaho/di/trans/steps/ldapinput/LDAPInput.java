@@ -114,22 +114,19 @@ public class LDAPInput extends BaseStep implements StepInterface
 
 			// Try to connect to LDAP server
              ctx = connectServerLdap(hostname,username, password,port);
-
-		     
 		     if (ctx==null)
 		     {
-		    	 log.logError("Connection", "ERROR");
+		    	 logError(Messages.getString("LDAPInput.Error.UnableToConnectToServer"));
 		     }
 		     
-		     log.logBasic("Connection", "Connected to server [{0}] with username [{1]}",hostname,username);
-		     if (log.isDetailed()) log.logDetailed("Class", "Class name [{0}]",ctx.getClass().getName());
+		     logBasic(Messages.getString("LDAPInput.ConnectedToServer.Message",hostname,username));
+		     if (log.isDetailed()) logDetailed(Messages.getString("LDAPInput.ClassUsed.Message",ctx.getClass().getName()));
 		     // Get the schema tree root
 		     DirContext schema = ctx.getSchema("");
 		     
-		     if (log.isDetailed()) log.logDetailed("Schema tree root", ""+schema.list(""));
+		     if (log.isDetailed()) logDetailed(Messages.getString("LDAPInput.SchemaList.Message",""+schema.list("")));
 		     
- 
-		     SearchControls controls = new SearchControls();
+ 		     SearchControls controls = new SearchControls();
 		     controls.setCountLimit(meta.getRowLimit());
 		     //controls.setTimeLimit(0);
 		    
@@ -144,9 +141,7 @@ public class LDAPInput extends BaseStep implements StepInterface
 				 Attribute attr = attrs.get("namingContexts");
 				  
 				 searchbase=attr.get().toString();
-				 if (log.isDetailed())  log.logBasic("Search Base","Search Base found [{0}]",searchbase );
-				 
-	
+				 if (log.isDetailed()) logBasic(Messages.getString("LDAPInput.SearchBaseFound",searchbase) );
 		     } 
 		
 	         controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
@@ -241,7 +236,7 @@ public class LDAPInput extends BaseStep implements StepInterface
 		} 
 		catch(Exception e)
 		{
-			log.logError("Exception", e.getMessage());
+			logError("Exception", e);
 			stopAll();
 			setErrors(1);
 		} 

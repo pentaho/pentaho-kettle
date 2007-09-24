@@ -101,7 +101,6 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 	private TextVar      wInclRownumField;
 	private FormData     fdlInclRownumField, fdInclRownumField;
 	
-	
 	private Label        wlLimit;
 	private Text         wLimit;
 	private FormData     fdlLimit, fdLimit;
@@ -1026,6 +1025,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 	
 	private void ok()
 	{
+		stepname = wStepname.getText();
         try
         {
             getInfo(input);
