@@ -28,13 +28,23 @@ public class WebServer
     private String hostname;
     private int port;
 
-    public WebServer(TransformationMap transformationMap, String hostname, int port) throws Exception
+    public WebServer(TransformationMap transformationMap, String hostname, int port, boolean join) throws Exception
     {
         this.transformationMap = transformationMap;
         this.hostname = hostname;
         this.port = port;
-        
+
         startServer();
+        
+        if (join) {
+            server.join();
+        }
+    }
+
+    
+    public WebServer(TransformationMap transformationMap, String hostname, int port) throws Exception
+    {
+      this(transformationMap, hostname, port, true);
     }
 
     public Server getServer()
@@ -109,7 +119,6 @@ public class WebServer
         createListeners();
         
         server.start();
-        server.join();
     }
 
     public void stopServer() {
