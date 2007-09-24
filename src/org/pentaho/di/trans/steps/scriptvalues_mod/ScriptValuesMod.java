@@ -27,6 +27,8 @@ package org.pentaho.di.trans.steps.scriptvalues_mod;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.Hashtable;
+import java.util.Map;
 
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Script;
@@ -34,6 +36,7 @@ import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 import org.pentaho.di.compatibility.Row;
 import org.pentaho.di.compatibility.Value;
+import org.pentaho.di.compatibility.ValueUsedListener;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
@@ -286,15 +289,31 @@ public class ScriptValuesMod extends BaseStep implements StepInterface, ScriptVa
         // Keep an index...
         int outputIndex = rowMeta.size();
         
+        // Keep track of the changed values...
+        //
+        final Map<Integer, Value> usedRowValues;
+        
+        if (meta.isCompatible()) {
+        	usedRowValues = new Hashtable<Integer, Value>();
+        }
+        else {
+        	usedRowValues = null;
+        }
+        
         try
         {
-
             try
             {
             	if (meta.isCompatible()) {
                 	Row v2Row = RowMeta.createOriginalRow(rowMeta, row);
                 	Scriptable jsV2Row = Context.toObject(v2Row, data.scope);
                     data.scope.put("row", data.scope, jsV2Row); //$NON-NLS-1$
+                    v2Row.getUsedValueListeners().add(new ValueUsedListener() {
+							public void valueIsUsed(int index, Value value) {
+								usedRowValues.put(index, value);
+							}
+						}
+                    );
             	}
             	else {
 	                Scriptable jsrow = Context.toObject(row, data.scope);
@@ -381,6 +400,15 @@ public class ScriptValuesMod extends BaseStep implements StepInterface, ScriptVa
 	                	ValueMetaInterface valueMeta = rowMeta.getValueMeta(data.fields_used[i]);
                 		outputRow[data.fields_used[i]] = valueMeta.getValueData(data.values_used[i]);
 	                }
+	                
+	                // Grab the variables in the "row" object too.
+	                //
+	                for (Integer index : usedRowValues.keySet()) {
+	                	Value value = usedRowValues.get(index);
+	                	ValueMetaInterface valueMeta = rowMeta.getValueMeta(index);
+	                	outputRow[index] = valueMeta.getValueData(value);
+	                }
+	                
                 }
                 
             }

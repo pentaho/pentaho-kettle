@@ -59,13 +59,14 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable
     /** Ignore this row? */
 	private boolean ignore;
 	
+	private List<ValueUsedListener> usedValueListeners = new ArrayList<ValueUsedListener>();
+	
 	/**
 	 * Create a new empty row (with 0 values)
 	 */
 	public Row()
 	{
 		ignore=false;
-		// logdate=null;
 	}
 
 	/**
@@ -93,7 +94,15 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable
 	 */
 	public Value getValue(int index)
 	{
-		return list.get(index);
+		Value value = list.get(index); 
+		
+		// Fire off the used value listeners
+		//
+		for (ValueUsedListener listener : usedValueListeners) {
+			listener.valueIsUsed(index, value);
+		}
+		
+		return value;
 	}
 
 	/**
@@ -963,4 +972,18 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable
             throw new RuntimeException(Messages.getString("Row.ErrorDeserializing"), e); //$NON-NLS-1$
         }
     }
+
+	/**
+	 * @return the usedValueListeners
+	 */
+	public List<ValueUsedListener> getUsedValueListeners() {
+		return usedValueListeners;
+	}
+
+	/**
+	 * @param usedValueListeners the usedValueListeners to set
+	 */
+	public void setUsedValueListeners(List<ValueUsedListener> usedValueListeners) {
+		this.usedValueListeners = usedValueListeners;
+	}
 }
