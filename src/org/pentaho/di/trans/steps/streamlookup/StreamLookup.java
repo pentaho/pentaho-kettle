@@ -272,9 +272,9 @@ public class StreamLookup extends BaseStep implements StepInterface
 			}
 		}
 		
-		if (add==null) // nothing was found, unknown code: add null-values
+		if (add==null) // nothing was found, unknown code: add the specified default value...
 		{
-			add=new Object[meta.getValue().length];
+			add=data.nullIf;
 		} 
 		
         return RowDataUtil.addRowData(row, rowMeta.size(), add);
