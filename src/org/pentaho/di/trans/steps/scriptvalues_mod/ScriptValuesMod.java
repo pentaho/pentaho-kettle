@@ -185,7 +185,13 @@ public class ScriptValuesMod extends BaseStep implements StepInterface, ScriptVa
 	                    data.scope.put(valueMeta.getName(), data.scope, jsarg);
                 	}
                 	else {
-                		Scriptable jsarg = Context.toObject(valueData, data.scope);
+                		Scriptable jsarg;
+                		if (valueData!=null) {
+                			jsarg = Context.toObject(valueData, data.scope);
+                		}
+                		else {
+                			jsarg = null;
+                		}
 	                    data.scope.put(valueMeta.getName(), data.scope, jsarg);
                 	}
                 }
@@ -307,7 +313,13 @@ public class ScriptValuesMod extends BaseStep implements StepInterface, ScriptVa
 	                    data.scope.put(valueMeta.getName(), data.scope, jsarg);
                     }
                     else {
-	                    Scriptable jsarg = Context.toObject(valueData, data.scope);
+	                    Scriptable jsarg;
+	                    if (valueData!=null) {
+	                    	jsarg = Context.toObject(valueData, data.scope);
+	                    }
+	                    else {
+	                    	jsarg = null;
+	                    }
 	                    data.scope.put(valueMeta.getName(), data.scope, jsarg);
                     }
                 }
