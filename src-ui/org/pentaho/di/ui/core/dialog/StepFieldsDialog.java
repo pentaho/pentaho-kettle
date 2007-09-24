@@ -36,6 +36,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.dialog.Messages;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -97,6 +98,7 @@ public class StepFieldsDialog extends Dialog
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
+		shell.setImage(GUIResource.getInstance().getImageTransGraph());
 		shell.setText(Messages.getString("StepFieldsDialog.Title"));
 		
 		int margin = Const.MARGIN;

@@ -44,6 +44,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
+import org.pentaho.di.ui.core.gui.GUIResource;
 
 
 /**
@@ -106,6 +107,7 @@ public class SelectRowDialog extends Dialog
 		if (title==null) title = Messages.getString("SelectRowDialog.Title");
 
 		shell.setLayout(formLayout);
+		shell.setImage(GUIResource.getInstance().getImageTransGraph());
 		shell.setText(title);
 		
 		int margin = Const.MARGIN;
