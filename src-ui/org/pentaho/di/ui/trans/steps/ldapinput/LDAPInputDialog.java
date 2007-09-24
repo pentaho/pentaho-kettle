@@ -821,13 +821,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
     		DirContext ctx = connectServerLdap(hostname,username, password,port);
 			
 		     
-		     log.logBasic("Connection", "Connected to server [{0}]",hostname);
-		     log.logBasic("Class", "Class name [{0}]",ctx.getClass().getName());
-		     // Get the schema tree root
-		     DirContext schema = ctx.getSchema("");
-		     
-		     if (log.isDetailed()) log.logDetailed("Schema tree root", ""+schema.list(""));
-		      
+		     log.logBasic("Connection", "Connected to server [{0}]",hostname);	      
 		     
 		     SearchControls controls = new SearchControls();
 	         controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
