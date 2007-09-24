@@ -26,9 +26,8 @@ import java.util.Hashtable;
 import javax.naming.Context;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
-import javax.naming.directory.Attributes;
 import javax.naming.directory.Attribute;
-import javax.naming.directory.BasicAttribute;
+import javax.naming.directory.Attributes;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.InitialDirContext;
 import javax.naming.directory.SearchControls;
@@ -96,7 +95,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 	
 	private Label        wlusingAuthentication;
 	private Button       wusingAuthentication;
-	private FormData     fdlusingAuthentication, fdusingAuthentication;
+	private FormData     fdlusingAuthentication;
 
 	private Label        wlInclRownumField;
 	private TextVar      wInclRownumField;
@@ -837,26 +836,26 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 	         results = ctx.search(searchbase,filter, controls);
 	        
 	        // Get all attributes
-	        SearchResult searchAttr = (SearchResult) results.next();
+	        SearchResult searchAttr = results.next();
 	        
 	        Attributes listattributes = searchAttr.getAttributes(); 
 	       
-	        NamingEnumeration ne = listattributes.getAll();
+	        NamingEnumeration<? extends Attribute> ne = listattributes.getAll();
 		   
-	        BasicAttribute Attr = null;
+	        Attribute attr = null;
 	        
 	        while (ne.hasMore()) 
 	        {
-	        	Attr = (BasicAttribute) ne.next();
+	        	attr = ne.next();
 	    	    
-	    		String fieldName = Attr.getID();
+	    		String fieldName = attr.getID();
 				
 				// Get Column Name
 	            TableItem item = new TableItem(wFields.table, SWT.NONE);
 	            item.setText(1, fieldName);
 	            item.setText(2, fieldName);
 	            
-	            String attributeValue=Attr.getID();
+	            String attributeValue=attr.getID();
 	            // Try to get the Type
 	            if(IsDate(attributeValue))
         		{
