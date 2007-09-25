@@ -57,7 +57,7 @@ import org.apache.commons.vfs.FileType;
 public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryInterface
 {
 	private String zipFilename;
-	public int afterzip;
+	public int afterunzip;
 	private String wildcard;
 	private String wildcardexclude;
 	private String targetdirectory;
@@ -69,7 +69,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 	{
 		super(n, "");
 		zipFilename=null;
-		afterzip=0;
+		afterunzip=0;
 		wildcard=null;
 		wildcardexclude=null;
 		targetdirectory=null;
@@ -105,7 +105,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 		retval.append("      ").append(XMLHandler.addTagValue("wildcardexclude",  wildcardexclude));
 		retval.append("      ").append(XMLHandler.addTagValue("targetdirectory",  targetdirectory));
 		retval.append("      ").append(XMLHandler.addTagValue("movetodirectory",  movetodirectory));
-		retval.append("      ").append(XMLHandler.addTagValue("afterzip",  afterzip));
+		retval.append("      ").append(XMLHandler.addTagValue("afterunzip",  afterunzip));
 		retval.append("      ").append(XMLHandler.addTagValue("addfiletoresult",  addfiletoresult));
 		return retval.toString();
 	}
@@ -117,7 +117,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 		{
 			super.loadXML(entrynode, databases);
 			zipFilename = XMLHandler.getTagValue(entrynode, "zipfilename");
-			afterzip        = Const.toInt(XMLHandler.getTagValue(entrynode, "afterzip"), -1);
+			afterunzip        = Const.toInt(XMLHandler.getTagValue(entrynode, "afterunzip"), -1);
 
     		wildcard = XMLHandler.getTagValue(entrynode, "wildcard");
 			wildcardexclude = XMLHandler.getTagValue(entrynode, "wildcardexclude");
@@ -140,7 +140,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 		{
 			super.loadRep(rep, id_jobentry, databases);
 			zipFilename = rep.getJobEntryAttributeString(id_jobentry, "zipfilename");
-			afterzip=(int) rep.getJobEntryAttributeInteger(id_jobentry, "afterzip");
+			afterunzip=(int) rep.getJobEntryAttributeInteger(id_jobentry, "afterunzip");
 			wildcard = rep.getJobEntryAttributeString(id_jobentry, "wildcard");
 			wildcardexclude = rep.getJobEntryAttributeString(id_jobentry, "wildcardexclude");
 			targetdirectory = rep.getJobEntryAttributeString(id_jobentry, "targetdirectory");
@@ -164,7 +164,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 			super.saveRep(rep, id_job);
 			
 			rep.saveJobEntryAttribute(id_job, getID(), "zipfilename", zipFilename);
-			rep.saveJobEntryAttribute(id_job, getID(), "afterzip", afterzip);
+			rep.saveJobEntryAttribute(id_job, getID(), "afterunzip", afterunzip);
 
 			rep.saveJobEntryAttribute(id_job, getID(), "wildcard", wildcard);
 			rep.saveJobEntryAttribute(id_job, getID(), "wildcardexclude", wildcardexclude);
@@ -219,14 +219,14 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 							
 							// If user want to move zip files after process
 							// movetodirectory must be provided 
-							if((afterzip==2) && (Const.isEmpty(movetodirectory)))
+							if((afterunzip==2) && (Const.isEmpty(movetodirectory)))
 							{
 								log.logError(Messages.getString("JobUnZip.Error.Label"), Messages.getString("JobUnZip.MoveToDirectoryEmpty.Label"));
 							}
 							else
 							{
 								boolean move_tofolder=false;
-								if(afterzip==2)
+								if(afterunzip==2)
 								{
 									movetodir = KettleVFS.getFileObject(realMovetodirectory);
 									
@@ -334,7 +334,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 									 System.gc();
 									  
 									  // Unzip done...
-									  if (afterzip==1)
+									  if (afterunzip==1)
 									  {
 										  // delete zip file
 										  boolean deleted = fileObject.delete();
@@ -349,7 +349,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 											log.logDebug(toString(), Messages.getString("JobUnZip.File_Deleted.Label",realZipfilename));
 										  
 									  }
-									  else if(afterzip == 2)
+									  else if(afterunzip == 2)
 									  {
 											// Move File	
 											try

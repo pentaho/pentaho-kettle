@@ -89,9 +89,9 @@ public class JobEntryUnZipDialog extends Dialog implements JobEntryDialogInterfa
 	private TextVar wWildcardExclude;
 	private FormData fdlWildcardExclude, fdWildcardExclude;
 
-	private Label wlAfterZip;
-	private CCombo wAfterZip;
-	private FormData fdlAfterZip, fdAfterZip;
+	private Label wlAfterUnZip;
+	private CCombo wAfterUnZip;
+	private FormData fdlAfterUnZip, fdAfterUnZip;
 
 	private SelectionAdapter lsDef;
 	
@@ -297,36 +297,30 @@ public class JobEntryUnZipDialog extends Dialog implements JobEntryDialogInterfa
 
 		
 
-		//After Zipping
-		wlAfterZip = new Label(shell, SWT.RIGHT);
-		wlAfterZip.setText(Messages.getString("JobUnZip.AfterZip.Label"));
-		props.setLook(wlAfterZip);
-		fdlAfterZip = new FormData();
-		fdlAfterZip.left = new FormAttachment(0, 0);
-		fdlAfterZip.right = new FormAttachment(middle, 0);
-		fdlAfterZip.top = new FormAttachment(wWildcardExclude, margin);
-		wlAfterZip.setLayoutData(fdlAfterZip);
-		wAfterZip = new CCombo(shell, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
-		wAfterZip.add(Messages.getString("JobUnZip.Do_Nothing_AfterZip.Label"));
-		wAfterZip.add(Messages.getString("JobUnZip.Delete_Files_AfterZip.Label"));
-		wAfterZip.add(Messages.getString("JobUnZip.Move_Files_AfterZip.Label"));
+		//After UnZipping
+		wlAfterUnZip = new Label(shell, SWT.RIGHT);
+		wlAfterUnZip.setText(Messages.getString("JobUnZip.AfterUnZip.Label"));
+		props.setLook(wlAfterUnZip);
+		fdlAfterUnZip = new FormData();
+		fdlAfterUnZip.left = new FormAttachment(0, 0);
+		fdlAfterUnZip.right = new FormAttachment(middle, 0);
+		fdlAfterUnZip.top = new FormAttachment(wWildcardExclude, margin);
+		wlAfterUnZip.setLayoutData(fdlAfterUnZip);
+		wAfterUnZip = new CCombo(shell, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
+		wAfterUnZip.add(Messages.getString("JobUnZip.Do_Nothing_AfterUnZip.Label"));
+		wAfterUnZip.add(Messages.getString("JobUnZip.Delete_Files_AfterUnZip.Label"));
+		wAfterUnZip.add(Messages.getString("JobUnZip.Move_Files_AfterUnZip.Label"));
 
-		wAfterZip.select(0); // +1: starts at -1
+		wAfterUnZip.select(0); // +1: starts at -1
 
-		props.setLook(wAfterZip);
-		fdAfterZip= new FormData();
-		fdAfterZip.left = new FormAttachment(middle, 0);
-		fdAfterZip.top = new FormAttachment(wWildcardExclude, margin);
-		fdAfterZip.right = new FormAttachment(100, 0);
-		wAfterZip.setLayoutData(fdAfterZip);
+		props.setLook(wAfterUnZip);
+		fdAfterUnZip= new FormData();
+		fdAfterUnZip.left = new FormAttachment(middle, 0);
+		fdAfterUnZip.top = new FormAttachment(wWildcardExclude, margin);
+		fdAfterUnZip.right = new FormAttachment(100, 0);
+		wAfterUnZip.setLayoutData(fdAfterUnZip);
 
-		fdAfterZip = new FormData();
-		fdAfterZip.left = new FormAttachment(middle, 0);
-		fdAfterZip.top = new FormAttachment(wWildcardExclude, margin);
-		fdAfterZip.right = new FormAttachment(100, 0);
-		wAfterZip.setLayoutData(fdAfterZip);
-
-		wAfterZip.addSelectionListener(new SelectionAdapter()
+		wAfterUnZip.addSelectionListener(new SelectionAdapter()
 		{
 			public void widgetSelected(SelectionEvent e)
 			{
@@ -341,7 +335,7 @@ public class JobEntryUnZipDialog extends Dialog implements JobEntryDialogInterfa
 		props.setLook(wlMovetoDirectory);
 		fdlMovetoDirectory = new FormData();
 		fdlMovetoDirectory.left = new FormAttachment(0, 0);
-		fdlMovetoDirectory.top = new FormAttachment(wAfterZip, margin);
+		fdlMovetoDirectory.top = new FormAttachment(wAfterUnZip, margin);
 		fdlMovetoDirectory.right = new FormAttachment(middle, -margin);
 		wlMovetoDirectory.setLayoutData(fdlMovetoDirectory);
 		wMovetoDirectory = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER, Messages
@@ -354,14 +348,14 @@ public class JobEntryUnZipDialog extends Dialog implements JobEntryDialogInterfa
 		wbMovetoDirectory.setText(Messages.getString("JobUnZip.BrowseFolders.Label"));
 		fdbMovetoDirectory=new FormData();
 		fdbMovetoDirectory.right= new FormAttachment(100, 0);
-		fdbMovetoDirectory.top  = new FormAttachment(wAfterZip, margin);
+		fdbMovetoDirectory.top  = new FormAttachment(wAfterUnZip, margin);
 		wbMovetoDirectory.setLayoutData(fdbMovetoDirectory);
 		
 		
 		wMovetoDirectory.addModifyListener(lsMod);
 		fdMovetoDirectory = new FormData();
 		fdMovetoDirectory.left = new FormAttachment(middle, 0);
-		fdMovetoDirectory.top = new FormAttachment(wAfterZip, margin);
+		fdMovetoDirectory.top = new FormAttachment(wAfterUnZip, margin);
 		fdMovetoDirectory.right = new FormAttachment(wbMovetoDirectory, -margin);
 		wMovetoDirectory.setLayoutData(fdMovetoDirectory);
 		
@@ -508,7 +502,7 @@ public class JobEntryUnZipDialog extends Dialog implements JobEntryDialogInterfa
 	{
 
 		jobEntry.setChanged();
-		if (wAfterZip.getSelectionIndex()==2)
+		if (wAfterUnZip.getSelectionIndex()==2)
 		{
 			wMovetoDirectory.setEnabled(true);
 			wbMovetoDirectory.setEnabled(true);
@@ -543,14 +537,14 @@ public class JobEntryUnZipDialog extends Dialog implements JobEntryDialogInterfa
 		if (jobEntry.getSourceDirectory()!= null) wTargetDirectory.setText( jobEntry.getSourceDirectory() );
 		if (jobEntry.getMoveToDirectory()!= null) wMovetoDirectory.setText( jobEntry.getMoveToDirectory() );
 
-		if (jobEntry.afterzip>=0)
+		if (jobEntry.afterunzip>=0)
 		{
-			wAfterZip.select(jobEntry.afterzip );
+			wAfterUnZip.select(jobEntry.afterunzip );
 		}
 
 		else
 		{
-			wAfterZip.select(0 ); // NOTHING
+			wAfterUnZip.select(0 ); // NOTHING
 		}
 		
 		wAddFileToResult.setSelection(jobEntry.isAddFileToResult());
@@ -577,7 +571,7 @@ public class JobEntryUnZipDialog extends Dialog implements JobEntryDialogInterfa
 		jobEntry.setMoveToDirectory(wMovetoDirectory.getText());
 		
 		
-		jobEntry.afterzip = wAfterZip.getSelectionIndex();
+		jobEntry.afterunzip = wAfterUnZip.getSelectionIndex();
 		
 		jobEntry.setAddFileToResult(wAddFileToResult.getSelection());
 	
