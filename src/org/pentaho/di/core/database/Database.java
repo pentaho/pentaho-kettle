@@ -3859,7 +3859,7 @@ public class Database implements VariableSpace
 		String schemaname = null;
 		if (databaseMeta.useSchemaNameForTableList()) schemaname = databaseMeta.getUsername().toUpperCase();
 
-		ArrayList<String> names = new ArrayList<String>();
+		List<String> names = new ArrayList<String>();
 		ResultSet alltables=null;
 		try
 		{
@@ -3867,8 +3867,13 @@ public class Database implements VariableSpace
 			while (alltables.next())
 			{
 				String table = alltables.getString("TABLE_NAME");
-                if (log.isRowLevel()) log.logRowlevel(toString(), "got table from meta-data: "+table);
-				names.add(table);
+				String schema = alltables.getString("TABLE_SCHEM");
+				if (Const.isEmpty(schema)) schema = alltables.getString("TABLE_CAT"); // retry for the catalog.
+				
+				String schemaTable = databaseMeta.getQuotedSchemaTableCombination(schema, table);
+				
+                if (log.isRowLevel()) log.logRowlevel(toString(), "got table from meta-data: "+schemaTable);
+				names.add(schemaTable);
 			}
 		}
 		catch(SQLException e)
@@ -3908,8 +3913,13 @@ public class Database implements VariableSpace
 			while (alltables.next())
 			{
 				String table = alltables.getString("TABLE_NAME");
-                if (log.isRowLevel()) log.logRowlevel(toString(), "got view from meta-data: "+table);
-				names.add(table);
+				String schema = alltables.getString("TABLE_SCHEM");
+				if (Const.isEmpty(schema)) schema = alltables.getString("TABLE_CAT"); // retry for the catalog.
+				
+				String schemaTable = databaseMeta.getQuotedSchemaTableCombination(schema, table);
+
+				if (log.isRowLevel()) log.logRowlevel(toString(), "got view from meta-data: "+schemaTable);
+				names.add(schemaTable);
 			}
 		}
 		catch(SQLException e)
@@ -3948,8 +3958,13 @@ public class Database implements VariableSpace
 			while (alltables.next())
 			{
 				String table = alltables.getString("TABLE_NAME");
-                if (log.isRowLevel()) log.logRowlevel(toString(), "got view from meta-data: "+table);
-				names.add(table);
+				String schema = alltables.getString("TABLE_SCHEM");
+				if (Const.isEmpty(schema)) schema = alltables.getString("TABLE_CAT"); // retry for the catalog.
+				
+				String schemaTable = databaseMeta.getQuotedSchemaTableCombination(schema, table);
+
+				if (log.isRowLevel()) log.logRowlevel(toString(), "got view from meta-data: "+schemaTable);
+				names.add(schemaTable);
 			}
 		}
 		catch(SQLException e)

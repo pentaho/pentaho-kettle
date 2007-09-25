@@ -47,8 +47,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.exception.KettleDatabaseException;
-import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.ui.spoon.wizards.RipDatabaseWizardPage1;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 
@@ -74,12 +72,6 @@ public class RipDatabaseWizardPage2 extends WizardPage
 	private Label     wlListSource, wlListDest;
 	
 	private Button    wAddOne, wAddAll, wRemoveAll, wRemoveOne;
-
-    /** @deprecated */
-    public RipDatabaseWizardPage2(String arg, LogWriter log, PropsUI props)
-    {
-        this(arg);
-    }
     
 	public RipDatabaseWizardPage2(String arg)
 	{
