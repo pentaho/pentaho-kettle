@@ -47,6 +47,7 @@ import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleStepLoaderException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
@@ -1044,8 +1045,8 @@ public class BaseStep extends Thread implements VariableSpace
             errorRowMeta.addRowMeta(add);
         }
         
-        Object[] errorRowData = new Object[errorRowMeta.size()];
-        System.arraycopy(row, 0, errorRowMeta, 0, rowMeta.size());
+        Object[] errorRowData = RowDataUtil.allocateRowData(errorRowMeta.size());
+        System.arraycopy(row, 0, errorRowData, 0, errorRowMeta.size());
         
         // Also add the error fields...
         stepErrorMeta.addErrorRowData(errorRowData, rowMeta.size(), nrErrors, errorDescriptions, fieldNames, errorCodes);

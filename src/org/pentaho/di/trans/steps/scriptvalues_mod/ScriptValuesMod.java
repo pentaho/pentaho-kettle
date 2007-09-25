@@ -31,6 +31,7 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import org.mozilla.javascript.Context;
+import org.mozilla.javascript.EvaluatorException;
 import org.mozilla.javascript.Script;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
@@ -736,9 +737,15 @@ public class ScriptValuesMod extends BaseStep implements StepInterface, ScriptVa
         }
         catch(KettleValueException e)
         {
+        	String location = null;
+        	if (e.getCause() instanceof EvaluatorException) {
+        		EvaluatorException ee = (EvaluatorException) e.getCause();
+        		location = "--> " + ee.lineNumber() + ":"+ ee.columnNumber(); // $NON-NLS-1$ $NON-NLS-2$  
+        	}
+        	
             if (getStepMeta().isDoingErrorHandling())
             {
-                putError(getInputRowMeta(), r, 1, e.getMessage(), null, "SCR-001");
+                putError(getInputRowMeta(), r, 1, e.getMessage()+Const.CR+location, null, "SCR-001");
             }
             else
             {

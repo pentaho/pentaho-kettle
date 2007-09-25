@@ -135,8 +135,10 @@ public class StepErrorMeta extends ChangedFlag implements XMLInterface, Cloneabl
         return xml.toString();
     }
     
-    public StepErrorMeta(Node node, List<StepMeta> steps)
+    public StepErrorMeta(VariableSpace variables, Node node, List<StepMeta> steps)
     {
+    	this.variables = variables;
+    	
         sourceStep = StepMeta.findStep(steps, XMLHandler.getTagValue(node, "source_step"));
         targetStep = StepMeta.findStep(steps, XMLHandler.getTagValue(node, "target_step"));
         enabled = "Y".equals( XMLHandler.getTagValue(node, "is_enabled") );
@@ -164,8 +166,10 @@ public class StepErrorMeta extends ChangedFlag implements XMLInterface, Cloneabl
         rep.saveStepAttribute(id_transformation, id_step, "step_error_handling_min_pct_rows",  minPercentRows);
     }
     
-    public StepErrorMeta(Repository rep, StepMeta stepMeta, List<StepMeta> steps) throws KettleException
+    public StepErrorMeta(VariableSpace variables, Repository rep, StepMeta stepMeta, List<StepMeta> steps) throws KettleException
     {
+    	this.variables = variables;
+    	
         sourceStep = stepMeta;
         targetStep = StepMeta.findStep( steps, rep.getStepAttributeString(stepMeta.getID(), "step_error_handling_target_step") );
         enabled = rep.getStepAttributeBoolean(stepMeta.getID(), "step_error_handling_is_enabled");
@@ -406,5 +410,4 @@ public class StepErrorMeta extends ChangedFlag implements XMLInterface, Cloneabl
     {
         this.minPercentRows = minRowsForPercent;
     }
-
 }

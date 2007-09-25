@@ -2361,7 +2361,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
                     String sourceStep = rep.getStepAttributeString(stepMeta.getID(), "step_error_handling_source_step");
                     if (sourceStep!=null)
                     {
-                        StepErrorMeta stepErrorMeta = new StepErrorMeta(rep, stepMeta, steps);
+                        StepErrorMeta stepErrorMeta = new StepErrorMeta(this, rep, stepMeta, steps);
                         stepErrorMeta.getSourceStep().setStepErrorMeta(stepErrorMeta); // a bit of a trick, I know.                        
                     }
                 }
@@ -2846,7 +2846,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
             for (int i=0;i<nrErrorHandlers;i++)
             {
                 Node stepErrorMetaNode = XMLHandler.getSubNodeByNr(errorHandlingNode, StepErrorMeta.XML_TAG, i);
-                StepErrorMeta stepErrorMeta = new StepErrorMeta(stepErrorMetaNode, steps);
+                StepErrorMeta stepErrorMeta = new StepErrorMeta(this, stepErrorMetaNode, steps);
                 stepErrorMeta.getSourceStep().setStepErrorMeta(stepErrorMeta); // a bit of a trick, I know.
             }
 

@@ -856,6 +856,10 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 		this.compatible = compatible;
 	}
 	
+	public boolean supportsErrorHandling() {
+		return true;
+	}
+	
     public String getDialogClassName() 
     {
     	return "org.pentaho.di.ui.trans.steps.scriptvalues_mod.ScriptValuesModDialog";
