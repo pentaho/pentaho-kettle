@@ -70,12 +70,12 @@ public class Const
 	/**
 	 * print update every ... lines
 	 */
-	public static final int ROWS_UPDATE = 5000;
+	public static final int ROWS_UPDATE = 50000;
 
 	/**
 	 * Size of rowset: bigger = faster for large amounts of data
 	 */
-	public static final int ROWS_IN_ROWSET = 1000;
+	public static final int ROWS_IN_ROWSET = 10000;
 
 	/**
 	 * Fetch size in rows when querying a database

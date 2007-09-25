@@ -338,10 +338,12 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 		colinfo[1] = new ColumnInfo(Messages.getString("XMLInputDialog.Files.Wildcard.Column"),
 				ColumnInfo.COLUMN_TYPE_TEXT, false);
 
+		colinfo[0].setUsingVariables(true);
 		colinfo[1].setToolTip(Messages.getString("XMLInputDialog.Files.Wildcard.Tooltip"));
 
-		wFilenameList = new TableView(transMeta, wFileComp, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, colinfo, 2,
-				lsMod, props);
+		wFilenameList = new TableView(transMeta, wFileComp, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, colinfo, 2, lsMod, props);
+		
+		
 		props.setLook(wFilenameList);
 		fdFilenameList = new FormData();
 		fdFilenameList.left = new FormAttachment(middle, 0);

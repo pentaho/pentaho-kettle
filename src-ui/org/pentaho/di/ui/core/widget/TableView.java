@@ -1220,6 +1220,7 @@ public class TableView extends Composite
 	{
 		row.setText(colnr, getTextWidgetValue(colnr));
 		text.dispose();
+		table.setFocus();
 						
 		String after_edit[] = getItemText(row);
 		checkChanged(new String[][] { before_edit }, new String[][] { after_edit }, new int[] { rownr });

@@ -105,7 +105,7 @@ public class TextVar extends Composite
         props.setLook(wText);
         wText.addModifyListener(getModifyListenerTooltipText(wText));
         SelectionAdapter lsVar = VariableButtonListenerFactory.getSelectionAdapter(this, wText, getCaretPositionInterface, insertTextInterface, space);
-        wText.addKeyListener(getControlSpaceKeyListener(space, wText, lsVar));
+        wText.addKeyListener(getControlSpaceKeyListener(space, wText, lsVar, getCaretPositionInterface, insertTextInterface));
         
         FormData fdText = new FormData();
         fdText.top   = new FormAttachment(0, 0);
@@ -169,8 +169,13 @@ public class TextVar extends Composite
             }
         };
     }
-    
+
     public static final KeyListener getControlSpaceKeyListener(final VariableSpace space, final Text textField, final SelectionListener lsVar)
+    {
+    	return getControlSpaceKeyListener(space, textField, lsVar, null, null);
+    }
+    
+    public static final KeyListener getControlSpaceKeyListener(final VariableSpace space, final Text textField, final SelectionListener lsVar, final GetCaretPositionInterface getCaretPositionInterface, final InsertTextInterface insertTextInterface)
     {
         return new KeyAdapter()
         {
@@ -180,6 +185,10 @@ public class TextVar extends Composite
                 if (e.character == ' ' && (( e.stateMask&SWT.CONTROL)!=0) && (( e.stateMask&SWT.ALT)==0) ) 
                 { 
                 	e.doit = false;
+                	
+                	final int position;
+                	if (getCaretPositionInterface!=null) position=getCaretPositionInterface.getCaretPosition();
+                	else position = -1;
                 	
                 	// Drop down a list of variables...
                 	//
@@ -203,11 +212,8 @@ public class TextVar extends Composite
             		list.addSelectionListener(new SelectionAdapter() {
             			// Enter or double-click: picks the variable
             			//
-						public synchronized void widgetDefaultSelected(SelectionEvent arg0) {
-							if (shell.isDisposed()) return;
-							if (list.getSelectionCount()<=0) return;
-							textField.insert("${"+list.getSelection()[0]+"}");
-							shell.dispose();
+						public synchronized void widgetDefaultSelected(SelectionEvent e) {
+							applyChanges(shell, list, textField, position, insertTextInterface);
 						}
 						
 						// Select a variable name: display the value in a tool tip
@@ -228,11 +234,8 @@ public class TextVar extends Composite
             		list.addKeyListener(new KeyAdapter() {
 					
 						public synchronized void keyPressed(KeyEvent e) {
-							if (shell.isDisposed()) return;
-							if (e.keyCode == SWT.CR) {
-								if (list.getSelectionCount()<=0) return;
-								textField.insert("${"+list.getSelection()[0]+"}");
-								shell.dispose();
+							if (e.keyCode==SWT.CR && ((e.keyCode&SWT.CONTROL)==0) && ((e.keyCode&SWT.SHIFT)==0) ) { 
+								applyChanges(shell, list, textField, position, insertTextInterface);
 							}
 						}
 					
@@ -242,6 +245,20 @@ public class TextVar extends Composite
                 };
             }
         };
+    }
+    
+    private static final void applyChanges(Shell shell, List list, Text textField, int position, InsertTextInterface insertTextInterface) {
+    	String extra = "${"+list.getSelection()[0]+"}";
+    	if (insertTextInterface!=null) {
+    		insertTextInterface.insertText(extra, position);
+    	}
+    	else {
+			if (textField.isDisposed()) return;
+			
+			if (list.getSelectionCount()<=0) return;
+			textField.insert(extra);
+    	}
+		if (!shell.isDisposed()) shell.dispose();
     }
     
     public static final String[] getVariableNames(VariableSpace space) {
