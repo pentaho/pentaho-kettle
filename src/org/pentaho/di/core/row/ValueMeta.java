@@ -535,14 +535,27 @@ public class ValueMeta implements ValueMetaInterface
 
     private synchronized String convertNumberToString(Double number) throws KettleValueException
     {
-        if (number==null) return null;
+        if (number==null) {
+        	if (!outputPaddingEnabled || length<1) {
+        		return null;
+        	}
+        	else {
+        		// Return strings padded to the specified length...
+        		// This is done for backward compatibility with 2.5.x 
+        		// We just optimized this a bit...
+        		//
+        		String[] emptyPaddedStrings = Const.getEmptyPaddedStrings();
+        		if (length<emptyPaddedStrings.length) {
+        			return emptyPaddedStrings[length];
+        		}
+        		else {
+        			return Const.rightPad("", length);
+        		}
+        	}
+        }
         
         try
         {
-            if (Const.isEmpty(conversionMask) && Const.isEmpty(decimalSymbol) && Const.isEmpty(groupingSymbol)) 
-            {
-                return number.toString();
-            }
             return getDecimalFormat().format(number);
         }
         catch(Exception e)
@@ -608,24 +621,108 @@ public class ValueMeta implements ValueMetaInterface
             if (!Const.isEmpty(groupingSymbol)) decimalFormatSymbols.setGroupingSeparator( groupingSymbol.charAt(0) );
             if (!Const.isEmpty(decimalSymbol)) decimalFormatSymbols.setDecimalSeparator( decimalSymbol.charAt(0) );
             decimalFormat.setDecimalFormatSymbols(decimalFormatSymbols);
-            if (!Const.isEmpty(conversionMask)) decimalFormat.applyPattern(conversionMask);
+            
+            // Apply the conversion mask if we have one...
+            //
+            if (!Const.isEmpty(conversionMask)) {
+            	decimalFormat.applyPattern(conversionMask);
+            }
+            else {
+            	switch(type) {
+            	case TYPE_INTEGER:
+	            	{
+		            	if (length<1) {
+		            		decimalFormat.applyPattern(" ###############0;-###############0"); // Same as before version 3.0
+		            	}
+		            	else {
+		    				StringBuffer integerPattern=new StringBuffer();
+		    				
+		    				// First the format for positive integers...
+		    				//
+		    				integerPattern.append(" ");
+		    				for (int i=0;i<getLength();i++) integerPattern.append('0'); // all zeroes.
+		    				integerPattern.append(";");
+		    				
+		    				// Then the format for the negative numbers...
+		    				//
+		    				integerPattern.append("-");
+		    				for (int i=0;i<getLength();i++) integerPattern.append('0'); // all zeroes.
+		    				decimalFormat.applyPattern(integerPattern.toString());
+		            	}
+	            	}
+	            	break;
+            	case TYPE_NUMBER:
+	            	{
+	            		if (length<1) {
+	            			decimalFormat.applyPattern(" ##########0.0########;-#########0.0########");
+	            		}
+	            		else {
+	    					StringBuffer numberPattern=new StringBuffer();
+
+	    					// First do the format for positive numbers...
+	    					//
+	    					numberPattern.append(' '); // to compensate for minus sign.
+	    					if (precision<0)  // Default: two decimals
+	    					{
+	    						for (int i=0;i<length;i++) numberPattern.append('0');
+	    						numberPattern.append(".00"); // for the .00
+	    					}
+	    					else  // Floating point format   00001234,56  --> (12,2)
+	    					{
+	    						for (int i=0;i<=length;i++) numberPattern.append('0'); // all zeroes.
+	    						int pos = length-precision+1;
+	    						if (pos>=0 && pos <numberPattern.length())
+	    						{
+	    							numberPattern.setCharAt(length-precision+1, '.'); // one 'comma'
+	    						}
+	    					}
+
+	    					// Now do the format for negative numbers...
+	    					//
+	    					StringBuffer negativePattern = new StringBuffer(numberPattern);
+	    					negativePattern.setCharAt(0, '-');
+
+	    					numberPattern.append(";");
+	    					numberPattern.append(negativePattern);
+	    					
+	    					// Apply the pattern...
+	    					//
+	    					decimalFormat.applyPattern(numberPattern.toString());
+	            		}
+	            	}
+            	}
+
+            }
             
             decimalFormatChanged=false;
         }
         return decimalFormat;
     }
-
-    private synchronized String convertIntegerToString(Long number) throws KettleValueException
+   
+    private synchronized String convertIntegerToString(Long integer) throws KettleValueException
     {
-        if (number==null) return null;
+        if (integer==null) {
+        	if (!outputPaddingEnabled || length<1) {
+        		return null;
+        	}
+        	else {
+        		// Return strings padded to the specified length...
+        		// This is done for backward compatibility with 2.5.x 
+        		// We just optimized this a bit...
+        		//
+        		String[] emptyPaddedStrings = Const.getEmptyPaddedStrings();
+        		if (length<emptyPaddedStrings.length) {
+        			return emptyPaddedStrings[length];
+        		}
+        		else {
+        			return Const.rightPad("", length);
+        		}
+        	}
+        }
 
         try
         {
-            if (Const.isEmpty(conversionMask)) 
-            {
-                return Long.toString(number); // number.toString() is not backward compatible.
-            }
-            return getDecimalFormat().format(number);
+            return getDecimalFormat().format(integer);
         }
         catch(Exception e)
         {
@@ -852,10 +949,6 @@ public class ValueMeta implements ValueMetaInterface
     {
         try
         {
-            if (object==null) // NULL 
-            {
-                return null;
-            }
             String string;
             
             switch(type)

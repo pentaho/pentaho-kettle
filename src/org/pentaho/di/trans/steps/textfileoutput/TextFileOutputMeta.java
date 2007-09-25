@@ -782,6 +782,10 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
                 {
             		v.setStringEncoding(getEncoding());
         		}
+                
+                // enable output padding by default to be compatible with v2.5.x
+                //
+                v.setOutputPaddingEnabled(true);
 			}
 		}
 	}

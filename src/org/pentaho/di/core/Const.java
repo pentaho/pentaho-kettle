@@ -426,6 +426,9 @@ public class Const
 	 * The packages are comma (,) delimited and the base specification is in the kettle-config.xml file
 	 */
 	public static final String KETTLE_PLUGIN_PACKAGES = "KETTLE_PLUGIN_PACKAGES";	
+	
+    private static String[] emptyPaddedSpacesStrings;
+
 
     /** 
      *  rounds double f to any number of places after decimal point
@@ -1773,4 +1776,13 @@ public class Const
 		return dir + FILE_SEPARATOR + file;
 	}
 
+	public static String[] getEmptyPaddedStrings() {
+		if (emptyPaddedSpacesStrings==null) {
+			 emptyPaddedSpacesStrings = new String[250];
+			 for (int i=0;i<emptyPaddedSpacesStrings.length;i++) {
+				 emptyPaddedSpacesStrings[i] = rightPad("", i);
+			 }
+		}
+		return emptyPaddedSpacesStrings;
+	}
 }
