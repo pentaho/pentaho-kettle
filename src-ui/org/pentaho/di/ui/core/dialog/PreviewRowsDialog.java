@@ -239,6 +239,16 @@ public class PreviewRowsDialog extends Dialog
                     if (i==0) item = wFields.table.getItem(i);
                     else item = new TableItem(wFields.table, SWT.NONE);
                     
+                    // Display the correct line item...
+                    //
+                    String strNr;
+                    try {
+						strNr = wFields.getNumberColumn().getValueMeta().getString(new Long(i+1));
+					} catch (Exception e) {
+						strNr = Integer.toString(i+1);
+					}
+					item.setText(0, strNr);
+                    
                     Object[] row = (Object[]) buffer.get(i);
 
                     for (int c = 0; c < rowMeta.size(); c++)

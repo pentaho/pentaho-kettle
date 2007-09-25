@@ -528,7 +528,8 @@ public class SpoonJobDelegate extends SpoonDelegate
 		if (spoon.getRepository() != null)
 		{
 			jobMeta.setDirectory(repdir);
-		} else
+		} 
+		else
 		{
 			jobMeta.setFilename(Const.createFilename(directory, jobname, Const.STRING_JOB_DEFAULT_EXT));
 		}
@@ -599,7 +600,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 					String fromstepname = Messages.getString("Spoon.RipDB.Monitor.FromStep.Name") + tables[i] + "]"; //$NON-NLS-1$ //$NON-NLS-2$
 					TableInputMeta tii = new TableInputMeta();
 					tii.setDatabaseMeta(sourceDbInfo);
-					tii.setSQL("SELECT * FROM " + sourceDbInfo.quoteField(tables[i])); //$NON-NLS-1$
+					tii.setSQL("SELECT * FROM " + tables[i]); //$NON-NLS-1$ // It's already quoted!
 
 					String fromstepid = StepLoader.getInstance().getStepPluginID(tii);
 					StepMeta fromstep = new StepMeta(fromstepid, fromstepname, tii);

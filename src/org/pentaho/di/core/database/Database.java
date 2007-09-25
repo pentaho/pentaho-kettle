@@ -3856,6 +3856,10 @@ public class Database implements VariableSpace
 		
 	public String[] getTablenames() throws KettleDatabaseException
 	{
+		return getTablenames(false);
+	}
+	public String[] getTablenames(boolean includeSchema) throws KettleDatabaseException
+	{
 		String schemaname = null;
 		if (databaseMeta.useSchemaNameForTableList()) schemaname = databaseMeta.getUsername().toUpperCase();
 
@@ -3870,7 +3874,9 @@ public class Database implements VariableSpace
 				String schema = alltables.getString("TABLE_SCHEM");
 				if (Const.isEmpty(schema)) schema = alltables.getString("TABLE_CAT"); // retry for the catalog.
 				
-				String schemaTable = databaseMeta.getQuotedSchemaTableCombination(schema, table);
+				String schemaTable;
+				if (includeSchema) schemaTable = databaseMeta.getQuotedSchemaTableCombination(schema, table);
+				else schemaTable = table;
 				
                 if (log.isRowLevel()) log.logRowlevel(toString(), "got table from meta-data: "+schemaTable);
 				names.add(schemaTable);
@@ -3897,8 +3903,12 @@ public class Database implements VariableSpace
 		return names.toArray(new String[names.size()]);
 	}
 	
-	public String[] getViews()
-		throws KettleDatabaseException
+	public String[] getViews() throws KettleDatabaseException
+	{
+		return getViews(false);
+	}
+	
+	public String[] getViews(boolean includeSchema) throws KettleDatabaseException
 	{
 		if (!databaseMeta.supportsViews()) return new String[] {};
 
@@ -3916,8 +3926,10 @@ public class Database implements VariableSpace
 				String schema = alltables.getString("TABLE_SCHEM");
 				if (Const.isEmpty(schema)) schema = alltables.getString("TABLE_CAT"); // retry for the catalog.
 				
-				String schemaTable = databaseMeta.getQuotedSchemaTableCombination(schema, table);
-
+				String schemaTable;
+				if (includeSchema) schemaTable = databaseMeta.getQuotedSchemaTableCombination(schema, table);
+				else schemaTable = table;
+				
 				if (log.isRowLevel()) log.logRowlevel(toString(), "got view from meta-data: "+schemaTable);
 				names.add(schemaTable);
 			}
@@ -3945,6 +3957,11 @@ public class Database implements VariableSpace
 
 	public String[] getSynonyms() throws KettleDatabaseException
 	{
+		return getViews(false);
+	}
+	
+	public String[] getSynonyms(boolean includeSchema) throws KettleDatabaseException
+	{
 		if (!databaseMeta.supportsSynonyms()) return new String[] {};
 		
 		String schemaname = null;
@@ -3961,8 +3978,10 @@ public class Database implements VariableSpace
 				String schema = alltables.getString("TABLE_SCHEM");
 				if (Const.isEmpty(schema)) schema = alltables.getString("TABLE_CAT"); // retry for the catalog.
 				
-				String schemaTable = databaseMeta.getQuotedSchemaTableCombination(schema, table);
-
+				String schemaTable;
+				if (includeSchema) schemaTable = databaseMeta.getQuotedSchemaTableCombination(schema, table);
+				else schemaTable = table;
+				
 				if (log.isRowLevel()) log.logRowlevel(toString(), "got view from meta-data: "+schemaTable);
 				names.add(schemaTable);
 			}

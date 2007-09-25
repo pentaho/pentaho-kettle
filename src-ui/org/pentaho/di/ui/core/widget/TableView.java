@@ -2832,5 +2832,19 @@ public class TableView extends Composite
     {
     	return table;
     }
+
+	/**
+	 * @return the numberColumn
+	 */
+	public ColumnInfo getNumberColumn() {
+		return numberColumn;
+	}
+
+	/**
+	 * @param numberColumn the numberColumn to set
+	 */
+	public void setNumberColumn(ColumnInfo numberColumn) {
+		this.numberColumn = numberColumn;
+	}
 	
 };
