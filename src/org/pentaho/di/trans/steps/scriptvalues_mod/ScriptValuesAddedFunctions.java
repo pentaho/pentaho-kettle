@@ -88,7 +88,8 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
         "rpad", "week", "month", "year", "str2RegExp","fileExists", "touch", "isRegExp", "date2str",
         "str2date", "sendMail", "replace", "decode", "isNum","isDate", "lower", "upper", "str2num",
         "num2str", "Alert", "setEnvironmentVar", "getEnvironmentVar", "LoadScriptFile", "LoadScriptFromTab", 
-        "print", "println", "resolveIP", "trim", "substr", "getVariable", "setVariable" ,"LuhnCheck","getDigitsOnly"
+        "print", "println", "resolveIP", "trim", "substr", "getVariable", "setVariable" ,"LuhnCheck","getDigitsOnly",
+        "indexOf",
         };
 	
 	// This is only used for reading, so no concurrency problems.
@@ -173,6 +174,30 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 		return returnCode;
 	}
 	
+	
+	public static int indexOf(Context actualContext, Scriptable actualObject, Object[] ArgList, Function FunctionContext){
+
+	    int returnIndex=-1;
+	    
+		if ( ArgList.length==2 || ArgList.length==3 )
+		{
+			if (!isNull(ArgList) && !isUndefined(ArgList))
+			{
+			    String string =  Context.toString(ArgList[0]);
+			    String subString =  Context.toString(ArgList[1]);
+			    
+			    int fromIndex = 0;
+			    if (ArgList.length==3) fromIndex = (int) Math.round(Context.toNumber(ArgList[2]));
+			    returnIndex = string.indexOf(subString, fromIndex);
+		    }			    
+		}
+		else
+		{
+			throw Context.reportRuntimeError("The function call indexOf requires 2 or 3 arguments");
+		}
+		return returnIndex;
+	}
+
     
 	  
 	public static Object getTransformationName(Context actualContext, Scriptable actualObject, Object[] ArgList, Function FunctionContext){

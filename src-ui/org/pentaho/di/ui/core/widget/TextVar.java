@@ -203,7 +203,8 @@ public class TextVar extends Composite
             		list.addSelectionListener(new SelectionAdapter() {
             			// Enter or double-click: picks the variable
             			//
-						public void widgetDefaultSelected(SelectionEvent arg0) {
+						public synchronized void widgetDefaultSelected(SelectionEvent arg0) {
+							if (shell.isDisposed()) return;
 							if (list.getSelectionCount()<=0) return;
 							textField.insert("${"+list.getSelection()[0]+"}");
 							shell.dispose();
@@ -226,7 +227,8 @@ public class TextVar extends Composite
             		
             		list.addKeyListener(new KeyAdapter() {
 					
-						public void keyPressed(KeyEvent e) {
+						public synchronized void keyPressed(KeyEvent e) {
+							if (shell.isDisposed()) return;
 							if (e.keyCode == SWT.CR) {
 								if (list.getSelectionCount()<=0) return;
 								textField.insert("${"+list.getSelection()[0]+"}");

@@ -1157,7 +1157,9 @@ Alert(getVariable(strVarName, ""));</sample>
       <Arguments>
          <argument id="1">var,var,var</argument>
       </Arguments>
-   </jsFunction>  
+   </jsFunction>
+   
+     
    	<jsFunction name="getVariable">
       <help>Returns Value of the given PDI variable or the default.</help>
       <sample>// Retrieves the value of a given Kettle/Pentaho Variable
@@ -1225,7 +1227,54 @@ Alert(getDigitsOnly(str1));
       </Arguments>
    </jsFunction>
    
+	<jsFunction name="LuhnCheck">
+      <help>Check if the given Value is a valid Card Number using the Luhn algorithm.</help>
+      <sample>// Returns true, if the given value is a valid card number 
+// 
+// Usage:
+// LuhnCheck(var);
+// 1: var - The Variable to check.
+//
+// 2007-09-11
+//
+var str1 = "4444333322221111";      
+Alert(str1 + ": " + LuhnCheck(str1));
 
+var str2 = "4444333322221110";      
+Alert(str2 + ": " + LuhnCheck(str2));
+      </sample>
+      <type>4</type>
+      <Arguments>
+         <argument id="1">var</argument>
+      </Arguments>
+   </jsFunction>
+   
+   
+   <jsFunction name="indexOf">
+     <help>Returns the index of a substring within a string of the first occurrence of the specified substring.</help>
+     <sample>// Perform the indexOf function
+// 
+// Usage:
+// indexOf(string, substring);
+// indexOf(string, substring, fromIndex);
+//
+// 2007-09-25
+//
+var str1= "Hello Pentaho!";
+var str2= indexOf(str1, "Pentaho");
+var str3= indexOf(str1, "o", 7);
+Alert("Input : " + str1);
+Alert("Index of 'Pentaho' + str2);
+Alert("index of 'o', search from position 7 : " + str3);
+</sample>
+      <type>0</type>
+      <Arguments>
+         <argument id="1">var,var</argument>
+         <argument id="2">var,var,var</argument>
+      </Arguments>
+   </jsFunction>   
+   
+   
 </jsFunctions>
 
 
