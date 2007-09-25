@@ -152,7 +152,7 @@ public class MergeJoin extends BaseStep implements StepInterface
             data.two_dummy=new Object[data.twoMeta.size()];
         }
 
-        if (log.isRowLevel()) logRowlevel(Messages.getString("MergeJoin.Log.DataInfo",data.one+"")+data.two); //$NON-NLS-1$ //$NON-NLS-2$
+        if (log.isRowLevel()) logRowlevel(Messages.getString("MergeJoin.Log.DataInfo",data.oneMeta.getString(data.one)+"")+data.twoMeta.getString(data.two)); //$NON-NLS-1$ //$NON-NLS-2$
 
         /*
          * We can stop processing if any of the following is true:
@@ -193,7 +193,7 @@ public class MergeJoin extends BaseStep implements StepInterface
         	 *   Read the next record from both streams
         	 *   If any of the keys match, this means we have duplicates. We therefore
         	 *     Create an array of all rows that have the same keys
-        	 *     Push a cartesian product of the two arrays to output
+        	 *     Push a Cartesian product of the two arrays to output
         	 *   Else
         	 *     Just push the combined rowset to output
         	 */ 
@@ -215,12 +215,11 @@ public class MergeJoin extends BaseStep implements StepInterface
             	if (compare1 == 0) // First stream has duplicates
             	{
             		data.ones.add(data.one_next);
-            		boolean done=false;
-	            	while(!done && !isStopped())
+            		for(;!isStopped();)
 	            	{
 	                	data.one_next = getRowFrom(data.oneRowSet);
 	                	if (0 != ((data.one_next == null) ? -1 : data.oneMeta.compare(data.one, data.one_next, data.keyNrs1, data.keyNrs1))) {
-	                		done=true;
+	                		break;
 	                	}
 	                	data.ones.add(data.one_next);
 	            	}
@@ -230,12 +229,11 @@ public class MergeJoin extends BaseStep implements StepInterface
             	if (compare2 == 0) // Second stream has duplicates
             	{
             		data.twos.add(data.two_next);
-            		boolean done=false;
-	            	while(!done && !isStopped())
+	            	for(;!isStopped();)
 	            	{
 	                	data.two_next = getRowFrom(data.twoRowSet);
 	                	if (0 != ((data.two_next == null) ? -1 : data.twoMeta.compare(data.two, data.two_next, data.keyNrs2, data.keyNrs2))) {
-	                		done=true;
+	                		break;
 	                	}
 	                	data.twos.add(data.two_next);
 	            	}
@@ -260,7 +258,7 @@ public class MergeJoin extends BaseStep implements StepInterface
         	data.two = data.two_next;
         	break;
         case 1:
-        	logDebug("First stream has missing key");
+        	if (log.isDebug()) logDebug("First stream has missing key");
         	/*
         	 * First stream is greater than the second stream. This means:
         	 *   a) This key is missing in the first stream
@@ -317,7 +315,7 @@ public class MergeJoin extends BaseStep implements StepInterface
         	}
         	break;
         case -1:
-        	logDebug("Second stream has missing key");
+        	if (log.isDebug()) logDebug("Second stream has missing key");
         	/*
         	 * Second stream is greater than the first stream. This means:
         	 *   a) This key is missing in the second stream
