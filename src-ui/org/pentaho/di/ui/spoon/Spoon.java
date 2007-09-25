@@ -3483,10 +3483,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         else
 		{
 			saved = saveXMLFile(meta);
-                       delegates.tabs.renameTabs();
+            delegates.tabs.renameTabs();
 		}
-
-		
 
 		refreshTree();
 
@@ -3496,10 +3494,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	public boolean saveXMLFile()
 	{
 		TransMeta transMeta = getActiveTransformation();
-        if (transMeta!=null) return saveXMLFile( (EngineMetaInterface) transMeta);
+        if (transMeta!=null) return saveXMLFile( transMeta );
 
 		JobMeta jobMeta = getActiveJob();
-        if (jobMeta!=null) return saveXMLFile( (EngineMetaInterface) jobMeta);
+        if (jobMeta!=null) return saveXMLFile( jobMeta );
 
 		return false;
 	}
@@ -3510,7 +3508,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		boolean saved = false;
 
 		FileDialog dialog = new FileDialog(shell, SWT.SAVE);
-		// dialog.setFilterPath("C:\\Projects\\kettle\\source\\");
 		String extensions[] = meta.getFilterExtensions();
 		dialog.setFilterExtensions(extensions);
 		dialog.setFilterNames(meta.getFilterNames());
@@ -3521,11 +3518,17 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			boolean ending = false;
 			for (int i = 0; i < extensions.length - 1; i++)
 			{
-                if (fname.endsWith(extensions[i].substring(1))) ending=true;
+				String[] parts = extensions[i].split(";");
+				for (int j=0;j<parts.length;j++) {
+					if (fname.endsWith(parts[j].substring(1))) {
+						ending=true;
+					}
+				}
 			}
             if (fname.endsWith(meta.getDefaultExtension())) ending=true;
 			if (!ending)
 			{
+				if (!meta.getDefaultExtension().startsWith(".") && !fname.endsWith(".")) fname += ".";
 				fname += meta.getDefaultExtension();
 			}
 			// See if the file already exists...
