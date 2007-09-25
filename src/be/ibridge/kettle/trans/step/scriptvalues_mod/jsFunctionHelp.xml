@@ -1172,4 +1172,29 @@ Alert(getDigitsOnly(str1));
       </Arguments>
    </jsFunction>
    
+   
+   <jsFunction name="indexOf">
+     <help>Returns the index of a substring within a string of the first occurrence of the specified substring.</help>
+     <sample>// Perform the indexOf function
+// 
+// Usage:
+// indexOf(string, substring);
+// indexOf(string, substring, fromIndex);
+//
+// 2007-09-25
+//
+var str1= "Hello Pentaho!";
+var str2= indexOf(str1, "Pentaho");
+var str3= indexOf(str1, "o", 7);
+Alert("Input : " + str1);
+Alert("Index of 'Pentaho' + str2);
+Alert("index of 'o', search from position 7 : " + str3);
+</sample>
+      <type>0</type>
+      <Arguments>
+         <argument id="1">var,var</argument>
+         <argument id="2">var,var,var</argument>
+      </Arguments>
+   </jsFunction>   
+   
 </jsFunctions>
