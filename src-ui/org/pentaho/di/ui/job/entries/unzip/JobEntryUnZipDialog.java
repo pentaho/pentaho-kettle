@@ -321,11 +321,6 @@ public class JobEntryUnZipDialog extends JobEntryDialog implements JobEntryDialo
 		fdAfterUnZip.right = new FormAttachment(100, 0);
 		wAfterUnZip.setLayoutData(fdAfterUnZip);
 
-		fdAfterUnZip = new FormData();
-		fdAfterUnZip.left = new FormAttachment(middle, 0);
-		fdAfterUnZip.top = new FormAttachment(wWildcardExclude, margin);
-		fdAfterUnZip.right = new FormAttachment(100, 0);
-		wAfterUnZip.setLayoutData(fdAfterUnZip);
 
 		wAfterUnZip.addSelectionListener(new SelectionAdapter()
 		{
