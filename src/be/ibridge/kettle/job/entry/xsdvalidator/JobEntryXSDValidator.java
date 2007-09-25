@@ -183,21 +183,21 @@ public class JobEntryXSDValidator extends JobEntryBase implements Cloneable, Job
 				if ( xmlfile.exists() && xsdfile.exists() )
 				{	
 					
-					SchemaFactory factorytXSDValidator_1 = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
-
+					SchemaFactory factoryXSDValidator = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
+					
 					// Get XSD File
 					File XSDFile = new File(KettleVFS.getFilename(xsdfile));
-					Schema SchematXSD = factorytXSDValidator_1.newSchema(XSDFile);
+					Schema SchematXSD = factoryXSDValidator.newSchema(XSDFile);
 					
 					Validator XSDValidator = SchematXSD.newValidator();
 					
 					// Get XML File
-					File xmlfiletXSDValidator_1 = new File(	KettleVFS.getFilename(xmlfile));
+					File xmlfiletXSDValidator = new File(KettleVFS.getFilename(xmlfile));
 					
-					Source sourcetXSDValidator_1 = new StreamSource(xmlfiletXSDValidator_1);
+					Source sourcetXSDValidator = new StreamSource(xmlfiletXSDValidator);
 					
 	
-					XSDValidator.validate(sourcetXSDValidator_1);
+					XSDValidator.validate(sourcetXSDValidator);
 						
 
 					// Everything is OK

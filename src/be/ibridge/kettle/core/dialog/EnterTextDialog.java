@@ -31,6 +31,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import be.ibridge.kettle.core.GUIResource;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.DescriptionInterface;
@@ -137,6 +138,7 @@ public class EnterTextDialog extends Dialog
 
         shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN |  (modal?SWT.APPLICATION_MODAL:SWT.NONE));
         props.setLook(shell);
+		shell.setImage(GUIResource.getInstance().getImageSpoon());
 
         FormLayout formLayout = new FormLayout();
         formLayout.marginWidth = Const.FORM_MARGIN;

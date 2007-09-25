@@ -115,6 +115,8 @@ import be.ibridge.kettle.trans.step.xmloutput.XMLOutputMeta;
 import be.ibridge.kettle.trans.step.orabulkloader.OraBulkLoaderMeta;
 import be.ibridge.kettle.trans.step.accessinput.AccessInputMeta;
 import be.ibridge.kettle.trans.step.regexeval.RegexEvalMeta;
+import be.ibridge.kettle.trans.step.xsdvalidator.XsdValidatorMeta;
+import be.ibridge.kettle.trans.step.xslt.XsltMeta;
 
 
 public class BaseStep extends Thread
@@ -277,6 +279,12 @@ public class BaseStep extends Thread
 
 			new StepPluginMeta(RegexEvalMeta.class, "RegexEval", Messages.getString("BaseStep.TypeLongDesc.RegexEval"), Messages
 			.getString("BaseStep.TypeTooltipDesc.RegexEval"), "RGE.png", CATEGORY_SCRIPTING), 
+
+			new StepPluginMeta(XsdValidatorMeta.class, "XsdValodator", Messages.getString("BaseStep.TypeLongDesc.XsdValidator"), Messages
+			.getString("BaseStep.TypeTooltipDesc.XsdValidator"), "XSD.png", CATEGORY_TRANSFORM), 
+
+			new StepPluginMeta(XsltMeta.class, "Xslt", Messages.getString("BaseStep.TypeLongDesc.Xslt"), Messages
+			.getString("BaseStep.TypeTooltipDesc.Xslt"), "XSLT.png", CATEGORY_TRANSFORM), 
 		
 
         };
