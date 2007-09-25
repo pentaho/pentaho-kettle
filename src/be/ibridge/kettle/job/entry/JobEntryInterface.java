@@ -57,6 +57,7 @@ import be.ibridge.kettle.job.entry.xsdvalidator.JobEntryXSDValidator;
 import be.ibridge.kettle.job.entry.dtdvalidator.JobEntryDTDValidator;
 import be.ibridge.kettle.job.entry.ftpput.JobEntryFTPPUT;
 import be.ibridge.kettle.job.entry.deletefiles.JobEntryDeleteFiles;
+import be.ibridge.kettle.job.entry.unzip.JobEntryUnZip;
 import be.ibridge.kettle.repository.Repository;
 
 
@@ -103,6 +104,7 @@ public interface JobEntryInterface
 	public static final int TYPE_JOBENTRY_DTD_VALIDATOR= 30;
 	public static final int TYPE_JOBENTRY_FTPPUT= 31;
 	public static final int TYPE_JOBENTRY_DELETE_FILES= 32;
+	public static final int TYPE_JOBENTRY_UNZIP= 33;
 
 	public final static String typeCode[] =
 		{
@@ -139,6 +141,7 @@ public interface JobEntryInterface
 			"DTD_VALIDATOR",
 			"FTP_PUT",
 			"DELETE_FILES",
+			"UNZIP",
 		};
 
 	public final static String typeDesc[] =
@@ -176,6 +179,7 @@ public interface JobEntryInterface
 			Messages.getString("JobEntry.DTDValidator.TypeDesc"),
 			Messages.getString("JobEntry.FTPPUT.TypeDesc"),
 			Messages.getString("JobEntry.DeleteFiles.TypeDesc"),
+			Messages.getString("JobEntry.Unzip.TypeDesc"),
 		};
 
 	public final static String icon_filename[] = 
@@ -213,6 +217,7 @@ public interface JobEntryInterface
 			"DTD.png",
 			"PFP.png",
 			"DFS.png",
+			"UZP.png",
 		};
 	
 	public final static String type_tooltip_desc[] = 
@@ -250,6 +255,7 @@ public interface JobEntryInterface
 			Messages.getString("JobEntry.DTDValidator.Tooltip"),
 			Messages.getString("JobEntry.FTPPUT.Tooltip"),
 			Messages.getString("JobEntry.DeleteFiles.Tooltip"),
+			Messages.getString("JobEntry.Unzip.Tooltip"),
  		};
 	
 	public final static Class type_classname[] = 
@@ -287,6 +293,7 @@ public interface JobEntryInterface
 			JobEntryDTDValidator.class,
 			JobEntryFTPPUT.class,
 			JobEntryDeleteFiles.class,
+			JobEntryUnZip.class,
 		};
 
 	public Result execute(Result prev_result, int nr, Repository rep, Job parentJob) throws KettleException;
