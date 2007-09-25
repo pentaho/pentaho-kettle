@@ -912,6 +912,10 @@ public class BaseStep extends Thread implements VariableSpace
                 	//
 	                if (partitionNrRowSetList==null) {
 	        			partitionNrRowSetList = new RowSet[outputRowSets.size()];
+	        			
+	        			// The distribution is calculated during transformation split
+	        			// The slave-step-copy distribution is passed onto the slave transformation
+	        			//
 		        		SlaveStepCopyPartitionDistribution distribution = transMeta.getSlaveStepCopyPartitionDistribution();
 		        		
 		        		String nextPartitionSchemaName = TransSplitter.createPartitionSchemaNameFromTarget( nextStepPartitioningMeta.getPartitionSchema().getName() );
@@ -919,7 +923,20 @@ public class BaseStep extends Thread implements VariableSpace
 		        		for (RowSet outputRowSet : outputRowSets) {
 		        			try
 		        			{
-			        			int partNr = distribution.getPartition(outputRowSet.getRemoteSlaveServerName(), nextPartitionSchemaName, outputRowSet.getDestinationStepCopy());
+		        				int partNr;
+				        		if (distribution.getDistribution().isEmpty()) {
+				        			// This can happen if we are not running clustered at all, but locally.
+				        			// However, the distribution is obviously also a lot easier.
+				        			// Target step copy 0 equals to partition nr 0, etc.
+				        			//
+				        			partNr = outputRowSet.getDestinationStepCopy();
+				        		}
+				        		else {
+				        			// Look at the pre-determined distribution, decided at "transformation split" time.
+				        			//
+				        			partNr = distribution.getPartition(outputRowSet.getRemoteSlaveServerName(), nextPartitionSchemaName, outputRowSet.getDestinationStepCopy());
+				        		}
+			        			
 			        			if (partNr<0) {
 			        				throw new KettleStepException("Unable to find partition using rowset data, slave="+outputRowSet.getRemoteSlaveServerName()+", partition schema="+nextStepPartitioningMeta.getPartitionSchema().getName()+", copy="+outputRowSet.getDestinationStepCopy());
 			        			}

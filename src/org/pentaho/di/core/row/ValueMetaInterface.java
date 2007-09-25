@@ -5,6 +5,7 @@ import java.io.DataOutputStream;
 import java.math.BigDecimal;
 import java.net.SocketTimeoutException;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
@@ -130,6 +131,7 @@ public interface ValueMetaInterface extends Cloneable
     public String getCurrencySymbol();
     public void setCurrencySymbol(String currencySymbol);
     
+    public SimpleDateFormat getDateFormat();
     public DecimalFormat getDecimalFormat();
 
     public String   getStringEncoding();
@@ -357,6 +359,13 @@ public interface ValueMetaInterface extends Cloneable
      */
     public Object convertData(ValueMetaInterface meta2, Object data2) throws KettleValueException;
 
+    /**
+     * Convert an object to the data type specified in the storage metadata
+     * @param data The data
+     * @return The data converted to the storage data type
+     * @throws KettleValueException in case there is a conversion error.
+     */
+    public Object convertDataUsingStorageMetaData(Object data) throws KettleValueException;
     /**
      * Convert the specified string to the data type specified in this object.
      * @param pol the string to be converted

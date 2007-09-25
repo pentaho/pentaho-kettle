@@ -582,6 +582,15 @@ public class ValueMeta implements ValueMetaInterface
     
     public synchronized SimpleDateFormat getDateFormat()
     {
+    	// If we have a Date that is represented as a String
+    	// In that case we can set the format of the original Date on the String value metadata in the form of a storage metadata object.
+    	// That way, we can always convert from Date to String and back without a problem, no matter how complex the format was.
+    	// As such, we should return the date SimpleDateFormat of the storage metadata.
+    	//
+    	if (storageMetadata!=null) {
+    		return storageMetadata.getDateFormat();
+    	}
+    	
         if (dateFormat==null || dateFormatChanged)
         {
         	// This may not become static as the class is not thread-safe!
@@ -612,6 +621,18 @@ public class ValueMeta implements ValueMetaInterface
 
     public synchronized DecimalFormat getDecimalFormat()
     {
+    	// If we have an Integer that is represented as a String
+    	// In that case we can set the format of the original Integer on the String value metadata in the form of a storage metadata object.
+    	// That way, we can always convert from Integer to String and back without a problem, no matter how complex the format was.
+    	// As such, we should return the decimal format of the storage metadata.
+    	//
+    	if (storageMetadata!=null) {
+    		return storageMetadata.getDecimalFormat();
+    	}
+    	
+    	// Calculate the decimal format as few times as possible.
+    	// That is because creating or changing a DecimalFormat object is very CPU hungry.
+    	//
         if (decimalFormat==null || decimalFormatChanged)
         {
             decimalFormat        = (DecimalFormat)NumberFormat.getInstance();
@@ -2344,6 +2365,37 @@ public class ValueMeta implements ValueMetaInterface
         case TYPE_BINARY    : return meta2.getBinary(data2);
         default: 
             throw new KettleValueException(toString()+" : I can't convert the specified value to data type : "+getType());
+        }
+    }
+
+    /**
+     * Convert an object to the data type specified in the storage metadata
+     * @param data The data
+     * @return The data converted to the storage data type
+     * @throws KettleValueException in case there is a conversion error.
+     */
+    public Object convertDataUsingStorageMetaData(Object data2) throws KettleValueException {
+    	if (storageMetadata==null) {
+    		throw new KettleValueException("API coding error: please specify a storage metadata before attempting to convert value "+name);
+    	}
+    	
+    	// Suppose we have an Integer 123, length 5
+    	// The string variation of this is " 00123"
+    	// To convert this back to an Integer we use the storage metadata
+    	// Specifically, in method convertStringToInteger() we consult the storageMetaData to get the correct conversion mask
+    	// That way we're always sure that a conversion works both ways.
+    	// 
+    	
+    	switch(storageMetadata.getType()) {
+        case TYPE_STRING    : return getString(data2);
+        case TYPE_INTEGER   : return getInteger(data2); 
+        case TYPE_NUMBER    : return getNumber(data2);
+        case TYPE_DATE      : return getDate(data2);
+        case TYPE_BIGNUMBER : return getBigNumber(data2);
+        case TYPE_BOOLEAN   : return getBoolean(data2);
+        case TYPE_BINARY    : return getBinary(data2);
+        default: 
+            throw new KettleValueException(toString()+" : I can't convert the specified value to data type : "+storageMetadata.getType());
         }
     }
 

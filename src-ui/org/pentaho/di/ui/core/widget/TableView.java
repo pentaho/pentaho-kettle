@@ -197,6 +197,9 @@ public class TableView extends Composite
 		clearUndo();
 		
         numberColumn = new ColumnInfo("#", ColumnInfo.COLUMN_TYPE_TEXT, true, true);
+        ValueMetaInterface numberColumnValueMeta = new ValueMeta("#", ValueMetaInterface.TYPE_INTEGER);
+        numberColumnValueMeta.setConversionMask("####0");
+        numberColumn.setValueMeta(numberColumnValueMeta);
         
 		lsUndo = new ModifyListener()
 			{
@@ -1101,7 +1104,12 @@ public class TableView extends Composite
             
             RowMetaInterface sourceRowMeta = rowMeta.clone();
             // Set it all to string...
-            for (int i=0;i<sourceRowMeta.size();i++) sourceRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);
+            // Also set the storage value metadata: this will allow us to convert back and forth without a problem.
+            //
+            for (int i=0;i<sourceRowMeta.size();i++) {
+            	sourceRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);
+            	sourceRowMeta.getValueMeta(i).setStorageMetadata(rowMeta.getValueMeta(i)); // Meaning: this string comes from an Integer/Number/Date/etc.
+            }
             
             // Now populate a list of data rows...
             //
@@ -1124,9 +1132,9 @@ public class TableView extends Composite
                 for (int j=0;j<table.getColumnCount();j++)
                 {
                     String data = item.getText(j);
-                    ValueMetaInterface targetValueMeta = rowMeta.getValueMeta(j+2);
+                    // ValueMetaInterface targetValueMeta = rowMeta.getValueMeta(j+2);
                     ValueMetaInterface sourceValueMeta = sourceRowMeta.getValueMeta(j+2);
-                    r[j+2] = targetValueMeta.convertData(sourceValueMeta, data);
+                    r[j+2] = sourceValueMeta.convertDataUsingStorageMetaData(data);
                 }
                 v.add(r);
             }
