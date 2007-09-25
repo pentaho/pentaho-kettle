@@ -45,7 +45,7 @@ import be.ibridge.kettle.trans.step.BaseStepDialog;
 
 
 /**
- * This dialog allows you to edit the Create File job entry settings.
+ * This dialog allows you to edit the Unzip job entry settings.
  *
  * @author Samatar Hassan
  * @since  25-09-2007
@@ -105,6 +105,9 @@ public class JobEntryUnZipDialog extends Dialog implements JobEntryDialogInterfa
 	
     private Button wbTargetDirectory;
     private FormData fdbTargetDirectory;
+    
+    private Button wbMovetoDirectory;
+    private FormData fdbMovetoDirectory;
 
 	private boolean changed;
 
@@ -327,7 +330,7 @@ public class JobEntryUnZipDialog extends Dialog implements JobEntryDialogInterfa
 		{
 			public void widgetSelected(SelectionEvent e)
 			{
-				AfterZipActivate();
+				AfterUnZipActivate();
 				
 			}
 		});
@@ -344,15 +347,26 @@ public class JobEntryUnZipDialog extends Dialog implements JobEntryDialogInterfa
 		wMovetoDirectory = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER, Messages
 			.getString("JobUnZip.MovetoDirectory.Tooltip"));
 		props.setLook(wMovetoDirectory);
+		
+	    // Browse folders button ...
+		wbMovetoDirectory=new Button(shell, SWT.PUSH| SWT.CENTER);
+		props.setLook(wbMovetoDirectory);
+		wbMovetoDirectory.setText(Messages.getString("JobUnZip.BrowseFolders.Label"));
+		fdbMovetoDirectory=new FormData();
+		fdbMovetoDirectory.right= new FormAttachment(100, 0);
+		fdbMovetoDirectory.top  = new FormAttachment(wAfterZip, margin);
+		wbMovetoDirectory.setLayoutData(fdbMovetoDirectory);
+		
+		
 		wMovetoDirectory.addModifyListener(lsMod);
 		fdMovetoDirectory = new FormData();
 		fdMovetoDirectory.left = new FormAttachment(middle, 0);
 		fdMovetoDirectory.top = new FormAttachment(wAfterZip, margin);
-		fdMovetoDirectory.right = new FormAttachment(100, 0);
+		fdMovetoDirectory.right = new FormAttachment(wbMovetoDirectory, -margin);
 		wMovetoDirectory.setLayoutData(fdMovetoDirectory);
 		
 		
-		  // fileresult grouping?
+		  // file result grouping?
         // ////////////////////////
         // START OF LOGGING GROUP///
         // /
@@ -445,6 +459,31 @@ public class JobEntryUnZipDialog extends Dialog implements JobEntryDialogInterfa
 			);
 			
 		
+		wbMovetoDirectory.addSelectionListener
+		(
+			new SelectionAdapter()
+			{
+				public void widgetSelected(SelectionEvent e)
+				{
+					DirectoryDialog ddialog = new DirectoryDialog(shell, SWT.OPEN);
+					if (wMovetoDirectory.getText()!=null)
+					{
+						ddialog.setFilterPath(StringUtil.environmentSubstitute(wMovetoDirectory.getText()) );
+					}
+					
+					 // Calling open() will open and run the dialog.
+			        // It will return the selected directory, or
+			        // null if user cancels
+			        String dir = ddialog.open();
+			        if (dir != null) {
+			          // Set the text box to the new selection
+			        	wMovetoDirectory.setText(dir);
+			        }
+					
+				}
+			}
+		);
+		
 		wName.addSelectionListener( lsDef );
 		wZipFilename.addSelectionListener( lsDef );
 
@@ -453,7 +492,7 @@ public class JobEntryUnZipDialog extends Dialog implements JobEntryDialogInterfa
 
 		getData();
 
-		AfterZipActivate();
+		AfterUnZipActivate();
 
 		BaseStepDialog.setSize(shell);
 
@@ -465,14 +504,20 @@ public class JobEntryUnZipDialog extends Dialog implements JobEntryDialogInterfa
 		return jobEntry;
 	}
 
-	public void AfterZipActivate()
+	public void AfterUnZipActivate()
 	{
 
 		jobEntry.setChanged();
 		if (wAfterZip.getSelectionIndex()==2)
+		{
 			wMovetoDirectory.setEnabled(true);
+			wbMovetoDirectory.setEnabled(true);
+		}
 		else
+		{
 			wMovetoDirectory.setEnabled(false);
+			wbMovetoDirectory.setEnabled(false);
+		}
 	}
 
     public void dispose()

@@ -16,7 +16,6 @@
 package be.ibridge.kettle.job.entry.unzip;
 
 import java.io.*;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -48,11 +47,11 @@ import org.apache.commons.vfs.FileType;
 
 
 /**
- * This defines a 'zip file' job entry. Its main use would be to 
- * zip files in a directory and process zipped files (deleted or move)
+ * This defines a 'unzip' job entry. Its main use would be to 
+ * unzip files in a directory
  * 
  * @author Samatar Hassan
- * @since 27-02-2007
+ * @since 25-09-2007
  *
  */
 public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryInterface
@@ -129,7 +128,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 		}
 		catch(KettleXMLException xe)
 		{
-			throw new KettleXMLException("Unable to load job entry of type 'zipfile' from XML node", xe);
+			throw new KettleXMLException("Unable to load job entry of type 'unzip' from XML node", xe);
 		}
 	}
 
@@ -153,7 +152,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 
 		catch(KettleException dbe)
 		{
-			throw new KettleException("Unable to load job entry of type 'zipfile' from the repository for id_jobentry="+id_jobentry, dbe);
+			throw new KettleException("Unable to load job entry of type 'unzip' from the repository for id_jobentry="+id_jobentry, dbe);
 		}
 	}
 	
@@ -175,7 +174,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException("Unable to save job entry of type 'zipfile' to the repository for id_job="+id_job, dbe);
+			throw new KettleException("Unable to save job entry of type 'unzip' to the repository for id_job="+id_job, dbe);
 		}
 	}
 
@@ -312,12 +311,27 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 								                    
 								                is.close();
 								                fos.close();
+								                
+								                if (addfiletoresult)
+												{
+								                	// Add file to result files name
+								                	ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL , KettleVFS.getFileObject(newfile), parentJob.getName(), toString());
+								                    result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
+												}
+								                
 											}    		
 										  }
   
 							          }
 
-									  zipfile.close();    
+									  zipfile.close();  
+									  
+									 // Here gc() is explicitly called if e.g. createfile is used in the same
+									 // job for the same file. The problem is that after creating the file the
+									 // file object is not properly garbaged collected and thus the file cannot
+									 // be deleted anymore. This is a known problem in the JVM.
+										
+									 System.gc();
 									  
 									  // Unzip done...
 									  if (afterzip==1)
