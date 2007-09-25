@@ -286,6 +286,16 @@ public class BaseStep extends Thread implements VariableSpace
 
     private int blockPointer;
     
+    
+    /**
+     * A flag to indicate that clustered partitioning was not yet initialized
+     */
+    private boolean clusteredPartitioningFirst;
+    
+    /**
+     * A flag to determine whether or not we are doing local or clustered (remote) par
+     */
+    private boolean clusteredPartitioning;
 
     /**
      * This is the base step that forms that basis for all steps. You can derive from this class to implement your own
@@ -320,7 +330,8 @@ public class BaseStep extends Thread implements VariableSpace
         }
 
         first = true;
-
+        clusteredPartitioningFirst=true;
+        
         stopped = new AtomicBoolean(false);;
         paused = new AtomicBoolean(false);;
         init = false;
@@ -404,44 +415,59 @@ public class BaseStep extends Thread implements VariableSpace
         //
     	SlaveStepCopyPartitionDistribution partitionDistribution = transMeta.getSlaveStepCopyPartitionDistribution();
     	
-        if (stepMeta.isPartitioned() && partitionDistribution!=null) 
+        if (stepMeta.isPartitioned()) 
         {
-        	String slaveServerName = getVariable(Const.INTERNAL_VARIABLE_SLAVE_SERVER_NAME);
-        	int stepCopyNr = stepcopy;
-        	
-        	// Look up the partition nr...
-        	// Set the partition ID (string) as well as the partition nr [0..size[
+        	// See if we are partitioning remotely
         	//
-        	PartitionSchema partitionSchema = stepMeta.getStepPartitioningMeta().getPartitionSchema();
-        	int partitionNr = partitionDistribution.getPartition(slaveServerName, partitionSchema.getName(), stepCopyNr);
-        	if (partitionNr>=0) {
+        	if (partitionDistribution!=null && !partitionDistribution.getDistribution().isEmpty())
+        	{
+	        	String slaveServerName = getVariable(Const.INTERNAL_VARIABLE_SLAVE_SERVER_NAME);
+	        	int stepCopyNr = stepcopy;
+	        	
+	        	// Look up the partition nr...
+	        	// Set the partition ID (string) as well as the partition nr [0..size[
+	        	//
+	        	PartitionSchema partitionSchema = stepMeta.getStepPartitioningMeta().getPartitionSchema();
+	        	int partitionNr = partitionDistribution.getPartition(slaveServerName, partitionSchema.getName(), stepCopyNr);
+	        	if (partitionNr>=0) {
+	        		String partitionNrString = new DecimalFormat("000").format(partitionNr);
+	        		setVariable(Const.INTERNAL_VARIABLE_STEP_PARTITION_NR, partitionNrString);
+	        		
+	        		if (partitionDistribution.getOriginalPartitionSchemas()!=null) {
+		        		// What is the partition schema name?
+		        		//
+		        		String partitionSchemaName = stepMeta.getStepPartitioningMeta().getPartitionSchema().getName();
+		
+		        		// Search the original partition schema in the distribution...
+		        		//
+		        		for (PartitionSchema originalPartitionSchema : partitionDistribution.getOriginalPartitionSchemas()) {
+		        			String slavePartitionSchemaName = TransSplitter.createSlavePartitionSchemaName(originalPartitionSchema.getName());
+		        			if (slavePartitionSchemaName.equals(partitionSchemaName)) {
+		        				PartitionSchema schema = (PartitionSchema) originalPartitionSchema.clone();
+		        				
+		        				// This is the one...
+		        				//
+		        				if (schema.isDynamicallyDefined()) {
+		        					schema.expandPartitionsDynamically(this.clusterSize, this);
+		        				}
+		        				
+		    	        		String partID = schema.getPartitionIDs().get(partitionNr);
+		    	        		setVariable(Const.INTERNAL_VARIABLE_STEP_PARTITION_ID, partID);
+		        				break;
+		        			}
+		        		}
+	        		}	
+	        	}
+        	}
+        	else 
+        	{
+        		// This is a locally partitioned step...
+        		//
+        		int partitionNr = stepcopy;
         		String partitionNrString = new DecimalFormat("000").format(partitionNr);
         		setVariable(Const.INTERNAL_VARIABLE_STEP_PARTITION_NR, partitionNrString);
-        		
-        		if (partitionDistribution.getOriginalPartitionSchemas()!=null) {
-	        		// What is the partition schema name?
-	        		//
-	        		String partitionSchemaName = stepMeta.getStepPartitioningMeta().getPartitionSchema().getName();
-	
-	        		// Search the original partition schema in the distribution...
-	        		//
-	        		for (PartitionSchema originalPartitionSchema : partitionDistribution.getOriginalPartitionSchemas()) {
-	        			String slavePartitionSchemaName = TransSplitter.createSlavePartitionSchemaName(originalPartitionSchema.getName());
-	        			if (slavePartitionSchemaName.equals(partitionSchemaName)) {
-	        				PartitionSchema schema = (PartitionSchema) originalPartitionSchema.clone();
-	        				
-	        				// This is the one...
-	        				//
-	        				if (schema.isDynamicallyDefined()) {
-	        					schema.expandPartitionsDynamically(this.clusterSize, this);
-	        				}
-	        				
-	    	        		String partID = schema.getPartitionIDs().get(partitionNr);
-	    	        		setVariable(Const.INTERNAL_VARIABLE_STEP_PARTITION_ID, partID);
-	        				break;
-	        			}
-	        		}
-        		}	
+        		String partitionID = stepMeta.getStepPartitioningMeta().getPartitionSchema().getPartitionIDs().get(partitionNr);
+        		setVariable(Const.INTERNAL_VARIABLE_STEP_PARTITION_ID, partitionID);
         	}
         }
         else if (!Const.isEmpty(partitionID))
@@ -902,12 +928,21 @@ public class BaseStep extends Thread implements VariableSpace
 
                 RowSet selectedRowSet = null;
                 
+                if (clusteredPartitioningFirst) {
+                	clusteredPartitioningFirst=false;
+                	
+                	// We are only running remotely if both the distribution is there AND if the distribution is actually contains something.
+                	//
+                	clusteredPartitioning = transMeta.getSlaveStepCopyPartitionDistribution()!=null && !transMeta.getSlaveStepCopyPartitionDistribution().getDistribution().isEmpty();
+                }
+                
         		// OK, we have a SlaveStepCopyPartitionDistribution in the transformation...
         		// We want to pre-calculate what rowset we're sending data to for which partition...
                 // It is only valid in clustering / partitioning situations.
                 // When doing a local partitioning, it is much simpler.
         		//
-                if (transMeta.getSlaveStepCopyPartitionDistribution()!=null) {
+                if (clusteredPartitioning) {
+                	
                 	// This next block is only performed once for speed...
                 	//
 	                if (partitionNrRowSetList==null) {
@@ -923,19 +958,9 @@ public class BaseStep extends Thread implements VariableSpace
 		        		for (RowSet outputRowSet : outputRowSets) {
 		        			try
 		        			{
-		        				int partNr;
-				        		if (distribution.getDistribution().isEmpty()) {
-				        			// This can happen if we are not running clustered at all, but locally.
-				        			// However, the distribution is obviously also a lot easier.
-				        			// Target step copy 0 equals to partition nr 0, etc.
-				        			//
-				        			partNr = outputRowSet.getDestinationStepCopy();
-				        		}
-				        		else {
-				        			// Look at the pre-determined distribution, decided at "transformation split" time.
-				        			//
-				        			partNr = distribution.getPartition(outputRowSet.getRemoteSlaveServerName(), nextPartitionSchemaName, outputRowSet.getDestinationStepCopy());
-				        		}
+		        				// Look at the pre-determined distribution, decided at "transformation split" time.
+			        			//
+				        		int partNr = distribution.getPartition(outputRowSet.getRemoteSlaveServerName(), nextPartitionSchemaName, outputRowSet.getDestinationStepCopy());
 			        			
 			        			if (partNr<0) {
 			        				throw new KettleStepException("Unable to find partition using rowset data, slave="+outputRowSet.getRemoteSlaveServerName()+", partition schema="+nextStepPartitioningMeta.getPartitionSchema().getName()+", copy="+outputRowSet.getDestinationStepCopy());
