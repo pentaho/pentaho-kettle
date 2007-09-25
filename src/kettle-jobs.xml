@@ -412,6 +412,17 @@
 		</tooltip>
 		<image-uri>ui/images/PFP.png</image-uri>
 	</job>
-	
+	<job id="UNZIP">
+		<type>
+			ognl:@org.pentaho.di.job.JobEntryType@UNZIP
+		</type>
+		<class-name>
+			org.pentaho.di.job.entries.unzip.JobEntryUnZip
+		</class-name>
+		<tooltip>
+			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.UnZip.Tooltip")
+		</tooltip>
+		<image-uri>ui/images/UZP.png</image-uri>
+	</job>
 	
 </jobs>

@@ -44,7 +44,8 @@ public enum JobEntryType
 	WRITE_TO_LOG(Messages.getString("JobEntry.WriteToLog.TypeDesc")),
 	COPY_FILES(Messages.getString("JobEntry.CopyFiles.TypeDesc")),
 	DTD_VALIDATOR(Messages.getString("JobEntry.DTDValidator.TypeDesc")),
-	FTP_PUT(Messages.getString("JobEntry.FTPPUT.TypeDesc"));
+	FTP_PUT(Messages.getString("JobEntry.FTPPUT.TypeDesc")),
+	UNZIP(Messages.getString("JobEntry.UnZip.TypeDesc"));
 	
 	private String description;
 	
