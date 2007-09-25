@@ -2258,17 +2258,17 @@ public class ValueMeta implements ValueMetaInterface
      * Convert the specified string to the data type specified in this object.
      * @param pol the string to be converted
      * @param convertMeta the metadata of the object (only string type) to be converted
-     * @param nullif set the object to null if pos equals nullif (IgnoreCase)
+     * @param nullIf set the object to null if pos equals nullif (IgnoreCase)
      * @param ifNull set the object to ifNull when pol is empty or null
      * @param trim_type the trim type to be used (ValueMetaInterface.TRIM_TYPE_XXX)
      * @return the object in the data type of this value metadata object
      * @throws KettleValueException in case there is a data conversion error
      */
-    public Object convertDataFromString(String pol, ValueMetaInterface convertMeta, String nullif, String ifNull, int trim_type) throws KettleValueException
+    public Object convertDataFromString(String pol, ValueMetaInterface convertMeta, String nullIf, String ifNull, int trim_type) throws KettleValueException
     {
         // null handling and conversion of value to null
         //
-		String null_value = nullif;
+		String null_value = nullIf;
 		if (null_value == null)
 		{
 			switch (convertMeta.getType())
@@ -2300,19 +2300,26 @@ public class ValueMeta implements ValueMetaInterface
 			}
 		}
 
-    	String nullCmp = Const.rightPad(new StringBuffer(null_value), pol.length());
-    	
-        if (Const.isEmpty(pol) || pol.equalsIgnoreCase(nullCmp))
-        {
-            if (ifNull!=null && ifNull.length()!=0)
-            {
-                pol = ifNull;
-            }
-        }
+    	// See if we need to convert a null value into a String
+		// For example, we might want to convert null into "Empty".
+    	//
+    	if (!Const.isEmpty(ifNull)) {
+    		// We only want to do these calculations IF we have an alternative.
+    		// 
+        	if (Const.isEmpty(pol)) {
+        		pol = ifNull;
+        	}
+        	else {
+        		String nullCmp = Const.rightPad(new StringBuffer(null_value), pol.length());
+        		if (pol.equalsIgnoreCase(nullCmp)) {
+        			pol = ifNull;
+        		}
+        	}
+    	}
         
-        if (pol == null || pol.length() == 0 || pol.equalsIgnoreCase(nullCmp)) 
+        if (Const.isEmpty(pol)) 
         {
-            return null;
+            return null_value;
         }
         
         // Trimming

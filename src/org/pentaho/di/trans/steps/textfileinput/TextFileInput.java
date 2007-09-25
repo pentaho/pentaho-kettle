@@ -548,7 +548,18 @@ public class TextFileInput extends BaseStep implements StepInterface
 					}
 
 					// Now add pol to the strings found!
-					strings[fieldnr]=pol;
+					try {
+						strings[fieldnr]=pol;
+					}
+					catch(ArrayIndexOutOfBoundsException e) {
+						// In case we didn't allocate enough space.
+						// This happens when you have less header values specified than there are actual values in the rows.
+						// As this is "the exception" we catch and resize here.
+						//
+						String[] newStrings = new String[strings.length];
+						for (int x=0;x<strings.length;x++) newStrings[x] = strings[x];
+						strings = newStrings;
+					}
 
 					pos = next + 1;
 					fieldnr++;
