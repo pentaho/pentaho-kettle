@@ -301,6 +301,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 	private static final String FILE_WELCOME_PAGE = Const.safeAppendDirectory(BasePropertyHandler.getProperty("documentationDirBase","docs/"), Messages.getString("Spoon.Title.STRING_DOCUMENT_WELCOME")); // "docs/English/welcome/kettle_document_map.html";
 
+	//private static final String FILE_WELCOME_PAGE = Const.safeAppendDirectory(BasePropertyHandler.getProperty("documentationDirBase","docs/"), "Francais/welcome/kettle_document_map.html";
+	
     private static final String UNDO_MENUITEM = "edit-undo"; //$NON-NLS-1$
     private static final String REDO_MENUITEM = "edit-redo"; //$NON-NLS-1$
     private static final String UNDO_UNAVAILABLE = Messages.getString("Spoon.Menu.Undo.NotAvailable"); //"Undo : not available \tCTRL-Z" //$NON-NLS-1$
