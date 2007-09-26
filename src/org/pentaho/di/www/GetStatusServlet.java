@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.job.Job;
 import org.pentaho.di.trans.Trans;
 
 public class GetStatusServlet extends HttpServlet
@@ -19,13 +20,16 @@ public class GetStatusServlet extends HttpServlet
     
     public static final String CONTEXT_PATH = "/kettle/status";
     
-    
     private static LogWriter log = LogWriter.getInstance();
-    private TransformationMap transformationMap;
     
-    public GetStatusServlet(TransformationMap transformationMap)
+    private TransformationMap transformationMap;
+
+	private JobMap jobMap;
+    
+    public GetStatusServlet(TransformationMap transformationMap, JobMap jobMap)
     {
         this.transformationMap = transformationMap;
+        this.jobMap = jobMap;
     }
 
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
@@ -53,13 +57,16 @@ public class GetStatusServlet extends HttpServlet
         }
         
         PrintStream out = new PrintStream(response.getOutputStream());
+        
+        String[] transNames = transformationMap.getTransformationNames();
+        String[] jobNames = jobMap.getJobNames();
+        
         if (useXML)
         {
             out.print(XMLHandler.getXMLHeader(Const.XML_ENCODING));
             SlaveServerStatus serverStatus = new SlaveServerStatus();
             serverStatus.setStatusDescription("Online");
             
-            String[] transNames = transformationMap.getTransformationNames();
             for (int i=0;i<transNames.length;i++)
             {
                 String name   = transNames[i]; 
@@ -68,7 +75,16 @@ public class GetStatusServlet extends HttpServlet
                 
                 serverStatus.getTransStatusList().add( new SlaveServerTransStatus(name, status) );
             }
-            
+
+            for (int i=0;i<jobNames.length;i++)
+            {
+                String name   = jobNames[i]; 
+                Job job       = jobMap.getJob(name);
+                String status = job.getStatus();
+                
+                serverStatus.getJobStatusList().add( new SlaveServerJobStatus(name, status) );
+            }
+
             out.println(serverStatus.getXML());
         }
         else
@@ -78,12 +94,12 @@ public class GetStatusServlet extends HttpServlet
             out.println("<BODY>");
             out.println("<H1>Status</H1>");
     
-            out.println("<table border=\"1\">");
-            out.print("<tr> <th>Transformation name</th> <th>Status</th> </tr>");
     
             try
             {
-                String[] transNames = transformationMap.getTransformationNames();
+                out.println("<table border=\"1\">");
+                out.print("<tr> <th>Transformation name</th> <th>Status</th> </tr>");
+
                 for (int i=0;i<transNames.length;i++)
                 {
                     String name   = transNames[i]; 
@@ -95,7 +111,24 @@ public class GetStatusServlet extends HttpServlet
                     out.print("<td>"+status+"</td>");
                     out.print("</tr>");
                 }
+                out.print("</table><p>");
+                
+                out.println("<table border=\"1\">");
+                out.print("<tr> <th>Job name</th> <th>Status</th> </tr>");
+
+                for (int i=0;i<jobNames.length;i++)
+                {
+                    String name   = jobNames[i]; 
+                    Job job       = jobMap.getJob(name);
+                    String status = job.getStatus();
+                    
+                    out.print("<tr>");
+                    out.print("<td><a href=\"/kettle/jobStatus?name="+name+"\">"+name+"</a></td>");
+                    out.print("<td>"+status+"</td>");
+                    out.print("</tr>");
+                }
                 out.print("</table>");
+
             }
             catch (Exception ex)
             {

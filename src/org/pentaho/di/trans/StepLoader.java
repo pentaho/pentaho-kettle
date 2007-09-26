@@ -33,6 +33,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepLoaderException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -85,16 +86,32 @@ public class StepLoader
         return stepLoader;
     }
 
-    public boolean read()
+    /**
+     * Read & initialize all the steps and plugins
+     * @throws KettleException In case a plug-in could not be loaded or something else went wrong in the process.
+     * @return true in case all goes well.
+     * @deprecated in favor of static method init() to flag the exception throwing in this method. (change of contract)
+     */
+    public boolean read() throws KettleException
     {
-        if (readNatives()) 
-        {
-            return readPlugins(); 
-        }
-        return false;
+        readNatives(); 
+        readPlugins();
+        
+        return true;
+    }
+    
+    /**
+     * Read & initialize all the steps and plugins
+     * @throws KettleException In case a plug-in could not be loaded or something else went wrong in the process.
+     */
+    public static final void init() throws KettleException
+    {
+    	StepLoader loader = getInstance();
+        loader.readNatives(); 
+        loader.readPlugins();
     }
 
-    public boolean readNatives()
+    public void readNatives()
     {
         for (int i = 0; i < BaseStep.steps.length; i++)
         {
@@ -111,30 +128,11 @@ public class StepLoader
             StepPlugin sp = new StepPlugin(StepPlugin.TYPE_NATIVE, id, long_desc, tooltip, directory, jarfiles, iconfile, classname, category, null);
             if (sp.handles("ScriptValues")) sp.setSeparateClassloaderNeeded(true);  //$NON-NLS-1$
 
-            /*
-            try
-            {
-                StepMetaInterface stepMetaInterface = getStepClass(sp);
-                String libs[] = stepMetaInterface.getUsedLibraries();
-                for (int u=0;u<libs.length;u++)
-                {
-                    libs[u] = "libext/"+libs[u];
-                }
-                sp.setJarfiles(libs);
-            }
-            catch(Exception e)
-            {
-                System.out.println("Severe error: we couldn't instantiate internal class/plugin with ID: "+id[0]);
-            }
-            */
-            
             pluginList.add(sp);
         }
-
-        return true;
     }
 
-    protected boolean readPluginFromResource( InputStream docStream, String path, String dir, int type ) {
+    protected void readPluginFromResource( InputStream docStream, String path, String dir, int type ) throws KettleException {
         try
         {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -172,14 +170,11 @@ public class StepLoader
         }
         catch (Exception e)
         {
-            LogWriter.getInstance().logError("StepLoader", Messages.getString("StepLoader.RuntimeError.UnableToReadPluginXML.TRANS0001") + e.toString()); //$NON-NLS-1$
-            LogWriter.getInstance().logError("StepLoader", Const.getStackTracker( e )); //$NON-NLS-1$
-            return false;
+            throw new KettleException( Messages.getString("StepLoader.RuntimeError.UnableToReadPluginXML.TRANS0001"), e); //$NON-NLS-1$
         }
-        return true;
     }
 
-    protected boolean readPluginFromResource( Node plugin, String path, String dir, int type, int pluginType ) {
+    protected void readPluginFromResource( Node plugin, String path, String dir, int type, int pluginType ) throws KettleException {
         try
         {
             String id = XMLHandler.getTagAttribute(plugin, "id"); //$NON-NLS-1$
@@ -307,14 +302,11 @@ public class StepLoader
         }
         catch (Throwable e)
         {
-            LogWriter.getInstance().logError("StepLoader", Messages.getString("StepLoader.RuntimeError.UnableToReadPluginXML.TRANS0001") + e.toString()); //$NON-NLS-1$
-            LogWriter.getInstance().logError("StepLoader", Const.getStackTracker( e )); //$NON-NLS-1$
-            return false;
+            throw new KettleException( Messages.getString("StepLoader.RuntimeError.UnableToReadPluginXML.TRANS0001"), e); //$NON-NLS-1$
         }
-        return true;
     }
 
-    public boolean readPlugins()
+    public void readPlugins() throws KettleException
     {
     	
     	try {
@@ -330,8 +322,7 @@ public class StepLoader
         		}
         	}
     	} catch (Exception e) {
-    		// TODO log this
-    		e.printStackTrace();
+    		throw new KettleException("Unable to load plugins specified in 'META-INF/step_plugin.xml' files", e);
     	}
     	
     	try {
@@ -358,8 +349,7 @@ public class StepLoader
         		}
         	}
     	} catch (Exception e) {
-    		// TODO log this
-    		e.printStackTrace();
+    		throw new KettleException("Unable to load plugins specified in 'META-INF/kettle-partition-plugins.xml' files", e);
     	}
 
         for (int dirNr = 0;dirNr<pluginDirectory.length;dirNr++)
@@ -390,128 +380,6 @@ public class StepLoader
 		                         */
 
 		            			readPluginFromResource( new FileInputStream(fpixml), pi.getPath(), dirs[i], StepPlugin.TYPE_PLUGIN );
-/*
-		                        try
-		                        {
-		                            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-		                            DocumentBuilder db = dbf.newDocumentBuilder();
-		                            Document doc = db.parse(fpixml);
-		
-		                            // Read the details from the XML file:
-		                            Node plugin = XMLHandler.getSubNode(doc, "plugin"); //$NON-NLS-1$
-		
-		                            String id = XMLHandler.getTagAttribute(plugin, "id"); //$NON-NLS-1$
-		                            String description = XMLHandler.getTagAttribute(plugin, "description"); //$NON-NLS-1$
-		                            String iconfile = XMLHandler.getTagAttribute(plugin, "iconfile"); //$NON-NLS-1$
-		                            String tooltip = XMLHandler.getTagAttribute(plugin, "tooltip"); //$NON-NLS-1$
-		                            String category = XMLHandler.getTagAttribute(plugin, "category"); //$NON-NLS-1$
-		                            String classname = XMLHandler.getTagAttribute(plugin, "classname"); //$NON-NLS-1$
-                                    String errorHelpfile = XMLHandler.getTagAttribute(plugin, "errorhelpfile"); //$NON-NLS-1$
-		
-		                            // String jarfile =
-		                            // InfoHandler.getTagAttribute(plugin, "jarfile");
-		
-		                            // System.out.println("id="+id+",
-		                            // iconfile="+iconfile+", classname="+classname);
-		
-		                            Node libsnode = XMLHandler.getSubNode(plugin, "libraries"); //$NON-NLS-1$
-		                            int nrlibs = XMLHandler.countNodes(libsnode, "library"); //$NON-NLS-1$
-		
-		                            String jarfiles[] = new String[nrlibs];
-		                            for (int j = 0; j < nrlibs; j++)
-		                            {
-		                                Node libnode = XMLHandler.getSubNodeByNr(libsnode, "library", j); //$NON-NLS-1$
-		                                String jarfile = XMLHandler.getTagAttribute(libnode, "name"); //$NON-NLS-1$
-		                                jarfiles[j] = pi.toString() + Const.FILE_SEPARATOR + jarfile;
-		                            }
-                                    
-                                    // Localized categories
-                                    //
-                                    Node locCatsNode = XMLHandler.getSubNode(plugin, "localized_category");
-                                    int nrLocCats = XMLHandler.countNodes(locCatsNode, "category");
-                                    Map<String, String> localizedCategories = new Hashtable<String, String>();              
-                                    for (int j=0 ; j < nrLocCats ; j++)
-                                    {
-                                        Node locCatNode = XMLHandler.getSubNodeByNr(locCatsNode, "category", j);
-                                        String locale = XMLHandler.getTagAttribute(locCatNode, "locale");
-                                        String locCat = XMLHandler.getNodeValue(locCatNode);
-                                        
-                                        if (!Const.isEmpty(locale) && !Const.isEmpty(locCat))
-                                        {
-                                            localizedCategories.put(locale.toLowerCase(), locCat);
-                                        }
-                                    }
-
-                                    // Localized descriptions
-                                    //
-                                    Node locDescsNode = XMLHandler.getSubNode(plugin, "localized_description");
-                                    int nrLocDescs = XMLHandler.countNodes(locDescsNode, "description");
-                                    Map<String, String> localizedDescriptions = new Hashtable<String, String>();              
-                                    for (int j=0 ; j < nrLocDescs; j++)
-                                    {
-                                        Node locDescNode = XMLHandler.getSubNodeByNr(locDescsNode, "description", j);
-                                        String locale = XMLHandler.getTagAttribute(locDescNode, "locale");
-                                        String locDesc = XMLHandler.getNodeValue(locDescNode);
-                                        
-                                        if (!Const.isEmpty(locale) && !Const.isEmpty(locDesc))
-                                        {
-                                            localizedDescriptions.put(locale.toLowerCase(), locDesc);
-                                        }
-                                    }
-
-                                    // Localized tooltips
-                                    //
-                                    Node locTipsNode = XMLHandler.getSubNode(plugin, "localized_tooltip");
-                                    int nrLocTips = XMLHandler.countNodes(locTipsNode, "tooltip");
-                                    Map<String, String> localizedTooltips = new Hashtable<String, String>();              
-                                    for (int j=0 ; j < nrLocTips; j++)
-                                    {
-                                        Node locTipNode = XMLHandler.getSubNodeByNr(locTipsNode, "tooltip", j);
-                                        String locale = XMLHandler.getTagAttribute(locTipNode, "locale");
-                                        String locTip = XMLHandler.getNodeValue(locTipNode);
-                                        
-                                        if (!Const.isEmpty(locale) && !Const.isEmpty(locTip))
-                                        {
-                                            localizedTooltips.put(locale.toLowerCase(), locTip);
-                                        }
-                                    }
-                                    
-		                            String iconFilename = pi.toString() + Const.FILE_SEPARATOR + iconfile;
-                                    String errorHelpFileFull = errorHelpfile;
-                                    if (!Const.isEmpty(errorHelpfile)) errorHelpFileFull = pi.getPath()+Const.FILE_SEPARATOR+errorHelpfile;
-                                    
-		                            StepPlugin sp = new StepPlugin(StepPlugin.TYPE_PLUGIN, new String[] { id }, description, tooltip, dirs[i], jarfiles, iconFilename, classname, category, errorHelpFileFull);
-                                    
-                                    // Add localized information too...
-                                    sp.setLocalizedCategories(localizedCategories);
-                                    sp.setLocalizedDescriptions(localizedDescriptions);
-                                    sp.setLocalizedTooltips(localizedTooltips);
-                                    
-		                            
-		                            /*
-		                             * If the step plugin is not yet in the list with the specified ID, just add it.
-		                             * If the step plugin is already in the list, overwrite with the latest version.
-		                             * Note that you can overwrite standard steps with plugins and standard plugins 
-		                             * with user plugins in the .kettle directory.
-		                             * /
-		                            if (findStepPluginWithID(id)==null)
-		                            {
-			                            pluginList.add(sp);
-		                            }
-		                            else
-		                            {
-		                                int idx = pluginList.indexOf(sp);
-			                            pluginList.set(idx, sp);
-		                                // System.out.println(Messages.getString("StepLoader.Log.ReplaceExistingPlugid")+id); //$NON-NLS-1$
-		                            }
-		                        }
-		                        catch (Exception e)
-		                        {
-                                    LogWriter.getInstance().logError("StepLoader", Messages.getString("StepLoader.RuntimeError.UnableToReadPluginXML.TRANS0001") + e.toString()); //$NON-NLS-1$
-                                    LogWriter.getInstance().logError("StepLoader", Const.getStackTracker( e )); //$NON-NLS-1$
-		                            return false;
-		                        }
-		                        */
 		                    }
 		                }
 		            }
@@ -519,10 +387,9 @@ public class StepLoader
             }
             catch(Exception e)
             {
-                LogWriter.getInstance().logError("StepLoader", Messages.getString("StepLoader.RuntimeError.CouldNotFindDirectory.TRANS0002",pluginDirectory[dirNr])); //$NON-NLS-1$ //$NON-NLS-2$
+                throw new KettleException(Messages.getString("StepLoader.RuntimeError.CouldNotFindDirectory.TRANS0002",pluginDirectory[dirNr]), e); //$NON-NLS-1$
             }
         }
-        return true;
     }
 
     public StepMetaInterface getStepClass(String desc) throws KettleStepLoaderException

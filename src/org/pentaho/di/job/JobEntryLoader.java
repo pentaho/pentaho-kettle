@@ -32,6 +32,7 @@ import org.pentaho.di.core.PDIClassLoader;
 import org.pentaho.di.core.config.ConfigManager;
 import org.pentaho.di.core.config.KettleConfig;
 import org.pentaho.di.core.exception.KettleConfigException;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepLoaderException;
 import org.pentaho.di.core.plugins.PluginLoader;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -74,17 +75,30 @@ public class JobEntryLoader
 		return jobEntryLoader;
 	}
 
-	public boolean read()
+	/**
+	 * Read all native and plug-in job entries
+	 * @return true if all went well
+	 * @throws KettleException in case an error occurs.
+     * @deprecated in favor of static method init() to flag the exception throwing in this method. (change of contract)
+	 */
+	public boolean read() throws KettleException
 	{
-		if (readNatives())
-		{
-			if (readPlugins())
-			{
-				initialized = true;
-				return true;
-			}
-		}
-		return false;
+		readNatives();
+		readPlugins();
+		initialized = true;
+		return true;
+	}
+
+	/**
+	 * Read all native and plug-in job entries
+     * @throws KettleException In case a plug-in could not be loaded or something else went wrong in the process.
+     */
+	public static final void init() throws KettleException 
+	{
+		JobEntryLoader loader = getInstance();
+		loader.readNatives();
+		loader.readPlugins();
+		loader.initialized = true;
 	}
 
 	public boolean readNatives()

@@ -1,10 +1,12 @@
 package org.pentaho.di.www;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.EnvUtil;
+import org.pentaho.di.job.JobEntryLoader;
 import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransConfiguration;
@@ -28,10 +30,11 @@ public class Carte
         
         init();
         
-        TransformationMap map = new TransformationMap(Thread.currentThread().getName());
+        TransformationMap transformationMap = new TransformationMap(Thread.currentThread().getName());
+        JobMap jobMap = new JobMap();
         
         Trans trans = generateTestTransformation();
-        map.addTransformation(trans.getName(), trans, new TransConfiguration(trans.getTransMeta(), new TransExecutionConfiguration()));
+        transformationMap.addTransformation(trans.getName(), trans, new TransConfiguration(trans.getTransMeta(), new TransExecutionConfiguration()));
         
         String hostname = args[0];
         int port = WebServer.PORT;
@@ -46,7 +49,7 @@ public class Carte
                 System.out.println("Unable to parse port ["+args[0]+"], using port ["+port+"]");
             }
         }
-        new WebServer(map, hostname, port);
+        new WebServer(transformationMap, jobMap, hostname, port);
     }
 
     private static void init() throws Exception
@@ -54,10 +57,22 @@ public class Carte
         EnvUtil.environmentInit();
         LogWriter.getInstance( LogWriter.LOG_LEVEL_BASIC );
         
-        StepLoader stepLoader = StepLoader.getInstance();
-        if (!stepLoader.read())
+		try 
+		{
+			StepLoader.init();
+		}
+		catch(KettleException e)
         {
-            throw new Exception("Unable to load steps & plugins");
+            throw new Exception("Unable to load steps & step plugins", e);
+        }
+
+		try 
+		{
+			JobEntryLoader.init();
+		}
+		catch(KettleException e)
+        {
+            throw new Exception("Unable to load jobs entries & job entry plugins", e);
         }
     }
     

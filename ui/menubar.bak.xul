@@ -56,7 +56,7 @@ align="vertical" >
                     <menuitem value="edit-search-metadata" acceltext="CTRL-F"  accesskey="ctrl-f">
 						<label>Search Meta data</label>
                     </menuitem>
-                    <menuitem value="edit-set-env-vars" acceltext="CTRL-F"  accesskey="ctrl-f">
+                    <menuitem value="edit-set-env-vars" acceltext="CTRL-ALT-J"  accesskey="ctrl-alt-j">
 						<label>Set Environment Variables</label>
                     </menuitem>
                     <menuitem value="edit-show-env-vars" acceltext="CTRL-L"  accesskey="ctrl-l">
@@ -99,7 +99,7 @@ align="vertical" >
 						<label>Explore...</label>
                     </menuitem>
 					<menuseparator/>
-                    <menuitem value="repository-edit-user" acceltext="CTRL-F"  accesskey="ctrl-f" disabled="true">
+                    <menuitem value="repository-edit-user" acceltext="CTRL-U"  accesskey="ctrl-u" disabled="true">
 						<label>Edit current user...</label>
                     </menuitem>
                </menupopup>

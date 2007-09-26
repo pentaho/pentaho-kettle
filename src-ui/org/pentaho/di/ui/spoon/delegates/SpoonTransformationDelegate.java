@@ -864,13 +864,13 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 		TransExecutionConfiguration executionConfiguration = null;
 		
 		if (preview) {
-			executionConfiguration = spoon.getPreviewExecutionConfiguration();
+			executionConfiguration = spoon.getTransPreviewExecutionConfiguration();
 		}
 		else if (debug) {
-			executionConfiguration = spoon.getDebugExecutionConfiguration();
+			executionConfiguration = spoon.getTransDebugExecutionConfiguration();
 		}
 		else {
-			executionConfiguration = spoon.getExecutionConfiguration();
+			executionConfiguration = spoon.getTransExecutionConfiguration();
 		}
 		
 		if (debug) {

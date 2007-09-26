@@ -17,8 +17,8 @@ public class ResourceExportTest extends TestCase {
         EnvUtil.environmentInit();
         LogWriter.getInstance(LogWriter.LOG_LEVEL_BASIC);
         
-        StepLoader.getInstance().read();
-        JobEntryLoader.getInstance().read();
+        StepLoader.init();
+        JobEntryLoader.init();
         
         // Load the job metadata
         //

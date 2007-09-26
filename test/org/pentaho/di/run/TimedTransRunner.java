@@ -5,7 +5,7 @@ import java.text.DecimalFormat;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.trans.StepLoader;
@@ -145,14 +145,14 @@ public class TimedTransRunner
         System.out.println(prefix+", rows: "+recordsDF.format(lines)+",   runtime: "+runtimeDF.format(runTime)+"s,   speed: "+speedDF.format(speed)+" rows/s");
     }
 
-    public boolean runNewEngine() throws KettleXMLException
+    public boolean runNewEngine() throws KettleException
     {
         return runNewEngine(false);
     }
 
-    public boolean runNewEngine(boolean printDescription) throws KettleXMLException
+    public boolean runNewEngine(boolean printDescription) throws KettleException
     {
-        if (StepLoader.getInstance().getPluginList().size()==0) StepLoader.getInstance().read();
+        if (StepLoader.getInstance().getPluginList().size()==0) StepLoader.init();
 
         newTransMeta = new TransMeta(filename);
         newTransMeta.setVariable("NR_OF_ROWS", Long.toString(records));

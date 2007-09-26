@@ -193,16 +193,13 @@ public class TransBuilder
     public static void main(String[] args) throws Exception
     {
     	EnvUtil.environmentInit();
-        // Init the logging...
-        LogWriter log = LogWriter.getInstance("TransBuilder.log", true, LogWriter.LOG_LEVEL_DETAILED);
         
-        // Load the Kettle steps & plugins 
-        StepLoader stloader = StepLoader.getInstance();
-        if (!stloader.read())
-        {
-            log.logError("TransBuilder",  "Error loading Kettle steps & plugins... stopping now!");
-            return;
-        }
+    	// Init the logging...
+    	//
+        LogWriter.getInstance("TransBuilder.log", true, LogWriter.LOG_LEVEL_DETAILED);
+        
+        // Load the Kettle steps & plugins
+    	StepLoader.init();
         
         // The parameters we want, optionally this can be 
         String fileName = "NewTrans.xml";

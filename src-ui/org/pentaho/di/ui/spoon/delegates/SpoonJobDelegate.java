@@ -3,6 +3,8 @@ package org.pentaho.di.ui.spoon.delegates;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -19,12 +21,12 @@ import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
-import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.undo.TransAction;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.JobEntryLoader;
 import org.pentaho.di.job.JobEntryType;
+import org.pentaho.di.job.JobExecutionConfiguration;
 import org.pentaho.di.job.JobHopMeta;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.JobPlugin;
@@ -36,14 +38,6 @@ import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
-import org.pentaho.di.ui.spoon.delegates.SpoonDelegate;
-import org.pentaho.di.ui.spoon.job.JobGraph;
-import org.pentaho.di.ui.spoon.job.JobHistory;
-import org.pentaho.di.ui.spoon.job.JobHistoryRefresher;
-import org.pentaho.di.ui.spoon.job.JobLog;
-import org.pentaho.di.ui.spoon.wizards.RipDatabaseWizardPage1;
-import org.pentaho.di.ui.spoon.wizards.RipDatabaseWizardPage2;
-import org.pentaho.di.ui.spoon.wizards.RipDatabaseWizardPage3;
 import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
@@ -54,9 +48,18 @@ import org.pentaho.di.trans.steps.tableinput.TableInputMeta;
 import org.pentaho.di.trans.steps.tableoutput.TableOutputMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.ShowMessageDialog;
+import org.pentaho.di.ui.core.gui.GUIResource;
+import org.pentaho.di.ui.job.dialog.JobExecutionConfigurationDialog;
 import org.pentaho.di.ui.spoon.Messages;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.TabMapEntry;
+import org.pentaho.di.ui.spoon.job.JobGraph;
+import org.pentaho.di.ui.spoon.job.JobHistory;
+import org.pentaho.di.ui.spoon.job.JobHistoryRefresher;
+import org.pentaho.di.ui.spoon.job.JobLog;
+import org.pentaho.di.ui.spoon.wizards.RipDatabaseWizardPage1;
+import org.pentaho.di.ui.spoon.wizards.RipDatabaseWizardPage2;
+import org.pentaho.di.ui.spoon.wizards.RipDatabaseWizardPage3;
 import org.pentaho.xul.swt.tab.TabItem;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -1390,6 +1393,56 @@ public class SpoonJobDelegate extends SpoonDelegate
 			break;
 		default:
 			break;
+		}
+	}
+	
+	public void executeJob(JobMeta jobMeta, boolean local, boolean remote, Date replayDate) throws KettleException {
+		
+		if (jobMeta == null) {
+			return;
+		}
+		
+		JobExecutionConfiguration executionConfiguration = spoon.getJobExecutionConfiguration();
+		
+		Object data[] = spoon.variables.getData();
+		String fields[] = spoon.variables.getRowMeta().getFieldNames();
+		Map<String, String> variableMap = new HashMap<String, String>();
+		for (int idx = 0; idx < fields.length; idx++) {
+			variableMap.put(fields[idx], data[idx].toString());
+		}
+
+		executionConfiguration.setVariables(variableMap);
+		executionConfiguration.getUsedVariables(jobMeta);
+		executionConfiguration.setReplayDate(replayDate);
+
+		executionConfiguration.setLogLevel(spoon.getLog().getLogLevel());
+
+		JobExecutionConfigurationDialog dialog = new JobExecutionConfigurationDialog(spoon.getShell(), executionConfiguration, jobMeta);
+		if (dialog.open()) {
+			addJobLog(jobMeta);
+			JobLog jobLog = spoon.getActiveJobLog();
+
+			// Is this a local execution?
+			//
+			if (executionConfiguration.isExecutingLocally()) {
+				jobLog.startJob(executionConfiguration.getReplayDate());
+			}
+				
+			// Are we executing remotely?
+			//
+			else if (executionConfiguration.isExecutingRemotely()) {
+				
+				if (executionConfiguration.getRemoteServer() != null) {
+					spoon.delegates.slaves.sendXMLToSlaveServer(jobMeta, executionConfiguration);
+					spoon.delegates.slaves.addSpoonSlave(executionConfiguration.getRemoteServer());
+				} else {
+					MessageBox mb = new MessageBox(spoon.getShell(), SWT.OK | SWT.ICON_INFORMATION);
+					mb.setMessage(Messages.getString("Spoon.Dialog.NoRemoteServerSpecified.Message"));
+					mb.setText(Messages.getString("Spoon.Dialog.NoRemoteServerSpecified.Title"));
+					mb.open();
+				}
+				
+			}
 		}
 	}
 

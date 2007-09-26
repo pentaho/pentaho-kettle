@@ -67,11 +67,12 @@ public class TransExecutionConfigurationDialog extends Dialog
     private Label wlArguments;
     private Label wlVariables;
     private TableView wVariables;
-    private SimpleDateFormat simpleDateFormat;
     private Label wlReplayDate;
     private Label wlLogLevel;
     private CCombo wLogLevel;
-    
+
+    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+
     public TransExecutionConfigurationDialog(Shell parent, TransExecutionConfiguration configuration, TransMeta transMeta)
     {
         super(parent);
@@ -80,8 +81,6 @@ public class TransExecutionConfigurationDialog extends Dialog
         this.transMeta  = transMeta;
                 
         props = PropsUI.getInstance();
-        
-        simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
     }
     
     public boolean open()
@@ -327,7 +326,7 @@ public class TransExecutionConfigurationDialog extends Dialog
           };
               
         int nrVariables = configuration.getVariables() !=null ? configuration.getVariables().size() : 0; 
-        wVariables = new TableView(transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, cVariables, nrVariables, true, null, props);
+        wVariables = new TableView(transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, cVariables, nrVariables, false, null, props);
         FormData fdVariables = new FormData();
         fdVariables.left   = new FormAttachment(50, margin);
         fdVariables.right  = new FormAttachment(100, 0);

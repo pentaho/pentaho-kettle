@@ -29,10 +29,10 @@ align="vertical" >
                     <menuitem value="edit-redo" acceltext="CTRL-Y"  accesskey="ctrl-y" label="%Spoon.Menu.Redo.NotAvailable"/>
 					<menuseparator/>
                     <menuitem value="edit-search-metadata" acceltext="CTRL-F"  accesskey="ctrl-f" label="%Spoon.Menu.Edit.Search"/>
-                    <menuitem value="edit-set-env-vars" acceltext="CTRL-F"  accesskey="ctrl-f" label="%Spoon.Menu.Edit.Variables"/>
+                    <menuitem value="edit-set-env-vars" acceltext="CTRL-ALT-J"  accesskey="ctrl-alt-j" label="%Spoon.Menu.Edit.Variables"/>
                     <menuitem value="edit-show-env-vars" acceltext="CTRL-L"  accesskey="ctrl-l" label="%Spoon.Menu.Edit.ShowVariables"/>
 					<menuseparator/> 
-				            <menuitem value="edit-show-arguments" acceltext="CTRL-U"  accesskey="ctrl-u" label="%Spoon.Menu.Edit.ShowArguments"/>
+				    <menuitem value="edit-show-arguments" acceltext="CTRL-ALT-U"  accesskey="ctrl-alt-u" label="%Spoon.Menu.Edit.ShowArguments"/>
 					<menuseparator/>
                     <menuitem value="edit-clear-selection" acceltext="ESC"  accesskey="esc" label="%Spoon.Menu.Edit.ClearSelection"/>
                     <menuitem value="edit-select-all" acceltext="CTRL-A"  accesskey="ctrl-a" label="%Spoon.Menu.Edit.SelectAllSteps"/>
@@ -51,7 +51,7 @@ align="vertical" >
                     <menuitem value="repository-disconnect" acceltext="CTRL-D"  accesskey="ctrl-d" disabled="true" label="%Spoon.Menu.Repository.DisconnectRepository"/>
                     <menuitem value="repository-explore" acceltext="CTRL-E"  accesskey="ctrl-e" disabled="true" label="%Spoon.Menu.Repository.ExploreRepository"/>
 					<menuseparator/>
-                    <menuitem value="repository-edit-user" acceltext="CTRL-F"  accesskey="ctrl-f" disabled="true" label="%Spoon.Menu.Repository.EditCurrentUser"/>
+                    <menuitem value="repository-edit-user" acceltext="CTRL-U"  accesskey="ctrl-u" disabled="true" label="%Spoon.Menu.Repository.EditCurrentUser"/>
                </menupopup>
 		</menu>
           <menu value="trans" label="%Spoon.Menu.Transformation">

@@ -297,9 +297,6 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         selected_steps = null;
         lastclick = null;
 
-        addKeyListener(spoon.modKeys);
-        canvas.addKeyListener(spoon.modKeys);
-
         /*
          * Handle the mouse...
          */

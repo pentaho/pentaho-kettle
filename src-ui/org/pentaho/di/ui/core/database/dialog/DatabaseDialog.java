@@ -1595,7 +1595,7 @@ public class DatabaseDialog extends Dialog
     {
         // See if we need to refresh the access list...
         String type = DatabaseMeta.getDatabaseTypeCode(wConnType.getSelectionIndex());
-        if (!type.equalsIgnoreCase(previousDatabaseType)) setAccessList();
+        if (type!=null && !type.equalsIgnoreCase(previousDatabaseType)) setAccessList();
         previousDatabaseType = type;
 
         int idxAccType = wConnAcc.getSelectionIndex();

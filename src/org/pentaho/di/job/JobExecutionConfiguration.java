@@ -3,6 +3,7 @@ package org.pentaho.di.job;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +31,7 @@ public class JobExecutionConfiguration implements Cloneable
     private Map<String, String> arguments;
     private Map<String, String> variables;
     
+    private Date     replayDate;
     private boolean  safeModeEnabled;
     private int      logLevel;
     
@@ -174,6 +176,22 @@ public class JobExecutionConfiguration implements Cloneable
     }
     
     /**
+     * @return the replayDate
+     */
+    public Date getReplayDate()
+    {
+        return replayDate;
+    }
+
+    /**
+     * @param replayDate the replayDate to set
+     */
+    public void setReplayDate(Date replayDate)
+    {
+        this.replayDate = replayDate;
+    }
+
+    /**
      * @return the usingSafeMode
      */
     public boolean isSafeModeEnabled()
@@ -247,6 +265,7 @@ public class JobExecutionConfiguration implements Cloneable
         }
         xml.append("    </arguments>").append(Const.CR);
 
+        xml.append("    ").append(XMLHandler.addTagValue("replay_date", replayDate));
         xml.append("    ").append(XMLHandler.addTagValue("safe_mode", safeModeEnabled));
         xml.append("    ").append(XMLHandler.addTagValue("log_level", LogWriter.getLogLevelDesc(logLevel)));
         
@@ -293,6 +312,7 @@ public class JobExecutionConfiguration implements Cloneable
         	}
         }
         
+        replayDate = XMLHandler.stringToDate( XMLHandler.getTagValue(trecNode, "replay_date") );
         safeModeEnabled = "Y".equalsIgnoreCase(XMLHandler.getTagValue(trecNode, "safe_mode"));
         logLevel = LogWriter.getLogLevel( XMLHandler.getTagValue(trecNode, "log_level") );
     }

@@ -354,20 +354,26 @@ public class BlackBoxTests extends TestCase {
 		Trans trans = null;
 
 		/* Load the plugins etc.*/
-		StepLoader steploader = StepLoader.getInstance();
-		if (!steploader.read())
+		try 
+		{
+			StepLoader.init();
+		}
+		catch(KettleException e)
 		{
 			addFailure("Error loading steps... halting!" + getPath(fileName));
-			log.logError("BlackBoxTest", "Error loading steps... halting!" + getPath(fileName));
+			log.logError("BlackBoxTest", "Error loading steps... halting!" + getPath(fileName), e);
 			return false;
 		}
 		
         /* Load the plugins etc.*/
-        JobEntryLoader jeloader = JobEntryLoader.getInstance();
-        if (!jeloader.read())
+		try 
+		{
+			JobEntryLoader.init();
+		}
+		catch(KettleException e)
         {
         	addFailure("Error loading job entries & plugins... halting!" + getPath(fileName));
-            log.logError("BlackBoxTest", "Error loading job entries & plugins... halting!" + getPath(fileName));
+            log.logError("BlackBoxTest", "Error loading job entries & plugins... halting!" + getPath(fileName), e);
             return false;
         }
         

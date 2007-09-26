@@ -44,6 +44,7 @@ import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.StepLoader;
+import org.pentaho.di.trans.Trans;
 
 
 /**
@@ -112,6 +113,8 @@ public class Job extends Thread implements VariableSpace
         initialized=false;
         batchId = -1;
         passedBatchId = -1;
+        
+        result = null;
 	}
 
 	public Job(LogWriter lw, StepLoader steploader, Repository rep, JobMeta ti)
@@ -202,7 +205,7 @@ public class Job extends Thread implements VariableSpace
             variables.initializeVariablesFrom(parentJob);
             setInternalKettleVariables(variables);                        
             
-            Result result = execute(); // Run the job
+            result = execute(); // Run the job
 			endProcessing(Messages.getString("Job.Status.End"), result);
 		}
 		catch(KettleException je)
@@ -868,6 +871,33 @@ public class Job extends Thread implements VariableSpace
 	public void injectVariables(Map<String,String> prop) 
 	{
 		variables.injectVariables(prop);		
-	}	    
+	}	
+	
+    public String getStatus()
+    {
+        String message;
+        
+        if (!initialized)
+        {
+            message = Trans.STRING_WAITING;
+        }
+        else
+        {
+        	if (active) 
+        	{
+        		message = Trans.STRING_RUNNING;
+        	}
+        	else
+        	{
+        		message = Trans.STRING_FINISHED;
+                if (result!=null && result.getNrErrors()>0)
+                {
+                	message+=" (with errors)";
+                }
+            }
+        }
+        
+        return message;
+    }
 
 }

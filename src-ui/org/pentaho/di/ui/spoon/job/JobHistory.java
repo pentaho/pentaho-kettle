@@ -235,7 +235,7 @@ public class JobHistory extends Composite implements TabItemInterface
                     try
                     {
                         Date date = df.parse(dateString);
-                        spoon.executeJob(jobMeta, true, false, false, false, date);
+                        spoon.executeJob(jobMeta, true, false, date);
                     }
                     catch (ParseException e1)
                     {

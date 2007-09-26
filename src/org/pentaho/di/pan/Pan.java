@@ -160,18 +160,23 @@ public class Pan
         log.logMinimal("Pan", "Start of run.");
 		
 		/* Load the plugins etc.*/
-		StepLoader steploader = StepLoader.getInstance();
-		if (!steploader.read())
+		try {
+			StepLoader.init();
+		}
+		catch(KettleException e)
 		{
 			log.logError("Pan", "Error loading steps... halting Pan!");
             System.exit(8);
 		}
 		
         /* Load the plugins etc.*/
-        JobEntryLoader jeloader = JobEntryLoader.getInstance();
-        if (!jeloader.read())
+		try 
+		{
+			JobEntryLoader.init();
+		}
+		catch(KettleException e)
         {
-            log.logError("Pan", "Error loading job entries & plugins... halting Pan!");
+            log.logError("Pan", "Error loading job entries & plugins... halting Pan!", e);
             System.exit(8);
         }
         

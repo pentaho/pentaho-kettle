@@ -100,9 +100,12 @@ public class SpoonBrowser implements TabItemInterface
                }
             };
             
-         browser.addLocationListener(locationListener);
+        browser.addLocationListener(locationListener);
          
-        
+        comp.addKeyListener(spoon.defKeys);
+        composite.addKeyListener(spoon.defKeys);
+        browser.addKeyListener(spoon.defKeys);
+                 
         // Set the text
         browser.setUrl(stringUrl);
     }

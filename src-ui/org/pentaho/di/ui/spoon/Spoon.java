@@ -125,6 +125,7 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.LanguageChoice;
 import org.pentaho.di.job.JobEntryLoader;
 import org.pentaho.di.job.JobEntryType;
+import org.pentaho.di.job.JobExecutionConfiguration;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.JobPlugin;
 import org.pentaho.di.job.entries.trans.JobEntryTrans;
@@ -306,7 +307,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     private static final String REDO_UNAVAILABLE = Messages.getString("Spoon.Menu.Redo.NotAvailable");//"Redo : not available \tCTRL-Y" //$NON-NLS-1$S
 
 	public KeyAdapter defKeys;
-	public KeyAdapter modKeys;
 
 	// private Menu mBar;
 
@@ -315,9 +315,11 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	private ExpandBar mainExpandBar;
 	private ExpandBar expandBar;
 
-	private TransExecutionConfiguration executionConfiguration;
-	private TransExecutionConfiguration previewExecutionConfiguration;
-	private TransExecutionConfiguration debugExecutionConfiguration;
+	private TransExecutionConfiguration transExecutionConfiguration;
+	private TransExecutionConfiguration transPreviewExecutionConfiguration;
+	private TransExecutionConfiguration transDebugExecutionConfiguration;
+
+	private JobExecutionConfiguration jobExecutionConfiguration;
 
 	// private TreeItem tiTrans, tiJobs;
 
@@ -410,9 +412,11 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		// Load settings in the props
 		loadSettings();
 
-		executionConfiguration = new TransExecutionConfiguration();
-		previewExecutionConfiguration = new TransExecutionConfiguration();
-		debugExecutionConfiguration = new TransExecutionConfiguration();
+		transExecutionConfiguration = new TransExecutionConfiguration();
+		transPreviewExecutionConfiguration = new TransExecutionConfiguration();
+		transDebugExecutionConfiguration = new TransExecutionConfiguration();
+
+		jobExecutionConfiguration = new JobExecutionConfiguration();
 
 		// Clean out every time we start, auto-loading etc, is not a good idea
 		// If they are needed that often, set them in the kettle.properties file
@@ -499,21 +503,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 				menuBar.handleAccessKey(key, alt, ctrl);
 			}
 		};
-		modKeys = new KeyAdapter()
-		{
-			public void keyPressed(KeyEvent e)
-			{
-				shift = (e.keyCode == SWT.SHIFT);
-				control = (e.keyCode == SWT.CONTROL);
-			}
-
-			public void keyReleased(KeyEvent e)
-			{
-				shift = (e.keyCode == SWT.SHIFT);
-				control = (e.keyCode == SWT.CONTROL);
-			}
-		};
-
         
         addBar();
 
@@ -555,7 +544,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         );
 
 		shell.addKeyListener(defKeys);
-		shell.addKeyListener(modKeys);
 
 		// Add a browser widget
 		if (props.showWelcomePageOnStartup())
@@ -1019,7 +1007,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	}
 
     public void executeJob() {
-		executeJob(getActiveJob(), true, false, false, false, null);
+		executeJob(getActiveJob(), true, false, null);
 	}
 
     public void copyJob() {
@@ -1177,7 +1165,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			//
 			ToolBar toolBar = (ToolBar) toolbar.getNativeObject();
 			toolBar.addKeyListener(defKeys);
-			toolBar.addKeyListener(modKeys);
 		} catch (Throwable t ) {
 			log.logError(toString(), Const.getStackTracker(t));
 			new ErrorDialog(shell, Messages.getString("Spoon.Exception.ErrorReadingXULFile.Title"), Messages.getString("Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_MENUBAR), new Exception(t));
@@ -1243,15 +1230,13 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 		// Keyboard shortcuts!
 		selectionTree.addKeyListener(defKeys);
-		selectionTree.addKeyListener(modKeys);
-
+		
 		// Set a listener on the tree
 		addDragSourceToTree(selectionTree);
 	
 		// Handle behavior for the main expand bar
 		//
 		mainExpandBar.addKeyListener(defKeys);
-		mainExpandBar.addKeyListener(modKeys);
 		
 		mainExpandBar.addListener(SWT.Resize, new Listener()
 			{
@@ -1496,12 +1481,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
                 ScrolledComposite scrolledComposite = new ScrolledComposite(expandBar, SWT.V_SCROLL | SWT.H_SCROLL | SWT.BORDER);
 				scrolledComposite.setLayout(new FillLayout());
 				scrolledComposite.addKeyListener(defKeys);
-				scrolledComposite.addKeyListener(modKeys);
 
 				final Composite composite = new Composite(scrolledComposite, SWT.NONE);
 				props.setLook(composite);
 				composite.addKeyListener(defKeys);
-				composite.addKeyListener(modKeys);
 
 				GridLayout layout = new GridLayout();
 				layout.marginLeft = 20;
@@ -1624,7 +1607,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		props.setLook(lineComposite);
 		lineComposite.setLayout(new FormLayout());
 		lineComposite.addKeyListener(defKeys);
-		lineComposite.addKeyListener(modKeys);
 
 		Label canvas = new Label(lineComposite, SWT.NONE);
 		canvas.setToolTipText(pluginDescription);
@@ -1824,10 +1806,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	}
 
     public void editJobProperties( String id ) {
-    		if( "job-settings".equals( id ) ) {
+		if( "job-settings".equals( id ) ) {
 			JobGraph.editProperties(getActiveJob(), this, rep);
-    		}
-    		else if( "job-inst-settings".equals( id ) ) {
+		}
+		else if( "job-inst-settings".equals( id ) ) {
 			JobGraph.editProperties((JobMeta) selectionObject, this, rep);
 		}
 	}
@@ -2224,12 +2206,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		props.setLook(tabfolder.getSwtTabset(), Props.WIDGET_STYLE_TAB);
 
 		tabfolder.addKeyListener(defKeys);
-		tabfolder.addKeyListener(modKeys);
 
 		// tabfolder.setSelection(0);
 
 		sashform.addKeyListener(defKeys);
-		sashform.addKeyListener(modKeys);
 
 		int weights[] = props.getSashWeights();
 		sashform.setWeights(weights);
@@ -4505,7 +4485,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	/**
      * @return the Log tab associated with the active job
      */
-    private JobLog getActiveJobLog()
+    public JobLog getActiveJobLog()
     {
         JobMeta jobMeta = getActiveJob();
         if (jobMeta==null) return null; // nothing to work with.
@@ -5078,18 +5058,23 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		}
 
 		/* Load the plugins etc. */
-		StepLoader stloader = StepLoader.getInstance();
-		if (!stloader.read())
+		try {
+			StepLoader.init();
+		}
+		catch(KettleException e)
 		{
-            log.logError(toString(), Messages.getString("Spoon.Log.ErrorLoadingAndHaltSystem"));//Error loading steps & plugins... halting Spoon!
+            log.logError(toString(), Messages.getString("Spoon.Log.ErrorLoadingAndHaltSystem"), e);//Error loading steps & plugins... halting Spoon!
 			return;
 		}
 
 		/* Load the plugins etc. we need to load jobentry */
-		JobEntryLoader jeloader = JobEntryLoader.getInstance();
-		if (!jeloader.read())
+		try 
 		{
-			log.logError(toString(), "Error loading job entries & plugins... halting Spoon!");
+			JobEntryLoader.init();
+		}
+		catch(KettleException e)
+		{
+			log.logError(toString(), "Error loading job entries & plugins... halting Spoon!", e);
 			return;
 		}
 
@@ -5852,7 +5837,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		if (transMeta != null)	executeTransformation(transMeta, local, remote, cluster, preview, debug, replayDate);
 
 		JobMeta jobMeta = getActiveJob();
-		if (jobMeta != null) executeJob(jobMeta, local, remote, cluster, preview, replayDate);
+		if (jobMeta != null) executeJob(jobMeta, local, remote, replayDate);
 
 	}
 
@@ -5861,19 +5846,28 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		try
 		{
 			delegates.trans.executeTransformation(transMeta, local, remote, cluster, preview, debug, replayDate);
-		} catch (Exception e)
+		} 
+		catch (Exception e)
 		{
-			new ErrorDialog(shell, "Split transformation", "There was an error during transformation split",
-					e);
+			new ErrorDialog(shell, "Execute transformation", "There was an error during transformation execution", e);
 		}
 	}
 
-	public void executeJob(JobMeta jobMeta, boolean local, boolean remote, boolean cluster, boolean preview,
-			Date replayDate)
+	public void executeJob(JobMeta jobMeta, boolean local, boolean remote, Date replayDate)
 	{
-		delegates.jobs.addJobLog(jobMeta);
-		JobLog jobLog = getActiveJobLog();
-		jobLog.startJob(replayDate);
+		// delegates.jobs.addJobLog(jobMeta);
+		// JobLog jobLog = getActiveJobLog();
+		// jobLog.startJob(replayDate);
+
+		try
+		{
+			delegates.jobs.executeJob(jobMeta, local, remote, replayDate);
+		} 
+		catch (Exception e)
+		{
+			new ErrorDialog(shell, "Execute job", "There was an error during job execution", e);
+		}
+
 	}
 
 	public void addSpoonSlave(SlaveServer slaveServer)
@@ -6037,9 +6031,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	}
 
 
-	public TransExecutionConfiguration getExecutionConfiguration()
+	public TransExecutionConfiguration getTransExecutionConfiguration()
 	{
-		return executionConfiguration;
+		return transExecutionConfiguration;
 	}
 
 	public Object[] messageDialogWithToggle(String dialogTitle, Object image, String message,
@@ -6141,35 +6135,49 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	/**
 	 * @return the previewExecutionConfiguration
 	 */
-	public TransExecutionConfiguration getPreviewExecutionConfiguration() {
-		return previewExecutionConfiguration;
+	public TransExecutionConfiguration getTransPreviewExecutionConfiguration() {
+		return transPreviewExecutionConfiguration;
 	}
 
 	/**
 	 * @param previewExecutionConfiguration the previewExecutionConfiguration to set
 	 */
-	public void setPreviewExecutionConfiguration(TransExecutionConfiguration previewExecutionConfiguration) {
-		this.previewExecutionConfiguration = previewExecutionConfiguration;
+	public void setTransPreviewExecutionConfiguration(TransExecutionConfiguration previewExecutionConfiguration) {
+		this.transPreviewExecutionConfiguration = previewExecutionConfiguration;
 	}
 
 	/**
 	 * @return the debugExecutionConfiguration
 	 */
-	public TransExecutionConfiguration getDebugExecutionConfiguration() {
-		return debugExecutionConfiguration;
+	public TransExecutionConfiguration getTransDebugExecutionConfiguration() {
+		return transDebugExecutionConfiguration;
 	}
 
 	/**
 	 * @param debugExecutionConfiguration the debugExecutionConfiguration to set
 	 */
-	public void setDebugExecutionConfiguration(TransExecutionConfiguration debugExecutionConfiguration) {
-		this.debugExecutionConfiguration = debugExecutionConfiguration;
+	public void setTransDebugExecutionConfiguration(TransExecutionConfiguration debugExecutionConfiguration) {
+		this.transDebugExecutionConfiguration = debugExecutionConfiguration;
 	}
 
 	/**
 	 * @param executionConfiguration the executionConfiguration to set
 	 */
-	public void setExecutionConfiguration(TransExecutionConfiguration executionConfiguration) {
-		this.executionConfiguration = executionConfiguration;
+	public void setTransExecutionConfiguration(TransExecutionConfiguration executionConfiguration) {
+		this.transExecutionConfiguration = executionConfiguration;
+	}
+
+	/**
+	 * @return the jobExecutionConfiguration
+	 */
+	public JobExecutionConfiguration getJobExecutionConfiguration() {
+		return jobExecutionConfiguration;
+	}
+
+	/**
+	 * @param jobExecutionConfiguration the jobExecutionConfiguration to set
+	 */
+	public void setJobExecutionConfiguration(JobExecutionConfiguration jobExecutionConfiguration) {
+		this.jobExecutionConfiguration = jobExecutionConfiguration;
 	}
 }

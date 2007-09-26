@@ -17,12 +17,15 @@ public class SlaveServerStatus
 
     private String             statusDescription;
     private String             errorDescription;
+    
     private List<SlaveServerTransStatus> transStatusList;
+    private List<SlaveServerJobStatus>   jobStatusList;
     
 
     public SlaveServerStatus()
     {
         transStatusList = new ArrayList<SlaveServerTransStatus>();
+        jobStatusList = new ArrayList<SlaveServerJobStatus>();
     }
     
     public SlaveServerStatus(String statusDescription)
@@ -36,10 +39,11 @@ public class SlaveServerStatus
      * @param statusDescription
      * @param transStatus
      */
-    public SlaveServerStatus(String statusDescription, List<SlaveServerTransStatus> transStatusList)
+    public SlaveServerStatus(String statusDescription, List<SlaveServerTransStatus> transStatusList, List<SlaveServerJobStatus> jobStatusList)
     {
         this.statusDescription = statusDescription;
         this.transStatusList = transStatusList;
+        this.jobStatusList = jobStatusList;
     }
 
     public String getXML()
@@ -48,6 +52,7 @@ public class SlaveServerStatus
 
         xml.append("<" + XML_TAG + ">").append(Const.CR);
         xml.append(XMLHandler.addTagValue("statusdesc", statusDescription));
+
         xml.append("  <transstatuslist>").append(Const.CR);
         for (int i = 0; i < transStatusList.size(); i++)
         {
@@ -55,6 +60,15 @@ public class SlaveServerStatus
             xml.append("    ").append(transStatus.getXML()).append(Const.CR);
         }
         xml.append("  </transstatuslist>").append(Const.CR);
+
+        xml.append("  <jobstatuslist>").append(Const.CR);
+        for (int i = 0; i < jobStatusList.size(); i++)
+        {
+            SlaveServerJobStatus jobStatus = jobStatusList.get(i);
+            xml.append("    ").append(jobStatus.getXML()).append(Const.CR);
+        }
+        xml.append("  </jobstatuslist>").append(Const.CR);
+        
         xml.append("</" + XML_TAG + ">").append(Const.CR);
 
         return xml.toString();
@@ -64,12 +78,22 @@ public class SlaveServerStatus
     {
         this();
         statusDescription = XMLHandler.getTagValue(statusNode, "statusdesc");
-        Node listNode = XMLHandler.getSubNode(statusNode, "transstatuslist");
-        int nr = XMLHandler.countNodes(listNode, SlaveServerTransStatus.XML_TAG);
-        for (int i = 0; i < nr; i++)
+        Node listTransNode = XMLHandler.getSubNode(statusNode, "transstatuslist");
+        Node listJobsNode = XMLHandler.getSubNode(statusNode, "jobstatuslist");
+        
+        int nrTrans = XMLHandler.countNodes(listTransNode, SlaveServerTransStatus.XML_TAG);
+        int nrJobs  = XMLHandler.countNodes(listJobsNode, SlaveServerJobStatus.XML_TAG);
+        
+        for (int i = 0; i < nrTrans; i++)
         {
-            Node transStatusNode = XMLHandler.getSubNodeByNr(listNode, SlaveServerTransStatus.XML_TAG, i);
+            Node transStatusNode = XMLHandler.getSubNodeByNr(listTransNode, SlaveServerTransStatus.XML_TAG, i);
             transStatusList.add( new SlaveServerTransStatus(transStatusNode) );
+        }
+
+        for (int i = 0; i < nrJobs; i++)
+        {
+            Node jobStatusNode = XMLHandler.getSubNodeByNr(listJobsNode, SlaveServerJobStatus.XML_TAG, i);
+            jobStatusList.add( new SlaveServerJobStatus(jobStatusNode) );
         }
     }
     
@@ -137,4 +161,29 @@ public class SlaveServerStatus
         }
         return null;
     }
+
+    public SlaveServerJobStatus findJobStatus(String jobName)
+    {
+        for (int i=0;i<jobStatusList.size();i++)
+        {
+            SlaveServerJobStatus jobStatus = (SlaveServerJobStatus) jobStatusList.get(i);
+            if (jobStatus.getJobName().equalsIgnoreCase(jobName)) return jobStatus;
+        }
+        return null;
+    }
+
+	/**
+	 * @return the jobStatusList
+	 */
+	public List<SlaveServerJobStatus> getJobStatusList() {
+		return jobStatusList;
+	}
+
+	/**
+	 * @param jobStatusList the jobStatusList to set
+	 */
+	public void setJobStatusList(List<SlaveServerJobStatus> jobStatusList) {
+		this.jobStatusList = jobStatusList;
+	}
+
 }

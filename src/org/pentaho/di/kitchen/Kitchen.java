@@ -139,18 +139,24 @@ public class Kitchen
 		log.logMinimal(STRING_KITCHEN, "Start of run.");
 		
 		/* Load the plugins etc.*/
-		StepLoader steploader = StepLoader.getInstance();
-		if (!steploader.read())
+		try {
+			StepLoader.init();
+		}
+		catch(KettleException e)
 		{
-			log.logError(STRING_KITCHEN, "Error loading steps... halting Kitchen!");
+			log.logError(STRING_KITCHEN, "Error loading steps... halting Kitchen!", e);
 			System.exit(8);
 		}
+		StepLoader stepLoader = StepLoader.getInstance();
         
         /* Load the plugins etc.*/
-        JobEntryLoader jeloader = JobEntryLoader.getInstance();
-        if (!jeloader.read())
+		try 
+		{
+			JobEntryLoader.init();
+		}
+		catch(KettleException e)
         {
-            log.logError(STRING_KITCHEN, "Error loading job entries & plugins... halting Kitchen!");
+            log.logError(STRING_KITCHEN, "Error loading job entries & plugins... halting Kitchen!", e);
             return;
         }
 
@@ -208,7 +214,7 @@ public class Kitchen
 											log.logDebug(STRING_KITCHEN, "Load the job info...");
 											jobMeta =  new JobMeta(log, repository, optionJobname.toString(), directory);
 											log.logDebug(STRING_KITCHEN, "Allocate job...");
-											job = new Job(log, steploader, repository, jobMeta);
+											job = new Job(log, stepLoader, repository, jobMeta);
 										}
 										else
 										// List the jobs in the repository
@@ -266,7 +272,7 @@ public class Kitchen
 				if (!Const.isEmpty(optionFilename) && job==null)
 				{
 					jobMeta = new JobMeta(log, optionFilename.toString(), null, null);
-					job = new Job(log, steploader, null, jobMeta);
+					job = new Job(log, stepLoader, null, jobMeta);
 				}
 			}
 			else

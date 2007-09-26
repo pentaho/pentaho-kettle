@@ -57,9 +57,11 @@ import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TreeMemory;
 import org.pentaho.di.ui.core.widget.TreeUtil;
+import org.pentaho.di.www.SlaveServerJobStatus;
 import org.pentaho.di.www.SlaveServerStatus;
 import org.pentaho.di.www.SlaveServerTransStatus;
 import org.pentaho.di.www.WebResult;
@@ -170,7 +172,7 @@ public class SpoonSlave extends Composite implements TabItemInterface
             }
         );
         
-		wText = new Text(sash, SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL | SWT.READ_ONLY);
+		wText = new Text(sash, SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL | SWT.READ_ONLY | SWT.BORDER);
 		spoon.props.setLook(wText);
 		wText.setVisible(true);
         
@@ -288,30 +290,53 @@ public class SpoonSlave extends Composite implements TabItemInterface
         if (ti.length==1)
         {
             TreeItem treeItem = ti[0];
-            String[] path = ConstUI.getTreeStrings(treeItem);
-            if (path.length>=1) // transformation name
+            int index = wTree.indexOf(treeItem);
+            
+            if (index<slaveServerStatus.getTransStatusList().size()) 
             {
-                String transName = path[0];
-                SlaveServerTransStatus transStatus = slaveServerStatus.findTransStatus(transName);
-                if (transStatus!=null)
+            	// It's a transformation that we clicked on...
+            	//
+            	SlaveServerTransStatus transStatus = slaveServerStatus.getTransStatusList().get(index);
+                stopEnabled = transStatus.isRunning();
+                
+                StringBuffer message = new StringBuffer();
+                String errorDescription = transStatus.getErrorDescription();
+                if (!Const.isEmpty(errorDescription))
                 {
-                    stopEnabled = transStatus.isRunning();
-                    
-                    StringBuffer message = new StringBuffer();
-                    String errorDescription = transStatus.getErrorDescription();
-                    if (!Const.isEmpty(errorDescription))
-                    {
-                        message.append(errorDescription).append(Const.CR).append(Const.CR);
-                    }
-                    
-                    if (!Const.isEmpty(transStatus.getLoggingString()))
-                    {
-                        message.append(transStatus.getLoggingString()).append(Const.CR);
-                    }
-                        
-                    wText.setText(message.toString());
-                    wText.setTopIndex(wText.getLineCount());
+                    message.append(errorDescription).append(Const.CR).append(Const.CR);
                 }
+                
+                if (!Const.isEmpty(transStatus.getLoggingString()))
+                {
+                    message.append(transStatus.getLoggingString()).append(Const.CR);
+                }
+                    
+                wText.setText(message.toString());
+                wText.setTopIndex(wText.getLineCount());
+            }
+            else
+            {
+            	index-=slaveServerStatus.getTransStatusList().size();
+            	
+            	// We clicked on a job line item
+            	//
+            	SlaveServerJobStatus jobStatus = slaveServerStatus.getJobStatusList().get(index);
+                stopEnabled = jobStatus.isRunning();
+                
+                StringBuffer message = new StringBuffer();
+                String errorDescription = jobStatus.getErrorDescription();
+                if (!Const.isEmpty(errorDescription))
+                {
+                    message.append(errorDescription).append(Const.CR).append(Const.CR);
+                }
+                
+                if (!Const.isEmpty(jobStatus.getLoggingString()))
+                {
+                    message.append(jobStatus.getLoggingString()).append(Const.CR);
+                }
+                    
+                wText.setText(message.toString());
+                wText.setTopIndex(wText.getLineCount());
             }
         }
         wStop.setEnabled(stopEnabled);
@@ -416,6 +441,7 @@ public class SpoonSlave extends Composite implements TabItemInterface
             TreeItem transItem = new TreeItem(wTree, SWT.NONE);
             transItem.setText(0, transStatus.getTransName());
             transItem.setText(9, transStatus.getStatusDescription());
+            transItem.setImage(GUIResource.getInstance().getImageTransGraph());
             
             try
             {
@@ -438,10 +464,34 @@ public class SpoonSlave extends Composite implements TabItemInterface
                 transStatus.setErrorDescription("Unable to access transformation details : "+Const.CR+Const.getStackTracker(e));
             } 
 		}
+
+        for (int i = 0; i < slaveServerStatus.getJobStatusList().size(); i++)
+		{
+            SlaveServerJobStatus jobStatus =  slaveServerStatus.getJobStatusList().get(i);
+            TreeItem jobItem = new TreeItem(wTree, SWT.NONE);
+            jobItem.setText(0, jobStatus.getJobName());
+            jobItem.setText(9, jobStatus.getStatusDescription());
+            jobItem.setImage(GUIResource.getInstance().getImageJobGraph());
+            
+            try
+            {
+                LogWriter.getInstance().logDetailed(toString(), "Getting job status for [{0}] on server [{1}]", jobStatus.getJobName(), slaveServer);
+                SlaveServerJobStatus ts = slaveServer.getJobStatus(jobStatus.getJobName());
+                LogWriter.getInstance().logDetailed(toString(), "Finished receiving job status for [{0}] from server [{1}]", jobStatus.getJobName(), slaveServer);
+                jobStatus.setLoggingString(ts.getLoggingString());
+            }
+            catch (Exception e)
+            {
+                jobStatus.setErrorDescription("Unable to access transformation details : "+Const.CR+Const.getStackTracker(e));
+            } 
+
+		}
         
         TreeMemory.setExpandedFromMemory(wTree, STRING_SLAVE_LOG_TREE_NAME+slaveServer.toString());
         TreeUtil.setOptimalWidthOnColumns(wTree);
-                
+
+        
+        
 		refreshBusy = false;
 	}
 

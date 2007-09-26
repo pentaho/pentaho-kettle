@@ -38,8 +38,9 @@ public class ResourceDependencyTest extends TestCase {
     EnvUtil.environmentInit();
     LogWriter.getInstance(LogWriter.LOG_LEVEL_BASIC);
     
-    StepLoader.getInstance().read();
-    JobEntryLoader.getInstance().read();
+    StepLoader.init();
+    JobEntryLoader.init();
+    
     // Load the first job metadata
     JobMeta jobMeta = new JobMeta(LogWriter.getInstance(), "test/org/pentaho/di/resource/processchangelog.kjb", null, null); //$NON-NLS-1$
     List<ResourceReference> resourceReferences = jobMeta.getResourceDependencies();
@@ -86,7 +87,8 @@ public class ResourceDependencyTest extends TestCase {
     EnvUtil.environmentInit();
     LogWriter.getInstance(LogWriter.LOG_LEVEL_BASIC);
     
-    StepLoader.getInstance().read();
+    StepLoader.init();
+    
     TransMeta transMeta = new TransMeta("test/org/pentaho/di/run/textfileinput/TextFileInputCSV.ktr"); //$NON-NLS-1$
     List<ResourceReference> resourceReferences = transMeta.getResourceDependencies();
     // printResourceReferences(resourceReferences);    

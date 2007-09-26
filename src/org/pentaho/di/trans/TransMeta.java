@@ -2475,6 +2475,13 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
 		retval.append("    ").append(XMLHandler.addTagValue("description", description)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("    ").append(XMLHandler.addTagValue("extended_description", extended_description)); 
 		retval.append("    ").append(XMLHandler.addTagValue("trans_version", trans_version));
+
+		// Let's add the last known file location if we have any...
+        //
+        if (!Const.isEmpty(filename)) {
+            retval.append("  ").append(XMLHandler.addTagValue("filename", filename)); //$NON-NLS-1$ //$NON-NLS-2$
+        }
+
 		if ( trans_status >= 0 )
 		{
 		    retval.append("    ").append(XMLHandler.addTagValue("trans_status", trans_status));
@@ -2903,6 +2910,10 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
 			// trans status
 			//
 			trans_status = Const.toInt(XMLHandler.getTagValue(infonode, "trans_status"),-1); 
+			
+            // Also load and set the filename
+            //
+            filename = XMLHandler.getTagValue(infonode, "filename"); //$NON-NLS-1$
 
             /*
              * Directory String directoryPath = XMLHandler.getTagValue(infonode, "directory");

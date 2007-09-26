@@ -2284,6 +2284,8 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
     
     public static boolean editProperties(JobMeta jobMeta, Spoon spoon, Repository rep)
     {
+    	if (jobMeta==null) return false;
+    	
         JobDialog jd = new JobDialog(spoon.getShell(), SWT.NONE, jobMeta, rep);
         JobMeta ji = jd.open();
         
