@@ -1033,7 +1033,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, VariableSpace
      */
     public void setInitialPoolSize(int initialPoolSize)
     {
-        attributes.setProperty(ATTRIBUTE_MAXIMUM_POOL_SIZE, Integer.toString(initialPoolSize));
+        attributes.setProperty(ATTRIBUTE_INITIAL_POOL_SIZE, Integer.toString(initialPoolSize));
     }
     
     
