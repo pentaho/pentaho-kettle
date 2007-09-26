@@ -216,9 +216,9 @@ public class Trans implements VariableSpace
 		startDate = null;
         running = false;
 
-		/*
-		 * Set the arguments on the transformation...
-		 */
+		//
+		// Set the arguments on the transformation...
+		//
 		if (arguments!=null) transMeta.setArguments(arguments);
 
 		if (transMeta.getName()==null)
@@ -251,8 +251,10 @@ public class Trans implements VariableSpace
 			log.logBasic(toString(), Messages.getString("Trans.Log.ThisIsNotAReplayTransformation")); //$NON-NLS-1$
 		}
 
-		// setInternalKettleVariables(this);  Let's not do this.
+		// setInternalKettleVariables(this);  --> Let's not do this, when running without file, for example remote, it spoils the fun
 		
+		// Keep track of all the row sets and allocated steps
+		//
 		steps	 = new ArrayList<StepMetaDataCombi>();
 		rowsets	 = new ArrayList<RowSet>();
 
@@ -345,6 +347,7 @@ public class Trans implements VariableSpace
 		log.logDetailed(toString(), Messages.getString("Trans.Log.AllocatingStepsAndStepData")); //$NON-NLS-1$
         
 		// Allocate the steps & the data...
+		//
 		for (int i=0;i<hopsteps.size();i++)
 		{
 			StepMeta stepMeta=hopsteps.get(i);
@@ -381,7 +384,7 @@ public class Trans implements VariableSpace
                     
 					// Copy the variables of the transformation to the step...
 					// don't share. Each copy of the step has its own variables.
-					((BaseStep)step).initializeVariablesFrom(this);
+					((BaseStep)step).initializeVariablesFrom(transMeta);
 					
                     // If the step is partitioned, set the partitioning ID and some other things as well...
                     if (stepMeta.isPartitioned())

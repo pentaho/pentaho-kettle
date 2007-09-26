@@ -20,7 +20,6 @@ import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.andValid
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlankValidator;
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notNullValidator;
 
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -40,7 +39,6 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.Log4jFileAppender;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.variables.VariableSpace;
-import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobEntryType;
@@ -568,15 +566,9 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
             {
                 log.removeAppender(appender);
                 appender.close();
-                try
-                {
-                    ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_LOG, KettleVFS.getFileObject(appender.getFile().getAbsolutePath()), parentJob.getJobname(), getName());
-                    result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
-                }
-                catch(IOException e)
-                {
-                    log.logError(toString(), "Error getting file object from file ["+appender.getFile()+"] : "+e.toString());
-                }
+
+                ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_LOG, appender.getFile(), parentJob.getJobname(), getName());
+                result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
             }
             log.setLogLevel(backupLogLevel);
 

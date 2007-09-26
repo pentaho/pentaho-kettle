@@ -221,7 +221,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 	{
 		try
 		{
-			spoon.getLog().logBasic(toString(), "edit job graph entry: " + je.getName()); //$NON-NLS-1$
+			spoon.getLog().logBasic(spoon.toString(), "edit job graph entry: " + je.getName()); //$NON-NLS-1$
 
 			JobEntryCopy before = (JobEntryCopy) je.clone_deep();
 			boolean entry_changed = false;
@@ -365,8 +365,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 
 			Node entriesnode = XMLHandler.getSubNode(doc, "jobentries"); //$NON-NLS-1$
 			int nr = XMLHandler.countNodes(entriesnode, "entry"); //$NON-NLS-1$
-			spoon.getLog()
-					.logDebug(toString(), "I found " + nr + " job entries to paste on location: " + loc); //$NON-NLS-1$ //$NON-NLS-2$
+			spoon.getLog().logDebug(spoon.toString(), "I found " + nr + " job entries to paste on location: " + loc); //$NON-NLS-1$ //$NON-NLS-2$
 			JobEntryCopy entries[] = new JobEntryCopy[nr];
 
 			// Point min = new Point(loc.x, loc.y);

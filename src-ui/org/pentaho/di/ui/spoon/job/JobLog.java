@@ -17,7 +17,7 @@
 package org.pentaho.di.ui.spoon.job;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -53,20 +53,18 @@ import org.pentaho.di.core.Props;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleJobException;
+import org.pentaho.di.core.gui.JobTracker;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobEntryResult;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryCopy;
-import org.pentaho.di.ui.spoon.job.JobHistoryRefresher;
-import org.pentaho.di.ui.spoon.job.Messages;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.TreeMemory;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.TabItemInterface;
 import org.pentaho.di.ui.spoon.dialog.LogSettingsDialog;
-import org.pentaho.di.core.gui.JobTracker;
 
 
 /*** 
@@ -100,7 +98,7 @@ public class JobLog extends Composite implements TabItemInterface
 	private SelectionListener lsStart, lsStop, lsRefresh, lsError, lsClear, lsLog;
 	private StringBuffer message;
 
-	private FileInputStream in;
+	private InputStream in;
 	private Job job;
     private int previousNrItems;
     private boolean isRunning;

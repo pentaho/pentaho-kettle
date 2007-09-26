@@ -1,32 +1,33 @@
 package org.pentaho.di.core.logging;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
+import org.apache.commons.vfs.FileObject;
 import org.apache.log4j.Appender;
 import org.apache.log4j.Layout;
 import org.apache.log4j.spi.ErrorHandler;
 import org.apache.log4j.spi.Filter;
 import org.apache.log4j.spi.LoggingEvent;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.vfs.KettleVFS;
 
 public class Log4jFileAppender implements Appender
 {
     private Layout layout;
     private Filter filter;
     
-    private File    file;
+    private FileObject file;
     
     private String  name;
     
-    private FileOutputStream fileOutputStream;
+    private OutputStream fileOutputStream;
     
-    public Log4jFileAppender(File file) throws IOException
+    public Log4jFileAppender(FileObject file) throws IOException
     {
         this.file = file;
         
-        fileOutputStream = new FileOutputStream(file);
+        fileOutputStream = KettleVFS.getOutputStream(file, false);
     }
     
     public void addFilter(Filter filter)
@@ -103,22 +104,22 @@ public class Log4jFileAppender implements Appender
         return true;
     }
 
-    public File getFile()
+    public FileObject getFile()
     {
         return file;
     }
 
-    public void setFilename(File file)
+    public void setFilename(FileObject file)
     {
         this.file = file;
     }
 
-    public FileOutputStream getFileOutputStream()
+    public OutputStream getFileOutputStream()
     {
         return fileOutputStream;
     }
 
-    public void setFileOutputStream(FileOutputStream fileOutputStream)
+    public void setFileOutputStream(OutputStream fileOutputStream)
     {
         this.fileOutputStream = fileOutputStream;
     }

@@ -19,9 +19,11 @@ package org.pentaho.di.core.logging;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.MessageFormat;
 import java.util.Enumeration;
 
+import org.apache.commons.vfs.FileObject;
 import org.apache.log4j.Appender;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Layout;
@@ -31,6 +33,7 @@ import org.apache.log4j.Priority;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
+import org.pentaho.di.core.vfs.KettleVFS;
 
 
 
@@ -201,23 +204,28 @@ public class LogWriter
 		}
 	}
 	
-	public static final Log4jFileAppender createFileAppender(String filename, boolean exact) throws KettleException
+	/**
+	 * Create a file appender 
+	 * @param filename The (VFS) filename (URL) to write to.
+	 * @param exact is this an exact filename of a filename to be stored in "java.io.tmp"
+	 * @return A new file appender
+	 * @throws KettleFileException In case there is a problem opening the file.
+	 */
+	public static final Log4jFileAppender createFileAppender(String filename, boolean exact) throws KettleFileException
 	{
 		try
 		{
-            File file;
+            FileObject file;
 	        if (!exact)
 	        {
-	            file = File.createTempFile(filename+".", ".log");
-	            file.deleteOnExit();
+	            file = KettleVFS.createTempFile(filename+".", ".log", System.getProperty("java.io.tmpdir"));
 	        }
 	        else
 	        {
-	            file = new File(filename);
+	            file = KettleVFS.getFileObject(filename);
 	        }
-	        File realFile = file.getAbsoluteFile();
-	
-	        Log4jFileAppender appender = new Log4jFileAppender(realFile);
+	        
+	        Log4jFileAppender appender = new Log4jFileAppender(file);
 	        appender.setLayout(new Log4jKettleLayout(true));
 	        appender.setName(LogWriter.createFileAppenderName(filename, exact));
             
@@ -445,9 +453,9 @@ public class LogWriter
     /**
      * Please try to get the file appender yourself using the static constructor and work from there
      */
-	public FileInputStream getFileInputStream() throws IOException
+	public InputStream getFileInputStream() throws IOException
 	{
-		return new FileInputStream(fileAppender.getFile());
+		return KettleVFS.getInputStream(fileAppender.getFile());
 	}
     
     /**
@@ -466,7 +474,7 @@ public class LogWriter
         {
             throw new IOException("Unable to find appender for file: "+filename+" (exact="+exact+")");
         }
-        return new FileInputStream(((Log4jFileAppender)appender).getFile());
+        return KettleVFS.getFileInputStream( ((Log4jFileAppender)appender).getFile() );
     }
     
     public boolean isBasic()

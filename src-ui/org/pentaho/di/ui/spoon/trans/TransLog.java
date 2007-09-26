@@ -16,7 +16,7 @@
 package org.pentaho.di.ui.spoon.trans;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -125,7 +125,7 @@ public class TransLog extends Composite implements TabItemInterface
 
 	private StringBuffer message;
 
-	private FileInputStream in;
+	private InputStream in;
 
 	private Trans trans;
 

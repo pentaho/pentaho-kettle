@@ -622,15 +622,9 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
             {
                 log.removeAppender(appender);
                 appender.close();
-                try
-                {
-                    ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_LOG, KettleVFS.getFileObject(appender.getFile().getAbsolutePath()), parentJob.getJobname(), getName());
-                    result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
-                }
-                catch(IOException e)
-                {
-                    log.logError(toString(), "Error getting file object from file ["+appender.getFile()+"] : "+e.toString());
-                }
+
+                ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_LOG, appender.getFile(), parentJob.getJobname(), getName());
+                result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
             }
             log.setLogLevel(backupLogLevel);
         }
