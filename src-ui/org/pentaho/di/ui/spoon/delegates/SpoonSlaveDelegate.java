@@ -6,6 +6,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.spoon.delegates.SpoonDelegate;
+import org.pentaho.di.trans.HasSlaveServersInterface;
 import org.pentaho.di.trans.TransConfiguration;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
@@ -99,7 +100,7 @@ public class SpoonSlaveDelegate extends SpoonDelegate
 		tabfolder.setSelected(idx);
 	}
 
-	public void delSlaveServer(TransMeta transMeta, SlaveServer slaveServer) throws KettleException
+	public void delSlaveServer(HasSlaveServersInterface hasSlaveServersInterface, SlaveServer slaveServer) throws KettleException
 	{
 
 		Repository rep = spoon.getRepository();
@@ -110,20 +111,20 @@ public class SpoonSlaveDelegate extends SpoonDelegate
 			rep.delSlave(slaveServer.getId());
 		}
 
-		int idx = transMeta.getSlaveServers().indexOf(slaveServer);
-		transMeta.getSlaveServers().remove(idx);
+		int idx = hasSlaveServersInterface.getSlaveServers().indexOf(slaveServer);
+		hasSlaveServersInterface.getSlaveServers().remove(idx);
 		spoon.refreshTree();
 
 	}
 
-	public void newSlaveServer(TransMeta transMeta)
+	public void newSlaveServer(HasSlaveServersInterface hasSlaveServersInterface)
 	{
 		SlaveServer slaveServer = new SlaveServer();
 
 		SlaveServerDialog dialog = new SlaveServerDialog(spoon.getShell(), slaveServer);
 		if (dialog.open())
 		{
-			transMeta.getSlaveServers().add(slaveServer);
+			hasSlaveServersInterface.getSlaveServers().add(slaveServer);
 			spoon.refreshTree();
 		}
 	}

@@ -145,6 +145,7 @@ import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.trans.DatabaseImpact;
 import org.pentaho.di.trans.HasDatabasesInterface;
+import org.pentaho.di.trans.HasSlaveServersInterface;
 import org.pentaho.di.trans.Partitioner;
 import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.StepPlugin;
@@ -1803,7 +1804,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	}
 
     public void newSlaveServer() {
-		newSlaveServer((TransMeta) selectionObjectParent);
+		newSlaveServer((HasSlaveServersInterface) selectionObjectParent);
 	}
 
     public void editTransformationPropertiesPopup() {
@@ -2026,9 +2027,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	}
 
     public void delSlaveServer() {
-		final TransMeta transMeta = (TransMeta) selectionObjectParent;
+		final HasSlaveServersInterface hasSlaveServersInterface = (HasSlaveServersInterface) selectionObjectParent;
 		final SlaveServer slaveServer = (SlaveServer) selectionObject;
-		delSlaveServer(transMeta, slaveServer);
+		delSlaveServer(hasSlaveServersInterface, slaveServer);
 	}
 
     public void addSpoonSlave() {
@@ -2169,7 +2170,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			if (selection.equals(DatabaseMeta.class)) delegates.db.newConnection();
 			if (selection.equals(PartitionSchema.class)) newPartitioningSchema((TransMeta) parent);
 			if (selection.equals(ClusterSchema.class)) newClusteringSchema((TransMeta) parent);
-			if (selection.equals(SlaveServer.class)) newSlaveServer((TransMeta) parent);
+			if (selection.equals(SlaveServer.class)) newSlaveServer((HasSlaveServersInterface) parent);
 		}
                 else
 		{
@@ -3876,7 +3877,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
                         if (partitionSchema.isShared()) tiPartition.setFont(guiResource.getFontBold());
 					}
 
-					// /////////////////////////////////////////////////////
+					///////////////////////////////////////////////////////
 					//
 					// The slaves
 					//
@@ -3884,7 +3885,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 					tiSlaveTitle.setText(STRING_SLAVES);
 					tiSlaveTitle.setImage(guiResource.getImageBol());
 
-					// Put the steps below it.
+					// Put the slaves below it.
+					//
 					for (int i = 0; i < transMeta.getSlaveServers().size(); i++)
 					{
 						SlaveServer slaveServer = transMeta.getSlaveServers().get(i);
@@ -3894,7 +3896,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
                         if (slaveServer.isShared()) tiSlave.setFont(guiResource.getFontBold());
 					}
 
-					// /////////////////////////////////////////////////////
+					///////////////////////////////////////////////////////
 					//
 					// The clusters
 					//
@@ -3976,7 +3978,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 					tiJobEntriesTitle.setText(STRING_JOB_ENTRIES);
 					tiJobEntriesTitle.setImage(guiResource.getImageBol());
 
-					// Put the steps below it.
+					// Put the job entries below it.
+					//
 					for (int i = 0; i < jobMeta.nrJobEntries(); i++)
 					{
 						JobEntryCopy jobEntry = jobMeta.getJobEntry(i);
@@ -4001,6 +4004,25 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
                             Image image = GUIResource.getInstance().getImagesJobentriesSmall().get(jobEntry.getEntry().getID());
 							tiJobEntry.setImage(image);
 						}
+					}
+					
+					///////////////////////////////////////////////////////
+					//
+					// The slaves
+					//
+					TreeItem tiSlaveTitle = new TreeItem(tiJobName, SWT.NONE);
+					tiSlaveTitle.setText(STRING_SLAVES);
+					tiSlaveTitle.setImage(guiResource.getImageBol());
+
+					// Put the slaves below it.
+					//
+					for (int i = 0; i < jobMeta.getSlaveServers().size(); i++)
+					{
+						SlaveServer slaveServer = jobMeta.getSlaveServers().get(i);
+						TreeItem tiSlave = new TreeItem(tiSlaveTitle, SWT.NONE);
+						tiSlave.setText(slaveServer.getName());
+						tiSlave.setImage(guiResource.getImageBol());
+                        if (slaveServer.isShared()) tiSlave.setFont(guiResource.getFontBold());
 					}
 				}
 			}
@@ -5781,16 +5803,16 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
      * This creates a slave server, edits it and adds it to the transformation metadata
 	 * 
 	 */
-	public void newSlaveServer(TransMeta transMeta)
+	public void newSlaveServer(HasSlaveServersInterface hasSlaveServersInterface)
 	{
-		delegates.slaves.newSlaveServer(transMeta);
+		delegates.slaves.newSlaveServer(hasSlaveServersInterface);
 	}
 
-	public void delSlaveServer(TransMeta transMeta, SlaveServer slaveServer)
+	public void delSlaveServer(HasSlaveServersInterface hasSlaveServersInterface, SlaveServer slaveServer)
 	{
 		try
 		{
-			delegates.slaves.delSlaveServer(transMeta,slaveServer);
+			delegates.slaves.delSlaveServer(hasSlaveServersInterface,slaveServer);
 		} catch (KettleException e)
 		{
             new ErrorDialog(shell, Messages.getString("Spoon.Dialog.ErrorDeletingSlave.Title"), Messages.getString("Spoon.Dialog.ErrorDeletingSlave.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
@@ -5802,7 +5824,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	 * Sends transformation to slave server
 	 * @param executionConfiguration
 	 */
-	public void sendXMLToSlaveServer(TransMeta transMeta, TransExecutionConfiguration executionConfiguration){
+	public void sendTransformationXMLToSlaveServer(TransMeta transMeta, TransExecutionConfiguration executionConfiguration){
 		try
 		{
 			delegates.slaves.sendXMLToSlaveServer(transMeta,executionConfiguration);

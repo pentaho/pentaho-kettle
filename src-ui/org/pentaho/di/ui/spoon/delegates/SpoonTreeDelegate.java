@@ -113,6 +113,8 @@ public class SpoonTreeDelegate extends SpoonDelegate
 							object = new TreeSelection(path[2], DatabaseMeta.class, jobMeta);
 						if (path[2].equals(Spoon.STRING_JOB_ENTRIES))
 							object = new TreeSelection(path[2], JobEntryCopy.class, jobMeta);
+						if (path[2].equals(Spoon.STRING_SLAVES))
+							object = new TreeSelection(path[2], SlaveServer.class, jobMeta);
 					}
 					break;
 
@@ -127,13 +129,11 @@ public class SpoonTreeDelegate extends SpoonDelegate
 						if (path[2].equals(Spoon.STRING_HOPS))
 							object = new TreeSelection(path[3], transMeta.findTransHop(path[3]), transMeta);
 						if (path[2].equals(Spoon.STRING_PARTITIONS))
-							object = new TreeSelection(path[3], transMeta.findPartitionSchema(path[3]),
-									transMeta);
+							object = new TreeSelection(path[3], transMeta.findPartitionSchema(path[3]), transMeta);
 						if (path[2].equals(Spoon.STRING_SLAVES))
 							object = new TreeSelection(path[3], transMeta.findSlaveServer(path[3]), transMeta);
 						if (path[2].equals(Spoon.STRING_CLUSTERS))
-							object = new TreeSelection(path[3], transMeta.findClusterSchema(path[3]),
-									transMeta);
+							object = new TreeSelection(path[3], transMeta.findClusterSchema(path[3]), transMeta);
 					}
 					if (path[0].equals(Spoon.STRING_JOBS)) // The name of a job
 					{
@@ -142,6 +142,8 @@ public class SpoonTreeDelegate extends SpoonDelegate
 							object = new TreeSelection(path[3], jobMeta.findDatabase(path[3]), jobMeta);
 						if (jobMeta != null && path[2].equals(Spoon.STRING_JOB_ENTRIES))
 							object = new TreeSelection(path[3], jobMeta.findJobEntry(path[3]), jobMeta);
+						if (jobMeta != null && path[2].equals(Spoon.STRING_SLAVES))
+							object = new TreeSelection(path[3], jobMeta.findSlaveServer(path[3]), jobMeta);
 					}
 					break;
 

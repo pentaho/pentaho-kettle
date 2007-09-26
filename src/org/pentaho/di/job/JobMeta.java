@@ -25,6 +25,7 @@ import org.apache.commons.vfs.FileName;
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.DBCache;
@@ -68,6 +69,8 @@ import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.HasDatabasesInterface;
+import org.pentaho.di.trans.HasSlaveServersInterface;
+import org.pentaho.di.trans.Messages;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -82,10 +85,13 @@ import org.w3c.dom.Node;
 public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, UndoInterface, 
 								HasDatabasesInterface, ChangedFlagInterface, 
 								VariableSpace, EngineMetaInterface,
-								ResourceExportInterface
+								ResourceExportInterface, HasSlaveServersInterface
 {
     public static final String  XML_TAG              = "job"; //$NON-NLS-1$
 
+    private static final String XML_TAG_SLAVESERVERS        = "slaveservers";  //$NON-NLS-1$
+    
+    
     public LogWriter            log;
 
     protected long              id;
@@ -102,15 +108,17 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
 
     protected String            filename;
 
-    public List<JobEntryInterface>     jobentries;
+    public List<JobEntryInterface> jobentries;
 
-    public List<JobEntryCopy>          jobcopies;
+    public List<JobEntryCopy>      jobcopies;
 
-    public List<JobHopMeta>            jobhops;
+    public List<JobHopMeta>        jobhops;
 
-    public List<NotePadMeta>           notes;
+    public List<NotePadMeta>       notes;
 
-    public List<DatabaseMeta>          databases;
+    public List<DatabaseMeta>      databases;
+    
+    private List<SlaveServer>      slaveServers;
 
     protected RepositoryDirectory directory;
 
@@ -183,11 +191,14 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
     public void clear()
     {
         name = null;
+        
         jobcopies = new ArrayList<JobEntryCopy>();
         jobentries = new ArrayList<JobEntryInterface>();
         jobhops = new ArrayList<JobHopMeta>();
         notes = new ArrayList<NotePadMeta>();
         databases = new ArrayList<DatabaseMeta>();
+        slaveServers = new ArrayList<SlaveServer>();
+        
         logconnection = null;
         logTable = null;
         arguments = null;
@@ -324,7 +335,7 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
               jobMeta.jobhops = new ArrayList<JobHopMeta>();
               jobMeta.notes = new ArrayList<NotePadMeta>();
               jobMeta.databases = new ArrayList<DatabaseMeta>();
-
+              jobMeta.slaveServers = new ArrayList<SlaveServer>();
             }
             
             for (JobEntryInterface entry : jobentries) jobMeta.jobentries.add((JobEntryInterface)entry.clone());
@@ -332,7 +343,8 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
             for (JobHopMeta entry : jobhops) jobMeta.jobhops.add((JobHopMeta)entry.clone());
             for (NotePadMeta entry : notes) jobMeta.notes.add((NotePadMeta)entry.clone());
             for (DatabaseMeta entry : databases) jobMeta.databases.add((DatabaseMeta)entry.clone());
-
+            for (SlaveServer slave : slaveServers) jobMeta.getSlaveServers().add((SlaveServer)slave.clone());
+            
             return jobMeta;
         }
         catch (CloneNotSupportedException e)
@@ -581,6 +593,17 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
             }
         }
         
+        // The slave servers...
+        //
+        retval.append("    ").append(XMLHandler.openTag(XML_TAG_SLAVESERVERS)).append(Const.CR); //$NON-NLS-1$
+        for (int i = 0; i < slaveServers.size(); i++)
+        {
+            SlaveServer slaveServer = slaveServers.get(i);
+            retval.append("         ").append(slaveServer.getXML()).append(Const.CR);
+        }
+        retval.append("    ").append(XMLHandler.closeTag(XML_TAG_SLAVESERVERS)).append(Const.CR); //$NON-NLS-1$
+
+        
         retval.append("  ").append(XMLHandler.addTagValue("logconnection", ci == null ? "" : ci.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         retval.append("  ").append(XMLHandler.addTagValue("logtable", logTable)); //$NON-NLS-1$ //$NON-NLS-2$
 
@@ -777,6 +800,33 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
                     }
                 }
             }
+            
+            // Read the slave servers...
+            // 
+            Node slaveServersNode = XMLHandler.getSubNode(jobnode, XML_TAG_SLAVESERVERS); //$NON-NLS-1$
+            int nrSlaveServers = XMLHandler.countNodes(slaveServersNode, SlaveServer.XML_TAG); //$NON-NLS-1$
+            for (int i = 0 ; i < nrSlaveServers ; i++)
+            {
+                Node slaveServerNode = XMLHandler.getSubNodeByNr(slaveServersNode, SlaveServer.XML_TAG, i);
+                SlaveServer slaveServer = new SlaveServer(slaveServerNode);
+                
+                // Check if the object exists and if it's a shared object.
+                // If so, then we will keep the shared version, not this one.
+                // The stored XML is only for backup purposes.
+                SlaveServer check = findSlaveServer(slaveServer.getName());
+                if (check!=null)
+                {
+                    if (!check.isShared()) // we don't overwrite shared objects.
+                    {
+                        addOrReplaceSlaveServer(slaveServer);
+                    }
+                }
+                else
+                {
+                    slaveServers.add(slaveServer);
+                }
+            }
+
 
             /*
              * Get the log database connection & log table
@@ -923,6 +973,11 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
                 DatabaseMeta databaseMeta = (DatabaseMeta) object;
                 addOrReplaceDatabase(databaseMeta);
             }
+            else if (object instanceof SlaveServer)
+            {
+                SlaveServer slaveServer = (SlaveServer) object;
+                addOrReplaceSlaveServer(slaveServer);
+            }
         }
 
         if (rep!=null)
@@ -942,6 +997,7 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
             // Now overwrite the objects in there
             List<Object> shared = new ArrayList<Object>();
             shared.addAll(databases);
+            shared.addAll(slaveServers);
             
             // The databases connections...
             for (int i=0;i<shared.size();i++)
@@ -1026,6 +1082,14 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
             saveRepJob(rep);
             if (monitor != null) monitor.worked(1);
 
+            // Save the slaves
+            //
+            for (int i=0;i<slaveServers.size();i++)
+            {
+                SlaveServer slaveServer = slaveServers.get(i);
+                slaveServer.saveRep(rep, getID(), false);
+            }
+
             //
             // Save the notes
             //
@@ -1107,7 +1171,8 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
      * @param jobname The name of the job
      * @param repdir The directory in which the job resides.
      * @throws KettleException
-     */    public JobMeta(LogWriter log, Repository rep, String jobname, RepositoryDirectory repdir, IProgressMonitor monitor) throws KettleException
+     */   
+    public JobMeta(LogWriter log, Repository rep, String jobname, RepositoryDirectory repdir, IProgressMonitor monitor) throws KettleException
     {
         this.log = log;
 
@@ -1371,6 +1436,27 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
             previous.replaceMeta(databaseMeta);
         }
         changed_databases = true;
+    }
+    
+    /**
+     * Add a new slave server to the transformation if that didn't exist yet.
+     * Otherwise, replace it.
+     *
+     * @param slaveServer The slave server to be added.
+     */
+    public void addOrReplaceSlaveServer(SlaveServer slaveServer)
+    {
+        int index = slaveServers.indexOf(slaveServer);
+        if (index<0)
+        {
+            slaveServers.add(slaveServer); 
+        }
+        else
+        {
+            SlaveServer previous = slaveServers.get(index);
+            previous.replaceMeta(slaveServer);
+        }
+        setChanged();
     }
 
     public void removeJobEntry(int i)
@@ -2646,4 +2732,35 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
 		return filename;
 	}
 
+	/**
+	 * @return the slaveServer list
+	 */
+	public List<SlaveServer> getSlaveServers() {
+		return slaveServers;
+	}
+
+	/**
+	 * @param slaveServers the slaveServers to set
+	 */
+	public void setSlaveServers(List<SlaveServer> slaveServers) {
+		this.slaveServers = slaveServers;
+	}
+
+	/**
+	 * Find a slave server using the name
+	 * @param serverString the name of the slave server
+	 * @return the slave server or null if we couldn't spot an approriate entry.
+	 */
+    public SlaveServer findSlaveServer(String serverString)
+    {
+        return SlaveServer.findSlaveServer(slaveServers, serverString);
+    }
+    
+    /**
+     * @return An array list slave server names
+     */
+    public String[] getSlaveServerNames()
+    {
+        return SlaveServer.getSlaveServerNames(slaveServers);
+    }
 }

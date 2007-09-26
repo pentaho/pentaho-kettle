@@ -123,7 +123,7 @@ align="vertical" >
 			<toolbarbutton value="trans-impact" label="%Spoon.Menu.Transformation.Impact" image="ui/images/impact.png" tooltiptext="%Spoon.Tooltip.AnalyzeTranformation"/>
 			<toolbarbutton value="trans-get-sql" label="%Spoon.Menu.Transformation.GetSQL" image="ui/images/SQLbutton.png" tooltiptext="%Spoon.Tooltip.GenerateSQLForTranformation"/>
 			<toolbarseparator />
-			<toolbarbutton value="explore-database" label="%Spoon.Menu.ExploreConnection" image="ui/images/DLU.png" tooltiptext="%Spoon.Tooltip.ExploreConnection"/>
+			<toolbarbutton value="explore-database" label="%Spoon.Menu.ExploreConnection" image="ui/images/exploredb.png" tooltiptext="%Spoon.Tooltip.ExploreConnection"/>
 		</toolbar>
 	</toolbox>
 

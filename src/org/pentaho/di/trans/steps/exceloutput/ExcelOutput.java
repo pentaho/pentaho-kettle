@@ -401,7 +401,6 @@ public class ExcelOutput extends BaseStep implements StepInterface
                 ws.setEncoding(meta.getEncoding());
             }
             
-            
             FileObject file = KettleVFS.getFileObject(buildFilename());
 
 		

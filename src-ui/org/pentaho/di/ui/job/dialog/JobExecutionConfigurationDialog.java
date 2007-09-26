@@ -1,6 +1,5 @@
-package org.pentaho.di.ui.trans.dialog;
+package org.pentaho.di.ui.job.dialog;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -21,12 +20,11 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.trans.TransExecutionConfiguration;
-import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.job.JobExecutionConfiguration;
+import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
@@ -37,7 +35,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 
 
-public class TransExecutionConfigurationDialog extends Dialog
+public class JobExecutionConfigurationDialog extends Dialog
 {
     private Display display;
     private Shell parent;
@@ -49,39 +47,29 @@ public class TransExecutionConfigurationDialog extends Dialog
     
     private Group gLocal;
     
-    private TransExecutionConfiguration configuration;
-    private TransMeta transMeta;
+    private JobExecutionConfiguration configuration;
+    private JobMeta jobMeta;
 
     private Button wExecLocal;
     private Button wExecRemote;
-    private Button wExecCluster;
-    private Button wSafeMode;
-    private Button wPrepareExecution;
-    private Button wPostTransformation;
-    private Button wStartExecution;
-    private Button wShowTransformations;
     private CCombo wRemoteHost;
     private Label wlRemoteHost;
-    private Text wReplayDate;
     private TableView wArguments;
     private Label wlArguments;
     private Label wlVariables;
     private TableView wVariables;
-    private SimpleDateFormat simpleDateFormat;
-    private Label wlReplayDate;
     private Label wlLogLevel;
     private CCombo wLogLevel;
-    
-    public TransExecutionConfigurationDialog(Shell parent, TransExecutionConfiguration configuration, TransMeta transMeta)
+    private Button wSafeMode;
+
+    public JobExecutionConfigurationDialog(Shell parent, JobExecutionConfiguration configuration, JobMeta jobMeta)
     {
         super(parent);
         this.parent = parent;
         this.configuration = configuration;
-        this.transMeta  = transMeta;
+        this.jobMeta  = jobMeta;
                 
         props = PropsUI.getInstance();
-        
-        simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
     }
     
     public boolean open()
@@ -169,65 +157,12 @@ public class TransExecutionConfigurationDialog extends Dialog
         fdRemoteHost.right = new FormAttachment(66, 0);
         fdRemoteHost.top   = new FormAttachment(wExecRemote, margin*2);
         wRemoteHost.setLayoutData(fdRemoteHost);
-        for (int i=0;i<transMeta.getSlaveServers().size();i++)
+        for (int i=0;i<jobMeta.getSlaveServers().size();i++)
         {
-            SlaveServer slaveServer = (SlaveServer)transMeta.getSlaveServers().get(i);
+            SlaveServer slaveServer = (SlaveServer)jobMeta.getSlaveServers().get(i);
             wRemoteHost.add(slaveServer.toString());
         }
         
-        /////////////////////////////////////////////////////////////////////////////////////////////////
-        // Clustered execution
-        //
-        wExecCluster=new Button(gLocal, SWT.RADIO);
-        wExecCluster.setText(Messages.getString("TransExecutionConfigurationDialog.ExecCluster.Label")); //$NON-NLS-1$
-        wExecCluster.setToolTipText(Messages.getString("TransExecutionConfigurationDialog.ExecCluster.Tooltip")); //$NON-NLS-1$ //$NON-NLS-2$
-        props.setLook(wExecCluster);
-        FormData fdExecCluster = new FormData();
-        fdExecCluster.left  = new FormAttachment(66, margin);
-        fdExecCluster.right = new FormAttachment(100, 0);
-        wExecCluster.setLayoutData(fdExecCluster);
-        wExecCluster.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { enableFields(); }});
-
-        wPostTransformation = new Button(gLocal, SWT.CHECK);
-        wPostTransformation.setText(Messages.getString("TransExecutionConfigurationDialog.PostTransformation.Label")); //$NON-NLS-1$
-        wPostTransformation.setToolTipText(Messages.getString("TransExecutionConfigurationDialog.PostTransformation.Tooltip")); //$NON-NLS-1$ //$NON-NLS-2$
-        props.setLook(wPostTransformation);
-        FormData fdPostTransformation = new FormData();
-        fdPostTransformation.left  = new FormAttachment(66, tabsize);
-        fdPostTransformation.right = new FormAttachment(100, 0);
-        fdPostTransformation.top   = new FormAttachment(wExecCluster, margin*2);
-        wPostTransformation.setLayoutData(fdPostTransformation);
-
-        wPrepareExecution = new Button(gLocal, SWT.CHECK);
-        wPrepareExecution.setText(Messages.getString("TransExecutionConfigurationDialog.PrepareExecution.Label")); //$NON-NLS-1$
-        wPrepareExecution.setToolTipText(Messages.getString("TransExecutionConfigurationDialog.PrepareExecution.Tooltip")); //$NON-NLS-1$ //$NON-NLS-2$
-        props.setLook(wPrepareExecution);
-        FormData fdPrepareExecution = new FormData();
-        fdPrepareExecution.left  = new FormAttachment(66, tabsize);
-        fdPrepareExecution.right = new FormAttachment(100, 0);
-        fdPrepareExecution.top   = new FormAttachment(wPostTransformation, margin);
-        wPrepareExecution.setLayoutData(fdPrepareExecution);
-        
-        wStartExecution = new Button(gLocal, SWT.CHECK);
-        wStartExecution.setText(Messages.getString("TransExecutionConfigurationDialog.StartExecution.Label")); //$NON-NLS-1$
-        wStartExecution.setToolTipText(Messages.getString("TransExecutionConfigurationDialog.StartExecution.Tooltip")); //$NON-NLS-1$ //$NON-NLS-2$
-        props.setLook(wStartExecution);
-        FormData fdStartExecution = new FormData();
-        fdStartExecution.left  = new FormAttachment(66, tabsize);
-        fdStartExecution.right = new FormAttachment(100, 0);
-        fdStartExecution.top   = new FormAttachment(wPrepareExecution, margin);
-        wStartExecution.setLayoutData(fdStartExecution);
-
-        wShowTransformations = new Button(gLocal, SWT.CHECK);
-        wShowTransformations.setText(Messages.getString("TransExecutionConfigurationDialog.ShowTransformations.Label")); //$NON-NLS-1$
-        wShowTransformations.setToolTipText(Messages.getString("TransExecutionConfigurationDialog.ShowTransformations.Tooltip")); //$NON-NLS-1$ //$NON-NLS-2$
-        props.setLook(wShowTransformations);
-        FormData fdShowTransformations = new FormData();
-        fdShowTransformations.left  = new FormAttachment(66, tabsize);
-        fdShowTransformations.right = new FormAttachment(100, 0);
-        fdShowTransformations.top   = new FormAttachment(wStartExecution, margin);
-        wShowTransformations.setLayoutData(fdShowTransformations);
-
         /////////////////////////////////////////////////////////////////////////////////////////////////
         // Replay date, arguments & variables
         //
@@ -263,28 +198,6 @@ public class TransExecutionConfigurationDialog extends Dialog
         wLogLevel.setLayoutData(fdLogLevel);
         wLogLevel.setItems( LogWriter.log_level_desc_long );
 
-        // ReplayDate
-        wlReplayDate = new Label(shell, SWT.LEFT);
-        props.setLook(wlReplayDate);
-        wlReplayDate.setText(Messages.getString("TransExecutionConfigurationDialog.ReplayDate.Label")); //$NON-NLS-1$
-        wlReplayDate.setToolTipText(Messages.getString("TransExecutionConfigurationDialog.ReplayDate.Tooltip")); //$NON-NLS-1$ //$NON-NLS-2$
-        FormData fdlReplayDate = new FormData();
-        fdlReplayDate.left   = new FormAttachment(50, margin);
-        fdlReplayDate.right  = new FormAttachment(50+rightMiddle, 0);
-        fdlReplayDate.top    = new FormAttachment(wLogLevel, margin*2);
-        wlReplayDate.setLayoutData(fdlReplayDate);
-
-        wReplayDate = new Text(shell, SWT.LEFT | SWT.BORDER | SWT.SINGLE);
-        props.setLook(wReplayDate);
-        wReplayDate.setToolTipText(Messages.getString("TransExecutionConfigurationDialog.ReplayDate.Tooltip")); //$NON-NLS-1$ //$NON-NLS-2$
-        FormData fdReplayDate = new FormData();
-        fdReplayDate.left   = new FormAttachment(50+rightMiddle, margin);
-        fdReplayDate.right  = new FormAttachment(100, 0);
-        fdReplayDate.top    = new FormAttachment(wLogLevel, margin*2);
-        wReplayDate.setLayoutData(fdReplayDate);
-
-
-        
         // Arguments
         wlArguments = new Label(shell, SWT.LEFT);
         props.setLook(wlArguments);
@@ -293,7 +206,7 @@ public class TransExecutionConfigurationDialog extends Dialog
         FormData fdlArguments = new FormData();
         fdlArguments.left   = new FormAttachment(0, 0);
         fdlArguments.right  = new FormAttachment(50, -margin);
-        fdlArguments.top    = new FormAttachment(wReplayDate, margin*2);
+        fdlArguments.top    = new FormAttachment(wLogLevel, margin*2);
         wlArguments.setLayoutData(fdlArguments);
 
         ColumnInfo[] cArguments = {
@@ -302,7 +215,7 @@ public class TransExecutionConfigurationDialog extends Dialog
           };
               
         int nrArguments = configuration.getArguments() !=null ? configuration.getArguments().size() : 0; 
-        wArguments = new TableView(transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, cArguments, nrArguments, true, null, props);
+        wArguments = new TableView(jobMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, cArguments, nrArguments, true, null, props);
         FormData fdArguments = new FormData();
         fdArguments.left   = new FormAttachment(0, 0);
         fdArguments.right  = new FormAttachment(50, -margin);
@@ -318,7 +231,7 @@ public class TransExecutionConfigurationDialog extends Dialog
         FormData fdlVariables = new FormData();
         fdlVariables.left   = new FormAttachment(50, margin);
         fdlVariables.right  = new FormAttachment(100, 0);
-        fdlVariables.top    = new FormAttachment(wReplayDate, margin*2);
+        fdlVariables.top    = new FormAttachment(wLogLevel, margin*2);
         wlVariables.setLayoutData(fdlVariables);
 
         ColumnInfo[] cVariables = {
@@ -327,7 +240,7 @@ public class TransExecutionConfigurationDialog extends Dialog
           };
               
         int nrVariables = configuration.getVariables() !=null ? configuration.getVariables().size() : 0; 
-        wVariables = new TableView(transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, cVariables, nrVariables, true, null, props);
+        wVariables = new TableView(jobMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, cVariables, nrVariables, true, null, props);
         FormData fdVariables = new FormData();
         fdVariables.left   = new FormAttachment(50, margin);
         fdVariables.right  = new FormAttachment(100, 0);
@@ -414,15 +327,9 @@ public class TransExecutionConfigurationDialog extends Dialog
     {
         wExecLocal.setSelection(configuration.isExecutingLocally());
         wExecRemote.setSelection(configuration.isExecutingRemotely());
-        wExecCluster.setSelection(configuration.isExecutingClustered());
         wSafeMode.setSelection(configuration.isSafeModeEnabled());
-        wPrepareExecution.setSelection(configuration.isClusterPreparing());
-        wPostTransformation.setSelection(configuration.isClusterPosting());
-        wStartExecution.setSelection(configuration.isClusterStarting());
-        wShowTransformations.setSelection(configuration.isClusterShowingTransformation());
         wRemoteHost.setText( configuration.getRemoteServer()==null ? "" : configuration.getRemoteServer().toString() );
         wLogLevel.setText( LogWriter.getInstance().getLogLevelDesc() );
-        if (configuration.getReplayDate()!=null) wReplayDate.setText(simpleDateFormat.format(configuration.getReplayDate()));
         getArgumentsData();
         getVariablesData();
         
@@ -433,34 +340,19 @@ public class TransExecutionConfigurationDialog extends Dialog
     {
         try
         {
-            if (!Const.isEmpty(wReplayDate.getText()))
-            {
-                configuration.setReplayDate(simpleDateFormat.parse(wReplayDate.getText()));
-            }
-            else
-            {
-                configuration.setReplayDate(null);
-            }
             configuration.setExecutingLocally(wExecLocal.getSelection());
             configuration.setExecutingRemotely(wExecRemote.getSelection());
-            configuration.setExecutingClustered(wExecCluster.getSelection());
-            
-            // Local data
-            // --> preview handled in debug transformation meta dialog
             
             // Remote data
+            //
             if (wExecRemote.getSelection())
             {
                 String serverName = wRemoteHost.getText();
-                configuration.setRemoteServer(transMeta.findSlaveServer(serverName));
+                configuration.setRemoteServer(jobMeta.findSlaveServer(serverName));
             }
             
-            // Clustering data
-            configuration.setClusterPosting(wPostTransformation.getSelection());
-            configuration.setClusterPreparing(wPrepareExecution.getSelection());
-            configuration.setClusterStarting(wStartExecution.getSelection());
-            configuration.setClusterShowingTransformation(wShowTransformations.getSelection());
-            
+            // various settings
+            //
             configuration.setSafeModeEnabled(wSafeMode.getSelection() );
             configuration.setLogLevel( LogWriter.getLogLevel(wLogLevel.getText()) );
             
@@ -512,27 +404,10 @@ public class TransExecutionConfigurationDialog extends Dialog
     
     private void enableFields()
     {
-        // boolean enableLocal = wExecLocal.getSelection();
         boolean enableRemote = wExecRemote.getSelection();
-        boolean enableCluster = wExecCluster.getSelection();
                 
-        // wlReplayDate.setEnabled(enableLocal);
-        // wReplayDate.setEnabled(enableLocal);
-        // wlArguments.setEnabled(enableLocal);
-        // wArguments.setEnabled(enableLocal);
-        // wArguments.table.setEnabled(enableLocal);
-        // wlVariables.setEnabled(enableLocal);
-        // wVariables.setEnabled(enableLocal);
-        // wVariables.table.setEnabled(enableLocal);
-        // wSafeMode.setEnabled(enableLocal);
-        
         wRemoteHost.setEnabled(enableRemote);
         wlRemoteHost.setEnabled(enableRemote);
-        
-        wPostTransformation.setEnabled(enableCluster);
-        wPrepareExecution.setEnabled(enableCluster);
-        wStartExecution.setEnabled(enableCluster);
-        wShowTransformations.setEnabled(enableCluster);
     }
 
     
@@ -540,7 +415,7 @@ public class TransExecutionConfigurationDialog extends Dialog
     /**
      * @return the configuration
      */
-    public TransExecutionConfiguration getConfiguration()
+    public JobExecutionConfiguration getConfiguration()
     {
         return configuration;
     }
@@ -548,9 +423,8 @@ public class TransExecutionConfigurationDialog extends Dialog
     /**
      * @param configuration the configuration to set
      */
-    public void setConfiguration(TransExecutionConfiguration configuration)
+    public void setConfiguration(JobExecutionConfiguration configuration)
     {
         this.configuration = configuration;
     }
-
 }

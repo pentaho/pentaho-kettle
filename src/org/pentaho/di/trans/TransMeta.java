@@ -95,7 +95,10 @@ import org.w3c.dom.Node;
  * @since 20-jun-2003
  * @author Matt
  */
-public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparable<TransMeta>, Cloneable, ChangedFlagInterface, UndoInterface, HasDatabasesInterface, VariableSpace, EngineMetaInterface, ResourceExportInterface
+public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparable<TransMeta>, 
+								  Cloneable, ChangedFlagInterface, UndoInterface, 
+								  HasDatabasesInterface, VariableSpace, EngineMetaInterface, 
+								  ResourceExportInterface, HasSlaveServersInterface
 {
     public static final String XML_TAG = "transformation";
         
@@ -1832,6 +1835,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
             rep.closeTransAttributeInsertPreparedStatement();
             
             // Save the partition schemas
+            //
             for (int i=0;i<partitionSchemas.size();i++)
             {
                 if (monitor!=null && monitor.isCanceled()) throw new KettleDatabaseException(Messages.getString("TransMeta.Log.UserCancelledTransSave"));
@@ -1845,6 +1849,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
             }
             
             // Save the slaves
+            //
             for (int i=0;i<slaveServers.size();i++)
             {
                 if (monitor!=null && monitor.isCanceled()) throw new KettleDatabaseException(Messages.getString("TransMeta.Log.UserCancelledTransSave"));

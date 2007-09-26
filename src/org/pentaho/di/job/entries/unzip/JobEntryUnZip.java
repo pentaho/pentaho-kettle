@@ -25,15 +25,16 @@ import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlank
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.List;
-import java.util.zip.*;
 import java.io.InputStream;
 import java.util.Enumeration;
-import java.util.zip.ZipEntry;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.FileType;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
@@ -53,7 +54,6 @@ import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.job.entry.validator.ValidatorContext;
 import org.pentaho.di.repository.Repository;
 import org.w3c.dom.Node;
-import org.apache.commons.vfs.FileType;
 
 /**
  * This defines a 'unzip' job entry. Its main use would be to 
@@ -252,7 +252,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 								{
 									// We can now start the unzip process ...
 									zipfile = new ZipFile(new File(realZipfilename));
-									Enumeration zipEnum =zipfile.entries();
+									Enumeration<? extends ZipEntry> zipEnum =zipfile.entries();
 									
 									File folder = new File(realTargetdirectory);
 									String foldername=folder.getAbsolutePath();
