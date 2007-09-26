@@ -49,3 +49,4 @@ The following bug where fixes backported from the 3.0.0-RC1 series to 2.5.2:
 - PDI-197: Save the right log level in job job entry and trans job entry - Sven B - 22-Sep-2007
 - Added XSLT & XSD validator step - Samatar - 24/09/2007
 - Added Unzip files job entry - Samatar - 25/09/2007
+- PDI-226: Save the initial pool size correctly - Sven B - 26-Sep-2007
