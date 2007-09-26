@@ -36,7 +36,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.getfilenames.Messages;
 
 /**
- * Read all Access files, convert them to rows and writes these to one or more output streams.
+ * Read all files, count rows number
  * 
  * @author Samatar
  * @since 24-05-2007
@@ -75,29 +75,31 @@ public class GetFilesRowsCount extends BaseStep implements StepInterface
             	setErrors(1);
                 stopAll(); 
             }
-            
-            if (meta.getRowSeparatorFormat().equals("CR"))
-    		{
-    			separator='\n';
-    			if (log.isDetailed()) log.logDetailed(Messages.getString("GetFilesRowsCount.Log.Separator.Title"), Messages.getString("GetFilesRowsCount.Log.Separatoris.Infos") + " \\n");
-    		}
-            else if (meta.getRowSeparatorFormat().equals("LF"))
-    		{
-    			separator='\r';
-    			if (log.isDetailed()) log.logDetailed(Messages.getString("GetFilesRowsCount.Log.Separator.Title"), Messages.getString("GetFilesRowsCount.Log.Separatoris.Infos") + " \\r");
-    		}
-            else if (meta.getRowSeparatorFormat().equals("TAB"))
-    		{
-            	separator='\t';
-            	if (log.isDetailed()) log.logDetailed(Messages.getString("GetFilesRowsCount.Log.Separator.Title"), Messages.getString("GetFilesRowsCount.Log.Separatoris.Infos") + " \\t");
-    		}
             else
-    		{
-            	
-            	separator=environmentSubstitute(meta.getRowSeparator()).charAt(0);
-            	 
-            	if (log.isDetailed()) log.logDetailed(Messages.getString("GetFilesRowsCount.Log.Separator.Title"), Messages.getString("GetFilesRowsCount.Log.Separatoris.Infos") + " " +separator);
-    		}
+            {
+	            if (meta.getRowSeparatorFormat().equals("CR"))
+	    		{
+	    			separator='\n';
+	    			if (log.isDetailed()) log.logDetailed(Messages.getString("GetFilesRowsCount.Log.Separator.Title"), Messages.getString("GetFilesRowsCount.Log.Separatoris.Infos") + " \\n");
+	    		}
+	            else if (meta.getRowSeparatorFormat().equals("LF"))
+	    		{
+	    			separator='\r';
+	    			if (log.isDetailed()) log.logDetailed(Messages.getString("GetFilesRowsCount.Log.Separator.Title"), Messages.getString("GetFilesRowsCount.Log.Separatoris.Infos") + " \\r");
+	    		}
+	            else if (meta.getRowSeparatorFormat().equals("TAB"))
+	    		{
+	            	separator='\t';
+	            	if (log.isDetailed()) log.logDetailed(Messages.getString("GetFilesRowsCount.Log.Separator.Title"), Messages.getString("GetFilesRowsCount.Log.Separatoris.Infos") + " \\t");
+	    		}
+	            else
+	    		{
+	            	
+	            	separator=environmentSubstitute(meta.getRowSeparator()).charAt(0);
+	            	 
+	            	if (log.isDetailed()) log.logDetailed(Messages.getString("GetFilesRowsCount.Log.Separator.Title"), Messages.getString("GetFilesRowsCount.Log.Separatoris.Infos") + " " +separator);
+	    		}
+            }
         }	
 		
 		for (int i=0;i<data.files.size();i++)
@@ -168,8 +170,6 @@ public class GetFilesRowsCount extends BaseStep implements StepInterface
 		
 		
 		 if ((linesInput > 0) && (linesInput % Const.ROWS_UPDATE) == 0) logBasic("linenr " + linesInput);
-        //if ((linesInput > 0) && (linesInput % Const.ROWS_UPDATE) == 0) logBasic("linenr " + linesInput);
-        //setOutputDone();  // signal end to receiver(s)
         return true;  // This is the end of this step. 
 	}		
 

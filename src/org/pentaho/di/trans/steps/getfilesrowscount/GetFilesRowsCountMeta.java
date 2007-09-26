@@ -289,7 +289,7 @@ public class GetFilesRowsCountMeta extends BaseStepMeta implements StepMetaInter
 		includeFilesCount = false;
 		FilesCountFieldName   = "";
 		RowsCountFieldName   = "rowscount";
-		RowSeparator_format="DOS";
+		RowSeparator_format="CR";
 		RowSeparator ="";
 		int nrFiles  =0;
 		
