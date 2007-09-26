@@ -979,7 +979,7 @@ public class ValueMeta implements ValueMetaInterface
                 {
                 case STORAGE_TYPE_NORMAL:         string = (String)object; break;
                 case STORAGE_TYPE_BINARY_STRING:  string = convertBinaryStringToString((byte[])object); break;
-                case STORAGE_TYPE_INDEXED:        string = (String) index[((Integer)object).intValue()];  break;
+                case STORAGE_TYPE_INDEXED:        string = object==null ? null : (String) index[((Integer)object).intValue()];  break;
                 default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
                 }
                 string = trim(string);
@@ -990,7 +990,7 @@ public class ValueMeta implements ValueMetaInterface
                 {
                 case STORAGE_TYPE_NORMAL:         string = convertDateToString((Date)object); break;
                 case STORAGE_TYPE_BINARY_STRING:  string = convertBinaryStringToString((byte[])object); break;
-                case STORAGE_TYPE_INDEXED:        string = convertDateToString((Date)index[((Integer)object).intValue()]); break;
+                case STORAGE_TYPE_INDEXED:        string = object==null ? null : convertDateToString((Date)index[((Integer)object).intValue()]); break;
                 default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
                 }
                 break;
@@ -1000,7 +1000,7 @@ public class ValueMeta implements ValueMetaInterface
                 {
                 case STORAGE_TYPE_NORMAL:         string = convertNumberToString((Double)object); break;
                 case STORAGE_TYPE_BINARY_STRING:  string = convertBinaryStringToString((byte[])object); break;
-                case STORAGE_TYPE_INDEXED:        string = convertNumberToString((Double)index[((Integer)object).intValue()]); break;
+                case STORAGE_TYPE_INDEXED:        string = object==null ? null : convertNumberToString((Double)index[((Integer)object).intValue()]); break;
                 default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
                 }
                 break;
@@ -1010,7 +1010,7 @@ public class ValueMeta implements ValueMetaInterface
                 {
                 case STORAGE_TYPE_NORMAL:         string = convertIntegerToString((Long)object); break;
                 case STORAGE_TYPE_BINARY_STRING:  string = convertBinaryStringToString((byte[])object); break;
-                case STORAGE_TYPE_INDEXED:        string = convertIntegerToString((Long)index[((Integer)object).intValue()]); break;
+                case STORAGE_TYPE_INDEXED:        string = object==null ? null : convertIntegerToString((Long)index[((Integer)object).intValue()]); break;
                 default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
                 }
                 break;
@@ -1020,7 +1020,7 @@ public class ValueMeta implements ValueMetaInterface
                 {
                 case STORAGE_TYPE_NORMAL:         string = convertBigNumberToString((BigDecimal)object); break;
                 case STORAGE_TYPE_BINARY_STRING:  string = convertBinaryStringToString((byte[])object); break;
-                case STORAGE_TYPE_INDEXED:        string = convertBigNumberToString((BigDecimal)index[((Integer)object).intValue()]); break;
+                case STORAGE_TYPE_INDEXED:        string = object==null ? null : convertBigNumberToString((BigDecimal)index[((Integer)object).intValue()]); break;
                 default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
                 }
                 break;
@@ -1030,7 +1030,7 @@ public class ValueMeta implements ValueMetaInterface
                 {
                 case STORAGE_TYPE_NORMAL:         string = convertBooleanToString((Boolean)object); break;
                 case STORAGE_TYPE_BINARY_STRING:  string = convertBinaryStringToString((byte[])object); break;
-                case STORAGE_TYPE_INDEXED:        string = convertBooleanToString((Boolean)index[((Integer)object).intValue()]); break;
+                case STORAGE_TYPE_INDEXED:        string = object==null ? null : convertBooleanToString((Boolean)index[((Integer)object).intValue()]); break;
                 default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
                 }
                 break;
@@ -1040,7 +1040,7 @@ public class ValueMeta implements ValueMetaInterface
                 {
                 case STORAGE_TYPE_NORMAL:         string = convertBinaryStringToString((byte[])object); break;
                 case STORAGE_TYPE_BINARY_STRING:  string = convertBinaryStringToString((byte[])object); break;
-                case STORAGE_TYPE_INDEXED:        string = convertBinaryStringToString((byte[])index[((Integer)object).intValue()]); break;
+                case STORAGE_TYPE_INDEXED:        string = object==null ? null : convertBinaryStringToString((byte[])index[((Integer)object).intValue()]); break;
                 default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
                 }
                 break;
@@ -1050,7 +1050,7 @@ public class ValueMeta implements ValueMetaInterface
                 {
                 case STORAGE_TYPE_NORMAL:         string = object.toString();  break; // just go for the default toString()
                 case STORAGE_TYPE_BINARY_STRING:  string = convertBinaryStringToString((byte[])object); break;
-                case STORAGE_TYPE_INDEXED:        string = index[((Integer)object).intValue()].toString();  break; // just go for the default toString()
+                case STORAGE_TYPE_INDEXED:        string = object==null ? null : index[((Integer)object).intValue()].toString();  break; // just go for the default toString()
                 default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
                 }
                 break;
