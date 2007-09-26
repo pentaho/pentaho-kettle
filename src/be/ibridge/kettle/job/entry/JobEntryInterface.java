@@ -179,7 +179,7 @@ public interface JobEntryInterface
 			Messages.getString("JobEntry.DTDValidator.TypeDesc"),
 			Messages.getString("JobEntry.FTPPUT.TypeDesc"),
 			Messages.getString("JobEntry.DeleteFiles.TypeDesc"),
-			Messages.getString("JobEntry.Unzip.TypeDesc"),
+			Messages.getString("JobEntry.UnZip.TypeDesc"),
 		};
 
 	public final static String icon_filename[] = 
@@ -255,7 +255,7 @@ public interface JobEntryInterface
 			Messages.getString("JobEntry.DTDValidator.Tooltip"),
 			Messages.getString("JobEntry.FTPPUT.Tooltip"),
 			Messages.getString("JobEntry.DeleteFiles.Tooltip"),
-			Messages.getString("JobEntry.Unzip.Tooltip"),
+			Messages.getString("JobEntry.UnZip.Tooltip"),
  		};
 	
 	public final static Class type_classname[] = 
