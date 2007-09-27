@@ -21,10 +21,7 @@
 package org.pentaho.di.ui.trans.steps.accessinput;
 
 import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.swt.SWT;
@@ -56,6 +53,8 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.fileinput.FileInputList;
+import org.pentaho.di.core.row.RowMeta;
+import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.trans.Trans;
@@ -76,10 +75,11 @@ import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.core.row.ValueMetaInterface;
 
-import com.healthmarketscience.jackcess.Column;
 import com.healthmarketscience.jackcess.Database;
 import com.healthmarketscience.jackcess.Table;
+import com.healthmarketscience.jackcess.Column;
 
 public class AccessInputDialog extends BaseStepDialog implements StepDialogInterface
 {
@@ -922,126 +922,117 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 
 	private void get()
 	{
+		RowMetaInterface fields = new RowMeta();
+		
         try
         {
-		
-    		AccessInputMeta meta = new AccessInputMeta();
+        	
+        	AccessInputMeta meta = new AccessInputMeta();
     		getInfo(meta);
-    		
+        	
     		// Check if a table name is specified 
     		if (!checkInputTableName(meta)) return;
-    		
-    		FileInputList inputList = meta.getFiles(transMeta);
             
-            // Clear Fields Grid
-            wFields.removeAll();
-            
-            if (inputList.nrOfFiles()>0)
+            FileInputList inputList = meta.getFiles(transMeta);
+
+            if (inputList.getFiles().size()>0)
             {
                 // Open the file (only first file)...
 
             	Database d = Database.open(new File(KettleVFS.getFilename(inputList.getFile(0))));			
-    			Table t=d.getTable(transMeta.environmentSubstitute(meta.getTableName()));
+    			Table t=d.getTable(meta.getTableName());
     			
     			// Get the list of columns
-    			List<Column> col = t.getColumns();
-    			
-    			log.logDetailed("Nbr Columns ", ""+col.size());
-
-    			Map<String, Object> row = t.getNextRow();
-    			
-    			Iterator<String> columnNameIterator = row.keySet().iterator();
-
-    			while (columnNameIterator.hasNext()) 
+    			List<Column> col = t.getColumns();    			
+    		
+    			for (int i=0;i<col.size() ;i++)
     			{
-    				String fieldName = columnNameIterator.next();
-    				Object obj = row.get(fieldName);
+    				String fieldname = null;
+					int    fieldtype = ValueMetaInterface.TYPE_NONE;
+					
+    				Column c = (Column)col.get(i);
     				
-					// Get Column Name
-		            TableItem item = new TableItem(wFields.table, SWT.NONE);
-		            item.setText(1, fieldName);
-		            item.setText(2, fieldName);
-		            
-		            String attributeValue=String.valueOf(obj);
-		            // Try to get the Type
-		            if(IsDate(attributeValue))
-            		{
-            			item.setText(3, "Date");
-            		}
-		            else if(IsInteger(attributeValue))
-            		{
-            			item.setText(3, "Integer");
-            		}
-		            else if(IsNumber(attributeValue))
-            		{
-            			item.setText(3, "Number");
-            		}	
-		           
-		            else
-		            {
-		            	item.setText(3, "String");	    		            
-		            }
-    			}  
+    				// Get column name
+    				fieldname=c.getName();
+    				
+    				
+		            // Get column type and Map with PDI values    				
+    				
+    				if(c.getType().INT.equals(c.getType()))
+    				{
+    					fieldtype = ValueMetaInterface.TYPE_INTEGER;
+    				}
+    				else if(c.getType().BOOLEAN.equals(c.getType()))
+    				{
+    					fieldtype = ValueMetaInterface.TYPE_BOOLEAN;
+    				}
+    				else if(c.getType().BINARY.equals(c.getType()))
+    				{
+    					fieldtype = ValueMetaInterface.TYPE_BINARY;
+    				}
+    				else if((c.getType().DOUBLE.equals(c.getType())) || (c.getType().LONG.equals(c.getType())) 
+    						|| (c.getType().NUMERIC.equals(c.getType()) ) )
+    				{
+    					fieldtype = ValueMetaInterface.TYPE_NUMBER;
+    				}
+    				else if((c.getType().equals(c.getType().FLOAT)) || (c.getType().MONEY.equals(c.getType())) 
+    						|| (c.getType().MEMO.equals(c.getType()) ) )
+    				{
+    					fieldtype = ValueMetaInterface.TYPE_BIGNUMBER;
+    				}
+    				else if((c.getType().SHORT_DATE_TIME.equals(c.getType())))
+    				{
+    					fieldtype = ValueMetaInterface.TYPE_DATE;
+    				}
+    				else
+    				{
+    					fieldtype = ValueMetaInterface.TYPE_STRING;
+    				}
+    				
+    				if (fieldname!=null && fieldtype!=ValueMetaInterface.TYPE_NONE)
+					{
+    					ValueMetaInterface field = new ValueMeta(fieldname, fieldtype);
+    					if (fields.indexOfValue(field.getName())<0) fields.addValueMeta(field);
+					}
+						
+    			}
     			
+            }	
+    					
     		}
+            catch(Exception e)
+    		{
+        		 new ErrorDialog(shell, Messages.getString("System.Dialog.Error.Title"), Messages.getString("AccessInputDialog.ErrorReadingFile.DialogMessage", e.toString()), e);
+    		} 
 
-
-            wFields.removeEmptyRows();
-            wFields.setRowNums();
-            wFields.optWidth(true);            
-        }
-        catch(KettleException e)
-        {
-            new ErrorDialog(shell, Messages.getString("AccessInputDialog.ErrorGettingColums.DialogTitle"), Messages.getString("AccessInputDialog.ErrorGettingColums.DialogMessage"), e);
-        }
-    	catch(Exception e)
-		{
-    		 new ErrorDialog(shell, Messages.getString("AccessInputDialog.ErrorGettingColums.DialogTitle"), Messages.getString("AccessInputDialog.ErrorGettingColums.DialogMessage"), e);
-
-		}  
+            
+            if (fields.size()>0)
+    		{
+            	
+            	// Clear Fields Grid
+                wFields.removeAll();
+                
+    			for (int j=0;j<fields.size();j++)
+    			{
+    				ValueMetaInterface field = fields.getValueMeta(j);
+    				wFields.add(new String[] { field.getName(), field.getName(),field.getTypeDesc(), "", "-1", "","","","","none", "N" } );
+    			}
+    			wFields.removeEmptyRows();
+    			wFields.setRowNums();
+    			wFields.optWidth(true);
+    		}
+    		else
+    		{
+    			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
+    			mb.setMessage(Messages.getString("AccessInputDialog.UnableToFindFields.DialogMessage"));
+    			mb.setText(Messages.getString("AccessInputDialog.UnableToFindFields.DialogTitle"));
+    			mb.open(); 
+    		}
+            
+ 
 	}
 
-	private boolean IsInteger(String str)
-	{
-		  try 
-		  {
-		    Integer.parseInt(str);
-		  }
-		  catch(NumberFormatException e)   {return false; }
-		  return true;
-	}
-	
-	private boolean IsNumber(String str)
-	{
-		  try 
-		  {
-		     Float.parseFloat(str);
-		  }
-		  catch(Exception e)   {return false; }
-		  return true;
-	}
-	
-	private boolean IsDate(String str)
-	{
-		  // TODO: What about other dates? Maybe something for a CRQ
-		  try 
-		  {
-		        SimpleDateFormat fdate = new SimpleDateFormat("yy-mm-dd");
-		        fdate.parse(str);
-		  }
-		  catch(Exception e)   {return false; }
-		  return true;
-	}
 
-	public void setMultiple()
-	{
-		/*
-		wlFilemask.setEnabled(wMultiple.getSelection());
-		wFilemask.setEnabled(wMultiple.getSelection());
-		wlFilename.setText(wMultiple.getSelection()?"Directory":"Filename ");
-		*/
-	}
-	
 	public void setIncludeFilename()
 	{
 		wlInclFilenameField.setEnabled(wInclFilename.getSelection());
@@ -1127,7 +1118,6 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
         wFields.setRowNums();
         wFields.optWidth(true);
 
-		setMultiple();
 		setIncludeFilename();
 		setIncludeTablename();
 		setIncludeRownum();
@@ -1292,12 +1282,10 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 			getInfo(meta);
 			
 			FileInputList fileInputList = meta.getFiles(transMeta);
-			//String files[] = fileInputList.getFileStrings();
-			if (fileInputList.nrOfFiles()>0) //(files != null && files.length > 0)
+
+			if (fileInputList.nrOfFiles()>0)
 			{
-				// Let's check the first file
-				log.logBasic("Le fichier ", KettleVFS.getFilename(fileInputList.getFile(0)) + " trait�...");
-				 
+			
 				// Check the first file
 			     if (fileInputList.getFile(0).exists()) {
 					// Open the file (only first file) in readOnly ...
