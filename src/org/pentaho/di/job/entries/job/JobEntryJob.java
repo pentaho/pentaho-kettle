@@ -55,7 +55,6 @@ import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
 import org.pentaho.di.trans.StepLoader;
-import org.pentaho.di.ui.spoon.delegates.SpoonSlaveDelegate;
 import org.pentaho.di.www.SlaveServerJobStatus;
 import org.w3c.dom.Node;
 

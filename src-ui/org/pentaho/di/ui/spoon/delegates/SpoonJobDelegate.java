@@ -24,6 +24,7 @@ import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.undo.TransAction;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobEntryLoader;
 import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobExecutionConfiguration;
@@ -1433,7 +1434,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 			else if (executionConfiguration.isExecutingRemotely()) {
 				
 				if (executionConfiguration.getRemoteServer() != null) {
-					SpoonSlaveDelegate.sendXMLToSlaveServer(jobMeta, executionConfiguration);
+					Job.sendXMLToSlaveServer(jobMeta, executionConfiguration);
 					spoon.delegates.slaves.addSpoonSlave(executionConfiguration.getRemoteServer());
 				} else {
 					MessageBox mb = new MessageBox(spoon.getShell(), SWT.OK | SWT.ICON_INFORMATION);
