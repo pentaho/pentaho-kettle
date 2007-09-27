@@ -17,6 +17,7 @@ package org.pentaho.di.job.entry;
 import java.util.List;
 import java.util.Map;
 
+import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.SQLStatement;
@@ -63,9 +64,9 @@ public interface JobEntryInterface
 	public void    setChanged(boolean ch);
 	public boolean hasChanged();
 
-	public void    loadXML(Node entrynode, List<DatabaseMeta> databases, Repository rep) throws KettleXMLException;
+	public void    loadXML(Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep) throws KettleXMLException;
 	public String  getXML();
-	public void    loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases) throws KettleException;
+	public void    loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException;
 	public void    saveRep(Repository rep, long id_job) throws KettleException;
 	
 	public JobEntryType     getJobEntryType();

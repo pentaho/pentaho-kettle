@@ -17,6 +17,7 @@ package org.pentaho.di.job.entries.special;
 import java.util.Calendar;
 import java.util.List;
 
+import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
@@ -109,11 +110,11 @@ public class JobEntrySpecial extends JobEntryBase implements Cloneable, JobEntry
 		return retval.toString();
 	}
 
-	public void loadXML(Node entrynode, List<DatabaseMeta> databases, Repository rep) throws KettleXMLException
+	public void loadXML(Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep) throws KettleXMLException
 	{
 		try
 		{
-			super.loadXML(entrynode, databases);
+			super.loadXML(entrynode, databases, slaveServers);
 			start = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "start"));
 			dummy = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "dummy"));
 			repeat = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "repeat"));
@@ -131,12 +132,12 @@ public class JobEntrySpecial extends JobEntryBase implements Cloneable, JobEntry
 		}
 	}
 
-	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta>  databases)
+	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta>  databases, List<SlaveServer> slaveServers)
 		throws KettleException
 	{
 		try
 		{
-			super.loadRep(rep, id_jobentry, databases);
+			super.loadRep(rep, id_jobentry, databases, slaveServers);
 
 			start = rep.getJobEntryAttributeBoolean(id_jobentry, "start");
 			dummy = rep.getJobEntryAttributeBoolean(id_jobentry, "dummy");

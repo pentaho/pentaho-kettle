@@ -102,6 +102,12 @@ public class GetTransStatusServlet extends HttpServlet
                     transStatus.setLoggingString( loggingString );
                 }
                 
+                // Also set the result object...
+                //
+                transStatus.setResult( trans.getResult() );
+                
+                // Send the result back as XML
+                //
                 out.println(transStatus.getXML());
             }
             else

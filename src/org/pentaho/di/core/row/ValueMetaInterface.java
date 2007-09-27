@@ -2,6 +2,7 @@ package org.pentaho.di.core.row;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.SocketTimeoutException;
 import java.text.DecimalFormat;
@@ -13,6 +14,7 @@ import org.pentaho.di.compatibility.Value;
 import org.pentaho.di.core.exception.KettleEOFException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.w3c.dom.Node;
 
 
 public interface ValueMetaInterface extends Cloneable
@@ -57,6 +59,7 @@ public interface ValueMetaInterface extends Cloneable
     /** The storage type is indexed.  This means that the value is a simple integer index referencing the values in getIndex() */
     public static final int STORAGE_TYPE_INDEXED       =  2; 
     
+    public static final String[] storageTypeCodes = new String[] { "normal", "binary-string", "indexed", };
     
     
     /** Indicating that the rows are not sorted on this key */
@@ -68,6 +71,7 @@ public interface ValueMetaInterface extends Cloneable
     /** Indicating that the rows are sorted descending on this key */
     public static final int SORT_TYPE_DESCENDING = 2;
     
+    public static final String[] sortTypeCodes = new String[] { "none", "ascending", "descending", };
     
     
     /** Indicating that the string content should NOT be trimmed if conversion is to occur to another data type */
@@ -81,7 +85,7 @@ public interface ValueMetaInterface extends Cloneable
 
     /** Indicating that the string content should be LEFT AND RIGHT trimmed if conversion is to occur to another data type */
     public static final int TRIM_TYPE_BOTH  = 3;
-    
+
     
     /** Default integer length for hardcoded metadata integers */
     public static final int DEFAULT_INTEGER_LENGTH = 10;
@@ -413,4 +417,27 @@ public interface ValueMetaInterface extends Cloneable
 	 *         This storage Meta data object survives cloning and should travel through the transformation unchanged as long as the data type remains the same.
 	 */
 	public void setStorageMetadata(ValueMetaInterface storageMetadata);
+	
+	/**
+	 * @return an XML representation of the row metadata
+	 * @throws IOException Thrown in case there is an (Base64/GZip) decoding problem
+	 */
+	public String getMetaXML() throws IOException;
+	
+	/**
+	 * @param value The data to serialize as XML
+	 * @return an xML representation of the row data
+	 * @throws IOException Thrown in case there is an (Base64/GZip) decoding problem
+	 */
+	public String getDataXML(Object value) throws IOException;
+	
+    /**
+     * Convert a data XML node to an Object that corresponds to the metadata.
+     * This is basically String to Object conversion that is being done.
+     * @param node the node to retrieve the data value from
+     * @return the converted data value
+     * @throws IOException thrown in case there is a problem with the XML to object conversion
+     */
+	public Object getValue(Node node) throws IOException;
+
 }

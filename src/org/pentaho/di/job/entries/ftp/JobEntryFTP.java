@@ -29,6 +29,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.vfs.FileObject;
 import org.apache.log4j.Logger;
+import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
@@ -150,11 +151,11 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
     return retval.toString();
   }
 
-  public void loadXML(Node entrynode, List<DatabaseMeta> databases, Repository rep) throws KettleXMLException
+  public void loadXML(Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep) throws KettleXMLException
   {
     try
     {
-      super.loadXML(entrynode, databases);
+      super.loadXML(entrynode, databases, slaveServers);
       serverName = XMLHandler.getTagValue(entrynode, "servername"); //$NON-NLS-1$
       userName = XMLHandler.getTagValue(entrynode, "username"); //$NON-NLS-1$
       password = Encr.decryptPasswordOptionallyEncrypted(XMLHandler.getTagValue(entrynode, "password")); //$NON-NLS-1$
@@ -179,11 +180,11 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
     }
   }
 
-  public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases) throws KettleException
+  public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
   {
     try
     {
-      super.loadRep(rep, id_jobentry, databases);
+      super.loadRep(rep, id_jobentry, databases, slaveServers);
       serverName = rep.getJobEntryAttributeString(id_jobentry, "servername"); //$NON-NLS-1$
       userName = rep.getJobEntryAttributeString(id_jobentry, "username"); //$NON-NLS-1$
       password = Encr.decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString(id_jobentry, "password") ); //$NON-NLS-1$

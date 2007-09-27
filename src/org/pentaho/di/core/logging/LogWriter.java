@@ -218,7 +218,7 @@ public class LogWriter
             FileObject file;
 	        if (!exact)
 	        {
-	            file = KettleVFS.createTempFile(filename+".", ".log", System.getProperty("java.io.tmpdir"));
+	            file = KettleVFS.createTempFile(filename, ".log", System.getProperty("java.io.tmpdir"));
 	        }
 	        else
 	        {

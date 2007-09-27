@@ -88,6 +88,10 @@ public class GetJobStatusServlet extends HttpServlet
                     jobStatus.setLoggingString( loggingString );
                 }
                 
+                // Also set the result object...
+                //
+                jobStatus.setResult( job.getResult() ); // might be null
+                
                 out.println(jobStatus.getXML());
             }
             else

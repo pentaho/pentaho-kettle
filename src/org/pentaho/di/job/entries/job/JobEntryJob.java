@@ -26,6 +26,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
+import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
@@ -42,6 +43,7 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobEntryType;
+import org.pentaho.di.job.JobExecutionConfiguration;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -53,6 +55,8 @@ import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
 import org.pentaho.di.trans.StepLoader;
+import org.pentaho.di.ui.spoon.delegates.SpoonSlaveDelegate;
+import org.pentaho.di.www.SlaveServerJobStatus;
 import org.w3c.dom.Node;
 
 
@@ -84,6 +88,8 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 
 	public  boolean parallel;
     private String directoryPath;
+    
+    private SlaveServer remoteSlaveServer;
 
     public JobEntryJob(String name)
 	{
@@ -202,6 +208,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 		retval.append("      ").append(XMLHandler.addTagValue("add_date",          addDate));
 		retval.append("      ").append(XMLHandler.addTagValue("add_time",          addTime));
 		retval.append("      ").append(XMLHandler.addTagValue("loglevel",          LogWriter.getLogLevelDesc(loglevel)));
+		retval.append("      ").append(XMLHandler.addTagValue("slave_server_name", remoteSlaveServer!=null ? remoteSlaveServer.getName() : null));
 
 		if (arguments!=null)
 		for (int i=0;i<arguments.length;i++)
@@ -212,11 +219,11 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 		return retval.toString();
 	}
 
-	public void loadXML(Node entrynode, List<DatabaseMeta> databases, Repository rep) throws KettleXMLException
+	public void loadXML(Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep) throws KettleXMLException
 	{
 		try
 		{
-			super.loadXML(entrynode, databases);
+			super.loadXML(entrynode, databases, slaveServers);
 
 			setFileName( XMLHandler.getTagValue(entrynode, "filename") );
 			setJobName( XMLHandler.getTagValue(entrynode, "jobname") );
@@ -228,6 +235,9 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 			logfile = XMLHandler.getTagValue(entrynode, "logfile");
 			logext = XMLHandler.getTagValue(entrynode, "logext");
 			loglevel = LogWriter.getLogLevel( XMLHandler.getTagValue(entrynode, "loglevel"));
+			
+			String remoteSlaveServerName = XMLHandler.getTagValue(entrynode, "slave_server_name");
+			remoteSlaveServer = SlaveServer.findSlaveServer(slaveServers, remoteSlaveServerName);
 
             directoryPath = XMLHandler.getTagValue(entrynode, "directory");
             if (rep!=null) // import from XML into a repository for example... (or copy/paste)
@@ -252,12 +262,11 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 	/*
 	 * Load the jobentry from repository
 	 */
-	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases)
-		throws KettleException
+	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
 	{
 		try
 		{
-			super.loadRep(rep, id_jobentry, databases);
+			super.loadRep(rep, id_jobentry, databases, slaveServers);
 
             jobname = rep.getJobEntryAttributeString(id_jobentry, "name");
             String dirPath = rep.getJobEntryAttributeString(id_jobentry, "dir_path");
@@ -273,6 +282,9 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 			logfile          = rep.getJobEntryAttributeString(id_jobentry, "logfile");
 			logext           = rep.getJobEntryAttributeString(id_jobentry, "logext");
 			loglevel         = LogWriter.getLogLevel( rep.getJobEntryAttributeString(id_jobentry, "loglevel") );
+
+			String remoteSlaveServerName = rep.getJobEntryAttributeString(id_jobentry, "slave_server_name");
+			remoteSlaveServer = SlaveServer.findSlaveServer(slaveServers, remoteSlaveServerName);
 
 			// How many arguments?
 			int argnr = rep.countNrJobEntryAttributes(id_jobentry, "argument");
@@ -292,8 +304,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 
 	// Save the attributes of this job entry
 	//
-	public void saveRep(Repository rep, long id_job)
-		throws KettleException
+	public void saveRep(Repository rep, long id_job) throws KettleException
 	{
 		try
 		{
@@ -311,6 +322,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 			rep.saveJobEntryAttribute(id_job, getID(), "add_time", addTime);
 			rep.saveJobEntryAttribute(id_job, getID(), "logfile", logfile);
 			rep.saveJobEntryAttribute(id_job, getID(), "logext", logext);
+			rep.saveJobEntryAttribute(id_job, getID(), "slave_server_name", remoteSlaveServer!=null ? remoteSlaveServer.getName() : null);
 			rep.saveJobEntryAttribute(id_job, getID(), "loglevel", LogWriter.getLogLevelDesc(loglevel));
 
 			// save the arguments...
@@ -436,29 +448,11 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
                 {
                 	resultRow = null;
                 }
-
-                // Create a new job
-                Job job = new Job(logwriter, StepLoader.getInstance(), rep, jobMeta);
-
-                job.shareVariablesWith(this);
-
-                // Don't forget the logging...
-                job.beginProcessing();
-
-                // Link the job with the sub-job
-                parentJob.getJobTracker().addJobTracker(job.getJobTracker());
-
-                // Link both ways!
-                job.getJobTracker().setParentJobTracker(parentJob.getJobTracker());
-
-                // Tell this sub-job about its parent...
-                job.setParentJob(parentJob);
-
-                if (parentJob.getJobMeta().isBatchIdPassed())
-                {
-                    job.setPassedBatchId(parentJob.getBatchId());
-                }
-
+                
+                Result oneResult = new Result();
+            	
+            	List<RowMetaAndData> sourceRows = null;
+                
                 if (execPerRow) // Execute for each input row
                 {
                     if (argFromPrevious) // Copy the input row to the (command line) arguments
@@ -478,7 +472,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
                         // Just pass a single row
                         List<RowMetaAndData> newList = new ArrayList<RowMetaAndData>();
                         newList.add(resultRow);
-                        job.setSourceRows(newList);
+                        sourceRows = newList;
                     }
                 }
                 else
@@ -499,48 +493,123 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
                     else
                     {
                         // Keep it as it was...
-                        job.setSourceRows(result.getRows());
+                        sourceRows = result.getRows();
                     }
                 }
 
-                job.getJobMeta().setArguments( args );
-
-                JobEntryJobRunner runner = new JobEntryJobRunner( job, result, nr);
-    			Thread jobRunnerThread = new Thread(runner);
-                jobRunnerThread.setName( Const.NVL(job.getJobMeta().getName(), job.getJobMeta().getFilename()) );
-                jobRunnerThread.start();
-
-                try
+                if (remoteSlaveServer==null)
                 {
-        			while (!runner.isFinished() && !parentJob.isStopped())
-        			{
-        				try { Thread.sleep(100);}
-        				catch(InterruptedException e) { }
-        			}
-
-        			// if the parent-job was stopped, stop the sub-job too...
-        			if (parentJob.isStopped())
-        			{
-        				job.stopAll();
-        				runner.waitUntilFinished(); // Wait until finished!
-        				job.endProcessing("stop", new Result()); // dummy result
-        			}
-        			else
-        			{
-        				job.endProcessing("end", runner.getResult()); // the result of the execution to be stored in the log file.
-        			}
+                	// Local execution...
+                	//
+                	
+	                // Create a new job
+	                Job job = new Job(logwriter, StepLoader.getInstance(), rep, jobMeta);
+	
+	                job.shareVariablesWith(this);
+	                
+	                // Set the source rows we calculated above...
+	                //
+	                job.setSourceRows(sourceRows);
+	
+	                // Don't forget the logging...
+	                job.beginProcessing();
+	
+	                // Link the job with the sub-job
+	                parentJob.getJobTracker().addJobTracker(job.getJobTracker());
+	
+	                // Link both ways!
+	                job.getJobTracker().setParentJobTracker(parentJob.getJobTracker());
+	
+	                // Tell this sub-job about its parent...
+	                job.setParentJob(parentJob);
+	
+	                if (parentJob.getJobMeta().isBatchIdPassed())
+	                {
+	                    job.setPassedBatchId(parentJob.getBatchId());
+	                }
+	
+	
+	                job.getJobMeta().setArguments( args );
+	
+	                JobEntryJobRunner runner = new JobEntryJobRunner( job, result, nr);
+	    			Thread jobRunnerThread = new Thread(runner);
+	                jobRunnerThread.setName( Const.NVL(job.getJobMeta().getName(), job.getJobMeta().getFilename()) );
+	                jobRunnerThread.start();
+	
+	                try
+	                {
+	        			while (!runner.isFinished() && !parentJob.isStopped())
+	        			{
+	        				try { Thread.sleep(100);}
+	        				catch(InterruptedException e) { }
+	        			}
+	
+	        			// if the parent-job was stopped, stop the sub-job too...
+	        			if (parentJob.isStopped())
+	        			{
+	        				job.stopAll();
+	        				runner.waitUntilFinished(); // Wait until finished!
+	        				job.endProcessing("stop", new Result()); // dummy result
+	        			}
+	        			else
+	        			{
+	        				job.endProcessing("end", runner.getResult()); // the result of the execution to be stored in the log file.
+	        			}
+	                }
+	        		catch(KettleException je)
+	        		{
+	        			log.logError(toString(), "Unable to open job entry job with name ["+getName()+"] : "+Const.CR+je.toString());
+	        			result.setNrErrors(1);
+	        		}
+	        		
+	        		oneResult = runner.getResult();
                 }
-        		catch(KettleException je)
-        		{
-        			log.logError(toString(), "Unable to open job entry job with name ["+getName()+"] : "+Const.CR+je.toString());
-        			result.setNrErrors(1);
-        		}
+                else
+                {
+                	// Remote execution...
+                	//
+                	JobExecutionConfiguration jobExecutionConfiguration = new JobExecutionConfiguration();
+                	jobExecutionConfiguration.setSourceRows(sourceRows);
+                	jobExecutionConfiguration.setArgumentStrings(args);
+                	jobExecutionConfiguration.setVariables(this);
+                	jobExecutionConfiguration.setRemoteServer(remoteSlaveServer);
+                	
+                	// Send the XML over to the slave server
+                	// Also start the job over there...
+                	//
+                	SpoonSlaveDelegate.sendXMLToSlaveServer(jobMeta, jobExecutionConfiguration);
+                	
+                	// Now start the monitoring...
+                	//
+                	while (!parentJob.isStopped())
+                	{
+                		try 
+                		{
+							SlaveServerJobStatus jobStatus = remoteSlaveServer.getJobStatus(jobMeta.getName());
+							if (!jobStatus.isRunning() && !jobStatus.isWaiting())
+							{
+								// The job is finished, get the result...
+								//
+								oneResult = jobStatus.getResult();
+								break;
+							}
+						} 
+                		catch (Exception e1) {
+							log.logError(toString(), "Unable to contact slave server ["+remoteSlaveServer+"] to verify the status of job ["+jobMeta.getName()+"]");
+							oneResult.setNrErrors(1L);
+							break; // Stop looking too, chances are too low the server will come back on-line
+						}
+                		
+                		try { Thread.sleep(10000); } catch(InterruptedException e) {} ; // sleep for 10 seconds
+                	}
+                }
 
-                Result oneResult = runner.getResult();
+                
                 if (iteration==0)
                 {
                     result.clear();
                 }
+                
                 result.add(oneResult);
                 if (oneResult.getResult()==false) // if one of them fails, set the number of errors
                 {
@@ -582,12 +651,13 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
         {
             result.setResult( true );
         }
-        
-		// Hint the VM to release handles.
-		System.gc();
 
         return result;
 	}
+	
+	
+	
+	
 
     public void clear()
 	{
@@ -741,4 +811,18 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     {
       return logfile;
     }
+
+	/**
+	 * @return the remoteSlaveServer
+	 */
+	public SlaveServer getRemoteSlaveServer() {
+		return remoteSlaveServer;
+	}
+
+	/**
+	 * @param remoteSlaveServer the remoteSlaveServer to set
+	 */
+	public void setRemoteSlaveServer(SlaveServer remoteSlaveServer) {
+		this.remoteSlaveServer = remoteSlaveServer;
+	}
 }

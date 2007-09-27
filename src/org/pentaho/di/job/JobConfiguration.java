@@ -1,5 +1,7 @@
 package org.pentaho.di.job;
 
+import java.io.IOException;
+
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
@@ -24,7 +26,7 @@ public class JobConfiguration
         this.jobExecutionConfiguration = jobExecutionConfiguration;
     }
     
-    public String getXML()
+    public String getXML() throws IOException
     {
         StringBuffer xml = new StringBuffer();
         

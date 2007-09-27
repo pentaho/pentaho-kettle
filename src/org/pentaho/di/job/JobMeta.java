@@ -858,7 +858,7 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
                 Node entrynode = XMLHandler.getSubNodeByNr(entriesnode, "entry", i); //$NON-NLS-1$
                 // System.out.println("Reading entry:\n"+entrynode);
 
-                JobEntryCopy je = new JobEntryCopy(entrynode, databases, rep);
+                JobEntryCopy je = new JobEntryCopy(entrynode, databases, slaveServers, rep);
                 JobEntryCopy prev = findJobEntry(je.getName(), 0, true);
                 if (prev != null)
                 {
@@ -1269,7 +1269,7 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
                 {
                     if (monitor != null) monitor.subTask(Messages.getString("JobMeta.Monitor.ReadingJobEntryNr") + (i + 1) + "/" + (jecids.length)); //$NON-NLS-1$ //$NON-NLS-2$
 
-                    JobEntryCopy jec = new JobEntryCopy(log, rep, getID(), jecids[i], jobentries, databases);
+                    JobEntryCopy jec = new JobEntryCopy(log, rep, getID(), jecids[i], jobentries, databases, slaveServers);
     				// Also set the copy number...
     				// We count the number of job entry copies that use the job entry
                     //

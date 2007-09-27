@@ -2,6 +2,7 @@ package org.pentaho.di.core.row;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.SocketTimeoutException;
 import java.util.Date;
@@ -9,6 +10,7 @@ import java.util.List;
 
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.w3c.dom.Node;
 
 public interface RowMetaInterface extends Cloneable
 {
@@ -334,4 +336,27 @@ public interface RowMetaInterface extends Cloneable
      * @return a string with a description of all the metadata values of the complete row of metadata
      */
     public String toStringMeta();
+    
+	/**
+	 * @return an XML representation of the row metadata
+	 * @throws IOException Thrown in case there is an (Base64/GZip) encoding problem
+	 */
+	public String getMetaXML() throws IOException;
+
+	/**
+	 * @param rowData the row of data to serialize as XML
+	 * @return an XML representation of the row data
+	 * @throws IOException Thrown in case there is an (Base64/GZip) encoding problem
+	 */
+	public String getDataXML(Object[] rowData) throws IOException;
+	
+	/**
+	 * Convert an XML node into binary data using the row metadata supplied. 
+	 * @param rowMeta The row metadata to reference
+	 * @param node The data row node 
+	 * @throws IOException Thrown in case there is an (Base64/GZip) decoding problem
+	 * @return a row of data de-serialized from XML
+	 */
+	public Object[] getRow(Node node) throws IOException; 
+
 }

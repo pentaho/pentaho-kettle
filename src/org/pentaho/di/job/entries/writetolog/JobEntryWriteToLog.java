@@ -18,6 +18,7 @@ import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.addOkRem
 
 import java.util.List;
 
+import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
@@ -88,12 +89,12 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
 		return retval.toString();
 	}
 	
-	public void loadXML(Node entrynode, List<DatabaseMeta> databases, Repository rep)
+	public void loadXML(Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep)
 		throws KettleXMLException
 	{
 		try
 		{
-			super.loadXML(entrynode, databases);
+			super.loadXML(entrynode, databases, slaveServers);
 			logmessage = XMLHandler.getTagValue(entrynode, "logmessage");
 			loglevel = LogWriter.getLogLevel( XMLHandler.getTagValue(entrynode, "loglevel"));
 			logsubject = XMLHandler.getTagValue(entrynode, "logsubject");
@@ -105,12 +106,12 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
 		}
 	}
 
-	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases)
+	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers)
 		throws KettleException
 	{
 		try
 		{
-			super.loadRep(rep, id_jobentry, databases);
+			super.loadRep(rep, id_jobentry, databases, slaveServers);
 
 			logmessage = rep.getJobEntryAttributeString(id_jobentry, "logmessage");
 			loglevel = LogWriter.getLogLevel( rep.getJobEntryAttributeString(id_jobentry, "loglevel") );

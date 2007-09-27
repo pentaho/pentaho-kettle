@@ -2,6 +2,7 @@ package org.pentaho.di.job.entries.empty;
 
 import java.util.List;
 
+import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -16,14 +17,12 @@ import org.w3c.dom.Node;
 
 public class JobEntryEmpty extends JobEntryBase implements JobEntryInterface
 {
-
 	public Result execute(Result prev_result, int nr, Repository rep, Job parentJob) throws KettleException
 	{
 		return null;
 	}
 
-	public void loadXML(Node entrynode, List<DatabaseMeta> databases, Repository rep)
-			throws KettleXMLException
+	public void loadXML(Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep) throws KettleXMLException
 	{
 
 	}

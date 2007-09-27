@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.vfs.FileObject;
+import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -94,11 +95,11 @@ public class JobEntryCreateFile extends JobEntryBase implements Cloneable, JobEn
     return retval.toString();
   }
 
-  public void loadXML(Node entrynode, List<DatabaseMeta> databases, Repository rep) throws KettleXMLException
+  public void loadXML(Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep) throws KettleXMLException
   {
     try
     {
-      super.loadXML(entrynode, databases);
+      super.loadXML(entrynode, databases, slaveServers);
       filename = XMLHandler.getTagValue(entrynode, "filename");
       failIfFileExists = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "fail_if_file_exists"));
     } catch (KettleXMLException xe)
@@ -107,11 +108,11 @@ public class JobEntryCreateFile extends JobEntryBase implements Cloneable, JobEn
     }
   }
 
-  public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases) throws KettleException
+  public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
   {
     try
     {
-      super.loadRep(rep, id_jobentry, databases);
+      super.loadRep(rep, id_jobentry, databases, slaveServers);
       filename = rep.getJobEntryAttributeString(id_jobentry, "filename");
       failIfFileExists = rep.getJobEntryAttributeBoolean(id_jobentry, "fail_if_file_exists");
     } catch (KettleException dbe)

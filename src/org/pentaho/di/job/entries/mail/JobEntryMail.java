@@ -48,6 +48,7 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
 import org.apache.commons.vfs.FileObject;
+import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
@@ -214,11 +215,11 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
     fileType = new int[nrFileTypes];
   }
 
-  public void loadXML(Node entrynode, List<DatabaseMeta> databases, Repository rep) throws KettleXMLException
+  public void loadXML(Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep) throws KettleXMLException
   {
     try
     {
-      super.loadXML(entrynode, databases);
+      super.loadXML(entrynode, databases, slaveServers);
       setServer(XMLHandler.getTagValue(entrynode, "server"));
       setPort(XMLHandler.getTagValue(entrynode, "port"));
       setDestination(XMLHandler.getTagValue(entrynode, "destination"));
@@ -267,11 +268,11 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
     }
   }
 
-  public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases) throws KettleException
+  public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
   {
     try
     {
-      super.loadRep(rep, id_jobentry, databases);
+      super.loadRep(rep, id_jobentry, databases, slaveServers);
 
       // First load the common parts like name & description, then the attributes...
       //

@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
@@ -154,11 +155,11 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
     return retval.toString();
   }
 
-  public void loadXML(Node entrynode, List<DatabaseMeta> databases, Repository rep) throws KettleXMLException
+  public void loadXML(Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep) throws KettleXMLException
   {
     try
     {
-      super.loadXML(entrynode, databases);
+      super.loadXML(entrynode, databases, slaveServers);
       url = XMLHandler.getTagValue(entrynode, "url");
       targetFilename = XMLHandler.getTagValue(entrynode, "targetfilename");
       fileAppended = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "file_appended"));
@@ -182,11 +183,11 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
     }
   }
 
-  public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases) throws KettleException
+  public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
   {
     try
     {
-      super.loadRep(rep, id_jobentry, databases);
+      super.loadRep(rep, id_jobentry, databases, slaveServers);
       url = rep.getJobEntryAttributeString(id_jobentry, "url");
       targetFilename = rep.getJobEntryAttributeString(id_jobentry, "targetfilename");
       fileAppended = rep.getJobEntryAttributeBoolean(id_jobentry, "file_appended");

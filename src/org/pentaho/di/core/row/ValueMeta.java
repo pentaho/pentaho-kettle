@@ -20,12 +20,17 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleEOFException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.Messages;
+import org.w3c.dom.Node;
 
 public class ValueMeta implements ValueMetaInterface
 {
     public static final String DEFAULT_DATE_FORMAT_MASK = "yyyy/MM/dd HH:mm:ss.SSS";
     
+	public static final String XML_META_TAG = "value-meta";
+	public static final String XML_DATA_TAG = "value-data";
+	
     private String   name;
     private int      length;
     private int      precision;
@@ -69,7 +74,7 @@ public class ValueMeta implements ValueMetaInterface
 	 */
 	public final static String trimTypeDesc[] = { Messages.getString("ValueMeta.TrimType.None"), Messages.getString("ValueMeta.TrimType.Left"),
 		Messages.getString("ValueMeta.TrimType.Right"), Messages.getString("ValueMeta.TrimType.Both") };
-	
+
     public ValueMeta()
     {
         this(null, ValueMetaInterface.TYPE_NONE, -1, -1);
@@ -1637,6 +1642,15 @@ public class ValueMeta implements ValueMetaInterface
         return typeCodes[type];
     }
 
+    /**
+     * Return the storage type of a value in a textual form: "normal", "binary-string", "indexes"
+     * @return A String describing the storage type of the value metadata
+     */
+    public String getStorageTypeDesc()
+    {
+        return storageTypeCodes[type];
+    }
+
 
     public String toString()
     {
@@ -2141,9 +2155,262 @@ public class ValueMeta implements ValueMetaInterface
             throw new KettleFileException(toString()+" : Unable to read value metadata from input stream", e);
         }
     }
+    
+    public String getMetaXML() throws IOException
+    {
+    	StringBuffer xml = new StringBuffer();
+    	
+    	xml.append(XMLHandler.openTag(XML_META_TAG));
+    	
+        xml.append( XMLHandler.addTagValue("type", getTypeDesc()) ) ;
+        xml.append( XMLHandler.addTagValue("storagetype", getStorageType()) );
 
+        switch(storageType) {
+        case STORAGE_TYPE_INDEXED:
+            {
+            	xml.append( XMLHandler.openTag("index"));
+
+                // Save the indexed strings...
+            	//
+                if (index!=null)
+                {
+                    for (int i=0;i<index.length;i++)
+                    {
+                        switch(type)
+                        {
+                        case TYPE_STRING:    xml.append( XMLHandler.addTagValue( "value", (String)index[i]) ); break; 
+                        case TYPE_NUMBER:    xml.append( XMLHandler.addTagValue( "value",  (Double)index[i]) ); break; 
+                        case TYPE_INTEGER:   xml.append( XMLHandler.addTagValue( "value", (Long)index[i]) ); break; 
+                        case TYPE_DATE:      xml.append( XMLHandler.addTagValue( "value", (Date)index[i]) ); break; 
+                        case TYPE_BIGNUMBER: xml.append( XMLHandler.addTagValue( "value", (BigDecimal)index[i]) ); break; 
+                        case TYPE_BOOLEAN:   xml.append( XMLHandler.addTagValue( "value", (Boolean)index[i]) ); break; 
+                        case TYPE_BINARY:    xml.append( XMLHandler.addTagValue( "value", (byte[])index[i]) ); break;
+                        default: throw new IOException(toString()+" : Unable to serialize indexe storage type to XML for data type "+getType());
+                        }
+                    }
+                }
+            	
+            	xml.append( XMLHandler.closeTag("index"));
+            }
+            break;
+        
+        case STORAGE_TYPE_BINARY_STRING:
+            {
+            	// Save the storage meta data...
+            	//
+            	if (storageMetadata!=null)
+            	{
+            		xml.append(XMLHandler.openTag("storage-meta"));
+            		xml.append(storageMetadata.getMetaXML());
+            		xml.append(XMLHandler.closeTag("storage-meta"));
+            	}
+            }
+            break;
+            
+       default:
+    	   break;
+       }
+        
+        xml.append( XMLHandler.addTagValue("name", name) );  
+        xml.append( XMLHandler.addTagValue("length", length) );  
+        xml.append( XMLHandler.addTagValue("precision", precision) );  
+        xml.append( XMLHandler.addTagValue("origin", origin) );  
+        xml.append( XMLHandler.addTagValue("comments", comments) );  
+        xml.append( XMLHandler.addTagValue("conversion_Mask", conversionMask) );  
+        xml.append( XMLHandler.addTagValue("decimal_symbol", decimalSymbol) );  
+        xml.append( XMLHandler.addTagValue("grouping_symbol", groupingSymbol) );  
+        xml.append( XMLHandler.addTagValue("currency_symbol", currencySymbol) );  
+        xml.append( XMLHandler.addTagValue("trim_type", getTrimTypeCode(trimType)) );
+        xml.append( XMLHandler.addTagValue("case_insensitive", caseInsensitive) );
+        xml.append( XMLHandler.addTagValue("sort_descending", sortedDescending) );
+        xml.append( XMLHandler.addTagValue("output_padding", outputPaddingEnabled) );
+        xml.append( XMLHandler.addTagValue("date_format_lenient", dateFormatLenient) );
+        xml.append( XMLHandler.addTagValue("date_format_locale", dateFormatLocale.toString()) );
+        
+    	xml.append(XMLHandler.closeTag(XML_META_TAG));
+    	
+    	return xml.toString();
+    }
+    
+    public ValueMeta(Node node) throws IOException 
+    {
+    	this();
+    	
+        type = getType( XMLHandler.getTagValue(node, "type") ) ;
+        storageType = getStorageType( XMLHandler.getTagValue(node, "storagetype") );
+
+        switch(storageType) {
+        case STORAGE_TYPE_INDEXED:
+            {
+            	Node indexNode = XMLHandler.getSubNode(node, "index");
+            	int nrIndexes = XMLHandler.countNodes(indexNode, "value");
+            	index = new Object[nrIndexes];
+            	
+        	    for (int i=0;i<index.length;i++)
+                {
+        	    	Node valueNode = XMLHandler.getSubNodeByNr(indexNode, "value", i);
+        	    	String valueString = XMLHandler.getNodeValue(valueNode);
+        	    	if (Const.isEmpty(valueString))
+        	    	{
+        	    		index[i] = null;
+        	    	}
+        	    	else
+        	    	{
+	                    switch(type)
+	                    {
+	                    case TYPE_STRING:    index[i] = valueString; break; 
+	                    case TYPE_NUMBER:    index[i] = Double.parseDouble( valueString ); break; 
+	                    case TYPE_INTEGER:   index[i] = Long.parseLong( valueString ); break; 
+	                    case TYPE_DATE:      index[i] = XMLHandler.stringToDate( valueString ); ; break; 
+	                    case TYPE_BIGNUMBER: index[i] = new BigDecimal( valueString ); ; break; 
+	                    case TYPE_BOOLEAN:   index[i] = new Boolean("Y".equalsIgnoreCase( valueString)); break; 
+	                    case TYPE_BINARY:    index[i] = XMLHandler.stringToBinary( valueString ); break;
+	                    default: throw new IOException(toString()+" : Unable to de-serialize indexe storage type from XML for data type "+getType());
+	                    }
+        	    	}
+                }
+            }
+            break;
+        
+        case STORAGE_TYPE_BINARY_STRING:
+            {
+            	// Save the storage meta data...
+            	//
+            	Node storageMetaNode = XMLHandler.getSubNode(node, "storage-meta");
+            	if (storageMetaNode!=null)
+            	{
+            		storageMetadata = new ValueMeta(storageMetaNode);
+            	}
+            }
+            break;
+            
+       default:
+    	   break;
+       }
+        
+        name = XMLHandler.getTagValue(node, "name");  
+        length =  Integer.parseInt( XMLHandler.getTagValue(node, "length") );  
+        precision = Integer.parseInt( XMLHandler.getTagValue(node, "precision") );  
+        origin = XMLHandler.getTagValue(node, "origin");  
+        comments = XMLHandler.getTagValue(node, "comments");  
+        conversionMask = XMLHandler.getTagValue(node, "conversion_Mask");  
+        decimalSymbol = XMLHandler.getTagValue(node, "decimal_symbol");  
+        groupingSymbol = XMLHandler.getTagValue(node, "grouping_symbol");  
+        currencySymbol = XMLHandler.getTagValue(node, "currency_symbol");  
+        trimType = getTrimTypeByCode( XMLHandler.getTagValue(node, "trim_type") );
+        caseInsensitive = "Y".equalsIgnoreCase( XMLHandler.getTagValue(node, "case_insensitive") );
+        sortedDescending = "Y".equalsIgnoreCase( XMLHandler.getTagValue(node, "sort_descending") );
+        outputPaddingEnabled = "Y".equalsIgnoreCase( XMLHandler.getTagValue(node, "output_padding") );
+        dateFormatLenient = "Y".equalsIgnoreCase( XMLHandler.getTagValue(node, "date_format_lenient") );
+        String dateFormatLocaleString = XMLHandler.getTagValue(node, "date_format_locale");
+        if (!Const.isEmpty( dateFormatLocaleString ))
+        {
+        	dateFormatLocale = new Locale(dateFormatLocaleString);
+        }
+	}
+
+    public String getDataXML(Object object) throws IOException
+    {
+    	StringBuffer xml = new StringBuffer();
+    	
+    	xml.append(XMLHandler.openTag(XML_DATA_TAG));
+    	
+        if (object!=null) // otherwise there is no point
+        {
+            switch(storageType)
+            {
+            case STORAGE_TYPE_NORMAL:
+                // Handle Content -- only when not NULL
+            	//
+                switch(getType())
+                {
+                case TYPE_STRING     : xml.append( XMLHandler.addTagValue("string-value", (String)object) ); break;
+                case TYPE_NUMBER     : xml.append( XMLHandler.addTagValue("number-value", (Double)object) ); break;
+                case TYPE_INTEGER    : xml.append( XMLHandler.addTagValue("integer-value", (Long)object) ); break;
+                case TYPE_DATE       : xml.append( XMLHandler.addTagValue("date-value", (Date)object) ); break;
+                case TYPE_BIGNUMBER  : xml.append( XMLHandler.addTagValue("bignumber-value", (BigDecimal)object) ); break;
+                case TYPE_BOOLEAN    : xml.append( XMLHandler.addTagValue("boolean-value", (Boolean)object) ); break;
+                case TYPE_BINARY     : xml.append( XMLHandler.addTagValue("binary-value", (byte[])object) ); break;
+                default: throw new IOException(toString()+" : Unable to serialize data type to XML "+getType());
+                }
+                break;
+                
+            case STORAGE_TYPE_BINARY_STRING:
+                // Handle binary string content -- only when not NULL
+            	// In this case, we opt not to convert anything at all for speed.
+            	// That way, we can save on CPU power.
+            	// Since the streams can be compressed, volume shouldn't be an issue at all.
+            	//
+            	xml.append( XMLHandler.addTagValue("binary-string", (byte[])object) );
+                break;
+                
+            case STORAGE_TYPE_INDEXED:
+            	xml.append( XMLHandler.addTagValue("index-value", (Integer)object) ); // just an index 
+                break;
+                
+            default: throw new IOException(toString()+" : Unknown storage type "+getStorageType());
+            }
+        }
+    	
+    	xml.append(XMLHandler.closeTag(XML_META_TAG));
+    	
+    	return xml.toString();
+    }
 
     /**
+     * Convert a data XML node to an Object that corresponds to the metadata.
+     * This is basically String to Object conversion that is being done.
+     * @param node the node to retrieve the data value from
+     * @return the converted data value
+     * @throws IOException thrown in case there is a problem with the XML to object conversion
+     */
+	public Object getValue(Node node) throws IOException {
+		
+        switch(storageType)
+        {
+        case STORAGE_TYPE_NORMAL:
+    		String valueString = XMLHandler.getTagValue(node, "value");
+    		if (Const.isEmpty(valueString)) return null;
+    		
+            // Handle Content -- only when not NULL
+        	//
+            switch(getType())
+            {
+            case TYPE_STRING:    return valueString;
+            case TYPE_NUMBER:    return Double.parseDouble( valueString ); 
+            case TYPE_INTEGER:   return Long.parseLong( valueString );
+            case TYPE_DATE:      return XMLHandler.stringToDate( valueString ); 
+            case TYPE_BIGNUMBER: return new BigDecimal( valueString );
+            case TYPE_BOOLEAN:   return new Boolean("Y".equalsIgnoreCase( valueString)); 
+            case TYPE_BINARY:    return XMLHandler.stringToBinary( valueString );
+            default: throw new IOException(toString()+" : Unable to de-serialize '"+valueString+"' from XML for data type "+getType());
+            }
+            
+        case STORAGE_TYPE_BINARY_STRING:
+            // Handle binary string content -- only when not NULL
+        	// In this case, we opt not to convert anything at all for speed.
+        	// That way, we can save on CPU power.
+        	// Since the streams can be compressed, volume shouldn't be an issue at all.
+        	//
+        	String binaryString = XMLHandler.getTagValue(node, "binary-string");
+    		if (Const.isEmpty(binaryString)) return null;
+    		
+    		return XMLHandler.stringToBinary(binaryString);
+            
+        case STORAGE_TYPE_INDEXED:
+        	String indexString = XMLHandler.getTagValue(node, "index-value");
+    		if (Const.isEmpty(indexString)) return null;
+
+    		return Integer.parseInt(indexString); 
+            
+        default: throw new IOException(toString()+" : Unknown storage type "+getStorageType());
+        }
+
+	}
+
+
+
+	/**
      * get an array of String describing the possible types a Value can have.
      * @return an array of String describing the possible types a Value can have.
      */
@@ -2183,9 +2450,7 @@ public class ValueMeta implements ValueMetaInterface
      */
     public static final int getType(String desc)
     {
-        int i;
-
-        for (i=1;i<typeCodes.length;i++)
+        for (int i=1;i<typeCodes.length;i++)
         {
             if (typeCodes[i].equalsIgnoreCase(desc))
             {
@@ -2194,6 +2459,25 @@ public class ValueMeta implements ValueMetaInterface
         }
 
         return TYPE_NONE;
+    }
+    
+
+    /**
+     * Convert the String description of a storage type to an integer type.
+     * @param desc The description of the storage type to convert
+     * @return The integer storage type of the given String.  (ValueMetaInterface.STORAGE_TYPE_...)
+     */
+    public static final int getStorageType(String desc)
+    {
+        for (int i=0;i<storageTypeCodes.length;i++)
+        {
+            if (storageTypeCodes[i].equalsIgnoreCase(desc))
+            {
+                return i; 
+            }
+        }
+
+        return STORAGE_TYPE_NORMAL;
     }
     
     /**
@@ -2739,5 +3023,4 @@ public class ValueMeta implements ValueMetaInterface
 		if (i < 0 || i >= trimTypeDesc.length) return trimTypeDesc[0];
 		return trimTypeDesc[i];
 	}
-	
 }

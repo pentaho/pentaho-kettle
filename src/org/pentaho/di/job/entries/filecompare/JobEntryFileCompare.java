@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.util.List;
 
 import org.apache.commons.vfs.FileObject;
+import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
@@ -100,12 +101,12 @@ public class JobEntryFileCompare extends JobEntryBase implements Cloneable, JobE
 		return retval.toString();
 	}
 
-	public void loadXML(Node entrynode, List<DatabaseMeta> databases, Repository rep)
+	public void loadXML(Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep)
 		throws KettleXMLException
 	{
 		try
 		{
-			super.loadXML(entrynode, databases);
+			super.loadXML(entrynode, databases, slaveServers);
 			filename1 = XMLHandler.getTagValue(entrynode, "filename1"); //$NON-NLS-1$
 			filename2 = XMLHandler.getTagValue(entrynode, "filename2"); //$NON-NLS-1$
 		}
@@ -115,12 +116,11 @@ public class JobEntryFileCompare extends JobEntryBase implements Cloneable, JobE
 		}
 	}
 
-	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases)
-		throws KettleException
+	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
 	{
 		try
 		{
-			super.loadRep(rep, id_jobentry, databases);
+			super.loadRep(rep, id_jobentry, databases, slaveServers);
 			filename1 = rep.getJobEntryAttributeString(id_jobentry, "filename1"); //$NON-NLS-1$
 			filename2 = rep.getJobEntryAttributeString(id_jobentry, "filename2"); //$NON-NLS-1$
 		}

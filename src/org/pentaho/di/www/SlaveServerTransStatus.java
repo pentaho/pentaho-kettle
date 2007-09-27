@@ -10,6 +10,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -27,6 +28,8 @@ public class SlaveServerTransStatus
     private String errorDescription;
     private String loggingString;
     private List<StepStatus>   stepStatusList;
+    
+    private Result result;
     
     public SlaveServerTransStatus()
     {
@@ -62,6 +65,16 @@ public class SlaveServerTransStatus
         xml.append("  </stepstatuslist>").append(Const.CR);
 
         xml.append(XMLHandler.addTagValue("logging_string", XMLHandler.buildCDATA(loggingString)));          
+
+        if (result!=null)
+        {
+        	try {
+				String resultXML = result.getXML();
+				xml.append(resultXML);
+			} catch (IOException e) {
+				LogWriter.getInstance().logError("Slave server transformation status", "Unable to serialize result object as XML", e);
+			}
+        }
 
         xml.append("</"+XML_TAG+">");
         
@@ -107,6 +120,18 @@ public class SlaveServerTransStatus
         catch(IOException e)
         {
             loggingString = "Unable to decode logging from remote server : "+e.toString()+Const.CR+Const.getStackTracker(e);
+        }
+        
+        // get the result object, if there is any...
+        //
+        Node resultNode = XMLHandler.getSubNode(transStatusNode, Result.XML_TAG);
+        if (resultNode!=null)
+        {
+        	try {
+				result = new Result(resultNode);
+			} catch (IOException e) {
+				loggingString+="Unable to serialize result object as XML"+Const.CR+Const.getStackTracker(e)+Const.CR;
+			}
         }
     }
     
@@ -240,4 +265,18 @@ public class SlaveServerTransStatus
     	
     	return result;
     }
+
+	/**
+	 * @return the result
+	 */
+	public Result getResult() {
+		return result;
+	}
+
+	/**
+	 * @param result the result to set
+	 */
+	public void setResult(Result result) {
+		this.result = result;
+	}
 }

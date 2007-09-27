@@ -40,6 +40,7 @@ import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.vfs.FileObject;
+import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
@@ -130,12 +131,12 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 		return retval.toString();
 	}
 
-	public void loadXML(Node entrynode, List<DatabaseMeta> databases, Repository rep)
+	public void loadXML(Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep)
 		throws KettleXMLException
 	{
 		try
 		{
-			super.loadXML(entrynode, databases);
+			super.loadXML(entrynode, databases, slaveServers);
 			zipFilename = XMLHandler.getTagValue(entrynode, "zipfilename");
 			compressionrate = Const.toInt(XMLHandler.getTagValue(entrynode, "compressionrate"), -1);
 			ifzipfileexists = Const.toInt(XMLHandler.getTagValue(entrynode, "ifzipfileexists"), -1);
@@ -155,13 +156,13 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 		}
 	}
 
-	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases)
+	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers)
 		throws KettleException
 	{
 
 		try
 		{
-			super.loadRep(rep, id_jobentry, databases);
+			super.loadRep(rep, id_jobentry, databases, slaveServers);
 			zipFilename = rep.getJobEntryAttributeString(id_jobentry, "zipfilename");
 			compressionrate=(int) rep.getJobEntryAttributeInteger(id_jobentry, "compressionrate");
 			ifzipfileexists=(int) rep.getJobEntryAttributeInteger(id_jobentry, "ifzipfileexists");

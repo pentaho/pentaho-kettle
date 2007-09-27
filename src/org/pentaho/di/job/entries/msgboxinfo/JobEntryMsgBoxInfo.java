@@ -18,6 +18,7 @@ import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.addOkRem
 
 import java.util.List;
 
+import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
@@ -87,12 +88,12 @@ public class JobEntryMsgBoxInfo extends JobEntryBase implements Cloneable, JobEn
 		return retval.toString();
 	}
 
-	public void loadXML(Node entrynode, List<DatabaseMeta> databases, Repository rep)
+	public void loadXML(Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep)
 		throws KettleXMLException
 	{
 		try
 		{
-			super.loadXML(entrynode, databases);
+			super.loadXML(entrynode, databases, slaveServers);
 			bodymessage = XMLHandler.getTagValue(entrynode, "bodymessage");
 			titremessage = XMLHandler.getTagValue(entrynode, "titremessage");
 		}
@@ -102,12 +103,12 @@ public class JobEntryMsgBoxInfo extends JobEntryBase implements Cloneable, JobEn
 		}
 	}
 
-	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases)
+	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers)
 		throws KettleException
 	{
 		try
 		{
-			super.loadRep(rep, id_jobentry, databases);
+			super.loadRep(rep, id_jobentry, databases, slaveServers);
 
 			bodymessage = rep.getJobEntryAttributeString(id_jobentry, "bodymessage");
 			titremessage = rep.getJobEntryAttributeString(id_jobentry, "titremessage");
@@ -120,8 +121,7 @@ public class JobEntryMsgBoxInfo extends JobEntryBase implements Cloneable, JobEn
 
 	// Save the attributes of this job entry
 	//
-	public void saveRep(Repository rep, long id_job)
-		throws KettleException
+	public void saveRep(Repository rep, long id_job) throws KettleException
 	{
 		try
 		{

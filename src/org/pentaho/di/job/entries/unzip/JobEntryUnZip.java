@@ -35,6 +35,7 @@ import java.util.zip.ZipFile;
 
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileType;
+import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
@@ -120,12 +121,12 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 		return retval.toString();
 	}
 	
-	public void loadXML(Node entrynode, List<DatabaseMeta> databases, Repository rep)
+	public void loadXML(Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep)
 	throws KettleXMLException
  {
 		try
 		{
-			super.loadXML(entrynode, databases);
+			super.loadXML(entrynode, databases, slaveServers);
 			zipFilename = XMLHandler.getTagValue(entrynode, "zipfilename");
 			afterunzip        = Const.toInt(XMLHandler.getTagValue(entrynode, "afterunzip"), -1);
 
@@ -142,12 +143,12 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 		}
 	}
 
-	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases)
+	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers)
 	throws KettleException
   {
 		try
 		{
-			super.loadRep(rep, id_jobentry, databases);
+			super.loadRep(rep, id_jobentry, databases, slaveServers);
 			zipFilename = rep.getJobEntryAttributeString(id_jobentry, "zipfilename");
 			afterunzip=(int) rep.getJobEntryAttributeInteger(id_jobentry, "afterunzip");
 			wildcard = rep.getJobEntryAttributeString(id_jobentry, "wildcard");

@@ -18,9 +18,14 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleEOFException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.xml.XMLHandler;
+import org.w3c.dom.Node;
 
 public class RowMeta implements RowMetaInterface
 {
+	public static final String XML_META_TAG = "row-meta"; //$NON-NLS-1$
+	public static final String XML_DATA_TAG = "row-data"; //$NON-NLS-1$
+    
     private List<ValueMetaInterface> valueMetaList;
 
     public RowMeta()
@@ -465,7 +470,7 @@ public class RowMeta implements RowMetaInterface
         }
     }
 
-    public Object[] readData(DataInputStream inputStream) throws KettleFileException, KettleEOFException, SocketTimeoutException
+	public Object[] readData(DataInputStream inputStream) throws KettleFileException, KettleEOFException, SocketTimeoutException
     {
         Object[] data = new Object[size()];
         for (int i=0;i<size();i++)
@@ -743,6 +748,81 @@ public class RowMeta implements RowMetaInterface
 		}
 		
 		return row;
+	}
+	
+	/**
+	 * @return an XML representation of the row metadata
+	 * @throws IOException Thrown in case there is an (Base64/GZip) encoding problem
+	 */
+	public String getMetaXML() throws IOException
+	{
+		StringBuffer xml= new StringBuffer();
+		
+        xml.append("<").append(XML_META_TAG).append(">"); //$NON-NLS-1$ //$NON-NLS-2$
+        
+        for (int i=0;i<size();i++)
+		{
+			xml.append(getValueMeta(i).getMetaXML());
+		}
+        
+		xml.append("</").append(XML_META_TAG).append(">"); //$NON-NLS-1$ //$NON-NLS-2$
+
+		return xml.toString();
+	}
+	
+	/**
+	 * Create a new row metadata object from XML
+	 * @param node the XML node to deserialize from
+	 * @throws IOException Thrown in case there is an (Base64/GZip) decoding problem
+	 */
+    public RowMeta(Node node) throws IOException {
+    	this();
+    	
+		int nrValues = XMLHandler.countNodes(node, ValueMeta.XML_META_TAG); 
+		for (int i=0;i<nrValues;i++)
+		{
+			addValueMeta( new ValueMeta(XMLHandler.getSubNodeByNr(node, ValueMeta.XML_META_TAG, i)) );
+		}
+	}
+	
+	/**
+	 * @param rowData the row of data to serialize as XML
+	 * @return an XML representation of the row data
+	 * @throws IOException Thrown in case there is an (Base64/GZip) encoding problem
+	 */
+	public String getDataXML(Object[] rowData) throws IOException
+	{
+		StringBuffer xml= new StringBuffer();
+		
+        xml.append("<").append(XML_DATA_TAG).append(">"); //$NON-NLS-1$ //$NON-NLS-2$
+        
+        for (int i=0;i<size();i++)
+		{
+			xml.append(getValueMeta(i).getDataXML(rowData[i]));
+		}
+        
+		xml.append("</").append(XML_DATA_TAG).append(">"); //$NON-NLS-1$ //$NON-NLS-2$
+
+		return xml.toString();
+	}
+
+	/**
+	 * Convert an XML node into binary data using the row metadata supplied. 
+	 * @param rowMeta The row metadata to reference
+	 * @param node The data row node 
+	 * @throws IOException Thrown in case there is an (Base64/GZip) decoding problem
+	 * @return a row of data, converted from XML
+	 */
+	public Object[] getRow(Node node) throws IOException 
+	{
+		Object[] rowData = RowDataUtil.allocateRowData(size());
+
+		for (int i=0;i<size();i++)
+		{
+			Node valueDataNode = XMLHandler.getSubNodeByNr(node, ValueMeta.XML_DATA_TAG, i);
+			rowData[i] = getValueMeta(i).getValue(valueDataNode);
+		}
+		return null;
 	}
 
 }

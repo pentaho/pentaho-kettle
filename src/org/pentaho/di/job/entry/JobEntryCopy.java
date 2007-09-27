@@ -17,6 +17,7 @@ package org.pentaho.di.job.entry;
 
 import java.util.List;
 
+import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.changed.ChangedFlagInterface;
@@ -99,8 +100,7 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 		return retval.toString();
 	}
 
-	public JobEntryCopy(Node entrynode, List<DatabaseMeta> databases, Repository rep)
-			throws KettleXMLException
+	public JobEntryCopy(Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep) throws KettleXMLException
 	{
 		try
 		{
@@ -116,7 +116,7 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 			{
 				// System.out.println("New JobEntryInterface built of type:
 				// "+entry.getTypeDesc());
-				entry.loadXML(entrynode, databases, rep);
+				entry.loadXML(entrynode, databases, slaveServers, rep);
 
 				// Handle GUI information: nr & location?
 				setNr(Const.toInt(XMLHandler.getTagValue(entrynode, "nr"), 0));
@@ -153,7 +153,7 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 	 * @param databases
 	 *            A list with all defined databases
 	 */
-	public JobEntryCopy(LogWriter log, Repository rep, long id_job, long id_jobentry_copy, List<JobEntryInterface> jobentries, List<DatabaseMeta> databases) throws KettleException
+	public JobEntryCopy(LogWriter log, Repository rep, long id_job, long id_jobentry_copy, List<JobEntryInterface> jobentries, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
 	{
 		try
 		{
@@ -193,7 +193,7 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 							entry = jobLoader.getJobEntryClass(jobPlugin);
 
 							// Load the attributes for that jobentry
-							entry.loadRep(rep, id_jobentry, databases);
+							entry.loadRep(rep, id_jobentry, databases, slaveServers);
 							entry.setID(id_jobentry);
 							
 							jobentries.add(entry);

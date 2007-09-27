@@ -19,6 +19,7 @@ import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.addOkRem
 
 import java.util.List;
 
+import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -72,18 +73,18 @@ public class JobEntryAbort extends JobEntryBase implements Cloneable, JobEntryIn
     return retval.toString();
   }
 
-  public void loadXML(Node entrynode, List<DatabaseMeta> databases, Repository rep) throws KettleXMLException {
+  public void loadXML(Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep) throws KettleXMLException {
     try {
-      super.loadXML(entrynode, databases);
+      super.loadXML(entrynode, databases, slaveServers);
       messageAbort = XMLHandler.getTagValue(entrynode, "message"); //$NON-NLS-1$
     } catch (Exception e) {
       throw new KettleXMLException(Messages.getString("JobEntryAbort.UnableToLoadFromXml.Label"), e); //$NON-NLS-1$
     }
   }
 
-  public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases) throws KettleException {
+  public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException {
     try {
-      super.loadRep(rep, id_jobentry, databases);
+      super.loadRep(rep, id_jobentry, databases, slaveServers);
       messageAbort = rep.getJobEntryAttributeString(id_jobentry, "message"); //$NON-NLS-1$
     } catch (KettleDatabaseException dbe) {
       throw new KettleException(Messages.getString(

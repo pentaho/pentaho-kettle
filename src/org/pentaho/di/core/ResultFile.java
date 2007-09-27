@@ -1,10 +1,14 @@
 package org.pentaho.di.core;
 
+import java.io.IOException;
 import java.util.Date;
 
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.core.xml.XMLHandler;
+import org.w3c.dom.Node;
 
 /**
  * This is a result file: a file as a result of the execution of a job entry, a transformation step, etc.
@@ -29,6 +33,7 @@ public class ResultFile implements Cloneable
                                                  Messages.getString("ResultFile.FileType.Error"),
                                                  Messages.getString("ResultFile.FileType.Warning")
     };
+	private static final String XML_TAG = "result-file";
     
 	private int type;
 	private FileObject file;
@@ -234,6 +239,34 @@ public class ResultFile implements Cloneable
 		row.addValue( new ValueMeta("timestamp", ValueMetaInterface.TYPE_DATE), timestamp);
 
 		return row;
+	}
+
+	public String getXML() 
+	{
+		StringBuffer xml = new StringBuffer();
+    	
+        xml.append(XMLHandler.openTag(XML_TAG));
+        
+        xml.append( XMLHandler.addTagValue("type", getTypeCode()) );
+        xml.append( XMLHandler.addTagValue("file", file.getName().toString()) );
+        xml.append( XMLHandler.addTagValue("parentorigin", originParent) );
+        xml.append( XMLHandler.addTagValue("origin", origin) );
+        xml.append( XMLHandler.addTagValue("comment", comment) );
+        xml.append( XMLHandler.addTagValue("timestamp", timestamp) );
+        
+        xml.append(XMLHandler.closeTag(XML_TAG));
+        
+        return xml.toString();
+	}
+	
+	public ResultFile(Node node) throws IOException
+	{
+		type = getType(XMLHandler.getTagValue(node, "type"));
+		file = KettleVFS.getFileObject( XMLHandler.getTagValue(node, "file") );
+		originParent = XMLHandler.getTagValue(node, "parentorigin");
+		origin = XMLHandler.getTagValue(node, "origin");
+		comment = XMLHandler.getTagValue(node, "comment");
+		timestamp = XMLHandler.stringToDate( XMLHandler.getTagValue(node, "timestamp") );
 	}
 
 }

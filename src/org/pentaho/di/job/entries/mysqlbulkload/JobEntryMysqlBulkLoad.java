@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
@@ -141,11 +142,11 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 		return retval.toString();
 	}
 
-	public void loadXML(Node entrynode, List<DatabaseMeta> databases, Repository rep) throws KettleXMLException
+	public void loadXML(Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep) throws KettleXMLException
 	{
 		try
 		{
-			super.loadXML(entrynode, databases);
+			super.loadXML(entrynode, databases, slaveServers);
 			schemaname  = XMLHandler.getTagValue(entrynode, "schemaname");
 			tablename   = XMLHandler.getTagValue(entrynode, "tablename");
 			filename    = XMLHandler.getTagValue(entrynode, "filename");
@@ -170,12 +171,12 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 		}
 	}
 
-	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases)
+	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers)
 		throws KettleException
 	{
 		try
 		{
-			super.loadRep(rep, id_jobentry, databases);
+			super.loadRep(rep, id_jobentry, databases, slaveServers);
 			schemaname      =      rep.getJobEntryAttributeString(id_jobentry,  "schemaname");
 			tablename       =      rep.getJobEntryAttributeString(id_jobentry,  "tablename");
 			filename        =      rep.getJobEntryAttributeString(id_jobentry,  "filename");

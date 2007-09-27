@@ -33,6 +33,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.commons.vfs.FileObject;
+import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
@@ -113,13 +114,12 @@ public class JobEntryDTDValidator extends JobEntryBase implements Cloneable, Job
 		return retval.toString();
 	}
 
-	public void loadXML(Node entrynode, List<DatabaseMeta> databases, Repository rep)
-	throws KettleXMLException
+	public void loadXML(Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep) throws KettleXMLException
 	{
 	
 		try
 		{
-			super.loadXML(entrynode, databases);
+			super.loadXML(entrynode, databases, slaveServers);
 			xmlfilename = XMLHandler.getTagValue(entrynode, "xmlfilename");
 			dtdfilename = XMLHandler.getTagValue(entrynode, "dtdfilename");
 			dtdintern = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "dtdintern"));
@@ -132,12 +132,11 @@ public class JobEntryDTDValidator extends JobEntryBase implements Cloneable, Job
 		}
 	}
 
-	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases)
-		throws KettleException
+	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
 	{
 		try
 		{
-			super.loadRep(rep, id_jobentry, databases);
+			super.loadRep(rep, id_jobentry, databases, slaveServers);
 			xmlfilename = rep.getJobEntryAttributeString(id_jobentry, "xmlfilename");
 			dtdfilename = rep.getJobEntryAttributeString(id_jobentry, "dtdfilename");
 			dtdintern=rep.getJobEntryAttributeBoolean(id_jobentry, "dtdintern");
@@ -149,8 +148,7 @@ public class JobEntryDTDValidator extends JobEntryBase implements Cloneable, Job
 		}
 	}
 
-	public void saveRep(Repository rep, long id_job)
-		throws KettleException
+	public void saveRep(Repository rep, long id_job) throws KettleException
 	{
 		try
 		{

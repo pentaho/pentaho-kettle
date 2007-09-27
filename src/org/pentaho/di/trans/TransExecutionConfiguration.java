@@ -160,7 +160,18 @@ public class TransExecutionConfiguration implements Cloneable
     {
         this.variables = variables;
     }
-
+    
+    public void setVariables(VariableSpace space)
+    {
+    	this.variables = new HashMap<String, String>();
+    	
+    	for (String name : space.listVariables())
+    	{
+    		String value = space.getVariable(name);
+    		this.variables.put(name, value);
+    	}
+    }
+    
     /**
      * @return the remoteExecution
      */

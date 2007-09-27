@@ -29,8 +29,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-//import net.sf.saxon.FeatureKeys;
-//import net.sf.saxon.value.StringValue;
 import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
@@ -39,6 +37,7 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.vfs.FileObject;
+import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
@@ -126,12 +125,11 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 		return retval.toString();
 	}
 
-	public void loadXML(Node entrynode, List<DatabaseMeta> databases, Repository rep)
-		throws KettleXMLException
+	public void loadXML(Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep) throws KettleXMLException
 	{
 		try
 		{
-			super.loadXML(entrynode, databases);
+			super.loadXML(entrynode, databases, slaveServers);
 			xmlfilename = XMLHandler.getTagValue(entrynode, "xmlfilename");
 			xslfilename = XMLHandler.getTagValue(entrynode, "xslfilename");
 			outputfilename = XMLHandler.getTagValue(entrynode, "outputfilename");
@@ -147,12 +145,12 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 		}
 	}
 
-	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases)
+	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers)
 		throws KettleException
 	{
 		try
 		{
-			super.loadRep(rep, id_jobentry, databases);
+			super.loadRep(rep, id_jobentry, databases, slaveServers);
 			xmlfilename = rep.getJobEntryAttributeString(id_jobentry, "xmlfilename");
 			xslfilename = rep.getJobEntryAttributeString(id_jobentry, "xslfilename");
 			outputfilename = rep.getJobEntryAttributeString(id_jobentry, "outputfilename");

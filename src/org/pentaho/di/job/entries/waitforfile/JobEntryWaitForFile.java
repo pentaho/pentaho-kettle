@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.List;
 
 import org.apache.commons.vfs.FileObject;
+import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
@@ -106,12 +107,12 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
 		return retval.toString();
 	}
 
-	public void loadXML(Node entrynode, List<DatabaseMeta> databases, Repository rep)
+	public void loadXML(Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep)
 		throws KettleXMLException
 	{
 		try
 		{
-			super.loadXML(entrynode, databases);
+			super.loadXML(entrynode, databases, slaveServers);
 			filename = XMLHandler.getTagValue(entrynode, "filename");
 			maximumTimeout = XMLHandler.getTagValue(entrynode, "maximum_timeout");
 			checkCycleTime = XMLHandler.getTagValue(entrynode, "check_cycle_time");
@@ -124,12 +125,12 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
 		}
 	}
 
-	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases)
+	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers)
 		throws KettleException
 	{
 		try
 		{
-			super.loadRep(rep, id_jobentry, databases);
+			super.loadRep(rep, id_jobentry, databases, slaveServers);
 			filename = rep.getJobEntryAttributeString(id_jobentry, "filename");
 			maximumTimeout = rep.getJobEntryAttributeString(id_jobentry, "maximum_timeout");
 			checkCycleTime = rep.getJobEntryAttributeString(id_jobentry, "check_cycle_time");

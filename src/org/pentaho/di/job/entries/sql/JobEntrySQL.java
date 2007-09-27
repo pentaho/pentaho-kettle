@@ -21,6 +21,7 @@ import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlank
 
 import java.util.List;
 
+import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.Database;
@@ -95,11 +96,11 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
 		return retval.toString();
 	}
 
-	public void loadXML(Node entrynode, List<DatabaseMeta> databases, Repository rep) throws KettleXMLException
+	public void loadXML(Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep) throws KettleXMLException
 	{
 		try
 		{
-			super.loadXML(entrynode, databases);
+			super.loadXML(entrynode, databases, slaveServers);
 			sql           = XMLHandler.getTagValue(entrynode, "sql");
 			String dbname = XMLHandler.getTagValue(entrynode, "connection");
 			String sSubs  = XMLHandler.getTagValue(entrynode, "useVariableSubstitution");
@@ -113,12 +114,12 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
 		}
 	}
 
-	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases)
+	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers)
 		throws KettleException
 	{
 		try
 		{
-			super.loadRep(rep, id_jobentry, databases);
+			super.loadRep(rep, id_jobentry, databases, slaveServers);
 
 			sql = rep.getJobEntryAttributeString(id_jobentry, "sql");
 			String sSubs = rep.getJobEntryAttributeString(id_jobentry, "useVariableSubstitution");

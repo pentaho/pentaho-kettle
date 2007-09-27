@@ -33,6 +33,7 @@ import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
 import org.apache.commons.vfs.FileObject;
+import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
@@ -108,12 +109,12 @@ public class JobEntryXSDValidator extends JobEntryBase implements Cloneable, Job
 		return retval.toString();
 	}
 
-	public void loadXML(Node entrynode, List<DatabaseMeta> databases, Repository rep)
+	public void loadXML(Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep)
 		throws KettleXMLException
 	{
 		try
 		{
-			super.loadXML(entrynode, databases);
+			super.loadXML(entrynode, databases, slaveServers);
 			xmlfilename = XMLHandler.getTagValue(entrynode, "xmlfilename");
 			xsdfilename = XMLHandler.getTagValue(entrynode, "xsdfilename");
 
@@ -125,12 +126,12 @@ public class JobEntryXSDValidator extends JobEntryBase implements Cloneable, Job
 		}
 	}
 
-	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases)
+	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers)
 		throws KettleException
 	{
 		try
 		{
-			super.loadRep(rep, id_jobentry, databases);
+			super.loadRep(rep, id_jobentry, databases, slaveServers);
 			xmlfilename = rep.getJobEntryAttributeString(id_jobentry, "xmlfilename");
 			xsdfilename = rep.getJobEntryAttributeString(id_jobentry, "xsdfilename");
 

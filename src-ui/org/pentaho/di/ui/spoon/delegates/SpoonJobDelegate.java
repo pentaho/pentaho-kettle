@@ -377,7 +377,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 			for (int i = 0; i < nr; i++)
 			{
 				Node entrynode = XMLHandler.getSubNodeByNr(entriesnode, "entry", i); //$NON-NLS-1$
-				entries[i] = new JobEntryCopy(entrynode, jobMeta.getDatabases(), spoon.getRepository());
+				entries[i] = new JobEntryCopy(entrynode, jobMeta.getDatabases(), jobMeta.getSlaveServers(), spoon.getRepository());
 
 				String name = jobMeta.getAlternativeJobentryName(entries[i].getName());
 				entries[i].setName(name);
@@ -1433,7 +1433,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 			else if (executionConfiguration.isExecutingRemotely()) {
 				
 				if (executionConfiguration.getRemoteServer() != null) {
-					spoon.delegates.slaves.sendXMLToSlaveServer(jobMeta, executionConfiguration);
+					SpoonSlaveDelegate.sendXMLToSlaveServer(jobMeta, executionConfiguration);
 					spoon.delegates.slaves.addSpoonSlave(executionConfiguration.getRemoteServer());
 				} else {
 					MessageBox mb = new MessageBox(spoon.getShell(), SWT.OK | SWT.ICON_INFORMATION);

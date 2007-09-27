@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.vfs.FileObject;
+import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
@@ -127,11 +128,11 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 		return retval.toString();
 	}
 
-	public void loadXML(Node entrynode, List<DatabaseMeta> databases, Repository rep) throws KettleXMLException
+	public void loadXML(Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep) throws KettleXMLException
 	{
 		try
 		{
-			super.loadXML(entrynode, databases);
+			super.loadXML(entrynode, databases, slaveServers);
 			setFileName( XMLHandler.getTagValue(entrynode, "filename") );
 			setWorkDirectory( XMLHandler.getTagValue(entrynode, "work_directory") );
 			argFromPrevious = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "arg_from_previous") );
@@ -160,12 +161,12 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 	}
 
 	// Load the jobentry from repository
-	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases)
+	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers)
 		throws KettleException
 	{
 		try
 		{
-			super.loadRep(rep, id_jobentry, databases);
+			super.loadRep(rep, id_jobentry, databases, slaveServers);
 
 			setFileName( rep.getJobEntryAttributeString(id_jobentry, "file_name")  );
 			setWorkDirectory( rep.getJobEntryAttributeString(id_jobentry, "work_directory")  );

@@ -16,19 +16,25 @@
  
 
 package org.pentaho.di.core.xml;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -677,7 +683,7 @@ public class XMLHandler
 	 * Build an XML string for a certain tag String value
 	 * @param tag The XML tag
 	 * @param val The String value of the tag
-	 * @param cr true if a cariage return is desired after the ending tag.
+	 * @param cr true if a carriage return is desired after the ending tag.
 	 * @return The XML String for the tag.
 	 */
 	public static final String addTagValue(String tag, String val, boolean cr,String... attributes)
@@ -778,7 +784,7 @@ public class XMLHandler
     }
 
     /**
-	 * Build an XML string (including a cariage return) for a certain tag String value
+	 * Build an XML string (including a carriage return) for a certain tag String value
 	 * @param tag The XML tag
 	 * @param val The String value of the tag
 	 * @return The XML String for the tag.
@@ -787,9 +793,11 @@ public class XMLHandler
 	{
 		return addTagValue(tag, val, true);
 	}
+	
+	
 
 	/**
-	 * Build an XML string (including a cariage return) for a certain tag boolean value
+	 * Build an XML string (including a carriage return) for a certain tag boolean value
 	 * @param tag The XML tag
 	 * @param bool The boolean value of the tag
 	 * @return The XML String for the tag.
@@ -803,7 +811,7 @@ public class XMLHandler
 	 * Build an XML string for a certain tag boolean value
 	 * @param tag The XML tag
 	 * @param bool The boolean value of the tag
-	 * @param cr true if a cariage return is desired after the ending tag.
+	 * @param cr true if a carriage return is desired after the ending tag.
 	 * @return The XML String for the tag.
 	 */
 	public static final String addTagValue(String tag, boolean bool, boolean cr)
@@ -826,7 +834,7 @@ public class XMLHandler
 	 * Build an XML string for a certain tag long integer value
 	 * @param tag The XML tag
 	 * @param l The long integer value of the tag
-	 * @param cr true if a cariage return is desired after the ending tag.
+	 * @param cr true if a carriage return is desired after the ending tag.
 	 * @return The XML String for the tag.
 	 */
 	public static final String addTagValue(String tag, long l, boolean cr)
@@ -837,7 +845,7 @@ public class XMLHandler
 	}
 
 	/**
-	 * Build an XML string (with cariage return) for a certain tag integer value
+	 * Build an XML string (with carriage return) for a certain tag integer value
 	 * @param tag The XML tag
 	 * @param i The integer value of the tag
 	 * @return The XML String for the tag.
@@ -851,7 +859,7 @@ public class XMLHandler
 	 * Build an XML string for a certain tag integer value
 	 * @param tag The XML tag
 	 * @param i The integer value of the tag
-	 * @param cr true if a cariage return is desired after the ending tag.
+	 * @param cr true if a carriage return is desired after the ending tag.
 	 * @return The XML String for the tag.
 	 */
 	public static final String addTagValue(String tag, int i, boolean cr)
@@ -860,7 +868,7 @@ public class XMLHandler
 	}
 
 	/**
-	 * Build an XML string (with cariage return) for a certain tag double value
+	 * Build an XML string (with carriage return) for a certain tag double value
 	 * @param tag The XML tag
 	 * @param d The double value of the tag
 	 * @return The XML String for the tag.
@@ -874,7 +882,7 @@ public class XMLHandler
 	 * Build an XML string for a certain tag double value
 	 * @param tag The XML tag
 	 * @param d The double value of the tag
-	 * @param cr true if a cariage return is desired after the ending tag.
+	 * @param cr true if a carriage return is desired after the ending tag.
 	 * @return The XML String for the tag.
 	 */
 	public static final String addTagValue(String tag, double d, boolean cr)
@@ -883,7 +891,7 @@ public class XMLHandler
 	}
 
 	/**
-	 * Build an XML string (with cariage return) for a certain tag Date value
+	 * Build an XML string (with carriage return) for a certain tag Date value
 	 * @param tag The XML tag
 	 * @param date The Date value of the tag
 	 * @return The XML String for the tag.
@@ -897,12 +905,75 @@ public class XMLHandler
 	 * Build an XML string for a certain tag Date value
 	 * @param tag The XML tag
 	 * @param date The Date value of the tag
-	 * @param cr true if a cariage return is desired after the ending tag.
+	 * @param cr true if a carriage return is desired after the ending tag.
 	 * @return The XML String for the tag.
 	 */
 	public static final String addTagValue(String tag, Date date, boolean cr)
 	{
 		return addTagValue(tag, date2string(date), cr);
+	}
+	
+
+    /**
+	 * Build an XML string (including a carriage return) for a certain tag BigDecimal value
+	 * @param tag The XML tag
+	 * @param val The BigDecimal value of the tag
+	 * @return The XML String for the tag.
+	 */
+	public static final String addTagValue(String tag, BigDecimal val)
+	{
+		return addTagValue(tag, val, true);
+	}
+	
+    /**
+	 * Build an XML string (including a carriage return) for a certain tag BigDecimal value
+	 * @param tag The XML tag
+	 * @param val The BigDecimal value of the tag
+	 * 
+	 * @return The XML String for the tag.
+	 */
+	public static final String addTagValue(String tag, BigDecimal val, boolean cr)
+	{
+		return addTagValue(tag, val!=null ? val.toString() : (String)null, true);
+	}
+
+    /**
+	 * Build an XML string (including a carriage return) for a certain tag binary (byte[]) value
+	 * @param tag The XML tag
+	 * @param val The binary value of the tag
+	 * @return The XML String for the tag.
+     * @throws IOException in case there is an Base64 or GZip encoding problem   
+	 */
+	public static final String addTagValue(String tag, byte[] val) throws IOException
+	{
+		return addTagValue(tag, val, true);
+	}
+	
+    /**
+	 * Build an XML string (including a carriage return) for a certain tag binary (byte[]) value
+	 * @param tag The XML tag
+	 * @param val The binary value of the tag
+	 * @return The XML String for the tag.
+     * @throws IOException in case there is an Base64 or GZip encoding problem  
+	 */
+	public static final String addTagValue(String tag, byte[] val, boolean cr) throws IOException
+	{
+		String string;
+		if (val==null)
+		{
+			string=null;
+		}
+		else
+		{
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            GZIPOutputStream gzos = new GZIPOutputStream(baos);
+            gzos.write( val );
+            gzos.close();
+            
+            string = new String(Base64.encodeBase64(baos.toByteArray()));
+		}
+		
+		return addTagValue(tag, string, true);
 	}
 
     /**
@@ -970,6 +1041,49 @@ public class XMLHandler
             return simpleDateFormat.format(date);
         }
     }
+    
+    /**
+     * Convert a XML encoded binary string back to binary format
+     * @param string the (Byte64/GZip) encoded string
+     * @return the decoded binary (byte[]) object
+     * @throws IOException In case there is a decoding error
+     */
+	public static byte[] stringToBinary(String string) throws IOException {
+        byte[] bytes;
+        if (string==null)
+        {
+        	bytes = new byte[] {};
+        }
+        else
+        {
+        	bytes = Base64.decodeBase64(string.getBytes());
+        }
+        if (bytes.length>0)
+        {
+            ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+            GZIPInputStream gzip = new GZIPInputStream(bais);
+        	byte[] result = new byte[] {};
+            
+            byte[] extra = new byte[1000];
+            int nrExtra = gzip.read(extra);
+            while (nrExtra>=0) {
+            	// add it to bytes...
+            	//
+            	int newSize = result.length + nrExtra;
+            	byte[] tmp = new byte[newSize];
+            	for (int i=0;i<result.length;i++) tmp[i]=result[i];
+            	for (int i=0;i<nrExtra;i++) tmp[result.length+i] = extra[i];
+            	
+            	// change the result
+            	result=tmp;
+            }
+            bytes = result;
+            gzip.close();
+        }
+
+        return bytes;
+	}
+
 
     public static String buildCDATA(String string)
     {
@@ -987,6 +1101,7 @@ public class XMLHandler
     {
         return "</"+tag+">";
     }
+
     
 }
 	

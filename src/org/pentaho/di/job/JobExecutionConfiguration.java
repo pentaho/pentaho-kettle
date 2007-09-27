@@ -1,5 +1,6 @@
 package org.pentaho.di.job;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -12,6 +13,7 @@ import java.util.Properties;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
+import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
@@ -35,6 +37,8 @@ public class JobExecutionConfiguration implements Cloneable
     private boolean  safeModeEnabled;
     private int      logLevel;
     
+    List<RowMetaAndData> sourceRows; // Rows from a previous job entry...
+    
     public JobExecutionConfiguration()
     {
     	executingLocally = true;
@@ -42,6 +46,7 @@ public class JobExecutionConfiguration implements Cloneable
     	        
         arguments = new HashMap<String, String>();
         variables = new HashMap<String, String>();
+        sourceRows = new ArrayList<RowMetaAndData>();
         
         logLevel = LogWriter.LOG_LEVEL_BASIC;
     }
@@ -57,6 +62,9 @@ public class JobExecutionConfiguration implements Cloneable
             
             configuration.variables = new HashMap<String, String>();
             configuration.variables.putAll(variables);
+            
+            configuration.sourceRows = new ArrayList<RowMetaAndData>();
+            configuration.sourceRows.addAll(sourceRows);
             
             return configuration;
         }
@@ -83,6 +91,21 @@ public class JobExecutionConfiguration implements Cloneable
     }
 
     /**
+     * @param arguments the arguments to set
+     */
+    public void setArgumentStrings(String[] arguments)
+    {
+    	this.arguments = new HashMap<String, String>();
+    	if (arguments!=null)
+    	{
+	    	for (int i=0;i<arguments.length;i++)
+	    	{
+	    		this.arguments.put("arg "+(i+1), arguments[i]);
+	    	}
+    	}
+    }
+    
+    /**
      * @return the variables
      */
     public Map<String, String> getVariables()
@@ -98,6 +121,17 @@ public class JobExecutionConfiguration implements Cloneable
         this.variables = variables;
     }
 
+    public void setVariables(VariableSpace space)
+    {
+    	this.variables = new HashMap<String, String>();
+    	
+    	for (String name : space.listVariables())
+    	{
+    		String value = space.getVariable(name);
+    		this.variables.put(name, value);
+    	}
+    }
+    
     /**
      * @return the remoteExecution
      */
@@ -223,7 +257,7 @@ public class JobExecutionConfiguration implements Cloneable
         this.logLevel = logLevel;
     }
     
-    public String getXML()
+    public String getXML() throws IOException
     {
         StringBuffer xml = new StringBuffer(160);
         
@@ -268,6 +302,27 @@ public class JobExecutionConfiguration implements Cloneable
         xml.append("    ").append(XMLHandler.addTagValue("replay_date", replayDate));
         xml.append("    ").append(XMLHandler.addTagValue("safe_mode", safeModeEnabled));
         xml.append("    ").append(XMLHandler.addTagValue("log_level", LogWriter.getLogLevelDesc(logLevel)));
+        
+        
+        // The source rows...
+        //
+        if (sourceRows.size()>0)
+        {
+        	xml.append("    <source_rows>").append(Const.CR);
+	        
+        	// Dump the metadata once, all rows should have the same metadata
+        	//
+        	xml.append(sourceRows.get(0).getRowMeta().getMetaXML()).append(Const.CR);
+        	
+            for (RowMetaAndData row : sourceRows)
+	        {
+            	// Dump the data too...
+            	//
+            	xml.append(row.getRowMeta().getDataXML(row.getData())).append(Const.CR);
+	        }
+	        
+            xml.append("    </source_rows>").append(Const.CR);
+        }
         
         xml.append("</"+XML_TAG+">").append(Const.CR);
         return xml.toString();
@@ -334,4 +389,18 @@ public class JobExecutionConfiguration implements Cloneable
         
         return values;
     }
+
+	/**
+	 * @return the sourceRows
+	 */
+	public List<RowMetaAndData> getSourceRows() {
+		return sourceRows;
+	}
+
+	/**
+	 * @param sourceRows the sourceRows to set
+	 */
+	public void setSourceRows(List<RowMetaAndData> sourceRows) {
+		this.sourceRows = sourceRows;
+	}
 }

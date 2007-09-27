@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.CheckResultSourceInterface;
 import org.pentaho.di.core.Const;
@@ -263,8 +264,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
     return retval.toString();
   }
 
-	public void loadXML(Node entrynode, List<DatabaseMeta> databases)
-		throws KettleXMLException
+  public void loadXML(Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleXMLException
   {
     try
     {
@@ -283,8 +283,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
   {
   }
 
-	public void saveRep(Repository rep, long id_job)
-		throws KettleException
+  public void saveRep(Repository rep, long id_job) throws KettleException
   {
     try
     {
@@ -296,8 +295,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
     }
   }
 
-	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases)
-		throws KettleException
+  public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
   {
     try
     {

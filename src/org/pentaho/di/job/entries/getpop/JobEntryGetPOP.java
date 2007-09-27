@@ -51,6 +51,7 @@ import javax.mail.URLName;
 import javax.mail.internet.MimeUtility;
 
 import org.apache.commons.vfs.FileObject;
+import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
@@ -159,11 +160,11 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
     return retval.toString();
   }
 
-  public void loadXML(Node entrynode, List<DatabaseMeta> databases, Repository rep) throws KettleXMLException
+  public void loadXML(Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep) throws KettleXMLException
   {
     try
     {
-      super.loadXML(entrynode, databases);
+      super.loadXML(entrynode, databases, slaveServers);
       servername = XMLHandler.getTagValue(entrynode, "servername"); //$NON-NLS-1$
       username = XMLHandler.getTagValue(entrynode, "username"); //$NON-NLS-1$
       password = Encr.decryptPasswordOptionallyEncrypted(XMLHandler.getTagValue(entrynode, "password"));
@@ -180,11 +181,11 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
     }
   }
 
-  public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases) throws KettleException
+  public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
   {
     try
     {
-      super.loadRep(rep, id_jobentry, databases);
+      super.loadRep(rep, id_jobentry, databases, slaveServers);
       servername = rep.getJobEntryAttributeString(id_jobentry, "servername"); //$NON-NLS-1$
       username = rep.getJobEntryAttributeString(id_jobentry, "username"); //$NON-NLS-1$
       password = Encr.decryptPasswordOptionallyEncrypted(rep.getJobEntryAttributeString(id_jobentry, "password"));

@@ -31,6 +31,7 @@ import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSelectInfo;
 import org.apache.commons.vfs.FileSelector;
 import org.apache.commons.vfs.FileType;
+import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
@@ -140,10 +141,10 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 	}
 	
 	
- public void loadXML(Node entrynode, List<DatabaseMeta> databases, Repository rep) throws KettleXMLException {
+	public void loadXML(Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep) throws KettleXMLException {
 		try
 		{
-			super.loadXML(entrynode, databases);
+			super.loadXML(entrynode, databases, slaveServers);
 			copy_empty_folders      = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "copy_empty_folders"));
 			arg_from_previous   = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "arg_from_previous") );
 			overwrite_files      = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "overwrite_files") );
@@ -177,10 +178,10 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 		}
 	}
 
-    public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases) throws KettleException {
+    public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException {
 		try
 		{
-			super.loadRep(rep, id_jobentry, databases);
+			super.loadRep(rep, id_jobentry, databases, slaveServers);
 			copy_empty_folders      = rep.getJobEntryAttributeBoolean(id_jobentry, "copy_empty_folders");
 			arg_from_previous   = rep.getJobEntryAttributeBoolean(id_jobentry, "arg_from_previous");
 			overwrite_files      = rep.getJobEntryAttributeBoolean(id_jobentry, "overwrite_files");
@@ -211,8 +212,7 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 		}
 	}
 	
-	public void saveRep(Repository rep, long id_job)
-		throws KettleException
+	public void saveRep(Repository rep, long id_job) throws KettleException
 	{
 		try
 		{

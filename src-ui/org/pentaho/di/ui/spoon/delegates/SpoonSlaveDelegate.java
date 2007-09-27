@@ -82,7 +82,7 @@ public class SpoonSlaveDelegate extends SpoonDelegate
 
 	}
 
-	public void sendXMLToSlaveServer(JobMeta jobMeta, JobExecutionConfiguration executionConfiguration) throws KettleException
+	public static void sendXMLToSlaveServer(JobMeta jobMeta, JobExecutionConfiguration executionConfiguration) throws KettleException
 	{
 		SlaveServer slaveServer = executionConfiguration.getRemoteServer();
 
@@ -92,9 +92,10 @@ public class SpoonSlaveDelegate extends SpoonDelegate
 			throw new KettleException(
 					"The job needs a name to uniquely identify it by on the remote server.");
 
-		String xml = new JobConfiguration(jobMeta, executionConfiguration).getXML();
 		try
 		{
+			String xml = new JobConfiguration(jobMeta, executionConfiguration).getXML();
+			
 			String reply = slaveServer.sendXML(xml, AddJobServlet.CONTEXT_PATH + "/?xml=Y");
 			WebResult webResult = WebResult.fromXMLString(reply);
 			if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))

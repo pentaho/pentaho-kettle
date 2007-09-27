@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
 
+import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
@@ -95,14 +96,14 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
 		return retval.toString();
 	}
 
-	public void loadXML(Node entrynode, List<DatabaseMeta> databases, Repository rep)
+	public void loadXML(Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep)
 		throws KettleXMLException
 	{
 		try
 		{
 			String nbrPaquets;
 
-			super.loadXML(entrynode, databases);
+			super.loadXML(entrynode, databases, slaveServers);
 			hostname   = XMLHandler.getTagValue(entrynode, "hostname");
 			nbrPackets = XMLHandler.getTagValue(entrynode, "nbr_packets");
 
@@ -121,14 +122,14 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
 		}
 	}
 
-	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases)
+	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers)
 		throws KettleException
 	{
 		try
 		{
 			String nbrPaquets;
 
-			super.loadRep(rep, id_jobentry, databases);
+			super.loadRep(rep, id_jobentry, databases, slaveServers);
 			hostname   = rep.getJobEntryAttributeString(id_jobentry, "hostname");
 			nbrPackets = rep.getJobEntryAttributeString(id_jobentry, "nbr_packets");
 

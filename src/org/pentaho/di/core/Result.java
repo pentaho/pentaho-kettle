@@ -15,11 +15,18 @@
 
  
 package org.pentaho.di.core;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+
+import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.row.RowMeta;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.xml.XMLHandler;
+import org.w3c.dom.Node;
 
 /**
  * Result describes the result of the execution of a Transformation or a Job.
@@ -30,6 +37,11 @@ import java.util.Map;
  */
 public class Result implements Cloneable
 {
+	public static final String XML_TAG = "result";
+	public static final String XML_FILES_TAG = "result-file";
+	public static final String XML_FILE_TAG = "result-file";
+	public static final String XML_ROWS_TAG = "result-rows";
+	
 	private long nrErrors;
 	private long nrLinesInput;
 	private long nrLinesOutput;
@@ -359,6 +371,120 @@ public class Result implements Cloneable
         nrFilesRetrieved+=res.getNrFilesRetrieved();
         resultFiles.putAll(res.getResultFiles());
         rows.addAll(res.getRows());
+    }
+    
+    /**
+     * @return This Result object serialized as XML
+     * @throws IOException 
+     */
+    public String getXML() throws IOException
+    {
+    	StringBuffer xml = new StringBuffer();
+    	
+        xml.append(XMLHandler.openTag(XML_TAG));
+        
+        // First the metrics...
+        //
+        xml.append(XMLHandler.addTagValue("lines_input", nrLinesInput));
+        xml.append(XMLHandler.addTagValue("lines_output", nrLinesOutput));
+        xml.append(XMLHandler.addTagValue("lines_read", nrLinesRead));
+        xml.append(XMLHandler.addTagValue("lines_written", nrLinesWritten));
+        xml.append(XMLHandler.addTagValue("lines_updated", nrLinesUpdated));
+        xml.append(XMLHandler.addTagValue("lines_rejected", nrLinesRejected));
+        xml.append(XMLHandler.addTagValue("lines_deleted", nrLinesDeleted));
+        xml.append(XMLHandler.addTagValue("nr_errors", nrErrors));
+        xml.append(XMLHandler.addTagValue("nr_files_retrieved", nrFilesRetrieved));
+        xml.append(XMLHandler.addTagValue("entry_nr", entryNr));
+        
+        // The high level results...
+        //
+        xml.append(XMLHandler.addTagValue("result", result));;
+        xml.append(XMLHandler.addTagValue("exit_status", exitStatus));
+        xml.append(XMLHandler.addTagValue("is_stopped", stopped));
+                
+        // Export the result files
+        //
+        xml.append(XMLHandler.openTag(XML_FILES_TAG));
+        for (ResultFile resultFile: resultFiles.values())
+        {
+        	xml.append(resultFile.getXML());
+        }
+        xml.append(XMLHandler.closeTag(XML_FILES_TAG));
+        
+        xml.append(XMLHandler.openTag(XML_ROWS_TAG));
+        boolean firstRow=true;
+        RowMetaInterface rowMeta = null;
+        for (RowMetaAndData row : rows)
+        {
+        	if (firstRow)
+        	{
+        		firstRow=false;
+        		rowMeta = row.getRowMeta();
+            	xml.append(rowMeta.getMetaXML());
+        	}
+        	xml.append(rowMeta.getDataXML(row.getData()));
+        }
+        xml.append(XMLHandler.closeTag(XML_ROWS_TAG));
+        
+        xml.append(XMLHandler.closeTag(XML_TAG));
+        
+        return xml.toString();
+    }
+    
+    public Result(Node node) throws IOException
+    {
+    	this();
+    	
+    	// First we read the metrics...
+    	//
+    	nrLinesInput     = Const.toLong(XMLHandler.getTagValue(node, "lines_input"), 0L);
+    	nrLinesOutput    = Const.toLong(XMLHandler.getTagValue(node, "lines_output"), 0L);
+    	nrLinesRead      = Const.toLong(XMLHandler.getTagValue(node, "lines_read"), 0L);
+    	nrLinesRead      = Const.toLong(XMLHandler.getTagValue(node, "lines_written"), 0L);
+    	nrLinesUpdated   = Const.toLong(XMLHandler.getTagValue(node, "lines_updated"), 0L);
+    	nrLinesRejected  = Const.toLong(XMLHandler.getTagValue(node, "lines_rejected"), 0L);
+    	nrLinesDeleted   = Const.toLong(XMLHandler.getTagValue(node, "lines_deleted"), 0L);
+    	nrErrors         = Const.toLong(XMLHandler.getTagValue(node, "nr_errors"), 0L);
+    	nrFilesRetrieved = Const.toLong(XMLHandler.getTagValue(node, "nr_files_retrieved"), 0L);
+    	entryNr          = Const.toLong(XMLHandler.getTagValue(node, "entry_nr"), 0L);
+    	
+        // The high level results...
+        //
+        result  = "Y".equalsIgnoreCase( XMLHandler.getTagValue(node, "result"));
+        exitStatus = Integer.parseInt( XMLHandler.getTagValue(node, "exit_status") );
+        stopped = "Y".equalsIgnoreCase( XMLHandler.getTagValue(node, "is_stopped" ));
+        
+    	// Now read back the result files...
+    	//
+    	Node resultFilesNode = XMLHandler.getSubNode(node, XML_FILES_TAG);
+    	int nrResultFiles = XMLHandler.countNodes(resultFilesNode, XML_FILE_TAG);
+    	for (int i=0;i<nrResultFiles;i++)
+    	{
+    		try {
+				ResultFile resultFile = new ResultFile(XMLHandler.getSubNodeByNr(resultFilesNode, XML_FILE_TAG, i));
+				resultFiles.put(resultFile.getFile().toString(), resultFile);
+			} catch (IOException e) {
+				
+				LogWriter.getInstance().logError("Execution result", "Unexpected error reading back a ResultFile object from XML", e);
+			} 
+    	}
+
+    	// Let's also read back the result rows...
+    	//
+    	Node resultRowsNode = XMLHandler.getSubNode(node, XML_ROWS_TAG);
+    	int nrResultRows = XMLHandler.countNodes(resultFilesNode, RowMeta.XML_DATA_TAG);
+    	if (nrResultRows>0)
+    	{
+    		// OK, get the metadata first...
+    		//
+    		RowMeta rowMeta = new RowMeta( XMLHandler.getSubNode(resultRowsNode, RowMeta.XML_META_TAG) );
+    		for (int i=0;i<nrResultRows;i++)
+    		{
+    			Object[] rowData = rowMeta.getRow(XMLHandler.getSubNodeByNr(resultRowsNode, RowMeta.XML_META_TAG, i));
+    			rows.add(new RowMetaAndData(rowMeta, rowData));
+    		}
+    	}
+
     }
 
     /**
