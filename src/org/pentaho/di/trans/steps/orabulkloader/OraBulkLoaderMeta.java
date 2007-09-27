@@ -46,8 +46,10 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.w3c.dom.Node;
 
 
-/*
+/**
  * Created on 20-feb-2007
+ * 
+ * @author Sven Boden
  */
 public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 {
@@ -113,6 +115,9 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 			
 	/** Erase files after use */
 	private boolean eraseFiles; 
+	
+	/** Database name override */
+	private String dbNameOverride;
 	
 	/*
 	 * Do not translate following values!!! They are will end up in the job export.
@@ -298,7 +303,8 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 			discardFile    = XMLHandler.getTagValue(stepnode, "discard_file"); //$NON-NLS-1$
 			directPath     = "Y".equalsIgnoreCase( XMLHandler.getTagValue(stepnode, "direct_path")); //$NON-NLS-1$
 			eraseFiles     = "Y".equalsIgnoreCase( XMLHandler.getTagValue(stepnode, "erase_files")); //$NON-NLS-1$
-			encoding       = XMLHandler.getTagValue(stepnode, "encoding");    //$NON-NLS-1$
+			encoding       = XMLHandler.getTagValue(stepnode, "encoding");         //$NON-NLS-1$
+			dbNameOverride = XMLHandler.getTagValue(stepnode, "dbname_override");  //$NON-NLS-1$
 
 			nrvalues       = XMLHandler.countNodes(stepnode, "mapping");      //$NON-NLS-1$
 			allocate(nrvalues);
@@ -352,6 +358,7 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 		badFile      = "";                                    //$NON-NLS-1$
 		discardFile  = "";                                    //$NON-NLS-1$
 		encoding     = "";                                    //$NON-NLS-1$
+		dbNameOverride = "";
 			
 		directPath   = false;
 		eraseFiles   = true;
@@ -383,6 +390,7 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 		retval.append("    ").append(XMLHandler.addTagValue("direct_path",  directPath));    //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("    ").append(XMLHandler.addTagValue("erase_files",  eraseFiles));    //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("    ").append(XMLHandler.addTagValue("encoding",     encoding));      //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    ").append(XMLHandler.addTagValue("dbname_override", dbNameOverride));      //$NON-NLS-1$ //$NON-NLS-2$
 		
 		for (int i=0;i<fieldTable.length;i++)
 		{
@@ -422,6 +430,7 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 			directPath     =      rep.getStepAttributeBoolean(id_step, "direct_path");    //$NON-NLS-1$
 			eraseFiles     =      rep.getStepAttributeBoolean(id_step, "erase_files");    //$NON-NLS-1$
 			encoding       =      rep.getStepAttributeString(id_step,  "encoding");       //$NON-NLS-1$
+			dbNameOverride =      rep.getStepAttributeString(id_step,  "dbname_override");//$NON-NLS-1$			
 			
 			int nrvalues = rep.countNrStepAttributes(id_step, "stream_name");             //$NON-NLS-1$
 
@@ -465,6 +474,7 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "direct_path",     directPath);    //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "erase_files",     eraseFiles);    //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "encoding",        encoding);      //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "dbname_override", dbNameOverride);//$NON-NLS-1$
 
 			for (int i=0;i<fieldTable.length;i++)
 			{
@@ -934,4 +944,12 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 	public void setReadSize(int readSize) {
 		this.readSize = readSize;
 	}
+
+	public String getDbNameOverride() {
+		return dbNameOverride;
+	}
+
+	public void setDbNameOverride(String dbNameOverride) {
+		this.dbNameOverride = dbNameOverride;
+	}	
 }

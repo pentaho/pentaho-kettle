@@ -63,7 +63,7 @@ import org.pentaho.di.ui.core.widget.TextVar;
  * Dialog class for the Oracle bulk loader step. 
  * Created on 21feb2007.
  * 
- * @author sboden
+ * @author Sven Boden
  */
 public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInterface
 {
@@ -135,6 +135,10 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 	private Button				wbDiscardFile;
 	private TextVar				wDiscardFile;
 	private FormData			fdlDiscardFile, fdbDiscardFile, fdDiscardFile;		
+
+	private Label				wlDbNameOverride;
+	private TextVar				wDbNameOverride;
+	private FormData			fdlDbNameOverride, fdDbNameOverride;		
 		
     private Label               wlEncoding;
     private Combo               wEncoding;
@@ -428,6 +432,24 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 		fdReadSize.top = new FormAttachment(wBindSize, margin);
 		fdReadSize.right = new FormAttachment(100, 0);
 		wReadSize.setLayoutData(fdReadSize);		
+
+		// Db Name Override line
+		wlDbNameOverride = new Label(shell, SWT.RIGHT);
+		wlDbNameOverride.setText(Messages.getString("OraBulkLoaderDialog.DbNameOverride.Label")); //$NON-NLS-1$
+ 		props.setLook(wlDbNameOverride);
+		fdlDbNameOverride = new FormData();
+		fdlDbNameOverride.left = new FormAttachment(0, 0);
+		fdlDbNameOverride.top = new FormAttachment(wReadSize, margin);
+		fdlDbNameOverride.right = new FormAttachment(middle, -margin);
+		wlDbNameOverride.setLayoutData(fdlDbNameOverride);
+		wDbNameOverride = new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+ 		props.setLook(wDbNameOverride);
+		wDbNameOverride.addModifyListener(lsMod);
+		fdDbNameOverride = new FormData();
+		fdDbNameOverride.left = new FormAttachment(middle, 0);
+		fdDbNameOverride.top = new FormAttachment(wReadSize, margin);
+		fdDbNameOverride.right = new FormAttachment(100, 0);
+		wDbNameOverride.setLayoutData(fdDbNameOverride);				
 		
 		// Control file line
 		wlControlFile = new Label(shell, SWT.RIGHT);
@@ -435,7 +457,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
  		props.setLook(wlControlFile);
 		fdlControlFile = new FormData();
 		fdlControlFile.left = new FormAttachment(0, 0);
-		fdlControlFile.top = new FormAttachment(wReadSize, margin);
+		fdlControlFile.top = new FormAttachment(wDbNameOverride, margin);
 		fdlControlFile.right = new FormAttachment(middle, -margin);
 		wlControlFile.setLayoutData(fdlControlFile);		
 		wbControlFile = new Button(shell, SWT.PUSH | SWT.CENTER);
@@ -443,14 +465,14 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 		wbControlFile.setText(Messages.getString("OraBulkLoaderDialog.Browse.Button")); //$NON-NLS-1$
 		fdbControlFile = new FormData();
 		fdbControlFile.right = new FormAttachment(100, 0);
-		fdbControlFile.top = new FormAttachment(wReadSize, margin);
+		fdbControlFile.top = new FormAttachment(wDbNameOverride, margin);
 		wbControlFile.setLayoutData(fdbControlFile);
 		wControlFile = new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);				
  		props.setLook(wControlFile);
 		wControlFile.addModifyListener(lsMod);
 		fdControlFile = new FormData();
 		fdControlFile.left = new FormAttachment(middle, 0);
-		fdControlFile.top = new FormAttachment(wReadSize, margin);
+		fdControlFile.top = new FormAttachment(wDbNameOverride, margin);
 		fdControlFile.right = new FormAttachment(wbControlFile, -margin);
 		wControlFile.setLayoutData(fdControlFile);		
 
@@ -553,7 +575,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 		fdDiscardFile.top = new FormAttachment(wBadFile, margin);
 		fdDiscardFile.right = new FormAttachment(wbDiscardFile, -margin);
 		wDiscardFile.setLayoutData(fdDiscardFile);			
-
+		
 		//
         // Control encoding line
         //
@@ -834,6 +856,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
         wCommit.addSelectionListener(lsDef);
         wBindSize.addSelectionListener(lsDef);
         wReadSize.addSelectionListener(lsDef);
+        wDbNameOverride.addSelectionListener(lsDef);
         wControlFile.addSelectionListener(lsDef);
         wDataFile.addSelectionListener(lsDef);
         wLogFile.addSelectionListener(lsDef);
@@ -884,7 +907,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 		wMaxErrors.setText("" + input.getMaxErrors());   //$NON-NLS-1$
 		wCommit.setText("" + input.getCommitSize());     //$NON-NLS-1$
 		wBindSize.setText("" + input.getBindSize());     //$NON-NLS-1$
-		wReadSize.setText("" + input.getReadSize());     //$NON-NLS-1$
+		wReadSize.setText("" + input.getReadSize());     //$NON-NLS-1$		
 
 		if (input.getFieldTable() != null)
 			for (i = 0; i < input.getFieldTable().length; i++)
@@ -932,6 +955,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 		if (input.getBadFile() != null) wBadFile.setText(input.getBadFile());
 		if (input.getDiscardFile() != null) wDiscardFile.setText(input.getDiscardFile());	
 		if (input.getEncoding() != null) wEncoding.setText(input.getEncoding());
+		if (input.getDbNameOverride() != null ) wDbNameOverride.setText(input.getDbNameOverride());
 		wDirectPath.setSelection(input.isDirectPath());
 		wEraseFiles.setSelection(input.isEraseFiles());
 		
@@ -1000,6 +1024,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 		inf.setCommitSize( Const.toInt(wCommit.getText(), 0) );
 		inf.setBindSize( Const.toInt(wBindSize.getText(), 0) );
 		inf.setReadSize( Const.toInt(wReadSize.getText(), 0) );
+		inf.setDbNameOverride(wDbNameOverride.getText());
 
 		log.logDebug(toString(), Messages.getString("OraBulkLoaderDialog.Log.FoundFields", "" + nrfields)); //$NON-NLS-1$ //$NON-NLS-2$
 		for (int i = 0; i < nrfields; i++)
