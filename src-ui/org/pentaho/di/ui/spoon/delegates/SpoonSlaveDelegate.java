@@ -82,40 +82,6 @@ public class SpoonSlaveDelegate extends SpoonDelegate
 
 	}
 
-	public static void sendXMLToSlaveServer(JobMeta jobMeta, JobExecutionConfiguration executionConfiguration) throws KettleException
-	{
-		SlaveServer slaveServer = executionConfiguration.getRemoteServer();
-
-		if (slaveServer == null)
-			throw new KettleException("No slave server specified");
-		if (Const.isEmpty(jobMeta.getName()))
-			throw new KettleException(
-					"The job needs a name to uniquely identify it by on the remote server.");
-
-		try
-		{
-			String xml = new JobConfiguration(jobMeta, executionConfiguration).getXML();
-			
-			String reply = slaveServer.sendXML(xml, AddJobServlet.CONTEXT_PATH + "/?xml=Y");
-			WebResult webResult = WebResult.fromXMLString(reply);
-			if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
-			{
-				throw new KettleException("There was an error posting the job on the remote server: " + Const.CR+ webResult.getMessage());
-			}
-
-			reply = slaveServer.getContentFromServer(StartJobServlet.CONTEXT_PATH + "/?name="+ jobMeta.getName() + "&xml=Y");
-			webResult = WebResult.fromXMLString(reply);
-			if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
-			{
-				throw new KettleException("There was an error starting the job on the remote server: " + Const.CR + webResult.getMessage());
-			}
-		} 
-		catch (Exception e)
-		{
-			throw new KettleException(e);
-		}
-	}
-
 	public void addSpoonSlave(SlaveServer slaveServer)
 	{
 		TabSet tabfolder = spoon.tabfolder;

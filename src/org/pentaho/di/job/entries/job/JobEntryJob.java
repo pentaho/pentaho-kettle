@@ -577,7 +577,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
                 	// Send the XML over to the slave server
                 	// Also start the job over there...
                 	//
-                	SpoonSlaveDelegate.sendXMLToSlaveServer(jobMeta, jobExecutionConfiguration);
+                	Job.sendXMLToSlaveServer(jobMeta, jobExecutionConfiguration);
                 	
                 	// Now start the monitoring...
                 	//
