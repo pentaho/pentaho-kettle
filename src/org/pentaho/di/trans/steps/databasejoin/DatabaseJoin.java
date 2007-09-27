@@ -103,7 +103,8 @@ public class DatabaseJoin extends BaseStep implements StepInterface
 			for (int i=0;i<addMeta.size();i++) {
 				newRow[newIndex++] = add[i];
 			}
-			putRow(data.outputRowMeta, newRow);
+			// we have to clone, otherwise we only get the last new value
+			putRow(data.outputRowMeta, data.outputRowMeta.cloneRow(newRow));
 			
 			if (log.isRowLevel()) logRowlevel(Messages.getString("DatabaseJoin.Log.PutoutRow")+data.outputRowMeta.getString(newRow)); //$NON-NLS-1$
 			
