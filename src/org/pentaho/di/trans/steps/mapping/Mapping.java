@@ -20,7 +20,6 @@ import java.util.List;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -274,8 +273,11 @@ public class Mapping extends BaseStep implements StepInterface
 		    // First we need to load the mapping (transformation)
             try
             {
-                Repository repository = Repository.getCurrentRepository();
-                data.mappingTransMeta = MappingMeta.loadMappingMeta(meta.getFileName(), meta.getTransName(), meta.getDirectoryPath(), repository, this);
+            	// Pass the repository down to the metadata object...
+            	//
+            	meta.setRepository(getTrans().getRepository());
+            	
+                data.mappingTransMeta = MappingMeta.loadMappingMeta(meta.getFileName(), meta.getTransName(), meta.getDirectoryPath(), meta.getRepository(), this);
                 if (data.mappingTransMeta!=null) // Do we have a mapping at all?
                 {
                 	// Set the parameters statically or dynamically

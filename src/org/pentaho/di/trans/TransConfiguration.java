@@ -1,7 +1,9 @@
 package org.pentaho.di.trans;
 
+import java.io.IOException;
+
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -23,7 +25,7 @@ public class TransConfiguration
         this.transExecutionConfiguration = transExecutionConfiguration;
     }
     
-    public String getXML()
+    public String getXML() throws IOException
     {
         StringBuffer xml = new StringBuffer();
         
@@ -37,15 +39,15 @@ public class TransConfiguration
         return xml.toString();
     }
     
-    public TransConfiguration(Node configNode) throws KettleXMLException
+    public TransConfiguration(Node configNode) throws KettleException
     {
-        Node transNode = XMLHandler.getSubNode(configNode, TransMeta.XML_TAG);
-        transMeta = new TransMeta(transNode);
         Node trecNode = XMLHandler.getSubNode(configNode, TransExecutionConfiguration.XML_TAG);
         transExecutionConfiguration = new TransExecutionConfiguration(trecNode);
+        Node transNode = XMLHandler.getSubNode(configNode, TransMeta.XML_TAG);
+        transMeta = new TransMeta(transNode, transExecutionConfiguration.getRepository());
     }
     
-    public static final TransConfiguration fromXML(String xml) throws KettleXMLException
+    public static final TransConfiguration fromXML(String xml) throws KettleException
     {
         Document document = XMLHandler.loadXMLString(xml);
         Node configNode = XMLHandler.getSubNode(document, XML_TAG);

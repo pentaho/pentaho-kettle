@@ -3,7 +3,7 @@ package org.pentaho.di.job;
 import java.io.IOException;
 
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.w3c.dom.Document;
@@ -40,7 +40,7 @@ public class JobConfiguration
         return xml.toString();
     }
     
-    public JobConfiguration(Node configNode) throws KettleXMLException
+    public JobConfiguration(Node configNode) throws KettleException
     {
         Node jobNode = XMLHandler.getSubNode(configNode, JobMeta.XML_TAG);
         jobMeta = new JobMeta(LogWriter.getInstance(), jobNode, null, null);
@@ -48,7 +48,7 @@ public class JobConfiguration
         jobExecutionConfiguration = new JobExecutionConfiguration(trecNode);
     }
     
-    public static final JobConfiguration fromXML(String xml) throws KettleXMLException
+    public static final JobConfiguration fromXML(String xml) throws KettleException
     {
         Document document = XMLHandler.loadXMLString(xml);
         Node configNode = XMLHandler.getSubNode(document, XML_TAG);

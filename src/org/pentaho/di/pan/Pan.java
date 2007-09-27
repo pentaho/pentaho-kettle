@@ -229,15 +229,10 @@ public class Pan
 										// Load a transformation
 										if (!Const.isEmpty(optionTransname))
 										{
-                                            throw new KettleException("3.0 TODO: re-enable repository support.");
-                                            /*
-                                            
 											log.logDebug("Pan", "Load the transformation info...");
 											transMeta = new TransMeta(rep, optionTransname.toString(), directory);
 											log.logDebug("Pan", "Allocate transformation...");
-											trans = new Trans(log, transMeta);
-                                            
-                                            */
+											trans = new Trans(transMeta);
 										}
 										else
 										// List the transformations in the repository
@@ -305,7 +300,7 @@ public class Pan
 				}
 
 				// Try to load the transformation from file, even if it failed to load from the repository
-                // You could implement some failover mechanism this way.
+                // You could implement some fail-over mechanism this way.
                 //
 				if (trans==null && !Const.isEmpty(optionFilename))
 				{
@@ -327,7 +322,7 @@ public class Pan
                         while ((c=inputStream.read()) != -1) xml.append((char)c);
                         inputStream.close();
                         Document document = XMLHandler.loadXMLString(xml.toString());
-                        transMeta = new TransMeta(XMLHandler.getSubNode(document, "transformation"));
+                        transMeta = new TransMeta(XMLHandler.getSubNode(document, "transformation"), null);
                         trans = new Trans(transMeta);
                     }
                     catch(Exception e)

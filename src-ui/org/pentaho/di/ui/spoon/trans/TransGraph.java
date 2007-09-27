@@ -2451,6 +2451,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     
     public static boolean editProperties(TransMeta transMeta, Spoon spoon, Repository rep)
     {
+        if (transMeta==null) return false;
         
         TransDialog tid = new TransDialog(spoon.getShell(), SWT.NONE, transMeta, rep);
         TransMeta ti = tid.open();

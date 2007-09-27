@@ -1,5 +1,6 @@
 package org.pentaho.di.trans;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -12,10 +13,17 @@ import java.util.Properties;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
+import org.pentaho.di.core.Result;
+import org.pentaho.di.core.encryption.Encr;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.repository.RepositoriesMeta;
+import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryMeta;
+import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.trans.debug.TransDebugMeta;
 import org.w3c.dom.Node;
 
@@ -43,6 +51,9 @@ public class TransExecutionConfiguration implements Cloneable
     private int      logLevel;
     
     private TransDebugMeta transDebugMeta;
+    
+    private Result previousResult;
+    private Repository repository;
 
     public TransExecutionConfiguration()
     {
@@ -95,6 +106,21 @@ public class TransExecutionConfiguration implements Cloneable
     public void setArguments(Map<String, String> arguments)
     {
         this.arguments = arguments;
+    }
+    
+    /**
+     * @param arguments the arguments to set
+     */
+    public void setArgumentStrings(String[] arguments)
+    {
+    	this.arguments = new HashMap<String, String>();
+    	if (arguments!=null)
+    	{
+	    	for (int i=0;i<arguments.length;i++)
+	    	{
+	    		this.arguments.put("arg "+(i+1), arguments[i]);
+	    	}
+    	}
     }
 
     /**
@@ -336,7 +362,7 @@ public class TransExecutionConfiguration implements Cloneable
         this.logLevel = logLevel;
     }
     
-    public String getXML()
+    public String getXML() throws IOException
     {
         StringBuffer xml = new StringBuffer(160);
         
@@ -392,11 +418,29 @@ public class TransExecutionConfiguration implements Cloneable
         xml.append("    ").append(XMLHandler.addTagValue("safe_mode", safeModeEnabled));
         xml.append("    ").append(XMLHandler.addTagValue("log_level", LogWriter.getLogLevelDesc(logLevel)));
         
+        // The source rows...
+        //
+        if (previousResult!=null)
+        {
+        	xml.append(previousResult.getXML());
+        }
+        
+        // Send the repository name and user to the remote site...
+        //
+        if (repository!=null)
+        {
+            xml.append(XMLHandler.openTag("repository"));
+            xml.append(XMLHandler.addTagValue("name", repository.getName()));
+            xml.append(XMLHandler.addTagValue("login", repository.getUserInfo().getLogin()));
+            xml.append(XMLHandler.addTagValue("password", Encr.encryptPassword(repository.getUserInfo().getPassword())));
+            xml.append(XMLHandler.closeTag("repository"));
+        }
+
         xml.append("</"+XML_TAG+">").append(Const.CR);
         return xml.toString();
     }
     
-    public TransExecutionConfiguration(Node trecNode)
+    public TransExecutionConfiguration(Node trecNode) throws KettleException
     {
     	this();
     	
@@ -447,6 +491,50 @@ public class TransExecutionConfiguration implements Cloneable
         replayDate = XMLHandler.stringToDate( XMLHandler.getTagValue(trecNode, "replay_date") );
         safeModeEnabled = "Y".equalsIgnoreCase(XMLHandler.getTagValue(trecNode, "safe_mode"));
         logLevel = LogWriter.getLogLevel( XMLHandler.getTagValue(trecNode, "log_level") );
+        
+        Node resultNode = XMLHandler.getSubNode(trecNode, Result.XML_TAG);
+        if (resultNode!=null)
+        {
+        	try {
+				previousResult = new Result(resultNode);
+			} catch (IOException e) {
+				LogWriter.getInstance().logError("Job execution configuration", "Unable to hydrate previous result", e);
+			}
+        }
+
+        // Try to get a handle to the repository from here...
+        //
+        Node repNode = XMLHandler.getSubNode(trecNode, "repository");
+        if (repNode!=null)
+        {
+            String repositoryName = XMLHandler.getTagValue(repNode, "name");
+            String username = XMLHandler.getTagValue(repNode, "login");
+            String password = Encr.decryptPassword(XMLHandler.getTagValue(repNode, "password"));
+            
+            // Verify that the repository exists on the slave server...
+            //
+            RepositoriesMeta repositoriesMeta = new RepositoriesMeta(LogWriter.getInstance());
+            if (!repositoriesMeta.readData())
+            {
+            	throw new KettleException("Unable to get a list of repositories to locate repository '"+repositoryName+"'");
+            }
+        	RepositoryMeta repositoryMeta = repositoriesMeta.findRepository(repositoryName);
+        	if (repositoryMeta==null)
+        	{
+        		throw new KettleException("I couldn't find the repository with name '"+repositoryName+"'");
+        	}
+    		Repository rep = new Repository(LogWriter.getInstance(), repositoryMeta, null);
+			if (!rep.connect("Job execution configuration"))
+			{
+				throw new KettleException("Unable to connect to the repository with name '"+repositoryName+"'");
+			}
+			UserInfo userInfo = new UserInfo(rep, username, password);
+			if (userInfo.getID()<=0)
+			{
+				rep.disconnect();
+				throw new KettleException("Unable to verify username '"+username+"' credentials for the repository with name '"+repositoryName+"'");
+			}
+        }
     }
 
     
@@ -481,4 +569,31 @@ public class TransExecutionConfiguration implements Cloneable
 		this.transDebugMeta = transDebugMeta;
 	}
 
+	/**
+	 * @return the previousResult
+	 */
+	public Result getPreviousResult() {
+		return previousResult;
+	}
+
+	/**
+	 * @param previousResult the previousResult to set
+	 */
+	public void setPreviousResult(Result previousResult) {
+		this.previousResult = previousResult;
+	}
+
+	/**
+	 * @return the repository
+	 */
+	public Repository getRepository() {
+		return repository;
+	}
+
+	/**
+	 * @param repository the repository to set
+	 */
+	public void setRepository(Repository repository) {
+		this.repository = repository;
+	}
 }

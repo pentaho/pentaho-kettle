@@ -906,6 +906,8 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 			}
 		}
 		
+		executionConfiguration.setRepository(spoon.rep);
+
 		int debugAnswer = TransDebugDialog.DEBUG_CONFIG;
 		
 		if (debug || preview) {
@@ -974,7 +976,7 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 			//
 			} else if (executionConfiguration.isExecutingRemotely()) {
 				if (executionConfiguration.getRemoteServer() != null) {
-					spoon.delegates.slaves.sendXMLToSlaveServer(transMeta, executionConfiguration);
+					Trans.sendXMLToSlaveServer(transMeta, executionConfiguration);
 					spoon.delegates.slaves.addSpoonSlave(executionConfiguration.getRemoteServer());
 				} else {
 					MessageBox mb = new MessageBox(spoon.getShell(), SWT.OK | SWT.ICON_INFORMATION);

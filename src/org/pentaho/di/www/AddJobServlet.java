@@ -15,6 +15,7 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobConfiguration;
 import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.StepLoader;
 
 
@@ -82,9 +83,13 @@ public class AddJobServlet extends HttpServlet
             JobMeta jobMeta = jobConfiguration.getJobMeta();
             jobMeta.injectVariables(jobConfiguration.getJobExecutionConfiguration().getVariables());
             
+            // If there was a repository, we know about it at this point in time.
+            //
+            final Repository repository = jobConfiguration.getJobExecutionConfiguration().getRepository();
+
             // Create the transformation and store in the list...
             //
-            Job job = new Job(LogWriter.getInstance(), StepLoader.getInstance(), null, jobMeta);
+            final Job job = new Job(LogWriter.getInstance(), StepLoader.getInstance(), repository, jobMeta);
             
             Job oldOne = jobMap.getJob(job.getName());
             if ( oldOne!=null && oldOne.isActive())
@@ -93,6 +98,28 @@ public class AddJobServlet extends HttpServlet
             }
             
             jobMap.addJob(jobMeta.getName(), job, jobConfiguration);
+            
+            if (repository!=null)
+            {
+	            // The repository connection is open: make sure we disconnect from the repository once we
+	            // are done with this transformation.
+	            //
+	            new Thread(new Runnable() {
+					public void run() 
+					{
+						while (job.isActive() || !job.isInitialized() )
+						{
+							try { Thread.sleep(250); } catch (InterruptedException e) { }
+						}
+
+						// Once we're done, we disconnect from the repository...
+						//
+						repository.disconnect();
+						
+					}
+				
+				}).start();
+            }
 
             String message;
             if (oldOne!=null)

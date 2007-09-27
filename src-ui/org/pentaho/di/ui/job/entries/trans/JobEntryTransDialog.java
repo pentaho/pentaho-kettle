@@ -45,6 +45,7 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
+import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.job.JobMeta;
@@ -79,107 +80,78 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 	private Label wlName;
 
 	private Text wName;
-
 	private FormData fdlName, fdName;
-
 	private Label wlTransname;
 
 	private Button wbTransname;
-
 	private TextVar wTransname;
-
 	private FormData fdlTransname, fdbTransname, fdTransname;
 
 	private Label wlDirectory;
-
 	private Text wDirectory;
-
 	private FormData fdlDirectory, fdDirectory;
 
 	private Label wlFilename;
-
 	private Button wbFilename;
-
 	private TextVar wFilename;
 
 	private FormData fdlFilename, fdbFilename, fdFilename;
-
 	private Group wLogging;
-
 	private FormData fdLogging;
 
 	private Label wlSetLogfile;
-
 	private Button wSetLogfile;
-
 	private FormData fdlSetLogfile, fdSetLogfile;
 
 	private Label wlLogfile;
-
 	private TextVar wLogfile;
-
 	private FormData fdlLogfile, fdLogfile;
 
 	private Label wlLogext;
-
 	private TextVar wLogext;
-
 	private FormData fdlLogext, fdLogext;
 
 	private Label wlAddDate;
-
 	private Button wAddDate;
-
 	private FormData fdlAddDate, fdAddDate;
 
 	private Label wlAddTime;
-
 	private Button wAddTime;
-
 	private FormData fdlAddTime, fdAddTime;
 
 	private Label wlLoglevel;
-
 	private CCombo wLoglevel;
-
 	private FormData fdlLoglevel, fdLoglevel;
 
 	private Label wlPrevious;
-
 	private Button wPrevious;
-
 	private FormData fdlPrevious, fdPrevious;
 
 	private Label wlEveryRow;
-
 	private Button wEveryRow;
-
 	private FormData fdlEveryRow, fdEveryRow;
 
 	private Label wlClearRows;
-
 	private Button wClearRows;
-
 	private FormData fdlClearRows, fdClearRows;
 
 	private Label wlClearFiles;
-
 	private Button wClearFiles;
-
 	private FormData fdlClearFiles, fdClearFiles;
 
 	private Label wlCluster;
-
 	private Button wCluster;
-
 	private FormData fdlCluster, fdCluster;
 
 	private Label wlFields;
-
 	private TableView wFields;
-
 	private FormData fdlFields, fdFields;
 
+	private Label wlSlaveServer;
+	private CCombo wSlaveServer;
+	private FormData fdlSlaveServer, fdSlaveServer;
+
+	
 	private Button wOK, wCancel;
 
 	private Listener lsOK, lsCancel;
@@ -555,13 +527,35 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 		fdCluster.top = new FormAttachment(wClearFiles, margin);
 		fdCluster.right = new FormAttachment(100, 0);
 		wCluster.setLayoutData(fdCluster);
+		wCluster.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { setActive(); } });
+
+		// The remote slave server
+		//
+		wlSlaveServer = new Label(shell, SWT.RIGHT);
+		wlSlaveServer.setText(Messages.getString("JobTrans.SlaveServer.Label"));
+		wlSlaveServer.setToolTipText(Messages.getString("JobTrans.SlaveServer.ToolTip"));
+		props.setLook(wlSlaveServer);
+		fdlSlaveServer = new FormData();
+		fdlSlaveServer.left = new FormAttachment(0, 0);
+		fdlSlaveServer.right = new FormAttachment(middle, -margin);
+		fdlSlaveServer.top = new FormAttachment(wCluster, margin);
+		wlSlaveServer.setLayoutData(fdlSlaveServer);
+		wSlaveServer = new CCombo(shell, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
+		wSlaveServer.setItems(SlaveServer.getSlaveServerNames(jobMeta.getSlaveServers()));
+		wSlaveServer.setToolTipText(Messages.getString("JobTrans.SlaveServer.ToolTip"));
+		props.setLook(wSlaveServer);
+		fdSlaveServer = new FormData();
+		fdSlaveServer.left = new FormAttachment(middle, 0);
+		fdSlaveServer.top = new FormAttachment(wCluster, margin);
+		fdSlaveServer.right = new FormAttachment(100, 0);
+		wSlaveServer.setLayoutData(fdSlaveServer);
 
 		wlFields = new Label(shell, SWT.NONE);
 		wlFields.setText(Messages.getString("JobTrans.Fields.Label"));
 		props.setLook(wlFields);
 		fdlFields = new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
-		fdlFields.top = new FormAttachment(wCluster, margin);
+		fdlFields.top = new FormAttachment(wSlaveServer, margin);
 		wlFields.setLayoutData(fdlFields);
 
 		final int FieldsCols = 1;
@@ -749,13 +743,9 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 
 		wlLoglevel.setEnabled(wSetLogfile.getSelection());
 		wLoglevel.setEnabled(wSetLogfile.getSelection());
-
-		/*
-		 * if (jobEntry.setLogfile) {
-		 * wLoglevel.setForeground(display.getSystemColor(SWT.COLOR_BLACK)); }
-		 * else {
-		 * wLoglevel.setForeground(display.getSystemColor(SWT.COLOR_GRAY)); }
-		 */
+		
+		wSlaveServer.setEnabled(!wCluster.getSelection());
+		wlSlaveServer.setEnabled(!wCluster.getSelection());
 	}
 
 	public void getData()
@@ -798,7 +788,12 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 		wClearRows.setSelection(jobEntry.clearResultRows);
 		wClearFiles.setSelection(jobEntry.clearResultFiles);
 		wCluster.setSelection(jobEntry.isClustering());
-
+		
+		if (jobEntry.getRemoteSlaveServer()!=null)
+		{
+			wSlaveServer.select(jobMeta.getSlaveServers().indexOf(jobEntry.getRemoteSlaveServer()));
+		}
+		
 		wLoglevel.select(jobEntry.loglevel);
 	}
 
@@ -850,6 +845,12 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 		jobEntry.clearResultFiles = wClearFiles.getSelection();
 		jobEntry.setClustering(wCluster.getSelection());
 
+		int slaveIndex = wSlaveServer.getSelectionIndex();
+		if (slaveIndex>=0 && slaveIndex<jobMeta.getSlaveServers().size())
+		{
+			jobEntry.setRemoteSlaveServer(jobMeta.getSlaveServers().get(slaveIndex));
+		}
+		
 		jobEntry.setChanged();
 
 		dispose();

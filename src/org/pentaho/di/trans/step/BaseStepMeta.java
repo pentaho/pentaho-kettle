@@ -28,6 +28,7 @@ import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.resource.ResourceReference;
@@ -47,6 +48,9 @@ public class BaseStepMeta implements Cloneable
     
     /** database connection object to use for searching fields & checking steps */
     protected Database databases[];
+    
+    /** The repository that is being used for this step */
+    protected Repository repository;
 
 	public BaseStepMeta()
 	{

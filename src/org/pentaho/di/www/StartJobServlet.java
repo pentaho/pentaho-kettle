@@ -75,7 +75,14 @@ public class StartJobServlet extends HttpServlet
             	{
             		// Re-create the job from the jobMeta
             		//
-            		job = new Job(LogWriter.getInstance(), StepLoader.getInstance(), null, job.getJobMeta());
+            		// We might need to re-connect to the database
+            		//
+            		if (!job.getRep().getRepositoryInfo().isLocked())
+            		{
+            			job.getRep().connect(toString());
+            		}
+
+            		job = new Job(LogWriter.getInstance(), StepLoader.getInstance(), job.getRep(), job.getJobMeta());
             	}
             	
                 // Log to a String & save appender for re-use later.

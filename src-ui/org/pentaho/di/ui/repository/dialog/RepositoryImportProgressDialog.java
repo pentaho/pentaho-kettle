@@ -200,7 +200,7 @@ public class RepositoryImportProgressDialog extends Dialog
     	//
     	// Load transformation from XML into a directory, possibly created!
     	//
-    	TransMeta ti = new TransMeta(transnode);
+    	TransMeta ti = new TransMeta(transnode, null);
 
     	wLabel.setText(Messages.getString("RepositoryImportDialog.ImportTrans.Label", Integer.toString(nrthis), Integer.toString(nrtrans), ti.getName()));
 

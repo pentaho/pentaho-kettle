@@ -1415,6 +1415,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 		executionConfiguration.setVariables(variableMap);
 		executionConfiguration.getUsedVariables(jobMeta);
 		executionConfiguration.setReplayDate(replayDate);
+		executionConfiguration.setRepository(spoon.rep);
 
 		executionConfiguration.setLogLevel(spoon.getLog().getLogLevel());
 

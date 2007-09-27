@@ -44,6 +44,7 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.EngineMetaInterface;
+import org.pentaho.di.core.Result;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.ui.spoon.Messages;
@@ -290,7 +291,14 @@ public class SpoonSlave extends Composite implements TabItemInterface
         if (ti.length==1)
         {
             TreeItem treeItem = ti[0];
+            
+            // Search for the top level entry...
+            //
+            while (treeItem.getParentItem()!=null) treeItem = treeItem.getParentItem();
+            
             int index = wTree.indexOf(treeItem);
+            
+            if (index<0) return;
             
             if (index<slaveServerStatus.getTransStatusList().size()) 
             {
@@ -479,6 +487,17 @@ public class SpoonSlave extends Composite implements TabItemInterface
                 SlaveServerJobStatus ts = slaveServer.getJobStatus(jobStatus.getJobName());
                 LogWriter.getInstance().logDetailed(toString(), "Finished receiving job status for [{0}] from server [{1}]", jobStatus.getJobName(), slaveServer);
                 jobStatus.setLoggingString(ts.getLoggingString());
+                Result result = ts.getResult();
+                if (result!=null)
+                {
+	                jobItem.setText(2, ""+result.getNrLinesRead());
+	                jobItem.setText(3, ""+result.getNrLinesWritten());
+	                jobItem.setText(4, ""+result.getNrLinesInput());
+	                jobItem.setText(5, ""+result.getNrLinesOutput());
+	                jobItem.setText(6, ""+result.getNrLinesUpdated());
+	                jobItem.setText(7, ""+result.getNrLinesRejected());
+	                jobItem.setText(8, ""+result.getNrErrors());
+                }
             }
             catch (Exception e)
             {

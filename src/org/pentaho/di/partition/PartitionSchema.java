@@ -78,7 +78,7 @@ public class PartitionSchema extends ChangedFlag implements Cloneable, SharedObj
     
     public boolean equals(Object obj)
     {
-        if (obj==null) return false;
+        if (obj==null || name==null) return false;
         return name.equals(((PartitionSchema)obj).name);
     }
 

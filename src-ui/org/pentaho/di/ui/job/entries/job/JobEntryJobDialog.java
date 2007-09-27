@@ -155,8 +155,6 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 
 	private Display display;
 
-	private Repository repository;
-
 	public JobEntryJobDialog(Shell parent, JobEntryInterface jobEntryInt, Repository rep, JobMeta jobMeta)
 	{
 		super(parent, jobEntryInt, rep, jobMeta);
@@ -228,7 +226,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 		fdbJobname.top = new FormAttachment(wName, margin * 2);
 		fdbJobname.right = new FormAttachment(100, 0);
 		wbJobname.setLayoutData(fdbJobname);
-		wbJobname.setEnabled(repository != null);
+		wbJobname.setEnabled(rep != null);
 
 		wJobname = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wJobname);
@@ -485,7 +483,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 		fdlSlaveServer = new FormData();
 		fdlSlaveServer.left = new FormAttachment(0, 0);
 		fdlSlaveServer.right = new FormAttachment(middle, -margin);
-		fdlSlaveServer.top = new FormAttachment(wlEveryRow, margin);
+		fdlSlaveServer.top = new FormAttachment(wEveryRow, margin);
 		wlSlaveServer.setLayoutData(fdlSlaveServer);
 		wSlaveServer = new CCombo(shell, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
 		wSlaveServer.setItems(SlaveServer.getSlaveServerNames(jobMeta.getSlaveServers()));
@@ -493,7 +491,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 		props.setLook(wSlaveServer);
 		fdSlaveServer = new FormData();
 		fdSlaveServer.left = new FormAttachment(middle, 0);
-		fdSlaveServer.top = new FormAttachment(wlEveryRow, margin);
+		fdSlaveServer.top = new FormAttachment(wEveryRow, margin);
 		fdSlaveServer.right = new FormAttachment(100, 0);
 		wSlaveServer.setLayoutData(fdSlaveServer);
 		
@@ -569,9 +567,9 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 		{
 			public void widgetSelected(SelectionEvent e)
 			{
-				if (repository != null)
+				if (rep != null)
 				{
-					SelectObjectDialog sod = new SelectObjectDialog(shell, repository, false, true);
+					SelectObjectDialog sod = new SelectObjectDialog(shell, rep, false, true);
 					String jobname = sod.open();
 					if (jobname != null)
 					{
@@ -629,7 +627,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 
 						wFilename.setText(lroot != null ? selected : Const.EMPTY_STRING);
 
-						JobMeta job = new JobMeta(log, wFilename.getText(), repository, SpoonFactory
+						JobMeta job = new JobMeta(log, wFilename.getText(), rep, SpoonFactory
 								.getInstance());
 						if (job.getName() != null)
 							wName.setText(job.getName());
@@ -697,12 +695,6 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 
 		wlLoglevel.setEnabled(wSetLogfile.getSelection());
 		wLoglevel.setEnabled(wSetLogfile.getSelection());
-		/*
-		 * if (wSetLogfile.getSelection()) {
-		 * wLoglevel.setForeground(display.getSystemColor(SWT.COLOR_BLACK)); }
-		 * else {
-		 * wLoglevel.setForeground(display.getSystemColor(SWT.COLOR_GRAY)); }
-		 */
 	}
 
 	public void getData()
@@ -756,8 +748,8 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 		jobEntry.setJobName(wJobname.getText());
 		jobEntry.setFileName(wFilename.getText());
 		jobEntry.setName(wName.getText());
-		if (repository != null)
-			jobEntry.setDirectory(repository.getDirectoryTree().findDirectory(wDirectory.getText()));
+		if (rep != null)
+			jobEntry.setDirectory(rep.getDirectoryTree().findDirectory(wDirectory.getText()));
 
 		int nritems = wFields.nrNonEmpty();
 		int nr = 0;

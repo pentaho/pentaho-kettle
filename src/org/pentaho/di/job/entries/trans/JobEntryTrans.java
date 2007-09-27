@@ -60,6 +60,7 @@ import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.cluster.TransSplitter;
+import org.pentaho.di.www.SlaveServerTransStatus;
 import org.w3c.dom.Node;
 
 
@@ -92,6 +93,8 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     private String  directoryPath;
 
     private boolean clustering;
+    
+    private SlaveServer remoteSlaveServer;
 
 	public JobEntryTrans(String name)
 	{
@@ -213,6 +216,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 		retval.append("      ").append(XMLHandler.addTagValue("add_time",          addTime));
         retval.append("      ").append(XMLHandler.addTagValue("loglevel",          LogWriter.getLogLevelDesc(loglevel)));
         retval.append("      ").append(XMLHandler.addTagValue("cluster",           clustering));
+		retval.append("      ").append(XMLHandler.addTagValue("slave_server_name", remoteSlaveServer!=null ? remoteSlaveServer.getName() : null));
 
 		if (arguments!=null)
 		for (int i=0;i<arguments.length;i++)
@@ -249,6 +253,9 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 			logext = XMLHandler.getTagValue(entrynode, "logext");
 			loglevel = LogWriter.getLogLevel( XMLHandler.getTagValue(entrynode, "loglevel"));
             clustering = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "cluster") );
+
+			String remoteSlaveServerName = XMLHandler.getTagValue(entrynode, "slave_server_name");
+			remoteSlaveServer = SlaveServer.findSlaveServer(slaveServers, remoteSlaveServerName);
 
 			// How many arguments?
 			int argnr = 0;
@@ -287,6 +294,9 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 			logext           = rep.getJobEntryAttributeString(id_jobentry, "logext");
 			loglevel         = LogWriter.getLogLevel( rep.getJobEntryAttributeString(id_jobentry, "loglevel") );
             clustering       = rep.getJobEntryAttributeBoolean(id_jobentry, "cluster");
+
+			String remoteSlaveServerName = rep.getJobEntryAttributeString(id_jobentry, "slave_server_name");
+			remoteSlaveServer = SlaveServer.findSlaveServer(slaveServers, remoteSlaveServerName);
 
 			// How many arguments?
 			int argnr = rep.countNrJobEntryAttributes(id_jobentry, "argument");
@@ -328,6 +338,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 			rep.saveJobEntryAttribute(id_job, getID(), "logext", logext);
 			rep.saveJobEntryAttribute(id_job, getID(), "loglevel", LogWriter.getLogLevelDesc(loglevel));
             rep.saveJobEntryAttribute(id_job, getID(), "cluster", clustering);
+			rep.saveJobEntryAttribute(id_job, getID(), "slave_server_name", remoteSlaveServer!=null ? remoteSlaveServer.getName() : null);
 
 			// save the arguments...
 			if (arguments!=null)
@@ -361,6 +372,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 		setLogfile=false;
 		clearResultRows=true;
 		clearResultFiles=true;
+		remoteSlaveServer=null;
 	}
 
 
@@ -524,6 +536,8 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
                     }
                 }
 
+                // Execute this transformation across a cluster of servers
+                //
                 if (clustering)
                 {
                     TransExecutionConfiguration executionConfiguration = new TransExecutionConfiguration();
@@ -532,6 +546,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
                     executionConfiguration.setClusterStarting(true);
                     executionConfiguration.setClusterShowingTransformation(false);
                     executionConfiguration.setSafeModeEnabled(false);
+                    executionConfiguration.setRepository(rep);
                     
                     TransSplitter transSplitter = Trans.executeClustered(transMeta, executionConfiguration );
                     
@@ -548,6 +563,51 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
                     result.setNrErrors(result.getNrErrors()+errors);
 
                 }
+                // Execute this transformation remotely
+                //
+                else if (remoteSlaveServer!=null)
+                {
+                	// Remote execution...
+                	//
+                	TransExecutionConfiguration transExecutionConfiguration = new TransExecutionConfiguration();
+                	transExecutionConfiguration.setPreviousResult(transMeta.getPreviousResult().clone());
+                	transExecutionConfiguration.setArgumentStrings(args);
+                	transExecutionConfiguration.setVariables(this);
+                	transExecutionConfiguration.setRemoteServer(remoteSlaveServer);
+                	
+                	// Send the XML over to the slave server
+                	// Also start the transformation over there...
+                	//
+                	Trans.sendXMLToSlaveServer(transMeta, transExecutionConfiguration);
+                	
+                	// Now start the monitoring...
+                	//
+                	while (!parentJob.isStopped())
+                	{
+                		try 
+                		{
+							SlaveServerTransStatus transStatus = remoteSlaveServer.getTransStatus(transMeta.getName());
+							if (!transStatus.isRunning())
+							{
+								// The transformation is finished, get the result...
+								//
+								Result remoteResult = transStatus.getResult(); 
+			                    result.clear();
+			                    result.add(remoteResult);
+								break;
+							}
+						} 
+                		catch (Exception e1) {
+							log.logError(toString(), "Unable to contact slave server ["+remoteSlaveServer+"] to verify the status of transformation ["+transMeta.getName()+"]");
+							result.setNrErrors(result.getNrErrors()+1L);
+							break; // Stop looking too, chances are too low the server will come back on-line
+						}
+                		
+                		try { Thread.sleep(10000); } catch(InterruptedException e) {} ; // sleep for 10 seconds
+                	}
+                }
+                // Execute this transformation on the local machine
+                //
                 else // Local execution...
                 {
                     // Create the transformation from meta-data
@@ -821,5 +881,19 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
   {
     return logfile;
   }
+
+/**
+ * @return the remoteSlaveServer
+ */
+public SlaveServer getRemoteSlaveServer() {
+	return remoteSlaveServer;
+}
+
+/**
+ * @param remoteSlaveServer the remoteSlaveServer to set
+ */
+public void setRemoteSlaveServer(SlaveServer remoteSlaveServer) {
+	this.remoteSlaveServer = remoteSlaveServer;
+}
 
 }

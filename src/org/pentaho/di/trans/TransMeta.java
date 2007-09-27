@@ -84,6 +84,7 @@ import org.pentaho.di.trans.step.StepErrorMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.step.StepPartitioningMeta;
+import org.pentaho.di.trans.steps.mapping.MappingMeta;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -216,6 +217,9 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
     
     /** Just a flag indicating that this is a slave transformation - internal use only, no GUI option */
     private boolean slaveTransformation;
+    
+    /** The repository to reference in the one-off case that it is needed */
+    private Repository repository;
     
     // //////////////////////////////////////////////////////////////////////////
 
@@ -1686,6 +1690,20 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
             for (int i=0;i<lu.length;i++) inform[i] = getStepFields(lu[i]);
         }
 
+        // Set the Repository object on the Mapping step
+        // That way the mapping step can determine the output fields for repository hosted mappings...
+        // This is the exception to the rule so we don't pass this through the getFields() method.
+        //
+        for (StepMeta step : steps)
+        {
+        	if (step.getStepMetaInterface() instanceof MappingMeta) 
+        	{
+        		((MappingMeta)step.getStepMetaInterface()).setRepository(repository);
+        	}
+        }
+        
+        // Go get the fields...
+        //
         stepint.getFields(row, name, inform, nextStep, this);
 
         return row;
@@ -2699,30 +2717,44 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
         }
     }
 
-    /**
+    /*
      * Load the transformation from an XML node
      *
      * @param transnode The XML node to parse
      * @throws KettleXMLException
-     */
+     *
     public TransMeta(Node transnode) throws KettleXMLException
     {
         loadXML(transnode);
     }
+    */
 
-    /**
+    /*
      * Parse a file containing the XML that describes the transformation.
      * (no repository is available to load default list of database connections from)
      *
      * @param transnode The XML node to load from
      * @throws KettleXMLException
-     */
+     *
     private void loadXML(Node transnode) throws KettleXMLException
     {
         loadXML(transnode, null, false);
     }
-
+    */
     
+    /**
+     * Parse a file containing the XML that describes the transformation.
+     * Specify a repository to load default list of database connections from and to reference in mappings etc.
+     *
+     * @param transnode The XML node to load from
+     * @param rep the repository to reference.
+     * @throws KettleXMLException
+     */
+    public TransMeta(Node transnode, Repository rep) throws KettleXMLException
+    {
+    	loadXML(transnode, rep, false);
+    }
+
     /**
      * Parse a file containing the XML that describes the transformation.
      *
@@ -5846,5 +5878,19 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
 
 	public void setSlaveTransformation(boolean slaveTransformation) {
 		this.slaveTransformation = slaveTransformation;
+	}
+
+	/**
+	 * @return the repository
+	 */
+	public Repository getRepository() {
+		return repository;
+	}
+
+	/**
+	 * @param repository the repository to set
+	 */
+	public void setRepository(Repository repository) {
+		this.repository = repository;
 	}
 }

@@ -911,8 +911,7 @@ public class Job extends Thread implements VariableSpace
 		if (slaveServer == null)
 			throw new KettleException("No slave server specified");
 		if (Const.isEmpty(jobMeta.getName()))
-			throw new KettleException(
-					"The job needs a name to uniquely identify it by on the remote server.");
+			throw new KettleException("The job needs a name to uniquely identify it by on the remote server.");
 
 		try
 		{

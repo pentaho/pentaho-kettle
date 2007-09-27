@@ -5949,10 +5949,18 @@ public class Repository
         return xml.toString();
     }
 
+    /**
+     * @return the current repository
+     * @deprecated this is not thread safe
+     */
     public synchronized static Repository getCurrentRepository()
     {
         return currentRepository;
     }
+    /**
+     * @param currentRepository the current repository
+     * @deprecated this is not thread safe
+     */
 
     public synchronized static void setCurrentRepository(Repository currentRepository)
     {

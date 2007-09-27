@@ -72,6 +72,12 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
     private List<MappingIODefinition> inputMappings;
     private List<MappingIODefinition> outputMappings;
     private MappingParameters         mappingParameters;
+    
+    /*
+     * This repository object is injected from the outside at runtime or at design time.
+     * It comes from either Spoon or Trans
+     */
+    private Repository repository;
 
 	public MappingMeta()
 	{
@@ -218,7 +224,6 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
     	
     	// Then see which fields get added to the row.
     	//
-        Repository repository = Repository.getCurrentRepository(); 
         TransMeta mappingTransMeta = null;
         try
         {
@@ -775,6 +780,20 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
     } catch (Exception e) {
       throw new KettleException(Messages.getString("MappingMeta.Exception.UnableToLoadTransformation",fileName)); //$NON-NLS-1$
     }
+	}
+
+	/**
+	 * @return the repository
+	 */
+	public Repository getRepository() {
+		return repository;
+	}
+
+	/**
+	 * @param repository the repository to set
+	 */
+	public void setRepository(Repository repository) {
+		this.repository = repository;
 	}
 
 }

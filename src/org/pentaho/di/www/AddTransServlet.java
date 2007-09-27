@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransConfiguration;
 import org.pentaho.di.trans.TransMeta;
@@ -75,14 +76,18 @@ public class AddTransServlet extends HttpServlet
             
             // Parse the XML, create a transformation configuration
             //
-            // System.out.println(xml);
             TransConfiguration transConfiguration = TransConfiguration.fromXML(xml.toString());
             TransMeta transMeta = transConfiguration.getTransMeta();
             transMeta.injectVariables(transConfiguration.getTransExecutionConfiguration().getVariables());
             
+            // If there was a repository, we know about it at this point in time.
+            //
+            final Repository repository = transConfiguration.getTransExecutionConfiguration().getRepository();
+            
             // Create the transformation and store in the list...
             //
-            Trans trans = new Trans(transMeta);
+            final Trans trans = new Trans(transMeta);
+            trans.setRepository(repository);
             
             Trans oldOne = transformationMap.getTransformation(trans.getName());
             if ( oldOne!=null && !oldOne.isFinished())
@@ -95,6 +100,28 @@ public class AddTransServlet extends HttpServlet
             
             transformationMap.addTransformation(transMeta.getName(), trans, transConfiguration);
 
+            if (repository!=null)
+            {
+	            // The repository connection is open: make sure we disconnect from the repository once we
+	            // are done with this transformation.
+	            //
+	            new Thread(new Runnable() {
+					public void run() 
+					{
+						while (!trans.isFinished())
+						{
+							try { Thread.sleep(250); } catch (InterruptedException e) { }
+						}
+						// Once we're done, we disconnect from the repository...
+						//
+						repository.disconnect();
+					}
+				
+				}).start();
+            }
+            
+
+            
             String message;
             if (oldOne!=null)
             {

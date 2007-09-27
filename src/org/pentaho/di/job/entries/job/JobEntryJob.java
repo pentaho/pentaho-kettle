@@ -321,8 +321,8 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 			rep.saveJobEntryAttribute(id_job, getID(), "add_time", addTime);
 			rep.saveJobEntryAttribute(id_job, getID(), "logfile", logfile);
 			rep.saveJobEntryAttribute(id_job, getID(), "logext", logext);
-			rep.saveJobEntryAttribute(id_job, getID(), "slave_server_name", remoteSlaveServer!=null ? remoteSlaveServer.getName() : null);
 			rep.saveJobEntryAttribute(id_job, getID(), "loglevel", LogWriter.getLogLevelDesc(loglevel));
+			rep.saveJobEntryAttribute(id_job, getID(), "slave_server_name", remoteSlaveServer!=null ? remoteSlaveServer.getName() : null);
 
 			// save the arguments...
 			if (arguments!=null)
@@ -568,10 +568,12 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
                 	// Remote execution...
                 	//
                 	JobExecutionConfiguration jobExecutionConfiguration = new JobExecutionConfiguration();
-                	jobExecutionConfiguration.setSourceRows(sourceRows);
+                	jobExecutionConfiguration.setPreviousResult(result.clone());
+                	jobExecutionConfiguration.getPreviousResult().setRows(sourceRows);
                 	jobExecutionConfiguration.setArgumentStrings(args);
                 	jobExecutionConfiguration.setVariables(this);
                 	jobExecutionConfiguration.setRemoteServer(remoteSlaveServer);
+                	jobExecutionConfiguration.setRepository(rep);
                 	
                 	// Send the XML over to the slave server
                 	// Also start the job over there...
@@ -585,7 +587,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
                 		try 
                 		{
 							SlaveServerJobStatus jobStatus = remoteSlaveServer.getJobStatus(jobMeta.getName());
-							if (!jobStatus.isRunning() && !jobStatus.isWaiting())
+							if (jobStatus.getResult()!=null)
 							{
 								// The job is finished, get the result...
 								//

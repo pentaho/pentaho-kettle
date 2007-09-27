@@ -77,7 +77,15 @@ public class Trans implements VariableSpace
 
 	private static LogWriter log = LogWriter.getInstance();
 	
+	/**
+	 * The transformation metadata to execute
+	 */
 	private TransMeta transMeta;
+	
+	/**
+	 * The repository we are referencing.
+	 */
+	private Repository repository;
 
     /** The job that's launching this transformation. This gives us access to the whole chain, including the parent variables, etc. */
     private Job parentJob;
@@ -2115,10 +2123,51 @@ public class Trans implements VariableSpace
         
         return result;
     }
+    
+	
+	public static void sendXMLToSlaveServer(TransMeta transMeta, TransExecutionConfiguration executionConfiguration) throws KettleException
+	{
+		SlaveServer slaveServer = executionConfiguration.getRemoteServer();
 
+		if (slaveServer == null)
+			throw new KettleException("No slave server specified");
+		if (Const.isEmpty(transMeta.getName()))
+			throw new KettleException( "The transformation needs a name to uniquely identify it by on the remote server.");
+
+		try
+		{
+			String xml = new TransConfiguration(transMeta, executionConfiguration).getXML();
+			String reply = slaveServer.sendXML(xml, AddTransServlet.CONTEXT_PATH + "/?xml=Y");
+			WebResult webResult = WebResult.fromXMLString(reply);
+			if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
+			{
+				throw new KettleException( "There was an error posting the transformation on the remote server: " + Const.CR + webResult.getMessage());
+			}
+
+			reply = slaveServer.getContentFromServer(PrepareExecutionTransServlet.CONTEXT_PATH + "/?name=" + transMeta.getName() + "&xml=Y");
+			webResult = WebResult.fromXMLString(reply);
+			if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
+			{
+				throw new KettleException("There was an error preparing the transformation for excution on the remote server: "+ Const.CR + webResult.getMessage());
+			}
+
+			reply = slaveServer.getContentFromServer(StartExecutionTransServlet.CONTEXT_PATH + "/?name=" + transMeta.getName() + "&xml=Y");
+			webResult = WebResult.fromXMLString(reply);
+
+			if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
+			{
+				throw new KettleException( "There was an error starting the transformation on the remote server: " + Const.CR + webResult.getMessage());
+			}
+		} 
+		catch (Exception e)
+		{
+			throw new KettleException(e);
+		}
+
+	}
 
     /**
-     * @return true if the transformation was prepared for execution succesfully.
+     * @return true if the transformation was prepared for execution successfully.
      * @see Trans.prepareExecution
      */
     public boolean isReadyToStart()
@@ -2264,5 +2313,19 @@ public class Trans implements VariableSpace
 	 */
 	public void setPreview(boolean preview) {
 		this.preview = preview;
+	}
+
+	/**
+	 * @return the repository
+	 */
+	public Repository getRepository() {
+		return repository;
+	}
+
+	/**
+	 * @param repository the repository to set
+	 */
+	public void setRepository(Repository repository) {
+		this.repository = repository;
 	} 
 }

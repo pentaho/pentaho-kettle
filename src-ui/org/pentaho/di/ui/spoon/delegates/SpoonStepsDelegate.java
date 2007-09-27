@@ -101,8 +101,7 @@ public class SpoonStepsDelegate extends SpoonDelegate
 			// Before we do anything, let's store the situation the way it
 			// was...
 			StepMeta before = (StepMeta) stepMeta.clone();
-			StepDialogInterface dialog = spoon.getStepEntryDialog(stepMeta.getStepMetaInterface(), transMeta,
-					name);
+			StepDialogInterface dialog = spoon.getStepEntryDialog(stepMeta.getStepMetaInterface(), transMeta, name);
 			String stepname = null;
 			if (dialog != null)
 			{

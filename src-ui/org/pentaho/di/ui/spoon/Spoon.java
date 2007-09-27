@@ -150,6 +150,7 @@ import org.pentaho.di.trans.HasSlaveServersInterface;
 import org.pentaho.di.trans.Partitioner;
 import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.StepPlugin;
+import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
@@ -4851,7 +4852,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		try
 		{
 			Document doc = XMLHandler.loadXMLString(xml);
-			TransMeta transMeta = new TransMeta(XMLHandler.getSubNode(doc, TransMeta.XML_TAG));
+			TransMeta transMeta = new TransMeta(XMLHandler.getSubNode(doc, TransMeta.XML_TAG), rep);
 			addTransGraph(transMeta); // create a new tab
 			refreshGraph();
 			refreshTree();
@@ -5812,7 +5813,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	public void sendTransformationXMLToSlaveServer(TransMeta transMeta, TransExecutionConfiguration executionConfiguration){
 		try
 		{
-			delegates.slaves.sendXMLToSlaveServer(transMeta,executionConfiguration);
+			Trans.sendXMLToSlaveServer(transMeta,executionConfiguration);
 		} catch (Exception e)
 		{
 			new ErrorDialog(shell, "Error", "Error sending transformation to server", e);

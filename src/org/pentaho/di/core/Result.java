@@ -86,7 +86,7 @@ public class Result implements Cloneable
 		this.entryNr=nr;
 	}
 	
-	public Object clone()
+	public Result clone()
 	{
 		try
 		{
@@ -440,7 +440,7 @@ public class Result implements Cloneable
     	nrLinesInput     = Const.toLong(XMLHandler.getTagValue(node, "lines_input"), 0L);
     	nrLinesOutput    = Const.toLong(XMLHandler.getTagValue(node, "lines_output"), 0L);
     	nrLinesRead      = Const.toLong(XMLHandler.getTagValue(node, "lines_read"), 0L);
-    	nrLinesRead      = Const.toLong(XMLHandler.getTagValue(node, "lines_written"), 0L);
+    	nrLinesWritten   = Const.toLong(XMLHandler.getTagValue(node, "lines_written"), 0L);
     	nrLinesUpdated   = Const.toLong(XMLHandler.getTagValue(node, "lines_updated"), 0L);
     	nrLinesRejected  = Const.toLong(XMLHandler.getTagValue(node, "lines_rejected"), 0L);
     	nrLinesDeleted   = Const.toLong(XMLHandler.getTagValue(node, "lines_deleted"), 0L);
