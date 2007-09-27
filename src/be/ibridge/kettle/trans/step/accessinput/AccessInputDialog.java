@@ -22,10 +22,7 @@
 package be.ibridge.kettle.trans.step.accessinput;
 
 import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.swt.SWT;
@@ -56,6 +53,7 @@ import org.eclipse.swt.widgets.Text;
 import be.ibridge.kettle.core.ColumnInfo;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Props;
+import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.dialog.EnterNumberDialog;
 import be.ibridge.kettle.core.dialog.EnterSelectionDialog;
 import be.ibridge.kettle.core.dialog.EnterTextDialog;
@@ -78,6 +76,7 @@ import be.ibridge.kettle.trans.step.fileinput.FileInputList;
 
 import com.healthmarketscience.jackcess.Database;
 import com.healthmarketscience.jackcess.Table;
+import com.healthmarketscience.jackcess.Column;
 
 public class AccessInputDialog extends BaseStepDialog implements StepDialogInterface
 {
@@ -872,123 +871,118 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 
 	private void get()
 	{
- 
+		
+		Row fields = new Row();
+		
         try
         {
         	
-        	
-        	
-    		AccessInputMeta meta = new AccessInputMeta();
+        	AccessInputMeta meta = new AccessInputMeta();
     		getInfo(meta);
-    		
+        	
     		// Check if a table name is specified 
     		if (!checkInputTableName(meta)) return;
             
             FileInputList inputList = meta.getFiles();
-            // Clear Fields Grid
-            wFields.removeAll();
-            
+
             if (inputList.getFiles().size()>0)
             {
                 // Open the file (only first file)...
 
             	Database d = Database.open(new File(KettleVFS.getFilename(inputList.getFile(0))));			
     			Table t=d.getTable(meta.getRealTableName());
-    			// Get the list of columns
-    			List col = t.getColumns();
-    			Iterator iter = col.iterator();
-    			Map row;
-    			row = t.getNextRow();
     			
-    			iter = row.keySet().iterator();
-
-    			while (iter.hasNext()) 
+    			// Get the list of columns
+    			List col = t.getColumns();    			
+    		
+    			for (int i=0;i<col.size() ;i++)
     			{
-    				String fieldName = (String) iter.next();
-    				Object obj = row.get(fieldName);
+    				String fieldname = null;
+					int    fieldtype = Value.VALUE_TYPE_NONE;
+					
+    				Column c = (Column)col.get(i);
     				
-					// Get attribut Name
-		            TableItem item = new TableItem(wFields.table, SWT.NONE);
-		            item.setText(1, fieldName);
-		            item.setText(2, fieldName);
-		            
-		            String attributeValue=String.valueOf(obj);
-		            // Try to get the Type
-		            if(IsDate(attributeValue))
-            		{
-            			item.setText(3, "Date");
-            		}
-		            else if(IsInteger(attributeValue))
-            		{
-            			item.setText(3, "Integer");
-            		}
-		            else if(IsNumber(attributeValue))
-            		{
-            			item.setText(3, "Number");
-            		}	    		          
-		            else
-		            {
-		            	item.setText(3, "String");	    		            
-		            }
-    			}    					
+    				// Get column name
+    				fieldname=c.getName();
+    				fieldtype = Value.VALUE_TYPE_NONE;
+    				
+    				
+		            // Get column type and Map with PDI values    				
+    				
+    				if(c.getType().INT.equals(c.getType()))
+    				{
+    					fieldtype = Value.VALUE_TYPE_INTEGER;
+    				}
+    				else if(c.getType().BOOLEAN.equals(c.getType()))
+    				{
+    					fieldtype = Value.VALUE_TYPE_BOOLEAN;
+    				}
+    				else if(c.getType().BINARY.equals(c.getType()))
+    				{
+    					fieldtype = Value.VALUE_TYPE_BINARY;
+    				}
+    				else if((c.getType().DOUBLE.equals(c.getType())) || (c.getType().LONG.equals(c.getType())) 
+    						|| (c.getType().NUMERIC.equals(c.getType()) ) )
+    				{
+    					fieldtype = Value.VALUE_TYPE_NUMBER;
+    				}
+    				else if((c.getType().equals(c.getType().FLOAT)) || (c.getType().MONEY.equals(c.getType())) 
+    						|| (c.getType().MEMO.equals(c.getType()) ) )
+    				{
+    					fieldtype = Value.VALUE_TYPE_BIGNUMBER;
+    				}
+    				else if((c.getType().SHORT_DATE_TIME.equals(c.getType())))
+    				{
+    					fieldtype = Value.VALUE_TYPE_DATE;
+    				}
+    				else
+    				{
+    					fieldtype = Value.VALUE_TYPE_STRING;
+    				}
+    				
+    				if (fieldname!=null && fieldtype!=Value.VALUE_TYPE_NONE)
+					{
+						Value field = new Value(fieldname, fieldtype);
+						if (fields.searchValueIndex(field.getName())<0) fields.addValue(field);
+					}
+						
+    			}
+    			
+            }	
+    					
     		}
+            catch(Exception e)
+    		{
+        		 new ErrorDialog(shell, Messages.getString("System.Dialog.Error.Title"), Messages.getString("AccessInputDialog.ErrorReadingFile.DialogMessage", e.toString()), e);
+    		} 
 
-
-            wFields.removeEmptyRows();
-            wFields.setRowNums();
-            wFields.optWidth(true);            
-        }
-        catch(KettleException e)
-        {
-            new ErrorDialog(shell, Messages.getString("XMLInputDialog.ErrorParsingData.DialogTitle"), Messages.getString("XMLInputDialog.ErrorParsingData.DialogMessage"), e);
-        }
-    	catch(Exception e)
-		{
-    		 new ErrorDialog(shell, Messages.getString("XMLInputDialog.ErrorParsingData.DialogTitle"), Messages.getString("XMLInputDialog.ErrorParsingData.DialogMessage"), e);
-
-		}  
+            
+            if (fields.size()>0)
+    		{
+            	
+            	// Clear Fields Grid
+                wFields.removeAll();
+                
+    			for (int j=0;j<fields.size();j++)
+    			{
+    				Value field = fields.getValue(j);
+    				wFields.add(new String[] { field.getName(), field.getName(),field.getTypeDesc(), "", "-1", "","","","","none", "N" } );
+    			}
+    			wFields.removeEmptyRows();
+    			wFields.setRowNums();
+    			wFields.optWidth(true);
+    		}
+    		else
+    		{
+    			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
+    			mb.setMessage(Messages.getString("AccessInputDialog.UnableToFindFields.DialogMessage"));
+    			mb.setText(Messages.getString("AccessInputDialog.UnableToFindFields.DialogTitle"));
+    			mb.open(); 
+    		}
+            
+ 
 	}
 
-	private boolean IsInteger(String str)
-	{
-		  try 
-		  {
-		    Integer.parseInt(str);
-		  }
-		  catch(NumberFormatException e)   {return false; }
-		  return true;
-	}
-	
-	private boolean IsNumber(String str)
-	{
-		  try 
-		  {
-		     Float.parseFloat(str);
-		  }
-		  catch(Exception e)   {return false; }
-		  return true;
-	}
-	
-	private boolean IsDate(String str)
-	{
-		  // TODO: What about other dates? Maybe something for a CRQ
-		  try 
-		  {
-		        SimpleDateFormat fdate = new SimpleDateFormat("yy-mm-dd");
-		        fdate.parse(str);
-		  }
-		  catch(Exception e)   {return false; }
-		  return true;
-	}
-
-	public void setMultiple()
-	{
-		/*
-		wlFilemask.setEnabled(wMultiple.getSelection());
-		wFilemask.setEnabled(wMultiple.getSelection());
-		wlFilename.setText(wMultiple.getSelection()?"Directory":"Filename ");
-		*/
-	}
 	
 	public void setIncludeFilename()
 	{
@@ -1074,7 +1068,6 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
         wFields.setRowNums();
         wFields.optWidth(true);
 
-		setMultiple();
 		setIncludeFilename();
 		setIncludeTablename();
 		setIncludeRownum();
