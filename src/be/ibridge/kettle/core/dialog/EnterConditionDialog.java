@@ -33,6 +33,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 
+import be.ibridge.kettle.core.GUIResource;
 import be.ibridge.kettle.core.Condition;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Props;
@@ -85,6 +86,7 @@ public class EnterConditionDialog extends Dialog
 		Shell parent = getParent();
 		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
  		props.setLook(shell);
+ 		shell.setImage(GUIResource.getInstance().getImageSpoon());
 		shell.setText(Messages.getString("EnterConditionDialog.Title"));
 		
 		FormLayout formLayout = new FormLayout ();
