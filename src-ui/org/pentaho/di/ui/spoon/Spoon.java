@@ -1187,6 +1187,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		composite.setLayout(fillLayout);
 
 		mainExpandBar = new ExpandBar(composite, SWT.NO_BACKGROUND);
+		mainExpandBar.setBackgroundMode(SWT.INHERIT_NONE);
 		props.setLook(mainExpandBar);
 		mainExpandBar.setSpacing(0);
 
@@ -1330,7 +1331,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		tmpGC.dispose();
 		img.dispose();
 
-		Rectangle rect = new Rectangle(0, 0, point.x + 100 - offset, point.y + 11);
+		Rectangle rect = new Rectangle(0, 0, point.x + 100 - offset, point.y+3);
 		Rectangle iconBounds = icon.getBounds();
 
 		final Image image = new Image(display, rect.width, rect.height);
@@ -1339,12 +1340,14 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		{
 			GUIResource.getInstance().drawPentahoGradient(display, gc, rect, false);
 		}
-		gc.drawImage(icon, 0, 2);
+		gc.setBackground(display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
 		gc.setForeground(GUIResource.getInstance().getColorBlack());
-		// gc.setBackground(expandItem.getParent().getBackground());
+		gc.fillRectangle(rect);
+		gc.drawImage(icon, 0, 0);
 		gc.setFont(GUIResource.getInstance().getFontBold());
-		gc.drawText(string, iconBounds.width + 5, (iconBounds.height - point.y) / 2 + 2, true);
-		expandItem.setImage(ImageUtil.makeImageTransparent(display, image, new RGB(255, 255, 255)));
+		gc.drawText(string, iconBounds.width + 5, (iconBounds.height - point.y) / 2 + 2, false);
+		expandItem.setImage(image);
+		// expandItem.setImage(ImageUtil.makeImageTransparent(display, image, new RGB(255, 255, 255)));
         expandItem.addDisposeListener(new DisposeListener() { public void widgetDisposed(DisposeEvent event) { image.dispose(); } });
         
         /*
@@ -1488,7 +1491,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 				composite.addKeyListener(defKeys);
 
 				GridLayout layout = new GridLayout();
-				layout.marginLeft = 20;
+				layout.marginLeft = Const.FORM_MARGIN;
 				layout.verticalSpacing = Const.MARGIN;
 				composite.setLayout(layout);
 
