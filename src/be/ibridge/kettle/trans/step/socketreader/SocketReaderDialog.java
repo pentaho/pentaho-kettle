@@ -243,6 +243,8 @@ public class SocketReaderDialog extends BaseStepDialog implements StepDialogInte
 	
 	private void ok()
 	{
+		if (Const.isEmpty(wStepname.getText())) return;
+
         input.setHostname(wHostname.getText());
         input.setPort(wPort.getText());
         input.setBufferSize(wBufferSize.getText());

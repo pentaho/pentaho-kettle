@@ -226,6 +226,8 @@ public class SetVariableDialog extends BaseStepDialog implements StepDialogInter
 	
 	private void ok()
 	{
+		if (Const.isEmpty(wStepname.getText())) return;
+
 		stepname = wStepname.getText(); // return value
 
 		int count = wFields.nrNonEmpty();

@@ -731,6 +731,8 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 	
 	private void ok()
 	{
+		if (Const.isEmpty(wStepname.getText())) return;
+
 		stepname = wStepname.getText(); // return value
 		
 		getInfo(input);

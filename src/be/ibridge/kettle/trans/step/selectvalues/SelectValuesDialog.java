@@ -534,19 +534,19 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 	
 	private void ok()
 	{
+		if (Const.isEmpty(wStepname.getText())) return;
+
 		stepname = wStepname.getText(); // return value
 		
 		// copy info to meta class (input)
 
-		int i;
-		
 		int nrfields = wFields.nrNonEmpty();
 		int nrremove = wRemove.nrNonEmpty();
 		int nrmeta   = wMeta.nrNonEmpty();
 		
 		input.allocate(nrfields, nrremove, nrmeta);
 		
-		for (i=0;i<nrfields;i++)
+		for (int i=0;i<nrfields;i++)
 		{
 			TableItem item = wFields.getNonEmpty(i);
 			input.getSelectName()        [i] = item.getText(1);
@@ -560,13 +560,13 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 			if (input.getSelectPrecision()[i]<-2) input.getSelectPrecision()[i]=-2;
 		}
 
-		for (i=0;i<nrremove;i++)
+		for (int i=0;i<nrremove;i++)
 		{
 			TableItem item = wRemove.getNonEmpty(i);
 			input.getDeleteName()        [i] = item.getText(1);
 		}
 
-		for (i=0;i<nrmeta;i++)
+		for (int i=0;i<nrmeta;i++)
 		{
 			TableItem item = wMeta.getNonEmpty(i);
 			input.getMetaName()        [i] = item.getText(1);

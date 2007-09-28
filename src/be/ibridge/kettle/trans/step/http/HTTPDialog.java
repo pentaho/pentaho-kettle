@@ -280,14 +280,14 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
 	
 	private void ok()
 	{
-		int i;
-	
+		if (Const.isEmpty(wStepname.getText())) return;
+
 		int nrargs = wFields.nrNonEmpty();
 
 		input.allocate(nrargs);
 
 		log.logDebug(toString(), Messages.getString("HTTPDialog.Log.FoundArguments",String.valueOf(nrargs))); //$NON-NLS-1$ //$NON-NLS-2$
-		for (i=0;i<nrargs;i++)
+		for (int i=0;i<nrargs;i++)
 		{
 			TableItem item = wFields.getNonEmpty(i);
 			input.getArgumentField()[i]       = item.getText(1);

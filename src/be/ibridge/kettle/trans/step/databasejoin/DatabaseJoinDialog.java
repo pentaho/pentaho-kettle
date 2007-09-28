@@ -318,6 +318,8 @@ public class DatabaseJoinDialog extends BaseStepDialog implements StepDialogInte
 	
 	private void ok()
 	{
+		if (Const.isEmpty(wStepname.getText())) return;
+
 		int nrparam  = wParam.nrNonEmpty();
 		
 		input.allocate(nrparam);

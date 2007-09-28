@@ -95,7 +95,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
     private Label wlProxyPort;
     private TextVar wProxyPort;
 
-    /** Sauvegarde des widgets permettant la saisie des champs en entrées */
+    /** Sauvegarde des widgets permettant la saisie des champs en entrï¿½es */
     private TableView fieldInTableView;
 
     /** Sauvegarde de la table permettant la saisie des champs en sortie*/
@@ -104,7 +104,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
     /** Composiste contenant les informations relatives au web service */
     private CTabItem tabItemWebService;
 
-    /** Composite contenant les informations relatives aux champs en entrées */
+    /** Composite contenant les informations relatives aux champs en entrï¿½es */
     private CTabItem tabItemFieldIn;
 
     /** Composite contenant les informations relatives aux champs en sortie */
@@ -130,7 +130,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         //GESTION DES ONGLETS !
         loadOperation(anOperationName);
 
-        //On supprime tous les tabs, on est obligé de les reconstruire pour chargé les bonnes données !
+        //On supprime tous les tabs, on est obligï¿½ de les reconstruire pour chargï¿½ les bonnes donnï¿½es !
 
         if (inWsdlParamContainer != null)
         {
@@ -174,7 +174,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
     {
         anURI = StringUtil.environmentSubstitute(anURI);
 
-        //Parcours des services pour les mettres à jour
+        //Parcours des services pour les mettres ï¿½ jour
         try
         {
 
@@ -340,8 +340,8 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
     }
     /**
      * Initialisation de l'arbre : 
-     * 	- construction par rapport à l'URL du WS
-     *  - ajout du listener de sélection sur l'arbre
+     * 	- construction par rapport ï¿½ l'URL du WS
+     *  - ajout du listener de sï¿½lection sur l'arbre
      * @throws KettleStepException 
      *
      */
@@ -665,7 +665,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
     }
 
     /**
-     * Gestion du chargement des données à l'affichage de la fenêtre
+     * Gestion du chargement des donnï¿½es ï¿½ l'affichage de la fenï¿½tre
      *
      */
     private void load()
@@ -729,12 +729,12 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
     }
 
     /**
-     * Gestion de la sauvegarde des données à la fermeture de la fenêtre
+     * Gestion de la sauvegarde des donnï¿½es ï¿½ la fermeture de la fenï¿½tre
      *
      */
     private void save()
     {
-        //Sauvegarde du méta
+        //Sauvegarde du mï¿½ta
         meta.setUrl(wURL.getText());
         meta.setProxyHost(wProxyHost.getText());
         meta.setProxyPort(wProxyPort.getText());
@@ -778,7 +778,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         if (tabItemFieldIn != null)
         {
             int nbRow = fieldInTableView.nrNonEmpty();
-            //Utilisation des valeurs en entrées
+            //Utilisation des valeurs en entrï¿½es
             for (int i = 0; i < nbRow; ++i)
             {
                 TableItem vTableItem = fieldInTableView.getNonEmpty(i);
@@ -799,7 +799,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         if (tabItemFieldOut != null)
         {
             int nbRow = fieldOutTableView.nrNonEmpty();
-            //Utilisation des valeurs en entrées
+            //Utilisation des valeurs en entrï¿½es
             for (int i = 0; i < nbRow; ++i)
             {
                 TableItem vTableItem = fieldOutTableView.getNonEmpty(i);
@@ -898,7 +898,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         {
             public void widgetSelected(SelectionEvent e)
             {
-                //Si l'url est renseigné, on essaye de toujours charger
+                //Si l'url est renseignï¿½, on essaye de toujours charger
                 if (wURL.getText() != null && !"".equals(wURL.getText())) //$NON-NLS-1$
                 {
                     try
@@ -923,7 +923,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         fdURL.right = new FormAttachment(wbURL, -margin);
         wURL.setLayoutData(fdURL);
 
-        // Opération
+        // Opï¿½ration
         wlOperation = new Label(compositeTabWebService, SWT.RIGHT);
         wlOperation.setText(Messages.getString("WebServiceDialog.Operation.Label")); //$NON-NLS-1$
         props.setLook(wlOperation);
@@ -1215,6 +1215,8 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
 
     private void ok()
     {
+		if (Const.isEmpty(wStepname.getText())) return;
+
         stepname = wStepname.getText(); // return value
 
         //getInfo(input);

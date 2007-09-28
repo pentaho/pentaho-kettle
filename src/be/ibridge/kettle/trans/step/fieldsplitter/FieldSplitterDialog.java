@@ -270,6 +270,8 @@ public class FieldSplitterDialog extends BaseStepDialog implements StepDialogInt
 	
 	private void ok()
 	{
+		if (Const.isEmpty(wStepname.getText())) return;
+
 		stepname = wStepname.getText(); // return value
 
 		input.setSplitField( wSplitfield.getText() );

@@ -705,6 +705,8 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 	
 	private void ok()
     {
+		if (Const.isEmpty(wStepname.getText())) return;
+
         try
         {
             stepname = wStepname.getText(); // return value

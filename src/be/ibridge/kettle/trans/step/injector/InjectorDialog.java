@@ -209,6 +209,8 @@ public class InjectorDialog extends BaseStepDialog implements StepDialogInterfac
 	
 	private void ok()
 	{
+		if (Const.isEmpty(wStepname.getText())) return;
+
 		stepname = wStepname.getText(); // return value
 		int nrfields = wFields.nrNonEmpty();
         input.allocate(nrfields);

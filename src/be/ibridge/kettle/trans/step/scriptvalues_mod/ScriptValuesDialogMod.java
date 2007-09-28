@@ -901,6 +901,8 @@ public class ScriptValuesDialogMod extends BaseStepDialog implements StepDialogI
 	
 	private void ok()
 	{
+		if (Const.isEmpty(wStepname.getText())) return;
+
 		stepname = wStepname.getText(); // return value
 		boolean bInputOK = false;
 		

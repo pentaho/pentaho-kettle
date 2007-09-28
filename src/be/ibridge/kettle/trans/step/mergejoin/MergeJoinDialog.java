@@ -400,6 +400,8 @@ public class MergeJoinDialog extends BaseStepDialog implements StepDialogInterfa
 	
 	private void ok()
 	{		
+		if (Const.isEmpty(wStepname.getText())) return;
+
         getMeta(input);
 
         stepname = wStepname.getText(); // return value

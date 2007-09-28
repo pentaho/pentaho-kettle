@@ -16,7 +16,6 @@
 
 package be.ibridge.kettle.trans.step.exceloutput;
 
-import java.io.File;
 import java.util.Locale;
 
 import jxl.Workbook;

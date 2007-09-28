@@ -212,6 +212,8 @@ public class SortedMergeDialog extends BaseStepDialog implements StepDialogInter
 	
 	private void ok()
 	{
+		if (Const.isEmpty(wStepname.getText())) return;
+
 		stepname = wStepname.getText(); // return value
 		
         int nrfields = wFields.nrNonEmpty();

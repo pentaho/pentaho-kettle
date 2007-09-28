@@ -274,6 +274,8 @@ public class FilterRowsDialog extends BaseStepDialog implements StepDialogInterf
 	
 	private void ok()
 	{		
+		if (Const.isEmpty(wStepname.getText())) return;
+
 		if (wCondition.getLevel()>0) 
 		{
 			wCondition.goUp();

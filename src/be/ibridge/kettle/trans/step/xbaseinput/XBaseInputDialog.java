@@ -510,6 +510,8 @@ public class XBaseInputDialog extends BaseStepDialog implements StepDialogInterf
 	
 	private void ok()
 	{
+		if (Const.isEmpty(wStepname.getText())) return;
+
 		try
 		{
 			stepname = wStepname.getText(); // return value

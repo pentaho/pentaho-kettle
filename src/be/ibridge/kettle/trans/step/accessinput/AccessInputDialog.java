@@ -1084,6 +1084,8 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 	
 	private void ok()
 	{
+		if (Const.isEmpty(wStepname.getText())) return;
+
         try
         {
             getInfo(input);

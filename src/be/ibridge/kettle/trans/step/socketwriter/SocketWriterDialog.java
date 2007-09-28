@@ -243,6 +243,8 @@ public class SocketWriterDialog extends BaseStepDialog implements StepDialogInte
 	
 	private void ok()
 	{
+		if (Const.isEmpty(wStepname.getText())) return;
+
         input.setPort(wPort.getText());
         input.setBufferSize(wBufferSize.getText());
         input.setFlushInterval(wFlushInterval.getText());

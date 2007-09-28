@@ -366,6 +366,8 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
     
 	private void ok()
 	{
+		if (Const.isEmpty(wStepname.getText())) return;
+
 		stepname = wStepname.getText(); // return value
 		// copy info to TextFileInputMeta class (input)
         

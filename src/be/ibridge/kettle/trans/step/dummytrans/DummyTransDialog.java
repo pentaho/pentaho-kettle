@@ -156,6 +156,8 @@ public class DummyTransDialog extends BaseStepDialog implements StepDialogInterf
 	
 	private void ok()
 	{
+		if (Const.isEmpty(wStepname.getText())) return;
+
 		stepname = wStepname.getText(); // return value
 		
 		dispose();

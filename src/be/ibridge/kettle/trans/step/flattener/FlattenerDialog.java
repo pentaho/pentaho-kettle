@@ -233,6 +233,8 @@ public class FlattenerDialog extends BaseStepDialog implements StepDialogInterfa
 	
 	private void ok()
 	{
+		if (Const.isEmpty(wStepname.getText())) return;
+
 		int nrTargets = wFields.nrNonEmpty();
         
         input.setFieldName( wField.getText() );

@@ -493,6 +493,8 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 
 	private void ok()
 	{
+		if (Const.isEmpty(wStepname.getText())) return;
+
 		getInfo(input);
 		dispose();
 	}

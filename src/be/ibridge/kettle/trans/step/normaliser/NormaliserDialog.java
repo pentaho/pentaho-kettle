@@ -235,6 +235,8 @@ public class NormaliserDialog extends BaseStepDialog implements StepDialogInterf
 	
 	private void ok()
 	{
+		if (Const.isEmpty(wStepname.getText())) return;
+
 		stepname = wStepname.getText(); // return value
 		
 		input.setTypeField( wTypefield.getText() );

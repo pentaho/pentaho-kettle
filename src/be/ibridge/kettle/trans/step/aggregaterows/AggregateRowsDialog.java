@@ -236,14 +236,15 @@ public class AggregateRowsDialog extends BaseStepDialog implements StepDialogInt
 	
 	private void ok()
 	{
-		int i;
+		if (Const.isEmpty(wStepname.getText())) return;
+
 		int nrfields = wFields.nrNonEmpty();
 
 		stepname = wStepname.getText(); // return value
 		
 		input.allocate(nrfields);
 		
-		for (i=0;i<nrfields;i++)
+		for (int i=0;i<nrfields;i++)
 		{
 			TableItem item = wFields.getNonEmpty(i);
 			input.getFieldName()[i]      = item.getText(1);
