@@ -34,6 +34,7 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import be.ibridge.kettle.core.GUIResource;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Props;
@@ -114,6 +115,7 @@ public class RepositoryDialog
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
+		shell.setImage(GUIResource.getInstance().getImageSpoon());
 		shell.setText(Messages.getString("RepositoryDialog.Dialog.Main.Title2")); //$NON-NLS-1$
 		
 		int middle = props.getMiddlePct();
