@@ -467,9 +467,9 @@ public class DatabaseDialog extends Dialog
         props.setLook(wConnType);
         String[] dbtypes = DatabaseMeta.getDBTypeDescLongList();
      
-        for (int i = 0; i < dbtypes.length; i++)
+        for (int i = 0; i < dbtypes.length-1; i++)
         {
-            wConnType.add((String)dbtypes[i]);
+            wConnType.add(DatabaseMeta.getDatabaseTypeDesc(i+1));
         }
         
         props.setLook(wConnType);

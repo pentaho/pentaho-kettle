@@ -40,7 +40,7 @@ public class SybaseIQDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 	 */
 	public int getDatabaseType()
 	{
-		return DatabaseMeta.TYPE_DATABASE_SYBASE;
+		return DatabaseMeta.TYPE_DATABASE_SYBASEIQ;
 	}
 		
 	public int[] getAccessTypeList()
