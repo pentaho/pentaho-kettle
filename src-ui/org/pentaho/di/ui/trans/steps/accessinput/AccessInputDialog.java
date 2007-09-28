@@ -77,6 +77,7 @@ import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
+import com.healthmarketscience.jackcess.DataType;
 import com.healthmarketscience.jackcess.Database;
 import com.healthmarketscience.jackcess.Table;
 import com.healthmarketscience.jackcess.Column;
@@ -958,29 +959,29 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
     				
 		            // Get column type and Map with PDI values    				
     				
-    				if(c.getType().INT.equals(c.getType()))
+    				if(DataType.INT.equals(c.getType()))
     				{
     					fieldtype = ValueMetaInterface.TYPE_INTEGER;
     				}
-    				else if(c.getType().BOOLEAN.equals(c.getType()))
+    				else if(DataType.BOOLEAN.equals(c.getType()))
     				{
     					fieldtype = ValueMetaInterface.TYPE_BOOLEAN;
     				}
-    				else if(c.getType().BINARY.equals(c.getType()))
+    				else if(DataType.BINARY.equals(c.getType()))
     				{
     					fieldtype = ValueMetaInterface.TYPE_BINARY;
     				}
-    				else if((c.getType().DOUBLE.equals(c.getType())) || (c.getType().LONG.equals(c.getType())) 
-    						|| (c.getType().NUMERIC.equals(c.getType()) ) )
+    				else if((DataType.DOUBLE.equals(c.getType())) || (DataType.LONG.equals(c.getType())) 
+    						|| (DataType.NUMERIC.equals(c.getType()) ) )
     				{
     					fieldtype = ValueMetaInterface.TYPE_NUMBER;
     				}
-    				else if((c.getType().equals(c.getType().FLOAT)) || (c.getType().MONEY.equals(c.getType())) 
-    						|| (c.getType().MEMO.equals(c.getType()) ) )
+    				else if((DataType.FLOAT.equals(c.getType())) || (DataType.MONEY.equals(c.getType())) 
+    						|| (DataType.MEMO.equals(c.getType())) )
     				{
     					fieldtype = ValueMetaInterface.TYPE_BIGNUMBER;
     				}
-    				else if((c.getType().SHORT_DATE_TIME.equals(c.getType())))
+    				else if((DataType.SHORT_DATE_TIME.equals(c.getType())))
     				{
     					fieldtype = ValueMetaInterface.TYPE_DATE;
     				}
