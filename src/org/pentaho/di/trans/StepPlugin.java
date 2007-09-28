@@ -22,6 +22,11 @@ package org.pentaho.di.trans;
 import java.util.Hashtable;
 import java.util.Map;
 
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.row.RowMeta;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.LanguageChoice;
 
 /**
@@ -31,10 +36,10 @@ import org.pentaho.di.i18n.LanguageChoice;
 public class StepPlugin
 {
     public static final int TYPE_ALL    = 0;
-
     public static final int TYPE_NATIVE = 1;
-
     public static final int TYPE_PLUGIN = 2;
+    
+    public static final String[] typeDesc = new String[] { Messages.getString("StepPlugin.Type.All.Desc"), Messages.getString("StepPlugin.Type.Native.Desc"), Messages.getString("StepPlugin.Type.Plugin.Desc"), }; 
 
     private int             type;
 
@@ -143,6 +148,20 @@ public class StepPlugin
     public String[] getJarfiles()
     {
         return jarfiles;
+    }
+    
+    public String getJarfilesList()
+    {
+    	String list = "";
+    	if (jarfiles!=null)
+    	{
+	    	for (int i=0;i<jarfiles.length;i++)
+	    	{
+	    		if (i>0) list+=Const.PATH_SEPARATOR;
+	    		list+=jarfiles[i];
+	    	}
+    	}
+        return list;
     }
 
     public String getIconFilename()
@@ -284,4 +303,47 @@ public class StepPlugin
         this.localizedTooltips = localizedTooltips;
     }
     
+    public String getTypeDesc()
+    {
+    	return typeDesc[type];
+    }
+
+    public static RowMetaInterface getPluginInformationRowMeta()
+    {
+    	RowMetaInterface row = new RowMeta();
+    	
+    	row.addValueMeta(new ValueMeta(Messages.getString("StepPlugin.Information.Type.Label"), ValueMetaInterface.TYPE_STRING));
+    	row.addValueMeta(new ValueMeta(Messages.getString("StepPlugin.Information.ID.Label"), ValueMetaInterface.TYPE_STRING));
+    	row.addValueMeta(new ValueMeta(Messages.getString("StepPlugin.Information.Description.Label"), ValueMetaInterface.TYPE_STRING));
+    	row.addValueMeta(new ValueMeta(Messages.getString("StepPlugin.Information.ToolTip.Label"), ValueMetaInterface.TYPE_STRING));
+    	row.addValueMeta(new ValueMeta(Messages.getString("StepPlugin.Information.Directory.Label"), ValueMetaInterface.TYPE_STRING));
+    	row.addValueMeta(new ValueMeta(Messages.getString("StepPlugin.Information.JarFiles.Label"), ValueMetaInterface.TYPE_STRING));
+    	row.addValueMeta(new ValueMeta(Messages.getString("StepPlugin.Information.IconFile.Label"), ValueMetaInterface.TYPE_STRING));
+    	row.addValueMeta(new ValueMeta(Messages.getString("StepPlugin.Information.ClassName.Label"), ValueMetaInterface.TYPE_STRING));
+    	row.addValueMeta(new ValueMeta(Messages.getString("StepPlugin.Information.Category.Label"), ValueMetaInterface.TYPE_STRING));
+    	row.addValueMeta(new ValueMeta(Messages.getString("StepPlugin.Information.ErrorHelpFile.Label"), ValueMetaInterface.TYPE_STRING));
+    	row.addValueMeta(new ValueMeta(Messages.getString("StepPlugin.Information.SeparateClassloader.Label"), ValueMetaInterface.TYPE_BOOLEAN));
+
+        return row;
+    }
+
+    public Object[] getPluginInformation()
+    {
+    	Object[] row = new Object[getPluginInformationRowMeta().size()];
+    	int rowIndex=0;
+    	
+    	row[rowIndex++] = getTypeDesc();
+    	row[rowIndex++] = getID()[0];
+    	row[rowIndex++] = getDescription();
+    	row[rowIndex++] = getTooltip();
+    	row[rowIndex++] = getDirectory();
+    	row[rowIndex++] = getJarfilesList();
+    	row[rowIndex++] = getIconFilename();
+    	row[rowIndex++] = getClassname();
+    	row[rowIndex++] = getCategory();
+    	row[rowIndex++] = getErrorHelpFile();
+    	row[rowIndex++] = isSeparateClassloaderNeeded();
+
+        return row;
+    }
 }

@@ -96,6 +96,8 @@ align="vertical" >
                     <menuitem value="help-tip" label="%Spoon.Menu.Help.Tip"/>
                     <menuitem value="help-welcome" label="%Spoon.Menu.Help.Welcome"/>
 					<menuseparator/>
+                    <menuitem value="help-step-plugins" label="%Spoon.Menu.StepPlugins"/>
+					<menuseparator/>
                     <menuitem value="help-about" label="%Spoon.Menu.About"/>
                </menupopup>
           </menu>

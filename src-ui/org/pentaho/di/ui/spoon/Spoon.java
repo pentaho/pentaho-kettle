@@ -3687,6 +3687,19 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		mb.setText(APP_NAME);
 		mb.open();
 	}
+	
+	/**
+	 * Show a dialog containing information on the different step plugins.
+	 */
+	public void helpShowStepPlugins()
+	{
+		List<Object[]> pluginInformation = StepLoader.getInstance().getPluginInformation();
+		RowMetaInterface pluginInformationRowMeta = StepPlugin.getPluginInformationRowMeta();
+		
+		PreviewRowsDialog dialog = new PreviewRowsDialog(shell, null, SWT.NONE, null, pluginInformationRowMeta, pluginInformation);
+		dialog.setTitleMessage(Messages.getString("Spoon.Dialog.StepPluginList.Title"), Messages.getString("Spoon.Dialog.StepPluginList.Message"));
+		dialog.open();
+	}
 
 	public void editUnselectAll()
 	{

@@ -93,6 +93,11 @@ public class Const
 	public static final String FILE_SEPARATOR = System.getProperty("file.separator");
 
 	/**
+	 * What's the path separator on this operating system?
+	 */
+	public static final String PATH_SEPARATOR = System.getProperty("path.separator");
+
+	/**
 	 * CR: operating systems specific Cariage Return
 	 */
 	public static final String CR = System.getProperty("line.separator");

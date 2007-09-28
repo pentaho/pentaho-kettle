@@ -769,4 +769,13 @@ public class StepLoader
 	public static Partitioner getPartitioner( String id ) {
 		return partitionerMap.get( id );
 	}
+	
+	public List<Object[]> getPluginInformation()
+	{
+		List<Object[]> list = new ArrayList<Object[]>();
+		for (StepPlugin plugin : pluginList) {
+			list.add(plugin.getPluginInformation());
+		}
+		return list;
+	}
 }
