@@ -197,7 +197,7 @@ public class TextVar extends Composite
             		
             		final Shell shell = new Shell(textField.getShell(), SWT.NONE);
             		shell.setSize(bounds.width, 200);
-            		shell.setLocation(location.x, location.y);
+            		shell.setLocation(location.x, location.y+bounds.height);
             		shell.setLayout(new FillLayout());
             		final List list = new List(shell, SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL);
             		props.setLook(list);

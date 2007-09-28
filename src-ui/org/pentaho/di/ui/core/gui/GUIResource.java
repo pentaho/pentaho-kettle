@@ -18,7 +18,6 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
@@ -1106,6 +1105,12 @@ public class GUIResource
 	public static Point calculateControlPosition(Control control) {
 		// Calculate the exact location...
 		//
+		Rectangle r = control.getBounds();
+		Point p = control.getParent().toDisplay(r.x, r.y);
+		
+		return p;
+		
+		/*
 		Point location = control.getLocation();
 		
 		Composite parent = control.getParent();
@@ -1130,5 +1135,6 @@ public class GUIResource
 		}
 		
 		return location;
+		*/
 	}
 }
