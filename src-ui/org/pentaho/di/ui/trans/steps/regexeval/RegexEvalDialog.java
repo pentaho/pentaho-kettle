@@ -591,6 +591,8 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
 	
 	private void ok()
 	{
+		if (Const.isEmpty(wStepname.getText())) return;
+
 		stepname = wStepname.getText(); // return value
 
 		input.setScript( wScript.getText() );
@@ -604,9 +606,7 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
 		input.setmultiline(wMultiline.getSelection());
 		input.setunicode(wUnicode.getSelection());
 		input.setunix(wUnix.getSelection());
-		
-	
-				
+						
 		dispose();
 	}
 	

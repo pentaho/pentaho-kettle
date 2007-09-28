@@ -2177,6 +2177,8 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 	
 	private void ok()
 	{
+		if (Const.isEmpty(wStepname.getText())) return;
+
 		getInfo(input);
 		dispose();
 	}

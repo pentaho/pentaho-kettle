@@ -369,6 +369,8 @@ public class MergeRowsDialog extends BaseStepDialog implements StepDialogInterfa
 	
 	private void ok()
 	{		
+		if (Const.isEmpty(wStepname.getText())) return;
+
 		input.setReferenceStepMeta( transMeta.findStep( wReference.getText() ) );
 		input.setCompareStepMeta( transMeta.findStep( wCompare.getText() ) );
         input.setFlagField( wFlagfield.getText());

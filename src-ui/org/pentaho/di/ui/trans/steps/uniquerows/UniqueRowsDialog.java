@@ -277,6 +277,8 @@ public class UniqueRowsDialog extends BaseStepDialog implements StepDialogInterf
 	
 	private void ok()
 	{
+		if (Const.isEmpty(wStepname.getText())) return;
+
 		int nrfields = wFields.nrNonEmpty();
 		input.allocate(nrfields);
 

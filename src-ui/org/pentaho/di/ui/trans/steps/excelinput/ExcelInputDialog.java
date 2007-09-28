@@ -1213,6 +1213,8 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 	
 	private void ok()
 	{
+		if (Const.isEmpty(wStepname.getText())) return;
+
 		getInfo(input);
 		dispose();
 	}

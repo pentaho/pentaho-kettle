@@ -474,6 +474,8 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
 	
 	private void ok()
 	{
+		if (Const.isEmpty(wStepname.getText())) return;
+
 		int sizegroup = wGroup.nrNonEmpty();
 		int nrfields = wAgg.nrNonEmpty();
         input.setPrefix( wPrefix.getText() );

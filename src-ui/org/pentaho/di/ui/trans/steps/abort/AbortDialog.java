@@ -232,6 +232,8 @@ public class AbortDialog extends BaseStepDialog implements StepDialogInterface
     
     private void ok()
     {
+		if (Const.isEmpty(wStepname.getText())) return;
+		    	
     	getInfo(input);
         stepname = wStepname.getText(); // return value
         dispose();

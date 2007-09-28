@@ -247,6 +247,8 @@ public class ConstantDialog extends BaseStepDialog implements StepDialogInterfac
 	
 	private void ok()
 	{
+		if (Const.isEmpty(wStepname.getText())) return;
+
 		stepname = wStepname.getText(); // return value
         
 		int i;

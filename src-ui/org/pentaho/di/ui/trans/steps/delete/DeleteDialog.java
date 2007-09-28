@@ -376,6 +376,8 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
 	
 	private void ok()
 	{
+		if (Const.isEmpty(wStepname.getText())) return;
+
 		// Get the information for the dialog into the input structure.
 		getInfo(input);
 		

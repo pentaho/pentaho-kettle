@@ -316,6 +316,8 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
 	
 	private void ok()
 	{
+		if (Const.isEmpty(wStepname.getText())) return;
+
 		int sizegroup = wGroup.nrNonEmpty();
 		int nrfields = wTarget.nrNonEmpty();
         

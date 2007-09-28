@@ -845,6 +845,8 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
 	
 	private void ok()
 	{
+		if (Const.isEmpty(wStepname.getText())) return;
+
         try
         {
             getInfo(input);

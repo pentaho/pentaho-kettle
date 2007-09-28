@@ -222,6 +222,8 @@ public class NullIfDialog extends BaseStepDialog implements StepDialogInterface
 	
 	private void ok()
 	{
+		if (Const.isEmpty(wStepname.getText())) return;
+
 		stepname = wStepname.getText(); // return value
 		//Table table = wFields.table;
 

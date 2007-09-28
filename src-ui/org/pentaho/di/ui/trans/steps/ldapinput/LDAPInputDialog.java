@@ -1019,6 +1019,8 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 	
 	private void ok()
 	{
+		if (Const.isEmpty(wStepname.getText())) return;
+
 		stepname = wStepname.getText();
         try
         {

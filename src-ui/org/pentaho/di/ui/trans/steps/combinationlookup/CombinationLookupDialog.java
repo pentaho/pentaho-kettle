@@ -675,6 +675,8 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 
 	private void ok()
 	{
+		if (Const.isEmpty(wStepname.getText())) return;
+
 		CombinationLookupMeta oldMetaState = (CombinationLookupMeta)input.clone();
 		
 		getInfo(input);

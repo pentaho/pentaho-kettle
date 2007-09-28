@@ -453,12 +453,14 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
 
 	private void ok()
 	{
+		if (Const.isEmpty(wStepname.getText())) return;
+
 		stepname = wStepname.getText(); // return value
 		// copy info to TextFileInputMeta class (input)
 		input.setSql(wSQL.getText());
 		input.setDatabaseMeta(transMeta.findDatabase(wConnection.getText()));
 		input.setExecutedEachInputRow(wEachRow.getSelection());
-    input.setVariableReplacementActive(wVariables.getSelection());
+		input.setVariableReplacementActive(wVariables.getSelection());
 
 		input.setInsertField(wInsertField.getText());
 		input.setUpdateField(wUpdateField.getText());

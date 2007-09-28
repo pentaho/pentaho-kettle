@@ -476,6 +476,8 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
 	
 	private void ok()
 	{
+		if (Const.isEmpty(wStepname.getText())) return;
+
 		getInfo(inputMeta);
 		stepname = wStepname.getText();
 		dispose();

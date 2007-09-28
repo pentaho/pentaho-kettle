@@ -965,6 +965,8 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
 
 	private void ok()
 	{
+		if (Const.isEmpty(wStepname.getText())) return;
+
 		try
 		{
 			getInfo(input);

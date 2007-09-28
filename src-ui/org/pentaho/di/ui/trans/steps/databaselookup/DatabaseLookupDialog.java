@@ -619,6 +619,8 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 	
 	private void ok()
 	{	
+		if (Const.isEmpty(wStepname.getText())) return;
+
 		int nrkeys = wKey.nrNonEmpty();
 		int nrfields = wReturn.nrNonEmpty();
 		

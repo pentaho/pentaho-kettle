@@ -519,6 +519,8 @@ public class AddXMLDialog extends BaseStepDialog implements StepDialogInterface
     
     private void ok()
     {
+		if (Const.isEmpty(wStepname.getText())) return;
+		
         stepname = wStepname.getText(); // return value
         
         getInfo(input);

@@ -347,6 +347,8 @@ public class CalculatorDialog extends BaseStepDialog implements StepDialogInterf
 	
 	private void ok()
 	{
+		if (Const.isEmpty(wStepname.getText())) return;
+
 		stepname = wStepname.getText(); // return value
 		
     	int nrNonEmptyFields = wFields.nrNonEmpty(); 

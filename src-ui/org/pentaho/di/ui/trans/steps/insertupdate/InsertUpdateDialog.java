@@ -506,6 +506,8 @@ public class InsertUpdateDialog extends BaseStepDialog implements StepDialogInte
 
 	private void ok()
 	{
+		if (Const.isEmpty(wStepname.getText())) return;
+
 		// Get the information for the dialog into the input structure.
 		getInfo(input);
 

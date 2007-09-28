@@ -215,6 +215,8 @@ public class AggregateRowsDialog extends BaseStepDialog implements StepDialogInt
 	
 	private void ok()
 	{
+		if (Const.isEmpty(wStepname.getText())) return;
+
 		int i;
 		int nrfields = wFields.nrNonEmpty();
 

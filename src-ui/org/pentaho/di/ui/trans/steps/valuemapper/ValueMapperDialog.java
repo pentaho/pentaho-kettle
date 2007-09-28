@@ -285,6 +285,8 @@ public class ValueMapperDialog extends BaseStepDialog implements StepDialogInter
 	
 	private void ok()
 	{
+		if (Const.isEmpty(wStepname.getText())) return;
+
 		stepname = wStepname.getText(); // return value
 
         input.setFieldToUse(wFieldname.getText());

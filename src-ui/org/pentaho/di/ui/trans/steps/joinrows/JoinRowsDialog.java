@@ -349,6 +349,8 @@ public class JoinRowsDialog extends BaseStepDialog implements StepDialogInterfac
 	
 	private void ok()
 	{
+		if (Const.isEmpty(wStepname.getText())) return;
+
 		if (wCondition.getLevel()>0) 
 		{
 			wCondition.goUp();

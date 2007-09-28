@@ -415,6 +415,8 @@ public class DBProcDialog extends BaseStepDialog implements StepDialogInterface
 	
 	private void ok()
 	{
+		if (Const.isEmpty(wStepname.getText())) return;
+
 		int i;
 	
 		int nrargs = wFields.nrNonEmpty();

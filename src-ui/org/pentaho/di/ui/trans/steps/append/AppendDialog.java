@@ -217,6 +217,8 @@ public class AppendDialog extends BaseStepDialog implements StepDialogInterface
 	
 	private void ok()
 	{		
+		if (Const.isEmpty(wStepname.getText())) return;
+
 		input.setHeadStepMeta( transMeta.findStep( wHeadHop.getText() ) );
 		input.setTailStepMeta( transMeta.findStep( wTailHop.getText() ) );
 

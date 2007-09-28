@@ -964,6 +964,8 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 
 	private void ok()
 	{
+		if (Const.isEmpty(wStepname.getText())) return;
+
 		try
 		{
 			getInfo(input);

@@ -8,6 +8,7 @@ import java.util.List;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.core.gui.Point;
@@ -100,6 +101,7 @@ public class SpoonStepsDelegate extends SpoonDelegate
 
 			// Before we do anything, let's store the situation the way it
 			// was...
+			//
 			StepMeta before = (StepMeta) stepMeta.clone();
 			StepDialogInterface dialog = spoon.getStepEntryDialog(stepMeta.getStepMetaInterface(), transMeta, name);
 			String stepname = null;
@@ -109,7 +111,7 @@ public class SpoonStepsDelegate extends SpoonDelegate
 				stepname = dialog.open();
 			}
 
-			if (stepname != null)
+			if (!Const.isEmpty(stepname))
 			{
 				// 
 				// See if the new name the user enter, doesn't collide with
@@ -146,7 +148,8 @@ public class SpoonStepsDelegate extends SpoonDelegate
 				StepMeta after = (StepMeta) stepMeta.clone();
 				spoon.addUndoChange(transMeta, new StepMeta[] { before }, new StepMeta[] { after },
 						new int[] { transMeta.indexOfStep(stepMeta) });
-			} else
+			} 
+			else
 			{
 				// Scenario: change connections and click cancel...
 				// Perhaps new connections were created in the step dialog?
