@@ -15,8 +15,6 @@
  
 package org.pentaho.di.trans.steps.addsequence;
 
-import java.util.Hashtable;
-
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.database.Database;
@@ -175,9 +173,16 @@ public class AddSequence extends BaseStep implements StepInterface
 
 				if (getTransMeta().getCounters()!=null)
 				{
-					Hashtable<String,Counter> counters = getTransMeta().getCounters();
-					data.counter = new Counter(meta.getStartAt());
-					counters.put(data.getLookup(), data.counter);
+					//check if counter exists
+					synchronized (getTransMeta().getCounters()){
+						data.counter=getTransMeta().getCounters().get(data.getLookup());
+						if (data.counter==null)
+						{
+							// create a new one
+							data.counter = new Counter(meta.getStartAt());
+							getTransMeta().getCounters().put(data.getLookup(), data.counter);
+						}
+					}
 					return true;
 				}
 				else
@@ -195,6 +200,11 @@ public class AddSequence extends BaseStep implements StepInterface
 	
 	public void dispose(StepMetaInterface smi, StepDataInterface sdi)
 	{
+		if (meta.isCounterUsed())
+		{
+			getTransMeta().getCounters().remove(data.getLookup());
+			data.counter=null;
+		}
 	    meta = (AddSequenceMeta)smi;
 	    data = (AddSequenceData)sdi;
 	    
