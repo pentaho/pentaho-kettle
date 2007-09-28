@@ -164,7 +164,7 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
 				Node outputConnector = XMLHandler.getSubNodeByNr(outputNode, "connector", i); //$NON-NLS-1$
 				String outputField = XMLHandler.getTagValue(outputConnector, "field"); //$NON-NLS-1$
 				String outputMapping = XMLHandler.getTagValue(outputConnector, "mapping"); //$NON-NLS-1$
-				outputMappingDefinition.getValueRenames().add( new MappingValueRename(outputField, outputMapping) );
+				outputMappingDefinition.getValueRenames().add( new MappingValueRename(outputMapping, outputField) );
 			}
 	        
 	        // Don't forget to add these to the input and output mapping definitions...
