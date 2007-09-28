@@ -51,6 +51,7 @@ import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.dialog.EnterPasswordDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.ui.core.gui.GUIResource;
 
 
 
@@ -117,6 +118,7 @@ public class RepositoryDialog
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
+		shell.setImage(GUIResource.getInstance().getImageSpoon());
 		shell.setText(Messages.getString("RepositoryDialog.Dialog.Main.Title2")); //$NON-NLS-1$
 		
 		int middle = props.getMiddlePct();

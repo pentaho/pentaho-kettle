@@ -2010,7 +2010,7 @@ public class DatabaseDialog extends Dialog
         }
         catch (KettleException e)
         {
-            new ErrorDialog(shell, Messages.getString("DatabaseDialog.ErrorParameters,title"), Messages.getString("DatabaseDialog.ErrorParameters.description"), e); //$NON-NLS-1$ //$NON-NLS-2$
+            new ErrorDialog(shell, Messages.getString("DatabaseDialog.ErrorParameters.title"), Messages.getString("DatabaseDialog.ErrorParameters.description"), e); //$NON-NLS-1$ //$NON-NLS-2$
         }
     }
 
