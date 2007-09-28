@@ -975,8 +975,8 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
     		else
     		{
     			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
-    			mb.setMessage(Messages.getString("AccessInputDialog.UnableToFindFields.DialogMessage"));
-    			mb.setText(Messages.getString("AccessInputDialog.UnableToFindFields.DialogTitle"));
+    			mb.setMessage(Messages.getString("AccessInputDialog.UnableToFindFields.DialogTitle"));
+    			mb.setText(Messages.getString("AccessInputDialog.UnableToFindFields.DialogMessage"));
     			mb.open(); 
     		}
             
