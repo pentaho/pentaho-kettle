@@ -529,56 +529,63 @@ public class Job extends Thread implements VariableSpace
 	// Handle logging at end
 	public boolean endProcessing(String status, Result res) throws KettleJobException
 	{
-		long read=res.getNrErrors();
-        long written=res.getNrLinesWritten();
-        long updated=res.getNrLinesUpdated();
-        long errors=res.getNrErrors();
-        long input=res.getNrLinesInput();
-        long output=res.getNrLinesOutput();
-        
-        if (errors==0 && !res.getResult()) errors=1;
-		
-		logDate     = new Date();
-
-        // Change the logging back to stream...
-        String log_string = null;
-        
-        if (jobMeta.isLogfieldUsed())
-        {
-            log_string = stringAppender.getBuffer().append(Const.CR+"END"+Const.CR).toString();
-            log.removeAppender(stringAppender);
-        }
-        
-		/*
-		 * Sums errors, read, written, etc.
-		 */		
-
-		DatabaseMeta logcon = jobMeta.getLogConnection();
-		if (logcon!=null)
+		try
 		{
-			Database ldb = new Database(logcon);
-			ldb.shareVariablesWith(this);
-			try
+			long read=res.getNrErrors();
+	        long written=res.getNrLinesWritten();
+	        long updated=res.getNrLinesUpdated();
+	        long errors=res.getNrErrors();
+	        long input=res.getNrLinesInput();
+	        long output=res.getNrLinesOutput();
+	        
+	        if (errors==0 && !res.getResult()) errors=1;
+			
+			logDate     = new Date();
+	
+	        // Change the logging back to stream...
+	        String log_string = null;
+	        
+	        if (jobMeta.isLogfieldUsed())
+	        {
+	            log_string = stringAppender.getBuffer().append(Const.CR+"END"+Const.CR).toString();
+	            log.removeAppender(stringAppender);
+	        }
+	        
+			/*
+			 * Sums errors, read, written, etc.
+			 */		
+	
+			DatabaseMeta logcon = jobMeta.getLogConnection();
+			if (logcon!=null)
 			{
-				ldb.connect();
-				ldb.writeLogRecord(jobMeta.getLogTable(), jobMeta.isBatchIdUsed(), getBatchId(), true, jobMeta.getName(), status, 
-				                   read,written,updated,input,output,errors, 
-				                   startDate, endDate, logDate, depDate, currentDate,
-								   log_string
-								   );
+				Database ldb = new Database(logcon);
+				ldb.shareVariablesWith(this);
+				try
+				{
+					ldb.connect();
+					ldb.writeLogRecord(jobMeta.getLogTable(), jobMeta.isBatchIdUsed(), getBatchId(), true, jobMeta.getName(), status, 
+					                   read,written,updated,input,output,errors, 
+					                   startDate, endDate, logDate, depDate, currentDate,
+									   log_string
+									   );
+				}
+				catch(KettleDatabaseException dbe)
+				{
+					addErrors(1);
+					throw new KettleJobException("Unable to end processing by writing log record to table "+jobMeta.getLogTable(), dbe);
+				}
+				finally
+				{
+					ldb.disconnect();
+				}
 			}
-			catch(KettleDatabaseException dbe)
-			{
-				addErrors(1);
-				throw new KettleJobException("Unable to end processing by writing log record to table "+jobMeta.getLogTable(), dbe);
-			}
-			finally
-			{
-				ldb.disconnect();
-			}
+	        
+			return true;
 		}
-        
-		return true;
+		catch(Exception e)
+		{
+			throw new KettleJobException(e); // In case something else goes wrong.
+		}
 	}
 	
 	public boolean isActive()
