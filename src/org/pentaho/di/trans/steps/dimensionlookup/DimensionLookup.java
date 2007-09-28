@@ -316,8 +316,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
 				{
 				    case CREATION_METHOD_TABLEMAX:
 						// What's the next value for the technical key?
-						technicalKey= new Long(0L); // value to accept new key...
-						data.db.getNextValue(getTransMeta().getCounters(), meta.getSchemaName(), meta.getTableName(), meta.getKeyField());
+						technicalKey=data.db.getNextValue(getTransMeta().getCounters(), meta.getSchemaName(), meta.getTableName(), meta.getKeyField());
                         break;
 				    case CREATION_METHOD_AUTOINC:
 						technicalKey=new Long(0L); // value to accept new key...
