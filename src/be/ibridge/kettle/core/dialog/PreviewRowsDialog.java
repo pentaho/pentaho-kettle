@@ -153,8 +153,6 @@ public class PreviewRowsDialog extends Dialog
 
         Row row = (Row) buffer.get(0);
 
-        int FieldsRows = buffer.size();
-
         ColumnInfo[] colinf = new ColumnInfo[row.size()];
         for (int i = 0; i < row.size(); i++)
         {
@@ -166,7 +164,7 @@ public class PreviewRowsDialog extends Dialog
         }
 
         wFields = new TableView(shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf,
-            FieldsRows, null, props);
+            0, null, props);
 
         fdFields = new FormData();
         fdFields.left = new FormAttachment(0, 0);
@@ -229,7 +227,10 @@ public class PreviewRowsDialog extends Dialog
             {
                 for (int i = 0; i < buffer.size(); i++)
                 {
-                    TableItem item = wFields.table.getItem(i);
+                    TableItem item;
+                    if (i==0) item = wFields.table.getItem(i);
+                    else item = new TableItem(wFields.table, SWT.NONE);
+
                     Row row = (Row) buffer.get(i);
 
                     for (int c = 0; c < row.size(); c++)
