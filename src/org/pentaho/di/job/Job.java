@@ -210,12 +210,32 @@ public class Job extends Thread implements VariableSpace
             setInternalKettleVariables(variables);                        
             
             result = execute(); // Run the job
-			endProcessing(Messages.getString("Job.Status.End"), result);
 		}
 		catch(KettleException je)
 		{
 			log.logError(toString(), Messages.getString("Job.Log.ErrorExecJob", je.getMessage()));
             log.logError(toString(), Const.getStackTracker(je));
+            //
+            // we don't have result object because execute() threw a curve-ball.
+            // So we create a new error object.
+            //
+            result = new Result();
+            result.setNrErrors(1L);
+            result.setResult(false);
+		}
+		finally
+		{
+			// Try to write the result back at the end, even if it's an unexpected error
+			//
+			try 
+			{
+				endProcessing(Messages.getString("Job.Status.End"), result);
+			} 
+			catch (KettleJobException e) 
+			{
+				log.logError(toString(), Messages.getString("Job.Log.ErrorExecJob", e.getMessage()));
+	            log.logError(toString(), Const.getStackTracker(e));
+			}
 		}
 	}
 

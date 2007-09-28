@@ -712,43 +712,50 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 	
 	private TransMeta getTransMeta(Repository rep,VariableSpace vars) throws KettleException
     {
-        LogWriter log = LogWriter.getInstance();
+		try
+		{
+	        LogWriter log = LogWriter.getInstance();
+	
+	        TransMeta transMeta = null;
+	        if (!Const.isEmpty(getFilename())) // Load from an XML file
+	        {        	
+	        	String filename = vars!=null?vars.environmentSubstitute(getFilename()):environmentSubstitute(getFilename());
+	            log.logBasic(toString(), "Loading transformation from XML file ["+filename+"]");
+	            transMeta = new TransMeta(filename);
+	        }
+	        else
+	        if (!Const.isEmpty(getTransname()) && getDirectory() != null)  // Load from the repository
+	        {
+	        	String filename = vars!=null?vars.environmentSubstitute(getTransname()):environmentSubstitute(getTransname());
+	        	
+	            log.logBasic(toString(), "Loading transformation from repository ["+filename+"] in directory ["+getDirectory()+"]");
+	
+	            if ( rep != null )
+	            {
+	            	//
+	            	// It only makes sense to try to load from the repository when the repository is also filled in.
+	            	//
+	                transMeta = new TransMeta(rep, filename, getDirectory());
+	            }
+	            else
+	            {
+	            	throw new KettleException("No repository defined!");
+	            }
+	        }
+	        else
+	        {
+	            throw new KettleJobException("The transformation to execute is not specified!");
+	        }
+	
+	        // Set the arguments...
+	        transMeta.setArguments(arguments);
 
-        TransMeta transMeta = null;
-        if (!Const.isEmpty(getFilename())) // Load from an XML file
-        {        	
-        	String filename = vars!=null?vars.environmentSubstitute(getFilename()):environmentSubstitute(getFilename());
-            log.logBasic(toString(), "Loading transformation from XML file ["+filename+"]");
-            transMeta = new TransMeta(filename);
-        }
-        else
-        if (!Const.isEmpty(getTransname()) && getDirectory() != null)  // Load from the repository
-        {
-        	String filename = vars!=null?vars.environmentSubstitute(getTransname()):environmentSubstitute(getTransname());
-        	
-            log.logBasic(toString(), "Loading transformation from repository ["+filename+"] in directory ["+getDirectory()+"]");
-
-            if ( rep != null )
-            {
-            	//
-            	// It only makes sense to try to load from the repository when the repository is also filled in.
-            	//
-                transMeta = new TransMeta(rep, filename, getDirectory());
-            }
-            else
-            {
-            	throw new KettleException("No repository defined!");
-            }
-        }
-        else
-        {
-            throw new KettleJobException("The transformation to execute is not specified!");
-        }
-
-        // Set the arguments...
-        transMeta.setArguments(arguments);
-
-        return transMeta;
+	        return transMeta;
+		}
+		catch(Exception e)
+		{
+			throw new KettleException("Unexpected error during transformation metadata load", e);
+		}
     }
 
     public boolean evaluates()

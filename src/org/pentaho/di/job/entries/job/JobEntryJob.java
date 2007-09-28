@@ -701,19 +701,27 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     
     private JobMeta getJobMeta(Repository rep, VariableSpace space) throws KettleException
     {   	
-        if (rep!=null && getDirectory()!=null)
-        {
-            return new JobMeta(LogWriter.getInstance(), 
-            		           rep, 
-            		           (space != null ? space.environmentSubstitute(getJobName()): getJobName()), 
-            		           getDirectory());
-        }
-        else
-        {
-            return new JobMeta(LogWriter.getInstance(), 
-            		           (space != null ? space.environmentSubstitute(getFilename()) : getFilename()), 
-            		           rep, null);
-        }
+    	try
+    	{
+	        if (rep!=null && getDirectory()!=null)
+	        {
+	            return new JobMeta(LogWriter.getInstance(), 
+	            		           rep, 
+	            		           (space != null ? space.environmentSubstitute(getJobName()): getJobName()), 
+	            		           getDirectory());
+	        }
+	        else
+	        {
+	            return new JobMeta(LogWriter.getInstance(), 
+	            		           (space != null ? space.environmentSubstitute(getFilename()) : getFilename()), 
+	            		           rep, null);
+	        }
+    	}
+		catch(Exception e)
+		{
+			throw new KettleException("Unexpected error during job metadata load", e);
+		}
+
     }
 
     /**
