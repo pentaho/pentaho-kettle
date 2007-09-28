@@ -456,8 +456,13 @@ Alert(year(d1));</sample>
 var strToMatch = "info@proconis.de";
 var strReg = "^(\\w+)@([a-zA-Z_]+?)\\.([a-zA-Z]{2,3})$";
 var xArr =  str2RegExp(strToMatch, strReg);
-for(i=0;i&lt;xArr.length;i++){
-	Alert(xArr[i]);
+if ( xArr != null ) {
+    for(i=0;i&lt;xArr.length;i++) {
+	    Alert(xArr[i]);
+	}
+}
+else {
+    Alert("no match");
 }</sample>
        <type>0</type>
       <Arguments>
