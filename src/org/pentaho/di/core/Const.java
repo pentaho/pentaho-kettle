@@ -1608,12 +1608,12 @@ public class Const
      * Returns the pure filename of a filename with full path. E.g. if passed parameter is
      * <code>/opt/tomcat/logs/catalina.out</code> this method returns <code>catalina.out</code>.
      * The method works with the Environment variable <i>System.getProperty("file.separator")</i>,
-     * so on linux/Unix it will check for the last occurence of a frontslash, on windows for
-     * the last occurence of a backslash.
+     * so on linux/Unix it will check for the last occurrence of a frontslash, on windows for
+     * the last occurrence of a backslash.
      * </p>
      * 
      * <p>
-     * To make this OS independent, the method could check for the last occurence of a
+     * To make this OS independent, the method could check for the last occurrence of a
      * frontslash and backslash and use the higher value of both. Should work, since these
      * characters aren't allowed in filenames on neither OS types (or said differently:
      * Neither linux nor windows can carry frontslashes OR backslashes in filenames).

@@ -110,7 +110,7 @@ public class SortedFileOutputStream extends FileOutputStream
                 continue;
             }
 
-            // Get first occurence of '=' character, that is not a position 0 and not
+            // Get first occurrence of '=' character, that is not a position 0 and not
             // escaped by a '\\'
             int idx = sLine.indexOf('=');
             if (idx <= 0)
@@ -149,7 +149,7 @@ public class SortedFileOutputStream extends FileOutputStream
     }
 
     /**
-     * Get next line. The line end is marked at the first occurence of an unescaped '\n' or '\r'
+     * Get next line. The line end is marked at the first occurrence of an unescaped '\n' or '\r'
      * character. All following '\n' or '\r' characters after the first unescaped '\n' or '\r'
      * character are included in the line.
      * 

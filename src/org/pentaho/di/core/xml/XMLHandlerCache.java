@@ -5,8 +5,8 @@ import java.util.Hashtable;
 
 /**
  * Singleton to help speed up lookups in an XML DOM tree.<br>
- * The theory is that you often loop over occurences of a certain tag in a Node.<br>
- * If there are 20 occurences, you go from index 0..19.<br>
+ * The theory is that you often loop over occurrences of a certain tag in a Node.<br>
+ * If there are 20 occurrences, you go from index 0..19.<br>
  * Every time we do the following<br>
  * - found node 0<br>
  * - found node 0, 1<br>

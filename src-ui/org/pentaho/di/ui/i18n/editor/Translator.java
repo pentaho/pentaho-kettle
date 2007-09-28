@@ -620,7 +620,7 @@ public class Translator
     }
 
     /**
-     * Get the path until the first occurence of "/messages/"
+     * Get the path until the first occurrence of "/messages/"
      * @param entry 
      * @return
      */

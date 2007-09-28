@@ -1234,9 +1234,9 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 		{
 			for (int e = 0; e < elements.length; e++)
 			{
-				// Count the number of occurences of this element...
-				int occurences = XMLHandler.countNodes(node, elements[e]);
-				for (int o = 0; o < occurences; o++)
+				// Count the number of occurrences of this element...
+				int occurrences = XMLHandler.countNodes(node, elements[e]);
+				for (int o = 0; o < occurrences; o++)
 				{
 					Node itemNode = XMLHandler.getSubNodeByNr(node, elements[e], o, false);
 					XMLInputFieldPosition xmlPos = new XMLInputFieldPosition(elements[e],

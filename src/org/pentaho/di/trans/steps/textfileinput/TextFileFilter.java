@@ -2,7 +2,7 @@ package org.pentaho.di.trans.steps.textfileinput;
 
 public class TextFileFilter implements Cloneable
 {
-    /** The position of the occurence of the filter string to check at */
+    /** The position of the occurrence of the filter string to check at */
     private int                filterPosition;
 
     /** The string to filter on */
