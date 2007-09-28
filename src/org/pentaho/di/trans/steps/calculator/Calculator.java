@@ -247,6 +247,7 @@ public class Calculator extends BaseStep implements StepInterface
                 case CalculatorMetaFunction.CALC_ADD                :  // A + B
                     {
                         calcData[index] = ValueDataUtil.plus(metaA, dataA, metaB, dataB);
+                        if (metaA.isString() || metaB.isString()) resultType=ValueMetaInterface.TYPE_STRING;
                     }
                     break;
                 case CalculatorMetaFunction.CALC_SUBTRACT           :   // A - B
@@ -313,7 +314,6 @@ public class Calculator extends BaseStep implements StepInterface
                 case CalculatorMetaFunction.CALC_CONSTANT           : // Set field to constant value...
                     {
                         calcData[index] = fn.getFieldA(); // A string
-                        resultType=ValueMetaInterface.TYPE_STRING;
                     }
                     break;
                 case CalculatorMetaFunction.CALC_NVL                : // Replace null values with another value
@@ -406,7 +406,7 @@ public class Calculator extends BaseStep implements StepInterface
                 // If we don't have a target data type, throw an error.
                 // Otherwise the result is non-deterministic.
                 //
-                if (fn.getValueType()==ValueMetaInterface.TYPE_NONE)
+                if (targetMeta.getType()==ValueMetaInterface.TYPE_NONE)
                 {
                     throw new KettleValueException("No datatype is specified for calculation #"+(i+1)+" : "+fn.getFieldName()+" = "+fn.getCalcTypeDesc()+" / "+fn.getCalcTypeLongDesc());
                 }
@@ -415,7 +415,7 @@ public class Calculator extends BaseStep implements StepInterface
                 // 
                 if (calcData[index]!=null)
                 {
-                    if (fn.getValueType()!=resultType) 
+                	if (targetMeta.getType()!=resultType) 
                     {
                         ValueMetaInterface resultMeta = new ValueMeta("result", resultType);  // $NON-NLS-1$
                         calcData[index] = targetMeta.convertData(resultMeta, calcData[index]);

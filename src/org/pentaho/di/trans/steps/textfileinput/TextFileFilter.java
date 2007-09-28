@@ -12,7 +12,7 @@ public class TextFileFilter implements Cloneable
     private boolean            filterLastLine;
 
     /**
-     * @param filterPosition The position of the occurence of the filter string to check at
+     * @param filterPosition The position of the occurrence of the filter string to check at
      * @param filterString   The string to filter on
      * @param filterLastLine True if we want to stop when we reach a filter string on the specified position
      *                       False if you just want to skip the line.

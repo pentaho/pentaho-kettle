@@ -174,6 +174,106 @@ public class CalculatorMeta extends BaseStepMeta implements StepMetaInterface
         v.setOrigin(origin);
         v.setComments(fn.getCalcTypeDesc());
         
+        // What if the user didn't specify a data type?
+        // In that case we look for the default data type
+        // 
+        if (fn.getValueType()==ValueMetaInterface.TYPE_NONE)
+        {
+            int defaultResultType = ValueMetaInterface.TYPE_NONE;
+            
+            switch(fn.getCalcType())
+            {
+            case CalculatorMetaFunction.CALC_NONE:  break;
+            case CalculatorMetaFunction.CALC_ADD                :  // A + B
+                defaultResultType = ValueMetaInterface.TYPE_NUMBER;
+                break;
+            case CalculatorMetaFunction.CALC_SUBTRACT           :   // A - B
+                defaultResultType = ValueMetaInterface.TYPE_NUMBER;
+                break;
+            case CalculatorMetaFunction.CALC_MULTIPLY           :   // A * B
+                defaultResultType = ValueMetaInterface.TYPE_NUMBER;
+                break;
+            case CalculatorMetaFunction.CALC_DIVIDE             :   // A / B
+                defaultResultType = ValueMetaInterface.TYPE_NUMBER;
+                break;
+            case CalculatorMetaFunction.CALC_SQUARE             :   // A * A
+                defaultResultType = ValueMetaInterface.TYPE_NUMBER;
+                break;
+            case CalculatorMetaFunction.CALC_SQUARE_ROOT        :   // SQRT( A )
+                defaultResultType = ValueMetaInterface.TYPE_NUMBER;
+                break;
+            case CalculatorMetaFunction.CALC_PERCENT_1          :   // 100 * A / B 
+                defaultResultType = ValueMetaInterface.TYPE_NUMBER;
+                break;
+            case CalculatorMetaFunction.CALC_PERCENT_2          :  // A - ( A * B / 100 )
+                defaultResultType = ValueMetaInterface.TYPE_NUMBER;
+                break;
+            case CalculatorMetaFunction.CALC_PERCENT_3          :  // A + ( A * B / 100 )
+                defaultResultType = ValueMetaInterface.TYPE_NUMBER;
+                break;
+            case CalculatorMetaFunction.CALC_COMBINATION_1      :  // A + B * C
+                defaultResultType = ValueMetaInterface.TYPE_NUMBER;
+                break;
+            case CalculatorMetaFunction.CALC_COMBINATION_2      :  // SQRT( A*A + B*B )
+                defaultResultType = ValueMetaInterface.TYPE_NUMBER;
+                break;
+            case CalculatorMetaFunction.CALC_ROUND_1            :  // ROUND( A )
+                defaultResultType = ValueMetaInterface.TYPE_INTEGER;
+                break;
+            case CalculatorMetaFunction.CALC_ROUND_2            :  //  ROUND( A , B )
+                defaultResultType = ValueMetaInterface.TYPE_NUMBER;
+                break;
+            case CalculatorMetaFunction.CALC_CONSTANT           : // Set field to constant value...
+                defaultResultType = ValueMetaInterface.TYPE_STRING;
+                break;
+            case CalculatorMetaFunction.CALC_NVL                : // Replace null values with another value
+                break;                    
+            case CalculatorMetaFunction.CALC_ADD_DAYS           : // Add B days to date field A
+                defaultResultType = ValueMetaInterface.TYPE_DATE;
+                break;
+           case CalculatorMetaFunction.CALC_YEAR_OF_DATE           : // What is the year (Integer) of a date?
+                defaultResultType=ValueMetaInterface.TYPE_INTEGER;
+                break;
+            case CalculatorMetaFunction.CALC_MONTH_OF_DATE           : // What is the month (Integer) of a date?
+                defaultResultType=ValueMetaInterface.TYPE_INTEGER;
+                break;
+            case CalculatorMetaFunction.CALC_DAY_OF_YEAR           : // What is the day of year (Integer) of a date?
+                defaultResultType=ValueMetaInterface.TYPE_INTEGER;
+                break;
+            case CalculatorMetaFunction.CALC_DAY_OF_MONTH           : // What is the day of month (Integer) of a date?
+                defaultResultType=ValueMetaInterface.TYPE_INTEGER;
+                break;
+            case CalculatorMetaFunction.CALC_DAY_OF_WEEK           : // What is the day of week (Integer) of a date?
+                defaultResultType=ValueMetaInterface.TYPE_INTEGER;
+                break;
+            case CalculatorMetaFunction.CALC_WEEK_OF_YEAR    : // What is the week of year (Integer) of a date?
+                defaultResultType=ValueMetaInterface.TYPE_INTEGER;
+                break;
+            case CalculatorMetaFunction.CALC_WEEK_OF_YEAR_ISO8601   : // What is the week of year (Integer) of a date ISO8601 style?
+                defaultResultType=ValueMetaInterface.TYPE_INTEGER;
+                break;                    
+            case CalculatorMetaFunction.CALC_YEAR_OF_DATE_ISO8601     : // What is the year (Integer) of a date ISO8601 style?
+                defaultResultType=ValueMetaInterface.TYPE_INTEGER;
+                break;
+            case CalculatorMetaFunction.CALC_BYTE_TO_HEX_ENCODE   : // Byte to Hex encode string field A
+                defaultResultType=ValueMetaInterface.TYPE_STRING;
+                break;
+            case CalculatorMetaFunction.CALC_HEX_TO_BYTE_DECODE   : // Hex to Byte decode string field A
+                defaultResultType=ValueMetaInterface.TYPE_STRING;
+                break;
+            case CalculatorMetaFunction.CALC_CHAR_TO_HEX_ENCODE   : // Char to Hex encode string field A
+                defaultResultType=ValueMetaInterface.TYPE_STRING;
+                break;
+            case CalculatorMetaFunction.CALC_HEX_TO_CHAR_DECODE   : // Hex to Char decode string field A
+                defaultResultType=ValueMetaInterface.TYPE_STRING;
+                break;                    
+            default:
+                break;
+            }
+            
+            v.setType(defaultResultType);
+        }
+        
         return v;
     }
 

@@ -571,7 +571,7 @@ public class ValueMeta implements ValueMetaInterface
     
     private synchronized Double convertStringToNumber(String string) throws KettleValueException
     {
-        if (string==null) return null;
+        if (Const.isEmpty(string)) return null;
         
         string = trim(string); // see if  trimming needs to be performed before conversion
 
@@ -788,7 +788,7 @@ public class ValueMeta implements ValueMetaInterface
     
     private synchronized BigDecimal convertStringToBigNumber(String string) throws KettleValueException
     {
-        if (string==null) return null;
+        if (Const.isEmpty(string)) return null;
 
         string = trim(string); // see if  trimming needs to be performed before conversion
 
@@ -2732,24 +2732,20 @@ public class ValueMeta implements ValueMetaInterface
     	// See if we need to convert a null value into a String
 		// For example, we might want to convert null into "Empty".
     	//
-    	if (!Const.isEmpty(ifNull)) {
-    		// We only want to do these calculations IF we have an alternative.
-    		// 
-        	if (Const.isEmpty(pol)) {
-        		pol = ifNull;
-        	}
-        	else {
-        		String nullCmp = Const.rightPad(new StringBuffer(null_value), pol.length());
-        		if (pol.equalsIgnoreCase(nullCmp)) {
-        			pol = ifNull;
-        		}
-        	}
-    	}
-        
-        if (Const.isEmpty(pol)) 
-        {
-            return null_value;
+        if (!Const.isEmpty(ifNull)) {
+			String nullCmp = Const.rightPad(new StringBuffer(null_value), pol.length());
+			if (Const.isEmpty(pol) || pol.equalsIgnoreCase(nullCmp))
+			{
+				pol = ifNull;
+			}
         }
+
+		// This looks like the same condition as above but r
+		if (Const.isEmpty(pol) || pol.equalsIgnoreCase(Const.rightPad(new StringBuffer(null_value), pol.length())) )
+		{
+            return null;
+        }
+ 
         
         // Trimming
         switch (trim_type)

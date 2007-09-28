@@ -106,7 +106,7 @@ public class EnterPreviewRowsDialog extends Dialog
 		fdlStepList.left = new FormAttachment(0, 0);
 		fdlStepList.top  = new FormAttachment(0, margin);
 		wlStepList.setLayoutData(fdlStepList);
-		wStepList=new List(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER | SWT.READ_ONLY);
+		wStepList=new List(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER | SWT.READ_ONLY | SWT.V_SCROLL | SWT.H_SCROLL);
 		for (int i=0;i<stepNames.size();i++)
 		{
 			wStepList.add((String)stepNames.get(i)); 
