@@ -644,7 +644,7 @@ public class XMLHandler
 	/**
 	 * Load a String into an XML document
 	 * @param string The XML text to load into a document
-	 * @return the Document if all went well, null if an error occured!
+	 * @return the Document if all went well, null if an error occurred!
 	 */
 	public static final Document loadXMLString(String string) throws KettleXMLException
 	{

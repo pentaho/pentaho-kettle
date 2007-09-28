@@ -103,6 +103,7 @@ import org.pentaho.di.core.dnd.DragAndDropContainer;
 import org.pentaho.di.core.dnd.XMLTransfer;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleRowException;
+import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.gui.GUIFactory;
 import org.pentaho.di.core.gui.OverwritePrompter;
 import org.pentaho.di.core.gui.Point;
@@ -911,10 +912,29 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		redoAction(getActiveUndoInterface());
 	}
 
+    /**
+     * It's called copySteps, but the job entries also arrive at this location
+     */
     public void copySteps() {
 		TransMeta transMeta = getActiveTransformation();
-		copySelected(transMeta, transMeta.getSelectedSteps(), transMeta.getSelectedNotes());
+		if (transMeta!=null)
+		{
+			copySelected(transMeta, transMeta.getSelectedSteps(), transMeta.getSelectedNotes());
+		}
+		JobMeta jobMeta = getActiveJob();
+		if (jobMeta!=null)
+		{
+			copyJobentries();
+		}
 	}
+    
+    public void copyJobentries() {
+    	JobMeta jobMeta = getActiveJob();
+    	if (jobMeta!=null)
+    	{
+    		delegates.jobs.copyJobEntries(jobMeta, jobMeta.getSelectedEntries());
+    	}
+    }
 
 	public void addMenu()
 	{
@@ -1172,6 +1192,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 	private static final String STRING_SPOON_MAIN_TREE = Messages.getString("Spoon.MainTree.Label");
     private static final String STRING_SPOON_CORE_OBJECTS_TREE= Messages.getString("Spoon.CoreObjectsTree.Label");
+    
+	public static final String XML_TAG_TRANSFORMATION_STEPS = "transformation-steps";
+	public static final String XML_TAG_JOB_JOB_ENTRIES= "job-jobentries";
 
 	private void addTree()
 	{
@@ -1531,7 +1554,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			props.setLook(composite);
 
 			GridLayout layout = new GridLayout();
-			layout.marginLeft = 20;
+			layout.marginLeft = Const.FORM_MARGIN;
 			layout.verticalSpacing = Const.MARGIN;
 			composite.setLayout(layout);
 
@@ -2248,7 +2271,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		try
 		{
 			Document doc = XMLHandler.loadXMLString(clipcontent);
-			Node transnode = XMLHandler.getSubNode(doc, "transformation");
+			Node transnode = XMLHandler.getSubNode(doc, Spoon.XML_TAG_TRANSFORMATION_STEPS);
 			// De-select all, re-select pasted steps...
 			transMeta.unselectAll();
 
@@ -2369,7 +2392,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         if (stepMeta==null || stepMeta.length==0) return;
 
 		String xml = XMLHandler.getXMLHeader();
-		xml += "<transformation>" + Const.CR;
+		xml += XMLHandler.openTag(Spoon.XML_TAG_TRANSFORMATION_STEPS) + Const.CR;
 		xml += " <steps>" + Const.CR;
 
 		for (int i = 0; i < stepMeta.length; i++)
@@ -2409,7 +2432,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			}
 		xml += "   </notepads>" + Const.CR;
 
-		xml += " </transformation>" + Const.CR;
+		xml += " " + XMLHandler.closeTag(Spoon.XML_TAG_TRANSFORMATION_STEPS) + Const.CR;
 
 		toClipboard(xml);
 	}
@@ -5907,25 +5930,51 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 	public void pasteSteps()
 	{
-		// Is there an active TransGraph?
-		TransGraph transGraph = getActiveTransGraph();
-        if (transGraph==null) {
-        	pasteTransformation();
-        }
-        else 
-        {
-			TransMeta transMeta = (TransMeta) transGraph.getMeta();
-	
-			String clipcontent = fromClipboard();
-			if (clipcontent != null)
+		String clipcontent = fromClipboard();
+		if (clipcontent != null)
+		{
+			// Load the XML 
+			//
+			try 
 			{
-				Point lastMove = transGraph.getLastMove();
-				if (lastMove != null)
-				{
-					pasteXML(transMeta, clipcontent, lastMove);
-				}
+				Document document = XMLHandler.loadXMLString(clipcontent);
+	            
+				boolean transformation = XMLHandler.getSubNode(document, TransMeta.XML_TAG) != null;
+	            boolean job = XMLHandler.getSubNode(document, JobMeta.XML_TAG) != null;
+	            boolean steps =  XMLHandler.getSubNode(document, Spoon.XML_TAG_TRANSFORMATION_STEPS) != null;
+	            boolean jobEntries =  XMLHandler.getSubNode(document, Spoon.XML_TAG_JOB_JOB_ENTRIES) != null;
+				
+	            if (transformation)
+	            {
+	            	pasteTransformation();
+	            }
+	            else if (job)
+	            {
+	            	pasteJob();
+	            }
+	            else if (steps)
+	            {
+	            	TransGraph transGraph = getActiveTransGraph();
+					if (transGraph!=null && transGraph.getLastMove() != null)
+					{
+						pasteXML(transGraph.getManagedObject(), clipcontent, transGraph.getLastMove());
+					}
+	            }
+	            else if (jobEntries)
+	            {
+	            	JobGraph jobGraph = getActiveJobGraph();
+					if (jobGraph!=null && jobGraph.getLastMove() != null)
+					{
+						pasteXML(jobGraph.getManagedObject(), clipcontent, jobGraph.getLastMove());
+					}
+	            	
+	            }
 			}
-        }
+			catch (KettleXMLException e) {
+				log.logError(toString(), "Unable to paste", e);
+			}
+		}
+		
 	}
 
 	public JobEntryCopy newJobEntry(JobMeta jobMeta, String typeDesc, boolean openit)

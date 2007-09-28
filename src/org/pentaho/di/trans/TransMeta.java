@@ -2704,7 +2704,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
             clear();
 
             // Root node:
-            Node transnode = XMLHandler.getSubNode(doc, "transformation"); //$NON-NLS-1$
+            Node transnode = XMLHandler.getSubNode(doc, XML_TAG); //$NON-NLS-1$
 
             // Load from this node...
             loadXML(transnode, rep, setInternalVariables);

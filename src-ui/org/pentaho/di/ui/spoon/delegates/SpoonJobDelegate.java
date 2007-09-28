@@ -346,14 +346,14 @@ public class SpoonJobDelegate extends SpoonDelegate
 			return;
 
 		String xml = XMLHandler.getXMLHeader();
-		xml += "<jobentries>" + Const.CR; //$NON-NLS-1$
+		xml += XMLHandler.openTag(Spoon.XML_TAG_JOB_JOB_ENTRIES) + Const.CR; //$NON-NLS-1$
 
 		for (int i = 0; i < jec.length; i++)
 		{
 			xml += jec[i].getXML();
 		}
 
-		xml += "    </jobentries>" + Const.CR; //$NON-NLS-1$
+		xml += "    " + XMLHandler.closeTag(Spoon.XML_TAG_JOB_JOB_ENTRIES) + Const.CR; //$NON-NLS-1$
 
 		spoon.toClipboard(xml);
 	}
@@ -367,7 +367,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 			// De-select all, re-select pasted steps...
 			jobMeta.unselectAll();
 
-			Node entriesnode = XMLHandler.getSubNode(doc, "jobentries"); //$NON-NLS-1$
+			Node entriesnode = XMLHandler.getSubNode(doc, Spoon.XML_TAG_JOB_JOB_ENTRIES); //$NON-NLS-1$
 			int nr = XMLHandler.countNodes(entriesnode, "entry"); //$NON-NLS-1$
 			spoon.getLog().logDebug(spoon.toString(), "I found " + nr + " job entries to paste on location: " + loc); //$NON-NLS-1$ //$NON-NLS-2$
 			JobEntryCopy entries[] = new JobEntryCopy[nr];

@@ -716,9 +716,10 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
                     renameJobEntry();
                 }
 
+                /*
                 if (e.character == 3) // CTRL-C
                 {
-                    spoon.delegates.jobs.copyJobEntries(jobMeta, jobMeta.getSelectedEntries());
+                    copyEntry();
                 }
                 if (e.character == 22) // CTRL-V
                 {
@@ -738,6 +739,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 					jobMeta.unselectAll();
 					redraw();
 				}
+                */
                 // Delete
                 if (e.keyCode == SWT.DEL)
                 {
@@ -2312,5 +2314,19 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
         spoon.setShellText();
         return ji!=null;
     }
+
+	/**
+	 * @return the lastMove
+	 */
+	public Point getLastMove() {
+		return lastMove;
+	}
+
+	/**
+	 * @param lastMove the lastMove to set
+	 */
+	public void setLastMove(Point lastMove) {
+		this.lastMove = lastMove;
+	}
 
 }
