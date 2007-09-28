@@ -36,7 +36,6 @@ public class Toolbar extends XulObject implements XulToolbar {
         fdBar.left = new FormAttachment(0, 0);
         fdBar.top = new FormAttachment(0, 0);
         toolBar.setLayoutData(fdBar);
-
 	}
 
 	public void addMenuListener(String id, Object listener, String methodName) {
@@ -71,6 +70,10 @@ public class Toolbar extends XulObject implements XulToolbar {
 
 	public void register(XulToolbarButton item, String id, String accessKey) {
 		handler.register(item, id, accessKey);
+		if (id!=null && item!=null)
+		{
+			buttonMap.put(id, item);
+		}
 	}
 
 	public boolean handleMenuEvent( String id ) {

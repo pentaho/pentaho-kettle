@@ -107,8 +107,7 @@ align="vertical" >
 	 
 	 <toolbox>
 		<toolbar id="nav-toolbar" mode="full">
-			<toolbarbutton value="file-new-trans" label="%Spoon.Menu.File.New" image="ui/images/newtrans.png" tooltiptext="%Spoon.Tooltip.NewTranformation"/>
-			<toolbarbutton value="file-new-job" label="%Spoon.Menu.File.New" image="ui/images/newjob.png" tooltiptext="%Spoon.Tooltip.NewJob"/>
+			<toolbarbutton value="file-new" label="%Spoon.Menu.File.New" image="ui/images/new.png" tooltiptext="%Spoon.Tooltip.NewFile"/>
 			<toolbarseparator />
 			<toolbarbutton value="file-open" label="%Spoon.Menu.File.Open" image="ui/images/open.png" tooltiptext="%Spoon.Tooltip.OpenTranformation" />
 			<toolbarbutton value="file-save" label="%Spoon.Menu.File.Save" image="ui/images/save.png" tooltiptext="%Spoon.Tooltip.SaveCurrentTranformation" />

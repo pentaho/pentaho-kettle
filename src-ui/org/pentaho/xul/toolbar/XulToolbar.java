@@ -17,5 +17,7 @@ public interface XulToolbar extends XulItem {
 	public int getMode();
 	
 	public void setMode(int mode);
+	
+	public XulToolbarButton getButtonById(String id);
 
 }

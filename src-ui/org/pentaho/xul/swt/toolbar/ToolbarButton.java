@@ -96,5 +96,9 @@ public class ToolbarButton extends XulObject implements XulToolbarButton, Select
 			toolItem.setText( text );
 		}
 	}
+	
+	public Object getNativeObject() {
+		return toolItem;
+	}
 
 }

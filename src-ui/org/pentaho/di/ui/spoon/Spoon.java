@@ -79,9 +79,11 @@ import org.eclipse.swt.widgets.ExpandItem;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.pentaho.di.cluster.ClusterSchema;
@@ -219,6 +221,7 @@ import org.pentaho.xul.swt.tab.TabItem;
 import org.pentaho.xul.swt.tab.TabListener;
 import org.pentaho.xul.swt.tab.TabSet;
 import org.pentaho.xul.toolbar.XulToolbar;
+import org.pentaho.xul.toolbar.XulToolbarButton;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -294,6 +297,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 	private Tree selectionTree;
 	private Tree coreObjectsTree;
+	
+	private org.eclipse.swt.widgets.Menu fileMenus;
 
 	private static final String APPL_TITLE = APP_NAME;
 
@@ -505,6 +510,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		};
         
         addBar();
+        
+        initFileMenu();
 
         
 
@@ -554,7 +561,24 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		shell.layout();
 	}
 
-    public Shell getShell() {
+    private void initFileMenu() {
+    	 fileMenus = new org.eclipse.swt.widgets.Menu(shell, SWT.NONE);
+    	 
+    	 // Add the new file toolbar items dropdowns
+    	 //
+	     MenuItem miNewTrans = new MenuItem(fileMenus, SWT.CASCADE);
+	     miNewTrans.setText(Messages.getString("Spoon.Menu.File.NewTrans")); //$NON-NLS-1$
+	     miNewTrans.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent arg0) { newTransFile(); } });
+	     miNewTrans.setImage(GUIResource.getInstance().getImageTransGraph());
+
+	     MenuItem miNewJob = new MenuItem(fileMenus, SWT.CASCADE);
+	     miNewJob.setText(Messages.getString("Spoon.Menu.File.NewJob")); //$NON-NLS-1$
+	     miNewJob.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent arg0) { newJobFile(); } });
+	     miNewJob.setImage(GUIResource.getInstance().getImageJobGraph());
+	     
+	}
+
+	public Shell getShell() {
 		return shell;
 	}
 
@@ -2995,20 +3019,26 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     public PropsUI getProperties() {
 		return props;
 	}
-
-	public void newFile()
-	{
-		String[] choices = new String[] { STRING_TRANSFORMATION, STRING_JOB };
-        EnterSelectionDialog enterSelectionDialog = new EnterSelectionDialog(shell, choices, Messages.getString("Spoon.Dialog.NewFile.Title"), Messages.getString("Spoon.Dialog.NewFile.Message"));
-		if (enterSelectionDialog.open() != null)
-		{
-			switch (enterSelectionDialog.getSelectionNr())
-			{
-            case 0: newTransFile(); break;
-            case 1: newJobFile(); break;
-			}
-		}
-	}
+    
+    public void newFileDropDown()
+    {
+    	// Drop down a list below the "New" icon (new.png)
+    	// First problem: where is that icon?
+    	//
+    	XulToolbarButton button = toolbar.getButtonById("file-new");
+    	Object object = button.getNativeObject();
+    	if (object instanceof ToolItem)
+    	{
+    		// OK, let's determine the location of this widget...
+    		//
+    		ToolItem item = (ToolItem) object;
+    		Rectangle bounds = item.getBounds();
+    		org.eclipse.swt.graphics.Point p = item.getParent().toDisplay(new org.eclipse.swt.graphics.Point(bounds.x, bounds.y));
+    		
+    		fileMenus.setLocation(p.x, p.y + bounds.height);
+            fileMenus.setVisible(true);
+    	}
+    }
 
 	public void newTransFile()
 	{

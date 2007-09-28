@@ -51,7 +51,7 @@ public class MenuHelper {
 								
 							    button.setImage(ImageUtil.getImage(shell.getDisplay(),imagePath));
 								
-
+							    toolbar.register(button, value, null);
 							}
 							else if( "toolbarseparator".equals( buttonNode.getNodeName() ) ) { //$NON-NLS-1$
 								new ToolbarSeparator(shell, toolbar);
