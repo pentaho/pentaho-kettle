@@ -1221,7 +1221,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		ExpandItem treeItem = new ExpandItem(mainExpandBar, SWT.NONE);
 		treeItem.setControl(selectionTree);
 		treeItem.setHeight(shell.getBounds().height);
-		setHeaderImage(treeItem, GUIResource.getInstance().getImageLogoSmall(), STRING_SPOON_MAIN_TREE, 0);
+		setHeaderImage(treeItem, GUIResource.getInstance().getImageLogoSmall(), STRING_SPOON_MAIN_TREE, 0, true);
 
 		// Add a tree memory as well...
 		TreeMemory.addTreeListener(selectionTree, STRING_SPOON_MAIN_TREE);
@@ -1274,7 +1274,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	{
 		Composite composite = new Composite(mainExpandBar, SWT.BORDER);
 		FormLayout formLayout = new FormLayout();
-		formLayout.marginLeft = 20;
+		formLayout.marginLeft = Const.FORM_MARGIN;
 		formLayout.marginTop = Const.MARGIN;
 		formLayout.marginBottom = Const.MARGIN;
 		composite.setLayout(formLayout);
@@ -1317,12 +1317,12 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		ExpandItem expandItem = new ExpandItem(mainExpandBar, SWT.NONE);
 		expandItem.setControl(composite);
 		expandItem.setHeight(shell.getBounds().height);
-        setHeaderImage(expandItem, GUIResource.getInstance().getImageLogoSmall(), STRING_SPOON_CORE_OBJECTS_TREE, 0);
+        setHeaderImage(expandItem, GUIResource.getInstance().getImageLogoSmall(), STRING_SPOON_CORE_OBJECTS_TREE, 0, true);
 
 		refreshCoreObjects();
 	}
 
-	private void setHeaderImage(ExpandItem expandItem, Image icon, String string, int offset)
+	private void setHeaderImage(ExpandItem expandItem, Image icon, String string, int offset, boolean boldFont)
 	{
 		// Draw just an image with text and all...
 		Image img = new Image(display, 1, 1);
@@ -1344,7 +1344,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		gc.setForeground(GUIResource.getInstance().getColorBlack());
 		gc.fillRectangle(rect);
 		gc.drawImage(icon, 0, 0);
-		gc.setFont(GUIResource.getInstance().getFontBold());
+	    if (boldFont) gc.setFont(GUIResource.getInstance().getFontBold());
 		gc.drawText(string, iconBounds.width + 5, (iconBounds.height - point.y) / 2 + 2, false);
 		expandItem.setImage(image);
 		// expandItem.setImage(ImageUtil.makeImageTransparent(display, image, new RGB(255, 255, 255)));
@@ -1416,7 +1416,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 				historyExpandItem.setControl(scrolledHistoryComposite);
 				historyExpandItem.setHeight(scrolledHistoryComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT).y);
-                setHeaderImage(historyExpandItem, GUIResource.getInstance().getImageLogoSmall(), STRING_HISTORY, 0);
+                setHeaderImage(historyExpandItem, GUIResource.getInstance().getImageLogoSmall(), STRING_HISTORY, 0, true);
 				scrolledHistoryComposite.layout(true, true);
 			}
 
@@ -1520,7 +1520,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 				item.setControl(scrolledComposite);
 				item.setHeight(scrolledComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT).y + 10);
-				setHeaderImage(item, GUIResource.getInstance().getImageArrow(), basecat[i], layout.marginLeft);
+				setHeaderImage(item, GUIResource.getInstance().getImageArrow(), basecat[i], layout.marginLeft, false);
 			}
 		}
 
@@ -1585,7 +1585,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			scrolledComposite.setExpandVertical(true);
 
 			item.setControl(scrolledComposite);
-            setHeaderImage(item, GUIResource.getInstance().getImageArrow(), STRING_JOB_ENTRIES, layout.marginLeft);
+            setHeaderImage(item, GUIResource.getInstance().getImageArrow(), STRING_JOB_ENTRIES, layout.marginLeft, true);
 			item.setHeight(scrolledComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT).y + 10);
 			item.setExpanded(true);
 
