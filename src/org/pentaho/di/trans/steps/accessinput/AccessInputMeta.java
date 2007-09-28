@@ -324,26 +324,26 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface
     
     public String getXML()
     {
-        StringBuffer retval=new StringBuffer();
+        StringBuffer retval=new StringBuffer(500);
         
-        retval.append("    "+XMLHandler.addTagValue("include",         includeFilename));
-        retval.append("    "+XMLHandler.addTagValue("include_field",   filenameField));
-        retval.append("    "+XMLHandler.addTagValue("tablename",         includeTablename));
-        retval.append("    "+XMLHandler.addTagValue("tablename_field",   tablenameField));
-        retval.append("    "+XMLHandler.addTagValue("rownum",          includeRowNumber));
-        retval.append("    "+XMLHandler.addTagValue("rownum_field",    rowNumberField));
-        retval.append("    "+XMLHandler.addTagValue("resetrownumber",          resetRowNumber));
+        retval.append("    ").append(XMLHandler.addTagValue("include",         includeFilename));
+        retval.append("    ").append(XMLHandler.addTagValue("include_field",   filenameField));
+        retval.append("    ").append(XMLHandler.addTagValue("tablename",       includeTablename));
+        retval.append("    ").append(XMLHandler.addTagValue("tablename_field", tablenameField));
+        retval.append("    ").append(XMLHandler.addTagValue("rownum",          includeRowNumber));
+        retval.append("    ").append(XMLHandler.addTagValue("rownum_field",    rowNumberField));
+        retval.append("    ").append(XMLHandler.addTagValue("resetrownumber",  resetRowNumber));
          
         
-        retval.append("    "+XMLHandler.addTagValue("table_name",      TableName));
+        retval.append("    ").append(XMLHandler.addTagValue("table_name",      TableName));
         
-        retval.append("    <file>"+Const.CR);
+        retval.append("    <file>").append(Const.CR);
         for (int i=0;i<fileName.length;i++)
         {
-            retval.append("      "+XMLHandler.addTagValue("name",     fileName[i]));
-            retval.append("      "+XMLHandler.addTagValue("filemask", fileMask[i]));
+            retval.append("      ").append(XMLHandler.addTagValue("name",     fileName[i]));
+            retval.append("      ").append(XMLHandler.addTagValue("filemask", fileMask[i]));
         }
-        retval.append("      </file>"+Const.CR);
+        retval.append("    </file>").append(Const.CR);
         
          
         /*
@@ -370,7 +370,7 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface
 		retval.append("    </fields>").append(Const.CR);
         
         
-        retval.append("    "+XMLHandler.addTagValue("limit", rowLimit));
+        retval.append("    ").append(XMLHandler.addTagValue("limit", rowLimit));
 
         return retval.toString();
     }

@@ -319,19 +319,19 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
     
     public String getXML()
     {
-        StringBuffer retval=new StringBuffer();
+        StringBuffer retval=new StringBuffer(500);
         
         
-        retval.append("    "+XMLHandler.addTagValue("useauthentication",  useAuthentication));
-        retval.append("    "+XMLHandler.addTagValue("rownum",          includeRowNumber));
-        retval.append("    "+XMLHandler.addTagValue("rownum_field",    rowNumberField));
-        retval.append("    "+XMLHandler.addTagValue("host",    Host));
-        retval.append("    "+XMLHandler.addTagValue("username",    UserName));
-        retval.append("    "+XMLHandler.addTagValue("password", Encr.encryptPasswordIfNotUsingVariables(Password)));
+        retval.append("    ").append(XMLHandler.addTagValue("useauthentication",  useAuthentication));
+        retval.append("    ").append(XMLHandler.addTagValue("rownum",          includeRowNumber));
+        retval.append("    ").append(XMLHandler.addTagValue("rownum_field",    rowNumberField));
+        retval.append("    ").append(XMLHandler.addTagValue("host",    Host));
+        retval.append("    ").append(XMLHandler.addTagValue("username",    UserName));
+        retval.append("    ").append(XMLHandler.addTagValue("password", Encr.encryptPasswordIfNotUsingVariables(Password)));
 
-        retval.append("    "+XMLHandler.addTagValue("port",    Port));
-        retval.append("    "+XMLHandler.addTagValue("filterstring",    FilterString));
-        retval.append("    "+XMLHandler.addTagValue("searchbase",    SearchBase));
+        retval.append("    ").append(XMLHandler.addTagValue("port",    Port));
+        retval.append("    ").append(XMLHandler.addTagValue("filterstring",    FilterString));
+        retval.append("    ").append(XMLHandler.addTagValue("searchbase",    SearchBase));
          
         /*
 		 * Describe the fields to read
@@ -357,7 +357,7 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 		retval.append("    </fields>").append(Const.CR);
         
         
-        retval.append("    "+XMLHandler.addTagValue("limit", rowLimit));
+        retval.append("    ").append(XMLHandler.addTagValue("limit", rowLimit));
 
         return retval.toString();
     }

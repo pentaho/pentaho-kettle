@@ -751,7 +751,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 			retval.append("        <key>").append(Const.CR); //$NON-NLS-1$
 			retval.append("          ").append(XMLHandler.addTagValue("name", keyStream[i])); //$NON-NLS-1$ //$NON-NLS-2$
 			retval.append("          ").append(XMLHandler.addTagValue("lookup", keyLookup[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        </key>" + Const.CR); //$NON-NLS-1$
+			retval.append("        </key>").append(Const.CR); //$NON-NLS-1$
 		}
 
 		retval.append("        <date>").append(Const.CR); //$NON-NLS-1$

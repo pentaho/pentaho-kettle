@@ -74,19 +74,19 @@ public class FixedFileInputField implements Cloneable, XMLInterface {
 	}
 
 	public String getXML() {
-		StringBuffer retval = new StringBuffer();
+		StringBuffer retval = new StringBuffer(300);
 
 		retval.append("      ").append(XMLHandler.openTag(XML_TAG)).append(Const.CR);
-		retval.append("        " + XMLHandler.addTagValue("name", name));
-		retval.append("        " + XMLHandler.addTagValue("type", ValueMeta.getTypeDesc(type)));
-		retval.append("        " + XMLHandler.addTagValue("format", format));
-		retval.append("        " + XMLHandler.addTagValue("trim_type", ValueMeta.getTrimTypeCode(trimType)));
-		retval.append("        " + XMLHandler.addTagValue("currency", currency));
-		retval.append("        " + XMLHandler.addTagValue("decimal", decimal));
-		retval.append("        " + XMLHandler.addTagValue("group", grouping));
-		retval.append("        " + XMLHandler.addTagValue("width", width));
-		retval.append("        " + XMLHandler.addTagValue("length", length));
-		retval.append("        " + XMLHandler.addTagValue("precision", precision));
+		retval.append("        ").append(XMLHandler.addTagValue("name", name));
+		retval.append("        ").append(XMLHandler.addTagValue("type", ValueMeta.getTypeDesc(type)));
+		retval.append("        ").append(XMLHandler.addTagValue("format", format));
+		retval.append("        ").append(XMLHandler.addTagValue("trim_type", ValueMeta.getTrimTypeCode(trimType)));
+		retval.append("        ").append(XMLHandler.addTagValue("currency", currency));
+		retval.append("        ").append(XMLHandler.addTagValue("decimal", decimal));
+		retval.append("        ").append(XMLHandler.addTagValue("group", grouping));
+		retval.append("        ").append(XMLHandler.addTagValue("width", width));
+		retval.append("        ").append(XMLHandler.addTagValue("length", length));
+		retval.append("        ").append(XMLHandler.addTagValue("precision", precision));
 		retval.append("        ").append(XMLHandler.closeTag(XML_TAG)).append(Const.CR);
 
 		return retval.toString();

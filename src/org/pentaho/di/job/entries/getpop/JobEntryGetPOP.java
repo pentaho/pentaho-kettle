@@ -143,7 +143,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 
   public String getXML()
   {
-    StringBuffer retval = new StringBuffer();
+    StringBuffer retval = new StringBuffer(200);
 
     retval.append(super.getXML());
     retval.append("      ").append(XMLHandler.addTagValue("servername", servername)); //$NON-NLS-1$ //$NON-NLS-2$

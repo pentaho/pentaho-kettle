@@ -2263,7 +2263,7 @@ public class ValueMeta implements ValueMetaInterface
 	                    case TYPE_INTEGER:   index[i] = Long.parseLong( valueString ); break; 
 	                    case TYPE_DATE:      index[i] = XMLHandler.stringToDate( valueString ); ; break; 
 	                    case TYPE_BIGNUMBER: index[i] = new BigDecimal( valueString ); ; break; 
-	                    case TYPE_BOOLEAN:   index[i] = new Boolean("Y".equalsIgnoreCase( valueString)); break; 
+	                    case TYPE_BOOLEAN:   index[i] = Boolean.valueOf("Y".equalsIgnoreCase( valueString)); break; 
 	                    case TYPE_BINARY:    index[i] = XMLHandler.stringToBinary( valueString ); break;
 	                    default: throw new IOException(toString()+" : Unable to de-serialize indexe storage type from XML for data type "+getType());
 	                    }
@@ -2381,7 +2381,7 @@ public class ValueMeta implements ValueMetaInterface
             case TYPE_INTEGER:   return Long.parseLong( valueString );
             case TYPE_DATE:      return XMLHandler.stringToDate( valueString ); 
             case TYPE_BIGNUMBER: return new BigDecimal( valueString );
-            case TYPE_BOOLEAN:   return new Boolean("Y".equalsIgnoreCase( valueString)); 
+            case TYPE_BOOLEAN:   return Boolean.valueOf("Y".equalsIgnoreCase( valueString)); 
             case TYPE_BINARY:    return XMLHandler.stringToBinary( valueString );
             default: throw new IOException(toString()+" : Unable to de-serialize '"+valueString+"' from XML for data type "+getType());
             }

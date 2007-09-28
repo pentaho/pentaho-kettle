@@ -183,11 +183,11 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
 
     public String getXML()
     {
-        StringBuffer retval = new StringBuffer();
+        StringBuffer retval = new StringBuffer(300);
         
-        retval.append("    "+XMLHandler.addTagValue("trans_name", transName) ); //$NON-NLS-1$
-        retval.append("    "+XMLHandler.addTagValue("filename", fileName )); //$NON-NLS-1$
-        retval.append("    "+XMLHandler.addTagValue("directory_path", directoryPath )); //$NON-NLS-1$
+        retval.append("    ").append(XMLHandler.addTagValue("trans_name", transName) ); //$NON-NLS-1$
+        retval.append("    ").append(XMLHandler.addTagValue("filename", fileName )); //$NON-NLS-1$
+        retval.append("    ").append(XMLHandler.addTagValue("directory_path", directoryPath )); //$NON-NLS-1$
         
         retval.append("    ").append(XMLHandler.openTag("mappings")).append(Const.CR); //$NON-NLS-1$ $NON-NLS-2$
 

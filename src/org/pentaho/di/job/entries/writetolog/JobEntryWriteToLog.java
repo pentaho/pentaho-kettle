@@ -77,9 +77,8 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
     }
 	
 	public String getXML()
-	{
-		
-        StringBuffer retval = new StringBuffer();
+	{		
+        StringBuffer retval = new StringBuffer(200);
 	
 		retval.append(super.getXML());
 		retval.append("      ").append(XMLHandler.addTagValue("logmessage",      logmessage));

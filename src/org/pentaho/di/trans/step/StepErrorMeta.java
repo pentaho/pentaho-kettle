@@ -117,7 +117,7 @@ public class StepErrorMeta extends ChangedFlag implements XMLInterface, Cloneabl
 
     public String getXML()
     {
-        StringBuffer xml = new StringBuffer();
+        StringBuffer xml = new StringBuffer(300);
 
         xml.append("      ").append(XMLHandler.openTag(XML_TAG)).append(Const.CR);
         xml.append("        ").append(XMLHandler.addTagValue("source_step", sourceStep!=null ? sourceStep.getName() : ""));

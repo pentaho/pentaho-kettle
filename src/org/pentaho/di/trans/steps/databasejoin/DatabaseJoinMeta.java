@@ -331,22 +331,22 @@ public class DatabaseJoinMeta extends BaseStepMeta implements StepMetaInterface
 
 	public String getXML()
 	{
-        StringBuffer retval = new StringBuffer();
+        StringBuffer retval = new StringBuffer(300);
 		
-		retval.append("    "+XMLHandler.addTagValue("connection", databaseMeta==null?"":databaseMeta.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		retval.append("    "+XMLHandler.addTagValue("rowlimit", rowLimit)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    "+XMLHandler.addTagValue("sql", sql)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    "+XMLHandler.addTagValue("outer_join", outerJoin)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    ").append(XMLHandler.addTagValue("connection", databaseMeta==null?"":databaseMeta.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		retval.append("    ").append(XMLHandler.addTagValue("rowlimit", rowLimit)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    ").append(XMLHandler.addTagValue("sql", sql)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    ").append(XMLHandler.addTagValue("outer_join", outerJoin)); //$NON-NLS-1$ //$NON-NLS-2$
 
-		retval.append("    <parameter>"+Const.CR); //$NON-NLS-1$
+		retval.append("    <parameter>").append(Const.CR); //$NON-NLS-1$
 		for (int i=0;i<parameterField.length;i++)
 		{
-			retval.append("      <field>"+Const.CR); //$NON-NLS-1$
-			retval.append("        "+XMLHandler.addTagValue("name", parameterField[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        "+XMLHandler.addTagValue("type", ValueMeta.getTypeDesc(parameterType[i]))); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        </field>"+Const.CR); //$NON-NLS-1$
+			retval.append("      <field>").append(Const.CR); //$NON-NLS-1$
+			retval.append("        ").append(XMLHandler.addTagValue("name", parameterField[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        ").append(XMLHandler.addTagValue("type", ValueMeta.getTypeDesc(parameterType[i]))); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("      </field>").append(Const.CR); //$NON-NLS-1$
 		}
-		retval.append("      </parameter>"+Const.CR); //$NON-NLS-1$
+		retval.append("    </parameter>").append(Const.CR); //$NON-NLS-1$
 
 		return retval.toString();
 	}

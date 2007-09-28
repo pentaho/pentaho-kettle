@@ -137,22 +137,22 @@ public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface
 
 	public String getXML()
 	{
-		StringBuffer retval = new StringBuffer();
+		StringBuffer retval = new StringBuffer(500);
 
-		retval.append("    " + XMLHandler.addTagValue("filename", filename));
-		retval.append("    " + XMLHandler.addTagValue("line_width", lineWidth));
-		retval.append("    " + XMLHandler.addTagValue("header", headerPresent));
-		retval.append("    " + XMLHandler.addTagValue("buffer_size", bufferSize));
-		retval.append("    " + XMLHandler.addTagValue("lazy_conversion", lazyConversionActive));
-		retval.append("    " + XMLHandler.addTagValue("line_feed", lineFeedPresent));
-		retval.append("    " + XMLHandler.addTagValue("parallel", runningInParallel));
+		retval.append("    ").append(XMLHandler.addTagValue("filename", filename));
+		retval.append("    ").append(XMLHandler.addTagValue("line_width", lineWidth));
+		retval.append("    ").append(XMLHandler.addTagValue("header", headerPresent));
+		retval.append("    ").append(XMLHandler.addTagValue("buffer_size", bufferSize));
+		retval.append("    ").append(XMLHandler.addTagValue("lazy_conversion", lazyConversionActive));
+		retval.append("    ").append(XMLHandler.addTagValue("line_feed", lineFeedPresent));
+		retval.append("    ").append(XMLHandler.addTagValue("parallel", runningInParallel));
 
-		retval.append("    <fields>" + Const.CR);
+		retval.append("    <fields>").append(Const.CR);
 		for (int i = 0; i < fieldDefinition.length; i++)
 		{
 			retval.append(fieldDefinition[i].getXML());
 		}
-		retval.append("      </fields>" + Const.CR);
+		retval.append("    </fields>").append(Const.CR);
 
 		return retval.toString();
 	}

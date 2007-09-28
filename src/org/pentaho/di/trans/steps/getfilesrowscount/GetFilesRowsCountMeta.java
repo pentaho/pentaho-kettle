@@ -223,24 +223,21 @@ public class GetFilesRowsCountMeta extends BaseStepMeta implements StepMetaInter
     
     public String getXML()
     {
-        StringBuffer retval=new StringBuffer();
+        StringBuffer retval=new StringBuffer(300);
         
-        retval.append("    "+XMLHandler.addTagValue("files_count",   includeFilesCount));
-        retval.append("    "+XMLHandler.addTagValue("files_count_fieldname",FilesCountFieldName));
-        retval.append("    "+XMLHandler.addTagValue("rows_count_fieldname",RowsCountFieldName));
-        retval.append("    "+XMLHandler.addTagValue("rowseparator_format",RowSeparator_format));
-        retval.append("    "+XMLHandler.addTagValue("row_separator",RowSeparator));
+        retval.append("    ").append(XMLHandler.addTagValue("files_count",   includeFilesCount));
+        retval.append("    ").append(XMLHandler.addTagValue("files_count_fieldname",FilesCountFieldName));
+        retval.append("    ").append(XMLHandler.addTagValue("rows_count_fieldname",RowsCountFieldName));
+        retval.append("    ").append(XMLHandler.addTagValue("rowseparator_format",RowSeparator_format));
+        retval.append("    ").append(XMLHandler.addTagValue("row_separator",RowSeparator));
         
-        
-        
-        
-        retval.append("    <file>"+Const.CR);
+        retval.append("    <file>").append(Const.CR);
         for (int i=0;i<fileName.length;i++)
         {
-            retval.append("      "+XMLHandler.addTagValue("name",     fileName[i]));
-            retval.append("      "+XMLHandler.addTagValue("filemask", fileMask[i]));
+            retval.append("      ").append(XMLHandler.addTagValue("name",     fileName[i]));
+            retval.append("      ").append(XMLHandler.addTagValue("filemask", fileMask[i]));
         }
-        retval.append("      </file>"+Const.CR);
+        retval.append("    </file>").append(Const.CR);
         
 
         return retval.toString();

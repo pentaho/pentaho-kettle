@@ -188,18 +188,18 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface
 	
 	public String getXML()
 	{
-        StringBuffer retval = new StringBuffer();
+        StringBuffer retval = new StringBuffer(200);
 
 		retval.append(XMLHandler.addTagValue("send_true_to", getSendTrueStepname()));		 //$NON-NLS-1$
 		retval.append(XMLHandler.addTagValue("send_false_to", getSendFalseStepname()));		 //$NON-NLS-1$
-		retval.append("    <compare>"+Const.CR); //$NON-NLS-1$
+		retval.append("    <compare>").append(Const.CR); //$NON-NLS-1$
 		
 		if (condition!=null)
 		{
 			retval.append(condition.getXML());
 		}
 		
-		retval.append("    </compare>"+Const.CR); //$NON-NLS-1$
+		retval.append("    </compare>").append(Const.CR); //$NON-NLS-1$
 
 		return retval.toString();
 	}

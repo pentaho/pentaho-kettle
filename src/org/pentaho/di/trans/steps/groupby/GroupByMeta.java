@@ -426,7 +426,7 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
 
 	public String getXML()
 	{
-        StringBuffer retval = new StringBuffer(200);
+        StringBuffer retval = new StringBuffer(500);
 
 		retval.append("      ").append(XMLHandler.addTagValue("all_rows",  passAllRows)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("      ").append(XMLHandler.addTagValue("ignore_aggregate",  aggregateIgnored)); //$NON-NLS-1$ //$NON-NLS-2$
@@ -443,7 +443,7 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
 			retval.append("          ").append(XMLHandler.addTagValue("name", groupField[i])); //$NON-NLS-1$ //$NON-NLS-2$
 			retval.append("        </field>").append(Const.CR); //$NON-NLS-1$
 		}
-		retval.append("        </group>").append(Const.CR); //$NON-NLS-1$
+		retval.append("      </group>").append(Const.CR); //$NON-NLS-1$
 
 		retval.append("      <fields>").append(Const.CR); //$NON-NLS-1$
 		for (int i=0;i<subjectField.length;i++)
@@ -454,7 +454,7 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
 			retval.append("          ").append(XMLHandler.addTagValue("type", getTypeDesc(aggregateType[i]))); //$NON-NLS-1$ //$NON-NLS-2$
 			retval.append("        </field>").append(Const.CR); //$NON-NLS-1$
 		}
-		retval.append("        </fields>").append(Const.CR); //$NON-NLS-1$
+		retval.append("      </fields>").append(Const.CR); //$NON-NLS-1$
 
 		return retval.toString();
 	}

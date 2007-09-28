@@ -214,23 +214,23 @@ public class MappingOutputMeta extends BaseStepMeta implements StepMetaInterface
     
     public String getXML()
     {
-        StringBuffer retval = new StringBuffer();
+        StringBuffer retval = new StringBuffer(300);
 
-        retval.append("    <fields>" + Const.CR); //$NON-NLS-1$
+        retval.append("    <fields>").append(Const.CR); //$NON-NLS-1$
         for (int i = 0; i < fieldName.length; i++)
         {
             if (fieldName[i] != null && fieldName[i].length() != 0)
             {
-                retval.append("      <field>" + Const.CR); //$NON-NLS-1$
-                retval.append("        " + XMLHandler.addTagValue("name", fieldName[i])); //$NON-NLS-1$ //$NON-NLS-2$
-                retval.append("        " + XMLHandler.addTagValue("type", ValueMeta.getTypeDesc(fieldType[i]))); //$NON-NLS-1$ //$NON-NLS-2$
-                retval.append("        " + XMLHandler.addTagValue("length", fieldLength[i])); //$NON-NLS-1$ //$NON-NLS-2$
-                retval.append("        " + XMLHandler.addTagValue("precision", fieldPrecision[i])); //$NON-NLS-1$ //$NON-NLS-2$
-                retval.append("        " + XMLHandler.addTagValue("added", fieldAdded[i]?"Y":"N")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-                retval.append("        </field>" + Const.CR); //$NON-NLS-1$
+                retval.append("      <field>").append(Const.CR); //$NON-NLS-1$
+                retval.append("        ").append(XMLHandler.addTagValue("name", fieldName[i])); //$NON-NLS-1$ //$NON-NLS-2$
+                retval.append("        ").append(XMLHandler.addTagValue("type", ValueMeta.getTypeDesc(fieldType[i]))); //$NON-NLS-1$ //$NON-NLS-2$
+                retval.append("        ").append(XMLHandler.addTagValue("length", fieldLength[i])); //$NON-NLS-1$ //$NON-NLS-2$
+                retval.append("        ").append(XMLHandler.addTagValue("precision", fieldPrecision[i])); //$NON-NLS-1$ //$NON-NLS-2$
+                retval.append("        ").append(XMLHandler.addTagValue("added", fieldAdded[i]?"Y":"N")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+                retval.append("      </field>").append(Const.CR); //$NON-NLS-1$
             }
         }
-        retval.append("      </fields>" + Const.CR); //$NON-NLS-1$
+        retval.append("    </fields>").append(Const.CR); //$NON-NLS-1$
 
         return retval.toString();
     }

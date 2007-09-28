@@ -45,7 +45,6 @@ import org.w3c.dom.Node;
  * Created on 24-jun-2003
  *
  */
-
 public class AggregateRowsMeta extends BaseStepMeta implements StepMetaInterface
 {
 	public final static int TYPE_AGGREGATE_NONE       = 0;
@@ -259,18 +258,18 @@ public class AggregateRowsMeta extends BaseStepMeta implements StepMetaInterface
 
 	public String getXML()
 	{
-        StringBuffer retval = new StringBuffer();
+        StringBuffer retval = new StringBuffer(300);
 		
-		retval.append("    <fields>"+Const.CR); //$NON-NLS-1$
+		retval.append("    <fields>").append(Const.CR); //$NON-NLS-1$
 		for (int i=0;i<fieldName.length;i++)
 		{
-    		retval.append("      <field>"+Const.CR); //$NON-NLS-1$
-    		retval.append("        "+XMLHandler.addTagValue("name", fieldName[i])); //$NON-NLS-1$ //$NON-NLS-2$
-    		retval.append("        "+XMLHandler.addTagValue("rename", fieldNewName[i])); //$NON-NLS-1$ //$NON-NLS-2$
-    		retval.append("        "+XMLHandler.addTagValue("type", getTypeDesc(aggregateType[i]))); //$NON-NLS-1$ //$NON-NLS-2$
-    		retval.append("        </field>"+Const.CR); //$NON-NLS-1$
+    		retval.append("      <field>").append(Const.CR); //$NON-NLS-1$
+    		retval.append("        ").append(XMLHandler.addTagValue("name", fieldName[i])); //$NON-NLS-1$ //$NON-NLS-2$
+    		retval.append("        ").append(XMLHandler.addTagValue("rename", fieldNewName[i])); //$NON-NLS-1$ //$NON-NLS-2$
+    		retval.append("        ").append(XMLHandler.addTagValue("type", getTypeDesc(aggregateType[i]))); //$NON-NLS-1$ //$NON-NLS-2$
+    		retval.append("      </field>").append(Const.CR); //$NON-NLS-1$
 		}
-		retval.append("      </fields>"+Const.CR); //$NON-NLS-1$
+		retval.append("    </fields>").append(Const.CR); //$NON-NLS-1$
 
 		return retval.toString();
 	}

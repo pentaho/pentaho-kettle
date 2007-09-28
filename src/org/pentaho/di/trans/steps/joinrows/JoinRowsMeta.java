@@ -223,22 +223,22 @@ public class JoinRowsMeta extends BaseStepMeta implements StepMetaInterface
 
 	public String getXML()
 	{
-        StringBuffer retval = new StringBuffer();
+        StringBuffer retval = new StringBuffer(300);
 
-		retval.append("      "+XMLHandler.addTagValue("directory",  directory)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("      "+XMLHandler.addTagValue("prefix",     prefix)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("      "+XMLHandler.addTagValue("cache_size", cacheSize)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("      ").append(XMLHandler.addTagValue("directory",  directory)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("      ").append(XMLHandler.addTagValue("prefix",     prefix)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("      ").append(XMLHandler.addTagValue("cache_size", cacheSize)); //$NON-NLS-1$ //$NON-NLS-2$
 		
-		retval.append("      "+XMLHandler.addTagValue("main", getLookupStepname())); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("      ").append(XMLHandler.addTagValue("main", getLookupStepname())); //$NON-NLS-1$ //$NON-NLS-2$
 
-		retval.append("    <compare>"+Const.CR); //$NON-NLS-1$
+		retval.append("    <compare>").append(Const.CR); //$NON-NLS-1$
 		
 		if (condition!=null)
 		{
 			retval.append(condition.getXML());
 		}
 		
-		retval.append("    </compare>"+Const.CR); //$NON-NLS-1$
+		retval.append("    </compare>").append(Const.CR); //$NON-NLS-1$
 
 		return retval.toString();	
 	}

@@ -173,12 +173,12 @@ public class CubeInputMeta extends BaseStepMeta implements StepMetaInterface
 	
 	public String getXML()
 	{
-        StringBuffer retval = new StringBuffer();
+        StringBuffer retval = new StringBuffer(300);
 		
-		retval.append("    <file>"+Const.CR); //$NON-NLS-1$
-		retval.append("      "+XMLHandler.addTagValue("name", filename)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("      </file>"+Const.CR); //$NON-NLS-1$
-		retval.append("    "+XMLHandler.addTagValue("limit",    rowLimit)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    <file>").append(Const.CR); //$NON-NLS-1$
+		retval.append("      ").append(XMLHandler.addTagValue("name", filename)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    </file>").append(Const.CR); //$NON-NLS-1$
+		retval.append("    ").append(XMLHandler.addTagValue("limit",  rowLimit)); //$NON-NLS-1$ //$NON-NLS-2$
 
 		return retval.toString();
 	}

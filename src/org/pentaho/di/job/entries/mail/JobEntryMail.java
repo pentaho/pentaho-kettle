@@ -190,11 +190,11 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
     retval.append("      ").append(XMLHandler.addTagValue("use_HTML", useHTML));
     retval.append("      ").append(XMLHandler.addTagValue("use_Priority", usePriority));
     
-    retval.append("    " + XMLHandler.addTagValue("encoding", encoding));
-    retval.append("    " + XMLHandler.addTagValue("priority", priority));
-    retval.append("    " + XMLHandler.addTagValue("importance", importance));
+    retval.append("      ").append(XMLHandler.addTagValue("encoding", encoding));
+    retval.append("      ").append(XMLHandler.addTagValue("priority", priority));
+    retval.append("      ").append(XMLHandler.addTagValue("importance", importance));
     
-    retval.append("    " + XMLHandler.addTagValue("secureconnectiontype", secureconnectiontype));
+    retval.append("      ").append(XMLHandler.addTagValue("secureconnectiontype", secureconnectiontype));
     
     
     

@@ -332,7 +332,7 @@ public class ConstantMeta extends BaseStepMeta implements StepMetaInterface
 	{
         StringBuffer retval = new StringBuffer(300);
 		
-		retval.append("    <fields>"+Const.CR);
+		retval.append("    <fields>").append(Const.CR);
 		for (int i=0;i<fieldName.length;i++)
 		{
 			if (fieldName[i]!=null && fieldName[i].length()!=0)

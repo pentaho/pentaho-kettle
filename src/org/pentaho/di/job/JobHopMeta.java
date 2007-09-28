@@ -110,7 +110,7 @@ public class JobHopMeta implements Cloneable, XMLInterface
 		retval.append("      ").append(XMLHandler.addTagValue("enabled",       enabled));
 		retval.append("      ").append(XMLHandler.addTagValue("evaluation",    evaluation));
 		retval.append("      ").append(XMLHandler.addTagValue("unconditional", unconditional));
-		retval.append("    </hop>"+Const.CR);
+		retval.append("    </hop>").append(Const.CR);
 		}
 		
 		return retval.toString();

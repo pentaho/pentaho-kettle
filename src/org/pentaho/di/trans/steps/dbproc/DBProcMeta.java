@@ -284,29 +284,29 @@ public class DBProcMeta extends BaseStepMeta implements StepMetaInterface
 
     public String getXML()
     {
-        StringBuffer retval = new StringBuffer();
+        StringBuffer retval = new StringBuffer(500);
 
-        retval.append("    " + XMLHandler.addTagValue("connection", database == null ? "" : database.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        retval.append("    " + XMLHandler.addTagValue("procedure", procedure)); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("    <lookup>" + Const.CR); //$NON-NLS-1$
+        retval.append("    ").append(XMLHandler.addTagValue("connection", database == null ? "" : database.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        retval.append("    ").append(XMLHandler.addTagValue("procedure", procedure)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("    <lookup>").append(Const.CR); //$NON-NLS-1$
 
         for (int i = 0; i < argument.length; i++)
         {
-            retval.append("      <arg>" + Const.CR); //$NON-NLS-1$
-            retval.append("        " + XMLHandler.addTagValue("name", argument[i])); //$NON-NLS-1$ //$NON-NLS-2$
-            retval.append("        " + XMLHandler.addTagValue("direction", argumentDirection[i])); //$NON-NLS-1$ //$NON-NLS-2$
-            retval.append("        " + XMLHandler.addTagValue("type", ValueMeta.getTypeDesc(argumentType[i]))); //$NON-NLS-1$ //$NON-NLS-2$
-            retval.append("        </arg>" + Const.CR); //$NON-NLS-1$
+            retval.append("      <arg>").append(Const.CR); //$NON-NLS-1$
+            retval.append("        ").append(XMLHandler.addTagValue("name", argument[i])); //$NON-NLS-1$ //$NON-NLS-2$
+            retval.append("        ").append(XMLHandler.addTagValue("direction", argumentDirection[i])); //$NON-NLS-1$ //$NON-NLS-2$
+            retval.append("        ").append(XMLHandler.addTagValue("type", ValueMeta.getTypeDesc(argumentType[i]))); //$NON-NLS-1$ //$NON-NLS-2$
+            retval.append("      </arg>").append(Const.CR); //$NON-NLS-1$
         }
 
-        retval.append("      </lookup>" + Const.CR); //$NON-NLS-1$
+        retval.append("    </lookup>").append(Const.CR); //$NON-NLS-1$
 
-        retval.append("    <result>" + Const.CR); //$NON-NLS-1$
-        retval.append("      " + XMLHandler.addTagValue("name", resultName)); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("      " + XMLHandler.addTagValue("type", ValueMeta.getTypeDesc(resultType))); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("      </result>" + Const.CR); //$NON-NLS-1$
+        retval.append("    <result>").append(Const.CR); //$NON-NLS-1$
+        retval.append("      ").append(XMLHandler.addTagValue("name", resultName)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("      ").append(XMLHandler.addTagValue("type", ValueMeta.getTypeDesc(resultType))); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("    </result>").append(Const.CR); //$NON-NLS-1$
 
-        retval.append("    " + XMLHandler.addTagValue("auto_commit", autoCommit)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("    ").append(XMLHandler.addTagValue("auto_commit", autoCommit)); //$NON-NLS-1$ //$NON-NLS-2$
 
         return retval.toString();
     }

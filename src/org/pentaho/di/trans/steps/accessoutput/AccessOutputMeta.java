@@ -139,14 +139,14 @@ public class AccessOutputMeta extends BaseStepMeta implements StepMetaInterface
 
 	public String getXML()
 	{
-		StringBuffer retval=new StringBuffer();
+		StringBuffer retval=new StringBuffer(300);
 		
-		retval.append("    "+XMLHandler.addTagValue("filename",      filename));
-		retval.append("    "+XMLHandler.addTagValue("table",         tablename));
-		retval.append("    "+XMLHandler.addTagValue("truncate",      tableTruncated));
-        retval.append("    "+XMLHandler.addTagValue("create_file",   fileCreated));
-        retval.append("    "+XMLHandler.addTagValue("create_table",  tableCreated));
-        retval.append("    "+XMLHandler.addTagValue("commit_size",   commitSize));
+		retval.append("    ").append(XMLHandler.addTagValue("filename",      filename));
+		retval.append("    ").append(XMLHandler.addTagValue("table",         tablename));
+		retval.append("    ").append(XMLHandler.addTagValue("truncate",      tableTruncated));
+        retval.append("    ").append(XMLHandler.addTagValue("create_file",   fileCreated));
+        retval.append("    ").append(XMLHandler.addTagValue("create_table",  tableCreated));
+        retval.append("    ").append(XMLHandler.addTagValue("commit_size",   commitSize));
 
 		return retval.toString();
 	}

@@ -115,24 +115,24 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
     
     public String getXML()
     {
-        StringBuffer xml = new StringBuffer();
+        StringBuffer xml = new StringBuffer(500);
         
-        xml.append("        <"+XML_TAG+">"+Const.CR); //$NON-NLS-1$ //$NON-NLS-2$
+        xml.append("        <").append(XML_TAG).append(">").append(Const.CR); //$NON-NLS-1$ //$NON-NLS-2$
         
-        xml.append("          "+XMLHandler.addTagValue("name", name)); //$NON-NLS-1$ //$NON-NLS-2$
-        xml.append("          "+XMLHandler.addTagValue("base_port", basePort)); //$NON-NLS-1$ //$NON-NLS-2$
-        xml.append("          "+XMLHandler.addTagValue("sockets_buffer_size", socketsBufferSize)); //$NON-NLS-1$ //$NON-NLS-2$
-        xml.append("          "+XMLHandler.addTagValue("sockets_flush_interval", socketsFlushInterval)); //$NON-NLS-1$ //$NON-NLS-2$
-        xml.append("          "+XMLHandler.addTagValue("sockets_compressed", socketsCompressed)); //$NON-NLS-1$ //$NON-NLS-2$
+        xml.append("          ").append(XMLHandler.addTagValue("name", name)); //$NON-NLS-1$ //$NON-NLS-2$
+        xml.append("          ").append(XMLHandler.addTagValue("base_port", basePort)); //$NON-NLS-1$ //$NON-NLS-2$
+        xml.append("          ").append(XMLHandler.addTagValue("sockets_buffer_size", socketsBufferSize)); //$NON-NLS-1$ //$NON-NLS-2$
+        xml.append("          ").append(XMLHandler.addTagValue("sockets_flush_interval", socketsFlushInterval)); //$NON-NLS-1$ //$NON-NLS-2$
+        xml.append("          ").append(XMLHandler.addTagValue("sockets_compressed", socketsCompressed)); //$NON-NLS-1$ //$NON-NLS-2$
         
-        xml.append("          <slaveservers>"+Const.CR); //$NON-NLS-1$
+        xml.append("          <slaveservers>").append(Const.CR); //$NON-NLS-1$
         for (int i=0;i<slaveServers.size();i++)
         {
             SlaveServer slaveServer = slaveServers.get(i);
-            xml.append("            "+XMLHandler.addTagValue("name", slaveServer.getName())); //$NON-NLS-1$ //$NON-NLS-2$
+            xml.append("            ").append(XMLHandler.addTagValue("name", slaveServer.getName())); //$NON-NLS-1$ //$NON-NLS-2$
         }
-        xml.append("          </slaveservers>"+Const.CR); //$NON-NLS-1$
-        xml.append("        </"+XML_TAG+">"+Const.CR); //$NON-NLS-1$ //$NON-NLS-2$
+        xml.append("          </slaveservers>").append(Const.CR); //$NON-NLS-1$
+        xml.append("        </").append(XML_TAG).append(">").append(Const.CR); //$NON-NLS-1$ //$NON-NLS-2$
         return xml.toString();
     }
     

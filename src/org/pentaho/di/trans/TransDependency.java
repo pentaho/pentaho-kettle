@@ -55,13 +55,13 @@ public class TransDependency implements XMLInterface, Cloneable
     
     public String getXML()
     {
-        StringBuffer xml = new StringBuffer();
+        StringBuffer xml = new StringBuffer(200);
         
         xml.append("      ").append(XMLHandler.openTag(XML_TAG)).append(Const.CR); //$NON-NLS-1$
         xml.append("        ").append(XMLHandler.addTagValue("connection", db==null?"":db.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         xml.append("        ").append(XMLHandler.addTagValue("table",      tablename)); //$NON-NLS-1$ //$NON-NLS-2$
         xml.append("        ").append(XMLHandler.addTagValue("field",      fieldname)); //$NON-NLS-1$ //$NON-NLS-2$
-        xml.append("       ").append(XMLHandler.closeTag(XML_TAG)).append(Const.CR); //$NON-NLS-1$
+        xml.append("      ").append(XMLHandler.closeTag(XML_TAG)).append(Const.CR); //$NON-NLS-1$
         
         return xml.toString();
     }

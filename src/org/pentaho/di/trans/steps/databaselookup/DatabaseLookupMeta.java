@@ -50,8 +50,6 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.w3c.dom.Node;
 
-
-
 public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterface
 {
     /** what's the lookup schema name? */
@@ -505,40 +503,39 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 
 	public String getXML()
 	{
-        StringBuffer retval = new StringBuffer();
+        StringBuffer retval = new StringBuffer(500);
 		
-		retval.append("    "+XMLHandler.addTagValue("connection", databaseMeta==null?"":databaseMeta.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		retval.append("    "+XMLHandler.addTagValue("cache", cached)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    "+XMLHandler.addTagValue("cache_size", cacheSize)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    <lookup>"+Const.CR); //$NON-NLS-1$
-        retval.append("      "+XMLHandler.addTagValue("schema", schemaName)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("      "+XMLHandler.addTagValue("table", tablename)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("      "+XMLHandler.addTagValue("orderby", orderByClause)); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("      "+XMLHandler.addTagValue("fail_on_multiple", failingOnMultipleResults)); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("      "+XMLHandler.addTagValue("eat_row_on_failure", eatingRowOnLookupFailure)); //$NON-NLS-1$ //$NON-NLS-2$
-
+		retval.append("    ").append(XMLHandler.addTagValue("connection", databaseMeta==null?"":databaseMeta.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		retval.append("    ").append(XMLHandler.addTagValue("cache", cached)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    ").append(XMLHandler.addTagValue("cache_size", cacheSize)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    <lookup>").append(Const.CR); //$NON-NLS-1$
+        retval.append("      ").append(XMLHandler.addTagValue("schema", schemaName)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("      ").append(XMLHandler.addTagValue("table", tablename)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("      ").append(XMLHandler.addTagValue("orderby", orderByClause)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("      ").append(XMLHandler.addTagValue("fail_on_multiple", failingOnMultipleResults)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("      ").append(XMLHandler.addTagValue("eat_row_on_failure", eatingRowOnLookupFailure)); //$NON-NLS-1$ //$NON-NLS-2$
         
 		for (int i=0;i<streamKeyField1.length;i++)
 		{
-			retval.append("      <key>"+Const.CR); //$NON-NLS-1$
-			retval.append("        "+XMLHandler.addTagValue("name", streamKeyField1[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        "+XMLHandler.addTagValue("field", tableKeyField[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        "+XMLHandler.addTagValue("condition", keyCondition[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        "+XMLHandler.addTagValue("name2", streamKeyField2[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        </key>"+Const.CR); //$NON-NLS-1$
+			retval.append("      <key>").append(Const.CR); //$NON-NLS-1$
+			retval.append("        ").append(XMLHandler.addTagValue("name", streamKeyField1[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        ").append(XMLHandler.addTagValue("field", tableKeyField[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        ").append(XMLHandler.addTagValue("condition", keyCondition[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        ").append(XMLHandler.addTagValue("name2", streamKeyField2[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("      </key>").append(Const.CR); //$NON-NLS-1$
 		}
 
 		for (int i=0;i<returnValueField.length;i++)
 		{
-			retval.append("      <value>"+Const.CR); //$NON-NLS-1$
-			retval.append("        "+XMLHandler.addTagValue("name", returnValueField[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        "+XMLHandler.addTagValue("rename", returnValueNewName[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        "+XMLHandler.addTagValue("default", returnValueDefault[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        "+XMLHandler.addTagValue("type", ValueMeta.getTypeDesc(returnValueDefaultType[i]))); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        </value>"+Const.CR); //$NON-NLS-1$
+			retval.append("      <value>").append(Const.CR); //$NON-NLS-1$
+			retval.append("        ").append(XMLHandler.addTagValue("name", returnValueField[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        ").append(XMLHandler.addTagValue("rename", returnValueNewName[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        ").append(XMLHandler.addTagValue("default", returnValueDefault[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        ").append(XMLHandler.addTagValue("type", ValueMeta.getTypeDesc(returnValueDefaultType[i]))); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("      </value>").append(Const.CR); //$NON-NLS-1$
 		}
 
-		retval.append("      </lookup>"+Const.CR); //$NON-NLS-1$
+		retval.append("    </lookup>").append(Const.CR); //$NON-NLS-1$
 
 		return retval.toString();
 	}
