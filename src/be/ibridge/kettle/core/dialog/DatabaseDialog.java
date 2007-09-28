@@ -223,7 +223,7 @@ public class DatabaseDialog extends Dialog
         Shell parent = getParent();
         shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
         props.setLook(shell);
-		shell.setImage((Image) GUIResource.getInstance().getImageConnection());
+        shell.setImage( GUIResource.getInstance().getImageConnection());
 
         lsMod = new ModifyListener()
         {
@@ -1948,7 +1948,7 @@ public class DatabaseDialog extends Dialog
         catch (KettleException e)
         {
             new ErrorDialog(shell,
-                    Messages.getString("DatabaseDialog.ErrorParameters,title"), Messages.getString("DatabaseDialog.ErrorParameters.description"), e); //$NON-NLS-1$ //$NON-NLS-2$
+                    Messages.getString("DatabaseDialog.ErrorParameters.title"), Messages.getString("DatabaseDialog.ErrorParameters.description"), e); //$NON-NLS-1$ //$NON-NLS-2$
         }
     }
 
