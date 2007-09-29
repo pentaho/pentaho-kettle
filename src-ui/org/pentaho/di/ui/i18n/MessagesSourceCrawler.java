@@ -13,7 +13,6 @@ import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.i18n.GlobalMessages;
 import org.pentaho.di.i18n.LanguageChoice;
 
 /**
