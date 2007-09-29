@@ -110,7 +110,7 @@ public class AbortMeta  extends BaseStepMeta implements StepMetaInterface {
 	    }
 	    catch(Exception e)
 	    {
- 		    throw new KettleException(Messages.getString("Abort.Exception.UnexpectedErrorInReadingStepInfoFromRepository"), e); //$NON-NLS-1$
+ 		    throw new KettleException(Messages.getString("AbortMeta.Exception.UnexpectedErrorInReadingStepInfoFromRepository"), e); //$NON-NLS-1$
 	    }
     }
 
@@ -125,7 +125,7 @@ public class AbortMeta  extends BaseStepMeta implements StepMetaInterface {
 	    }
 	    catch(Exception e)
 	    {
-		    throw new KettleException(Messages.getString("Abort.Exception.UnableToSaveStepInfoToRepository")+id_step, e); //$NON-NLS-1$
+		    throw new KettleException(Messages.getString("AbortMeta.Exception.UnableToSaveStepInfoToRepository")+id_step, e); //$NON-NLS-1$
 	    }
     }
     

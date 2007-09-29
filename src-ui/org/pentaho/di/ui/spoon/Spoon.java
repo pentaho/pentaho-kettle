@@ -996,9 +996,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		{
 			// TODO log this
 			t.printStackTrace();
-			new ErrorDialog(shell, Messages.getString("Spoon.Exception.ErrorReadingXULFile.Title"), Messages
-					.getString("Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_MENUS), new Exception(
-					t));
+			new ErrorDialog(shell, Messages.getString("Spoon.Exception.ErrorReadingXULFile.Title"), Messages.getString("Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_MENUS), new Exception(t));
 		}
 
 		addMenuListeners();
@@ -1191,8 +1189,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 				// "Error loading transformation", "I was unable to load this
 				// transformation from the
 				// XML file because of an error"
-				new ErrorDialog(shell, Messages.getString("Spoon.Dialog.LoadTransformationError.Title"), Messages
-						.getString("Spoon.Dialog.LoadTransformationError.Message"), ke);
+				new ErrorDialog(shell, Messages.getString("Spoon.Dialog.LoadTransformationError.Title"), Messages.getString("Spoon.Dialog.LoadTransformationError.Message"), ke);
 			}
 		}
 

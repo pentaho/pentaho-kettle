@@ -218,8 +218,7 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
         fdlURL.top = new FormAttachment(wName, margin);
         fdlURL.right = new FormAttachment(middle, -margin);
         wlURL.setLayoutData(fdlURL);
-        wURL = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER, Messages
-            .getString("JobHTTP.URL.Tooltip"));
+        wURL = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER, Messages.getString("JobHTTP.URL.Tooltip"));
         props.setLook(wURL);
         wURL.addModifyListener(lsMod);
         fdURL = new FormData();

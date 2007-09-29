@@ -230,8 +230,7 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
 
 		final int FieldsRows = input.getArguments().length;
 
-		ColumnInfo[] colinf = new ColumnInfo[] { new ColumnInfo(Messages
-				.getString("ExecSQLDialog.ColumnInfo.ArgumentFieldname"), ColumnInfo.COLUMN_TYPE_TEXT, false) //$NON-NLS-1$
+		ColumnInfo[] colinf = new ColumnInfo[] { new ColumnInfo(Messages.getString("ExecSQLDialog.ColumnInfo.ArgumentFieldname"), ColumnInfo.COLUMN_TYPE_TEXT, false) //$NON-NLS-1$
 		};
 
 		wFields = new TableView(transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows,

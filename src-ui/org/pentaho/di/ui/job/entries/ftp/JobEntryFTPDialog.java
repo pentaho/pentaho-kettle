@@ -196,8 +196,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
         int margin = Const.MARGIN;
 
         // Job entry name line
-        wName = new LabelText(shell, Messages.getString("JobFTP.Name.Label"), Messages
-            .getString("JobFTP.Name.Tooltip"));
+        wName = new LabelText(shell, Messages.getString("JobFTP.Name.Label"), Messages.getString("JobFTP.Name.Tooltip"));
         wName.addModifyListener(lsMod);
         fdName = new FormData();
         fdName.top = new FormAttachment(0, 0);
@@ -206,8 +205,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
         wName.setLayoutData(fdName);
 
         // ServerName line
-        wServerName = new LabelTextVar(jobMeta, shell, Messages.getString("JobFTP.Server.Label"), Messages
-            .getString("JobFTP.Server.Tooltip"));
+        wServerName = new LabelTextVar(jobMeta, shell, Messages.getString("JobFTP.Server.Label"), Messages.getString("JobFTP.Server.Tooltip"));
         props.setLook(wServerName);
         wServerName.addModifyListener(lsMod);
         fdServerName = new FormData();
@@ -217,8 +215,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
         wServerName.setLayoutData(fdServerName);
 
         // UserName line
-        wUserName = new LabelTextVar(jobMeta, shell, Messages.getString("JobFTP.User.Label"), Messages
-            .getString("JobFTP.User.Tooltip"));
+        wUserName = new LabelTextVar(jobMeta, shell, Messages.getString("JobFTP.User.Label"), Messages.getString("JobFTP.User.Tooltip"));
         props.setLook(wUserName);
         wUserName.addModifyListener(lsMod);
         fdUserName = new FormData();
@@ -228,8 +225,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
         wUserName.setLayoutData(fdUserName);
 
         // Password line
-        wPassword = new LabelTextVar(jobMeta, shell, Messages.getString("JobFTP.Password.Label"), Messages
-            .getString("JobFTP.Password.Tooltip"));
+        wPassword = new LabelTextVar(jobMeta, shell, Messages.getString("JobFTP.Password.Label"), Messages.getString("JobFTP.Password.Tooltip"));
         props.setLook(wPassword);
         wPassword.setEchoChar('*');
         wPassword.addModifyListener(lsMod);
@@ -271,8 +267,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
         wTargetDirectory.setLayoutData(fdTargetDirectory);
 
         // Wildcard line
-        wWildcard = new LabelTextVar(jobMeta, shell, Messages.getString("JobFTP.Wildcard.Label"), Messages
-            .getString("JobFTP.Wildcard.Tooltip"));
+        wWildcard = new LabelTextVar(jobMeta, shell, Messages.getString("JobFTP.Wildcard.Label"), Messages.getString("JobFTP.Wildcard.Tooltip"));
         props.setLook(wWildcard);
         wWildcard.addModifyListener(lsMod);
         fdWildcard = new FormData();
@@ -300,8 +295,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
         wBinaryMode.setLayoutData(fdBinaryMode);
 
         // Timeout line
-        wTimeout = new LabelTextVar(jobMeta, shell, Messages.getString("JobFTP.Timeout.Label"), Messages
-            .getString("JobFTP.Timeout.Tooltip"));
+        wTimeout = new LabelTextVar(jobMeta, shell, Messages.getString("JobFTP.Timeout.Label"), Messages.getString("JobFTP.Timeout.Tooltip"));
         props.setLook(wTimeout);
         wTimeout.addModifyListener(lsMod);
         fdTimeout = new FormData();

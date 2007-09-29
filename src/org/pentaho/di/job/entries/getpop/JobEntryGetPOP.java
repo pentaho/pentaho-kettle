@@ -405,8 +405,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
       // Check if output folder exists
       if (!fileObject.exists())
       {
-        log.logError(toString(), Messages.getString(
-            "JobGetMailsFromPOP.FolderNotExists.Label", getRealOutputDirectory())); //$NON-NLS-1$
+        log.logError(toString(), Messages.getString("JobGetMailsFromPOP.FolderNotExists.Label", getRealOutputDirectory())); //$NON-NLS-1$
       } else
       {
 
@@ -468,14 +467,8 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 
           Message messageList[] = f.getMessages();
 
-          log.logDetailed(toString(), Messages.getString(
-              "JobGetMailsFromPOP.TotalMessagesFolder.Label", f.getName(), String.valueOf(messageList.length))); //$NON-NLS-1$
-          log
-              .logDetailed(
-                  toString(),
-                  Messages
-                      .getString(
-                          "JobGetMailsFromPOP.TotalUnreadMessagesFolder.Label", f.getName(), String.valueOf(f.getUnreadMessageCount()))); //$NON-NLS-1$
+          log.logDetailed(toString(), Messages.getString("JobGetMailsFromPOP.TotalMessagesFolder.Label", f.getName(), String.valueOf(messageList.length))); //$NON-NLS-1$
+          log.logDetailed(toString(), Messages.getString("JobGetMailsFromPOP.TotalUnreadMessagesFolder.Label", f.getName(), String.valueOf(f.getUnreadMessageCount()))); //$NON-NLS-1$
 
           // Get emails
           Message msg_list[] = getPOPMessages(f, retrievemails);
@@ -509,16 +502,13 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
               {
 
                 Message msg_POP = msg_list[i];
-                log.logDetailed(toString(), Messages.getString(
-                    "JobGetMailsFromPOP.EmailFrom.Label", msg_list[i].getFrom()[0].toString())); //$NON-NLS-1$
-                log.logDetailed(toString(), Messages.getString(
-                    "JobGetMailsFromPOP.EmailSubject.Label", msg_list[i].getSubject())); //$NON-NLS-1$
+                log.logDetailed(toString(), Messages.getString("JobGetMailsFromPOP.EmailFrom.Label", msg_list[i].getFrom()[0].toString())); //$NON-NLS-1$
+                log.logDetailed(toString(), Messages.getString("JobGetMailsFromPOP.EmailSubject.Label", msg_list[i].getSubject())); //$NON-NLS-1$
 
                 String localfilename_message = startpattern
                     + "_" + dateFormat.format(new Date()) + "_" + (i + 1) + ".mail"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
-                log.logDetailed(toString(), Messages.getString(
-                    "JobGetMailsFromPOP.LocalFilename.Label", localfilename_message)); //$NON-NLS-1$
+                log.logDetailed(toString(), Messages.getString("JobGetMailsFromPOP.LocalFilename.Label", localfilename_message)); //$NON-NLS-1$
 
                 File filename_message = new File(getRealOutputDirectory(), localfilename_message);
                 OutputStream os_filename = new FileOutputStream(filename_message);

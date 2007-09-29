@@ -169,8 +169,9 @@ public class SpoonJobDelegate extends SpoonDelegate
 		{
 			new ErrorDialog(
 					spoon.getShell(),
-					Messages
-							.getString("Spoon.ErrorDiaspoon.getLog().UnexpectedErrorCreatingNewJobGraphEntry.Title"), Messages.getString("Spoon.ErrorDiaspoon.getLog().UnexpectedErrorCreatingNewJobGraphEntry.Message"), new Exception(e)); //$NON-NLS-1$ //$NON-NLS-2$
+					Messages.getString("Spoon.ErrorDiaspoon.getLog().UnexpectedErrorCreatingNewJobGraphEntry.Title"), 
+					Messages.getString("Spoon.ErrorDiaspoon.getLog().UnexpectedErrorCreatingNewJobGraphEntry.Message"), 
+					new Exception(e)); //$NON-NLS-1$ //$NON-NLS-2$
 			return null;
 		}
 	}
@@ -671,9 +672,8 @@ public class SpoonJobDelegate extends SpoonDelegate
 					if (!ok)
 					{
 						throw new InvocationTargetException(
-								new Exception(
-										Messages
-												.getString("Spoon.RipDB.Exception.UnableToSaveTransformationToRepository")), Messages.getString("Spoon.RipDB.Exception.UnableToSaveTransformationToRepository")); //$NON-NLS-1$
+								new Exception(Messages.getString("Spoon.RipDB.Exception.UnableToSaveTransformationToRepository")), //$NON-NLS-1$
+								Messages.getString("Spoon.RipDB.Exception.UnableToSaveTransformationToRepository")); //$NON-NLS-1$
 					}
 
 					// We can now continue with the population of the job...

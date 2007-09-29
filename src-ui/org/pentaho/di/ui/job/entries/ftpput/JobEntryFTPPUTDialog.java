@@ -321,8 +321,7 @@ public class JobEntryFTPPUTDialog extends JobEntryDialog implements JobEntryDial
 		wbScpDirectory.setLayoutData(fdbScpDirectory);
         
         
-        wScpDirectory = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER, Messages
-            .getString("JobFTPPUT.RemoteDir.Tooltip"));
+        wScpDirectory = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER, Messages.getString("JobFTPPUT.RemoteDir.Tooltip"));
         props.setLook(wScpDirectory);
         wScpDirectory.addModifyListener(lsMod);
         fdScpDirectory = new FormData();
@@ -340,8 +339,7 @@ public class JobEntryFTPPUTDialog extends JobEntryDialog implements JobEntryDial
         fdlTargetDirectory.top = new FormAttachment(wScpDirectory, margin);
         fdlTargetDirectory.right = new FormAttachment(middle, -margin);
         wlTargetDirectory.setLayoutData(fdlTargetDirectory);
-        wTargetDirectory = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER, Messages
-            .getString("JobFTPPUT.TargetDir.Tooltip"));
+        wTargetDirectory = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER, Messages.getString("JobFTPPUT.TargetDir.Tooltip"));
         props.setLook(wTargetDirectory);
         wTargetDirectory.addModifyListener(lsMod);
         fdTargetDirectory = new FormData();
@@ -359,8 +357,7 @@ public class JobEntryFTPPUTDialog extends JobEntryDialog implements JobEntryDial
         fdlWildcard.top = new FormAttachment(wTargetDirectory, margin);
         fdlWildcard.right = new FormAttachment(middle, -margin);
         wlWildcard.setLayoutData(fdlWildcard);
-        wWildcard = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER, Messages
-            .getString("JobFTPPUT.Wildcard.Tooltip"));
+        wWildcard = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER, Messages.getString("JobFTPPUT.Wildcard.Tooltip"));
         props.setLook(wWildcard);
         wWildcard.addModifyListener(lsMod);
         fdWildcard = new FormData();
@@ -388,8 +385,7 @@ public class JobEntryFTPPUTDialog extends JobEntryDialog implements JobEntryDial
         wBinaryMode.setLayoutData(fdBinaryMode);
 
         // Timeout line
-        wTimeout = new LabelTextVar(jobMeta, shell, Messages.getString("JobFTPPUT.Timeout.Label"), Messages
-            .getString("JobFTPPUT.Timeout.Tooltip"));
+        wTimeout = new LabelTextVar(jobMeta, shell, Messages.getString("JobFTPPUT.Timeout.Label"), Messages.getString("JobFTPPUT.Timeout.Tooltip"));
         props.setLook(wTimeout);
         wTimeout.addModifyListener(lsMod);
         fdTimeout = new FormData();

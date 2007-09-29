@@ -621,8 +621,7 @@ public class BaseStepDialog extends Dialog {
     if (keys.size() > 0) {
       // Ask what we should do with the existing data in the step.
       //
-      MessageDialog md = new MessageDialog(tableView.getShell(), Messages
-          .getString("BaseStepDialog.GetFieldsChoice.Title"),//"Warning!"  //$NON-NLS-1$
+      MessageDialog md = new MessageDialog(tableView.getShell(), Messages.getString("BaseStepDialog.GetFieldsChoice.Title"),//"Warning!"  //$NON-NLS-1$
           null, Messages.getString("BaseStepDialog.GetFieldsChoice.Message", "" + keys.size(), "" + row.size()), //$NON-NLS-1$  //$NON-NLS-2$  //$NON-NLS-3$
           MessageDialog.WARNING, new String[] { Messages.getString("BaseStepDialog.AddNew"), //$NON-NLS-1$
               Messages.getString("BaseStepDialog.Add"), Messages.getString("BaseStepDialog.ClearAndAdd"), //$NON-NLS-1$  //$NON-NLS-2$

@@ -646,9 +646,7 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 		TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(transMeta, oneMeta, wStepname
 				.getText());
 
-		EnterNumberDialog numberDialog = new EnterNumberDialog(shell, 500, Messages
-				.getString("GetFileNamesDialog.PreviewSize.DialogTitle"), Messages
-				.getString("GetFileNamesDialog.PreviewSize.DialogMessage"));
+		EnterNumberDialog numberDialog = new EnterNumberDialog(shell, 500, Messages.getString("GetFileNamesDialog.PreviewSize.DialogTitle"), Messages.getString("GetFileNamesDialog.PreviewSize.DialogMessage"));
 		int previewSize = numberDialog.open();
 		if (previewSize > 0)
 		{
@@ -663,9 +661,7 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 
 				if (trans.getResult() != null && trans.getResult().getNrErrors() > 0)
 				{
-					EnterTextDialog etd = new EnterTextDialog(shell, Messages
-							.getString("System.Dialog.Error.Title"), Messages
-							.getString("GetFileNamesDialog.ErrorInPreview.DialogMessage"), loggingText, true);
+					EnterTextDialog etd = new EnterTextDialog(shell, Messages.getString("System.Dialog.Error.Title"), Messages.getString("GetFileNamesDialog.ErrorInPreview.DialogMessage"), loggingText, true);
 					etd.setReadOnly();
 					etd.open();
 				}

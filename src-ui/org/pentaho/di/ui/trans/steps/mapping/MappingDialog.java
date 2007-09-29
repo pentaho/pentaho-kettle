@@ -663,14 +663,12 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 				RepositoryDirectory repdir = repository.getDirectoryTree().findDirectory(wTransDir.getText());
 				if (repdir == null)
 				{
-					throw new KettleException(Messages
-							.getString("MappingDialog.Exception.UnableToFindRepositoryDirectory)"));
+					throw new KettleException(Messages.getString("MappingDialog.Exception.UnableToFindRepositoryDirectory)"));
 				}
 				loadRepositoryTrans(wTransName.getText(), repdir);
 			} else
 			{
-				throw new KettleException(Messages
-						.getString("MappingDialog.Exception.NoValidMappingDetailsFound"));
+				throw new KettleException(Messages.getString("MappingDialog.Exception.NoValidMappingDetailsFound"));
 			}
 		}
 	}
@@ -729,26 +727,26 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 
 	private void addOutputMappingDefinitionTab(MappingIODefinition definition, int index)
 	{
-		addMappingDefinitionTab(outputMappings.get(index), index + 1 + inputMappings.size(), Messages
-				.getString("MappingDialog.OutputTab.Title"), Messages
-				.getString("MappingDialog.InputTab.Tooltip"), Messages
-				.getString("MappingDialog.OutputTab.label.InputSourceStepName"), Messages
-				.getString("MappingDialog.OutputTab.label.OutputTargetStepName"), Messages
-				.getString("MappingDialog.OutputTab.label.Description"), Messages
-				.getString("MappingDialog.OutputTab.column.SourceField"), Messages
-				.getString("MappingDialog.OutputTab.column.TargetField"), false);
+		addMappingDefinitionTab(outputMappings.get(index), index + 1 + inputMappings.size(), 
+				Messages.getString("MappingDialog.OutputTab.Title"), 
+				Messages.getString("MappingDialog.InputTab.Tooltip"), 
+				Messages.getString("MappingDialog.OutputTab.label.InputSourceStepName"), 
+				Messages.getString("MappingDialog.OutputTab.label.OutputTargetStepName"), 
+				Messages.getString("MappingDialog.OutputTab.label.Description"), 
+				Messages.getString("MappingDialog.OutputTab.column.SourceField"), 
+				Messages.getString("MappingDialog.OutputTab.column.TargetField"), false);
 
 	}
 
 	private void addInputMappingDefinitionTab(MappingIODefinition definition, int index)
 	{
 		addMappingDefinitionTab(definition, index + 1, Messages.getString("MappingDialog.InputTab.Title"),
-				Messages.getString("MappingDialog.InputTab.Tooltip"), Messages
-						.getString("MappingDialog.InputTab.label.InputSourceStepName"), Messages
-						.getString("MappingDialog.InputTab.label.OutputTargetStepName"), Messages
-						.getString("MappingDialog.InputTab.label.Description"), Messages
-						.getString("MappingDialog.InputTab.column.SourceField"), Messages
-						.getString("MappingDialog.InputTab.column.TargetField"), true);
+				Messages.getString("MappingDialog.InputTab.Tooltip"), 
+				Messages.getString("MappingDialog.InputTab.label.InputSourceStepName"), 
+				Messages.getString("MappingDialog.InputTab.label.OutputTargetStepName"), 
+				Messages.getString("MappingDialog.InputTab.label.Description"), 
+				Messages.getString("MappingDialog.InputTab.column.SourceField"), 
+				Messages.getString("MappingDialog.InputTab.column.TargetField"), true);
 
 	}
 
@@ -882,8 +880,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 				StepMeta stepMeta = transMeta.findStep(stepname);
 				if (stepMeta == null)
 				{
-					throw new KettleException(Messages.getString(
-							"MappingDialog.Exception.SpecifiedStepWasNotFound", stepname));
+					throw new KettleException(Messages.getString("MappingDialog.Exception.SpecifiedStepWasNotFound", stepname));
 				}
 				return transMeta.getStepFields(stepMeta);
 			}
@@ -898,13 +895,11 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 				String[] stepnames = getMappingSteps(mappingTransMeta, mappingInput);
 				if (stepnames.length > 1)
 				{
-					throw new KettleException(Messages.getString(
-							"MappingDialog.Exception.OnlyOneMappingInputStepAllowed", "" + stepnames.length));
+					throw new KettleException(Messages.getString("MappingDialog.Exception.OnlyOneMappingInputStepAllowed", "" + stepnames.length));
 				}
 				if (stepnames.length == 0)
 				{
-					throw new KettleException(Messages.getString(
-							"MappingDialog.Exception.OneMappingInputStepRequired", "" + stepnames.length));
+					throw new KettleException(Messages.getString("MappingDialog.Exception.OneMappingInputStepRequired", "" + stepnames.length));
 				}
 				return mappingTransMeta.getStepFields(stepnames[0]);
 			} else
@@ -914,8 +909,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 				StepMeta stepMeta = mappingTransMeta.findStep(stepname);
 				if (stepMeta == null)
 				{
-					throw new KettleException(Messages.getString(
-							"MappingDialog.Exception.SpecifiedStepWasNotFound", stepname));
+					throw new KettleException(Messages.getString("MappingDialog.Exception.SpecifiedStepWasNotFound", stepname));
 				}
 				return mappingTransMeta.getStepFields(stepMeta);
 			}
@@ -1210,9 +1204,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 					}
 				} catch (KettleException e)
 				{
-					new ErrorDialog(shell, Messages.getString("System.Dialog.Error.Title"), Messages
-							.getString("MappingDialog.Exception.ErrorGettingMappingSourceAndTargetFields", e
-									.toString()), e);
+					new ErrorDialog(shell, Messages.getString("System.Dialog.Error.Title"), Messages.getString("MappingDialog.Exception.ErrorGettingMappingSourceAndTargetFields", e.toString()), e);
 				}
 			}
 
@@ -1434,9 +1426,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 			dispose();
 		} catch (KettleException e)
 		{
-			new ErrorDialog(shell, Messages
-					.getString("MappingDialog.ErrorLoadingSpecifiedTransformation.Title"), Messages
-					.getString("MappingDialog.ErrorLoadingSpecifiedTransformation.Message"), e);
+			new ErrorDialog(shell, Messages.getString("MappingDialog.ErrorLoadingSpecifiedTransformation.Title"), Messages.getString("MappingDialog.ErrorLoadingSpecifiedTransformation.Message"), e);
 		}
 	}
 

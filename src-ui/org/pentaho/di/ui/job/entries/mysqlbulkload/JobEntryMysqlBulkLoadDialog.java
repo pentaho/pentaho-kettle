@@ -71,12 +71,7 @@ import org.pentaho.di.job.entries.mysqlbulkload.Messages;
 public class JobEntryMysqlBulkLoadDialog extends JobEntryDialog implements JobEntryDialogInterface
 {
 
-	private static final String[] FILETYPES = new String[] 
-		{
-			Messages
-			.getString("JobMysqlBulkLoad.Filetype.Text"),
-			Messages
-			.getString("JobMysqlBulkLoad.Filetype.All") };
+	private static final String[] FILETYPES = new String[] { Messages.getString("JobMysqlBulkLoad.Filetype.Text"), Messages.getString("JobMysqlBulkLoad.Filetype.All") };
 
 	private Label wlName;
 	private Text wName;

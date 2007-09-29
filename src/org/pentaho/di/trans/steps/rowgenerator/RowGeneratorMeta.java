@@ -457,7 +457,7 @@ public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface
 		CheckResult cr;
 		if (prev!=null && prev.size()>0)
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("owGeneratorMeta.CheckResult.NoInputStreamsError"), stepMeta);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("RowGeneratorMeta.CheckResult.NoInputStreamsError"), stepMeta);
 			remarks.add(cr);
 		}
 		else

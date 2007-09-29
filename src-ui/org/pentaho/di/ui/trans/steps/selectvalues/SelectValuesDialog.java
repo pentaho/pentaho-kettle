@@ -469,8 +469,7 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 					prevFields = transMeta.getPrevStepFields(stepname);
 				} catch (KettleException e) {
 					prevFields = new RowMeta();
-					String msg = Messages
-							.getString("SelectValuesDialog.DoMapping.UnableToFindInput");
+					String msg = Messages.getString("SelectValuesDialog.DoMapping.UnableToFindInput");
 					log.logError(toString(), msg);
 				}
 				String[] prevStepFieldNames = prevFields.getFieldNames();

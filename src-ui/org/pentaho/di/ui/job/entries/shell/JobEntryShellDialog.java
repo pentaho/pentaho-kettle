@@ -62,11 +62,7 @@ import org.pentaho.di.job.entries.shell.Messages;
  */
 public class JobEntryShellDialog extends JobEntryDialog implements JobEntryDialogInterface
 {
-    private static final String[] FILEFORMATS = new String[] {
-                                                              Messages
-                                                                  .getString("JobShell.Fileformat.Scripts"),
-                                                              Messages
-                                                                  .getString("JobShell.Fileformat.All") };
+    private static final String[] FILEFORMATS = new String[] { Messages.getString("JobShell.Fileformat.Scripts"), Messages.getString("JobShell.Fileformat.All") };
 
     private Label wlName;
 

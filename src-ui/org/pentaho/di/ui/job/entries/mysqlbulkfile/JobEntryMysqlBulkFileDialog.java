@@ -75,10 +75,7 @@ public class JobEntryMysqlBulkFileDialog extends JobEntryDialog implements JobEn
 
 	private static final String[] FILETYPES = new String[] 
 		{
-			Messages
-			.getString("JobMysqlBulkFile.Filetype.Text"),
-			Messages
-			.getString("JobMysqlBulkFile.Filetype.All") };
+			Messages.getString("JobMysqlBulkFile.Filetype.Text"), Messages.getString("JobMysqlBulkFile.Filetype.All") };
 
 	private Label wlName;
 

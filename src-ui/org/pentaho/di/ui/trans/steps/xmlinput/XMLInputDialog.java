@@ -487,8 +487,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 		fdlPosition.right = new FormAttachment(middle, -margin);
 		wlPosition.setLayoutData(fdlPosition);
 
-		ColumnInfo[] locationColumns = new ColumnInfo[] { new ColumnInfo(Messages
-				.getString("XMLInputDialog.Position.Elements.Column"), ColumnInfo.COLUMN_TYPE_TEXT, false) };
+		ColumnInfo[] locationColumns = new ColumnInfo[] { new ColumnInfo(Messages.getString("XMLInputDialog.Position.Elements.Column"), ColumnInfo.COLUMN_TYPE_TEXT, false) };
 
 		int nrElements = input.getInputPosition() != null ? input.getInputPosition().length : 0;
 
@@ -717,9 +716,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 					String files[] = fileInputList.getFileStrings();
 					if (files != null && files.length > 0)
 					{
-						EnterSelectionDialog esd = new EnterSelectionDialog(shell, files, Messages
-								.getString("XMLInputDialog.FilesReadSelection.DialogTitle"), Messages
-								.getString("XMLInputDialog.FilesReadSelection.DialogMessage"));
+						EnterSelectionDialog esd = new EnterSelectionDialog(shell, files, Messages.getString("XMLInputDialog.FilesReadSelection.DialogTitle"), Messages.getString("XMLInputDialog.FilesReadSelection.DialogMessage"));
 						esd.setViewOnly();
 						esd.open();
 					} else
@@ -905,8 +902,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 				String group = field.getGroupSymbol();
 				String decim = field.getDecimalSymbol();
 				String trim = field.getTrimTypeDesc();
-				String rep = field.isRepeated() ? Messages.getString("System.Combo.Yes") : Messages
-						.getString("System.Combo.No");
+				String rep = field.isRepeated() ? Messages.getString("System.Combo.Yes") : Messages.getString("System.Combo.No");
 
 				if (name != null)
 					item.setText(1, name);
@@ -1289,9 +1285,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 			TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(transMeta, oneMeta, wStepname
 					.getText());
 
-			EnterNumberDialog numberDialog = new EnterNumberDialog(shell, 500, Messages
-					.getString("XMLInputDialog.NumberRows.DialogTitle"), Messages
-					.getString("XMLInputDialog.NumberRows.DialogMessage"));
+			EnterNumberDialog numberDialog = new EnterNumberDialog(shell, 500, Messages.getString("XMLInputDialog.NumberRows.DialogTitle"), Messages.getString("XMLInputDialog.NumberRows.DialogMessage"));
 			int previewSize = numberDialog.open();
 			if (previewSize > 0)
 			{
@@ -1306,9 +1300,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 
 					if (trans.getResult() != null && trans.getResult().getNrErrors() > 0)
 					{
-						EnterTextDialog etd = new EnterTextDialog(shell, Messages
-								.getString("System.Dialog.PreviewError.Title"), Messages
-								.getString("System.Dialog.PreviewError.Message"), loggingText, true);
+						EnterTextDialog etd = new EnterTextDialog(shell, Messages.getString("System.Dialog.PreviewError.Title"), Messages.getString("System.Dialog.PreviewError.Message"), loggingText, true);
 						etd.setReadOnly();
 						etd.open();
 					}

@@ -248,8 +248,7 @@ public class JobEntryUnZipDialog extends JobEntryDialog implements JobEntryDialo
 		fdbTargetDirectory.top  = new FormAttachment(wZipFilename, margin);
 		wbTargetDirectory.setLayoutData(fdbTargetDirectory);
 		
-		wTargetDirectory = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER, Messages
-			.getString("JobUnZip.TargetDir.Tooltip"));
+		wTargetDirectory = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER, Messages.getString("JobUnZip.TargetDir.Tooltip"));
 		props.setLook(wTargetDirectory);
 		wTargetDirectory.addModifyListener(lsMod);
 		fdTargetDirectory = new FormData();
@@ -267,8 +266,7 @@ public class JobEntryUnZipDialog extends JobEntryDialog implements JobEntryDialo
 		fdlWildcard.top = new FormAttachment(wTargetDirectory, margin);
 		fdlWildcard.right = new FormAttachment(middle, -margin);
 		wlWildcard.setLayoutData(fdlWildcard);
-		wWildcard = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER, Messages
-			.getString("JobUnZip.Wildcard.Tooltip"));
+		wWildcard = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER, Messages.getString("JobUnZip.Wildcard.Tooltip"));
 		props.setLook(wWildcard);
 		wWildcard.addModifyListener(lsMod);
 		fdWildcard = new FormData();
@@ -286,8 +284,7 @@ public class JobEntryUnZipDialog extends JobEntryDialog implements JobEntryDialo
 		fdlWildcardExclude.top = new FormAttachment(wWildcard, margin);
 		fdlWildcardExclude.right = new FormAttachment(middle, -margin);
 		wlWildcardExclude.setLayoutData(fdlWildcardExclude);
-		wWildcardExclude = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER, Messages
-			.getString("JobUnZip.WildcardExclude.Tooltip"));
+		wWildcardExclude = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER, Messages.getString("JobUnZip.WildcardExclude.Tooltip"));
 		props.setLook(wWildcardExclude);
 		wWildcardExclude.addModifyListener(lsMod);
 		fdWildcardExclude = new FormData();
@@ -340,8 +337,7 @@ public class JobEntryUnZipDialog extends JobEntryDialog implements JobEntryDialo
 		fdlMovetoDirectory.top = new FormAttachment(wAfterUnZip, margin);
 		fdlMovetoDirectory.right = new FormAttachment(middle, -margin);
 		wlMovetoDirectory.setLayoutData(fdlMovetoDirectory);
-		wMovetoDirectory = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER, Messages
-			.getString("JobUnZip.MovetoDirectory.Tooltip"));
+		wMovetoDirectory = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER, Messages.getString("JobUnZip.MovetoDirectory.Tooltip"));
 		props.setLook(wMovetoDirectory);
 		
 	    // Browse folders button ...

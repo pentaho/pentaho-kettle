@@ -257,8 +257,7 @@ public class ExecSQLMeta extends BaseStepMeta implements StepMetaInterface
 			}
 		} catch (Exception e)
 		{
-			throw new KettleXMLException(Messages
-					.getString("ExecSQLMeta.Exception.UnableToLoadStepInfoFromXML"), e); //$NON-NLS-1$
+			throw new KettleXMLException(Messages.getString("ExecSQLMeta.Exception.UnableToLoadStepInfoFromXML"), e); //$NON-NLS-1$
 		}
 	}
 
@@ -369,8 +368,7 @@ public class ExecSQLMeta extends BaseStepMeta implements StepMetaInterface
 
 		if (databaseMeta != null)
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages
-					.getString("ExecSQLMeta.CheckResult.ConnectionExists"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("ExecSQLMeta.CheckResult.ConnectionExists"), stepMeta); //$NON-NLS-1$
 			remarks.add(cr);
 
 			Database db = new Database(databaseMeta);
@@ -381,25 +379,21 @@ public class ExecSQLMeta extends BaseStepMeta implements StepMetaInterface
 			try
 			{
 				db.connect();
-				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages
-						.getString("ExecSQLMeta.CheckResult.DBConnectionOK"), stepMeta); //$NON-NLS-1$
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("ExecSQLMeta.CheckResult.DBConnectionOK"), stepMeta); //$NON-NLS-1$
 				remarks.add(cr);
 
 				if (sql != null && sql.length() != 0)
 				{
-					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages
-							.getString("ExecSQLMeta.CheckResult.SQLStatementEntered"), stepMeta); //$NON-NLS-1$
+					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("ExecSQLMeta.CheckResult.SQLStatementEntered"), stepMeta); //$NON-NLS-1$
 					remarks.add(cr);
 				} else
 				{
-					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages
-							.getString("ExecSQLMeta.CheckResult.SQLStatementMissing"), stepMeta); //$NON-NLS-1$
+					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("ExecSQLMeta.CheckResult.SQLStatementMissing"), stepMeta); //$NON-NLS-1$
 					remarks.add(cr);
 				}
 			} catch (KettleException e)
 			{
-				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages
-						.getString("ExecSQLMeta.CheckResult.ErrorOccurred") + e.getMessage(), stepMeta); //$NON-NLS-1$
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("ExecSQLMeta.CheckResult.ErrorOccurred") + e.getMessage(), stepMeta); //$NON-NLS-1$
 				remarks.add(cr);
 			} finally
 			{
@@ -407,8 +401,7 @@ public class ExecSQLMeta extends BaseStepMeta implements StepMetaInterface
 			}
 		} else
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages
-					.getString("ExecSQLMeta.CheckResult.ConnectionNeeded"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("ExecSQLMeta.CheckResult.ConnectionNeeded"), stepMeta); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 
@@ -417,26 +410,22 @@ public class ExecSQLMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			if (input.length > 0)
 			{
-				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages
-						.getString("ExecSQLMeta.CheckResult.StepReceivingInfoOK"), stepMeta); //$NON-NLS-1$
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("ExecSQLMeta.CheckResult.StepReceivingInfoOK"), stepMeta); //$NON-NLS-1$
 				remarks.add(cr);
 			} else
 			{
-				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages
-						.getString("ExecSQLMeta.CheckResult.NoInputReceivedError"), stepMeta); //$NON-NLS-1$
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("ExecSQLMeta.CheckResult.NoInputReceivedError"), stepMeta); //$NON-NLS-1$
 				remarks.add(cr);
 			}
 		} else
 		{
 			if (input.length > 0)
 			{
-				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages
-						.getString("ExecSQLMeta.CheckResult.SQLOnlyExecutedOnce"), stepMeta); //$NON-NLS-1$
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("ExecSQLMeta.CheckResult.SQLOnlyExecutedOnce"), stepMeta); //$NON-NLS-1$
 				remarks.add(cr);
 			} else
 			{
-				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages
-						.getString("ExecSQLMeta.CheckResult.InputReceivedOKForSQLOnlyExecuteOnce"), stepMeta); //$NON-NLS-1$
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("ExecSQLMeta.CheckResult.InputReceivedOKForSQLOnlyExecuteOnce"), stepMeta); //$NON-NLS-1$
 				remarks.add(cr);
 			}
 		}

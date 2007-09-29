@@ -141,9 +141,7 @@ public class SpoonDBDelegate extends SpoonDelegate
 				} catch (KettleException dbe)
 				{
 
-					new ErrorDialog(spoon.getShell(), Messages
-							.getString("Spoon.Dialog.ErrorDeletingConnection.Title"), Messages.getString(
-							"Spoon.Dialog.ErrorDeletingConnection.Message", db.getName()), dbe);// "Error
+					new ErrorDialog(spoon.getShell(), Messages.getString("Spoon.Dialog.ErrorDeletingConnection.Title"), Messages.getString("Spoon.Dialog.ErrorDeletingConnection.Message", db.getName()), dbe);// "Error
 					// deleting
 					// connection
 					// ["+db+"]
@@ -152,10 +150,9 @@ public class SpoonDBDelegate extends SpoonDelegate
 				}
 			} else
 			{
-				new ErrorDialog(spoon.getShell(), Messages
-						.getString("Spoon.Dialog.ErrorDeletingConnection.Title"), Messages.getString(
-						"Spoon.Dialog.ErrorDeletingConnection.Message", db.getName()), new KettleException(
-						Messages.getString("Spoon.Dialog.Exception.ReadOnlyUser")));// "Error
+				new ErrorDialog(spoon.getShell(), Messages.getString("Spoon.Dialog.ErrorDeletingConnection.Title"), 
+						Messages.getString("Spoon.Dialog.ErrorDeletingConnection.Message", db.getName()), 
+						new KettleException(Messages.getString("Spoon.Dialog.Exception.ReadOnlyUser")));// "Error
 				// deleting
 				// connection
 				// ["+db+"]
@@ -440,10 +437,9 @@ public class SpoonDBDelegate extends SpoonDelegate
 				} catch (KettleException ke)
 				{
 					rep.rollback(); // In case of failure: undo changes!
-					new ErrorDialog(spoon.getShell(), Messages
-							.getString("Spoon.Dialog.ErrorSavingConnection.Title"), Messages.getString(
-							"Spoon.Dialog.ErrorSavingConnection.Message", db.getDatabaseName()), ke);
-				} finally
+					new ErrorDialog(spoon.getShell(), Messages.getString("Spoon.Dialog.ErrorSavingConnection.Title"), Messages.getString("Spoon.Dialog.ErrorSavingConnection.Message", db.getDatabaseName()), ke);
+				} 
+				finally
 				{
 					try
 					{
@@ -460,10 +456,8 @@ public class SpoonDBDelegate extends SpoonDelegate
 				new ErrorDialog(
 						spoon.getShell(),
 						Messages.getString("Spoon.Dialog.UnableSave.Title"),
-						Messages
-								.getString("Spoon.Dialog.ErrorSavingConnection.Message", db.getDatabaseName()),
-						new KettleException(Messages
-								.getString("Spoon.Dialog.Exception.ReadOnlyRepositoryUser")));// This
+						Messages.getString("Spoon.Dialog.ErrorSavingConnection.Message", db.getDatabaseName()),
+						new KettleException(Messages.getString("Spoon.Dialog.Exception.ReadOnlyRepositoryUser")));// This
 				// repository
 				// user
 				// is

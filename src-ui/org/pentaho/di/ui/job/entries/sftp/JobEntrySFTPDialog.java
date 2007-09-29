@@ -263,8 +263,7 @@ public class JobEntrySFTPDialog extends JobEntryDialog implements JobEntryDialog
         fdlScpDirectory.top = new FormAttachment(wPassword, margin);
         fdlScpDirectory.right = new FormAttachment(middle, -margin);
         wlScpDirectory.setLayoutData(fdlScpDirectory);
-        wScpDirectory = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER, Messages
-            .getString("JobSFTP.RemoteDir.Tooltip"));
+        wScpDirectory = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER, Messages.getString("JobSFTP.RemoteDir.Tooltip"));
         props.setLook(wScpDirectory);
         wScpDirectory.addModifyListener(lsMod);
         fdScpDirectory = new FormData();
@@ -282,8 +281,7 @@ public class JobEntrySFTPDialog extends JobEntryDialog implements JobEntryDialog
         fdlTargetDirectory.top = new FormAttachment(wScpDirectory, margin);
         fdlTargetDirectory.right = new FormAttachment(middle, -margin);
         wlTargetDirectory.setLayoutData(fdlTargetDirectory);
-        wTargetDirectory = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER, Messages
-            .getString("JobSFTP.TargetDir.Tooltip"));
+        wTargetDirectory = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER, Messages.getString("JobSFTP.TargetDir.Tooltip"));
         props.setLook(wTargetDirectory);
         wTargetDirectory.addModifyListener(lsMod);
         fdTargetDirectory = new FormData();
@@ -301,8 +299,7 @@ public class JobEntrySFTPDialog extends JobEntryDialog implements JobEntryDialog
         fdlWildcard.top = new FormAttachment(wTargetDirectory, margin);
         fdlWildcard.right = new FormAttachment(middle, -margin);
         wlWildcard.setLayoutData(fdlWildcard);
-        wWildcard = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER, Messages
-            .getString("JobSFTP.Wildcard.Tooltip"));
+        wWildcard = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER, Messages.getString("JobSFTP.Wildcard.Tooltip"));
         props.setLook(wWildcard);
         wWildcard.addModifyListener(lsMod);
         fdWildcard = new FormData();

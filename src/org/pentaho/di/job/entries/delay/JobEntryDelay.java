@@ -185,8 +185,7 @@ public class JobEntryDelay extends JobEntryBase implements Cloneable, JobEntryIn
       if (iMaximumTimeout < 0)
       {
         iMaximumTimeout = Const.toInt(DEFAULT_MAXIMUM_TIMEOUT, 0);
-        log.logBasic(toString(), Messages.getString(
-            "JobEntryDelay.MaximumTimeReset.Label", String.valueOf(iMaximumTimeout), String.valueOf(Waitscale))); //$NON-NLS-1$
+        log.logBasic(toString(), Messages.getString("JobEntryDelay.MaximumTimeReset.Label", String.valueOf(iMaximumTimeout), String.valueOf(Waitscale))); //$NON-NLS-1$
       }
 
       // TODO don't contineously loop, but sleeping would be better.

@@ -1909,16 +1909,10 @@ public class DatabaseDialog extends Dialog
         }
     }
 
-    private static final StringBuffer appendMessage(StringBuffer report, String messageName, String value)
-	{
-		return report.append(Messages.getString(messageName)).append(value).append(Const.CR);
-	}
-
-	private static final StringBuffer appendConnectionInfo(StringBuffer report, 
-    		String hostName, String portNumber, String dbName) {
-        appendMessage(report, "DatabaseDialog.report.Hostname", hostName); //$NON-NLS-1$
-        appendMessage(report, "DatabaseDialog.report.Port", portNumber); //$NON-NLS-1$
-        appendMessage(report, "DatabaseDialog.report.DatabaseName", dbName); //$NON-NLS-1$
+	private static final StringBuffer appendConnectionInfo(StringBuffer report, String hostName, String portNumber, String dbName) {
+        report.append(Messages.getString("DatabaseDialog.report.Hostname")).append(hostName).append(Const.CR); //$NON-NLS-1$
+        report.append(Messages.getString("DatabaseDialog.report.Port")).append(portNumber).append(Const.CR); //$NON-NLS-1$
+        report.append(Messages.getString("DatabaseDialog.report.DatabaseName")).append(dbName).append(Const.CR); //$NON-NLS-1$
         return report;
     }
 	

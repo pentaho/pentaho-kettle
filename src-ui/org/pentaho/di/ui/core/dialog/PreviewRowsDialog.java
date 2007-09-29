@@ -294,9 +294,7 @@ public class PreviewRowsDialog extends Dialog
     {
         if (loggingText != null)
         {
-            EnterTextDialog etd = new EnterTextDialog(shell, Messages
-                .getString("PreviewRowsDialog.ShowLogging.Title"), Messages
-                .getString("PreviewRowsDialog.ShowLogging.Message"), loggingText);
+            EnterTextDialog etd = new EnterTextDialog(shell, Messages.getString("PreviewRowsDialog.ShowLogging.Title"), Messages.getString("PreviewRowsDialog.ShowLogging.Message"), loggingText);
             etd.open();
         }
     };
