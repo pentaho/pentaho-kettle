@@ -92,6 +92,7 @@ public class ErrorDialog extends Dialog
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
+		shell.setImage(GUIResource.getInstance().getImageSpoon());
 		shell.setText(title);
 		
 		int margin = Const.MARGIN;
