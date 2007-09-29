@@ -210,8 +210,7 @@ public interface StepMetaInterface
      * You can also use this to specify certain Environment variable values.
      * 
      * @return A Map of argument values. (name and optionally a default value)
-     *         Put 10 values in the row for the possible 10 arguments.
-     *         Set the type to ValueMetaInterface.TYPE_NONE if it's not used!
+     *         Put 10 values in the map for the possible 10 arguments.
      */
     public Map<String, String> getUsedArguments();
     

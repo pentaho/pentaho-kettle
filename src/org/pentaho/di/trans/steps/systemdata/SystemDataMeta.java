@@ -15,6 +15,7 @@
 
 package org.pentaho.di.trans.steps.systemdata;
 
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -417,6 +418,7 @@ public class SystemDataMeta extends BaseStepMeta implements StepMetaInterface
     public Map<String, String> getUsedArguments()
     {
     	Map<String, String> stepArgs = new HashMap<String, String>();
+    	DecimalFormat df = new DecimalFormat("00");
     	
         for (int argNr=0;argNr<10;argNr++)
         {
@@ -427,7 +429,7 @@ public class SystemDataMeta extends BaseStepMeta implements StepMetaInterface
             }
             if (found)
             {
-            	stepArgs.put(""+(argNr+1), "");
+            	stepArgs.put(df.format(argNr+1), "");
             }
         }
         

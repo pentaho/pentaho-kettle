@@ -5107,7 +5107,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
             }
             if (value.length()==0) // try the saved option...
             {
-                if (argNr > 0 && argNr <= saved.length && saved[argNr] != null)
+                if (argNr > 0 && argNr < saved.length && saved[argNr] != null)
                 {
                     value = saved[argNr-1];
                 }
