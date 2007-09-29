@@ -16,9 +16,6 @@
  
 package org.pentaho.di.ui.spoon.job;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -54,6 +51,8 @@ import org.pentaho.di.core.Result;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleJobException;
 import org.pentaho.di.core.gui.JobTracker;
+import org.pentaho.di.core.logging.BufferChangedListener;
+import org.pentaho.di.core.logging.Log4jStringAppender;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobEntryResult;
@@ -96,14 +95,14 @@ public class JobLog extends Composite implements TabItemInterface
 
 	private FormData fdText, fdSash, fdStart, fdStop, fdRefresh, fdError, fdClear, fdLog, fdAuto; 
 	private SelectionListener lsStart, lsStop, lsRefresh, lsError, lsClear, lsLog;
-	private StringBuffer message;
 
-	private InputStream in;
 	private Job job;
     private int previousNrItems;
     private boolean isRunning;
     private JobTracker jobTracker;
     private JobHistoryRefresher chefHistoryRefresher;
+	private Log4jStringAppender stringAppender;
+	private int textSize;
 
     private static final String STRING_CHEF_LOG_TREE_NAME = "Job Log Tree";
     
@@ -125,9 +124,7 @@ public class JobLog extends Composite implements TabItemInterface
 		
 		setVisible(true);
 		white = Display.getCurrent().getSystemColor(SWT.COLOR_WHITE);
-		// should we dispose of a system color? next time we try to use it its been disposed of...
-//		addDisposeListener(new DisposeListener() { public void widgetDisposed(DisposeEvent e) { white.dispose(); } });
-
+		
 		SashForm sash = new SashForm(this, SWT.VERTICAL);
 								
 		// Create the tree table...
@@ -253,15 +250,47 @@ public class JobLog extends Composite implements TabItemInterface
 
 		pack();
 
-		try
-		{
-			in = log.getFileInputStream();
-		}
-		catch(Exception e)
-		{
-			System.out.println(Messages.getString("JobLog.Error.CouldNotCreateInputPipe")); //$NON-NLS-1$
-		}
+		// Create a new String appender to the log and capture that directly...
+		//
+		stringAppender = LogWriter.createStringAppender();
+		stringAppender.setMaxNrLines(Props.getInstance().getMaxNrLinesInLog());
+		stringAppender.addBufferChangedListener(new BufferChangedListener() {
 		
+			public void contentWasAdded(final StringBuffer content, final String extra, final int nrLines) {
+				display.asyncExec(new Runnable() {
+				
+					public void run() 
+					{
+						if (!wText.isDisposed())
+						{
+							textSize++;
+							
+							// OK, now what if the number of lines gets too big?
+							// We allow for a few hundred lines buffer over-run.
+							// That way we reduce flicker...
+							//
+							if (textSize>=nrLines+200)
+							{
+								wText.setText(content.toString());
+								wText.setSelection(content.length());
+								wText.showSelection();
+								wText.clearSelection();
+								textSize=nrLines;
+							}
+							else
+							{
+								wText.append(extra);
+							}
+						}
+					}
+				
+				});
+			}
+		
+		});
+		log.addAppender(stringAppender);
+		addDisposeListener(new DisposeListener() { public void widgetDisposed(DisposeEvent e) { log.removeAppender(stringAppender); } });
+
 		lsRefresh = new SelectionAdapter() 
 		{
 			public void widgetSelected(SelectionEvent e) 
@@ -324,6 +353,20 @@ public class JobLog extends Composite implements TabItemInterface
 				}
 			}
 		);
+		
+		// Key listeners...
+		//
+		addKeyListener(spoon.defKeys);
+		wTree.addKeyListener(spoon.defKeys);
+		wText.addKeyListener(spoon.defKeys);
+		sash.addKeyListener(spoon.defKeys);
+
+		wRefresh.addKeyListener(spoon.defKeys);
+		wStart.addKeyListener(spoon.defKeys);
+        wStop.addKeyListener(spoon.defKeys);
+		wError.addKeyListener(spoon.defKeys);
+		wClear.addKeyListener(spoon.defKeys);
+		wLog.addKeyListener(spoon.defKeys);
 	}
     
     public synchronized void startJob()
@@ -465,38 +508,13 @@ public class JobLog extends Composite implements TabItemInterface
 
     public void readLog()
 	{
-		if (message==null)  message = new StringBuffer(); else message.setLength(0);				
 		try
 		{
-            BufferedReader reader = new BufferedReader(new InputStreamReader(in, Const.XML_ENCODING));
-            String line;
-            while ( (line=reader.readLine()) != null )
-            {
-                message.append(line);
-                message.append(Const.CR);
-            }
 			refreshTreeTable();
 		}
 		catch(Exception ex)
 		{
-			message.append(ex.toString());
-		}
-
-		if (!wText.isDisposed() && message.length()>0) 
-		{
-			wText.setSelection(wText.getText().length());
-			wText.clearSelection();
-			wText.insert(message.toString());
-            
-            int maxLines = Props.getInstance().getMaxNrLinesInLog();
-            if (maxLines>0 && wText.getLineCount()>maxLines)
-            {
-                // OK, remove the extra amount of character + 20 from 
-                // Remove the oldest ones.
-                StringBuffer buffer = new StringBuffer(wText.getText());
-                buffer.delete(0, message.length()+20);
-                wText.setText(buffer.toString());
-            }
+			wText.append(ex.toString());
 		}
 	}
 	

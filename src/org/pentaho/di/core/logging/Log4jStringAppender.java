@@ -1,5 +1,8 @@
 package org.pentaho.di.core.logging;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.log4j.Appender;
 import org.apache.log4j.Layout;
 import org.apache.log4j.spi.ErrorHandler;
@@ -16,9 +19,18 @@ public class Log4jStringAppender implements Appender
     
     private StringBuffer buffer;
     
+    private int nrLines;
+    
+    private int maxNrLines;
+    
+    private List<BufferChangedListener> bufferChangedListeners;
+    
     public Log4jStringAppender()
     {
         buffer = new StringBuffer();
+        nrLines = 0;
+        maxNrLines = -1;
+        bufferChangedListeners=new ArrayList<BufferChangedListener>();
     }
     
     public String toString() {
@@ -48,6 +60,19 @@ public class Log4jStringAppender implements Appender
     {
         String line = layout.format(event)+Const.CR;
         buffer.append(line);
+
+        // See if we don't have too many lines on board...
+        nrLines++;
+        if (maxNrLines>0 && nrLines>maxNrLines)
+        {
+        	buffer.delete(0, line.length());
+        	nrLines--;
+        }
+        
+        for (BufferChangedListener listener : bufferChangedListeners)
+        {
+        	listener.contentWasAdded(buffer, line, nrLines);
+        }
     }
 
     public void setName(String name)
@@ -98,4 +123,41 @@ public class Log4jStringAppender implements Appender
     {
         this.buffer = buffer;
     }
+
+	/**
+	 * @return the maximum number of lines that this buffer contains
+	 */
+	public int getMaxNrLines() {
+		return maxNrLines;
+	}
+
+	/**
+	 * @param maxNrLines the maximum number of lines that this buffer should contain
+	 */
+	public void setMaxNrLines(int maxNrLines) {
+		this.maxNrLines = maxNrLines;
+	}
+
+	/**
+	 * @return the nrLines
+	 */
+	public int getNrLines() {
+		return nrLines;
+	}
+
+	public void addBufferChangedListener(BufferChangedListener bufferChangedListener) {
+		bufferChangedListeners.add(bufferChangedListener);
+	}
+	
+	public void removeBufferChangedListener(BufferChangedListener bufferChangedListener) {
+		bufferChangedListeners.remove(bufferChangedListener);
+	}
+
+	/**
+	 * @param nrLines the nrLines to set
+	 */
+	public void setNrLines(int nrLines) {
+		this.nrLines = nrLines;
+	}
+	
 }

@@ -485,7 +485,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 		fdlSlaveServer.right = new FormAttachment(middle, -margin);
 		fdlSlaveServer.top = new FormAttachment(wEveryRow, margin);
 		wlSlaveServer.setLayoutData(fdlSlaveServer);
-		wSlaveServer = new CCombo(shell, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
+		wSlaveServer = new CCombo(shell, SWT.SINGLE | SWT.BORDER);
 		wSlaveServer.setItems(SlaveServer.getSlaveServerNames(jobMeta.getSlaveServers()));
 		wSlaveServer.setToolTipText(Messages.getString("JobJob.SlaveServer.ToolTip"));
 		props.setLook(wSlaveServer);
@@ -729,7 +729,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 		
 		if (jobEntry.getRemoteSlaveServer()!=null)
 		{
-			wSlaveServer.select(jobMeta.getSlaveServers().indexOf(jobEntry.getRemoteSlaveServer()));
+			wSlaveServer.setText(jobEntry.getRemoteSlaveServer().getName());
 		}
 
 		wLoglevel.select(jobEntry.loglevel);
@@ -780,11 +780,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 		jobEntry.argFromPrevious = wPrevious.getSelection();
 		jobEntry.execPerRow = wEveryRow.getSelection();
 		
-		int slaveIndex = wSlaveServer.getSelectionIndex();
-		if (slaveIndex>=0 && slaveIndex<jobMeta.getSlaveServers().size())
-		{
-			jobEntry.setRemoteSlaveServer(jobMeta.getSlaveServers().get(slaveIndex));
-		}
+		jobEntry.setRemoteSlaveServer( SlaveServer.findSlaveServer(jobMeta.getSlaveServers(), wSlaveServer.getText()) );
 		
 		dispose();
 	}

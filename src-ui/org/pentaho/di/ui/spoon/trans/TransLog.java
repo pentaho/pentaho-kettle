@@ -15,9 +15,6 @@
 
 package org.pentaho.di.ui.spoon.trans;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -51,6 +48,8 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.BufferChangedListener;
+import org.pentaho.di.core.logging.Log4jStringAppender;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -114,7 +113,6 @@ public class TransLog extends Composite implements TabItemInterface
 	private Button wClear;
 	private Button wLog;
 	private long lastUpdateView;
-	private long lastUpdateLog;
 
 	private FormData fdText, fdSash, fdStart, fdPause, fdPreview, fdError, fdClear, fdLog, fdOnlyActive, fdSafeMode;
 
@@ -122,10 +120,6 @@ public class TransLog extends Composite implements TabItemInterface
     private boolean initialized;
 
 	private SelectionListener lsStart, lsPause, lsStop, lsPreview, lsError, lsClear, lsLog;
-
-	private StringBuffer message;
-
-	private InputStream in;
 
 	private Trans trans;
 
@@ -137,7 +131,10 @@ public class TransLog extends Composite implements TabItemInterface
 
     private FormData fdStop;
 
-	private boolean pausing;    
+	private boolean pausing;
+
+	private Log4jStringAppender stringAppender;    
+	private int textSize;
 
 	public TransLog(Composite parent, final Spoon spoon, final TransMeta transMeta)
 	{
@@ -151,7 +148,6 @@ public class TransLog extends Composite implements TabItemInterface
 		running = false;
 		debug = false;
 		lastUpdateView = 0L;
-		lastUpdateLog = 0L;
 
 		FormLayout formLayout = new FormLayout();
 		formLayout.marginWidth = Const.FORM_MARGIN;
@@ -306,14 +302,46 @@ public class TransLog extends Composite implements TabItemInterface
 
 		pack();
 
-		try
-		{
-			in = log.getFileInputStream();
-		}
-		catch (Exception e)
-		{
-			log.logError(Spoon.APP_NAME, Messages.getString("SpoonLog.Log.CouldNotLinkInputToOutputPipe")); //$NON-NLS-1$
-		}
+		// Create a new String appender to the log and capture that directly...
+		//
+		stringAppender = LogWriter.createStringAppender();
+		stringAppender.setMaxNrLines(Props.getInstance().getMaxNrLinesInLog());
+		stringAppender.addBufferChangedListener(new BufferChangedListener() {
+		
+			public void contentWasAdded(final StringBuffer content, final String extra, final int nrLines) {
+				display.asyncExec(new Runnable() {
+				
+					public void run() 
+					{
+						if (!wText.isDisposed())
+						{
+							textSize++;
+							
+							// OK, now what if the number of lines gets too big?
+							// We allow for a few hundred lines buffer over-run.
+							// That way we reduce flicker...
+							//
+							if (textSize>=nrLines+200)
+							{
+								wText.setText(content.toString());
+								wText.setSelection(content.length());
+								wText.showSelection();
+								wText.clearSelection();
+								textSize=nrLines;
+							}
+							else
+							{
+								wText.append(extra);
+							}
+						}
+					}
+				
+				});
+			}
+		
+		});
+		log.addAppender(stringAppender);
+		addDisposeListener(new DisposeListener() { public void widgetDisposed(DisposeEvent e) { log.removeAppender(stringAppender); } });
 
 		lsError = new SelectionAdapter()
 		{
@@ -344,7 +372,6 @@ public class TransLog extends Composite implements TabItemInterface
                                     checkStartThreads();
                                     checkTransEnded();
                                     checkErrors();
-                                    readLog();
                                     refreshView();
                                     busy.setCharAt(0, 'N');
                                 }
@@ -520,7 +547,6 @@ public class TransLog extends Composite implements TabItemInterface
 						new ErrorDialog(shell,
 								Messages.getString("SpoonLog.Dialog.ErrorOpeningTransformation.Title"), Messages.getString("SpoonLog.Dialog.ErrorOpeningTransformation.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
 					}
-					readLog();
 					if (trans != null)
 					{
 						Map<String,String> arguments = executionConfiguration.getArguments();
@@ -551,7 +577,6 @@ public class TransLog extends Composite implements TabItemInterface
 						wStart.setEnabled(false);
 						wPause.setEnabled(true);
                         wStop.setEnabled(true);
-						readLog();
 					}
 				}
 				else
@@ -689,54 +714,6 @@ public class TransLog extends Composite implements TabItemInterface
 		}
 	}
 
-	public void readLog()
-	{
-		long time = new Date().getTime();
-		long msSinceLastUpdate = time - lastUpdateLog;
-		if (msSinceLastUpdate < UPDATE_TIME_LOG)
-		{
-			return;
-		}
-		lastUpdateLog = time;
-
-		if (message == null)
-			message = new StringBuffer();
-		else
-			message.setLength(0);
-		try
-		{
-			BufferedReader reader = new BufferedReader(new InputStreamReader(in, Const.XML_ENCODING));
-			String line;
-			while ((line = reader.readLine()) != null)
-			{
-				message.append(line);
-				message.append(Const.CR);
-			}
-		}
-		catch (Exception ex)
-		{
-			message.append("Unexpected error reading the log: " + ex.toString());
-		}
-
-		if (!wText.isDisposed() && message.length() > 0)
-		{
-			String mess = wText.getText();
-			wText.setSelection(mess.length());
-			wText.clearSelection();
-			wText.insert(message.toString());
-            
-            int maxLines = Props.getInstance().getMaxNrLinesInLog();
-            if (maxLines>0 && wText.getLineCount()>maxLines)
-            {
-                // OK, remove the extra amount of character + 20 from 
-                // Remove the oldest ones.
-                StringBuffer buffer = new StringBuffer(mess);
-                buffer.delete(0, message.length()+20);
-                wText.setText(buffer.toString());
-            }
-		}
-	}
-
 	private boolean refresh_busy;
 
 	private TransHistoryRefresher spoonHistoryRefresher;
@@ -870,7 +847,6 @@ public class TransLog extends Composite implements TabItemInterface
 				//
 				trans.startThreads();
 
-				readLog();
 				running = !running;
     			debug=true;
 

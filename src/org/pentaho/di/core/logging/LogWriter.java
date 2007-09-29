@@ -451,13 +451,21 @@ public class LogWriter
 	}
 	
     /**
-     * Please try to get the file appender yourself using the static constructor and work from there
+     * This is not thread safe: please try to get the file appender yourself using the static constructor and work from there
      */
 	public InputStream getFileInputStream() throws IOException
 	{
 		return KettleVFS.getInputStream(fileAppender.getFile());
 	}
-    
+
+    /**
+     * This is not thread safe: please try to get the file appender yourself using the static constructor and work from there
+     */
+	public FileObject getFileAppenderFile() throws IOException
+	{
+		return fileAppender.getFile();
+	}
+
     /**
      * Get the file input stream for a certain appender.
      * The appender is looked up using the filename
