@@ -117,6 +117,7 @@ import be.ibridge.kettle.trans.step.accessinput.AccessInputMeta;
 import be.ibridge.kettle.trans.step.regexeval.RegexEvalMeta;
 import be.ibridge.kettle.trans.step.xsdvalidator.XsdValidatorMeta;
 import be.ibridge.kettle.trans.step.xslt.XsltMeta;
+import be.ibridge.kettle.trans.step.getfilesrowscount.GetFilesRowsCountMeta;
 
 
 public class BaseStep extends Thread
@@ -285,6 +286,9 @@ public class BaseStep extends Thread
 
 			new StepPluginMeta(XsltMeta.class, "Xslt", Messages.getString("BaseStep.TypeLongDesc.Xslt"), Messages
 			.getString("BaseStep.TypeTooltipDesc.Xslt"), "XSLT.png", CATEGORY_TRANSFORM), 
+			
+			new StepPluginMeta(GetFilesRowsCountMeta.class, "GetFilesRowsCount", Messages.getString("BaseStep.TypeLongDesc.GetFilesRowsCount"), Messages
+					.getString("BaseStep.TypeTooltipDesc.GetFilesRowsCount"), "FRC.png", CATEGORY_INPUT), 
 		
 
         };
