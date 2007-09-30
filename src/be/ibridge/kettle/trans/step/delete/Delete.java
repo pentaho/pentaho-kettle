@@ -108,11 +108,14 @@ public class Delete extends BaseStep implements StepInterface
 	{
 		meta=(DeleteMeta)smi;
 		data=(DeleteData)sdi;
+		
+		 boolean sendToErrorRow=false;
+	     String errorMessage = null;
 
 		Row r=getRow();       // Get row from input rowset & set row busy!
 		if (r==null)  // no more input to be expected...
 		{
-                        // proces batched deletes
+                        // process batched deletes
                         try {
                             data.dbupd.updateFinished(data.batchMode);
                         } catch(Exception dbe)
@@ -136,11 +139,24 @@ public class Delete extends BaseStep implements StepInterface
 		}
 		catch(KettleException e)
 		{
-			logError(Messages.getString("Delete.Log.ErrorInStep")+e.getMessage()); //$NON-NLS-1$
-			setErrors(1);
-			stopAll();
-			setOutputDone();  // signal end to receiver(s)
-			return false;
+			if (getStepMeta().isDoingErrorHandling())
+	        {
+                sendToErrorRow = true;
+                errorMessage = e.toString();
+	        }
+			else
+			{
+				logError(Messages.getString("Delete.Log.ErrorInStep")+e.getMessage()); //$NON-NLS-1$
+				setErrors(1);
+				stopAll();
+				setOutputDone();  // signal end to receiver(s)
+				return false;
+			}
+			if (sendToErrorRow)
+	         {
+				 // Simply add this row to the error row
+	             putError(r, 1, errorMessage, null, "DEL001");
+	         }
 		}
 			
 		return true;
