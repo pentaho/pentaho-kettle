@@ -1,0 +1,459 @@
+ /**********************************************************************
+ **                                                                   **
+ **               This code belongs to the KETTLE project.            **
+ **                                                                   **
+ ** Kettle, from version 2.2 on, is released into the public domain   **
+ ** under the Lesser GNU Public License (LGPL).                       **
+ **                                                                   **
+ ** For more details, please read the document LICENSE.txt, included  **
+ ** in this project                                                   **
+ **                                                                   **
+ ** http://www.kettle.be                                              **
+ ** info@kettle.be                                                    **
+ **                                                                   **
+ **********************************************************************/
+
+/* 
+ * 
+ * Created on 07-sept-2007
+ * 
+ */
+
+package be.ibridge.kettle.trans.step.getfilesrowscount;
+
+import java.util.ArrayList;
+import java.util.Hashtable;
+
+import org.eclipse.swt.widgets.Shell;
+import org.w3c.dom.Node;
+
+import be.ibridge.kettle.core.util.StringUtil;
+import be.ibridge.kettle.core.CheckResult;
+import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.Row;
+import be.ibridge.kettle.core.exception.KettleException;
+import be.ibridge.kettle.core.exception.KettleXMLException;
+import be.ibridge.kettle.core.value.Value;
+import be.ibridge.kettle.repository.Repository;
+import be.ibridge.kettle.trans.Trans;
+import be.ibridge.kettle.trans.TransMeta;
+import be.ibridge.kettle.trans.step.BaseStepMeta;
+import be.ibridge.kettle.trans.step.StepDataInterface;
+import be.ibridge.kettle.trans.step.StepDialogInterface;
+import be.ibridge.kettle.trans.step.StepInterface;
+import be.ibridge.kettle.trans.step.StepMeta;
+import be.ibridge.kettle.trans.step.StepMetaInterface;
+import be.ibridge.kettle.trans.step.fileinput.FileInputList;
+import be.ibridge.kettle.core.XMLHandler;
+
+
+public class GetFilesRowsCountMeta extends BaseStepMeta implements StepMetaInterface
+{	
+	/** Array of filenames */
+	private  String  fileName[]; 
+
+	/** Wildcard or filemask (regular expression) */
+	private  String  fileMask[];
+ 	 
+	
+	/** Flag indicating that a row number field should be included in the output */
+	private  boolean includeFilesCount;
+	
+	/** The name of the field in the output containing the file number*/
+	private  String  FilesCountFieldName;
+	
+	/** The name of the field in the output containing the row number*/
+	private String RowsCountFieldName;
+	
+	/** The row separator type*/
+	private String RowSeparator_format;
+	
+	/** The row separator*/
+	private String RowSeparator;
+	
+	
+	public GetFilesRowsCountMeta()
+	{
+		super(); // allocate BaseStepMeta
+	}
+	
+	
+	  /**
+     * @return Returns the row separator.
+     */
+	public String getRowSeparator()
+	{
+		return RowSeparator;
+	}
+	
+	/**
+     * @param RowSeparatorin The RowSeparator to set.
+     */
+	public void setRowSeparator(String RowSeparatorin)
+	{
+		this.RowSeparator=RowSeparatorin;
+	}
+	
+	  /**
+     * @return Returns the row separator format.
+     */
+	public String getRowSeparatorFormat()
+	{
+		return RowSeparator_format;
+	}
+	
+	/**
+     * @param RowSeparator_formatin The RowSeparator_format to set.
+     */
+	public void setRowSeparatorFormat(String RowSeparator_formatin)
+	{
+		this.RowSeparator_format=RowSeparator_formatin;
+	}
+	
+    /**
+     * @return Returns the fileMask.
+     */
+    public String[] getFileMask()
+    {
+        return fileMask;
+    }
+    
+    /**
+     * @param fileMask The fileMask to set.
+     */
+    public void setFileMask(String[] fileMask)
+    {
+        this.fileMask = fileMask;
+    }
+    
+    /**
+     * @return Returns the fileName.
+     */
+    public String[] getFileName()
+    {
+        return fileName;
+    }
+    
+    /**
+     * @param fileName The fileName to set.
+     */
+    public void setFileName(String[] fileName)
+    {
+        this.fileName = fileName;
+    }
+    
+       /**
+     * @return Returns the includeCountFiles.
+     */
+    public boolean includeCountFiles()
+    {
+        return includeFilesCount;
+    }
+    
+   
+    /**
+     * @param includeFilesCount The includeFilesCount to set.
+     */
+    public void setIncludeCountFiles(boolean includeFilesCountin)
+    {
+        this.includeFilesCount = includeFilesCountin;
+    }
+    
+   
+
+    /**
+     * @return Returns the FilesCountFieldName.
+     */
+    public String getFilesCountFieldName()
+    {
+        return FilesCountFieldName;
+    }
+    
+   
+    /**
+     * @return Returns the RowsCountFieldName.
+     */
+    public String getRowsCountFieldName()
+    {
+        return RowsCountFieldName;
+    }
+    
+    
+    
+  
+    
+    
+    /**
+     * @param FilesCountFieldName The FilesCountFieldName to set.
+     */
+    public void setIncludeFilesCountFieldName(String FilesCountFieldNamein)
+    {
+        this.FilesCountFieldName = FilesCountFieldNamein;
+    }
+    
+    /**
+     * @param RowsCountFieldName The RowsCountFieldName to set.
+     */
+    public void setRowsCountFieldName(String RowsCountFieldNamein)
+    {
+        this.RowsCountFieldName = RowsCountFieldNamein;
+    }
+    
+    
+    
+    
+    public void loadXML(Node stepnode, ArrayList databases, Hashtable counters) throws KettleXMLException
+    {
+    	readData(stepnode);
+	}
+
+	public Object clone()
+	{
+		GetFilesRowsCountMeta retval = (GetFilesRowsCountMeta)super.clone();
+		
+		int nrFiles  = fileName.length;
+
+		retval.allocate(nrFiles);
+	
+		return retval;
+	}
+    
+    public String getXML()
+    {
+        StringBuffer retval=new StringBuffer(300);
+        
+        retval.append("    ").append(XMLHandler.addTagValue("files_count",   includeFilesCount));
+        retval.append("    ").append(XMLHandler.addTagValue("files_count_fieldname",FilesCountFieldName));
+        retval.append("    ").append(XMLHandler.addTagValue("rows_count_fieldname",RowsCountFieldName));
+        retval.append("    ").append(XMLHandler.addTagValue("rowseparator_format",RowSeparator_format));
+        retval.append("    ").append(XMLHandler.addTagValue("row_separator",RowSeparator));
+        
+        retval.append("    <file>").append(Const.CR);
+        for (int i=0;i<fileName.length;i++)
+        {
+            retval.append("      ").append(XMLHandler.addTagValue("name",     fileName[i]));
+            retval.append("      ").append(XMLHandler.addTagValue("filemask", fileMask[i]));
+        }
+        retval.append("    </file>").append(Const.CR);
+        
+
+        return retval.toString();
+    }
+
+	private void readData(Node stepnode) throws KettleXMLException
+	{
+		try
+		{
+
+			includeFilesCount  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "files_count"));
+			FilesCountFieldName    = XMLHandler.getTagValue(stepnode, "files_count_fieldname");
+			RowSeparator_format    = XMLHandler.getTagValue(stepnode, "rowseparator_format");
+			RowSeparator    = XMLHandler.getTagValue(stepnode, "row_separator");
+			
+			
+			Node filenode   = XMLHandler.getSubNode(stepnode,  "file");
+			int nrFiles     = XMLHandler.countNodes(filenode,  "name");
+			allocate(nrFiles);
+			
+			for (int i=0;i<nrFiles;i++)
+			{
+				Node filenamenode = XMLHandler.getSubNodeByNr(filenode, "name", i); 
+				Node filemasknode = XMLHandler.getSubNodeByNr(filenode, "filemask", i); 
+				fileName[i] = XMLHandler.getNodeValue(filenamenode);
+				fileMask[i] = XMLHandler.getNodeValue(filemasknode);
+			}
+			
+		}
+		catch(Exception e)
+		{
+			throw new KettleXMLException("Unable to load step info from XML", e);
+		}
+	}
+	
+	public void allocate(int nrfiles)
+	{
+		fileName   = new String [nrfiles];
+		fileMask   = new String [nrfiles];
+		        
+	}
+	
+	public void setDefault()
+	{
+		
+		includeFilesCount = false;
+		FilesCountFieldName   = "";
+		RowsCountFieldName   = "rowscount";
+		RowSeparator_format="CR";
+		RowSeparator ="";
+		int nrFiles  =0;
+		
+		allocate(nrFiles);	
+		
+		for (int i=0;i<nrFiles;i++) 
+		{
+			fileName[i]="filename"+(i+1);
+			fileMask[i]="";
+		}
+		
+
+	}
+	
+	public Row getFields(Row r, String name, Row info)
+	  {
+		 Row row;
+	        if (r == null)
+	            row = new Row(); // give back values
+	        else
+	            row = r; // add to the existing row of values...
+	        
+	     Value nr_row = new Value(StringUtil.environmentSubstitute(RowsCountFieldName), Value.VALUE_TYPE_INTEGER);
+	     nr_row.setLength(500,-1);
+	     nr_row.setOrigin(name);
+	     row.addValue(nr_row);
+		
+		
+		if (includeFilesCount)
+		{
+		     Value nr_files = new Value(StringUtil.environmentSubstitute(FilesCountFieldName), Value.VALUE_TYPE_INTEGER);
+		     nr_row.setLength(500,-1);
+		     nr_row.setOrigin(name);
+		     row.addValue(nr_files);
+			
+		}
+		
+		 return row;
+	}
+	
+	 
+	  public void readRep(Repository rep, long id_step, ArrayList databases, Hashtable counters) throws KettleException
+	   {
+	
+		try
+		{
+			
+			includeFilesCount  = rep.getStepAttributeBoolean(id_step, "files_count");
+			FilesCountFieldName    = rep.getStepAttributeString (id_step, "files_count_fieldname");
+			RowsCountFieldName    = rep.getStepAttributeString (id_step, "rows_count_fieldname");
+			RowSeparator_format    = rep.getStepAttributeString (id_step, "rowseparator_format");
+			RowSeparator    = rep.getStepAttributeString (id_step, "row_separator");
+			
+			
+			
+			
+			int nrFiles       = rep.countNrStepAttributes(id_step, "file_name");
+            
+			allocate(nrFiles);
+
+			for (int i=0;i<nrFiles;i++)
+			{
+				fileName[i] =      rep.getStepAttributeString (id_step, i, "file_name"    );
+				fileMask[i] =      rep.getStepAttributeString (id_step, i, "file_mask"    );
+			}
+
+			
+        }
+		catch(Exception e)
+		{
+			throw new KettleException(Messages.getString("AccessInputMeta.Exception.ErrorReadingRepository"), e);
+		}
+	}
+	
+	public void saveRep(Repository rep, long id_transformation, long id_step)
+		throws KettleException
+	{
+		try
+		{
+
+			rep.saveStepAttribute(id_transformation, id_step, "files_count",        includeFilesCount);
+			rep.saveStepAttribute(id_transformation, id_step, "files_count_fieldname",  FilesCountFieldName);
+			rep.saveStepAttribute(id_transformation, id_step, "rows_count_fieldname",  RowsCountFieldName);
+			rep.saveStepAttribute(id_transformation, id_step, "rowseparator_format",  RowSeparator_format);
+			rep.saveStepAttribute(id_transformation, id_step, "row_separator",  RowSeparator);
+			
+			
+			
+					
+			for (int i=0;i<fileName.length;i++)
+			{
+				rep.saveStepAttribute(id_transformation, id_step, i, "file_name",     fileName[i]);
+				rep.saveStepAttribute(id_transformation, id_step, i, "file_mask",     fileMask[i]);
+			}
+			
+		}
+		catch(Exception e)
+		{
+			throw new KettleException(Messages.getString("AccessInputMeta.Exception.ErrorSavingToRepository", ""+id_step), e);
+		}
+	}
+	
+
+	public FileInputList  getFiles()
+	{
+        
+        
+        String required[] = new String[fileName.length];
+        boolean subdirs[] = new boolean[fileName.length]; // boolean arrays are defaulted to false.
+        for (int i=0;i<required.length; required[i]="Y", i++); //$NON-NLS-1$
+        return FileInputList.createFileList(fileName, fileMask, required, subdirs);
+        
+	}
+	
+	 public void check(ArrayList remarks, StepMeta stepinfo, Row prev, String input[], String output[], Row info)
+	   {
+	
+		CheckResult cr;
+
+		// See if we get input...
+		if (input.length>0)
+		{		
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("GetFilesRowsCountMeta.CheckResult.NoInputExpected"), stepinfo);
+			remarks.add(cr);
+		}
+		else
+		{
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("GetFilesRowsCountMeta.CheckResult.NoInput"), stepinfo);
+			remarks.add(cr);
+		}
+		
+        FileInputList fileInputList = getFiles();
+
+		if (fileInputList==null || fileInputList.getFiles().size()==0)
+		{
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("GetFilesRowsCountMeta.CheckResult.NoFiles"), stepinfo);
+			remarks.add(cr);
+		}
+		else
+		{
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("GetFilesRowsCountMeta.CheckResult.FilesOk", ""+fileInputList.getFiles().size()), stepinfo);
+			remarks.add(cr);
+		}
+		
+		if ((RowSeparator_format.equals("CUSTOM")) && (RowSeparator==null))
+		{
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("GetFilesRowsCountMeta.CheckResult.NoSeparator"), stepinfo);
+			remarks.add(cr);
+		}		
+		else
+		{
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("GetFilesRowsCountMeta.CheckResult.SeparatorOk"), stepinfo);
+			remarks.add(cr);
+		}
+		
+	}
+	
+	public StepInterface getStep(StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr, Trans trans)
+	{
+		return new GetFilesRowsCount(stepMeta, stepDataInterface, cnr, tr, trans);
+	}
+	
+	public StepDataInterface getStepData()
+	{
+		return new GetFilesRowsCountData();
+	}
+
+   public StepDialogInterface getDialog(Shell shell, StepMetaInterface info, TransMeta transMeta, String name)
+	{
+		return new GetFilesRowsCountDialog(shell, info, transMeta, name);
+	}
+	
+}
