@@ -239,6 +239,9 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 	{
 		meta=(DatabaseLookupMeta)smi;
 		data=(DatabaseLookupData)sdi;
+		
+		 boolean sendToErrorRow=false;
+		 String errorMessage = null;
 
 		Object[] r=getRow();       // Get row from input rowset & set row busy!
 		if (r==null)  // no more input to be expected...
@@ -392,11 +395,25 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 		}
 		catch(KettleException e)
 		{
-			logError(Messages.getString("DatabaseLookup.ERROR003.UnexpectedErrorDuringProcessing")+e.getMessage()); //$NON-NLS-1$
-			setErrors(1);
-			stopAll();
-			setOutputDone();  // signal end to receiver(s)
-			return false;
+			if (getStepMeta().isDoingErrorHandling())
+			{
+		          sendToErrorRow = true;
+		          errorMessage = e.toString();
+			}
+			else
+			{
+				logError(Messages.getString("DatabaseLookup.ERROR003.UnexpectedErrorDuringProcessing")+e.getMessage()); //$NON-NLS-1$
+				setErrors(1);
+				stopAll();
+				setOutputDone();  // signal end to receiver(s)
+				return false;
+			}
+			if (sendToErrorRow)
+			{
+			   // Simply add this row to the error row
+			   putError(getInputRowMeta(), r, 1, errorMessage, null, "DBLOOKUPD001");
+			}
+
 		}
 
 		return true;

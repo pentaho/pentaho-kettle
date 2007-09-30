@@ -155,6 +155,9 @@ public class HTTP extends BaseStep implements StepInterface
 	{
 		meta=(HTTPMeta)smi;
 		data=(HTTPData)sdi;
+		
+		 boolean sendToErrorRow=false;
+		 String errorMessage = null;
 
 		Object[] r=getRow();     // Get row from input rowset & set row busy!
 		if (r==null)  // no more input to be expected...
@@ -178,11 +181,24 @@ public class HTTP extends BaseStep implements StepInterface
 		}
 		catch(KettleException e)
 		{
-			logError(Messages.getString("HTTP.ErrorInStepRunning")+e.getMessage()); //$NON-NLS-1$
-			setErrors(1);
-			stopAll();
-			setOutputDone();  // signal end to receiver(s)
-			return false;
+			if (getStepMeta().isDoingErrorHandling())
+	        {
+                sendToErrorRow = true;
+                errorMessage = e.toString();
+	        }
+			else
+			{
+				logError(Messages.getString("HTTP.ErrorInStepRunning")+e.getMessage()); //$NON-NLS-1$
+				setErrors(1);
+				stopAll();
+				setOutputDone();  // signal end to receiver(s)
+				return false;
+			}
+			if (sendToErrorRow)
+	         {
+				 // Simply add this row to the error row
+				putError(getInputRowMeta(), r, 1, errorMessage, null, "HTTP001");
+	         }
 		}
 			
 		return true;

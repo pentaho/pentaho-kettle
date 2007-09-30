@@ -307,4 +307,9 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface
     {
         return new HTTPData();
     }
+
+    public boolean supportsErrorHandling()
+    {
+        return true;
+    }
 }

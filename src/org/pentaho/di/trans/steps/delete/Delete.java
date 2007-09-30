@@ -162,7 +162,7 @@ public class Delete extends BaseStep implements StepInterface
 			 if (sendToErrorRow)
 	         {
 				 // Simply add this row to the error row
-	             putError(getInputRowMeta(), r, 1, errorMessage, null, "TOP001");
+	             putError(getInputRowMeta(), r, 1, errorMessage, null, "DEL001");
 	         }
 		}
 			

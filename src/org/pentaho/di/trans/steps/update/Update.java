@@ -180,6 +180,9 @@ public class Update extends BaseStep implements StepInterface
 	{
 		meta=(UpdateMeta)smi;
 		data=(UpdateData)sdi;
+		
+		boolean sendToErrorRow=false;
+		String errorMessage = null;
 
 		Object[] r=getRow();       // Get row from input rowset & set row busy!
 		if (r==null)  // no more input to be expected...
@@ -240,11 +243,38 @@ public class Update extends BaseStep implements StepInterface
             setLookup(getInputRowMeta());
             prepareUpdate(getInputRowMeta());
         }
+        
+        try
+        {
             
-		Object[] outputRow = lookupValues(getInputRowMeta(), r); // add new values to the row in rowset[0].
-        if (outputRow!=null) putRow(data.outputRowMeta, outputRow); // copy non-ignored rows to output rowset(s);
-        if (checkFeedback(linesRead)) logBasic(Messages.getString("Update.Log.LineNumber")+linesRead); //$NON-NLS-1$
+			Object[] outputRow = lookupValues(getInputRowMeta(), r); // add new values to the row in rowset[0].
+	        if (outputRow!=null) putRow(data.outputRowMeta, outputRow); // copy non-ignored rows to output rowset(s);
+	        if (checkFeedback(linesRead)) logBasic(Messages.getString("Update.Log.LineNumber")+linesRead); //$NON-NLS-1$
+        }
+        catch(KettleException e)
+		{
+			if (getStepMeta().isDoingErrorHandling())
+	        {
+                sendToErrorRow = true;
+                errorMessage = e.toString();
+	        }
+	        else
+	        {
 			
+				logError(Messages.getString("Update.Log.ErrorInStep"), e); //$NON-NLS-1$
+				setErrors(1);
+				stopAll();
+				setOutputDone();  // signal end to receiver(s)
+				return false;
+	        }
+			 
+			 if (sendToErrorRow)
+	         {
+				 // Simply add this row to the error row
+	             putError(getInputRowMeta(), r, 1, errorMessage, null, "UPD001");
+	         }
+		}
+	
 		return true;
 	}
     

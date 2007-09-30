@@ -159,7 +159,7 @@ public class DBProc extends BaseStep implements StepInterface
 			 if (sendToErrorRow)
 	         {
 				 // Simply add this row to the error row
-	             putError(data.outputMeta, r, 1, errorMessage, null, "TOP001");
+	             putError(data.outputMeta, r, 1, errorMessage, null, "DBP001");
 	         }
 		}
 			
