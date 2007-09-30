@@ -618,5 +618,8 @@ public class DatabaseJoinMeta extends BaseStepMeta implements StepMetaInterface
             return super.getUsedDatabaseConnections();
         }
     }
-
+    public boolean supportsErrorHandling()
+    {
+        return true;
+    }
 }

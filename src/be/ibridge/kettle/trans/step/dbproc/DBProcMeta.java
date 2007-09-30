@@ -517,5 +517,8 @@ public class DBProcMeta extends BaseStepMeta implements StepMetaInterface
             return super.getUsedDatabaseConnections();
         }
     }
-
+    public boolean supportsErrorHandling()
+    {
+        return true;
+    }
 }
