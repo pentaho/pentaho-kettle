@@ -303,6 +303,102 @@ public class JavaScriptStringTest extends TestCase
 		
 		return list;
 	}		
+
+	public RowMetaInterface createRowMetaInterface2()
+	{
+		RowMetaInterface rm = new RowMeta();
+		
+		ValueMetaInterface valuesMeta[] = {
+			    new ValueMeta("string",  ValueMeta.TYPE_STRING),
+			    new ValueMeta("search",  ValueMeta.TYPE_STRING),
+			    new ValueMeta("offset1", ValueMeta.TYPE_INTEGER),
+			    new ValueMeta("offset2", ValueMeta.TYPE_INTEGER),
+	    };
+
+		for (int i=0; i < valuesMeta.length; i++ )
+		{
+			rm.addValueMeta(valuesMeta[i]);
+		}
+		
+		return rm;
+	}
+	
+	/*
+	 */
+	public List<RowMetaAndData> createData4()
+	{
+		List<RowMetaAndData> list = new ArrayList<RowMetaAndData>();	
+		
+		RowMetaInterface rm = createRowMetaInterface2();
+		
+		Object[] r1 = new Object[] { "abcdefgh", "ef", new Long(3), new Long(10) }; 
+		Object[] r2 = new Object[] { "abcdefgh", "h", new Long(0), new Long(7)   };
+		Object[] r3 = new Object[] { "abcdefgh", "h", new Long(1), new Long(6)   };
+		Object[] r4 = new Object[] { "abcdefgh", null, new Long(1), new Long(2)  };
+		Object[] r5 = new Object[] { "abcdefgh", "invalid", new Long(1), new Long(1) };
+		Object[] r6 = new Object[] { "abcdefgh", "invalidlonger", new Long(1), new Long(1) };
+		
+		list.add(new RowMetaAndData(rm, r1));
+		list.add(new RowMetaAndData(rm, r2));
+		list.add(new RowMetaAndData(rm, r3));
+		list.add(new RowMetaAndData(rm, r4));
+		list.add(new RowMetaAndData(rm, r5));
+		list.add(new RowMetaAndData(rm, r6));
+		
+		return list;
+	}		
+
+	/**
+	 * Create the meta data for the results (indexOf).
+	 */
+	public RowMetaInterface createRowMetaInterfaceResult4()
+	{
+		RowMetaInterface rm = new RowMeta();
+	
+		ValueMetaInterface valuesMeta[] = {
+			    new ValueMeta("string",  ValueMeta.TYPE_STRING),
+			    new ValueMeta("search",  ValueMeta.TYPE_STRING),
+			    new ValueMeta("offset1", ValueMeta.TYPE_INTEGER),
+			    new ValueMeta("offset2", ValueMeta.TYPE_INTEGER),
+			    new ValueMeta("index1",  ValueMeta.TYPE_INTEGER),
+			    new ValueMeta("index2",  ValueMeta.TYPE_INTEGER),
+			    new ValueMeta("index3",  ValueMeta.TYPE_INTEGER),			    
+	    };
+
+		for (int i=0; i < valuesMeta.length; i++ )
+		{
+			rm.addValueMeta(valuesMeta[i]);
+		}
+		
+		return rm;
+	}	
+	
+	
+	/**
+	 * Create result data for test case 4: indexOf.
+	 */
+	public List<RowMetaAndData> createResultData4()
+	{
+		List<RowMetaAndData> list = new ArrayList<RowMetaAndData>();	
+		
+		RowMetaInterface rm = createRowMetaInterfaceResult4();
+		
+		Object[] r1 = new Object[] { "abcdefgh", "ef", new Long(3), new Long(10), new Long(4), new Long(4), new Long(-1) }; 
+		Object[] r2 = new Object[] { "abcdefgh", "h", new Long(0), new Long(7), new Long(7), new Long(7), new Long(7)   };
+		Object[] r3 = new Object[] { "abcdefgh", "h", new Long(1), new Long(6), new Long(7), new Long(7), new Long(7)   };
+		Object[] r4 = new Object[] { "abcdefgh", null, new Long(1), new Long(2), new Long(-1), new Long(-1), new Long(-1)  };
+		Object[] r5 = new Object[] { "abcdefgh", "invalid", new Long(1), new Long(1), new Long(-1), new Long(-1), new Long(-1) };
+		Object[] r6 = new Object[] { "abcdefgh", "invalidlonger", new Long(1), new Long(1), new Long(-1), new Long(-1), new Long(-1) };
+		
+		list.add(new RowMetaAndData(rm, r1));
+		list.add(new RowMetaAndData(rm, r2));
+		list.add(new RowMetaAndData(rm, r3));
+		list.add(new RowMetaAndData(rm, r4));
+		list.add(new RowMetaAndData(rm, r5));
+		list.add(new RowMetaAndData(rm, r6));
+		
+		return list;
+	}			
 	
 	/**
 	 *  Check the 2 lists comparing the rows in order.
@@ -672,5 +768,110 @@ public class JavaScriptStringTest extends TestCase
                 
         List<RowMetaAndData> resultRows2 = dummyRc.getRowsRead();
         checkRows(resultRows2, goldenImageRows);
-    }    
+    }
+    
+	/**
+	 * Test case for javascript functionality: indexOf().
+	 */
+    public void testIndexOf() throws Exception
+    {
+        EnvUtil.environmentInit();
+
+        //
+        // Create a new transformation...
+        //
+        TransMeta transMeta = new TransMeta();
+        transMeta.setName("test javascript indexOf()");
+    	
+        StepLoader steploader = StepLoader.getInstance();            
+
+        // 
+        // create an injector step...
+        //
+        String injectorStepname = "injector step";
+        InjectorMeta im = new InjectorMeta();
+        
+        // Set the information of the injector.                
+        String injectorPid = steploader.getStepPluginID(im);
+        StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, (StepMetaInterface)im);
+        transMeta.addStep(injectorStep);                       
+
+        // 
+        // Create a javascript step
+        //
+        String javaScriptStepname = "javascript step";            
+        ScriptValuesMetaMod svm = new ScriptValuesMetaMod();
+        
+        ScriptValuesScript[] js = new ScriptValuesScript[] {new ScriptValuesScript(ScriptValuesScript.TRANSFORM_SCRIPT,
+        		                                              "script",
+        		                                              "var index1 = indexOf(string.getString(), search.getString());\n" +
+        		                                              "var index2 = indexOf(string.getString(), search.getString(), offset1.getInteger());\n" +
+        		                                              "var index3 = indexOf(string.getString(), search.getString(), offset2.getInteger());\n") };
+        svm.setJSScripts(js);
+        svm.setName(new String[] { "index1", "index2", "index3" });
+        svm.setRename(new String[] { "", "", "" });
+        svm.setType(new int[] { ValueMetaInterface.TYPE_INTEGER,
+        		                ValueMetaInterface.TYPE_INTEGER,
+        		                ValueMetaInterface.TYPE_INTEGER});        
+        svm.setLength(new int[] { -1, -1, -1 });
+        svm.setPrecision(new int[] { -1, -1, -1 });
+        svm.setCompatible(true);
+
+        String javaScriptStepPid = steploader.getStepPluginID(svm);
+        StepMeta javaScriptStep = new StepMeta(javaScriptStepPid, javaScriptStepname, (StepMetaInterface)svm);
+        transMeta.addStep(javaScriptStep);            
+
+        TransHopMeta hi1 = new TransHopMeta(injectorStep, javaScriptStep);
+        transMeta.addTransHop(hi1);        
+        
+        // 
+        // Create a dummy step 
+        //
+        String dummyStepname = "dummy step";            
+        DummyTransMeta dm = new DummyTransMeta();
+
+        String dummyPid = steploader.getStepPluginID(dm);
+        StepMeta dummyStep = new StepMeta(dummyPid, dummyStepname, (StepMetaInterface)dm);
+        transMeta.addStep(dummyStep);                              
+
+        TransHopMeta hi2 = new TransHopMeta(javaScriptStep, dummyStep);
+        transMeta.addTransHop(hi2);        
+        
+        // Now execute the transformation...
+        Trans trans = new Trans(transMeta);
+
+        trans.prepareExecution(null);
+                
+        StepInterface si;
+
+        si = trans.getStepInterface(javaScriptStepname, 0);
+        RowStepCollector javaScriptRc = new RowStepCollector();
+        si.addRowListener(javaScriptRc);
+               
+        si = trans.getStepInterface(dummyStepname, 0);
+        RowStepCollector dummyRc = new RowStepCollector();
+        si.addRowListener(dummyRc);
+        
+        RowProducer rp = trans.addRowProducer(injectorStepname, 0);
+        trans.startThreads();
+        
+        // add rows
+        List<RowMetaAndData> inputList = createData4();
+        Iterator<RowMetaAndData> it = inputList.iterator();
+        while ( it.hasNext() )
+        {
+        	RowMetaAndData rm = (RowMetaAndData)it.next();
+        	rp.putRow(rm.getRowMeta(), rm.getData());
+        }   
+        rp.finished();
+
+        trans.waitUntilFinished();   
+        
+        List<RowMetaAndData> goldenImageRows = createResultData4();
+        List<RowMetaAndData> resultRows1 = javaScriptRc.getRowsWritten();
+        checkRows(resultRows1, goldenImageRows);
+                
+        List<RowMetaAndData> resultRows2 = dummyRc.getRowsRead();
+        checkRows(resultRows2, goldenImageRows);
+    }        
 }
