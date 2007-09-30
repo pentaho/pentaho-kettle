@@ -47,17 +47,11 @@ import be.ibridge.kettle.trans.step.StepMetaInterface;
 
 public class XsltMeta extends BaseStepMeta implements StepMetaInterface
 {
-	private String  xsdfilename;
+	private String  xslfilename;
 	private String  fieldname;
 	private String  resultfieldname;
-	private boolean internxsd;
-	private String resultfieldformat;
-	private String xsdvalidetext;
-	private String xsdnovalidetext;
-	private boolean invalidmsg;
-	private String invalidmsgfield;
-	private String xsdfilefield;
-	private boolean xsdfilefielduse;
+	private String  xslfilefield;
+	private boolean xslfilefielduse;
 
 	
 	public XsltMeta()
@@ -68,81 +62,24 @@ public class XsltMeta extends BaseStepMeta implements StepMetaInterface
 
     
     /**
-     * @return Returns the XSD filename.
+     * @return Returns the XSL filename.
      */
-    public String getXsdFilename()
+    public String getXslFilename()
     {
-        return xsdfilename;
+        return xslfilename;
     }
-   
-    public void setXsdValideText(String validetext)
+  
+    public void setXSLFileField(String xslfilefieldin)
     {
-        xsdvalidetext=validetext;
-    }
-    
-    public void setInvalidMsgField(String invalidmsgfieldin)
-    {
-    	invalidmsgfield=invalidmsgfieldin;
+    	xslfilefield=xslfilefieldin;
     }
     
     
-       
-    
-    
-    
-    public void setXSDFileField(String xsdfilefieldin)
+    public String getXSLFileField()
     {
-    	xsdfilefield=xsdfilefieldin;
+        return xslfilefield;
     }
     
-    
-    public String getXSDFileField()
-    {
-        return xsdfilefield;
-    }
-    
-    
-    public String getInvalidMsgField()
-    {
-        return invalidmsgfield;
-    }
-    
-    public String getXsdValideText()
-    {
-        return xsdvalidetext;
-    }
-    
-    public String getRealInvalidMsgField()
-    {
-        return StringUtil.environmentSubstitute(getInvalidMsgField());
-    }
-      
-    
-    
-    
-    public String getRealXsdValideText()
-    {
-        return StringUtil.environmentSubstitute(getXsdValideText());
-    }
-    
-    
-    
-    public void setXsdNoValideText(String novalidetext)
-    {
-        xsdnovalidetext=novalidetext;
-    }
-    
-    public String getXsdNoValideText()
-    {
-        return xsdnovalidetext;
-    }
-    
-    public String getRealXsdNoValideText()
-    {
-        return StringUtil.environmentSubstitute(getXsdNoValideText());
-    }
-    
- 
     
     public String getResultfieldname()
     {
@@ -151,7 +88,7 @@ public class XsltMeta extends BaseStepMeta implements StepMetaInterface
     
     
     /**
-     * @return Returns the real XSD Filename.
+     * @return Returns the real XSL Filename.
      */
     public String getRealResultfieldname()
     {
@@ -160,11 +97,11 @@ public class XsltMeta extends BaseStepMeta implements StepMetaInterface
     
     
     /**
-     * @return Returns the realscript.
+     * @return Returns the real XSL filename.
      */
-    public String getRealXsdFilename()
+    public String getRealXslFilename()
     {
-        return StringUtil.environmentSubstitute(getXsdFilename());
+        return StringUtil.environmentSubstitute(getXslFilename());
     }
    
     
@@ -174,11 +111,11 @@ public class XsltMeta extends BaseStepMeta implements StepMetaInterface
     }
     
     /**
-     * @param script The script to set.
+     * @param script The Xsl filename to set.
      */
-    public void setXsdFilename(String xsdfilenamein)
+    public void setXslFilename(String xslfilenamein)
     {
-        this.xsdfilename = xsdfilenamein;
+        this.xslfilename = xslfilenamein;
     }
     
     
@@ -187,15 +124,6 @@ public class XsltMeta extends BaseStepMeta implements StepMetaInterface
         this.resultfieldname = resultfield;
     }
     
-    public void setResultfieldFormat(String format)
-    {
-        this.resultfieldformat = format;
-    }
-    
-    public String getResultfieldFormat()
-    {
-    	return resultfieldformat;
-    }
 
     
     public void setFieldname(String fieldnamein)
@@ -219,68 +147,36 @@ public class XsltMeta extends BaseStepMeta implements StepMetaInterface
 
 		return retval;
 	}
-	 /**
-     * @return Returns the use var flag.
-     */
-    public boolean useInternXSD()
-    {
-        return internxsd;
-    }
-    
-   
-    public boolean useInvalidMsg()
-    {
-        return invalidmsg;
-    }
+	
     
     
-    public boolean useXSDFileFieldUse()
+    public boolean useXSLFileFieldUse()
     {
-        return xsdfilefielduse;
+        return xslfilefielduse;
     }
     
       
-    public void setXSDFileFieldUse(boolean xsdfilefieldusein)
+    public void setXSLFileFieldUse(boolean xslfilefieldusein)
     {
-        this.xsdfilefielduse = xsdfilefieldusein;
+        this.xslfilefielduse = xslfilefieldusein;
     }
     
-      
-    public void setInvalidMsg(boolean invalidmsgin)
-    {
-        this.invalidmsg = invalidmsgin;
-    }
-    
+  
     
    
     
-    /**
-     * @param useVar The useVar flag to set.
-     */
-    public void setUseInternXSD(boolean internxsdin)
-    {
-        this.internxsd = internxsdin;
-    }
- 
 	private void readData(Node stepnode)
 		throws KettleXMLException
 	{
 		try
 		{		
-			xsdfilename     = XMLHandler.getTagValue(stepnode, "xsdfilename"); //$NON-NLS-1$
+			xslfilename     = XMLHandler.getTagValue(stepnode, "xslfilename"); //$NON-NLS-1$
 			fieldname     = XMLHandler.getTagValue(stepnode, "fieldname"); //$NON-NLS-1$
 			resultfieldname     = XMLHandler.getTagValue(stepnode, "resultfieldname"); //$NON-NLS-1$
-			internxsd = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "internxsd"));
-			resultfieldformat     = XMLHandler.getTagValue(stepnode, "resultfieldformat"); //$NON-NLS-1$
 			
-			xsdnovalidetext     = XMLHandler.getTagValue(stepnode, "xsdnovalidetext"); //$NON-NLS-1$
-			xsdvalidetext     = XMLHandler.getTagValue(stepnode, "xsdvalidetext"); //$NON-NLS-1$
+			xslfilefield     = XMLHandler.getTagValue(stepnode, "xslfilefield");
 			
-			invalidmsg = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "invalidmsg"));
-			invalidmsgfield     = XMLHandler.getTagValue(stepnode, "invalidmsgfield");
-			xsdfilefield     = XMLHandler.getTagValue(stepnode, "xsdfilefield");
-			
-			xsdfilefielduse = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "xsdfilefielduse"));	
+			xslfilefielduse = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "xslfilefielduse"));	
 		}
 		catch(Exception e)
 		{
@@ -290,17 +186,11 @@ public class XsltMeta extends BaseStepMeta implements StepMetaInterface
 
 	public void setDefault()
 	{
-		xsdfilename = null; //$NON-NLS-1$
+		xslfilename = null; //$NON-NLS-1$
 		fieldname = null;
 		resultfieldname="result";
-		internxsd = false;
-		resultfieldformat = "Boolean";
-		xsdnovalidetext=null;
-		xsdvalidetext=null;
-		invalidmsg=false;
-		invalidmsgfield=null;
-		xsdfilefield=null;
-		xsdfilefielduse=false;		
+		xslfilefield=null;
+		xslfilefielduse=false;		
 	}
 	
     public Row getFields(Row r, String name, Row info)
@@ -320,14 +210,7 @@ public class XsltMeta extends BaseStepMeta implements StepMetaInterface
             v.setOrigin(name);
             row.addValue(v);
             
-            // XSD Invalid message Field
-            if (useInvalidMsg())
-            {
-            	 v = new Value(getRealInvalidMsgField(), Value.VALUE_TYPE_STRING);
-            	 v.setOrigin(name);
-            	 row.addValue(v);          	 
-            	 
-            }
+           
             
         }
 
@@ -339,21 +222,13 @@ public class XsltMeta extends BaseStepMeta implements StepMetaInterface
 	{
         StringBuffer retval = new StringBuffer();
 		
-		retval.append("    "+XMLHandler.addTagValue("xsdfilename", xsdfilename)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    "+XMLHandler.addTagValue("xslfilename", xslfilename)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("    "+XMLHandler.addTagValue("fieldname", fieldname)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("    "+XMLHandler.addTagValue("resultfieldname", resultfieldname)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    "+XMLHandler.addTagValue("internxsd",  internxsd));
-		retval.append("    "+XMLHandler.addTagValue("resultfieldformat", resultfieldformat)); //$NON-NLS-1$ //$NON-NLS-2$
 		
-		retval.append("    "+XMLHandler.addTagValue("xsdnovalidetext", xsdnovalidetext)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    "+XMLHandler.addTagValue("xsdvalidetext", xsdvalidetext)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    "+XMLHandler.addTagValue("xslfilefield", xslfilefield));
 		
-		retval.append("    "+XMLHandler.addTagValue("invalidmsg",  invalidmsg)); 
-		retval.append("    "+XMLHandler.addTagValue("invalidmsgfield", invalidmsgfield));
-		
-		retval.append("    "+XMLHandler.addTagValue("xsdfilefield", xsdfilefield));
-		
-		retval.append("    "+XMLHandler.addTagValue("xsdfilefielduse",  xsdfilefielduse));
+		retval.append("    "+XMLHandler.addTagValue("xslfilefielduse",  xslfilefielduse));
 
 		return retval.toString();
 	}
@@ -363,20 +238,12 @@ public class XsltMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			xsdfilename     = rep.getStepAttributeString(id_step, "xsdfilename"); //$NON-NLS-1$
+			xslfilename     = rep.getStepAttributeString(id_step, "xslfilename"); //$NON-NLS-1$
 			fieldname     = rep.getStepAttributeString(id_step, "fieldname"); //$NON-NLS-1$
 			resultfieldname     = rep.getStepAttributeString(id_step, "resultfieldname"); //$NON-NLS-1$
-			internxsd    =      rep.getStepAttributeBoolean(id_step, "internxsd"); 
 			
-			resultfieldformat     = rep.getStepAttributeString(id_step, "resultfieldformat"); //$NON-NLS-1$
-			xsdvalidetext     = rep.getStepAttributeString(id_step, "xsdvalidetext"); //$NON-NLS-1$
-			xsdnovalidetext     = rep.getStepAttributeString(id_step, "xsdnovalidetext"); //$NON-NLS-1$
-			
-			invalidmsg    =      rep.getStepAttributeBoolean(id_step, "invalidmsg"); 
-			invalidmsgfield     = rep.getStepAttributeString(id_step, "invalidmsgfield");
-			
-			xsdfilefield     = rep.getStepAttributeString(id_step, "xsdfilefield");
-			xsdfilefielduse    =      rep.getStepAttributeBoolean(id_step, "xsdfilefielduse"); 
+			xslfilefield     = rep.getStepAttributeString(id_step, "xslfilefield");
+			xslfilefielduse    =      rep.getStepAttributeBoolean(id_step, "xslfilefielduse"); 
 
 		}
 		catch(Exception e)
@@ -390,22 +257,13 @@ public class XsltMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			rep.saveStepAttribute(id_transformation, id_step, "xsdfilename", xsdfilename); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "xslfilename", xslfilename); //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "fieldname", fieldname); //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "resultfieldname", resultfieldname); //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "internxsd",  internxsd);
 			
-			rep.saveStepAttribute(id_transformation, id_step, "resultfieldformat", resultfieldformat); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "xslfilefield", xslfilefield);
 			
-			rep.saveStepAttribute(id_transformation, id_step, "xsdvalidetext", xsdvalidetext); //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "xsdnovalidetext", xsdnovalidetext); //$NON-NLS-1$
-			
-			rep.saveStepAttribute(id_transformation, id_step, "invalidmsg",  invalidmsg);
-			rep.saveStepAttribute(id_transformation, id_step, "invalidmsgfield", invalidmsgfield);
-			
-			rep.saveStepAttribute(id_transformation, id_step, "xsdfilefield", xsdfilefield);
-			
-			rep.saveStepAttribute(id_transformation, id_step, "xsdfilefielduse",  xsdfilefielduse);
+			rep.saveStepAttribute(id_transformation, id_step, "xslfilefielduse",  xslfilefielduse);
 
 		}
 		catch(Exception e)
@@ -438,39 +296,15 @@ public class XsltMeta extends BaseStepMeta implements StepMetaInterface
 		if (getResultfieldname()==null)
 		{
 			 // Result Field is missing !
-			  cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("XsltMeta.CheckResult.ErrorMatcherMissing"), stepinfo); //$NON-NLS-1$
+			  cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("XsltMeta.CheckResult.ErrorResultFieldNameMissing"), stepinfo); //$NON-NLS-1$
 	          remarks.add(cr);
 		
 		}
 		
 			
 		
-		// Check XSD Invalid message Field		
-	      if (useInvalidMsg() && Const.isEmpty(getInvalidMsgField()))
-          {
-	    	  cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("XsltMeta.CheckResult.NoXSDInvalidMessageField"), stepinfo); //$NON-NLS-1$
-	          remarks.add(cr);
-          }
-	      
-	      // Check Output Field format
-			if (getResultfieldFormat().equals("String"))
-				{
-					if(getXsdValideText()==null)
-					{
-		
-						 cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("XsltMeta.CheckResult.ResultFiedFormatXSDValide"), stepinfo); //$NON-NLS-1$
-				         remarks.add(cr);
-						
-					}
-					
-					if(getXsdNoValideText()==null)
-					{
-						
-						 cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("XsltMeta.CheckResult.ResultFiedFormatXSDNoValide"), stepinfo); //$NON-NLS-1$
-				         remarks.add(cr);
-						
-					}
-				}
+
+	     
 			
 	}
 

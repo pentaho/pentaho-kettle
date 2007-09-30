@@ -55,9 +55,9 @@ public class Xslt extends BaseStep implements StepInterface
 	static final String JAXP_SCHEMA_LANGUAGE = "http://java.sun.com/xml/jaxp/properties/schemaLanguage";	
 	static final String JAXP_SCHEMA_SOURCE = "http://java.sun.com/xml/jaxp/properties/schemaSource";
 	
-	String xsdfilename= null;
+	String xslfilename= null;
 	int fieldposition=0; 
-	int fielxsdfiledposition=0;
+	int fielxslfiledposition=0;
 	
 		
 	public Xslt(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans)
@@ -109,63 +109,42 @@ public class Xslt extends BaseStep implements StepInterface
 				throw new KettleStepException(Messages.getString("Xslt.Exception.ErrorMatcherMissing")); 
 			}
 			
-			logBasic("" + meta.getXsdFilename());
+			logBasic("" + meta.getXslFilename());
 			
-			// Check if the XSD Filename is given
-			if (!meta.useInternXSD())	
-			{
-				if(Const.isEmpty(meta.getXsdFilename()))
+			// Check if the XSL Filename is given
+		
+				if(Const.isEmpty(meta.getXslFilename()))
 				{
-					logError(Messages.getString("Xslt.Log.ErrorXSDFile")); 
-					throw new KettleStepException(Messages.getString("Xslt.Exception.ErrorXSDFile"));
+					logError(Messages.getString("Xslt.Log.ErrorXSLFile")); 
+					throw new KettleStepException(Messages.getString("Xslt.Exception.ErrorXSLFile"));
 				}
-				xsdfilename = meta.getRealXsdFilename();
+				xslfilename = meta.getRealXslFilename();
 				
-				// Check if the XSD Filename is contained in a column
-				if (meta.useXSDFileFieldUse())
+				// Check if the XSL Filename is contained in a column
+				if (meta.useXSLFileFieldUse())
 				{
-					if (Const.isEmpty(meta.getXSDFileField()))
+					if (Const.isEmpty(meta.getXSLFileField()))
 					{
 						// The field is missing
 						//	Result field is missing !
-						logError(Messages.getString("Xslt.Log.ErrorXSDFileFieldMissing")); //$NON-NLS-1$ //$NON-NLS-2$
-						throw new KettleStepException(Messages.getString("Xslt.Exception.ErrorXSDFileFieldMissing")); //$NON-NLS-1$ //$NON-NLS-2$
+						logError(Messages.getString("Xslt.Log.ErrorXSLFileFieldMissing")); //$NON-NLS-1$ //$NON-NLS-2$
+						throw new KettleStepException(Messages.getString("Xslt.Exception.ErrorXSLFileFieldMissing")); //$NON-NLS-1$ //$NON-NLS-2$
 					}
 					
 					// Try to get Field index
-					fielxsdfiledposition =r.searchValueIndex(meta.getXSDFileField());
+					fielxslfiledposition =r.searchValueIndex(meta.getXSLFileField());
 					
 					
 					//  Let's check the Field
-					if (fielxsdfiledposition<0)
+					if (fielxslfiledposition<0)
 					{
 						//	 The field is unreachable !
-						logError(Messages.getString("Xslt.Log.ErrorXSDFileFieldFinding")+ "[" + meta.getXSDFileField()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
-						throw new KettleStepException(Messages.getString("Xslt.Exception.ErrorXSDFileFieldFinding",meta.getXSDFileField())); //$NON-NLS-1$ //$NON-NLS-2$
+						logError(Messages.getString("Xslt.Log.ErrorXSLFileFieldFinding")+ "[" + meta.getXSLFileField()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+						throw new KettleStepException(Messages.getString("Xslt.Exception.ErrorXSLFileFieldFinding",meta.getXSLFileField())); //$NON-NLS-1$ //$NON-NLS-2$
 					}						
-				}						
+										
 			}			
-			// Check Output Field format
-			if (meta.getResultfieldFormat().equals("String"))
-				{
-					if(meta.getXsdValideText()==null)
-					{
-						logError(Messages.getString("Xslt.Log.ErrorXSDValide")); 
-						throw new KettleStepException(Messages.getString("Xslt.Exception.ErrorXSDValide"));						
-					}
-					
-					if(meta.getXsdNoValideText()==null)
-					{
-						logError(Messages.getString("Xslt.Log.ErrorXSDNoValide")); 
-						throw new KettleStepException(Messages.getString("Xslt.Exception.ErrorXSDNoValide")); 						
-					}
-				}
-			// Check XSD Invalid message Field		
-		      if (meta.useInvalidMsg() && Const.isEmpty(meta.getInvalidMsgField()))
-		       {	
-	    		  	logError(Messages.getString("XsltMeta.Log.NoXSDInvalidMessageField")); 
-	    		  	throw new KettleStepException(Messages.getString("XsltMeta.Exception.NoXSDInvalidMessageField"));   				
-		       }			
+				
 		}		
 
 		// Get the field value
@@ -174,22 +153,22 @@ public class Xslt extends BaseStep implements StepInterface
 		
 		String xmlString=null;
 
-		if (meta.useXSDFileFieldUse())
+		if (meta.useXSLFileFieldUse())
 		{
 			// Get the value
-			Value valuexsd = r.getValue(fielxsdfiledposition);
-			xsdfilename= valuexsd.getString();				
-			if (log.isDetailed()) logDetailed("XSD Filename [" + xsdfilename + "] extracted from field [" +  meta.getXSDFileField() + "]");			
+			Value valuexsl = r.getValue(fielxslfiledposition);
+			xslfilename= valuexsl.getString();				
+			if (log.isDetailed()) logDetailed("XSL Filename [" + xslfilename + "] extracted from field [" +  meta.getXSLFileField() + "]");			
 		}
 		else
 		{		
-				xsdfilename = meta.getRealXsdFilename();
+				xslfilename = meta.getRealXslFilename();
 		}
 		try {			
-			logDetailed(Messages.getString("XsltMeta.Log.Filexsl") + xsdfilename);
+			logDetailed(Messages.getString("XsltMeta.Log.Filexsl") + xslfilename);
 			TransformerFactory factory = TransformerFactory.newInstance();
 			// Use the factory to create a template containing the xsl file
-			Templates template = factory.newTemplates(new StreamSource(	new FileInputStream(xsdfilename)));//"C:\\workspace\\Workflow\\fichiers\\GenerateFile.xsl")));
+			Templates template = factory.newTemplates(new StreamSource(	new FileInputStream(xslfilename)));//"C:\\workspace\\Workflow\\fichiers\\GenerateFile.xsl")));
 			// Use the template to create a transformer
 			Transformer xformer = template.newTransformer();
 			Source source = new StreamSource(new StringReader(Fieldvalue));			

@@ -66,22 +66,21 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface
 	
 
 	private FormData    fdResultField,fdlField, fdField,fdTabFolder
-						,fdlXSDFilename, fdbXSDFilename,fdXSDFilename,fdXSDField,fdlXSDField;//fdXsdValideText,fdXsdNoValideText,,fdInvalidMsgField	
-	private LabelTextVar wResultField;//,wXsdValideText,wXsdNoValideText,wInvalidMsgField
-	private CCombo       wField,wXSDField;
-    private FormData fdlXSDFileField,fdXSDFileField;  //fdlInterneXsd, fdInterneXsd,fdlInvalidMsg,fdInvalidMsg,
-    
+						,fdlXSLFilename, fdbXSLFilename,fdXSLFilename,fdXSLField,fdlXSLField;	
+	private LabelTextVar wResultField;
+	private CCombo       wField,wXSLField;
+    private FormData fdlXSLFileField,fdXSLFileField;  
  
-	private Label wlField,wlFilename,wlXSDField,wlXSDFileField;//wlInterneXsd,wlInvalidMsg,
+	private Label wlField,wlFilename,wlXSLField,wlXSLFileField;
     
-	private Button wbbFilename,wXSDFileField; //,wInterneXsd,wInvalidMsg
+	private Button wbbFilename,wXSLFileField; 
 
 	private XsltMeta input;
 	
-	private Group wOutputField,wXSDFileGroup;
-	private FormData fdOutputField,fdXSDFileGroup;
+	private Group wOutputField,wXSLFileGroup;
+	private FormData fdOutputField,fdXSLFileGroup;
 	
-	private TextVar wXSDFilename;
+	private TextVar wXSLFilename;
 
 	
 	private CTabFolder   wTabFolder;
@@ -89,10 +88,6 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface
 	private CTabItem     wGeneralTab;
 	private Composite    wGeneralComp;
 	private FormData     fdGeneralComp;
-	
-   // private Label        wlFormat;
-   // private CCombo       wFormat;
-   // private FormData     fdlFormat, fdFormat;
 	
 	
 	public XsltDialog(Shell parent, Object in, TransMeta transMeta, String sname)
@@ -244,69 +239,69 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface
 		// ///////////////////////////////////////////////////////////	
 		
 		
-    	// XSD File grouping?
+    	// XSL File grouping
 		// ////////////////////////
-		// START OF XSD File GROUP
+		// START OF XSL File GROUP
 		// 
 
-		wXSDFileGroup = new Group(wGeneralComp, SWT.SHADOW_NONE);
-		props.setLook(wXSDFileGroup);
-		wXSDFileGroup.setText(Messages.getString("XsltDialog.XSD.Group.Label"));
+		wXSLFileGroup = new Group(wGeneralComp, SWT.SHADOW_NONE);
+		props.setLook(wXSLFileGroup);
+		wXSLFileGroup.setText(Messages.getString("XsltDialog.XSL.Group.Label"));
 		
-		FormLayout XSDFileGroupLayout = new FormLayout();
-		XSDFileGroupLayout.marginWidth = 10;
-		XSDFileGroupLayout.marginHeight = 10;
-		wXSDFileGroup.setLayout(XSDFileGroupLayout);
+		FormLayout XSLFileGroupLayout = new FormLayout();
+		XSLFileGroupLayout.marginWidth = 10;
+		XSLFileGroupLayout.marginHeight = 10;
+		wXSLFileGroup.setLayout(XSLFileGroupLayout);
 
 
-		// Is XSD filename defined in a Field?
-		wlXSDFileField = new Label(wXSDFileGroup, SWT.RIGHT);
-		wlXSDFileField.setText(Messages.getString("XsltDialog.XSDFilenameFileField.Label"));
-		props.setLook(wlXSDFileField);
-		fdlXSDFileField = new FormData();
-		fdlXSDFileField.left = new FormAttachment(0, 0);
-		fdlXSDFileField.top = new FormAttachment(wResultField, margin);
-		fdlXSDFileField.right = new FormAttachment(middle, -margin);
-		wlXSDFileField.setLayoutData(fdlXSDFileField);
-		wXSDFileField = new Button(wXSDFileGroup, SWT.CHECK);
-		props.setLook(wXSDFileField);
-		wXSDFileField.setToolTipText(Messages.getString("XsltDialog.XSDFilenameFileField.Tooltip"));
-		fdXSDFileField = new FormData();
-		fdXSDFileField.left = new FormAttachment(middle, margin);
-		fdXSDFileField.top = new FormAttachment(wResultField, margin);
-		wXSDFileField.setLayoutData(fdXSDFileField);
+		// Is XSL filename defined in a Field?
+		wlXSLFileField = new Label(wXSLFileGroup, SWT.RIGHT);
+		wlXSLFileField.setText(Messages.getString("XsltDialog.XSLFilenameFileField.Label"));
+		props.setLook(wlXSLFileField);
+		fdlXSLFileField = new FormData();
+		fdlXSLFileField.left = new FormAttachment(0, 0);
+		fdlXSLFileField.top = new FormAttachment(wResultField, margin);
+		fdlXSLFileField.right = new FormAttachment(middle, -margin);
+		wlXSLFileField.setLayoutData(fdlXSLFileField);
+		wXSLFileField = new Button(wXSLFileGroup, SWT.CHECK);
+		props.setLook(wXSLFileField);
+		wXSLFileField.setToolTipText(Messages.getString("XsltDialog.XSLFilenameFileField.Tooltip"));
+		fdXSLFileField = new FormData();
+		fdXSLFileField.left = new FormAttachment(middle, margin);
+		fdXSLFileField.top = new FormAttachment(wResultField, margin);
+		wXSLFileField.setLayoutData(fdXSLFileField);
 		
-		SelectionAdapter lsXsdFile = new SelectionAdapter()
+		SelectionAdapter lsXslFile = new SelectionAdapter()
         {
             public void widgetSelected(SelectionEvent arg0)
             {
-            	ActivewlXSDField();
+            	ActivewlXSLField();
             	input.setChanged();
             }
         };
-        wXSDFileField.addSelectionListener(lsXsdFile);
+        wXSLFileField.addSelectionListener(lsXslFile);
 		
 		
 		
-		// If XSD File name defined in a Field
-		wlXSDField=new Label(wXSDFileGroup, SWT.RIGHT);
-        wlXSDField.setText(Messages.getString("XsltDialog.XSDFilenameField.Label"));
-        props.setLook(wlXSDField);
-        fdlXSDField=new FormData();
-        fdlXSDField.left = new FormAttachment(0, 0);
-        fdlXSDField.top  = new FormAttachment(wXSDFileField, margin);
-        fdlXSDField.right= new FormAttachment(middle, -margin);
-        wlXSDField.setLayoutData(fdlXSDField);
-        wXSDField=new CCombo(wXSDFileGroup, SWT.BORDER | SWT.READ_ONLY);
-        wXSDField.setEditable(true);
-        props.setLook(wXSDField);
-        wXSDField.addModifyListener(lsMod);
-        fdXSDField=new FormData();
-        fdXSDField.left = new FormAttachment(middle, margin);
-        fdXSDField.top  = new FormAttachment(wXSDFileField, margin);
-        fdXSDField.right= new FormAttachment(100, -margin);
-        wXSDField.setLayoutData(fdXSDField);
-        wXSDField.addFocusListener(new FocusListener()
+		// If XSL File name defined in a Field
+		wlXSLField=new Label(wXSLFileGroup, SWT.RIGHT);
+        wlXSLField.setText(Messages.getString("XsltDialog.XSLFilenameField.Label"));
+        props.setLook(wlXSLField);
+        fdlXSLField=new FormData();
+        fdlXSLField.left = new FormAttachment(0, 0);
+        fdlXSLField.top  = new FormAttachment(wXSLFileField, margin);
+        fdlXSLField.right= new FormAttachment(middle, -margin);
+        wlXSLField.setLayoutData(fdlXSLField);
+        wXSLField=new CCombo(wXSLFileGroup, SWT.BORDER | SWT.READ_ONLY);
+        wXSLField.setEditable(true);
+        props.setLook(wXSLField);
+        wXSLField.addModifyListener(lsMod);
+        fdXSLField=new FormData();
+        fdXSLField.left = new FormAttachment(middle, margin);
+        fdXSLField.top  = new FormAttachment(wXSLFileField, margin);
+        fdXSLField.right= new FormAttachment(100, -margin);
+        wXSLField.setLayoutData(fdXSLField);
+        wXSLField.addFocusListener(new FocusListener()
             {
                 public void focusLost(org.eclipse.swt.events.FocusEvent e)
                 {
@@ -316,7 +311,7 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface
                 {
                     Cursor busy = new Cursor(shell.getDisplay(), SWT.CURSOR_WAIT);
                     shell.setCursor(busy);
-                    setXSDFieldname();
+                    setXSLFieldname();
                     shell.setCursor(null);
                     busy.dispose();
                 }
@@ -324,48 +319,46 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface
         );
 		       
         
-		// XSD Filename
-		wlFilename = new Label(wXSDFileGroup, SWT.RIGHT);
-		wlFilename.setText(Messages.getString("XsltDialog.XSDFilename.Label"));
+		// XSL Filename
+		wlFilename = new Label(wXSLFileGroup, SWT.RIGHT);
+		wlFilename.setText(Messages.getString("XsltDialog.XSLFilename.Label"));
 		props.setLook(wlFilename);
-		fdlXSDFilename = new FormData();
-		fdlXSDFilename.left = new FormAttachment(0, 0);
-		fdlXSDFilename.top = new FormAttachment(wXSDField, 2*margin);
-		fdlXSDFilename.right = new FormAttachment(middle, -margin);
-		wlFilename.setLayoutData(fdlXSDFilename);
+		fdlXSLFilename = new FormData();
+		fdlXSLFilename.left = new FormAttachment(0, 0);
+		fdlXSLFilename.top = new FormAttachment(wXSLField, 2*margin);
+		fdlXSLFilename.right = new FormAttachment(middle, -margin);
+		wlFilename.setLayoutData(fdlXSLFilename);
 
-		wbbFilename = new Button(wXSDFileGroup, SWT.PUSH | SWT.CENTER);
+		wbbFilename = new Button(wXSLFileGroup, SWT.PUSH | SWT.CENTER);
 		props.setLook(wbbFilename);
 		wbbFilename.setText(Messages
 				.getString("XsltDialog.FilenameBrowse.Button"));
 		wbbFilename.setToolTipText(Messages
 				.getString("System.Tooltip.BrowseForFileOrDirAndAdd"));
-		fdbXSDFilename = new FormData();
-		fdbXSDFilename.right = new FormAttachment(100, 0);
-		fdbXSDFilename.top = new FormAttachment(wXSDField, 2*margin);
-		wbbFilename.setLayoutData(fdbXSDFilename);
+		fdbXSLFilename = new FormData();
+		fdbXSLFilename.right = new FormAttachment(100, 0);
+		fdbXSLFilename.top = new FormAttachment(wXSLField, 2*margin);
+		wbbFilename.setLayoutData(fdbXSLFilename);
 
-		wXSDFilename = new TextVar(wXSDFileGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		props.setLook(wXSDFilename);
-		wXSDFilename.addModifyListener(lsMod);
-		fdXSDFilename = new FormData();
-		fdXSDFilename.left = new FormAttachment(middle, margin);
-		fdXSDFilename.right = new FormAttachment(wbbFilename, -margin);
-		fdXSDFilename.top = new FormAttachment(wXSDField, 2*margin);
-		wXSDFilename.setLayoutData(fdXSDFilename);
+		wXSLFilename = new TextVar(wXSLFileGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		props.setLook(wXSLFilename);
+		wXSLFilename.addModifyListener(lsMod);
+		fdXSLFilename = new FormData();
+		fdXSLFilename.left = new FormAttachment(middle, margin);
+		fdXSLFilename.right = new FormAttachment(wbbFilename, -margin);
+		fdXSLFilename.top = new FormAttachment(wXSLField, 2*margin);
+		wXSLFilename.setLayoutData(fdXSLFilename);
 				
 		        
 		
-		
-		
-		fdXSDFileGroup = new FormData();
-		fdXSDFileGroup.left = new FormAttachment(0, margin);
-		fdXSDFileGroup.top = new FormAttachment(wOutputField, margin);
-		fdXSDFileGroup.right = new FormAttachment(100, -margin);
-		wXSDFileGroup.setLayoutData(fdXSDFileGroup);
+		fdXSLFileGroup = new FormData();
+		fdXSLFileGroup.left = new FormAttachment(0, margin);
+		fdXSLFileGroup.top = new FormAttachment(wOutputField, margin);
+		fdXSLFileGroup.right = new FormAttachment(100, -margin);
+		wXSLFileGroup.setLayoutData(fdXSLFileGroup);
 		
 		// ///////////////////////////////////////////////////////////
-		// / END OF XSD File GROUP
+		// / END OF XSL File GROUP
 		// ///////////////////////////////////////////////////////////	
 	
 	        
@@ -423,10 +416,9 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface
 		
 		// Whenever something changes, set the tooltip to the expanded version
 		// of the filename:
-		wXSDFilename.addModifyListener(new ModifyListener() {
+		wXSLFilename.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
-				wXSDFilename.setToolTipText(StringUtil
-						.environmentSubstitute(wXSDFilename.getText()));
+				wXSLFilename.setToolTipText(StringUtil.environmentSubstitute(wXSLFilename.getText()));
 			}
 		});
 
@@ -438,9 +430,9 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface
 					dialog.setFilterExtensions(new String[] { "*.xsl;*.XSL",
 							"*.xslt;.*XSLT",
 							"*" });
-					if (wXSDFilename.getText() != null) {
+					if (wXSLFilename.getText() != null) {
 						String fname = StringUtil
-								.environmentSubstitute(wXSDFilename.getText());
+								.environmentSubstitute(wXSLFilename.getText());
 						dialog.setFileName(fname);
 					}
 
@@ -453,7 +445,7 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface
 						String str = dialog.getFilterPath()
 								+ System.getProperty("file.separator")
 								+ dialog.getFileName();
-						wXSDFilename.setText(str);
+						wXSLFilename.setText(str);
 					}
 				}			
 		});
@@ -466,7 +458,7 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface
 		setSize();
 		
 		getData();
-		ActivewlXSDField();
+		ActivewlXSLField();
 
 		
 		input.setChanged(changed);
@@ -484,20 +476,20 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface
 	
 		
 	
-	private void ActivewlXSDField()
+	private void ActivewlXSLField()
 	{
        
-		wXSDField.setEnabled(wXSDFileField.getSelection());
-		wlXSDField.setEnabled(wXSDFileField.getSelection());
+		wXSLField.setEnabled(wXSLFileField.getSelection());
+		wlXSLField.setEnabled(wXSLFileField.getSelection());
 		
-		wXSDFilename.setEnabled(!wXSDFileField.getSelection());
-		wlFilename.setEnabled(!wXSDFileField.getSelection());
-		wbbFilename.setEnabled(!wXSDFileField.getSelection());
+		wXSLFilename.setEnabled(!wXSLFileField.getSelection());
+		wlFilename.setEnabled(!wXSLFileField.getSelection());
+		wbbFilename.setEnabled(!wXSLFileField.getSelection());
 		
 	}
 	
 	
- 	 private void setXSDFieldname()
+ 	 private void setXSLFieldname()
 	 {
 		 try{
 	           
@@ -509,7 +501,7 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface
 					for (int i=0;i<r.size();i++)
 					{
 						Value v = r.getValue(i);	
-						wXSDField.add(v.getName());										
+						wXSLField.add(v.getName());										
 					}
 				}
 		    
@@ -553,16 +545,16 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface
 	public void getData()
 	{
 	
-		if (input.getXsdFilename() != null) wXSDFilename.setText( input.getXsdFilename() );
+		if (input.getXslFilename() != null) wXSLFilename.setText( input.getXslFilename() );
 		if (input.getResultfieldname() != null) wResultField.setText( input.getResultfieldname() );
 		if (input.getFieldname() != null) wField.setText( input.getFieldname() );
 
 		
 		
-		if (input.getXSDFileField() != null) wXSDField.setText( input.getXSDFileField() );
+		if (input.getXSLFileField() != null) wXSLField.setText( input.getXSLFileField() );
 		
 		
-		wXSDFileField.setSelection(input.useXSDFileFieldUse());
+		wXSLFileField.setSelection(input.useXSLFileFieldUse());
 		
 			
 		
@@ -582,15 +574,15 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface
 	{
 		stepname = wStepname.getText(); // return value
 
-		input.setXsdFilename( wXSDFilename.getText() );
+		input.setXslFilename( wXSLFilename.getText() );
 		input.setResultfieldname(wResultField.getText() );
 		input.setFieldname(wField.getText() );
 
 		
-		input.setXSDFileField(wXSDField.getText() );
+		input.setXSLFileField(wXSLField.getText() );
 		
 
-		input.setXSDFileFieldUse(wXSDFileField.getSelection());
+		input.setXSLFileFieldUse(wXSLFileField.getSelection());
 						
 		dispose();
 	}
