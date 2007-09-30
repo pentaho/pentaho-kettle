@@ -158,14 +158,14 @@ public class Xslt extends BaseStep implements StepInterface
 			// Get the value
 			Value valuexsl = r.getValue(fielxslfiledposition);
 			xslfilename= valuexsl.getString();				
-			if (log.isDetailed()) logDetailed("XSL Filename [" + xslfilename + "] extracted from field [" +  meta.getXSLFileField() + "]");			
+			if (log.isDetailed()) logDetailed(Messages.getString("Xslt.Log.XslfileNameFromFied",xslfilename,meta.getXSLFileField()));			
 		}
 		else
 		{		
 				xslfilename = meta.getRealXslFilename();
 		}
 		try {			
-			logDetailed(Messages.getString("XsltMeta.Log.Filexsl") + xslfilename);
+			logDetailed(Messages.getString("Xslt.Log.Filexsl") + xslfilename);
 			TransformerFactory factory = TransformerFactory.newInstance();
 			// Use the factory to create a template containing the xsl file
 			Templates template = factory.newTemplates(new StreamSource(	new FileInputStream(xslfilename)));//"C:\\workspace\\Workflow\\fichiers\\GenerateFile.xsl")));
@@ -175,7 +175,7 @@ public class Xslt extends BaseStep implements StepInterface
 		    StreamResult resultat = new StreamResult(new StringWriter());	   
 			xformer.transform(source, resultat);
 			xmlString = resultat.getWriter().toString();			
-			logDetailed(Messages.getString("XsltMeta.Log.FileResult"));
+			logDetailed(Messages.getString("Xslt.Log.FileResult"));
 			logDetailed(xmlString);		
 		} 
 		catch (Exception e) {
