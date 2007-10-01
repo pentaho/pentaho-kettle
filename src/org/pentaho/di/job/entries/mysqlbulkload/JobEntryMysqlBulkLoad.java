@@ -468,7 +468,7 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 			{
 				// the file doesn't exist
 				result.setNrErrors(1);
-				log.logDetailed(toString(), "File ["+realFilename+"] doesn't exist!");
+				log.logError(toString(), "File ["+realFilename+"] doesn't exist!");
 			}
 		}
 		else
