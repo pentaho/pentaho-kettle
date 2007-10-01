@@ -65,6 +65,7 @@ public class PreviewRowsDialog extends Dialog
     private FormData fdlFields, fdFields;
 
     private Button wClose;
+    private Button wStop;
     private Button wNext;
     private Button wLog;
 
@@ -79,8 +80,11 @@ public class PreviewRowsDialog extends Dialog
     private String loggingText;
     
     private boolean proposingToGetMoreRows;
+    private boolean proposingToStop;
 
     private boolean askingForMoreRows;
+    
+    private boolean askingToStop;
 
     private RowMetaInterface rowMeta;
     
@@ -188,12 +192,25 @@ public class PreviewRowsDialog extends Dialog
 	        buttons.add(wLog);
         }
 
+        if (proposingToStop) {
+	        wStop = new Button(shell, SWT.PUSH);
+	        wStop.setText(Messages.getString("PreviewRowsDialog.Button.Stop.Label"));
+	        wStop.setToolTipText(Messages.getString("PreviewRowsDialog.Button.Stop.ToolTip"));
+	        wStop.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { askingToStop=true; close(); } });
+	        buttons.add(wStop);
+        }
+
         if (proposingToGetMoreRows) {
 	        wNext = new Button(shell, SWT.PUSH);
 	        wNext.setText(Messages.getString("PreviewRowsDialog.Button.Next.Label"));
 	        wNext.setToolTipText(Messages.getString("PreviewRowsDialog.Button.Next.ToolTip"));
 	        wNext.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { askingForMoreRows=true; close(); } });
 	        buttons.add(wNext);
+        }
+        
+        if (proposingToGetMoreRows || proposingToStop) {
+	        wClose.setText(Messages.getString("PreviewRowsDialog.Button.Close.Label"));
+	        wClose.setToolTipText(Messages.getString("PreviewRowsDialog.Button.Close.ToolTip"));
         }
 
         // Position the buttons...
@@ -373,5 +390,26 @@ public class PreviewRowsDialog extends Dialog
 	 */
 	public void setProposingToGetMoreRows(boolean proposingToGetMoreRows) {
 		this.proposingToGetMoreRows = proposingToGetMoreRows;
+	}
+
+	/**
+	 * @return the askingToStop
+	 */
+	public boolean isAskingToStop() {
+		return askingToStop;
+	}
+
+	/**
+	 * @return the proposingToStop
+	 */
+	public boolean isProposingToStop() {
+		return proposingToStop;
+	}
+
+	/**
+	 * @param proposingToStop the proposingToStop to set
+	 */
+	public void setProposingToStop(boolean proposingToStop) {
+		this.proposingToStop = proposingToStop;
 	}
 }

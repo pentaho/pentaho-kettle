@@ -897,6 +897,7 @@ public class TransLog extends Composite implements TabItemInterface
 				
 				PreviewRowsDialog previewRowsDialog = new PreviewRowsDialog(shell, transMeta, SWT.APPLICATION_MODAL, stepDebugMeta.getStepMeta().getName(), rowBufferMeta, rowBuffer);
 				previewRowsDialog.setProposingToGetMoreRows(true);
+				previewRowsDialog.setProposingToStop(true);
 				previewRowsDialog.open();
 
 				if (previewRowsDialog.isAskingForMoreRows()) {
@@ -909,6 +910,13 @@ public class TransLog extends Composite implements TabItemInterface
 					//
 					pauseResume();
 				}
+
+				if (previewRowsDialog.isAskingToStop()) {
+					// Stop running
+					//
+					stop();
+				}
+
 			}
 		
 		});
