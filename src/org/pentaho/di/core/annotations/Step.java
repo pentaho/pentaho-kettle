@@ -35,5 +35,5 @@ public @interface Step
 	String categoryDescription() default "";
 	
 	String i18nPackageName() default "";
-
+	
 }

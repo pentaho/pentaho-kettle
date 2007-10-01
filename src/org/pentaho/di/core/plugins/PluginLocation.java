@@ -10,10 +10,12 @@ import org.pentaho.di.core.exception.KettleConfigException;
  * @author Alex Silva
  *
  */
-public class PluginConfig
+public class PluginLocation
 {
 	private String id;
-
+	
+	public static final String PDI_PLUGIN_CONFIG = "pdi.plugins.config"; 
+	
 	private String location;
 
 	public String getId()
@@ -25,10 +27,17 @@ public class PluginConfig
 	{
 		this.id = id;
 	}
-
+	
+	/**
+	 * Returns where the plugin xml file is located.  This file specifies "n" locations from which plugins can be loaded.
+	 * You can override what's returned by this method by supplying a system property called "pdi.plugins.config" that points
+	 * to the location of the file.
+	 * 
+	 * @return
+	 */
 	public String getLocation()
 	{
-		return location;
+		return System.getProperty(PDI_PLUGIN_CONFIG,location);
 	}
 
 	public void setLocation(String resource)
@@ -41,10 +50,10 @@ public class PluginConfig
 		if (o==this)
 			return true;
 		
-		if (!(o instanceof PluginConfig))
+		if (!(o instanceof PluginLocation))
 			return false;
 		
-		PluginConfig that = (PluginConfig)o;
+		PluginLocation that = (PluginLocation)o;
 		
 		return that.id.equals(id) && that.location.equals(location);
 	}

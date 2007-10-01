@@ -15,6 +15,8 @@
 
 package org.pentaho.di.job;
 
+import org.pentaho.di.core.plugins.Plugin;
+
 /**
  * Contains the description of a job-entry of a job-entry plugin, what jars to
  * load, the icon, etc.
@@ -23,86 +25,22 @@ package org.pentaho.di.job;
  * @author Matt
  * 
  */
-public class JobPlugin
+public class JobPlugin extends Plugin<String>
 {
-	public static final int TYPE_ALL = 0;
-
-	public static final int TYPE_NATIVE = 1;
-
-	public static final int TYPE_PLUGIN = 2;
-
-	private int type;
-
-	private String id;
-
 	private JobEntryType jobType;
-	
-	private String description;
-
-	private String tooltip;
-
-	private String directory;
-
-	private String jarfiles[];
-
-	private String icon_filename;
-
-	private String classname;
 
 	public JobPlugin(int type, String id, JobEntryType jobType, String tooltip, String directory,
 			String jarfiles[], String icon_filename, String classname)
 	{
-		this.type = type;
-		this.id = id;
+
+		super(type, id, jobType.getDescription(), tooltip, directory, jarfiles, icon_filename, classname);
 		this.jobType = jobType;
-		this.description = jobType.getDescription();
-		this.tooltip = tooltip;
-		this.directory = directory;
-		this.jarfiles = jarfiles;
-		this.icon_filename = icon_filename;
-		this.classname = classname;
 	}
-	
+
 	public JobPlugin(int type, String id, String description, String tooltip, String directory,
 			String jarfiles[], String icon_filename, String classname)
 	{
-		this.type = type;
-		this.id = id;
-		this.jobType = null;
-		this.description = description;
-		this.tooltip = tooltip;
-		this.directory = directory;
-		this.jarfiles = jarfiles;
-		this.icon_filename = icon_filename;
-		this.classname = classname;
-	}
-
-	public int getType()
-	{
-		return type;
-	}
-
-	public boolean isNative()
-	{
-		return type == TYPE_NATIVE;
-	}
-
-	public boolean isPlugin()
-	{
-		return type == TYPE_PLUGIN;
-	}
-
-	/**
-	 * @return The ID (code String) of the job or job-plugin.
-	 */
-	public String getID()
-	{
-		return id;
-	}
-
-	public String getDescription()
-	{
-		return description;
+		super(type, id, description, tooltip, directory, jarfiles, icon_filename, classname);
 	}
 
 	public JobEntryType getJobType()
@@ -110,48 +48,19 @@ public class JobPlugin
 		return jobType;
 	}
 
-	public String getTooltip()
-	{
-		return tooltip;
-	}
-
-	public String getDirectory()
-	{
-		return directory;
-	}
-
-	public String[] getJarfiles()
-	{
-		return jarfiles;
-	}
-
-	public String getIconFilename()
-	{
-		return icon_filename;
-	}
-
-	public void setIconFilename(String filename)
-	{
-		icon_filename = filename;
-	}
-
-	public String getClassname()
-	{
-		return classname;
-	}
-
 	public int hashCode()
 	{
-		return id.hashCode();
+		return getID().hashCode();
 	}
 
 	public boolean equals(Object obj)
 	{
 		return getID().equals(((JobPlugin) obj).getID());
 	}
-	
+
 	public String toString()
 	{
-		return getClass().getName()+": " + id + "(" + (type==TYPE_NATIVE?"NATIVE":"PLUGIN") + ")";
+		return getClass().getName() + ": " + getID() + "(" + (getType() == TYPE_NATIVE ? "NATIVE" : "PLUGIN")
+				+ ")";
 	}
 }

@@ -28,6 +28,9 @@
 	<plugin id="PUBLIC_JOBENTRIES_DIR">
 		<location>plugins/jobentries</location>
 	</plugin>
+	<plugin id="PUBLIC_STEPS_DIR">
+		<location>plugins/steps</location>
+	</plugin>
 	<plugin id="PRIVATE_JOBENTRIES_DIR">
 		<location>
 			ognl:@org.pentaho.di.core.Const@getKettleDirectory()+"/plugins/"

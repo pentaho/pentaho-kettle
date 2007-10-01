@@ -34,6 +34,7 @@ import org.pentaho.di.core.config.KettleConfig;
 import org.pentaho.di.core.exception.KettleConfigException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepLoaderException;
+import org.pentaho.di.core.plugins.Plugin;
 import org.pentaho.di.core.plugins.PluginLoader;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.springframework.core.io.FileSystemResourceLoader;
@@ -45,7 +46,7 @@ import org.springframework.core.io.support.ResourcePatternResolver;
  * Takes care of loading job-entries or job-entry plugins.
  * 
  * @since 9-may-2005
- * @author Matt
+ * @author Matt	
  * 
  */
 public class JobEntryLoader
@@ -135,9 +136,9 @@ public class JobEntryLoader
 	{
 		try
 		{
-			PluginLoader loader = new PluginLoader();
+			PluginLoader loader = PluginLoader.getInstance();
 			loader.load("plugins-config");
-			pluginList.addAll(loader.doConfig());
+			pluginList.addAll(loader.getDefinedPlugins(JobPlugin.class));
 			return true;
 		} catch (KettleConfigException e)
 		{
@@ -266,9 +267,11 @@ public class JobEntryLoader
 	{
 		String jarfiles[] = sp.getJarfiles();
 		List<URL> classpath = new ArrayList<URL>();
-		//safe to use filesystem because at this point it is all local
-		//and we are using this so we can do things like */lib/*.jar and so forth, as with ant
-		ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver(new FileSystemResourceLoader());
+		// safe to use filesystem because at this point it is all local
+		// and we are using this so we can do things like */lib/*.jar and so
+		// forth, as with ant
+		ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver(
+				new FileSystemResourceLoader());
 		for (int i = 0; i < jarfiles.length; i++)
 		{
 			try

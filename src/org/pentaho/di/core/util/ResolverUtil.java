@@ -131,7 +131,7 @@ public class ResolverUtil<T>
 		Test test = new IsA(parent);
 		for (String pkg : packageNames)
 		{
-			findInPackage(test, pkg);
+			findInPackage(pkg,test);
 		}
 	}
 
@@ -142,7 +142,7 @@ public class ResolverUtil<T>
 		Test test = new NameEndsWith(suffix);
 		for (String pkg : packageNames)
 		{
-			findInPackage(test, pkg);
+			findInPackage(pkg,test);
 		}
 	}
 
@@ -153,21 +153,26 @@ public class ResolverUtil<T>
 		Test test = new AnnotatedWith(annotation);
 		for (String pkg : packageNames)
 		{
-			findInPackage(test, pkg);
+			findInPackage(pkg,test);
 		}
 	}
 
-	public void find(Test test, String... packageNames)
+	public void find(Test[] test, String... packageNames)
 	{
 		if (packageNames == null)
 			return;
 		for (String pkg : packageNames)
 		{
-			findInPackage(test, pkg);
+			findInPackage(pkg,test);
 		}
 	}
+	
+	public void find(Test test, String... packageNames)
+	{
+		find(new Test[]{test},packageNames);
+	}
 
-	public void findInPackage(Test test, String packageName)
+	public void findInPackage(String packageName, Test... tests)
 	{
 		packageName = packageName.replace('.', '/');
 		ClassLoader loader = getClassLoader();
@@ -194,14 +199,15 @@ public class ResolverUtil<T>
 				{
 					urlPath = urlPath.substring(0, urlPath.indexOf('!'));
 				}
-				log.logDetailed(toString(), "Scanning for classes in [" + urlPath + "] matching criteria: " + test);
+				log.logDetailed(toString(), "Scanning for classes in [" + urlPath + "] matching criteria: "
+						+ tests);
 				File file = new File(urlPath);
 				if (file.isDirectory())
 				{
-					loadImplementationsInDirectory(test, packageName, file);
+					loadImplementationsInDirectory(packageName, file,tests);
 				} else
 				{
-					loadImplementationsInJar(test, packageName, file);
+					loadImplementationsInJar(packageName, file,tests);
 				}
 			} catch (IOException ioe)
 			{
@@ -210,7 +216,7 @@ public class ResolverUtil<T>
 		}
 	}
 
-	private void loadImplementationsInDirectory(Test test, String parent, File location)
+	private void loadImplementationsInDirectory(String parent, File location, Test... tests)
 	{
 		File[] files = location.listFiles();
 		StringBuilder builder = null;
@@ -221,15 +227,15 @@ public class ResolverUtil<T>
 			String packageOrClass = (parent == null ? file.getName() : builder.toString());
 			if (file.isDirectory())
 			{
-				loadImplementationsInDirectory(test, packageOrClass, file);
+				loadImplementationsInDirectory(packageOrClass, file, tests);
 			} else if (file.getName().endsWith(".class"))
 			{
-				addIfMatching(test, packageOrClass);
+				addIfMatching(packageOrClass,tests);
 			}
 		}
 	}
 
-	private void loadImplementationsInJar(Test test, String parent, File jarfile)
+	public void loadImplementationsInJar(String parent, File jarfile, Test... tests)
 	{
 		try
 		{
@@ -240,37 +246,42 @@ public class ResolverUtil<T>
 				String name = entry.getName();
 				if (!entry.isDirectory() && name.startsWith(parent) && name.endsWith(".class"))
 				{
-					addIfMatching(test, name);
+					addIfMatching(name,tests);
 				}
 			}
 		} catch (IOException ioe)
 		{
-			log.logError(toString(), "Could not search jar file \\\'" + jarfile + "\\\' for classes matching criteria: "
-					+ test + " due to an IOException", ioe);
+			log.logError(toString(), "Could not search jar file \\\'" + jarfile
+					+ "\\\' for classes matching criteria: " + tests + " due to an IOException", ioe);
 		}
 	}
 
 	@SuppressWarnings("unchecked")
-	protected void addIfMatching(Test test, String fqn)
+	protected void addIfMatching(String fqn, Test... tests)
 	{
 		try
 		{
 			String externalName = fqn.substring(0, fqn.indexOf('.')).replace('/', '.');
 			ClassLoader loader = getClassLoader();
-			if (log.isDebug())
-			{
-				log.logDebug(toString(), "Checking to see if class " + externalName + " matches criteria [" + test + "]");
-			}
+
 			Class<?> type = loader.loadClass(externalName);
 
-			if (test.matches(type))
+			for (Test test : tests)
 			{
-				matches.add((Class<T>) type);
+				if (log.isDebug())
+				{
+					log.logDebug(toString(), "Checking to see if class " + externalName
+							+ " matches criteria [" + test + "]");
+				}
+				if (test.matches(type))
+				{
+					matches.add((Class<T>) type);
+				}
 			}
 		} catch (Throwable t)
 		{
-			log.logDetailed(toString(), "Could not examine class \\\'" + fqn + "\\\' due to a " + t.getClass().getName()
-					+ " with message: " + t.getMessage());
+			log.logDetailed(toString(), "Could not examine class \\\'" + fqn + "\\\' due to a "
+					+ t.getClass().getName() + " with message: " + t.getMessage());
 		}
 	}
 }

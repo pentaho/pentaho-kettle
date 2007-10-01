@@ -351,7 +351,8 @@ public class StepLoader
     	} catch (Exception e) {
     		throw new KettleException("Unable to load plugins specified in 'META-INF/kettle-partition-plugins.xml' files", e);
     	}
-
+    	
+    	//TODO: THis is what will move into the plubin loader class
         for (int dirNr = 0;dirNr<pluginDirectory.length;dirNr++)
         {
             try
