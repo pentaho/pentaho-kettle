@@ -1,7 +1,9 @@
 package org.pentaho.di.trans.steps.mapping;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.repository.Repository;
 import org.w3c.dom.Node;
 
 /**
@@ -74,6 +76,28 @@ public class MappingParameters implements Cloneable {
 		
 		return xml.toString();
 	}
+	
+	public void saveRep(Repository rep, long id_transformation, long id_step) throws KettleException {
+		for (int i=0;i<variable.length;i++)
+		{
+			rep.saveStepAttribute(id_transformation, id_step, i, "mapping_parameter_variable", variable[i]);  //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, i, "mapping_parameter_input", input[i]);  //$NON-NLS-1$
+		}
+	}
+
+	public MappingParameters(Repository rep, long id_step) throws KettleException {
+		int nrVariables = rep.countNrStepAttributes(id_step, "mapping_parameter_variable");
+		
+		variable = new String[nrVariables];
+		input    = new String[nrVariables];
+		
+		for (int i=0;i<nrVariables;i++)
+		{
+			variable[i] = rep.getStepAttributeString(id_step, i, "mapping_parameter_variable");  //$NON-NLS-1$
+			input[i]    = rep.getStepAttributeString(id_step, i, "mapping_parameter_input");  //$NON-NLS-1$
+		}
+	}
+
 
 	/**
 	 * @return the inputField
@@ -104,5 +128,6 @@ public class MappingParameters implements Cloneable {
 	public void setVariable(String[] variable) {
 		this.variable = variable;
 	}
+
 
 }

@@ -176,10 +176,7 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
 	        mappingParameters = new MappingParameters();
         }
 	}
-    
-    public void allocate()
-    {
-    }
+
 
     public String getXML()
     {
@@ -213,10 +210,89 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
         
         return retval.toString();
     }
+    
+    public void readRep(Repository rep, long id_step, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleException
+	{
+        transName        = rep.getStepAttributeString(id_step, "trans_name"); //$NON-NLS-1$
+        fileName         = rep.getStepAttributeString(id_step, "filename"); //$NON-NLS-1$
+        directoryPath    = rep.getStepAttributeString(id_step, "directory_path"); //$NON-NLS-1$
+        
+        int nrInput  = rep.countNrStepAttributes(id_step, "input_field"); //$NON-NLS-1$
+        int nrOutput = rep.countNrStepAttributes(id_step, "output_field"); //$NON-NLS-1$
+
+        // Backward compatibility...
+        //
+        if (nrInput>0 || nrOutput>0)
+        {
+	        MappingIODefinition inputMappingDefinition = new MappingIODefinition(); // null means: auto-detect
+	        inputMappingDefinition.setMainDataPath(true);
+	        
+	        for (int i = 0; i < nrInput; i++) {
+	        	String inputField   = rep.getStepAttributeString(id_step, i, "input_field"); //$NON-NLS-1$
+	            String inputMapping = rep.getStepAttributeString(id_step, i, "input_mapping"); //$NON-NLS-1$
+				inputMappingDefinition.getValueRenames().add( new MappingValueRename(inputField, inputMapping) );
+			}
+
+	        MappingIODefinition outputMappingDefinition = new MappingIODefinition(); // null means: auto-detect
+	        outputMappingDefinition.setMainDataPath(true);
+	        
+	        for (int i = 0; i < nrOutput; i++) {
+	        	String outputField   = rep.getStepAttributeString(id_step, i, "output_field"); //$NON-NLS-1$
+	            String outputMapping = rep.getStepAttributeString(id_step, i, "output_mapping"); //$NON-NLS-1$
+				outputMappingDefinition.getValueRenames().add( new MappingValueRename(outputMapping, outputField) );
+			}
+	        
+	        // Don't forget to add these to the input and output mapping definitions...
+	        //
+	        inputMappings.add(inputMappingDefinition);
+	        outputMappings.add(outputMappingDefinition);
+	        
+	        // The default is to have no mapping parameters: the concept didn't exist before.
+	        mappingParameters = new MappingParameters();
+        }
+        else
+        {
+        	nrInput  = rep.countNrStepAttributes(id_step, "input_input_step"); //$NON-NLS-1$
+        	nrOutput = rep.countNrStepAttributes(id_step, "output_input_step"); //$NON-NLS-1$
+        	
+        	for (int i=0;i<nrInput;i++) {
+        		inputMappings.add( new MappingIODefinition(rep, id_step, "input_", i) );
+        	}
+
+        	for (int i=0;i<nrOutput;i++) {
+        		outputMappings.add( new MappingIODefinition(rep, id_step, "output_", i) );
+        	}
+
+        	mappingParameters = new MappingParameters(rep, id_step);
+        }
+        
+	}
+    
+    public void saveRep(Repository rep, long id_transformation, long id_step) throws KettleException
+    {
+        rep.saveStepAttribute(id_transformation, id_step, "filename", fileName); //$NON-NLS-1$
+        rep.saveStepAttribute(id_transformation, id_step, "trans_name", transName); //$NON-NLS-1$
+        rep.saveStepAttribute(id_transformation, id_step, "directory_path", directoryPath); //$NON-NLS-1$
+
+        for (int i=0;i<inputMappings.size();i++)
+        {
+        	inputMappings.get(i).saveRep(rep, id_transformation, id_step, "input_", i);
+        }
+
+        for (int i=0;i<outputMappings.size();i++)
+        {
+        	outputMappings.get(i).saveRep(rep, id_transformation, id_step, "output_", i);
+        }
+        
+        // save the mapping parameters too
+        //
+        mappingParameters.saveRep(rep, id_transformation, id_step);
+
+    }
+
 
 	public void setDefault()
 	{
-        allocate();
 	}
 	
     public void getFields(RowMetaInterface row, String origin, RowMetaInterface info[], StepMeta nextStep, VariableSpace space) throws KettleStepException {
@@ -390,59 +466,6 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
     	if (targetSteps.isEmpty()) return null;
 
     	return targetSteps.toArray(new String[targetSteps.size()]);
-    }
-
-    public void readRep(Repository rep, long id_step, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleException
-	{
-    	/*
-    	 * TODO re-enable repository support
-    	 * 
-        transName        = rep.getStepAttributeString(id_step, "trans_name"); //$NON-NLS-1$
-        fileName         = rep.getStepAttributeString(id_step, "filename"); //$NON-NLS-1$
-        directoryPath    = rep.getStepAttributeString(id_step, "directory_path"); //$NON-NLS-1$
-        
-        int nrInput  = rep.countNrStepAttributes(id_step, "input_field"); //$NON-NLS-1$
-        int nrOutput = rep.countNrStepAttributes(id_step, "output_field"); //$NON-NLS-1$
-
-        allocate(nrInput, nrOutput);
-        
-        for (int i=0;i<nrInput;i++)
-        {
-            inputField[i]   = rep.getStepAttributeString(id_step, i, "input_field"); //$NON-NLS-1$
-            inputMapping[i] = rep.getStepAttributeString(id_step, i, "input_mapping"); //$NON-NLS-1$
-        }
-
-        for (int i=0;i<nrOutput;i++)
-        {
-            outputField[i]   = rep.getStepAttributeString(id_step, i, "output_field"); //$NON-NLS-1$
-            outputMapping[i] = rep.getStepAttributeString(id_step, i, "output_mapping"); //$NON-NLS-1$
-        }
-        */
-	}
-    
-    public void saveRep(Repository rep, long id_transformation, long id_step) throws KettleException
-    {
-    	/*
-    	 * TODO re-enable repository support
-    	 * 
-        rep.saveStepAttribute(id_transformation, id_step, "filename", fileName); //$NON-NLS-1$
-        rep.saveStepAttribute(id_transformation, id_step, "trans_name", transName); //$NON-NLS-1$
-        rep.saveStepAttribute(id_transformation, id_step, "directory_path", directoryPath); //$NON-NLS-1$
-        
-        if (inputField!=null)
-        for (int i=0;i<inputField.length;i++)
-        {
-            rep.saveStepAttribute(id_transformation, id_step, i, "input_field",   inputField[i]); //$NON-NLS-1$
-            rep.saveStepAttribute(id_transformation, id_step, i, "input_mapping", inputMapping[i]); //$NON-NLS-1$
-        }
-        
-        if (outputField!=null)
-        for (int i=0;i<outputField.length;i++)
-        {
-            rep.saveStepAttribute(id_transformation, id_step, i, "output_field",   outputField[i]); //$NON-NLS-1$
-            rep.saveStepAttribute(id_transformation, id_step, i, "output_mapping", outputMapping[i]); //$NON-NLS-1$
-        }
-        */
     }
 
     public synchronized static final TransMeta loadMappingMeta(String fileName, String transName, String directoryPath, Repository rep, VariableSpace space) throws KettleException

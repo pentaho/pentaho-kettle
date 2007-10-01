@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.repository.Repository;
 import org.w3c.dom.Node;
 
 /**
@@ -113,6 +115,38 @@ public class MappingIODefinition implements Cloneable {
 		xml.append("    ").append(XMLHandler.closeTag(XML_TAG));  //$NON-NLS-1$
 		
 		return xml.toString();
+	}
+
+	public void saveRep(Repository rep, long id_transformation, long id_step, String prefix, long nr) throws KettleException {
+		rep.saveStepAttribute(id_transformation, id_step, nr, prefix+"input_step", inputStepname); 
+		rep.saveStepAttribute(id_transformation, id_step, nr, prefix+"output_step", outputStepname); 
+		rep.saveStepAttribute(id_transformation, id_step, nr, prefix+"main_path", mainDataPath); 
+		rep.saveStepAttribute(id_transformation, id_step, nr, prefix+"rename_on_output", renamingOnOutput); 
+		rep.saveStepAttribute(id_transformation, id_step, nr, prefix+"description", description); 
+		
+		rep.saveStepAttribute(id_transformation, id_step, nr, prefix+"nr_renames", valueRenames.size());
+		for (int i=0;i<valueRenames.size();i++) {
+			rep.saveStepAttribute(id_transformation, id_step, nr, prefix+"rename_parent_"+i, valueRenames.get(i).getSourceValueName());
+			rep.saveStepAttribute(id_transformation, id_step, nr, prefix+"rename_child_"+i, valueRenames.get(i).getTargetValueName());
+		}
+		
+	}
+	
+	public MappingIODefinition(Repository rep, long id_step, String prefix, int nr) throws KettleException {
+		this();
+		
+		inputStepname = rep.getStepAttributeString(id_step, nr, prefix+"input_step");
+		outputStepname = rep.getStepAttributeString(id_step, nr, prefix+"output_step");
+		mainDataPath = rep.getStepAttributeBoolean(id_step, nr, prefix+"main_path");
+		renamingOnOutput = rep.getStepAttributeBoolean(id_step, nr, prefix+"rename_on_output");
+		description = rep.getStepAttributeString(id_step, nr, prefix+"description");
+		
+		int nrRenames = (int) rep.getStepAttributeInteger(id_step, nr, prefix+"nr_renames");
+		for (int i=0;i<nrRenames;i++) {
+			String parent = rep.getStepAttributeString(id_step, nr, prefix+"rename_parent_"+i);
+			String child = rep.getStepAttributeString(id_step, nr, prefix+"rename_child_"+i);
+			valueRenames.add(new MappingValueRename(parent, child));
+		}
 	}
 
 	/**
