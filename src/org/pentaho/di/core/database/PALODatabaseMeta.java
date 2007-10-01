@@ -45,10 +45,17 @@ public class PALODatabaseMeta extends GenericDatabaseMeta implements DatabaseInt
 		
 	public int[] getAccessTypeList()
 	{
-		return new int[] { DatabaseMeta.TYPE_ACCESS_CUSTOM, };
+		return new int[] { DatabaseMeta.TYPE_ACCESS_PLUGIN, };
 	}
 	
 	public int getDefaultDatabasePort() {
 		return 7777;
 	}	
+	
+	public String getConnectionTestReport() {
+		// TODO: connect to the Palo server...
+		// We need plug-in resources for this, so this needs to become a real plug-in during post-3.0.
+		//
+		return super.getConnectionTestReport();
+	}
 }

@@ -50,30 +50,29 @@ import org.pentaho.di.core.Props;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.BaseDatabaseMeta;
 import org.pentaho.di.core.database.ConnectionPoolUtil;
-import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseConnectionPoolParameter;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.GenericDatabaseMeta;
 import org.pentaho.di.core.database.PartitionDatabaseMeta;
 import org.pentaho.di.core.database.SAPR3DatabaseMeta;
-import org.pentaho.di.ui.core.database.dialog.DatabaseExplorerDialog;
-import org.pentaho.di.ui.core.database.dialog.Messages;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
-import org.pentaho.di.ui.core.gui.GUIResource;
-import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.core.gui.SpoonFactory;
 import org.pentaho.di.core.gui.SpoonInterface;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.util.StringUtil;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
 import org.pentaho.di.ui.core.dialog.SelectRowDialog;
+import org.pentaho.di.ui.core.gui.GUIResource;
+import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 
 /**
@@ -1908,13 +1907,6 @@ public class DatabaseDialog extends Dialog
             new ErrorDialog(shell, Messages.getString("DatabaseDialog.ErrorParameters.title"), Messages.getString("DatabaseDialog.ErrorConnectionInfo.description"), e); //$NON-NLS-1$ //$NON-NLS-2$
         }
     }
-
-	private static final StringBuffer appendConnectionInfo(StringBuffer report, String hostName, String portNumber, String dbName) {
-        report.append(Messages.getString("DatabaseDialog.report.Hostname")).append(hostName).append(Const.CR); //$NON-NLS-1$
-        report.append(Messages.getString("DatabaseDialog.report.Port")).append(portNumber).append(Const.CR); //$NON-NLS-1$
-        report.append(Messages.getString("DatabaseDialog.report.DatabaseName")).append(dbName).append(Const.CR); //$NON-NLS-1$
-        return report;
-    }
 	
     /**
      * Test the database connection
@@ -1924,57 +1916,11 @@ public class DatabaseDialog extends Dialog
         String[] remarks = dbinfo.checkParameters();
         if (remarks.length == 0)
         {
-            StringBuffer report = new StringBuffer();
+        	// Get a "test" report from this database
+        	//
+        	String reportMessage = dbinfo.testConnection();
 
-            Database db = new Database(dbinfo);
-            if (dbinfo.isPartitioned())
-            {
-                PartitionDatabaseMeta[] partitioningInformation = dbinfo.getPartitioningInformation();
-                for (int i = 0; i < partitioningInformation.length; i++)
-                {
-                    try
-                    {
-                        db.connect(partitioningInformation[i].getPartitionId());
-                        report.append(Messages.getString("DatabaseDialog.report.ConnectionWithPartOk", dbinfo.getName(), partitioningInformation[i].getPartitionId()) + Const.CR); //$NON-NLS-1$
-                    }
-                    catch (KettleException e)
-                    {
-                        report.append(Messages.getString("DatabaseDialog.report.ConnectionWithPartError", dbinfo.getName(), partitioningInformation[i].getPartitionId(), e.toString()) + Const.CR); //$NON-NLS-1$
-                        report.append(Const.getStackTracker(e) + Const.CR);
-                    }
-                    finally
-                    {
-                        db.disconnect();
-                    }
-                    appendConnectionInfo(report, db.environmentSubstitute(partitioningInformation[i].getHostname()), 
-                    		                     db.environmentSubstitute(partitioningInformation[i].getPort()), 
-                    		                     db.environmentSubstitute(partitioningInformation[i].getDatabaseName()));
-                    report.append(Const.CR);
-                }
-            }
-            else
-            {
-                try
-                {
-                    db.connect();
-                    report.append(Messages.getString("DatabaseDialog.report.ConnectionOk", dbinfo.getName()) + Const.CR); //$NON-NLS-1$
-                }
-                catch (KettleException e)
-                {
-                    report.append(Messages.getString("DatabaseDialog.report.ConnectionError", dbinfo.getName()) + e.toString() + Const.CR); //$NON-NLS-1$
-                    report.append(Const.getStackTracker(e) + Const.CR);
-                }
-                finally
-                {
-                    db.disconnect();
-                }
-                appendConnectionInfo(report, db.environmentSubstitute(dbinfo.getHostname()), 
-                		                     db.environmentSubstitute(dbinfo.getDatabasePortNumberString()), 
-                		                     db.environmentSubstitute(dbinfo.getDatabaseName()));
-                report.append(Const.CR);
-            }
-
-            EnterTextDialog dialog = new EnterTextDialog(shell, Messages.getString("DatabaseDialog.ConnectionReport.title"), Messages.getString("DatabaseDialog.ConnectionReport.description"), report.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+        	EnterTextDialog dialog = new EnterTextDialog(shell, Messages.getString("DatabaseDialog.ConnectionReport.title"), Messages.getString("DatabaseDialog.ConnectionReport.description"), reportMessage.toString()); //$NON-NLS-1$ //$NON-NLS-2$
             dialog.setReadOnly();
             dialog.setFixed(true);
             dialog.setModal();
@@ -1999,8 +1945,18 @@ public class DatabaseDialog extends Dialog
         try
         {
             getInfo(dbinfo);
-            DatabaseExplorerDialog ded = new DatabaseExplorerDialog(shell, SWT.NONE, dbinfo, databases, true);
-            ded.open();
+            if (dbinfo.getAccessType()!=DatabaseMeta.TYPE_ACCESS_PLUGIN) 
+            {
+	            DatabaseExplorerDialog ded = new DatabaseExplorerDialog(shell, SWT.NONE, dbinfo, databases, true);
+	            ded.open();
+            }
+            else
+            {
+                MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION);
+                mb.setText(Messages.getString("DatabaseDialog.ExplorerNotImplemented.Title")); //$NON-NLS-1$
+                mb.setMessage(Messages.getString("DatabaseDialog.ExplorerNotImplemented.Message")); //$NON-NLS-1$
+                mb.open();
+            }
         }
         catch (KettleException e)
         {
@@ -2010,23 +1966,26 @@ public class DatabaseDialog extends Dialog
 
     public void showFeatureList()
     {
-        /*
-         * TODO: re-enable feature list
-         * 
         DatabaseMeta dbinfo = new DatabaseMeta();
         try
         {
             getInfo(dbinfo);
-            ArrayList buffer = (ArrayList) dbinfo.getFeatureSummary();
-            PreviewRowsDialog prd = new PreviewRowsDialog(shell, SWT.NONE, Messages.getString("DatabaseDialog.FeatureList.title"), buffer); //$NON-NLS-1$
-            prd.setTitleMessage(Messages.getString("DatabaseDialog.FeatureList.title"), Messages.getString("DatabaseDialog.FeatureList.title2")); //$NON-NLS-1$ //$NON-NLS-2$
-            prd.open();
+            java.util.List<RowMetaAndData> buffer = dbinfo.getFeatureSummary();
+            if (buffer.size()>0)
+            {
+            	RowMetaInterface rowMeta = buffer.get(0).getRowMeta();
+            	java.util.List<Object[]> rowData = new ArrayList<Object[]>();
+            	for (RowMetaAndData row : buffer) rowData.add(row.getData());
+            	
+	            PreviewRowsDialog prd = new PreviewRowsDialog(shell, dbinfo, SWT.NONE, null, rowMeta, rowData); //$NON-NLS-1$
+	            prd.setTitleMessage(Messages.getString("DatabaseDialog.FeatureList.title"), Messages.getString("DatabaseDialog.FeatureList.title")); //$NON-NLS-1$ //$NON-NLS-2$
+	            prd.open();
+            }
         }
         catch (KettleException e)
         {
             new ErrorDialog(shell,
                     Messages.getString("DatabaseDialog.FeatureListError.title"), Messages.getString("DatabaseDialog.FeatureListError.description"), e); //$NON-NLS-1$ //$NON-NLS-2$
         }
-        */
     }
 }

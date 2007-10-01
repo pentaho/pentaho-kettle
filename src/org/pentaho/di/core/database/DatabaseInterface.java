@@ -741,4 +741,10 @@ public interface DatabaseInterface extends Cloneable
 	 * @return true if this database needs a transaction to perform a query (auto-commit turned off).
 	 */
 	public boolean isRequiringTransactionsOnQueries();
+
+	/**
+	 * This method only needs to be overridden by databases with access type TYPE_ACCESS_PLUGIN 
+	 * @return a connection test report
+	 */
+	public String getConnectionTestReport();
 }

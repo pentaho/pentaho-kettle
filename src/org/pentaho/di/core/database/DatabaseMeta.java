@@ -243,11 +243,6 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
      */
     public static final int TYPE_ACCESS_JNDI        =  4;
     
-    /**
-     * Connect to the database using a custom built protocol.
-     */
-    public static final int TYPE_ACCESS_CUSTOM        =  5;
-    
     
 	/**
 	 * Short description of the access type, used in XML and the repository.
@@ -259,7 +254,6 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 			"OCI",
             "Plugin",
 			"JNDI",
-			"CUSTOM",
 		};
 
 	/**
@@ -1864,138 +1858,137 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     }
 
     
-    /*
-     * TODO: re-add the feature list support later on...
+    /**
+     * @return a feature list for the chosen database type.
      * 
-     * @return a feature list for the choosen database type.
-    public List getFeatureSummary()
+     */
+    @SuppressWarnings("unchecked")
+	public List<RowMetaAndData> getFeatureSummary()
     {
-        ArrayList list = new ArrayList();
-        Row r =null;
+    	List<RowMetaAndData> list = new ArrayList<RowMetaAndData>();
+    	RowMetaAndData r =null;
         final String par = "Parameter";
         final String val = "Value";
 
-        Value testValue =  new Value("FIELD", ValueMetaInterface.TYPE_STRING);
+        ValueMetaInterface testValue =  new ValueMeta("FIELD", ValueMetaInterface.TYPE_STRING);
         testValue.setLength(30);
 
         if (databaseInterface!=null)
         {
             // Type of database
-            r = new Row(); r.addValue(new Value(par, "Database type")); r.addValue(new Value(val, getDatabaseTypeDesc())); list.add(r);
+            r = new RowMetaAndData(); r.addValue(par, ValueMetaInterface.TYPE_STRING, "Database type"); r.addValue(val, ValueMetaInterface.TYPE_STRING, getDatabaseTypeDesc()); list.add(r);
             // Type of access
-            r = new Row(); r.addValue(new Value(par, "Access type")); r.addValue(new Value(val, getAccessTypeDesc())); list.add(r);
+            r = new RowMetaAndData(); r.addValue(par, ValueMetaInterface.TYPE_STRING, "Access type"); r.addValue(val, ValueMetaInterface.TYPE_STRING, getAccessTypeDesc()); list.add(r);
             // Name of database
-            r = new Row(); r.addValue(new Value(par, "Database name")); r.addValue(new Value(val, getDatabaseName())); list.add(r);
-            // server hostname
-            r = new Row(); r.addValue(new Value(par, "Server hostname")); r.addValue(new Value(val, getHostname())); list.add(r);
+            r = new RowMetaAndData(); r.addValue(par, ValueMetaInterface.TYPE_STRING, "Database name"); r.addValue(val, ValueMetaInterface.TYPE_STRING, getDatabaseName()); list.add(r);
+            // server host name
+            r = new RowMetaAndData(); r.addValue(par, ValueMetaInterface.TYPE_STRING, "Server hostname"); r.addValue(val, ValueMetaInterface.TYPE_STRING, getHostname()); list.add(r);
             // Port number
-            r = new Row(); r.addValue(new Value(par, "Service port")); r.addValue(new Value(val, getDatabasePortNumberString())); list.add(r);
+            r = new RowMetaAndData(); r.addValue(par, ValueMetaInterface.TYPE_STRING, "Service port"); r.addValue(val, ValueMetaInterface.TYPE_STRING, getDatabasePortNumberString()); list.add(r);
             // Username
-            r = new Row(); r.addValue(new Value(par, "Username")); r.addValue(new Value(val, getUsername())); list.add(r);
+            r = new RowMetaAndData(); r.addValue(par, ValueMetaInterface.TYPE_STRING, "Username"); r.addValue(val, ValueMetaInterface.TYPE_STRING, getUsername()); list.add(r);
             // Informix server
-            r = new Row(); r.addValue(new Value(par, "Informix server name")); r.addValue(new Value(val, getServername())); list.add(r);
+            r = new RowMetaAndData(); r.addValue(par, ValueMetaInterface.TYPE_STRING, "Informix server name"); r.addValue(val, ValueMetaInterface.TYPE_STRING, getServername()); list.add(r);
             // Other properties...
             Enumeration keys = getAttributes().keys();
             while (keys.hasMoreElements())
             {
                 String key = (String) keys.nextElement();
                 String value = getAttributes().getProperty(key);
-                r = new Row(); r.addValue(new Value(par, "Extra attribute ["+key+"]")); r.addValue(new Value(val, value)); list.add(r);
+                r = new RowMetaAndData(); r.addValue(par, ValueMetaInterface.TYPE_STRING, "Extra attribute ["+key+"]"); r.addValue(val, ValueMetaInterface.TYPE_STRING, value); list.add(r);
             }
             
             // driver class
-            r = new Row(); r.addValue(new Value(par, "Driver class")); r.addValue(new Value(val, getDriverClass())); list.add(r);
+            r = new RowMetaAndData(); r.addValue(par, ValueMetaInterface.TYPE_STRING, "Driver class"); r.addValue(val, ValueMetaInterface.TYPE_STRING, getDriverClass()); list.add(r);
             // URL
             String pwd = getPassword();
             setPassword("password"); // Don't give away the password in the URL!
             String url = "";
             try { url = getURL(); } catch(KettleDatabaseException e) {}
-            r = new Row(); r.addValue(new Value(par, "URL")); r.addValue(new Value(val, url)); list.add(r);
+            r = new RowMetaAndData(); r.addValue(par, ValueMetaInterface.TYPE_STRING, "URL"); r.addValue(val, ValueMetaInterface.TYPE_STRING, url); list.add(r);
             setPassword(pwd);
             // SQL: Next sequence value
-            r = new Row(); r.addValue(new Value(par, "SQL: next sequence value")); r.addValue(new Value(val, getSeqNextvalSQL("SEQUENCE"))); list.add(r);
-            // is set fetchsize supported 
-            r = new Row(); r.addValue(new Value(par, "supported: set fetch size")); r.addValue(new Value(val, isFetchSizeSupported())); list.add(r);
-            // needs placeholder for auto increment 
-            r = new Row(); r.addValue(new Value(par, "auto increment field needs placeholder")); r.addValue(new Value(val, needsPlaceHolder())); list.add(r);
+            r = new RowMetaAndData(); r.addValue(par, ValueMetaInterface.TYPE_STRING, "SQL: next sequence value"); r.addValue(val, ValueMetaInterface.TYPE_STRING, getSeqNextvalSQL("SEQUENCE")); list.add(r);
+            // is set fetch size supported 
+            r = new RowMetaAndData(); r.addValue(par, ValueMetaInterface.TYPE_STRING, "supported: set fetch size"); r.addValue(val, ValueMetaInterface.TYPE_STRING, isFetchSizeSupported()?"Y":"N"); list.add(r);
+            // needs place holder for auto increment 
+            r = new RowMetaAndData(); r.addValue(par, ValueMetaInterface.TYPE_STRING, "auto increment field needs placeholder"); r.addValue(val, ValueMetaInterface.TYPE_STRING, needsPlaceHolder()?"Y":"N"); list.add(r);
             // Sum function 
-            r = new Row(); r.addValue(new Value(par, "SUM aggregate function")); r.addValue(new Value(val, getFunctionSum())); list.add(r);
+            r = new RowMetaAndData(); r.addValue(par, ValueMetaInterface.TYPE_STRING, "SUM aggregate function"); r.addValue(val, ValueMetaInterface.TYPE_STRING, getFunctionSum()); list.add(r);
             // Avg function 
-            r = new Row(); r.addValue(new Value(par, "AVG aggregate function")); r.addValue(new Value(val, getFunctionAverage())); list.add(r);
+            r = new RowMetaAndData(); r.addValue(par, ValueMetaInterface.TYPE_STRING, "AVG aggregate function"); r.addValue(val, ValueMetaInterface.TYPE_STRING, getFunctionAverage()); list.add(r);
             // Minimum function 
-            r = new Row(); r.addValue(new Value(par, "MIN aggregate function")); r.addValue(new Value(val, getFunctionMinimum())); list.add(r);
+            r = new RowMetaAndData(); r.addValue(par, ValueMetaInterface.TYPE_STRING, "MIN aggregate function"); r.addValue(val, ValueMetaInterface.TYPE_STRING, getFunctionMinimum()); list.add(r);
             // Maximum function 
-            r = new Row(); r.addValue(new Value(par, "MAX aggregate function")); r.addValue(new Value(val, getFunctionMaximum())); list.add(r);
+            r = new RowMetaAndData(); r.addValue(par, ValueMetaInterface.TYPE_STRING, "MAX aggregate function"); r.addValue(val, ValueMetaInterface.TYPE_STRING, getFunctionMaximum()); list.add(r);
             // Count function 
-            r = new Row(); r.addValue(new Value(par, "COUNT aggregate function")); r.addValue(new Value(val, getFunctionCount())); list.add(r);
-            // Schema-table comination
-            r = new Row(); r.addValue(new Value(par, "Schema / Table combination")); r.addValue(new Value(val, getSchemaTableCombination("SCHEMA", "TABLE"))); list.add(r);
+            r = new RowMetaAndData(); r.addValue(par, ValueMetaInterface.TYPE_STRING, "COUNT aggregate function"); r.addValue(val, ValueMetaInterface.TYPE_STRING, getFunctionCount()); list.add(r);
+            // Schema-table combination
+            r = new RowMetaAndData(); r.addValue(par, ValueMetaInterface.TYPE_STRING, "Schema / Table combination"); r.addValue(val, ValueMetaInterface.TYPE_STRING, getSchemaTableCombination("SCHEMA", "TABLE")); list.add(r);
             // Limit clause 
-            r = new Row(); r.addValue(new Value(par, "LIMIT clause for 100 rows")); r.addValue(new Value(val, getLimitClause(100))); list.add(r);
+            r = new RowMetaAndData(); r.addValue(par, ValueMetaInterface.TYPE_STRING, "LIMIT clause for 100 rows"); r.addValue(val, ValueMetaInterface.TYPE_STRING, getLimitClause(100)); list.add(r);
             // add column statement 
-            r = new Row(); r.addValue(new Value(par, "Add column statement")); r.addValue(new Value(val, getAddColumnStatement("TABLE", testValue, null, false, null, false))); list.add(r);
+            r = new RowMetaAndData(); r.addValue(par, ValueMetaInterface.TYPE_STRING, "Add column statement"); r.addValue(val, ValueMetaInterface.TYPE_STRING, getAddColumnStatement("TABLE", testValue, null, false, null, false)); list.add(r);
             // drop column statement 
-            r = new Row(); r.addValue(new Value(par, "Drop column statement")); r.addValue(new Value(val, getDropColumnStatement("TABLE", testValue, null, false, null, false))); list.add(r);
+            r = new RowMetaAndData(); r.addValue(par, ValueMetaInterface.TYPE_STRING, "Drop column statement"); r.addValue(val, ValueMetaInterface.TYPE_STRING, getDropColumnStatement("TABLE", testValue, null, false, null, false)); list.add(r);
             // Modify column statement 
-            r = new Row(); r.addValue(new Value(par, "Modify column statement")); r.addValue(new Value(val, getModifyColumnStatement("TABLE", testValue, null, false, null, false))); list.add(r);
+            r = new RowMetaAndData(); r.addValue(par, ValueMetaInterface.TYPE_STRING, "Modify column statement"); r.addValue(val, ValueMetaInterface.TYPE_STRING, getModifyColumnStatement("TABLE", testValue, null, false, null, false)); list.add(r);
             
             // List of reserved words 
             String reserved = "";
             if (getReservedWords()!=null) for (int i=0;i<getReservedWords().length;i++) reserved+=(i>0?", ":"")+getReservedWords()[i];
-            r = new Row(); r.addValue(new Value(par, "List of reserved words")); r.addValue(new Value(val, reserved)); list.add(r);
+            r = new RowMetaAndData(); r.addValue(par, ValueMetaInterface.TYPE_STRING, "List of reserved words"); r.addValue(val, ValueMetaInterface.TYPE_STRING, reserved); list.add(r);
             
             // Quote reserved words?
-            r = new Row(); r.addValue(new Value(par, "Quote reserved words?")); r.addValue(new Value(val, quoteReservedWords())); list.add(r);
+            r = new RowMetaAndData(); r.addValue(par, ValueMetaInterface.TYPE_STRING, "Quote reserved words?"); r.addValue(val, ValueMetaInterface.TYPE_STRING, quoteReservedWords()?"Y":"N"); list.add(r);
             // Start Quote
-            r = new Row(); r.addValue(new Value(par, "Start quote for reserved words")); r.addValue(new Value(val, getStartQuote())); list.add(r);
+            r = new RowMetaAndData(); r.addValue(par, ValueMetaInterface.TYPE_STRING, "Start quote for reserved words"); r.addValue(val, ValueMetaInterface.TYPE_STRING, getStartQuote()); list.add(r);
             // End Quote
-            r = new Row(); r.addValue(new Value(par, "End quote for reserved words")); r.addValue(new Value(val, getEndQuote())); list.add(r);
+            r = new RowMetaAndData(); r.addValue(par, ValueMetaInterface.TYPE_STRING, "End quote for reserved words"); r.addValue(val, ValueMetaInterface.TYPE_STRING, getEndQuote()); list.add(r);
             
             // List of table types
             String types = "";
             String slist[] = getTableTypes(); 
             if (slist!=null) for (int i=0;i<slist.length;i++) types+=(i>0?", ":"")+slist[i];
-            r = new Row(); r.addValue(new Value(par, "List of JDBC table types")); r.addValue(new Value(val, types)); list.add(r);
+            r = new RowMetaAndData(); r.addValue(par, ValueMetaInterface.TYPE_STRING, "List of JDBC table types"); r.addValue(val, ValueMetaInterface.TYPE_STRING, types); list.add(r);
             
             // List of view types
             types = "";
             slist = getViewTypes(); 
             if (slist!=null) for (int i=0;i<slist.length;i++) types+=(i>0?", ":"")+slist[i];
-            r = new Row(); r.addValue(new Value(par, "List of JDBC view types")); r.addValue(new Value(val, types)); list.add(r);
+            r = new RowMetaAndData(); r.addValue(par, ValueMetaInterface.TYPE_STRING, "List of JDBC view types"); r.addValue(val, ValueMetaInterface.TYPE_STRING, types); list.add(r);
             
             // List of synonym types
             types = "";
             slist = getSynonymTypes(); 
             if (slist!=null) for (int i=0;i<slist.length;i++) types+=(i>0?", ":"")+slist[i];
-            r = new Row(); r.addValue(new Value(par, "List of JDBC synonym types")); r.addValue(new Value(val, types)); list.add(r);
+            r = new RowMetaAndData(); r.addValue(par, ValueMetaInterface.TYPE_STRING, "List of JDBC synonym types"); r.addValue(val, ValueMetaInterface.TYPE_STRING, types); list.add(r);
             
             // Use schema-name to get list of tables?
-            r = new Row(); r.addValue(new Value(par, "use schema name to get table list?")); r.addValue(new Value(val, useSchemaNameForTableList())); list.add(r);
+            r = new RowMetaAndData(); r.addValue(par, ValueMetaInterface.TYPE_STRING, "use schema name to get table list?"); r.addValue(val, ValueMetaInterface.TYPE_STRING, useSchemaNameForTableList()?"Y":"N"); list.add(r);
             // supports view?
-            r = new Row(); r.addValue(new Value(par, "supports views?")); r.addValue(new Value(val, supportsViews())); list.add(r);
+            r = new RowMetaAndData(); r.addValue(par, ValueMetaInterface.TYPE_STRING, "supports views?"); r.addValue(val, ValueMetaInterface.TYPE_STRING, supportsViews()?"Y":"N"); list.add(r);
             // supports synonyms?
-            r = new Row(); r.addValue(new Value(par, "supports synonyms?")); r.addValue(new Value(val, supportsSynonyms())); list.add(r);
+            r = new RowMetaAndData(); r.addValue(par, ValueMetaInterface.TYPE_STRING, "supports synonyms?"); r.addValue(val, ValueMetaInterface.TYPE_STRING, supportsSynonyms()?"Y":"N"); list.add(r);
             // SQL: get list of procedures?
-            r = new Row(); r.addValue(new Value(par, "SQL: list of procedures")); r.addValue(new Value(val, getSQLListOfProcedures())); list.add(r);
+            r = new RowMetaAndData(); r.addValue(par, ValueMetaInterface.TYPE_STRING, "SQL: list of procedures"); r.addValue(val, ValueMetaInterface.TYPE_STRING, getSQLListOfProcedures()); list.add(r);
             // SQL: get truncate table statement?
-            r = new Row(); r.addValue(new Value(par, "SQL: truncate table")); r.addValue(new Value(val, getTruncateTableStatement(null, "TABLE"))); list.add(r);
+            r = new RowMetaAndData(); r.addValue(par, ValueMetaInterface.TYPE_STRING, "SQL: truncate table"); r.addValue(val, ValueMetaInterface.TYPE_STRING, getTruncateTableStatement(null, "TABLE")); list.add(r);
             // supports float rounding on update?
-            r = new Row(); r.addValue(new Value(par, "supports floating point rounding on update/insert")); r.addValue(new Value(val, supportsFloatRoundingOnUpdate())); list.add(r);
+            r = new RowMetaAndData(); r.addValue(par, ValueMetaInterface.TYPE_STRING, "supports floating point rounding on update/insert"); r.addValue(val, ValueMetaInterface.TYPE_STRING, supportsFloatRoundingOnUpdate()?"Y":"N"); list.add(r);
             // supports time stamp to date conversion
-            r = new Row(); r.addValue(new Value(par, "supports timestamp-date conversion")); r.addValue(new Value(val, supportsTimeStampToDateConversion())); list.add(r);
+            r = new RowMetaAndData(); r.addValue(par, ValueMetaInterface.TYPE_STRING, "supports timestamp-date conversion"); r.addValue(val, ValueMetaInterface.TYPE_STRING, supportsTimeStampToDateConversion()?"Y":"N"); list.add(r);
             // supports batch updates
-            r = new Row(); r.addValue(new Value(par, "supports batch updates")); r.addValue(new Value(val, supportsBatchUpdates())); list.add(r);
+            r = new RowMetaAndData(); r.addValue(par, ValueMetaInterface.TYPE_STRING, "supports batch updates"); r.addValue(val, ValueMetaInterface.TYPE_STRING, supportsBatchUpdates()?"Y":"N"); list.add(r);
             // supports boolean values
-            r = new Row(); r.addValue(new Value(par, "supports boolean data type")); r.addValue(new Value(val, supportsBooleanDataType())); list.add(r);
+            r = new RowMetaAndData(); r.addValue(par, ValueMetaInterface.TYPE_STRING, "supports boolean data type"); r.addValue(val, ValueMetaInterface.TYPE_STRING, supportsBooleanDataType()?"Y":"N"); list.add(r);
         }
         
         return list;
     }
-    */
-
 
     /**
-     * @return true if the database resultsets support getTimeStamp() to retrieve date-time. (Date)
+     * @return true if the database result sets support getTimeStamp() to retrieve date-time. (Date)
      */
     public boolean supportsTimeStampToDateConversion()
     {
@@ -2462,11 +2455,79 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     }
     
 
+
+	private StringBuffer appendConnectionInfo(StringBuffer report, String hostName, String portNumber, String dbName) {
+        report.append(Messages.getString("DatabaseMeta.report.Hostname")).append(hostName).append(Const.CR); //$NON-NLS-1$
+        report.append(Messages.getString("DatabaseMeta.report.Port")).append(portNumber).append(Const.CR); //$NON-NLS-1$
+        report.append(Messages.getString("DatabaseMeta.report.DatabaseName")).append(dbName).append(Const.CR); //$NON-NLS-1$
+        return report;
+    }
+	
 	/**
 	 * @return true if this database needs a transaction to perform a query (auto-commit turned off).
 	 */
 	public boolean isRequiringTransactionsOnQueries()
 	{
 		return databaseInterface.isRequiringTransactionsOnQueries();
+	}
+
+	public String testConnection() {
+		if (getAccessType()!=TYPE_ACCESS_PLUGIN) {
+            StringBuffer report = new StringBuffer();
+
+            Database db = new Database(this);
+            if (isPartitioned())
+            {
+                PartitionDatabaseMeta[] partitioningInformation = getPartitioningInformation();
+                for (int i = 0; i < partitioningInformation.length; i++)
+                {
+                    try
+                    {
+                        db.connect(partitioningInformation[i].getPartitionId());
+                        report.append(Messages.getString("DatabaseMeta.report.ConnectionWithPartOk", getName(), partitioningInformation[i].getPartitionId()) + Const.CR); //$NON-NLS-1$
+                    }
+                    catch (KettleException e)
+                    {
+                        report.append(Messages.getString("DatabaseMeta.report.ConnectionWithPartError", getName(), partitioningInformation[i].getPartitionId(), e.toString()) + Const.CR); //$NON-NLS-1$
+                        report.append(Const.getStackTracker(e) + Const.CR);
+                    }
+                    finally
+                    {
+                        db.disconnect();
+                    }
+                    appendConnectionInfo(report, db.environmentSubstitute(partitioningInformation[i].getHostname()), 
+                    		                     db.environmentSubstitute(partitioningInformation[i].getPort()), 
+                    		                     db.environmentSubstitute(partitioningInformation[i].getDatabaseName()));
+                    report.append(Const.CR);
+                }
+            }
+            else
+            {
+                try
+                {
+                    db.connect();
+                    report.append(Messages.getString("DatabaseMeta.report.ConnectionOk", getName()) + Const.CR); //$NON-NLS-1$
+                }
+                catch (KettleException e)
+                {
+                    report.append(Messages.getString("DatabaseMeta.report.ConnectionError", getName()) + e.toString() + Const.CR); //$NON-NLS-1$
+                    report.append(Const.getStackTracker(e) + Const.CR);
+                }
+                finally
+                {
+                    db.disconnect();
+                }
+                appendConnectionInfo(report, db.environmentSubstitute(getHostname()), 
+                		                     db.environmentSubstitute(getDatabasePortNumberString()), 
+                		                     db.environmentSubstitute(getDatabaseName()));
+                report.append(Const.CR);
+            }
+            return report.toString();
+		}
+		else {
+			// If the plug-in needs to provide connection information, we ask the DatabaseInterface...
+			//
+			return databaseInterface.getConnectionTestReport();
+		}
 	}
 }

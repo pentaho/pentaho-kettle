@@ -1318,4 +1318,13 @@ public abstract class BaseDatabaseMeta implements Cloneable, VariableSpace
 	{
 		return true;
 	}
+	
+	/**
+	 * This method only needs to be overridden by databases with access type TYPE_ACCESS_PLUGIN 
+	 * @return a connection test report
+	 */
+	public String getConnectionTestReport()
+	{
+		return Messages.getString("BaseDatabaseMeta.TestConnectionReportNotImplemented.Message"); // $NON-NLS-1
+	}
 }
