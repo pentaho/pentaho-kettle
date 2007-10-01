@@ -22,6 +22,7 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.gui.Point;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.undo.TransAction;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
@@ -1427,6 +1428,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 			// Is this a local execution?
 			//
 			if (executionConfiguration.isExecutingLocally()) {
+				LogWriter.getInstance().setLogLevel(executionConfiguration.getLogLevel());
 				jobLog.startJob(executionConfiguration.getReplayDate());
 			}
 				

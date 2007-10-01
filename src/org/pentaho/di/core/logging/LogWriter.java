@@ -325,6 +325,11 @@ public class LogWriter
 		return logLevelDescription[level];
 	}
 	
+	public String getLogLevelLongDesc()
+	{
+		return log_level_desc_long[level];
+	}
+	
     /**
      * @deprecated : get the layout and use that object
      */

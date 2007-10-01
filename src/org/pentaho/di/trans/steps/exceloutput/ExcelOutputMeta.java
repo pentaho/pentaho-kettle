@@ -168,17 +168,17 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 	/**
 	 * @return Returns the password.
 	 */
-	public String getPassword(VariableSpace space)
+	public String getPassword()
 	{
-		return space.environmentSubstitute(password);
+		return password;
 	}
 
 	/**
 	 * @return Returns the sheet name.
 	 */
-	public String getSheetname(VariableSpace space)
+	public String getSheetname()
 	{
-		return space.environmentSubstitute(sheetname);
+		return sheetname;
 	}
 
 	/**

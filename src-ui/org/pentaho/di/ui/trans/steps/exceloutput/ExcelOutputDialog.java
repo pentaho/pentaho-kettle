@@ -949,9 +949,9 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		wAddStepnr.setSelection(input.isStepNrInFilename());
 		wTemplate.setSelection(input.isTemplateEnabled());
 		wTemplateAppend.setSelection(input.isTemplateAppend());
-		if (input.getSheetname(transMeta) != null) 
+		if (input.getSheetname() != null) 
 		{
-			wSheetname.setText(input.getSheetname(transMeta));
+			wSheetname.setText(input.getSheetname());
 		}
 		else
 		{
@@ -962,7 +962,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		EnablePassword();
 		EnableTemplate();
 
-		if (input.getPassword(transMeta) != null) wPassword.setText(input.getPassword(transMeta));
+		if (input.getPassword() != null) wPassword.setText(input.getPassword());
 		log.logDebug(toString(), "getting fields info...");
 		
 		for (int i=0;i<input.getOutputFields().length;i++)

@@ -2,6 +2,10 @@
 <transformation>
   <info>
     <name>Excel Output - Write different data types</name>
+    <description/>
+    <extended_description/>
+    <trans_version/>
+  <filename>&#47;home&#47;matt&#47;workspace&#47;Kettle trunk&#47;samples&#47;transformations&#47;Excel Output - Write different data types.ktr</filename>
     <directory>&#47;</directory>
     <log>
       <read/>
@@ -9,18 +13,19 @@
       <input/>
       <output/>
       <update/>
+      <rejected/>
       <connection/>
       <table/>
       <use_batchid>Y</use_batchid>
       <use_logfield>N</use_logfield>
-      </log>
+    </log>
     <maxdate>
       <connection/>
       <table/>
       <field/>
       <offset>0.0</offset>
       <maxdiff>0.0</maxdiff>
-      </maxdate>
+    </maxdate>
     <size_rowset>1000</size_rowset>
     <sleep_time_empty>1</sleep_time_empty>
     <sleep_time_full>1</sleep_time_full>
@@ -35,12 +40,20 @@
         <partitionschema>
           <name>MySQL EC2 Schema</name>
           <partition>            <id>P2</id>
-            </partition>          <partition>            <id>P3</id>
-            </partition>          <partition>            <id>P4</id>
-            </partition>          <partition>            <id>P5</id>
-            </partition>          </partitionschema>
+          </partition>          <partition>            <id>P3</id>
+          </partition>          <partition>            <id>P4</id>
+          </partition>          <partition>            <id>P5</id>
+          </partition>          <dynamic>N</dynamic>
+          <partitions_per_slave/>
+        </partitionschema>
     </partitionschemas>
     <slaveservers>
+         <slaveserver><name>localhost:8082</name><hostname>localhost</hostname><port>8082</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>localhost:8080:Master</name><hostname>localhost</hostname><port>8080</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>Y</master></slaveserver>
+         <slaveserver><name>localhost:8081</name><hostname>localhost</hostname><port>8081</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>localhost:8080</name><hostname>localhost</hostname><port>8080</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>localhost:8084</name><hostname>localhost</hostname><port>8084</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>localhost:8083</name><hostname>localhost</hostname><port>8083</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
          <slaveserver><name>EC_SLAVE_2</name><hostname>domU-12-31-33-00-01-F1.usma1.compute.amazonaws.com</hostname><port>8080</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
          <slaveserver><name>EC_SLAVE_4</name><hostname>domU-12-31-33-00-02-55.usma1.compute.amazonaws.com</hostname><port>8080</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
          <slaveserver><name>EC_SLAVE_3</name><hostname>domU-12-31-33-00-03-FB.usma1.compute.amazonaws.com</hostname><port>8080</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
@@ -48,6 +61,18 @@
          <slaveserver><name>EC_SLAVE_5</name><hostname>domU-12-31-33-00-03-EA.usma1.compute.amazonaws.com</hostname><port>8080</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
     </slaveservers>
     <clusterschemas>
+        <clusterschema>
+          <name>local schema</name>
+          <base_port>40000</base_port>
+          <sockets_buffer_size>2000</sockets_buffer_size>
+          <sockets_flush_interval>5000</sockets_flush_interval>
+          <sockets_compressed>N</sockets_compressed>
+          <slaveservers>
+            <name>localhost:8080:Master</name>
+            <name>localhost:8081</name>
+            <name>localhost:8082</name>
+          </slaveservers>
+        </clusterschema>
         <clusterschema>
           <name>EC2</name>
           <base_port>40000</base_port>
@@ -78,7 +103,6 @@
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
     <header>Y</header>
@@ -90,7 +114,10 @@
       <split>N</split>
       <add_date>N</add_date>
       <add_time>N</add_time>
-      <splitevery>75</splitevery>
+      <sheetname>Sheet1</sheetname>
+      <protect_sheet>N</protect_sheet>
+      <password>Encrypted </password>
+      <splitevery>0</splitevery>
       </file>
     <template>
       <enabled>N</enabled>
@@ -130,7 +157,7 @@
         </field>
       </fields>
      <cluster_schema/>
-    <GUI>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>305</xloc>
       <yloc>73</yloc>
       <draw>Y</draw>
@@ -145,7 +172,6 @@
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
     <fields>
@@ -159,7 +185,7 @@
         <nullif>This is a string field</nullif>
         <length>20</length>
         <precision>-1</precision>
-        </field>
+      </field>
       <field>
         <name>NumberField</name>
         <type>Number</type>
@@ -170,7 +196,7 @@
         <nullif>19348,392</nullif>
         <length>8</length>
         <precision>3</precision>
-        </field>
+      </field>
       <field>
         <name>IntegerField</name>
         <type>Integer</type>
@@ -181,7 +207,7 @@
         <nullif>38472</nullif>
         <length>7</length>
         <precision>0</precision>
-        </field>
+      </field>
       <field>
         <name>DateField</name>
         <type>Date</type>
@@ -192,7 +218,7 @@
         <nullif>2006&#47;12&#47;31 23:59:59</nullif>
         <length>-1</length>
         <precision>-1</precision>
-        </field>
+      </field>
       <field>
         <name>BooleanField</name>
         <type>Boolean</type>
@@ -203,7 +229,7 @@
         <nullif>TRUE</nullif>
         <length>-1</length>
         <precision>-1</precision>
-        </field>
+      </field>
       <field>
         <name>BigNumberField</name>
         <type>BigNumber</type>
@@ -214,15 +240,20 @@
         <nullif>989873947.2984839</nullif>
         <length>23</length>
         <precision>8</precision>
-        </field>
-      </fields>
+      </field>
+    </fields>
     <limit>100</limit>
      <cluster_schema/>
-    <GUI>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>103</xloc>
       <yloc>73</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
 
+  <step_error_handling>
+  </step_error_handling>
+   <slave-step-copy-partition-distribution>
+</slave-step-copy-partition-distribution>
+   <slave_transformation>N</slave_transformation>
 </transformation>

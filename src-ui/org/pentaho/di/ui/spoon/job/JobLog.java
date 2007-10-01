@@ -369,9 +369,9 @@ public class JobLog extends Composite implements TabItemInterface
 		wLog.addKeyListener(spoon.defKeys);
 	}
     
-    public synchronized void startJob()
+    private synchronized void startJob()
     {
-        startJob(null);
+    	spoon.executeJob();
     }
     
 	
@@ -414,11 +414,11 @@ public class JobLog extends Composite implements TabItemInterface
 			      ) && !jobMeta.hasChanged()                             // Didn't change
 			   )
 			{
-				if (job==null || (job!=null && job.isActive()) )
+				if (job==null || (job!=null && !job.isActive()) )
 				{
 					try
 					{
-                        // TODO: clean up this awfull mess...
+                        // TODO: clean up this awful mess...
                         //
                         job = new Job(log, jobMeta.getName(), jobMeta.getFilename(), null);
 						job.open(spoon.rep, jobMeta.getFilename(), jobMeta.getName(), jobMeta.getDirectory().getPath(), spoon);

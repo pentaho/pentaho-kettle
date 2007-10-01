@@ -286,8 +286,7 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
     						{
     							if ( log.isDetailed() )
     							{
-    								log.logDetailed(toString(), "Sleeping " + sleepTime + " seconds before next check for file [" +
-    										realFilename + "]");
+    								log.logDetailed(toString(), "Sleeping " + sleepTime + " seconds before next check for file [" + realFilename + "]");
     							}
     							Thread.sleep(sleepTime * 1000);
     						}

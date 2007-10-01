@@ -243,7 +243,7 @@ public class Trans implements VariableSpace
 
 		if (transMeta.getArguments()!=null)
 		{
-			log.logMinimal(toString(), Messages.getString("Trans.Log.NumberOfArgumentsDetected", String.valueOf(transMeta.getArguments().length) )); //$NON-NLS-1$
+			log.logBasic(toString(), Messages.getString("Trans.Log.NumberOfArgumentsDetected", String.valueOf(transMeta.getArguments().length) )); //$NON-NLS-1$
 		}
 
 		if (isSafeModeEnabled())
@@ -1378,7 +1378,7 @@ public class Trans implements VariableSpace
 
 	public String toString()
 	{
-        if (transMeta==null || transMeta.getName()==null) return getClass().getName();
+        if (transMeta==null || transMeta.getName()==null) return getClass().getSimpleName();
 		return transMeta.getName();
 	}
 

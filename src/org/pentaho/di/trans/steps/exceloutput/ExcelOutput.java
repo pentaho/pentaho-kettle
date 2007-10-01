@@ -406,25 +406,38 @@ public class ExcelOutput extends BaseStep implements StepInterface
 		
 			// Add this to the result file names...
 			ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, file, getTransMeta().getName(), getStepname());
-			resultFile.setComment("This file was created with an Excel output step");
+			resultFile.setComment("This file was created with an Excel output step by Pentaho Data Integration");
             addResultFile(resultFile);
 
             // Create the workboook
             if (!meta.isTemplateEnabled())
             {				
+            	if (file.exists())
+            	{
+            		// Attempts to load it from the local file failed in the past.
+            		// As such we will try to remove the file first...
+            		//
+            		file.delete();
+            	}
+            	
 				// Create a new Workbook
-				data.workbook = Workbook.createWorkbook(file.getContent().getOutputStream(), ws);
+            	data.outputStream = file.getContent().getOutputStream();
+				data.workbook = Workbook.createWorkbook(data.outputStream, ws);
 
 				// Create a sheet?
-				data.sheet = data.workbook.createSheet("Sheet1", 0);    
+				String sheetname = "Sheet1";
+            	data.sheet = data.workbook.getSheet(sheetname);
+            	if (data.sheet==null)
+            	{
+            		data.sheet = data.workbook.createSheet(sheetname, 0);
+            	}
 
             } else {
 
             	FileObject fo = KettleVFS.getFileObject(environmentSubstitute(meta.getTemplateFileName()));
 				// create the openFile from the template
 
-				Workbook tmpWorkbook=Workbook.getWorkbook(
-						                  fo.getContent().getInputStream(), ws);
+				Workbook tmpWorkbook=Workbook.getWorkbook(fo.getContent().getInputStream(), ws);
 				data.workbook = Workbook.createWorkbook(file.getContent().getOutputStream(), tmpWorkbook);
 				
             	tmpWorkbook.close();
@@ -435,16 +448,16 @@ public class ExcelOutput extends BaseStep implements StepInterface
             }
 			
             // Rename Sheet
-			if (!Const.isEmpty(meta.getSheetname(this))) 
+			if (!Const.isEmpty(environmentSubstitute(meta.getSheetname()))) 
 			{
-				data.sheet.setName(meta.getSheetname(this)); 
+				data.sheet.setName(environmentSubstitute(meta.getSheetname())); 
 			}
 
 			if (meta.isSheetProtected())
 			{
 				// Protect Sheet by setting password
 				data.sheet.getSettings().setProtected(true); 
-				data.sheet.getSettings().setPassword(meta.getPassword(this));
+				data.sheet.getSettings().setPassword(environmentSubstitute(meta.getPassword()));
 			}
             
 
@@ -462,7 +475,8 @@ public class ExcelOutput extends BaseStep implements StepInterface
 		}
 		catch(Exception e)
 		{
-			logError("Error opening new file : "+e.toString());
+			logError("Error opening new file", e);
+			setErrors(1);
 		}
 		// System.out.println("end of newFile(), splitnr="+splitnr);
 
@@ -481,6 +495,9 @@ public class ExcelOutput extends BaseStep implements StepInterface
 			{
 			    data.workbook.write();
                 data.workbook.close();
+                data.outputStream.close();
+                data.outputStream=null;
+                data.workbook = null;
 			}
             data.formats.clear();
 
@@ -492,7 +509,8 @@ public class ExcelOutput extends BaseStep implements StepInterface
 		}
 		catch(Exception e)
 		{
-            logError("Unable to close openFile file : "+e.toString());
+            logError("Unable to close openFile file", e);
+			setErrors(1);
 		}
 
 		return retval;

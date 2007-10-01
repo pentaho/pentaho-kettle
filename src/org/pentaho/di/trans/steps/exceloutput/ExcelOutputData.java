@@ -16,6 +16,7 @@
 
 package org.pentaho.di.trans.steps.exceloutput;
 
+import java.io.OutputStream;
 import java.util.Hashtable;
 import java.util.Map;
 
@@ -59,6 +60,8 @@ public class ExcelOutputData extends BaseStepData implements StepDataInterface
     public int positionY;
 
     public WritableFont headerFont;
+
+	public OutputStream outputStream;
 
 	/**
 	 * 
