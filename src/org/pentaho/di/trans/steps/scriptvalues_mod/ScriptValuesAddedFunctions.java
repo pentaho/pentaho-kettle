@@ -72,7 +72,6 @@ import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
-import org.pentaho.di.ui.trans.steps.scriptvalues_mod.ScriptValuesModDialog.ScriptValuesModDummy;
 
 public class ScriptValuesAddedFunctions extends ScriptableObject {
 
