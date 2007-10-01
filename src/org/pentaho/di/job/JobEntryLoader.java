@@ -34,7 +34,6 @@ import org.pentaho.di.core.config.KettleConfig;
 import org.pentaho.di.core.exception.KettleConfigException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepLoaderException;
-import org.pentaho.di.core.plugins.Plugin;
 import org.pentaho.di.core.plugins.PluginLoader;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.springframework.core.io.FileSystemResourceLoader;
