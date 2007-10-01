@@ -5,6 +5,7 @@
     <description/>
     <extended_description/>
     <trans_version/>
+  <filename>&#47;home&#47;matt&#47;workspace&#47;Kettle trunk&#47;samples&#47;transformations&#47;JavaScript - process all fields per row.ktr</filename>
     <directory>&#47;</directory>
     <log>
       <read/>
@@ -38,8 +39,26 @@
     <partitionschemas>
     </partitionschemas>
     <slaveservers>
+         <slaveserver><name>localhost:8080:Master</name><hostname>localhost</hostname><port>8080</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>Y</master></slaveserver>
+         <slaveserver><name>localhost:8082</name><hostname>localhost</hostname><port>8082</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>localhost:8081</name><hostname>localhost</hostname><port>8081</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>localhost:8080</name><hostname>localhost</hostname><port>8080</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>localhost:8084</name><hostname>localhost</hostname><port>8084</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>localhost:8083</name><hostname>localhost</hostname><port>8083</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
     </slaveservers>
     <clusterschemas>
+        <clusterschema>
+          <name>local schema</name>
+          <base_port>40000</base_port>
+          <sockets_buffer_size>2000</sockets_buffer_size>
+          <sockets_flush_interval>5000</sockets_flush_interval>
+          <sockets_compressed>N</sockets_compressed>
+          <slaveservers>
+            <name>localhost:8080:Master</name>
+            <name>localhost:8081</name>
+            <name>localhost:8082</name>
+          </slaveservers>
+        </clusterschema>
     </clusterschemas>
   <modified_user/>
   <modified_date>2007&#47;07&#47;27 22:30:19.348</modified_date>
@@ -50,16 +69,16 @@
 of a row by JavaScript. Here all &apos;E&apos; characters will be replaced by &apos;Z&apos;.</note>
       <xloc>33</xloc>
       <yloc>28</yloc>
-      <width>362</width>
-      <heigth>40</heigth>
+      <width>436</width>
+      <heigth>44</heigth>
     </notepad>
     <notepad>
       <note>To see the result, do a preview on this Dummy step
 ... or add an output step.</note>
       <xloc>350</xloc>
       <yloc>175</yloc>
-      <width>279</width>
-      <heigth>40</heigth>
+      <width>336</width>
+      <heigth>44</heigth>
     </notepad>
     <notepad>
       <note>Revision notes:
@@ -67,32 +86,10 @@ of a row by JavaScript. Here all &apos;E&apos; characters will be replaced by &a
 2007-07-27 Jens Bleuel: changed for 3.0 API</note>
       <xloc>11</xloc>
       <yloc>567</yloc>
-      <width>237</width>
-      <heigth>55</heigth>
+      <width>289</width>
+      <heigth>61</heigth>
     </notepad>
   </notepads>
-  <connection>
-    <name>MySQL local - test</name>
-    <server>localhost</server>
-    <type>MYSQL</type>
-    <access>Native</access>
-    <database>test</database>
-    <port>3306</port>
-    <username>root</username>
-    <password>Encrypted 2be98afc86aa7f2e4cb79ce10cc9da0ce</password>
-    <servername/>
-    <data_tablespace/>
-    <index_tablespace/>
-    <attributes>
-      <attribute><code>EXTRA_OPTION_MYSQL.defaultFetchSize</code><attribute>500</attribute></attribute>
-      <attribute><code>EXTRA_OPTION_MYSQL.useCursorFetch</code><attribute>true</attribute></attribute>
-      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
-      <attribute><code>MAXIMUM_POOL_SIZE</code><attribute>10</attribute></attribute>
-      <attribute><code>PORT_NUMBER</code><attribute>3306</attribute></attribute>
-      <attribute><code>STREAM_RESULTS</code><attribute>Y</attribute></attribute>
-      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
-    </attributes>
-  </connection>
   <order>
   <hop> <from>Generate some test rows</from><to>Modified Java Script Value</to><enabled>Y</enabled> </hop>  <hop> <from>Modified Java Script Value</from><to>Dummy (do nothing)</to><enabled>Y</enabled> </hop>  </order>
   <step>
@@ -103,7 +100,6 @@ of a row by JavaScript. Here all &apos;E&apos; characters will be replaced by &a
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
      <cluster_schema/>
@@ -122,7 +118,6 @@ of a row by JavaScript. Here all &apos;E&apos; characters will be replaced by &a
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
     <fields>
@@ -188,16 +183,21 @@ of a row by JavaScript. Here all &apos;E&apos; characters will be replaced by &a
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
-    <script/>
-    <compatible>Y</compatible>
+    <compatible>N</compatible>
     <jsScripts>      <jsScript>        <jsScript_type>0</jsScript_type>
         <jsScript_name>Script 1</jsScript_name>
-        <jsScript_script>for (var i=0;i&lt;rowMeta.size();i++) { &#47;&#47;loop through the actual row
+        <jsScript_script>
+for (var i=0;i&lt;getInputRowMeta().size();i++) { &#47;&#47;loop through the actual row
+
+  &#47;&#47; Grab the metadata for this value
+  &#47;&#47;
+  var valueMeta = getInputRowMeta().getValueMeta(i);
+
   &#47;&#47;using the IDs instead of &quot;String&quot; would make it faster, see API for the IDs
-  if (rowMeta.getValueMeta(i).getTypeDesc().equals(&quot;String&quot;)) { &#47;&#47;only for String types
+  &#47;&#47;
+  if (valueMeta.getTypeDesc().equals(&quot;String&quot;)) { &#47;&#47;only for String types
     row[i]=replace(row[i],&apos;E&apos;,&apos;Z&apos;);
   }
 }
@@ -239,4 +239,7 @@ Alert(str2);</jsScript_script>
 
   <step_error_handling>
   </step_error_handling>
+   <slave-step-copy-partition-distribution>
+</slave-step-copy-partition-distribution>
+   <slave_transformation>N</slave_transformation>
 </transformation>

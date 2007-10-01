@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <transformation>
   <info>
-    <name/>
+    <name>Get Files  Get all transformations</name>
+    <description/>
+    <extended_description/>
+    <trans_version/>
+  <filename>file:&#47;&#47;&#47;home&#47;matt&#47;workspace&#47;Kettle trunk&#47;samples&#47;jobs&#47;run_all&#47;..&#47;..&#47;transformations&#47;Get Files - Get all transformations.ktr</filename>
     <directory>&#47;</directory>
     <log>
       <read/>
@@ -9,18 +13,19 @@
       <input/>
       <output/>
       <update/>
+      <rejected/>
       <connection/>
       <table/>
       <use_batchid>Y</use_batchid>
       <use_logfield>N</use_logfield>
-      </log>
+    </log>
     <maxdate>
       <connection/>
       <table/>
       <field/>
       <offset>0.0</offset>
       <maxdiff>0.0</maxdiff>
-      </maxdate>
+    </maxdate>
     <size_rowset>1000</size_rowset>
     <sleep_time_empty>1</sleep_time_empty>
     <sleep_time_full>1</sleep_time_full>
@@ -30,24 +35,44 @@
     <using_thread_priorities>Y</using_thread_priorities>
     <shared_objects_file/>
     <dependencies>
-      </dependencies>
+    </dependencies>
     <partitionschemas>
         <partitionschema>
           <name>MySQL EC2 Schema</name>
           <partition>            <id>P2</id>
-            </partition>          <partition>            <id>P3</id>
-            </partition>          <partition>            <id>P4</id>
-            </partition>          <partition>            <id>P5</id>
-            </partition>          </partitionschema>
-      </partitionschemas>
+          </partition>          <partition>            <id>P3</id>
+          </partition>          <partition>            <id>P4</id>
+          </partition>          <partition>            <id>P5</id>
+          </partition>          <dynamic>N</dynamic>
+          <partitions_per_slave/>
+        </partitionschema>
+    </partitionschemas>
     <slaveservers>
+         <slaveserver><name>localhost:8080:Master</name><hostname>localhost</hostname><port>8080</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>Y</master></slaveserver>
+         <slaveserver><name>localhost:8082</name><hostname>localhost</hostname><port>8082</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>localhost:8081</name><hostname>localhost</hostname><port>8081</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>localhost:8080</name><hostname>localhost</hostname><port>8080</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>localhost:8084</name><hostname>localhost</hostname><port>8084</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>localhost:8083</name><hostname>localhost</hostname><port>8083</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
          <slaveserver><name>EC_SLAVE_2</name><hostname>domU-12-31-33-00-01-F1.usma1.compute.amazonaws.com</hostname><port>8080</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
          <slaveserver><name>EC_SLAVE_4</name><hostname>domU-12-31-33-00-02-55.usma1.compute.amazonaws.com</hostname><port>8080</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
          <slaveserver><name>EC_SLAVE_3</name><hostname>domU-12-31-33-00-03-FB.usma1.compute.amazonaws.com</hostname><port>8080</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
          <slaveserver><name>EC_MASTER_1</name><hostname>domU-12-31-33-00-03-9C.usma1.compute.amazonaws.com</hostname><port>8080</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>Y</master></slaveserver>
          <slaveserver><name>EC_SLAVE_5</name><hostname>domU-12-31-33-00-03-EA.usma1.compute.amazonaws.com</hostname><port>8080</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
-      </slaveservers>
+    </slaveservers>
     <clusterschemas>
+        <clusterschema>
+          <name>local schema</name>
+          <base_port>40000</base_port>
+          <sockets_buffer_size>2000</sockets_buffer_size>
+          <sockets_flush_interval>5000</sockets_flush_interval>
+          <sockets_compressed>N</sockets_compressed>
+          <slaveservers>
+            <name>localhost:8080:Master</name>
+            <name>localhost:8081</name>
+            <name>localhost:8082</name>
+          </slaveservers>
+        </clusterschema>
         <clusterschema>
           <name>EC2</name>
           <base_port>40000</base_port>
@@ -62,22 +87,21 @@
             <name>EC_SLAVE_5</name>
           </slaveservers>
         </clusterschema>
-      </clusterschemas>
+    </clusterschemas>
   <modified_user/>
   <modified_date>2007&#47;01&#47;23 23:39:52.968</modified_date>
-    </info>
+  </info>
   <notepads>
     <notepad>
       <note>Select all JavaScript transformations</note>
       <xloc>99</xloc>
       <yloc>27</yloc>
       <width>249</width>
-      <heigth>26</heigth>
-      </notepad>
-    </notepads>
+      <heigth>27</heigth>
+    </notepad>
+  </notepads>
   <order>
-  <hop> <from>Get File Names</from><to>Filter rows</to><enabled>Y</enabled> </hop>  <hop> <from>Filter rows</from><to>Copy rows to result</to><enabled>Y</enabled> </hop>  </order>
-
+  <hop> <from>Get File Names</from><to>Filter rows 2</to><enabled>Y</enabled> </hop>  <hop> <from>Filter rows 2</from><to>Copy rows to result</to><enabled>Y</enabled> </hop>  </order>
   <step>
     <name>Copy rows to result</name>
     <type>RowsToResult</type>
@@ -86,54 +110,66 @@
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
      <cluster_schema/>
-    <GUI>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>417</xloc>
-      <yloc>115</yloc>
+      <yloc>121</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
 
   <step>
-    <name>Filter rows</name>
+    <name>Filter rows 2</name>
     <type>FilterRows</type>
     <description/>
     <distribute>Y</distribute>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
 <send_true_to/>
 <send_false_to/>
     <compare>
 <condition>
- <negated>N</negated>
+ <negated>Y</negated>
  <conditions>
   <condition>
    <negated>N</negated>
    <leftvalue>short_filename</leftvalue>
-   <function>CONTAINS</function>
-   <rightvalue/>
-   <value><name>constant</name><type>String</type><text>JavaScript</text><length>-1</length><precision>-1</precision><isnull>N</isnull></value>   </condition>
-  <condition>
-   <negated>Y</negated>
-   <operator>AND</operator>
-   <leftvalue>short_filename</leftvalue>
    <function>ENDS WITH</function>
    <rightvalue/>
-   <value><name>constant</name><type>String</type><text>connection metadata.ktr</text><length>-1</length><precision>-1</precision><isnull>N</isnull></value>   </condition>
+   <value><name>constant</name><type>String</type><text>dialog.ktr</text><length>-1</length><precision>-1</precision><isnull>N</isnull></value>   </condition>
+  <condition>
+   <negated>N</negated>
+   <operator>OR</operator>
+   <leftvalue>short_filename</leftvalue>
+   <function>CONTAINS</function>
+   <rightvalue/>
+   <value><name>constant</name><type>String</type><text>Database</text><length>-1</length><precision>-1</precision><isnull>N</isnull></value>   </condition>
+  <condition>
+   <negated>N</negated>
+   <operator>OR</operator>
+   <leftvalue>short_filename</leftvalue>
+   <function>CONTAINS</function>
+   <rightvalue/>
+   <value><name>constant</name><type>String</type><text>Table Output</text><length>-1</length><precision>-1</precision><isnull>N</isnull></value>   </condition>
+  <condition>
+   <negated>N</negated>
+   <operator>OR</operator>
+   <leftvalue>short_filename</leftvalue>
+   <function>CONTAINS</function>
+   <rightvalue/>
+   <value><name>constant</name><type>String</type><text>Change log processing</text><length>-1</length><precision>-1</precision><isnull>N</isnull></value>   </condition>
   </conditions>
  </condition>
     </compare>
      <cluster_schema/>
-    <GUI>
-      <xloc>259</xloc>
-      <yloc>115</yloc>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>271</xloc>
+      <yloc>121</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -146,20 +182,27 @@
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
+    <filter>
+      <filterfiletype/>
+    </filter>
     <file>
       <name>${Internal.Transformation.Filename.Directory}&#47;</name>
       <filemask>.*\.ktr$</filemask>
       <file_required/>
-  </file>
+    </file>
      <cluster_schema/>
-    <GUI>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>125</xloc>
-      <yloc>115</yloc>
+      <yloc>121</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
 
+  <step_error_handling>
+  </step_error_handling>
+   <slave-step-copy-partition-distribution>
+</slave-step-copy-partition-distribution>
+   <slave_transformation>N</slave_transformation>
 </transformation>

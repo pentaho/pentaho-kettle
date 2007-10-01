@@ -44,7 +44,9 @@ import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueDataUtil;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -468,11 +470,17 @@ public class ScriptValuesMod extends BaseStep implements StepInterface, ScriptVa
                         else
                             if (classType.equalsIgnoreCase("org.mozilla.javascript.NativeJavaObject"))
                             {
-                                // Is it a java Value class ?
-                                // Value v = (Value) Context.toType(result, Value.class);
-                                // res.setValue(v.getNumber());
-                                String string = Context.toString(result);
-                                return new Double( Double.parseDouble(string) );
+                            	try
+                            	{
+	                                // Is it a java Value class ?
+	                                Value v = (Value) Context.jsToJava(result, Value.class);
+	                                return v.getNumber();
+                            	}
+                            	catch(Exception e)
+                            	{
+	                                String string = Context.toString(result);
+	                                return new Double( Double.parseDouble(ValueDataUtil.trim(string)) );
+                            	}
                             }
                             else
                             {
@@ -481,54 +489,33 @@ public class ScriptValuesMod extends BaseStep implements StepInterface, ScriptVa
                             }
 
                     case ValueMetaInterface.TYPE_INTEGER:
-                        if (classType.equalsIgnoreCase("java.lang.Byte"))
-                        {
-                            return new Long( ((java.lang.Byte) result).longValue() );
-                        }
-                        else
-                            if (classType.equalsIgnoreCase("java.lang.Short"))
-                            {
-                                return new Long( ((Short) result).longValue());
-                            }
-                            else
-                                if (classType.equalsIgnoreCase("java.lang.Integer"))
-                                {
-                                    return new Long( ((Integer) result).longValue());
-                                }
-                                else
-                                    if (classType.equalsIgnoreCase("java.lang.Long"))
-                                    {
-                                        return new Long( ((Long) result).longValue());
-                                    }
-                                    else
-                                        if (classType.equalsIgnoreCase("java.lang.Double"))
-                                        {
-                                            return new Long( ((Double) result).longValue());
-                                        }
-                                        else
-                                            if (classType.equalsIgnoreCase("java.lang.String"))
-                                            {
-                                                return new Long( (new Long((String) result)).longValue());
-                                            }
-                                            else
-                                                if (classType.equalsIgnoreCase("org.mozilla.javascript.Undefined"))
-                                                {
-                                                    return null;
-                                                }
-                                                else
-                                                    if (classType.equalsIgnoreCase("org.mozilla.javascript.NativeJavaObject"))
-                                                    {
-                                                        // Is it a java Value class ?
-                                                        // Value v = (Value) Context.toType(result, Value.class);
-                                                        // res.setValue(v.getInteger());
-
-                                                        String string = Context.toString(result);
-                                                        return new Long( Long.parseLong(string) );
-                                                    }
-                                                    else
-                                                    {
-                                                        return new Long( (long) ((Long) result).longValue() );
-                                                    }
+                        if (classType.equalsIgnoreCase("java.lang.Byte")) {
+							return new Long(((java.lang.Byte) result).longValue());
+						} else if (classType.equalsIgnoreCase("java.lang.Short")) {
+							return new Long(((Short) result).longValue());
+						} else if (classType.equalsIgnoreCase("java.lang.Integer")) {
+							return new Long(((Integer) result).longValue());
+						} else if (classType.equalsIgnoreCase("java.lang.Long")) {
+							return new Long(((Long) result).longValue());
+						} else if (classType.equalsIgnoreCase("java.lang.Double")) {
+							return new Long(((Double) result).longValue());
+						} else if (classType.equalsIgnoreCase("java.lang.String")) {
+							return new Long((new Long((String) result)).longValue());
+						} else if (classType.equalsIgnoreCase("org.mozilla.javascript.Undefined")) {
+							return null;
+						} else if (classType.equalsIgnoreCase("org.mozilla.javascript.NativeJavaObject")) {
+							// Is it a Value?
+							//
+							try {
+								Value value = (Value) Context.jsToJava(result, Value.class);
+								return value.getInteger();
+							} catch (Exception e2) {
+								String string = Context.toString(result);
+								return new Long(Long.parseLong(ValueDataUtil.trim(string)));
+							}
+						} else {
+							return new Long((long) ((Long) result).longValue());
+						}
 
                     case ValueMetaInterface.TYPE_STRING:
                         if (classType.equalsIgnoreCase("org.mozilla.javascript.NativeJavaObject") || //$NON-NLS-1$
@@ -537,22 +524,21 @@ public class ScriptValuesMod extends BaseStep implements StepInterface, ScriptVa
                             // Is it a java Value class ?
                             try
                             {
-                                // Value v = (Value) Context.toType(result, Value.class);
-                                // res.setValue(v.getString());
-                                
-                                return Context.toString(result);
+                                Value v = (Value) Context.jsToJava(result, Value.class);
+                                return v.toString();
                             }
                             catch (Exception ev)
                             {
-                                // A String perhaps?
-                                String string = (String) Context.jsToJava(result, String.class);
+                                // convert to a string should work in most cases...
+                            	//
+                                String string = (String) Context.toString(result);
                                 return string;
                             }
                         }
                         else
                         {
                             // A String perhaps?
-                            String string = (String) Context.jsToJava(result, String.class);
+                            String string = (String) Context.toString(result);
                             return string;
                         }
 
@@ -580,18 +566,25 @@ public class ScriptValuesMod extends BaseStep implements StepInterface, ScriptVa
                                     }
                                     catch (Exception e)
                                     {
-                                        throw new KettleValueException("Can't convert a string to a date");
-                                        /*
-                                         * 
-                                         String string = (String) Context.toType(result, String.class);
-                                        
-                                        // Value v = (Value) Context.toType(result, Value.class);
-                                        Date dat = v.getDate();
-                                        if (dat != null)
-                                            dbl = dat.getTime();
-                                        else
-                                            res.setNull();
-                                        */
+                                    	// Is it a Value?
+                                    	//
+                                    	try 
+                                    	{
+                                    		Value value = (Value)Context.jsToJava(result, Value.class);
+                                    		return value.getDate();
+                                    	}
+                                    	catch(Exception e2)
+                                    	{
+                                    		try
+                                    		{
+                                    			String string = (String) Context.toString(result);
+                                    			return XMLHandler.stringToDate(string);
+                                    		}
+                                    		catch(Exception e3)
+                                    		{
+                                    			throw new KettleValueException("Can't convert a string to a date");
+                                    		}
+                                    	}
                                     }
                                 }
                                 else if (classType.equalsIgnoreCase("java.lang.Double"))
@@ -627,15 +620,19 @@ public class ScriptValuesMod extends BaseStep implements StepInterface, ScriptVa
                                 }
                                 catch (Exception e)
                                 {
-                                    String string = (String) Context.jsToJava(result, String.class);
-                                    return new BigDecimal(string);
-                                    /*
-                                        Value v = (Value) Context.toType(result, Value.class);
+                                    try 
+                                    {
+                                        Value v = (Value) Context.jsToJava(result, Value.class);
                                         if (!v.isNull())
-                                            res.setValue(v.getBigNumber());
+                                            return v.getBigNumber();
                                         else
-                                            res.setNull();
-                                    */
+                                            return null;
+                                    }
+                                    catch(Exception e2) 
+                                    {
+                                        String string = (String) Context.jsToJava(result, String.class);
+                                        return new BigDecimal(string);
+                                    }
                                 }
                             }
                             else

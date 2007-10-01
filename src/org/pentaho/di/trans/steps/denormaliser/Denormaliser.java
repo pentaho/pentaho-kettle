@@ -245,7 +245,7 @@ public class Denormaliser extends BaseStep implements StepInterface
 	}
 	
     /**
-     * This method de-normalises a single key-value pair.
+     * This method de-normalizes a single key-value pair.
      * It looks up the key and determines the value name to store it in.
      * It converts it to the right type and stores it in the result row.
      * 
@@ -295,13 +295,17 @@ public class Denormaliser extends BaseStep implements StepInterface
                         	prevTargetData = ValueDataUtil.plus(targetMeta, prevTargetData, targetMeta, targetData);
                             break;
                         case DenormaliserTargetField.TYPE_AGGR_MIN:
-                            if (targetMeta.compare(sourceData, prevTargetData)<0) prevTargetData = sourceData;
+                            if (sourceMeta.compare(sourceData, targetMeta, prevTargetData)<0) {
+                            	prevTargetData = targetMeta.convertData(sourceMeta, sourceData);
+                            }
                             break;
                         case DenormaliserTargetField.TYPE_AGGR_MAX:
-                            if (targetMeta.compare(sourceData, prevTargetData)>0) prevTargetData = sourceData;
+                            if (sourceMeta.compare(sourceData, targetMeta, prevTargetData)>0) {
+                            	prevTargetData = targetMeta.convertData(sourceMeta, sourceData);
+                            }
                             break;
                         case DenormaliserTargetField.TYPE_AGGR_COUNT_ALL:
-                            if (!sourceMeta.isNull(sourceData)) prevTargetData = ((Integer)prevTargetData)+1;;
+                            if (!targetMeta.isNull(sourceData)) prevTargetData = ((Integer)prevTargetData)+1;;
                             break;
                         case DenormaliserTargetField.TYPE_AGGR_AVERAGE:
                             if (!sourceMeta.isNull(sourceData)) 

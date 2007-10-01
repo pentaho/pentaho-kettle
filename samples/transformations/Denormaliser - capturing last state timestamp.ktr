@@ -45,8 +45,26 @@
           </partition>        </partitionschema>
     </partitionschemas>
     <slaveservers>
+         <slaveserver><name>localhost:8083</name><hostname>localhost</hostname><port>8083</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>localhost:8080</name><hostname>localhost</hostname><port>8080</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>localhost:8082</name><hostname>localhost</hostname><port>8082</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>localhost:8080:Master</name><hostname>localhost</hostname><port>8080</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>Y</master></slaveserver>
+         <slaveserver><name>localhost:8081</name><hostname>localhost</hostname><port>8081</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>localhost:8084</name><hostname>localhost</hostname><port>8084</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
     </slaveservers>
     <clusterschemas>
+        <clusterschema>
+          <name>local schema</name>
+          <base_port>40000</base_port>
+          <sockets_buffer_size>2000</sockets_buffer_size>
+          <sockets_flush_interval>5000</sockets_flush_interval>
+          <sockets_compressed>N</sockets_compressed>
+          <slaveservers>
+            <name>localhost:8080:Master</name>
+            <name>localhost:8081</name>
+            <name>localhost:8082</name>
+          </slaveservers>
+        </clusterschema>
     </clusterschemas>
   <modified_user>-</modified_user>
   <modified_date>2007&#47;06&#47;06 20:53:11.531</modified_date>
@@ -56,12 +74,116 @@
       <note>Specify the nr of states here</note>
       <xloc>649</xloc>
       <yloc>250</yloc>
-      <width>148</width>
-      <heigth>23</heigth>
+      <width>191</width>
+      <heigth>27</heigth>
     </notepad>
   </notepads>
   <order>
   <hop> <from>Sort rows</from><to>Row denormaliser</to><enabled>Y</enabled> </hop>  <hop> <from>R1</from><to>Dummy (do nothing)</to><enabled>Y</enabled> </hop>  <hop> <from>Dummy (do nothing)</from><to>Sort rows</to><enabled>Y</enabled> </hop>  <hop> <from>R2</from><to>Dummy (do nothing)</to><enabled>Y</enabled> </hop>  <hop> <from>R3</from><to>Dummy (do nothing)</to><enabled>Y</enabled> </hop>  <hop> <from>R1 4</from><to>Dummy (do nothing)</to><enabled>Y</enabled> </hop>  <hop> <from>Row denormaliser</from><to>id</to><enabled>Y</enabled> </hop>  <hop> <from>id</from><to>Calculator</to><enabled>Y</enabled> </hop>  <hop> <from>Calculator</from><to>Group by</to><enabled>Y</enabled> </hop>  <hop> <from>Group by</from><to>Remove group</to><enabled>Y</enabled> </hop>  </order>
+  <step>
+    <name>Calculator</name>
+    <type>Calculator</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <field_name/>
+           <schema_name/>
+           </partitioning>
+       <calculation><field_name>nrStates</field_name>
+<calc_type>CONSTANT</calc_type>
+<field_a>2</field_a>
+<field_b/>
+<field_c/>
+<value_type>Integer</value_type>
+<value_length>-1</value_length>
+<value_precision>-1</value_precision>
+<remove>Y</remove>
+</calculation>
+       <calculation><field_name>group</field_name>
+<calc_type>DIVIDE</calc_type>
+<field_a>id</field_a>
+<field_b>nrStates</field_b>
+<field_c/>
+<value_type>Integer</value_type>
+<value_length>-1</value_length>
+<value_precision>-1</value_precision>
+<remove>N</remove>
+</calculation>
+     <cluster_schema/>
+    <GUI>
+      <xloc>703</xloc>
+      <yloc>195</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Dummy (do nothing)</name>
+    <type>Dummy</type>
+    <description/>
+    <distribute>N</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <field_name/>
+           <schema_name/>
+           </partitioning>
+     <cluster_schema/>
+    <GUI>
+      <xloc>246</xloc>
+      <yloc>195</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Group by</name>
+    <type>GroupBy</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <field_name/>
+           <schema_name/>
+           </partitioning>
+      <all_rows>N</all_rows>
+      <ignore_aggregate>N</ignore_aggregate>
+      <field_ignore/>
+      <directory>%%java.io.tmpdir%%</directory>
+      <prefix>grp</prefix>
+      <add_linenr>N</add_linenr>
+      <linenr_fieldname/>
+      <group>
+        <field>
+          <name>service</name>
+        </field>
+        <field>
+          <name>group</name>
+        </field>
+        </group>
+      <fields>
+        <field>
+          <aggregate>state1agg</aggregate>
+          <subject>STATE1</subject>
+          <type>MAX</type>
+        </field>
+        <field>
+          <aggregate>state2agg</aggregate>
+          <subject>STATE2</subject>
+          <type>MAX</type>
+        </field>
+        </fields>
+     <cluster_schema/>
+    <GUI>
+      <xloc>831</xloc>
+      <yloc>195</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
   <step>
     <name>R1</name>
     <type>RowGenerator</type>
@@ -283,6 +405,36 @@
     </step>
 
   <step>
+    <name>Remove group</name>
+    <type>SelectValues</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <field_name/>
+           <schema_name/>
+           </partitioning>
+    <fields>      <remove>        <name>group</name>
+      </remove>      <meta>        <name>state1agg</name>
+        <rename>state1</rename>
+        <type>-</type>
+        <length>-2</length>
+        <precision>-2</precision>
+      </meta>      <meta>        <name>state2agg</name>
+        <rename>state2</rename>
+        <type>-</type>
+        <length>-2</length>
+        <precision>-2</precision>
+      </meta>    </fields>     <cluster_schema/>
+    <GUI>
+      <xloc>951</xloc>
+      <yloc>194</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
     <name>Row denormaliser</name>
     <type>Denormaliser</type>
     <description/>
@@ -374,25 +526,6 @@
     </step>
 
   <step>
-    <name>Dummy (do nothing)</name>
-    <type>Dummy</type>
-    <description/>
-    <distribute>N</distribute>
-    <copies>1</copies>
-         <partitioning>
-           <method>none</method>
-           <field_name/>
-           <schema_name/>
-           </partitioning>
-     <cluster_schema/>
-    <GUI>
-      <xloc>246</xloc>
-      <yloc>195</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
-  <step>
     <name>id</name>
     <type>Sequence</type>
     <description/>
@@ -417,121 +550,6 @@
     <GUI>
       <xloc>577</xloc>
       <yloc>195</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
-  <step>
-    <name>Calculator</name>
-    <type>Calculator</type>
-    <description/>
-    <distribute>Y</distribute>
-    <copies>1</copies>
-         <partitioning>
-           <method>none</method>
-           <field_name/>
-           <schema_name/>
-           </partitioning>
-       <calculation><field_name>nrStates</field_name>
-<calc_type>CONSTANT</calc_type>
-<field_a>2</field_a>
-<field_b/>
-<field_c/>
-<value_type>Integer</value_type>
-<value_length>-1</value_length>
-<value_precision>-1</value_precision>
-<remove>Y</remove>
-</calculation>
-       <calculation><field_name>group</field_name>
-<calc_type>DIVIDE</calc_type>
-<field_a>id</field_a>
-<field_b>nrStates</field_b>
-<field_c/>
-<value_type>Integer</value_type>
-<value_length>-1</value_length>
-<value_precision>-1</value_precision>
-<remove>N</remove>
-</calculation>
-     <cluster_schema/>
-    <GUI>
-      <xloc>703</xloc>
-      <yloc>195</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
-  <step>
-    <name>Group by</name>
-    <type>GroupBy</type>
-    <description/>
-    <distribute>Y</distribute>
-    <copies>1</copies>
-         <partitioning>
-           <method>none</method>
-           <field_name/>
-           <schema_name/>
-           </partitioning>
-      <all_rows>N</all_rows>
-      <ignore_aggregate>N</ignore_aggregate>
-      <field_ignore/>
-      <directory>%%java.io.tmpdir%%</directory>
-      <prefix>grp</prefix>
-      <add_linenr>N</add_linenr>
-      <linenr_fieldname/>
-      <group>
-        <field>
-          <name>service</name>
-        </field>
-        <field>
-          <name>group</name>
-        </field>
-        </group>
-      <fields>
-        <field>
-          <aggregate>state1agg</aggregate>
-          <subject>STATE1</subject>
-          <type>MAX</type>
-        </field>
-        <field>
-          <aggregate>state2agg</aggregate>
-          <subject>STATE2</subject>
-          <type>MAX</type>
-        </field>
-        </fields>
-     <cluster_schema/>
-    <GUI>
-      <xloc>831</xloc>
-      <yloc>195</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
-  <step>
-    <name>Remove group</name>
-    <type>SelectValues</type>
-    <description/>
-    <distribute>Y</distribute>
-    <copies>1</copies>
-         <partitioning>
-           <method>none</method>
-           <field_name/>
-           <schema_name/>
-           </partitioning>
-    <fields>      <remove>        <name>group</name>
-      </remove>      <meta>        <name>state1agg</name>
-        <rename>state1</rename>
-        <type>-</type>
-        <length>-2</length>
-        <precision>-2</precision>
-      </meta>      <meta>        <name>state2agg</name>
-        <rename>state2</rename>
-        <type>-</type>
-        <length>-2</length>
-        <precision>-2</precision>
-      </meta>    </fields>     <cluster_schema/>
-    <GUI>
-      <xloc>951</xloc>
-      <yloc>194</yloc>
       <draw>Y</draw>
       </GUI>
     </step>

@@ -314,6 +314,7 @@ public class Calculator extends BaseStep implements StepInterface
                 case CalculatorMetaFunction.CALC_CONSTANT           : // Set field to constant value...
                     {
                         calcData[index] = fn.getFieldA(); // A string
+                        resultType = ValueMetaInterface.TYPE_STRING;
                     }
                     break;
                 case CalculatorMetaFunction.CALC_NVL                : // Replace null values with another value
