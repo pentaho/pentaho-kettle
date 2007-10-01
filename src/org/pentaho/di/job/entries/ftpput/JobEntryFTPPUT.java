@@ -51,6 +51,7 @@ import org.w3c.dom.Node;
 
 import com.enterprisedt.net.ftp.FTPClient;
 import com.enterprisedt.net.ftp.FTPConnectMode;
+import com.enterprisedt.net.ftp.FTPTransferType;
 
 /**
  * This defines an FTP put job entry.
@@ -65,8 +66,8 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
 	private String serverPort;
 	private String userName;
 	private String password;
-	private String sftpDirectory;
-	private String targetDirectory;
+	private String remoteDirectory;
+	private String localDirectory;
 	private String wildcard;
 	private boolean binaryMode;
 	private int     timeout;
@@ -90,6 +91,8 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
 		super(n, "");
 		serverName=null;
         serverPort="21";
+        remoteDirectory=null;
+        localDirectory=null;
 		setID(-1L);
 		setJobEntryType(JobEntryType.FTP_PUT);
 		setControlEncoding(DEFAULT_CONTROL_ENCODING);
@@ -121,8 +124,8 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
 		retval.append("      ").append(XMLHandler.addTagValue("serverport",   serverPort));
 		retval.append("      ").append(XMLHandler.addTagValue("username",     userName));
 		retval.append("      ").append(XMLHandler.addTagValue("password",     password));
-		retval.append("      ").append(XMLHandler.addTagValue("sftpdirectory", sftpDirectory));
-		retval.append("      ").append(XMLHandler.addTagValue("targetdirectory", targetDirectory));
+		retval.append("      ").append(XMLHandler.addTagValue("remoteDirectory", remoteDirectory));
+		retval.append("      ").append(XMLHandler.addTagValue("localDirectory", localDirectory));
 		retval.append("      ").append(XMLHandler.addTagValue("wildcard",     wildcard));
 		retval.append("      ").append(XMLHandler.addTagValue("binary",       binaryMode));
 		retval.append("      ").append(XMLHandler.addTagValue("timeout",      timeout));
@@ -143,8 +146,8 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
 			serverPort      = XMLHandler.getTagValue(entrynode, "serverport");
 			userName        = XMLHandler.getTagValue(entrynode, "username");
 			password        = XMLHandler.getTagValue(entrynode, "password");
-			sftpDirectory   = XMLHandler.getTagValue(entrynode, "sftpdirectory");
-			targetDirectory = XMLHandler.getTagValue(entrynode, "targetdirectory");
+			remoteDirectory   = XMLHandler.getTagValue(entrynode, "remoteDirectory");
+			localDirectory = XMLHandler.getTagValue(entrynode, "localDirectory");
 			wildcard        = XMLHandler.getTagValue(entrynode, "wildcard");
 			binaryMode          = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "binary") );
 			timeout             = Const.toInt(XMLHandler.getTagValue(entrynode, "timeout"), 10000);
@@ -177,8 +180,8 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
 
 			userName        = rep.getJobEntryAttributeString(id_jobentry, "username");
 			password        = rep.getJobEntryAttributeString(id_jobentry, "password");
-			sftpDirectory   = rep.getJobEntryAttributeString(id_jobentry, "sftpdirectory");
-			targetDirectory = rep.getJobEntryAttributeString(id_jobentry, "targetdirectory");
+			remoteDirectory   = rep.getJobEntryAttributeString(id_jobentry, "remoteDirectory");
+			localDirectory = rep.getJobEntryAttributeString(id_jobentry, "localDirectory");
 			wildcard        = rep.getJobEntryAttributeString(id_jobentry, "wildcard");
 			binaryMode          = rep.getJobEntryAttributeBoolean(id_jobentry, "binary");
 			timeout             = (int)rep.getJobEntryAttributeInteger(id_jobentry, "timeout");
@@ -210,8 +213,8 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
 			rep.saveJobEntryAttribute(id_job, getID(), "serverport",      serverPort);
 			rep.saveJobEntryAttribute(id_job, getID(), "username",        userName);
 			rep.saveJobEntryAttribute(id_job, getID(), "password",        password);
-			rep.saveJobEntryAttribute(id_job, getID(), "sftpdirectory",    sftpDirectory);
-			rep.saveJobEntryAttribute(id_job, getID(), "targetdirectory", targetDirectory);
+			rep.saveJobEntryAttribute(id_job, getID(), "remoteDirectory",    remoteDirectory);
+			rep.saveJobEntryAttribute(id_job, getID(), "localDirectory", localDirectory);
 			rep.saveJobEntryAttribute(id_job, getID(), "wildcard",        wildcard);
 			rep.saveJobEntryAttribute(id_job, getID(), "binary",          binaryMode);
 			rep.saveJobEntryAttribute(id_job, getID(), "timeout",         timeout);
@@ -296,19 +299,19 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
     	this.controlEncoding = encoding;
     }    
 	/**
-	 * @return Returns the directory.
+	 * @return Returns the remoteDirectory.
 	 */
-	public String getScpDirectory()
+	public String getRemoteDirectory()
 	{
-		return sftpDirectory;
+		return remoteDirectory;
 	}
 	
 	/**
-	 * @param directory The directory to set.
+	 * @param directory The remoteDirectory to set.
 	 */
-	public void setScpDirectory(String directory)
+	public void setRemoteDirectory(String directory)
 	{
-		this.sftpDirectory = directory;
+		this.remoteDirectory = directory;
 	}
 	
 	/**
@@ -376,19 +379,19 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
 	}
 	
 	/**
-	 * @return Returns the targetDirectory.
+	 * @return Returns the localDirectory.
 	 */
-	public String getTargetDirectory()
+	public String getLocalDirectory()
 	{
-		return targetDirectory;
+		return localDirectory;
 	}
 	
 	/**
-	 * @param targetDirectory The targetDirectory to set.
+	 * @param directory The localDirectory to set.
 	 */
-	public void setTargetDirectory(String targetDirectory)
+	public void setLocalDirectory(String directory)
 	{
-		this.targetDirectory = targetDirectory;
+		this.localDirectory = directory;
 	}
 	
 	/**
@@ -447,9 +450,9 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
         String realServerPort      = environmentSubstitute(serverPort);
         String realUsername        = environmentSubstitute(userName);
         String realPassword        = environmentSubstitute(password);
-        String realRemoteDirectory = environmentSubstitute(sftpDirectory);
+        String realRemoteDirectory = environmentSubstitute(remoteDirectory);
         String realWildcard        = environmentSubstitute(wildcard);
-        String realLocalDirectory  = environmentSubstitute(targetDirectory);
+        String realLocalDirectory  = environmentSubstitute(localDirectory);
         
         
         FTPClient ftpclient=null;
@@ -476,9 +479,12 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
             }
 			
         	// Set the timeout
-			ftpclient.setTimeout(timeout);
-			if (log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobFTPPUT.Log.SetTimeout",""+timeout));
-			
+            if (timeout>0) 
+            {
+				ftpclient.setTimeout(timeout);
+				if (log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobFTPPUT.Log.SetTimeout",""+timeout));
+            }
+            
 			ftpclient.setControlEncoding(controlEncoding);
 			if (log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobFTPPUT.Log.SetEncoding",controlEncoding));
 
@@ -486,6 +492,12 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
             ftpclient.connect();
 			ftpclient.login(realUsername, realPassword);
 				
+            // set BINARY
+            if (binaryMode) 
+            {
+            	ftpclient.setType(FTPTransferType.BINARY);
+            	if (log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobFTPPUT.Log.BinaryMode"));
+            }
 			
 			//  Remove password from logging, you don't know where it ends up.
 			if (log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobFTPPUT.Log.Logged",realUsername));
@@ -548,7 +560,12 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
 				
 				if (getIt)
 				{
-					if (!ftpclient.exists(filelist[i]) || (ftpclient.exists(filelist[i]) && !onlyPuttingNewFiles))
+					// Put file if it's new file or user want to put even existing files
+					boolean putFile=true;
+					
+					if(onlyPuttingNewFiles) putFile=!ftpclient.exists(filelist[i]);
+					
+					if (putFile)
 					{
 						if (log.isDebug()) log.logDebug(toString(), Messages.getString("JobFTPPUT.Log.PuttingFileToRemoteDirectory",filelist[i],realRemoteDirectory));
 						
