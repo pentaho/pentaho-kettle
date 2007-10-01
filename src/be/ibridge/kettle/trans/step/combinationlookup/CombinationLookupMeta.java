@@ -1112,4 +1112,9 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
     {
         this.schemaName = schemaName;
     }
+    public boolean supportsErrorHandling()
+    {
+        return true;
+    }
+
 }

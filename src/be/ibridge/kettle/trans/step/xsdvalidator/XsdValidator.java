@@ -85,114 +85,112 @@ public class XsdValidator extends BaseStep implements StepInterface
 			return false;
 		}
 		
+		if (first)
+		{
+			first=false;
+				
+			// Try to get XML Field index
+			xmlindex =r.searchValueIndex(meta.getXMLStream());			
+				
+			// Check if XML stream is given
+			if (meta.getXMLStream()!=null)
+			{
+				// Let's check the Field
+				if (xmlindex<0)
+				{
+					// The field is unreachable !
+					logError(Messages.getString("XsdValidator.Log.ErrorFindingField")+ "[" + meta.getXMLStream()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+					throw new KettleStepException(Messages.getString("XsdValidator.Exception.CouldnotFindField",meta.getXMLStream())); //$NON-NLS-1$ //$NON-NLS-2$
+				}
+					
+					
+				// Let's check that Result Field is given
+				if (meta.getRealResultfieldname() == null )
+				{
+					//	Result field is missing !
+					logError(Messages.getString("XsdValidator.Log.ErrorResultFieldMissing")); //$NON-NLS-1$ //$NON-NLS-2$
+					throw new KettleStepException(Messages.getString("XsdValidator.Exception.ErrorResultFieldMissing")); //$NON-NLS-1$ //$NON-NLS-2$
+				}
+					
+				// Is XSD file is provided?
+				if (meta.getXSDSource().equals(meta.SPECIFY_FILENAME))
+				{
+					if(meta.getXSDFilename()==null)
+					{
+							
+						logError(Messages.getString("XsdValidator.Log.ErrorXSDFileMissing")); //$NON-NLS-1$ //$NON-NLS-2$
+						throw new KettleStepException(Messages.getString("XsdValidator.Exception.ErrorXSDFileMissing")); //$NON-NLS-1$ //$NON-NLS-2$
+					}
+					else
+					{
+						// Is XSD file exists ?
+						FileObject xsdfile=null;
+						try
+						{
+							xsdfile = KettleVFS.getFileObject(meta.getRealXSDFilename());
+						    if(!xsdfile.exists())
+						    {
+						    	logError(Messages.getString("XsdValidator.Log.Error.XSDFileNotExists"));
+								throw new KettleStepException(Messages.getString("XsdValidator.Exception.XSDFileNotExists"));
+						    }
+							
+						}
+						catch (Exception e)
+						{
+							logError(Messages.getString("XsdValidator.Log.Error.GettingXSDFile"));
+							throw new KettleStepException(Messages.getString("XsdValidator.Exception.GettingXSDFile"));
+						}
+						finally
+						{
+							try 
+							{
+								   
+							    if ( xsdfile != null )   	xsdfile.close();
+									
+						    }
+							catch ( IOException e ) { }			
+						}
+					}
+				}
+					
+				// Is XSD field is provided?
+				if (meta.getXSDSource().equals(meta.SPECIFY_FIELDNAME))
+				{
+					if(meta.getXSDDefinedField()==null)
+					{
+						logError(Messages.getString("XsdValidator.Log.Error.XSDFieldMissing"));
+						throw new KettleStepException(Messages.getString("XsdValidator.Exception.XSDFieldMissing"));
+					}
+					else
+					{
+						// Let's check if the XSD field exist
+						// Try to get XML Field index
+						xsdindex =r.searchValueIndex(meta.getXSDDefinedField());
+							
+						if (xsdindex<0)
+						{
+							// The field is unreachable !
+							logError(Messages.getString("XsdValidator.Log.ErrorFindingXSDField",meta.getXSDDefinedField())); //$NON-NLS-1$ //$NON-NLS-2$
+							throw new KettleStepException(Messages.getString("XsdValidator.Exception.ErrorFindingXSDField",meta.getXSDDefinedField())); //$NON-NLS-1$ //$NON-NLS-2$
+						}
+					}
+				}
+					
+					
+			}
+			else
+			{
+				// XML stream field is missing !
+				logError(Messages.getString("XsdValidator.Log.Error.XmlStreamFieldMissing")); //$NON-NLS-1$ //$NON-NLS-2$
+				throw new KettleStepException(Messages.getString("XsdValidator.Exception.XmlStreamFieldMissing")); //$NON-NLS-1$ //$NON-NLS-2$
+			}
+		}
+			
 		boolean sendToErrorRow=false;
 	    String errorMessage = null;
+	    
 		try
 		{
-	
-
-			if (first)
-			{
-				first=false;
-				
-				// Try to get XML Field index
-				xmlindex =r.searchValueIndex(meta.getXMLStream());			
-				
-				// Check if XML stream is given
-				if (meta.getXMLStream()!=null)
-				{
-					// Let's check the Field
-					if (xmlindex<0)
-					{
-						// The field is unreachable !
-						logError(Messages.getString("XsdValidator.Log.ErrorFindingField")+ "[" + meta.getXMLStream()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
-						throw new KettleStepException(Messages.getString("XsdValidator.Exception.CouldnotFindField",meta.getXMLStream())); //$NON-NLS-1$ //$NON-NLS-2$
-					}
-					
-					
-					// Let's check that Result Field is given
-					if (meta.getRealResultfieldname() == null )
-					{
-						//	Result field is missing !
-						logError(Messages.getString("XsdValidator.Log.ErrorResultFieldMissing")); //$NON-NLS-1$ //$NON-NLS-2$
-						throw new KettleStepException(Messages.getString("XsdValidator.Exception.ErrorResultFieldMissing")); //$NON-NLS-1$ //$NON-NLS-2$
-					}
-					
-					// Is XSD file is provided?
-					if (meta.getXSDSource().equals(meta.SPECIFY_FILENAME))
-					{
-						if(meta.getXSDFilename()==null)
-						{
-							
-							logError(Messages.getString("XsdValidator.Log.ErrorXSDFileMissing")); //$NON-NLS-1$ //$NON-NLS-2$
-							throw new KettleStepException(Messages.getString("XsdValidator.Exception.ErrorXSDFileMissing")); //$NON-NLS-1$ //$NON-NLS-2$
-						}
-						else
-						{
-							// Is XSD file exists ?
-							FileObject xsdfile=null;
-							try
-							{
-								xsdfile = KettleVFS.getFileObject(meta.getRealXSDFilename());
-							    if(!xsdfile.exists())
-							    {
-							    	logError(Messages.getString("XsdValidator.Log.Error.XSDFileNotExists"));
-									throw new KettleStepException(Messages.getString("XsdValidator.Exception.XSDFileNotExists"));
-							    }
-							
-							}
-							catch (Exception e)
-							{
-								logError(Messages.getString("XsdValidator.Log.Error.GettingXSDFile"));
-								throw new KettleStepException(Messages.getString("XsdValidator.Exception.GettingXSDFile"));
-							}
-							finally
-							{
-								try 
-								{
-								   
-								    if ( xsdfile != null )   	xsdfile.close();
-									
-							    }
-								catch ( IOException e ) { }			
-							}
-						}
-					}
-					
-					// Is XSD field is provided?
-					if (meta.getXSDSource().equals(meta.SPECIFY_FIELDNAME))
-					{
-						if(meta.getXSDDefinedField()==null)
-						{
-							logError(Messages.getString("XsdValidator.Log.Error.XSDFieldMissing"));
-							throw new KettleStepException(Messages.getString("XsdValidator.Exception.XSDFieldMissing"));
-						}
-						else
-						{
-							// Let's check if the XSD field exist
-							// Try to get XML Field index
-							xsdindex =r.searchValueIndex(meta.getXSDDefinedField());
-							
-							if (xsdindex<0)
-							{
-								// The field is unreachable !
-								logError(Messages.getString("XsdValidator.Log.ErrorFindingXSDField",meta.getXSDDefinedField())); //$NON-NLS-1$ //$NON-NLS-2$
-								throw new KettleStepException(Messages.getString("XsdValidator.Exception.ErrorFindingXSDField",meta.getXSDDefinedField())); //$NON-NLS-1$ //$NON-NLS-2$
-							}
-						}
-					}
-					
-					
-				}
-				else
-				{
-					// XML stream field is missing !
-					logError(Messages.getString("XsdValidator.Log.Error.XmlStreamFieldMissing")); //$NON-NLS-1$ //$NON-NLS-2$
-					throw new KettleStepException(Messages.getString("XsdValidator.Exception.XmlStreamFieldMissing")); //$NON-NLS-1$ //$NON-NLS-2$
-				}
-			}
-			
-
 	
 			// Get the XML field value
 			Value xmlvalue = r.getValue(xmlindex);
@@ -201,7 +199,7 @@ public class XsdValidator extends BaseStep implements StepInterface
 			
 			boolean isvalid =false;
 			
-			// XSF filename
+			// XSD filename
 			String xsdfilename= null;
 			
 			if (meta.getXSDSource().equals(meta.SPECIFY_FILENAME))

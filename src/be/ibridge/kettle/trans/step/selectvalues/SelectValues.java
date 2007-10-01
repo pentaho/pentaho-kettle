@@ -315,12 +315,39 @@ public class SelectValues extends BaseStep implements StepInterface
 			setOutputDone();  // signal end to receiver(s)
 			return false;
 		} 
+		 boolean sendToErrorRow=false;
+		 String errorMessage = null;
 
-		putRow(r);      // copy row to possible alternate rowset(s).
-		if (log.isRowLevel()) logRowlevel(Messages.getString("SelectValues.Log.WroteRowToNextStep")+r); //$NON-NLS-1$
+		try
+		{
+			putRow(r);      // copy row to possible alternate rowset(s).
+			if (log.isRowLevel()) logRowlevel(Messages.getString("SelectValues.Log.WroteRowToNextStep")+r); //$NON-NLS-1$
+	
+	        if (checkFeedback(linesRead)) logBasic(Messages.getString("SelectValues.Log.LineNumber")+linesRead); //$NON-NLS-1$
+		}
+		catch(KettleException e)
+		{
+			if (getStepMeta().isDoingErrorHandling())
+			{
+		          sendToErrorRow = true;
+		          errorMessage = e.toString();
+			}
+			else
+			{
+				logError(Messages.getString("SelectValues.Log.ErrorInStep")+e.getMessage()); //$NON-NLS-1$
+				setErrors(1);
+				stopAll();
+				setOutputDone();  // signal end to receiver(s)
+				return false;
 
-        if (checkFeedback(linesRead)) logBasic(Messages.getString("SelectValues.Log.LineNumber")+linesRead); //$NON-NLS-1$
-			
+			}
+			if (sendToErrorRow)
+			{
+			   // Simply add this row to the error row
+			   putError(r, 1, errorMessage, null, "SELVAL001");
+			}
+
+		}
 		return true;
 	}
 	

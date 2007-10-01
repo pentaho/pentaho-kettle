@@ -469,18 +469,25 @@ log.logDetailed(toString(), Messages.getString("JobFTPPUT.Log.Starting"));
 
 			
         	// Set the timeout
-			if (timeout>0) ftpclient.setTimeout(timeout);
-			if (log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobFTPPUT.Log.SetTimeout",""+timeout));
-			
+			if (timeout>0) 
+			{
+				ftpclient.setTimeout(timeout);
+				if (log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobFTPPUT.Log.SetTimeout",""+timeout));
+			}
+
 			ftpclient.setControlEncoding(controlEncoding);
 			if (log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobFTPPUT.Log.SetEncoding",controlEncoding));
 
 			// login to ftp host ...
             ftpclient.connect();
             ftpclient.login(realUsername, realPassword);
-            
-            // set BINARY
-            if (binaryMode) ftpclient.setType(FTPTransferType.BINARY);
+
+			// set BINARY
+			if (binaryMode) 
+			{
+				ftpclient.setType(FTPTransferType.BINARY);
+				if (log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobFTPPUT.Log.BinaryMode"));
+			}
             
 			//  Remove password from logging, you don't know where it ends up.
 			if (log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobFTPPUT.Log.Logged",realUsername));
@@ -543,9 +550,12 @@ log.logDetailed(toString(), Messages.getString("JobFTPPUT.Log.Starting"));
 				
 				if (getIt)
 				{
-					boolean existfile=ftpclient.exists(filelist[i]);
+					// Put file if it's new file or user want to put even existing files
+					boolean putFile=true;
 					
-					if (!existfile || (existfile && !onlyPuttingNewFiles))
+					if(onlyPuttingNewFiles) putFile=!ftpclient.exists(filelist[i]);
+					
+					if (putFile)
 					{
 						if (log.isDebug()) log.logDebug(toString(), Messages.getString("JobFTPPUT.Log.PuttingFileToRemoteDirectory",filelist[i],realRemoteDirectory));
 						

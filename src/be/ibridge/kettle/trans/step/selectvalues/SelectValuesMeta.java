@@ -772,4 +772,10 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		return new SelectValuesData();
 	}
+
+    public boolean supportsErrorHandling()
+    {
+        return true;
+    }
+
 }

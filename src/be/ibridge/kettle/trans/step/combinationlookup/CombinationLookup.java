@@ -292,6 +292,10 @@ public class CombinationLookup extends BaseStep implements StepInterface
 			return false;
 		}
 
+		 boolean sendToErrorRow=false;
+		 String errorMessage = null;
+
+		 
 		try
 		{
 			lookupValues(r); // add new values to the row in rowset[0].
@@ -301,11 +305,25 @@ public class CombinationLookup extends BaseStep implements StepInterface
 		}
 		catch(KettleException e)
 		{
-			logError(Messages.getString("CombinationLookup.Log.ErrorInStepRunning")+e.getMessage()); //$NON-NLS-1$
-			setErrors(1);
-			stopAll();
-			setOutputDone();  // signal end to receiver(s)
-			return false;
+			if (getStepMeta().isDoingErrorHandling())
+			{
+		          sendToErrorRow = true;
+		          errorMessage = e.toString();
+			}
+			else
+			{
+				logError(Messages.getString("CombinationLookup.Log.ErrorInStepRunning")+e.getMessage()); //$NON-NLS-1$
+				setErrors(1);
+				stopAll();
+				setOutputDone();  // signal end to receiver(s)
+				return false;
+			}
+			if (sendToErrorRow)
+			{
+			   // Simply add this row to the error row
+			   putError(r, 1, errorMessage, null, "CLOOKUP001");
+			}
+
 		}
 
 		return true;

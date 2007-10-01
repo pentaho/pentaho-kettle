@@ -453,5 +453,10 @@ public class ConstantMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		return new ConstantData();
 	}
+    public boolean supportsErrorHandling()
+    {
+        return true;
+    }
+
 
 }

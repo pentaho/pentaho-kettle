@@ -101,6 +101,10 @@ public class AddSequence extends BaseStep implements StepInterface
 	{
 		meta=(AddSequenceMeta)smi;
 		data=(AddSequenceData)sdi;
+		
+		 boolean sendToErrorRow=false;
+		 String errorMessage = null;
+
 
 		Row r=null;
 		
@@ -123,11 +127,25 @@ public class AddSequence extends BaseStep implements StepInterface
 		}
 		catch(KettleException e)
 		{
-			logError(Messages.getString("AddSequence.Log.ErrorInStep")+e.getMessage()); //$NON-NLS-1$
-			setErrors(1);
-			stopAll();
-			setOutputDone();  // signal end to receiver(s)
-			return false;
+			if (getStepMeta().isDoingErrorHandling())
+			{
+		          sendToErrorRow = true;
+		          errorMessage = e.toString();
+			}
+			else
+			{
+				logError(Messages.getString("AddSequence.Log.ErrorInStep")+e.getMessage()); //$NON-NLS-1$
+				setErrors(1);
+				stopAll();
+				setOutputDone();  // signal end to receiver(s)
+				return false;
+			}
+			if (sendToErrorRow)
+			{
+			   // Simply add this row to the error row
+			   putError(r, 1, errorMessage, null, "ADDSEQ001");
+			}
+
 		}
 			
 		return true;

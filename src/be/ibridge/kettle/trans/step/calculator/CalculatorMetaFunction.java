@@ -401,4 +401,10 @@ public class CalculatorMetaFunction implements Cloneable
     {
         this.removedFromResult = removedFromResult;
     }
+    
+    public boolean supportsErrorHandling()
+    {
+        return true;
+    }
+
 }

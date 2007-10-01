@@ -170,12 +170,40 @@ public class Constant extends BaseStep implements StepInterface
             setOutputDone();
             return false;
         }
-        
-        r.addRow( new Row(data.constants) );
-		putRow(r);
+        boolean sendToErrorRow=false;
+        String errorMessage = null;
 
-        if (checkFeedback(linesWritten)) logBasic("Linenr "+linesWritten);
-		
+        
+        try
+        {
+	        r.addRow( new Row(data.constants) );
+			putRow(r);
+	
+	        if (checkFeedback(linesWritten)) logBasic("Linenr "+linesWritten);
+        }
+        catch(KettleException e)
+        {
+        	if (getStepMeta().isDoingErrorHandling())
+        	{
+                  sendToErrorRow = true;
+                  errorMessage = e.toString();
+        	}
+        	else
+        	{
+        		logError(Messages.getString("Constant.Log.ErrorInStep")+e.getMessage()); //$NON-NLS-1$
+				setErrors(1);
+				stopAll();
+				setOutputDone();  // signal end to receiver(s)
+				return false;
+
+        	}
+        	if (sendToErrorRow)
+        	{
+        	   // Simply add this row to the error row
+        	   putError(r, 1, errorMessage, null, "CONS001");
+        	}
+
+        }
 		return true;
 	}
 		

@@ -25,6 +25,7 @@ import org.eclipse.swt.widgets.Text;
 
 import be.ibridge.kettle.cluster.SlaveServer;
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.GUIResource;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.core.widget.TextVar;
@@ -99,6 +100,7 @@ public class StepErrorMetaDialog extends Dialog
 		formLayout.marginHeight = Const.FORM_MARGIN;
 		
 		shell.setText("Step error handling settings");
+		shell.setImage(GUIResource.getInstance().getImageSpoonGraph());
 		shell.setLayout (formLayout);
  		
 		// First, add the buttons...

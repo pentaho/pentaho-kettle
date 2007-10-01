@@ -52,6 +52,10 @@ public class Calculator extends BaseStep implements StepInterface
 	{
 		meta=(CalculatorMeta)smi;
 		data=(CalculatorData)sdi;
+		
+		 boolean sendToErrorRow=false;
+		 String errorMessage = null;
+
 
 		Row r=getRow();    // get row, set busy!
 		if (r==null)  // no more input to be expected...
@@ -61,13 +65,40 @@ public class Calculator extends BaseStep implements StepInterface
 		}
 
         if (log.isRowLevel()) log.logRowlevel(toString(), "Read row #"+linesRead+" : "+r);
+        
+        try
+        {
+	        calcFields(r);		
+			putRow(r);     // copy row to possible alternate rowset(s).
+	
+	        if (log.isRowLevel()) log.logRowlevel(toString(), "Wrote row #"+linesWritten+" : "+r);        
+	        if (checkFeedback(linesRead)) logBasic("Linenr "+linesRead);
+        }
+        catch(KettleException e)
+		{
+        	if (getStepMeta().isDoingErrorHandling())
+        	{
+                  sendToErrorRow = true;
+                  errorMessage = e.toString();
+        	}
+        	else
+        	{
+        		logError(Messages.getString("Calculator.Log.ErrorInStep")+e.getMessage()); //$NON-NLS-1$
+				setErrors(1);
+				stopAll();
+				setOutputDone();  // signal end to receiver(s)
+				return false;
 
-        calcFields(r);		
-		putRow(r);     // copy row to possible alternate rowset(s).
+        	}
+        	if (sendToErrorRow)
+        	{
+        	   // Simply add this row to the error row
+        	   putError(r, 1, errorMessage, null, "CAL001");
+        	}
 
-        if (log.isRowLevel()) log.logRowlevel(toString(), "Wrote row #"+linesWritten+" : "+r);        
-        if (checkFeedback(linesRead)) logBasic("Linenr "+linesRead);
 
+
+		}
 		return true;
 	}
 
