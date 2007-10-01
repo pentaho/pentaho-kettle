@@ -698,7 +698,10 @@ public class ScriptValuesMod extends BaseStep implements StepInterface, ScriptVa
         }
     }
 	
-	
+	public RowMetaInterface getOutputRowMeta() {
+		return data.outputRowMeta;
+	}
+		
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException{
 		
 		meta=(ScriptValuesMetaMod)smi;

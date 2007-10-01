@@ -2607,6 +2607,11 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
 	{
 		return variables.getParentVariableSpace();
 	}
+	
+	public void setParentVariableSpace(VariableSpace parent) 
+	{
+		variables.setParentVariableSpace(parent);
+	}
 
 	public String getVariable(String variableName, String defaultValue) 
 	{

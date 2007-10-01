@@ -409,6 +409,11 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
   {
     return variables.getParentVariableSpace();
   }
+  
+  public void setParentVariableSpace(VariableSpace parent) 
+  {
+    variables.setParentVariableSpace(parent);
+  }
 
   public String getVariable(String variableName, String defaultValue)
   {

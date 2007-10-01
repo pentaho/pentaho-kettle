@@ -62,6 +62,10 @@ public class Variables implements VariableSpace
 	public VariableSpace getParentVariableSpace() {
 		return parent;
 	}
+	
+	public void setParentVariableSpace(VariableSpace parent) {
+		this.parent = parent;
+	}
 
 	public String getVariable(String variableName, String defaultValue) {
         String var = properties.get(variableName);

@@ -1246,6 +1246,11 @@ public abstract class BaseDatabaseMeta implements Cloneable, VariableSpace
 		return variables.getParentVariableSpace();
 	}
 
+	public void setParentVariableSpace(VariableSpace parent) 
+	{
+		variables.setParentVariableSpace(parent);
+	}
+
 	public String getVariable(String variableName, String defaultValue) 
 	{
 		return variables.getVariable(variableName, defaultValue);

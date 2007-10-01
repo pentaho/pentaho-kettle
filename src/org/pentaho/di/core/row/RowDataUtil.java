@@ -4,7 +4,7 @@ package org.pentaho.di.core.row;
  * 
  * We use this class to do row manipulations like add, delete, resize, etc.
  * That way, when we want to go for a metadata driven system with 
- * hiding deletes, oversized arrays etc, we can change these methods to find occurrences.
+ * hiding deletes, over sized arrays etc, we can change these methods to find occurrences.
  * 
  * @author Matt
  *
@@ -34,6 +34,20 @@ public class RowDataUtil {
 		if (objects!=null && objects.length >= newSize)
 			return objects;
 
+		Object[] newObjects = new Object[newSize+OVER_ALLOCATE_SIZE];
+		if (objects!=null) System.arraycopy(objects, 0, newObjects, 0, objects.length);
+		return newObjects;
+	}
+
+	/**
+	 * Resize an object array making it bigger, over allocate, always create a copy of the original array, even if there's enough room in the old one.
+	 * 
+	 * @param objects the original row
+	 * @param newSize the new size
+	 * @return A new object array, resized.
+	 */
+	public static Object[] createResizedCopy(Object[] objects, int newSize) {
+		
 		Object[] newObjects = new Object[newSize+OVER_ALLOCATE_SIZE];
 		if (objects!=null) System.arraycopy(objects, 0, newObjects, 0, objects.length);
 		return newObjects;

@@ -856,6 +856,11 @@ public class Job extends Thread implements VariableSpace
 	{
 		return variables.getParentVariableSpace();
 	}
+	
+	public void setParentVariableSpace(VariableSpace parent) 
+	{
+		variables.setParentVariableSpace(parent);
+	}
 
 	public String getVariable(String variableName, String defaultValue) 
 	{

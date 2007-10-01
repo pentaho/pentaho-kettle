@@ -385,12 +385,14 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
             {
                 log.logDetailed(toString(), "Loading job from repository : ["+directory+" : "+environmentSubstitute(jobname)+"]");
                 jobMeta = new JobMeta(logwriter, rep, environmentSubstitute(jobname), directory);
+                jobMeta.setParentVariableSpace(parentJob);
             }
             else // Get it from the XML file
             if (fromXMLFile)
             {
                 log.logDetailed(toString(), "Loading job from XML file : ["+environmentSubstitute(filename)+"]");
                 jobMeta = new JobMeta(logwriter, environmentSubstitute(filename), rep, null);
+                jobMeta.setParentVariableSpace(parentJob);
             }
 
             if (jobMeta==null)

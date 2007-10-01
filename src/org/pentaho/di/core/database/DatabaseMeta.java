@@ -2368,6 +2368,11 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 	{
 		return variables.getParentVariableSpace();
 	}
+	
+	public void setParentVariableSpace(VariableSpace parent) 
+	{
+		variables.setParentVariableSpace(parent);
+	}
 
 	public String getVariable(String variableName, String defaultValue) 
 	{

@@ -2235,6 +2235,11 @@ public class Trans implements VariableSpace
 	{
 		return variables.getParentVariableSpace();
 	}
+	
+	public void setParentVariableSpace(VariableSpace parent) 
+	{
+		variables.setParentVariableSpace(parent);
+	}
 
 	public String getVariable(String variableName, String defaultValue) 
 	{

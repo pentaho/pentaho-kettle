@@ -57,18 +57,19 @@ public class RowsFromResult extends BaseStep implements StepInterface
 			return false;
 		}
         RowMetaAndData row = previousResult.getRows().get((int) linesRead);
-
-		Object[] r = row.getData();
+        linesRead++;
         
-		linesRead++;
 		data = (RowsFromResultData) sdi;
-		data.outputRowMeta = getInputRowMeta().clone();
-		meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
-		putRow(data.outputRowMeta, r); // copy row to possible alternate
-										// rowset(s).
+		
+		// We don't get the meta-data from the previous steps (there aren't any) but from the previous transformation or job
+		//
+		data.outputRowMeta = row.getRowMeta();
+		
+		// copy row to possible alternate rowset(s).
+		//
+		putRow(data.outputRowMeta, row.getData());
 
-		if (checkFeedback(linesRead))
-			logBasic(Messages.getString("RowsFromResult.Log.LineNumber") + linesRead); //$NON-NLS-1$
+		if (checkFeedback(linesRead)) logBasic(Messages.getString("RowsFromResult.Log.LineNumber") + linesRead); //$NON-NLS-1$
 
 		return true;
 	}

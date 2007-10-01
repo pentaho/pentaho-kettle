@@ -425,7 +425,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
         }
 
         // Load the transformation only once for the complete loop!
-        TransMeta transMeta = getTransMeta(rep);
+        TransMeta transMeta = getTransMeta(rep, parentJob);
 
         int iteration = 0;
         String args1[] = arguments;
@@ -710,7 +710,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 		return getTransMeta(rep,null);
 	}
 	
-	private TransMeta getTransMeta(Repository rep,VariableSpace vars) throws KettleException
+	private TransMeta getTransMeta(Repository rep,VariableSpace parentVariableSpace) throws KettleException
     {
 		try
 		{
@@ -718,15 +718,16 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 	
 	        TransMeta transMeta = null;
 	        if (!Const.isEmpty(getFilename())) // Load from an XML file
-	        {        	
-	        	String filename = vars!=null?vars.environmentSubstitute(getFilename()):environmentSubstitute(getFilename());
+	        {
+	        	String filename = parentVariableSpace!=null?parentVariableSpace.environmentSubstitute(getFilename()):environmentSubstitute(getFilename());
 	            log.logBasic(toString(), "Loading transformation from XML file ["+filename+"]");
 	            transMeta = new TransMeta(filename);
+	            transMeta.setParentVariableSpace(parentVariableSpace);
 	        }
 	        else
 	        if (!Const.isEmpty(getTransname()) && getDirectory() != null)  // Load from the repository
 	        {
-	        	String filename = vars!=null?vars.environmentSubstitute(getTransname()):environmentSubstitute(getTransname());
+	        	String filename = parentVariableSpace!=null?parentVariableSpace.environmentSubstitute(getTransname()):environmentSubstitute(getTransname());
 	        	
 	            log.logBasic(toString(), "Loading transformation from repository ["+filename+"] in directory ["+getDirectory()+"]");
 	
@@ -736,6 +737,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 	            	// It only makes sense to try to load from the repository when the repository is also filled in.
 	            	//
 	                transMeta = new TransMeta(rep, filename, getDirectory());
+		            transMeta.setParentVariableSpace(parentVariableSpace);
 	            }
 	            else
 	            {

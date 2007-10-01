@@ -23,6 +23,7 @@ import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileType;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -73,8 +74,10 @@ public class GetFileNames extends BaseStep implements StepInterface
 
             FileObject file = data.files.getFile(data.filenr);
 
-            if (meta.getFilterFileType().equals("all_files") || (meta.getFilterFileType().equals("only_files") && file.getType() == FileType.FILE)
-                    || meta.getFilterFileType().equals("only_folders") && file.getType() == FileType.FOLDER)
+            if (meta.getFilterFileType()==null || 
+            	meta.getFilterFileType().equals("all_files") || 
+            	(meta.getFilterFileType().equals("only_files") && file.getType() == FileType.FILE) ||
+                meta.getFilterFileType().equals("only_folders") && file.getType() == FileType.FOLDER)
             {
 
                 // filename
@@ -133,7 +136,7 @@ public class GetFileNames extends BaseStep implements StepInterface
         }
         catch (Exception e)
         {
-            log.logError(toString(), "Error exception: " + e.getMessage());
+            throw new KettleStepException(e);
         }
 
         data.filenr++;

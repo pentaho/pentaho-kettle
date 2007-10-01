@@ -82,6 +82,7 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.mozilla.javascript.CompilerEnvirons;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ErrorReporter;
+import org.mozilla.javascript.EvaluatorException;
 import org.mozilla.javascript.JavaScriptException;
 import org.mozilla.javascript.Parser;
 import org.mozilla.javascript.Script;
@@ -206,6 +207,13 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 	 */
 	public class ScriptValuesModDummy implements StepInterface, ScriptValuesModInterface
 	{
+		private RowMetaInterface inputRowMeta;
+		private RowMetaInterface outputRowMeta;
+
+		public ScriptValuesModDummy(RowMetaInterface inputRowMeta, RowMetaInterface outputRowMeta) {
+			this.inputRowMeta = inputRowMeta;
+			this.outputRowMeta = outputRowMeta;
+		}
 		public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException {
 			return false;
 		}
@@ -348,6 +356,10 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		public VariableSpace getParentVariableSpace() {
 			return null;
 		}
+		
+		public void setParentVariableSpace(VariableSpace parent) 
+		{
+		}
 
 		public String getVariable(String variableName, String defaultValue) {
 			return defaultValue;
@@ -372,6 +384,14 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 
 		public void shareVariablesWith(VariableSpace space) {
 		}	
+		
+		public RowMetaInterface getInputRowMeta() {
+			return inputRowMeta;
+		}
+
+		public RowMetaInterface getOutputRowMeta() {
+			return outputRowMeta;
+		}
 	}
 	
 	public ScriptValuesModDialog(Shell parent, Object in, TransMeta transMeta, String sname){
@@ -1068,7 +1088,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		boolean retval=true;
 		StyledTextComp wScript = getStyledTextComp();
 		String scr = wScript.getText();
-		String errorMessage = ""; //$NON-NLS-1$
+		KettleException testException = null;
 		
 		Context jscx;
 		Scriptable jsscope;
@@ -1091,14 +1111,15 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		// Adding the Name of the Transformation to the Context
 		jsscope.put("_TransformationName_", jsscope, this.stepname);
 		
-		ScriptValuesModDummy dummyStep = new ScriptValuesModDummy();
-		Scriptable jsvalue = Context.toObject(dummyStep, jsscope);
-		jsscope.put("_step_", jsscope, jsvalue); //$NON-NLS-1$
 			
 		try{
-			
 			RowMetaInterface rowMeta = transMeta.getPrevStepFields(stepname);
 			if (rowMeta!=null){
+				
+				ScriptValuesModDummy dummyStep = new ScriptValuesModDummy(rowMeta, transMeta.getStepFields(stepname));
+				Scriptable jsvalue = Context.toObject(dummyStep, jsscope);
+				jsscope.put("_step_", jsscope, jsvalue); //$NON-NLS-1$
+
 				// Modification for Additional Script parsing
 				try{
                     if (input.getAddClasses()!=null)
@@ -1109,7 +1130,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
     					}
                     }
 				}catch(Exception e){
-					errorMessage="Couldn't add JavaClasses to Context! Error:"+Const.CR+e.toString(); //$NON-NLS-1$
+					testException = new KettleException("Couldn't add JavaClasses to Context!", e); //$NON-NLS-1$
 					retval = false;
 				}
 				
@@ -1118,7 +1139,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 					Context.javaToJS(ScriptValuesAddedFunctions.class, jsscope);
 					((ScriptableObject)jsscope).defineFunctionProperties(jsFunctionList, ScriptValuesAddedFunctions.class, ScriptableObject.DONTENUM);
 				} catch (Exception ex) {
-					errorMessage="Couldn't add Default Functions! Error:"+Const.CR+ex.toString(); //$NON-NLS-1$
+					testException = new KettleException("Couldn't add Default Functions!", ex); //$NON-NLS-1$
 					retval = false;
 				};
 
@@ -1129,7 +1150,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 					jsscope.put("ERROR_TRANSFORMATION", jsscope, Integer.valueOf(ERROR_TRANSFORMATION));
 					jsscope.put("CONTINUE_TRANSFORMATION", jsscope, Integer.valueOf(CONTINUE_TRANSFORMATION));
 				} catch (Exception ex) {
-					errorMessage="Couldn't add Transformation Constants! Error:"+Const.CR+ex.toString(); //$NON-NLS-1$
+					testException = new KettleException("Couldn't add Transformation Constants!", ex); //$NON-NLS-1$
 					retval = false;
 				};
 				
@@ -1181,7 +1202,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 	                }
 
 				}catch(Exception ev){
-					errorMessage="Couldn't add Input fields to Script! Error:"+Const.CR+ev.toString(); //$NON-NLS-1$
+					testException = new KettleException("Couldn't add Input fields to Script!", ev); //$NON-NLS-1$
 					retval = false;
 				}
 				
@@ -1192,11 +1213,11 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 						/* Object startScript = */ jscx.evaluateString(jsscope, strStartScript, "trans_Start", 1, null);
 					}
 				}catch(Exception e){
-					errorMessage="Couldn't process Start Script! Error:"+Const.CR+e.toString(); //$NON-NLS-1$
+					testException = new KettleException("Couldn't process Start Script!", e); //$NON-NLS-1$
 					retval = false;					
 				};
 				
-				try{
+				try {
 					
 					Script evalScript = jscx.compileString(scr, "script", 1, null);
 					evalScript.exec(jscx, jsscope);
@@ -1253,16 +1274,24 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 					
 					// End Script!
 				}
-				catch(JavaScriptException jse){
-					errorMessage=Messages.getString("ScriptValuesDialogMod.Exception.CouldNotExecuteScript")+Const.CR+jse.toString(); //$NON-NLS-1$
+				catch(EvaluatorException e){
+					String position = "("+e.lineNumber()+":"+e.columnNumber()+")"; // $NON-NLS-1$ $NON-NLS-2$ $NON-NLS-3$   
+					String message = Messages.getString("ScriptValuesDialogMod.Exception.CouldNotExecuteScript", position); //$NON-NLS-1$
+					testException = new KettleException(message, e);
+					retval=false;
+				}
+				catch(JavaScriptException e){
+					String position = "("+e.lineNumber()+":"+e.columnNumber()+")"; // $NON-NLS-1$ $NON-NLS-2$ $NON-NLS-3$   
+					String message = Messages.getString("ScriptValuesDialogMod.Exception.CouldNotExecuteScript", position); //$NON-NLS-1$
+					testException = new KettleException(message, e);
 					retval=false;
 				}
 				catch(Exception e){
-					errorMessage=Messages.getString("ScriptValuesDialogMod.Exception.CouldNotExecuteScript2")+Const.CR+e.toString(); //$NON-NLS-1$
+					testException = new KettleException(Messages.getString("ScriptValuesDialogMod.Exception.CouldNotExecuteScript2"), e); //$NON-NLS-1$
 					retval=false;
 				}
 			}else{
-				errorMessage = Messages.getString("ScriptValuesDialogMod.Exception.CouldNotGetFields"); //$NON-NLS-1$
+				testException = new KettleException(Messages.getString("ScriptValuesDialogMod.Exception.CouldNotGetFields")); //$NON-NLS-1$
 				retval=false;
 			}
 	
@@ -1275,10 +1304,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 						mb.open();
 					}
 				}else{
-					MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-					mb.setMessage(errorMessage);
-					mb.setText("ERROR"); //$NON-NLS-1$
-					mb.open(); 
+					new ErrorDialog(shell, Messages.getString("ScriptValuesDialogMod.TestFailed.DialogTitle"), Messages.getString("ScriptValuesDialogMod.TestFailed.DialogMessage"), testException); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 			}
 		}catch(KettleException ke){

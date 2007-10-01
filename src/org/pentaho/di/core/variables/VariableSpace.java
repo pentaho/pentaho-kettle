@@ -45,6 +45,12 @@ public interface VariableSpace
     VariableSpace getParentVariableSpace();
     
     /**
+     * Set the parent variable space
+     * @param parent The parent variable space to set
+     */
+    void setParentVariableSpace(VariableSpace parent);
+    
+    /**
      * Sets a variable in the Kettle Variables list.
      * 
      * @param variableName The name of the variable to set

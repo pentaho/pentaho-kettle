@@ -114,7 +114,7 @@ public class SetVariable extends BaseStep implements StepInterface
                     {
                         setVariable(varname, value);
 
-                        VariableSpace parentJob = getParentVariableSpace();
+                        VariableSpace parentJob = getParentVariableSpace().getParentVariableSpace();
                         if (parentJob!=null)
                         {
                             parentJob.setVariable(varname, value);
@@ -138,7 +138,7 @@ public class SetVariable extends BaseStep implements StepInterface
                     {                        
                         setVariable(varname, value);
 
-                        VariableSpace parentJob = getParentVariableSpace();
+                        VariableSpace parentJob = getParentVariableSpace().getParentVariableSpace();
                         parentJob.setVariable(varname, value);
                     }
                 }               

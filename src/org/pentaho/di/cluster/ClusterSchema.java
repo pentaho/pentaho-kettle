@@ -416,6 +416,11 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
 	{
 		return variables.getParentVariableSpace();
 	}
+	
+	public void setParentVariableSpace(VariableSpace parent) 
+	{
+		variables.setParentVariableSpace(parent);
+	}
 
 	public String getVariable(String variableName, String defaultValue) 
 	{

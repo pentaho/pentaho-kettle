@@ -5697,6 +5697,11 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
 		return variables.getParentVariableSpace();
 	}
 
+	public void setParentVariableSpace(VariableSpace parent) 
+	{
+		variables.setParentVariableSpace(parent);
+	}
+
 	public String getVariable(String variableName, String defaultValue) 
 	{
 		return variables.getVariable(variableName, defaultValue);

@@ -68,8 +68,11 @@ import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.gui.SpoonFactory;
 import org.pentaho.di.core.gui.SpoonInterface;
+import org.pentaho.di.core.row.RowDataUtil;
+import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
+import org.pentaho.di.ui.trans.steps.scriptvalues_mod.ScriptValuesModDialog.ScriptValuesModDummy;
 
 public class ScriptValuesAddedFunctions extends ScriptableObject {
 
@@ -89,7 +92,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
         "str2date", "sendMail", "replace", "decode", "isNum","isDate", "lower", "upper", "str2num",
         "num2str", "Alert", "setEnvironmentVar", "getEnvironmentVar", "LoadScriptFile", "LoadScriptFromTab", 
         "print", "println", "resolveIP", "trim", "substr", "getVariable", "setVariable" ,"LuhnCheck","getDigitsOnly",
-        "indexOf",
+        "indexOf", "getOutputRowMeta", "getInputRowMeta", "createRowCopy", "putRow", 
         };
 	
 	// This is only used for reading, so no concurrency problems.
@@ -1561,4 +1564,104 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 	    }		
 		return sRC;
 	}	      
+	
+	
+	// Return the output row metadata
+	public static RowMetaInterface getOutputRowMeta(Context actualContext, Scriptable actualObject, Object[] ArgList, Function FunctionContext){
+		if(ArgList.length==0){
+			try{
+				Object scmO = actualObject.get("_step_", actualObject);
+				try {
+					ScriptValuesMod scm = (ScriptValuesMod)Context.jsToJava(scmO, ScriptValuesMod.class);
+					return scm.getOutputRowMeta();
+				}
+				catch(Exception e) {
+					ScriptValuesModDummy scm = (ScriptValuesModDummy)Context.jsToJava(scmO, ScriptValuesModDummy.class);
+					return scm.getOutputRowMeta();
+				}
+			}
+			catch(Exception e){
+			    throw Context.reportRuntimeError("Unable to get the output row metadata because of an error: "+Const.CR+e.toString());
+			}
+		}
+	    else
+	    {
+		    throw Context.reportRuntimeError("The function call getOutputRowMeta doesn't require arguments.");
+	    }		
+	}
+	
+	// Return the input row metadata
+	public static RowMetaInterface getInputRowMeta(Context actualContext, Scriptable actualObject, Object[] ArgList, Function FunctionContext){
+		if(ArgList.length==0){
+			try{
+				Object scmO = actualObject.get("_step_", actualObject);
+				try {
+					ScriptValuesMod scm = (ScriptValuesMod)Context.jsToJava(scmO, ScriptValuesMod.class);
+					return scm.getInputRowMeta();
+				}
+				catch(Exception  e) {
+					ScriptValuesModDummy scm = (ScriptValuesModDummy)Context.jsToJava(scmO, ScriptValuesModDummy.class);
+					return scm.getInputRowMeta();
+				}
+			}
+			catch(Exception e){
+			    throw Context.reportRuntimeError("Unable to get the input row metadata because of an error: "+Const.CR+e.toString());
+			}
+		}
+	    else
+	    {
+		    throw Context.reportRuntimeError("The function call getInputRowMeta doesn't require arguments.");
+	    }		
+	}	
+	
+	
+	// Return the input row metadata
+	public static Object[] createRowCopy(Context actualContext, Scriptable actualObject, Object[] ArgList, Function FunctionContext){
+		if(ArgList.length==1){
+			try {
+				int newSize = (int) Math.round( Context.toNumber(ArgList[0]) );
+				
+				Object scmO = actualObject.get("row", actualObject);
+				Object[] row = (Object[])Context.jsToJava(scmO, (new Object[] {}).getClass());
+				
+				return RowDataUtil.createResizedCopy(row, newSize);
+			}
+			catch(Exception e){
+			    throw Context.reportRuntimeError("Unable to create a row copy: "+Const.CR+e.toString());
+			}
+		}
+	    else
+	    {
+		    throw Context.reportRuntimeError("The function call createRowCopy requires a single arguments : the new size of the row");
+	    }		
+	}
+	
+	// put a row out to the next steps...
+	//
+	public static void putRow(Context actualContext, Scriptable actualObject, Object[] ArgList, Function FunctionContext) {
+		if(ArgList.length==1){
+			try{
+				Object[] newRow = (Object[]) Context.jsToJava(ArgList[0], (new Object[] {}).getClass() );
+				
+				Object scmO = actualObject.get("_step_", actualObject);
+				try {
+					ScriptValuesMod step = (ScriptValuesMod)Context.jsToJava(scmO, ScriptValuesMod.class);
+					step.putRow(step.getOutputRowMeta(), newRow);
+				}
+				catch(Exception  e) {
+					ScriptValuesModDummy step = (ScriptValuesModDummy)Context.jsToJava(scmO, ScriptValuesModDummy.class);
+					step.putRow(step.getOutputRowMeta(), newRow);
+				}
+				
+			}
+			catch(Exception e){
+			    throw Context.reportRuntimeError("Unable to pass the new row to the next step(s) because of an error: "+Const.CR+e.toString());
+			}
+		}
+	    else
+	    {
+		    throw Context.reportRuntimeError("The function call putRow requires 1 argument : the output row data (Object[])");
+	    }		
+	}	
+
 }
