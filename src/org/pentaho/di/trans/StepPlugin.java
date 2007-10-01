@@ -23,6 +23,7 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.plugins.Plugin;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
@@ -31,128 +32,134 @@ import org.pentaho.di.i18n.LanguageChoice;
 
 /**
  * @author Matt
- *
+ * 
  */
-public class StepPlugin
+public class StepPlugin extends Plugin<String[]>
 {
-    public static final int TYPE_ALL    = 0;
-    public static final int TYPE_NATIVE = 1;
-    public static final int TYPE_PLUGIN = 2;
+	private String category;
+	private String errorHelpFile;
     
     public static final String[] typeDesc = new String[] { Messages.getString("StepPlugin.Type.All.Desc"), Messages.getString("StepPlugin.Type.Native.Desc"), Messages.getString("StepPlugin.Type.Plugin.Desc"), }; 
 
-    private int             type;
+	private boolean separateClassloaderNeeded;
 
-    private String          id[];
+	private Map<String, String> localizedCategories;
 
-    private String          description;
+	private Map<String, String> localizedDescriptions;
 
-    private String          tooltip;
+	private Map<String, String> localizedTooltips;
 
-    private String          directory;
+	public StepPlugin(int type, String id[], String description, String tooltip, String directory,
+			String jarfiles[], String icon_filename, String classname, String category, String errorHelpFile)
+	{
+		super(type, id, description, tooltip, directory, jarfiles, icon_filename, classname);
 
-    private String          jarfiles[];
+		this.category = category;
+		this.errorHelpFile = errorHelpFile;
+		this.separateClassloaderNeeded = false;
 
-    private String          icon_filename;
+		this.localizedCategories = new Hashtable<String, String>();
+		this.localizedDescriptions = new Hashtable<String, String>();
+		this.localizedTooltips = new Hashtable<String, String>();
+	}
 
-    private String          classname;
+	@Override
+	public String getDescription()
+	{
+		return getDescription(LanguageChoice.getInstance().getDefaultLocale().toString().toLowerCase());
+	}
 
-    private String          category;
+	public String getDescription(String locale)
+	{
+		String localizedDescription = (String) localizedDescriptions.get(locale.toLowerCase());
+		if (localizedDescription != null)
+		{
+			return localizedDescription;
+		}
+		return description;
+	}
 
-    private String          errorHelpFile;
-    
-    private boolean         separateClassloaderNeeded;
+	@Override
+	public String getTooltip()
+	{
+		return getTooltip(LanguageChoice.getInstance().getDefaultLocale().toString().toLowerCase());
+	}
 
-    private Map<String, String> localizedCategories;
-    private Map<String, String> localizedDescriptions;
-    private Map<String, String> localizedTooltips;
+	public String getTooltip(String locale)
+	{
+		String localizedTooltip = (String) localizedTooltips.get(locale.toLowerCase());
+		if (localizedTooltip != null)
+		{
+			return localizedTooltip;
+		}
+		return super.getTooltip();
+	}
 
-    public StepPlugin(int type, String id[], String description, String tooltip, String directory, String jarfiles[], String icon_filename,
-            String classname, String category, String errorHelpFile)
-    {
-        this.type = type;
-        this.id = id;
-        this.description = description;
-        this.tooltip = tooltip;
-        this.directory = directory;
-        this.jarfiles = jarfiles;
-        this.icon_filename = icon_filename;
-        this.classname = classname;
-        this.category = category;
-        this.errorHelpFile = errorHelpFile;
-        this.separateClassloaderNeeded = false;
-        
-        this.localizedCategories = new Hashtable<String, String>();
-        this.localizedDescriptions = new Hashtable<String, String>();
-        this.localizedTooltips = new Hashtable<String, String>();
-    }
+	public String getCategory()
+	{
+		return getCategory(LanguageChoice.getInstance().getDefaultLocale().toString().toLowerCase());
+	}
 
-    public int getType()
-    {
-        return type;
-    }
+	public String getCategory(String locale)
+	{
+		String localizedCategory = (String) localizedCategories.get(locale.toLowerCase());
+		if (localizedCategory != null)
+		{
+			return localizedCategory;
+		}
+		if (category == null)
+			return Messages.getString("StepPlugin.Label"); //$NON-NLS-1$
+		return category;
+	}
 
-    public boolean isNative()
-    {
-        return type == TYPE_NATIVE;
-    }
+	public void setCategory(String category)
+	{
+		this.category = category;
+	}
 
-    public boolean isPlugin()
-    {
-        return type == TYPE_PLUGIN;
-    }
+	public int hashCode()
+	{
+		return getID().hashCode();
+	}
 
-    /**
-     * @return The ID (code String) of the step or plugin. (TextFileInput, DatabaseLookup, ...)
-     */
-    public String[] getID()
-    {
-        return id;
-    }
+	public boolean equals(Object obj)
+	{
+		return handles(((StepPlugin) obj).getID());
+	}
 
-    public String getDescription()
-    {
-        return getDescription(LanguageChoice.getInstance().getDefaultLocale().toString().toLowerCase());
-    }
-    
-    public String getDescription(String locale)
-    {
-        String localizedDescription = (String) localizedDescriptions.get(locale.toLowerCase());
-        if (localizedDescription!=null) 
-        {
-            return localizedDescription;
-        }
-        return description;
-    }
+	public boolean handles(String pluginID)
+	{
+		String[] id = getID();
 
-    public String getTooltip()
-    {
-        return getTooltip(LanguageChoice.getInstance().getDefaultLocale().toString().toLowerCase());
-    }
-    
-    public String getTooltip(String locale)
-    {
-        String localizedTooltip = (String) localizedTooltips.get(locale.toLowerCase());
-        if (localizedTooltip!=null)
-        {
-            return localizedTooltip;
-        }
-        return tooltip;
-    }
+		for (int i = 0; i < id.length; i++)
+		{
+			if (id[i].equals(pluginID))
+				return true;
+		}
+		return false;
+	}
 
-    public String getDirectory()
-    {
-        return directory;
-    }
+	public boolean handles(String pluginID[])
+	{
+		String[] id = getID();
 
-    public String[] getJarfiles()
-    {
-        return jarfiles;
-    }
+		for (int i = 0; i < id.length; i++)
+		{
+			for (int j = 0; j < pluginID.length; j++)
+			{
+				if (id[i].equals(pluginID[j]))
+					return true;
+			}
+		}
+		return false;
+	}
     
     public String getJarfilesList()
     {
     	String list = "";
+    	
+    	String jarfiles[] = super.getJarfiles();
+    	
     	if (jarfiles!=null)
     	{
 	    	for (int i=0;i<jarfiles.length;i++)
@@ -164,148 +171,80 @@ public class StepPlugin
         return list;
     }
 
-    public String getIconFilename()
-    {
-        return icon_filename;
-    }
+	public void setErrorHelpFile(String errorHelpText)
+	{
+		this.errorHelpFile = errorHelpText;
+	}
 
-    public String getClassname()
-    {
-        return classname;
-    }
+	public String getErrorHelpFile()
+	{
+		return errorHelpFile;
+	}
 
-    public String getCategory()
-    {
-        return getCategory(LanguageChoice.getInstance().getDefaultLocale().toString().toLowerCase());
-    }
-    
-    public String getCategory(String locale)
-    {
-        String localizedCategory = (String) localizedCategories.get(locale.toLowerCase());
-        if (localizedCategory!=null)
-        {
-            return localizedCategory;
-        }
-        if (category == null) return Messages.getString("StepPlugin.Label"); //$NON-NLS-1$
-        return category;
-    }
+	/**
+	 * @return Returns the separateClassloaderNeeded.
+	 */
+	public boolean isSeparateClassloaderNeeded()
+	{
+		return separateClassloaderNeeded;
+	}
 
-    public void setCategory(String category)
-    {
-        this.category = category;
-    }
+	/**
+	 * @param separateClassloaderNeeded
+	 *            The separateClassloaderNeeded to set.
+	 */
+	public void setSeparateClassloaderNeeded(boolean separateClassloaderNeeded)
+	{
+		this.separateClassloaderNeeded = separateClassloaderNeeded;
+	}
 
-    public int hashCode()
-    {
-        return id.hashCode();
-    }
+	public void setLocalizedCategories(Map<String, String> localizedCategories)
+	{
+		this.localizedCategories = localizedCategories;
 
-    public boolean equals(Object obj)
-    {
-        return handles( ((StepPlugin)obj).getID() );
-    }
-    
-    public boolean handles(String pluginID)
-    {
-        for (int i=0;i<id.length;i++)
-        {
-            if (id[i].equals(pluginID)) return true;
-        }
-        return false;
-    }
-    
-    public boolean handles(String pluginID[])
-    {
-        for (int i=0;i<id.length;i++)
-        {
-            for (int j=0;j<pluginID.length;j++)
-            {
-                if (id[i].equals(pluginID[j])) return true;
-            }
-        }
-        return false;
-    }
-    
-    public void setErrorHelpFile(String errorHelpText)
-    {
-        this.errorHelpFile = errorHelpText;
-    }
+	}
 
-    public String getErrorHelpFile()
-    {
-        return errorHelpFile;
-    }
+	/**
+	 * @return the localized categories map.
+	 */
+	public Map<String, String> getLocalizedCategories()
+	{
+		return localizedCategories;
+	}
 
-    /**
-     * @return Returns the separateClassloaderNeeded.
-     */
-    public boolean isSeparateClassloaderNeeded()
-    {
-        return separateClassloaderNeeded;
-    }
+	public void setLocalizedDescriptions(Map<String, String> localizedDescriptions)
+	{
+		this.localizedDescriptions = localizedDescriptions;
+	}
 
-    /**
-     * @param separateClassloaderNeeded The separateClassloaderNeeded to set.
-     */
-    public void setSeparateClassloaderNeeded(boolean separateClassloaderNeeded)
-    {
-        this.separateClassloaderNeeded = separateClassloaderNeeded;
-    }
+	/**
+	 * @return the localized descriptions map.
+	 */
+	public Map<String, String> getLocalizedDescriptions()
+	{
+		return localizedDescriptions;
+	}
 
-    /**
-     * @param jarfiles the jarfiles to set
-     */
-    public void setJarfiles(String[] jarfiles)
-    {
-        this.jarfiles = jarfiles;
-    }
+	/**
+	 * @return the localizedTooltips
+	 */
+	public Map<String, String> getLocalizedTooltips()
+	{
+		return localizedTooltips;
+	}
 
-    public void setLocalizedCategories(Map<String, String> localizedCategories)
-    {
-        this.localizedCategories = localizedCategories;
-        
-    }
+	/**
+	 * @param localizedTooltips
+	 *            the localizedTooltips to set
+	 */
+	public void setLocalizedTooltips(Map<String, String> localizedTooltips)
+	{
+		this.localizedTooltips = localizedTooltips;
+	}
 
-    /**
-     * @return the localized categories map.
-     */
-    public Map<String, String> getLocalizedCategories()
-    {
-        return localizedCategories;
-    }
-
-    public void setLocalizedDescriptions(Map<String, String> localizedDescriptions)
-    {
-        this.localizedDescriptions = localizedDescriptions;
-    }
-
-    /**
-     * @return the localized descriptions map.
-     */
-    public Map<String, String> getLocalizedDescriptions()
-    {
-        return localizedDescriptions;
-    }
-
-    /**
-     * @return the localizedTooltips
-     */
-    public Map<String, String> getLocalizedTooltips()
-    {
-        return localizedTooltips;
-    }
-
-    /**
-     * @param localizedTooltips the localizedTooltips to set
-     */
-    public void setLocalizedTooltips(Map<String, String> localizedTooltips)
-    {
-        this.localizedTooltips = localizedTooltips;
-    }
-    
     public String getTypeDesc()
     {
-    	return typeDesc[type];
+    	return typeDesc[super.getType()];
     }
 
     public static RowMetaInterface getPluginInformationRowMeta()
