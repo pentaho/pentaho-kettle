@@ -52,6 +52,7 @@ import org.w3c.dom.Node;
 import com.enterprisedt.net.ftp.FTPClient;
 import com.enterprisedt.net.ftp.FTPConnectMode;
 import com.enterprisedt.net.ftp.FTPTransferType;
+import com.enterprisedt.net.ftp.FTPException;
 
 /**
  * This defines an FTP put job entry.
@@ -560,12 +561,26 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
 				
 				if (getIt)
 				{
-					// Put file if it's new file or user want to put even existing files
-					boolean putFile=true;
 					
-					if(onlyPuttingNewFiles) putFile=!ftpclient.exists(filelist[i]);
+					// File exists?
+					boolean fileExist=false;
+					try
+					{
+						fileExist=ftpclient.exists(filelist[i]);
+					}
+					catch (FTPException e){
+						// Assume file does not exist !!
+					}
 					
-					if (putFile)
+					if (log.isDebug()) 
+					{
+						if(fileExist)
+							log.logDebug(toString(),Messages.getString("JobFTPPUT.Log.FileExists",filelist[i]));
+						else
+							log.logDebug(toString(),Messages.getString("JobFTPPUT.Log.FileDoesNotExists",filelist[i]));
+					}
+					
+					if (!fileExist || (!onlyPuttingNewFiles && fileExist))
 					{
 						if (log.isDebug()) log.logDebug(toString(), Messages.getString("JobFTPPUT.Log.PuttingFileToRemoteDirectory",filelist[i],realRemoteDirectory));
 						
