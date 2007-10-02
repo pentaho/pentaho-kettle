@@ -28,6 +28,7 @@ import org.w3c.dom.Node;
 import com.enterprisedt.net.ftp.FTPClient;
 import com.enterprisedt.net.ftp.FTPConnectMode;
 import com.enterprisedt.net.ftp.FTPTransferType;
+import com.enterprisedt.net.ftp.FTPException;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
@@ -550,12 +551,25 @@ log.logDetailed(toString(), Messages.getString("JobFTPPUT.Log.Starting"));
 				
 				if (getIt)
 				{
-					// Put file if it's new file or user want to put even existing files
-					boolean putFile=true;
+					// File exists?
+					boolean fileExist=false;
+					try
+					{
+						fileExist=ftpclient.exists(filelist[i]);
+					}
+					catch (FTPException e){
+						// Assume file does not exist !!
+					}
 					
-					if(onlyPuttingNewFiles) putFile=!ftpclient.exists(filelist[i]);
+					if (log.isDebug()) 
+					{
+						if(fileExist)
+							log.logDebug(toString(),Messages.getString("JobFTPPUT.Log.FileExists",filelist[i]));
+						else
+							log.logDebug(toString(),Messages.getString("JobFTPPUT.Log.FileDoesNotExists",filelist[i]));
+					}
 					
-					if (putFile)
+					if (!fileExist || (!onlyPuttingNewFiles && fileExist))
 					{
 						if (log.isDebug()) log.logDebug(toString(), Messages.getString("JobFTPPUT.Log.PuttingFileToRemoteDirectory",filelist[i],realRemoteDirectory));
 						
@@ -581,9 +595,11 @@ log.logDetailed(toString(), Messages.getString("JobFTPPUT.Log.Starting"));
 		}
 		catch(Exception e)
 		{
+
 			result.setNrErrors(1);
 			log.logError(toString(), Messages.getString("JobFTPPUT.Log.ErrorPuttingFiles",e.getMessage()));
             log.logError(toString(), Const.getStackTracker(e));
+			
 		} finally 
 		{
 			 if (ftpclient!=null && ftpclient.connected())
