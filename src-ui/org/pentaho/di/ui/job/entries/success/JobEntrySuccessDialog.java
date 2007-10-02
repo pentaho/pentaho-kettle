@@ -47,7 +47,7 @@ import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.job.entries.success.JobEntrySuccess;
-import org.pentaho.di.job.entries.success.Messages; 
+import org.pentaho.di.job.entries.success.Messages;
 
 /**
  * This dialog allows you to edit a JobEntry Success object.

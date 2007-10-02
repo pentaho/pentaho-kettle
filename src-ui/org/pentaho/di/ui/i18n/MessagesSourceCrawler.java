@@ -165,7 +165,7 @@ public class MessagesSourceCrawler {
 			//
 			// "package org.pentaho.di.trans.steps.sortedmerge;"
 			//
-			if (line.matches("^[ \t]*package .*;")) {
+			if (line.matches("^[ \t]*package .*;[ \t]*$")) {
 				int beginIndex = line.indexOf("org.pentaho.");
 				int endIndex = line.indexOf(';');
 				messagesPackage = line.substring(beginIndex, endIndex); // this is the default
@@ -175,7 +175,7 @@ public class MessagesSourceCrawler {
 			//
 			// "import org.pentaho.di.trans.steps.sortedmerge.Messages;"
 			//
-			if (line.matches("^[ \t]*import [a-z\\._]*\\.Messages;")) {
+			if (line.matches("^[ \t]*import [a-z\\._]*\\.Messages;[ \t]*$")) {
 				int beginIndex = line.indexOf("org.pentaho.");
 				int endIndex = line.indexOf(".Messages;");
 				messagesPackage = line.substring(beginIndex, endIndex); // if there is any specified, we take this one.
