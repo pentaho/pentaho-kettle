@@ -68,11 +68,11 @@ import org.pentaho.di.www.SlaveServerTransStatus;
 import org.pentaho.di.www.WebResult;
 
 /**
- * SpoonLog handles the display of the logging information in the Spoon logging window.
+ * SpoonSlave handles the display of the slave server information in a Spoon tab.
  *  
  * @see org.pentaho.di.spoon.Spoon
  * @author Matt
- * @since  17 may 2003
+ * @since  12 nov 2006
  */
 public class SpoonSlave extends Composite implements TabItemInterface
 {
@@ -132,7 +132,7 @@ public class SpoonSlave extends Composite implements TabItemInterface
 				new ColumnInfo(Messages.getString("SpoonSlave.Column.Input"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
 				new ColumnInfo(Messages.getString("SpoonSlave.Column.Output"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
 				new ColumnInfo(Messages.getString("SpoonSlave.Column.Updated"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-                new ColumnInfo(Messages.getString("SpoonLog.Column.Rejected"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+                new ColumnInfo(Messages.getString("SpoonSlave.Column.Rejected"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
 				new ColumnInfo(Messages.getString("SpoonSlave.Column.Errors"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
 				new ColumnInfo(Messages.getString("SpoonSlave.Column.Active"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
 				new ColumnInfo(Messages.getString("SpoonSlave.Column.Time"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
@@ -530,8 +530,8 @@ public class SpoonSlave extends Composite implements TabItemInterface
 			{
 				String line = all.substring(startpos, i);
 				String uLine = line.toUpperCase();
-				if (uLine.indexOf(Messages.getString("SpoonLog.System.ERROR")) >= 0 || //$NON-NLS-1$
-						uLine.indexOf(Messages.getString("SpoonLog.System.EXCEPTION")) >= 0 || //$NON-NLS-1$
+				if (uLine.indexOf(Messages.getString("TransLog.System.ERROR")) >= 0 || //$NON-NLS-1$
+						uLine.indexOf(Messages.getString("TransLog.System.EXCEPTION")) >= 0 || //$NON-NLS-1$
 						uLine.indexOf("ERROR") >= 0 || // i18n for compatibilty to non translated steps a.s.o. //$NON-NLS-1$ 
 						uLine.indexOf("EXCEPTION") >= 0 // i18n for compatibilty to non translated steps a.s.o. //$NON-NLS-1$
 				)
@@ -546,8 +546,8 @@ public class SpoonSlave extends Composite implements TabItemInterface
 		}
 		String line = all.substring(startpos);
 		String uLine = line.toUpperCase();
-		if (uLine.indexOf(Messages.getString("SpoonLog.System.ERROR2")) >= 0 || //$NON-NLS-1$
-				uLine.indexOf(Messages.getString("SpoonLog.System.EXCEPTION2")) >= 0 || //$NON-NLS-1$
+		if (uLine.indexOf(Messages.getString("TransLog.System.ERROR2")) >= 0 || //$NON-NLS-1$
+				uLine.indexOf(Messages.getString("TransLog.System.EXCEPTION2")) >= 0 || //$NON-NLS-1$
 				uLine.indexOf("ERROR") >= 0 || // i18n for compatibilty to non translated steps a.s.o. //$NON-NLS-1$ 
 				uLine.indexOf("EXCEPTION") >= 0 // i18n for compatibilty to non translated steps a.s.o. //$NON-NLS-1$
 		)
@@ -561,7 +561,7 @@ public class SpoonSlave extends Composite implements TabItemInterface
 			for (i = 0; i < err_lines.length; i++)
 				err_lines[i] = err.get(i);
 
-			EnterSelectionDialog esd = new EnterSelectionDialog(shell, err_lines, Messages.getString("SpoonLog.Dialog.ErrorLines.Title"), Messages.getString("SpoonLog.Dialog.ErrorLines.Message")); //$NON-NLS-1$ //$NON-NLS-2$
+			EnterSelectionDialog esd = new EnterSelectionDialog(shell, err_lines, Messages.getString("TransLog.Dialog.ErrorLines.Title"), Messages.getString("TransLog.Dialog.ErrorLines.Message")); //$NON-NLS-1$ //$NON-NLS-2$
 			line = esd.open();
             /*
              * TODO: we have multiple transformation we can go to: which one should we pick?

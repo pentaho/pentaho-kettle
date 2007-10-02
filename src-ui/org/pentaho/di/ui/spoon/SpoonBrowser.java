@@ -34,11 +34,10 @@ import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.TabItemInterface;
 
 /**
- * This class handles the display of the transformations in a graphical way using icons, arrows, etc.
- * One transformation is handled per SpoonGraph
+ * This class handles the display of help information like the welcome page and JDBC info in an embedded browser.
  * 
  * @author Matt
- * @since 17-mei-2003
+ * @since November 2006
  * 
  */
 

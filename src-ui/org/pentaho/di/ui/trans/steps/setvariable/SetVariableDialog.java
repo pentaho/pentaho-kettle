@@ -265,7 +265,7 @@ public class SetVariableDialog extends BaseStepDialog implements StepDialogInter
         }
         catch(KettleException ke)
         {
-            new ErrorDialog(shell, Messages.getString("SelectValuesDialog.FailedToGetFields.DialogTitle"), Messages.getString("SelectValuesDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+            new ErrorDialog(shell, Messages.getString("SetVariableDialog.FailedToGetFields.DialogTitle"), Messages.getString("Set.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
         }
     }
 }

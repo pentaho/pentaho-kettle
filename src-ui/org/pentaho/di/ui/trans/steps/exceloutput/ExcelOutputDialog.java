@@ -376,7 +376,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 				{
 					MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
 					mb.setMessage(Messages.getString("ExcelOutputDialog.NoFilesFound.DialogMessage"));
-					mb.setText(Messages.getString("System.DialogTitle.Error"));
+					mb.setText(Messages.getString("System.Dialog.Error.Title"));
 					mb.open(); 
 				}
 			}

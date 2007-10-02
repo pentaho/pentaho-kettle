@@ -5,8 +5,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.fileinput.FileInputList;
@@ -152,7 +154,7 @@ public class MessagesSourceCrawler {
 		
 		String messagesPackage = null;
 		int row=0;
-		
+
 		String line = reader.readLine();
 		while (line!=null) {
 			row++;
@@ -164,7 +166,7 @@ public class MessagesSourceCrawler {
 			// "package org.pentaho.di.trans.steps.sortedmerge;"
 			//
 			if (line.matches("^[ \t]*package .*;")) {
-				int beginIndex = 8;
+				int beginIndex = line.indexOf("org.pentaho.");
 				int endIndex = line.indexOf(';');
 				messagesPackage = line.substring(beginIndex, endIndex); // this is the default
 			}
@@ -173,7 +175,7 @@ public class MessagesSourceCrawler {
 			//
 			// "import org.pentaho.di.trans.steps.sortedmerge.Messages;"
 			//
-			if (line.matches("^[ \t]*import [a-z\\.]*\\.Messages;")) {
+			if (line.matches("^[ \t]*import [a-z\\._]*\\.Messages;")) {
 				int beginIndex = line.indexOf("org.pentaho.");
 				int endIndex = line.indexOf(".Messages;");
 				messagesPackage = line.substring(beginIndex, endIndex); // if there is any specified, we take this one.
@@ -252,6 +254,22 @@ public class MessagesSourceCrawler {
 		KeyOccurrence keyOccurrence = new KeyOccurrence(fileObject, messagesPackage, row, column, key, arguments);
 		addKeyOccurrence(keyOccurrence);
 	}
+	
+	/**
+	 * @return A sorted list of distinct occurences of the used message package names
+	 */
+	public List<String> getMessagesPackagesList() {
+		Map<String, String> table = new Hashtable<String, String>();
+		
+		for (KeyOccurrence keyOccurrence : occurrences) {
+			table.put(keyOccurrence.getMessagesPackage(), keyOccurrence.getMessagesPackage());
+		}
+		
+		List<String> list = new ArrayList<String>( table.keySet() );
+		Collections.sort(list);
+		
+		return list;
+	}
 
 	public static void main(String[] args) throws IOException {
 		MessagesSourceCrawler crawler = new MessagesSourceCrawler(new String[] { "src", "src-ui", } );
@@ -260,22 +278,34 @@ public class MessagesSourceCrawler {
 						"MessagesSourceCrawler.java", "KeyOccurence.java", "TransLator.java", 
 						"MenuHelper.java", "Messages.java", "XulMessages.java", 
 						"AnnotatedStepsConfigManager.java", "AnnotatedJobConfigManager.java", 
-						"JobEntryValidatorUtils.java",
+						"JobEntryValidatorUtils.java", "Const.java", 
 					});
 		crawler.crawl();
 		int mis=0;
 		LanguageChoice.getInstance().setDefaultLocale(Locale.US);
 		for (KeyOccurrence occ : crawler.getOccurrences()) {
+			
 			// Try to get a value attached to each of these >6k occurrences...
 			//
 			String translation = BaseMessages.getString(occ.getMessagesPackage(), occ.getKey());
+			
 			if (translation.startsWith("!")) {
 				mis++;
-				System.out.println(mis+"\t"+occ.getKey()+"\t"+occ.getMessagesPackage()+"\t"+occ.getFileObject());
+				System.out.println(mis+"\t"+occ.getKey()+"\t"+occ.getRow()+"\t"+occ.getMessagesPackage()+"\t"+occ.getFileObject().getName().getBaseName()+"\t"+occ.getFileObject().getParent());
 			}
 		}
 		System.out.println("-------------------------------------------------");
 		System.out.println("Found "+crawler.getOccurrences().size());
+		System.out.println("-------------------------------------------------");
+		
+		List<String> packageNames = crawler.getMessagesPackagesList();
+
+		System.out.println("Packages found : "+packageNames.size());
+		/*
+		for (String packageName : packageNames) {
+			System.out.println("["+packageName+"]");
+		}
+		*/
 	}
 
 }

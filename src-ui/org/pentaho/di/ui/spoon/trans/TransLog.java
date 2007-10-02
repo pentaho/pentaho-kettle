@@ -77,7 +77,7 @@ import org.pentaho.di.ui.spoon.dialog.LogSettingsDialog;
 
 
 /**
- * SpoonLog handles the display of the logging information in the Spoon logging window.
+ * TransLog handles the display of the transformation logging information in the Spoon logging window.
  *  
  * @see org.pentaho.di.ui.spoon.Spoon
  * @author Matt
@@ -91,10 +91,10 @@ public class TransLog extends Composite implements TabItemInterface
 	public static final long UPDATE_TIME_LOG = 2000L;
 	public static final long REFRESH_TIME = 100L;
 	
-	public final static String START_TEXT = Messages.getString("SpoonLog.Button.StartTransformation"); //$NON-NLS-1$
-	public final static String PAUSE_TEXT = Messages.getString("SpoonLog.Button.PauseTransformation"); //$NON-NLS-1$
-	public final static String RESUME_TEXT = Messages.getString("SpoonLog.Button.ResumeTransformation"); //$NON-NLS-1$
-	public final static String STOP_TEXT = Messages.getString("SpoonLog.Button.StopTransformation"); //$NON-NLS-1$
+	public final static String START_TEXT = Messages.getString("TransLog.Button.StartTransformation"); //$NON-NLS-1$
+	public final static String PAUSE_TEXT = Messages.getString("TransLog.Button.PauseTransformation"); //$NON-NLS-1$
+	public final static String RESUME_TEXT = Messages.getString("TransLog.Button.ResumeTransformation"); //$NON-NLS-1$
+	public final static String STOP_TEXT = Messages.getString("TransLog.Button.StopTransformation"); //$NON-NLS-1$
 
 	private Display display;
     private Shell shell;
@@ -164,19 +164,19 @@ public class TransLog extends Composite implements TabItemInterface
 		sash.setLayout(new FillLayout());
 
 		colinf = new ColumnInfo[] { 
-                new ColumnInfo(Messages.getString("SpoonLog.Column.Stepname"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-				new ColumnInfo(Messages.getString("SpoonLog.Column.Copynr"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-				new ColumnInfo(Messages.getString("SpoonLog.Column.Read"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-				new ColumnInfo(Messages.getString("SpoonLog.Column.Written"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-				new ColumnInfo(Messages.getString("SpoonLog.Column.Input"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-				new ColumnInfo(Messages.getString("SpoonLog.Column.Output"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-				new ColumnInfo(Messages.getString("SpoonLog.Column.Updated"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-                new ColumnInfo(Messages.getString("SpoonLog.Column.Rejected"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-				new ColumnInfo(Messages.getString("SpoonLog.Column.Errors"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-				new ColumnInfo(Messages.getString("SpoonLog.Column.Active"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-				new ColumnInfo(Messages.getString("SpoonLog.Column.Time"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-				new ColumnInfo(Messages.getString("SpoonLog.Column.Speed"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-				new ColumnInfo(Messages.getString("SpoonLog.Column.PriorityBufferSizes"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+                new ColumnInfo(Messages.getString("TransLog.Column.Stepname"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+				new ColumnInfo(Messages.getString("TransLog.Column.Copynr"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+				new ColumnInfo(Messages.getString("TransLog.Column.Read"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+				new ColumnInfo(Messages.getString("TransLog.Column.Written"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+				new ColumnInfo(Messages.getString("TransLog.Column.Input"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+				new ColumnInfo(Messages.getString("TransLog.Column.Output"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+				new ColumnInfo(Messages.getString("TransLog.Column.Updated"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+                new ColumnInfo(Messages.getString("TransLog.Column.Rejected"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+				new ColumnInfo(Messages.getString("TransLog.Column.Errors"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+				new ColumnInfo(Messages.getString("TransLog.Column.Active"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+				new ColumnInfo(Messages.getString("TransLog.Column.Time"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+				new ColumnInfo(Messages.getString("TransLog.Column.Speed"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+				new ColumnInfo(Messages.getString("TransLog.Column.PriorityBufferSizes"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
 		};
 
 		colinf[1].setAllignement(SWT.RIGHT);
@@ -213,23 +213,23 @@ public class TransLog extends Composite implements TabItemInterface
         wStop.setEnabled(false);
         
 		wPreview = new Button(this, SWT.PUSH);
-		wPreview.setText(Messages.getString("SpoonLog.Button.Preview")); //$NON-NLS-1$
+		wPreview.setText(Messages.getString("TransLog.Button.Preview")); //$NON-NLS-1$
         
 		wError = new Button(this, SWT.PUSH);
-		wError.setText(Messages.getString("SpoonLog.Button.ShowErrorLines")); //$NON-NLS-1$
+		wError.setText(Messages.getString("TransLog.Button.ShowErrorLines")); //$NON-NLS-1$
         
 		wClear = new Button(this, SWT.PUSH);
-		wClear.setText(Messages.getString("SpoonLog.Button.ClearLog")); //$NON-NLS-1$
+		wClear.setText(Messages.getString("TransLog.Button.ClearLog")); //$NON-NLS-1$
         
 		wLog = new Button(this, SWT.PUSH);
-		wLog.setText(Messages.getString("SpoonLog.Button.LogSettings")); //$NON-NLS-1$
+		wLog.setText(Messages.getString("TransLog.Button.LogSettings")); //$NON-NLS-1$
         
 		wOnlyActive = new Button(this, SWT.CHECK);
-		wOnlyActive.setText(Messages.getString("SpoonLog.Button.ShowOnlyActiveSteps")); //$NON-NLS-1$
+		wOnlyActive.setText(Messages.getString("TransLog.Button.ShowOnlyActiveSteps")); //$NON-NLS-1$
         spoon.props.setLook(wOnlyActive);
         
 		wSafeMode = new Button(this, SWT.CHECK);
-		wSafeMode.setText(Messages.getString("SpoonLog.Button.SafeMode")); //$NON-NLS-1$
+		wSafeMode.setText(Messages.getString("TransLog.Button.SafeMode")); //$NON-NLS-1$
         spoon.props.setLook(wSafeMode);
 
 		fdStart = new FormData();
@@ -464,7 +464,7 @@ public class TransLog extends Composite implements TabItemInterface
         {
             if (trans.isFinished() && ( running || halted ))
             {
-                log.logMinimal(Spoon.APP_NAME, Messages.getString("SpoonLog.Log.TransformationHasFinished")); //$NON-NLS-1$
+                log.logMinimal(Spoon.APP_NAME, Messages.getString("TransLog.Log.TransformationHasFinished")); //$NON-NLS-1$
     
                 running = false;
                 initialized=false;
@@ -478,7 +478,7 @@ public class TransLog extends Composite implements TabItemInterface
                 }
                 catch (KettleException e)
                 {
-                    new ErrorDialog(shell, Messages.getString("SpoonLog.Dialog.ErrorWritingLogRecord.Title"), Messages.getString("SpoonLog.Dialog.ErrorWritingLogRecord.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+                    new ErrorDialog(shell, Messages.getString("TransLog.Dialog.ErrorWritingLogRecord.Title"), Messages.getString("TransLog.Dialog.ErrorWritingLogRecord.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
                 }
                 
                 wStart.setEnabled(true);
@@ -509,10 +509,10 @@ public class TransLog extends Composite implements TabItemInterface
 				}
 				else
 				{
-					MessageDialogWithToggle md = new MessageDialogWithToggle(shell, Messages.getString("SpoonLog.Dialog.FileHasChanged.Title"), //$NON-NLS-1$
-							null, Messages.getString("SpoonLog.Dialog.FileHasChanged1.Message") + Const.CR + Messages.getString("SpoonLog.Dialog.FileHasChanged2.Message") + Const.CR, //$NON-NLS-1$ //$NON-NLS-2$
+					MessageDialogWithToggle md = new MessageDialogWithToggle(shell, Messages.getString("TransLog.Dialog.FileHasChanged.Title"), //$NON-NLS-1$
+							null, Messages.getString("TransLog.Dialog.FileHasChanged1.Message") + Const.CR + Messages.getString("TransLog.Dialog.FileHasChanged2.Message") + Const.CR, //$NON-NLS-1$ //$NON-NLS-2$
 							MessageDialog.QUESTION, new String[] { Messages.getString("System.Button.Yes"), Messages.getString("System.Button.No") }, //$NON-NLS-1$ //$NON-NLS-2$
-							0, Messages.getString("SpoonLog.Dialog.Option.AutoSaveTransformation"), //$NON-NLS-1$
+							0, Messages.getString("TransLog.Dialog.Option.AutoSaveTransformation"), //$NON-NLS-1$
 							spoon.props.getAutoSave());
 					int answer = md.open();
 					if ( (answer & 0xFF) == 0)
@@ -539,13 +539,13 @@ public class TransLog extends Composite implements TabItemInterface
 						trans.setReplayDate(executionConfiguration.getReplayDate());
 						trans.injectVariables(executionConfiguration.getVariables());
 						trans.setMonitored(true);
-						log.logBasic(toString(), Messages.getString("SpoonLog.Log.TransformationOpened")); //$NON-NLS-1$
+						log.logBasic(toString(), Messages.getString("TransLog.Log.TransformationOpened")); //$NON-NLS-1$
 					}
 					catch (KettleException e)
 					{
 						trans = null;
 						new ErrorDialog(shell,
-								Messages.getString("SpoonLog.Dialog.ErrorOpeningTransformation.Title"), Messages.getString("SpoonLog.Dialog.ErrorOpeningTransformation.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+								Messages.getString("TransLog.Dialog.ErrorOpeningTransformation.Title"), Messages.getString("TransLog.Dialog.ErrorOpeningTransformation.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
 					}
 					if (trans != null)
 					{
@@ -554,7 +554,7 @@ public class TransLog extends Composite implements TabItemInterface
 						if (arguments != null) args = convertArguments(arguments); else args = null;
                         setVariables(executionConfiguration);
                         
-						log.logMinimal(Spoon.APP_NAME, Messages.getString("SpoonLog.Log.LaunchingTransformation") + trans.getTransMeta().getName() + "]..."); //$NON-NLS-1$ //$NON-NLS-2$
+						log.logMinimal(Spoon.APP_NAME, Messages.getString("TransLog.Log.LaunchingTransformation") + trans.getTransMeta().getName() + "]..."); //$NON-NLS-1$ //$NON-NLS-2$
 						trans.setSafeModeEnabled(executionConfiguration.isSafeModeEnabled());
                         
                         // Launch the step preparation in a different thread. 
@@ -573,7 +573,7 @@ public class TransLog extends Composite implements TabItemInterface
                                 }
                             );
                         
-						log.logMinimal(Spoon.APP_NAME, Messages.getString("SpoonLog.Log.StartedExecutionOfTransformation")); //$NON-NLS-1$
+						log.logMinimal(Spoon.APP_NAME, Messages.getString("TransLog.Log.StartedExecutionOfTransformation")); //$NON-NLS-1$
 						wStart.setEnabled(false);
 						wPause.setEnabled(true);
                         wStop.setEnabled(true);
@@ -582,8 +582,8 @@ public class TransLog extends Composite implements TabItemInterface
 				else
 				{
 					MessageBox m = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
-					m.setText(Messages.getString("SpoonLog.Dialog.DoNoStartTransformationTwice.Title")); //$NON-NLS-1$
-					m.setMessage(Messages.getString("SpoonLog.Dialog.DoNoStartTransformationTwice.Message")); //$NON-NLS-1$
+					m.setText(Messages.getString("TransLog.Dialog.DoNoStartTransformationTwice.Title")); //$NON-NLS-1$
+					m.setMessage(Messages.getString("TransLog.Dialog.DoNoStartTransformationTwice.Message")); //$NON-NLS-1$
 					m.open();
 				}
 			}
@@ -592,22 +592,22 @@ public class TransLog extends Composite implements TabItemInterface
 				if (transMeta.hasChanged())
 				{
 					MessageBox m = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
-					m.setText(Messages.getString("SpoonLog.Dialog.SaveTransformationBeforeRunning.Title")); //$NON-NLS-1$
-					m.setMessage(Messages.getString("SpoonLog.Dialog.SaveTransformationBeforeRunning.Message")); //$NON-NLS-1$
+					m.setText(Messages.getString("TransLog.Dialog.SaveTransformationBeforeRunning.Title")); //$NON-NLS-1$
+					m.setMessage(Messages.getString("TransLog.Dialog.SaveTransformationBeforeRunning.Message")); //$NON-NLS-1$
 					m.open();
 				}
 				else if (spoon.rep != null && transMeta.getName() == null)
 				{
 					MessageBox m = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
-					m.setText(Messages.getString("SpoonLog.Dialog.GiveTransformationANameBeforeRunning.Title")); //$NON-NLS-1$
-					m.setMessage(Messages.getString("SpoonLog.Dialog.GiveTransformationANameBeforeRunning.Message")); //$NON-NLS-1$
+					m.setText(Messages.getString("TransLog.Dialog.GiveTransformationANameBeforeRunning.Title")); //$NON-NLS-1$
+					m.setMessage(Messages.getString("TransLog.Dialog.GiveTransformationANameBeforeRunning.Message")); //$NON-NLS-1$
 					m.open();
 				}
 				else
 				{
 					MessageBox m = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
-					m.setText(Messages.getString("SpoonLog.Dialog.SaveTransformationBeforeRunning2.Title")); //$NON-NLS-1$
-					m.setMessage(Messages.getString("SpoonLog.Dialog.SaveTransformationBeforeRunning2.Message")); //$NON-NLS-1$
+					m.setText(Messages.getString("TransLog.Dialog.SaveTransformationBeforeRunning2.Title")); //$NON-NLS-1$
+					m.setMessage(Messages.getString("TransLog.Dialog.SaveTransformationBeforeRunning2.Message")); //$NON-NLS-1$
 					m.open();
 				}
 			}
@@ -623,11 +623,11 @@ public class TransLog extends Composite implements TabItemInterface
             try
             {
                 trans.endProcessing("stop"); //$NON-NLS-1$
-                log.logMinimal(Spoon.APP_NAME, Messages.getString("SpoonLog.Log.ProcessingOfTransformationStopped")); //$NON-NLS-1$
+                log.logMinimal(Spoon.APP_NAME, Messages.getString("TransLog.Log.ProcessingOfTransformationStopped")); //$NON-NLS-1$
             }
             catch (KettleException e)
             {
-                new ErrorDialog(shell, Messages.getString("SpoonLog.Dialog.ErrorWritingLogRecord.Title"), Messages.getString("SpoonLog.Dialog.ErrorWritingLogRecord.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+                new ErrorDialog(shell, Messages.getString("TransLog.Dialog.ErrorWritingLogRecord.Title"), Messages.getString("TransLog.Dialog.ErrorWritingLogRecord.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
             }
             wStart.setEnabled(true);
             wPause.setEnabled(false);
@@ -770,7 +770,7 @@ public class TransLog extends Composite implements TabItemInterface
 						ti = table.getItem(nr);
                     }
 
-					String fields[] = stepStatus.getSpoonLogFields();
+					String fields[] = stepStatus.getTransLogFields();
 
                     // Anti-flicker: if nothing has changed, don't change it on the screen!
 					for (int f = 1; f < fields.length; f++)
@@ -815,7 +815,7 @@ public class TransLog extends Composite implements TabItemInterface
     			this.lastTransDebugMeta = transDebugMeta;
     			
                 log.setLogLevel(executionConfiguration.getLogLevel());
-    			log.logDetailed(toString(), Messages.getString("SpoonLog.Log.DoPreview")); //$NON-NLS-1$
+    			log.logDetailed(toString(), Messages.getString("TransLog.Log.DoPreview")); //$NON-NLS-1$
                 String[] args=null;
 				Map<String,String> arguments = executionConfiguration.getArguments();
 				if (arguments != null)
@@ -856,14 +856,14 @@ public class TransLog extends Composite implements TabItemInterface
     		}
     		catch (Exception e)
     		{
-    			new ErrorDialog(shell, Messages.getString("SpoonLog.Dialog.UnexpectedErrorDuringPreview.Title"), Messages.getString("SpoonLog.Dialog.UnexpectedErrorDuringPreview.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+    			new ErrorDialog(shell, Messages.getString("TransLog.Dialog.UnexpectedErrorDuringPreview.Title"), Messages.getString("TransLog.Dialog.UnexpectedErrorDuringPreview.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
     		}
         }
         else
         {
             MessageBox m = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
-            m.setText(Messages.getString("SpoonLog.Dialog.DoNoPreviewWhileRunning.Title")); //$NON-NLS-1$
-            m.setMessage(Messages.getString("SpoonLog.Dialog.DoNoPreviewWhileRunning.Message")); //$NON-NLS-1$
+            m.setText(Messages.getString("TransLog.Dialog.DoNoPreviewWhileRunning.Title")); //$NON-NLS-1$
+            m.setMessage(Messages.getString("TransLog.Dialog.DoNoPreviewWhileRunning.Message")); //$NON-NLS-1$
             m.open();
         }
 	}
@@ -950,8 +950,8 @@ public class TransLog extends Composite implements TabItemInterface
 			{
 				String line = all.substring(startpos, i);
 				String uLine = line.toUpperCase();
-				if (uLine.indexOf(Messages.getString("SpoonLog.System.ERROR")) >= 0 || //$NON-NLS-1$
-						uLine.indexOf(Messages.getString("SpoonLog.System.EXCEPTION")) >= 0 || //$NON-NLS-1$
+				if (uLine.indexOf(Messages.getString("TransLog.System.ERROR")) >= 0 || //$NON-NLS-1$
+						uLine.indexOf(Messages.getString("TransLog.System.EXCEPTION")) >= 0 || //$NON-NLS-1$
 						uLine.indexOf("ERROR") >= 0 || // i18n for compatibilty to non translated steps a.s.o. //$NON-NLS-1$ 
 						uLine.indexOf("EXCEPTION") >= 0 // i18n for compatibilty to non translated steps a.s.o. //$NON-NLS-1$
 				)
@@ -966,8 +966,8 @@ public class TransLog extends Composite implements TabItemInterface
 		}
 		String line = all.substring(startpos);
 		String uLine = line.toUpperCase();
-		if (uLine.indexOf(Messages.getString("SpoonLog.System.ERROR2")) >= 0 || //$NON-NLS-1$
-				uLine.indexOf(Messages.getString("SpoonLog.System.EXCEPTION2")) >= 0 || //$NON-NLS-1$
+		if (uLine.indexOf(Messages.getString("TransLog.System.ERROR2")) >= 0 || //$NON-NLS-1$
+				uLine.indexOf(Messages.getString("TransLog.System.EXCEPTION2")) >= 0 || //$NON-NLS-1$
 				uLine.indexOf("ERROR") >= 0 || // i18n for compatibilty to non translated steps a.s.o. //$NON-NLS-1$ 
 				uLine.indexOf("EXCEPTION") >= 0 // i18n for compatibilty to non translated steps a.s.o. //$NON-NLS-1$
 		)
@@ -981,7 +981,7 @@ public class TransLog extends Composite implements TabItemInterface
 			for (i = 0; i < err_lines.length; i++)
 				err_lines[i] = err.get(i);
 
-			EnterSelectionDialog esd = new EnterSelectionDialog(shell, err_lines, Messages.getString("SpoonLog.Dialog.ErrorLines.Title"), Messages.getString("SpoonLog.Dialog.ErrorLines.Message")); //$NON-NLS-1$ //$NON-NLS-2$
+			EnterSelectionDialog esd = new EnterSelectionDialog(shell, err_lines, Messages.getString("TransLog.Dialog.ErrorLines.Title"), Messages.getString("TransLog.Dialog.ErrorLines.Message")); //$NON-NLS-1$ //$NON-NLS-2$
 			line = esd.open();
 			if (line != null)
 			{

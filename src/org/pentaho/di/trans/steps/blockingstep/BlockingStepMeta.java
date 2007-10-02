@@ -82,27 +82,27 @@ public class BlockingStepMeta  extends BaseStepMeta implements StepMetaInterface
             {
                 if (f.isDirectory())
                 {
-                    cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("SortRowsMeta.CheckResult.DirectoryExists", realDirectory),
+                    cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("BlockingStepMeta.CheckResult.DirectoryExists", realDirectory),
                             stepMeta);
                     remarks.add(cr);
                 }
                 else
                 {
-                    cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("SortRowsMeta.CheckResult.ExistsButNoDirectory",
+                    cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("BlockingStepMeta.CheckResult.ExistsButNoDirectory",
                             realDirectory), stepMeta);
                     remarks.add(cr);
                 }
             }
             else
             {
-                cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("SortRowsMeta.CheckResult.DirectoryNotExists", realDirectory),
+                cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("BlockingStepMeta.CheckResult.DirectoryNotExists", realDirectory),
                         stepMeta);
                 remarks.add(cr);
             }
         }
         else
         {
-            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("SortRowsMeta.CheckResult.NoFields"), stepMeta);
+            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("BlockingStepMeta.CheckResult.NoFields"), stepMeta);
             remarks.add(cr);
         }
 

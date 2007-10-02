@@ -539,8 +539,8 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
             // Now we can continue reading the rows of data and we can guess the 
             // Sample a few lines to determine the correct type of the fields...
             // 
-            String shellText = org.pentaho.di.trans.steps.textfileinput.Messages.getString("TextFileInputDialog.LinesToSample.DialogTitle");
-            String lineText = org.pentaho.di.trans.steps.textfileinput.Messages.getString("TextFileInputDialog.LinesToSample.DialogMessage");
+            String shellText = org.pentaho.di.trans.steps.textfileinput.Messages.getString("CsvInputDialog.LinesToSample.DialogTitle");
+            String lineText = org.pentaho.di.trans.steps.textfileinput.Messages.getString("CsvInputDialog.LinesToSample.DialogMessage");
             EnterNumberDialog end = new EnterNumberDialog(shell, 100, shellText, lineText);
             int samples = end.open();
             if (samples >= 0)
@@ -559,7 +559,7 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
                     wFields.setRowNums();
                     wFields.optWidth(true);
 
-					EnterTextDialog etd = new EnterTextDialog(shell, Messages.getString("TextFileInputDialog.ScanResults.DialogTitle"), Messages.getString("TextFileInputDialog.ScanResults.DialogMessage"), message, true);
+					EnterTextDialog etd = new EnterTextDialog(shell, Messages.getString("CsvInputDialog.ScanResults.DialogTitle"), Messages.getString("CsvInputDialog.ScanResults.DialogMessage"), message, true);
 					etd.setReadOnly();
 					etd.open();
                 }
@@ -567,11 +567,11 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
 		}
 		catch(IOException e)
 		{
-            new ErrorDialog(shell, Messages.getString("TextFileInputDialog.IOError.DialogTitle"), Messages.getString("TextFileInputDialog.IOError.DialogMessage"), e);
+            new ErrorDialog(shell, Messages.getString("CsvInputDialog.IOError.DialogTitle"), Messages.getString("CsvInputDialog.IOError.DialogMessage"), e);
 		}
         catch(KettleException e)
         {
-            new ErrorDialog(shell, Messages.getString("System.Dialog.Error.Title"), Messages.getString("TextFileInputDialog.ErrorGettingFileDesc.DialogMessage"), e);
+            new ErrorDialog(shell, Messages.getString("System.Dialog.Error.Title"), Messages.getString("CsvInputDialog.ErrorGettingFileDesc.DialogMessage"), e);
         }
 		finally
 		{
@@ -594,7 +594,7 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
         
         TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(transMeta, oneMeta, wStepname.getText());
         
-        EnterNumberDialog numberDialog = new EnterNumberDialog(shell, 500, org.pentaho.di.trans.steps.textfileinput.Messages.getString("TextFileInputDialog.PreviewSize.DialogTitle"), org.pentaho.di.trans.steps.textfileinput.Messages.getString("TextFileInputDialog.PreviewSize.DialogMessage"));
+        EnterNumberDialog numberDialog = new EnterNumberDialog(shell, 500, org.pentaho.di.trans.steps.textfileinput.Messages.getString("CsvInputDialog.PreviewSize.DialogTitle"), org.pentaho.di.trans.steps.textfileinput.Messages.getString("CsvInputDialog.PreviewSize.DialogMessage"));
         int previewSize = numberDialog.open();
         if (previewSize>0)
         {

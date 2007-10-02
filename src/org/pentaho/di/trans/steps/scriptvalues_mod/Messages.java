@@ -11,7 +11,7 @@ public class Messages
 	{
 		return BaseMessages.getString(packageName, key);
 	}
-	
+
 	public static String getString(String key, String param1)
 	{
 		return BaseMessages.getString(packageName, key, param1);

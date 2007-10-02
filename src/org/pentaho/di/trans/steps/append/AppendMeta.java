@@ -161,7 +161,7 @@ public class AppendMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException(Messages.getString("MergeRowsMeta.Exception.UnableToLoadStepInfo"), e); //$NON-NLS-1$
+			throw new KettleXMLException(Messages.getString("AppendMeta.Exception.UnableToLoadStepInfo"), e); //$NON-NLS-1$
 		}
 	}
 	
@@ -195,7 +195,7 @@ public class AppendMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(Messages.getString("MergeRowsMeta.Exception.UnexpectedErrorReadingStepInfo"), e); //$NON-NLS-1$
+			throw new KettleException(Messages.getString("AppendMeta.Exception.UnexpectedErrorReadingStepInfo"), e); //$NON-NLS-1$
 		}
 	}
 
@@ -209,7 +209,7 @@ public class AppendMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(Messages.getString("MergeRowsMeta.Exception.UnableToSaveStepInfo")+id_step, e); //$NON-NLS-1$
+			throw new KettleException(Messages.getString("AppendMeta.Exception.UnableToSaveStepInfo")+id_step, e); //$NON-NLS-1$
 		}
 	}
 	
@@ -247,17 +247,17 @@ public class AppendMeta extends BaseStepMeta implements StepMetaInterface
 		
 		if (getHeadStepName()!=null && getTailStepName()!=null)
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("MergeRowsMeta.CheckResult.SourceStepsOK"), stepMeta);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("AppendMeta.CheckResult.SourceStepsOK"), stepMeta);
 			remarks.add(cr);
 		}
 		else if (getHeadStepName()==null && getTailStepName()==null)
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("MergeRowsMeta.CheckResult.SourceStepsMissing"), stepMeta);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("AppendMeta.CheckResult.SourceStepsMissing"), stepMeta);
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("MergeRowsMeta.CheckResult.OneSourceStepMissing"), stepMeta);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("AppendMeta.CheckResult.OneSourceStepMissing"), stepMeta);
 			remarks.add(cr);
 		}
 	}

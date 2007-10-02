@@ -115,7 +115,7 @@ public class StepStatus
         return new StepStatus(XMLHandler.getSubNode(document, XML_TAG));
     }
     
-    public String[] getSpoonLogFields()
+    public String[] getTransLogFields()
     {
         String fields[] = new String[] {
             "", // Row number
@@ -139,7 +139,7 @@ public class StepStatus
     
     public String[] getSpoonSlaveLogFields()
     {
-        String fields[] = getSpoonLogFields();
+        String fields[] = getTransLogFields();
         String retval[] = new String[fields.length-1];
         for (int i=0;i<retval.length;i++)
         {

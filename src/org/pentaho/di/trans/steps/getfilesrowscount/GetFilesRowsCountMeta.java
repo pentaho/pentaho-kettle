@@ -352,7 +352,7 @@ public class GetFilesRowsCountMeta extends BaseStepMeta implements StepMetaInter
         }
 		catch(Exception e)
 		{
-			throw new KettleException(Messages.getString("AccessInputMeta.Exception.ErrorReadingRepository"), e);
+			throw new KettleException(Messages.getString("GetFilesRowsCountMeta.Exception.ErrorReadingRepository"), e);
 		}
 	}
 	
@@ -380,7 +380,7 @@ public class GetFilesRowsCountMeta extends BaseStepMeta implements StepMetaInter
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(Messages.getString("AccessInputMeta.Exception.ErrorSavingToRepository", ""+id_step), e);
+			throw new KettleException(Messages.getString("GetFilesRowsCountMeta.Exception.ErrorSavingToRepository", ""+id_step), e);
 		}
 	}
 	

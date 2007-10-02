@@ -98,71 +98,71 @@
   </menupopup>
 
   <menupopup id="trans-graph-entry">
-    <menuitem value="trans-graph-entry-newhop" label="%SpoonGraph.PopupMenu.NewHop"/>
-    <menuitem value="trans-graph-entry-edit" label="%SpoonGraph.PopupMenu.EditStep"/>
-    <menuitem value="trans-graph-entry-edit-description" label="%SpoonGraph.PopupMenu.EditStepDescription"/>
+    <menuitem value="trans-graph-entry-newhop" label="%TransGraph.PopupMenu.NewHop"/>
+    <menuitem value="trans-graph-entry-edit" label="%TransGraph.PopupMenu.EditStep"/>
+    <menuitem value="trans-graph-entry-edit-description" label="%TransGraph.PopupMenu.EditStepDescription"/>
 	<menuseparator/>
-    <menu value="trans-graph-entry-data-movement" label="%SpoonGraph.PopupMenu.DataMovement">
+    <menu value="trans-graph-entry-data-movement" label="%TransGraph.PopupMenu.DataMovement">
 		<menupopup>
-			<menuitem value="trans-graph-entry-data-movement-distribute" type="checkbox" label="%SpoonGraph.PopupMenu.DistributeData"/>
-			<menuitem value="trans-graph-entry-data-movement-copy" type="checkbox" label="%SpoonGraph.PopupMenu.CopyData"/>
+			<menuitem value="trans-graph-entry-data-movement-distribute" type="checkbox" label="%TransGraph.PopupMenu.DistributeData"/>
+			<menuitem value="trans-graph-entry-data-movement-copy" type="checkbox" label="%TransGraph.PopupMenu.CopyData"/>
 		</menupopup>
 	</menu>
-    <menuitem value="trans-graph-entry-copies" label="%SpoonGraph.PopupMenu.NumberOfCopies"/>
+    <menuitem value="trans-graph-entry-copies" label="%TransGraph.PopupMenu.NumberOfCopies"/>
 	<menuseparator/>
-	<menuitem value="trans-graph-entry-copy" label="%SpoonGraph.PopupMenu.CopyToClipboard"/>
-    <menuitem value="trans-graph-entry-duplicate" label="%SpoonGraph.PopupMenu.DuplicateStep"/>
-	<menuitem value="trans-graph-entry-delete" label="%SpoonGraph.PopupMenu.DeleteStep"/>
-    <menuitem value="trans-graph-entry-hide" label="%SpoonGraph.PopupMenu.HideStep"/>
-    <menuitem value="trans-graph-entry-detach" label="%SpoonGraph.PopupMenu.DetachStep"/>
+	<menuitem value="trans-graph-entry-copy" label="%TransGraph.PopupMenu.CopyToClipboard"/>
+    <menuitem value="trans-graph-entry-duplicate" label="%TransGraph.PopupMenu.DuplicateStep"/>
+	<menuitem value="trans-graph-entry-delete" label="%TransGraph.PopupMenu.DeleteStep"/>
+    <menuitem value="trans-graph-entry-hide" label="%TransGraph.PopupMenu.HideStep"/>
+    <menuitem value="trans-graph-entry-detach" label="%TransGraph.PopupMenu.DetachStep"/>
 	<menuseparator/>
-    <menuitem value="trans-graph-entry-inputs" label="%SpoonGraph.PopupMenu.ShowInputFields"/>
-    <menuitem value="trans-graph-entry-outputs" label="%SpoonGraph.PopupMenu.ShowOutputFields"/>
+    <menuitem value="trans-graph-entry-inputs" label="%TransGraph.PopupMenu.ShowInputFields"/>
+    <menuitem value="trans-graph-entry-outputs" label="%TransGraph.PopupMenu.ShowOutputFields"/>
 	<menuseparator/>
-    <menu value="trans-graph-entry-align" label="%SpoonGraph.PopupMenu.AllignDistribute">
+    <menu value="trans-graph-entry-align" label="%TransGraph.PopupMenu.AllignDistribute">
 		<menupopup>
-			<menuitem value="trans-graph-entry-align-left" label="%SpoonGraph.PopupMenu.AllignLeft" accesskey="ctrl-left"/>
-			<menuitem value="trans-graph-entry-align-right" label="%SpoonGraph.PopupMenu.AllignRight" accesskey="ctrl-right"/>
-			<menuitem value="trans-graph-entry-align-top" label="%SpoonGraph.PopupMenu.AllignTop" accesskey="ctrl-up"/>
-			<menuitem value="trans-graph-entry-align-bottom" label="%SpoonGraph.PopupMenu.AllignBottom" accesskey="ctrl-down"/>
+			<menuitem value="trans-graph-entry-align-left" label="%TransGraph.PopupMenu.AllignLeft" accesskey="ctrl-left"/>
+			<menuitem value="trans-graph-entry-align-right" label="%TransGraph.PopupMenu.AllignRight" accesskey="ctrl-right"/>
+			<menuitem value="trans-graph-entry-align-top" label="%TransGraph.PopupMenu.AllignTop" accesskey="ctrl-up"/>
+			<menuitem value="trans-graph-entry-align-bottom" label="%TransGraph.PopupMenu.AllignBottom" accesskey="ctrl-down"/>
 			<menuseparator/>
-			<menuitem value="trans-graph-entry-align-horz" label="%SpoonGraph.PopupMenu.DistributeHorizontally" accesskey="alt-right"/>
-			<menuitem value="trans-graph-entry-align-vert" label="%SpoonGraph.PopupMenu.DistributeVertically" accesskey="alt-up" />
+			<menuitem value="trans-graph-entry-align-horz" label="%TransGraph.PopupMenu.DistributeHorizontally" accesskey="alt-right"/>
+			<menuitem value="trans-graph-entry-align-vert" label="%TransGraph.PopupMenu.DistributeVertically" accesskey="alt-up" />
 			<menuseparator/>
-			<menuitem value="trans-graph-entry-align-snap" label="%SpoonGraph.PopupMenu.SnapToGrid" accesskey="alt-home" />
+			<menuitem value="trans-graph-entry-align-snap" label="%TransGraph.PopupMenu.SnapToGrid" accesskey="alt-home" />
 		</menupopup>
 	</menu>
 	<menuseparator/>
-    <menuitem value="trans-graph-entry-verify" label="%SpoonGraph.PopupMenu.CheckSelectedSteps"/>
-    <menuitem value="trans-graph-entry-mapping" label="%SpoonGraph.PopupMenu.GenerateMappingToThisStep"/>
-    <menuitem value="trans-graph-entry-partitioning" label="%SpoonGraph.PopupMenu.Partitioning"/>
-    <menuitem value="trans-graph-entry-clustering" label="%SpoonGraph.PopupMenu.Clustering"/>
-    <menuitem value="trans-graph-entry-errors" label="%SpoonGraph.PopupMenu.Error"/>
+    <menuitem value="trans-graph-entry-verify" label="%TransGraph.PopupMenu.CheckSelectedSteps"/>
+    <menuitem value="trans-graph-entry-mapping" label="%TransGraph.PopupMenu.GenerateMappingToThisStep"/>
+    <menuitem value="trans-graph-entry-partitioning" label="%TransGraph.PopupMenu.Partitioning"/>
+    <menuitem value="trans-graph-entry-clustering" label="%TransGraph.PopupMenu.Clustering"/>
+    <menuitem value="trans-graph-entry-errors" label="%TransGraph.PopupMenu.Error"/>
   </menupopup>
 
   <menupopup id="trans-graph-hop">
-    <menuitem value="trans-graph-hop-edit" label="%SpoonGraph.PopupMenu.EditHop"/>
-    <menuitem value="trans-graph-hop-flip" label="%SpoonGraph.PopupMenu.FlipDirection"/>
-    <menuitem value="trans-graph-hop-enabled" label="%SpoonGraph.PopupMenu.DisableHop"/>
-    <menuitem value="trans-graph-hop-delete" label="%SpoonGraph.PopupMenu.DeleteHop"/>
+    <menuitem value="trans-graph-hop-edit" label="%TransGraph.PopupMenu.EditHop"/>
+    <menuitem value="trans-graph-hop-flip" label="%TransGraph.PopupMenu.FlipDirection"/>
+    <menuitem value="trans-graph-hop-enabled" label="%TransGraph.PopupMenu.DisableHop"/>
+    <menuitem value="trans-graph-hop-delete" label="%TransGraph.PopupMenu.DeleteHop"/>
   </menupopup>
 
   <menupopup id="trans-graph-note">
-    <menuitem value="trans-graph-note-edit" label="%SpoonGraph.PopupMenu.EditNote"/>
-    <menuitem value="trans-graph-note-delete" label="%SpoonGraph.PopupMenu.DeleteNote"/>
-    <menuitem value="trans-graph-note-raise" label="%SpoonGraph.PopupMenu.RaiseNote"/>
-    <menuitem value="trans-graph-note-lower" label="%SpoonGraph.PopupMenu.LowerNote"/>
+    <menuitem value="trans-graph-note-edit" label="%TransGraph.PopupMenu.EditNote"/>
+    <menuitem value="trans-graph-note-delete" label="%TransGraph.PopupMenu.DeleteNote"/>
+    <menuitem value="trans-graph-note-raise" label="%TransGraph.PopupMenu.RaiseNote"/>
+    <menuitem value="trans-graph-note-lower" label="%TransGraph.PopupMenu.LowerNote"/>
   </menupopup>
 
   <menupopup id="trans-graph-background">
-    <menuitem value="trans-graph-background-new-note" label="%SpoonGraph.PopupMenu.NewNote"/>
-    <menu value="trans-graph-background-new-step" label="%SpoonGraph.PopupMenu.NewStep">
+    <menuitem value="trans-graph-background-new-note" label="%TransGraph.PopupMenu.NewNote"/>
+    <menu value="trans-graph-background-new-step" label="%TransGraph.PopupMenu.NewStep">
 		<menupopup>
 		</menupopup>
 	</menu>
 	
-    <menuitem value="trans-graph-background-paste" label="%SpoonGraph.PopupMenu.PasteStepFromClipboard"/>
-    <menuitem value="trans-graph-background-settings" label="%SpoonGraph.PopupMenu.Settings"/>
+    <menuitem value="trans-graph-background-paste" label="%TransGraph.PopupMenu.PasteStepFromClipboard"/>
+    <menuitem value="trans-graph-background-settings" label="%TransGraph.PopupMenu.Settings"/>
 	
   </menupopup>
 

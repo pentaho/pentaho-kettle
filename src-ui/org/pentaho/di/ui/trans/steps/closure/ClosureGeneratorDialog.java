@@ -221,7 +221,7 @@ public class ClosureGeneratorDialog extends BaseStepDialog implements StepDialog
                     }
                     catch(KettleException e)
                     {
-                        log.logError(toString(), Messages.getString("CalculatorDialog.Log.UnableToFindInput"));
+                        log.logError(toString(), Messages.getString("ClosureGeneratorDialog.Log.UnableToFindInput"));
                     }
                 }
             }

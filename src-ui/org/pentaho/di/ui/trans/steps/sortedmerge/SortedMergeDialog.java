@@ -251,7 +251,7 @@ public class SortedMergeDialog extends BaseStepDialog implements StepDialogInter
         }
         catch(KettleException ke)
         {
-            new ErrorDialog(shell, Messages.getString("CombinationLookupDialog.UnableToGetFieldsError.DialogTitle"), Messages.getString("CombinationLookupDialog.UnableToGetFieldsError.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+            new ErrorDialog(shell, Messages.getString("SortedMergeDialog.UnableToGetFieldsError.DialogTitle"), Messages.getString("SortedMergeDialog.UnableToGetFieldsError.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
         }
     }
 }

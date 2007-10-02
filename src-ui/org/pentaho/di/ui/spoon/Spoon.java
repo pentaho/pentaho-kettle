@@ -2562,8 +2562,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		if (transMeta.hasLoop(newHop.getFromStep()) || transMeta.hasLoop(newHop.getToStep()))
 		{
 			MessageBox mb = new MessageBox(shell, SWT.YES | SWT.ICON_WARNING);
-			mb.setMessage(Messages.getString("SpoonGraph.Dialog.HopCausesLoop.Message")); //$NON-NLS-1$
-			mb.setText(Messages.getString("SpoonGraph.Dialog.HopCausesLoop.Title")); //$NON-NLS-1$
+			mb.setMessage(Messages.getString("TransGraph.Dialog.HopCausesLoop.Message")); //$NON-NLS-1$
+			mb.setText(Messages.getString("TransGraph.Dialog.HopCausesLoop.Title")); //$NON-NLS-1$
 			mb.open();
 			ok = false;
 		}
@@ -2578,7 +2578,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         catch(KettleRowException re)
 		{
 			// Show warning about mixing rows with conflicting layouts...
-            new ErrorDialog(shell, Messages.getString("TransGraph.Dialog.HopCausesRowMixing.Title"), Messages.getString("SpoonGraph.Dialog.HopCausesRowMixing.Message"), re);
+            new ErrorDialog(shell, Messages.getString("TransGraph.Dialog.HopCausesRowMixing.Title"), Messages.getString("TransGraph.Dialog.HopCausesRowMixing.Message"), re);
 		}
 
 		verifyCopyDistribute(transMeta, newHop.getFromStep());

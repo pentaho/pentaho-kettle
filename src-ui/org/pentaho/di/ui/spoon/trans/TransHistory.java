@@ -55,7 +55,7 @@ import org.pentaho.di.ui.spoon.TabItemInterface;
 
 
 /**
- * SpoonHistory handles the display of the historical information regarding earlier runs of this transformation.
+ * TransHistory handles the display of the historical information regarding earlier runs of this transformation.
  * The idea is that this Composite is only populated when after loading of a transformation, we find a connection and logging table.
  * We then read from this table and populate the grid and log.
  *  
@@ -80,8 +80,6 @@ public class TransHistory extends Composite implements TabItemInterface
 	
 
     private List<RowMetaAndData> rowList;
-
-	// private final SpoonLog spoonLog;
 
 	private final Shell shell;
 
@@ -113,20 +111,20 @@ public class TransHistory extends Composite implements TabItemInterface
 		final int FieldsRows=1;
 		
 		colinf=new ColumnInfo[] {
-            new ColumnInfo(Messages.getString("SpoonHistory.Column.Name"),           ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
-            new ColumnInfo(Messages.getString("SpoonHistory.Column.BatchID"),        ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
-    		new ColumnInfo(Messages.getString("SpoonHistory.Column.Status"),         ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-            new ColumnInfo(Messages.getString("SpoonHistory.Column.Read"),           ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
-    		new ColumnInfo(Messages.getString("SpoonHistory.Column.Written"),        ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
-            new ColumnInfo(Messages.getString("SpoonHistory.Column.Updated"),        ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
-    		new ColumnInfo(Messages.getString("SpoonHistory.Column.Input"),          ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
-    		new ColumnInfo(Messages.getString("SpoonHistory.Column.Output"),         ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
-    		new ColumnInfo(Messages.getString("SpoonHistory.Column.Errors"),         ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
-            new ColumnInfo(Messages.getString("SpoonHistory.Column.StartDate"),      ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-            new ColumnInfo(Messages.getString("SpoonHistory.Column.EndDate"),        ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-    		new ColumnInfo(Messages.getString("SpoonHistory.Column.LogDate"),        ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-            new ColumnInfo(Messages.getString("SpoonHistory.Column.DependencyDate"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-            new ColumnInfo(Messages.getString("SpoonHistory.Column.ReplayDate"),     ColumnInfo.COLUMN_TYPE_TEXT, false, true) //$NON-NLS-1$
+            new ColumnInfo(Messages.getString("TransHistory.Column.Name"),           ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
+            new ColumnInfo(Messages.getString("TransHistory.Column.BatchID"),        ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
+    		new ColumnInfo(Messages.getString("TransHistory.Column.Status"),         ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+            new ColumnInfo(Messages.getString("TransHistory.Column.Read"),           ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
+    		new ColumnInfo(Messages.getString("TransHistory.Column.Written"),        ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
+            new ColumnInfo(Messages.getString("TransHistory.Column.Updated"),        ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
+    		new ColumnInfo(Messages.getString("TransHistory.Column.Input"),          ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
+    		new ColumnInfo(Messages.getString("TransHistory.Column.Output"),         ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
+    		new ColumnInfo(Messages.getString("TransHistory.Column.Errors"),         ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
+            new ColumnInfo(Messages.getString("TransHistory.Column.StartDate"),      ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+            new ColumnInfo(Messages.getString("TransHistory.Column.EndDate"),        ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+    		new ColumnInfo(Messages.getString("TransHistory.Column.LogDate"),        ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+            new ColumnInfo(Messages.getString("TransHistory.Column.DependencyDate"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+            new ColumnInfo(Messages.getString("TransHistory.Column.ReplayDate"),     ColumnInfo.COLUMN_TYPE_TEXT, false, true) //$NON-NLS-1$
         };
 		
         for (int i=0;i<colinf.length;i++) colinf[i].setAllignement(SWT.RIGHT);
@@ -144,10 +142,10 @@ public class TransHistory extends Composite implements TabItemInterface
 		wText = new Text(sash, SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL | SWT.READ_ONLY );
 		spoon.props.setLook(wText);
 		wText.setVisible(true);
-        wText.setText(Messages.getString("SpoonHistory.PleaseRefresh.Message"));
+        wText.setText(Messages.getString("TransHistory.PleaseRefresh.Message"));
 		
 		wRefresh = new Button(this, SWT.PUSH);
-		wRefresh.setText(Messages.getString("SpoonHistory.Button.Refresh")); //$NON-NLS-1$
+		wRefresh.setText(Messages.getString("TransHistory.Button.Refresh")); //$NON-NLS-1$
 
 		fdRefresh    = new FormData(); 
 		fdRefresh.left   = new FormAttachment(15, 0);  
@@ -155,7 +153,7 @@ public class TransHistory extends Composite implements TabItemInterface
 		wRefresh.setLayoutData(fdRefresh);
 		
 		wReplay = new Button(this, SWT.PUSH);
-		wReplay.setText(Messages.getString("SpoonHistory.Button.Replay")); //$NON-NLS-1$
+		wReplay.setText(Messages.getString("TransHistory.Button.Replay")); //$NON-NLS-1$
 
 		fdReplay    = new FormData(); 
 		fdReplay.left   = new FormAttachment(wRefresh, Const.MARGIN);  
@@ -234,8 +232,8 @@ public class TransHistory extends Composite implements TabItemInterface
 						spoon.executeTransformation(transMeta, true, false, false, false, false, replayDate);
 					} catch (ParseException e1) {
 						new ErrorDialog(shell, 
-								Messages.getString("SpoonHistory.Error.ReplayingTransformation2"), //$NON-NLS-1$
-								Messages.getString("SpoonHistory.Error.InvalidReplayDate") + dateString, e1); //$NON-NLS-1$
+								Messages.getString("TransHistory.Error.ReplayingTransformation2"), //$NON-NLS-1$
+								Messages.getString("TransHistory.Error.InvalidReplayDate") + dateString, e1); //$NON-NLS-1$
 					}
 				}
 			}
@@ -332,7 +330,7 @@ public class TransHistory extends Composite implements TabItemInterface
                     catch(KettleException e)
                     {
                         StringBuffer message = new StringBuffer();
-                        message.append(Messages.getString("SpoonHistory.Error.GettingInfoFromLoggingTable")).append(Const.CR).append(Const.CR);
+                        message.append(Messages.getString("TransHistory.Error.GettingInfoFromLoggingTable")).append(Const.CR).append(Const.CR);
                         message.append(e.toString()).append(Const.CR).append(Const.CR);
                         message.append(Const.getStackTracker(e)).append(Const.CR);
                         wText.setText(message.toString());

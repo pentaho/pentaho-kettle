@@ -145,7 +145,7 @@ public class GUIResource
 
 	private Image imageVariable;
 
-	private Image imageSpoonGraph;
+	private Image imageTransGraph;
 
 	private Image imageJobGraph;
 
@@ -286,7 +286,7 @@ public class GUIResource
 			imageSplash.dispose();
 			imagePentaho.dispose();
 			imageVariable.dispose();
-			imageSpoonGraph.dispose();
+			imageTransGraph.dispose();
 			imageJobGraph.dispose();
 
 			disposeImage(imageEditOptionButton);
@@ -441,7 +441,7 @@ public class GUIResource
 
 		// Makes transparent images "on the fly"
 		//
-		imageSpoonGraph = ImageUtil.makeImageTransparent(display, ImageUtil.getImageAsResource(display,
+		imageTransGraph = ImageUtil.makeImageTransparent(display, ImageUtil.getImageAsResource(display,
 				BasePropertyHandler.getProperty("SpoonIcon_image")), new RGB(255, 255, 255)); // , "ui/images/spoongraph.png"
 		imageJobGraph = ImageUtil.makeImageTransparent(display, ImageUtil.getImageAsResource(display, 
 				BasePropertyHandler.getProperty("ChefIcon_image")), // , "ui/images/chefgraph.png"
@@ -912,7 +912,7 @@ public class GUIResource
 
 	public Image getImageTransGraph()
 	{
-		return imageSpoonGraph;
+		return imageTransGraph;
 	}
 
 	public Image getImageJobGraph()

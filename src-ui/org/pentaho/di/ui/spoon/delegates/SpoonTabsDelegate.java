@@ -12,6 +12,7 @@ import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.gui.SpoonInterface;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.core.gui.GUIResource;
@@ -202,6 +203,7 @@ public class SpoonTabsDelegate extends SpoonDelegate
 			return true;
 		} catch (Throwable e)
 		{
+			LogWriter.getInstance().logError(spoon.toString(), "Unable to open browser tab", e);
 			return false;
 		}
 	}

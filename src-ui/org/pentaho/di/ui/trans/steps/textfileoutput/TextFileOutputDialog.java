@@ -442,7 +442,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 					{
 						MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
 						mb.setMessage(Messages.getString("TextFileOutputDialog.NoFilesFound.DialogMessage"));
-						mb.setText(Messages.getString("System.DialogTitle.Error"));
+						mb.setText(Messages.getString("System.Dialog.Error.Title"));
 						mb.open(); 
 					}
 				}

@@ -170,8 +170,8 @@ public class SpoonJobDelegate extends SpoonDelegate
 		{
 			new ErrorDialog(
 					spoon.getShell(),
-					Messages.getString("Spoon.ErrorDiaspoon.getLog().UnexpectedErrorCreatingNewJobGraphEntry.Title"), 
-					Messages.getString("Spoon.ErrorDiaspoon.getLog().UnexpectedErrorCreatingNewJobGraphEntry.Message"), 
+					Messages.getString("Spoon.ErrorDialog.UnexpectedErrorCreatingNewJobGraphEntry.Title"), 
+					Messages.getString("Spoon.ErrorDialog.UnexpectedErrorCreatingNewJobGraphEntry.Message"), 
 					new Exception(e)); //$NON-NLS-1$ //$NON-NLS-2$
 			return null;
 		}
@@ -271,7 +271,8 @@ public class SpoonJobDelegate extends SpoonDelegate
 			if (!spoon.getShell().isDisposed())
 				new ErrorDialog(
 						spoon.getShell(),
-						Messages.getString("Spoon.ErrorDiaLog.ErrorEditingJobEntry.Title"), Messages.getString("Spoon.ErrorDiaspoon.getLog().ErrorEditingJobEntry.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+						Messages.getString("Spoon.ErrorDialog.ErrorEditingJobEntry.Title"), 
+						Messages.getString("Spoon.ErrorDialog.ErrorEditingJobEntry.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 
@@ -428,7 +429,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 		{
 			new ErrorDialog(
 					spoon.getShell(),
-					Messages.getString("Spoon.ErrorDiaspoon.getLog().ErrorPasingJobEntries.Title"), Messages.getString("Spoon.ErrorDiaspoon.getLog().ErrorPasingJobEntries.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+					Messages.getString("Spoon.ErrorDialog.ErrorPasingJobEntries.Title"), Messages.getString("Spoon.ErrorDialog.ErrorPasingJobEntries.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 
@@ -757,13 +758,13 @@ public class SpoonJobDelegate extends SpoonDelegate
 		{
 			new ErrorDialog(
 					spoon.getShell(),
-					Messages.getString("Spoon.ErrorDiaspoon.getLog().RipDB.ErrorRippingTheDatabase.Title"), Messages.getString("Spoon.ErrorDiaspoon.getLog().RipDB.ErrorRippingTheDatabase.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+					Messages.getString("Spoon.ErrorDialog.RipDB.ErrorRippingTheDatabase.Title"), Messages.getString("Spoon.ErrorDialog.RipDB.ErrorRippingTheDatabase.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
 			return null;
 		} catch (InterruptedException e)
 		{
 			new ErrorDialog(
 					spoon.getShell(),
-					Messages.getString("Spoon.ErrorDiaspoon.getLog().RipDB.ErrorRippingTheDatabase.Title"), Messages.getString("Spoon.ErrorDiaspoon.getLog().RipDB.ErrorRippingTheDatabase.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+					Messages.getString("Spoon.ErrorDialog.RipDB.ErrorRippingTheDatabase.Title"), Messages.getString("Spoon.ErrorDialog.RipDB.ErrorRippingTheDatabase.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
 			return null;
 		} finally
 		{

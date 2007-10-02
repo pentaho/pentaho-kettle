@@ -111,7 +111,7 @@ import org.pentaho.xul.swt.menu.MenuChoice;
 
 /**
  * This class handles the display of the transformations in a graphical way using icons, arrows, etc.
- * One transformation is handled per SpoonGraph
+ * One transformation is handled per TransGraph
  * 
  * @author Matt
  * @since 17-mei-2003
@@ -506,9 +506,9 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
                                     int id = 0;
                                     if (!spoon.props.getAutoSplit())
                                     {
-                                        MessageDialogWithToggle md = new MessageDialogWithToggle(shell, Messages.getString("SpoonGraph.Dialog.SplitHop.Title"), null, //$NON-NLS-1$
-                                                Messages.getString("SpoonGraph.Dialog.SplitHop.Message") + Const.CR + hi.toString(), MessageDialog.QUESTION, new String[] { //$NON-NLS-1$
-                                                        Messages.getString("System.Button.Yes"), Messages.getString("System.Button.No") }, 0, Messages.getString("SpoonGraph.Dialog.Option.SplitHop.DoNotAskAgain"), spoon.props.getAutoSplit()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                                        MessageDialogWithToggle md = new MessageDialogWithToggle(shell, Messages.getString("TransGraph.Dialog.SplitHop.Title"), null, //$NON-NLS-1$
+                                                Messages.getString("TransGraph.Dialog.SplitHop.Message") + Const.CR + hi.toString(), MessageDialog.QUESTION, new String[] { //$NON-NLS-1$
+                                                        Messages.getString("System.Button.Yes"), Messages.getString("System.Button.No") }, 0, Messages.getString("TransGraph.Dialog.Option.SplitHop.DoNotAskAgain"), spoon.props.getAutoSplit()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                                         id = md.open();
                                         spoon.props.setAutoSplit(md.getToggleState());
                                     }
@@ -837,8 +837,8 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     	    	                    if (stepMeta.isDrawn() || transMeta.isStepUsedInTransHops(stepMeta))
     	    	                    {
     	    	                        MessageBox mb = new MessageBox(shell, SWT.OK);
-    	    	                        mb.setMessage(Messages.getString("SpoonGraph.Dialog.StepIsAlreadyOnCanvas.Message")); //$NON-NLS-1$
-    	    	                        mb.setText(Messages.getString("SpoonGraph.Dialog.StepIsAlreadyOnCanvas.Title")); //$NON-NLS-1$
+    	    	                        mb.setMessage(Messages.getString("TransGraph.Dialog.StepIsAlreadyOnCanvas.Message")); //$NON-NLS-1$
+    	    	                        mb.setText(Messages.getString("TransGraph.Dialog.StepIsAlreadyOnCanvas.Title")); //$NON-NLS-1$
     	    	                        mb.open();
     	    	                        return;
     	    	                    }
@@ -906,8 +906,8 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     	                    {
     	                        // Nothing we can use: give an error!
                                 MessageBox mb = new MessageBox(shell, SWT.OK);
-                                mb.setMessage(Messages.getString("SpoonGraph.Dialog.ItemCanNotBePlacedOnCanvas.Message")); //$NON-NLS-1$
-                                mb.setText(Messages.getString("SpoonGraph.Dialog.ItemCanNotBePlacedOnCanvas.Title")); //$NON-NLS-1$
+                                mb.setMessage(Messages.getString("TransGraph.Dialog.ItemCanNotBePlacedOnCanvas.Message")); //$NON-NLS-1$
+                                mb.setText(Messages.getString("TransGraph.Dialog.ItemCanNotBePlacedOnCanvas.Title")); //$NON-NLS-1$
                                 mb.open();
                                 return;
     	                    }
@@ -935,7 +935,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
                     }
                     catch(Exception e)
                     {
-                    	new ErrorDialog(shell, Messages.getString("SpoonGraph.Dialog.ErrorDroppingObject.Message"), Messages.getString("SpoonGraph.Dialog.ErrorDroppingObject.Title"), e);
+                    	new ErrorDialog(shell, Messages.getString("TransGraph.Dialog.ErrorDroppingObject.Message"), Messages.getString("TransGraph.Dialog.ErrorDroppingObject.Title"), e);
                     }
                 }
     
@@ -1400,8 +1400,8 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     {
         final boolean multipleOK = checkNumberOfCopies(transMeta, getCurrentStep());
         selected_steps = null;
-        String tt = Messages.getString("SpoonGraph.Dialog.NrOfCopiesOfStep.Title"); //$NON-NLS-1$
-        String mt = Messages.getString("SpoonGraph.Dialog.NrOfCopiesOfStep.Message"); //$NON-NLS-1$
+        String tt = Messages.getString("TransGraph.Dialog.NrOfCopiesOfStep.Title"); //$NON-NLS-1$
+        String mt = Messages.getString("TransGraph.Dialog.NrOfCopiesOfStep.Message"); //$NON-NLS-1$
         EnterNumberDialog nd = new EnterNumberDialog(shell, getCurrentStep().getCopies(), tt, mt);
         int cop = nd.open();
         if (cop >= 0)
@@ -1413,8 +1413,8 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
                 cop = 1;
                 
                 MessageBox mb = new MessageBox(shell, SWT.YES | SWT.ICON_WARNING);
-                mb.setMessage(Messages.getString("SpoonGraph.Dialog.MultipleCopiesAreNotAllowedHere.Message")); //$NON-NLS-1$
-                mb.setText(Messages.getString("SpoonGraph.Dialog.MultipleCopiesAreNotAllowedHere.Title")); //$NON-NLS-1$
+                mb.setMessage(Messages.getString("TransGraph.Dialog.MultipleCopiesAreNotAllowedHere.Message")); //$NON-NLS-1$
+                mb.setText(Messages.getString("TransGraph.Dialog.MultipleCopiesAreNotAllowedHere.Title")); //$NON-NLS-1$
                 mb.open();
                 
             }
@@ -1449,7 +1449,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         }
         catch(Exception ex)
         {
-            new ErrorDialog(shell, Messages.getString("SpoonGraph.Dialog.ErrorDuplicatingStep.Title"), Messages.getString("SpoonGraph.Dialog.ErrorDuplicatingStep.Message"), ex); //$NON-NLS-1$ //$NON-NLS-2$
+            new ErrorDialog(shell, Messages.getString("TransGraph.Dialog.ErrorDuplicatingStep.Title"), Messages.getString("TransGraph.Dialog.ErrorDuplicatingStep.Message"), ex); //$NON-NLS-1$ //$NON-NLS-2$
         }
     }
     
@@ -1491,8 +1491,8 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         {
             spoon.refreshGraph();
             MessageBox mb = new MessageBox(shell, SWT.YES | SWT.ICON_WARNING);
-            mb.setMessage(Messages.getString("SpoonGraph.Dialog.LoopsAreNotAllowed.Message")); //$NON-NLS-1$
-            mb.setText(Messages.getString("SpoonGraph.Dialog.LoopsAreNotAllowed.Title")); //$NON-NLS-1$
+            mb.setMessage(Messages.getString("TransGraph.Dialog.LoopsAreNotAllowed.Message")); //$NON-NLS-1$
+            mb.setText(Messages.getString("TransGraph.Dialog.LoopsAreNotAllowed.Title")); //$NON-NLS-1$
             mb.open();
 
             hi.flip();
@@ -1517,8 +1517,8 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         {
             hi.setEnabled(!hi.isEnabled());
             MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
-            mb.setMessage(Messages.getString("SpoonGraph.Dialog.LoopAfterHopEnabled.Message")); //$NON-NLS-1$
-            mb.setText(Messages.getString("SpoonGraph.Dialog.LoopAfterHopEnabled.Title")); //$NON-NLS-1$
+            mb.setMessage(Messages.getString("TransGraph.Dialog.LoopAfterHopEnabled.Message")); //$NON-NLS-1$
+            mb.setText(Messages.getString("TransGraph.Dialog.LoopAfterHopEnabled.Title")); //$NON-NLS-1$
             mb.open();
         }
         else
@@ -1584,8 +1584,8 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     public void newNote()
     {
         selrect = null;
-        String title = Messages.getString("SpoonGraph.Dialog.NoteEditor.Title"); //$NON-NLS-1$
-        String message = Messages.getString("SpoonGraph.Dialog.NoteEditor.Message"); //$NON-NLS-1$
+        String title = Messages.getString("TransGraph.Dialog.NoteEditor.Title"); //$NON-NLS-1$
+        String message = Messages.getString("TransGraph.Dialog.NoteEditor.Message"); //$NON-NLS-1$
         EnterTextDialog dd = new EnterTextDialog(shell, title, message, ""); //$NON-NLS-1$
         String n = dd.open();
         if (n != null)
@@ -1645,7 +1645,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 	    				item.setEnabled( sels == 2 );
 	    				
 	    				item = menu.getMenuItemById( "trans-graph-entry-align-snap" ); //$NON-NLS-1$
-		            	item.setText(Messages.getString("SpoonGraph.PopupMenu.SnapToGrid") + ConstUI.GRID_SIZE + ")\tALT-HOME");
+		            	item.setText(Messages.getString("TransGraph.PopupMenu.SnapToGrid") + ConstUI.GRID_SIZE + ")\tALT-HOME");
 	
 					XulMenu aMenu = menu.getMenuById( "trans-graph-entry-align" ); //$NON-NLS-1$
 					if( aMenu != null ) {
@@ -1711,9 +1711,9 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 	    					XulMenuChoice item  = menu.getMenuItemById( "trans-graph-hop-enabled" ); //$NON-NLS-1$
 	    					if( item != null ) {
 	    						if (hi.isEnabled()) {
-	    							item.setText(Messages.getString("SpoonGraph.PopupMenu.DisableHop")); //$NON-NLS-1$
+	    							item.setText(Messages.getString("TransGraph.PopupMenu.DisableHop")); //$NON-NLS-1$
 	    						} else {
-	    							item.setText(Messages.getString("SpoonGraph.PopupMenu.EnableHop")); //$NON-NLS-1$
+	    							item.setText(Messages.getString("TransGraph.PopupMenu.EnableHop")); //$NON-NLS-1$
 	    						}
 	    					}
 	
@@ -1867,12 +1867,12 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
             // Add the partitioning info
             //
             if (stepMeta.isPartitioned()) {
-            	newTip+=Const.CR+Const.CR+Messages.getString("SpoonGraph.Step.Tooltip.CurrentPartitioning")+stepMeta.getStepPartitioningMeta().toString();
+            	newTip+=Const.CR+Const.CR+Messages.getString("TransGraph.Step.Tooltip.CurrentPartitioning")+stepMeta.getStepPartitioningMeta().toString();
             }
             // Add the partitioning info
             //
             if (stepMeta.getTargetStepPartitioningMeta()!=null) {
-            	newTip+=Const.CR+Const.CR+Messages.getString("SpoonGraph.Step.Tooltip.NextPartitioning")+stepMeta.getTargetStepPartitioningMeta().toString();
+            	newTip+=Const.CR+Const.CR+Messages.getString("TransGraph.Step.Tooltip.NextPartitioning")+stepMeta.getTargetStepPartitioningMeta().toString();
             }
         }
         else
@@ -1967,7 +1967,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 
           // Create and display the delete confirmation dialog
           MessageBox mb = new DeleteMessageBox(shell, 
-              Messages.getString("SpoonGraph.Dialog.Warning.DeleteSteps.Message"), //$NON-NLS-1$
+              Messages.getString("TransGraph.Dialog.Warning.DeleteSteps.Message"), //$NON-NLS-1$
               stepList);
           int result = mb.open();
           if (result == SWT.YES)
@@ -1986,8 +1986,8 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 
     public void editDescription(StepMeta stepMeta)
     {
-        String title = Messages.getString("SpoonGraph.Dialog.StepDescription.Title"); //$NON-NLS-1$
-        String message = Messages.getString("SpoonGraph.Dialog.StepDescription.Message"); //$NON-NLS-1$
+        String title = Messages.getString("TransGraph.Dialog.StepDescription.Title"); //$NON-NLS-1$
+        String message = Messages.getString("TransGraph.Dialog.StepDescription.Message"); //$NON-NLS-1$
         EnterTextDialog dd = new EnterTextDialog(shell, title, message, stepMeta.getDescription());
         String d = dd.open();
         if (d != null) stepMeta.setDescription(d);
@@ -2034,11 +2034,11 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         }
         catch (InvocationTargetException e)
         {
-            new ErrorDialog(shell, Messages.getString("SpoonGraph.Dialog.GettingFields.Title"), Messages.getString("SpoonGraph.Dialog.GettingFields.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+            new ErrorDialog(shell, Messages.getString("TransGraph.Dialog.GettingFields.Title"), Messages.getString("TransGraph.Dialog.GettingFields.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
         }
         catch (InterruptedException e)
         {
-            new ErrorDialog(shell, Messages.getString("SpoonGraph.Dialog.GettingFields.Title"), Messages.getString("SpoonGraph.Dialog.GettingFields.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+            new ErrorDialog(shell, Messages.getString("TransGraph.Dialog.GettingFields.Title"), Messages.getString("TransGraph.Dialog.GettingFields.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
         }
 
         RowMetaInterface fields = op.getFields();
@@ -2059,8 +2059,8 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         else
         {
             MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION);
-            mb.setMessage(Messages.getString("SpoonGraph.Dialog.CouldntFindFields.Message")); //$NON-NLS-1$
-            mb.setText(Messages.getString("SpoonGraph.Dialog.CouldntFindFields.Title")); //$NON-NLS-1$
+            mb.setMessage(Messages.getString("TransGraph.Dialog.CouldntFindFields.Message")); //$NON-NLS-1$
+            mb.setText(Messages.getString("TransGraph.Dialog.CouldntFindFields.Title")); //$NON-NLS-1$
             mb.open();
         }
 
@@ -2149,8 +2149,8 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     {
         NotePadMeta before = (NotePadMeta) ni.clone();
 
-        String title = Messages.getString("SpoonGraph.Dialog.EditNote.Title"); //$NON-NLS-1$
-        String message = Messages.getString("SpoonGraph.Dialog.EditNote.Message"); //$NON-NLS-1$
+        String title = Messages.getString("TransGraph.Dialog.EditNote.Title"); //$NON-NLS-1$
+        String message = Messages.getString("TransGraph.Dialog.EditNote.Message"); //$NON-NLS-1$
         EnterTextDialog dd = new EnterTextDialog(shell, title, message, ni.getNote());
         String n = dd.open();
         if (n != null)
@@ -2169,7 +2169,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     private void editHop(TransHopMeta transHopMeta)
     {
         String name = transHopMeta.toString();
-        log.logDebug(toString(), Messages.getString("SpoonGraph.Logging.EditingHop") + name); //$NON-NLS-1$
+        log.logDebug(toString(), Messages.getString("TransGraph.Logging.EditingHop") + name); //$NON-NLS-1$
         spoon.editHop(transMeta, transHopMeta);
     }
 
