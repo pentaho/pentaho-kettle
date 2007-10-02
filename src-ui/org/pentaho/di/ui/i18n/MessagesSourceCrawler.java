@@ -50,6 +50,7 @@ public class MessagesSourceCrawler {
 		super();
 		this.sourceDirectories = sourceDirectories;
 		this.occurrences = new ArrayList<KeyOccurrence>();
+		this.filesToAvoid = new String[] {};
 	}
 
 	/**
@@ -270,6 +271,22 @@ public class MessagesSourceCrawler {
 		
 		return list;
 	}
+	
+	/**
+	 * Get all the key occurrences for a certain messsages package. 
+	 * @param messagesPackage the package to hunt for
+	 * @return all the key occurrences for a certain messages package.
+	 */
+	public List<KeyOccurrence> getOccurrencesForPackage(String messagesPackage) {
+		List<KeyOccurrence> list = new ArrayList<KeyOccurrence>();
+		for (KeyOccurrence keyOccurrence : occurrences) {
+			if (keyOccurrence.getMessagesPackage().equals(messagesPackage)) {
+				list.add(keyOccurrence);
+			}
+		}
+		
+		return list;
+	}
 
 	public static void main(String[] args) throws IOException {
 		MessagesSourceCrawler crawler = new MessagesSourceCrawler(new String[] { "src", "src-ui", } );
@@ -278,7 +295,7 @@ public class MessagesSourceCrawler {
 						"MessagesSourceCrawler.java", "KeyOccurence.java", "TransLator.java", 
 						"MenuHelper.java", "Messages.java", "XulMessages.java", 
 						"AnnotatedStepsConfigManager.java", "AnnotatedJobConfigManager.java", 
-						"JobEntryValidatorUtils.java", "Const.java", 
+						"JobEntryValidatorUtils.java", "Const.java", "XulHelper.java", 
 					});
 		crawler.crawl();
 		int mis=0;
