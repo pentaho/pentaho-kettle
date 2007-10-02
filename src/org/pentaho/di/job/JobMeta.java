@@ -1118,7 +1118,7 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
             //
             // Save the job entries
             //
-            log.logDetailed(toString(), "Saving " + nrJobEntries() + " ChefGraphEntries to repository..."); //$NON-NLS-1$ //$NON-NLS-2$
+            log.logDetailed(toString(), "Saving " + nrJobEntries() + " Job enty copies to repository..."); //$NON-NLS-1$ //$NON-NLS-2$
             rep.updateJobEntryTypes();
             for (int i = 0; i < nrJobEntries(); i++)
             {

@@ -55,7 +55,7 @@ public class LocaleStore {
 					throw new KettleException(e);
 				}
 				else {
-					LogWriter.getInstance().logError("Locale store", "No translations found for locale '"+locale+"' in package '"+messagePackage+"'");
+					LogWriter.getInstance().logDetailed("Locale store", "No translations found for locale '"+locale+"' in package '"+messagePackage+"'");
 				}
 
 			}

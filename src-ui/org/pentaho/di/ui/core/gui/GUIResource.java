@@ -139,7 +139,7 @@ public class GUIResource
 
 	private Image imageSpoon;
 
-	private Image imageChef;
+	private Image imageJob;
 
 	private Image imagePentaho;
 
@@ -282,7 +282,7 @@ public class GUIResource
 			imageStartSmall.dispose();
 			imageDummySmall.dispose();
 			imageSpoon.dispose();
-			imageChef.dispose();
+			imageJob.dispose();
 			imageSplash.dispose();
 			imagePentaho.dispose();
 			imageVariable.dispose();
@@ -423,7 +423,7 @@ public class GUIResource
 		imageStart = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("STR_image")); // , "ui/images/STR.png"
 		imageDummy = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("DUM_image")); // , "ui/images/DUM.png"
 		imageSpoon = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("spoon_image")); // , "ui/images/spoon32.png"
-		imageChef = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Chef_image")); // , "ui/images/chef.png"
+		imageJob = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Chef_image")); // , "ui/images/chef.png"
 		imageSplash = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("splash_image")); // , "ui/images/kettle_splash.png"
 		imagePentaho = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("CorpLogo_image")); // , "ui/images/PentahoLogo.png"
 		imageVariable = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Variable_image")); // , "ui/images/variable.png"
@@ -836,7 +836,7 @@ public class GUIResource
 	 */
 	public Image getImageChef()
 	{
-		return imageChef;
+		return imageJob;
 	}
 
 	/**
@@ -845,7 +845,7 @@ public class GUIResource
 	 */
 	public void setImageChef(Image imageChef)
 	{
-		this.imageChef = imageChef;
+		this.imageJob = imageChef;
 	}
 
 	/**

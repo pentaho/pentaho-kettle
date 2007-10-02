@@ -7,16 +7,16 @@ import org.pentaho.xul.swt.tab.TabListener;
 public class JobHistoryRefresher implements TabListener {
 
 	private final TabItem tiTabsHist;
-	private final JobHistory chefHist;
+	private final JobHistory jobHist;
 
-	public JobHistoryRefresher(TabItem tiTabsHist, JobHistory chefHist) {
+	public JobHistoryRefresher(TabItem tiTabsHist, JobHistory jobHist) {
 		this.tiTabsHist = tiTabsHist;
-		this.chefHist = chefHist;
+		this.jobHist = jobHist;
 	}
 
 	public void tabSelected(TabItem item) {
 		if(item == tiTabsHist)
-			chefHist.refreshHistoryIfNeeded();
+			jobHist.refreshHistoryIfNeeded();
 	}
 
 	public void tabDeselected(TabItem item) {
@@ -28,7 +28,7 @@ public class JobHistoryRefresher implements TabListener {
 
 	public void markRefreshNeeded()
 	{
-		chefHist.markRefreshNeeded();
+		jobHist.markRefreshNeeded();
 	}
 
 }

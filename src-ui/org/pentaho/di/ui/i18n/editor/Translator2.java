@@ -27,6 +27,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.ui.core.PropsUI;
+import org.pentaho.di.ui.core.dialog.EnterStringDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.WindowProperty;
@@ -82,6 +83,12 @@ public class Translator2
     private Button wApply;
     private Button wRevert;
     private Button wSave;
+
+    private Button wSearch;
+    private Button wNext;
+    
+    private Button wSearchV;
+    private Button wNextV;
     
     private Button wAll;
     
@@ -89,6 +96,8 @@ public class Translator2
 	protected String lastValue;
 	protected boolean lastValueChanged;
 	protected String selectedKey;
+	protected String searchString;
+	protected String lastFoundKey;
 		
     public Translator2(Display display)
     {
@@ -99,13 +108,14 @@ public class Translator2
     
     public void readFiles(String[] directories) throws KettleFileException
     {
-        log.logBasic(toString(), "Scanning directories: "+directories);
+        log.logBasic(toString(), "Scanning source directories and Java source files for i18n keys...");
         try
         {
         	// crawl through the source directories...
         	//
         	crawler = new MessagesSourceCrawler(directories);
         	crawler.setFilesToAvoid(FILES_TO_AVOID);
+        	crawler.setXulDirectories( new String[] { "ui", } );
         	crawler.crawl();
         	
         	// get the packages...
@@ -165,7 +175,7 @@ public class Translator2
         
         refresh();
         
-		BaseStepDialog.setSize(shell);
+		shell.setSize(1024, 768);
 
         shell.open();
     }
@@ -352,6 +362,20 @@ public class Translator2
         wMain.setLayoutData(fdMain);
         wMain.setEditable(false);
 
+        wSearch = new Button(composite, SWT.PUSH);
+        wSearch.setText("   &Search   ");
+        FormData fdSearch = new FormData();
+        fdSearch.right  = new FormAttachment(middle, -Const.MARGIN*2);
+        fdSearch.top    = new FormAttachment(wMain, 0, SWT.CENTER);
+        wSearch.setLayoutData(fdSearch);
+        
+        wNext = new Button(composite, SWT.PUSH);
+        wNext.setText("   &Next   ");
+        FormData fdNext = new FormData();
+        fdNext.right  = new FormAttachment(middle, -Const.MARGIN*2);
+        fdNext.top    = new FormAttachment(wSearch, Const.MARGIN*2);
+        wNext.setLayoutData(fdNext);
+        
         // The translation
         //
         Label wlValue = new Label(composite, SWT.RIGHT);
@@ -363,7 +387,7 @@ public class Translator2
         fdlValue.top   = new FormAttachment(wMain, Const.MARGIN);
         wlValue.setLayoutData(fdlValue);
 
-        wValue = new Text(composite, SWT.MULTI | SWT.BORDER );
+        wValue = new Text(composite, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL );
         props.setLook(wValue);
         FormData fdValue = new FormData();
         fdValue.left   = new FormAttachment(middle, Const.MARGIN);
@@ -388,6 +412,22 @@ public class Translator2
         fdRevert.top    = new FormAttachment(wApply, Const.MARGIN*2);
         wRevert.setLayoutData(fdRevert);
     	wRevert.setEnabled(false);
+    	
+        wSearchV = new Button(composite, SWT.PUSH);
+        wSearchV.setText("   &Search   ");
+        FormData fdSearchV = new FormData();
+        fdSearchV.right  = new FormAttachment(middle, -Const.MARGIN*2);
+        fdSearchV.top    = new FormAttachment(wRevert, Const.MARGIN*4);
+        wSearchV.setLayoutData(fdSearchV);
+        
+        wNextV = new Button(composite, SWT.PUSH);
+        wNextV.setText("   &Next   ");
+        FormData fdNextV = new FormData();
+        fdNextV.right  = new FormAttachment(middle, -Const.MARGIN*2);
+        fdNextV.top    = new FormAttachment(wSearchV, Const.MARGIN*2);
+        wNextV.setLayoutData(fdNextV);
+
+        
 
     	wAll.addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent e) {
@@ -472,10 +512,88 @@ public class Translator2
 			}
 		);
 
+		wSearch.addSelectionListener(new SelectionAdapter() {
+				public void widgetSelected(SelectionEvent e) {
+					search(REFERENCE_LOCALE);
+				}
+			}
+		);
+
+		wNext.addSelectionListener(new SelectionAdapter() {
+				public void widgetSelected(SelectionEvent e) {
+					searchAgain(REFERENCE_LOCALE);
+				}
+			}
+		);
+			
+		wSearchV.addSelectionListener(new SelectionAdapter() {
+				public void widgetSelected(SelectionEvent e) {
+					search(selectedLocale);
+				}
+			}
+		);
+
+		wNextV.addSelectionListener(new SelectionAdapter() {
+				public void widgetSelected(SelectionEvent e) {
+					searchAgain(selectedLocale);
+				}
+			}
+		);
 
      }
     
-    protected void handleKeySelection(String key) {
+    protected void search(String searchLocale) {
+		// Ask for the search string...
+		//
+		EnterStringDialog dialog = new EnterStringDialog(shell, Const.NVL(searchString, ""), "Search key", "Search the translated '"+searchLocale+"' strings in this package");
+		searchString = dialog.open();
+		
+		lastFoundKey = null;
+		
+		searchAgain(searchLocale);
+	}
+
+	protected void searchAgain(String searchLocale) {
+		if (searchString!=null) {
+			
+			// We want to search for key in the list here...
+			// That means we'll enter a String to search for in the values
+			//
+			
+			String upperSearchString = searchString.toUpperCase();
+			
+			boolean lastKeyFound = lastFoundKey==null;
+			
+			// Search through all the main locale messages stores for the selected package
+			//
+			java.util.List<MessagesStore> mainLocaleMessagesStores = store.getMessagesStores(searchLocale, selectedMessagesPackage);
+			for (MessagesStore messagesStore : mainLocaleMessagesStores) {
+				for (String key : messagesStore.getMessagesMap().keySet()) {
+					String value = messagesStore.getMessagesMap().get(key);
+					String upperValue = value.toUpperCase();
+					if (upperValue.indexOf(upperSearchString)>=0) {
+						// OK, we found a key worthy of our attention...
+						//
+						if (lastKeyFound) {
+							int index = wTodo.indexOf(key);
+							if (index>=0) {
+								lastFoundKey = key;
+								wTodo.setSelection(index);
+								handleKeySelection(wTodo.getSelection()[0]);
+								return;
+							}
+						}
+						if (key.equals(lastFoundKey)) {
+							lastKeyFound=true;
+						}
+					}
+				}
+			}
+		}
+
+	}
+
+	protected void handleKeySelection(String key) {
 		if (!key.equals(selectedKey)) {
 			
 			applyChangedValue();
@@ -526,7 +644,7 @@ public class Translator2
     		java.util.List<KeyOccurrence> todo = new ArrayList<KeyOccurrence>();
     		for (KeyOccurrence keyOccurrence : keys) {
     			String value = store.lookupKeyValue(selectedLocale, selectedMessagesPackage, keyOccurrence.getKey());
-    			if (value==null || wAll.getSelection()) {
+    			if ((value==null || wAll.getSelection()) && !keyOccurrence.getKey().startsWith("System.")) { // Avoid the System keys.  Those are taken care off.
     				todo.add(keyOccurrence);
     			}
     		}
@@ -582,6 +700,7 @@ public class Translator2
     {
     	refreshLocale();
         refreshPackages();
+        refreshGrid();
     }
     
     public void refreshPackages()

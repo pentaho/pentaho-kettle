@@ -36,7 +36,8 @@ import org.pentaho.di.ui.core.PropsUI;
 
 /**
  * Shows a wizard that creates a new database connection...
- * (Code 'normalized' from Spoon and Chef.)
+ * (Code 'normalized' from Spoon)
+ * 
  * @author Matt, Jens
  * @since  29-mar-2006
  *

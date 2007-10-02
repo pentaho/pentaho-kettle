@@ -169,6 +169,29 @@ public class TranslationsStore {
 		
 		return list;
 	}
+	
+	
+	/**
+	 * @param searchLocale the locale the filter on.
+	 * @param messagesPackage the messagesPackage to filter on.  Specify null to get all message stores.
+	 * @return the list of messages stores for the main locale
+	 */
+	public List<MessagesStore> getMessagesStores(String searchLocale, String messagesPackage) {
+		List<MessagesStore> list = new ArrayList<MessagesStore>();
+		
+		for(LocaleStore localeStore : translationsMap.values()) {
+			for (MessagesStore messagesStore : localeStore.getLocaleMap().values()) {
+				if (messagesStore.getLocale().equals(searchLocale)) {
+					if (messagesPackage==null || messagesStore.getMessagesPackage().equals(messagesPackage))
+					{
+						list.add(messagesStore);
+					}
+				}
+			}
+		}
+		
+		return list;
+	}
 
 	public MessagesStore findMainLocaleMessagesStore(String messagesPackage) {
 		LocaleStore localeStore = translationsMap.get(mainLocale);

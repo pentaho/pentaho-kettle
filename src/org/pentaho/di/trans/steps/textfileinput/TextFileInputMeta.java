@@ -1531,9 +1531,9 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 		return acceptingFilenames;
 	}
 
-	public void setAcceptingFilenames(boolean getFileFromChef)
+	public void setAcceptingFilenames(boolean getFileFromJob)
 	{
-		this.acceptingFilenames = getFileFromChef;
+		this.acceptingFilenames = getFileFromJob;
 	}
 
 	/**

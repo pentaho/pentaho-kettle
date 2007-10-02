@@ -21,7 +21,9 @@ if [ -z "$KETTLE_HOME" ]; then
   BASEDIR=$(dirname $0)
 fi
 CLASSPATH=$BASEDIR
-CLASSPATH=$CLASSPATH:$BASEDIR/lib/kettle3.jar
+CLASSPATH=$CLASSPATH:$BASEDIR/lib/kettle-engine-3.0.jar
+CLASSPATH=$CLASSPATH:$BASEDIR/lib/kettle-ui-swt-3.0.jar
+
 CLASSPATH=$CLASSPATH:$BASEDIR/libswt/jface.jar
 CLASSPATH=$CLASSPATH:$BASEDIR/libswt/runtime.jar
 CLASSPATH=$CLASSPATH:$BASEDIR/libswt/common.jar
@@ -143,5 +145,5 @@ OPT="-Xmx256m -cp $CLASSPATH -Djava.library.path=$LIBPATH -DKETTLE_HOME=$KETTLE_
 # ** Run...    **
 # ***************
 
-$JAVA_BIN $OPT org.pentaho.di.i18n.editor.Translator "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9"
+$JAVA_BIN $OPT org.pentaho.di.ui.i18n.editor.Translator2 "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9"
 

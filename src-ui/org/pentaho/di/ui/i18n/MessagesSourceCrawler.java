@@ -11,11 +11,19 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.vfs.FileObject;
+import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.fileinput.FileInputList;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.i18n.LanguageChoice;
+import org.pentaho.di.ui.spoon.Spoon;
+import org.pentaho.di.ui.spoon.job.JobGraph;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 /**
  * This class takes care of crawling through the source code
@@ -30,6 +38,11 @@ public class MessagesSourceCrawler {
 	 * The source directories to crawl through
 	 */
 	private String[] sourceDirectories;
+	
+	/**
+	 * The directories to search for XUL files in
+	 */
+	private String[] xulDirectories;
 	
 	
 	/**
@@ -51,6 +64,7 @@ public class MessagesSourceCrawler {
 		this.sourceDirectories = sourceDirectories;
 		this.occurrences = new ArrayList<KeyOccurrence>();
 		this.filesToAvoid = new String[] {};
+		this.xulDirectories = new String[] {};
 	}
 
 	/**
@@ -142,8 +156,56 @@ public class MessagesSourceCrawler {
 			//
 			lookForOccurrencesInFile(fileObject);
 		}
+		
+		// Also search for keys in the XUL files...
+		//
+		String[] xulMasks = new String[xulDirectories.length];
+		String[] xulReq = new String[xulDirectories.length];
+		boolean[] xulSubdirs = new boolean[xulDirectories.length];
+		
+		for (int i=0;i<xulMasks.length;i++) {
+			xulMasks[i] = ".*\\.xul$";
+			xulReq[i] = "N";
+			xulSubdirs[i] = true;
+		}
+		FileInputList xulFileInputList = FileInputList.createFileList(new Variables(), xulDirectories, xulMasks, xulReq, xulSubdirs);
+		for (FileObject fileObject : xulFileInputList.getFiles()) {
+			try {
+				Document doc = XMLHandler.loadXMLFile(fileObject);
+				
+				// The menus...
+				//
+				addLabelOccurrences(fileObject, doc.getElementsByTagName("menu"));
+				addLabelOccurrences(fileObject, doc.getElementsByTagName("menuitem"));
+				addLabelOccurrences(fileObject, doc.getElementsByTagName("toolbar"));
+				addLabelOccurrences(fileObject, doc.getElementsByTagName("toolbarbutton"));
+			}
+			catch(KettleXMLException e) {
+				LogWriter.getInstance().logError(toString(), "Unable to open XUL / XML document: "+fileObject);
+			}
+		}
 	}
 	
+	private void addLabelOccurrences(FileObject fileObject, NodeList nodeList) {
+		if (nodeList==null) return;
+		
+		for (int i=0;i<nodeList.getLength();i++) {
+			Node menuNode = nodeList.item(i);
+			String labelString = XMLHandler.getTagAttribute(menuNode, "label");
+			if (labelString!=null && labelString.startsWith("%")) {
+				String key = labelString.substring(1);
+				
+				// TODO: figure out a way to do this cleaner...
+				// 
+				String messagesPackage = Spoon.class.getPackage().getName();
+				if (key.startsWith("JobGraph.")) messagesPackage = JobGraph.class.getPackage().getName();
+				
+				KeyOccurrence keyOccurrence = new KeyOccurrence(fileObject, messagesPackage, -1, -1, key, "?");
+				occurrences.add(keyOccurrence);
+			}
+		}
+	}
+
 	/**
 	 * Look for additional occurrences of keys in the specified file.
 	 * @param fileObject The java source file to examine
@@ -323,6 +385,14 @@ public class MessagesSourceCrawler {
 			System.out.println("["+packageName+"]");
 		}
 		*/
+	}
+
+	public String[] getXulDirectories() {
+		return xulDirectories;
+	}
+
+	public void setXulDirectories(String[] xulDirectories) {
+		this.xulDirectories = xulDirectories;
 	}
 
 }

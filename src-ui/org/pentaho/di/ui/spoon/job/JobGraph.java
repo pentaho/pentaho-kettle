@@ -903,8 +903,8 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
         if (jobs != null && jobs.length > 0)
         {
             MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION);
-            mb.setMessage(Messages.getString("Chef.Dialog.JobEntryNameExists.Message", newName));
-            mb.setText(Messages.getString("Chef.Dialog.JobEntryNameExists.Title"));
+            mb.setMessage(Messages.getString("Spoon.Dialog.JobEntryNameExists.Message", newName));
+            mb.setText(Messages.getString("Spoon.Dialog.JobEntryNameExists.Title"));
             mb.open();
         }
         else
@@ -938,7 +938,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
         
         // Display the delete confirmation message box
         MessageBox mb = new DeleteMessageBox(shell,
-            Messages.getString("Chef.Dialog.DeletionConfirm.Message"), //$NON-NLS-1$
+            Messages.getString("Spoon.Dialog.DeletionConfirm.Message"), //$NON-NLS-1$
             stepList
             );
         int answer = mb.open();
@@ -2271,8 +2271,8 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
     public int showChangedWarning()
     {
         MessageBox mb = new MessageBox(shell, SWT.YES | SWT.NO | SWT.CANCEL | SWT.ICON_WARNING );
-        mb.setMessage(Messages.getString("Chef.Dialog.FileChangedSaveFirst.Message", spoon.delegates.tabs.makeJobGraphTabName(jobMeta)));//"This model has changed.  Do you want to save it?"
-        mb.setText(Messages.getString("Chef.Dialog.FileChangedSaveFirst.Title"));
+        mb.setMessage(Messages.getString("Spoon.Dialog.FileChangedSaveFirst.Message", spoon.delegates.tabs.makeJobGraphTabName(jobMeta)));//"This model has changed.  Do you want to save it?"
+        mb.setText(Messages.getString("Spoon.Dialog.FileChangedSaveFirst.Title"));
         return mb.open();
     }   
     
