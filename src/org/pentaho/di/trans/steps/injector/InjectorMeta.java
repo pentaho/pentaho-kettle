@@ -206,7 +206,7 @@ public class InjectorMeta extends BaseStepMeta implements StepMetaInterface
         }
         catch(Exception e)
         {
-            throw new KettleException(Messages.getString("RowsFromResultMeta.Exception.ErrorReadingStepInfoFromRepository"), e); //$NON-NLS-1$
+            throw new KettleException(Messages.getString("InjectorMeta.Exception.ErrorReadingStepInfoFromRepository"), e); //$NON-NLS-1$
         }
 
 	}
@@ -226,7 +226,7 @@ public class InjectorMeta extends BaseStepMeta implements StepMetaInterface
         }
         catch(Exception e)
         {
-            throw new KettleException(Messages.getString("RowsFromResultMeta.Exception.UnableToSaveStepInfoToRepository")+id_step, e); //$NON-NLS-1$
+            throw new KettleException(Messages.getString("InjectorMeta.Exception.UnableToSaveStepInfoToRepository")+id_step, e); //$NON-NLS-1$
         }
 	}
     
@@ -244,12 +244,12 @@ public class InjectorMeta extends BaseStepMeta implements StepMetaInterface
 		// See if we have input streams leading to this step!
 		if (input.length>0)
 		{
-			CheckResult cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("RowsFromResultMeta.CheckResult.StepExpectingNoReadingInfoFromOtherSteps"), stepMeta); //$NON-NLS-1$
+			CheckResult cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("InjectorMeta.CheckResult.StepExpectingNoReadingInfoFromOtherSteps"), stepMeta); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 		else
 		{
-			CheckResult cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("RowsFromResultMeta.CheckResult.NoInputReceivedError"), stepMeta); //$NON-NLS-1$
+			CheckResult cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("InjectorMeta.CheckResult.NoInputReceivedError"), stepMeta); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 	}
