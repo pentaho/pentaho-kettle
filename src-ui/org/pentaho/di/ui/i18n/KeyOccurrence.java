@@ -47,6 +47,10 @@ public class KeyOccurrence implements Comparable<KeyOccurrence> {
 	private int occurrences;
 	
 	/**
+	 * line of source code on which the key occurs.
+	 */
+	private String sourceLine;
+	/**
 	 * 
 	 */
 	public KeyOccurrence() {
@@ -61,7 +65,7 @@ public class KeyOccurrence implements Comparable<KeyOccurrence> {
 	 * @param key The i18n key 
 	 * @param arguments The arguments from the source code
 	 */
-	public KeyOccurrence(FileObject fileObject, String messagesPackage, int row, int column, String key, String arguments) {
+	public KeyOccurrence(FileObject fileObject, String messagesPackage, int row, int column, String key, String arguments, String sourceLine) {
 		this();
 		this.fileObject = fileObject;
 		this.messagesPackage = messagesPackage;
@@ -70,6 +74,7 @@ public class KeyOccurrence implements Comparable<KeyOccurrence> {
 		this.key = key;
 		this.arguments = arguments;
 		this.occurrences = 1;
+		this.sourceLine = sourceLine;
 	}
 	
 	public String toString() {
@@ -193,5 +198,19 @@ public class KeyOccurrence implements Comparable<KeyOccurrence> {
 	 */
 	public void incrementOccurrences() {
 		this.occurrences++;
+	}
+
+	/**
+	 * @return the line of source code on which the key occurs.
+	 */
+	public String getSourceLine() {
+		return sourceLine;
+	}
+
+	/**
+	 * @param sourceLine the line of source code on which the key occurs.
+	 */
+	public void setSourceLine(String sourceLine) {
+		this.sourceLine = sourceLine;
 	}
 }

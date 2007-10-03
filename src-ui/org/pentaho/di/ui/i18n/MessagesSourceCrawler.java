@@ -190,8 +190,8 @@ public class MessagesSourceCrawler {
 		if (nodeList==null) return;
 		
 		for (int i=0;i<nodeList.getLength();i++) {
-			Node menuNode = nodeList.item(i);
-			String labelString = XMLHandler.getTagAttribute(menuNode, "label");
+			Node node = nodeList.item(i);
+			String labelString = XMLHandler.getTagAttribute(node, "label");
 			if (labelString!=null && labelString.startsWith("%")) {
 				String key = labelString.substring(1);
 				
@@ -200,7 +200,7 @@ public class MessagesSourceCrawler {
 				String messagesPackage = Spoon.class.getPackage().getName();
 				if (key.startsWith("JobGraph.")) messagesPackage = JobGraph.class.getPackage().getName();
 				
-				KeyOccurrence keyOccurrence = new KeyOccurrence(fileObject, messagesPackage, -1, -1, key, "?");
+				KeyOccurrence keyOccurrence = new KeyOccurrence(fileObject, messagesPackage, -1, -1, key, "?", node.toString());
 				occurrences.add(keyOccurrence);
 			}
 		}
@@ -314,7 +314,7 @@ public class MessagesSourceCrawler {
 				
 		// OK, add the occurrence to the list...
 		//
-		KeyOccurrence keyOccurrence = new KeyOccurrence(fileObject, messagesPackage, row, column, key, arguments);
+		KeyOccurrence keyOccurrence = new KeyOccurrence(fileObject, messagesPackage, row, column, key, arguments, line);
 		addKeyOccurrence(keyOccurrence);
 	}
 	
@@ -393,6 +393,15 @@ public class MessagesSourceCrawler {
 
 	public void setXulDirectories(String[] xulDirectories) {
 		this.xulDirectories = xulDirectories;
+	}
+
+	public KeyOccurrence getKeyOccurrence(String key, String selectedMessagesPackage) {
+		for (KeyOccurrence keyOccurrence : occurrences) {
+			if (keyOccurrence.getKey().equals(key) && keyOccurrence.getMessagesPackage().equals(selectedMessagesPackage)) {
+				return keyOccurrence;
+			}
+		}
+		return null;
 	}
 
 }

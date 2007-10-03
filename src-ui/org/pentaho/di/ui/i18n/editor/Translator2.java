@@ -77,6 +77,7 @@ public class Translator2
     private Text wKey;
     private Text wMain;
     private Text wValue;
+    private Text wSource;
 
     private Button wReload;
     private Button wClose;
@@ -89,6 +90,11 @@ public class Translator2
     
     private Button wSearchV;
     private Button wNextV;
+    
+    /*
+    private Button wSearchG;
+    private Button wNextG;
+    */
     
     private Button wAll;
     
@@ -168,7 +174,7 @@ public class Translator2
         addGrid();
         addListeners();
         
-        sashform.setWeights(new int[] { 25, 75 });
+        sashform.setWeights(new int[] { 20, 80 });
         sashform.setVisible(true);
         
         shell.pack();
@@ -292,8 +298,24 @@ public class Translator2
         
         BaseStepDialog.positionBottomButtons(composite, new Button[] { wReload, wSave, wClose, } , Const.MARGIN*3, null);
 
-        int left = 35;
-        int middle = 50;
+        /*
+        wSearchG = new Button(composite, SWT.PUSH);
+        wSearchG.setText("   Search &key  ");
+        FormData fdSearchG = new FormData();
+        fdSearchG.left   = new FormAttachment(0, 0);
+        fdSearchG.bottom = new FormAttachment(100, 0);
+        wSearchG.setLayoutData(fdSearchG);
+        
+        wNextG = new Button(composite, SWT.PUSH);
+        wNextG.setText("   Next ke&y  ");
+        FormData fdNextG = new FormData();
+        fdNextG.left   = new FormAttachment(wSearchG, Const.MARGIN);
+        fdNextG.bottom = new FormAttachment(100, 0);
+        wNextG.setLayoutData(fdNextG);
+		*/
+        
+        int left = 25;
+        int middle = 40;
         
         wAll = new Button(composite, SWT.CHECK);
         wAll.setText("Show all keys, not just the TODO list");
@@ -363,18 +385,39 @@ public class Translator2
         wMain.setEditable(false);
 
         wSearch = new Button(composite, SWT.PUSH);
-        wSearch.setText("   &Search   ");
+        wSearch.setText("   Search   ");
         FormData fdSearch = new FormData();
         fdSearch.right  = new FormAttachment(middle, -Const.MARGIN*2);
         fdSearch.top    = new FormAttachment(wMain, 0, SWT.CENTER);
         wSearch.setLayoutData(fdSearch);
         
         wNext = new Button(composite, SWT.PUSH);
-        wNext.setText("   &Next   ");
+        wNext.setText("   Next   ");
         FormData fdNext = new FormData();
         fdNext.right  = new FormAttachment(middle, -Const.MARGIN*2);
         fdNext.top    = new FormAttachment(wSearch, Const.MARGIN*2);
         wNext.setLayoutData(fdNext);
+        
+        // A few lines of source code at the bottom...
+        //
+        Label wlSource = new Label(composite, SWT.RIGHT);
+        wlSource.setText("Line of source code : ");
+        props.setLook(wlSource);
+        FormData fdlSource = new FormData();
+        fdlSource.left  = new FormAttachment(left, Const.MARGIN);
+        fdlSource.right = new FormAttachment(middle, 0);
+        fdlSource.top   = new FormAttachment(wClose, -100-Const.MARGIN);
+        wlSource.setLayoutData(fdlSource);
+
+        wSource = new Text(composite, SWT.MULTI | SWT.BORDER | SWT.WRAP );
+        props.setLook(wSource);
+        FormData fdSource = new FormData();
+        fdSource.left   = new FormAttachment(middle, Const.MARGIN);
+        fdSource.right  = new FormAttachment(100, 0);
+        fdSource.top    = new FormAttachment(wClose, -100-Const.MARGIN);
+        fdSource.bottom = new FormAttachment(wClose, -Const.MARGIN);
+        wSource.setLayoutData(fdSource);
+        wSource.setEditable(false);
         
         // The translation
         //
@@ -393,7 +436,7 @@ public class Translator2
         fdValue.left   = new FormAttachment(middle, Const.MARGIN);
         fdValue.right  = new FormAttachment(100, 0);
         fdValue.top    = new FormAttachment(wMain, Const.MARGIN);
-        fdValue.bottom = new FormAttachment(wClose, -Const.MARGIN);
+        fdValue.bottom = new FormAttachment(wSource, -Const.MARGIN);
         wValue.setLayoutData(fdValue);
         wValue.setEditable(true);
         
@@ -414,14 +457,14 @@ public class Translator2
     	wRevert.setEnabled(false);
     	
         wSearchV = new Button(composite, SWT.PUSH);
-        wSearchV.setText("   &Search   ");
+        wSearchV.setText("   Search   ");
         FormData fdSearchV = new FormData();
         fdSearchV.right  = new FormAttachment(middle, -Const.MARGIN*2);
         fdSearchV.top    = new FormAttachment(wRevert, Const.MARGIN*4);
         wSearchV.setLayoutData(fdSearchV);
         
         wNextV = new Button(composite, SWT.PUSH);
-        wNextV.setText("   &Next   ");
+        wNextV.setText("   Next   ");
         FormData fdNextV = new FormData();
         fdNextV.right  = new FormAttachment(middle, -Const.MARGIN*2);
         fdNextV.top    = new FormAttachment(wSearchV, Const.MARGIN*2);
@@ -444,7 +487,7 @@ public class Translator2
 
 						String key = wTodo.getSelection()[0]; 
 
-						handleKeySelection(key);
+						showKeySelection(key);
 					}
 				}
 			}
@@ -482,32 +525,7 @@ public class Translator2
 		
 		wSave.addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent event) {
-					java.util.List<MessagesStore> changedMessagesStores = store.getChangedMessagesStores();
-					StringBuffer msg = new StringBuffer();
-					for (MessagesStore messagesStore : changedMessagesStores) {
-						// Find the main locale variation for this messages store...
-						//
-						MessagesStore mainLocaleMessagesStore = store.findMainLocaleMessagesStore(messagesStore.getMessagesPackage());
-						String sourceDirectory = mainLocaleMessagesStore.getSourceDirectory(ROOT);
-						String filename = messagesStore.getSaveFilename(sourceDirectory);
-						messagesStore.setFilename(filename);
-						msg.append(filename).append(Const.CR);
-					}
-					
-					EnterTextDialog dialog = new EnterTextDialog(shell, "Changed files", "Below are the changed messages files.  Select 'OK' to save these files to disk.", msg.toString());
-					if (dialog.open()!=null)
-					{
-						try
-						{
-							for (MessagesStore messagesStore : changedMessagesStores) {
-								messagesStore.write();
-								LogWriter.getInstance().logBasic(toString(), "Saved messages file : "+messagesStore.getFilename());	
-							}
-						}
-						catch(KettleException e) {
-							new ErrorDialog(shell, "Error", "There was an error saving the changed messages files:", e);
-						}
-					}
+					saveFiles();
 				}
 			}
 		);
@@ -542,7 +560,46 @@ public class Translator2
 
      }
     
-    protected void search(String searchLocale) {
+    protected void saveFiles() {
+		java.util.List<MessagesStore> changedMessagesStores = store.getChangedMessagesStores();
+		if (changedMessagesStores.size()>0) {
+				
+			StringBuffer msg = new StringBuffer();
+			for (MessagesStore messagesStore : changedMessagesStores) {
+				// Find the main locale variation for this messages store...
+				//
+				MessagesStore mainLocaleMessagesStore = store.findMainLocaleMessagesStore(messagesStore.getMessagesPackage());
+				String sourceDirectory = mainLocaleMessagesStore.getSourceDirectory(ROOT);
+				String filename = messagesStore.getSaveFilename(sourceDirectory);
+				messagesStore.setFilename(filename);
+				msg.append(filename).append(Const.CR);
+			}
+			
+			EnterTextDialog dialog = new EnterTextDialog(shell, "Changed files", "Below are the changed messages files.  Select 'OK' to save these files to disk.", msg.toString());
+			if (dialog.open()!=null)
+			{
+				try
+				{
+					for (MessagesStore messagesStore : changedMessagesStores) {
+						messagesStore.write();
+						LogWriter.getInstance().logBasic(toString(), "Saved messages file : "+messagesStore.getFilename());	
+					}
+				}
+				catch(KettleException e) {
+					new ErrorDialog(shell, "Error", "There was an error saving the changed messages files:", e);
+				}
+			}
+			
+		}
+		else {
+			// Nothing was saved.
+			// TODO: disable the button if nothing changed.
+			
+		}
+
+	}
+
+	protected void search(String searchLocale) {
 		// Ask for the search string...
 		//
 		EnterStringDialog dialog = new EnterStringDialog(shell, Const.NVL(searchString, ""), "Search key", "Search the translated '"+searchLocale+"' strings in this package");
@@ -579,7 +636,7 @@ public class Translator2
 							if (index>=0) {
 								lastFoundKey = key;
 								wTodo.setSelection(index);
-								handleKeySelection(wTodo.getSelection()[0]);
+								showKeySelection(wTodo.getSelection()[0]);
 								return;
 							}
 						}
@@ -593,7 +650,7 @@ public class Translator2
 
 	}
 
-	protected void handleKeySelection(String key) {
+	protected void showKeySelection(String key) {
 		if (!key.equals(selectedKey)) {
 			
 			applyChangedValue();
@@ -603,9 +660,12 @@ public class Translator2
 			if (selectedLocale!=null && key!=null && selectedMessagesPackage!=null) {
 				String mainValue = store.lookupKeyValue(mainLocale, selectedMessagesPackage, key);
 				String value = store.lookupKeyValue(selectedLocale, selectedMessagesPackage, key);
+				KeyOccurrence keyOccurrence = crawler.getKeyOccurrence(key, selectedMessagesPackage);
+				
 				wKey.setText(key);
 				wMain.setText(Const.NVL(mainValue, ""));
 				wValue.setText(Const.NVL(value, ""));
+				wSource.setText(keyOccurrence.getSourceLine());
 				
 				// Focus on the entry field
 				// Put the cursor all the way at the back
@@ -631,6 +691,7 @@ public class Translator2
     	wKey.setText("");
     	wMain.setText("");
     	wValue.setText("");
+    	wSource.setText("");
     	
     	selectedLocale = wLocale.getSelectionCount()==0 ? null : wLocale.getSelection()[0];
     	selectedMessagesPackage = wPackages.getSelectionCount()==0 ? null : wPackages.getSelection()[0];
@@ -664,11 +725,10 @@ public class Translator2
     	if (selectedKey!=null && selectedLocale!=null && selectedMessagesPackage!=null && lastValueChanged) {
     		// Store the last modified value
     		//
-    		if (Const.isEmpty(lastValue)) {
-    			store.removeValue(selectedLocale, selectedMessagesPackage, selectedKey);
-    		}
-    		else {
+    		if (!Const.isEmpty(lastValue)) {
     			store.storeValue(selectedLocale, selectedMessagesPackage, selectedKey, lastValue);
+        		lastValueChanged = false;
+
     			if (!wAll.getSelection()) {
 					wTodo.remove(selectedKey);
 					if (wTodo.getSelectionIndex()<0) {
@@ -677,13 +737,13 @@ public class Translator2
 						
 						if (todoIndex>=0 && todoIndex<wTodo.getItemCount()) {
 							wTodo.setSelection(todoIndex);
-							selectedKey = null;
-							handleKeySelection(wTodo.getSelection()[0]);
+							showKeySelection(wTodo.getSelection()[0]);
+						} else {
+							refreshGrid();
 						}
 					}
     			}
     		}
-    		lastValueChanged = false;
         	lastValue = null;
         	wApply.setEnabled(false);
         	wRevert.setEnabled(false);
