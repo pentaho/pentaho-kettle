@@ -5887,6 +5887,11 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	public void runFile(){
 		executeFile(true, false, false, false, false, null);
 	}
+	
+	public void replayTransformation(){
+		TransExecutionConfiguration tc = this.getTransExecutionConfiguration();
+		executeFile(tc.isExecutingLocally(),tc.isExecutingRemotely(),tc.isExecutingClustered(),false,false,new Date());
+	}
 
 	public void previewFile(){
 		executeFile(true, false, false, true, false, null);
