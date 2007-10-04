@@ -954,7 +954,7 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 
 		boolean execConfigAnswer = true;
 		
-		if (debugAnswer == TransDebugDialog.DEBUG_CONFIG) {
+		if (debugAnswer == TransDebugDialog.DEBUG_CONFIG && replayDate==null) {
 			TransExecutionConfigurationDialog dialog = new TransExecutionConfigurationDialog(spoon.getShell(), executionConfiguration, transMeta);
 			execConfigAnswer = dialog.open();
 		}
