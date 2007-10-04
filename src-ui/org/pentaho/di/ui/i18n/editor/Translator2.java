@@ -1,5 +1,6 @@
 package org.pentaho.di.ui.i18n.editor;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import org.eclipse.swt.SWT;
@@ -129,6 +130,41 @@ public class Translator2
         	messagesPackages = crawler.getMessagesPackagesList();
         	store = new TranslationsStore(localeList, messagesPackages, REFERENCE_LOCALE); // en_US : main locale
         	store.read(directories);
+        	
+        	// What are the statistics?
+        	//
+        	int nrKeys = 0;
+        	
+        	int keyCounts[] = new int[localeList.size()];
+        	for (int i=0;i<localeList.size();i++) {
+        		String locale = localeList.get(i);
+        		
+        		// Count the number of keys available in that locale...
+        		//
+        		keyCounts[i]=0;
+        		for (KeyOccurrence keyOccurrence : crawler.getOccurrences()) {
+        			// We don't want the system keys, just the regular ones.
+        			//
+        			if (!keyOccurrence.getKey().startsWith("System.")) {
+            			String value = store.lookupKeyValue(locale, keyOccurrence.getMessagesPackage(), keyOccurrence.getKey());
+	        			if (!Const.isEmpty(value)) {
+	        				keyCounts[i]++;
+	        			}
+	        			if (locale.equals(REFERENCE_LOCALE)) {
+	        				nrKeys++;
+	        			}
+        			}
+        		}
+        	}
+        	
+        	DecimalFormat df = new DecimalFormat("##0.00");
+        	
+        	double donePct[] = new double[localeList.size()];
+        	System.out.println("Number of keys found : "+nrKeys);
+        	for (int i=0;i<localeList.size();i++) {
+        		donePct[i] = 100 * (double)keyCounts[i] / (double)nrKeys;
+            	System.out.println(localeList.get(i)+" : "+df.format(donePct[i])+"% complete  ("+keyCounts[i]+")");
+        	}
         	
         }
         catch(Exception e)
@@ -705,7 +741,7 @@ public class Translator2
     		java.util.List<KeyOccurrence> todo = new ArrayList<KeyOccurrence>();
     		for (KeyOccurrence keyOccurrence : keys) {
     			String value = store.lookupKeyValue(selectedLocale, selectedMessagesPackage, keyOccurrence.getKey());
-    			if ((value==null || wAll.getSelection()) && !keyOccurrence.getKey().startsWith("System.")) { // Avoid the System keys.  Those are taken care off.
+    			if ((Const.isEmpty(value) || wAll.getSelection()) && !keyOccurrence.getKey().startsWith("System.")) { // Avoid the System keys.  Those are taken care off.
     				todo.add(keyOccurrence);
     			}
     		}
