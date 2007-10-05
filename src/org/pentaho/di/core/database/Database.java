@@ -30,6 +30,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -94,9 +95,9 @@ public class Database implements VariableSpace
 	private LogWriter log;
 	
 	/**
-	 * Counts the number of rows written to a batch.
+	 * Counts the number of rows written to a batch for a certain PreparedStatement.
 	 */
-	private int batchCounter;
+	private Map<PreparedStatement, Integer> batchCounterMap;
 
     /**
      * Number of times a connection was opened using this object.
@@ -125,6 +126,8 @@ public class Database implements VariableSpace
 		log=LogWriter.getInstance();
 		databaseMeta = inf;
 		shareVariablesWith(inf);
+		
+		batchCounterMap = new HashMap<PreparedStatement, Integer>();
 		
 		pstmt = null;
 		rowMeta = null;
@@ -1206,27 +1209,25 @@ public class Database implements VariableSpace
 	}
 	
 	/**
-     * @param batchCounter The batchCounter to set.
+     * @param batchCounterMap The batch counter map to set.
      */
-    public void setBatchCounter(int batchCounter)
+    public void setBatchCounterMap(Map<PreparedStatement, Integer> batchCounterMap)
     {
-        this.batchCounter = batchCounter;
+        this.batchCounterMap = batchCounterMap;
     }
     
     /**
-     * @return Returns the batchCounter.
+     * @return Returns the batch counter map.
      */
-    public int getBatchCounter()
+    public Map<PreparedStatement, Integer> getBatchCounterMap()
     {
-        return batchCounter;
+        return batchCounterMap;
     }
-    
-    //private long testCounter = 0;
 
     /**
      * Insert a row into the database using a prepared statement that has all values set.
      * @param ps The prepared statement
-     * @param batch True if you want to use batch inserts (size = commitsize)
+     * @param batch True if you want to use batch inserts (size = commit size)
      * @return true if the rows are safe: if batch of rows was sent to the database OR if a commit was done.
      * @throws KettleDatabaseException
      */
@@ -1234,6 +1235,8 @@ public class Database implements VariableSpace
 	{
 	    String debug="insertRow start";
         boolean rowsAreSafe=false;
+        Integer batchCounter = null;
+        
 		try
 		{
             // Unique connections and Batch inserts don't mix when you want to roll back on certain databases.
@@ -1249,10 +1252,17 @@ public class Database implements VariableSpace
 				if (useBatchInsert)
 				{
 				    debug="insertRow add batch";
-				    batchCounter++;
+				    
+				    // Increment the counter...
+				    //
+				    batchCounter = batchCounterMap.get(ps);
+				    if (batchCounter==null) {
+				    	batchCounterMap.put(ps, 1);
+				    }
+				    else {
+				    	batchCounterMap.put(ps, Integer.valueOf(batchCounter.intValue()+1));
+				    }
 					ps.addBatch(); // Add the batch, but don't forget to run the batch
-                    //testCounter++;
-                    // System.out.println("testCounter is at "+testCounter);
 				}
 				else
 				{
@@ -1276,7 +1286,7 @@ public class Database implements VariableSpace
 					commit();
                     ps.clearBatch();
 
-					batchCounter=0;
+                    batchCounterMap.put(ps, Integer.valueOf(0));
 				}
 				else
 				{
@@ -1343,7 +1353,15 @@ public class Database implements VariableSpace
 	    insertFinished(prepStatementInsert, batch);
 		prepStatementInsert = null;
 	}
-	
+
+	/**
+	 * Empty and close a prepared statement.
+	 * 
+	 * @param ps The prepared statement to empty and close.
+	 * @param batch true if you are using batch processing (typically true for this method)
+	 * @param psBatchCounter The number of rows on the batch queue
+	 * @throws KettleDatabaseException
+	 */
 	public void insertFinished(PreparedStatement ps, boolean batch) throws KettleDatabaseException
 	{		
 		try
@@ -1352,11 +1370,26 @@ public class Database implements VariableSpace
 			{
 			    if (!isAutoCommit())
 			    {
-					if (batch && getDatabaseMetaData().supportsBatchUpdates() && batchCounter>0)
+			    	// Get the batch counter.  This counter is unique per Prepared Statement.
+			    	// It is increased in method insertRow()
+			    	//
+			    	Integer batchCounter = batchCounterMap.get(ps);
+			    	
+			    	// Execute the batch or just perform a commit.
+			    	//
+					if (batch && getDatabaseMetaData().supportsBatchUpdates() && batchCounter!=null && batchCounter.intValue()>0)
 					{
-					    //System.out.println("Executing batch with "+batchCounter+" elements...");
+					    // The problem with the batch counters is that you can't just execute the current batch.
+						// Certain databases have a problem if you execute the batch and if there are no statements in it.
+						// You can't just catch the exception either because you would have to roll back on certain databases before you can then continue to do anything.
+						// That leaves the task of keeping track of the number of rows up to our responsibility.
+						//
 						ps.executeBatch();
 						commit();
+						
+						// Remove the batch counter to avoid memory leaks in the database driver
+						//
+						batchCounterMap.remove(ps);
 					}
 					else
 					{
@@ -1364,12 +1397,13 @@ public class Database implements VariableSpace
 					}
 			    }
 	
+			    // Let's not forget to close the prepared statement.
+			    //
 				ps.close();
 			}
 		}
         catch(BatchUpdateException ex)
         {
-            //System.out.println("Batch update exception "+ex.getMessage());
             KettleDatabaseBatchException kdbe = new KettleDatabaseBatchException("Error updating batch", ex);
             kdbe.setUpdateCounts(ex.getUpdateCounts());
             List<Exception> exceptions = new ArrayList<Exception>();
