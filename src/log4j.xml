@@ -16,7 +16,7 @@
 
 <log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" debug="false">
    
-<appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
+   <appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
       <param name="Target" value="System.out"/>
       <param name="Threshold" value="INFO"/>
 
@@ -27,9 +27,18 @@
          -->
          <param name="ConversionPattern" value="%-5p %d{dd-MM HH:mm:ss,SSS} (%F:%M:%L)  -%m%n"/>
       </layout>
-</appender>
+   </appender>
+
+   <category name="com.healthmarketscience.jackcess">
+      <priority value="INFO"/>
+   </category>
+   
+   <category name="org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient">
+      <priority value="INFO"/>
+   </category>
 
    <root>
+      <priority value="INFO"/>
       <appender-ref ref="CONSOLE"/>
    </root>
 
