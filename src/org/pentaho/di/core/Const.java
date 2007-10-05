@@ -1213,14 +1213,14 @@ public class Const
 	/**
 	 * Convert strings separated by a string into an array of strings.<p>
 	 * <code>
-	 Example: a;b;c;d    ==  new String[] { a, b, c, d }
+	 Example: a;b;c;d    ==>  new String[] { a, b, c, d }
 	 * </code>
+	 * 
+	 * <p><b>NOTE: this differs from String.split() in a way that the built-in method uses regular expressions and this one does not.</b>
 	 *  
 	 * @param string The string to split
 	 * @param separator The separator used.
 	 * @return the string split into an array of strings
-	 * 
-	 * NOTE: this is deprecated stuff, just use String.split()
 	 */
 	public static final String[] splitString(String string, String separator)
 	{
