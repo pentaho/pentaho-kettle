@@ -513,7 +513,7 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
             
             // Split the string, header or data into parts...
             //
-            String[] fieldNames = line.split(meta.getDelimiter()); 
+            String[] fieldNames = Const.splitString(line, meta.getDelimiter()); 
             
             if (!meta.isHeaderPresent()) {
             	// Don't use field names from the header...
@@ -539,8 +539,8 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
             // Now we can continue reading the rows of data and we can guess the 
             // Sample a few lines to determine the correct type of the fields...
             // 
-            String shellText = org.pentaho.di.trans.steps.textfileinput.Messages.getString("CsvInputDialog.LinesToSample.DialogTitle");
-            String lineText = org.pentaho.di.trans.steps.textfileinput.Messages.getString("CsvInputDialog.LinesToSample.DialogMessage");
+            String shellText = Messages.getString("CsvInputDialog.LinesToSample.DialogTitle");
+            String lineText = Messages.getString("CsvInputDialog.LinesToSample.DialogMessage");
             EnterNumberDialog end = new EnterNumberDialog(shell, 100, shellText, lineText);
             int samples = end.open();
             if (samples >= 0)
@@ -584,8 +584,8 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
 			}
 		}
 	}
-	
-    // Preview the data
+
+	// Preview the data
     private void preview()
     {
         // Create the XML input step
@@ -594,7 +594,7 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
         
         TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(transMeta, oneMeta, wStepname.getText());
         
-        EnterNumberDialog numberDialog = new EnterNumberDialog(shell, 500, org.pentaho.di.trans.steps.textfileinput.Messages.getString("CsvInputDialog.PreviewSize.DialogTitle"), org.pentaho.di.trans.steps.textfileinput.Messages.getString("CsvInputDialog.PreviewSize.DialogMessage"));
+        EnterNumberDialog numberDialog = new EnterNumberDialog(shell, 500, Messages.getString("CsvInputDialog.PreviewSize.DialogTitle"), Messages.getString("CsvInputDialog.PreviewSize.DialogMessage"));
         int previewSize = numberDialog.open();
         if (previewSize>0)
         {
