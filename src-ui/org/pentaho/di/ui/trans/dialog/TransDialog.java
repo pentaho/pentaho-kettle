@@ -1645,6 +1645,14 @@ public class TransDialog extends Dialog
 			if (sii instanceof TableInputMeta)
 			{
 				TableInputMeta tii = (TableInputMeta)stepMeta.getStepMetaInterface();
+				if (tii.getDatabaseMeta()==null)
+				{
+					 MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
+                     mb.setMessage(Messages.getString("TransDialog.DatabaseMetaNotSet.Text"));
+                     mb.open();
+                     
+                     return;
+				}
 				con  = tii.getDatabaseMeta().getName();
 				tab  = getTableFromSQL(tii.getSQL());
 				if (tab==null) tab=stepMeta.getName();
