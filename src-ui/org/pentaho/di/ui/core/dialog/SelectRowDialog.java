@@ -120,7 +120,7 @@ public class SelectRowDialog extends Dialog
         
 		int FieldsRows=buffer.size();
 		
-		ColumnInfo[] colinf=new ColumnInfo[buffer.size()];
+		ColumnInfo[] colinf=new ColumnInfo[rowMeta.size()];
 		for (int i=0;i<rowMeta.size();i++)
 		{
 			ValueMetaInterface v=rowMeta.getValueMeta(i);
@@ -212,7 +212,8 @@ public class SelectRowDialog extends Dialog
                     {
                         show = "<conversion error>";
                     }
-				wFields.table.getItem(i).setText(c+1, show);
+				if (show!=null)
+					wFields.table.getItem(i).setText(c+1, show);
 			}
 		}
 		wFields.optWidth(true);
