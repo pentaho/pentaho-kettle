@@ -2332,7 +2332,36 @@ public class Spoon implements AddUndoPositionInterface
         ddSource.setTransfer(ttypes);
         ddSource.addDragListener(new DragSourceListener() 
             {
-                public void dragStart(DragSourceEvent event){ }
+                public void dragStart(DragSourceEvent event)
+                { 
+    				TreeSelection[] treeObjects = getTreeObjects(tree);
+    				if (treeObjects.length == 0)
+    				{
+    					event.doit = false;
+    					return;
+    				}
+    				
+    				TreeSelection treeObject = treeObjects[0];
+    				Object object = treeObject.getSelection();
+    				TransMeta transMeta = getActiveTransformation();
+    				// JobMeta jobMeta = spoon.getActiveJob();
+    				
+    				if (object instanceof StepMeta ||
+    					object instanceof StepPlugin ||
+    					( object instanceof DatabaseMeta && transMeta!=null) ||
+    					object instanceof TransHopMeta || 
+    					object instanceof JobEntryCopy ||
+    					object instanceof JobPlugin ||
+    					(object instanceof Class && object.equals(JobPlugin.class)) 
+    					)
+    				{
+    					event.doit = true;
+    				}
+    				else
+    				{
+    					event.doit = false;
+    				}
+                }
     
                 public void dragSetData(DragSourceEvent event) 
                 {
