@@ -229,7 +229,7 @@ public class Job extends Thread implements VariableSpace
 			//
 			try 
 			{
-				endProcessing(Messages.getString("Job.Status.End"), result);
+				endProcessing("end", result);  // $NON-NLS-1$
 			} 
 			catch (KettleJobException e) 
 			{
@@ -484,7 +484,7 @@ public class Job extends Thread implements VariableSpace
 			try
 			{
 				ldb.connect();
-				Object[] lastr = ldb.getLastLogDate(jobMeta.getLogTable(), jobMeta.getName(), true, Messages.getString("Job.Status.End"));
+				Object[] lastr = ldb.getLastLogDate(jobMeta.getLogTable(), jobMeta.getName(), true, "end"); // $NON-NLS-1$
 				if (!Const.isEmpty(lastr))
 				{
                     Date last;
@@ -516,7 +516,7 @@ public class Job extends Thread implements VariableSpace
                     }
                 }
 
-				ldb.writeLogRecord(jobMeta.getLogTable(), jobMeta.isBatchIdUsed(), getBatchId(), true, jobMeta.getName(), Messages.getString("Job.Status.Start"), 
+				ldb.writeLogRecord(jobMeta.getLogTable(), jobMeta.isBatchIdUsed(), getBatchId(), true, jobMeta.getName(), "start",  // $NON-NLS-1$ 
 				                   0L, 0L, 0L, 0L, 0L, 0L, 
 				                   startDate, endDate, logDate, depDate, currentDate,
 								   null
