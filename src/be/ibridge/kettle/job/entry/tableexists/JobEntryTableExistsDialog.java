@@ -172,6 +172,7 @@ public class JobEntryTableExistsDialog extends Dialog implements JobEntryDialogI
             {
                 DatabaseMeta databaseMeta = new DatabaseMeta();
                 DatabaseDialog cid = new DatabaseDialog(shell, databaseMeta);
+				cid.setModalDialog(true);
                 if (cid.open() != null)
                 {
                     jobMeta.addDatabase(databaseMeta);

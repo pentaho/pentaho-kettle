@@ -173,6 +173,7 @@ public class RepositoryDialog
 				{
 					DatabaseMeta databaseMeta = new DatabaseMeta();
 					DatabaseDialog dd = new DatabaseDialog(shell, databaseMeta);
+					dd.setModalDialog(true);
 					if (dd.open()!=null)
 					{
 						repositories.addDatabase(databaseMeta);
@@ -195,6 +196,7 @@ public class RepositoryDialog
 					if (databaseMeta!=null)
 					{
 						DatabaseDialog dd = new DatabaseDialog(shell, databaseMeta);
+						dd.setModalDialog(true);
 						if (dd.open()!=null)
 						{
 							fillConnections();

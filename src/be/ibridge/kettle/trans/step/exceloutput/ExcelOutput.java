@@ -464,6 +464,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
 		catch(Exception e)
 		{
 			logError("Error opening new file : "+e.toString());
+			retval=false;
 		}
 		// System.out.println("end of newFile(), splitnr="+splitnr);
 
@@ -491,6 +492,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
 		catch(Exception e)
 		{
             logError("Unable to close workbook file : "+e.toString());
+			setErrors(1);
 		}
 
 		return retval;

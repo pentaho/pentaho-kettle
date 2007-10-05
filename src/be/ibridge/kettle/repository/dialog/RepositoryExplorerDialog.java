@@ -2062,6 +2062,7 @@ public class RepositoryExplorerDialog extends Dialog
 			DatabaseMeta databaseMeta = new DatabaseMeta(rep, idDatabase);
 
 			DatabaseDialog dd = new DatabaseDialog(shell, databaseMeta);
+			dd.setModalDialog(true);
 			String name = dd.open();
 			if (name!=null)
 			{
@@ -2104,6 +2105,7 @@ public class RepositoryExplorerDialog extends Dialog
 		{
 			DatabaseMeta databaseMeta = new DatabaseMeta();
 			DatabaseDialog dd = new DatabaseDialog(shell, databaseMeta);
+			dd.setModalDialog(true);
 			String name = dd.open();
 			if (name!=null)
 			{

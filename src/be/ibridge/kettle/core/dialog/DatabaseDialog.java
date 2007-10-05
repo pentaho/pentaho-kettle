@@ -19,9 +19,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
-import org.eclipse.swt.graphics.Image;
 import java.util.Properties;
-import be.ibridge.kettle.core.GUIResource;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
@@ -49,6 +48,7 @@ import org.eclipse.swt.widgets.Text;
 
 import be.ibridge.kettle.core.ColumnInfo;
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.GUIResource;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.Row;
@@ -182,7 +182,8 @@ public class DatabaseDialog extends Dialog
 
 	private Button wDoubleDecimalSeparator;
  
-
+    private boolean modalDialog;
+    
     /**
      * @deprecated Use the simple version without <i>style</i>, <i>log</i> and <i>props</i> parameters
      */
@@ -221,7 +222,7 @@ public class DatabaseDialog extends Dialog
     public String open()
     {
         Shell parent = getParent();
-        shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
+        shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN | (modalDialog ? SWT.APPLICATION_MODAL : SWT.NONE));
         props.setLook(shell);
         shell.setImage( GUIResource.getInstance().getImageConnection());
 
@@ -1970,4 +1971,18 @@ public class DatabaseDialog extends Dialog
         }
 
     }
+
+	/**
+	 * @return the modalDialog
+	 */
+	public boolean isModalDialog() {
+		return modalDialog;
+	}
+
+	/**
+	 * @param modalDialog the modalDialog to set
+	 */
+	public void setModalDialog(boolean modalDialog) {
+		this.modalDialog = modalDialog;
+	}
 }

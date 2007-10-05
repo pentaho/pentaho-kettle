@@ -727,6 +727,7 @@ public class TransDialog extends Dialog
             {
                 DatabaseMeta databaseMeta = new DatabaseMeta();
                 DatabaseDialog cid = new DatabaseDialog(shell, databaseMeta);
+				cid.setModalDialog(true);
                 if (cid.open()!=null)
                 {
                     transMeta.addDatabase(databaseMeta);
