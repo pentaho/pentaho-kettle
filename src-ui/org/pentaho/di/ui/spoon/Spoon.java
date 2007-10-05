@@ -3087,6 +3087,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			}
 
 			delegates.jobs.addJobGraph(jobMeta);
+			
 			refreshTree();
         }
         catch(Exception e)
@@ -6275,5 +6276,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	 */
 	public void setJobExecutionConfiguration(JobExecutionConfiguration jobExecutionConfiguration) {
 		this.jobExecutionConfiguration = jobExecutionConfiguration;
+	}
+	
+	public XulToolbar getToolbar()
+	{
+		return toolbar;
 	}
 }
