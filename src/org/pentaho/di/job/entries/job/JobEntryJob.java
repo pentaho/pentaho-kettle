@@ -20,12 +20,17 @@ import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.andValid
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlankValidator;
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notNullValidator;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.VFS;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -341,10 +346,23 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 
 	public Result execute(Result result, int nr, Repository rep, Job parentJob) throws KettleException
 	{
-		result.setEntryNr( nr );
+		try
+		{
+			FileObject parent = VFS.getManager().resolveFile(parentJob.getJobMeta().getFilename());
+			FileObject thisFile = VFS.getManager().resolveFile(getFilename());
+			
+			if (parent.equals(thisFile))
+				throw new KettleException("JobJobError.Recursive");
+		}
+		catch(IOException e)
+		{
+			throw new KettleException(e);
+		}
+	
+	    result.setEntryNr( nr );
 
         LogWriter logwriter = log;
-
+        
         Log4jFileAppender appender = null;
         int backupLogLevel = log.getLogLevel();
         if (setLogfile)
