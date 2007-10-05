@@ -697,9 +697,11 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
                 if (databaseMeta!=null)
                 {
                     Database db = new Database(databaseMeta);
+                    db.connect(); //TODO is this the right place? Why did this worked before with Show output fields?
                     String schemaTable = databaseMeta.getQuotedSchemaTableCombination(schemaName, tableName);
                     RowMetaInterface extraFields = db.getTableFields(schemaTable);
-
+                    db.disconnect(); //TODO see above
+                    
                     for (int i = 0; i < fieldLookup.length; i++)
                     {
                         v = extraFields.searchValueMeta(fieldLookup[i]);

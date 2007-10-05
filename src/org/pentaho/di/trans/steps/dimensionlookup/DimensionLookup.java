@@ -128,14 +128,17 @@ public class DimensionLookup extends BaseStep implements StepInterface
             }
 
             // Return values
-            data.fieldnrs = new int[meta.getFieldStream().length];
-            for (int i=0;meta.getFieldStream()!=null && i<meta.getFieldStream().length;i++)
+            if (meta.isUpdate())
             {
-                data.fieldnrs[i]=getInputRowMeta().indexOfValue(meta.getFieldStream()[i]);
-                if ((data.fieldnrs[i] < 0)) 
-                {
-                  throw new KettleStepException(Messages.getString("DimensionLookup.Exception.KeyFieldNotFound", meta.getFieldStream()[i])); //$NON-NLS-1$ //$NON-NLS-2$
-                }
+	            data.fieldnrs = new int[meta.getFieldStream().length];
+	            for (int i=0;meta.getFieldStream()!=null && i<meta.getFieldStream().length;i++)
+	            {
+	                data.fieldnrs[i]=getInputRowMeta().indexOfValue(meta.getFieldStream()[i]);
+	                if ((data.fieldnrs[i] < 0)) 
+	                {
+	                  throw new KettleStepException(Messages.getString("DimensionLookup.Exception.KeyFieldNotFound", meta.getFieldStream()[i])); //$NON-NLS-1$ //$NON-NLS-2$
+	                }
+	            }
             }
 
             if (meta.getDateField()!=null && meta.getDateField().length()>0)
@@ -178,10 +181,21 @@ public class DimensionLookup extends BaseStep implements StepInterface
                 data.cacheValueRowMeta = new RowMeta();
                 data.cacheValueRowMeta.addValueMeta( new ValueMeta(meta.getKeyField(), ValueMetaInterface.TYPE_INTEGER) );
                 data.cacheValueRowMeta.addValueMeta( new ValueMeta(meta.getVersionField(), ValueMetaInterface.TYPE_INTEGER) );
-                for (int i=0;i<data.fieldnrs.length;i++)
+                if (data.fieldnrs!=null)
                 {
-                    ValueMetaInterface v = getInputRowMeta().getValueMeta(data.fieldnrs[i]);
-                    data.cacheValueRowMeta.addValueMeta(v);
+	                for (int i=0;i<data.fieldnrs.length;i++)
+	                {
+	                	ValueMetaInterface v = null;
+	                	if (!meta.isUpdate())
+	                	{
+	                		v = data.outputRowMeta.getValueMeta(data.fieldnrs[i]);
+	                	}
+	                	else
+	                	{
+	                		v = getInputRowMeta().getValueMeta(data.fieldnrs[i]);	
+	                	}
+	                    data.cacheValueRowMeta.addValueMeta(v);
+	                }
                 }
                 data.cacheValueRowMeta.addValueMeta( new ValueMeta(meta.getDateFrom(), ValueMetaInterface.TYPE_DATE) );
                 data.cacheValueRowMeta.addValueMeta( new ValueMeta(meta.getDateTo(), ValueMetaInterface.TYPE_DATE) );
@@ -536,7 +550,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
      * table: dimension table keys[]: which dim-fields do we use to look up key? retval: name of the key to return
      * datefield: do we have a datefield? datefrom, dateto: date-range, if any.
      */
-    public void setDimLookup(RowMetaInterface rowMeta) throws KettleDatabaseException
+    private void setDimLookup(RowMetaInterface rowMeta) throws KettleDatabaseException
     {
         DatabaseMeta databaseMeta = meta.getDatabaseMeta();
         
@@ -563,7 +577,15 @@ public class DimensionLookup extends BaseStep implements StepInterface
                 if (!Const.isEmpty(meta.getFieldLookup()[i]))
                 {
                     sql+=", "+databaseMeta.quoteField(meta.getFieldLookup()[i]);
-                    ValueMetaInterface valueMeta = rowMeta.getValueMeta( data.fieldnrs[i] ).clone();
+                    ValueMetaInterface valueMeta = null;
+                    if (!meta.isUpdate())
+                    {
+                    	valueMeta = data.outputRowMeta.searchValueMeta(meta.getFieldLookup()[i]).clone();
+                    }
+                    else
+                    {
+                    	valueMeta = rowMeta.getValueMeta( data.fieldnrs[i] ).clone();
+                    }
                     
                     if (!Const.isEmpty( meta.getFieldStream()[i] ) && !meta.getFieldLookup()[i].equals(meta.getFieldStream()[i]))
                     {
