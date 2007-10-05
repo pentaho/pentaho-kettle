@@ -230,6 +230,33 @@ public class SpoonTreeDelegate extends SpoonDelegate
 		{
 			public void dragStart(DragSourceEvent event)
 			{
+				TreeSelection[] treeObjects = getTreeObjects(tree,selectionTree,coreObjectsTree);
+				if (treeObjects.length == 0)
+				{
+					event.doit = false;
+					return;
+				}
+				
+				TreeSelection treeObject = treeObjects[0];
+				Object object = treeObject.getSelection();
+				TransMeta transMeta = spoon.getActiveTransformation();
+				// JobMeta jobMeta = spoon.getActiveJob();
+				
+				if (object instanceof StepMeta ||
+					object instanceof StepPlugin ||
+					( object instanceof DatabaseMeta && transMeta!=null) ||
+					object instanceof TransHopMeta || 
+					object instanceof JobEntryCopy ||
+					object instanceof JobPlugin ||
+					(object instanceof Class && object.equals(JobPlugin.class)) 
+					)
+				{
+					event.doit = true;
+				}
+				else
+				{
+					event.doit = false;
+				}
 			}
 
 			public void dragSetData(DragSourceEvent event)
