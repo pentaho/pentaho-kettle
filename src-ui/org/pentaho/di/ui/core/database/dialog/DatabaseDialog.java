@@ -189,6 +189,8 @@ public class DatabaseDialog extends Dialog
 	private Label wlDoubleDecimalSeparator;
 
 	private Button wDoubleDecimalSeparator;
+	
+    private boolean modalDialog;
 
     public DatabaseDialog(Shell parent, DatabaseMeta databaseMeta)
     {
@@ -220,7 +222,7 @@ public class DatabaseDialog extends Dialog
     public String open()
     {
         Shell parent = getParent();
-        shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
+        shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN | (modalDialog ? SWT.APPLICATION_MODAL : SWT.NONE) );
         props.setLook(shell);
 		shell.setImage( GUIResource.getInstance().getImageConnection());
 
@@ -1988,4 +1990,18 @@ public class DatabaseDialog extends Dialog
                     Messages.getString("DatabaseDialog.FeatureListError.title"), Messages.getString("DatabaseDialog.FeatureListError.description"), e); //$NON-NLS-1$ //$NON-NLS-2$
         }
     }
+
+	/**
+	 * @return the modalDialog
+	 */
+	public boolean isModalDialog() {
+		return modalDialog;
+	}
+
+	/**
+	 * @param modalDialog the modalDialog to set
+	 */
+	public void setModalDialog(boolean modalDialog) {
+		this.modalDialog = modalDialog;
+	}
 }

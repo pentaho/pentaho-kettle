@@ -187,6 +187,7 @@ public class JobEntrySQLDialog extends JobEntryDialog implements JobEntryDialogI
                 DatabaseMeta databaseMeta = new DatabaseMeta();
                 databaseMeta.shareVariablesWith(jobMeta);
                 DatabaseDialog cid = new DatabaseDialog(shell, databaseMeta);
+                cid.setModalDialog(true);
                 if (cid.open() != null)
                 {
                     jobMeta.addDatabase(databaseMeta);

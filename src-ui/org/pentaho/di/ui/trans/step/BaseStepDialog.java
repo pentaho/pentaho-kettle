@@ -396,6 +396,7 @@ public class BaseStepDialog extends Dialog {
         DatabaseMeta databaseMeta = new DatabaseMeta();
         databaseMeta.shareVariablesWith(transMeta);
         DatabaseDialog cid = new DatabaseDialog(shell, databaseMeta);
+        cid.setModalDialog(true);
         if (cid.open() != null) {
           transMeta.addDatabase(databaseMeta);
           wConnection.removeAll();
@@ -422,6 +423,7 @@ public class BaseStepDialog extends Dialog {
         if (databaseMeta != null) {
           databaseMeta.shareVariablesWith(transMeta);
           DatabaseDialog cid = new DatabaseDialog(shell, databaseMeta);
+          cid.setModalDialog(true);
           if (cid.open() != null) {
             wConnection.removeAll();
             addDatabases(wConnection);

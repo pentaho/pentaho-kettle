@@ -1262,6 +1262,7 @@ public class Database implements VariableSpace
 				    else {
 				    	batchCounterMap.put(ps, Integer.valueOf(batchCounter.intValue()+1));
 				    }
+				    
 					ps.addBatch(); // Add the batch, but don't forget to run the batch
 				}
 				else
@@ -1386,10 +1387,6 @@ public class Database implements VariableSpace
 						//
 						ps.executeBatch();
 						commit();
-						
-						// Remove the batch counter to avoid memory leaks in the database driver
-						//
-						batchCounterMap.remove(ps);
 					}
 					else
 					{
@@ -1425,6 +1422,12 @@ public class Database implements VariableSpace
 		catch(SQLException ex) 
 		{
 			throw new KettleDatabaseException("Unable to commit connection after having inserted rows.", ex);
+		}
+		finally
+		{
+			// Remove the batch counter to avoid memory leaks in the database driver
+			//
+			batchCounterMap.remove(ps);
 		}
 	}
 	
