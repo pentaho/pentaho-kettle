@@ -1474,7 +1474,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 	public String getSchemaTableCombination(String schemaName, String tableName)
 	{
         if (Const.isEmpty(schemaName)) return tableName; // no need to look further
-        if (isUsingDoubleDecimalAsSchemaTableSeparator()) return schemaName+".."+tableName;
+        if (!isUsingDoubleDecimalAsSchemaTableSeparator()) return schemaName+".."+tableName;
 		return databaseInterface.getSchemaTableCombination(schemaName, tableName);
 	}
 	
