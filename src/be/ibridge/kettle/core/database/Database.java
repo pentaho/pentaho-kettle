@@ -31,8 +31,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.sql.DataSource;
@@ -92,9 +94,9 @@ public class Database
 	private LogWriter log;
 
 	/**
-	 * Counts the number of rows written to a batch.
+	 * Counts the number of rows written to a batch for a certain PreparedStatement.
 	 */
-	private int batchCounter;
+	private Map batchCounterMap;
 
     /**
      * Number of times a connection was opened using this object.
@@ -113,7 +115,7 @@ public class Database
 
 
 	/**
-	 * Construnct a new Database Connection
+	 * Construct a new Database Connection
 	 * @param inf The Database Connection Info to construct the connection with.
 	 */
 	public Database(DatabaseMeta inf)
@@ -121,6 +123,8 @@ public class Database
 		log=LogWriter.getInstance();
 		databaseMeta = inf;
 
+		batchCounterMap = new HashMap();
+		
 		pstmt = null;
 		rowinfo = null;
 		dbmd = null;
@@ -1729,19 +1733,19 @@ public class Database
 	}
 
 	/**
-     * @param batchCounter The batchCounter to set.
+     * @param batchCounterMap The batch counter map to set.
      */
-    public void setBatchCounter(int batchCounter)
+    public void setBatchCounterMap(Map batchCounterMap)
     {
-        this.batchCounter = batchCounter;
+        this.batchCounterMap = batchCounterMap;
     }
-
+    
     /**
-     * @return Returns the batchCounter.
+     * @return Returns the batch counter map.
      */
-    public int getBatchCounter()
+    public Map getBatchCounterMap()
     {
-        return batchCounter;
+        return batchCounterMap;
     }
 
     //private long testCounter = 0;
@@ -1757,6 +1761,8 @@ public class Database
 	{
 	    String debug="insertRow start";
         boolean rowsAreSafe=false;
+        Integer batchCounter = null;
+        
 		try
 		{
             // Unique connections and Batch inserts don't mix when you want to roll back on certain databases.
@@ -1772,10 +1778,18 @@ public class Database
 				if (useBatchInsert)
 				{
 				    debug="insertRow add batch";
-				    batchCounter++;
-					ps.addBatch(); // Add the batch, but don't forget to run the batch
-                    //testCounter++;
-                    // System.out.println("testCounter is at "+testCounter);
+				    
+				    // Increment the counter...
+				    //
+				    batchCounter = (Integer) batchCounterMap.get(ps);
+				    if (batchCounter==null) {
+				    	batchCounterMap.put(ps, new Integer(1));
+				    }
+				    else {
+				    	batchCounterMap.put(ps, new Integer(batchCounter.intValue()+1));
+				    }
+
+				    ps.addBatch(); // Add the batch, but don't forget to run the batch
 				}
 				else
 				{
@@ -1799,7 +1813,7 @@ public class Database
 					commit();
                     ps.clearBatch();
 
-					batchCounter=0;
+					batchCounter=new Integer(0);
 				}
 				else
 				{
@@ -1881,9 +1895,13 @@ public class Database
 			{
 			    if (!isAutoCommit())
 			    {
-					if (batch && getDatabaseMetaData().supportsBatchUpdates() && batchCounter>0)
+			    	// Get the batch counter.  This counter is unique per Prepared Statement.
+			    	// It is increased in method insertRow()
+			    	//
+			    	Integer batchCounter = (Integer) batchCounterMap.get(ps);
+			    	
+					if (batch && getDatabaseMetaData().supportsBatchUpdates() && batchCounter!=null && batchCounter.intValue()>0)
 					{
-					    //System.out.println("Executing batch with "+batchCounter+" elements...");
 						ps.executeBatch();
 						commit();
 					}
@@ -1920,6 +1938,12 @@ public class Database
 		catch(SQLException ex)
 		{
 			throw new KettleDatabaseException("Unable to commit connection after having inserted rows.", ex);
+		}
+		finally
+		{
+			// Remove the batch counter to avoid memory leaks in the database driver
+			//
+			batchCounterMap.remove(ps);
 		}
 	}
 
