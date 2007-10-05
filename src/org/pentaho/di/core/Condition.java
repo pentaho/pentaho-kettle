@@ -402,6 +402,8 @@ public class Condition implements Cloneable, XMLInterface
 //                      throw new KettleException("Unable to find field ["+left_valuename+"] in the input row!");
 //                  }
                 }
+				else
+					return false; //no fields to evaluate
 				
 			    // Get fieldnrs right exact
                 ValueMetaInterface fieldMeta2 = right_exact!=null ? right_exact.getValueMeta() : null;
