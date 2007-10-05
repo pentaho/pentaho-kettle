@@ -1200,24 +1200,8 @@ public class BaseStep extends Thread implements VariableSpace
 	    
 	    // See if we need to open sockets to remote input steps...
 	    //
-        if (!remoteInputSteps.isEmpty()) {
-        	if (!remoteInputStepsInitialized) {
-        		// Loop over the remote steps and open client sockets to them 
-        		// Just be careful in case we're dealing with a partitioned clustered step.
-        		// A partitioned clustered step has only one. (see dispatch())
-        		// 
-        		for (RemoteStep remoteStep : remoteInputSteps) {
-        			try {
-						RowSet rowSet = remoteStep.openReaderSocket(this);
-						inputRowSets.add(rowSet);
-					} catch (Exception e) {
-						throw new KettleStepException("Error opening reader socket to remote step '"+remoteStep+"'", e);
-					}
-        		}
-        		remoteInputStepsInitialized = true;
-        	}
-        }
- 
+	    openRemoteInputStepSocketsOnce();
+	    
 	    // If everything is finished, we can stop immediately!
 	    //
 	    if (inputRowSets.isEmpty())
@@ -1317,7 +1301,34 @@ public class BaseStep extends Thread implements VariableSpace
         return row;
     }
 
-    protected void safeModeChecking(RowMetaInterface row) throws KettleRowException
+    /**
+     * Opens socket connections to the remote input steps of this step.
+     * <br>This method should be used by steps that don't call getRow() first in which it is executed automatically.
+     * <br><b>This method should be called before any data is read from previous steps.</b>
+     * <br>This action is executed only once.
+     * @throws KettleStepException
+     */
+    protected void openRemoteInputStepSocketsOnce() throws KettleStepException {
+        if (!remoteInputSteps.isEmpty()) {
+        	if (!remoteInputStepsInitialized) {
+        		// Loop over the remote steps and open client sockets to them 
+        		// Just be careful in case we're dealing with a partitioned clustered step.
+        		// A partitioned clustered step has only one. (see dispatch())
+        		// 
+        		for (RemoteStep remoteStep : remoteInputSteps) {
+        			try {
+						RowSet rowSet = remoteStep.openReaderSocket(this);
+						inputRowSets.add(rowSet);
+					} catch (Exception e) {
+						throw new KettleStepException("Error opening reader socket to remote step '"+remoteStep+"'", e);
+					}
+        		}
+        		remoteInputStepsInitialized = true;
+        	}
+        }
+	}
+
+	protected void safeModeChecking(RowMetaInterface row) throws KettleRowException
     {
     	if (row==null) {
     		return;

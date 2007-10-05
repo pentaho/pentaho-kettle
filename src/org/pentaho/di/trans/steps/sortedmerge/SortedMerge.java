@@ -51,17 +51,22 @@ public class SortedMerge extends BaseStep implements StepInterface
     
     
     /**
-     * We read from all streams in the partition mergin mode
+     * We read from all streams in the partition merge mode
      * For that we need at least one row on all input rowsets...
      * If we don't have a row, we wait for one.
      * 
-     * TODO: keep the inputRowSets() list sorted and go from there. That should dramatically improve speed as you only need half as many comparissons.
+     * TODO: keep the inputRowSets() list sorted and go from there. That should dramatically improve speed as you only need half as many comparisons.
      * 
      * @return the next row
      */
     private synchronized Object[] getRowSorted() throws KettleException {
         if (first) {
         	first=false;
+        	
+        	// Verify that socket connections to all the remote input steps are opened 
+        	// before we start to read/write ...
+        	//
+        	openRemoteInputStepSocketsOnce();
         	
         	// Read one row from all rowsets...
         	// 
