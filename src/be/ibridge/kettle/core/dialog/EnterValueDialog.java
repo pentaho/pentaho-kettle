@@ -122,7 +122,7 @@ public class EnterValueDialog extends Dialog
 		Shell parent = getParent();
 		display = parent.getDisplay();
 
-		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE );
+		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | (modalDialog ? SWT.APPLICATION_MODAL : SWT.NONE));
  		props.setLook(shell);
 
 		FormLayout formLayout = new FormLayout ();
