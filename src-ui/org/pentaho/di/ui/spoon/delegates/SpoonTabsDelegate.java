@@ -344,6 +344,8 @@ public class SpoonTabsDelegate extends SpoonDelegate
 		//
 		for (TabMapEntry entry : collection)
 		{
+			boolean isTrans = (entry.getObject() instanceof TransGraph);
+			
 			if (item.equals(entry.getTabItem()))
 			{
 				// TabItemInterface itemInterface = entry.getObject();
@@ -353,7 +355,8 @@ public class SpoonTabsDelegate extends SpoonDelegate
 				// state of the core object tree in method
 				// addCoreObjectsToTree()
 				//
-				if (entry.getObject() instanceof TransGraph || entry.getObject() instanceof JobGraph)
+				
+				if (isTrans || entry.getObject() instanceof JobGraph)
 				{
 					EngineMetaInterface meta = entry.getObject().getMeta();
 					if (meta != null)
@@ -365,12 +368,18 @@ public class SpoonTabsDelegate extends SpoonDelegate
 						spoon.refreshCoreObjects();
 					}
 				}
+				
+				spoon.getToolbar().getButtonById("trans-preview").setEnable(isTrans);
+				
+				break;
 			}
 		}
 
 		// Also refresh the tree
 		spoon.refreshTree();
 		spoon.enableMenus();
+		
+		
 	}
 	
 }
