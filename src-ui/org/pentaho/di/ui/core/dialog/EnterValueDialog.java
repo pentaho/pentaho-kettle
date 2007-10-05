@@ -92,6 +92,8 @@ public class EnterValueDialog extends Dialog
     private ValueMetaInterface valueMeta;
     private Object valueData;
 
+    private boolean modalDialog;
+    
 	public EnterValueDialog(Shell parent, int style, ValueMetaInterface value, Object data)
 	{
 		super(parent, style);
@@ -105,7 +107,7 @@ public class EnterValueDialog extends Dialog
 		Shell parent = getParent();
 		display = parent.getDisplay();
 
-		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE );
+		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | (modalDialog ? SWT.APPLICATION_MODAL : SWT.NONE)  );
  		props.setLook(shell);
  		shell.setImage(GUIResource.getInstance().getImageSpoon());
 
@@ -376,5 +378,19 @@ public class EnterValueDialog extends Dialog
         {
             new ErrorDialog(shell, "Error", "There was an error during data type conversion: ", e);
         }
+	}
+
+	/**
+	 * @return the modalDialog
+	 */
+	public boolean isModalDialog() {
+		return modalDialog;
+	}
+
+	/**
+	 * @param modalDialog the modalDialog to set
+	 */
+	public void setModalDialog(boolean modalDialog) {
+		this.modalDialog = modalDialog;
 	}
 }

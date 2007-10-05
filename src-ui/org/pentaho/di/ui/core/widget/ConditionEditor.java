@@ -391,6 +391,7 @@ public class ConditionEditor extends Composite
 								}
 							}
 							EnterValueDialog evd = new EnterValueDialog(shell, SWT.NONE, v.getValueMeta(), v.getValueData());
+							evd.setModalDialog(true); // To keep the condition editor from being closed with a value dialog still open. (PDI-140)
 							ValueMetaAndData newval = evd.open();
 							if (newval!=null)
 							{
