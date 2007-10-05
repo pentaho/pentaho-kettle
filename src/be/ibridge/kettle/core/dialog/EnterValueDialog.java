@@ -91,7 +91,8 @@ public class EnterValueDialog extends Dialog
 	private Props props;
 	private Value value;
 	
-	
+    private boolean modalDialog;
+    
 	private NumberFormat nf;
 	private DecimalFormat df;
 	private SimpleDateFormat daf;
@@ -410,5 +411,19 @@ public class EnterValueDialog extends Dialog
 		mb.setMessage(Messages.getString("EnterValueDialog.TestResult.Message", result.toString()));
 		mb.setText(Messages.getString("EnterValueDialog.TestResult.Title"));
 		mb.open();
+	}
+
+	/**
+	 * @return the modalDialog
+	 */
+	public boolean isModalDialog() {
+		return modalDialog;
+	}
+
+	/**
+	 * @param modalDialog the modalDialog to set
+	 */
+	public void setModalDialog(boolean modalDialog) {
+		this.modalDialog = modalDialog;
 	}
 }
