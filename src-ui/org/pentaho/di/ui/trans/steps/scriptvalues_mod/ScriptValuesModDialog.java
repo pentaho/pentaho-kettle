@@ -344,6 +344,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		fdCompatible.left  = new FormAttachment(wlCompatible, margin);
 		fdCompatible.top   = new FormAttachment(wlPosition, margin);
 		wCompatible.setLayoutData(fdCompatible);
+		wCompatible.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { rebuildInputFieldsTree();} });
 		
 		
 		wlHelpLabel = new Text(wTop, SWT.V_SCROLL |   SWT.LEFT);
@@ -499,7 +500,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		
 		// Adding the Rest (Functions, InputItems, etc.) to the Tree
 		buildSpecialFunctionsTree();
-		buildInputFieldsTree();
+		rebuildInputFieldsTree();
 		buildOutputFieldsTree();
 		buildAddClassesListTree();
 		addRenameTowTreeScriptItems();
@@ -1232,26 +1233,41 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 	}
 	
 	
-	private void buildInputFieldsTree(){
+	private void rebuildInputFieldsTree(){
 		try{
-		
+			String itemName = "Input Fields";
+			
 			RowMetaInterface r = transMeta.getPrevStepFields(stepname);
 			if (r!=null){
-				TreeItem item = new TreeItem(wTree, SWT.NULL);
-				item.setText("Input Fields");
+				TreeItem item = null;
+				for (TreeItem look : wTree.getItems()) {
+					if (look.getText().equals(itemName)) {
+						// This is the rebuild part!
+						for (TreeItem child : look.getItems()) child.dispose(); // clear the children.
+						item=look;
+						break;
+					}
+				}
+				if (item==null)  item = new TreeItem(wTree, SWT.NULL);
+				item.setText(itemName);
 				String strItemToAdd="";
 				for (int i=0;i<r.size();i++){
 						ValueMetaInterface v = r.getValueMeta(i);
-						switch(v.getType()){
-							case ValueMetaInterface.TYPE_STRING : strItemToAdd=v.getName()+".getString()"; break; //$NON-NLS-1$
-							case ValueMetaInterface.TYPE_NUMBER : strItemToAdd=v.getName()+".getNumber()"; break; //$NON-NLS-1$
-							case ValueMetaInterface.TYPE_INTEGER: strItemToAdd=v.getName()+".getInteger()"; break; //$NON-NLS-1$
-							case ValueMetaInterface.TYPE_DATE   : strItemToAdd=v.getName()+".getDate()"; break; //$NON-NLS-1$
-							case ValueMetaInterface.TYPE_BOOLEAN: strItemToAdd=v.getName()+".getBoolean()"; break; //$NON-NLS-1$
-							case ValueMetaInterface.TYPE_BIGNUMBER: strItemToAdd=v.getName()+".getBigNumber()"; break; //$NON-NLS-1$
-							case ValueMetaInterface.TYPE_BINARY: strItemToAdd=v.getName()+".getBytes()"; break; //$NON-NLS-1$
-							case ValueMetaInterface.TYPE_SERIALIZABLE: strItemToAdd=v.getName()+".getSerializable()"; break; //$NON-NLS-1$
-							default: strItemToAdd=v.getName(); break;
+						if (wCompatible.getSelection()) {
+							switch(v.getType()){
+								case ValueMetaInterface.TYPE_STRING : strItemToAdd=v.getName()+".getString()"; break; //$NON-NLS-1$
+								case ValueMetaInterface.TYPE_NUMBER : strItemToAdd=v.getName()+".getNumber()"; break; //$NON-NLS-1$
+								case ValueMetaInterface.TYPE_INTEGER: strItemToAdd=v.getName()+".getInteger()"; break; //$NON-NLS-1$
+								case ValueMetaInterface.TYPE_DATE   : strItemToAdd=v.getName()+".getDate()"; break; //$NON-NLS-1$
+								case ValueMetaInterface.TYPE_BOOLEAN: strItemToAdd=v.getName()+".getBoolean()"; break; //$NON-NLS-1$
+								case ValueMetaInterface.TYPE_BIGNUMBER: strItemToAdd=v.getName()+".getBigNumber()"; break; //$NON-NLS-1$
+								case ValueMetaInterface.TYPE_BINARY: strItemToAdd=v.getName()+".getBytes()"; break; //$NON-NLS-1$
+								case ValueMetaInterface.TYPE_SERIALIZABLE: strItemToAdd=v.getName()+".getSerializable()"; break; //$NON-NLS-1$
+								default: strItemToAdd=v.getName(); break;
+							}
+						}
+						else {
+							strItemToAdd=v.getName();
 						}
 						TreeItem itemInputFields = new TreeItem(item, SWT.NULL);
 						itemInputFields.setText(strItemToAdd);
