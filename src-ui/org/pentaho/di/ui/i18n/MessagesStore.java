@@ -105,7 +105,7 @@ public class MessagesStore extends ChangedFlag {
 			String attempt = directory+Const.FILE_SEPARATOR+path+Const.FILE_SEPARATOR+"messages"+Const.FILE_SEPARATOR+filename;
 			if (new File(attempt).exists()) return attempt;
 		}
-		throw new FileNotFoundException("package '"+(path+Const.FILE_SEPARATOR+filename)+" could not be found");
+		throw new FileNotFoundException("package '"+(path+Const.FILE_SEPARATOR+"messages"+Const.FILE_SEPARATOR+filename)+"' could not be found");
 	}
 	
 	public String getSourceDirectory(String[] directories) {

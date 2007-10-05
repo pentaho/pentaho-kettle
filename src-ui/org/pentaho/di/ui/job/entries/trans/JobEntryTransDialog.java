@@ -411,8 +411,8 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 		fdlLoglevel.top = new FormAttachment(wlAddTime, margin);
 		wlLoglevel.setLayoutData(fdlLoglevel);
 		wLoglevel = new CCombo(wLogging, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
-		for (int i = 0; i < LogWriter.logLevelDescription.length; i++)
-			wLoglevel.add(LogWriter.logLevelDescription[i]);
+		for (int i = 0; i < LogWriter.log_level_desc_long.length; i++)
+			wLoglevel.add(LogWriter.log_level_desc_long[i]);
 		wLoglevel.select(jobEntry.loglevel);
 
 		props.setLook(wLoglevel);

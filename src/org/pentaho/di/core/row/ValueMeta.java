@@ -865,6 +865,8 @@ public class ValueMeta implements ValueMetaInterface
         // This obviously only applies to numeric data and dates.
         // We verify if this is true or false in advance for performance reasons
         //
+    	if (binary==null) return null;
+    	
         if (identicalFormat) {
         	String string;
             if (Const.isEmpty(stringEncoding))

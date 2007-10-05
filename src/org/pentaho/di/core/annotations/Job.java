@@ -30,4 +30,6 @@ public @interface Job
 	String image();
 
 	JobEntryType type();
+	
+	String version() default "";
 }

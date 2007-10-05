@@ -127,8 +127,8 @@ public class LogSettingsDialog extends Dialog
 		fdlLoglevel.top  = new FormAttachment(wFilter, margin);
 		wlLoglevel.setLayoutData(fdlLoglevel);
 		wLoglevel=new CCombo(shell, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
-		for (int i=0;i<LogWriter.logLevelDescription.length;i++) 
-			wLoglevel.add(LogWriter.logLevelDescription[i]);
+		for (int i=0;i<LogWriter.log_level_desc_long.length;i++) 
+			wLoglevel.add(LogWriter.log_level_desc_long[i]);
 		wLoglevel.select( log.getLogLevel()+1); //+1: starts at -1	
 		
  		props.setLook(wLoglevel);

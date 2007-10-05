@@ -122,7 +122,7 @@ public class Kitchen
         if (!Const.isEmpty(optionLoglevel)) 
         {
             log.setLogLevel(optionLoglevel.toString());
-            log.logMinimal(STRING_KITCHEN, "Logging is at level : "+log.getLogLevelDesc());
+            log.logMinimal(STRING_KITCHEN, "Logging is at level : "+log.getLogLevelLongDesc());
         } 
 		
         if (!Const.isEmpty(optionVersion))

@@ -27,6 +27,7 @@ import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.EnterStringDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
@@ -113,6 +114,10 @@ public class Translator2
         this.props = PropsUI.getInstance();
     }
     
+    public boolean showKey(String key, String messagesPackage) {
+    	return !key.startsWith("System.") || messagesPackage.equals(BaseMessages.class.getPackage().getName());
+    }
+    
     public void readFiles(String[] directories) throws KettleFileException
     {
         log.logBasic(toString(), "Scanning source directories and Java source files for i18n keys...");
@@ -145,7 +150,7 @@ public class Translator2
         		for (KeyOccurrence keyOccurrence : crawler.getOccurrences()) {
         			// We don't want the system keys, just the regular ones.
         			//
-        			if (!keyOccurrence.getKey().startsWith("System.")) {
+        			if (showKey(keyOccurrence.getKey(), keyOccurrence.getMessagesPackage())) {
             			String value = store.lookupKeyValue(locale, keyOccurrence.getMessagesPackage(), keyOccurrence.getKey());
 	        			if (!Const.isEmpty(value)) {
 	        				keyCounts[i]++;
@@ -445,7 +450,7 @@ public class Translator2
         fdlSource.top   = new FormAttachment(wClose, -100-Const.MARGIN);
         wlSource.setLayoutData(fdlSource);
 
-        wSource = new Text(composite, SWT.MULTI | SWT.BORDER | SWT.WRAP );
+        wSource = new Text(composite, SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
         props.setLook(wSource);
         FormData fdSource = new FormData();
         fdSource.left   = new FormAttachment(middle, Const.MARGIN);
@@ -740,9 +745,13 @@ public class Translator2
     		java.util.List<KeyOccurrence> keys = crawler.getOccurrencesForPackage(selectedMessagesPackage);
     		java.util.List<KeyOccurrence> todo = new ArrayList<KeyOccurrence>();
     		for (KeyOccurrence keyOccurrence : keys) {
-    			String value = store.lookupKeyValue(selectedLocale, selectedMessagesPackage, keyOccurrence.getKey());
-    			if ((Const.isEmpty(value) || wAll.getSelection()) && !keyOccurrence.getKey().startsWith("System.")) { // Avoid the System keys.  Those are taken care off.
-    				todo.add(keyOccurrence);
+    			// Avoid the System keys.  Those are taken care off in a different package
+    			//
+    			if (showKey(keyOccurrence.getKey(), keyOccurrence.getMessagesPackage())) { 
+	    			String value = store.lookupKeyValue(selectedLocale, selectedMessagesPackage, keyOccurrence.getKey());
+	    			if (Const.isEmpty(value) || wAll.getSelection()) { 
+	    				todo.add(keyOccurrence);
+	    			}
     			}
     		}
     		

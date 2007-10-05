@@ -130,7 +130,7 @@ public class Pan
         if (!Const.isEmpty(optionLoglevel)) 
         {
             log.setLogLevel(optionLoglevel.toString());
-            log.logMinimal("Pan", "Logging is at level : "+log.getLogLevelDesc());
+            log.logMinimal("Pan", "Logging is at level : "+log.getLogLevelLongDesc());
         }
         
         if (!Const.isEmpty(optionVersion))

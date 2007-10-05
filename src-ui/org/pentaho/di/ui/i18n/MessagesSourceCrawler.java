@@ -11,6 +11,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.vfs.FileObject;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.logging.LogWriter;
@@ -314,12 +315,31 @@ public class MessagesSourceCrawler {
 				
 		// OK, add the occurrence to the list...
 		//
-		KeyOccurrence keyOccurrence = new KeyOccurrence(fileObject, messagesPackage, row, column, key, arguments, line);
-		addKeyOccurrence(keyOccurrence);
+		// Make sure we pass the System key occurrences to the correct package.
+		//
+		if (key.startsWith("System.")) {
+			String i18nPackage = BaseMessages.class.getPackage().getName();
+			KeyOccurrence keyOccurrence = new KeyOccurrence(fileObject, i18nPackage, row, column, key, arguments, line);
+			
+			// If we just add this key, we'll get doubles in the i18n package
+			//
+			KeyOccurrence lookup = getKeyOccurrence(key, i18nPackage);
+			if (lookup==null) {
+				addKeyOccurrence(keyOccurrence);
+			} else {
+				// Adjust the line of code...
+				//
+				lookup.setSourceLine(lookup.getSourceLine()+Const.CR+keyOccurrence.getSourceLine());
+				lookup.incrementOccurrences();
+			}
+		} else {
+			KeyOccurrence keyOccurrence = new KeyOccurrence(fileObject, messagesPackage, row, column, key, arguments, line);
+			addKeyOccurrence(keyOccurrence);
+		}
 	}
 	
 	/**
-	 * @return A sorted list of distinct occurences of the used message package names
+	 * @return A sorted list of distinct occurrences of the used message package names
 	 */
 	public List<String> getMessagesPackagesList() {
 		Map<String, String> table = new Hashtable<String, String>();
