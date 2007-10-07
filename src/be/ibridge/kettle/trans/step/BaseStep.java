@@ -118,6 +118,7 @@ import be.ibridge.kettle.trans.step.regexeval.RegexEvalMeta;
 import be.ibridge.kettle.trans.step.xsdvalidator.XsdValidatorMeta;
 import be.ibridge.kettle.trans.step.xslt.XsltMeta;
 import be.ibridge.kettle.trans.step.getfilesrowscount.GetFilesRowsCountMeta;
+import be.ibridge.kettle.trans.step.sqlfileoutput.SQLFileOutputMeta;
 
 
 public class BaseStep extends Thread
@@ -289,7 +290,8 @@ public class BaseStep extends Thread
 			
 			new StepPluginMeta(GetFilesRowsCountMeta.class, "GetFilesRowsCount", Messages.getString("BaseStep.TypeLongDesc.GetFilesRowsCount"), Messages
 					.getString("BaseStep.TypeTooltipDesc.GetFilesRowsCount"), "FRC.png", CATEGORY_INPUT), 
-		
+			new StepPluginMeta(SQLFileOutputMeta.class, "SQLFileOutput", Messages.getString("BaseStep.TypeLongDesc.SQLFileOutput"), Messages
+					.getString("BaseStep.TypeTooltipDesc.SQLFileOutput"), "SFO.png", CATEGORY_OUTPUT),
 
         };
 
