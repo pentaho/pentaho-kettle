@@ -1,0 +1,961 @@
+ /**********************************************************************
+ **                                                                   **
+ **               This code belongs to the KETTLE project.            **
+ **                                                                   **
+ ** Kettle, from version 2.2 on, is released into the public domain   **
+ ** under the Lesser GNU Public License (LGPL).                       **
+ **                                                                   **
+ ** For more details, please read the document LICENSE.txt, included  **
+ ** in this project                                                   **
+ **                                                                   **
+ ** http://www.kettle.be                                              **
+ ** info@kettle.be                                                    **
+ **                                                                   **
+ **********************************************************************/
+
+package be.ibridge.kettle.trans.step.sqlfileoutput;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Hashtable;
+
+import org.eclipse.swt.widgets.Shell;
+import org.w3c.dom.Node;
+
+import be.ibridge.kettle.core.CheckResult;
+import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.Row;
+import be.ibridge.kettle.core.SQLStatement;
+import be.ibridge.kettle.core.XMLHandler;
+import be.ibridge.kettle.core.database.Database;
+import be.ibridge.kettle.core.database.DatabaseMeta;
+import be.ibridge.kettle.core.exception.KettleDatabaseException;
+import be.ibridge.kettle.core.exception.KettleException;
+import be.ibridge.kettle.core.exception.KettleStepException;
+import be.ibridge.kettle.core.exception.KettleXMLException;
+import be.ibridge.kettle.core.util.StringUtil;
+import be.ibridge.kettle.core.value.Value;
+import be.ibridge.kettle.repository.Repository;
+import be.ibridge.kettle.trans.DatabaseImpact;
+import be.ibridge.kettle.trans.Trans;
+import be.ibridge.kettle.trans.TransMeta;
+import be.ibridge.kettle.trans.step.BaseStepMeta;
+import be.ibridge.kettle.trans.step.StepDataInterface;
+import be.ibridge.kettle.trans.step.StepDialogInterface;
+import be.ibridge.kettle.trans.step.StepInterface;
+import be.ibridge.kettle.trans.step.StepMeta;
+import be.ibridge.kettle.trans.step.StepMetaInterface;
+import be.ibridge.kettle.trans.step.sqlfileoutput.Messages;
+
+
+/*
+ * Created on 26-may-2007
+ *
+ */
+ 
+public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
+{
+		
+	private DatabaseMeta databaseMeta;
+    private String       schemaName;
+	private String       tablename;
+	private boolean      truncateTable;
+	
+	private boolean		AddToResult;
+	
+	private boolean      createTable;
+ 
+    /** The base name of the output file */
+	private  String fileName;
+	
+	/** The file extention in case of a generated filename */
+	private  String  extension;
+	
+	/** if this value is larger then 0, the text file is split up into parts of this number of lines */
+    private  int    splitEvery;
+
+	/** Flag to indicate the we want to append to the end of an existing file (if it exists) */
+    private  boolean fileAppended;
+
+	/** Flag: add the stepnr in the filename */
+    private  boolean stepNrInFilename;
+	
+	/** Flag: add the partition number in the filename */
+    private  boolean partNrInFilename;
+	
+	/** Flag: add the date in the filename */
+    private  boolean dateInFilename;
+	
+	/** Flag: add the time in the filename */
+    private  boolean timeInFilename;
+    
+    /** The encoding to use for reading: null or empty string means system default encoding */
+    private String encoding;
+    
+    /** The date format */
+    private String dateformat;
+    
+    /** Start New line for each statement */
+    private boolean		StartNewLine;
+    
+    /** Flag: create parent folder if needed */
+    private boolean createparentfolder;
+    
+	
+	
+	public void loadXML(Node stepnode, ArrayList databases, Hashtable counters)
+		throws KettleXMLException
+	{
+		readData(stepnode, databases);
+	}
+
+	public Object clone()
+	{
+		
+		SQLFileOutputMeta retval = (SQLFileOutputMeta)super.clone();
+		
+		return retval;
+	}
+	
+
+	
+	/**
+     * @return Returns the database.
+     */
+    public DatabaseMeta getDatabaseMeta()
+    {
+        return databaseMeta;
+    }
+    
+    /**
+     * @param database The database to set.
+     */
+    public void setDatabaseMeta(DatabaseMeta database)
+    {
+        this.databaseMeta = database;
+    }
+    
+    /**
+     * @return Returns the extension.
+     */
+    public String getExtension()
+    {
+        return extension;
+    }
+
+    /**
+     * @param extension The extension to set.
+     */
+    public void setExtension(String extension)
+    {
+        this.extension = extension;
+    }
+    
+    /**
+     * @return Returns the fileAppended.
+     */
+    public boolean isFileAppended()
+    {
+        return fileAppended;
+    }
+    
+    /**
+     * @param fileAppended The fileAppended to set.
+     */
+    public void setFileAppended(boolean fileAppended)
+    {
+        this.fileAppended = fileAppended;
+    }
+    
+    /**
+     * @return Returns the fileName.
+     */
+    public String getFileName()
+    {
+        return fileName;
+    }
+
+    
+    /**
+     * @return Returns the splitEvery.
+     */
+    public int getSplitEvery()
+    {
+        return splitEvery;
+    }
+
+    /**
+     * @param splitEvery The splitEvery to set.
+     */
+    public void setSplitEvery(int splitEvery)
+    {
+        this.splitEvery = splitEvery;
+    }
+
+    /**
+     * @return Returns the stepNrInFilename.
+     */
+    public boolean isStepNrInFilename()
+    {
+        return stepNrInFilename;
+    }
+
+    /**
+     * @param stepNrInFilename The stepNrInFilename to set.
+     */
+    public void setStepNrInFilename(boolean stepNrInFilename)
+    {
+        this.stepNrInFilename = stepNrInFilename;
+    }
+    
+
+    /**
+     * @return Returns the timeInFilename.
+     */
+    public boolean isTimeInFilename()
+    {
+        return timeInFilename;
+    }
+
+    /**
+     * @return Returns the dateInFilename.
+     */
+    public boolean isDateInFilename()
+    {
+        return dateInFilename;
+    }
+
+    /**
+     * @param dateInFilename The dateInFilename to set.
+     */
+    public void setDateInFilename(boolean dateInFilename)
+    {
+        this.dateInFilename = dateInFilename;
+    }
+    
+    /**
+     * @param timeInFilename The timeInFilename to set.
+     */
+    public void setTimeInFilename(boolean timeInFilename)
+    {
+        this.timeInFilename = timeInFilename;
+    }
+
+    
+    /**
+     * @param fileName The fileName to set.
+     */
+    public void setFileName(String fileName)
+    {
+        this.fileName = fileName;
+    }
+
+
+    /**
+     * @return The desired encoding of output file, null or empty if the default system encoding needs to be used.
+     */
+    public String getEncoding()
+    {
+        return encoding;
+    }
+
+    /**
+     * @return The desired date format.
+     */
+    public String getDateFormat()
+    {
+        return dateformat;
+    }
+    
+    /**
+     * @param encoding The desired encoding of output file, null or empty if the default system encoding needs to be
+     * used.
+     */
+    public void setEncoding(String encoding)
+    {
+        this.encoding = encoding;
+    }
+    
+    
+    /**
+     * @param date format The desired date format of output field date
+     * used.
+     */
+    public void setDateFormat(String date_format)
+    {
+        this.dateformat = date_format;
+    }
+    
+    
+    
+    /**
+     * @return Returns the tablename.
+     */
+    public String getTablename()
+    {
+        return tablename;
+    }
+    
+    /**
+     * @param tablename The tablename to set.
+     */
+    public void setTablename(String tablename)
+    {
+        this.tablename = tablename;
+    }
+    
+    /**
+     * @return Returns the truncate table flag.
+     */
+    public boolean truncateTable()
+    {
+        return truncateTable;
+    }
+    
+    
+    /**
+     * @return Returns the Add to result filesname flag.
+     */
+    public boolean AddToResult()
+    {
+        return AddToResult;
+    }
+    
+    /**
+     * @return Returns the Start new line flag.
+     */
+    public boolean StartNewLine()
+    {
+        return StartNewLine;
+    }
+    
+ 
+    /**
+     * @return Returns the create table flag.
+     */
+    public boolean createTable()
+    {
+        return createTable;
+    }
+    
+    
+    
+    /**
+     * @param truncateTable The truncate table flag to set.
+     */
+    public void setTruncateTable(boolean truncateTable)
+    {
+        this.truncateTable = truncateTable;
+    }
+    
+    /**
+     * @param AddToResult The Add file to result to set.
+     */
+    public void setAddToResult(boolean AddToResult)
+    {
+        this.AddToResult = AddToResult;
+    }
+    
+    /**
+     * @param StartNewLine The Start NEw Line to set.
+     */
+    public void setStartNewLine(boolean StartNewLine)
+    {
+        this.StartNewLine = StartNewLine;
+    }
+    
+    /**
+     * @param createTable The create table flag to set.
+     */
+    public void setCreateTable(boolean createTable)
+    {
+        this.createTable = createTable;
+    }
+    
+    /**
+     * @return Returns the create parent folder flag.
+     */
+    public boolean isCreateParentFolder()
+    {
+    	return createparentfolder;
+    }
+    
+    /**
+     * @param createparentfolder The create parent folder flag to set.
+     */
+    public void setCreateParentFolder(boolean createparentfolder)
+    {
+    	this.createparentfolder=createparentfolder;
+    }
+    
+	public String[] getFiles()
+	{
+		int copies=1;
+		int splits=1;
+		int parts=1;
+
+		if (stepNrInFilename)
+		{
+			copies=3;
+		}
+		
+		if (partNrInFilename)
+		{
+			parts=3;
+		}
+		
+		if (splitEvery!=0)
+		{
+			splits=3;
+		}
+		
+		int nr=copies*parts*splits;
+		if (nr>1) nr++;
+		
+		String retval[]=new String[nr];
+		
+		int i=0;
+		for (int copy=0;copy<copies;copy++)
+		{
+			for (int part=0;part<parts;part++)
+			{
+				for (int split=0;split<splits;split++)
+				{
+					retval[i]=buildFilename(copy, split);
+					i++;
+				}
+			}
+		}
+		if (i<nr)
+		{
+			retval[i]="...";
+		}
+		
+		return retval;
+	}
+	public String buildFilename(int stepnr, int splitnr)
+	{
+		SimpleDateFormat daf     = new SimpleDateFormat();
+
+		// Replace possible environment variables...
+		String retval=StringUtil.environmentSubstitute( fileName );
+		
+
+		Date now = new Date();
+		
+		if (dateInFilename)
+		{
+			daf.applyPattern("yyyMMdd");
+			String d = daf.format(now);
+			retval+="_"+d;
+		}
+		if (timeInFilename)
+		{
+			daf.applyPattern("HHmmss");
+			String t = daf.format(now);
+			retval+="_"+t;
+		}
+		if (stepNrInFilename)
+		{
+			retval+="_"+stepnr;
+		}
+		
+		if (splitEvery>0)
+		{
+			retval+="_"+splitnr;
+		}
+		
+		
+		if (extension!=null && extension.length()!=0) 
+		{
+			retval+="."+extension;
+		}
+		
+		return retval;
+	}
+    
+	private void readData(Node stepnode, ArrayList databases) throws KettleXMLException
+	{
+		try
+		{
+		
+			String con = XMLHandler.getTagValue(stepnode, "connection");
+			databaseMeta      = DatabaseMeta.findDatabase(databases, con);
+            schemaName    = XMLHandler.getTagValue(stepnode, "schema");
+			tablename     = XMLHandler.getTagValue(stepnode, "table");
+			truncateTable = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "truncate"));
+			createTable = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "create"));
+			encoding         = XMLHandler.getTagValue(stepnode, "encoding");
+			dateformat         = XMLHandler.getTagValue(stepnode, "dateformat");
+			AddToResult = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "AddToResult"));
+			
+			
+			StartNewLine = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "StartNewLine"));
+			
+			fileName  = XMLHandler.getTagValue(stepnode, "file", "name");
+			createparentfolder ="Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "create_parent_folder"));
+			extension = XMLHandler.getTagValue(stepnode, "file", "extention");
+			fileAppended    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "append"));
+			stepNrInFilename     = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "split"));
+			partNrInFilename     = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "haspartno"));
+			dateInFilename  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "add_date"));
+			timeInFilename  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "add_time"));
+			splitEvery=Const.toInt(XMLHandler.getTagValue(stepnode, "file", "splitevery"), 0);
+			
+			
+			
+			
+        }
+		catch(Exception e)
+		{
+			throw new KettleXMLException("Unable to load step info from XML", e);
+		}
+	}
+
+	public void setDefault()
+	{
+		databaseMeta = null;
+		tablename      = "";
+		createparentfolder=false;
+		
+		
+        
+	}
+
+	public String getXML()
+	{
+		StringBuffer retval=new StringBuffer();
+		
+		retval.append("    "+XMLHandler.addTagValue("connection",    databaseMeta==null?"":databaseMeta.getName()));
+        retval.append("    "+XMLHandler.addTagValue("schema",        schemaName));
+		retval.append("    "+XMLHandler.addTagValue("table",         tablename));
+		retval.append("    "+XMLHandler.addTagValue("truncate",      truncateTable));
+		retval.append("    "+XMLHandler.addTagValue("create",      createTable));	
+		retval.append("    "+XMLHandler.addTagValue("encoding",  encoding));
+		retval.append("    "+XMLHandler.addTagValue("dateformat",  dateformat));
+		retval.append("    "+XMLHandler.addTagValue("addtoresult",      AddToResult));
+		
+		retval.append("    "+XMLHandler.addTagValue("startnewline",      StartNewLine));
+		
+		retval.append("    <file>"+Const.CR);
+		retval.append("      "+XMLHandler.addTagValue("name",       fileName));
+		retval.append("      "+XMLHandler.addTagValue("extention",  extension));
+		retval.append("      "+XMLHandler.addTagValue("append",     fileAppended));
+		retval.append("      "+XMLHandler.addTagValue("split",      stepNrInFilename));
+		retval.append("      "+XMLHandler.addTagValue("haspartno",  partNrInFilename));
+		retval.append("      "+XMLHandler.addTagValue("add_date",   dateInFilename));
+		retval.append("      "+XMLHandler.addTagValue("add_time",   timeInFilename));
+		retval.append("      "+XMLHandler.addTagValue("splitevery", splitEvery));
+		retval.append("      "+XMLHandler.addTagValue("create_parent_folder",   createparentfolder));
+		
+		retval.append("      </file>"+Const.CR);
+		
+		
+		return retval.toString();
+	}
+
+	public void readRep(Repository rep, long id_step, ArrayList databases, Hashtable counters) throws KettleException
+	{
+		try
+		{
+			long id_connection =   rep.getStepAttributeInteger(id_step, "id_connection"); 
+			databaseMeta = DatabaseMeta.findDatabase( databases, id_connection);
+            schemaName       =      rep.getStepAttributeString (id_step, "schema");
+			tablename        =      rep.getStepAttributeString (id_step, "table");
+			truncateTable    =      rep.getStepAttributeBoolean(id_step, "truncate"); 
+			createTable    =      rep.getStepAttributeBoolean(id_step, "create");
+			encoding        =      rep.getStepAttributeString (id_step, "encoding");
+			dateformat       =      rep.getStepAttributeString (id_step, "dateformat");
+			AddToResult     =      rep.getStepAttributeBoolean(id_step, "addtoresult"); 
+			StartNewLine     =      rep.getStepAttributeBoolean(id_step, "startnewline");
+			
+			fileName        =      rep.getStepAttributeString (id_step, "file_name");    
+			extension       =      rep.getStepAttributeString (id_step, "file_extention");
+			fileAppended          =      rep.getStepAttributeBoolean(id_step, "file_append");
+			splitEvery      = (int)rep.getStepAttributeInteger(id_step, "file_split");
+			stepNrInFilename      =      rep.getStepAttributeBoolean(id_step, "file_add_stepnr");
+			partNrInFilename      =      rep.getStepAttributeBoolean(id_step, "file_add_partnr");
+			dateInFilename        =      rep.getStepAttributeBoolean(id_step, "file_add_date");
+			timeInFilename        =      rep.getStepAttributeBoolean(id_step, "file_add_time");
+			createparentfolder        =      rep.getStepAttributeBoolean(id_step, "create_parent_folder");
+			
+			
+			
+
+		}
+		catch(Exception e)
+		{
+			throw new KettleException("Unexpected error reading step information from the repository", e);
+		}
+	}
+
+	public void saveRep(Repository rep, long id_transformation, long id_step) throws KettleException
+	{
+		try
+		{
+			rep.saveStepAttribute(id_transformation, id_step, "id_connection",   databaseMeta==null?-1:databaseMeta.getID());
+            rep.saveStepAttribute(id_transformation, id_step, "schema",          schemaName);
+			rep.saveStepAttribute(id_transformation, id_step, "table",       	 tablename);
+			rep.saveStepAttribute(id_transformation, id_step, "truncate",        truncateTable);
+			rep.saveStepAttribute(id_transformation, id_step, "create",        createTable);		
+			rep.saveStepAttribute(id_transformation, id_step, "encoding",         encoding);
+			rep.saveStepAttribute(id_transformation, id_step, "dateformat",         dateformat);
+			rep.saveStepAttribute(id_transformation, id_step, "addtoresult",        AddToResult);
+			
+			rep.saveStepAttribute(id_transformation, id_step, "file_name",        fileName);
+			rep.saveStepAttribute(id_transformation, id_step, "file_extention",   extension);
+			rep.saveStepAttribute(id_transformation, id_step, "file_append",      fileAppended);
+			rep.saveStepAttribute(id_transformation, id_step, "file_split",       splitEvery);
+			rep.saveStepAttribute(id_transformation, id_step, "file_add_stepnr",  stepNrInFilename);
+			rep.saveStepAttribute(id_transformation, id_step, "file_add_partnr",  partNrInFilename);
+			rep.saveStepAttribute(id_transformation, id_step, "file_add_date",    dateInFilename);
+			rep.saveStepAttribute(id_transformation, id_step, "file_add_time",    timeInFilename);
+			rep.saveStepAttribute(id_transformation, id_step, "create_parent_folder",    createparentfolder);
+			
+			
+		
+			// Also, save the step-database relationship!
+			if (databaseMeta!=null) rep.insertStepDatabase(id_transformation, id_step, databaseMeta.getID());
+			
+		}
+		catch(Exception e)
+		{
+			throw new KettleException("Unable to save step information to the repository for id_step="+id_step, e);
+		}
+	}
+
+	public Row getFields(Row r, String name, Row info) throws KettleStepException 
+	{
+		Row row;
+		if (r == null)
+			row = new Row(); // give back values
+		else
+			row = r; // add to the existing row of values...
+
+	
+		return row;
+	}
+
+	public void check(ArrayList remarks, StepMeta stepMeta, Row prev, String input[], String output[], Row info)
+	{
+		if (databaseMeta!=null)
+		{
+			CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("SQLFileOutputMeta.CheckResult.ConnectionExists"), stepMeta);
+			remarks.add(cr);
+
+			Database db = new Database(databaseMeta);
+			try
+			{
+				db.connect();
+				
+				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("SQLFileOutputMeta.CheckResult.ConnectionOk"), stepMeta);
+				remarks.add(cr);
+
+				if (!Const.isEmpty(tablename))
+				{
+                    String schemaTable = databaseMeta.getQuotedSchemaTableCombination(schemaName, tablename);
+					// Check if this table exists...
+					if (db.checkTableExists(schemaTable))
+					{
+						cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("SQLFileOutputMeta.CheckResult.TableAccessible", schemaTable), stepMeta);
+						remarks.add(cr);
+
+						Row r = db.getTableFields(schemaTable);
+						if (r!=null)
+						{
+							cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("SQLFileOutputMeta.CheckResult.TableOk", schemaTable), stepMeta);
+							remarks.add(cr);
+
+							String error_message = "";
+							boolean error_found = false;
+							// OK, we have the table fields.
+							// Now see what we can find as previous step...
+							if (prev!=null && prev.size()>0)
+							{
+								cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("SQLFileOutputMeta.CheckResult.FieldsReceived", ""+prev.size()), stepMeta);
+								remarks.add(cr);
+	
+								// Starting from prev...
+								for (int i=0;i<prev.size();i++)
+								{
+									Value pv = prev.getValue(i);
+									int idx = r.searchValueIndex(pv.getName());
+									if (idx<0) 
+									{
+										error_message+="\t\t"+pv.getName()+" ("+pv.getTypeDesc()+")"+Const.CR;
+										error_found=true;
+									} 
+								}
+								if (error_found) 
+								{
+									error_message=Messages.getString("SQLFileOutputMeta.CheckResult.FieldsNotFoundInOutput", error_message);
+	
+									cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
+									remarks.add(cr);
+								}
+								else
+								{
+									cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("SQLFileOutputMeta.CheckResult.AllFieldsFoundInOutput"), stepMeta);
+									remarks.add(cr);
+								}
+	
+								// Starting from table fields in r...
+								for (int i=0;i<r.size();i++)
+								{
+									Value rv = r.getValue(i);
+									int idx = prev.searchValueIndex(rv.getName());
+									if (idx<0) 
+									{
+										error_message+="\t\t"+rv.getName()+" ("+rv.getTypeDesc()+")"+Const.CR;
+										error_found=true;
+									} 
+								}
+								if (error_found) 
+								{
+									error_message=Messages.getString("SQLFileOutputMeta.CheckResult.FieldsNotFound", error_message);
+	
+									cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, error_message, stepMeta);
+									remarks.add(cr);
+								}
+								else
+								{
+									cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("SQLFileOutputMeta.CheckResult.AllFieldsFound"), stepMeta);
+									remarks.add(cr);
+								}
+							}
+							else
+							{
+								cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("SQLFileOutputMeta.CheckResult.NoFields"), stepMeta);
+								remarks.add(cr);
+							}
+						}
+						else
+						{
+							cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("SQLFileOutputMeta.CheckResult.TableNotAccessible"), stepMeta);
+							remarks.add(cr);
+						}
+					}
+					else
+					{
+						cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("SQLFileOutputMeta.CheckResult.TableError", schemaTable), stepMeta);
+						remarks.add(cr);
+					}
+				}
+				else
+				{
+					cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("SQLFileOutputMeta.CheckResult.NoTableName"), stepMeta);
+					remarks.add(cr);
+				}
+			}
+			catch(KettleException e)
+			{
+				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("SQLFileOutputMeta.CheckResult.UndefinedError", e.getMessage()), stepMeta);
+				remarks.add(cr);
+			}
+			finally
+			{
+				db.disconnect();
+			}
+		}
+		else
+		{
+			CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("SQLFileOutputMeta.CheckResult.NoConnection"), stepMeta);
+			remarks.add(cr);
+		}
+		
+		// See if we have input streams leading to this step!
+		if (input.length>0)
+		{
+			CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("SQLFileOutputMeta.CheckResult.ExpectedInputOk"), stepMeta);
+			remarks.add(cr);
+		}
+		else
+		{
+			CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("SQLFileOutputMeta.CheckResult.ExpectedInputError"), stepMeta);
+			remarks.add(cr);
+		}
+	}
+
+	public StepDialogInterface getDialog(Shell shell, StepMetaInterface info, TransMeta transMeta, String name)
+	{
+		return new SQLFileOutputDialog(shell, info, transMeta, name);
+	}
+
+	public StepInterface getStep(StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta, Trans trans)
+	{
+		return new SQLFileOutput(stepMeta, stepDataInterface, cnr, transMeta, trans);
+	}
+	
+	public StepDataInterface getStepData()
+	{
+		return new SQLFileOutputData();
+	}
+
+	public void analyseImpact(ArrayList impact, TransMeta transMeta, StepMeta stepMeta, Row prev, String input[], String output[], Row info)
+	{
+		if (truncateTable)
+		{
+			DatabaseImpact ii = new DatabaseImpact( DatabaseImpact.TYPE_IMPACT_TRUNCATE, 
+											transMeta.getName(),
+											stepMeta.getName(),
+											databaseMeta.getDatabaseName(),
+											tablename,
+											"",
+											"",
+											"",
+											"",
+											"Truncate of table"
+											);
+			impact.add(ii);
+
+		}
+		// The values that are entering this step are in "prev":
+		if (prev!=null)
+		{
+			for (int i=0;i<prev.size();i++)
+			{
+				Value v = prev.getValue(i);
+				DatabaseImpact ii = new DatabaseImpact( DatabaseImpact.TYPE_IMPACT_WRITE, 
+												transMeta.getName(),
+												stepMeta.getName(),
+												databaseMeta.getDatabaseName(),
+												tablename,
+												v.getName(),
+												v.getName(),
+                                                v!=null?v.getOrigin():"?",
+												"",
+												"Type = "+v.toStringMeta()
+												);
+				impact.add(ii);
+			}
+		}
+	}
+
+	public SQLStatement getSQLStatements(TransMeta transMeta, StepMeta stepMeta, Row prev)
+	{
+		SQLStatement retval = new SQLStatement(stepMeta.getName(), databaseMeta, null); // default: nothing to do!
+	
+		if (databaseMeta!=null)
+		{
+			if (prev!=null && prev.size()>0)
+			{
+				if (!Const.isEmpty(tablename))
+				{
+					Database db = new Database(databaseMeta);
+					try
+					{
+						db.connect();
+						
+                        String schemaTable = databaseMeta.getQuotedSchemaTableCombination(schemaName, tablename);
+                        String cr_table = db.getDDL(schemaTable, prev);
+						
+						// Empty string means: nothing to do: set it to null...
+						if (cr_table==null || cr_table.length()==0) cr_table=null;
+						
+						retval.setSQL(cr_table);
+					}
+					catch(KettleDatabaseException dbe)
+					{
+						retval.setError(Messages.getString("SQLFileOutputMeta.Error.ErrorConnecting", dbe.getMessage()));
+					}
+					finally
+					{
+						db.disconnect();
+					}
+				}
+				else
+				{
+					retval.setError(Messages.getString("SQLFileOutputMeta.Error.NoTable"));
+				}
+			}
+			else
+			{
+				retval.setError(Messages.getString("SQLFileOutputMeta.Error.NoInput"));
+			}
+		}
+		else
+		{
+			retval.setError(Messages.getString("SQLFileOutputMeta.Error.NoConnection"));
+		}
+
+		return retval;
+	}
+
+    public Row getRequiredFields() throws KettleException
+    {
+        if (databaseMeta!=null)
+        {
+            Database db = new Database(databaseMeta);
+            try
+            {
+                db.connect();
+                
+                if (!Const.isEmpty(tablename))
+                {
+                    String schemaTable = databaseMeta.getQuotedSchemaTableCombination(schemaName, tablename);
+                    
+                    // Check if this table exists...
+                    if (db.checkTableExists(schemaTable))
+                    {
+                        return db.getTableFields(schemaTable);
+                    }
+                    else
+                    {
+                        throw new KettleException(Messages.getString("SQLFileOutputMeta.Exception.TableNotFound"));
+                    }
+                }
+                else
+                {
+                    throw new KettleException(Messages.getString("SQLFileOutputMeta.Exception.TableNotSpecified"));
+                }
+            }
+            catch(Exception e)
+            {
+                throw new KettleException(Messages.getString("SQLFileOutputMeta.Exception.ErrorGettingFields"), e);
+            }
+            finally
+            {
+                db.disconnect();
+            }
+        }
+        else
+        {
+            throw new KettleException(Messages.getString("SQLFileOutputMeta.Exception.ConnectionNotDefined"));
+        }
+
+    }
+    
+    public DatabaseMeta[] getUsedDatabaseConnections()
+    {
+        if (databaseMeta!=null) 
+        {
+            return new DatabaseMeta[] { databaseMeta };
+        }
+        else
+        {
+            return super.getUsedDatabaseConnections();
+        }
+    }
+
+    /**
+     * @return the schemaName
+     */
+    public String getSchemaName()
+    {
+        return schemaName;
+    }
+
+    /**
+     * @param schemaName the schemaName to set
+     */
+    public void setSchemaName(String schemaName)
+    {
+        this.schemaName = schemaName;
+    }
+    
+    public boolean supportsErrorHandling()
+    {
+        return true;
+    }
+}
