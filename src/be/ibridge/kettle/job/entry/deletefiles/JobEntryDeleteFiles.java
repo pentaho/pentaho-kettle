@@ -379,10 +379,8 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
 			{
 				
 
-				log.logError(Messages.getString("JobCopyFiles.Error.Exception.CopyProcessError") , Messages.getString("JobCopyFiles.Error.Exception.CopyProcess1") 
-					+ " ["+info.getFile().toString()+ "] " + Messages.getString("JobCopyFiles.Error.Exception.CopyProcess1") + " ["  
-					+ file_name.toString() + "] " + Messages.getString("JobCopyFiles.Error.Exception.CopyProcess3") + e.getMessage());
-				
+				log.logError(Messages.getString("JobDeleteFiles.Error.Exception.DeleteProcessError") , Messages.getString("JobDeleteFiles.Error.Exception.DeleteProcess", 
+						info.getFile().toString(),e.getMessage()));
 				 returncode= false;
 			}
 			finally 
