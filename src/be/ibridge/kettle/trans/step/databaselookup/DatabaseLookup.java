@@ -289,8 +289,8 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 		meta=(DatabaseLookupMeta)smi;
 		data=(DatabaseLookupData)sdi;
 		
-		 boolean sendToErrorRow=false;
-		 String errorMessage = null;
+		boolean sendToErrorRow=false;
+		String errorMessage = null;
 
 		Row r=getRow();       // Get row from input rowset & set row busy!
 
