@@ -716,7 +716,7 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
 							dialog.setFileName( fname );
 						}
 						
-						dialog.setFilterNames(new String[] {Messages.getString("GetFilesRowsCountDialog.FileType.AccessFiles"), Messages.getString("System.FileType.AllFiles")});
+						dialog.setFilterNames(new String[] {Messages.getString("System.FileType.AllFiles")});
 						
 						if (dialog.open()!=null)
 						{
