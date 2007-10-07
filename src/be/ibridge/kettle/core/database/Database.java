@@ -4917,4 +4917,111 @@ public class Database
     {
         this.copy = copy;
     }
+	/**
+	 * Return SQL statement (INSERT INTO TableName ...
+	 * @param schemaName tableName The schema 
+	 * @param tableName
+	 * @param fields
+	 * dateFormat date format of field
+	 * @throws KettleDatabaseException
+	 */
+
+    public String getSQLOutput(String schemaName, String tableName, Row fields, String dateFormat) throws KettleDatabaseException
+	{
+		StringBuffer ins=new StringBuffer(128);
+		
+        String schemaTable = databaseMeta.getQuotedSchemaTableCombination(schemaName, tableName);
+		ins.append("INSERT INTO ").append(schemaTable).append('(');
+		
+		// now add the names in the row:
+		for (int i=0;i<fields.size();i++)
+		{
+			if (i>0) ins.append(", ");
+			String name = fields.getValue(i).getName();
+			ins.append(databaseMeta.quoteField(name));
+		}
+		ins.append(") VALUES (");
+		
+		// Add placeholders...
+		for (int i=0;i<fields.size();i++)
+		{
+			if (i>0) ins.append(",");
+			{
+				
+				
+				if (fields.getValue(i).getType()==fields.getValue(i).VALUE_TYPE_STRING)
+				{
+					ins.append("'" + fields.getValue(i).getString() + "'") ;
+				
+				}
+				else if  (fields.getValue(i).getType()==fields.getValue(i).VALUE_TYPE_DATE)
+				{
+					if (Const.isEmpty(dateFormat))
+					{
+						ins.append("'" + fields.getValue(i)+ "'") ;
+					}
+					else
+					{
+						try 
+						{
+							java.text.SimpleDateFormat formatter  = new java.text.SimpleDateFormat(dateFormat);
+					       
+							ins.append("'" + formatter.format(fields.getValue(i).getDate())+ "'") ;
+						}
+						catch(Exception e)
+			            {
+			                throw new KettleDatabaseException("Error : ", e);
+			            }
+					}
+				
+				}
+				else
+				{
+					ins.append( fields.getValue(i)) ;
+				}
+							
+			}
+			
+		}
+		ins.append(')');
+		
+		return ins.toString();
+	}
+    
+    /**
+     * Return CREATION statement for a Table
+     * @param tableName The table to create
+     * @throws KettleDatabaseException
+     */
+
+	public String getDDLCreationTable(String tableName, Row fields) throws KettleDatabaseException
+	{
+		String retval;
+		
+		// First, check for reserved SQL in the input row r...
+		databaseMeta.quoteReservedWords(fields);
+		String quotedTk = databaseMeta.quoteField(null) ;
+
+		retval=getCreateTableStatement(tableName, fields, quotedTk, false, null, true);
+				
+		return retval;
+	}
+
+	/**
+	 * Return TRUNCATE statement for a Table
+	 * @param schema The schema
+	 * @param tableName The table to create
+	 * @throws KettleDatabaseException
+	 */
+	public String getDDLTruncateTable(String schema, String tablename) throws KettleDatabaseException
+	{
+        if (Const.isEmpty(connectionGroup))
+        {
+            return(databaseMeta.getTruncateTableStatement(schema, tablename));
+        }
+        else
+        {
+            return("DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(schema, tablename));
+        }
+	}
 }
