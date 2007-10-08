@@ -255,6 +255,20 @@ public class TableInput extends BaseStep implements StepInterface
 
 		if (super.init(smi, sdi))
 		{
+			// Verify some basic things first...
+			//
+			boolean passed=true;
+			if (Const.isEmpty(meta.getSQL())) {
+				logError(Messages.getString("TableInput.Exception.SQLIsNeeded"));
+				passed=false;
+			}
+
+			if (meta.getDatabaseMeta()==null) {
+				logError(Messages.getString("TableInput.Exception.DatabaseConnectionsIsNeeded"));
+				passed=false;
+			}
+			if (!passed) return false;
+
 			data.db=new Database(meta.getDatabaseMeta());
 			data.db.shareVariablesWith(this);
 			
