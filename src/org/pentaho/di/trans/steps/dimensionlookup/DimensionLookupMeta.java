@@ -691,16 +691,21 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
         // Don't bother if there are no return values specified.
 		if (!update && fieldLookup.length>0)
 		{
+			Database db = null;
             try
             {
                 // Get the rows from the table...
                 if (databaseMeta!=null)
                 {
-                    Database db = new Database(databaseMeta);
-                    db.connect(); //TODO is this the right place? Why did this worked before with Show output fields?
+                    db = new Database(databaseMeta);
+                    // First try without connecting to the database... (can be  S L O W)
                     String schemaTable = databaseMeta.getQuotedSchemaTableCombination(schemaName, tableName);
                     RowMetaInterface extraFields = db.getTableFields(schemaTable);
-                    db.disconnect(); //TODO see above
+                    if (extraFields==null) // now we need to connect
+                    {
+                    	db.connect();
+                    	extraFields = db.getTableFields(schemaTable);
+                    }
                     
                     for (int i = 0; i < fieldLookup.length; i++)
                     {
@@ -733,6 +738,10 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
                 String message = Messages.getString("DimensionLookupMeta.Exception.UnableToRetrieveDataTypeOfReturnField2"); //$NON-NLS-1$
                 log.logError(toString(), message);
                 throw new KettleStepException(message, e);
+            }
+            finally
+            {
+            	if (db!=null) db.disconnect();
             }
    		}
 	}
