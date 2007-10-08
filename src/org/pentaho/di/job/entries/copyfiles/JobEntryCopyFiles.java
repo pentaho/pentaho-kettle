@@ -233,7 +233,7 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 		{
 			super.saveRep(rep, id_job);
 			
-			rep.saveJobEntryAttribute(id_job, getID(), "copyemptfolders",      copy_empty_folders);
+			rep.saveJobEntryAttribute(id_job, getID(), "copy_empty_folders",      copy_empty_folders);
 			rep.saveJobEntryAttribute(id_job, getID(), "arg_from_previous",  arg_from_previous);
 			rep.saveJobEntryAttribute(id_job, getID(), "overwrite_files",      overwrite_files);
 			rep.saveJobEntryAttribute(id_job, getID(), "include_subfolders", include_subfolders);
@@ -293,24 +293,20 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 			{
 				
 				resultRow = rows.get(iteration);
-				vsourcefilefolder = new String[resultRow.size()];
-				vdestinationfilefolder = new String[resultRow.size()];
-				vwildcard = new String[resultRow.size()];
 				
 				// Get source and destination file names, also wildcard
-				vsourcefilefolder[iteration] = resultRow.getString(0,null);
-				vdestinationfilefolder[iteration] = resultRow.getString(1,null);
-				vwildcard[iteration] = resultRow.getString(2,null);
+				String vsourcefilefolder_previous = resultRow.getString(0,null);
+				String vdestinationfilefolder_previous = resultRow.getString(1,null);
+				String vwildcard_previous = resultRow.getString(2,null);
 	
 
 				
-				if(!Const.isEmpty(vsourcefilefolder[iteration]) &&  !Const.isEmpty(vdestinationfilefolder[iteration]))
-				
+				if(!Const.isEmpty(vsourcefilefolder_previous) &&  !Const.isEmpty(vdestinationfilefolder_previous))
 				{
 				
-					log.logBasic(toString(), Messages.getString("JobCopyFiles.Log.ProcessingRow",vsourcefilefolder[iteration], vdestinationfilefolder[iteration], vwildcard[iteration]));
+					log.logBasic(toString(), Messages.getString("JobCopyFiles.Log.ProcessingRow",vsourcefilefolder_previous, vdestinationfilefolder_previous, vwildcard_previous));
 
-					if(! ProcessFileFolder(vsourcefilefolder[iteration],vdestinationfilefolder[iteration],vwildcard[iteration],parentJob,result))
+					if(! ProcessFileFolder(vsourcefilefolder_previous,vdestinationfilefolder_previous,vwildcard_previous,parentJob,result))
 					{
 						// The copy process fail
 						NbrFail=NbrFail++;
