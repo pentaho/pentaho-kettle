@@ -16,6 +16,7 @@
 
 package org.pentaho.di.core.variables;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -24,6 +25,7 @@ import java.util.Map;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.util.StringUtil;
+import org.pentaho.di.version.BuildVersion;
 
 
 /**
@@ -44,6 +46,15 @@ public class Variables implements VariableSpace
         parent      = null;
         injection   = null;
         initialized = false;
+        
+        // The Kettle version
+        properties.put(Const.INTERNAL_VARIABLE_KETTLE_VERSION, Const.VERSION);
+
+        // The Kettle build version
+        properties.put(Const.INTERNAL_VARIABLE_KETTLE_BUILD_VERSION, Integer.toString( BuildVersion.getInstance().getVersion() ));
+
+        // The Kettle build date
+        properties.put(Const.INTERNAL_VARIABLE_KETTLE_BUILD_DATE, new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format( BuildVersion.getInstance().getBuildDate() ));
     }
 
 	public void copyVariablesFrom(VariableSpace space) {
