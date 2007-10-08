@@ -128,17 +128,14 @@ public class DimensionLookup extends BaseStep implements StepInterface
             }
 
             // Return values
-            if (meta.isUpdate())
+            data.fieldnrs = new int[meta.getFieldStream().length];
+            for (int i=0;meta.getFieldStream()!=null && i<meta.getFieldStream().length;i++)
             {
-	            data.fieldnrs = new int[meta.getFieldStream().length];
-	            for (int i=0;meta.getFieldStream()!=null && i<meta.getFieldStream().length;i++)
-	            {
-	                data.fieldnrs[i]=getInputRowMeta().indexOfValue(meta.getFieldStream()[i]);
-	                if ((data.fieldnrs[i] < 0)) 
-	                {
-	                  throw new KettleStepException(Messages.getString("DimensionLookup.Exception.KeyFieldNotFound", meta.getFieldStream()[i])); //$NON-NLS-1$ //$NON-NLS-2$
-	                }
-	            }
+                data.fieldnrs[i]=data.outputRowMeta.indexOfValue(meta.getFieldStream()[i]);
+                if ((data.fieldnrs[i] < 0)) 
+                {
+                  throw new KettleStepException(Messages.getString("DimensionLookup.Exception.KeyFieldNotFound", meta.getFieldStream()[i])); //$NON-NLS-1$ //$NON-NLS-2$
+                }
             }
 
             if (meta.getDateField()!=null && meta.getDateField().length()>0)
@@ -181,21 +178,10 @@ public class DimensionLookup extends BaseStep implements StepInterface
                 data.cacheValueRowMeta = new RowMeta();
                 data.cacheValueRowMeta.addValueMeta( new ValueMeta(meta.getKeyField(), ValueMetaInterface.TYPE_INTEGER) );
                 data.cacheValueRowMeta.addValueMeta( new ValueMeta(meta.getVersionField(), ValueMetaInterface.TYPE_INTEGER) );
-                if (data.fieldnrs!=null)
+                for (int i=0;i<data.fieldnrs.length;i++)
                 {
-	                for (int i=0;i<data.fieldnrs.length;i++)
-	                {
-	                	ValueMetaInterface v = null;
-	                	if (!meta.isUpdate())
-	                	{
-	                		v = data.outputRowMeta.getValueMeta(data.fieldnrs[i]);
-	                	}
-	                	else
-	                	{
-	                		v = getInputRowMeta().getValueMeta(data.fieldnrs[i]);	
-	                	}
-	                    data.cacheValueRowMeta.addValueMeta(v);
-	                }
+                    ValueMetaInterface v = data.outputRowMeta.getValueMeta(data.fieldnrs[i]);
+                    data.cacheValueRowMeta.addValueMeta(v);
                 }
                 data.cacheValueRowMeta.addValueMeta( new ValueMeta(meta.getDateFrom(), ValueMetaInterface.TYPE_DATE) );
                 data.cacheValueRowMeta.addValueMeta( new ValueMeta(meta.getDateTo(), ValueMetaInterface.TYPE_DATE) );
@@ -204,7 +190,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
             determineTechKeyCreation();
             if (getCopy()==0) checkDimZero();
             
-            setDimLookup(getInputRowMeta());
+            setDimLookup(data.outputRowMeta);
         }
         
         try
@@ -393,7 +379,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
 				
 				for (int i=0;i<meta.getFieldStream().length;i++)
 				{
-                    ValueMetaInterface v1  = rowMeta.getValueMeta(data.fieldnrs[i]);
+                    ValueMetaInterface v1  = data.outputRowMeta.getValueMeta(data.fieldnrs[i]);
                     Object valueData1 = row[data.fieldnrs[i]]; 
                     ValueMetaInterface v2  = data.returnRowMeta.getValueMeta(i+2);
                     Object valueData2 = returnRow[i+2];
@@ -517,13 +503,11 @@ public class DimensionLookup extends BaseStep implements StepInterface
         outputRow[outputIndex] = returnRow[inputIndex];
         outputIndex++;
         inputIndex++;
+        //skip the version        
+        inputIndex++;
         
         // Then get the "extra fields"...
-        if (meta.getCacheSize()>=0 && !meta.isUpdate()) // don't return date from-to fields.
-        {
-            inputIndex+=2;
-        }
-
+        // don't return date from-to fields, they can be returned when explicitely specified in lookup fields.
         while (inputIndex<returnRow.length && outputIndex<outputRow.length)
 		{
 			outputRow[outputIndex] = returnRow[inputIndex];
@@ -531,10 +515,10 @@ public class DimensionLookup extends BaseStep implements StepInterface
             inputIndex++;
 		}
 
-		//
-		// Finaly, check the date range!
+        // Finaly, check the date range!
         /*
-         * TODO: WTF is this???
+         * TODO: WTF is this??? 
+         * [May be it makes sense to keep the return date from-to fields within min/max range, but even then the code below is wrong].
 		Value date;
 		if (data.datefieldnr>=0) date = row.getValue(data.datefieldnr);
 		else				date = new Value("date", new Date()); // system date //$NON-NLS-1$
@@ -577,15 +561,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
                 if (!Const.isEmpty(meta.getFieldLookup()[i]))
                 {
                     sql+=", "+databaseMeta.quoteField(meta.getFieldLookup()[i]);
-                    ValueMetaInterface valueMeta = null;
-                    if (!meta.isUpdate())
-                    {
-                    	valueMeta = data.outputRowMeta.searchValueMeta(meta.getFieldLookup()[i]).clone();
-                    }
-                    else
-                    {
-                    	valueMeta = rowMeta.getValueMeta( data.fieldnrs[i] ).clone();
-                    }
+                    ValueMetaInterface valueMeta = rowMeta.getValueMeta( data.fieldnrs[i] ).clone();
                     
                     if (!Const.isEmpty( meta.getFieldStream()[i] ) && !meta.getFieldLookup()[i].equals(meta.getFieldStream()[i]))
                     {
