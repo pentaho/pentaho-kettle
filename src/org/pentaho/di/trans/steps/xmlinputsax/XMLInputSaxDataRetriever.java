@@ -65,6 +65,8 @@ public class XMLInputSaxDataRetriever extends DefaultHandler
 
 	private String tempVal;
 
+	private StringBuffer charactersBuffer;
+
 	/**
 	 * Constructor of xmlDataRetreiver class.
 	 * 
@@ -84,6 +86,8 @@ public class XMLInputSaxDataRetriever extends DefaultHandler
 		this.meta = meta;
 
 		this.data = data;
+		
+		charactersBuffer = new StringBuffer();
 
 		for (int i = 0; i < meta.getInputPosition().length; i++)
 		{
@@ -338,10 +342,18 @@ public class XMLInputSaxDataRetriever extends DefaultHandler
 
 	public void characters(char[] ch, int start, int length) throws SAXException
 	{
+		tempVal = new String(ch, start, length);
+		if (tempVal!=null) charactersBuffer.append(tempVal);
+		
+	}
+
+	public void endElement(String uri, String localName, String qName) throws SAXException
+	{
+		tempVal = charactersBuffer.toString();
+		charactersBuffer = new StringBuffer(); // start again.
+
 		try
 		{
-			tempVal = new String(ch, start, length);
-
 			if (this.fieldToFill >= 0)
 			{
 				if (tempVal==null)
@@ -386,10 +398,7 @@ public class XMLInputSaxDataRetriever extends DefaultHandler
 		{
 			LogWriter.getInstance().logError(toString(), Const.getStackTracker(e));
 		}
-	}
 
-	public void endElement(String uri, String localName, String qName) throws SAXException
-	{
 		position[_counter + 1] = -1;
 		counterDown();
 	}
