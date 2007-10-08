@@ -203,18 +203,16 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
 
       for (int iteration = 0; iteration < rows.size(); iteration++) {
     	  resultRow = (Row) rows.get(iteration);
-        args = new String[resultRow.size()];
-        fmasks = new String[resultRow.size()];
 
-
-        args[iteration] = resultRow.getValue(0).getString();
-        fmasks[iteration] = resultRow.getValue(1).getString();        
+    	 // Get values from previous result 
+        String filefolder_previous = resultRow.getValue(0).getString();
+        String fmasks_previous = resultRow.getValue(1).getString();        
 
           // ok we can process this file/folder
           log.logDetailed(toString(), Messages.getString(
-              "JobEntryDeleteFiles.ProcessingRow", args[iteration], fmasks[iteration])); //$NON-NLS-1$
+              "JobEntryDeleteFiles.ProcessingRow", filefolder_previous, fmasks_previous)); //$NON-NLS-1$
 
-          if (!ProcessFile(args[iteration], fmasks[iteration])) {
+          if (!ProcessFile(filefolder_previous, fmasks_previous)) {
         	  NrErrFiles = NrErrFiles++;
           }
        

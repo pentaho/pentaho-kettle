@@ -283,10 +283,10 @@ public class BaseStep extends Thread
 			.getString("BaseStep.TypeTooltipDesc.RegexEval"), "RGE.png", CATEGORY_SCRIPTING), 
 
 			new StepPluginMeta(XsdValidatorMeta.class, "XsdValodator", Messages.getString("BaseStep.TypeLongDesc.XsdValidator"), Messages
-			.getString("BaseStep.TypeTooltipDesc.XsdValidator"), "XSD.png", CATEGORY_TRANSFORM), 
+			.getString("BaseStep.TypeTooltipDesc.XsdValidator"), "XSD.png", CATEGORY_EXPERIMENTAL), 
 
 			new StepPluginMeta(XsltMeta.class, "Xslt", Messages.getString("BaseStep.TypeLongDesc.Xslt"), Messages
-			.getString("BaseStep.TypeTooltipDesc.Xslt"), "XSLT.png", CATEGORY_TRANSFORM), 
+			.getString("BaseStep.TypeTooltipDesc.Xslt"), "XSLT.png", CATEGORY_EXPERIMENTAL), 
 			
 			new StepPluginMeta(GetFilesRowsCountMeta.class, "GetFilesRowsCount", Messages.getString("BaseStep.TypeLongDesc.GetFilesRowsCount"), Messages
 					.getString("BaseStep.TypeTooltipDesc.GetFilesRowsCount"), "FRC.png", CATEGORY_INPUT), 
