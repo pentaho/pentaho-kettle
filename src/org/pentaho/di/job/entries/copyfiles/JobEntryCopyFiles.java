@@ -454,7 +454,7 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 						if (remove_source_files && !list_files_remove.isEmpty())
 						{
 	
-							 for (Iterator iter = list_files_remove.iterator(); iter.hasNext();)
+							 for (Iterator<String> iter = list_files_remove.iterator(); iter.hasNext();)
 					        {
 					            String fileremoventry = (String) iter.next();
 					            // Remove ONLY Files
@@ -628,8 +628,7 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 			catch (Exception e) 
 			{
 				
-				log.logError(Messages.getString("JobCopyFiles.Error.Exception.CopyProcessError") , Messages.getString("JobCopyFiles.Error.Exception.CopyProcess", 
-						info.getFile().toString(),fil_name, e.getMessage()));
+				log.logError(toString(), Messages.getString("JobCopyFiles.Error.Exception.CopyProcess", info.getFile().toString(),fil_name, e.getMessage()));
 					
 				
 			}

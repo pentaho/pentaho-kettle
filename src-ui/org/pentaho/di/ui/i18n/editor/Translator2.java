@@ -20,19 +20,25 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.EnterStringDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.ui.core.widget.ColumnInfo;
+import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.i18n.KeyOccurrence;
 import org.pentaho.di.ui.i18n.MessagesSourceCrawler;
 import org.pentaho.di.ui.i18n.MessagesStore;
@@ -70,7 +76,7 @@ public class Translator2
     
     private SashForm sashform;
     private List wLocale;
-    private List wPackages;
+    private TableView wPackages;
     private List wTodo;
     
     private String selectedLocale;
@@ -236,9 +242,9 @@ public class Translator2
             {
                 public void widgetSelected(SelectionEvent arg0)
                 {
-                    int idx[] = wPackages.getSelectionIndices();
+                    int idx[] = wPackages.table.getSelectionIndices();
                     reload();
-                    wPackages.setSelection(idx);
+                    wPackages.table.setSelection(idx);
                 }
             }
         );
@@ -272,6 +278,15 @@ public class Translator2
 
     public boolean quitFile()
     {
+		java.util.List<MessagesStore> changedMessagesStores = store.getChangedMessagesStores();
+		if (changedMessagesStores.size()>0) {
+			MessageBox mb = new MessageBox(shell, SWT.YES | SWT.NO | SWT.ICON_WARNING);
+            mb.setMessage("There are unsaved changes."+Const.CR+Const.CR+"The number of changed messages files is: "+changedMessagesStores.size()+Const.CR+Const.CR+"Are you sure you want to exit?");
+			mb.setText("Warning!");
+			int answer = mb.open();
+			if (answer==SWT.NO) return false;
+		}
+
         WindowProperty winprop = new WindowProperty(shell);
         props.setScreen(winprop);
         props.saveProps();
@@ -298,13 +313,20 @@ public class Translator2
         fdLocale.bottom= new FormAttachment(20, 0);
         wLocale.setLayoutData(fdLocale);
         
-        wPackages = new List(composite, SWT.SINGLE | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
+        ColumnInfo[] colinfo=new ColumnInfo[]
+	        {
+	            new ColumnInfo("Packagename", ColumnInfo.COLUMN_TYPE_TEXT, false, true),
+	        };
+
+        
+	    wPackages = new TableView(new Variables(), composite, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, colinfo, 1, true, null, props);
         FormData fdPackages = new FormData();
         fdPackages.left  = new FormAttachment(0, 0);
         fdPackages.right = new FormAttachment(100, 0);
         fdPackages.top= new FormAttachment(wLocale, Const.MARGIN);
         fdPackages.bottom= new FormAttachment(100, 0);
         wPackages.setLayoutData(fdPackages);
+        wPackages.setSortable(false);
 
         FormData fdComposite = new FormData();
         fdComposite.left  = new FormAttachment(0, 0);
@@ -315,7 +337,12 @@ public class Translator2
 
         // Add a selection listener.
         wLocale.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { refreshGrid(); } } );
-        wPackages.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { refreshGrid(); } } );
+		        wPackages.table.addSelectionListener(new SelectionAdapter() {
+					public void widgetSelected(SelectionEvent e) {
+						refreshGrid();
+					}
+				}
+	        );
         
         composite.layout();
     }
@@ -695,32 +722,32 @@ public class Translator2
 		if (!key.equals(selectedKey)) {
 			
 			applyChangedValue();
+		}
 			
-			String mainLocale = REFERENCE_LOCALE;
+		String mainLocale = REFERENCE_LOCALE;
+		
+		if (selectedLocale!=null && key!=null && selectedMessagesPackage!=null) {
+			String mainValue = store.lookupKeyValue(mainLocale, selectedMessagesPackage, key);
+			String value = store.lookupKeyValue(selectedLocale, selectedMessagesPackage, key);
+			KeyOccurrence keyOccurrence = crawler.getKeyOccurrence(key, selectedMessagesPackage);
 			
-			if (selectedLocale!=null && key!=null && selectedMessagesPackage!=null) {
-				String mainValue = store.lookupKeyValue(mainLocale, selectedMessagesPackage, key);
-				String value = store.lookupKeyValue(selectedLocale, selectedMessagesPackage, key);
-				KeyOccurrence keyOccurrence = crawler.getKeyOccurrence(key, selectedMessagesPackage);
-				
-				wKey.setText(key);
-				wMain.setText(Const.NVL(mainValue, ""));
-				wValue.setText(Const.NVL(value, ""));
-				wSource.setText(keyOccurrence.getSourceLine());
-				
-				// Focus on the entry field
-				// Put the cursor all the way at the back
-				//
-				wValue.setFocus();
-				wValue.setSelection(wValue.getText().length());
-				wValue.showSelection();
-				wValue.clearSelection();
-				
-				selectedKey = key;
-				lastValueChanged=false;
-				wApply.setEnabled(false);
-				wRevert.setEnabled(false);
-			}
+			wKey.setText(key);
+			wMain.setText(Const.NVL(mainValue, ""));
+			wValue.setText(Const.NVL(value, ""));
+			wSource.setText(keyOccurrence.getSourceLine());
+			
+			// Focus on the entry field
+			// Put the cursor all the way at the back
+			//
+			wValue.setFocus();
+			wValue.setSelection(wValue.getText().length());
+			wValue.showSelection();
+			wValue.clearSelection();
+			
+			selectedKey = key;
+			lastValueChanged=false;
+			wApply.setEnabled(false);
+			wRevert.setEnabled(false);
 		}
 	}
 
@@ -735,31 +762,39 @@ public class Translator2
     	wSource.setText("");
     	
     	selectedLocale = wLocale.getSelectionCount()==0 ? null : wLocale.getSelection()[0];
-    	selectedMessagesPackage = wPackages.getSelectionCount()==0 ? null : wPackages.getSelection()[0];
+    	selectedMessagesPackage = wPackages.table.getSelectionCount()==0 ? null : wPackages.table.getSelection()[0].getText(1);
+    	refreshPackages();
     	
     	// Only continue with a locale & a messages package, otherwise we won't budge ;-)
 		//
     	if (selectedLocale!=null && selectedMessagesPackage!=null) {
     		// Get the list of keys that need a translation...
     		//
-    		java.util.List<KeyOccurrence> keys = crawler.getOccurrencesForPackage(selectedMessagesPackage);
-    		java.util.List<KeyOccurrence> todo = new ArrayList<KeyOccurrence>();
-    		for (KeyOccurrence keyOccurrence : keys) {
-    			// Avoid the System keys.  Those are taken care off in a different package
-    			//
-    			if (showKey(keyOccurrence.getKey(), keyOccurrence.getMessagesPackage())) { 
-	    			String value = store.lookupKeyValue(selectedLocale, selectedMessagesPackage, keyOccurrence.getKey());
-	    			if (Const.isEmpty(value) || wAll.getSelection()) { 
-	    				todo.add(keyOccurrence);
-	    			}
-    			}
-    		}
-    		
+    		java.util.List<KeyOccurrence> todo = getTodoList(selectedLocale, selectedMessagesPackage, false);
     		String[] todoItems = new String[todo.size()];
     		for (int i=0;i<todoItems.length;i++) todoItems[i] = todo.get(i).getKey();
     		wTodo.setItems(todoItems);
 		}
     }
+	
+	private java.util.List<KeyOccurrence> getTodoList(String locale, String messagesPackage, boolean strict) {
+		// Get the list of keys that need a translation...
+		//
+		java.util.List<KeyOccurrence> keys = crawler.getOccurrencesForPackage(messagesPackage);
+		java.util.List<KeyOccurrence> todo = new ArrayList<KeyOccurrence>();
+		for (KeyOccurrence keyOccurrence : keys) {
+			// Avoid the System keys.  Those are taken care off in a different package
+			//
+			if (showKey(keyOccurrence.getKey(), keyOccurrence.getMessagesPackage())) { 
+    			String value = store.lookupKeyValue(locale, messagesPackage, keyOccurrence.getKey());
+    			if ( Const.isEmpty(value) || ( wAll.getSelection() && !strict) ) { 
+    				todo.add(keyOccurrence);
+    			}
+			}
+		}
+
+		return todo;
+	}
 
 
     private void applyChangedValue() {
@@ -810,9 +845,43 @@ public class Translator2
     
     public void refreshPackages()
     {
+    	int index = wPackages.getSelectionIndex();
+    	
         // OK, we have a distinct list of packages to work with...
-        wPackages.removeAll();
-        wPackages.setItems(messagesPackages.toArray(new String[messagesPackages.size()]));
+    	wPackages.table.removeAll();
+        for (int i=0;i<messagesPackages.size();i++) {
+        	String messagesPackage = messagesPackages.get(i);
+        	TableItem item = new TableItem(wPackages.table, SWT.NONE);
+        	item.setText(1, messagesPackage);
+        	
+        	// count the number of keys for the package that are NOT yet translated...
+        	//
+        	if (selectedLocale!=null) {
+	        	java.util.List<KeyOccurrence> todo = getTodoList(selectedLocale, messagesPackage, true);
+	        	if (todo.size()>50) {
+	        		item.setBackground(GUIResource.getInstance().getColorRed());
+	        	} else if (todo.size()>25) {
+	        		item.setBackground(GUIResource.getInstance().getColorOrange());
+	        	} else if (todo.size()>10) {
+	        		item.setBackground(GUIResource.getInstance().getColorYellow());
+	        	} else if (todo.size()>5) {
+	        		item.setBackground(GUIResource.getInstance().getColorGray());
+	        	} else if (todo.size()>0) {
+	        		item.setBackground(GUIResource.getInstance().getColorLightGray());
+	        	}
+        	}
+        }
+        if (messagesPackages.size()==0) {
+        	new TableItem(wPackages.table, SWT.NONE);
+        } else {
+        	wPackages.setRowNums();
+        	wPackages.optWidth(true);
+        }
+        
+        if (index>=0) {
+        	wPackages.table.setSelection(index);
+        	wPackages.table.showSelection();
+        }
     }
     
     public void refreshLocale()
