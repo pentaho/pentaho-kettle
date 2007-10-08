@@ -170,6 +170,7 @@ public class SpoonDBDelegate extends SpoonDelegate
 			spoon.addUndoDelete((UndoInterface) hasDatabasesInterface, new DatabaseMeta[] { (DatabaseMeta) db
 					.clone() }, new int[] { pos });
 			hasDatabasesInterface.removeDatabase(pos);
+			DBCache.getInstance().clear(db.getName());  // remove this from the cache as well.
 		}
 
 		spoon.refreshTree();

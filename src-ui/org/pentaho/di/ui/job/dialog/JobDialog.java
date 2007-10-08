@@ -782,35 +782,38 @@ public class JobDialog extends Dialog
         jobMeta.setBatchIdPassed( wBatchTrans.getSelection());
         jobMeta.setLogfieldUsed( wLogfield.getSelection());
         jobMeta.setSharedObjectsFile( wSharedObjectsFile.getText() );
-        
-        if (directoryChangeAllowed) 
-        {
-			RepositoryDirectory dirFrom = jobMeta.getDirectory();
-		    long idDirFrom = dirFrom==null?-1L:dirFrom.getID();
 
-		    try
-			{
-			    
-				rep.moveJob(jobMeta.getName(), idDirFrom, newDirectory.getID() );
-				log.logDetailed(getClass().getName(), "Moved directory to ["+newDirectory.getPath()+"]");
-				jobMeta.setDirectory( newDirectory );
-				wDirectory.setText(jobMeta.getDirectory().getPath());
-			}
-			catch(KettleException dbe)
-			{
-				jobMeta.setDirectory( dirFrom );
-		 		
-				MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-				mb.setText(Messages.getString("JobDialog.Dialog.ErrorChangingDirectory.Title"));
-				mb.setMessage(Messages.getString("JobDialog.Dialog.ErrorChangingDirectory.Message"));
-				mb.open();
-			}
-        }
-        else
+        if (newDirectory!=null) 
         {
-        	// Just update to the new selected directory...
-        	//
-        	if (newDirectory!=null) jobMeta.setDirectory( newDirectory );
+	        if (directoryChangeAllowed) 
+	        {
+				RepositoryDirectory dirFrom = jobMeta.getDirectory();
+			    long idDirFrom = dirFrom==null?-1L:dirFrom.getID();
+	
+			    try
+				{
+				    
+					rep.moveJob(jobMeta.getName(), idDirFrom, newDirectory.getID() );
+					log.logDetailed(getClass().getName(), "Moved directory to ["+newDirectory.getPath()+"]");
+					jobMeta.setDirectory( newDirectory );
+					wDirectory.setText(jobMeta.getDirectory().getPath());
+				}
+				catch(KettleException dbe)
+				{
+					jobMeta.setDirectory( dirFrom );
+			 		
+					MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
+					mb.setText(Messages.getString("JobDialog.Dialog.ErrorChangingDirectory.Title"));
+					mb.setMessage(Messages.getString("JobDialog.Dialog.ErrorChangingDirectory.Message"));
+					mb.open();
+				}
+	        }
+	        else
+	        {
+	        	// Just update to the new selected directory...
+	        	//
+	        	jobMeta.setDirectory( newDirectory );
+	        }
         }
 
 		dispose();
