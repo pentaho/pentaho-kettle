@@ -498,7 +498,7 @@ public class Spoon implements AddUndoPositionInterface
                     if (e.character ==  9 && ctrl && alt) { if (transMeta!=null) { copyTransformationImage(transMeta); } }
 
                     // CTRL-J --> Edit job properties
-                    if (e.character == 10 && ctrl && !alt ) { editJobProperties(jobMeta); };
+                    if (e.character == 10 && ctrl && !alt ) { editJobProperties(jobMeta, true); };
 
                     // CTRL-ALT-J --> Get variables
                     if (e.character == 10 && ctrl && alt ) { getVariables(); };
@@ -531,7 +531,7 @@ public class Spoon implements AddUndoPositionInterface
                     if (e.character == 19 && ctrl && alt) { executeFile(false, true, false, false, null);  }
 
                     // CTRL-T --> transformation
-                    if (e.character == 20 && ctrl && !alt) { editTransformationProperties(transMeta);  }
+                    if (e.character == 20 && ctrl && !alt) { editTransformationProperties(transMeta, true);  }
 
                     // CTRL-U --> transformation replay
                     if (e.character == 21 && ctrl && !alt) { executeFile(false, false, true, false, null);  }
@@ -1287,11 +1287,11 @@ public class Spoon implements AddUndoPositionInterface
         miTransImage.setText(Messages.getString("Spoon.Menu.Transformation.CopyTransformationImageClipboard"));//Copy the transformation image clipboard \tCTRL-ALT-I
         miTransImage.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { copyTransformationImage(getActiveTransformation()); } });
         new MenuItem(msTrans, SWT.SEPARATOR);
-        // Edit transformation setttings
+        // Edit transformation settings
         //
         miTransDetails   = new MenuItem(msTrans, SWT.CASCADE); 
         miTransDetails.setText(Messages.getString("Spoon.Menu.Transformation.Settings"));//&Settings... \tCTRL-T
-        miTransDetails.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { editTransformationProperties(getActiveTransformation());   } });
+        miTransDetails.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { editTransformationProperties(getActiveTransformation(), true);   } });
         
         ////////////////////////////////////////////////////////////
         // Job
@@ -1329,7 +1329,7 @@ public class Spoon implements AddUndoPositionInterface
         //
         miJobInfo = new MenuItem(msJob, SWT.CASCADE);   
         miJobInfo.setText(Messages.getString("Spoon.Menu.Job.Settings")); //$NON-NLS-1$
-        miJobInfo.addListener (SWT.Selection, new Listener() { public void handleEvent(Event e) { editJobProperties(getActiveJob());  } });
+        miJobInfo.addListener (SWT.Selection, new Listener() { public void handleEvent(Event e) { editJobProperties(getActiveJob(), true);  } });
 
         
         ////////////////////////////////////////////////////////////
@@ -2593,7 +2593,7 @@ public class Spoon implements AddUndoPositionInterface
             {
                 // Edit transformation properties
                 MenuItem miEdit = new MenuItem(spoonMenu, SWT.PUSH); miEdit.setText(Messages.getString("Spoon.Menu.Transformation.Settings")); //Settings...
-                miEdit.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { editTransformationProperties((TransMeta)selection); } } );
+                miEdit.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { editTransformationProperties((TransMeta)selection, true); } } );
 
                 // Open log window
                 MenuItem miLog  = new MenuItem(spoonMenu, SWT.PUSH); miLog.setText(Messages.getString("Spoon.Menu.Popup.BASE.LogWindow"));
@@ -2607,7 +2607,7 @@ public class Spoon implements AddUndoPositionInterface
             {
                 // Edit transformation properties
                 MenuItem miEdit = new MenuItem(spoonMenu, SWT.PUSH); miEdit.setText(Messages.getString("Spoon.Menu.Job.Settings")); //Settings...
-                miEdit.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { editJobProperties((JobMeta)selection); } } );
+                miEdit.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { editJobProperties((JobMeta)selection, true); } } );
 
                 // Open log window
                 MenuItem miLog  = new MenuItem(spoonMenu, SWT.PUSH); miLog.setText(Messages.getString("Spoon.Menu.Popup.BASE.LogWindow"));
@@ -2800,8 +2800,8 @@ public class Spoon implements AddUndoPositionInterface
         }
         else
         {
-            if (selection instanceof TransMeta) editTransformationProperties((TransMeta)selection);
-            if (selection instanceof JobMeta) editJobProperties((JobMeta)selection);
+            if (selection instanceof TransMeta) editTransformationProperties((TransMeta)selection, true);
+            if (selection instanceof JobMeta) editJobProperties((JobMeta)selection, true);
             if (selection instanceof StepPlugin) newStep(getActiveTransformation());
             if (selection instanceof DatabaseMeta) editConnection((DatabaseMeta) selection);
             if (selection instanceof StepMeta) editStep((TransMeta)parent, (StepMeta)selection);
@@ -3107,6 +3107,7 @@ public class Spoon implements AddUndoPositionInterface
         {
             addUndoDelete((UndoInterface)hasDatabasesInterface, new DatabaseMeta[] { (DatabaseMeta)db.clone() }, new int[] { pos });
             hasDatabasesInterface.removeDatabase(pos);
+            DBCache.getInstance().clear(db.getName());  // remove this from the cache as well.
         }
 
         refreshTree();
@@ -4363,7 +4364,7 @@ public class Spoon implements AddUndoPositionInterface
                     mb.open();
                 }
                 ask=false;
-                answer = editTransformationProperties(transMeta);
+                answer = editTransformationProperties(transMeta, false);
             }
             
             if (answer && !Const.isEmpty(transMeta.getName()))
@@ -5625,11 +5626,12 @@ public class Spoon implements AddUndoPositionInterface
         return (JobMeta[]) list.toArray(new JobMeta[list.size()]);
     }
 
-    protected boolean editTransformationProperties(TransMeta transMeta)
+    protected boolean editTransformationProperties(TransMeta transMeta, boolean directoryChangeAllowed)
     {
         if (transMeta==null) return false;
         
         TransDialog tid = new TransDialog(shell, SWT.NONE, transMeta, rep);
+        tid.setDirectoryChangeAllowed(directoryChangeAllowed);
         TransMeta ti = tid.open();
         
         // In this case, load shared objects
@@ -8638,7 +8640,7 @@ public class Spoon implements AddUndoPositionInterface
                     mb.open();
                 }
                 ask=false;
-                answer = editJobProperties(jobMeta);
+                answer = editJobProperties(jobMeta, false);
             }
             
             if (answer && jobMeta.getName()!=null && jobMeta.getName().length()>0)
@@ -8826,10 +8828,11 @@ public class Spoon implements AddUndoPositionInterface
         return saved;
     }
     
-    public boolean editJobProperties(JobMeta jobMeta)
+    public boolean editJobProperties(JobMeta jobMeta, boolean directoryChangeAllowed)
     {
         if (jobMeta==null) return false;
         JobDialog jd = new JobDialog(shell, SWT.NONE, jobMeta, rep);
+        jd.setDirectoryChangeAllowed(directoryChangeAllowed);
         JobMeta ji = jd.open();
         
         // In this case, load shared objects

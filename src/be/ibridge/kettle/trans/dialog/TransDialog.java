@@ -182,6 +182,8 @@ public class TransDialog extends Dialog
     private Button wManageThreads;
 
     private CCombo wRejectedStep;
+    
+	private boolean directoryChangeAllowed;
 	
     /** @deprecated */
 	public TransDialog(Shell parent, int style, LogWriter log, Props props, TransMeta transMeta, Repository rep)
@@ -206,6 +208,8 @@ public class TransDialog extends Dialog
             schemas.add( ((PartitionSchema)transMeta.getPartitionSchemas().get(i)).clone() );
         }
         previousSchemaIndex = -1;
+        
+        directoryChangeAllowed=true;
     }
 
 
@@ -1607,21 +1611,28 @@ public class TransDialog extends Dialog
 
 		if (newDirectory!=null)
 		{
-		    RepositoryDirectory dirFrom = transMeta.getDirectory();
-		    long idDirFrom = dirFrom==null?-1L:dirFrom.getID();
-		    
-			try
-			{
-				rep.moveTransformation(transMeta.getName(), idDirFrom, newDirectory.getID() );
-		 		log.logDetailed(getClass().getName(), Messages.getString("TransDialog.Log.MovedDirectoryTo",newDirectory.getPath())); //$NON-NLS-1$ //$NON-NLS-2$
-				transMeta.setDirectory( newDirectory );
-			}
-			catch(KettleException ke)
-			{
-		 		transMeta.setDirectory( dirFrom );
-		 		OK=false;
-		 		new ErrorDialog(shell, Messages.getString("TransDialog.ErrorMovingTransformation.DialogTitle"), Messages.getString("TransDialog.ErrorMovingTransformation.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
-			}
+	        if (directoryChangeAllowed)
+	        {
+			    RepositoryDirectory dirFrom = transMeta.getDirectory();
+			    long idDirFrom = dirFrom==null?-1L:dirFrom.getID();
+			    
+				try
+				{
+					rep.moveTransformation(transMeta.getName(), idDirFrom, newDirectory.getID() );
+			 		log.logDetailed(getClass().getName(), Messages.getString("TransDialog.Log.MovedDirectoryTo",newDirectory.getPath())); //$NON-NLS-1$ //$NON-NLS-2$
+					transMeta.setDirectory( newDirectory );
+				}
+				catch(KettleException ke)
+				{
+			 		transMeta.setDirectory( dirFrom );
+			 		OK=false;
+			 		new ErrorDialog(shell, Messages.getString("TransDialog.ErrorMovingTransformation.DialogTitle"), Messages.getString("TransDialog.ErrorMovingTransformation.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+				}
+	        }
+	        else
+	        {
+	        	transMeta.setDirectory(newDirectory);
+	        }
 		}
 
         // Also get the partition schemas...
@@ -1762,4 +1773,9 @@ public class TransDialog extends Dialog
     {
         return sharedObjectsFileChanged;
     }
+
+
+	public void setDirectoryChangeAllowed(boolean directoryChangeAllowed) {
+		this.directoryChangeAllowed = directoryChangeAllowed;
+	}
 }

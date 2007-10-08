@@ -1781,7 +1781,7 @@ public class SpoonGraph extends Composite implements Redrawable, TabItemInterfac
                     {
                         public void widgetSelected(SelectionEvent e)
                         {
-                            spoon.editTransformationProperties(transMeta);
+                            spoon.editTransformationProperties(transMeta, true);
                         }
                     });
 

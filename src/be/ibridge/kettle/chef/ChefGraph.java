@@ -1473,7 +1473,7 @@ public class ChefGraph extends Composite implements Redrawable, TabItemInterface
                     {
                         public void widgetSelected(SelectionEvent e)
                         {
-                            spoon.editJobProperties(jobMeta);
+                            spoon.editJobProperties(jobMeta, true);
                         }
                     });
 
