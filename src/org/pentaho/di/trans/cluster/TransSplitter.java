@@ -20,6 +20,7 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.RemoteStep;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepPartitioningMeta;
+import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
 import org.pentaho.di.trans.steps.socketreader.SocketReaderMeta;
 import org.pentaho.di.trans.steps.socketwriter.SocketWriterMeta;
 
@@ -877,13 +878,105 @@ public class TransSplitter
                         }
                         else
                         {
-                            /*
                             // reference step is NOT clustered
                             // Previous step is clustered
                             // --> We read from the slave server using socket readers.
                             //     We need a reader for each slave server in the cluster
-                            //
-                             */
+                            //     On top of that we need to merge the data from all these steps using a dummy. (to make sure)
+                        	//     That dummy needs to feed into Merge Join
+                        	//
+                            int nrSlaves = infoClusterSchema.getSlaveServers().size();
+                            for (int s=0;s<nrSlaves;s++)
+                            {
+                                SlaveServer slaveServer = (SlaveServer) infoClusterSchema.getSlaveServers().get(s);
+                                
+                                if (!slaveServer.isMaster())
+                                {
+                                	////////////////////////////////////////////////////////////////////////////////////////////
+                                    // On the SLAVES: add a socket writer...
+                                	//
+                                	TransMeta slave = getSlaveTransformation(infoClusterSchema, slaveServer);
+                                    
+                                	SocketWriterMeta socketWriterMeta = new SocketWriterMeta();
+                                	int port = getPort(infoClusterSchema, slaveServer, infoStep.getName());
+                                	socketWriterMeta.setPort(""+port);
+                                	socketWriterMeta.setBufferSize(infoClusterSchema.getSocketsBufferSize());
+                                	socketWriterMeta.setFlushInterval(infoClusterSchema.getSocketsFlushInterval());
+                                	socketWriterMeta.setCompressed(infoClusterSchema.isSocketsCompressed());
+                                	
+                                    StepMeta writerStep = new StepMeta(getWriterName( infoStep.getName(), infoClusterSchema, slaveServer ), socketWriterMeta);
+                                    writerStep.setLocation(infoStep.getLocation().x+50, infoStep.getLocation().y + 50);
+                                    writerStep.setDraw(true);
+                                    
+                                    slave.addStep(writerStep);
+                                    
+                                    // We also need to add a hop between infoStep and the new writer step
+                                    //
+                                    TransHopMeta slaveHop =new TransHopMeta(infoStep, writerStep);
+                                    if (slave.findTransHop(slaveHop)==null) slave.addTransHop(slaveHop);
+                                	
+                                    ////////////////////////////////////////////////////////////////////////////////////////////
+                                    // On the MASTER : add a socket reader and a dummy step to merge the data...
+                                	//
+                                    SocketReaderMeta socketReaderMeta = new SocketReaderMeta();
+                                    socketReaderMeta.setPort(""+port);
+                                    socketReaderMeta.setBufferSize(infoClusterSchema.getSocketsBufferSize());
+                                    socketReaderMeta.setCompressed(infoClusterSchema.isSocketsCompressed());
+                                    
+                                    StepMeta readerStep = new StepMeta(getReaderName(infoStep.getName(), infoClusterSchema, slaveServer ), socketReaderMeta);
+                                    readerStep.setLocation(infoStep.getLocation().x, infoStep.getLocation().y+(s*FANOUT*2)-(nrSlaves*FANOUT/2));
+                                    readerStep.setDraw(true);
+                                    
+                                    master.addStep(readerStep);
+                                    
+                                    // Also add a single dummy step in the master that will merge the data from the slave transformations.
+                                    // 
+                                    String dummyName = infoStep.getName();
+                                    StepMeta dummyStep = master.findStep(dummyName);
+                                    if (dummyStep==null) 
+                                    {
+                                    	DummyTransMeta dummy = new DummyTransMeta();
+                                    	dummyStep = new StepMeta(dummyName, dummy);
+                                    	dummyStep.setLocation(infoStep.getLocation().x+(SPLIT/2), infoStep.getLocation().y);
+                                    	dummyStep.setDraw(true);
+                                    	dummyStep.setDescription("This step merges the data from the various data streams coming from the slave transformations.\nIt does that right before it hits the step that reads from a specific (info) step.");
+                                    	
+                                    	master.addStep(dummyStep);
+                                    	
+                                    	// Now we need a hop from the dummy merge step to the actual target step (original step)
+                                    	//
+                                    	StepMeta masterTargetStep = master.findStep(originalStep.getName());
+                                    	TransHopMeta targetHop = new TransHopMeta(dummyStep, masterTargetStep);
+                                    	master.addTransHop(targetHop);
+                                    	
+                                    	// Set the master target step as an info step... (use the cloned copy)
+                                		//
+                                        String infoStepNames[] = masterTargetStep.getStepMetaInterface().getInfoSteps();
+                                        if (infoStepNames!=null)
+                                        {
+                                            StepMeta is[] = new StepMeta[infoStepNames.length];
+                                            for (int n=0;n<infoStepNames.length;n++)
+                                            {
+                                                is[n] = slave.findStep(infoStepNames[n]); // OK, info steps moved to the slave steps
+                                                if (infoStepNames[n].equals(infoStep.getName()))  
+                                                {
+                                                    // We want to replace this one with the reader step: that's where we source from now
+                                                    infoSteps[n] = readerStep;
+                                                }
+                                            }
+                                            masterTargetStep.getStepMetaInterface().setInfoSteps(infoSteps);
+                                        }
+                                    }
+                                    
+                                    // Add a hop between the reader step and the dummy
+                                    //
+                                    TransHopMeta mergeHop = new TransHopMeta(readerStep, dummyStep);
+                                    if (master.findTransHop(mergeHop)==null) 
+                                    {
+                                    	master.addTransHop(mergeHop);
+                                    }
+                                }
+                            }
                         }
                     }
                     else
