@@ -1043,7 +1043,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	}
 
     public void editTransformationProperties() {
-		TransGraph.editProperties(getActiveTransformation(), this, rep);
+		TransGraph.editProperties(getActiveTransformation(), this, rep, true);
 	}
 
     public void executeJob() {
@@ -1835,7 +1835,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	}
 
     public void editTransformationPropertiesPopup() {
-		TransGraph.editProperties((TransMeta) selectionObject, this, rep);
+		TransGraph.editProperties((TransMeta) selectionObject, this, rep, true);
 	}
 
     public void addTransLog() {
@@ -1852,10 +1852,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
     public void editJobProperties( String id ) {
 		if( "job-settings".equals( id ) ) {
-			JobGraph.editProperties(getActiveJob(), this, rep);
+			JobGraph.editProperties(getActiveJob(), this, rep, true);
 		}
 		else if( "job-inst-settings".equals( id ) ) {
-			JobGraph.editProperties((JobMeta) selectionObject, this, rep);
+			JobGraph.editProperties((JobMeta) selectionObject, this, rep, true);
 		}
 	}
 
@@ -2201,8 +2201,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		}
                 else
 		{
-			if (selection instanceof TransMeta) TransGraph.editProperties((TransMeta) selection, this, rep);
-			if (selection instanceof JobMeta)JobGraph.editProperties((JobMeta) selection, this, rep);
+			if (selection instanceof TransMeta) TransGraph.editProperties((TransMeta) selection, this, rep, true);
+			if (selection instanceof JobMeta)JobGraph.editProperties((JobMeta) selection, this, rep, true);
 			if (selection instanceof StepPlugin)newStep(getActiveTransformation());
 			if (selection instanceof DatabaseMeta)delegates.db.editConnection((DatabaseMeta) selection);
 			if (selection instanceof StepMeta) delegates.steps.editStep((TransMeta) parent, (StepMeta) selection);
@@ -3288,10 +3288,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 				}
 				ask = false;
                 if( meta instanceof TransMeta ) {
-					answer = TransGraph.editProperties((TransMeta) meta, this, rep);
+					answer = TransGraph.editProperties((TransMeta) meta, this, rep, false);
 				}
                 if( meta instanceof JobMeta ) {
-					answer = JobGraph.editProperties((JobMeta) meta, this, rep);
+					answer = JobGraph.editProperties((JobMeta) meta, this, rep, false);
 				}
 			}
 
@@ -3402,7 +3402,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 					mb.open();
 				}
 				ask = false;
-				answer = JobGraph.editProperties(jobMeta, this, rep);
+				answer = JobGraph.editProperties(jobMeta, this, rep, false);
 			}
 
 			if (answer && jobMeta.getName() != null && jobMeta.getName().length() > 0)

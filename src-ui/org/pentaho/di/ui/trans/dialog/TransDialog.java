@@ -182,14 +182,9 @@ public class TransDialog extends Dialog
     private Button wManageThreads;
 
     private CCombo wRejectedStep;
-	
-    /** @deprecated */
-	public TransDialog(Shell parent, int style, LogWriter log, PropsUI props, TransMeta transMeta, Repository rep)
-	{
-		this(parent, style, transMeta, rep);
-	}
 
- 
+	private boolean directoryChangeAllowed;
+	
     public TransDialog(Shell parent, int style, TransMeta transMeta, Repository rep)
     {
         super(parent, style);
@@ -206,6 +201,8 @@ public class TransDialog extends Dialog
             schemas.add( (PartitionSchema) transMeta.getPartitionSchemas().get(i).clone() );
         }
         previousSchemaIndex = -1;
+        
+        directoryChangeAllowed=true;
     }
 
 
@@ -1605,24 +1602,32 @@ public class TransDialog extends Dialog
         transMeta.setSharedObjectsFile( wSharedObjectsFile.getText() );
         transMeta.setUsingThreadPriorityManagment( wManageThreads.getSelection() );
 
-		if (newDirectory!=null)
-		{
-		    RepositoryDirectory dirFrom = transMeta.getDirectory();
-		    long idDirFrom = dirFrom==null?-1L:dirFrom.getID();
-		    
-			try
+        if (directoryChangeAllowed) {
+			if (newDirectory!=null)
 			{
-				rep.moveTransformation(transMeta.getName(), idDirFrom, newDirectory.getID() );
-		 		log.logDetailed(getClass().getName(), Messages.getString("TransDialog.Log.MovedDirectoryTo",newDirectory.getPath())); //$NON-NLS-1$ //$NON-NLS-2$
-				transMeta.setDirectory( newDirectory );
+			    RepositoryDirectory dirFrom = transMeta.getDirectory();
+			    long idDirFrom = dirFrom==null?-1L:dirFrom.getID();
+			    
+				try
+				{
+					rep.moveTransformation(transMeta.getName(), idDirFrom, newDirectory.getID() );
+			 		log.logDetailed(getClass().getName(), Messages.getString("TransDialog.Log.MovedDirectoryTo",newDirectory.getPath())); //$NON-NLS-1$ //$NON-NLS-2$
+					transMeta.setDirectory( newDirectory );
+				}
+				catch(KettleException ke)
+				{
+			 		transMeta.setDirectory( dirFrom );
+			 		OK=false;
+			 		new ErrorDialog(shell, Messages.getString("TransDialog.ErrorMovingTransformation.DialogTitle"), Messages.getString("TransDialog.ErrorMovingTransformation.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+				}
 			}
-			catch(KettleException ke)
-			{
-		 		transMeta.setDirectory( dirFrom );
-		 		OK=false;
-		 		new ErrorDialog(shell, Messages.getString("TransDialog.ErrorMovingTransformation.DialogTitle"), Messages.getString("TransDialog.ErrorMovingTransformation.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
-			}
-		}
+        }
+        else
+        {
+        	// Just update to the new selected directory...
+        	//
+        	if (newDirectory!=null) transMeta.setDirectory(newDirectory);
+        }
 
         // Also get the partition schemas...
         applySchema(); // get last changes too...
@@ -1771,4 +1776,9 @@ public class TransDialog extends Dialog
     {
         return sharedObjectsFileChanged;
     }
+
+
+	public void setDirectoryChangeAllowed(boolean directoryChangeAllowed) {
+		this.directoryChangeAllowed = directoryChangeAllowed;
+	}
 }

@@ -45,23 +45,22 @@ import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.ui.core.gui.GUIResource;
-import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobEntryLoader;
 import org.pentaho.di.job.JobMeta;
-import org.pentaho.di.ui.job.dialog.Messages;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.database.dialog.SQLEditor;
+import org.pentaho.di.ui.core.gui.GUIResource;
+import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.repository.dialog.SelectDirectoryDialog;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 
 /**
@@ -153,15 +152,8 @@ public class JobDialog extends Dialog
 	private Text         wModUser;
 	private Text         wModDate;
 
-    /**
-     * @deprecated Use version without <i>log</i> and <i>props</i> parameter
-     */
-    public JobDialog(Shell parent, int style, LogWriter log, Props props, JobMeta jobMeta, Repository rep)
-    {
-        this(parent, style, jobMeta, rep);
-        //this.log = log;
-        //this.props = props;
-    }
+	private RepositoryDirectory newDirectory;
+	private boolean directoryChangeAllowed;
 
 	public JobDialog(Shell parent, int style, JobMeta jobMeta, Repository rep)
 	{
@@ -170,6 +162,10 @@ public class JobDialog extends Dialog
 		this.jobMeta=jobMeta;
 		this.props=PropsUI.getInstance();
 		this.rep=rep;
+		
+        this.newDirectory = null;
+        
+		directoryChangeAllowed=true;
 	}
 	
 
@@ -403,22 +399,10 @@ public class JobDialog extends Dialog
 				{
 					if (idDirectoryFrom!=rd.getID())
 					{
-						try
-						{
-							rep.moveJob(jobMeta.getName(), idDirectoryFrom, rd.getID() );
-							log.logDetailed(getClass().getName(), "Moved directory to ["+rd.getPath()+"]");
-							jobMeta.setDirectory( rd );
-							wDirectory.setText(jobMeta.getDirectory().getPath());
-						}
-						catch(KettleException dbe)
-						{
-							jobMeta.setDirectory( directoryFrom );
-					 		
-							MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-							mb.setText(Messages.getString("JobDialog.Dialog.ErrorChangingDirectory.Title"));
-							mb.setMessage(Messages.getString("JobDialog.Dialog.ErrorChangingDirectory.Message"));
-							mb.open();
-						}
+                        // We need to change this in the repository as well!!
+                        // We do this when the user pressed OK
+                        newDirectory = rd;
+                        wDirectory.setText(rd.getPath());
 					}
 					else
 					{
@@ -798,6 +782,36 @@ public class JobDialog extends Dialog
         jobMeta.setBatchIdPassed( wBatchTrans.getSelection());
         jobMeta.setLogfieldUsed( wLogfield.getSelection());
         jobMeta.setSharedObjectsFile( wSharedObjectsFile.getText() );
+        
+        if (directoryChangeAllowed) 
+        {
+			RepositoryDirectory dirFrom = jobMeta.getDirectory();
+		    long idDirFrom = dirFrom==null?-1L:dirFrom.getID();
+
+		    try
+			{
+			    
+				rep.moveJob(jobMeta.getName(), idDirFrom, newDirectory.getID() );
+				log.logDetailed(getClass().getName(), "Moved directory to ["+newDirectory.getPath()+"]");
+				jobMeta.setDirectory( newDirectory );
+				wDirectory.setText(jobMeta.getDirectory().getPath());
+			}
+			catch(KettleException dbe)
+			{
+				jobMeta.setDirectory( dirFrom );
+		 		
+				MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
+				mb.setText(Messages.getString("JobDialog.Dialog.ErrorChangingDirectory.Title"));
+				mb.setMessage(Messages.getString("JobDialog.Dialog.ErrorChangingDirectory.Message"));
+				mb.open();
+			}
+        }
+        else
+        {
+        	// Just update to the new selected directory...
+        	//
+        	if (newDirectory!=null) jobMeta.setDirectory( newDirectory );
+        }
 
 		dispose();
 	}
@@ -900,4 +914,8 @@ public class JobDialog extends Dialog
         {
         }
     }
+    
+	public void setDirectoryChangeAllowed(boolean directoryChangeAllowed) {
+		this.directoryChangeAllowed = directoryChangeAllowed;
+	}
 }

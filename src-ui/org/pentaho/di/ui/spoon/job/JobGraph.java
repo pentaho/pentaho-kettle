@@ -1314,7 +1314,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 	}
 
 	public void editJobProperties() {
-        editProperties(jobMeta, spoon, spoon.getRepository());
+        editProperties(jobMeta, spoon, spoon.getRepository(), true);
 	}
 	
 	public void pasteNote() {
@@ -2284,11 +2284,12 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
     	return mb.open();
     }
     
-    public static boolean editProperties(JobMeta jobMeta, Spoon spoon, Repository rep)
+    public static boolean editProperties(JobMeta jobMeta, Spoon spoon, Repository rep, boolean allowDirectoryChange)
     {
     	if (jobMeta==null) return false;
     	
         JobDialog jd = new JobDialog(spoon.getShell(), SWT.NONE, jobMeta, rep);
+        jd.setDirectoryChangeAllowed(allowDirectoryChange);
         JobMeta ji = jd.open();
         
         // In this case, load shared objects

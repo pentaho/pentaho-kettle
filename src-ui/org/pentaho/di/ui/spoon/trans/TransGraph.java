@@ -1606,7 +1606,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 
     public void settings()
     {
-        editProperties( transMeta, spoon, spoon.getRepository());
+        editProperties( transMeta, spoon, spoon.getRepository(), true);
     }
 
     public void newStep( String description )
@@ -2449,11 +2449,12 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         return lastMove;
     }
     
-    public static boolean editProperties(TransMeta transMeta, Spoon spoon, Repository rep)
+    public static boolean editProperties(TransMeta transMeta, Spoon spoon, Repository rep, boolean allowDirectoryChange)
     {
         if (transMeta==null) return false;
         
         TransDialog tid = new TransDialog(spoon.getShell(), SWT.NONE, transMeta, rep);
+        tid.setDirectoryChangeAllowed(allowDirectoryChange);
         TransMeta ti = tid.open();
         
         // In this case, load shared objects
