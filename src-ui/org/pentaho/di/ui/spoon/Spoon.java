@@ -351,9 +351,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		// Do some initialisation of environment variables
 		EnvUtil.environmentInit();
 		
-		ArrayList<String> args = new ArrayList<String>();
-        for (int i=0;i<a.length;i++) args.add(a[i]);
-
+		List<String> args = new ArrayList<String>(java.util.Arrays.asList(a));
+       
 		Display display = new Display();
 		Spoon spoon = new Spoon(display);
 		spoon.run(args);
@@ -5156,6 +5155,57 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         
 
 	}
+    
+    private boolean openRepositoryDialog(RepositoriesDialog rd,RepositoryMeta repositoryMeta,UserInfo userinfo)
+    {
+    	if (rd.open())
+		{
+			repositoryMeta = rd.getRepository();
+			userinfo = rd.getUser();
+			if (!userinfo.useTransformations())
+			{
+				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
+                mb.setMessage(Messages.getString("Spoon.Dialog.RepositoryUserCannotWork.Message"));//"Sorry, this repository user can't work with transformations from the repository."
+				mb.setText(Messages.getString("Spoon.Dialog.RepositoryUserCannotWork.Title"));// "Error!"
+				mb.open();
+
+				userinfo = null;
+				repositoryMeta = null;
+				
+				return false;
+            } else {
+               	String repName = repositoryMeta.getName();                	
+				RepositoriesMeta repsinfo = new RepositoriesMeta(log);
+				if (repsinfo.readData())
+				{
+					repositoryMeta = repsinfo.findRepository(repName);
+					if (repositoryMeta != null)
+					{
+						// Define and connect to the repository...
+						setRepository(new Repository(log, repositoryMeta, userinfo));
+						return true;
+                    } else {
+                        log.logError(toString(), Messages.getString("Spoon.Log.NoRepositoryRrovided"));//"No repository provided, can't load transformation."
+					}
+                } else {
+                    log.logError(toString(), Messages.getString("Spoon.Log.NoRepositoriesDefined"));//"No repositories defined on this system."
+				}
+				
+				return false;
+
+			}
+        }
+        else
+		{
+			// Exit point: user pressed CANCEL!
+			if (rd.isCancelled())
+			{
+				return false;
+			}
+		}
+    	
+    	return false;
+    }
 
     public boolean selectRep( Splash splash ) {
 		RepositoryMeta repositoryMeta = null;
@@ -5163,54 +5213,16 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 		StringBuffer optionRepname = getCommandLineOption("rep").getArgument();
 		StringBuffer optionFilename = getCommandLineOption("file").getArgument();
-
+		int perms[] = new int[] { PermissionMeta.TYPE_PERMISSION_TRANSFORMATION, PermissionMeta.TYPE_PERMISSION_JOB };
+		
         if (Const.isEmpty(optionRepname) && Const.isEmpty(optionFilename) && props.showRepositoriesDialogAtStartup())
 		{
             log.logBasic(APP_NAME, Messages.getString("Spoon.Log.AskingForRepository"));//"Asking for repository"
 
-            int perms[] = new int[] { PermissionMeta.TYPE_PERMISSION_TRANSFORMATION, PermissionMeta.TYPE_PERMISSION_JOB };
-			splash.hide();
-            RepositoriesDialog rd = new RepositoriesDialog(display, perms, Messages.getString("Spoon.Application.Name"));//"Spoon"
-			if (rd.open())
-			{
-				repositoryMeta = rd.getRepository();
-				userinfo = rd.getUser();
-				if (!userinfo.useTransformations())
-				{
-					MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
-                    mb.setMessage(Messages.getString("Spoon.Dialog.RepositoryUserCannotWork.Message"));//"Sorry, this repository user can't work with transformations from the repository."
-					mb.setText(Messages.getString("Spoon.Dialog.RepositoryUserCannotWork.Title"));// "Error!"
-					mb.open();
-
-					userinfo = null;
-					repositoryMeta = null;
-                } else {
-                   	String repName = repositoryMeta.getName();                	
-					RepositoriesMeta repsinfo = new RepositoriesMeta(log);
-					if (repsinfo.readData())
-					{
-						repositoryMeta = repsinfo.findRepository(repName);
-						if (repositoryMeta != null)
-						{
-							// Define and connect to the repository...
-							setRepository(new Repository(log, repositoryMeta, userinfo));
-                        } else {
-                            log.logError(toString(), Messages.getString("Spoon.Log.NoRepositoryRrovided"));//"No repository provided, can't load transformation."
-						}
-                    } else {
-                        log.logError(toString(), Messages.getString("Spoon.Log.NoRepositoriesDefined"));//"No repositories defined on this system."
-					}
-
-				}
-            }
-            else
-			{
-				// Exit point: user pressed CANCEL!
-				if (rd.isCancelled())
-				{
-					return false;
-				}
-			}
+            splash.hide();
+			RepositoriesDialog rd = new RepositoriesDialog(display, perms, Messages.getString("Spoon.Application.Name"));//"Spoon"
+			
+            return openRepositoryDialog(rd,repositoryMeta,userinfo);
 		}
         else if (!Const.isEmpty(optionRepname) && Const.isEmpty(optionFilename) ) {
 			RepositoriesMeta repsinfo = new RepositoriesMeta(log);
@@ -5222,8 +5234,17 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 					// Define and connect to the repository...
 					setRepository(new Repository(log, repositoryMeta, userinfo));
                 } 
-            } else {
-                log.logError(toString(), Messages.getString("Spoon.Log.NoRepositoriesDefined"));//"No repositories defined on this system."
+	             else {
+	            	String msg = Messages.getString("Spoon.Log.NoRepositoriesDefined");
+	                log.logError(toString(), msg);//"No repositories defined on this system."
+	                MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
+	                mb.setMessage(Messages.getString("Spoon.Error.Repository.NotFound",optionRepname.toString()));
+					mb.setText(Messages.getString("Spoon.Error.Repository.NotFound.Title"));
+					mb.open();
+					RepositoriesDialog rd = new RepositoriesDialog(display, perms, Messages.getString("Spoon.Application.Name"));//"Spoon"
+					
+		            return openRepositoryDialog(rd,repositoryMeta,userinfo);
+				}
 			}
         }
 		return true;
@@ -5408,7 +5429,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		return null;
 	}
 
-    public void getCommandLineArgs( ArrayList<String> args ) {
+    public void getCommandLineArgs( List<String> args ) {
 
 		options = new CommandLineOption[] 
 	{
@@ -5449,7 +5470,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		splash = new Splash(display);
 	}
 
-    public void run( ArrayList<String> args ) {
+    public void run( List<String> args ) {
     	try {
 			createSplash();
 			getCommandLineArgs(args);
