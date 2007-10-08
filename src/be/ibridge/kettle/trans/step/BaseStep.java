@@ -291,7 +291,7 @@ public class BaseStep extends Thread
 			new StepPluginMeta(GetFilesRowsCountMeta.class, "GetFilesRowsCount", Messages.getString("BaseStep.TypeLongDesc.GetFilesRowsCount"), Messages
 					.getString("BaseStep.TypeTooltipDesc.GetFilesRowsCount"), "FRC.png", CATEGORY_INPUT), 
 			new StepPluginMeta(SQLFileOutputMeta.class, "SQLFileOutput", Messages.getString("BaseStep.TypeLongDesc.SQLFileOutput"), Messages
-					.getString("BaseStep.TypeTooltipDesc.SQLFileOutput"), "SFO.png", CATEGORY_OUTPUT),
+					.getString("BaseStep.TypeTooltipDesc.SQLFileOutput"), "SFO.png", CATEGORY_EXPERIMENTAL),
 
         };
 
