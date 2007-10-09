@@ -118,6 +118,11 @@ public class TeradataDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 		return true;
 	}
 	
+	public String getSQLTableExists(String tablename)
+	{
+		return "show table " + tablename;
+	} 
+	
 	/**
 	 * @param tableName The table to be truncated.
 	 * @return The SQL statement to truncate a table: remove all rows from it without a transaction
