@@ -25,6 +25,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.provider.local.LocalFile;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -48,6 +50,7 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
+import org.pentaho.di.trans.steps.csvinput.Messages;
 import org.w3c.dom.Node;
 
 /**
@@ -293,181 +296,210 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 		Result result = previousResult;
 		result.setResult(false);
 
-		// Let's check  the filename ...
-		if (filename!=null)
+		String vfsFilename = environmentSubstitute(filename);
+
+		// Let's check the filename ...
+		if (!Const.isEmpty(vfsFilename))
 		{
-			// User has specified a file, We can continue ...
-			String realFilename = getRealFilename();
-			File file = new File(realFilename);
-			if ((file.exists() && file.canRead()) || isLocalInfile()==false)
+			try
 			{
-				// User has specified an existing file, We can continue ...
-				log.logDetailed(toString(), "File ["+realFilename+"] exists.");
-
-				if (connection!=null)
+				// User has specified a file, We can continue ...
+				//
+				
+				// This is running over VFS but we need a normal file.
+				// As such, we're going to verify that it's a local file...
+				// We're also going to convert VFS FileObject to File
+				//
+				FileObject fileObject = KettleVFS.getFileObject(vfsFilename);
+				if (!(fileObject instanceof LocalFile)) {
+					// MySQL LOAD DATA can only use local files, so that's what we limit ourselves to.
+					//
+					throw new KettleException("Only local files are supported at this time, file ["+vfsFilename+"] is not a local file.");
+				}
+				
+				// Convert it to a regular platform specific file name
+				//
+				String realFilename = KettleVFS.getFilename(fileObject);
+				
+				// Here we go... back to the regular scheduled program...
+				//
+				File file = new File(realFilename);
+				if ((file.exists() && file.canRead()) || isLocalInfile()==false)
 				{
-					// User has specified a connection, We can continue ...
-					Database db = new Database(connection);
-					db.shareVariablesWith(this);
-					try
+					// User has specified an existing file, We can continue ...
+					log.logDetailed(toString(), "File ["+realFilename+"] exists.");
+	
+					if (connection!=null)
 					{
-						db.connect();
-						// Get schemaname
-						String realSchemaname = environmentSubstitute(schemaname);
-						// Get tablename
-						String realTablename = environmentSubstitute(tablename);
-
-						if (db.checkTableExists(realTablename))
+						// User has specified a connection, We can continue ...
+						Database db = new Database(connection);
+						db.shareVariablesWith(this);
+						try
 						{
-							// The table existe, We can continue ...
-							log.logDetailed(toString(), "Table ["+realTablename+"] exists.");
-
-							// Add schemaname (Most the time Schemaname.Tablename)
-							if (schemaname !=null)
+							db.connect();
+							// Get schemaname
+							String realSchemaname = environmentSubstitute(schemaname);
+							// Get tablename
+							String realTablename = environmentSubstitute(tablename);
+	
+							if (db.checkTableExists(realTablename))
 							{
-								realTablename= realSchemaname + "." + realTablename;
-							}
-
-							// Set the REPLACE or IGNORE
-							if (isReplacedata())
-							{
-								ReplaceIgnore="REPLACE";
+								// The table existe, We can continue ...
+								log.logDetailed(toString(), "Table ["+realTablename+"] exists.");
+	
+								// Add schemaname (Most the time Schemaname.Tablename)
+								if (schemaname !=null)
+								{
+									realTablename= realSchemaname + "." + realTablename;
+								}
+	
+								// Set the REPLACE or IGNORE
+								if (isReplacedata())
+								{
+									ReplaceIgnore="REPLACE";
+								}
+								else
+								{
+									ReplaceIgnore="IGNORE";
+								}
+	
+								// Set the IGNORE LINES
+								if (Const.toInt(getRealIgnorelines(),0)>0)
+								{
+									IgnoreNbrLignes = "IGNORE " + getRealIgnorelines() + " LINES";
+								}
+	
+								// Set list of Column
+								if (getRealListattribut()!= null)
+								{
+									ListOfColumn="(" + MysqlString(getRealListattribut()) + ")";
+	
+								}
+	
+								// Local File execution
+								if (isLocalInfile())
+								{
+									LocalExec = "LOCAL";
+								}
+	
+								// Prority
+								if (prorityvalue == 1)
+								{
+									//LOW
+									PriorityText = "LOW_PRIORITY";
+								}
+								else if(prorityvalue == 2)
+								{
+									//CONCURRENT
+									PriorityText = "CONCURRENT";
+								}
+	
+								// Fields ....
+								if (getRealSeparator() != null || getRealEnclosed() != null || getRealEscaped() != null)
+								{
+									FieldTerminatedby ="FIELDS ";
+	
+									if (getRealSeparator() != null )
+									{
+										FieldTerminatedby = FieldTerminatedby + "TERMINATED BY '" +  Const.replace(getRealSeparator(), "'", "''") +"'";
+									}
+									if (getRealEnclosed() != null )
+									{
+										FieldTerminatedby = FieldTerminatedby + " ENCLOSED BY '" +  Const.replace(getRealEnclosed(), "'", "''") +"'";
+	
+									}
+									if (getRealEscaped() != null )
+									{
+	
+											FieldTerminatedby = FieldTerminatedby + " ESCAPED BY '" +  Const.replace(getRealEscaped(), "'", "''") +"'";
+	
+									}
+								}
+	
+								// LINES ...
+								if (getRealLinestarted() != null ||getRealLineterminated() != null )
+								{
+									LineTerminatedby="LINES ";
+	
+									// Line starting By
+									if (getRealLinestarted() != null)
+									{
+										LineTerminatedby =LineTerminatedby + "STARTING BY '" +  Const.replace(getRealLinestarted(), "'", "''") +"'";
+									}
+	
+									// Line terminating By
+									if (getRealLineterminated() != null)
+									{
+										LineTerminatedby =LineTerminatedby + " TERMINATED BY '" +  Const.replace(getRealLineterminated(), "'", "''") +"'";
+									}
+								}
+	
+								String SQLBULKLOAD="LOAD DATA " + PriorityText + " " + LocalExec + " INFILE '" + realFilename + 	"' " + ReplaceIgnore +
+	                     						   " INTO TABLE " + realTablename + " " + FieldTerminatedby + " " + LineTerminatedby + " " + IgnoreNbrLignes + " " +  ListOfColumn  + ";";
+	
+								try
+								{
+									// Run the SQL
+									db.execStatements(SQLBULKLOAD);
+	
+									// Everything is OK...we can deconnect now
+									db.disconnect();
+									
+									if (isAddFileToResult())
+									{
+										// Add zip filename to output files
+					                	ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(realFilename), parentJob.getName(), toString());
+					                    result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
+									}
+									
+									result.setResult(true);
+								}
+								catch(KettleDatabaseException je)
+								{
+									db.disconnect();
+									result.setNrErrors(1);
+									log.logError(toString(), "An error occurred executing this job entry : "+je.getMessage());
+								}
+								catch (IOException e)
+								{
+					       			log.logError(toString(), "An error occurred executing this job entry : " + e.getMessage());
+									result.setNrErrors(1);
+								}
 							}
 							else
 							{
-								ReplaceIgnore="IGNORE";
-							}
-
-							// Set the IGNORE LINES
-							if (Const.toInt(getRealIgnorelines(),0)>0)
-							{
-								IgnoreNbrLignes = "IGNORE " + getRealIgnorelines() + " LINES";
-							}
-
-							// Set list of Column
-							if (getRealListattribut()!= null)
-							{
-								ListOfColumn="(" + MysqlString(getRealListattribut()) + ")";
-
-							}
-
-							// Local File execution
-							if (isLocalInfile())
-							{
-								LocalExec = "LOCAL";
-							}
-
-							// Prority
-							if (prorityvalue == 1)
-							{
-								//LOW
-								PriorityText = "LOW_PRIORITY";
-							}
-							else if(prorityvalue == 2)
-							{
-								//CONCURRENT
-								PriorityText = "CONCURRENT";
-							}
-
-							// Fields ....
-							if (getRealSeparator() != null || getRealEnclosed() != null || getRealEscaped() != null)
-							{
-								FieldTerminatedby ="FIELDS ";
-
-								if (getRealSeparator() != null )
-								{
-									FieldTerminatedby = FieldTerminatedby + "TERMINATED BY '" +  Const.replace(getRealSeparator(), "'", "''") +"'";
-								}
-								if (getRealEnclosed() != null )
-								{
-									FieldTerminatedby = FieldTerminatedby + " ENCLOSED BY '" +  Const.replace(getRealEnclosed(), "'", "''") +"'";
-
-								}
-								if (getRealEscaped() != null )
-								{
-
-										FieldTerminatedby = FieldTerminatedby + " ESCAPED BY '" +  Const.replace(getRealEscaped(), "'", "''") +"'";
-
-								}
-							}
-
-							// LINES ...
-							if (getRealLinestarted() != null ||getRealLineterminated() != null )
-							{
-								LineTerminatedby="LINES ";
-
-								// Line starting By
-								if (getRealLinestarted() != null)
-								{
-									LineTerminatedby =LineTerminatedby + "STARTING BY '" +  Const.replace(getRealLinestarted(), "'", "''") +"'";
-								}
-
-								// Line terminating By
-								if (getRealLineterminated() != null)
-								{
-									LineTerminatedby =LineTerminatedby + " TERMINATED BY '" +  Const.replace(getRealLineterminated(), "'", "''") +"'";
-								}
-							}
-
-							String SQLBULKLOAD="LOAD DATA " + PriorityText + " " + LocalExec + " INFILE '" + realFilename + 	"' " + ReplaceIgnore +
-                     						   " INTO TABLE " + realTablename + " " + FieldTerminatedby + " " + LineTerminatedby + " " + IgnoreNbrLignes + " " +  ListOfColumn  + ";";
-
-							try
-							{
-								// Run the SQL
-								db.execStatements(SQLBULKLOAD);
-
-								// Everything is OK...we can deconnect now
-								db.disconnect();
-								
-								if (isAddFileToResult())
-								{
-									// Add zip filename to output files
-				                	ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(realFilename), parentJob.getName(), toString());
-				                    result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
-								}
-								
-								result.setResult(true);
-							}
-							catch(KettleDatabaseException je)
-							{
+								// Of course, the table should have been created already before the bulk load operation
 								db.disconnect();
 								result.setNrErrors(1);
-								log.logError(toString(), "An error occurred executing this job entry : "+je.getMessage());
-							}
-							catch (IOException e)
-							{
-				       			log.logError(toString(), "An error occurred executing this job entry : " + e.getMessage());
-								result.setNrErrors(1);
+								log.logDetailed(toString(), "Table ["+realTablename+"] doesn't exist!");
 							}
 						}
-						else
+						catch(KettleDatabaseException dbe)
 						{
-							// Of course, the table should have been created already before the bulk load operation
 							db.disconnect();
 							result.setNrErrors(1);
-							log.logDetailed(toString(), "Table ["+realTablename+"] doesn't exist!");
+							log.logError(toString(), "An error occurred executing this entry: "+dbe.getMessage());
 						}
 					}
-					catch(KettleDatabaseException dbe)
+					else
 					{
-						db.disconnect();
+						// No database connection is defined
 						result.setNrErrors(1);
-						log.logError(toString(), "An error occurred executing this entry: "+dbe.getMessage());
+						log.logError(toString(),  Messages.getString("JobMysqlBulkLoad.Nodatabase.Label"));
 					}
 				}
 				else
 				{
-					// No database connection is defined
+					// the file doesn't exist
 					result.setNrErrors(1);
-					log.logError(toString(),  Messages.getString("JobMysqlBulkLoad.Nodatabase.Label"));
+					log.logError(toString(), "File ["+realFilename+"] doesn't exist!");
 				}
 			}
-			else
+			catch(Exception e)
 			{
-				// the file doesn't exist
+				// An unexpected error occurred
 				result.setNrErrors(1);
-				log.logError(toString(), "File ["+realFilename+"] doesn't exist!");
+				log.logError(toString(), Messages.getString("JobMysqlBulkLoad.UnexpectedError.Label"), e);
 			}
 		}
 		else
@@ -513,12 +545,6 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 	public String getFilename()
 	{
 		return filename;
-	}
-
-	public String getRealFilename()
-	{
-		String RealFile= environmentSubstitute(getFilename());
-		return RealFile.replace('\\','/');
 	}
 
 	public void setSeparator(String separator)
