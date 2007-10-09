@@ -344,19 +344,6 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 
 	public Result execute(Result result, int nr, Repository rep, Job parentJob) throws KettleException
 	{
-		try
-		{
-			FileObject parent = VFS.getManager().resolveFile(parentJob.getJobMeta().getFilename());
-			FileObject thisFile = VFS.getManager().resolveFile(getFilename());
-			
-			if (parent.equals(thisFile))
-				throw new KettleException("JobJobError.Recursive");
-		}
-		catch(IOException e)
-		{
-			throw new KettleException(e);
-		}
-	
 	    result.setEntryNr( nr );
 
         LogWriter logwriter = log;
@@ -415,7 +402,9 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
             {
                 throw new KettleException("Unable to load the job: please specify the name and repository directory OR a filename");
             }
-
+            
+            verifyRecursiveExecution(parentJob, jobMeta);
+    		
             // Tell logging what job entry we are launching...
             if (fromRepository)
             {
@@ -677,8 +666,47 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 	
 	
 	
+	/**
+	 * Make sure that we are not loading jobs recursively...
+	 * 
+	 * @param parentJobMeta the parent job metadata
+	 * @param jobMeta the job metadata
+	 * @throws KettleException in case both jobs are loaded from the same source
+	 */
+    private void verifyRecursiveExecution(Job parentJob, JobMeta jobMeta) throws KettleException {
+    	
+    	if (parentJob==null) return; // OK!
+    	
+    	JobMeta parentJobMeta = parentJob.getJobMeta();
+    	
+    	if (parentJobMeta.getName()==null && jobMeta.getName()!=null) return; // OK
+    	if (parentJobMeta.getName()!=null && jobMeta.getName()==null) return; // OK as well.
+    	
+		// Not from the repository? just verify the filename
+		//
+		if (jobMeta.getFilename()!=null && jobMeta.getFilename().equals(parentJobMeta.getFilename()))
+		{
+			throw new KettleException(Messages.getString("JobJobError.Recursive", jobMeta.getFilename()));
+		}
 
-    public void clear()
+		// Different directories: OK
+		if (parentJobMeta.getDirectory()==null && jobMeta.getDirectory()!=null) return; 
+		if (parentJobMeta.getDirectory()!=null && jobMeta.getDirectory()==null) return; 
+		if (jobMeta.getDirectory().getID() != parentJobMeta.getDirectory().getID()) return;
+		
+		// Same names, same directories : loaded from same location in the repository: 
+		// --> recursive loading taking place!
+		//
+		if (parentJobMeta.getName().equals(jobMeta.getName()))
+		{
+			throw new KettleException(Messages.getString("JobJobError.Recursive", jobMeta.getFilename()));
+		}
+		
+		// Also compare with the grand-parent (if there is any)
+		verifyRecursiveExecution(parentJob.getParentJob(), jobMeta);
+   	}
+
+	public void clear()
 	{
 		super.clear();
 
