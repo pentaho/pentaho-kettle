@@ -225,6 +225,11 @@ public class ValueMeta implements ValueMetaInterface
      */
     public int getPrecision()
     {
+    	// For backward compatibility we need to tweak a bit...
+    	//
+    	if (isInteger() || isBinary()) return 0;
+    	if (isString() || isBoolean()) return -1;
+    	
         return precision;
     }
     
