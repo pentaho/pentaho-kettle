@@ -36,6 +36,7 @@ public class FixedInputData extends BaseStepData implements StepDataInterface
 	public FileChannel fc;
 	public ByteBuffer bb;
 	public RowMetaInterface outputRowMeta;
+	public RowMetaInterface convertRowMeta;
 	
 	public byte[] byteBuffer;
 	public int    startBuffer;
