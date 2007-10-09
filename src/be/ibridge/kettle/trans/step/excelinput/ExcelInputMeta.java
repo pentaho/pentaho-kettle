@@ -1173,4 +1173,13 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
     {
         this.encoding = encoding;
     }
+    
+    /**
+     * Read all sheets if the sheet names are left blank. 
+     * @return true if all sheets are read.
+     */
+    public boolean readAllSheets()
+	{
+		return Const.isEmpty(sheetName) || ( sheetName.length==1 && Const.isEmpty(sheetName[0]) );
+	}
 }

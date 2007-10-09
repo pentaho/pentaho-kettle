@@ -1699,12 +1699,32 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 					Sheet sheet = workbook.getSheet(j);
 
 					// See if it's a selected sheet:
-					int sheetIndex = Const.indexOfString(sheet.getName(), info.getSheetName()); 
+					int sheetIndex;
+					if (info.readAllSheets())
+					{
+						sheetIndex = 0; 
+					}
+					else 
+					{
+						sheetIndex = Const.indexOfString(sheet.getName(), info.getSheetName());
+					}
 					if (sheetIndex>=0)
 					{
 						// We suppose it's the complete range we're looking for...
-						int rownr=info.getStartRow()[sheetIndex];
-						int startcol = info.getStartColumn()[sheetIndex];
+						//
+						int rownr=0;
+						int startcol=0;
+						
+						if (info.readAllSheets())
+						{
+							if (info.getStartColumn().length==1) startcol=info.getStartColumn()[0];
+							if (info.getStartRow().length==1) rownr=info.getStartRow()[0];
+						}
+						else
+						{
+							rownr=info.getStartRow()[sheetIndex];
+							startcol = info.getStartColumn()[sheetIndex];
+						}
 						
 						boolean stop=false;
 						for (int colnr=startcol;colnr<256 && !stop;colnr++)

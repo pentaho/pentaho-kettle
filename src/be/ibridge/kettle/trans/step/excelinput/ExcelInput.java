@@ -483,21 +483,34 @@ public class ExcelInput extends BaseStep implements StepInterface
 				data.errorHandler.handleFile(data.file);
 				// Start at the first sheet again...
 				data.sheetnr = 0;
-
+				
+				// See if we have sheet names to retrieve, otherwise we'll have to get all sheets...
+				//
+				if (meta.readAllSheets())
+				{
+					data.sheetNames = data.workbook.getSheetNames();
+					data.startColumn = new int[data.sheetNames.length];
+					data.startRow    = new int[data.sheetNames.length];
+					for (int i=0;i<data.sheetNames.length;i++)
+					{
+						data.startColumn[i] = data.defaultStartColumn;
+						data.startRow[i]    = data.defaultStartRow;
+					}
+				}
 			}
 
 			boolean nextsheet = false;
 
 			// What sheet were we handling?
 			if (log.isDebug()) logDetailed("Get sheet #" + data.filenr + "." + data.sheetnr);
-			String sheetName = meta.getSheetName()[data.sheetnr];
+			String sheetName = data.sheetNames[data.sheetnr];
 			Sheet sheet = data.workbook.getSheet(sheetName);
 			if (sheet != null)
 			{
 				// at what row do we continue reading?
 				if (data.rownr < 0)
 				{
-					data.rownr = meta.getStartRow()[data.sheetnr];
+					data.rownr = data.startRow[data.sheetnr];
 
 					// Add an extra row if we have a header row to skip...
 					if (meta.startsWithHeader())
@@ -506,7 +519,7 @@ public class ExcelInput extends BaseStep implements StepInterface
 					}
 				}
 				// Start at the specified column
-				data.colnr = meta.getStartColumn()[data.sheetnr];
+				data.colnr = data.startColumn[data.sheetnr];
 
 				// Build a new row and fill in the data from the sheet...
 				try
@@ -567,7 +580,7 @@ public class ExcelInput extends BaseStep implements StepInterface
 				data.previousRow = null;
 
 				// Perhaps it was the last sheet?
-				if (data.sheetnr >= meta.getSheetName().length)
+				if (data.sheetnr >= data.sheetNames.length)
 				{
 					jumpToNextFile();
 				}
@@ -665,10 +678,45 @@ public class ExcelInput extends BaseStep implements StepInterface
 					if (name.length() > data.maxfilelength) data.maxfilelength = name.length();
 				}
 
-				// Determine the maximum sheetname length...
+				// Determine the maximum sheet name length...
 				data.maxsheetlength = -1;
-				for (int i = 0; i < meta.getSheetName().length; i++)
-					if (meta.getSheetName()[i].length() > data.maxsheetlength) data.maxsheetlength = meta.getSheetName()[i].length();
+				if (!meta.readAllSheets())
+				{
+					data.sheetNames = new String[meta.getSheetName().length];
+					data.startColumn = new int[meta.getSheetName().length];
+					data.startRow    = new int[meta.getSheetName().length];
+					for (int i = 0; i < meta.getSheetName().length; i++)
+					{
+						data.sheetNames[i] = meta.getSheetName()[i];
+						data.startColumn[i] = meta.getStartColumn()[i];
+						data.startRow[i] = meta.getStartRow()[i];
+						
+						if (meta.getSheetName()[i].length() > data.maxsheetlength) 
+						{
+							data.maxsheetlength = meta.getSheetName()[i].length();
+						}
+					}
+				}
+				else
+				{
+					// Allocated at open file time: we want ALL sheets.
+					if (meta.getStartRow().length==1)
+					{
+						data.defaultStartRow = meta.getStartRow()[0];
+					}
+					else
+					{
+						data.defaultStartRow = 0;
+					}
+					if (meta.getStartColumn().length==1)
+					{
+						data.defaultStartColumn = meta.getStartColumn()[0];
+					}
+					else
+					{
+						data.defaultStartColumn = 0;
+					}
+				}
 
 				return true;
 			}

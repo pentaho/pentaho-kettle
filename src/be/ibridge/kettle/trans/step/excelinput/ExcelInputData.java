@@ -98,6 +98,13 @@ public class ExcelInputData extends BaseStepData implements StepDataInterface
 	public FileErrorHandler errorHandler;
 
 	public FilePlayList filePlayList;
+	
+	public String[] sheetNames;
+	public int[]    startColumn;
+	public int[]    startRow;
+
+	public int      defaultStartColumn;
+	public int      defaultStartRow;
 
 	/**
 	 * 
