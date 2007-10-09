@@ -52,7 +52,6 @@ import org.w3c.dom.Node;
 public class Condition implements Cloneable, XMLInterface
 {
 	public static final String[] operators = new String[] { "-", "OR", "AND", "NOT", "OR NOT", "AND NOT", "XOR" };
-	
 	public static final int OPERATOR_NONE       = 0;
 	public static final int OPERATOR_OR         = 1;
 	public static final int OPERATOR_AND        = 2;
