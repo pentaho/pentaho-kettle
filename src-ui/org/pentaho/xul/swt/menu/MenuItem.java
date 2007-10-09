@@ -68,7 +68,7 @@ public class MenuItem extends XulObject implements XulMenuItem {
 
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
-		getSwtMenuItem().setEnabled( enabled );
+		if (!getSwtMenuItem().isDisposed()) getSwtMenuItem().setEnabled( enabled );
 	}
 
 }
