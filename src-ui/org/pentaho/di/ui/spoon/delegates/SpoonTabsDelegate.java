@@ -124,6 +124,7 @@ public class SpoonTabsDelegate extends SpoonDelegate
 				tabSelected(entry.getTabItem());
 			}
 		}
+		
 		return close;
 	}
 
