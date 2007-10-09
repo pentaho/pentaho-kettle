@@ -772,6 +772,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		esd.setTitle(Messages.getString("Spoon.Dialog.SetVariables.Title"));
 		esd.setMessage(Messages.getString("Spoon.Dialog.SetVariables.Message"));
 		esd.setReadOnly(false);
+		esd.setShellImage(GUIResource.getInstance().getImageVariable());
 		if (esd.open() != null)
 		{
 			// here was code to put the values in another place.

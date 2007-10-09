@@ -2137,6 +2137,12 @@ public class TableView extends Composite
 			if (header) 
 			{
 				max=dummy_gc.textExtent(tc.getText(), SWT.DRAW_TAB | SWT.DRAW_DELIMITER).x;
+				
+                // Check if the column has a sorted mark set. In that case, we need the header to be a bit wider...
+                //
+                if (c==sortfield) {
+                	max+=30;
+                }
 			} 
 				
 			for (int r=0;r<table.getItemCount() && ( r<nrLines || nrLines<=0);r++)

@@ -23,6 +23,7 @@ package org.pentaho.di.ui.core.dialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -70,6 +71,7 @@ public class EnterStringsDialog extends Dialog
     private boolean       readOnly;
     private String message;
     private String title;
+    private Image  shellImage;
 
     /**
      * Constructs a new dialog
@@ -164,6 +166,8 @@ public class EnterStringsDialog extends Dialog
 
 		BaseStepDialog.setSize(shell);
 
+		if (shellImage!=null) shell.setImage(shellImage);
+		
 		shell.open();
 		while (!shell.isDisposed())
 		{
@@ -299,4 +303,11 @@ public class EnterStringsDialog extends Dialog
     {
         this.title = title;
     }
+
+	/**
+	 * @param shellImage the shellImage to set
+	 */
+	public void setShellImage(Image shellImage) {
+		this.shellImage = shellImage;
+	}
 }
