@@ -49,10 +49,12 @@ public class SpoonTabsDelegate extends SpoonDelegate
 		// Try to find the tab-item that's being closed.
 		List<TabMapEntry> collection = new ArrayList<TabMapEntry>();
 		collection.addAll(tabMap.values());
-
+		int idx = 0;
+		
 		boolean close = true;
 		for (TabMapEntry entry : collection)
 		{
+			
 			if (item.equals(entry.getTabItem()))
 			{
 				TabItemInterface itemInterface = entry.getObject();
@@ -86,24 +88,40 @@ public class SpoonTabsDelegate extends SpoonDelegate
 						TransMeta transMeta = (TransMeta) entry.getObject().getManagedObject();
 						spoon.delegates.trans.closeTransformation(transMeta);
 						spoon.refreshTree();
+						//spoon.refreshCoreObjects();
 					} else if (entry.getObject() instanceof JobGraph)
 					{
 						JobMeta jobMeta = (JobMeta) entry.getObject().getManagedObject();
 						spoon.delegates.jobs.closeJob(jobMeta);
 						spoon.refreshTree();
+						//spoon.refreshCoreObjects();
 					} else if (entry.getObject() instanceof SpoonBrowser)
 					{
 						spoon.closeSpoonBrowser();
 						spoon.refreshTree();
 					}
 
-					if (entry.getObject() instanceof Composite)
+					else if (entry.getObject() instanceof Composite)
 					{
 						Composite comp = (Composite) entry.getObject();
 						if (comp != null && !comp.isDisposed())
 							comp.dispose();
 					}
 				}
+				
+				break;
+			}
+			
+			idx+=1;
+		}
+		
+		//select a tab
+		if (idx-1>=0)
+		{
+			TabMapEntry entry = collection.get(idx-1);
+			if (entry!=null){
+				spoon.tabfolder.setSelected(entry.getTabItem());
+				tabSelected(entry.getTabItem());
 			}
 		}
 		return close;
