@@ -3793,6 +3793,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	{
         if (shell.isDisposed()) return;
 
+        
 		GUIResource guiResource = GUIResource.getInstance();
 		TransMeta activeTransMeta = getActiveTransformation();
 		JobMeta activeJobMeta = getActiveJob();
@@ -4045,8 +4046,11 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 							tiJobEntry.setImage(GUIResource.getInstance().getImageDummy());
                         }
                         else
-						{
-                            Image image = GUIResource.getInstance().getImagesJobentriesSmall().get(jobEntry.getEntry().getID());
+						{ 
+                        	String key = jobEntry.getEntry().getPluginID();
+                        	if (key==null)
+                        		key = jobEntry.getEntry().getJobEntryType().name();
+                            Image image = GUIResource.getInstance().getImagesJobentriesSmall().get(key);
 							tiJobEntry.setImage(image);
 						}
 					}
