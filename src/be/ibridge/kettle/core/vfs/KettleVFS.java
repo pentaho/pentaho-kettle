@@ -1,6 +1,7 @@
 package be.ibridge.kettle.core.vfs;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -13,6 +14,7 @@ import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.FileSystemManager;
 import org.apache.commons.vfs.VFS;
+import org.apache.commons.vfs.provider.local.LocalFile;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Row;
@@ -126,9 +128,34 @@ public class KettleVFS
                 throw new IOException(GlobalMessages.getString(Row.class.getPackage().getName(), "KettleVFS.Exception.ParentDirectoryDoesNotExist", getFilename(parent)));
             }
         }
-        fileObject.createFile();
-        FileContent content = fileObject.getContent();
-        return content.getOutputStream(append);
+        try
+        {
+	        fileObject.createFile();
+	        FileContent content = fileObject.getContent();
+	        return content.getOutputStream(append);
+        }
+        catch(FileSystemException e)
+        {
+        	// Perhaps if it's a local file, we can retry using the standard
+        	// File object.  This is because on Windows there is a bug in VFS.
+        	//
+        	if (fileObject instanceof LocalFile) 
+        	{
+        		try
+        		{
+	        		String filename = getFilename(fileObject);
+	        		return new FileOutputStream(new File(filename), append);
+        		}
+        		catch(Exception e2)
+        		{
+        			throw e; // throw the original exception: hide the retry.
+        		}
+        	}
+        	else
+        	{
+        		throw e;
+        	}
+        }
     }
     
     public static OutputStream getOutputStream(String vfsFilename, boolean append) throws IOException
