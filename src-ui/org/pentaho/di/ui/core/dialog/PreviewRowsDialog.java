@@ -58,7 +58,9 @@ import org.pentaho.di.ui.core.widget.TableView;
  */
 public class PreviewRowsDialog extends Dialog
 {
-    private String stepname;
+    public static final int MAX_BINARY_STRING_PREVIEW_SIZE = 1000000;
+
+	private String stepname;
 
     private Label wlFields;
     private TableView wFields;
@@ -275,6 +277,12 @@ public class PreviewRowsDialog extends Dialog
                         try
                         {
                             show = v.getString(row[c]);
+                            if (v.isBinary() && show!=null && show.length()>MAX_BINARY_STRING_PREVIEW_SIZE)
+                            {
+                            	// We want to limit the size of the strings during preview to keep all SWT widgets happy.
+                            	//
+                            	show = show.substring(0, MAX_BINARY_STRING_PREVIEW_SIZE);
+                            }
                         }
                         catch (KettleValueException e)
                         {
