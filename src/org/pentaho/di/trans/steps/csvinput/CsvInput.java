@@ -61,8 +61,19 @@ public class CsvInput extends BaseStep implements StepInterface
 		if (first) {
 			first=false;
 			
-			data.outputRowMeta = new RowMeta();
-			meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
+			data.convertRowMeta = new RowMeta();
+			meta.getFields(data.convertRowMeta, getStepname(), null, null, this);
+			
+			// Keep the output row metadata separate.
+			// Remove the storage metadata if we're not running in lazy conversion mode.
+			// In that case it's not needed anymore and will mess with the standard Integer-String conversion logic.
+			//
+			data.outputRowMeta = data.convertRowMeta.clone();
+			if (!meta.isLazyConversionActive()) {
+				for (ValueMetaInterface valueMeta : data.outputRowMeta.getValueMetaList()) {
+					valueMeta.setStorageMetadata(null);
+				}
+			}
 			
 			if (meta.isHeaderPresent()) {
 				readOneRow(false); // skip this row.
@@ -94,7 +105,7 @@ public class CsvInput extends BaseStep implements StepInterface
 
 		try {
 
-			Object[] outputRowData = RowDataUtil.allocateRowData(data.outputRowMeta.size());
+			Object[] outputRowData = RowDataUtil.allocateRowData(data.convertRowMeta.size());
 			int outputIndex=0;
 			boolean newLineFound = false;
 			int newLines = 0;
@@ -239,7 +250,7 @@ public class CsvInput extends BaseStep implements StepInterface
 					else {
 						// We're not lazy so we convert the data right here and now.
 						//
-						ValueMetaInterface targetValueMeta = data.outputRowMeta.getValueMeta(outputIndex);
+						ValueMetaInterface targetValueMeta = data.convertRowMeta.getValueMeta(outputIndex);
 						ValueMetaInterface sourceValueMeta = targetValueMeta.getStorageMetadata();
 						
 						outputRowData[outputIndex++] = targetValueMeta.convertData(sourceValueMeta, field);

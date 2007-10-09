@@ -34,6 +34,7 @@ public class CsvInputData extends BaseStepData implements StepDataInterface
 
 	public FileChannel fc;
 	public ByteBuffer bb;
+	public RowMetaInterface convertRowMeta;
 	public RowMetaInterface outputRowMeta;
 	
 	public byte[] byteBuffer;
