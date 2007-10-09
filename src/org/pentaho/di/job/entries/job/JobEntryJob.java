@@ -20,15 +20,12 @@ import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.andValid
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlankValidator;
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notNullValidator;
 
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.vfs.FileObject;
-import org.apache.commons.vfs.VFS;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;

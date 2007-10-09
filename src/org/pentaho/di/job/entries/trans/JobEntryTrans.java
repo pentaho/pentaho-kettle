@@ -41,7 +41,6 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.Log4jFileAppender;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.variables.VariableSpace;
-import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
@@ -425,7 +424,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
         }
 
         // Load the transformation only once for the complete loop!
-        TransMeta transMeta = getTransMeta(rep, parentJob);
+        TransMeta transMeta = getTransMeta(rep);
 
         int iteration = 0;
         String args1[] = arguments;
@@ -433,7 +432,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
         {
             args1 = parentJob.getJobMeta().getArguments();
         }
-        initializeVariablesFrom(parentJob);
+        // initializeVariablesFrom(parentJob);
 
         //
         // For the moment only do variable translation at the start of a job, not
@@ -618,7 +617,6 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
                         trans.setPassedBatchId(parentJob.getPassedBatchId());
                     }
 
-
                     // set the parent job on the transformation, variables are taken from here...
                     trans.setParentJob(parentJob);
                     trans.shareVariablesWith(this);
@@ -706,11 +704,6 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 
 	
 	private TransMeta getTransMeta(Repository rep) throws KettleException
-	{
-		return getTransMeta(rep,null);
-	}
-	
-	private TransMeta getTransMeta(Repository rep,VariableSpace parentVariableSpace) throws KettleException
     {
 		try
 		{
@@ -719,15 +712,15 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 	        TransMeta transMeta = null;
 	        if (!Const.isEmpty(getFilename())) // Load from an XML file
 	        {
-	        	String filename = parentVariableSpace!=null?parentVariableSpace.environmentSubstitute(getFilename()):environmentSubstitute(getFilename());
+	        	String filename = environmentSubstitute(getFilename());
 	            log.logBasic(toString(), "Loading transformation from XML file ["+filename+"]");
 	            transMeta = new TransMeta(filename);
-	            transMeta.setParentVariableSpace(parentVariableSpace);
+	            transMeta.copyVariablesFrom(this);
 	        }
 	        else
 	        if (!Const.isEmpty(getTransname()) && getDirectory() != null)  // Load from the repository
 	        {
-	        	String filename = parentVariableSpace!=null?parentVariableSpace.environmentSubstitute(getTransname()):environmentSubstitute(getTransname());
+	        	String filename = environmentSubstitute(getTransname());
 	        	
 	            log.logBasic(toString(), "Loading transformation from repository ["+filename+"] in directory ["+getDirectory()+"]");
 	
@@ -737,7 +730,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 	            	// It only makes sense to try to load from the repository when the repository is also filled in.
 	            	//
 	                transMeta = new TransMeta(rep, filename, getDirectory());
-		            transMeta.setParentVariableSpace(parentVariableSpace);
+		            transMeta.copyVariablesFrom(this);
 	            }
 	            else
 	            {
@@ -854,9 +847,8 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 			// First load the transformation metadata...
 			//
 			//Had to add this to support variable replacement here as well. asilva 9/07/07
-			Variables vars = new Variables();
-			vars.copyVariablesFrom(space);
-			TransMeta transMeta = getTransMeta(null,vars);
+			copyVariablesFrom(space);
+			TransMeta transMeta = getTransMeta(null);
 			
 
 			// Also go down into the transformation and export the files there. (mapping recursively down)

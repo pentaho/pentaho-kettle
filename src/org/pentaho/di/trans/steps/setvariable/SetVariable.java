@@ -19,6 +19,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.job.Job;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -95,13 +96,18 @@ public class SetVariable extends BaseStep implements StepInterface
                     {
                         setVariable(varname, value);
 
+                        // Set variable in the transformation
+                        //
+                        VariableSpace transVariableSpace = getTrans();  
+                        transVariableSpace.setVariable(varname, value);
+
                         VariableSpace rootJob = null;
-                        VariableSpace parentJob = getParentVariableSpace();
+                        Job parentJob = getTrans().getParentJob();
                         while (parentJob!=null)
                         {                           
                             parentJob.setVariable(varname, value);
                             rootJob = parentJob;
-                            parentJob = parentJob.getParentVariableSpace();
+                            parentJob = parentJob.getParentJob();
                         }
                         // OK, we have the rootjob, set the variable on it...
                         if (rootJob==null)
@@ -112,34 +118,63 @@ public class SetVariable extends BaseStep implements StepInterface
                     break;
                 case SetVariableMeta.VARIABLE_TYPE_GRAND_PARENT_JOB:
                     {
-                        setVariable(varname, value);
-
-                        VariableSpace parentJob = getParentVariableSpace().getParentVariableSpace();
+                    	// Set variable in this step
+                    	//
+                        setVariable(varname, value); 
+                        
+                        // Set variable in the transformation
+                        //
+                        VariableSpace transVariableSpace = getTrans();  
+                        transVariableSpace.setVariable(varname, value);
+                        
+                        // Set the variable in the parent job 
+                        //
+                        VariableSpace parentJob = getTrans().getParentJob();
                         if (parentJob!=null)
                         {
-                            parentJob.setVariable(varname, value);
-                            VariableSpace gpJob = parentJob.getParentVariableSpace();
-                            if (gpJob!=null)
-                            {
-                                gpJob.setVariable(varname, value);
-                            }
-                            else
-                            {
-                                throw new KettleStepException("Can't set variable ["+varname+"] on grand parent job: the grand parent job is not available");
-                            }
+                        	parentJob.setVariable(varname, value);
                         }
                         else
                         {
-                            throw new KettleStepException("Can't set variable ["+varname+"] on grand parent job: the parent job is not available");
+                        	throw new KettleStepException("Can't set variable ["+varname+"] on parent job: the parent job is not available");
+                        }
+
+                        // Set the variable on the grand-parent job
+                        //
+                        VariableSpace gpJob = getTrans().getParentJob().getParentJob();
+                        if (gpJob!=null)
+                        {
+                            gpJob.setVariable(varname, value);
+                        }
+                        else
+                        {
+                            throw new KettleStepException("Can't set variable ["+varname+"] on grand parent job: the grand parent job is not available");
                         }
                         
                     }
                 case SetVariableMeta.VARIABLE_TYPE_PARENT_JOB:
                     {                        
-                        setVariable(varname, value);
+                    	// Set variable in this step
+                    	//
+                        setVariable(varname, value); 
+                        
+                        // Set variable in the transformation
+                        //
+                        VariableSpace transVariableSpace = getTrans();  
+                        transVariableSpace.setVariable(varname, value);
+                        
+                        // Set the variable in the parent job 
+                        //
+                        VariableSpace parentJob = getTrans().getParentJob();
+                        if (parentJob!=null)
+                        {
+                        	parentJob.setVariable(varname, value);
+                        }
+                        else
+                        {
+                        	throw new KettleStepException("Can't set variable ["+varname+"] on parent job: the parent job is not available");
+                        }
 
-                        VariableSpace parentJob = getParentVariableSpace().getParentVariableSpace();
-                        parentJob.setVariable(varname, value);
                     }
                 }               
                 
