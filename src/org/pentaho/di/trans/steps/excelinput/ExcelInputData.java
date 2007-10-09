@@ -106,6 +106,13 @@ public class ExcelInputData extends BaseStepData implements StepDataInterface
 
     public RowMetaInterface conversionRowMeta;
 
+	public String[] sheetNames;
+	public int[]    startColumn;
+	public int[]    startRow;
+
+	public int      defaultStartColumn;
+	public int      defaultStartRow;
+	
 	/**
 	 * 
 	 */
