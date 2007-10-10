@@ -5161,6 +5161,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 	}
     
+    //Added this method to avoid code pasting... SEMINOLE-69
     private boolean openRepositoryDialog(RepositoriesDialog rd,RepositoryMeta repositoryMeta,UserInfo userinfo)
     {
     	if (rd.open())
