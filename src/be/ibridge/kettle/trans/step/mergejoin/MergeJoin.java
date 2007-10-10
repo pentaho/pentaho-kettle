@@ -174,6 +174,12 @@ public class MergeJoin extends BaseStep implements StepInterface
         	(data.one == null && data.one_optional == false) ||
         	(data.two == null && data.two_optional == false))
         {
+        	// Before we stop processing, we have to make sure that all rows from both input streams are depleted!
+        	// If we don't do this, the transformation can stall.
+        	//
+        	while (data.one!=null && !isStopped()) data.one=getRowFrom(meta.getStepName1());
+            while (data.two!=null && !isStopped()) data.two=getRowFrom(meta.getStepName2());
+            
             setOutputDone();
             return false;
         }
@@ -294,6 +300,12 @@ public class MergeJoin extends BaseStep implements StepInterface
         			 * If we are doing right outer join then we are done since
         			 * there are no more rows in the second set
         			 */
+                	// Before we stop processing, we have to make sure that all rows from both input streams are depleted!
+                	// If we don't do this, the transformation can stall.
+                	//
+                	while (data.one!=null && !isStopped()) data.one=getRowFrom(meta.getStepName1());
+                    while (data.two!=null && !isStopped()) data.two=getRowFrom(meta.getStepName2());
+
         			setOutputDone();
         			return false;
         		}
@@ -357,6 +369,12 @@ public class MergeJoin extends BaseStep implements StepInterface
         			 * We are doing a left outer join and there are no more rows
         			 * in the first stream; so we are done
         			 */
+                	// Before we stop processing, we have to make sure that all rows from both input streams are depleted!
+                	// If we don't do this, the transformation can stall.
+                	//
+                	while (data.one!=null && !isStopped()) data.one=getRowFrom(meta.getStepName1());
+                    while (data.two!=null && !isStopped()) data.two=getRowFrom(meta.getStepName2());
+
         			setOutputDone();
         			return false;
         		}
