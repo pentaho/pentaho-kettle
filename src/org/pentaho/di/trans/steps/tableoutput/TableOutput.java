@@ -253,12 +253,12 @@ public class TableOutput extends BaseStep implements StepInterface
     		    {
     		        if (data.warnings<20)
     		        {
-    		            logBasic("WARNING: Couldn't insert row into table: "+r+Const.CR+dbe.getMessage());
+    		            logBasic("WARNING: Couldn't insert row into table: "+rowMeta.getString(r)+Const.CR+dbe.getMessage());
     		        }
     		        else
     		        if (data.warnings==20)
     		        {
-    		            logBasic("FINAL WARNING (no more then 20 displayed): Couldn't insert row into table: "+r+Const.CR+dbe.getMessage());
+    		            logBasic("FINAL WARNING (no more then 20 displayed): Couldn't insert row into table: "+rowMeta.getString(r)+Const.CR+dbe.getMessage());
     		        }
     		        data.warnings++;
     		    }
@@ -266,7 +266,7 @@ public class TableOutput extends BaseStep implements StepInterface
     		    {
     		        setErrors(getErrors()+1);
     		        data.db.rollback();
-    		        throw new KettleException("Error inserting row into table ["+tableName+"] with values: "+r, dbe);
+    		        throw new KettleException("Error inserting row into table ["+tableName+"] with values: "+rowMeta.getString(r), dbe);
     		    }
             }
 		}
