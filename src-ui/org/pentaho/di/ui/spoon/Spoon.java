@@ -5209,7 +5209,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			}
 		}
     	
-    	return false;
+    	return true;
     }
 
     public boolean selectRep( Splash splash ) {
