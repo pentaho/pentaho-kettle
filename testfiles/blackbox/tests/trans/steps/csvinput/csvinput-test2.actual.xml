@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Rows>
+ <Row><date1>1-10-1996</date1> <Customer No>10000</Customer No> <First Name>Matt</First Name> <Last Name>&quot;\&quot;Casters\&quot;&quot;</Last Name> <Address>Pekelharing 32, 9000 GENT</Address> <Birth Date>1-1-1970</Birth Date> </Row>
+ <Row><date1>1-8-2000</date1> <Customer No>10000</Customer No> <First Name>Matt</First Name> <Last Name>Casters</Last Name> <Address>Assesteenweg 234, 1742 TERNAT</Address> <Birth Date/> </Row>
+ <Row><date1>1-5-2002</date1> <Customer No>10000</Customer No> <First Name>Matt</First Name> <Last Name>Casters</Last Name> <Address>Fonteinstraat 70, 9400 OKEGEM</Address> <Birth Date>14-2-1969</Birth Date> </Row>
+</Rows>
