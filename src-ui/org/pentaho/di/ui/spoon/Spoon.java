@@ -5389,10 +5389,13 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
     public void start() {
 
-    	if( !selectRep( splash ) ) {
-			splash.dispose();
-			quitFile();
-    	} else {
+    	boolean stop = !selectRep( splash );
+    	if (stop) {
+    		splash.dispose();
+			stop = quitFile();
+    	}
+    	
+    	if(!stop) {
 			handleStartOptions();
 			open();
 
