@@ -1635,7 +1635,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 			}
 			catch(Throwable e)
 			{
-                new ErrorDialog(shell, Messages.getString("JobGraph.Dialog.ErrorLaunchingChefCanNotLoadJob.Title"), Messages.getString("JobGraph.Dialog.ErrorLaunchingChefCanNotLoadJob.Message"), new Exception(e));
+                new ErrorDialog(shell, Messages.getString("JobGraph.Dialog.ErrorLaunchingChefCanNotLoadJob.Title"), Messages.getString("JobGraph.Dialog.ErrorLaunchingChefCanNotLoadJob.Message"), e);
 			}
 		}
 		else
@@ -1663,7 +1663,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 			}
 			catch(Throwable e)
 			{
-                new ErrorDialog(shell, Messages.getString("JobGraph.Dialog.ErrorLaunchingChefCanNotLoadJobFromXML.Title"), Messages.getString("JobGraph.Dialog.ErrorLaunchingChefCanNotLoadJobFromXML.Message"), new Exception(e));
+                new ErrorDialog(shell, Messages.getString("JobGraph.Dialog.ErrorLaunchingChefCanNotLoadJobFromXML.Title"), Messages.getString("JobGraph.Dialog.ErrorLaunchingChefCanNotLoadJobFromXML.Message"), e);
 			}
 		}
 	}

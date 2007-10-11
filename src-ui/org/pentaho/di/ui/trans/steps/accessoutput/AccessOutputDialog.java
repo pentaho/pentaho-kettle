@@ -411,7 +411,7 @@ public class AccessOutputDialog extends BaseStepDialog implements StepDialogInte
         }
         catch(Throwable e)
         {
-            new ErrorDialog(shell, Messages.getString("AccessOutputDialog.UnableToGetListOfTables.Title"), Messages.getString("AccessOutputDialog.UnableToGetListOfTables.Message"), new Exception(e));
+            new ErrorDialog(shell, Messages.getString("AccessOutputDialog.UnableToGetListOfTables.Title"), Messages.getString("AccessOutputDialog.UnableToGetListOfTables.Message"), e);
         }
         finally
         {

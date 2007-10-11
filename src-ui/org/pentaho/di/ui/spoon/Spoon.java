@@ -4273,7 +4273,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         }
         catch(Throwable e)
 		{
-            if (!shell.isDisposed()) new ErrorDialog(shell, Messages.getString("Spoon.Dialog.ErrorCreatingStep.Title"), Messages.getString("Spoon.Dialog.UnableCreateNewStep.Message"), new Exception(e));//"Error creating step"
+            if (!shell.isDisposed()) new ErrorDialog(shell, Messages.getString("Spoon.Dialog.ErrorCreatingStep.Title"), Messages.getString("Spoon.Dialog.UnableCreateNewStep.Message"), e);//"Error creating step"
 			return null;
 		}
 

@@ -561,7 +561,7 @@ public class RepositoryExplorerDialog extends Dialog
                     }
                     catch(Throwable e)
                     {
-                        new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Drop.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Drop.UnexpectedError.Message1")+debug+"]"+Const.CR+Messages.getString("RepositoryExplorerDialog.Drop.UnexpectedError.Message2"), new Exception(e)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+                        new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Drop.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Drop.UnexpectedError.Message1")+debug+"]"+Const.CR+Messages.getString("RepositoryExplorerDialog.Drop.UnexpectedError.Message2"), e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
                     }
     			}
     
@@ -589,7 +589,7 @@ public class RepositoryExplorerDialog extends Dialog
         }
         catch(Throwable e)
         {
-            new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Main.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Main.UnexpectedError.Message1")+debug+"]"+Const.CR+Messages.getString("RepositoryExplorerDialog.Main.UnexpectedError.Message2")+Const.CR+Messages.getString("RepositoryExplorerDialog.Main.UnexpectedError.Message3"), new Exception(e)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+            new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Main.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Main.UnexpectedError.Message1")+debug+"]"+Const.CR+Messages.getString("RepositoryExplorerDialog.Main.UnexpectedError.Message2")+Const.CR+Messages.getString("RepositoryExplorerDialog.Main.UnexpectedError.Message3"), e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
         }
 		return lastOpened;
 

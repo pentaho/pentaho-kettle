@@ -1332,7 +1332,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 		}
 		catch(Throwable e)
 	    {
-	        new ErrorDialog(shell, Messages.getString("AccessInputDialog.UnableToGetListOfTables.Title"), Messages.getString("AccessInputDialog.UnableToGetListOfTables.Message"), new Exception(e));
+	        new ErrorDialog(shell, Messages.getString("AccessInputDialog.UnableToGetListOfTables.Title"), Messages.getString("AccessInputDialog.UnableToGetListOfTables.Message"), e);
 	    }
 	    finally
 	    {

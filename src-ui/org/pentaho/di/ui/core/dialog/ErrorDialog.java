@@ -68,10 +68,22 @@ public class ErrorDialog extends Dialog
 	private Shell  shell;
 	private SelectionAdapter lsDef;
 	private PropsUI props;
-    
+
+	public ErrorDialog(Shell parent, String title, String message, Throwable throwable)
+	{
+		super(parent, SWT.NONE);
+
+		if (throwable instanceof Exception) showErrorDialog(parent, title, message, (Exception)throwable);
+	}
+
 	public ErrorDialog(Shell parent, String title, String message, Exception exception)
 	{
 		super(parent, SWT.NONE);
+		showErrorDialog(parent, title, message, exception);
+	}
+	
+	private void showErrorDialog(Shell parent, String title, String message, Exception exception)
+	{
 		this.props = PropsUI.getInstance();
 
 		Display display  = parent.getDisplay();
