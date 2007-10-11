@@ -50,7 +50,6 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
-import org.pentaho.di.trans.steps.csvinput.Messages;
 import org.w3c.dom.Node;
 
 /**
