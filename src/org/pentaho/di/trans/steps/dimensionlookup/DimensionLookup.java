@@ -319,7 +319,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
 						technicalKey=data.db.getNextValue(getTransMeta().getCounters(), meta.getSchemaName(), meta.getTableName(), meta.getKeyField());
                         break;
 				    case CREATION_METHOD_AUTOINC:
-						technicalKey=new Long(0L); // value to accept new key...
+						technicalKey=null; // Set to null to flag auto-increment usage
 						break;
 				    case CREATION_METHOD_SEQUENCE:						
 						technicalKey=data.db.getNextSequenceValue(meta.getSchemaName(), meta.getSequenceName(), meta.getKeyField());
@@ -692,7 +692,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
             
             try
             {
-                if (!Const.isEmpty(meta.getKeyField()))
+                if (technicalKey==null)
                 {
                     log.logDetailed(toString(), "SQL w/ return keys=["+sql+"]");
                     data.prepStatementInsert=data.db.getConnection().prepareStatement(databaseMeta.stripCR(sql), Statement.RETURN_GENERATED_KEYS);
