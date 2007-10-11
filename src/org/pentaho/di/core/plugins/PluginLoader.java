@@ -195,7 +195,7 @@ public class PluginLoader
 
 					} else
 					{
-						log.logBasic(Plugin.PLUGIN_LOADER, fobj + " does not exist.");
+						log.logDetailed(Plugin.PLUGIN_LOADER, fobj + " does not exist.");
 					}
 				} catch (Exception e)
 				{
