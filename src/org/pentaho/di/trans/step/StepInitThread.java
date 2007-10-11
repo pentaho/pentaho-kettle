@@ -29,7 +29,7 @@ public class StepInitThread implements Runnable
     public void run()
     {
         // Set the internal variables also on the init thread!
-        ((BaseStep)combi.step).setInternalVariables();
+        // ((BaseStep)combi.step).setInternalVariables();
         
         try
         {

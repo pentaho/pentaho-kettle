@@ -432,7 +432,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
         {
             args1 = parentJob.getJobMeta().getArguments();
         }
-        // initializeVariablesFrom(parentJob);
+        initializeVariablesFrom(parentJob);
 
         //
         // For the moment only do variable translation at the start of a job, not
@@ -616,11 +616,20 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
                     {
                         trans.setPassedBatchId(parentJob.getPassedBatchId());
                     }
-
+                    
                     // set the parent job on the transformation, variables are taken from here...
                     trans.setParentJob(parentJob);
-                    trans.shareVariablesWith(this);
 
+                    // First get the root job
+                    //
+                    Job rootJob = parentJob;
+                    while (rootJob.getParentJob()!=null) rootJob=rootJob.getParentJob();
+                    
+                    // Get the start and end-date from the root job...
+                    //
+                    trans.setJobStartDate( rootJob.getStartDate() );
+                    trans.setJobEndDate( rootJob.getEndDate() );
+                    
                     try {
             			// Start execution...
                     	//
