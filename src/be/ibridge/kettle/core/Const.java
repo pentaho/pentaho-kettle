@@ -789,12 +789,29 @@ public class Const
 	}
 
 	/** 
-	 * @return True if the OS is a Windows diravate. 
+	 * @return True if the OS is derived from Windows. 
 	 */
 	public static final boolean isWindows()
 	{
 		return getOS().startsWith("Windows");
 	}
+	
+	/** 
+	 * @return True if the OS is derived from Linux. 
+	 */
+	public static final boolean isLinux()
+	{
+		return getOS().startsWith("Linux");
+	}
+
+	/** 
+	 * @return True if the OS is derived from Apple OSX. 
+	 */
+	public static final boolean isOSX()
+	{
+		return getOS().toLowerCase().startsWith("mac os x");
+	}
+
 
     /**
      * Determine the hostname of the machine Kettle is running on

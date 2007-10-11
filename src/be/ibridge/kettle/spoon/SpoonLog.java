@@ -15,9 +15,6 @@
 
 package be.ibridge.kettle.spoon;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Timer;
@@ -57,6 +54,8 @@ import be.ibridge.kettle.core.dialog.EnterSelectionDialog;
 import be.ibridge.kettle.core.dialog.EnterStringsDialog;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.exception.KettleException;
+import be.ibridge.kettle.core.logging.BufferChangedListener;
+import be.ibridge.kettle.core.logging.Log4jStringAppender;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.core.widget.TableView;
 import be.ibridge.kettle.spoon.dialog.EnterPreviewRowsDialog;
@@ -104,7 +103,6 @@ public class SpoonLog extends Composite implements TabItemInterface
 	private Button wClear;
 	private Button wLog;
 	private long lastUpdateView;
-	private long lastUpdateLog;
 
 	private FormData fdText, fdSash, fdStart, fdPreview, fdError, fdClear, fdLog, fdOnlyActive, fdSafeMode;
 
@@ -116,10 +114,6 @@ public class SpoonLog extends Composite implements TabItemInterface
 
 	private SelectionListener lsStart, lsStop, lsPreview, lsError, lsClear, lsLog;
 
-	private StringBuffer message;
-
-	private FileInputStream in;
-
 	private Trans trans;
 
 	private Spoon spoon;
@@ -128,6 +122,9 @@ public class SpoonLog extends Composite implements TabItemInterface
     private boolean halting;
 
     private FormData fdStop;    
+    
+	private Log4jStringAppender stringAppender;    
+	private int textSize;
 
 	public SpoonLog(Composite parent, final Spoon spoon, final TransMeta transMeta)
 	{
@@ -141,7 +138,6 @@ public class SpoonLog extends Composite implements TabItemInterface
 		running = false;
 		preview = false;
 		lastUpdateView = 0L;
-		lastUpdateLog = 0L;
 
 		FormLayout formLayout = new FormLayout();
 		formLayout.marginWidth = Const.FORM_MARGIN;
@@ -289,14 +285,47 @@ public class SpoonLog extends Composite implements TabItemInterface
 
 		pack();
 
-		try
-		{
-			in = log.getFileInputStream();
-		}
-		catch (Exception e)
-		{
-			log.logError(Spoon.APP_NAME, Messages.getString("SpoonLog.Log.CouldNotLinkInputToOutputPipe")); //$NON-NLS-1$
-		}
+		// Create a new String appender to the log and capture that directly...
+		//
+		stringAppender = LogWriter.createStringAppender();
+		stringAppender.setMaxNrLines(Props.getInstance().getMaxNrLinesInLog());
+		stringAppender.addBufferChangedListener(new BufferChangedListener() {
+		
+			public void contentWasAdded(final StringBuffer content, final String extra, final int nrLines) {
+				display.asyncExec(new Runnable() {
+				
+					public void run() 
+					{
+						if (!wText.isDisposed())
+						{
+							textSize++;
+							
+							// OK, now what if the number of lines gets too big?
+							// We allow for a few hundred lines buffer over-run.
+							// That way we reduce flicker...
+							//
+							if (textSize>=nrLines+200)
+							{
+								wText.setText(content.toString());
+								wText.setSelection(content.length());
+								wText.showSelection();
+								wText.clearSelection();
+								textSize=nrLines;
+							}
+							else
+							{
+								wText.append(extra);
+							}
+						}
+					}
+				
+				});
+			}
+		
+		});
+		log.addAppender(stringAppender);
+		addDisposeListener(new DisposeListener() { public void widgetDisposed(DisposeEvent e) { log.removeAppender(stringAppender); } });
+
 
 		lsError = new SelectionAdapter()
 		{
@@ -327,7 +356,6 @@ public class SpoonLog extends Composite implements TabItemInterface
                                     checkStartThreads();
                                     checkTransEnded();
                                     checkErrors();
-                                    readLog();
                                     refreshView();
                                     busy.setCharAt(0, 'N');
                                 }
@@ -486,7 +514,7 @@ public class SpoonLog extends Composite implements TabItemInterface
 						new ErrorDialog(shell,
 								Messages.getString("SpoonLog.Dialog.ErrorOpeningTransformation.Title"), Messages.getString("SpoonLog.Dialog.ErrorOpeningTransformation.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
 					}
-					readLog();
+
 					if (trans != null)
 					{
 						Row arguments = executionConfiguration.getArguments();
@@ -516,7 +544,6 @@ public class SpoonLog extends Composite implements TabItemInterface
 						log.logMinimal(Spoon.APP_NAME, Messages.getString("SpoonLog.Log.StartedExecutionOfTransformation")); //$NON-NLS-1$
 						wStart.setEnabled(false);
                         wStop.setEnabled(true);
-						readLog();
 					}
 				}
 				else
@@ -649,54 +676,6 @@ public class SpoonLog extends Composite implements TabItemInterface
 		}
 	}
 
-	public void readLog()
-	{
-		long time = new Date().getTime();
-		long msSinceLastUpdate = time - lastUpdateLog;
-		if (msSinceLastUpdate < UPDATE_TIME_LOG)
-		{
-			return;
-		}
-		lastUpdateLog = time;
-
-		if (message == null)
-			message = new StringBuffer();
-		else
-			message.setLength(0);
-		try
-		{
-			BufferedReader reader = new BufferedReader(new InputStreamReader(in, Const.XML_ENCODING));
-			String line;
-			while ((line = reader.readLine()) != null)
-			{
-				message.append(line);
-				message.append(Const.CR);
-			}
-		}
-		catch (Exception ex)
-		{
-			message.append("Unexpected error reading the log: " + ex.toString());
-		}
-
-		if (!wText.isDisposed() && message.length() > 0)
-		{
-			String mess = wText.getText();
-			wText.setSelection(mess.length());
-			wText.clearSelection();
-			wText.insert(message.toString());
-            
-            int maxLines = Props.getInstance().getMaxNrLinesInLog();
-            if (maxLines>0 && wText.getLineCount()>maxLines)
-            {
-                // OK, remove the extra amount of character + 20 from 
-                // Remove the oldest ones.
-                StringBuffer buffer = new StringBuffer(mess);
-                buffer.delete(0, message.length()+20);
-                wText.setText(buffer.toString());
-            }
-		}
-	}
-
 	private boolean refresh_busy;
 
 	private SpoonHistoryRefresher spoonHistoryRefresher;
@@ -818,7 +797,6 @@ public class SpoonLog extends Composite implements TabItemInterface
                 trans.setSafeModeEnabled(executionConfiguration.isSafeModeEnabled());
 				trans.execute(args);
 				preview = true;
-				readLog();
 				running = !running;
                 wStart.setEnabled(false);
                 wStop.setEnabled(true);

@@ -54,6 +54,8 @@ public class TransPainter
     private Rectangle    selrect;
     private int          linewidth;
     private Hashtable    images;
+    
+    private GUIResource  guiResource;
 
     public TransPainter(TransMeta transMeta)
     {
@@ -73,24 +75,26 @@ public class TransPainter
     {
         this.transMeta     = transMeta;
         
-        this.background    = GUIResource.getInstance().getColorGraph();
-        this.black         = GUIResource.getInstance().getColorBlack();
-        this.red           = GUIResource.getInstance().getColorRed();
-        this.yellow        = GUIResource.getInstance().getColorYellow();
-        this.orange        = GUIResource.getInstance().getColorOrange();
-        this.green         = GUIResource.getInstance().getColorGreen();
-        this.blue          = GUIResource.getInstance().getColorBlue();
-        this.magenta       = GUIResource.getInstance().getColorMagenta();
-        this.gray          = GUIResource.getInstance().getColorGray();
-        this.lightGray     = GUIResource.getInstance().getColorLightGray();
-        this.darkGray      = GUIResource.getInstance().getColorDarkGray();
+        this.guiResource   = GUIResource.getInstance();
+        
+        this.background    = guiResource.getColorGraph();
+        this.black         = guiResource.getColorBlack();
+        this.red           = guiResource.getColorRed();
+        this.yellow        = guiResource.getColorYellow();
+        this.orange        = guiResource.getColorOrange();
+        this.green         = guiResource.getColorGreen();
+        this.blue          = guiResource.getColorBlue();
+        this.magenta       = guiResource.getColorMagenta();
+        this.gray          = guiResource.getColorGray();
+        this.lightGray     = guiResource.getColorLightGray();
+        this.darkGray      = guiResource.getColorDarkGray();
         
         this.area          = area;
         this.hori          = hori;
         this.vert          = vert;
-        this.noteFont      = GUIResource.getInstance().getFontNote();
-        this.graphFont     = GUIResource.getInstance().getFontGraph();
-        this.images        = GUIResource.getInstance().getImagesSteps();
+        this.noteFont      = guiResource.getFontNote();
+        this.graphFont     = guiResource.getFontGraph();
+        this.images        = guiResource.getImagesSteps();
         this.candidate     = candidate;
         this.selrect       = selrect;
         this.drop_candidate= drop_candidate;
@@ -114,12 +118,12 @@ public class TransPainter
         gc.setBackground(background);
         gc.fillRectangle(0, 0, area.x, area.y);
         
-        if (branded)
+        if (branded && !guiResource.isUsingLightMode())
         {
-            Image gradient= GUIResource.getInstance().getImageBanner();
+            Image gradient= guiResource.getImageBanner();
             gc.drawImage(gradient, 0, 0);
 
-            Image logo = GUIResource.getInstance().getImageKettleLogo();
+        	Image logo = guiResource.getImageKettleLogo();
             org.eclipse.swt.graphics.Rectangle logoBounds = logo.getBounds();
             gc.drawImage(logo, 20, area.y-logoBounds.height);
         }

@@ -86,7 +86,6 @@ public class GUIResource
     private Image     imageBanner;
     private Image     imageBol;
     private Image     imageArrow;
-    private Image     imageKettle;
     private Image     imageCredits;
     private Image     imageStart;
     private Image     imageDummy;
@@ -99,24 +98,24 @@ public class GUIResource
     private Image     imageSpoonGraph;
     private Image     imageChefGraph;
     
-    private Image     imageSplash;
-
     private Image     imageEditOptionButton;
     private Image     imageResetOptionButton;
 
     private ManagedFont fontBold;
-
-    private Image imageLogoLeft;
+    
+    private boolean   usingLightMode;
 
     /**
      * GUIResource also contains the clipboard as it has to be allocated only once!
-     * I don't want to put it in a seperate singleton just for this one member.
+     * I don't want to put it in a separate singleton just for this one member.
      */
     private static Clipboard clipboard;
 
     private GUIResource(Display display)
     {
         this.display = display;
+        
+        usingLightMode = !Const.isWindows() && !Const.isLinux() && !Const.isOSX();
         
         getResources(false);
         
@@ -220,20 +219,17 @@ public class GUIResource
             imageHop         .dispose();
             imageConnection  .dispose();
             imageLogoSmall   .dispose();
-            imageKettleLogo  .dispose();
-            imageLogoLeft    .dispose();
-            imageBanner      .dispose();
+            if (imageKettleLogo!=null) imageKettleLogo  .dispose();
+            if (imageBanner!=null)     imageBanner      .dispose();
+            if (imageCredits!=null)    imageCredits     .dispose();
             imageBol         .dispose();
             imageArrow       .dispose();
-            imageKettle      .dispose();
-            imageCredits     .dispose();
             imageStart       .dispose();
             imageDummy       .dispose();
             imageStartSmall  .dispose();
             imageDummySmall  .dispose();
             imageSpoon       .dispose();
             imageChef        .dispose();
-            imageSplash      .dispose();
             imagePentaho     .dispose();
             imageVariable    .dispose();
             imageSpoonGraph  .dispose();
@@ -357,18 +353,22 @@ public class GUIResource
     
     private void loadCommonImages()
     {
+    	// General images that we always need...
+    	//
         imageHop         = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "HOP.png"));
         imageConnection  = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "CNC.png"));
-        imageKettleLogo  = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "logo_kettle_lrg.png"));
-        imageBanner      = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "bg_banner.png"));
         imageBol         = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "BOL.png"));
-        imageKettle      = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "kettle_logo.png"));
-        imageCredits     = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "credits.png"));
+        
+        if (!usingLightMode)
+        {
+            imageKettleLogo  = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "logo_kettle_lrg.png"));
+        	imageBanner      = ImageUtil.makeImageTransparent(display, new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "bg_banner.png")), new RGB(255,255,255));
+            imageCredits     = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "credits.png"));
+        }
         imageStart       = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "STR.png"));
         imageDummy       = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "DUM.png"));
         imageSpoon       = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "spoon32.png"));
         imageChef        = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "chef.png"));
-        imageSplash      = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "kettle_splash.png"));
         imagePentaho     = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "PentahoLogo.png"));
         imageVariable    = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "variable.png"));
         imageEditOptionButton  = loadImage(Const.IMAGE_DIRECTORY + "edit_option.png");
@@ -389,10 +389,6 @@ public class GUIResource
         imageChefGraph  = ImageUtil.makeImageTransparent(display, new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "chefgraph.png")), new RGB(255,255,255));
         imageLogoSmall  = ImageUtil.makeImageTransparent(display, new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "kettle_logo_small.png")), new RGB(255,255,255));
         imageArrow      = ImageUtil.makeImageTransparent(display, new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "arrow.png")), new RGB(255,255,255));
-        imageBanner     = ImageUtil.makeImageTransparent(display, new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "bg_banner.png")), new RGB(255,255,255));
-        
-        // Rotate logo once left.
-        imageLogoLeft = new Image(display, ImageUtil.rotate(imageKettleLogo.getImageData(), SWT.RIGHT));
     }
 
     /**
@@ -704,14 +700,6 @@ public class GUIResource
     }
 
     /**
-     * @return Returns the imageKettle.
-     */
-    public Image getImageKettle()
-    {
-        return imageKettle;
-    }
-
-    /**
      * @return Returns the imageSpoon.
      */
     public Image getImageSpoon()
@@ -722,7 +710,7 @@ public class GUIResource
     /**
      * @return Returns the image Pentaho.
      */
-    public Image getImagePentaho ()
+    public Image getImagePentaho()
     {
         return imagePentaho;
     }
@@ -749,14 +737,6 @@ public class GUIResource
     public Image getImageStart()
     {
         return imageStart;
-    }
-
-    /**
-     * @return Returns the imageSplash.
-     */
-    public Image getImageSplash()
-    {
-        return imageSplash;
     }
 
     /**
@@ -985,26 +965,17 @@ public class GUIResource
     }
 
     /**
-     * @return the imageLogoLeft
-     */
-    public Image getImageLogoLeft()
-    {
-        return imageLogoLeft;
-    }
-
-    /**
-     * @param imageLogoLeft the imageLogoLeft to set
-     */
-    public void setImageLogoLeft(Image imageLogoLeft)
-    {
-        this.imageLogoLeft = imageLogoLeft;
-    }
-
-    /**
      * @return the colorLightPentaho
      */
     public Color getColorLightPentaho()
     {
         return colorLightPentaho.getColor();
     }
+
+	/**
+	 * @return the lightMode
+	 */
+	public boolean isUsingLightMode() {
+		return usingLightMode;
+	}
 }

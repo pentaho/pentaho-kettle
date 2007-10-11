@@ -15,9 +15,6 @@
 
  
 package be.ibridge.kettle.chef;
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -56,6 +53,8 @@ import be.ibridge.kettle.core.dialog.EnterSelectionDialog;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleJobException;
+import be.ibridge.kettle.core.logging.BufferChangedListener;
+import be.ibridge.kettle.core.logging.Log4jStringAppender;
 import be.ibridge.kettle.core.widget.TreeMemory;
 import be.ibridge.kettle.job.Job;
 import be.ibridge.kettle.job.JobEntryResult;
@@ -94,14 +93,14 @@ public class ChefLog extends Composite implements TabItemInterface
 
 	private FormData fdText, fdSash, fdStart, fdStop, fdRefresh, fdError, fdClear, fdLog, fdAuto; 
 	private SelectionListener lsStart, lsStop, lsRefresh, lsError, lsClear, lsLog;
-	private StringBuffer message;
 
-	private FileInputStream in;
 	private Job job;
     private int previousNrItems;
     private boolean isRunning;
     private JobTracker jobTracker;
     private ChefHistoryRefresher chefHistoryRefresher;
+	private Log4jStringAppender stringAppender;
+	private int textSize;
 
     private static final String STRING_CHEF_LOG_TREE_NAME = "Job Log Tree";
     
@@ -250,14 +249,46 @@ public class ChefLog extends Composite implements TabItemInterface
 
 		pack();
 
-		try
-		{
-			in = log.getFileInputStream();
-		}
-		catch(Exception e)
-		{
-			System.out.println(Messages.getString("ChefLog.Error.CouldNotCreateInputPipe")); //$NON-NLS-1$
-		}
+		// Create a new String appender to the log and capture that directly...
+		//
+		stringAppender = LogWriter.createStringAppender();
+		stringAppender.setMaxNrLines(Props.getInstance().getMaxNrLinesInLog());
+		stringAppender.addBufferChangedListener(new BufferChangedListener() {
+		
+			public void contentWasAdded(final StringBuffer content, final String extra, final int nrLines) {
+				display.asyncExec(new Runnable() {
+				
+					public void run() 
+					{
+						if (!wText.isDisposed())
+						{
+							textSize++;
+							
+							// OK, now what if the number of lines gets too big?
+							// We allow for a few hundred lines buffer over-run.
+							// That way we reduce flicker...
+							//
+							if (textSize>=nrLines+200)
+							{
+								wText.setText(content.toString());
+								wText.setSelection(content.length());
+								wText.showSelection();
+								wText.clearSelection();
+								textSize=nrLines;
+							}
+							else
+							{
+								wText.append(extra);
+							}
+						}
+					}
+				
+				});
+			}
+		
+		});
+		log.addAppender(stringAppender);
+		addDisposeListener(new DisposeListener() { public void widgetDisposed(DisposeEvent e) { log.removeAppender(stringAppender); } });
 		
 		lsRefresh = new SelectionAdapter() 
 		{
@@ -464,38 +495,13 @@ public class ChefLog extends Composite implements TabItemInterface
 
     public void readLog()
 	{
-		if (message==null)  message = new StringBuffer(); else message.setLength(0);				
 		try
 		{
-            BufferedReader reader = new BufferedReader(new InputStreamReader(in, Const.XML_ENCODING));
-            String line;
-            while ( (line=reader.readLine()) != null )
-            {
-                message.append(line);
-                message.append(Const.CR);
-            }
 			refreshTreeTable();
 		}
 		catch(Exception ex)
 		{
-			message.append(ex.toString());
-		}
-
-		if (!wText.isDisposed() && message.length()>0) 
-		{
-			wText.setSelection(wText.getText().length());
-			wText.clearSelection();
-			wText.insert(message.toString());
-            
-            int maxLines = Props.getInstance().getMaxNrLinesInLog();
-            if (maxLines>0 && wText.getLineCount()>maxLines)
-            {
-                // OK, remove the extra amount of character + 20 from 
-                // Remove the oldest ones.
-                StringBuffer buffer = new StringBuffer(wText.getText());
-                buffer.delete(0, message.length()+20);
-                wText.setText(buffer.toString());
-            }
+			wText.append(ex.toString());
 		}
 	}
 	
