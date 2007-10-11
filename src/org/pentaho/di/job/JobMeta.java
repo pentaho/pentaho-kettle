@@ -646,10 +646,16 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
         return retval.toString();
     }
 
+    public JobMeta(LogWriter log, String fname, Repository rep) throws KettleXMLException
+    {
+      this(log, null, fname, rep, null);
+    }
+
     public JobMeta(LogWriter log, String fname, Repository rep, OverwritePrompter prompter) throws KettleXMLException
     {
       this(log, null, fname, rep, prompter);
     }
+    
     /**
      * Load the job from the XML file specified.
      * 

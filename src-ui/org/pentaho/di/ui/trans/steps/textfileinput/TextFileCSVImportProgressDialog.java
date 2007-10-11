@@ -17,7 +17,6 @@ import java.util.Date;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
@@ -49,7 +48,7 @@ public class TextFileCSVImportProgressDialog
 
     private int               samples;
     
-    private int               clearFields;
+    private boolean           replaceMeta;
     
     private String            message;
 
@@ -65,13 +64,13 @@ public class TextFileCSVImportProgressDialog
      * Creates a new dialog that will handle the wait while we're finding out what tables, views etc we can reach in the
      * database.
      */
-    public TextFileCSVImportProgressDialog(Shell shell, InputFileMetaInterface meta, TransMeta transMeta, InputStreamReader reader, int samples, int clearFields )
+    public TextFileCSVImportProgressDialog(Shell shell, InputFileMetaInterface meta, TransMeta transMeta, InputStreamReader reader, int samples, boolean replaceMeta )
     {
         this.shell       = shell;
         this.meta        = meta;
         this.reader      = reader;
         this.samples     = samples;
-        this.clearFields = clearFields;
+        this.replaceMeta = replaceMeta;
         this.transMeta   = transMeta;
 
         message = null;
@@ -170,7 +169,7 @@ public class TextFileCSVImportProgressDialog
 
             if (log.isDebug()) debug = "init field #" + i;
           
-            if (clearFields == SWT.YES) // Clear previous info...
+            if (replaceMeta) // Clear previous info...
             {
                 field.setName(meta.getInputFields()[i].getName());
                 field.setType(meta.getInputFields()[i].getType());

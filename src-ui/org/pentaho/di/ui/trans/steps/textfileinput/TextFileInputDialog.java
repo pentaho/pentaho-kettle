@@ -2073,7 +2073,10 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		{
 		    TextFileInputField field = in.getInputFields()[i];
 		    
-			TableItem item = wFields.table.getItem(i);
+			TableItem item;
+			if (i>=wFields.table.getItemCount()) item = wFields.table.getItem(i);
+			else item = new TableItem(wFields.table, SWT.NONE);
+			
 			item.setText(1, field.getName());
 			String type     = field.getTypeDesc();
 			String format   = field.getFormat();
@@ -2332,10 +2335,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
 			try
 			{
-				if (clearFields == SWT.YES)
-				{
-					wFields.table.removeAll();
-				}
+				wFields.table.removeAll();
 
                 FileObject fileObject = textFileList.getFile(0);
 				fileInputStream = fileObject.getContent().getInputStream();
@@ -2400,6 +2400,9 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
                                 item.setText(2, "String"); // The default type is String...
                             }
 
+                            wFields.setRowNums();
+                            wFields.optWidth(true);
+                            
                             // Copy it...
                             getInfo(meta);
                         }
@@ -2414,10 +2417,12 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
                     {
                         getInfo(meta);
 
-    			        TextFileCSVImportProgressDialog pd = new TextFileCSVImportProgressDialog(shell, meta, transMeta, reader, samples, clearFields);
+    			        TextFileCSVImportProgressDialog pd = new TextFileCSVImportProgressDialog(shell, meta, transMeta, reader, samples, clearFields==SWT.YES);
                         String message = pd.open();
                         if (message!=null)
                         {
+                        	wFields.removeAll();
+                        	
                             // OK, what's the result of our search?
                             getData(meta);
                             wFields.removeEmptyRows();

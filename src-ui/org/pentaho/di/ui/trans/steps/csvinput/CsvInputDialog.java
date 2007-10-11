@@ -547,7 +547,7 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
             {
                 getInfo(meta);
 
-		        TextFileCSVImportProgressDialog pd = new TextFileCSVImportProgressDialog(shell, meta, transMeta, reader, samples, SWT.YES);
+		        TextFileCSVImportProgressDialog pd = new TextFileCSVImportProgressDialog(shell, meta, transMeta, reader, samples, true);
                 String message = pd.open();
                 if (message!=null)
                 {
