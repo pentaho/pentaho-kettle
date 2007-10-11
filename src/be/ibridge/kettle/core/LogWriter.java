@@ -173,7 +173,12 @@ public class LogWriter
 	{
 		if (logWriter != null) 
 	    {
+			// Set the logging level as requested.
+			//
+			logWriter.setLogLevel(level);
+			
 			// OK, see if we have a file appender already for this 
+			//
 			if (logWriter.rootLogger.getAppender(LogWriter.createFileAppenderName(filename, exact))==null)
 			{
 				logWriter.fileAppender = createFileAppender(filename, exact);
