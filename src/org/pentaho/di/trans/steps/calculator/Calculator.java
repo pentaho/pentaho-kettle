@@ -172,15 +172,13 @@ public class Calculator extends BaseStep implements StepInterface
 		return true;
 	}
 
-    /**
-     * TODO: Make it backward compatible.
-     * 
-     * @param inputRowMeta
-     * @param outputRowMeta
-     * @param r
-     * @return
-     * @throws KettleValueException
-     */
+
+	/**
+	 * @param inputRowMeta the input row metadata
+	 * @param r the input row (data)
+	 * @return A row including the calculations, excluding the temporary values
+	 * @throws KettleValueException in case there is a calculation error.
+	 */
     private Object[] calcFields(RowMetaInterface inputRowMeta, Object[] r) throws KettleValueException
     {
         // First copy the input data to the new result...
