@@ -1561,6 +1561,9 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 				{
                     newTrans = new TransMeta(spoon.rep, exactTransname, entry.getDirectory());
 				}
+				
+                copyInternalJobVariables(jobMeta, newTrans);
+                
                 spoon.addTransGraph(newTrans);
 				newTrans.clearChanged();
 				spoon.open();
@@ -1591,6 +1594,9 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
                 
 				launchTransMeta.clearChanged();
                 launchTransMeta.setFilename( exactFilename );
+                
+                copyInternalJobVariables(jobMeta, launchTransMeta);
+                
                 spoon.addTransGraph( launchTransMeta );
 				spoon.open();
 			}
@@ -1600,6 +1606,17 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 			}
 
 		}
+	}
+
+	public static void copyInternalJobVariables(JobMeta sourceJobMeta, TransMeta targetTransMeta) {
+        // Also set some internal JOB variables...
+        //
+        String[] internalVariables = Const.INTERNAL_JOB_VARIABLES;
+        
+        for (String variableName : internalVariables)
+        {
+        	targetTransMeta.setVariable(variableName, sourceJobMeta.getVariable(variableName));
+        }
 	}
 
 	public void launchChef(JobEntryJob entry)

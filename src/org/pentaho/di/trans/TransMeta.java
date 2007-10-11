@@ -5666,16 +5666,31 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
         }
         
         // The name of the transformation
+        //
         var.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_NAME, Const.NVL(name, ""));
 
         // The name of the directory in the repository
+        //
         var.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY, directory!=null?directory.getPath():"");
         
-        // Here we don't undefine the job specific parameters, as it may come in handy.
-        if (var.getVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY)==null)   var.setVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, "Parent Job File Directory"); //$NON-NLS-1$
-        if (var.getVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_NAME)==null)        var.setVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_NAME, "Parent Job Filename"); //$NON-NLS-1$
-        if (var.getVariable(Const.INTERNAL_VARIABLE_JOB_NAME)==null)                 var.setVariable(Const.INTERNAL_VARIABLE_JOB_NAME, "Parent Job Name"); //$NON-NLS-1$
-        if (var.getVariable(Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY)==null) var.setVariable(Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY, "Parent Job Repository Directory"); //$NON-NLS-1$        
+        // Here we don't remove the job specific parameters, as they may come in handy.
+        //
+        if (var.getVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY)==null)
+        {
+        	var.setVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, "Parent Job File Directory"); //$NON-NLS-1$
+        }
+        if (var.getVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_NAME)==null)
+        {
+        	var.setVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_NAME, "Parent Job Filename"); //$NON-NLS-1$
+        }
+        if (var.getVariable(Const.INTERNAL_VARIABLE_JOB_NAME)==null)
+        {
+        	var.setVariable(Const.INTERNAL_VARIABLE_JOB_NAME, "Parent Job Name"); //$NON-NLS-1$
+        }
+        if (var.getVariable(Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY)==null)
+        {
+        	var.setVariable(Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY, "Parent Job Repository Directory"); //$NON-NLS-1$        
+        }
     }    
     
 	public void copyVariablesFrom(VariableSpace space) {

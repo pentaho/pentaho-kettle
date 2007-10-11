@@ -52,7 +52,6 @@ import org.pentaho.di.core.logging.BufferChangedListener;
 import org.pentaho.di.core.logging.Log4jStringAppender;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
@@ -535,30 +534,29 @@ public class TransLog extends Composite implements TabItemInterface
                         // Set the requested logging level.
                         log.setLogLevel(executionConfiguration.getLogLevel());
 
-						trans = new Trans((VariableSpace)transMeta, spoon.rep, transMeta.getName(), transMeta.getDirectory().getPath(), transMeta.getFilename());
+						transMeta.injectVariables(executionConfiguration.getVariables());
+
+						trans = new Trans(transMeta, spoon.rep, transMeta.getName(), transMeta.getDirectory().getPath(), transMeta.getFilename());
 						trans.setReplayDate(executionConfiguration.getReplayDate());
-						trans.injectVariables(executionConfiguration.getVariables());
 						trans.setMonitored(true);
 						log.logBasic(toString(), Messages.getString("TransLog.Log.TransformationOpened")); //$NON-NLS-1$
 					}
 					catch (KettleException e)
 					{
 						trans = null;
-						new ErrorDialog(shell,
-								Messages.getString("TransLog.Dialog.ErrorOpeningTransformation.Title"), Messages.getString("TransLog.Dialog.ErrorOpeningTransformation.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+						new ErrorDialog(shell, Messages.getString("TransLog.Dialog.ErrorOpeningTransformation.Title"), Messages.getString("TransLog.Dialog.ErrorOpeningTransformation.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
 					}
 					if (trans != null)
 					{
 						Map<String,String> arguments = executionConfiguration.getArguments();
                         final String args[];
 						if (arguments != null) args = convertArguments(arguments); else args = null;
-                        setVariables(executionConfiguration);
                         
 						log.logMinimal(Spoon.APP_NAME, Messages.getString("TransLog.Log.LaunchingTransformation") + trans.getTransMeta().getName() + "]..."); //$NON-NLS-1$ //$NON-NLS-2$
 						trans.setSafeModeEnabled(executionConfiguration.isSafeModeEnabled());
                         
                         // Launch the step preparation in a different thread. 
-                        // That way Spoon doesn't block anymore and that way we can follow the progress of the initialisation
+                        // That way Spoon doesn't block anymore and that way we can follow the progress of the initialization
                         //
                         
                         final Thread parentThread = Thread.currentThread();
@@ -694,12 +692,6 @@ public class TransLog extends Composite implements TabItemInterface
         trans.startThreads();
     }
 
-    private void setVariables(TransExecutionConfiguration executionConfiguration)
-    {
-        Map<String, String> variables = executionConfiguration.getVariables();
-        transMeta.injectVariables(variables);
-    }
-
 	public void checkErrors()
 	{
 		if (trans != null)
@@ -822,7 +814,7 @@ public class TransLog extends Composite implements TabItemInterface
 				{
 					args = convertArguments(arguments);
                 }
-                setVariables(executionConfiguration);
+				transMeta.injectVariables(executionConfiguration.getVariables());
 
                 // Create a new transformation to execution
                 //

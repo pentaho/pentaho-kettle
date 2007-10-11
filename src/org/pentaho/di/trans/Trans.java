@@ -392,7 +392,8 @@ public class Trans implements VariableSpace
                     
 					// Copy the variables of the transformation to the step...
 					// don't share. Each copy of the step has its own variables.
-					((BaseStep)step).initializeVariablesFrom(transMeta);
+					// 
+					((BaseStep)step).initializeVariablesFrom(this);
 					
                     // If the step is partitioned, set the partitioning ID and some other things as well...
                     if (stepMeta.isPartitioned())

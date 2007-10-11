@@ -365,6 +365,16 @@ public class Const
     /** The job directory */
     public static final String INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY = INTERNAL_VARIABLE_PREFIX+".Transformation.Repository.Directory";
 
+	/** 
+	 * All the internal job variables
+	 */
+	public static final String[] INTERNAL_JOB_VARIABLES = new String[] { 
+        		Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY,
+        		Const.INTERNAL_VARIABLE_JOB_FILENAME_NAME,
+        		Const.INTERNAL_VARIABLE_JOB_NAME,
+        		Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY,
+        };
+	
     /** The transformation filename directory */
     public static final String INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY = INTERNAL_VARIABLE_PREFIX+".Transformation.Filename.Directory";
 
@@ -430,8 +440,8 @@ public class Const
 	 * You can set this environment variable to make Kettle scan additional packages for annotated plugins.
 	 * The packages are comma (,) delimited and the base specification is in the kettle-config.xml file
 	 */
-	public static final String KETTLE_PLUGIN_PACKAGES = "KETTLE_PLUGIN_PACKAGES";	
-	
+	public static final String KETTLE_PLUGIN_PACKAGES = "KETTLE_PLUGIN_PACKAGES";
+
     private static String[] emptyPaddedSpacesStrings;
 
 

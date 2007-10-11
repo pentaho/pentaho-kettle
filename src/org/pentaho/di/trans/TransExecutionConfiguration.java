@@ -305,6 +305,14 @@ public class TransExecutionConfiguration implements Cloneable
             // variables.clear();
             variables.putAll(newVariables);
         }
+        
+        // Also add the internal job variables if these are set...
+        //
+        for (String variableName : Const.INTERNAL_JOB_VARIABLES)
+        {
+        	String value = transMeta.getVariable(variableName);
+        	if (!Const.isEmpty(value)) variables.put(variableName, value);
+        }
     }
     
     public void getUsedArguments(TransMeta transMeta, String[] commandLineArguments)
