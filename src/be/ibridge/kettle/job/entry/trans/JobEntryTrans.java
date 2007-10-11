@@ -637,8 +637,18 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     
     
                     // set the parent job on the transformation, variables are taken from here...
+                    //
                     trans.setParentJob(parentJob);
                     
+                    // First get the root job
+                    //
+                    Job rootJob = parentJob;
+                    while (rootJob.getParentJob()!=null) rootJob=rootJob.getParentJob();
+                    
+                    // Get the start and end-date from the root job...
+                    //
+                    trans.setJobStartDate( rootJob.getStartDate() );
+                    trans.setJobEndDate( rootJob.getEndDate() );
                     
         			// Execute!
         			if (!trans.execute(args))
