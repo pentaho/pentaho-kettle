@@ -58,7 +58,7 @@
   <jar href="libext/JDBC/postgresql-8.1-407.jdbc3.jar"/>
   <jar href="libext/JDBC/rdbthin.jar"/>
   <jar href="libext/JDBC/sapdbc.jar"/>
-  <jar href="libext/JDBC/sqlitejdbc-v032-nested.jar"/>
+  <jar href="libext/JDBC/sqlitejdbc-v037-nested.jar"/>
   <jar href="libext/JDBC/unijdbc.jar"/>
   <jar href="libext/JDBC/xdbjdbc.jar"/>
 

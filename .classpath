@@ -46,7 +46,6 @@
 	<classpathentry kind="lib" path="libext/JDBC/postgresql-8.1-407.jdbc3.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/rdbthin.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/sapdbc.jar"/>
-	<classpathentry kind="lib" path="libext/JDBC/sqlitejdbc-v032-nested.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/unijdbc.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/xdbjdbc.jar"/>
 	<classpathentry kind="lib" path="libext/webservices/jsr173_api.jar"/>
@@ -81,5 +80,7 @@
 	<classpathentry kind="lib" path="libext/spring/spring-core.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/pentaho-1.2.0.jar"/>
 	<classpathentry kind="lib" path="libext/saxon8.jar"/>
+	<classpathentry kind="lib" path="plugins/steps/DummyPlugin/dummy.jar" sourcepath="/DummyPlugin3/src"/>
+	<classpathentry kind="lib" path="libext/JDBC/sqlitejdbc-v037-nested.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

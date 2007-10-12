@@ -221,6 +221,6 @@ public class SQLiteDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 
     public String[] getUsedLibraries()
     {
-        return new String[] { "sqlitejdbc-v032-nested.jar" };
+        return new String[] { "sqlitejdbc-v037-nested.jar" };
     }
 }
