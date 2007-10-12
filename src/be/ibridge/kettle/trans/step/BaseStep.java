@@ -754,6 +754,10 @@ public class BaseStep extends Thread
         if (outputRowSets.isEmpty())
         {
             // No more output rowsets!
+	    	// Still update the nr of lines written.
+	    	//
+	    	linesWritten++;
+	    	
             return; // we're done here!
         }
 
