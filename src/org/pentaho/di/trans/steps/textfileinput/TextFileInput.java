@@ -567,7 +567,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 				if ( pos == length)
 				{
 					if (log.isRowLevel()) log.logRowlevel("convert line to row", "End of line empty field found: []");
-					strings[fieldnr]= Const.EMPTY_STRING;
+					if (fieldnr<strings.length) strings[fieldnr]= Const.EMPTY_STRING;
                     fieldnr++;
 				}
 			}
