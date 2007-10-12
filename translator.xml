@@ -1,0 +1,13 @@
+<translator-config>
+  <locale-list>
+    <locale> <code>en_US</code> <language>English</language> <country>United States of America</country> </locale>
+    <locale> <code>fr_FR</code> <language>French</language> <country>France</country> </locale>
+    <locale> <code>es_ES</code> <language>Spanish</language> <country>Spain</country> </locale>
+    <locale> <code>nl_NL</code> <language>Dutch</language> <country>The Netherlands</country> </locale>
+    <locale> <code>de_DE</code> <language>German</language> <country>Germany</country> </locale>
+    <locale> <code>zh_CN</code> <language>Simplified Chinese</language> <country>China</country> </locale>
+    <locale> <code>pt_BR</code> <language>Portuguese</language> <country>Brazil</country> </locale>
+    <locale> <code>pt_PT</code> <language>Portuguese</language> <country>Portugal</country> </locale>
+  </locale-list>
+</translator-config>
+

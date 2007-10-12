@@ -430,7 +430,7 @@
 		  	<echo>Generating the Kettle i18n distribution package Kettle-i18n-${version}.zip ...</echo>
 		  	<jar jarfile="${dist.dir}/Kettle-i18n-${version}.zip" 
 		    	 basedir="." 
-		    	 includes="src/**/*.java src/**/*.properties src-ui/**/*.java src-ui/**/*.properties lib/*.jar libswt/win32/*.jar libswt/linux/x86/*.jar libswt/*.jar libext/log4j-1.2.8.jar libext/spring/spring-core.jar libext/commons/commons-vfs*.jar libext/commons/commons-logging*.jar ui/*.xul Translator.bat translator.sh"
+		    	 includes="src/**/*.java src/**/*.properties src-ui/**/*.java src-ui/**/*.properties lib/*.jar libswt/win32/*.jar libswt/linux/x86/*.jar libswt/*.jar libext/log4j-1.2.8.jar libext/spring/spring-core.jar libext/commons/commons-vfs*.jar libext/commons/commons-logging*.jar ui/*.xul Translator.bat translator.sh translator.xml"
 		  	     excludes="**/Thumbs.db **/.svn"
 		  		/>
 	</target>

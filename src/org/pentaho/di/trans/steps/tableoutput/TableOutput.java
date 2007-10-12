@@ -237,7 +237,15 @@ public class TableOutput extends BaseStep implements StepInterface
             {
     			data.db.clearBatch(insertStatement);
     		    data.db.rollback();
-    			throw new KettleException("Error batch inserting rows into table ["+tableName+"]", be);
+    		    StringBuffer msg = new StringBuffer("Error batch inserting rows into table ["+tableName+"].");
+    		    msg.append(Const.CR);
+    		    msg.append("Errors encountered (first 10):").append(Const.CR);
+    		    for (int x = 0 ; x < be.getExceptionsList().size() && x < 10 ; x++)
+    		    {
+    		    	Exception exception = be.getExceptionsList().get(x);
+    		    	if (exception.getMessage()!=null) msg.append(exception.getMessage()).append(Const.CR);
+    		    }
+    		    throw new KettleException(msg.toString(), be);
             }
 		}
 		catch(KettleDatabaseException dbe)
@@ -454,21 +462,21 @@ public class TableOutput extends BaseStep implements StepInterface
                 }
                 catch(KettleException e)
                 {
-                    logError("Unexpected error processing batch error : "+e.toString());
+                    logError("Unexpected error processing batch error", e);
                     setErrors(1);
                     stopAll();
                 }
             }
             else
             {
-                logError("Unexpected batch update error committing the database connection: "+be.toString());
+                logError("Unexpected batch update error committing the database connection.", be);
     			setErrors(1);
     			stopAll();
             }
 		}
 		catch(Exception dbe)
 		{
-			logError("Unexpected error committing the database connection: "+dbe.toString());
+			logError("Unexpected error committing the database connection.", dbe);
             logError(Const.getStackTracker(dbe));
 			setErrors(1);
 			stopAll();
@@ -485,7 +493,7 @@ public class TableOutput extends BaseStep implements StepInterface
                 }
                 catch(KettleDatabaseException e)
                 {
-                    logError("Unexpected error rolling back the database connection: "+e.toString());
+                    logError("Unexpected error rolling back the database connection.", e);
                 }
             }
             
@@ -506,8 +514,7 @@ public class TableOutput extends BaseStep implements StepInterface
 		}
 		catch(Throwable t)
 		{
-			logError(Messages.getString("System.Log.UnexpectedError")+" : "); //$NON-NLS-1$ //$NON-NLS-2$
-            logError(Const.getStackTracker(t));
+			logError(Messages.getString("System.Log.UnexpectedError")+" : ", t); //$NON-NLS-1$ //$NON-NLS-2$
             setErrors(1);
 			stopAll();
 		}

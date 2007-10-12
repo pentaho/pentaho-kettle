@@ -1,5 +1,6 @@
 package org.pentaho.di.ui.i18n.editor;
 
+import java.io.File;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
@@ -30,6 +31,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.variables.Variables;
+import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.EnterStringDialog;
@@ -44,6 +46,8 @@ import org.pentaho.di.ui.i18n.MessagesSourceCrawler;
 import org.pentaho.di.ui.i18n.MessagesStore;
 import org.pentaho.di.ui.i18n.TranslationsStore;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 
 
 
@@ -195,6 +199,29 @@ public class Translator2
     	localeList.add("de_DE");
     	localeList.add("zh_CN");
     	localeList.add("pt_BR");
+    	localeList.add("pt_PT");
+    	
+    	File file = new File("translator.xml");
+    	if (file.exists()) {
+    		
+    		// TODO: add the other configurations that are now hard coded to the XML document as well.
+    		
+    		try {
+    			Document doc = XMLHandler.loadXMLFile(file);
+    			Node configNode = XMLHandler.getSubNode(doc, "translator-config");
+    			Node localeListNode = XMLHandler.getSubNode(configNode, "locale-list");
+    			int nrLocale = XMLHandler.countNodes(localeListNode, "locale");
+    			if (nrLocale>0) localeList.clear();
+    			for (int i=0;i<nrLocale;i++) {
+    				Node localeNode = XMLHandler.getSubNodeByNr(localeListNode, "locale", i);
+    				String locale = XMLHandler.getTagValue(localeNode, "code");
+    				localeList.add(locale);
+    			}
+    		}
+    		catch (Exception e) {
+				log.logError("Translator", "Error reading translator.xml", e);
+			}
+    	}
     }
     
     public void open()
