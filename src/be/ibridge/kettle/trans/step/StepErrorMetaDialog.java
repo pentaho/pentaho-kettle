@@ -99,7 +99,7 @@ public class StepErrorMetaDialog extends Dialog
 		formLayout.marginWidth  = Const.FORM_MARGIN;
 		formLayout.marginHeight = Const.FORM_MARGIN;
 		
-		shell.setText("Step error handling settings");
+		shell.setText(Messages.getString("BaseStepDialog.ErrorHandling.Title.Label"));
 		shell.setImage(GUIResource.getInstance().getImageSpoonGraph());
 		shell.setLayout (formLayout);
  		
@@ -124,7 +124,7 @@ public class StepErrorMetaDialog extends Dialog
         // What's the source step
         Label wlSourceStep = new Label(composite, SWT.RIGHT); 
         props.setLook(wlSourceStep);
-        wlSourceStep.setText("Error handling stepname  ");
+        wlSourceStep.setText(Messages.getString("BaseStepDialog.ErrorHandling.StepName.Label"));
         FormData fdlSourceStep = new FormData();
         fdlSourceStep.top   = new FormAttachment(0, 0);
         fdlSourceStep.left  = new FormAttachment(0, 0);  // First one in the left top corner
@@ -144,7 +144,7 @@ public class StepErrorMetaDialog extends Dialog
         // What's the target step
         Label wlTargetStep = new Label(composite, SWT.RIGHT); 
         props.setLook(wlTargetStep);
-        wlTargetStep.setText("Target step  ");
+        wlTargetStep.setText(Messages.getString("BaseStepDialog.ErrorHandling.TargetStep.Label"));
         FormData fdlTargetStep = new FormData();
         fdlTargetStep.top   = new FormAttachment(wSourceStep, margin);
         fdlTargetStep.left  = new FormAttachment(0, 0);  // First one in the left top corner
@@ -167,7 +167,7 @@ public class StepErrorMetaDialog extends Dialog
         // is the error handling enabled?
         Label wlEnabled = new Label(composite, SWT.RIGHT); 
         props.setLook(wlEnabled);
-        wlEnabled.setText("Enable the error handling?  ");
+        wlEnabled.setText(Messages.getString("BaseStepDialog.ErrorHandling.Enable.Label"));
         FormData fdlEnabled = new FormData();
         fdlEnabled.top   = new FormAttachment(wTargetStep, margin);
         fdlEnabled.left  = new FormAttachment(0, 0);  // First one in the left top corner
@@ -184,7 +184,7 @@ public class StepErrorMetaDialog extends Dialog
         // What's the field for the nr of errors
         Label wlNrErrors = new Label(composite, SWT.RIGHT); 
         props.setLook(wlNrErrors);
-        wlNrErrors.setText("Nr of errors fieldname  ");
+        wlNrErrors.setText(Messages.getString("BaseStepDialog.ErrorHandling.NrErrField.Label"));
         FormData fdlNrErrors = new FormData();
         fdlNrErrors.top   = new FormAttachment(wEnabled, margin*2);
         fdlNrErrors.left  = new FormAttachment(0, 0);  // First one in the left top corner
@@ -203,7 +203,7 @@ public class StepErrorMetaDialog extends Dialog
         // What's the field for the error descriptions
         Label wlErrDesc = new Label(composite, SWT.RIGHT); 
         props.setLook(wlErrDesc);
-        wlErrDesc.setText("Error descriptions fieldname  ");
+        wlErrDesc.setText(Messages.getString("BaseStepDialog.ErrorHandling.ErrDescField.Label"));
         FormData fdlErrDesc = new FormData();
         fdlErrDesc.top   = new FormAttachment(wNrErrors, margin);
         fdlErrDesc.left  = new FormAttachment(0, 0);  // First one in the left top corner
@@ -221,7 +221,7 @@ public class StepErrorMetaDialog extends Dialog
         
         // What's the field for the error fields
         Label wlErrFields = new Label(composite, SWT.RIGHT ); 
-        wlErrFields.setText("Error fields fieldname  "); 
+        wlErrFields.setText(Messages.getString("BaseStepDialog.ErrorHandling.ErrFieldName.Label") ); 
         props.setLook(wlErrFields);
         FormData fdlErrFields = new FormData();
         fdlErrFields.top  = new FormAttachment(wErrDesc, margin);
@@ -240,7 +240,7 @@ public class StepErrorMetaDialog extends Dialog
         
         // What's the fieldname for the error codes field
         Label wlErrCodes = new Label(composite, SWT.RIGHT ); 
-        wlErrCodes.setText("Error codes fieldname  "); 
+        wlErrCodes.setText(Messages.getString("BaseStepDialog.ErrorHandling.ErrCodeFieldName.Label")); 
         props.setLook(wlErrCodes);
         FormData fdlErrCodes = new FormData();
         fdlErrCodes.top  = new FormAttachment(wErrFields, margin);
@@ -259,7 +259,7 @@ public class StepErrorMetaDialog extends Dialog
 
         // What's the maximum number of errors allowed before we stop?
         Label wlMaxErrors = new Label(composite, SWT.RIGHT ); 
-        wlMaxErrors.setText("Max nr errors allowed  "); 
+        wlMaxErrors.setText(Messages.getString("BaseStepDialog.ErrorHandling.MaxErr.Label")); 
         props.setLook(wlMaxErrors);
         FormData fdlMaxErrors = new FormData();
         fdlMaxErrors.top  = new FormAttachment(wErrCodes, margin);
@@ -278,7 +278,7 @@ public class StepErrorMetaDialog extends Dialog
 
         // What's the maximum % of errors allowed?
         Label wlMaxPct = new Label(composite, SWT.RIGHT ); 
-        wlMaxPct.setText("Max % errors allowed (empty==100%) "); 
+        wlMaxPct.setText(Messages.getString("BaseStepDialog.ErrorHandling.MaxPctErr.Label")); 
         props.setLook(wlMaxPct);
         FormData fdlMaxPct = new FormData();
         fdlMaxPct.top  = new FormAttachment(wMaxErrors, margin);
@@ -297,7 +297,7 @@ public class StepErrorMetaDialog extends Dialog
 
         // What's the min nr of rows to read before doing % evaluation
         Label wlMinPctRows = new Label(composite, SWT.RIGHT ); 
-        wlMinPctRows.setText("Min nr of rows to read before doing % evaluation "); 
+        wlMinPctRows.setText(Messages.getString("BaseStepDialog.ErrorHandling.MinErr.Label")); 
         props.setLook(wlMinPctRows);
         FormData fdlMinPctRows = new FormData();
         fdlMinPctRows.top  = new FormAttachment(wMaxPct, margin);
