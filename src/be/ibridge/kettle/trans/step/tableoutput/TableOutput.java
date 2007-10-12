@@ -231,7 +231,14 @@ public class TableOutput extends BaseStep implements StepInterface
             {
     			data.db.clearBatch(insertStatement);
     		    data.db.rollback();
-    			throw new KettleException("Error batch inserting rows into table ["+tableName+"]", be);
+    		    StringBuffer msg = new StringBuffer("Error batch inserting rows into table ["+tableName+"].");
+    		    msg.append(Const.CR);
+    		    msg.append("Errors encountered (first 10):").append(Const.CR);
+    		    for (int x = 0 ; x < be.getExceptionsList().size() && x < 10 ; x++)
+    		    {
+    		    	Exception exception = (Exception) be.getExceptionsList().get(x);
+    		    	if (exception.getMessage()!=null) msg.append(exception.getMessage()).append(Const.CR);
+    		    }
             }
 		}
 		catch(KettleDatabaseException dbe)
