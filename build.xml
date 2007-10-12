@@ -59,7 +59,7 @@
 	    </javac>
 	  </target>
 	  
-	  <target name="compile-ui" depends="init" description="compile the UI source " >
+	  <target name="compile-ui" depends="kettle" description="compile the UI source " >
 	  	<echo>Compiling Kettle UI...</echo>
 	    <javac 
 	    	   destdir="${classes-ui}"
