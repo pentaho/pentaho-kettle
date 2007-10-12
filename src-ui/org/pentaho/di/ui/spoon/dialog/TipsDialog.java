@@ -111,7 +111,7 @@ public class TipsDialog extends Dialog
         fdlDesc.top = new FormAttachment(0, margin);
         wlDesc.setLayoutData(fdlDesc);
         // wDesc=new Text(shell, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
-        wDesc = new Text(shell, SWT.MULTI | SWT.LEFT);
+        wDesc = new Text(shell, SWT.MULTI | SWT.LEFT | SWT.READ_ONLY | SWT.V_SCROLL | SWT.WRAP);
         wDesc.setText(description);
         props.setLook(wDesc);
         wDesc.setFont(font);
