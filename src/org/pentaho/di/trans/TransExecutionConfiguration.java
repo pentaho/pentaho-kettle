@@ -278,6 +278,40 @@ public class TransExecutionConfiguration implements Cloneable
         this.remoteServer = remoteServer;
     }
     
+    public void getAllVariables(TransMeta transMeta)
+    {
+        Properties sp = new Properties();
+        VariableSpace space = Variables.getADefaultVariableSpace();
+        
+        String keys[] = space.listVariables();
+        for ( int i=0; i<keys.length; i++ )
+        {
+            sp.put(keys[i], space.getVariable(keys[i]));
+        }
+ 
+        String[] vars = transMeta.listVariables();
+        if (vars!=null && vars.length>0)
+        {
+          HashMap<String, String> newVariables = new HashMap<String, String>();
+          
+            for (int i=0;i<vars.length;i++) 
+            {
+                String varname = vars[i]; 
+                newVariables.put(varname, Const.NVL(variables.get(varname), sp.getProperty(varname, "")));
+            }
+            // variables.clear();
+            variables.putAll(newVariables);
+        }
+        
+        // Also add the internal job variables if these are set...
+        //
+        for (String variableName : Const.INTERNAL_JOB_VARIABLES)
+        {
+          String value = transMeta.getVariable(variableName);
+          if (!Const.isEmpty(value)) variables.put(variableName, value);
+        }
+    }
+    
     public void getUsedVariables(TransMeta transMeta)
     {
         Properties sp = new Properties();
