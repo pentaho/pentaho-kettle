@@ -20,6 +20,7 @@ package org.pentaho.di.core;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -249,7 +250,18 @@ public class Props implements Cloneable
 		
 		// Try to create the directory...
 		File dir = new File(directory);
-		try { dir.mkdirs(); } catch(Exception e) { }
+		try 
+		{ 
+			dir.mkdirs();
+			
+			// Also create a file called kettle.properties
+			//
+			createDefaultKettleProperties(directory);
+		} 
+		catch(Exception e) 
+		{ 
+			
+		}
 		
 		switch(type)
 		{
@@ -273,6 +285,43 @@ public class Props implements Cloneable
 		return filename;
 	}
 	
+	public void createDefaultKettleProperties(String directory) {
+		String kpFile = directory+Const.FILE_SEPARATOR+Const.KETTLE_PROPERTIES;
+		File file = new File(kpFile);
+		if (!file.exists()) 
+		{
+			FileOutputStream out = null;
+			try 
+			{
+				out = new FileOutputStream(file);
+				out.write((Messages.getString("Props.Kettle.Properties.Sample.Line01", Const.VERSION)+Const.CR).getBytes());
+				out.write((Messages.getString("Props.Kettle.Properties.Sample.Line02")+Const.CR).getBytes());
+				out.write((Messages.getString("Props.Kettle.Properties.Sample.Line03")+Const.CR).getBytes());
+				out.write((Messages.getString("Props.Kettle.Properties.Sample.Line04")+Const.CR).getBytes());
+				out.write((Messages.getString("Props.Kettle.Properties.Sample.Line05")+Const.CR).getBytes());
+				out.write((Messages.getString("Props.Kettle.Properties.Sample.Line06")+Const.CR).getBytes());
+				out.write((Messages.getString("Props.Kettle.Properties.Sample.Line07")+Const.CR).getBytes());
+				out.write((Messages.getString("Props.Kettle.Properties.Sample.Line08")+Const.CR).getBytes());
+				out.write((Messages.getString("Props.Kettle.Properties.Sample.Line09")+Const.CR).getBytes());
+				out.write((Messages.getString("Props.Kettle.Properties.Sample.Line10")+Const.CR).getBytes());
+			} 
+			catch (IOException e) 
+			{
+				log.logError(Const.KETTLE_PROPERTIES, Messages.getString("Props.Log.Error.UnableToCreateDefaultKettleProperties.Message", Const.KETTLE_PROPERTIES, kpFile), e);
+			}
+			finally 
+			{
+				if (out!=null) {
+					try {
+						out.close();
+					} catch (IOException e) {
+						log.logError(Const.KETTLE_PROPERTIES, Messages.getString("Props.Log.Error.UnableToCreateDefaultKettleProperties.Message", Const.KETTLE_PROPERTIES, kpFile), e);
+					}
+				}
+			}
+		}
+	}
+
 	public String getLicenseFilename()
 	{
 		String directory = Const.getKettleDirectory();
