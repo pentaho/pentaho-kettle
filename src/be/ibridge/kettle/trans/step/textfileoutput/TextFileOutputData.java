@@ -63,6 +63,8 @@ public class TextFileOutputData extends BaseStepData implements StepDataInterfac
     public Process cmdProc;
 
     public OutputStream fos;
+    
+   
 
     /**
 	 * 
@@ -85,5 +87,7 @@ public class TextFileOutputData extends BaseStepData implements StepDataInterfac
         defaultDateFormatSymbols = new DateFormatSymbols();
 
         cmdProc = null;
+
+        
 	}
 }

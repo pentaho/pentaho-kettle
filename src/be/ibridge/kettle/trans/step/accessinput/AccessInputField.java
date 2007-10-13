@@ -19,7 +19,6 @@ import org.w3c.dom.Node;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.XMLHandler;
-import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleValueException;
 import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.core.value.Value;
@@ -49,11 +48,8 @@ public class AccessInputField implements Cloneable
       Messages.getString("AccessInputField.TrimType.Both")
     };
     
-    public final static String POSITION_MARKER  = ",";
-    
 	private String 	  name;
 	private String 	  attribute;
-	private AccessInputFieldPosition[] fieldPosition;
 	
     private int 	  type;
     private int       length;
@@ -68,11 +64,10 @@ public class AccessInputField implements Cloneable
     private String    samples[];
 
     
-	public AccessInputField(String fieldname, AccessInputFieldPosition[] AccessInputFieldPositions)
+	public AccessInputField(String fieldname)
 	{
 		this.name           = fieldname;
 		this.attribute      = "";
-		this.fieldPosition  = AccessInputFieldPositions;
 		this.length         = -1;
 		this.type           = Value.VALUE_TYPE_STRING;
 		this.format         = "";
@@ -86,7 +81,7 @@ public class AccessInputField implements Cloneable
     
     public AccessInputField()
     {
-        this(null, null);
+        this("");
     }
 
     public String getXML()
@@ -124,18 +119,7 @@ public class AccessInputField implements Cloneable
         setPrecision( Const.toInt(XMLHandler.getTagValue(fnode, "precision"), -1) );
         setTrimType( getTrimTypeByCode(XMLHandler.getTagValue(fnode, "trim_type")) );
         setRepeated( !"N".equalsIgnoreCase(XMLHandler.getTagValue(fnode, "repeat")) ); 
-        
-        Node positions = XMLHandler.getSubNode(fnode, "positions");
-        int nrPositions = XMLHandler.countNodes(positions, "position");
-        
-        fieldPosition = new AccessInputFieldPosition[nrPositions];
-        
-        for (int i=0;i<nrPositions;i++)
-        {
-            Node positionnode = XMLHandler.getSubNodeByNr(positions, "position", i); 
-            String encoded = XMLHandler.getNodeValue(positionnode);
-            fieldPosition[i] = new AccessInputFieldPosition(encoded);
-        }
+
     }
 
     public final static int getTrimTypeByCode(String tt)
@@ -177,16 +161,7 @@ public class AccessInputField implements Cloneable
 		try
 		{
 			AccessInputField retval = (AccessInputField) super.clone();
-            
-            if (fieldPosition!=null)
-            {
-                retval.setFieldPosition( new AccessInputFieldPosition[fieldPosition.length] );
-                for (int i=0;i<fieldPosition.length;i++)
-                {
-                    retval.getFieldPosition()[i] = (AccessInputFieldPosition)fieldPosition[i].clone();
-                }
-            }
-            
+
 			return retval;
 		}
 		catch(CloneNotSupportedException e)
@@ -195,21 +170,6 @@ public class AccessInputField implements Cloneable
 		}
 	}	
     
-	/**
-     * @return Returns the AccessInputFieldPositions.
-     */
-    public AccessInputFieldPosition[] getFieldPosition()
-    {
-        return fieldPosition;
-    }
-
-    /**
-     * @param AccessInputFieldPositions The AccessInputFieldPositions to set.
-     */
-    public void setFieldPosition(AccessInputFieldPosition[] AccessInputFieldPositions)
-    {
-        this.fieldPosition = AccessInputFieldPositions;
-    }
 
     public int getLength()
 	{
@@ -361,20 +321,5 @@ public class AccessInputField implements Cloneable
 	{
 	}
 
-    public void setFieldPosition(String encoded) throws KettleException
-    {
-        try
-        {
-            String codes[] = encoded.split(POSITION_MARKER);
-            fieldPosition = new AccessInputFieldPosition[codes.length];
-            for (int i=0;i<codes.length;i++)
-            {
-                fieldPosition[i] = new AccessInputFieldPosition(codes[i]);
-            }
-        }
-        catch(Exception e)
-        {
-            throw new KettleException("Unable to parse the field positions because of an error"+Const.CR+"Please use E=element or A=attribute in a comma separated list (code: "+encoded+")", e);
-        }
-    }
+  
 }

@@ -434,7 +434,7 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface
 		
 		for (int i=0;i<nrFields;i++)
 		{
-		    inputFields[i] = new AccessInputField("field"+(i+1), null);
+		    inputFields[i] = new AccessInputField("field"+(i+1));
 		}
 
 		rowLimit=0;
