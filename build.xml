@@ -2,7 +2,7 @@
 
 	  <description>
 	      Kettle build file
-	    </description>
+	  </description>
 
 	  <tstamp prefix="start"/>
 	
@@ -25,6 +25,7 @@
 	  	<mkdir dir="${testClasses}"/>
 	    <mkdir dir="${lib}"/>
 		<mkdir dir="${distrib}"/>
+	  	<mkdir dir="${macdistrib}"/>
 		<mkdir dir="${docs}"/>
 		<mkdir dir="${api}"/>
 		<mkdir dir="${webstart}"/>
@@ -684,5 +685,46 @@
 	 <target name="nightly" depends="clean, zip, sourcezip, javadoc_zip, compileTests" > <!-- , tests-core, tests-resource, tests-trans, tests-run -->
 	 	<ant antfile="build_coverage.xml" dir="." target="zip-reports" />
 	 </target>
+	
+	<target name="macapplication" depends="distrib" description="Build OS X executable">
+		
+	  	        <delete dir="${macdistrib}/${ant.project.name}.app"/>
+	  	        <taskdef name="jarbundler"
+	  	                 classpath="${jarbundler.jar}"
+	  	                 classname="net.sourceforge.jarbundler.JarBundler"/>
+	  	        <jarbundler dir="${macdistrib}"
+	  	                    name="${ant.project.name}"
+	  	                    mainclass="org.pentaho.di.ui.spoon.Spoon"
+	  	                    icon="${ui}/images/Scaled_icons.icns"
+	  	                    version="${version}"
+	  	        			verbose="true"
+	  	        	VMOptions="-Xmx256m"
+				    shortname="WD"
+	  	        	arguments=""
+	  	        	workingdirectory="$APP_PACKAGE/Contents/Resources"
+	  	            jvmversion="1.5+">
+	  	        	<javaproperty name="java.library.path" value="$APP_PACKAGE/Contents/Resources"/>
+	  	        	<jarfileset dir="${distrib}">
+	  	                	<include name="${lib}/*.jar"/>
+	  	        			<include name="${libext}/*.jar"/>
+	  	        			<include name="${libext}/**/*.jar"/>
+	  	        			<include name="${libswt}/*.jar"/>
+	  	        			<include name="${libswt}/osx/*.jar"/>
+	  	        	</jarfileset>
+	  	        </jarbundler>
+	  			<!-- patch Info.plist with StartOnMainTrhead property need to make sure that the token is in the right place-->
+	  			<replace file="${macdistrib}/${ant.project.name}.app/Contents/Info.plist" token="&lt;key&gt;ClassPath" value="&lt;key&gt;StartOnMainThread&lt;/key&gt;&lt;true/&gt; &lt;key&gt;ClassPath" />
+	  			<!-- Create a .dmg file containing the app and docs -->
+	  		    <exec executable="/usr/bin/hdiutil" os="Mac OS X">
+	  		      <arg value="create"/>
+	  		      <arg value="-srcfolder"/>
+	  		      <arg value="${macdistrib}"/>
+	  		      <arg value="-volname"/>
+	  		      <arg value="${ant.project.name} ${version}"/>
+	  		      <arg value="-ov"/>
+	  		      <arg value="${macdistrib}/${ant.project.name}-${version}.dmg"/>
+	  		    </exec>
+	  	    </target>
+	
 
 </project>
