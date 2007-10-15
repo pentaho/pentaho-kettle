@@ -686,6 +686,11 @@
 	 	<ant antfile="build_coverage.xml" dir="." target="zip-reports" />
 	 </target>
 	
+	<!--
+		BEFORE USING : Please download JarBundler version 1.9 and unzip it in tools/libant/
+		http://informagen.com/JarBundler/	
+	-->
+	
 	<target name="macapplication" depends="distrib" description="Build OS X executable">
 		
 	  	        <delete dir="${macdistrib}/${ant.project.name}.app"/>
