@@ -421,6 +421,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
             }
 
             copyVariablesFrom(parentJob);
+            setParentVariableSpace(parentJob);
 
             //
             // For the moment only do variable translation at the start of a job, not

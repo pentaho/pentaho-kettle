@@ -432,7 +432,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
         {
             args1 = parentJob.getJobMeta().getArguments();
         }
-        initializeVariablesFrom(parentJob);
+        //initializeVariablesFrom(parentJob);
 
         //
         // For the moment only do variable translation at the start of a job, not
