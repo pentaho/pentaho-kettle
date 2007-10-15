@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.pentaho.di.core.Condition;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.logging.LogWriter;
 
 
 public class StringSearcher
@@ -133,7 +134,7 @@ public class StringSearcher
                         }
                         catch(Exception ex)
                         {
-                            System.out.println(Const.rightPad(" ", level)+"    Unable to get access to method "+fullMethod+" : "+e.toString());
+                            LogWriter.getInstance().logDebug("StringSearcher", Const.rightPad(" ", level)+"    Unable to get access to method "+fullMethod+" : "+e.toString());
                         }
                     }
                 }
