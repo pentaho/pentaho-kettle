@@ -61,6 +61,7 @@ import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.dnd.DragAndDropContainer;
 import org.pentaho.di.core.dnd.XMLTransfer;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.gui.GUIPositionInterface;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.gui.Redrawable;
@@ -1085,14 +1086,32 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 		if (des != null) jobEntry.setDescription(des);
 	}
 
-	public void duplicateEntry() 
+	public void duplicateEntry() throws KettleException
 	{
-		spoon.delegates.jobs.dupeJobEntry(jobMeta, getJobEntry());
+		if (!canDup(jobEntry))
+		{
+			JobGraph.showOnlyStartOnceMessage(spoon.getShell());
+		}
+		
+		spoon.delegates.jobs.dupeJobEntry(jobMeta, jobEntry);
 	}
 
-	public void copyEntry() 
+	public void copyEntry()
 	{
-	    spoon.delegates.jobs.copyJobEntries(jobMeta, jobMeta.getSelectedEntries());
+		JobEntryCopy[] entries = jobMeta.getSelectedEntries();
+		for (int i=0;i<entries.length;i++)
+		{
+			if(!canDup(entries[i]))
+				entries[i] = null;
+				
+		}
+		
+	    spoon.delegates.jobs.copyJobEntries(jobMeta, entries);
+	}
+	
+	private boolean canDup(JobEntryCopy entry)
+	{
+		return !entry.isStart();
 	}
 
 	public void detatchEntry()
@@ -1648,6 +1667,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
                 }
 
                 JobMeta newJobMeta;
+                
                 if (KettleVFS.fileExists(exactFilename))
                 {
                     newJobMeta = new JobMeta(log, exactFilename, spoon.rep, spoon);
