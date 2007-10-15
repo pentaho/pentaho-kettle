@@ -7,6 +7,7 @@ import java.util.List;
 
 import be.ibridge.kettle.core.Condition;
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.LogWriter;
 
 public class StringSearcher
 {
@@ -135,7 +136,7 @@ public class StringSearcher
                         }
                         catch(Exception ex)
                         {
-                            System.out.println(Const.rightPad(" ", level)+"    Unable to get access to method "+fullMethod+" : "+e.toString());
+                            LogWriter.getInstance().logDebug("StringSearcher", Const.rightPad(" ", level)+"    Unable to get access to method "+fullMethod+" : "+e.toString());
                         }
                     }
                 }
