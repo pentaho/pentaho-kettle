@@ -286,6 +286,7 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 		{
 			for (int iteration=0;iteration<rows.size();iteration++) 
 			{
+				resultRow = (Row) rows.get(iteration);
 				
 				// Get source and destination file names, also wildcard
 				String vsourcefilefolder_previous = resultRow.getValue(0).getString();
