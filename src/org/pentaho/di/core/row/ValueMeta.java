@@ -578,7 +578,7 @@ public class ValueMeta implements ValueMetaInterface
     {
         if (Const.isEmpty(string)) return null;
         
-        string = trim(string); // see if  trimming needs to be performed before conversion
+        string = trimNumeric(string); // see if  trimming needs to be performed before conversion
 
         try
         {
@@ -765,7 +765,7 @@ public class ValueMeta implements ValueMetaInterface
     {
         if (Const.isEmpty(string)) return null;
         
-        string = trim(string); // see if  trimming needs to be performed before conversion
+        string = trimNumeric(string); // see if  trimming needs to be performed before conversion
 
         try
         {
@@ -795,7 +795,7 @@ public class ValueMeta implements ValueMetaInterface
     {
         if (Const.isEmpty(string)) return null;
 
-        string = trim(string); // see if  trimming needs to be performed before conversion
+        string = trimNumeric(string); // see if  trimming needs to be performed before conversion
 
         /*
         if (!".".equalsIgnoreCase(decimalSymbol))
@@ -1087,6 +1087,17 @@ public class ValueMeta implements ValueMetaInterface
     private String trim(String string) {
         switch(getTrimType()) {
         case TRIM_TYPE_NONE : break;
+        case TRIM_TYPE_RIGHT : string = ValueDataUtil.rightTrim(string); break;
+        case TRIM_TYPE_LEFT  : string = ValueDataUtil.leftTrim(string); break;
+        case TRIM_TYPE_BOTH  : string = ValueDataUtil.trim(string); break;
+        default: break;
+        }
+        return string;
+	}
+
+    private String trimNumeric(String string) {
+        switch(getTrimType()) {
+        case TRIM_TYPE_NONE : string = ValueDataUtil.leftTrim(string); break; // To compensate for the plus sign space that is added by default
         case TRIM_TYPE_RIGHT : string = ValueDataUtil.rightTrim(string); break;
         case TRIM_TYPE_LEFT  : string = ValueDataUtil.leftTrim(string); break;
         case TRIM_TYPE_BOTH  : string = ValueDataUtil.trim(string); break;

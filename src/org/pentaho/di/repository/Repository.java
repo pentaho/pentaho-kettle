@@ -1109,7 +1109,7 @@ public class Repository
 		RowMetaAndData par = new RowMetaAndData();
 		par.addValue(new ValueMeta(keyfield, ValueMetaInterface.TYPE_INTEGER), new Long(id));
 		RowMetaAndData result = database.getOneRow(sql, par.getRowMeta(), par.getData());
-		if (result != null)
+		if (result != null && result.getData()!=null)
 		{
 			return result.getString(0, null);
 		}
@@ -2086,7 +2086,7 @@ public class Repository
 		sql += "AND   " + quote(FIELD_VALUE_IS_NULL) + "    = ? ";
 
 		RowMetaAndData result = database.getOneRow(sql, table.getRowMeta(), table.getData());
-		if (result != null && result.isNumeric(0))
+		if (result != null && result.getData()!=null && result.isNumeric(0))
 			return result.getInteger(0, 0L);
 		else
 			return -1;
@@ -3259,7 +3259,7 @@ public class Repository
 			table.addValue(new ValueMeta(FIELD_STEP_ATTRIBUTE_ID_STEP, ValueMetaInterface.TYPE_INTEGER), new Long(id_step));
 			table.addValue(new ValueMeta(FIELD_STEP_ATTRIBUTE_CODE, ValueMetaInterface.TYPE_STRING), code);
 			RowMetaAndData r = database.getOneRow(sql, table.getRowMeta(), table.getData());
-			if (r == null) return 0;
+			if (r == null || r.getData()==null) return 0;
             return (int) r.getInteger(0, 0L);
 	    }
 	}
@@ -3309,7 +3309,7 @@ public class Repository
         table.addValue(new ValueMeta(FIELD_TRANS_ATTRIBUTE_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER), new Long(id_transformation));
         table.addValue(new ValueMeta(FIELD_TRANS_ATTRIBUTE_CODE, ValueMetaInterface.TYPE_STRING), code);
         RowMetaAndData r = database.getOneRow(sql, table.getRowMeta(), table.getData());
-        if (r == null)
+        if (r == null|| r.getData()==null)
             return 0;
         
         return (int) r.getInteger(0, 0L);
@@ -3475,7 +3475,7 @@ public class Repository
 		table.addValue(new ValueMeta(FIELD_JOBENTRY_ATTRIBUTE_ID_JOBENTRY, ValueMetaInterface.TYPE_INTEGER), new Long(id_jobentry));
 		table.addValue(new ValueMeta(FIELD_JOBENTRY_ATTRIBUTE_CODE, ValueMetaInterface.TYPE_STRING), code);
 		RowMetaAndData r = database.getOneRow(sql, table.getRowMeta(), table.getData());
-		if (r == null) return 0;
+		if (r == null || r.getData()==null) return 0;
 		return (int) r.getInteger(0, 0L);
 	}
 
