@@ -535,6 +535,13 @@ public class ExcelInput extends BaseStep implements StepInterface
 							// Put the row
 							retval = r;
 						}
+						else
+						{
+							if (data.rownr>sheet.getRows())
+							{
+								nextsheet=true;
+							}
+						}
 
 						if (isEmpty && meta.stopOnEmpty())
 						{
