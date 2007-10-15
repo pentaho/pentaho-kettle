@@ -353,6 +353,9 @@ public class SpoonJobDelegate extends SpoonDelegate
 
 		for (int i = 0; i < jec.length; i++)
 		{
+			if (jec[i]==null)
+				continue;
+			
 			xml += jec[i].getXML();
 		}
 
@@ -373,29 +376,37 @@ public class SpoonJobDelegate extends SpoonDelegate
 			Node entriesnode = XMLHandler.getSubNode(doc, Spoon.XML_TAG_JOB_JOB_ENTRIES); //$NON-NLS-1$
 			int nr = XMLHandler.countNodes(entriesnode, "entry"); //$NON-NLS-1$
 			spoon.getLog().logDebug(spoon.toString(), "I found " + nr + " job entries to paste on location: " + loc); //$NON-NLS-1$ //$NON-NLS-2$
-			JobEntryCopy entries[] = new JobEntryCopy[nr];
-
+			List<JobEntryCopy> entryList = new ArrayList<JobEntryCopy>(nr);
+			
 			// Point min = new Point(loc.x, loc.y);
 			Point min = new Point(99999999, 99999999);
 
 			for (int i = 0; i < nr; i++)
 			{
 				Node entrynode = XMLHandler.getSubNodeByNr(entriesnode, "entry", i); //$NON-NLS-1$
-				entries[i] = new JobEntryCopy(entrynode, jobMeta.getDatabases(), jobMeta.getSlaveServers(), spoon.getRepository());
-
-				String name = jobMeta.getAlternativeJobentryName(entries[i].getName());
-				entries[i].setName(name);
+				JobEntryCopy copy = new JobEntryCopy(entrynode, jobMeta.getDatabases(), jobMeta.getSlaveServers(), spoon.getRepository());
+				if (copy.isStart()) {
+					JobGraph.showOnlyStartOnceMessage(spoon.getShell());
+					continue;
+				}
+				String name = jobMeta.getAlternativeJobentryName(copy.getName());
+				copy.setName(name);
 
 				if (loc != null)
 				{
-					Point p = entries[i].getLocation();
+					Point p = copy.getLocation();
 
 					if (min.x > p.x)
 						min.x = p.x;
 					if (min.y > p.y)
 						min.y = p.y;
 				}
+				
+				entryList.add(copy);
 			}
+			
+			JobEntryCopy entries[] = entryList.toArray(new JobEntryCopy[]{});
+
 
 			// What's the difference between loc and min?
 			// This is the offset:
