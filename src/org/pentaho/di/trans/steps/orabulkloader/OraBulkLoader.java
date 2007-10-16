@@ -34,8 +34,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.PrintWriter;
 
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
@@ -72,51 +70,44 @@ public class OraBulkLoader extends BaseStep implements StepInterface
 	 * the rows upon previewing, we don't do any of the real stuff.
 	 */
 	private boolean preview = false;
+  
+  //
+  // This class continually reads from the stream, and sends it to the log
+  // if the logging level is at least basic level.
+  //
+  final private class StreamLogger extends Thread
+  {
+    private InputStream input;
+    private String type;
+    
+    StreamLogger(InputStream is, String type) {
+      this.input = is;
+      this.type = type + ">"; //$NON-NLS-1$
+    }
+
+    public void run() {
+      try
+      {
+        final BufferedReader br = new BufferedReader(new InputStreamReader(input));
+        String line;
+        while ( (line = br.readLine()) != null)
+        {
+          // Only perform the concatenation if at basic level. Otherwise,
+          // this just reads from the stream.
+          if (log.isBasic()) { 
+            logBasic(type + line);
+          }
+        }
+      } 
+      catch (IOException ioe)
+      {
+          ioe.printStackTrace();  
+      }
+      
+    }
+    
+  }
 	
-	class StreamGobbler extends Thread
-	{
-	    private InputStream is;
-	    private String type;
-	    private OutputStream os;
-	    
-	    StreamGobbler(InputStream is, String type)
-	    {
-	        this(is, type, null);
-	    }
-	    
-	    StreamGobbler(InputStream is, String type, OutputStream redirect)
-	    {
-	        this.is = is;
-	        this.type = type;
-	        this.os = redirect;
-	    }
-	    
-	    public void run()
-	    {
-	        try
-	        {
-	            PrintWriter pw = null;
-	            if (os != null)
-	                pw = new PrintWriter(os);
-	                
-	            InputStreamReader isr = new InputStreamReader(is);
-	            BufferedReader br = new BufferedReader(isr);
-	            String line=null;
-	            while ( (line = br.readLine()) != null)
-	            {
-	                if (pw != null)
-	                    pw.println(line);
-	                logBasic(type + ">" + line);    
-	            }
-	            if (pw != null)
-	                pw.flush();
-	        } 
-	        catch (IOException ioe)
-	        {
-	            ioe.printStackTrace();  
-	        }
-	    }
-	}
 	
 	public OraBulkLoader(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans)
 	{
@@ -425,16 +416,16 @@ public class OraBulkLoader extends BaseStep implements StepInterface
         {
             sqlldrProcess = rt.exec(createCommandLine(meta, true));
             // any error message?
-            StreamGobbler errorGobbler = new 
-                StreamGobbler(sqlldrProcess.getErrorStream(), "ERROR");            
+            StreamLogger errorLogger = new 
+                StreamLogger(sqlldrProcess.getErrorStream(), "ERROR");            
         
             // any output?
-            StreamGobbler outputGobbler = new 
-                StreamGobbler(sqlldrProcess.getInputStream(), "OUTPUT");
+            StreamLogger outputLogger = new 
+                StreamLogger(sqlldrProcess.getInputStream(), "OUTPUT");
             
             // kick them off
-            errorGobbler.start();
-            outputGobbler.start();                              
+            errorLogger.start();
+            outputLogger.start();                              
 
             if ( wait ) 
             {
