@@ -31,9 +31,9 @@ public class GlobalMessages extends AbstractMessageHandler
 
     protected static final Map<String,ResourceBundle>         locales               = Collections.synchronizedMap(new HashMap<String,ResourceBundle>());
 
-    public static final String[] localeCodes = { "en_US", "nl_NL", "zh_CN", "es_ES", "fr_FR", "de_DE", "pt_BR", "pt_PT", };
+    public static final String[] localeCodes = { "en_US", "nl_NL", "zh_CN", "es_ES", "fr_FR", "de_DE", "pt_BR", "pt_PT", "es_AR", };
     
-    public static final String[] localeDescr = { "English (US)", "Nederlands", "Simplified Chinese", "Espa\u00F1ol", "Fran\u00E7ais", "Deutsch", "Portuguese (Brazil)", "Portuguese (Portugal)", };
+    public static final String[] localeDescr = { "English (US)", "Nederlands", "Simplified Chinese", "Espa\u00F1ol (Spain)", "Fran\u00E7ais", "Deutsch", "Portuguese (Brazil)", "Portuguese (Portugal)", "Espa\u00F1ol (Argentina)", };
  
     protected static GlobalMessages GMinstance = null;
     
