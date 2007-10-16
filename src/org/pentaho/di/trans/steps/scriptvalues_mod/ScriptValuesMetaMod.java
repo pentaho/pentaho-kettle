@@ -25,6 +25,7 @@
 
 package org.pentaho.di.trans.steps.scriptvalues_mod;
 
+import java.math.BigDecimal;
 import java.net.URL;
 import java.util.Date;
 import java.util.List;
@@ -36,6 +37,7 @@ import org.mozilla.javascript.JavaScriptException;
 import org.mozilla.javascript.Script;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
+import org.pentaho.di.compatibility.Row;
 import org.pentaho.di.compatibility.Value;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
@@ -44,6 +46,7 @@ import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -478,7 +481,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 		if (prev!=null && strActiveScript.length()>0)		{
 			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("ScriptValuesMetaMod.CheckResult.ConnectedStepOK",String.valueOf(prev.size())), stepinfo); //$NON-NLS-1$ //$NON-NLS-2$
 			remarks.add(cr);
-
+			
 			// Adding the existing Scripts to the Context
 			for(int i=0;i<getNumberOfJSScripts();i++){
 				Scriptable jsR = Context.toObject(jsScripts[i].getScript(), jsscope);
@@ -487,7 +490,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
  
 			// Modification for Additional Script parsing
 			try{
-                if (getAddClasses()!=null)
+				if (getAddClasses()!=null)
                 {
     				for(int i=0;i<getAddClasses().length;i++){
     					Object jsOut = Context.javaToJS(getAddClasses()[i].getAddObject(), jsscope);
@@ -523,26 +526,56 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 			};
 
 			try{
-   			    Scriptable jsrow = Context.toObject(prev, jsscope);
-			    jsscope.put("row", jsscope, jsrow); //$NON-NLS-1$
+				ScriptValuesModDummy dummyStep = new ScriptValuesModDummy(prev, transMeta.getStepFields(stepinfo));
+				Scriptable jsvalue = Context.toObject(dummyStep, jsscope);
+				jsscope.put("_step_", jsscope, jsvalue); //$NON-NLS-1$
+
+				Object[] row=new Object[prev.size()];
+   			    Scriptable jsRowMeta = Context.toObject(prev, jsscope);
+			    jsscope.put("rowMeta", jsscope, jsRowMeta); //$NON-NLS-1$
 			    for (int i=0;i<prev.size();i++)
 			    {
-  				    ValueMetaInterface valueMeta = prev.getValueMeta(i);
+                    ValueMetaInterface valueMeta = prev.getValueMeta(i);
+  				    Object valueData = null;
                     
-                    Object valueData = null;
+				    // Set date and string values to something to simulate real thing
+                    //
+				    if (valueMeta.isDate()) valueData = new Date();
+				    if (valueMeta.isString()) valueData = "test value test value test value test value test value test value test value test value test value test value"; //$NON-NLS-1$
+                    if (valueMeta.isInteger()) valueData = Long.valueOf(0L);
+                    if (valueMeta.isNumber()) valueData = new Double(0.0);
+                    if (valueMeta.isBigNumber()) valueData = new BigDecimal(0.0);
+                    if (valueMeta.isBoolean()) valueData = Boolean.TRUE;
+                    if (valueMeta.isBinary()) valueData = new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, };
                     
-                    // Set date and string values to something to simulate real thing
-                    if (valueMeta.isDate()) valueData = new Date();
-                    if (valueMeta.isString()) valueData = "test value test value test value test value test value test value test value test value test value test value"; //$NON-NLS-1$
-                    if (valueMeta.isNumeric()) valueData = new Double(0.0);
-
-				    Scriptable jsarg = Context.toObject(valueData, jsscope);
-				    jsscope.put(valueMeta.getName(), jsscope, jsarg);
+                    row[i]=valueData;
+                    
+                    if (isCompatible()) {
+                    	Value value = valueMeta.createOriginalValue(valueData);
+                    	Scriptable jsarg = Context.toObject(value, jsscope);
+					    jsscope.put(valueMeta.getName(), jsscope, jsarg);
+                    }
+                    else {
+                    	Scriptable jsarg = Context.toObject(valueData, jsscope);
+					    jsscope.put(valueMeta.getName(), jsscope, jsarg);
+                    }
 			    }
 			    // Add support for Value class (new Value())
 			    Scriptable jsval = Context.toObject(Value.class, jsscope);
-			    jsscope.put("Value", jsscope, jsval); //$NON-NLS-1$			
-			} catch(Exception ev){
+			    jsscope.put("Value", jsscope, jsval); //$NON-NLS-1$
+
+                // Add the old style row object for compatibility reasons...
+                //
+                if (isCompatible()) {
+                	Row v2Row = RowMeta.createOriginalRow(prev, row);
+                	Scriptable jsV2Row = Context.toObject(v2Row, jsscope);
+                    jsscope.put("row", jsscope, jsV2Row); //$NON-NLS-1$
+                }
+                else {
+	                Scriptable jsRow = Context.toObject(row, jsscope);
+	                jsscope.put("row", jsscope, jsRow); //$NON-NLS-1$
+                }
+            } catch(Exception ev){
 				error_message="Couldn't add Input fields to Script! Error:"+Const.CR+ev.toString(); //$NON-NLS-1$
 				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepinfo);
 				remarks.add(cr);
