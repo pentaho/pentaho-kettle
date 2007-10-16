@@ -271,7 +271,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 				 	} 
 				 }
 				 if (smallest!=null) {
-					 data.look.remove(smallest);
+					 data.look.remove(smallest.getRow());
 				 }
 			}
 		} 
