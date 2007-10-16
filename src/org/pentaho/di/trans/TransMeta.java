@@ -85,7 +85,6 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.step.StepPartitioningMeta;
 import org.pentaho.di.trans.steps.mapping.MappingMeta;
-import org.pentaho.di.ui.spoon.Spoon;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -3555,9 +3554,6 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
             NotePadMeta ni = getNote(i);
             ni.setSelected(true);
         }
-        
-        Spoon.getInstance().refreshGraph();
-        
     }
 
     /**
