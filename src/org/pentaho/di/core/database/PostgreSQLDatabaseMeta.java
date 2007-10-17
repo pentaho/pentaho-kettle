@@ -447,7 +447,7 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
     
     /**
      * @return true if the database defaults to naming tables and fields in uppercase.
-     * True for most databases except for stuborn stuff like Postgres ;-)
+     * True for most databases except for stubborn stuff like PostgreSQL ;-)
      */
     public boolean isDefaultingToUppercase()
     {
@@ -456,6 +456,6 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
 
     public String[] getUsedLibraries()
     {
-        return new String[] { "postgresql-8.1-407.jdbc3.jar" };
+        return new String[] { "postgresql-8.2-506.jdbc4.jar" };
     }
 }
