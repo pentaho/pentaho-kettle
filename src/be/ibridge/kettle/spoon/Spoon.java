@@ -6763,15 +6763,30 @@ public class Spoon implements AddUndoPositionInterface
         }
     }
     
-    public void toClipboard(String cliptext)
-    {
-        GUIResource.getInstance().toClipboard(cliptext);
-    }
-    
-    public String fromClipboard()
-    {
-        return GUIResource.getInstance().fromClipboard();
-    }
+	public void toClipboard(String cliptext)
+	{
+		try
+		{
+			GUIResource.getInstance().toClipboard(cliptext);
+		}
+		catch(Throwable e)
+		{
+			new ErrorDialog(shell, Messages.getString("Spoon.Dialog.ExceptionCopyToClipboard.Title"), Messages.getString("Spoon.Dialog.ExceptionCopyToClipboard.Message"), e);
+		}
+	}
+
+	public String fromClipboard()
+	{
+		try
+		{
+			return GUIResource.getInstance().fromClipboard();
+		}
+		catch(Throwable e)
+		{
+			new ErrorDialog(shell, Messages.getString("Spoon.Dialog.ExceptionPasteFromClipboard.Title"), Messages.getString("Spoon.Dialog.ExceptionPasteFromClipboard.Message"), e);
+			return null;
+		}
+	}
     
     /**
      * Paste transformation from the clipboard...

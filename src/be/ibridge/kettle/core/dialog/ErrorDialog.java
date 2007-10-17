@@ -75,9 +75,21 @@ public class ErrorDialog extends Dialog
         this.props = props;
     }
     
+	public ErrorDialog(Shell parent, String title, String message, Throwable throwable)
+	{
+		super(parent, SWT.NONE);
+
+		if (throwable instanceof Exception) showErrorDialog(parent, title, message, (Exception)throwable);
+	}
+
 	public ErrorDialog(Shell parent, String title, String message, Exception exception)
 	{
 		super(parent, SWT.NONE);
+		showErrorDialog(parent, title, message, exception);
+	}
+	
+	private void showErrorDialog(Shell parent, String title, String message, Exception exception)
+	{
 		this.props = Props.getInstance();
 
 		Display display  = parent.getDisplay();
