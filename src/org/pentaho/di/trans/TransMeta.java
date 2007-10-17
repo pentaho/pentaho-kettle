@@ -44,7 +44,7 @@ import org.pentaho.di.core.Result;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.SQLStatement;
-import org.pentaho.di.core.changed.ChangedFlagInterface;
+import org.pentaho.di.core.changed.ChangedFlag;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -95,8 +95,8 @@ import org.w3c.dom.Node;
  * @since 20-jun-2003
  * @author Matt
  */
-public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparable<TransMeta>, 
-								  Cloneable, ChangedFlagInterface, UndoInterface, 
+public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<TransMeta>, Comparable<TransMeta>, 
+								  Cloneable, UndoInterface, 
 								  HasDatabasesInterface, VariableSpace, EngineMetaInterface, 
 								  ResourceExportInterface, HasSlaveServersInterface
 {
@@ -170,7 +170,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
 
     private Hashtable<String,Counter> counters;
 
-    private boolean             changed, changed_steps, changed_databases, changed_hops, changed_notes;
+    private boolean             changed_steps, changed_databases, changed_hops, changed_notes;
 
     private List<TransAction>   undo;
 
@@ -3316,14 +3316,6 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
         return false;
     }
 
-    /**
-     * Mark the transformation as being changed.
-     *
-     */
-    public void setChanged()
-    {
-        setChanged(true);
-    }
 
     /**
      * Sets the changed parameter of the transformation.
@@ -3332,7 +3324,10 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
      */
     public void setChanged(boolean ch)
     {
-        changed = ch;
+        if (ch)
+        	setChanged();
+        else
+        	clearChanged();
     }
 
     /**
@@ -3341,7 +3336,6 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
      */
     public void clearChanged()
     {
-        changed = false;
         changed_steps = false;
         changed_databases = false;
         changed_hops = false;
@@ -3375,6 +3369,8 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
         {
             clusterSchemas.get(i).setChanged(false);
         }
+        
+        super.clearChanged();
     }
 
     /* (non-Javadoc)
@@ -3485,7 +3481,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
      */
     public boolean hasChanged()
     {
-        if (changed) return true;
+        if (super.hasChanged()) return true;
 
         if (haveConnectionsChanged()) return true;
         if (haveStepsChanged()) return true;
@@ -3554,6 +3550,9 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
             NotePadMeta ni = getNote(i);
             ni.setSelected(true);
         }
+        
+        setChanged();
+        notifyObservers("refreshGraph");
     }
 
     /**
@@ -3573,6 +3572,8 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
             NotePadMeta ni = getNote(i);
             ni.setSelected(false);
         }
+        
+        setChanged();
     }
 
     /**
