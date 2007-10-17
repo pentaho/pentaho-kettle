@@ -106,8 +106,10 @@ public class ValueMetaAndData
                 else
                 {
                     ValueMetaInterface stringValueMeta = new ValueMeta(name, ValueMetaInterface.TYPE_STRING);
-                    String stringValueData = r.getString("VALUE_STR", null);
-                    valueData = valueMeta.convertData(stringValueMeta, stringValueData);
+                    stringValueMeta.setStorageMetadata(valueMeta);
+                    
+                    String string = r.getString("VALUE_STR", null);
+                    valueData = stringValueMeta.convertDataUsingStorageMetaData(string);
                 }
             }
         }

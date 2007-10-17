@@ -488,6 +488,7 @@ public class TransLog extends Composite implements TabItemInterface
                 // If so and we didn't hit a breakpoint yet, display the show preview dialog...
                 //
                 if (debug && lastTransDebugMeta!=null && lastTransDebugMeta.getTotalNumberOfHits()==0) {
+                	debug=false;
                 	showLastPreviewResults();
                 }
             	debug=false;
@@ -1071,7 +1072,7 @@ public class TransLog extends Composite implements TabItemInterface
 		return lastTransDebugMeta;
 	}
 
-	public void showLastPreviewResults() {
+	public synchronized void showLastPreviewResults() {
 		if (lastTransDebugMeta==null || lastTransDebugMeta.getStepDebugMetaMap().isEmpty()) return;
 		
 		List<String> stepnames = new ArrayList<String>();

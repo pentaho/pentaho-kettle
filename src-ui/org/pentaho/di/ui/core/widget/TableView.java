@@ -1108,7 +1108,7 @@ public class TableView extends Composite
             //
             for (int i=0;i<sourceRowMeta.size();i++) {
             	sourceRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);
-            	sourceRowMeta.getValueMeta(i).setStorageMetadata(rowMeta.getValueMeta(i)); // Meaning: this string comes from an Integer/Number/Date/etc.
+            	sourceRowMeta.getValueMeta(i).setStorageMetadata(rowMeta.getValueMeta(i).clone()); // Meaning: this string comes from an Integer/Number/Date/etc.
             }
             
             // Now populate a list of data rows...

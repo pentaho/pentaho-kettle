@@ -1,5 +1,8 @@
 package org.pentaho.di.core.row;
 
+import java.math.BigDecimal;
+import java.util.Date;
+
 import junit.framework.TestCase;
 
 /**
@@ -79,5 +82,87 @@ public class ValueMetaTest extends TestCase
 
 		String str3 = val2.getString(val1.getBinary("PDI123456"));
 		assertTrue("PDI123456".equals(str3));
-	}	
+	}
+	
+	public void testIntegerToStringToInteger() throws Exception
+	{
+		ValueMeta intValueMeta = new ValueMeta("i", ValueMetaInterface.TYPE_INTEGER);
+		intValueMeta.setLength(7);
+		
+		Long originalValue = new Long(123L);
+		
+		String string = intValueMeta.getString(originalValue);
+		
+		assertEquals(" 0000123", string);
+		
+		ValueMeta strValueMeta = new ValueMeta("str", ValueMetaInterface.TYPE_STRING);
+		strValueMeta.setStorageMetadata(intValueMeta);
+		
+		Long x = (Long) strValueMeta.convertDataUsingStorageMetaData(string);
+		
+		assertEquals(originalValue, x);
+	}
+	
+	
+	public void testNumberToStringToNumber() throws Exception
+	{
+		ValueMeta numValueMeta = new ValueMeta("i", ValueMetaInterface.TYPE_NUMBER);
+		numValueMeta.setLength(7,3);
+		numValueMeta.setDecimalSymbol(",");
+		numValueMeta.setGroupingSymbol(".");
+		
+		Double originalValue = new Double(123.456);
+		
+		String string = numValueMeta.getString(originalValue);
+		
+		assertEquals(" 0123,456", string);
+		
+		ValueMeta strValueMeta = new ValueMeta("str", ValueMetaInterface.TYPE_STRING);
+		strValueMeta.setStorageMetadata(numValueMeta);
+		
+		Double x = (Double) strValueMeta.convertDataUsingStorageMetaData(string);
+		
+		assertEquals(originalValue, x);
+	}
+	
+	public void testBigNumberToStringToBigNumber() throws Exception
+	{
+		ValueMeta numValueMeta = new ValueMeta("i", ValueMetaInterface.TYPE_BIGNUMBER);
+		numValueMeta.setLength(42,9);
+		numValueMeta.setDecimalSymbol(",");
+		numValueMeta.setGroupingSymbol(".");
+		
+		BigDecimal originalValue = new BigDecimal("34039423484343123.443489056");
+		
+		String string = numValueMeta.getString(originalValue);
+		
+		assertEquals("34039423484343123.443489056", string);
+		
+		ValueMeta strValueMeta = new ValueMeta("str", ValueMetaInterface.TYPE_STRING);
+		strValueMeta.setStorageMetadata(numValueMeta);
+		
+		BigDecimal x = (BigDecimal) strValueMeta.convertDataUsingStorageMetaData(string);
+		
+		assertEquals(originalValue, x);
+	}
+	
+	public void testDateToStringToDate() throws Exception
+	{
+		ValueMeta numValueMeta = new ValueMeta("i", ValueMetaInterface.TYPE_DATE);
+		numValueMeta.setConversionMask("yyyy - MM - dd   HH:mm:ss'('SSS')'");
+		
+		Date originalValue = new Date(7258114799999L);
+		
+		String string = numValueMeta.getString(originalValue);
+		
+		assertEquals("2199 - 12 - 31   23:59:59(999)", string);
+		
+		ValueMeta strValueMeta = new ValueMeta("str", ValueMetaInterface.TYPE_STRING);
+		strValueMeta.setStorageMetadata(numValueMeta);
+		
+		Date x = (Date) strValueMeta.convertDataUsingStorageMetaData(string);
+		
+		assertEquals(originalValue, x);
+	}
+	
 }
