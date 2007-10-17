@@ -86,7 +86,7 @@ public class ValueMetaTest extends TestCase
 	
 	public void testIntegerToStringToInteger() throws Exception
 	{
-		ValueMeta intValueMeta = new ValueMeta("i", ValueMetaInterface.TYPE_INTEGER);
+		ValueMetaInterface intValueMeta = new ValueMeta("i", ValueMetaInterface.TYPE_INTEGER);
 		intValueMeta.setLength(7);
 		
 		Long originalValue = new Long(123L);
@@ -95,7 +95,7 @@ public class ValueMetaTest extends TestCase
 		
 		assertEquals(" 0000123", string);
 		
-		ValueMeta strValueMeta = new ValueMeta("str", ValueMetaInterface.TYPE_STRING);
+		ValueMetaInterface strValueMeta = new ValueMeta("str", ValueMetaInterface.TYPE_STRING);
 		strValueMeta.setStorageMetadata(intValueMeta);
 		
 		Long x = (Long) strValueMeta.convertDataUsingStorageMetaData(string);
@@ -106,7 +106,7 @@ public class ValueMetaTest extends TestCase
 	
 	public void testNumberToStringToNumber() throws Exception
 	{
-		ValueMeta numValueMeta = new ValueMeta("i", ValueMetaInterface.TYPE_NUMBER);
+		ValueMetaInterface numValueMeta = new ValueMeta("i", ValueMetaInterface.TYPE_NUMBER);
 		numValueMeta.setLength(7,3);
 		numValueMeta.setDecimalSymbol(",");
 		numValueMeta.setGroupingSymbol(".");
@@ -117,7 +117,7 @@ public class ValueMetaTest extends TestCase
 		
 		assertEquals(" 0123,456", string);
 		
-		ValueMeta strValueMeta = new ValueMeta("str", ValueMetaInterface.TYPE_STRING);
+		ValueMetaInterface strValueMeta = new ValueMeta("str", ValueMetaInterface.TYPE_STRING);
 		strValueMeta.setStorageMetadata(numValueMeta);
 		
 		Double x = (Double) strValueMeta.convertDataUsingStorageMetaData(string);
@@ -127,7 +127,7 @@ public class ValueMetaTest extends TestCase
 	
 	public void testBigNumberToStringToBigNumber() throws Exception
 	{
-		ValueMeta numValueMeta = new ValueMeta("i", ValueMetaInterface.TYPE_BIGNUMBER);
+		ValueMetaInterface numValueMeta = new ValueMeta("i", ValueMetaInterface.TYPE_BIGNUMBER);
 		numValueMeta.setLength(42,9);
 		numValueMeta.setDecimalSymbol(",");
 		numValueMeta.setGroupingSymbol(".");
@@ -138,7 +138,7 @@ public class ValueMetaTest extends TestCase
 		
 		assertEquals("34039423484343123.443489056", string);
 		
-		ValueMeta strValueMeta = new ValueMeta("str", ValueMetaInterface.TYPE_STRING);
+		ValueMetaInterface strValueMeta = new ValueMeta("str", ValueMetaInterface.TYPE_STRING);
 		strValueMeta.setStorageMetadata(numValueMeta);
 		
 		BigDecimal x = (BigDecimal) strValueMeta.convertDataUsingStorageMetaData(string);
@@ -148,21 +148,59 @@ public class ValueMetaTest extends TestCase
 	
 	public void testDateToStringToDate() throws Exception
 	{
-		ValueMeta numValueMeta = new ValueMeta("i", ValueMetaInterface.TYPE_DATE);
-		numValueMeta.setConversionMask("yyyy - MM - dd   HH:mm:ss'('SSS')'");
+		ValueMetaInterface datValueMeta = new ValueMeta("i", ValueMetaInterface.TYPE_DATE);
+		datValueMeta.setConversionMask("yyyy - MM - dd   HH:mm:ss'('SSS')'");
 		
 		Date originalValue = new Date(7258114799999L);
 		
-		String string = numValueMeta.getString(originalValue);
+		String string = datValueMeta.getString(originalValue);
 		
 		assertEquals("2199 - 12 - 31   23:59:59(999)", string);
 		
-		ValueMeta strValueMeta = new ValueMeta("str", ValueMetaInterface.TYPE_STRING);
-		strValueMeta.setStorageMetadata(numValueMeta);
+		ValueMetaInterface strValueMeta = new ValueMeta("str", ValueMetaInterface.TYPE_STRING);
+		strValueMeta.setStorageMetadata(datValueMeta);
 		
 		Date x = (Date) strValueMeta.convertDataUsingStorageMetaData(string);
 		
 		assertEquals(originalValue, x);
 	}
 	
+	public void testConvertDataDate() throws Exception
+	{
+		ValueMetaInterface source = new ValueMeta("src", ValueMetaInterface.TYPE_STRING);
+		source.setConversionMask("SSS.ss:mm:HH dd/MM/yyyy");
+		ValueMetaInterface target = new ValueMeta("tgt", ValueMetaInterface.TYPE_DATE);
+		
+		Date date = (Date) target.convertData(source, "999.59:59:23 31/12/2007");
+		assertEquals(new Date(1199141999999L), date);
+		
+		target.setConversionMask("yy/MM/dd HH:mm");
+		
+		String string = (String) source.convertData(target, date);
+		assertEquals("07/12/31 23:59", string);
+		
+	}
+
+	public void testConvertDataInteger() throws Exception
+	{
+		ValueMetaInterface source = new ValueMeta("src", ValueMetaInterface.TYPE_STRING);
+		source.setConversionMask("###,###,##0.000");
+		source.setLength(12,3);
+		source.setDecimalSymbol(",");
+		source.setGroupingSymbol(".");
+		ValueMetaInterface target = new ValueMeta("tgt", ValueMetaInterface.TYPE_NUMBER);
+		
+		Double d = (Double) target.convertData(source, "123.456.789,012");
+		assertEquals(123456789.012, d);
+		
+		target.setConversionMask("###,###,##0.00");
+		source.setLength(12,4);
+		source.setDecimalSymbol(".");
+		source.setGroupingSymbol("''");
+		
+		String string = (String) source.convertData(target, d);
+		assertEquals("123.456.789,01", string);
+		
+	}
+
 }
