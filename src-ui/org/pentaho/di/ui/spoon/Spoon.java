@@ -3242,7 +3242,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		{
 			if (meta.getFilename() != null)
 			{
-				saved = save(meta, meta.getFilename());
+				saved = save(meta, meta.getFilename(),false);
             }
             else
 			{
@@ -3520,7 +3520,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         }
         else
 		{
-			saved = saveXMLFile(meta);
+			saved = saveXMLFile(meta,false);
             delegates.tabs.renameTabs();
 		}
 
@@ -3528,19 +3528,24 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 		return saved;
 	}
+	
+	public boolean exportXMLFile()
+	{
+		return saveXMLFile(true);
+	}
 
-	public boolean saveXMLFile()
+	public boolean saveXMLFile(boolean export)
 	{
 		TransMeta transMeta = getActiveTransformation();
-        if (transMeta!=null) return saveXMLFile( transMeta );
+        if (transMeta!=null) return saveXMLFile( transMeta,export );
 
 		JobMeta jobMeta = getActiveJob();
-        if (jobMeta!=null) return saveXMLFile( jobMeta );
+        if (jobMeta!=null) return saveXMLFile( jobMeta,export );
 
 		return false;
 	}
 
-	public boolean saveXMLFile(EngineMetaInterface meta)
+	public boolean saveXMLFile(EngineMetaInterface meta,boolean export)
 	{
 		log.logBasic(toString(), "Save file as..."); //$NON-NLS-1$
 		boolean saved = false;
@@ -3588,7 +3593,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			}
 			if (id == SWT.YES)
 			{
-				save(meta, fname);
+				save(meta, fname,export);
 			}
 		}
 		return saved;
@@ -3664,13 +3669,13 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			}
 			if (id == SWT.YES)
 			{
-				save(meta, fname);
+				save(meta, fname,false);
 			}
 		}
 		return saved;
 	}
 
-    public boolean save(EngineMetaInterface meta, String fname) {
+    public boolean save(EngineMetaInterface meta, String fname,boolean export) {
 		boolean saved = false;
 		FileListener listener = null;
 		// match by extension first
@@ -3685,7 +3690,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		}
 
     	if( listener != null ) {
-			saved = listener.save(meta, fname);
+			saved = listener.save(meta, fname,export);
 		}
 		return saved;
 	}
