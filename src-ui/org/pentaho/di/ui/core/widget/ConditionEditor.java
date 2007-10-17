@@ -72,6 +72,7 @@ import org.w3c.dom.Node;
 
 public class ConditionEditor extends Composite 
 {
+	private static final int X_PADDING = 18;
 	private static final String STRING_NOT = "NOT";
 	private static final String STRING_UP  = " ^^ UP ^^ ";
 	
@@ -804,7 +805,7 @@ public class ConditionEditor extends Composite
 			}
 		}
 		
-		gc.drawImage(imageAdd, size_add.x, size_add.y);
+		gc.drawImage(imageAdd, size_add.x-X_PADDING, size_add.y);
 		
 		/*
 		 * Draw the up-symbol if needed...
