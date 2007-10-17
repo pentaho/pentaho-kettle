@@ -49,6 +49,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.row.ValueDataUtil;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -524,7 +525,21 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
             		fieldNames[i] = "Field_"+df.format(i); // $NON-NLS-1$
             	}
             }
-            
+            else
+            {
+            	if (!Const.isEmpty(meta.getEnclosure())) {
+                	for (int i=0;i<fieldNames.length;i++) {
+                		if (fieldNames[i].startsWith(meta.getEnclosure()) && fieldNames[i].endsWith(meta.getEnclosure()) && fieldNames[i].length()>1) fieldNames[i] = fieldNames[i].substring(1, fieldNames[i].length()-1);
+                	}
+            	}
+            }
+
+            // Trim the names to make sure...
+            //
+        	for (int i=0;i<fieldNames.length;i++) {
+        		fieldNames[i] = ValueDataUtil.trim(fieldNames[i]);
+        	}
+
             // Update the GUI
             //
             for (int i=0;i<fieldNames.length;i++) {

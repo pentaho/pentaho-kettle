@@ -141,6 +141,7 @@ public class CsvInput extends BaseStep implements StepInterface
 				// Later we can add an option for having escaped or double enclosures in the file. <sigh>
 				//
 				boolean delimiterFound = false;
+				boolean enclosureFound = false;
 				while (!delimiterFound) {
 					// If we find the first char, we might find others as well ;-)
 					// Single byte delimiters only for now.
@@ -193,6 +194,7 @@ public class CsvInput extends BaseStep implements StepInterface
 					//
 					else if (data.enclosure != null && data.byteBuffer[data.endBuffer]==data.enclosure[0]) {
 						
+						enclosureFound=true;
 						do {
 							data.endBuffer++;
 	
@@ -239,6 +241,10 @@ public class CsvInput extends BaseStep implements StepInterface
 				int length = data.endBuffer-data.startBuffer;
 				if (newLineFound) {
 					length-=newLines;
+				}
+				if (enclosureFound) {
+					data.startBuffer++;
+					length-=2;
 				}
 				byte[] field = new byte[length];
 				System.arraycopy(data.byteBuffer, data.startBuffer, field, 0, length);
