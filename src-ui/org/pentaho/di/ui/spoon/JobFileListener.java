@@ -4,9 +4,6 @@ import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.LastUsedFile;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.job.JobMeta;
-import org.pentaho.di.ui.spoon.FileListener;
-import org.pentaho.di.ui.spoon.Messages;
-import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.w3c.dom.Node;
 
@@ -37,8 +34,17 @@ public class JobFileListener implements FileListener {
         return false;
     }
 
-    public boolean save(EngineMetaInterface meta, String fname) {
+    public boolean save(EngineMetaInterface meta, String fname,boolean export) {
     	Spoon spoon = Spoon.getInstance();
-    	return spoon.saveMeta(meta, fname);
+    	
+    	EngineMetaInterface lmeta;
+    	if (export)
+    	{
+    		lmeta = (JobMeta)((JobMeta)meta).realClone(false);
+    	}
+    	else
+    		lmeta = meta;
+    	
+    	return spoon.saveMeta(lmeta, fname);
     }
 }
