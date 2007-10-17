@@ -40,7 +40,7 @@
   <jar href="libext/mysql-connector-java-3.1.14-bin.jar"/>
   <jar href="libext/ojdbc14.jar"/>
   <jar href="libext/orai18n.jar"/>
-  <jar href="libext/postgresql-8.1-407.jdbc3.jar"/>
+  <jar href="libext/postgresql-8.2-506.jdbc4.jar"/>
   <jar href="libext/rdbthin.jar"/>
   <jar href="libext/sapdbc.jar"/>
   <jar href="libext/SQLBaseJDBC.jar"/>
