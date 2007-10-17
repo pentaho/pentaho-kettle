@@ -19,6 +19,7 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -99,6 +100,7 @@ import org.pentaho.di.core.Props;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.SourceToTargetMapping;
 import org.pentaho.di.core.changed.ChangedFlagInterface;
+import org.pentaho.di.core.changed.PDIObserver;
 import org.pentaho.di.core.clipboard.ImageDataTransfer;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.dnd.DragAndDropContainer;
@@ -231,7 +233,7 @@ import org.w3c.dom.Node;
  * @author Matt
  * @since 16-may-2003, i18n at 07-Feb-2006, redesign 01-Dec-2006
  */
-public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterface, OverwritePrompter
+public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterface, OverwritePrompter,PDIObserver
 {
 	public static final String STRING_TRANSFORMATIONS = Messages.getString("Spoon.STRING_TRANSFORMATIONS"); // Transformations
     public static final String STRING_JOBS            = Messages.getString("Spoon.STRING_JOBS");            // Jobs
@@ -392,7 +394,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	}
 
     public void init( TransMeta ti ) {
-		FormLayout layout = new FormLayout();
+    	FormLayout layout = new FormLayout();
 		layout.marginWidth = 0;
 		layout.marginHeight = 0;
 		shell.setLayout(layout);
@@ -3040,6 +3042,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	public void newTransFile()
 	{
 		TransMeta transMeta = new TransMeta();
+		transMeta.addObserver(this);
 		try
 		{
 			transMeta.readSharedObjects(rep);
@@ -3067,6 +3070,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		try
 		{
 			JobMeta jobMeta = new JobMeta(log);
+			jobMeta.addObserver(this);
 			try
 			{
 				jobMeta.readSharedObjects(rep);
@@ -6327,4 +6331,21 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	{
 		return toolbar;
 	}
+
+	public void update(ChangedFlagInterface o, Object arg)
+	{
+		try
+		{
+			Method m = getClass().getMethod(arg.toString());
+		
+			if (m!=null)
+				m.invoke(this);
+		}
+		catch(Exception e)
+		{
+			//ignore... let the other notifiers try to do something
+			System.out.println("Unable to update: " + e.getLocalizedMessage());
+		}	
+	}
+
 }
