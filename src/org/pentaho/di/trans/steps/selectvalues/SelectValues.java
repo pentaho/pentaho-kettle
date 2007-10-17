@@ -24,7 +24,6 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowDataUtil;
-import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.Trans;
@@ -70,8 +69,6 @@ public class SelectValues extends BaseStep implements StepInterface
             // We also want to know the indexes of the selected fields in the source row.
             //
 			data.fieldnrs=new int[meta.getSelectName().length];
-			data.outputMeta=new RowMeta();
-
 			for (int i=0;i<data.fieldnrs.length;i++) 
 			{
 				data.fieldnrs[i]=rowMeta.indexOfValue( meta.getSelectName()[i] );
@@ -82,26 +79,6 @@ public class SelectValues extends BaseStep implements StepInterface
 					stopAll();
 					return null;
 				}
-                
-                // Create the meta-data values too...
-				//
-                ValueMetaInterface valueMeta = rowMeta.getValueMeta( data.fieldnrs[i] ).clone();
-                
-                // Optionally change the name
-                //
-                if (!Const.isEmpty(meta.getSelectRename()[i]))
-                {
-                    valueMeta.setName( meta.getSelectRename()[i] );
-                }
-                
-                // Optionally set the length and precision type
-                //
-                if (meta.getSelectLength()[i]!=-2)    valueMeta.setLength(meta.getSelectLength()[i]);
-                if (meta.getSelectPrecision()[i]!=-2) valueMeta.setPrecision(meta.getSelectPrecision()[i]);
-                
-                // Save this info
-                //
-                data.outputMeta.addValueMeta(valueMeta);
 			}
 			
 			// Check for doubles in the selected fields... AFTER renaming!!
@@ -137,49 +114,59 @@ public class SelectValues extends BaseStep implements StepInterface
 				ArrayList<Integer> unspecifiedKeyNrs = new ArrayList<Integer>(); 
 				for (int i=0;i<rowMeta.size();i++) {
 					String fieldName = rowMeta.getValueMeta(i).getName();
-					if (data.outputMeta.indexOfValue(fieldName)<0) {
+					if (Const.indexOfString(fieldName, meta.getSelectName())<0) {
 						extra.add(fieldName);
 					}
 				}
 				Collections.sort(extra);
 				for (String fieldName : extra) {
 					int index = rowMeta.indexOfValue(fieldName);
-					data.outputMeta.addValueMeta(rowMeta.getValueMeta(index));
 					unspecifiedKeyNrs.add(index);
 				}
 				
-				// Adjust the normal array of indexes to select...
+				// Create the extra field list...
 				//
-				int[] newKeys = new int[data.fieldnrs.length + unspecifiedKeyNrs.size()];
-				for (int i=0;i<data.fieldnrs.length;i++) newKeys[i] = data.fieldnrs[i]; 
-				for (int i=0;i<unspecifiedKeyNrs.size();i++) newKeys[i+data.fieldnrs.length] = unspecifiedKeyNrs.get(i);
-				data.fieldnrs = newKeys;
+				data.extraFieldnrs = new int[unspecifiedKeyNrs.size()];
+				for (int i=0;i<data.extraFieldnrs.length;i++) data.extraFieldnrs[i] = unspecifiedKeyNrs.get(i);
+			}
+			else
+			{
+				data.extraFieldnrs = new int[] {};
 			}
 		}
 
         // Create a new output row
-        Object[] outputData = new Object[data.fieldnrs.length];
+        Object[] outputData = new Object[data.selectRowMeta.size()];
+        int outputIndex = 0;
         
 		// Get the field values
-		for (int i=0;i<data.fieldnrs.length;i++)
+        //
+		for (int idx : data.fieldnrs)
 		{
             // Normally this can't happen, except when streams are mixed with different
 			// number of fields.
 			// 
-			if (data.fieldnrs[i]<rowMeta.size())
+			if (idx<rowMeta.size())
 			{
-                ValueMetaInterface valueMeta = rowMeta.getValueMeta( data.fieldnrs[i] );
+                ValueMetaInterface valueMeta = rowMeta.getValueMeta( idx );
                 
 			    // TODO: Clone might be a 'bit' expensive as it is only needed in case you want to copy a single field to 2 or more target fields.
                 // And even then it is only required for the last n-1 target fields.
                 // Perhaps we can consider the requirements for cloning at init(), store it in a boolean[] and just consider this at runtime
                 //
-                outputData[i] = valueMeta.cloneValueData(rowData[data.fieldnrs[i]]);
+                outputData[outputIndex++] = valueMeta.cloneValueData(rowData[idx]);
 			}
 			else
 			{
 				if (log.isDetailed()) logDetailed(Messages.getString("SelectValues.Log.MixingStreamWithDifferentFields")); //$NON-NLS-1$
 			}			
+		}
+		
+		// Do we need to drag the rest of the row also in there?
+		//
+		for (int idx : data.extraFieldnrs)
+		{
+			outputData[outputIndex++] = rowData[idx]; // always just a copy, can't be specified twice.
 		}
 
 		return outputData;
@@ -188,7 +175,6 @@ public class SelectValues extends BaseStep implements StepInterface
 	/**
 	   
 	   Remove the values that are no longer needed.<p>
-	   This, we can do VERY fast.<p>
 	   
 	   @param row The row to manipulate
 	   @return true if everything went well, false if we need to stop because of an error!
@@ -200,10 +186,7 @@ public class SelectValues extends BaseStep implements StepInterface
 		{
 			data.firstdeselect=false;
 
-			// System.out.println("Fields to remove: "+info.dname.length);
 			data.removenrs=new int[meta.getDeleteName().length];
-			data.outputMeta = rowMeta.clone();
-            
 			for (int i=0;i<data.removenrs.length;i++) 
 			{
 				data.removenrs[i]=rowMeta.indexOfValue(meta.getDeleteName()[i]);
@@ -237,19 +220,12 @@ public class SelectValues extends BaseStep implements StepInterface
 			
 			// Sort removenrs descending.  So that we can delete in ascending order...
             Arrays.sort(data.removenrs);
-            
-            // Patch the output metadata as well...
-            //
-            for (int i=data.removenrs.length-1;i>=0;i--)
-            {
-                data.outputMeta.removeValueMeta(data.removenrs[i]);
-            }
 		}
 
 		/*
 		 *  Remove the field values
 		 *  Take into account that field indexes change once you remove them!!!
-		 *  Therefor removenrs is sorted in reverse on index...
+		 *  Therefore removenrs is sorted in reverse on index...
 		 */
         return RowDataUtil.removeItems(rowData, data.removenrs);
 	}
@@ -271,8 +247,6 @@ public class SelectValues extends BaseStep implements StepInterface
 			data.firstmetadata=false;
 
 			data.metanrs=new int[meta.getMetaName().length];
-            data.outputMeta = rowMeta.clone();
-			
 			for (int i=0;i<data.metanrs.length;i++) 
 			{
 				data.metanrs[i]=rowMeta.indexOfValue(meta.getMetaName()[i]);
@@ -303,23 +277,6 @@ public class SelectValues extends BaseStep implements StepInterface
 					}
 				}
 			}
-            
-            /*
-             * Change the meta-data! 
-             */
-            for (int i=0;i<data.metanrs.length;i++)
-            {
-                ValueMetaInterface v = data.outputMeta.getValueMeta(data.metanrs[i]);
-                
-                if (!Const.isEmpty(meta.getMetaRename()[i]))             v.setName(meta.getMetaRename()[i]);
-                if (meta.getMetaType()[i]!=ValueMetaInterface.TYPE_NONE) 
-                {
-                    v.setType(meta.getMetaType()[i]);
-                    v.setStorageType(ValueMetaInterface.STORAGE_TYPE_NORMAL); // this performs a reset, there is no other options
-                }
-                if (meta.getMetaLength()[i]!=-2)                         v.setLength(meta.getMetaLength()[i]);
-                if (meta.getMetaPrecision()[i]!=-2)                      v.setPrecision(meta.getMetaPrecision()[i]);
-            }
 		}
 
 		//
@@ -330,7 +287,7 @@ public class SelectValues extends BaseStep implements StepInterface
 			if (meta.getMetaType()[i]!=ValueMetaInterface.TYPE_NONE)
             {
                 ValueMetaInterface fromMeta = rowMeta.getValueMeta(data.metanrs[i]);
-                ValueMetaInterface toMeta   = data.outputMeta.getValueMeta(data.metanrs[i]);
+                ValueMetaInterface toMeta   = data.metadataRowMeta.getValueMeta(data.metanrs[i]);
                 
                 switch(toMeta.getType())
                 {
@@ -363,11 +320,23 @@ public class SelectValues extends BaseStep implements StepInterface
 		}
 		if (log.isRowLevel()) logRowlevel(Messages.getString("SelectValues.Log.GotRowFromPreviousStep")+rowData); //$NON-NLS-1$
 
-		Object[] outputData = null;
-
-        if (data.select)   outputData = selectValues(getInputRowMeta(), rowData);
-		if (data.deselect) outputData = removeValues(getInputRowMeta(), rowData);
-		if (data.metadata) outputData = metadataValues(getInputRowMeta(), rowData);
+		if (first)
+		{
+			first = false;
+			
+			data.selectRowMeta = getInputRowMeta().clone();
+			meta.getSelectFields(data.selectRowMeta, getStepname());
+			data.deselectRowMeta = data.selectRowMeta.clone();
+			meta.getDeleteFields(data.deselectRowMeta);
+			data.metadataRowMeta = data.deselectRowMeta.clone();
+			meta.getMetadataFields(data.metadataRowMeta, getStepname());
+		}
+		
+		Object[] outputData = rowData;
+		
+        if (data.select)   outputData = selectValues(getInputRowMeta(), outputData);
+		if (data.deselect) outputData = removeValues(data.selectRowMeta, outputData);
+		if (data.metadata) outputData = metadataValues(data.deselectRowMeta, outputData);
 		
 		if (outputData==null) 
 		{
@@ -376,7 +345,7 @@ public class SelectValues extends BaseStep implements StepInterface
 		} 
 
         // Send the row on its way
-		putRow(data.outputMeta, outputData);
+		putRow(data.metadataRowMeta, outputData);
         
 		if (log.isRowLevel()) logRowlevel(Messages.getString("SelectValues.Log.WroteRowToNextStep")+rowData); //$NON-NLS-1$
 

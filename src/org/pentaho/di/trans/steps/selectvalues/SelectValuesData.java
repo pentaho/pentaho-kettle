@@ -25,15 +25,20 @@ import org.pentaho.di.trans.step.StepDataInterface;
  */
 public class SelectValuesData extends BaseStepData implements StepDataInterface
 {
-	public int fieldnrs[];
-	public int removenrs[];
-	public int metanrs[];
+	public int[] fieldnrs;
+	public int[] extraFieldnrs;
+	public int[] removenrs;
+	public int[] metanrs;
 	
 	public boolean firstselect;
 	public boolean firstdeselect;
 	public boolean firstmetadata;
-	
-	public RowMetaInterface outputMeta;
+
+	public RowMetaInterface selectRowMeta;
+	public RowMetaInterface deselectRowMeta;
+	public RowMetaInterface metadataRowMeta;
+
+	public RowMetaInterface outputRowMeta;
 	
 	// The MODE, default = select...
 	public boolean select;      // "normal" selection of fields.

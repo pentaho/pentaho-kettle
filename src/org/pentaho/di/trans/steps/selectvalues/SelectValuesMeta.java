@@ -386,11 +386,11 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
 			metaPrecision[i] = -2;
 		}
 	}
-
-	public void getFields(RowMetaInterface inputRowMeta, String name, RowMetaInterface info[], StepMeta nextStep, VariableSpace space) throws KettleStepException
+	
+	public void getSelectFields(RowMetaInterface inputRowMeta, String name) throws KettleStepException
 	{
-        RowMetaInterface row=null;
-
+		RowMetaInterface row;
+		
 		if (selectName!=null && selectName.length>0)  // SELECT values
 		{
 			// 0. Start with an empty row
@@ -429,7 +429,7 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
 				List<String> extra = new ArrayList<String>();
 				for (int i=0;i<inputRowMeta.size();i++) {
 					String fieldName = inputRowMeta.getValueMeta(i).getName();
-					if (row.indexOfValue(fieldName)<0) {
+					if (Const.indexOfString(fieldName, selectName)<0) {
 						extra.add(fieldName);
 					}
 				}
@@ -444,7 +444,10 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
             inputRowMeta.clear();
             inputRowMeta.addRowMeta(row);
 		}
-		
+	}
+	
+	public void getDeleteFields(RowMetaInterface inputRowMeta) throws KettleStepException
+	{
 		if (deleteName!=null && deleteName.length>0)  // DESELECT values from the stream...
 		{
 			for (int i=0;i<deleteName.length;i++)
@@ -459,7 +462,10 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
                 }
 			}
 		}
-
+	}
+	
+	public void getMetadataFields(RowMetaInterface inputRowMeta, String name)
+	{
 		if (metaName!=null && metaName.length>0) // METADATA mode: change the meta-data of the values mentioned...
 		{
 			for (int i=0;i<metaName.length;i++)
@@ -486,6 +492,13 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
 				}
 			}
 		}
+	}
+
+	public void getFields(RowMetaInterface inputRowMeta, String name, RowMetaInterface info[], StepMeta nextStep, VariableSpace space) throws KettleStepException
+	{
+        getSelectFields(inputRowMeta, name);
+		getDeleteFields(inputRowMeta);
+		getMetadataFields(inputRowMeta, name);
 	}
 
 	public String getXML()
