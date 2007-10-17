@@ -39,7 +39,6 @@ import java.util.Properties;
 import javax.sql.DataSource;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.pentaho.core.util.DatasourceHelper;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.DBCache;
@@ -47,6 +46,7 @@ import org.pentaho.di.core.DBCacheEntry;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.map.DatabaseConnectionMap;
+import org.pentaho.di.core.database.util.DatabaseUtil;
 import org.pentaho.di.core.exception.KettleDatabaseBatchException;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleValueException;
@@ -310,7 +310,7 @@ public class Database implements VariableSpace
 	  private void initWithJNDI(String jndiName) throws KettleDatabaseException {
 		  connection = null;
 		  try {
-			  DataSource dataSource = DatasourceHelper.getDataSourceFromJndi(jndiName);
+			  DataSource dataSource = DatabaseUtil.getDataSourceFromJndi(jndiName);
 			  if (dataSource != null) {
 				  connection = dataSource.getConnection();
 				  if (connection == null) {
