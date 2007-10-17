@@ -35,7 +35,7 @@ import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.SQLStatement;
-import org.pentaho.di.core.changed.ChangedFlagInterface;
+import org.pentaho.di.core.changed.ChangedFlag;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -81,8 +81,8 @@ import org.w3c.dom.Node;
  * @since 11-08-2003
  * 
  */
-public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, UndoInterface, 
-								HasDatabasesInterface, ChangedFlagInterface, 
+public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMeta>, XMLInterface, UndoInterface, 
+								HasDatabasesInterface,  
 								VariableSpace, EngineMetaInterface,
 								ResourceExportInterface, HasSlaveServersInterface
 {
@@ -123,7 +123,7 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
 
     protected String              arguments[];
 
-    protected boolean             changed, changed_entries, changed_hops, changed_notes, changed_databases;
+    protected boolean             changed_entries, changed_hops, changed_notes, changed_databases;
 
     protected DatabaseMeta        logconnection;
 
@@ -428,14 +428,12 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
         this.databases = databases;
     }
 
-    public void setChanged()
-    {
-        setChanged(true);
-    }
-
     public void setChanged(boolean ch)
     {
-        changed = ch;
+        if (ch)
+        	setChanged();
+        else
+        	clearChanged();
     }
 
     public void clearChanged()
@@ -464,12 +462,12 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
             NotePadMeta note = getNote(i);
             note.setChanged(false);
         }
-        changed = false;
+        super.clearChanged();
     }
 
     public boolean hasChanged()
     {
-        if (changed) return true;
+        if (super.hasChanged()) return true;
         
         if (haveJobEntriesChanged()) return true;
         if (haveJobHopsChanged()) return true;
@@ -1840,6 +1838,9 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
             JobEntryCopy ce = getJobEntry(i);
             ce.setSelected(true);
         }
+        
+        setChanged();
+        notifyObservers("refreshGraph");
     }
 
     public void unselectAll()
