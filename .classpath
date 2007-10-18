@@ -78,7 +78,6 @@
 	<classpathentry kind="lib" path="libext/mondrian/javacup.jar"/>
 	<classpathentry kind="lib" path="libext/saxon8.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/sqlitejdbc-v037-nested.jar"/>
-	<classpathentry kind="lib" path="plugins/steps/ShapeFileReader3/shapefilereader3.jar" sourcepath="/ShapeFileReader3"/>
 	<classpathentry kind="lib" path="libext/spring/spring-core.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/postgresql-8.2-506.jdbc4.jar"/>
 	<classpathentry kind="output" path="classes"/>
