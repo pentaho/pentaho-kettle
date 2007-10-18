@@ -3648,7 +3648,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
             if (fname.endsWith(meta.getDefaultExtension())) ending=true;
 			if (!ending)
 			{
-				fname += meta.getDefaultExtension();
+				fname += '.' + meta.getDefaultExtension();
 			}
 			// See if the file already exists...
 			int id = SWT.YES;
