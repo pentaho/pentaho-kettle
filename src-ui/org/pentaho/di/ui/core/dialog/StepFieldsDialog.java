@@ -32,6 +32,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
@@ -248,6 +249,10 @@ public class StepFieldsDialog extends Dialog
 		else
 		{
 			stepname = null;
+			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
+            mb.setText(Messages.getString("StepFieldsDialog.OriginStep.Title")); //$NON-NLS-1$
+            mb.setMessage(Messages.getString("StepFieldsDialog.OriginStep.Message")); //$NON-NLS-1$
+            mb.open();
 		}
 		
 		dispose();
