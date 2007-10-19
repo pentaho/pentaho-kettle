@@ -65,6 +65,6 @@
 	<classpathentry kind="lib" path="libext/JDBC/derbyclient.jar"/>
 	<classpathentry kind="lib" path="libswt/win32/swt.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/sqlitejdbc-v037-nested.jar"/>
-	<classpathentry kind="lib" path="libext/JDBC/postgresql-8.2-506.jdbc4.jar"/>
+	<classpathentry kind="lib" path="libext/JDBC/postgresql-8.2-506.jdbc3.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
