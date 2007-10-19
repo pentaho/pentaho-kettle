@@ -55,7 +55,7 @@
   <jar href="libext/JDBC/nzjdbc.jar"/>
   <jar href="libext/JDBC/ojdbc14.jar"/>
   <jar href="libext/JDBC/orai18n.jar"/>
-  <jar href="libext/JDBC/postgresql-8.2-506.jdbc4.jar"/>
+  <jar href="libext/JDBC/postgresql-8.2-506.jdbc3.jar"/>
   <jar href="libext/JDBC/rdbthin.jar"/>
   <jar href="libext/JDBC/sapdbc.jar"/>
   <jar href="libext/JDBC/sqlitejdbc-v037-nested.jar"/>
