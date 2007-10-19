@@ -46,7 +46,6 @@ import org.eclipse.swt.widgets.Text;
 
 import be.ibridge.kettle.core.ColumnInfo;
 import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.SourceToTargetMapping;
 import be.ibridge.kettle.core.dialog.EnterMappingDialog;
@@ -465,11 +464,12 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
         {
             loadTransformation();
             
-            // If we're still here, mappingTransMeta is valid.
-            
-            LogWriter log = LogWriter.getInstance();
-            Spoon spoon = new Spoon(log, shell.getDisplay(), mappingTransMeta, repository);
-            spoon.open();
+			// If we're still here, mappingTransMeta is valid.
+			Spoon spoon = Spoon.getInstance();
+			if (spoon != null)
+			{
+				spoon.addSpoonGraph(mappingTransMeta);
+			}
         }
         catch(KettleException e)
         {
