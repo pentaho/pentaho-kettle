@@ -248,7 +248,7 @@ public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface
 			//
 			ValueMetaInterface storageMetadata = valueMeta.clone();
 			storageMetadata.setType(ValueMetaInterface.TYPE_STRING);
-			storageMetadata.setStorageType(ValueMetaInterface.STORAGE_TYPE_BINARY_STRING);
+			storageMetadata.setStorageType(ValueMetaInterface.STORAGE_TYPE_NORMAL);
 			
 			valueMeta.setStorageMetadata(storageMetadata);
 			

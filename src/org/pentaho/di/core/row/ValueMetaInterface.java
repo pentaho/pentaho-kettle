@@ -141,6 +141,11 @@ public interface ValueMetaInterface extends Cloneable
     public String   getStringEncoding();
     public void     setStringEncoding(String stringEncoding);
     
+	/**
+	 * @return true if the String encoding used (storage) is single byte encoded.
+	 */
+	public boolean isSingleByteEncoding();
+
     /**
      * Determine if an object is null.
      * This is the case if data==null or if it's an empty string.
@@ -369,7 +374,7 @@ public interface ValueMetaInterface extends Cloneable
      * @return The data converted to the storage data type
      * @throws KettleValueException in case there is a conversion error.
      */
-    public Object convertDataUsingStorageMetaData(Object data) throws KettleValueException;
+    public Object convertDataUsingConversionMetaData(Object data) throws KettleValueException;
     /**
      * Convert the specified string to the data type specified in this object.
      * @param pol the string to be converted
@@ -382,6 +387,21 @@ public interface ValueMetaInterface extends Cloneable
      */
     public Object convertDataFromString(String pol, ValueMetaInterface convertMeta, String nullif, String ifNull, int trim_type) throws KettleValueException;
     
+    /**
+     * Convert the given binary data to the actual data type.<br> 
+     * - byte[] --> Long (Integer)<br>
+     * - byte[] --> Double (Number)<br>
+     * - byte[] --> BigDecimal (BigNumber)<br>
+     * - byte[] --> Date (Date)<br>
+     * - byte[] --> Boolean (Boolean)<br>
+     * - byte[] --> byte[] (Binary)<br>
+     * <br>
+     * @param binary the binary data read from file or database
+     * @return the native data type after conversion
+     * @throws KettleValueException in case there is a data conversion error
+     */
+    public Object convertBinaryStringToNativeType(byte[] binary) throws KettleValueException;
+
     /**
      * Calculate the hashcode of the specified data object
      * @param object the data value to calculate a hashcode for 
@@ -419,6 +439,19 @@ public interface ValueMetaInterface extends Cloneable
 	public void setStorageMetadata(ValueMetaInterface storageMetadata);
 	
 	/**
+	 * This conversion metadata can be attached to a String object to see where it came from and with which mask it was generated, the encoding, the local languages used, padding, etc.
+	 * @return The conversion metadata
+	 */
+	public ValueMetaInterface getConversionMetadata();
+
+	/**
+	 * 	Attach conversion metadata to a String object to see where it came from and with which mask it was generated, the encoding, the local languages used, padding, etc.
+
+	 * @param conversionMetadata the conversionMetadata to set 
+	 */
+	public void setConversionMetadata(ValueMetaInterface conversionMetadata);
+	
+	/**
 	 * @return an XML representation of the row metadata
 	 * @throws IOException Thrown in case there is an (Base64/GZip) decoding problem
 	 */
@@ -439,5 +472,14 @@ public interface ValueMetaInterface extends Cloneable
      * @throws IOException thrown in case there is a problem with the XML to object conversion
      */
 	public Object getValue(Node node) throws IOException;
+	
+	/**
+	 * @return the number of binary string to native data type conversions done with this object conversions
+	 */
+	public long getNumberOfBinaryStringConversions();
 
+	/**
+	 * @param numberOfBinaryStringConversions the number of binary string to native data type done with this object conversions to set
+	 */
+	public void setNumberOfBinaryStringConversions(long numberOfBinaryStringConversions);
 }

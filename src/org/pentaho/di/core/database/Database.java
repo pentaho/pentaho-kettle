@@ -1654,6 +1654,11 @@ public class Database implements VariableSpace
 
 	public ResultSet openQuery(String sql, RowMetaInterface params, Object[] data, int fetch_mode) throws KettleDatabaseException
 	{
+		return openQuery(sql, params, data, fetch_mode, false);
+	}
+	
+	public ResultSet openQuery(String sql, RowMetaInterface params, Object[] data, int fetch_mode, boolean lazyConversion) throws KettleDatabaseException
+	{
 		ResultSet res;
 		String debug = "Start";
 		
@@ -1718,7 +1723,7 @@ public class Database implements VariableSpace
             // MySQL Hack only. It seems too much for the cursor type of operation on MySQL, to have another cursor opened
             // to get the length of a String field.  So, on MySQL, we ingore the length of Strings in result rows.
             // 
-			rowMeta = getRowInfo(res.getMetaData(), databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_MYSQL, false);
+			rowMeta = getRowInfo(res.getMetaData(), databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_MYSQL, lazyConversion);
 		}
 		catch(SQLException ex)
 		{
@@ -2496,6 +2501,13 @@ public class Database implements VariableSpace
         if (lazyConversion && valtype==ValueMetaInterface.TYPE_STRING) {
         	v.setStorageType(ValueMetaInterface.STORAGE_TYPE_BINARY_STRING);
         	// TODO set some encoding to go with this.
+
+        	// Also set the storage metadata. a copy of the parent, set to String too.
+        	// 
+        	ValueMetaInterface storageMetaData = v.clone();
+        	storageMetaData.setType(ValueMetaInterface.TYPE_STRING);
+        	storageMetaData.setStorageType(ValueMetaInterface.STORAGE_TYPE_NORMAL);
+        	v.setStorageMetadata(storageMetaData);
         }
 
 

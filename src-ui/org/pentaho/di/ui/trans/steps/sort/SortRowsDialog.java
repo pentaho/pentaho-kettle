@@ -332,6 +332,7 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 		wStepname.addSelectionListener( lsDef );
 		wSortDir.addSelectionListener( lsDef );
 		wPrefix.addSelectionListener( lsDef );
+		wSortSize.addSelectionListener( lsDef );
 		
 		// Detect X or ALT-F4 or something that kills this window...
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );

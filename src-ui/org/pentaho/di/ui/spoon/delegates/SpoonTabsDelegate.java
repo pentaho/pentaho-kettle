@@ -267,24 +267,35 @@ public class SpoonTabsDelegate extends SpoonDelegate
 
 				if (entry.getObject() instanceof TransGraph)
 				{
-					entry.getTabItem().setText(makeTransGraphTabName((TransMeta) managedObject));
-					entry.getTabItem().setToolTipText(
-							Messages.getString("Spoon.TabTrans.Tooltip",
-									makeTransGraphTabName((TransMeta) managedObject)));
-				} else if (entry.getObject() instanceof TransLog)
+					TransMeta transMeta = (TransMeta) managedObject;
+					entry.getTabItem().setText(makeTransGraphTabName(transMeta));
+					String toolTipText = Messages.getString("Spoon.TabTrans.Tooltip", makeTransGraphTabName(transMeta));
+					if (!Const.isEmpty(transMeta.getFilename())) toolTipText+=Const.CR+Const.CR+transMeta.getFilename();
+					entry.getTabItem().setToolTipText(toolTipText);
+				} 
+				else if (entry.getObject() instanceof TransLog)
+				{
 					entry.getTabItem().setText(makeLogTabName((TransMeta) managedObject));
+				}
 				else if (entry.getObject() instanceof TransHistory)
+				{
 					entry.getTabItem().setText(makeHistoryTabName((TransMeta) managedObject));
+				}
 				else if (entry.getObject() instanceof JobGraph)
 				{
-					entry.getTabItem().setText(makeJobGraphTabName((JobMeta) managedObject));
-					entry.getTabItem().setToolTipText(
-							Messages.getString("Spoon.TabJob.Tooltip",
-									makeJobGraphTabName((JobMeta) managedObject)));
+					JobMeta jobMeta = (JobMeta) managedObject;
+					entry.getTabItem().setText(makeJobGraphTabName(jobMeta));
+					String toolTipText = Messages.getString("Spoon.TabJob.Tooltip", makeJobGraphTabName(jobMeta));
+					if (!Const.isEmpty(jobMeta.getFilename())) toolTipText+=Const.CR+Const.CR+jobMeta.getFilename();
+					entry.getTabItem().setToolTipText(toolTipText);
 				} else if (entry.getObject() instanceof JobLog)
+				{
 					entry.getTabItem().setText(makeJobLogTabName((JobMeta) managedObject));
+				}
 				else if (entry.getObject() instanceof JobHistory)
+				{
 					entry.getTabItem().setText(makeJobHistoryTabName((JobMeta) managedObject));
+				}
 			}
 
 			String after = entry.getTabItem().getText();

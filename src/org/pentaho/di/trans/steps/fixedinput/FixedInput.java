@@ -60,18 +60,16 @@ public class FixedInput extends BaseStep implements StepInterface
 		if (first) {
 			first=false;
 			
-			data.convertRowMeta = new RowMeta();
-			meta.getFields(data.convertRowMeta, getStepname(), null, null, this);
+			data.outputRowMeta = new RowMeta();
+			meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
 
-			// Keep the output row metadata separate.
-			// Remove the storage metadata if we're not running in lazy conversion mode.
-			// In that case it's not needed anymore and will mess with the standard Integer-String conversion logic.
+			// The conversion logic for when the lazy conversion is turned of is simple:
+			// Pretend it's a lazy conversion object anyway and get the native type during conversion.
 			//
-			data.outputRowMeta = data.convertRowMeta.clone();
-			if (!meta.isLazyConversionActive()) {
-				for (ValueMetaInterface valueMeta : data.outputRowMeta.getValueMetaList()) {
-					valueMeta.setStorageMetadata(null);
-				}
+			data.convertRowMeta = data.outputRowMeta.clone();
+			for (ValueMetaInterface valueMeta : data.convertRowMeta.getValueMetaList())
+			{
+				valueMeta.setStorageType(ValueMetaInterface.STORAGE_TYPE_BINARY_STRING);
 			}
 			
 			if (meta.isHeaderPresent()) {
@@ -166,11 +164,11 @@ public class FixedInput extends BaseStep implements StepInterface
 					}
 					else {
 						// We're not lazy so we convert the data right here and now.
+						// The convert object uses binary storage as such we just have to ask the native type from it.
+						// That will do the actual conversion.
 						//
-						ValueMetaInterface targetValueMeta = data.convertRowMeta.getValueMeta(outputIndex);
-						ValueMetaInterface sourceValueMeta = targetValueMeta.getStorageMetadata();
-						
-						outputRowData[outputIndex++] = targetValueMeta.convertData(sourceValueMeta, field);
+						ValueMetaInterface sourceValueMeta = data.convertRowMeta.getValueMeta(outputIndex);
+						outputRowData[outputIndex++] = sourceValueMeta.convertBinaryStringToNativeType(field);
 					}
 				}
 				else {
@@ -244,6 +242,8 @@ public class FixedInput extends BaseStep implements StepInterface
 					logError(e.toString());
 					return false;
 				}
+				
+				logBasic("Opened file with name ["+data.filename+"]");
 				
 				data.stopReading = false;
 				

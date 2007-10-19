@@ -423,6 +423,7 @@ public class JobLog extends Composite implements TabItemInterface
                         job = new Job(log, jobMeta.getName(), jobMeta.getFilename(), null);
 						job.open(spoon.rep, jobMeta.getFilename(), jobMeta.getName(), jobMeta.getDirectory().getPath(), spoon);
                         job.getJobMeta().setArguments(jobMeta.getArguments());
+                        job.shareVariablesWith(jobMeta);
                         log.logMinimal(Spoon.APP_NAME, Messages.getString("JobLog.Log.StartingJob")); //$NON-NLS-1$
 						job.start();
                         // Link to the new jobTracker!

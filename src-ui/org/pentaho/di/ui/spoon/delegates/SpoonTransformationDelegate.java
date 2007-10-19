@@ -187,8 +187,9 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 			{
 				TransGraph transGraph = new TransGraph(spoon.tabfolder.getSwtTabset(), spoon, transMeta);
 				tabItem = new TabItem(spoon.tabfolder, tabName, tabName);
-				tabItem.setToolTipText(Messages.getString("Spoon.TabTrans.Tooltip", spoon.delegates.tabs
-						.makeTransGraphTabName(transMeta)));
+				String toolTipText = Messages.getString("Spoon.TabTrans.Tooltip", spoon.delegates.tabs.makeTransGraphTabName(transMeta));
+				if (!Const.isEmpty(transMeta.getFilename())) toolTipText+=Const.CR+Const.CR+transMeta.getFilename();
+				tabItem.setToolTipText(toolTipText);
 				tabItem.setImage(GUIResource.getInstance().getImageTransGraph());
 				tabItem.setControl(transGraph);
 

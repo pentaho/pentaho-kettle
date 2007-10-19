@@ -262,11 +262,14 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
 			if (lazyConversionActive) valueMeta.setStorageType(ValueMetaInterface.STORAGE_TYPE_BINARY_STRING);
 			
 			// In case we want to convert Strings...
+			// Using a copy of the valueMeta object means that the inner and outer representation format is the same.
+			// Preview will show the data the same way as we read it.
+			// This layout is then taken further down the road by the metadata through the transformation.
 			//
 			ValueMetaInterface storageMetadata = valueMeta.clone();
 			storageMetadata.setType(ValueMetaInterface.TYPE_STRING);
-			storageMetadata.setStorageType(ValueMetaInterface.STORAGE_TYPE_BINARY_STRING);
-			
+			storageMetadata.setStorageType(ValueMetaInterface.STORAGE_TYPE_NORMAL);
+			storageMetadata.setLength(-1,-1); // we don't really know the lengths of the strings read in advance.
 			valueMeta.setStorageMetadata(storageMetadata);
 			
 			valueMeta.setOrigin(origin);

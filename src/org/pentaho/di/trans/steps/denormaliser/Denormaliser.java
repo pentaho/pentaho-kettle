@@ -55,7 +55,6 @@ public class Denormaliser extends BaseStep implements StepInterface
 				//
                 Object[] outputRowData = buildResult(data.inputRowMeta, data.previous);
 				putRow(data.outputRowMeta, outputRowData);
-                //System.out.println("Wrote row: "+data.previous);
 			}
 
 			setOutputDone();

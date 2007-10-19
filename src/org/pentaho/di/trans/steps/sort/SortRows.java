@@ -37,6 +37,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -447,6 +448,13 @@ public class SortRows extends BaseStep implements StepInterface
                     }
                 }
             );
+            long nrConversions = 0L;
+            for (ValueMetaInterface valueMeta : data.outputRowMeta.getValueMetaList())
+            {
+            	nrConversions+=valueMeta.getNumberOfBinaryStringConversions();
+            	valueMeta.setNumberOfBinaryStringConversions(0L);
+            }
+            logDetailed("The number of binary string to data type conversions done in this sort block is "+nrConversions);
 		}
 		if (log.isDetailed()) logDetailed("QuickSort algorithm has finished.");
 	}

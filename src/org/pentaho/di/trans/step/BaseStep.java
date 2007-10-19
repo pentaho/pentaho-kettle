@@ -485,6 +485,7 @@ public class BaseStep extends Thread implements VariableSpace
         
         setVariable(Const.INTERNAL_VARIABLE_STEP_UNIQUE_NUMBER, Integer.toString(uniqueStepNrAcrossSlaves));
         setVariable(Const.INTERNAL_VARIABLE_STEP_UNIQUE_COUNT, Integer.toString(uniqueStepCountAcrossSlaves));
+        setVariable(Const.INTERNAL_VARIABLE_STEP_COPYNR, Integer.toString(stepcopy));
         
         // Now that these things have been done, we also need to start a number of server sockets.
         // One for each of the remote output steps that we're going to write to.

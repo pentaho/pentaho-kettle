@@ -1102,13 +1102,20 @@ public class TableView extends Composite
                 rowMeta.addValueMeta(valueMeta);
             }
             
-            RowMetaInterface sourceRowMeta = rowMeta.clone();
+            final RowMetaInterface sourceRowMeta = rowMeta.clone();
+            final RowMetaInterface conversionRowMeta = rowMeta.clone();
+            
             // Set it all to string...
             // Also set the storage value metadata: this will allow us to convert back and forth without a problem.
             //
             for (int i=0;i<sourceRowMeta.size();i++) {
-            	sourceRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);
-            	sourceRowMeta.getValueMeta(i).setStorageMetadata(rowMeta.getValueMeta(i).clone()); // Meaning: this string comes from an Integer/Number/Date/etc.
+                ValueMetaInterface sourceValueMeta = sourceRowMeta.getValueMeta(i); 
+            	sourceValueMeta.setType(ValueMetaInterface.TYPE_STRING);
+            	sourceValueMeta.setStorageType(ValueMetaInterface.STORAGE_TYPE_NORMAL);
+            	
+            	ValueMetaInterface conversionMetaData = conversionRowMeta.getValueMeta(i);
+            	conversionMetaData.setStorageType(ValueMetaInterface.STORAGE_TYPE_NORMAL);
+            	sourceRowMeta.getValueMeta(i).setConversionMetadata(conversionMetaData); // Meaning: this string comes from an Integer/Number/Date/etc.
             }
             
             // Now populate a list of data rows...
@@ -1134,7 +1141,7 @@ public class TableView extends Composite
                     String data = item.getText(j);
                     // ValueMetaInterface targetValueMeta = rowMeta.getValueMeta(j+2);
                     ValueMetaInterface sourceValueMeta = sourceRowMeta.getValueMeta(j+2);
-                    r[j+2] = sourceValueMeta.convertDataUsingStorageMetaData(data);
+                    r[j+2] = sourceValueMeta.convertDataUsingConversionMetaData(data);
                 }
                 v.add(r);
             }
@@ -1149,7 +1156,7 @@ public class TableView extends Composite
                         
                         try
                         {
-                            return rowMeta.compare(r1, r2, sortIndex);
+                            return conversionRowMeta.compare(r1, r2, sortIndex);
                         }
                         catch(KettleValueException e)
                         {
@@ -1184,7 +1191,7 @@ public class TableView extends Composite
                 
                 for (int j=2;j<r.length;j++)
                 {
-                    String string = rowMeta.getString(r, j);
+                    String string = conversionRowMeta.getString(r, j);
                     if (string!=null) item.setText(j-2, string);
                 }
             }

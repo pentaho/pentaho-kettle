@@ -71,6 +71,7 @@ public class ValueMetaTest extends TestCase
 		val1.setStringEncoding("UTF8");
 
 		ValueMeta val2 = new ValueMeta("BINSTR1", ValueMetaInterface.TYPE_STRING, ValueMetaInterface.STORAGE_TYPE_BINARY_STRING);
+		val2.setStorageMetadata(val1);
 		val2.setLength(6);
 		val2.setStringEncoding("UTF8");		
 		
@@ -96,9 +97,9 @@ public class ValueMetaTest extends TestCase
 		assertEquals(" 0000123", string);
 		
 		ValueMetaInterface strValueMeta = new ValueMeta("str", ValueMetaInterface.TYPE_STRING);
-		strValueMeta.setStorageMetadata(intValueMeta);
+		strValueMeta.setConversionMetadata(intValueMeta);
 		
-		Long x = (Long) strValueMeta.convertDataUsingStorageMetaData(string);
+		Long x = (Long) strValueMeta.convertDataUsingConversionMetaData(string);
 		
 		assertEquals(originalValue, x);
 	}
@@ -118,9 +119,9 @@ public class ValueMetaTest extends TestCase
 		assertEquals(" 0123,456", string);
 		
 		ValueMetaInterface strValueMeta = new ValueMeta("str", ValueMetaInterface.TYPE_STRING);
-		strValueMeta.setStorageMetadata(numValueMeta);
+		strValueMeta.setConversionMetadata(numValueMeta);
 		
-		Double x = (Double) strValueMeta.convertDataUsingStorageMetaData(string);
+		Double x = (Double) strValueMeta.convertDataUsingConversionMetaData(string);
 		
 		assertEquals(originalValue, x);
 	}
@@ -139,9 +140,9 @@ public class ValueMetaTest extends TestCase
 		assertEquals("34039423484343123.443489056", string);
 		
 		ValueMetaInterface strValueMeta = new ValueMeta("str", ValueMetaInterface.TYPE_STRING);
-		strValueMeta.setStorageMetadata(numValueMeta);
+		strValueMeta.setConversionMetadata(numValueMeta);
 		
-		BigDecimal x = (BigDecimal) strValueMeta.convertDataUsingStorageMetaData(string);
+		BigDecimal x = (BigDecimal) strValueMeta.convertDataUsingConversionMetaData(string);
 		
 		assertEquals(originalValue, x);
 	}
@@ -158,9 +159,9 @@ public class ValueMetaTest extends TestCase
 		assertEquals("2199 - 12 - 31   23:59:59(999)", string);
 		
 		ValueMetaInterface strValueMeta = new ValueMeta("str", ValueMetaInterface.TYPE_STRING);
-		strValueMeta.setStorageMetadata(datValueMeta);
+		strValueMeta.setConversionMetadata(datValueMeta);
 		
-		Date x = (Date) strValueMeta.convertDataUsingStorageMetaData(string);
+		Date x = (Date) strValueMeta.convertDataUsingConversionMetaData(string);
 		
 		assertEquals(originalValue, x);
 	}
@@ -200,7 +201,118 @@ public class ValueMetaTest extends TestCase
 		
 		String string = (String) source.convertData(target, d);
 		assertEquals("123.456.789,01", string);
+	}
+	
+	/**
+	 * Lazy conversion is used to read data from disk in a binary format.
+	 * The data itself is not converted from the byte[] to Integer, rather left untouched until it's needed.
+	 * 
+	 * However at that time we do need it we should get the correct value back.
+	 * @throws Exception
+	 */
+	public void testLazyConversionInteger() throws Exception
+	{
+		byte[] data = ("1234").getBytes();
+		ValueMetaInterface intValueMeta = new ValueMeta("i", ValueMetaInterface.TYPE_INTEGER);
+		intValueMeta.setLength(7);
+		intValueMeta.setStorageType(ValueMetaInterface.STORAGE_TYPE_BINARY_STRING);
+		ValueMetaInterface strValueMeta = new ValueMeta("str", ValueMetaInterface.TYPE_STRING);
+		intValueMeta.setStorageMetadata(strValueMeta);
 		
+		Long integerValue = intValueMeta.getInteger(data);
+		assertEquals(new Long(1234L), integerValue);
+		Double numberValue = intValueMeta.getNumber(data);
+		assertEquals(new Double(1234), numberValue);
+		BigDecimal bigNumberValue = intValueMeta.getBigNumber(data);
+		assertEquals(new BigDecimal(1234), bigNumberValue);
+		Date dateValue = intValueMeta.getDate(data);
+		assertEquals(new Date(1234L), dateValue);
+		String string = intValueMeta.getString(data);
+		assertEquals(" 0001234", string);
 	}
 
+	/**
+	 * Lazy conversion is used to read data from disk in a binary format.
+	 * The data itself is not converted from the byte[] to Integer, rather left untouched until it's needed.
+	 * 
+	 * However at that time we do need it we should get the correct value back.
+	 * @throws Exception
+	 */
+	public void testLazyConversionNumber() throws Exception
+	{
+		byte[] data = ("1,234.56").getBytes();
+		ValueMetaInterface numValueMeta = new ValueMeta("i", ValueMetaInterface.TYPE_NUMBER);
+		// The representation formatting options.
+		//
+		numValueMeta.setLength(12,4);
+		numValueMeta.setDecimalSymbol(",");
+		numValueMeta.setGroupingSymbol(".");
+		numValueMeta.setStorageType(ValueMetaInterface.STORAGE_TYPE_BINARY_STRING);
+		
+		// let's explain to the parser how the input data looks like. (the storage metadata)
+		//
+		ValueMetaInterface strValueMeta = new ValueMeta("str", ValueMetaInterface.TYPE_STRING);
+		strValueMeta.setConversionMask("#,##0.00");
+		strValueMeta.setDecimalSymbol(".");
+		strValueMeta.setGroupingSymbol(",");
+		numValueMeta.setStorageMetadata(strValueMeta);
+		
+		Long integerValue = numValueMeta.getInteger(data);
+		assertEquals(new Long(1234L), integerValue);
+		Double numberValue = numValueMeta.getNumber(data);
+		assertEquals(new Double(1234.56), numberValue);
+		BigDecimal bigNumberValue = numValueMeta.getBigNumber(data);
+		assertEquals(new BigDecimal(1234.56), bigNumberValue);
+		Date dateValue = numValueMeta.getDate(data);
+		assertEquals(new Date(1234L), dateValue);
+		String string = numValueMeta.getString(data);
+		assertEquals(" 00001234,5600", string);
+		
+		// Get the binary data back : has to return exactly the same as we asked ONLY if the formatting options are the same
+		// In this unit test they are not!
+		//
+		byte[] binaryValue = numValueMeta.getBinaryString(data);
+		assertTrue(byteCompare((" 00001234,5600").getBytes(), binaryValue));
+	}
+	
+	/**
+	 * Lazy conversion is used to read data from disk in a binary format.
+	 * The data itself is not converted from the byte[] to Integer, rather left untouched until it's needed.
+	 * 
+	 * However at that time we do need it we should get the correct value back.
+	 * @throws Exception
+	 */
+	public void testLazyConversionBigNumber() throws Exception
+	{
+		String originalValue = "34983433433212304121900934.5634314343"; 
+		byte[] data = originalValue.getBytes();
+		ValueMetaInterface numValueMeta = new ValueMeta("i", ValueMetaInterface.TYPE_BIGNUMBER);
+		// The representation formatting options.
+		//
+		numValueMeta.setLength(36,10);
+		numValueMeta.setDecimalSymbol(",");
+		numValueMeta.setGroupingSymbol(".");
+		numValueMeta.setStorageType(ValueMetaInterface.STORAGE_TYPE_BINARY_STRING);
+		
+		// let's explain to the parser how the input data looks like. (the storage metadata)
+		//
+		ValueMetaInterface strValueMeta = new ValueMeta("str", ValueMetaInterface.TYPE_STRING);
+		numValueMeta.setStorageMetadata(strValueMeta);
+		
+		// NOTE This is obviously a number that is too large to fit into an Integer or a Number, but this is what we expect to come back.
+		// Later it might be better to throw exceptions for big-number to integer conversion.
+		// At the time of writing this unit test is not the case. 
+		// -- Matt
+		
+		Long integerValue = numValueMeta.getInteger(data);
+		assertEquals(new Long(-5045838617297571962L), integerValue); 
+		Double numberValue = numValueMeta.getNumber(data);
+		assertEquals(new Double("3.4983433433212304E25"), numberValue);
+		BigDecimal bigNumberValue = numValueMeta.getBigNumber(data);
+		assertEquals(new BigDecimal(originalValue), bigNumberValue);
+		Date dateValue = numValueMeta.getDate(data);
+		assertEquals(new Date(-5045838617297571962L), dateValue);
+		String string = numValueMeta.getString(data);
+		assertEquals(originalValue, string);
+	}
 }

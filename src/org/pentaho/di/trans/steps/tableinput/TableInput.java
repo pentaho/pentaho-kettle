@@ -16,6 +16,8 @@
 
 package org.pentaho.di.trans.steps.tableinput;
 
+import java.sql.ResultSet;
+
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.RowSet;
@@ -190,7 +192,7 @@ public class TableInput extends BaseStep implements StepInterface
         if (meta.isVariableReplacementActive()) sql = environmentSubstitute(meta.getSQL());
         else sql = meta.getSQL();
         
-        data.rs = data.db.openQuery(sql, parametersMeta, parameters);
+        data.rs = data.db.openQuery(sql, parametersMeta, parameters, ResultSet.FETCH_FORWARD, meta.isLazyConversionActive());
         if (data.rs == null)
         {
             logError("Couldn't open Query [" + sql + "]");

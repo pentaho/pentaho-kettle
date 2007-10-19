@@ -970,8 +970,9 @@ public class SpoonJobDelegate extends SpoonDelegate
 			{
 				JobGraph jobGraph = new JobGraph(spoon.tabfolder.getSwtTabset(), spoon, jobMeta);
 				tabItem = new TabItem(spoon.tabfolder, tabName, tabName);
-				tabItem.setToolTipText(Messages.getString("Spoon.TabJob.Tooltip", spoon.delegates.tabs
-						.makeJobGraphTabName(jobMeta)));
+				String toolTipText = Messages.getString("Spoon.TabJob.Tooltip", spoon.delegates.tabs.makeJobGraphTabName(jobMeta));
+				if (!Const.isEmpty(jobMeta.getFilename())) toolTipText+=Const.CR+Const.CR+jobMeta.getFilename();
+				tabItem.setToolTipText(toolTipText);
 				tabItem.setImage(GUIResource.getInstance().getImageJobGraph());
 				tabItem.setControl(jobGraph);
 
@@ -1441,6 +1442,13 @@ public class SpoonJobDelegate extends SpoonDelegate
 			//
 			if (executionConfiguration.isExecutingLocally()) {
 				LogWriter.getInstance().setLogLevel(executionConfiguration.getLogLevel());
+				// Set the variables that where specified...
+				for (String varName : executionConfiguration.getVariables().keySet())
+				{
+					String varValue = executionConfiguration.getVariables().get(varName);
+					jobMeta.setVariable(varName, varValue);
+				}
+				
 				jobLog.startJob(executionConfiguration.getReplayDate());
 			}
 				

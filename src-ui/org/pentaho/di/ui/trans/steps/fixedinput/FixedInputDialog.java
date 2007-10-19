@@ -455,7 +455,7 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
 	private void cancel()
 	{
 		stepname=null;
-		inputMeta.setChanged(changed);
+		inputMeta.setChanged(backupChanged);
 		dispose();
 	}
 	

@@ -287,7 +287,7 @@ public class JobExecutionConfigurationDialog extends Dialog
           };
               
         int nrVariables = configuration.getVariables() !=null ? configuration.getVariables().size() : 0; 
-        wVariables = new TableView(jobMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, cVariables, nrVariables, true, null, props);
+        wVariables = new TableView(jobMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, cVariables, nrVariables, false, null, props);
         FormData fdVariables = new FormData();
         fdVariables.left   = new FormAttachment(50, margin);
         fdVariables.right  = new FormAttachment(100, 0);
