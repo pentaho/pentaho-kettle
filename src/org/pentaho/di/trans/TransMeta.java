@@ -3572,8 +3572,6 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
             NotePadMeta ni = getNote(i);
             ni.setSelected(false);
         }
-        
-        setChanged();
     }
 
     /**
