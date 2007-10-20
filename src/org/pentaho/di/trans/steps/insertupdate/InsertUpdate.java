@@ -122,27 +122,35 @@ public class InsertUpdate extends BaseStep implements StepInterface
                 boolean update = false;
                 for (int i=0;i<data.valuenrs.length;i++)
                 {
-                    ValueMetaInterface valueMeta = rowMeta.getValueMeta( data.valuenrs[i] );
-                    Object rowvalue = row[ data.valuenrs[i] ];
-                    Object retvalue = add[ i ];
+            		if ( meta.getUpdate()[i].booleanValue() ) 
+            		{
+                        ValueMetaInterface valueMeta = rowMeta.getValueMeta( data.valuenrs[i] );
+                        Object rowvalue = row[ data.valuenrs[i] ];
+                        Object retvalue = add[ i ];
                     
-                    if ( valueMeta.compare(rowvalue, retvalue)!=0 )
-                    {
-                        update=true;
-                    }
+                        if ( valueMeta.compare(rowvalue, retvalue)!=0 )
+                        {
+                            update=true;
+                        }
+            		}
                 }
                 if (update)
                 {
                     // Create the update row...
                     Object[] updateRow = new Object[data.updateParameterRowMeta.size()];
+                    int j = 0;
                     for (int i=0;i<data.valuenrs.length;i++)
                     {
-                        updateRow[i] = row[ data.valuenrs[i] ]; // the setters
+                		if( meta.getUpdate()[i].booleanValue() ) 
+                		{
+                            updateRow[j] = row[ data.valuenrs[i] ]; // the setters
+                            j++;
+                		}
                     }
                     // add the where clause parameters, they are exactly the same for lookup and update
                     for (int i=0;i<lookupRow.length;i++)
                     {
-                        updateRow[data.valuenrs.length+i] = lookupRow[i];
+                        updateRow[j+i] = lookupRow[i];
                     }
                     
                     if (log.isRowLevel()) logRowlevel(Messages.getString("InsertUpdate.Log.UpdateRow")+data.lookupParameterRowMeta.getString(lookupRow)); //$NON-NLS-1$
@@ -357,10 +365,12 @@ public class InsertUpdate extends BaseStep implements StepInterface
 
         for (int i=0;i<meta.getUpdateLookup().length;i++)
         {
-            if (i!=0) sql+= ",   ";
-            sql += databaseMeta.quoteField(meta.getUpdateLookup()[i]);
-            sql += " = ?" + Const.CR;
-            data.updateParameterRowMeta.addValueMeta( rowMeta.searchValueMeta(meta.getUpdateStream()[i]) );
+    		if ( meta.getUpdate()[i].booleanValue() ) {
+                if (i!=0) sql+= ",   ";
+                sql += databaseMeta.quoteField(meta.getUpdateLookup()[i]);
+                sql += " = ?" + Const.CR;
+                data.updateParameterRowMeta.addValueMeta( rowMeta.searchValueMeta(meta.getUpdateStream()[i]) );
+    		}
         }
 
         sql += "WHERE ";
