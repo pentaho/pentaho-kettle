@@ -66,15 +66,13 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
 	
 	private Label        wlScript;
 	private Text         wScript;
-	private FormData     fdlScript, fdScript,fdResultField,fdlModule, fdModule;
+	private FormData     fdlScript, fdScript,fdResultField,fdlMatcher, fdMatcher;
 	
 	private LabelTextVar wResultField;
 	
-    private CCombo       wModule;
-    
-    
-	
-	private Label wlModule;
+    private CCombo       wMatcher;
+
+	private Label wlMatcher;
     
 
 
@@ -189,25 +187,25 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
 		
 		
 		
-		// Module
-		wlModule=new Label(wStepSettings, SWT.RIGHT);
-        wlModule.setText(Messages.getString("RegexEvalDialog.Matcher.Label"));
-        props.setLook(wlModule);
-        fdlModule=new FormData();
-        fdlModule.left = new FormAttachment(0, 0);
-        fdlModule.top  = new FormAttachment(wStepname, margin);
-        fdlModule.right= new FormAttachment(middle, -margin);
-        wlModule.setLayoutData(fdlModule);
-        wModule=new CCombo(wStepSettings, SWT.BORDER | SWT.READ_ONLY);
-        wModule.setEditable(true);
-        props.setLook(wModule);
-        wModule.addModifyListener(lsMod);
-        fdModule=new FormData();
-        fdModule.left = new FormAttachment(middle, margin);
-        fdModule.top  = new FormAttachment(wStepname, margin);
-        fdModule.right= new FormAttachment(100, -margin);
-        wModule.setLayoutData(fdModule);
-        wModule.addFocusListener(new FocusListener()
+		// Matcher
+		wlMatcher=new Label(wStepSettings, SWT.RIGHT);
+        wlMatcher.setText(Messages.getString("RegexEvalDialog.Matcher.Label"));
+        props.setLook(wlMatcher);
+        fdlMatcher=new FormData();
+        fdlMatcher.left = new FormAttachment(0, 0);
+        fdlMatcher.top  = new FormAttachment(wStepname, margin);
+        fdlMatcher.right= new FormAttachment(middle, -margin);
+        wlMatcher.setLayoutData(fdlMatcher);
+        wMatcher=new CCombo(wStepSettings, SWT.BORDER | SWT.READ_ONLY);
+        wMatcher.setEditable(true);
+        props.setLook(wMatcher);
+        wMatcher.addModifyListener(lsMod);
+        fdMatcher=new FormData();
+        fdMatcher.left = new FormAttachment(middle, margin);
+        fdMatcher.top  = new FormAttachment(wStepname, margin);
+        fdMatcher.right= new FormAttachment(100, -margin);
+        wMatcher.setLayoutData(fdMatcher);
+        wMatcher.addFocusListener(new FocusListener()
             {
                 public void focusLost(org.eclipse.swt.events.FocusEvent e)
                 {
@@ -232,7 +230,7 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
         wResultField .addModifyListener(lsMod);
         fdResultField  = new FormData();
         fdResultField .left = new FormAttachment(0, 0);
-        fdResultField .top = new FormAttachment(wModule, margin);
+        fdResultField .top = new FormAttachment(wMatcher, margin);
         fdResultField .right = new FormAttachment(100, 0);
         wResultField .setLayoutData(fdResultField );
         
@@ -616,7 +614,7 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
 	 {
 		 try{
 	           
-				wModule.removeAll();
+				wMatcher.removeAll();
 				
 				Row r = transMeta.getPrevStepFields(stepname);
 				if (r!=null)
@@ -624,7 +622,7 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
 					for (int i=0;i<r.size();i++)
 					{
 						Value v = r.getValue(i);	
-						wModule.add(v.getName());
+						wMatcher.add(v.getName());
 						
 						
 					}
@@ -638,6 +636,7 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
 
 
 	 }
+	 
 	/**
 	 * Copy information from the meta-data input to the dialog fields.
 	 */ 
@@ -646,7 +645,7 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
 	
 		if (input.getScript() != null) wScript.setText( input.getScript() );
 		if (input.getResultfieldname() != null) wResultField.setText( input.getResultfieldname() );
-		if (input.getMatcher() != null) wModule.setText( input.getMatcher() );
+		if (input.getMatcher() != null) wMatcher.setText( input.getMatcher() );
 
 		wUseVar.setSelection(input.useVar());
 		wCanonEq.setSelection(input.canoeq());
@@ -675,7 +674,7 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
 
 		input.setScript( wScript.getText() );
 		input.setResultfieldname(wResultField.getText() );
-		input.setMatcher(wModule.getText() );
+		input.setMatcher(wMatcher.getText() );
 		input.setuseVar(wUseVar.getSelection());
 		input.setcanoneq(wCanonEq.getSelection());
 		input.setcaseinsensitive(wCaseInsensitive.getSelection());
