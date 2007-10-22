@@ -22,6 +22,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
@@ -778,5 +779,22 @@ public class StepLoader
 			list.add(plugin.getPluginInformation());
 		}
 		return list;
+	}
+
+	/**
+	 * @return a unique array of all the step plugin package names
+	 */
+	public String[] getPluginPackages() 
+	{
+		List<String> list = new ArrayList<String>();
+		for (StepPlugin stepPlugin : pluginList)
+		{
+			String className = stepPlugin.getClassname();
+			int lastIndex = className.lastIndexOf(".");
+			String packageName = className.substring(0, lastIndex); 
+			if (!list.contains(packageName)) list.add(packageName);
+		}
+		Collections.sort(list);
+		return list.toArray(new String[list.size()]);
 	}
 }

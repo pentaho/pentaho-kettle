@@ -8,15 +8,31 @@ import java.util.List;
 import org.pentaho.di.core.Condition;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.job.JobEntryLoader;
+import org.pentaho.di.trans.StepLoader;
 
 
 public class StringSearcher
 {
+	private static final String LOCAL_PACKAGE = "org.pentaho.di";
+	
+	private static String[] stepPluginPackages;
+	private static String[] jobEntryPluginPackages;
+	
     public static final void findMetaData(Object object, int level, List<StringSearchResult> stringList, Object parentObject, Object grandParentObject)
     {
         // System.out.println(Const.rightPad(" ", level)+"Finding strings in "+object.toString());
         
         if (level>5) return;
+        
+        if (stepPluginPackages==null) 
+        {
+        	stepPluginPackages = StepLoader.getInstance().getPluginPackages();  
+        }
+        if (jobEntryPluginPackages==null) 
+        {
+        	jobEntryPluginPackages = JobEntryLoader.getInstance().getPluginPackages();  
+        }
         
         Class<? extends Object> baseClass = object.getClass();
         Field[] fields = baseClass.getDeclaredFields();
@@ -28,8 +44,25 @@ public class StringSearcher
             
             if ( (field.getModifiers()&Modifier.FINAL ) > 0) processThisOne=false;
             if ( (field.getModifiers()&Modifier.STATIC) > 0) processThisOne=false;
-            if ( field.toString().indexOf("org.pentaho.di")<0 ) processThisOne=false; // Stay in this code-base.
             
+            // Investigate only if we're dealing with a sanctioned package.
+            // A sanctioned package is either the local package (org.pentaho.di) or
+            // a package of one of the plugins.
+            //
+            boolean sanctionedPackage = false;
+            if (field.toString().indexOf(LOCAL_PACKAGE)>=0) sanctionedPackage=true;
+            for (int x=0;x<stepPluginPackages.length && !sanctionedPackage;x++)
+            {
+            	if (field.toString().indexOf(stepPluginPackages[x])>=0) sanctionedPackage=true;
+            }
+            for (int x=0;x<jobEntryPluginPackages.length && !sanctionedPackage;x++)
+            {
+            	if (field.toString().indexOf(jobEntryPluginPackages[x])>=0) sanctionedPackage=true;
+            }
+            if ( !sanctionedPackage ) processThisOne=false; // Stay in the sanctioned code-base.
+            
+            // Digg into the metadata from here...
+            //
             if (processThisOne)
             {
                 try

@@ -22,6 +22,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.jar.JarEntry;
@@ -490,4 +491,20 @@ public class JobEntryLoader
 		}
 		return null;
 	}
-}
+
+	/**
+	 * @return a unique array of all the job entry plugin package names
+	 */
+	public String[] getPluginPackages() 
+	{
+		List<String> list = new ArrayList<String>();
+		for (JobPlugin stepPlugin : pluginList)
+		{
+			String className = stepPlugin.getClassname();
+			int lastIndex = className.lastIndexOf(".");
+			String packageName = className.substring(0, lastIndex); 
+			if (!list.contains(packageName)) list.add(packageName);
+		}
+		Collections.sort(list);
+		return list.toArray(new String[list.size()]);
+	}}

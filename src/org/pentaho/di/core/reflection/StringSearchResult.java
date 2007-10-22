@@ -1,7 +1,8 @@
 package org.pentaho.di.core.reflection;
 
 import org.pentaho.di.core.Messages;
-import org.pentaho.di.core.RowMetaAndData;
+import org.pentaho.di.core.row.RowMeta;
+import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
@@ -45,15 +46,20 @@ public class StringSearchResult
     {
         this.string = string;
     }
-
-    public RowMetaAndData toRow()
+    
+    public static final RowMetaInterface getResultRowMeta()
     {
-        RowMetaAndData row = new RowMetaAndData();
-        row.addValue(new ValueMeta(Messages.getString("SearchResult.TransOrJob"), ValueMetaInterface.TYPE_STRING), grandParentObject.toString());
-        row.addValue(new ValueMeta(Messages.getString("SearchResult.StepDatabaseNotice"), ValueMetaInterface.TYPE_STRING), parentObject.toString());
-        row.addValue(new ValueMeta(Messages.getString("SearchResult.String"), ValueMetaInterface.TYPE_STRING), string);
-        row.addValue(new ValueMeta(Messages.getString("SearchResult.FieldName"), ValueMetaInterface.TYPE_STRING), fieldName);
-        return row;
+    	RowMetaInterface rowMeta = new RowMeta();
+        rowMeta.addValueMeta(new ValueMeta(Messages.getString("SearchResult.TransOrJob"), ValueMetaInterface.TYPE_STRING));
+        rowMeta.addValueMeta(new ValueMeta(Messages.getString("SearchResult.StepDatabaseNotice"), ValueMetaInterface.TYPE_STRING));
+        rowMeta.addValueMeta(new ValueMeta(Messages.getString("SearchResult.String"), ValueMetaInterface.TYPE_STRING));
+        rowMeta.addValueMeta(new ValueMeta(Messages.getString("SearchResult.FieldName"), ValueMetaInterface.TYPE_STRING));
+    	return rowMeta;
+    }
+
+    public Object[] toRow()
+    {
+    	return new Object[] { grandParentObject.toString(), parentObject.toString(), string, fieldName, };
     }
     
     public String toString()
