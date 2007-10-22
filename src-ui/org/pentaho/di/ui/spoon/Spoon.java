@@ -2927,6 +2927,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		return lastFileOpened;
 	}
 	
+	public void setLastFileOpened(String inLastFileOpened) {
+	  lastFileOpened = inLastFileOpened;
+	}
+	
 	// private String lastVfsUsername="";
 	// private String lastVfsPassword="";
 
