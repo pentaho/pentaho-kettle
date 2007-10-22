@@ -87,6 +87,8 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
 	private int    metaLength[];
 	/** Meta: new precision of field (for numbers)  */
 	private int    metaPrecision[];
+	/** Meta: the storage type, NORMAL or BINARY_STRING  */
+	private int    metaStorageType[];
 	
 	public SelectValuesMeta()
 	{
@@ -270,11 +272,14 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
 		
 		deleteName      = new String[nrremove];
 		
-		metaName      = new String[nrmeta];
-		metaRename    = new String[nrmeta];
-		metaType      = new int   [nrmeta];
-		metaLength    = new int   [nrmeta];
-		metaPrecision = new int   [nrmeta];
+		metaName        = new String[nrmeta];
+		metaRename      = new String[nrmeta];
+		metaType        = new int   [nrmeta];
+		metaLength      = new int   [nrmeta];
+		metaPrecision   = new int   [nrmeta];
+		metaStorageType = new int   [nrmeta];
+		
+		for (int i=0;i<metaStorageType.length;i++) metaStorageType[i]=-1; // not used by default!
 	}
 
 	public Object clone()
@@ -302,18 +307,18 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
 		
 		for (int i=0;i<nrmeta;i++)
 		{
-			retval.metaName     [i] = metaName[i];
-			retval.metaRename   [i] = metaRename[i];
-			retval.metaType     [i] = metaType[i];
-			retval.metaLength   [i] = metaLength[i];
-			retval.metaPrecision[i] = metaPrecision[i];
+			retval.metaName       [i] = metaName[i];
+			retval.metaRename     [i] = metaRename[i];
+			retval.metaType       [i] = metaType[i];
+			retval.metaLength     [i] = metaLength[i];
+			retval.metaPrecision  [i] = metaPrecision[i];
+			retval.metaStorageType[i] = metaStorageType[i];
 		}
 
 		return retval;
 	}
 	
-	private void readData(Node step)
-		throws KettleXMLException
+	private void readData(Node step) throws KettleXMLException
 	{
 		try
 		{
@@ -343,11 +348,12 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
 			for (int i=0;i<nrmeta;i++)
 			{
 				Node line = XMLHandler.getSubNodeByNr(fields, "meta", i); //$NON-NLS-1$
-				metaName     [i] = XMLHandler.getTagValue(line, "name"); //$NON-NLS-1$
-				metaRename   [i] = XMLHandler.getTagValue(line, "rename"); //$NON-NLS-1$
-				metaType     [i] = ValueMeta.getType(XMLHandler.getTagValue(line, "type")); //$NON-NLS-1$
-				metaLength   [i] = Const.toInt(XMLHandler.getTagValue(line, "length"), -2); //$NON-NLS-1$
-				metaPrecision[i] = Const.toInt(XMLHandler.getTagValue(line, "precision"), -2); //$NON-NLS-1$
+				metaName       [i] = XMLHandler.getTagValue(line, "name"); //$NON-NLS-1$
+				metaRename     [i] = XMLHandler.getTagValue(line, "rename"); //$NON-NLS-1$
+				metaType       [i] = ValueMeta.getType(XMLHandler.getTagValue(line, "type")); //$NON-NLS-1$
+				metaLength     [i] = Const.toInt(XMLHandler.getTagValue(line, "length"), -2); //$NON-NLS-1$
+				metaPrecision  [i] = Const.toInt(XMLHandler.getTagValue(line, "precision"), -2); //$NON-NLS-1$
+				metaStorageType[i] = ValueMeta.getStorageType( XMLHandler.getTagValue(line, "storage_type") ); //$NON-NLS-1$
 			}
 		}
 		catch(Exception e)
@@ -379,11 +385,12 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
 
 		for (int i=0;i<nrmeta;i++)
 		{
-			metaName     [i] = "fieldname"+(i+1); //$NON-NLS-1$
-			metaRename   [i] = ""; //$NON-NLS-1$
-			metaType     [i] = ValueMetaInterface.TYPE_NONE;
-			metaLength   [i] = -2;
-			metaPrecision[i] = -2;
+			metaName       [i] = "fieldname"+(i+1); //$NON-NLS-1$
+			metaRename     [i] = ""; //$NON-NLS-1$
+			metaType       [i] = ValueMetaInterface.TYPE_NONE;
+			metaLength     [i] = -2;
+			metaPrecision  [i] = -2;
+			metaStorageType[i] = -1;
 		}
 	}
 	
@@ -489,6 +496,7 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
 					}
 					if (metaLength[i]!=-2   ) { v.setLength(metaLength[i]);       v.setOrigin(name); } 
 					if (metaPrecision[i]!=-2) { v.setPrecision(metaPrecision[i]); v.setOrigin(name); }
+					if (metaStorageType[i]>=0) { v.setStorageType(metaStorageType[i]); }
 				}
 			}
 		}
@@ -525,11 +533,12 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
 		for (int i=0;i<metaName.length;i++)
 		{
 			retval.append("      <meta>"); //$NON-NLS-1$
-			retval.append("        ").append(XMLHandler.addTagValue("name",      metaName[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        ").append(XMLHandler.addTagValue("rename",    metaRename[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        ").append(XMLHandler.addTagValue("type",      ValueMeta.getTypeDesc(metaType[i])) ); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        ").append(XMLHandler.addTagValue("length",    metaLength[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        ").append(XMLHandler.addTagValue("precision", metaPrecision[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        ").append(XMLHandler.addTagValue("name",         metaName[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        ").append(XMLHandler.addTagValue("rename",       metaRename[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        ").append(XMLHandler.addTagValue("type",         ValueMeta.getTypeDesc(metaType[i])) ); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        ").append(XMLHandler.addTagValue("length",       metaLength[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        ").append(XMLHandler.addTagValue("precision",    metaPrecision[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        ").append(XMLHandler.addTagValue("storage_type", ValueMeta.getStorageTypeCode(metaStorageType[i]))); //$NON-NLS-1$ //$NON-NLS-2$
 			retval.append("      </meta>"); //$NON-NLS-1$
 		}
 		retval.append("    </fields>"); //$NON-NLS-1$
@@ -537,8 +546,7 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
 		return retval.toString();
 	}
 
-	public void readRep(Repository rep, long id_step, List<DatabaseMeta> databases, Map<String, Counter> counters)
-		throws KettleException
+	public void readRep(Repository rep, long id_step, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleException
 	{
 		try
 		{
@@ -569,6 +577,7 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
 				metaType[i]      = (int)rep.getStepAttributeInteger(id_step, i, "meta_type"); //$NON-NLS-1$
 				metaLength[i]    = (int)rep.getStepAttributeInteger(id_step, i, "meta_length"); //$NON-NLS-1$
 				metaPrecision[i] = (int)rep.getStepAttributeInteger(id_step, i, "meta_precision"); //$NON-NLS-1$
+				metaStorageType[i] = ValueMeta.getStorageType(rep.getStepAttributeString (id_step, i, "meta_storage_type")); //$NON-NLS-1$ 
 			}
 		}
 		catch(Exception e)
@@ -598,11 +607,12 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
 	
 			for (int i=0;i<metaName.length;i++)
 			{
-				rep.saveStepAttribute(id_transformation, id_step, i, "meta_name",      metaName[i]); //$NON-NLS-1$
-				rep.saveStepAttribute(id_transformation, id_step, i, "meta_rename",    metaRename[i]); //$NON-NLS-1$
-				rep.saveStepAttribute(id_transformation, id_step, i, "meta_type",      metaType[i]); //$NON-NLS-1$
-				rep.saveStepAttribute(id_transformation, id_step, i, "meta_length",    metaLength[i]); //$NON-NLS-1$
-				rep.saveStepAttribute(id_transformation, id_step, i, "meta_precision", metaPrecision[i]); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, "meta_name",         metaName[i]); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, "meta_rename",       metaRename[i]); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, "meta_type",         metaType[i]); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, "meta_length",       metaLength[i]); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, "meta_precision",    metaPrecision[i]); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, "meta_storage_type", ValueMeta.getStorageTypeCode(metaStorageType[i])); //$NON-NLS-1$
 			}
 		}
 		catch(Exception e)
@@ -810,5 +820,19 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
 	 */
 	public void setSelectingAndSortingUnspecifiedFields(boolean selectingAndSortingUnspecifiedFields) {
 		this.selectingAndSortingUnspecifiedFields = selectingAndSortingUnspecifiedFields;
+	}
+
+	/**
+	 * @return the metaStorageType
+	 */
+	public int[] getMetaStorageType() {
+		return metaStorageType;
+	}
+
+	/**
+	 * @param metaStorageType the metaStorageType to set
+	 */
+	public void setMetaStorageType(int[] metaStorageType) {
+		this.metaStorageType = metaStorageType;
 	}
 }

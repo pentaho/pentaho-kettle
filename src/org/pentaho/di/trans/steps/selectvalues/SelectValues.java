@@ -284,20 +284,27 @@ public class SelectValues extends BaseStep implements StepInterface
 		//
 		for (int i=0;i<data.metanrs.length;i++)
 		{
+			int index = data.metanrs[i];
+			ValueMetaInterface fromMeta = rowMeta.getValueMeta(index);
+            ValueMetaInterface toMeta   = data.metadataRowMeta.getValueMeta(index);
+			
+			// If we need to change from BINARY_STRING storage type to NORMAL...
+			//
+			if (fromMeta.isStorageBinaryString() && meta.getMetaStorageType()[i]==ValueMetaInterface.STORAGE_TYPE_NORMAL)
+			{
+				rowData[index] = fromMeta.convertBinaryStringToNativeType((byte[]) rowData[index]);
+			}
 			if (meta.getMetaType()[i]!=ValueMetaInterface.TYPE_NONE)
             {
-                ValueMetaInterface fromMeta = rowMeta.getValueMeta(data.metanrs[i]);
-                ValueMetaInterface toMeta   = data.metadataRowMeta.getValueMeta(data.metanrs[i]);
-                
                 switch(toMeta.getType())
                 {
-                case ValueMetaInterface.TYPE_STRING    : rowData[data.metanrs[i]] = fromMeta.getString(rowData[data.metanrs[i]]); break;
-                case ValueMetaInterface.TYPE_NUMBER    : rowData[data.metanrs[i]] = fromMeta.getNumber(rowData[data.metanrs[i]]); break;
-                case ValueMetaInterface.TYPE_INTEGER   : rowData[data.metanrs[i]] = fromMeta.getInteger(rowData[data.metanrs[i]]); break;
-                case ValueMetaInterface.TYPE_DATE      : rowData[data.metanrs[i]] = fromMeta.getDate(rowData[data.metanrs[i]]); break;
-                case ValueMetaInterface.TYPE_BIGNUMBER : rowData[data.metanrs[i]] = fromMeta.getBigNumber(rowData[data.metanrs[i]]); break;
-                case ValueMetaInterface.TYPE_BOOLEAN   : rowData[data.metanrs[i]] = fromMeta.getBoolean(rowData[data.metanrs[i]]); break;
-                case ValueMetaInterface.TYPE_BINARY    : rowData[data.metanrs[i]] = fromMeta.getBinary(rowData[data.metanrs[i]]); break;
+                case ValueMetaInterface.TYPE_STRING    : rowData[index] = fromMeta.getString(rowData[index]); break;
+                case ValueMetaInterface.TYPE_NUMBER    : rowData[index] = fromMeta.getNumber(rowData[index]); break;
+                case ValueMetaInterface.TYPE_INTEGER   : rowData[index] = fromMeta.getInteger(rowData[index]); break;
+                case ValueMetaInterface.TYPE_DATE      : rowData[index] = fromMeta.getDate(rowData[index]); break;
+                case ValueMetaInterface.TYPE_BIGNUMBER : rowData[index] = fromMeta.getBigNumber(rowData[index]); break;
+                case ValueMetaInterface.TYPE_BOOLEAN   : rowData[index] = fromMeta.getBoolean(rowData[index]); break;
+                case ValueMetaInterface.TYPE_BINARY    : rowData[index] = fromMeta.getBinary(rowData[index]); break;
                 default: throw new KettleValueException("Unable to convert data type of value '"+fromMeta+"' to data type "+toMeta.getType());
                 }
             }
