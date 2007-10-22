@@ -943,7 +943,9 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 		String fields[] = spoon.variables.getRowMeta().getFieldNames();
 		Map<String, String> variableMap = new HashMap<String, String>();
 		for (int idx = 0; idx < fields.length; idx++) {
-			variableMap.put(fields[idx], data[idx].toString());
+			String value = executionConfiguration.getVariables().get(fields[idx]);
+			if (Const.isEmpty(value)) value = data[idx].toString();  
+			variableMap.put(fields[idx], value);
 		}
 
 		executionConfiguration.setVariables(variableMap);
