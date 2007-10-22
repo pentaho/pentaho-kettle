@@ -2542,7 +2542,7 @@ public class ValueMeta implements ValueMetaInterface
     /**
      * Convert the String description of a storage type to an integer type.
      * @param desc The description of the storage type to convert
-     * @return The integer storage type of the given String.  (ValueMetaInterface.STORAGE_TYPE_...)
+     * @return The integer storage type of the given String.  (ValueMetaInterface.STORAGE_TYPE_...) or -1 if the storage type code not be found.
      */
     public static final int getStorageType(String desc)
     {
@@ -2554,7 +2554,16 @@ public class ValueMeta implements ValueMetaInterface
             }
         }
 
-        return STORAGE_TYPE_NORMAL;
+        return -1;
+    }
+    
+    public static final String getStorageTypeCode(int storageType)
+    {
+    	if (storageType>=STORAGE_TYPE_NORMAL && storageType<=STORAGE_TYPE_INDEXED)
+    	{
+    		return storageTypeCodes[storageType];
+    	}
+    	return null;
     }
     
     /**
