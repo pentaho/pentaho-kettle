@@ -353,7 +353,15 @@ public class TransExecutionConfiguration implements Cloneable
     {
         // OK, see if we need to ask for some arguments first...
         //
-        arguments = transMeta.getUsedArguments(commandLineArguments);
+    	Map<String, String> map = transMeta.getUsedArguments(commandLineArguments); 
+    	for (String key : map.keySet())
+    	{
+    		String value = map.get(key);
+    		if (!arguments.containsKey(key))
+    		{
+    			arguments.put(key, value);
+    		}
+    	}
     }
 
     /**
