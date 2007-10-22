@@ -652,11 +652,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
                 if (filter!=null && result.getParentObject().toString().toUpperCase().indexOf(filter)>=0) add=true;
                 if (filter!=null && result.getGrandParentObject().toString().toUpperCase().indexOf(filter)>=0) add=true;
 
-                if (add) rows.add(result.toRow().getData());
+                if (add) rows.add(result.toRow());
 			}
 		}
 
-		RowMetaInterface rowMeta = null;
 		for (int t = 0; t < jobMetas.length; t++)
 		{
 			JobMeta jobMeta = jobMetas[t];
@@ -673,16 +672,13 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
                 if (filter!=null && result.getParentObject().toString().toUpperCase().indexOf(filter)>=0) add=true;
                 if (filter!=null && result.getGrandParentObject().toString().toUpperCase().indexOf(filter)>=0) add=true;
 
-				RowMetaAndData row = result.toRow();
-
-				rowMeta = row.getRowMeta();
-                if (add) rows.add(row.getData());
+                if (add) rows.add(result.toRow());
 			}
 		}
 
 		if (rows.size() != 0)
 		{
-            PreviewRowsDialog prd = new PreviewRowsDialog(shell, Variables.getADefaultVariableSpace(), SWT.NONE, Messages.getString("Spoon.StringSearchResult.Subtitle"), rowMeta, rows);
+            PreviewRowsDialog prd = new PreviewRowsDialog(shell, Variables.getADefaultVariableSpace(), SWT.NONE, Messages.getString("Spoon.StringSearchResult.Subtitle"), StringSearchResult.getResultRowMeta(), rows);
 			String title = Messages.getString("Spoon.StringSearchResult.Title");
 			String message = Messages.getString("Spoon.StringSearchResult.Message");
 			prd.setTitleMessage(title, message);
