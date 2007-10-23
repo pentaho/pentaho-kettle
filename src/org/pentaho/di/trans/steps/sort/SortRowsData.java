@@ -50,6 +50,7 @@ public class SortRowsData extends BaseStepData implements StepDataInterface
     public RowMetaInterface outputRowMeta;
 	public int sortSize;
 	public boolean compressFiles;
+	public boolean convertKeysToNative;
 
 	/**
 	 * 

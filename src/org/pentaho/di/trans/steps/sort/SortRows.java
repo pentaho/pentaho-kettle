@@ -66,11 +66,24 @@ public class SortRows extends BaseStep implements StepInterface
 		data=(SortRowsData)stepDataInterface;
 	}
 	
-	private boolean addBuffer(RowMetaInterface rowMeta, Object[] r)
+	private boolean addBuffer(RowMetaInterface rowMeta, Object[] r) throws KettleException
 	{
 		if (r!=null)
 		{
-			data.buffer.add( r );     // Save row
+			// Do we need to convert binary string keys?
+			//
+			if (data.convertKeysToNative)
+			{
+				for (int i=0;i<data.fieldnrs.length;i++)
+				{
+					int index = data.fieldnrs[i];
+					r[index] = rowMeta.getValueMeta(index).convertBinaryStringToNativeType((byte[]) r[index]);
+				}
+			}
+
+			// Save row
+			// 
+			data.buffer.add( r );     
 		}
 		if (data.files.size()==0 && r==null) // No more records: sort buffer
 		{
@@ -141,7 +154,7 @@ public class SortRows extends BaseStep implements StepInterface
                 
                 for (p=0;p<data.buffer.size();p++)
 				{
-                    rowMeta.writeData(dos, data.buffer.get(p));
+                    data.outputRowMeta.writeData(dos, data.buffer.get(p));
 				}
                 
                 // Clear the list
@@ -157,8 +170,7 @@ public class SortRows extends BaseStep implements StepInterface
 			}
 			catch(Exception e)
 			{
-				logError("Error processing temp-file: "+e.toString());
-				return false;
+				throw new KettleException("Error processing temp-file!", e);
 			}
 			
             data.getBufferIndex=0;
@@ -323,6 +335,7 @@ public class SortRows extends BaseStep implements StepInterface
 		if (first && r!=null)
 		{
 			first=false;
+			data.convertKeysToNative = false;
 			data.fieldnrs=new int[meta.getFieldName().length];
 			for (i=0;i<meta.getFieldName().length;i++)
 			{
@@ -333,6 +346,7 @@ public class SortRows extends BaseStep implements StepInterface
 					setOutputDone();
 					return false;
 				}
+				if (getInputRowMeta().getValueMeta(i).isStorageBinaryString()) data.convertKeysToNative=true;
  			}
             
             // Metadata

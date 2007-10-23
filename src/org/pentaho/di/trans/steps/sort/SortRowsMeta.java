@@ -326,6 +326,13 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
                 ValueMetaInterface valueMeta = inputRowMeta.getValueMeta(idx);
                 valueMeta.setSortedDescending(!ascending[i]);
                 valueMeta.setCaseInsensitive(!caseSensitive[i]);
+                
+                // Also see if lazy conversion is active on these key fields.
+                // If so we want to automatically convert them to the normal storage type.
+                // This will improve performance, see also: PDI-346
+                // 
+                valueMeta.setStorageType(ValueMetaInterface.STORAGE_TYPE_NORMAL);
+                valueMeta.setStorageMetadata(null);
             }
         }
         
