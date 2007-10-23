@@ -201,8 +201,7 @@ public class AddSequenceTest extends TestCase
         AddSequenceMeta asm1 = new AddSequenceMeta();
         
         asm1.setUseCounter(true);
-        asm1.setValuename("counter");
-        asm1.setCounterName("counter");
+        asm1.setValuename("counter1");
         asm1.setStartAt(10);
         asm1.setIncrementBy(1);
         asm1.setMaxValue(100);
@@ -221,7 +220,7 @@ public class AddSequenceTest extends TestCase
         AddSequenceMeta asm2 = new AddSequenceMeta();
         
         asm2.setUseCounter(true);
-        asm2.setValuename("valuename");       
+        asm2.setValuename("valuename2");
         asm2.setStartAt(1);
         asm2.setIncrementBy(1);
         asm2.setMaxValue(5);
@@ -240,7 +239,7 @@ public class AddSequenceTest extends TestCase
         AddSequenceMeta asm3 = new AddSequenceMeta();
         
         asm3.setUseCounter(true);
-        asm3.setValuename("valuename");       
+        asm3.setValuename("valuename3");
         asm3.setStartAt(1);
         asm3.setIncrementBy(3);
         asm3.setMaxValue(17);
@@ -259,7 +258,7 @@ public class AddSequenceTest extends TestCase
         AddSequenceMeta asm4 = new AddSequenceMeta();
         
         asm4.setUseCounter(true);
-        asm4.setValuename("valuename");       
+        asm4.setValuename("valuename4");
         asm4.setStartAt(10);
         asm4.setIncrementBy(-2);
         asm4.setMaxValue(3);
