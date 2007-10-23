@@ -6083,7 +6083,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			return delegates.steps.getStepEntryDialog(stepMeta, transMeta, stepName);
 		} catch (Throwable t)
 		{
-			log.logError("Could not create dialog for " + stepMeta.getDialogClassName(), t.getMessage());
+			log.logError(toString(), "Could not create dialog for " + stepMeta.getDialogClassName(), t);
 		}
 		return null;
 	}
