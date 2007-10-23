@@ -136,7 +136,7 @@ public class AddSequence extends BaseStep implements StepInterface
 	}
 
 	public boolean init(StepMetaInterface smi, StepDataInterface sdi)
-	{
+	{		
 		meta=(AddSequenceMeta)smi;
 		data=(AddSequenceData)sdi;
 
@@ -178,8 +178,20 @@ public class AddSequence extends BaseStep implements StepInterface
 						if (data.counter==null)
 						{
 							// create a new one
-							data.counter = new Counter(meta.getStartAt());
+							data.counter = new Counter(meta.getStartAt(), meta.getIncrementBy(), meta.getMaxValue());
 							getTransMeta().getCounters().put(data.getLookup(), data.counter);
+						}
+						else
+						{
+							// Check whether counter characteristics are the same as a previously
+							// defined counter with the same name.
+							if ( (data.counter.getStart() != meta.getStartAt()) ||
+							   	 (data.counter.getIncrement() != meta.getIncrementBy()) ||								 
+								 (data.counter.getMaximum() != meta.getMaxValue()) )
+							{
+								logError(Messages.getString("AddSequence.Log.CountersWithDifferentCharacteristics", data.getLookup())); //$NON-NLS-1$
+								return false;
+						    }
 						}
 					}
 					return true;
