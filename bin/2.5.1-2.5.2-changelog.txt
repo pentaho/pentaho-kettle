@@ -1,0 +1,71 @@
+PDI-349 : Spoon user guide link on welcome screen is broken
+PDI-322 : When you try to edit a mapping trans, another Spoon is opened with no trans	
+Fix for bug #5620 : hardening of the copy/paste actions in Spoon Typo fix in comments of Database.java	
+upgrade of the PostgreSQL JDBC driver to version 8.2-506.	
+Various i18n fixes
+PDI-45 : DB Lookup Cache - TimedRow ClassCastException	
+Cosmetical fix for PDI-162	
+Sort rows: remove bottleneck, backport from 3.0
+Update of SQLite JDBC driver to fix an out of memory problem (upgrade from 032 to 037)	
+Step: Update the number of rows written to output, even if there are no next steps.  Backport from version 3.	
+Improved Table Output error handling for PDI-92, backport from 3.0.0-RC2 code	
+Yet another fix for the MS-SQL server "double-dot" problem.  Some code cleanup.	
+PDI-8 : set the logging level during LogWriter.getInstance()	
+PDI-25 : correctly expose the date range of the root job in "Get System Data"	
+Logging bug fix backported from trunk (3.0) : prevent Out Of Memory situation by limiting the log size. We no longer open a log file but use a Log4J string appender that can be limited in size. 
+Introducing a light graphics mode for limited platforms like AIX, Solaris, etc.	
+PDI-287 : Merge Join stalls in certain situations	
+PDI-4 : Transformations can't be saved in Windows Home directory, anywhere else is OK
+PDI-58 : Not using DatabaseMetaData in "Table exists" causes failure on Teradata	
+PDI-273 : Excel Input step crashes when Sheet Name is not specified or is null	
+PDI-81 : XML input; Strings cutted after several specialchars	
+PDI-139 : save as in repository is bugged for jobs	
+New "SQL Output" step in Experimental
+PDI-154 :  org.eclipse.swt.SWTException: Widget is disposed on connections	
+PDI-140 : Filterstep: org.eclipse.swt.SWTException: Widget is disposed	
+PDI-93 : prevent users from attempting to drag items from the main tree onto the workspace	
+PDI-207 : Table output with partitioning by day looses rows	
+PDI-258 : SQL Server "schema.tableName" using .. notation when .. selection check box is not selected	
+New "Get files rows count" step
+Some performance tuning for the "Preview Rows" Dialog
+PDI-143 : prevent step dialogs from being closed if they don't have a step name specified.	
+PDI-179	: Null pointer exception thrown when the job log table becomes corrupt.
+PDI-239	: Access Input do not retrieve schema information when you click on "Get fields"
+PDI-226 : put initial pool size in the right variable	
+New "Unzip files" job entry
+PDI-175 : implemented the indexOf() function for Javascript strings	
+PDI-197 : save the right log level.	
+New "XSL transform" and "XSD validator" steps in Experimental. Will allow to process XML stream for each row!
+PDI-197 : save the right log level.	
+PDI-185 : javascript weekdays now doesn't loop anymore	
+PDI-180 : support of variable substitution in arguments to shell job entry.	
+PDI-180 : cube input/output now properly support variable substitution.	
+New "Delete files" job entry
+New "FTP put file" job entry
+PDI-161 : Get fields button for Null if field	
+PDI-165 : Group By : row metadata exiting this step is not correct
+PDI-157	: Add Luhn algorithm function to java mod step
+PDI-156 : Fix size limit parameter in the XBase input step
+Job hops : prevent NPE if data is not valid
+"Mail" job entry : changes backported from 3.0
+New "DTD" job entry
+new "XSD" job entry
+Job example for running a shell for every row.	
+Job example for running jobs in parallel and synchronize them by the File job entries.	
+Backport of PDI-121 (.. and instance name in separate "SQL Server" database dialog tab)	
+PDI-28 : Selecting wrong job entry names corrupts the repository (backport from 3.0.0M2)
+PDI-133 : HTTP client: parameter handling	
+PDI-130 : template xls now also uses VFS access.	
+New "Copy files" job entry
+
+
+
+
+
+
+
+
+
+
+
+
