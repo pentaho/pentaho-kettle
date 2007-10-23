@@ -172,7 +172,7 @@ public class RepositoriesMeta
 			}
 			catch(FileNotFoundException ef)
 			{
-				InputStream is = getClass().getResourceAsStream("/be/ibridge/kettle/repository/repositories.xml");
+				InputStream is = getClass().getResourceAsStream("/org/pentaho/di/repository/repositories.xml");
 				if (is!=null)
 				{
 					doc = db.parse(is);
