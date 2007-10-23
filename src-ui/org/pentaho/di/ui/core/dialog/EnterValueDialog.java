@@ -329,14 +329,14 @@ public class EnterValueDialog extends Dialog
 		Object valueData = val.getValueData();
 		
 		valueMeta.setType( valtype );
-		valueMeta.setConversionMask( wFormat.getText() );
+		valueMeta.setConversionMask( Const.isEmpty(wFormat.getText())?null:wFormat.getText());
 		valueMeta.setLength( Const.toInt( wLength.getText(), -1) );
 		valueMeta.setPrecision( Const.toInt( wPrecision.getText(), -1) );
         
-        ValueMetaInterface stringValueMeta = valueMeta.clone();
-        stringValueMeta.setType(ValueMetaInterface.TYPE_STRING);
+        ValueMetaInterface stringValueMeta = new ValueMeta(valuename, ValueMetaInterface.TYPE_STRING);
+        stringValueMeta.setConversionMetadata(valueMeta);
         
-        Object targetData = valueMeta.convertData(stringValueMeta, valueData);
+        Object targetData = stringValueMeta.convertDataUsingConversionMetaData(valueData);
         val.setValueData(targetData);
 		
 		return val;
