@@ -92,7 +92,6 @@ public class DatabaseUtil
 		{
 			throw firstNe;
 		}
-		throw new NamingException(Messages.getString(
-				"DatabaseUtil.DSNotFound", dsName)); //$NON-NLS-1$
+		throw new NamingException(Messages.getString("DatabaseUtil.DSNotFound", dsName)); //$NON-NLS-1$
 	}
 }
