@@ -369,9 +369,9 @@ public interface ValueMetaInterface extends Cloneable
     public Object convertData(ValueMetaInterface meta2, Object data2) throws KettleValueException;
 
     /**
-     * Convert an object to the data type specified in the storage metadata
+     * Convert an object to the data type specified in the conversion metadata
      * @param data The data
-     * @return The data converted to the storage data type
+     * @return The data converted to the conversion data type
      * @throws KettleValueException in case there is a conversion error.
      */
     public Object convertDataUsingConversionMetaData(Object data) throws KettleValueException;
