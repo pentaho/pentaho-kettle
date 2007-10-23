@@ -225,7 +225,16 @@ public class SpoonDBDelegate extends SpoonDelegate
 			{
 				SQLStatementsDialog ssd = new SQLStatementsDialog(spoon.getShell(), Variables
 						.getADefaultVariableSpace(), SWT.NONE, stats);
-				ssd.open();
+				String sn = ssd.open();
+
+	            if (sn != null)
+	            {
+	                StepMeta esi = transMeta.findStep(sn);
+	                if (esi != null)
+	                {
+	                    spoon.delegates.steps.editStep(transMeta,esi);
+	                }
+	            }
 			} else
 			{
 				MessageBox mb = new MessageBox(spoon.getShell(), SWT.OK | SWT.ICON_INFORMATION);
