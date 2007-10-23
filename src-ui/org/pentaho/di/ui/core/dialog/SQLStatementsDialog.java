@@ -351,6 +351,14 @@ public class SQLStatementsDialog extends Dialog
 			stepname = wFields.table.getItem(idx).getText(1);
 			dispose();
 		}	
+		else
+		{
+			stepname = null;
+			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
+            mb.setText(Messages.getString("StepFieldsDialog.OriginStep.Title")); //$NON-NLS-1$
+            mb.setMessage(Messages.getString("StepFieldsDialog.OriginStep.Message")); //$NON-NLS-1$
+            mb.open();
+		}
 	}
 	
 	private void close()
