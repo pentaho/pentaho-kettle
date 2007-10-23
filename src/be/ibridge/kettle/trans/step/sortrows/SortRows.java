@@ -133,7 +133,7 @@ public class SortRows extends BaseStep implements StepInterface
 				return false;
 			}
 			
-			data.buffer.clear();
+			data.getBufferIndex=0;
 		}
 		
 		
@@ -196,10 +196,10 @@ public class SortRows extends BaseStep implements StepInterface
 		
 		if (data.files.size()==0)
 		{
-			if (data.buffer.size()>0)
+			if (data.getBufferIndex<data.buffer.size())
 			{
-				retval=(Row)data.buffer.get(0);
-				data.buffer.remove(0);
+				retval=(Row)data.buffer.get(data.getBufferIndex);
+				data.getBufferIndex++;
 			}
 			else
 			{
