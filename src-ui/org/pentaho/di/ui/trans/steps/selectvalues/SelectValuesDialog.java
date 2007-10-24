@@ -363,15 +363,17 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 		fdlMeta.top  = new FormAttachment(0, 0);
 		wlMeta.setLayoutData(fdlMeta);
 		
-		final int MetaCols=5;
 		final int MetaRows=input.getMetaName().length;
 		
-		ColumnInfo[] colmeta=new ColumnInfo[MetaCols];
-		colmeta[0]=new ColumnInfo(Messages.getString("SelectValuesDialog.ColumnInfo.Fieldname"),   ColumnInfo.COLUMN_TYPE_CCOMBO, new String[]{Messages.getString("SelectValuesDialog.ColumnInfo.Loading")}, false ); //$NON-NLS-1$
-		colmeta[1]=new ColumnInfo(Messages.getString("SelectValuesDialog.ColumnInfo.Renameto"),   ColumnInfo.COLUMN_TYPE_TEXT,     false ); //$NON-NLS-1$
-		colmeta[2]=new ColumnInfo(Messages.getString("SelectValuesDialog.ColumnInfo.Type"),        ColumnInfo.COLUMN_TYPE_CCOMBO,   ValueMeta.getAllTypes(), false); //$NON-NLS-1$
-		colmeta[3]=new ColumnInfo(Messages.getString("SelectValuesDialog.ColumnInfo.Length"),      ColumnInfo.COLUMN_TYPE_TEXT,     false ); //$NON-NLS-1$
-		colmeta[4]=new ColumnInfo(Messages.getString("SelectValuesDialog.ColumnInfo.Precision"),   ColumnInfo.COLUMN_TYPE_TEXT,     false ); //$NON-NLS-1$
+		ColumnInfo[] colmeta=new ColumnInfo[] {
+			new ColumnInfo(Messages.getString("SelectValuesDialog.ColumnInfo.Fieldname"),     ColumnInfo.COLUMN_TYPE_CCOMBO,   new String[]{Messages.getString("SelectValuesDialog.ColumnInfo.Loading")}, false ), //$NON-NLS-1$
+			new ColumnInfo(Messages.getString("SelectValuesDialog.ColumnInfo.Renameto"),      ColumnInfo.COLUMN_TYPE_TEXT,     false ), //$NON-NLS-1$
+			new ColumnInfo(Messages.getString("SelectValuesDialog.ColumnInfo.Type"),          ColumnInfo.COLUMN_TYPE_CCOMBO,   ValueMeta.getAllTypes(), false), //$NON-NLS-1$
+			new ColumnInfo(Messages.getString("SelectValuesDialog.ColumnInfo.Length"),        ColumnInfo.COLUMN_TYPE_TEXT,     false ), //$NON-NLS-1$
+			new ColumnInfo(Messages.getString("SelectValuesDialog.ColumnInfo.Precision"),     ColumnInfo.COLUMN_TYPE_TEXT,     false ), //$NON-NLS-1$
+			new ColumnInfo(Messages.getString("SelectValuesDialog.ColumnInfo.Storage.Label"), ColumnInfo.COLUMN_TYPE_CCOMBO,   new String[] {Messages.getString("System.Combo.Yes"), Messages.getString("System.Combo.No"), } ), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		};
+		colmeta[5].setToolTip(Messages.getString("SelectValuesDialog.ColumnInfo.Storage.Tooltip"));
 		fieldColumns.add(colmeta[0]);
 		wMeta=new TableView(transMeta, wMetaComp, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
@@ -542,6 +544,7 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 				item.setText(3, ValueMeta.getTypeDesc( input.getMetaType()[i]) );
 				item.setText(4, input.getMetaLength()   [i]==-2?"":""+input.getMetaLength()   [i]); //$NON-NLS-1$ //$NON-NLS-2$
 				item.setText(5, input.getMetaPrecision()[i]==-2?"":""+input.getMetaPrecision()[i]); //$NON-NLS-1$ //$NON-NLS-2$
+				item.setText(6, input.getMetaStorageType()[i]==ValueMetaInterface.STORAGE_TYPE_NORMAL?Messages.getString("System.Combo.Yes"):Messages.getString("System.Combo.No")); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 			wMeta.setRowNums();
 			wMeta.optWidth(true);
@@ -567,15 +570,13 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 		
 		// copy info to meta class (input)
 
-		int i;
-		
 		int nrfields = wFields.nrNonEmpty();
 		int nrremove = wRemove.nrNonEmpty();
 		int nrmeta   = wMeta.nrNonEmpty();
 		
 		input.allocate(nrfields, nrremove, nrmeta);
 		
-		for (i=0;i<nrfields;i++)
+		for (int i=0;i<nrfields;i++)
 		{
 			TableItem item = wFields.getNonEmpty(i);
 			input.getSelectName()        [i] = item.getText(1);
@@ -590,13 +591,13 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 		}
 		input.setSelectingAndSortingUnspecifiedFields( wUnspecified.getSelection() );
 
-		for (i=0;i<nrremove;i++)
+		for (int i=0;i<nrremove;i++)
 		{
 			TableItem item = wRemove.getNonEmpty(i);
 			input.getDeleteName()        [i] = item.getText(1);
 		}
 
-		for (i=0;i<nrmeta;i++)
+		for (int i=0;i<nrmeta;i++)
 		{
 			TableItem item = wMeta.getNonEmpty(i);
 			input.getMetaName()        [i] = item.getText(1);
@@ -609,6 +610,7 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 			
 			if (input.getMetaLength()   [i]<-2) input.getMetaLength()   [i]=-2;
 			if (input.getMetaPrecision()[i]<-2) input.getMetaPrecision()[i]=-2;
+			if (Messages.getString("System.Combo.Yes").equalsIgnoreCase(item.getText(6))) input.getMetaStorageType()[i]=ValueMetaInterface.STORAGE_TYPE_NORMAL;
 		}
 		dispose();
 	}
