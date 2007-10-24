@@ -95,9 +95,9 @@ public class XsdValidatorDialog extends BaseStepDialog implements StepDialogInte
 	private Composite    wGeneralComp;
 	private FormData     fdGeneralComp;
 	
-	private CTabItem     wContentTab;
-	private Composite    wContentComp;
-	private FormData     fdContentComp;
+	//private CTabItem     wContentTab;
+	//private Composite    wContentComp;
+	//private FormData     fdContentComp;
 	
 	
 	public XsdValidatorDialog(Shell parent, Object in, TransMeta transMeta, String sname)
@@ -180,7 +180,7 @@ public class XsdValidatorDialog extends BaseStepDialog implements StepDialogInte
 
 		wXML = new Group(wGeneralComp, SWT.SHADOW_NONE);
 		props.setLook(wXML);
-		wXML.setText("XML source");
+		wXML.setText(Messages.getString("XsdValidatorDialog.Gourp.XMLSource.Label"));
 		
 		FormLayout groupXML = new FormLayout();
 		groupXML.marginWidth = 10;
@@ -260,7 +260,7 @@ public class XsdValidatorDialog extends BaseStepDialog implements StepDialogInte
 
 		wOutputFields = new Group(wGeneralComp, SWT.SHADOW_NONE);
 		props.setLook(wOutputFields);
-		wOutputFields.setText("Output Fields");
+		wOutputFields.setText(Messages.getString("XsdValidatorDialog.Gourp.OutputFields.Label"));
 		
 		FormLayout groupLayout = new FormLayout();
 		groupLayout.marginWidth = 10;
@@ -384,7 +384,7 @@ public class XsdValidatorDialog extends BaseStepDialog implements StepDialogInte
 
 		wXSD = new Group(wGeneralComp, SWT.SHADOW_NONE);
 		props.setLook(wXSD);
-		wXSD.setText("XML Schema Definition");
+		wXSD.setText(Messages.getString("XsdValidatorDialog.Gourp.XSD.Label"));
 		
 		FormLayout groupXSD = new FormLayout();
 		groupXSD.marginWidth = 10;
