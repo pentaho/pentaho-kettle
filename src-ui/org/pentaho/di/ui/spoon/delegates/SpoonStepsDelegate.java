@@ -168,8 +168,7 @@ public class SpoonStepsDelegate extends SpoonDelegate
 		{
 			if (spoon.getShell().isDisposed())
 				return null;
-			new ErrorDialog(spoon.getShell(), Messages.getString("Spoon.Dialog.UnableOpenDialog.Title"),
-					Messages.getString("Spoon.Dialog.UnableOpenDialog.Message"), new Exception(e));
+			new ErrorDialog(spoon.getShell(), Messages.getString("Spoon.Dialog.UnableOpenDialog.Title"), Messages.getString("Spoon.Dialog.UnableOpenDialog.Message"), e);
 		}
 
 		if (refresh)

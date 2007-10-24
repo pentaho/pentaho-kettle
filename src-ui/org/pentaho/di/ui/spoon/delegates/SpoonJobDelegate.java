@@ -196,7 +196,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 		} catch (Throwable t)
 		{
 			t.printStackTrace();
-			spoon.getLog().logError("Could not create dialog for " + dialogClassName, t.getMessage());
+			spoon.getLog().logError(spoon.toString(), "Could not create dialog for " + dialogClassName, t);
 		}
 		return null;
 	}
@@ -218,7 +218,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 			return (StepDialogInterface) dialogConstructor.newInstance(paramArgs);
 		} catch (Throwable t)
 		{
-			spoon.getLog().logError("Could not create dialog for " + dialogClassName, t.getMessage());
+			spoon.getLog().logError(spoon.toString(), "Could not create dialog for " + dialogClassName, t);
 		}
 		return null;
 	}
