@@ -174,7 +174,7 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
 
 		wStepSettings = new Group(wGeneralComp, SWT.SHADOW_NONE);
 		props.setLook(wStepSettings);
-		wStepSettings.setText("Step Settings");
+		wStepSettings.setText(Messages.getString("RegexEvalDialog.Group.StepSettings.Label"));
 		
 		FormLayout groupLayout = new FormLayout();
 		groupLayout.marginWidth = 10;
