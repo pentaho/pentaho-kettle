@@ -120,7 +120,7 @@ public class Const
     /**
      * Path to the users home directory (keep this entry above references to getKettleDirectory())
      */
-    public static final String USER_HOME_DIRECTORY = Const.isEmpty(System.getProperty("KETTLE_HOME"))?System.getProperty("user.home"):System.getProperty("KETTLE_HOME");
+    public static final String USER_HOME_DIRECTORY = NVL(System.getProperty("KETTLE_HOME"), System.getProperty("user.home"));
 
 	/*
 	 * The images directory
@@ -980,7 +980,7 @@ public class Const
 	 */
 	public static final String getKettleDirectory()
 	{
-		return USER_HOME_DIRECTORY + FILE_SEPARATOR + BasePropertyHandler.getProperty("userBaseDir",".kettle");
+		return USER_HOME_DIRECTORY + FILE_SEPARATOR + BasePropertyHandler.getProperty("userBaseDir", ".kettle");
 	}
 	
     
