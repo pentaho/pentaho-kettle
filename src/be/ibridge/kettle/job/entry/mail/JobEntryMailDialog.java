@@ -46,6 +46,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import be.ibridge.kettle.core.widget.StyledTextComp;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.ResultFile;
@@ -158,7 +159,7 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
 
     private Label wlComment;
 
-    private Text wComment;
+    private StyledTextComp wComment;
 
     private FormData fdlComment, fdComment;
 
@@ -859,7 +860,8 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
         fdlComment.right = new FormAttachment(middle, margin);
         wlComment.setLayoutData(fdlComment);
 
-        wComment = new Text(wMessageGroup, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
+        //wComment = new Text(wMessageGroup, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
+        wComment=new StyledTextComp(wMessageGroup, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "");
         props.setLook(wComment);
         wComment.addModifyListener(lsMod);
         fdComment = new FormData();
@@ -868,8 +870,8 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
         fdComment.right = new FormAttachment(100, 0);
         fdComment.bottom = new FormAttachment(100, -margin);
         wComment.setLayoutData(fdComment);
-        SelectionAdapter lsVar = VariableButtonListenerFactory.getSelectionAdapter(shell, wComment);
-        wComment.addKeyListener(TextVar.getControlSpaceKeyListener(wComment, lsVar));
+        //SelectionAdapter lsVar = VariableButtonListenerFactory.getSelectionAdapter(shell, wComment);
+        //wComment.addKeyListener(TextVar.getControlSpaceKeyListener(wComment, lsVar));
         
         fdMessageGroup = new FormData();
         fdMessageGroup.left = new FormAttachment(0, margin);
