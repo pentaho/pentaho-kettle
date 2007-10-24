@@ -240,7 +240,7 @@ public class StreamLookup extends BaseStep implements StepInterface
                     {
                     	// Change the input value to match the lookup value
                     	//
-                        lu[i] = lookupValue.convertData(inputValue, lu[i]);
+                        lu[i] = lookupValue.convertDataCompatible(inputValue, lu[i]);
                     }
                     catch (KettleValueException e)
                     {

@@ -529,6 +529,14 @@ public class ValueMeta implements ValueMetaInterface
         
         return getDateFormat().format(date);
     }
+    
+    private static SimpleDateFormat compatibleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS"); 
+
+    private synchronized String convertDateToCompatibleString(Date date)
+    {
+        if (date==null) return null;
+        return compatibleDateFormat.format(date);
+    }
 
     private synchronized Date convertStringToDate(String string) throws KettleValueException
     {
@@ -611,6 +619,12 @@ public class ValueMeta implements ValueMetaInterface
         {
             throw new KettleValueException(toString()+" : couldn't convert Number to String ", e);
         }
+    }
+    
+    private synchronized String convertNumberToCompatibleString(Double number) throws KettleValueException
+    {
+        if (number==null) return null;
+        return Double.toString(number);
     }
     
     private synchronized Double convertStringToNumber(String string) throws KettleValueException
@@ -800,6 +814,12 @@ public class ValueMeta implements ValueMetaInterface
         }
     }
     
+    private synchronized String convertIntegerToCompatibleString(Long integer) throws KettleValueException
+    {
+        if (integer==null) return null;
+        return Long.toString(integer);
+    }
+    
     private synchronized Long convertStringToInteger(String string) throws KettleValueException
     {
         if (Const.isEmpty(string)) return null;
@@ -821,12 +841,7 @@ public class ValueMeta implements ValueMetaInterface
         if (number==null) return null;
 
         String string = number.toString();
-        /*
-        if ( !Const.isEmpty(decimalSymbol) && !".".equalsIgnoreCase(decimalSymbol) )
-        {
-            string = Const.replace(string, ".", decimalSymbol.substring(0, 1));
-        }
-        */
+
         return string;
     }
     
@@ -1030,6 +1045,56 @@ public class ValueMeta implements ValueMetaInterface
         	
         	return object;
         	
+        }
+    }
+    
+    public String getCompatibleString(Object object) throws KettleValueException
+    {
+        try
+        {
+            String string;
+            
+            switch(type)
+            {
+            case TYPE_DATE:
+                switch(storageType)
+                {
+                case STORAGE_TYPE_NORMAL:         string = convertDateToCompatibleString((Date)object); break;
+                case STORAGE_TYPE_BINARY_STRING:  string = convertDateToCompatibleString((Date)convertBinaryStringToNativeType((byte[])object)); break;
+                case STORAGE_TYPE_INDEXED:        string = object==null ? null : convertDateToCompatibleString((Date)index[((Integer)object).intValue()]); break;
+                default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
+                }
+                break;
+    
+            case TYPE_NUMBER:
+                switch(storageType)
+                {
+                case STORAGE_TYPE_NORMAL:         string = convertNumberToCompatibleString((Double)object); break;
+                case STORAGE_TYPE_BINARY_STRING:  string = convertNumberToCompatibleString((Double)convertBinaryStringToNativeType((byte[])object)); break;
+                case STORAGE_TYPE_INDEXED:        string = object==null ? null : convertNumberToCompatibleString((Double)index[((Integer)object).intValue()]); break;
+                default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
+                }
+                break;
+    
+            case TYPE_INTEGER:
+                switch(storageType)
+                {
+                case STORAGE_TYPE_NORMAL:         string = convertIntegerToCompatibleString((Long)object); break;
+                case STORAGE_TYPE_BINARY_STRING:  string = convertIntegerToCompatibleString((Long)convertBinaryStringToNativeType((byte[])object)); break;
+                case STORAGE_TYPE_INDEXED:        string = object==null ? null : convertIntegerToCompatibleString((Long)index[((Integer)object).intValue()]); break;
+                default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
+                }
+                break;
+    
+            default: 
+                return getString(object);
+            }
+            
+            return string;
+        }
+        catch(ClassCastException e)
+        {
+        	throw new KettleValueException(toString()+" : There was a data type error: the data type of "+object.getClass().getName()+" object ["+object+"] does not correspond to value meta ["+toStringMeta()+"]");
         }
     }
 
@@ -2750,6 +2815,31 @@ public class ValueMeta implements ValueMetaInterface
         switch(getType())
         {
         case TYPE_STRING    : return meta2.getString(data2);
+        case TYPE_NUMBER    : return meta2.getNumber(data2);
+        case TYPE_INTEGER   : return meta2.getInteger(data2);
+        case TYPE_DATE      : return meta2.getDate(data2);
+        case TYPE_BIGNUMBER : return meta2.getBigNumber(data2);
+        case TYPE_BOOLEAN   : return meta2.getBoolean(data2);
+        case TYPE_BINARY    : return meta2.getBinary(data2);
+        default: 
+            throw new KettleValueException(toString()+" : I can't convert the specified value to data type : "+getType());
+        }
+    }
+    
+    /**
+     * Convert the specified data to the data type specified in this object.
+     * For String conversion, be compatible with version 2.5.2.
+     * 
+     * @param meta2 the metadata of the object to be converted
+     * @param data2 the data of the object to be converted
+     * @return the object in the data type of this value metadata object
+     * @throws KettleValueException in case there is a data conversion error
+     */
+    public Object convertDataCompatible(ValueMetaInterface meta2, Object data2) throws KettleValueException
+    {
+        switch(getType())
+        {
+        case TYPE_STRING    : return meta2.getCompatibleString(data2);
         case TYPE_NUMBER    : return meta2.getNumber(data2);
         case TYPE_INTEGER   : return meta2.getInteger(data2);
         case TYPE_DATE      : return meta2.getDate(data2);

@@ -218,7 +218,10 @@ public interface ValueMetaInterface extends Cloneable
     /* Conversion methods */
     
     public Object cloneValueData(Object object) throws KettleValueException;
-    
+
+    /** Convert the supplied data to a String compatible with version 2.5. */
+    public String getCompatibleString(Object object) throws KettleValueException;
+
     /** Convert the supplied data to a String */
     public String getString(Object object) throws KettleValueException;
 
@@ -367,6 +370,17 @@ public interface ValueMetaInterface extends Cloneable
      * @throws KettleValueException in case there is a data conversion error
      */
     public Object convertData(ValueMetaInterface meta2, Object data2) throws KettleValueException;
+
+    /**
+     * Convert the specified data to the data type specified in this object.
+     * For String conversion, be compatible with version 2.5.2.
+     * 
+     * @param meta2 the metadata of the object to be converted
+     * @param data2 the data of the object to be converted
+     * @return the object in the data type of this value metadata object
+     * @throws KettleValueException in case there is a data conversion error
+     */
+    public Object convertDataCompatible(ValueMetaInterface meta2, Object data2) throws KettleValueException;
 
     /**
      * Convert an object to the data type specified in the conversion metadata

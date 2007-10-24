@@ -20,6 +20,7 @@ import java.util.Hashtable;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -97,7 +98,8 @@ public class ValueMapper extends BaseStep implements StepInterface
             
 		}
 
-        String source = data.previousMeta.getString(r, data.keynr);
+		ValueMetaInterface previousValueMeta = data.previousMeta.getValueMeta(data.keynr);
+		String source = previousValueMeta.getCompatibleString(r[data.keynr]);
         String target = null;
         
         // Null/Empty mapping to value...
