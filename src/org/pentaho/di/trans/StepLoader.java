@@ -103,13 +103,23 @@ public class StepLoader
     
     /**
      * Read & initialize all the steps and plugins
+     * @param pluginDirectory the directories to read plugins from
+     * @throws KettleException In case a plug-in could not be loaded or something else went wrong in the process.
+     */
+    public static final void init(String[] pluginDirectory) throws KettleException
+    {
+    	StepLoader loader = getInstance(pluginDirectory);
+        loader.readNatives(); 
+        loader.readPlugins();
+    }
+    
+    /**
+     * Read & initialize all the steps and plugins
      * @throws KettleException In case a plug-in could not be loaded or something else went wrong in the process.
      */
     public static final void init() throws KettleException
     {
-    	StepLoader loader = getInstance();
-        loader.readNatives(); 
-        loader.readPlugins();
+    	init(new String[] { Const.PLUGIN_STEPS_DIRECTORY_PUBLIC, Const.PLUGIN_STEPS_DIRECTORY_PRIVATE });
     }
 
     public void readNatives()
@@ -309,7 +319,8 @@ public class StepLoader
 
     public void readPlugins() throws KettleException
     {
-    	
+    	LogWriter log = LogWriter.getInstance();
+        
     	try {
     		// try reading plugins defined in JAR file META-INF/step_plugin.xml
         	Enumeration<URL> resources = getClass().getClassLoader().getResources("META-INF/step_plugin.xml");
@@ -361,8 +372,7 @@ public class StepLoader
 	            File f = new File(pluginDirectory[dirNr]);
 		        if (f.isDirectory() && f.exists())
 		        {
-                    LogWriter log = LogWriter.getInstance();
-		            log.logDetailed(Messages.getString("StepLoader.Log.StepLoader.Title"), Messages.getString("StepLoader.Log.StepLoader.Description")+pluginDirectory[dirNr]); //$NON-NLS-1$ //$NON-NLS-2$
+                    log.logDetailed(Messages.getString("StepLoader.Log.StepLoader.Title"), Messages.getString("StepLoader.Log.StepLoader.Description")+pluginDirectory[dirNr]); //$NON-NLS-1$ //$NON-NLS-2$
 	
 		            String dirs[] = f.list();
 		            for (int i = 0; i < dirs.length; i++)
@@ -383,8 +393,20 @@ public class StepLoader
 
 		            			readPluginFromResource( new FileInputStream(fpixml), pi.getPath(), dirs[i], StepPlugin.TYPE_PLUGIN );
 		                    }
+		                    else
+		                    {
+		    		            log.logDetailed(Messages.getString("StepLoader.Log.StepLoader.Title"), "Plugin file ["+fpixml+"] is not readable."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		                    }
 		                }
-		            }
+		                else
+		                {
+	    		            log.logDetailed(Messages.getString("StepLoader.Log.StepLoader.Title"), "Plugin directory ["+piDir+"] is not a directory."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		                }
+		            }		           
+		        }
+		        else
+		        {
+		            log.logDetailed(Messages.getString("StepLoader.Log.StepLoader.Title"), "Plugin directory not found: ["+pluginDirectory[dirNr]+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		        }
             }
             catch(Exception e)
