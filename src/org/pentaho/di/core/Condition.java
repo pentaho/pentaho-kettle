@@ -445,7 +445,7 @@ public class Condition implements Cloneable, XMLInterface
                         }
                         else
                         {
-                            retval = Pattern.matches(fieldMeta2.getString(field2), fieldMeta.getString(field));
+                            retval = Pattern.matches(fieldMeta2.getCompatibleString(field2), fieldMeta.getCompatibleString(field));
                         }
                         break;
 					case FUNC_NULL          : retval = (fieldMeta.isNull(field));           break;
@@ -455,19 +455,19 @@ public class Condition implements Cloneable, XMLInterface
 					    	retval = Const.indexOfString(fieldMeta.getCompatibleString(field), list)>=0; // Compatible string doesn't pad with 0's etc.
 					    	break;
 					case FUNC_CONTAINS      : 
-                        retval = fieldMeta.getString(field)!=null?fieldMeta.getString(field).indexOf(fieldMeta2.getString(field2))>=0:false; 
+                        retval = fieldMeta.getCompatibleString(field)!=null?fieldMeta.getCompatibleString(field).indexOf(fieldMeta2.getCompatibleString(field2))>=0:false; 
                         break;
 					case FUNC_STARTS_WITH   : 
-                        retval = fieldMeta.getString(field)!=null?fieldMeta.getString(field).startsWith(fieldMeta2.getString(field2)):false; 
+                        retval = fieldMeta.getCompatibleString(field)!=null?fieldMeta.getCompatibleString(field).startsWith(fieldMeta2.getCompatibleString(field2)):false; 
                         break;
 					case FUNC_ENDS_WITH     : 
-                        String string = fieldMeta.getString(field); 
+                        String string = fieldMeta.getCompatibleString(field); 
                         if (!Const.isEmpty(string))
                         {
-                            if (right_string==null && field2!=null) right_string=fieldMeta2.getString(field2);
+                            if (right_string==null && field2!=null) right_string=fieldMeta2.getCompatibleString(field2);
                             if (right_string!=null)
                             {
-                                retval = string.endsWith(fieldMeta2.getString(field2));
+                                retval = string.endsWith(fieldMeta2.getCompatibleString(field2));
                             }
                             else
                             {
@@ -478,7 +478,6 @@ public class Condition implements Cloneable, XMLInterface
                         {
                             retval = false;
                         }
-                        // retval = fieldMeta.getString(field)!=null?fieldMeta.getString(field).endsWith(fieldMeta2.getString(field2)):false;   
                         break;
 					default: break;
 				}
