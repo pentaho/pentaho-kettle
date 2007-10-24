@@ -764,7 +764,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 				filterBytes = filterString.getBytes();
 				filterPrefix = STRING_BASE64_PREFIX;
 			}
-			String filterEncoded = filterPrefix + Base64.encodeBase64(filterBytes);
+			String filterEncoded = filterPrefix + new String(Base64.encodeBase64(filterBytes));
 
 			retval.append("      <filter>").append(Const.CR);
 			retval.append("        ").append(XMLHandler.addTagValue("filter_string", filterEncoded, false));
