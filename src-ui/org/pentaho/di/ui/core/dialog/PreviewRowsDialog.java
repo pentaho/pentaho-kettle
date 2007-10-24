@@ -252,6 +252,7 @@ public class PreviewRowsDialog extends Dialog
         {
             public void run()
             {
+            	int nrErrors = 0;
                 for (int i = 0; i < buffer.size(); i++)
                 {
                     TableItem item;
@@ -286,12 +287,20 @@ public class PreviewRowsDialog extends Dialog
                         }
                         catch (KettleValueException e)
                         {
-                            LogWriter.getInstance().logError(toString(), Const.getStackTracker(e));
+                        	nrErrors++;
+                        	if (nrErrors<25)
+                        	{
+	                            LogWriter.getInstance().logError(toString(), Const.getStackTracker(e));
+                        	}
                             show=null;
                         }
                         catch (ArrayIndexOutOfBoundsException e)
                         {
-                            LogWriter.getInstance().logError(toString(), Const.getStackTracker(e));
+                        	nrErrors++;
+                        	if (nrErrors<25)
+                        	{
+                        		LogWriter.getInstance().logError(toString(), Const.getStackTracker(e));
+                        	}
                             show=null;
                         }
 
