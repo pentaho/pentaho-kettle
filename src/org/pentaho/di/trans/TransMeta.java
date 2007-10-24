@@ -683,6 +683,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     {
         if (i < 0 || i >= databases.size()) return;
         databases.remove(i);
+        changed_databases = true;
     }
 
     /**
