@@ -708,11 +708,10 @@ public class SpoonJobDelegate extends SpoonDelegate
 						JobEntrySQL jesql = new JobEntrySQL(jesqlname);
 						jesql.setDatabase(targetDbInfo);
 						jesql.setSQL(sql);
-						jesql
-								.setDescription(Messages.getString("Spoon.RipDB.JobEntrySQL.Description") + targetDbInfo + "].[" + tables[i] + "]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+						jesql.setDescription(Messages.getString("Spoon.RipDB.JobEntrySQL.Description") + targetDbInfo + "].[" + tables[i] + "]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
 						JobEntryCopy jecsql = new JobEntryCopy();
-						jecsql.setEntry(jesql);
+						jecsql.setEntry(jesql);						
 						jecsql.setLocation(new Point(location.x, location.y));
 						jecsql.setDrawn();
 						jobMeta.addJobEntry(jecsql);
@@ -732,14 +731,14 @@ public class SpoonJobDelegate extends SpoonDelegate
 					if (spoon.getRepository() != null)
 					{
 						jetrans.setDirectory(transMeta.getDirectory());
-					} else
+					} 
+					else
 					{
 						jetrans.setFileName(Const.createFilename("${"+ Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY + "}", transMeta.getName(), "."+Const.STRING_TRANS_DEFAULT_EXT));
 					}
 
 					JobEntryCopy jectrans = new JobEntryCopy(spoon.getLog(), jetrans);
-					jectrans
-							.setDescription(Messages.getString("Spoon.RipDB.JobEntryTrans.Description1") + Const.CR + Messages.getString("Spoon.RipDB.JobEntryTrans.Description2") + sourceDbInfo + "].[" + tables[i] + "]" + Const.CR + Messages.getString("Spoon.RipDB.JobEntryTrans.Description3") + targetDbInfo + "].[" + tables[i] + "]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
+					jectrans.setDescription(Messages.getString("Spoon.RipDB.JobEntryTrans.Description1") + Const.CR + Messages.getString("Spoon.RipDB.JobEntryTrans.Description2") + sourceDbInfo + "].[" + tables[i] + "]" + Const.CR + Messages.getString("Spoon.RipDB.JobEntryTrans.Description3") + targetDbInfo + "].[" + tables[i] + "]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
 					jectrans.setDrawn();
 					location.x += 400;
 					jectrans.setLocation(new Point(location.x, location.y));

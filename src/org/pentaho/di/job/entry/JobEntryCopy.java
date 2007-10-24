@@ -80,7 +80,7 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 
 	public JobEntryCopy(LogWriter log, JobEntryInterface entry)
 	{
-		this.entry = entry;
+		setEntry(entry);
 	}
 
 	public String getXML()
@@ -322,6 +322,13 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 	public void setEntry(JobEntryInterface je)
 	{
 		entry = je;
+		if (entry!=null)
+		{
+			if (entry.getConfigId()==null)
+		    {
+				entry.setConfigId( JobEntryLoader.getInstance().getJobEntryID(entry) );
+		    }
+		}
 	}
 
 	public JobEntryInterface getEntry()

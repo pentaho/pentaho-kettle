@@ -1800,7 +1800,11 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 			if (je.isDummy()) im = GUIResource.getInstance().getImageDummy();
 			break;
 		default:
-            im = (Image)GUIResource.getInstance().getImagesJobentries().get(je.getEntry().getConfigId());
+			String configId = je.getEntry().getConfigId();
+			if (configId!=null)
+			{
+				im = (Image)GUIResource.getInstance().getImagesJobentries().get(configId);
+			}
 		}
 		return im;
 	}
