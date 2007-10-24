@@ -556,7 +556,7 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, Messages.getString("RegexEvalDialog.FailedToGetFields.DialogTitle"), Messages.getString("RegexEvalDialogMod.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, Messages.getString("RegexEvalDialog.FailedToGetFields.DialogTitle"), Messages.getString("RegexEvalDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 	 
