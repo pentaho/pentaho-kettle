@@ -57,7 +57,6 @@ public class TableInput extends BaseStep implements StepInterface
 
         RowMetaInterface parametersMeta = new RowMeta();
         Object[] parametersData = new Object[] {};
-        RowMetaAndData parameters = new RowMetaAndData(parametersMeta, parametersData);
 
         RowSet rowSet = findInputRowSet(meta.getLookupStepname());
         Object[] rowData = getRowFrom(rowSet); // rows are originating from "lookup_from"
@@ -73,7 +72,9 @@ public class TableInput extends BaseStep implements StepInterface
         {
             throw new KettleException("Expected to read parameters from step ["+meta.getLookupStepname()+"] but none were found.");
         }
-        
+
+        RowMetaAndData parameters = new RowMetaAndData(parametersMeta, parametersData);
+
         return parameters;
     }	
 	
