@@ -200,6 +200,8 @@ public class Translator2
     	localeList.add("zh_CN");
     	localeList.add("pt_BR");
     	localeList.add("pt_PT");
+    	localeList.add("es_AR");
+    	localeList.add("no_NO");
     	
     	File file = new File("translator.xml");
     	if (file.exists()) {
