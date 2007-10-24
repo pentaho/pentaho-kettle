@@ -548,7 +548,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 		} 
 		else
 		{
-			jobMeta.setFilename(Const.createFilename(directory, jobname, Const.STRING_JOB_DEFAULT_EXT));
+			jobMeta.setFilename(Const.createFilename(directory, jobname, "."+Const.STRING_JOB_DEFAULT_EXT));
 		}
 
 		spoon.refreshTree();
@@ -595,8 +595,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 						transMeta.setDirectory(repdir);
 					} else
 					{
-						transMeta.setFilename(Const.createFilename(directory, transname,
-								Const.STRING_TRANS_DEFAULT_EXT));
+						transMeta.setFilename(Const.createFilename(directory, transname, "."+Const.STRING_TRANS_DEFAULT_EXT));
 					}
 
 					// Add the source & target db
@@ -735,9 +734,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 						jetrans.setDirectory(transMeta.getDirectory());
 					} else
 					{
-						jetrans.setFileName(Const.createFilename("${"
-								+ Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY + "}", transMeta.getName(),
-								Const.STRING_TRANS_DEFAULT_EXT));
+						jetrans.setFileName(Const.createFilename("${"+ Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY + "}", transMeta.getName(), "."+Const.STRING_TRANS_DEFAULT_EXT));
 					}
 
 					JobEntryCopy jectrans = new JobEntryCopy(spoon.getLog(), jetrans);
