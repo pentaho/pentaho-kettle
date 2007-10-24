@@ -64,14 +64,8 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 	 */
 	private synchronized Object[] lookupValues(RowMetaInterface inputRowMeta, Object[] row) throws KettleException
 	{
-		Object[] outputRow = RowDataUtil.allocateRowData(data.outputRowMeta.size());
-        
-        // copy the original objects...
-        for (int i=0;i<inputRowMeta.size();i++)
-        {
-            outputRow[i] = row[i];
-        }
-        
+		Object[] outputRow = RowDataUtil.resizeArray(row, data.outputRowMeta.size());
+                
         Object[] lookupRow = new Object[data.lookupMeta.size()];
         int lookupIndex=0;
         
@@ -223,9 +217,9 @@ public class DatabaseLookup extends BaseStep implements StepInterface
                     }
                 }
             }
-		} 
+		}
 
-		for (int i=0;i<add.length;i++)
+		for (int i=0;i<data.returnMeta.size();i++)
 		{
 			outputRow[inputRowMeta.size()+i] = add[i];
 		}
@@ -385,11 +379,14 @@ public class DatabaseLookup extends BaseStep implements StepInterface
             // add new lookup values to the row
             Object[] outputRow = lookupValues(getInputRowMeta(), r); 
 
-            // copy row to output rowset(s);
-			putRow(data.outputRowMeta, outputRow);
-            
-			if (log.isRowLevel()) logRowlevel(Messages.getString("DatabaseLookup.Log.WroteRowToNextStep")+r); //$NON-NLS-1$
-            if (checkFeedback(linesRead)) logBasic("linenr "+linesRead); //$NON-NLS-1$
+            if (outputRow!=null)
+            {
+	            // copy row to output rowset(s);
+				putRow(data.outputRowMeta, outputRow);
+	            
+				if (log.isRowLevel()) logRowlevel(Messages.getString("DatabaseLookup.Log.WroteRowToNextStep")+r); //$NON-NLS-1$
+	            if (checkFeedback(linesRead)) logBasic("linenr "+linesRead); //$NON-NLS-1$
+            }
 		}
 		catch(KettleException e)
 		{
