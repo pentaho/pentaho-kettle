@@ -16,10 +16,9 @@ export LD_LIBRARY_PATH=${MOZILLA_FIVE_HOME}:${LD_LIBRARY_PATH}
 # ** Libraries used by Kettle:                    **
 # **************************************************
 
-BASEDIR=${KETTLE_HOME}
-if [ -z "$KETTLE_HOME" ]; then
-  BASEDIR=$(dirname $0)
-fi
+BASEDIR=$(dirname $0)
+cd $BASEDIR
+
 CLASSPATH=$BASEDIR
 CLASSPATH=$CLASSPATH:$BASEDIR/lib/kettle-engine-3.0.jar
 CLASSPATH=$CLASSPATH:$BASEDIR/lib/kettle-ui-swt-3.0.jar

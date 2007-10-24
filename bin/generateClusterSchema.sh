@@ -5,6 +5,8 @@
 # **************************************************
 
 BASEDIR=$(dirname $0)
+cd $BASEDIR
+
 CLASSPATH=$BASEDIR
 CLASSPATH=$CLASSPATH:$BASEDIR/lib/kettle-engine-3.0.jar
 

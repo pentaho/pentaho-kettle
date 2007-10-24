@@ -4,10 +4,9 @@
 # ** Libraries used by Kettle:                    **
 # **************************************************
 
-BASEDIR=${KETTLE_HOME}
-if [ -z "$KETTLE_HOME" ]; then
-  BASEDIR=$(dirname $0)
-fi
+BASEDIR=$(dirname $0)
+cd $BASEDIR
+
 CLASSPATH=$BASEDIR
 CLASSPATH=$CLASSPATH:$BASEDIR/lib/kettle-engine-3.0.jar
 
