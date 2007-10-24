@@ -305,6 +305,7 @@ public class TransDebugDialog extends Dialog {
         fdRowCount.right  = new FormAttachment(100, 0);
         fdRowCount.top    = new FormAttachment(0, 0);
         wRowCount.setLayoutData(fdRowCount);
+        wRowCount.addSelectionListener(new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent arg0) {ok(false); }});
 
     	// Do we retrieve the first rows passing?
     	//
