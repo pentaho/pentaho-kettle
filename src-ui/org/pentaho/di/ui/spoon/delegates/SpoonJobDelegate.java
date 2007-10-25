@@ -327,20 +327,30 @@ public class SpoonJobDelegate extends SpoonDelegate
 
 	public void dupeJobEntry(JobMeta jobMeta, JobEntryCopy jobEntry)
 	{
-		if (jobEntry != null && !jobEntry.isStart())
+		if (jobEntry==null)
+			return;
+		
+		if (jobEntry.isStart())
 		{
-			JobEntryCopy dupejge = (JobEntryCopy) jobEntry.clone();
-			dupejge.setNr(jobMeta.findUnusedNr(dupejge.getName()));
-			if (dupejge.isDrawn())
-			{
-				Point p = jobEntry.getLocation();
-				dupejge.setLocation(p.x + 10, p.y + 10);
-			}
-			jobMeta.addJobEntry(dupejge);
-			spoon.refreshGraph();
-			spoon.refreshTree();
-			spoon.setShellText();
+			MessageBox mb = new MessageBox(spoon.getShell(), SWT.OK | SWT.ICON_INFORMATION);
+			mb.setMessage(Messages.getString("Spoon.Dialog.OnlyUseStartOnce.Message"));
+			mb.setText(Messages.getString("Spoon.Dialog.OnlyUseStartOnce.Title"));
+			mb.open();
+			return;
 		}
+		
+		JobEntryCopy dupejge = (JobEntryCopy) jobEntry.clone();
+		dupejge.setNr(jobMeta.findUnusedNr(dupejge.getName()));
+		if (dupejge.isDrawn())
+		{
+			Point p = jobEntry.getLocation();
+			dupejge.setLocation(p.x + 10, p.y + 10);
+		}
+		jobMeta.addJobEntry(dupejge);
+		spoon.refreshGraph();
+		spoon.refreshTree();
+		spoon.setShellText();
+		
 	}
 
 	public void copyJobEntries(JobMeta jobMeta, JobEntryCopy jec[])
@@ -1456,7 +1466,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 					Job.sendXMLToSlaveServer(jobMeta, executionConfiguration);
 					spoon.delegates.slaves.addSpoonSlave(executionConfiguration.getRemoteServer());
 				} else {
-					MessageBox mb = new MessageBox(spoon.getShell(), SWT.OK | SWT.ICON_INFORMATION);
+					MessageBox mb = new MessageBox(spoon.getShell(), SWT.OK | SWT.ICON_ERROR);
 					mb.setMessage(Messages.getString("Spoon.Dialog.NoRemoteServerSpecified.Message"));
 					mb.setText(Messages.getString("Spoon.Dialog.NoRemoteServerSpecified.Title"));
 					mb.open();
