@@ -500,7 +500,6 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 		wInclTablenameField.setLayoutData(fdInclTablenameField);
 
 	
-		
 		wlInclRownum=new Label(wAdditionalGroup, SWT.RIGHT);
 		wlInclRownum.setText(Messages.getString("AccessInputDialog.InclRownum.Label"));
  		props.setLook(wlInclRownum);
@@ -540,17 +539,15 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 		fdlResetRownum=new FormData();
 		fdlResetRownum.left = new FormAttachment(wInclRownum, margin);
 		fdlResetRownum.top  = new FormAttachment(wInclRownumField, margin);
-		//fdlResetRownum.right= new FormAttachment(middle, -margin);
 		wlResetRownum.setLayoutData(fdlResetRownum);
 		wResetRownum=new Button(wAdditionalGroup, SWT.CHECK );
  		props.setLook(wResetRownum);
 		wResetRownum.setToolTipText(Messages.getString("AccessInputDialog.ResetRownum.Tooltip"));
 		fdRownum=new FormData();
-		fdRownum.left = new FormAttachment(wlInclRownumField, margin);
-		fdRownum.top  = new FormAttachment(wInclRownumField, margin);
+		fdRownum.left = new FormAttachment(wlResetRownum, margin);
+		fdRownum.top  = new FormAttachment(wInclRownumField, margin);	
 		wResetRownum.setLayoutData(fdRownum);
 		
-
 		
 		fdAdditionalGroup = new FormData();
 		fdAdditionalGroup.left = new FormAttachment(0, margin);
@@ -1033,7 +1030,6 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
  
 	}
 
-
 	public void setIncludeFilename()
 	{
 		wlInclFilenameField.setEnabled(wInclFilename.getSelection());
@@ -1044,6 +1040,8 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 	{
 		wlInclRownumField.setEnabled(wInclRownum.getSelection());
 		wInclRownumField.setEnabled(wInclRownum.getSelection());
+		wlResetRownum.setEnabled(wInclRownum.getSelection());
+		wResetRownum.setEnabled(wInclRownum.getSelection());
 	}
 	
 	public void setIncludeTablename()
@@ -1314,9 +1312,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 					// The file not exists !
 					throw new KettleException(Messages.getString("AccessInputMeta.Exception.FileDoesNotExist", KettleVFS
 							.getFilename(fileInputList.getFile(0))));
-				}
-	          
-				
+				}				
 			}
 			else
 			{
@@ -1326,9 +1322,6 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 		            mb.setText(Messages.getString("System.Dialog.Error.Title"));
 		            mb.open(); 
 			}
-			
-			
-			
 		}
 		catch(Throwable e)
 	    {
