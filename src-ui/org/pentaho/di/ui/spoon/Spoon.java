@@ -3563,7 +3563,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			{
 				String[] parts = extensions[i].split(";");
 				for (int j=0;j<parts.length;j++) {
-					if (fname.endsWith(parts[j].substring(1))) {
+					if (fname.toLowerCase().endsWith(parts[j].substring(1).toLowerCase())) {
 						ending=true;
 					}
 				}
