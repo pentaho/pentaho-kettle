@@ -297,7 +297,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 
   public String getOutputDirectory()
   {
-    return "             ";
+    return outputdirectory;
   }
 
   public String getRealOutputDirectory()
@@ -709,5 +709,4 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
     }
     return references;
   }
-
 }

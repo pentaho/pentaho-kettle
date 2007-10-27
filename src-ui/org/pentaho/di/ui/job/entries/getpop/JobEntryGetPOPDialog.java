@@ -487,13 +487,13 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
         }
         return jobEntry;
     }
+    
 	private void EnableSSL()
 	{
 	
-		wSSLPort.setEnabled(wUseSSL.getSelection());
-	
-	
+		wSSLPort.setEnabled(wUseSSL.getSelection());	
 	}
+	
 	public void checkPasswordVisible()
 	{
 		String password = wPassword.getText();
@@ -508,9 +508,9 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 			wPassword.setEchoChar('\0'); // Show it all...
 		}
 	}
+	
 	public void ChooseListMails()
 	{
-
 		jobEntry.setChanged();
 		if (wListmails.getSelectionIndex()==2)
 			wFirstmails.setEnabled(true);
@@ -570,10 +570,6 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 			wFirstmails.setText(jobEntry.getFirstMails());
 
 		wDelete.setSelection(jobEntry.getDelete());
-
-
-		
-
     }
 
     private void cancel()
@@ -613,5 +609,4 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
     {
         return false;
     }
-
 }
