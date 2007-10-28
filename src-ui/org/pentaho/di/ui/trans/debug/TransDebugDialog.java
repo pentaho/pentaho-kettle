@@ -189,6 +189,10 @@ public class TransDebugDialog extends Dialog {
     private void getData() {
     	GUIResource resource = GUIResource.getInstance();
     	
+    	// Save the latest changes to the screen...
+    	//
+    	getStepDebugMeta();
+    	
     	// Add the list of steps...
     	//
     	int maxIconSize=0;
