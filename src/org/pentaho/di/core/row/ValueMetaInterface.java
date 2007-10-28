@@ -402,6 +402,14 @@ public interface ValueMetaInterface extends Cloneable
     public Object convertDataFromString(String pol, ValueMetaInterface convertMeta, String nullif, String ifNull, int trim_type) throws KettleValueException;
     
     /**
+     * Converts the specified data object to the normal storage type.
+     * @param object the data object to convert
+     * @return the data in a normal storage type
+     * @throws KettleValueException In case there is a data conversion error.
+     */
+    public Object convertToNormalStorageType(Object object) throws KettleValueException;
+    
+    /**
      * Convert the given binary data to the actual data type.<br> 
      * - byte[] --> Long (Integer)<br>
      * - byte[] --> Double (Number)<br>
@@ -416,6 +424,22 @@ public interface ValueMetaInterface extends Cloneable
      */
     public Object convertBinaryStringToNativeType(byte[] binary) throws KettleValueException;
 
+    /**
+     * Convert a normal storage type to a binary string object. (for comparison reasons)
+     * @param object The object expressed in a normal storage type 
+     * @return a binary string
+     * @throws KettleValueException in case there is a data conversion error
+     */
+    public Object convertNormalStorageTypeToBinaryString(Object object) throws KettleValueException;
+    
+    /**
+     * Converts the specified data object to the binary string storage type.
+     * @param object the data object to convert
+     * @return the data in a binary string storage type
+     * @throws KettleValueException In case there is a data conversion error.
+     */
+    public Object convertToBinaryStringStorageType(Object object) throws KettleValueException;
+    
     /**
      * Calculate the hashcode of the specified data object
      * @param object the data value to calculate a hashcode for 

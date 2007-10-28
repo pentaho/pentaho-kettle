@@ -955,6 +955,52 @@ public class ValueMeta implements ValueMetaInterface
     }
     
     /**
+     * Converts the specified data object to the normal storage type.
+     * @param object the data object to convert
+     * @return the data in a normal storage type
+     * @throws KettleValueException In case there is a data conversion error.
+     */
+    public Object convertToNormalStorageType(Object object) throws KettleValueException
+    {
+    	if (object==null) return null;
+    	
+    	switch(storageType)
+    	{
+    	case STORAGE_TYPE_NORMAL: 
+    		return object;
+    	case STORAGE_TYPE_BINARY_STRING : 
+    		return convertBinaryStringToNativeType((byte[])object);
+    	case STORAGE_TYPE_INDEXED : 
+    		return index[(Integer)object];
+        default: 
+        	throw new KettleValueException(toStringMeta()+" : Unknown storage type ["+storageType+"] while converting to normal storage type");
+    	}
+    }
+
+    /**
+     * Converts the specified data object to the binary string storage type.
+     * @param object the data object to convert
+     * @return the data in a binary string storage type
+     * @throws KettleValueException In case there is a data conversion error.
+     */
+    public Object convertToBinaryStringStorageType(Object object) throws KettleValueException
+    {
+    	if (object==null) return null;
+    	
+    	switch(storageType)
+    	{
+    	case STORAGE_TYPE_NORMAL: 
+    		return convertNormalStorageTypeToBinaryString(object);
+    	case STORAGE_TYPE_BINARY_STRING : 
+    		return object;
+    	case STORAGE_TYPE_INDEXED : 
+    		return convertNormalStorageTypeToBinaryString( index[(Integer)object] );
+        default: 
+        	throw new KettleValueException(toStringMeta()+" : Unknown storage type ["+storageType+"] while converting to normal storage type");
+    	}
+    }
+
+    /**
      * Convert the binary data to the actual data type.<br> 
      * - byte[] --> Long (Integer)
      * - byte[] --> Double (Number)
@@ -977,13 +1023,22 @@ public class ValueMeta implements ValueMetaInterface
         // First we decode it in the correct encoding 
         //
     	String string = convertBinaryStringToString(binary);
-    	    	
+    	
     	// In this method we always must convert the data.
     	// We use the storageMetadata object to convert the binary string object. 
     	//
     	// --> Convert from the String format to the current data type...
         //
         return convertData(storageMetadata, string);
+    }
+    
+    public Object convertNormalStorageTypeToBinaryString(Object object) throws KettleValueException
+    {
+    	if (object==null) return null;
+    	
+    	String string = getString(object);
+    	
+    	return convertStringToBinaryString(string);
     }
 
 
@@ -1790,7 +1845,7 @@ public class ValueMeta implements ValueMetaInterface
      */
     public String getStorageTypeDesc()
     {
-        return storageTypeCodes[type];
+        return storageTypeCodes[storageType];
     }
 
 
@@ -1837,6 +1892,11 @@ public class ValueMeta implements ValueMetaInterface
             }
             break;
         default: break;
+        }
+        
+        if (!isStorageNormal())
+        {
+        	retval.append("<").append(getStorageTypeDesc()).append(">");
         }
 
         return retval.toString();
@@ -2795,7 +2855,37 @@ public class ValueMeta implements ValueMetaInterface
     public int compare(Object data1, ValueMetaInterface meta2, Object data2) throws KettleValueException
     {
         // Before we can compare data1 to data2 we need to make sure they have the same data type etc.
-        if (getType()==meta2.getType()) return compare(data1, data2);
+    	//
+        if (getType()==meta2.getType()) 
+        {
+        	if (getStorageType()==meta2.getStorageType()) return compare(data1, data2);
+        	
+        	// Convert the storage type to compare the data.
+        	//
+        	switch(getStorageType())
+        	{
+        	case STORAGE_TYPE_NORMAL        :
+        		return compare(data1, meta2.convertToNormalStorageType(data2));
+
+        	case STORAGE_TYPE_BINARY_STRING : 
+        		return compare(data1, meta2.convertToBinaryStringStorageType(data2));
+        		
+        	case STORAGE_TYPE_INDEXED       : 
+        		switch(meta2.getStorageType())
+        		{
+        		case STORAGE_TYPE_INDEXED: 
+        			return compare(data1, data2); // not accessible, just to make sure.
+        		case STORAGE_TYPE_NORMAL: 
+        			return -meta2.compare(data2, convertToNormalStorageType(data1));
+        		case STORAGE_TYPE_BINARY_STRING: 
+        			return -meta2.compare(data2, convertToBinaryStringStorageType(data1));
+            	default: 
+            		throw new KettleValueException(meta2.toStringMeta()+" : Unknown storage type : "+meta2.getStorageType());
+        		
+        		}
+        	default: throw new KettleValueException(toStringMeta()+" : Unknown storage type : "+getStorageType());
+        	}
+        }
         
         // If the data types are not the same, the first one is the driver...
         // The second data type is converted to the first one.

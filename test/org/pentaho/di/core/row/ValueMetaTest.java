@@ -315,4 +315,151 @@ public class ValueMetaTest extends TestCase
 		String string = numValueMeta.getString(data);
 		assertEquals(originalValue, string);
 	}
+	
+	public void testCompareIntegersNormalStorageData() throws Exception
+	{
+		Long integer1 = new Long(1234L);
+		Long integer2 = new Long(1235L);
+		Long integer3 = new Long(1233L);
+		Long integer4 = new Long(1234L);
+		Long integer5 = null;
+		Long integer6 = null;
+		
+		ValueMetaInterface one = new ValueMeta("one", ValueMetaInterface.TYPE_INTEGER);
+		ValueMetaInterface two = new ValueMeta("two", ValueMetaInterface.TYPE_INTEGER);
+		
+		assertTrue( one.compare(integer1, integer2) < 0 );
+		assertTrue( one.compare(integer1, integer3) > 0 );
+		assertTrue( one.compare(integer1, integer4) == 0 );
+		assertTrue( one.compare(integer1, integer5) != 0 );
+		assertTrue( one.compare(integer5, integer6) == 0 );
+		
+		assertTrue( one.compare(integer1, two, integer2) < 0 );
+		assertTrue( one.compare(integer1, two, integer3) > 0 );
+		assertTrue( one.compare(integer1, two, integer4) == 0 );
+		assertTrue( one.compare(integer1, two, integer5) != 0 );
+		assertTrue( one.compare(integer5, two, integer6) == 0 );
+	}
+	
+	public void testCompareNumbersNormalStorageData() throws Exception
+	{
+		Double number1 = new Double(1234.56);
+		Double number2 = new Double(1235.56);
+		Double number3 = new Double(1233.56);
+		Double number4 = new Double(1234.56);
+		Double number5 = null;
+		Double number6 = null;
+		
+		ValueMetaInterface one = new ValueMeta("one", ValueMetaInterface.TYPE_NUMBER);
+		ValueMetaInterface two = new ValueMeta("two", ValueMetaInterface.TYPE_NUMBER);
+		
+		assertTrue( one.compare(number1, number2) < 0 );
+		assertTrue( one.compare(number1, number3) > 0 );
+		assertTrue( one.compare(number1, number4) == 0 );
+		assertTrue( one.compare(number1, number5) != 0 );
+		assertTrue( one.compare(number5, number6) == 0 );
+		
+		assertTrue( one.compare(number1, two, number2) < 0 );
+		assertTrue( one.compare(number1, two, number3) > 0 );
+		assertTrue( one.compare(number1, two, number4) == 0 );
+		assertTrue( one.compare(number1, two, number5) != 0 );
+		assertTrue( one.compare(number5, two, number6) == 0 );
+	}
+
+	public void testCompareBigNumberNormalStorageData() throws Exception
+	{
+		BigDecimal number1 = new BigDecimal("987908798769876.23943409");
+		BigDecimal number2 = new BigDecimal("999908798769876.23943409");
+		BigDecimal number3 = new BigDecimal("955908798769876.23943409");
+		BigDecimal number4 = new BigDecimal("987908798769876.23943409");
+		BigDecimal number5 = null;
+		BigDecimal number6 = null;
+		
+		ValueMetaInterface one = new ValueMeta("one", ValueMetaInterface.TYPE_BIGNUMBER);
+		ValueMetaInterface two = new ValueMeta("two", ValueMetaInterface.TYPE_BIGNUMBER);
+		
+		assertTrue( one.compare(number1, number2) < 0 );
+		assertTrue( one.compare(number1, number3) > 0 );
+		assertTrue( one.compare(number1, number4) == 0 );
+		assertTrue( one.compare(number1, number5) != 0 );
+		assertTrue( one.compare(number5, number6) == 0 );
+		
+		assertTrue( one.compare(number1, two, number2) < 0 );
+		assertTrue( one.compare(number1, two, number3) > 0 );
+		assertTrue( one.compare(number1, two, number4) == 0 );
+		assertTrue( one.compare(number1, two, number5) != 0 );
+		assertTrue( one.compare(number5, two, number6) == 0 );
+	}
+	
+	public void testCompareDatesNormalStorageData() throws Exception
+	{
+		Date date1 = new Date();
+		Date date2 = new Date(date1.getTime()+3600);
+		Date date3 = new Date(date1.getTime()-3600);
+		Date date4 = new Date(date1.getTime());
+		Date date5 = null;
+		Date date6 = null;
+		
+		ValueMetaInterface one = new ValueMeta("one", ValueMetaInterface.TYPE_DATE);
+		ValueMetaInterface two = new ValueMeta("two", ValueMetaInterface.TYPE_DATE);
+		
+		assertTrue( one.compare(date1, date2) < 0 );
+		assertTrue( one.compare(date1, date3) > 0 );
+		assertTrue( one.compare(date1, date4) == 0 );
+		assertTrue( one.compare(date1, date5) != 0 );
+		assertTrue( one.compare(date5, date6) == 0 );
+		
+		assertTrue( one.compare(date1, two, date2) < 0 );
+		assertTrue( one.compare(date1, two, date3) > 0 );
+		assertTrue( one.compare(date1, two, date4) == 0 );
+		assertTrue( one.compare(date1, two, date5) != 0 );
+		assertTrue( one.compare(date5, two, date6) == 0 );
+	}
+	
+	public void testCompareBooleanNormalStorageData() throws Exception
+	{
+		Boolean boolean1 = new Boolean(false);
+		Boolean boolean2 = new Boolean(true);
+		Boolean boolean3 = new Boolean(false);
+		Boolean boolean4 = null;
+		Boolean boolean5 = null;
+		
+		ValueMetaInterface one = new ValueMeta("one", ValueMetaInterface.TYPE_BOOLEAN);
+		ValueMetaInterface two = new ValueMeta("two", ValueMetaInterface.TYPE_BOOLEAN);
+		
+		assertTrue( one.compare(boolean1, boolean2) < 0 );
+		assertTrue( one.compare(boolean1, boolean3) == 0 );
+		assertTrue( one.compare(boolean1, boolean4) != 0 );
+		assertTrue( one.compare(boolean4, boolean5) == 0 );
+		
+		assertTrue( one.compare(boolean1, two, boolean2) < 0 );
+		assertTrue( one.compare(boolean1, two, boolean3) == 0 );
+		assertTrue( one.compare(boolean1, two, boolean4) != 0 );
+		assertTrue( one.compare(boolean4, two, boolean5) == 0 );
+	}
+	
+	public void testCompareStringsNormalStorageData() throws Exception
+	{
+		String string1 = "bbbbb";
+		String string2 = "ccccc";
+		String string3 = "aaaaa";
+		String string4 = "bbbbb";
+		String string5 = null;
+		String string6 = null;
+		
+		ValueMetaInterface one = new ValueMeta("one", ValueMetaInterface.TYPE_STRING);
+		ValueMetaInterface two = new ValueMeta("two", ValueMetaInterface.TYPE_STRING);
+		
+		assertTrue( one.compare(string1, string2) < 0 );
+		assertTrue( one.compare(string1, string3) > 0 );
+		assertTrue( one.compare(string1, string4) == 0 );
+		assertTrue( one.compare(string1, string5) != 0 );
+		assertTrue( one.compare(string5, string6) == 0 );
+		
+		assertTrue( one.compare(string1, two, string2) < 0 );
+		assertTrue( one.compare(string1, two, string3) > 0 );
+		assertTrue( one.compare(string1, two, string4) == 0 );
+		assertTrue( one.compare(string1, two, string5) != 0 );
+		assertTrue( one.compare(string5, two, string6) == 0 );
+	}	
 }
