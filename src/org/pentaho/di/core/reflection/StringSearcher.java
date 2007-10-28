@@ -4,9 +4,11 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.List;
+import java.util.Map;
 
 import org.pentaho.di.core.Condition;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.database.DatabaseInterface;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.job.JobEntryLoader;
 import org.pentaho.di.trans.StepLoader;
@@ -15,6 +17,9 @@ import org.pentaho.di.trans.StepLoader;
 public class StringSearcher
 {
 	private static final String LOCAL_PACKAGE = "org.pentaho.di";
+
+	private static final String[] JAVA_PACKAGES = new String[] { "java.util", };
+
 	
 	private static String[] stepPluginPackages;
 	private static String[] jobEntryPluginPackages;
@@ -44,13 +49,30 @@ public class StringSearcher
             
             if ( (field.getModifiers()&Modifier.FINAL ) > 0) processThisOne=false;
             if ( (field.getModifiers()&Modifier.STATIC) > 0) processThisOne=false;
-            
+
+        	if (field.toString().indexOf("Interface")>=0)
+        	{
+        		System.out.println("OK");
+        	}
+
+        	if (field.toString().indexOf("attributes")>=0)
+        	{
+        		System.out.println("OK");
+        	}
+
             // Investigate only if we're dealing with a sanctioned package.
             // A sanctioned package is either the local package (org.pentaho.di) or
             // a package of one of the plugins.
             //
             boolean sanctionedPackage = false;
             if (field.toString().indexOf(LOCAL_PACKAGE)>=0) sanctionedPackage=true;
+            for (int x=0;x<JAVA_PACKAGES.length && !sanctionedPackage;x++)
+            {
+            	if (field.toString().indexOf(JAVA_PACKAGES[x])>=0)
+            	{
+            		sanctionedPackage=true;
+            	}
+            }
             for (int x=0;x<stepPluginPackages.length && !sanctionedPackage;x++)
             {
             	if (field.toString().indexOf(stepPluginPackages[x])>=0) sanctionedPackage=true;
@@ -61,7 +83,7 @@ public class StringSearcher
             }
             if ( !sanctionedPackage ) processThisOne=false; // Stay in the sanctioned code-base.
             
-            // Digg into the metadata from here...
+            // Dig into the metadata from here...
             //
             if (processThisOne)
             {
@@ -70,42 +92,7 @@ public class StringSearcher
                     Object obj = field.get(object);
                     if (obj!=null)
                     {
-                        if (obj instanceof String)
-                        {
-                            // OK, let's add the String
-                            stringList.add(new StringSearchResult((String)obj, parentObject, grandParentObject, field.getName()));                       
-                        }
-                        else
-                        if (obj instanceof String[])
-                        {
-                            String[] array = (String[])obj;
-                            for (int x=0;x<array.length;x++) 
-                            {
-                                if (array[x]!=null)
-                                {
-                                    stringList.add(new StringSearchResult(array[x], parentObject, grandParentObject, field.getName()+" #"+(x+1)));
-                                }
-                            }
-                        }
-                        else
-                        if (obj instanceof Boolean)
-                        {
-                            // OK, let's add the String
-                            stringList.add(new StringSearchResult(((Boolean)obj).toString(), parentObject, grandParentObject, field.getName()+" (Boolean)"));                       
-                        }
-                        else
-                        if (obj instanceof Condition)
-                        {
-                        	stringList.add(new StringSearchResult(((Condition)obj).toString(), parentObject, grandParentObject, field.getName()+" (Condition)"));
-                        }
-                        else
-                        if (obj instanceof Object[])
-                        {
-                            for (int j=0;j<((Object[])obj).length;j++) findMetaData( ((Object[])obj)[j], level+1, stringList, parentObject, grandParentObject);
-                        }
-                        else {
-                            	findMetaData(obj, level+1, stringList, parentObject, grandParentObject);
-                        }
+                    	stringSearchInObject(obj, level, stringList, parentObject, grandParentObject, field);
                     }
                 }
                 catch(IllegalAccessException e)
@@ -121,48 +108,10 @@ public class StringSearcher
                         // OK, how do we get the value now?
                         try
                         {
-                            // System.out.println(Const.rightPad(" ", level)+"  Invoking method: "+fullMethod+", on object: "+object.toString());
                             Object string = method.invoke(object, (Object[])null);
                             if (string!=null)
                             {
-                                if (string instanceof String)
-                                {
-                                    stringList.add(new StringSearchResult((String)string, parentObject, grandParentObject, field.getName()));
-                                    // System.out.println(Const.rightPad(" ", level)+"  "+field.getName()+" : method "+fullMethod+" --> "+((String)string));
-                                }
-                                else
-                                if (string instanceof String[])
-                                {
-                                    String[] array = (String[])string;
-                                    for (int x=0;x<array.length;x++) 
-                                    {
-                                        if (array[x]!=null)
-                                        {
-                                            stringList.add(new StringSearchResult(array[x], parentObject, grandParentObject, field.getName()+" #"+(x+1)));
-                                            /// System.out.println(Const.rightPad(" ", level)+"  "+field.getName()+" : method "+fullMethod+" --> String #"+x+" = "+array[x]);
-                                        }
-                                    }
-                                }
-                                else
-                                if (string instanceof Boolean)
-                                {
-                                    // OK, let's add the String
-                                    stringList.add(new StringSearchResult(((Boolean)string).toString(), parentObject, grandParentObject, field.getName()+" (Boolean)"));                       
-                                }
-                                else
-                                if (string instanceof Condition)
-                                {
-                                	stringList.add(new StringSearchResult(((Condition)string).toString(), parentObject, grandParentObject, field.getName()+" (Condition)"));
-                                }
-                                else
-                                if (string instanceof Object[])
-                                {
-                                    for (int j=0;j<((Object[])string).length;j++) findMetaData( ((Object[])string)[j], level+1, stringList, parentObject, grandParentObject);
-                                }
-                                else
-                                {
-                                    findMetaData(string, level+1, stringList, parentObject, grandParentObject);
-                                }
+                            	stringSearchInObject(string, level, stringList, parentObject, grandParentObject, field);
                             }
                         }
                         catch(Exception ex)
@@ -175,7 +124,79 @@ public class StringSearcher
         }        
     }
 
-    private static Method findMethod(Class<? extends Object> baseClass, String name)
+    @SuppressWarnings("unchecked")
+	private static void stringSearchInObject(Object obj, int level, List<StringSearchResult> stringList, Object parentObject, Object grandParentObject, Field field) {
+        if (obj instanceof String)
+        {
+            // OK, let's add the String
+            stringList.add(new StringSearchResult((String)obj, parentObject, grandParentObject, field.getName()));                       
+        }
+        else
+        if (obj instanceof String[])
+        {
+            String[] array = (String[])obj;
+            for (int x=0;x<array.length;x++) 
+            {
+                if (array[x]!=null)
+                {
+                    stringList.add(new StringSearchResult(array[x], parentObject, grandParentObject, field.getName()+" #"+(x+1)));
+                }
+            }
+        }
+        else
+        if (obj instanceof Boolean)
+        {
+            // OK, let's add the String
+            stringList.add(new StringSearchResult(((Boolean)obj).toString(), parentObject, grandParentObject, field.getName()+" (Boolean)"));                       
+        }
+        else
+        if (obj instanceof Condition)
+        {
+        	stringList.add(new StringSearchResult(((Condition)obj).toString(), parentObject, grandParentObject, field.getName()+" (Condition)"));
+        }
+        else
+        if (obj instanceof DatabaseInterface)
+        {
+        	// Make sure we read the attributes.  This is not picked up by default. (getDeclaredFields doesn't pick up inherited fields)
+        	//
+        	DatabaseInterface databaseInterface = (DatabaseInterface) obj;
+        	findMapMetaData(databaseInterface.getAttributes(), level+1, stringList, parentObject, grandParentObject, field);
+        	findMetaData(obj, level+1, stringList, parentObject, grandParentObject);
+        }
+        else
+        if (obj instanceof Map)
+        {
+        	findMapMetaData((Map)obj, level, stringList, parentObject, grandParentObject, field);
+        }
+        else
+        if (obj instanceof Object[])
+        {
+            for (int j=0;j<((Object[])obj).length;j++) findMetaData( ((Object[])obj)[j], level+1, stringList, parentObject, grandParentObject);
+        }
+        else 
+        {
+            findMetaData(obj, level+1, stringList, parentObject, grandParentObject);
+        }
+	}
+
+    @SuppressWarnings("unchecked")
+	private static void findMapMetaData(Map map, int level, List<StringSearchResult> stringList, Object parentObject, Object grandParentObject, Field field) {
+		
+    	for (Object key : map.keySet())
+    	{
+    		Object value = map.get( key );
+    		if (key!=null)
+    		{
+    			stringList.add(new StringSearchResult(key.toString(), parentObject, grandParentObject, field.getName()+" (Map key)"));
+    		}
+    		if (value!=null)
+    		{
+    			stringList.add(new StringSearchResult(value.toString(), parentObject, grandParentObject, field.getName()+" (Map value)"));
+    		}
+    	}
+	}
+
+	private static Method findMethod(Class<? extends Object> baseClass, String name)
     {
         // baseClass.getMethod(methodName[m], null);
         Method[] methods = baseClass.getDeclaredMethods();
