@@ -433,7 +433,7 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 									}
 								}
 	
-								String SQLBULKLOAD="LOAD DATA " + PriorityText + " " + LocalExec + " INFILE '" + realFilename + 	"' " + ReplaceIgnore +
+								String SQLBULKLOAD="LOAD DATA " + PriorityText + " " + LocalExec + " INFILE '" + realFilename.replace('\\', '/') + 	"' " + ReplaceIgnore +
 	                     						   " INTO TABLE " + realTablename + " " + FieldTerminatedby + " " + LineTerminatedby + " " + IgnoreNbrLignes + " " +  ListOfColumn  + ";";
 	
 								try
