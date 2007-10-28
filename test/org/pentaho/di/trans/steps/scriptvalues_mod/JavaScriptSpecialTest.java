@@ -134,6 +134,23 @@ public class JavaScriptSpecialTest extends TestCase
 
 		return list;
 	}
+	
+	public List<RowMetaAndData> createResultData2()
+	{
+		List<RowMetaAndData> list = new ArrayList<RowMetaAndData>();
+
+		RowMetaInterface rm = createRowMetaInterface1();
+
+		Object[] r1 = new Object[] { "446-667-651" };
+		Object[] r2 = new Object[] { "446667651" };
+		Object[] r3 = new Object[] { "4444333322221111" };
+		
+		list.add(new RowMetaAndData(rm, r1));
+		list.add(new RowMetaAndData(rm, r2));
+		list.add(new RowMetaAndData(rm, r3));
+
+		return list;
+	}		
 
 	/**
 	 *  Check the 2 lists comparing the rows in order.
@@ -192,7 +209,7 @@ public class JavaScriptSpecialTest extends TestCase
         // Create a new transformation...
         //
         TransMeta transMeta = new TransMeta();
-        transMeta.setName("test javascript trim");
+        transMeta.setName("test javascript LuhnCheck");
 
         StepLoader steploader = StepLoader.getInstance();
 
@@ -282,4 +299,110 @@ public class JavaScriptSpecialTest extends TestCase
         List<RowMetaAndData> resultRows2 = dummyRc.getRowsRead();
         checkRows(resultRows2, goldenImageRows);
     }
+    
+	/**
+	 * Test case for javascript functionality: trans_Status and SKIP_TRANSFORMATION.
+	 * Regression test case for JIRA defect PDI-364.
+	 */
+    public void testTransStatus() throws Exception
+    {
+        EnvUtil.environmentInit();
+
+        //
+        // Create a new transformation...
+        //
+        TransMeta transMeta = new TransMeta();
+        transMeta.setName("test javascript trans_Status");
+
+        StepLoader steploader = StepLoader.getInstance();
+
+        //
+        // create an injector step...
+        //
+        String injectorStepname = "injector step";
+        InjectorMeta im = new InjectorMeta();
+
+        // Set the information of the injector.
+        String injectorPid = steploader.getStepPluginID(im);
+        StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, (StepMetaInterface)im);
+        transMeta.addStep(injectorStep);
+
+        //
+        // Create a javascript step
+        //
+        String javaScriptStepname = "javascript step";
+        ScriptValuesMetaMod svm = new ScriptValuesMetaMod();
+
+        // process 3 rows and skip the rest.
+        ScriptValuesScript[] js = new ScriptValuesScript[] {new ScriptValuesScript(ScriptValuesScript.TRANSFORM_SCRIPT,
+        		                                              "script",
+        		                                              "trans_Status = CONTINUE_TRANSFORMATION;\n" +
+        		                                              "if (getProcessCount(\"r\") > 3) {\n" +
+        		                                              " 	trans_Status = SKIP_TRANSFORMATION;\n" +
+        		                                              "}")};
+        svm.setJSScripts(js);
+        svm.setName(new String[] {});
+        svm.setRename(new String[] { });
+        svm.setType(new int[] { });
+        svm.setLength(new int[] { });
+        svm.setPrecision(new int[] { });
+        svm.setCompatible(false);
+
+        String javaScriptStepPid = steploader.getStepPluginID(svm);
+        StepMeta javaScriptStep = new StepMeta(javaScriptStepPid, javaScriptStepname, (StepMetaInterface)svm);
+        transMeta.addStep(javaScriptStep);
+
+        TransHopMeta hi1 = new TransHopMeta(injectorStep, javaScriptStep);
+        transMeta.addTransHop(hi1);
+
+        //
+        // Create a dummy step
+        //
+        String dummyStepname = "dummy step";
+        DummyTransMeta dm = new DummyTransMeta();
+
+        String dummyPid = steploader.getStepPluginID(dm);
+        StepMeta dummyStep = new StepMeta(dummyPid, dummyStepname, (StepMetaInterface)dm);
+        transMeta.addStep(dummyStep);
+
+        TransHopMeta hi2 = new TransHopMeta(javaScriptStep, dummyStep);
+        transMeta.addTransHop(hi2);
+
+        // Now execute the transformation...
+        Trans trans = new Trans(transMeta);
+
+        trans.prepareExecution(null);
+
+        StepInterface si;
+
+        si = trans.getStepInterface(javaScriptStepname, 0);
+        RowStepCollector javaScriptRc = new RowStepCollector();
+        si.addRowListener(javaScriptRc);
+
+        si = trans.getStepInterface(dummyStepname, 0);
+        RowStepCollector dummyRc = new RowStepCollector();
+        si.addRowListener(dummyRc);
+
+        RowProducer rp = trans.addRowProducer(injectorStepname, 0);
+        trans.startThreads();
+
+        // add rows
+        List<RowMetaAndData> inputList = createData1();
+        Iterator<RowMetaAndData> it = inputList.iterator();
+        while ( it.hasNext() )
+        {
+        	RowMetaAndData rm = (RowMetaAndData)it.next();
+        	rp.putRow(rm.getRowMeta(), rm.getData());
+        }
+        rp.finished();
+
+        trans.waitUntilFinished();
+
+        List<RowMetaAndData> goldenImageRows = createResultData2();
+        List<RowMetaAndData> resultRows1 = javaScriptRc.getRowsWritten();
+        checkRows(resultRows1, goldenImageRows);
+
+        List<RowMetaAndData> resultRows2 = dummyRc.getRowsRead();
+        checkRows(resultRows2, goldenImageRows);
+    }    
 }
