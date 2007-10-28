@@ -126,7 +126,7 @@ public class ScriptValuesMod extends BaseStep implements StepInterface, ScriptVa
 		if (log.isDetailed()) logDetailed(Messages.getString("ScriptValuesMod.Log.UsingValuesFromInputStream",String.valueOf(data.fields_used.length))); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 	
-	private Object[] addValues(RowMetaInterface rowMeta, Object[] row) throws KettleValueException
+	private boolean addValues(RowMetaInterface rowMeta, Object[] row) throws KettleValueException
     {
         if (first)
         {
@@ -413,13 +413,14 @@ public class ScriptValuesMod extends BaseStep implements StepInterface, ScriptVa
 	                }
 	                
                 }
-                
+                putRow(data.outputRowMeta, outputRow);
             }
             else
             {
                 switch (iTranStat) 
                 {
                 case SKIP_TRANSFORMATION:
+                	// eat this row.
                     bRC = true;
                 break;
                 case ABORT_TRANSFORMATION:
@@ -444,7 +445,7 @@ public class ScriptValuesMod extends BaseStep implements StepInterface, ScriptVa
         {
             throw new KettleValueException(Messages.getString("ScriptValuesMod.Log.JavascriptError"), e); //$NON-NLS-1$
         }
-        return outputRow;
+        return bRC;
     }
 	
 	
@@ -732,8 +733,7 @@ public class ScriptValuesMod extends BaseStep implements StepInterface, ScriptVa
 		// Getting the Row, with the Transformation Status
         try
         {
-            Object[] outputRow = addValues(getInputRowMeta(), r);
-            putRow(data.outputRowMeta, outputRow);
+            addValues(getInputRowMeta(), r);            
         }
         catch(KettleValueException e)
         {
