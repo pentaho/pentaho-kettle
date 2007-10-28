@@ -17,7 +17,6 @@
 
 package org.pentaho.di.ui.core.dialog;
 import org.eclipse.swt.SWT;
-import org.pentaho.di.ui.core.gui.GUIResource;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -39,10 +38,12 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.row.ValueDataUtil;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaAndData;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.ui.core.PropsUI;
+import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
@@ -241,6 +242,26 @@ public class EnterValueDialog extends Dialog
 		wLength.addSelectionListener       (lsDef);
 		wPrecision.addSelectionListener    (lsDef);
 		
+		// If the user changes data type or if we type a text, we set the default mask for the type
+		// We also set the list of possible masks in the wFormat
+		//
+		wInputString.addModifyListener(new ModifyListener() 
+			{
+				public void modifyText(ModifyEvent event) 
+				{
+					setFormats();
+				}
+			}
+		);
+		wValueType.addSelectionListener(new SelectionAdapter() 
+			{
+				public void widgetSelected(SelectionEvent event)
+				{
+					setFormats();
+				}
+			}
+		);
+		
 		// Detect [X] or ALT-F4 or something that kills this window...
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
 
@@ -255,6 +276,70 @@ public class EnterValueDialog extends Dialog
 				if (!display.readAndDispatch()) display.sleep();
 		}
 		return valueMetaAndData;
+	}
+
+	protected void setFormats() 
+	{
+		// What is the selected type?
+		//
+		String formatString = wFormat.getText();
+		int type = ValueMeta.getType(wValueType.getText());
+		String string = wInputString.getText();
+		switch(type)
+		{
+		case ValueMetaInterface.TYPE_INTEGER:
+			wFormat.setItems(Const.getNumberFormats());
+			// remove white spaces if needed
+			if (string.startsWith(" ") || string.endsWith(" ")) 
+			{
+				string = ValueDataUtil.trim(string);
+				wInputString.setText(string);
+			}
+			if (Const.isEmpty(string) || Const.isEmpty(formatString))
+			{
+				wFormat.setText("#"); // default
+			}
+			break;
+		case ValueMetaInterface.TYPE_NUMBER:
+			wFormat.setItems(Const.getNumberFormats());
+			// remove white spaces if needed
+			if (string.startsWith(" ") || string.endsWith(" ")) 
+			{
+				string = ValueDataUtil.trim(string);
+				wInputString.setText(string);
+			}
+			if (Const.isEmpty(string) || Const.isEmpty(formatString)) 
+			{
+				wFormat.setText("#.#"); // default
+			}
+			break;
+		case ValueMetaInterface.TYPE_DATE:
+			wFormat.setItems(Const.getDateFormats());
+			// remove white spaces if needed
+			if (string.startsWith(" ") || string.endsWith(" ")) 
+			{
+				string = ValueDataUtil.trim(string);
+				wInputString.setText(string);
+			}
+			if (Const.isEmpty(string) || Const.isEmpty(formatString))
+			{
+				wFormat.setText("yyyy/MM/dd HH:mm:ss"); // default
+			}
+			break;
+		case ValueMetaInterface.TYPE_BIGNUMBER:
+			wFormat.setItems(new String[] {});
+			wFormat.setText("");
+			if (string.startsWith(" ") || string.endsWith(" ")) 
+			{
+				string = ValueDataUtil.trim(string);
+				wInputString.setText(string);
+			}
+			break;
+		default: 
+			wFormat.setItems(new String[] {});
+			wFormat.setText("");
+			break;
+		}
 	}
 
 	public void dispose()
@@ -287,30 +372,10 @@ public class EnterValueDialog extends Dialog
 		wLength.setText(Integer.toString(valueMeta.getLength()));
 		wPrecision.setText(Integer.toString(valueMeta.getPrecision()));
 		
+		setFormats();
+		
 		wInputString.setFocus();
 		wInputString.selectAll();
-	}
-	
-	public void setFormats()
-	{
-		wFormat.removeAll();
-		int valtype = ValueMeta.getType( wValueType.getText() );
-		switch(valtype)
-		{
-		case ValueMetaInterface.TYPE_NUMBER:
-			
-			for (int i=0;i<Const.getNumberFormats().length;i++) 
-				wFormat.add(Const.getNumberFormats()[i]);
-			break;
-        case ValueMetaInterface.TYPE_DATE:
-			for (int i=0;i<Const.getDateFormats().length;i++) 
-				wFormat.add(Const.getDateFormats()[i]);
-			break;
-        case ValueMetaInterface.TYPE_STRING  : 
-        case ValueMetaInterface.TYPE_BOOLEAN : 
-        case ValueMetaInterface.TYPE_INTEGER : 
-		default                       : break;
-		}
 	}
 	
 	private void cancel()
