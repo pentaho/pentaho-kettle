@@ -20,6 +20,8 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -207,11 +209,13 @@ public class TextFileOutput extends BaseStep implements StepInterface
 
     private byte[] formatField(ValueMetaInterface v, Object valueData) throws KettleValueException
     {
-    	if( v.isString())
+    	if( v.isString() )
     	{    	
     		String svalue = (valueData instanceof String)?(String)valueData:v.getString(valueData);
     		return convertStringToBinaryString(v,Const.trimToType(svalue, v.getTrimType()));
-    	} else {
+    	} 
+    	else 
+    	{
             return v.getBinaryString(valueData);
     	}
     }
@@ -317,13 +321,75 @@ public class TextFileOutput extends BaseStep implements StepInterface
         	else {
         		str = formatField(v, valueData);
         	}
-    		if (str!=null) data.writer.write(str);
+    		if (str!=null)
+    		{
+    			List<Integer> enclosures = null;
+    			
+        		if (v.isString() && meta.isEnclosureForced())
+        		{
+        			data.writer.write(data.binaryEnclosure);
+        			
+        			// Also check for the existence of the enclosure character.
+        			// If needed we double (escape) the enclosure character.
+        			//
+        			enclosures = getEnclosurePositions(str);
+        		}
+
+        		if (enclosures == null) 
+        		{
+        			data.writer.write(str);
+        		}
+        		else
+        		{
+        			// Skip the enclosures, double them instead...
+        			int from=0;
+        			for (int i=0;i<enclosures.size();i++)
+        			{
+        				int position = enclosures.get(i);
+        				data.writer.write(str, from, position + data.binaryEnclosure.length);
+        				data.writer.write(data.binaryEnclosure); // write enclosure a second time
+        				from=position+data.binaryEnclosure.length;
+        			}
+        			if (from<str.length)
+        			{
+        				data.writer.write(str, from, str.length-from);
+        			}
+        		}
+        		
+        		if (v.isString() && meta.isEnclosureForced())
+        		{
+        			data.writer.write(data.binaryEnclosure);
+        		}
+    		}
         }
         catch(Exception e)
         {
             throw new KettleStepException("Error writing field content to file", e);
         }
     }
+
+	private List<Integer> getEnclosurePositions(byte[] str) {
+		List<Integer> positions = null;
+		if (data.binaryEnclosure!=null && data.binaryEnclosure.length>0)
+		{
+			for (int i=0;i<str.length - data.binaryEnclosure.length;i++)
+			{
+				// verify if on position i there is an enclosure
+				// 
+				boolean found = true;
+				for (int x=0;found && x<data.binaryEnclosure.length;x++)
+				{
+					if (str[i+x] != data.binaryEnclosure[x]) found=false;
+				}
+				if (found)
+				{
+					if (positions==null) positions=new ArrayList<Integer>();
+					positions.add(i);
+				}
+			}
+		}
+		return positions;
+	}
 
 	private boolean writeEndedLine()
 	{
