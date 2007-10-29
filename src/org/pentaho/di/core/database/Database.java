@@ -4297,8 +4297,10 @@ public class Database implements VariableSpace
 	{
 		variables = space;
 		
-		// Also share the variables with the meta data object		
-		databaseMeta.shareVariablesWith(space);
+		// Also share the variables with the meta data object
+		// Make sure it's not the databaseMeta object itself. We would get an infinite loop in that case.
+		//
+		if (space!=databaseMeta) databaseMeta.shareVariablesWith(space);
 	}
 
 	public void injectVariables(Map<String,String> prop) 
