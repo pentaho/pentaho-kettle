@@ -863,7 +863,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
             {
                 if (i>0) sql+=", "; else sql+="  ";
                 sql+= meta.getDatabaseMeta().quoteField(meta.getFieldLookup()[i])+" = ?"+Const.CR;
-                data.dimensionUpdateRowMeta.addValueMeta( rowMeta.getValueMeta(data.keynrs[i]) );
+                data.dimensionUpdateRowMeta.addValueMeta( rowMeta.getValueMeta(data.fieldnrs[i]) );
             }
             sql+="WHERE  "+meta.getDatabaseMeta().quoteField(meta.getKeyField())+" = ?";
             data.dimensionUpdateRowMeta.addValueMeta( new ValueMeta(meta.getKeyField(), ValueMetaInterface.TYPE_INTEGER) ); // The tk
