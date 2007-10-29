@@ -149,7 +149,7 @@ public class RowGenerator extends BaseStep implements StepInterface
 		Object[] r=null;
 		boolean retval=true;
 		
-		if (linesWritten<data.rowLimit)
+		if (data.rowsWritten<data.rowLimit)
 		{
 			r=data.outputRowMeta.cloneRow(data.outputRowData);
         }
@@ -160,13 +160,14 @@ public class RowGenerator extends BaseStep implements StepInterface
 		}
 		
 		putRow(data.outputRowMeta, r);
+		data.rowsWritten++;
 		
         if (log.isRowLevel())
         {
-            log.logRowlevel(toString(), Messages.getString("RowGenerator.Log.Wrote.Row", Long.toString(linesWritten), data.outputRowMeta.getString(r)) );
+            log.logRowlevel(toString(), Messages.getString("RowGenerator.Log.Wrote.Row", Long.toString(data.rowsWritten), data.outputRowMeta.getString(r)) );
         }
         
-        if (checkFeedback(linesRead)) logBasic( Messages.getString("RowGenerator.Log.LineNr", Long.toString(linesWritten) ) );
+        if (checkFeedback(linesRead)) logBasic( Messages.getString("RowGenerator.Log.LineNr", Long.toString(data.rowsWritten) ) );
 		
 		return retval;
 	}
@@ -180,6 +181,7 @@ public class RowGenerator extends BaseStep implements StepInterface
         {
             // Determine the number of rows to generate...
             data.rowLimit = Const.toLong(environmentSubstitute(meta.getRowLimit()), -1L);
+            data.rowsWritten = 0L;
             
             if (data.rowLimit<0L) // Unable to parse
             {

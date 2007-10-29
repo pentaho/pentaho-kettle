@@ -29,6 +29,7 @@ public class RowGeneratorData extends BaseStepData implements StepDataInterface
 	public Object[]         outputRowData;
 	
     public long rowLimit;
+	public long rowsWritten;
 	
 	public RowGeneratorData()
 	{
