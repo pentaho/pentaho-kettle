@@ -102,4 +102,70 @@ public class CsvInputData extends BaseStepData implements StepDataInterface
 		} 
 	}
 
+	/**
+	 * Increase the endBuffer pointer by one.<br>
+	 * If there is not enough room in the buffer to go there, resize the byte buffer and read more data.<br>
+	 * if there is no more data to read and if the endBuffer pointer has reached the end of the byte buffer, we return true.<br>
+	 * @return true if we reached the end of the byte buffer.
+	 * @throws IOException In case we get an error reading from the input file.
+	 */
+	public boolean increaseEndBuffer() throws IOException {
+		endBuffer++;
+		
+		if (endBuffer>=bufferSize) {
+			// Oops, we need to read more data...
+			// Better resize this before we read other things in it...
+			//
+			resizeByteBuffer();
+			
+			// Also read another chunk of data, now that we have the space for it...
+			if (!readBufferFromFile()) {
+				// Break out of the loop if we don't have enough buffer space to continue...
+				//
+				if (endBuffer>=bufferSize) 
+				{
+					return true;
+				}
+			}
+		}
+		
+		return false;
+	}
+
+	/**
+      <pre>	 
+      [abcd "" defg] --> [abcd " defg]
+      [""""] --> [""]
+      [""] --> ["]
+      </pre>	 
+
+     @return the byte array with escaped enclosures escaped.
+	*/
+	public byte[] removeEscapedEnclosures(byte[] field, int nrEnclosuresFound) {
+		byte[] result = new byte[field.length-nrEnclosuresFound];
+		int resultIndex=0;
+		for (int i=0;i<field.length;i++)
+		{
+			if (field[i]==enclosure[0])
+			{
+				if (i+1<field.length && field[i+1]==enclosure[0])
+				{
+					// field[i]+field[i+1] is an escaped enclosure...
+					// so we ignore this one
+					// field[i+1] will be picked up on the next iteration.
+				}
+				else
+				{
+					// Not an escaped enclosure...
+					result[resultIndex++] = field[i];
+				}
+			}
+			else
+			{
+				result[resultIndex++] = field[i];
+			}
+		}
+		return result;
+	}
+
 }

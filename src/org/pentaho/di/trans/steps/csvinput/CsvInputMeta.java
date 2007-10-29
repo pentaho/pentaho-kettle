@@ -93,7 +93,7 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
 	}
 
 	public void setDefault() {
-		delimiter = ";"  ;
+		delimiter = ","  ;
 		enclosure = "\""  ;
 		headerPresent = true;
 		lazyConversionActive=true;

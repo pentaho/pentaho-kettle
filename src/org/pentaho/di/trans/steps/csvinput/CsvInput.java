@@ -140,6 +140,7 @@ public class CsvInput extends BaseStep implements StepInterface
 				//
 				boolean delimiterFound = false;
 				boolean enclosureFound = false;
+				int escapedEnclosureFound = 0;
 				while (!delimiterFound) {
 					// If we find the first char, we might find others as well ;-)
 					// Single byte delimiters only for now.
@@ -189,56 +190,45 @@ public class CsvInput extends BaseStep implements StepInterface
 					}
 					// Perhaps we need to skip over an enclosed part?
 					// We always expect exactly one enclosure character
+					// If we find the enclosure doubled, we consider it escaped.
+					// --> "" is converted to " later on.
 					//
 					else if (data.enclosure != null && data.byteBuffer[data.endBuffer]==data.enclosure[0]) {
 						
 						enclosureFound=true;
+						boolean keepGoing;
 						do {
-							data.endBuffer++;
-	
-							if (data.endBuffer>=data.bufferSize) {
-								// Oops, we need to read more data...
-								// Better resize this before we read other things in it...
-								//
-								data.resizeByteBuffer();
-								
-								// Also read another chunk of data, now that we have the space for it...
-								if (!data.readBufferFromFile()) {
-									// Break out of the loop if we don't have enough buffer space to continue...
-									//
-									if (data.endBuffer>=data.bufferSize) 
-									{
-										enclosureFound=false;
-										break;
-									}
-								}
+							if (data.increaseEndBuffer())
+							{
+								enclosureFound=false;
+								break;
 							}
-						} while (data.byteBuffer[data.endBuffer]!=data.enclosure[0]);
+							keepGoing = data.byteBuffer[data.endBuffer]!=data.enclosure[0];
+							if (!keepGoing)
+							{
+								// We found an enclosure character.
+								// Read another byte...
+								if (data.increaseEndBuffer())
+								{
+									enclosureFound=false;
+									break;
+								}
+								
+								// If this character is also an enclosure, we can consider the enclosure "escaped".
+								// As such, if this is an enclosure, we keep going...
+								//
+								keepGoing = data.byteBuffer[data.endBuffer]==data.enclosure[0];
+								if (keepGoing) escapedEnclosureFound++;
+							}
+						} while (keepGoing);
 						
+						// Did we reach the end of the buffer?
+						//
 						if (data.endBuffer>=data.bufferSize)
 						{
 							newLineFound=true; // consider it a newline to break out of the upper while loop
 							newLines+=2; // to remove the enclosures in case of missing newline on last line.
 							break;
-						}
-						
-						data.endBuffer++;
-						if (data.endBuffer>=data.bufferSize) {
-							// Oops, we need to read more data...
-							// Better resize this before we read other things in it...
-							//
-							data.resizeByteBuffer();
-							
-							// Also read another chunk of data, now that we have the space for it...
-							if (!data.readBufferFromFile()) {
-								// Break out of the loop if we don't have enough buffer space to continue...
-								//
-								if (data.endBuffer>=data.bufferSize)
-								{
-									newLineFound=true; // consider it a newline to break out of the upper while loop
-									break;
-								}
-							}
 						}
 					}
 						
@@ -283,8 +273,17 @@ public class CsvInput extends BaseStep implements StepInterface
 					if (length<=0) length=0;
 				}
 				if (length<=0) length=0;
+				
 				byte[] field = new byte[length];
 				System.arraycopy(data.byteBuffer, data.startBuffer, field, 0, length);
+
+				// Did we have any escaped characters in there?
+				//
+				if (escapedEnclosureFound>0)
+				{
+					if (log.isRowLevel()) logRowlevel("Escaped enclosures found in "+new String(field));
+					field = data.removeEscapedEnclosures(field, escapedEnclosureFound);
+				}
 				
 				if (doConversions) {
 					if (meta.isLazyConversionActive()) {
