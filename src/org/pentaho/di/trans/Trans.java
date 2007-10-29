@@ -2137,6 +2137,13 @@ public class Trans implements VariableSpace
 
 		try
 		{
+			// Inject certain internal variables to make it more intuitive. 
+			// 
+			for (String var : Const.INTERNAL_TRANS_VARIABLES) executionConfiguration.getVariables().put(var, transMeta.getVariable(var));
+			for (String var : Const.INTERNAL_JOB_VARIABLES) executionConfiguration.getVariables().put(var, transMeta.getVariable(var));
+			
+			// Now send it off to the remote server...
+			//
 			String xml = new TransConfiguration(transMeta, executionConfiguration).getXML();
 			String reply = slaveServer.sendXML(xml, AddTransServlet.CONTEXT_PATH + "/?xml=Y");
 			WebResult webResult = WebResult.fromXMLString(reply);

@@ -947,6 +947,11 @@ public class Job extends Thread implements VariableSpace
 
 		try
 		{
+			// Inject certain internal variables to make it more intuitive. 
+			// 
+			for (String var : Const.INTERNAL_TRANS_VARIABLES) executionConfiguration.getVariables().put(var, jobMeta.getVariable(var));
+			for (String var : Const.INTERNAL_JOB_VARIABLES) executionConfiguration.getVariables().put(var, jobMeta.getVariable(var));
+
 			String xml = new JobConfiguration(jobMeta, executionConfiguration).getXML();
 			
 			String reply = slaveServer.sendXML(xml, AddJobServlet.CONTEXT_PATH + "/?xml=Y");

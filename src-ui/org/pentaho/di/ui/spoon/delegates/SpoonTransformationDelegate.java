@@ -1028,6 +1028,11 @@ public class SpoonTransformationDelegate extends SpoonDelegate
         }
       }
       
+	  // Inject certain internal variables to make it more intuitive. 
+	  // 
+	  for (String var : Const.INTERNAL_TRANS_VARIABLES) executionConfiguration.getVariables().put(var, transMeta.getVariable(var));
+	  for (String var : Const.INTERNAL_JOB_VARIABLES) executionConfiguration.getVariables().put(var, transMeta.getVariable(var));
+      
       Trans.executeClustered(transSplitter, executionConfiguration);
       
       if (executionConfiguration.isClusterPosting()) {

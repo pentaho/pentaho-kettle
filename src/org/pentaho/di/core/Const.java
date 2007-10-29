@@ -368,6 +368,16 @@ public class Const
 	/** 
 	 * All the internal job variables
 	 */
+	public static final String[] INTERNAL_TRANS_VARIABLES = new String[] { 
+        		Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY,
+        		Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_NAME,
+        		Const.INTERNAL_VARIABLE_TRANSFORMATION_NAME,
+        		Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY,
+        };
+	
+	/** 
+	 * All the internal job variables
+	 */
 	public static final String[] INTERNAL_JOB_VARIABLES = new String[] { 
         		Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY,
         		Const.INTERNAL_VARIABLE_JOB_FILENAME_NAME,

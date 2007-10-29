@@ -572,12 +572,6 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		retval.append("  ").append(XMLHandler.addTagValue("created_date", XMLHandler.date2string(created_date))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         retval.append("  ").append(XMLHandler.addTagValue("modified_user", modifiedUser)); //$NON-NLS-1$ //$NON-NLS-2$
         retval.append("  ").append(XMLHandler.addTagValue("modified_date", XMLHandler.date2string(created_date))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-
-        // Let's add the last known file location if we have any...
-        //
-        if (!Const.isEmpty(filename)) {
-            retval.append("  ").append(XMLHandler.addTagValue("filename", filename)); //$NON-NLS-1$ //$NON-NLS-2$
-        }
         
         // Save the database connections...
         for (int i = 0; i < nrDatabases(); i++)
@@ -761,10 +755,6 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
                 modifiedDate = XMLHandler.stringToDate(modDate);
             }
             
-            // Also load and set the filename
-            //
-            filename = XMLHandler.getTagValue(jobnode, "filename"); //$NON-NLS-1$
-
             // Load the default list of databases
             // Read objects from the shared XML file & the repository
             try
@@ -2554,7 +2544,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
      */
     public void setInternalKettleVariables(VariableSpace var)
     {
-        if (filename!=null) // we have a finename that's defined.
+        if (filename!=null) // we have a filename that's defined.
         {
             try
             {
