@@ -517,7 +517,7 @@ public class TextFileInput extends BaseStep implements StepInterface
                         if (log.isRowLevel()) log.logRowlevel("convert line to row", "Normal field found: [" + pol + "]");
 					}
 
-					if (dencl)
+					if (dencl && Const.isEmpty(inf.getEscapeCharacter()))
 					{
 						StringBuffer sbpol = new StringBuffer(pol);
 						int idx = sbpol.indexOf(inf.getEnclosure() + inf.getEnclosure());
