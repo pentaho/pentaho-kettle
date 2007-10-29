@@ -325,7 +325,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
     		{
     			List<Integer> enclosures = null;
     			
-        		if (v.isString() && meta.isEnclosureForced())
+        		if (v.isString() && meta.isEnclosureForced() && !meta.isPadded())
         		{
         			data.writer.write(data.binaryEnclosure);
         			
@@ -356,7 +356,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
         			}
         		}
         		
-        		if (v.isString() && meta.isEnclosureForced())
+        		if (v.isString() && meta.isEnclosureForced() && !meta.isPadded())
         		{
         			data.writer.write(data.binaryEnclosure);
         		}
