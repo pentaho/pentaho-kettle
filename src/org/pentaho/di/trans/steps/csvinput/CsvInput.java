@@ -208,7 +208,21 @@ public class CsvInput extends BaseStep implements StepInterface
 									return null;
 								}
 							}
-						} while (data.byteBuffer[data.endBuffer]==data.enclosure[0]);
+						} while (data.byteBuffer[data.endBuffer]!=data.enclosure[0]);
+						
+						data.endBuffer++;
+						if (data.endBuffer>=data.bufferSize) {
+							// Oops, we need to read more data...
+							// Better resize this before we read other things in it...
+							//
+							data.resizeByteBuffer();
+							
+							// Also read another chunk of data, now that we have the space for it...
+							if (!data.readBufferFromFile()) {
+								// TODO handle EOF properly for EOF in the middle of the row, etc.
+								return null;
+							}
+						}
 					}
 						
 					else {
@@ -239,11 +253,14 @@ public class CsvInput extends BaseStep implements StepInterface
 				int length = data.endBuffer-data.startBuffer;
 				if (newLineFound) {
 					length-=newLines;
+					if (length<=0) length=0;
 				}
 				if (enclosureFound) {
 					data.startBuffer++;
 					length-=2;
+					if (length<=0) length=0;
 				}
+				if (length<=0) length=0;
 				byte[] field = new byte[length];
 				System.arraycopy(data.byteBuffer, data.startBuffer, field, 0, length);
 				
