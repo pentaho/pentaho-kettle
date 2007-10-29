@@ -4295,8 +4295,10 @@ public class Database implements VariableSpace
 
 	public void shareVariablesWith(VariableSpace space) 
 	{
-		variables = space;		
+		variables = space;
+		
 		// Also share the variables with the meta data object		
+		databaseMeta.shareVariablesWith(space);
 	}
 
 	public void injectVariables(Map<String,String> prop) 

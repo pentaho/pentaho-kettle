@@ -2412,7 +2412,12 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
 	public void shareVariablesWith(VariableSpace space) 
 	{
-		variables = space;		
+		variables = space;
+		
+		// Also push it down to the database interface.
+		// That way, the generic database metadata is aware of the variables too...
+		//
+		databaseInterface.shareVariablesWith(space);
 	}
 
 	public void injectVariables(Map<String,String> prop) 

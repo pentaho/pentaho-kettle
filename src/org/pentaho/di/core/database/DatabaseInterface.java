@@ -21,6 +21,7 @@ import java.util.Properties;
 
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.variables.VariableSpace;
 
 /**
  * This interface describes the methods that a database connection needs to have in order to describe it properly.
@@ -28,7 +29,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
  * @author Matt
  * @since  11-mrt-2005
  */
-public interface DatabaseInterface extends Cloneable
+public interface DatabaseInterface extends VariableSpace
 {
 	public static final Class<?>[] implementingClasses =
 		{
