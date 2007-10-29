@@ -68,7 +68,7 @@ public class GenericDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
         if (getAccessType()==DatabaseMeta.TYPE_ACCESS_NATIVE)
         {
             String driverClass = getAttributes().getProperty(ATRRIBUTE_CUSTOM_DRIVER_CLASS, "");
-            return environmentSubstitute(driverClass);            
+            return driverClass;            
         }
         else
         {
@@ -82,7 +82,7 @@ public class GenericDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
         if (getAccessType()==DatabaseMeta.TYPE_ACCESS_NATIVE)
         {
             String url = getAttributes().getProperty(ATRRIBUTE_CUSTOM_URL, "");
-            return environmentSubstitute(url);
+            return url;
         }
         else
         {

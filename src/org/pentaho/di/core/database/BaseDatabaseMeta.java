@@ -25,10 +25,7 @@ import java.util.Properties;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.encryption.Encr;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.variables.VariableSpace;
-import org.pentaho.di.core.variables.Variables;
 
 
 
@@ -40,10 +37,8 @@ import org.pentaho.di.core.variables.Variables;
  * @author Matt
  * @since  11-mrt-2005
  */
-public abstract class BaseDatabaseMeta implements Cloneable, VariableSpace
+public abstract class BaseDatabaseMeta implements Cloneable
 {
-    private VariableSpace variables = new Variables();
-    
     /**
      * The port number of the database as string: allows for parameterization.
      */
@@ -1225,79 +1220,6 @@ public abstract class BaseDatabaseMeta implements Cloneable, VariableSpace
     {
         attributes.setProperty(ATTRIBUTE_FORCE_IDENTIFIERS_TO_UPPERCASE, forceUpperCase?"Y":"N");
     }
-
-	public void copyVariablesFrom(VariableSpace space) 
-	{
-		variables.copyVariablesFrom(space);		
-	}
-
-	public String environmentSubstitute(String aString) 
-	{
-		return variables.environmentSubstitute(aString);
-	}	
-
-	public String[] environmentSubstitute(String aString[]) 
-	{
-		return variables.environmentSubstitute(aString);
-	}		
-
-	public VariableSpace getParentVariableSpace() 
-	{
-		return variables.getParentVariableSpace();
-	}
-
-	public void setParentVariableSpace(VariableSpace parent) 
-	{
-		variables.setParentVariableSpace(parent);
-	}
-
-	public String getVariable(String variableName, String defaultValue) 
-	{
-		return variables.getVariable(variableName, defaultValue);
-	}
-
-	public String getVariable(String variableName) 
-	{
-		return variables.getVariable(variableName);
-	}
-	
-	public boolean getBooleanValueOfVariable(String variableName, boolean defaultValue) {
-		if (!Const.isEmpty(variableName))
-		{
-			String value = environmentSubstitute(variableName);
-			if (!Const.isEmpty(value))
-			{
-				return ValueMeta.convertStringToBoolean(value);
-			}
-		}
-		return defaultValue;
-	}
-
-	public void initializeVariablesFrom(VariableSpace parent) 
-	{
-		variables.initializeVariablesFrom(parent);	
-	}
-
-	public String[] listVariables() 
-	{
-		return variables.listVariables();
-	}
-
-	public void setVariable(String variableName, String variableValue) 
-	{
-		variables.setVariable(variableName, variableValue);		
-	}
-
-	public void shareVariablesWith(VariableSpace space) 
-	{
-		variables = space;		
-	}
-
-	public void injectVariables(Map<String,String> prop) 
-	{
-		variables.injectVariables(prop);		
-	}    
-	
     
     /**
      * @return true if we use a double decimal separator to specify schema/table combinations on MS-SQL server

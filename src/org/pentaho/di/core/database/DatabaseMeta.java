@@ -1000,7 +1000,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
         {
             baseUrl = databaseInterface.getURL(getHostname(), getDatabasePortNumberString(), getDatabaseName());
         }
-		StringBuffer url=new StringBuffer( baseUrl );
+		StringBuffer url=new StringBuffer( environmentSubstitute(baseUrl) );
         
         if (databaseInterface.supportsOptionsInURL())
         {
@@ -1389,7 +1389,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 	
 	public String getDriverClass()
 	{
-		return databaseInterface.getDriverClass();
+		return environmentSubstitute(databaseInterface.getDriverClass());
 	}
 	
 	public String stripCR(String sbsql)
@@ -2413,11 +2413,6 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 	public void shareVariablesWith(VariableSpace space) 
 	{
 		variables = space;
-		
-		// Also push it down to the database interface.
-		// That way, the generic database metadata is aware of the variables too...
-		//
-		databaseInterface.shareVariablesWith(space);
 	}
 
 	public void injectVariables(Map<String,String> prop) 
