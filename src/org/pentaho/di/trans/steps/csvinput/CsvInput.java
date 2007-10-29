@@ -204,11 +204,23 @@ public class CsvInput extends BaseStep implements StepInterface
 								
 								// Also read another chunk of data, now that we have the space for it...
 								if (!data.readBufferFromFile()) {
-									// TODO handle EOF properly for EOF in the middle of the row, etc.
-									return null;
+									// Break out of the loop if we don't have enough buffer space to continue...
+									//
+									if (data.endBuffer>=data.bufferSize) 
+									{
+										enclosureFound=false;
+										break;
+									}
 								}
 							}
 						} while (data.byteBuffer[data.endBuffer]!=data.enclosure[0]);
+						
+						if (data.endBuffer>=data.bufferSize)
+						{
+							newLineFound=true; // consider it a newline to break out of the upper while loop
+							newLines+=2; // to remove the enclosures in case of missing newline on last line.
+							break;
+						}
 						
 						data.endBuffer++;
 						if (data.endBuffer>=data.bufferSize) {
@@ -219,8 +231,13 @@ public class CsvInput extends BaseStep implements StepInterface
 							
 							// Also read another chunk of data, now that we have the space for it...
 							if (!data.readBufferFromFile()) {
-								// TODO handle EOF properly for EOF in the middle of the row, etc.
-								return null;
+								// Break out of the loop if we don't have enough buffer space to continue...
+								//
+								if (data.endBuffer>=data.bufferSize)
+								{
+									newLineFound=true; // consider it a newline to break out of the upper while loop
+									break;
+								}
 							}
 						}
 					}
@@ -236,8 +253,13 @@ public class CsvInput extends BaseStep implements StepInterface
 							
 							// Also read another chunk of data, now that we have the space for it...
 							if (!data.readBufferFromFile()) {
-								// TODO handle EOF properly for EOF in the middle of the row, etc.
-								return null;
+								// Break out of the loop if we don't have enough buffer space to continue...
+								//
+								if (data.endBuffer>=data.bufferSize)
+								{
+									newLineFound=true; // consider it a newline to break out of the upper while loop
+									break;
+								}
 							}
 						}
 					}
