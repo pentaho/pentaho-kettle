@@ -1269,7 +1269,7 @@ var str1= "Hello Pentaho!";
 var str2= indexOf(str1, "Pentaho");
 var str3= indexOf(str1, "o", 7);
 Alert("Input : " + str1);
-Alert("Index of 'Pentaho' + str2);
+Alert("Index of 'Pentaho' : " + str2);
 Alert("index of 'o', search from position 7 : " + str3);
 </sample>
       <type>0</type>
