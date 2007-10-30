@@ -2854,43 +2854,50 @@ public class ValueMeta implements ValueMetaInterface
      */
     public int compare(Object data1, ValueMetaInterface meta2, Object data2) throws KettleValueException
     {
-        // Before we can compare data1 to data2 we need to make sure they have the same data type etc.
-    	//
-        if (getType()==meta2.getType()) 
-        {
-        	if (getStorageType()==meta2.getStorageType()) return compare(data1, data2);
-        	
-        	// Convert the storage type to compare the data.
-        	//
-        	switch(getStorageType())
-        	{
-        	case STORAGE_TYPE_NORMAL        :
-        		return compare(data1, meta2.convertToNormalStorageType(data2));
-
-        	case STORAGE_TYPE_BINARY_STRING : 
-        		return compare(data1, meta2.convertToBinaryStringStorageType(data2));
-        		
-        	case STORAGE_TYPE_INDEXED       : 
-        		switch(meta2.getStorageType())
-        		{
-        		case STORAGE_TYPE_INDEXED: 
-        			return compare(data1, data2); // not accessible, just to make sure.
-        		case STORAGE_TYPE_NORMAL: 
-        			return -meta2.compare(data2, convertToNormalStorageType(data1));
-        		case STORAGE_TYPE_BINARY_STRING: 
-        			return -meta2.compare(data2, convertToBinaryStringStorageType(data1));
-            	default: 
-            		throw new KettleValueException(meta2.toStringMeta()+" : Unknown storage type : "+meta2.getStorageType());
-        		
-        		}
-        	default: throw new KettleValueException(toStringMeta()+" : Unknown storage type : "+getStorageType());
-        	}
-        }
-        
-        // If the data types are not the same, the first one is the driver...
-        // The second data type is converted to the first one.
-        //
-        return compare(data1, convertData(meta2, data2));
+    	try
+    	{
+	        // Before we can compare data1 to data2 we need to make sure they have the same data type etc.
+	    	//
+	        if (getType()==meta2.getType()) 
+	        {
+	        	if (getStorageType()==meta2.getStorageType()) return compare(data1, data2);
+	        	
+	        	// Convert the storage type to compare the data.
+	        	//
+	        	switch(getStorageType())
+	        	{
+	        	case STORAGE_TYPE_NORMAL        :
+	        		return compare(data1, meta2.convertToNormalStorageType(data2));
+	
+	        	case STORAGE_TYPE_BINARY_STRING : 
+	        		return compare(data1, meta2.convertToBinaryStringStorageType(data2));
+	        		
+	        	case STORAGE_TYPE_INDEXED       : 
+	        		switch(meta2.getStorageType())
+	        		{
+	        		case STORAGE_TYPE_INDEXED: 
+	        			return compare(data1, data2); // not accessible, just to make sure.
+	        		case STORAGE_TYPE_NORMAL: 
+	        			return -meta2.compare(data2, convertToNormalStorageType(data1));
+	        		case STORAGE_TYPE_BINARY_STRING: 
+	        			return -meta2.compare(data2, convertToBinaryStringStorageType(data1));
+	            	default: 
+	            		throw new KettleValueException(meta2.toStringMeta()+" : Unknown storage type : "+meta2.getStorageType());
+	        		
+	        		}
+	        	default: throw new KettleValueException(toStringMeta()+" : Unknown storage type : "+getStorageType());
+	        	}
+	        }
+	        
+	        // If the data types are not the same, the first one is the driver...
+	        // The second data type is converted to the first one.
+	        //
+	        return compare(data1, convertData(meta2, data2));
+    	}
+    	catch(Exception e)
+    	{
+    		throw new KettleValueException(toStringMeta()+" : Unable to compare with value ["+meta2.toStringMeta()+"]");
+    	}
     }
 
     /**

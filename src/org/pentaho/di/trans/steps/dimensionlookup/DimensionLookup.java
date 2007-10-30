@@ -160,6 +160,8 @@ public class DimensionLookup extends BaseStep implements StepInterface
             }
             
             // Caching...
+            // TODO URGENT : base these values on the return metadata from the database, NOT the input !!!! 
+            //
             if (meta.getCacheSize()>=0)
             {
                 // KEY : the natural key(s)
@@ -265,6 +267,12 @@ public class DimensionLookup extends BaseStep implements StepInterface
         {
             data.db.setValues(data.lookupRowMeta, lookupRow, data.prepStatementLookup);
             returnRow=data.db.getLookup(data.prepStatementLookup);
+            if (returnRow!=null)
+            {
+            	// We got a row, now we know the layout of the return row too...
+            	//
+            	data.returnRowMeta = data.db.getReturnRowMeta();
+            }
             
             linesInput++;
             
@@ -538,7 +546,6 @@ public class DimensionLookup extends BaseStep implements StepInterface
     {
         DatabaseMeta databaseMeta = meta.getDatabaseMeta();
         
-        data.returnRowMeta = new RowMeta();
         data.lookupRowMeta = new RowMeta();
     
         /* 
@@ -551,8 +558,6 @@ public class DimensionLookup extends BaseStep implements StepInterface
          * 
          */
         String sql = "SELECT "+databaseMeta.quoteField(meta.getKeyField())+", "+databaseMeta.quoteField(meta.getVersionField());
-        data.returnRowMeta.addValueMeta( new ValueMeta(meta.getKeyField(), ValueMetaInterface.TYPE_INTEGER) );
-        data.returnRowMeta.addValueMeta( new ValueMeta(meta.getVersionField(), ValueMetaInterface.TYPE_INTEGER) );
         
         if (!Const.isEmpty(meta.getFieldLookup()))
         {
@@ -561,23 +566,17 @@ public class DimensionLookup extends BaseStep implements StepInterface
                 if (!Const.isEmpty(meta.getFieldLookup()[i]))
                 {
                     sql+=", "+databaseMeta.quoteField(meta.getFieldLookup()[i]);
-                    ValueMetaInterface valueMeta = rowMeta.getValueMeta( data.fieldnrs[i] ).clone();
                     
                     if (!Const.isEmpty( meta.getFieldStream()[i] ) && !meta.getFieldLookup()[i].equals(meta.getFieldStream()[i]))
                     {
                         sql+=" AS "+databaseMeta.quoteField(meta.getFieldStream()[i]);
-                        valueMeta.setName(meta.getFieldStream()[i]);
                     }
-                    
-                    data.returnRowMeta.addValueMeta( valueMeta );
                 }
             }
         }
         if (meta.getCacheSize()>=0)
         {
             sql+=", "+databaseMeta.quoteField(meta.getDateFrom())+", "+databaseMeta.quoteField(meta.getDateTo());
-            data.returnRowMeta.addValueMeta( new ValueMeta(meta.getDateFrom(), ValueMetaInterface.TYPE_DATE) );
-            data.returnRowMeta.addValueMeta( new ValueMeta(meta.getDateTo(), ValueMetaInterface.TYPE_DATE) );
         }
         
         sql+= " FROM "+data.schemaTable+" WHERE ";
@@ -1022,7 +1021,9 @@ public class DimensionLookup extends BaseStep implements StepInterface
 	private void addToCache(Object[] keyValues, Object[] returnValues) throws KettleValueException
     {
         // store it in the cache if needed.
-        data.cache.put(RowMeta.extractData(data.cacheKeyRowMeta, keyValues), RowMeta.extractData(data.cacheValueRowMeta, returnValues));
+		byte[] keyPart = RowMeta.extractData(data.cacheKeyRowMeta, keyValues);
+		byte[] valuePart = RowMeta.extractData(data.cacheValueRowMeta, returnValues);
+        data.cache.put(keyPart, valuePart);
         
         // check if the size is not too big...
         // Allow for a buffer overrun of 20% and then remove those 20% in one go.
