@@ -289,16 +289,36 @@ public class ScriptValuesMod extends BaseStep implements StepInterface
 				}
 			}
 		}catch(JavaScriptException jse){
-            logError(Messages.getString("ScriptValuesMod.Log.ErrorStackTrace")+Const.CR+Const.getStackTracker(jse)); //$NON-NLS-1$
-            setErrors(1);
-			stopAll();
-			return ERROR_TRANSFORMATION;
+			if (getStepMeta().isDoingErrorHandling())
+	        {
+	             putError(row, 1, jse.getMessage(), null, "JSMOD001");
+	             row.setIgnore(); 
+	        }
+			else
+			{
+		        logError(Messages.getString("ScriptValuesMod.Log.ErrorStackTrace")+Const.CR+Const.getStackTracker(jse)); //$NON-NLS-1$
+	            setErrors(1);
+				stopAll();
+				return ERROR_TRANSFORMATION;
+			}
+			 return SKIP_TRANSFORMATION;
+ 
+			
 		}catch(Exception e)	{
-			logError(Messages.getString("ScriptValuesMod.Log.JavascriptError")+e.toString()); //$NON-NLS-1$
-            logError(Messages.getString("ScriptValuesMod.Log.ErrorStackTrace")+Const.CR+Const.getStackTracker(e)); //$NON-NLS-1$
-			setErrors(1);
-			stopAll();
-			return ERROR_TRANSFORMATION;
+			if (getStepMeta().isDoingErrorHandling())
+	        {
+	             putError(row, 1, e.getMessage(), null, "JSMOD001");
+	             row.setIgnore();
+	        }
+			else
+			{
+				logError(Messages.getString("ScriptValuesMod.Log.JavascriptError")+e.toString()); //$NON-NLS-1$
+	            logError(Messages.getString("ScriptValuesMod.Log.ErrorStackTrace")+Const.CR+Const.getStackTracker(e)); //$NON-NLS-1$
+				setErrors(1);
+				stopAll();
+				return ERROR_TRANSFORMATION;
+			}
+			return SKIP_TRANSFORMATION;
 		}
 		return iTranStat;
 	}
@@ -453,6 +473,9 @@ public class ScriptValuesMod extends BaseStep implements StepInterface
 		meta=(ScriptValuesMetaMod)smi;
 		data=(ScriptValuesDataMod)sdi;
 		
+		boolean sendToErrorRow=false;
+		String errorMessage = null;
+		
 		Row r=getRow();       // Get row from input rowset & set row busy!
 
 		if (r==null){
@@ -468,10 +491,13 @@ public class ScriptValuesMod extends BaseStep implements StepInterface
 					if (log.isDetailed()) logDetailed(("No end Script found!"));
 				}
 			}catch(Exception e){
-				logError(Messages.getString("ScriptValuesMod.Log.UnexpectedeError")+" : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$				
-				logError(Messages.getString("ScriptValuesMod.Log.ErrorStackTrace")+Const.CR+Const.getStackTracker(e)); //$NON-NLS-1$
-				setErrors(1);
-				stopAll();
+				
+
+					logError(Messages.getString("ScriptValuesMod.Log.UnexpectedeError")+" : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$				
+					logError(Messages.getString("ScriptValuesMod.Log.ErrorStackTrace")+Const.CR+Const.getStackTracker(e)); //$NON-NLS-1$
+					setErrors(1);
+					stopAll();
+
 			}
 
 			if (data.cx!=null) Context.exit();
