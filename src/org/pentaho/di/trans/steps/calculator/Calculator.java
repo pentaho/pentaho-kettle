@@ -237,7 +237,7 @@ public class Calculator extends BaseStep implements StepInterface
                 {
                     resultType=ValueMetaInterface.TYPE_NONE;
                 }
-                
+                                
                 switch(fn.getCalcType())
                 {
                 case CalculatorMetaFunction.CALC_NONE: 
@@ -416,7 +416,17 @@ public class Calculator extends BaseStep implements StepInterface
                 {
                 	if (targetMeta.getType()!=resultType) 
                     {
+                        String resultConversionMask = null;
+
+                		switch(resultType)
+                		{
+                		case ValueMetaInterface.TYPE_INTEGER : resultConversionMask = "0"; break;
+                		case ValueMetaInterface.TYPE_NUMBER  : resultConversionMask = "0.0"; break;
+                		case ValueMetaInterface.TYPE_DATE    : resultConversionMask = "yyyy/MM/dd HH:mm:ss.SSS"; break;
+                		default: break;
+                		}
                         ValueMetaInterface resultMeta = new ValueMeta("result", resultType);  // $NON-NLS-1$
+                        resultMeta.setConversionMask(resultConversionMask);
                         calcData[index] = targetMeta.convertData(resultMeta, calcData[index]);
                     }
                 }
