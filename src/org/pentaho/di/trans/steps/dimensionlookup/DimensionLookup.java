@@ -158,37 +158,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
             {
                 data.valueDateNow = new Date(System.currentTimeMillis()); // System date... //$NON-NLS-1$
             }
-            
-            // Caching...
-            // TODO URGENT : base these values on the return metadata from the database, NOT the input !!!! 
-            //
-            if (meta.getCacheSize()>=0)
-            {
-                // KEY : the natural key(s)
-                //
-                data.cacheKeyRowMeta = new RowMeta();
-                for (int i=0;i<data.keynrs.length;i++)
-                {
-                    ValueMetaInterface key = getInputRowMeta().getValueMeta(data.keynrs[i]);
-                    data.cacheKeyRowMeta.addValueMeta( key.clone());
-                }
-                
-                data.cache = new ByteArrayHashMap(meta.getCacheSize()>0 ? meta.getCacheSize() : 5000, data.cacheKeyRowMeta);
-            
-                // VALUE : tk, version, fields, from date, to date 
-                //
-                data.cacheValueRowMeta = new RowMeta();
-                data.cacheValueRowMeta.addValueMeta( new ValueMeta(meta.getKeyField(), ValueMetaInterface.TYPE_INTEGER) );
-                data.cacheValueRowMeta.addValueMeta( new ValueMeta(meta.getVersionField(), ValueMetaInterface.TYPE_INTEGER) );
-                for (int i=0;i<data.fieldnrs.length;i++)
-                {
-                    ValueMetaInterface v = data.outputRowMeta.getValueMeta(data.fieldnrs[i]);
-                    data.cacheValueRowMeta.addValueMeta(v);
-                }
-                data.cacheValueRowMeta.addValueMeta( new ValueMeta(meta.getDateFrom(), ValueMetaInterface.TYPE_DATE) );
-                data.cacheValueRowMeta.addValueMeta( new ValueMeta(meta.getDateTo(), ValueMetaInterface.TYPE_DATE) );
-            }
-            
+                        
             determineTechKeyCreation();
             if (getCopy()==0) checkDimZero();
             
@@ -1020,6 +990,39 @@ public class DimensionLookup extends BaseStep implements StepInterface
      */
 	private void addToCache(Object[] keyValues, Object[] returnValues) throws KettleValueException
     {
+        // Caching...
+        //
+        if (data.cacheKeyRowMeta==null)
+        {
+        	// KEY : the natural key(s)
+            //
+            data.cacheKeyRowMeta = new RowMeta();
+            for (int i=0;i<data.keynrs.length;i++)
+            {
+                ValueMetaInterface key = getInputRowMeta().getValueMeta(data.keynrs[i]);
+                data.cacheKeyRowMeta.addValueMeta( key.clone());
+            }
+            
+            data.cache = new ByteArrayHashMap(meta.getCacheSize()>0 ? meta.getCacheSize() : 5000, data.cacheKeyRowMeta);
+        
+            data.cacheValueRowMeta = data.returnRowMeta.clone();
+            
+            /*
+            // VALUE : tk, version, fields, from date, to date 
+            //
+            data.cacheValueRowMeta = new RowMeta();
+            data.cacheValueRowMeta.addValueMeta( new ValueMeta(meta.getKeyField(), ValueMetaInterface.TYPE_INTEGER) );
+            data.cacheValueRowMeta.addValueMeta( new ValueMeta(meta.getVersionField(), ValueMetaInterface.TYPE_INTEGER) );
+            for (int i=0;i<data.fieldnrs.length;i++)
+            {
+                ValueMetaInterface v = data.outputRowMeta.getValueMeta(data.fieldnrs[i]);
+                data.cacheValueRowMeta.addValueMeta(v);
+            }
+            data.cacheValueRowMeta.addValueMeta( new ValueMeta(meta.getDateFrom(), ValueMetaInterface.TYPE_DATE) );
+            data.cacheValueRowMeta.addValueMeta( new ValueMeta(meta.getDateTo(), ValueMetaInterface.TYPE_DATE) );
+            */
+        }
+
         // store it in the cache if needed.
 		byte[] keyPart = RowMeta.extractData(data.cacheKeyRowMeta, keyValues);
 		byte[] valuePart = RowMeta.extractData(data.cacheValueRowMeta, returnValues);
@@ -1099,7 +1102,10 @@ public class DimensionLookup extends BaseStep implements StepInterface
 
     private Object[] getFromCache(Object[] keyValues, Date dateValue) throws KettleValueException
     {
-        byte[] value = data.cache.get(RowMeta.extractData(data.cacheKeyRowMeta, keyValues));
+    	if (data.cacheKeyRowMeta==null) return null; // There is nothing in the cache: don't look
+    	
+    	byte[] key = RowMeta.extractData(data.cacheKeyRowMeta, keyValues);
+        byte[] value = data.cache.get(key);
         if (value!=null) 
         {
             Object[] row = RowMeta.getRow(data.cacheValueRowMeta, value);

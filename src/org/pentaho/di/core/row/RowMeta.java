@@ -712,7 +712,7 @@ public class RowMeta implements RowMetaInterface
         }
         catch(Exception e)
         {
-            throw new RuntimeException("Error serializing row to byte array: "+row, e);
+            throw new RuntimeException("Error serializing row to byte array", e);
         }
     }
     
