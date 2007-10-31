@@ -50,17 +50,7 @@ public class StringSearcher
             if ( (field.getModifiers()&Modifier.FINAL ) > 0) processThisOne=false;
             if ( (field.getModifiers()&Modifier.STATIC) > 0) processThisOne=false;
 
-        	if (field.toString().indexOf("Interface")>=0)
-        	{
-        		System.out.println("OK");
-        	}
-
-        	if (field.toString().indexOf("attributes")>=0)
-        	{
-        		System.out.println("OK");
-        	}
-
-            // Investigate only if we're dealing with a sanctioned package.
+        	// Investigate only if we're dealing with a sanctioned package.
             // A sanctioned package is either the local package (org.pentaho.di) or
             // a package of one of the plugins.
             //
