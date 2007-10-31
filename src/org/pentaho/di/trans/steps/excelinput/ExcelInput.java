@@ -168,7 +168,7 @@ public class ExcelInput extends BaseStep implements StepInterface
 					}
 				}
 			}
-
+			
 			ExcelInputField field = meta.getField()[rowcolumn];
 
 			// Change to the appropriate type if needed...
@@ -205,14 +205,14 @@ public class ExcelInput extends BaseStep implements StepInterface
                             r[rowcolumn] = targetMeta.convertData(sourceMetaCopy, string);
 							break;
 						default:
-                            r[rowcolumn] = targetMeta.convertData(sourceMeta, r[rowcolumn]);
+                            r[rowcolumn] = targetMeta.convertData(sourceMetaCopy, r[rowcolumn]);
 							break;
 						}
 						break;
 					// Use case: we find a date: convert it using the supplied format to String...
 					//
 					default:
-                        r[rowcolumn] = targetMeta.convertData(sourceMeta, r[rowcolumn]);
+                        r[rowcolumn] = targetMeta.convertData(sourceMetaCopy, r[rowcolumn]);
 					}
 				}
 			}
