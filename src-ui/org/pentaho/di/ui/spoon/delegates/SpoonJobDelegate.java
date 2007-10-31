@@ -140,8 +140,12 @@ public class SpoonJobDelegate extends SpoonDelegate
 						jge.setLocation(50, 50);
 						jge.setNr(0);
 						jobMeta.addJobEntry(jge);
-						spoon.addUndoNew(jobMeta, new JobEntryCopy[] { jge }, new int[] { jobMeta
-								.indexOfJobEntry(jge) });
+						
+						// Verify that the name is not already used in the job.
+						//
+						jobMeta.renameJobEntryIfNameCollides(jge);
+
+						spoon.addUndoNew(jobMeta, new JobEntryCopy[] { jge }, new int[] { jobMeta.indexOfJobEntry(jge) });
 						spoon.refreshGraph();
 						spoon.refreshTree();
 						return jge;
@@ -149,7 +153,8 @@ public class SpoonJobDelegate extends SpoonDelegate
 					{
 						return null;
 					}
-				} else
+				} 
+				else
 				{
 					JobEntryCopy jge = new JobEntryCopy();
 					jge.setEntry(jei);
@@ -230,7 +235,6 @@ public class SpoonJobDelegate extends SpoonDelegate
 			spoon.getLog().logBasic(spoon.toString(), "edit job graph entry: " + je.getName()); //$NON-NLS-1$
 
 			JobEntryCopy before = (JobEntryCopy) je.clone_deep();
-			boolean entry_changed = false;
 
 			JobEntryInterface jei = je.getEntry();
 
@@ -238,27 +242,28 @@ public class SpoonJobDelegate extends SpoonDelegate
 			{
 				JobEntrySpecial special = (JobEntrySpecial) jei;
 				if (special.isDummy())
+				{
 					return;
+				}
 			}
 
 			JobEntryDialogInterface d = getJobEntryDialog(jei, jobMeta);
 			if (d != null)
 			{
-				
 				if (d.open() != null)
 				{
-					entry_changed = true;
-				}
-
-				if (entry_changed)
-				{
+					// First see if the name changed.
+					// If so, we need to verify that the name is not already used in the job.
+					//
+					jobMeta.renameJobEntryIfNameCollides(je);
+					
 					JobEntryCopy after = (JobEntryCopy) je.clone();
-					spoon.addUndoChange(jobMeta, new JobEntryCopy[] { before }, new JobEntryCopy[] { after },
-							new int[] { jobMeta.indexOfJobEntry(je) });
+					spoon.addUndoChange(jobMeta, new JobEntryCopy[] { before }, new JobEntryCopy[] { after }, new int[] { jobMeta.indexOfJobEntry(je) });
 					spoon.refreshGraph();
 					spoon.refreshTree();
 				}
-			} else
+			} 
+			else
 			{
 				MessageBox mb = new MessageBox(spoon.getShell(), SWT.OK | SWT.ICON_INFORMATION);
 				mb.setMessage(Messages.getString("Spoon.Dialog.JobEntryCanNotBeChanged.Message")); //$NON-NLS-1$

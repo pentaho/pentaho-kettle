@@ -2774,4 +2774,34 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
     {
         return SlaveServer.getSlaveServerNames(slaveServers);
     }
+    
+    /**
+     * See if the name of the supplied job entry copy doesn't collide with any other job entry copy in the job.
+     * @param je The job entry copy to verify the name for.
+     */
+    public void renameJobEntryIfNameCollides(JobEntryCopy je)
+    {
+		// First see if the name changed.
+		// If so, we need to verify that the name is not already used in the job.
+		//
+		String newname = je.getName();
+		
+		// See if this name exists in the other job entries
+		//
+		boolean found;
+		int nr=1;
+		do {
+			found=false;
+			for (JobEntryCopy copy : jobcopies)
+			{
+				if (copy!=je && copy.getName().equalsIgnoreCase(newname) && copy.getNr()==0) found=true;
+			}
+			if (found) nr++;
+			newname = je.getName()+" ("+nr+")";
+		} while(found);
+		
+		// Rename if required.
+		//
+		je.setName(newname);
+    }
 }
