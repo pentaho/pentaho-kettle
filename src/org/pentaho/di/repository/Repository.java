@@ -2954,6 +2954,21 @@ public class Repository
     	}
     	return attrs;
     }
+
+    public Collection<RowMetaAndData> getDatabaseAttributes(long id_database) throws KettleDatabaseException, KettleValueException
+    {
+    	List<RowMetaAndData> attrs = new ArrayList<RowMetaAndData>();
+    	List<Object[]> rows = database.getRows("SELECT * FROM " + quote(TABLE_R_DATABASE_ATTRIBUTE) + " WHERE "+quote(FIELD_DATABASE_ID_DATABASE) +" = "+id_database, 0);
+    	for (Object[] row : rows) 
+    	{
+    		RowMetaAndData rowWithMeta = new RowMetaAndData(database.getReturnRowMeta(), row);
+    		long id = rowWithMeta.getInteger(quote(FIELD_DATABASE_ATTRIBUTE_ID_DATABASE_ATTRIBUTE), 0);
+    		if (id >0) {
+    			attrs.add(rowWithMeta);
+    		}
+    	}
+    	return attrs;
+    }
     
 	public RowMetaAndData getCondition(long id_condition) throws KettleException
 	{

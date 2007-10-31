@@ -421,17 +421,13 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 				setIndexTablespace( r.getString("INDEX_TBS", "") );
                 
                 // Also, load all the properties we can find...
-				final Collection<RowMetaAndData> attrs = rep.getDatabaseAttributes();
+				final Collection<RowMetaAndData> attrs = rep.getDatabaseAttributes(id_database);
                 for (RowMetaAndData row : attrs)
                 {
-                	long id = row.getInteger("ID_DATABASE", -1L);
-                	if (id==id_database)
-                	{
-	                    String code = row.getString("CODE", "");
-	                    String attribute = row.getString("VALUE_STR", "");
-	                    // System.out.println("Attributes: "+(getAttributes()!=null)+", code: "+(code!=null)+", attribute: "+(attribute!=null));
-	                    getAttributes().put(code, Const.NVL(attribute, ""));
-                	}
+                    String code = row.getString("CODE", "");
+                    String attribute = row.getString("VALUE_STR", "");
+                    // System.out.println("Attributes: "+(getAttributes()!=null)+", code: "+(code!=null)+", attribute: "+(attribute!=null));
+                    getAttributes().put(code, Const.NVL(attribute, ""));
                 }
 			}
 		}
