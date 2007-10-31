@@ -2796,8 +2796,11 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 			{
 				if (copy!=je && copy.getName().equalsIgnoreCase(newname) && copy.getNr()==0) found=true;
 			}
-			if (found) nr++;
-			newname = je.getName()+" ("+nr+")";
+			if (found)
+			{
+				nr++;
+				newname = je.getName()+" ("+nr+")";
+			}
 		} while(found);
 		
 		// Rename if required.
