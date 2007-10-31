@@ -352,7 +352,11 @@ public class EnterValueDialog extends Dialog
 		wValueType.setText(valueMeta.getTypeDesc());
 		try
         {
-            if (valueMeta.getString(valueData)!=null) wInputString.setText(valueMeta.getString(valueData));
+            if (valueData != null )
+            { 
+            	String value = valueMeta.getString(valueData);
+            	if ( value != null) wInputString.setText(value);
+            }
         }
         catch (KettleValueException e)
         {
