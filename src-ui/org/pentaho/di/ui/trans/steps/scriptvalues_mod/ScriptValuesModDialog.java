@@ -900,7 +900,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		
 		jscx = Context.enter();
 		jscx.setOptimizationLevel(-1);
-		jsscope = jscx.initStandardObjects(null);
+		jsscope = jscx.initStandardObjects(null, false);
 				
 		// Adding the existing Scripts to the Context
 		for(int i=0;i<folder.getItemCount();i++){

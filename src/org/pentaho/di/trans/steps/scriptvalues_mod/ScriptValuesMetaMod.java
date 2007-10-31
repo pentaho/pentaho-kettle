@@ -450,7 +450,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 		Script jsscript;
 
 		jscx = Context.enter();
-		jsscope = jscx.initStandardObjects(null);
+		jsscope = jscx.initStandardObjects(null, false);
 		jscx.setOptimizationLevel(-1);
 			
 		// String strActiveScriptName="";

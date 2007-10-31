@@ -143,7 +143,7 @@ public class ScriptValuesMod extends BaseStep implements StepInterface, ScriptVa
 
             data.cx = Context.enter();
             data.cx.setOptimizationLevel(9);
-            data.scope = data.cx.initStandardObjects(null, true);
+            data.scope = data.cx.initStandardObjects(null, false);
 
             bFirstRun = true;
 
