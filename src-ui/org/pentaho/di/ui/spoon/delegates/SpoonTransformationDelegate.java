@@ -853,7 +853,7 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 		}
 	}
 
-	public void executeTransformation(TransMeta transMeta, boolean local, boolean remote, boolean cluster, boolean preview, boolean debug, Date replayDate) throws KettleException {
+	public void executeTransformation(TransMeta transMeta, boolean local, boolean remote, boolean cluster, boolean preview, boolean debug, Date replayDate, boolean safe) throws KettleException {
 		
 		if (transMeta == null) {
 			return;
@@ -908,6 +908,7 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 		}
 		
 		executionConfiguration.setRepository(spoon.rep);
+		executionConfiguration.setSafeModeEnabled(safe);
 
 		int debugAnswer = TransDebugDialog.DEBUG_CONFIG;
 		

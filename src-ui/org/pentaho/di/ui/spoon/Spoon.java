@@ -1003,15 +1003,15 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	}
 
     public void executeTransformation() {
-		executeTransformation(getActiveTransformation(), true, false, false, false, false, null);
+		executeTransformation(getActiveTransformation(), true, false, false, false, false, null, false);
 	}
 
     public void previewTransformation() {
-		executeTransformation(getActiveTransformation(), true, false, false, true, false, null);
+		executeTransformation(getActiveTransformation(), true, false, false, true, false, null, true);
 	}
 
     public void debugTransformation() {
-		executeTransformation(getActiveTransformation(), true, false, false, false, true, null);
+		executeTransformation(getActiveTransformation(), true, false, false, false, true, null, true);
 	}
 
     public void checkTrans() {
@@ -5940,37 +5940,37 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	}
 
 	public void runFile(){
-		executeFile(true, false, false, false, false, null);
+		executeFile(true, false, false, false, false, null, false);
 	}
 	
 	public void replayTransformation(){
 		TransExecutionConfiguration tc = this.getTransExecutionConfiguration();
-		executeFile(tc.isExecutingLocally(),tc.isExecutingRemotely(),tc.isExecutingClustered(),false,false,new Date());
+		executeFile(tc.isExecutingLocally(),tc.isExecutingRemotely(),tc.isExecutingClustered(),false,false,new Date(), false);
 	}
 
 	public void previewFile(){
-		executeFile(true, false, false, true, false, null);
+		executeFile(true, false, false, true, false, null, true);
 	}
 	
 	public void debugFile() {
-		executeFile(true, false, false, false, true, null);
+		executeFile(true, false, false, false, true, null, true);
 	}
 
-	public void executeFile(boolean local, boolean remote, boolean cluster, boolean preview, boolean debug, Date replayDate)
+	public void executeFile(boolean local, boolean remote, boolean cluster, boolean preview, boolean debug, Date replayDate, boolean safe)
 	{
 		TransMeta transMeta = getActiveTransformation();
-		if (transMeta != null)	executeTransformation(transMeta, local, remote, cluster, preview, debug, replayDate);
+		if (transMeta != null)	executeTransformation(transMeta, local, remote, cluster, preview, debug, replayDate, safe);
 
 		JobMeta jobMeta = getActiveJob();
 		if (jobMeta != null) executeJob(jobMeta, local, remote, replayDate);
 
 	}
 
-    public void executeTransformation(TransMeta transMeta, boolean local, boolean remote, boolean cluster, boolean preview, boolean debug, Date replayDate)
+    public void executeTransformation(TransMeta transMeta, boolean local, boolean remote, boolean cluster, boolean preview, boolean debug, Date replayDate, boolean safe)
 	{
 		try
 		{
-			delegates.trans.executeTransformation(transMeta, local, remote, cluster, preview, debug, replayDate);
+			delegates.trans.executeTransformation(transMeta, local, remote, cluster, preview, debug, replayDate, safe);
 		} 
 		catch (Exception e)
 		{

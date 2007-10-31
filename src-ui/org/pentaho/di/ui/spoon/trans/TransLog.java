@@ -388,7 +388,7 @@ public class TransLog extends Composite implements TabItemInterface
 		{
 			public void widgetSelected(SelectionEvent e)
 			{
-				spoon.executeTransformation(transMeta, true, false, false, false, false, null);
+				spoon.executeTransformation(transMeta, true, false, false, false, false, null, wSafeMode.getSelection());
 			}
 		};
 
@@ -412,7 +412,7 @@ public class TransLog extends Composite implements TabItemInterface
 		{
 			public void widgetSelected(SelectionEvent e)
 			{
-				spoon.executeTransformation(transMeta, true, false, false, true, false, null);
+				spoon.executeTransformation(transMeta, true, false, false, true, false, null, wSafeMode.getSelection());
 			}
 		};
 
