@@ -54,7 +54,6 @@ public class SpoonTabsDelegate extends SpoonDelegate
 		boolean close = true;
 		for (TabMapEntry entry : collection)
 		{
-			
 			if (item.equals(entry.getTabItem()))
 			{
 				TabItemInterface itemInterface = entry.getObject();
@@ -122,6 +121,7 @@ public class SpoonTabsDelegate extends SpoonDelegate
 			if (entry!=null){
 				spoon.tabfolder.setSelected(entry.getTabItem());
 				tabSelected(entry.getTabItem());
+				spoon.showSelection();
 			}
 		}
 		
