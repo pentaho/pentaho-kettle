@@ -847,10 +847,9 @@ Alert(getNextWorkingDay(d1));</sample>
       	
    <jsFunction name="fireToDB">
 	<help>Sends a SQL-Statement to a valid DB-Connection.</help>
-      <sample>// Fires a SQL-Statement to a valid Pentaho / Kelttle connection
+      <sample>// Fires a SQL-Statement to a valid Pentaho / Kettle connection
 // and returns, if possible, an array.
-// Keep in mind, it is possible to kill your Data
-// if you send a delete or truncate to your tables.
+// This should only be used for SELECT statements.
 //
 // Usage:
 // fireToDB(var,var);
