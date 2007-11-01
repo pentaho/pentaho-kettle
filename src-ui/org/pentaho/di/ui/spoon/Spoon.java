@@ -2921,9 +2921,12 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		}
 	}
 
-	private String lastFileOpened = "";
+	private String lastFileOpened = null;
 	public String getLastFileOpened()
 	{
+	  if (lastFileOpened == null) {
+	    lastFileOpened = System.getProperty("org.pentaho.di.defaultVFSPath", "");
+	  }
 		return lastFileOpened;
 	}
 	
@@ -2939,7 +2942,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		FileObject initialFile = null;
 		FileObject rootFile = null;
       try {
-			initialFile = KettleVFS.getFileObject(lastFileOpened);
+			initialFile = KettleVFS.getFileObject(getLastFileOpened());
 			rootFile = initialFile.getFileSystem().getRoot();
       } catch (IOException e) {
 			e.printStackTrace();
@@ -2965,9 +2968,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		VfsFileChooserDialog vfsFileChooser = new VfsFileChooserDialog(rootFile, initialFile);
       FileObject selectedFile = vfsFileChooser.open(shell, null, Const.STRING_TRANS_AND_JOB_FILTER_EXT, Const.getTransformationAndJobFilterNames(), VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE);
       if (selectedFile != null) {
-			lastFileOpened = selectedFile.getName().getFriendlyURI();
-			openFile(selectedFile.getName().getFriendlyURI(), false);
-		}
+        setLastFileOpened(selectedFile.getName().getFriendlyURI());
+			  openFile(selectedFile.getName().getFriendlyURI(), false);
+	  	}
 	}
 
     public void addFileListener( FileListener listener, String extension, String rootNodeName ) {
@@ -3618,8 +3621,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		FileObject rootFile = null;
 		FileObject initialFile = null;
         try {
-			initialFile = KettleVFS.getFileObject(lastFileOpened);
-			rootFile = KettleVFS.getFileObject(lastFileOpened).getFileSystem().getRoot();
+			initialFile = KettleVFS.getFileObject(getLastFileOpened());
+			rootFile = KettleVFS.getFileObject(getLastFileOpened()).getFileSystem().getRoot();
         } catch (Exception e) {
 			e.printStackTrace();
 			MessageBox messageDialog = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
