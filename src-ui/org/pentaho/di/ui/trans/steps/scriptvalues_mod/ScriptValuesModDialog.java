@@ -1530,7 +1530,9 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		
 		
 		wTree.addListener(SWT.MouseDown, new Listener(){
-			public void handleEvent(Event e){
+			public void handleEvent(Event e) {
+				if (wTree.getSelectionCount()<=0) return;
+				
 				TreeItem tItem = wTree.getSelection()[0];
 				if(tItem != null){
 					TreeItem pItem = tItem.getParentItem();
