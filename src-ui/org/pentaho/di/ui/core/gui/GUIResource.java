@@ -407,19 +407,18 @@ public class GUIResource
 		fontFixed = new ManagedFont(display, props.getFixedFont());
 
 		// Create a large version of the graph font
-		FontData largeFontData = props.getGraphFont();
-		largeFontData.setHeight(largeFontData.getHeight() * 3);
+		FontData largeFontData = new FontData(props.getGraphFont().getName(), props.getGraphFont().getHeight() * 3, props.getGraphFont().getStyle());
 		fontLarge = new ManagedFont(display, largeFontData);
 
 		// Create a tiny version of the graph font
-		FontData tinyFontData = props.getGraphFont();
-		tinyFontData.setHeight(tinyFontData.getHeight() - 2);
+		FontData tinyFontData = new FontData(props.getGraphFont().getName(), props.getGraphFont().getHeight() -2, props.getGraphFont().getStyle());
 		fontTiny = new ManagedFont(display, tinyFontData);
 
 		// Create a bold version of the default font to display shared objects
 		// in the trees
-		FontData boldFontData = props.getDefaultFont();
-		boldFontData.setStyle(SWT.BOLD);
+		int extraHeigth=3;
+		if (Const.isWindows()) extraHeigth=0;
+		FontData boldFontData = new FontData( props.getDefaultFont().getName(), props.getDefaultFont().getHeight()+extraHeigth, props.getDefaultFont().getStyle() | SWT.BOLD );
 		fontBold = new ManagedFont(display, boldFontData);
 	}
 

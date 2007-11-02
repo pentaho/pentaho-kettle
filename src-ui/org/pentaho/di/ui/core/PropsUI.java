@@ -877,8 +877,7 @@ public class PropsUI extends Props
 
     public void setLook(Control control, int style)
     {
-        // if (!Const.isWindows()) return;
-        if (this.isOSLookShown() && style!=WIDGET_STYLE_FIXED) return;
+    	if (this.isOSLookShown() && style!=WIDGET_STYLE_FIXED) return;
         
         GUIResource gui = GUIResource.getInstance();
         Font font        = null;

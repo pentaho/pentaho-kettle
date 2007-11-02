@@ -1222,8 +1222,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		fillLayout.marginWidth = Const.MARGIN;
 		composite.setLayout(fillLayout);
 
-		mainExpandBar = new ExpandBar(composite, SWT.NO_BACKGROUND);
-		mainExpandBar.setBackgroundMode(SWT.INHERIT_NONE);
+		mainExpandBar = new ExpandBar(composite, SWT.V_SCROLL);
+		// mainExpandBar.setBackgroundMode(SWT.INHERIT_DEFAULT);
+		// mainExpandBar.setBackground(display.getSystemColor(SWT.COLOR_GRAY));
+		// mainExpandBar.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
 		props.setLook(mainExpandBar);
 		mainExpandBar.setSpacing(0);
 
@@ -1243,8 +1245,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			}
             }
         );
-		mainExpandBar.setBackground(GUIResource.getInstance().getColorBackground());
-		mainExpandBar.setForeground(GUIResource.getInstance().getColorBlack());
 
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 		//
@@ -1316,7 +1316,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		composite.setLayout(formLayout);
 
 		expandBar = new ExpandBar(composite, SWT.V_SCROLL);
-		expandBar.setBackground(GUIResource.getInstance().getColorBackground());
+		props.setLook(expandBar);
 		expandBar.setSpacing(0);
 
 		FormData expandData = new FormData();
@@ -1360,38 +1360,39 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 	private void setHeaderImage(ExpandItem expandItem, Image icon, String string, int offset, boolean boldFont)
 	{
-		// Draw just an image with text and all...
-		Image img = new Image(display, 1, 1);
-		GC tmpGC = new GC(img);
-		org.eclipse.swt.graphics.Point point = tmpGC.textExtent(STRING_SPOON_MAIN_TREE);
-		tmpGC.dispose();
-		img.dispose();
-
-		Rectangle rect = new Rectangle(0, 0, point.x + 100 - offset, point.y+3);
-		Rectangle iconBounds = icon.getBounds();
-
-		final Image image = new Image(display, rect.width, rect.height);
-		GC gc = new GC(image);
-		if (props.isBrandingActive())
+		if (Const.isWindows() || Const.isLinux())
 		{
-			GUIResource.getInstance().drawPentahoGradient(display, gc, rect, false);
+			// Draw just an image with text and all...
+			Image img = new Image(display, 1, 1);
+			GC tmpGC = new GC(img);
+			org.eclipse.swt.graphics.Point point = tmpGC.textExtent(STRING_SPOON_MAIN_TREE);
+			tmpGC.dispose();
+			img.dispose();
+	
+			Rectangle rect = new Rectangle(0, 0, point.x + 100 - offset, point.y+3);
+			Rectangle iconBounds = icon.getBounds();
+	
+			final Image image = new Image(display, rect.width, rect.height);
+			GC gc = new GC(image);
+			if (props.isBrandingActive())
+			{
+				GUIResource.getInstance().drawPentahoGradient(display, gc, rect, false);
+			}
+			gc.setBackground(expandBar.getBackground());
+		    gc.setForeground(expandBar.getForeground());
+			gc.fillRectangle(rect);
+			gc.drawImage(icon, 0, 0);
+		    if (boldFont) gc.setFont(GUIResource.getInstance().getFontBold());
+			gc.drawText(string, iconBounds.width + 5, (iconBounds.height - point.y) / 2 + 2, false);
+			expandItem.setImage(image);
+			// expandItem.setImage(ImageUtil.makeImageTransparent(display, image, new RGB(255, 255, 255)));
+	        expandItem.addDisposeListener(new DisposeListener() { public void widgetDisposed(DisposeEvent event) { image.dispose(); } });
 		}
-		gc.setBackground(display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
-		gc.setForeground(GUIResource.getInstance().getColorBlack());
-		gc.fillRectangle(rect);
-		gc.drawImage(icon, 0, 0);
-	    if (boldFont) gc.setFont(GUIResource.getInstance().getFontBold());
-		gc.drawText(string, iconBounds.width + 5, (iconBounds.height - point.y) / 2 + 2, false);
-		expandItem.setImage(image);
-		// expandItem.setImage(ImageUtil.makeImageTransparent(display, image, new RGB(255, 255, 255)));
-        expandItem.addDisposeListener(new DisposeListener() { public void widgetDisposed(DisposeEvent event) { image.dispose(); } });
-        
-        /*
+		else
 		{
             expandItem.setImage(icon);
             expandItem.setText(string);
-			}
-		 */
+		}
 	}
 
 	private void refreshCoreObjectsHistory()

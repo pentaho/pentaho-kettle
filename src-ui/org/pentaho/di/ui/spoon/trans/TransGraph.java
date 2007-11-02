@@ -1252,8 +1252,15 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
             follow = follow.getParent();
         }
 
-        p.x = x - p.x - 16;
-        p.y = y - p.y - 64;
+        int offsetX = -16;
+        int offsetY = -64;
+        if (Const.isOSX())
+        {
+        	offsetX=-2;
+        	offsetY=-24;
+        }
+        p.x = x - p.x + offsetX;
+        p.y = y - p.y + offsetY;
 
         return screen2real(p.x, p.y);
     }

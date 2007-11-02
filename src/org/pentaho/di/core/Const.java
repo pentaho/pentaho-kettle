@@ -776,6 +776,14 @@ public class Const
 	{
 		return getOS().startsWith("Linux");
 	}
+	
+	/** 
+	 * @return True if the OS is an OSX derivate. 
+	 */
+	public static final boolean isOSX()
+	{
+		return getOS().toUpperCase().contains("OS X");
+	}
 
     /**
      * Determine the hostname of the machine Kettle is running on
