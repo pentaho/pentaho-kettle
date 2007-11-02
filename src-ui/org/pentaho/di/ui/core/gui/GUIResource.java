@@ -1,5 +1,5 @@
 /*
- * Copyright © 2007 Pentaho Corporation.  All rights reserved. 
+ * Copyright ï¿½ 2007 Pentaho Corporation.  All rights reserved. 
  * This software was developed by Pentaho Corporation and is provided under the terms 
  * of the GNU Lesser General Public License, Version 2.1. You may not use 
  * this file except in compliance with the license. If you need a copy of the license, 
@@ -416,8 +416,8 @@ public class GUIResource
 
 		// Create a bold version of the default font to display shared objects
 		// in the trees
-		int extraHeigth=3;
-		if (Const.isWindows()) extraHeigth=0;
+		int extraHeigth=0;
+		if (Const.isOSX()) extraHeigth=3;
 		FontData boldFontData = new FontData( props.getDefaultFont().getName(), props.getDefaultFont().getHeight()+extraHeigth, props.getDefaultFont().getStyle() | SWT.BOLD );
 		fontBold = new ManagedFont(display, boldFontData);
 	}
