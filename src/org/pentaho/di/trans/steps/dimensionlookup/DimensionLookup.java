@@ -1,4 +1,4 @@
- /* Copyright © 2007 Pentaho Corporation.  All rights reserved. 
+ /* Copyright ï¿½ 2007 Pentaho Corporation.  All rights reserved. 
  * This software was developed by Pentaho Corporation and is provided under the terms 
  * of the GNU Lesser General Public License, Version 2.1. You may not use 
  * this file except in compliance with the license. If you need a copy of the license, 
@@ -132,6 +132,22 @@ public class DimensionLookup extends BaseStep implements StepInterface
                 {
                   throw new KettleStepException(Messages.getString("DimensionLookup.Exception.KeyFieldNotFound", meta.getFieldStream()[i])); //$NON-NLS-1$ //$NON-NLS-2$
                 }
+            }
+            
+            // Caching...
+            //
+            if (data.cacheKeyRowMeta==null)
+            {
+            	// KEY : the natural key(s)
+                //
+                data.cacheKeyRowMeta = new RowMeta();
+                for (int i=0;i<data.keynrs.length;i++)
+                {
+                    ValueMetaInterface key = getInputRowMeta().getValueMeta(data.keynrs[i]);
+                    data.cacheKeyRowMeta.addValueMeta( key.clone());
+                }
+                
+                data.cache = new ByteArrayHashMap(meta.getCacheSize()>0 ? meta.getCacheSize() : 5000, data.cacheKeyRowMeta);
             }
 
             if (meta.getDateField()!=null && meta.getDateField().length()>0)
@@ -317,7 +333,10 @@ public class DimensionLookup extends BaseStep implements StepInterface
                     Object[] values = getCacheValues(rowMeta, row, technicalKey, valueVersion, valueDateFrom, valueDateTo);
                     
                     // put it in the cache...
-                    addToCache(lookupRow, values);
+                    if (values!=null)
+                    {
+                    	addToCache(lookupRow, values);
+                    }
                 }
                 
 				if (log.isRowLevel()) logRowlevel(Messages.getString("DimensionLookup.Log.AddedDimensionEntry")+data.returnRowMeta.getString(returnRow)); //$NON-NLS-1$
@@ -938,6 +957,8 @@ public class DimensionLookup extends BaseStep implements StepInterface
      */
     private Object[] getCacheValues(RowMetaInterface rowMeta, Object[] row, Long technicalKey, Long valueVersion, Date valueDateFrom, Date valueDateTo)
     {
+    	if (data.cacheValueRowMeta==null) return null; // nothing is in the cache.
+    	
         Object[] cacheValues = new Object[data.cacheValueRowMeta.size()];
         int cacheIndex = 0;
         
@@ -981,37 +1002,9 @@ public class DimensionLookup extends BaseStep implements StepInterface
      */
 	private void addToCache(Object[] keyValues, Object[] returnValues) throws KettleValueException
     {
-        // Caching...
-        //
-        if (data.cacheKeyRowMeta==null)
+        if (data.cacheValueRowMeta==null)
         {
-        	// KEY : the natural key(s)
-            //
-            data.cacheKeyRowMeta = new RowMeta();
-            for (int i=0;i<data.keynrs.length;i++)
-            {
-                ValueMetaInterface key = getInputRowMeta().getValueMeta(data.keynrs[i]);
-                data.cacheKeyRowMeta.addValueMeta( key.clone());
-            }
-            
-            data.cache = new ByteArrayHashMap(meta.getCacheSize()>0 ? meta.getCacheSize() : 5000, data.cacheKeyRowMeta);
-        
             data.cacheValueRowMeta = data.returnRowMeta.clone();
-            
-            /*
-            // VALUE : tk, version, fields, from date, to date 
-            //
-            data.cacheValueRowMeta = new RowMeta();
-            data.cacheValueRowMeta.addValueMeta( new ValueMeta(meta.getKeyField(), ValueMetaInterface.TYPE_INTEGER) );
-            data.cacheValueRowMeta.addValueMeta( new ValueMeta(meta.getVersionField(), ValueMetaInterface.TYPE_INTEGER) );
-            for (int i=0;i<data.fieldnrs.length;i++)
-            {
-                ValueMetaInterface v = data.outputRowMeta.getValueMeta(data.fieldnrs[i]);
-                data.cacheValueRowMeta.addValueMeta(v);
-            }
-            data.cacheValueRowMeta.addValueMeta( new ValueMeta(meta.getDateFrom(), ValueMetaInterface.TYPE_DATE) );
-            data.cacheValueRowMeta.addValueMeta( new ValueMeta(meta.getDateTo(), ValueMetaInterface.TYPE_DATE) );
-            */
         }
 
         // store it in the cache if needed.
@@ -1093,7 +1086,13 @@ public class DimensionLookup extends BaseStep implements StepInterface
 
     private Object[] getFromCache(Object[] keyValues, Date dateValue) throws KettleValueException
     {
-    	if (data.cacheKeyRowMeta==null) return null; // There is nothing in the cache: don't look
+        if (data.cacheValueRowMeta==null)
+        {
+        	// nothing in the cache yet, no lookup was ever performed
+        	if (data.returnRowMeta==null) return null; 
+        	
+            data.cacheValueRowMeta = data.returnRowMeta.clone();
+        }
     	
     	byte[] key = RowMeta.extractData(data.cacheKeyRowMeta, keyValues);
         byte[] value = data.cache.get(key);
