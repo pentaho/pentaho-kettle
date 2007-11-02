@@ -37,7 +37,6 @@ import org.w3c.dom.Node;
 
 /**
  * Job entry type to display a message box.
- * It uses a piece of javascript to do this.
  *
  * @author Samatar
  * @since 12-02-2007
