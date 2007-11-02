@@ -66,7 +66,7 @@
 	<classpathentry kind="lib" path="libext/ognl-2.6.9.jar"/>
 	<classpathentry kind="lib" path="libext/commons/commons-validator-1.3.1.jar"/>
 	<classpathentry kind="lib" path="libext/commons/commons-beanutils-1.7.0.jar"/>
-	<classpathentry kind="lib" path="libswt/linux/x86/swt.jar"/>
+	<classpathentry kind="lib" path="libswt/win32/swt.jar"/>
 	<classpathentry kind="lib" path="libext/jackcess-1.1.9.jar"/>
 	<classpathentry kind="lib" path="libext/mondrian/eigenbase-properties.jar"/>
 	<classpathentry kind="lib" path="libext/mondrian/eigenbase-resgen.jar"/>
