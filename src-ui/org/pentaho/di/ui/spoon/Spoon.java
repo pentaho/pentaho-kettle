@@ -1,4 +1,4 @@
-/* Copyright © 2007 Pentaho Corporation.  All rights reserved. 
+/* Copyright ï¿½ 2007 Pentaho Corporation.  All rights reserved. 
  * This software was developed by Pentaho Corporation and is provided under the terms 
  * of the GNU Lesser General Public License, Version 2.1. You may not use 
  * this file except in compliance with the license. If you need a copy of the license, 
@@ -1378,8 +1378,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			{
 				GUIResource.getInstance().drawPentahoGradient(display, gc, rect, false);
 			}
-			gc.setBackground(expandBar.getBackground());
-		    gc.setForeground(expandBar.getForeground());
 			gc.fillRectangle(rect);
 			gc.drawImage(icon, 0, 0);
 		    if (boldFont) gc.setFont(GUIResource.getInstance().getFontBold());
