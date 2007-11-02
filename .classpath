@@ -40,7 +40,6 @@
 	<classpathentry kind="lib" path="libext/JDBC/jt400.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/jtds-1.2.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/mysql-connector-java-3.1.14-bin.jar"/>
-	<classpathentry kind="lib" path="libext/JDBC/nzjdbc.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/ojdbc14.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/orai18n.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/rdbthin.jar"/>
