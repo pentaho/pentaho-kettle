@@ -113,7 +113,7 @@ public class SortRows extends BaseStep implements StepInterface
 				}
 				else
 				{
-					dos = new DataOutputStream(outputStream);
+					dos = new DataOutputStream(new BufferedOutputStream(outputStream, 5000000));
 					gzos = null;
 				}
                 
@@ -178,9 +178,6 @@ public class SortRows extends BaseStep implements StepInterface
 	
 	private Object[] getBuffer() throws KettleValueException
 	{
-		int i, f;
-		int smallest;
-		Object[] r1, r2;
 		Object[] retval;
 		
 		// Open all files at once and read one row from each file...
@@ -190,7 +187,7 @@ public class SortRows extends BaseStep implements StepInterface
 		
 			try
 			{
-				for (f=0;f<data.files.size() && !isStopped();f++)
+				for (int f=0;f<data.files.size() && !isStopped();f++)
 				{
 					FileObject fileObject = (FileObject)data.files.get(f);
                     String filename = KettleVFS.getFilename(fileObject);
@@ -206,7 +203,7 @@ public class SortRows extends BaseStep implements StepInterface
 					}
                     else
 					{
-						di=new DataInputStream(fi);
+						di=new DataInputStream(new BufferedInputStream(fi, 5000000));
 					}
 					data.dis.add(di);
 					
@@ -217,10 +214,14 @@ public class SortRows extends BaseStep implements StepInterface
 					
 					if (buffersize>0)
 					{
-						// Read a row from each temp-file
-                        data.rowbuffer.add( data.outputRowMeta.readData(di) );    // new row from input stream
+						Object[] row = (Object [])data.outputRowMeta.readData(di);
+                        data.rowbuffer.add( row );    // new row from input stream
+                        data.tempRows.add( new RowTempFile(row,f) );
 					}
 				}
+				
+				// Sort the data row buffer
+				Collections.sort(data.tempRows, data.comparator);
 			}
 			catch(Exception e)
 			{
@@ -253,29 +254,16 @@ public class SortRows extends BaseStep implements StepInterface
 				//
 				if (log.isRowLevel())
 				{
-				    for (i=0;i<data.rowbuffer.size() && !isStopped();i++)
+				    for (int i=0;i<data.rowbuffer.size() && !isStopped();i++)
 				    {
 					    Object[] b = (Object[])data.rowbuffer.get(i);
 					    logRowlevel("--BR#"+i+": "+data.outputRowMeta.getString(b));
 				    }
 				}
 				
-				smallest=0;
-				r1=(Object[])data.rowbuffer.get(smallest);
-				for (f=1;f<data.rowbuffer.size() && !isStopped();f++)
-				{
-					r2=(Object[])data.rowbuffer.get(f);
-					
-					if (r2!=null && data.outputRowMeta.compare(r1, r2, data.fieldnrs)>0)
-					{
-						smallest=f;
-						r1=(Object[])data.rowbuffer.get(smallest);
-					}
-				}
-				retval=r1;
-		
-				data.rowbuffer.remove(smallest);
-				if (log.isRowLevel()) logRowlevel("Smallest row selected on ["+smallest+"] : "+retval);
+				RowTempFile rowTempFile = data.tempRows.remove(0);
+				retval = rowTempFile.row;
+				int smallest = rowTempFile.fileNumber;
 				
 				// now get another Row for position smallest
 				
@@ -286,7 +274,18 @@ public class SortRows extends BaseStep implements StepInterface
 
 				try
 				{
-					data.rowbuffer.add(smallest, data.outputRowMeta.readData(di));
+					Object[] row2 = (Object [])data.outputRowMeta.readData(di);
+					RowTempFile extra = new RowTempFile(row2, smallest);
+					
+					int index = Collections.binarySearch(data.tempRows, extra, data.comparator);
+					if (index < 0)
+					{
+						data.tempRows.add(index*(-1) - 1, extra);
+					}
+					else
+					{
+						data.tempRows.add(index, extra);
+					}
 				}
 				catch(KettleFileException fe) // empty file or EOF mostly
 				{
@@ -310,6 +309,14 @@ public class SortRows extends BaseStep implements StepInterface
 					data.fis.remove(smallest);
 
 					if (gzfi != null) data.gzis.remove(smallest);
+					
+					// Also update all file numbers in in data.tempRows if they are larger than smallest.
+					//
+					for (RowTempFile rtf : data.tempRows)
+					{
+						if (rtf.fileNumber>smallest) rtf.fileNumber--;
+					}
+					
 				} 
 				catch (SocketTimeoutException e) 
 				{
@@ -416,6 +423,21 @@ public class SortRows extends BaseStep implements StepInterface
 
             data.compressFiles = getBooleanValueOfVariable(meta.getCompressFilesVariable(), meta.getCompressFiles());
             
+            data.comparator = new Comparator<RowTempFile>(){
+            	public int compare(RowTempFile o1, RowTempFile o2)
+            	{
+            		try
+            		{
+            			return data.outputRowMeta.compare(o1.row, o2.row, data.fieldnrs);
+            		}
+            		catch(KettleValueException e)
+            		{
+            			logError("Error comparing rows: "+e.toString());
+                    	return 0;
+            		}
+            	}
+            };
+
 		    // Add init code here.
             
             if (data.sortSize>0)
@@ -426,6 +448,7 @@ public class SortRows extends BaseStep implements StepInterface
             {
                 data.rowbuffer=new ArrayList<Object[]>();
             }
+            data.tempRows  = new ArrayList<RowTempFile>();
 		    return true;
 		}
 		return false;

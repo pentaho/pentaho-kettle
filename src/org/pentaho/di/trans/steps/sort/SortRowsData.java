@@ -15,6 +15,7 @@ package org.pentaho.di.trans.steps.sort;
 import java.io.DataInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
 
@@ -41,6 +42,9 @@ public class SortRowsData extends BaseStepData implements StepDataInterface
 	public List<Object[]> rowbuffer;
     public List<Integer> bufferSizes;
 
+    // To store rows and file references
+    public List<RowTempFile> tempRows;
+
 	public int     fieldnrs[];      // the corresponding field numbers;
     public FileObject fil;
     public RowMetaInterface outputRowMeta;
@@ -48,6 +52,9 @@ public class SortRowsData extends BaseStepData implements StepDataInterface
 	public boolean compressFiles;
 	public boolean convertKeysToNative;
 
+	public Comparator<RowTempFile> comparator;
+	
+	
 	/**
 	 * 
 	 */

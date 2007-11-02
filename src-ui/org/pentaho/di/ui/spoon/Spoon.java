@@ -1223,7 +1223,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		composite.setLayout(fillLayout);
 
 		mainExpandBar = new ExpandBar(composite, SWT.V_SCROLL);
-		// mainExpandBar.setBackgroundMode(SWT.INHERIT_DEFAULT);
+		//mainExpandBar.setBackgroundMode(SWT.INHERIT_NONE);
 		// mainExpandBar.setBackground(display.getSystemColor(SWT.COLOR_GRAY));
 		// mainExpandBar.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
 		props.setLook(mainExpandBar);
@@ -1378,6 +1378,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			{
 				GUIResource.getInstance().drawPentahoGradient(display, gc, rect, false);
 			}
+			gc.setBackground(display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
+			gc.setForeground(GUIResource.getInstance().getColorBlack());
 			gc.fillRectangle(rect);
 			gc.drawImage(icon, 0, 0);
 		    if (boldFont) gc.setFont(GUIResource.getInstance().getFontBold());
