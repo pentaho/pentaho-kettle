@@ -331,7 +331,15 @@ public class Denormaliser extends BaseStep implements StepInterface
                             if (!sourceMeta.isNull(sourceData)) 
                             {
                                 data.counters[idx]++;
-                                data.sum[idx] = (Integer)data.sum[idx] + (Integer)sourceData;
+                                if (data.sum[idx]==null)
+                                {
+                                	data.sum[idx] = targetData;
+                                }
+                                else
+                                {
+                                	data.sum[idx] = ValueDataUtil.plus(targetMeta, data.sum[idx], targetMeta, targetData);
+                                }
+                                // data.sum[idx] = (Integer)data.sum[idx] + (Integer)sourceData;
                             }
                             break;
                         case DenormaliserTargetField.TYPE_AGGR_NONE:
