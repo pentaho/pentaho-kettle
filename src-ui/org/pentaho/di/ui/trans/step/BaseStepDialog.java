@@ -200,6 +200,58 @@ public class BaseStepDialog extends Dialog {
         rightAlignButtons(buttons, largest.width, margin, lastControl);
         break;
     }
+    if (Const.isOSX())
+    {
+        Shell parentShell=composite.getShell();
+        final List<TableView> tableViews = new ArrayList<TableView>();
+        getTableViews(parentShell, tableViews);
+        for (final Button button : buttons) {
+        	// We know the table views
+        	// We also know that if a button is hit, the table loses focus
+        	// In that case, we can apply the content of an open text editor...
+        	//
+        	button.addSelectionListener(new SelectionAdapter() {
+			
+				public void widgetSelected(SelectionEvent e) {
+					for (TableView view : tableViews)
+					{
+						view.applyOSXChanges();
+					}
+				}
+			});
+        }
+    }
+  }
+  
+  private static final void getTableViews(Control parentControl, List<TableView> tableViews)
+  {
+	if (parentControl instanceof TableView) 
+	{
+		tableViews.add((TableView) parentControl);
+	}
+	else
+	{
+		if (parentControl instanceof Composite)
+		{
+			Control[] children = ((Composite)parentControl).getChildren();
+			for (Control child : children)
+			{
+				getTableViews(child, tableViews);
+			}
+		}
+		else
+		{
+			if (parentControl instanceof Shell)
+			{
+				Control[] children = ((Shell)parentControl).getChildren();
+				for (Control child : children)
+				{
+					getTableViews(child, tableViews);
+				}
+				
+			}
+		}
+	}
   }
 
   /**

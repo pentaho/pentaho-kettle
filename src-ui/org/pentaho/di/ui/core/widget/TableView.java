@@ -159,7 +159,7 @@ public class TableView extends Composite
     protected int textWidgetCaretPosition;
     
     private VariableSpace variables;
-
+    
 	public TableView(VariableSpace space, Composite par, int st, ColumnInfo[] c, int r, ModifyListener lsm, PropsUI pr)
 	{
 		this(space, par, st, c, r, false, lsm, pr);
@@ -1780,7 +1780,7 @@ public class TableView extends Composite
 		    activeTableItem=table.getItem(rownr);
 	}
 
-	private void edit(int rownr, int colnr)
+	public void edit(int rownr, int colnr)
 	{
 		setPosition(rownr, colnr);
 		edit(rownr, colnr, true, (char)0);
@@ -2857,6 +2857,22 @@ public class TableView extends Composite
 	 */
 	public void setNumberColumn(ColumnInfo numberColumn) {
 		this.numberColumn = numberColumn;
+	}
+
+	public TableEditor getEditor() {
+		return editor;
+	}
+
+	public void setEditor(TableEditor editor) {
+		this.editor = editor;
+	}
+
+	public void applyOSXChanges()
+	{
+		if (text!=null && !text.isDisposed() && lsFocusText!=null)
+		{
+			lsFocusText.focusLost(null);
+		}
 	}
 	
 };

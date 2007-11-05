@@ -674,6 +674,7 @@
 			  <include name="*.zip"/>
 	    	</fileset>
 	  	</delete>
+	    <delete dir="${macdistrib}"/>
 	  </target>
 
 	  <target name="clean" depends="cleandirs"/>
@@ -700,21 +701,23 @@
 	  	        <jarbundler dir="${macdistrib}"
 	  	                    name="${ant.project.name}"
 	  	                    mainclass="org.pentaho.di.ui.spoon.Spoon"
-	  	                    icon="${ui}/images/Scaled_icons.icns"
+	  	                    icon="${ui}/images/spoon32.icns"
 	  	                    version="${version}"
 	  	        			verbose="true"
 	  	        	VMOptions="-Xmx256m"
-				    shortname="WD"
+				    shortname="Spoon"
 	  	        	arguments=""
 	  	        	workingdirectory="$APP_PACKAGE/Contents/Resources"
 	  	            jvmversion="1.5+">
 	  	        	<javaproperty name="java.library.path" value="$APP_PACKAGE/Contents/Resources"/>
 	  	        	<jarfileset dir="${distrib}">
 	  	                	<include name="${lib}/*.jar"/>
-	  	        			<include name="${libext}/*.jar"/>
-	  	        			<include name="${libext}/**/*.jar"/>
-	  	        			<include name="${libswt}/*.jar"/>
-	  	        			<include name="${libswt}/osx/*.jar"/>
+	  	        		<include name="${libext}/*.jar"/>
+	  	        		<include name="${libext}/**/*.jar"/>
+	  	        		<include name="${libswt}/*.jar"/>
+	  	        		<include name="${libswt}/osx/*.jar"/>
+	  	        		<include name="${samples}/**/*"/>
+	  	        		<include name="${docs}/**/*"/>
 	  	        	</jarfileset>
 	  	        </jarbundler>
 	  			<!-- patch Info.plist with StartOnMainTrhead property need to make sure that the token is in the right place-->
