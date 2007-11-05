@@ -1,4 +1,4 @@
-/* Copyright © 2007 Pentaho Corporation.  All rights reserved. 
+/* Copyright ï¿½ 2007 Pentaho Corporation.  All rights reserved. 
  * This software was developed by Pentaho Corporation and is provided under the terms 
  * of the GNU Lesser General Public License, Version 2.1. You may not use 
  * this file except in compliance with the license. If you need a copy of the license, 
@@ -405,7 +405,14 @@ public class RepositoriesDialog
         BaseStepDialog.setMinimalShellHeight(shell, new Control[] { wCanvas, wlKettle, wRepository, wUsername, wPassword, wOK }, margin, 3 * margin);
         Rectangle dialogBounds = shell.getBounds();
 
-        shell.setSize(bounds.width + 20, dialogBounds.height);
+        if (!Const.isOSX())
+        {
+        	shell.setSize(bounds.width + 20, dialogBounds.height);
+        }
+        else
+        {
+        	shell.setSize(bounds.width + 20, dialogBounds.height+50);
+        }
 
         // MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION);
         // mb.setText("Warning");
