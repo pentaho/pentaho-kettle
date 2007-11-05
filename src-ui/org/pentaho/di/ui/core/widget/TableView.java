@@ -1,4 +1,4 @@
- /* Copyright © 2007 Pentaho Corporation.  All rights reserved. 
+ /* Copyright ï¿½ 2007 Pentaho Corporation.  All rights reserved. 
  * This software was developed by Pentaho Corporation and is provided under the terms 
  * of the GNU Lesser General Public License, Version 2.1. You may not use 
  * this file except in compliance with the license. If you need a copy of the license, 
@@ -2196,6 +2196,7 @@ public class TableView extends Composite
 			try
 			{
                 int extra = 30;
+                if (Const.isOSX()) max*=1.3;
                 tc.setWidth(max+extra);
 			}
 			catch(Exception e) {}
