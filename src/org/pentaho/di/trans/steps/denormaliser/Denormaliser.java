@@ -248,7 +248,7 @@ public class Denormaliser extends BaseStep implements StepInterface
         
         for (int i=0;i<meta.getDenormaliserTargetFields().length;i++)
         {
-            data.targetResult[i] = null; // Well Duh!
+            data.targetResult[i] = null;
 
             data.counters[i]=0L; // set to 0
             data.sum[i]=null;
@@ -305,7 +305,14 @@ public class Denormaliser extends BaseStep implements StepInterface
                         switch(field.getTargetAggregationType())
                         {
                         case DenormaliserTargetField.TYPE_AGGR_SUM:
-                        	prevTargetData = ValueDataUtil.plus(targetMeta, prevTargetData, targetMeta, targetData);
+                        	if (prevTargetData!=null)
+                        	{
+                        		prevTargetData = ValueDataUtil.plus(targetMeta, prevTargetData, targetMeta, targetData);
+                        	}
+                        	else
+                        	{
+                        		prevTargetData = targetData;
+                        	}
                             break;
                         case DenormaliserTargetField.TYPE_AGGR_MIN:
                             if (sourceMeta.compare(sourceData, targetMeta, prevTargetData)<0) {
