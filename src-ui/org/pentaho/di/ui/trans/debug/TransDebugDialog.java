@@ -1,5 +1,5 @@
 /*
- * Copyright © 2007 Pentaho Corporation.  All rights reserved. 
+ * Copyright ï¿½ 2007 Pentaho Corporation.  All rights reserved. 
  * This software was developed by Pentaho Corporation and is provided under the terms 
  * of the GNU Lesser General Public License, Version 2.1. You may not use 
  * this file except in compliance with the license. If you need a copy of the license, 
@@ -231,6 +231,7 @@ public class TransDebugDialog extends Dialog {
     	wSteps.removeEmptyRows();
     	wSteps.table.getColumn(0).setWidth(maxIconSize+10);
     	wSteps.table.getColumn(0).setAlignment(SWT.CENTER);
+    	wSteps.table.getColumn(1).setWidth(wSteps.table.getBounds().width-maxIconSize-10);
     	
     	// OK, select the first used step debug line...
     	//
