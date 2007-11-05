@@ -229,9 +229,9 @@ public class TransDebugDialog extends Dialog {
     	}
     	
     	wSteps.removeEmptyRows();
+    	wSteps.optWidth(false);
     	wSteps.table.getColumn(0).setWidth(maxIconSize+10);
     	wSteps.table.getColumn(0).setAlignment(SWT.CENTER);
-    	wSteps.table.getColumn(1).setWidth(wSteps.table.getBounds().width-maxIconSize-10);
     	
     	// OK, select the first used step debug line...
     	//
