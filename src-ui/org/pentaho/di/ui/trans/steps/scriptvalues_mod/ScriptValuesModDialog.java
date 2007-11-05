@@ -1,5 +1,5 @@
 /*
- * Copyright © 2007 Pentaho Corporation.  All rights reserved. 
+ * Copyright ï¿½ 2007 Pentaho Corporation.  All rights reserved. 
  * This software was developed by Pentaho Corporation and is provided under the terms 
  * of the GNU Lesser General Public License, Version 2.1. You may not use 
  * this file except in compliance with the license. If you need a copy of the license, 
@@ -1486,6 +1486,8 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		addDeleteItem.setText("Delete");
 		addDeleteItem.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event e) {
+				if (wTree.getSelectionCount()<=0) return;
+				
 				TreeItem tItem = wTree.getSelection()[0];
 		        if(tItem!=null){
 		        	MessageBox messageBox = new MessageBox(shell, SWT.ICON_QUESTION | SWT.NO | SWT.YES);
