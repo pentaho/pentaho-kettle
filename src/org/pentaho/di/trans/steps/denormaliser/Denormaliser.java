@@ -1,5 +1,5 @@
 /*
- * Copyright © 2007 Pentaho Corporation.  All rights reserved. 
+ * Copyright ï¿½ 2007 Pentaho Corporation.  All rights reserved. 
  * This software was developed by Pentaho Corporation and is provided under the terms 
  * of the GNU Lesser General Public License, Version 2.1. You may not use 
  * this file except in compliance with the license. If you need a copy of the license, 
@@ -265,7 +265,9 @@ public class Denormaliser extends BaseStep implements StepInterface
      */
 	private void deNormalise(RowMetaInterface rowMeta, Object[] rowData) throws KettleValueException
 	{
-        String key = rowMeta.getString(rowData, data.keyFieldNr);
+		ValueMetaInterface valueMeta = rowMeta.getValueMeta(data.keyFieldNr);
+		Object valueData = rowData[data.keyFieldNr];
+		String key = valueMeta.getCompatibleString(valueData);
         if ( !Const.isEmpty(key) )
         {
             // Get all the indexes for the given key value...
