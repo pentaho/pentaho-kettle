@@ -432,6 +432,13 @@ public class TransExecutionConfigurationDialog extends Dialog
 
     private void ok()
     {
+    	if (Const.isOSX())
+    	{
+    		// OSX bug workaround.
+    		//
+    		wVariables.applyOSXChanges();
+    		wArguments.applyOSXChanges();
+    	}
         getInfo();
         retval=true;
         dispose();
