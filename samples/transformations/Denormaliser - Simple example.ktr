@@ -1,36 +1,162 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <transformation>
   <info>
-    <name/>
-    <directory>/</directory>
+    <name>Denormaliser  Simple example</name>
+    <description/>
+    <extended_description/>
+    <trans_version/>
+    <directory>&#47;</directory>
     <log>
       <read/>
       <write/>
       <input/>
       <output/>
       <update/>
+      <rejected/>
       <connection/>
       <table/>
       <use_batchid>Y</use_batchid>
       <use_logfield>N</use_logfield>
-      </log>
+    </log>
     <maxdate>
       <connection/>
       <table/>
       <field/>
       <offset>0.0</offset>
       <maxdiff>0.0</maxdiff>
-      </maxdate>
+    </maxdate>
     <size_rowset>1000</size_rowset>
     <sleep_time_empty>1</sleep_time_empty>
     <sleep_time_full>1</sleep_time_full>
+    <unique_connections>N</unique_connections>
+    <feedback_shown>Y</feedback_shown>
+    <feedback_size>50000</feedback_size>
+    <using_thread_priorities>Y</using_thread_priorities>
+    <shared_objects_file/>
     <dependencies>
-      </dependencies>
-    </info>
+    </dependencies>
+    <partitionschemas>
+    </partitionschemas>
+    <slaveservers>
+         <slaveserver><name>localhost:8080</name><hostname>localhost</hostname><port>8080</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+    </slaveservers>
+    <clusterschemas>
+    </clusterschemas>
+  <modified_user/>
+  <modified_date>2007&#47;11&#47;05 09:51:52.418</modified_date>
+  </info>
   <notepads>
-    </notepads>
+  </notepads>
+  <connection>
+    <name>MySQL</name>
+    <server>localhost</server>
+    <type>MYSQL</type>
+    <access>Native</access>
+    <database>test</database>
+    <port>3306</port>
+    <username>matt</username>
+    <password>Encrypted 2be98afc86aa7f2e4cb79ce10df90acde</password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>EXTRA_OPTION_MYSQL.defaultFetchSize</code><attribute>500</attribute></attribute>
+      <attribute><code>EXTRA_OPTION_MYSQL.rewriteBatchedStatements</code><attribute>false</attribute></attribute>
+      <attribute><code>EXTRA_OPTION_MYSQL.useCursorFetch</code><attribute>true</attribute></attribute>
+      <attribute><code>EXTRA_OPTION_MYSQL.zeroDateTimeBehavior</code><attribute>convertToNull</attribute></attribute>
+      <attribute><code>EXTRA_OPTION_SYBASE.SQLINITSTRING</code><attribute>SET CHAINED OFF</attribute></attribute>
+      <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>INITIAL_POOL_SIZE</code><attribute>5</attribute></attribute>
+      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
+      <attribute><code>MAXIMUM_POOL_SIZE</code><attribute>10</attribute></attribute>
+      <attribute><code>MSSQL_DOUBLE_DECIMAL_SEPARATOR</code><attribute>N</attribute></attribute>
+      <attribute><code>POOLING_defaultCatalog</code><attribute>catalog</attribute></attribute>
+      <attribute><code>POOLING_removeAbandoned</code><attribute>true</attribute></attribute>
+      <attribute><code>POOLING_testOnReturn</code><attribute>false</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>3306</attribute></attribute>
+      <attribute><code>QUOTE_ALL_FIELDS</code><attribute>N</attribute></attribute>
+      <attribute><code>STREAM_RESULTS</code><attribute>Y</attribute></attribute>
+      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
+    </attributes>
+  </connection>
+  <connection>
+    <name>Pentaho Steel Wheels HSQL</name>
+    <server>localhost</server>
+    <type>HYPERSONIC</type>
+    <access>Native</access>
+    <database>sampledata</database>
+    <port>1521</port>
+    <username/>
+    <password>Encrypted </password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>CLUSTER_DBNAME_0</code><attribute>db1</attribute></attribute>
+      <attribute><code>CLUSTER_DBNAME_1</code><attribute>db2</attribute></attribute>
+      <attribute><code>CLUSTER_DBNAME_2</code><attribute>db3</attribute></attribute>
+      <attribute><code>CLUSTER_DBNAME_3</code><attribute>db4</attribute></attribute>
+      <attribute><code>CLUSTER_DBNAME_4</code><attribute>db5</attribute></attribute>
+      <attribute><code>CLUSTER_HOSTNAME_0</code><attribute>192.168.1.10</attribute></attribute>
+      <attribute><code>CLUSTER_HOSTNAME_1</code><attribute>192.168.1.10</attribute></attribute>
+      <attribute><code>CLUSTER_HOSTNAME_2</code><attribute>192.168.1.10</attribute></attribute>
+      <attribute><code>CLUSTER_HOSTNAME_3</code><attribute>192.168.1.10</attribute></attribute>
+      <attribute><code>CLUSTER_HOSTNAME_4</code><attribute>192.168.1.10</attribute></attribute>
+      <attribute><code>CLUSTER_PARTITION_0</code><attribute>PartDB1</attribute></attribute>
+      <attribute><code>CLUSTER_PARTITION_1</code><attribute>PartDB2</attribute></attribute>
+      <attribute><code>CLUSTER_PARTITION_2</code><attribute>PartDB3</attribute></attribute>
+      <attribute><code>CLUSTER_PARTITION_3</code><attribute>PartDB4</attribute></attribute>
+      <attribute><code>CLUSTER_PARTITION_4</code><attribute>PartDB5</attribute></attribute>
+      <attribute><code>CLUSTER_PASSWORD_0</code><attribute>Encrypted </attribute></attribute>
+      <attribute><code>CLUSTER_PASSWORD_1</code><attribute>Encrypted </attribute></attribute>
+      <attribute><code>CLUSTER_PASSWORD_2</code><attribute>Encrypted </attribute></attribute>
+      <attribute><code>CLUSTER_PASSWORD_3</code><attribute>Encrypted </attribute></attribute>
+      <attribute><code>CLUSTER_PASSWORD_4</code><attribute>Encrypted </attribute></attribute>
+      <attribute><code>CLUSTER_PORT_0</code><attribute>3306</attribute></attribute>
+      <attribute><code>CLUSTER_PORT_1</code><attribute>3306</attribute></attribute>
+      <attribute><code>CLUSTER_PORT_2</code><attribute>3306</attribute></attribute>
+      <attribute><code>CLUSTER_PORT_3</code><attribute>3306</attribute></attribute>
+      <attribute><code>CLUSTER_PORT_4</code><attribute>3306</attribute></attribute>
+      <attribute><code>EXTRA_OPTION_MYSQL.defaultFetchSize</code><attribute>500</attribute></attribute>
+      <attribute><code>EXTRA_OPTION_MYSQL.rewriteBatchedStatements</code><attribute>false</attribute></attribute>
+      <attribute><code>EXTRA_OPTION_MYSQL.useCursorFetch</code><attribute>true</attribute></attribute>
+      <attribute><code>EXTRA_OPTION_MYSQL.zeroDateTimeBehavior</code><attribute>convertToNull</attribute></attribute>
+      <attribute><code>EXTRA_OPTION_SYBASE.SQLINITSTRING</code><attribute>SET CHAINED OFF</attribute></attribute>
+      <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>INITIAL_POOL_SIZE</code><attribute>5</attribute></attribute>
+      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
+      <attribute><code>MAXIMUM_POOL_SIZE</code><attribute>10</attribute></attribute>
+      <attribute><code>MSSQL_DOUBLE_DECIMAL_SEPARATOR</code><attribute>N</attribute></attribute>
+      <attribute><code>POOLING_defaultCatalog</code><attribute>catalog</attribute></attribute>
+      <attribute><code>POOLING_removeAbandoned</code><attribute>true</attribute></attribute>
+      <attribute><code>POOLING_testOnReturn</code><attribute>false</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>1521</attribute></attribute>
+      <attribute><code>QUOTE_ALL_FIELDS</code><attribute>N</attribute></attribute>
+      <attribute><code>STREAM_RESULTS</code><attribute>Y</attribute></attribute>
+      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
+    </attributes>
+  </connection>
   <order>
   <hop> <from>Generate Rows</from><to>Dummy (do nothing)</to><enabled>Y</enabled> </hop>  <hop> <from>Generate Rows 2</from><to>Dummy (do nothing)</to><enabled>Y</enabled> </hop>  <hop> <from>Generate Rows 3</from><to>Dummy (do nothing)</to><enabled>Y</enabled> </hop>  <hop> <from>Dummy (do nothing)</from><to>Row denormaliser</to><enabled>Y</enabled> </hop>  </order>
+  <step>
+    <name>Dummy (do nothing)</name>
+    <type>Dummy</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>378</xloc>
+      <yloc>250</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
 
   <step>
     <name>Generate Rows</name>
@@ -38,6 +164,10 @@
     <description/>
     <distribute>Y</distribute>
     <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
     <fields>
       <field>
         <name>code</name>
@@ -49,7 +179,7 @@
         <nullif>abc</nullif>
         <length>10</length>
         <precision>-1</precision>
-        </field>
+      </field>
       <field>
         <name>year</name>
         <type>Integer</type>
@@ -60,7 +190,7 @@
         <nullif>2006</nullif>
         <length>4</length>
         <precision>-1</precision>
-        </field>
+      </field>
       <field>
         <name>month</name>
         <type>Integer</type>
@@ -71,7 +201,7 @@
         <nullif>01</nullif>
         <length>2</length>
         <precision>-1</precision>
-        </field>
+      </field>
       <field>
         <name>otherstuff</name>
         <type>String</type>
@@ -82,10 +212,11 @@
         <nullif>xxx</nullif>
         <length>5</length>
         <precision>-1</precision>
-        </field>
-      </fields>
+      </field>
+    </fields>
     <limit>1</limit>
-    <GUI>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>210</xloc>
       <yloc>165</yloc>
       <draw>Y</draw>
@@ -98,6 +229,10 @@
     <description/>
     <distribute>Y</distribute>
     <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
     <fields>
       <field>
         <name>code</name>
@@ -109,7 +244,7 @@
         <nullif>def</nullif>
         <length>10</length>
         <precision>-1</precision>
-        </field>
+      </field>
       <field>
         <name>year</name>
         <type>Integer</type>
@@ -120,7 +255,7 @@
         <nullif>2006</nullif>
         <length>4</length>
         <precision>-1</precision>
-        </field>
+      </field>
       <field>
         <name>month</name>
         <type>Integer</type>
@@ -131,7 +266,7 @@
         <nullif>02</nullif>
         <length>2</length>
         <precision>-1</precision>
-        </field>
+      </field>
       <field>
         <name>otherstuff</name>
         <type>String</type>
@@ -142,10 +277,11 @@
         <nullif>yyy</nullif>
         <length>5</length>
         <precision>-1</precision>
-        </field>
-      </fields>
+      </field>
+    </fields>
     <limit>1</limit>
-    <GUI>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>209</xloc>
       <yloc>247</yloc>
       <draw>Y</draw>
@@ -158,6 +294,10 @@
     <description/>
     <distribute>Y</distribute>
     <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
     <fields>
       <field>
         <name>code</name>
@@ -169,7 +309,7 @@
         <nullif>def</nullif>
         <length>10</length>
         <precision>-1</precision>
-        </field>
+      </field>
       <field>
         <name>year</name>
         <type>Integer</type>
@@ -180,7 +320,7 @@
         <nullif>2006</nullif>
         <length>4</length>
         <precision>-1</precision>
-        </field>
+      </field>
       <field>
         <name>month</name>
         <type>Integer</type>
@@ -191,7 +331,7 @@
         <nullif>03</nullif>
         <length>2</length>
         <precision>-1</precision>
-        </field>
+      </field>
       <field>
         <name>otherstuff</name>
         <type>String</type>
@@ -202,25 +342,13 @@
         <nullif>zzz</nullif>
         <length>5</length>
         <precision>-1</precision>
-        </field>
-      </fields>
+      </field>
+    </fields>
     <limit>1</limit>
-    <GUI>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>210</xloc>
       <yloc>324</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
-  <step>
-    <name>Dummy (do nothing)</name>
-    <type>Dummy</type>
-    <description/>
-    <distribute>Y</distribute>
-    <copies>1</copies>
-    <GUI>
-      <xloc>378</xloc>
-      <yloc>250</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -231,6 +359,10 @@
     <description/>
     <distribute>Y</distribute>
     <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
       <key_field>month</key_field>
       <group>
         <field>
@@ -245,7 +377,7 @@
           <field_name>otherstuff</field_name>
           <key_value>1</key_value>
           <target_name>month01</target_name>
-          <target_type>Integer</target_type>
+          <target_type>String</target_type>
           <target_format/>
           <target_length>2</target_length>
           <target_precision>-1</target_precision>
@@ -259,7 +391,7 @@
           <field_name>otherstuff</field_name>
           <key_value>2</key_value>
           <target_name>month02</target_name>
-          <target_type>Integer</target_type>
+          <target_type>String</target_type>
           <target_format/>
           <target_length>2</target_length>
           <target_precision>-1</target_precision>
@@ -273,7 +405,7 @@
           <field_name>otherstuff</field_name>
           <key_value>3</key_value>
           <target_name>month03</target_name>
-          <target_type>Integer</target_type>
+          <target_type>String</target_type>
           <target_format/>
           <target_length>2</target_length>
           <target_precision>-1</target_precision>
@@ -284,11 +416,17 @@
           <target_aggregation_type>-</target_aggregation_type>
           </field>
         </fields>
-    <GUI>
-      <xloc>560</xloc>
-      <yloc>248</yloc>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>559</xloc>
+      <yloc>250</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
 
+  <step_error_handling>
+  </step_error_handling>
+   <slave-step-copy-partition-distribution>
+</slave-step-copy-partition-distribution>
+   <slave_transformation>N</slave_transformation>
 </transformation>
