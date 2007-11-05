@@ -1,4 +1,4 @@
- /* Copyright © 2007 Pentaho Corporation.  All rights reserved. 
+ /* Copyright ï¿½ 2007 Pentaho Corporation.  All rights reserved. 
  * This software was developed by Pentaho Corporation and is provided under the terms 
  * of the GNU Lesser General Public License, Version 2.1. You may not use 
  * this file except in compliance with the license. If you need a copy of the license, 
@@ -39,6 +39,8 @@ import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.util.EnvUtil;
+import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransPreviewFactory;
@@ -234,12 +236,11 @@ public class RowGeneratorDialog extends BaseStepDialog implements StepDialogInte
 	 */ 
 	public void getData()
 	{
-		int i;
 		log.logDebug(toString(), "getting fields info...");
 		
 		wLimit.setText(input.getRowLimit());
 
-		for (i=0;i<input.getFieldName().length;i++)
+		for (int i=0;i<input.getFieldName().length;i++)
 		{
 			if (input.getFieldName()[i]!=null)
 			{
@@ -322,11 +323,15 @@ public class RowGeneratorDialog extends BaseStepDialog implements StepDialogInte
         }
         
         // Performs checks...
+        /*
+         * Commented out verification : if variables are used, this check is a pain!
+         * 
         long longLimit = Const.toLong(transMeta.environmentSubstitute( wLimit.getText()), -1L );
         if (longLimit<0)
         {
             throw new KettleException( Messages.getString("RowGeneratorDialog.Wrong.RowLimit.Number") );
         }
+        */
     }
 
     public String toString()
