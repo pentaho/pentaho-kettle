@@ -42,7 +42,7 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 
 
-public class StyledTextComp extends Composite{
+public class StyledTextComp extends Composite {
 
 	//Modification for Undo/Redo on Styled Text
 	private static final int MAX_STACK_SIZE = 25;

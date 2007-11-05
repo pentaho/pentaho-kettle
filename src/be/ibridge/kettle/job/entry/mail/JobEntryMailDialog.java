@@ -15,50 +15,47 @@
 
 package be.ibridge.kettle.job.entry.mail;
 
-import org.eclipse.swt.graphics.Cursor;
-import org.eclipse.swt.SWT;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
-import org.eclipse.swt.custom.CCombo;
-import org.eclipse.swt.events.FocusListener;
-import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
-import org.eclipse.swt.custom.CTabFolder;
-import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Text;
 
-import be.ibridge.kettle.core.widget.StyledTextComp;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.ResultFile;
 import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.core.widget.LabelText;
 import be.ibridge.kettle.core.widget.LabelTextVar;
-import be.ibridge.kettle.core.widget.TextVar;
 import be.ibridge.kettle.job.dialog.JobDialog;
 import be.ibridge.kettle.job.entry.JobEntryDialogInterface;
 import be.ibridge.kettle.job.entry.JobEntryInterface;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
-import be.ibridge.kettle.trans.step.textfileinput.VariableButtonListenerFactory;
+import de.proconis.StyledText.StyledTextComp;
 
 /**
  * Dialog that allows you to edit a JobEntryMail object.

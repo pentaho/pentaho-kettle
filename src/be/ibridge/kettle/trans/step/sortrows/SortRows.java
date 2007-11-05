@@ -134,6 +134,7 @@ public class SortRows extends BaseStep implements StepInterface
 			}
 			
 			data.getBufferIndex=0;
+			data.buffer.clear();
 		}
 		
 		
