@@ -1,5 +1,5 @@
 /*
- * Copyright © 2007 Pentaho Corporation.  All rights reserved. 
+ * Copyright ï¿½ 2007 Pentaho Corporation.  All rights reserved. 
  * This software was developed by Pentaho Corporation and is provided under the terms 
  * of the GNU Lesser General Public License, Version 2.1. You may not use 
  * this file except in compliance with the license. If you need a copy of the license, 
@@ -282,7 +282,7 @@ public class SpoonTabsDelegate extends SpoonDelegate
 					TransMeta transMeta = (TransMeta) managedObject;
 					entry.getTabItem().setText(makeTransGraphTabName(transMeta));
 					String toolTipText = Messages.getString("Spoon.TabTrans.Tooltip", makeTransGraphTabName(transMeta));
-					if (!Const.isEmpty(transMeta.getFilename())) toolTipText+=Const.CR+Const.CR+transMeta.getFilename();
+					if (Const.isWindows() && !Const.isEmpty(transMeta.getFilename())) toolTipText+=Const.CR+Const.CR+transMeta.getFilename();
 					entry.getTabItem().setToolTipText(toolTipText);
 				} 
 				else if (entry.getObject() instanceof TransLog)
@@ -298,7 +298,7 @@ public class SpoonTabsDelegate extends SpoonDelegate
 					JobMeta jobMeta = (JobMeta) managedObject;
 					entry.getTabItem().setText(makeJobGraphTabName(jobMeta));
 					String toolTipText = Messages.getString("Spoon.TabJob.Tooltip", makeJobGraphTabName(jobMeta));
-					if (!Const.isEmpty(jobMeta.getFilename())) toolTipText+=Const.CR+Const.CR+jobMeta.getFilename();
+					if (Const.isWindows() && !Const.isEmpty(jobMeta.getFilename())) toolTipText+=Const.CR+Const.CR+jobMeta.getFilename();
 					entry.getTabItem().setToolTipText(toolTipText);
 				} else if (entry.getObject() instanceof JobLog)
 				{
