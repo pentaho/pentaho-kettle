@@ -711,13 +711,18 @@
 	  	            jvmversion="1.5+">
 	  	        	<javaproperty name="java.library.path" value="$APP_PACKAGE/Contents/Resources"/>
 	  	        	<jarfileset dir="${distrib}">
-	  	                	<include name="${lib}/*.jar"/>
+	  	                <include name="${lib}/*.jar"/>
 	  	        		<include name="${libext}/*.jar"/>
 	  	        		<include name="${libext}/**/*.jar"/>
 	  	        		<include name="${libswt}/*.jar"/>
 	  	        		<include name="${libswt}/osx/*.jar"/>
 	  	        		<include name="${samples}/**/*"/>
 	  	        		<include name="${docs}/**/*"/>
+	  	        		<include name="README_FIRST.txt"/>
+	  	        		<include name="README_OSX.txt"/>
+	  	        		<include name="*.sh"/>
+	  	        		<include name="simple-jndi/**/*"/>
+	  	        		<include name="pwd/**/*"/>
 	  	        	</jarfileset>
 	  	        </jarbundler>
 	  			<!-- patch Info.plist with StartOnMainTrhead property need to make sure that the token is in the right place-->
