@@ -197,10 +197,10 @@ public class ValueMetaTest extends TestCase
 		target.setConversionMask("###,###,##0.00");
 		target.setLength(12,4);
 		target.setDecimalSymbol(".");
-		target.setGroupingSymbol(",");
+		target.setGroupingSymbol("'");
 		
 		String string = (String) source.convertData(target, d);
-		assertEquals("123,456,789.01", string);
+		assertEquals("123'456'789.01", string);
 	}
 	
 	/**
