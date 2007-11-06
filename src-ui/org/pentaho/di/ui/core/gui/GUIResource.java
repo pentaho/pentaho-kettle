@@ -137,8 +137,6 @@ public class GUIResource
 
 	private Image imageArrow;
 
-	private Image imageKettle;
-
 	private Image imageCredits;
 
 	private Image imageStart;
@@ -160,8 +158,6 @@ public class GUIResource
 	private Image imageTransGraph;
 
 	private Image imageJobGraph;
-
-	private Image imageSplash;
 
 	private Image imageEditOptionButton;
 
@@ -287,7 +283,6 @@ public class GUIResource
 			imageBanner.dispose();
 			imageBol.dispose();
 			imageArrow.dispose();
-			imageKettle.dispose();
 			imageCredits.dispose();
 			imageStart.dispose();
 			imageDummy.dispose();
@@ -295,7 +290,6 @@ public class GUIResource
 			imageDummySmall.dispose();
 			imageSpoon.dispose();
 			imageJob.dispose();
-			imageSplash.dispose();
 			imagePentaho.dispose();
 			imageVariable.dispose();
 			imageTransGraph.dispose();
@@ -429,13 +423,11 @@ public class GUIResource
 		imageKettleLogo = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Logo_lrg_image")); // , "ui/images/logo_kettle_lrg.png"
 		imageBanner = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Banner_bg_image")); // , "ui/images/bg_banner.png"
 		imageBol = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("BOL_image")); // , "ui/images/BOL.png"
-		imageKettle = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Logo_image")); // , "ui/images/kettle_logo.png"
 		imageCredits = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Credits_image")); // , "ui/images/credits.png"
 		imageStart = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("STR_image")); // , "ui/images/STR.png"
 		imageDummy = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("DUM_image")); // , "ui/images/DUM.png"
 		imageSpoon = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("spoon_image")); // , "ui/images/spoon32.png"
 		imageJob = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Chef_image")); // , "ui/images/chef.png"
-		imageSplash = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("splash_image")); // , "ui/images/kettle_splash.png"
 		imagePentaho = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("CorpLogo_image")); // , "ui/images/PentahoLogo.png"
 		imageVariable = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Variable_image")); // , "ui/images/variable.png"
 		imageEditOptionButton = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("EditOption_image")); // , "ui/images/edit_option.png"
@@ -753,14 +745,6 @@ public class GUIResource
 	}
 
 	/**
-	 * @return Returns the imageKettle.
-	 */
-	public Image getImageKettle()
-	{
-		return imageKettle;
-	}
-
-	/**
 	 * @return Returns the imageSpoon.
 	 */
 	public Image getImageSpoon()
@@ -798,14 +782,6 @@ public class GUIResource
 	public Image getImageStart()
 	{
 		return imageStart;
-	}
-
-	/**
-	 * @return Returns the imageSplash.
-	 */
-	public Image getImageSplash()
-	{
-		return imageSplash;
 	}
 
 	/**
