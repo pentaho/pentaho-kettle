@@ -1468,6 +1468,17 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 				    {
 				    	// System wide properties
                         System.setProperty(sArg1, sArg2);
+                        
+                        // Set also all the way to the root as else we will take
+                        // stale values
+                        scm.setVariable(sArg1, sArg2);
+
+                        VariableSpace parentSpace = scm.getParentVariableSpace();
+                        while (parentSpace!=null)
+                        {                           
+                            parentSpace.setVariable(sArg1, sArg2);
+                            parentSpace = parentSpace.getParentVariableSpace();
+                        }				                            
 				    }
 				    else if ( "r".equals(sArg3) )
 				    {

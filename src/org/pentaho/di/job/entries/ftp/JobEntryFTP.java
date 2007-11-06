@@ -517,7 +517,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 
         if (getIt)
         {
-          log.logDebug(toString(), Messages.getString("JobEntryFTP.GettingFile", filelist[i], environmentSubstitute(targetDirectory))); //$NON-NLS-1$
+          log.logDetailed(toString(), Messages.getString("JobEntryFTP.GettingFile", filelist[i], environmentSubstitute(targetDirectory))); //$NON-NLS-1$
           String targetFilename = getTargetFilename(filelist[i]);
           FileObject targetFile = KettleVFS.getFileObject(targetFilename);
 
