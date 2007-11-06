@@ -1,4 +1,4 @@
- /* Copyright © 2007 Pentaho Corporation.  All rights reserved. 
+ /* Copyright ï¿½ 2007 Pentaho Corporation.  All rights reserved. 
  * This software was developed by Pentaho Corporation and is provided under the terms 
  * of the GNU Lesser General Public License, Version 2.1. You may not use 
  * this file except in compliance with the license. If you need a copy of the license, 
@@ -138,7 +138,18 @@ public class ValueMapper extends BaseStep implements StepInterface
             {
             	if (target.length()>0)
             	{
-            		r[data.keynr]=target;
+            		// See if the expected type is a String...
+            		//
+            		if (previousValueMeta.isString())
+            		{
+            			r[data.keynr]=target;
+            		}
+            		else
+            		{
+            			// Do implicit conversion of the String to the target type...
+            			//
+            			r[data.keynr] = previousValueMeta.convertData(data.stringMeta, target);
+            		}
             	}
                 else
                 {

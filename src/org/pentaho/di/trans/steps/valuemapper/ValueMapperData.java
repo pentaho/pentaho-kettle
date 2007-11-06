@@ -1,4 +1,4 @@
- /* Copyright © 2007 Pentaho Corporation.  All rights reserved. 
+ /* Copyright ï¿½ 2007 Pentaho Corporation.  All rights reserved. 
  * This software was developed by Pentaho Corporation and is provided under the terms 
  * of the GNU Lesser General Public License, Version 2.1. You may not use 
  * this file except in compliance with the license. If you need a copy of the license, 
@@ -15,6 +15,8 @@ package org.pentaho.di.trans.steps.valuemapper;
 import java.util.Hashtable;
 
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
 
@@ -33,6 +35,8 @@ public class ValueMapperData extends BaseStepData implements StepDataInterface
     public Hashtable<String,String> hashtable;
 
     public int emptyFieldIndex;
+    
+    public ValueMetaInterface stringMeta;
 
 	/**
 	 * 
@@ -42,6 +46,8 @@ public class ValueMapperData extends BaseStepData implements StepDataInterface
 		super();
 		
 		hashtable = null;
+		
+		stringMeta = new ValueMeta("string", ValueMetaInterface.TYPE_STRING);
 	}
 
 }
