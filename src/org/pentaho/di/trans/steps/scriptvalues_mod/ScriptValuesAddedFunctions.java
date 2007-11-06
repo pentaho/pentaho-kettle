@@ -98,7 +98,6 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 	// date2num, num2date,  
 	// fisc_date, isNull
 	// 
-	
 
 	public static String getDigitsOnly(Context actualContext, Scriptable actualObject, Object[] ArgList, Function FunctionContext)
 	  {

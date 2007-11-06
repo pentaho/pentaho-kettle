@@ -189,7 +189,6 @@ public class SetVariable extends BaseStep implements StepInterface
                         {
                         	throw new KettleStepException("Can't set variable ["+varname+"] on parent job: the parent job is not available");
                         }
-
                     }
                 }               
                 
