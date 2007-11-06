@@ -1,4 +1,4 @@
- /* Copyright © 2007 Pentaho Corporation.  All rights reserved. 
+ /* Copyright ï¿½ 2007 Pentaho Corporation.  All rights reserved. 
  * This software was developed by Pentaho Corporation and is provided under the terms 
  * of the GNU Lesser General Public License, Version 2.1. You may not use 
  * this file except in compliance with the license. If you need a copy of the license, 
@@ -38,6 +38,7 @@ import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.TransMeta;
@@ -123,7 +124,7 @@ public class TransHistory extends Composite implements TabItemInterface
             new ColumnInfo(Messages.getString("TransHistory.Column.ReplayDate"),     ColumnInfo.COLUMN_TYPE_TEXT, false, true) //$NON-NLS-1$
         };
 		
-        for (int i=0;i<colinf.length;i++) colinf[i].setAllignement(SWT.RIGHT);
+        for (int i=2;i<9;i++) colinf[i].setAllignement(SWT.RIGHT);
         
         wFields=new TableView(transMeta, 
         		              sash, 
@@ -292,6 +293,18 @@ public class TransHistory extends Composite implements TabItemInterface
                             for (int i=0;i<rowList.size();i++)
                             {
                                 RowMetaAndData row = rowList.get(i);
+                                if (i==0)
+                                {
+                                	RowMetaInterface rowMeta = row.getRowMeta();
+                                    // Displaying it just like that adds way too many zeroes to the numbers.
+                                    // So we set the lengths to -1 of the integers...
+                                    //
+                                    for (int v=0;v<rowMeta.size();v++)
+                                    {
+                                    	if (rowMeta.getValueMeta(v).isNumeric()) rowMeta.getValueMeta(v).setLength(-1,-1);
+                                    }
+                                }
+                                
                                 TableItem item = new TableItem(wFields.table, SWT.NONE);
                                 String batchID = row.getString("ID_BATCH", "");
                                 int index=1;
