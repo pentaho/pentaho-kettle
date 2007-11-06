@@ -195,12 +195,12 @@ public class ValueMetaTest extends TestCase
 		assertEquals(123456789.012, d);
 		
 		target.setConversionMask("###,###,##0.00");
-		source.setLength(12,4);
-		source.setDecimalSymbol(".");
-		source.setGroupingSymbol("''");
+		target.setLength(12,4);
+		target.setDecimalSymbol(".");
+		target.setGroupingSymbol(",");
 		
 		String string = (String) source.convertData(target, d);
-		assertEquals("123.456.789,01", string);
+		assertEquals("123,456,789.01", string);
 	}
 	
 	/**
