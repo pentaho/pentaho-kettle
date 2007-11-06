@@ -1,4 +1,4 @@
- /* Copyright © 2007 Pentaho Corporation.  All rights reserved. 
+ /* Copyright ï¿½ 2007 Pentaho Corporation.  All rights reserved. 
  * This software was developed by Pentaho Corporation and is provided under the terms 
  * of the GNU Lesser General Public License, Version 2.1. You may not use 
  * this file except in compliance with the license. If you need a copy of the license, 
@@ -412,6 +412,7 @@ public class JobDialog extends Dialog
 		props.setLook(wDirectory);
 		wDirectory.setToolTipText(Messages.getString("JobDialog.Directory.Tooltip"));
 		wDirectory.setEditable(false);
+		wDirectory.setEnabled(false);
 		fdDirectory=new FormData();
 		fdDirectory.top  = new FormAttachment(wJobversion, margin);
 		fdDirectory.left = new FormAttachment(middle, 0);
@@ -740,7 +741,7 @@ public class JobDialog extends Dialog
     public void setFlags()
     {
         wbDirectory.setEnabled(rep!=null);
-        wDirectory.setEnabled(rep!=null);
+        // wDirectory.setEnabled(rep!=null);
         wlDirectory.setEnabled(rep!=null);
         
         DatabaseMeta dbMeta = jobMeta.findDatabase(wLogconnection.getText());

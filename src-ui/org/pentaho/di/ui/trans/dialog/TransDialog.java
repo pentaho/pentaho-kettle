@@ -1,4 +1,4 @@
- /* Copyright © 2007 Pentaho Corporation.  All rights reserved. 
+ /* Copyright ï¿½ 2007 Pentaho Corporation.  All rights reserved. 
  * This software was developed by Pentaho Corporation and is provided under the terms 
  * of the GNU Lesser General Public License, Version 2.1. You may not use 
  * this file except in compliance with the license. If you need a copy of the license, 
@@ -180,6 +180,8 @@ public class TransDialog extends Dialog
     private CCombo wRejectedStep;
 
 	private boolean directoryChangeAllowed;
+
+	private Label wlDirectory;
 	
     public TransDialog(Shell parent, int style, TransMeta transMeta, Repository rep)
     {
@@ -418,7 +420,7 @@ public class TransDialog extends Dialog
 		wTransversion.setLayoutData(fdTransversion);
 
 		// Directory:
-		Label wlDirectory = new Label(wTransComp, SWT.RIGHT);
+		wlDirectory = new Label(wTransComp, SWT.RIGHT);
 		wlDirectory.setText(Messages.getString("TransDialog.Directory.Label")); //$NON-NLS-1$
 		props.setLook(wlDirectory);
 		FormData fdlDirectory = new FormData();
@@ -470,6 +472,7 @@ public class TransDialog extends Dialog
         wDirectory=new Text(wTransComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wDirectory);
         wDirectory.setEditable(false);
+        wDirectory.setEnabled(false);
         FormData fdDirectory = new FormData();
         fdDirectory.left = new FormAttachment(middle, 0);
 		fdDirectory.top  = new FormAttachment(wTransversion, margin);
@@ -1395,7 +1398,6 @@ public class TransDialog extends Dialog
 	 */ 
 	public void getData()
 	{
-		int i;
 		log.logDebug(toString(), Messages.getString("TransDialog.Log.GettingTransformationInfo")); //$NON-NLS-1$
 
 		if (transMeta.getName()!=null)         wTransname.setText        ( transMeta.getName());
@@ -1431,7 +1433,7 @@ public class TransDialog extends Dialog
 		wMaxdateoffset.setText(Double.toString(transMeta.getMaxDateOffset()));
 		wMaxdatediff.setText(Double.toString(transMeta.getMaxDateDifference()));
 		
-		for (i=0;i<transMeta.nrDependencies();i++)
+		for (int i=0;i<transMeta.nrDependencies();i++)
 		{
 			TableItem item = wFields.table.getItem(i);
 			TransDependency td = transMeta.getDependency(i);
@@ -1471,6 +1473,8 @@ public class TransDialog extends Dialog
 		
 		wTransname.selectAll();
 		wTransname.setFocus();
+		
+		setFlags();
 	}
 	
 	private void refreshPartitions()
@@ -1503,6 +1507,12 @@ public class TransDialog extends Dialog
         }
     }
 
+	public void setFlags()
+    {
+        wbDirectory.setEnabled(rep!=null);
+        // wDirectory.setEnabled(rep!=null);
+        wlDirectory.setEnabled(rep!=null);
+     }
 
     private void cancel()
 	{
@@ -1514,7 +1524,6 @@ public class TransDialog extends Dialog
 	
 	private void ok()
 	{
-		int i;
 		boolean OK = true;
 	
 		transMeta.setReadStep(          transMeta.findStep( wReadStep.getText() )            );
@@ -1579,7 +1588,7 @@ public class TransDialog extends Dialog
 		transMeta.removeAllDependencies();
 		
     	int nrNonEmptyFields = wFields.nrNonEmpty(); 
-		for (i=0;i<nrNonEmptyFields;i++)
+		for (int i=0;i<nrNonEmptyFields;i++)
 		{
 			TableItem item = wFields.getNonEmpty(i);
 			
