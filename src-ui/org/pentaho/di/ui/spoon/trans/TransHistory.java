@@ -457,6 +457,6 @@ public class TransHistory extends Composite implements TabItemInterface
     
     public boolean hasContentChanged()
     {
-        return refreshNeeded;
+        return false;
     }
 }
