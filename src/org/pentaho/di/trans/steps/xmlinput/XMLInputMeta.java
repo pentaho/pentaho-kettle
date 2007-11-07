@@ -1,4 +1,4 @@
- /* Copyright © 2007 Pentaho Corporation.  All rights reserved. 
+ /* Copyright ï¿½ 2007 Pentaho Corporation.  All rights reserved. 
  * This software was developed by Pentaho Corporation and is provided under the terms 
  * of the GNU Lesser General Public License, Version 2.1. You may not use 
  * this file except in compliance with the license. If you need a copy of the license, 
@@ -401,9 +401,7 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface
 	
 	public void getFields(RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space)
 	{
-		
-		int i;
-		for (i=0;i<inputFields.length;i++)
+		for (int i=0;i<inputFields.length;i++)
 		{
 		    XMLInputField field = inputFields[i];
 		    
@@ -417,14 +415,14 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface
 		if (includeFilename)
 		{
 			ValueMetaInterface v = new ValueMeta(filenameField, ValueMeta.TYPE_STRING);
-			v.setLength(100, -1);
+			v.setLength(100);
 			v.setOrigin(name);
 			r.addValueMeta(v);
 		}
 		if (includeRowNumber)
 		{
-			ValueMetaInterface v = new ValueMeta(rowNumberField, ValueMeta.TYPE_NUMBER);
-			v.setLength(7, 0);
+			ValueMetaInterface v = new ValueMeta(rowNumberField, ValueMeta.TYPE_INTEGER);
+			v.setLength(ValueMetaInterface.DEFAULT_INTEGER_LENGTH);
 			v.setOrigin(name);
 			r.addValueMeta(v);
 		}
