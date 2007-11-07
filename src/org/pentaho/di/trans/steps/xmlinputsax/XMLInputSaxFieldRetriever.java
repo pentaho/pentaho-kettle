@@ -171,7 +171,16 @@ public class XMLInputSaxFieldRetriever extends DefaultHandler{
         try {
 			if(!rootFound)
 			{
-			    XMLInputSaxFieldPosition el=(XMLInputSaxFieldPosition)pathToRootElement.get(counter);
+			    XMLInputSaxFieldPosition el=null;
+			    
+			    try
+			    {
+			    	el = (XMLInputSaxFieldPosition)pathToRootElement.get(counter);
+			    }
+			    catch(IndexOutOfBoundsException e)
+			    {
+			    	throw new SAXException(e);
+			    }
 			    if((counter==_counter) && qName.equalsIgnoreCase(el.getName()))
 			    {
 			        if (el.getType()==XMLInputSaxFieldPosition.XML_ELEMENT_ATT)
