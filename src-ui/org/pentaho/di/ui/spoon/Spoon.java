@@ -103,6 +103,7 @@ import org.pentaho.di.core.dnd.DragAndDropContainer;
 import org.pentaho.di.core.dnd.XMLTransfer;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleRowException;
+import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.gui.GUIFactory;
 import org.pentaho.di.core.gui.OverwritePrompter;
@@ -769,7 +770,28 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		esd.setShellImage(GUIResource.getInstance().getImageVariable());
 		if (esd.open() != null)
 		{
-			// here was code to put the values in another place.
+			// We want to insert the variables into all loaded jobs and transformations
+			//
+			for (int i=0;i<variables.size();i++)
+			{
+				try 
+				{
+					String name = variables.getValueMeta(i).getName();
+					String value = variables.getString(i, "");
+
+					for (TransMeta transMeta : getLoadedTransformations())
+					{
+						transMeta.setVariable(name, Const.NVL(value, ""));
+					}
+					for (JobMeta jobMeta : getLoadedJobs())
+					{
+						jobMeta.setVariable(name, Const.NVL(value, ""));
+					}
+				} 
+				catch (KettleValueException e) {
+					// Just eat the exception.  getString() should never give an exception.
+				}
+			}
 		}
 	}
 
@@ -3043,6 +3065,11 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	{
 		TransMeta transMeta = new TransMeta();
 		transMeta.addObserver(this);
+		
+		// Set the variables that were previously defined in this session on the transformation metadata too. 
+		//
+		setTransMetaVariables(transMeta);
+		
 		try
 		{
 			transMeta.readSharedObjects(rep);
@@ -3071,6 +3098,11 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		{
 			JobMeta jobMeta = new JobMeta(log);
 			jobMeta.addObserver(this);
+			
+			// Set the variables that were previously defined in this session on the transformation metadata too. 
+			//
+			setJobMetaVariables(jobMeta);
+
 			try
 			{
 				jobMeta.readSharedObjects(rep);
@@ -3097,6 +3129,42 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         catch(Exception e)
 		{
             new ErrorDialog(shell, Messages.getString("Spoon.Exception.ErrorCreatingNewJob.Title"), Messages.getString("Spoon.Exception.ErrorCreatingNewJob.Message"), e);
+		}
+	}
+
+	private void setTransMetaVariables(TransMeta transMeta) 
+	{
+		for (int i=0;i<variables.size();i++)
+		{
+			try 
+			{
+				String name = variables.getValueMeta(i).getName();
+				String value = variables.getString(i, "");
+
+				transMeta.setVariable(name, Const.NVL(value, ""));
+			}
+			catch (Exception e) 
+			{
+				// Ignore the exception, it should never happen on a getString() anyway.
+			}
+		}
+	}
+
+	private void setJobMetaVariables(JobMeta jobMeta) 
+	{
+		for (int i=0;i<variables.size();i++)
+		{
+			try 
+			{
+				String name = variables.getValueMeta(i).getName();
+				String value = variables.getString(i, "");
+
+				jobMeta.setVariable(name, Const.NVL(value, ""));
+			}
+			catch (Exception e) 
+			{
+				// Ignore the exception, it should never happen on a getString() anyway.
+			}
 		}
 	}
 
@@ -4946,6 +5014,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		{
 			Document doc = XMLHandler.loadXMLString(xml);
 			TransMeta transMeta = new TransMeta(XMLHandler.getSubNode(doc, TransMeta.XML_TAG), rep);
+			setTransMetaVariables(transMeta);
 			addTransGraph(transMeta); // create a new tab
 			refreshGraph();
 			refreshTree();
@@ -5331,29 +5400,30 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 										{
                                 				log.logError(toString(), Messages.getString("Spoon.Log.UnableFindDirectory", optionDirname.toString())); //"Can't find directory ["+dirname+"] in the repository."
                                 			}
-                                			else {
+                                			else 
+                                			{
 											if (!Const.isEmpty(optionTransname))
 											{
-                                					TransMeta transMeta = new TransMeta(rep, optionTransname.toString(), repdir);
+                                				TransMeta transMeta = new TransMeta(rep, optionTransname.toString(), repdir);
 												transMeta.setFilename(optionRepname.toString());
 												transMeta.clearChanged();
 												transMeta.setInternalKettleVariables();
 												addTransGraph(transMeta);
-                                				}
-                                				else
+                                			}
+                                			else
 											{
-                                					// Try to load a specified job if any
-                                					JobMeta jobMeta = new JobMeta(log, rep, optionJobname.toString(), repdir);
+                                				// Try to load a specified job if any
+                                				JobMeta jobMeta = new JobMeta(log, rep, optionJobname.toString(), repdir);
 												jobMeta.setFilename(optionRepname.toString());
 												jobMeta.clearChanged();
 												jobMeta.setInternalKettleVariables();
-                                					delegates.jobs.addJobGraph(jobMeta);
-                                        		}
-											}
+                                				delegates.jobs.addJobGraph(jobMeta);
+                                    		}
 										}
 									}
 								}
-                                else
+							}
+                            else
 							{
                                     log.logError(toString(), Messages.getString("Spoon.Log.UnableVerifyUser"));//"Can't verify username and password."
 								rep.disconnect();
