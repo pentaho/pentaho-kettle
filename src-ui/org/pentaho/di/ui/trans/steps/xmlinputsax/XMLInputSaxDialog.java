@@ -1051,6 +1051,16 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
 			// Keep the list of positions
 
 			String[] filePaths = meta.getFilePaths(transMeta);
+			
+			if (meta.getInputPosition().length==0)
+			{
+				//error
+				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
+				mb.setMessage(Messages.getString("XMLInputSaxDialog.Dialog.NoElements.Message")); //$NON-NLS-1$
+				mb.setText(Messages.getString("XMLInputSaxDialog.Dialog.NoElements.Title")); //$NON-NLS-1$
+				mb.open();
+				return;
+			}
 			for (int f = 0; f < filePaths.length; f++)
 			{
 				XMLInputSaxFieldRetriever fieldRetreiver = new XMLInputSaxFieldRetriever(filePaths[f], meta);
