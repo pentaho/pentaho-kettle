@@ -2907,6 +2907,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 				{
 					TransLoadProgressDialog tlpd = new TransLoadProgressDialog(shell, rep, name, repdir);
 					TransMeta transMeta = tlpd.open();
+					setTransMetaVariables(transMeta);	
 					if (transMeta != null)
 					{
                         log.logDetailed(toString(),Messages.getString("Spoon.Log.LoadToTransformation",name,repdir.getDirectoryName()) );//"Transformation ["+transname+"] in directory ["+repdir+"] loaded from the repository."
@@ -2926,6 +2927,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 				{
 					JobLoadProgressDialog jlpd = new JobLoadProgressDialog(shell, rep, name, repdir);
 					JobMeta jobMeta = jlpd.open();
+					setJobMetaVariables(jobMeta);
 					if (jobMeta != null)
 					{
                         props.addLastFile(LastUsedFile.FILE_TYPE_JOB, name, repdir.getPath(), true, rep.getName());
@@ -3132,7 +3134,11 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		}
 	}
 
-	private void setTransMetaVariables(TransMeta transMeta) 
+	/**
+	 * Set previously defined variables (set variables dialog) on the specified transformation
+	 * @param transMeta
+	 */
+	public void setTransMetaVariables(TransMeta transMeta) 
 	{
 		for (int i=0;i<variables.size();i++)
 		{
@@ -3150,7 +3156,11 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		}
 	}
 
-	private void setJobMetaVariables(JobMeta jobMeta) 
+	/**
+	 * Set previously defined variables (set variables dialog) on the specified job
+	 * @param jobMeta
+	 */
+	public void setJobMetaVariables(JobMeta jobMeta) 
 	{
 		for (int i=0;i<variables.size();i++)
 		{
