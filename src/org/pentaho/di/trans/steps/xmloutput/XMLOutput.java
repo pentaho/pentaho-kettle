@@ -1,4 +1,4 @@
-/* Copyright © 2007 Pentaho Corporation.  All rights reserved. 
+/* Copyright ï¿½ 2007 Pentaho Corporation.  All rights reserved. 
  * This software was developed by Pentaho Corporation and is provided under the terms 
  * of the GNU Lesser General Public License, Version 2.1. You may not use 
  * this file except in compliance with the license. If you need a copy of the license, 
@@ -12,18 +12,21 @@
 package org.pentaho.di.trans.steps.xmloutput;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaAndData;
+import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -84,24 +87,18 @@ public class XMLOutput extends BaseStep implements StepInterface
 			return false;
 		}
 
-		result = writeRowToFile(r);
-		if (!result)
-		{
-			setErrors(1);
-			stopAll();
-			return false;
-		}
+		writeRowToFile(getInputRowMeta(), r);
+		
 		data.outputRowMeta = getInputRowMeta().clone();
 		meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
 		putRow(data.outputRowMeta, r); // in case we want it to go further...
 
-		if (checkFeedback(linesOutput))
-			logBasic("linenr " + linesOutput);
+		if (checkFeedback(linesOutput)) logBasic("linenr " + linesOutput);
 
 		return result;
 	}
 
-	private boolean writeRowToFile(Object[] r)
+	private void writeRowToFile(RowMetaInterface rowMeta, Object[] r) throws KettleException
 	{
 		ValueMetaAndData v;
 
@@ -109,22 +106,17 @@ public class XMLOutput extends BaseStep implements StepInterface
 		{
 			if (first)
 			{
-				data.previousMeta = getInputRowMeta().clone();
+				data.previousMeta = rowMeta.clone();
 
 				first = false;
 
 				data.fieldnrs = new int[meta.getOutputFields().length];
 				for (int i = 0; i < meta.getOutputFields().length; i++)
 				{
-					data.fieldnrs[i] = data.previousMeta.indexOfValue(meta.getOutputFields()[i]
-							.getFieldName());
+					data.fieldnrs[i] = data.previousMeta.indexOfValue(meta.getOutputFields()[i].getFieldName());
 					if (data.fieldnrs[i] < 0)
 					{
-						logError("Field [" + meta.getOutputFields()[i].getFieldName()
-								+ "] couldn't be found in the input stream!");
-						setErrors(1);
-						stopAll();
-						return false;
+						throw new KettleException("Field [" + meta.getOutputFields()[i].getFieldName()+ "] couldn't be found in the input stream!");
 					}
 				}
 			}
@@ -138,18 +130,19 @@ public class XMLOutput extends BaseStep implements StepInterface
 				// OK, write a new row to the XML file:
 				data.writer.write((" <" + meta.getRepeatElement() + ">").toCharArray());
 
-				for (int i = 0; i < r.length; i++)
+				for (int i = 0; i < data.previousMeta.size(); i++)
 				{
-					if (i > 0)
-						data.writer.write(' '); // put a space between
-					// the XML elements of
-					// the row.
+					// Put a space between the XML elements of the row
+					//
+					if (i > 0) data.writer.write(' ');
 
-					v = (ValueMetaAndData) r[i];
-
-					writeField(v, -1, v.getValueMeta().getName());
+					ValueMetaInterface valueMeta = data.previousMeta.getValueMeta(i);
+					Object valueData = r[i];
+					
+					writeField(new ValueMetaAndData(valueMeta, valueData), -1, valueMeta.getName());
 				}
-			} else
+			} 
+			else
 			{
 				/*
 				 * Only write the fields specified!
@@ -189,15 +182,13 @@ public class XMLOutput extends BaseStep implements StepInterface
 			
 			data.writer.write((" </" + meta.getRepeatElement() + ">").toCharArray());
 			data.writer.write(Const.CR.toCharArray());
-		} catch (Exception e)
+		} 
+		catch (Exception e)
 		{
-			logError("Error writing XML row :" + e.toString() + Const.CR + "Row: " + r);
-			return false;
+			throw new KettleException("Error writing XML row :" + e.toString() + Const.CR + "Row: " + getInputRowMeta().getString(r), e);
 		}
 
 		linesOutput++;
-
-		return true;
 	}
 
 	private String formatField(ValueMetaAndData v, int idx) throws KettleValueException
@@ -403,12 +394,12 @@ public class XMLOutput extends BaseStep implements StepInterface
 
 		try
 		{
-			File file = new File(buildFilename(true));
+			FileObject file = KettleVFS.getFileObject(buildFilename(true));
 
 			OutputStream outputStream;
 			if (meta.isZipped())
 			{
-				FileOutputStream fos = new FileOutputStream(file);
+				OutputStream fos = KettleVFS.getOutputStream(file, false);
 				data.zip = new ZipOutputStream(fos);
 				File entry = new File(buildFilename(false));
 				ZipEntry zipentry = new ZipEntry(entry.getName());
@@ -417,7 +408,7 @@ public class XMLOutput extends BaseStep implements StepInterface
 				outputStream = data.zip;
 			} else
 			{
-				FileOutputStream fos = new FileOutputStream(file);
+				OutputStream fos = KettleVFS.getOutputStream(file, false);
 				outputStream = fos;
 			}
 			if (meta.getEncoding() != null && meta.getEncoding().length() > 0)
