@@ -1,4 +1,4 @@
- /* Copyright © 2007 Pentaho Corporation.  All rights reserved. 
+ /* Copyright ï¿½ 2007 Pentaho Corporation.  All rights reserved. 
  * This software was developed by Pentaho Corporation and is provided under the terms 
  * of the GNU Lesser General Public License, Version 2.1. You may not use 
  * this file except in compliance with the license. If you need a copy of the license, 
@@ -1092,18 +1092,21 @@ public class ConditionEditor extends Composite
 	
 	private boolean isInUp(Point screen)
 	{
-		if (parents.isEmpty()) return false; // not displayed!
+		if (size_up==null || parents.isEmpty()) return false; // not displayed!
 		
 		return Real2Screen(size_up).contains(screen);
 	}
 
 	private boolean isInAdd(Point screen)
 	{
+		if (size_add==null || screen==null) return false;
 		return size_add.contains(screen);
 	}
 
 	private boolean isInWidget(Point screen)
 	{
+		if (size_widget==null) return false;
+		
 		return Real2Screen(size_widget).contains(screen);
 	}
 	
