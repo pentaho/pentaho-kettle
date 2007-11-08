@@ -1144,7 +1144,7 @@ Alert("From position 6 for 7 long : " + str3);
 // setVariable(var,var,var);
 // 1: String - The name of the variable to set.
 // 2: Variable - The value which should be assigned
-// 3: Type - "s"ystem, "r"oot, "p"arent, "g"randport. Upto which
+// 3: Type - "s"ystem, "r"oot, "p"arent, "g"randparent. Upto which
 //           level the variable is set.
 //
 // 2007-07-27
