@@ -1,4 +1,4 @@
-/* Copyright © 2007 Pentaho Corporation.  All rights reserved. 
+/* Copyright ï¿½ 2007 Pentaho Corporation.  All rights reserved. 
  * This software was developed by Pentaho Corporation and is provided under the terms 
  * of the GNU Lesser General Public License, Version 2.1. You may not use 
  * this file except in compliance with the license. If you need a copy of the license, 
@@ -396,9 +396,16 @@ public class BaseStepDialog extends Dialog {
   }
 
   public void addDatabases(CCombo wConnection) {
+	  addDatabases(wConnection, -1);
+  }
+
+  public void addDatabases(CCombo wConnection, int databaseType) {
     for (int i = 0; i < transMeta.nrDatabases(); i++) {
       DatabaseMeta ci = transMeta.getDatabase(i);
-      wConnection.add(ci.getName());
+      if (ci.getDatabaseType()==databaseType || databaseType<0)
+      {
+    	  wConnection.add(ci.getName());
+      }
     }
   }
 
@@ -410,12 +417,22 @@ public class BaseStepDialog extends Dialog {
   }
 
   public CCombo addConnectionLine(Composite parent, Control previous, int middle, int margin) {
+	    return addConnectionLine(parent, previous, middle, margin, new Label(parent, SWT.RIGHT), new Button(parent,
+	        SWT.PUSH), new Button(parent, SWT.PUSH));
+	  }
+
+  public CCombo addConnectionLine(Composite parent, Control previous, int middle, int margin, int databaseType) {
     return addConnectionLine(parent, previous, middle, margin, new Label(parent, SWT.RIGHT), new Button(parent,
-        SWT.PUSH), new Button(parent, SWT.PUSH));
+        SWT.PUSH), new Button(parent, SWT.PUSH), databaseType);
   }
 
   public CCombo addConnectionLine(Composite parent, Control previous, int middle, int margin, final Label wlConnection,
-      final Button wbnConnection, final Button wbeConnection) {
+	      final Button wbnConnection, final Button wbeConnection) {
+	  return addConnectionLine(parent, previous, middle, margin, -1);
+  }
+  
+  public CCombo addConnectionLine(Composite parent, Control previous, int middle, int margin, final Label wlConnection,
+      final Button wbnConnection, final Button wbeConnection, final int databaseType) {
     final CCombo wConnection;
     final FormData fdlConnection, fdbConnection, fdeConnection, fdConnection;
 
@@ -448,7 +465,7 @@ public class BaseStepDialog extends Dialog {
         if (cid.open() != null) {
           transMeta.addDatabase(databaseMeta);
           wConnection.removeAll();
-          addDatabases(wConnection);
+          addDatabases(wConnection, databaseType);
           selectDatabase(wConnection, databaseMeta.getName());
         }
       }
