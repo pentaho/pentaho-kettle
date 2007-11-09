@@ -528,6 +528,7 @@ public class JobEntryXSLTDialog extends JobEntryDialog implements JobEntryDialog
 		{
 			wXSLTFactory.setText(jobEntry.getXSLTFactory());
 		}
+		else
 		{
 			wXSLTFactory.setText("JAXP");
 		}
