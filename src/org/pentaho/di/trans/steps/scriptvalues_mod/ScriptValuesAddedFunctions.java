@@ -56,6 +56,7 @@ import org.mozilla.javascript.Context;
 import org.mozilla.javascript.EvaluatorException;
 import org.mozilla.javascript.Function;
 import org.mozilla.javascript.JavaScriptException;
+import org.mozilla.javascript.NativeObject;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.WrappedException;
@@ -1273,7 +1274,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 		if(ArgList.length==1){
 			try{
 				String sArg1 = Context.toString(ArgList[0]);
-				sRC = variables.getVariable(sArg1,"");
+				sRC=System.getProperty(sArg1, "");
 			}catch(Exception e){
 				sRC="";
 			}
@@ -1544,7 +1545,9 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 	    String sArg2 = "";		
 		if(ArgList.length==2){
 			try{
-				Object scmO = actualObject.get("_step_", actualObject);
+				Object scmo = actualObject.get("_step_", actualObject);
+				Object scmO = Context.jsToJava(scmo, ScriptValuesModInterface.class);
+				
 				if ( scmO instanceof ScriptValuesMod)
 				{
 					ScriptValuesMod scm = (ScriptValuesMod)Context.jsToJava(scmO, ScriptValuesMod.class);
@@ -1668,5 +1671,4 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 		    throw Context.reportRuntimeError("The function call putRow requires 1 argument : the output row data (Object[])");
 	    }		
 	}	
-
 }
