@@ -9,8 +9,10 @@
         <tstamp>
            <format property="compile.timestamp" pattern="yyyy-MM-dd HH.mm.ss" />
         </tstamp>
-        
-	  <!-- set global properties for this build -->
+
+        <!-- Look for user-override properties file first -->        
+		<property file="override.properties"/>
+        <!-- set global properties for this build -->
 		<property file="build.properties"/>
 		  
 	  <target name="init" description="create timestamp and directories">
@@ -48,7 +50,8 @@
 	    	   target="5"
 	    	   source="5"
 	           deprecation="true"
-	    	   debug="true"
+	    	   debug="${debug}"
+               optimize="${optimize}"
 	    	>
 	    	<src path="${src}"/>
 	    	
@@ -67,7 +70,8 @@
 	    	   target="5"
 	    	   source="5"
 	           deprecation="true"
-	    	   debug="true"
+	    	   debug="${debug}"
+               optimize="${optimize}"
 	    	   excludes="be/ibridge/kettle/schema/**/* be/ibridge/kettle/menu/**/*"
 	    	   memorymaximumsize="256M"
 	    	   fork="true"
