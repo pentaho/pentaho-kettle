@@ -276,8 +276,9 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 											 // Directory 
 								             File newdir = new File( foldername+ Const.FILE_SEPARATOR + item.getName() );
 								             if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("JobUnZip.CreatingDirectory.Label",newdir.getAbsolutePath()));
-								             newdir.mkdir();
 
+								             // Create Directory if necessary ...
+								             if(!newdir.exists())  newdir.mkdir();
 										  }
 										  else
 										  {
@@ -307,15 +308,16 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 												
 								                InputStream is = zipfile.getInputStream(item);
 								                FileOutputStream fos = new FileOutputStream(newfile);
-								                    
-								                int ch;
-								          
-								                while( (ch = is.read()) != -1 )
-								                {
-								                   fos.write(ch);
-								                }
-								                    
-								                is.close();
+
+								                byte[] buff=new byte[2048];
+							                	int len;
+							                	
+							                	while((len=is.read(buff))>0)
+							                	{
+							                		fos.write(buff,0,len);
+							                	}
+								                
+							                    is.close();
 								                fos.close();
 								                
 								                if (addfiletoresult)
