@@ -54,5 +54,5 @@ The following bug where fixes backported from the 3.0.0-RC1 series to 2.5.2:
 - Added getfilesrowscount step : Samatar - 30-Sept-2007
 
 
-The following bug where fixes backported from the 3.0.0-RC1 series to 2.5.3:
+The following bug where fixes backported from the 3.0.0-RC2 series to 2.5.3:
 - PDI-453 : Unzip files is too slow - Samatar - 10-Nov-2007
