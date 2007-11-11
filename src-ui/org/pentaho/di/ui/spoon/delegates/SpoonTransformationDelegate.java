@@ -1,5 +1,5 @@
 /*
- * Copyright © 2007 Pentaho Corporation.  All rights reserved. 
+ * Copyright ï¿½ 2007 Pentaho Corporation.  All rights reserved. 
  * This software was developed by Pentaho Corporation and is provided under the terms 
  * of the GNU Lesser General Public License, Version 2.1. You may not use 
  * this file except in compliance with the license. If you need a copy of the license, 
@@ -894,6 +894,21 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 				transDebugMeta = new TransDebugMeta(transMeta);
 				transDebugMetaMap.put(transMeta, transDebugMeta);
 			}
+			
+			// Set the default number of rows to retrieve on all selected steps...
+			//
+			StepMeta[] selectedSteps = transMeta.getSelectedSteps();
+			if (selectedSteps!=null && selectedSteps.length>0) {
+				transDebugMeta.getStepDebugMetaMap().clear();
+				for (StepMeta stepMeta : transMeta.getSelectedSteps()) {
+					StepDebugMeta stepDebugMeta = new StepDebugMeta(stepMeta);
+					stepDebugMeta.setRowCount(PropsUI.getInstance().getDefaultPreviewSize());
+					stepDebugMeta.setPausingOnBreakPoint(true);
+					stepDebugMeta.setReadingFirstRows(false);
+					transDebugMeta.getStepDebugMetaMap().put(stepMeta, stepDebugMeta);
+				}
+			}
+
 		}
 		else if (preview) {
 			// See if we have preview information stored somewhere?
@@ -913,6 +928,7 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 				for (StepMeta stepMeta : transMeta.getSelectedSteps()) {
 					StepDebugMeta stepDebugMeta = new StepDebugMeta(stepMeta);
 					stepDebugMeta.setRowCount(PropsUI.getInstance().getDefaultPreviewSize());
+					stepDebugMeta.setPausingOnBreakPoint(false);
 					stepDebugMeta.setReadingFirstRows(true);
 					transDebugMeta.getStepDebugMetaMap().put(stepMeta, stepDebugMeta);
 				}

@@ -199,16 +199,24 @@ public class TransDebugDialog extends Dialog {
     }
     
     private void getData() {
-    	GUIResource resource = GUIResource.getInstance();
-    	
     	// Save the latest changes to the screen...
     	//
     	getStepDebugMeta();
+    	
+    	// Add the steps...
+    	//
+    	refreshStepList();
+    	
+	}
+    
+    private void refreshStepList() {
+    	GUIResource resource = GUIResource.getInstance();
     	
     	// Add the list of steps...
     	//
     	int maxIconSize=0;
     	int indexSelected = -1;
+    	wSteps.table.removeAll();
     	for (int i=0;i<transDebugMeta.getTransMeta().getSteps().size();i++) {
     		StepMeta stepMeta = transDebugMeta.getTransMeta().getStep(i);
     		TableItem item = new TableItem(wSteps.table, SWT.NONE);
@@ -219,7 +227,7 @@ public class TransDebugDialog extends Dialog {
     		
     		if (image.getBounds().width>maxIconSize) maxIconSize=image.getBounds().width;
     		
-    		StepDebugMeta stepDebugMeta = transDebugMeta.getStepDebugMetaMap().get(stepMeta);
+    		StepDebugMeta stepDebugMeta = stepDebugMetaMap.get(stepMeta);
     		if (stepDebugMeta!=null) {
     			// We have debugging information so we mark the row
     			//
@@ -233,16 +241,16 @@ public class TransDebugDialog extends Dialog {
     	wSteps.table.getColumn(0).setWidth(maxIconSize+10);
     	wSteps.table.getColumn(0).setAlignment(SWT.CENTER);
     	
+    	
     	// OK, select the first used step debug line...
     	//
     	if (indexSelected>=0) {
     		wSteps.table.setSelection(indexSelected);
     		showStepDebugInformation();
     	}
-    	
 	}
-    
-    /**
+
+	/**
      * Grab the step debugging information from the dialog.
      * Store it in our private map
      */
@@ -294,23 +302,27 @@ public class TransDebugDialog extends Dialog {
     }
     
     private void showStepDebugInformation() {
-    	int[] selectionIndices = wSteps.table.getSelectionIndices();
-    	if (selectionIndices==null || selectionIndices.length!=1) return;
-    	
-    	// What step did we click on?
-    	//
-    	StepMeta stepMeta = transDebugMeta.getTransMeta().getStep(selectionIndices[0]);
-    	
-    	// What is the step debugging metadata?
-    	// --> This can be null (most likely scenario)
-    	//
-    	StepDebugMeta stepDebugMeta = stepDebugMetaMap.get(stepMeta);
     	
     	// Now that we have all the information to display, let's put some widgets on our composite.
     	// Before we go there, let's clear everything that was on there...
     	//
     	for (Control control : wComposite.getChildren()) control.dispose();
-
+    	wComposite.layout(true, true);
+    	
+    	int[] selectionIndices = wSteps.table.getSelectionIndices();
+    	if (selectionIndices==null || selectionIndices.length!=1) return;
+    	
+    	previousIndex = selectionIndices[0];
+    	
+    	// What step did we click on?
+    	//
+    	final StepMeta stepMeta = transDebugMeta.getTransMeta().getStep(selectionIndices[0]);
+    	
+    	// What is the step debugging metadata?
+    	// --> This can be null (most likely scenario)
+    	//
+    	final StepDebugMeta stepDebugMeta = stepDebugMetaMap.get(stepMeta);
+    	
     	// At the top we'll put a few common items like first[x], etc.
     	//
     	
@@ -380,6 +392,34 @@ public class TransDebugDialog extends Dialog {
         wCondition.setLayoutData(fdCondition);
 
         getStepDebugData(stepDebugMeta);
+        
+        // Add a "clear" button at the bottom on the left...
+        //
+        Button wClear = new Button(wComposite, SWT.PUSH);
+        props.setLook(wClear);
+        wClear.setText(Messages.getString("TransDebugDialog.Clear.Label"));
+        wClear.setToolTipText(Messages.getString("TransDebugDialog.Clear.ToolTip"));
+        FormData fdClear = new FormData();
+    	fdClear.left   = new FormAttachment(0, 0);
+        fdClear.bottom = new FormAttachment(100, 0);
+        wClear.setLayoutData(fdClear);
+        
+        wClear.addSelectionListener(new SelectionAdapter() {
+				public void widgetSelected(SelectionEvent event) {
+					// Clear the preview step information for this step...
+					//
+					stepDebugMetaMap.remove(stepMeta);
+					wSteps.table.setSelection(new int[] {});
+					previousIndex = -1;
+					
+					// refresh the steps list...
+					//
+					refreshStepList();
+					
+					showStepDebugInformation();
+				}
+			}
+        );
         
         wComposite.layout(true, true);
     }
