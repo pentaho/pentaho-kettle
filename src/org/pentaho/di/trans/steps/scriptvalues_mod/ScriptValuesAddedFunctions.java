@@ -1,4 +1,4 @@
- /* Copyright © 2007 Pentaho Corporation.  All rights reserved. 
+ /* Copyright (c) 2007 Pentaho Corporation.  All rights reserved. 
  * This software was developed by Pentaho Corporation and is provided under the terms 
  * of the GNU Lesser General Public License, Version 2.1. You may not use 
  * this file except in compliance with the license. If you need a copy of the license, 
@@ -56,7 +56,6 @@ import org.mozilla.javascript.Context;
 import org.mozilla.javascript.EvaluatorException;
 import org.mozilla.javascript.Function;
 import org.mozilla.javascript.JavaScriptException;
-import org.mozilla.javascript.NativeObject;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.WrappedException;
@@ -68,7 +67,6 @@ import org.pentaho.di.core.gui.SpoonInterface;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
-import org.pentaho.di.core.variables.Variables;
 
 public class ScriptValuesAddedFunctions extends ScriptableObject {
 
@@ -93,7 +91,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 	
 	// This is only used for reading, so no concurrency problems.
 	// todo: move in the real variables of the step.
-	private static VariableSpace variables = Variables.getADefaultVariableSpace();
+	// private static VariableSpace variables = Variables.getADefaultVariableSpace();
 
 	// Functions to Add
 	// date2num, num2date,  

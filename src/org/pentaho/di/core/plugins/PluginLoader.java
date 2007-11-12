@@ -1,5 +1,5 @@
 /*
- * Copyright © 2007 Pentaho Corporation.  All rights reserved. 
+ * Copyright (c) 2007 Pentaho Corporation.  All rights reserved. 
  * This software was developed by Pentaho Corporation and is provided under the terms 
  * of the GNU Lesser General Public License, Version 2.1. You may not use 
  * this file except in compliance with the license. If you need a copy of the license, 
@@ -27,7 +27,6 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -74,6 +73,7 @@ import org.xml.sax.SAXException;
  * @author Alex Silva
  * 
  */
+@SuppressWarnings("unchecked")
 public class PluginLoader
 {
 	private static final String WORK_DIR = "work"; //$NON-NLS-1$
@@ -82,7 +82,7 @@ public class PluginLoader
 
 	private static final String JAR = "jar"; //$NON-NLS-1$
 
-	private static final Pattern patt = Pattern.compile("^*..(jar|zip)$");//$NON-NLS-1$
+	// private static final Pattern patt = Pattern.compile("^*..(jar|zip)$");//$NON-NLS-1$
 
 	private static final LogWriter log = LogWriter.getInstance();
 

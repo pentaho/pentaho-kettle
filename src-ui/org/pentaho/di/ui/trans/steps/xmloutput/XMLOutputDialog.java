@@ -1,4 +1,4 @@
- /* Copyright © 2007 Pentaho Corporation.  All rights reserved. 
+ /* Copyright (c) 2007 Pentaho Corporation.  All rights reserved. 
  * This software was developed by Pentaho Corporation and is provided under the terms 
  * of the GNU Lesser General Public License, Version 2.1. You may not use 
  * this file except in compliance with the license. If you need a copy of the license, 
@@ -55,18 +55,18 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.xmloutput.Messages;
 import org.pentaho.di.trans.steps.xmloutput.XMLField;
 import org.pentaho.di.trans.steps.xmloutput.XMLOutputMeta;
-import org.pentaho.di.ui.trans.steps.textfileinput.VariableButtonListenerFactory;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
+import org.pentaho.di.ui.core.widget.TextVar;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 
 
 public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterface
@@ -80,9 +80,8 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
 
 	private Label        wlFilename;
 	private Button       wbFilename;
-	private Button       wbcFilename;
-	private Text         wFilename;
-	private FormData     fdlFilename, fdbFilename, fdbcFilename, fdFilename;
+	private TextVar      wFilename;
+	private FormData     fdlFilename, fdbFilename, fdFilename;
 
 	private Label        wlExtension;
 	private Text         wExtension;
@@ -220,32 +219,14 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
 		fdbFilename.top  = new FormAttachment(0, 0);
 		wbFilename.setLayoutData(fdbFilename);
 
-		wbcFilename=new Button(wFileComp, SWT.PUSH| SWT.CENTER);
- 		props.setLook(wbcFilename);
-		wbcFilename.setText(Messages.getString("XMLOutputDialog.Variable.Button"));
-		fdbcFilename=new FormData();
-		fdbcFilename.right= new FormAttachment(wbFilename, -margin);
-		fdbcFilename.top  = new FormAttachment(0, 0);
-		wbcFilename.setLayoutData(fdbcFilename);
-
-		wFilename=new Text(wFileComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wFilename=new TextVar(transMeta, wFileComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wFilename);
 		wFilename.addModifyListener(lsMod);
 		fdFilename=new FormData();
 		fdFilename.left = new FormAttachment(middle, 0);
 		fdFilename.top  = new FormAttachment(0, margin);
-		fdFilename.right= new FormAttachment(wbcFilename, -margin);
+		fdFilename.right= new FormAttachment(wbFilename, -margin);
 		wFilename.setLayoutData(fdFilename);
-		
-		// Whenever something changes, set the tooltip to the expanded version:
-		wFilename.addModifyListener(new ModifyListener()
-			{
-				public void modifyText(ModifyEvent e)
-				{
-					wFilename.setToolTipText(transMeta.environmentSubstitute( wFilename.getText() ) );
-				}
-			}
-		);
 
 		// Extension line
 		wlExtension=new Label(wFileComp, SWT.RIGHT);
@@ -641,9 +622,6 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
 			}
 		);
 		
-
-		// Listen to the Variable... button
-		wbcFilename.addSelectionListener(VariableButtonListenerFactory.getSelectionAdapter(shell, wFilename, transMeta));
 
 		wbFilename.addSelectionListener
 		(
