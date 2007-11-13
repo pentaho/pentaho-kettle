@@ -66,12 +66,7 @@ public class FilesToResult extends BaseStep implements StepInterface
 		{
 			first = false;
 
-			for (int i = 0; i < r.length; i++)
-				if (((ValueMeta) r[i]).getName().equals(meta.getFilenameField()))
-				{
-					data.filenameIndex = i;
-					break;
-				}
+			data.filenameIndex = getInputRowMeta().indexOfValue(meta.getFilenameField());
 
 			if (data.filenameIndex < 0)
 			{
@@ -83,9 +78,7 @@ public class FilesToResult extends BaseStep implements StepInterface
 		}
 
 		// OK, get the filename field from the row
-		ValueMeta filenameValue = (ValueMeta) r[data.filenameIndex];
-
-		String filename = filenameValue.getString(filenameValue);
+		String filename = (String)r[data.filenameIndex];
 
 		try
 		{
