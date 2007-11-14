@@ -12,6 +12,8 @@
 
         <!-- Look for user-override properties file first -->        
 		<property file="override.properties"/>
+	    <!-- version properites -->
+	    <property file="build-res/version.properties" />
         <!-- set global properties for this build -->
 		<property file="build.properties"/>
 		  
@@ -146,7 +148,7 @@
 	    	<fileset dir="${src}" includes="**/*.xml **/*properties"/>
 	  	    </copy>
 	    <copy todir="${classes}">
-	    	<fileset file="build_version.txt"/>
+	    	<fileset file="${version.file}"/>
 	  	    </copy>
 	    <copy todir="${classes}/META-INF">
 	    	<fileset file="${src}/kettle-partition-plugins.xml"/>
@@ -207,13 +209,15 @@
 	  	<echo>Generating the Kettle library kettle-engine-3.0.jar ...</echo>
 	  	<jar jarfile="${lib}/kettle-engine-3.0.jar" 
 	    	 basedir="${classes}" 
-	    	 includes="**/* ../build_version.txt"
+	    	 includes="**/* ${version.file.path}"
 	  	     excludes="**/Thumbs.db **/kettle.jar **/derbyOld/* **/derbyNew/*"
 	  		>
                 <manifest>
-                    <attribute name="Implementation-Title" value="Kettle 3.0 Engine" />
-                    <attribute name="Implementation-Version" value="3.0 (${compile.timestamp})" />
-                    <attribute name="Implementation-Vendor" value="Pentaho" />
+                    <attribute name="Implementation-Title" value="${impl.title.engine}" />
+                    <attribute name="Implementation-Version" value="${impl.version}" />
+                    <attribute name="Implementation-Vendor" value="${impl.vendor}" />
+    				<attribute name="Implementation-ProductID" value="${impl.productID}" />
+                    <attribute name="Compile-Timestamp" value="${compile.timestamp}" />
                 </manifest>
         </jar>
 	  	
@@ -224,12 +228,14 @@
 	  	<echo>Generating the Kettle library kettle-ui-swt-3.0.jar ...</echo>
 	  	<jar jarfile="${lib}/kettle-ui-swt-3.0.jar" 
 	    	 basedir="${classes-ui}" 
-	    	 includes="**/* ../build_version.txt"
+	    	 includes="**/* ${version.file.path}"
 	  	     excludes="**/Thumbs.db **/kettle.jar">
                 <manifest>
-                    <attribute name="Implementation-Title" value="Kettle 3.0 UI" />
-                    <attribute name="Implementation-Version" value="3.0 (${compile.timestamp})" />
-                    <attribute name="Implementation-Vendor" value="Pentaho" />
+                    <attribute name="Implementation-Title" value="${impl.title.ui}" />
+                    <attribute name="Implementation-Version" value="${impl.version}" />
+                    <attribute name="Implementation-Vendor" value="${impl.vendor}" />
+    				<attribute name="Implementation-ProductID" value="${impl.productID}" />
+                    <attribute name="Compile-Timestamp" value="${compile.timestamp}" />
                 </manifest>
 	  	</jar>
 
