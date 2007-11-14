@@ -9,15 +9,14 @@
  * Software distributed under the GNU Lesser Public License is distributed on an "AS IS" 
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or  implied. Please refer to 
  * the license for the specific language governing your rights and limitations.
-*/
+ */
 package org.pentaho.di.core.util;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
+import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.URLDecoder;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
@@ -143,7 +142,7 @@ public class ResolverUtil<T>
 		Test test = new IsA(parent);
 		for (String pkg : packageNames)
 		{
-			findInPackage(pkg,test);
+			findInPackage(pkg, test);
 		}
 	}
 
@@ -154,7 +153,7 @@ public class ResolverUtil<T>
 		Test test = new NameEndsWith(suffix);
 		for (String pkg : packageNames)
 		{
-			findInPackage(pkg,test);
+			findInPackage(pkg, test);
 		}
 	}
 
@@ -165,7 +164,7 @@ public class ResolverUtil<T>
 		Test test = new AnnotatedWith(annotation);
 		for (String pkg : packageNames)
 		{
-			findInPackage(pkg,test);
+			findInPackage(pkg, test);
 		}
 	}
 
@@ -175,13 +174,13 @@ public class ResolverUtil<T>
 			return;
 		for (String pkg : packageNames)
 		{
-			findInPackage(pkg,test);
+			findInPackage(pkg, test);
 		}
 	}
-	
+
 	public void find(Test test, String... packageNames)
 	{
-		find(new Test[]{test},packageNames);
+		find(new Test[] { test }, packageNames);
 	}
 
 	public void findInPackage(String packageName, Test... tests)
@@ -201,29 +200,35 @@ public class ResolverUtil<T>
 		{
 			try
 			{
-				String urlPath = urls.nextElement().getFile();
-				urlPath = URLDecoder.decode(urlPath, "UTF-8");
-				if (urlPath.startsWith("file:"))
-				{
-					urlPath = urlPath.substring(5);
-				}
+				URL eurl = urls.nextElement();
+				String urlPath = eurl.toURI().toString();
+
 				if (urlPath.indexOf('!') > 0)
 				{
 					urlPath = urlPath.substring(0, urlPath.indexOf('!'));
+					if (urlPath.startsWith("jar:"))
+						urlPath = urlPath.substring(4);
+					eurl = new URL(urlPath);
 				}
 				log.logDetailed(toString(), "Scanning for classes in [" + urlPath + "] matching criteria: "
 						+ tests);
-				File file = new File(urlPath);
-				if (file.isDirectory())
+
+				// is it a file?
+				File file = new File(eurl.getFile());
+				if (file.exists() && file.isDirectory())
 				{
-					loadImplementationsInDirectory(packageName, file,tests);
+					loadImplementationsInDirectory(packageName, file, tests);
 				} else
 				{
-					loadImplementationsInJar(packageName, file,tests);
+					loadImplementationsInJar(packageName, eurl, tests);
 				}
-			} catch (IOException ioe)
+			} catch (IOException e)
 			{
-				log.logError(toString(), "could not read entries", ioe);
+				e.printStackTrace();
+				log.logError(toString(), "could not read entries", e);
+			} catch (URISyntaxException se)
+			{
+				log.logError(toString(), "could not read entries", se);
 			}
 		}
 	}
@@ -242,27 +247,28 @@ public class ResolverUtil<T>
 				loadImplementationsInDirectory(packageOrClass, file, tests);
 			} else if (file.getName().endsWith(".class"))
 			{
-				addIfMatching(packageOrClass,tests);
+				addIfMatching(packageOrClass, tests);
 			}
 		}
 	}
 
-	public void loadImplementationsInJar(String parent, File jarfile, Test... tests)
+	public void loadImplementationsInJar(String parent, URL jarfile, Test... tests)
 	{
 		try
 		{
 			JarEntry entry;
-			JarInputStream jarStream = new JarInputStream(new FileInputStream(jarfile));
+			JarInputStream jarStream = new JarInputStream(jarfile.openStream());
 			while ((entry = jarStream.getNextJarEntry()) != null)
 			{
 				String name = entry.getName();
 				if (!entry.isDirectory() && name.startsWith(parent) && name.endsWith(".class"))
 				{
-					addIfMatching(name,tests);
+					addIfMatching(name, tests);
 				}
 			}
 		} catch (IOException ioe)
 		{
+			ioe.printStackTrace();
 			log.logError(toString(), "Could not search jar file \\\'" + jarfile
 					+ "\\\' for classes matching criteria: " + tests + " due to an IOException", ioe);
 		}
