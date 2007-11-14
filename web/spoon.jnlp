@@ -61,6 +61,10 @@
   <jar href="libext/JDBC/sqlitejdbc-v037-nested.jar"/>
   <jar href="libext/JDBC/unijdbc.jar"/>
   <jar href="libext/JDBC/xdbjdbc.jar"/>
+  
+  <jar href="libext/spring/spring-core.jar"/>
+  
+  <jar href="libext/saxon8.jar"/>
 
   <jar href="libext/commons/commons-beanutils-1.7.0.jar"/>
   <jar href="libext/commons/commons-codec-1.3.jar"/>
