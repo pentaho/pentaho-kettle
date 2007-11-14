@@ -453,7 +453,7 @@ public class TransSplitter
                                 {
                                 	// MASTER: add remote input steps to the master step.  That way it can receive data over sockets.
                                 	// 
-                                	int port = getPort(previousClusterSchema, slaveServer, referenceStep.getName());
+                                	int port = getPort(previousClusterSchema, slaveServer, previousStep.getName() + " - " + referenceStep.getName());
                                 	
                                 	// Default: we send/receive to/from copy 0 of the remote step.
                                 	//
@@ -852,7 +852,10 @@ public class TransSplitter
                             {
                                 // SLAVE
                                 TransMeta slave = getSlaveTransformation(referenceClusterSchema, slaveServer);
-                                addSlaveCopy(slave, referenceStep, slaveServer);
+                                if (slave.findStep(referenceStep.getName())==null)
+                                {
+                                	addSlaveCopy(slave, referenceStep, slaveServer);
+                                }
                             }
                         }
                     }
@@ -910,7 +913,7 @@ public class TransSplitter
                                 	TransMeta slave = getSlaveTransformation(infoClusterSchema, slaveServer);
                                     
                                 	SocketWriterMeta socketWriterMeta = new SocketWriterMeta();
-                                	int port = getPort(infoClusterSchema, slaveServer, infoStep.getName());
+                                	int port = getPort(infoClusterSchema, slaveServer, infoStep.getName()+" - "+originalStep.getName());
                                 	socketWriterMeta.setPort(""+port);
                                 	socketWriterMeta.setBufferSize(infoClusterSchema.getSocketsBufferSize());
                                 	socketWriterMeta.setFlushInterval(infoClusterSchema.getSocketsFlushInterval());
@@ -1008,7 +1011,7 @@ public class TransSplitter
                                 {
                                     // MASTER
                                     SocketWriterMeta socketWriterMeta = new SocketWriterMeta();
-                                    socketWriterMeta.setPort(""+getPort(originalClusterSchema, slaveServer, originalStep.getName()));
+                                    socketWriterMeta.setPort(""+getPort(originalClusterSchema, slaveServer, infoStep.getName()+" - "+originalStep.getName()));
                                     socketWriterMeta.setBufferSize(originalClusterSchema.getSocketsBufferSize());
                                     socketWriterMeta.setFlushInterval(originalClusterSchema.getSocketsFlushInterval());
                                     socketWriterMeta.setCompressed(originalClusterSchema.isSocketsCompressed());
@@ -1036,7 +1039,7 @@ public class TransSplitter
                                     
                                     SocketReaderMeta socketReaderMeta = new SocketReaderMeta();
                                     socketReaderMeta.setHostname(masterServer.getHostname());
-                                    socketReaderMeta.setPort(""+getPort(originalClusterSchema, slaveServer, originalStep.getName() ));
+                                    socketReaderMeta.setPort(""+getPort(originalClusterSchema, slaveServer, infoStep.getName()+" - "+originalStep.getName() ));
                                     socketReaderMeta.setBufferSize(originalClusterSchema.getSocketsBufferSize());
                                     socketReaderMeta.setCompressed(originalClusterSchema.isSocketsCompressed());
                                     
