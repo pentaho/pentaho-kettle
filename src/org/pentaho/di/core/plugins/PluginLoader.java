@@ -262,7 +262,7 @@ public class PluginLoader
 				for (FileObject couldBeJar : exploded.getChildren())
 				{
 					if (couldBeJar.getName().getExtension().equals(JAR))
-						resPlugins.loadImplementationsInJar(Const.EMPTY_STRING, new File(couldBeJar.getURL().getFile()),
+						resPlugins.loadImplementationsInJar(Const.EMPTY_STRING, couldBeJar.getURL(),
 								tests.values().toArray(new ResolverUtil.Test[2]));
 				}
 
