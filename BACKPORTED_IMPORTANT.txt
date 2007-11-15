@@ -55,4 +55,5 @@ The following bug where fixes backported from the 3.0.0-RC1 series to 2.5.2:
 
 
 The following bug where fixes backported from the 3.0.0-RC2 series to 2.5.3:
-- PDI-453 : Unzip files is too slow - Samatar - 10-Nov-2007
+- Fix for PDI-453 : Unzip files is too slow - Samatar - 10-Nov-2007
+- Fix for PDI-466: Oracle Bulk loader producing incorrect config file for DateTime in special circumstances - Jen Bleuel - 15-Nov-2007
