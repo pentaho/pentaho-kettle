@@ -241,6 +241,7 @@ public class StepFieldsDialog extends Dialog
 		if (idx>=0)
 		{
 			stepname = wFields.table.getItem(idx).getText(5);
+			dispose();
 		}
 		else
 		{
@@ -251,6 +252,6 @@ public class StepFieldsDialog extends Dialog
             mb.open();
 		}
 		
-		dispose();
+		
 	}
 }
