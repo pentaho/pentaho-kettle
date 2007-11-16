@@ -329,7 +329,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 					// Now add pol to the strings found!
 					strings.add(pol);
 
-					pos = next + 1;
+					pos = next + inf.getSeparator().length();
 					fieldnr++;
 				}
 				if ( pos == length )
@@ -557,7 +557,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 						strings = newStrings;
 					}
 
-					pos = next + 1;
+					pos = next + inf.getSeparator().length();
 					fieldnr++;
 				}
 				if ( pos == length)
