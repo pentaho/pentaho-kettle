@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
@@ -214,7 +215,8 @@ public class ResolverUtil<T>
 						+ tests);
 
 				// is it a file?
-				File file = new File(eurl.getFile());
+				File file = new File(URLDecoder.decode(eurl.getFile(),"UTF-8"));
+				// File file = new File(eurl.getFile());
 				if (file.exists() && file.isDirectory())
 				{
 					loadImplementationsInDirectory(packageName, file, tests);
