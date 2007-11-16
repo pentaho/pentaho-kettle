@@ -17,7 +17,6 @@
 package be.ibridge.kettle.trans.step.exceloutput;
 
 import java.util.Locale;
-
 import jxl.Workbook;
 import jxl.WorkbookSettings;
 import jxl.write.DateFormat;
@@ -27,8 +26,6 @@ import jxl.write.Label;
 import jxl.write.NumberFormat;
 import jxl.write.WritableCellFormat;
 import jxl.write.WritableFont;
-
-import org.apache.commons.vfs.FileObject;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.ResultFile;
@@ -71,10 +68,15 @@ public class ExcelOutput extends BaseStep implements StepInterface
 		boolean result=true;
 		r=getRow();       // This also waits for a row to be finished.
 		
-		if ( ( r==null && data.headerrow!=null && meta.isFooterEnabled() ) ||
-		     ( r!=null && linesOutput>0 && meta.getSplitEvery()>0 && ((linesOutput+1)%meta.getSplitEvery())==0)
+		
+	
+		  if(( r==null && data.headerrow!=null && meta.isFooterEnabled() ) ||
+		     ( r!=null && linesOutput>0 && meta.getSplitEvery()>0 && ((linesOutput)%meta.getSplitEvery())==0)
 		   )
 		{
+			
+	
+			
 			if (data.headerrow!=null) 
 			{
 			   if ( meta.isFooterEnabled() )
@@ -117,15 +119,16 @@ public class ExcelOutput extends BaseStep implements StepInterface
 		
 		putRow(r);       // in case we want it to go further...
 		
-        if (checkFeedback(linesOutput)) logBasic("linenr "+linesOutput);
+        if (checkFeedback(linesOutput)) logBasic("linenr"+linesOutput);
 		
 		return result;
 	}
 
 	private boolean writeRowToFile(Row r)
 	{
+
 		Value v;
-		
+
 		try
 		{	
 			if (first)
@@ -401,32 +404,32 @@ public class ExcelOutput extends BaseStep implements StepInterface
             }
             
             
-            FileObject file = KettleVFS.getFileObject(buildFilename());
+            data.file = KettleVFS.getFileObject(buildFilename());
 
 		
 			// Add this to the result file names...
-			ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, file, getTransMeta().getName(), getStepname());
+			ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, data.file, getTransMeta().getName(), getStepname());
 			resultFile.setComment("This file was created with an Excel output step");
             addResultFile(resultFile);
+            
 
             // Create the workboook
             if (!meta.isTemplateEnabled())
             {
 				
 				// Create a new Workbook
-				data.workbook = Workbook.createWorkbook(file.getContent().getOutputStream(), ws);
+				data.workbook = Workbook.createWorkbook(data.file.getContent().getOutputStream(), ws);
 
 				// Create a sheet?
 				data.sheet = data.workbook.createSheet("Sheet1", 0);    
 
             } else {
-            	FileObject fo = KettleVFS.getFileObject(StringUtil.environmentSubstitute(meta.getTemplateFileName()));
+            	data.fo = KettleVFS.getFileObject(StringUtil.environmentSubstitute(meta.getTemplateFileName()));
 				// create the openFile from the template
 
-				Workbook tmpWorkbook=Workbook.getWorkbook(
-						                  fo.getContent().getInputStream(), ws);
+				Workbook tmpWorkbook=Workbook.getWorkbook(data.fo.getContent().getInputStream(), ws);
 
-				data.workbook = Workbook.createWorkbook(file.getContent().getOutputStream(), tmpWorkbook);
+				data.workbook = Workbook.createWorkbook(data.file.getContent().getOutputStream(), tmpWorkbook);
 				
             	tmpWorkbook.close();
             	// use only the first sheet as template
@@ -466,38 +469,45 @@ public class ExcelOutput extends BaseStep implements StepInterface
 			logError("Error opening new file : "+e.toString());
 			retval=false;
 		}
-		// System.out.println("end of newFile(), splitnr="+splitnr);
-
+	
+		
 		data.splitnr++;
 
 		return retval;
 	}
-
 	private boolean closeFile()
 	{
 		boolean retval=false;
 		
 		try
 		{
-			data.workbook.write();
-                        data.workbook.close();
-                        data.formats.clear();
-
-                        // Fix for PDI-48: call gc to release file handle.
-                        System.gc();
-
+			if ( data.workbook != null )
+			{
+			    data.workbook.write();
+			    data.workbook.close();
+                data.workbook = null;
+			}
             
+    	    // close file
+    	    if(data.file!=null) data.file.close();
+    	    if(data.fo!=null) data.fo.close();
+  
+            
+            // Explicitly call garbage collect to have file handle
+            // released. Bug tracker: PDI-48
+			System.gc();
+
 			retval=true;
 		}
 		catch(Exception e)
 		{
-            logError("Unable to close workbook file : "+e.toString());
+			logError("Unable to close workbook file : "+ data.file.toString() + ":" + e.toString());
 			setErrors(1);
 		}
 
 		return retval;
 	}
-	
+
 	public boolean init(StepMetaInterface smi, StepDataInterface sdi)
 	{
 		meta=(ExcelOutputMeta)smi;
@@ -511,6 +521,8 @@ public class ExcelOutput extends BaseStep implements StepInterface
             {
                 // Create the default font TODO: allow to change this later on.
                 data.writableFont = new WritableFont(WritableFont.ARIAL, 10, WritableFont.NO_BOLD);
+                
+               
             }
             catch(Exception we)
             {
@@ -535,11 +547,10 @@ public class ExcelOutput extends BaseStep implements StepInterface
 	
 	public void dispose(StepMetaInterface smi, StepDataInterface sdi)
 	{
+				
 		meta=(ExcelOutputMeta)smi;
 		data=(ExcelOutputData)sdi;
-		
 		closeFile();
-        
         super.dispose(smi, sdi);
 	}
 	
@@ -551,6 +562,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
 		{
 			logBasic("Starting to run...");
 			while (processRow(meta, data) && !isStopped());
+			
 		}
 		catch(Exception e)
 		{

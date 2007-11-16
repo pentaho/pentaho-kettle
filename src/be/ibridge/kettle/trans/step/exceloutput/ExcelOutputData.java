@@ -19,6 +19,8 @@ package be.ibridge.kettle.trans.step.exceloutput;
 import java.util.Hashtable;
 import java.util.Map;
 
+import org.apache.commons.vfs.FileObject;
+
 import jxl.write.WritableCellFormat;
 import jxl.write.WritableFont;
 import jxl.write.WritableSheet;
@@ -56,6 +58,9 @@ public class ExcelOutputData extends BaseStepData implements StepDataInterface
     public int positionY;
 
     public WritableFont headerFont;
+    
+	public FileObject file;
+	public FileObject fo;
 
 	/**
 	 * 
@@ -65,6 +70,8 @@ public class ExcelOutputData extends BaseStepData implements StepDataInterface
 		super();
         
         formats = new Hashtable();
+        file=null;
+        fo=null;
 	}
 
 }
