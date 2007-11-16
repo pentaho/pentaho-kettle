@@ -3598,12 +3598,16 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		{
 			meta.setID(-1L);
 			saved = saveToRepository(meta, true);
-            delegates.tabs.renameTabs();
+			String sync = BasePropertyHandler.getProperty(SYNC_TRANS);
+			if (Boolean.parseBoolean(sync))
+				delegates.tabs.renameTabs();
         }
         else
 		{
 			saved = saveXMLFile(meta,false);
-            delegates.tabs.renameTabs();
+			String sync = BasePropertyHandler.getProperty(SYNC_TRANS);
+			if (Boolean.parseBoolean(sync))
+				delegates.tabs.renameTabs();
 		}
 
 		refreshTree();
