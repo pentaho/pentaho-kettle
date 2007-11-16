@@ -252,6 +252,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
     public static final String STRING_TRANSFORMATION  = Messages.getString("Spoon.STRING_TRANSFORMATION");  // Transformation
     public static final String STRING_JOB             = Messages.getString("Spoon.STRING_JOB");             // Job
+    
+    private static final String SYNC_TRANS = "sync_trans_name_to_file_name";
 
 	public static final String APP_NAME = Messages.getString("Spoon.Application.Name"); // "Spoon";
 
@@ -1538,7 +1540,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			StepLoader steploader = StepLoader.getInstance();
 			StepPlugin basesteps[] = steploader.getStepsWithType(StepPlugin.TYPE_ALL);
 			String basecat[] = steploader.getCategories(StepPlugin.TYPE_ALL, locale);
-			addFind(new Composite(expandBar,SWT.NONE));
 			for (int i = 0; i < basecat.length; i++)
 			{
                 ScrolledComposite scrolledComposite = new ScrolledComposite(expandBar, SWT.V_SCROLL | SWT.H_SCROLL | SWT.BORDER);
@@ -1699,33 +1700,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		addDragSourceToLine(canvas, plugin);
 		addDragSourceToLine(name, plugin);
 	}
-    
-    private void addFind(Composite composite)
-	{
-		// Add a line with the step as a new composite
-		Composite lineComposite = new Composite(composite, SWT.NONE);
-		props.setLook(lineComposite);
-		lineComposite.setLayout(new FormLayout());
-		
-		Label canvas = new Label(lineComposite, SWT.NONE);
-		props.setLook(canvas);
-		FormData fdCanvas = new FormData();
-		fdCanvas.left = new FormAttachment(0, 0);
-		fdCanvas.right = new FormAttachment(0, 10);
-		fdCanvas.top = new FormAttachment(0, 0);
-		fdCanvas.bottom = new FormAttachment(0, 10);
-		canvas.setLayoutData(fdCanvas);
-
-		Label name = new Label(lineComposite, SWT.LEFT);
-		props.setLook(name);
-		name.setText("Find:");
-		 FormData fdName = new FormData();
-		fdName.left = new FormAttachment(canvas, Const.MARGIN);
-		fdName.right = new FormAttachment(100, 0);
-		fdName.top = new FormAttachment(canvas, 0, SWT.CENTER);
-		name.setLayoutData(fdName);
-	}
-    
+        
 	private void addDragSourceToLine(final Control control, final Object plugin)
 	{
 		// Drag & Drop for steps
@@ -3798,7 +3773,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
     	if( listener != null ) {
 			saved = listener.save(meta, fname,export);
-			delegates.tabs.renameTabs();
+			String sync = BasePropertyHandler.getProperty(SYNC_TRANS);
+			if (Boolean.parseBoolean(sync))
+				delegates.tabs.renameTabs();
 		}
 		return saved;
 	}
