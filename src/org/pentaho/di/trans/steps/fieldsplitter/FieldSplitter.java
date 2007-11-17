@@ -41,7 +41,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 		super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
 	}
 	
-	private boolean splitField(Object[] r) throws KettleValueException
+	private Object[] splitField(Object[] r) throws KettleValueException
 	{
 		if (first)
 		{
@@ -52,19 +52,13 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 			data.fieldnr=data.previousMeta.indexOfValue(meta.getSplitField());
 			if (data.fieldnr<0)
 			{
-				logError(Messages.getString("FieldSplitter.Log.CouldNotFindFieldToSplit",meta.getSplitField())); //$NON-NLS-1$ //$NON-NLS-2$
-				setErrors(1);
-				stopAll();
-				return false;
+				throw new KettleValueException(Messages.getString("FieldSplitter.Log.CouldNotFindFieldToSplit",meta.getSplitField())); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 
 			// only String type allowed
 			if (!data.previousMeta.getValueMeta(data.fieldnr).isString())
 			{
-				logError(Messages.getString("FieldSplitter.Log.SplitFieldNotValid",meta.getSplitField())); //$NON-NLS-1$ //$NON-NLS-2$
-				setErrors(1);
-				stopAll();
-				return false;
+				throw new KettleValueException((Messages.getString("FieldSplitter.Log.SplitFieldNotValid",meta.getSplitField()))); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 
 			// prepare the outputMeta
@@ -73,15 +67,17 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 		}
 		
 		String v=data.previousMeta.getString(r, data.fieldnr);
+		
 		// reserve room
-		RowDataUtil.resizeArray(r, data.outputMeta.size());
-		// needs to be moved?
-		boolean insert = data.fieldnr<data.previousMeta.size();
-		if(insert)
-		{
-			//move to the right and make room between
-			System.arraycopy(r, data.fieldnr+1, r, data.fieldnr+meta.getFieldID().length, meta.getFieldID().length);
-		}
+		Object[] outputRow = RowDataUtil.allocateRowData(data.outputMeta.size());
+		
+		int nrExtraFields = meta.getFieldID().length - 1;
+		
+		for (int i=0;i<data.fieldnr;i++) outputRow[i] = r[i];
+		for (int i=data.fieldnr+1;i<data.outputMeta.size();i++) outputRow[i+nrExtraFields] = r[i];
+
+		// OK, now we have room in the middle to place the fields...
+		//
 		
 		// Named values info.id[0] not filled in!
 		boolean use_ids = meta.getFieldID().length>0 && meta.getFieldID()[0]!=null && meta.getFieldID()[0].length()>0;
@@ -90,6 +86,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 		if (use_ids)
 		{
 			if (log.isDebug()) logDebug(Messages.getString("FieldSplitter.Log.UsingIds")); //$NON-NLS-1$
+			
 			// pol all split fields
 			// Loop over the specified field list
 			// If we spot the corresponding id[] entry in pol, add the value
@@ -142,12 +139,9 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 				}
 				catch(Exception e)
 				{
-					logError(Messages.getString("FieldSplitter.Log.ErrorConvertingSplitValue",split,meta.getSplitField()+"]!")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-					setErrors(1);
-					stopAll();
-					return false;
+					throw new KettleValueException(Messages.getString("FieldSplitter.Log.ErrorConvertingSplitValue",split,meta.getSplitField()+"]!"), e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				}
-				r[data.fieldnr+i]=value;
+				outputRow[data.fieldnr+i]=value;
 			}
 		}
 		else
@@ -173,16 +167,13 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 				}
 				catch(Exception e)
 				{
-					logError(Messages.getString("FieldSplitter.Log.ErrorConvertingSplitValue",pol,meta.getSplitField()+"]!")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-					setErrors(1);
-					stopAll();
-					return false;
+					throw new KettleValueException(Messages.getString("FieldSplitter.Log.ErrorConvertingSplitValue",pol,meta.getSplitField()+"]!"), e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				}
-				r[data.fieldnr+i]=value;
+				outputRow[data.fieldnr+i]=value;
 			}
 		}
 		
-		return true;
+		return outputRow;
 	}
 	
 	private static final String polNext(String str, String del, int start)
@@ -220,14 +211,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 			return false;
 		}
 		
-		boolean noerr = splitField(r);
-		if (!noerr)
-		{
-			setOutputDone();
-			return false;
-		}
-				
-		putRow(data.outputMeta, r);
+		Object[] outputRowData = splitField(r);
+		putRow(data.outputMeta, outputRowData);
 
         if (checkFeedback(linesRead)) logBasic(Messages.getString("FieldSplitter.Log.LineNumber")+linesRead); //$NON-NLS-1$
 			
