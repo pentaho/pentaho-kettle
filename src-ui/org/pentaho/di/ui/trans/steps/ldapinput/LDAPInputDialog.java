@@ -1097,7 +1097,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
         
             TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(transMeta, oneMeta, wStepname.getText());
             
-            EnterNumberDialog numberDialog = new EnterNumberDialog(shell, 500, Messages.getString("LDAPInputDialog.NumberRows.DialogTitle"), Messages.getString("LDAPInputDialog.NumberRows.DialogMessage"));
+            EnterNumberDialog numberDialog = new EnterNumberDialog(shell, props.getDefaultPreviewSize(), Messages.getString("LDAPInputDialog.NumberRows.DialogTitle"), Messages.getString("LDAPInputDialog.NumberRows.DialogMessage"));
             int previewSize = numberDialog.open();
             if (previewSize>0)
             {

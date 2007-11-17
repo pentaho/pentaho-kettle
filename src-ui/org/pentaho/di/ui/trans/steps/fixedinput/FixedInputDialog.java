@@ -516,7 +516,7 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
         
         TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(transMeta, oneMeta, wStepname.getText());
         
-        EnterNumberDialog numberDialog = new EnterNumberDialog(shell, 500, Messages.getString("FixedInputDialog.PreviewSize.DialogTitle"), Messages.getString("FixedInputDialog.PreviewSize.DialogMessage"));
+        EnterNumberDialog numberDialog = new EnterNumberDialog(shell, props.getDefaultPreviewSize(), Messages.getString("FixedInputDialog.PreviewSize.DialogTitle"), Messages.getString("FixedInputDialog.PreviewSize.DialogMessage"));
         int previewSize = numberDialog.open();
         if (previewSize>0)
         {

@@ -358,7 +358,7 @@ public class RowGeneratorDialog extends BaseStepDialog implements StepDialogInte
         
         TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(transMeta, oneMeta, wStepname.getText());
         
-        EnterNumberDialog numberDialog = new EnterNumberDialog(shell, 500, Messages.getString("System.Dialog.EnterPreviewSize.Title"), Messages.getString("System.Dialog.EnterPreviewSize.Message"));
+        EnterNumberDialog numberDialog = new EnterNumberDialog(shell, props.getDefaultPreviewSize(), Messages.getString("System.Dialog.EnterPreviewSize.Title"), Messages.getString("System.Dialog.EnterPreviewSize.Message"));
         int previewSize = numberDialog.open();
         if (previewSize>0)
         {

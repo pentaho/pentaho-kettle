@@ -1281,7 +1281,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 			TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(transMeta, oneMeta, wStepname
 					.getText());
 
-			EnterNumberDialog numberDialog = new EnterNumberDialog(shell, 500, Messages.getString("XMLInputDialog.NumberRows.DialogTitle"), Messages.getString("XMLInputDialog.NumberRows.DialogMessage"));
+			EnterNumberDialog numberDialog = new EnterNumberDialog(shell, props.getDefaultPreviewSize(), Messages.getString("XMLInputDialog.NumberRows.DialogTitle"), Messages.getString("XMLInputDialog.NumberRows.DialogMessage"));
 			int previewSize = numberDialog.open();
 			if (previewSize > 0)
 			{

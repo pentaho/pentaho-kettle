@@ -919,7 +919,7 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
             
             TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(transMeta, oneMeta, wStepname.getText());
             
-            EnterNumberDialog numberDialog = new EnterNumberDialog(shell, 500, Messages.getString("GetFilesRowsCountDialog.NumberRows.DialogTitle"), Messages.getString("GetFilesRowsCountDialog.NumberRows.DialogMessage"));
+            EnterNumberDialog numberDialog = new EnterNumberDialog(shell, props.getDefaultPreviewSize(), Messages.getString("GetFilesRowsCountDialog.NumberRows.DialogTitle"), Messages.getString("GetFilesRowsCountDialog.NumberRows.DialogMessage"));
             int previewSize = numberDialog.open();
             if (previewSize>0)
             {

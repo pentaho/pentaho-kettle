@@ -571,7 +571,7 @@ public class XBaseInputDialog extends BaseStepDialog implements StepDialogInterf
             
 	        TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(transMeta, oneMeta, wStepname.getText());
 	        
-	        EnterNumberDialog numberDialog = new EnterNumberDialog(shell, 500, Messages.getString("XBaseInputDialog.PreviewSize.DialogTitle"), Messages.getString("XBaseInputDialog.PreviewSize.DialogMessage")); //$NON-NLS-1$ //$NON-NLS-2$
+	        EnterNumberDialog numberDialog = new EnterNumberDialog(shell, props.getDefaultPreviewSize(), Messages.getString("XBaseInputDialog.PreviewSize.DialogTitle"), Messages.getString("XBaseInputDialog.PreviewSize.DialogMessage")); //$NON-NLS-1$ //$NON-NLS-2$
 	        int previewSize = numberDialog.open();
 	        if (previewSize>0)
 	        {
