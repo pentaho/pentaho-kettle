@@ -46,6 +46,7 @@ import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MessageBox;
@@ -1217,7 +1218,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 				menu.addMenuListener( "job-graph-entry-hide", this, "hideEntry" ); //$NON-NLS-1$ //$NON-NLS-2$ 
 				menu.addMenuListener( "job-graph-entry-delete", this, "deleteEntry" ); //$NON-NLS-1$ //$NON-NLS-2$ 
 				
-				canvas.setMenu((Menu)menu.getNativeObject());
+				displayMenu(menu, canvas);
 			}
 			
 		}
@@ -1279,7 +1280,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 						if (hi.isEnabled()) miDisHop.setText(Messages.getString("JobGraph.PopupMenu.Hop.Disable")); //$NON-NLS-1$
 						else                miDisHop.setText(Messages.getString("JobGraph.PopupMenu.Hop.Enable")); //$NON-NLS-1$
 					}
-					canvas.setMenu((Menu)menu.getNativeObject());
+    				displayMenu(menu, canvas);
 				}
 
 			}
@@ -1300,8 +1301,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 						menu.addMenuListener( "job-graph-note-raise", this, "raiseNote" ); //$NON-NLS-1$ //$NON-NLS-2$
 						menu.addMenuListener( "job-graph-note-lower", this, "lowerNote" ); //$NON-NLS-1$ //$NON-NLS-2$
 						
-						canvas.setMenu((Menu)menu.getNativeObject());
-
+	    				displayMenu(menu, canvas);
 					}
 				}
 				else
@@ -1320,12 +1320,22 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 	                    		item.setEnabled( clipcontent != null );
 	                    }
 						
-	    				canvas.setMenu((Menu)menu.getNativeObject());
-
+	    				displayMenu(menu, canvas);
 					}
 				}
 			}
 		}
+	}
+	
+    private void displayMenu(XulPopupMenu menu, Control control) {
+		Menu nativeMenu = (Menu)menu.getNativeObject();
+		Menu oldMenu = control.getMenu();
+		if (oldMenu!=null && oldMenu!=nativeMenu)
+		{
+			oldMenu.setVisible(false);
+		}
+		control.setMenu(nativeMenu);
+		nativeMenu.setVisible(true);
 	}
 
 	public void editJobProperties() {

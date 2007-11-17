@@ -2193,7 +2193,16 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 		}
         if( spoonMenu != null ) {
-			tree.setMenu(spoonMenu.getSwtMenu());
+        	org.eclipse.swt.widgets.Menu newMenu = spoonMenu.getSwtMenu();
+        	org.eclipse.swt.widgets.Menu oldMenu = tree.getMenu();
+        	
+        	if (oldMenu!=null && oldMenu!=newMenu)
+        	{
+        		oldMenu.setVisible(false);
+        	}
+        	
+			tree.setMenu(newMenu);
+			newMenu.setVisible(true);
 		}
 	}
 
