@@ -224,7 +224,10 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         
         this.areaOwners = new ArrayList<AreaOwner>();
         
-        // this.props = Props.getInstance();
+        setLayout(new FillLayout());
+        
+        canvas = new Canvas(this, SWT.V_SCROLL | SWT.H_SCROLL | SWT.NO_BACKGROUND);
+
 		try {
     		// first get the XML document
     			menuMap = XulHelper.createPopupMenus(SpoonInterface.XUL_FILE_MENUS, shell, new XulMessages(),"trans-graph-hop",
@@ -234,9 +237,6 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 			t.printStackTrace();
 		}
         
-        setLayout(new FillLayout());
-        
-        canvas = new Canvas(this, SWT.V_SCROLL | SWT.H_SCROLL | SWT.NO_BACKGROUND);
 
         toolTip = new DefaultToolTip(canvas, ToolTip.NO_RECREATE, true);
         // toolTip.setHideOnMouseDown(true);
@@ -1637,20 +1637,21 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 	        final StepMeta stepMeta = transMeta.getStep(x, y, iconsize);
 	        if (stepMeta != null) // We clicked on a Step!
 	        {
-	        		setCurrentStep( stepMeta );
+            	setCurrentStep( stepMeta );
 	        		
-	        		XulPopupMenu menu = (XulPopupMenu) menuMap.get( "trans-graph-entry" ); //$NON-NLS-1$
-	    			if( menu != null ) {
-	    	            int sels = transMeta.nrSelectedSteps();
-	    	            
-	    				XulMenuChoice item  = menu.getMenuItemById( "trans-graph-entry-newhop" ); //$NON-NLS-1$
-	    				menu.addMenuListener( "trans-graph-entry-newhop", this, TransGraph.class, "newHop" ); //$NON-NLS-1$ //$NON-NLS-2$
-	    				item.setEnabled( sels == 2 );
-	    				
-	    				item = menu.getMenuItemById( "trans-graph-entry-align-snap" ); //$NON-NLS-1$
-		            	item.setText(Messages.getString("TransGraph.PopupMenu.SnapToGrid") + ConstUI.GRID_SIZE + ")\tALT-HOME");
+	        	XulPopupMenu menu = (XulPopupMenu) menuMap.get( "trans-graph-entry" ); //$NON-NLS-1$
+	    		if( menu != null ) {
+	    			int sels = transMeta.nrSelectedSteps();
+    	            
+    				XulMenuChoice item  = menu.getMenuItemById( "trans-graph-entry-newhop" ); //$NON-NLS-1$
+    				menu.addMenuListener( "trans-graph-entry-newhop", this, TransGraph.class, "newHop" ); //$NON-NLS-1$ //$NON-NLS-2$
+    				item.setEnabled( sels == 2 );
+    				
+    				item = menu.getMenuItemById( "trans-graph-entry-align-snap" ); //$NON-NLS-1$
+	            	item.setText(Messages.getString("TransGraph.PopupMenu.SnapToGrid") + ConstUI.GRID_SIZE + ")\tALT-HOME");
 	
 					XulMenu aMenu = menu.getMenuById( "trans-graph-entry-align" ); //$NON-NLS-1$
+					
 					if( aMenu != null ) {
 						aMenu.setEnabled( sels > 1 );
 					}
@@ -1696,43 +1697,38 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 					menu.addMenuListener( "trans-graph-entry-partitioning", this, "partitioning" ); //$NON-NLS-1$ //$NON-NLS-2$
 					menu.addMenuListener( "trans-graph-entry-clustering", this, "clustering" ); //$NON-NLS-1$ //$NON-NLS-2$
 					menu.addMenuListener( "trans-graph-entry-errors", this, "errorHandling" ); //$NON-NLS-1$ //$NON-NLS-2$
-	
-					canvas.setMenu((Menu)menu.getNativeObject());
-	    			}
-	    			
+
+					displayMenu(menu, canvas);
+	    		}	
 	        }
 	        else
 	        {
 	            final TransHopMeta hi = findHop(x, y);
 	            if (hi != null) // We clicked on a HOP!
 	            {
-	            	
-	            		XulPopupMenu menu = (XulPopupMenu) menuMap.get( "trans-graph-hop" ); //$NON-NLS-1$
-	    				if( menu != null ) {
-	    					setCurrentHop( hi );
-	    				
-	    					XulMenuChoice item  = menu.getMenuItemById( "trans-graph-hop-enabled" ); //$NON-NLS-1$
-	    					if( item != null ) {
-	    						if (hi.isEnabled()) {
-	    							item.setText(Messages.getString("TransGraph.PopupMenu.DisableHop")); //$NON-NLS-1$
-	    						} else {
-	    							item.setText(Messages.getString("TransGraph.PopupMenu.EnableHop")); //$NON-NLS-1$
-	    						}
-	    					}
-	
-	    					menu.addMenuListener( "trans-graph-hop-edit", this, "editHop" ); //$NON-NLS-1$ //$NON-NLS-2$
-	    					menu.addMenuListener( "trans-graph-hop-flip", this, "flipHopDirection" ); //$NON-NLS-1$ //$NON-NLS-2$
-	    					menu.addMenuListener( "trans-graph-hop-enabled", this, "enableHop" ); //$NON-NLS-1$ //$NON-NLS-2$
-	    					menu.addMenuListener( "trans-graph-hop-delete", this, "deleteHop" ); //$NON-NLS-1$ //$NON-NLS-2$
-	
-	    					canvas.setMenu((Menu)menu.getNativeObject());
-	
-	    				}
-	
+            		XulPopupMenu menu = (XulPopupMenu) menuMap.get( "trans-graph-hop" ); //$NON-NLS-1$
+    				if( menu != null ) {
+    					setCurrentHop( hi );
+    				
+    					XulMenuChoice item  = menu.getMenuItemById( "trans-graph-hop-enabled" ); //$NON-NLS-1$
+    					if( item != null ) {
+    						if (hi.isEnabled()) {
+    							item.setText(Messages.getString("TransGraph.PopupMenu.DisableHop")); //$NON-NLS-1$
+    						} else {
+    							item.setText(Messages.getString("TransGraph.PopupMenu.EnableHop")); //$NON-NLS-1$
+    						}
+    					}
+
+    					menu.addMenuListener( "trans-graph-hop-edit", this, "editHop" ); //$NON-NLS-1$ //$NON-NLS-2$
+    					menu.addMenuListener( "trans-graph-hop-flip", this, "flipHopDirection" ); //$NON-NLS-1$ //$NON-NLS-2$
+    					menu.addMenuListener( "trans-graph-hop-enabled", this, "enableHop" ); //$NON-NLS-1$ //$NON-NLS-2$
+    					menu.addMenuListener( "trans-graph-hop-delete", this, "deleteHop" ); //$NON-NLS-1$ //$NON-NLS-2$
+
+	    				displayMenu(menu, canvas);
+    				}
 	            }
 	            else
 	            {
-	            	
 					// Clicked on the background: maybe we hit a note?
 					final NotePadMeta ni = transMeta.getNote(x, y);
 					setCurrentNote( ni );
@@ -1746,8 +1742,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 							menu.addMenuListener( "trans-graph-note-delete", this, "deleteNote" ); //$NON-NLS-1$ //$NON-NLS-2$
 							menu.addMenuListener( "trans-graph-note-raise", this, "raiseNote" ); //$NON-NLS-1$ //$NON-NLS-2$
 							menu.addMenuListener( "trans-graph-note-lower", this, "lowerNote" ); //$NON-NLS-1$ //$NON-NLS-2$
-							canvas.setMenu((Menu)menu.getNativeObject());
-	
+		    				displayMenu(menu, canvas);
 						}
 					}
 	                else
@@ -1795,8 +1790,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 		            			
 		                    }
 		                    
-		    				canvas.setMenu((Menu)menu.getNativeObject());
-	
+		    				displayMenu(menu, canvas);
 						}
 	
 	                }
@@ -1809,7 +1803,18 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     	}
     }
 
-    private boolean checkNumberOfCopies(TransMeta transMeta, StepMeta stepMeta)
+    private void displayMenu(XulPopupMenu menu, Control control) {
+		Menu nativeMenu = (Menu)menu.getNativeObject();
+		Menu oldMenu = control.getMenu();
+		if (oldMenu!=null && oldMenu!=nativeMenu)
+		{
+			oldMenu.setVisible(false);
+		}
+		control.setMenu(nativeMenu);
+		nativeMenu.setVisible(true);
+	}
+
+	private boolean checkNumberOfCopies(TransMeta transMeta, StepMeta stepMeta)
     {
         boolean enabled = true;
         StepMeta[] prevSteps = transMeta.getPrevSteps(stepMeta);
