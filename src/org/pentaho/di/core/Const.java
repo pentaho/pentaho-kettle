@@ -1415,9 +1415,9 @@ public class Const
 	}
 
 	/**
-	 * Sorts the array of Strings, determines the uniquely occuring strings.  
+	 * Sorts the array of Strings, determines the uniquely occurring strings.  
 	 * @param strings the array that you want to do a distinct on
-	 * @return a sorted array of uniquely occuring strings
+	 * @return a sorted array of uniquely occurring strings
 	 */
 	public static final String[] getDistinctStrings(String[] strings)
 	{
