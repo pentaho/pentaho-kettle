@@ -3958,7 +3958,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 					String name = delegates.tabs.makeTransGraphTabName(transMeta);
 					if (Const.isEmpty(name))name = STRING_TRANS_NO_NAME;
 					tiTransName.setText(name);
-					tiTransName.setImage(guiResource.getImageBol());
+					tiTransName.setImage(guiResource.getImageTransGraph());
 
 					// Set expanded if this is the only transformation shown.
 					if (props.isOnlyActiveFileShownInTree())
@@ -4108,7 +4108,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
                     String name = delegates.tabs.makeJobGraphTabName(jobMeta);
                     if (Const.isEmpty(name)) name = STRING_JOB_NO_NAME;
 					tiJobName.setText(name);
-					tiJobName.setImage(guiResource.getImageBol());
+					tiJobName.setImage(guiResource.getImageJobGraph());
 
 					// Set expanded if this is the only job shown.
 					if (props.isOnlyActiveFileShownInTree())
