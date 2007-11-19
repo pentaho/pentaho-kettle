@@ -879,6 +879,8 @@ public class TransLog extends Composite implements TabItemInterface
 				
 				if (isDisposed() || wPause.isDisposed()) return;
 				
+				spoon.enableMenus();
+				
 				// The transformation is now paused, indicate this in the log dialog...
 				//
 				pausing=true;
