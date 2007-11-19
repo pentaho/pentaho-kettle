@@ -993,6 +993,26 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 		}
 		
 		if (execConfigAnswer) {
+			
+			// Verify if there is at least one step specified to debug or preview...
+			//
+			if (debug || preview)
+			{
+				if (transDebugMeta.getNrOfUsedSteps()==0)
+				{
+					MessageBox box = new MessageBox(spoon.getShell(), SWT.ICON_WARNING | SWT.YES | SWT.NO);
+					box.setText(Messages.getString("Spoon.Dialog.Warning.NoPreviewOrDebugSteps.Title"));
+					box.setMessage(Messages.getString("Spoon.Dialog.Warning.NoPreviewOrDebugSteps.Message"));
+					int answer = box.open();
+					if (answer!=SWT.YES)
+					{
+						return;
+					}
+				}	
+			}
+			
+
+			
 			addTransLog(transMeta, executionConfiguration.isExecutingLocally());
 			TransLog transLog = spoon.getActiveTransLog();
 
