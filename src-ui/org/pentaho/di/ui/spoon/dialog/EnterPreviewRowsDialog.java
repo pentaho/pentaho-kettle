@@ -31,6 +31,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.ui.core.gui.GUIResource;
@@ -68,11 +69,11 @@ public class EnterPreviewRowsDialog extends Dialog
 
 	public EnterPreviewRowsDialog(Shell parent, int style, java.util.List<String> stepNames, java.util.List<RowMetaInterface> rowMetas, java.util.List<java.util.List<Object[]>> rowBuffers)
 	{
-			super(parent, style);
-			this.stepNames=stepNames;
-			this.rowDatas=rowBuffers;
-            this.rowMetas = rowMetas;
-			props=PropsUI.getInstance();
+		super(parent, style);
+		this.stepNames=stepNames;
+		this.rowDatas=rowBuffers;
+        this.rowMetas = rowMetas;
+		props=PropsUI.getInstance();
 	}
 
 	public Object open()
@@ -193,6 +194,13 @@ public class EnterPreviewRowsDialog extends Dialog
     										Variables.getADefaultVariableSpace(),
     				                        SWT.NONE, name, rowMeta, buffer);
     		prd.open();
+        }
+        else
+        {
+        	MessageBox mb = new MessageBox(shell, SWT.ICON_INFORMATION | SWT.OK);
+        	mb.setText(Messages.getString("EnterPreviewRowsDialog.Dialog.NoPreviewRowsFound.Title"));
+        	mb.setMessage(Messages.getString("EnterPreviewRowsDialog.Dialog.NoPreviewRowsFound.Message"));
+        	mb.open();
         }
 	}
 }
