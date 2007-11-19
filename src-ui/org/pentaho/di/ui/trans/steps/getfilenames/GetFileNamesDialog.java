@@ -297,6 +297,7 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 				new ColumnInfo(Messages.getString("GetFileNamesDialog.WildcardColumn.Column"),
 						ColumnInfo.COLUMN_TYPE_TEXT, false), };
 
+        colinfo[0].setUsingVariables(true);
 		colinfo[1].setToolTip(Messages.getString("GetFileNamesDialog.RegExpColumn.Column"));
 
 		wFilenameList = new TableView(transMeta, wFileComp, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, colinfo,
