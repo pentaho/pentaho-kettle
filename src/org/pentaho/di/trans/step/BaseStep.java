@@ -785,38 +785,8 @@ public class BaseStep extends Thread implements VariableSpace
         
         // Check the remote output sets.  Do we need to initialize open any connections there?
         //
-        if (!remoteOutputSteps.isEmpty()) {
-        	if (!remoteOutputStepsInitialized) {
-        		
-        		// Set the current slave target name on all the current output steps (local)
-        		//
-        		for (int c=0;c<outputRowSets.size();c++) {
-        			RowSet rowSet = outputRowSets.get(c);
-        			rowSet.setRemoteSlaveServerName(getVariable(Const.INTERNAL_VARIABLE_SLAVE_SERVER_NAME));
-        			if (getVariable(Const.INTERNAL_VARIABLE_SLAVE_SERVER_NAME)==null) {
-        				throw new KettleStepException("Variable '"+Const.INTERNAL_VARIABLE_SLAVE_SERVER_NAME+"' is not defined.");
-        			}
-        		}
-        		
-        		// Start threads: one per remote step to funnel the data through...
-        		//
-        		for (RemoteStep remoteStep : remoteOutputSteps) {
-        			try {
-        				if (remoteStep.getTargetSlaveServerName()==null) {
-            				throw new KettleStepException("The target slave server name is not defined for remote output step: "+remoteStep);
-        				}
-						RowSet rowSet = remoteStep.openWriterSocket();
-						if (log.isDetailed()) logDetailed("Opened a writer socket to remote step: "+remoteStep);
-						outputRowSets.add(rowSet);
-					} catch (IOException e) {
-						throw new KettleStepException("Error opening writer socket to remote step '"+remoteStep+"'", e);
-					}
-        		}
-        		
-        		remoteOutputStepsInitialized = true;
-        	}
-        }
-
+        openRemoteOutputStepSocketsOnce();
+        
 	    if (outputRowSets.isEmpty())
 	    {
 	        // No more output rowsets!
@@ -1323,6 +1293,39 @@ public class BaseStep extends Thread implements VariableSpace
         	}
         }
 	}
+    
+    protected void openRemoteOutputStepSocketsOnce() throws KettleStepException {
+        if (!remoteOutputSteps.isEmpty()) {
+        	if (!remoteOutputStepsInitialized) {
+				// Set the current slave target name on all the current output steps (local)
+				//
+				for (int c=0;c<outputRowSets.size();c++) {
+					RowSet rowSet = outputRowSets.get(c);
+					rowSet.setRemoteSlaveServerName(getVariable(Const.INTERNAL_VARIABLE_SLAVE_SERVER_NAME));
+					if (getVariable(Const.INTERNAL_VARIABLE_SLAVE_SERVER_NAME)==null) {
+						throw new KettleStepException("Variable '"+Const.INTERNAL_VARIABLE_SLAVE_SERVER_NAME+"' is not defined.");
+					}
+				}
+				
+				// Start threads: one per remote step to funnel the data through...
+				//
+				for (RemoteStep remoteStep : remoteOutputSteps) {
+					try {
+						if (remoteStep.getTargetSlaveServerName()==null) {
+		    				throw new KettleStepException("The target slave server name is not defined for remote output step: "+remoteStep);
+						}
+						RowSet rowSet = remoteStep.openWriterSocket();
+						if (log.isDetailed()) logDetailed("Opened a writer socket to remote step: "+remoteStep);
+						outputRowSets.add(rowSet);
+					} catch (IOException e) {
+						throw new KettleStepException("Error opening writer socket to remote step '"+remoteStep+"'", e);
+					}
+				}
+				
+				remoteOutputStepsInitialized = true;
+        	}
+        }
+    }
 
 	protected void safeModeChecking(RowMetaInterface row) throws KettleRowException
     {

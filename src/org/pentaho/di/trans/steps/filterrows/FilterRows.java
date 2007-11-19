@@ -61,7 +61,7 @@ public class FilterRows extends BaseStep implements StepInterface
 
 		boolean keep;
 		
-		Object[] r=getRow();       // Get next useable row from input rowset(s)!
+		Object[] r=getRow();       // Get next usable row from input rowset(s)!
 		if (r==null)  // no more input to be expected...
 		{
 			setOutputDone();
@@ -70,20 +70,26 @@ public class FilterRows extends BaseStep implements StepInterface
         
         if (first)
         {
+        	first = false;
+        	
             data.outputRowMeta = getInputRowMeta().clone();
             meta.getFields(getInputRowMeta(), getStepname(), null, null, this);
             
             // Cache the position of the RowSet for the output.
             //
-            if (meta.chosesTargetSteps())
+            if (data.chosesTargetSteps)
             {
+            	// Normally this is done during putRow(), but we need it before in the clustered setting...
+            	//
+            	openRemoteOutputStepSocketsOnce();
+            	
             	data.trueRowSet = findOutputRowSet(getStepname(), getCopy(), meta.getSendTrueStepname(), 0);
             	data.falseRowSet = findOutputRowSet(getStepname(), getCopy(), meta.getSendFalseStepname(), 0);
             }
         }
 
 		keep=keepRow(getInputRowMeta(), r); // Keep this row?
-		if (!meta.chosesTargetSteps())
+		if (!data.chosesTargetSteps)
 		{
 			if (keep)
 			{
@@ -125,8 +131,10 @@ public class FilterRows extends BaseStep implements StepInterface
             }
             else
             {
+            	data.chosesTargetSteps = meta.getSendTrueStepname()!=null && meta.getSendFalseStepname()!=null;
+            	
                 return true;
-            }            
+            } 
         }
         return false;
     }

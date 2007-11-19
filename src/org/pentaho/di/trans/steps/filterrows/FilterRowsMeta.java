@@ -95,8 +95,13 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface
 		        sendFalseStep.getName()!=null &&
 		        sendFalseStep.getName().length()>0
 			   ) 
-				return sendFalseStep.getName();
-			return null;
+		{
+			return sendFalseStep.getName();
+		}
+		else
+		{
+			return sendFalseStepname;
+		}
    }
  
 	/**
@@ -108,8 +113,13 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface
 		        sendTrueStep.getName()!=null &&
 		        sendTrueStep.getName().length()>0
 			   ) 
-				return sendTrueStep.getName();
-			return null;
+		{
+			return sendTrueStep.getName();
+		}
+		else
+		{
+			return sendTrueStepname;
+		}
    }
     
 

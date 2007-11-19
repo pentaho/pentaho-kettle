@@ -30,6 +30,7 @@ public class FilterRowsData extends BaseStepData implements StepDataInterface
 	public RowMetaInterface outputRowMeta;
 	public RowSet trueRowSet;
 	public RowSet falseRowSet;
+	public boolean chosesTargetSteps;
 
     /**
 	 * 
