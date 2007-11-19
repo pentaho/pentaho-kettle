@@ -14,6 +14,7 @@ package org.pentaho.di.trans.steps.setvariable;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.trans.Trans;
@@ -66,7 +67,16 @@ public class SetVariable extends BaseStep implements StepInterface
             for (int i=0;i<meta.getFieldName().length;i++)
             {
                 // Set the appropriate environment variable
-            	String value = data.outputMeta.getString(rowData, meta.getFieldName()[i], "");
+            	//
+            	int index = data.outputMeta.indexOfValue(meta.getFieldName()[i]);
+            	if (index<0)
+            	{
+            		throw new KettleException("Unable to find field ["+meta.getFieldName()[i]+"] in input row");
+            	}
+            	ValueMetaInterface valueMeta = data.outputMeta.getValueMeta(index);
+            	Object valueData = rowData[index];
+            	
+            	String value = valueMeta.getCompatibleString(valueData);
             	if (value==null) value="";
                 
                 String varname = meta.getVariableName()[i];
