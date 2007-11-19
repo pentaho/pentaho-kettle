@@ -2207,9 +2207,17 @@ public class Database implements VariableSpace
 
 		// No cache entry found 
 		
-		String debug="";
+		// String debug="";
+		
+		PreparedStatement preparedStatement = null; 
 		try
 		{
+			
+			preparedStatement = connection.prepareStatement(databaseMeta.stripCR(sql), ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+			ResultSetMetaData rsmd = preparedStatement.getMetaData();
+			fields = getRowInfo(rsmd, false, false);
+			
+			/*
 			if (inform==null 
 					// Hack for MSSQL jtds 1.2 when using xxx NOT IN yyy we have to use a prepared statement (see BugID 3214)
 					&& databaseMeta.getDatabaseType()!=DatabaseMeta.TYPE_DATABASE_MSSQL
@@ -2269,14 +2277,30 @@ public class Database implements VariableSpace
 				debug="close preparedStatement";
 				ps.close();
 			}
+			*/
+		
 		}
 		catch(SQLException ex)
 		{
-			throw new KettleDatabaseException("Couldn't get field info from ["+sql+"]"+Const.CR+"Location: "+debug, ex);
+			throw new KettleDatabaseException("Couldn't get field info from ["+sql+"]"+Const.CR, ex);
 		}
 		catch(Exception e)
 		{
-			throw new KettleDatabaseException("Couldn't get field info in part ["+debug+"]", e);
+			throw new KettleDatabaseException("Couldn't get field info", e);
+		}
+		finally
+		{
+			if (preparedStatement!=null)
+			{
+				try 
+				{
+					preparedStatement.close();
+				} 
+				catch (SQLException e) 
+				{
+					throw new KettleDatabaseException("Unable to close prepared statement after determining SQL layout", e);
+				}
+			}
 		}
 		
 		// Store in cache!!
