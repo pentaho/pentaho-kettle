@@ -1167,7 +1167,14 @@ public class RepositoryExplorerDialog extends Dialog
 			}
 		}
 		
+		Menu oldMenu = wTree.getMenu();
+		if (oldMenu!=null)
+		{
+			oldMenu.setVisible(false);
+		}
+		
 		wTree.setMenu(mTree);
+		mTree.setVisible(true);
 	}
 	
 	public void renameInTree()
