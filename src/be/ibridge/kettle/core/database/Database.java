@@ -40,7 +40,6 @@ import java.util.Properties;
 import javax.sql.DataSource;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import be.ibridge.kettle.core.util.DatasourceHelper;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Counter;
@@ -52,6 +51,7 @@ import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.database.map.DatabaseConnectionMap;
 import be.ibridge.kettle.core.exception.KettleDatabaseBatchException;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
+import be.ibridge.kettle.core.util.DatasourceHelper;
 import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.trans.step.dimensionlookup.DimensionLookupMeta;
@@ -2705,8 +2705,14 @@ public class Database
 		// No cache entry found
 
 		String debug="";
+		PreparedStatement preparedStatement = null;
 		try
 		{
+			preparedStatement = connection.prepareStatement(databaseMeta.stripCR(sql), ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+			ResultSetMetaData rsmd = preparedStatement.getMetaData();
+			fields = getRowInfo(rsmd, false);
+			
+			/*
 			if (inform==null
 					// Hack for MSSQL jtds 1.2 when using xxx NOT IN yyy we have to use a prepared statement (see BugID 3214)
 					&& databaseMeta.getDatabaseType()!=DatabaseMeta.TYPE_DATABASE_MSSQL
@@ -2766,6 +2772,7 @@ public class Database
 				debug="close preparedStatement";
 				ps.close();
 			}
+			*/
 		}
 		catch(SQLException ex)
 		{
@@ -2774,6 +2781,20 @@ public class Database
 		catch(Exception e)
 		{
 			throw new KettleDatabaseException("Couldn't get field info in part ["+debug+"]", e);
+		}
+		finally
+		{
+			if (preparedStatement!=null)
+			{
+				try 
+				{
+					preparedStatement.close();
+				} 
+				catch (SQLException e) 
+				{
+					throw new KettleDatabaseException("Unable to close prepared statement after determining SQL layout", e);
+				}
+			}
 		}
 
 		// Store in cache!!
@@ -4949,12 +4970,12 @@ public class Database
 			{
 				
 				
-				if (fields.getValue(i).getType()==fields.getValue(i).VALUE_TYPE_STRING)
+				if (fields.getValue(i).getType()==Value.VALUE_TYPE_STRING)
 				{
 					ins.append("'" + fields.getValue(i).getString() + "'") ;
 				
 				}
-				else if  (fields.getValue(i).getType()==fields.getValue(i).VALUE_TYPE_DATE)
+				else if  (fields.getValue(i).getType()==Value.VALUE_TYPE_DATE)
 				{
 					if (Const.isEmpty(dateFormat))
 					{
