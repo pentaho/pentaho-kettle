@@ -157,6 +157,7 @@ import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.debug.TransDebugMeta;
 import org.pentaho.di.trans.step.BaseStep;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
@@ -4500,8 +4501,15 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	{
 		boolean enableTransMenu = getActiveTransformation() != null;
 		boolean enableJobMenu = getActiveJob() != null;
-
 		boolean enableRepositoryMenu = rep != null;
+		
+		boolean enableLastPreviewMenu = false;
+		TransLog transLog = getActiveTransLog();
+		if (transLog!=null)
+		{
+			TransDebugMeta lastTransDebugMeta = transLog.getLastTransDebugMeta();
+			enableLastPreviewMenu = !(lastTransDebugMeta==null || lastTransDebugMeta.getStepDebugMetaMap().isEmpty());
+		}
 
 		// Only enable certain menu-items if we need to.
 		menuBar.setEnableById("file-save", enableTransMenu || enableJobMenu);
@@ -4509,12 +4517,13 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		menuBar.setEnableById("file-close", enableTransMenu || enableJobMenu);
 		menuBar.setEnableById("file-print", enableTransMenu || enableJobMenu);
 
-    // Disable the undo and redo menus if there is no active transformation or active job
-    // DO NOT ENABLE them otherwise ... leave that to the undo/redo settings
-    if (!enableTransMenu && !enableJobMenu) {
-		  menuBar.setEnableById(UNDO_MENUITEM, false);
-		  menuBar.setEnableById(REDO_MENUITEM, false);
-    }
+	    // Disable the undo and redo menus if there is no active transformation or active job
+	    // DO NOT ENABLE them otherwise ... leave that to the undo/redo settings
+		//
+	    if (!enableTransMenu && !enableJobMenu) {
+			  menuBar.setEnableById(UNDO_MENUITEM, false);
+			  menuBar.setEnableById(REDO_MENUITEM, false);
+	    }
 
 		menuBar.setEnableById("edit-clear-selection", enableTransMenu);
 		menuBar.setEnableById("edit-select-all", enableTransMenu);
@@ -4547,6 +4556,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		menuBar.setEnableById("repository-disconnect", enableRepositoryMenu);
 		menuBar.setEnableById("repository-explore", enableRepositoryMenu);
 		menuBar.setEnableById("repository-edit-user", enableRepositoryMenu);
+		
+		menuBar.setEnableById("trans-last-preview", enableLastPreviewMenu);
 
 		// Do the bar as well
 		toolbar.setEnableById("sql", enableTransMenu || enableJobMenu);
