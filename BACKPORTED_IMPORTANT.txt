@@ -60,3 +60,4 @@ The following bug where fixes backported from the 3.0.0-RC2 series to 2.5.3:
 - Fix for PDI-466: Oracle Bulk loader producing incorrect config file for DateTime in special circumstances - Jen Bleuel - 15-Nov-2007
 - FIX for PDI-462 : Excel output step do not attach filename to result filename when checking "add time" in filename - Samatar - 17-Nov-2007
 - Fix for PDI-469 : Split every .. row did not work for Excel Output step - Samatar - 17-Nov-2007
+- Fix for PDI-481 : Grab SQL layout from prepared statement without executing - Matt - 19-Nov-2007
