@@ -51,6 +51,8 @@ import org.eclipse.swt.events.ExpandAdapter;
 import org.eclipse.swt.events.ExpandEvent;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
@@ -1286,7 +1288,15 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		// Add a tree memory as well...
 		TreeMemory.addTreeListener(selectionTree, STRING_SPOON_MAIN_TREE);
 
-        selectionTree.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { setMenu(selectionTree); } });
+		selectionTree.addMouseListener(new MouseAdapter() {
+				public void mouseDown(MouseEvent event) {
+					if (event.button==3)
+					{
+						setMenu(selectionTree);
+					}
+				}
+			}
+		);
         selectionTree.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { showSelection(); } });
         selectionTree.addSelectionListener(new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e){ doubleClickedInTree(selectionTree); } });
 
@@ -2196,7 +2206,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         	org.eclipse.swt.widgets.Menu newMenu = spoonMenu.getSwtMenu();
         	org.eclipse.swt.widgets.Menu oldMenu = tree.getMenu();
         	
-        	if (oldMenu!=null && oldMenu!=newMenu)
+        	if (oldMenu!=null)
         	{
         		oldMenu.setVisible(false);
         	}
