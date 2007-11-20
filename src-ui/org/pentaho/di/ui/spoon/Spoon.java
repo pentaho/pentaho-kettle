@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -113,6 +114,8 @@ import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.gui.SpoonFactory;
 import org.pentaho.di.core.gui.SpoonInterface;
 import org.pentaho.di.core.gui.UndoInterface;
+import org.pentaho.di.core.listeners.LifecycleException;
+import org.pentaho.di.core.listeners.LifecycleListener;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.reflection.StringSearchResult;
 import org.pentaho.di.core.row.RowMeta;
@@ -121,6 +124,7 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.undo.TransAction;
 import org.pentaho.di.core.util.EnvUtil;
+import org.pentaho.di.core.util.ResolverUtil;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -344,6 +348,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	private List<Object[]> menuListeners = new ArrayList<Object[]>();
 
 	private Map<String, Menu> menuMap = new HashMap<String, Menu>();
+	
+	private static Set<LifecycleListener> lifeListeners;
 
     /**
      * This is the main procedure for Spoon.
@@ -354,11 +360,18 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	{
 		// Do some initialisation of environment variables
 		EnvUtil.environmentInit();
-		
+				
 		List<String> args = new ArrayList<String>(java.util.Arrays.asList(a));
        
 		Display display = new Display();
+		
 		Spoon spoon = new Spoon(display);
+		
+		spoon.initListeners();
+		
+		//do start on them
+		spoon.startListeners();		
+		
 		spoon.run(args);
 
 		// Kill all remaining things in this VM!
@@ -3314,7 +3327,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 				}
 			}
 		}
-
+        
+        //and now we call the listeners
+        stopListeners();	
 
         if (exit) dispose();
 
@@ -6476,6 +6491,66 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			//ignore... let the other notifiers try to do something
 			System.out.println("Unable to update: " + e.getLocalizedMessage());
 		}	
+	}
+	
+	private void initListeners()
+	{
+//		get the listeners
+		ResolverUtil<LifecycleListener> listeners = new ResolverUtil<LifecycleListener>();
+		listeners.find(new ResolverUtil.IsA(LifecycleListener.class), "org.pentaho.di.core.listeners.pdi");
+		Set<Class<? extends LifecycleListener>> listenerClasses = listeners.getClasses();
+		
+		lifeListeners = new HashSet<LifecycleListener>(listenerClasses.size());
+	
+		for (Class<? extends LifecycleListener> clazz:listenerClasses)
+		{
+			try
+			{
+				lifeListeners.add(clazz.newInstance());
+			}
+			catch(Exception e)
+			{
+				log.logError("Spoon", "Unable to init listener:" + e.getMessage(), new Object[]{});
+				continue;
+			}
+		}
+	}
+	private void startListeners()
+	{
+		for (LifecycleListener listener:lifeListeners)
+		{
+			try
+			{
+				listener.onStart();
+			}
+			catch(LifecycleException e)
+			{
+				MessageBox mb = new MessageBox(shell, SWT.OK | (e.isSevere()?SWT.ICON_ERROR:SWT.ICON_INFORMATION));
+				mb.setMessage(e.getMessage());
+				mb.setText(Messages.getString("Spoon.StartListeners.Title"));
+				mb.open();
+				
+				if (e.isSevere()) //we quit!
+					System.exit(1);
+			}
+		}
+	}
+	
+	private void stopListeners()
+	{
+		for (LifecycleListener listener:lifeListeners)
+		{
+			
+			try
+			{
+				listener.onExit();
+			}
+			catch(LifecycleException e)
+			{
+				log.logError("Spoon", e.getMessage(), new Object[]{});
+			}
+		}
+		
 	}
 
 }
