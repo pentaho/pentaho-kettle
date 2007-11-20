@@ -390,6 +390,7 @@ public class Trans implements VariableSpace
 					// don't share. Each copy of the step has its own variables.
 					// 
 					((BaseStep)step).initializeVariablesFrom(this);
+					((BaseStep)step).setUsingThreadPriorityManagment(transMeta.isUsingThreadPriorityManagment());
 					
                     // If the step is partitioned, set the partitioning ID and some other things as well...
                     if (stepMeta.isPartitioned())

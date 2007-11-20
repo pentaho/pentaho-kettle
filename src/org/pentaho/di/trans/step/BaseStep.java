@@ -293,6 +293,8 @@ public class BaseStep extends Thread implements VariableSpace
      */
     private boolean clusteredPartitioning;
 
+	private boolean usingThreadPriorityManagment;
+
     /**
      * This is the base step that forms that basis for all steps. You can derive from this class to implement your own
      * steps.
@@ -1174,15 +1176,25 @@ public class BaseStep extends Thread implements VariableSpace
 	    {
 	        return null;
 	    }
-
+	    
 	    // Do we need to switch to the next input stream?
     	if (blockPointer>=NR_OF_ROWS_IN_BLOCK) {
     		nextInputStream();
     	}
-	    
-        // What's the current input stream?
+
+    	// What's the current input stream?
         RowSet inputRowSet = currentInputStream();
         
+	    // To reduce stress on the locking system we are going to allow
+	    // The buffer to grow beyond "a few" entries.
+	    // We'll only do that if the previous step has not ended...
+	    //
+        if (isUsingThreadPriorityManagment() && !inputRowSet.isDone() && inputRowSet.size()==0)
+        {
+        	try { Thread.sleep(0,10); } catch (InterruptedException e) { }
+        }
+    
+
         // See if this step is receiving partitioned data...
         // In that case it might be the case that one input row set is receiving all data and
         // the other rowsets nothing. (repartitioning on the same key would do that)
@@ -2354,6 +2366,20 @@ public class BaseStep extends Thread implements VariableSpace
 	 */
 	public void setServerSockets(List<ServerSocket> serverSockets) {
 		this.serverSockets = serverSockets;
+	}
+
+	/**
+	 * @param usingThreadPriorityManagment set to true to actively manage priorities of step threads
+	 */
+	public void setUsingThreadPriorityManagment(boolean usingThreadPriorityManagment) {
+		this.usingThreadPriorityManagment = usingThreadPriorityManagment;
+	}
+
+	/**
+	 * @return true if we are actively managing priorities of step threads
+	 */
+	public boolean isUsingThreadPriorityManagment() {
+		return usingThreadPriorityManagment;
 	}
 
 
