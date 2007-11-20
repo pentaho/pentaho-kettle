@@ -211,8 +211,10 @@ public class DimensionLookup extends BaseStep implements StepInterface
 		Date valueDateFrom = null;
 		Date valueDateTo   = null;
 
-        // Determine "Now" once, the first time we get here...
-		if (data.valueDateNow==null && meta.getDateField()!=null && data.datefieldnr>=0)
+        // Determine the lookup date ("now") if we have a field that carries said date.
+		// If not, the system date is taken.
+		//
+		if (data.datefieldnr>=0)
 		{
 			data.valueDateNow = rowMeta.getDate(row, data.datefieldnr);
 		}
