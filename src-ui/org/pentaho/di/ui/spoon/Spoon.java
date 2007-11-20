@@ -2117,33 +2117,35 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 				// New
 				spoonMenu = (Menu) menuMap.get("trans-class");
 			}
-			if (selection.equals(JobMeta.class))
+			else if (selection.equals(JobMeta.class))
 			{
 				// New
 				spoonMenu = (Menu) menuMap.get("job-class");
 			}
-			if (selection.equals(TransHopMeta.class))
+			else if (selection.equals(TransHopMeta.class))
 			{
 				// New
 				spoonMenu = (Menu) menuMap.get("trans-hop-class");
 			}
-			if (selection.equals(DatabaseMeta.class))
+			else if (selection.equals(DatabaseMeta.class))
 			{
 				spoonMenu = (Menu) menuMap.get("database-class");
 			}
-			if (selection.equals(PartitionSchema.class))
+			else if (selection.equals(PartitionSchema.class))
 			{
 				// New
 				spoonMenu = (Menu) menuMap.get("partition-schema-class");
 			}
-			if (selection.equals(ClusterSchema.class))
+			else if (selection.equals(ClusterSchema.class))
 			{
 				spoonMenu = (Menu) menuMap.get("cluster-schema-class");
 			}
-			if (selection.equals(SlaveServer.class))
+			else if (selection.equals(SlaveServer.class))
 			{
 				spoonMenu = (Menu) menuMap.get("slave-cluster-class");
 			}
+			else
+				spoonMenu = null;
         }
         else
 		{
@@ -2152,16 +2154,16 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			{
 				spoonMenu = (Menu) menuMap.get("trans-inst");
 			}
-			if (selection instanceof JobMeta)
+			else if (selection instanceof JobMeta)
 			{
 				spoonMenu = (Menu) menuMap.get("job-inst");
 			}
-			if (selection instanceof StepPlugin)
+			else if (selection instanceof StepPlugin)
 			{
 				spoonMenu = (Menu) menuMap.get("step-plugin");
 			}
 
-			if (selection instanceof DatabaseMeta)
+			else if (selection instanceof DatabaseMeta)
 			{
 				spoonMenu = (PopupMenu) menuMap.get("database-inst");
                 // disable for now if the connection is an SAP R/3 type of database...
@@ -2177,27 +2179,27 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 				}
 
 			}
-			if (selection instanceof StepMeta)
+			else if (selection instanceof StepMeta)
 			{
 				spoonMenu = (Menu) menuMap.get("step-inst");
 			}
-			if (selection instanceof JobEntryCopy)
+			else if (selection instanceof JobEntryCopy)
 			{
 				spoonMenu = (Menu) menuMap.get("job-entry-copy-inst");
 			}
-			if (selection instanceof TransHopMeta)
+			else if (selection instanceof TransHopMeta)
 			{
 				spoonMenu = (Menu) menuMap.get("trans-hop-inst");
 			}
-			if (selection instanceof PartitionSchema)
+			else if (selection instanceof PartitionSchema)
 			{
 				spoonMenu = (Menu) menuMap.get("partition-schema-inst");
 			}
-			if (selection instanceof ClusterSchema)
+			else if (selection instanceof ClusterSchema)
 			{
 				spoonMenu = (Menu) menuMap.get("cluster-schema-inst");
 			}
-			if (selection instanceof SlaveServer)
+			else if (selection instanceof SlaveServer)
 			{
 				spoonMenu = (Menu) menuMap.get("slave-server-inst");
 			}
@@ -2215,6 +2217,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			tree.setMenu(newMenu);
 			newMenu.setVisible(true);
 		}
+        else
+        	tree.setMenu(null);
 	}
 
 	/**
