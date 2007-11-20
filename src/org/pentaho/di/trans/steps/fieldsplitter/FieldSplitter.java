@@ -45,6 +45,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 	{
 		if (first)
 		{
+			first=false;
 			// get the RowMeta
 			data.previousMeta = getInputRowMeta().clone();
 			
@@ -74,7 +75,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 		int nrExtraFields = meta.getFieldID().length - 1;
 		
 		for (int i=0;i<data.fieldnr;i++) outputRow[i] = r[i];
-		for (int i=data.fieldnr+1;i<data.outputMeta.size();i++) outputRow[i+nrExtraFields] = r[i];
+		for (int i=data.fieldnr+1;i<data.previousMeta.size();i++) outputRow[i+nrExtraFields] = r[i];
 
 		// OK, now we have room in the middle to place the fields...
 		//
