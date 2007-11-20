@@ -367,7 +367,7 @@ public class MappingInputMeta extends BaseStepMeta implements StepMetaInterface
                 }
             }
             
-			rep.saveStepAttribute(id_transformation, id_step, "field_precision", selectingAndSortingUnspecifiedFields); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "select_unspecified", selectingAndSortingUnspecifiedFields); //$NON-NLS-1$
         }
         catch (Exception e)
         {
