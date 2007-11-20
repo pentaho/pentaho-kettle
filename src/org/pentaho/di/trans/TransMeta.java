@@ -24,7 +24,7 @@ import java.util.Map;
 import org.apache.commons.vfs.FileName;
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemException;
-import org.eclipse.core.runtime.IProgressMonitor;
+
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResult;
@@ -35,6 +35,7 @@ import org.pentaho.di.core.DBCache;
 import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.LastUsedFile;
 import org.pentaho.di.core.NotePadMeta;
+import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.ResultFile;
@@ -1487,7 +1488,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      * @param monitor The progress monitor for progress dialog. (null if not used!)
      * @return A row containing the fields emitted.
      */
-    public RowMetaInterface getStepFields(StepMeta stepMeta, IProgressMonitor monitor) throws KettleStepException
+    public RowMetaInterface getStepFields(StepMeta stepMeta, ProgressMonitorListener monitor) throws KettleStepException
     {
         return getStepFields(stepMeta, null, monitor);
     }
@@ -1500,7 +1501,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      * @param monitor The progress monitor for progress dialog. (null if not used!)
      * @return A row containing the fields emitted.
      */
-    public RowMetaInterface getStepFields(StepMeta stepMeta, StepMeta targetStep, IProgressMonitor monitor) throws KettleStepException
+    public RowMetaInterface getStepFields(StepMeta stepMeta, StepMeta targetStep, ProgressMonitorListener monitor) throws KettleStepException
     {
         RowMetaInterface row = new RowMeta();
 
@@ -1587,7 +1588,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      * @param monitor The progress monitor for progress dialog. (null if not used!)
      * @return A row containing the fields (w/ origin) entering the step
      */
-    public RowMetaInterface getPrevStepFields(StepMeta stepMeta, IProgressMonitor monitor) throws KettleStepException
+    public RowMetaInterface getPrevStepFields(StepMeta stepMeta, ProgressMonitorListener monitor) throws KettleStepException
     {
         RowMetaInterface row = new RowMeta();
 
@@ -1662,7 +1663,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      *
      * @return A Row containing the output fields.
      */
-    public RowMetaInterface getThisStepFields(StepMeta stepMeta, StepMeta nextStep, RowMetaInterface row, IProgressMonitor monitor) throws KettleStepException
+    public RowMetaInterface getThisStepFields(StepMeta stepMeta, StepMeta nextStep, RowMetaInterface row, ProgressMonitorListener monitor) throws KettleStepException
     {
         // Then this one.
         log.logDebug(toString(), Messages.getString("TransMeta.Log.GettingFieldsFromStep",stepMeta.getName(), stepMeta.getStepID())); //$NON-NLS-1$ //$NON-NLS-2$
@@ -1739,7 +1740,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      * @param rep The repository.
      * @throws KettleException if an error occurrs.
      */
-    public void saveRep(Repository rep, IProgressMonitor monitor) throws KettleException
+    public void saveRep(Repository rep, ProgressMonitorListener monitor) throws KettleException
     {
         try
         {
@@ -2242,7 +2243,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      * @param repdir the path to the repository directory
      * @param monitor The progress monitor to display the progress of the file-open operation in a dialog
      */
-    public TransMeta(Repository rep, String transname, RepositoryDirectory repdir, IProgressMonitor monitor) throws KettleException
+    public TransMeta(Repository rep, String transname, RepositoryDirectory repdir, ProgressMonitorListener monitor) throws KettleException
     {
         this(rep, transname, repdir, monitor, true);
     }
@@ -2255,7 +2256,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      * @param monitor The progress monitor to display the progress of the file-open operation in a dialog
      * @param setInternalVariables true if you want to set the internal variables based on this transformation information
      */
-    public TransMeta(Repository rep, String transname, RepositoryDirectory repdir, IProgressMonitor monitor, boolean setInternalVariables) throws KettleException
+    public TransMeta(Repository rep, String transname, RepositoryDirectory repdir, ProgressMonitorListener monitor, boolean setInternalVariables) throws KettleException
     {
         this();
         
@@ -4108,7 +4109,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      * @param impact An ArrayList of DatabaseImpact objects.
      *
      */
-    public void analyseImpact(List<DatabaseImpact> impact, IProgressMonitor monitor) throws KettleStepException
+    public void analyseImpact(List<DatabaseImpact> impact, ProgressMonitorListener monitor) throws KettleStepException
     {
         if (monitor != null)
         {
@@ -4181,7 +4182,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      *
      * @return An ArrayList of SQLStatement objects.
      */
-    public List<SQLStatement> getSQLStatements(IProgressMonitor monitor) throws KettleStepException
+    public List<SQLStatement> getSQLStatements(ProgressMonitorListener monitor) throws KettleStepException
     {
         if (monitor != null) monitor.beginTask(Messages.getString("TransMeta.Monitor.GettingTheSQLForTransformationTask.Title"), nrSteps() + 1); //$NON-NLS-1$
         List<SQLStatement> stats = new ArrayList<SQLStatement>();
@@ -4261,7 +4262,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      * @param only_selected Check only the selected steps.
      * @param monitor The progress monitor to use, null if not used
      */
-    public void checkSteps(List<CheckResultInterface> remarks, boolean only_selected, IProgressMonitor monitor)
+    public void checkSteps(List<CheckResultInterface> remarks, boolean only_selected, ProgressMonitorListener monitor)
     {
         try
         {
@@ -5584,7 +5585,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      * @throws KettleRowException in case we detect a row mixing violation
      *
      */
-    public void checkRowMixingStatically(StepMeta stepMeta, IProgressMonitor monitor) throws KettleRowException
+    public void checkRowMixingStatically(StepMeta stepMeta, ProgressMonitorListener monitor) throws KettleRowException
     {
        int nrPrevious = findNrPrevSteps(stepMeta);
        if (nrPrevious>1)

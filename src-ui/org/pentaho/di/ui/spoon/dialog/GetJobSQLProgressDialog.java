@@ -24,6 +24,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
+import org.pentaho.di.core.ProgressMonitorAdapter;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.job.JobMeta;
@@ -71,7 +72,7 @@ public class GetJobSQLProgressDialog
 
 				try
 				{
-					stats = jobMeta.getSQLStatements(repository, monitor);
+					stats = jobMeta.getSQLStatements(repository, new ProgressMonitorAdapter(monitor));
 				}
 				catch(KettleException e)
 				{

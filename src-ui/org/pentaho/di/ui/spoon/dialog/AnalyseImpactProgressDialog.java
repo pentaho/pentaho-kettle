@@ -25,6 +25,7 @@ import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.ui.spoon.dialog.Messages;
+import org.pentaho.di.core.ProgressMonitorAdapter;
 import org.pentaho.di.trans.DatabaseImpact;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
@@ -64,7 +65,7 @@ public class AnalyseImpactProgressDialog
 				try
 				{
 					impact.clear(); // Start with a clean slate!!
-					transMeta.analyseImpact(impact, monitor);
+					transMeta.analyseImpact(impact, new ProgressMonitorAdapter(monitor));
 					impactHasRun = true;
 				}
 				catch(Exception e)

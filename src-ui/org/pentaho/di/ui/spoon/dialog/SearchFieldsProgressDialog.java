@@ -21,6 +21,7 @@ import java.lang.reflect.InvocationTargetException;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.pentaho.di.core.ProgressMonitorAdapter;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -58,12 +59,12 @@ public class SearchFieldsProgressDialog implements IRunnableWithProgress
 			if (before)
 			{
 				monitor.beginTask(Messages.getString("SearchFieldsProgressDialog.Dialog.SearchInputFields.Message"), size); //Searching for input fields...
-				fields = transMeta.getPrevStepFields(stepInfo, monitor);
+				fields = transMeta.getPrevStepFields(stepInfo, new ProgressMonitorAdapter(monitor));
 			}
 			else
 			{
 				monitor.beginTask(Messages.getString("SearchFieldsProgressDialog.Dialog.SearchOutputFields.Message"), size); //Searching for output fields...
-				fields = transMeta.getStepFields(stepInfo, monitor);
+				fields = transMeta.getStepFields(stepInfo, new ProgressMonitorAdapter(monitor));
 			}
 		}
 		catch(KettleStepException kse)

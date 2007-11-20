@@ -28,6 +28,7 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.trans.dialog.Messages;
 
 import org.pentaho.di.core.EngineMetaInterface;
+import org.pentaho.di.core.ProgressMonitorAdapter;
 import org.pentaho.di.core.exception.KettleException;
 
 
@@ -64,7 +65,7 @@ public class SaveProgressDialog
 			{
 				try
 				{
-					meta.saveRep(rep, monitor);
+					meta.saveRep(rep, new ProgressMonitorAdapter(monitor));
 				}
 				catch(KettleException e)
 				{

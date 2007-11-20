@@ -23,11 +23,11 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
+import org.pentaho.di.core.ProgressMonitorAdapter;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.ui.trans.dialog.Messages;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 
 
@@ -71,10 +71,10 @@ public class TransLoadProgressDialog
                 // This is running in a new process: copy some KettleVariables info
                 // LocalVariables.getInstance().createKettleVariables(Thread.currentThread(), parentThread, true);
                 // --> don't set variables if not running in different thread --> pmd.run(true,true, op);
-
+				
 				try
 				{
-					transInfo = new TransMeta(rep, transname, repdir, monitor);
+					transInfo = new TransMeta(rep, transname, repdir, new ProgressMonitorAdapter(monitor));
 				}
 				catch(KettleException e)
 				{

@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.DisposeEvent;
@@ -40,13 +39,10 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.EngineMetaInterface;
+import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.ui.spoon.Messages;
-import org.pentaho.di.ui.spoon.Spoon;
-import org.pentaho.di.ui.spoon.TabItemInterface;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.trans.step.StepStatus;
@@ -58,6 +54,7 @@ import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TreeMemory;
 import org.pentaho.di.ui.core.widget.TreeUtil;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.www.SlaveServerJobStatus;
 import org.pentaho.di.www.SlaveServerStatus;
 import org.pentaho.di.www.SlaveServerTransStatus;
@@ -634,7 +631,7 @@ public class SpoonSlave extends Composite implements TabItemInterface
 				return false;
 			}
 		
-			public void saveRep(Repository rep, IProgressMonitor monitor) throws KettleException {
+			public void saveRep(Repository rep, ProgressMonitorListener monitor) throws KettleException {
 			}
 		
 			public void nameFromFilename() {

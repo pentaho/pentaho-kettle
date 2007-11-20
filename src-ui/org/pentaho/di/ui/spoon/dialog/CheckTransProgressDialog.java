@@ -25,6 +25,7 @@ import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResultInterface;
+import org.pentaho.di.core.ProgressMonitorAdapter;
 import org.pentaho.di.ui.spoon.dialog.Messages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
@@ -64,7 +65,7 @@ public class CheckTransProgressDialog
 			{
 				try
 				{
-					transMeta.checkSteps(remarks, onlySelected, monitor);
+					transMeta.checkSteps(remarks, onlySelected, new ProgressMonitorAdapter(monitor));
 				}
 				catch(Exception e)
 				{

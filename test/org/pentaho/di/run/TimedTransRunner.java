@@ -53,6 +53,7 @@ public class TimedTransRunner
         init();
         
         boolean ok = runOldEngine(true);
+        
         ok &= runNewEngine(false);
         
         compareResults();
@@ -91,6 +92,8 @@ public class TimedTransRunner
     
     public boolean runOldEngine(boolean printDescription) throws Exception
     {
+    	System.gc();
+        
         if (be.ibridge.kettle.trans.StepLoader.getInstance().getPluginList().size()==0) be.ibridge.kettle.trans.StepLoader.getInstance().read();
 
         KettleVariables.getInstance().setVariable("NR_OF_ROWS", Long.toString(records));
@@ -138,7 +141,7 @@ public class TimedTransRunner
 
     private static DecimalFormat recordsDF = new DecimalFormat("###,###,##0");
     private static DecimalFormat runtimeDF = new DecimalFormat("##0.00");
-    private static DecimalFormat speedDF = new DecimalFormat("###,###,##0");
+    private static DecimalFormat speedDF = new DecimalFormat("#,###,###,##0");
     
     private void printStats(String prefix, long lines, double runTime, double speed)
     {
@@ -152,6 +155,8 @@ public class TimedTransRunner
 
     public boolean runNewEngine(boolean printDescription) throws KettleException
     {
+    	System.gc();
+    	
         if (StepLoader.getInstance().getPluginList().size()==0) StepLoader.init();
 
         newTransMeta = new TransMeta(filename);

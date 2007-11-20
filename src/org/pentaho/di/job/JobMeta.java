@@ -20,7 +20,7 @@ import java.util.Map;
 import org.apache.commons.vfs.FileName;
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemException;
-import org.eclipse.core.runtime.IProgressMonitor;
+
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -28,6 +28,7 @@ import org.pentaho.di.core.DBCache;
 import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.LastUsedFile;
 import org.pentaho.di.core.NotePadMeta;
+import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.SQLStatement;
@@ -1040,7 +1041,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
         saveRep(rep, null);
     }
 
-    public void saveRep(Repository rep, IProgressMonitor monitor) throws KettleException
+    public void saveRep(Repository rep, ProgressMonitorListener monitor) throws KettleException
     {
         try
         {
@@ -1171,7 +1172,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
      * @param repdir The directory in which the job resides.
      * @throws KettleException
      */   
-    public JobMeta(LogWriter log, Repository rep, String jobname, RepositoryDirectory repdir, IProgressMonitor monitor) throws KettleException
+    public JobMeta(LogWriter log, Repository rep, String jobname, RepositoryDirectory repdir, ProgressMonitorListener monitor) throws KettleException
     {
         this.log = log;
 
@@ -2120,7 +2121,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
      * 
      * @return An ArrayList of SQLStatement objects.
      */
-    public List<SQLStatement> getSQLStatements(Repository repository, IProgressMonitor monitor) throws KettleException
+    public List<SQLStatement> getSQLStatements(Repository repository, ProgressMonitorListener monitor) throws KettleException
     {
         if (monitor != null) monitor.beginTask(Messages.getString("JobMeta.Monitor.GettingSQLNeededForThisJob"), nrJobEntries() + 1); //$NON-NLS-1$
         List<SQLStatement> stats = new ArrayList<SQLStatement>();
@@ -2660,7 +2661,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
    * @param only_selected true if you only want to check the selected jobs
    * @param monitor Progress monitor (not presently in use)
 	 */
-  public void checkJobEntries(List<CheckResultInterface> remarks, boolean only_selected, IProgressMonitor monitor) {
+  public void checkJobEntries(List<CheckResultInterface> remarks, boolean only_selected, ProgressMonitorListener monitor) {
     remarks.clear(); // Empty remarks
     if (monitor != null) monitor.beginTask(Messages.getString("JobMeta.Monitor.VerifyingThisJobEntryTask.Title"), jobcopies.size() + 2); //$NON-NLS-1$
     boolean stop_checking = false;

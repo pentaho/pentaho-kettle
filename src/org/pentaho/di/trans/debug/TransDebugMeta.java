@@ -74,7 +74,7 @@ public class TransDebugMeta {
 		this.stepDebugMetaMap = stepDebugMeta;
 	}
 
-	public void addRowListenersToTransformation(final Trans trans) {
+	public synchronized void addRowListenersToTransformation(final Trans trans) {
 		
 		final TransDebugMeta self = this;
 		
@@ -186,5 +186,28 @@ public class TransDebugMeta {
 			total+=stepDebugMeta.getNumberOfHits();
 		}
 		return total;
+	}
+
+	/**
+	 * @return the number of steps used to preview or debug on
+	 */
+	public int getNrOfUsedSteps() {
+		int nr = 0;
+		
+		for (StepDebugMeta stepDebugMeta : stepDebugMetaMap.values())
+		{
+			if (stepDebugMeta.isReadingFirstRows() && stepDebugMeta.getRowCount()>0)
+			{
+				nr++;
+			}
+			else
+			if (stepDebugMeta.isReadingFirstRows() && stepDebugMeta.getRowCount()>0 && 
+					stepDebugMeta.getCondition()!=null && !stepDebugMeta.getCondition().isEmpty())
+			{
+				nr++;
+			}
+		}
+		
+		return nr;
 	}
 }

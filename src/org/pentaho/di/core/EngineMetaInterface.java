@@ -14,7 +14,6 @@ package org.pentaho.di.core;
 
 import java.util.Date;
 
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
@@ -61,7 +60,7 @@ public interface EngineMetaInterface {
     
     public boolean showReplaceWarning(Repository rep);
     
-    public void saveRep(Repository rep, IProgressMonitor monitor) throws KettleException;
+    public void saveRep(Repository rep, ProgressMonitorListener monitor) throws KettleException;
     
     public String getFilename();
     
