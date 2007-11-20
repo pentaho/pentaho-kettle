@@ -32,7 +32,7 @@
     <unique_connections>N</unique_connections>
     <feedback_shown>Y</feedback_shown>
     <feedback_size>250000</feedback_size>
-    <using_thread_priorities>N</using_thread_priorities>
+    <using_thread_priorities>Y</using_thread_priorities>
     <shared_objects_file/>
     <dependencies>
     </dependencies>
