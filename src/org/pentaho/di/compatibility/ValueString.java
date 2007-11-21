@@ -19,7 +19,6 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 
 import org.pentaho.di.core.Const;
 
@@ -34,7 +33,12 @@ public class ValueString implements ValueInterface, Cloneable
 {
 	private String string;
 	private int length;
-	private static SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS", Locale.US);
+	
+	private static final ThreadLocal  LOCAL_SIMPLE_DATE_PARSER = new ThreadLocal() {
+		protected Object initialValue() {
+			return new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS");
+     	}
+    };
 
 	public ValueString()
 	{
@@ -71,11 +75,9 @@ public class ValueString implements ValueInterface, Cloneable
 	{
 	    if (string!=null)
 	    {
-//	    	Tom modified this for performance
-//			SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS");
 			try
 			{
-				return df.parse(string);
+				return ((SimpleDateFormat)LOCAL_SIMPLE_DATE_PARSER.get()).parse(string);
 			}
 			catch(ParseException e)
 			{
@@ -106,9 +108,7 @@ public class ValueString implements ValueInterface, Cloneable
 	
 	public void    setDate(Date date)
 	{
-		//Tom modified this for performance
-//		SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS");
-		this.string = df.format(date);
+		this.string = ((SimpleDateFormat)LOCAL_SIMPLE_DATE_PARSER.get()).format(date);
 	}
 	
 	public void    setBoolean(boolean bool)
