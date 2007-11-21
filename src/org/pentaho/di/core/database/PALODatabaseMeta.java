@@ -13,6 +13,8 @@
 
 package org.pentaho.di.core.database;
 
+import plugin.palo.core.PaloHelper;
+
 
 /**
  * Contains Database Connection information through static final members for a PALO database.
@@ -63,11 +65,8 @@ public class PALODatabaseMeta extends GenericDatabaseMeta implements DatabaseInt
 	public int getDefaultDatabasePort() {
 		return 7777;
 	}	
-	
-	public String getConnectionTestReport() {
-		// TODO: connect to the Palo server...
-		// We need plug-in resources for this, so this needs to become a real plug-in during post-3.0.
-		//
-		return super.getConnectionTestReport();
+
+	public String getDatabaseFactoryName() {
+		return "plugin.palo.core.PaloHelper";
 	}
 }

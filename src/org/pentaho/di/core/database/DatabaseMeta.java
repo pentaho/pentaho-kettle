@@ -2454,14 +2454,6 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
         databaseInterface.setUsingDoubleDecimalAsSchemaTableSeparator(useDoubleDecimalSeparator);
     }
     
-
-
-	private StringBuffer appendConnectionInfo(StringBuffer report, String hostName, String portNumber, String dbName) {
-        report.append(Messages.getString("DatabaseMeta.report.Hostname")).append(hostName).append(Const.CR); //$NON-NLS-1$
-        report.append(Messages.getString("DatabaseMeta.report.Port")).append(portNumber).append(Const.CR); //$NON-NLS-1$
-        report.append(Messages.getString("DatabaseMeta.report.DatabaseName")).append(dbName).append(Const.CR); //$NON-NLS-1$
-        return report;
-    }
 	
 	/**
 	 * @return true if this database needs a transaction to perform a query (auto-commit turned off).
@@ -2472,62 +2464,30 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 	}
 
 	public String testConnection() {
-		if (getAccessType()!=TYPE_ACCESS_PLUGIN) {
-            StringBuffer report = new StringBuffer();
+		
+		StringBuffer report = new StringBuffer();
 
-            Database db = new Database(this);
-            if (isPartitioned())
-            {
-                PartitionDatabaseMeta[] partitioningInformation = getPartitioningInformation();
-                for (int i = 0; i < partitioningInformation.length; i++)
-                {
-                    try
-                    {
-                        db.connect(partitioningInformation[i].getPartitionId());
-                        report.append(Messages.getString("DatabaseMeta.report.ConnectionWithPartOk", getName(), partitioningInformation[i].getPartitionId()) + Const.CR); //$NON-NLS-1$
-                    }
-                    catch (KettleException e)
-                    {
-                        report.append(Messages.getString("DatabaseMeta.report.ConnectionWithPartError", getName(), partitioningInformation[i].getPartitionId(), e.toString()) + Const.CR); //$NON-NLS-1$
-                        report.append(Const.getStackTracker(e) + Const.CR);
-                    }
-                    finally
-                    {
-                        db.disconnect();
-                    }
-                    appendConnectionInfo(report, db.environmentSubstitute(partitioningInformation[i].getHostname()), 
-                    		                     db.environmentSubstitute(partitioningInformation[i].getPort()), 
-                    		                     db.environmentSubstitute(partitioningInformation[i].getDatabaseName()));
-                    report.append(Const.CR);
-                }
-            }
-            else
-            {
-                try
-                {
-                    db.connect();
-                    report.append(Messages.getString("DatabaseMeta.report.ConnectionOk", getName()) + Const.CR); //$NON-NLS-1$
-                }
-                catch (KettleException e)
-                {
-                    report.append(Messages.getString("DatabaseMeta.report.ConnectionError", getName()) + e.toString() + Const.CR); //$NON-NLS-1$
-                    report.append(Const.getStackTracker(e) + Const.CR);
-                }
-                finally
-                {
-                    db.disconnect();
-                }
-                appendConnectionInfo(report, db.environmentSubstitute(getHostname()), 
-                		                     db.environmentSubstitute(getDatabasePortNumberString()), 
-                		                     db.environmentSubstitute(getDatabaseName()));
-                report.append(Const.CR);
-            }
-            return report.toString();
+		// If the plug-in needs to provide connection information, we ask the DatabaseInterface...
+		//
+		try {
+			DatabaseFactoryInterface factory = getDatabaseFactory();
+			return factory.getConnectionTestReport(this);
+		} 
+		catch (ClassNotFoundException e) {
+			report.append(Messages.getString("BaseDatabaseMeta.TestConnectionReportNotImplemented.Message")).append(Const.CR); // $NON-NLS-1
+            report.append(Messages.getString("DatabaseMeta.report.ConnectionError", getName()) + e.toString() + Const.CR); //$NON-NLS-1$
+            report.append(Const.getStackTracker(e) + Const.CR);
+		} 
+		catch (Exception e) {
+            report.append(Messages.getString("DatabaseMeta.report.ConnectionError", getName()) + e.toString() + Const.CR); //$NON-NLS-1$
+            report.append(Const.getStackTracker(e) + Const.CR);
 		}
-		else {
-			// If the plug-in needs to provide connection information, we ask the DatabaseInterface...
-			//
-			return databaseInterface.getConnectionTestReport();
-		}
+        return report.toString();
+	}
+	
+	public DatabaseFactoryInterface getDatabaseFactory() throws Exception
+	{
+		Class<?> clazz = Class.forName(databaseInterface.getDatabaseFactoryName());
+		return (DatabaseFactoryInterface)clazz.newInstance();
 	}
 }
