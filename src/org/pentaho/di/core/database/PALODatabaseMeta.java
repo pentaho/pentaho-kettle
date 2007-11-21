@@ -13,8 +13,6 @@
 
 package org.pentaho.di.core.database;
 
-import plugin.palo.core.PaloHelper;
-
 
 /**
  * Contains Database Connection information through static final members for a PALO database.
@@ -68,5 +66,6 @@ public class PALODatabaseMeta extends GenericDatabaseMeta implements DatabaseInt
 
 	public String getDatabaseFactoryName() {
 		return "plugin.palo.core.PaloHelper";
+		// return PaloDatabaseFactory.class.getName();
 	}
 }
