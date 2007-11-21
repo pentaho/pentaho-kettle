@@ -34,8 +34,8 @@ public class ValueString implements ValueInterface, Cloneable
 	private String string;
 	private int length;
 	
-	private static final ThreadLocal  LOCAL_SIMPLE_DATE_PARSER = new ThreadLocal() {
-		protected Object initialValue() {
+	private static final ThreadLocal<SimpleDateFormat>  LOCAL_SIMPLE_DATE_PARSER = new ThreadLocal<SimpleDateFormat>() {
+		protected SimpleDateFormat initialValue() {
 			return new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS");
      	}
     };
