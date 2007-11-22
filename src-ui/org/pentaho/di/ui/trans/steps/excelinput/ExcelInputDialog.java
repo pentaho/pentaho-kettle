@@ -1682,6 +1682,15 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		ExcelInputMeta info = new ExcelInputMeta();
 		getInfo(info);
 
+		int clearFields = SWT.YES;
+		if (wFields.nrNonEmpty()>0)
+		{
+			MessageBox messageBox = new MessageBox(shell, SWT.YES | SWT.NO | SWT.ICON_QUESTION );
+			messageBox.setMessage(Messages.getString("ExcelInputDialog.ClearFieldList.DialogMessage"));
+			messageBox.setText(Messages.getString("ExcelInputDialog.ClearFieldList.DialogTitle"));
+			clearFields = messageBox.open();
+		}
+		
 		FileInputList fileList = info.getFileList(transMeta);
 		for (FileObject file : fileList.getFiles()) {
 			try
@@ -1793,10 +1802,14 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 
 		if (fields.size()>0)
 		{
+			if (clearFields==SWT.YES)
+			{
+				wFields.clearAll(false);
+			}
 			for (int j=0;j<fields.size();j++)
 			{
 				ValueMetaInterface field = fields.getValueMeta(j);
-				wFields.add(new String[] { field.getName(), field.getTypeDesc(), "-1", "-1", "none", "N" } );
+				wFields.add(new String[] { field.getName(), field.getTypeDesc(), "", "", "none", "N" } );
 			}
 			wFields.removeEmptyRows();
 			wFields.setRowNums();

@@ -2081,41 +2081,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		wLimit.setText(""+in.getRowLimit());
 		
 		log.logDebug(toString(), "getting fields info...");
-		for (int i=0;i<in.getInputFields().length;i++)
-		{
-		    TextFileInputField field = in.getInputFields()[i];
-		    
-			TableItem item;
-			if (i>=wFields.table.getItemCount()) item = wFields.table.getItem(i);
-			else item = new TableItem(wFields.table, SWT.NONE);
-			
-			item.setText(1, field.getName());
-			String type     = field.getTypeDesc();
-			String format   = field.getFormat();
-			String position = ""+field.getPosition();
-			String length   = ""+field.getLength();
-			String prec     = ""+field.getPrecision();
-			String curr     = field.getCurrencySymbol();
-			String group    = field.getGroupSymbol();
-			String decim    = field.getDecimalSymbol();
-			String def      = field.getNullString();
-            String ifNull   = field.getIfNullValue();
-			String trim     = field.getTrimTypeDesc();
-			String rep      = field.isRepeated()?Messages.getString("System.Combo.Yes"):Messages.getString("System.Combo.No");
-			
-			if (type    !=null) item.setText( 2, type    );
-			if (format  !=null) item.setText( 3, format  );
-			if (position!=null && !"-1".equals(position)) item.setText( 4, position);
-			if (length  !=null && !"-1".equals(length  )) item.setText( 5, length  );
-			if (prec    !=null && !"-1".equals(prec    )) item.setText( 6, prec    );
-			if (curr    !=null) item.setText( 7, curr    );
-			if (decim   !=null) item.setText( 8, decim   );
-			if (group   !=null) item.setText( 9, group   );
-			if (def     !=null) item.setText(10, def     );
-            if (ifNull  !=null) item.setText(11, ifNull     );
-			if (trim    !=null) item.setText(12, trim    );
-			if (rep     !=null) item.setText(13, rep     );
-		}
+		getFieldsData(in, false);
 		
         if ( in.getEncoding()!=null ) wEncoding.setText( in.getEncoding() );
         
@@ -2159,6 +2125,54 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         setFlags();
         
 		wStepname.selectAll();
+	}
+	
+	private void getFieldsData(TextFileInputMeta in, boolean insertAtTop)
+	{
+		for (int i=0;i<in.getInputFields().length;i++)
+		{
+		    TextFileInputField field = in.getInputFields()[i];
+		    
+			TableItem item;
+			
+			if (insertAtTop)
+			{
+				item = new TableItem(wFields.table, SWT.NONE, i);
+			}
+			else
+			{
+				if (i>=wFields.table.getItemCount()) item = wFields.table.getItem(i);
+				else item = new TableItem(wFields.table, SWT.NONE);
+			}
+			
+			item.setText(1, field.getName());
+			String type     = field.getTypeDesc();
+			String format   = field.getFormat();
+			String position = ""+field.getPosition();
+			String length   = ""+field.getLength();
+			String prec     = ""+field.getPrecision();
+			String curr     = field.getCurrencySymbol();
+			String group    = field.getGroupSymbol();
+			String decim    = field.getDecimalSymbol();
+			String def      = field.getNullString();
+            String ifNull   = field.getIfNullValue();
+			String trim     = field.getTrimTypeDesc();
+			String rep      = field.isRepeated()?Messages.getString("System.Combo.Yes"):Messages.getString("System.Combo.No");
+			
+			if (type    !=null) item.setText( 2, type    );
+			if (format  !=null) item.setText( 3, format  );
+			if (position!=null && !"-1".equals(position)) item.setText( 4, position);
+			if (length  !=null && !"-1".equals(length  )) item.setText( 5, length  );
+			if (prec    !=null && !"-1".equals(prec    )) item.setText( 6, prec    );
+			if (curr    !=null) item.setText( 7, curr    );
+			if (decim   !=null) item.setText( 8, decim   );
+			if (group   !=null) item.setText( 9, group   );
+			if (def     !=null) item.setText(10, def     );
+            if (ifNull  !=null) item.setText(11, ifNull     );
+			if (trim    !=null) item.setText(12, trim    );
+			if (rep     !=null) item.setText(13, rep     );
+		}
+
 	}
 	
 	private void setEncodings()
@@ -2323,7 +2337,9 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 	{
 		TextFileInputMeta meta = new TextFileInputMeta();
 		getInfo(meta);
-						
+		
+		TextFileInputMeta previousMeta = (TextFileInputMeta) meta.clone();
+		
 		FileInputList    textFileList = meta.getTextFileList(transMeta);
 		InputStream      fileInputStream = null;
 		ZipInputStream   zipInputStream = null ;
@@ -2437,6 +2453,15 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
                         	
                             // OK, what's the result of our search?
                             getData(meta);
+                            
+                            // If we didn't want the list to be cleared, we need to re-inject the previous values...
+                            //
+                    		if (clearFields==SWT.NO)
+                    		{
+                    			getFieldsData(previousMeta, true);
+                    			wFields.table.setSelection(previousMeta.getInputFields().length, wFields.table.getItemCount()-1);
+                    		}
+                            
                             wFields.removeEmptyRows();
                             wFields.setRowNums();
                             wFields.optWidth(true);
