@@ -440,7 +440,11 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         feedbackShown = true;
         feedbackSize = Const.ROWS_UPDATE;
         
-        usingThreadPriorityManagment = false; // set to false in version 2.5.0
+        // Thread priority: 
+        // - set to false in version 2.5.0
+        // - re-enabling in version 3.0.1 to prevent excessive locking (PDI-491)
+        //
+        usingThreadPriorityManagment = true; 
     }
 
     public void clearUndo()
