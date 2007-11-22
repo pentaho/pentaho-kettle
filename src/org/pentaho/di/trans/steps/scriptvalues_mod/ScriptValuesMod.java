@@ -41,6 +41,7 @@ import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueDataUtil;
+import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.trans.Trans;
@@ -671,9 +672,14 @@ public class ScriptValuesMod extends BaseStep implements StepInterface, ScriptVa
                     	{
                     		return Context.jsToJava(result, byte[].class);
                     	}
+                    case ValueMetaInterface.TYPE_NONE:
+	                    {
+	                        throw new RuntimeException("No data output data type was specified for new field ["+meta.getName()[i]+"]");
+	                    }
                     default:
-                        throw new RuntimeException("JavaScript conversion not implemented for type" + meta.getType()[i]);
-
+	                    {
+                    		throw new RuntimeException("JavaScript conversion not implemented for type " + meta.getType()[i]+" ("+ValueMeta.getTypeDesc(meta.getType()[i])+")");
+	                    }
                     }
                 }
                 else

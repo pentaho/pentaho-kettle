@@ -773,7 +773,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 		try
 		{
 			RowMetaInterface r = transMeta.getPrevStepFields(stepname);
-			if (r!=null)
+			if (r!=null && !r.isEmpty())
 			{
                 BaseStepDialog.getFieldsFromPrevious(r, wKey, 1, new int[] { 1, 2 }, new int[] {}, -1, -1, new TableItemInsertListener()
                     {

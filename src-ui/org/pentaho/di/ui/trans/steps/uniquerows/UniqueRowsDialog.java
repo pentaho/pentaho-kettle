@@ -317,7 +317,7 @@ public class UniqueRowsDialog extends BaseStepDialog implements StepDialogInterf
 		try
 		{
             RowMetaInterface r = transMeta.getPrevStepFields(stepname);
-			if (r!=null)
+			if (r!=null && !r.isEmpty())
 			{
                 BaseStepDialog.getFieldsFromPrevious(r, wFields, 1, new int[] { 1 }, new int[] {}, -1, -1, null);
 			}

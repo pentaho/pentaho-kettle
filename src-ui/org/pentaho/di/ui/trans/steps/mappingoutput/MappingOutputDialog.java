@@ -278,7 +278,7 @@ public class MappingOutputDialog extends BaseStepDialog implements StepDialogInt
         try
         {
             RowMetaInterface r = transMeta.getPrevStepFields(stepname);
-            if (r!=null)
+            if (r!=null && !r.isEmpty())
             {
                 BaseStepDialog.getFieldsFromPrevious(r, wFields, 1, new int[] { 1 }, new int[] {2}, 3, 4, new TableItemInsertListener()
                     {

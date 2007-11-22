@@ -708,7 +708,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 		try
 		{
             RowMetaInterface r = transMeta.getPrevStepFields(stepname);
-			if (r!=null)
+			if (r!=null && !r.isEmpty())
 			{
                 TableItemInsertListener listener = new TableItemInsertListener()
                 {
@@ -743,7 +743,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 				{
                     String schemaTable = ci.getQuotedSchemaTableCombination(wSchema.getText(), wTable.getText());
                     RowMetaInterface r = db.getTableFields(schemaTable);
-					if (r!=null)
+					if (r!=null && !r.isEmpty())
 					{
                         log.logDebug(toString(), Messages.getString("DatabaseLookupDialog.Log.FoundTableFields")+schemaTable+" --> "+r.toStringMeta()); //$NON-NLS-1$ //$NON-NLS-2$
                         BaseStepDialog.getFieldsFromPrevious(r, wReturn, 1, new int[] { 1, 2}, new int[] { 4 }, -1, -1, null);

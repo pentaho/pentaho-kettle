@@ -559,7 +559,7 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 		try
 		{
 			RowMetaInterface r = transMeta.getPrevStepFields(stepname);
-			if (r!=null)
+			if (r!=null && !r.isEmpty())
 			{
                 TableItemInsertListener listener = new TableItemInsertListener()
                 {
@@ -583,7 +583,7 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 		try
 		{
 			RowMetaInterface r = transMeta.getPrevStepFields(stepname);
-			if (r!=null)
+			if (r!=null && !r.isEmpty())
 			{
                 BaseStepDialog.getFieldsFromPrevious(r, wReturn, 1, new int[] { 1, 2}, new int[] {}, -1, -1, null);
 			}

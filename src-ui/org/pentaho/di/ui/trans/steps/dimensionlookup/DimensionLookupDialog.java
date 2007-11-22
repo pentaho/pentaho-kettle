@@ -1119,7 +1119,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		try
 		{
 			RowMetaInterface r = transMeta.getPrevStepFields(stepname);
-			if (r!=null)
+			if (r!=null && !r.isEmpty())
 			{
                 BaseStepDialog.getFieldsFromPrevious(r, wUpIns, 2, new int[] {1, 2}, new int[] {}, -1, -1, new TableItemInsertListener()
                     {
@@ -1166,7 +1166,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 				db.connect();
                 String schemaTable = databaseMeta.getQuotedSchemaTableCombination(wSchema.getText(), wTable.getText()); 
 				RowMetaInterface r = db.getTableFields(schemaTable);
-				if (r!=null)
+				if (r!=null && !r.isEmpty())
 				{
                     BaseStepDialog.getFieldsFromPrevious(r, wUpIns, 2, new int[] { 1, 2 }, new int[] { 3 }, -1, -1, new TableItemInsertListener()
                         {
@@ -1212,7 +1212,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		try
 		{
 			RowMetaInterface r = transMeta.getPrevStepFields(stepname);
-			if (r!=null)
+			if (r!=null && !r.isEmpty())
 			{
                 BaseStepDialog.getFieldsFromPrevious(r, wKey, 2, new int[] {1, 2}, new int[] { 3 }, -1, -1, new TableItemInsertListener()
                 {

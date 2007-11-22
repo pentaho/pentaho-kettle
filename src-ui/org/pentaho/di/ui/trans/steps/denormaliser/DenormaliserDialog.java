@@ -391,7 +391,7 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
 		try
 		{
 			RowMetaInterface r = transMeta.getPrevStepFields(stepname);
-			if (r!=null)
+			if (r!=null && !r.isEmpty())
 			{
                 BaseStepDialog.getFieldsFromPrevious(r, wGroup, 1, new int[] { 1 }, new int[] { }, -1, -1, null);
 			}
@@ -410,7 +410,7 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
 		try
 		{
 			RowMetaInterface r = transMeta.getPrevStepFields(stepname);
-			if (r!=null)
+			if (r!=null && !r.isEmpty())
 			{
                 BaseStepDialog.getFieldsFromPrevious(r, wTarget, 2, new int[] {}, new int[] {}, -1, -1, new TableItemInsertListener()
                     {

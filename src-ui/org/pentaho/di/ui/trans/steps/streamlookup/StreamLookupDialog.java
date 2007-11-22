@@ -68,12 +68,6 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 	private TableView    wReturn;
 	private FormData     fdlReturn, fdReturn;
 	
-    /*
-	private Label        wlSortedInput;
-	private Button       wSortedInput;
-	private FormData     fdlSortedInput, fdSortedInput;
-    */
-    
     private Label        wlPreserveMemory;
     private Button       wPreserveMemory;
     private FormData     fdlPreserveMemory, fdPreserveMemory;
@@ -233,32 +227,6 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 		fdReturn.right = new FormAttachment(100, 0);
 		fdReturn.bottom= new FormAttachment(100, -125);
 		wReturn.setLayoutData(fdReturn);
-
-        /*
-		wlSortedInput=new Label(shell, SWT.RIGHT);
-		wlSortedInput.setText(Messages.getString("StreamLookupDialog.SortedInput.Label")); //$NON-NLS-1$
- 		props.setLook(wlSortedInput);
-		fdlSortedInput=new FormData();
-		fdlSortedInput.left = new FormAttachment(0, 0);
-		fdlSortedInput.top  = new FormAttachment(wReturn, margin);
-		fdlSortedInput.right= new FormAttachment(middle, -margin);
-		wlSortedInput.setLayoutData(fdlSortedInput);
-		wSortedInput=new Button(shell, SWT.CHECK );
- 		props.setLook(wSortedInput);
-		fdSortedInput=new FormData();
-		fdSortedInput.left = new FormAttachment(middle, 0);
-		fdSortedInput.top  = new FormAttachment(wReturn, margin);
-		fdSortedInput.right= new FormAttachment(100, 0);
-		wSortedInput.setLayoutData(fdSortedInput);
-		wSortedInput.addSelectionListener(new SelectionAdapter() 
-			{
-				public void widgetSelected(SelectionEvent e) 
-				{
-					input.setChanged();
-				}
-			}
-		);
-        */
         
         wlPreserveMemory=new Label(shell, SWT.RIGHT);
         wlPreserveMemory.setText(Messages.getString("StreamLookupDialog.PreserveMemory.Label")); //$NON-NLS-1$
@@ -474,9 +442,35 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 		try
 		{
 			RowMetaInterface r = transMeta.getPrevStepFields(stepname);
-			if (r!=null)
+			if (r!=null && !r.isEmpty())
 			{
                 BaseStepDialog.getFieldsFromPrevious(r, wKey, 1, new int[] { 1, 2}, new int[] {}, -1, -1, null);
+			}
+			else
+			{
+				String stepFrom = wStep.getText();
+				if (!Const.isEmpty(stepFrom))
+				{
+					r = transMeta.getStepFields(stepFrom);
+					if (r!=null)
+					{
+	                    BaseStepDialog.getFieldsFromPrevious(r, wKey, 2, new int[] { 1, 2 }, new int[] {}, -1, -1, null);
+					}
+					else
+					{
+						MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
+						mb.setMessage(Messages.getString("StreamLookupDialog.CouldNotFindFields.DialogMessage")); //$NON-NLS-1$
+						mb.setText(Messages.getString("StreamLookupDialog.CouldNotFindFields.DialogTitle")); //$NON-NLS-1$
+						mb.open(); 
+					}
+				}
+				else
+				{
+					MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
+					mb.setMessage(Messages.getString("StreamLookupDialog.StepNameRequired.DialogMessage")); //$NON-NLS-1$
+					mb.setText(Messages.getString("StreamLookupDialog.StepNameRequired.DialogTitle")); //$NON-NLS-1$
+					mb.open(); 
+				}
 			}
 		}
 		catch(KettleException ke)
@@ -490,10 +484,10 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 		try
 		{
 			String stepFrom = wStep.getText();
-			if (stepFrom!=null)
+			if (!Const.isEmpty(stepFrom))
 			{
 				RowMetaInterface r = transMeta.getStepFields(stepFrom);
-				if (r!=null)
+				if (r!=null && !r.isEmpty())
 				{
                     BaseStepDialog.getFieldsFromPrevious(r, wReturn, 1, new int[] { 1 }, new int[] { 4 }, -1, -1, null);
 				}

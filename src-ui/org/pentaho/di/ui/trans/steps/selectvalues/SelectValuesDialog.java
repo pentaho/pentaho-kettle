@@ -616,7 +616,7 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 		try
 		{
             RowMetaInterface r = transMeta.getPrevStepFields(stepname);
-            if (r!=null)
+            if (r!=null && !r.isEmpty())
             {
     			switch (wTabFolder.getSelectionIndex())
     			{

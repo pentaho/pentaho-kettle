@@ -354,7 +354,7 @@ public class DatabaseJoinDialog extends BaseStepDialog implements StepDialogInte
 		try
 		{
 			RowMetaInterface r = transMeta.getPrevStepFields(stepname);
-			if (r!=null)
+			if (r!=null && !r.isEmpty())
 			{
                 BaseStepDialog.getFieldsFromPrevious(r, wParam, 1, new int[] { 1 }, new int[] { 2 }, -1, -1, null);
 			}

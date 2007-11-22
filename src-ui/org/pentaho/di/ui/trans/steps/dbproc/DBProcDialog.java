@@ -452,7 +452,7 @@ public class DBProcDialog extends BaseStepDialog implements StepDialogInterface
 		try
 		{
 			RowMetaInterface r = transMeta.getPrevStepFields(stepname);
-			if (r!=null)
+			if (r!=null && !r.isEmpty())
 			{
                 TableItemInsertListener listener = new TableItemInsertListener()
                 {

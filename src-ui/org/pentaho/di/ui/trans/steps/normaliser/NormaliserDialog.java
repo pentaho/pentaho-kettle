@@ -256,7 +256,7 @@ public class NormaliserDialog extends BaseStepDialog implements StepDialogInterf
 		try
 		{
 			RowMetaInterface r = transMeta.getPrevStepFields(stepname);
-			if (r!=null)
+			if (r!=null && !r.isEmpty())
 			{
                 BaseStepDialog.getFieldsFromPrevious(r, wFields, 1, new int[] { 1, 2 }, new int[] {}, -1, -1, null);
 			}

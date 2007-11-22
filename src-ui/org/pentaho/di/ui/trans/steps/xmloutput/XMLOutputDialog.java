@@ -807,7 +807,7 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
 		try
 		{
 			RowMetaInterface r = transMeta.getPrevStepFields(stepname);
-			if (r!=null)
+			if (r!=null && !r.isEmpty())
 			{
                 TableItemInsertListener listener = new TableItemInsertListener()
                     {
