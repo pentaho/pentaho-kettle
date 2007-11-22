@@ -2000,7 +2000,24 @@ public class Repository
 
 		if (v != null)
 		{
-			id_value = insertValue(v.getValueMeta().getName(), v.getValueMeta().getTypeDesc(), v.getValueMeta().getString(v.getValueData()), v.getValueMeta().isNull(v.getValueData()), condition.getRightExactID());
+			
+			// We have to make sure that all data is saved irrespective of locale differences.
+			// Here is where we force that
+			//
+			ValueMetaInterface valueMeta = v.getValueMeta();
+			valueMeta.setDecimalSymbol(ValueMetaAndData.VALUE_REPOSITORY_DECIMAL_SYMBOL);
+			valueMeta.setGroupingSymbol(ValueMetaAndData.VALUE_REPOSITORY_GROUPING_SYMBOL);
+			switch(valueMeta.getType())
+			{
+			case ValueMetaInterface.TYPE_NUMBER:
+				valueMeta.setConversionMask(ValueMetaAndData.VALUE_REPOSITORY_NUMBER_CONVERSION_MASK);
+				break;
+			default:
+				break;
+			}
+			String stringValue = valueMeta.getString(v.getValueData());
+			
+			id_value = insertValue(valueMeta.getName(), valueMeta.getTypeDesc(), stringValue, valueMeta.isNull(v.getValueData()), condition.getRightExactID());
 			condition.setRightExactID(id_value);
 		}
 		table.addValue(new ValueMeta(FIELD_CONDITION_ID_VALUE_RIGHT, ValueMetaInterface.TYPE_INTEGER), new Long(id_value));

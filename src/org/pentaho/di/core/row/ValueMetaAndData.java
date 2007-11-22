@@ -98,7 +98,11 @@ public class ValueMetaAndData
         
         return vmad;
     }
-
+    
+    public static final String VALUE_REPOSITORY_NUMBER_CONVERSION_MASK = "#.#";
+    public static final String VALUE_REPOSITORY_DECIMAL_SYMBOL = ".";
+    public static final String VALUE_REPOSITORY_GROUPING_SYMBOL = ",";
+    
     public ValueMetaAndData(Repository rep, long id_value) throws KettleException
     {
         try
@@ -120,8 +124,25 @@ public class ValueMetaAndData
                     ValueMetaInterface stringValueMeta = new ValueMeta(name, ValueMetaInterface.TYPE_STRING);
                     stringValueMeta.setConversionMetadata(valueMeta);
                     
+                    valueMeta.setDecimalSymbol(VALUE_REPOSITORY_DECIMAL_SYMBOL);
+                    valueMeta.setGroupingSymbol(VALUE_REPOSITORY_GROUPING_SYMBOL);
+                    
+                    switch(valueMeta.getType())
+                    {
+                    case ValueMetaInterface.TYPE_NUMBER:
+                    	valueMeta.setConversionMask(VALUE_REPOSITORY_NUMBER_CONVERSION_MASK);
+                    	break;
+                    default:
+                    	break;
+                    }
+                    
                     String string = r.getString("VALUE_STR", null);
                     valueData = stringValueMeta.convertDataUsingConversionMetaData(string);
+                    
+                    // OK, now comes the dirty part...
+                    // We want the defaults back on there...
+                    //
+                    valueMeta = new ValueMeta(name, valueMeta.getType());
                 }
             }
         }
