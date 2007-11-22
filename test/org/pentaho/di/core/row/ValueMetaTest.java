@@ -185,8 +185,28 @@ public class ValueMetaTest extends TestCase
 	public void testConvertDataInteger() throws Exception
 	{
 		ValueMetaInterface source = new ValueMeta("src", ValueMetaInterface.TYPE_STRING);
-		source.setConversionMask("###,###,##0.000");
+		source.setConversionMask(" #,##0");
 		source.setLength(12,3);
+		source.setDecimalSymbol(",");
+		source.setGroupingSymbol(".");
+		ValueMetaInterface target = new ValueMeta("tgt", ValueMetaInterface.TYPE_INTEGER);
+		
+		Long d = (Long) target.convertData(source, " 2.837");
+		assertEquals(2837L, d.longValue());
+		
+		target.setConversionMask("###,###,##0.00");
+		target.setLength(12,4);
+		target.setDecimalSymbol(".");
+		target.setGroupingSymbol("'");
+		String string = (String) source.convertData(target, d);
+		assertEquals("2'837.00", string);
+	}
+
+	public void testConvertDataNumber() throws Exception
+	{
+		ValueMetaInterface source = new ValueMeta("src", ValueMetaInterface.TYPE_STRING);
+		source.setConversionMask("###,###,##0.000");
+		source.setLength(3,0);
 		source.setDecimalSymbol(",");
 		source.setGroupingSymbol(".");
 		ValueMetaInterface target = new ValueMeta("tgt", ValueMetaInterface.TYPE_NUMBER);
@@ -202,7 +222,7 @@ public class ValueMetaTest extends TestCase
 		String string = (String) source.convertData(target, d);
 		assertEquals("123'456'789.01", string);
 	}
-	
+
 	/**
 	 * Lazy conversion is used to read data from disk in a binary format.
 	 * The data itself is not converted from the byte[] to Integer, rather left untouched until it's needed.
