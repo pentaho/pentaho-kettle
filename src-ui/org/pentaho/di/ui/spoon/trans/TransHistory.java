@@ -43,6 +43,7 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.spoon.Messages;
@@ -111,6 +112,7 @@ public class TransHistory extends Composite implements TabItemInterface
             new ColumnInfo(Messages.getString("TransHistory.Column.Name"),           ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
             new ColumnInfo(Messages.getString("TransHistory.Column.BatchID"),        ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
     		new ColumnInfo(Messages.getString("TransHistory.Column.Status"),         ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+    		new ColumnInfo(Messages.getString("TransHistory.Column.Duration"),       ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
             new ColumnInfo(Messages.getString("TransHistory.Column.Read"),           ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
     		new ColumnInfo(Messages.getString("TransHistory.Column.Written"),        ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
             new ColumnInfo(Messages.getString("TransHistory.Column.Updated"),        ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
@@ -289,43 +291,103 @@ public class TransHistory extends Composite implements TabItemInterface
                         {
                             wFields.table.clearAll();
                             
+                            RowMetaInterface displayMeta = null;
+                        	ValueMetaInterface durationMeta = null;
+
                             // OK, now that we have a series of rows, we can add them to the table view...
+                            // 
                             for (int i=0;i<rowList.size();i++)
                             {
                                 RowMetaAndData row = rowList.get(i);
-                                if (i==0)
+                                if (displayMeta==null)
                                 {
-                                	RowMetaInterface rowMeta = row.getRowMeta();
+                                	displayMeta = row.getRowMeta();
+                                	
+                                    // Insert the duration on position 2
+                                	//
+                                	durationMeta = new ValueMeta("DURATION", ValueMetaInterface.TYPE_NUMBER);
+                                	durationMeta.setConversionMask("0");
+                                	colinf[2].setValueMeta(durationMeta);
+                                	
                                     // Displaying it just like that adds way too many zeroes to the numbers.
                                     // So we set the lengths to -1 of the integers...
                                     //
-                                    for (int v=0;v<rowMeta.size();v++)
+                                    for (int v=0;v<displayMeta.size();v++)
                                     {
-                                    	if (rowMeta.getValueMeta(v).isNumeric()) rowMeta.getValueMeta(v).setLength(-1,-1);
+                                    	ValueMetaInterface valueMeta = displayMeta.getValueMeta(v);
+                                    	
+                                    	if (valueMeta.isNumeric())
+                                    	{
+                                    		valueMeta.setLength(-1,-1);
+                                    	}
+                                    	if (valueMeta.isDate())
+                                    	{
+                                    		valueMeta.setConversionMask("yyyy/MM/dd HH:mm:ss");
+                                    	}
                                     }
+                                    
+                                    // Set the correct valueMeta objects on the view
+                                    //
+                                    colinf[ 0].setValueMeta(displayMeta.searchValueMeta("TRANSNAME"));
+                                    colinf[ 1].setValueMeta(displayMeta.searchValueMeta("ID_BATCH"));
+                                    colinf[ 2].setValueMeta(displayMeta.searchValueMeta("STATUS"));
+                                    colinf[ 3].setValueMeta(durationMeta);
+                                    colinf[ 4].setValueMeta(displayMeta.searchValueMeta("LINES_READ"));
+                                    colinf[ 5].setValueMeta(displayMeta.searchValueMeta("LINES_WRITTEN"));
+                                    colinf[ 6].setValueMeta(displayMeta.searchValueMeta("LINES_UPDATED"));
+                                    colinf[ 7].setValueMeta(displayMeta.searchValueMeta("LINES_INPUT"));
+                                    colinf[ 8].setValueMeta(displayMeta.searchValueMeta("LINES_OUTPUT"));
+                                    colinf[ 9].setValueMeta(displayMeta.searchValueMeta("ERRORS"));
+                                    colinf[10].setValueMeta(displayMeta.searchValueMeta("STARTDATE"));
+                                    colinf[11].setValueMeta(displayMeta.searchValueMeta("ENDDATE"));
+                                    colinf[12].setValueMeta(displayMeta.searchValueMeta("LOGDATE"));
+                                    colinf[13].setValueMeta(displayMeta.searchValueMeta("DEPDATE"));
+                                    colinf[14].setValueMeta(displayMeta.searchValueMeta("REPLAYDATE"));
                                 }
                                 
                                 TableItem item = new TableItem(wFields.table, SWT.NONE);
                                 String batchID = row.getString("ID_BATCH", "");
                                 int index=1;
                                 item.setText( index++, Const.NVL( row.getString("TRANSNAME", ""), ""));           //$NON-NLS-1$ //$NON-NLS-2$
-                                if(batchID != null)
-                                item.setText( index++, batchID);           //$NON-NLS-1$ //$NON-NLS-2$
-                                item.setText( index++, Const.NVL( row.getString("STATUS", ""), ""));           //$NON-NLS-1$ //$NON-NLS-2$
-                                item.setText( index++, Const.NVL( row.getString("LINES_READ", ""), ""));           //$NON-NLS-1$ //$NON-NLS-2$
-                                item.setText( index++, Const.NVL( row.getString("LINES_WRITTEN", ""), ""));           //$NON-NLS-1$ //$NON-NLS-2$
-                                item.setText( index++, Const.NVL( row.getString("LINES_UPDATED", ""), ""));           //$NON-NLS-1$ //$NON-NLS-2$
-                                item.setText( index++, Const.NVL( row.getString("LINES_INPUT", ""), ""));           //$NON-NLS-1$ //$NON-NLS-2$
-                                item.setText( index++, Const.NVL( row.getString("LINES_OUTPUT", ""), ""));           //$NON-NLS-1$ //$NON-NLS-2$
-                                item.setText( index++, Const.NVL( row.getString("ERRORS", ""), ""));           //$NON-NLS-1$ //$NON-NLS-2$
-                                item.setText( index++, Const.NVL( row.getString("STARTDATE", ""), ""));           //$NON-NLS-1$ //$NON-NLS-2$
-                                item.setText( index++, Const.NVL( row.getString("ENDDATE", ""), ""));           //$NON-NLS-1$ //$NON-NLS-2$
-                                item.setText( index++, Const.NVL( row.getString("LOGDATE", ""), ""));           //$NON-NLS-1$ //$NON-NLS-2$
-                                item.setText( index++, Const.NVL( row.getString("DEPDATE", ""), ""));   //$NON-NLS-1$ //$NON-NLS-2$
-                                String replayDate = row.getString("REPLAYDATE", ""); //$NON-NLS-1$ //$NON-NLS-2$
-                                if(replayDate == null)
-                                	replayDate = Const.NULL_STRING;
-								item.setText(index++, replayDate);
+                                
+                                // LOGDATE - REPLAYDATE --> duration
+                                //
+                                Date logDate = row.getDate("LOGDATE", null);
+                                Date replayDate = row.getDate("REPLAYDATE", null);
+
+                                Double duration = null;
+                                if (logDate!=null && replayDate!=null)
+                                {
+                                	duration = new Double( ((double)logDate.getTime() - (double)replayDate.getTime())/1000 );
+                                }
+                                
+                                // Display the data...
+                                //
+                                if (batchID != null) item.setText( index++, batchID);           									//$NON-NLS-1$ //$NON-NLS-2$
+                                item.setText( index++, Const.NVL( row.getString("STATUS", ""), ""));        //$NON-NLS-1$ //$NON-NLS-2$
+                                item.setText( index++, Const.NVL( durationMeta.getString(duration), ""));   //$NON-NLS-1$ //$NON-NLS-2$
+                                item.setText( index++, Const.NVL( row.getString("LINES_READ", ""), ""));    //$NON-NLS-1$ //$NON-NLS-2$
+                                item.setText( index++, Const.NVL( row.getString("LINES_WRITTEN", ""), "")); //$NON-NLS-1$ //$NON-NLS-2$
+                                item.setText( index++, Const.NVL( row.getString("LINES_UPDATED", ""), "")); //$NON-NLS-1$ //$NON-NLS-2$
+                                item.setText( index++, Const.NVL( row.getString("LINES_INPUT", ""), ""));   //$NON-NLS-1$ //$NON-NLS-2$
+                                item.setText( index++, Const.NVL( row.getString("LINES_OUTPUT", ""), ""));  //$NON-NLS-1$ //$NON-NLS-2$
+                                item.setText( index++, Const.NVL( row.getString("ERRORS", ""), ""));        //$NON-NLS-1$ //$NON-NLS-2$
+                                item.setText( index++, Const.NVL( row.getString("STARTDATE", ""), ""));     //$NON-NLS-1$ //$NON-NLS-2$
+                                item.setText( index++, Const.NVL( row.getString("ENDDATE", ""), ""));       //$NON-NLS-1$ //$NON-NLS-2$
+                                item.setText( index++, Const.NVL( row.getString("LOGDATE", ""), ""));       //$NON-NLS-1$ //$NON-NLS-2$
+                                item.setText( index++, Const.NVL( row.getString("REPLAYDATE", ""), ""));    //$NON-NLS-1$ //$NON-NLS-2$
+                                
+                                String status = row.getString("STATUS", "");
+                                Long errors = row.getInteger("ERRORS", 0L);
+                                if (errors!=null && errors.longValue()>0L)
+                                {
+                                	item.setBackground(GUIResource.getInstance().getColorRed());
+                                }
+                                else
+                                if ("stop".equals(status))
+                                {
+                                	item.setBackground(GUIResource.getInstance().getColorYellow());
+                                }
                             }
                             
                             wFields.removeEmptyRows();

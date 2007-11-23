@@ -147,6 +147,11 @@ public class ColumnInfo
         this(colname, coltype, num);
         readonly=ro;
     }
+    
+    public String toString() 
+    {
+    	return name;
+    }
 	
 	public void setToolTip(String tip)
     {
