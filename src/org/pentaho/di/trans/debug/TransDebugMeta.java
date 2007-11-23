@@ -94,16 +94,20 @@ public class TransDebugMeta {
 								// This block of code is called whenever there is a row written by the step
 								// So we want to execute the debugging actions that are specified by the step...
 								//
-								if (stepDebugMeta.isReadingFirstRows() && stepDebugMeta.getRowCount()>0) {
-									// This is the classic preview mode.
-									// We add simply add the row to the buffer.
-									//
-									stepDebugMeta.setRowBufferMeta(rowMeta);
-									stepDebugMeta.getRowBuffer().add(rowMeta.cloneRow(row));
-									
-									// The default behavior for preview is to pause when the requested number of rows are found.
-									//
-									if (stepDebugMeta.getRowBuffer().size()>=stepDebugMeta.getRowCount()) {
+								int rowCount = stepDebugMeta.getRowCount();
+								
+								if (stepDebugMeta.isReadingFirstRows() && rowCount>0) {
+
+									int bufferSize = stepDebugMeta.getRowBuffer().size();
+									if (bufferSize<rowCount) {
+										
+										// This is the classic preview mode.
+										// We add simply add the row to the buffer.
+										//
+										stepDebugMeta.setRowBufferMeta(rowMeta);
+										stepDebugMeta.getRowBuffer().add(rowMeta.cloneRow(row));
+									}
+									else {
 										// pause the transformation...
 										//
 										trans.pauseRunning();
@@ -119,7 +123,7 @@ public class TransDebugMeta {
 									// Before we do that, see if a row count is set.
 									// If so, keep the last rowCount rows in memory
 									//
-									if (stepDebugMeta.getRowCount()>0) {
+									if (rowCount>0) {
 										// Keep a number of rows in memory
 										// Store them in a reverse order to keep it intuitive for the user.
 										//
@@ -129,8 +133,9 @@ public class TransDebugMeta {
 										// Only keep a number of rows in memory
 										// If we have too many, remove the last (oldest)
 										//
-										if (stepDebugMeta.getRowBuffer().size()>stepDebugMeta.getRowCount()) {
-											stepDebugMeta.getRowBuffer().remove(stepDebugMeta.getRowBuffer().size()-1);
+										int bufferSize = stepDebugMeta.getRowBuffer().size();
+										if (bufferSize>rowCount) {
+											stepDebugMeta.getRowBuffer().remove(bufferSize-1);
 										}
 									}
 									else {
@@ -201,7 +206,7 @@ public class TransDebugMeta {
 				nr++;
 			}
 			else
-			if (stepDebugMeta.isReadingFirstRows() && stepDebugMeta.getRowCount()>0 && 
+			if (stepDebugMeta.isPausingOnBreakPoint() && 
 					stepDebugMeta.getCondition()!=null && !stepDebugMeta.getCondition().isEmpty())
 			{
 				nr++;
