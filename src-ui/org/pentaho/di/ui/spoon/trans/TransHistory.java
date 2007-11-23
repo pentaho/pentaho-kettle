@@ -11,8 +11,6 @@
  
 package org.pentaho.di.ui.spoon.trans;
 import java.sql.ResultSet;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -85,6 +83,9 @@ public class TransHistory extends Composite implements TabItemInterface
 	
 	private Object refreshNeededLock = new Object();
 	
+	private ValueMetaInterface durationMeta;
+	private ValueMetaInterface replayDateMeta;
+	
 	public TransHistory(Composite parent, final Spoon spoon, final TransMeta transMeta)
 	{
 		super(parent, SWT.NONE);
@@ -105,9 +106,8 @@ public class TransHistory extends Composite implements TabItemInterface
 		spoon.props.setLook(sash);
 		
 		sash.setLayout(new FillLayout());
-
-		final int FieldsRows=1;
 		
+		final int FieldsRows=1;
 		colinf=new ColumnInfo[] {
             new ColumnInfo(Messages.getString("TransHistory.Column.Name"),           ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
             new ColumnInfo(Messages.getString("TransHistory.Column.BatchID"),        ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
@@ -126,7 +126,13 @@ public class TransHistory extends Composite implements TabItemInterface
             new ColumnInfo(Messages.getString("TransHistory.Column.ReplayDate"),     ColumnInfo.COLUMN_TYPE_TEXT, false, true) //$NON-NLS-1$
         };
 		
-        for (int i=2;i<9;i++) colinf[i].setAllignement(SWT.RIGHT);
+        for (int i=3;i<10;i++) colinf[i].setAllignement(SWT.RIGHT);
+        
+        // Create the duration value meta data
+        //
+        durationMeta = new ValueMeta("DURATION", ValueMetaInterface.TYPE_NUMBER);
+        durationMeta.setConversionMask("0");
+        colinf[2].setValueMeta(durationMeta);
         
         wFields=new TableView(transMeta, 
         		              sash, 
@@ -217,19 +223,19 @@ public class TransHistory extends Composite implements TabItemInterface
 	private void setupReplayListener() {
 		SelectionAdapter lsReplay = new SelectionAdapter()
         {
-			final SimpleDateFormat df = new SimpleDateFormat(ValueMeta.DEFAULT_DATE_FORMAT_MASK);
-
 			public void widgetSelected(SelectionEvent e) {
 				int idx = wFields.getSelectionIndex();
 				if (idx >= 0) {
 					String fields[] = wFields.getItem(idx);
-					String dateString = fields[12];
+					String dateString = fields[13];
 					try {
-						Date replayDate;
-                        if (Const.isEmpty(dateString)) replayDate = new Date();
-                        else replayDate = df.parse(dateString);
+						ValueMetaInterface stringValueMeta = replayDateMeta.clone();
+						stringValueMeta.setType(ValueMetaInterface.TYPE_STRING);
+						
+						Date replayDate = stringValueMeta.getDate(dateString);
+						
 						spoon.executeTransformation(transMeta, true, false, false, false, false, replayDate, false);
-					} catch (ParseException e1) {
+					} catch (KettleException e1) {
 						new ErrorDialog(shell, 
 								Messages.getString("TransHistory.Error.ReplayingTransformation2"), //$NON-NLS-1$
 								Messages.getString("TransHistory.Error.InvalidReplayDate") + dateString, e1); //$NON-NLS-1$
@@ -292,7 +298,6 @@ public class TransHistory extends Composite implements TabItemInterface
                             wFields.table.clearAll();
                             
                             RowMetaInterface displayMeta = null;
-                        	ValueMetaInterface durationMeta = null;
 
                             // OK, now that we have a series of rows, we can add them to the table view...
                             // 
@@ -302,13 +307,7 @@ public class TransHistory extends Composite implements TabItemInterface
                                 if (displayMeta==null)
                                 {
                                 	displayMeta = row.getRowMeta();
-                                	
-                                    // Insert the duration on position 2
-                                	//
-                                	durationMeta = new ValueMeta("DURATION", ValueMetaInterface.TYPE_NUMBER);
-                                	durationMeta.setConversionMask("0");
-                                	colinf[2].setValueMeta(durationMeta);
-                                	
+                                	                                	
                                     // Displaying it just like that adds way too many zeroes to the numbers.
                                     // So we set the lengths to -1 of the integers...
                                     //
@@ -342,7 +341,8 @@ public class TransHistory extends Composite implements TabItemInterface
                                     colinf[11].setValueMeta(displayMeta.searchValueMeta("ENDDATE"));
                                     colinf[12].setValueMeta(displayMeta.searchValueMeta("LOGDATE"));
                                     colinf[13].setValueMeta(displayMeta.searchValueMeta("DEPDATE"));
-                                    colinf[14].setValueMeta(displayMeta.searchValueMeta("REPLAYDATE"));
+                                    replayDateMeta = displayMeta.searchValueMeta("REPLAYDATE");
+                                    colinf[14].setValueMeta(replayDateMeta);
                                 }
                                 
                                 TableItem item = new TableItem(wFields.table, SWT.NONE);
@@ -375,6 +375,7 @@ public class TransHistory extends Composite implements TabItemInterface
                                 item.setText( index++, Const.NVL( row.getString("STARTDATE", ""), ""));     //$NON-NLS-1$ //$NON-NLS-2$
                                 item.setText( index++, Const.NVL( row.getString("ENDDATE", ""), ""));       //$NON-NLS-1$ //$NON-NLS-2$
                                 item.setText( index++, Const.NVL( row.getString("LOGDATE", ""), ""));       //$NON-NLS-1$ //$NON-NLS-2$
+                                item.setText( index++, Const.NVL( row.getString("REPLAYDATE", ""), ""));    //$NON-NLS-1$ //$NON-NLS-2$
                                 item.setText( index++, Const.NVL( row.getString("REPLAYDATE", ""), ""));    //$NON-NLS-1$ //$NON-NLS-2$
                                 
                                 String status = row.getString("STATUS", "");
