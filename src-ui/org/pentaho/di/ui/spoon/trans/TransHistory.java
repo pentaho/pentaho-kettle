@@ -375,7 +375,7 @@ public class TransHistory extends Composite implements TabItemInterface
                                 item.setText( index++, Const.NVL( row.getString("STARTDATE", ""), ""));     //$NON-NLS-1$ //$NON-NLS-2$
                                 item.setText( index++, Const.NVL( row.getString("ENDDATE", ""), ""));       //$NON-NLS-1$ //$NON-NLS-2$
                                 item.setText( index++, Const.NVL( row.getString("LOGDATE", ""), ""));       //$NON-NLS-1$ //$NON-NLS-2$
-                                item.setText( index++, Const.NVL( row.getString("REPLAYDATE", ""), ""));    //$NON-NLS-1$ //$NON-NLS-2$
+                                item.setText( index++, Const.NVL( row.getString("DEPDATE", ""), ""));    //$NON-NLS-1$ //$NON-NLS-2$
                                 item.setText( index++, Const.NVL( row.getString("REPLAYDATE", ""), ""));    //$NON-NLS-1$ //$NON-NLS-2$
                                 
                                 String status = row.getString("STATUS", "");
