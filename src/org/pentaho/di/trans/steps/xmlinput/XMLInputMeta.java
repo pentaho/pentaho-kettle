@@ -409,6 +409,11 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface
 			if (type==ValueMeta.TYPE_NONE) type=ValueMeta.TYPE_STRING;
 			ValueMetaInterface v=new ValueMeta(field.getName(), type);
 			v.setLength(field.getLength(), field.getPrecision());
+			v.setConversionMask(field.getFormat());
+			v.setDecimalSymbol(field.getDecimalSymbol());
+			v.setGroupingSymbol(field.getGroupSymbol());
+			v.setTrimType(field.getTrimType());
+			v.setCurrencySymbol(field.getCurrencySymbol());
 			v.setOrigin(name);
 			r.addValueMeta(v);
 		}
