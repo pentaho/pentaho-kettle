@@ -120,9 +120,11 @@ public class JobEntryEval extends JobEntryBase implements Cloneable, JobEntryInt
   /**
    * Evaluate the result of the execution of previous job entry.
    * @param result The result to evaulate.
+ * @param prev_result the previous result
+ * @param parentJob the parent job
    * @return The boolean result of the evaluation script.
    */
-  public boolean evaluate(Result result) {
+  public boolean evaluate(Result result, Job parentJob, Result prev_result) {
     LogWriter log = LogWriter.getInstance();
     Context cx;
     Scriptable scope;
@@ -165,6 +167,8 @@ public class JobEntryEval extends JobEntryBase implements Cloneable, JobEntryInt
       }
 
       scope.put("rows", scope, array); //$NON-NLS-1$
+      scope.put("parent_job", scope, parentJob); //$NON-NLS-1$
+      scope.put("previous_result", scope, prev_result); //$NON-NLS-1$
 
       try {
         debug = "cx.evaluateString()"; //$NON-NLS-1$
@@ -196,7 +200,7 @@ public class JobEntryEval extends JobEntryBase implements Cloneable, JobEntryInt
    * @return The Result of the execution.
    */
   public Result execute(Result prev_result, int nr, Repository rep, Job parentJob) {
-    prev_result.setResult(evaluate(prev_result));
+    prev_result.setResult(evaluate(prev_result, parentJob, prev_result));
 
     return prev_result;
   }
