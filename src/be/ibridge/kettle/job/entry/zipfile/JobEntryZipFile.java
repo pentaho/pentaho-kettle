@@ -27,7 +27,7 @@ import java.util.zip.Deflater;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import java.util.zip.ZipInputStream;
-import java.util.TreeSet;
+import java.util.HashSet;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -337,7 +337,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 					
 					ZipOutputStream out = new ZipOutputStream(buff);
 					
-					TreeSet fileSet = new TreeSet();
+					HashSet fileSet = new HashSet();
 										
 					if( renameOk)
 					{
