@@ -21,7 +21,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.TreeSet;
+import java.util.HashSet;
 
 import org.eclipse.swt.widgets.Shell;
 import org.w3c.dom.Node;
@@ -70,8 +70,8 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 	public  String  source_filefolder[];
 	public  String  destination_filefolder[];
 	public  String  wildcard[];
-	TreeSet list_files_remove = new TreeSet();
-	TreeSet list_add_result = new TreeSet();
+	HashSet list_files_remove = new HashSet();
+	HashSet list_add_result = new HashSet();
 	int NbrFail=0;
 	
 	public JobEntryCopyFiles(String n)
