@@ -27,7 +27,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.TreeSet;
+import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.Deflater;
@@ -336,7 +336,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 					BufferedOutputStream buff = new BufferedOutputStream(dest);
 					ZipOutputStream out = new ZipOutputStream(buff);
 
-					TreeSet<String> fileSet = new TreeSet<String>();
+					HashSet<String> fileSet = new HashSet<String>();
 
 					if( renameOk)
 					{

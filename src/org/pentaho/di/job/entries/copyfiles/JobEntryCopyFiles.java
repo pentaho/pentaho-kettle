@@ -19,7 +19,7 @@ import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notNullV
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
-import java.util.TreeSet;
+import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -70,8 +70,8 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 	public  String  source_filefolder[];
 	public  String  destination_filefolder[];
 	public  String  wildcard[];
-	TreeSet<String> list_files_remove = new TreeSet<String>();
-	TreeSet<String> list_add_result = new TreeSet<String>();
+	HashSet<String> list_files_remove = new HashSet<String>();
+	HashSet<String> list_add_result = new HashSet<String>();
 	int NbrFail=0;
 	
 	public JobEntryCopyFiles(String n)
