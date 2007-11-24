@@ -417,8 +417,7 @@ public class BaseStepDialog extends Dialog {
   }
 
   public CCombo addConnectionLine(Composite parent, Control previous, int middle, int margin) {
-	    return addConnectionLine(parent, previous, middle, margin, new Label(parent, SWT.RIGHT), new Button(parent,
-	        SWT.PUSH), new Button(parent, SWT.PUSH));
+	    return addConnectionLine(parent, previous, middle, margin, new Label(parent, SWT.RIGHT), null, null);
 	  }
 
   public CCombo addConnectionLine(Composite parent, Control previous, int middle, int margin, int databaseType) {
