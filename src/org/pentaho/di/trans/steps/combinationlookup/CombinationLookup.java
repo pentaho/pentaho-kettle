@@ -462,7 +462,9 @@ public class CombinationLookup extends BaseStep implements StepInterface
             {
                 sql += "? IS NULL";
             }
-            data.lookupRowMeta.addValueMeta(inputRowMeta.getValueMeta(data.keynrs[i]));
+            // Add the ValueMeta for the null check, BUT cloning needed.
+            // Otherwise the field gets renamed and gives problems when referenced by previous steps.
+            data.lookupRowMeta.addValueMeta(inputRowMeta.getValueMeta(data.keynrs[i]).clone());
             
             sql += " ) )";
             sql += Const.CR;
