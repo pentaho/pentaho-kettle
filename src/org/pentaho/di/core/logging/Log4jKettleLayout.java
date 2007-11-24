@@ -23,6 +23,12 @@ import org.pentaho.di.version.BuildVersion;
 
 public class Log4jKettleLayout extends Layout implements Log4JLayoutInterface
 {
+	private static final ThreadLocal<SimpleDateFormat>  LOCAL_SIMPLE_DATE_PARSER = new ThreadLocal<SimpleDateFormat>() {
+		protected SimpleDateFormat initialValue() {
+			return new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+     	}
+    };
+    
     private boolean timeAdded;
     
     public Log4jKettleLayout(boolean addTime)
@@ -39,8 +45,7 @@ public class Log4jKettleLayout extends Layout implements Log4JLayoutInterface
         String dateTimeString = "";
         if (timeAdded)
         {
-            SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-            dateTimeString = df.format(new Date(event.timeStamp))+" - ";
+            dateTimeString = ((SimpleDateFormat)LOCAL_SIMPLE_DATE_PARSER.get()).format(new Date(event.timeStamp))+" - ";
         }
 
         Object object = event.getMessage();
@@ -63,10 +68,9 @@ public class Log4jKettleLayout extends Layout implements Log4JLayoutInterface
                 if (message.isError())  
                 {
                     BuildVersion buildVersion = BuildVersion.getInstance();
-                    SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
                     line+="ERROR (version "+Const.VERSION+
                     ", build "+buildVersion.getVersion()+
-                    " from "+format.format(buildVersion.getBuildDate())+
+                    " from "+((SimpleDateFormat)LOCAL_SIMPLE_DATE_PARSER.get()).format(buildVersion.getBuildDate())+
                     (Const.isEmpty(buildVersion.getHostname())?"":" @ "+buildVersion.getHostname())+
                     ") : ";                
                  }
