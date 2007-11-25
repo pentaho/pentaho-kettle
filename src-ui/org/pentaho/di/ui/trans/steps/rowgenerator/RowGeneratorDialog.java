@@ -344,7 +344,6 @@ public class RowGeneratorDialog extends BaseStepDialog implements StepDialogInte
      */
     private void preview()
     {
-        // Create the excel reader step...
         RowGeneratorMeta oneMeta = new RowGeneratorMeta();
         try
         {
