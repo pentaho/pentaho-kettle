@@ -311,7 +311,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
         		{
             		str = (byte[]) valueData;
         		} else {
-            		str = getBinaryString(valueData.toString());
+       				str = getBinaryString((valueData == null) ? "" : valueData.toString());
         		}
         	}
         	else {
