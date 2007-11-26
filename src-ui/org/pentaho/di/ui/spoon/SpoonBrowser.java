@@ -45,8 +45,13 @@ public class SpoonBrowser implements TabItemInterface
     private Composite        composite;
     
     private static Browser browser;
-
+    
     public SpoonBrowser(Composite parent, final Spoon spoon, final String stringUrl) throws SWTError
+    {
+    	this(parent,spoon,stringUrl,true);
+    }
+  
+    public SpoonBrowser(Composite parent, final Spoon spoon, final String stringUrl,boolean isURL) throws SWTError
     {
         this.shell = parent.getShell();
         this.spoon = spoon;
@@ -102,7 +107,11 @@ public class SpoonBrowser implements TabItemInterface
         browser.addKeyListener(spoon.defKeys);
                  
         // Set the text
-        browser.setUrl(stringUrl);
+       if (isURL)
+    	   browser.setUrl(stringUrl);
+       else
+    	   browser.setText(stringUrl);
+
     }
 
     /**

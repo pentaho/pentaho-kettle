@@ -14,7 +14,6 @@ package org.pentaho.di.ui.spoon;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
@@ -6516,39 +6515,13 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	
 	public void consume(LifeEventInfo info)
 	{
+		if (PropsUI.getInstance().isListenerDisabled(info.getName()))
+			return;
+		
 		if (info.hasHint(LifeEventInfo.Hint.DISPLAY_BROWSER))
 		{
-			FileWriter out = null;
-			try{
-
-			FileObject output = KettleVFS.getFileObject("docs/English/welcome/version_check_rs.html");
-			File outFile = new File(output.getURL().toURI());
-			outFile.deleteOnExit();
-			out = new FileWriter(outFile);
-			out.write(info.getMessage());
-			out.flush();
-				
 			delegates.tabs.addSpoonBrowser(info.getName(),info.getMessage(),false);
-			}
-			catch(Exception e)
-			{
-				MessageBox box = new MessageBox(shell, (info.getState()!=LifeEventInfo.State.SUCCESS?SWT.ICON_ERROR:SWT.ICON_INFORMATION) | SWT.OK);
-				box.setText(info.getName());
-	            box.setMessage("Unable to display browser!\n\n"+info.getMessage());
-				box.open();
-			}
-			finally
-			{
-				try
-				{
-					if (out!=null)
-						out.close();
-				}
-				catch(IOException e)
-				{
-					e.printStackTrace();
-				}
-			}
+			
 		}
 		else
 		{
