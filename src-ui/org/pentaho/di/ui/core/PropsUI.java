@@ -51,7 +51,7 @@ import org.pentaho.di.ui.core.gui.WindowProperty;
 public class PropsUI extends Props
 {
 
-	private static final String VERSION_CHECK = "Version Check";
+	private static final String VERSION_CHECK = "Version Checker";
 
 	private static final String NO = "N";
 
