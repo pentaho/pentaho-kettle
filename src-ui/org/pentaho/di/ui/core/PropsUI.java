@@ -36,7 +36,6 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.LastUsedFile;
 import org.pentaho.di.core.ObjectUsageCount;
 import org.pentaho.di.core.Props;
-import org.pentaho.di.core.lifecycle.pdi.VersionCheckerListener;
 import org.pentaho.di.laf.BasePropertyHandler;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
@@ -51,6 +50,8 @@ import org.pentaho.di.ui.core.gui.WindowProperty;
  */
 public class PropsUI extends Props
 {
+
+	private static final String VERSION_CHECK = "Version Check";
 
 	private static final String NO = "N";
 
@@ -1122,12 +1123,12 @@ public class PropsUI extends Props
 
 	public boolean skipVersionCheck()
 	{
-		return isListenerDisabled(VersionCheckerListener.VERSION_CHECKER);
+		return isListenerDisabled(VERSION_CHECK);
 	}
 
 	public void setSkipVersionCheck(boolean check)
 	{
-		setListeners(check, VersionCheckerListener.VERSION_CHECKER);
+		setListeners(check, VERSION_CHECK);
 	}
 
 	private void setListeners(boolean disabled, String name)
