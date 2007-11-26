@@ -34,6 +34,8 @@ public class VersionCheckerListener implements LifecycleListener
 	private LifecycleException root;
 
 	private static LogWriter log = LogWriter.getInstance();
+	
+	public static final String VERSION_CHECKER = "Version Checker";
 
 	/**
 	 * Interface method: checks the version
@@ -130,7 +132,7 @@ public class VersionCheckerListener implements LifecycleListener
 				}
 
 				LifeEventInfo info = new LifeEventInfo();
-				info.setName(Messages.getString("VersionListener.title"));
+				info.setName(VERSION_CHECKER);
 				info.setMessage(smsg);
 				info.setHint(LifeEventInfo.Hint.DISPLAY_BROWSER);
 				info.setState(LifeEventInfo.State.SUCCESS);
