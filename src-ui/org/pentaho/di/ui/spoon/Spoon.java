@@ -14,6 +14,7 @@ package org.pentaho.di.ui.spoon;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
@@ -22,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -114,8 +114,10 @@ import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.gui.SpoonFactory;
 import org.pentaho.di.core.gui.SpoonInterface;
 import org.pentaho.di.core.gui.UndoInterface;
-import org.pentaho.di.core.listeners.LifecycleException;
-import org.pentaho.di.core.listeners.LifecycleListener;
+import org.pentaho.di.core.lifecycle.LifeEventHandler;
+import org.pentaho.di.core.lifecycle.LifeEventInfo;
+import org.pentaho.di.core.lifecycle.LifecycleException;
+import org.pentaho.di.core.lifecycle.LifecycleSupport;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.reflection.StringSearchResult;
 import org.pentaho.di.core.row.RowMeta;
@@ -124,7 +126,6 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.undo.TransAction;
 import org.pentaho.di.core.util.EnvUtil;
-import org.pentaho.di.core.util.ResolverUtil;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -237,7 +238,7 @@ import org.w3c.dom.Node;
  * @author Matt
  * @since 16-may-2003, i18n at 07-Feb-2006, redesign 01-Dec-2006
  */
-public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterface, OverwritePrompter,PDIObserver
+public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterface, OverwritePrompter,PDIObserver,LifeEventHandler
 {
 	public static final String STRING_TRANSFORMATIONS = Messages.getString("Spoon.STRING_TRANSFORMATIONS"); // Transformations
     public static final String STRING_JOBS            = Messages.getString("Spoon.STRING_JOBS");            // Jobs
@@ -349,7 +350,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 	private Map<String, Menu> menuMap = new HashMap<String, Menu>();
 	
-	private static Set<LifecycleListener> lifeListeners;
+	//loads the lifecycle listeners
+	private LifecycleSupport lcsup = new LifecycleSupport();
 
     /**
      * This is the main procedure for Spoon.
@@ -366,11 +368,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		Display display = new Display();
 		
 		Spoon spoon = new Spoon(display);
-		
-		spoon.initListeners();
-		
-		//do start on them
-		spoon.startListeners();		
 		
 		spoon.run(args);
 
@@ -3329,7 +3326,16 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		}
         
         //and now we call the listeners
-        stopListeners();	
+        try
+        {
+        	lcsup.onExit(this);
+        }
+        catch(LifecycleException e)
+        {
+        	MessageBox box = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
+            box.setMessage(e.getMessage());
+			box.open();
+        }
 
         if (exit) dispose();
 
@@ -5648,6 +5654,21 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			createSplash();
 			getCommandLineArgs(args);
 			createSpoon();
+			
+			//listeners
+			try
+			{
+				lcsup.onStart(this);
+			}
+			catch(LifecycleException e)
+			{
+				//if severe, we have to quit
+				MessageBox box = new MessageBox(shell, (e.isSevere()?SWT.ICON_ERROR:SWT.ICON_WARNING) | SWT.OK);
+	            box.setMessage(e.getMessage());
+				box.open();
+			}
+			
+			
 			setArguments(args.toArray(new String[args.size()]));
 			start();
     	} catch (Throwable t) {
@@ -6493,64 +6514,51 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		}	
 	}
 	
-	private void initListeners()
+	public void consume(LifeEventInfo info)
 	{
-//		get the listeners
-		ResolverUtil<LifecycleListener> listeners = new ResolverUtil<LifecycleListener>();
-		listeners.find(new ResolverUtil.IsA(LifecycleListener.class), "org.pentaho.di.core.listeners.pdi");
-		Set<Class<? extends LifecycleListener>> listenerClasses = listeners.getClasses();
-		
-		lifeListeners = new HashSet<LifecycleListener>(listenerClasses.size());
-	
-		for (Class<? extends LifecycleListener> clazz:listenerClasses)
+		if (info.hasHint(LifeEventInfo.Hint.DISPLAY_BROWSER))
 		{
-			try
-			{
-				lifeListeners.add(clazz.newInstance());
+			FileWriter out = null;
+			try{
+
+			FileObject output = KettleVFS.getFileObject("docs/English/welcome/version_check_rs.html");
+			File outFile = new File(output.getURL().toURI());
+			outFile.deleteOnExit();
+			out = new FileWriter(outFile);
+			out.write(info.getMessage());
+			out.flush();
+				
+			delegates.tabs.addSpoonBrowser(info.getName(),info.getMessage(),false);
 			}
 			catch(Exception e)
 			{
-				log.logError("Spoon", "Unable to init listener:" + e.getMessage(), new Object[]{});
-				continue;
+				MessageBox box = new MessageBox(shell, (info.getState()!=LifeEventInfo.State.SUCCESS?SWT.ICON_ERROR:SWT.ICON_INFORMATION) | SWT.OK);
+				box.setText(info.getName());
+	            box.setMessage("Unable to display browser!\n\n"+info.getMessage());
+				box.open();
+			}
+			finally
+			{
+				try
+				{
+					if (out!=null)
+						out.close();
+				}
+				catch(IOException e)
+				{
+					e.printStackTrace();
+				}
 			}
 		}
-	}
-	private void startListeners()
-	{
-		for (LifecycleListener listener:lifeListeners)
+		else
 		{
-			try
-			{
-				listener.onStart();
-			}
-			catch(LifecycleException e)
-			{
-				MessageBox mb = new MessageBox(shell, SWT.OK | (e.isSevere()?SWT.ICON_ERROR:SWT.ICON_INFORMATION));
-				mb.setMessage(e.getMessage());
-				mb.setText(Messages.getString("Spoon.StartListeners.Title"));
-				mb.open();
-				
-				if (e.isSevere()) //we quit!
-					System.exit(1);
-			}
-		}
-	}
-	
-	private void stopListeners()
-	{
-		for (LifecycleListener listener:lifeListeners)
-		{
-			
-			try
-			{
-				listener.onExit();
-			}
-			catch(LifecycleException e)
-			{
-				log.logError("Spoon", e.getMessage(), new Object[]{});
-			}
+			MessageBox box = new MessageBox(shell, (info.getState()!=LifeEventInfo.State.SUCCESS?SWT.ICON_ERROR:SWT.ICON_INFORMATION) | SWT.OK);
+			box.setText(info.getName());
+            box.setMessage(info.getMessage());
+			box.open();
 		}
 		
 	}
 
+	
 }
