@@ -204,8 +204,13 @@ public class SpoonTabsDelegate extends SpoonDelegate
 	{
 		return "Slave server: " + slaveServer.getName();
 	}
-
+	
 	public boolean addSpoonBrowser(String name, String urlString)
+	{
+		return addSpoonBrowser(name,urlString,true);
+	}
+	
+	public boolean addSpoonBrowser(String name, String urlString,boolean isURL)
 	{
 		TabSet tabfolder = spoon.tabfolder;
 
@@ -220,7 +225,7 @@ public class SpoonTabsDelegate extends SpoonDelegate
 			TabItem tabItem = findTabItem(name, TabMapEntry.OBJECT_TYPE_BROWSER);
 			if (tabItem == null)
 			{
-				SpoonBrowser browser = new SpoonBrowser(tabfolder.getSwtTabset(), spoon, urlString);
+				SpoonBrowser browser = new SpoonBrowser(tabfolder.getSwtTabset(), spoon, urlString,isURL);
 				tabItem = new TabItem(tabfolder, name, name);
 				tabItem.setImage(GUIResource.getInstance().getImageLogoSmall());
 				tabItem.setControl(browser.getComposite());
