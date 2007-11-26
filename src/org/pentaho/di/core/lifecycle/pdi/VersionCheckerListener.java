@@ -112,7 +112,9 @@ public class VersionCheckerListener implements LifecycleListener
 			vc.performCheck(false);
 
 			if (root != null)
-				throw root;
+				root.printStackTrace();
+			//	throw root; REQ says that it shouldnt do anything
+			// 
 
 			if (message.length() > 0)
 			{
@@ -141,7 +143,8 @@ public class VersionCheckerListener implements LifecycleListener
 
 		} catch (IOException e)
 		{
-			throw new LifecycleException(e, false);
+			e.printStackTrace();
+			//throw new LifecycleException(e, false); REQ says that it shouldnt do anything
 		}
 
 	}
