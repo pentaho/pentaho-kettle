@@ -49,6 +49,8 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.webservices.wsdl.XsdType;
 
+import com.ctc.wstx.exc.WstxParsingException;
+
 public class WebService extends BaseStep implements StepInterface
 {
     public static final String NS_PREFIX = "ns";
@@ -476,8 +478,17 @@ public class WebService extends BaseStep implements StepInterface
                                 	WebServiceField field = meta.getFieldOutFromWsName(vReader.getLocalName());
                                     if (meta.getFieldsOut().size() == 1 && field != null)
                                     {
-                                    	outputRowData[outputIndex++] = getValue(vReader.getElementText(), field);
-                                        putRow(data.outputRowMeta, outputRowData);
+                                    	// This can be either a simple return element, or a complex type...
+                                    	//
+                                    	try
+                                    	{
+                                    		outputRowData[outputIndex++] = getValue(vReader.getElementText(), field);
+                                    		putRow(data.outputRowMeta, outputRowData);
+                                    	}
+                                    	catch(WstxParsingException e)
+                                    	{
+                                    		throw new KettleStepException("Unable to get value for field ["+field.getName()+"].  Verify that this is not a complex data type by looking at the response XML.", e);
+                                    	}
                                     }
                                     else
                                     {
