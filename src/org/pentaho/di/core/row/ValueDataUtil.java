@@ -168,7 +168,7 @@ public class ValueDataUtil
         case ValueMetaInterface.TYPE_BIGNUMBER : 
             return metaA.getBigNumber(dataA).divide( metaB.getBigNumber(dataB), BigDecimal.ROUND_HALF_UP);
             
-        default: throw new KettleValueException("The 'multiply' function only works on numeric data optionally multiplying strings." );
+        default: throw new KettleValueException("The 'divide' function only works on numeric data optionally multiplying strings." );
         }
     }
     
