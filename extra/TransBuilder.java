@@ -130,8 +130,8 @@ public class TransBuilder
             svi.allocate(0, 0, sourceFields.length);
             for (int i = 0; i < sourceFields.length; i++)
             {
-                svi.getMetaName()[i] = sourceFields[i];
-                svi.getMetaRename()[i] = targetFields[i];
+                svi.getMeta()[i].setName(sourceFields[i]);
+                svi.getMeta()[i].setRename(targetFields[i]);
             }
 
             String selstepname = "Rename field names";

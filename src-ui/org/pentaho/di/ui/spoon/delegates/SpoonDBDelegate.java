@@ -355,8 +355,8 @@ public class SpoonDBDelegate extends SpoonDelegate
 					ValueMetaInterface v = fields.getValueMeta(i);
 					if (targetDBInfo.isReservedWord(v.getName()))
 					{
-						svi.getMetaName()[nr] = v.getName();
-						svi.getMetaRename()[nr] = targetDBInfo.quoteField(v.getName());
+						svi.getMeta()[nr].setName(v.getName());
+						svi.getMeta()[nr].setRename(targetDBInfo.quoteField(v.getName()));
 						nr++;
 					}
 				}

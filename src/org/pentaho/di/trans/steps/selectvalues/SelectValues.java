@@ -242,13 +242,13 @@ public class SelectValues extends BaseStep implements StepInterface
 		{
 			data.firstmetadata=false;
 
-			data.metanrs=new int[meta.getMetaName().length];
+			data.metanrs=new int[meta.getMeta().length];
 			for (int i=0;i<data.metanrs.length;i++) 
 			{
-				data.metanrs[i]=rowMeta.indexOfValue(meta.getMetaName()[i]);
+				data.metanrs[i]=rowMeta.indexOfValue(meta.getMeta()[i].getName());
 				if (data.metanrs[i]<0)
 				{
-					logError(Messages.getString("SelectValues.Log.CouldNotFindField",meta.getMetaName()[i])); //$NON-NLS-1$ //$NON-NLS-2$
+					logError(Messages.getString("SelectValues.Log.CouldNotFindField",meta.getMeta()[i].getName())); //$NON-NLS-1$ //$NON-NLS-2$
 					setErrors(1);
 					stopAll();
 					return null;
@@ -256,21 +256,45 @@ public class SelectValues extends BaseStep implements StepInterface
 			}
 			
 			// Check for doubles in the selected fields...
-			int cnt[] = new int[meta.getMetaName().length];
-			for (int i=0;i<meta.getMetaName().length;i++)
+			int cnt[] = new int[meta.getMeta().length];
+			for (int i=0;i<meta.getMeta().length;i++)
 			{
 				cnt[i]=0;
-				for (int j=0;j<meta.getMetaName().length;j++)
+				for (int j=0;j<meta.getMeta().length;j++)
 				{
-					if (meta.getMetaName()[i].equals(meta.getMetaName()[j])) cnt[i]++;
+					if (meta.getMeta()[i].getName().equals(meta.getMeta()[j].getName())) cnt[i]++;
 					
 					if (cnt[i]>1)
 					{
-						logError(Messages.getString("SelectValues.Log.FieldCouldNotSpecifiedMoreThanTwice2",meta.getMetaName()[i])); //$NON-NLS-1$ //$NON-NLS-2$
+						logError(Messages.getString("SelectValues.Log.FieldCouldNotSpecifiedMoreThanTwice2",meta.getMeta()[i].getName())); //$NON-NLS-1$ //$NON-NLS-2$
 						setErrors(1);
 						stopAll();
 						return null;
 					}
+				}
+			}
+			
+			// Also apply the metadata on the row meta to allow us to convert the data correctly, with the correct mask.
+			//
+			for (int i=0;i<data.metanrs.length;i++) 
+			{
+				SelectMetadataChange change = meta.getMeta()[i];
+				ValueMetaInterface valueMeta = rowMeta.getValueMeta(data.metanrs[i]);
+				if (!Const.isEmpty(change.getConversionMask()))
+				{
+					valueMeta.setConversionMask(change.getConversionMask());
+				}
+				if (!Const.isEmpty(change.getDecimalSymbol()))
+				{
+					valueMeta.setDecimalSymbol(change.getDecimalSymbol());
+				}
+				if (!Const.isEmpty(change.getGroupingSymbol()))
+				{
+					valueMeta.setGroupingSymbol(change.getGroupingSymbol());
+				}
+				if (!Const.isEmpty(change.getCurrencySymbol()))
+				{
+					valueMeta.setCurrencySymbol(change.getCurrencySymbol());
 				}
 			}
 		}
@@ -286,11 +310,11 @@ public class SelectValues extends BaseStep implements StepInterface
 			
 			// If we need to change from BINARY_STRING storage type to NORMAL...
 			//
-			if (fromMeta.isStorageBinaryString() && meta.getMetaStorageType()[i]==ValueMetaInterface.STORAGE_TYPE_NORMAL)
+			if (fromMeta.isStorageBinaryString() && meta.getMeta()[i].getStorageType()==ValueMetaInterface.STORAGE_TYPE_NORMAL)
 			{
 				rowData[index] = fromMeta.convertBinaryStringToNativeType((byte[]) rowData[index]);
 			}
-			if (meta.getMetaType()[i]!=ValueMetaInterface.TYPE_NONE)
+			if (meta.getMeta()[i].getType()!=ValueMetaInterface.TYPE_NONE)
             {
                 switch(toMeta.getType())
                 {
@@ -372,9 +396,9 @@ public class SelectValues extends BaseStep implements StepInterface
 			data.deselect=false;
 			data.metadata=false;
 			
-			if (meta.getSelectName()!=null && meta.getSelectName().length>0) data.select   = true;
-			if (meta.getDeleteName()!=null && meta.getDeleteName().length>0) data.deselect = true;
-			if (meta.getMetaName()!=null && meta.getMetaName().length>0) data.metadata = true;
+			if (!Const.isEmpty(meta.getSelectName())) data.select   = true;
+			if (!Const.isEmpty(meta.getDeleteName())) data.deselect = true;
+			if (!Const.isEmpty(meta.getMeta())) data.metadata = true;
 			
 			boolean atLeastOne = data.select || data.deselect || data.metadata;
 			if (!atLeastOne)

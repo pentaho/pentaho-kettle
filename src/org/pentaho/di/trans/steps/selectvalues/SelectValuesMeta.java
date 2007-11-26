@@ -73,18 +73,7 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
 	private String deleteName[]; 
 	
 	// META-DATA mode
-	/** Fields of which we want to change the meta data  */
-	private String metaName[];
-	/** Meta: new name of field  */
-	private String metaRename[];
-	/** Meta: new type for this field or VALUE_TYPE_NONE if no change needed!  */
-	private int    metaType[];
-	/** Meta: new length of field  */
-	private int    metaLength[];
-	/** Meta: new precision of field (for numbers)  */
-	private int    metaPrecision[];
-	/** Meta: the storage type, NORMAL or BINARY_STRING  */
-	private int    metaStorageType[];
+	private SelectMetadataChange[] meta;
 	
 	public SelectValuesMeta()
 	{
@@ -105,86 +94,6 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
     public void setDeleteName(String[] deleteName)
     {
         this.deleteName = deleteName;
-    }
-    
-    /**
-     * @return Returns the metaLength.
-     */
-    public int[] getMetaLength()
-    {
-        return metaLength;
-    }
-    
-    /**
-     * @param metaLength The metaLength to set.
-     */
-    public void setMetaLength(int[] metaLength)
-    {
-        this.metaLength = metaLength;
-    }
-    
-    /**
-     * @return Returns the metaName.
-     */
-    public String[] getMetaName()
-    {
-        return metaName;
-    }
-    
-    /**
-     * @param metaName The metaName to set.
-     */
-    public void setMetaName(String[] metaName)
-    {
-        this.metaName = metaName;
-    }
-    
-    /**
-     * @return Returns the metaPrecision.
-     */
-    public int[] getMetaPrecision()
-    {
-        return metaPrecision;
-    }
-    
-    /**
-     * @param metaPrecision The metaPrecision to set.
-     */
-    public void setMetaPrecision(int[] metaPrecision)
-    {
-        this.metaPrecision = metaPrecision;
-    }
-    
-    /**
-     * @return Returns the metaRename.
-     */
-    public String[] getMetaRename()
-    {
-        return metaRename;
-    }
-    
-    /**
-     * @param metaRename The metaRename to set.
-     */
-    public void setMetaRename(String[] metaRename)
-    {
-        this.metaRename = metaRename;
-    }
-    
-    /**
-     * @return Returns the metaType.
-     */
-    public int[] getMetaType()
-    {
-        return metaType;
-    }
-    
-    /**
-     * @param metaType The metaType to set.
-     */
-    public void setMetaType(int[] metaType)
-    {
-        this.metaType = metaType;
     }
     
     /**
@@ -268,14 +177,9 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
 		
 		deleteName      = new String[nrremove];
 		
-		metaName        = new String[nrmeta];
-		metaRename      = new String[nrmeta];
-		metaType        = new int   [nrmeta];
-		metaLength      = new int   [nrmeta];
-		metaPrecision   = new int   [nrmeta];
-		metaStorageType = new int   [nrmeta];
+		meta            = new SelectMetadataChange[nrmeta];
 		
-		for (int i=0;i<metaStorageType.length;i++) metaStorageType[i]=-1; // not used by default!
+		// for (int i=0;i<meta.length;i++) meta[i].setStorageType(-1); // not used by default!
 	}
 
 	public Object clone()
@@ -284,7 +188,7 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
 
 		int nrfields = selectName.length;
 		int nrremove = deleteName.length;
-		int nrmeta   = metaName.length;
+		int nrmeta   = meta.length;
 		
 		retval.allocate(nrfields, nrremove, nrmeta);
 		
@@ -303,12 +207,7 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
 		
 		for (int i=0;i<nrmeta;i++)
 		{
-			retval.metaName       [i] = metaName[i];
-			retval.metaRename     [i] = metaRename[i];
-			retval.metaType       [i] = metaType[i];
-			retval.metaLength     [i] = metaLength[i];
-			retval.metaPrecision  [i] = metaPrecision[i];
-			retval.metaStorageType[i] = metaStorageType[i];
+			retval.getMeta()[i] = meta[i].clone();
 		}
 
 		return retval;
@@ -322,7 +221,7 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
 	
 			int nrfields   = XMLHandler.countNodes(fields, "field"); //$NON-NLS-1$
 			int nrremove   = XMLHandler.countNodes(fields, "remove"); //$NON-NLS-1$
-			int nrmeta     = XMLHandler.countNodes(fields, "meta"); //$NON-NLS-1$
+			int nrmeta     = XMLHandler.countNodes(fields, SelectMetadataChange.XML_TAG); //$NON-NLS-1$
 			allocate(nrfields, nrremove, nrmeta);
 			
 			for (int i=0;i<nrfields;i++)
@@ -343,13 +242,8 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
 	
 			for (int i=0;i<nrmeta;i++)
 			{
-				Node line = XMLHandler.getSubNodeByNr(fields, "meta", i); //$NON-NLS-1$
-				metaName       [i] = XMLHandler.getTagValue(line, "name"); //$NON-NLS-1$
-				metaRename     [i] = XMLHandler.getTagValue(line, "rename"); //$NON-NLS-1$
-				metaType       [i] = ValueMeta.getType(XMLHandler.getTagValue(line, "type")); //$NON-NLS-1$
-				metaLength     [i] = Const.toInt(XMLHandler.getTagValue(line, "length"), -2); //$NON-NLS-1$
-				metaPrecision  [i] = Const.toInt(XMLHandler.getTagValue(line, "precision"), -2); //$NON-NLS-1$
-				metaStorageType[i] = ValueMeta.getStorageType( XMLHandler.getTagValue(line, "storage_type") ); //$NON-NLS-1$
+				Node metaNode = XMLHandler.getSubNodeByNr(fields, SelectMetadataChange.XML_TAG, i); //$NON-NLS-1$
+				meta[i] = new SelectMetadataChange(metaNode);
 			}
 		}
 		catch(Exception e)
@@ -381,12 +275,7 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
 
 		for (int i=0;i<nrmeta;i++)
 		{
-			metaName       [i] = "fieldname"+(i+1); //$NON-NLS-1$
-			metaRename     [i] = ""; //$NON-NLS-1$
-			metaType       [i] = ValueMetaInterface.TYPE_NONE;
-			metaLength     [i] = -2;
-			metaPrecision  [i] = -2;
-			metaStorageType[i] = -1;
+			meta[i] = new SelectMetadataChange("fieldname"+(i+1), "", ValueMetaInterface.TYPE_NONE, -2, -2, -1, null, null, null, null);
 		}
 	}
 	
@@ -469,30 +358,52 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
 	
 	public void getMetadataFields(RowMetaInterface inputRowMeta, String name)
 	{
-		if (metaName!=null && metaName.length>0) // METADATA mode: change the meta-data of the values mentioned...
+		if (meta!=null && meta.length>0) // METADATA mode: change the meta-data of the values mentioned...
 		{
-			for (int i=0;i<metaName.length;i++)
+			for (int i=0;i<meta.length;i++)
 			{
-				int idx = inputRowMeta.indexOfValue(metaName[i]);
+				SelectMetadataChange metaChange = meta[i];
+				
+				int idx = inputRowMeta.indexOfValue(metaChange.getName());
 				if (idx>=0)  // We found the value
 				{
 					// This is the value we need to change:
 					ValueMetaInterface v = inputRowMeta.getValueMeta(idx);
 					
 					// Do we need to rename ?
-					if (!v.getName().equals(metaRename[i]) && metaRename[i]!=null && metaRename[i].length()>0)
+					if (!v.getName().equals(metaChange.getRename()) && !Const.isEmpty(metaChange.getRename()))
 					{
-						v.setName(metaRename[i]);
+						v.setName(metaChange.getRename());
 						v.setOrigin(name);
 					}
 					// Change the type?
-					if (metaType[i]!=ValueMetaInterface.TYPE_NONE)
+					if (metaChange.getType()!=ValueMetaInterface.TYPE_NONE)
 					{
-						v.setType(metaType[i]);
+						v.setType(metaChange.getType());
 					}
-					if (metaLength[i]!=-2   ) { v.setLength(metaLength[i]);       v.setOrigin(name); } 
-					if (metaPrecision[i]!=-2) { v.setPrecision(metaPrecision[i]); v.setOrigin(name); }
-					if (metaStorageType[i]>=0) { v.setStorageType(metaStorageType[i]); }
+					if (metaChange.getLength()     != -2) { v.setLength(metaChange.getLength());       v.setOrigin(name); } 
+					if (metaChange.getPrecision()  != -2) { v.setPrecision(metaChange.getPrecision()); v.setOrigin(name); }
+					if (metaChange.getStorageType() >= 0) { v.setStorageType(metaChange.getStorageType()); v.setOrigin(name); }
+					if (!Const.isEmpty(metaChange.getConversionMask())) 
+					{ 
+						v.setConversionMask(metaChange.getConversionMask());
+						v.setOrigin(name);
+					}
+					if (!Const.isEmpty(metaChange.getDecimalSymbol())) 
+					{ 
+						v.setDecimalSymbol(metaChange.getDecimalSymbol());
+						v.setOrigin(name);
+					}
+					if (!Const.isEmpty(metaChange.getGroupingSymbol())) 
+					{ 
+						v.setGroupingSymbol(metaChange.getGroupingSymbol());
+						v.setOrigin(name);
+					}
+					if (!Const.isEmpty(metaChange.getCurrencySymbol())) 
+					{ 
+						v.setCurrencySymbol(metaChange.getCurrencySymbol());
+						v.setOrigin(name);
+					}
 				}
 			}
 		}
@@ -526,16 +437,9 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
 			retval.append("        ").append(XMLHandler.addTagValue("name",      deleteName[i])); //$NON-NLS-1$ //$NON-NLS-2$
 			retval.append("      </remove>"); //$NON-NLS-1$
 		}
-		for (int i=0;i<metaName.length;i++)
+		for (int i=0;i<meta.length;i++)
 		{
-			retval.append("      <meta>"); //$NON-NLS-1$
-			retval.append("        ").append(XMLHandler.addTagValue("name",         metaName[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        ").append(XMLHandler.addTagValue("rename",       metaRename[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        ").append(XMLHandler.addTagValue("type",         ValueMeta.getTypeDesc(metaType[i])) ); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        ").append(XMLHandler.addTagValue("length",       metaLength[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        ").append(XMLHandler.addTagValue("precision",    metaPrecision[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        ").append(XMLHandler.addTagValue("storage_type", ValueMeta.getStorageTypeCode(metaStorageType[i]))); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("      </meta>"); //$NON-NLS-1$
+			retval.append(meta[i].getXML());
 		}
 		retval.append("    </fields>"); //$NON-NLS-1$
 
@@ -568,12 +472,17 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
 
 			for (int i=0;i<nrmeta;i++)
 			{
-				metaName[i]      =      rep.getStepAttributeString (id_step, i, "meta_name"); //$NON-NLS-1$
-				metaRename[i]    =      rep.getStepAttributeString (id_step, i, "meta_rename"); //$NON-NLS-1$
-				metaType[i]      = (int)rep.getStepAttributeInteger(id_step, i, "meta_type"); //$NON-NLS-1$
-				metaLength[i]    = (int)rep.getStepAttributeInteger(id_step, i, "meta_length"); //$NON-NLS-1$
-				metaPrecision[i] = (int)rep.getStepAttributeInteger(id_step, i, "meta_precision"); //$NON-NLS-1$
-				metaStorageType[i] = ValueMeta.getStorageType(rep.getStepAttributeString (id_step, i, "meta_storage_type")); //$NON-NLS-1$ 
+				meta[i] = new SelectMetadataChange();
+				meta[i].setName(rep.getStepAttributeString (id_step, i, "meta_name")); //$NON-NLS-1$
+				meta[i].setRename(rep.getStepAttributeString (id_step, i, "meta_rename")); //$NON-NLS-1$
+				meta[i].setType((int)rep.getStepAttributeInteger(id_step, i, "meta_type")); //$NON-NLS-1$
+				meta[i].setLength((int)rep.getStepAttributeInteger(id_step, i, "meta_length")); //$NON-NLS-1$
+				meta[i].setPrecision((int)rep.getStepAttributeInteger(id_step, i, "meta_precision")); //$NON-NLS-1$
+				meta[i].setStorageType(ValueMeta.getStorageType(rep.getStepAttributeString (id_step, i, "meta_storage_type"))); //$NON-NLS-1$ 
+				meta[i].setConversionMask(rep.getStepAttributeString (id_step, i, "meta_conversion_mask")); //$NON-NLS-1$
+				meta[i].setDecimalSymbol(rep.getStepAttributeString (id_step, i, "meta_decimal_symbol")); //$NON-NLS-1$
+				meta[i].setGroupingSymbol(rep.getStepAttributeString (id_step, i, "meta_grouping_symbol")); //$NON-NLS-1$
+				meta[i].setCurrencySymbol(rep.getStepAttributeString (id_step, i, "meta_currency_symbol")); //$NON-NLS-1$
 			}
 		}
 		catch(Exception e)
@@ -601,14 +510,18 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
 				rep.saveStepAttribute(id_transformation, id_step, i, "remove_name",      deleteName[i]); //$NON-NLS-1$
 			}
 	
-			for (int i=0;i<metaName.length;i++)
+			for (int i=0;i<meta.length;i++)
 			{
-				rep.saveStepAttribute(id_transformation, id_step, i, "meta_name",         metaName[i]); //$NON-NLS-1$
-				rep.saveStepAttribute(id_transformation, id_step, i, "meta_rename",       metaRename[i]); //$NON-NLS-1$
-				rep.saveStepAttribute(id_transformation, id_step, i, "meta_type",         metaType[i]); //$NON-NLS-1$
-				rep.saveStepAttribute(id_transformation, id_step, i, "meta_length",       metaLength[i]); //$NON-NLS-1$
-				rep.saveStepAttribute(id_transformation, id_step, i, "meta_precision",    metaPrecision[i]); //$NON-NLS-1$
-				rep.saveStepAttribute(id_transformation, id_step, i, "meta_storage_type", ValueMeta.getStorageTypeCode(metaStorageType[i])); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, "meta_name",            meta[i].getName()); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, "meta_rename",          meta[i].getRename()); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, "meta_type",            meta[i].getType()); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, "meta_length",          meta[i].getLength()); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, "meta_precision",       meta[i].getPrecision()); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, "meta_storage_type",    ValueMeta.getStorageTypeCode(meta[i].getStorageType())); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, "meta_conversion_mask", meta[i].getConversionMask()); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, "meta_decimal_symbol",  meta[i].getDecimalSymbol()); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, "meta_grouping_symbol", meta[i].getGroupingSymbol()); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, "meta_currency_symbol", meta[i].getCurrencySymbol()); //$NON-NLS-1$
 			}
 		}
 		catch(Exception e)
@@ -720,12 +633,12 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
 			error_found=false;
 			
 			// Starting from selected fields in ...
-			for (int i=0;i< this.metaName.length;i++)
+			for (int i=0;i< this.meta.length;i++)
 			{
-				int idx = prev.indexOfValue(metaName[i]);
+				int idx = prev.indexOfValue(this.meta[i].getName());
 				if (idx<0)
 				{
-					error_message+="\t\t"+metaName[i]+Const.CR; //$NON-NLS-1$
+					error_message+="\t\t"+this.meta[i].getName()+Const.CR; //$NON-NLS-1$
 					error_found=true;
 				} 
 			}
@@ -819,16 +732,16 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
 	}
 
 	/**
-	 * @return the metaStorageType
+	 * @return the meta
 	 */
-	public int[] getMetaStorageType() {
-		return metaStorageType;
+	public SelectMetadataChange[] getMeta() {
+		return meta;
 	}
 
 	/**
-	 * @param metaStorageType the metaStorageType to set
+	 * @param meta the meta to set
 	 */
-	public void setMetaStorageType(int[] metaStorageType) {
-		this.metaStorageType = metaStorageType;
+	public void setMeta(SelectMetadataChange[] meta) {
+		this.meta = meta;
 	}
 }

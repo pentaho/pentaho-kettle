@@ -58,6 +58,7 @@ import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.selectvalues.Messages;
+import org.pentaho.di.trans.steps.selectvalues.SelectMetadataChange;
 import org.pentaho.di.trans.steps.selectvalues.SelectValuesMeta;
 import org.pentaho.di.ui.core.dialog.EnterMappingDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
@@ -359,7 +360,7 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 		fdlMeta.top  = new FormAttachment(0, 0);
 		wlMeta.setLayoutData(fdlMeta);
 		
-		final int MetaRows=input.getMetaName().length;
+		final int MetaRows=input.getMeta().length;
 		
 		ColumnInfo[] colmeta=new ColumnInfo[] {
 			new ColumnInfo(Messages.getString("SelectValuesDialog.ColumnInfo.Fieldname"),     ColumnInfo.COLUMN_TYPE_CCOMBO,   new String[]{Messages.getString("SelectValuesDialog.ColumnInfo.Loading")}, false ), //$NON-NLS-1$
@@ -368,6 +369,10 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 			new ColumnInfo(Messages.getString("SelectValuesDialog.ColumnInfo.Length"),        ColumnInfo.COLUMN_TYPE_TEXT,     false ), //$NON-NLS-1$
 			new ColumnInfo(Messages.getString("SelectValuesDialog.ColumnInfo.Precision"),     ColumnInfo.COLUMN_TYPE_TEXT,     false ), //$NON-NLS-1$
 			new ColumnInfo(Messages.getString("SelectValuesDialog.ColumnInfo.Storage.Label"), ColumnInfo.COLUMN_TYPE_CCOMBO,   new String[] {Messages.getString("System.Combo.Yes"), Messages.getString("System.Combo.No"), } ), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			new ColumnInfo(Messages.getString("SelectValuesDialog.ColumnInfo.Format"),        ColumnInfo.COLUMN_TYPE_CCOMBO,   Const.getConversionFormats() ), //$NON-NLS-1$
+			new ColumnInfo(Messages.getString("SelectValuesDialog.ColumnInfo.Decimal"),       ColumnInfo.COLUMN_TYPE_TEXT,     false),
+			new ColumnInfo(Messages.getString("SelectValuesDialog.ColumnInfo.Grouping"),      ColumnInfo.COLUMN_TYPE_TEXT,     false),
+			new ColumnInfo(Messages.getString("SelectValuesDialog.ColumnInfo.Currency"),      ColumnInfo.COLUMN_TYPE_TEXT,     false),
 		};
 		colmeta[5].setToolTip(Messages.getString("SelectValuesDialog.ColumnInfo.Storage.Tooltip"));
 		fieldColumns.add(colmeta[0]);
@@ -528,19 +533,26 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 		/*
 		 * Change the meta-data of certain fields
 		 */
-		if (input.getMetaName()!=null && input.getMetaName().length>0)
+		if (!Const.isEmpty(input.getMeta()))
 		{
-			for (int i=0;i<input.getMetaName().length;i++)
+			for (int i=0;i<input.getMeta().length;i++)
 			{
+				SelectMetadataChange change = input.getMeta()[i];
+				
 				TableItem item = wMeta.table.getItem(i);
-				if (input.getMetaName()[i]!=null) 
-					item.setText(1, input.getMetaName()     [i]);
-				if (input.getMetaRename()[i]!=null && !input.getMetaRename()[i].equals(input.getMetaName()[i]))
-					item.setText(2, input.getMetaRename()   [i]);
-				item.setText(3, ValueMeta.getTypeDesc( input.getMetaType()[i]) );
-				item.setText(4, input.getMetaLength()   [i]==-2?"":""+input.getMetaLength()   [i]); //$NON-NLS-1$ //$NON-NLS-2$
-				item.setText(5, input.getMetaPrecision()[i]==-2?"":""+input.getMetaPrecision()[i]); //$NON-NLS-1$ //$NON-NLS-2$
-				item.setText(6, input.getMetaStorageType()[i]==ValueMetaInterface.STORAGE_TYPE_NORMAL?Messages.getString("System.Combo.Yes"):Messages.getString("System.Combo.No")); //$NON-NLS-1$ //$NON-NLS-2$
+				item.setText( 1, Const.NVL(change.getName(), ""));
+				if (change.getRename()!=null && !change.getRename().equals(change.getName()))
+				{
+					item.setText(2, change.getRename());
+				}
+				item.setText( 3, ValueMeta.getTypeDesc( change.getType()) );
+				item.setText( 4, change.getLength()   ==-2?"":""+change.getLength()); //$NON-NLS-1$ //$NON-NLS-2$
+				item.setText( 5, change.getPrecision()==-2?"":""+change.getPrecision()); //$NON-NLS-1$ //$NON-NLS-2$
+				item.setText( 6, change.getStorageType()==ValueMetaInterface.STORAGE_TYPE_NORMAL?Messages.getString("System.Combo.Yes"):Messages.getString("System.Combo.No")); //$NON-NLS-1$ //$NON-NLS-2$
+				item.setText( 7, Const.NVL(change.getConversionMask(), ""));
+				item.setText( 8, Const.NVL(change.getDecimalSymbol(), ""));
+				item.setText( 9, Const.NVL(change.getGroupingSymbol(), ""));
+				item.setText(10, Const.NVL(change.getCurrencySymbol(), ""));
 			}
 			wMeta.setRowNums();
 			wMeta.optWidth(true);
@@ -595,18 +607,32 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 
 		for (int i=0;i<nrmeta;i++)
 		{
-			TableItem item = wMeta.getNonEmpty(i);
-			input.getMetaName()        [i] = item.getText(1);
-			input.getMetaRename()      [i] = item.getText(2);
-			if (input.getMetaRename()[i]==null || input.getMetaName()[i].length()==0)
-				input.getMetaRename()[i] = input.getMetaName()[i];
-			input.getMetaType()        [i] = ValueMeta.getType( item.getText(3) );
-			input.getMetaLength()      [i] = Const.toInt(item.getText(4), -2);
-			input.getMetaPrecision()   [i] = Const.toInt(item.getText(5), -2);
+			SelectMetadataChange change = new SelectMetadataChange();
+			input.getMeta()[i] = change;
 			
-			if (input.getMetaLength()   [i]<-2) input.getMetaLength()   [i]=-2;
-			if (input.getMetaPrecision()[i]<-2) input.getMetaPrecision()[i]=-2;
-			if (Messages.getString("System.Combo.Yes").equalsIgnoreCase(item.getText(6))) input.getMetaStorageType()[i]=ValueMetaInterface.STORAGE_TYPE_NORMAL;
+			TableItem item = wMeta.getNonEmpty(i);
+			
+			change.setName(item.getText(1));
+			change.setRename(item.getText(2));
+			if (Const.isEmpty(change.getRename()))
+			{
+				change.setRename(change.getName());
+			}
+			change.setType(ValueMeta.getType(item.getText(3)) );
+			change.setLength(Const.toInt(item.getText(4), -2));
+			change.setPrecision(Const.toInt(item.getText(5), -2));
+			
+			if (change.getLength()<-2) change.setLength(-2);
+			if (change.getPrecision()<-2) change.setPrecision(-2);
+			if (Messages.getString("System.Combo.Yes").equalsIgnoreCase(item.getText(6))) 
+			{
+				change.setStorageType(ValueMetaInterface.STORAGE_TYPE_NORMAL);
+			}
+			
+			change.setConversionMask(item.getText(7));
+			change.setDecimalSymbol(item.getText(8));
+			change.setGroupingSymbol(item.getText(9));
+			change.setCurrencySymbol(item.getText(10));
 		}
 		dispose();
 	}
