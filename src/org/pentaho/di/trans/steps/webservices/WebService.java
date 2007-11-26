@@ -2,6 +2,7 @@ package org.pentaho.di.trans.steps.webservices;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.UnknownHostException;
@@ -289,7 +290,7 @@ public class WebService extends BaseStep implements StepInterface
             }
             else
             {
-            	throw new KettleStepException(Messages.getString("WebServices.ERROR0001.ServerError", Integer.toString(responseCode), new String(vHttpMethod.getResponseBody())) );
+            	throw new KettleStepException(Messages.getString("WebServices.ERROR0001.ServerError", Integer.toString(responseCode), Const.NVL(new String(vHttpMethod.getResponseBody()), "")) );
             }
             requestTime += Const.nanoTime() - currentRequestTime;
         }
@@ -365,32 +366,39 @@ public class WebService extends BaseStep implements StepInterface
 
     private void processRows(InputStream anXml) throws KettleStepException
     {
-    	/*
-    	try
+    	// First we should get the complete string
+    	// The problem is that the string can contain XML or any other format such as HTML saying the service is no longer available.
+    	// We're talking about a WEB service here.
+    	// As such, to keep the original parsing scheme, we first read the content.
+    	// Then we create an input stream from the content again.
+    	// It's elaborate, but that way we can report on the failure more correctly.
+    	//
+    	
+		StringBuffer response = new StringBuffer();
+		try
     	{
-    		StringBuffer buffer = new StringBuffer();
     		int c=anXml.read();
     		while (c>=0)
     		{
-    			buffer.append((char)c);
+    			response.append((char)c);
     			c=anXml.read();
     		}
     		anXml.close();
-    		System.out.println(buffer.toString());
-    		return;
     	}
     	catch(Exception e)
     	{
-    		e.printStackTrace();
+    		throw new KettleStepException("Unable to read web service response data from input stream", e);
     	}
-    	*/
+    	
+    	// Create a new reader to feed into the XML Input Factory below...
+    	//
+    	StringReader stringReader = new StringReader(response.toString());
     	
     	// TODO Very empirical : see if we can do something better here
-    	// TODO Fix problem with parsing supplied DTD information
         try
         {
             XMLInputFactory vFactory = XMLInputFactory.newInstance();
-            XMLStreamReader vReader = vFactory.createXMLStreamReader(anXml);
+            XMLStreamReader vReader = vFactory.createXMLStreamReader(stringReader);
             
             Object[] outputRowData = RowDataUtil.allocateRowData(data.outputRowMeta.size());
             int outputIndex = 0;
@@ -570,8 +578,7 @@ public class WebService extends BaseStep implements StepInterface
         }
         catch (Exception e)
         {
-            //System.out.println(xml.toString());
-            throw new KettleStepException(Messages.getString("WebServices.ERROR0010.OutputParsingError"), e);
+            throw new KettleStepException(Messages.getString("WebServices.ERROR0010.OutputParsingError", response.toString()), e);
         }
     }
     
