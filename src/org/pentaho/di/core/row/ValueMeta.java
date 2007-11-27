@@ -870,7 +870,14 @@ public class ValueMeta implements ValueMetaInterface
         }
         */
         
-        return new BigDecimal( string );
+        try
+        {
+        	return new BigDecimal( string );
+        }
+        catch(NumberFormatException e)
+        {
+        	throw new KettleValueException(toString()+" : couldn't convert string value '" + string + "' to a number.");
+        }
     }
 
     // BOOLEAN + STRING
