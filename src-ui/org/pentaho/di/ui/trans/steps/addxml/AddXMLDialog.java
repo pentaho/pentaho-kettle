@@ -25,6 +25,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.events.FocusAdapter;
+import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -159,6 +161,7 @@ public class AddXMLDialog extends BaseStepDialog implements StepDialogInterface
         ///
         wContentTab=new CTabItem(wTabFolder, SWT.NONE);
         wContentTab.setText(Messages.getString("AddXMLDialog.ContentTab.TabTitle"));
+        
 
         FormLayout contentLayout = new FormLayout ();
         contentLayout.marginWidth  = 3;
@@ -271,7 +274,7 @@ public class AddXMLDialog extends BaseStepDialog implements StepDialogInterface
 
         wContentComp.layout();
         wContentTab.setControl(wContentComp);
-
+        
         /////////////////////////////////////////////////////////////
         /// END OF CONTENT TAB
         /////////////////////////////////////////////////////////////
@@ -427,6 +430,8 @@ public class AddXMLDialog extends BaseStepDialog implements StepDialogInterface
             String defEncoding = Const.getEnvironmentVariable("file.encoding", "UTF-8");
             int idx = Const.indexOfString(defEncoding, wEncoding.getItems() );
             if (idx>=0) wEncoding.select( idx );
+            else 
+            	wEncoding.select(Const.indexOfString("UTF-8", wEncoding.getItems() ));
         }
     }
 
