@@ -6515,21 +6515,21 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	
 	public void consume(LifeEventInfo info)
 	{
-		if (PropsUI.getInstance().isListenerDisabled(info.getName()))
-			return;
-		
-		if (info.hasHint(LifeEventInfo.Hint.DISPLAY_BROWSER))
-		{
-			delegates.tabs.addSpoonBrowser(info.getName(),info.getMessage(),false);
-			
-		}
-		else
-		{
-			MessageBox box = new MessageBox(shell, (info.getState()!=LifeEventInfo.State.SUCCESS?SWT.ICON_ERROR:SWT.ICON_INFORMATION) | SWT.OK);
-			box.setText(info.getName());
-            box.setMessage(info.getMessage());
-			box.open();
-		}
+//		if (PropsUI.getInstance().isListenerDisabled(info.getName()))
+//			return;
+//		
+//		if (info.hasHint(LifeEventInfo.Hint.DISPLAY_BROWSER))
+//		{
+//			delegates.tabs.addSpoonBrowser(info.getName(),info.getMessage(),false);
+//			
+//		}
+//		else
+//		{
+//			MessageBox box = new MessageBox(shell, (info.getState()!=LifeEventInfo.State.SUCCESS?SWT.ICON_ERROR:SWT.ICON_INFORMATION) | SWT.OK);
+//			box.setText(info.getName());
+//            box.setMessage(info.getMessage());
+//			box.open();
+//		}
 		
 	}
 
