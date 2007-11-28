@@ -72,6 +72,10 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
     private TextVar      wSortSize;
     private FormData     fdlSortSize, fdSortSize;
 
+    private Label        wlFreeMemory;
+    private TextVar      wFreeMemory;
+    private FormData     fdlFreeMemory, fdFreeMemory;
+
     private Label        wlCompress;
     private CheckBoxVar  wCompress;
     private FormData     fdlCompress, fdCompress;
@@ -228,6 +232,26 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
         fdSortSize.right = new FormAttachment(100, 0);
         wSortSize.setLayoutData(fdSortSize);
 
+        // Maximum number of lines to keep in memory before using temporary files
+        wlFreeMemory=new Label(shell, SWT.RIGHT);
+        wlFreeMemory.setText(Messages.getString("SortRowsDialog.FreeMemory.Label"));
+        wlFreeMemory.setToolTipText(Messages.getString("SortRowsDialog.FreeMemory.ToolTip"));
+        props.setLook(wlFreeMemory);
+        fdlFreeMemory=new FormData();
+        fdlFreeMemory.left = new FormAttachment(0, 0);
+        fdlFreeMemory.right= new FormAttachment(middle, -margin);
+        fdlFreeMemory.top  = new FormAttachment(wSortSize, margin*2);
+        wlFreeMemory.setLayoutData(fdlFreeMemory);
+        wFreeMemory=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+        wFreeMemory.setToolTipText(Messages.getString("SortRowsDialog.FreeMemory.ToolTip"));
+        props.setLook(wFreeMemory);
+        wFreeMemory.addModifyListener(lsMod);
+        fdFreeMemory=new FormData();
+        fdFreeMemory.left  = new FormAttachment(middle, 0);
+        fdFreeMemory.top   = new FormAttachment(wSortSize, margin*2);
+        fdFreeMemory.right = new FormAttachment(100, 0);
+        wFreeMemory.setLayoutData(fdFreeMemory);
+
         // Using compression for temporary files?
         wlCompress=new Label(shell, SWT.RIGHT);
         wlCompress.setText(Messages.getString("SortRowsDialog.Compress.Label"));
@@ -235,13 +259,13 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
         fdlCompress=new FormData();
         fdlCompress.left = new FormAttachment(0, 0);
         fdlCompress.right= new FormAttachment(middle, -margin);
-        fdlCompress.top  = new FormAttachment(wSortSize, margin*2);
+        fdlCompress.top  = new FormAttachment(wFreeMemory, margin*2);
         wlCompress.setLayoutData(fdlCompress);
         wCompress=new CheckBoxVar(transMeta, shell, SWT.CHECK, "");
         props.setLook(wCompress);
         fdCompress=new FormData();
         fdCompress.left  = new FormAttachment(middle, 0);
-        fdCompress.top   = new FormAttachment(wSortSize, margin*2);
+        fdCompress.top   = new FormAttachment(wFreeMemory, margin*2);
         fdCompress.right = new FormAttachment(100, 0);
         wCompress.setLayoutData(fdCompress);
         wCompress.addSelectionListener(new SelectionAdapter() 
@@ -329,6 +353,7 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 		wSortDir.addSelectionListener( lsDef );
 		wPrefix.addSelectionListener( lsDef );
 		wSortSize.addSelectionListener( lsDef );
+		wFreeMemory.addSelectionListener( lsDef );
 		
 		// Detect X or ALT-F4 or something that kills this window...
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
@@ -368,6 +393,7 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 		if (input.getPrefix() != null) wPrefix.setText(input.getPrefix());
 		if (input.getDirectory() != null) wSortDir.setText(input.getDirectory());
 		wSortSize.setText(Const.NVL(input.getSortSize(), ""));
+		wFreeMemory.setText(Const.NVL(input.getFreeMemoryLimit(), ""));
 		wCompress.setSelection(input.getCompressFiles());
 		wCompress.setVariableName(input.getCompressFilesVariable());
 		wUniqueRows.setSelection(input.isOnlyPassingUniqueRows());
@@ -405,6 +431,7 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 		input.setPrefix( wPrefix.getText() );
 		input.setDirectory( wSortDir.getText() );
         input.setSortSize( wSortSize.getText() );
+        input.setFreeMemoryLimit( wFreeMemory.getText() );
         log.logDetailed("Sort rows", "Compression is set to " + wCompress.getSelection());
         input.setCompressFiles(wCompress.getSelection());
         input.setCompressFilesVariable(wCompress.getVariableName());
