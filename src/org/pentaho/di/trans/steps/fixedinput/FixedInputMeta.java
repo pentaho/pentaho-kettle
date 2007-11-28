@@ -55,6 +55,17 @@ import org.w3c.dom.Node;
 		category=StepCategory.CATEGORY_INPUT)
 public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface
 {
+	public static final int FILE_TYPE_NONE = 0;
+	public static final int FILE_TYPE_UNIX = 1;
+	public static final int FILE_TYPE_DOS  = 2;
+	
+	public static final String[] fileTypeCode = new String[] { "NONE", "UNIX", "DOS", };
+	public static final String[] fileTypeDesc = new String[] { 
+			Messages.getString("FixedFileInputMeta.FileType.None.Desc"),
+			Messages.getString("FixedFileInputMeta.FileType.Unix.Desc"),
+			Messages.getString("FixedFileInputMeta.FileType.Dos.Desc"),
+		};
+
 	private String filename;
 	
 	private boolean headerPresent;
@@ -68,6 +79,8 @@ public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface
 	private boolean lineFeedPresent;
 
 	private boolean runningInParallel;
+	
+	private int     fileType;
 
 	private FixedFileInputField fieldDefinition[];
 
@@ -109,7 +122,8 @@ public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface
 			lineFeedPresent = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "line_feed"));
 			lazyConversionActive = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "lazy_conversion"));
 			runningInParallel = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "parallel"));
-
+			fileType = getFileType( XMLHandler.getTagValue(stepnode, "file_type") );
+			
 			Node fields = XMLHandler.getSubNode(stepnode, "fields");
 			int nrfields = XMLHandler.countNodes(fields, "field");
 			
@@ -142,6 +156,7 @@ public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface
 		retval.append("    ").append(XMLHandler.addTagValue("lazy_conversion", lazyConversionActive));
 		retval.append("    ").append(XMLHandler.addTagValue("line_feed", lineFeedPresent));
 		retval.append("    ").append(XMLHandler.addTagValue("parallel", runningInParallel));
+		retval.append("    ").append(XMLHandler.addTagValue("file_type", getFileTypeCode()));
 
 		retval.append("    <fields>").append(Const.CR);
 		for (int i = 0; i < fieldDefinition.length; i++)
@@ -165,6 +180,7 @@ public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface
 			bufferSize = rep.getStepAttributeString(id_step, "buffer_size");
 			lazyConversionActive = rep.getStepAttributeBoolean(id_step, "lazy_conversion");
 			runningInParallel = rep.getStepAttributeBoolean(id_step, "parallel");
+			fileType = getFileType( rep.getStepAttributeString(id_step, "file_type") );
 			
 			int nrfields = rep.countNrStepAttributes(id_step, "field_name");
 
@@ -203,6 +219,7 @@ public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "lazy_conversion", lazyConversionActive);
 			rep.saveStepAttribute(id_transformation, id_step, "line_feed", lineFeedPresent);
 			rep.saveStepAttribute(id_transformation, id_step, "parallel", runningInParallel);
+			rep.saveStepAttribute(id_transformation, id_step, "file_type", getFileTypeCode(fileType));
 
 			for (int i = 0; i < fieldDefinition.length; i++)
 			{
@@ -415,5 +432,56 @@ public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface
 			 reference.getEntries().add( new ResourceEntry(transMeta.environmentSubstitute(filename), ResourceType.FILE));
 		 }
 		 return references;
+	}
+
+	/**
+	 * @return the fileType
+	 */
+	public int getFileType() {
+		return fileType;
+	}
+
+	/**
+	 * @param fileType the fileType to set
+	 */
+	public void setFileType(int fileType) {
+		this.fileType = fileType;
+	}
+	
+	public static final String getFileTypeCode(int fileType) {
+		return fileTypeCode[fileType];
+	}
+
+	public static final String getFileTypeDesc(int fileType) {
+		return fileTypeDesc[fileType];
+	}
+
+	public String getFileTypeCode() {
+		return getFileTypeCode(fileType);
+	}
+
+	public String getFileTypeDesc() {
+		return getFileTypeDesc(fileType);
+	}
+
+	public static final int getFileType(String fileTypeCode) {
+		int t = Const.indexOfString(fileTypeCode, FixedInputMeta.fileTypeCode);
+		if (t >= 0) return t;
+		t = Const.indexOfString(fileTypeCode, FixedInputMeta.fileTypeDesc);
+		if (t >= 0) return t;
+		return FILE_TYPE_NONE;
+	}
+
+	public int getLineSeparatorLength() {
+		if (isLineFeedPresent()) {
+			switch(fileType) {
+			case FILE_TYPE_NONE : return 0;
+			case FILE_TYPE_UNIX : return 1;
+			case FILE_TYPE_DOS  : return 2;
+			default: return 0;
+			}
+		} else {
+			return 0;
+		}
 	}
 }

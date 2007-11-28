@@ -253,11 +253,12 @@ public class FixedInput extends BaseStep implements StepInterface
 				//
 				if (meta.isRunningInParallel()) {
 					
-	                long nrRows = data.fileSize / data.lineWidth; // 100.000 / 100 = 1000 rows
+					int totalLineWidth = data.lineWidth + meta.getLineSeparatorLength(); // including line separator bytes
+	                long nrRows = data.fileSize / totalLineWidth; // 100.000 / 100 = 1000 rows
 	                long rowsToSkip = Math.round( data.stepNumber * nrRows / (double)data.totalNumberOfSteps );  // 0, 333, 667
 	                long nextRowsToSkip = Math.round( (data.stepNumber+1) * nrRows / (double)data.totalNumberOfSteps );  // 333, 667, 1000
 	                data.rowsToRead = nextRowsToSkip - rowsToSkip;
-	                long bytesToSkip = rowsToSkip*data.lineWidth;
+	                long bytesToSkip = rowsToSkip * totalLineWidth;
 	             
 	                logBasic("Step #"+data.stepNumber+" is skipping "+bytesToSkip+" to position in file, then it's reading "+data.rowsToRead+" rows.");
 

@@ -24,6 +24,7 @@ import java.util.List;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -82,6 +83,9 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
 	private TableView    wFields;
 
 	private Button wRunningInParallel;
+	
+	private Label  wlFileType;
+	private CCombo wFileType;
 	
 	private List<FixedFileInputField> fields;
     
@@ -283,9 +287,34 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
 		FormData fdRunningInParallel = new FormData();
 		fdRunningInParallel.top  = new FormAttachment(lastControl, margin);
 		fdRunningInParallel.left = new FormAttachment(middle, 0);
-		fdRunningInParallel.right= new FormAttachment(100, 0);
 		wRunningInParallel.setLayoutData(fdRunningInParallel);
-		lastControl = wRunningInParallel;
+
+		// The file type...
+		//
+		wlFileType = new Label(shell, SWT.RIGHT);
+		wlFileType.setText(Messages.getString("FixedInputDialog.FileType.Label")); //$NON-NLS-1$
+		wlFileType.setToolTipText(Messages.getString("FixedInputDialog.FileType.ToolTip")); //$NON-NLS-1$
+ 		props.setLook(wlFileType);
+		FormData fdlFileType = new FormData();
+		fdlFileType.top  = new FormAttachment(lastControl, margin);
+		fdlFileType.left = new FormAttachment(wRunningInParallel, margin*2);
+		wlFileType.setLayoutData(fdlFileType);
+		wFileType = new CCombo(shell, SWT.BORDER | SWT.READ_ONLY);
+		wFileType.setToolTipText(Messages.getString("FixedInputDialog.FileType.ToolTip")); //$NON-NLS-1$
+ 		props.setLook(wFileType);
+ 		wFileType.setItems(FixedInputMeta.fileTypeDesc);
+		FormData fdFileType = new FormData();
+		fdFileType.top  = new FormAttachment(lastControl, margin);
+		fdFileType.left = new FormAttachment(wlFileType, margin);
+		fdFileType.right= new FormAttachment(100, 0);
+		wFileType.setLayoutData(fdFileType);
+		lastControl = wFileType;
+		
+		wRunningInParallel.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent event) {
+				enableFields();
+			}
+		});
 		
 		// Some buttons first, so that the dialog scales nicely...
 		//
@@ -411,6 +440,14 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
 		return stepname;
 	}
 	
+	protected void enableFields() {
+		boolean enabled = wRunningInParallel.getSelection();
+		wlFileType.setVisible(enabled);
+		wlFileType.setEnabled(enabled);
+		wFileType.setVisible(enabled);
+		wFileType.setEnabled(enabled);
+	}
+
 	/**
 	 * Copy information from the meta-data input to the dialog fields.
 	 */ 
@@ -424,7 +461,8 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
 		wLazyConversion.setSelection(inputMeta.isLazyConversionActive());
 		wHeaderPresent.setSelection(inputMeta.isHeaderPresent());
 		wRunningInParallel.setSelection(inputMeta.isRunningInParallel());
-
+		wFileType.setText(inputMeta.getFileTypeDesc());
+		
 		for (int i=0;i<inputMeta.getFieldDefinition().length;i++) {
 			TableItem item = new TableItem(wFields.table, SWT.NONE);
 			int colnr=1;
@@ -444,6 +482,8 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
 		wFields.removeEmptyRows();
 		wFields.setRowNums();
 		wFields.optWidth(true);
+		
+		enableFields();
 		
 		wStepname.selectAll();
 	}
@@ -475,7 +515,8 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
 		fixedInputMeta.setHeaderPresent(wHeaderPresent.getSelection());
 		fixedInputMeta.setLineFeedPresent(wLineFeedPresent.getSelection());
 		fixedInputMeta.setRunningInParallel(wRunningInParallel.getSelection());
-
+		fixedInputMeta.setFileType(FixedInputMeta.getFileType(wFileType.getText()));
+		
     	int nrNonEmptyFields = wFields.nrNonEmpty(); 
 		fixedInputMeta.allocate(nrNonEmptyFields);
 
