@@ -15,6 +15,7 @@ package org.pentaho.di.trans.steps.calculator;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
 import org.w3c.dom.Node;
@@ -129,6 +130,11 @@ public class CalculatorMetaFunction implements Cloneable
     private int    valueLength;
     private int    valuePrecision;
     
+    private String conversionMask;
+    private String decimalSymbol;
+    private String groupingSymbol;
+    private String currencySymbol;
+    
     private boolean removedFromResult;
     
     /**
@@ -140,8 +146,12 @@ public class CalculatorMetaFunction implements Cloneable
      * @param valueType
      * @param valueLength
      * @param valuePrecision
+     * @param conversionMask 
+     * @param decimalSymbol 
+     * @param groupingSymbol 
+     * @param currencySymbol 
      */
-    public CalculatorMetaFunction(String fieldName, int calcType, String fieldA, String fieldB, String fieldC, int valueType, int valueLength, int valuePrecision, boolean removedFromResult)
+    public CalculatorMetaFunction(String fieldName, int calcType, String fieldA, String fieldB, String fieldC, int valueType, int valueLength, int valuePrecision, boolean removedFromResult, String conversionMask, String decimalSymbol, String groupingSymbol, String currencySymbol)
     {
         this.fieldName = fieldName;
         this.calcType = calcType;
@@ -152,6 +162,10 @@ public class CalculatorMetaFunction implements Cloneable
         this.valueLength = valueLength;
         this.valuePrecision = valuePrecision;
         this.removedFromResult = removedFromResult;
+        this.conversionMask = conversionMask;
+        this.decimalSymbol = decimalSymbol;
+        this.groupingSymbol = groupingSymbol;
+        this.currencySymbol = currencySymbol;
     }
 
     public boolean equals(Object obj)
@@ -193,6 +207,10 @@ public class CalculatorMetaFunction implements Cloneable
         xml+=XMLHandler.addTagValue("value_length",    valueLength);
         xml+=XMLHandler.addTagValue("value_precision", valuePrecision);
         xml+=XMLHandler.addTagValue("remove",          removedFromResult);
+        xml+=XMLHandler.addTagValue("conversion_mask", conversionMask);
+        xml+=XMLHandler.addTagValue("decimal_symbol",  decimalSymbol);
+        xml+=XMLHandler.addTagValue("grouping_symbol", groupingSymbol);
+        xml+=XMLHandler.addTagValue("currency_symbol", currencySymbol);
         
         xml+="</"+XML_TAG+">";
      
@@ -210,9 +228,34 @@ public class CalculatorMetaFunction implements Cloneable
         valueLength    = Const.toInt( XMLHandler.getTagValue(calcnode, "value_length"), -1 );
         valuePrecision = Const.toInt( XMLHandler.getTagValue(calcnode, "value_precision"), -1 );
         removedFromResult = "Y".equalsIgnoreCase(XMLHandler.getTagValue(calcnode, "remove"));
+        conversionMask = XMLHandler.getTagValue(calcnode, "conversion_mask");
+        decimalSymbol  = XMLHandler.getTagValue(calcnode, "decimal_symbol");
+        groupingSymbol = XMLHandler.getTagValue(calcnode, "grouping_symbol");
+        currencySymbol = XMLHandler.getTagValue(calcnode, "currency_symbol");
+        
+        // Fix 2.x backward compatibility
+        // The conversion mask was added in a certain revision.
+        // Anything that we load from before then should get masks set to retain backward compatibility
+        //
+        if (XMLHandler.getSubNode(calcnode, "conversion_mask")==null) {
+            fixBackwardCompatibility();
+        }
     }
     
-    public void saveRep(Repository rep, long id_transformation, long id_step, int nr) throws KettleException
+    private void fixBackwardCompatibility() {
+        if (valueType==ValueMetaInterface.TYPE_INTEGER) {
+        	if (Const.isEmpty(conversionMask)) conversionMask="0"; 
+        	if (Const.isEmpty(decimalSymbol)) decimalSymbol="."; 
+        	if (Const.isEmpty(groupingSymbol)) groupingSymbol=","; 
+        }
+        if (valueType==ValueMetaInterface.TYPE_NUMBER) {
+        	if (Const.isEmpty(conversionMask)) conversionMask="0.0"; 
+        	if (Const.isEmpty(decimalSymbol)) decimalSymbol="."; 
+        	if (Const.isEmpty(groupingSymbol)) groupingSymbol=","; 
+        }
+	}
+
+	public void saveRep(Repository rep, long id_transformation, long id_step, int nr) throws KettleException
     {
         rep.saveStepAttribute(id_transformation, id_step, nr, "field_name",          fieldName);
         rep.saveStepAttribute(id_transformation, id_step, nr, "calc_type",           getCalcTypeDesc());
@@ -223,19 +266,35 @@ public class CalculatorMetaFunction implements Cloneable
         rep.saveStepAttribute(id_transformation, id_step, nr, "value_length",        valueLength);
         rep.saveStepAttribute(id_transformation, id_step, nr, "value_precision",     valuePrecision);
         rep.saveStepAttribute(id_transformation, id_step, nr, "remove",              removedFromResult);
+        rep.saveStepAttribute(id_transformation, id_step, nr, "conversion_mask",     conversionMask);
+        rep.saveStepAttribute(id_transformation, id_step, nr, "decimal_symbol",      decimalSymbol);
+        rep.saveStepAttribute(id_transformation, id_step, nr, "grouping_symbol",     groupingSymbol);
+        rep.saveStepAttribute(id_transformation, id_step, nr, "currency_symbol",     currencySymbol);
     }
 
     public CalculatorMetaFunction(Repository rep, long id_step, int nr) throws KettleException
     {
-        fieldName      = rep.getStepAttributeString(id_step, nr, "field_name");
-        calcType       = getCalcFunctionType( rep.getStepAttributeString(id_step, nr, "calc_type") );
-        fieldA         = rep.getStepAttributeString(id_step, nr, "field_a");
-        fieldB         = rep.getStepAttributeString(id_step, nr, "field_b");
-        fieldC         = rep.getStepAttributeString(id_step, nr, "field_c");
-        valueType      = ValueMeta.getType( rep.getStepAttributeString(id_step, nr, "value_type") );
-        valueLength    = (int)rep.getStepAttributeInteger(id_step, nr,  "value_length");
-        valuePrecision = (int)rep.getStepAttributeInteger(id_step, nr, "value_precision");
+        fieldName         = rep.getStepAttributeString(id_step, nr, "field_name");
+        calcType          = getCalcFunctionType( rep.getStepAttributeString(id_step, nr, "calc_type") );
+        fieldA            = rep.getStepAttributeString(id_step, nr, "field_a");
+        fieldB            = rep.getStepAttributeString(id_step, nr, "field_b");
+        fieldC            = rep.getStepAttributeString(id_step, nr, "field_c");
+        valueType         = ValueMeta.getType( rep.getStepAttributeString(id_step, nr, "value_type") );
+        valueLength       = (int)rep.getStepAttributeInteger(id_step, nr,  "value_length");
+        valuePrecision    = (int)rep.getStepAttributeInteger(id_step, nr, "value_precision");
         removedFromResult = rep.getStepAttributeBoolean(id_step, nr, "remove");
+        conversionMask    = rep.getStepAttributeString(id_step, nr, "conversion_mask");
+        decimalSymbol     = rep.getStepAttributeString(id_step, nr, "decimal_symbol");
+        groupingSymbol    = rep.getStepAttributeString(id_step, nr, "grouping_symbol");
+        currencySymbol    = rep.getStepAttributeString(id_step, nr, "currency_symbol");
+        
+        // Fix 2.x backward compatibility
+        // The conversion mask was added in a certain revision.
+        // Anything that we load from before then should get masks set to retain backward compatibility
+        //
+        if (rep.findStepAttributeID(id_step, nr, "conversion_mask")<0) {
+        	fixBackwardCompatibility();
+        }
     }
     
     public static final int getCalcFunctionType(String desc)
@@ -412,4 +471,60 @@ public class CalculatorMetaFunction implements Cloneable
     {
         this.removedFromResult = removedFromResult;
     }
+
+	/**
+	 * @return the conversionMask
+	 */
+	public String getConversionMask() {
+		return conversionMask;
+	}
+
+	/**
+	 * @param conversionMask the conversionMask to set
+	 */
+	public void setConversionMask(String conversionMask) {
+		this.conversionMask = conversionMask;
+	}
+
+	/**
+	 * @return the decimalSymbol
+	 */
+	public String getDecimalSymbol() {
+		return decimalSymbol;
+	}
+
+	/**
+	 * @param decimalSymbol the decimalSymbol to set
+	 */
+	public void setDecimalSymbol(String decimalSymbol) {
+		this.decimalSymbol = decimalSymbol;
+	}
+
+	/**
+	 * @return the groupingSymbol
+	 */
+	public String getGroupingSymbol() {
+		return groupingSymbol;
+	}
+
+	/**
+	 * @param groupingSymbol the groupingSymbol to set
+	 */
+	public void setGroupingSymbol(String groupingSymbol) {
+		this.groupingSymbol = groupingSymbol;
+	}
+
+	/**
+	 * @return the currencySymbol
+	 */
+	public String getCurrencySymbol() {
+		return currencySymbol;
+	}
+
+	/**
+	 * @param currencySymbol the currencySymbol to set
+	 */
+	public void setCurrencySymbol(String currencySymbol) {
+		this.currencySymbol = currencySymbol;
+	}
 }

@@ -169,6 +169,10 @@ public class CalculatorMeta extends BaseStepMeta implements StepMetaInterface
         v.setPrecision(fn.getValuePrecision());
         v.setOrigin(origin);
         v.setComments(fn.getCalcTypeDesc());
+        v.setConversionMask(fn.getConversionMask());
+        v.setDecimalSymbol(fn.getDecimalSymbol());
+        v.setGroupingSymbol(fn.getGroupingSymbol());
+        v.setCurrencySymbol(fn.getCurrencySymbol());
         
         // What if the user didn't specify a data type?
         // In that case we look for the default data type
