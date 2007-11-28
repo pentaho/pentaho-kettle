@@ -168,7 +168,7 @@
         <javadoc 
         	destdir="${api}" 
         	access="public" 
-        	source="1.4" 
+        	source="1.5" 
         	use="true" 
         	notree="false" 
         	nonavbar="false" 
@@ -182,7 +182,7 @@
         	packagenames ="org.pentaho.di.*" 
         	sourcepath="${src}" 
         	doctitle="Kettle API documentation">
-            <link href="http://java.sun.com/j2se/1.4.2/docs/api/"/>
+            <link href="http://java.sun.com/j2se/1.5.0/docs/api/"/>
 
         	<classpath refid="cp-kettle"/>
 
@@ -210,7 +210,7 @@
 	  	<jar jarfile="${lib}/kettle-engine-3.0.jar" 
 	    	 basedir="${classes}" 
 	    	 includes="**/* ${version.file.path}"
-	  	     excludes="**/Thumbs.db **/kettle.jar **/derbyOld/* **/derbyNew/*"
+	  	     excludes="**/Thumbs.db **/*.jar **/derbyOld/* **/derbyNew/* org/pentaho/di/run/**/*.ktr org/pentaho/di/run/**/*.txt org/pentaho/di/run/**/*.xls org/pentaho/di/run/**/*.swp org/pentaho/di/ui/**/*"
 	  		>
                 <manifest>
                     <attribute name="Implementation-Title" value="${impl.title.engine}" />
