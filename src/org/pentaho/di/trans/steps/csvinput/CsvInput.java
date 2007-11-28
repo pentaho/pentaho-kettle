@@ -340,10 +340,10 @@ public class CsvInput extends BaseStep implements StepInterface
 				
 				data.delimiter = environmentSubstitute(meta.getDelimiter()).getBytes();
 
-				if( meta.getEnclosure() != null ) {
-					data.enclosure = environmentSubstitute(meta.getEnclosure()).getBytes();
-				} else {
+				if( Const.isEmpty(meta.getEnclosure()) ) {
 					data.enclosure = null;
+				} else {
+					data.enclosure = environmentSubstitute(meta.getEnclosure()).getBytes();
 				}
 				
 				return true;
