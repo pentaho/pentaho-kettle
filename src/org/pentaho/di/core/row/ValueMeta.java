@@ -1383,9 +1383,9 @@ public class ValueMeta implements ValueMetaInterface
 	        case TYPE_NUMBER:
 	            switch(storageType)
 	            {
-	            case STORAGE_TYPE_NORMAL:         return new Long( ((Double)object).longValue() );
-	            case STORAGE_TYPE_BINARY_STRING:  return new Long( ((Double)convertBinaryStringToNativeType((byte[])object)).longValue() );
-	            case STORAGE_TYPE_INDEXED:        return new Long( ((Double)index[((Integer)object).intValue()]).longValue() );
+	            case STORAGE_TYPE_NORMAL:         return new Long( Math.round(((Double)object).doubleValue()) );
+	            case STORAGE_TYPE_BINARY_STRING:  return new Long( Math.round(((Double)convertBinaryStringToNativeType((byte[])object)).doubleValue()) );
+	            case STORAGE_TYPE_INDEXED:        return new Long( Math.round(((Double)index[((Integer)object).intValue()]).doubleValue()) );
 	            default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
 	            }
 	        case TYPE_DATE:
