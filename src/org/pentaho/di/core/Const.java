@@ -1814,4 +1814,17 @@ public class Const
 		}
 		return emptyPaddedSpacesStrings;
 	}
+	
+	public static final int getPercentageFreeMemory()
+	{
+		Runtime runtime = Runtime.getRuntime();
+		long maxMemory = runtime.maxMemory();
+		long allocatedMemory = runtime.totalMemory();
+		long freeMemory = runtime.freeMemory();
+		long totalFreeMemory = (freeMemory + (maxMemory - allocatedMemory));
+		
+		int percentage = (int)Math.round(100*(double)totalFreeMemory / (double)maxMemory);
+		
+		return percentage;
+	}
 }
