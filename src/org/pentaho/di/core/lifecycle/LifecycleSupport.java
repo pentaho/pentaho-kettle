@@ -25,7 +25,8 @@ public class LifecycleSupport implements LifecycleListener
 			try
 			{
 				lifeListeners.add(clazz.newInstance());
-			} catch (Exception e)
+			} 
+			catch (Throwable e)
 			{
 				log.logError("Spoon", "Unable to init listener:" + e.getMessage(), new Object[] {});
 				continue;
