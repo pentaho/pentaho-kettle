@@ -59,6 +59,9 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
 
     /** The sort size: number of rows sorted and kept in memory */
     private String  sortSize;
+    
+    /** The free memory limit in percentages in case we don't use the sort size */
+    private String  freeMemoryLimit;
 
     /** The sort size: number of rows sorted and kept in memory */
     private boolean onlyPassingUniqueRows;
@@ -178,7 +181,7 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
             directory = XMLHandler.getTagValue(stepnode, "directory");
             prefix = XMLHandler.getTagValue(stepnode, "prefix");
             sortSize = XMLHandler.getTagValue(stepnode, "sort_size");
-            if (Const.isEmpty(sortSize)) sortSize = Integer.toString(Const.SORT_SIZE);
+            freeMemoryLimit = XMLHandler.getTagValue(stepnode, "free_memory");
             compressFiles = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "compress"));
             compressFilesVariable = XMLHandler.getTagValue(stepnode, "compress_variable");
             onlyPassingUniqueRows = "Y".equalsIgnoreCase( XMLHandler.getTagValue(stepnode, "unique_rows") );
@@ -209,7 +212,8 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
     {
         directory = "%%java.io.tmpdir%%";
         prefix = "out";
-        sortSize = Integer.toString(Const.SORT_SIZE);
+        sortSize = null;
+        freeMemoryLimit = "25";
         compressFiles = false;
         compressFilesVariable = null;
         onlyPassingUniqueRows = false;
@@ -232,6 +236,7 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
         retval.append("      ").append(XMLHandler.addTagValue("directory", directory));
         retval.append("      ").append(XMLHandler.addTagValue("prefix", prefix));
         retval.append("      ").append(XMLHandler.addTagValue("sort_size", sortSize));
+        retval.append("      ").append(XMLHandler.addTagValue("free_memory", freeMemoryLimit));
         retval.append("      ").append(XMLHandler.addTagValue("compress", compressFiles));
         retval.append("      ").append(XMLHandler.addTagValue("compress_variable", compressFilesVariable));
         retval.append("      ").append(XMLHandler.addTagValue("unique_rows", onlyPassingUniqueRows));
@@ -263,7 +268,7 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
             else {
             	sortSize = rep.getStepAttributeString(id_step, "sort_size");
             }
-            if (Const.isEmpty(sortSize)) sortSize = Integer.toString(Const.SORT_SIZE);
+            freeMemoryLimit = rep.getStepAttributeString(id_step, "free_memory");
             
             compressFiles = rep.getStepAttributeBoolean(id_step, "compress");
             compressFilesVariable = rep.getStepAttributeString(id_step, "compress_variable");
@@ -294,6 +299,7 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
             rep.saveStepAttribute(id_transformation, id_step, "directory", directory);
             rep.saveStepAttribute(id_transformation, id_step, "prefix", prefix);
             rep.saveStepAttribute(id_transformation, id_step, "sort_size", sortSize);
+            rep.saveStepAttribute(id_transformation, id_step, "free_memory", freeMemoryLimit);
             rep.saveStepAttribute(id_transformation, id_step, "compress", compressFiles);
             rep.saveStepAttribute(id_transformation, id_step, "compress_variable", compressFilesVariable);
             rep.saveStepAttribute(id_transformation, id_step, "unique_rows", onlyPassingUniqueRows);
@@ -508,5 +514,19 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
 	 */
 	public void setCaseSensitive(boolean[] caseSensitive) {
 		this.caseSensitive = caseSensitive;
+	}
+
+	/**
+	 * @return the freeMemoryLimit
+	 */
+	public String getFreeMemoryLimit() {
+		return freeMemoryLimit;
+	}
+
+	/**
+	 * @param freeMemoryLimit the freeMemoryLimit to set
+	 */
+	public void setFreeMemoryLimit(String freeMemoryLimit) {
+		this.freeMemoryLimit = freeMemoryLimit;
 	}
 }

@@ -53,7 +53,7 @@ public class SortRows extends BaseStep implements StepInterface
 {
 	private SortRowsMeta meta;
 	private SortRowsData data;
-
+	
 	public SortRows(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans)
 	{
 		super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
@@ -86,10 +86,32 @@ public class SortRows extends BaseStep implements StepInterface
 			quickSort(data.buffer);
 		}
 		
-		// time to write to disk: buffer is full!
-		if ( data.buffer.size()==data.sortSize     // Buffer is full: sort & dump to disk 
-		   || (data.files.size()>0 && r==null && data.buffer.size()>0) // No more records: join from disk 
-		   )
+		// Check the free memory every 1000 rows...
+		//
+		data.freeCounter++;
+		if (data.sortSize<=0 && data.freeCounter>=1000)
+		{
+			data.freeMemoryPct = Const.getPercentageFreeMemory();
+			data.freeCounter=0;
+			
+			if (log.isDetailed())
+			{
+				data.memoryReporting++;
+				if (data.memoryReporting>=10 && log.isDetailed())
+				{
+					logDetailed("Available memory : "+data.freeMemoryPct+"%");
+					data.memoryReporting=0;
+				}
+			}
+		}
+		
+		boolean doSort = data.buffer.size()==data.sortSize; // Buffer is full: sort & dump to disk
+		doSort |= data.files.size()>0 && r==null && data.buffer.size()>0; // No more records: join from disk 
+		doSort |= data.freeMemoryPctLimit>0 && data.freeMemoryPct<data.freeMemoryPctLimit && data.buffer.size()>=data.minSortSize;
+		
+		// time to sort the buffer and write the data to disk...
+		//
+		if ( doSort )
 		{
 			// First sort the rows in buffer[]
 			quickSort(data.buffer);
@@ -113,7 +135,7 @@ public class SortRows extends BaseStep implements StepInterface
 				}
 				else
 				{
-					dos = new DataOutputStream(new BufferedOutputStream(outputStream, 5000000));
+					dos = new DataOutputStream(new BufferedOutputStream(outputStream, 500000));
 					gzos = null;
 				}
                 
@@ -153,6 +175,20 @@ public class SortRows extends BaseStep implements StepInterface
                     data.outputRowMeta.writeData(dos, data.buffer.get(p));
 				}
                 
+                if (data.sortSize<0)
+                {
+                	if (data.buffer.size()>data.minSortSize)
+                	{
+                		data.minSortSize=data.buffer.size(); // if we did it once, we can do it again.
+                		
+                		// Memory usage goes up over time, even with garbage collection
+                		// We need pointers, file handles, etc.
+                		// As such, we're going to lower the min sort size a bit
+                		//
+                		data.minSortSize = (int)Math.round((double)data.minSortSize * 0.90);
+                	}
+                }
+                
                 // Clear the list
                 data.buffer.clear();
                 
@@ -163,6 +199,16 @@ public class SortRows extends BaseStep implements StepInterface
 					gzos.close(); // close gzip stream
                 }
                 outputStream.close();  // close file stream
+                
+                // How much memory do we have left?
+                //
+                data.freeMemoryPct = Const.getPercentageFreeMemory();
+    			data.freeCounter=0;
+    			if (data.sortSize<=0)
+    			{
+    				if (log.isDetailed()) logDetailed("Available memory : "+data.freeMemoryPct+"%");
+    			}
+    			
 			}
 			catch(Exception e)
 			{
@@ -418,8 +464,23 @@ public class SortRows extends BaseStep implements StepInterface
 		
 		if (super.init(smi, sdi))
 		{
-			data.sortSize = Integer.parseInt(environmentSubstitute(meta.getSortSize()));
-            data.buffer = new ArrayList<Object[]>(data.sortSize);
+			data.sortSize = Const.toInt(environmentSubstitute(meta.getSortSize()), -1);
+			data.freeMemoryPctLimit = Const.toInt(meta.getFreeMemoryLimit(), -1);
+			if (data.sortSize<=0 && data.freeMemoryPctLimit<=0)
+			{
+				// Prefer the memory limit as it should never fail
+				//
+				data.freeMemoryPctLimit = 25;
+			}
+						
+			if (data.sortSize>0)
+			{
+				data.buffer = new ArrayList<Object[]>(data.sortSize);
+			}
+			else
+			{
+				data.buffer = new ArrayList<Object[]>(5000);
+			}
 
             data.compressFiles = getBooleanValueOfVariable(meta.getCompressFilesVariable(), meta.getCompressFiles());
             
@@ -449,6 +510,9 @@ public class SortRows extends BaseStep implements StepInterface
                 data.rowbuffer=new ArrayList<Object[]>();
             }
             data.tempRows  = new ArrayList<RowTempFile>();
+            
+            data.minSortSize = 5000;
+            
 		    return true;
 		}
 		return false;

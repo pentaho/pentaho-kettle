@@ -54,6 +54,12 @@ public class SortRowsData extends BaseStepData implements StepDataInterface
 
 	public Comparator<RowTempFile> comparator;
 	
+	public int freeCounter;
+	public int freeMemoryPct;
+	public int minSortSize;
+	public int freeMemoryPctLimit;
+	public int memoryReporting;
+	
 	
 	/**
 	 * 
