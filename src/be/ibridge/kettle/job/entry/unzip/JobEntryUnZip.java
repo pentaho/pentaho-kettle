@@ -303,25 +303,26 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 								                InputStream is = zipfile.getInputStream(item);
 								                FileOutputStream fos = new FileOutputStream(newfile);
 								                  
-								                byte[] buff=new byte[2048];
-							                	int len;
-							                	
-							                	while((len=is.read(buff))>0)
-							                	{
-							                		fos.write(buff,0,len);
-							                	}
-
-							                	is.close();
-							                	fos.close();
-
-								                
-								                if (addfiletoresult)
-												{
-								                	// Add file to result files name
-								                	ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL , KettleVFS.getFileObject(newfile), parentJob.getName(), toString());
-								                    result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
-												}
-								                
+								                if(is!=null)
+								                {
+									                byte[] buff=new byte[2048];
+									                int len;
+								                	
+								                	while((len=is.read(buff))>0)
+								                	{
+								                		fos.write(buff,0,len);
+								                	}
+	
+								                	if(is!=null) is.close();
+								                	if(fos!=null) fos.close();	
+									                
+									                if (addfiletoresult)
+													{
+									                	// Add file to result files name
+									                	ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL , KettleVFS.getFileObject(newfile), parentJob.getName(), toString());
+									                    result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
+													}
+								                }
 											}    		
 										  }
   
