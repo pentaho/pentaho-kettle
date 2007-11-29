@@ -2194,6 +2194,7 @@ public class Database implements VariableSpace
 		DBCacheEntry entry=null;
 		
 		// Check the cache first!
+		//
 		if (dbcache!=null)
 		{
 			entry = new DBCacheEntry(databaseMeta.getName(), sql);
@@ -2206,99 +2207,51 @@ public class Database implements VariableSpace
 		if (connection==null) return null; // Cache test without connect.
 
 		// No cache entry found 
-		
-		// String debug="";
-		
-		PreparedStatement preparedStatement = null; 
-		try
+
+		// The new method of retrieving the query fields fails on Oracle because
+		// they failed to implement the getMetaData method on a prepared statement. (!!!)
+		// Even recent drivers like 10.2 fail because of it.
+		// 
+		// There might be other databases that don't support it (we have no knowledge of this at the time of writing).
+		// If we discover other RDBMSs, we will create an interface for it.
+		// For now, we just try to get the field layout on the re-bound in the exception block below.
+		//
+		if (databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_ORACLE)
 		{
+			return getQueryFieldsFallback(sql, param, inform, data);
+		}
+		else
+		{
+			// On with the regular program.
+			//
 			
-			preparedStatement = connection.prepareStatement(databaseMeta.stripCR(sql), ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-			ResultSetMetaData rsmd = preparedStatement.getMetaData();
-			fields = getRowInfo(rsmd, false, false);
-			
-			/*
-			if (inform==null 
-					// Hack for MSSQL jtds 1.2 when using xxx NOT IN yyy we have to use a prepared statement (see BugID 3214)
-					&& databaseMeta.getDatabaseType()!=DatabaseMeta.TYPE_DATABASE_MSSQL
-					)
+			PreparedStatement preparedStatement = null; 
+			try
 			{
-				debug="inform==null";
-				sel_stmt = connection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-				
-				debug="isFetchSizeSupported()";
-				if (databaseMeta.isFetchSizeSupported() && sel_stmt.getMaxRows()>=1)
-				{
-					debug = "Set fetchsize";
-                    if (databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_MYSQL)
-                    {
-                        sel_stmt.setFetchSize(Integer.MIN_VALUE);
-                    }
-                    else
-                    {
-                        sel_stmt.setFetchSize(1);
-                    }
-				}
-				debug = "Set max rows to 1";
-                if (databaseMeta.supportsSetMaxRows()) sel_stmt.setMaxRows(1);
-				
-				debug = "exec query";
-				ResultSet r=sel_stmt.executeQuery(databaseMeta.stripCR(sql));
-                debug = "getQueryFields get row info";
-				fields = getRowInfo(r.getMetaData(), false, false);
-				debug="close resultset";
-				r.close();
-				debug="close statement";
-				sel_stmt.close();
-				sel_stmt=null;
+				preparedStatement = connection.prepareStatement(databaseMeta.stripCR(sql), ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+				ResultSetMetaData rsmd = preparedStatement.getMetaData();
+				fields = getRowInfo(rsmd, false, false);
 			}
-			else
+			catch(SQLException ex)
 			{
-				debug="prepareStatement";
-				PreparedStatement ps = connection.prepareStatement(databaseMeta.stripCR(sql));
-				if (param)
-				{
-					RowMetaInterface par = inform;
-					
-					debug="getParameterMetaData()";
-					if (par==null || par.isEmpty()) par = getParameterMetaData(ps);
-                    
-					debug="getParameterMetaData()";
-					if (par==null || par.isEmpty()) par = getParameterMetaData(sql, inform, data);
-	
-					setValues(par, data, ps);
-				}
-				debug="executeQuery()";
-				ResultSet r = ps.executeQuery();
-				debug="getRowInfo";
-				fields=getRowInfo(ps.getMetaData(), false, false);
-				debug="close resultset";
-				r.close();
-				debug="close preparedStatement";
-				ps.close();
+				throw new KettleDatabaseException("Couldn't get field info from ["+sql+"]"+Const.CR, ex);
 			}
-			*/
-		
-		}
-		catch(SQLException ex)
-		{
-			throw new KettleDatabaseException("Couldn't get field info from ["+sql+"]"+Const.CR, ex);
-		}
-		catch(Exception e)
-		{
-			throw new KettleDatabaseException("Couldn't get field info", e);
-		}
-		finally
-		{
-			if (preparedStatement!=null)
+			catch(Exception e)
 			{
-				try 
+				fields = getQueryFieldsFallback(sql, param, inform, data);
+			}
+			finally
+			{
+				if (preparedStatement!=null)
 				{
-					preparedStatement.close();
-				} 
-				catch (SQLException e) 
-				{
-					throw new KettleDatabaseException("Unable to close prepared statement after determining SQL layout", e);
+					try 
+					{
+						preparedStatement.close();
+					} 
+					catch (SQLException e) 
+					{
+						throw new KettleDatabaseException("Unable to close prepared statement after determining SQL layout", e);
+					}
 				}
 			}
 		}
@@ -2310,6 +2263,65 @@ public class Database implements VariableSpace
 			{
 				dbcache.put(entry, fields);
 			}
+		}
+		
+		return fields;
+	}
+	
+	private RowMetaInterface getQueryFieldsFallback(String sql, boolean param, RowMetaInterface inform, Object[] data) throws KettleDatabaseException
+	{
+		RowMetaInterface fields;
+
+		try
+		{
+			if (inform==null 
+					// Hack for MSSQL jtds 1.2 when using xxx NOT IN yyy we have to use a prepared statement (see BugID 3214)
+					&& databaseMeta.getDatabaseType()!=DatabaseMeta.TYPE_DATABASE_MSSQL
+					)
+			{
+				sel_stmt = connection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+				
+				if (databaseMeta.isFetchSizeSupported() && sel_stmt.getMaxRows()>=1)
+				{
+	                if (databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_MYSQL)
+	                {
+	                    sel_stmt.setFetchSize(Integer.MIN_VALUE);
+	                }
+	                else
+	                {
+	                    sel_stmt.setFetchSize(1);
+	                }
+				}
+	            if (databaseMeta.supportsSetMaxRows()) sel_stmt.setMaxRows(1);
+				
+				ResultSet r=sel_stmt.executeQuery(databaseMeta.stripCR(sql));
+				fields = getRowInfo(r.getMetaData(), false, false);
+				r.close();
+				sel_stmt.close();
+				sel_stmt=null;
+			}
+			else
+			{
+				PreparedStatement ps = connection.prepareStatement(databaseMeta.stripCR(sql));
+				if (param)
+				{
+					RowMetaInterface par = inform;
+					
+					if (par==null || par.isEmpty()) par = getParameterMetaData(ps);
+	                
+					if (par==null || par.isEmpty()) par = getParameterMetaData(sql, inform, data);
+	
+					setValues(par, data, ps);
+				}
+				ResultSet r = ps.executeQuery();
+				fields=getRowInfo(ps.getMetaData(), false, false);
+				r.close();
+				ps.close();
+			}
+		}
+		catch(Exception ex)
+		{
+			throw new KettleDatabaseException("Couldn't get field info from ["+sql+"]"+Const.CR, ex);
 		}
 		
 		return fields;
