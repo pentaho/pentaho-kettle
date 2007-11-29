@@ -115,8 +115,6 @@ import org.pentaho.di.core.gui.SpoonInterface;
 import org.pentaho.di.core.gui.UndoInterface;
 import org.pentaho.di.core.lifecycle.LifeEventHandler;
 import org.pentaho.di.core.lifecycle.LifeEventInfo;
-import org.pentaho.di.core.lifecycle.LifecycleException;
-import org.pentaho.di.core.lifecycle.LifecycleSupport;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.reflection.StringSearchResult;
 import org.pentaho.di.core.row.RowMeta;
@@ -3644,16 +3642,12 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		{
 			meta.setID(-1L);
 			saved = saveToRepository(meta, true);
-			String sync = BasePropertyHandler.getProperty(SYNC_TRANS);
-			if (Boolean.parseBoolean(sync))
-				delegates.tabs.renameTabs();
+			
         }
         else
 		{
 			saved = saveXMLFile(meta,false);
-			String sync = BasePropertyHandler.getProperty(SYNC_TRANS);
-			if (Boolean.parseBoolean(sync))
-				delegates.tabs.renameTabs();
+			
 		}
 
 		refreshTree();
@@ -3822,10 +3816,13 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		}
 
     	if( listener != null ) {
-			saved = listener.save(meta, fname,export);
-			String sync = BasePropertyHandler.getProperty(SYNC_TRANS);
-			if (Boolean.parseBoolean(sync))
+    		String sync = BasePropertyHandler.getProperty(SYNC_TRANS);
+			if (Boolean.parseBoolean(sync)){
+				listener.syncMetaName(meta,Const.createName(fname));
 				delegates.tabs.renameTabs();
+			}
+			saved = listener.save(meta, fname,export);
+			
 		}
 		return saved;
 	}
@@ -6520,10 +6517,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	{
 //		if (PropsUI.getInstance().isListenerDisabled(info.getName()))
 //			return;
-//		
+		
 //		if (info.hasHint(LifeEventInfo.Hint.DISPLAY_BROWSER))
 //		{
-//			delegates.tabs.addSpoonBrowser(info.getName(),info.getMessage(),false);
+//			display.asyncExec(new Runnable(){public void run(){delegates.tabs.addSpoonBrowser(info.getName(),info.getMessage(),false);}});
 //			
 //		}
 //		else
