@@ -60,4 +60,8 @@ public class JobFileListener implements FileListener {
     	
     	return spoon.saveMeta(lmeta, fname);
     }
+    
+    public void syncMetaName(EngineMetaInterface meta,String name) {
+    	((JobMeta)meta).setName(name);
+    }
 }
