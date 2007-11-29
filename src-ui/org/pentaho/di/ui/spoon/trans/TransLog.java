@@ -630,7 +630,7 @@ public class TransLog extends Composite implements TabItemInterface
             running = false;
             initialized = false;
             halted = false;
-            halting = false;
+            // halting = false;
             transMeta.setInternalKettleVariables(); // set the original vars back as they may be changed by a mapping
         }
     }
@@ -686,7 +686,14 @@ public class TransLog extends Composite implements TabItemInterface
     private synchronized void startThreads()
     {
         running=true;
-        trans.startThreads();
+        try
+        {
+        	trans.startThreads();
+        }
+        catch(KettleException e)
+        {
+        	log.logError(toString(), "Error starting step threads", e);
+        }
     }
 
 	public void checkErrors()

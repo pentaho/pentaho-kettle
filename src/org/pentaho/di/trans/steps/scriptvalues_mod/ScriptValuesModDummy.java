@@ -17,6 +17,7 @@ import java.util.Map;
 
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.trans.step.RowListener;
@@ -212,5 +213,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 		public RowMetaInterface getOutputRowMeta() {
 			return outputRowMeta;
+		}
+		public void initBeforeStart() throws KettleStepException {
+			
 		}
 	}

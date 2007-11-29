@@ -785,10 +785,6 @@ public class BaseStep extends Thread implements VariableSpace
             }
         }
         
-        // Check the remote output sets.  Do we need to initialize open any connections there?
-        //
-        openRemoteOutputStepSocketsOnce();
-        
 	    if (outputRowSets.isEmpty())
 	    {
 	        // No more output rowsets!
@@ -1306,6 +1302,12 @@ public class BaseStep extends Thread implements VariableSpace
         }
 	}
     
+    /**
+     * Opens socket connections to the remote output steps of this step.
+     * <br>This method is called in method initBeforeStart() because it needs to connect to the server sockets (remote steps) as soon as possible to avoid time-out situations.
+     * <br>This action is executed only once.
+     * @throws KettleStepException
+     */
     protected void openRemoteOutputStepSocketsOnce() throws KettleStepException {
         if (!remoteOutputSteps.isEmpty()) {
         	if (!remoteOutputStepsInitialized) {
@@ -1808,7 +1810,7 @@ public class BaseStep extends Thread implements VariableSpace
     {
         Calendar cal = Calendar.getInstance();
         start_time = cal.getTime();
-                
+        
         setInternalVariables();
     }
 
@@ -2382,7 +2384,16 @@ public class BaseStep extends Thread implements VariableSpace
 		return usingThreadPriorityManagment;
 	}
 
-
+	/**
+	 * This method is executed by Trans right before the threads start and right after initialization.
+	 * 
+	 * More to the point: here we open remote output step sockets. 
+	 * 
+	 * @throws KettleStepException In case there is an error
+	 */
+	public void initBeforeStart() throws KettleStepException {
+		openRemoteOutputStepSocketsOnce();
+	}
 
   
 }

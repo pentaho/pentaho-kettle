@@ -79,10 +79,6 @@ public class FilterRows extends BaseStep implements StepInterface
             //
             if (data.chosesTargetSteps)
             {
-            	// Normally this is done during putRow(), but we need it before in the clustered setting...
-            	//
-            	openRemoteOutputStepSocketsOnce();
-            	
             	data.trueRowSet = findOutputRowSet(getStepname(), getCopy(), meta.getSendTrueStepname(), 0);
             	data.falseRowSet = findOutputRowSet(getStepname(), getCopy(), meta.getSendFalseStepname(), 0);
             }

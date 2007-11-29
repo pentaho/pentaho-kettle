@@ -577,18 +577,25 @@ public class Trans implements VariableSpace
 
     /**
      * Start the threads prepared by prepareThreads();
-     * Before you start the threads, you can add Rowlisteners to them.
+     * Before you start the threads, you can add RowListeners to them.
+     * @throws KettleException in case there is a communication error with a remote output socket.
      */
-    public void startThreads()
+    public void startThreads() throws KettleException
     {
         // Now start all the threads...
         for (int i=0;i<steps.size();i++)
         {
             final StepMetaDataCombi sid = steps.get(i);
             sid.step.markStart();
-            sid.step.start();
+            sid.step.initBeforeStart();
         }
-        
+
+        // Now start all the threads...
+        for (int i=0;i<steps.size();i++)
+        {
+            steps.get(i).step.start();
+        }
+
         running=true;
         
         log.logDetailed(toString(), Messages.getString("Trans.Log.TransformationHasAllocated",String.valueOf(steps.size()),String.valueOf(rowsets.size()))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$

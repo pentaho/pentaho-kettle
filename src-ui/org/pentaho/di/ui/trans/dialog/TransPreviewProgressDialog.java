@@ -140,7 +140,8 @@ public class TransPreviewProgressDialog
 		} catch (final KettleException e) {
 			shell.getDisplay().asyncExec(new Runnable() {
 				public void run() {
-					new ErrorDialog(shell, Messages.getString("System.Dialog.Error.Title"), Messages.getString("TransPreviewProgressDialog.Exception.ErrorPreparingTransformation"), e);
+					new ErrorDialog(shell, Messages.getString("System.Dialog.Error.Title"), Messages
+							.getString("TransPreviewProgressDialog.Exception.ErrorPreparingTransformation"), e);
 				}
 			});
 			
@@ -167,7 +168,20 @@ public class TransPreviewProgressDialog
         
         // Fire off the step threads... start running!
         //
-        trans.startThreads();
+        try {
+            trans.startThreads();
+		} catch (final KettleException e) {
+			shell.getDisplay().asyncExec(new Runnable() {
+				public void run() {
+					new ErrorDialog(shell, Messages.getString("System.Dialog.Error.Title"), Messages
+							.getString("TransPreviewProgressDialog.Exception.ErrorPreparingTransformation"), e);
+				}
+			});
+			
+			// It makes no sense to continue, so just stop running...
+			//
+			return;
+		}
         
         int previousPct = 0;
         final List<String> previewComplete = new ArrayList<String>();

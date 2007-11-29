@@ -15,6 +15,7 @@ import java.util.List;
 
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowMetaInterface;
 
 /*
@@ -217,4 +218,14 @@ public interface StepInterface
      * Call this method typically, after ALL the slave transformations in a clustered run have finished.
      */
 	public void cleanup();
+	
+	/**
+	 * This method is executed by Trans right before the threads start and right after initialization.<br>
+	 * <br>
+	 * <b>!!! A plugin implementing this method should make sure to also call <i>super.initBeforeStart();</i> !!!</b>
+	 * 
+	 * @throws KettleStepException In case there is an error
+	 */
+	public void initBeforeStart() throws KettleStepException;
+		   
 }
