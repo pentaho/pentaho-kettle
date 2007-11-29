@@ -58,5 +58,9 @@ public class TransFileListener implements FileListener {
     		lmeta = meta;
     	return spoon.saveMeta(lmeta, fname);
     }
+    
+    public void syncMetaName(EngineMetaInterface meta,String name) {
+    	((TransMeta)meta).setName(name);
+    }
 
 }
