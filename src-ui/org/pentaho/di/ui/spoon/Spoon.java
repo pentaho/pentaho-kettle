@@ -349,8 +349,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 	private Map<String, Menu> menuMap = new HashMap<String, Menu>();
 	
-	//loads the lifecycle listeners
-	private LifecycleSupport lcsup = new LifecycleSupport();
+	// loads the lifecycle listeners
+	// private LifecycleSupport lcsup = new LifecycleSupport();
 
     /**
      * This is the main procedure for Spoon.
@@ -3325,6 +3325,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		}
         
         //and now we call the listeners
+        /*
         try
         {
         	lcsup.onExit(this);
@@ -3335,6 +3336,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
             box.setMessage(e.getMessage());
 			box.open();
         }
+        */
 
         if (exit) dispose();
 
@@ -5655,6 +5657,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			createSpoon();
 			
 			//listeners
+			/*
 			try
 			{
 				lcsup.onStart(this);
@@ -5666,7 +5669,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	            box.setMessage(e.getMessage());
 				box.open();
 			}
-			
+			*/
 			
 			setArguments(args.toArray(new String[args.size()]));
 			start();
