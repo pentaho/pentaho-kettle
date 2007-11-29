@@ -358,11 +358,15 @@ public class InsertUpdate extends BaseStep implements StepInterface
         
         String sql = "UPDATE " + data.schemaTable + Const.CR;
         sql += "SET ";
-
+        
+        boolean comma=false;
+        
         for (int i=0;i<meta.getUpdateLookup().length;i++)
         {
     		if ( meta.getUpdate()[i].booleanValue() ) {
-                if (i!=0) sql+= ",   ";
+                if (comma) sql+= ",   ";
+                else comma=true;
+                
                 sql += databaseMeta.quoteField(meta.getUpdateLookup()[i]);
                 sql += " = ?" + Const.CR;
                 data.updateParameterRowMeta.addValueMeta( rowMeta.searchValueMeta(meta.getUpdateStream()[i]) );
