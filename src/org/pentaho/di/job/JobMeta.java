@@ -773,6 +773,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
             {
                 Node dbnode = XMLHandler.getSubNodeByNr(jobnode, "connection", i); //$NON-NLS-1$
                 DatabaseMeta dbcon = new DatabaseMeta(dbnode);
+                dbcon.shareVariablesWith(this);
 
                 DatabaseMeta exist = findDatabase(dbcon.getName());
                 if (exist == null)
@@ -932,6 +933,8 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
             for (int i = 0; i < dbids.length; i++)
             {
                 DatabaseMeta databaseMeta = new DatabaseMeta(rep, dbids[i]);
+                databaseMeta.shareVariablesWith(this);
+                
                 DatabaseMeta check = findDatabase(databaseMeta.getName()); // Check if there already is one in the
                                                                             // transformation
                 if (check == null || overWriteShared) // We only add, never overwrite database connections.
@@ -1221,6 +1224,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
                 {
                     // Get the logconnection
                     logconnection = new DatabaseMeta(rep, id_logdb);
+                    logconnection.shareVariablesWith(this);
                 }
                 useBatchId = jobRow.getBoolean("USE_BATCH_ID", false); //$NON-NLS-1$
                 batchIdPassed = jobRow.getBoolean("PASS_BATCH_ID", false); //$NON-NLS-1$

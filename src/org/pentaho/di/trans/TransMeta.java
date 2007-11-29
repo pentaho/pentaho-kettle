@@ -2002,6 +2002,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
             for (int i = 0; i < dbids.length; i++)
             {
                 DatabaseMeta databaseMeta = new DatabaseMeta(rep, dbids[i]);
+                databaseMeta.shareVariablesWith(this);
+                
                 DatabaseMeta check = findDatabase(databaseMeta.getName()); // Check if there already is one in the transformation
                 if (check==null || overWriteShared) // We only add, never overwrite database connections. 
                 {
@@ -2793,6 +2795,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
                 Node nodecon = XMLHandler.getSubNodeByNr(transnode, DatabaseMeta.XML_TAG, i); //$NON-NLS-1$
 
                 DatabaseMeta dbcon = new DatabaseMeta(nodecon);
+                dbcon.shareVariablesWith(this);
 
                 DatabaseMeta exist = findDatabase(dbcon.getName());
                 if (exist == null)
@@ -3164,6 +3167,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
             if (object instanceof DatabaseMeta)
             {
                 DatabaseMeta databaseMeta = (DatabaseMeta) object;
+                databaseMeta.shareVariablesWith(this);
                 addOrReplaceDatabase(databaseMeta);
             }
             else if (object instanceof SlaveServer)

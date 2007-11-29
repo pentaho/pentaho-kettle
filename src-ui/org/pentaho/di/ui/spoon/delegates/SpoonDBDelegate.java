@@ -497,6 +497,10 @@ public class SpoonDBDelegate extends SpoonDelegate
 		}
 
 		DatabaseMeta databaseMeta = new DatabaseMeta();
+		if (hasDatabasesInterface instanceof VariableSpace) {
+			databaseMeta.shareVariablesWith((VariableSpace)hasDatabasesInterface);
+		}
+		
 		DatabaseDialog con = new DatabaseDialog(spoon.getShell(), databaseMeta);
 		String con_name = con.open();
 		if (!Const.isEmpty(con_name))
