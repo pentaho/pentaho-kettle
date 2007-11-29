@@ -2012,6 +2012,9 @@ public class Repository
 			case ValueMetaInterface.TYPE_NUMBER:
 				valueMeta.setConversionMask(ValueMetaAndData.VALUE_REPOSITORY_NUMBER_CONVERSION_MASK);
 				break;
+			case ValueMetaInterface.TYPE_INTEGER:
+				valueMeta.setConversionMask(ValueMetaAndData.VALUE_REPOSITORY_INTEGER_CONVERSION_MASK);
+				break;
 			default:
 				break;
 			}

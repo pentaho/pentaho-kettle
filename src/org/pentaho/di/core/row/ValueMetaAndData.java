@@ -100,6 +100,7 @@ public class ValueMetaAndData
     }
     
     public static final String VALUE_REPOSITORY_NUMBER_CONVERSION_MASK = "#.#";
+    public static final String VALUE_REPOSITORY_INTEGER_CONVERSION_MASK = "#";
     public static final String VALUE_REPOSITORY_DECIMAL_SYMBOL = ".";
     public static final String VALUE_REPOSITORY_GROUPING_SYMBOL = ",";
     
@@ -131,6 +132,9 @@ public class ValueMetaAndData
                     {
                     case ValueMetaInterface.TYPE_NUMBER:
                     	valueMeta.setConversionMask(VALUE_REPOSITORY_NUMBER_CONVERSION_MASK);
+                    	break;
+                    case ValueMetaInterface.TYPE_INTEGER:
+                    	valueMeta.setConversionMask(VALUE_REPOSITORY_INTEGER_CONVERSION_MASK);
                     	break;
                     default:
                     	break;
