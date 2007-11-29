@@ -9,7 +9,7 @@ import org.pentaho.di.core.exception.KettleException;
  * @author matt
  *
  */
-public class DatabaseFactory {
+public class DatabaseFactory implements DatabaseFactoryInterface {
 	
 	public DatabaseFactory() 
 	{
