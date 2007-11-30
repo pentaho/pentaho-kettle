@@ -429,7 +429,12 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
   public void setIncludeSubfolders(boolean includeSubfolders) {
     this.includeSubfolders = includeSubfolders;
   }
+  public void setPrevious(boolean argFromPrevious) {
+	    this.argFromPrevious = argFromPrevious;
+	  }
 
+  
+  
   public boolean evaluates() {
     return true;
   }
