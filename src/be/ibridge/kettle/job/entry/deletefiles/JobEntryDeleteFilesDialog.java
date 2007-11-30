@@ -214,21 +214,8 @@ public class JobEntryDeleteFilesDialog extends Dialog implements JobEntryDialogI
 		{
 			public void widgetSelected(SelectionEvent e)
 			{
-				jobEntry.argFromPrevious = !jobEntry.argFromPrevious;
-				jobEntry.setChanged();
-				wlFields.setEnabled(!jobEntry.argFromPrevious);
-				wFields.setEnabled(!jobEntry.argFromPrevious);
-				
-				wFilename.setEnabled(!jobEntry.argFromPrevious);
-				wlFilename.setEnabled(!jobEntry.argFromPrevious);
-				wbFilename.setEnabled(!jobEntry.argFromPrevious);
-				
-				wlFilemask.setEnabled(!jobEntry.argFromPrevious);
-				wFilemask.setEnabled(!jobEntry.argFromPrevious);
-				
-				wbdFilename.setEnabled(!jobEntry.argFromPrevious);
-				wbeFilename.setEnabled(!jobEntry.argFromPrevious);
-				wbaFilename.setEnabled(!jobEntry.argFromPrevious);
+				setPrevious();
+				jobEntry.setChanged();				
 			}
 		});
 		fdSettings = new FormData();
@@ -493,6 +480,7 @@ public class JobEntryDeleteFilesDialog extends Dialog implements JobEntryDialogI
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
 
 		getData();
+		setPrevious();
 
 		BaseStepDialog.setSize(shell);
 
@@ -503,7 +491,24 @@ public class JobEntryDeleteFilesDialog extends Dialog implements JobEntryDialogI
 		}
 		return jobEntry;
 	}
-
+	private void setPrevious()
+	{
+		wlFields.setEnabled(!wPrevious.getSelection());
+		wFields.setEnabled(!wPrevious.getSelection());
+		
+		wFilename.setEnabled(!wPrevious.getSelection());
+		wlFilename.setEnabled(!wPrevious.getSelection());
+		wbFilename.setEnabled(!wPrevious.getSelection());
+		
+		wlFilemask.setEnabled(!wPrevious.getSelection());
+		wFilemask.setEnabled(!wPrevious.getSelection());
+		
+		wbdFilename.setEnabled(!wPrevious.getSelection());
+		wbeFilename.setEnabled(!wPrevious.getSelection());
+		wbaFilename.setEnabled(!wPrevious.getSelection());
+		wbDirectory.setEnabled(!wPrevious.getSelection());
+		
+	}
 	public void dispose()
 	{
 		WindowProperty winprop = new WindowProperty(shell);
@@ -549,6 +554,7 @@ public class JobEntryDeleteFilesDialog extends Dialog implements JobEntryDialogI
 	{
 		jobEntry.setName(wName.getText());
 		jobEntry.setIncludeSubfolders(wIncludeSubfolders.getSelection());
+		jobEntry.setargFromPrevious(wPrevious.getSelection());
 
 		int nritems = wFields.nrNonEmpty();
 		int nr = 0;
