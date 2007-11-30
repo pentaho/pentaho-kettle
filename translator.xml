@@ -8,6 +8,7 @@
     <locale> <code>zh_CN</code> <language>Simplified Chinese</language> <country>China</country> </locale>
     <locale> <code>pt_BR</code> <language>Portuguese</language> <country>Brazil</country> </locale>
     <locale> <code>pt_PT</code> <language>Portuguese</language> <country>Portugal</country> </locale>
+    <locale> <code>it_IT</code> <language>Italian</language> <country>Italy</country> </locale>
   </locale-list>
 </translator-config>
 
