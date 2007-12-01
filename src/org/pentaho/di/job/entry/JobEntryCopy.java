@@ -122,7 +122,7 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 				int y = Const.toInt(XMLHandler.getTagValue(entrynode, "yloc"), 0);
 				setLocation(x, y);
 			}
-		} catch (Exception e)
+		} catch (Throwable e)
 		{
 			String message = "Unable to read Job Entry copy info from XML node : " + e.toString();
 			LogWriter log = LogWriter.getInstance();
