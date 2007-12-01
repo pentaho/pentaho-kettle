@@ -34,7 +34,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
@@ -47,14 +46,12 @@ import org.pentaho.di.trans.step.StepMeta;
 
 /**
  * 
- * Dialog that allows you to edit the settings of the security service connection
+ * Dialog that allows you to edit the step error handling meta-data
  * 
- * @see SlaveServer
  * @author Matt
  * @since 31-10-2006
  *
  */
-
 public class StepErrorMetaDialog extends Dialog 
 {
 	private StepErrorMeta stepErrorMeta;

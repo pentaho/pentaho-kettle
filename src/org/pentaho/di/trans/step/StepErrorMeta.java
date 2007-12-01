@@ -77,7 +77,7 @@ public class StepErrorMeta extends ChangedFlag implements XMLInterface, Cloneabl
     public StepErrorMeta(VariableSpace space, StepMeta sourceStep)
     {
         this.sourceStep = sourceStep;
-        this.enabled = true;
+        this.enabled = false;
         this.variables = space;
     }
 
@@ -90,7 +90,7 @@ public class StepErrorMeta extends ChangedFlag implements XMLInterface, Cloneabl
     {
         this.sourceStep = sourceStep;
         this.targetStep = targetStep;
-        this.enabled = true;
+        this.enabled = false;
         this.variables = space;
     }
     
@@ -107,7 +107,7 @@ public class StepErrorMeta extends ChangedFlag implements XMLInterface, Cloneabl
     {
         this.sourceStep = sourceStep;
         this.targetStep = targetStep;
-        this.enabled = true;
+        this.enabled = false;
         this.nrErrorsValuename = nrErrorsValuename;
         this.errorDescriptionsValuename = errorDescriptionsValuename;
         this.errorFieldsValuename = errorFieldsValuename;
