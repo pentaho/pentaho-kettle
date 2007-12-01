@@ -69,7 +69,12 @@ public class ErrorDialog extends Dialog
 	{
 		super(parent, SWT.NONE);
 
-		if (throwable instanceof Exception) showErrorDialog(parent, title, message, (Exception)throwable);
+		if (throwable instanceof Exception) {
+			showErrorDialog(parent, title, message, (Exception)throwable);
+		} else {
+			// not optimal, but better then nothing
+			showErrorDialog(parent, title, message + Const.CR + Const.getStackTracker(throwable), null);
+		}
 	}
 
 	public ErrorDialog(Shell parent, String title, String message, Exception exception)
@@ -164,6 +169,9 @@ public class ErrorDialog extends Dialog
 			
 			details.append(sw.getBuffer());
 			
+			wDesc.setText( text.toString() );
+		} else {
+			text.append(message);
 			wDesc.setText( text.toString() );
 		}
 		wDesc.setBackground(gray);

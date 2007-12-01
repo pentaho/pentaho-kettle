@@ -5550,6 +5550,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		{
             log.logError(toString(), Messages.getString("Spoon.Log.ErrorOccurred")+Const.CR+ke.getMessage());//"An error occurred: "
 			log.logError(toString(), Const.getStackTracker(ke));
+			// do not just eat the exception
+			new ErrorDialog(shell, Messages.getString("Spoon.Log.ErrorOccurred"), Messages.getString("Spoon.Log.ErrorOccurred")+Const.CR+ke.getMessage(), ke);
 			rep = null;
 		}
 
@@ -5581,6 +5583,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			{
                 log.logError(toString(), Messages.getString("Spoon.Log.UnexpectedErrorOccurred")+Const.CR+e.getMessage());//"An unexpected error occurred in Spoon: probable cause: please close all windows before stopping Spoon! "
 				log.logError(toString(), Const.getStackTracker(e));
+				new ErrorDialog(shell, Messages.getString("Spoon.Log.UnexpectedErrorOccurred"), Messages.getString("Spoon.Log.UnexpectedErrorOccurred")+Const.CR+e.getMessage(), e);
 
 			}
 			dispose();
@@ -5671,8 +5674,11 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			setArguments(args.toArray(new String[args.size()]));
 			start();
     	} catch (Throwable t) {
-			log.logError(toString(), "Fatal error : " + Const.NVL(t.toString(), Const.NVL(t.getMessage(), "Unknown error")) );
+    		// avoid Messages.getString() in this block to (hopefully) catch also OOME
+			log.logError(toString(), "Fatal error : " + Const.NVL(t.toString(), Const.NVL(t.getMessage(), "Unknown error")) ); //$NON-NLS-1$ //$NON-NLS-2$
 			log.logError(toString(), Const.getStackTracker(t));
+			// inform the user with a dialog when possible
+			new ErrorDialog(shell, Messages.getString("Fatal error : "), "Fatal error : " + Const.NVL(t.toString(), Const.NVL(t.getMessage(), "Unknown error")), t); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
 	}
 
