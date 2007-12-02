@@ -2873,6 +2873,10 @@ public class ValueMeta implements ValueMetaInterface
      */
     public int compare(Object data1, ValueMetaInterface meta2, Object data2) throws KettleValueException
     {
+		if (meta2==null) {
+			throw new KettleValueException(toStringMeta()+" : Second meta data (meta2) is null, please check one of the previous steps.");
+		}
+
     	try
     	{
 	        // Before we can compare data1 to data2 we need to make sure they have the same data type etc.
@@ -2915,7 +2919,7 @@ public class ValueMeta implements ValueMetaInterface
     	}
     	catch(Exception e)
     	{
-    		throw new KettleValueException(toStringMeta()+" : Unable to compare with value ["+meta2.toStringMeta()+"]");
+    		throw new KettleValueException(toStringMeta()+" : Unable to compare with value ["+meta2.toStringMeta()+"]", e);
     	}
     }
 
