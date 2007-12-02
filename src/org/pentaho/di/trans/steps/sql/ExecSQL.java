@@ -158,7 +158,9 @@ public class ExecSQL extends BaseStep implements StepInterface
 				// replace the '?' with the String in the row.
 				//
 				int pos = data.markerPositions.get(i);
-				buf.replace(pos, pos + 1, valueMeta.getString(valueData)); 
+				String replaceValue = valueMeta.getString(valueData);
+				replaceValue = Const.NVL(replaceValue, "");
+				buf.replace(pos, pos + 1, replaceValue); 
 			}
 			sql = buf.toString();
 		}
