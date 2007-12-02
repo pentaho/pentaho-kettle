@@ -297,6 +297,7 @@ public class ConditionEditor extends Composite
 					{
 					case AREA_NOT : 
 						active_condition.negate();
+						setModified();
 						widget.redraw();
 						break;
 					case AREA_OPERATOR:
@@ -311,6 +312,7 @@ public class ConditionEditor extends Composite
 							{
 								int opnr = Condition.getOperator(selection);
 								active_condition.getCondition(operator).setOperator(opnr);
+								setModified();
 							}
 							widget.redraw();
 						}
@@ -336,6 +338,7 @@ public class ConditionEditor extends Composite
 							{
 								int fnnr = Condition.getFunction(selection);
 								active_condition.setFunction(fnnr);
+								setModified();
 							}
 							widget.redraw();
 						}
@@ -351,6 +354,7 @@ public class ConditionEditor extends Composite
 							{
 								ValueMetaInterface v = fields.getValueMeta( esd.getSelectionNr() );
 								active_condition.setLeftValuename(v.getName());
+								setModified();
 							}
 							widget.redraw();
 						}
@@ -367,6 +371,7 @@ public class ConditionEditor extends Composite
                                 ValueMetaInterface v = fields.getValueMeta( esd.getSelectionNr() );
 								active_condition.setRightValuename(v.getName());
 								active_condition.setRightExact(null);
+								setModified();
 							}
 							widget.redraw();
 						}
@@ -394,6 +399,7 @@ public class ConditionEditor extends Composite
 							{
 								active_condition.setRightValuename(null);
 								active_condition.setRightExact(newval);
+								setModified();
 							}
 							widget.redraw();
 						}
