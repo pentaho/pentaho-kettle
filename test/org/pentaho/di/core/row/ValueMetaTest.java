@@ -278,7 +278,7 @@ public class ValueMetaTest extends TestCase
 		numValueMeta.setStorageMetadata(strValueMeta);
 		
 		Long integerValue = numValueMeta.getInteger(data);
-		assertEquals(new Long(1234L), integerValue);
+		assertEquals(new Long(1235L), integerValue);
 		Double numberValue = numValueMeta.getNumber(data);
 		assertEquals(new Double(1234.56), numberValue);
 		BigDecimal bigNumberValue = numValueMeta.getBigNumber(data);
