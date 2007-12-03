@@ -201,6 +201,7 @@ public class MergeJoin extends BaseStep implements StepInterface
         	 */ 
         	data.one_next = getRowFrom(data.oneRowSet);
         	data.two_next = getRowFrom(data.twoRowSet);
+        	        	
         	int compare1 = (data.one_next == null) ? -1 : data.oneMeta.compare(data.one, data.one_next, data.keyNrs1, data.keyNrs1);
         	int compare2 = (data.two_next == null) ? -1 : data.twoMeta.compare(data.two, data.two_next, data.keyNrs2, data.keyNrs2);
         	if (compare1 == 0 || compare2 == 0) // Duplicate keys
@@ -254,7 +255,8 @@ public class MergeJoin extends BaseStep implements StepInterface
         	}
         	else // No duplicates
         	{
-	        	putRow(data.outputRowMeta, RowDataUtil.addRowData(data.one, data.oneMeta.size(), data.two));
+        		Object[] outputRowData = RowDataUtil.addRowData(data.one, data.oneMeta.size(), data.two);
+	        	putRow(data.outputRowMeta, outputRowData);
         	}
         	data.one = data.one_next;
         	data.two = data.two_next;
@@ -274,7 +276,9 @@ public class MergeJoin extends BaseStep implements StepInterface
         	{
         		if (data.two != null)
         		{
-	        		putRow(data.outputRowMeta, RowDataUtil.addRowData(data.one_dummy, data.oneMeta.size(), data.two));
+        			Object[] outputRowData = RowDataUtil.createResizedCopy(data.one_dummy, data.outputRowMeta.size());
+            		outputRowData = RowDataUtil.addRowData(outputRowData, data.oneMeta.size(), data.two);
+	        		putRow(data.outputRowMeta, outputRowData);
 	        		data.two = getRowFrom(data.twoRowSet);
         		}
         		else if (data.two_optional == false)
@@ -298,7 +302,9 @@ public class MergeJoin extends BaseStep implements StepInterface
         			 * We are doing full outer join so print the 1st stream and
         			 * get the next row from 1st stream
         			 */
-	        		putRow(data.outputRowMeta, RowDataUtil.addRowData(data.one, data.oneMeta.size(), data.two_dummy));
+            		Object[] outputRowData = RowDataUtil.createResizedCopy(data.one, data.outputRowMeta.size());
+            		outputRowData = RowDataUtil.addRowData(outputRowData, data.oneMeta.size(), data.two_dummy);
+	        		putRow(data.outputRowMeta, outputRowData);
 	        		data.one = getRowFrom(data.oneRowSet);
         		}
         	}
@@ -310,8 +316,10 @@ public class MergeJoin extends BaseStep implements StepInterface
         		 * So, create a row with just the values in the first stream
         		 * and push it forward
         		 */
-        		putRow(data.outputRowMeta, RowDataUtil.addRowData(data.one, data.oneMeta.size(), data.two_dummy));
-        		data.one = getRowFrom(data.oneRowSet);
+        		Object[] outputRowData = RowDataUtil.createResizedCopy(data.one, data.outputRowMeta.size());
+        		outputRowData = RowDataUtil.addRowData(outputRowData, data.oneMeta.size(), data.two_dummy);
+        		putRow(data.outputRowMeta, outputRowData);
+        		data.one = getRowFrom(data.twoRowSet);
         	}
         	else if (data.two != null)
         	{
@@ -337,7 +345,9 @@ public class MergeJoin extends BaseStep implements StepInterface
         	{
         		if (data.one != null)
         		{
-        			putRow(data.outputRowMeta, RowDataUtil.addRowData(data.one, data.oneMeta.size(), data.two_dummy));
+            		Object[] outputRowData = RowDataUtil.createResizedCopy(data.one, data.outputRowMeta.size());
+            		outputRowData = RowDataUtil.addRowData(outputRowData, data.oneMeta.size(), data.two_dummy);
+        			putRow(data.outputRowMeta, outputRowData);
 	        		data.one = getRowFrom(data.oneRowSet);
         		}
         		else if (data.one_optional == false)
@@ -361,7 +371,9 @@ public class MergeJoin extends BaseStep implements StepInterface
         			 * We are doing a full outer join so print the 2nd stream and
         			 * get the next row from the 2nd stream
         			 */
-        			putRow(data.outputRowMeta, RowDataUtil.addRowData(data.one_dummy, data.oneMeta.size(), data.two));
+            		Object[] outputRowData = RowDataUtil.createResizedCopy(data.one_dummy, data.outputRowMeta.size());
+            		outputRowData = RowDataUtil.addRowData(outputRowData, data.oneMeta.size(), data.two);
+        			putRow(data.outputRowMeta, outputRowData);
 	        		data.two = getRowFrom(data.twoRowSet);
         		}
         	}
@@ -373,7 +385,9 @@ public class MergeJoin extends BaseStep implements StepInterface
         		 * So, create a row with just the values in the 2nd stream
         		 * and push it forward
         		 */
-        		putRow(data.outputRowMeta, RowDataUtil.addRowData(data.one_dummy, data.oneMeta.size(), data.two));
+        		Object[] outputRowData = RowDataUtil.createResizedCopy(data.one_dummy, data.outputRowMeta.size());
+        		outputRowData = RowDataUtil.addRowData(outputRowData, data.oneMeta.size(), data.two);
+        		putRow(data.outputRowMeta, outputRowData);
         		data.two = getRowFrom(data.twoRowSet);
         	}
         	else if (data.one != null)
@@ -396,7 +410,7 @@ public class MergeJoin extends BaseStep implements StepInterface
         if (checkFeedback(linesRead)) logBasic(Messages.getString("MergeJoin.LineNumber")+linesRead); //$NON-NLS-1$
 		return true;
 	}
-
+		
 	/**
      * @see StepInterface#init( org.pentaho.di.trans.step.StepMetaInterface , org.pentaho.di.trans.step.StepDataInterface)
      */
