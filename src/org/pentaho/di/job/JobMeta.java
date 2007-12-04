@@ -67,6 +67,7 @@ import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.HasDatabasesInterface;
 import org.pentaho.di.trans.HasSlaveServersInterface;
+import org.pentaho.di.trans.Messages;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -1077,6 +1078,21 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
             }
             if (monitor != null) monitor.worked(1);
 
+            // First of all we need to verify that all database connections are saved.
+            //
+            log.logDebug(toString(), Messages.getString("JobMeta.Log.SavingDatabaseConnections")); //$NON-NLS-1$
+            for (int i = 0; i < nrDatabases(); i++)
+            {
+                if (monitor != null) monitor.subTask(Messages.getString("JobMeta.Monitor.SavingDatabaseTask.Title") + (i + 1) + "/" + nrDatabases()); //$NON-NLS-1$ //$NON-NLS-2$
+                DatabaseMeta databaseMeta = getDatabase(i);
+                // ONLY save the database connection if it has changed and nothing was saved in the repository
+                if(databaseMeta.hasChanged() || databaseMeta.getID()<=0)
+                {
+                    databaseMeta.saveRep(rep);
+                }
+                if (monitor != null) monitor.worked(1);
+            }
+            
             // Now, save the job entry in R_JOB
             // Note, we save this first so that we have an ID in the database.
             // Everything else depends on this ID, including recursive job entries to the save job. (retry)
