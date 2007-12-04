@@ -67,7 +67,6 @@ import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.HasDatabasesInterface;
 import org.pentaho.di.trans.HasSlaveServersInterface;
-import org.pentaho.di.trans.Messages;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
