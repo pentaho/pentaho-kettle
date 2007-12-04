@@ -365,8 +365,8 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 		logfile=null;
 		logext=null;
 		setLogfile=false;
-		clearResultRows=true;
-		clearResultFiles=true;
+		clearResultRows=false;
+		clearResultFiles=false;
 		remoteSlaveServer=null;
 	}
 
