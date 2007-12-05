@@ -33,6 +33,7 @@ public class TableInputData extends BaseStepData implements StepDataInterface
 	public String    lookupStep;
     public RowMetaInterface rowMeta;
 	public RowSet rowSet;
+	public boolean isCanceled;
 	
 	public TableInputData()
 	{

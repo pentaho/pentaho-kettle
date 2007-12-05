@@ -200,13 +200,16 @@ public class ExecSQL extends BaseStep implements StepInterface
 	}
 
 	/** Stop the running query */
-	public void stopRunning(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
+	public synchronized void stopRunning(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{
 		meta = (ExecSQLMeta) smi;
 		data = (ExecSQLData) sdi;
 
-		if (data.db != null)
+		if (data.db != null && !data.isCanceled)
+		{
 			data.db.cancelQuery();
+			data.isCanceled = true;
+		}
 	}
 
 	public boolean init(StepMetaInterface smi, StepDataInterface sdi)

@@ -411,12 +411,16 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 	}
     
     /** Stop the running query */
-    public void stopRunning(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
+    public synchronized void stopRunning(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
     {
         meta=(DatabaseLookupMeta)smi;
         data=(DatabaseLookupData)sdi;
 
-        if (data.db!=null) data.db.cancelQuery();
+        if (data.db!=null && !data.isCanceled) 
+        {
+        	data.db.cancelQuery();
+        	data.isCanceled = true;
+        }
     }
 
 

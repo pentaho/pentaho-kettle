@@ -35,6 +35,7 @@ public class ExecSQLData extends BaseStepData implements StepDataInterface
     public List<Integer>     markerPositions;
     public RowMetaInterface outputRowMeta;
     public String   sql;
+	public boolean isCanceled;
 	
 	public ExecSQLData()
 	{

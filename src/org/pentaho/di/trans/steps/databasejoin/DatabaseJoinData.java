@@ -34,6 +34,7 @@ public class DatabaseJoinData extends BaseStepData implements StepDataInterface
 	
 	public int      keynrs[]; // parameter value index in an input row...
 	public Object[] notfound; // Values in case nothing is found...
+	public boolean isCanceled;
 
 	/**
 	 * 
