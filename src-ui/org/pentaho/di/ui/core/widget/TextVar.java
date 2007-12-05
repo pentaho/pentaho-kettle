@@ -276,7 +276,17 @@ public class TextVar extends Composite
     public static final String[] getVariableNames(VariableSpace space) {
     	String variableNames[] = space.listVariables();
         Arrays.sort(variableNames);
-        return variableNames;
+        
+        // repeat a few entries at the top, for convenience...
+        //
+        String[] array = new String[variableNames.length+2];
+        int index=0;
+        array[index++]= Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY;
+        array[index++]= Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY;
+        
+        for (String name : variableNames) array[index++] = name;
+        
+        return array;
     }
 
     /**
