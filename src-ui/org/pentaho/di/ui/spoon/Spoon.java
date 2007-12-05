@@ -4527,11 +4527,15 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		boolean enableRepositoryMenu = rep != null;
 		
 		boolean enableLastPreviewMenu = false;
+		boolean disablePreviewButton = false;
+		
 		TransLog transLog = getActiveTransLog();
 		if (transLog!=null)
 		{
 			TransDebugMeta lastTransDebugMeta = transLog.getLastTransDebugMeta();
 			enableLastPreviewMenu = !(lastTransDebugMeta==null || lastTransDebugMeta.getStepDebugMetaMap().isEmpty());
+			
+			disablePreviewButton = transLog.isRunning() && !transLog.isHalting();
 		}
 
 		// Only enable certain menu-items if we need to.
@@ -4554,8 +4558,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		menuBar.setEnableById("edit-paste", enableTransMenu);
 
 		// Transformations
-		menuBar.setEnableById("trans-run", enableTransMenu);
-		menuBar.setEnableById("trans-preview", enableTransMenu);
+		menuBar.setEnableById("trans-run", enableTransMenu && !disablePreviewButton);
+		menuBar.setEnableById("trans-replay", enableTransMenu && !disablePreviewButton);
+		menuBar.setEnableById("trans-preview", enableTransMenu && !disablePreviewButton);
+		menuBar.setEnableById("trans-debug", enableTransMenu && !disablePreviewButton);
 		menuBar.setEnableById("trans-verify", enableTransMenu);
 		menuBar.setEnableById("trans-impact", enableTransMenu);
 		menuBar.setEnableById("trans-get-sql", enableTransMenu);
@@ -4583,16 +4589,18 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		menuBar.setEnableById("trans-last-preview", enableLastPreviewMenu);
 
 		// Do the bar as well
-		toolbar.setEnableById("sql", enableTransMenu || enableJobMenu);
-		toolbar.setEnableById("impact", enableTransMenu);
-		toolbar.setEnableById("check", enableTransMenu);
-		toolbar.setEnableById("replay", enableTransMenu);
-		toolbar.setEnableById("preview", enableTransMenu);
-		toolbar.setEnableById("run", enableTransMenu || enableJobMenu);
-		toolbar.setEnableById("print", enableTransMenu || enableJobMenu);
-		toolbar.setEnableById("saveas", enableTransMenu || enableJobMenu);
-		toolbar.setEnableById("save", enableTransMenu || enableJobMenu);
-
+		toolbar.setEnableById("trans-get-sql", enableTransMenu || enableJobMenu);
+		toolbar.setEnableById("trans-impact", enableTransMenu);
+		toolbar.setEnableById("trans-check", enableTransMenu);
+		toolbar.setEnableById("trans-replay", enableTransMenu && !disablePreviewButton);
+		toolbar.setEnableById("trans-preview", enableTransMenu && !disablePreviewButton);
+		toolbar.setEnableById("trans-debug", enableTransMenu && !disablePreviewButton);
+		toolbar.setEnableById("trans-run", (enableTransMenu && !disablePreviewButton) || enableJobMenu);
+		toolbar.setEnableById("file-print", enableTransMenu || enableJobMenu);
+		toolbar.setEnableById("file-save-as", enableTransMenu || enableJobMenu);
+		toolbar.setEnableById("file-save", enableTransMenu || enableJobMenu);
+		toolbar.setEnableById("explore-database", enableTransMenu || enableJobMenu);
+		
 		// What steps & plugins to show?
 		refreshCoreObjects();
 	}
