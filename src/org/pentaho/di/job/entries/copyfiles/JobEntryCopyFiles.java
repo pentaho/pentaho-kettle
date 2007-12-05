@@ -1079,10 +1079,10 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 	    for (int i = 0; i < source_filefolder.length; i++) 
 	    {
 	      andValidator().validate(this, "arguments[" + i + "]", remarks, ctx);
-	    }
-	    
-    
-	    
+	    } 
 	  }
 
-	}
+   public boolean evaluates() {
+		return true;
+   }
+}
