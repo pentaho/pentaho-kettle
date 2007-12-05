@@ -3060,10 +3060,20 @@ public class ValueMeta implements ValueMetaInterface
         }
 
 		// This looks like the same condition as above but r
-		if (Const.isEmpty(pol) || pol.equalsIgnoreCase(Const.rightPad(new StringBuffer(null_value), pol.length())) )
+		if (Const.isEmpty(pol))
 		{
             return null;
         }
+		else
+		{
+			if (!Const.isEmpty(null_value) && null_value.length()<=pol.length())
+			{
+				if (pol.equalsIgnoreCase(Const.rightPad(new StringBuffer(null_value), pol.length())))
+				{
+					return null;
+				}
+			}
+		}
  
         
         // Trimming
