@@ -2104,9 +2104,9 @@ public class BaseStep extends Thread implements VariableSpace
 
     public int getStatus()
     {
+    	if (isStopped()) return StepDataInterface.STATUS_STOPPED;
         if (isPaused()) return StepDataInterface.STATUS_PAUSED;
         if (isAlive()) return StepDataInterface.STATUS_RUNNING;
-        if (isStopped()) return StepDataInterface.STATUS_STOPPED;
 
         // Get the rest in StepDataInterface object:
         StepDataInterface sdi = trans.getStepDataInterface(stepname, stepcopy);
