@@ -609,7 +609,7 @@ public class TransLog extends Composite implements TabItemInterface
 		}
 	}
     
-    public synchronized void stop()
+    public void stop()
     {
         if (running && !halting)
         {
@@ -630,7 +630,7 @@ public class TransLog extends Composite implements TabItemInterface
             running = false;
             initialized = false;
             halted = false;
-            // halting = false;
+            halting = false;
             transMeta.setInternalKettleVariables(); // set the original vars back as they may be changed by a mapping
         }
     }
@@ -878,7 +878,7 @@ public class TransLog extends Composite implements TabItemInterface
 		return args;
 	}
 
-	public void showPreview(final TransDebugMeta transDebugMeta, final StepDebugMeta stepDebugMeta, final RowMetaInterface rowBufferMeta, final List<Object[]> rowBuffer)
+	public synchronized void showPreview(final TransDebugMeta transDebugMeta, final StepDebugMeta stepDebugMeta, final RowMetaInterface rowBufferMeta, final List<Object[]> rowBuffer)
 	{
 		display.asyncExec(new Runnable() {
 		
@@ -1096,5 +1096,19 @@ public class TransLog extends Composite implements TabItemInterface
 		
 		EnterPreviewRowsDialog dialog = new EnterPreviewRowsDialog(shell, SWT.NONE, stepnames, rowMetas, rowBuffers);
 		dialog.open();
+	}
+
+	/**
+	 * @return the halting
+	 */
+	public boolean isHalting() {
+		return halting;
+	}
+
+	/**
+	 * @param halting the halting to set
+	 */
+	public void setHalting(boolean halting) {
+		this.halting = halting;
 	}
 }
