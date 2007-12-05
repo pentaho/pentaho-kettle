@@ -750,6 +750,15 @@ public class BaseStep extends Thread implements VariableSpace
 			}
     	}
     	
+    	// Right after the pause loop we have to check if this thread is stopped or not.
+    	//
+    	if (stopped.get())
+    	{
+    		if (log.isDebug()) logDebug(Messages.getString("BaseStep.Log.StopPuttingARow")); //$NON-NLS-1$
+    		stopAll();
+    		return;
+    	}
+    	
 	    // Have all threads started?
 	    // Are we running yet?  If not, wait a bit until all threads have been started.
     	//
@@ -795,12 +804,6 @@ public class BaseStep extends Thread implements VariableSpace
 	        return; // we're done here!
 	    }
 
-        if (stopped.get())
-        {
-            if (log.isDebug()) logDebug(Messages.getString("BaseStep.Log.StopPuttingARow")); //$NON-NLS-1$
-            stopAll();
-            return;
-        }
 
         // Repartitioning happens when the current step is not partitioned, but the next one is.
         // That means we need to look up the partitioning information in the next step..
