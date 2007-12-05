@@ -78,6 +78,11 @@ public class CacheDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 		return false;
 	}
 	
+	public boolean isFetchSizeSupported() 
+	{
+		return false;
+	}
+	
 	/**
 	 * @return Whether or not the database can use auto increment type of fields (pk)
 	 */
