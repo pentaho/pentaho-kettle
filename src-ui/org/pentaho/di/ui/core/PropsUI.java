@@ -10,11 +10,10 @@
  * the license for the specific language governing your rights and limitations.*/
 
  
-
-
 package org.pentaho.di.ui.core;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
@@ -37,6 +36,8 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.LastUsedFile;
 import org.pentaho.di.core.ObjectUsageCount;
 import org.pentaho.di.core.Props;
+import org.pentaho.di.core.gui.GUIOption;
+import org.pentaho.di.core.util.ResolverUtil;
 import org.pentaho.di.laf.BasePropertyHandler;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
@@ -73,6 +74,9 @@ public class PropsUI extends Props
     private static final String STRING_ONLY_SHOW_ACTIVE_FILE = "OnlyShowActiveFileInTree";
     
     private static final String SHOW_TOOL_TIPS = "ShowToolTips";
+    
+    
+    private static List<GUIOption> editables;
 
 	/**
 	 * Initialize the properties: load from disk.
@@ -142,7 +146,7 @@ public class PropsUI extends Props
     	super(filename);
     }
     
-	protected void init() {
+	protected synchronized void init() {
 		properties = new Properties();
         pluginHistory = new ArrayList<ObjectUsageCount>();
 
@@ -154,6 +158,27 @@ public class PropsUI extends Props
 
 		loadScreens();
         loadLastUsedFiles();
+        
+        //load the editables
+        ResolverUtil<GUIOption> res = new ResolverUtil<GUIOption>();
+        res.find(new ResolverUtil.IsA(GUIOption.class),"org.pentaho.di.core");
+        List<GUIOption> leditables = new ArrayList<GUIOption>();
+        for (Class<? extends GUIOption>c:res.getClasses())
+        {
+        	try
+        	{
+        		if (c.isInterface())
+        			continue;
+        		
+        		leditables.add(c.newInstance());
+        	}
+        	catch(Exception e)
+        	{
+        		e.printStackTrace(); //TODO: either handle it or ignore it stack trace is good for now
+        	}
+        }
+        
+        editables = Collections.unmodifiableList(leditables);
 
 	}
 
@@ -1079,5 +1104,10 @@ public class PropsUI extends Props
     public void setShowToolTips(boolean show)
     {
         properties.setProperty(SHOW_TOOL_TIPS, show?YES:NO);
+    }
+    
+    public List<GUIOption> getRegisteredEditableComponents()
+    {
+    	return editables;
     }
 }
