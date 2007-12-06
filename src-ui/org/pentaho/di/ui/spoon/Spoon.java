@@ -115,6 +115,8 @@ import org.pentaho.di.core.gui.SpoonInterface;
 import org.pentaho.di.core.gui.UndoInterface;
 import org.pentaho.di.core.lifecycle.LifeEventHandler;
 import org.pentaho.di.core.lifecycle.LifeEventInfo;
+import org.pentaho.di.core.lifecycle.LifecycleException;
+import org.pentaho.di.core.lifecycle.LifecycleSupport;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.reflection.StringSearchResult;
 import org.pentaho.di.core.row.RowMeta;
@@ -348,7 +350,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	private Map<String, Menu> menuMap = new HashMap<String, Menu>();
 	
 	// loads the lifecycle listeners
-	// private LifecycleSupport lcsup = new LifecycleSupport();
+	private LifecycleSupport lcsup = new LifecycleSupport();
 
     /**
      * This is the main procedure for Spoon.
@@ -3323,7 +3325,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		}
         
         //and now we call the listeners
-        /*
+        
         try
         {
         	lcsup.onExit(this);
@@ -3334,7 +3336,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
             box.setMessage(e.getMessage());
 			box.open();
         }
-        */
+        
 
         if (exit) dispose();
 
@@ -5665,7 +5667,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			createSpoon();
 			
 			//listeners
-			/*
+			
 			try
 			{
 				lcsup.onStart(this);
@@ -5677,7 +5679,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	            box.setMessage(e.getMessage());
 				box.open();
 			}
-			*/
+			
 			
 			setArguments(args.toArray(new String[args.size()]));
 			start();
@@ -6527,23 +6529,23 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		}	
 	}
 	
-	public void consume(LifeEventInfo info)
+	public void consume(final LifeEventInfo info)
 	{
 //		if (PropsUI.getInstance().isListenerDisabled(info.getName()))
 //			return;
 		
-//		if (info.hasHint(LifeEventInfo.Hint.DISPLAY_BROWSER))
-//		{
-//			display.asyncExec(new Runnable(){public void run(){delegates.tabs.addSpoonBrowser(info.getName(),info.getMessage(),false);}});
-//			
-//		}
-//		else
-//		{
-//			MessageBox box = new MessageBox(shell, (info.getState()!=LifeEventInfo.State.SUCCESS?SWT.ICON_ERROR:SWT.ICON_INFORMATION) | SWT.OK);
-//			box.setText(info.getName());
-//            box.setMessage(info.getMessage());
-//			box.open();
-//		}
+		if (info.hasHint(LifeEventInfo.Hint.DISPLAY_BROWSER))
+		{
+			display.asyncExec(new Runnable(){public void run(){delegates.tabs.addSpoonBrowser(info.getName(),info.getMessage(),false);}});
+			
+		}
+		else
+		{
+			MessageBox box = new MessageBox(shell, (info.getState()!=LifeEventInfo.State.SUCCESS?SWT.ICON_ERROR:SWT.ICON_INFORMATION) | SWT.OK);
+			box.setText(info.getName());
+            box.setMessage(info.getMessage());
+			box.open();
+		}
 		
 	}
 
