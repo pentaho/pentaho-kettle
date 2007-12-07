@@ -190,7 +190,7 @@ public class ScriptValuesMod extends BaseStep implements StepInterface, ScriptVa
                 	else {
                 		Scriptable jsarg;
                 		if (valueData!=null) {
-                			jsarg = Context.toObject(valueData, data.scope);
+                			jsarg = Context.toObject(valueMeta.convertToNormalStorageType(valueData), data.scope);
                 		}
                 		else {
                 			jsarg = null;
