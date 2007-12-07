@@ -110,6 +110,7 @@ public class ValueMeta implements ValueMetaInterface
     {
         this(name, type, -1, -1);
         this.storageType = storageType;
+        setDefaultConversionMask();
     }
     
     public ValueMeta(String name, int type, int length, int precision)
@@ -127,6 +128,7 @@ public class ValueMeta implements ValueMetaInterface
         this.identicalFormat = true;
         
         determineSingleByteEncoding();
+        setDefaultConversionMask();
     }
     
     public static final String[] SINGLE_BYTE_ENCODINGS = new String[] {
@@ -138,6 +140,18 @@ public class ValueMeta implements ValueMetaInterface
     	"ISO8859_2", "ISO8859_3", "ISO8859_5", "ISO8859_5", "ISO8859_6", "ISO8859_7", "ISO8859_8", "ISO8859_9", "ISO8859_13", "ISO8859_15", "ISO8859_15_FDIS", 
     	"MacCentralEurope", "MacCroatian", "MacCyrillic", "MacDingbat", "MacGreek", "MacHebrew", "MacIceland", "MacRoman", "MacRomania", "MacSymbol", "MacTurkish", "MacUkraine",
     };
+    
+    private void setDefaultConversionMask()
+    {
+        // Set some sensible default mask on the numbers
+        //
+		switch(type)
+		{
+		case TYPE_INTEGER: setConversionMask(" #;-#"); break;
+		case TYPE_NUMBER: setConversionMask(" #.#;-#.#"); break;
+		default: break;
+		}
+    }
     
     private void determineSingleByteEncoding() 
     {
@@ -1291,67 +1305,74 @@ public class ValueMeta implements ValueMetaInterface
 
 	public Double getNumber(Object object) throws KettleValueException
     {
-        if (object==null) // NULL 
-        {
-            return null;
-        }
-        switch(type)
-        {
-        case TYPE_NUMBER:
-            switch(storageType)
-            {
-            case STORAGE_TYPE_NORMAL:         return (Double)object;
-            case STORAGE_TYPE_BINARY_STRING:  return (Double)convertBinaryStringToNativeType((byte[])object);
-            case STORAGE_TYPE_INDEXED:        return (Double)index[((Integer)object).intValue()];
-            default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
-            }
-        case TYPE_STRING:
-            switch(storageType)
-            {
-            case STORAGE_TYPE_NORMAL:         return convertStringToNumber((String)object);
-            case STORAGE_TYPE_BINARY_STRING:  return convertStringToNumber((String)convertBinaryStringToNativeType((byte[])object));
-            case STORAGE_TYPE_INDEXED:        return convertStringToNumber((String) index[((Integer)object).intValue()]); 
-            default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
-            }
-        case TYPE_DATE:
-            switch(storageType)
-            {
-            case STORAGE_TYPE_NORMAL:         return convertDateToNumber((Date)object);
-            case STORAGE_TYPE_BINARY_STRING:  return convertDateToNumber((Date)convertBinaryStringToNativeType((byte[])object));
-            case STORAGE_TYPE_INDEXED:        return new Double( ((Date)index[((Integer)object).intValue()]).getTime() );  
-            default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
-            }
-        case TYPE_INTEGER:
-            switch(storageType)
-            {
-            case STORAGE_TYPE_NORMAL:         return new Double( ((Long)object).doubleValue() );
-            case STORAGE_TYPE_BINARY_STRING:  return new Double( ((Long)convertBinaryStringToNativeType((byte[])object)).doubleValue() );
-            case STORAGE_TYPE_INDEXED:        return new Double( ((Long)index[((Integer)object).intValue()]).doubleValue() );
-            default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
-            }
-        case TYPE_BIGNUMBER:
-            switch(storageType)
-            {
-            case STORAGE_TYPE_NORMAL:         return new Double( ((BigDecimal)object).doubleValue() );
-            case STORAGE_TYPE_BINARY_STRING:  return new Double( ((BigDecimal)convertBinaryStringToNativeType((byte[])object)).doubleValue() );
-            case STORAGE_TYPE_INDEXED:        return new Double( ((BigDecimal)index[((Integer)object).intValue()]).doubleValue() );
-            default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
-            }
-        case TYPE_BOOLEAN:
-            switch(storageType)
-            {
-            case STORAGE_TYPE_NORMAL:         return convertBooleanToNumber( (Boolean)object );
-            case STORAGE_TYPE_BINARY_STRING:  return convertBooleanToNumber( (Boolean)convertBinaryStringToNativeType((byte[])object) );
-            case STORAGE_TYPE_INDEXED:        return convertBooleanToNumber( (Boolean)index[((Integer)object).intValue()] );
-            default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
-            }
-        case TYPE_BINARY:
-            throw new KettleValueException(toString()+" : I don't know how to convert binary values to numbers.");
-        case TYPE_SERIALIZABLE:
-            throw new KettleValueException(toString()+" : I don't know how to convert serializable values to numbers.");
-        default:
-            throw new KettleValueException(toString()+" : Unknown type "+type+" specified.");
-        }
+		try
+		{
+	        if (object==null) // NULL 
+	        {
+	            return null;
+	        }
+	        switch(type)
+	        {
+	        case TYPE_NUMBER:
+	            switch(storageType)
+	            {
+	            case STORAGE_TYPE_NORMAL:         return (Double)object;
+	            case STORAGE_TYPE_BINARY_STRING:  return (Double)convertBinaryStringToNativeType((byte[])object);
+	            case STORAGE_TYPE_INDEXED:        return (Double)index[((Integer)object).intValue()];
+	            default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
+	            }
+	        case TYPE_STRING:
+	            switch(storageType)
+	            {
+	            case STORAGE_TYPE_NORMAL:         return convertStringToNumber((String)object);
+	            case STORAGE_TYPE_BINARY_STRING:  return convertStringToNumber((String)convertBinaryStringToNativeType((byte[])object));
+	            case STORAGE_TYPE_INDEXED:        return convertStringToNumber((String) index[((Integer)object).intValue()]); 
+	            default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
+	            }
+	        case TYPE_DATE:
+	            switch(storageType)
+	            {
+	            case STORAGE_TYPE_NORMAL:         return convertDateToNumber((Date)object);
+	            case STORAGE_TYPE_BINARY_STRING:  return convertDateToNumber((Date)convertBinaryStringToNativeType((byte[])object));
+	            case STORAGE_TYPE_INDEXED:        return new Double( ((Date)index[((Integer)object).intValue()]).getTime() );  
+	            default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
+	            }
+	        case TYPE_INTEGER:
+	            switch(storageType)
+	            {
+	            case STORAGE_TYPE_NORMAL:         return new Double( ((Long)object).doubleValue() );
+	            case STORAGE_TYPE_BINARY_STRING:  return new Double( ((Long)convertBinaryStringToNativeType((byte[])object)).doubleValue() );
+	            case STORAGE_TYPE_INDEXED:        return new Double( ((Long)index[((Integer)object).intValue()]).doubleValue() );
+	            default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
+	            }
+	        case TYPE_BIGNUMBER:
+	            switch(storageType)
+	            {
+	            case STORAGE_TYPE_NORMAL:         return new Double( ((BigDecimal)object).doubleValue() );
+	            case STORAGE_TYPE_BINARY_STRING:  return new Double( ((BigDecimal)convertBinaryStringToNativeType((byte[])object)).doubleValue() );
+	            case STORAGE_TYPE_INDEXED:        return new Double( ((BigDecimal)index[((Integer)object).intValue()]).doubleValue() );
+	            default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
+	            }
+	        case TYPE_BOOLEAN:
+	            switch(storageType)
+	            {
+	            case STORAGE_TYPE_NORMAL:         return convertBooleanToNumber( (Boolean)object );
+	            case STORAGE_TYPE_BINARY_STRING:  return convertBooleanToNumber( (Boolean)convertBinaryStringToNativeType((byte[])object) );
+	            case STORAGE_TYPE_INDEXED:        return convertBooleanToNumber( (Boolean)index[((Integer)object).intValue()] );
+	            default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
+	            }
+	        case TYPE_BINARY:
+	            throw new KettleValueException(toString()+" : I don't know how to convert binary values to numbers.");
+	        case TYPE_SERIALIZABLE:
+	            throw new KettleValueException(toString()+" : I don't know how to convert serializable values to numbers.");
+	        default:
+	            throw new KettleValueException(toString()+" : Unknown type "+type+" specified.");
+	        }
+    	}
+    	catch(Exception e)
+    	{
+    		throw new KettleValueException("Unexpected conversion error while converting value ["+toString()+"] to a Number", e);
+    	}
     }
 
     public Long getInteger(Object object) throws KettleValueException
@@ -3059,16 +3080,35 @@ public class ValueMeta implements ValueMetaInterface
 			}
         }
 
-		// This looks like the same condition as above but r
+		// See if the polled value is empty
+        // In that case, we have a null value on our hands...
+        //
 		if (Const.isEmpty(pol))
 		{
             return null;
         }
 		else
 		{
-			if (!Const.isEmpty(null_value) && null_value.length()<=pol.length())
+			// if the null_value is specified, we try to match with that.
+			//
+			if (!Const.isEmpty(null_value))
 			{
-				if (pol.equalsIgnoreCase(Const.rightPad(new StringBuffer(null_value), pol.length())))
+				if (null_value.length()<=pol.length())
+				{
+					// If the polled value is equal to the spaces right-padded null_value, we have a match
+					//
+					if (pol.equalsIgnoreCase(Const.rightPad(new StringBuffer(null_value), pol.length())))
+					{
+						return null;
+					}
+				}
+			}
+			else
+			{
+				// Verify if there are only spaces in the polled value...
+				// We consider that empty as well...
+				//
+				if (Const.onlySpaces(pol))
 				{
 					return null;
 				}
