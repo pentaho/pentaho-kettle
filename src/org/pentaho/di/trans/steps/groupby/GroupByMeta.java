@@ -395,16 +395,18 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
 					precision=-1;
 					length=-1;
 				}
-				else
-                if (aggregateType[i]==TYPE_GROUP_COUNT_ALL)
+				else if (aggregateType[i]==TYPE_GROUP_COUNT_ALL)
                 {
                     length    = ValueMetaInterface.DEFAULT_INTEGER_LENGTH;
                     precision = 0;
                 }
-                else
+				// If it ain't numeric, we change it to Number
+				//
+                else if (aggregateType[i]==TYPE_GROUP_SUM && value_type!=ValueMetaInterface.TYPE_INTEGER && value_type!=ValueMetaInterface.TYPE_NUMBER && value_type!=ValueMetaInterface.TYPE_BIGNUMBER)
                 {
-                    length    = subj.getLength();
-                    precision = subj.getPrecision();                	
+                	value_type = ValueMetaInterface.TYPE_NUMBER;
+					precision=-1;
+					length=-1;       	
                 }
                 
 				if (value_type != ValueMetaInterface.TYPE_NONE)

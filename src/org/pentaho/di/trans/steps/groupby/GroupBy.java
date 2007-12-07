@@ -425,10 +425,10 @@ public class GroupBy extends BaseStep implements StepInterface
 			switch(meta.getAggregateType()[i])
 			{
 				case GroupByMeta.TYPE_GROUP_SUM            :
-					data.agg[i]=ValueDataUtil.plus(valueMeta, value, subjMeta, subj);
+					data.agg[i]=ValueDataUtil.sum(valueMeta, value, subjMeta, subj);
 					break; 
 				case GroupByMeta.TYPE_GROUP_AVERAGE        :
-					data.agg[i]=ValueDataUtil.plus(valueMeta, value, subjMeta, subj);
+					data.agg[i]=ValueDataUtil.sum(valueMeta, value, subjMeta, subj);
 				data.counts[i]++;
 					break; 
 				case GroupByMeta.TYPE_GROUP_COUNT_ALL      :
