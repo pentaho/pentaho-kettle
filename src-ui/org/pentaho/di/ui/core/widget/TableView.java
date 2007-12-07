@@ -246,10 +246,15 @@ public class TableView extends Composite
 
 		for (int i=0;i<columns.length;i++)
 		{
-			tablecolumn[i+1]=new TableColumn(table, columns[i].getAllignement());
+			int allignment = columns[i].getAllignement();
+			tablecolumn[i+1]=new TableColumn(table, allignment);
 			tablecolumn[i+1].setResizable(true);
 			if (columns[i].getName()!=null) tablecolumn[i+1].setText(columns[i].getName());
-			//tablecolumn[i+1].setWidth((width-30)/columns.length);
+			ValueMetaInterface valueMeta = columns[i].getValueMeta();
+			if (valueMeta!=null && valueMeta.isNumeric())
+			{
+				tablecolumn[i+1].setAlignment(SWT.RIGHT);
+			}
 			tablecolumn[i+1].pack();
 		}
 		
