@@ -90,6 +90,13 @@ public class GroupBy extends BaseStep implements StepInterface
         	//
 			data.counts     = new long[meta.getSubjectField().length];
 			data.subjectnrs = new int[meta.getSubjectField().length];
+
+			data.cumulativeSumSourceIndexes = new ArrayList<Integer>();
+			data.cumulativeSumTargetIndexes = new ArrayList<Integer>();
+			
+			data.cumulativeAvgSourceIndexes = new ArrayList<Integer>();
+			data.cumulativeAvgTargetIndexes = new ArrayList<Integer>();
+			
 			for (int i=0;i<meta.getSubjectField().length;i++)
 			{
 				data.subjectnrs[i] = data.inputRowMeta.indexOfValue(meta.getSubjectField()[i]);
@@ -100,6 +107,28 @@ public class GroupBy extends BaseStep implements StepInterface
 					stopAll();
 					return false;
 				}
+				
+				if (meta.getAggregateType()[i]==GroupByMeta.TYPE_GROUP_CUMULATIVE_SUM)
+				{
+					data.cumulativeSumSourceIndexes.add(data.subjectnrs[i]);
+					
+					// The position of the target in the output row is the input row size + i
+					//
+					data.cumulativeSumTargetIndexes.add(getInputRowMeta().size()+i);
+				}
+				if (meta.getAggregateType()[i]==GroupByMeta.TYPE_GROUP_CUMULATIVE_AVERAGE)
+				{
+					data.cumulativeAvgSourceIndexes.add(data.subjectnrs[i]);
+
+					// The position of the target in the output row is the input row size + i
+					//
+					data.cumulativeAvgTargetIndexes.add(getInputRowMeta().size()+i);
+				}
+				
+				data.previousSums = new Object[data.cumulativeSumTargetIndexes.size()];
+				
+				data.previousAvgSum = new Object[data.cumulativeAvgTargetIndexes.size()];
+				data.previousAvgCount = new long[data.cumulativeAvgTargetIndexes.size()];
 			}
 			
 			data.groupnrs = new int[meta.getGroupField().length];
@@ -114,6 +143,11 @@ public class GroupBy extends BaseStep implements StepInterface
 					return false;
 				}				
 			}
+			
+			// Create a metadata value for the counter Integers
+			//
+			data.valueMetaInteger = new ValueMeta("count", ValueMetaInterface.TYPE_INTEGER);
+			data.valueMetaNumber = new ValueMeta("sum", ValueMetaInterface.TYPE_NUMBER);
 			
 			// Initialize the group metadata
 			//
@@ -143,6 +177,7 @@ public class GroupBy extends BaseStep implements StepInterface
 
                 Object[] row = getRowFromBuffer();
                 
+                
                 long lineNr=0;
                 while (row!=null)
                 {
@@ -154,11 +189,14 @@ public class GroupBy extends BaseStep implements StepInterface
                     if (meta.isAddingLineNrInGroup() && !Const.isEmpty(meta.getLineNrInGroupField()))
                     {
                     	Object lineNrValue= new Long(lineNr);
-                    	ValueMetaInterface lineNrValueMeta = new ValueMeta(meta.getLineNrInGroupField(), ValueMetaInterface.TYPE_INTEGER);
-                    	lineNrValueMeta.setLength(9);
+                    	// ValueMetaInterface lineNrValueMeta = new ValueMeta(meta.getLineNrInGroupField(), ValueMetaInterface.TYPE_INTEGER);
+                    	// lineNrValueMeta.setLength(9);
                     	row=RowDataUtil.addValueData(row, size, lineNrValue);
                     	size++;
                     }
+                    
+                    addCumulativeSums(row);
+                    addCumulativeAverages(row);
                     
                     putRow(data.outputRowMeta, row);
                     row = getRowFromBuffer();
@@ -231,11 +269,15 @@ public class GroupBy extends BaseStep implements StepInterface
                     if (meta.isAddingLineNrInGroup() && !Const.isEmpty(meta.getLineNrInGroupField()))
                     {
                     	Object lineNrValue= new Long(lineNr);
-                    	ValueMetaInterface lineNrValueMeta = new ValueMeta(meta.getLineNrInGroupField(), ValueMetaInterface.TYPE_INTEGER);
-                    	lineNrValueMeta.setLength(9);
+                    	// ValueMetaInterface lineNrValueMeta = new ValueMeta(meta.getLineNrInGroupField(), ValueMetaInterface.TYPE_INTEGER);
+                    	// lineNrValueMeta.setLength(9);
                     	row=RowDataUtil.addValueData(row, size, lineNrValue);
                     	size++;
                     }
+                    
+                    addCumulativeSums(row);
+                    addCumulativeAverages(row);
+                    
                     putRow(data.outputRowMeta, row);
                     row = getRowFromBuffer();
                 }
@@ -256,6 +298,112 @@ public class GroupBy extends BaseStep implements StepInterface
 		return true;
 	}
 	
+	private void addCumulativeSums(Object[] row) throws KettleValueException {
+
+		// We need to adjust this row with cumulative averages?
+        //
+        for (int i=0;i<data.cumulativeSumSourceIndexes.size();i++)
+        {
+        	int sourceIndex = data.cumulativeSumSourceIndexes.get(i);
+        	Object previousTarget = data.previousSums[i];
+        	Object sourceValue = row[sourceIndex];
+        	
+        	int targetIndex = data.cumulativeSumTargetIndexes.get(i);
+        	
+        	ValueMetaInterface sourceMeta = getInputRowMeta().getValueMeta(sourceIndex);
+    		ValueMetaInterface targetMeta = data.outputRowMeta.getValueMeta(targetIndex);
+
+    		// If the first values where null, or this is the first time around, just take the source value...
+    		//
+        	if (targetMeta.isNull(previousTarget))
+        	{
+        		row[targetIndex]=sourceMeta.convertToNormalStorageType(sourceValue);
+        	}
+        	else
+        	{
+        		// If the source value is null, just take the previous target value
+        		//
+        		if (sourceMeta.isNull(sourceValue))
+        		{
+        			row[targetIndex] = previousTarget;
+        		}
+        		else
+        		{
+            		row[targetIndex] = ValueDataUtil.plus(targetMeta, data.previousSums[i], sourceMeta, row[sourceIndex]);
+        		}
+        	}
+        	data.previousSums[i] = row[targetIndex];
+        }
+
+	}
+	
+	private void addCumulativeAverages(Object[] row) throws KettleValueException {
+
+		// We need to adjust this row with cumulative sums
+        //
+        for (int i=0;i<data.cumulativeAvgSourceIndexes.size();i++)
+        {
+        	int sourceIndex = data.cumulativeAvgSourceIndexes.get(i);
+        	Object previousTarget = data.previousAvgSum[i];
+        	Object sourceValue = row[sourceIndex];
+        	
+        	int targetIndex = data.cumulativeAvgTargetIndexes.get(i);
+        	
+        	ValueMetaInterface sourceMeta = getInputRowMeta().getValueMeta(sourceIndex);
+    		ValueMetaInterface targetMeta = data.outputRowMeta.getValueMeta(targetIndex);
+
+    		// If the first values where null, or this is the first time around, just take the source value...
+    		//
+    		Object sum = null;
+    		
+        	if (targetMeta.isNull(previousTarget))
+        	{
+        		sum=sourceMeta.convertToNormalStorageType(sourceValue);
+        	}
+        	else
+        	{
+        		// If the source value is null, just take the previous target value
+        		//
+        		if (sourceMeta.isNull(sourceValue))
+        		{
+        			sum = previousTarget;
+        		}
+        		else
+        		{
+        			if (sourceMeta.isInteger())
+        			{
+        				sum = ValueDataUtil.plus(data.valueMetaInteger, data.previousAvgSum[i], sourceMeta, row[sourceIndex]);
+        			}
+        			else
+        			{
+        				sum = ValueDataUtil.plus(targetMeta, data.previousAvgSum[i], sourceMeta, row[sourceIndex]);
+        			}
+        		}
+        	}
+        	data.previousAvgSum[i] = sum;
+
+        	if (!sourceMeta.isNull(sourceValue)) data.previousAvgCount[i]++;
+        	
+        	if (sourceMeta.isInteger()) {
+        		// Change to number as the exception
+        		//
+        		if (sum==null)
+        		{
+        			row[targetIndex] = null;
+        		}
+        		else 
+        		{
+        			row[targetIndex] = new Double( ((Long)sum).doubleValue() / data.previousAvgCount[i] );
+        		}
+        	}
+        	else
+        	{
+        		row[targetIndex] = ValueDataUtil.divide(targetMeta, sum, data.valueMetaInteger, data.previousAvgCount[i]);
+        	}
+        }
+
+	}
+
 	// Is the row r of the same group as previous?
 	private boolean sameGroup(Object[] previous, Object[] r) throws KettleValueException
 	{
@@ -338,6 +486,8 @@ public class GroupBy extends BaseStep implements StepInterface
 			{
 				case GroupByMeta.TYPE_GROUP_SUM            : 
 				case GroupByMeta.TYPE_GROUP_AVERAGE        :
+				case GroupByMeta.TYPE_GROUP_CUMULATIVE_SUM : 
+				case GroupByMeta.TYPE_GROUP_CUMULATIVE_AVERAGE :
                     vMeta = new ValueMeta(meta.getAggregateField()[i], subjMeta.isNumeric()?subjMeta.getType():ValueMetaInterface.TYPE_NUMBER);
                     switch(subjMeta.getType())
                     {
@@ -375,6 +525,15 @@ public class GroupBy extends BaseStep implements StepInterface
             }
 			if (v!=null) data.agg[i]=v;
 			data.aggMeta.addValueMeta(vMeta);
+		}
+		
+		// Also clear the cumulative data...
+		//
+		for (int i=0;i<data.previousSums.length;i++) data.previousSums[i]=null;
+		for (int i=0;i<data.previousAvgCount.length;i++) 
+		{
+			data.previousAvgCount[i]=0L;
+			data.previousAvgSum[i]=null;
 		}
 	}
 	

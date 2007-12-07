@@ -45,36 +45,40 @@ import org.w3c.dom.Node;
 
 public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
 {
-	public static final int TYPE_GROUP_NONE            =  0;
-	public static final int TYPE_GROUP_SUM             =  1;
-	public static final int TYPE_GROUP_AVERAGE         =  2;
-	public static final int TYPE_GROUP_MIN             =  3;
-	public static final int TYPE_GROUP_MAX             =  4;
-	public static final int TYPE_GROUP_COUNT_ALL       =  5;
-    public static final int TYPE_GROUP_CONCAT_COMMA    =  6;
-    public static final int TYPE_GROUP_FIRST           =  7;
-    public static final int TYPE_GROUP_LAST            =  8;
-    public static final int TYPE_GROUP_FIRST_INCL_NULL =  9;
-    public static final int TYPE_GROUP_LAST_INCL_NULL  = 10;
+	public static final int TYPE_GROUP_NONE               =  0;
+	public static final int TYPE_GROUP_SUM                =  1;
+	public static final int TYPE_GROUP_AVERAGE            =  2;
+	public static final int TYPE_GROUP_MIN                =  3;
+	public static final int TYPE_GROUP_MAX                =  4;
+	public static final int TYPE_GROUP_COUNT_ALL          =  5;
+    public static final int TYPE_GROUP_CONCAT_COMMA       =  6;
+    public static final int TYPE_GROUP_FIRST              =  7;
+    public static final int TYPE_GROUP_LAST               =  8;
+    public static final int TYPE_GROUP_FIRST_INCL_NULL    =  9;
+    public static final int TYPE_GROUP_LAST_INCL_NULL     = 10;
+	public static final int TYPE_GROUP_CUMULATIVE_SUM     = 11;
+	public static final int TYPE_GROUP_CUMULATIVE_AVERAGE = 12;
 
 	public static final String typeGroupCode[] =  /* WARNING: DO NOT TRANSLATE THIS. WE ARE SERIOUS, DON'T TRANSLATE! */ 
 		{
-			"-", "SUM", "AVERAGE", "MIN", "MAX", "COUNT_ALL", "CONCAT_COMMA", "FIRST", "LAST", "FIRST_INCL_NULL", "LAST_INCL_NULL",   	 //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$
+			"-", "SUM", "AVERAGE", "MIN", "MAX", "COUNT_ALL", "CONCAT_COMMA", "FIRST", "LAST", "FIRST_INCL_NULL", "LAST_INCL_NULL", "CUM_SUM", "CUM_AVG",  	 //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$ //$NON-NLS-13$
 		};
 
 	public static final String typeGroupLongDesc[] = 
 		{
-			"-",                                                                   //$NON-NLS-1$ 
-            Messages.getString("GroupByMeta.TypeGroupLongDesc.SUM"),               //$NON-NLS-1$ 
-            Messages.getString("GroupByMeta.TypeGroupLongDesc.AVERAGE"),           //$NON-NLS-1$ 
-            Messages.getString("GroupByMeta.TypeGroupLongDesc.MIN"),               //$NON-NLS-1$ 
-            Messages.getString("GroupByMeta.TypeGroupLongDesc.MAX"),               //$NON-NLS-1$ 
-            Messages.getString("GroupByMeta.TypeGroupLongDesc.CONCAT_ALL"),        //$NON-NLS-1$ 
-            Messages.getString("GroupByMeta.TypeGroupLongDesc.CONCAT_COMMA"),      //$NON-NLS-1$ 
-            Messages.getString("GroupByMeta.TypeGroupLongDesc.FIRST"),             //$NON-NLS-1$ 
-            Messages.getString("GroupByMeta.TypeGroupLongDesc.LAST"), 	           //$NON-NLS-1$ 
-            Messages.getString("GroupByMeta.TypeGroupLongDesc.FIRST_INCL_NULL"),   //$NON-NLS-1$ 
-            Messages.getString("GroupByMeta.TypeGroupLongDesc.LAST_INCL_NULL"),    //$NON-NLS-1$ 
+			"-",                                                                     //$NON-NLS-1$ 
+            Messages.getString("GroupByMeta.TypeGroupLongDesc.SUM"),                 //$NON-NLS-1$ 
+            Messages.getString("GroupByMeta.TypeGroupLongDesc.AVERAGE"),             //$NON-NLS-1$ 
+            Messages.getString("GroupByMeta.TypeGroupLongDesc.MIN"),                 //$NON-NLS-1$ 
+            Messages.getString("GroupByMeta.TypeGroupLongDesc.MAX"),                 //$NON-NLS-1$ 
+            Messages.getString("GroupByMeta.TypeGroupLongDesc.CONCAT_ALL"),          //$NON-NLS-1$ 
+            Messages.getString("GroupByMeta.TypeGroupLongDesc.CONCAT_COMMA"),        //$NON-NLS-1$ 
+            Messages.getString("GroupByMeta.TypeGroupLongDesc.FIRST"),               //$NON-NLS-1$ 
+            Messages.getString("GroupByMeta.TypeGroupLongDesc.LAST"), 	             //$NON-NLS-1$ 
+            Messages.getString("GroupByMeta.TypeGroupLongDesc.FIRST_INCL_NULL"),     //$NON-NLS-1$ 
+            Messages.getString("GroupByMeta.TypeGroupLongDesc.LAST_INCL_NULL"),      //$NON-NLS-1$ 
+            Messages.getString("GroupByMeta.TypeGroupLongDesc.CUMUMALTIVE_SUM"),     //$NON-NLS-1$ 
+            Messages.getString("GroupByMeta.TypeGroupLongDesc.CUMUMALTIVE_AVERAGE"), //$NON-NLS-1$ 
 		};
 
 	
@@ -368,19 +372,30 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
                 
 				switch(aggregateType[i])
 				{
-					case TYPE_GROUP_SUM             : value_type = subj.getType(); break;
-					case TYPE_GROUP_AVERAGE         :
-					case TYPE_GROUP_COUNT_ALL       : value_type = ValueMetaInterface.TYPE_INTEGER; break;
-                    case TYPE_GROUP_FIRST           : 
-                    case TYPE_GROUP_LAST            : 
-                    case TYPE_GROUP_FIRST_INCL_NULL : 
-                    case TYPE_GROUP_LAST_INCL_NULL  : 
-					case TYPE_GROUP_MIN             : 
-					case TYPE_GROUP_MAX             : value_type = subj.getType(); break;
-                    case TYPE_GROUP_CONCAT_COMMA    : value_type = ValueMetaInterface.TYPE_STRING; break;
+					case TYPE_GROUP_SUM                : 
+					case TYPE_GROUP_AVERAGE            : 
+					case TYPE_GROUP_CUMULATIVE_SUM     : 
+					case TYPE_GROUP_CUMULATIVE_AVERAGE : 
+                    case TYPE_GROUP_FIRST              : 
+                    case TYPE_GROUP_LAST               : 
+                    case TYPE_GROUP_FIRST_INCL_NULL    : 
+                    case TYPE_GROUP_LAST_INCL_NULL     : 
+					case TYPE_GROUP_MIN                : 
+					case TYPE_GROUP_MAX                : value_type = subj.getType(); break;
+					case TYPE_GROUP_COUNT_ALL          : value_type = ValueMetaInterface.TYPE_INTEGER; break;
+                    case TYPE_GROUP_CONCAT_COMMA       : value_type = ValueMetaInterface.TYPE_STRING; break;
 					default: break;
 				}
-                
+				
+				// Change type from integer to number in case off averages for cumulative average
+				//
+				if (aggregateType[i]==TYPE_GROUP_CUMULATIVE_AVERAGE && value_type==ValueMetaInterface.TYPE_INTEGER)
+				{
+					value_type = ValueMetaInterface.TYPE_NUMBER;
+					precision=-1;
+					length=-1;
+				}
+				else
                 if (aggregateType[i]==TYPE_GROUP_COUNT_ALL)
                 {
                     length    = ValueMetaInterface.DEFAULT_INTEGER_LENGTH;
@@ -412,6 +427,8 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
                 lineNr.setOrigin(origin);
                 fields.addValueMeta(lineNr);
             }
+            
+            
         }
         
         // Now that we have all the fields we want, we should clear the original row and replace the values...

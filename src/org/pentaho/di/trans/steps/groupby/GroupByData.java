@@ -17,8 +17,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
 
@@ -62,6 +64,21 @@ public class GroupByData extends BaseStepData implements StepDataInterface
     
     public RowMetaInterface inputRowMeta;
     public RowMetaInterface outputRowMeta;
+
+	public List<Integer> cumulativeSumSourceIndexes;
+	public List<Integer> cumulativeSumTargetIndexes;
+	
+	public List<Integer> cumulativeAvgSourceIndexes;
+	public List<Integer> cumulativeAvgTargetIndexes;
+
+	public Object[] previousSums;
+
+	public Object[] previousAvgSum;
+
+	public long[] previousAvgCount;
+
+	public ValueMetaInterface valueMetaInteger;
+	public ValueMetaInterface valueMetaNumber;
     
 	/**
 	 * 
