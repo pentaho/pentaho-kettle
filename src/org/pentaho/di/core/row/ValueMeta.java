@@ -147,8 +147,8 @@ public class ValueMeta implements ValueMetaInterface
         //
 		switch(type)
 		{
-		case TYPE_INTEGER: setConversionMask(" #;-#"); break;
-		case TYPE_NUMBER: setConversionMask(" #.#;-#.#"); break;
+		case TYPE_INTEGER: setConversionMask("#;-#"); break;
+		case TYPE_NUMBER: setConversionMask("#.#;-#.#"); break;
 		default: break;
 		}
     }
