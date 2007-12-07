@@ -96,6 +96,15 @@ public class ValueDataUtil
         }
     }
     
+    public static Object sum(ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB) throws KettleValueException
+    {
+        if (dataA==null && dataB==null) return null;
+        if (dataA==null && dataB!=null) return metaA.convertData(metaB, dataB);
+        if (dataA!=null && dataB==null) return dataA;
+        
+        return plus(metaA, dataA, metaB, dataB);
+    }
+    
     public static Object minus(ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB) throws KettleValueException
     {
         if (dataA==null || dataB==null) return null;
@@ -168,7 +177,7 @@ public class ValueDataUtil
         case ValueMetaInterface.TYPE_BIGNUMBER : 
             return metaA.getBigNumber(dataA).divide( metaB.getBigNumber(dataB), BigDecimal.ROUND_HALF_UP);
             
-        default: throw new KettleValueException("The 'divide' function only works on numeric data optionally multiplying strings." );
+        default: throw new KettleValueException("The 'divide' function only works on numeric data." );
         }
     }
     
