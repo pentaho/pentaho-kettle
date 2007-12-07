@@ -645,18 +645,31 @@ public class Repository
         }
         catch(Exception e)
         {
-            // If we can't retrieve the last available upgrade date:
-            // this means the R_VERSION table doesn't exist.
-            // This table was introduced in version 2.3.0
-            //
-            log.logBasic(toString(), "There was an error getting information from the version table "+quote(TABLE_R_VERSION)+".");
-            log.logBasic(toString(), "This table was introduced in version 2.3.0. so we assume the version is 2.2.2");
-            log.logBasic(toString(), "Stack trace: "+Const.getStackTracker(e));
-
-            majorVersion = 2;
-            minorVersion = 2;
-
-            lastUpgrade = null;
+        	try
+        	{
+	        	// See if the repository exists at all.  For this we verify table R_USER.
+	        	//
+	        	database.getOneRow("SELECT * FROM "+quote(TABLE_R_USER));
+	        	
+	        	// Still here?  That means we have a repository...
+	        	//
+	            // If we can't retrieve the last available upgrade date:
+	            // this means the R_VERSION table doesn't exist.
+	            // This table was introduced in version 2.3.0
+	            //
+	            log.logBasic(toString(), "There was an error getting information from the version table "+quote(TABLE_R_VERSION)+".");
+	            log.logBasic(toString(), "This table was introduced in version 2.3.0. so we assume the version is 2.2.2");
+	            log.logBasic(toString(), "Stack trace: "+Const.getStackTracker(e));
+	
+	            majorVersion = 2;
+	            minorVersion = 2;
+	
+	            lastUpgrade = null;
+        	}
+        	catch(Exception ex)
+        	{
+        		throw new KettleException(Messages.getString("Repository.NoRepositoryExists.Messages"));
+        	}
         }
 
         if (lastUpgrade != null)
@@ -667,12 +680,22 @@ public class Repository
             
         if (majorVersion < REQUIRED_MAJOR_VERSION || ( majorVersion==REQUIRED_MAJOR_VERSION && minorVersion<REQUIRED_MINOR_VERSION))
         {
-            throw new KettleException(Const.CR+
-                    "The version of the repository is "+getVersion()+Const.CR+
-                    "This Kettle edition requires it to be at least version "+getRequiredVersion()+Const.CR+
-                    "Please upgrade the repository using the repository dialog (edit)"+Const.CR+
-                    "Also see the Repository Upgrade Guide (in docs/English) for more information."
-            );
+            throw new KettleException(Messages.getString("Repository.UpgradeRequired.Message", getVersion(), getRequiredVersion()));
+        }
+        
+        if (majorVersion==3 && minorVersion==0) {
+        	// The exception: someone upgraded the repository to version 3.0.0
+        	// In that version, one column got named incorrectly.
+        	// Another upgrade to 3.0.1 or later will fix that.
+        	// However, since we don't have point versions in here, we'll have to look at the column in question...
+        	//
+        	String tableName = TABLE_R_TRANS_PARTITION_SCHEMA;
+        	String errorColumn = "TRANSFORMATION";
+    		RowMetaInterface tableFields = database.getTableFields(tableName);
+    		if (tableFields.indexOfValue(errorColumn)>=0)
+    		{
+    			throw new KettleException(Messages.getString("Repository.FixFor300Required.Message"));
+    		}        	
         }
     }
 
