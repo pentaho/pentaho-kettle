@@ -867,6 +867,8 @@ public class Trans implements VariableSpace
                 log.logError(toString(), "Something went wrong while trying to stop the transformation: "+e.toString());
                 log.logError(toString(), Const.getStackTracker(e));
             }
+            
+            sid.data.setStatus(StepDataInterface.STATUS_STOPPED);
 		}
 	}
 
