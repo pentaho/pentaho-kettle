@@ -1066,4 +1066,9 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 	{
 		return new JobEntryCopyFilesDialog(shell,this,jobMeta);
 	}
+	
+	public boolean evaluates()
+	{
+		return true;
+	}
 }
