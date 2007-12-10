@@ -5684,7 +5684,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			setArguments(args.toArray(new String[args.size()]));
 			start();
     	} catch (Throwable t) {
-    		// avoid Messages.getString() in this block to (hopefully) catch also OOME
+    		// avoid calls to Messages i18n method getString() in this block 
+    		// We do this to (hopefully) also catch Out of Memory Exceptions
+    		//
 			log.logError(toString(), "Fatal error : " + Const.NVL(t.toString(), Const.NVL(t.getMessage(), "Unknown error")) ); //$NON-NLS-1$ //$NON-NLS-2$
 			log.logError(toString(), Const.getStackTracker(t));
 			// inform the user with a dialog when possible
