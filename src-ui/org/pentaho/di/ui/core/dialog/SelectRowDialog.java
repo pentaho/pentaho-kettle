@@ -224,9 +224,8 @@ public class SelectRowDialog extends Dialog
 	private void ok()
 	{
 	    int idx[] = wFields.getSelectionIndices();
-	    if (idx.length==0) return;
-        
-		selection=buffer.get(idx[0]);
+	    if (idx.length>0 && idx[0]<buffer.size())        
+	    	selection=buffer.get(idx[0]);
 		dispose();
 	}	
 }
