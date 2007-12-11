@@ -2216,7 +2216,8 @@ public class Database implements VariableSpace
 		// If we discover other RDBMSs, we will create an interface for it.
 		// For now, we just try to get the field layout on the re-bound in the exception block below.
 		//
-		if (databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_ORACLE)
+		if (databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_ORACLE ||
+			databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_GENERIC)
 		{
 			return getQueryFieldsFallback(sql, param, inform, data);
 		}
@@ -2231,10 +2232,6 @@ public class Database implements VariableSpace
 				preparedStatement = connection.prepareStatement(databaseMeta.stripCR(sql), ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
 				ResultSetMetaData rsmd = preparedStatement.getMetaData();
 				fields = getRowInfo(rsmd, false, false);
-			}
-			catch(SQLException ex)
-			{
-				throw new KettleDatabaseException("Couldn't get field info from ["+sql+"]"+Const.CR, ex);
 			}
 			catch(Exception e)
 			{
