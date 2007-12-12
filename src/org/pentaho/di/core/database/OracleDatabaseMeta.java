@@ -133,7 +133,17 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 		else
 		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_NATIVE)
 		{
-			return "jdbc:oracle:thin:@"+hostname+":"+port+":"+databaseName;
+			// the database name can be a SID (starting with :) or a Service (starting with /)
+			//<host>:<port>/<service>
+			//<host>:<port>:<SID>
+			if (databaseName != null && databaseName.length()>0 && 
+					(databaseName.startsWith("/") || databaseName.startsWith(":"))) {
+				return "jdbc:oracle:thin:@"+hostname+":"+port+databaseName;
+			}
+			else {
+				// by default we assume a SID
+				return "jdbc:oracle:thin:@"+hostname+":"+port+":"+databaseName;
+			}
 		}
 		else // OCI
 		{
