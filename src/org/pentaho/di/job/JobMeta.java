@@ -2745,9 +2745,9 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
       	
       	// At the end, add ourselves to the map...
       	//
-      	String transMetaContent = jobMeta.getXML();
+      	String jobMetaContent = jobMeta.getXML();
       	
-      	definition = new ResourceDefinition(name, transMetaContent);
+      	definition = new ResourceDefinition(name, jobMetaContent);
       	definitions.put(fileObject.getName().getPath(), definition);
       }
     } catch (FileSystemException e) {
@@ -2756,7 +2756,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
       throw new KettleException(Messages.getString("JobMeta.Exception.AnErrorOccuredReadingJob", getFilename()), e);
     }
 		
-		return filename;
+		return name;
 	}
 
 	/**
