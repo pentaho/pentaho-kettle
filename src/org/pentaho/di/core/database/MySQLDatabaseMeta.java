@@ -242,7 +242,14 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 				{
 					if (length>9)
 					{
-						retval+="BIGINT";
+						if (length<19) {
+							// can hold signed values between -9223372036854775808 and 9223372036854775807
+							// 18 significant digits
+							retval+="BIGINT";
+						}
+						else {
+							retval+="DECIMAL("+length+")";
+						}
 					}
 					else
 					{
