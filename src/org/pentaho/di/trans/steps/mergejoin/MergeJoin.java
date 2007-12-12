@@ -319,7 +319,7 @@ public class MergeJoin extends BaseStep implements StepInterface
         		Object[] outputRowData = RowDataUtil.createResizedCopy(data.one, data.outputRowMeta.size());
         		outputRowData = RowDataUtil.addRowData(outputRowData, data.oneMeta.size(), data.two_dummy);
         		putRow(data.outputRowMeta, outputRowData);
-        		data.one = getRowFrom(data.twoRowSet);
+        		data.one = getRowFrom(data.oneRowSet);
         	}
         	else if (data.two != null)
         	{
