@@ -59,7 +59,8 @@ public enum JobEntryType
 	FTP_PUT(Messages.getString("JobEntry.FTPPUT.TypeDesc")),
 	UNZIP(Messages.getString("JobEntry.UnZip.TypeDesc")),
 	CREATE_FOLDER(Messages.getString("JobEntry.CreateFolder.TypeDesc")),
-	FOLDER_IS_EMPTY(Messages.getString("JobEntry.FolderIsEmpty.TypeDesc"));
+	FOLDER_IS_EMPTY(Messages.getString("JobEntry.FolderIsEmpty.TypeDesc")),
+	FILES_EXIST(Messages.getString("JobEntry.FilesExist.TypeDesc"));
 	
 	private String description;
 	

@@ -448,6 +448,19 @@
 		</tooltip>
 		<image-uri>ui/images/EFO.png</image-uri>
 	</job>
+
+	<job id="FILES_EXIST">
+		<type>
+			ognl:@org.pentaho.di.job.JobEntryType@FILES_EXIST
+		</type>
+		<class-name>
+			org.pentaho.di.job.entries.filesexist.JobEntryFilesExist
+		</class-name>
+		<tooltip>
+			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.FilesExist.Tooltip")
+		</tooltip>
+		<image-uri>ui/images/LFE.png</image-uri>
+	</job>
 	
 	
 </jobs>
