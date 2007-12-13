@@ -300,6 +300,14 @@
 	  			         excludes="**/*.vpn" />
 	  			</copy>
 
+	        <!-- launcher -->
+	  		<mkdir dir="${distrib}/launcher"/>
+	  		<copy todir="${distrib}/launcher">
+	  			<fileset dir="launcher" 
+	  				     includes="**/*.*"
+	  			         excludes="**/*.vpn" />
+	  			</copy>
+
 	        <!-- simple-jndi -->
 	  		<mkdir dir="${distrib}/simple-jndi"/>
 	  		<copy todir="${distrib}/simple-jndi">
