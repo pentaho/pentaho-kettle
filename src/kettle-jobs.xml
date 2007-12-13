@@ -461,6 +461,17 @@
 		</tooltip>
 		<image-uri>ui/images/LFE.png</image-uri>
 	</job>
-	
+	<job id="FOLDERS_COMPARE">
+		<type>
+			ognl:@org.pentaho.di.job.JobEntryType@FOLDERS_COMPARE
+		</type>
+		<class-name>
+			org.pentaho.di.job.entries.folderscompare.JobEntryFoldersCompare
+		</class-name>
+		<tooltip>
+			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.FoldersCompare.Tooltip")
+		</tooltip>
+		<image-uri>ui/images/FCP.png</image-uri>
+	</job>
 	
 </jobs>

@@ -60,7 +60,8 @@ public enum JobEntryType
 	UNZIP(Messages.getString("JobEntry.UnZip.TypeDesc")),
 	CREATE_FOLDER(Messages.getString("JobEntry.CreateFolder.TypeDesc")),
 	FOLDER_IS_EMPTY(Messages.getString("JobEntry.FolderIsEmpty.TypeDesc")),
-	FILES_EXIST(Messages.getString("JobEntry.FilesExist.TypeDesc"));
+	FILES_EXIST(Messages.getString("JobEntry.FilesExist.TypeDesc")),
+	FOLDERS_COMPARE(Messages.getString("JobEntry.FoldersCompare.TypeDesc"));
 	
 	private String description;
 	
