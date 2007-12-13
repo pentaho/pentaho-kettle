@@ -57,7 +57,9 @@ public enum JobEntryType
 	COPY_FILES(Messages.getString("JobEntry.CopyFiles.TypeDesc")),
 	DTD_VALIDATOR(Messages.getString("JobEntry.DTDValidator.TypeDesc")),
 	FTP_PUT(Messages.getString("JobEntry.FTPPUT.TypeDesc")),
-	UNZIP(Messages.getString("JobEntry.UnZip.TypeDesc"));
+	UNZIP(Messages.getString("JobEntry.UnZip.TypeDesc")),
+	CREATE_FOLDER(Messages.getString("JobEntry.CreateFolder.TypeDesc")),
+	FOLDER_IS_EMPTY(Messages.getString("JobEntry.FolderIsEmpty.TypeDesc"));
 	
 	private String description;
 	

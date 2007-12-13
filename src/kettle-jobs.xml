@@ -424,5 +424,30 @@
 		</tooltip>
 		<image-uri>ui/images/UZP.png</image-uri>
 	</job>
+		<job id="CREATE_FOLDER">
+		<type>
+			ognl:@org.pentaho.di.job.JobEntryType@CREATE_FOLDER
+		</type>
+		<class-name>
+			org.pentaho.di.job.entries.createfolder.JobEntryCreateFolder
+		</class-name>
+		<tooltip>
+			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.CreateFolder.Tooltip")
+		</tooltip>
+		<image-uri>ui/images/CRF.png</image-uri>
+	</job>
+		<job id="FOLDER_IS_EMPTY">
+		<type>
+			ognl:@org.pentaho.di.job.JobEntryType@FOLDER_IS_EMPTY
+		</type>
+		<class-name>
+			org.pentaho.di.job.entries.folderisempty.JobEntryFolderIsEmpty
+		</class-name>
+		<tooltip>
+			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.FolderIsEmpty.Tooltip")
+		</tooltip>
+		<image-uri>ui/images/EFO.png</image-uri>
+	</job>
+	
 	
 </jobs>
