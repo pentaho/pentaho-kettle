@@ -207,6 +207,7 @@ public class Translator2
     	localeList.add("en_US");
     	localeList.add("fr_FR");
     	localeList.add("es_ES");
+    	localeList.add("es_AR");
     	localeList.add("nl_NL");
     	localeList.add("de_DE");
     	localeList.add("zh_CN");
