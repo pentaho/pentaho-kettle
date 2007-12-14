@@ -18,7 +18,6 @@ import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.fileExis
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlankValidator;
 
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -310,7 +309,7 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 						
 						// Prepare the input and output files
 						Source source = new StreamSource(new FileInputStream(realxmlfilename));
-						StreamResult resultat = new StreamResult(new FileOutputStream(realoutputfilename));
+						StreamResult resultat = new StreamResult(KettleVFS.getOutputStream(outputfile, false));
 
 						// Apply the xsl file to the source file and write the result to the output file
 						xformer.transform(source, resultat);
