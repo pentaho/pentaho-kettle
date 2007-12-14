@@ -95,8 +95,6 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
         "num2str", "Alert", "setEnvironmentVar", "getEnvironmentVar", "LoadScriptFile", "LoadScriptFromTab", 
         "print", "println", "resolveIP", "trim", "substr", "getVariable", "setVariable" ,"LuhnCheck","getDigitsOnly",
         "indexOf", "getOutputRowMeta", "getInputRowMeta", "createRowCopy", "putRow", 
-        
-        
         "deleteFile","createFolder","copyFile","getFileSize","isFile","isFolder","getShortFilename",
         "getFileExtension","getParentFoldername","getLastModifiedTime",
         };
