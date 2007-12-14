@@ -76,7 +76,7 @@ public class PropsUI extends Props
     private static final String SHOW_TOOL_TIPS = "ShowToolTips";
     
     
-    private static List<GUIOption> editables;
+    private static List<GUIOption<Object>> editables;
 
 	/**
 	 * Initialize the properties: load from disk.
@@ -160,10 +160,10 @@ public class PropsUI extends Props
         loadLastUsedFiles();
         
         //load the editables
-        ResolverUtil<GUIOption> res = new ResolverUtil<GUIOption>();
+        ResolverUtil<GUIOption<Object>> res = new ResolverUtil<GUIOption<Object>>();
         res.find(new ResolverUtil.IsA(GUIOption.class),"org.pentaho.di.core");
-        List<GUIOption> leditables = new ArrayList<GUIOption>();
-        for (Class<? extends GUIOption>c:res.getClasses())
+        List<GUIOption<Object>> leditables = new ArrayList<GUIOption<Object>>();
+        for (Class<? extends GUIOption<Object>>c:res.getClasses())
         {
         	try
         	{
@@ -1106,7 +1106,7 @@ public class PropsUI extends Props
         properties.setProperty(SHOW_TOOL_TIPS, show?YES:NO);
     }
     
-    public List<GUIOption> getRegisteredEditableComponents()
+    public List<GUIOption<Object>> getRegisteredEditableComponents()
     {
     	return editables;
     }
