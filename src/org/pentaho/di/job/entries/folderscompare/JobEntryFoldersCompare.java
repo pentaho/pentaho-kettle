@@ -351,8 +351,8 @@ public class JobEntryFoldersCompare extends JobEntryBase implements Cloneable, J
 							if(lenList1==lenList2)
 							{
 						
-								HashMap collection1 = new HashMap();
-								HashMap collection2 = new HashMap();
+								HashMap<String, String> collection1 = new HashMap<String, String>();
+								HashMap<String, String> collection2 = new HashMap<String, String>();
 								
 								
 								for ( int i=0; i < list1.length; i++ ) 
@@ -372,12 +372,12 @@ public class JobEntryFoldersCompare extends JobEntryBase implements Cloneable, J
 								// and for each entry, we will search it in Folder2
 								// if the entry exists..we will compare file entry (file or folder?)
 								// if the 2 entry are file (not folder), we will compare content
-								Set entrees = collection1.entrySet();
-								Iterator iterateur = entrees.iterator();
+								Set<Map.Entry<String,String>> entrees = collection1.entrySet();
+								Iterator<Map.Entry<String,String>> iterateur = entrees.iterator();
 						
 								while(iterateur.hasNext())
 								{
-								   Map.Entry entree = (Map.Entry)iterateur.next();
+								   Map.Entry<String,String> entree = iterateur.next();
 								   if(!collection2.containsKey(entree.getKey() ))
 								   {
 									   ok=false;
