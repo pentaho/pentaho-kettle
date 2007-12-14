@@ -485,7 +485,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 	        	event.doit=false;
 	        	if(cItem!=null && folder.getItemCount()>1){
 	        		MessageBox messageBox = new MessageBox(shell, SWT.ICON_QUESTION | SWT.NO | SWT.YES);
-	        		messageBox.setText("Delete Item");
+	        		messageBox.setText(Messages.getString("ScriptValuesDialogMod.DeleteItem.Label"));
 	        		messageBox.setMessage("Do you really want to delete "+cItem.getText() + "?");
 		            switch(messageBox.open()){
 		            	case SWT.YES:
@@ -504,7 +504,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		
 		// Adding the Default Transform Scripts Item to the Tree
 		wTreeScriptsItem = new TreeItem(wTree, SWT.NULL);
-		wTreeScriptsItem.setText("Transform Scripts");
+		wTreeScriptsItem.setText(Messages.getString("ScriptValuesDialogMod.TransformScript.Label"));
 		
 		// Set the shell size, based upon previous time...
 		setSize();
@@ -576,7 +576,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		}
 		StyledTextComp wScript=new StyledTextComp(item.getParent(), SWT.MULTI | SWT.LEFT |  SWT.H_SCROLL | SWT.V_SCROLL, item.getText());
 		if((strScript !=null) && strScript.length()>0) wScript.setText(strScript);
-		else wScript.setText("//Script here"+Const.CR+Const.CR); 
+		else wScript.setText(Messages.getString("ScriptValuesDialogMod.ScriptHere.Label")+Const.CR+Const.CR); 
 		item.setImage(imageInactiveScript);
  		props.setLook(wScript, Props.WIDGET_STYLE_FIXED);
 		
@@ -1136,7 +1136,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 	private void buildSpecialFunctionsTree(){
 
 		TreeItem item = new TreeItem(wTree, SWT.NULL);
-		item.setText("Transform Constants");
+		item.setText(Messages.getString("ScriptValuesDialogMod.TansformConstant.Label"));
 		TreeItem itemT = new TreeItem(item, SWT.NULL);
 		itemT.setText("SKIP_TRANSFORMATION");
 		itemT.setData("SKIP_TRANSFORMATION");
@@ -1152,24 +1152,24 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		
 		
 		item = new TreeItem(wTree, SWT.NULL);
-		item.setText("Transform Functions");
+		item.setText(Messages.getString("ScriptValuesDialogMod.TransformFunctions.Label"));
 		String strData = "";
 		
 		// Adding the Grouping Items to the Tree
 		TreeItem itemStringFunctionsGroup = new TreeItem(item, SWT.NULL);
-		itemStringFunctionsGroup.setText("String Functions");
+		itemStringFunctionsGroup.setText(Messages.getString("ScriptValuesDialogMod.StringFunctions.Label"));
 		itemStringFunctionsGroup.setData("Function");
 		TreeItem itemNumericFunctionsGroup = new TreeItem(item, SWT.NULL);
-		itemNumericFunctionsGroup.setText("Numeric Functions");
+		itemNumericFunctionsGroup.setText(Messages.getString("ScriptValuesDialogMod.NumericFunctions.Label"));
 		itemNumericFunctionsGroup.setData("Function");
 		TreeItem itemDateFunctionsGroup = new TreeItem(item, SWT.NULL);
-		itemDateFunctionsGroup.setText("Date Functions");
+		itemDateFunctionsGroup.setText(Messages.getString("ScriptValuesDialogMod.DateFunctions.Label"));
 		itemDateFunctionsGroup.setData("Function");
 		TreeItem itemLogicFunctionsGroup = new TreeItem(item, SWT.NULL);
-		itemLogicFunctionsGroup.setText("Logic Functions");
+		itemLogicFunctionsGroup.setText(Messages.getString("ScriptValuesDialogMod.LogicFunctions.Label"));
 		itemLogicFunctionsGroup.setData("Function");
 		TreeItem itemSpecialFunctionsGroup = new TreeItem(item, SWT.NULL);
-		itemSpecialFunctionsGroup.setText("Special Functions");
+		itemSpecialFunctionsGroup.setText(Messages.getString("ScriptValuesDialogMod.SpecialFunctions.Label"));
 		itemSpecialFunctionsGroup.setData("Function");
 		
 		// Loading the Default delivered JScript Functions
@@ -1221,7 +1221,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 			RowMetaInterface r = transMeta.getPrevStepFields(stepname);
 			if (r!=null){
 				TreeItem item = new TreeItem(wTree, SWT.NULL);
-				item.setText("Output Fields");
+				item.setText(Messages.getString("ScriptValuesDialogMod.OutputFields.Label"));
 				String strItemToAdd="";
 				for (int i=0;i<r.size();i++){
 						ValueMetaInterface v = r.getValueMeta(i);					
@@ -1247,7 +1247,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 	
 	private void rebuildInputFieldsTree(){
 		try{
-			String itemName = "Input Fields";
+			String itemName = Messages.getString("ScriptValuesDialogMod.InputFields.Label");
 			
 			RowMetaInterface r = transMeta.getPrevStepFields(stepname);
 			if (r!=null){
@@ -1383,7 +1383,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 	private void buildingFolderMenu(){
 		//styledTextPopupmenu = new Menu(, SWT.POP_UP);
 		MenuItem addNewItem = new MenuItem(cMenu, SWT.PUSH);
-		addNewItem.setText("Add New");
+		addNewItem.setText(Messages.getString("ScriptValuesDialogMod.AddNewTab"));
 		addNewItem.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event e) {
 				addCtab("","", ADD_BLANK);
@@ -1391,7 +1391,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		});
 		
 		MenuItem copyItem = new MenuItem(cMenu, SWT.PUSH);
-		copyItem.setText("Add Copy");
+		copyItem.setText(Messages.getString("ScriptValuesDialogMod.AddCopy"));
 		copyItem.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event e) {
 				CTabItem item = folder.getSelection();
@@ -1402,7 +1402,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		new MenuItem(cMenu, SWT.SEPARATOR);
 		
 		MenuItem setActiveScriptItem = new MenuItem(cMenu, SWT.PUSH);
-		setActiveScriptItem.setText("Set Transform Script");
+		setActiveScriptItem.setText(Messages.getString("ScriptValuesDialogMod.SetTransformScript"));
 		setActiveScriptItem.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event e) {
 				CTabItem item = folder.getSelection();
@@ -1423,7 +1423,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		});
 		
 		MenuItem setStartScriptItem = new MenuItem(cMenu, SWT.PUSH);
-		setStartScriptItem.setText("Set Start Script");
+		setStartScriptItem.setText(Messages.getString("ScriptValuesDialogMod.SetStartScript"));
 		setStartScriptItem.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event e) {
 				CTabItem item = folder.getSelection();
@@ -1444,7 +1444,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		});
 		
 		MenuItem setEndScriptItem = new MenuItem(cMenu, SWT.PUSH);
-		setEndScriptItem.setText("Set End Script");
+		setEndScriptItem.setText(Messages.getString("ScriptValuesDialogMod.SetEndScript"));
 		setEndScriptItem.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event e) {
 				CTabItem item = folder.getSelection();
@@ -1465,7 +1465,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		});
 		new MenuItem(cMenu, SWT.SEPARATOR);
 		MenuItem setRemoveScriptItem = new MenuItem(cMenu, SWT.PUSH);
-		setRemoveScriptItem.setText("Remove Script Type");
+		setRemoveScriptItem.setText(Messages.getString("ScriptValuesDialogMod.RemoveScriptType"));
 		setRemoveScriptItem.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event e) {
 				CTabItem item = folder.getSelection();

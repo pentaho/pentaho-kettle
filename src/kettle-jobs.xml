@@ -474,4 +474,32 @@
 		<image-uri>ui/images/FCP.png</image-uri>
 	</job>
 	
+		<job id="ADD_RESULT_FILENAMES">
+		<type>
+			ognl:@org.pentaho.di.job.JobEntryType@ADD_RESULT_FILENAMES
+		</type>
+		<class-name>
+			org.pentaho.di.job.entries.addresultfilenames.JobEntryAddResultFilenames
+		</class-name>
+		<tooltip>
+			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.AddResultFilenames.Tooltip")
+		</tooltip>
+		<image-uri>ui/images/AFN.png</image-uri>
+	</job>
+	
+		<job id="DELETE_RESULT_FILENAMES">
+		<type>
+			ognl:@org.pentaho.di.job.JobEntryType@DELETE_RESULT_FILENAMES
+		</type>
+		<class-name>
+			org.pentaho.di.job.entries.deleteresultfilenames.JobEntryDeleteResultFilenames
+		</class-name>
+		<tooltip>
+			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.DeleteResultFilenames.Tooltip")
+		</tooltip>
+		<image-uri>ui/images/DFN.png</image-uri>
+	</job>
+	
+	
+	
 </jobs>

@@ -61,7 +61,13 @@ public enum JobEntryType
 	CREATE_FOLDER(Messages.getString("JobEntry.CreateFolder.TypeDesc")),
 	FOLDER_IS_EMPTY(Messages.getString("JobEntry.FolderIsEmpty.TypeDesc")),
 	FILES_EXIST(Messages.getString("JobEntry.FilesExist.TypeDesc")),
-	FOLDERS_COMPARE(Messages.getString("JobEntry.FoldersCompare.TypeDesc"));
+	FOLDERS_COMPARE(Messages.getString("JobEntry.FoldersCompare.TypeDesc")),
+	ADD_RESULT_FILENAMES(Messages.getString("JobEntry.AddResultFilenames.TypeDesc")),
+	DELETE_RESULT_FILENAMES(Messages.getString("JobEntry.DeleteResultFilenames.TypeDesc"));
+	
+	
+	
+	
 	
 	private String description;
 	

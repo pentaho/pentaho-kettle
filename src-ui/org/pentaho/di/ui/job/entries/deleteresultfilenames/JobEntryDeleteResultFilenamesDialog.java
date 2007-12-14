@@ -1,0 +1,316 @@
+ /**********************************************************************
+ **                                                                   **
+ **               This code belongs to the KETTLE project.            **
+ **                                                                   **
+ **                                                                   **
+ **                                                                   **
+ **********************************************************************/
+
+
+package org.pentaho.di.ui.job.entries.deleteresultfilenames;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.ShellAdapter;
+import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.layout.FormAttachment;
+import org.eclipse.swt.layout.FormData;
+import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
+
+import org.pentaho.di.repository.Repository;
+import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.core.Const;
+
+import org.pentaho.di.ui.core.widget.TextVar;
+import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.ui.job.dialog.JobDialog;
+import org.pentaho.di.ui.job.entry.JobEntryDialog;
+import org.pentaho.di.job.entry.JobEntryDialogInterface;
+import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.job.entries.deleteresultfilenames.JobEntryDeleteResultFilenames;
+import org.pentaho.di.job.entries.deleteresultfilenames.Messages;
+
+
+/**
+ * This dialog allows you to edit the Create Folder job entry settings.
+ *
+ * @author Samatar
+ * @since  27-10-2007
+ */
+public class JobEntryDeleteResultFilenamesDialog extends JobEntryDialog implements JobEntryDialogInterface
+{
+	
+	private Label        wlName;
+	private Text         wName;
+    private FormData     fdlName, fdName;
+
+	
+    private Label        wlSpecifyWilcard;
+    private Button       wSpecifyWilcard;
+    private FormData     fdlSpecifyWilcard, fdSpecifyWilcard;
+    
+	private Label        wlWildcard;
+	private TextVar      wWildcard;
+	private FormData     fdlWildcard, fdWildcard;    
+	
+	private Label        wlWildcardExclude;
+	private TextVar      wWildcardExclude;
+	private FormData     fdlWildcardExclude, fdWildcardExclude; 
+
+	private Button wOK, wCancel;
+	private Listener lsOK, lsCancel;
+
+	private JobEntryDeleteResultFilenames jobEntry;
+	private Shell       	shell;
+
+	private SelectionAdapter lsDef;
+
+	private boolean changed;
+
+	 public JobEntryDeleteResultFilenamesDialog(Shell parent, JobEntryInterface jobEntryInt, Repository rep, JobMeta jobMeta)
+	 {	
+        super(parent, jobEntryInt, rep, jobMeta);
+        jobEntry = (JobEntryDeleteResultFilenames) jobEntryInt;
+
+		if (this.jobEntry.getName() == null) 
+			this.jobEntry.setName(Messages.getString("JobEntryDeleteResultFilenames.Name.Default"));
+	}
+
+	public JobEntryInterface open()
+	{
+		Shell parent = getParent();
+		Display display = parent.getDisplay();
+
+        shell = new Shell(parent, props.getJobsDialogStyle());
+        props.setLook(shell);
+        JobDialog.setShellImage(shell, jobEntry);
+
+		ModifyListener lsMod = new ModifyListener()
+		{
+			public void modifyText(ModifyEvent e)
+			{
+				jobEntry.setChanged();
+			}
+		};
+		changed = jobEntry.hasChanged();
+
+		FormLayout formLayout = new FormLayout ();
+		formLayout.marginWidth  = Const.FORM_MARGIN;
+		formLayout.marginHeight = Const.FORM_MARGIN;
+
+		shell.setLayout(formLayout);
+		shell.setText(Messages.getString("JobEntryDeleteResultFilenames.Title"));
+
+		int middle = props.getMiddlePct();
+		int margin = Const.MARGIN;
+
+		// Foldername line
+		wlName=new Label(shell, SWT.RIGHT);
+		wlName.setText(Messages.getString("JobEntryDeleteResultFilenames.Name.Label"));
+ 		props.setLook(wlName);
+		fdlName=new FormData();
+		fdlName.left = new FormAttachment(0, 0);
+		fdlName.right= new FormAttachment(middle, -margin);
+		fdlName.top  = new FormAttachment(0, margin);
+		wlName.setLayoutData(fdlName);
+		wName=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+ 		props.setLook(wName);
+		wName.addModifyListener(lsMod);
+		fdName=new FormData();
+		fdName.left = new FormAttachment(middle, 0);
+		fdName.top  = new FormAttachment(0, margin);
+		fdName.right= new FormAttachment(100, 0);
+		wName.setLayoutData(fdName);	
+	
+        // Specify wilcard?
+        wlSpecifyWilcard = new Label(shell, SWT.RIGHT);
+        wlSpecifyWilcard.setText(Messages.getString("JobEntryDeleteResultFilenames.SpecifyWilcard.Label"));
+        props.setLook(wlSpecifyWilcard);
+        fdlSpecifyWilcard = new FormData();
+        fdlSpecifyWilcard.left = new FormAttachment(0, 0);
+        fdlSpecifyWilcard.top = new FormAttachment(wName, margin);
+        fdlSpecifyWilcard.right = new FormAttachment(middle, -margin);
+        wlSpecifyWilcard.setLayoutData(fdlSpecifyWilcard);
+        wSpecifyWilcard = new Button(shell, SWT.CHECK);
+        props.setLook(wSpecifyWilcard);
+        wSpecifyWilcard.setToolTipText(Messages.getString("JobEntryDeleteResultFilenames.SpecifyWilcard.Tooltip"));
+        fdSpecifyWilcard = new FormData();
+        fdSpecifyWilcard.left = new FormAttachment(middle, 0);
+        fdSpecifyWilcard.top = new FormAttachment(wName, margin);
+        fdSpecifyWilcard.right = new FormAttachment(100, 0);
+        wSpecifyWilcard.setLayoutData(fdSpecifyWilcard);
+        wSpecifyWilcard.addSelectionListener(new SelectionAdapter()
+        {
+            public void widgetSelected(SelectionEvent e)
+            {
+                jobEntry.setChanged();
+                CheckLimit();
+            }
+        });
+        
+
+        
+		// Wilcard line
+		wlWildcard=new Label(shell, SWT.RIGHT);
+		wlWildcard.setText(Messages.getString("JobEntryDeleteResultFilenames.Wildcard.Label"));
+ 		props.setLook(wlWildcard);
+		fdlWildcard=new FormData();
+		fdlWildcard.left = new FormAttachment(0, 0);
+		fdlWildcard.top  = new FormAttachment(wSpecifyWilcard, margin);
+		fdlWildcard.right= new FormAttachment(middle, -margin);
+		wlWildcard.setLayoutData(fdlWildcard);
+		wWildcard=new TextVar(jobMeta,shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wWildcard.setToolTipText(Messages.getString("JobEntryDeleteResultFilenames.Wildcard.Tooltip"));
+ 		props.setLook(wWildcard);
+		wWildcard.addModifyListener(lsMod);
+		fdWildcard=new FormData();
+		fdWildcard.left = new FormAttachment(middle, 0);
+		fdWildcard.top  = new FormAttachment(wSpecifyWilcard, margin);
+		fdWildcard.right= new FormAttachment(100, -margin);
+		wWildcard.setLayoutData(fdWildcard);
+		
+		
+		// Whenever something changes, set the tooltip to the expanded version:
+		wWildcard.addModifyListener(new ModifyListener()
+			{
+				public void modifyText(ModifyEvent e)
+				{
+					wWildcard.setToolTipText(jobMeta.environmentSubstitute( wWildcard.getText() ) );
+				}
+			}
+		);
+
+		// wWildcardExclude
+		wlWildcardExclude=new Label(shell, SWT.RIGHT);
+		wlWildcardExclude.setText(Messages.getString("JobEntryDeleteResultFilenames.WildcardExclude.Label"));
+ 		props.setLook(wlWildcardExclude);
+		fdlWildcardExclude=new FormData();
+		fdlWildcardExclude.left = new FormAttachment(0, 0);
+		fdlWildcardExclude.top  = new FormAttachment(wWildcard, margin);
+		fdlWildcardExclude.right= new FormAttachment(middle, -margin);
+		wlWildcardExclude.setLayoutData(fdlWildcardExclude);
+		wWildcardExclude=new TextVar(jobMeta,shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wWildcardExclude.setToolTipText(Messages.getString("JobEntryDeleteResultFilenames.WildcardExclude.Tooltip"));
+ 		props.setLook(wWildcardExclude);
+		wWildcardExclude.addModifyListener(lsMod);
+		fdWildcardExclude=new FormData();
+		fdWildcardExclude.left = new FormAttachment(middle, 0);
+		fdWildcardExclude.top  = new FormAttachment(wWildcard, margin);
+		fdWildcardExclude.right= new FormAttachment(100, -margin);
+		wWildcardExclude.setLayoutData(fdWildcardExclude);
+		
+		
+		// Whenever something changes, set the tooltip to the expanded version:
+		wWildcardExclude.addModifyListener(new ModifyListener()
+			{
+				public void modifyText(ModifyEvent e)
+				{
+					wWildcardExclude.setToolTipText(jobMeta.environmentSubstitute( wWildcardExclude.getText() ) );
+				}
+			}
+		);
+
+        wOK = new Button(shell, SWT.PUSH);
+        wOK.setText(Messages.getString("System.Button.OK"));
+        wCancel = new Button(shell, SWT.PUSH);
+        wCancel.setText(Messages.getString("System.Button.Cancel"));
+        
+		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wWildcardExclude);
+
+		// Add listeners
+		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel(); } };
+		lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
+
+		wCancel.addListener(SWT.Selection, lsCancel);
+		wOK.addListener    (SWT.Selection, lsOK    );
+
+		lsDef=new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { ok(); } };
+
+		wName.addSelectionListener( lsDef );
+		// Detect X or ALT-F4 or something that kills this window...
+		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
+
+		getData();
+		CheckLimit();
+
+		BaseStepDialog.setSize(shell);
+
+		shell.open();
+		while (!shell.isDisposed())
+		{
+				if (!display.readAndDispatch()) display.sleep();
+		}
+		return jobEntry;
+	}
+
+	public void dispose()
+	{
+		WindowProperty winprop = new WindowProperty(shell);
+		props.setScreen(winprop);
+		shell.dispose();
+	}
+	private void CheckLimit()
+	{
+		wlWildcard.setEnabled(wSpecifyWilcard.getSelection());
+		wWildcard.setEnabled(wSpecifyWilcard.getSelection());
+		wlWildcardExclude.setEnabled(wSpecifyWilcard.getSelection());
+		wWildcardExclude.setEnabled(wSpecifyWilcard.getSelection());
+	}
+
+	/**
+	 * Copy information from the meta-data input to the dialog fields.
+	 */
+	public void getData()
+	{
+		if (jobEntry.getName()!= null) wName.setText( jobEntry.getName() );
+		wName.selectAll();
+		wSpecifyWilcard.setSelection(jobEntry.isSpecifyWilcard());
+		if (jobEntry.getWildcard()!= null) wWildcard.setText( jobEntry.getWildcard() );
+		if (jobEntry.getWildcardExclude()!= null) wWildcardExclude.setText( jobEntry.getWildcardExclude() );
+		
+		
+	}
+
+	private void cancel()
+	{
+		jobEntry.setChanged(changed);
+		jobEntry=null;
+		dispose();
+	}
+
+	private void ok()
+	{
+		jobEntry.setName(wName.getText());
+		jobEntry.setSpecifyWilcard(wSpecifyWilcard.getSelection());
+		jobEntry.setWildcard(wWildcard.getText());
+		jobEntry.setWildcardExclude(wWildcardExclude.getText());
+		
+		dispose();
+	}
+
+	public String toString()
+	{
+		return this.getClass().getName();
+	}
+
+	public boolean evaluates()
+	{
+		return true;
+	}
+
+	public boolean isUnconditional()
+	{
+		return false;
+	}
+}
