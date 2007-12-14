@@ -184,8 +184,6 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
 
     int NrErrFiles = 0;
 
-    // String args[] = arguments;
-    // String fmasks[] = filemasks;
     result.setResult(true);
 
 

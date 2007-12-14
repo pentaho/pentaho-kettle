@@ -245,8 +245,8 @@ public class JobEntryDeleteResultFilenames extends JobEntryBase implements Clone
 			            			&& !CheckFileWildcard(file.getName().getBaseName(),  environmentSubstitute(wildcardexclude),false))
 			  				{
 			            		// Remove file from result files list
-								ResultFile removeFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, file, parentJob.getName(), toString());
-								previousResult.getResultFiles().remove(removeFile);
+								result.getResultFiles().remove(resultFile.getFile().toString());
+								
 			            		if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("JobEntryDeleteResultFilenames.log.DeletedFile",file.toString()));
 			  				}  
 			            	 
