@@ -1,7 +1,5 @@
 package org.pentaho.di.job.entries.createfolder;
-
-import be.ibridge.kettle.i18n.BaseMessages;
-
+import org.pentaho.di.i18n.BaseMessages;
 public class Messages
 {
     public static final String packageName = Messages.class.getPackage().getName();

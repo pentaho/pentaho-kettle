@@ -1,6 +1,6 @@
 
 package org.pentaho.di.job.entries.deleteresultfilenames;
-import be.ibridge.kettle.i18n.BaseMessages;
+import org.pentaho.di.i18n.BaseMessages;
 
 public class Messages
 {
