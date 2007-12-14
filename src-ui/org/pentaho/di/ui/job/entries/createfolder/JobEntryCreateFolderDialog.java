@@ -259,7 +259,7 @@ public class JobEntryCreateFolderDialog extends JobEntryDialog implements JobEnt
 		if (jobEntry.getName()    != null) wName.setText( jobEntry.getName() );
 		wName.selectAll();
 		if (jobEntry.getFoldername()!= null) wFoldername.setText( jobEntry.getFoldername() );
-		wAbortExists.setSelection(jobEntry.isFailIfFolderExists());
+		wAbortExists.setSelection(jobEntry.isFailOfFolderExists());
 	}
 
 	private void cancel()
@@ -273,7 +273,7 @@ public class JobEntryCreateFolderDialog extends JobEntryDialog implements JobEnt
 	{
 		jobEntry.setName(wName.getText());
 		jobEntry.setFoldername(wFoldername.getText());
-		jobEntry.setFailIfFolderExists(wAbortExists.getSelection());
+		jobEntry.setFailOfFolderExists(wAbortExists.getSelection());
 		dispose();
 	}
 

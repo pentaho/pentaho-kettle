@@ -58,13 +58,13 @@ import org.apache.commons.vfs.FileType;
 public class JobEntryCreateFolder extends JobEntryBase implements Cloneable, JobEntryInterface
 {
 	private String foldername;
-	private boolean failIfFolderExists;
+	private boolean failOfFolderExists;
 	
 	public JobEntryCreateFolder(String n)
 	{
 		super(n, "");
 		foldername=null;
-		failIfFolderExists=true;
+		failOfFolderExists=true;
 		setID(-1L);
 		setJobEntryType(JobEntryType.CREATE_FOLDER);
 	}
@@ -91,7 +91,7 @@ public class JobEntryCreateFolder extends JobEntryBase implements Cloneable, Job
 		
 		retval.append(super.getXML());		
 		retval.append("      ").append(XMLHandler.addTagValue("foldername",   foldername));
-		retval.append("      ").append(XMLHandler.addTagValue("fail_if_Folder_exists", failIfFolderExists));
+		retval.append("      ").append(XMLHandler.addTagValue("fail_of_folder_exists", failOfFolderExists));
 		
 		return retval.toString();
 	}
@@ -102,7 +102,7 @@ public class JobEntryCreateFolder extends JobEntryBase implements Cloneable, Job
 		{
 			super.loadXML(entrynode, databases, slaveServers);
 			foldername = XMLHandler.getTagValue(entrynode, "foldername");
-			failIfFolderExists = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "fail_if_Folder_exists"));
+			failOfFolderExists = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "fail_of_folder_exists"));
 		}
 		catch(KettleXMLException xe)
 		{
@@ -116,7 +116,7 @@ public class JobEntryCreateFolder extends JobEntryBase implements Cloneable, Job
 		{
 			super.loadRep(rep, id_jobentry, databases, slaveServers);
 			foldername = rep.getJobEntryAttributeString(id_jobentry, "foldername");
-			failIfFolderExists = rep.getJobEntryAttributeBoolean(id_jobentry, "fail_if_Folder_exists");
+			failOfFolderExists = rep.getJobEntryAttributeBoolean(id_jobentry, "fail_of_folder_exists");
 		}
 		catch(KettleException dbe)
 		{
@@ -132,7 +132,7 @@ public class JobEntryCreateFolder extends JobEntryBase implements Cloneable, Job
 			super.saveRep(rep, id_job);
 			
 			rep.saveJobEntryAttribute(id_job, getID(), "foldername", foldername);
-            rep.saveJobEntryAttribute(id_job, getID(), "fail_if_Folder_exists", failIfFolderExists);
+            rep.saveJobEntryAttribute(id_job, getID(), "fail_of_folder_exists", failOfFolderExists);
 		}
 		catch(KettleDatabaseException dbe)
 		{
@@ -176,7 +176,7 @@ public class JobEntryCreateFolder extends JobEntryBase implements Cloneable, Job
 					//Check if it's a folder
 					if(FolderObject.getType() == FileType.FOLDER)  isFolder=true;
 					
-						if ( isFailIfFolderExists() )
+						if ( isFailOfFolderExists() )
 						{
 							// Folder exists and fail flag is on.
 						    result.setResult( false );
@@ -231,12 +231,12 @@ public class JobEntryCreateFolder extends JobEntryBase implements Cloneable, Job
     
 
 
-	public boolean isFailIfFolderExists() {
-		return failIfFolderExists;
+	public boolean isFailOfFolderExists() {
+		return failOfFolderExists;
 	}
 
-	public void setFailIfFolderExists(boolean failIfFolderExists) {
-		this.failIfFolderExists = failIfFolderExists;
+	public void setFailOfFolderExists(boolean failIfFolderExists) {
+		this.failOfFolderExists = failIfFolderExists;
 	}
 	
 	public static void main(String[] args)
