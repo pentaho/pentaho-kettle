@@ -1493,7 +1493,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		        if(tItem!=null){
 		        	MessageBox messageBox = new MessageBox(shell, SWT.ICON_QUESTION | SWT.NO | SWT.YES);
 		            messageBox.setText(Messages.getString("ScriptValuesDialogMod.DeleteItem.Label"));
-		            messageBox.setMessage(Messages.getString("ScriptValuesDialogMod.ConfirmDeleteItem.Label,tItem.getText()"));
+		            messageBox.setMessage(Messages.getString("ScriptValuesDialogMod.ConfirmDeleteItem.Label",tItem.getText()));
 		            switch(messageBox.open()){
 		            	case SWT.YES:
 				        	modifyCTabItem(tItem,DELETE_ITEM,"");

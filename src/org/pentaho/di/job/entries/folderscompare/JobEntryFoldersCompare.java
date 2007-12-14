@@ -472,9 +472,9 @@ public class JobEntryFoldersCompare extends JobEntryBase implements Cloneable, J
 				else
 				{
 					if ( ! folder1.exists() )
-						log.logError(toString(), Messages.getString("obFileCompare.Log.FileNotExist",realFilename1));
+						log.logError(toString(), Messages.getString("JobFileCompare.Log.FileNotExist",realFilename1));
 					if ( ! folder2.exists() )
-						log.logError(toString(), Messages.getString("obFileCompare.Log.FileNotExist",realFilename2));
+						log.logError(toString(), Messages.getString("JobFileCompare.Log.FileNotExist",realFilename2));
 					result.setResult( false );
 					result.setNrErrors(1);
 				}
