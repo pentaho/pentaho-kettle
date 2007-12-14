@@ -1195,6 +1195,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 				case ScriptValuesAddedFunctions.DATE_FUNCTION:itemFunction = new TreeItem(itemDateFunctionsGroup,SWT.NULL); break;
 				case ScriptValuesAddedFunctions.LOGIC_FUNCTION:itemFunction = new TreeItem(itemLogicFunctionsGroup,SWT.NULL); break;
 				case ScriptValuesAddedFunctions.SPECIAL_FUNCTION:itemFunction = new TreeItem(itemSpecialFunctionsGroup,SWT.NULL); break;
+				case ScriptValuesAddedFunctions.FILE_FUNCTION:itemFunction = new TreeItem(itemFileFunctionsGroup,SWT.NULL); break;
 			}
 			if(itemFunction !=null){
 				itemFunction.setText(strFunction);

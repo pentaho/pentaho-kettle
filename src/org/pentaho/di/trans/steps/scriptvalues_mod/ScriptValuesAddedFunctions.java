@@ -59,6 +59,10 @@ import org.mozilla.javascript.JavaScriptException;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.WrappedException;
+import org.apache.commons.vfs.FileType;
+import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.FileSelectInfo;
+import org.apache.commons.vfs.FileSelector;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -67,6 +71,9 @@ import org.pentaho.di.core.gui.SpoonInterface;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.vfs.KettleVFS;
+
+
 
 public class ScriptValuesAddedFunctions extends ScriptableObject {
 
@@ -77,6 +84,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 	public static final int DATE_FUNCTION = 2;
 	public static final int LOGIC_FUNCTION = 3;
 	public static final int SPECIAL_FUNCTION = 4;	
+	public static final int FILE_FUNCTION = 5;
 		
 	public static  String[] jsFunctionList = {
         "appendToFile", "getTransformationName","writeToLog","getFiscalDate", "getProcessCount", 
@@ -87,6 +95,10 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
         "num2str", "Alert", "setEnvironmentVar", "getEnvironmentVar", "LoadScriptFile", "LoadScriptFromTab", 
         "print", "println", "resolveIP", "trim", "substr", "getVariable", "setVariable" ,"LuhnCheck","getDigitsOnly",
         "indexOf", "getOutputRowMeta", "getInputRowMeta", "createRowCopy", "putRow", 
+        
+        
+        "deleteFile","createFolder","copyFile","getFileSize","isFile","isFolder","getShortFilename",
+        "getFileExtension","getParentFoldername","getLastModifiedTime",
         };
 	
 	// This is only used for reading, so no concurrency problems.
@@ -1668,5 +1680,387 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 	    {
 		    throw Context.reportRuntimeError("The function call putRow requires 1 argument : the output row data (Object[])");
 	    }		
-	}	
+	}
+	
+
+	public static void deleteFile(Context actualContext, Scriptable actualObject, Object[] ArgList, Function FunctionContext){
+		
+		try{
+			if(ArgList.length==1 && !isNull(ArgList[0]) && !isUndefined(ArgList[0])){
+				//Object act = actualObject.get("_step_", actualObject);
+				//ScriptValuesMod act = (ScriptValuesMod)Context.toType(scm_delete, ScriptValuesMod.class);
+				
+				FileObject fileObject=null;
+				
+				try
+				{
+					fileObject = KettleVFS.getFileObject(Context.toString(ArgList[0]));
+					if(fileObject.exists())
+					{
+						if(fileObject.getType() == FileType.FILE) 
+						{		
+						if(!fileObject.delete())	
+							Context.reportRuntimeError("We can not delete file [" + Context.toString(ArgList[0]) + "]!");
+						}
+
+					}else{Context.reportRuntimeError("file [" + Context.toString(ArgList[0]) + "] can not be found!");}
+				}catch (IOException e)
+				{
+					throw Context.reportRuntimeError("The function call deleteFile is not valid.");
+				}finally {if(fileObject!=null) try{fileObject.close();}catch(Exception e){}}
+
+			}else{
+				throw Context.reportRuntimeError("The function call deleteFile is not valid.");
+			}
+		}catch(Exception e){
+			throw Context.reportRuntimeError(e.toString());
+		}
+	}
+	
+	
+	public static void createFolder(Context actualContext, Scriptable actualObject, Object[] ArgList, Function FunctionContext){
+			
+			try{
+				if(ArgList.length==1 && !isNull(ArgList[0]) && !isUndefined(ArgList[0])){
+					FileObject fileObject=null;
+					
+					try
+					{	
+						fileObject = KettleVFS.getFileObject(Context.toString(ArgList[0]));
+						if(!fileObject.exists())
+						{
+							fileObject.createFolder();
+						}else{Context.reportRuntimeError("folder [" + Context.toString(ArgList[0]) + "] already exist!");}
+					}catch (IOException e)
+					{
+						throw Context.reportRuntimeError("The function call createFolder is not valid.");
+					}finally {if(fileObject!=null) try{fileObject.close();}catch(Exception e){}}
+					
+				}else{
+					throw Context.reportRuntimeError("The function call createFolder is not valid.");
+				}
+			}catch(Exception e){
+				throw Context.reportRuntimeError(e.toString());
+			}
+		}
+	
+public static void copyFile(Context actualContext, Scriptable actualObject, Object[] ArgList, Function FunctionContext){
+		
+		try{
+			if(ArgList.length==3 && !isNull(ArgList[0]) && !isNull(ArgList[1]) && !isUndefined(ArgList[0]) && !isUndefined(ArgList[1])){
+				FileObject fileSource=null,fileDestination=null;
+				
+				try
+				{
+					// Source file to copy
+					fileSource = KettleVFS.getFileObject(Context.toString(ArgList[0]));
+					// Destination filename
+					fileDestination = KettleVFS.getFileObject(Context.toString(ArgList[1]));
+					if(fileSource.exists())
+					{
+						// Source file exists...
+						if(fileSource.getType() == FileType.FILE)
+						{
+							// Great..source is a file ...
+							boolean overwrite=false;
+							if(!ArgList[1].equals(null)) overwrite=Context.toBoolean(ArgList[2]);
+							// Let's copy the file...
+							ScriptValuesAddedFunctions toto= new ScriptValuesAddedFunctions();
+							fileDestination.copyFrom(fileSource,toto.new TextOneToOneFileSelector (fileDestination,overwrite));
+							
+						}
+					}else{Context.reportRuntimeError("file to copy [" + Context.toString(ArgList[0]) + "] can not be found!");}
+				}catch (IOException e)
+				{
+					throw Context.reportRuntimeError("The function call copyFile throw an error : " + e.toString());
+				}finally {if(fileSource!=null) try{fileSource.close();}catch(Exception e){}
+				if(fileDestination!=null) try{fileDestination.close();}catch(Exception e){}}
+				
+			}else{
+				throw Context.reportRuntimeError("The function call copyFileis not valid.");
+			}
+		}catch(Exception e){
+			throw Context.reportRuntimeError(e.toString());
+		}
+	}
+
+public class TextOneToOneFileSelector implements FileSelector 
+{
+	FileObject destfile=null;
+	boolean overwrite_files; 
+	
+	public TextOneToOneFileSelector(FileObject destinationfile,boolean overwrite) 
+	 {
+		 if (destinationfile!=null)	 destfile=destinationfile;
+		 overwrite_files=overwrite;
+	 }
+	 
+	public boolean includeFile(FileSelectInfo info) 
+	{
+		boolean resultat=false; 			
+		try
+		{
+				// check if the destination file exists
+				
+				if (destfile.exists())
+				{
+					if (overwrite_files) resultat=true;	
+				}
+				else resultat= true;
+			
+		}
+		catch (Exception e) 
+		{
+			throw Context.reportRuntimeError("Error trying to copy file [" + info.getFile().toString() + "]. Exception : " + e.toString());
+		}
+		
+				
+		return resultat;
+		
+	}
+	public boolean traverseDescendents(FileSelectInfo info) 
+	{
+		return false;
+	}
+}
+
+public static double getFileSize(Context actualContext, Scriptable actualObject, Object[] ArgList, Function FunctionContext){
+	try{
+		if(ArgList.length==1 && !isNull(ArgList[0]) && !isUndefined(ArgList[0])){
+			if(ArgList[0].equals(null)) return 0;
+			FileObject file=null;
+
+			try
+			{
+				// Source file
+				file= KettleVFS.getFileObject(Context.toString(ArgList[0]));
+				long filesize=0;
+				if(file.exists())
+				{
+					if(file.getType().equals(FileType.FILE))
+						filesize=file.getContent().getSize();
+					else
+						Context.reportRuntimeError("[" + Context.toString(ArgList[0]) + "] is not a file!");
+				}else{Context.reportRuntimeError("file [" + Context.toString(ArgList[0]) + "] can not be found!");}
+				return filesize;
+			}catch (IOException e)
+			{
+				throw Context.reportRuntimeError("The function call getFileSize throw an error : " + e.toString());
+				}finally {if(file!=null) try{file.close();}catch(Exception e){}					
+			}
+			
+			
+			
+		}else{
+			throw Context.reportRuntimeError("The function call getFileSize is not valid.");
+		}
+	}catch(Exception e){
+		throw Context.reportRuntimeError(e.toString());
+	}
+}
+public static boolean isFile(Context actualContext, Scriptable actualObject, Object[] ArgList, Function FunctionContext){
+	try{
+		if(ArgList.length==1 && !isNull(ArgList[0]) && !isUndefined(ArgList[0])){
+			if(ArgList[0].equals(null)) return false;
+			FileObject file=null;
+
+			try
+			{
+				// Source file
+				file= KettleVFS.getFileObject(Context.toString(ArgList[0]));
+				boolean isafile=false;
+				if(file.exists())
+				{
+					if(file.getType().equals(FileType.FILE))
+						isafile=true;
+					else
+						Context.reportRuntimeError("[" + Context.toString(ArgList[0]) + "] is not a file!");
+				}else{Context.reportRuntimeError("file [" + Context.toString(ArgList[0]) + "] can not be found!");}
+				return isafile;
+			}catch (IOException e)
+			{
+				throw Context.reportRuntimeError("The function call is File throw an error : " + e.toString());
+				}finally {if(file!=null) try{file.close();}catch(Exception e){}					
+			}
+			
+			
+			
+		}else{
+			throw Context.reportRuntimeError("The function call isFile is not valid.");
+		}
+	}catch(Exception e){
+		throw Context.reportRuntimeError(e.toString());
+	}
+}
+public static boolean isFolder(Context actualContext, Scriptable actualObject, Object[] ArgList, Function FunctionContext){
+	try{
+		if(ArgList.length==1 && !isNull(ArgList[0]) && !isUndefined(ArgList[0])){
+			if(ArgList[0].equals(null)) return false;
+			FileObject file=null;
+
+			try
+			{
+				// Source file
+				file= KettleVFS.getFileObject(Context.toString(ArgList[0]));
+				boolean isafolder=false;
+				if(file.exists())
+				{
+					if(file.getType().equals(FileType.FOLDER))
+						isafolder=true;
+					else
+						Context.reportRuntimeError("[" + Context.toString(ArgList[0]) + "] is not a folder!");
+				}else{Context.reportRuntimeError("folder [" + Context.toString(ArgList[0]) + "] can not be found!");}
+				return isafolder;
+			}catch (IOException e)
+			{
+				throw Context.reportRuntimeError("The function call isFolder throw an error : " + e.toString());
+				}finally {if(file!=null) try{file.close();}catch(Exception e){}					
+			}
+			
+			
+			
+		}else{
+			throw Context.reportRuntimeError("The function call isFolder is not valid.");
+		}
+	}catch(Exception e){
+		throw Context.reportRuntimeError(e.toString());
+	}
+}
+
+public static String getShortFilename(Context actualContext, Scriptable actualObject, Object[] ArgList, Function FunctionContext){
+	try{
+		if(ArgList.length==1 && !isNull(ArgList[0]) && !isUndefined(ArgList[0])){
+			if(ArgList[0].equals(null)) return null;
+			FileObject file=null;
+
+			try
+			{
+				// Source file
+				file= KettleVFS.getFileObject(Context.toString(ArgList[0]));
+				String Filename=null;
+				if(file.exists())
+				{
+					Filename=file.getName().getBaseName().toString();
+				
+				}else{Context.reportRuntimeError("file [" + Context.toString(ArgList[0]) + "] can not be found!");}
+
+				return Filename;
+			}catch (IOException e)
+			{
+				throw Context.reportRuntimeError("The function call getShortFilename throw an error : " + e.toString());
+				}finally {if(file!=null) try{file.close();}catch(Exception e){}					
+			}
+
+			
+		}else{
+			throw Context.reportRuntimeError("The function call getShortFilename is not valid.");
+		}
+	}catch(Exception e){
+		throw Context.reportRuntimeError(e.toString());
+	}
+}
+
+public static String getFileExtension(Context actualContext, Scriptable actualObject, Object[] ArgList, Function FunctionContext){
+	try{
+		if(ArgList.length==1 && !isNull(ArgList[0]) && !isUndefined(ArgList[0])){
+			if(ArgList[0].equals(null)) return null;
+			FileObject file=null;
+
+			try
+			{
+				// Source file
+				file= KettleVFS.getFileObject(Context.toString(ArgList[0]));
+				String Extension=null;
+				if(file.exists())
+				{
+					Extension=file.getName().getExtension().toString();
+				
+				}else{Context.reportRuntimeError("file [" + Context.toString(ArgList[0]) + "] can not be found!");}
+
+				return Extension;
+			}catch (IOException e)
+			{
+				throw Context.reportRuntimeError("The function call getFileExtension throw an error : " + e.toString());
+				}finally {if(file!=null) try{file.close();}catch(Exception e){}					
+			}
+
+			
+		}else{
+			throw Context.reportRuntimeError("The function call getFileExtension is not valid.");
+		}
+	}catch(Exception e){
+		throw Context.reportRuntimeError(e.toString());
+	}
+}
+
+
+public static String getParentFoldername(Context actualContext, Scriptable actualObject, Object[] ArgList, Function FunctionContext){
+	try{
+		if(ArgList.length==1 && !isNull(ArgList[0]) && !isUndefined(ArgList[0])){
+			if(ArgList[0].equals(null)) return null;
+			FileObject file=null;
+
+			try
+			{
+				// Source file
+				file= KettleVFS.getFileObject(Context.toString(ArgList[0]));
+				String foldername=null;
+				if(file.exists())
+				{
+					foldername=KettleVFS.getFilename(file.getParent());
+				
+				}else{Context.reportRuntimeError("file [" + Context.toString(ArgList[0]) + "] can not be found!");}
+
+				return foldername;
+			}catch (IOException e)
+			{
+				throw Context.reportRuntimeError("The function call getParentFoldername throw an error : " + e.toString());
+				}finally {if(file!=null) try{file.close();}catch(Exception e){}					
+			}
+
+			
+		}else{
+			throw Context.reportRuntimeError("The function call getParentFoldername is not valid.");
+		}
+	}catch(Exception e){
+		throw Context.reportRuntimeError(e.toString());
+	}
+}
+
+public static String getLastModifiedTime(Context actualContext, Scriptable actualObject, Object[] ArgList, Function FunctionContext){
+	try{
+		if(ArgList.length==2 && !isNull(ArgList[0]) && !isUndefined(ArgList[0])){
+			if(ArgList[0].equals(null)) return null;
+			FileObject file=null;
+
+			try
+			{
+				// Source file
+				file= KettleVFS.getFileObject(Context.toString(ArgList[0]));
+				String dateformat= Context.toString(ArgList[1]);
+				if(isNull(dateformat)) dateformat="yyyy-MM-dd";
+				String lastmodifiedtime=null;
+				if(file.exists())
+				{
+					java.util.Date lastmodifiedtimedate=new java.util.Date(file.getContent().getLastModifiedTime());
+					java.text.DateFormat dateFormat = new SimpleDateFormat(dateformat);
+					lastmodifiedtime=dateFormat.format(lastmodifiedtimedate);
+				
+				}else{Context.reportRuntimeError("file [" + Context.toString(ArgList[0]) + "] can not be found!");}
+
+				return lastmodifiedtime;
+			}catch (IOException e)
+			{
+				throw Context.reportRuntimeError("The function call getLastModifiedTime throw an error : " + e.toString());
+				}finally {if(file!=null) try{file.close();}catch(Exception e){}					
+			}
+
+			
+		}else{
+			throw Context.reportRuntimeError("The function call getLastModifiedTime is not valid.");
+		}
+	}catch(Exception e){
+		throw Context.reportRuntimeError(e.toString());
+	}
+}
 }

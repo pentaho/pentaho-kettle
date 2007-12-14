@@ -526,7 +526,7 @@ Alert(getEnvironmentVar("user.name"));</sample>
 
 var strFile = "Your File, with Path.";
 touch(strFile);</sample>
-       <type>4</type>
+       <type>5</type>
       <Arguments>
          <argument id="1">var</argument>
       </Arguments>
@@ -583,7 +583,7 @@ Alert(isRegExp(email3, reg1,reg2) + " Matches");</sample>
 
 var strFile = "Your File, with Path.";
 Alert(fileExists(strFile));</sample>
-       <type>4</type>
+       <type>5</type>
       <Arguments>
          <argument id="1">var</argument>
       </Arguments>
@@ -1278,7 +1278,189 @@ Alert("index of 'o', search from position 7 : " + str3);
       </Arguments>
    </jsFunction>   
    
+    <jsFunction name="deleteFile">
+      <help>Delete a file</help>
+      <sample>// Delete a file.
+// 
+// Usage:
+// deleteFile(var);
+// 1: String - The Filename with Path.
+// 2007-10-29
+//
+
+var strFile = "Your File, with Path.";
+deleteFile(strFile);</sample>
+       <type>5</type>
+      <Arguments>
+         <argument id="1">var</argument>
+      </Arguments>
+   </jsFunction> 
    
+   <jsFunction name="createFolder">
+      <help>Create a folder</help>
+      <sample>// Create a folder.
+// 
+// Usage:
+// createFolder(var);
+// 1: String - The Foldername with Path.
+// 2007-10-29
+//
+
+var strFolder = "Your Folder, with Path.";
+createFolder(strFolder);</sample>
+       <type>5</type>
+      <Arguments>
+         <argument id="1">var</argument>
+      </Arguments>
+   </jsFunction>    
+   <jsFunction name="copyFile">
+      <help>copyFile a file</help>
+      <sample>// copyFile a file.
+// 
+// Usage:
+// copyFile(var1,var2,var3);
+// 1: String - The file to copy with Path.
+// 2: String - The destination filename with Path.
+// 3: Boolean- Overwrite destination file if exist.
+// 2007-10-29
+//
+var sourcefile="your source filename with path";
+var destinationfile="your destination filename with path";
+copyFile(sourcefile,destinationfile,false);</sample>
+       <type>5</type>
+      <Arguments>
+         <argument id="1">var,var,var</argument>
+      </Arguments>
+   </jsFunction>
+   <jsFunction name="getFileSize">
+      <help>get size of a file (in bytes)</help>
+      <sample>// get file size.
+// 
+// Usage:
+// getFileSize(var1);
+// 1: String - The file to get the size from.
+// The result is a long (in bytes)
+// 2007-10-29
+//
+var sourcefile="your source filename with path";
+getFileSize(sourcefile);</sample>
+       <type>5</type>
+      <Arguments>
+         <argument id="1">var</argument>
+      </Arguments>
+   </jsFunction> 
+     <jsFunction name="isFile">
+      <help>check if it's a file</help>
+      <sample>
+// 
+// Usage:
+// isFile(var1);
+// 1: String - The file to check
+// The result is a boolean (true or false)
+// 2007-10-29
+//
+var sourcefile="your source filename with path";
+isFile(sourcefile);</sample>
+       <type>5</type>
+      <Arguments>
+         <argument id="1">var</argument>
+      </Arguments>
+   </jsFunction> 
+  <jsFunction name="isFolder">
+      <help>check if it's a folder</help>
+      <sample>
+// 
+// Usage:
+// isFolder(var1);
+// 1: String - The folder to check
+// The result is a boolean (true or false)
+// 2007-10-29
+//
+var sourcefile="your source foldername with path";
+isFolder(sourcefile);</sample>
+       <type>5</type>
+      <Arguments>
+         <argument id="1">var</argument>
+      </Arguments>
+   </jsFunction> 
+   
+     
+      
+ <jsFunction name="getShortFilename">
+ <help>return the file short filename</help>
+ <sample>
+// 
+// Usage:
+// getShortFilename(var1);
+// 1: String - The file
+// The result is a String
+// 2007-10-29
+//
+var sourcefile="your source filename with path";
+getShortFilename(sourcefile);</sample>
+       <type>5</type>
+      <Arguments>
+         <argument id="1">var</argument>
+      </Arguments>
+ </jsFunction> 
+   
+   
+ <jsFunction name="getFileExtension">
+ <help>return the file extension</help>
+ <sample>
+// 
+// Usage:
+// getFileExtension(var1);
+// 1: String - The file
+// The result is a String
+// 2007-10-29
+//
+var sourcefile="your source filename with path";
+getFileExtension(sourcefile);</sample>
+       <type>5</type>
+      <Arguments>
+         <argument id="1">var</argument>
+      </Arguments>
+ </jsFunction>  
+ 
+ 
+  <jsFunction name="getParentFoldername">
+ <help>return the file parent folder</help>
+ <sample>
+// 
+// Usage:
+// getParentFoldername(var1);
+// 1: String - The file
+// The result is a String
+// 2007-10-29
+//
+var sourcefile="your source filename with path";
+getParentFoldername(sourcefile);</sample>
+       <type>5</type>
+      <Arguments>
+         <argument id="1">var</argument>
+      </Arguments>
+ </jsFunction>    
+ 
+ 
+ <jsFunction name="getLastModifiedTime">
+ <help>return the file last modified time</help>
+ <sample>
+// 
+// Usage:
+// getLastModifiedTime(var1);
+// 1: String - The file
+// The result is a String
+// 2007-10-29
+//
+var sourcefile="your source filename with path";
+var dateformat="yyyy-MM-dd HH:MM:ss";
+getLastModifiedTime(sourcefile,dateformat);</sample>
+       <type>5</type>
+      <Arguments>
+         <argument id="1">var,var</argument>
+      </Arguments>
+ </jsFunction>      
 </jsFunctions>
 
 
