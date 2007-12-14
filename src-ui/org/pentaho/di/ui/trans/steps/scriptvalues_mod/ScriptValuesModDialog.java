@@ -486,7 +486,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 	        	if(cItem!=null && folder.getItemCount()>1){
 	        		MessageBox messageBox = new MessageBox(shell, SWT.ICON_QUESTION | SWT.NO | SWT.YES);
 	        		messageBox.setText(Messages.getString("ScriptValuesDialogMod.DeleteItem.Label"));
-	        		messageBox.setMessage("Do you really want to delete "+cItem.getText() + "?");
+	        		messageBox.setMessage(Messages.getString("ScriptValuesDialogMod.ConfirmDeleteItem.Label",cItem.getText()));
 		            switch(messageBox.open()){
 		            	case SWT.YES:
 		            		modifyScriptTree(cItem,DELETE_ITEM);
@@ -828,8 +828,8 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		// Check if Active Script has set, otherwise Ask
 		if(getCTabItemByName(strActiveScript)==null){
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.CANCEL | SWT.ICON_ERROR );
-			mb.setMessage("No active Script has been set! Should the first tab set as acitve Script?");
-			mb.setText("ERROR"); //$NON-NLS-1$
+			mb.setMessage(Messages.getString("ScriptValuesDialogMod.NoActiveScriptSet"));
+			mb.setText(Messages.getString("ScriptValuesDialogMod.ERROR.Label")); //$NON-NLS-1$
 			switch(mb.open()){
 				case SWT.OK:
 					strActiveScript = folder.getItem(0).getText();
@@ -943,7 +943,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
     					}
                     }
 				}catch(Exception e){
-					testException = new KettleException("Couldn't add JavaClasses to Context!", e); //$NON-NLS-1$
+					testException = new KettleException(Messages.getString("ScriptValuesDialogMod.CouldNotAddToContext",e.toString())); //$NON-NLS-1$
 					retval = false;
 				}
 				
@@ -952,7 +952,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 					Context.javaToJS(ScriptValuesAddedFunctions.class, jsscope);
 					((ScriptableObject)jsscope).defineFunctionProperties(jsFunctionList, ScriptValuesAddedFunctions.class, ScriptableObject.DONTENUM);
 				} catch (Exception ex) {
-					testException = new KettleException("Couldn't add Default Functions!", ex); //$NON-NLS-1$
+					testException = new KettleException(Messages.getString("ScriptValuesDialogMod.CouldNotAddDefaultFunctions", ex.toString())); //$NON-NLS-1$
 					retval = false;
 				};
 
@@ -963,7 +963,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 					jsscope.put("ERROR_TRANSFORMATION", jsscope, Integer.valueOf(ERROR_TRANSFORMATION));
 					jsscope.put("CONTINUE_TRANSFORMATION", jsscope, Integer.valueOf(CONTINUE_TRANSFORMATION));
 				} catch (Exception ex) {
-					testException = new KettleException("Couldn't add Transformation Constants!", ex); //$NON-NLS-1$
+					testException = new KettleException(Messages.getString("ScriptValuesDialogMod.CouldNotAddTransformationConstants",ex.toString())); //$NON-NLS-1$
 					retval = false;
 				};
 				
@@ -1015,7 +1015,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 	                }
 
 				}catch(Exception ev){
-					testException = new KettleException("Couldn't add Input fields to Script!", ev); //$NON-NLS-1$
+					testException = new KettleException(Messages.getString("ScriptValuesDialogMod.CouldNotAddInputFields", ev.toString())); //$NON-NLS-1$
 					retval = false;
 				}
 				
@@ -1026,7 +1026,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 						/* Object startScript = */ jscx.evaluateString(jsscope, strStartScript, "trans_Start", 1, null);
 					}
 				}catch(Exception e){
-					testException = new KettleException("Couldn't process Start Script!", e); //$NON-NLS-1$
+					testException = new KettleException(Messages.getString("ScriptValuesDialogMod.CouldProcessStartScript",e.toString())); //$NON-NLS-1$
 					retval = false;					
 				};
 				
@@ -1112,7 +1112,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 				if (retval){
 					if (!getvars){
 						MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION );
-						mb.setMessage("This script compiled without problems."+Const.CR); //$NON-NLS-1$
+						mb.setMessage(Messages.getString("ScriptValuesDialogMod.ScriptCompilationOK")+Const.CR); //$NON-NLS-1$
 						mb.setText("OK"); //$NON-NLS-1$
 						mb.open();
 					}
@@ -1171,13 +1171,13 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		TreeItem itemSpecialFunctionsGroup = new TreeItem(item, SWT.NULL);
 		itemSpecialFunctionsGroup.setText(Messages.getString("ScriptValuesDialogMod.SpecialFunctions.Label"));
 		itemSpecialFunctionsGroup.setData("Function");
+		TreeItem itemFileFunctionsGroup = new TreeItem(item, SWT.NULL);
+		itemFileFunctionsGroup.setText(Messages.getString("ScriptValuesDialogMod.FileFunctions.Label"));
+		itemFileFunctionsGroup.setData("Function");
 		
 		// Loading the Default delivered JScript Functions
 		//Method[] methods = ScriptValuesAddedFunctions.class.getMethods();
 		//String strClassType = ScriptValuesAddedFunctions.class.toString();
-		
-		
-		
 		
 		Hashtable<String, String> hatFunctions =scVHelp.getFunctionList(); 
 	    
@@ -1483,7 +1483,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 	private void buildingTreeMenu(){
 		//styledTextPopupmenu = new Menu(, SWT.POP_UP);
 		MenuItem addDeleteItem = new MenuItem(tMenu, SWT.PUSH);
-		addDeleteItem.setText("Delete");
+		addDeleteItem.setText(Messages.getString("ScriptValuesDialogMod.Delete.Label"));
 		addDeleteItem.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event e) {
 				if (wTree.getSelectionCount()<=0) return;
@@ -1491,8 +1491,8 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 				TreeItem tItem = wTree.getSelection()[0];
 		        if(tItem!=null){
 		        	MessageBox messageBox = new MessageBox(shell, SWT.ICON_QUESTION | SWT.NO | SWT.YES);
-		            messageBox.setText("Delete Item");
-		            messageBox.setMessage("Do you really want to delete "+tItem.getText() + "?");
+		            messageBox.setText(Messages.getString("ScriptValuesDialogMod.DeleteItem.Label"));
+		            messageBox.setMessage(Messages.getString("ScriptValuesDialogMod.ConfirmDeleteItem.Label,tItem.getText()"));
 		            switch(messageBox.open()){
 		            	case SWT.YES:
 				        	modifyCTabItem(tItem,DELETE_ITEM,"");
@@ -1505,7 +1505,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		});
 		
 		MenuItem renItem = new MenuItem(tMenu, SWT.PUSH);
-		renItem.setText("Rename");
+		renItem.setText(Messages.getString("ScriptValuesDialogMod.Rename.Label"));
 		renItem.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event e) {
 				renameFunction(wTree.getSelection()[0]);
@@ -1514,7 +1514,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		
 		new MenuItem(tMenu, SWT.SEPARATOR);
 		MenuItem helpItem = new MenuItem(tMenu, SWT.PUSH);
-		helpItem.setText("Sample");
+		helpItem.setText(Messages.getString("ScriptValuesDialogMod.Sample.Label"));
 		helpItem.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event e) {
 				String strFunctionName = wTree.getSelection()[0].getText();
