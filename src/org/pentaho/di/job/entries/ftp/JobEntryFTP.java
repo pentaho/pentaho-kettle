@@ -523,12 +523,11 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 
           if ((onlyGettingNewFiles == false) || (onlyGettingNewFiles == true) && needsDownload(filelist[i]))
           {
-            ftpclient.get(targetFilename, filelist[i]);
+        	ftpclient.get(KettleVFS.getOutputStream(targetFilename, false), filelist[i]);
             filesRetrieved++;
 
             // Add to the result files...
-            ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, targetFile, parentJob.getJobname(),
-                toString());
+            ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, targetFile, parentJob.getJobname(), toString());
             resultFile.setComment(Messages.getString("JobEntryFTP.Downloaded", serverName)); //$NON-NLS-1$
             result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
 
