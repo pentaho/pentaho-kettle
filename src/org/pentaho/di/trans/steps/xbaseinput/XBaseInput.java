@@ -56,7 +56,6 @@ public class XBaseInput extends BaseStep implements StepInterface
             // The output row meta data, what does it look like?
             //
             data.outputRowMeta = new RowMeta();
-            meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
             
             if (meta.isAcceptingFilenames())
             {
@@ -103,6 +102,8 @@ public class XBaseInput extends BaseStep implements StepInterface
                 }
             }
 
+            meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
+            
             // Open the first file & read the required rows in the buffer, stop
             // if it fails, exception will stop processLoop
             //
@@ -168,6 +169,21 @@ public class XBaseInput extends BaseStep implements StepInterface
                 logError(Messages.getString("XBaseInput.Log.Error.NoFilesSpecified"));
                 return false;
             }
+            if ( meta.isAcceptingFilenames() ) 
+            {
+            	if ( Const.isEmpty(meta.getAcceptingStepName()) ||
+            		 findInputRowSet(meta.getAcceptingStepName()) == null )
+            	{
+            		logError(Messages.getString("XBaseInput.Log.Error.InvalidAcceptingStepName"));
+                    return false;
+            	}
+            	
+            	if ( Const.isEmpty(meta.getAcceptingField()) )
+            	{
+            		logError(Messages.getString("XBaseInput.Log.Error.InvalidAcceptingFieldName"));
+                    return false;            		
+            	}
+            }
             return true;
 	    }
 		return false;
@@ -220,7 +236,10 @@ public class XBaseInput extends BaseStep implements StepInterface
 	private void closeLastFile()
     {
         logBasic(Messages.getString("XBaseInput.Log.FinishedReadingRecords")); //$NON-NLS-1$
-        data.xbi.close();    
+        if ( data.xbi != null )
+        {
+            data.xbi.close();
+        }
     }
 
     //

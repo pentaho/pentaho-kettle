@@ -432,8 +432,25 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface
 		
 		if (dbfFileName==null)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("XBaseInputMeta.Remark.PleaseSelectFileToUse"), stepMeta); //$NON-NLS-1$
-			remarks.add(cr);
+            if ( isAcceptingFilenames() ) 
+            {
+        	     if ( Const.isEmpty(getAcceptingStepName()) ) 
+           	     {
+        	    	 cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("XBaseInput.Log.Error.InvalidAcceptingStepName"), stepMeta); //$NON-NLS-1$
+        	    	 remarks.add(cr);
+                 }
+           	
+           	     if ( Const.isEmpty(getAcceptingField()) )
+           	     {
+           	    	cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("XBaseInput.Log.Error.InvalidAcceptingFieldName"), stepMeta); //$NON-NLS-1$
+           	    	remarks.add(cr);
+                 }
+            }
+            else
+            {		
+			    cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("XBaseInputMeta.Remark.PleaseSelectFileToUse"), stepMeta); //$NON-NLS-1$
+			    remarks.add(cr);
+            }
 		}
         else
         {
