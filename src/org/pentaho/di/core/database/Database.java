@@ -2478,9 +2478,9 @@ public class Database implements VariableSpace
             	{
             		valtype=ValueMetaInterface.TYPE_INTEGER;
             	}
-                if (precision<=0 && length<=0) // undefined size: BIGNUMBER
+                if (precision<=0 && length<=0) // undefined size: NUMBER
                 {
-                    valtype=ValueMetaInterface.TYPE_BIGNUMBER;
+                    valtype=ValueMetaInterface.TYPE_NUMBER;
                     length=-1;
                     precision=-1;
                 }
