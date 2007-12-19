@@ -595,6 +595,17 @@ public class XMLHandler
      */
     public static final Document loadXMLFile(FileObject fileObject) throws KettleXMLException
     {
+    	return loadXMLFile(fileObject, null);
+    }
+
+    /**
+     * Load a file into an XML document
+     * @param filename The filename to load into a document
+     * @param systemId Provide a base for resolving relative URIs.
+     * @return the Document if all went well, null if an error occured!
+     */
+    public static final Document loadXMLFile(FileObject fileObject, String systemID) throws KettleXMLException
+    {
         DocumentBuilderFactory dbf;
         DocumentBuilder db;
         Document doc;
@@ -603,10 +614,21 @@ public class XMLHandler
         {           
             // Check and open XML document
             dbf  = DocumentBuilderFactory.newInstance();
+            // even dbf.setValidating(false) will the parser NOT prevent from checking the existance of the DTD
+            // thus we need to give the BaseURI (systemID) below to have a chance to get it
             db   = dbf.newDocumentBuilder();
             try
             {
-                doc  = db.parse(fileObject.getContent().getInputStream());
+            	if (Const.isEmpty(systemID)) {
+            		doc  = db.parse(fileObject.getContent().getInputStream());
+            	} else {
+            		String systemIDwithEndingSlash=systemID.trim();
+            		//make sure we have an ending slash, otherwise the last part will be ignored
+            		if (!systemIDwithEndingSlash.endsWith("/") && !systemIDwithEndingSlash.endsWith("\\")) {
+            			systemIDwithEndingSlash=systemIDwithEndingSlash.concat("/");
+            		}
+            		doc  = db.parse(fileObject.getContent().getInputStream(),systemIDwithEndingSlash);
+            	}
             }
             catch(FileNotFoundException ef)
             {

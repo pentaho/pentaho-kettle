@@ -59,7 +59,7 @@ public class XMLInputData extends BaseStepData implements StepDataInterface
 	public boolean last_file;
 
 	public FileObject file;
-
+	
 	public int filenr;
 
 	public FileInputStream fr;

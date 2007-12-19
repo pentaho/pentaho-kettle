@@ -152,6 +152,12 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 	private Text wSkip;
 
 	private FormData fdlSkip, fdSkip;
+	
+	private Label wlFileBaseURI;
+	
+	private TextVar wFileBaseURI;
+	
+	private FormData fdlFileBaseURI, fdFileBaseURI;
 
 	private Label wlPosition;
 
@@ -473,13 +479,30 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 		fdSkip.top = new FormAttachment(wLimit, margin);
 		fdSkip.right = new FormAttachment(100, 0);
 		wSkip.setLayoutData(fdSkip);
+		
+		wlFileBaseURI = new Label(wContentComp, SWT.RIGHT);
+		wlFileBaseURI.setText(Messages.getString("XMLInputDialog.BaseURI.Label"));
+		props.setLook(wlFileBaseURI);
+		fdlFileBaseURI = new FormData();
+		fdlFileBaseURI.left = new FormAttachment(0, 0);
+		fdlFileBaseURI.top = new FormAttachment(wSkip, margin);
+		fdlFileBaseURI.right = new FormAttachment(middle, -margin);
+		wlFileBaseURI.setLayoutData(fdlFileBaseURI);		
+		wFileBaseURI = new TextVar(transMeta, wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		props.setLook(wFileBaseURI);
+		wFileBaseURI.addModifyListener(lsMod);
+		fdFileBaseURI = new FormData();
+		fdFileBaseURI.left = new FormAttachment(middle, 0);
+		fdFileBaseURI.top = new FormAttachment(wSkip, margin);		
+		fdFileBaseURI.right = new FormAttachment(100, 0);
+		wFileBaseURI.setLayoutData(fdFileBaseURI);		
 
 		wlPosition = new Label(wContentComp, SWT.RIGHT);
 		wlPosition.setText(Messages.getString("XMLInputDialog.Location.Label"));
 		props.setLook(wlPosition);
 		fdlPosition = new FormData();
 		fdlPosition.left = new FormAttachment(0, 0);
-		fdlPosition.top = new FormAttachment(wSkip, margin * 3);
+		fdlPosition.top = new FormAttachment(wFileBaseURI, margin * 3);
 		fdlPosition.right = new FormAttachment(middle, -margin);
 		wlPosition.setLayoutData(fdlPosition);
 
@@ -492,7 +515,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 		wPosition.addModifyListener(lsMod);
 		fdPosition = new FormData();
 		fdPosition.left = new FormAttachment(middle, 0);
-		fdPosition.top = new FormAttachment(wSkip, margin * 3);
+		fdPosition.top = new FormAttachment(wFileBaseURI, margin * 3);
 		fdPosition.bottom = new FormAttachment(100, -50);
 		fdPosition.right = new FormAttachment(100, 0);
 		wPosition.setLayoutData(fdPosition);
@@ -804,6 +827,16 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 			}
 		});
 
+		// Whenever something changes, set the tooltip to the expanded version
+		// of the wFileBaseURI:
+		wFileBaseURI.addModifyListener(new ModifyListener()
+		{
+			public void modifyText(ModifyEvent e)
+			{
+				wFileBaseURI.setToolTipText(transMeta.environmentSubstitute(wFileBaseURI.getText()));
+			}
+		});
+
 		// Detect X or ALT-F4 or something that kills this window...
 		shell.addShellListener(new ShellAdapter()
 		{
@@ -880,6 +913,8 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 			wInclRownumField.setText(in.getRowNumberField());
 		wLimit.setText("" + in.getRowLimit());
 		wSkip.setText("" + in.getNrRowsToSkip());
+		if (in.getFileBaseURI() != null)
+			wFileBaseURI.setText(in.getFileBaseURI());
 
 		log.logDebug(toString(), Messages.getString("XMLInputDialog.Log.GettingFieldsInfo"));
 		for (int i = 0; i < in.getInputFields().length; i++)
@@ -981,6 +1016,8 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 
 		in.setIncludeFilename(wInclFilename.getSelection());
 		in.setIncludeRowNumber(wInclRownum.getSelection());
+		
+		in.setFileBaseURI(wFileBaseURI.getText());
 
 		int nrFiles = wFilenameList.getItemCount();
 		int nrFields = wFields.nrNonEmpty();
@@ -1068,7 +1105,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 			for (int f = 0; f < inputList.getFiles().size() && !finished; f++)
 			{
 				// Open the file...
-				Node rootNode = XMLHandler.loadXMLFile(inputList.getFile(f));
+				Node rootNode = XMLHandler.loadXMLFile(inputList.getFile(f), transMeta.environmentSubstitute(meta.getFileBaseURI()));
 
 				// Position to the repeating item
 				for (int p = 0; rootNode != null && p < meta.getInputPosition().length - 1; p++)

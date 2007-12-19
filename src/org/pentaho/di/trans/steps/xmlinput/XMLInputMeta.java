@@ -73,6 +73,9 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface
 
     /** The number or lines to skip before starting to read*/
     private  int  nrRowsToSkip;
+    
+    /** Provide a base for resolving relative URIs */
+	private String fileBaseURI;
 
 	/** The fields to import... */
 	private XMLInputField inputFields[];
@@ -275,6 +278,7 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface
         retval.append("    "+XMLHandler.addTagValue("include_field",   filenameField));
         retval.append("    "+XMLHandler.addTagValue("rownum",          includeRowNumber));
         retval.append("    "+XMLHandler.addTagValue("rownum_field",    rowNumberField));
+        retval.append("    "+XMLHandler.addTagValue("file_base_uri",   fileBaseURI));
         
         retval.append("    <file>"+Const.CR);
         for (int i=0;i<fileName.length;i++)
@@ -314,6 +318,7 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface
 			filenameField     = XMLHandler.getTagValue(stepnode, "include_field");
 			includeRowNumber  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "rownum"));
 			rowNumberField    = XMLHandler.getTagValue(stepnode, "rownum_field");
+			fileBaseURI       = XMLHandler.getTagValue(stepnode, "file_base_uri");
 	
 			Node filenode  = XMLHandler.getSubNode(stepnode,   "file");
 			Node fields    = XMLHandler.getSubNode(stepnode,   "fields");
@@ -372,6 +377,7 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface
 		filenameField = "";
 		includeRowNumber    = false;
 		rowNumberField = "";
+		fileBaseURI = "";
 		
 		int nrFiles=0;
 		int nrFields=0;
@@ -446,6 +452,7 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface
 			rowNumberField    =      rep.getStepAttributeString (id_step, "rownum_field");
 			rowLimit          =      rep.getStepAttributeInteger(id_step, "limit");
             nrRowsToSkip      = (int)rep.getStepAttributeInteger(id_step, "skip");
+            fileBaseURI       =      rep.getStepAttributeString(id_step, "file_base_uri");
 	
 			int nrFiles     = rep.countNrStepAttributes(id_step, "file_name");
 			int nrFields    = rep.countNrStepAttributes(id_step, "field_name");
@@ -506,6 +513,7 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "rownum_field",    rowNumberField);
 			rep.saveStepAttribute(id_transformation, id_step, "limit",           rowLimit);
             rep.saveStepAttribute(id_transformation, id_step, "skip",            nrRowsToSkip);
+            rep.saveStepAttribute(id_transformation, id_step, "file_base_uri",   fileBaseURI);
 			
 			for (int i=0;i<fileName.length;i++)
 			{
@@ -702,4 +710,20 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface
     {
         this.inputPosition = inputPosition;
     }
+
+
+	/**
+	 * @return Provide a base for resolving relative URIs
+	 */
+	public String getFileBaseURI() {
+		return fileBaseURI;
+	}
+
+
+	/**
+	 * @param fileBaseURI Provide a base for resolving relative URIs
+	 */
+	public void setFileBaseURI(String fileBaseURI) {
+		this.fileBaseURI = fileBaseURI;
+	}
 }
