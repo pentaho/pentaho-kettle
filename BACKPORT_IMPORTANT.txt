@@ -4,3 +4,4 @@ Information on fixes applied to 3.0.1
 
 - PDI-592 : reset internal kettle variables for sub jobs so that they execute correctly
 - PDI-588 : don't eat rows on parameter switch in table input reading parameters from a hop.
+- PDI-594 : don't let excel output NPE when there's no input.
