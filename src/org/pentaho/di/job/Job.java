@@ -790,7 +790,7 @@ public class Job extends Thread implements VariableSpace
         this.passedBatchId = jobBatchId;
     }
     
-    private void setInternalKettleVariables(VariableSpace var)
+    public void setInternalKettleVariables(VariableSpace var)
     {
         if (jobMeta != null && jobMeta.getFilename() !=null) // we have a finename that's defined.
         {
