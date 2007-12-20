@@ -64,8 +64,8 @@ public class ExcelOutput extends BaseStep implements StepInterface
 		Object[] r;
 		boolean result=true;
 		r=getRow();       // This also waits for a row to be finished.
-		if (first) {
-			// get the RowMeta
+		if (first && r != null) {
+			// get the RowMeta, rowMeta is only set when a row is read
 			data.previousMeta = getInputRowMeta().clone();
 			//do not set first=false, below is another part that uses first
 		}
