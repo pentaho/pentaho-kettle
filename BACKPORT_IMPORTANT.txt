@@ -1,0 +1,5 @@
+
+Information on fixes applied to 3.0.1
+-------------------------------------
+
+- PDI-592 : reset internal kettle variables for sub jobs so that they execute correctly

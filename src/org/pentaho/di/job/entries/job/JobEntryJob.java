@@ -506,6 +506,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 	                Job job = new Job(logwriter, StepLoader.getInstance(), rep, jobMeta);
 	
 	                job.shareVariablesWith(this);
+	                job.setInternalKettleVariables(this);
 	                
 	                // Set the source rows we calculated above...
 	                //
