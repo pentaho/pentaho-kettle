@@ -2490,7 +2490,18 @@ public class Database implements VariableSpace
         case java.sql.Types.DATE:
         case java.sql.Types.TIME:
         case java.sql.Types.TIMESTAMP: 
-            valtype=ValueMetaInterface.TYPE_DATE; 
+            valtype=ValueMetaInterface.TYPE_DATE;
+            // 
+            if (databaseMeta.getDatabaseType() == DatabaseMeta.TYPE_DATABASE_MYSQL) {
+                String property = databaseMeta.getConnectionProperties().getProperty("yearIsDateType");
+                if (property != null && property.equalsIgnoreCase("false")
+                		&& rm.getColumnTypeName(index).equalsIgnoreCase("YEAR")) {
+                	valtype = ValueMetaInterface.TYPE_INTEGER;
+                	precision = 0;
+                	length = 4;
+                	break;
+                }
+            } 
             break;
 
         case java.sql.Types.BOOLEAN:
