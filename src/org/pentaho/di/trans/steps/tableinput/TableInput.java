@@ -101,7 +101,7 @@ public class TableInput extends BaseStep implements StepInterface
                 }
                 if (parameters!=null)
                 {
-                    if (log.isDetailed()) logDetailed("Query parameters found = " + parameters.toString());
+                    if (log.isDetailed()) logDetailed("Query parameters found = " + parametersMeta.getString(parameters));
                 }
             }
             else
@@ -150,6 +150,14 @@ public class TableInput extends BaseStep implements StepInterface
                     if (!success) 
                     { 
                         return false; 
+                    }
+                    
+                    if (data.thisrow!=null) // We can expect more rows
+                    {
+                        putRow(data.rowMeta, data.thisrow); // fill the rowset(s). (wait for empty)
+                        data.thisrow = data.nextrow;
+
+                        if (checkFeedback(linesInput)) logBasic("linenr " + linesInput);
                     }
                 }
             }
