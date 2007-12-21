@@ -498,38 +498,49 @@ public class TextFileCSVImportProgressDialog
 
             if (field.getType() == ValueMetaInterface.TYPE_STRING)
             {
-                if (isDate[i])
-                {
-                    field.setType(ValueMetaInterface.TYPE_DATE);
-                    for (int x = Const.getDateFormats().length - 1; x >= 0; x--)
+            	if (nrnull[i] != linenr - 1)
+            	{
+            		// If all values in a column where "null"/empty it makes more sense
+            		// to keep the field as a string, previously it would be seen as a date.
+                    if (isDate[i])
                     {
-                        if (dateFormat[i][x])
+                        field.setType(ValueMetaInterface.TYPE_DATE);
+                        for (int x = Const.getDateFormats().length - 1; x >= 0; x--)
                         {
-                            field.setFormat(Const.getDateFormats()[x]);
-                            field.setLength(TextFileInputDialog.dateLengths[x]);
-                            field.setPrecision(-1);
-                        }
-                    }
-                } else
-                    if (isNumber[i])
-                    {
-                        field.setType(ValueMetaInterface.TYPE_NUMBER);
-                        for (int x = Const.getNumberFormats().length - 1; x >= 0; x--)
-                        {
-                            if (numberFormat[i][x])
+                            if (dateFormat[i][x])
                             {
-                                field.setFormat(Const.getNumberFormats()[x]);
-                                field.setLength(numberLength[i][x]);
-                                field.setPrecision(numberPrecision[i][x]);
-
-                                if (field.getPrecision() == 0 && field.getLength() < 18)
-                                {
-                                    field.setType(ValueMetaInterface.TYPE_INTEGER);
-                                    field.setFormat("");
-                                }
+                                field.setFormat(Const.getDateFormats()[x]);
+                                field.setLength(TextFileInputDialog.dateLengths[x]);
+                                field.setPrecision(-1);
                             }
                         }
                     } else
+                        if (isNumber[i])
+                        {
+                            field.setType(ValueMetaInterface.TYPE_NUMBER);
+                            for (int x = Const.getNumberFormats().length - 1; x >= 0; x--)
+                            {
+                                if (numberFormat[i][x])
+                                {
+                                    field.setFormat(Const.getNumberFormats()[x]);
+                                    field.setLength(numberLength[i][x]);
+                                    field.setPrecision(numberPrecision[i][x]);
+
+                                    if (field.getPrecision() == 0 && field.getLength() < 18)
+                                    {
+                                        field.setType(ValueMetaInterface.TYPE_INTEGER);
+                                        field.setFormat("");
+                                    }
+                                }
+                            }
+                        } else
+                        {
+                            field.setDecimalSymbol("");
+                            field.setGroupSymbol("");
+                            field.setCurrencySymbol("");
+                        }
+            	    }
+            	    else
                     {
                         field.setDecimalSymbol("");
                         field.setGroupSymbol("");
