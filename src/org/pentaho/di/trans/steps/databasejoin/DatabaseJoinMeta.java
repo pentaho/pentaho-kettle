@@ -279,7 +279,7 @@ public class DatabaseJoinMeta extends BaseStepMeta implements StepMetaInterface
 		// Which fields are parameters?
         // info[0] comes from the database connection.
         //
-		RowMetaInterface param = getParameterRow(info[0]);
+		RowMetaInterface param = getParameterRow(row);
 		
 		// First try without connecting to the database... (can be  S L O W)
 		// See if it's in the cache...
