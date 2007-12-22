@@ -1766,11 +1766,24 @@ public class Const
         return STRING_JOB_FILTER_NAMES;
     }
     
+    /**
+     * Return the current time as nano-seconds.
+     * 
+     * @return time as nano-seconds.
+     */
     public static long nanoTime()
     {
         return new Date().getTime()*1000;
     }
     
+    /**
+     * Return the input string trimmed as specified.
+     * 
+     * @param string String to be trimmed
+     * @param trimType Type of trimming
+     * 
+     * @return Trimmed string.
+     */
     public static String trimToType(String string,int trimType)
     {
     	switch(trimType)
@@ -1805,6 +1818,12 @@ public class Const
 		return dir + FILE_SEPARATOR + file;
 	}
 
+	/**
+	 * Create an array of Strings consisting of spaces. The index of a String in
+	 * the array determines the number of spaces in that string.
+	 * 
+	 * @return array of 'space' Strings.
+	 */
 	public static String[] getEmptyPaddedStrings() {
 		if (emptyPaddedSpacesStrings==null) {
 			 emptyPaddedSpacesStrings = new String[250];
@@ -1815,6 +1834,11 @@ public class Const
 		return emptyPaddedSpacesStrings;
 	}
 	
+	/**
+	 * Return the percentage of free memory for this JVM.
+	 * 
+	 * @return Percentage of free memory.
+	 */
 	public static final int getPercentageFreeMemory()
 	{
 		Runtime runtime = Runtime.getRuntime();
