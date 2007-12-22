@@ -17,7 +17,6 @@
  **                                                                   **
  **                                                                   **
  **********************************************************************/
-
 package org.pentaho.di.ui.job.entries.zipfile;
 
 import org.eclipse.swt.SWT;
@@ -427,14 +426,15 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
         fdZipFile.top = new FormAttachment(wSourceFiles, margin);
         fdZipFile.right = new FormAttachment(100, -margin);
         wZipFile.setLayoutData(fdZipFile);
-        // ///////////////////////////////////////////////////////////
-        // / END OF ZipFile GROUP
-        // ///////////////////////////////////////////////////////////
         
-		  // Settings grouping?
-        // ////////////////////////
-        // START OF Settings GROUP///
-        // /
+        /////////////////////////////////////////////////////////////
+        // END OF ZipFile GROUP
+        /////////////////////////////////////////////////////////////
+        
+
+        //////////////////////////////
+        // START OF Settings GROUP
+        //
         wSettings = new Group(shell, SWT.SHADOW_NONE);
         props.setLook(wSettings);
         wSettings.setText(Messages.getString("JobSettingss.Settings.Group.Label"));
@@ -443,7 +443,7 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
         groupLayoutSettings.marginHeight = 10;
         wSettings.setLayout(groupLayoutSettings);
 
-       //Compression Rate
+        // Compression Rate
 		wlCompressionRate = new Label(wSettings, SWT.RIGHT);
 		wlCompressionRate.setText(Messages.getString("JobZipFiles.CompressionRate.Label"));
 		props.setLook(wlCompressionRate);
@@ -472,7 +472,7 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 		fdCompressionRate.right = new FormAttachment(100, 0);
 		wCompressionRate.setLayoutData(fdCompressionRate);
 	
-		//IF File Exists
+		// If File Exists
 		wlIfFileExists = new Label(wSettings, SWT.RIGHT);
 		wlIfFileExists.setText(Messages.getString("JobZipFiles.IfZipFileExists.Label"));
 		props.setLook(wlIfFileExists);
@@ -502,7 +502,7 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 		fdIfFileExists.right = new FormAttachment(100, 0);
 		wIfFileExists.setLayoutData(fdIfFileExists);
 
-		//After Zipping
+		// After Zipping
 		wlAfterZip = new Label(wSettings, SWT.RIGHT);
 		wlAfterZip.setText(Messages.getString("JobZipFiles.AfterZip.Label"));
 		props.setLook(wlAfterZip);
@@ -717,7 +717,6 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 				}
 			}
 			);
-
 			
 		wName.addSelectionListener( lsDef );
 		wZipFilename.addSelectionListener( lsDef );
@@ -823,7 +822,6 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 		wAddFileToResult.setSelection(jobEntry.isAddFileToResult());
 		wgetFromPrevious.setSelection(jobEntry.getDatafromprevious());
 		wCreateParentFolder.setSelection(jobEntry.getcreateparentfolder());
-		
 	}
 
 	private void cancel()
@@ -855,6 +853,7 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 		jobEntry.setcreateparentfolder(wCreateParentFolder.getSelection());
 		dispose();
 	}
+	
 	public String toString()
 	{
 		return this.getClass().getName();
