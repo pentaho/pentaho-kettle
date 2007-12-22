@@ -33,6 +33,7 @@ import org.pentaho.di.trans.steps.rowgenerator.RowGeneratorTest;
 import org.pentaho.di.trans.steps.scriptvalues_mod.JavaScriptSpecialTest;
 import org.pentaho.di.trans.steps.scriptvalues_mod.JavaScriptStringTest;
 import org.pentaho.di.trans.steps.sort.SortRowsTest;
+import org.pentaho.di.trans.steps.tableinput.TableInputTest;
 import org.pentaho.di.trans.steps.valuemapper.ValueMapperTest;
 
 
@@ -83,7 +84,8 @@ public class AllRegressionTests
         suite.addTestSuite(SortRowsTest.class);
         suite.addTestSuite(ValueMapperTest.class);
         suite.addTestSuite(NullIfTest.class);
-        suite.addTestSuite(AddSequenceTest.class);        
+        suite.addTestSuite(AddSequenceTest.class);  
+        suite.addTestSuite(TableInputTest.class);
         suite.addTestSuite(CombinationLookupTest.class);
         suite.addTestSuite(JavaScriptStringTest.class);
         suite.addTestSuite(JavaScriptSpecialTest.class);
