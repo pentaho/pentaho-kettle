@@ -40,6 +40,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 
 /**
@@ -595,16 +596,19 @@ public class XMLHandler
      */
     public static final Document loadXMLFile(FileObject fileObject) throws KettleXMLException
     {
-    	return loadXMLFile(fileObject, null);
+    	return loadXMLFile(fileObject, null, false, false);
     }
 
     /**
      * Load a file into an XML document
      * @param filename The filename to load into a document
      * @param systemId Provide a base for resolving relative URIs.
+     * @param ignoreEntities Ignores external entities and returns an empty dummy.
+     * @param namespaceAware support XML namespaces.
      * @return the Document if all went well, null if an error occured!
      */
-    public static final Document loadXMLFile(FileObject fileObject, String systemID) throws KettleXMLException
+    public static final Document loadXMLFile(FileObject fileObject, String systemID, boolean ignoreEntities,
+    		boolean namespaceAware) throws KettleXMLException
     {
         DocumentBuilderFactory dbf;
         DocumentBuilder db;
@@ -614,9 +618,12 @@ public class XMLHandler
         {           
             // Check and open XML document
             dbf  = DocumentBuilderFactory.newInstance();
+            dbf.setNamespaceAware(namespaceAware);
+            db   = dbf.newDocumentBuilder();
             // even dbf.setValidating(false) will the parser NOT prevent from checking the existance of the DTD
             // thus we need to give the BaseURI (systemID) below to have a chance to get it
-            db   = dbf.newDocumentBuilder();
+            // or return empty dummy documents for all external entities (sources)
+            if (ignoreEntities) db.setEntityResolver(new DTDIgnoringEntityResolver()); 
             try
             {
             	if (Const.isEmpty(systemID)) {
@@ -1151,4 +1158,22 @@ public class XMLHandler
 
     
 }
+
+//
+/**
+ * Handle external references and return an empty dummy document.
+ * @author jb
+ * @since 2007-12-21
+ *
+ */
+class DTDIgnoringEntityResolver implements EntityResolver{
+	public DTDIgnoringEntityResolver(){
+		//nothing
+	}
+	public InputSource resolveEntity(java.lang.String publicID, java.lang.String systemID) throws IOException {
+		//System.out.println("Public-ID: "+publicID.toString());
+		//System.out.println("System-ID: "+systemID.toString());
+		return new InputSource(new ByteArrayInputStream("<?xml version='1.0' encoding='UTF-8'?>".getBytes()));
+	}
+} 
 	

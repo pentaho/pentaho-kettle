@@ -159,6 +159,18 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 	
 	private FormData fdlFileBaseURI, fdFileBaseURI;
 
+	private Label wlIgnoreEntities;
+
+	private Button wIgnoreEntities;
+	
+	private FormData fdlIgnoreEntities, fdIgnoreEntities;
+
+	private Label wlNamespaceAware;
+
+	private Button wNamespaceAware;
+
+	private FormData fdlNamespaceAware, fdNamespaceAware;
+	
 	private Label wlPosition;
 
 	private TableView wPosition;
@@ -495,14 +507,46 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 		fdFileBaseURI.left = new FormAttachment(middle, 0);
 		fdFileBaseURI.top = new FormAttachment(wSkip, margin);		
 		fdFileBaseURI.right = new FormAttachment(100, 0);
-		wFileBaseURI.setLayoutData(fdFileBaseURI);		
+		wFileBaseURI.setLayoutData(fdFileBaseURI);	
+
+		wlIgnoreEntities = new Label(wContentComp, SWT.RIGHT);
+		wlIgnoreEntities.setText(Messages.getString("XMLInputDialog.IgnoreEntities.Label"));
+		props.setLook(wlIgnoreEntities);
+		fdlIgnoreEntities = new FormData();
+		fdlIgnoreEntities.left = new FormAttachment(0, 0);
+		fdlIgnoreEntities.top = new FormAttachment(wFileBaseURI, margin);
+		fdlIgnoreEntities.right = new FormAttachment(middle, -margin);
+		wlIgnoreEntities.setLayoutData(fdlIgnoreEntities);
+		wIgnoreEntities = new Button(wContentComp, SWT.CHECK);
+		props.setLook(wIgnoreEntities);
+		wIgnoreEntities.setToolTipText(Messages.getString("XMLInputDialog.IgnoreEntities.Tooltip"));
+		fdIgnoreEntities = new FormData();
+		fdIgnoreEntities.left = new FormAttachment(middle, 0);
+		fdIgnoreEntities.top = new FormAttachment(wFileBaseURI, margin);
+		wIgnoreEntities.setLayoutData(fdIgnoreEntities);	
+
+		wlNamespaceAware = new Label(wContentComp, SWT.RIGHT);
+		wlNamespaceAware.setText(Messages.getString("XMLInputDialog.NamespaceAware.Label"));
+		props.setLook(wlNamespaceAware);
+		fdlNamespaceAware = new FormData();
+		fdlNamespaceAware.left = new FormAttachment(0, 0);
+		fdlNamespaceAware.top = new FormAttachment(wIgnoreEntities, margin);
+		fdlNamespaceAware.right = new FormAttachment(middle, -margin);
+		wlNamespaceAware.setLayoutData(fdlNamespaceAware);
+		wNamespaceAware = new Button(wContentComp, SWT.CHECK);
+		props.setLook(wNamespaceAware);
+		wNamespaceAware.setToolTipText(Messages.getString("XMLInputDialog.NamespaceAware.Tooltip"));
+		fdNamespaceAware = new FormData();
+		fdNamespaceAware.left = new FormAttachment(middle, 0);
+		fdNamespaceAware.top = new FormAttachment(wIgnoreEntities, margin);
+		wNamespaceAware.setLayoutData(fdNamespaceAware);
 
 		wlPosition = new Label(wContentComp, SWT.RIGHT);
 		wlPosition.setText(Messages.getString("XMLInputDialog.Location.Label"));
 		props.setLook(wlPosition);
 		fdlPosition = new FormData();
 		fdlPosition.left = new FormAttachment(0, 0);
-		fdlPosition.top = new FormAttachment(wFileBaseURI, margin * 3);
+		fdlPosition.top = new FormAttachment(wNamespaceAware, margin * 3);
 		fdlPosition.right = new FormAttachment(middle, -margin);
 		wlPosition.setLayoutData(fdlPosition);
 
@@ -515,7 +559,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 		wPosition.addModifyListener(lsMod);
 		fdPosition = new FormData();
 		fdPosition.left = new FormAttachment(middle, 0);
-		fdPosition.top = new FormAttachment(wFileBaseURI, margin * 3);
+		fdPosition.top = new FormAttachment(wNamespaceAware, margin * 3);
 		fdPosition.bottom = new FormAttachment(100, -50);
 		fdPosition.right = new FormAttachment(100, 0);
 		wPosition.setLayoutData(fdPosition);
@@ -675,6 +719,8 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 		wLimit.addSelectionListener(lsDef);
 		wInclRownumField.addSelectionListener(lsDef);
 		wInclFilenameField.addSelectionListener(lsDef);
+		wIgnoreEntities.addSelectionListener(lsDef);
+		wNamespaceAware.addSelectionListener(lsDef);
 
 		// Add the file to the list of files...
 		SelectionAdapter selA = new SelectionAdapter()
@@ -915,6 +961,8 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 		wSkip.setText("" + in.getNrRowsToSkip());
 		if (in.getFileBaseURI() != null)
 			wFileBaseURI.setText(in.getFileBaseURI());
+		wIgnoreEntities.setSelection(in.isIgnoreEntities());
+		wNamespaceAware.setSelection(in.isNamespaceAware());
 
 		log.logDebug(toString(), Messages.getString("XMLInputDialog.Log.GettingFieldsInfo"));
 		for (int i = 0; i < in.getInputFields().length; i++)
@@ -1018,6 +1066,8 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 		in.setIncludeRowNumber(wInclRownum.getSelection());
 		
 		in.setFileBaseURI(wFileBaseURI.getText());
+		in.setIgnoreEntities(wIgnoreEntities.getSelection());
+		in.setNamespaceAware(wNamespaceAware.getSelection());
 
 		int nrFiles = wFilenameList.getItemCount();
 		int nrFields = wFields.nrNonEmpty();
@@ -1105,7 +1155,8 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 			for (int f = 0; f < inputList.getFiles().size() && !finished; f++)
 			{
 				// Open the file...
-				Node rootNode = XMLHandler.loadXMLFile(inputList.getFile(f), transMeta.environmentSubstitute(meta.getFileBaseURI()));
+				Node rootNode = XMLHandler.loadXMLFile(inputList.getFile(f), transMeta.environmentSubstitute(meta.getFileBaseURI()),
+						meta.isIgnoreEntities(), meta.isNamespaceAware());
 
 				// Position to the repeating item
 				for (int p = 0; rootNode != null && p < meta.getInputPosition().length - 1; p++)

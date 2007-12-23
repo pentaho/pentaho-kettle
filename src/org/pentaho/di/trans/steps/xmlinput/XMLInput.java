@@ -293,7 +293,8 @@ public class XMLInput extends BaseStep implements StepInterface
 			data.filenr++;
 
 			// Open the XML document
-			data.document = XMLHandler.loadXMLFile(data.file, this.environmentSubstitute(meta.getFileBaseURI()));
+			data.document = XMLHandler.loadXMLFile(data.file, this.environmentSubstitute(meta.getFileBaseURI()),
+					meta.isIgnoreEntities(), meta.isNamespaceAware());
 
 			// Add this to the result file names...
 			ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, data.file, getTransMeta()

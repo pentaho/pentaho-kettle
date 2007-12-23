@@ -74,6 +74,12 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface
     /** The number or lines to skip before starting to read*/
     private  int  nrRowsToSkip;
     
+    /** support XML namespaces */
+    private boolean namespaceAware;
+    
+    /**  Ignores external entities and returns an empty dummy e.g. for missing DTDs */
+    private boolean ignoreEntities;
+    
     /** Provide a base for resolving relative URIs */
 	private String fileBaseURI;
 
@@ -279,6 +285,8 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface
         retval.append("    "+XMLHandler.addTagValue("rownum",          includeRowNumber));
         retval.append("    "+XMLHandler.addTagValue("rownum_field",    rowNumberField));
         retval.append("    "+XMLHandler.addTagValue("file_base_uri",   fileBaseURI));
+        retval.append("    "+XMLHandler.addTagValue("ignore_entities", ignoreEntities));
+        retval.append("    "+XMLHandler.addTagValue("namespace_aware", namespaceAware));
         
         retval.append("    <file>"+Const.CR);
         for (int i=0;i<fileName.length;i++)
@@ -319,6 +327,8 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface
 			includeRowNumber  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "rownum"));
 			rowNumberField    = XMLHandler.getTagValue(stepnode, "rownum_field");
 			fileBaseURI       = XMLHandler.getTagValue(stepnode, "file_base_uri");
+			ignoreEntities  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "ignore_entities"));
+			namespaceAware  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "namespace_aware"));
 	
 			Node filenode  = XMLHandler.getSubNode(stepnode,   "file");
 			Node fields    = XMLHandler.getSubNode(stepnode,   "fields");
@@ -378,6 +388,8 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface
 		includeRowNumber    = false;
 		rowNumberField = "";
 		fileBaseURI = "";
+		ignoreEntities = false;
+		namespaceAware = false;
 		
 		int nrFiles=0;
 		int nrFields=0;
@@ -453,6 +465,8 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface
 			rowLimit          =      rep.getStepAttributeInteger(id_step, "limit");
             nrRowsToSkip      = (int)rep.getStepAttributeInteger(id_step, "skip");
             fileBaseURI       =      rep.getStepAttributeString(id_step, "file_base_uri");
+            ignoreEntities    =      rep.getStepAttributeBoolean(id_step, "ignore_entities");
+            namespaceAware    =      rep.getStepAttributeBoolean(id_step, "namespace_aware");
 	
 			int nrFiles     = rep.countNrStepAttributes(id_step, "file_name");
 			int nrFields    = rep.countNrStepAttributes(id_step, "field_name");
@@ -514,6 +528,8 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "limit",           rowLimit);
             rep.saveStepAttribute(id_transformation, id_step, "skip",            nrRowsToSkip);
             rep.saveStepAttribute(id_transformation, id_step, "file_base_uri",   fileBaseURI);
+            rep.saveStepAttribute(id_transformation, id_step, "ignore_entities", ignoreEntities);
+            rep.saveStepAttribute(id_transformation, id_step, "namespace_aware", namespaceAware);
 			
 			for (int i=0;i<fileName.length;i++)
 			{
@@ -725,5 +741,36 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface
 	 */
 	public void setFileBaseURI(String fileBaseURI) {
 		this.fileBaseURI = fileBaseURI;
+	}
+
+	/**
+	 * @return Ignores external entities and returns an empty dummy e.g. for missing DTDs
+	 */
+	public boolean isIgnoreEntities() {
+		return ignoreEntities;
+	}
+
+
+	/**
+	 * @param ignoreEntities Ignores external entities and returns an empty dummy e.g. for missing DTDs
+	 */
+	public void setIgnoreEntities(boolean ignoreEntities) {
+		this.ignoreEntities = ignoreEntities;
+	}
+
+
+	/**
+	 * @return support XML namespaces
+	 */
+	public boolean isNamespaceAware() {
+		return namespaceAware;
+	}
+
+
+	/**
+	 * @param namespaceAware support XML namespaces
+	 */
+	public void setNamespaceAware(boolean namespaceAware) {
+		this.namespaceAware = namespaceAware;
 	}
 }
