@@ -783,6 +783,16 @@
 		</tooltip>
 		<image-uri>ui/images/LIP.png</image-uri>
 	</step>
+		<step id="getXMLData">
+		<description>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.getXMLData")
+		</description>
+		<class-name>org.pentaho.di.trans.steps.getxmldata.getXMLDataMeta</class-name>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@INPUT.getName()</category>
+		<tooltip>ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.getXMLData")
+		</tooltip>
+		<image-uri>ui/images/GXD.png</image-uri>
+	</step>
 
 	
 </steps>

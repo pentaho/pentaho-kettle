@@ -1214,6 +1214,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
             TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(transMeta, oneMeta, wStepname.getText());
             
             EnterNumberDialog numberDialog = new EnterNumberDialog(shell, props.getDefaultPreviewSize(), Messages.getString("AccessInputDialog.NumberRows.DialogTitle"), Messages.getString("AccessInputDialog.NumberRows.DialogMessage"));
+            
             int previewSize = numberDialog.open();
             if (previewSize>0)
             {
