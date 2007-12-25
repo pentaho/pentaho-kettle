@@ -17,8 +17,8 @@
 package org.pentaho.di.trans.steps.getxmldata;
 import org.w3c.dom.Node;
 
-import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.XMLHandler;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.exception.KettleValueException;

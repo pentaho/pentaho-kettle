@@ -391,8 +391,6 @@ public class getXMLData extends BaseStep implements StepInterface
 						int indexvarend=XPathValue.indexOf("}") ;
 						if(indexvarstart>=0 && indexvarend>=0)
 						{
-							//log.logBasic("Index start trouvé", "" + indexvarstart);
-							//log.logBasic("Index end trouvé", "" + indexvarend);
 							String NameVarInputField = XPathValue.substring(indexvarstart+2, indexvarend);
 						
 							for (int k=0;k<meta.getInputFields().length;k++)
