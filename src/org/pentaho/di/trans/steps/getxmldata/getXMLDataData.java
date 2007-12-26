@@ -66,7 +66,6 @@ public class getXMLDataData extends BaseStepData implements StepDataInterface
     public int itemPosition;
     public long rownr;
     public int indexOfXmlField;
-    public int totalpreviousfields;
 
 
 	/**
@@ -90,7 +89,6 @@ public class getXMLDataData extends BaseStepData implements StepDataInterface
 		
 		fr=null;
 		is=null;
-		totalpreviousfields=0;
 		indexOfXmlField=-1;
 
 	}

@@ -136,9 +136,6 @@ public class getXMLData extends BaseStep implements StepInterface
 						throw new KettleException(Messages.getString("getXMLData.Exception.CouldnotFindField",meta.getXMLField())); //$NON-NLS-1$ //$NON-NLS-2$
 					}
 				}
-			
-				// Get the number of previous fields
-				data.totalpreviousfields=getInputRowMeta().getFieldNames().length;
 				
 			}	
 			else
@@ -246,19 +243,19 @@ public class getXMLData extends BaseStep implements StepInterface
 		 return true;		  
 	}
 		
-	private String getValueXML(NodeList widgetNodes,int itFileInputXML_1,XPath xpath, String xpathvalue, String element_type)
+	private String getValueXML(NodeList widgetNodes,int itFileInputXML,XPath xpath, String xpathvalue, String element_type)
 	throws KettleStepException
 	{
 		String valueNode=null;	
 		try
 		{
-			Node widgetNode = widgetNodes.item(itFileInputXML_1);			
+			Node widgetNode = widgetNodes.item(itFileInputXML);			
 			if (element_type.equals("node"))
 			{
 				// Get Node value
 				Node resultNode = (Node) xpath.evaluate(xpathvalue,widgetNode, XPathConstants.NODE);			
 				//widgetNode
-				if (resultNode != null) valueNode=XMLHandler.getNodeValue( resultNode ); // resultNode.getTextContent();
+				if (resultNode != null) valueNode=XMLHandler.getNodeValue( resultNode );
 			}
 			else
 			{
@@ -269,7 +266,7 @@ public class getXMLData extends BaseStep implements StepInterface
                     Node namedItem = widgetNode.getAttributes().getNamedItem(xpathvalue);
                     if (namedItem!=null)
                     {
-                        valueNode=XMLHandler.getNodeValue(namedItem); // namedItem.getTextContent();
+                        valueNode=XMLHandler.getNodeValue(namedItem);
                     }
                 }
 			}
@@ -398,15 +395,15 @@ public class getXMLData extends BaseStep implements StepInterface
 								getXMLDataField Tmp_xmlInputField = meta.getInputFields()[k];
 								if(Tmp_xmlInputField.getName().equalsIgnoreCase(NameVarInputField))
 								{		
-									
-									XPathValue = XPathValue.replaceAll("\\{\\$"+NameVarInputField+"\\}","'"+ getInputRowMeta().getString(outputRowData,data.totalpreviousfields+k)+"'");
-									
+									XPathValue = XPathValue.replaceAll("\\{\\$"+NameVarInputField+"\\}","'"+ outputRowData[k]+"'");	
+									log.logBasic(toString(),XPathValue);
 								}
 							}	
 								
 						}
 						
 						String value = getValueXML(widgetNodes,iFileInputXML,xpath, XPathValue,Element_Type);  
+						//log.logBasic(toString(),"-------------------------"+value);
 						// OK, we have the string...
 						
 						// DO Trimming!
