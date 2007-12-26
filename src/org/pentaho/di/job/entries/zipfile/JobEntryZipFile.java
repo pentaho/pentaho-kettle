@@ -362,7 +362,6 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 					else
 					{
 						// Target is a file
-						// Initialisation du tableau de chaînes
 						filelist = new String[1];
 						filelist[0] =f.getName();
 					}
