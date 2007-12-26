@@ -711,7 +711,7 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		
 		//	control Xpath	
-		if (getLoopXPath()== null || getLoopXPath().isEmpty())
+		if (getLoopXPath()== null || Const.isEmpty(getLoopXPath()))
 		{		
 			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("getXMLDataMeta.CheckResult.NoLoopXpath"), stepMeta);
 			remarks.add(cr);
