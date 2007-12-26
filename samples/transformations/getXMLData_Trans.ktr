@@ -1,0 +1,586 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<transformation>
+  <info>
+    <name>getXMLData</name>
+    <description/>
+    <extended_description/>
+    <trans_version/>
+    <directory>&#47;</directory>
+    <log>
+      <read/>
+      <write/>
+      <input/>
+      <output/>
+      <update/>
+      <rejected/>
+      <connection/>
+      <table/>
+      <use_batchid>Y</use_batchid>
+      <use_logfield>N</use_logfield>
+    </log>
+    <maxdate>
+      <connection/>
+      <table/>
+      <field/>
+      <offset>0.0</offset>
+      <maxdiff>0.0</maxdiff>
+    </maxdate>
+    <size_rowset>1000</size_rowset>
+    <sleep_time_empty>1</sleep_time_empty>
+    <sleep_time_full>1</sleep_time_full>
+    <unique_connections>N</unique_connections>
+    <feedback_shown>Y</feedback_shown>
+    <feedback_size>5000</feedback_size>
+    <using_thread_priorities>N</using_thread_priorities>
+    <shared_objects_file/>
+    <dependencies>
+    </dependencies>
+    <partitionschemas>
+    </partitionschemas>
+    <slaveservers>
+    </slaveservers>
+    <clusterschemas>
+    </clusterschemas>
+  <modified_user>-</modified_user>
+  <modified_date>2007&#47;10&#47;15 12:57:16.107</modified_date>
+  </info>
+  <notepads>
+    <notepad>
+      <note>The XML field contain: 1 row
+
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; standalone=&quot;yes&quot;?&gt;
+&lt;persons&gt;
+&lt;person&gt;
+&lt;id&gt;1&lt;&#47;id&gt;
+&lt;firstname&gt;Samatar&lt;&#47;firstname&gt;
+&lt;name&gt;Hassan&lt;&#47;name&gt;
+&lt;birthdate&gt;20&#47;06&#47;1978&lt;&#47;birthdate&gt;
+&lt;&#47;person&gt;
+&lt;person&gt;
+&lt;id&gt;2&lt;&#47;id&gt;
+&lt;firstname&gt;Isaac&lt;&#47;firstname&gt;
+&lt;name&gt;Hassan&lt;&#47;name&gt;
+&lt;birthdate&gt;20&#47;09&#47;2004&lt;&#47;birthdate&gt;
+&lt;&#47;person&gt;
+&lt;person&gt;
+&lt;id&gt;3&lt;&#47;id&gt;
+&lt;firstname&gt;Souley&lt;&#47;firstname&gt;
+&lt;name&gt;Hassan&lt;&#47;name&gt;
+&lt;birthdate&gt;20&#47;09&#47;2007&lt;&#47;birthdate&gt;
+&lt;&#47;person&gt;
+&lt;&#47;persons&gt;</note>
+      <xloc>36</xloc>
+      <yloc>563</yloc>
+      <width>297</width>
+      <heigth>309</heigth>
+    </notepad>
+    <notepad>
+      <note>This step will parse the input XML field and extract all person with
+the selected fields.
+You can use it to read RSS like this :
+
+Generate 1 row --&gt; Call HTTP --&gt; Parse</note>
+      <xloc>376</xloc>
+      <yloc>560</yloc>
+      <width>322</width>
+      <heigth>75</heigth>
+    </notepad>
+    <notepad>
+      <note>1 - Read the file and extract all session data
+----------------------------------------------------------------------------</note>
+      <xloc>17</xloc>
+      <yloc>26</yloc>
+      <width>314</width>
+      <heigth>36</heigth>
+    </notepad>
+    <notepad>
+      <note>3 - Parse the contain of a field
+----------------------------------------------------------------------------
+Image you want to extract all person (id, first name, name, birth date) for the XML field.
+In fact, you will get nb returned rows=nb persons.
+This kind of result can be from Web service  or HTTP service.</note>
+      <xloc>23</xloc>
+      <yloc>387</yloc>
+      <width>434</width>
+      <heigth>75</heigth>
+    </notepad>
+    <notepad>
+      <note>Please notice &apos;kind of variable&apos; use : {$User} mean current User
+-----------------------------------------------------------------------------
+
+Data field =  ..&#47;..&#47;InfoSession&#47;InfoSessionData[@User={$User}]&#47;Data
+{$User} mean that the step must search Data for current user.
+There must be User field before. </note>
+      <xloc>365</xloc>
+      <yloc>78</yloc>
+      <width>349</width>
+      <heigth>88</heigth>
+    </notepad>
+    <notepad>
+      <note>2- Read the file and extract all session data
+------------------------------------------------------
+Same than 1. but filename is passed by previous step</note>
+      <xloc>19</xloc>
+      <yloc>209</yloc>
+      <width>266</width>
+      <heigth>49</heigth>
+    </notepad>
+  </notepads>
+  <order>
+  <hop> <from>Read XML file</from><to>Dummy1</to><enabled>Y</enabled> </hop>  <hop> <from>Read XML</from><to>Dummy3</to><enabled>Y</enabled> </hop>  <hop> <from>generate XML</from><to>Read XML</to><enabled>Y</enabled> </hop>  <hop> <from>parse file from filename</from><to>Dummy2</to><enabled>Y</enabled> </hop>  <hop> <from>Get filename</from><to>parse file from filename</to><enabled>Y</enabled> </hop>  </order>
+  <step>
+    <name>Dummy1</name>
+    <type>Dummy</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <field_name/>
+           <schema_name/>
+           </partitioning>
+     <cluster_schema/>
+    <GUI>
+      <xloc>260</xloc>
+      <yloc>99</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Dummy2</name>
+    <type>Dummy</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <field_name/>
+           <schema_name/>
+           </partitioning>
+     <cluster_schema/>
+    <GUI>
+      <xloc>352</xloc>
+      <yloc>299</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Dummy3</name>
+    <type>Dummy</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <field_name/>
+           <schema_name/>
+           </partitioning>
+     <cluster_schema/>
+    <GUI>
+      <xloc>591</xloc>
+      <yloc>495</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Get filename</name>
+    <type>GetVariable</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <field_name/>
+           <schema_name/>
+           </partitioning>
+    <fields>
+      <field>
+        <name>filename</name>
+        <variable>${Internal.Transformation.Filename.Directory}&#47;files&#47;test_xml_file.xml</variable>
+        </field>
+      </fields>
+     <cluster_schema/>
+    <GUI>
+      <xloc>65</xloc>
+      <yloc>296</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Read XML</name>
+    <type>getXMLData</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <field_name/>
+           <schema_name/>
+           </partitioning>
+    <include>N</include>
+    <include_field/>
+    <rownum>N</rownum>
+    <addresultfile>N</addresultfile>
+    <namespaceaware>N</namespaceaware>
+    <validating>N</validating>
+    <rownum_field/>
+    <encoding>UTF-8</encoding>
+    <file>
+      <name/>
+      <filemask/>
+      </file>
+    <fields>
+      <field>
+        <name>id</name>
+        <xpath>id</xpath>
+        <element_type>node</element_type>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+        </field>
+      <field>
+        <name>firstname</name>
+        <xpath>firstname</xpath>
+        <element_type>node</element_type>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+        </field>
+      <field>
+        <name>name</name>
+        <xpath>name</xpath>
+        <element_type>node</element_type>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+        </field>
+      <field>
+        <name>birthdate</name>
+        <xpath>birthdate</xpath>
+        <element_type>node</element_type>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+        </field>
+      </fields>
+    <limit>0</limit>
+    <loopxpath>persons&#47;person</loopxpath>
+    <IsInFields>Y</IsInFields>
+    <IsAFile>N</IsAFile>
+    <XmlField>xmlstring</XmlField>
+     <cluster_schema/>
+    <GUI>
+      <xloc>376</xloc>
+      <yloc>493</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Read XML file</name>
+    <type>getXMLData</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <field_name/>
+           <schema_name/>
+           </partitioning>
+    <include>N</include>
+    <include_field/>
+    <rownum>N</rownum>
+    <addresultfile>N</addresultfile>
+    <namespaceaware>N</namespaceaware>
+    <validating>N</validating>
+    <rownum_field/>
+    <encoding>UTF-8</encoding>
+    <file>
+      <name>${Internal.Transformation.Filename.Directory}&#47;files&#47;test_xml_file.xml</name>
+      <filemask/>
+      </file>
+    <fields>
+      <field>
+        <name>Code</name>
+        <xpath>..&#47;..&#47;@Code</xpath>
+        <element_type>node</element_type>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+        </field>
+      <field>
+        <name>User</name>
+        <xpath>Parameter&#47;User</xpath>
+        <element_type>node</element_type>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+        </field>
+      <field>
+        <name>Password</name>
+        <xpath>Parameter&#47;Password</xpath>
+        <element_type>node</element_type>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+        </field>
+      <field>
+        <name>Status</name>
+        <xpath>OutputData&#47;Step&#47;Status</xpath>
+        <element_type>node</element_type>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+        </field>
+      <field>
+        <name>Error_Message</name>
+        <xpath>OutputData&#47;Step&#47;Error_Message</xpath>
+        <element_type>node</element_type>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+        </field>
+      <field>
+        <name>Data</name>
+        <xpath>..&#47;..&#47;InfoSession&#47;InfoSessionData[@User={$User}]&#47;Data</xpath>
+        <element_type>node</element_type>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+        </field>
+      </fields>
+    <limit>0</limit>
+    <loopxpath>Session_header&#47;Session&#47;SessionData</loopxpath>
+    <IsInFields>N</IsInFields>
+    <IsAFile>N</IsAFile>
+    <XmlField/>
+     <cluster_schema/>
+    <GUI>
+      <xloc>48</xloc>
+      <yloc>100</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>generate XML</name>
+    <type>RowGenerator</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <field_name/>
+           <schema_name/>
+           </partitioning>
+    <fields>
+      <field>
+        <name>xmlstring</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; standalone=&quot;yes&quot;?&gt;&lt;persons&gt;&lt;person&gt;&lt;id&gt;1&lt;&#47;id&gt;&lt;firstname&gt;Samatar&lt;&#47;firstname&gt;&lt;name&gt;Hassan&lt;&#47;name&gt;&lt;birthdate&gt;20&#47;06&#47;1978&lt;&#47;birthdate&gt;&lt;&#47;person&gt;&lt;person&gt;&lt;id&gt;2&lt;&#47;id&gt;&lt;firstname&gt;Isaac&lt;&#47;firstname&gt;&lt;name&gt;Hassan&lt;&#47;name&gt;&lt;birthdate&gt;20&#47;09&#47;2004&lt;&#47;birthdate&gt;&lt;&#47;person&gt;&lt;person&gt;&lt;id&gt;3&lt;&#47;id&gt;&lt;firstname&gt;Souley&lt;&#47;firstname&gt;&lt;name&gt;Hassan&lt;&#47;name&gt;&lt;birthdate&gt;20&#47;09&#47;2007&lt;&#47;birthdate&gt;&lt;&#47;person&gt;&lt;&#47;persons&gt;</nullif>
+        <length>-1</length>
+        <precision>-1</precision>
+        </field>
+      </fields>
+    <limit>1</limit>
+     <cluster_schema/>
+    <GUI>
+      <xloc>42</xloc>
+      <yloc>492</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>parse file from filename</name>
+    <type>getXMLData</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <field_name/>
+           <schema_name/>
+           </partitioning>
+    <include>N</include>
+    <include_field/>
+    <rownum>N</rownum>
+    <addresultfile>N</addresultfile>
+    <namespaceaware>N</namespaceaware>
+    <validating>N</validating>
+    <rownum_field>N°ligne</rownum_field>
+    <encoding>UTF-8</encoding>
+    <file>
+      <name/>
+      <filemask/>
+      </file>
+    <fields>
+      <field>
+        <name>Code</name>
+        <xpath>..&#47;..&#47;@Code</xpath>
+        <element_type>node</element_type>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+        </field>
+      <field>
+        <name>User</name>
+        <xpath>Parameter&#47;User</xpath>
+        <element_type>node</element_type>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+        </field>
+      <field>
+        <name>Password</name>
+        <xpath>Parameter&#47;Password</xpath>
+        <element_type>node</element_type>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+        </field>
+      <field>
+        <name>Status</name>
+        <xpath>OutputData&#47;Step&#47;Status</xpath>
+        <element_type>node</element_type>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+        </field>
+      <field>
+        <name>Error_Message</name>
+        <xpath>OutputData&#47;Step&#47;Error_Message</xpath>
+        <element_type>node</element_type>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+        </field>
+      <field>
+        <name>Data</name>
+        <xpath>..&#47;..&#47;InfoSession&#47;InfoSessionData[@User={$User}]&#47;Data</xpath>
+        <element_type>node</element_type>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+        </field>
+      </fields>
+    <limit>0</limit>
+    <loopxpath>Session_header&#47;Session&#47;SessionData</loopxpath>
+    <IsInFields>Y</IsInFields>
+    <IsAFile>Y</IsAFile>
+    <XmlField>filename</XmlField>
+     <cluster_schema/>
+    <GUI>
+      <xloc>202</xloc>
+      <yloc>298</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step_error_handling>
+  </step_error_handling>
+</transformation>
