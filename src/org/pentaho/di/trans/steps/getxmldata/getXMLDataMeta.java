@@ -374,41 +374,41 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 
     public String getXML()
     {
-        StringBuffer retval=new StringBuffer();
+        StringBuffer retval=new StringBuffer(400);
         
-        retval.append("    "+XMLHandler.addTagValue("include",         includeFilename));
-        retval.append("    "+XMLHandler.addTagValue("include_field",   filenameField));
-        retval.append("    "+XMLHandler.addTagValue("rownum",          includeRowNumber));
-        retval.append("    "+XMLHandler.addTagValue("addresultfile",   addresultfile));
-        retval.append("    "+XMLHandler.addTagValue("namespaceaware",  namespaceaware));
-        retval.append("    "+XMLHandler.addTagValue("validating",      validating));
+        retval.append("    ").append(XMLHandler.addTagValue("include",         includeFilename));
+        retval.append("    ").append(XMLHandler.addTagValue("include_field",   filenameField));
+        retval.append("    ").append(XMLHandler.addTagValue("rownum",          includeRowNumber));
+        retval.append("    ").append(XMLHandler.addTagValue("addresultfile",   addresultfile));
+        retval.append("    ").append(XMLHandler.addTagValue("namespaceaware",  namespaceaware));
+        retval.append("    ").append(XMLHandler.addTagValue("validating",      validating));
         
-        retval.append("    "+XMLHandler.addTagValue("rownum_field",    rowNumberField));
-        retval.append("    "+XMLHandler.addTagValue("encoding",        encoding));
+        retval.append("    ").append(XMLHandler.addTagValue("rownum_field",    rowNumberField));
+        retval.append("    ").append(XMLHandler.addTagValue("encoding",        encoding));
         
-        retval.append("    <file>"+Const.CR);
+        retval.append("    <file>").append(Const.CR);
         for (int i=0;i<fileName.length;i++)
         {
-            retval.append("      "+XMLHandler.addTagValue("name",     fileName[i]));
-            retval.append("      "+XMLHandler.addTagValue("filemask", fileMask[i]));
+            retval.append("      ").append(XMLHandler.addTagValue("name",     fileName[i]));
+            retval.append("      ").append(XMLHandler.addTagValue("filemask", fileMask[i]));
         }
-        retval.append("      </file>"+Const.CR);
+        retval.append("    </file>").append(Const.CR);
         
-        retval.append("    <fields>"+Const.CR);
+        retval.append("    <fields>").append(Const.CR);
         for (int i=0;i<inputFields.length;i++)
         {
             getXMLDataField field = inputFields[i];
             retval.append(field.getXML());
         }
-        retval.append("      </fields>"+Const.CR);
+        retval.append("    </fields>").append(Const.CR);
         
-        retval.append("    "+XMLHandler.addTagValue("limit", rowLimit));
-        retval.append("    "+XMLHandler.addTagValue("loopxpath", loopxpath));
+        retval.append("    ").append(XMLHandler.addTagValue("limit", rowLimit));
+        retval.append("    ").append(XMLHandler.addTagValue("loopxpath", loopxpath));
         
-        retval.append("    "+XMLHandler.addTagValue("IsInFields", IsInFields));
-        retval.append("    "+XMLHandler.addTagValue("IsAFile", IsAFile));
+        retval.append("    ").append(XMLHandler.addTagValue("IsInFields", IsInFields));
+        retval.append("    ").append(XMLHandler.addTagValue("IsAFile", IsAFile));
         
-        retval.append("    "+XMLHandler.addTagValue("XmlField", XmlField));
+        retval.append("    ").append(XMLHandler.addTagValue("XmlField", XmlField));
 
         return retval.toString();
     }

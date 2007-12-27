@@ -373,8 +373,8 @@ public class getXMLData extends BaseStep implements StepInterface
 						// Get the path type
 						String Element_Type = xmlInputField.getElementTypeCode();
 						
-						int indexvarstart=XPathValue.indexOf("{$") ;
-						int indexvarend=XPathValue.indexOf("}") ;
+						int indexvarstart=XPathValue.indexOf("{$");
+						int indexvarend=XPathValue.indexOf('}');
 						if(indexvarstart>=0 && indexvarend>=0)
 						{
 							String NameVarInputField = XPathValue.substring(indexvarstart+2, indexvarend);

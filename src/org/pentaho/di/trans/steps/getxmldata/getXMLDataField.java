@@ -94,26 +94,25 @@ public class getXMLDataField implements Cloneable
 
     public String getXML()
     {
-        String retval="";
+        StringBuffer retval = new StringBuffer(400);
         
-        retval+="      <field>"+Const.CR;
-        retval+="        "+XMLHandler.addTagValue("name",         getName());
-        retval+="        "+XMLHandler.addTagValue("xpath",        getXPath());
-        retval+="        "+XMLHandler.addTagValue("element_type", getElementTypeCode());
-        retval+="        "+XMLHandler.addTagValue("type",         getTypeDesc());
-        retval+="        "+XMLHandler.addTagValue("format",       getFormat());
-        retval+="        "+XMLHandler.addTagValue("currency",     getCurrencySymbol());
-        retval+="        "+XMLHandler.addTagValue("decimal",      getDecimalSymbol());
-        retval+="        "+XMLHandler.addTagValue("group",        getGroupSymbol());
-        retval+="        "+XMLHandler.addTagValue("length",       getLength());
-        retval+="        "+XMLHandler.addTagValue("precision",    getPrecision());
-        retval+="        "+XMLHandler.addTagValue("trim_type",    getTrimTypeCode());
-        retval+="        "+XMLHandler.addTagValue("repeat",       isRepeated());
+        retval.append("      <field>").append(Const.CR);
+        retval.append("        ").append(XMLHandler.addTagValue("name",         getName()));
+        retval.append("        ").append(XMLHandler.addTagValue("xpath",        getXPath()));
+        retval.append("        ").append(XMLHandler.addTagValue("element_type", getElementTypeCode()));
+        retval.append("        ").append(XMLHandler.addTagValue("type",         getTypeDesc()));
+        retval.append("        ").append(XMLHandler.addTagValue("format",       getFormat()));
+        retval.append("        ").append(XMLHandler.addTagValue("currency",     getCurrencySymbol()));
+        retval.append("        ").append(XMLHandler.addTagValue("decimal",      getDecimalSymbol()));
+        retval.append("        ").append(XMLHandler.addTagValue("group",        getGroupSymbol()));
+        retval.append("        ").append(XMLHandler.addTagValue("length",       getLength()));
+        retval.append("        ").append(XMLHandler.addTagValue("precision",    getPrecision()));
+        retval.append("        ").append(XMLHandler.addTagValue("trim_type",    getTrimTypeCode()));
+        retval.append("        ").append(XMLHandler.addTagValue("repeat",       isRepeated()));
         
-
-        retval+="      </field>"+Const.CR;
+        retval.append("      </field>").append(Const.CR);
         
-        return retval;
+        return retval.toString();
     }
 
 	public getXMLDataField(Node fnode) throws KettleValueException
