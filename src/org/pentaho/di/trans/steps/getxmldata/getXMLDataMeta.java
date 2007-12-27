@@ -469,22 +469,21 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 	
 	public void allocate(int nrfiles, int nrfields)
 	{
-		fileName   = new String [nrfiles];
-		fileMask   = new String [nrfiles];
-		inputFields = new getXMLDataField[nrfields];
-        
+		fileName    = new String [nrfiles];
+		fileMask    = new String [nrfiles];
+		inputFields = new getXMLDataField[nrfields];       
 	}
 	
 	public void setDefault()
 	{
-		includeFilename    = false;
+		includeFilename = false;
 		filenameField = "";
-		includeRowNumber    = false;
+		includeRowNumber = false;
 		rowNumberField = "";
-		IsAFile=false;
-		addresultfile=true;
-		namespaceaware=false;
-		validating=false;
+		IsAFile = false;
+		addresultfile = true;
+		namespaceaware = false;
+		validating = false;
 		
 		int nrFiles=0;
 		int nrFields=0;
@@ -494,8 +493,8 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 		
 		for (int i=0;i<nrFiles;i++) 
 		{
-			fileName[i]="filename"+(i+1);
-			fileMask[i]="";
+			fileName[i] = "filename"+(i+1);
+			fileMask[i] = "";
 		}
 		
 		for (int i=0;i<nrFields;i++)
@@ -503,15 +502,14 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 		    inputFields[i] = new getXMLDataField("field"+(i+1));
 		}
 
-		rowLimit=0;
+		rowLimit = 0;
 		
-		IsInFields    = false;
+		IsInFields = false;
 		XmlField = "";
 	}
 	
 	public void getFields(RowMetaInterface r, String name, RowMetaInterface info[], StepMeta nextStep, VariableSpace space) throws KettleStepException
-	{
-		
+	{		
 		int i;
 		for (i=0;i<inputFields.length;i++)
 		{

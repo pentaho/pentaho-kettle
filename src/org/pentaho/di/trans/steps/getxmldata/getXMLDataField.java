@@ -47,11 +47,26 @@ public class getXMLDataField implements Cloneable
       Messages.getString("getXMLDataField.TrimType.Both")
     };
     
-    public final static String ElementTypeCode[] = { "node", "attribut" };
+    ////////////////////////////////////////////////////////////////
+    //
+    // Conversion to be done to go from "attribute" to "attribute"
+    // - The output is written as "attribut" but both "attribut" and
+    //   "attribute" are accepted as input.
+    // - When v3.1 is being deprecated all supported versions will
+    //   support "attribut" and "attribute". Then output "attribute"
+    //   as all version support it.
+    // - In a distant future remove "attribut" all together in v5 or so.
+    //
+    //                                            TODO Sven Boden
+    //
+    ////////////////////////////////////////////////////////////////
+    public final static String ElementTypeCode[] = { "node", "attribute" };
+    
+    public final static String ElementOldTypeCode[] = { "node", "attribut" };
     
     public final static String ElementTypeDesc[] = {
         Messages.getString("getXMLDataField.ElementType.Node"),
-        Messages.getString("getXMLDataField.ElementType.Attribut")
+        Messages.getString("getXMLDataField.ElementType.Attribute")
       };
     
     
@@ -69,7 +84,6 @@ public class getXMLDataField implements Cloneable
 	private String 	  groupSymbol;
 	private boolean   repeat;
 
-   
 	public getXMLDataField(String fieldname)
 	{
 		this.name           = fieldname;
@@ -79,9 +93,9 @@ public class getXMLDataField implements Cloneable
 		this.format         = "";
 		this.trimtype       = TYPE_TRIM_NONE;
 		this.elementtype    = ELEMENT_TYPE_NODE;
-		this.groupSymbol   = "";
-		this.decimalSymbol = "";
-		this.currencySymbol= "";
+		this.groupSymbol    = "";
+		this.decimalSymbol  = "";
+		this.currencySymbol = "";
 		this.precision      = -1;
 		this.repeat         = false;
 	}
@@ -90,7 +104,6 @@ public class getXMLDataField implements Cloneable
     {
        this("");
     }
-
 
     public String getXML()
     {
@@ -146,10 +159,20 @@ public class getXMLDataField implements Cloneable
     {
         if (tt==null) return 0;
         
+        /// Code to be removed later on as explained in the top of 
+        //  this file.
+        ////////////////////////////////////////////////////////////////
+        for (int i=0;i<ElementOldTypeCode.length;i++)
+        {
+            if (ElementOldTypeCode[i].equalsIgnoreCase(tt)) return i;
+        }
+        ////////////////////////////////////////////////////////////////        
+        
         for (int i=0;i<ElementTypeCode.length;i++)
         {
             if (ElementTypeCode[i].equalsIgnoreCase(tt)) return i;
         }
+
         return 0;
     }
     
@@ -184,8 +207,9 @@ public class getXMLDataField implements Cloneable
     
     public final static String getElementTypeCode(int i)
     {
-        if (i<0 || i>=ElementTypeCode.length) return ElementTypeCode[0];
-        return ElementTypeCode[i]; 
+    	// To be changed to the new code once all are converted
+        if (i<0 || i>=ElementOldTypeCode.length) return ElementOldTypeCode[0];
+        return ElementOldTypeCode[i]; 
     }
     
     
