@@ -1,18 +1,16 @@
- /**********************************************************************
- **                                                                   **
- **               This code belongs to the KETTLE project.            **
- **                                                                   **
- ** Kettle, from version 2.2 on, is released into the public domain   **
- ** under the Lesser GNU Public License (LGPL).                       **
- **                                                                   **
- ** For more details, please read the document LICENSE.txt, included  **
- ** in this project                                                   **
- **                                                                   **
- ** http://www.kettle.be                                              **
- ** info@kettle.be                                                    **
- **                                                                   **
- **********************************************************************/
- 
+/*************************************************************************************** 
+ * Copyright (C) 2007 Samatar, Brahim.  All rights reserved. 
+ * This software was developed by Samatar, Brahim and is provided under the terms 
+ * of the GNU Lesser General Public License, Version 2.1. You may not use 
+ * this file except in compliance with the license. A copy of the license, 
+ * is included with the binaries and source code. The Original Code is Samatar, Brahim.  
+ * The Initial Developer is Samatar, Brahim.
+ *
+ * Software distributed under the GNU Lesser Public License is distributed on an 
+ * "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * Please refer to the license for the specific language governing your rights 
+ * and limitations.
+ ***************************************************************************************/
 
 package org.pentaho.di.trans.steps.getxmldata;
 
@@ -26,12 +24,11 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 
 import org.apache.commons.vfs.FileObject;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 
 
 /**

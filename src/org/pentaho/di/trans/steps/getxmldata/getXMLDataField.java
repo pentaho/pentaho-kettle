@@ -1,20 +1,19 @@
- /**********************************************************************
- **                                                                   **
- **               This code belongs to the KETTLE project.            **
- **                                                                   **
- ** Kettle, from version 2.2 on, is released into the public domain   **
- ** under the Lesser GNU Public License (LGPL).                       **
- **                                                                   **
- ** For more details, please read the document LICENSE.txt, included  **
- ** in this project                                                   **
- **                                                                   **
- ** http://www.kettle.be                                              **
- ** info@kettle.be                                                    **
- **                                                                   **
- **********************************************************************/
- 
+/*************************************************************************************** 
+ * Copyright (C) 2007 Samatar, Brahim.  All rights reserved. 
+ * This software was developed by Samatar, Brahim and is provided under the terms 
+ * of the GNU Lesser General Public License, Version 2.1. You may not use 
+ * this file except in compliance with the license. A copy of the license, 
+ * is included with the binaries and source code. The Original Code is Samatar, Brahim.  
+ * The Initial Developer is Samatar, Brahim.
+ *
+ * Software distributed under the GNU Lesser Public License is distributed on an 
+ * "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * Please refer to the license for the specific language governing your rights 
+ * and limitations.
+ ***************************************************************************************/
 
 package org.pentaho.di.trans.steps.getxmldata;
+
 import org.w3c.dom.Node;
 
 import org.pentaho.di.core.Const;
@@ -24,11 +23,10 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.exception.KettleValueException;
 
 /**
- * Describes an XML field and the position in an XML field, file
+ * Describes an XML field and the position in an XML field.
  * 
  * @author Samatar, Brahim
  * @since 20-06-2007
- *
  */
 public class getXMLDataField implements Cloneable
 {
@@ -113,7 +111,7 @@ public class getXMLDataField implements Cloneable
         retval+="        "+XMLHandler.addTagValue("repeat",       isRepeated());
         
 
-        retval+="        </field>"+Const.CR;
+        retval+="      </field>"+Const.CR;
         
         return retval;
     }
@@ -132,8 +130,6 @@ public class getXMLDataField implements Cloneable
         setPrecision( Const.toInt(XMLHandler.getTagValue(fnode, "precision"), -1) );
         setTrimType( getTrimTypeByCode(XMLHandler.getTagValue(fnode, "trim_type")) );
         setRepeated( !"N".equalsIgnoreCase(XMLHandler.getTagValue(fnode, "repeat")) ); 
- 
-        
     }
 
     public final static int getTrimTypeByCode(String tt)
@@ -241,8 +237,6 @@ public class getXMLDataField implements Cloneable
 	{
 		return xpath;
 	}
-
-	
 	
 	public void setXPath(String fieldxpath)
 	{
@@ -278,16 +272,6 @@ public class getXMLDataField implements Cloneable
 		this.format = format;
 	}
 	
-/*	public void setSamples(String samples[])
-	{
-		this.samples = samples;
-	}
-    
-    public String[] getSamples()
-    {
-        return samples;
-    }*/
-
 	public int getTrimType()
 	{
 		return trimtype;
@@ -298,12 +282,12 @@ public class getXMLDataField implements Cloneable
 		return elementtype;
 	}
 	
-  public String getTrimTypeCode()
+    public String getTrimTypeCode()
 	{
 		return getTrimTypeCode(trimtype);
 	}
   
-  public String getElementTypeCode()
+    public String getElementTypeCode()
 	{
 		return getElementTypeCode(elementtype);
 	}
@@ -323,13 +307,10 @@ public class getXMLDataField implements Cloneable
 		this.trimtype= trimtype;
 	}
 	
-	
-	
 	public void setElementType(int element_type)
 	{
 		this.elementtype= element_type;
 	}
-
 
 	public String getGroupSymbol()
 	{
@@ -385,17 +366,4 @@ public class getXMLDataField implements Cloneable
 	{
 		repeat = !repeat;		
 	}
-    
-    public String getFieldPositionsCode()
-    {
-        String enc="";
-
-        return enc;
-    }
-	
-	public void guess()
-	{
-	}
-
-   
-}
+ }

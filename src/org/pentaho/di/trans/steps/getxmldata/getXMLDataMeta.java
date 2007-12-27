@@ -1,26 +1,18 @@
- /**********************************************************************
- **                                                                   **
- **               This code belongs to the KETTLE project.            **
- **                                                                   **
- ** Kettle, from version 2.2 on, is released into the public domain   **
- ** under the Lesser GNU Public License (LGPL).                       **
- **                                                                   **
- ** For more details, please read the document LICENSE.txt, included  **
- ** in this project                                                   **
- **                                                                   **
- ** http://www.kettle.be                                              **
- ** info@kettle.be                                                    **
- **                                                                   **
- **********************************************************************/
-
-/* 
- * 
- * Created on 4-apr-2003
- * 
- */
+/*************************************************************************************** 
+ * Copyright (C) 2007 Samatar, Brahim.  All rights reserved. 
+ * This software was developed by Samatar, Brahim and is provided under the terms 
+ * of the GNU Lesser General Public License, Version 2.1. You may not use 
+ * this file except in compliance with the license. A copy of the license, 
+ * is included with the binaries and source code. The Original Code is Samatar, Brahim.  
+ * The Initial Developer is Samatar, Brahim.
+ *
+ * Software distributed under the GNU Lesser Public License is distributed on an 
+ * "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * Please refer to the license for the specific language governing your rights 
+ * and limitations.
+ ***************************************************************************************/
 
 package org.pentaho.di.trans.steps.getxmldata;
-
 
 import java.util.List;
 import java.util.Map;
@@ -50,7 +42,9 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.core.fileinput.FileInputList;
 
-
+/**
+ * Store run-time data on the XML xpath step.
+ */
 public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 {	
 	/** Array of filenames */
@@ -122,7 +116,6 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 		return namespaceaware;
 	}
 	
-	
 	/** 
 	 * @return the validating flag
 	 */
@@ -168,38 +161,37 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
         this.inputFields = inputFields;
     }
     
-    /************************************
-     * get and set  XmlField
-    *************************************/
-    /**  */
+    /**
+     * Get XML field.
+     */
     public String getXMLField()
     {
         return XmlField;
     }
     
-    /**  */ 
+    /**
+     * Set XML field.
+     */ 
     public void setXMLField(String XmlField)
     {
         this.XmlField = XmlField;
     }
     
-    /************************************
-     * get et set  IsInFields
-    *************************************/
-    /**  */
+    /**  
+     * Get the IsInFields.
+     */
     public boolean getIsInFields()
     {
         return IsInFields;
     }
     
-    /**  */ 
+    /**  
+     * Set the IsInFields.
+     */
     public void setIsInFields(boolean IsInFields)
     {
         this.IsInFields = IsInFields;
     }
-    
-       
-    
 
     /**
      * @return Returns the fileMask.
@@ -208,6 +200,7 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
     {
         return fileMask;
     }
+    
     /**
      * @param fileMask The fileMask to set.
      */
@@ -288,8 +281,6 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
         return rowLimit;
     }
     
- 
-    
     /**
      * @param rowLimit The rowLimit to set.
      */
@@ -297,9 +288,6 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
     {
         this.rowLimit = rowLimit;
     }
-
-    
-
     
     /**
      * @return Returns the LoopXPath
@@ -308,9 +296,6 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
     {
         return loopxpath;
     }
-  
-    
-   
 
     /**
      * @param loopxpath The loopxpath to set.
@@ -319,7 +304,6 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
     {
         this.loopxpath = loopxpath;
     }
-
 
     /**
      * @return Returns the rowNumberField.
@@ -351,23 +335,20 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
     public void setEncoding(String encoding)
     {
         this.encoding = encoding;
-    }
-    
+    }    
     
     public boolean getIsAFile()
     {
     	return IsAFile;
-    }
-    
+    }    
     
     public void setIsAFile(boolean IsAFile)
     {
     	this.IsAFile=IsAFile;
     }
     
-    
     public void loadXML(Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters)
-	throws KettleXMLException
+  	    throws KettleXMLException
 	{
     	readData(stepnode);
 	}
@@ -391,7 +372,6 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 		return retval;
 	}
 
-    
     public String getXML()
     {
         StringBuffer retval=new StringBuffer();
@@ -683,7 +663,6 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 			throw new KettleException(Messages.getString("getXMLDataMeta.Exception.ErrorSavingToRepository", ""+id_step), e);
 		}
 	}
-	
 
 	public FileInputList getFiles(VariableSpace space)
 	{
@@ -750,11 +729,7 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 				remarks.add(cr);
 			}	
 		}	
-		
-		
 	}
-
-
 	
 	public StepInterface getStep(StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr, Trans trans)
 	{
@@ -769,7 +744,5 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
     public boolean supportsErrorHandling()
     {
         return true;
-    }
-
-  
+    } 
 }

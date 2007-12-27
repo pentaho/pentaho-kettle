@@ -1,45 +1,41 @@
- /**********************************************************************
- **                                                                   **
- **               This code belongs to the KETTLE project.            **
- **                                                                   **
- ** Kettle, from version 2.2 on, is released into the public domain   **
- ** under the Lesser GNU Public License (LGPL).                       **
- **                                                                   **
- ** For more details, please read the document LICENSE.txt, included  **
- ** in this project                                                   **
- **                                                                   **
- ** http://www.kettle.be                                              **
- ** info@kettle.be                                                    **
- **                                                                   **
- **********************************************************************/
- 
+/*************************************************************************************** 
+ * Copyright (C) 2007 Samatar, Brahim.  All rights reserved. 
+ * This software was developed by Samatar, Brahim and is provided under the terms 
+ * of the GNU Lesser General Public License, Version 2.1. You may not use 
+ * this file except in compliance with the license. A copy of the license, 
+ * is included with the binaries and source code. The Original Code is Samatar, Brahim.  
+ * The Initial Developer is Samatar, Brahim.
+ *
+ * Software distributed under the GNU Lesser Public License is distributed on an 
+ * "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * Please refer to the license for the specific language governing your rights 
+ * and limitations.
+ ***************************************************************************************/
 
 package org.pentaho.di.trans.steps.getxmldata;
 
-import org.apache.commons.vfs.FileObject;
-import org.apache.commons.vfs.FileType;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.Document;
-import org.xml.sax.InputSource;
-import java.io.StringReader;
-import java.io.InputStreamReader;
 import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.io.StringReader;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.FileType;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -47,14 +43,15 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.di.trans.steps.accessinput.AccessInputField;
-import org.pentaho.di.core.exception.KettleStepException;
-import org.pentaho.di.core.xml.XMLHandler;
-
-
+import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 
 /**
- * Read XML files, parse them and convert them to rows and writes these to one or more output streams.
+ * Read XML files, parse them and convert them to rows and writes these to one or more output 
+ * streams.
  * 
  * @author Samatar,Brahim
  * @since 20-06-2007
@@ -63,7 +60,6 @@ public class getXMLData extends BaseStep implements StepInterface
 {
 	private getXMLDataMeta meta;
 	private getXMLDataData data;
-
 	
 	public getXMLData(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans)
 	{
@@ -87,8 +83,7 @@ public class getXMLData extends BaseStep implements StepInterface
 	        }
 		}
 		else
-		{
-			
+		{			
 			if(row==null)
 			{
 			      setOutputDone();
@@ -99,6 +94,7 @@ public class getXMLData extends BaseStep implements StepInterface
 		if(first)
 		{
 			first=false;
+			
 			 // Create the output row meta-data
             data.outputRowMeta = new RowMeta();
 
@@ -112,8 +108,7 @@ public class getXMLData extends BaseStep implements StepInterface
 			//
 			data.convertRowMeta = data.outputRowMeta.clone();
 			for (int i=0;i<data.convertRowMeta.size();i++) {
-				data.convertRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);           
-            
+				data.convertRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);            
 			}
 			
 			if(meta.getIsInFields())
@@ -135,14 +130,12 @@ public class getXMLData extends BaseStep implements StepInterface
 						logError(Messages.getString("getXMLData.Log.ErrorFindingField")+ "[" + meta.getXMLField()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
 						throw new KettleException(Messages.getString("getXMLData.Exception.CouldnotFindField",meta.getXMLField())); //$NON-NLS-1$ //$NON-NLS-2$
 					}
-				}
-				
+				}				
 			}	
 			else
 			{
 				// XML source is file (probably many files)...
-			}
-			
+			}			
 		}
 		try
 		{
@@ -161,12 +154,11 @@ public class getXMLData extends BaseStep implements StepInterface
 						// XML source is a file.
 						file=  KettleVFS.getFileObject(Fieldvalue);
 						// Process file ...
-						ProcessXML(file, null, false, row);	
-					
+						processXML(file, null, false, row);						
 					}
 					catch (Exception e)
 					{
-						
+						// Something to do here?
 					}finally{
 						try
 						{if(file!=null) file.close();}catch (Exception e){}
@@ -175,10 +167,8 @@ public class getXMLData extends BaseStep implements StepInterface
 				else
 				{
 					// Let's parse the XML stream
-					ProcessXML(null,Fieldvalue , true,row);
+					processXML(null,Fieldvalue , true,row);
 				}
-				
-				
 			}		
 			else
 			{
@@ -193,7 +183,7 @@ public class getXMLData extends BaseStep implements StepInterface
 					    	logBasic(Messages.getString("getXMLData.Log.OpeningFile", data.file.toString()));					
 					    	
 							// Fetch files and process each one
-							ProcessXML(data.file, null, false, null);	
+							processXML(data.file, null, false, null);	
 							
 							if (log.isDetailed()) logDetailed(Messages.getString("getXMLData.Log.FileOpened", data.file.toString()));      				
 						}
@@ -215,8 +205,7 @@ public class getXMLData extends BaseStep implements StepInterface
 			}	
 		}
 		catch (KettleStepException k)
-		{
-			
+		{			
 			if (getStepMeta().isDoingErrorHandling())
 			{
 		          sendToErrorRow = true;
@@ -278,22 +267,24 @@ public class getXMLData extends BaseStep implements StepInterface
 		}			
 		return valueNode;
 	}
+	
 	/**
-	 * Build an empty row based on the meta-data...
+	 * Build an empty row based on the meta-data.
 	 * 
 	 * @return
 	 */
-
 	private Object[] buildEmptyRow()
 	{
         Object[] rowData = RowDataUtil.allocateRowData(data.outputRowMeta.size());
  
-		 return rowData;
+	    return rowData;
 	}
-
 	
-	private void ProcessXML(FileObject file ,String StringXML,boolean IsInXMLField,Object[] row) 
-	throws KettleStepException
+	/**
+	 * Main gist of the processing.
+	 */
+	private void processXML(FileObject file ,String StringXML,boolean IsInXMLField,Object[] row) 
+	    throws KettleStepException
 	{	
 		Object[] outputRowData = null;
 		
@@ -313,8 +304,7 @@ public class getXMLData extends BaseStep implements StepInterface
 					{
 						// it's not a file
 						log.logError(toString(),Messages.getString("getXMLData.Log.IsNotAFile",file.toString()));
-						throw new KettleException(Messages.getString("getXMLData.Log.IsNotAFile",file.toString()));
-					
+						throw new KettleException(Messages.getString("getXMLData.Log.IsNotAFile",file.toString()));					
 					}
 				}
 				else
@@ -325,17 +315,17 @@ public class getXMLData extends BaseStep implements StepInterface
 				}
 			}
 			// get encoding. By default UTF-8
-			String encodage="UTF-8";
+			String encoding="UTF-8";
 			if (!Const.isEmpty(meta.getEncoding()))
 			{
-				encodage=meta.getEncoding();
+				encoding=meta.getEncoding();
 			}
-			DocumentBuilderFactory fabrique = DocumentBuilderFactory.newInstance();
+			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 			// Set Name space aware?
-			fabrique.setNamespaceAware(meta.isNamespaceAware());
+			factory.setNamespaceAware(meta.isNamespaceAware());
 			// Validate XML against specified schema?
-			fabrique.setValidating(meta.isValidating());
-			DocumentBuilder builder = fabrique.newDocumentBuilder();
+			factory.setValidating(meta.isValidating());
+			DocumentBuilder builder = factory.newDocumentBuilder();
 		
 			Document document=null;
 			
@@ -347,7 +337,7 @@ public class getXMLData extends BaseStep implements StepInterface
 			}
 			else
 			{
-				document = builder.parse(new InputSource(new InputStreamReader(new FileInputStream(KettleVFS.getFilename(file)), encodage)));	
+				document = builder.parse(new InputSource(new InputStreamReader(new FileInputStream(KettleVFS.getFilename(file)), encoding)));	
 			}
  	
 			if (log.isDetailed()) log.logDetailed(toString(), Messages.getString("getXMLData.Log.CreateDocumentEnd"));
@@ -355,7 +345,6 @@ public class getXMLData extends BaseStep implements StepInterface
 			XPath xpath = XPathFactory.newInstance().newXPath();
 			NodeList widgetNodes = (NodeList) xpath.evaluate(environmentSubstitute(meta.getLoopXPath()), document,XPathConstants.NODESET);
 	        
-			
 			if (IsInXMLField)
 	        {
 	        	if (log.isDetailed()) logDetailed(Messages.getString("getXMLData.Log.LoopOccurences",""+widgetNodes.getLength()));	
@@ -395,36 +384,34 @@ public class getXMLData extends BaseStep implements StepInterface
 								getXMLDataField Tmp_xmlInputField = meta.getInputFields()[k];
 								if(Tmp_xmlInputField.getName().equalsIgnoreCase(NameVarInputField))
 								{		
-									XPathValue = XPathValue.replaceAll("\\{\\$"+NameVarInputField+"\\}","'"+ outputRowData[k]+"'");	
-									log.logBasic(toString(),XPathValue);
+									XPathValue = XPathValue.replaceAll("\\{\\$"+NameVarInputField+"\\}","'"+ outputRowData[k]+"'");
+									if ( log.isDetailed() )
+									{
+									    log.logDetailed(toString(),XPathValue);
+									}
 								}
-							}	
-								
+							}								
 						}
 						
 						String value = getValueXML(widgetNodes,iFileInputXML,xpath, XPathValue,Element_Type);  
-						//log.logBasic(toString(),"-------------------------"+value);
-						// OK, we have the string...
 						
-						// DO Trimming!
+						// Do trimming
 						switch (meta.getInputFields()[i].getTrimType())
 						{
-						case AccessInputField.TYPE_TRIM_LEFT:
+						case getXMLDataField.TYPE_TRIM_LEFT:
 							value = Const.ltrim(value);
 							break;
-						case AccessInputField.TYPE_TRIM_RIGHT:
+						case getXMLDataField.TYPE_TRIM_RIGHT:
 							value = Const.rtrim(value);
 							break;
-						case AccessInputField.TYPE_TRIM_BOTH:
+						case getXMLDataField.TYPE_TRIM_BOTH:
 							value = Const.trim(value);
 							break;
 						default:
 							break;
 						}
-						
-						
 
-						// DO CONVERSIONS...
+						// Do conversions
 						//
 						ValueMetaInterface targetValueMeta = data.outputRowMeta.getValueMeta(i);
 						ValueMetaInterface sourceValueMeta = data.convertRowMeta.getValueMeta(i);
@@ -451,17 +438,14 @@ public class getXMLData extends BaseStep implements StepInterface
 			        {
 			            outputRowData[rowIndex++] = new Long(data.rownr);
 			        }
-			        
 					
 					RowMetaInterface irow = getInputRowMeta();
 					
 					data.previousRow = irow==null?outputRowData:(Object[])irow.cloneRow(outputRowData); // copy it to make
 					// surely the next step doesn't change it in between...
 					data.rownr++;
-		    		      
 		           
 					putRow(data.outputRowMeta, outputRowData);  // copy row to output rowset(s);
-
 				}
 			}        
 		} 
@@ -469,17 +453,14 @@ public class getXMLData extends BaseStep implements StepInterface
 		{
 			log.logError(toString(), e.toString());
 			throw new KettleStepException(e.toString());
-
 		} 			
 	}
-	
 
 	public boolean init(StepMetaInterface smi, StepDataInterface sdi)
 	{
 		meta=(getXMLDataMeta)smi;
 		data=(getXMLDataData)sdi;				
 		
-
 		if (super.init(smi, sdi))
 		{
 			if(!meta.getIsInFields())
@@ -492,34 +473,34 @@ public class getXMLData extends BaseStep implements StepInterface
 				}
 	            
 				data.rownr = 1L;
-			}
-			
+			}			
 				
 			return true;
 		}
-		return false;
-		
+		return false;		
 	}
+	
 	public void dispose(StepMetaInterface smi, StepDataInterface sdi)
 	{
 		meta=(getXMLDataMeta)smi;
 		data=(getXMLDataData)sdi;
 		super.dispose(smi, sdi);
 	}	
-	//
-	// Run is were the action happens!
 	
+	//
+	// Run is were the action happens!	
 	public void run()
 	{			    
 		try
 		{
-			logBasic(Messages.getString("getXMLData.Log.StartingRun"));			
+			logBasic(Messages.getString("System.Log.StartingToRun")); //$NON-NLS-1$
+			
 			while (processRow(meta, data) && !isStopped());
 		}
-		catch(Exception e)
+		catch(Throwable t)
 		{
-			logError("Unexpected error : "+e.toString());
-			logError(Const.getStackTracker(e));
+			logError(Messages.getString("System.Log.UnexpectedError")+" : "); //$NON-NLS-1$ //$NON-NLS-2$
+			logError(Const.getStackTracker(t));
 			setErrors(1);
 			stopAll();
 		}
