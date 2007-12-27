@@ -44,7 +44,6 @@ import org.w3c.dom.Node;
  * @since 14-jan-2006
  * 
  */
-
 public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface
 {
 	/** The base name of the output file */
@@ -284,7 +283,7 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface
 				String fieldName = XMLHandler.getTagValue(fnode, "name");
 				outputFields[i].setFieldName(fieldName);
 				String elementName = XMLHandler.getTagValue(fnode, "element");
-				outputFields[i].setElementName(elementName==null?fieldName:elementName);
+				outputFields[i].setElementName(elementName==null?"":elementName);
 				outputFields[i].setType(XMLHandler.getTagValue(fnode, "type"));
 				outputFields[i].setFormat(XMLHandler.getTagValue(fnode, "format"));
 				outputFields[i].setCurrencySymbol(XMLHandler.getTagValue(fnode, "currency"));
@@ -465,7 +464,7 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface
 
 	public String getXML()
 	{
-		StringBuffer retval = new StringBuffer();
+		StringBuffer retval = new StringBuffer(600);
 
 		retval.append("    " + XMLHandler.addTagValue("encoding", encoding));
 		retval.append("    " + XMLHandler.addTagValue("xml_main_element", mainElement));
@@ -479,7 +478,7 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface
 		retval.append("      " + XMLHandler.addTagValue("add_time", timeInFilename));
 		retval.append("      " + XMLHandler.addTagValue("zipped", zipped));
 		retval.append("      " + XMLHandler.addTagValue("splitevery", splitEvery));
-		retval.append("      </file>" + Const.CR);
+		retval.append("    </file>" + Const.CR);
 		retval.append("    <fields>" + Const.CR);
 		for (int i = 0; i < outputFields.length; i++)
 		{
@@ -498,10 +497,10 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface
 				retval.append("        " + XMLHandler.addTagValue("nullif", field.getNullString()));
 				retval.append("        " + XMLHandler.addTagValue("length", field.getLength()));
 				retval.append("        " + XMLHandler.addTagValue("precision", field.getPrecision()));
-				retval.append("        </field>" + Const.CR);
+				retval.append("      </field>" + Const.CR);
 			}
 		}
-		retval.append("      </fields>" + Const.CR);
+		retval.append("    </fields>" + Const.CR);
 
 		return retval.toString();
 	}
@@ -694,5 +693,4 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		this.repeatElement = repeatElement;
 	}
-
 }

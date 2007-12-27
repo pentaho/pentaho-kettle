@@ -164,7 +164,14 @@ public class XMLOutput extends BaseStep implements StepInterface
 					if (obj instanceof ValueMetaAndData)
 						v = (ValueMetaAndData) r[data.fieldnrs[i]];
 					else
-						v = new ValueMetaAndData(outputField.getElementName(),obj);
+					{
+						String elementName = outputField.getElementName();
+						if ( Const.isEmpty(elementName) )
+						{
+							elementName = outputField.getFieldName();
+						}
+						v = new ValueMetaAndData(elementName,obj);
+					}
 
 					v.getValueMeta().setLength(outputField.getLength(), outputField.getPrecision());
 

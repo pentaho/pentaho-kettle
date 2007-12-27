@@ -724,7 +724,19 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
 
 			TableItem item = wFields.table.getItem(i);
 			if (field.getFieldName()!=null) item.setText(1, field.getFieldName());
-            if (field.getElementName()!=null) item.setText(2, field.getElementName());
+            if (field.getElementName()!=null) 
+           	{
+            	item.setText(2, field.getElementName());
+           	}
+            else
+            {
+            	// Fixup for defect JIRA PDI-607. Make it the same functionality
+            	// as the loading of the original XML file.
+            	if (field.getFieldName()!=null)
+            	{
+            		item.setText(2, field.getFieldName());
+            	}            
+            }
 			item.setText(3, field.getTypeDesc());
 			if (field.getFormat()!=null) item.setText(4, field.getFormat());
 			if (field.getLength()!=-1) item.setText(5, ""+field.getLength());
@@ -841,7 +853,7 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
                             return true;
                         }
                     };
-                BaseStepDialog.getFieldsFromPrevious(r, wFields, 1, new int[] { 1, 2 }, new int[] { 3 }, 5, 6, listener);
+                BaseStepDialog.getFieldsFromPrevious(r, wFields, 1, new int[] { 1 }, new int[] { 3 }, 5, 6, listener);
 			}
 		}
 		catch(KettleException ke)
