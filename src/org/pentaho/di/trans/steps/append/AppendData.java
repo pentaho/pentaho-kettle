@@ -24,6 +24,7 @@ public class AppendData extends BaseStepData implements StepDataInterface
 {
     public boolean processHead;
     public boolean processTail;
+    public boolean firstTail;
 	public RowSet headRowSet;
 	public RowSet tailRowSet;
 	public RowMetaInterface outputRowMeta;   

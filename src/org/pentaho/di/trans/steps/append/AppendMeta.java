@@ -232,8 +232,8 @@ public class AppendMeta extends BaseStepMeta implements StepMetaInterface
         //
         if (info!=null)
         {
-            for (int i=0;i<info.length;i++)
-            r.mergeRowMeta(info[i]);
+        	if ( info.length > 0 )            
+                r.mergeRowMeta(info[0]);
         }
     }
 

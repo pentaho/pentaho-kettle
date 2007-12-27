@@ -13,6 +13,8 @@ package org.pentaho.di.trans.steps.append;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleRowException;
+import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -72,8 +74,24 @@ public class Append extends BaseStep implements StepInterface
 	            return false;
 		    }
 	    	if (data.outputRowMeta==null) {
-	    		data.outputRowMeta = data.headRowSet.getRowMeta();
+	    		data.outputRowMeta = data.tailRowSet.getRowMeta();
 	    	}
+	    	
+	    	if ( data.firstTail )
+	    	{
+	    		data.firstTail = false;
+	    		
+    		    // Check here for the layout (which has to be the same) when we
+	    		// read the first row of the tail.
+                try
+                {
+                    checkInputLayoutValid(data.headRowSet.getRowMeta(), data.tailRowSet.getRowMeta());
+                }
+                catch(KettleRowException e)
+                {
+            	    throw new KettleException(Messages.getString("Append.Exception.InvalidLayoutDetected"), e);
+                }
+	    	}	    	
     	}
 
     	if ( input != null )
@@ -98,6 +116,7 @@ public class Append extends BaseStep implements StepInterface
         {
         	data.processHead = true;
         	data.processTail = false;
+        	data.firstTail = true;
             if (meta.getHeadStepName()==null || meta.getTailStepName()==null)
             {
                 logError(Messages.getString("AppendRows.Log.BothHopsAreNeeded")); //$NON-NLS-1$
@@ -111,6 +130,23 @@ public class Append extends BaseStep implements StepInterface
         }
         return false;
     }
+    
+    /**
+     * Checks whether 2 template rows are compatible for the mergestep. 
+     * 
+     * @param referenceRow Reference row
+     * @param compareRow Row to compare to
+     * 
+     * @return true when templates are compatible.
+     * @throws KettleRowException in case there is a compatibility error.
+     */
+    protected void checkInputLayoutValid(RowMetaInterface referenceRowMeta, RowMetaInterface compareRowMeta) throws KettleRowException
+    {
+        if (referenceRowMeta!=null && compareRowMeta!=null)
+        {
+            BaseStep.safeModeChecking(referenceRowMeta, compareRowMeta);
+        }
+    }    
 
 	//
 	// Run is were the action happens!
