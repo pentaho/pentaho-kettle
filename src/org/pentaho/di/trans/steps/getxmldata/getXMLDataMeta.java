@@ -380,8 +380,8 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
         retval.append("    "+XMLHandler.addTagValue("include_field",   filenameField));
         retval.append("    "+XMLHandler.addTagValue("rownum",          includeRowNumber));
         retval.append("    "+XMLHandler.addTagValue("addresultfile",   addresultfile));
-        retval.append("    "+XMLHandler.addTagValue("namespaceaware",   namespaceaware));
-        retval.append("    "+XMLHandler.addTagValue("validating",   validating));
+        retval.append("    "+XMLHandler.addTagValue("namespaceaware",  namespaceaware));
+        retval.append("    "+XMLHandler.addTagValue("validating",      validating));
         
         retval.append("    "+XMLHandler.addTagValue("rownum_field",    rowNumberField));
         retval.append("    "+XMLHandler.addTagValue("encoding",        encoding));
@@ -402,7 +402,6 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
         }
         retval.append("      </fields>"+Const.CR);
         
-
         retval.append("    "+XMLHandler.addTagValue("limit", rowLimit));
         retval.append("    "+XMLHandler.addTagValue("loopxpath", loopxpath));
         
@@ -418,22 +417,21 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-
 			includeFilename   = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "include"));
 			filenameField     = XMLHandler.getTagValue(stepnode, "include_field");
 			
-			addresultfile  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "addresultfile"));
-			namespaceaware  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "namespaceaware"));
-			validating  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "validating"));
+			addresultfile     = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "addresultfile"));
+			namespaceaware    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "namespaceaware"));
+			validating        = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "validating"));
 			
 			includeRowNumber  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "rownum"));
 			rowNumberField    = XMLHandler.getTagValue(stepnode, "rownum_field");
 			encoding          = XMLHandler.getTagValue(stepnode, "encoding");
 	
-			Node filenode  = XMLHandler.getSubNode(stepnode,   "file");
-			Node fields    = XMLHandler.getSubNode(stepnode,   "fields");
-			int nrFiles     = XMLHandler.countNodes(filenode,  "name");
-			int nrFields    = XMLHandler.countNodes(fields,    "field");
+			Node filenode     = XMLHandler.getSubNode(stepnode,   "file");
+			Node fields       = XMLHandler.getSubNode(stepnode,   "fields");
+			int nrFiles       = XMLHandler.countNodes(filenode,  "name");
+			int nrFields      = XMLHandler.countNodes(fields,    "field");
 	
 			allocate(nrFiles, nrFields);
 			
@@ -535,7 +533,6 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 			v.setOrigin(name);
 			r.addValueMeta(v);
 		}
-		
 
 		if (includeRowNumber)
 		{
@@ -544,30 +541,29 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 			v.setOrigin(name);
 			r.addValueMeta(v);
 		}
-		
 	}
 	
 	public void readRep(Repository rep, long id_step, List<DatabaseMeta> databases, Map<String, Counter> counters)
-	throws KettleException
+	    throws KettleException
 	{
 	
 		try
 		{
-			includeFilename   =      rep.getStepAttributeBoolean(id_step, "include");  
-			filenameField     =      rep.getStepAttributeString (id_step, "include_field");
+			includeFilename   =   rep.getStepAttributeBoolean(id_step, "include");  
+			filenameField     =   rep.getStepAttributeString (id_step, "include_field");
 			
-			addresultfile  =      rep.getStepAttributeBoolean(id_step, "addresultfile");
-			namespaceaware  =      rep.getStepAttributeBoolean(id_step, "namespaceaware");
-			validating  =      rep.getStepAttributeBoolean(id_step, "validating");
+			addresultfile     =   rep.getStepAttributeBoolean(id_step, "addresultfile");
+			namespaceaware    =   rep.getStepAttributeBoolean(id_step, "namespaceaware");
+			validating        =   rep.getStepAttributeBoolean(id_step, "validating");
 			
-			includeRowNumber  =      rep.getStepAttributeBoolean(id_step, "rownum");
-			rowNumberField    =      rep.getStepAttributeString (id_step, "rownum_field");
-			rowLimit          =      rep.getStepAttributeInteger(id_step, "limit");
-			loopxpath      	  =  	rep.getStepAttributeString(id_step, "loopxpath");
-			encoding          =      rep.getStepAttributeString (id_step, "encoding");
+			includeRowNumber  =   rep.getStepAttributeBoolean(id_step, "rownum");
+			rowNumberField    =   rep.getStepAttributeString (id_step, "rownum_field");
+			rowLimit          =   rep.getStepAttributeInteger(id_step, "limit");
+			loopxpath      	  =   rep.getStepAttributeString(id_step, "loopxpath");
+			encoding          =   rep.getStepAttributeString (id_step, "encoding");
 	
-			int nrFiles     = rep.countNrStepAttributes(id_step, "file_name");
-			int nrFields    = rep.countNrStepAttributes(id_step, "field_name");
+			int nrFiles       =   rep.countNrStepAttributes(id_step, "file_name");
+			int nrFields      =   rep.countNrStepAttributes(id_step, "field_name");
             
 			allocate(nrFiles, nrFields);
 
@@ -593,17 +589,13 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 				field.setPrecision( (int)rep.getStepAttributeInteger(id_step, i, "field_precision") );
 				field.setTrimType( getXMLDataField.getTrimTypeByCode( rep.getStepAttributeString (id_step, i, "field_trim_type") ));
 				field.setRepeated( rep.getStepAttributeBoolean(id_step, i, "field_repeat") );
-
                 
 				inputFields[i] = field;
 			}
-			IsInFields        =      rep.getStepAttributeBoolean (id_step, "IsInFields");
-			IsAFile        =      rep.getStepAttributeBoolean (id_step, "IsAFile");
+			IsInFields = rep.getStepAttributeBoolean (id_step, "IsInFields");
+			IsAFile    = rep.getStepAttributeBoolean (id_step, "IsAFile");
 			
-			XmlField          =      rep.getStepAttributeString (id_step, "XmlField");
-            
-  
-
+			XmlField   = rep.getStepAttributeString (id_step, "XmlField");
 		}
 		catch(Exception e)
 		{
