@@ -1,0 +1,239 @@
+ /**********************************************************************
+ **                                                                   **
+ **               This code belongs to the KETTLE project.            **
+ **                                                                   **
+ ** Kettle, from version 2.2 on, is released into the public domain   **
+ ** under the Lesser GNU Public License (LGPL).                       **
+ **                                                                   **
+ ** For more details, please read the document LICENSE.txt, included  **
+ ** in this project                                                   **
+ **                                                                   **
+ ** http://www.kettle.be                                              **
+ ** info@kettle.be                                                    **
+ **                                                                   **
+ **********************************************************************/
+ 
+
+package org.pentaho.di.trans.steps.xslt;
+
+import java.io.FileInputStream;
+import javax.xml.transform.Source;
+import javax.xml.transform.Templates;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+import java.io.StringReader; 
+import java.io.StringWriter;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.row.RowDataUtil;
+import org.pentaho.di.trans.Trans;
+import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.step.BaseStep;
+import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.StepInterface;
+import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.steps.xslt.XsltMeta;
+import org.pentaho.di.trans.steps.xslt.XsltData;
+
+/**
+ * Executes a XSL Transform on the values in the input stream. 
+ * 
+ * @author Samatar
+ * @since 15-Oct-2007
+ *
+ */
+public class Xslt extends BaseStep implements StepInterface
+{
+	private XsltMeta meta;
+	private XsltData data;
+	
+	static final String JAXP_SCHEMA_LANGUAGE = "http://java.sun.com/xml/jaxp/properties/schemaLanguage";	
+	static final String JAXP_SCHEMA_SOURCE = "http://java.sun.com/xml/jaxp/properties/schemaSource";
+	
+	String xslfilename= null;
+
+	
+	public Xslt(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans)
+	{
+		super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
+	}
+    public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
+	{
+		meta=(XsltMeta)smi;
+		data=(XsltData)sdi;
+		
+		Object[] row = getRow();
+		
+		if (row==null)  // no more input to be expected...
+		{
+			setOutputDone();
+			return false;
+		}
+		if (first)
+		{
+			first=false;
+			data.outputRowMeta = getInputRowMeta().clone();
+			meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
+			
+			// Check if The result field is given
+			if (meta.getResultfieldname()!=null)
+			{
+				// Try to get XML Field index
+				data.fieldposition = getInputRowMeta().indexOfValue(meta.getFieldname());
+				// Let's check the Field
+				if (data.fieldposition<0)
+				{
+					// The field is unreachable !
+					logError(Messages.getString("Xslt.Log.ErrorFindingField")+ "[" + meta.getFieldname()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+					throw new KettleStepException(Messages.getString("Xslt.Exception.CouldnotFindField",meta.getFieldname())); //$NON-NLS-1$ //$NON-NLS-2$
+				}
+				// Check if the XSL Filename is given
+				
+				if(Const.isEmpty(meta.getXslFilename()))
+				{
+					logError(Messages.getString("Xslt.Log.ErrorXSLFile")); 
+					throw new KettleStepException(Messages.getString("Xslt.Exception.ErrorXSLFile"));
+				}
+				else
+				{
+					
+					// Check if the XSL Filename is contained in a column
+					if (meta.useXSLFileFieldUse())
+					{
+						if (Const.isEmpty(meta.getXSLFileField()))
+						{
+							// The field is missing
+							//	Result field is missing !
+							logError(Messages.getString("Xslt.Log.ErrorXSLFileFieldMissing")); //$NON-NLS-1$ //$NON-NLS-2$
+							throw new KettleStepException(Messages.getString("Xslt.Exception.ErrorXSLFileFieldMissing")); //$NON-NLS-1$ //$NON-NLS-2$
+						}
+						else
+						{
+							// Try to get Field index
+							data.fielxslfiledposition = getInputRowMeta().indexOfValue(meta.getXSLFileField());
+						
+						
+							//  Let's check the Field
+							if (data.fielxslfiledposition<0)
+							{
+								//	 The field is unreachable !
+								logError(Messages.getString("Xslt.Log.ErrorXSLFileFieldFinding")+ "[" + meta.getXSLFileField()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+								throw new KettleStepException(Messages.getString("Xslt.Exception.ErrorXSLFileFieldFinding",meta.getXSLFileField())); //$NON-NLS-1$ //$NON-NLS-2$
+							}	
+						}
+					}else
+					{
+						// Check if XSL File exists!
+						xslfilename = environmentSubstitute(meta.getXslFilename());
+						java.io.File file=new java.io.File(xslfilename);
+						if(!file.exists())
+						{
+							logError(Messages.getString("Xslt.Log.ErrorXSLFileNotExists",xslfilename)); //$NON-NLS-1$ //$NON-NLS-2$
+							throw new KettleStepException(Messages.getString("Xslt.Exception.ErrorXSLFileNotExists",xslfilename)); //$NON-NLS-1$ //$NON-NLS-2$
+						}
+						if(!file.isFile())
+						{
+							logError(Messages.getString("Xslt.Log.ErrorXSLNotAFile",xslfilename)); //$NON-NLS-1$ //$NON-NLS-2$
+							throw new KettleStepException(Messages.getString("Xslt.Exception.ErrorXSLNotAFile",xslfilename)); //$NON-NLS-1$ //$NON-NLS-2$
+						}
+					}
+				}
+			}
+			else
+			{
+				// Result Field is missing !
+				logError(Messages.getString("Xslt.Log.ErrorMatcherMissing")); //$NON-NLS-1$ //$NON-NLS-2$
+				throw new KettleStepException(Messages.getString("Xslt.Exception.ErrorMatcherMissing")); 
+			}
+		}	
+		
+		// Get the field value
+		String Fieldvalue= getInputRowMeta().getString(row,data.fieldposition);	
+		
+		String xmlString=null;
+
+		if (meta.useXSLFileFieldUse())
+		{
+			// Get the value	
+			xslfilename= getInputRowMeta().getString(row,data.fielxslfiledposition);	
+			if (log.isDetailed()) logDetailed(Messages.getString("Xslt.Log.XslfileNameFromFied",xslfilename,meta.getXSLFileField()));			
+		}
+		else
+		{		
+				xslfilename = environmentSubstitute(meta.getXslFilename());
+		}
+		try {			
+			logDetailed(Messages.getString("Xslt.Log.Filexsl") + xslfilename);
+			TransformerFactory factory = TransformerFactory.newInstance();
+			
+			if (meta.getXSLFactory().equals("SAXON"))
+			{
+				// Set the TransformerFactory to the SAXON implementation.
+				factory = new net.sf.saxon.TransformerFactoryImpl(); 
+				
+			}
+			
+			// Use the factory to create a template containing the xsl file
+			Templates template = factory.newTemplates(new StreamSource(	new FileInputStream(xslfilename)));//"C:\\workspace\\Workflow\\fichiers\\GenerateFile.xsl")));
+			// Use the template to create a transformer
+			Transformer xformer = template.newTransformer();
+			Source source = new StreamSource(new StringReader(Fieldvalue));			
+		    StreamResult resultat = new StreamResult(new StringWriter());	   
+			xformer.transform(source, resultat);
+			xmlString = resultat.getWriter().toString();			
+			logDetailed(Messages.getString("Xslt.Log.FileResult"));
+			logDetailed(xmlString);		
+		} 
+		catch (Exception e) {
+			// TODO: handle exception
+			logError("ERROR : " +  e);
+		}
+		
+		Object[] outputRowData =RowDataUtil.addValueData(row, getInputRowMeta().size(),xmlString);
+		
+		if (log.isRowLevel()) logRowlevel(Messages.getString("Xslt.Log.ReadRow") + " " +  getInputRowMeta().getString(row)); 
+		 //	add new values to the row.
+        putRow(data.outputRowMeta, outputRowData);  // copy row to output rowset(s);
+   
+		return true;	
+	}
+		
+	public boolean init(StepMetaInterface smi, StepDataInterface sdi)
+	{
+		meta=(XsltMeta)smi;
+		data=(XsltData)sdi;		
+		if (super.init(smi, sdi))
+		{
+		    // Add init code here.
+		    return true;
+		}
+		return false;
+	}
+
+	// Run is were the action happens!
+	public void run()
+	{		
+		try
+		{
+			logBasic(Messages.getString("Xslt.Log.StartingToRun")); //$NON-NLS-1$		
+			while (processRow(meta, data) && !isStopped());
+		}
+		catch(Exception e)
+		{
+			logError(Messages.getString("Xslt.Log.UnexpectedeError")+" : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+            logError(Messages.getString("Xslt.Log.ErrorStackTrace")+Const.CR+Const.getStackTracker(e)); //$NON-NLS-1$
+			setErrors(1);
+			stopAll();
+		}
+		finally
+		{
+			dispose(meta, data);
+			logSummary();
+			markStop();
+		}
+	}
+}
