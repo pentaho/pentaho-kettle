@@ -184,7 +184,6 @@ public class DB2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfa
 		case ValueMetaInterface.TYPE_DATE   : retval+="TIMESTAMP"; break;
 		case ValueMetaInterface.TYPE_BOOLEAN: retval+="CHARACTER(1)"; break;
 		case ValueMetaInterface.TYPE_NUMBER :
-		case ValueMetaInterface.TYPE_INTEGER:
         case ValueMetaInterface.TYPE_BIGNUMBER: 
 			if (fieldname.equalsIgnoreCase(tk) && use_autoinc) // Technical key: auto increment field!
 			{
@@ -207,6 +206,16 @@ public class DB2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfa
 				}
 			}
 			break;
+		case ValueMetaInterface.TYPE_INTEGER:	
+			if (fieldname.equalsIgnoreCase(tk) && use_autoinc) // Technical key: auto increment field!
+			{
+				retval+="INTEGER NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 0, INCREMENT BY 1, NOCACHE)";
+			} 
+			else
+			{
+				retval+="INTEGER";
+			}
+			break;			
 		case ValueMetaInterface.TYPE_STRING:
 			if (length>getMaxVARCHARLength() || length>=DatabaseMeta.CLOB_LENGTH)
 			{
