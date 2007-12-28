@@ -8,3 +8,4 @@ Information on fixes applied to 3.0.1
 - PDI-593 : Setting the correct thread name makes unique connections work again. (Sven B.)
 - PDI-595 : Database join is working again with parameters (Sven B.)
 - PDI-578 : Make it able to save a calculator step to the repository (Sven B.)
+- PDI-613 : Fix for DB2 seeing integer as float (Sven B.)
