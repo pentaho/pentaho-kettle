@@ -15,24 +15,18 @@
 
 package org.pentaho.di.trans.steps.xslt;
 
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.Script;
-import org.mozilla.javascript.Scriptable;
-
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
 
 /**
- * @author Matt
+ * @author Samatar
  * @since 24-jan-2005
  *
  */
 public class XsltData extends BaseStepData implements StepDataInterface
 {
-	public Context cx;
-	public Scriptable scope;
-	public Script script;
+
 	public RowMetaInterface outputRowMeta;
 	public int fieldposition;
 	public int fielxslfiledposition;
@@ -46,7 +40,6 @@ public class XsltData extends BaseStepData implements StepDataInterface
 	{
 		super();
 
-		cx=null;
 		fields_used=null;
 		fieldposition=-1;
 		fielxslfiledposition=-1;
