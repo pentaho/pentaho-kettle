@@ -42,6 +42,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.steps.xsdvalidator.Messages;
 
 
 /*
@@ -267,12 +268,20 @@ public class XsltMeta extends BaseStepMeta implements StepMetaInterface
 		}
         else
         {
-        	
-        	
             cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("XsltMeta.CheckResult.NoInputReceived"), stepinfo); //$NON-NLS-1$
             remarks.add(cr);
         }
-		
+		 // See if we have input streams leading to this step!
+        if (input.length > 0)
+        {
+            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("XsltMeta.CheckResult.ExpectedInputOk"), stepinfo);
+            remarks.add(cr);
+        }
+        else
+        {
+            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("XsltMeta.CheckResult.ExpectedInputError"), stepinfo);
+            remarks.add(cr);
+        }
 		
 		//	Check if The result field is given
 		if (getResultfieldname()==null)
@@ -282,7 +291,32 @@ public class XsltMeta extends BaseStepMeta implements StepMetaInterface
 	          remarks.add(cr);
 		
 		}
+		
+		// Check if XSL Filename field is provided
+		if(xslfilefielduse)
+		{
+			if (getXSLFileField()==null)
+			{
+				 // Result Field is missing !
+				  cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("XsltMeta.CheckResult.ErrorResultXSLFieldNameMissing"), stepinfo); //$NON-NLS-1$
+		          remarks.add(cr);
+			}
+			else
+			{
+				 // Result Field is provided !
+				  cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("XsltMeta.CheckResult.ErrorResultXSLFieldNameOK"), stepinfo); //$NON-NLS-1$
+		          remarks.add(cr);
+			}
+		}else{
+			if(getXslFilename()==null)
+			{
+				 // Result Field is missing !
+				  cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("XsltMeta.CheckResult.ErrorXSLFileNameMissing"), stepinfo); //$NON-NLS-1$
+		          remarks.add(cr);
 
+			}
+		}
+		
 			
 	}
 

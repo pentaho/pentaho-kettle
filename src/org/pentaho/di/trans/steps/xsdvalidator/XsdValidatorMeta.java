@@ -396,21 +396,7 @@ public class XsdValidatorMeta extends BaseStepMeta implements StepMetaInterface
 			if(Const.isEmpty(xdsfilename))
 			{
 				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("XsdValidatorMeta.CheckResult.XSDFieldEmpty"), stepinfo); //$NON-NLS-1$ //$NON-NLS-2$
-				remarks.add(cr);
-			}else{
-				// Check if file exists
-				java.io.File fileXSD= new java.io.File(xdsfilename);
-				if(!fileXSD.exists())
-				{
-					cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("XsdValidatorMeta.CheckResult.CanNotFindXSDFile",xdsfilename), stepinfo); //$NON-NLS-1$ //$NON-NLS-2$
-					remarks.add(cr);
-				}else{
-					if(!fileXSD.isFile())
-					{
-						cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("XsdValidatorMeta.CheckResult.NotFileXSDFile",xdsfilename), stepinfo); //$NON-NLS-1$ //$NON-NLS-2$
-						remarks.add(cr);
-					}
-				}
+				remarks.add(cr);				
 			}
 		}
 		
