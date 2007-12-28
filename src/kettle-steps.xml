@@ -793,6 +793,17 @@
 		</tooltip>
 		<image-uri>ui/images/GXD.png</image-uri>
 	</step>
+	</step>
+		<step id="XSDValidator">
+		<description>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.XSDValidator")
+		</description>
+		<class-name>org.pentaho.di.trans.steps.xsdvalidator.XsdValidatorMeta</class-name>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@TRANSFORM.getName()</category>
+		<tooltip>ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.XSDValidator")
+		</tooltip>
+		<image-uri>ui/images/XSD.png</image-uri>
+	</step>
 
 	
 </steps>
