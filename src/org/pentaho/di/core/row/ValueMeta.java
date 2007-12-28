@@ -576,7 +576,8 @@ public class ValueMeta implements ValueMetaInterface
         }
         catch (ParseException e)
         {
-            throw new KettleValueException(toString()+" : couldn't convert string ["+string+"] to a date", e);
+        	String dateFormat = (getDateFormat() != null) ? getDateFormat().toPattern() : "null";
+            throw new KettleValueException(toString()+" : couldn't convert string ["+string+"] to a date using format ["+dateFormat+"]", e);
         }
     }
 
