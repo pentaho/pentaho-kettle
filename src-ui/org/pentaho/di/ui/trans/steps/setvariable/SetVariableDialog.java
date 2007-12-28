@@ -252,7 +252,7 @@ public class SetVariableDialog extends BaseStepDialog implements StepDialogInter
                 	    public boolean tableItemInserted(TableItem tableItem, ValueMetaInterface v)
                         {
                             tableItem.setText(2, v.getName().toUpperCase());
-                            tableItem.setText(3, SetVariableMeta.getVariableTypeDescription(SetVariableMeta.VARIABLE_TYPE_JVM));
+                            tableItem.setText(3, SetVariableMeta.getVariableTypeDescription(SetVariableMeta.VARIABLE_TYPE_ROOT_JOB));
                             return true;
                         }
                     }
