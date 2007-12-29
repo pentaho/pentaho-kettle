@@ -11,6 +11,8 @@
  
 package org.pentaho.di.trans.steps.addsequence;
 
+import java.text.ParseException;
+
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.database.Database;
@@ -53,11 +55,11 @@ public class AddSequence extends BaseStep implements StepInterface
 			synchronized (data.counter) {
 				long prev = data.counter.getCounter();
 				
-				long nval = prev + meta.getIncrementBy();
-				if (meta.getIncrementBy() > 0 && meta.getMaxValue() > meta.getStartAt() && nval > meta.getMaxValue())
-					nval = meta.getStartAt();
-				if (meta.getIncrementBy() < 0 && meta.getMaxValue() < meta.getStartAt() && nval < meta.getMaxValue())
-					nval = meta.getStartAt();
+				long nval = prev + data.increment;
+				if (data.increment > 0 && data.maximum > data.start && nval > data.maximum)
+					nval = data.start;
+				if (data.increment < 0 && data.maximum < data.start && nval < data.maximum)
+					nval = data.start;
 				data.counter.setCounter(nval);
 	
 				next = prev;
@@ -157,6 +159,43 @@ public class AddSequence extends BaseStep implements StepInterface
 			else
 			if (meta.isCounterUsed())
 			{
+				// Do the environment translations of the counter values.
+				boolean doAbort = false;
+				try 
+				{
+					data.start = Long.parseLong(environmentSubstitute(meta.getStartAt()));
+				}
+				catch ( NumberFormatException ex)
+				{
+					logError(Messages.getString("AddSequence.Log.CouldNotParseCounterValue", "start", meta.getStartAt(), environmentSubstitute(meta.getStartAt()), ex.getMessage())); //$NON-NLS-1$
+					doAbort = true;
+				}
+				
+				try 
+				{
+					data.increment = Long.parseLong(environmentSubstitute(meta.getIncrementBy()));
+				}
+				catch ( NumberFormatException ex)
+				{
+					logError(Messages.getString("AddSequence.Log.CouldNotParseCounterValue", "increment", meta.getIncrementBy(), environmentSubstitute(meta.getIncrementBy()), ex.getMessage())); //$NON-NLS-1$
+					doAbort = true;
+				}				
+
+				try 
+				{
+					data.maximum = Long.parseLong(environmentSubstitute(meta.getMaxValue()));
+				}
+				catch ( NumberFormatException ex)
+				{
+					logError(Messages.getString("AddSequence.Log.CouldNotParseCounterValue", "increment", meta.getMaxValue(), environmentSubstitute(meta.getMaxValue()), ex.getMessage())); //$NON-NLS-1$
+					doAbort = true;
+				}				
+				
+				if ( doAbort )
+				{
+					return false;
+				}				
+				
                 if (!Const.isEmpty(meta.getCounterName()))
                 {
                     data.setLookup( "@@sequence:"+meta.getCounterName() ); //$NON-NLS-1$
@@ -174,16 +213,16 @@ public class AddSequence extends BaseStep implements StepInterface
 						if (data.counter==null)
 						{
 							// create a new one
-							data.counter = new Counter(meta.getStartAt(), meta.getIncrementBy(), meta.getMaxValue());
+							data.counter = new Counter(data.start, data.increment, data.maximum);
 							getTransMeta().getCounters().put(data.getLookup(), data.counter);
 						}
 						else
 						{
 							// Check whether counter characteristics are the same as a previously
 							// defined counter with the same name.
-							if ( (data.counter.getStart() != meta.getStartAt()) ||
-							   	 (data.counter.getIncrement() != meta.getIncrementBy()) ||								 
-								 (data.counter.getMaximum() != meta.getMaxValue()) )
+							if ( (data.counter.getStart() != data.start) ||
+							   	 (data.counter.getIncrement() != data.increment) ||								 
+								 (data.counter.getMaximum() != data.maximum) )
 							{
 								logError(Messages.getString("AddSequence.Log.CountersWithDifferentCharacteristics", data.getLookup())); //$NON-NLS-1$
 								return false;

@@ -28,6 +28,11 @@ public class AddSequenceData extends BaseStepData implements StepDataInterface
 	private String lookup;
     public RowMetaInterface outputRowMeta;
 	public Counter counter;
+
+	// The runtime values, in which the environment variables are already resolved
+	public long  start;
+	public long  increment;
+	public long  maximum;
 	
 	/**
 	 * 

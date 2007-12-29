@@ -2161,12 +2161,12 @@ public class Database implements VariableSpace
 		return cr_index;
 	}
 	
-    public String getCreateSequenceStatement(String sequence, long start_at, long increment_by, long max_value, boolean semi_colon)
+    public String getCreateSequenceStatement(String sequence, String start_at, String increment_by, String max_value, boolean semi_colon)
     {
         return getCreateSequenceStatement(null, sequence, start_at, increment_by, max_value, semi_colon);
     }
     
-	public String getCreateSequenceStatement(String schemaName, String sequenceName, long start_at, long increment_by, long max_value, boolean semi_colon)
+	public String getCreateSequenceStatement(String schemaName, String sequenceName, String start_at, String increment_by, String max_value, boolean semi_colon)
 	{
 		String cr_seq="";
 		
@@ -2178,7 +2178,7 @@ public class Database implements VariableSpace
 			cr_seq += "CREATE SEQUENCE "+schemaSequence+" "+Const.CR;  // Works for both Oracle and PostgreSQL :-)
 			cr_seq += "START WITH "+start_at+" "+Const.CR;
 			cr_seq += "INCREMENT BY "+increment_by+" "+Const.CR;
-			if (max_value>0) cr_seq += "MAXVALUE "+max_value+Const.CR;
+			if (max_value != null) cr_seq += "MAXVALUE "+max_value+Const.CR;
 			
 			if (semi_colon) cr_seq+=";"+Const.CR;
 		}

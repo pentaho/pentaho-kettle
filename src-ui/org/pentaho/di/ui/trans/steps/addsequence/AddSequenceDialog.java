@@ -445,9 +445,9 @@ public class AddSequenceDialog extends BaseStepDialog implements StepDialogInter
 		
 		wUseCounter.setSelection(input.isCounterUsed());
         wCounterName.setText( Const.NVL(input.getCounterName(), "") );
-		wStartAt.setText(""+input.getStartAt()); //$NON-NLS-1$
-		wIncrBy.setText(""+input.getIncrementBy()); //$NON-NLS-1$
-		wMaxVal.setText(""+input.getMaxValue()); //$NON-NLS-1$
+		wStartAt.setText(input.getStartAt()); //$NON-NLS-1$
+		wIncrBy.setText(input.getIncrementBy()); //$NON-NLS-1$
+		wMaxVal.setText(input.getMaxValue()); //$NON-NLS-1$
 		
 		enableFields();
 		wStepname.selectAll();
@@ -476,9 +476,9 @@ public class AddSequenceDialog extends BaseStepDialog implements StepDialogInter
 		input.setValuename(wValuename.getText());
 		
         input.setCounterName( wCounterName.getText() );
-		input.setStartAt    ( Const.toLong(wStartAt.getText(), 1L) );
-		input.setIncrementBy( Const.toLong(wIncrBy.getText(), 1L) );
-		input.setMaxValue   ( Const.toLong(wMaxVal.getText(), 99999999999L) );
+		input.setStartAt    ( wStartAt.getText() );
+		input.setIncrementBy( wIncrBy.getText() );
+		input.setMaxValue   ( wMaxVal.getText() );
 		
 		if (input.isDatabaseUsed() && transMeta.findDatabase(connection)==null)
 		{

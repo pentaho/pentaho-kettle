@@ -57,9 +57,9 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 
 	private boolean      useCounter;
     private String       counterName;  
-	private long         startAt;
-	private long         incrementBy;
-	private long         maxValue;
+	private String       startAt;
+	private String       incrementBy;
+	private String       maxValue;
     
 	
 	/**
@@ -81,7 +81,7 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 	/**
 	 * @return Returns the incrementBy.
 	 */
-	public long getIncrementBy()
+	public String getIncrementBy()
 	{
 		return incrementBy;
 	}
@@ -89,7 +89,7 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 	/**
 	 * @param incrementBy The incrementBy to set.
 	 */
-	public void setIncrementBy(long incrementBy)
+	public void setIncrementBy(String incrementBy)
 	{
 		this.incrementBy = incrementBy;
 	}
@@ -97,7 +97,7 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 	/**
 	 * @return Returns the maxValue.
 	 */
-	public long getMaxValue()
+	public String getMaxValue()
 	{
 		return maxValue;
 	}
@@ -105,11 +105,11 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 	/**
 	 * @param maxValue The maxValue to set.
 	 */
-	public void setMaxValue(long maxValue)
+	public void setMaxValue(String maxValue)
 	{
 		this.maxValue = maxValue;
 	}
-	
+
 	/**
 	 * @return Returns the sequenceName.
 	 */
@@ -125,11 +125,35 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		this.sequenceName = sequenceName;
 	}
+
+	/**
+	 * @param maxValue The maxValue to set.
+	 */
+	public void setMaxValue(long maxValue)
+	{
+		this.maxValue = Long.toString(maxValue);
+	}
+
+	/**
+	 * @param startAt The starting point of the sequence to set.
+	 */
+	public void setStartAt(long startAt)
+	{
+		this.startAt = Long.toString(startAt);
+	}	
 	
+	/**
+	 * @param incrementBy The incrementBy to set.
+	 */
+	public void setIncrementBy(long incrementBy)
+	{
+		this.incrementBy = Long.toString(incrementBy);
+	}
+
 	/**
 	 * @return Returns the start of the sequence.
 	 */
-	public long getStartAt()
+	public String getStartAt()
 	{
 		return startAt;
 	}
@@ -137,7 +161,7 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 	/**
 	 * @param startAt The starting point of the sequence to set.
 	 */
-	public void setStartAt(long startAt)
+	public void setStartAt(String startAt)
 	{
 		this.startAt = startAt;
 	}
@@ -215,9 +239,13 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 			
 			useCounter   = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "use_counter")); //$NON-NLS-1$ //$NON-NLS-2$
             counterName  = XMLHandler.getTagValue(stepnode, "counter_name"); //$NON-NLS-1$
-			startAt      = Const.toLong(XMLHandler.getTagValue(stepnode, "start_at"), 1); //$NON-NLS-1$
-			incrementBy  = Const.toLong(XMLHandler.getTagValue(stepnode, "increment_by"), 1); //$NON-NLS-1$
-			maxValue     = Const.toLong(XMLHandler.getTagValue(stepnode, "max_value"), 999999999L); //$NON-NLS-1$
+          	startAt      = XMLHandler.getTagValue(stepnode, "start_at"); //$NON-NLS-1$
+			incrementBy  = XMLHandler.getTagValue(stepnode, "increment_by"); //$NON-NLS-1$
+			maxValue     = XMLHandler.getTagValue(stepnode, "max_value"); //$NON-NLS-1$
+            
+// TODO		startAt      = Const.toLong(XMLHandler.getTagValue(stepnode, "start_at"), 1); //$NON-NLS-1$
+//			incrementBy  = Const.toLong(XMLHandler.getTagValue(stepnode, "increment_by"), 1); //$NON-NLS-1$
+//			maxValue     = Const.toLong(XMLHandler.getTagValue(stepnode, "max_value"), 999999999L); //$NON-NLS-1$
 		}
 		catch(Exception e)
 		{
@@ -236,9 +264,9 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 		
 		useCounter   = true;
         counterName  = null;
-		startAt      = 1L;
-		incrementBy  = 1L;
-		maxValue     = 9999999L;
+		startAt      = "1";
+		incrementBy  = "1";
+		maxValue     = "999999999";
 	}
 
 	public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException
@@ -282,9 +310,29 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 	
 			useCounter      =      rep.getStepAttributeBoolean(id_step, "use_counter");  //$NON-NLS-1$
             counterName     =      rep.getStepAttributeString (id_step, "counter_name");  //$NON-NLS-1$
-			startAt         =      rep.getStepAttributeInteger(id_step, "start_at");  //$NON-NLS-1$
-			incrementBy     =      rep.getStepAttributeInteger(id_step, "increment_by");  //$NON-NLS-1$
-			maxValue        =      rep.getStepAttributeInteger(id_step, "max_value"); //$NON-NLS-1$
+            
+			startAt         =      rep.getStepAttributeString(id_step, "start_at");  //$NON-NLS-1$
+			incrementBy     =      rep.getStepAttributeString(id_step, "increment_by");  //$NON-NLS-1$
+			maxValue        =      rep.getStepAttributeString(id_step, "max_value"); //$NON-NLS-1$
+
+			// Fix for backwards compatibility, only to be used from previous versions (TO DO Sven Boden: remove in later versions)
+			if ( startAt == null )
+			{
+				long start = rep.getStepAttributeInteger(id_step, "start_at");  //$NON-NLS-1$
+				startAt = Long.toString(start);
+			}
+			
+			if ( incrementBy == null )
+			{
+				long increment = rep.getStepAttributeInteger(id_step, "increment_by");  //$NON-NLS-1$
+			    incrementBy = Long.toString(increment);      
+			}
+			
+			if ( maxValue == null )
+			{
+				long max = rep.getStepAttributeInteger(id_step, "max_value"); //$NON-NLS-1$
+				maxValue = Long.toString(max);
+			}      
 		}
 		catch(Exception e)
 		{
