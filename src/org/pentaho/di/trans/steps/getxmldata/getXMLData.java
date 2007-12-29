@@ -17,6 +17,7 @@ package org.pentaho.di.trans.steps.getxmldata;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -30,6 +31,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -76,7 +78,7 @@ public class getXMLData extends BaseStep implements StepInterface
 		 
 		if(!meta.getIsInFields())	
 		{
-			if (data.filenr >= data.files.size())
+			if (data.filenr >= data.files.nrOfFiles())
 	        {
 	            setOutputDone();
 	            return false;
@@ -135,7 +137,8 @@ public class getXMLData extends BaseStep implements StepInterface
 			else
 			{
 				// XML source is file (probably many files)...
-			}			
+			}
+			handleMissingFiles();
 		}
 		try
 		{
@@ -175,11 +178,11 @@ public class getXMLData extends BaseStep implements StepInterface
 				// XML source is a file (probably many files...)
 				data.rownr=0;
 	
-					for (int i=0;i<data.files.size();i++)
+					for (int i=0;i<data.files.nrOfFiles();i++)
 					{			
 						if ((meta.getRowLimit()>0 &&  data.rownr<meta.getRowLimit()) || meta.getRowLimit()==0) 
 						{			
-							data.file = (FileObject) data.files.get(i);			    	
+							data.file = (FileObject) data.files.getFile(i);	    	
 					    	logBasic(Messages.getString("getXMLData.Log.OpeningFile", data.file.toString()));					
 					    	
 							// Fetch files and process each one
@@ -231,7 +234,27 @@ public class getXMLData extends BaseStep implements StepInterface
 		}
 		 return true;		  
 	}
-		
+	private void handleMissingFiles() throws KettleException
+	{
+		List<FileObject> nonExistantFiles = data.files.getNonExistantFiles();
+	
+		if (nonExistantFiles.size() != 0)
+		{
+			String message = FileInputList.getRequiredFilesDescription(nonExistantFiles);
+			log.logBasic("Required files", "WARNING: Missing " + message);
+
+			throw new KettleException("Following required files are missing " +message);
+		}
+
+		List<FileObject> nonAccessibleFiles = data.files.getNonAccessibleFiles();
+		if (nonAccessibleFiles.size() != 0)
+		{
+			String message = FileInputList.getRequiredFilesDescription(nonAccessibleFiles);
+			log.logBasic("Required files", "WARNING: Not accessible " + message);
+
+				throw new KettleException("Following required files are not accessible " +message);
+		}
+	}
 	private String getValueXML(NodeList widgetNodes,int itFileInputXML,XPath xpath, String xpathvalue, String element_type)
 	throws KettleStepException
 	{
@@ -465,8 +488,8 @@ public class getXMLData extends BaseStep implements StepInterface
 		{
 			if(!meta.getIsInFields())
 			{
-				data.files = meta.getFiles(this).getFiles();
-				if (data.files==null)// || data.files.size()==0)
+				data.files = meta.getFiles(this);
+				if (data.files.nrOfFiles() == 0 && data.files.nrOfMissingFiles() == 0)
 				{
 					logError(Messages.getString("getXMLData.Log.NoFiles"));
 					return false;

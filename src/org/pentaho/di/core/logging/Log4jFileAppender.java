@@ -41,7 +41,12 @@ public class Log4jFileAppender implements Appender
         
         fileOutputStream = KettleVFS.getOutputStream(file, false);
     }
-    
+    public Log4jFileAppender(FileObject file,boolean append) throws IOException
+    {
+        this.file = file;
+        
+        fileOutputStream = KettleVFS.getOutputStream(file, append);
+    }
     public void addFilter(Filter filter)
     {
         this.filter = filter;

@@ -166,6 +166,8 @@ public class Xslt extends BaseStep implements StepInterface
 		{		
 				xslfilename = environmentSubstitute(meta.getXslFilename());
 		}
+		boolean sendToErrorRow=false;
+	    String errorMessage = null;
 		try {			
 			logDetailed(Messages.getString("Xslt.Log.Filexsl") + xslfilename);
 			TransformerFactory factory = TransformerFactory.newInstance();
@@ -178,7 +180,7 @@ public class Xslt extends BaseStep implements StepInterface
 			}
 			
 			// Use the factory to create a template containing the xsl file
-			Templates template = factory.newTemplates(new StreamSource(	new FileInputStream(xslfilename)));//"C:\\workspace\\Workflow\\fichiers\\GenerateFile.xsl")));
+			Templates template = factory.newTemplates(new StreamSource(	new FileInputStream(xslfilename)));
 			// Use the template to create a transformer
 			Transformer xformer = template.newTransformer();
 			Source source = new StreamSource(new StringReader(Fieldvalue));			
@@ -187,17 +189,37 @@ public class Xslt extends BaseStep implements StepInterface
 			xmlString = resultat.getWriter().toString();			
 			logDetailed(Messages.getString("Xslt.Log.FileResult"));
 			logDetailed(xmlString);		
+			
+			Object[] outputRowData =RowDataUtil.addValueData(row, getInputRowMeta().size(),xmlString);
+			
+			if (log.isRowLevel()) logRowlevel(Messages.getString("Xslt.Log.ReadRow") + " " +  getInputRowMeta().getString(row)); 
+			 //	add new values to the row.
+	        putRow(data.outputRowMeta, outputRowData);  // copy row to output rowset(s);
 		} 
 		catch (Exception e) {
-			// TODO: handle exception
-			logError("ERROR : " +  e);
+			if (getStepMeta().isDoingErrorHandling())
+	        {
+	           sendToErrorRow = true;
+	           errorMessage = e.getMessage();
+	        }
+	            
+			if (sendToErrorRow) 
+            {
+                // Simply add this row to the error row
+                putError(getInputRowMeta(), row, 1, errorMessage, meta.getResultfieldname(), "XSLT01");  
+           
+            }
+			else
+			{
+				logError(Messages.getString("Xslt.ErrorProcesing")+e.getMessage()); //$NON-NLS-1$
+				setErrors(1);
+				stopAll();
+				setOutputDone();  // signal end to receiver(s)
+				return false;
+			}
 		}
 		
-		Object[] outputRowData =RowDataUtil.addValueData(row, getInputRowMeta().size(),xmlString);
-		
-		if (log.isRowLevel()) logRowlevel(Messages.getString("Xslt.Log.ReadRow") + " " +  getInputRowMeta().getString(row)); 
-		 //	add new values to the row.
-        putRow(data.outputRowMeta, outputRowData);  // copy row to output rowset(s);
+
    
 		return true;	
 	}

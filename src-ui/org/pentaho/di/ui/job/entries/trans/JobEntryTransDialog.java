@@ -159,6 +159,12 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 	private JobEntryTrans jobEntry;
 
 	private boolean backupChanged;
+	
+    private Label wlAppendLogfile;
+
+    private Button wAppendLogfile;
+
+    private FormData fdlAppendLogfile, fdAppendLogfile;
 
 	private Display display;
 
@@ -327,14 +333,37 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 				setActive();
 			}
 		});
-
+        // Append the logfile?
+        wlAppendLogfile = new Label(wLogging, SWT.RIGHT);
+        wlAppendLogfile.setText(Messages.getString("JobTrans.Append.Logfile.Label"));
+        props.setLook(wlAppendLogfile);
+        fdlAppendLogfile = new FormData();
+        fdlAppendLogfile.left = new FormAttachment(0, 0);
+        fdlAppendLogfile.top = new FormAttachment(wSetLogfile, margin);
+        fdlAppendLogfile.right = new FormAttachment(middle, -margin);
+        wlAppendLogfile.setLayoutData(fdlAppendLogfile);
+        wAppendLogfile = new Button(wLogging, SWT.CHECK);
+        wAppendLogfile.setToolTipText(Messages.getString("JobTrans.Append.Logfile.Tooltip"));
+        props.setLook(wAppendLogfile);
+        fdAppendLogfile = new FormData();
+        fdAppendLogfile.left = new FormAttachment(middle, 0);
+        fdAppendLogfile.top = new FormAttachment(wSetLogfile, margin);
+        fdAppendLogfile.right = new FormAttachment(100, 0);
+        wAppendLogfile.setLayoutData(fdAppendLogfile);
+        wAppendLogfile.addSelectionListener(new SelectionAdapter()
+        {
+            public void widgetSelected(SelectionEvent e)
+            {
+            }
+        });
+        
 		// Set the logfile path + base-name
 		wlLogfile = new Label(wLogging, SWT.RIGHT);
 		wlLogfile.setText(Messages.getString("JobTrans.NameOfLogfile.Label"));
 		props.setLook(wlLogfile);
 		fdlLogfile = new FormData();
 		fdlLogfile.left = new FormAttachment(0, 0);
-		fdlLogfile.top = new FormAttachment(wlSetLogfile, margin);
+		fdlLogfile.top = new FormAttachment(wAppendLogfile, margin);
 		fdlLogfile.right = new FormAttachment(middle, 0);
 		wlLogfile.setLayoutData(fdlLogfile);
 		wLogfile = new TextVar(jobMeta, wLogging, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
@@ -342,7 +371,7 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 		props.setLook(wLogfile);
 		fdLogfile = new FormData();
 		fdLogfile.left = new FormAttachment(middle, 0);
-		fdLogfile.top = new FormAttachment(wlSetLogfile, margin);
+		fdLogfile.top = new FormAttachment(wAppendLogfile, margin);
 		fdLogfile.right = new FormAttachment(100, 0);
 		wLogfile.setLayoutData(fdLogfile);
 
@@ -404,7 +433,7 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 		fdlLoglevel = new FormData();
 		fdlLoglevel.left = new FormAttachment(0, 0);
 		fdlLoglevel.right = new FormAttachment(middle, -margin);
-		fdlLoglevel.top = new FormAttachment(wlAddTime, margin);
+		fdlLoglevel.top = new FormAttachment(wAddTime, margin);
 		wlLoglevel.setLayoutData(fdlLoglevel);
 		wLoglevel = new CCombo(wLogging, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
 		for (int i = 0; i < LogWriter.log_level_desc_long.length; i++)
@@ -414,7 +443,7 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 		props.setLook(wLoglevel);
 		fdLoglevel = new FormData();
 		fdLoglevel.left = new FormAttachment(middle, 0);
-		fdLoglevel.top = new FormAttachment(wlAddTime, margin);
+		fdLoglevel.top = new FormAttachment(wAddTime, margin);
 		fdLoglevel.right = new FormAttachment(100, 0);
 		wLoglevel.setLayoutData(fdLoglevel);
 
@@ -740,8 +769,15 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 		wlLoglevel.setEnabled(wSetLogfile.getSelection());
 		wLoglevel.setEnabled(wSetLogfile.getSelection());
 		
+		
+		wAppendLogfile.setEnabled(wSetLogfile.getSelection());
+		wlAppendLogfile.setEnabled(wSetLogfile.getSelection());
+		
 		wSlaveServer.setEnabled(!wCluster.getSelection());
 		wlSlaveServer.setEnabled(!wCluster.getSelection());
+
+		
+		
 	}
 
 	public void getData()
@@ -789,7 +825,7 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 		{
 			wSlaveServer.setText(jobEntry.getRemoteSlaveServer().getName());
 		}
-		
+		wAppendLogfile.setSelection(jobEntry.setAppendLogfile);
 		wLoglevel.select(jobEntry.loglevel);
 	}
 
@@ -842,7 +878,7 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 		jobEntry.setClustering(wCluster.getSelection());
 
 		jobEntry.setRemoteSlaveServer( SlaveServer.findSlaveServer(jobMeta.getSlaveServers(), wSlaveServer.getText()) );
-		
+		jobEntry.setAppendLogfile = wAppendLogfile.getSelection();
 		jobEntry.setChanged();
 
 		dispose();

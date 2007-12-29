@@ -21,9 +21,9 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
-import java.util.List;
 
 import org.apache.commons.vfs.FileObject;
+import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
@@ -49,7 +49,11 @@ public class getXMLDataData extends BaseStepData implements StepDataInterface
 	public SimpleDateFormat daf;
 	public DateFormatSymbols dafs;
 	
-	public List<FileObject>     files;
+	/**
+	 * The XML files to read
+	 */
+	public FileInputList files;
+	
 	public boolean last_file;
 	public FileObject file;
 	public int     filenr;

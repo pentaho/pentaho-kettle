@@ -18,7 +18,7 @@ package org.pentaho.di.trans.steps.xslt;
 
 import java.util.List;
 import java.util.Map;
-
+import java.io.File;
 import org.w3c.dom.Node;
 
 import org.pentaho.di.core.CheckResult;
@@ -42,8 +42,6 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.di.trans.steps.xsdvalidator.Messages;
-
 
 /*
  * Created on 15-Oct-2007
@@ -255,31 +253,29 @@ public class XsltMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 
-	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepinfo,
-			RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
-	{
-
+	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+    {
 		CheckResult cr;
 		
 		if (prev!=null && prev.size()>0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("XsltMeta.CheckResult.ConnectedStepOK",String.valueOf(prev.size())), stepinfo); //$NON-NLS-1$ //$NON-NLS-2$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("XsltMeta.CheckResult.ConnectedStepOK",String.valueOf(prev.size())), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
 			remarks.add(cr);
 		}
         else
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("XsltMeta.CheckResult.NoInputReceived"), stepinfo); //$NON-NLS-1$
+            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("XsltMeta.CheckResult.NoInputReceived"), stepMeta); //$NON-NLS-1$
             remarks.add(cr);
         }
 		 // See if we have input streams leading to this step!
         if (input.length > 0)
         {
-            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("XsltMeta.CheckResult.ExpectedInputOk"), stepinfo);
+            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("XsltMeta.CheckResult.ExpectedInputOk"), stepMeta);
             remarks.add(cr);
         }
         else
         {
-            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("XsltMeta.CheckResult.ExpectedInputError"), stepinfo);
+            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("XsltMeta.CheckResult.ExpectedInputError"), stepMeta);
             remarks.add(cr);
         }
 		
@@ -287,7 +283,7 @@ public class XsltMeta extends BaseStepMeta implements StepMetaInterface
 		if (getResultfieldname()==null)
 		{
 			 // Result Field is missing !
-			  cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("XsltMeta.CheckResult.ErrorResultFieldNameMissing"), stepinfo); //$NON-NLS-1$
+			  cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("XsltMeta.CheckResult.ErrorResultFieldNameMissing"), stepMeta); //$NON-NLS-1$
 	          remarks.add(cr);
 		
 		}
@@ -298,22 +294,46 @@ public class XsltMeta extends BaseStepMeta implements StepMetaInterface
 			if (getXSLFileField()==null)
 			{
 				 // Result Field is missing !
-				  cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("XsltMeta.CheckResult.ErrorResultXSLFieldNameMissing"), stepinfo); //$NON-NLS-1$
+				  cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("XsltMeta.CheckResult.ErrorResultXSLFieldNameMissing"), stepMeta); //$NON-NLS-1$
 		          remarks.add(cr);
 			}
 			else
 			{
 				 // Result Field is provided !
-				  cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("XsltMeta.CheckResult.ErrorResultXSLFieldNameOK"), stepinfo); //$NON-NLS-1$
+				  cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("XsltMeta.CheckResult.ErrorResultXSLFieldNameOK"), stepMeta); //$NON-NLS-1$
 		          remarks.add(cr);
 			}
 		}else{
-			if(getXslFilename()==null)
+			if(xslfilename==null)
 			{
 				 // Result Field is missing !
-				  cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("XsltMeta.CheckResult.ErrorXSLFileNameMissing"), stepinfo); //$NON-NLS-1$
+				  cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("XsltMeta.CheckResult.ErrorXSLFileNameMissing"), stepMeta); //$NON-NLS-1$
 		          remarks.add(cr);
 
+			}else{
+				// Check if it's exist and it's a file
+				String RealFilename=transMeta.environmentSubstitute(xslfilename);
+				File f=new File(RealFilename);
+				
+				if (f.exists())
+	            {
+	                if (f.isFile())
+	                {
+	                    cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("XsltMeta.CheckResult.FileExists", RealFilename),stepMeta);
+	                    remarks.add(cr);
+	                }
+	                else
+	                {
+	                    cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("XsltMeta.CheckResult.ExistsButNoFile",	RealFilename), stepMeta);
+	                    remarks.add(cr);
+	                }
+	            }
+	            else
+	            {
+	                cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("XsltMeta.CheckResult.FileNotExists", RealFilename),
+	                        stepMeta);
+	                remarks.add(cr);
+	            }
 			}
 		}
 		

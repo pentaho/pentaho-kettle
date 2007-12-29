@@ -79,6 +79,8 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 	public int loglevel;
 
 	public boolean execPerRow;
+	
+	public boolean setAppendLogfile;
 
 	public JobEntryShell(String name)
 	{
@@ -116,6 +118,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 		retval.append("      ").append(XMLHandler.addTagValue("exec_per_row", execPerRow));
 		retval.append("      ").append(XMLHandler.addTagValue("set_logfile", setLogfile));
 		retval.append("      ").append(XMLHandler.addTagValue("logfile", logfile));
+		retval.append("      ").append(XMLHandler.addTagValue("set_append_logfile",     setAppendLogfile));
 		retval.append("      ").append(XMLHandler.addTagValue("logext", logext));
 		retval.append("      ").append(XMLHandler.addTagValue("add_date", addDate));
 		retval.append("      ").append(XMLHandler.addTagValue("add_time", addTime));
@@ -144,6 +147,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 			argFromPrevious = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "arg_from_previous"));
 			execPerRow = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "exec_per_row"));
 			setLogfile = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "set_logfile"));
+			setAppendLogfile = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "set_append_logfile") );
 			addDate = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "add_date"));
 			addTime = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "add_time"));
 			logfile = XMLHandler.getTagValue(entrynode, "logfile");
@@ -181,6 +185,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 			execPerRow = rep.getJobEntryAttributeBoolean(id_jobentry, "exec_per_row");
 
 			setLogfile = rep.getJobEntryAttributeBoolean(id_jobentry, "set_logfile");
+			setAppendLogfile       = rep.getJobEntryAttributeBoolean(id_jobentry, "set_append_logfile");
 			addDate = rep.getJobEntryAttributeBoolean(id_jobentry, "add_date");
 			addTime = rep.getJobEntryAttributeBoolean(id_jobentry, "add_time");
 			logfile = rep.getJobEntryAttributeString(id_jobentry, "logfile");
@@ -217,6 +222,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 			rep.saveJobEntryAttribute(id_job, getID(), "arg_from_previous", argFromPrevious);
 			rep.saveJobEntryAttribute(id_job, getID(), "exec_per_row", execPerRow);
 			rep.saveJobEntryAttribute(id_job, getID(), "set_logfile", setLogfile);
+			rep.saveJobEntryAttribute(id_job, getID(), "set_append_logfile", setAppendLogfile);
 			rep.saveJobEntryAttribute(id_job, getID(), "add_date", addDate);
 			rep.saveJobEntryAttribute(id_job, getID(), "add_time", addTime);
 			rep.saveJobEntryAttribute(id_job, getID(), "logfile", logfile);
@@ -251,6 +257,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 		logext = null;
 		setLogfile = false;
 		execPerRow = false;
+		setAppendLogfile=false;
 	}
 
 	public void setFileName(String n)
@@ -313,7 +320,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 		{
 			try
 			{
-				appender = LogWriter.createFileAppender(environmentSubstitute(getLogFilename()), true);
+				appender = LogWriter.createFileAppender(environmentSubstitute(getLogFilename()), true,setAppendLogfile);
 			} catch (KettleException e)
 			{
 				log.logError(toString(), "Unable to open file appender for file [" + getLogFilename()

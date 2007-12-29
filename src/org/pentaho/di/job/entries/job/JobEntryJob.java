@@ -83,6 +83,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 
 	public  boolean parallel;
     private String directoryPath;
+    public boolean setAppendLogfile;
     
     private SlaveServer remoteSlaveServer;
 
@@ -210,7 +211,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 		{
 			retval.append("      ").append(XMLHandler.addTagValue("argument"+i, arguments[i]));
 		}
-
+		retval.append("      ").append(XMLHandler.addTagValue("set_append_logfile",     setAppendLogfile));
 		return retval.toString();
 	}
 
@@ -230,7 +231,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 			logfile = XMLHandler.getTagValue(entrynode, "logfile");
 			logext = XMLHandler.getTagValue(entrynode, "logext");
 			loglevel = LogWriter.getLogLevel( XMLHandler.getTagValue(entrynode, "loglevel"));
-			
+			setAppendLogfile = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "set_append_logfile") );
 			String remoteSlaveServerName = XMLHandler.getTagValue(entrynode, "slave_server_name");
 			remoteSlaveServer = SlaveServer.findSlaveServer(slaveServers, remoteSlaveServerName);
 
@@ -277,7 +278,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 			logfile          = rep.getJobEntryAttributeString(id_jobentry, "logfile");
 			logext           = rep.getJobEntryAttributeString(id_jobentry, "logext");
 			loglevel         = LogWriter.getLogLevel( rep.getJobEntryAttributeString(id_jobentry, "loglevel") );
-
+			setAppendLogfile       = rep.getJobEntryAttributeBoolean(id_jobentry, "set_append_logfile");
 			String remoteSlaveServerName = rep.getJobEntryAttributeString(id_jobentry, "slave_server_name");
 			remoteSlaveServer = SlaveServer.findSlaveServer(slaveServers, remoteSlaveServerName);
 
@@ -317,6 +318,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 			rep.saveJobEntryAttribute(id_job, getID(), "add_time", addTime);
 			rep.saveJobEntryAttribute(id_job, getID(), "logfile", logfile);
 			rep.saveJobEntryAttribute(id_job, getID(), "logext", logext);
+			rep.saveJobEntryAttribute(id_job, getID(), "set_append_logfile", setAppendLogfile);
 			rep.saveJobEntryAttribute(id_job, getID(), "loglevel", LogWriter.getLogLevelDesc(loglevel));
 			rep.saveJobEntryAttribute(id_job, getID(), "slave_server_name", remoteSlaveServer!=null ? remoteSlaveServer.getName() : null);
 
@@ -347,7 +349,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
         {
             try
             {
-                appender = LogWriter.createFileAppender(environmentSubstitute(getLogFilename()), true);
+                appender = LogWriter.createFileAppender(environmentSubstitute(getLogFilename()), true,setAppendLogfile);
             }
             catch(KettleException e)
             {
@@ -715,6 +717,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 		logfile=null;
 		logext=null;
 		setLogfile=false;
+		setAppendLogfile=false;
 	}
 
 	public boolean evaluates()

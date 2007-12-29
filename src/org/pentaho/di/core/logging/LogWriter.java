@@ -237,6 +237,39 @@ public class LogWriter
 			throw new KettleFileException("Unable to add Kettle file appender to Log4J", e);
 		}
     }
+	/**
+	 * Create a file appender 
+	 * @param filename The (VFS) filename (URL) to write to.
+	 * @param exact is this an exact filename of a filename to be stored in "java.io.tmp"
+	 * @param append
+	 * @return A new file appender
+	 * @throws KettleFileException In case there is a problem opening the file.
+	 */
+	public static final Log4jFileAppender createFileAppender(String filename, boolean exact,boolean append) throws KettleFileException
+	{
+		try
+		{
+            FileObject file;
+	        if (!exact)
+	        {
+	            file = KettleVFS.createTempFile(filename, ".log", System.getProperty("java.io.tmpdir"));
+	        }
+	        else
+	        {
+	            file = KettleVFS.getFileObject(filename);
+	        }
+	        
+	        Log4jFileAppender appender = new Log4jFileAppender(file,append);
+	        appender.setLayout(new Log4jKettleLayout(true));
+	        appender.setName(LogWriter.createFileAppenderName(filename, exact));
+            
+            return appender;
+		}
+		catch(IOException e)
+		{
+			throw new KettleFileException("Unable to add Kettle file appender to Log4J", e);
+		}
+    }
 	
 	public static final String createFileAppenderName(String filename, boolean exact)
 	{

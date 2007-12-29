@@ -47,6 +47,9 @@ import org.pentaho.di.core.fileinput.FileInputList;
  */
 public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 {	
+	private static final String NO = "N";
+	private static final String YES = "Y";
+	
 	/** Array of filenames */
 	private  String  fileName[]; 
 
@@ -94,6 +97,9 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
     
     /** Flag: set XML Validating **/
     private boolean validating;
+    
+	/** Array of boolean values as string, indicating if a file is required. */
+	private  String  fileRequired[];
 	
 	public getXMLDataMeta()
 	{
@@ -209,6 +215,15 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
         this.fileMask = fileMask;
     }
     
+	public String[] getFileRequired() {
+		return fileRequired;
+	}
+    
+	public void setFileRequired(String[] fileRequired) {
+		this.fileRequired = fileRequired;
+	}
+
+	
     /**
      * @return Returns the fileName.
      */
@@ -391,6 +406,7 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
         {
             retval.append("      ").append(XMLHandler.addTagValue("name",     fileName[i]));
             retval.append("      ").append(XMLHandler.addTagValue("filemask", fileMask[i]));
+            retval.append("      ").append(XMLHandler.addTagValue("file_required", fileRequired[i]));
         }
         retval.append("    </file>").append(Const.CR);
         
@@ -439,8 +455,10 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 			{
 				Node filenamenode = XMLHandler.getSubNodeByNr(filenode, "name", i); 
 				Node filemasknode = XMLHandler.getSubNodeByNr(filenode, "filemask", i); 
+				Node fileRequirednode = XMLHandler.getSubNodeByNr(filenode, "file_required", i);
 				fileName[i] = XMLHandler.getNodeValue(filenamenode);
 				fileMask[i] = XMLHandler.getNodeValue(filemasknode);
+				fileRequired[i] = XMLHandler.getNodeValue(fileRequirednode);
 			}
 			
 			for (int i=0;i<nrFields;i++)
@@ -471,6 +489,7 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		fileName    = new String [nrfiles];
 		fileMask    = new String [nrfiles];
+		fileRequired = new String[nrfiles];
 		inputFields = new getXMLDataField[nrfields];       
 	}
 	
@@ -495,6 +514,7 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			fileName[i] = "filename"+(i+1);
 			fileMask[i] = "";
+			fileRequired[i] = NO;
 		}
 		
 		for (int i=0;i<nrFields;i++)
@@ -569,6 +589,8 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 			{
 				fileName[i] =      rep.getStepAttributeString (id_step, i, "file_name"    );
 				fileMask[i] =      rep.getStepAttributeString (id_step, i, "file_mask"    );
+				fileRequired[i] = rep.getStepAttributeString(id_step, i, "file_required");
+                if(!YES.equalsIgnoreCase(fileRequired[i]))    	fileRequired[i] = NO;
 			}
 
 			for (int i=0;i<nrFields;i++)
@@ -623,6 +645,7 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 			{
 				rep.saveStepAttribute(id_transformation, id_step, i, "file_name",     fileName[i]);
 				rep.saveStepAttribute(id_transformation, id_step, i, "file_mask",     fileMask[i]);
+				rep.saveStepAttribute(id_transformation, id_step, i, "file_required", fileRequired[i]);
 			}
 			
 			for (int i=0;i<inputFields.length;i++)

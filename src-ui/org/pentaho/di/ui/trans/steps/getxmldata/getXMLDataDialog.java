@@ -59,7 +59,6 @@ import java.io.InputStreamReader;
 import java.io.FileInputStream;
 import javax.xml.xpath.XPathFactory;
 import javax.xml.xpath.XPathConstants;
-//import be.ibridge.kettle.trans.step.BaseStep;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
@@ -91,6 +90,8 @@ import org.pentaho.di.core.vfs.KettleVFS;
 
 public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterface
 {
+	private static final String[] YES_NO_COMBO = new String[] { Messages.getString("System.Combo.No"), Messages.getString("System.Combo.Yes") };
+	
 	private CTabFolder   wTabFolder;
 	private FormData     fdTabFolder;
 	
@@ -469,20 +470,15 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		fdbShowFiles.bottom = new FormAttachment(100, 0);
 		wbShowFiles.setLayoutData(fdbShowFiles);
 
-		ColumnInfo[] colinfo=new ColumnInfo[2];
-		colinfo[ 0]=new ColumnInfo(
-      Messages.getString("getXMLDataDialog.Files.Filename.Column"),
-      ColumnInfo.COLUMN_TYPE_TEXT,
-      false);
-		colinfo[ 1]=new ColumnInfo(
-      Messages.getString("getXMLDataDialog.Files.Wildcard.Column"),
-      ColumnInfo.COLUMN_TYPE_TEXT,
-      false );
-		
+		ColumnInfo[] colinfo=new ColumnInfo[3];
+		colinfo[ 0]=new ColumnInfo( Messages.getString("getXMLDataDialog.Files.Filename.Column"), ColumnInfo.COLUMN_TYPE_TEXT, false);
+		colinfo[ 1]=new ColumnInfo( Messages.getString("getXMLDataDialog.Files.Wildcard.Column"),ColumnInfo.COLUMN_TYPE_TEXT, false );
+
 		colinfo[0].setUsingVariables(true);
 		colinfo[1].setUsingVariables(true);
-		colinfo[ 1].setToolTip(Messages.getString("getXMLDataDialog.Files.Wildcard.Tooltip"));
-		
+		colinfo[1].setToolTip(Messages.getString("getXMLDataDialog.Files.Wildcard.Tooltip"));
+		colinfo[2]=new ColumnInfo(Messages.getString("getXMLDataDialog.Required.Column"),ColumnInfo.COLUMN_TYPE_CCOMBO,  YES_NO_COMBO );
+		colinfo[2].setToolTip(Messages.getString("getXMLDataDialog.Required.Tooltip"));		
 		
 		wFilenameList = new TableView(transMeta,wFileComp, 
 						      SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, 
@@ -1356,7 +1352,7 @@ private boolean IsDate(String str)
             gotEncodings = true;
             
             wEncoding.removeAll();
-            ArrayList values = new ArrayList(Charset.availableCharsets().values());
+            ArrayList<Charset> values = new ArrayList<Charset>(Charset.availableCharsets().values());
             for (int i=0;i<values.size();i++)
             {
                 Charset charSet = (Charset)values.get(i);
@@ -1394,8 +1390,10 @@ private boolean IsDate(String str)
 			wFilenameList.removeAll();
 			for (int i=0;i<in.getFileName().length;i++) 
 			{
-				wFilenameList.add(new String[] { in.getFileName()[i], in.getFileMask()[i] } );
+				wFilenameList.add(new String[] { in.getFileName()[i], in.getFileMask()[i],in.getFileRequired()[i] } );
 			}
+			
+			
 			wFilenameList.removeEmptyRows();
 			wFilenameList.setRowNums();
 			wFilenameList.optWidth(true);
@@ -1517,6 +1515,7 @@ private boolean IsDate(String str)
 
 		in.setFileName( wFilenameList.getItems(0) );
 		in.setFileMask( wFilenameList.getItems(1) );
+		in.setFileRequired( wFilenameList.getItems(2) );
 
 		for (int i=0;i<nrFields;i++)
 		{

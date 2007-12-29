@@ -149,6 +149,12 @@ public class JobEntryShellDialog extends JobEntryDialog implements JobEntryDialo
     private JobEntryShell jobEntry;
 
     private boolean backupChanged, backupLogfile, backupDate, backupTime;
+    
+    private Label wlAppendLogfile;
+
+    private Button wAppendLogfile;
+
+    private FormData fdlAppendLogfile, fdAppendLogfile;
 
     private Display display;
 
@@ -297,6 +303,30 @@ public class JobEntryShellDialog extends JobEntryDialog implements JobEntryDialo
                 setActive();
             }
         });
+        // Append logfile?
+        wlAppendLogfile = new Label(wLogging, SWT.RIGHT);
+        wlAppendLogfile.setText(Messages.getString("JobShell.Append.Logfile.Label"));
+        props.setLook(wlAppendLogfile);
+        fdlAppendLogfile = new FormData();
+        fdlAppendLogfile.left = new FormAttachment(0, 0);
+        fdlAppendLogfile.top = new FormAttachment(wSetLogfile, margin);
+        fdlAppendLogfile.right = new FormAttachment(middle, -margin);
+        wlAppendLogfile.setLayoutData(fdlAppendLogfile);
+        wAppendLogfile = new Button(wLogging, SWT.CHECK);
+        wAppendLogfile.setToolTipText(Messages.getString("JobShell.Append.Logfile.Tooltip"));
+        props.setLook(wAppendLogfile);
+        fdAppendLogfile = new FormData();
+        fdAppendLogfile.left = new FormAttachment(middle, 0);
+        fdAppendLogfile.top = new FormAttachment(wSetLogfile, margin);
+        fdAppendLogfile.right = new FormAttachment(100, 0);
+        wAppendLogfile.setLayoutData(fdAppendLogfile);
+        wAppendLogfile.addSelectionListener(new SelectionAdapter()
+        {
+            public void widgetSelected(SelectionEvent e)
+            {
+            }
+        });
+
 
         // Set the logfile path + base-name
         wlLogfile = new Label(wLogging, SWT.RIGHT);
@@ -304,7 +334,7 @@ public class JobEntryShellDialog extends JobEntryDialog implements JobEntryDialo
         props.setLook(wlLogfile);
         fdlLogfile = new FormData();
         fdlLogfile.left = new FormAttachment(0, 0);
-        fdlLogfile.top = new FormAttachment(wlSetLogfile, margin);
+        fdlLogfile.top = new FormAttachment(wAppendLogfile, margin);
         fdlLogfile.right = new FormAttachment(middle, 0);
         wlLogfile.setLayoutData(fdlLogfile);
         wLogfile = new TextVar(jobMeta, wLogging, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
@@ -312,7 +342,7 @@ public class JobEntryShellDialog extends JobEntryDialog implements JobEntryDialo
         props.setLook(wLogfile);
         fdLogfile = new FormData();
         fdLogfile.left = new FormAttachment(middle, 0);
-        fdLogfile.top = new FormAttachment(wlSetLogfile, margin);
+        fdLogfile.top = new FormAttachment(wAppendLogfile, margin);
         fdLogfile.right = new FormAttachment(100, 0);
         wLogfile.setLayoutData(fdLogfile);
 
@@ -365,14 +395,14 @@ public class JobEntryShellDialog extends JobEntryDialog implements JobEntryDialo
         props.setLook(wlAddTime);
         fdlAddTime = new FormData();
         fdlAddTime.left = new FormAttachment(0, 0);
-        fdlAddTime.top = new FormAttachment(wlAddDate, margin);
+        fdlAddTime.top = new FormAttachment(wAddDate, margin);
         fdlAddTime.right = new FormAttachment(middle, -margin);
         wlAddTime.setLayoutData(fdlAddTime);
         wAddTime = new Button(wLogging, SWT.CHECK);
         props.setLook(wAddTime);
         fdAddTime = new FormData();
         fdAddTime.left = new FormAttachment(middle, 0);
-        fdAddTime.top = new FormAttachment(wlAddDate, margin);
+        fdAddTime.top = new FormAttachment(wAddDate, margin);
         fdAddTime.right = new FormAttachment(100, 0);
         wAddTime.setLayoutData(fdAddTime);
         wAddTime.addSelectionListener(new SelectionAdapter()
@@ -390,7 +420,7 @@ public class JobEntryShellDialog extends JobEntryDialog implements JobEntryDialo
         fdlLoglevel = new FormData();
         fdlLoglevel.left = new FormAttachment(0, 0);
         fdlLoglevel.right = new FormAttachment(middle, -margin);
-        fdlLoglevel.top = new FormAttachment(wlAddTime, margin);
+        fdlLoglevel.top = new FormAttachment(wAddTime, margin);
         wlLoglevel.setLayoutData(fdlLoglevel);
         wLoglevel = new CCombo(wLogging, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
         for (int i = 0; i < LogWriter.log_level_desc_long.length; i++)
@@ -400,7 +430,7 @@ public class JobEntryShellDialog extends JobEntryDialog implements JobEntryDialo
         props.setLook(wLoglevel);
         fdLoglevel = new FormData();
         fdLoglevel.left = new FormAttachment(middle, 0);
-        fdLoglevel.top = new FormAttachment(wlAddTime, margin);
+        fdLoglevel.top = new FormAttachment(wAddTime, margin);
         fdLoglevel.right = new FormAttachment(100, 0);
         wLoglevel.setLayoutData(fdLoglevel);
 
@@ -608,6 +638,10 @@ public class JobEntryShellDialog extends JobEntryDialog implements JobEntryDialo
 
         wlLoglevel.setEnabled(jobEntry.setLogfile);
         wLoglevel.setEnabled(jobEntry.setLogfile);
+        
+        wlAppendLogfile.setEnabled(jobEntry.setLogfile);
+        wAppendLogfile.setEnabled(jobEntry.setLogfile); 
+        
         if (jobEntry.setLogfile)
         {
             wLoglevel.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
@@ -647,7 +681,7 @@ public class JobEntryShellDialog extends JobEntryDialog implements JobEntryDialo
             wLogext.setText(jobEntry.logext);
         wAddDate.setSelection(jobEntry.addDate);
         wAddTime.setSelection(jobEntry.addTime);
-
+        wAppendLogfile.setSelection(jobEntry.setAppendLogfile);
         wLoglevel.select(jobEntry.loglevel + 1);
     }
 
@@ -691,6 +725,7 @@ public class JobEntryShellDialog extends JobEntryDialog implements JobEntryDialo
         jobEntry.logfile = wLogfile.getText();
         jobEntry.logext = wLogext.getText();
         jobEntry.loglevel = wLoglevel.getSelectionIndex() - 1;
+        jobEntry.setAppendLogfile = wAppendLogfile.getSelection();
         dispose();
     }
 }
