@@ -421,6 +421,30 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface
 			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("FilterRowsMeta.CheckResult.PlsSpecifyBothTrueAndFalseStep"), stepinfo); //$NON-NLS-1$
 			remarks.add(cr);
 		}
+				
+		if ( getSendTrueStepname() != null )
+		{
+			int trueTargetIdx = Const.indexOfString(getSendTrueStepname(), output);
+			if ( trueTargetIdx < 0 )
+			{
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, 
+						             Messages.getString("FilterRowsMeta.CheckResult.TargetStepInvalid", "true", getSendTrueStepname()), 
+						             stepinfo);
+				remarks.add(cr);
+			}
+		}
+
+		if ( getSendFalseStepname() != null )
+		{
+			int falseTargetIdx = Const.indexOfString(getSendFalseStepname(), output);
+			if ( falseTargetIdx < 0 )
+			{
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, 
+						             Messages.getString("FilterRowsMeta.CheckResult.TargetStepInvalid", "false", getSendFalseStepname()), 
+						             stepinfo);
+				remarks.add(cr);
+			}
+		}
 		
 		// Look up fields in the input stream <prev>
 		if (prev!=null && prev.size()>0)
@@ -486,5 +510,5 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface
 	public StepDataInterface getStepData()
 	{
 		return new FilterRowsData();
-	}
+	}	
 }
