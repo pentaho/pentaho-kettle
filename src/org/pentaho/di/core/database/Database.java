@@ -2227,6 +2227,7 @@ public class Database implements VariableSpace
 		// For now, we just try to get the field layout on the re-bound in the exception block below.
 		//
 		if (databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_ORACLE ||
+			databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_H2 ||
 			databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_GENERIC)
 		{
 			return getQueryFieldsFallback(sql, param, inform, data);
