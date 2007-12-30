@@ -13,7 +13,7 @@
  **                                                                   **
  **********************************************************************/
 
-package org.pentaho.di.trans.steps.tableinput;
+package org.pentaho.di.trans.steps.databaselookup;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -46,13 +46,21 @@ import org.pentaho.di.trans.steps.tableinput.TableInputMeta;
 
 
 /**
- * Test class for tableinput. H2 is used as database in memory to get 
- * an easy playground for database tests. H2 does not support all SQL 
- * features but it should proof enough for most of our tests.
+ * Test class for database lookup. H2 is used
+ * as database in memory to get an easy playground for database
+ * tests. H2 does not support all SQL features but it should
+ * proof enough for most of our tests.
+ * 
+ * Still to do:
+ *  - cache testing.
+ *  - Do not pass rows functionality/eat rows on failed lookup
+ *  - Fail on multiple rows
+ *  - Order by
+ *  - Different comparators
  *
  * @author Sven Boden
  */
-public class TableInputTest extends TestCase
+public class DatabaseLookupTest extends TestCase
 {
     public static final String[] databasesXML = {
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
@@ -68,55 +76,55 @@ public class TableInputTest extends TestCase
           "</connection>",
     };
 
-    private static String source_table = "table_source1";
+    private static String lookup_table = "lookup_table1";
 
     private static String insertStatement[] = 
     {
     	// New rows for the source
-        "INSERT INTO " + source_table + "(ID, CODE) " +
-        "VALUES (1, 100)",
+        "INSERT INTO " + lookup_table + "(ID, CODE, STRING) " +
+        "VALUES (1, 100, '1')",
         
-        "INSERT INTO " + source_table + "(ID, CODE) " +
-        "VALUES (2, 100)",
+        "INSERT INTO " + lookup_table + "(ID, CODE, STRING) " +
+        "VALUES (2, 100, '2')",
         
-        "INSERT INTO " + source_table + "(ID, CODE) " +
-        "VALUES (3, 100)",
+        "INSERT INTO " + lookup_table + "(ID, CODE, STRING) " +
+        "VALUES (3, 100, '3')",
 
-        "INSERT INTO " + source_table + "(ID, CODE) " +
-        "VALUES (4, 100)",
+        "INSERT INTO " + lookup_table + "(ID, CODE, STRING) " +
+        "VALUES (4, 100, '4')",
 
-        "INSERT INTO " + source_table + "(ID, CODE) " +
-        "VALUES (5, 101)",
+        "INSERT INTO " + lookup_table + "(ID, CODE, STRING) " +
+        "VALUES (5, 101, '5')",
         
-        "INSERT INTO " + source_table + "(ID, CODE) " +
-        "VALUES (6, 101)",
+        "INSERT INTO " + lookup_table + "(ID, CODE, STRING) " +
+        "VALUES (6, 101, '6')",
         
-        "INSERT INTO " + source_table + "(ID, CODE) " +
-        "VALUES (7, 101)",
+        "INSERT INTO " + lookup_table + "(ID, CODE, STRING) " +
+        "VALUES (7, 101, '7')",
 
-        "INSERT INTO " + source_table + "(ID, CODE) " +
-        "VALUES (8, 101)",
+        "INSERT INTO " + lookup_table + "(ID, CODE, STRING) " +
+        "VALUES (8, 101, '8')",
         
-        "INSERT INTO " + source_table + "(ID, CODE) " +
-        "VALUES (9,  102)",
+        "INSERT INTO " + lookup_table + "(ID, CODE, STRING) " +
+        "VALUES (9, 102, '9')",
         
-        "INSERT INTO " + source_table + "(ID, CODE) " +
-        "VALUES (10, 102)",
+        "INSERT INTO " + lookup_table + "(ID, CODE, STRING) " +
+        "VALUES (10, 102, '10')",
         
-        "INSERT INTO " + source_table + "(ID, CODE) " +
-        "VALUES (11, 102)",
+        "INSERT INTO " + lookup_table + "(ID, CODE, STRING) " +
+        "VALUES (11, 102, '11')",
 
-        "INSERT INTO " + source_table + "(ID, CODE) " +
-        "VALUES (12, 102)",
+        "INSERT INTO " + lookup_table + "(ID, CODE, STRING) " +
+        "VALUES (12, 102, '12')",
         
-        "INSERT INTO " + source_table + "(ID, CODE) " +
-        "VALUES (13, 103)",
+        "INSERT INTO " + lookup_table + "(ID, CODE, STRING) " +
+        "VALUES (13, 103, '13')",
 
-        "INSERT INTO " + source_table + "(ID, CODE) " +
-        "VALUES (14, 103)",
+        "INSERT INTO " + lookup_table + "(ID, CODE, STRING) " +
+        "VALUES (14, 103, '14')",
         
-        "INSERT INTO " + source_table + "(ID, CODE) " +
-        "VALUES (15, 103)"        
+        "INSERT INTO " + lookup_table + "(ID, CODE, STRING) " +
+        "VALUES (15, 103, '15')"        
     };
     
 	public RowMetaInterface createSourceRowMetaInterface()
@@ -124,8 +132,9 @@ public class TableInputTest extends TestCase
 		RowMetaInterface rm = new RowMeta();
 
 		ValueMetaInterface valuesMeta[] = {
-			    new ValueMeta("ID",   ValueMeta.TYPE_INTEGER, 8, 0),
-			    new ValueMeta("CODE", ValueMeta.TYPE_INTEGER,  8, 0),
+			    new ValueMeta("ID",     ValueMeta.TYPE_INTEGER,  8, 0),
+			    new ValueMeta("CODE",   ValueMeta.TYPE_INTEGER,  8, 0),
+			    new ValueMeta("STRING", ValueMeta.TYPE_STRING,  30, 0)
 	    };
 
 		for (int i=0; i < valuesMeta.length; i++ )
@@ -141,13 +150,13 @@ public class TableInputTest extends TestCase
 	 */
 	public void createTables(Database db) throws Exception
 	{		
-		String source = db.getCreateTableStatement(source_table, createSourceRowMetaInterface(), null, false, null, true);
+		String source = db.getCreateTableStatement(lookup_table, createSourceRowMetaInterface(), null, false, null, true);
 		try  {
 		    db.execStatement(source);
 		}
 		catch ( KettleException ex ) 
 		{
-			fail("failure while creating table " + source_table + ": " + ex.getMessage());	
+			fail("failure while creating table " + lookup_table + ": " + ex.getMessage());	
 		}						
 	}
 
@@ -189,9 +198,9 @@ public class TableInputTest extends TestCase
 		
 		RowMetaInterface rm = createRowMetaInterface();
 		
-		Object[] r1 = new Object[] { new Long(100L) };
-		Object[] r2 = new Object[] { new Long(101L) };
-		Object[] r3 = new Object[] { new Long(103L) };
+		Object[] r1 = new Object[] { new Long( 5L) };
+		Object[] r2 = new Object[] { new Long( 9L) };
+		Object[] r3 = new Object[] { new Long(20L) };  // non-existing one.
 		
 		list.add(new RowMetaAndData(rm, r1));
 		list.add(new RowMetaAndData(rm, r2));
@@ -200,6 +209,25 @@ public class TableInputTest extends TestCase
 		return list;
 	}	
 
+	public RowMetaInterface createResultRowMetaInterface()
+	{
+		RowMetaInterface rm = new RowMeta();
+
+		ValueMetaInterface valuesMeta[] = {
+			    new ValueMeta("int_gield",  ValueMeta.TYPE_INTEGER,  8, 0),
+			    new ValueMeta("RET_CODE",   ValueMeta.TYPE_INTEGER,  8, 0),
+			    new ValueMeta("RET_STRING", ValueMeta.TYPE_STRING,  30, 0)
+	    };
+
+		for (int i=0; i < valuesMeta.length; i++ )
+		{
+			rm.addValueMeta(valuesMeta[i]);
+		}
+		
+		return rm;
+	}       	
+	
+	
 	/**
 	 * Create the result rows for a test.
 	 */
@@ -207,31 +235,15 @@ public class TableInputTest extends TestCase
 	{
 		List<RowMetaAndData> list = new ArrayList<RowMetaAndData>();	
 		
-		RowMetaInterface rm = createSourceRowMetaInterface();
+		RowMetaInterface rm = createResultRowMetaInterface();
 		
-		Object[] r1  = new Object[] { new Long(1L),   new Long(100L) };
-		Object[] r2  = new Object[] { new Long(2L),   new Long(100L) };
-		Object[] r3  = new Object[] { new Long(3L),   new Long(100L) };
-		Object[] r4  = new Object[] { new Long(4L),   new Long(100L) };
-		Object[] r5  = new Object[] { new Long(5L),   new Long(101L) };
-		Object[] r6  = new Object[] { new Long(6L),   new Long(101L) };
-		Object[] r7  = new Object[] { new Long(7L),   new Long(101L) };
-		Object[] r8  = new Object[] { new Long(8L),   new Long(101L) };
-		Object[] r9  = new Object[] { new Long(13L),  new Long(103L) };
-		Object[] r10 = new Object[] { new Long(14L),  new Long(103L) };
-		Object[] r11 = new Object[] { new Long(15L),  new Long(103L) };
+		Object[] r1  = new Object[] { new Long(5L),   new Long(101L), "5" };
+		Object[] r2  = new Object[] { new Long(9L),   new Long(102L), "9" };
+		Object[] r3  = new Object[] { new Long(20L),  new Long(-1L),  "UNDEF" };
 		
 		list.add(new RowMetaAndData(rm, r1));
 		list.add(new RowMetaAndData(rm, r2));
 		list.add(new RowMetaAndData(rm, r3));
-		list.add(new RowMetaAndData(rm, r4));
-		list.add(new RowMetaAndData(rm, r5));
-		list.add(new RowMetaAndData(rm, r6));
-		list.add(new RowMetaAndData(rm, r7));
-		list.add(new RowMetaAndData(rm, r8));
-		list.add(new RowMetaAndData(rm, r9));
-		list.add(new RowMetaAndData(rm, r10));
-		list.add(new RowMetaAndData(rm, r11));
 		
 		return list;
 	}	
@@ -282,13 +294,9 @@ public class TableInputTest extends TestCase
     }
     
 	/**
-	 * Test case for table input which is taking its input from a hop. This is
-	 * a regression test case for JIRA PDI-588.
-	 * 
-	 * The query in the table input step has one '?' and this parameter is filled
-	 * by values read from an input hop.
+	 * Basic Test case for database lookup.
 	 */
-    public void testTableInputWithParam() throws Exception
+    public void testBasicDatabaseLookup() throws Exception
     {
         EnvUtil.environmentInit();
         try
@@ -329,24 +337,33 @@ public class TableInputTest extends TestCase
             transMeta.addStep(injectorStep);            
             
             // 
-            // create the source step...
+            // create the lookup step...
             //
-            String fromstepname = "read from [" + source_table + "]";
-            TableInputMeta tii = new TableInputMeta();
-            tii.setDatabaseMeta(transMeta.findDatabase("db"));
-            tii.setLookupFromStep(injectorStep);
-            tii.setExecuteEachInputRow(true);
-            String selectSQL = "SELECT "+Const.CR;
-            selectSQL+="ID, CODE ";
-            selectSQL+="FROM " + source_table + " WHERE CODE = ? ORDER BY ID, CODE;";
-            tii.setSQL(selectSQL);
-
-            String fromstepid = steploader.getStepPluginID(tii);
-            StepMeta fromstep = new StepMeta(fromstepid, fromstepname, (StepMetaInterface) tii);
-            fromstep.setDescription("Reads information from table [" + source_table + "] on database [" + dbInfo + "]");
-            transMeta.addStep(fromstep);
+            String lookupName = "look up from [" + lookup_table + "]";
+            DatabaseLookupMeta dbl = new DatabaseLookupMeta();
+            dbl.setDatabaseMeta(transMeta.findDatabase("db"));
+            dbl.setTablename(lookup_table);
+            dbl.setCached(false);
+            dbl.setEatingRowOnLookupFailure(false);
+            dbl.setFailingOnMultipleResults(false);
+            dbl.setOrderByClause("");
             
-            TransHopMeta hi = new TransHopMeta(injectorStep, fromstep);
+            dbl.setTableKeyField(new String[] {"ID"});
+            dbl.setKeyCondition(new String[] {"="});
+            dbl.setStreamKeyField1(new String[] {"int_field"});
+            dbl.setStreamKeyField2(new String[] {""});
+            
+            dbl.setReturnValueField(new String[] {"CODE", "STRING"});
+            dbl.setReturnValueDefaultType( new int[] {ValueMeta.TYPE_INTEGER, ValueMeta.TYPE_STRING});      
+            dbl.setReturnValueDefault(new String[] {"-1", "UNDEF"});
+            dbl.setReturnValueNewName(new String[] {"RET_CODE", "RET_STRING"});
+            
+            String lookupId = steploader.getStepPluginID(dbl);
+            StepMeta lookupStep = new StepMeta(lookupId, lookupName, (StepMetaInterface) dbl);
+            lookupStep.setDescription("Reads information from table [" + lookup_table + "] on database [" + dbInfo + "]");
+            transMeta.addStep(lookupStep);
+            
+            TransHopMeta hi = new TransHopMeta(injectorStep, lookupStep);
             transMeta.addTransHop(hi);
 
             // Now execute the transformation...
@@ -354,7 +371,7 @@ public class TableInputTest extends TestCase
 
             trans.prepareExecution(null);
                     
-            StepInterface si = trans.getStepInterface(fromstepname, 0);
+            StepInterface si = trans.getStepInterface(lookupName, 0);
             RowStepCollector rc = new RowStepCollector();
             si.addRowListener(rc);
             
