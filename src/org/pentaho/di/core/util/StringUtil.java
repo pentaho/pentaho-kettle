@@ -21,8 +21,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleValueException;
@@ -100,8 +98,6 @@ public class StringUtil
     	 "sun.os.patch.level",
       };
   
-	private static final Pattern ALL_LETTERS = Pattern.compile("([a-z])");
-
 	/**
 	 * Substitutes variables in <code>aString</code>. Variable names are
 	 * delimited by open and close strings. The values are retrieved from the
@@ -344,14 +340,16 @@ public class StringUtil
 		if (st == null || st.trim().length() == 0)
 			return "";
 
-		StringBuffer sb = new StringBuffer();
-		Matcher m = ALL_LETTERS.matcher(st);
-		if (m.find(0))
-			m.appendReplacement(sb, m.group(1).toUpperCase());
-
-		st = m.appendTail(sb).toString();
-
-		return st;
+		if ( st.substring(0,1).equals(st.substring(0,1).toUpperCase()))
+		{
+			// Already initially capitalized.
+			return st;
+		}
+		else
+		{
+			// Capitalize first character
+			return st.substring(0,1).toUpperCase() + st.substring(1); 
+		}			
 	}
 
 	public static double str2num(String pattern, String decimal, String grouping, String currency,
