@@ -21,6 +21,7 @@ import org.pentaho.di.core.row.RowDataUtilTest;
 import org.pentaho.di.core.row.RowTest;
 import org.pentaho.di.core.row.ValueDataUtilTest;
 import org.pentaho.di.core.row.ValueMetaTest;
+import org.pentaho.di.core.util.StringUtilTest;
 import org.pentaho.di.trans.HopTest;
 import org.pentaho.di.trans.steps.addsequence.AddSequenceTest;
 import org.pentaho.di.trans.steps.append.AppendTest;
@@ -65,6 +66,7 @@ public class AllRegressionTests
         suite.addTestSuite(ValueBooleanTest.class);
         suite.addTestSuite(ValueTest.class);
         suite.addTestSuite(ConstTest.class);
+        suite.addTestSuite(StringUtilTest.class);
         suite.addTestSuite(EncrTest.class);
         
         suite.addTestSuite(ValueMetaTest.class);
