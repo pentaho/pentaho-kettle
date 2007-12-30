@@ -21,7 +21,6 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -42,7 +41,6 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.injector.InjectorMeta;
-import org.pentaho.di.trans.steps.tableinput.TableInputMeta;
 
 
 /**
