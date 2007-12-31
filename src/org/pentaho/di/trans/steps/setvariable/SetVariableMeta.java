@@ -57,6 +57,7 @@ public class SetVariableMeta extends BaseStepMeta implements StepMetaInterface
 	private String fieldName[];
 	private String variableName[];
     private int variableType[];
+    private String defaultValue[];
 	
 	public SetVariableMeta()
 	{
@@ -102,6 +103,23 @@ public class SetVariableMeta extends BaseStepMeta implements StepMetaInterface
     {
         return variableType;
     }
+    
+	/**
+     * @return Returns the defaultValue.
+     */
+    public String[] getDefaultValue()
+    {
+        return defaultValue;
+    }
+    
+    /**
+     * @param fieldName The fieldName to set.
+     */
+    public void setDefaultValue(String[] defaultValue)
+    {
+        this.defaultValue = defaultValue;
+    }
+	
 
     /**
      * @param variableType The variable type, see also VARIABLE_TYPE_...
@@ -163,6 +181,7 @@ public class SetVariableMeta extends BaseStepMeta implements StepMetaInterface
 		fieldName  = new String[count];
 		variableName = new String[count];
         variableType = new int[count];
+        defaultValue  = new String[count];
 	}
 
 	public Object clone()
@@ -200,6 +219,7 @@ public class SetVariableMeta extends BaseStepMeta implements StepMetaInterface
 				fieldName[i]  = XMLHandler.getTagValue(fnode, "field_name"); //$NON-NLS-1$
 				variableName[i] = XMLHandler.getTagValue(fnode, "variable_name"); //$NON-NLS-1$
                 variableType[i] = getVariableType(XMLHandler.getTagValue(fnode, "variable_type")); //$NON-NLS-1$
+                defaultValue[i]  = XMLHandler.getTagValue(fnode, "default_value"); //$NON-NLS-1$
 			}
 		}
 		catch(Exception e)
@@ -219,6 +239,7 @@ public class SetVariableMeta extends BaseStepMeta implements StepMetaInterface
 			fieldName[i] = "field"+i; //$NON-NLS-1$
 			variableName[i] = ""; //$NON-NLS-1$
             variableType[i] = VARIABLE_TYPE_JVM;
+            defaultValue[i]="";
 		}
 	}
 
@@ -234,7 +255,8 @@ public class SetVariableMeta extends BaseStepMeta implements StepMetaInterface
 			retval.append("        ").append(XMLHandler.addTagValue("field_name", fieldName[i])); //$NON-NLS-1$ //$NON-NLS-2$
 			retval.append("        ").append(XMLHandler.addTagValue("variable_name", variableName[i])); //$NON-NLS-1$ //$NON-NLS-2$
             retval.append("        ").append(XMLHandler.addTagValue("variable_type", getVariableTypeCode(variableType[i]))); //$NON-NLS-1$
-			retval.append("        </field>").append(Const.CR); //$NON-NLS-1$
+            retval.append("        ").append(XMLHandler.addTagValue("default_value", defaultValue[i]));
+            retval.append("        </field>").append(Const.CR); //$NON-NLS-1$
 		}
 		retval.append("      </fields>").append(Const.CR); //$NON-NLS-1$
 
@@ -255,6 +277,7 @@ public class SetVariableMeta extends BaseStepMeta implements StepMetaInterface
 				fieldName[i] =          rep.getStepAttributeString(id_step, i, "field_name"); //$NON-NLS-1$
 				variableName[i] = 		rep.getStepAttributeString(id_step, i, "variable_name"); //$NON-NLS-1$
                 variableType[i] = getVariableType(rep.getStepAttributeString(id_step, i, "variable_type")); //$NON-NLS-1$
+                defaultValue[i] = 		rep.getStepAttributeString(id_step, i, "default_value");
 			}
 		}
 		catch(Exception e)
@@ -274,6 +297,7 @@ public class SetVariableMeta extends BaseStepMeta implements StepMetaInterface
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_name",      fieldName[i]); //$NON-NLS-1$
 				rep.saveStepAttribute(id_transformation, id_step, i, "variable_name",     variableName[i]); //$NON-NLS-1$
                 rep.saveStepAttribute(id_transformation, id_step, i, "variable_type",   getVariableTypeCode(variableType[i])); //$NON-NLS-1$
+                rep.saveStepAttribute(id_transformation, id_step, i, "default_value",     defaultValue[i]);
 			}
 		}
 		catch(Exception e)
