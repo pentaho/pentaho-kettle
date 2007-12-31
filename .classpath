@@ -81,6 +81,5 @@
 	<classpathentry kind="lib" path="libswt/win32/swt.jar"/>
 	<classpathentry kind="lib" path="libext/kettle-version-checker-0.1.0.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/pentaho-versionchecker.jar"/>
-	<classpathentry kind="lib" path="libext/json.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

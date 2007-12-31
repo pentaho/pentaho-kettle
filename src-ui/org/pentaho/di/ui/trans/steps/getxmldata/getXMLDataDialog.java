@@ -1208,7 +1208,7 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
     		FileInputList inputList = meta.getFiles(transMeta);
             if(meta.getIsInFields())
             {
-               //  à faire prochainement version Kettle 3   			
+ 			
             }           
             else if (inputList.getFiles().size()>0)
             {
