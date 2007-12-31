@@ -1236,12 +1236,15 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
     				
     				for (int n = 0; n < widgetNodes.getLength(); n++) 
     				{
+    					// Let's take the node
+	    				Node widgetNode = widgetNodes.item(n);
+	    				
 	    				String valueNode=null;
 	    				
-	    				for (int i = 0; i < widgetNodes.item(n).getChildNodes().getLength(); i++) 
+	    				for (int i = 0; i < widgetNode.getChildNodes().getLength(); i++) 
 	    				{
 	    					// Get Node Name
-	    					String nodename=widgetNodes.item(n).getChildNodes().item(i).getNodeName();
+	    					String nodename=widgetNode.getChildNodes().item(i).getNodeName();
 	    					
 	    					if(!list.contains(nodename) && !nodename.equals("#text"))
 	    					{
@@ -1252,7 +1255,7 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		    		           
 		    
 		    		            // Get Node value
-		    		            valueNode=XMLHandler.getNodeValue( widgetNodes.item(n).getChildNodes().item(i) ); 
+		    		            valueNode=XMLHandler.getNodeValue( widgetNode.getChildNodes().item(i) ); 
 		    		           
 		    					// Try to get the Type
 		    		            if(IsDate(valueNode))
@@ -1269,10 +1272,10 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 	    					
 	    				}
 	    				list.clear();
-	    				for (int i = 0; i < widgetNodes.item(n).getAttributes().getLength(); i++) 
+	    				for (int i = 0; i < widgetNode.getAttributes().getLength(); i++) 
 	    				{
-	    					// Get Attribut Name
-	    					String attributname=widgetNodes.item(n).getAttributes().item(i).getNodeName();
+	    					// Get Attribute Name
+	    					String attributname=widgetNode.getAttributes().item(i).getNodeName();
 	    					
 	    					if(!list.contains(attributname))
 	    					{
@@ -1281,8 +1284,8 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		    		            item.setText(2, attributname);
 		    		            item.setText(3, getXMLDataField.ElementTypeDesc[1]);
 		    		            
-		    		            // Get Node value
-		    		            valueNode = widgetNodes.item(n).getAttributes().item(i).getNodeValue(); 
+		    		            // Get attribute value
+		    		            valueNode = widgetNode.getAttributes().item(i).getNodeValue(); 
 		    		            
 		    		            // Try to get the Type
 		    		            if(IsDate(valueNode))
