@@ -1261,7 +1261,7 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		    		            if(IsDate(valueNode))
 		    		            {
 			            			item.setText(4, "Date");
-			            			item.setText(5, "yy-mm-dd");
+			            			item.setText(5, "yyyy/MM/dd");
 		    		            }
 		    		            else if(IsInteger(valueNode))
 			            			item.setText(4, "Integer");
@@ -1294,7 +1294,7 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		    		            if(IsDate(valueNode))
 		    		            {
 			            			item.setText(4, "Date");
-			            			item.setText(5, "yy-mm-dd");
+			            			item.setText(5, "yyyy/MM/dd");
 			            			
 		    		            }
 		    		            else if(IsInteger(valueNode))
@@ -1350,11 +1350,9 @@ private boolean IsDate(String str)
 	  // TODO: What about other dates? Maybe something for a CRQ
 	  try 
 	  {
-	        SimpleDateFormat fdate = new SimpleDateFormat("yy-mm-dd");
+	        SimpleDateFormat fdate = new SimpleDateFormat("yyyy/MM/dd");
 	        fdate.setLenient(false);
 	        fdate.parse(str);
-	        
-	        
 	  }
 	  catch(Exception e)   {return false; }
 	  return true;
