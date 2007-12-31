@@ -399,11 +399,13 @@ public class ExcelOutput extends BaseStep implements StepInterface
             
             FileObject file = KettleVFS.getFileObject(buildFilename());
 
-		
-			// Add this to the result file names...
-			ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, file, getTransMeta().getName(), getStepname());
-			resultFile.setComment("This file was created with an Excel output step by Pentaho Data Integration");
-            addResultFile(resultFile);
+            if(meta.isAddToResultFiles())
+            {
+				// Add this to the result file names...
+				ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, file, getTransMeta().getName(), getStepname());
+				resultFile.setComment("This file was created with an Excel output step by Pentaho Data Integration");
+	            addResultFile(resultFile);
+            }
 
             // Create the workboook
             if (!meta.isTemplateEnabled())

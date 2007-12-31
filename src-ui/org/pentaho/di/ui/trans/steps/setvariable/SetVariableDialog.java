@@ -131,8 +131,11 @@ public class SetVariableDialog extends BaseStepDialog implements StepDialogInter
 		        new ColumnInfo(Messages.getString("SetVariableDialog.Fields.Column.FieldName"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
 		        new ColumnInfo(Messages.getString("SetVariableDialog.Fields.Column.VariableName"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
                 new ColumnInfo(Messages.getString("SetVariableDialog.Fields.Column.VariableType"), ColumnInfo.COLUMN_TYPE_CCOMBO, SetVariableMeta.getVariableTypeDescriptions(), false), //$NON-NLS-1$
+                new ColumnInfo(Messages.getString("SetVariableDialog.Fields.Column.DefaultValue"), ColumnInfo.COLUMN_TYPE_TEXT, false), 
             };
-
+		colinf[3].setUsingVariables(true);
+		colinf[3].setToolTip(Messages.getString("SetVariableDialog.Fields.Column.DefaultValue.Tooltip"));
+		
 		wFields=new TableView(transMeta, shell, 
 							  SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
 							  colinf, 
@@ -202,10 +205,12 @@ public class SetVariableDialog extends BaseStepDialog implements StepDialogInter
 			String src = input.getFieldName()[i];
 			String tgt = input.getVariableName()[i];
 			String typ = SetVariableMeta.getVariableTypeDescription(input.getVariableType()[i]);
+			String tvv = input.getDefaultValue()[i];
 			
 			if (src!=null) item.setText(1, src);
 			if (tgt!=null) item.setText(2, tgt);
             if (typ!=null) item.setText(3, typ);
+            if (tvv!=null) item.setText(4, tvv);
 		}
 
 		wFields.setRowNums();
@@ -236,6 +241,7 @@ public class SetVariableDialog extends BaseStepDialog implements StepDialogInter
 			input.getFieldName()[i]    = item.getText(1);
 			input.getVariableName()[i] = item.getText(2);
             input.getVariableType()[i] = SetVariableMeta.getVariableType(item.getText(3));
+            input.getDefaultValue()[i] = item.getText(4);
 		}
 		dispose();
 	}

@@ -72,6 +72,9 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 	
 	/** Flag: add the date in the filename */
     private  boolean dateInFilename;
+    
+	/** Flag: add the filenames to result filenames */
+    private boolean addtoresultfilenames;
 
 	/** Flag: protect the sheet */
 	private  boolean protectsheet;
@@ -271,8 +274,25 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
         return splitEvery;
     }
 
+    
+    
+    /**
+     * @return Returns the add to result filesname.
+     */
+    public boolean isAddToResultFiles()
+    {
+    	return addtoresultfilenames;
+    }
 
-
+    
+    /**
+     * @param addtoresultfilenamesin The addtoresultfilenames to set.
+     */
+    public void setAddToResultFiles(boolean addtoresultfilenamesin)
+    {
+        this.addtoresultfilenames = addtoresultfilenamesin;
+    }
+    
     /**
      * @param splitEvery The splitEvery to set.
      */
@@ -464,6 +484,8 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 			stepNrInFilename     = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "split"));
 			dateInFilename  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "add_date"));
 			timeInFilename  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "add_time"));
+			addtoresultfilenames  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "add_to_result_filenames"));
+			
 			protectsheet = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "protect_sheet"));
 			password = Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue(stepnode, "file", "password") );
 			splitEvery=Const.toInt(XMLHandler.getTagValue(stepnode, "file", "splitevery"), 0);
@@ -523,6 +545,7 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 		stepNrInFilename = false;
 		dateInFilename   = false;
 		timeInFilename   = false;
+		addtoresultfilenames=true;
 		protectsheet	 = false;
 		splitEvery       = 0;
 		templateEnabled  = false;
@@ -640,6 +663,8 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 		retval.append("      "+XMLHandler.addTagValue("split",      stepNrInFilename));
 		retval.append("      "+XMLHandler.addTagValue("add_date",   dateInFilename));
 		retval.append("      "+XMLHandler.addTagValue("add_time",   timeInFilename));
+		retval.append("      "+XMLHandler.addTagValue("add_to_result_filenames",   addtoresultfilenames));
+		
 		retval.append("      "+XMLHandler.addTagValue("sheetname", sheetname));
 		retval.append("      "+XMLHandler.addTagValue("protect_sheet",   protectsheet));
 		retval.append("      "+XMLHandler.addTagValue("password",  Encr.encryptPasswordIfNotUsingVariables(password)));
@@ -685,6 +710,8 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 			stepNrInFilename =      rep.getStepAttributeBoolean(id_step, "file_add_stepnr");
 			dateInFilename   =      rep.getStepAttributeBoolean(id_step, "file_add_date");
 			timeInFilename   =      rep.getStepAttributeBoolean(id_step, "file_add_time");
+			addtoresultfilenames   =      rep.getStepAttributeBoolean(id_step, "add_to_result_filenames");
+			
 			protectsheet     =      rep.getStepAttributeBoolean(id_step, "protect_sheet");
 			password         = Encr.decryptPasswordOptionallyEncrypted( rep.getStepAttributeString (id_step, "password") );
 
@@ -726,6 +753,8 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "file_add_stepnr",  stepNrInFilename);
 			rep.saveStepAttribute(id_transformation, id_step, "file_add_date",    dateInFilename);
 			rep.saveStepAttribute(id_transformation, id_step, "file_add_time",    timeInFilename);
+			rep.saveStepAttribute(id_transformation, id_step, "add_to_result_filenames",    addtoresultfilenames);
+			
 			rep.saveStepAttribute(id_transformation, id_step, "protect_sheet",    protectsheet);
 			rep.saveStepAttribute(id_transformation, id_step, "password",  Encr.encryptPasswordIfNotUsingVariables(password) );
 			rep.saveStepAttribute(id_transformation, id_step, "template_enabled",  templateEnabled);

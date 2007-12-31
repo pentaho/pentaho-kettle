@@ -172,6 +172,11 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
     private Listener     lsMinWidth;
     private boolean      gotEncodings = false; 
     
+	private Label        wlAddToResult;
+	private Button       wAddToResult;
+	private FormData     fdlAddToResult, fdAddToResult;
+
+    
 	public TextFileOutputDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
 		super(parent, (BaseStepMeta)in, transMeta, sname);
@@ -445,6 +450,32 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 			}
 		);
 
+
+		// Add File to the result files name
+		wlAddToResult=new Label(wFileComp, SWT.RIGHT);
+		wlAddToResult.setText(Messages.getString("TextFileOutputDialog.AddFileToResult.Label"));
+		props.setLook(wlAddToResult);
+		fdlAddToResult=new FormData();
+		fdlAddToResult.left  = new FormAttachment(0, 0);
+		fdlAddToResult.top   = new FormAttachment(wbShowFiles, 2*margin);
+		fdlAddToResult.right = new FormAttachment(middle, -margin);
+		wlAddToResult.setLayoutData(fdlAddToResult);
+		wAddToResult=new Button(wFileComp, SWT.CHECK);
+		wAddToResult.setToolTipText(Messages.getString("TextFileOutputDialog.AddFileToResult.Tooltip"));
+ 		props.setLook(wAddToResult);
+		fdAddToResult=new FormData();
+		fdAddToResult.left  = new FormAttachment(middle, 0);
+		fdAddToResult.top   = new FormAttachment(wbShowFiles, 2*margin);
+		fdAddToResult.right = new FormAttachment(100, 0);
+		wAddToResult.setLayoutData(fdAddToResult);
+		SelectionAdapter lsSelR = new SelectionAdapter()
+        {
+            public void widgetSelected(SelectionEvent arg0)
+            {
+                input.setChanged();
+            }
+        };
+		wAddToResult.addSelectionListener(lsSelR);
 
 		
 		fdFileComp=new FormData();
@@ -1029,6 +1060,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		wAddPartnr.setSelection(input.isPartNrInFilename());
 		wPad.setSelection(input.isPadded());
 		wFastDump.setSelection(input.isFastDump());
+		wAddToResult.setSelection(input.isAddToResultFiles());
 				
 		log.logDebug(toString(), "getting fields info...");
 		
@@ -1087,6 +1119,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		tfoi.setDateInFilename( wAddDate.getSelection() );
 		tfoi.setTimeInFilename( wAddTime.getSelection() );
 		tfoi.setPadded( wPad.getSelection() );
+		tfoi.setAddToResultFiles( wAddToResult.getSelection() );
 		tfoi.setFastDump( wFastDump.getSelection() );
 
 		int i;

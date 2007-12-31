@@ -20,6 +20,7 @@ import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleValueException;
@@ -401,7 +402,17 @@ public class XMLOutput extends BaseStep implements StepInterface
 
 		try
 		{
+			
 			FileObject file = KettleVFS.getFileObject(buildFilename(true));
+			
+
+		    if(meta.isAddToResultFiles())
+            {
+				// Add this to the result file names...
+				ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, file, getTransMeta().getName(), getStepname());
+				resultFile.setComment("This file was created with a xml output step");
+	            addResultFile(resultFile);
+            }
 
 			OutputStream outputStream;
 			if (meta.isZipped())

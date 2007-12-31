@@ -22,7 +22,6 @@ package org.pentaho.di.ui.trans.steps.exceloutput;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
@@ -154,6 +153,11 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
     private Button       wMinWidth;
     private Listener     lsMinWidth;
     private boolean      gotEncodings = false; 
+    
+	private Label        wlAddToResult;
+	private Button       wAddToResult;
+	private FormData     fdlAddToResult, fdAddToResult;
+	
     
 	public ExcelOutputDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
@@ -379,6 +383,34 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		}
 			);
 		
+		
+		// Add File to the result files name
+		wlAddToResult=new Label(wFileComp, SWT.RIGHT);
+		wlAddToResult.setText(Messages.getString("ExcelOutputDialog.AddFileToResult.Label"));
+		props.setLook(wlAddToResult);
+		fdlAddToResult=new FormData();
+		fdlAddToResult.left  = new FormAttachment(0, 0);
+		fdlAddToResult.top   = new FormAttachment(wbShowFiles, 2*margin);
+		fdlAddToResult.right = new FormAttachment(middle, -margin);
+		wlAddToResult.setLayoutData(fdlAddToResult);
+		wAddToResult=new Button(wFileComp, SWT.CHECK);
+		wAddToResult.setToolTipText(Messages.getString("ExcelOutputDialog.AddFileToResult.Tooltip"));
+ 		props.setLook(wAddToResult);
+		fdAddToResult=new FormData();
+		fdAddToResult.left  = new FormAttachment(middle, 0);
+		fdAddToResult.top   = new FormAttachment(wbShowFiles, 2*margin);
+		fdAddToResult.right = new FormAttachment(100, 0);
+		wAddToResult.setLayoutData(fdAddToResult);
+		SelectionAdapter lsSelR = new SelectionAdapter()
+        {
+            public void widgetSelected(SelectionEvent arg0)
+            {
+                input.setChanged();
+            }
+        };
+		wAddToResult.addSelectionListener(lsSelR);
+
+	
 		fdFileComp=new FormData();
 		fdFileComp.left  = new FormAttachment(0, 0);
 		fdFileComp.top   = new FormAttachment(0, 0);
@@ -939,8 +971,8 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		wFooter.setSelection(input.isFooterEnabled());
 		wAddDate.setSelection(input.isDateInFilename());
 		wAddTime.setSelection(input.isTimeInFilename());
+		wAddToResult.setSelection(input.isAddToResultFiles());
 		
-
 
 		wAddStepnr.setSelection(input.isStepNrInFilename());
 		wTemplate.setSelection(input.isTemplateEnabled());
@@ -997,6 +1029,8 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		tfoi.setStepNrInFilename( wAddStepnr.getSelection() );
 		tfoi.setDateInFilename( wAddDate.getSelection() );
 		tfoi.setTimeInFilename( wAddTime.getSelection() );
+		tfoi.setAddToResultFiles( wAddToResult.getSelection() );
+		
 		tfoi.setProtectSheet( wProtectSheet.getSelection() );
 		tfoi.setPassword(   wPassword.getText() );
 		tfoi.setTemplateEnabled( wTemplate.getSelection() );

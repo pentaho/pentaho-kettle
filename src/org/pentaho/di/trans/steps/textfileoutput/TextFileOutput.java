@@ -529,11 +529,13 @@ public class TextFileOutput extends BaseStep implements StepInterface
             else
             {
                 String filename = buildFilename(true);
-                
-				// Add this to the result file names...
-				ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(filename), getTransMeta().getName(), getStepname());
-				resultFile.setComment("This file was created with a text file output step");
-	            addResultFile(resultFile);
+                if(meta.isAddToResultFiles())
+                {
+					// Add this to the result file names...
+					ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(filename), getTransMeta().getName(), getStepname());
+					resultFile.setComment("This file was created with a text file output step");
+		            addResultFile(resultFile);
+                }
 	
 	            OutputStream outputStream;
                 

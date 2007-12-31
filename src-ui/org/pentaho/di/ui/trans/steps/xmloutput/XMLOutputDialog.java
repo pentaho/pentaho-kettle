@@ -131,6 +131,10 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
     private Listener     lsMinWidth;
     private boolean      gotEncodings = false; 
     
+	private Label        wlAddToResult;
+	private Button       wAddToResult;
+	private FormData     fdlAddToResult, fdAddToResult;
+	
 	public XMLOutputDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
 		super(parent, (BaseStepMeta)in, transMeta, sname);
@@ -352,6 +356,31 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
 			}
 		);
 
+		// Add File to the result files name
+		wlAddToResult=new Label(wFileComp, SWT.RIGHT);
+		wlAddToResult.setText(Messages.getString("XMLOutputDialog.AddFileToResult.Label"));
+		props.setLook(wlAddToResult);
+		fdlAddToResult=new FormData();
+		fdlAddToResult.left  = new FormAttachment(0, 0);
+		fdlAddToResult.top   = new FormAttachment(wbShowFiles, 2*margin);
+		fdlAddToResult.right = new FormAttachment(middle, -margin);
+		wlAddToResult.setLayoutData(fdlAddToResult);
+		wAddToResult=new Button(wFileComp, SWT.CHECK);
+		wAddToResult.setToolTipText(Messages.getString("XMLOutputDialog.AddFileToResult.Tooltip"));
+ 		props.setLook(wAddToResult);
+		fdAddToResult=new FormData();
+		fdAddToResult.left  = new FormAttachment(middle, 0);
+		fdAddToResult.top   = new FormAttachment(wbShowFiles, 2*margin);
+		fdAddToResult.right = new FormAttachment(100, 0);
+		wAddToResult.setLayoutData(fdAddToResult);
+		SelectionAdapter lsSelR = new SelectionAdapter()
+        {
+            public void widgetSelected(SelectionEvent arg0)
+            {
+                input.setChanged();
+            }
+        };
+		wAddToResult.addSelectionListener(lsSelR);
 
 		
 		fdFileComp=new FormData();
@@ -715,6 +744,8 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
 		wAddDate.setSelection(input.isDateInFilename());
 		wAddTime.setSelection(input.isTimeInFilename());
 		wAddStepnr.setSelection(input.isStepNrInFilename());
+
+		wAddToResult.setSelection(input.isAddToResultFiles());
 		
 		log.logDebug(toString(), Messages.getString("XMLOutputDialog.Log.GettingFieldsInfo"));
 		
@@ -772,6 +803,7 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
 		tfoi.setStepNrInFilename( wAddStepnr.getSelection() );
 		tfoi.setDateInFilename( wAddDate.getSelection() );
 		tfoi.setTimeInFilename( wAddTime.getSelection() );
+		tfoi.setAddToResultFiles( wAddToResult.getSelection() );
 		tfoi.setZipped( wZipped.getSelection() );
 
 		//Table table = wFields.table;

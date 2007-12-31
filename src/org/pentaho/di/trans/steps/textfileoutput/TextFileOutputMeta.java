@@ -119,6 +119,9 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
     
 	/** Calculated value ... */
     private  String newline;
+    
+	/** Flag: add the filenames to result filenames */
+    private boolean addtoresultfilenames;
 
 	public TextFileOutputMeta()
     {
@@ -205,6 +208,23 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
         this.extension = extension;
     }
 
+    /**
+     * @return Returns the add to result filesname.
+     */
+    public boolean isAddToResultFiles()
+    {
+    	return addtoresultfilenames;
+    }
+
+    
+    /**
+     * @param addtoresultfilenamesin The addtoresultfilenames to set.
+     */
+    public void setAddToResultFiles(boolean addtoresultfilenamesin)
+    {
+        this.addtoresultfilenames = addtoresultfilenamesin;
+    }
+    
     /**
      * @return Returns the fileAppended.
      */
@@ -545,6 +565,8 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 			partNrInFilename     = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "haspartno"));
 			dateInFilename  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "add_date"));
 			timeInFilename  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "add_time"));
+			addtoresultfilenames  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "add_to_result_filenames"));
+			
 			padded       = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "pad"));
 			fastDump       = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "fast_dump"));
 			splitEvery=Const.toInt(XMLHandler.getTagValue(stepnode, "file", "splitevery"), 0);
@@ -618,6 +640,7 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 		timeInFilename   = false;
 		padded           = false;
 		fastDump         = false;
+		addtoresultfilenames=true;
 		splitEvery       = 0;
 
 		newline = getNewLine(fileFormat);
@@ -809,6 +832,7 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 		retval.append("      "+XMLHandler.addTagValue("haspartno",  partNrInFilename));
 		retval.append("      "+XMLHandler.addTagValue("add_date",   dateInFilename));
 		retval.append("      "+XMLHandler.addTagValue("add_time",   timeInFilename));
+		retval.append("      "+XMLHandler.addTagValue("add_to_result_filenames",   addtoresultfilenames));
 		retval.append("      "+XMLHandler.addTagValue("pad",        padded));
 		retval.append("      "+XMLHandler.addTagValue("fast_dump",  fastDump));
 		retval.append("      "+XMLHandler.addTagValue("splitevery", splitEvery));
@@ -873,6 +897,7 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 			partNrInFilename      =      rep.getStepAttributeBoolean(id_step, "file_add_partnr");
 			dateInFilename        =      rep.getStepAttributeBoolean(id_step, "file_add_date");
 			timeInFilename        =      rep.getStepAttributeBoolean(id_step, "file_add_time");
+			addtoresultfilenames   =      rep.getStepAttributeBoolean(id_step, "add_to_result_filenames");
 			padded             =      rep.getStepAttributeBoolean(id_step, "file_pad");
 			fastDump             =      rep.getStepAttributeBoolean(id_step, "file_fast_dump");
 	
@@ -926,6 +951,7 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 			rep.saveStepAttribute(id_transformation, id_step, "file_add_stepnr",  stepNrInFilename);
 			rep.saveStepAttribute(id_transformation, id_step, "file_add_partnr",  partNrInFilename);
 			rep.saveStepAttribute(id_transformation, id_step, "file_add_date",    dateInFilename);
+			rep.saveStepAttribute(id_transformation, id_step, "add_to_result_filenames",    addtoresultfilenames);
 			rep.saveStepAttribute(id_transformation, id_step, "file_add_time",    timeInFilename);
 			rep.saveStepAttribute(id_transformation, id_step, "file_pad",         padded);
 			rep.saveStepAttribute(id_transformation, id_step, "file_fast_dump",   fastDump);

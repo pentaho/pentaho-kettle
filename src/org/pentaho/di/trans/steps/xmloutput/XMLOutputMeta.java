@@ -81,6 +81,9 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface
 
 	/** The name of the repeating row XML element */
 	private String repeatElement;
+	
+	/** Flag: add the filenames to result filenames */
+    private boolean addtoresultfilenames;
 
 	/* THE FIELD SPECIFICATIONS ... */
 
@@ -193,6 +196,25 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		this.timeInFilename = timeInFilename;
 	}
+	
+	
+    /**
+     * @return Returns the add to result filesname.
+     */
+    public boolean isAddToResultFiles()
+    {
+    	return addtoresultfilenames;
+    }
+
+    
+    /**
+     * @param addtoresultfilenamesin The addtoresultfilenames to set.
+     */
+    public void setAddToResultFiles(boolean addtoresultfilenamesin)
+    {
+        this.addtoresultfilenames = addtoresultfilenamesin;
+    }
+    
 
 	/**
 	 * @return Returns the zipped.
@@ -267,6 +289,8 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface
 			stepNrInFilename = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "split"));
 			dateInFilename = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "add_date"));
 			timeInFilename = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "add_time"));
+			addtoresultfilenames  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "add_to_result_filenames"));
+			
 			zipped = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "zipped"));
 			splitEvery = Const.toInt(XMLHandler.getTagValue(stepnode, "file", "splitevery"), 0);
 
@@ -324,6 +348,7 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface
 		stepNrInFilename = false;
 		dateInFilename = false;
 		timeInFilename = false;
+		addtoresultfilenames=false;
 		zipped = false;
 		splitEvery = 0;
 		encoding = Const.XML_ENCODING;
@@ -476,6 +501,7 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface
 		retval.append("      " + XMLHandler.addTagValue("split", stepNrInFilename));
 		retval.append("      " + XMLHandler.addTagValue("add_date", dateInFilename));
 		retval.append("      " + XMLHandler.addTagValue("add_time", timeInFilename));
+		retval.append("      "+XMLHandler.addTagValue("add_to_result_filenames",   addtoresultfilenames));
 		retval.append("      " + XMLHandler.addTagValue("zipped", zipped));
 		retval.append("      " + XMLHandler.addTagValue("splitevery", splitEvery));
 		retval.append("    </file>" + Const.CR);
@@ -519,6 +545,7 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface
 			stepNrInFilename = rep.getStepAttributeBoolean(id_step, "file_add_stepnr");
 			dateInFilename = rep.getStepAttributeBoolean(id_step, "file_add_date");
 			timeInFilename = rep.getStepAttributeBoolean(id_step, "file_add_time");
+			addtoresultfilenames   =      rep.getStepAttributeBoolean(id_step, "add_to_result_filenames");
 			zipped = rep.getStepAttributeBoolean(id_step, "file_zipped");
 
 			int nrfields = rep.countNrStepAttributes(id_step, "field_name");
@@ -560,6 +587,7 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "file_add_stepnr", stepNrInFilename);
 			rep.saveStepAttribute(id_transformation, id_step, "file_add_date", dateInFilename);
 			rep.saveStepAttribute(id_transformation, id_step, "file_add_time", timeInFilename);
+			rep.saveStepAttribute(id_transformation, id_step, "add_to_result_filenames",    addtoresultfilenames);
 			rep.saveStepAttribute(id_transformation, id_step, "file_zipped", zipped);
 
 			for (int i = 0; i < outputFields.length; i++)

@@ -354,7 +354,7 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface
 				
 		 // XSLTFactory
         wlXSLTFactory=new Label(wXSLFileGroup, SWT.RIGHT);
-        wlXSLTFactory.setText(Messages.getString("JobEntryXSLT.XSLTFactory.Label"));
+        wlXSLTFactory.setText(Messages.getString("XsltDialog.XSLTFactory.Label"));
         props.setLook(wlXSLTFactory);
         fdlXSLTFactory=new FormData();
         fdlXSLTFactory.left = new FormAttachment(0, 0);
@@ -456,7 +456,6 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface
 
 					dialog.setFilterNames(new String[] {
 							Messages.getString("XsltDialog.FileType"),
-							Messages.getString("XslTValidatorDialog.FileType"),
 							Messages.getString("System.FileType.AllFiles") });
 
 					if (dialog.open() != null) {
