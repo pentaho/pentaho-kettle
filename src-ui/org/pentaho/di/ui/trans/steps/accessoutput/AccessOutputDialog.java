@@ -82,6 +82,10 @@ public class AccessOutputDialog extends BaseStepDialog implements StepDialogInte
     private Label        wlCommitSize;
     private Text         wCommitSize;
     private FormData     fdlCommitSize, fdCommitSize;
+    
+	private Label        wlAddToResult;
+	private Button       wAddToResult;
+	private FormData     fdlAddToResult, fdAddToResult;
 
     private AccessOutputMeta input;
 	
@@ -259,6 +263,34 @@ public class AccessOutputDialog extends BaseStepDialog implements StepDialogInte
         fdCommitSize.right= new FormAttachment(100, 0);
         fdCommitSize.top  = new FormAttachment(wCreateTable, margin);
         wCommitSize.setLayoutData(fdCommitSize);
+        
+
+		// Add File to the result files name
+		wlAddToResult=new Label(shell, SWT.RIGHT);
+		wlAddToResult.setText(Messages.getString("AccessOutputMeta.AddFileToResult.Label"));
+		props.setLook(wlAddToResult);
+		fdlAddToResult=new FormData();
+		fdlAddToResult.left  = new FormAttachment(0, 0);
+		fdlAddToResult.top   = new FormAttachment(wCommitSize, 2*margin);
+		fdlAddToResult.right = new FormAttachment(middle, -margin);
+		wlAddToResult.setLayoutData(fdlAddToResult);
+		wAddToResult=new Button(shell, SWT.CHECK);
+		wAddToResult.setToolTipText(Messages.getString("AccessOutputMeta.AddFileToResult.Tooltip"));
+ 		props.setLook(wAddToResult);
+		fdAddToResult=new FormData();
+		fdAddToResult.left  = new FormAttachment(middle, 0);
+		fdAddToResult.top   = new FormAttachment(wCommitSize, 2*margin);
+		fdAddToResult.right = new FormAttachment(100, 0);
+		wAddToResult.setLayoutData(fdAddToResult);
+		SelectionAdapter lsSelR = new SelectionAdapter()
+        {
+            public void widgetSelected(SelectionEvent arg0)
+            {
+                input.setChanged();
+            }
+        };
+		wAddToResult.addSelectionListener(lsSelR);
+
 
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
@@ -347,6 +379,7 @@ public class AccessOutputDialog extends BaseStepDialog implements StepDialogInte
         wCreateFile.setSelection( input.isFileCreated() );
         wCreateTable.setSelection(input.isFileCreated() );
         if (input.getCommitSize()>0) wCommitSize.setText( Integer.toString( input.getCommitSize() ) );
+        wAddToResult.setSelection(input.isAddToResultFiles());
 		
 		wStepname.selectAll();
 	}
@@ -365,6 +398,7 @@ public class AccessOutputDialog extends BaseStepDialog implements StepDialogInte
         info.setFileCreated( wCreateFile.getSelection() );
 		info.setTableCreated( wCreateTable.getSelection() );
         info.setCommitSize( Const.toInt(wCommitSize.getText(), -1) );
+        info.setAddToResultFiles( wAddToResult.getSelection() );
 	}
 	
 	private void ok()

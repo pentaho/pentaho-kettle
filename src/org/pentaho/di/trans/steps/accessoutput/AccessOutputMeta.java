@@ -61,6 +61,8 @@ public class AccessOutputMeta extends BaseStepMeta implements StepMetaInterface
     private boolean      tableCreated;
 	private boolean      tableTruncated;
     private int          commitSize;
+	/** Flag: add the filenames to result filenames */
+    private boolean addtoresultfilenames;
 
     public AccessOutputMeta()
 	{
@@ -118,6 +120,8 @@ public class AccessOutputMeta extends BaseStepMeta implements StepMetaInterface
             fileCreated = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "create_file"));
             tableCreated = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "create_table"));
             commitSize = Const.toInt( XMLHandler.getTagValue(stepnode, "commit_size"), AccessOutput.COMMIT_SIZE);
+            addtoresultfilenames  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "add_to_result_filenames"));
+
         }
 		catch(Exception e)
 		{
@@ -131,6 +135,7 @@ public class AccessOutputMeta extends BaseStepMeta implements StepMetaInterface
         tableCreated = true;
         tableTruncated = false;	
         commitSize = AccessOutput.COMMIT_SIZE;
+        addtoresultfilenames=true;
     }
 
 	public String getXML()
@@ -143,6 +148,7 @@ public class AccessOutputMeta extends BaseStepMeta implements StepMetaInterface
         retval.append("    ").append(XMLHandler.addTagValue("create_file",   fileCreated));
         retval.append("    ").append(XMLHandler.addTagValue("create_table",  tableCreated));
         retval.append("    ").append(XMLHandler.addTagValue("commit_size",   commitSize));
+        retval.append("      "+XMLHandler.addTagValue("add_to_result_filenames",   addtoresultfilenames));
 
 		return retval.toString();
 	}
@@ -156,6 +162,7 @@ public class AccessOutputMeta extends BaseStepMeta implements StepMetaInterface
             fileCreated       =      rep.getStepAttributeBoolean(id_step, "create_file"); 
             tableCreated      =      rep.getStepAttributeBoolean(id_step, "create_table"); 
             commitSize        = (int)rep.getStepAttributeInteger(id_step, "commit_size"); 
+            addtoresultfilenames   =      rep.getStepAttributeBoolean(id_step, "add_to_result_filenames");
 		}
 		catch(Exception e)
 		{
@@ -172,6 +179,7 @@ public class AccessOutputMeta extends BaseStepMeta implements StepMetaInterface
             rep.saveStepAttribute(id_transformation, id_step, "create_file",     fileCreated);
             rep.saveStepAttribute(id_transformation, id_step, "create_table",    tableCreated);
             rep.saveStepAttribute(id_transformation, id_step, "commit_size",     commitSize);
+            rep.saveStepAttribute(id_transformation, id_step, "add_to_result_filenames",    addtoresultfilenames);
 		}
 		catch(Exception e)
 		{
@@ -565,6 +573,23 @@ public class AccessOutputMeta extends BaseStepMeta implements StepMetaInterface
         this.commitSize = commitSize;
     }
 
+    /**
+     * @return Returns the add to result filesname.
+     */
+    public boolean isAddToResultFiles()
+    {
+    	return addtoresultfilenames;
+    }
+
+    
+    /**
+     * @param addtoresultfilenamesin The addtoresultfilenames to set.
+     */
+    public void setAddToResultFiles(boolean addtoresultfilenamesin)
+    {
+        this.addtoresultfilenames = addtoresultfilenamesin;
+    }
+    
     public String[] getUsedLibraries()
     {
         return new String[] 

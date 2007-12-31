@@ -197,8 +197,12 @@ public class AccessOutput extends BaseStep implements StepInterface
                 
                 // Add the filename to the result object...
                 //
-    			ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, fileObject, getTransMeta().getName(), toString());
-    			addResultFile(resultFile);
+                if(meta.isAddToResultFiles())
+                {
+	    			ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, fileObject, getTransMeta().getName(), toString());
+	    			resultFile.setComment("This file was created with an access output step");
+	    			addResultFile(resultFile);
+                }
                 
 				return true;
 			}
