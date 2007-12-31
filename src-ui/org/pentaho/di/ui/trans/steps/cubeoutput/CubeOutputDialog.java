@@ -54,6 +54,9 @@ public class CubeOutputDialog extends BaseStepDialog implements StepDialogInterf
 	private Button       wbFilename;
 	private TextVar      wFilename;
 	private FormData     fdlFilename, fdbFilename, fdFilename;
+	private Label        wlAddToResult;
+	private Button       wAddToResult;
+	private FormData     fdlAddToResult, fdAddToResult;
 
 	private CubeOutputMeta input;
 
@@ -139,13 +142,39 @@ public class CubeOutputDialog extends BaseStepDialog implements StepDialogInterf
 		fdFilename.top  = new FormAttachment(wStepname, margin+5);
 		fdFilename.right= new FormAttachment(wbFilename, -margin);
 		wFilename.setLayoutData(fdFilename);
+		
+		// Add File to the result files name
+		wlAddToResult=new Label(shell, SWT.RIGHT);
+		wlAddToResult.setText(Messages.getString("CubeOutputDialog.AddFileToResult.Label"));
+		props.setLook(wlAddToResult);
+		fdlAddToResult=new FormData();
+		fdlAddToResult.left  = new FormAttachment(0, 0);
+		fdlAddToResult.top   = new FormAttachment(wFilename, 2*margin);
+		fdlAddToResult.right = new FormAttachment(middle, -margin);
+		wlAddToResult.setLayoutData(fdlAddToResult);
+		wAddToResult=new Button(shell, SWT.CHECK);
+		wAddToResult.setToolTipText(Messages.getString("CubeOutputDialog.AddFileToResult.Tooltip"));
+ 		props.setLook(wAddToResult);
+		fdAddToResult=new FormData();
+		fdAddToResult.left  = new FormAttachment(middle, 0);
+		fdAddToResult.top   = new FormAttachment(wFilename, 2*margin);
+		fdAddToResult.right = new FormAttachment(100, 0);
+		wAddToResult.setLayoutData(fdAddToResult);
+		SelectionAdapter lsSelR = new SelectionAdapter()
+        {
+            public void widgetSelected(SelectionEvent arg0)
+            {
+                input.setChanged();
+            }
+        };
+		wAddToResult.addSelectionListener(lsSelR);
 
 		wOK=new Button(shell, SWT.PUSH);
 		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
 
-		setButtonPositions(new Button[] { wOK, wCancel }, margin, wFilename);
+		setButtonPositions(new Button[] { wOK, wCancel }, margin, wAddToResult);
 
 		// Add listeners
 		lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
@@ -204,7 +233,7 @@ public class CubeOutputDialog extends BaseStepDialog implements StepDialogInterf
 	public void getData()
 	{
 		if (input.getFilename()  !=null) wFilename.setText(input.getFilename());
-		
+		wAddToResult.setSelection(input.isAddToResultFiles());
 		wStepname.selectAll();
 	}
 	
@@ -221,7 +250,7 @@ public class CubeOutputDialog extends BaseStepDialog implements StepDialogInterf
 		if (Const.isEmpty(wStepname.getText())) return;
 
 		stepname = wStepname.getText(); // return value
-
+		input.setAddToResultFiles( wAddToResult.getSelection() );
 		input.setFilename( wFilename.getText() );
 
 		dispose();

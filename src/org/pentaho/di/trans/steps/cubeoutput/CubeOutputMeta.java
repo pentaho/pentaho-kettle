@@ -46,6 +46,8 @@ import org.w3c.dom.Node;
 public class CubeOutputMeta extends BaseStepMeta implements StepMetaInterface
 {
 	private String filename;
+	/** Flag: add the filenames to result filenames */
+    private boolean addtoresultfilenames;
 
 	public CubeOutputMeta()
 	{
@@ -74,6 +76,23 @@ public class CubeOutputMeta extends BaseStepMeta implements StepMetaInterface
 		return filename;
 	}
 	
+    /**
+     * @return Returns the add to result filesname.
+     */
+    public boolean isAddToResultFiles()
+    {
+    	return addtoresultfilenames;
+    }
+
+    
+    /**
+     * @param addtoresultfilenamesin The addtoresultfilenames to set.
+     */
+    public void setAddToResultFiles(boolean addtoresultfilenamesin)
+    {
+        this.addtoresultfilenames = addtoresultfilenamesin;
+    }
+    
 	public Object clone()
 	{
 		CubeOutputMeta retval = (CubeOutputMeta)super.clone();
@@ -87,6 +106,8 @@ public class CubeOutputMeta extends BaseStepMeta implements StepMetaInterface
 		try
 		{
 			filename  = XMLHandler.getTagValue(stepnode, "file", "name"); //$NON-NLS-1$ //$NON-NLS-2$
+			addtoresultfilenames  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "add_to_result_filenames"));
+			
 		}
 		catch(Exception e)
 		{
@@ -97,6 +118,7 @@ public class CubeOutputMeta extends BaseStepMeta implements StepMetaInterface
 	public void setDefault()
 	{
 		filename   = "file"; //$NON-NLS-1$
+		addtoresultfilenames=false;
 	}
 	
 	public String getXML()
@@ -105,6 +127,7 @@ public class CubeOutputMeta extends BaseStepMeta implements StepMetaInterface
 		
 		retval.append("    <file>").append(Const.CR); //$NON-NLS-1$
 		retval.append("      ").append(XMLHandler.addTagValue("name",       filename)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("      "+XMLHandler.addTagValue("add_to_result_filenames",   addtoresultfilenames));
 		retval.append("    </file>").append(Const.CR); //$NON-NLS-1$
 
 		return retval.toString();
@@ -116,6 +139,8 @@ public class CubeOutputMeta extends BaseStepMeta implements StepMetaInterface
 		try
 		{
 			filename         =      rep.getStepAttributeString (id_step, "file_name"); //$NON-NLS-1$
+			addtoresultfilenames   =      rep.getStepAttributeBoolean(id_step, "add_to_result_filenames");
+			
 		}
 		catch(Exception e)
 		{
@@ -129,6 +154,7 @@ public class CubeOutputMeta extends BaseStepMeta implements StepMetaInterface
 		try
 		{
 			rep.saveStepAttribute(id_transformation, id_step, "file_name",   filename); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "add_to_result_filenames",    addtoresultfilenames);
 		}
 		catch(Exception e)
 		{

@@ -14,7 +14,7 @@ package org.pentaho.di.trans.steps.cubeoutput;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.zip.GZIPOutputStream;
-
+import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -109,7 +109,17 @@ public class CubeOutput extends BaseStep implements StepInterface
 		{
 			try
 			{
-				data.fos=KettleVFS.getOutputStream(environmentSubstitute(meta.getFilename()), false);
+				String filename=environmentSubstitute(meta.getFilename());
+			    if(meta.isAddToResultFiles())
+                {
+					// Add this to the result file names...
+					ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(filename), getTransMeta().getName(), getStepname());
+					resultFile.setComment("This file was created with a cube file output step");
+		            addResultFile(resultFile);
+                }
+	
+			    
+				data.fos=KettleVFS.getOutputStream(filename, false);
 				data.zip=new GZIPOutputStream(data.fos);
 				data.dos=new DataOutputStream(data.zip);
 			
