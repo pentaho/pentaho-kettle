@@ -38,7 +38,6 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.w3c.dom.Node;
 
-
 /*
  * Created on 4-apr-2003
  *
@@ -121,7 +120,7 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
     private  String newline;
     
 	/** Flag: add the filenames to result filenames */
-    private boolean addtoresultfilenames;
+    private boolean addToResultFilenames;
 
 	public TextFileOutputMeta()
     {
@@ -213,7 +212,7 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
      */
     public boolean isAddToResultFiles()
     {
-    	return addtoresultfilenames;
+    	return addToResultFilenames;
     }
 
     
@@ -222,7 +221,7 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
      */
     public void setAddToResultFiles(boolean addtoresultfilenamesin)
     {
-        this.addtoresultfilenames = addtoresultfilenamesin;
+        this.addToResultFilenames = addtoresultfilenamesin;
     }
     
     /**
@@ -552,29 +551,29 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 				  fileCompression = fileCompressionTypeCodes[FILE_COMPRESSION_TYPE_NONE];
               }
 			}
-            encoding         = XMLHandler.getTagValue(stepnode, "encoding");
+            encoding = XMLHandler.getTagValue(stepnode, "encoding");
 
-            endedLine  = XMLHandler.getTagValue(stepnode, "endedLine");
+            endedLine = XMLHandler.getTagValue(stepnode, "endedLine");
 			if (endedLine==null) endedLine="";
 
-			fileName  = XMLHandler.getTagValue(stepnode, "file", "name");
-			fileAsCommand  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "is_command"));
-			extension = XMLHandler.getTagValue(stepnode, "file", "extention");
-			fileAppended    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "append"));
-			stepNrInFilename     = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "split"));
-			partNrInFilename     = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "haspartno"));
-			dateInFilename  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "add_date"));
-			timeInFilename  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "add_time"));
-			addtoresultfilenames  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "add_to_result_filenames"));
+			fileName              = XMLHandler.getTagValue(stepnode, "file", "name");
+			fileAsCommand         = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "is_command"));
+			extension             = XMLHandler.getTagValue(stepnode, "file", "extention");
+			fileAppended          = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "append"));
+			stepNrInFilename      = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "split"));
+			partNrInFilename      = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "haspartno"));
+			dateInFilename        = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "add_date"));
+			timeInFilename        = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "add_time"));
+			addToResultFilenames  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "add_to_result_filenames"));
 			
 			padded       = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "pad"));
-			fastDump       = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "fast_dump"));
-			splitEvery=Const.toInt(XMLHandler.getTagValue(stepnode, "file", "splitevery"), 0);
+			fastDump     = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "fast_dump"));
+			splitEvery   = Const.toInt(XMLHandler.getTagValue(stepnode, "file", "splitevery"), 0);
 			
 			newline = getNewLine(fileFormat);
 			
-			Node fields = XMLHandler.getSubNode(stepnode, "fields");
-			int nrfields= XMLHandler.countNodes(fields, "field");
+			Node fields  = XMLHandler.getSubNode(stepnode, "fields");
+			int nrfields = XMLHandler.countNodes(fields, "field");
 	
 			allocate(nrfields);
 			
@@ -592,8 +591,7 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 				outputFields[i].setNullString( XMLHandler.getTagValue(fnode, "nullif") );
 				outputFields[i].setLength( Const.toInt(XMLHandler.getTagValue(fnode, "length"), -1) );
 				outputFields[i].setPrecision( Const.toInt(XMLHandler.getTagValue(fnode, "precision"), -1) );
-			}
-			
+			}		
 		}
 		catch(Exception e)
 		{
@@ -640,7 +638,7 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 		timeInFilename   = false;
 		padded           = false;
 		fastDump         = false;
-		addtoresultfilenames=true;
+		addToResultFilenames=true;
 		splitEvery       = 0;
 
 		newline = getNewLine(fileFormat);
@@ -811,54 +809,54 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 
 	public String getXML()
 	{
-		StringBuffer retval=new StringBuffer();
+		StringBuffer retval=new StringBuffer(800);
 		
-		retval.append("    "+XMLHandler.addTagValue("separator", separator));
-		retval.append("    "+XMLHandler.addTagValue("enclosure", enclosure));
-        retval.append("    "+XMLHandler.addTagValue("enclosure_forced", enclosureForced));
-		retval.append("    "+XMLHandler.addTagValue("header",    headerEnabled));
-		retval.append("    "+XMLHandler.addTagValue("footer",    footerEnabled));
-		retval.append("    "+XMLHandler.addTagValue("format",    fileFormat));
-		retval.append("    "+XMLHandler.addTagValue("compression",    fileCompression));
-        retval.append("    "+XMLHandler.addTagValue("encoding",  encoding));
-        retval.append("    "+XMLHandler.addTagValue("endedLine",  endedLine));
+		retval.append("    ").append(XMLHandler.addTagValue("separator", separator));
+		retval.append("    ").append(XMLHandler.addTagValue("enclosure", enclosure));
+        retval.append("    ").append(XMLHandler.addTagValue("enclosure_forced", enclosureForced));
+		retval.append("    ").append(XMLHandler.addTagValue("header",    headerEnabled));
+		retval.append("    ").append(XMLHandler.addTagValue("footer",    footerEnabled));
+		retval.append("    ").append(XMLHandler.addTagValue("format",    fileFormat));
+		retval.append("    ").append(XMLHandler.addTagValue("compression",    fileCompression));
+        retval.append("    ").append(XMLHandler.addTagValue("encoding",  encoding));
+        retval.append("    ").append(XMLHandler.addTagValue("endedLine",  endedLine));
 
-		retval.append("    <file>"+Const.CR);
-		retval.append("      "+XMLHandler.addTagValue("name",       fileName));
-		retval.append("      "+XMLHandler.addTagValue("is_command", fileAsCommand));
-		retval.append("      "+XMLHandler.addTagValue("extention",  extension));
-		retval.append("      "+XMLHandler.addTagValue("append",     fileAppended));
-		retval.append("      "+XMLHandler.addTagValue("split",      stepNrInFilename));
-		retval.append("      "+XMLHandler.addTagValue("haspartno",  partNrInFilename));
-		retval.append("      "+XMLHandler.addTagValue("add_date",   dateInFilename));
-		retval.append("      "+XMLHandler.addTagValue("add_time",   timeInFilename));
-		retval.append("      "+XMLHandler.addTagValue("add_to_result_filenames",   addtoresultfilenames));
-		retval.append("      "+XMLHandler.addTagValue("pad",        padded));
-		retval.append("      "+XMLHandler.addTagValue("fast_dump",  fastDump));
-		retval.append("      "+XMLHandler.addTagValue("splitevery", splitEvery));
-		retval.append("      </file>"+Const.CR);
+		retval.append("    <file>").append(Const.CR);
+		retval.append("      ").append(XMLHandler.addTagValue("name",       fileName));
+		retval.append("      ").append(XMLHandler.addTagValue("is_command", fileAsCommand));
+		retval.append("      ").append(XMLHandler.addTagValue("extention",  extension));
+		retval.append("      ").append(XMLHandler.addTagValue("append",     fileAppended));
+		retval.append("      ").append(XMLHandler.addTagValue("split",      stepNrInFilename));
+		retval.append("      ").append(XMLHandler.addTagValue("haspartno",  partNrInFilename));
+		retval.append("      ").append(XMLHandler.addTagValue("add_date",   dateInFilename));
+		retval.append("      ").append(XMLHandler.addTagValue("add_time",   timeInFilename));
+		retval.append("      ").append(XMLHandler.addTagValue("add_to_result_filenames",   addToResultFilenames));
+		retval.append("      ").append(XMLHandler.addTagValue("pad",        padded));
+		retval.append("      ").append(XMLHandler.addTagValue("fast_dump",  fastDump));
+		retval.append("      ").append(XMLHandler.addTagValue("splitevery", splitEvery));
+		retval.append("    </file>").append(Const.CR);
         
-		retval.append("    <fields>"+Const.CR);
+		retval.append("    <fields>").append(Const.CR);
 		for (int i=0;i<outputFields.length;i++)
 		{
 		    TextFileField field = outputFields[i];
 		    
 			if (field.getName()!=null && field.getName().length()!=0)
 			{
-				retval.append("      <field>"+Const.CR);
-				retval.append("        "+XMLHandler.addTagValue("name",      field.getName()));
-				retval.append("        "+XMLHandler.addTagValue("type",      field.getTypeDesc()));
-				retval.append("        "+XMLHandler.addTagValue("format",    field.getFormat()));
-				retval.append("        "+XMLHandler.addTagValue("currency",  field.getCurrencySymbol()));
-				retval.append("        "+XMLHandler.addTagValue("decimal",   field.getDecimalSymbol()));
-				retval.append("        "+XMLHandler.addTagValue("group",     field.getGroupingSymbol()));
-				retval.append("        "+XMLHandler.addTagValue("nullif",    field.getNullString()));
-				retval.append("        "+XMLHandler.addTagValue("length",    field.getLength()));
-				retval.append("        "+XMLHandler.addTagValue("precision", field.getPrecision()));
-				retval.append("        </field>"+Const.CR);
+				retval.append("      <field>").append(Const.CR);
+				retval.append("        ").append(XMLHandler.addTagValue("name",      field.getName()));
+				retval.append("        ").append(XMLHandler.addTagValue("type",      field.getTypeDesc()));
+				retval.append("        ").append(XMLHandler.addTagValue("format",    field.getFormat()));
+				retval.append("        ").append(XMLHandler.addTagValue("currency",  field.getCurrencySymbol()));
+				retval.append("        ").append(XMLHandler.addTagValue("decimal",   field.getDecimalSymbol()));
+				retval.append("        ").append(XMLHandler.addTagValue("group",     field.getGroupingSymbol()));
+				retval.append("        ").append(XMLHandler.addTagValue("nullif",    field.getNullString()));
+				retval.append("        ").append(XMLHandler.addTagValue("length",    field.getLength()));
+				retval.append("        ").append(XMLHandler.addTagValue("precision", field.getPrecision()));
+				retval.append("      </field>").append(Const.CR);
 			}
 		}
-		retval.append("      </fields>"+Const.CR);
+		retval.append("    </fields>").append(Const.CR);
 
 		return retval.toString();
 	}
@@ -897,7 +895,7 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 			partNrInFilename      =      rep.getStepAttributeBoolean(id_step, "file_add_partnr");
 			dateInFilename        =      rep.getStepAttributeBoolean(id_step, "file_add_date");
 			timeInFilename        =      rep.getStepAttributeBoolean(id_step, "file_add_time");
-			addtoresultfilenames   =      rep.getStepAttributeBoolean(id_step, "add_to_result_filenames");
+			addToResultFilenames   =      rep.getStepAttributeBoolean(id_step, "add_to_result_filenames");
 			padded             =      rep.getStepAttributeBoolean(id_step, "file_pad");
 			fastDump             =      rep.getStepAttributeBoolean(id_step, "file_fast_dump");
 	
@@ -951,7 +949,7 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 			rep.saveStepAttribute(id_transformation, id_step, "file_add_stepnr",  stepNrInFilename);
 			rep.saveStepAttribute(id_transformation, id_step, "file_add_partnr",  partNrInFilename);
 			rep.saveStepAttribute(id_transformation, id_step, "file_add_date",    dateInFilename);
-			rep.saveStepAttribute(id_transformation, id_step, "add_to_result_filenames",    addtoresultfilenames);
+			rep.saveStepAttribute(id_transformation, id_step, "add_to_result_filenames",    addToResultFilenames);
 			rep.saveStepAttribute(id_transformation, id_step, "file_add_time",    timeInFilename);
 			rep.saveStepAttribute(id_transformation, id_step, "file_pad",         padded);
 			rep.saveStepAttribute(id_transformation, id_step, "file_fast_dump",   fastDump);
