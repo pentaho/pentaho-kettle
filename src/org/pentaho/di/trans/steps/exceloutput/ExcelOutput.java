@@ -12,6 +12,7 @@
 
 package org.pentaho.di.trans.steps.exceloutput;
 
+import java.io.File;
 import java.util.Locale;
 
 import jxl.Workbook;
@@ -396,8 +397,8 @@ public class ExcelOutput extends BaseStep implements StepInterface
             {
                 ws.setEncoding(meta.getEncoding());
             }
-            
-            FileObject file = KettleVFS.getFileObject(buildFilename());
+            String filename=buildFilename();
+            FileObject file = KettleVFS.getFileObject(filename);
 
             if(meta.isAddToResultFiles())
             {
@@ -410,25 +411,65 @@ public class ExcelOutput extends BaseStep implements StepInterface
             // Create the workboook
             if (!meta.isTemplateEnabled())
             {				
-            	if (file.exists())
+            	/*if (file.exists())
             	{
             		// Attempts to load it from the local file failed in the past.
             		// As such we will try to remove the file first...
             		//
             		file.delete();
+            	}*/
+            	
+            	
+               	if(meta.isAppend() && file.exists())
+            	{
+               		File fle = new File(filename);
+                    boolean find=false;
+                    int position=0;
+                    
+            		// Update Workbook
+            		data.workbook = Workbook.createWorkbook(fle ,Workbook.getWorkbook(fle));
+            		
+            		// get available sheets
+            		String listSheets[]=data.workbook.getSheetNames();
+            		
+            		// Let's see if this sheet already exist...
+            		for (int i=0;i<listSheets.length;i++)
+            		{
+            			if(listSheets[i].equals(meta.getSheetname()))
+            			{
+            				// We find the sheet
+            				find=true;
+            				position=i;
+            			}
+            			
+            		}
+    				
+            		if(find)
+            		{
+            			// let's delete sheet
+            			data.workbook.removeSheet(position);
+            		}
+            		
+                	// and now .. we create the new sheet
+                	data.sheet = data.workbook.createSheet(meta.getSheetname(),data.workbook.getNumberOfSheets()+1);
+
+				
+            	}else{
+            		// Create a new Workbook
+                	data.outputStream = file.getContent().getOutputStream();
+    				data.workbook = Workbook.createWorkbook(data.outputStream, ws);
+
+    				// Create a sheet?
+    				String sheetname = "Sheet1";
+                	data.sheet = data.workbook.getSheet(sheetname);
+                	if (data.sheet==null)
+                	{
+                		data.sheet = data.workbook.createSheet(sheetname, 0);
+                	}
             	}
             	
-				// Create a new Workbook
-            	data.outputStream = file.getContent().getOutputStream();
-				data.workbook = Workbook.createWorkbook(data.outputStream, ws);
-
-				// Create a sheet?
-				String sheetname = "Sheet1";
-            	data.sheet = data.workbook.getSheet(sheetname);
-            	if (data.sheet==null)
-            	{
-            		data.sheet = data.workbook.createSheet(sheetname, 0);
-            	}
+            	
+		
 
             } else {
 
@@ -489,15 +530,20 @@ public class ExcelOutput extends BaseStep implements StepInterface
 		
 		try
 		{
+
 			if ( data.workbook != null )
 			{
 			    data.workbook.write();
                 data.workbook.close();
-                data.outputStream.close();
-                data.outputStream=null;
                 data.workbook = null;
+                if(data.outputStream!=null) 
+                {	
+                	data.outputStream.close();
+                	data.outputStream=null;
+                }
+               
 			}
-            data.formats.clear();
+            //data.formats.clear();
 
             // Explicitly call garbage collect to have file handle
             // released. Bug tracker: PDI-48

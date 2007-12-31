@@ -158,6 +158,9 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 	private Button       wAddToResult;
 	private FormData     fdlAddToResult, fdAddToResult;
 	
+	private Label        wlAppend;
+	private Button       wAppend;
+	private FormData     fdlAppend, fdAppend;
     
 	public ExcelOutputDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
@@ -438,6 +441,33 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		Composite wContentComp = new Composite(wTabFolder, SWT.NONE);
  		props.setLook(wContentComp);
 		wContentComp.setLayout(contentLayout);
+		
+		// Append checkbox
+		wlAppend=new Label(wContentComp, SWT.RIGHT);
+		wlAppend.setText(Messages.getString("ExcelOutputDialog.Append.Label"));
+ 		props.setLook(wlAppend);
+		fdlAppend=new FormData();
+		fdlAppend.left = new FormAttachment(0, 0);
+		fdlAppend.top  = new FormAttachment(0, 0);
+		fdlAppend.right= new FormAttachment(middle, -margin);
+		wlAppend.setLayoutData(fdlAppend);
+		wAppend=new Button(wContentComp, SWT.CHECK);
+ 		props.setLook(wAppend);
+ 		wAppend.setToolTipText(Messages.getString("ExcelOutputDialog.Append.Tooltip"));
+		fdAppend=new FormData();
+		fdAppend.left = new FormAttachment(middle, 0);
+		fdAppend.top  = new FormAttachment(0, 0);
+		fdAppend.right= new FormAttachment(100, 0);
+		wAppend.setLayoutData(fdAppend);
+		wAppend.addSelectionListener(new SelectionAdapter() 
+	        {
+				public void widgetSelected(SelectionEvent arg0)
+				{
+					input.setChanged();
+				}
+			});
+		
+		
 
 
 		wlHeader=new Label(wContentComp, SWT.RIGHT);
@@ -445,14 +475,14 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
  		props.setLook(wlHeader);
 		fdlHeader=new FormData();
 		fdlHeader.left = new FormAttachment(0, 0);
-		fdlHeader.top  = new FormAttachment(0, 0);
+		fdlHeader.top  = new FormAttachment(wAppend, margin);
 		fdlHeader.right= new FormAttachment(middle, -margin);
 		wlHeader.setLayoutData(fdlHeader);
 		wHeader=new Button(wContentComp, SWT.CHECK );
  		props.setLook(wHeader);
 		fdHeader=new FormData();
 		fdHeader.left = new FormAttachment(middle, 0);
-		fdHeader.top  = new FormAttachment(0, 0);
+		fdHeader.top  = new FormAttachment(wAppend, margin);
 		fdHeader.right= new FormAttachment(100, 0);
 		wHeader.setLayoutData(fdHeader);
 		wHeader.addSelectionListener(new SelectionAdapter() 
@@ -966,7 +996,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		if (input.getTemplateFileName()  != null) wTemplateFilename.setText(input.getTemplateFileName());
 		
 		wSplitEvery.setText(""+input.getSplitEvery());
-
+		wAppend.setSelection(input.isAppend());
 		wHeader.setSelection(input.isHeaderEnabled());
 		wFooter.setSelection(input.isFooterEnabled());
 		wAddDate.setSelection(input.isDateInFilename());
@@ -1023,7 +1053,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		tfoi.setExtension(  wExtension.getText() );
 		tfoi.setTemplateFileName(  wTemplateFilename.getText() );
 		tfoi.setSplitEvery( Const.toInt(wSplitEvery.getText(), 0) );
-
+		tfoi.setAppend( wAppend.getSelection() ); 
 		tfoi.setHeaderEnabled( wHeader.getSelection() ); 
 		tfoi.setFooterEnabled( wFooter.getSelection() );
 		tfoi.setStepNrInFilename( wAddStepnr.getSelection() );

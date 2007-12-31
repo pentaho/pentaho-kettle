@@ -104,6 +104,9 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
     
     /** Calculated value ... */
     private  String newline;
+    
+	/** Flag : append workbook? */
+    private  boolean append;
 
 	public ExcelOutputMeta()
 	{
@@ -392,6 +395,21 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 		this.templateFileName = templateFileName;
 	}
 	
+    /**
+     * @return Returns the append.
+     */
+    public boolean isAppend()
+    {
+        return append;
+    }
+    /**
+     * @param append The append to set.
+     */
+    public void setAppend(boolean append)
+    {
+        this.append = append;
+    }
+    
 	public void loadXML(Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters)
 		throws KettleXMLException
 	{
@@ -427,7 +445,7 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 			headerEnabled    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "header"));
 			footerEnabled    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "footer"));
 			encoding         = XMLHandler.getTagValue(stepnode, "encoding");
-
+			append    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "append"));
             fileName             = XMLHandler.getTagValue(stepnode, "file", "name");
 			extension            = XMLHandler.getTagValue(stepnode, "file", "extention");
 			stepNrInFilename     = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "split"));
@@ -438,7 +456,7 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 			protectsheet = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "protect_sheet"));
 			password     = Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue(stepnode, "file", "password") );
 			splitEvery   = Const.toInt(XMLHandler.getTagValue(stepnode, "file", "splitevery"), 0);
-
+			
 			templateEnabled   = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "template", "enabled"));
 			templateAppend    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "template", "append"));
 			templateFileName  = XMLHandler.getTagValue(stepnode, "template", "filename");
@@ -501,8 +519,8 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 		templateAppend   = false;
 		templateFileName = "template.xls";
 		sheetname="Sheet1";	
+		append   		 = false;
 		int i, nrfields=0;
-		
 		allocate(nrfields);
 					
 		for (i=0;i<nrfields;i++)
@@ -605,6 +623,7 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 		retval.append("    ").append(XMLHandler.addTagValue("header",    headerEnabled));
 		retval.append("    ").append(XMLHandler.addTagValue("footer",    footerEnabled));
         retval.append("    ").append(XMLHandler.addTagValue("encoding",  encoding));
+        retval.append("    "+XMLHandler.addTagValue("append",    append));
 
 		retval.append("    <file>").append(Const.CR);
 		retval.append("      ").append(XMLHandler.addTagValue("name",       fileName));
@@ -618,6 +637,7 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 		retval.append("      ").append(XMLHandler.addTagValue("protect_sheet",   protectsheet));
 		retval.append("      ").append(XMLHandler.addTagValue("password",  Encr.encryptPasswordIfNotUsingVariables(password)));
 		retval.append("      ").append(XMLHandler.addTagValue("splitevery", splitEvery));
+		
 		retval.append("      </file>").append(Const.CR);
 		
 		retval.append("    <template>").append(Const.CR);
@@ -652,6 +672,7 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 			headerEnabled    =      rep.getStepAttributeBoolean(id_step, "header");
 			footerEnabled    =      rep.getStepAttributeBoolean(id_step, "footer");   
             encoding         =      rep.getStepAttributeString (id_step, "encoding");
+            append   =      rep.getStepAttributeBoolean(id_step, "append");
             
 			fileName         =      rep.getStepAttributeString (id_step, "file_name");  
 			extension        =      rep.getStepAttributeString (id_step, "file_extention");
@@ -696,6 +717,7 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "header",           headerEnabled);
 			rep.saveStepAttribute(id_transformation, id_step, "footer",           footerEnabled);
             rep.saveStepAttribute(id_transformation, id_step, "encoding",         encoding);
+            rep.saveStepAttribute(id_transformation, id_step, "append",           append);
 			rep.saveStepAttribute(id_transformation, id_step, "file_name",        fileName);
 			rep.saveStepAttribute(id_transformation, id_step, "file_extention",   extension);
 			rep.saveStepAttribute(id_transformation, id_step, "file_split",       splitEvery);
