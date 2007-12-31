@@ -74,7 +74,7 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
     private  boolean dateInFilename;
     
 	/** Flag: add the filenames to result filenames */
-    private boolean addtoresultfilenames;
+    private boolean addToResultFilenames;
 
 	/** Flag: protect the sheet */
 	private  boolean protectsheet;
@@ -101,8 +101,6 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 
     /** The encoding to use for reading: null or empty string means system default encoding */
     private String encoding;
-
-
     
     /** Calculated value ... */
     private  String newline;
@@ -111,8 +109,6 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 	{
 		super(); // allocate BaseStepMeta
 	}
-    
-    
 	
 	/**
      * @return Returns the dateInFilename.
@@ -122,8 +118,6 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
         return dateInFilename;
     }
 
-
-
     /**
      * @param dateInFilename The dateInFilename to set.
      */
@@ -131,10 +125,6 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
     {
         this.dateInFilename = dateInFilename;
     }
-
-
-
-    /**
 
     /**
      * @return Returns the extension.
@@ -144,8 +134,6 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
         return extension;
     }
 
-
-
     /**
      * @param extension The extension to set.
      */
@@ -153,8 +141,6 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
     {
         this.extension = extension;
     }
-
-
 
     /**
      * @return Returns the fileName.
@@ -196,7 +182,6 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
         this.fileName = fileName;
     }
 
-
 	/**
 	 * @param password teh passwoed to set.
 	 */
@@ -204,8 +189,6 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 	{
 		this.password = password;
 	}
-
-
 
     /**
      * @return Returns the footer.
@@ -215,8 +198,6 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
         return footerEnabled;
     }
 
-
-
     /**
      * @param footer The footer to set.
      */
@@ -224,8 +205,6 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
     {
         this.footerEnabled = footer;
     }
-
-
 
     /**
      * @return Returns the header.
@@ -235,8 +214,6 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
         return headerEnabled;
     }
 
-
-
     /**
      * @param header The header to set.
      */
@@ -244,8 +221,6 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
     {
         this.headerEnabled = header;
     }
-
-
 
     /**
      * @return Returns the newline.
@@ -255,8 +230,6 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
         return newline;
     }
 
-
-
     /**
      * @param newline The newline to set.
      */
@@ -265,7 +238,6 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
         this.newline = newline;
     }
 
-
     /**
      * @return Returns the splitEvery.
      */
@@ -273,24 +245,21 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
     {
         return splitEvery;
     }
-
-    
     
     /**
      * @return Returns the add to result filesname.
      */
     public boolean isAddToResultFiles()
     {
-    	return addtoresultfilenames;
+    	return addToResultFilenames;
     }
-
     
     /**
      * @param addtoresultfilenamesin The addtoresultfilenames to set.
      */
     public void setAddToResultFiles(boolean addtoresultfilenamesin)
     {
-        this.addtoresultfilenames = addtoresultfilenamesin;
+        this.addToResultFilenames = addtoresultfilenamesin;
     }
     
     /**
@@ -301,8 +270,6 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
         this.splitEvery = splitEvery;
     }
 
-
-
     /**
      * @return Returns the stepNrInFilename.
      */
@@ -311,8 +278,6 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
         return stepNrInFilename;
     }
 
-
-
     /**
      * @param stepNrInFilename The stepNrInFilename to set.
      */
@@ -320,8 +285,6 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
     {
         this.stepNrInFilename = stepNrInFilename;
     }
-
-
 
     /**
      * @return Returns the timeInFilename.
@@ -339,8 +302,6 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 		return protectsheet;
 	}
 
-
-
     /**
      * @param timeInFilename The timeInFilename to set.
      */
@@ -349,7 +310,6 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
         this.timeInFilename = timeInFilename;
     }
 
-
 	/**
 	 * @param protectsheet the value to set.
 	 */
@@ -357,8 +317,6 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 	{
 		this.protectsheet = protectsheet;
 	}
-
-
 
     /**
      * @return Returns the outputFields.
@@ -376,7 +334,6 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
         this.outputFields = outputFields;
     }
 
-
     /**
      * @return The desired encoding of output file, null or empty if the default system encoding needs to be used. 
      */
@@ -385,7 +342,6 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
         return encoding;
     }
 
-
     /**
      * @param encoding The desired encoding of output file, null or empty if the default system encoding needs to be used.
      */
@@ -393,7 +349,6 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
     {
         this.encoding = encoding;
     }
-
     
 	/**
 	 * @return Returns the template.
@@ -401,7 +356,6 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 	public boolean isTemplateEnabled() {
 		return templateEnabled;
 	}
-
 	
 	/**
 	 * @param template The template to set.
@@ -409,7 +363,6 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 	public void setTemplateEnabled(boolean template) {
 		this.templateEnabled = template;
 	}
-
 	
 	/**
 	 * @return Returns the templateAppend.
@@ -417,7 +370,6 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 	public boolean isTemplateAppend() {
 		return templateAppend;
 	}
-
 	
 	/**
 	 * @param templateAppend The templateAppend to set.
@@ -425,7 +377,6 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 	public void setTemplateAppend(boolean templateAppend) {
 		this.templateAppend = templateAppend;
 	}
-
 	
 	/**
 	 * @return Returns the templateFileName.
@@ -433,7 +384,6 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 	public String getTemplateFileName() {
 		return templateFileName;
 	}
-
 	
 	/**
 	 * @param templateFileName The templateFileName to set.
@@ -441,7 +391,6 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 	public void setTemplateFileName(String templateFileName) {
 		this.templateFileName = templateFileName;
 	}
-    
 	
 	public void loadXML(Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters)
 		throws KettleXMLException
@@ -479,23 +428,23 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 			footerEnabled    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "footer"));
 			encoding         = XMLHandler.getTagValue(stepnode, "encoding");
 
-            fileName  = XMLHandler.getTagValue(stepnode, "file", "name");
-			extension = XMLHandler.getTagValue(stepnode, "file", "extention");
+            fileName             = XMLHandler.getTagValue(stepnode, "file", "name");
+			extension            = XMLHandler.getTagValue(stepnode, "file", "extention");
 			stepNrInFilename     = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "split"));
-			dateInFilename  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "add_date"));
-			timeInFilename  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "add_time"));
-			addtoresultfilenames  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "add_to_result_filenames"));
+			dateInFilename       = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "add_date"));
+			timeInFilename       = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "add_time"));
+			addToResultFilenames = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "add_to_result_filenames"));
 			
 			protectsheet = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "protect_sheet"));
-			password = Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue(stepnode, "file", "password") );
-			splitEvery=Const.toInt(XMLHandler.getTagValue(stepnode, "file", "splitevery"), 0);
+			password     = Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue(stepnode, "file", "password") );
+			splitEvery   = Const.toInt(XMLHandler.getTagValue(stepnode, "file", "splitevery"), 0);
 
-			templateEnabled    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "template", "enabled"));
+			templateEnabled   = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "template", "enabled"));
 			templateAppend    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "template", "append"));
 			templateFileName  = XMLHandler.getTagValue(stepnode, "template", "filename");
-			sheetname  = XMLHandler.getTagValue(stepnode, "file", "sheetname");
-			Node fields = XMLHandler.getSubNode(stepnode, "fields");
-			int nrfields= XMLHandler.countNodes(fields, "field");
+			sheetname         = XMLHandler.getTagValue(stepnode, "file", "sheetname");
+			Node fields       = XMLHandler.getSubNode(stepnode, "fields");
+			int nrfields      = XMLHandler.countNodes(fields, "field");
 	
 			allocate(nrfields);
 			
@@ -545,7 +494,7 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 		stepNrInFilename = false;
 		dateInFilename   = false;
 		timeInFilename   = false;
-		addtoresultfilenames=true;
+		addToResultFilenames=true;
 		protectsheet	 = false;
 		splitEvery       = 0;
 		templateEnabled  = false;
@@ -651,47 +600,47 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 
 	public String getXML()
 	{
-		StringBuffer retval=new StringBuffer();
+		StringBuffer retval=new StringBuffer(800);
 		
-		retval.append("    "+XMLHandler.addTagValue("header",    headerEnabled));
-		retval.append("    "+XMLHandler.addTagValue("footer",    footerEnabled));
-        retval.append("    "+XMLHandler.addTagValue("encoding",  encoding));
+		retval.append("    ").append(XMLHandler.addTagValue("header",    headerEnabled));
+		retval.append("    ").append(XMLHandler.addTagValue("footer",    footerEnabled));
+        retval.append("    ").append(XMLHandler.addTagValue("encoding",  encoding));
 
-		retval.append("    <file>"+Const.CR);
-		retval.append("      "+XMLHandler.addTagValue("name",       fileName));
-		retval.append("      "+XMLHandler.addTagValue("extention",  extension));
-		retval.append("      "+XMLHandler.addTagValue("split",      stepNrInFilename));
-		retval.append("      "+XMLHandler.addTagValue("add_date",   dateInFilename));
-		retval.append("      "+XMLHandler.addTagValue("add_time",   timeInFilename));
-		retval.append("      "+XMLHandler.addTagValue("add_to_result_filenames",   addtoresultfilenames));
+		retval.append("    <file>").append(Const.CR);
+		retval.append("      ").append(XMLHandler.addTagValue("name",       fileName));
+		retval.append("      ").append(XMLHandler.addTagValue("extention",  extension));
+		retval.append("      ").append(XMLHandler.addTagValue("split",      stepNrInFilename));
+		retval.append("      ").append(XMLHandler.addTagValue("add_date",   dateInFilename));
+		retval.append("      ").append(XMLHandler.addTagValue("add_time",   timeInFilename));
+		retval.append("      ").append(XMLHandler.addTagValue("add_to_result_filenames",   addToResultFilenames));
 		
-		retval.append("      "+XMLHandler.addTagValue("sheetname", sheetname));
-		retval.append("      "+XMLHandler.addTagValue("protect_sheet",   protectsheet));
-		retval.append("      "+XMLHandler.addTagValue("password",  Encr.encryptPasswordIfNotUsingVariables(password)));
-		retval.append("      "+XMLHandler.addTagValue("splitevery", splitEvery));
-		retval.append("      </file>"+Const.CR);
+		retval.append("      ").append(XMLHandler.addTagValue("sheetname", sheetname));
+		retval.append("      ").append(XMLHandler.addTagValue("protect_sheet",   protectsheet));
+		retval.append("      ").append(XMLHandler.addTagValue("password",  Encr.encryptPasswordIfNotUsingVariables(password)));
+		retval.append("      ").append(XMLHandler.addTagValue("splitevery", splitEvery));
+		retval.append("      </file>").append(Const.CR);
 		
-		retval.append("    <template>"+Const.CR);
-		retval.append("      "+XMLHandler.addTagValue("enabled",  templateEnabled));
-		retval.append("      "+XMLHandler.addTagValue("append",   templateAppend));
-		retval.append("      "+XMLHandler.addTagValue("filename", templateFileName));
-		retval.append("      </template>"+Const.CR);
+		retval.append("    <template>").append(Const.CR);
+		retval.append("      ").append(XMLHandler.addTagValue("enabled",  templateEnabled));
+		retval.append("      ").append(XMLHandler.addTagValue("append",   templateAppend));
+		retval.append("      ").append(XMLHandler.addTagValue("filename", templateFileName));
+		retval.append("    </template>").append(Const.CR);
 		
-		retval.append("    <fields>"+Const.CR);
+		retval.append("    <fields>").append(Const.CR);
 		for (int i=0;i<outputFields.length;i++)
 		{
 		    ExcelField field = outputFields[i];
 		    
-			if (field.getName()!=null && field.getName().length()!=0)
+			if (field.getName()!= null && field.getName().length()!= 0)
 			{
-				retval.append("      <field>"+Const.CR);
-				retval.append("        "+XMLHandler.addTagValue("name",      field.getName()));
-				retval.append("        "+XMLHandler.addTagValue("type",      field.getTypeDesc()));
-				retval.append("        "+XMLHandler.addTagValue("format",    field.getFormat()));
-				retval.append("        </field>"+Const.CR);
+				retval.append("      <field>").append(Const.CR);
+				retval.append("        ").append(XMLHandler.addTagValue("name",      field.getName()));
+				retval.append("        ").append(XMLHandler.addTagValue("type",      field.getTypeDesc()));
+				retval.append("        ").append(XMLHandler.addTagValue("format",    field.getFormat()));
+				retval.append("      </field>").append(Const.CR);
 			}
 		}
-		retval.append("      </fields>"+Const.CR);
+		retval.append("    </fields>").append(Const.CR);
 
 		return retval.toString();
 	}
@@ -710,16 +659,16 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 			stepNrInFilename =      rep.getStepAttributeBoolean(id_step, "file_add_stepnr");
 			dateInFilename   =      rep.getStepAttributeBoolean(id_step, "file_add_date");
 			timeInFilename   =      rep.getStepAttributeBoolean(id_step, "file_add_time");
-			addtoresultfilenames   =      rep.getStepAttributeBoolean(id_step, "add_to_result_filenames");
+			addToResultFilenames =  rep.getStepAttributeBoolean(id_step, "add_to_result_filenames");
 			
-			protectsheet     =      rep.getStepAttributeBoolean(id_step, "protect_sheet");
-			password         = Encr.decryptPasswordOptionallyEncrypted( rep.getStepAttributeString (id_step, "password") );
+			protectsheet          = rep.getStepAttributeBoolean(id_step, "protect_sheet");
+			password              = Encr.decryptPasswordOptionallyEncrypted( rep.getStepAttributeString (id_step, "password") );
 
-			templateEnabled       =      rep.getStepAttributeBoolean(id_step, "template_enabled");
-			templateAppend        =      rep.getStepAttributeBoolean(id_step, "template_append");
-			templateFileName      =      rep.getStepAttributeString (id_step, "template_filename");
-			sheetname      =      rep.getStepAttributeString (id_step, "sheetname");
-			int nrfields = rep.countNrStepAttributes(id_step, "field_name");
+			templateEnabled       = rep.getStepAttributeBoolean(id_step, "template_enabled");
+			templateAppend        = rep.getStepAttributeBoolean(id_step, "template_append");
+			templateFileName      = rep.getStepAttributeString(id_step, "template_filename");
+			sheetname             = rep.getStepAttributeString(id_step, "sheetname");
+			int nrfields          = rep.countNrStepAttributes(id_step, "field_name");
 			
 			allocate(nrfields);
 			
@@ -753,7 +702,7 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "file_add_stepnr",  stepNrInFilename);
 			rep.saveStepAttribute(id_transformation, id_step, "file_add_date",    dateInFilename);
 			rep.saveStepAttribute(id_transformation, id_step, "file_add_time",    timeInFilename);
-			rep.saveStepAttribute(id_transformation, id_step, "add_to_result_filenames",    addtoresultfilenames);
+			rep.saveStepAttribute(id_transformation, id_step, "add_to_result_filenames",    addToResultFilenames);
 			
 			rep.saveStepAttribute(id_transformation, id_step, "protect_sheet",    protectsheet);
 			rep.saveStepAttribute(id_transformation, id_step, "password",  Encr.encryptPasswordIfNotUsingVariables(password) );
@@ -843,5 +792,4 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
     {
         return new String[] { "jxl.jar", };
     }
-
 }
