@@ -85,13 +85,13 @@ public class StringUtilTest extends TestCase
 	public void testSubstituteBasic()	
 	{
 		Map<String, String> map = createVariables1("${", "}");
-		assertEquals("||", StringUtil.substitute("|${EMPTY}|", map, "${", "}", 0));
-		assertEquals("|case1|", StringUtil.substitute("|${checkcase}|", map, "${", "}", 0));
-		assertEquals("|case2|", StringUtil.substitute("|${CheckCase}|", map, "${", "}", 0));
-		assertEquals("|case3|", StringUtil.substitute("|${CHECKCASE}|", map, "${", "}", 0));
-		assertEquals("|Arecurse|", StringUtil.substitute("|${recursive1}|", map, "${", "}", 0));
-		assertEquals("|recurseB|", StringUtil.substitute("|${recursive3}|", map, "${", "}", 0));
-		assertEquals("|ZfinalB|", StringUtil.substitute("|${recursive5}|", map, "${", "}", 0));
+		assertEquals("||", StringUtil.substitute("|${EMPTY}|", map, "${", "}"));
+		assertEquals("|case1|", StringUtil.substitute("|${checkcase}|", map, "${", "}"));
+		assertEquals("|case2|", StringUtil.substitute("|${CheckCase}|", map, "${", "}"));
+		assertEquals("|case3|", StringUtil.substitute("|${CHECKCASE}|", map, "${", "}"));
+		assertEquals("|Arecurse|", StringUtil.substitute("|${recursive1}|", map, "${", "}"));
+		assertEquals("|recurseB|", StringUtil.substitute("|${recursive3}|", map, "${", "}"));
+		assertEquals("|ZfinalB|", StringUtil.substitute("|${recursive5}|", map, "${", "}"));
 		
 		try {
 		    StringUtil.substitute("|${recursive_all}|", map, "${", "}", 0);
@@ -101,16 +101,32 @@ public class StringUtilTest extends TestCase
 		{ }
 		
 		map = createVariables1("%%", "%%");
-		assertEquals("||", StringUtil.substitute("|%%EMPTY%%|", map, "%%", "%%", 0));
-		assertEquals("|case1|", StringUtil.substitute("|%%checkcase%%|", map, "%%", "%%", 0));
-		assertEquals("|case2|", StringUtil.substitute("|%%CheckCase%%|", map, "%%", "%%", 0));
-		assertEquals("|case3|", StringUtil.substitute("|%%CHECKCASE%%|", map, "%%", "%%", 0));
-		assertEquals("|Arecurse|", StringUtil.substitute("|%%recursive1%%|", map, "%%", "%%", 0));
-		assertEquals("|recurseB|", StringUtil.substitute("|%%recursive3%%|", map, "%%", "%%", 0));
-		assertEquals("|ZfinalB|", StringUtil.substitute("|%%recursive5%%|", map, "%%", "%%", 0));
+		assertEquals("||", StringUtil.substitute("|%%EMPTY%%|", map, "%%", "%%"));
+		assertEquals("|case1|", StringUtil.substitute("|%%checkcase%%|", map, "%%", "%%"));
+		assertEquals("|case2|", StringUtil.substitute("|%%CheckCase%%|", map, "%%", "%%"));
+		assertEquals("|case3|", StringUtil.substitute("|%%CHECKCASE%%|", map, "%%", "%%"));
+		assertEquals("|Arecurse|", StringUtil.substitute("|%%recursive1%%|", map, "%%", "%%"));
+		assertEquals("|recurseB|", StringUtil.substitute("|%%recursive3%%|", map, "%%", "%%"));
+		assertEquals("|ZfinalB|", StringUtil.substitute("|%%recursive5%%|", map, "%%", "%%"));
 		
 		try {
-		    StringUtil.substitute("|%%recursive_all%%|", map, "%%", "%%", 0);
+		    StringUtil.substitute("|%%recursive_all%%|", map, "%%", "%%");
+		    fail("recursive check is failing");
+		}
+		catch ( RuntimeException rex )
+		{ }
+
+		map = createVariables1("${", "}");
+		assertEquals("||", StringUtil.environmentSubstitute("|%%EMPTY%%|", map));
+		assertEquals("|case1|", StringUtil.environmentSubstitute("|%%checkcase%%|", map));
+		assertEquals("|case2|", StringUtil.environmentSubstitute("|%%CheckCase%%|", map));
+		assertEquals("|case3|", StringUtil.environmentSubstitute("|%%CHECKCASE%%|", map));
+		assertEquals("|Arecurse|", StringUtil.environmentSubstitute("|%%recursive1%%|", map));
+		assertEquals("|recurseB|", StringUtil.environmentSubstitute("|%%recursive3%%|", map));
+		assertEquals("|ZfinalB|", StringUtil.environmentSubstitute("|%%recursive5%%|", map));
+		
+		try {
+		    StringUtil.environmentSubstitute("|%%recursive_all%%|", map);
 		    fail("recursive check is failing");
 		}
 		catch ( RuntimeException rex )
@@ -124,7 +140,19 @@ public class StringUtilTest extends TestCase
 	{
 		assertTrue(StringUtil.isEmpty((String)null));
 		assertTrue(StringUtil.isEmpty(""));
+		
 		assertFalse(StringUtil.isEmpty("A"));
 		assertFalse(StringUtil.isEmpty(" A "));
 	}
+
+	/**
+	 * Test getIndent() call.
+	 */
+	public void testGetIndent()	
+	{
+		assertEquals("",    StringUtil.getIndent(0));
+		assertEquals(" ",   StringUtil.getIndent(1));
+		assertEquals("  ",  StringUtil.getIndent(2));
+		assertEquals("   ", StringUtil.getIndent(3));
+	}	
 }

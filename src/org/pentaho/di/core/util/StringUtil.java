@@ -419,10 +419,6 @@ public class StringUtil
 
 	public static Date str2dat(String arg0, String arg1, String val) throws KettleValueException
 	{
-
-		// System.out.println("Convert string ["+string+"] to date using pattern
-		// '"+arg0+"'");
-
 		SimpleDateFormat df = new SimpleDateFormat();
 
 		DateFormatSymbols dfs = new DateFormatSymbols();
@@ -434,16 +430,13 @@ public class StringUtil
 		try
 		{
 			return df.parse(val);
-
 		} catch (Exception e)
 		{
-
-			throw new KettleValueException("TO_DATE Couldn't convert String to Date" + e.toString());
+			throw new KettleValueException("TO_DATE Couldn't convert String to Date " + e.toString());
 		}
 	}
   
-  public static String getIndent(int indentLevel) {
-    return INDENTCHARS.substring(0, indentLevel);
-  }
-  
+    public static String getIndent(int indentLevel) {
+        return INDENTCHARS.substring(0, indentLevel);
+    }  
 }
