@@ -328,20 +328,19 @@ public class LDAPInput extends BaseStep implements StepInterface
 	
 	//
 	// Run is were the action happens!
-	//
 	public void run()
-	{			    
+	{
 		try
 		{
-			logBasic(Messages.getString("LDAPInput.Log.StartingRun"));		
+			logBasic(Messages.getString("System.Log.StartingToRun")); //$NON-NLS-1$
 			
 			while (processRow(meta, data) && !isStopped());
 		}
-		catch(Exception e)
+		catch(Throwable t)
 		{
-			logError("Unexpected error : ");
-			logError(Const.getStackTracker(e));
-			setErrors(1);
+			logError(Messages.getString("System.Log.UnexpectedError")+" : "); //$NON-NLS-1$ //$NON-NLS-2$
+            logError(Const.getStackTracker(t));
+            setErrors(1);
 			stopAll();
 		}
 		finally
@@ -350,5 +349,5 @@ public class LDAPInput extends BaseStep implements StepInterface
 			logSummary();
 			markStop();
 		}
-	}
+	}	
 }
