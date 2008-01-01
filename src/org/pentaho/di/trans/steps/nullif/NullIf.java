@@ -25,7 +25,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 
 /**
- * Get information from the System or the supervising transformation.
+ * NullIf step, put null as value when the original field matches a specific value.
  * 
  * @author Matt 
  * @since 4-aug-2003

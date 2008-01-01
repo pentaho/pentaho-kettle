@@ -168,6 +168,4 @@ public class ClosureGenerator extends BaseStep implements StepInterface
 			markStop();
 		}
 	}
-	
-	
 }
