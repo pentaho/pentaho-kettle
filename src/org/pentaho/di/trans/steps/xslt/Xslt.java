@@ -218,8 +218,6 @@ public class Xslt extends BaseStep implements StepInterface
 				return false;
 			}
 		}
-		
-
    
 		return true;	
 	}
@@ -236,19 +234,21 @@ public class Xslt extends BaseStep implements StepInterface
 		return false;
 	}
 
+	//
 	// Run is were the action happens!
 	public void run()
-	{		
+	{
 		try
 		{
-			logBasic(Messages.getString("Xslt.Log.StartingToRun")); //$NON-NLS-1$		
+			logBasic(Messages.getString("System.Log.StartingToRun")); //$NON-NLS-1$
+			
 			while (processRow(meta, data) && !isStopped());
 		}
-		catch(Exception e)
+		catch(Throwable t)
 		{
-			logError(Messages.getString("Xslt.Log.UnexpectedeError")+" : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
-            logError(Messages.getString("Xslt.Log.ErrorStackTrace")+Const.CR+Const.getStackTracker(e)); //$NON-NLS-1$
-			setErrors(1);
+			logError(Messages.getString("System.Log.UnexpectedError")+" : "); //$NON-NLS-1$ //$NON-NLS-2$
+            logError(Const.getStackTracker(t));
+            setErrors(1);
 			stopAll();
 		}
 		finally
@@ -257,5 +257,5 @@ public class Xslt extends BaseStep implements StepInterface
 			logSummary();
 			markStop();
 		}
-	}
+	}	
 }
