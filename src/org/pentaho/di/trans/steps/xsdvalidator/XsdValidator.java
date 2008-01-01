@@ -66,9 +66,6 @@ public class XsdValidator extends BaseStep implements StepInterface
 	{
 		super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
 	}
-	
-	
-
 
     public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{
@@ -350,18 +347,17 @@ public class XsdValidator extends BaseStep implements StepInterface
 	// Run is were the action happens!
 	public void run()
 	{
-		
 		try
 		{
-			logBasic(Messages.getString("XsdValidator.Log.StartingToRun")); //$NON-NLS-1$
-		
+			logBasic(Messages.getString("System.Log.StartingToRun")); //$NON-NLS-1$
+			
 			while (processRow(meta, data) && !isStopped());
 		}
-		catch(Exception e)
+		catch(Throwable t)
 		{
-			logError(Messages.getString("XsdValidator.Log.UnexpectedeError")+" : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
-            logError(Messages.getString("XsdValidator.Log.ErrorStackTrace")+Const.CR+Const.getStackTracker(e)); //$NON-NLS-1$
-			setErrors(1);
+			logError(Messages.getString("System.Log.UnexpectedError")+" : "); //$NON-NLS-1$ //$NON-NLS-2$
+            logError(Const.getStackTracker(t));
+            setErrors(1);
 			stopAll();
 		}
 		finally
