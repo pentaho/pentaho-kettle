@@ -311,32 +311,7 @@ public class AddXML extends BaseStep implements StepInterface
         
         super.dispose(smi, sdi);
         
-    }
-    
-    //
-    // Run is were the action happens!
-    public void run()
-    {
-        try
-        {
-            logBasic("Starting to run...");
-            while (processRow(meta, data) && !isStopped())
-                ;
-        }
-        catch(Exception e)
-        {
-            logError("Unexpected error : ");
-            logError(Const.getStackTracker(e));
-            setErrors(1);
-            stopAll();
-        }
-        finally
-        {
-            dispose(meta, data);
-            logSummary();
-            markStop();
-        }
-    }
+    }    
 
     private void setDomImplentation(DOMImplementation domImplentation) {
         this.domImplentation = domImplentation;
@@ -352,5 +327,30 @@ public class AddXML extends BaseStep implements StepInterface
 
     private Transformer getSerializer() {
         return serializer;
-    }   
+    }
+    
+	//
+	// Run is were the action happens!
+	public void run()
+	{		
+		try
+		{
+			logBasic(Messages.getString("System.Log.StartingToRun")); //$NON-NLS-1$
+			
+			while (processRow(meta, data) && !isStopped());
+		}
+		catch(Throwable t)
+		{
+			logError(Messages.getString("System.Log.UnexpectedError")+" : "); //$NON-NLS-1$ //$NON-NLS-2$
+            logError(Const.getStackTracker(t));
+			setErrors(1);
+			stopAll();
+		}
+		finally
+		{
+		    dispose(meta, data);
+		    logSummary();		    
+			markStop();
+		}
+	}    
 }

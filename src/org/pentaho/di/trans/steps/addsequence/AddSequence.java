@@ -11,8 +11,6 @@
  
 package org.pentaho.di.trans.steps.addsequence;
 
-import java.text.ParseException;
-
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.database.Database;
@@ -30,12 +28,11 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
 
-
 /**
  * Adds a sequential number to a stream of rows.
  * 
  * @author Matt
- * @since 13-mei-2003
+ * @since 13-may-2003
  */
 public class AddSequence extends BaseStep implements StepInterface
 {

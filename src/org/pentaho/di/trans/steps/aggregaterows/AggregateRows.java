@@ -212,27 +212,29 @@ public class AggregateRows extends BaseStep implements StepInterface
 		return false;
 		
 	}
+	
 	//
 	// Run is were the action happens!
 	public void run()
-	{
+	{		
 		try
 		{
-			logBasic(Messages.getString("AggregateRows.Log.StartToRun")); //$NON-NLS-1$
+			logBasic(Messages.getString("System.Log.StartingToRun")); //$NON-NLS-1$
+			
 			while (processRow(meta, data) && !isStopped());
-		}	
-		catch(Exception e)
+		}
+		catch(Throwable t)
 		{
-			logError(Messages.getString("AggregateRows.Log.UnexpectedErrorInfo")+" : "); //$NON-NLS-1$ //$NON-NLS-2$
-            logError(Const.getStackTracker(e));
-            setErrors(1);
+			logError(Messages.getString("System.Log.UnexpectedError")+" : "); //$NON-NLS-1$ //$NON-NLS-2$
+            logError(Const.getStackTracker(t));
+			setErrors(1);
 			stopAll();
 		}
 		finally
 		{
 		    dispose(meta, data);
+		    logSummary();		    
 			markStop();
-		    logSummary();
 		}
-	}
+	}	
 }
