@@ -1294,7 +1294,7 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 			setAttribute(widgetNode,NodeStart,round,false);
 			// Put nodes
 			setNode(widgetNode,NodeStart, round);
-		}
+		} // end if
 	}
 
 	private void setAttribute(Node node,String NodeStart,int round,boolean start)
