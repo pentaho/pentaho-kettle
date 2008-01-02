@@ -180,6 +180,8 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 	
 	private boolean  gotEncodings = false;
 	
+	private     HashSet<String> list = new HashSet<String> ();
+	
 	public static final int dateLengths[] = new int[]
 		{
 			23, 19, 14, 10, 10, 10, 10, 8, 8, 8, 8, 6, 6
@@ -1198,12 +1200,12 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 	{
         try
         {
+        	list.clear();
         	getXMLDataMeta meta = new getXMLDataMeta();
         	getInfo(meta);
         	
         	//	 check if the path is given 
-    		if (!checkLoopXPath(meta)) return;    	
-    		        
+    		if (!checkLoopXPath(meta)) return;    	       
             
     		FileInputList inputList = meta.getFiles(transMeta);
             if(meta.getIsInFields())
@@ -1212,7 +1214,7 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
             }           
             else if (inputList.getFiles().size()>0)
             {
-
+            	
             	//Clear Fields Grid
                 wFields.removeAll(); 
                 
@@ -1229,89 +1231,20 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
     			XPath xpath =XPathFactory.newInstance().newXPath();
     			NodeList widgetNodes = (NodeList) xpath.evaluate(meta.getLoopXPath(), document,XPathConstants.NODESET);
     	        
-    			HashSet<String> list = new HashSet<String> ();
-    			
     			if (widgetNodes.getLength() >0)
     			{
     				
     				for (int n = 0; n < widgetNodes.getLength(); n++) 
     				{
-    					// Let's take the node
+    					// Let's take current node
 	    				Node widgetNode = widgetNodes.item(n);
-	    				
-	    				String valueNode=null;
-	    				
-	    				for (int i = 0; i < widgetNode.getChildNodes().getLength(); i++) 
-	    				{
-	    					// Get Node Name
-	    					String nodename=widgetNode.getChildNodes().item(i).getNodeName();
-	    					
-	    					if(!list.contains(nodename) && !nodename.equals("#text"))
-	    					{
-		    		            TableItem item = new TableItem(wFields.table, SWT.NONE);
-		    		            item.setText(1, nodename);
-		    		            item.setText(2, nodename);
-		    		            item.setText(3, getXMLDataField.ElementTypeDesc[0]);
-		    		           
-		    
-		    		            // Get Node value
-		    		            valueNode=XMLHandler.getNodeValue( widgetNode.getChildNodes().item(i) ); 
-		    		           
-		    					// Try to get the Type
-		    		            if(IsDate(valueNode))
-		    		            {
-			            			item.setText(4, "Date");
-			            			item.setText(5, "yyyy/MM/dd");
-		    		            }
-		    		            else if(IsInteger(valueNode))
-			            			item.setText(4, "Integer");
-		    		            else if(IsNumber(valueNode))
-			            			item.setText(4, "Number");	    		          
-		    		            else
-		    		            	item.setText(4, "String");	    		            
-		    		            
-		    		            list.add(nodename);
-	    					}
-	    					
-	    				}
-	    				list.clear();
-	    				for (int i = 0; i < widgetNode.getAttributes().getLength(); i++) 
-	    				{
-	    					// Get Attribute Name
-	    					String attributname=widgetNode.getAttributes().item(i).getNodeName();
-	    					
-	    					if(!list.contains(attributname))
-	    					{
-		    		            TableItem item = new TableItem(wFields.table, SWT.NONE);
-		    		            item.setText(1, attributname);
-		    		            item.setText(2, attributname);
-		    		            item.setText(3, getXMLDataField.ElementTypeDesc[1]);
-		    		            
-		    		            // Get attribute value
-		    		            valueNode = widgetNode.getAttributes().item(i).getNodeValue(); 
-		    		            
-		    		            // Try to get the Type
-		    		            if(IsDate(valueNode))
-		    		            {
-			            			item.setText(4, "Date");
-			            			item.setText(5, "yyyy/MM/dd");
-			            			
-		    		            }
-		    		            else if(IsInteger(valueNode))
-			            			item.setText(4, "Integer");
-		    		            else if(IsNumber(valueNode))
-			            			item.setText(4, "Number");	    		          
-		    		            else
-		    		            	item.setText(4, "String");	    		            	
-		    		            list.add(attributname);
-	    					}
-	    				} 
-    				}
+    					setAttribute(widgetNode,widgetNode.getNodeName(),0,true);
+    					setNodes(widgetNode,widgetNode.getNodeName(),0);
+    				} // end loop Nodes
     			}
                 wFields.removeEmptyRows();
                 wFields.setRowNums();
-                wFields.optWidth(true);                			
-            	
+                wFields.optWidth(true);
             }
             
 
@@ -1322,7 +1255,138 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
         }
 	}
 	
+	private void setNodes(Node widgetNode,String NodeStart, int round)
+	{
+		int nn=0;
+		nn=widgetNode.getChildNodes().getLength();
 
+		if(nn>1)
+		{
+			// Fetch file to get the child nodes ...
+			for (int i = 0; i < nn; i++) 
+			{
+				// Get node
+				Node node=widgetNode.getChildNodes().item(i);
+				// Get Node Name
+				String nodename=node.getNodeName();
+				
+				// Put attribute
+				setAttribute(node,NodeStart,round,false);
+			
+				// Check if we have child nodes ...
+				int nbe=0;
+				nbe=node.getChildNodes().getLength();
+				if(nbe>1) 
+				{
+					for (int j = 0; j < nbe; j++) 
+					{
+						setNodes(node.getChildNodes().item(j),nodename,1);
+					}
+				}else{
+					
+					// so let's put the node name
+					setNode(node,NodeStart, round);
+				} // end if		
+			}// end for
+		}else
+		{
+			// Put attributes
+			setAttribute(widgetNode,NodeStart,round,false);
+			// Put nodes
+			setNode(widgetNode,NodeStart, round);
+		}
+	}
+
+	private void setAttribute(Node node,String NodeStart,int round,boolean start)
+	{
+		// How many attribute can we find here...
+		String nodename=node.getNodeName();
+		int nbattribute=0;
+		if(node.getAttributes()!=null) 	nbattribute=node.getAttributes().getLength();
+		
+		if(nbattribute>0)
+		{
+			// We find at least one attribute
+			for (int a = 0; a < node.getAttributes().getLength(); a++) 
+			{
+				Node childnode=node.getAttributes().item(a);
+				// Get Attribute Name
+				String attributname=childnode.getNodeName();
+				String attributnametxt=null;
+				
+				if(start) attributnametxt="@" + attributname;
+				else
+				{
+					attributnametxt=nodename +"/@" + attributname;
+					if(round>0) attributnametxt = NodeStart+ '/' + nodename +"/@" + attributname;
+				}
+
+				if(!list.contains(attributnametxt))
+				{
+		            TableItem item = new TableItem(wFields.table, SWT.NONE);
+		            item.setText(1, attributname);
+		            item.setText(2, attributnametxt);
+		            item.setText(3, getXMLDataField.ElementTypeDesc[0]);
+		            
+		            // Get attribute value
+		            String valueNode =childnode.getNodeValue();
+		            
+		            // Try to get the Type
+		            if(IsDate(valueNode))
+		            {
+            			item.setText(4, "Date");
+            			item.setText(5, "yyyy/MM/dd");
+            			
+		            }
+		            else if(IsInteger(valueNode))
+            			item.setText(4, "Integer");
+		            else if(IsNumber(valueNode))
+            			item.setText(4, "Number");	    		          
+		            else
+		            	item.setText(4, "String");	    		            	
+		            list.add(attributnametxt);
+				}// end if
+				
+			}// end loop attribute
+	            
+		} // end if attribute
+	}
+	
+	private void setNode(Node node,String NodeStart, int round)
+	{
+		// Get Node Name
+		String nodename=node.getNodeName();
+		String nodenametxt=nodename;
+		if(round>0) nodenametxt  = NodeStart+ '/' + nodename;
+		
+		if(!list.contains(nodenametxt) && !nodename.equals("#text"))
+		{	
+            TableItem item = new TableItem(wFields.table, SWT.NONE);
+            item.setText(1, nodename);
+            item.setText(2, nodenametxt);
+            item.setText(3, getXMLDataField.ElementTypeDesc[0]);
+
+            // Get Node value
+            String valueNode=null;
+            valueNode=XMLHandler.getNodeValue( node); 
+
+			// Try to get the Type
+            if(IsDate(valueNode))
+            {
+    			item.setText(4, "Date");
+    			item.setText(5, "yyyy/MM/dd");
+            }
+            else if(IsInteger(valueNode))
+    			item.setText(4, "Integer");
+            else if(IsNumber(valueNode))
+    			item.setText(4, "Number");	    		          
+            else
+            	item.setText(4, "String");
+            
+            list.add(nodenametxt);
+           
+		}// end if
+	}
 private boolean IsInteger(String str)
 {
 	  try 

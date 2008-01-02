@@ -15,15 +15,14 @@
 package org.pentaho.di.trans.steps.getxmldata;
 
 import java.io.FileInputStream;
-import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.util.List;
+import java.util.HashMap;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathFactory;
+import org.dom4j.io.SAXReader;
+import org.dom4j.Document;
+import org.dom4j.XPath;
+import org.dom4j.tree.AbstractNode;
 
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileType;
@@ -37,7 +36,6 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
-import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -45,11 +43,6 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-import org.w3c.dom.Document;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
 
 /**
  * Read XML files, parse them and convert them to rows and writes these to one or more output 
@@ -119,7 +112,7 @@ public class getXMLData extends BaseStep implements StepInterface
 				if (Const.isEmpty(meta.getXMLField()))
 				{
 					logError(Messages.getString("getXMLData.Log.NoField"));
-					throw new KettleException(Messages.getString("getXMLData.Log.NoField")); //$NON-NLS-1$ //$NON-NLS-2$
+					throw new KettleException(Messages.getString("getXMLData.Log.NoField"));
 				}
 				
 				// cache the position of the field			
@@ -137,8 +130,9 @@ public class getXMLData extends BaseStep implements StepInterface
 			else
 			{
 				// XML source is file (probably many files)...
+				handleMissingFiles();
 			}
-			handleMissingFiles();
+			
 		}
 		try
 		{
@@ -255,41 +249,6 @@ public class getXMLData extends BaseStep implements StepInterface
 				throw new KettleException("Following required files are not accessible " +message);
 		}
 	}
-	private String getValueXML(NodeList widgetNodes,int itFileInputXML,XPath xpath, String xpathvalue, String element_type)
-	throws KettleStepException
-	{
-		String valueNode=null;	
-		try
-		{
-			Node widgetNode = widgetNodes.item(itFileInputXML);			
-			if (element_type.equals("node"))
-			{
-				// Get Node value
-				Node resultNode = (Node) xpath.evaluate(xpathvalue,widgetNode, XPathConstants.NODE);			
-				//widgetNode
-				if (resultNode != null) valueNode=XMLHandler.getNodeValue( resultNode );
-			}
-			else
-			{
-				// Get attribute value
-                NamedNodeMap attributes = widgetNode.getAttributes();
-                if (attributes!=null)
-                {
-                    Node namedItem = widgetNode.getAttributes().getNamedItem(xpathvalue);
-                    if (namedItem!=null)
-                    {
-                        valueNode=XMLHandler.getNodeValue(namedItem);
-                    }
-                }
-			}
-		} 
-		catch (Exception e) 
-		{
-			log.logError(toString(), e.toString());
-			throw new KettleStepException(e.toString());
-		}			
-		return valueNode;
-	}
 	
 	/**
 	 * Build an empty row based on the meta-data.
@@ -304,12 +263,14 @@ public class getXMLData extends BaseStep implements StepInterface
 	}
 	
 	/**
-	 * Main gist of the processing.
+	 * Main function of the processing.
 	 */
 	private void processXML(FileObject file ,String StringXML,boolean IsInXMLField,Object[] row) 
 	    throws KettleStepException
 	{	
 		Object[] outputRowData = null;
+		 boolean sendToErrorRow=false;
+		 String errorMessage = null;
 		
 		try 
 		{		
@@ -343,53 +304,69 @@ public class getXMLData extends BaseStep implements StepInterface
 			{
 				encoding=meta.getEncoding();
 			}
-			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-			// Set Name space aware?
-			factory.setNamespaceAware(meta.isNamespaceAware());
+
+			SAXReader reader = new SAXReader();
 			// Validate XML against specified schema?
-			factory.setValidating(meta.isValidating());
-			DocumentBuilder builder = factory.newDocumentBuilder();
+			if(meta.isValidating())
+			{
+				reader.setValidation(true);
+				reader.setFeature("http://apache.org/xml/features/validation/schema", true);
+			}
+
+			Document doc = null;
+			HashMap xmlNameSpaceMap = new HashMap();
 		
-			Document document=null;
-			
 			if (log.isDetailed()) log.logDetailed(toString(), Messages.getString("getXMLData.Log.CreateDocumentStart"));
 			
 			if (IsInXMLField)
 			{
-				document = builder.parse(new InputSource(new StringReader(StringXML)));	
+				doc= reader.read(new StringReader(StringXML));	
 			}
 			else
 			{
-				document = builder.parse(new InputSource(new InputStreamReader(new FileInputStream(KettleVFS.getFilename(file)), encoding)));	
+				doc = reader.read(new FileInputStream(KettleVFS.getFilename(file)));
+				doc.setXMLEncoding(encoding);
 			}
+			
+		
  	
 			if (log.isDetailed()) log.logDetailed(toString(), Messages.getString("getXMLData.Log.CreateDocumentEnd"));
 			
-			XPath xpath = XPathFactory.newInstance().newXPath();
-			NodeList widgetNodes = (NodeList) xpath.evaluate(environmentSubstitute(meta.getLoopXPath()), document,XPathConstants.NODESET);
+	        XPath xpath = doc.createXPath(environmentSubstitute(meta.getLoopXPath()));
 	        
+	        /* Set Name space aware?*/
+	    	if(meta.isNamespaceAware())
+			{
+				String ns = doc.getRootElement().getNamespaceURI();
+				xmlNameSpaceMap.put("ns", ns);
+				xpath.setNamespaceURIs(xmlNameSpaceMap);
+			}
+	        
+			List<AbstractNode> an = (List<AbstractNode>) xpath.selectNodes(doc);
 			if (IsInXMLField)
 	        {
-	        	if (log.isDetailed()) logDetailed(Messages.getString("getXMLData.Log.LoopOccurences",""+widgetNodes.getLength()));	
+	        	if (log.isDetailed()) logDetailed(Messages.getString("getXMLData.Log.LoopOccurences",""+an.size()));	
 	        }
 	        else
 	        {
-	        	if (log.isDetailed()) logDetailed(Messages.getString("getXMLData.Log.LoopFileOccurences",""+widgetNodes.getLength(),KettleVFS.getFilename(file)));
+	        	if (log.isDetailed()) logDetailed(Messages.getString("getXMLData.Log.LoopFileOccurences",""+an.size(),KettleVFS.getFilename(file)));
 	        }
-	        
-			for (int iFileInputXML = 0; iFileInputXML < widgetNodes.getLength(); iFileInputXML++) 
+
+			for (AbstractNode a : an) 
 			{
 				if ((meta.getRowLimit()>0 && data.rownr<meta.getRowLimit()) || meta.getRowLimit()==0)  
 				{
+					
 					// Create new row				
 					outputRowData = buildEmptyRow();
 					
-					// Close previous row ...
+					// Clone previous row ...
 					if(row!=null) outputRowData = row.clone();
 					
-					// Read from the Node...
+					// Read fields...
 					for (int i=0;i<meta.getInputFields().length;i++)
 					{	
+						// Get field
 						getXMLDataField xmlInputField = meta.getInputFields()[i];
 						// Get the Path to look for
 						String XPathValue = environmentSubstitute(xmlInputField.getXPath());
@@ -410,13 +387,20 @@ public class getXMLData extends BaseStep implements StepInterface
 									XPathValue = XPathValue.replaceAll("\\{\\$"+NameVarInputField+"\\}","'"+ outputRowData[k]+"'");
 									if ( log.isDetailed() )
 									{
-									    log.logDetailed(toString(),XPathValue);
+									   if(log.isDetailed()) log.logDetailed(toString(),XPathValue);
 									}
 								}
 							}								
 						}
+				
+
+						// Get node value
+						String value =null;
+						if (!Element_Type.equals("node")) XPathValue='@'+XPathValue;
+						XPath xpathnode = a.createXPath(XPathValue);
 						
-						String value = getValueXML(widgetNodes,iFileInputXML,xpath, XPathValue,Element_Type);  
+					
+						if(xpathnode!=null) value = xpathnode.valueOf(a);
 						
 						// Do trimming
 						switch (meta.getInputFields()[i].getTrimType())
@@ -474,8 +458,22 @@ public class getXMLData extends BaseStep implements StepInterface
 		} 
 		catch(Exception e)
 		{
-			log.logError(toString(), e.toString());
-			throw new KettleStepException(e.toString());
+			if (getStepMeta().isDoingErrorHandling())
+			{
+		          sendToErrorRow = true;
+		          errorMessage = e.toString();
+			}
+			else
+			{
+				log.logError(toString(), e.toString());
+				throw new KettleStepException(e.toString());
+			}
+
+			if (sendToErrorRow)
+			{
+			   // Simply add this row to the error row
+			   putError(getInputRowMeta(), row, 1, errorMessage, null, "getXMLData001");
+			}
 		} 			
 	}
 
