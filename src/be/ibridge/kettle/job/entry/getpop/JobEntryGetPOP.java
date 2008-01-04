@@ -449,7 +449,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 						List current_file_POP = new ArrayList();
 						List current_filepath_POP = new ArrayList();
 						int nb_email_POP=1;    
-						DateFormat dateFormat = new SimpleDateFormat("hhmmss_mmddyyyy");
+						DateFormat dateFormat = new SimpleDateFormat("hhmmss_MMddyyyy");
 
 						String startpattern="name";
 						if (!Const.isEmpty(getRealFilenamePattern()))
