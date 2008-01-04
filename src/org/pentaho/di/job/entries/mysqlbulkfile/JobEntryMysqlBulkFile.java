@@ -322,7 +322,7 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
 
 					//Format Date
 
-					DateFormat dateFormat = new SimpleDateFormat("mmddyyyy_hhmmss");
+					DateFormat dateFormat = new SimpleDateFormat("hhmmss_MMddyyyy");
 					// Try to clean filename (without wildcard)
 					String wildcard = realFilename.substring(realFilename.length()-4,realFilename.length());
 					if(wildcard.substring(0,1).equals("."))

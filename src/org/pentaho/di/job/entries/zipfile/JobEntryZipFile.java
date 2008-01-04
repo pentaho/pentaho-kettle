@@ -323,7 +323,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 						// the zip file exists and user want to create new one with unique name
 						//Format Date
 						
-						DateFormat dateFormat = new SimpleDateFormat("hhmmss_mmddyyyy");
+						DateFormat dateFormat = new SimpleDateFormat("hhmmss_MMddyyyy");
 						realZipfilename=realZipfilename + "_" + dateFormat.format(new Date())+".zip";		
 						log.logDebug(toString(), Messages.getString("JobZipFiles.Zip_FileNameChange1.Label") + realZipfilename + 
 												Messages.getString("JobZipFiles.Zip_FileNameChange1.Label"));

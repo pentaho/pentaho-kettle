@@ -261,7 +261,7 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 								// the output file exists and user want to create new one with unique name
 								//Format Date
 
-								DateFormat dateFormat = new SimpleDateFormat("mmddyyyy_hhmmss");
+								DateFormat dateFormat = new SimpleDateFormat("hhmmss_MMddyyyy");
 								// Try to clean filename (without wildcard)
 								String wildcard = realoutputfilename.substring(realoutputfilename.length()-4,realoutputfilename.length());
 								if(wildcard.substring(0,1).equals("."))
