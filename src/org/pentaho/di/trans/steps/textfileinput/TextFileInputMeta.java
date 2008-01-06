@@ -664,9 +664,10 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
             v.setConversionMask(field.getFormat());
             v.setDecimalSymbol(field.getDecimalSymbol());
             v.setGroupingSymbol(field.getGroupSymbol());
-            v.setCurrencySymbol(field.getCurrencySymbol());
+            v.setCurrencySymbol(field.getCurrencySymbol());            
             v.setDateFormatLenient(dateFormatLenient);
             v.setDateFormatLocale(dateFormatLocale);
+            v.setTrimType(field.getTrimType());
             
 			row.addValueMeta(v);
 		}
