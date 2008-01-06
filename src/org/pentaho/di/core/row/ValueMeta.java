@@ -1203,7 +1203,8 @@ public class ValueMeta implements ValueMetaInterface
                 case STORAGE_TYPE_INDEXED:        string = object==null ? null : (String) index[((Integer)object).intValue()];  break;
                 default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
                 }
-                string = trim(string);
+                if ( string != null )
+                    string = trim(string);
                 break;
                 
             case TYPE_DATE:

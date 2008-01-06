@@ -25,6 +25,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -588,6 +589,7 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 				outputFields[i].setCurrencySymbol( XMLHandler.getTagValue(fnode, "currency") );
 				outputFields[i].setDecimalSymbol( XMLHandler.getTagValue(fnode, "decimal") );
 				outputFields[i].setGroupingSymbol( XMLHandler.getTagValue(fnode, "group") );
+			    outputFields[i].setTrimType( ValueMeta.getTrimTypeByCode(XMLHandler.getTagValue(fnode, "trim_type")) );
 				outputFields[i].setNullString( XMLHandler.getTagValue(fnode, "nullif") );
 				outputFields[i].setLength( Const.toInt(XMLHandler.getTagValue(fnode, "length"), -1) );
 				outputFields[i].setPrecision( Const.toInt(XMLHandler.getTagValue(fnode, "precision"), -1) );
@@ -795,6 +797,7 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
                 v.setGroupingSymbol(field.getGroupingSymbol());
                 v.setCurrencySymbol(field.getCurrencySymbol());
                 v.setOutputPaddingEnabled( isPadded() );
+                v.setTrimType(field.getTrimType());
                 if ( ! Const.isEmpty(getEncoding()) )
                 {
             		v.setStringEncoding(getEncoding());
@@ -851,6 +854,7 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 				retval.append("        ").append(XMLHandler.addTagValue("decimal",   field.getDecimalSymbol()));
 				retval.append("        ").append(XMLHandler.addTagValue("group",     field.getGroupingSymbol()));
 				retval.append("        ").append(XMLHandler.addTagValue("nullif",    field.getNullString()));
+				retval.append("        ").append(XMLHandler.addTagValue("trim_type", field.getTrimTypeCode()));
 				retval.append("        ").append(XMLHandler.addTagValue("length",    field.getLength()));
 				retval.append("        ").append(XMLHandler.addTagValue("precision", field.getPrecision()));
 				retval.append("      </field>").append(Const.CR);
@@ -915,6 +919,7 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 			    outputFields[i].setCurrencySymbol(	rep.getStepAttributeString (id_step, i, "field_currency") );
 			    outputFields[i].setDecimalSymbol(	rep.getStepAttributeString (id_step, i, "field_decimal") );
 			    outputFields[i].setGroupingSymbol(	rep.getStepAttributeString (id_step, i, "field_group") );
+				outputFields[i].setTrimType(        ValueMeta.getTrimTypeByCode(rep.getStepAttributeString(id_step, i, "field_trim_type")) );			    
 			    outputFields[i].setNullString(		rep.getStepAttributeString (id_step, i, "field_nullif") );
 			    outputFields[i].setLength(	   (int)rep.getStepAttributeInteger(id_step, i, "field_length") );
 			    outputFields[i].setPrecision(  (int)rep.getStepAttributeInteger(id_step, i, "field_precision") );
@@ -964,6 +969,7 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_currency",  field.getCurrencySymbol());
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_decimal",   field.getDecimalSymbol());
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_group",     field.getGroupingSymbol());
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_trim_type", field.getTrimTypeCode());
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_nullif",    field.getNullString());
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_length",    field.getLength());
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_precision", field.getPrecision());
