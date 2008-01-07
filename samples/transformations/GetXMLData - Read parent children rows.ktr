@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<transformation>
+  <info>
+    <name>GetXMLData - Read parent children rows</name>
+    <description>Example showing how to read parent children data from XML files</description>
+    <extended_description>Example showing how to read parent children data from XML files
+using the GetXMLData&#47;Read data from XML step.</extended_description>
+    <trans_version/>
+    <trans_status>0</trans_status>
+    <directory>&#47;</directory>
+    <log>
+      <read/>
+      <write/>
+      <input/>
+      <output/>
+      <update/>
+      <rejected/>
+      <connection/>
+      <table/>
+      <use_batchid>Y</use_batchid>
+      <use_logfield>N</use_logfield>
+    </log>
+    <maxdate>
+      <connection/>
+      <table/>
+      <field/>
+      <offset>0.0</offset>
+      <maxdiff>0.0</maxdiff>
+    </maxdate>
+    <size_rowset>10000</size_rowset>
+    <sleep_time_empty>50</sleep_time_empty>
+    <sleep_time_full>50</sleep_time_full>
+    <unique_connections>N</unique_connections>
+    <feedback_shown>Y</feedback_shown>
+    <feedback_size>50000</feedback_size>
+    <using_thread_priorities>Y</using_thread_priorities>
+    <shared_objects_file/>
+    <dependencies>
+    </dependencies>
+    <partitionschemas>
+    </partitionschemas>
+    <slaveservers>
+    </slaveservers>
+    <clusterschemas>
+    </clusterschemas>
+  <modified_user>-</modified_user>
+  <modified_date>2007&#47;12&#47;31 20:35:42.156</modified_date>
+  </info>
+  <notepads>
+    <notepad>
+      <note>Read the detail elements from the XML file.
+Note that besides the child data, we also take the id of the surrounding parent data
+for referential purposes.</note>
+      <xloc>74</xloc>
+      <yloc>313</yloc>
+      <width>400</width>
+      <heigth>49</heigth>
+    </notepad>
+    <notepad>
+      <note>Showing how to read parent&#47;child data from an XML file.
+Using the GetXMLData&#47;Read data from XML step.
+
+This step uses XPath to get at the XML data.</note>
+      <xloc>27</xloc>
+      <yloc>42</yloc>
+      <width>276</width>
+      <heigth>62</heigth>
+    </notepad>
+    <notepad>
+      <note>Read parent elements from an XML file.
+</note>
+      <xloc>75</xloc>
+      <yloc>160</yloc>
+      <width>196</width>
+      <heigth>36</heigth>
+    </notepad>
+    <notepad>
+      <note>When processing this kind of data for real, you would first process the parent data in 1 transformation
+and then the child&#47;detail data in another transformation.
+
+The transformation extracting the parent data can make sure that all parent data exists in the target
+before you start processing the child data.
+</note>
+      <xloc>76</xloc>
+      <yloc>478</yloc>
+      <width>483</width>
+      <heigth>88</heigth>
+    </notepad>
+  </notepads>
+  <order>
+  <hop> <from>Read parent data from XML</from><to>Parent rows</to><enabled>Y</enabled> </hop>  <hop> <from>Read Detail from XML</from><to>Child&#47;detail rows</to><enabled>Y</enabled> </hop>  </order>
+  <step>
+    <name>Read Detail from XML</name>
+    <type>getXMLData</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+    <include>N</include>
+    <include_field/>
+    <rownum>N</rownum>
+    <addresultfile>Y</addresultfile>
+    <namespaceaware>N</namespaceaware>
+    <validating>N</validating>
+    <rownum_field/>
+    <encoding>UTF-8</encoding>
+    <file>
+      <name>${Internal.Transformation.Filename.Directory}&#47;files&#47;item_detail.xml</name>
+      <filemask/>
+      <file_required/>
+    </file>
+    <fields>
+      <field>
+        <name>parent_id</name>
+        <xpath>..&#47;@id</xpath>
+        <element_type>node</element_type>
+        <type>Integer</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
+        <name>child_id</name>
+        <xpath>@child_id</xpath>
+        <element_type>node</element_type>
+        <type>Integer</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
+        <name>name</name>
+        <xpath>name</xpath>
+        <element_type>node</element_type>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
+        <name>amount</name>
+        <xpath>amount</xpath>
+        <element_type>node</element_type>
+        <type>Integer</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+    </fields>
+    <limit>0</limit>
+    <loopxpath>database&#47;item&#47;detail</loopxpath>
+    <IsInFields>N</IsInFields>
+    <IsAFile>N</IsAFile>
+    <XmlField/>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>138</xloc>
+      <yloc>390</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Read parent data from XML</name>
+    <type>getXMLData</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+    <include>N</include>
+    <include_field/>
+    <rownum>N</rownum>
+    <addresultfile>Y</addresultfile>
+    <namespaceaware>N</namespaceaware>
+    <validating>N</validating>
+    <rownum_field/>
+    <encoding>UTF-8</encoding>
+    <file>
+      <name>${Internal.Transformation.Filename.Directory}&#47;files&#47;item_detail.xml</name>
+      <filemask/>
+      <file_required/>
+    </file>
+    <fields>
+      <field>
+        <name>clientName</name>
+        <xpath>@clientName</xpath>
+        <element_type>node</element_type>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
+        <name>id</name>
+        <xpath>@id</xpath>
+        <element_type>node</element_type>
+        <type>Integer</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+    </fields>
+    <limit>0</limit>
+    <loopxpath>database&#47;item</loopxpath>
+    <IsInFields>N</IsInFields>
+    <IsAFile>N</IsAFile>
+    <XmlField/>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>142</xloc>
+      <yloc>228</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Parent rows</name>
+    <type>Dummy</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>301</xloc>
+      <yloc>228</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Child&#47;detail rows</name>
+    <type>Dummy</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>302</xloc>
+      <yloc>390</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step_error_handling>
+  </step_error_handling>
+   <slave-step-copy-partition-distribution>
+</slave-step-copy-partition-distribution>
+   <slave_transformation>N</slave_transformation>
+</transformation>
