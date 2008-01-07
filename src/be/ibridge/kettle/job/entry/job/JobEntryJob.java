@@ -412,10 +412,14 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
             
             Row resultRow = null;
             boolean first = true;
-            List rows = result.getRows();
+            List rows = new ArrayList(result.getRows());
             
             while( ( first && !execPerRow ) || ( execPerRow && rows!=null && iteration<rows.size() && result.getNrErrors()==0 ) )
             {
+            	if (execPerRow)
+            	{
+            		result.getRows().clear();
+            	}
                 first=false;
                 if (rows!=null && execPerRow)
                 {
