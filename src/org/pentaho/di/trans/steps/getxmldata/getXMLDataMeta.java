@@ -55,6 +55,9 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 
 	/** Wildcard or filemask (regular expression) */
 	private  String  fileMask[];
+	
+	/** Array of boolean values as string, indicating if a file is required. */
+	private  String  fileRequired[];
  	 
 	/** Flag indicating that we should include the filename in the output */
 	private  boolean includeFilename;
@@ -97,10 +100,7 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
     
     /** Flag: set XML Validating **/
     private boolean validating;
-    
-	/** Array of boolean values as string, indicating if a file is required. */
-	private  String  fileRequired[];
-	
+    	
 	public getXMLDataMeta()
 	{
 		super(); // allocate BaseStepMeta
@@ -359,7 +359,7 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
     
     public void setIsAFile(boolean IsAFile)
     {
-    	this.IsAFile=IsAFile;
+    	this.IsAFile = IsAFile;
     }
     
     public void loadXML(Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters)
@@ -376,6 +376,13 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 		int nrFields = inputFields.length;
 
 		retval.allocate(nrFiles, nrFields);
+		
+        for (int i = 0; i < nrFiles; i++)
+        {
+            retval.fileName[i]     = fileName[i];
+            retval.fileMask[i]     = fileMask[i];
+            retval.fileRequired[i] = fileRequired[i];
+        }
 		
 		for (int i=0;i<nrFields;i++)
 		{
@@ -487,10 +494,10 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 	
 	public void allocate(int nrfiles, int nrfields)
 	{
-		fileName    = new String [nrfiles];
-		fileMask    = new String [nrfiles];
+		fileName     = new String [nrfiles];
+		fileMask     = new String [nrfiles];
 		fileRequired = new String[nrfiles];
-		inputFields = new getXMLDataField[nrfields];       
+		inputFields  = new getXMLDataField[nrfields];
 	}
 	
 	public void setDefault()
