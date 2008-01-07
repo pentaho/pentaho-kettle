@@ -562,8 +562,9 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 
         for (int i = 0; i < nrfiles; i++)
         {
-            retval.fileName[i] = fileName[i];
-            retval.fileMask[i] = fileMask[i];
+            retval.fileName[i]     = fileName[i];
+            retval.fileMask[i]     = fileMask[i];
+            retval.fileRequired[i] = fileRequired[i];
         }
 
 		for (int i = 0; i < nrfields; i++)

@@ -443,8 +443,9 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 
 		for (int i=0;i<nrfiles;i++)
 		{
-			retval.fileName[i] = fileName[i];
-			retval.fileMask[i] = fileMask[i];
+			retval.fileName[i]     = fileName[i];
+			retval.fileMask[i]     = fileMask[i];
+			retval.fileRequired[i] = fileRequired[i];
 		}
 
 		for (int i=0;i<nrsheets;i++)
@@ -545,15 +546,15 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 	
 	public void allocate(int nrfiles, int nrsheets, int nrfields)
 	{
-		fileName   = new String [nrfiles];
-		fileMask   = new String [nrfiles];
-		fileRequired = new String[nrfiles];
+		fileName      = new String[nrfiles];
+		fileMask      = new String[nrfiles];
+		fileRequired  = new String[nrfiles];
 		
-		sheetName  = new String [nrsheets];
-		startRow   = new int    [nrsheets];
-		startColumn   = new int    [nrsheets];
+		sheetName     = new String[nrsheets];
+		startRow      = new int   [nrsheets];
+		startColumn   = new int   [nrsheets];
 		
-		field = new ExcelInputField[nrfields];
+		field         = new ExcelInputField[nrfields];
 	}
 	
 	public void setDefault()
