@@ -121,10 +121,12 @@ public class InsertUpdate extends BaseStep implements StepInterface
             		if ( meta.getUpdate()[i].booleanValue() ) 
             		{
                         ValueMetaInterface valueMeta = rowMeta.getValueMeta( data.valuenrs[i] );
+                        ValueMetaInterface retMeta = data.db.getReturnRowMeta().getValueMeta(i);
+                        
                         Object rowvalue = row[ data.valuenrs[i] ];
                         Object retvalue = add[ i ];
                     
-                        if ( valueMeta.compare(rowvalue, retvalue)!=0 )
+                        if ( valueMeta.compare(rowvalue, retMeta, retvalue)!=0 )
                         {
                             update=true;
                         }
