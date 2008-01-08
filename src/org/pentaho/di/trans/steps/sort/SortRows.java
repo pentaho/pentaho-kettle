@@ -135,7 +135,7 @@ public class SortRows extends BaseStep implements StepInterface
 				}
 				else
 				{
-					dos = new DataOutputStream(new BufferedOutputStream(outputStream, 500000));
+					dos = new DataOutputStream(new BufferedOutputStream(outputStream, 50000));
 					gzos = null;
 				}
                 
@@ -249,7 +249,7 @@ public class SortRows extends BaseStep implements StepInterface
 					}
                     else
 					{
-						di=new DataInputStream(new BufferedInputStream(fi, 5000000));
+						di=new DataInputStream(new BufferedInputStream(fi, 50000));
 					}
 					data.dis.add(di);
 					
