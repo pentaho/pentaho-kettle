@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <transformation>
   <info>
-    <name>getXMLData</name>
+    <name>GetXMLData Different possibilities of reading XML</name>
     <description/>
     <extended_description/>
     <trans_version/>
+    <trans_status>0</trans_status>
     <directory>&#47;</directory>
     <log>
       <read/>
@@ -136,11 +137,10 @@ Same than 1. but filename is passed by previous step</note>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
      <cluster_schema/>
-    <GUI>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>260</xloc>
       <yloc>99</yloc>
       <draw>Y</draw>
@@ -155,11 +155,10 @@ Same than 1. but filename is passed by previous step</note>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
      <cluster_schema/>
-    <GUI>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>352</xloc>
       <yloc>299</yloc>
       <draw>Y</draw>
@@ -174,11 +173,10 @@ Same than 1. but filename is passed by previous step</note>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
      <cluster_schema/>
-    <GUI>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>591</xloc>
       <yloc>495</yloc>
       <draw>Y</draw>
@@ -193,17 +191,16 @@ Same than 1. but filename is passed by previous step</note>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
     <fields>
       <field>
         <name>filename</name>
         <variable>${Internal.Transformation.Filename.Directory}&#47;files&#47;test_xml_file.xml</variable>
-        </field>
-      </fields>
+      </field>
+    </fields>
      <cluster_schema/>
-    <GUI>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>65</xloc>
       <yloc>296</yloc>
       <draw>Y</draw>
@@ -218,7 +215,6 @@ Same than 1. but filename is passed by previous step</note>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
     <include>N</include>
@@ -232,7 +228,8 @@ Same than 1. but filename is passed by previous step</note>
     <file>
       <name/>
       <filemask/>
-      </file>
+      <file_required/>
+    </file>
     <fields>
       <field>
         <name>id</name>
@@ -247,7 +244,7 @@ Same than 1. but filename is passed by previous step</note>
         <precision>-1</precision>
         <trim_type>none</trim_type>
         <repeat>N</repeat>
-        </field>
+      </field>
       <field>
         <name>firstname</name>
         <xpath>firstname</xpath>
@@ -261,7 +258,7 @@ Same than 1. but filename is passed by previous step</note>
         <precision>-1</precision>
         <trim_type>none</trim_type>
         <repeat>N</repeat>
-        </field>
+      </field>
       <field>
         <name>name</name>
         <xpath>name</xpath>
@@ -275,7 +272,7 @@ Same than 1. but filename is passed by previous step</note>
         <precision>-1</precision>
         <trim_type>none</trim_type>
         <repeat>N</repeat>
-        </field>
+      </field>
       <field>
         <name>birthdate</name>
         <xpath>birthdate</xpath>
@@ -289,15 +286,15 @@ Same than 1. but filename is passed by previous step</note>
         <precision>-1</precision>
         <trim_type>none</trim_type>
         <repeat>N</repeat>
-        </field>
-      </fields>
+      </field>
+    </fields>
     <limit>0</limit>
     <loopxpath>persons&#47;person</loopxpath>
     <IsInFields>Y</IsInFields>
     <IsAFile>N</IsAFile>
     <XmlField>xmlstring</XmlField>
      <cluster_schema/>
-    <GUI>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>376</xloc>
       <yloc>493</yloc>
       <draw>Y</draw>
@@ -312,7 +309,6 @@ Same than 1. but filename is passed by previous step</note>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
     <include>N</include>
@@ -326,7 +322,8 @@ Same than 1. but filename is passed by previous step</note>
     <file>
       <name>${Internal.Transformation.Filename.Directory}&#47;files&#47;test_xml_file.xml</name>
       <filemask/>
-      </file>
+      <file_required/>
+    </file>
     <fields>
       <field>
         <name>Code</name>
@@ -341,7 +338,7 @@ Same than 1. but filename is passed by previous step</note>
         <precision>-1</precision>
         <trim_type>none</trim_type>
         <repeat>N</repeat>
-        </field>
+      </field>
       <field>
         <name>User</name>
         <xpath>Parameter&#47;User</xpath>
@@ -355,7 +352,7 @@ Same than 1. but filename is passed by previous step</note>
         <precision>-1</precision>
         <trim_type>none</trim_type>
         <repeat>N</repeat>
-        </field>
+      </field>
       <field>
         <name>Password</name>
         <xpath>Parameter&#47;Password</xpath>
@@ -369,7 +366,7 @@ Same than 1. but filename is passed by previous step</note>
         <precision>-1</precision>
         <trim_type>none</trim_type>
         <repeat>N</repeat>
-        </field>
+      </field>
       <field>
         <name>Status</name>
         <xpath>OutputData&#47;Step&#47;Status</xpath>
@@ -383,7 +380,7 @@ Same than 1. but filename is passed by previous step</note>
         <precision>-1</precision>
         <trim_type>none</trim_type>
         <repeat>N</repeat>
-        </field>
+      </field>
       <field>
         <name>Error_Message</name>
         <xpath>OutputData&#47;Step&#47;Error_Message</xpath>
@@ -397,7 +394,7 @@ Same than 1. but filename is passed by previous step</note>
         <precision>-1</precision>
         <trim_type>none</trim_type>
         <repeat>N</repeat>
-        </field>
+      </field>
       <field>
         <name>Data</name>
         <xpath>..&#47;..&#47;InfoSession&#47;InfoSessionData[@User={$User}]&#47;Data</xpath>
@@ -411,15 +408,15 @@ Same than 1. but filename is passed by previous step</note>
         <precision>-1</precision>
         <trim_type>none</trim_type>
         <repeat>N</repeat>
-        </field>
-      </fields>
+      </field>
+    </fields>
     <limit>0</limit>
     <loopxpath>Session_header&#47;Session&#47;SessionData</loopxpath>
     <IsInFields>N</IsInFields>
     <IsAFile>N</IsAFile>
     <XmlField/>
      <cluster_schema/>
-    <GUI>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>48</xloc>
       <yloc>100</yloc>
       <draw>Y</draw>
@@ -434,7 +431,6 @@ Same than 1. but filename is passed by previous step</note>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
     <fields>
@@ -448,11 +444,11 @@ Same than 1. but filename is passed by previous step</note>
         <nullif>&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; standalone=&quot;yes&quot;?&gt;&lt;persons&gt;&lt;person&gt;&lt;id&gt;1&lt;&#47;id&gt;&lt;firstname&gt;Samatar&lt;&#47;firstname&gt;&lt;name&gt;Hassan&lt;&#47;name&gt;&lt;birthdate&gt;20&#47;06&#47;1978&lt;&#47;birthdate&gt;&lt;&#47;person&gt;&lt;person&gt;&lt;id&gt;2&lt;&#47;id&gt;&lt;firstname&gt;Isaac&lt;&#47;firstname&gt;&lt;name&gt;Hassan&lt;&#47;name&gt;&lt;birthdate&gt;20&#47;09&#47;2004&lt;&#47;birthdate&gt;&lt;&#47;person&gt;&lt;person&gt;&lt;id&gt;3&lt;&#47;id&gt;&lt;firstname&gt;Souley&lt;&#47;firstname&gt;&lt;name&gt;Hassan&lt;&#47;name&gt;&lt;birthdate&gt;20&#47;09&#47;2007&lt;&#47;birthdate&gt;&lt;&#47;person&gt;&lt;&#47;persons&gt;</nullif>
         <length>-1</length>
         <precision>-1</precision>
-        </field>
-      </fields>
+      </field>
+    </fields>
     <limit>1</limit>
      <cluster_schema/>
-    <GUI>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>42</xloc>
       <yloc>492</yloc>
       <draw>Y</draw>
@@ -467,7 +463,6 @@ Same than 1. but filename is passed by previous step</note>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
     <include>N</include>
@@ -481,7 +476,8 @@ Same than 1. but filename is passed by previous step</note>
     <file>
       <name/>
       <filemask/>
-      </file>
+      <file_required/>
+    </file>
     <fields>
       <field>
         <name>Code</name>
@@ -496,7 +492,7 @@ Same than 1. but filename is passed by previous step</note>
         <precision>-1</precision>
         <trim_type>none</trim_type>
         <repeat>N</repeat>
-        </field>
+      </field>
       <field>
         <name>User</name>
         <xpath>Parameter&#47;User</xpath>
@@ -510,7 +506,7 @@ Same than 1. but filename is passed by previous step</note>
         <precision>-1</precision>
         <trim_type>none</trim_type>
         <repeat>N</repeat>
-        </field>
+      </field>
       <field>
         <name>Password</name>
         <xpath>Parameter&#47;Password</xpath>
@@ -524,7 +520,7 @@ Same than 1. but filename is passed by previous step</note>
         <precision>-1</precision>
         <trim_type>none</trim_type>
         <repeat>N</repeat>
-        </field>
+      </field>
       <field>
         <name>Status</name>
         <xpath>OutputData&#47;Step&#47;Status</xpath>
@@ -538,7 +534,7 @@ Same than 1. but filename is passed by previous step</note>
         <precision>-1</precision>
         <trim_type>none</trim_type>
         <repeat>N</repeat>
-        </field>
+      </field>
       <field>
         <name>Error_Message</name>
         <xpath>OutputData&#47;Step&#47;Error_Message</xpath>
@@ -552,7 +548,7 @@ Same than 1. but filename is passed by previous step</note>
         <precision>-1</precision>
         <trim_type>none</trim_type>
         <repeat>N</repeat>
-        </field>
+      </field>
       <field>
         <name>Data</name>
         <xpath>..&#47;..&#47;InfoSession&#47;InfoSessionData[@User={$User}]&#47;Data</xpath>
@@ -566,15 +562,15 @@ Same than 1. but filename is passed by previous step</note>
         <precision>-1</precision>
         <trim_type>none</trim_type>
         <repeat>N</repeat>
-        </field>
-      </fields>
+      </field>
+    </fields>
     <limit>0</limit>
     <loopxpath>Session_header&#47;Session&#47;SessionData</loopxpath>
     <IsInFields>Y</IsInFields>
     <IsAFile>Y</IsAFile>
     <XmlField>filename</XmlField>
      <cluster_schema/>
-    <GUI>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>202</xloc>
       <yloc>298</yloc>
       <draw>Y</draw>
@@ -583,4 +579,7 @@ Same than 1. but filename is passed by previous step</note>
 
   <step_error_handling>
   </step_error_handling>
+   <slave-step-copy-partition-distribution>
+</slave-step-copy-partition-distribution>
+   <slave_transformation>N</slave_transformation>
 </transformation>
