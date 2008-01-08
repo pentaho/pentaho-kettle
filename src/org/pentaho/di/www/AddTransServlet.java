@@ -27,6 +27,7 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransConfiguration;
+import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
 
 
@@ -90,7 +91,9 @@ public class AddTransServlet extends HttpServlet
             //
             TransConfiguration transConfiguration = TransConfiguration.fromXML(xml.toString());
             TransMeta transMeta = transConfiguration.getTransMeta();
-            transMeta.injectVariables(transConfiguration.getTransExecutionConfiguration().getVariables());
+            TransExecutionConfiguration transExecutionConfiguration = transConfiguration.getTransExecutionConfiguration();
+            log.setLogLevel(transExecutionConfiguration.getLogLevel());
+            transMeta.injectVariables(transExecutionConfiguration.getVariables());
             
             // If there was a repository, we know about it at this point in time.
             //
