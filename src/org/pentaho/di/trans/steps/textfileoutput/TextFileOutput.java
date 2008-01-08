@@ -306,20 +306,26 @@ public class TextFileOutput extends BaseStep implements StepInterface
         try
         {
         	byte[] str;
-        	if (meta.isFastDump()) {
-        		if( valueData instanceof byte[] )
-        		{
-            		str = (byte[]) valueData;
-        		} else {
-       				str = getBinaryString((valueData == null) ? "" : valueData.toString());
-        		}
+        	// First check whether or not we have a null string set
+        	// These values should be set when a null value passes
+        	//
+        	if (nullString!=null && v.isNull(valueData)) {
+        		str = nullString;
         	}
         	else {
-    			str = formatField(v, valueData);
-        		if (nullString!=null && ( str==null || str.length==0) ) {
-        			str = nullString;
-        		}
+	        	if (meta.isFastDump()) {
+	        		if( valueData instanceof byte[] )
+	        		{
+	            		str = (byte[]) valueData;
+	        		} else {
+	       				str = getBinaryString((valueData == null) ? "" : valueData.toString());
+	        		}
+	        	}
+	        	else {
+	    			str = formatField(v, valueData);
+	        	}
         	}
+        	
     		if (str!=null)
     		{
     			List<Integer> enclosures = null;
