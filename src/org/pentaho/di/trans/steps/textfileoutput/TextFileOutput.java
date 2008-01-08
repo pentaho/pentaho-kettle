@@ -171,7 +171,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 					ValueMetaInterface v=rowMeta.getValueMeta(i);
                     Object valueData = r[i];
                     
-					writeField(v, valueData);
+					writeField(v, valueData, data.binaryNullValue[i]);
 				}
                 data.writer.write(data.binaryNewline);
 			}
@@ -187,7 +187,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 	
 					ValueMetaInterface v = rowMeta.getValueMeta(data.fieldnrs[i]);
 					Object valueData = r[data.fieldnrs[i]];
-					writeField(v, valueData);
+					writeField(v, valueData, data.binaryNullValue[i]);
 				}
                 data.writer.write(data.binaryNewline);
 			}
@@ -301,7 +301,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
     	}
     }
     
-    private void writeField(ValueMetaInterface v, Object valueData) throws KettleStepException
+    private void writeField(ValueMetaInterface v, Object valueData, byte[] nullString) throws KettleStepException
     {
         try
         {
@@ -315,7 +315,10 @@ public class TextFileOutput extends BaseStep implements StepInterface
         		}
         	}
         	else {
-        		str = formatField(v, valueData);
+    			str = formatField(v, valueData);
+        		if (nullString!=null && ( str==null || str.length==0) ) {
+        			str = nullString;
+        		}
         	}
     		if (str!=null)
     		{
@@ -677,7 +680,23 @@ public class TextFileOutput extends BaseStep implements StepInterface
 						if (!Const.isEmpty(meta.getNewline()))   data.binaryNewline   = meta.getNewline().getBytes();
 					}
 					
-					
+					data.binaryNullValue = new byte[meta.getOutputFields().length][];
+					for (int i=0;i<meta.getOutputFields().length;i++)
+					{
+						data.binaryNullValue[i] = null;
+						String nullString = meta.getOutputFields()[i].getNullString();
+						if (!Const.isEmpty(nullString)) 
+						{
+							if (data.hasEncoding)
+							{
+								data.binaryNullValue[i] = nullString.getBytes(meta.getEncoding());
+							}
+							else
+							{
+								data.binaryNullValue[i] = nullString.getBytes();
+							}
+						}
+					}
 				} catch (UnsupportedEncodingException e) {
 					logError("Encoding problem: "+e.toString());
 					logError(Const.getStackTracker(e));

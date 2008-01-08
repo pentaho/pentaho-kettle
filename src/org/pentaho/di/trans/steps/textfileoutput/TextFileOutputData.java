@@ -65,6 +65,8 @@ public class TextFileOutputData extends BaseStepData implements StepDataInterfac
 
 	public boolean hasEncoding;
 
+	public byte[] binaryNullValue[];
+	
     /**
 	 * 
 	 */
