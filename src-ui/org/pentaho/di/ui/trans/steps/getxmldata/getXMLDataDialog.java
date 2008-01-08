@@ -461,7 +461,8 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		wbeFilename.setToolTipText(Messages.getString("getXMLDataDialog.FilenameEdit.Tooltip"));
 		fdbeFilename=new FormData();
 		fdbeFilename.right = new FormAttachment(100, 0);
-		fdbeFilename.top  = new FormAttachment (wbdFilename, margin);
+		fdbeFilename.left  = new FormAttachment(wbdFilename, 0, SWT.LEFT);
+		fdbeFilename.top   = new FormAttachment (wbdFilename, margin);
 		wbeFilename.setLayoutData(fdbeFilename);
 
 		wbShowFiles=new Button(wFileComp, SWT.PUSH| SWT.CENTER);

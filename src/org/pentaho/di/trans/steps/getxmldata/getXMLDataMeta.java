@@ -507,7 +507,7 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 		includeRowNumber = false;
 		rowNumberField = "";
 		IsAFile = false;
-		addresultfile = true;
+		addresultfile = false;
 		namespaceaware = false;
 		validating = false;
 		
