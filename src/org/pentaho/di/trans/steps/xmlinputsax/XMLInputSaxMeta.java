@@ -475,10 +475,12 @@ public class XMLInputSaxMeta extends BaseStepMeta implements StepMetaInterface
 				fileMask[i] =      rep.getStepAttributeString (id_step, i, "file_mask"    );
 			}
 			
+			clearDefinition();
 			for (int i=0;i<nrAttributes;i++)
 			{
-				definitionElement.set(i,rep.getStepAttributeString (id_step, i, "def_element"    ));
-				definitionAttribute.set(i,rep.getStepAttributeString (id_step, i, "def_attribute"    ));
+				String a = rep.getStepAttributeString(id_step, i, "def_element");
+				String b = rep.getStepAttributeString (id_step, i, "def_attribute");
+				this.setDefiningAttribute(a,b);
 			}
 
 			for (int i=0;i<nrFields;i++)
