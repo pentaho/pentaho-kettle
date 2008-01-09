@@ -17,7 +17,6 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.util.URIUtil;
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleValueException;
@@ -229,24 +228,6 @@ public class HTTP extends BaseStep implements StepInterface
 	// Run is were the action happens!
 	public void run()
 	{
-		try
-		{
-			logBasic(Messages.getString("System.Log.StartingToRun")); //$NON-NLS-1$
-			
-			while (processRow(meta, data) && !isStopped());
-		}
-		catch(Throwable t)
-		{
-			logError(Messages.getString("System.Log.UnexpectedError")+" : "); //$NON-NLS-1$ //$NON-NLS-2$
-            logError(Const.getStackTracker(t));
-            setErrors(1);
-			stopAll();
-		}
-		finally
-		{
-			dispose(meta, data);
-			logSummary();
-			markStop();
-		}
+    	BaseStep.runStepThread(this, meta, data);
 	}
 }

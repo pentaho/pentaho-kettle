@@ -217,4 +217,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 		public void initBeforeStart() throws KettleStepException {
 			
 		}
+		public void setLinesRejected(long linesRejected) {
+			// TODO Auto-generated method stub
+			
+		}
 	}

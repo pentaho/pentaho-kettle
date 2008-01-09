@@ -17,19 +17,18 @@
 package org.pentaho.di.trans.steps.xsdvalidator;
 
 
+import java.io.File;
 import java.io.IOException;
-import org.xml.sax.SAXException;
-import java.io.StringReader; 
-import java.io.File; 
+import java.io.StringReader;
+
+import javax.xml.XMLConstants;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
-import org.apache.commons.vfs.FileObject;
-import javax.xml.XMLConstants;
 
-import org.pentaho.di.core.Const;
+import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
@@ -41,8 +40,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.di.trans.steps.xsdvalidator.XsdValidatorMeta;
-import org.pentaho.di.trans.steps.xsdvalidator.XsdValidatorData;
+import org.xml.sax.SAXException;
 
 /**
  * Executes a xsd validator on the values in the input stream. 
@@ -347,24 +345,6 @@ public class XsdValidator extends BaseStep implements StepInterface
 	// Run is were the action happens!
 	public void run()
 	{
-		try
-		{
-			logBasic(Messages.getString("System.Log.StartingToRun")); //$NON-NLS-1$
-			
-			while (processRow(meta, data) && !isStopped());
-		}
-		catch(Throwable t)
-		{
-			logError(Messages.getString("System.Log.UnexpectedError")+" : "); //$NON-NLS-1$ //$NON-NLS-2$
-            logError(Const.getStackTracker(t));
-            setErrors(1);
-			stopAll();
-		}
-		finally
-		{
-			dispose(meta, data);
-			logSummary();
-			markStop();
-		}
+    	BaseStep.runStepThread(this, meta, data);
 	}
 }

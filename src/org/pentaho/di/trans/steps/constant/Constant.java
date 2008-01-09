@@ -17,7 +17,6 @@ import java.util.List;
 
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
@@ -244,24 +243,6 @@ public class Constant extends BaseStep implements StepInterface
 	// Run is were the action happens!
 	public void run()
 	{
-		try
-		{
-			logBasic(Messages.getString("System.Log.StartingToRun")); //$NON-NLS-1$
-			
-			while (processRow(meta, data) && !isStopped());
-		}
-		catch(Throwable t)
-		{
-			logError(Messages.getString("System.Log.UnexpectedError")+" : "); //$NON-NLS-1$ //$NON-NLS-2$
-			logError(Const.getStackTracker(t));
-			setErrors(1);
-			stopAll();
-		}
-		finally
-		{
-			dispose(meta, data);
-			logSummary();
-			markStop();
-		}
+    	BaseStep.runStepThread(this, meta, data);
 	}
 }

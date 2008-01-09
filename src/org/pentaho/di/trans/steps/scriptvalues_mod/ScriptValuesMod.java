@@ -31,6 +31,7 @@ import org.mozilla.javascript.EvaluatorException;
 import org.mozilla.javascript.Script;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
+import org.mozilla.javascript.UniqueTag;
 import org.pentaho.di.compatibility.Row;
 import org.pentaho.di.compatibility.Value;
 import org.pentaho.di.compatibility.ValueUsedListener;
@@ -511,8 +512,12 @@ public class ScriptValuesMod extends BaseStep implements StepInterface, ScriptVa
 								String string = Context.toString(result);
 								return new Long(Long.parseLong(ValueDataUtil.trim(string)));
 							}
-						} else {
-							return new Long((long) ((Long) result).longValue());
+						} else if (classType.equalsIgnoreCase("org.mozilla.javascript.UniqueTag")) {
+							return Long.valueOf(Long.parseLong(((UniqueTag)result).toString()));
+						}
+						else 
+						{
+							return Long.valueOf(Long.parseLong(result.toString()));
 						}
 
                     case ValueMetaInterface.TYPE_STRING:
@@ -787,33 +792,23 @@ public class ScriptValuesMod extends BaseStep implements StepInterface, ScriptVa
 		return false;
 	}
 
+	public void dispose(StepMetaInterface smi, StepDataInterface sdi) 
+	{
+		try
+		{
+			if (data.cx!=null) Context.exit();
+		}
+		catch(Exception er) 
+		{
+			logError(Messages.getString("System.Log.UnexpectedError"), er);
+		};
+		
+		super.dispose(smi, sdi);
+	}
 	//
 	// Run is were the action happens!
 	public void run()
 	{
-		try
-		{
-			logBasic(Messages.getString("System.Log.StartingToRun")); //$NON-NLS-1$
-			
-			while (processRow(meta, data) && !isStopped());
-		}
-		catch(Throwable t)
-		{
-			try
-			{
-				if (data.cx!=null) Context.exit();
-			}
-			catch(Exception er) {};
-			logError(Messages.getString("System.Log.UnexpectedError")+" : "); //$NON-NLS-1$ //$NON-NLS-2$
-            logError(Const.getStackTracker(t));
-			setErrors(1);
-			stopAll();
-		}
-		finally
-		{
-			dispose(meta, data);
-			logSummary();
-			markStop();
-		}
+    	BaseStep.runStepThread(this, meta, data);
 	}
 }

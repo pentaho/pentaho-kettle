@@ -70,6 +70,17 @@ public class ExcelOutput extends BaseStep implements StepInterface
 			data.previousMeta = getInputRowMeta().clone();
 			//do not set first=false, below is another part that uses first
 		}
+		else
+		{
+			if (meta.isHeaderEnabled()) 
+			{
+				writeHeader();
+			}
+			if (meta.isFooterEnabled())
+			{
+				writeHeader();
+			}
+		}
 		
 		if ( ( r==null && data.headerrow!=null && meta.isFooterEnabled() ) ||
 		     ( r!=null && linesOutput>0 && meta.getSplitEvery()>0 && ((linesOutput+1)%meta.getSplitEvery())==0)
@@ -609,24 +620,6 @@ public class ExcelOutput extends BaseStep implements StepInterface
 	// Run is were the action happens!
 	public void run()
 	{
-		try
-		{
-			logBasic(Messages.getString("System.Log.StartingToRun")); //$NON-NLS-1$
-			
-			while (processRow(meta, data) && !isStopped());
-		}
-		catch(Throwable t)
-		{
-			logError(Messages.getString("System.Log.UnexpectedError")+" : "); //$NON-NLS-1$ //$NON-NLS-2$
-            logError(Const.getStackTracker(t));
-            setErrors(1);
-			stopAll();
-		}
-		finally
-		{
-			dispose(meta, data);
-			logSummary();
-			markStop();
-		}
+    	BaseStep.runStepThread(this, meta, data);
 	}	
 }

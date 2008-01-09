@@ -49,31 +49,45 @@ public class Mapping extends BaseStep implements StepInterface
      */
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{
-		meta=(MappingMeta)smi;
-		data=(MappingData)sdi;
-		
-		// Start the mapping/sub-transformation threads
-        //
-        data.mappingTrans.startThreads();
-        
-        // The transformation still runs in the background and might have some more work to do.
-        // Since everything is running in the MappingThreads we don't have to do anything else here but wait...
-        //
-        data.mappingTrans.waitUntilFinished();
-        
-        // Set some statistics from the mapping...
-        // This will show up in Spoon, etc.
-        //
-    	Result result = data.mappingTrans.getResult();
-    	setErrors(result.getNrErrors());
-    	linesRead = result.getNrLinesRead();
-    	linesWritten = result.getNrLinesWritten();
-    	linesInput = result.getNrLinesInput();
-    	linesOutput = result.getNrLinesOutput();
-    	linesUpdated = result.getNrLinesUpdated();
-    	linesRejected = result.getNrLinesRejected();
-    	
-    	return false;
+		try
+		{
+			meta=(MappingMeta)smi;
+			data=(MappingData)sdi;
+			
+			// Start the mapping/sub-transformation threads
+	        //
+	        data.mappingTrans.startThreads();
+	        
+	        // The transformation still runs in the background and might have some more work to do.
+	        // Since everything is running in the MappingThreads we don't have to do anything else here but wait...
+	        //
+	        data.mappingTrans.waitUntilFinished();
+	        
+	        // Set some statistics from the mapping...
+	        // This will show up in Spoon, etc.
+	        //
+	    	Result result = data.mappingTrans.getResult();
+	    	setErrors(result.getNrErrors());
+	    	linesRead = result.getNrLinesRead();
+	    	linesWritten = result.getNrLinesWritten();
+	    	linesInput = result.getNrLinesInput();
+	    	linesOutput = result.getNrLinesOutput();
+	    	linesUpdated = result.getNrLinesUpdated();
+	    	linesRejected = result.getNrLinesRejected();
+	    	
+	    	return false;
+		}
+		catch(Throwable t)
+		{
+			// Some unexpected situation occurred.
+			// Better to stop the mapping transformation.
+			//
+			if (data.mappingTrans!=null) data.mappingTrans.stopAll();
+			
+			// Forward the exception...
+			//
+			throw new KettleException(t);
+		}
 	}
 
 	private void setMappingParameters() throws KettleException {
@@ -348,25 +362,6 @@ public class Mapping extends BaseStep implements StepInterface
 	// Run is were the action happens!
 	public void run()
 	{
-		try
-		{
-			logBasic(Messages.getString("System.Log.StartingToRun")); //$NON-NLS-1$
-			
-			while (processRow(meta, data) && !isStopped());
-		}
-		catch(Throwable t)
-		{
-			logError(Messages.getString("System.Log.UnexpectedError")+" : "); //$NON-NLS-1$ //$NON-NLS-2$
-            logError(Const.getStackTracker(t));
-            setErrors(1);
-			stopAll();
-			if (data.mappingTrans!=null) data.mappingTrans.stopAll();
-		}
-		finally
-		{
-			dispose(meta, data);
-			logSummary();
-			markStop();
-		}
+    	BaseStep.runStepThread(this, meta, data);
 	}
 }

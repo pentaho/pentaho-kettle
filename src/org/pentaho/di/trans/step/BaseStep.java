@@ -2398,5 +2398,37 @@ public class BaseStep extends Thread implements VariableSpace
 		openRemoteOutputStepSocketsOnce();
 	}
 
+	
+	public static void runStepThread(StepInterface stepInterface, StepMetaInterface meta, StepDataInterface data) {
+		LogWriter log = LogWriter.getInstance();
+		try
+		{
+			log.logBasic(stepInterface.toString(), Messages.getString("System.Log.StartingToRun")); //$NON-NLS-1$
+
+			while (stepInterface.processRow(meta, data) && !stepInterface.isStopped());
+		}
+		catch(Throwable t)
+		{
+			log.logBasic(stepInterface.toString(), Messages.getString("System.Log.UnexpectedError")+" : "); //$NON-NLS-1$ //$NON-NLS-2$
+			log.logBasic(stepInterface.toString(), Const.getStackTracker(t));
+            stepInterface.setErrors(1);
+			stepInterface.stopAll();
+		}
+		finally
+		{
+			stepInterface.dispose(meta, data);
+
+	        log.logBasic(stepInterface.toString(), 
+	        		Messages.getString("BaseStep.Log.SummaryInfo", //$NON-NLS-1$
+	        		String.valueOf(stepInterface.getLinesInput()), 
+	        		String.valueOf(stepInterface.getLinesOutput()), 
+	        		String.valueOf(stepInterface.getLinesRead()), 
+	        		String.valueOf(stepInterface.getLinesWritten()), 
+	        		String.valueOf(stepInterface.getLinesUpdated()), 
+	        		String.valueOf(stepInterface.getErrors()+stepInterface.getLinesRejected())));
+
+			stepInterface.markStop();
+		}
+	} 
   
 }

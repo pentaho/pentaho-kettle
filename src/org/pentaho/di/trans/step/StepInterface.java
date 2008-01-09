@@ -146,6 +146,16 @@ public interface StepInterface
      * @return Returns the linesUpdated.
      */
     public long getLinesUpdated();
+    
+    /**
+     * @param linesRejected Returns the lines rejected by error handling.
+     */
+    public void setLinesRejected(long linesRejected);
+    
+    /**
+     * @return Returns the lines rejected by error handling.
+     */
+    public long getLinesRejected();
 
 	/**
 	 * Process one row.

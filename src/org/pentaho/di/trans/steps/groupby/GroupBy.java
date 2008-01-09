@@ -713,32 +713,19 @@ public class GroupBy extends BaseStep implements StepInterface
 		}
 		return false;
 	}
+	
+	public void dispose(StepMetaInterface smi, StepDataInterface sdi) 
+	{
+		if (data.tempFile!=null) data.tempFile.delete();
+		
+		super.dispose(smi, sdi);
+	}
 
 	
 	//
 	// Run is were the action happens!
 	public void run()
-	{		
-		try
-		{
-			logBasic(Messages.getString("System.Log.StartingToRun")); //$NON-NLS-1$
-			
-			while (processRow(meta, data) && !isStopped());
-		}
-		catch(Throwable t)
-		{
-			logError(Messages.getString("System.Log.UnexpectedError")+" : "); //$NON-NLS-1$ //$NON-NLS-2$
-            logError(Const.getStackTracker(t));
-            setErrors(1);
-			stopAll();
-		}
-		finally
-		{
-            if (data.tempFile!=null) data.tempFile.delete();
-            
-			dispose(meta, data);
-			logSummary();
-			markStop();
-		}
+	{
+    	BaseStep.runStepThread(this, meta, data);
 	}
 }
