@@ -392,6 +392,9 @@ public class LogWriter
 		        
         // Where did this come from???
         Logger logger = Logger.getLogger(subject);
+        // ensure all messages get logged in this logger since we filtered it above
+        // we do not set the level in the rootLogger so the rootLogger can decide by itself (e.g. in the plattform) 
+        logger.setLevel(Level.ALL);         
         
         Log4jMessage message = new Log4jMessage(msg, subject, lvl);
         
