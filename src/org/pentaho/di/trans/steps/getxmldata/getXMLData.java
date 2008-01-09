@@ -324,8 +324,7 @@ public class getXMLData extends BaseStep implements StepInterface
 			}
 			else
 			{
-				doc = reader.read(new FileInputStream(KettleVFS.getFilename(file)));
-				doc.setXMLEncoding(encoding);
+				doc = reader.read(new FileInputStream(KettleVFS.getFilename(file)),encoding);
 			}
 			
 		
