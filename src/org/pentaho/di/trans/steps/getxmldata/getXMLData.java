@@ -265,6 +265,7 @@ public class getXMLData extends BaseStep implements StepInterface
 	/**
 	 * Main function of the processing.
 	 */
+	@SuppressWarnings("unchecked")
 	private void processXML(FileObject file ,String StringXML,boolean IsInXMLField,Object[] row) 
 	    throws KettleStepException
 	{	

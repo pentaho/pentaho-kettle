@@ -202,8 +202,8 @@ public class JobEntryAddResultFilenames extends JobEntryBase implements Cloneabl
 
     int NrErrFiles = 0;
 
-    String args[] = arguments;
-    String fmasks[] = filemasks;
+    // String args[] = arguments;
+    // String fmasks[] = filemasks;
     result.setResult(true);
 
 

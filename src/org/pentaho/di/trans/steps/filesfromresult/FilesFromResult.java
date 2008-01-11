@@ -11,7 +11,6 @@
 
 package org.pentaho.di.trans.steps.filesfromresult;
 
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowMetaAndData;
