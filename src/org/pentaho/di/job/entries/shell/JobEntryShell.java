@@ -573,7 +573,8 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 
 			if (getWorkDirectory() != null && !Const.isEmpty(Const.rtrim(getWorkDirectory())))
 			{
-				File file = new File(environmentSubstitute(getWorkDirectory()));
+				String vfsFilename = environmentSubstitute(getWorkDirectory());
+				File file = new File(KettleVFS.getFilename(KettleVFS.getFileObject(vfsFilename)));
 				procBuilder.directory(file);
 			}
 			Process proc = procBuilder.start();
