@@ -813,6 +813,15 @@
 		</tooltip>
 		<image-uri>ui/images/XSLT.png</image-uri>
 	</step>
-
+	<step id="Validator">
+		<description>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.Validator")
+		</description>
+		<class-name>org.pentaho.di.trans.steps.validator.ValidatorMeta</class-name>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<tooltip>ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.Validator")
+		</tooltip>
+		<image-uri>ui/images/VLD.png</image-uri>
+	</step>
 	
 </steps>
