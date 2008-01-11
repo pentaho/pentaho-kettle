@@ -373,26 +373,29 @@ public class getXMLData extends BaseStep implements StepInterface
 						// Get the path type
 						String Element_Type = xmlInputField.getElementTypeCode();
 						
-						int indexvarstart=XPathValue.indexOf("{$");
-						int indexvarend=XPathValue.indexOf('}');
-						if(indexvarstart>=0 && indexvarend>=0)
+						// Use Token
+						if(meta.isuseToken())
 						{
-							String NameVarInputField = XPathValue.substring(indexvarstart+2, indexvarend);
-						
-							for (int k=0;k<meta.getInputFields().length;k++)
+							int indexvarstart=XPathValue.indexOf("{$");
+							int indexvarend=XPathValue.indexOf('}');
+							if(indexvarstart>=0 && indexvarend>=0)
 							{
-								getXMLDataField Tmp_xmlInputField = meta.getInputFields()[k];
-								if(Tmp_xmlInputField.getName().equalsIgnoreCase(NameVarInputField))
-								{		
-									XPathValue = XPathValue.replaceAll("\\{\\$"+NameVarInputField+"\\}","'"+ outputRowData[k]+"'");
-									if ( log.isDetailed() )
-									{
-									   if(log.isDetailed()) log.logDetailed(toString(),XPathValue);
+								String NameVarInputField = XPathValue.substring(indexvarstart+2, indexvarend);
+							
+								for (int k=0;k<meta.getInputFields().length;k++)
+								{
+									getXMLDataField Tmp_xmlInputField = meta.getInputFields()[k];
+									if(Tmp_xmlInputField.getName().equalsIgnoreCase(NameVarInputField))
+									{		
+										XPathValue = XPathValue.replaceAll("\\{\\$"+NameVarInputField+"\\}","'"+ outputRowData[k]+"'");
+										if ( log.isDetailed() )
+										{
+										   if(log.isDetailed()) log.logDetailed(toString(),XPathValue);
+										}
 									}
-								}
-							}								
+								}								
+							}
 						}
-				
 
 						// Get node value
 						String value =null;

@@ -100,6 +100,10 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
     
     /** Flag: set XML Validating **/
     private boolean validating;
+    
+	/** Flag : do we process use tokens? */
+	private boolean usetoken;
+	
     	
 	public getXMLDataMeta()
 	{
@@ -114,13 +118,7 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 		return addresultfile;
 	}
 	
-	/** 
-	 * @return the namespaceware flag
-	 */
-	public boolean isNamespaceAware()
-	{
-		return namespaceaware;
-	}
+
 	
 	/** 
 	 * @return the validating flag
@@ -133,18 +131,11 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 	/** 
 	 * @param the validating to set
 	 */
-	void setValidating(boolean validating)
+	public void setValidating(boolean validating)
 	{
 		this.validating= validating;
 	}
 	
-	/** 
-	 * @param the namespaceaware to set
-	 */
-	void setNamespaceAwre(boolean namespaceaware)
-	{
-		this.namespaceaware= namespaceaware;
-	}
 	
 	public void setAddResultFile(boolean addresultfile)
 	{
@@ -319,7 +310,40 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
     {
         this.loopxpath = loopxpath;
     }
+    
+	/** 
+	 * @param the usetoken to set
+	 */
+    public void setuseToken(boolean usetoken)
+	{
+		this.usetoken= usetoken;
+	}
+	
+	/** 
+	 * @return the usetoken flag
+	 */
+	public boolean isuseToken()
+	{
+		return usetoken;
+	}
+	/** 
+	 * @param the namespaceaware to set
+	 */
+	public void setNamespaceAware(boolean namespaceaware)
+	{
+		this.namespaceaware= namespaceaware;
+	}
+	
 
+	
+	/** 
+	 * @return the namespaceware flag
+	 */
+	public boolean isNamespaceAware()
+	{
+		return namespaceaware;
+	}
+	
     /**
      * @return Returns the rowNumberField.
      */
@@ -404,6 +428,7 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
         retval.append("    ").append(XMLHandler.addTagValue("addresultfile",   addresultfile));
         retval.append("    ").append(XMLHandler.addTagValue("namespaceaware",  namespaceaware));
         retval.append("    ").append(XMLHandler.addTagValue("validating",      validating));
+        retval.append("    "+XMLHandler.addTagValue("usetoken",   usetoken));
         
         retval.append("    ").append(XMLHandler.addTagValue("rownum_field",    rowNumberField));
         retval.append("    ").append(XMLHandler.addTagValue("encoding",        encoding));
@@ -446,6 +471,7 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 			addresultfile     = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "addresultfile"));
 			namespaceaware    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "namespaceaware"));
 			validating        = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "validating"));
+			usetoken  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "usetoken"));
 			
 			includeRowNumber  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "rownum"));
 			rowNumberField    = XMLHandler.getTagValue(stepnode, "rownum_field");
@@ -502,6 +528,7 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 	
 	public void setDefault()
 	{
+		usetoken=false;
 		includeFilename = false;
 		filenameField = "";
 		includeRowNumber = false;
@@ -580,7 +607,7 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 			addresultfile     =   rep.getStepAttributeBoolean(id_step, "addresultfile");
 			namespaceaware    =   rep.getStepAttributeBoolean(id_step, "namespaceaware");
 			validating        =   rep.getStepAttributeBoolean(id_step, "validating");
-			
+			usetoken  =      rep.getStepAttributeBoolean(id_step, "usetoken");
 			includeRowNumber  =   rep.getStepAttributeBoolean(id_step, "rownum");
 			rowNumberField    =   rep.getStepAttributeString (id_step, "rownum_field");
 			rowLimit          =   rep.getStepAttributeInteger(id_step, "limit");
@@ -640,7 +667,7 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "addresultfile",   addresultfile);
 			rep.saveStepAttribute(id_transformation, id_step, "namespaceaware",   namespaceaware);
 			rep.saveStepAttribute(id_transformation, id_step, "validating",   validating);
-			
+			rep.saveStepAttribute(id_transformation, id_step, "usetoken",   usetoken);
 			
 			rep.saveStepAttribute(id_transformation, id_step, "rownum",          includeRowNumber);
 			rep.saveStepAttribute(id_transformation, id_step, "rownum_field",    rowNumberField);

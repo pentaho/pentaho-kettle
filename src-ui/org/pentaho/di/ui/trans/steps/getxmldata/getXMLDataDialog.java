@@ -119,6 +119,10 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 	private Button       wbShowFiles;
 	private FormData     fdbShowFiles;
 	
+	private Label        wluseToken;
+	private Button       wuseToken;
+	private FormData     fdluseToken, fduseToken;
+	
 
 	private FormData fdlXMLField, fdlXMLStreamField,fdlXMLIsAFile;
 	private FormData    fdXMLField, fdXSDFileField;
@@ -630,12 +634,29 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		fdValidating.top  = new FormAttachment(wNameSpaceAware, margin);
 		wValidating.setLayoutData(fdValidating);
 		
+		 // use Token ?
+		wluseToken=new Label(wXmlConf, SWT.RIGHT);
+		wluseToken.setText(Messages.getString("getXMLDataDialog.useToken.Label"));
+ 		props.setLook(wluseToken);
+		fdluseToken=new FormData();
+		fdluseToken.left = new FormAttachment(0, 0);
+		fdluseToken.top  = new FormAttachment(wValidating, margin);
+		fdluseToken.right= new FormAttachment(middle, -margin);
+		wluseToken.setLayoutData(fdluseToken);
+		wuseToken=new Button(wXmlConf, SWT.CHECK );
+ 		props.setLook(wuseToken);
+		wuseToken.setToolTipText(Messages.getString("getXMLDataDialog.useToken.Tooltip"));
+		fduseToken=new FormData();
+		fduseToken.left = new FormAttachment(middle, 0);
+		fduseToken.top  = new FormAttachment(wValidating, margin);
+		wuseToken.setLayoutData(fduseToken);
+		
 		wlLimit=new Label(wXmlConf, SWT.RIGHT);
 		wlLimit.setText(Messages.getString("getXMLDataDialog.Limit.Label"));
  		props.setLook(wlLimit);
 		fdlLimit=new FormData();
 		fdlLimit.left = new FormAttachment(0, 0);
-		fdlLimit.top  = new FormAttachment(wValidating, margin);
+		fdlLimit.top  = new FormAttachment(wuseToken, margin);
 		fdlLimit.right= new FormAttachment(middle, -margin);
 		wlLimit.setLayoutData(fdlLimit);
 		wLimit=new Text(wXmlConf, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
@@ -643,7 +664,7 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		wLimit.addModifyListener(lsMod);
 		fdLimit=new FormData();
 		fdLimit.left = new FormAttachment(middle, 0);
-		fdLimit.top  = new FormAttachment(wValidating, margin);
+		fdLimit.top  = new FormAttachment(wuseToken, margin);
 		fdLimit.right= new FormAttachment(100, 0);
 		wLimit.setLayoutData(fdLimit);
 		
@@ -1482,6 +1503,7 @@ private boolean IsDate(String str)
 		wAddResult.setSelection(in.addResultFile());
 		wNameSpaceAware.setSelection(in.isNamespaceAware());
 		wValidating.setSelection(in.isValidating());
+		wuseToken.setSelection(in.isuseToken());
 		
 		wXMLStreamField.setSelection(in.getIsInFields());
 		wXMLIsAFile.setSelection(in.getIsAFile());
@@ -1580,8 +1602,9 @@ private boolean IsDate(String str)
 		in.setIncludeFilename( wInclFilename.getSelection() );
 		in.setIncludeRowNumber( wInclRownum.getSelection() );
 		
-		//in.setNamespaceAwre( wNameSpaceAware.getSelection() );
-		//in.setValidating( wValidating.getSelection() );
+		in.setNamespaceAware( wNameSpaceAware.getSelection() );
+		in.setValidating( wValidating.getSelection() );
+		in.setuseToken(wuseToken.getSelection() );
 		
 		in.setIsInFields(wXMLStreamField.getSelection());
 		in.setIsAFile(wXMLIsAFile.getSelection());
