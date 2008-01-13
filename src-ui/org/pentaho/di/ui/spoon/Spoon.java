@@ -5698,7 +5698,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			log.logError(toString(), "Fatal error : " + Const.NVL(t.toString(), Const.NVL(t.getMessage(), "Unknown error")) ); //$NON-NLS-1$ //$NON-NLS-2$
 			log.logError(toString(), Const.getStackTracker(t));
 			// inform the user with a dialog when possible
-			new ErrorDialog(shell, Messages.getString("Fatal error : "), "Fatal error : " + Const.NVL(t.toString(), Const.NVL(t.getMessage(), "Unknown error")), t); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			new ErrorDialog(shell, Messages.getString("Spoon.Dialog.FatalError"), "Fatal error : " + Const.NVL(t.toString(), Const.NVL(t.getMessage(), "Unknown error")), t); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
 	}
 
