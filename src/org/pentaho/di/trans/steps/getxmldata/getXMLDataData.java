@@ -21,15 +21,16 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.util.List;
 
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
 
+import org.dom4j.Document;
+import org.dom4j.tree.AbstractNode;
 
 /**
  * @author Samatar
@@ -39,6 +40,7 @@ public class getXMLDataData extends BaseStepData implements StepDataInterface
 {
 	public String thisline, nextline, lastline;
 	public Object[] previousRow;
+	public RowMetaInterface inputRowMeta;
 	public RowMetaInterface outputRowMeta;
 	public RowMetaInterface convertRowMeta;
 	public int nr_repeats;
@@ -49,6 +51,17 @@ public class getXMLDataData extends BaseStepData implements StepDataInterface
 	public SimpleDateFormat daf;
 	public DateFormatSymbols dafs;
 	
+    public int nrInputFields;
+    public String PathValue;
+    public String tokenStart;
+    public String tokenEnd;
+    public int nodenr;
+    public int nodesize;
+    public List<AbstractNode> an;
+    public Object[] readrow;
+    public int totalpreviousfields;
+    
+    
 	/**
 	 * The XML files to read
 	 */
@@ -61,12 +74,13 @@ public class getXMLDataData extends BaseStepData implements StepDataInterface
 	public FileInputStream fr;
 	public BufferedInputStream is;
     public Document document;
-    public Node section;
     public String itemElement;
     public int itemCount;
     public int itemPosition;
     public long rownr;
     public int indexOfXmlField;
+    
+    RowMetaInterface      outputMeta;
 
 	/**
 	 * 
@@ -90,7 +104,16 @@ public class getXMLDataData extends BaseStepData implements StepDataInterface
 		fr=null;
 		is=null;
 		indexOfXmlField=-1;
-
+		
+		nrInputFields=-1;
+		PathValue=null;
+		tokenStart="@_";
+		tokenEnd="-";
+		nodenr=0;
+		nodesize=0;
+		an=null;
+		readrow=null;
+		totalpreviousfields=0;
 	}
 
 }
