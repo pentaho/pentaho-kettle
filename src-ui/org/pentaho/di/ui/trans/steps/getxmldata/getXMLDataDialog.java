@@ -179,6 +179,9 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 	private Group wAdditionalFields;
 	private Group wAddFileResult;
 	private Group wXmlConf;
+	
+	private Button   wbbLoopPathList;
+	private FormData fdbLoopPathList;
 
 	private getXMLDataMeta input;
 	
@@ -186,12 +189,16 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 	
 	private     HashSet<String> list = new HashSet<String> ();
 	
+	private String parentNodeName="";
+	
 	public static final int dateLengths[] = new int[]
 		{
 			23, 19, 14, 10, 10, 10, 10, 8, 8, 8, 8, 6, 6
 		}
 		;
-
+	
+	HashSet<String> listpath = new HashSet<String> ();
+	
 	public getXMLDataDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
 		super(parent, (BaseStepMeta)in, transMeta, sname);
@@ -545,7 +552,18 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		XmlConfgroupLayout.marginHeight = 10;
 		wXmlConf.setLayout(XmlConfgroupLayout);
 		
-		
+		wbbLoopPathList=new Button(wXmlConf, SWT.PUSH| SWT.CENTER);
+ 		props.setLook(wbbLoopPathList);
+ 		wbbLoopPathList.setText(Messages.getString("getXMLDataDialog.LoopPathList.Button"));
+ 		wbbLoopPathList.setToolTipText(Messages.getString("System.Tooltip.BrowseForFileOrDirAndAdd"));
+		fdbLoopPathList=new FormData();
+		fdbLoopPathList.right= new FormAttachment(100, 0);
+		fdbLoopPathList.top  = new FormAttachment(0, 0);
+		wbbLoopPathList.setLayoutData(fdbLoopPathList);
+
+		wbbLoopPathList.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { getLoopPathList(); } } );
+
+        
 		
         wlLoopXPath=new Label(wXmlConf, SWT.RIGHT);
         wlLoopXPath.setText(Messages.getString("getXMLDataDialog.LoopXPath.Label"));
@@ -562,9 +580,10 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
         fdLoopXPath=new FormData();
         fdLoopXPath.left = new FormAttachment(middle, 0);
         fdLoopXPath.top  = new FormAttachment(0, margin);
-        fdLoopXPath.right= new FormAttachment(100, 0);
+        fdLoopXPath.right= new FormAttachment(wbbLoopPathList, -margin);
         wLoopXPath.setLayoutData(fdLoopXPath);
         
+
         
         wlEncoding=new Label(wXmlConf, SWT.RIGHT);
         wlEncoding.setText(Messages.getString("getXMLDataDialog.Encoding.Label"));
@@ -1217,7 +1236,81 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		wPreview.setEnabled(!wXMLStreamField.getSelection());
 		wGet.setEnabled(!wXMLStreamField.getSelection());		
 	}
-	
+	private void getLoopPathList()
+	{
+
+		try
+		{	
+			getXMLDataMeta meta = new getXMLDataMeta ();
+			getInfo(meta);
+			FileInputList fileinputList = meta.getFiles(transMeta);
+    	
+	    	 if (fileinputList.nrOfFiles()>0)
+            { 
+				// Check the first file
+				if (fileinputList.getFile(0).exists()) 
+				{
+               
+					listpath.clear();
+					parentNodeName="";
+					
+           			// get encoding. By default UTF-8
+   					String encodage="UTF-8";
+   					if (!Const.isEmpty(meta.getEncoding()))
+   					{
+   						encodage=meta.getEncoding();
+   					}	
+   					// Get Fields from the first file 
+   					DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+   						Document document = builder.parse(new InputSource(new InputStreamReader(new FileInputStream(KettleVFS.getFilename(fileinputList.getFile(0))), encodage)));        
+   	    	
+   					NodeList nodesr = document.getChildNodes();
+   					HashSet<String> listr = new HashSet<String> ();
+   					
+   					for (int n = 0; n < nodesr.getLength(); n++) 
+   					{
+   				   	 Node node=nodesr.item(n);
+   				   	 if(!listr.contains(node.getNodeName()))
+   				     {
+   				   		 listpath.add(node.getNodeName());
+   				    	 getLoopNodes(node);
+   				     }
+   			  	 	 listr.add(node.getNodeName());
+
+   			  	
+					String[] list_xpath = (String[]) listpath.toArray(new String[listpath.size()]);
+
+					EnterSelectionDialog dialog = new EnterSelectionDialog(shell, list_xpath, Messages.getString("getXMLDataDialog.Dialog.SelectALoopPath.Title"), Messages.getString("getXMLDataDialog.Dialog.SelectALoopPath.Message"));
+					String listxpaths = dialog.open();
+					if (listxpaths != null) {
+						wLoopXPath.setText(listxpaths);
+					}
+
+
+   				
+   					}
+				} else {
+					// The file not exists !
+					throw new KettleException(Messages.getString("getXMLDataDialog.Exception.FileDoesNotExist", KettleVFS
+							.getFilename(fileinputList.getFile(0))));
+					}
+           		}
+           
+			else
+			{
+				// No file specified
+				 MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
+		            mb.setMessage(Messages.getString("getXMLDataDialog.FilesMissing.DialogMessage"));
+		            mb.setText(Messages.getString("System.Dialog.Error.Title"));
+		            mb.open(); 
+			}
+
+		}
+		catch(Throwable e)
+	    {
+	        new ErrorDialog(shell, Messages.getString("getXMLDataDialog.UnableToGetListOfPaths.Title"), Messages.getString("getXMLDataDialog.UnableToGetListOfPaths.Message"), e);
+	    }
+	}
 	private void get()
 	{
         try
@@ -1236,10 +1329,8 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
             }           
             else if (inputList.getFiles().size()>0)
             {
-            	
-            	//Clear Fields Grid
-                wFields.removeAll(); 
                 
+            	wFields.removeAll();
             	// get encoding. By default UTF-8
     			String encodage="UTF-8";
     			if (!Const.isEmpty(meta.getEncoding()))
@@ -1251,6 +1342,7 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
     			Document document = builder.parse(new InputSource(new InputStreamReader(new FileInputStream(KettleVFS.getFilename(inputList.getFile(0))), encodage)));        
     	    	
     			XPath xpath =XPathFactory.newInstance().newXPath();
+
     			NodeList widgetNodes = (NodeList) xpath.evaluate(meta.getLoopXPath(), document,XPathConstants.NODESET);
     	        
     			if (widgetNodes.getLength() >0)
@@ -1276,7 +1368,41 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
             new ErrorDialog(shell, Messages.getString("getXMLDataDialog.ErrorParsingData.DialogTitle"), Messages.getString("getXMLDataDialog.ErrorParsingData.DialogMessage"), e);
         }
 	}
-	
+	private void getLoopNodes(Node node)
+	{
+		HashSet<String> listn = new HashSet<String> ();
+		String NodeName=node.getNodeName();
+
+		if(NodeName!=null)
+		{
+			parentNodeName=parentNodeName+"/"+NodeName;
+			//log.logBasic("Parent Node....", NodeName);
+			NodeList childNodes = node.getChildNodes();
+			
+			for (int c = 0; c < childNodes.getLength(); c++) 
+			{
+				Node child=childNodes.item(c);
+				String childNodeName=child.getNodeName();
+				
+				if(childNodeName!=null && !childNodeName.equals("#text") && !listn.contains(childNodeName))
+				{
+					listn.add(childNodeName);
+					
+					String completeNodeName=parentNodeName+"/"+childNodeName;
+					//log.logBasic("current Node....", childNodeName);
+					// Add path to the list
+					listpath.add(completeNodeName);
+					
+					
+					getLoopNodes(child);
+					
+				}
+			}
+		}
+		
+		
+		
+	}
 	private void setNodes(Node widgetNode,String NodeStart, int round)
 	{
 		int nn=0;
@@ -1308,6 +1434,7 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 					
 					// so let's put the node name
 					setNode(node,NodeStart, round);
+					
 				} // end if		
 			}// end for
 		}else
