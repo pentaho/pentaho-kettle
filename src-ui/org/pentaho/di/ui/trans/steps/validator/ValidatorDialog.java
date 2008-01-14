@@ -91,6 +91,7 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 	private List wAllowedValues;
 	private Button wbAddAllowed;
 	private Button wbRemoveAllowed;
+	private Button wClear;
 
 	public ValidatorDialog(Shell parent, Object in, TransMeta tr, String sname)
 	{
@@ -158,10 +159,12 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
 		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
+		wClear=new Button(shell, SWT.PUSH);
+		wClear.setText(Messages.getString("ValidatorDialog.ClearButton.Label")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
 		
-		setButtonPositions(new Button[] { wOK, wCancel }, margin, null);
+		setButtonPositions(new Button[] { wOK, wClear, wCancel }, margin, null);
 
 		// List of fields to the left...
 		//
@@ -498,6 +501,22 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 		
 		wCancel.addListener(SWT.Selection, lsCancel);
 		wOK.addListener    (SWT.Selection, lsOK    );
+		wClear.addSelectionListener(new SelectionAdapter() {
+		
+			public void widgetSelected(SelectionEvent e) {
+				// Clear the validation rules for a certain field...
+				//
+				int index = wFieldList.getSelectionIndex();
+				if (index>=0) {
+					String fieldName = wFieldList.getItem(index);
+					selectionMap.remove(fieldName);
+					selectedField=null;
+					wFieldList.deselectAll();
+					enableFields();
+				}
+			}
+		
+		});
 		
 		lsDef=new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { ok(); } };
 		
