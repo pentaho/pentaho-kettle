@@ -260,6 +260,7 @@ public class getXMLData extends BaseStep implements StepInterface
        }
    }
    
+   @SuppressWarnings("unchecked")
    private boolean applyXPath()
    {
 	   try{
