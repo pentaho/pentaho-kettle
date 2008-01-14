@@ -73,6 +73,8 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface
     
     private String httpPassword;
     
+    private boolean passingInputData;
+    
     /** Nombre de row a envoyer a chaque appel */
     private int callStep = DEFAULT_STEP;
 
@@ -99,9 +101,14 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface
     public void getFields(RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException 
     {
         // Input rows and output rows are different in the webservice step
-        // TODO Maybe input row are info rows
     	//
-        r.clear();
+        if (!isPassingInputData()) 
+        {
+        	r.clear();
+        }
+
+        // Add the output fields...
+        //
         for (WebServiceField field : getFieldsOut())
         {
             ValueMetaInterface vValue = new ValueMeta(field.getName(), field.getType());
@@ -118,7 +125,7 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface
 
     public void setDefault()
     {
-        System.out.println("setDefaults");
+        passingInputData = true; // Pass input data by default.
     }
 
     public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
@@ -170,6 +177,7 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface
         retval.append("    " + XMLHandler.addTagValue("httpLogin", getHttpLogin()));
         retval.append("    " + XMLHandler.addTagValue("httpPassword", getHttpPassword()));
         retval.append("    " + XMLHandler.addTagValue("callStep", getCallStep()));
+        retval.append("    " + XMLHandler.addTagValue("passingInputData", isPassingInputData()));
 
         //SAUVEGARDE DU PARAMETRAGE DES DONNEES EN ENTREES
 
@@ -220,6 +228,7 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface
         setHttpLogin(XMLHandler.getTagValue(stepnode, "httpLogin"));
         setHttpPassword(XMLHandler.getTagValue(stepnode, "httpPassword"));
         setCallStep(Const.toInt(XMLHandler.getTagValue(stepnode, "callStep"), DEFAULT_STEP));
+        setPassingInputData("Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "passingInputData")));
 
         //CHARGEMENT DES DONNEES EN ENTREES
 
@@ -279,6 +288,7 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface
         setHttpLogin(rep.getStepAttributeString(id_step, "httpLogin"));
         setHttpPassword(rep.getStepAttributeString(id_step, "httpPassword"));
         setCallStep((int) rep.getStepAttributeInteger(id_step, "callStep"));
+        setPassingInputData(rep.getStepAttributeBoolean(id_step, "passingInputData"));
 
         //RESTAURATION DU PARAMETRAGE DES DONNEES EN ENTREES
 
@@ -326,6 +336,7 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface
         rep.saveStepAttribute(id_transformation, id_step, "httpLogin", getHttpLogin());
         rep.saveStepAttribute(id_transformation, id_step, "httpPassword", getHttpPassword());
         rep.saveStepAttribute(id_transformation, id_step, "callStep", getCallStep());
+        rep.saveStepAttribute(id_transformation, id_step, "passingInputData", isPassingInputData());
 
         //SAUVEGARDE DU PARAMETRAGE DES DONNEES EN ENTREES
 
@@ -550,4 +561,18 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface
     {
         this.outFieldContainerName = outFieldContainerName;
     }
+
+	/**
+	 * @return the passingInputData
+	 */
+	public boolean isPassingInputData() {
+		return passingInputData;
+	}
+
+	/**
+	 * @param passingInputData the passingInputData to set
+	 */
+	public void setPassingInputData(boolean passingInputData) {
+		this.passingInputData = passingInputData;
+	}
 }
