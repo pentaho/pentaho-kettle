@@ -7185,6 +7185,8 @@ public class Spoon implements AddUndoPositionInterface
             log.logError("Spoon", "Error loading job entries & plugins... halting Kitchen!");
             return;
         }
+        
+        initJNDI();
 
         final Spoon spoon = new Spoon(log, display, null);
         staticSpoon = spoon;
@@ -7389,7 +7391,25 @@ public class Spoon implements AddUndoPositionInterface
         System.exit(0);
     }
 
-    private void loadLastUsedFile(LastUsedFile lastUsedFile, RepositoryMeta repositoryMeta) throws KettleException
+    private static void initJNDI() {
+		  String path = ""; //$NON-NLS-1$
+	      try
+	      {
+	          File file = new File("simple-jndi"); //$NON-NLS-1$
+	          path = file.getCanonicalPath();
+	      }
+	      catch (Exception e)
+	      {
+	          LogWriter.getInstance().logError(APP_NAME, "Error initializing JNDI: "+e.getMessage());
+	          LogWriter.getInstance().logError(APP_NAME, Const.getStackTracker(e));
+	      }
+
+	      System.setProperty("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory"); //$NON-NLS-1$ //$NON-NLS-2$
+	      System.setProperty("org.osjava.sj.root", path); //$NON-NLS-1$ //$NON-NLS-2$
+	      System.setProperty("org.osjava.sj.delimiter", "/"); //$NON-NLS-1$ //$NON-NLS-2$
+	}
+
+	private void loadLastUsedFile(LastUsedFile lastUsedFile, RepositoryMeta repositoryMeta) throws KettleException
     {
         boolean useRepository = repositoryMeta!=null;
         
