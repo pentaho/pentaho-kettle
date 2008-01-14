@@ -409,10 +409,30 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		shell = new Shell(display);
 		shell.setText(APPL_TITLE);
 		staticSpoon = this;
+		
+		initJNDI();
+		
 		SpoonFactory.setSpoonInstance(this);
 	}
 
-    public void init( TransMeta ti ) {
+    private void initJNDI() {
+		  String path = ""; //$NON-NLS-1$
+	      try
+	      {
+	          File file = new File("simple-jndi"); //$NON-NLS-1$
+	          path = file.getCanonicalPath();
+	      }
+	      catch (Exception e)
+	      {
+	          log.logError(toString(), "Error initializing JNDI", e);
+	      }
+
+	      System.setProperty("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory"); //$NON-NLS-1$ //$NON-NLS-2$
+	      System.setProperty("org.osjava.sj.root", path); //$NON-NLS-1$ //$NON-NLS-2$
+	      System.setProperty("org.osjava.sj.delimiter", "/"); //$NON-NLS-1$ //$NON-NLS-2$
+	}
+
+	public void init( TransMeta ti ) {
     	FormLayout layout = new FormLayout();
 		layout.marginWidth = 0;
 		layout.marginHeight = 0;
