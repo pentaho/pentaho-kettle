@@ -139,7 +139,7 @@ public class Validator extends BaseStep implements StepInterface
             
             // Check the data type!
             //
-            if (field.getDataType()!=ValueMetaInterface.TYPE_NONE) {
+            if (field.isDataTypeVerified() && field.getDataType()!=ValueMetaInterface.TYPE_NONE) {
             	
             	// Same data type?
             	//
@@ -157,32 +157,32 @@ public class Validator extends BaseStep implements StepInterface
             	// Minimum length
             	//
             	if (field.getMinimumLength()>=0 && stringValue.length()<field.getMinimumLength() ) {
-                	throw new KettleValidatorException(KettleValidatorException.ERROR_SHORTER_THAN_MINIMUM_LENGTH, Messages.getString("Validator.Exception.ShorterThanMininumLength", field.getName(), inputRowMeta.getString(r)), field.getName());
+                	throw new KettleValidatorException(KettleValidatorException.ERROR_SHORTER_THAN_MINIMUM_LENGTH, Messages.getString("Validator.Exception.ShorterThanMininumLength", field.getName(), valueMeta.getString(valueData), Integer.toString(stringValue.length()), Integer.toString(field.getMinimumLength())), field.getName());
             	}
             	
             	// Maximum length
             	//
             	if (field.getMaximumLength()>=0 && stringValue.length()>field.getMaximumLength() ) {
-                	throw new KettleValidatorException(KettleValidatorException.ERROR_SHORTER_THAN_MINIMUM_LENGTH, Messages.getString("Validator.Exception.ShorterThanMininumLength", field.getName(), inputRowMeta.getString(r)), field.getName());
+                	throw new KettleValidatorException(KettleValidatorException.ERROR_LONGER_THAN_MAXIMUM_LENGTH, Messages.getString("Validator.Exception.LongerThanMaximumLength", field.getName(), valueMeta.getString(valueData), Integer.toString(stringValue.length()), Integer.toString(field.getMaximumLength())), field.getName());
             	}
             	
             	// Minimal value
             	//
-            	if (data.minimumValue!=null && valueMeta.compare(valueData, validatorMeta, data.minimumValue[i])<0) {
-                	throw new KettleValidatorException(KettleValidatorException.ERROR_LOWER_THAN_ALLOWED_MINIMUM, Messages.getString("Validator.Exception.LowerThanMinimumValue", field.getName(), valueMeta.getString(valueData), validatorMeta.getString(data.minimumValue)), field.getName());
+            	if (data.minimumValue[i]!=null && valueMeta.compare(valueData, validatorMeta, data.minimumValue[i])<0) {
+                	throw new KettleValidatorException(KettleValidatorException.ERROR_LOWER_THAN_ALLOWED_MINIMUM, Messages.getString("Validator.Exception.LowerThanMinimumValue", field.getName(), valueMeta.getString(valueData), data.constantsMeta[i].getString(data.minimumValue[i])), field.getName());
             	}
 
             	// Maximum value
             	//
-            	if (data.maximumValue!=null && valueMeta.compare(valueData, validatorMeta, data.maximumValue[i])>0) {
-                	throw new KettleValidatorException(KettleValidatorException.ERROR_HIGHER_THAN_ALLOWED_MAXIMUM, Messages.getString("Validator.Exception.HigherThanMaximumValue", field.getName(), valueMeta.getString(valueData), validatorMeta.getString(data.minimumValue)), field.getName());
+            	if (data.maximumValue[i]!=null && valueMeta.compare(valueData, validatorMeta, data.maximumValue[i])>0) {
+                	throw new KettleValidatorException(KettleValidatorException.ERROR_HIGHER_THAN_ALLOWED_MAXIMUM, Messages.getString("Validator.Exception.HigherThanMaximumValue", field.getName(), valueMeta.getString(valueData), data.constantsMeta[i].getString(data.maximumValue[i])), field.getName());
             	}
             	
             	// In list?
             	//
-            	boolean found = data.listValues.length==0;
+            	boolean found = data.listValues[i].length==0;
             	for (Object object : data.listValues[i]) {
-                	if (object!=null && valueMeta.compare(valueData, validatorMeta, object)==0) {
+                	if (object!=null && data.listValues[i]!=null && valueMeta.compare(valueData, validatorMeta, object)==0) {
                     	found=true;
                 	}
             	}
@@ -201,6 +201,10 @@ public class Validator extends BaseStep implements StepInterface
 		if (super.init(smi, sdi))
 		{
 			data.constantsMeta = new ValueMetaInterface[meta.getValidatorField().length];
+			data.minimumValue = new Object[meta.getValidatorField().length];
+			data.maximumValue = new Object[meta.getValidatorField().length];
+			data.listValues = new Object[meta.getValidatorField().length][];
+
 			for (int i=0;i<data.constantsMeta.length;i++) {
 				ValidatorField field = meta.getValidatorField()[i];
 				data.constantsMeta[i] = new ValueMeta(field.getName(), field.getDataType());
@@ -212,15 +216,20 @@ public class Validator extends BaseStep implements StepInterface
 				stringMeta.setType(ValueMetaInterface.TYPE_STRING);
 				
 				try {
-					data.minimumValue[i] = data.constantsMeta[i].convertData(stringMeta, field.getMinimumValue());
-					data.maximumValue[i] = data.constantsMeta[i].convertData(stringMeta, field.getMaximumValue());
+					data.minimumValue[i] = Const.isEmpty(field.getMinimumValue()) ? null : data.constantsMeta[i].convertData(stringMeta, field.getMinimumValue());
+					data.maximumValue[i] = Const.isEmpty(field.getMaximumValue()) ? null : data.constantsMeta[i].convertData(stringMeta, field.getMaximumValue());
 					int listSize = field.getAllowedValues()!=null ? field.getAllowedValues().length : 0;
 					data.listValues[i] = new Object[listSize];
 					for (int s=0;s<listSize;s++) {
-						data.listValues[i][s] = data.constantsMeta[i].convertData(stringMeta, field.getAllowedValues()[s]);
+						data.listValues[i][s] = Const.isEmpty(field.getAllowedValues()[s]) ? null : data.constantsMeta[i].convertData(stringMeta, field.getAllowedValues()[s]);
 					}
 				} catch (KettleValueException e) {
-					logError(Messages.getString("Validator.Exception.DataConversionErrorEncountered"), e);
+					if (field.getDataType()==ValueMetaInterface.TYPE_NONE) {
+						logError(Messages.getString("Validator.Exception.SpecifyDataType"), e);
+					}
+					else {
+						logError(Messages.getString("Validator.Exception.DataConversionErrorEncountered"), e);
+					}
 					return false;
 				}
 			}

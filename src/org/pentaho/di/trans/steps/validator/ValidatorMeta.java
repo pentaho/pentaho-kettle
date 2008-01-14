@@ -186,5 +186,8 @@ public class ValidatorMeta extends BaseStepMeta implements StepMetaInterface
 		this.validatorField = validatorField;
 	}
 
+	public boolean supportsErrorHandling() {
+		return true;
+	}
 
 }

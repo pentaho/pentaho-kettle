@@ -1,10 +1,14 @@
 package org.pentaho.di.trans.steps.validator;
 
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
 import org.w3c.dom.Node;
 
 public class ValidatorField implements Cloneable {
 	public static final String XML_TAG = "validator_field";
+	public static final String XML_TAG_ALLOWED = "allowed_value";
 
 	private String name;
 	
@@ -16,10 +20,11 @@ public class ValidatorField implements Cloneable {
 	
 	private boolean nullAllowed;
 
-	private int    dataType;
-	private String conversionMask;
-	private String decimalSymbol;
-	private String groupingSymbol;
+	private int     dataType;
+	private boolean dataTypeVerified;
+	private String  conversionMask;
+	private String  decimalSymbol;
+	private String  groupingSymbol;
 
 	private String   minimumValue;
 	private String   maximumValue;
@@ -47,12 +52,70 @@ public class ValidatorField implements Cloneable {
 	}
 
 	public String getXML() {
-		return null; // TODO FIXME
+		StringBuffer xml = new StringBuffer();
+		
+		xml.append(XMLHandler.openTag(XML_TAG));
+		
+		xml.append(XMLHandler.addTagValue("name", name));
+		xml.append(XMLHandler.addTagValue("max_length", maximumLength));
+		xml.append(XMLHandler.addTagValue("max_limit", limitingToMaximum));
+		xml.append(XMLHandler.addTagValue("min_length", minimumLength));
+		xml.append(XMLHandler.addTagValue("min_pad", paddedToMinimum));
+		xml.append(XMLHandler.addTagValue("pad_string", paddingString));
+
+		xml.append(XMLHandler.addTagValue("null_allowed", nullAllowed));
+
+		xml.append(XMLHandler.addTagValue("data_type", ValueMeta.getTypeDesc(dataType)));
+		xml.append(XMLHandler.addTagValue("data_type_verified", dataTypeVerified));
+		xml.append(XMLHandler.addTagValue("conversion_mask", conversionMask));
+		xml.append(XMLHandler.addTagValue("decimal_symbol", decimalSymbol));
+		xml.append(XMLHandler.addTagValue("grouping_symbol", groupingSymbol));
+
+		xml.append(XMLHandler.addTagValue("max_value", maximumValue));
+		xml.append(XMLHandler.addTagValue("min_value", minimumValue));
+		
+		if (allowedValues!=null) {
+			xml.append(XMLHandler.openTag(XML_TAG_ALLOWED));
+				
+			for (String allowedValue : allowedValues) {
+				xml.append(XMLHandler.addTagValue("value", allowedValue));
+			}
+			xml.append(XMLHandler.closeTag(XML_TAG_ALLOWED));
+		}
+
+		xml.append(XMLHandler.closeTag(XML_TAG));
+		
+		return xml.toString();
 	}
 
 	public ValidatorField(Node calcnode) {
 		this();
-		// TODO FIXME
+
+		name = XMLHandler.getTagValue(calcnode, "name");
+		maximumLength = Const.toInt(XMLHandler.getTagValue(calcnode, "max_length"), -1);
+		limitingToMaximum = "Y".equalsIgnoreCase(XMLHandler.getTagValue(calcnode, "max_limit"));
+		minimumLength = Const.toInt(XMLHandler.getTagValue(calcnode, "min_length"), -1);
+		paddedToMinimum = "Y".equalsIgnoreCase(XMLHandler.getTagValue(calcnode, "min_pad"));
+		paddingString = XMLHandler.getTagValue(calcnode, "pad_string");
+
+		nullAllowed = "Y".equalsIgnoreCase(XMLHandler.getTagValue(calcnode, "null_allowed"));
+
+		dataType = ValueMeta.getType( XMLHandler.getTagValue(calcnode, "data_type") );
+		dataTypeVerified = "Y".equalsIgnoreCase( XMLHandler.getTagValue(calcnode, "data_type_verified"));
+		conversionMask = XMLHandler.getTagValue(calcnode, "conversion_mask");
+		decimalSymbol = XMLHandler.getTagValue(calcnode, "decimal_symbol");
+		groupingSymbol = XMLHandler.getTagValue(calcnode, "grouping_symbol");
+
+		minimumValue = XMLHandler.getTagValue(calcnode, "min_value");
+		maximumValue = XMLHandler.getTagValue(calcnode, "max_value");
+
+		Node allowedValuesNode = XMLHandler.getSubNode(calcnode, XML_TAG_ALLOWED);
+		int nrValues = XMLHandler.countNodes(calcnode, "value");
+		allowedValues = new String[nrValues];
+		for (int i=0;i<nrValues;i++) {
+			Node allowedNode = XMLHandler.getSubNodeByNr(allowedValuesNode, "value", i);
+			allowedValues[i] = XMLHandler.getNodeValue(allowedNode);
+		}
 	}
 	
 	public ValidatorField(Repository rep, long id_step, int i) {
@@ -259,6 +322,20 @@ public class ValidatorField implements Cloneable {
 	 */
 	public void setAllowedValues(String[] allowedValues) {
 		this.allowedValues = allowedValues;
+	}
+
+	/**
+	 * @return the dataTypeVerified
+	 */
+	public boolean isDataTypeVerified() {
+		return dataTypeVerified;
+	}
+
+	/**
+	 * @param dataTypeVerified the dataTypeVerified to set
+	 */
+	public void setDataTypeVerified(boolean dataTypeVerified) {
+		this.dataTypeVerified = dataTypeVerified;
 	}
 
 }

@@ -4,6 +4,7 @@ import org.pentaho.di.core.exception.KettleValueException;
 
 public class KettleValidatorException extends KettleValueException {
 
+	public static final int ERROR_NONE                        =  0;
 	public static final int ERROR_NULL_VALUE_NOT_ALLOWED      =  1;
 	public static final int ERROR_LONGER_THAN_MAXIMUM_LENGTH  =  2;
 	public static final int ERROR_SHORTER_THAN_MINIMUM_LENGTH =  3;
@@ -12,7 +13,7 @@ public class KettleValidatorException extends KettleValueException {
 	public static final int ERROR_HIGHER_THAN_ALLOWED_MAXIMUM =  6;
 	public static final int ERROR_VALUE_NOT_IN_LIST           =  7;
 	
-	private static final String errorCode[] = new String[] { "KVD-001", "KVD-002", "KVD-003", "KVD-004", "KVD-005", "KVD-006", "KVD-007", };
+	private static final String errorCode[] = new String[] { "KVD-000", "KVD-001", "KVD-002", "KVD-003", "KVD-004", "KVD-005", "KVD-006", "KVD-007", };
 	
 	private int code;
 	private String fieldname;
