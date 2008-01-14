@@ -198,6 +198,7 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		;
 	
 	ArrayList<String> listpath = new ArrayList<String>();
+	String precNodeName=null;
 
 	
 	public getXMLDataDialog(Shell parent, Object in, TransMeta transMeta, String sname)
@@ -1267,7 +1268,7 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
    					
    					NodeList nodesr = document.getChildNodes();
    					HashSet<String> listr = new HashSet<String> ();
-   					
+   				
    					for (int n = 0; n < nodesr.getLength(); n++) 
    					{
    				   	 Node node=nodesr.item(n);
@@ -1375,34 +1376,48 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 	{
 		HashSet<String> listn = new HashSet<String> ();
 		String NodeName=node.getNodeName();
+		
 
 		if(NodeName!=null)
 		{
-			if(parentNodeName.equals("/")) 
-				parentNodeName="/"+NodeName;
-			else
-				parentNodeName=parentNodeName+"/"+NodeName;
-			//log.logBasic("------------------->Parent Node....", NodeName);
+			if(!node.getParentNode().getNodeName().equals(precNodeName))
+			{
+				if(parentNodeName.equals("/")) 
+					parentNodeName="/"+NodeName;
+				else
+					parentNodeName=parentNodeName+"/"+NodeName;
+				
+				precNodeName=node.getParentNode().getNodeName();
+			}
+			
+			
 			NodeList childNodes = node.getChildNodes();
+			
 			
 			for (int c = 0; c < childNodes.getLength(); c++) 
 			{
 				Node child=childNodes.item(c);
 				String childNodeName=child.getNodeName();
 				
-				if(childNodeName!=null && !childNodeName.equals("#text") && !listn.contains(childNodeName))
+				if(childNodeName!=null && !childNodeName.equals("#text") && !listn.contains(childNodeName) 
+						&& child.getChildNodes().getLength()> 0)
 				{
 					listn.add(childNodeName);
 					
-					String completeNodeName=parentNodeName+"/"+childNodeName;
+					
 					//log.logBasic("current Node....", childNodeName);
+
+					
+					String completeNodeName=parentNodeName+"/"+childNodeName;
 					// Add path to the list
 					listpath.add(completeNodeName);
+					getLoopNodes(child);
+		
 					
-					if(child.getChildNodes().getLength()>0)	getLoopNodes(child);
 					
 				}
 			}
+			
 		}
 		
 		
