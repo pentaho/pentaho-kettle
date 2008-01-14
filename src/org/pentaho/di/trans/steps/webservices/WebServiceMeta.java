@@ -289,8 +289,8 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface
         {
             WebServiceField field = new WebServiceField();
             field.setName(rep.getStepAttributeString(id_step, i, "fieldIn_name"));
-            field.setName(rep.getStepAttributeString(id_step, i, "fieldIn_ws_name"));
-            field.setName(rep.getStepAttributeString(id_step, i, "fieldIn_xsd_type"));
+            field.setWsName(rep.getStepAttributeString(id_step, i, "fieldIn_ws_name"));
+            field.setXsdType(rep.getStepAttributeString(id_step, i, "fieldIn_xsd_type"));
             getFieldsIn().add(field);
         }
 
@@ -301,8 +301,8 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface
         {
             WebServiceField field = new WebServiceField();
             field.setName(rep.getStepAttributeString(id_step, i, "fieldOut_name"));
-            field.setName(rep.getStepAttributeString(id_step, i, "fieldOut_ws_name"));
-            field.setName(rep.getStepAttributeString(id_step, i, "fieldOut_xsd_type"));
+            field.setWsName(rep.getStepAttributeString(id_step, i, "fieldOut_ws_name"));
+            field.setXsdType(rep.getStepAttributeString(id_step, i, "fieldOut_xsd_type"));
             getFieldsOut().add(field);
         }
 
