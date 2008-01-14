@@ -521,6 +521,14 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 		lsDef=new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { ok(); } };
 		
 		wStepname.addSelectionListener( lsDef );
+		wConversionMask.addSelectionListener(lsDef);
+		wGroupingSymbol.addSelectionListener(lsDef);
+		wDecimalSymbol.addSelectionListener(lsDef);
+		
+		wMaxLength.addSelectionListener(lsDef);
+		wMinLength.addSelectionListener(lsDef);
+		wMaxValue.addSelectionListener(lsDef);
+		wMinValue.addSelectionListener(lsDef);
 		
 		// Detect X or ALT-F4 or something that kills this window...
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
