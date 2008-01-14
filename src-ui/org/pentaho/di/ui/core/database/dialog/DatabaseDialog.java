@@ -11,7 +11,6 @@
 
 package org.pentaho.di.ui.core.database.dialog;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
@@ -55,7 +54,6 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.gui.SpoonFactory;
 import org.pentaho.di.core.gui.SpoonInterface;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.ui.core.PropsUI;
@@ -197,22 +195,6 @@ public class DatabaseDialog extends Dialog
         this.databases = null;
         this.extraOptions = databaseMeta.getExtraOptions();
         this.database_id = databaseMeta.getID();
-
-        String path = ""; //$NON-NLS-1$
-        try
-        {
-            File file = new File("simple-jndi"); //$NON-NLS-1$
-            path = file.getCanonicalPath();
-        }
-        catch (Exception e)
-        {
-            LogWriter.getInstance().logError(toString(), Const.getStackTracker(e));
-        }
-
-        System.setProperty("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory"); //$NON-NLS-1$ //$NON-NLS-2$
-        System.setProperty("org.osjava.sj.root", path); //$NON-NLS-1$ //$NON-NLS-2$
-        System.setProperty("org.osjava.sj.delimiter", "/"); //$NON-NLS-1$ //$NON-NLS-2$
-
     }
 
     public String open()
