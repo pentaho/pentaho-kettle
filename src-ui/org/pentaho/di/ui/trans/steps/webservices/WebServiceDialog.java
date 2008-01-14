@@ -83,6 +83,9 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
     private Label wlStep;
     private Text wStep;
 
+    private Label wlPassInputData;
+    private Button wPassInputData;
+
     private Label wlHttpLogin;
     private TextVar wHttpLogin;
 
@@ -685,6 +688,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         wHttpPassword.setText(meta.getHttpPassword() == null ? "" : meta.getHttpPassword()); //$NON-NLS-1$
         DatabaseDialog.checkPasswordVisible(wHttpPassword.getTextWidget());
         wStep.setText(Integer.toString(meta.getCallStep()));
+        wPassInputData.setSelection(meta.isPassingInputData());
         if (wURL.getText() != null && !"".equals(wURL.getText())) //$NON-NLS-1$
         {
             wOperation.setText(meta.getOperationName() == null ? "" : meta.getOperationName());
@@ -747,6 +751,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         meta.setHttpLogin(wHttpLogin.getText());
         meta.setHttpPassword(wHttpPassword.getText());
         meta.setCallStep(Const.toInt(wStep.getText(), WebServiceMeta.DEFAULT_STEP));
+        meta.setPassingInputData(wPassInputData.getSelection());
 
         if (wsdlOperation != null)
         {
@@ -992,6 +997,25 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         fdStep.right = new FormAttachment(100, 0);
         wStep.setLayoutData(fdStep);
 
+        // Option to pass all input data to output
+        //
+        wlPassInputData = new Label(compositeTabWebService, SWT.RIGHT);
+        wlPassInputData.setText(Messages.getString("WebServiceDialog.PassInputData.Label")); //$NON-NLS-1$
+        props.setLook(wlPassInputData);
+        FormData fdlPassInputData = new FormData();
+        fdlPassInputData.left = new FormAttachment(0, 0);
+        fdlPassInputData.top = new FormAttachment(wStep, margin);
+        fdlPassInputData.right = new FormAttachment(middle, -margin);
+        wlPassInputData.setLayoutData(fdlPassInputData);
+        wPassInputData = new Button(compositeTabWebService, SWT.CHECK);
+        wPassInputData.setToolTipText(Messages.getString("WebServiceDialog.PassInputData.Tooltip")); //$NON-NLS-1$
+        props.setLook(wPassInputData);
+        FormData fdPassInputData = new FormData();
+        fdPassInputData.top = new FormAttachment(wStep, margin);
+        fdPassInputData.left = new FormAttachment(middle, 0);
+        fdPassInputData.right = new FormAttachment(100, 0);
+        wPassInputData.setLayoutData(fdPassInputData);
+        
         //////////////////////////
         // START HTTP AUTH GROUP
 
@@ -1045,7 +1069,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         FormData fdHttpAuth = new FormData();
         fdHttpAuth.left = new FormAttachment(0, 0);
         fdHttpAuth.right = new FormAttachment(100, 0);
-        fdHttpAuth.top = new FormAttachment(wStep, margin);
+        fdHttpAuth.top = new FormAttachment(wPassInputData, margin);
         gHttpAuth.setLayoutData(fdHttpAuth);
 
         // END HTTP AUTH GROUP

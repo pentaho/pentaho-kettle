@@ -158,7 +158,7 @@
            </partitioning>
     <fields>
       <field>
-        <name>degree</name>
+        <name>degreesCelcius</name>
         <type>Number</type>
         <format>#.#</format>
         <currency/>
@@ -200,16 +200,17 @@
     <httpLogin/>
     <httpPassword/>
     <callStep>1</callStep>
+    <passingInputData>Y</passingInputData>
     <fieldsIn>
     <field>
-        <name>degree</name>
+        <name>degreesCelcius</name>
         <wsName>nCelcius</wsName>
         <xsdType>decimal</xsdType>
     </field>
       </fieldsIn>
     <fieldsOut>
     <field>
-        <name>degree</name>
+        <name>degreesFarenheit</name>
         <wsName>CelciusToFahrenheitResult</wsName>
         <xsdType>decimal</xsdType>
     </field>
