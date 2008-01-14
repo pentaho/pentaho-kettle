@@ -47,6 +47,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
@@ -627,6 +628,12 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 		ValidatorField field = selectionMap.get(selection);
 		if (field==null) {
 			field = new ValidatorField(selection);
+			ValueMetaInterface valueMeta = inputFields.searchValueMeta(selection);
+			if (valueMeta!=null) {
+				// Set the default data type
+				//
+				field.setDataType(valueMeta.getType());
+			}
 		}
 		
 		selectedField = field;
