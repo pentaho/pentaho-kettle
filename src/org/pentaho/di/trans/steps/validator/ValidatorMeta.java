@@ -116,7 +116,7 @@ public class ValidatorMeta extends BaseStepMeta implements StepMetaInterface
 	public void readRep(Repository rep, long id_step, List<DatabaseMeta> databases, Map<String, Counter> counters)
 		throws KettleException
 	{
-        int nrValidationFields = rep.countNrStepAttributes(id_step, "validatorfield_name");
+        int nrValidationFields = rep.countNrStepAttributes(id_step, "validator_field_name");
         allocate(nrValidationFields);
         for (int i=0;i<nrValidationFields;i++)
         {

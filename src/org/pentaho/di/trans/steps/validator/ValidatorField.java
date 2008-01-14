@@ -1,6 +1,10 @@
 package org.pentaho.di.trans.steps.validator;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
@@ -14,9 +18,6 @@ public class ValidatorField implements Cloneable {
 	
 	private int maximumLength;
 	private int minimumLength;
-	private boolean limitingToMaximum;
-	private boolean paddedToMinimum;
-	private String  paddingString;
 	
 	private boolean nullAllowed;
 
@@ -58,10 +59,7 @@ public class ValidatorField implements Cloneable {
 		
 		xml.append(XMLHandler.addTagValue("name", name));
 		xml.append(XMLHandler.addTagValue("max_length", maximumLength));
-		xml.append(XMLHandler.addTagValue("max_limit", limitingToMaximum));
 		xml.append(XMLHandler.addTagValue("min_length", minimumLength));
-		xml.append(XMLHandler.addTagValue("min_pad", paddedToMinimum));
-		xml.append(XMLHandler.addTagValue("pad_string", paddingString));
 
 		xml.append(XMLHandler.addTagValue("null_allowed", nullAllowed));
 
@@ -74,14 +72,14 @@ public class ValidatorField implements Cloneable {
 		xml.append(XMLHandler.addTagValue("max_value", maximumValue));
 		xml.append(XMLHandler.addTagValue("min_value", minimumValue));
 		
+		xml.append(XMLHandler.openTag(XML_TAG_ALLOWED));
 		if (allowedValues!=null) {
-			xml.append(XMLHandler.openTag(XML_TAG_ALLOWED));
 				
 			for (String allowedValue : allowedValues) {
 				xml.append(XMLHandler.addTagValue("value", allowedValue));
 			}
-			xml.append(XMLHandler.closeTag(XML_TAG_ALLOWED));
 		}
+		xml.append(XMLHandler.closeTag(XML_TAG_ALLOWED));
 
 		xml.append(XMLHandler.closeTag(XML_TAG));
 		
@@ -93,10 +91,7 @@ public class ValidatorField implements Cloneable {
 
 		name = XMLHandler.getTagValue(calcnode, "name");
 		maximumLength = Const.toInt(XMLHandler.getTagValue(calcnode, "max_length"), -1);
-		limitingToMaximum = "Y".equalsIgnoreCase(XMLHandler.getTagValue(calcnode, "max_limit"));
 		minimumLength = Const.toInt(XMLHandler.getTagValue(calcnode, "min_length"), -1);
-		paddedToMinimum = "Y".equalsIgnoreCase(XMLHandler.getTagValue(calcnode, "min_pad"));
-		paddingString = XMLHandler.getTagValue(calcnode, "pad_string");
 
 		nullAllowed = "Y".equalsIgnoreCase(XMLHandler.getTagValue(calcnode, "null_allowed"));
 
@@ -110,7 +105,7 @@ public class ValidatorField implements Cloneable {
 		maximumValue = XMLHandler.getTagValue(calcnode, "max_value");
 
 		Node allowedValuesNode = XMLHandler.getSubNode(calcnode, XML_TAG_ALLOWED);
-		int nrValues = XMLHandler.countNodes(calcnode, "value");
+		int nrValues = XMLHandler.countNodes(allowedValuesNode, "value");
 		allowedValues = new String[nrValues];
 		for (int i=0;i<nrValues;i++) {
 			Node allowedNode = XMLHandler.getSubNodeByNr(allowedValuesNode, "value", i);
@@ -118,13 +113,57 @@ public class ValidatorField implements Cloneable {
 		}
 	}
 	
-	public ValidatorField(Repository rep, long id_step, int i) {
-		// TODO FIXME
+	public ValidatorField(Repository rep, long id_step, int i) throws KettleException {
+		name = rep.getStepAttributeString(id_step, i, "validator_field_name");
+		
+		maximumLength = (int)rep.getStepAttributeInteger(id_step, i, "validator_field_max_length");
+		minimumLength = (int)rep.getStepAttributeInteger(id_step, i, "validator_field_min_length");
+
+		nullAllowed = rep.getStepAttributeBoolean(id_step, i, "validator_field_null_allowed");
+
+		dataType = ValueMeta.getType( rep.getStepAttributeString(id_step, i, "validator_field_data_type") );
+		dataTypeVerified = rep.getStepAttributeBoolean(id_step, i, "validator_field_data_type_verified");
+		conversionMask = rep.getStepAttributeString(id_step, i, "validator_field_conversion_mask");
+		decimalSymbol = rep.getStepAttributeString(id_step, i, "validator_field_decimal_symbol");
+		groupingSymbol = rep.getStepAttributeString(id_step, i, "validator_field_grouping_symbol");
+
+		minimumValue = rep.getStepAttributeString(id_step, i, "validator_field_min_value");
+		maximumValue = rep.getStepAttributeString(id_step, i, "validator_field_max_value");
+
+		List<String> allowed = new ArrayList<String>();
+		
+		int nr = 1;
+		String value = rep.getStepAttributeString(id_step, i, "validator_field_value_"+nr);
+		while (value!=null) {
+			allowed.add(value);
+			nr++;
+			value = rep.getStepAttributeString(id_step, i, "validator_field_value_"+nr);
+		}
+		allowedValues = allowed.toArray(new String[allowed.size()]);
 	}
 
-	public void saveRep(Repository rep, long id_transformation, long id_step, int i) {
-		// TODO FIXME
+	public void saveRep(Repository rep, long id_transformation, long id_step, int i) throws KettleException {
+		rep.saveStepAttribute(id_transformation, id_step, i, "validator_field_name", name);
+		rep.saveStepAttribute(id_transformation, id_step, i, "validator_field_max_length", maximumLength);
+		rep.saveStepAttribute(id_transformation, id_step, i, "validator_field_min_length", minimumLength);
+
+		rep.saveStepAttribute(id_transformation, id_step, i, "validator_field_null_allowed", nullAllowed);
+
+		rep.saveStepAttribute(id_transformation, id_step, i, "validator_field_data_type", ValueMeta.getTypeDesc(dataType));
+		rep.saveStepAttribute(id_transformation, id_step, i, "validator_field_data_type_verified", dataTypeVerified);
+		rep.saveStepAttribute(id_transformation, id_step, i, "validator_field_conversion_mask", conversionMask);
+		rep.saveStepAttribute(id_transformation, id_step, i, "validator_field_decimal_symbol", decimalSymbol);
+		rep.saveStepAttribute(id_transformation, id_step, i, "validator_field_grouping_symbol", groupingSymbol);
+
+		rep.saveStepAttribute(id_transformation, id_step, i, "validator_field_max_value", maximumValue);
+		rep.saveStepAttribute(id_transformation, id_step, i, "validator_field_min_value", minimumValue);
 		
+		if (allowedValues!=null) {
+			for (int nr=1;nr<=allowedValues.length;nr++) {
+				rep.saveStepAttribute(id_transformation, id_step, i, "validator_field_value_"+nr, allowedValues[nr-1]);
+			}
+		}
+
 	}
 
 
@@ -168,48 +207,6 @@ public class ValidatorField implements Cloneable {
 	 */
 	public void setMinimumLength(int minimumLength) {
 		this.minimumLength = minimumLength;
-	}
-
-	/**
-	 * @return the limitingToMaximum
-	 */
-	public boolean isLimitingToMaximum() {
-		return limitingToMaximum;
-	}
-
-	/**
-	 * @param limitingToMaximum the limitingToMaximum to set
-	 */
-	public void setLimitingToMaximum(boolean limitingToMaximum) {
-		this.limitingToMaximum = limitingToMaximum;
-	}
-
-	/**
-	 * @return the paddedToMinimum
-	 */
-	public boolean isPaddedToMinimum() {
-		return paddedToMinimum;
-	}
-
-	/**
-	 * @param paddedToMinimum the paddedToMinimum to set
-	 */
-	public void setPaddedToMinimum(boolean paddedToMinimum) {
-		this.paddedToMinimum = paddedToMinimum;
-	}
-
-	/**
-	 * @return the paddingString
-	 */
-	public String getPaddingString() {
-		return paddingString;
-	}
-
-	/**
-	 * @param paddingString the paddingString to set
-	 */
-	public void setPaddingString(String paddingString) {
-		this.paddingString = paddingString;
 	}
 
 	/**
@@ -337,5 +334,4 @@ public class ValidatorField implements Cloneable {
 	public void setDataTypeVerified(boolean dataTypeVerified) {
 		this.dataTypeVerified = dataTypeVerified;
 	}
-
 }
