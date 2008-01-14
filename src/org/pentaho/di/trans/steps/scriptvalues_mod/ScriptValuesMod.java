@@ -800,7 +800,8 @@ public class ScriptValuesMod extends BaseStep implements StepInterface, ScriptVa
 		}
 		catch(Exception er) 
 		{
-			logError(Messages.getString("System.Log.UnexpectedError"), er);
+			// Eat this error, it's typically : "Calling Context.exit without previous Context.enter"
+			// logError(Messages.getString("System.Log.UnexpectedError"), er);
 		};
 		
 		super.dispose(smi, sdi);
