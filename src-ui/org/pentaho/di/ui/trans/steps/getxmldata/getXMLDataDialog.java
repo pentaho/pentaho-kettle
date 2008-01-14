@@ -189,7 +189,7 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 	
 	private     HashSet<String> list = new HashSet<String> ();
 	
-	private String parentNodeName="";
+	private String parentNodeName;
 	
 	public static final int dateLengths[] = new int[]
 		{
@@ -197,7 +197,8 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		}
 		;
 	
-	HashSet<String> listpath = new HashSet<String> ();
+	ArrayList<String> listpath = new ArrayList<String>();
+
 	
 	public getXMLDataDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
@@ -1250,32 +1251,34 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 				// Check the first file
 				if (fileinputList.getFile(0).exists()) 
 				{
-               
-					listpath.clear();
-					parentNodeName="";
-					
+
            			// get encoding. By default UTF-8
    					String encodage="UTF-8";
-   					if (!Const.isEmpty(meta.getEncoding()))
-   					{
-   						encodage=meta.getEncoding();
-   					}	
+   					if (!Const.isEmpty(meta.getEncoding())) encodage=meta.getEncoding();
+   						
    					// Get Fields from the first file 
    					DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
    						Document document = builder.parse(new InputSource(new InputStreamReader(new FileInputStream(KettleVFS.getFilename(fileinputList.getFile(0))), encodage)));        
-   	    	
+   	    
+					
+   					listpath.clear();
+					parentNodeName="/";
+   					listpath.add(parentNodeName);
+   					
    					NodeList nodesr = document.getChildNodes();
    					HashSet<String> listr = new HashSet<String> ();
    					
    					for (int n = 0; n < nodesr.getLength(); n++) 
    					{
    				   	 Node node=nodesr.item(n);
-   				   	 if(!listr.contains(node.getNodeName()))
+   				   	 String nodename=node.getNodeName();
+   				   	 if(!listr.contains(nodename))
    				     {
-   				   		 listpath.add(node.getNodeName());
-   				    	 getLoopNodes(node);
+   				   		 listpath.add("/"+nodename);
+   				    	 if(node.getChildNodes().getLength()>0) getLoopNodes(node);
+   				    	 listr.add(nodename);
    				     }
-   			  	 	 listr.add(node.getNodeName());
+   			  	 	 
 
    			  	
 					String[] list_xpath = (String[]) listpath.toArray(new String[listpath.size()]);
@@ -1375,8 +1378,11 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 
 		if(NodeName!=null)
 		{
-			parentNodeName=parentNodeName+"/"+NodeName;
-			//log.logBasic("Parent Node....", NodeName);
+			if(parentNodeName.equals("/")) 
+				parentNodeName="/"+NodeName;
+			else
+				parentNodeName=parentNodeName+"/"+NodeName;
+			//log.logBasic("------------------->Parent Node....", NodeName);
 			NodeList childNodes = node.getChildNodes();
 			
 			for (int c = 0; c < childNodes.getLength(); c++) 
@@ -1393,8 +1399,7 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 					// Add path to the list
 					listpath.add(completeNodeName);
 					
-					
-					getLoopNodes(child);
+					if(child.getChildNodes().getLength()>0)	getLoopNodes(child);
 					
 				}
 			}

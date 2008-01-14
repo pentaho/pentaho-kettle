@@ -768,7 +768,7 @@
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.GetFilesRowsCount")
 		</description>
 		<class-name>org.pentaho.di.trans.steps.getfilesrowscount.GetFilesRowsCountMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@INPUT.getName()</category>
 		<tooltip>ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.GetFilesRowsCount")
 		</tooltip>
 		<image-uri>ui/images/FRC.png</image-uri>
