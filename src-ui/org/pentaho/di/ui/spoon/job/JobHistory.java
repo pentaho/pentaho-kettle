@@ -357,14 +357,14 @@ public class JobHistory extends Composite implements TabItemInterface
         {
             // OK, grab this one from the buffer...
             RowMetaAndData row = rowList.get(nr);
-            String logging;
+            String logging=null;
             try
             {
                 logging = row.getString("LOG_FIELD", ""); //$NON-NLS-1$ //$NON-NLS-2$
             }
             catch (KettleValueException e)
             {
-                logging = Const.getStackTracker(e);
+            	new ErrorDialog(this.getShell(), Messages.getString("JobHistory.Error.GettingLoggingInfo"), Messages.getString("JobHistory.Error.GettingLogFieldFromLoggingTable"), e); //$NON-NLS-1$ //$NON-NLS-2$
             } 
             if (logging!=null) 
             {
