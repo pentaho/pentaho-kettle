@@ -15,7 +15,6 @@
 
 package be.ibridge.kettle.core.dialog;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
@@ -201,22 +200,6 @@ public class DatabaseDialog extends Dialog
         this.databases = null;
         this.extraOptions = databaseMeta.getExtraOptions();
         this.database_id = databaseMeta.getID();
-
-        String path = ""; //$NON-NLS-1$
-        try
-        {
-            File file = new File("simple-jndi"); //$NON-NLS-1$
-            path = file.getCanonicalPath();
-        }
-        catch (Exception e)
-        {
-            LogWriter.getInstance().logError(toString(), Const.getStackTracker(e));
-        }
-
-        System.setProperty("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory"); //$NON-NLS-1$ //$NON-NLS-2$
-        System.setProperty("org.osjava.sj.root", path); //$NON-NLS-1$ //$NON-NLS-2$
-        System.setProperty("org.osjava.sj.delimiter", "/"); //$NON-NLS-1$ //$NON-NLS-2$
-
     }
 
     public String open()

@@ -16,6 +16,7 @@
 
 package be.ibridge.kettle.core.database;
 
+import java.io.File;
 import java.io.StringReader;
 import java.sql.BatchUpdateException;
 import java.sql.Blob;
@@ -304,6 +305,22 @@ public class Database
 
 
 	  private void initWithJNDI(String jndiName) throws KettleDatabaseException {
+
+		  String path = ""; //$NON-NLS-1$
+	      try
+	      {
+	          File file = new File("simple-jndi"); //$NON-NLS-1$
+	          path = file.getCanonicalPath();
+	      }
+	      catch (Exception e)
+	      {
+	          throw new KettleDatabaseException(e);
+	      }
+
+	      System.setProperty("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory"); //$NON-NLS-1$ //$NON-NLS-2$
+	      System.setProperty("org.osjava.sj.root", path); //$NON-NLS-1$ //$NON-NLS-2$
+	      System.setProperty("org.osjava.sj.delimiter", "/"); //$NON-NLS-1$ //$NON-NLS-2$
+
 		  connection = null;
 		  try {
 			  DataSource dataSource = DatasourceHelper.getDataSourceFromJndi(jndiName);
