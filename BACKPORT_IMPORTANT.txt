@@ -11,3 +11,4 @@ Information on fixes applied to 3.0.1
 - PDI-613 : Fix for DB2 seeing integer as float (Sven B.)
 - PDI-639 : Streaming XML input can't be loaded from repository (Sven B.)
 - PDI-652 : Correctly save webservice step to repository (Sven B.)
+- PDI-654 : Use correct environment substitution on filenames (Sven B.)
