@@ -1130,6 +1130,7 @@ public class XMLHandler
             	
             	// change the result
             	result=tmp;
+                nrExtra = gzip.read(extra);
             }
             bytes = result;
             gzip.close();
