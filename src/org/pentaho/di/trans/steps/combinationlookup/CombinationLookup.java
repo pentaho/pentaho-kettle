@@ -440,7 +440,7 @@ public class CombinationLookup extends BaseStep implements StepInterface
             sql += "( ( ";
         }
         
-        for (int i=0;i<meta.getKeyField().length;i++)
+        for (int i=0;i<meta.getKeyLookup().length;i++)
         {
             if (comma)
             {
@@ -450,7 +450,7 @@ public class CombinationLookup extends BaseStep implements StepInterface
             { 
                 comma=true; 
             }
-            sql += databaseMeta.quoteField(meta.getKeyField()[i]) + " = ? ) OR ( " + databaseMeta.quoteField(meta.getKeyField()[i]);
+            sql += databaseMeta.quoteField(meta.getKeyLookup()[i]) + " = ? ) OR ( " + databaseMeta.quoteField(meta.getKeyLookup()[i]);
             data.lookupRowMeta.addValueMeta(inputRowMeta.getValueMeta(data.keynrs[i]));
             
             sql += " IS NULL AND ";
