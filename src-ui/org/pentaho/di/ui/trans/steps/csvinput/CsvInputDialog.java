@@ -77,6 +77,7 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
 	
 	private TextVar      wFilename;
 	private Button       wbbFilename; // Browse for a file
+	private Button       wbDelimiter;
 	private TextVar      wDelimiter;
 	private TextVar      wEnclosure;
 	private TextVar      wBufferSize;
@@ -180,17 +181,25 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
 		fdlDelimiter.left = new FormAttachment(0, 0);
 		fdlDelimiter.right= new FormAttachment(middle, -margin);
 		wlDelimiter.setLayoutData(fdlDelimiter);
+		wbDelimiter=new Button(shell, SWT.PUSH| SWT.CENTER);
+        props.setLook(wbDelimiter);
+        wbDelimiter.setText(Messages.getString("CsvInputDialog.Delimiter.Button"));
+        FormData fdbDelimiter=new FormData();
+        fdbDelimiter.top  = new FormAttachment(lastControl, margin);
+        fdbDelimiter.left = new FormAttachment(wbbFilename, 0, SWT.LEFT);
+        fdbDelimiter.right= new FormAttachment(100, 0);        
+        wbDelimiter.setLayoutData(fdbDelimiter);
 		wDelimiter=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wDelimiter);
 		wDelimiter.addModifyListener(lsMod);
 		FormData fdDelimiter = new FormData();
 		fdDelimiter.top  = new FormAttachment(lastControl, margin);
 		fdDelimiter.left = new FormAttachment(middle, 0);
-		fdDelimiter.right= new FormAttachment(100, 0);
-		wDelimiter.setLayoutData(fdDelimiter);
-		lastControl = wDelimiter;
-
-		// delimiter
+		fdDelimiter.right= new FormAttachment(wbDelimiter, -margin);
+		wDelimiter.setLayoutData(fdDelimiter);		
+        lastControl = wDelimiter;
+		
+		// enclosure
 		Label wlEnclosure = new Label(shell, SWT.RIGHT);
 		wlEnclosure.setText(Messages.getString("CsvInputDialog.Enclosure.Label")); //$NON-NLS-1$
  		props.setLook(wlEnclosure);
@@ -347,6 +356,18 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
 		wEnclosure.addSelectionListener( lsDef );
 		wBufferSize.addSelectionListener( lsDef );
 		
+		// Allow the insertion of tabs as separator...
+		wbDelimiter.addSelectionListener(new SelectionAdapter() 
+			{
+				public void widgetSelected(SelectionEvent se) 
+				{
+					Text t = wDelimiter.getTextWidget();
+					if ( t != null )
+					    t.insert("\t");
+				}
+			}
+		);
+
 		// Listen to the browse button next to the file name
 		wbbFilename.addSelectionListener(
 				new SelectionAdapter()
