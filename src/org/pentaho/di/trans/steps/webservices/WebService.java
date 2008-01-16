@@ -30,8 +30,6 @@ import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.ByteArrayRequestEntity;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.RequestEntity;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -86,7 +84,9 @@ public class WebService extends BaseStep implements StepInterface
         }
         catch (ParseException e)
         {
-            e.printStackTrace();
+            logError("Unexpected error in WebService constructor: ", e);
+            setErrors(1);
+            stopAll();
         }
     }
 
@@ -240,11 +240,6 @@ public class WebService extends BaseStep implements StepInterface
 
     private void requestSOAP() throws KettleStepException
     {
-        // desactivation des logs
-    	//
-        Level saveLogLevel = Logger.getRootLogger().getLevel();
-        Logger.getRootLogger().setLevel(Level.ERROR);
-
         HttpClient vHttpClient = new HttpClient();
         String vURLSansVariable = environmentSubstitute(meta.getUrl());
         String vURLService;
@@ -320,8 +315,6 @@ public class WebService extends BaseStep implements StepInterface
         {
             vHttpMethod.releaseConnection();
         }
-
-        Logger.getRootLogger().setLevel(saveLogLevel);
 
     }
 
@@ -416,16 +409,12 @@ public class WebService extends BaseStep implements StepInterface
                     	// Start new code
                     	//START_ELEMENT= 1
                     	//
-                        System.out.print("START_ELEMENT / ");
-                        System.out.print(vReader.getAttributeCount());
-                        System.out.print(" / ");
-                        System.out.println(vReader.getNamespaceCount());
+                    	if (log.isRowLevel()) logRowlevel("START_ELEMENT / "+ vReader.getAttributeCount()+" / "+vReader.getNamespaceCount());
                         
                         // If we start the xml element named like the return type,
                         // we start a new row
                         //
-                        System.out.print("vReader.getLocalName = ");
-                        System.out.println(vReader.getLocalName());
+                        if (log.isRowLevel()) logRowlevel("vReader.getLocalName = "+vReader.getLocalName());
                         if ( Const.isEmpty(meta.getOutFieldArgumentName()) )
                         {
                         	//getOutFieldArgumentName() == null
@@ -443,8 +432,7 @@ public class WebService extends BaseStep implements StepInterface
                                 	if (meta.getOutFieldContainerName().equals(vReader.getLocalName()))
                                 	{
                                 		// meta.getOutFieldContainerName() = vReader.getLocalName()
-                                        System.out.print("OutFieldContainerName = ");
-                                        System.out.println(meta.getOutFieldContainerName());
+                                        if (log.isRowLevel()) logRowlevel("OutFieldContainerName = "+meta.getOutFieldContainerName());
                                         oneValueRowProcessing = true;
                                 	}
                                 }
@@ -453,13 +441,11 @@ public class WebService extends BaseStep implements StepInterface
                         else
                         {
                         	//getOutFieldArgumentName() != null
-                            System.out.print("OutFieldArgumentName = ");
-                            System.out.println(meta.getOutFieldArgumentName());
+                            if (log.isRowLevel()) logRowlevel("OutFieldArgumentName = "+meta.getOutFieldArgumentName());
                             if (meta.getOutFieldArgumentName().equals(vReader.getLocalName()))
                             {
-                                System.out.print("vReader.getLocalName = ");
-                                System.out.print("OutFieldArgumentName = ");
-                                System.out.println(vReader.getLocalName());
+                                if (log.isRowLevel()) logRowlevel("vReader.getLocalName = "+vReader.getLocalName());
+                                if (log.isRowLevel()) logRowlevel("OutFieldArgumentName = ");
                                 if (processing)
                                 {
                                 	WebServiceField field = meta.getFieldOutFromWsName(vReader.getLocalName());
@@ -506,17 +492,15 @@ public class WebService extends BaseStep implements StepInterface
                             }
                             else
                             {
-                                System.out.print("vReader.getLocalName = ");
-                                System.out.println(vReader.getLocalName());
-                                System.out.print("OutFieldArgumentName = ");
-                                System.out.println(meta.getOutFieldArgumentName());
+                                if (log.isRowLevel()) logRowlevel("vReader.getLocalName = "+vReader.getLocalName());
+                                if (log.isRowLevel()) logRowlevel("OutFieldArgumentName = "+meta.getOutFieldArgumentName());
                             }
                         }
                         break;
                         
                     case XMLStreamConstants.END_ELEMENT:
                     	//END_ELEMENT= 2
-                        System.out.println("END_ELEMENT");
+                        if (log.isRowLevel()) logRowlevel("END_ELEMENT");
                         // If we end the xml element named as the return type, we
                         // finish a row
                         if ((meta.getOutFieldArgumentName() == null && meta.getOperationName().equals(vReader.getLocalName())))
@@ -531,56 +515,56 @@ public class WebService extends BaseStep implements StepInterface
                         break;
                     case XMLStreamConstants.PROCESSING_INSTRUCTION:
                     	//PROCESSING_INSTRUCTION= 3
-                        System.out.println("PROCESSING_INSTRUCTION");
+                        if (log.isRowLevel()) logRowlevel("PROCESSING_INSTRUCTION");
                         break;
                     case XMLStreamConstants.CHARACTERS:
                     	//CHARACTERS= 4
-                        System.out.println("CHARACTERS");
+                        if (log.isRowLevel()) logRowlevel("CHARACTERS");
                         break;
                     case XMLStreamConstants.COMMENT:
                     	//COMMENT= 5
-                        System.out.println("COMMENT");
+                        if (log.isRowLevel()) logRowlevel("COMMENT");
                         break;
                     case XMLStreamConstants.SPACE:
                     	//PROCESSING_INSTRUCTION= 6
-                        System.out.println("PROCESSING_INSTRUCTION");
+                        if (log.isRowLevel()) logRowlevel("PROCESSING_INSTRUCTION");
                         break;
                     case XMLStreamConstants.START_DOCUMENT:
                     	//START_DOCUMENT= 7
-                        System.out.println("START_DOCUMENT");
-                        System.out.println(vReader.getText());
+                        if (log.isRowLevel()) logRowlevel("START_DOCUMENT");
+                        if (log.isRowLevel()) logRowlevel(vReader.getText());
                         break;
                     case XMLStreamConstants.END_DOCUMENT:
                     	//END_DOCUMENT= 8
-                        System.out.println("END_DOCUMENT");
+                        if (log.isRowLevel()) logRowlevel("END_DOCUMENT");
                         break;
                     case XMLStreamConstants.ENTITY_REFERENCE:
                     	//ENTITY_REFERENCE= 9
-                        System.out.println("ENTITY_REFERENCE");
+                        if (log.isRowLevel()) logRowlevel("ENTITY_REFERENCE");
                         break;
                     case XMLStreamConstants.ATTRIBUTE:
                     	//ATTRIBUTE= 10
-                        System.out.println("ATTRIBUTE");
+                        if (log.isRowLevel()) logRowlevel("ATTRIBUTE");
                         break;
                     case XMLStreamConstants.DTD:
                     	//DTD= 11
-                        System.out.println("DTD");
+                        if (log.isRowLevel()) logRowlevel("DTD");
                         break;
                     case XMLStreamConstants.CDATA:
                     	//CDATA= 12
-                        System.out.println("CDATA");
+                        if (log.isRowLevel()) logRowlevel("CDATA");
                         break;
                     case XMLStreamConstants.NAMESPACE:
                     	//NAMESPACE= 13
-                        System.out.println("NAMESPACE");
+                        if (log.isRowLevel()) logRowlevel("NAMESPACE");
                         break;
                     case XMLStreamConstants.NOTATION_DECLARATION:
                     	//NOTATION_DECLARATION= 14
-                        System.out.println("NOTATION_DECLARATION");
+                        if (log.isRowLevel()) logRowlevel("NOTATION_DECLARATION");
                         break;
                     case XMLStreamConstants.ENTITY_DECLARATION:
                     	//ENTITY_DECLARATION= 15
-                        System.out.println("ENTITY_DECLARATION");
+                        if (log.isRowLevel()) logRowlevel("ENTITY_DECLARATION");
                         break;
                     default:
                         break;
@@ -613,7 +597,9 @@ public class WebService extends BaseStep implements StepInterface
                 }
                 catch (ParseException e)
                 {
-                	System.out.println(Const.getStackTracker(e));
+                	logError(Const.getStackTracker(e));
+                    setErrors(1);
+                    stopAll();
                     return null;
                 }
             }
@@ -625,8 +611,10 @@ public class WebService extends BaseStep implements StepInterface
                 }
                 catch (ParseException e)
                 {
-                	System.out.println(Const.getStackTracker(e));
-                    return null;
+                	logError(Const.getStackTracker(e));
+                    setErrors(1);
+                    stopAll();
+                	return null;
                 }
             }
             else if (XsdType.DATE_TIME.equals(field.getXsdType()))
@@ -637,8 +625,10 @@ public class WebService extends BaseStep implements StepInterface
                 }
                 catch (ParseException e)
                 {
-                	System.out.println(Const.getStackTracker(e));
-                    return null;
+                	logError(Const.getStackTracker(e));
+                    setErrors(1);
+                    stopAll();
+                	return null;
                 }
             }
             else if (XsdType.INTEGER.equals(field.getXsdType()) || XsdType.SHORT.equals(field.getXsdType()))
@@ -649,8 +639,10 @@ public class WebService extends BaseStep implements StepInterface
                 }
                 catch (NumberFormatException e)
                 {
-                	System.out.println(Const.getStackTracker(e));
-                    return null;
+                	logError(Const.getStackTracker(e));
+                    setErrors(1);
+                    stopAll();
+                	return null;
                 }
             }
             else if (XsdType.FLOAT.equals(field.getXsdType()) || XsdType.DOUBLE.equals(field.getXsdType()))
@@ -661,7 +653,9 @@ public class WebService extends BaseStep implements StepInterface
                 }
                 catch (NumberFormatException e)
                 {
-                	System.out.println(Const.getStackTracker(e));
+                	logError(Const.getStackTracker(e));
+                    setErrors(1);
+                    stopAll();
                     return null;
                 }
             }
@@ -679,4 +673,5 @@ public class WebService extends BaseStep implements StepInterface
             }
         }
     }
+
 }
