@@ -118,6 +118,7 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface
 
 		return retval;
 	}
+	
 	 /**
      * @return Returns the use var flag.
      */

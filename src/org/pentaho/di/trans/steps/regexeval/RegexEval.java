@@ -32,21 +32,17 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  * 
  * @author Matt
  * @since 15-08-2007
- *
  */
 public class RegexEval extends BaseStep implements StepInterface
 {
 	private RegexEvalMeta meta;
 	private RegexEvalData data;
 	
-	
 	public RegexEval(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
 			Trans trans)
 	{
 		super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
 	}
-
-
 
     public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{
@@ -80,10 +76,9 @@ public class RegexEval extends BaseStep implements StepInterface
 		                // The field is unreachable !
 						logError(Messages.getString("RegexEval.Log.ErrorFindingField")+ "[" + meta.getMatcher()+"]"); 
 						throw new KettleStepException(Messages.getString("RegexEval.Exception.CouldnotFindField",meta.getMatcher())); 
-					}
-		                
+					}		                
 					
-					 // Let's check that Result Field is given
+					// Let's check that Result Field is given
 					if (environmentSubstitute(meta.getResultfieldname()) == null )
 					{
 						//	Result field is missing !
@@ -99,13 +94,37 @@ public class RegexEval extends BaseStep implements StepInterface
 				log.logError("Error",Messages.getString("RegexEval.Log.ErrorMatcherMissing"));
 				throw new KettleStepException(Messages.getString("RegexEval.Exception.ErrorMatcherMissing")); 
 			}
-			
 		}
 		
 		// Get the Field value
 		String Fieldvalue= getInputRowMeta().getString(row,data.indexOfFieldToEvaluate);
+			
+		// Search engine	
+		Matcher m = data.pattern.matcher(Fieldvalue);
 		
-		// Endebbed options
+		// Start search
+		boolean b = m.matches();
+		
+		// Add result field to input stream
+		Object[] outputRowData2 =RowDataUtil.addValueData(row, getInputRowMeta().size(),b);
+		
+		if (log.isRowLevel()) logRowlevel(Messages.getString("RegexEval.Log.ReadRow") + " " +  getInputRowMeta().getString(row)); 
+		
+		putRow(data.outputRowMeta, outputRowData2);  // copy row to output rowset(s);
+       
+		return true;
+	}
+    
+    /**
+     * Compile a pattern.
+     * 
+     * @param meta the metadata of the step.
+     */
+    private Pattern compilePattern(RegexEvalMeta meta)
+    {
+    	Pattern p;
+    	
+		// Embedded options
 		String options="";
 		
 		if (meta.caseinsensitive())
@@ -141,33 +160,17 @@ public class RegexEval extends BaseStep implements StepInterface
 		}
 		if (log.isDetailed()) logDetailed(Messages.getString("RegexEval.Log.Regexp") + " " + options+regularexpression); 
 		
-		// Regex compilation
-		Pattern p;
-		
 		if (meta.canoeq())
 		{
-			p= Pattern.compile(options+regularexpression,Pattern.CANON_EQ);
+			p = Pattern.compile(options+regularexpression,Pattern.CANON_EQ);
 		}
 		else
 		{
-			p= Pattern.compile(options+regularexpression);	
+			p = Pattern.compile(options+regularexpression);	
 		}
 		
-		// Search engine
-		Matcher m = p.matcher(Fieldvalue);
-		
-		// Start search
-		boolean b = m.matches();
-		
-		// Add result field to input stream
-		Object[] outputRowData2 =RowDataUtil.addValueData(row, getInputRowMeta().size(),b);
-		
-		if (log.isRowLevel()) logRowlevel(Messages.getString("RegexEval.Log.ReadRow") + " " +  getInputRowMeta().getString(row)); 
-		
-		putRow(data.outputRowMeta, outputRowData2);  // copy row to output rowset(s);
-       
-		return true;
-	}
+		return p;
+    }
 		
 	public boolean init(StepMetaInterface smi, StepDataInterface sdi)
 	{
@@ -176,7 +179,9 @@ public class RegexEval extends BaseStep implements StepInterface
 		
 		if (super.init(smi, sdi))
 		{
-		    // Add init code here.
+            // Add init code here.
+			data.pattern = compilePattern(meta);
+		    
 		    return true;
 		}
 		return false;

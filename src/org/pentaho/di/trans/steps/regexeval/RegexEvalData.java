@@ -11,20 +11,22 @@
 
 package org.pentaho.di.trans.steps.regexeval;
 
+import java.util.regex.Pattern;
+
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
 
 /**
- * @author Matt
- * @since 15-08-2007
- *
+ * Runtime data for the RegexEval step.
+ * 
+ * @author Samatar Hassan
  */
 public class RegexEvalData extends BaseStepData implements StepDataInterface
-{
-	
+{	
 	public RowMetaInterface outputRowMeta;
-	public int indexOfFieldToEvaluate;
+	public int              indexOfFieldToEvaluate;
+	public Pattern          pattern;
 	
 	public RegexEvalData()
 	{
@@ -32,5 +34,4 @@ public class RegexEvalData extends BaseStepData implements StepDataInterface
 
 		indexOfFieldToEvaluate = -1;
 	}
-
 }
