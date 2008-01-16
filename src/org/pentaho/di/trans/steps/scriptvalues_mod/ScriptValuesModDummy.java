@@ -221,4 +221,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 			// TODO Auto-generated method stub
 			
 		}
+		public int getCopy() {
+			// TODO Auto-generated method stub
+			return 0;
+		}
 	}

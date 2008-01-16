@@ -57,7 +57,6 @@
 	<classpathentry kind="lib" path="libext/ldapjdk.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/derby.jar"/>
 	<classpathentry kind="src" path="extra"/>
-	<classpathentry kind="lib" path="test/libext/kettle.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/pentaho-vfs-browser.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/pentaho-vfs-browser-i18n.jar"/>
 	<classpathentry kind="lib" path="libext/commons/commons-digester-1.8.jar"/>
@@ -83,5 +82,7 @@
 	<classpathentry kind="lib" path="libext/pentaho/pentaho-versionchecker.jar"/>
 	<classpathentry kind="lib" path="libext/dom4j-1.6.1.jar"/>
 	<classpathentry kind="lib" path="libext/jaxen-1.1.1.jar"/>
+	<classpathentry kind="lib" path="libext/jfree/jcommon-1.0.0.jar"/>
+	<classpathentry kind="lib" path="libext/jfree/jfreechart-1.0.1.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

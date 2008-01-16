@@ -217,6 +217,10 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     /** The repository to reference in the one-off case that it is needed */
     private Repository repository;
     
+    private boolean    capturingStepPerformanceSnapShots;
+    
+    private long       stepPerformanceCapturingDelay;
+    
     // //////////////////////////////////////////////////////////////////////////
 
     public static final int     TYPE_UNDO_CHANGE   = 1;
@@ -445,6 +449,11 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         // - re-enabling in version 3.0.1 to prevent excessive locking (PDI-491)
         //
         usingThreadPriorityManagment = true; 
+
+        // TODO FIXME Make these performance monitoring options configurable
+        //
+        capturingStepPerformanceSnapShots = true;
+        stepPerformanceCapturingDelay = 1000; // every 1 seconds
     }
 
     public void clearUndo()
@@ -5906,5 +5915,33 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 	 */
 	public void setRepository(Repository repository) {
 		this.repository = repository;
+	}
+
+	/**
+	 * @return the capturingStepPerformanceSnapShots
+	 */
+	public boolean isCapturingStepPerformanceSnapShots() {
+		return capturingStepPerformanceSnapShots;
+	}
+
+	/**
+	 * @param capturingStepPerformanceSnapShots the capturingStepPerformanceSnapShots to set
+	 */
+	public void setCapturingStepPerformanceSnapShots(boolean capturingStepPerformanceSnapShots) {
+		this.capturingStepPerformanceSnapShots = capturingStepPerformanceSnapShots;
+	}
+
+	/**
+	 * @return the stepPerformanceCapturingDelay
+	 */
+	public long getStepPerformanceCapturingDelay() {
+		return stepPerformanceCapturingDelay;
+	}
+
+	/**
+	 * @param stepPerformanceCapturingDelay the stepPerformanceCapturingDelay to set
+	 */
+	public void setStepPerformanceCapturingDelay(long stepPerformanceCapturingDelay) {
+		this.stepPerformanceCapturingDelay = stepPerformanceCapturingDelay;
 	}
 }

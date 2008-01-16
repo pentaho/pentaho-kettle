@@ -106,6 +106,11 @@ public interface StepInterface
 	public String getStepname();
     
     /**
+     * @return The steps copy number (default 0)
+     */
+    public int getCopy();
+    
+    /**
      * @return the type ID of the step...
      */
     public String getStepID();
@@ -148,7 +153,7 @@ public interface StepInterface
     public long getLinesUpdated();
     
     /**
-     * @param linesRejected Returns the lines rejected by error handling.
+     * @param linesRejected steps the lines rejected by error handling.
      */
     public void setLinesRejected(long linesRejected);
     

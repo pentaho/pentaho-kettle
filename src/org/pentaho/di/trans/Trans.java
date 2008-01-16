@@ -16,8 +16,11 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.apache.commons.vfs.FileName;
 import org.apache.commons.vfs.FileObject;
@@ -42,6 +45,7 @@ import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.trans.cluster.TransSplitter;
+import org.pentaho.di.trans.performance.StepPerformanceSnapShot;
 import org.pentaho.di.trans.step.BaseStep;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepErrorMeta;
@@ -148,7 +152,11 @@ public class Trans implements VariableSpace
     private boolean running;
 
     private boolean readyToStart;    
+    
+    private Map<String,List<StepPerformanceSnapShot>> stepPerformanceSnapShots;
 
+    private Timer stepPerformanceSnapShotTimer;
+    
 	/**
 	 * Initialize a transformation from transformation meta-data defined in memory
 	 * @param transMeta the transformation meta-data to use.
@@ -404,7 +412,7 @@ public class Trans implements VariableSpace
                     	List<String> partitionIDs = stepMeta.getStepPartitioningMeta().getPartitionSchema().getPartitionIDs();
                         if (partitionIDs!=null && partitionIDs.size()>0) 
                         {
-                            step.setPartitionID(partitionIDs.get(c)); // Pass the partition ID to the step
+                        	step.setPartitionID(partitionIDs.get(c)); // Pass the partition ID to the step
                         }
                     }
 
@@ -596,6 +604,21 @@ public class Trans implements VariableSpace
             sid.step.initBeforeStart();
         }
 
+    	if (transMeta.isCapturingStepPerformanceSnapShots()) 
+    	{
+    		stepPerformanceSnapShots = new HashMap<String, List<StepPerformanceSnapShot>>();
+    		
+    		// Set a timer to collect the performance data from the running threads...
+    		//
+    		stepPerformanceSnapShotTimer = new Timer();
+    		TimerTask timerTask = new TimerTask() {
+				public void run() {
+					addStepPerformanceSnapShot();
+				}
+			};
+    		stepPerformanceSnapShotTimer.schedule(timerTask, 100, transMeta.getStepPerformanceCapturingDelay());
+    	}
+    	
         // Now start all the threads...
         for (int i=0;i<steps.size();i++)
         {
@@ -607,7 +630,48 @@ public class Trans implements VariableSpace
         log.logDetailed(toString(), Messages.getString("Trans.Log.TransformationHasAllocated",String.valueOf(steps.size()),String.valueOf(rowsets.size()))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
     
-    /**
+    protected void addStepPerformanceSnapShot() {
+    	if (transMeta.isCapturingStepPerformanceSnapShots())
+    	{
+	        // get the statistics from the steps and keep them...
+	    	//
+	        for (int i=0;i<steps.size();i++)
+	        {
+	            StepMeta stepMeta = steps.get(i).stepMeta;
+	            StepInterface step = steps.get(i).step;
+	            BaseStep baseStep = (BaseStep)step;
+	            
+	            StepPerformanceSnapShot snapShot = new StepPerformanceSnapShot(
+	            		new Date(),
+	            		stepMeta.getName(),
+	            		step.getCopy(),
+	            		step.getLinesRead(),
+	            		step.getLinesWritten(),
+	            		step.getLinesInput(),
+	            		step.getLinesOutput(),
+	            		step.getLinesUpdated(),
+	            		step.getLinesRejected(),
+	            		step.getErrors()
+	            		);
+	            List<StepPerformanceSnapShot> snapShotList = stepPerformanceSnapShots.get(step.toString());
+	            StepPerformanceSnapShot previous;
+	            if (snapShotList==null) {
+	            	snapShotList = new ArrayList<StepPerformanceSnapShot>();
+	            	stepPerformanceSnapShots.put(step.toString(), snapShotList);
+	            	previous = null;
+	            }
+	            else {
+	            	previous = snapShotList.get(snapShotList.size()-1); // the last one...
+	            }
+	            // Make the difference...
+	            //
+	            if (previous!=null) snapShot.diff(previous, baseStep.rowsetInputSize(), baseStep.rowsetOutputSize());
+	            snapShotList.add(snapShot);
+	        }
+    	}
+	}
+
+	/**
      * Call this method after the transformation has finished.
      * Typically, after ALL the slave transformations in a clustered run have finished.
      */
@@ -711,7 +775,18 @@ public class Trans implements VariableSpace
 
 		int ended=getEnded();
 
-		return ended==steps.size();
+		boolean finished = ended==steps.size();
+		
+		if (finished) 
+		{
+			// TODO replace by listener system, see PDI-662
+			//
+			if (transMeta.isCapturingStepPerformanceSnapShots() && stepPerformanceSnapShotTimer!=null) 
+			{
+				stepPerformanceSnapShotTimer.cancel();
+			}
+		}
+		return finished;
 	}
 
 	public void killAll()
@@ -2352,5 +2427,19 @@ public class Trans implements VariableSpace
 	 */
 	public void setRepository(Repository repository) {
 		this.repository = repository;
+	}
+
+	/**
+	 * @return the stepPerformanceSnapShots
+	 */
+	public Map<String, List<StepPerformanceSnapShot>> getStepPerformanceSnapShots() {
+		return stepPerformanceSnapShots;
+	}
+
+	/**
+	 * @param stepPerformanceSnapShots the stepPerformanceSnapShots to set
+	 */
+	public void setStepPerformanceSnapShots(Map<String, List<StepPerformanceSnapShot>> stepPerformanceSnapShots) {
+		this.stepPerformanceSnapShots = stepPerformanceSnapShots;
 	} 
 }

@@ -107,14 +107,15 @@ public class TransLog extends Composite implements TabItemInterface
 	private Button wError;
 	private Button wClear;
 	private Button wLog;
+	private Button wGraph;
 	private long lastUpdateView;
 
-	private FormData fdText, fdSash, fdStart, fdPause, fdPreview, fdError, fdClear, fdLog, fdOnlyActive, fdSafeMode;
+	private FormData fdText, fdSash, fdStart, fdPause, fdPreview, fdError, fdClear, fdLog, fdGraph, fdOnlyActive, fdSafeMode;
 
 	private boolean running;
     private boolean initialized;
 
-	private SelectionListener lsStart, lsPause, lsStop, lsPreview, lsError, lsClear, lsLog;
+	private SelectionListener lsStart, lsPause, lsStop, lsPreview, lsError, lsClear, lsLog, lsGraph;
 
 	private Trans trans;
 
@@ -218,7 +219,10 @@ public class TransLog extends Composite implements TabItemInterface
         
 		wLog = new Button(this, SWT.PUSH);
 		wLog.setText(Messages.getString("TransLog.Button.LogSettings")); //$NON-NLS-1$
-        
+
+		wGraph = new Button(this, SWT.PUSH);
+		wGraph.setText(Messages.getString("TransLog.Button.ShowGraph")); //$NON-NLS-1$
+
 		wOnlyActive = new Button(this, SWT.CHECK);
 		wOnlyActive.setText(Messages.getString("TransLog.Button.ShowOnlyActiveSteps")); //$NON-NLS-1$
         spoon.props.setLook(wOnlyActive);
@@ -262,8 +266,13 @@ public class TransLog extends Composite implements TabItemInterface
 		fdLog.bottom = new FormAttachment(100, 0);
 		wLog.setLayoutData(fdLog);
 
+        fdGraph = new FormData();
+        fdGraph.left = new FormAttachment(wLog, 10);
+		fdGraph.bottom = new FormAttachment(100, 0);
+		wGraph.setLayoutData(fdGraph);
+
         fdOnlyActive = new FormData();
-        fdOnlyActive.left = new FormAttachment(wLog, Const.MARGIN);
+        fdOnlyActive.left = new FormAttachment(wGraph, Const.MARGIN);
 		fdOnlyActive.bottom = new FormAttachment(100, 0);
 		wOnlyActive.setLayoutData(fdOnlyActive);
 		wOnlyActive.addSelectionListener(new SelectionAdapter()
@@ -427,6 +436,15 @@ public class TransLog extends Composite implements TabItemInterface
 				setLog();
 			}
 		};
+		
+		lsGraph = new SelectionAdapter()
+		{
+			public void widgetSelected(SelectionEvent e)
+			{
+				showStepPerformanceGraph();
+			}
+		};
+		
 
 		wError.addSelectionListener(lsError);
 		wStart.addSelectionListener(lsStart);
@@ -435,7 +453,8 @@ public class TransLog extends Composite implements TabItemInterface
 		wPreview.addSelectionListener(lsPreview);
 		wClear.addSelectionListener(lsClear);
 		wLog.addSelectionListener(lsLog);
-
+		wGraph.addSelectionListener(lsGraph);
+		
 		addDisposeListener(new DisposeListener()
 		{
 			public void widgetDisposed(DisposeEvent e)
@@ -445,7 +464,17 @@ public class TransLog extends Composite implements TabItemInterface
 		});
 	}
     
-    private void checkStartThreads()
+    private void showStepPerformanceGraph() {
+		StepPerformanceSnapShotDialog dialog = new StepPerformanceSnapShotDialog(
+			shell, 
+			transMeta.getName(), 
+			trans.getStepPerformanceSnapShots(),
+			transMeta.getStepPerformanceCapturingDelay()
+			);
+		dialog.open();
+	}
+
+	private void checkStartThreads()
     {
         if (initialized && !running && trans!=null)
         {

@@ -1188,7 +1188,7 @@ public class BaseStep extends Thread implements VariableSpace
 	    // The buffer to grow beyond "a few" entries.
 	    // We'll only do that if the previous step has not ended...
 	    //
-        if (isUsingThreadPriorityManagment() && !inputRowSet.isDone() && inputRowSet.size()==0)
+        while (isUsingThreadPriorityManagment() && !inputRowSet.isDone() && inputRowSet.size()<= ( transMeta.getSizeRowset()>>6 ) && !isStopped())
         {
         	try { Thread.sleep(0,10); } catch (InterruptedException e) { }
         }
