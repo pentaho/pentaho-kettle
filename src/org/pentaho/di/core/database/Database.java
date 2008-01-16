@@ -123,7 +123,7 @@ public class Database implements VariableSpace
     private int copy; 
 
     private String connectionGroup;
-    private boolean performRollbackAtLastDisconnect;
+    private boolean performRollbackAtLastDisconnect; // Only used in the context of a database connection map
     private String partitionId;
     
     private VariableSpace variables = new Variables();
@@ -502,7 +502,7 @@ public class Database implements VariableSpace
                         
                         // Before we close perform commit or rollback.
                         
-                        if (performRollbackAtLastDisconnect)
+                        if (lookup.performRollbackAtLastDisconnect)
                         {
                             rollback(true);
                         }
@@ -617,6 +617,7 @@ public class Database implements VariableSpace
             }
 			if (getDatabaseMetaData().supportsTransactions())
 			{
+				if (log.isDebug()) log.logDebug(toString(), "Commit on database connection ["+toString()+"]");
 				connection.commit();
 			}
 			else
@@ -642,12 +643,17 @@ public class Database implements VariableSpace
 		{
             if (!Const.isEmpty(connectionGroup) && !force)
             {
-                performRollbackAtLastDisconnect=true;
+                DatabaseConnectionMap map = DatabaseConnectionMap.getInstance();
+                Database lookup = map.getDatabase(connectionGroup, partitionId, this);
+                lookup.performRollbackAtLastDisconnect=true;
                 return; 
             }
             if (getDatabaseMetaData().supportsTransactions())
             {
-                if (connection!=null) connection.rollback();
+                if (connection!=null) {
+                	if (log.isDebug()) log.logDebug(toString(), "Rollback on database connection ["+toString()+"]");
+                	connection.rollback();
+                }
             }
             else
             {
