@@ -13,6 +13,8 @@ package org.pentaho.di.repository;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
@@ -23,6 +25,7 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.GZIPOutputStream;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.pentaho.di.cluster.ClusterSchema;
@@ -54,6 +57,8 @@ import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.StepPlugin;
 import org.pentaho.di.trans.TransMeta;
+
+import org.apache.commons.codec.binary.Base64;
 
 
 /**
@@ -3164,6 +3169,32 @@ public class Repository
 	{
 		return insertStepAttribute(id_transformation, id_step, nr, code, value_num, value_str);
 	}
+
+  /**
+   * GZips and then base64 encodes an array of bytes to a String
+   *
+   * @param val the array of bytes to convert to a string
+   * @return the base64 encoded string
+   * @throws IOException in the case there is a Base64 or GZip encoding problem
+   */
+  public static final String byteArrayToString(byte[] val) throws IOException {
+    
+    String string;
+    if (val == null) {
+      string = null;
+    } else {
+      ByteArrayOutputStream baos = new ByteArrayOutputStream();
+      GZIPOutputStream gzos = new GZIPOutputStream(baos);
+      BufferedOutputStream bos = new BufferedOutputStream(gzos);
+      bos.write( val );
+      bos.flush();
+      bos.close();
+      
+      string = new String(Base64.encodeBase64(baos.toByteArray()));
+    }
+
+    return string;
+  }
 
 	// STEP ATTRIBUTES: GET
 
