@@ -13,6 +13,8 @@
 
 package org.pentaho.di.core.xml;
 import java.io.ByteArrayInputStream;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -1021,8 +1023,10 @@ public class XMLHandler
 		{
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             GZIPOutputStream gzos = new GZIPOutputStream(baos);
-            gzos.write( val );
-            gzos.close();
+            BufferedOutputStream bos = new BufferedOutputStream(gzos);
+            bos.write( val );
+            bos.flush();
+            bos.close();
             
             string = new String(Base64.encodeBase64(baos.toByteArray()));
 		}
@@ -1116,10 +1120,11 @@ public class XMLHandler
         {
             ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
             GZIPInputStream gzip = new GZIPInputStream(bais);
+            BufferedInputStream bi = new BufferedInputStream(gzip);
         	byte[] result = new byte[] {};
             
-            byte[] extra = new byte[1000];
-            int nrExtra = gzip.read(extra);
+            byte[] extra = new byte[1000000];
+            int nrExtra = bi.read(extra);
             while (nrExtra>=0) {
             	// add it to bytes...
             	//
@@ -1130,7 +1135,7 @@ public class XMLHandler
             	
             	// change the result
             	result=tmp;
-                nrExtra = gzip.read(extra);
+                nrExtra = bi.read(extra);
             }
             bytes = result;
             gzip.close();
