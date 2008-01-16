@@ -31,6 +31,7 @@ import org.pentaho.di.trans.steps.constant.ConstantTest;
 import org.pentaho.di.trans.steps.databaselookup.DatabaseLookupTest;
 import org.pentaho.di.trans.steps.injector.InjectorTest;
 import org.pentaho.di.trans.steps.nullif.NullIfTest;
+import org.pentaho.di.trans.steps.regexeval.RegexEvalTest;
 import org.pentaho.di.trans.steps.rowgenerator.RowGeneratorTest;
 import org.pentaho.di.trans.steps.scriptvalues_mod.JavaScriptSpecialTest;
 import org.pentaho.di.trans.steps.scriptvalues_mod.JavaScriptStringTest;
@@ -87,8 +88,9 @@ public class AllRegressionTests
         suite.addTestSuite(SortRowsTest.class);
         suite.addTestSuite(ValueMapperTest.class);
         suite.addTestSuite(NullIfTest.class);
+        suite.addTestSuite(RegexEvalTest.class);
         suite.addTestSuite(AddSequenceTest.class);  
-        suite.addTestSuite(TableInputTest.class);
+        suite.addTestSuite(TableInputTest.class);        
         suite.addTestSuite(DatabaseLookupTest.class);
         suite.addTestSuite(CombinationLookupTest.class);
         suite.addTestSuite(JavaScriptStringTest.class);
