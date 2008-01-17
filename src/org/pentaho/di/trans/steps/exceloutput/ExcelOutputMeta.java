@@ -446,13 +446,18 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 			footerEnabled    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "footer"));
 			encoding         = XMLHandler.getTagValue(stepnode, "encoding");
 			append    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "append"));
+			String addToResult=XMLHandler.getTagValue(stepnode,  "add_to_result_filenames");
+			if(Const.isEmpty(addToResult)) 
+				addToResultFilenames = true;
+			else
+				addToResultFilenames = "Y".equalsIgnoreCase(addToResult);
+		
             fileName             = XMLHandler.getTagValue(stepnode, "file", "name");
 			extension            = XMLHandler.getTagValue(stepnode, "file", "extention");
 			stepNrInFilename     = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "split"));
 			dateInFilename       = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "add_date"));
 			timeInFilename       = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "add_time"));
-			addToResultFilenames = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "add_to_result_filenames"));
-			
+		
 			protectsheet = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "protect_sheet"));
 			password     = Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue(stepnode, "file", "password") );
 			splitEvery   = Const.toInt(XMLHandler.getTagValue(stepnode, "file", "splitevery"), 0);
@@ -624,6 +629,7 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 		retval.append("    ").append(XMLHandler.addTagValue("footer",    footerEnabled));
         retval.append("    ").append(XMLHandler.addTagValue("encoding",  encoding));
         retval.append("    "+XMLHandler.addTagValue("append",    append));
+        retval.append("    "+XMLHandler.addTagValue("add_to_result_filenames",   addToResultFilenames));
 
 		retval.append("    <file>").append(Const.CR);
 		retval.append("      ").append(XMLHandler.addTagValue("name",       fileName));
@@ -631,7 +637,7 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 		retval.append("      ").append(XMLHandler.addTagValue("split",      stepNrInFilename));
 		retval.append("      ").append(XMLHandler.addTagValue("add_date",   dateInFilename));
 		retval.append("      ").append(XMLHandler.addTagValue("add_time",   timeInFilename));
-		retval.append("      ").append(XMLHandler.addTagValue("add_to_result_filenames",   addToResultFilenames));
+		
 		
 		retval.append("      ").append(XMLHandler.addTagValue("sheetname", sheetname));
 		retval.append("      ").append(XMLHandler.addTagValue("protect_sheet",   protectsheet));
@@ -674,13 +680,20 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
             encoding         =      rep.getStepAttributeString (id_step, "encoding");
             append   =      rep.getStepAttributeBoolean(id_step, "append");
             
+            String addToResult=rep.getStepAttributeString (id_step, "add_to_result_filenames");
+			if(Const.isEmpty(addToResult)) 
+				addToResultFilenames = true;
+			else
+				addToResultFilenames =  rep.getStepAttributeBoolean(id_step, "add_to_result_filenames");
+            
+            
 			fileName         =      rep.getStepAttributeString (id_step, "file_name");  
 			extension        =      rep.getStepAttributeString (id_step, "file_extention");
 			splitEvery       = (int)rep.getStepAttributeInteger(id_step, "file_split");
 			stepNrInFilename =      rep.getStepAttributeBoolean(id_step, "file_add_stepnr");
 			dateInFilename   =      rep.getStepAttributeBoolean(id_step, "file_add_date");
 			timeInFilename   =      rep.getStepAttributeBoolean(id_step, "file_add_time");
-			addToResultFilenames =  rep.getStepAttributeBoolean(id_step, "add_to_result_filenames");
+			
 			
 			protectsheet          = rep.getStepAttributeBoolean(id_step, "protect_sheet");
 			password              = Encr.decryptPasswordOptionallyEncrypted( rep.getStepAttributeString (id_step, "password") );
@@ -718,13 +731,14 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "footer",           footerEnabled);
             rep.saveStepAttribute(id_transformation, id_step, "encoding",         encoding);
             rep.saveStepAttribute(id_transformation, id_step, "append",           append);
+            rep.saveStepAttribute(id_transformation, id_step, "add_to_result_filenames",    addToResultFilenames);
 			rep.saveStepAttribute(id_transformation, id_step, "file_name",        fileName);
 			rep.saveStepAttribute(id_transformation, id_step, "file_extention",   extension);
 			rep.saveStepAttribute(id_transformation, id_step, "file_split",       splitEvery);
 			rep.saveStepAttribute(id_transformation, id_step, "file_add_stepnr",  stepNrInFilename);
 			rep.saveStepAttribute(id_transformation, id_step, "file_add_date",    dateInFilename);
 			rep.saveStepAttribute(id_transformation, id_step, "file_add_time",    timeInFilename);
-			rep.saveStepAttribute(id_transformation, id_step, "add_to_result_filenames",    addToResultFilenames);
+			
 			
 			rep.saveStepAttribute(id_transformation, id_step, "protect_sheet",    protectsheet);
 			rep.saveStepAttribute(id_transformation, id_step, "password",  Encr.encryptPasswordIfNotUsingVariables(password) );
