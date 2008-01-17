@@ -229,6 +229,7 @@ public class Pan
 											transMeta = new TransMeta(rep, optionTransname.toString(), directory);
 											log.logDebug("Pan", "Allocate transformation...");
 											trans = new Trans(transMeta);
+											trans.setRepository(rep);
 										}
 										else
 										// List the transformations in the repository
