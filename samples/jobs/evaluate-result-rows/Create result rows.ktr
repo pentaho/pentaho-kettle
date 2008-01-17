@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<transformation>
+  <info>
+    <name>Create result rows</name>
+    <description/>
+    <extended_description/>
+    <trans_version/>
+    <directory>&#47;</directory>
+    <log>
+      <read/>
+      <write/>
+      <input/>
+      <output/>
+      <update/>
+      <rejected/>
+      <connection/>
+      <table/>
+      <use_batchid>Y</use_batchid>
+      <use_logfield>N</use_logfield>
+    </log>
+    <maxdate>
+      <connection/>
+      <table/>
+      <field/>
+      <offset>0.0</offset>
+      <maxdiff>0.0</maxdiff>
+    </maxdate>
+    <size_rowset>10000</size_rowset>
+    <sleep_time_empty>50</sleep_time_empty>
+    <sleep_time_full>50</sleep_time_full>
+    <unique_connections>N</unique_connections>
+    <feedback_shown>Y</feedback_shown>
+    <feedback_size>50000</feedback_size>
+    <using_thread_priorities>Y</using_thread_priorities>
+    <shared_objects_file/>
+    <dependencies>
+    </dependencies>
+    <partitionschemas>
+    </partitionschemas>
+    <slaveservers>
+         <slaveserver><name>localhost:8082</name><hostname>localhost</hostname><port>8082</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>localhost:8081</name><hostname>localhost</hostname><port>8081</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>localhost:8080 master</name><hostname>localhost</hostname><port>8080</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>Y</master></slaveserver>
+         <slaveserver><name>localhost:8080</name><hostname>localhost</hostname><port>8080</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>localhost:8084</name><hostname>localhost</hostname><port>8084</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>localhost:8083</name><hostname>localhost</hostname><port>8083</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+    </slaveservers>
+    <clusterschemas>
+    </clusterschemas>
+  <modified_user>-</modified_user>
+  <modified_date>2008&#47;01&#47;16 14:16:48.336</modified_date>
+  </info>
+  <notepads>
+  </notepads>
+  <connection>
+    <name>MySQL</name>
+    <server>localhost</server>
+    <type>MYSQL</type>
+    <access>Native</access>
+    <database>test</database>
+    <port>3306</port>
+    <username>matt</username>
+    <password>Encrypted 2be98afc86aa7f2e4cb79ce10df90acde</password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>EXTRA_OPTION_MYSQL.defaultFetchSize</code><attribute>500</attribute></attribute>
+      <attribute><code>EXTRA_OPTION_MYSQL.rewriteBatchedStatements</code><attribute>false</attribute></attribute>
+      <attribute><code>EXTRA_OPTION_MYSQL.useCursorFetch</code><attribute>true</attribute></attribute>
+      <attribute><code>EXTRA_OPTION_MYSQL.zeroDateTimeBehavior</code><attribute>convertToNull</attribute></attribute>
+      <attribute><code>EXTRA_OPTION_SYBASE.SQLINITSTRING</code><attribute>SET CHAINED OFF</attribute></attribute>
+      <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>INITIAL_POOL_SIZE</code><attribute>5</attribute></attribute>
+      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
+      <attribute><code>MAXIMUM_POOL_SIZE</code><attribute>10</attribute></attribute>
+      <attribute><code>MSSQL_DOUBLE_DECIMAL_SEPARATOR</code><attribute>N</attribute></attribute>
+      <attribute><code>POOLING_defaultCatalog</code><attribute>catalog</attribute></attribute>
+      <attribute><code>POOLING_removeAbandoned</code><attribute>true</attribute></attribute>
+      <attribute><code>POOLING_testOnReturn</code><attribute>false</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>3306</attribute></attribute>
+      <attribute><code>QUOTE_ALL_FIELDS</code><attribute>N</attribute></attribute>
+      <attribute><code>STREAM_RESULTS</code><attribute>Y</attribute></attribute>
+      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
+    </attributes>
+  </connection>
+  <connection>
+    <name>Pentaho Steel Wheels HSQL</name>
+    <server>localhost</server>
+    <type>HYPERSONIC</type>
+    <access>Native</access>
+    <database>sampledata</database>
+    <port>1521</port>
+    <username/>
+    <password>Encrypted </password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>CLUSTER_DBNAME_0</code><attribute>db1</attribute></attribute>
+      <attribute><code>CLUSTER_DBNAME_1</code><attribute>db2</attribute></attribute>
+      <attribute><code>CLUSTER_DBNAME_2</code><attribute>db3</attribute></attribute>
+      <attribute><code>CLUSTER_DBNAME_3</code><attribute>db4</attribute></attribute>
+      <attribute><code>CLUSTER_DBNAME_4</code><attribute>db5</attribute></attribute>
+      <attribute><code>CLUSTER_HOSTNAME_0</code><attribute>192.168.1.10</attribute></attribute>
+      <attribute><code>CLUSTER_HOSTNAME_1</code><attribute>192.168.1.10</attribute></attribute>
+      <attribute><code>CLUSTER_HOSTNAME_2</code><attribute>192.168.1.10</attribute></attribute>
+      <attribute><code>CLUSTER_HOSTNAME_3</code><attribute>192.168.1.10</attribute></attribute>
+      <attribute><code>CLUSTER_HOSTNAME_4</code><attribute>192.168.1.10</attribute></attribute>
+      <attribute><code>CLUSTER_PARTITION_0</code><attribute>PartDB1</attribute></attribute>
+      <attribute><code>CLUSTER_PARTITION_1</code><attribute>PartDB2</attribute></attribute>
+      <attribute><code>CLUSTER_PARTITION_2</code><attribute>PartDB3</attribute></attribute>
+      <attribute><code>CLUSTER_PARTITION_3</code><attribute>PartDB4</attribute></attribute>
+      <attribute><code>CLUSTER_PARTITION_4</code><attribute>PartDB5</attribute></attribute>
+      <attribute><code>CLUSTER_PASSWORD_0</code><attribute>Encrypted </attribute></attribute>
+      <attribute><code>CLUSTER_PASSWORD_1</code><attribute>Encrypted </attribute></attribute>
+      <attribute><code>CLUSTER_PASSWORD_2</code><attribute>Encrypted </attribute></attribute>
+      <attribute><code>CLUSTER_PASSWORD_3</code><attribute>Encrypted </attribute></attribute>
+      <attribute><code>CLUSTER_PASSWORD_4</code><attribute>Encrypted </attribute></attribute>
+      <attribute><code>CLUSTER_PORT_0</code><attribute>3306</attribute></attribute>
+      <attribute><code>CLUSTER_PORT_1</code><attribute>3306</attribute></attribute>
+      <attribute><code>CLUSTER_PORT_2</code><attribute>3306</attribute></attribute>
+      <attribute><code>CLUSTER_PORT_3</code><attribute>3306</attribute></attribute>
+      <attribute><code>CLUSTER_PORT_4</code><attribute>3306</attribute></attribute>
+      <attribute><code>EXTRA_OPTION_MYSQL.defaultFetchSize</code><attribute>500</attribute></attribute>
+      <attribute><code>EXTRA_OPTION_MYSQL.rewriteBatchedStatements</code><attribute>false</attribute></attribute>
+      <attribute><code>EXTRA_OPTION_MYSQL.useCursorFetch</code><attribute>true</attribute></attribute>
+      <attribute><code>EXTRA_OPTION_MYSQL.zeroDateTimeBehavior</code><attribute>convertToNull</attribute></attribute>
+      <attribute><code>EXTRA_OPTION_SYBASE.SQLINITSTRING</code><attribute>SET CHAINED OFF</attribute></attribute>
+      <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>INITIAL_POOL_SIZE</code><attribute>5</attribute></attribute>
+      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
+      <attribute><code>MAXIMUM_POOL_SIZE</code><attribute>10</attribute></attribute>
+      <attribute><code>MSSQL_DOUBLE_DECIMAL_SEPARATOR</code><attribute>N</attribute></attribute>
+      <attribute><code>POOLING_defaultCatalog</code><attribute>catalog</attribute></attribute>
+      <attribute><code>POOLING_removeAbandoned</code><attribute>true</attribute></attribute>
+      <attribute><code>POOLING_testOnReturn</code><attribute>false</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>1521</attribute></attribute>
+      <attribute><code>QUOTE_ALL_FIELDS</code><attribute>N</attribute></attribute>
+      <attribute><code>STREAM_RESULTS</code><attribute>Y</attribute></attribute>
+      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
+    </attributes>
+  </connection>
+  <order>
+  <hop> <from>Generate 1 Row of data</from><to>Copy rows to result</to><enabled>Y</enabled> </hop>  </order>
+  <step>
+    <name>Generate 1 Row of data</name>
+    <type>RowGenerator</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+    <fields>
+      <field>
+        <name>name</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>Foo</nullif>
+        <length>30</length>
+        <precision>-1</precision>
+      </field>
+      <field>
+        <name>firstname</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>Bar</nullif>
+        <length>30</length>
+        <precision>-1</precision>
+      </field>
+    </fields>
+    <limit>1</limit>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>79</xloc>
+      <yloc>63</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Copy rows to result</name>
+    <type>RowsToResult</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>304</xloc>
+      <yloc>64</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step_error_handling>
+  </step_error_handling>
+   <slave-step-copy-partition-distribution>
+</slave-step-copy-partition-distribution>
+   <slave_transformation>N</slave_transformation>
+</transformation>
