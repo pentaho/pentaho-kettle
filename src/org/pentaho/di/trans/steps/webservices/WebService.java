@@ -305,7 +305,7 @@ public class WebService extends BaseStep implements StepInterface
         }
         catch (UnknownHostException e)
         {
-            throw new KettleStepException(Messages.getString("WebServices.ERROR0011.UnknownHost"));
+            throw new KettleStepException(Messages.getString("WebServices.ERROR0013.UnknownHost"));
         }
         catch (IOException e)
         {
