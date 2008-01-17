@@ -13,7 +13,7 @@ public class KettleValidatorException extends KettleValueException {
 	public static final int ERROR_HIGHER_THAN_ALLOWED_MAXIMUM =  6;
 	public static final int ERROR_VALUE_NOT_IN_LIST           =  7;
 	
-	private static final String errorCode[] = new String[] { "KVD-000", "KVD-001", "KVD-002", "KVD-003", "KVD-004", "KVD-005", "KVD-006", "KVD-007", };
+	private static final String errorCode[] = new String[] { "KVD000", "KVD001", "KVD002", "KVD003", "KVD004", "KVD005", "KVD006", "KVD007", };
 	
 	private int code;
 	private String fieldname;
