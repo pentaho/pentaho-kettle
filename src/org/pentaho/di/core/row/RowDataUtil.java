@@ -60,7 +60,10 @@ public class RowDataUtil {
 	 */
 	public static Object[] createResizedCopy(Object[] objects, int newSize) {
 		
-		Object[] newObjects = new Object[newSize+OVER_ALLOCATE_SIZE];
+		Object[] newObjects;
+		if (objects.length<newSize) newObjects = new Object[newSize+OVER_ALLOCATE_SIZE];
+		else newObjects = new Object[objects.length];
+		
 		if (objects!=null) System.arraycopy(objects, 0, newObjects, 0, objects.length);
 		return newObjects;
 	}
