@@ -34,7 +34,6 @@ public class ExcelOutputData extends BaseStepData implements StepDataInterface
 {
 	public int splitnr;
 
-	public Object[] headerrow;
 	public RowMetaInterface previousMeta;
 	public RowMetaInterface outputMeta;
 	public int fieldnrs[];
@@ -43,7 +42,7 @@ public class ExcelOutputData extends BaseStepData implements StepDataInterface
 
     public WritableSheet sheet;
     
-    public int templateColumns; // inital number of columns in the template
+    public int templateColumns; // initial number of columns in the template
 
     public WritableFont writableFont;
 

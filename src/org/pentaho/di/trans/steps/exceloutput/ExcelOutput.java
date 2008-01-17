@@ -61,27 +61,17 @@ public class ExcelOutput extends BaseStep implements StepInterface
 		meta=(ExcelOutputMeta)smi;
 		data=(ExcelOutputData)sdi;
 
-		Object[] r;
-		boolean result=true;
-		r=getRow();       // This also waits for a row to be finished.
+		Object[] r=getRow();       // This also waits for a row to be finished.
 		if (first && r != null) {
-			// get the RowMeta
+			// get the RowMeta, rowMeta is only set when a row is read
 			data.previousMeta = getInputRowMeta().clone();
 			//do not set first=false, below is another part that uses first
 		}
 		
-		if ( ( r==null && data.headerrow!=null && meta.isFooterEnabled() ) ||
-		     ( r!=null && linesOutput>0 && meta.getSplitEvery()>0 && ((linesOutput+1)%meta.getSplitEvery())==0)
-		   )
-		{
-			if (data.headerrow!=null) 
-			{
-			   if ( meta.isFooterEnabled() )
-			   {
-			      writeHeader();
-			   }
-			}
-			
+		// If we split the data stream in small XLS files, we need to do this here...
+		//
+		if ( r!=null && linesOutput>0 && meta.getSplitEvery()>0 && ((linesOutput+1)%meta.getSplitEvery())==0)
+		{	
 			// Not finished: open another file...
 			if (r!=null)
 			{
@@ -92,8 +82,6 @@ public class ExcelOutput extends BaseStep implements StepInterface
 					setErrors(1);
 					return false;
 				}
-
-				if (meta.isHeaderEnabled() && data.headerrow!=null) if (writeHeader()) linesOutput++;
 			}
 		
 		}
@@ -104,7 +92,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
 			return false;
 		}
 		
-		result=writeRowToFile(r);
+		boolean result=writeRowToFile(r);
 		if (!result)
 		{
 			setErrors(1);
@@ -128,17 +116,6 @@ public class ExcelOutput extends BaseStep implements StepInterface
 			if (first)
 			{
 				first=false;
-				if ( meta.isHeaderEnabled() || meta.isFooterEnabled()) // See if we have to write a header-line)
-				{
-					data.headerrow=data.previousMeta.cloneRow(r); // copy the row for the footer!
-					if (meta.isHeaderEnabled() && data.headerrow!=null)
-					{
-						if (writeHeader() )
-                        {
-							return false;
-                        }
-					}
-				}
 				
 				data.fieldnrs=new int[meta.getOutputFields().length];
 				for (int i=0;i<meta.getOutputFields().length;i++)
@@ -195,7 +172,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
 		
 		return true;
 	}
-
+	
     /**
      * Write a value to Excel, increasing data.positionX with one afterwards.
      * @param v The value to write
@@ -338,7 +315,6 @@ public class ExcelOutput extends BaseStep implements StepInterface
 	private boolean writeHeader()
 	{
         boolean retval=false;
-		Object[] r=data.headerrow;
 		
 		try
 		{
@@ -353,7 +329,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
 				}
 			}
 			else
-			if (r!=null)  // Just put all field names in the header/footer
+			if (data.previousMeta!=null)  // Just put all field names in the header/footer
 			{
 				for (int i=0;i<data.previousMeta.size();i++)
 				{
@@ -466,6 +442,12 @@ public class ExcelOutput extends BaseStep implements StepInterface
             } else {
             	data.positionY = 0;
             }
+            
+            // If we need to write a header, do so...
+            //
+            if (meta.isHeaderEnabled()) {
+            	writeHeader();
+            }
 
 			retval=true;
 		}
@@ -487,15 +469,28 @@ public class ExcelOutput extends BaseStep implements StepInterface
 		
 		try
 		{
+			if (meta.isFooterEnabled())
+			{
+				writeHeader();
+			}
+
 			if ( data.workbook != null )
 			{
 			    data.workbook.write();
                 data.workbook.close();
-                data.outputStream.close();
-                data.outputStream=null;
                 data.workbook = null;
+                if(data.outputStream!=null) 
+                {	
+                	data.outputStream.close();
+                	data.outputStream=null;
+                }
+                
+                if (data.sheet!=null) {
+                	data.sheet = null;
+                }
+               
 			}
-            data.formats.clear();
+            //data.formats.clear();
 
             // Explicitly call garbage collect to have file handle
             // released. Bug tracker: PDI-48
@@ -511,7 +506,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
 
 		return retval;
 	}
-	
+
 	public boolean init(StepMetaInterface smi, StepDataInterface sdi)
 	{
 		meta=(ExcelOutputMeta)smi;
