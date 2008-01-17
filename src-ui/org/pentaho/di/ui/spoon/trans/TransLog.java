@@ -564,6 +564,7 @@ public class TransLog extends Composite implements TabItemInterface
 
 						trans = new Trans(transMeta, spoon.rep, transMeta.getName(), transMeta.getDirectory().getPath(), transMeta.getFilename());
 						trans.setReplayDate(executionConfiguration.getReplayDate());
+						trans.setRepository(executionConfiguration.getRepository());
 						trans.setMonitored(true);
 						log.logBasic(toString(), Messages.getString("TransLog.Log.TransformationOpened")); //$NON-NLS-1$
 					}
