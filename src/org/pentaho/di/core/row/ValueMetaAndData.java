@@ -185,7 +185,7 @@ public class ValueMetaAndData
         retval.append(XMLHandler.addTagValue("type", meta.getTypeDesc(), false));
         try
         {
-            retval.append(XMLHandler.addTagValue("text", meta.getString(valueData), false));
+            retval.append(XMLHandler.addTagValue("text", meta.getCompatibleString(valueData), false));
         }
         catch (KettleValueException e)
         {
