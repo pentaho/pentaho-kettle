@@ -102,6 +102,8 @@ public class XBaseInput extends BaseStep implements StepInterface
                     return false;
                 }
             }
+            
+            data.outputRowMeta = meta.getOutputFields(data.files, getStepname());
 
             // Open the first file & read the required rows in the buffer, stop
             // if it fails, exception will stop processLoop

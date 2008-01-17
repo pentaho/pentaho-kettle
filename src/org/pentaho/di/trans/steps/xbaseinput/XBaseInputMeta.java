@@ -24,6 +24,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.fileinput.FileInputList;
+import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -306,23 +307,16 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface
         return super.getInfoSteps();
     }
     
-    @Override
-    public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
-    		VariableSpace space) throws KettleStepException {
-
-    	FileInputList fileList = getTextFileList(space);
-        if (fileList.nrOfFiles()==0)
-        {
-            throw new KettleStepException(Messages.getString("XBaseInputMeta.Exception.NoFilesFoundToProcess")); //$NON-NLS-1$
-        }
-        
+    public RowMetaInterface getOutputFields(FileInputList files, String name) throws KettleStepException {
+    	RowMetaInterface rowMeta = new RowMeta();
+    	
         // Take the first file to determine what the layout is...
         //
         XBase xbi=null;
 		try
 		{
-            xbi = new XBase(fileList.getFile(0).getContent().getInputStream());
-            xbi.setDbfFile(fileList.getFile(0).getName().getURI());
+            xbi = new XBase(files.getFile(0).getContent().getInputStream());
+            xbi.setDbfFile(files.getFile(0).getName().getURI());
             xbi.open();
 			RowMetaInterface add = xbi.getFields();
 			for (int i=0;i<add.size();i++)
@@ -330,7 +324,7 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface
 				ValueMetaInterface v=add.getValueMeta(i);
 				v.setOrigin(name);
 			}
-			row.addRowMeta(	add );
+			rowMeta.addRowMeta( add );
 		}
 		catch(Exception ke)
 	    {
@@ -345,7 +339,7 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface
 	    {
 	    	ValueMetaInterface rnr = new ValueMeta(rowNrField, ValueMetaInterface.TYPE_INTEGER);
 	    	rnr.setOrigin(name);
-	    	row.addValueMeta(rnr);
+	    	rowMeta.addValueMeta(rnr);
 	    }
         
         if (includeFilename)
@@ -353,8 +347,21 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface
             ValueMetaInterface v = new ValueMeta(filenameField, ValueMetaInterface.TYPE_STRING);
             v.setLength(100, -1);
             v.setOrigin(name);
-            row.addValueMeta(v);
+            rowMeta.addValueMeta(v);
         }
+		return rowMeta;
+    }
+    
+    @Override
+    public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException {
+
+    	FileInputList fileList = getTextFileList(space);
+        if (fileList.nrOfFiles()==0)
+        {
+            throw new KettleStepException(Messages.getString("XBaseInputMeta.Exception.NoFilesFoundToProcess")); //$NON-NLS-1$
+        }
+
+        row.addRowMeta( getOutputFields(fileList, name) );
 	}
 
 	public String getXML()
