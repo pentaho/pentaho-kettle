@@ -2779,10 +2779,15 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
 			// trans status
 			trans_status = Const.toInt(XMLHandler.getTagValue(infonode, "trans_status"),-1); 
 
-            /*
-             * Directory String directoryPath = XMLHandler.getTagValue(infonode, "directory");
-             */
-
+            // Optionally load the repository directory...
+			//
+			if (rep!=null) {
+				String directoryPath = XMLHandler.getTagValue(infonode, "directory");
+				if (directoryPath!=null) {
+					directory = rep.getDirectoryTree().findDirectory(directoryPath);
+				}
+			}
+			
             // Logging method...
             readStep = findStep(XMLHandler.getTagValue(infonode, "log", "read")); //$NON-NLS-1$ //$NON-NLS-2$
             writeStep = findStep(XMLHandler.getTagValue(infonode, "log", "write")); //$NON-NLS-1$ //$NON-NLS-2$
