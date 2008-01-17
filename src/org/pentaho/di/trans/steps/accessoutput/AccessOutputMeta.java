@@ -118,7 +118,12 @@ public class AccessOutputMeta extends BaseStepMeta implements StepMetaInterface
             fileCreated           = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "create_file"));
             tableCreated          = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "create_table"));
             commitSize            = Const.toInt(XMLHandler.getTagValue(stepnode, "commit_size"), AccessOutput.COMMIT_SIZE);
-            addToResultFilenames  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "add_to_result_filenames"));
+            String addToResultFiles=XMLHandler.getTagValue(stepnode, "add_to_result_filenames");
+            if(Const.isEmpty(addToResultFiles))
+            	addToResultFilenames=true;
+            else
+            	addToResultFilenames  = "Y".equalsIgnoreCase(addToResultFiles);
+          
         }
 		catch(Exception e)
 		{
@@ -159,7 +164,11 @@ public class AccessOutputMeta extends BaseStepMeta implements StepMetaInterface
             fileCreated           =      rep.getStepAttributeBoolean(id_step, "create_file"); 
             tableCreated          =      rep.getStepAttributeBoolean(id_step, "create_table"); 
             commitSize            = (int)rep.getStepAttributeInteger(id_step, "commit_size"); 
-            addToResultFilenames  =      rep.getStepAttributeBoolean(id_step, "add_to_result_filenames");
+            String addToResultFiles=rep.getStepAttributeString (id_step, "add_to_result_filenames");
+            if(Const.isEmpty(addToResultFiles))
+            	addToResultFilenames=true;
+            else
+            	addToResultFilenames  =      rep.getStepAttributeBoolean(id_step, "add_to_result_filenames");
 		}
 		catch(Exception e)
 		{

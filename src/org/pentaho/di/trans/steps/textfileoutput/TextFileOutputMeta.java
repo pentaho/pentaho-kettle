@@ -565,7 +565,12 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 			partNrInFilename      = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "haspartno"));
 			dateInFilename        = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "add_date"));
 			timeInFilename        = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "add_time"));
-			addToResultFilenames  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "add_to_result_filenames"));
+			
+			String AddToResultFiles= XMLHandler.getTagValue(stepnode, "file", "add_to_result_filenames");
+			if(Const.isEmpty(AddToResultFiles))
+				addToResultFilenames=true;
+			else
+				addToResultFilenames  = "Y".equalsIgnoreCase(AddToResultFiles);
 			
 			padded       = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "pad"));
 			fastDump     = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "fast_dump"));
@@ -899,7 +904,14 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 			partNrInFilename      =      rep.getStepAttributeBoolean(id_step, "file_add_partnr");
 			dateInFilename        =      rep.getStepAttributeBoolean(id_step, "file_add_date");
 			timeInFilename        =      rep.getStepAttributeBoolean(id_step, "file_add_time");
-			addToResultFilenames   =      rep.getStepAttributeBoolean(id_step, "add_to_result_filenames");
+			
+			String AddToResultFiles = rep.getStepAttributeString (id_step, "add_to_result_filenames");  
+			if(Const.isEmpty(AddToResultFiles))
+				addToResultFilenames=true;
+			else
+				addToResultFilenames   =      rep.getStepAttributeBoolean(id_step, "add_to_result_filenames");
+			
+			
 			padded             =      rep.getStepAttributeBoolean(id_step, "file_pad");
 			fastDump             =      rep.getStepAttributeBoolean(id_step, "file_fast_dump");
 	
