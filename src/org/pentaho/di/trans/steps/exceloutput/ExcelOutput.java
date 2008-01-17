@@ -62,38 +62,17 @@ public class ExcelOutput extends BaseStep implements StepInterface
 		meta=(ExcelOutputMeta)smi;
 		data=(ExcelOutputData)sdi;
 
-		Object[] r;
-		boolean result=true;
-		r=getRow();       // This also waits for a row to be finished.
+		Object[] r=getRow();       // This also waits for a row to be finished.
 		if (first && r != null) {
 			// get the RowMeta, rowMeta is only set when a row is read
 			data.previousMeta = getInputRowMeta().clone();
 			//do not set first=false, below is another part that uses first
 		}
-		else
-		{
-			if (meta.isHeaderEnabled()) 
-			{
-				writeHeader();
-			}
-			if (meta.isFooterEnabled())
-			{
-				writeHeader();
-			}
-		}
 		
-		if ( ( r==null && data.headerrow!=null && meta.isFooterEnabled() ) ||
-		     ( r!=null && linesOutput>0 && meta.getSplitEvery()>0 && ((linesOutput+1)%meta.getSplitEvery())==0)
-		   )
+		// If we split the data stream in small XLS files, we need to do this here...
+		//
+		if ( r!=null && linesOutput>0 && meta.getSplitEvery()>0 && ((linesOutput+1)%meta.getSplitEvery())==0)
 		{
-			if (data.headerrow!=null) 
-			{
-			   if ( meta.isFooterEnabled() )
-			   {
-			      writeHeader();
-			   }
-			}
-			
 			// Not finished: open another file...
 			if (r!=null)
 			{
@@ -104,10 +83,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
 					setErrors(1);
 					return false;
 				}
-
-				if (meta.isHeaderEnabled() && data.headerrow!=null) if (writeHeader()) linesOutput++;
 			}
-		
 		}
 		
 		if (r==null)  // no more input to be expected...
@@ -116,7 +92,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
 			return false;
 		}
 		
-		result=writeRowToFile(r);
+		boolean result=writeRowToFile(r);
 		if (!result)
 		{
 			setErrors(1);
@@ -140,17 +116,6 @@ public class ExcelOutput extends BaseStep implements StepInterface
 			if (first)
 			{
 				first=false;
-				if ( meta.isHeaderEnabled() || meta.isFooterEnabled()) // See if we have to write a header-line)
-				{
-					data.headerrow=data.previousMeta.cloneRow(r); // copy the row for the footer!
-					if (meta.isHeaderEnabled() && data.headerrow!=null)
-					{
-						if (writeHeader() )
-                        {
-							return false;
-                        }
-					}
-				}
 				
 				data.fieldnrs=new int[meta.getOutputFields().length];
 				for (int i=0;i<meta.getOutputFields().length;i++)
@@ -350,7 +315,6 @@ public class ExcelOutput extends BaseStep implements StepInterface
 	private boolean writeHeader()
 	{
         boolean retval=false;
-		Object[] r=data.headerrow;
 		
 		try
 		{
@@ -365,7 +329,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
 				}
 			}
 			else
-			if (r!=null)  // Just put all field names in the header/footer
+			if (data.previousMeta!=null)  // Just put all field names in the header/footer
 			{
 				for (int i=0;i<data.previousMeta.size();i++)
 				{
@@ -520,6 +484,12 @@ public class ExcelOutput extends BaseStep implements StepInterface
             } else {
             	data.positionY = 0;
             }
+            
+            // If we need to write a header, do so...
+            //
+            if (meta.isHeaderEnabled()) {
+            	writeHeader();
+            }
 
 			retval=true;
 		}
@@ -541,6 +511,10 @@ public class ExcelOutput extends BaseStep implements StepInterface
 		
 		try
 		{
+			if (meta.isFooterEnabled())
+			{
+				writeHeader();
+			}
 
 			if ( data.workbook != null )
 			{
@@ -551,6 +525,10 @@ public class ExcelOutput extends BaseStep implements StepInterface
                 {	
                 	data.outputStream.close();
                 	data.outputStream=null;
+                }
+                
+                if (data.sheet!=null) {
+                	data.sheet = null;
                 }
                
 			}
