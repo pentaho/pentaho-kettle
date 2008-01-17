@@ -59,6 +59,7 @@ import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.map.DatabaseConnectionMap;
 import org.pentaho.di.core.database.util.DatabaseUtil;
+import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleDatabaseBatchException;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleValueException;
@@ -390,7 +391,7 @@ public class Database implements VariableSpace
                 if (partition!=null)
                 {
                     clusterUsername = partition.getUsername();
-                    clusterPassword = partition.getPassword();
+                    clusterPassword = Encr.decryptPasswordOptionallyEncrypted(partition.getPassword());
                 }
             }
             
@@ -404,7 +405,7 @@ public class Database implements VariableSpace
             else
             {
                 username = environmentSubstitute(databaseMeta.getUsername());
-                password = environmentSubstitute(databaseMeta.getPassword());
+                password = Encr.decryptPasswordOptionallyEncrypted(environmentSubstitute(databaseMeta.getPassword()));
             }
 
             if (databaseMeta.supportsOptionsInURL())
