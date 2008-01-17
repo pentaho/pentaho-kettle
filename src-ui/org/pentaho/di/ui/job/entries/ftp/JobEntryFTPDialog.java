@@ -132,6 +132,22 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
     
     private FormData     fdlControlEncoding, fdControlEncoding;
     
+    private LabelTextVar wProxyHost;
+
+    private FormData     fdProxyHost;
+
+    private LabelTextVar wProxyPort;
+
+    private FormData     fdProxyPort;
+
+    private LabelTextVar wProxyUsername;
+
+    private FormData     fdProxyUsername;
+    
+    private LabelTextVar wProxyPassword;
+    
+    private FormData     fdProxyPasswd;
+
     private boolean changed;        
     
     // These should not be translated, they are required to exist on all
@@ -352,7 +368,47 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
         fdActive.left = new FormAttachment(middle, margin);
         fdActive.top = new FormAttachment(wOnlyNew, margin);
         fdActive.right = new FormAttachment(100, 0);
-        wActive.setLayoutData(fdActive);
+        wActive.setLayoutData(fdActive);       
+        
+        // Proxy host line
+        wProxyHost = new LabelTextVar(jobMeta, shell, Messages.getString("JobFTP.ProxyHost.Label"), Messages.getString("JobFTP.ProxyHost.Tooltip"));
+        props.setLook(wProxyHost);
+        wProxyHost.addModifyListener(lsMod);
+        fdProxyHost = new FormData();
+        fdProxyHost.left 	= new FormAttachment(0, 0);
+        fdProxyHost.top		= new FormAttachment(wActive, margin);
+        fdProxyHost.right	= new FormAttachment(100, 0);
+        wProxyHost.setLayoutData(fdProxyHost);
+
+        // Proxy port line
+        wProxyPort = new LabelTextVar(jobMeta, shell, Messages.getString("JobFTP.ProxyPort.Label"), Messages.getString("JobFTP.ProxyPort.Tooltip"));
+        props.setLook(wProxyPort);
+        wProxyPort.addModifyListener(lsMod);
+        fdProxyPort = new FormData();
+        fdProxyPort.left 	= new FormAttachment(0, 0);
+        fdProxyPort.top  	= new FormAttachment(wProxyHost, margin);
+        fdProxyPort.right	= new FormAttachment(100, 0);
+        wProxyPort.setLayoutData(fdProxyPort);
+
+        // Proxy username line
+        wProxyUsername = new LabelTextVar(jobMeta, shell, Messages.getString("JobFTP.ProxyUsername.Label"), Messages.getString("JobFTP.ProxyUsername.Tooltip"));
+        props.setLook(wProxyUsername);
+        wProxyUsername.addModifyListener(lsMod);
+        fdProxyUsername = new FormData();
+        fdProxyUsername.left = new FormAttachment(0, 0);
+        fdProxyUsername.top  = new FormAttachment(wProxyPort, margin);
+        fdProxyUsername.right= new FormAttachment(100, 0);
+        wProxyUsername.setLayoutData(fdProxyUsername);
+        
+        // Proxy password line
+        wProxyPassword = new LabelTextVar(jobMeta, shell, Messages.getString("JobFTP.ProxyPassword.Label"), Messages.getString("JobFTP.ProxyPassword.Tooltip"));
+        props.setLook(wProxyPassword);
+        wProxyPassword.addModifyListener(lsMod);
+        fdProxyPasswd=new FormData();
+        fdProxyPasswd.left = new FormAttachment(0, 0);
+        fdProxyPasswd.top  = new FormAttachment(wProxyUsername, margin);
+        fdProxyPasswd.right= new FormAttachment(100, 0);
+        wProxyPassword.setLayoutData(fdProxyPasswd);
         
         // Control encoding line
         //
@@ -364,7 +420,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
         props.setLook(wlControlEncoding);
         fdlControlEncoding=new FormData();
         fdlControlEncoding.left  = new FormAttachment(0, 0);
-        fdlControlEncoding.top   = new FormAttachment(wActive, margin);
+        fdlControlEncoding.top   = new FormAttachment(wProxyPassword, margin);
         fdlControlEncoding.right = new FormAttachment(middle, 0);
         wlControlEncoding.setLayoutData(fdlControlEncoding);
         wControlEncoding=new Combo(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
@@ -373,9 +429,9 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
         props.setLook(wControlEncoding);
         fdControlEncoding=new FormData();
         fdControlEncoding.left = new FormAttachment(middle, margin);
-        fdControlEncoding.top  = new FormAttachment(wActive, margin);
+        fdControlEncoding.top  = new FormAttachment(wProxyPassword, margin);
         fdControlEncoding.right= new FormAttachment(100, 0);        
-        wControlEncoding.setLayoutData(fdControlEncoding);       
+        wControlEncoding.setLayoutData(fdControlEncoding);
 
         wOK = new Button(shell, SWT.PUSH);
         wOK.setText(Messages.getString("System.Button.OK"));
@@ -420,6 +476,10 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
         wFtpDirectory.addSelectionListener(lsDef);
         wWildcard.addSelectionListener(lsDef);
         wTimeout.addSelectionListener(lsDef);
+        wProxyHost.addSelectionListener(lsDef);
+        wProxyPort.addSelectionListener(lsDef);
+        wProxyUsername.addSelectionListener(lsDef );
+        wProxyPassword.addSelectionListener(lsDef);
 
         // Detect X or ALT-F4 or something that kills this window...
         shell.addShellListener(new ShellAdapter()
@@ -487,6 +547,10 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
         wOnlyNew.setSelection(jobEntry.isOnlyGettingNewFiles());
         wActive.setSelection(jobEntry.isActiveConnection());
         wControlEncoding.setText(jobEntry.getControlEncoding());
+        wProxyHost.setText(Const.NVL(jobEntry.getProxyHost(), ""));       
+        wProxyPort.setText(Const.NVL(jobEntry.getProxyPort(), ""));
+        wProxyUsername.setText(Const.NVL(jobEntry.getProxyUsername(), ""));
+        wProxyPassword.setText(Const.NVL(jobEntry.getProxyPassword(), ""));
     }
 
     private void cancel()
@@ -511,6 +575,10 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
         jobEntry.setOnlyGettingNewFiles(wOnlyNew.getSelection());
         jobEntry.setActiveConnection(wActive.getSelection());
         jobEntry.setControlEncoding(wControlEncoding.getText());
+        jobEntry.setProxyHost(wProxyHost.getText()); 
+        jobEntry.setProxyPort(wProxyPort.getText());
+        jobEntry.setProxyUsername(wProxyUsername.getText());
+        jobEntry.setProxyPassword(wProxyPassword.getText());
 
         dispose();
     }
@@ -529,5 +597,4 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
     {
         return false;
     }
-
 }

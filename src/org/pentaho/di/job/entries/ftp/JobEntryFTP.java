@@ -527,7 +527,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
     	      log.logDetailed(toString(), "Opened FTP connection to proxy server ["+realProxy_host+"]");
 
     	  // FIXME: Proper default port for proxy    	  
-    	  int port = Const.toInt(environmentSubstitute(proxyPort), 0);
+    	  int port = Const.toInt(environmentSubstitute(proxyPort), 21);
     	  if (port != 0) 
     	  {
     	     ftpclient.setRemotePort(port);
@@ -540,9 +540,6 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
           if ( log.isDetailed() )
     	      log.logDetailed(toString(), "Opened FTP connection to server ["+realServername+"]");                
       }
-
-      if ( log.isDetailed() )
-          log.logDetailed(toString(), Messages.getString("JobEntryFTP.OpenedConnection", realServername)); //$NON-NLS-1$
 
       // set activeConnection connectmode ...
       if (activeConnection)
@@ -566,15 +563,16 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
       // login to ftp host ...
       ftpclient.connect();     
       String realUsername = environmentSubstitute(userName) +
-                            (!Const.isEmpty(proxyUsername) ? "@" + environmentSubstitute(proxyUsername) 
-                        		                           : "") 
-         		            + (!Const.isEmpty(proxyHost) ? "@" + realServername : "");
+                            (!Const.isEmpty(proxyHost) ? "@" + realServername : "") + 
+                            (!Const.isEmpty(proxyUsername) ? " " + environmentSubstitute(proxyUsername) 
+                        		                           : ""); 
+         		            
       String realPassword = environmentSubstitute(password) + 
-                            (!Const.isEmpty(proxyPassword) ? "@" + environmentSubstitute(proxyPassword) : "" );
+                            (!Const.isEmpty(proxyPassword) ? " " + environmentSubstitute(proxyPassword) : "" );
       
       ftpclient.login(realUsername, realPassword);
       //  Remove password from logging, you don't know where it ends up.
-      log.logDetailed(toString(), Messages.getString("JobEntryFTP.LoggedIn", realUsername)); //$NON-NLS-1$
+      //log.logDetailed(toString(), Messages.getString("JobEntryFTP.LoggedIn", realUsername)); //$NON-NLS-1$
 
       // move to spool dir ...
       if (!Const.isEmpty(ftpDirectory))
