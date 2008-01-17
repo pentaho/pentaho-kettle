@@ -17,19 +17,22 @@
 package be.ibridge.kettle.trans.step.xmloutput;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import org.apache.commons.vfs.FileObject;
+
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.ResultFile;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleStepException;
 import be.ibridge.kettle.core.value.Value;
+import be.ibridge.kettle.core.vfs.KettleVFS;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.step.BaseStep;
@@ -417,12 +420,17 @@ public class XMLOutput extends BaseStep implements StepInterface
 		
 		try
 		{
-			File file = new File(buildFilename(true));
+			FileObject file = KettleVFS.getFileObject(buildFilename(true));
 
+			// Add this to the result file names...
+			ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, file, getTransMeta().getName(), getStepname());
+			resultFile.setComment("This file was created with a xml output step");
+            addResultFile(resultFile);
+            
             OutputStream outputStream;
 			if (meta.isZipped())
 			{
-				FileOutputStream fos = new FileOutputStream(file);
+				OutputStream fos = KettleVFS.getOutputStream(file, false);
 				data.zip = new ZipOutputStream(fos);
 				File entry = new File(buildFilename(false));
 				ZipEntry zipentry = new ZipEntry(entry.getName());
@@ -432,7 +440,7 @@ public class XMLOutput extends BaseStep implements StepInterface
 			}
 			else
 			{
-				FileOutputStream fos=new FileOutputStream(file);
+				OutputStream fos=KettleVFS.getOutputStream(file, false);
 				outputStream=fos;
 			}
             if (meta.getEncoding()!=null && meta.getEncoding().length()>0)
