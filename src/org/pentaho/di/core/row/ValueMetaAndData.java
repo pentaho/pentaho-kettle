@@ -185,7 +185,7 @@ public class ValueMetaAndData
         retval.append(XMLHandler.addTagValue("type", meta.getTypeDesc(), false));
         try
         {
-            retval.append(XMLHandler.addTagValue("text", meta.getString(valueData), false));
+            retval.append(XMLHandler.addTagValue("text", meta.getCompatibleString(valueData), false));
         }
         catch (KettleValueException e)
         {
@@ -217,7 +217,7 @@ public class ValueMetaAndData
      */
     public boolean loadXML(Node valnode)
     {
-        valueMeta = new ValueMeta();
+        valueMeta = null;
         
         try
         {
@@ -228,8 +228,7 @@ public class ValueMetaAndData
             int len        =  Const.toInt(XMLHandler.getTagValue(valnode, "length"), -1);
             int prec       =  Const.toInt(XMLHandler.getTagValue(valnode, "precision"), -1);
 
-            valueMeta.setType(valtype);
-            valueMeta.setName(valname);
+            valueMeta = new ValueMeta(valname, valtype);
             valueData = text;
             valueMeta.setLength(len);
             valueMeta.setPrecision(prec);
