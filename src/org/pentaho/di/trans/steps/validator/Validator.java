@@ -96,6 +96,7 @@ public class Validator extends BaseStep implements StepInterface
 
         try {
         	validateFields(getInputRowMeta(), r);		
+        	putRow(getInputRowMeta(), r);     // copy row to possible alternate rowset(s).
         }
         catch(KettleValidatorException e) {
         	if (getStepMeta().isDoingErrorHandling()) {
@@ -105,7 +106,6 @@ public class Validator extends BaseStep implements StepInterface
         		throw new KettleException(e.getMessage(), e);
         	}
         }
-		putRow(getInputRowMeta(), r);     // copy row to possible alternate rowset(s).
 
         if (log.isRowLevel()) log.logRowlevel(toString(), "Wrote row #"+linesWritten+" : "+r);        
         if (checkFeedback(linesRead)) logBasic("Linenr "+linesRead);
