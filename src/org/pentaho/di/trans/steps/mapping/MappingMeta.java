@@ -267,6 +267,15 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
     {
         rep.saveStepAttribute(id_transformation, id_step, "filename", fileName); //$NON-NLS-1$
         rep.saveStepAttribute(id_transformation, id_step, "trans_name", transName); //$NON-NLS-1$
+        
+		// Verify import from repository explorer into different directory...
+        //
+		if (rep.getImportBaseDirectory()!=null && !rep.getImportBaseDirectory().isRoot()) {
+			directoryPath = rep.getImportBaseDirectory().getPath()+directoryPath;
+		}
+
+		// Now we can save it with the correct reference...
+		//
         rep.saveStepAttribute(id_transformation, id_step, "directory_path", directoryPath); //$NON-NLS-1$
 
         for (int i=0;i<inputMappings.size();i++)

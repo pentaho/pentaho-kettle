@@ -85,16 +85,7 @@ public class RepositoryImportProgressDialog extends Dialog
     private boolean askDirectory = true;
     private int nrtrans;
     private int nrjobs;
-    /**
-     * @deprecated Use CT without <i>log</i> and <i>props</i> parameters
-     */
-    public RepositoryImportProgressDialog(Shell parent, int style, LogWriter log, PropsUI props, Repository rep, String filename, RepositoryDirectory baseDirectory)
-    {
-        this(parent, style, rep, null, new String[] { filename }, baseDirectory);
-        this.log = log;
-        this.props = props;
-    }
-    
+
     public RepositoryImportProgressDialog(Shell parent, int style, Repository rep, String fileDirectory, String[] filenames, RepositoryDirectory baseDirectory)
     {
         super(parent, style);
@@ -106,6 +97,8 @@ public class RepositoryImportProgressDialog extends Dialog
         this.fileDirectory = fileDirectory;
         this.filenames = filenames;
         this.baseDirectory = baseDirectory;
+        
+        rep.setImportBaseDirectory(baseDirectory);
     }
 
     public void open()
@@ -207,14 +200,21 @@ public class RepositoryImportProgressDialog extends Dialog
         wLogging.setSelection(wLogging.getText().length()); // make it scroll
     }
 
-    private boolean importTransformation(int nrthis, Node transnode) throws KettleException
+    /**
+     * 
+     * @param transformationNumber the transformation number (for logging only)
+     * @param transnode The XML DOM node to read the transformation from
+     * @return false if the import should be canceled.
+     * @throws KettleException in case there is an unexpected error
+     */
+    private boolean importTransformation(int transformationNumber, Node transnode) throws KettleException
     {
     	//
     	// Load transformation from XML into a directory, possibly created!
     	//
     	TransMeta ti = new TransMeta(transnode, null);
 
-    	wLabel.setText(Messages.getString("RepositoryImportDialog.ImportTrans.Label", Integer.toString(nrthis), Integer.toString(nrtrans), ti.getName()));
+    	wLabel.setText(Messages.getString("RepositoryImportDialog.ImportTrans.Label", Integer.toString(transformationNumber), Integer.toString(nrtrans), ti.getName()));
 
     	// What's the directory path?
     	String directoryPath = XMLHandler.getTagValue(transnode, "info", "directory");
@@ -303,11 +303,11 @@ public class RepositoryImportProgressDialog extends Dialog
     			ti.setModifiedDate( new Date() );                 
     			ti.setModifiedUser( rep.getUserInfo().getLogin() );
     			ti.saveRep(rep);
-    			addLog(Messages.getString("RepositoryImportDialog.TransSaved.Log", Integer.toString(nrthis), ti.getName()));
+    			addLog(Messages.getString("RepositoryImportDialog.TransSaved.Log", Integer.toString(transformationNumber), ti.getName()));
     		}
     		catch (Exception e)
     		{
-    			addLog(Messages.getString("RepositoryImportDialog.ErrorSavingTrans.Log", Integer.toString(nrthis), ti.getName(), e.toString()));
+    			addLog(Messages.getString("RepositoryImportDialog.ErrorSavingTrans.Log", Integer.toString(transformationNumber), ti.getName(), e.toString()));
     			addLog(Const.getStackTracker(e));
     		}
     	}
@@ -400,125 +400,187 @@ public class RepositoryImportProgressDialog extends Dialog
         }
         return true;
     }
-    private void importAll()
-    {
-        wLabel.setText(Messages.getString("RepositoryImportDialog.ImportXML.Label"));
-        try
-        {
-			for (int ii = 0; ii < filenames.length; ++ii)
-			{
-				final String filename = ((fileDirectory != null) && (fileDirectory.length()>0)) ? 
-						fileDirectory + Const.FILE_SEPARATOR + filenames[ii] : filenames[ii];
-						log.logBasic("Repository", "Import objects from XML file [" + filename + "]"); //$NON-NLS-1$ //$NON-NLS-2$
-            addLog(Messages.getString("RepositoryImportDialog.WhichFile.Log", filename));
+	
+    private void importAll() {
+		wLabel.setText(Messages.getString("RepositoryImportDialog.ImportXML.Label"));
+		try {
+			for (int ii = 0; ii < filenames.length; ++ii) {
+				
+				final String filename = ((fileDirectory != null) && (fileDirectory.length() > 0)) ? fileDirectory + Const.FILE_SEPARATOR + filenames[ii] : filenames[ii];
+				log.logBasic("Repository", "Import objects from XML file [" + filename + "]"); //$NON-NLS-1$ //$NON-NLS-2$
+				addLog(Messages.getString("RepositoryImportDialog.WhichFile.Log", filename));
 
-            // To where?
-            wLabel.setText(Messages.getString("RepositoryImportDialog.WhichDir.Label"));
+				// To where?
+				wLabel.setText(Messages.getString("RepositoryImportDialog.WhichDir.Label"));
 
-            Document doc = XMLHandler.loadXMLFile(filename);
-            if (doc != null)
-            {
-                //
-                // HERE WE START
-                //
-                Node repnode = XMLHandler.getSubNode(doc, "repository");
-							if (null == repnode) {
-								Node firstnode = doc.getFirstChild();
-								// if top node is transformation then we have just a transformation
-								if ((null != firstnode) && firstnode.getNodeName().equals("transformation")) {
-									nrtrans = filenames.length;
+				Document doc = XMLHandler.loadXMLFile(filename);
+				if (doc != null) {
+					//
+					// HERE WE START
+					//
+					Node repnode = XMLHandler.getSubNode(doc, "repository");
+					if (null == repnode) {
+						Node firstnode = doc.getFirstChild();
+						// if top node is transformation then we have just a transformation
+						if ((null != firstnode) && firstnode.getNodeName().equals("transformation")) {
+							nrtrans = filenames.length;
 
-                    wBar.setMinimum(0);
-                    wBar.setMaximum(nrtrans);
-									wBar.setSelection(ii);
+							wBar.setMinimum(0);
+							wBar.setMaximum(nrtrans);
+							wBar.setSelection(ii);
 
-									askDirectory = false; // just use the specified basedirectory
-									if (!importTransformation(ii+1, firstnode))
-									{
-										return;
-									}
-									wBar.setSelection(ii+1);
-									continue;
+							askDirectory = false; // just use the specified base directory
+							try {
+								if (!importTransformation(ii + 1, firstnode)) {
+									return;
 								}
+							} catch (Exception e) {
+								// Some unexpected error occurred during transformation import
+								// This is usually a problem with a missing plugin or something like that...
+								//
+								new ErrorDialog(
+										shell,
+										Messages.getString("RepositoryImportDialog.UnexpectedErrorDuringTransformationImport.Title"),
+										Messages.getString("RepositoryImportDialog.UnexpectedErrorDuringTransformationImport.Message"),
+										e);
 
-								// if top node is job then we have a single job ...
-								if ((null != firstnode) && firstnode.getNodeName().equals("job")) {
-									nrjobs =filenames.length;
-
-									wBar.setMinimum(0);
-									wBar.setMaximum(nrjobs);
-									wBar.setSelection(ii);
-
-									askDirectory = false; // just use the specified basedirectory
-									if (!importJob(ii+1, firstnode)) 
-									{
-										return;
-									}
-									wBar.setSelection(ii+1);
-									continue;
-								}
+								MessageBox mb = new MessageBox(shell, SWT.ICON_QUESTION | SWT.YES | SWT.NO);
+								mb.setMessage(Messages.getString("RepositoryImportDialog.DoYouWantToContinue.Message"));
+								mb.setText(Messages.getString("RepositoryImportDialog.DoYouWantToContinue.Title"));
+								int answer = mb.open();
+								if (answer == SWT.NO) return;
 							}
+							wBar.setSelection(ii + 1);
+							continue;
+						}
 
-							Node transsnode = XMLHandler.getSubNode(repnode, "transformations");
-							if (transsnode != null) // Load transformations...
+						// if top node is job then we have a single job ...
+						if ((null != firstnode) && firstnode.getNodeName().equals("job")) {
+							nrjobs = filenames.length;
+
+							wBar.setMinimum(0);
+							wBar.setMaximum(nrjobs);
+							wBar.setSelection(ii);
+
+							askDirectory = false; // just use the specified base directory
+							try
 							{
-								nrtrans = XMLHandler.countNodes(transsnode, "transformation");
-
-								wBar.setMinimum(0);
-								wBar.setMaximum(filenames.length - 1 + nrtrans);
-								for (int i = 0; i < nrtrans; i++)
-								{
-									wBar.setSelection(ii + i);
-									wBar.getDisplay().update();
-									Node transnode = XMLHandler.getSubNodeByNr(transsnode, "transformation", i);
-									if (!importTransformation(i+1, transnode))
-									{
-										return;
-									}
-									wBar.setSelection(ii + i + 1);
-									wBar.getDisplay().update();
+								if (!importJob(ii + 1, firstnode)) {
+									return;
 								}
+							} catch (Exception e) {
+								// Some unexpected error occurred during job import
+								// This is usually a problem with a missing plugin or something like that...
+								//
+								new ErrorDialog(
+										shell,
+										Messages.getString("RepositoryImportDialog.UnexpectedErrorDuringJobImport.Title"),
+										Messages.getString("RepositoryImportDialog.UnexpectedErrorDuringJobImport.Message"),
+										e);
+	
+								MessageBox mb = new MessageBox(shell, SWT.ICON_QUESTION | SWT.YES | SWT.NO);
+								mb.setMessage(Messages.getString("RepositoryImportDialog.DoYouWantToContinue.Message"));
+								mb.setText(Messages.getString("RepositoryImportDialog.DoYouWantToContinue.Title"));
+								int answer = mb.open();
+								if (answer == SWT.NO) return;
 							}
 
-                // Ask again for the jobs...
-                overwrite = false;
-                askOverwrite = true;
+							wBar.setSelection(ii + 1);
+							continue;
+						}
+					}
 
-                Node jobsnode = XMLHandler.getSubNode(repnode, "jobs");
-                if (jobsnode != null) // Load jobs...
-                {
-								nrjobs = XMLHandler.countNodes(jobsnode, "job");
+					Node transsnode = XMLHandler.getSubNode(repnode, "transformations");
+					if (transsnode != null) // Load transformations...
+					{
+						nrtrans = XMLHandler.countNodes(transsnode, "transformation");
 
-                    wBar.setMinimum(0);
-								wBar.setMaximum(filenames.length - 1+ nrjobs);
-								for (int i = 0; i < nrjobs; i++)
-								{
-									wBar.setSelection(ii + i);
-									wBar.getDisplay().update();
-									Node jobnode = XMLHandler.getSubNodeByNr(jobsnode, "job", i);
-									if (!importJob(i+1, jobnode))
-									{
-										return;
-									}
-									wBar.setSelection(ii + i + 1);
-									wBar.getDisplay().update();
+						wBar.setMinimum(0);
+						wBar.setMaximum(filenames.length - 1 + nrtrans);
+						for (int i = 0; i < nrtrans; i++) {
+							wBar.setSelection(ii + i);
+							wBar.getDisplay().update();
+							Node transnode = XMLHandler.getSubNodeByNr(transsnode, "transformation", i);
+							try
+							{
+								if (!importTransformation(i + 1, transnode)) {
+									return;
 								}
+							} catch (Exception e) {
+								// Some unexpected error occurred during transformation import
+								// This is usually a problem with a missing plugin or something like that...
+								//
+								new ErrorDialog(
+										shell,
+										Messages.getString("RepositoryImportDialog.UnexpectedErrorDuringTransformationImport.Title"),
+										Messages.getString("RepositoryImportDialog.UnexpectedErrorDuringTransformationImport.Message"),
+										e);
+	
+								MessageBox mb = new MessageBox(shell, SWT.ICON_QUESTION | SWT.YES | SWT.NO);
+								mb.setMessage(Messages.getString("RepositoryImportDialog.DoYouWantToContinue.Message"));
+								mb.setText(Messages.getString("RepositoryImportDialog.DoYouWantToContinue.Title"));
+								int answer = mb.open();
+								if (answer == SWT.NO) return;
 							}
-            }
-            else
-            {
-                MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-                mb.setMessage(Messages.getString("RepositoryImportDialog.ErrorInvalidXML.Message"));
-                mb.setText(Messages.getString("RepositoryImportDialog.ErrorInvalidXML.Title"));
-                mb.open();
-            }
-        }
+
+							wBar.setSelection(ii + i + 1);
+							wBar.getDisplay().update();
+						}
+					}
+
+					// Ask again for the jobs...
+					overwrite = false;
+					askOverwrite = true;
+
+					Node jobsnode = XMLHandler.getSubNode(repnode, "jobs");
+					if (jobsnode != null) // Load jobs...
+					{
+						nrjobs = XMLHandler.countNodes(jobsnode, "job");
+
+						wBar.setMinimum(0);
+						wBar.setMaximum(filenames.length - 1 + nrjobs);
+						for (int i = 0; i < nrjobs; i++) {
+							wBar.setSelection(ii + i);
+							wBar.getDisplay().update();
+							Node jobnode = XMLHandler.getSubNodeByNr(jobsnode, "job", i);
+							try
+							{
+								if (!importJob(i + 1, jobnode)) {
+									return;
+								}
+							} catch (Exception e) {
+								// Some unexpected error occurred during job import
+								// This is usually a problem with a missing plugin or something like that...
+								//
+								new ErrorDialog(
+										shell,
+										Messages.getString("RepositoryImportDialog.UnexpectedErrorDuringJobImport.Title"),
+										Messages.getString("RepositoryImportDialog.UnexpectedErrorDuringJobImport.Message"),
+										e);
+	
+								MessageBox mb = new MessageBox(shell, SWT.ICON_QUESTION | SWT.YES | SWT.NO);
+								mb.setMessage(Messages.getString("RepositoryImportDialog.DoYouWantToContinue.Message"));
+								mb.setText(Messages.getString("RepositoryImportDialog.DoYouWantToContinue.Title"));
+								int answer = mb.open();
+								if (answer == SWT.NO) return;
+							}
+
+							wBar.setSelection(ii + i + 1);
+							wBar.getDisplay().update();
+						}
+					}
+				} else {
+					MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
+					mb.setMessage(Messages.getString("RepositoryImportDialog.ErrorInvalidXML.Message"));
+					mb.setText(Messages.getString("RepositoryImportDialog.ErrorInvalidXML.Title"));
+					mb.open();
+				}
+			}
 			addLog(Messages.getString("RepositoryImportDialog.ImportFinished.Log"));
+		} catch (KettleException e) {
+			new ErrorDialog(shell, Messages.getString("RepositoryImportDialog.ErrorGeneral.Title"), Messages
+					.getString("RepositoryImportDialog.ErrorGeneral.Message"), e);
 		}
-        catch (KettleException e)
-        {
-            new ErrorDialog(shell, Messages.getString("RepositoryImportDialog.ErrorGeneral.Title"), Messages.getString("RepositoryImportDialog.ErrorGeneral.Message"), e);
-        }
 		wLabel.setText(Messages.getString("RepositoryImportDialog.ImportFinished.Log"));
-    }
+	}
 }
