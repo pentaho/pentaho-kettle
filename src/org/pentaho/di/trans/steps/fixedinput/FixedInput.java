@@ -227,6 +227,11 @@ public class FixedInput extends BaseStep implements StepInterface
 				data.lineWidth = Integer.parseInt(environmentSubstitute(meta.getLineWidth()));
 				data.filename = environmentSubstitute(meta.getFilename());
 				
+				if (Const.isEmpty(data.filename)) {
+					logError(Messages.getString("FixedInput.MissingFilename.Message"));
+					return false;
+				}
+				
 				FileObject fileObject = KettleVFS.getFileObject(data.filename);
 				try
 				{

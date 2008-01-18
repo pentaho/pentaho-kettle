@@ -326,6 +326,11 @@ public class CsvInput extends BaseStep implements StepInterface
 				data.preferredBufferSize = Integer.parseInt(environmentSubstitute(meta.getBufferSize()));
 				data.filename = environmentSubstitute(meta.getFilename());
 				
+				if (Const.isEmpty(data.filename)) {
+					logError(Messages.getString("CsvInput.MissingFilename.Message"));
+					return false;
+				}
+				
 				FileObject fileObject = KettleVFS.getFileObject(data.filename);
 				if (!(fileObject instanceof LocalFile)) {
 					// We can only use NIO on local files at the moment, so that's what we limit ourselves to.
