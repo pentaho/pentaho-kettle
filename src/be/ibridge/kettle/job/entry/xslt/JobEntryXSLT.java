@@ -15,8 +15,6 @@
 
 package be.ibridge.kettle.job.entry.xslt;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -188,7 +186,7 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 
 	
 		FileObject xmlfile = null;
-		FileObject xlsfile = null;
+		FileObject xslfile = null;
 		FileObject outputfile = null;
 
 		try 
@@ -198,10 +196,10 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 			if (xmlfilename!=null && xslfilename!=null && outputfilename!=null)
 			{
 				xmlfile = KettleVFS.getFileObject(realxmlfilename);
-				xlsfile = KettleVFS.getFileObject(realxslfilename);
+				xslfile = KettleVFS.getFileObject(realxslfilename);
 				outputfile = KettleVFS.getFileObject(realoutputfilename);
 
-				if ( xmlfile.exists() && xlsfile.exists() )
+				if ( xmlfile.exists() && xslfile.exists() )
 				{	
 					if (outputfile.exists() && iffileexists==2) 
 					{
@@ -260,14 +258,14 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 						TransformerFactory factory = TransformerFactory.newInstance();
 		    
 						// Use the factory to create a template containing the xsl file
-						Templates template = factory.newTemplates(new StreamSource(	new FileInputStream(realxslfilename)));
+						Templates template = factory.newTemplates(new StreamSource(	KettleVFS.getInputStream(xslfile))); 
 		    
 						// Use the template to create a transformer
 						Transformer xformer = template.newTransformer();
 		    
 						// Prepare the input and output files
-						Source source = new StreamSource(new FileInputStream(realxmlfilename));
-						StreamResult resultat = new StreamResult(new FileOutputStream(realoutputfilename));
+						Source source = new StreamSource(KettleVFS.getInputStream(xmlfile));
+						StreamResult resultat = new StreamResult(KettleVFS.getOutputStream(outputfile, false));
 
 						// Apply the xsl file to the source file and write the result to the output file
 						xformer.transform(source, resultat);
@@ -284,7 +282,7 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 						log.logError(toString(),  Messages.getString("JobEntryXSLT.FileDoesNotExist1.Label") + 
 							realxmlfilename +  Messages.getString("JobEntryXSLT.FileDoesNotExist2.Label"));
 					}
-					if(!xlsfile.exists())
+					if(!xslfile.exists())
 					{
 						log.logError(toString(),  Messages.getString("JobEntryXSLT.FileDoesNotExist1.Label") + 
 							realxslfilename +  Messages.getString("JobEntryXSLT.FileDoesNotExist2.Label"));
@@ -324,8 +322,8 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 			    if ( xmlfile != null )
 			    	xmlfile.close();
 			    
-			    if ( xlsfile != null )
-			    	xlsfile.close();	
+			    if ( xslfile != null )
+			    	xslfile.close();	
 				if ( outputfile != null )
 					outputfile.close();	
 				
