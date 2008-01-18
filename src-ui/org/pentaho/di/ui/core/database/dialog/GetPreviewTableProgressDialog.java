@@ -20,6 +20,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
+import org.pentaho.di.core.ProgressMonitorAdapter;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.ui.core.database.dialog.Messages;
@@ -68,7 +69,7 @@ public class GetPreviewTableProgressDialog
 				{
 					db.connect();
 					
-					rows =  db.getFirstRows(tableName, limit, monitor);
+					rows =  db.getFirstRows(tableName, limit, new ProgressMonitorAdapter(monitor));
                     rowMeta = db.getReturnRowMeta();
 					
 					if (monitor.isCanceled()) 

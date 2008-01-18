@@ -24,6 +24,7 @@ import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.ProgressMonitorAdapter;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.repository.Repository;
@@ -63,7 +64,7 @@ public class RepositoryExportProgressDialog
             {
                 try
                 {
-                    rep.exportAllObjects(monitor, filename, dir);
+                    rep.exportAllObjects(new ProgressMonitorAdapter(monitor), filename, dir);
                 }
                 catch (KettleException e)
                 {

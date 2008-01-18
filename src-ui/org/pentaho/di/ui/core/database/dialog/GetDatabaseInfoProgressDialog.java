@@ -23,6 +23,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
+import org.pentaho.di.core.ProgressMonitorAdapter;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.DatabaseMetaInformation;
 import org.pentaho.di.ui.core.database.dialog.Messages;
@@ -60,7 +61,7 @@ public class GetDatabaseInfoProgressDialog
 			{
 				try
 				{
-					dmi.getData(monitor);
+					dmi.getData(new ProgressMonitorAdapter(monitor));
 				}
 				catch(Exception e)
 				{

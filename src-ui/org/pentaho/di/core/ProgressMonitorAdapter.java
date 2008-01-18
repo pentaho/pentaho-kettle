@@ -29,4 +29,7 @@ public class ProgressMonitorAdapter implements ProgressMonitorListener {
 		monitor.worked(nrWorks);
 	}
 
+	public void setTaskName(String taskName) {
+		monitor.setTaskName(taskName);
+	}
 }

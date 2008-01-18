@@ -50,11 +50,11 @@ import java.util.Properties;
 
 import javax.sql.DataSource;
 
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.DBCache;
 import org.pentaho.di.core.DBCacheEntry;
+import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.map.DatabaseConnectionMap;
@@ -3850,7 +3850,7 @@ public class Database implements VariableSpace
 	 * @return An ArrayList of rows.
 	 * @throws KettleDatabaseException if something goes wrong.
 	 */
-	public List<Object[]> getRows(String sql, int limit, IProgressMonitor monitor) throws KettleDatabaseException
+	public List<Object[]> getRows(String sql, int limit, ProgressMonitorListener monitor) throws KettleDatabaseException
 	{
 		if (monitor!=null) monitor.setTaskName("Opening query...");
 		ResultSet rset = openQuery(sql);
@@ -3866,7 +3866,7 @@ public class Database implements VariableSpace
      * @return An ArrayList of rows.
      * @throws KettleDatabaseException if something goes wrong.
      */
-	public List<Object[]> getRows(ResultSet rset, int limit, IProgressMonitor monitor) throws KettleDatabaseException
+	public List<Object[]> getRows(ResultSet rset, int limit, ProgressMonitorListener monitor) throws KettleDatabaseException
     {
         try
         {
@@ -3917,7 +3917,7 @@ public class Database implements VariableSpace
      * @return An ArrayList of rows.
      * @throws KettleDatabaseException in case something goes wrong
      */
-	public List<Object[]> getFirstRows(String table_name, int limit, IProgressMonitor monitor) throws KettleDatabaseException
+	public List<Object[]> getFirstRows(String table_name, int limit, ProgressMonitorListener monitor) throws KettleDatabaseException
 	{
 		String sql = "SELECT * FROM "+table_name;
 		

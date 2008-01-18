@@ -19,7 +19,7 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import org.eclipse.core.runtime.IProgressMonitor;
+import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 
 /**
@@ -142,7 +142,7 @@ public class DatabaseMetaInformation
 		return synonyms;
 	}
 	
-	public void getData(IProgressMonitor monitor) throws KettleDatabaseException
+	public void getData(ProgressMonitorListener monitor) throws KettleDatabaseException
 	{
 		if (monitor!=null)
 		{

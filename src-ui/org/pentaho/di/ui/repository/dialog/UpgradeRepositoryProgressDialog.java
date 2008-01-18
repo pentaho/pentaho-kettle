@@ -24,6 +24,7 @@ import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.ProgressMonitorAdapter;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogWriter;
@@ -80,7 +81,7 @@ public class UpgradeRepositoryProgressDialog
 
                 try
                 {
-                    rep.createRepositorySchema(monitor, upgrade);
+                    rep.createRepositorySchema(new ProgressMonitorAdapter(monitor), upgrade);
                 }
                 catch (KettleException e)
                 {
