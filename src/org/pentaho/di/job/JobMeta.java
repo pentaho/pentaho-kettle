@@ -750,10 +750,8 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 					boolean overwrite = Props.isInitialized() ? props.replaceExistingDatabaseConnections() : true;
 					if (askOverwrite && prompter != null) {
 
-						overwrite = prompter.overwritePrompt(Messages.getString(
-								"JobMeta.Dialog.ConnectionExistsOverWrite.Message", dbcon.getName()), Messages
-								.getString("JobMeta.Dialog.ConnectionExistsOverWrite.DontShowAnyMoreMessage"),
-								Props.STRING_ASK_ABOUT_REPLACING_DATABASES);
+						overwrite = prompter.overwritePrompt(Messages.getString("JobMeta.Dialog.ConnectionExistsOverWrite.Message", dbcon.getName()), 
+								Messages.getString("JobMeta.Dialog.ConnectionExistsOverWrite.DontShowAnyMoreMessage"),Props.STRING_ASK_ABOUT_REPLACING_DATABASES);
 					}
 
 					if (overwrite) {

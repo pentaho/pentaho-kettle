@@ -1195,7 +1195,7 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 			 
 			
 		 }catch(KettleException ke){
-				new ErrorDialog(shell, Messages.getString("GenerateAirDialog.FailedToGetFields.DialogTitle"), Messages.getString("GenerateAirDialogMod.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+				new ErrorDialog(shell, Messages.getString("getXMLDataDialog.FailedToGetFields.DialogTitle"), Messages.getString("getXMLDataDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 	 }
 	 
