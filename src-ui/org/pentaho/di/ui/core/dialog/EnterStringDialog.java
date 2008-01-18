@@ -12,6 +12,7 @@
  
 package org.pentaho.di.ui.core.dialog;
 import org.eclipse.swt.SWT;
+import org.pentaho.di.ui.core.gui.GUIResource;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
@@ -78,6 +79,7 @@ public class EnterStringDialog extends Dialog
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
+		shell.setImage(GUIResource.getInstance().getImageSpoon());
 		shell.setText(shellText);
 		int length = Const.LENGTH;
 		int margin = Const.MARGIN;

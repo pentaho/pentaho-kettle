@@ -387,7 +387,7 @@ public class JobEntryFTPPUTDialog extends JobEntryDialog implements JobEntryDial
         wTimeout.addModifyListener(lsMod);
         fdTimeout = new FormData();
         fdTimeout.left = new FormAttachment(0, 0);
-        fdTimeout.top = new FormAttachment(wlBinaryMode, margin);
+        fdTimeout.top = new FormAttachment(wBinaryMode, margin);
         fdTimeout.right = new FormAttachment(100, 0);
         wTimeout.setLayoutData(fdTimeout);
 

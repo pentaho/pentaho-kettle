@@ -263,7 +263,7 @@ public class JobEntrySQLDialog extends JobEntryDialog implements JobEntryDialogI
         wSQL.addModifyListener(lsMod);
         fdSQL = new FormData();
         fdSQL.left = new FormAttachment(0, 0);
-        fdSQL.top = new FormAttachment(wlSQL, margin);
+        fdSQL.top = new FormAttachment(wUseSubs, margin);
         fdSQL.right = new FormAttachment(100, -5);
         fdSQL.bottom = new FormAttachment(wlPosition, -margin);
         wSQL.setLayoutData(fdSQL);
