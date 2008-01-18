@@ -47,7 +47,7 @@ public class SpoonSlaveDelegate extends SpoonDelegate
 					+ slaveServer.getServerAndPort());
 			tabItem.setControl(spoonSlave);
 
-			spoon.delegates.tabs.addTab(tabName, new TabMapEntry(tabItem, tabName, spoonSlave, TabMapEntry.OBJECT_TYPE_SLAVE_SERVER));
+			spoon.delegates.tabs.addTab(new TabMapEntry(tabItem, tabName, spoonSlave, TabMapEntry.OBJECT_TYPE_SLAVE_SERVER));
 		}
 		int idx = tabfolder.indexOf(tabItem);
 		tabfolder.setSelected(idx);

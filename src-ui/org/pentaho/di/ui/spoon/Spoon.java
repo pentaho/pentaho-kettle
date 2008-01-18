@@ -649,7 +649,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 	public void closeSpoonBrowser()
 	{
-		delegates.tabs.removeTab(STRING_WELCOME_TAB_NAME);
+		delegates.tabs.removeTab(STRING_WELCOME_TAB_NAME, TabMapEntry.OBJECT_TYPE_BROWSER);
 		TabItem tab = delegates.tabs.findTabItem(STRING_WELCOME_TAB_NAME, TabMapEntry.OBJECT_TYPE_BROWSER);
 		if (tab != null)
 			tab.dispose();
@@ -4268,10 +4268,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	{
         if (shell.isDisposed()) return;
 
-		String tabText = getActiveTabText();
-        if (tabText==null) return;
+		TabItem tabItem = tabfolder.getSelected();
+        if (tabItem==null) return;
 
-		TabMapEntry tabMapEntry = delegates.tabs.getTab(tabText);
+		TabMapEntry tabMapEntry = delegates.tabs.getTab(tabItem);
 		if (tabMapEntry.getObject() instanceof TransGraph)
 		{
 			TransGraph transGraph = (TransGraph) tabMapEntry.getObject();
@@ -4717,14 +4717,14 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	{
 		if (tabfolder.getSelected()==null) return null;
 		
-		TabMapEntry mapEntry = delegates.tabs.getTab(tabfolder.getSelected().getText());
+		TabMapEntry mapEntry = delegates.tabs.getTab(tabfolder.getSelected());
 		if (mapEntry.getObject() instanceof TransGraph)	return (TransGraph) mapEntry.getObject();
 		return null;
 	}
 
      public JobGraph getActiveJobGraph()
      {
-         TabMapEntry mapEntry = delegates.tabs.getTab(tabfolder.getSelected().getText());
+         TabMapEntry mapEntry = delegates.tabs.getTab(tabfolder.getSelected());
          if (mapEntry.getObject() instanceof JobGraph) return (JobGraph) mapEntry.getObject();
          return null;
      }
@@ -4772,7 +4772,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		// What transformation is in the active tab?
 		// TransLog, TransGraph & TransHist contain the same transformation
 		//
-		TabMapEntry mapEntry = delegates.tabs.getTab(tabfolder.getSelected().getText());
+		TabMapEntry mapEntry = delegates.tabs.getTab(tabfolder.getSelected());
 		EngineMetaInterface meta = null;
 		if (mapEntry != null)
 		{

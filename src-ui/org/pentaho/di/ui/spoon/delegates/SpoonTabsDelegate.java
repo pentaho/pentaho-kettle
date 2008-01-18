@@ -13,10 +13,7 @@
 package org.pentaho.di.ui.spoon.delegates;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Hashtable;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -45,22 +42,21 @@ import org.pentaho.xul.swt.tab.TabSet;
 public class SpoonTabsDelegate extends SpoonDelegate
 {
 	/**
-	 * This contains a map between the name of the tab name and the object name
-	 * and type
+	 * This contains a list of the tab map entries
 	 */
-	private Map<String, TabMapEntry> tabMap;
+	private List<TabMapEntry> tabMap;
 
 	public SpoonTabsDelegate(Spoon spoon)
 	{
 		super(spoon);
-		tabMap = new Hashtable<String, TabMapEntry>();
+		tabMap = new ArrayList<TabMapEntry>();
 	}
 
 	public boolean tabClose(TabItem item)
 	{
 		// Try to find the tab-item that's being closed.
 		List<TabMapEntry> collection = new ArrayList<TabMapEntry>();
-		collection.addAll(tabMap.values());
+		collection.addAll(tabMap);
 		int idx = 0;
 		
 		boolean close = true;
@@ -140,21 +136,41 @@ public class SpoonTabsDelegate extends SpoonDelegate
 		return close;
 	}
 
-	public void removeTab(String key)
+	public void removeTab(TabItem tabItem )
 	{
-		tabMap.remove(key);
+		for (TabMapEntry tabMapEntry : getTabs()) {
+			if (tabMapEntry.getTabItem().equals(tabItem)) {
+				tabMap.remove(tabMapEntry);
+				return;
+			}
+		}
+	}
+	
+	public void removeTab(String tabText, int tabMapEntryType)
+	{
+		for (TabMapEntry tabMapEntry : getTabs()) {
+			if (tabMapEntry.getObjectName().equals(tabText) && tabMapEntry.getObjectType()==tabMapEntryType) {
+				tabMap.remove(tabMapEntry);
+				return;
+			}
+		}
 	}
 
 	public List<TabMapEntry> getTabs()
 	{
 		List<TabMapEntry> list = new ArrayList<TabMapEntry>();
-		list.addAll(tabMap.values());
+		list.addAll(tabMap);
 		return list;
 	}
 
-	public TabMapEntry getTab(String key)
+	public TabMapEntry getTab(TabItem tabItem)
 	{
-		return tabMap.get(key);
+		for (TabMapEntry tabMapEntry : tabMap) {
+			if (tabMapEntry.getTabItem().equals(tabItem)) {
+				return tabMapEntry;
+			}
+		}
+		return null;
 	}
 
 	public EngineMetaInterface getActiveMeta()
@@ -169,7 +185,7 @@ public class SpoonTabsDelegate extends SpoonDelegate
 		// What transformation is in the active tab?
 		// TransLog, TransGraph & TransHist contain the same transformation
 		//
-		TabMapEntry mapEntry = tabMap.get(tabfolder.getSelected().getText());
+		TabMapEntry mapEntry = getTab(tabfolder.getSelected());
 		EngineMetaInterface meta = null;
 		if (mapEntry != null)
 		{
@@ -230,7 +246,7 @@ public class SpoonTabsDelegate extends SpoonDelegate
 				tabItem.setImage(GUIResource.getInstance().getImageLogoSmall());
 				tabItem.setControl(browser.getComposite());
 
-				tabMap.put(name, new TabMapEntry(tabItem, name, browser, TabMapEntry.OBJECT_TYPE_BROWSER));
+				tabMap.add(new TabMapEntry(tabItem, name, browser, TabMapEntry.OBJECT_TYPE_BROWSER));
 			}
 			int idx = tabfolder.indexOf(tabItem);
 
@@ -246,7 +262,7 @@ public class SpoonTabsDelegate extends SpoonDelegate
 
 	public TabItem findTabItem(String tabItemText, int objectType)
 	{
-		for (TabMapEntry entry : tabMap.values())
+		for (TabMapEntry entry : tabMap)
 		{
 			if (entry.getTabItem().isDisposed())
 				continue;
@@ -264,10 +280,7 @@ public class SpoonTabsDelegate extends SpoonDelegate
 	 */
 	public void renameTabs()
 	{
-		Collection<TabMapEntry> collection = tabMap.values();
-		List<TabMapEntry> list = new ArrayList<TabMapEntry>();
-		list.addAll(collection);
-
+		List<TabMapEntry> list = new ArrayList<TabMapEntry>(tabMap);
 		for (TabMapEntry entry : list)
 		{
 			if (entry.getTabItem().isDisposed())
@@ -277,7 +290,7 @@ public class SpoonTabsDelegate extends SpoonDelegate
 				continue;
 			}
 
-			String before = entry.getTabItem().getText();
+			TabItem before = entry.getTabItem();
 			Object managedObject = entry.getObject().getManagedObject();
 			if (managedObject != null)
 			{
@@ -317,22 +330,20 @@ public class SpoonTabsDelegate extends SpoonDelegate
 
 			String after = entry.getTabItem().getText();
 
-			if (!before.equals(after))
+			if (!before.getText().equals(after))
 			{
 				entry.setObjectName(after);
-				tabMap.remove(before);
-				tabMap.put(after, entry);
 
 				// Also change the transformation map
 				if (entry.getObject() instanceof TransGraph)
 				{
-					spoon.delegates.trans.removeTransformation(before);
+					spoon.delegates.trans.removeTransformation(before.getText());
 					spoon.delegates.trans.addTransformation(after, (TransMeta) entry.getObject().getManagedObject());
 				}
 				// Also change the job map
 				if (entry.getObject() instanceof JobGraph)
 				{
-					spoon.delegates.jobs.removeJob(before);
+					spoon.delegates.jobs.removeJob(before.getText());
 					spoon.delegates.jobs.addJob(after, (JobMeta) entry.getObject().getManagedObject());
 				}
 			}
@@ -340,9 +351,9 @@ public class SpoonTabsDelegate extends SpoonDelegate
 		spoon.setShellText();
 	}
 
-	public void addTab(String key, TabMapEntry entry)
+	public void addTab(TabMapEntry entry)
 	{
-		tabMap.put(key, entry);
+		tabMap.add(entry);
 	}
 
 	public String makeTransGraphTabName(TransMeta transMeta)
@@ -384,8 +395,7 @@ public class SpoonTabsDelegate extends SpoonDelegate
 
 	public void tabSelected(TabItem item)
 	{
-		ArrayList<TabMapEntry> collection = new ArrayList<TabMapEntry>();
-		collection.addAll(tabMap.values());
+		ArrayList<TabMapEntry> collection = new ArrayList<TabMapEntry>(tabMap);
 
 		// See which core objects to show
 		//

@@ -836,7 +836,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 			}
 			jobHistory.markRefreshNeeded(); // will refresh when first selected
 
-			spoon.delegates.tabs.addTab(tabName, new TabMapEntry(tabItem, tabName, jobHistory,
+			spoon.delegates.tabs.addTab(new TabMapEntry(tabItem, tabName, jobHistory,
 					TabMapEntry.OBJECT_TYPE_JOB_HISTORY));
 		}
 		if (select)
@@ -953,7 +953,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 		TabItem graphTab = spoon.delegates.tabs.findTabItem(tabName, TabMapEntry.OBJECT_TYPE_JOB_GRAPH);
 		if (graphTab != null)
 		{
-			spoon.delegates.tabs.removeTab(tabName);
+			spoon.delegates.tabs.removeTab(graphTab);
 			graphTab.dispose();
 		}
 
@@ -963,7 +963,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 		if (logTab != null)
 		{
 			logTab.dispose();
-			spoon.delegates.tabs.removeTab(logTabName);
+			spoon.delegates.tabs.removeTab(logTab);
 		}
 
 		// History
@@ -972,7 +972,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 		if (historyTab != null)
 		{
 			historyTab.dispose();
-			spoon.delegates.tabs.removeTab(historyTabName);
+			spoon.delegates.tabs.removeTab(historyTab);
 		}
 
 		spoon.refreshTree();
@@ -999,7 +999,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 				tabItem.setImage(GUIResource.getInstance().getImageJobGraph());
 				tabItem.setControl(jobGraph);
 
-				spoon.delegates.tabs.addTab(tabName, new TabMapEntry(tabItem, tabName, jobGraph,
+				spoon.delegates.tabs.addTab(new TabMapEntry(tabItem, tabName, jobGraph,
 						TabMapEntry.OBJECT_TYPE_JOB_GRAPH));
 			}
 			int idx = spoon.tabfolder.indexOf(tabItem);
@@ -1048,7 +1048,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 				jobLog.setJobHistoryRefresher(jobHistoryRefresher);
 			}
 
-			spoon.delegates.tabs.addTab(tabName, new TabMapEntry(tabItem, tabName, jobLog,
+			spoon.delegates.tabs.addTab(new TabMapEntry(tabItem, tabName, jobLog,
 					TabMapEntry.OBJECT_TYPE_JOB_LOG));
 		}
 		int idx = spoon.tabfolder.indexOf(tabItem);
