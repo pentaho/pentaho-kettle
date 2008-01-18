@@ -157,7 +157,7 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 		if (graphTab != null)
 		{
 			graphTab.dispose();
-			spoon.delegates.tabs.removeTab(tabName);
+			spoon.delegates.tabs.removeTab(graphTab);
 		}
 
 		// Logging
@@ -167,7 +167,7 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 		if (logTab != null)
 		{
 			logTab.dispose();
-			spoon.delegates.tabs.removeTab(logTabName);
+			spoon.delegates.tabs.removeTab(logTab);
 		}
 
 		// History
@@ -177,7 +177,7 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 		if (historyTab != null)
 		{
 			historyTab.dispose();
-			spoon.delegates.tabs.removeTab(historyTabName);
+			spoon.delegates.tabs.removeTab(historyTab);
 		}
 
 		spoon.refreshTree();
@@ -205,7 +205,7 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 				tabItem.setImage(GUIResource.getInstance().getImageTransGraph());
 				tabItem.setControl(transGraph);
 
-				spoon.delegates.tabs.addTab(tabName, new TabMapEntry(tabItem, tabName, transGraph,
+				spoon.delegates.tabs.addTab(new TabMapEntry(tabItem, tabName, transGraph,
 						TabMapEntry.OBJECT_TYPE_TRANSFORMATION_GRAPH));
 			}
 			int idx = spoon.tabfolder.indexOf(tabItem);
@@ -289,7 +289,7 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 				transLog.setTransHistoryRefresher(transHistoryRefresher);
 			}
 
-			spoon.delegates.tabs.addTab(tabName, new TabMapEntry(tabItem, tabName, transLog,
+			spoon.delegates.tabs.addTab(new TabMapEntry(tabItem, tabName, transLog,
 					TabMapEntry.OBJECT_TYPE_TRANSFORMATION_LOG));
 		}
 		if (setActive)
@@ -328,7 +328,7 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 			transHistory.markRefreshNeeded(); // will refresh when first
 			// selected
 
-			spoon.delegates.tabs.addTab(tabName, new TabMapEntry(tabItem, tabName, transHistory,
+			spoon.delegates.tabs.addTab(new TabMapEntry(tabItem, tabName, transHistory,
 					TabMapEntry.OBJECT_TYPE_TRANSFORMATION_HISTORY));
 		}
 		if (select)
