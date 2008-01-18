@@ -509,7 +509,8 @@ public class RepositoryDirectory
 		{
 			String trans[]   = rep.getTransformationNames(getID());
 			String jobs[]    = rep.getJobNames(getID());
-			if (trans.length==0 && jobs.length==0)
+			long[] subDirectories = rep.getSubDirectoryIDs(getID());
+			if (trans.length==0 && jobs.length==0 && subDirectories.length==0)
 			{
 				rep.deleteDirectory(getID());
 			}
