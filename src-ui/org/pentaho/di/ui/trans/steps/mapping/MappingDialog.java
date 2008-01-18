@@ -682,6 +682,9 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 
 		// if we have a filename, then we use the filename, otherwise we go with
 		// the repository...
+		wFileRadio.setSelection(false);
+		wRepRadio.setSelection(false);
+		
 		if (!Const.isEmpty(mappingMeta.getFileName()))
 		{
 			wFileRadio.setSelection(true);
