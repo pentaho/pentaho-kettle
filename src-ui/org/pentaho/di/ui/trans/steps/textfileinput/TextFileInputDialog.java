@@ -2246,12 +2246,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		meta.setFileCompression(wCompression.getText() );
 		meta.setDateFormatLenient( wDateLenient.getSelection() );
 		meta.setNoEmptyLines( wNoempty.getSelection() );
-
-        String encoding = wEncoding.getText();
-        if (encoding.length()>0) 
-        {
-            meta.setEncoding(encoding);
-        }
+        meta.setEncoding(wEncoding.getText());
         
 		int nrfiles    = wFilenameList.getItemCount();
 		int nrfields   = wFields.nrNonEmpty();

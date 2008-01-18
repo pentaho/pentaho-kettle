@@ -6,4 +6,5 @@ public interface ProgressMonitorListener {
 	public boolean isCanceled();
 	public void worked(int nrWorks);
 	public void done();
+	public void setTaskName(String taskName);
 }

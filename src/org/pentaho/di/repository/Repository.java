@@ -27,13 +27,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.zip.GZIPOutputStream;
 
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Condition;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.Counters;
+import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -4005,7 +4005,7 @@ public class Repository
      * @param upgrade True if you want to upgrade the repository, false if you want to create it.
      * @throws KettleException in case something goes wrong!
      */
-	public synchronized void createRepositorySchema(IProgressMonitor monitor, boolean upgrade) throws KettleException
+	public synchronized void createRepositorySchema(ProgressMonitorListener monitor, boolean upgrade) throws KettleException
 	{
 		RowMetaInterface table;
 		String sql;
@@ -5920,7 +5920,7 @@ public class Repository
         }
     }
     
-    public synchronized void exportAllObjects(IProgressMonitor monitor, String xmlFilename, RepositoryDirectory root) throws KettleException
+    public synchronized void exportAllObjects(ProgressMonitorListener monitor, String xmlFilename, RepositoryDirectory root) throws KettleException
     {
         if (monitor!=null) monitor.beginTask("Exporting the repository to XML...", 3);
         
@@ -5963,7 +5963,7 @@ public class Repository
         if (monitor!=null) monitor.done();
     }
 
-    private String exportJobs(IProgressMonitor monitor, RepositoryDirectory dirTree) throws KettleException
+    private String exportJobs(ProgressMonitorListener monitor, RepositoryDirectory dirTree) throws KettleException
     {
         StringBuffer xml = new StringBuffer();
         
@@ -6002,7 +6002,7 @@ public class Repository
         return xml.toString();
     }
 
-    private String exportTransformations(IProgressMonitor monitor, RepositoryDirectory dirTree) throws KettleException
+    private String exportTransformations(ProgressMonitorListener monitor, RepositoryDirectory dirTree) throws KettleException
     {
         StringBuffer xml = new StringBuffer();
         
