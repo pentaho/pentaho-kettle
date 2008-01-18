@@ -84,7 +84,7 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
         this.slaveServers = slaveServers;
     }
 
-    public Object clone() 
+    public ClusterSchema clone() 
     {
         ClusterSchema clusterSchema = new ClusterSchema();
         clusterSchema.replaceMeta(this);

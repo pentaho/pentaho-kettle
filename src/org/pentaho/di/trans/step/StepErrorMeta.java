@@ -115,11 +115,11 @@ public class StepErrorMeta extends ChangedFlag implements XMLInterface, Cloneabl
         this.variables = space;
     }
     
-    public Object clone()
+    public StepErrorMeta clone()
     {
         try
         {
-            return super.clone();
+            return (StepErrorMeta) super.clone();
         }
         catch(CloneNotSupportedException e)
         {
@@ -162,7 +162,6 @@ public class StepErrorMeta extends ChangedFlag implements XMLInterface, Cloneabl
         maxPercentErrors = Const.toInt(XMLHandler.getTagValue(node, "max_pct_errors"), -1);
         minPercentRows = Const.toLong(XMLHandler.getTagValue(node, "min_pct_rows"), -1L);
     }
-
 
     public void saveRep(Repository rep, long id_transformation, long id_step) throws KettleException
     {

@@ -499,6 +499,12 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
         this.remoteOutputSteps = new ArrayList<RemoteStep>();
         for (RemoteStep remoteStep : stepMeta.remoteOutputSteps) this.remoteOutputSteps.add((RemoteStep)remoteStep.clone());
         
+        // The error handling needs to be done too...
+        //
+        if (stepMeta.stepErrorMeta!=null) {
+        	this.stepErrorMeta = stepMeta.stepErrorMeta.clone();
+        }
+        
         // this.setShared(stepMeta.isShared());
         this.id = stepMeta.getID();
         this.setChanged(true);
