@@ -277,7 +277,7 @@ public class CombinationLookup extends BaseStep implements StepInterface
 			{
                 // Entry already exists...
                 //
-				val_key = (Long) add[0]; // Only one value possible here...
+				val_key = data.db.getReturnRowMeta().getInteger(add, 0); // Sometimes it's not an integer, believe it or not.
                 addToCache(data.hashRowMeta, hashRow, val_key);
 			}
 		}
