@@ -17,6 +17,7 @@
 package org.pentaho.di.ui.trans.steps.fixedinput;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -25,12 +26,14 @@ import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -80,6 +83,7 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
 	private TextVar      wBufferSize;
 	private Button       wLazyConversion;
 	private Button       wHeaderPresent;
+    private CCombo       wEncoding;
 	private TableView    wFields;
 
 	private Button wRunningInParallel;
@@ -88,6 +92,8 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
 	private CCombo wFileType;
 	
 	private List<FixedFileInputField> fields;
+
+	private boolean gotEncodings;
     
 	
 	public FixedInputDialog(Shell parent, Object in, TransMeta tr, String sname)
@@ -316,6 +322,43 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
 			}
 		});
 		
+        Label wlEncoding = new Label(shell, SWT.RIGHT);
+        wlEncoding.setText(Messages.getString("FixedInputDialog.Encoding.Label"));
+        props.setLook(wlEncoding);
+        FormData fdlEncoding = new FormData();
+        fdlEncoding.left = new FormAttachment(0, 0);
+        fdlEncoding.top  = new FormAttachment(lastControl, margin);
+        fdlEncoding.right= new FormAttachment(middle, -margin);
+        wlEncoding.setLayoutData(fdlEncoding);
+        wEncoding=new CCombo(shell, SWT.BORDER | SWT.READ_ONLY);
+        wEncoding.setEditable(true);
+        props.setLook(wEncoding);
+        wEncoding.addModifyListener(lsMod);
+        FormData fdEncoding = new FormData();
+        fdEncoding.left = new FormAttachment(middle, 0);
+        fdEncoding.top  = new FormAttachment(lastControl, margin);
+        fdEncoding.right= new FormAttachment(100, 0);
+        wEncoding.setLayoutData(fdEncoding);
+        lastControl = wEncoding;
+		
+        wEncoding.addFocusListener(new FocusListener()
+            {
+                public void focusLost(org.eclipse.swt.events.FocusEvent e)
+                {
+                }
+            
+                public void focusGained(org.eclipse.swt.events.FocusEvent e)
+                {
+                    Cursor busy = new Cursor(shell.getDisplay(), SWT.CURSOR_WAIT);
+                    shell.setCursor(busy);
+                    setEncodings();
+                    shell.setCursor(null);
+                    busy.dispose();
+                }
+            }
+        );
+
+		
 		// Some buttons first, so that the dialog scales nicely...
 		//
 		wOK=new Button(shell, SWT.PUSH);
@@ -440,6 +483,28 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
 		return stepname;
 	}
 	
+	private void setEncodings()
+    {
+        // Encoding of the text file:
+        if (!gotEncodings)
+        {
+            gotEncodings = true;
+            
+            wEncoding.removeAll();
+            List<Charset> values = new ArrayList<Charset>(Charset.availableCharsets().values());
+            for (int i=0;i<values.size();i++)
+            {
+                Charset charSet = (Charset)values.get(i);
+                wEncoding.add( charSet.displayName() );
+            }
+            
+            // Now select the default!
+            String defEncoding = Const.getEnvironmentVariable("file.encoding", "UTF-8");
+            int idx = Const.indexOfString(defEncoding, wEncoding.getItems() );
+            if (idx>=0) wEncoding.select( idx );
+        }
+    }
+	
 	protected void enableFields() {
 		boolean enabled = wRunningInParallel.getSelection();
 		wlFileType.setVisible(enabled);
@@ -462,7 +527,8 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
 		wHeaderPresent.setSelection(inputMeta.isHeaderPresent());
 		wRunningInParallel.setSelection(inputMeta.isRunningInParallel());
 		wFileType.setText(inputMeta.getFileTypeDesc());
-		
+        wEncoding.setText( Const.NVL(inputMeta.getEncoding(), "") );
+
 		for (int i=0;i<inputMeta.getFieldDefinition().length;i++) {
 			TableItem item = new TableItem(wFields.table, SWT.NONE);
 			int colnr=1;
@@ -516,7 +582,8 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
 		fixedInputMeta.setLineFeedPresent(wLineFeedPresent.getSelection());
 		fixedInputMeta.setRunningInParallel(wRunningInParallel.getSelection());
 		fixedInputMeta.setFileType(FixedInputMeta.getFileType(wFileType.getText()));
-		
+        fixedInputMeta.setEncoding(wEncoding.getText());
+
     	int nrNonEmptyFields = wFields.nrNonEmpty(); 
 		fixedInputMeta.allocate(nrNonEmptyFields);
 
