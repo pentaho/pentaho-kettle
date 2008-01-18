@@ -81,6 +81,9 @@ public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface
 	private boolean runningInParallel;
 	
 	private int     fileType;
+	
+	/** The encoding to use for reading: null or empty string means system default encoding */
+	private String encoding;
 
 	private FixedFileInputField fieldDefinition[];
 
@@ -123,6 +126,7 @@ public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface
 			lazyConversionActive = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "lazy_conversion"));
 			runningInParallel = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "parallel"));
 			fileType = getFileType( XMLHandler.getTagValue(stepnode, "file_type") );
+			encoding = XMLHandler.getTagValue(stepnode, "encoding");
 			
 			Node fields = XMLHandler.getSubNode(stepnode, "fields");
 			int nrfields = XMLHandler.countNodes(fields, "field");
@@ -157,7 +161,8 @@ public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface
 		retval.append("    ").append(XMLHandler.addTagValue("line_feed", lineFeedPresent));
 		retval.append("    ").append(XMLHandler.addTagValue("parallel", runningInParallel));
 		retval.append("    ").append(XMLHandler.addTagValue("file_type", getFileTypeCode()));
-
+		retval.append("    ").append(XMLHandler.addTagValue("encoding", encoding));
+		
 		retval.append("    <fields>").append(Const.CR);
 		for (int i = 0; i < fieldDefinition.length; i++)
 		{
@@ -181,6 +186,7 @@ public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface
 			lazyConversionActive = rep.getStepAttributeBoolean(id_step, "lazy_conversion");
 			runningInParallel = rep.getStepAttributeBoolean(id_step, "parallel");
 			fileType = getFileType( rep.getStepAttributeString(id_step, "file_type") );
+			encoding = rep.getStepAttributeString(id_step, "encoding");
 			
 			int nrfields = rep.countNrStepAttributes(id_step, "field_name");
 
@@ -220,7 +226,8 @@ public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "line_feed", lineFeedPresent);
 			rep.saveStepAttribute(id_transformation, id_step, "parallel", runningInParallel);
 			rep.saveStepAttribute(id_transformation, id_step, "file_type", getFileTypeCode(fileType));
-
+			rep.saveStepAttribute(id_transformation, id_step, "encoding", encoding);
+			
 			for (int i = 0; i < fieldDefinition.length; i++)
 			{
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_name", fieldDefinition[i].getName());
@@ -255,6 +262,7 @@ public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface
 			valueMeta.setDecimalSymbol(field.getDecimal());
 			valueMeta.setGroupingSymbol(field.getGrouping());
 			valueMeta.setCurrencySymbol(field.getCurrency());
+			valueMeta.setStringEncoding(encoding);
 			if (lazyConversionActive) valueMeta.setStorageType(ValueMetaInterface.STORAGE_TYPE_BINARY_STRING);
 			
 			// In case we want to convert Strings...
@@ -483,5 +491,19 @@ public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface
 		} else {
 			return 0;
 		}
+	}
+
+	/**
+	 * @return the encoding
+	 */
+	public String getEncoding() {
+		return encoding;
+	}
+
+	/**
+	 * @param encoding the encoding to set
+	 */
+	public void setEncoding(String encoding) {
+		this.encoding = encoding;
 	}
 }
