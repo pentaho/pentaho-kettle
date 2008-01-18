@@ -86,15 +86,15 @@ public class TransDialog extends Dialog
 	private CTabFolder   wTabFolder;
 	private FormData     fdTabFolder;
 	
-	private CTabItem     wTransTab, wLogTab, wDateTab, wDepTab, wMiscTab, wPartTab;
+	private CTabItem     wTransTab, wLogTab, wDateTab, wDepTab, wMiscTab, wPartTab, wMonitorTab;
 
 	private Text         wTransname;
 
 	// Trans description
 	private Text         wTransdescription;
 	
-	private Label wlExtendeddescription;
-	private Text wExtendeddescription;
+	private Label        wlExtendeddescription;
+	private Text         wExtendeddescription;
 
 	// Trans Status
 	private Label    wlTransstatus;
@@ -182,6 +182,10 @@ public class TransDialog extends Dialog
 	private boolean directoryChangeAllowed;
 
 	private Label wlDirectory;
+
+	private Button wEnableStepPerfMonitor;
+
+	private Text wEnableStepPerfInterval;
 	
     public TransDialog(Shell parent, int style, TransMeta transMeta, Repository rep)
     {
@@ -243,6 +247,7 @@ public class TransDialog extends Dialog
 		addDepTab();
 		addMiscTab();
         addPartTab();
+        addMonitoringTab();
 		
 		fdTabFolder = new FormData();
 		fdTabFolder.left  = new FormAttachment(0, 0);
@@ -316,8 +321,8 @@ public class TransDialog extends Dialog
         props.setLook(wTransComp);
 
         FormLayout transLayout = new FormLayout();
-        transLayout.marginWidth  = Const.MARGIN;
-        transLayout.marginHeight = Const.MARGIN;
+        transLayout.marginWidth  = Const.FORM_MARGIN;
+        transLayout.marginHeight = Const.FORM_MARGIN;
         wTransComp.setLayout(transLayout);
 
 
@@ -1031,8 +1036,8 @@ public class TransDialog extends Dialog
         props.setLook(wMiscComp);
 
         FormLayout perfLayout = new FormLayout();
-        perfLayout.marginWidth  = Const.MARGIN;
-        perfLayout.marginHeight = Const.MARGIN;
+        perfLayout.marginWidth  = Const.FORM_MARGIN;
+        perfLayout.marginHeight = Const.FORM_MARGIN;
         wMiscComp.setLayout(perfLayout);
 
 
@@ -1179,8 +1184,8 @@ public class TransDialog extends Dialog
         props.setLook(wPartComp);
 
         FormLayout partLayout = new FormLayout();
-        partLayout.marginWidth  = Const.MARGIN;
-        partLayout.marginHeight = Const.MARGIN;
+        partLayout.marginWidth  = Const.FORM_MARGIN;
+        partLayout.marginHeight = Const.FORM_MARGIN;
         wPartComp.setLayout(partLayout);
 
         // Buttons new / delete
@@ -1278,6 +1283,79 @@ public class TransDialog extends Dialog
         
         /////////////////////////////////////////////////////////////
         /// END OF PARTITIONING TAB
+        /////////////////////////////////////////////////////////////
+
+    }
+
+    private void addMonitoringTab()
+    {
+        //////////////////////////
+        // START OF MONITORING TAB///
+        ///
+        wMonitorTab=new CTabItem(wTabFolder, SWT.NONE);
+        wMonitorTab.setText(Messages.getString("TransDialog.MonitorTab.Label")); //$NON-NLS-1$
+        
+        Composite wMonitorComp = new Composite(wTabFolder, SWT.NONE);
+        props.setLook(wMonitorComp);
+
+        FormLayout monitorLayout = new FormLayout();
+        monitorLayout.marginWidth  = Const.FORM_MARGIN;
+        monitorLayout.marginHeight = Const.FORM_MARGIN;
+        wMonitorComp.setLayout(monitorLayout);
+
+        // 
+        // Enable step performance monitoring?
+        //
+        Label wlEnableStepPerfMonitor = new Label(wMonitorComp, SWT.LEFT);
+        wlEnableStepPerfMonitor.setText(Messages.getString("TransDialog.StepPerformanceMonitoring.Label")); //$NON-NLS-1$
+        props.setLook(wlEnableStepPerfMonitor);
+        FormData fdlSchemaName=new FormData();
+        fdlSchemaName.left = new FormAttachment(0, 0);
+        fdlSchemaName.right = new FormAttachment(middle, -margin);
+        fdlSchemaName.top  = new FormAttachment(0, 0);
+        wlEnableStepPerfMonitor.setLayoutData(fdlSchemaName);
+        wEnableStepPerfMonitor=new Button(wMonitorComp, SWT.CHECK);
+        props.setLook(wEnableStepPerfMonitor);
+        FormData fdEnableStepPerfMonitor=new FormData();
+        fdEnableStepPerfMonitor.left   = new FormAttachment(middle, 0);
+        fdEnableStepPerfMonitor.right  = new FormAttachment(100, 0);
+        fdEnableStepPerfMonitor.top    = new FormAttachment(0, 0);
+        wEnableStepPerfMonitor.setLayoutData(fdEnableStepPerfMonitor);
+
+        // 
+        // Step performance interval
+        //
+        Label wlEnableStepPerfInterval = new Label(wMonitorComp, SWT.LEFT);
+        wlEnableStepPerfInterval.setText(Messages.getString("TransDialog.StepPerformanceInterval.Label")); //$NON-NLS-1$
+        props.setLook(wlEnableStepPerfInterval);
+        FormData fdlEnableStepPerfInterval=new FormData();
+        fdlEnableStepPerfInterval.left  = new FormAttachment(0, 0);
+        fdlEnableStepPerfInterval.right = new FormAttachment(middle, -margin);
+        fdlEnableStepPerfInterval.top = new FormAttachment(wEnableStepPerfMonitor, margin);
+        wlEnableStepPerfInterval.setLayoutData(fdlEnableStepPerfInterval);
+        wEnableStepPerfInterval=new Text(wMonitorComp, SWT.LEFT | SWT.BORDER | SWT.SINGLE);
+        props.setLook(wEnableStepPerfInterval);
+        FormData fdEnableStepPerfInterval=new FormData();
+        fdEnableStepPerfInterval.left   = new FormAttachment(middle, 0);
+        fdEnableStepPerfInterval.right  = new FormAttachment(100, 0);
+        fdEnableStepPerfInterval.top    = new FormAttachment(wEnableStepPerfMonitor, margin);
+        wEnableStepPerfInterval.setLayoutData(fdEnableStepPerfInterval);
+
+
+        // TransDialog.SchemaMonitoritions.Label
+
+        FormData fdMonitorComp = new FormData();
+        fdMonitorComp.left  = new FormAttachment(0, 0);
+        fdMonitorComp.top   = new FormAttachment(0, 0);
+        fdMonitorComp.right = new FormAttachment(100, 0);
+        fdMonitorComp.bottom= new FormAttachment(100, 0);
+        wMonitorComp.setLayoutData(fdMonitorComp);
+    
+        wMonitorComp.layout();
+        wMonitorTab.setControl(wMonitorComp);
+        
+        /////////////////////////////////////////////////////////////
+        /// END OF MONITORING TAB
         /////////////////////////////////////////////////////////////
 
     }
@@ -1471,6 +1549,11 @@ public class TransDialog extends Dialog
 		if (transMeta.getDirectory()!=null && transMeta.getDirectory().getPath()!=null) 
 			wDirectory.setText(transMeta.getDirectory().getPath());
 		
+		// Performance monitoring tab:
+		//
+		wEnableStepPerfMonitor.setSelection(transMeta.isCapturingStepPerformanceSnapShots());
+		wEnableStepPerfInterval.setText(Long.toString(transMeta.getStepPerformanceCapturingDelay()));
+		
 		wTransname.selectAll();
 		wTransname.setFocus();
 		
@@ -1633,6 +1716,11 @@ public class TransDialog extends Dialog
         	//
         	if (newDirectory!=null) transMeta.setDirectory(newDirectory);
         }
+
+		// Performance monitoring tab:
+		//
+		transMeta.setCapturingStepPerformanceSnapShots(wEnableStepPerfMonitor.getSelection());
+		transMeta.setStepPerformanceCapturingDelay(Long.parseLong(wEnableStepPerfInterval.getText()));
 
         // Also get the partition schemas...
         applySchema(); // get last changes too...

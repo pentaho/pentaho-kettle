@@ -474,12 +474,14 @@ public class Repository
     private static final int REP_STRING_LENGTH      = 2000000;
     private static final int REP_STRING_CODE_LENGTH =     255;
     
-	private static final String TRANS_ATTRIBUTE_ID_STEP_REJECTED = "ID_STEP_REJECTED";
-	private static final String TRANS_ATTRIBUTE_UNIQUE_CONNECTIONS = "UNIQUE_CONNECTIONS";
-	private static final String TRANS_ATTRIBUTE_FEEDBACK_SHOWN = "FEEDBACK_SHOWN";
-	private static final String TRANS_ATTRIBUTE_FEEDBACK_SIZE = "FEEDBACK_SIZE";
-	private static final String TRANS_ATTRIBUTE_USING_THREAD_PRIORITIES = "USING_THREAD_PRIORITIES";
-	private static final String TRANS_ATTRIBUTE_SHARED_FILE = "SHARED_FILE";
+    public static final String TRANS_ATTRIBUTE_ID_STEP_REJECTED = "ID_STEP_REJECTED";
+	public static final String TRANS_ATTRIBUTE_UNIQUE_CONNECTIONS = "UNIQUE_CONNECTIONS";
+	public static final String TRANS_ATTRIBUTE_FEEDBACK_SHOWN = "FEEDBACK_SHOWN";
+	public static final String TRANS_ATTRIBUTE_FEEDBACK_SIZE = "FEEDBACK_SIZE";
+	public static final String TRANS_ATTRIBUTE_USING_THREAD_PRIORITIES = "USING_THREAD_PRIORITIES";
+	public static final String TRANS_ATTRIBUTE_SHARED_FILE = "SHARED_FILE";
+	public static final String TRANS_ATTRIBUTE_CAPTURE_STEP_PERFORMANCE = "CAPTURE_STEP_PERFORMANCE";
+	public static final String TRANS_ATTRIBUTE_STEP_PERFORMANCE_CAPTURING_DELAY = "STEP_PERFORMANCE_CAPTURING_DELAY";
 		
     private static Repository currentRepository;
 
@@ -1441,6 +1443,9 @@ public class Repository
         insertTransAttribute(transMeta.getId(), 0, TRANS_ATTRIBUTE_FEEDBACK_SIZE, transMeta.getFeedbackSize(), "");
 		insertTransAttribute(transMeta.getId(), 0, TRANS_ATTRIBUTE_USING_THREAD_PRIORITIES, 0, transMeta.isUsingThreadPriorityManagment()?"Y":"N");
         insertTransAttribute(transMeta.getId(), 0, TRANS_ATTRIBUTE_SHARED_FILE, 0, transMeta.getSharedObjectsFile());
+        
+        insertTransAttribute(transMeta.getId(), 0, TRANS_ATTRIBUTE_CAPTURE_STEP_PERFORMANCE, 0, transMeta.isCapturingStepPerformanceSnapShots()?"Y":"N");
+        insertTransAttribute(transMeta.getId(), 0, TRANS_ATTRIBUTE_STEP_PERFORMANCE_CAPTURING_DELAY, transMeta.getStepPerformanceCapturingDelay(), "");
         
 		// Save the logging connection link...
 		if (transMeta.getLogConnection()!=null) insertStepDatabase(transMeta.getId(), -1L, transMeta.getLogConnection().getID());

@@ -2194,10 +2194,15 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
                     directory = directoryTree.findDirectory(id_directory);
                 }
                 
-                usingUniqueConnections = rep.getTransAttributeBoolean(getID(), 0, "UNIQUE_CONNECTIONS");
-                feedbackShown = !"N".equalsIgnoreCase( rep.getTransAttributeString(getID(), 0, "FEEDBACK_SHOWN") );
-                feedbackSize = (int) rep.getTransAttributeInteger(getID(), 0, "FEEDBACK_SIZE");
-                usingThreadPriorityManagment = !"N".equalsIgnoreCase( rep.getTransAttributeString(getID(), 0, "USING_THREAD_PRIORITIES") );                
+                usingUniqueConnections = rep.getTransAttributeBoolean(getID(), 0, Repository.TRANS_ATTRIBUTE_UNIQUE_CONNECTIONS);
+                feedbackShown = !"N".equalsIgnoreCase( rep.getTransAttributeString(getID(), 0, Repository.TRANS_ATTRIBUTE_FEEDBACK_SHOWN) );
+                feedbackSize = (int) rep.getTransAttributeInteger(getID(), 0, Repository.TRANS_ATTRIBUTE_FEEDBACK_SIZE);
+                usingThreadPriorityManagment = !"N".equalsIgnoreCase( rep.getTransAttributeString(getID(), 0, Repository.TRANS_ATTRIBUTE_USING_THREAD_PRIORITIES) );    
+                
+                // Performance monitoring for steps...
+                //
+                capturingStepPerformanceSnapShots = rep.getTransAttributeBoolean(getID(), 0, Repository.TRANS_ATTRIBUTE_CAPTURE_STEP_PERFORMANCE);
+                stepPerformanceCapturingDelay = rep.getTransAttributeInteger(getID(), 0, Repository.TRANS_ATTRIBUTE_STEP_PERFORMANCE_CAPTURING_DELAY);
             }
         }
         catch (KettleDatabaseException dbe)
@@ -2542,7 +2547,12 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         retval.append("    ").append(XMLHandler.addTagValue("feedback_size", feedbackSize)); //$NON-NLS-1$ //$NON-NLS-2$
         retval.append("    ").append(XMLHandler.addTagValue("using_thread_priorities", usingThreadPriorityManagment)); // $NON-NLS-1$
         retval.append("    ").append(XMLHandler.addTagValue("shared_objects_file", sharedObjectsFile)); // $NON-NLS-1$
-        
+
+		// Performance monitoring
+        //
+        retval.append("    ").append(XMLHandler.addTagValue("capture_step_performance", capturingStepPerformanceSnapShots)); // $NON-NLS-1$
+        retval.append("    ").append(XMLHandler.addTagValue("step_performance_capturing_delay", stepPerformanceCapturingDelay)); // $NON-NLS-1$
+
         retval.append("    ").append(XMLHandler.openTag(XML_TAG_DEPENDENCIES)).append(Const.CR); //$NON-NLS-1$
         for (int i = 0; i < nrDependencies(); i++)
         {
@@ -2586,6 +2596,9 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         retval.append("  ").append(XMLHandler.addTagValue("modified_date", modifiedDate));
 
         retval.append("  ").append(XMLHandler.closeTag(XML_TAG_INFO)).append(Const.CR); //$NON-NLS-1$
+        
+        
+        
         
         retval.append("  ").append(XMLHandler.openTag(XML_TAG_NOTEPADS)).append(Const.CR); //$NON-NLS-1$
         if (notes != null) for (int i = 0; i < nrNotes(); i++)
@@ -3112,7 +3125,12 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
             feedbackShown = !"N".equalsIgnoreCase( XMLHandler.getTagValue(infonode, "feedback_shown") ); //$NON-NLS-1$
             feedbackSize = Const.toInt(XMLHandler.getTagValue(infonode, "feedback_size"), Const.ROWS_UPDATE); //$NON-NLS-1$
             usingThreadPriorityManagment = !"N".equalsIgnoreCase( XMLHandler.getTagValue(infonode, "using_thread_priorities") ); //$NON-NLS-1$ 
-            
+
+            // Performance monitoring for steps...
+            //
+            capturingStepPerformanceSnapShots = "Y".equalsIgnoreCase(XMLHandler.getTagValue(infonode, "capture_step_performance")); // $NON-NLS-1$ $NON-NLS-2$
+            stepPerformanceCapturingDelay = Const.toLong(XMLHandler.getTagValue(infonode, "step_performance_capturing_delay"), 1000); // $NON-NLS-1$
+
 			// Created user/date
 			createdUser = XMLHandler.getTagValue(infonode, "created_user");
 			String createDate = XMLHandler.getTagValue(infonode, "created_date");
