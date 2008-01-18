@@ -47,8 +47,6 @@ import org.pentaho.di.trans.StepPlugin;
 import org.pentaho.di.trans.TransMeta;
 import org.w3c.dom.Node;
 
-
-
 /**
  * This class contains everything that is needed to define a step.
  * 
@@ -498,6 +496,12 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
         for (RemoteStep remoteStep : stepMeta.remoteInputSteps) this.remoteInputSteps.add((RemoteStep)remoteStep.clone());
         this.remoteOutputSteps = new ArrayList<RemoteStep>();
         for (RemoteStep remoteStep : stepMeta.remoteOutputSteps) this.remoteOutputSteps.add((RemoteStep)remoteStep.clone());
+        
+        // The error handling needs to be done too...
+        //
+        if (stepMeta.stepErrorMeta!=null) {
+        	this.stepErrorMeta = (StepErrorMeta)stepMeta.stepErrorMeta.clone();
+        }
         
         // this.setShared(stepMeta.isShared());
         this.id = stepMeta.getID();
