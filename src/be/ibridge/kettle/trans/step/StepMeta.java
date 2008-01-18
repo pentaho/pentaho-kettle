@@ -442,6 +442,12 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable,
         }
         this.clusterSchemaName = stepMeta.clusterSchemaName; // temporary to resolve later.
         
+        // The error handling needs to be done too...
+        //
+        if (stepMeta.stepErrorMeta!=null) {
+        	this.stepErrorMeta = (StepErrorMeta)stepMeta.stepErrorMeta.clone();
+        }
+        
         // this.setShared(stepMeta.isShared());
         this.id = stepMeta.getID();
         this.setChanged(true);
