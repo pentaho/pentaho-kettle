@@ -319,6 +319,15 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 		try
 		{
 			super.saveRep(rep, id_job);
+			
+			if (rep.getImportBaseDirectory()!=null && !rep.getImportBaseDirectory().isRoot()) {
+				directoryPath = rep.getImportBaseDirectory().getPath()+directoryPath;
+				directory = rep.getDirectoryTree().findDirectory(  directoryPath);
+			}
+			
+			if (directory==null) {
+				throw new KettleException("No valid directory found for directory path: "+directoryPath);
+			}
 
 			long id_transformation = rep.getTransformationID(transname, directory.getID());
 			rep.saveJobEntryAttribute(id_job, getID(), "id_transformation", id_transformation);

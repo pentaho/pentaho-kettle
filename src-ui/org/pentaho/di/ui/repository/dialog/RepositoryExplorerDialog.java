@@ -62,8 +62,6 @@ import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.ui.core.gui.GUIResource;
-import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -73,16 +71,7 @@ import org.pentaho.di.repository.ProfileMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.UserInfo;
-import org.pentaho.di.ui.repository.RepositoryDirectoryUI;
-import org.pentaho.di.ui.repository.dialog.Messages;
-import org.pentaho.di.ui.repository.dialog.ProfileDialog;
-import org.pentaho.di.ui.repository.dialog.RepositoryExportProgressDialog;
-import org.pentaho.di.ui.repository.dialog.RepositoryImportProgressDialog;
-import org.pentaho.di.ui.repository.dialog.SelectDirectoryDialog;
-import org.pentaho.di.ui.repository.dialog.UserDialog;
-import org.pentaho.di.ui.spoon.job.JobGraph;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.cluster.dialog.ClusterSchemaDialog;
 import org.pentaho.di.ui.cluster.dialog.SlaveServerDialog;
 import org.pentaho.di.ui.core.ConstUI;
@@ -90,10 +79,15 @@ import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.dialog.EnterStringDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.gui.GUIResource;
+import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.DoubleClickInterface;
 import org.pentaho.di.ui.core.widget.TreeItemAccelerator;
 import org.pentaho.di.ui.core.widget.TreeMemory;
 import org.pentaho.di.ui.partition.dialog.PartitionSchemaDialog;
+import org.pentaho.di.ui.repository.RepositoryDirectoryUI;
+import org.pentaho.di.ui.spoon.job.JobGraph;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.w3c.dom.Document;
 
 
@@ -229,7 +223,6 @@ public class RepositoryExplorerDialog extends Dialog
         
         try
         {
-    		
             debug="open new independent shell"; //$NON-NLS-1$
             Shell parent = getParent();
     		Display display = parent.getDisplay();

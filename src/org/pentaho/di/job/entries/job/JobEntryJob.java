@@ -306,6 +306,15 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 		{
 			super.saveRep(rep, id_job);
 
+			if (rep.getImportBaseDirectory()!=null && !rep.getImportBaseDirectory().isRoot()) {
+				directoryPath = rep.getImportBaseDirectory().getPath()+directoryPath;
+				directory = rep.getDirectoryTree().findDirectory(  directoryPath);
+			}
+			
+			if (directory==null) {
+				throw new KettleException("No valid directory found for directory path: "+directoryPath);
+			}
+
 			long id_job_attr = rep.getJobID(jobname, directory.getID());
 			rep.saveJobEntryAttribute(id_job, getID(), "id_job", id_job_attr);
             rep.saveJobEntryAttribute(id_job, getID(), "name", getJobName());

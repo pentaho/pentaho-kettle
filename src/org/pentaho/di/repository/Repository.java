@@ -445,6 +445,7 @@ public class Repository
 	private RepositoryMeta		repinfo;
 	public  UserInfo			userinfo;
 	private RepositoryDirectory	directoryTree;
+	private RepositoryDirectory importBaseDirectory;
 	private Database			database;
 
 	public  LogWriter			log;
@@ -6149,5 +6150,25 @@ public class Repository
 	 */
 	public void setUseBatchProcessing(boolean useBatchProcessing) {
 		this.useBatchProcessing = useBatchProcessing;
+	}
+	
+
+	/**
+	 * Set this directory during import to signal that job entries like Trans and Job need to point to job entries relative to this directory.
+	 * 
+	 * @param importBaseDirectory the base import directory, selected by the user
+	 */
+	public void setImportBaseDirectory(RepositoryDirectory importBaseDirectory) {
+		this.importBaseDirectory = importBaseDirectory;
+		
+	}
+	
+	/**
+	 * The directory set during import to signal that job entries like Trans and Job need to point to job entries relative to this directory
+	 * 
+	 * @return the base import directory, selected by the user
+	 */
+	public RepositoryDirectory getImportBaseDirectory() {
+		return importBaseDirectory;
 	}
 }
