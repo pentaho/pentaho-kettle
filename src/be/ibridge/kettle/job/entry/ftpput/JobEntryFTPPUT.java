@@ -583,8 +583,8 @@ log.logDetailed(toString(), Messages.getString("JobFTPPUT.Log.Starting"));
 						// Delete the file if this is needed!
 						if (remove) 
 						{
-							children[i].delete();
-							if (log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobFTPPUT.Log.DeletedFile",filelist[i]));
+							new File(localFilename).delete();
+							if (log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobFTPPUT.Log.DeletedFile",localFilename));
 						}
 					}
 				}

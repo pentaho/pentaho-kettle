@@ -396,8 +396,8 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 					// Delete the file if this is needed!
 					if (remove) 
 					{
-						children[i].delete();
-						log.logDetailed(toString(), "deleted local file ["+filelist[i]+"]");
+						new File(localFilename).delete();
+						log.logDetailed(toString(), "deleted local file ["+localFilename+"]");
 					}
 				}
 			} // end for
