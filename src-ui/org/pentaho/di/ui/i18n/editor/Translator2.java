@@ -244,6 +244,7 @@ public class Translator2
         shell = new Shell(display);
         shell.setLayout(new FillLayout());
         shell.setText(APP_NAME);
+        shell.setImage(GUIResource.getInstance().getImageLogoSmall());
         
         try
         {
