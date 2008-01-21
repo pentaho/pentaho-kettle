@@ -63,7 +63,8 @@ public enum JobEntryType
 	FILES_EXIST(Messages.getString("JobEntry.FilesExist.TypeDesc")),
 	FOLDERS_COMPARE(Messages.getString("JobEntry.FoldersCompare.TypeDesc")),
 	ADD_RESULT_FILENAMES(Messages.getString("JobEntry.AddResultFilenames.TypeDesc")),
-	DELETE_RESULT_FILENAMES(Messages.getString("JobEntry.DeleteResultFilenames.TypeDesc"));
+	DELETE_RESULT_FILENAMES(Messages.getString("JobEntry.DeleteResultFilenames.TypeDesc")),
+	MSSQL_BULK_LOAD(Messages.getString("JobEntry.MssqlBulkLoad.TypeDesc")),;
 	
 	
 	

@@ -57,6 +57,8 @@ public class ExcelOutputData extends BaseStepData implements StepDataInterface
     public WritableFont headerFont;
 
 	public OutputStream outputStream;
+	
+	public boolean oneFileOpened;
 
 	/**
 	 * 
@@ -66,6 +68,7 @@ public class ExcelOutputData extends BaseStepData implements StepDataInterface
 		super();
         
         formats = new Hashtable<String,WritableCellFormat>();
+        oneFileOpened=false;
 	}
 
 }

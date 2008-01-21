@@ -135,6 +135,10 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
 	private Button       wAddToResult;
 	private FormData     fdlAddToResult, fdAddToResult;
 	
+	private Label        wlDoNotOpenNewFileInit;
+	private Button       wDoNotOpenNewFileInit;
+	private FormData     fdlDoNotOpenNewFileInit, fdDoNotOpenNewFileInit;
+	
 	public XMLOutputDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
 		super(parent, (BaseStepMeta)in, transMeta, sname);
@@ -232,13 +236,40 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
 		fdFilename.right= new FormAttachment(wbFilename, -margin);
 		wFilename.setLayoutData(fdFilename);
 
+		// Open new File at Init
+		wlDoNotOpenNewFileInit=new Label(wFileComp, SWT.RIGHT);
+		wlDoNotOpenNewFileInit.setText(Messages.getString("XMLOutputDialog.DoNotOpenNewFileInit.Label"));
+ 		props.setLook(wlDoNotOpenNewFileInit);
+		fdlDoNotOpenNewFileInit=new FormData();
+		fdlDoNotOpenNewFileInit.left = new FormAttachment(0, 0);
+		fdlDoNotOpenNewFileInit.top  = new FormAttachment(wFilename, margin);
+		fdlDoNotOpenNewFileInit.right= new FormAttachment(middle, -margin);
+		wlDoNotOpenNewFileInit.setLayoutData(fdlDoNotOpenNewFileInit);
+		wDoNotOpenNewFileInit=new Button(wFileComp, SWT.CHECK );
+		wDoNotOpenNewFileInit.setToolTipText(Messages.getString("XMLOutputDialog.DoNotOpenNewFileInit.Tooltip"));
+ 		props.setLook(wDoNotOpenNewFileInit);
+		fdDoNotOpenNewFileInit=new FormData();
+		fdDoNotOpenNewFileInit.left = new FormAttachment(middle, 0);
+		fdDoNotOpenNewFileInit.top  = new FormAttachment(wFilename, margin);
+		fdDoNotOpenNewFileInit.right= new FormAttachment(100, 0);
+		wDoNotOpenNewFileInit.setLayoutData(fdDoNotOpenNewFileInit);
+		wDoNotOpenNewFileInit.addSelectionListener(new SelectionAdapter() 
+			{
+				public void widgetSelected(SelectionEvent e) 
+				{
+					input.setChanged();
+				}
+			}
+		);
+		
+		
 		// Extension line
 		wlExtension=new Label(wFileComp, SWT.RIGHT);
 		wlExtension.setText(Messages.getString("XMLOutputDialog.Extension.Label"));
  		props.setLook(wlExtension);
 		fdlExtension=new FormData();
 		fdlExtension.left = new FormAttachment(0, 0);
-		fdlExtension.top  = new FormAttachment(wFilename, margin);
+		fdlExtension.top  = new FormAttachment(wDoNotOpenNewFileInit, margin);
 		fdlExtension.right= new FormAttachment(middle, -margin);
 		wlExtension.setLayoutData(fdlExtension);
 		wExtension=new Text(wFileComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
@@ -247,7 +278,7 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
 		wExtension.addModifyListener(lsMod);
 		fdExtension=new FormData();
 		fdExtension.left = new FormAttachment(middle, 0);
-		fdExtension.top  = new FormAttachment(wFilename, margin);
+		fdExtension.top  = new FormAttachment(wDoNotOpenNewFileInit, margin);
 		fdExtension.right= new FormAttachment(100, 0);
 		wExtension.setLayoutData(fdExtension);
 
@@ -734,6 +765,7 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
 	{
 		if (input.getFileName()      != null) wFilename.setText(input.getFileName());
 		if (input.getExtension()     != null) wExtension.setText(input.getExtension());
+		wDoNotOpenNewFileInit.setSelection(input.isDoNotOpenNewFileInit());
         if (input.getEncoding()      != null) wEncoding.setText(input.getEncoding());
         if (input.getMainElement()   != null) wMainElement.setText(input.getMainElement());
         if (input.getRepeatElement() != null) wRepeatElement.setText(input.getRepeatElement());
@@ -798,6 +830,7 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
         tfoi.setMainElement( wMainElement.getText() );
         tfoi.setRepeatElement( wRepeatElement.getText() );
 		tfoi.setExtension(  wExtension.getText() );
+		tfoi.setDoNotOpenNewFileInit(wDoNotOpenNewFileInit.getSelection() );
 		tfoi.setSplitEvery( Const.toInt(wSplitEvery.getText(), 0) );
 
 		tfoi.setStepNrInFilename( wAddStepnr.getSelection() );

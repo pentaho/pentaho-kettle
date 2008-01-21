@@ -89,6 +89,9 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface
 
 	/** The output fields */
 	private XMLField outputFields[];
+	
+    /** Flag : Do not open new file when transformation start  */ 
+    private boolean donotopennewfileinit;
 
 	public XMLOutputMeta()
 	{
@@ -128,6 +131,25 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		this.extension = extension;
 	}
+	
+    /**
+     * @return Returns the donotopennewfileinit.
+     */    
+    public boolean isDoNotOpenNewFileInit()
+    {
+    	return donotopennewfileinit;
+    }
+
+    /**
+     * @param donotopennewfileinit The donotopennewfileinit to set.
+     */
+    public void setDoNotOpenNewFileInit(boolean donotopennewfileinitv)
+    {
+    	this.donotopennewfileinit=donotopennewfileinitv;
+    }
+
+	
+	
 
 	/**
 	 * @return Returns the fileName.
@@ -286,6 +308,8 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface
 
 			fileName = XMLHandler.getTagValue(stepnode, "file", "name");
 			extension = XMLHandler.getTagValue(stepnode, "file", "extention");
+			
+			donotopennewfileinit = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "do_not_open_newfile_init"));
 			stepNrInFilename = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "split"));
 			dateInFilename = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "add_date"));
 			timeInFilename = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "add_time"));
@@ -346,6 +370,7 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface
 		fileName = "file";
 		extension = "xml";
 		stepNrInFilename = false;
+		donotopennewfileinit=false;
 		dateInFilename = false;
 		timeInFilename = false;
 		addToResultFilenames = false;
@@ -498,6 +523,8 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface
 		retval.append("    <file>").append(Const.CR);
 		retval.append("      ").append(XMLHandler.addTagValue("name", fileName));
 		retval.append("      ").append(XMLHandler.addTagValue("extention", extension));
+		
+		retval.append("      ").append(XMLHandler.addTagValue("do_not_open_newfile_init", donotopennewfileinit));
 		retval.append("      ").append(XMLHandler.addTagValue("split", stepNrInFilename));
 		retval.append("      ").append(XMLHandler.addTagValue("add_date", dateInFilename));
 		retval.append("      ").append(XMLHandler.addTagValue("add_time", timeInFilename));
@@ -541,6 +568,8 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface
 
 			fileName = rep.getStepAttributeString(id_step, "file_name");
 			extension = rep.getStepAttributeString(id_step, "file_extention");
+			
+			donotopennewfileinit = rep.getStepAttributeBoolean(id_step, "do_not_open_newfile_init");
 			splitEvery = (int) rep.getStepAttributeInteger(id_step, "file_split");
 			stepNrInFilename = rep.getStepAttributeBoolean(id_step, "file_add_stepnr");
 			dateInFilename = rep.getStepAttributeBoolean(id_step, "file_add_date");
@@ -583,6 +612,8 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "xml_repeat_element", repeatElement);
 			rep.saveStepAttribute(id_transformation, id_step, "file_name", fileName);
 			rep.saveStepAttribute(id_transformation, id_step, "file_extention", extension);
+			
+			rep.saveStepAttribute(id_transformation, id_step, "do_not_open_newfile_init", donotopennewfileinit);
 			rep.saveStepAttribute(id_transformation, id_step, "file_split", splitEvery);
 			rep.saveStepAttribute(id_transformation, id_step, "file_add_stepnr", stepNrInFilename);
 			rep.saveStepAttribute(id_transformation, id_step, "file_add_date", dateInFilename);

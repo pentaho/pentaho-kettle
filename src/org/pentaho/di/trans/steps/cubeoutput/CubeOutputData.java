@@ -30,6 +30,7 @@ public class CubeOutputData extends BaseStepData implements StepDataInterface
 	public GZIPOutputStream zip;
 	public DataOutputStream dos;
 	public RowMetaInterface outputMeta;
+	public boolean oneFileOpened;
 	
 	/**
 	 * 
@@ -37,6 +38,7 @@ public class CubeOutputData extends BaseStepData implements StepDataInterface
 	public CubeOutputData()
 	{
 		super();
+		oneFileOpened=false;
 	}
 
 }

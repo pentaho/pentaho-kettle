@@ -59,7 +59,20 @@ public class CubeOutput extends BaseStep implements StepInterface
 			setOutputDone();
             return false;
 		}
-		
+		if(meta.isDoNotOpenNewFileInit())
+		{
+			try
+			{
+				PrepareFile();
+				data.oneFileOpened=true;
+			}
+			catch(IOException ioe)
+			{
+				logError(Messages.getString("CubeOutput.Log.ErrorOpeningCubeOutputFile")+ioe.toString()); //$NON-NLS-1$
+				setErrors(1);
+				return false;
+			}
+		}
 		result=writeRowToFile(r);
 		if (!result)
 		{
@@ -107,58 +120,68 @@ public class CubeOutput extends BaseStep implements StepInterface
 
 		if (super.init(smi, sdi))
 		{
-			try
+			if(!meta.isDoNotOpenNewFileInit())
 			{
-				String filename=environmentSubstitute(meta.getFilename());
-			    if(meta.isAddToResultFiles())
-                {
-					// Add this to the result file names...
-					ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(filename), getTransMeta().getName(), getStepname());
-					resultFile.setComment("This file was created with a cube file output step");
-		            addResultFile(resultFile);
-                }
-	
-			    
-				data.fos=KettleVFS.getOutputStream(filename, false);
-				data.zip=new GZIPOutputStream(data.fos);
-				data.dos=new DataOutputStream(data.zip);
-			
-				return true;
-			}
-			catch(IOException ioe)
-			{
-				logError(Messages.getString("CubeOutput.Log.ErrorOpeningCubeOutputFile")+ioe.toString()); //$NON-NLS-1$
-			}
+				try
+				{
+					PrepareFile();
+					data.oneFileOpened=true;
+					return true;
+				}
+				catch(IOException ioe)
+				{
+					logError(Messages.getString("CubeOutput.Log.ErrorOpeningCubeOutputFile")+ioe.toString()); //$NON-NLS-1$
+				}
+			}else return true;
+				
 		}
 		return false;
 	}
-    
+    private void PrepareFile() throws IOException
+    {
+		String filename=environmentSubstitute(meta.getFilename());
+	    if(meta.isAddToResultFiles())
+        {
+			// Add this to the result file names...
+			ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(filename), getTransMeta().getName(), getStepname());
+			resultFile.setComment("This file was created with a cube file output step");
+            addResultFile(resultFile);
+        }
+
+	    
+		data.fos=KettleVFS.getOutputStream(filename, false);
+		data.zip=new GZIPOutputStream(data.fos);
+		data.dos=new DataOutputStream(data.zip);
+    }
     public void dispose(StepMetaInterface smi, StepDataInterface sdi)
     {
-        try
-        {
-            if (data.dos!=null) 
-            {
-            	data.dos.close();
-            	data.dos=null;
-            }
-            if (data.zip!=null)
-            {
-				data.zip.close();
-				data.zip=null;
-			}
-            if (data.fos!=null)
-            {
-            	data.fos.close();
-            	data.fos=null;
-            }
-        }
-        catch(IOException e)
-        {
-            logError(Messages.getString("CubeOutput.Log.ErrorClosingFile")+meta.getFilename()); //$NON-NLS-1$
-            setErrors(1);
-            stopAll();
-        }
+    	if(data.oneFileOpened)
+    	{
+	        try
+	        {
+	            if (data.dos!=null) 
+	            {
+	            	data.dos.close();
+	            	data.dos=null;
+	            }
+	            if (data.zip!=null)
+	            {
+					data.zip.close();
+					data.zip=null;
+				}
+	            if (data.fos!=null)
+	            {
+	            	data.fos.close();
+	            	data.fos=null;
+	            }
+	        }
+	        catch(IOException e)
+	        {
+	            logError(Messages.getString("CubeOutput.Log.ErrorClosingFile")+meta.getFilename()); //$NON-NLS-1$
+	            setErrors(1);
+	            stopAll();
+	        }
+    	}
 
         super.dispose(smi, sdi);
     }

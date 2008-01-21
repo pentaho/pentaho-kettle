@@ -47,6 +47,9 @@ public class CubeOutputMeta extends BaseStepMeta implements StepMetaInterface
 	private String filename;
 	/** Flag: add the filenames to result filenames */
     private boolean addToResultFilenames;
+    
+    /** Flag : Do not open new file when transformation start  */ 
+    private boolean donotopennewfileinit;
 
 	public CubeOutputMeta()
 	{
@@ -90,7 +93,21 @@ public class CubeOutputMeta extends BaseStepMeta implements StepMetaInterface
     {
         this.addToResultFilenames = addtoresultfilenamesin;
     }
-    
+    /**
+     * @return Returns the donotopennewfileinit.
+     */    
+    public boolean isDoNotOpenNewFileInit()
+    {
+    	return donotopennewfileinit;
+    }
+
+    /**
+     * @param donotopennewfileinit The donotopennewfileinit to set.
+     */
+    public void setDoNotOpenNewFileInit(boolean donotopennewfileinitv)
+    {
+    	this.donotopennewfileinit=donotopennewfileinitv;
+    }
 	public Object clone()
 	{
 		CubeOutputMeta retval = (CubeOutputMeta)super.clone();
@@ -104,7 +121,9 @@ public class CubeOutputMeta extends BaseStepMeta implements StepMetaInterface
 		try
 		{
 			filename              = XMLHandler.getTagValue(stepnode, "file", "name"); //$NON-NLS-1$ //$NON-NLS-2$
-			addToResultFilenames  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "add_to_result_filenames"));			
+			addToResultFilenames  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "add_to_result_filenames"));
+			donotopennewfileinit  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "do_not_open_newfile_init"));
+			
 		}
 		catch(Exception e)
 		{
@@ -116,6 +135,7 @@ public class CubeOutputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		filename             = "file"; //$NON-NLS-1$
 		addToResultFilenames = false;
+		donotopennewfileinit=false;
 	}
 	
 	public String getXML()
@@ -125,6 +145,8 @@ public class CubeOutputMeta extends BaseStepMeta implements StepMetaInterface
 		retval.append("    <file>").append(Const.CR); //$NON-NLS-1$
 		retval.append("      ").append(XMLHandler.addTagValue("name",       filename)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("      ").append(XMLHandler.addTagValue("add_to_result_filenames",   addToResultFilenames));
+		retval.append("      ").append(XMLHandler.addTagValue("do_not_open_newfile_init",   donotopennewfileinit));
+		
 		retval.append("    </file>").append(Const.CR); //$NON-NLS-1$
 
 		return retval.toString();
@@ -137,6 +159,8 @@ public class CubeOutputMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			filename               =      rep.getStepAttributeString (id_step, "file_name"); //$NON-NLS-1$
 			addToResultFilenames   =      rep.getStepAttributeBoolean(id_step, "add_to_result_filenames");
+			donotopennewfileinit   =      rep.getStepAttributeBoolean(id_step, "do_not_open_newfile_init");
+			
 			
 		}
 		catch(Exception e)
@@ -152,6 +176,9 @@ public class CubeOutputMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			rep.saveStepAttribute(id_transformation, id_step, "file_name",   filename); //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "add_to_result_filenames",    addToResultFilenames);  //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "do_not_open_newfile_init",    donotopennewfileinit);  //$NON-NLS-1$
+			
+			
 		}
 		catch(Exception e)
 		{

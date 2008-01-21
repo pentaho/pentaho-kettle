@@ -67,6 +67,23 @@ public class ExcelOutput extends BaseStep implements StepInterface
 			// get the RowMeta, rowMeta is only set when a row is read
 			data.previousMeta = getInputRowMeta().clone();
 			//do not set first=false, below is another part that uses first
+			
+			if(meta.isDoNotOpenNewFileInit())
+			{
+				data.oneFileOpened=true;
+				try
+		         {
+					 PrepareFile();
+		         }
+		         catch(Exception we)
+		         {
+		             logError("Unexpected error preparing to write to Excel file : "+we.toString());
+		             logError(Const.getStackTracker(we));
+		             return false;
+		         }
+			}
+          
+			
 		}
 		
 		// If we split the data stream in small XLS files, we need to do this here...
@@ -557,39 +574,48 @@ public class ExcelOutput extends BaseStep implements StepInterface
 		if (super.init(smi, sdi))
 		{
 			data.splitnr=0;
-            
-            try
-            {
-                // Create the default font TODO: allow to change this later on.
-                data.writableFont = new WritableFont(WritableFont.ARIAL, 10, WritableFont.NO_BOLD);
-            }
-            catch(Exception we)
-            {
-                logError("Unexpected error preparing to write to Excel file : "+we.toString());
-                logError(Const.getStackTracker(we));
-                return false;
-            }
-            
-			if (openNewFile())
+			if(!meta.isDoNotOpenNewFileInit())
 			{
+				data.oneFileOpened=true;
+				 try
+		         {
+					 PrepareFile();
+		         }
+		         catch(Exception we)
+		         {
+		             logError("Unexpected error preparing to write to Excel file : "+we.toString());
+		             logError(Const.getStackTracker(we));
+		             return false;
+		         }
+	           
+				if (openNewFile())
+				{
+					return true;
+				}
+				else
+				{
+					logError("Couldn't open file "+meta.getFileName());
+					setErrors(1L);
+					stopAll();
+				}
+			}else
 				return true;
-			}
-			else
-			{
-				logError("Couldn't open file "+meta.getFileName());
-				setErrors(1L);
-				stopAll();
-			}
 		}
 		return false;
 	}
-	
+	private void PrepareFile() throws Exception
+	{
+
+        // Create the default font TODO: allow to change this later on.
+        data.writableFont = new WritableFont(WritableFont.ARIAL, 10, WritableFont.NO_BOLD);
+    
+	}
 	public void dispose(StepMetaInterface smi, StepDataInterface sdi)
 	{
 		meta=(ExcelOutputMeta)smi;
 		data=(ExcelOutputData)sdi;
 		
-		closeFile();
+		if(data.oneFileOpened) closeFile();
         
         super.dispose(smi, sdi);
 	}

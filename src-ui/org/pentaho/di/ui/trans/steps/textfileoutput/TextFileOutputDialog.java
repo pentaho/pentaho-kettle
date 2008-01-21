@@ -175,6 +175,10 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 	private Label        wlAddToResult;
 	private Button       wAddToResult;
 	private FormData     fdlAddToResult, fdAddToResult;
+	
+	private Label        wlDoNotOpenNewFileInit;
+	private Button       wDoNotOpenNewFileInit;
+	private FormData     fdlDoNotOpenNewFileInit, fdDoNotOpenNewFileInit;
 
     
 	public TextFileOutputDialog(Shell parent, Object in, TransMeta transMeta, String sname)
@@ -299,6 +303,34 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 				}
 			}
 		);
+		
+
+		// Open new File at Init
+		wlDoNotOpenNewFileInit=new Label(wFileComp, SWT.RIGHT);
+		wlDoNotOpenNewFileInit.setText(Messages.getString("TextFileOutputDialog.DoNotOpenNewFileInit.Label"));
+ 		props.setLook(wlDoNotOpenNewFileInit);
+		fdlDoNotOpenNewFileInit=new FormData();
+		fdlDoNotOpenNewFileInit.left = new FormAttachment(0, 0);
+		fdlDoNotOpenNewFileInit.top  = new FormAttachment(wFileIsCommand, margin);
+		fdlDoNotOpenNewFileInit.right= new FormAttachment(middle, -margin);
+		wlDoNotOpenNewFileInit.setLayoutData(fdlDoNotOpenNewFileInit);
+		wDoNotOpenNewFileInit=new Button(wFileComp, SWT.CHECK );
+		wDoNotOpenNewFileInit.setToolTipText(Messages.getString("TextFileOutputDialog.DoNotOpenNewFileInit.Tooltip"));
+ 		props.setLook(wDoNotOpenNewFileInit);
+		fdDoNotOpenNewFileInit=new FormData();
+		fdDoNotOpenNewFileInit.left = new FormAttachment(middle, 0);
+		fdDoNotOpenNewFileInit.top  = new FormAttachment(wFileIsCommand, margin);
+		fdDoNotOpenNewFileInit.right= new FormAttachment(100, 0);
+		wDoNotOpenNewFileInit.setLayoutData(fdDoNotOpenNewFileInit);
+		wDoNotOpenNewFileInit.addSelectionListener(new SelectionAdapter() 
+			{
+				public void widgetSelected(SelectionEvent e) 
+				{
+					input.setChanged();
+				}
+			}
+		);
+		
 
 		// Extension line
 		wlExtension=new Label(wFileComp, SWT.RIGHT);
@@ -306,7 +338,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
  		props.setLook(wlExtension);
 		fdlExtension=new FormData();
 		fdlExtension.left = new FormAttachment(0, 0);
-		fdlExtension.top  = new FormAttachment(wFileIsCommand, margin);
+		fdlExtension.top  = new FormAttachment(wDoNotOpenNewFileInit, margin);
 		fdlExtension.right= new FormAttachment(middle, -margin);
 		wlExtension.setLayoutData(fdlExtension);
 		wExtension=new Text(wFileComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
@@ -315,7 +347,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		wExtension.addModifyListener(lsMod);
 		fdExtension=new FormData();
 		fdExtension.left = new FormAttachment(middle, 0);
-		fdExtension.top  = new FormAttachment(wFileIsCommand, margin);
+		fdExtension.top  = new FormAttachment(wDoNotOpenNewFileInit, margin);
 		fdExtension.right= new FormAttachment(100, 0);
 		wExtension.setLayoutData(fdExtension);
 
@@ -1040,6 +1072,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 	{
 		if (input.getFileName()  != null) wFilename.setText(input.getFileName());
 		wFileIsCommand.setSelection(input.isFileAsCommand());
+		wDoNotOpenNewFileInit.setSelection(input.isDoNotOpenNewFileInit());
 		if (input.getExtension() != null) wExtension.setText(input.getExtension());
 		if (input.getSeparator() !=null) wSeparator.setText(input.getSeparator());
 		if (input.getEnclosure() !=null) wEnclosure.setText(input.getEnclosure());
@@ -1101,6 +1134,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 	{
 		tfoi.setFileName(   wFilename.getText() );
 		tfoi.setFileAsCommand( wFileIsCommand.getSelection() );
+		tfoi.setDoNotOpenNewFileInit(wDoNotOpenNewFileInit.getSelection() );
 		tfoi.setFileFormat( wFormat.getText() );
 		tfoi.setFileCompression( wCompression.getText() );
         tfoi.setEncoding( wEncoding.getText() );

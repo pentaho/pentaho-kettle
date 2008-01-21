@@ -64,7 +64,29 @@ public class XMLOutput extends BaseStep implements StepInterface
 		boolean result = true;
 
 		r = getRow(); // This also waits for a row to be finished.
-
+		
+		if(first && meta.isDoNotOpenNewFileInit())
+		{
+			// no more input to be expected...
+			// In this case, no file was opened.
+			if (r == null) 
+			{
+				setOutputDone();
+				return false;
+			}
+			
+			if (openNewFile())
+			{
+				data.OpenedNewFile=true;
+			} else
+			{
+				logError("Couldn't open file " + meta.getFileName());
+				setErrors(1L);
+				return false;
+			}
+		}
+		
+		
 		if ((r != null && linesOutput > 0 && meta.getSplitEvery() > 0 && (linesOutput % meta.getSplitEvery()) == 0))
 		{
 			// Done with this part or with everything.
@@ -120,6 +142,7 @@ public class XMLOutput extends BaseStep implements StepInterface
 						throw new KettleException("Field [" + meta.getOutputFields()[i].getFieldName()+ "] couldn't be found in the input stream!");
 					}
 				}
+				
 			}
 
 			if (meta.getOutputFields() == null || meta.getOutputFields().length == 0)
@@ -459,31 +482,32 @@ public class XMLOutput extends BaseStep implements StepInterface
 	private boolean closeFile()
 	{
 		boolean retval = false;
-
-		try
+		if(data.OpenedNewFile)
 		{
-			// Close the parent element
-			data.writer.write(("</" + meta.getMainElement() + ">" + Const.CR).toCharArray());
-
-			if (meta.isZipped())
+			try
 			{
-				// System.out.println("close zip entry ");
-				data.zip.closeEntry();
-				// System.out.println("finish file...");
-				data.zip.finish();
-				data.zip.close();
-			} else
+				// Close the parent element
+				data.writer.write(("</" + meta.getMainElement() + ">" + Const.CR).toCharArray());
+	
+				if (meta.isZipped())
+				{
+					// System.out.println("close zip entry ");
+					data.zip.closeEntry();
+					// System.out.println("finish file...");
+					data.zip.finish();
+					data.zip.close();
+				} else
+				{
+					data.writer.close();
+				}
+	
+				// System.out.println("Closed file...");
+	
+				retval = true;
+			} catch (Exception e)
 			{
-				data.writer.close();
 			}
-
-			// System.out.println("Closed file...");
-
-			retval = true;
-		} catch (Exception e)
-		{
 		}
-
 		return retval;
 	}
 
@@ -495,16 +519,20 @@ public class XMLOutput extends BaseStep implements StepInterface
 		if (super.init(smi, sdi))
 		{
 			data.splitnr = 0;
-
-			if (openNewFile())
+			if(!meta.isDoNotOpenNewFileInit())
 			{
+				if (openNewFile())
+				{
+					data.OpenedNewFile=true;
+					return true;
+				} else
+				{
+					logError("Couldn't open file " + meta.getFileName());
+					setErrors(1L);
+					stopAll();
+				}
+			}else
 				return true;
-			} else
-			{
-				logError("Couldn't open file " + meta.getFileName());
-				setErrors(1L);
-				stopAll();
-			}
 		}
 		return false;
 	}

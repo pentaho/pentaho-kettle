@@ -86,6 +86,10 @@ public class AccessOutputDialog extends BaseStepDialog implements StepDialogInte
 	private Label        wlAddToResult;
 	private Button       wAddToResult;
 	private FormData     fdlAddToResult, fdAddToResult;
+	
+	private Label        wlDoNotOpenNewFileInit;
+	private Button       wDoNotOpenNewFileInit;
+	private FormData     fdlDoNotOpenNewFileInit, fdDoNotOpenNewFileInit;
 
     private AccessOutputMeta input;
 	
@@ -177,6 +181,33 @@ public class AccessOutputDialog extends BaseStepDialog implements StepDialogInte
         fdFilename.right= new FormAttachment(wbbFilename, -margin);
         fdFilename.top  = new FormAttachment(wStepname, margin);
         wFilename.setLayoutData(fdFilename);
+        
+		// Open new File at Init
+		wlDoNotOpenNewFileInit=new Label(shell, SWT.RIGHT);
+		wlDoNotOpenNewFileInit.setText(Messages.getString("AccessOutputDialog.DoNotOpenNewFileInit.Label"));
+ 		props.setLook(wlDoNotOpenNewFileInit);
+		fdlDoNotOpenNewFileInit=new FormData();
+		fdlDoNotOpenNewFileInit.left = new FormAttachment(0, 0);
+		fdlDoNotOpenNewFileInit.top  = new FormAttachment(wFilename, margin);
+		fdlDoNotOpenNewFileInit.right= new FormAttachment(middle, -margin);
+		wlDoNotOpenNewFileInit.setLayoutData(fdlDoNotOpenNewFileInit);
+		wDoNotOpenNewFileInit=new Button(shell, SWT.CHECK );
+		wDoNotOpenNewFileInit.setToolTipText(Messages.getString("AccessOutputDialog.DoNotOpenNewFileInit.Tooltip"));
+ 		props.setLook(wDoNotOpenNewFileInit);
+		fdDoNotOpenNewFileInit=new FormData();
+		fdDoNotOpenNewFileInit.left = new FormAttachment(middle, margin);
+		fdDoNotOpenNewFileInit.top  = new FormAttachment(wFilename, margin);
+		fdDoNotOpenNewFileInit.right= new FormAttachment(100, 0);
+		wDoNotOpenNewFileInit.setLayoutData(fdDoNotOpenNewFileInit);
+		wDoNotOpenNewFileInit.addSelectionListener(new SelectionAdapter() 
+			{
+				public void widgetSelected(SelectionEvent e) 
+				{
+					input.setChanged();
+				}
+			}
+		);
+		
 
         // Create file?
         wlCreateFile=new Label(shell, SWT.RIGHT);
@@ -185,7 +216,7 @@ public class AccessOutputDialog extends BaseStepDialog implements StepDialogInte
         props.setLook(wlCreateFile);
         fdlCreateFile=new FormData();
         fdlCreateFile.left  = new FormAttachment(0, 0);
-        fdlCreateFile.top   = new FormAttachment(wFilename, margin);
+        fdlCreateFile.top   = new FormAttachment(wDoNotOpenNewFileInit, margin);
         fdlCreateFile.right = new FormAttachment(middle, 0);
         wlCreateFile.setLayoutData(fdlCreateFile);
         wCreateFile=new Button(shell, SWT.CHECK);
@@ -193,7 +224,7 @@ public class AccessOutputDialog extends BaseStepDialog implements StepDialogInte
         props.setLook(wCreateFile);
         fdCreateFile=new FormData();
         fdCreateFile.left  = new FormAttachment(middle, margin);
-        fdCreateFile.top   = new FormAttachment(wFilename, margin);
+        fdCreateFile.top   = new FormAttachment(wDoNotOpenNewFileInit, margin);
         fdCreateFile.right = new FormAttachment(100, 0);
         wCreateFile.setLayoutData(fdCreateFile);
         wCreateFile.addSelectionListener(lsSelMod);
@@ -278,7 +309,7 @@ public class AccessOutputDialog extends BaseStepDialog implements StepDialogInte
 		wAddToResult.setToolTipText(Messages.getString("AccessOutputMeta.AddFileToResult.Tooltip"));
  		props.setLook(wAddToResult);
 		fdAddToResult=new FormData();
-		fdAddToResult.left  = new FormAttachment(middle, 0);
+		fdAddToResult.left  = new FormAttachment(middle, margin);
 		fdAddToResult.top   = new FormAttachment(wCommitSize, 2*margin);
 		fdAddToResult.right = new FormAttachment(100, 0);
 		wAddToResult.setLayoutData(fdAddToResult);
@@ -380,6 +411,7 @@ public class AccessOutputDialog extends BaseStepDialog implements StepDialogInte
         wCreateTable.setSelection(input.isFileCreated() );
         if (input.getCommitSize()>0) wCommitSize.setText( Integer.toString( input.getCommitSize() ) );
         wAddToResult.setSelection(input.isAddToResultFiles());
+        wDoNotOpenNewFileInit.setSelection(input.isDoNotOpenNewFileInit());
 		
 		wStepname.selectAll();
 	}
@@ -399,6 +431,7 @@ public class AccessOutputDialog extends BaseStepDialog implements StepDialogInte
 		info.setTableCreated( wCreateTable.getSelection() );
         info.setCommitSize( Const.toInt(wCommitSize.getText(), -1) );
         info.setAddToResultFiles( wAddToResult.getSelection() );
+        input.setDoNotOpenNewFileInit(wDoNotOpenNewFileInit.getSelection() );
 	}
 	
 	private void ok()

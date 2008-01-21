@@ -35,11 +35,13 @@ public class AccessOutputData extends BaseStepData implements StepDataInterface
     public List<Column> columns;
     public List<Object[]> rows;
 	public RowMetaInterface outputRowMeta;
+	public boolean oneFileOpened;
         
 	public AccessOutputData()
 	{
 		super();
         rows = new ArrayList<Object[]>();
+        oneFileOpened=false;
 	}
 
 }

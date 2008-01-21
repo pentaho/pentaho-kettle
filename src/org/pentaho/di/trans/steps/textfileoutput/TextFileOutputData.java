@@ -66,6 +66,8 @@ public class TextFileOutputData extends BaseStepData implements StepDataInterfac
 	public boolean hasEncoding;
 
 	public byte[] binaryNullValue[];
+	
+	public boolean oneFileOpened;
 
     /**
 	 * 
@@ -88,5 +90,6 @@ public class TextFileOutputData extends BaseStepData implements StepDataInterfac
         defaultDateFormatSymbols = new DateFormatSymbols();
 
         cmdProc = null;
+        oneFileOpened=false;
 	}
 }

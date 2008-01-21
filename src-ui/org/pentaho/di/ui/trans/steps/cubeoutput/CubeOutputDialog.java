@@ -57,6 +57,10 @@ public class CubeOutputDialog extends BaseStepDialog implements StepDialogInterf
 	private Label        wlAddToResult;
 	private Button       wAddToResult;
 	private FormData     fdlAddToResult, fdAddToResult;
+	
+	private Label        wlDoNotOpenNewFileInit;
+	private Button       wDoNotOpenNewFileInit;
+	private FormData     fdlDoNotOpenNewFileInit, fdDoNotOpenNewFileInit;
 
 	private CubeOutputMeta input;
 
@@ -143,13 +147,41 @@ public class CubeOutputDialog extends BaseStepDialog implements StepDialogInterf
 		fdFilename.right= new FormAttachment(wbFilename, -margin);
 		wFilename.setLayoutData(fdFilename);
 		
+
+		// Open new File at Init
+		wlDoNotOpenNewFileInit=new Label(shell, SWT.RIGHT);
+		wlDoNotOpenNewFileInit.setText(Messages.getString("CubeOutputDialog.DoNotOpenNewFileInit.Label"));
+ 		props.setLook(wlDoNotOpenNewFileInit);
+		fdlDoNotOpenNewFileInit=new FormData();
+		fdlDoNotOpenNewFileInit.left = new FormAttachment(0, 0);
+		fdlDoNotOpenNewFileInit.top  = new FormAttachment(wFilename, 2*margin);
+		fdlDoNotOpenNewFileInit.right= new FormAttachment(middle, -margin);
+		wlDoNotOpenNewFileInit.setLayoutData(fdlDoNotOpenNewFileInit);
+		wDoNotOpenNewFileInit=new Button(shell, SWT.CHECK );
+		wDoNotOpenNewFileInit.setToolTipText(Messages.getString("CubeOutputDialog.DoNotOpenNewFileInit.Tooltip"));
+ 		props.setLook(wDoNotOpenNewFileInit);
+		fdDoNotOpenNewFileInit=new FormData();
+		fdDoNotOpenNewFileInit.left = new FormAttachment(middle, 0);
+		fdDoNotOpenNewFileInit.top  = new FormAttachment(wFilename, 2*margin);
+		fdDoNotOpenNewFileInit.right= new FormAttachment(100, 0);
+		wDoNotOpenNewFileInit.setLayoutData(fdDoNotOpenNewFileInit);
+		wDoNotOpenNewFileInit.addSelectionListener(new SelectionAdapter() 
+			{
+				public void widgetSelected(SelectionEvent e) 
+				{
+					input.setChanged();
+				}
+			}
+		);
+		
+		
 		// Add File to the result files name
 		wlAddToResult=new Label(shell, SWT.RIGHT);
 		wlAddToResult.setText(Messages.getString("CubeOutputDialog.AddFileToResult.Label"));
 		props.setLook(wlAddToResult);
 		fdlAddToResult=new FormData();
 		fdlAddToResult.left  = new FormAttachment(0, 0);
-		fdlAddToResult.top   = new FormAttachment(wFilename, 2*margin);
+		fdlAddToResult.top   = new FormAttachment(wDoNotOpenNewFileInit, margin);
 		fdlAddToResult.right = new FormAttachment(middle, -margin);
 		wlAddToResult.setLayoutData(fdlAddToResult);
 		wAddToResult=new Button(shell, SWT.CHECK);
@@ -157,7 +189,7 @@ public class CubeOutputDialog extends BaseStepDialog implements StepDialogInterf
  		props.setLook(wAddToResult);
 		fdAddToResult=new FormData();
 		fdAddToResult.left  = new FormAttachment(middle, 0);
-		fdAddToResult.top   = new FormAttachment(wFilename, 2*margin);
+		fdAddToResult.top   = new FormAttachment(wDoNotOpenNewFileInit, margin);
 		fdAddToResult.right = new FormAttachment(100, 0);
 		wAddToResult.setLayoutData(fdAddToResult);
 		SelectionAdapter lsSelR = new SelectionAdapter()
@@ -233,6 +265,7 @@ public class CubeOutputDialog extends BaseStepDialog implements StepDialogInterf
 	public void getData()
 	{
 		if (input.getFilename()  !=null) wFilename.setText(input.getFilename());
+		wDoNotOpenNewFileInit.setSelection(input.isDoNotOpenNewFileInit());
 		wAddToResult.setSelection(input.isAddToResultFiles());
 		wStepname.selectAll();
 	}
@@ -251,6 +284,7 @@ public class CubeOutputDialog extends BaseStepDialog implements StepDialogInterf
 
 		stepname = wStepname.getText(); // return value
 		input.setAddToResultFiles( wAddToResult.getSelection() );
+		input.setDoNotOpenNewFileInit(wDoNotOpenNewFileInit.getSelection() );
 		input.setFilename( wFilename.getText() );
 
 		dispose();

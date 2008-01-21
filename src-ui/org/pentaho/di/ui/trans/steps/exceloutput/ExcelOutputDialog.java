@@ -161,6 +161,10 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 	private Label        wlAppend;
 	private Button       wAppend;
 	private FormData     fdlAppend, fdAppend;
+	
+	private Label        wlDoNotOpenNewFileInit;
+	private Button       wDoNotOpenNewFileInit;
+	private FormData     fdlDoNotOpenNewFileInit, fdDoNotOpenNewFileInit;
     
 	public ExcelOutputDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
@@ -259,13 +263,41 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		fdFilename.right= new FormAttachment(wbFilename, -margin);
 		wFilename.setLayoutData(fdFilename);
 		
+		
+		// Open new File at Init
+		wlDoNotOpenNewFileInit=new Label(wFileComp, SWT.RIGHT);
+		wlDoNotOpenNewFileInit.setText(Messages.getString("ExcelOutputDialog.DoNotOpenNewFileInit.Label"));
+ 		props.setLook(wlDoNotOpenNewFileInit);
+		fdlDoNotOpenNewFileInit=new FormData();
+		fdlDoNotOpenNewFileInit.left = new FormAttachment(0, 0);
+		fdlDoNotOpenNewFileInit.top  = new FormAttachment(wFilename, margin);
+		fdlDoNotOpenNewFileInit.right= new FormAttachment(middle, -margin);
+		wlDoNotOpenNewFileInit.setLayoutData(fdlDoNotOpenNewFileInit);
+		wDoNotOpenNewFileInit=new Button(wFileComp, SWT.CHECK );
+		wDoNotOpenNewFileInit.setToolTipText(Messages.getString("ExcelOutputDialog.DoNotOpenNewFileInit.Tooltip"));
+ 		props.setLook(wDoNotOpenNewFileInit);
+		fdDoNotOpenNewFileInit=new FormData();
+		fdDoNotOpenNewFileInit.left = new FormAttachment(middle, 0);
+		fdDoNotOpenNewFileInit.top  = new FormAttachment(wFilename, margin);
+		fdDoNotOpenNewFileInit.right= new FormAttachment(100, 0);
+		wDoNotOpenNewFileInit.setLayoutData(fdDoNotOpenNewFileInit);
+		wDoNotOpenNewFileInit.addSelectionListener(new SelectionAdapter() 
+			{
+				public void widgetSelected(SelectionEvent e) 
+				{
+					input.setChanged();
+				}
+			}
+		);
+		
+		
 		// Extension line
 		wlExtension=new Label(wFileComp, SWT.RIGHT);
 		wlExtension.setText(Messages.getString("System.Label.Extension"));
  		props.setLook(wlExtension);
 		fdlExtension=new FormData();
 		fdlExtension.left = new FormAttachment(0, 0);
-		fdlExtension.top  = new FormAttachment(wFilename, margin);
+		fdlExtension.top  = new FormAttachment(wDoNotOpenNewFileInit, margin);
 		fdlExtension.right= new FormAttachment(middle, -margin);
 		wlExtension.setLayoutData(fdlExtension);
 		wExtension=new Text(wFileComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
@@ -274,7 +306,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		wExtension.addModifyListener(lsMod);
 		fdExtension=new FormData();
 		fdExtension.left = new FormAttachment(middle, 0);
-		fdExtension.top  = new FormAttachment(wFilename, margin);
+		fdExtension.top  = new FormAttachment(wDoNotOpenNewFileInit, margin);
 		fdExtension.right= new FormAttachment(wbFilename, -margin);
 		wExtension.setLayoutData(fdExtension);
 
@@ -991,6 +1023,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 	public void getData()
 	{
 		if (input.getFileName()  != null) wFilename.setText(input.getFileName());
+		wDoNotOpenNewFileInit.setSelection(input.isDoNotOpenNewFileInit());
 		if (input.getExtension() != null) wExtension.setText(input.getExtension());
         if (input.getEncoding()  !=null) wEncoding.setText(input.getEncoding());
 		if (input.getTemplateFileName()  != null) wTemplateFilename.setText(input.getTemplateFileName());
@@ -1050,6 +1083,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 	{
 		tfoi.setFileName(   wFilename.getText() );
         tfoi.setEncoding( wEncoding.getText() );
+        tfoi.setDoNotOpenNewFileInit(wDoNotOpenNewFileInit.getSelection() );
 		tfoi.setExtension(  wExtension.getText() );
 		tfoi.setTemplateFileName(  wTemplateFilename.getText() );
 		tfoi.setSplitEvery( Const.toInt(wSplitEvery.getText(), 0) );

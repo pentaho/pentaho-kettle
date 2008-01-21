@@ -60,6 +60,8 @@ public class XMLOutputData extends BaseStepData implements StepDataInterface
 	public SimpleDateFormat defaultDateFormat;
 
 	public DateFormatSymbols defaultDateFormatSymbols;
+	
+	public boolean OpenedNewFile;
 
 	/**
 	 * 
@@ -80,6 +82,8 @@ public class XMLOutputData extends BaseStepData implements StepDataInterface
 
 		defaultDateFormat = new SimpleDateFormat();
 		defaultDateFormatSymbols = new DateFormatSymbols();
+		
+		OpenedNewFile=false;
 
 	}
 

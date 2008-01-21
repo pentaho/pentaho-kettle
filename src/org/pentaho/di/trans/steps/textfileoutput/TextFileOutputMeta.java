@@ -122,6 +122,9 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
     
 	/** Flag: add the filenames to result filenames */
     private boolean addToResultFilenames;
+    
+    /** Flag : Do not open new file when transformation start  */ 
+    private boolean donotopennewfileinit;
 
 	public TextFileOutputMeta()
     {
@@ -384,6 +387,23 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
     {
         this.separator = separator;
     }
+    
+    /**
+     * @return Returns the donotopennewfileinit.
+     */    
+    public boolean isDoNotOpenNewFileInit()
+    {
+    	return donotopennewfileinit;
+    }
+
+    /**
+     * @param donotopennewfileinit The donotopennewfileinit to set.
+     */
+    public void setDoNotOpenNewFileInit(boolean donotopennewfileinitv)
+    {
+    	this.donotopennewfileinit=donotopennewfileinitv;
+    }
+
 
     /**
      * @return Returns the splitEvery.
@@ -559,6 +579,7 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 
 			fileName              = XMLHandler.getTagValue(stepnode, "file", "name");
 			fileAsCommand         = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "is_command"));
+			donotopennewfileinit  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "do_not_open_new_file_init"));
 			extension             = XMLHandler.getTagValue(stepnode, "file", "extention");
 			fileAppended          = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "append"));
 			stepNrInFilename      = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "split"));
@@ -638,6 +659,7 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 		fileCompression  = fileCompressionTypeCodes[FILE_COMPRESSION_TYPE_NONE];
 		fileName         = "file";
 		fileAsCommand    = false;
+		donotopennewfileinit =false;
 		extension        = "txt";
 		stepNrInFilename = false;
 		partNrInFilename = false;
@@ -832,6 +854,7 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 		retval.append("    <file>").append(Const.CR);
 		retval.append("      ").append(XMLHandler.addTagValue("name",       fileName));
 		retval.append("      ").append(XMLHandler.addTagValue("is_command", fileAsCommand));
+		retval.append("      ").append(XMLHandler.addTagValue("do_not_open_new_file_init", donotopennewfileinit));
 		retval.append("      ").append(XMLHandler.addTagValue("extention",  extension));
 		retval.append("      ").append(XMLHandler.addTagValue("append",     fileAppended));
 		retval.append("      ").append(XMLHandler.addTagValue("split",      stepNrInFilename));
@@ -897,6 +920,7 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
             
 			fileName        =      rep.getStepAttributeString (id_step, "file_name");  
 			fileAsCommand        =      rep.getStepAttributeBoolean (id_step, "file_is_command");  
+			donotopennewfileinit =      rep.getStepAttributeBoolean(id_step, "do_not_open_new_file_init");
 			extension       =      rep.getStepAttributeString (id_step, "file_extention");
 			fileAppended          =      rep.getStepAttributeBoolean(id_step, "file_append");
 			splitEvery      = (int)rep.getStepAttributeInteger(id_step, "file_split");
@@ -960,6 +984,7 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
             rep.saveStepAttribute(id_transformation, id_step, "encoding",         encoding);
 			rep.saveStepAttribute(id_transformation, id_step, "file_name",        fileName);
 			rep.saveStepAttribute(id_transformation, id_step, "file_is_command",  fileAsCommand);
+			rep.saveStepAttribute(id_transformation, id_step, "do_not_open_new_file_init", donotopennewfileinit);  
 			rep.saveStepAttribute(id_transformation, id_step, "file_extention",   extension);
 			rep.saveStepAttribute(id_transformation, id_step, "file_append",      fileAppended);
 			rep.saveStepAttribute(id_transformation, id_step, "file_split",       splitEvery);

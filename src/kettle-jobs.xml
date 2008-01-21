@@ -499,7 +499,18 @@
 		</tooltip>
 		<image-uri>ui/images/DFN.png</image-uri>
 	</job>
-	
+	<job id="MSSQL_BULK_LOAD">
+		<type>
+			ognl:@org.pentaho.di.job.JobEntryType@MSSQL_BULK_LOAD
+		</type>
+		<class-name>
+			org.pentaho.di.job.entries.mssqlbulkload.JobEntryMssqlBulkLoad
+		</class-name>
+		<tooltip>
+			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.MssqlBulkLoad.Tooltip")
+		</tooltip>
+		<image-uri>ui/images/MBL.png</image-uri>
+	</job>
 	
 	
 </jobs>

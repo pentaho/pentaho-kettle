@@ -62,6 +62,20 @@ public class AccessOutput extends BaseStep implements StepInterface
 			return false;
 		}
 		
+		if(first && meta.isDoNotOpenNewFileInit())
+		{
+			try
+			{
+				if(!OpenFile()) return false;
+                
+			}
+			catch(Exception e)
+			{
+				logError("An error occurred intialising this step: "+e.getMessage());
+				stopAll();
+				setErrors(1);
+			}
+		}
 		try
 		{
 			writeToTable(r);
@@ -170,76 +184,85 @@ public class AccessOutput extends BaseStep implements StepInterface
 
 		if (super.init(smi, sdi))
 		{
-			try
+			if(!meta.isDoNotOpenNewFileInit())
 			{
-                String realFilename = environmentSubstitute(meta.getFilename());
-                logBasic(Messages.getString("AccessOutput.log.WritingToFile", realFilename));
-                FileObject fileObject = KettleVFS.getFileObject(realFilename);
-                File file = new File(KettleVFS.getFilename(fileObject));
-                
-                // First open or create the access file
-                if (!file.exists())
-                {
-                    if (meta.isFileCreated())
-                    {
-                        data.db = Database.create(file);
-                    }
-                    else
-                    {
-                        logError(Messages.getString("AccessOutput.InitError.FileDoesNotExist", realFilename));
-                        return false;
-                    }
-                }
-                else
-                {
-                    data.db = Database.open(file);
-                }
-                
-                // Add the filename to the result object...
-                //
-                if(meta.isAddToResultFiles())
-                {
-	    			ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, fileObject, getTransMeta().getName(), toString());
-	    			resultFile.setComment("This file was created with an access output step");
-	    			addResultFile(resultFile);
-                }
-                
-				return true;
-			}
-			catch(Exception e)
-			{
-				logError("An error occurred intialising this step: "+e.getMessage());
-				stopAll();
-				setErrors(1);
-			}
+				try
+				{
+					return OpenFile();
+	                
+				}
+				catch(Exception e)
+				{
+					logError("An error occurred intialising this step: "+e.getMessage());
+					stopAll();
+					setErrors(1);
+				}
+			}else return true;
 		}
 		return false;
 	}
-		
+	private boolean OpenFile() throws Exception
+	{
+		data.oneFileOpened=true;
+        String realFilename = environmentSubstitute(meta.getFilename());
+        logBasic(Messages.getString("AccessOutput.log.WritingToFile", realFilename));
+        FileObject fileObject = KettleVFS.getFileObject(realFilename);
+        File file = new File(KettleVFS.getFilename(fileObject));
+        
+        // First open or create the access file
+        if (!file.exists())
+        {
+            if (meta.isFileCreated())
+            {
+                data.db = Database.create(file);
+            }
+            else
+            {
+                logError(Messages.getString("AccessOutput.InitError.FileDoesNotExist", realFilename));
+                return false;
+            }
+        }
+        else
+        {
+            data.db = Database.open(file);
+        }
+        
+        // Add the filename to the result object...
+        //
+        if(meta.isAddToResultFiles())
+        {
+			ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, fileObject, getTransMeta().getName(), toString());
+			resultFile.setComment("This file was created with an access output step");
+			addResultFile(resultFile);
+        }
+        
+        return true;
+	}
 	public void dispose(StepMetaInterface smi, StepDataInterface sdi)
 	{
 		meta=(AccessOutputMeta)smi;
 		data=(AccessOutputData)sdi;
-
-		try
+		if(data.oneFileOpened)
 		{
-            // Put the last records in the table as well!
-            if (data.table!=null) {
-            	data.table.addRows(data.rows);
-            }
-            
-            // Just for good measure.
-            data.rows.clear();
-            
-            data.db.close();
+			try
+			{
+	            // Put the last records in the table as well!
+	            if (data.table!=null) {
+	            	data.table.addRows(data.rows);
+	            }
+	            
+	            // Just for good measure.
+	            data.rows.clear();
+	            
+	            data.db.close();
+			}
+			catch(IOException e)
+			{
+			    logError("Error closing the database: "+e.toString());
+				setErrors(1);
+				stopAll();
+			}
 		}
-		catch(IOException e)
-		{
-		    logError("Error closing the database: "+e.toString());
-			setErrors(1);
-			stopAll();
-		}
-
         super.dispose(smi, sdi);
 	}	
 

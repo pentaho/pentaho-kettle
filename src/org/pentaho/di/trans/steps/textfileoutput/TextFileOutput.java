@@ -78,6 +78,24 @@ public class TextFileOutput extends BaseStep implements StepInterface
             data.outputRowMeta = getInputRowMeta().clone();
             meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
             
+            if(meta.isDoNotOpenNewFileInit())
+            {
+            	// Open a new file here
+            	if (openNewFile())
+				{
+            		data.oneFileOpened=true;
+					try {
+						setSettings();
+						
+					} catch (UnsupportedEncodingException e) {
+						logError("Encoding problem: "+e.toString());
+						logError(Const.getStackTracker(e));
+						return false;
+					}
+				}	
+            	
+            }
+            
             if (!meta.isFileAppended() && ( meta.isHeaderEnabled() || meta.isFooterEnabled())) // See if we have to write a header-line)
             {
                 if (meta.isHeaderEnabled() && data.outputRowMeta!=null)
@@ -669,68 +687,76 @@ public class TextFileOutput extends BaseStep implements StepInterface
 		if (super.init(smi, sdi))
 		{
 			data.splitnr=0;
-			
-			if (openNewFile())
+			// In case user want to create file at first row
+			// In that case, DO NOT create file at Init
+			if(!meta.isDoNotOpenNewFileInit())
 			{
-				try {
-					data.hasEncoding = !Const.isEmpty(meta.getEncoding());
-					data.binarySeparator = new byte[] {};
-					data.binaryEnclosure = new byte[] {};
-					data.binaryNewline   = new byte[] {};
-					
-					if (data.hasEncoding) {
-						if (!Const.isEmpty(meta.getSeparator())) data.binarySeparator= meta.getSeparator().getBytes(meta.getEncoding());
-						if (!Const.isEmpty(meta.getEnclosure())) data.binaryEnclosure = meta.getEnclosure().getBytes(meta.getEncoding());
-						if (!Const.isEmpty(meta.getNewline()))   data.binaryNewline   = meta.getNewline().getBytes(meta.getEncoding());
+				if (openNewFile())
+				{
+					data.oneFileOpened=true;
+					try{
+						setSettings();
+					} catch (UnsupportedEncodingException e) {
+						logError("Encoding problem: "+e.toString());
+						logError(Const.getStackTracker(e));
+						return false;
 					}
-					else {
-						if (!Const.isEmpty(meta.getSeparator())) data.binarySeparator= meta.getSeparator().getBytes();
-						if (!Const.isEmpty(meta.getEnclosure())) data.binaryEnclosure = meta.getEnclosure().getBytes();
-						if (!Const.isEmpty(meta.getNewline()))   data.binaryNewline   = meta.getNewline().getBytes();
-					}
-					
-					data.binaryNullValue = new byte[meta.getOutputFields().length][];
-					for (int i=0;i<meta.getOutputFields().length;i++)
-					{
-						data.binaryNullValue[i] = null;
-						String nullString = meta.getOutputFields()[i].getNullString();
-						if (!Const.isEmpty(nullString)) 
-						{
-							if (data.hasEncoding)
-							{
-								data.binaryNullValue[i] = nullString.getBytes(meta.getEncoding());
-							}
-							else
-							{
-								data.binaryNullValue[i] = nullString.getBytes();
-							}
-						}
-					}
-					
-				} catch (UnsupportedEncodingException e) {
-					logError("Encoding problem: "+e.toString());
-					logError(Const.getStackTracker(e));
-					return false;
+					return true;
+				}	
+				else
+				{
+					logError("Couldn't open file "+meta.getFileName());
+					setErrors(1L);
+					stopAll();
 				}
-				
-				return true;
 			}
-			else
-			{
-				logError("Couldn't open file "+meta.getFileName());
-				setErrors(1L);
-				stopAll();
-			}
+			return true;
 		}
+	
 		return false;
 	}
-	
+	private void setSettings() throws UnsupportedEncodingException
+	{
+		data.hasEncoding = !Const.isEmpty(meta.getEncoding());
+		data.binarySeparator = new byte[] {};
+		data.binaryEnclosure = new byte[] {};
+		data.binaryNewline   = new byte[] {};
+		
+		if (data.hasEncoding) {
+			if (!Const.isEmpty(meta.getSeparator())) data.binarySeparator= meta.getSeparator().getBytes(meta.getEncoding());
+			if (!Const.isEmpty(meta.getEnclosure())) data.binaryEnclosure = meta.getEnclosure().getBytes(meta.getEncoding());
+			if (!Const.isEmpty(meta.getNewline()))   data.binaryNewline   = meta.getNewline().getBytes(meta.getEncoding());
+		}
+		else {
+			if (!Const.isEmpty(meta.getSeparator())) data.binarySeparator= meta.getSeparator().getBytes();
+			if (!Const.isEmpty(meta.getEnclosure())) data.binaryEnclosure = meta.getEnclosure().getBytes();
+			if (!Const.isEmpty(meta.getNewline()))   data.binaryNewline   = meta.getNewline().getBytes();
+		}
+		
+		data.binaryNullValue = new byte[meta.getOutputFields().length][];
+		for (int i=0;i<meta.getOutputFields().length;i++)
+		{
+			data.binaryNullValue[i] = null;
+			String nullString = meta.getOutputFields()[i].getNullString();
+			if (!Const.isEmpty(nullString)) 
+			{
+				if (data.hasEncoding)
+				{
+					data.binaryNullValue[i] = nullString.getBytes(meta.getEncoding());
+				}
+				else
+				{
+					data.binaryNullValue[i] = nullString.getBytes();
+				}
+			}
+		}
+	}
 	public void dispose(StepMetaInterface smi, StepDataInterface sdi)
 	{
 		meta=(TextFileOutputMeta)smi;
 		data=(TextFileOutputData)sdi;
 		
-		closeFile();
+		if(data.oneFileOpened) closeFile();
 
         super.dispose(smi, sdi);
 	}
