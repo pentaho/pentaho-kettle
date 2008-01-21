@@ -134,6 +134,7 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 			String dbname   = XMLHandler.getTagValue(entrynode, "connection");
 			addfiletoresult = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "addfiletoresult"));
 			connection      = DatabaseMeta.findDatabase(databases, dbname);
+
 		}
 		catch(KettleException e)
 		{
@@ -167,6 +168,8 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 				// This is were we end up in normally, the previous lines are for backward compatibility.
 				connection = DatabaseMeta.findDatabase(databases, rep.getJobEntryAttributeString(id_jobentry, "connection"));
 			}
+		
+			
 
 		}
 		catch(KettleDatabaseException dbe)
@@ -191,6 +194,7 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 			rep.saveJobEntryAttribute(id_job, getID(), "addfiletoresult", addfiletoresult);
 
 			if (connection!=null) rep.saveJobEntryAttribute(id_job, getID(), "connection", connection.getName());
+
 		}
 		catch(KettleDatabaseException dbe)
 		{
@@ -267,7 +271,7 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 				if (!(fileObject instanceof LocalFile)) {
 					// MSSQL BUKL INSERT can only use local files, so that's what we limit ourselves to.
 					//
-					throw new KettleException("Only local files are supported at this time, file ["+vfsFilename+"] is not a local file.");
+					throw new KettleException(Messages.getString("JobMssqlBulkLoad.Error.OnlyLocalFileSupported",vfsFilename));
 				}
 				
 				// Convert it to a regular platform specific file name
@@ -280,7 +284,7 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 				if (file.exists() && file.canRead())
 				{
 					// User has specified an existing file, We can continue ...
-					log.logDetailed(toString(), "File ["+realFilename+"] exists.");
+					if (log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobMssqlBulkLoad.FileExists.Label",realFilename));
 	
 					if (connection!=null)
 					{
@@ -288,10 +292,10 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 						Database db = new Database(connection);
 						
 						if(db.getDatabaseMeta().getDatabaseType()!=DatabaseMeta.TYPE_DATABASE_MSSQL)
-							{
-								log.logError(toString(),Messages.getString("JobMssqlBulkLoad.Error.DbNotMSSQL",connection.getDatabaseName()));
-								return result;
-							}
+						{
+							log.logError(toString(),Messages.getString("JobMssqlBulkLoad.Error.DbNotMSSQL",connection.getDatabaseName()));
+							return result;
+						}
 						db.shareVariablesWith(this);
 						try
 						{
@@ -304,13 +308,11 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 							if (db.checkTableExists(realTablename))
 							{
 								// The table existe, We can continue ...
-								log.logDetailed(toString(), "Table ["+realTablename+"] exists.");
+								log.logDetailed(toString(), Messages.getString("JobMssqlBulkLoad.TableExists.Label",realTablename));
 	
 								// Add schemaname (Most the time Schemaname.Tablename)
 								if (schemaname !=null)
-								{
 									realTablename= realSchemaname + "." + realTablename;
-								}
 	
 								// Take the X first rows
 								String nblinesTake=getRealTakelines();
@@ -340,7 +342,7 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 									// Run the SQL
 									db.execStatements(SQLBULKLOAD);
 	
-									// Everything is OK...we can deconnect now
+									// Everything is OK...we can disconnect now
 									db.disconnect();
 									
 									if (isAddFileToResult())
@@ -354,7 +356,6 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 								}
 								catch(KettleDatabaseException je)
 								{
-									db.disconnect();
 									result.setNrErrors(1);
 									log.logError(toString(), "An error occurred executing this job entry : "+je.getMessage());
 								}
@@ -363,13 +364,21 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 					       			log.logError(toString(), "An error occurred executing this job entry : " + e.getMessage());
 									result.setNrErrors(1);
 								}
+								finally
+								{
+									if(db!=null)
+									{
+										db.disconnect();
+										db=null;
+									}
+								}
 							}
 							else
 							{
 								// Of course, the table should have been created already before the bulk load operation
 								db.disconnect();
 								result.setNrErrors(1);
-								log.logDetailed(toString(), "Table ["+realTablename+"] doesn't exist!");
+								log.logDetailed(toString(), Messages.getString("JobMssqlBulkLoad.Error.TableNotExists",realTablename));
 							}
 						}
 						catch(KettleDatabaseException dbe)
@@ -390,7 +399,7 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 				{
 					// the file doesn't exist
 					result.setNrErrors(1);
-					log.logError(toString(), "File ["+realFilename+"] doesn't exist!");
+					log.logError(toString(),Messages.getString("JobMssqlBulkLoad.Error.FileNotExists",realFilename));
 				}
 			}
 			catch(Exception e)

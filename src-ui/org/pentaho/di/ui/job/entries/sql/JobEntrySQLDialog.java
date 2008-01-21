@@ -40,7 +40,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.job.JobMeta;
-import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
+
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.job.dialog.JobDialog;
 import org.pentaho.di.ui.job.entry.JobEntryDialog; 
@@ -67,13 +67,7 @@ public class JobEntrySQLDialog extends JobEntryDialog implements JobEntryDialogI
 
     private FormData fdlName, fdName;
 
-    private Label wlConnection;
-
     private CCombo wConnection;
-
-    private Button wbConnection;
-
-    private FormData fdlConnection, fdbConnection, fdConnection;
 
     private Label wlUseSubs;
 
@@ -159,62 +153,16 @@ public class JobEntrySQLDialog extends JobEntryDialog implements JobEntryDialogI
         props.setLook(wName);
         wName.addModifyListener(lsMod);
         fdName = new FormData();
-        fdName.left = new FormAttachment(middle, margin);
+        fdName.left = new FormAttachment(middle, 0);
         fdName.top = new FormAttachment(0, margin);
         fdName.right = new FormAttachment(100, 0);
         wName.setLayoutData(fdName);
+        
+		// Connection line
+		wConnection = addConnectionLine(shell, wName, middle, margin);
+		if (jobEntry.getDatabase()==null && jobMeta.nrDatabases()==1) wConnection.select(0);
+		wConnection.addModifyListener(lsMod);
 
-        // Connection line
-        wlConnection = new Label(shell, SWT.RIGHT);
-        wlConnection.setText(Messages.getString("JobSQL.Connection.Label"));
-        props.setLook(wlConnection);
-        fdlConnection = new FormData();
-        fdlConnection.left = new FormAttachment(0, 0);
-        fdlConnection.right = new FormAttachment(middle, 0);
-        fdlConnection.top = new FormAttachment(wName, margin);
-        wlConnection.setLayoutData(fdlConnection);
-
-        wbConnection = new Button(shell, SWT.PUSH);
-        wbConnection.setText(Messages.getString("System.Button.New") + "...");
-        wbConnection.addSelectionListener(new SelectionAdapter()
-        {
-            public void widgetSelected(SelectionEvent e)
-            {
-                DatabaseMeta databaseMeta = new DatabaseMeta();
-                databaseMeta.shareVariablesWith(jobMeta);
-                DatabaseDialog cid = new DatabaseDialog(shell, databaseMeta);
-                cid.setModalDialog(true);
-                if (cid.open() != null)
-                {
-                    jobMeta.addDatabase(databaseMeta);
-
-                    // SB: Maybe do the same her as in BaseStepDialog: remove
-                    // all db connections and add them again.
-                    wConnection.add(databaseMeta.getName());
-                    wConnection.select(wConnection.getItemCount() - 1);
-                }
-            }
-        });
-        fdbConnection = new FormData();
-        fdbConnection.right = new FormAttachment(100, 0);
-        fdbConnection.top = new FormAttachment(wName, margin);
-        fdbConnection.height = 20;
-        wbConnection.setLayoutData(fdbConnection);
-
-        wConnection = new CCombo(shell, SWT.BORDER | SWT.READ_ONLY);
-        props.setLook(wConnection);
-        for (int i = 0; i < jobMeta.nrDatabases(); i++)
-        {
-            DatabaseMeta ci = jobMeta.getDatabase(i);
-            wConnection.add(ci.getName());
-        }
-        wConnection.select(0);
-        wConnection.addModifyListener(lsMod);
-        fdConnection = new FormData();
-        fdConnection.left = new FormAttachment(middle, margin);
-        fdConnection.top = new FormAttachment(wName, margin);
-        fdConnection.right = new FormAttachment(wbConnection, -margin);
-        wConnection.setLayoutData(fdConnection);
 
         // Include Files?
         wlUseSubs = new Label(shell, SWT.RIGHT);
@@ -229,7 +177,7 @@ public class JobEntrySQLDialog extends JobEntryDialog implements JobEntryDialogI
         props.setLook(wUseSubs);
         wUseSubs.setToolTipText(Messages.getString("JobSQL.UseVariableSubst.Tooltip"));
         fdUseSubs = new FormData();
-        fdUseSubs.left = new FormAttachment(middle, margin);
+        fdUseSubs.left = new FormAttachment(middle, 0);
         fdUseSubs.top = new FormAttachment(wConnection, margin);
         fdUseSubs.right = new FormAttachment(100, 0);
         wUseSubs.setLayoutData(fdUseSubs);

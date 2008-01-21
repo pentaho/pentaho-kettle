@@ -35,9 +35,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.job.JobMeta;
-import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.job.dialog.JobDialog;
@@ -64,13 +62,8 @@ public class JobEntryTableExistsDialog extends JobEntryDialog implements JobEntr
 
     private FormData fdlName, fdName;
 
-    private Label wlConnection;
 
     private CCombo wConnection;
-
-    private Button wbConnection;
-
-    private FormData fdlConnection, fdbConnection, fdConnection;
 
     private Label wlTablename;
 
@@ -144,57 +137,12 @@ public class JobEntryTableExistsDialog extends JobEntryDialog implements JobEntr
         fdName.right = new FormAttachment(100, 0);
         wName.setLayoutData(fdName);
 
-        // Connection line
-        wlConnection = new Label(shell, SWT.RIGHT);
-        wlConnection.setText(Messages.getString("JobTableExists.Connection.Label"));
-        props.setLook(wlConnection);
-        fdlConnection = new FormData();
-        fdlConnection.left = new FormAttachment(0, 0);
-        fdlConnection.top = new FormAttachment(wName, margin);
-        fdlConnection.right = new FormAttachment(middle, -margin);
-        wlConnection.setLayoutData(fdlConnection);
-
-        wbConnection = new Button(shell, SWT.PUSH);
-        wbConnection.setText(Messages.getString("System.Button.New") + "...");
-        wbConnection.addSelectionListener(new SelectionAdapter()
-        {
-            public void widgetSelected(SelectionEvent e)
-            {
-                DatabaseMeta databaseMeta = new DatabaseMeta();
-                databaseMeta.shareVariablesWith(jobMeta);
-                DatabaseDialog cid = new DatabaseDialog(shell, databaseMeta);
-                cid.setModalDialog(true);
-                if (cid.open() != null)
-                {
-                    jobMeta.addDatabase(databaseMeta);
-
-                    // SB: Maybe do the same here as in BaseStepDialog: remove
-                    // all db connections and add them again.
-                    wConnection.add(databaseMeta.getName());
-                    wConnection.select(wConnection.getItemCount() - 1);
-                }
-            }
-        });
-        fdbConnection = new FormData();
-        fdbConnection.right = new FormAttachment(100, 0);
-        fdbConnection.top = new FormAttachment(wName, margin);
-        fdbConnection.height = 20;
-        wbConnection.setLayoutData(fdbConnection);
-
-        wConnection = new CCombo(shell, SWT.BORDER | SWT.READ_ONLY);
-        props.setLook(wConnection);
-        for (int i = 0; i < jobMeta.nrDatabases(); i++)
-        {
-            DatabaseMeta ci = jobMeta.getDatabase(i);
-            wConnection.add(ci.getName());
-        }
-        wConnection.select(0);
-        wConnection.addModifyListener(lsMod);
-        fdConnection = new FormData();
-        fdConnection.left = new FormAttachment(middle, 0);
-        fdConnection.top = new FormAttachment(wName, margin);
-        fdConnection.right = new FormAttachment(wbConnection, -margin);
-        wConnection.setLayoutData(fdConnection);
+		// Connection line
+		wConnection = addConnectionLine(shell, wName, middle, margin);
+		if (jobEntry.getDatabase()==null && jobMeta.nrDatabases()==1) wConnection.select(0);
+		wConnection.addModifyListener(lsMod);
+        
+       
 
         // Table name line
         wlTablename = new Label(shell, SWT.RIGHT);
