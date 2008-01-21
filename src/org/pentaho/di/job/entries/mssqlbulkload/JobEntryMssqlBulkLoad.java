@@ -60,15 +60,9 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 	private String tablename;
 	private String filename;
 	private String separator;
-	private String enclosed;
-	private String escaped;
-	private String linestarted;
 	private String lineterminated;
 	private String takelines;
-	private boolean replacedata;
 	private String orderby;
-	private boolean localinfile;
-	public int prorityvalue;
 	private boolean addfiletoresult;
 
 	private DatabaseMeta connection;
@@ -80,14 +74,9 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 		schemaname=null;
 		filename=null;
 		separator=null;
-		enclosed=null;
-		escaped=null;
 		lineterminated=null;
-		linestarted=null;
-		replacedata=true;
 		takelines = "0";
 		orderby=null;
-		localinfile=true;
 		connection=null;
 		addfiletoresult = false;
 		setID(-1L);
@@ -119,21 +108,10 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 		retval.append("      ").append(XMLHandler.addTagValue("tablename",       tablename));
 		retval.append("      ").append(XMLHandler.addTagValue("filename",        filename));
 		retval.append("      ").append(XMLHandler.addTagValue("separator",       separator));
-		retval.append("      ").append(XMLHandler.addTagValue("enclosed",        enclosed));
-		retval.append("      ").append(XMLHandler.addTagValue("escaped",        escaped));
-		retval.append("      ").append(XMLHandler.addTagValue("linestarted",     linestarted));
 		retval.append("      ").append(XMLHandler.addTagValue("lineterminated",  lineterminated));
-
-		retval.append("      ").append(XMLHandler.addTagValue("replacedata",     replacedata));
 		retval.append("      ").append(XMLHandler.addTagValue("takelines",     takelines));
-		retval.append("      ").append(XMLHandler.addTagValue("orderby",    orderby));
-
-		retval.append("      ").append(XMLHandler.addTagValue("localinfile",     localinfile));
-
-		retval.append("      ").append(XMLHandler.addTagValue("prorityvalue",    prorityvalue));
-		
+		retval.append("      ").append(XMLHandler.addTagValue("orderby",    orderby));		
 		retval.append("      ").append(XMLHandler.addTagValue("addfiletoresult",  addfiletoresult));
-
 		retval.append("      ").append(XMLHandler.addTagValue("connection",      connection==null?null:connection.getName()));
 
 		return retval.toString();
@@ -148,16 +126,11 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 			tablename   = XMLHandler.getTagValue(entrynode, "tablename");
 			filename    = XMLHandler.getTagValue(entrynode, "filename");
 			separator   = XMLHandler.getTagValue(entrynode, "separator");
-			enclosed    = XMLHandler.getTagValue(entrynode, "enclosed");
-			escaped    = XMLHandler.getTagValue(entrynode, "escaped");
 
-			linestarted     = XMLHandler.getTagValue(entrynode, "linestarted");
 			lineterminated  = XMLHandler.getTagValue(entrynode, "lineterminated");
-			replacedata     = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "replacedata"));
 			takelines     = XMLHandler.getTagValue(entrynode, "takelines");
 			orderby    = XMLHandler.getTagValue(entrynode, "orderby");
-			localinfile     = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "localinfile"));
-			prorityvalue    = Const.toInt(XMLHandler.getTagValue(entrynode, "prorityvalue"), -1);
+
 			String dbname   = XMLHandler.getTagValue(entrynode, "connection");
 			addfiletoresult = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "addfiletoresult"));
 			connection      = DatabaseMeta.findDatabase(databases, dbname);
@@ -178,15 +151,10 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 			tablename       =      rep.getJobEntryAttributeString(id_jobentry,  "tablename");
 			filename        =      rep.getJobEntryAttributeString(id_jobentry,  "filename");
 			separator       =      rep.getJobEntryAttributeString(id_jobentry,  "separator");
-			enclosed        =      rep.getJobEntryAttributeString(id_jobentry,  "enclosed");
-			escaped        =      rep.getJobEntryAttributeString(id_jobentry,  "escaped");
-			linestarted     =      rep.getJobEntryAttributeString(id_jobentry,  "linestarted");
 			lineterminated  =      rep.getJobEntryAttributeString(id_jobentry,  "lineterminated");
-			replacedata     =      rep.getJobEntryAttributeBoolean(id_jobentry, "replacedata");
 			takelines     =      rep.getJobEntryAttributeString(id_jobentry,  "takelines");
 			orderby    =      rep.getJobEntryAttributeString(id_jobentry,  "orderby");
-			localinfile     =      rep.getJobEntryAttributeBoolean(id_jobentry, "localinfile");
-			prorityvalue    =(int) rep.getJobEntryAttributeInteger(id_jobentry, "prorityvalue");
+
 			addfiletoresult=rep.getJobEntryAttributeBoolean(id_jobentry, "addfiletoresult");
 
 			long id_db = rep.getJobEntryAttributeInteger(id_jobentry, "id_database");
@@ -217,15 +185,9 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 			rep.saveJobEntryAttribute(id_job, getID(), "tablename",      tablename);
 			rep.saveJobEntryAttribute(id_job, getID(), "filename",       filename);
 			rep.saveJobEntryAttribute(id_job, getID(), "separator",      separator);
-			rep.saveJobEntryAttribute(id_job, getID(), "enclosed",       enclosed);
-			rep.saveJobEntryAttribute(id_job, getID(), "escaped",       escaped);
-			rep.saveJobEntryAttribute(id_job, getID(), "linestarted",    linestarted);
 			rep.saveJobEntryAttribute(id_job, getID(), "lineterminated", lineterminated);
-			rep.saveJobEntryAttribute(id_job, getID(), "replacedata",    replacedata);
 			rep.saveJobEntryAttribute(id_job, getID(), "takelines",    takelines);
 			rep.saveJobEntryAttribute(id_job, getID(), "orderby",   orderby);
-			rep.saveJobEntryAttribute(id_job, getID(), "localinfile",    localinfile);
-			rep.saveJobEntryAttribute(id_job, getID(), "prorityvalue",   prorityvalue);
 			rep.saveJobEntryAttribute(id_job, getID(), "addfiletoresult", addfiletoresult);
 
 			if (connection!=null) rep.saveJobEntryAttribute(id_job, getID(), "connection", connection.getName());
@@ -315,7 +277,7 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 				// Here we go... back to the regular scheduled program...
 				//
 				File file = new File(realFilename);
-				if ((file.exists() && file.canRead()) || isLocalInfile()==false)
+				if (file.exists() && file.canRead())
 				{
 					// User has specified an existing file, We can continue ...
 					log.logDetailed(toString(), "File ["+realFilename+"] exists.");
@@ -324,6 +286,12 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 					{
 						// User has specified a connection, We can continue ...
 						Database db = new Database(connection);
+						
+						if(db.getDatabaseMeta().getDatabaseType()!=DatabaseMeta.TYPE_DATABASE_MSSQL)
+							{
+								log.logError(toString(),Messages.getString("JobMssqlBulkLoad.Error.DbNotMSSQL",connection.getDatabaseName()));
+								return result;
+							}
 						db.shareVariablesWith(this);
 						try
 						{
@@ -446,26 +414,6 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 		return new DatabaseMeta[] { connection, };
 	}
 
-	public boolean isReplacedata()
-	{
-		return replacedata;
-	}
-
-	public void setReplacedata(boolean replacedata)
-	{
-		this.replacedata = replacedata;
-	}
-
-
-	public void setLocalInfile(boolean localinfile)
-	{
-		this.localinfile = localinfile;
-	}
-
-	public boolean isLocalInfile()
-	{
-		return localinfile;
-	}
 
 	public void setFilename(String filename)
 	{
@@ -487,39 +435,6 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 		this.lineterminated = lineterminated;
 	}
 
-	public void setLinestarted(String linestarted)
-	{
-		this.linestarted = linestarted;
-	}
-
-	public String getEnclosed()
-	{
-		return enclosed;
-	}
-	public String getRealEnclosed()
-	{
-		return environmentSubstitute(getEnclosed());
-	}
-
-	public void setEnclosed(String enclosed)
-	{
-		this.enclosed = enclosed;
-	}
-
-	public String getEscaped()
-	{
-		return escaped;
-	}
-
-	public String getRealEscaped()
-	{
-		return environmentSubstitute(getEscaped());
-	}
-
-	public void setEscaped(String escaped)
-	{
-		this.escaped = escaped;
-	}
 
 	public String getSeparator()
 	{
@@ -529,16 +444,6 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 	public String getLineterminated()
 	{
 		return lineterminated;
-	}
-
-	public String getLinestarted()
-	{
-		return linestarted;
-	}
-
-	public String getRealLinestarted()
-	{
-		return environmentSubstitute(getLinestarted());
 	}
 
 	public String getRealLineterminated()
