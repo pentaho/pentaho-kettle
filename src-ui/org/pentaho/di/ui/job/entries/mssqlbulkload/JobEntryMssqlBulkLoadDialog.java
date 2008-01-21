@@ -117,6 +117,11 @@ public class JobEntryMssqlBulkLoadDialog extends JobEntryDialog implements JobEn
 	private Label wlTakelines;
 	private TextVar wTakelines;
 	private FormData fdlTakelines, fdTakelines;
+	
+	//Specific Codepage
+	private Label wlSpecificCodePage;
+	private TextVar wSpecificCodePage;
+	private FormData fdlSpecificCodePage, fdSpecificCodePage;
 
 
 	private Button wbTable;
@@ -169,6 +174,11 @@ public class JobEntryMssqlBulkLoadDialog extends JobEntryDialog implements JobEn
 	private Label wlOrderDirection;
 	private  CCombo wOrderDirection;
 	private FormData fdlOrderDirection, fdOrderDirection;
+	
+	// CodePage
+	private Label wlCodePage;
+	private  CCombo wCodePage;
+	private FormData fdlCodePage, fdCodePage;
 
 
 
@@ -396,15 +406,48 @@ public class JobEntryMssqlBulkLoadDialog extends JobEntryDialog implements JobEn
 		fdDataFiletype.top = new FormAttachment(wLineterminated, margin);
 		fdDataFiletype.right = new FormAttachment(100, 0);
 		wDataFiletype.setLayoutData(fdDataFiletype);
+		
+		// CodePage
+		wlCodePage = new Label(shell, SWT.RIGHT);
+		wlCodePage.setText(Messages.getString("JobMysqlBulkLoad.CodePage.Label"));
+		props.setLook(wlCodePage);
+		fdlCodePage = new FormData();
+		fdlCodePage.left = new FormAttachment(0, 0);
+		fdlCodePage.right = new FormAttachment(middle, 0);
+		fdlCodePage.top = new FormAttachment(wDataFiletype, margin);
+		wlCodePage.setLayoutData(fdlCodePage);
+		wCodePage = new CCombo(shell, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
+					wCodePage.add("ACP");
+					wCodePage.add("OEM");
+					wCodePage.add("RAW");
+					wCodePage.add(Messages.getString("JobMssqlBulkLoad.CodePage.Specific"));
+					wCodePage.select(0); // +1: starts at -1
 
-		fdDataFiletype = new FormData();
-		fdDataFiletype.left = new FormAttachment(middle, 0);
-		fdDataFiletype.top = new FormAttachment(wLineterminated, margin);
-		fdDataFiletype.right = new FormAttachment(100, 0);
-		wDataFiletype.setLayoutData(fdDataFiletype);
-		
-		
-		
+		props.setLook(wCodePage);
+		fdCodePage= new FormData();
+		fdCodePage.left = new FormAttachment(middle, 0);
+		fdCodePage.top = new FormAttachment(wDataFiletype, margin);
+		fdCodePage.right = new FormAttachment(100, 0);
+		wCodePage.setLayoutData(fdCodePage);
+
+		// Specific CodePage
+		wlSpecificCodePage = new Label(shell, SWT.RIGHT);
+		wlSpecificCodePage.setText(Messages.getString("JobMssqlBulkLoad.SpecificCodePage.Label"));
+		props.setLook(wlSpecificCodePage);
+		fdlSpecificCodePage = new FormData();
+		fdlSpecificCodePage.left = new FormAttachment(0, 0);
+		fdlSpecificCodePage.right = new FormAttachment(middle, 0);
+		fdlSpecificCodePage.top = new FormAttachment(wCodePage, margin);
+		wlSpecificCodePage.setLayoutData(fdlSpecificCodePage);
+
+		wSpecificCodePage = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		props.setLook(wSpecificCodePage);
+		wSpecificCodePage.addModifyListener(lsMod);
+		fdSpecificCodePage = new FormData();
+		fdSpecificCodePage.left = new FormAttachment(middle, 0);
+		fdSpecificCodePage.top = new FormAttachment(wCodePage, margin);
+		fdSpecificCodePage.right = new FormAttachment(100, 0);
+		wSpecificCodePage.setLayoutData(fdSpecificCodePage);
 
 		// FortmatFilename line
 		wlFortmatFilename = new Label(shell, SWT.RIGHT);
@@ -412,7 +455,7 @@ public class JobEntryMssqlBulkLoadDialog extends JobEntryDialog implements JobEn
 		props.setLook(wlFortmatFilename);
 		fdlFortmatFilename = new FormData();
 		fdlFortmatFilename.left = new FormAttachment(0, 0);
-		fdlFortmatFilename.top = new FormAttachment(wDataFiletype, margin);
+		fdlFortmatFilename.top = new FormAttachment(wSpecificCodePage, margin);
 		fdlFortmatFilename.right = new FormAttachment(middle, -margin);
 		wlFortmatFilename.setLayoutData(fdlFortmatFilename);
 
@@ -421,7 +464,7 @@ public class JobEntryMssqlBulkLoadDialog extends JobEntryDialog implements JobEn
 		wbFortmatFilename.setText(Messages.getString("System.Button.Browse"));
 		fdbFortmatFilename = new FormData();
 		fdbFortmatFilename.right = new FormAttachment(100, 0);
-		fdbFortmatFilename.top = new FormAttachment(wDataFiletype, 0);
+		fdbFortmatFilename.top = new FormAttachment(wSpecificCodePage, 0);
 		wbFortmatFilename.setLayoutData(fdbFortmatFilename);
 
 		wFortmatFilename = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
@@ -429,7 +472,7 @@ public class JobEntryMssqlBulkLoadDialog extends JobEntryDialog implements JobEn
 		wFortmatFilename.addModifyListener(lsMod);
 		fdFortmatFilename = new FormData();
 		fdFortmatFilename.left = new FormAttachment(middle, 0);
-		fdFortmatFilename.top = new FormAttachment(wDataFiletype, margin);
+		fdFortmatFilename.top = new FormAttachment(wSpecificCodePage, margin);
 		fdFortmatFilename.right = new FormAttachment(wbFortmatFilename, -margin);
 		wFortmatFilename.setLayoutData(fdFortmatFilename);
 
