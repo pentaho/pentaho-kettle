@@ -124,7 +124,9 @@ public class LDAPInput extends BaseStep implements StepInterface
 		     
  		     SearchControls controls = new SearchControls();
 		     controls.setCountLimit(meta.getRowLimit());
-		     //controls.setTimeLimit(0);
+		     
+		     // Timeout
+		     //controls.setTimeLimit(10 * 1000);
 		    
 		     // Limit returned attributes to user selection
 		     controls.setReturningAttributes(attrReturned);
@@ -147,14 +149,17 @@ public class LDAPInput extends BaseStep implements StepInterface
 	         // Get value for attributes
 
 	         Attribute attr=null; 
-	         String attrvalue=null;
+	        
 	       
-		       while (((meta.getRowLimit()>0 &&  data.rownr<meta.getRowLimit()) || meta.getRowLimit()==0)  && (results.hasMore()))  
-				{
-		    	    
-	                SearchResult searchResult = (SearchResult) results.next();
-	                Attributes attributes = searchResult.getAttributes();      
-	                
+		     while (((meta.getRowLimit()>0 &&  data.rownr<meta.getRowLimit()) || meta.getRowLimit()==0)  && (results.hasMoreElements()))  
+			 {
+		    	 
+                SearchResult searchResult = (SearchResult) results.next();
+                Attributes attributes = null;
+                attributes=searchResult.getAttributes();      
+                
+                if(attributes!=null)
+                {
 					// Create new row				
 					outputRowData = buildEmptyRow();
 							
@@ -162,8 +167,23 @@ public class LDAPInput extends BaseStep implements StepInterface
 					for (int i=0;i<meta.getInputFields().length;i++)
 					{
 						// Get attribute value
+						
+						String attrvalue=null;
 		            	attr = attributes.get(environmentSubstitute(meta.getInputFields()[i].getAttribute())); 
-		                if (attr!=null) attrvalue=(String) attr.get();
+		                if (attr!=null) 
+		                {
+		                	//Let's try to get all values of for this field
+		                	
+		                	StringBuilder attrStr = new StringBuilder();
+							for (NamingEnumeration eattr = attr.getAll() ; eattr.hasMore();) 
+							{
+								if (attrStr.length() > 0) {
+									attrStr.append("$"); //TODO : Let user specify the separator
+								}
+								attrStr.append(eattr.next().toString());
+							}
+							attrvalue = attrStr.toString(); 	
+		                }
 		               
 						// DO Trimming!
 						switch (meta.getInputFields()[i].getTrimType())
@@ -219,7 +239,8 @@ public class LDAPInput extends BaseStep implements StepInterface
 					linesInput++;
 		           
 					putRow(data.outputRowMeta, outputRowData);  // copy row to output rowset(s);
-	            }
+                }
+            }
 		        
 		     
 			    ctx.close();

@@ -59,9 +59,13 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 	private String schemaname;
 	private String tablename;
 	private String filename;
-	private String separator;
+	private String datafiletype;
+	private String fieldterminator;
 	private String lineterminated;
-	private String takelines;
+	private String codepage;
+	private String specificcodepage;
+	private String startfile;
+	private String endfile;
 	private String orderby;
 	private boolean addfiletoresult;
 
@@ -73,9 +77,13 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 		tablename=null;
 		schemaname=null;
 		filename=null;
-		separator=null;
+		datafiletype="char";
+		fieldterminator=null;
 		lineterminated=null;
-		takelines = "0";
+		codepage="RAW";
+		specificcodepage=null;
+		startfile = null;
+		endfile= null;
 		orderby=null;
 		connection=null;
 		addfiletoresult = false;
@@ -107,9 +115,21 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 		retval.append("      ").append(XMLHandler.addTagValue("schemaname",      schemaname));
 		retval.append("      ").append(XMLHandler.addTagValue("tablename",       tablename));
 		retval.append("      ").append(XMLHandler.addTagValue("filename",        filename));
-		retval.append("      ").append(XMLHandler.addTagValue("separator",       separator));
+		
+		
+		
+		retval.append("      ").append(XMLHandler.addTagValue("datafiletype", datafiletype));
+		retval.append("      ").append(XMLHandler.addTagValue("fieldterminator", fieldterminator));
 		retval.append("      ").append(XMLHandler.addTagValue("lineterminated",  lineterminated));
-		retval.append("      ").append(XMLHandler.addTagValue("takelines",     takelines));
+		retval.append("      ").append(XMLHandler.addTagValue("codepage",  codepage));
+		retval.append("      ").append(XMLHandler.addTagValue("specificcodepage",  specificcodepage));
+		
+		
+		
+		retval.append("      ").append(XMLHandler.addTagValue("startfile",     startfile));
+		retval.append("      ").append(XMLHandler.addTagValue("endfile",     endfile));
+		
+		
 		retval.append("      ").append(XMLHandler.addTagValue("orderby",    orderby));		
 		retval.append("      ").append(XMLHandler.addTagValue("addfiletoresult",  addfiletoresult));
 		retval.append("      ").append(XMLHandler.addTagValue("connection",      connection==null?null:connection.getName()));
@@ -125,10 +145,18 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 			schemaname  = XMLHandler.getTagValue(entrynode, "schemaname");
 			tablename   = XMLHandler.getTagValue(entrynode, "tablename");
 			filename    = XMLHandler.getTagValue(entrynode, "filename");
-			separator   = XMLHandler.getTagValue(entrynode, "separator");
+			
+			
+			datafiletype   = XMLHandler.getTagValue(entrynode, "datafiletype");
+			fieldterminator   = XMLHandler.getTagValue(entrynode, "fieldterminator");
 
 			lineterminated  = XMLHandler.getTagValue(entrynode, "lineterminated");
-			takelines     = XMLHandler.getTagValue(entrynode, "takelines");
+			codepage  = XMLHandler.getTagValue(entrynode, "codepage");
+			specificcodepage  = XMLHandler.getTagValue(entrynode, "specificcodepage");
+			
+			startfile     = XMLHandler.getTagValue(entrynode, "startfile");
+			endfile     = XMLHandler.getTagValue(entrynode, "endfile");
+			
 			orderby    = XMLHandler.getTagValue(entrynode, "orderby");
 
 			String dbname   = XMLHandler.getTagValue(entrynode, "connection");
@@ -151,9 +179,19 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 			schemaname      =      rep.getJobEntryAttributeString(id_jobentry,  "schemaname");
 			tablename       =      rep.getJobEntryAttributeString(id_jobentry,  "tablename");
 			filename        =      rep.getJobEntryAttributeString(id_jobentry,  "filename");
-			separator       =      rep.getJobEntryAttributeString(id_jobentry,  "separator");
+			
+			
+			
+			datafiletype       =      rep.getJobEntryAttributeString(id_jobentry,  "datafiletype");
+			fieldterminator       =      rep.getJobEntryAttributeString(id_jobentry,  "fieldterminator");
+			
 			lineterminated  =      rep.getJobEntryAttributeString(id_jobentry,  "lineterminated");
-			takelines     =      rep.getJobEntryAttributeString(id_jobentry,  "takelines");
+			codepage  =      rep.getJobEntryAttributeString(id_jobentry,  "codepage");
+			specificcodepage  =      rep.getJobEntryAttributeString(id_jobentry,  "specificcodepage");
+			
+			startfile     =      rep.getJobEntryAttributeString(id_jobentry,  "startfile");
+			endfile     =      rep.getJobEntryAttributeString(id_jobentry,  "endfile");
+			
 			orderby    =      rep.getJobEntryAttributeString(id_jobentry,  "orderby");
 
 			addfiletoresult=rep.getJobEntryAttributeBoolean(id_jobentry, "addfiletoresult");
@@ -187,9 +225,16 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 			rep.saveJobEntryAttribute(id_job, getID(), "schemaname",     schemaname);
 			rep.saveJobEntryAttribute(id_job, getID(), "tablename",      tablename);
 			rep.saveJobEntryAttribute(id_job, getID(), "filename",       filename);
-			rep.saveJobEntryAttribute(id_job, getID(), "separator",      separator);
+			
+			
+			rep.saveJobEntryAttribute(id_job, getID(), "datafiletype",      datafiletype);
+			rep.saveJobEntryAttribute(id_job, getID(), "fieldterminator",      fieldterminator);
 			rep.saveJobEntryAttribute(id_job, getID(), "lineterminated", lineterminated);
-			rep.saveJobEntryAttribute(id_job, getID(), "takelines",    takelines);
+			rep.saveJobEntryAttribute(id_job, getID(), "codepage", codepage);
+			rep.saveJobEntryAttribute(id_job, getID(), "specificcodepage", specificcodepage);
+			
+			rep.saveJobEntryAttribute(id_job, getID(), "startfile",    startfile);
+			rep.saveJobEntryAttribute(id_job, getID(), "endfile",    endfile);
 			rep.saveJobEntryAttribute(id_job, getID(), "orderby",   orderby);
 			rep.saveJobEntryAttribute(id_job, getID(), "addfiletoresult", addfiletoresult);
 
@@ -320,7 +365,7 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 									TakeFirstNbrLines="FIRSTROW="+nblinesTake;
 								
 								// FIELDTERMINATOR
-								String Fieldterminator=getRealSeparator();
+								String Fieldterminator=getRealFieldTerminator();
 								if(!Const.isEmpty(Fieldterminator))	
 									FieldTerminatedby="FIELDTERMINATOR='"+Fieldterminator+"'";
 								
@@ -434,9 +479,9 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 		return filename;
 	}
 
-	public void setSeparator(String separator)
+	public void setFieldTerminator(String fieldterminator)
 	{
-		this.separator = separator;
+		this.fieldterminator = fieldterminator;
 	}
 
 	public void setLineterminated(String lineterminated)
@@ -444,10 +489,25 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 		this.lineterminated = lineterminated;
 	}
 
-
-	public String getSeparator()
+	public void setCodePage(String codepage)
 	{
-		return separator;
+		this.codepage = codepage;
+	}
+	public String getCodePage()
+	{
+		return codepage;
+	}
+	public void setSpecificCodePage(String specificcodepage)
+	{
+		this.specificcodepage =specificcodepage;
+	}
+	public String getSpecificCodePage()
+	{
+		return specificcodepage;
+	}
+	public String getFieldTerminator()
+	{
+		return fieldterminator;
 	}
 
 	public String getLineterminated()
@@ -455,29 +515,46 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 		return lineterminated;
 	}
 
+
+	public String getDataFileType()
+	{
+		return datafiletype;
+	}
+	public void setDataFileType(String datafiletype)
+	{
+		this.datafiletype = datafiletype;
+	}
 	public String getRealLineterminated()
 	{
 		return environmentSubstitute(getLineterminated());
 	}
 
-	public String getRealSeparator()
+	public String getRealFieldTerminator()
 	{
-		return environmentSubstitute(getSeparator());
+		return environmentSubstitute(getFieldTerminator());
 	}
 
-	public void setTakelines(String takelines)
+	public void setStartFile(String startfile)
 	{
-		this.takelines = takelines;
+		this.startfile = startfile;
 	}
 
-	public String getTakelines()
+	public String getStartFile()
 	{
-		return takelines;
+		return startfile;
+	}
+	public void setEndFile(String endfile)
+	{
+		this.endfile = endfile;
+	}
+	public String getEndFile()
+	{
+		return endfile;
 	}
 
 	public String getRealTakelines()
 	{
-		return environmentSubstitute(getTakelines());
+		return environmentSubstitute(getStartFile());
 	}
 
 	public void setOrderBy(String orderby)
