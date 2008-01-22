@@ -72,7 +72,7 @@ public class Append extends BaseStep implements StepInterface
 	            return false;
 		    }
 	    	if (data.outputRowMeta==null) {
-	    		data.outputRowMeta = data.headRowSet.getRowMeta();
+	    		data.outputRowMeta = data.tailRowSet.getRowMeta();
 	    	}
     	}
 
