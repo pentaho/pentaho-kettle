@@ -14,3 +14,4 @@ Information on fixes applied to 3.0.1
 - PDI-654 : Use correct environment substitution on filenames (Sven B.)
 - PDI-680 : Fixup translation in web service step (Sven B.)
 - PDI-665 : optionally decrypt password entered via variable (Sven B.)
+- PDI-697 : remove NPE when 0 rows as head of append step
