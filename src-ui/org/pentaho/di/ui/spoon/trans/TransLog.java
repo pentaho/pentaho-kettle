@@ -754,7 +754,10 @@ public class TransLog extends Composite implements TabItemInterface
 			for (int i = 0; i < trans.nrSteps(); i++)
 			{
 				BaseStep baseStep = trans.getRunThread(i);
-				if ( (baseStep.isAlive() && wOnlyActive.getSelection()) || baseStep.getStatus()!=StepDataInterface.STATUS_EMPTY)
+				//when "Hide active" steps is enabled show only alive steps
+				//otherwise only those that have not STATUS_EMPTY
+				if ( (wOnlyActive.getSelection() && baseStep.isAlive() ) || 
+						( !wOnlyActive.getSelection() && baseStep.getStatus()!=StepDataInterface.STATUS_EMPTY) )
 				{
                     StepStatus stepStatus = new StepStatus(baseStep);
                     TableItem ti;
