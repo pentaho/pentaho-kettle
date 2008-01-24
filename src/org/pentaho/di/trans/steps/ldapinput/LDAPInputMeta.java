@@ -82,6 +82,12 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 	/** The fields to import... */
 	private LDAPInputField inputFields[];
 	
+	/** The Time limit **/
+	private int timelimit;
+	
+	/** Multi valued separator **/
+	private String multivaluedseparator;
+	
 	private static final String YES = "Y";
 	
     public final static String type_trim_code[] = { "none", "left", "right", "both" };
@@ -258,6 +264,42 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
     }
     
     /**
+     * @param timeout The timeout to set.
+     */
+    public void setTimeLimit(int timelimit)
+    {
+        this.timelimit = timelimit;
+    }
+    
+    
+    /**
+     * @return Returns the timelimit.
+     */
+    public int getTimeLimit()
+    {
+        return timelimit;
+    }
+    
+    
+    
+    /**
+     * @param multivaluedseparator The multi valued separator filed.
+     */
+    public void setMultiValuedSeparator(String multivaluedseparator)
+    {
+        this.multivaluedseparator = multivaluedseparator;
+    }
+    
+    
+    /**
+     * @return Returns the multi valued separator.
+     */
+    public String getMultiValuedSeparator()
+    {
+        return multivaluedseparator;
+    }
+    
+    /**
      * @param rowLimit The rowLimit to set.
      */
     public void setRowLimit(long rowLimit)
@@ -354,6 +396,11 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
         
         
         retval.append("    ").append(XMLHandler.addTagValue("limit", rowLimit));
+        retval.append("    ").append(XMLHandler.addTagValue("timelimit", timelimit));
+        retval.append("    ").append(XMLHandler.addTagValue("multivaluedseparator", multivaluedseparator));
+        
+        
+        
 
         return retval.toString();
     }
@@ -406,6 +453,11 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 			
 			// Is there a limit on the number of rows we process?
 			rowLimit = Const.toLong(XMLHandler.getTagValue(stepnode, "limit"), 0L);
+			timelimit = Const.toInt(XMLHandler.getTagValue(stepnode, "timelimit"), 0);
+			multivaluedseparator = XMLHandler.getTagValue(stepnode, "multivaluedseparator");
+			
+			
+			
 		}
 		catch(Exception e)
 		{
@@ -431,7 +483,7 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 		Port="389";
 		FilterString="objectclass=*";
 		SearchBase="";
-		
+		multivaluedseparator=";";
 
 		int nrFields =0;
 
@@ -443,6 +495,7 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 		}
 
 		rowLimit=0;
+		timelimit=0;
 	}
 	public void getFields(RowMetaInterface r, String name, RowMetaInterface info[], StepMeta nextStep, VariableSpace space) throws KettleStepException
 	{
@@ -505,6 +558,9 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 			SearchBase    = rep.getStepAttributeString (id_step, "searchbase");
 			
 			rowLimit          = rep.getStepAttributeInteger(id_step, "limit");
+			timelimit          = (int)rep.getStepAttributeInteger(id_step, "timelimit");
+			multivaluedseparator    = rep.getStepAttributeString (id_step, "multivaluedseparator");
+			
 	
 			int nrFields      = rep.countNrStepAttributes(id_step, "field_name");
             
@@ -553,7 +609,9 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "filterstring",   FilterString);
 			rep.saveStepAttribute(id_transformation, id_step, "searchbase",  SearchBase);
 			rep.saveStepAttribute(id_transformation, id_step, "limit",           rowLimit);
-
+			rep.saveStepAttribute(id_transformation, id_step, "timelimit",           timelimit);
+			rep.saveStepAttribute(id_transformation, id_step, "multivaluedseparator", multivaluedseparator);
+			
 			for (int i=0;i<inputFields.length;i++)
 			{
 			    LDAPInputField field = inputFields[i];
@@ -613,6 +671,9 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		return new LDAPInputData();
 	}
-
+    public boolean supportsErrorHandling()
+    {
+        return true;
+    } 
 	
 }

@@ -100,6 +100,14 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 	private Label        wlLimit;
 	private Text         wLimit;
 	private FormData     fdlLimit, fdLimit;
+	
+	private Label        wlTimeLimit;
+	private TextVar      wTimeLimit;
+	private FormData     fdlTimeLimit, fdTimeLimit;
+	
+	private Label        wlMultiValuedSeparator;
+	private TextVar      wMultiValuedSeparator;
+	private FormData     fdlMultiValuedSeparator, fdMultiValuedSeparator;
    
 	private TableView    wFields;
 	private FormData     fdFields;
@@ -544,6 +552,45 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		fdLimit.top  = new FormAttachment(wAdditionalGroup, 2*margin);
 		fdLimit.right= new FormAttachment(100, 0);
 		wLimit.setLayoutData(fdLimit);
+		
+		// TimeLimit
+		wlTimeLimit=new Label(wContentComp, SWT.RIGHT);
+		wlTimeLimit.setText(Messages.getString("LDAPInputDialog.TimeLimit.Label"));
+ 		props.setLook(wlTimeLimit);
+		fdlTimeLimit=new FormData();
+		fdlTimeLimit.left = new FormAttachment(0, 0);
+		fdlTimeLimit.top  = new FormAttachment(wLimit, margin);
+		fdlTimeLimit.right= new FormAttachment(middle, -margin);
+		wlTimeLimit.setLayoutData(fdlTimeLimit);
+		wTimeLimit=new TextVar(transMeta,wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+ 		props.setLook(wTimeLimit);
+ 		wTimeLimit.setToolTipText(Messages.getString("LDAPInputDialog.TimeLimit.Tooltip"));
+		wTimeLimit.addModifyListener(lsMod);
+		
+		fdTimeLimit=new FormData();
+		fdTimeLimit.left = new FormAttachment(middle, 0);
+		fdTimeLimit.top  = new FormAttachment(wLimit, margin);
+		fdTimeLimit.right= new FormAttachment(100, 0);
+		wTimeLimit.setLayoutData(fdTimeLimit);
+		
+		// Multi valued field separator
+		wlMultiValuedSeparator=new Label(wContentComp, SWT.RIGHT);
+		wlMultiValuedSeparator.setText(Messages.getString("LDAPInputDialog.MultiValuedSeparator.Label"));
+ 		props.setLook(wlMultiValuedSeparator);
+		fdlMultiValuedSeparator=new FormData();
+		fdlMultiValuedSeparator.left = new FormAttachment(0, 0);
+		fdlMultiValuedSeparator.top  = new FormAttachment(wTimeLimit, margin);
+		fdlMultiValuedSeparator.right= new FormAttachment(middle, -margin);
+		wlMultiValuedSeparator.setLayoutData(fdlMultiValuedSeparator);
+		wMultiValuedSeparator=new TextVar(transMeta,wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+ 		props.setLook(wMultiValuedSeparator);
+ 		wMultiValuedSeparator.setToolTipText(Messages.getString("LDAPInputDialog.MultiValuedSeparator.Tooltip"));
+		wMultiValuedSeparator.addModifyListener(lsMod);
+		fdMultiValuedSeparator=new FormData();
+		fdMultiValuedSeparator.left = new FormAttachment(middle, 0);
+		fdMultiValuedSeparator.top  = new FormAttachment(wTimeLimit, margin);
+		fdMultiValuedSeparator.right= new FormAttachment(100, 0);
+		wMultiValuedSeparator.setLayoutData(fdMultiValuedSeparator);
        
 		fdContentComp = new FormData();
 		fdContentComp.left  = new FormAttachment(0, 0);
@@ -953,6 +1000,8 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		
 		if (in.getRowNumberField()!=null) wInclRownumField.setText(in.getRowNumberField());
 		wLimit.setText(""+in.getRowLimit());
+		wTimeLimit.setText(""+in.getTimeLimit());
+		if(in.getMultiValuedSeparator()!=null)	wMultiValuedSeparator.setText(in.getMultiValuedSeparator());
 
 		if (in.getHost() != null)  wHost.setText(in.getHost());
 		if (in.getUserName() != null)  wUserName.setText(in.getUserName());
@@ -1035,7 +1084,8 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 
 		// copy info to TextFileInputMeta class (input)
 		in.setRowLimit( Const.toLong(wLimit.getText(), 0L) );
-		
+		in.setTimeLimit( Const.toInt(wTimeLimit.getText(), 0) );
+		in.setMultiValuedSeparator(wMultiValuedSeparator.getText());
 		in.setIncludeRowNumber( wInclRownum.getSelection() );
 		in.setUseAuthentication( wusingAuthentication.getSelection() );
 		

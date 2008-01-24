@@ -22,6 +22,11 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
 
+import javax.naming.NamingEnumeration;
+import javax.naming.directory.DirContext;
+import javax.naming.directory.SearchResult;
+
+
 /**
  * @author Samatar Hassan
  * @since 21-09-2007
@@ -41,7 +46,13 @@ public class LDAPInputData extends BaseStepData implements StepDataInterface
 	public DateFormatSymbols    dafs;
 
     public long                rownr;
+    
+    public DirContext ctx;
+    NamingEnumeration<SearchResult> results;
+    public String multi_valuedFieldSeparator;
 
+    public int nrfields;
+    
 	public LDAPInputData()
 	{
 		super();
@@ -55,6 +66,10 @@ public class LDAPInputData extends BaseStepData implements StepDataInterface
 
 		nr_repeats=0;
 		previousRow=null;
+		ctx=null;
+		multi_valuedFieldSeparator=null;
+		results=null;
+		nrfields=0;
 
 	}
 	

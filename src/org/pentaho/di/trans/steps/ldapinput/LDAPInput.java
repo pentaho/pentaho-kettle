@@ -15,11 +15,10 @@ package org.pentaho.di.trans.steps.ldapinput;
 import java.util.Hashtable;
 import javax.naming.Context;
 import javax.naming.NamingEnumeration;
-import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
-import javax.naming.directory.DirContext;
 import javax.naming.directory.InitialDirContext;
+
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
 import org.pentaho.di.core.Const;
@@ -35,7 +34,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-
+import org.pentaho.di.trans.steps.http.Messages;
 /**
  * Read LDAP Host, convert them to rows and writes these to one or more output streams.
  * 
@@ -55,25 +54,7 @@ public class LDAPInput extends BaseStep implements StepInterface
 	
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{
-    	
-		String port=environmentSubstitute(meta.getPort());
-		String hostname=environmentSubstitute(meta.getHost());
-		String username=environmentSubstitute(meta.getUserName());
-		String password=environmentSubstitute(meta.getPassword());
-        //Set the filter string.  The more exact of the search string
-		String filter=environmentSubstitute(meta.getFilterString());
-		//Set the Search base.This is the place where the search will
-		String searchbase=environmentSubstitute(meta.getSearchBase());
-	
-		
-		NamingEnumeration<SearchResult> results=null;
-		DirContext ctx = null;
-		data.rownr=0;
-		linesInput=0;
-		
-	    String [] attrReturned = new String [meta.getInputFields().length];
-	    Object[] outputRowData = null;
-        
+
         if (first)
         {
             first = false;
@@ -87,104 +68,107 @@ public class LDAPInput extends BaseStep implements StepInterface
             data.convertRowMeta = data.outputRowMeta.clone();
             for (int i=0;i<data.convertRowMeta.size();i++) data.convertRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);
 
-            
-            
+
             // For String to <type> conversions, we allocate a conversion meta data row as well...
 			//
 			data.convertRowMeta = data.outputRowMeta.clone();
 			for (int i=0;i<data.convertRowMeta.size();i++) {
 				data.convertRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);           
-            
 			}
-			
-		   // Get user selection attributes
-		   for (int i=0;i<meta.getInputFields().length;i++)
-		   {
-		    	attrReturned[i]=environmentSubstitute(meta.getInputFields()[i].getAttribute());
-			
-		   }
+   
+			// Try to connect to LDAP server
+            connectServerLdap();
+           
+	        // Get multi valued field separator
+	        data.multi_valuedFieldSeparator=environmentSubstitute(meta.getMultiValuedSeparator()) ;
+	        
+	        data.nrfields = meta.getInputFields().length;
+	 
         }
 	
+        Object[] outputRowData=null;
+        boolean sendToErrorRow=false;
+		String errorMessage = null;
 		try 
 		{	
-
-			// Try to connect to LDAP server
-             ctx = connectServerLdap(hostname,username, password,port);
-		     if (ctx==null)
-		     {
-		    	 logError(Messages.getString("LDAPInput.Error.UnableToConnectToServer"));
-		     }
-		     
-		     logBasic(Messages.getString("LDAPInput.ConnectedToServer.Message",hostname,username));
-		     if (log.isDetailed()) logDetailed(Messages.getString("LDAPInput.ClassUsed.Message",ctx.getClass().getName()));
-		     // Get the schema tree root
-		     DirContext schema = ctx.getSchema("");
-		     
-		     if (log.isDetailed()) logDetailed(Messages.getString("LDAPInput.SchemaList.Message",""+schema.list("")));
-		     
- 		     SearchControls controls = new SearchControls();
-		     controls.setCountLimit(meta.getRowLimit());
-		     
-		     // Timeout
-		     //controls.setTimeLimit(10 * 1000);
-		    
-		     // Limit returned attributes to user selection
-		     controls.setReturningAttributes(attrReturned);
-		     
-		     
-		     if(Const.isEmpty(searchbase))
-		     {
-			     // get Search Base
-			     Attributes attrs = ctx.getAttributes("", new String[] { "namingContexts" });
-				 Attribute attr = attrs.get("namingContexts");
-				  
-				 searchbase=attr.get().toString();
-				 if (log.isDetailed()) logBasic(Messages.getString("LDAPInput.SearchBaseFound",searchbase) );
-		     } 
+			outputRowData =getOneRow();
+			
+			if(outputRowData==null)
+			{
+				setOutputDone();
+				return false;
+			}
 		
-	         controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
-	         
-	         results = ctx.search(searchbase,filter.replace("\n\r", "").replace("\n", ""), controls);
-	        
-	         // Get value for attributes
+			putRow(data.outputRowMeta, outputRowData);  // copy row to output rowset(s);
+		    
+			if(log.isDebug()) log.logDebug(Messages.getString("LDAPInput.log.ReadRow"), outputRowData.toString());
+			
+		    if ((linesInput > 0) && (linesInput % Const.ROWS_UPDATE) == 0) logBasic(Messages.getString("LDAPInput.log.LineRow") + linesInput);
+		    
+		    return true; 
+		} 
+		catch(Exception e)
+		{
+			if (getStepMeta().isDoingErrorHandling())
+			{
+		          sendToErrorRow = true;
+		          errorMessage = e.toString();
+			}
+			else
+			{
+				logError(Messages.getString("LDAPInput.log.Exception", e.getMessage()));
+				setErrors(1);
+				stopAll();
+				setOutputDone();  // signal end to receiver(s)
+				return false;				
+			}
+			if (sendToErrorRow)
+			{
+			   // Simply add this row to the error row
+			   putError(getInputRowMeta(), outputRowData, 1, errorMessage, null, "LDAPINPUT001");
+			}
+		} 
+		return true;
+	}		
+	private Object[] getOneRow()  throws KettleException
+	{
 
-	         Attribute attr=null; 
-	        
-	       
-		     while (((meta.getRowLimit()>0 &&  data.rownr<meta.getRowLimit()) || meta.getRowLimit()==0)  && (results.hasMoreElements()))  
-			 {
-		    	 
-                SearchResult searchResult = (SearchResult) results.next();
-                Attributes attributes = null;
-                attributes=searchResult.getAttributes();      
-                
-                if(attributes!=null)
-                {
-					// Create new row				
-					outputRowData = buildEmptyRow();
-							
-					// Execute for each Input field...
-					for (int i=0;i<meta.getInputFields().length;i++)
-					{
-						// Get attribute value
-						
-						String attrvalue=null;
-		            	attr = attributes.get(environmentSubstitute(meta.getInputFields()[i].getAttribute())); 
-		                if (attr!=null) 
-		                {
-		                	//Let's try to get all values of for this field
-		                	
-		                	StringBuilder attrStr = new StringBuilder();
-							for (NamingEnumeration eattr = attr.getAll() ; eattr.hasMore();) 
-							{
-								if (attrStr.length() > 0) {
-									attrStr.append("$"); //TODO : Let user specify the separator
-								}
-								attrStr.append(eattr.next().toString());
+		while (!data.results.hasMoreElements())
+		{
+	      return null;
+		} 
+
+		 // Build an empty row based on the meta-data		  
+		 Object[] outputRowData=buildEmptyRow();
+
+		 try{	
+			 SearchResult searchResult = (SearchResult) data.results.next();
+             Attributes attributes = searchResult.getAttributes();     	
+             
+             if(attributes!=null)
+             {
+			
+				// Execute for each Input field...
+				for (int i=0;i<meta.getInputFields().length;i++)
+				{
+					// Get attribute value
+					
+					String attrvalue =null;
+					Attribute attr = attributes.get(environmentSubstitute(meta.getInputFields()[i].getAttribute())); 
+	                if (attr!=null) 
+	                {
+	                	//Let's try to get all values of this attribute
+	                	
+	                	StringBuilder attrStr = new StringBuilder();
+						for (NamingEnumeration eattr = attr.getAll() ; eattr.hasMore();) 
+						{
+							if (attrStr.length() > 0) {
+								attrStr.append(data.multi_valuedFieldSeparator);
 							}
-							attrvalue = attrStr.toString(); 	
-		                }
-		               
+							attrStr.append(eattr.next().toString());
+						}
+						attrvalue=attrStr.toString(); 	
+						
 						// DO Trimming!
 						switch (meta.getInputFields()[i].getTrimType())
 						{
@@ -201,87 +185,49 @@ public class LDAPInput extends BaseStep implements StepInterface
 							break;
 						}
 							      
-						
-						// DO CONVERSIONS...
-						//
-						ValueMetaInterface targetValueMeta = data.outputRowMeta.getValueMeta(i);
-						ValueMetaInterface sourceValueMeta = data.convertRowMeta.getValueMeta(i);
-						outputRowData[i] = targetValueMeta.convertData(sourceValueMeta, attrvalue);
-						
-						// Do we need to repeat this field if it is null?
-						if (meta.getInputFields()[i].isRepeated())
+	                }
+					// DO CONVERSIONS...
+					//
+					ValueMetaInterface targetValueMeta = data.outputRowMeta.getValueMeta(i);
+					ValueMetaInterface sourceValueMeta = data.convertRowMeta.getValueMeta(i);
+					outputRowData[i] = targetValueMeta.convertData(sourceValueMeta, attrvalue);
+            
+                
+					// Do we need to repeat this field if it is null?
+					if (meta.getInputFields()[i].isRepeated())
+					{
+						if (data.previousRow!=null && Const.isEmpty(attrvalue))
 						{
-							if (data.previousRow!=null && Const.isEmpty(attrvalue))
-							{
-								outputRowData[i] = data.previousRow[i];
-							}
+							outputRowData[i] = data.previousRow[i];
 						}
-			            
-			    
-			 			
-					}    // End of loop over fields...
-	                    
-					int rowIndex = meta.getInputFields().length;
-				
-					
-			        // See if we need to add the row number to the row...  
-			        if (meta.includeRowNumber() && !Const.isEmpty(meta.getRowNumberField()))
-			        {
-			            outputRowData[rowIndex++] = new Long(data.rownr);
-			        }
-			        
-					
-					RowMetaInterface irow = getInputRowMeta();
-					
-					data.previousRow = irow==null?outputRowData:(Object[])irow.cloneRow(outputRowData); // copy it to make
-					// surely the next step doesn't change it in between...
-					data.rownr++;
-					linesInput++;
-		           
-					putRow(data.outputRowMeta, outputRowData);  // copy row to output rowset(s);
-                }
-            }
-		        
-		     
-			    ctx.close();
-			    log.logBasic(Messages.getString("LDAPInput.log.Deconnection"),Messages.getString("LDAPInput.log.Deconnection.Done"));
-			     
-			    if(log.isDebug()) log.logDebug(Messages.getString("LDAPInput.log.ReadRow"), outputRowData.toString());
-		
-			    if ((linesInput > 0) && (linesInput % Const.ROWS_UPDATE) == 0) logBasic(Messages.getString("LDAPInput.log.LineRow") + linesInput);
-			     
-		} 
-		catch(Exception e)
-		{
-			logError(Messages.getString("LDAPInput.log.Exception"), e);
-			stopAll();
-			setErrors(1);
-		} 
-		finally
-	    {
-			
-            if (results != null) {
-                try {
-                    results.close();
-                } catch (Exception e) {
-                }
-            }
-            if (ctx != null) {
-                try {
-                    ctx.close();
-                } catch (Exception e) {
-                }
-            }
-	    }
+					}
 	
-			
+				}    // End of loop over fields...
 
-        
-        setOutputDone();  // signal end to receiver(s)
-        return false;     // This is the end of this step.
-	}		
-	
-	 public InitialDirContext connectServerLdap(String hostname,String username, String password,String port) throws NamingException {
+		        // See if we need to add the row number to the row...  
+		        if (meta.includeRowNumber() && !Const.isEmpty(meta.getRowNumberField()))
+		        {
+		            outputRowData[ data.nrfields++] = new Long(data.rownr);
+		        }
+		        
+				RowMetaInterface irow = getInputRowMeta();
+				
+				data.previousRow = irow==null?outputRowData:(Object[])irow.cloneRow(outputRowData); // copy it to make
+				// surely the next step doesn't change it in between...
+				data.rownr++;
+				
+				linesInput++;
+             }         
+			
+		 }
+		 catch (Exception e)
+		 {
+			throw new KettleException("Unable to read row from LDAP", e);
+		 }
+		return outputRowData;
+	}
+	 
+	 public void connectServerLdap() throws KettleException {
 		 //TODO : Add SSL Authentication
 			/*
 			//---
@@ -294,19 +240,80 @@ public class LDAPInput extends BaseStep implements StepInterface
 			// the keystore that holds trusted root certificates
 			String certifPath=System.getProperty("user.dir")+"\\certificats\\"+rb.getString("certificat").trim();
 			System.setProperty("javax.net.ssl.trustStore", certifPath);*/
-		 
+		 try
+		 {
+			String port=environmentSubstitute(meta.getPort());
+			int portint=Const.toInt(port, 389);
+			String hostname=environmentSubstitute(meta.getHost());
+			String username=environmentSubstitute(meta.getUserName());
+			String password=environmentSubstitute(meta.getPassword());
+	        //Set the filter string.  The more exact of the search string
+			String filter=environmentSubstitute(meta.getFilterString());
+			//Set the Search base.This is the place where the search will
+			String searchbase=environmentSubstitute(meta.getSearchBase());
+			 
+			 
 	        Hashtable<String, String> env = new Hashtable<String, String>();
 
 	        env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
-	        env.put(Context.PROVIDER_URL, "ldap://"+hostname + ":" + Const.toInt(port, 389));
+	        env.put(Context.PROVIDER_URL, "ldap://"+hostname + ":" + portint);
 	        env.put(Context.SECURITY_AUTHENTICATION, "simple" );
+	        // TODO ; Add referral handling
 	        if (meta.UseAuthentication())
 	        {
 	        	env.put(Context.SECURITY_PRINCIPAL, username);
 	        	env.put(Context.SECURITY_CREDENTIALS, password); 
 	        }
 
-	        return new InitialDirContext(env);
+	       data.ctx=new InitialDirContext(env);
+		  
+	       if (data.ctx==null)
+		   {
+			   logError(Messages.getString("LDAPInput.Error.UnableToConnectToServer"));
+			   throw new KettleException(Messages.getString("LDAPInput.Error.UnableToConnectToServer"));
+		   }
+		   logBasic(Messages.getString("LDAPInput.Log.ConnectedToServer",hostname,username));
+		   if (log.isDetailed()) logDetailed(Messages.getString("LDAPInput.ClassUsed.Message",data.ctx.getClass().getName()));
+		   // Get the schema tree root
+		   //DirContext schema = data.ctx.getSchema("");  
+		   //if (log.isDetailed()) logDetailed(Messages.getString("LDAPInput.SchemaList.Message",""+schema.list(""))); 
+	       
+		   SearchControls controls = new SearchControls();
+		   controls.setCountLimit(meta.getRowLimit());
+		    
+		   // Time Limit
+		   if(meta.getTimeLimit()>0)   controls.setTimeLimit(meta.getTimeLimit() * 1000);
+
+		   // Limit returned attributes to user selection
+		   String[] attrReturned = new String [meta.getInputFields().length];
+		   // Get user selection attributes
+		   for (int i=0;i<meta.getInputFields().length;i++)
+		   {
+		    	attrReturned[i]=environmentSubstitute(meta.getInputFields()[i].getAttribute());
+			
+		   }
+		   
+		   controls.setReturningAttributes(attrReturned);
+		     
+		     
+		   if(Const.isEmpty(searchbase))
+		   {
+			    // get Search Base
+			    Attributes attrs = data.ctx.getAttributes("", new String[] { "namingContexts" });
+				Attribute attr = attrs.get("namingContexts");
+				  
+				searchbase=attr.get().toString();
+				if (log.isDetailed()) logBasic(Messages.getString("LDAPInput.SearchBaseFound",searchbase) );
+		    } 
+		
+	        controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+	         
+	        data.results = data.ctx.search(searchbase,filter.replace("\n\r", "").replace("\n", ""), controls);
+	        
+		 }catch (Exception e)
+		 {
+			 throw new KettleException("Error : " + e.getMessage());
+		 }
 	    }
 	
 	/**
@@ -331,7 +338,7 @@ public class LDAPInput extends BaseStep implements StepInterface
 		if (super.init(smi, sdi))
 		{
 			
-            
+			linesInput=0;
 			data.rownr = 1L;
 			
 			return true;
@@ -343,7 +350,24 @@ public class LDAPInput extends BaseStep implements StepInterface
 	{
 		meta=(LDAPInputMeta)smi;
 		data=(LDAPInputData)sdi;
-
+		if(data.ctx!=null)
+		{
+			try
+			{
+				data.ctx.close();
+				if(data.results!=null) data.results=null;
+				log.logBasic(toString(),Messages.getString("LDAPInput.log.Disconnection.Done"));
+			}
+			catch (Exception e)
+			{
+				if (log.isDebug()) 
+	            {
+	                logDebug("Could not close LDAP Connection: "+e.toString());
+	                logDebug(Const.getStackTracker(e));
+	            }
+			}
+			
+		}
 		super.dispose(smi, sdi);
 	}
 	

@@ -1,13 +1,16 @@
- /* Copyright (c) 2007 Pentaho Corporation.  All rights reserved. 
- * This software was developed by Pentaho Corporation and is provided under the terms 
+/*************************************************************************************** 
+ * Copyright (C) 2007 Samatar  All rights reserved. 
+ * This software was developed by Samatar and is provided under the terms 
  * of the GNU Lesser General Public License, Version 2.1. You may not use 
- * this file except in compliance with the license. If you need a copy of the license, 
- * please go to http://www.gnu.org/licenses/lgpl-2.1.txt. The Original Code is Pentaho 
- * Data Integration.  The Initial Developer is Pentaho Corporation.
+ * this file except in compliance with the license. A copy of the license, 
+ * is included with the binaries and source code. The Original Code is Samatar.  
+ * The Initial Developer is Samatar.
  *
- * Software distributed under the GNU Lesser Public License is distributed on an "AS IS" 
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or  implied. Please refer to 
- * the license for the specific language governing your rights and limitations.*/
+ * Software distributed under the GNU Lesser Public License is distributed on an 
+ * "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * Please refer to the license for the specific language governing your rights 
+ * and limitations.
+ ***************************************************************************************/
 
 package org.pentaho.di.job.entries.mssqlbulkload;
 
@@ -49,7 +52,7 @@ import org.pentaho.di.resource.ResourceEntry.ResourceType;
 import org.w3c.dom.Node;
 
 /**
- * This defines a MySQL job entry.
+ * This defines a MSSQL Bulk job entry.
  *
  * @author Samatar Hassan
  * @since Jan-2007
@@ -299,7 +302,7 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 		result.setResult(false);
 
 		String vfsFilename = environmentSubstitute(filename);
-
+		FileObject fileObject = null;
 		// Let's check the filename ...
 		if (!Const.isEmpty(vfsFilename))
 		{
@@ -312,7 +315,7 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 				// As such, we're going to verify that it's a local file...
 				// We're also going to convert VFS FileObject to File
 				//
-				FileObject fileObject = KettleVFS.getFileObject(vfsFilename);
+				fileObject = KettleVFS.getFileObject(vfsFilename);
 				if (!(fileObject instanceof LocalFile)) {
 					// MSSQL BUKL INSERT can only use local files, so that's what we limit ourselves to.
 					//
@@ -452,6 +455,10 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 				// An unexpected error occurred
 				result.setNrErrors(1);
 				log.logError(toString(), Messages.getString("JobMssqlBulkLoad.UnexpectedError.Label"), e);
+			}finally{
+				try{
+				if(fileObject!=null) fileObject.close();
+				}catch (Exception e){}
 			}
 		}
 		else
