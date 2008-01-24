@@ -79,6 +79,8 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 	private boolean addfiletoresult;
 	private boolean isfromprevious;
 	private boolean createparentfolder;
+	private boolean adddate;
+	private boolean addtime;
 	
 	/**
 	 * Default constructor.
@@ -97,6 +99,8 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 		addfiletoresult = false;
 		isfromprevious = false;
 		createparentfolder = false;
+		adddate=false;
+		addtime=false;
 		setID(-1L);
 		setJobEntryType(JobEntryType.ZIP_FILE);
 	}
@@ -132,7 +136,9 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 		retval.append("      ").append(XMLHandler.addTagValue("afterzip",  afterzip));
 		retval.append("      ").append(XMLHandler.addTagValue("addfiletoresult",  addfiletoresult));
 		retval.append("      ").append(XMLHandler.addTagValue("isfromprevious",  isfromprevious));
-		retval.append("      ").append(XMLHandler.addTagValue("createparentfolder",  createparentfolder));		
+		retval.append("      ").append(XMLHandler.addTagValue("createparentfolder",  createparentfolder));
+		retval.append("      ").append(XMLHandler.addTagValue("adddate",  adddate));
+		retval.append("      ").append(XMLHandler.addTagValue("addtime",  addtime));
 		return retval.toString();
 	}
 	
@@ -141,7 +147,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
     {
 	    try
 	    {
-		super.loadXML(entrynode, databases, slaveServers);
+	    	super.loadXML(entrynode, databases, slaveServers);
 			zipFilename = XMLHandler.getTagValue(entrynode, "zipfilename");
 			compressionrate = Const.toInt(XMLHandler.getTagValue(entrynode, "compressionrate"), -1);
 			ifzipfileexists = Const.toInt(XMLHandler.getTagValue(entrynode, "ifzipfileexists"), -1);
@@ -154,6 +160,9 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 			addfiletoresult = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "addfiletoresult"));	
 			isfromprevious = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "isfromprevious"));	
 			createparentfolder = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "createparentfolder"));	
+			adddate = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "adddate"));	
+			addtime = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "addtime"));	
+			
 
 		}
 		catch(KettleXMLException xe)
@@ -180,6 +189,9 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 			addfiletoresult=rep.getJobEntryAttributeBoolean(id_jobentry, "addfiletoresult");
 			isfromprevious=rep.getJobEntryAttributeBoolean(id_jobentry, "isfromprevious");
 			createparentfolder=rep.getJobEntryAttributeBoolean(id_jobentry, "createparentfolder");
+			adddate=rep.getJobEntryAttributeBoolean(id_jobentry, "adddate");
+			addtime=rep.getJobEntryAttributeBoolean(id_jobentry, "adddate");
+			
 		}
 		catch(KettleException dbe)
 		{
@@ -206,6 +218,9 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 			rep.saveJobEntryAttribute(id_job, getID(), "addfiletoresult", addfiletoresult);
 			rep.saveJobEntryAttribute(id_job, getID(), "isfromprevious", isfromprevious);
 			rep.saveJobEntryAttribute(id_job, getID(), "createparentfolder", createparentfolder);
+			rep.saveJobEntryAttribute(id_job, getID(), "addtime", addtime);
+			rep.saveJobEntryAttribute(id_job, getID(), "adddate", adddate);
+			
 			
 		}
 		catch(KettleDatabaseException dbe)
@@ -304,14 +319,11 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 	                	ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL , KettleVFS.getFileObject(realZipfilename), parentJob.getName(), toString());
 	                    result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
 					}					
-					//result.setResult( true );
 					resultat = true;
 				}
 				else if(afterzip==2 && realMovetodirectory== null)
 				{
 					// After Zip, Move files..User must give a destination Folder
-					//result.setResult( false );
-					//result.setNrErrors(1);
 					resultat = false;
 					log.logError(toString(), Messages.getString("JobZipFiles.AfterZip_No_DestinationFolder_Defined.Label"));
 				}				
@@ -690,10 +702,10 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 			if(!Const.isEmpty(sourcedirectory))
 			{
 				// get values from job entry
-				realTargetdirectory	  = environmentSubstitute(sourcedirectory);
-				realZipfilename       = environmentSubstitute(zipFilename);
+				realZipfilename       = getFullFilename(environmentSubstitute(zipFilename),adddate, addtime);
 				realWildcard          = environmentSubstitute(wildcard);
 				realWildcardExclude   = environmentSubstitute(wildcardexclude);	
+				realTargetdirectory   = environmentSubstitute(sourcedirectory);
 				
 				result.setResult(processRowFile(parentJob,result,realZipfilename,realWildcard,realWildcardExclude, realTargetdirectory, realMovetodirectory, createparentfolder));			
 			}
@@ -706,7 +718,33 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 		// End		
 		return result;
 	}
-	
+	public String getFullFilename(String filename,boolean add_date,boolean add_time)
+	{
+		String retval="gggg";
+		// Replace possible environment variables...
+		if(filename!=null) retval=environmentSubstitute(filename);
+		
+		SimpleDateFormat daf     = new SimpleDateFormat();
+		Date now = new Date();
+		
+		if (add_date)
+		{
+			daf.applyPattern("yyyMMdd");
+			String d = daf.format(now);
+			retval+="_"+d;
+		}
+		if (add_time)
+		{
+			daf.applyPattern("HHmmss");
+			String t = daf.format(now);
+			retval+="_"+t;
+		}
+
+		retval+=".zip";
+		return retval;
+
+	}
+
 	public boolean evaluates()
 	{
 		return true;
@@ -774,6 +812,25 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 	{
 		this.createparentfolder= createparentfolder;
 	}
+	
+	public void setDateInFilename(boolean adddate) 
+	{
+		this.adddate= adddate;
+	}
+	
+	public boolean isDateInFilename() 
+	{
+		return adddate;
+	}
+	public void setTimeInFilename(boolean addtime) 
+	{
+		this.addtime= addtime;
+	}
+	public boolean isTimeInFilename() 
+	{
+		return addtime;
+	}
+	
 	
 	public boolean getcreateparentfolder() 
 	{

@@ -33,6 +33,8 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.MessageBox;
+import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Group;
@@ -134,7 +136,19 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 	private Label        wlgetFromPrevious;
 	private Button       wgetFromPrevious;
 	private FormData     fdlgetFromPrevious, fdgetFromPrevious;
+	
 
+	private Label        wlAddDate;
+	private Button       wAddDate;
+	private FormData     fdlAddDate, fdAddDate;
+
+	private Label        wlAddTime;
+	private Button       wAddTime;
+	private FormData     fdlAddTime, fdAddTime;
+
+	private Button       wbShowFiles;
+	private FormData     fdbShowFiles;
+	
 	private boolean changed;
     public JobEntryZipFileDialog(Shell parent, JobEntryInterface jobEntryInt, Repository rep, JobMeta jobMeta)
     {
@@ -420,6 +434,89 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 			}
 		);
 
+		// Create multi-part file?
+		wlAddDate=new Label(wZipFile, SWT.RIGHT);
+		wlAddDate.setText(Messages.getString("JobZipFiles.AddDate.Label"));
+ 		props.setLook(wlAddDate);
+		fdlAddDate=new FormData();
+		fdlAddDate.left = new FormAttachment(0, 0);
+		fdlAddDate.top  = new FormAttachment(wCreateParentFolder, margin);
+		fdlAddDate.right= new FormAttachment(middle, -margin);
+		wlAddDate.setLayoutData(fdlAddDate);
+		wAddDate=new Button(wZipFile, SWT.CHECK);
+ 		props.setLook(wAddDate);
+ 		wAddDate.setToolTipText(Messages.getString("JobZipFiles.AddDate.Tooltip"));
+		fdAddDate=new FormData();
+		fdAddDate.left = new FormAttachment(middle, 0);
+		fdAddDate.top  = new FormAttachment(wCreateParentFolder, margin);
+		fdAddDate.right= new FormAttachment(100, 0);
+		wAddDate.setLayoutData(fdAddDate);
+		wAddDate.addSelectionListener(new SelectionAdapter() 
+			{
+				public void widgetSelected(SelectionEvent e) 
+				{
+					jobEntry.setChanged();
+				}
+			}
+		);
+		// Create multi-part file?
+		wlAddTime=new Label(wZipFile, SWT.RIGHT);
+		wlAddTime.setText(Messages.getString("JobZipFiles.AddTime.Label"));
+ 		props.setLook(wlAddTime);
+		fdlAddTime=new FormData();
+		fdlAddTime.left = new FormAttachment(0, 0);
+		fdlAddTime.top  = new FormAttachment(wAddDate, margin);
+		fdlAddTime.right= new FormAttachment(middle, -margin);
+		wlAddTime.setLayoutData(fdlAddTime);
+		wAddTime=new Button(wZipFile, SWT.CHECK);
+ 		props.setLook(wAddTime);
+ 		wAddTime.setToolTipText(Messages.getString("JobZipFiles.AddTime.Tooltip"));
+		fdAddTime=new FormData();
+		fdAddTime.left = new FormAttachment(middle, 0);
+		fdAddTime.top  = new FormAttachment(wAddDate, margin);
+		fdAddTime.right= new FormAttachment(100, 0);
+		wAddTime.setLayoutData(fdAddTime);
+		wAddTime.addSelectionListener(new SelectionAdapter() 
+			{
+				public void widgetSelected(SelectionEvent e) 
+				{
+					jobEntry.setChanged();
+				}
+			}
+		);
+
+		wbShowFiles=new Button(wZipFile, SWT.PUSH| SWT.CENTER);
+		props.setLook(wbShowFiles);
+		wbShowFiles.setText(Messages.getString("JobZipFiles.ShowFile.Button"));
+		fdbShowFiles=new FormData();
+		fdbShowFiles.left = new FormAttachment(middle, 0);
+		fdbShowFiles.top  = new FormAttachment(wAddTime, margin*2);
+		wbShowFiles.setLayoutData(fdbShowFiles);
+		wbShowFiles.addSelectionListener(new SelectionAdapter() 
+		{
+			public void widgetSelected(SelectionEvent e) 
+			{
+				JobEntryZipFile jobEntry = new JobEntryZipFile();
+				String filename[] = new String[1];
+				filename[0]=jobEntry.getFullFilename(wZipFilename.getText(),wAddDate.getSelection(),wAddTime.getSelection());
+				if (filename!=null && filename.length>0)
+				{
+					EnterSelectionDialog esd = new EnterSelectionDialog(shell, filename, Messages.getString("JobZipFiles.SelectOutputFiles.DialogTitle"), Messages.getString("JobZipFiles.SelectOutputFiles.DialogMessage"));
+					esd.setViewOnly();
+					esd.open();
+				}
+				else
+				{
+					MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
+					mb.setMessage(Messages.getString("JobZipFiles.NoFilesFound.DialogMessage"));
+					mb.setText(Messages.getString("System.Dialog.Error.Title"));
+					mb.open(); 
+				}
+			}
+		}
+			);
+		
+		
 
         fdZipFile = new FormData();
         fdZipFile.left = new FormAttachment(0, margin);
@@ -750,6 +847,11 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 		wZipFilename.setEnabled(!wgetFromPrevious.getSelection());
 		wbZipFilename.setEnabled(!wgetFromPrevious.getSelection());
 		wbSourceFile.setEnabled(!wgetFromPrevious.getSelection());
+		wlAddDate.setEnabled(!wgetFromPrevious.getSelection());
+		wAddDate.setEnabled(!wgetFromPrevious.getSelection());
+		wlAddTime.setEnabled(!wgetFromPrevious.getSelection());
+		wAddTime.setEnabled(!wgetFromPrevious.getSelection());
+		wbShowFiles.setEnabled(!wgetFromPrevious.getSelection());
 		
 	}
 
@@ -822,6 +924,9 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 		wAddFileToResult.setSelection(jobEntry.isAddFileToResult());
 		wgetFromPrevious.setSelection(jobEntry.getDatafromprevious());
 		wCreateParentFolder.setSelection(jobEntry.getcreateparentfolder());
+		wAddDate.setSelection(jobEntry.isDateInFilename());
+		wAddTime.setSelection(jobEntry.isTimeInFilename());
+
 	}
 
 	private void cancel()
@@ -851,6 +956,8 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 		jobEntry.setAddFileToResult(wAddFileToResult.getSelection());
 		jobEntry.setDatafromprevious(wgetFromPrevious.getSelection());
 		jobEntry.setcreateparentfolder(wCreateParentFolder.getSelection());
+		jobEntry.setDateInFilename( wAddDate.getSelection() );
+		jobEntry.setTimeInFilename( wAddTime.getSelection() );
 		dispose();
 	}
 	

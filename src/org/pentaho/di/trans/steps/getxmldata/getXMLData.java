@@ -304,9 +304,6 @@ public class getXMLData extends BaseStep implements StepInterface
 			}else
 			{
 				if (log.isDetailed()) log.logDetailed(toString(),Messages.getString("getXMLData.Log.OpeningFile", data.file.toString()));
-				
-				// Move file pointer ahead!
-				data.filenr++;
 	            
 				//Open the XML document
 				if(!setDocument(null,data.file,false)) 
@@ -362,9 +359,10 @@ public class getXMLData extends BaseStep implements StepInterface
 		 
 		 if (log.isRowLevel()) logRowlevel(Messages.getString("getXMLData.Log.ReadRow", r.toString()));
 		 linesInput++;
+		 data.rownr++;
 		 putRow(data.outputRowMeta, r);  // copy row to output rowset(s);
 		 
-		  if (meta.getRowLimit()>0 && data.rownr>=meta.getRowLimit())  // limit has been reached: stop now.
+		  if (meta.getRowLimit()>0 && data.rownr>meta.getRowLimit())  // limit has been reached: stop now.
 	      {
 	            setOutputDone();
 	            return false;
@@ -555,7 +553,6 @@ public class getXMLData extends BaseStep implements StepInterface
 			
 			data.previousRow = irow==null?outputRowData:(Object[])irow.cloneRow(outputRowData); // copy it to make
 			// surely the next step doesn't change it in between...
-			data.rownr++;
 	    
 		}
 		catch(Exception e)
