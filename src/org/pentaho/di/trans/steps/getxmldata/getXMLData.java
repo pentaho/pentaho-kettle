@@ -290,28 +290,41 @@ public class getXMLData extends BaseStep implements StepInterface
 			data.last_file = ( data.filenr==data.files.nrOfFiles()-1);
 			data.file = (FileObject) data.files.getFile(data.filenr);
 			
-			if (log.isDetailed()) log.logDetailed(toString(),Messages.getString("getXMLData.Log.OpeningFile", data.file.toString()));
+			// Check if file is empty
+			long fileSize= data.file.getContent().getSize();
 			
 			// Move file pointer ahead!
 			data.filenr++;
             
-			//Open the XML document
-			if(!setDocument(null,data.file,false)) 
+			if(meta.isIgnoreEmptyFile() && fileSize==0)
 			{
-				throw new KettleException (Messages.getString("getXMLData.Log.UnableCreateDocument"));
-			}
-			
-			// Apply XPath and set node list
-			if(!applyXPath())
+				log.logError(toString(),Messages.getString("getXMLData.Error.FileSizeZero", ""+data.file.getName()));
+				openNextFile();
+				
+			}else
 			{
-				throw new KettleException (Messages.getString("getXMLData.Log.UnableApplyXPath"));
+				if (log.isDetailed()) log.logDetailed(toString(),Messages.getString("getXMLData.Log.OpeningFile", data.file.toString()));
+				
+				// Move file pointer ahead!
+				data.filenr++;
+	            
+				//Open the XML document
+				if(!setDocument(null,data.file,false)) 
+				{
+					throw new KettleException (Messages.getString("getXMLData.Log.UnableCreateDocument"));
+				}
+				
+				// Apply XPath and set node list
+				if(!applyXPath())
+				{
+					throw new KettleException (Messages.getString("getXMLData.Log.UnableApplyXPath"));
+				}
+				
+				addFileToResultFilesname(data.file);
+	
+	            if (log.isDetailed()) logDetailed(Messages.getString("getXMLData.Log.FileOpened", data.file.toString()));
+	            if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("getXMLData.Log.LoopFileOccurences",""+data.nodesize,data.file.getName().getBaseName()));
 			}
-			
-			addFileToResultFilesname(data.file);
-
-            if (log.isDetailed()) logDetailed(Messages.getString("getXMLData.Log.FileOpened", data.file.toString()));
-            if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("getXMLData.Log.LoopFileOccurences",""+data.nodesize,data.file.getName().getBaseName()));
-            
 
 		}
 		catch(Exception e)

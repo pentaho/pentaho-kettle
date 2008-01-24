@@ -104,6 +104,9 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 	/** Flag : do we process use tokens? */
 	private boolean usetoken;
 	
+	/** Flag : do we ignore empty files */
+	private boolean IsIgnoreEmptyFile;
+	
     	
 	public getXMLDataMeta()
 	{
@@ -326,6 +329,25 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		return usetoken;
 	}
+	
+	/** 
+	 * @return the IsIgnoreEmptyFile flag
+	 */
+	public boolean isIgnoreEmptyFile()
+	{
+		return IsIgnoreEmptyFile;
+	}
+	
+	/** 
+	 * @param the IsIgnoreEmptyFile to set
+	 */
+	public void setIgnoreEmptyFile(boolean IsIgnoreEmptyFile)
+	{
+		this.IsIgnoreEmptyFile= IsIgnoreEmptyFile;
+	}
+	
+	
+	
 	/** 
 	 * @param the namespaceaware to set
 	 */
@@ -429,6 +451,8 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
         retval.append("    ").append(XMLHandler.addTagValue("namespaceaware",  namespaceaware));
         retval.append("    ").append(XMLHandler.addTagValue("validating",      validating));
         retval.append("    "+XMLHandler.addTagValue("usetoken",   usetoken));
+        retval.append("    "+XMLHandler.addTagValue("IsIgnoreEmptyFile",   IsIgnoreEmptyFile));
+        
         
         retval.append("    ").append(XMLHandler.addTagValue("rownum_field",    rowNumberField));
         retval.append("    ").append(XMLHandler.addTagValue("encoding",        encoding));
@@ -472,6 +496,7 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 			namespaceaware    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "namespaceaware"));
 			validating        = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "validating"));
 			usetoken  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "usetoken"));
+			IsIgnoreEmptyFile  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "IsIgnoreEmptyFile"));
 			
 			includeRowNumber  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "rownum"));
 			rowNumberField    = XMLHandler.getTagValue(stepnode, "rownum_field");
@@ -529,6 +554,7 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 	public void setDefault()
 	{
 		usetoken=false;
+		IsIgnoreEmptyFile=false;
 		includeFilename = false;
 		filenameField = "";
 		includeRowNumber = false;
@@ -608,6 +634,8 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 			namespaceaware    =   rep.getStepAttributeBoolean(id_step, "namespaceaware");
 			validating        =   rep.getStepAttributeBoolean(id_step, "validating");
 			usetoken  =      rep.getStepAttributeBoolean(id_step, "usetoken");
+			IsIgnoreEmptyFile  =      rep.getStepAttributeBoolean(id_step, "IsIgnoreEmptyFile");
+			
 			includeRowNumber  =   rep.getStepAttributeBoolean(id_step, "rownum");
 			rowNumberField    =   rep.getStepAttributeString (id_step, "rownum_field");
 			rowLimit          =   rep.getStepAttributeInteger(id_step, "limit");
@@ -668,6 +696,7 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "namespaceaware",   namespaceaware);
 			rep.saveStepAttribute(id_transformation, id_step, "validating",   validating);
 			rep.saveStepAttribute(id_transformation, id_step, "usetoken",   usetoken);
+			rep.saveStepAttribute(id_transformation, id_step, "IsIgnoreEmptyFile",   IsIgnoreEmptyFile);
 			
 			rep.saveStepAttribute(id_transformation, id_step, "rownum",          includeRowNumber);
 			rep.saveStepAttribute(id_transformation, id_step, "rownum_field",    rowNumberField);

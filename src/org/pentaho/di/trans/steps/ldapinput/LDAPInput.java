@@ -54,14 +54,12 @@ public class LDAPInput extends BaseStep implements StepInterface
 	
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{
-
         if (first)
         {
             first = false;
             // Create the output row meta-data
             data.outputRowMeta = new RowMeta();
             meta.getFields(data.outputRowMeta, getStepname(), null, null, this); // get the metadata populated
-            
             
             // Create convert meta-data objects that will contain Date & Number formatters
             //
@@ -111,8 +109,8 @@ public class LDAPInput extends BaseStep implements StepInterface
 		{
 			if (getStepMeta().isDoingErrorHandling())
 			{
-		          sendToErrorRow = true;
-		          errorMessage = e.toString();
+		         sendToErrorRow = true;
+		         errorMessage = e.toString();
 			}
 			else
 			{

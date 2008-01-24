@@ -140,13 +140,10 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 	private Button       wNameSpaceAware;
 	private FormData     fdlNameSpaceAware, fdNameSpaceAware;
 	
-	
 	private Label        wlValidating;
 	private Button       wValidating;
 	private FormData     fdlValidating, fdValidating;
 	
-	
-
 	private Label        wlInclFilenameField;
 	private TextVar      wInclFilenameField;
 	private FormData     fdlInclFilenameField, fdInclFilenameField;
@@ -182,6 +179,11 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 	
 	private Button   wbbLoopPathList;
 	private FormData fdbLoopPathList;
+	
+	// ignore empty files flag
+	private Label        wlIgnoreEmptyFile;
+	private Button       wIgnoreEmptyFile;
+	private FormData     fdlIgnoreEmptyFile, fdIgnoreEmptyFile;
 
 	private getXMLDataMeta input;
 	
@@ -672,12 +674,29 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		fduseToken.top  = new FormAttachment(wValidating, margin);
 		wuseToken.setLayoutData(fduseToken);
 		
+		 // Ignore Empty File
+		wlIgnoreEmptyFile=new Label(wXmlConf, SWT.RIGHT);
+		wlIgnoreEmptyFile.setText(Messages.getString("getXMLDataDialog.IgnoreEmptyFile.Label"));
+ 		props.setLook(wlIgnoreEmptyFile);
+		fdlIgnoreEmptyFile=new FormData();
+		fdlIgnoreEmptyFile.left = new FormAttachment(0, 0);
+		fdlIgnoreEmptyFile.top  = new FormAttachment(wuseToken, margin);
+		fdlIgnoreEmptyFile.right= new FormAttachment(middle, -margin);
+		wlIgnoreEmptyFile.setLayoutData(fdlIgnoreEmptyFile);
+		wIgnoreEmptyFile=new Button(wXmlConf, SWT.CHECK );
+ 		props.setLook(wIgnoreEmptyFile);
+		wIgnoreEmptyFile.setToolTipText(Messages.getString("getXMLDataDialog.IgnoreEmptyFile.Tooltip"));
+		fdIgnoreEmptyFile=new FormData();
+		fdIgnoreEmptyFile.left = new FormAttachment(middle, 0);
+		fdIgnoreEmptyFile.top  = new FormAttachment(wuseToken, margin);
+		wIgnoreEmptyFile.setLayoutData(fdIgnoreEmptyFile);
+		
 		wlLimit=new Label(wXmlConf, SWT.RIGHT);
 		wlLimit.setText(Messages.getString("getXMLDataDialog.Limit.Label"));
  		props.setLook(wlLimit);
 		fdlLimit=new FormData();
 		fdlLimit.left = new FormAttachment(0, 0);
-		fdlLimit.top  = new FormAttachment(wuseToken, margin);
+		fdlLimit.top  = new FormAttachment(wIgnoreEmptyFile, margin);
 		fdlLimit.right= new FormAttachment(middle, -margin);
 		wlLimit.setLayoutData(fdlLimit);
 		wLimit=new Text(wXmlConf, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
@@ -685,7 +704,7 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		wLimit.addModifyListener(lsMod);
 		fdLimit=new FormData();
 		fdLimit.left = new FormAttachment(middle, 0);
-		fdLimit.top  = new FormAttachment(wuseToken, margin);
+		fdLimit.top  = new FormAttachment(wIgnoreEmptyFile, margin);
 		fdLimit.right= new FormAttachment(100, 0);
 		wLimit.setLayoutData(fdLimit);
 		
@@ -1651,7 +1670,7 @@ private boolean IsDate(String str)
 		wNameSpaceAware.setSelection(in.isNamespaceAware());
 		wValidating.setSelection(in.isValidating());
 		wuseToken.setSelection(in.isuseToken());
-		
+		wIgnoreEmptyFile.setSelection(in.isIgnoreEmptyFile());
 		wXMLStreamField.setSelection(in.getIsInFields());
 		wXMLIsAFile.setSelection(in.getIsAFile());
 		
@@ -1752,7 +1771,7 @@ private boolean IsDate(String str)
 		in.setNamespaceAware( wNameSpaceAware.getSelection() );
 		in.setValidating( wValidating.getSelection() );
 		in.setuseToken(wuseToken.getSelection() );
-		
+		in.setIgnoreEmptyFile(wIgnoreEmptyFile.getSelection() );
 		in.setIsInFields(wXMLStreamField.getSelection());
 		in.setIsAFile(wXMLIsAFile.getSelection());
 		in.setXMLField(wXMLField.getText());
