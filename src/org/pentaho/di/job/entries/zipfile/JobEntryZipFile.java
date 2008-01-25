@@ -23,7 +23,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -47,6 +46,7 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
@@ -335,8 +335,13 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 						// the zip file exists and user want to create new one with unique name
 						//Format Date
 						
-						DateFormat dateFormat = new SimpleDateFormat("hhmmss_MMddyyyy");
-						realZipfilename=realZipfilename + "_" + dateFormat.format(new Date())+".zip";		
+						//do we have already a .zip at the end?
+						if (realZipfilename.toLowerCase().endsWith(".zip")) {
+							//strip this off
+							realZipfilename = realZipfilename.substring(0, realZipfilename.length()-4);
+						}
+						
+						realZipfilename=realZipfilename + "_" + StringUtil.getFormattedDateTimeNow(true) +".zip";		
 						log.logDebug(toString(), Messages.getString("JobZipFiles.Zip_FileNameChange1.Label") + realZipfilename + 
 												Messages.getString("JobZipFiles.Zip_FileNameChange1.Label"));
 					}
@@ -729,13 +734,13 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 		
 		if (add_date)
 		{
-			daf.applyPattern("yyyMMdd");
+			daf.applyPattern("yyyyMMdd");
 			String d = daf.format(now);
 			retval+="_"+d;
 		}
 		if (add_time)
 		{
-			daf.applyPattern("HHmmss");
+			daf.applyPattern("HHmmssSSS");
 			String t = daf.format(now);
 			retval+="_"+t;
 		}
