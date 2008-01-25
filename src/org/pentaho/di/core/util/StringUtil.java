@@ -12,6 +12,7 @@
 */
 package org.pentaho.di.core.util;
 
+import java.text.DateFormat;
 import java.text.DateFormatSymbols;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -438,5 +439,55 @@ public class StringUtil
   
     public static String getIndent(int indentLevel) {
         return INDENTCHARS.substring(0, indentLevel);
-    }  
+    }
+
+	/**
+	 * Giving back a date/time string in the format following the rule
+	 * from the most to the least significant
+	 * @param date the date to convert
+	 * @return a string in the form yyyddMM_hhmmss
+	 */
+	public static String getFormattedDateTime(Date date)
+	{
+		return getFormattedDateTime(date, false);
+	}
+	
+	/**
+	 * Giving back a date/time string in the format following the rule
+	 * from the most to the least significant
+	 * @param date the date to convert
+	 * @param milliseconds true when milliseconds should be added
+	 * @return a string in the form yyyddMM_hhmmssSSS (milliseconds will be optional)
+	 */
+	public static String getFormattedDateTime(Date date, boolean milliseconds)
+	{
+		DateFormat dateFormat =null;
+		if (milliseconds) {
+			dateFormat = new SimpleDateFormat(Const.GENERALIZED_DATE_TIME_FORMAT_MILLIS);
+		} else {
+			dateFormat = new SimpleDateFormat(Const.GENERALIZED_DATE_TIME_FORMAT);
+		}
+		return dateFormat.format(date);
+	}
+	
+	/**
+	 * Giving back the actual time as a date/time string in the format following the rule
+	 * from the most to the least significant
+	 * @return a string in the form yyyddMM_hhmmss
+	 */
+	public static String getFormattedDateTimeNow()
+	{
+		return getFormattedDateTime(new Date(), false);
+	}
+	
+	/**
+	 * Giving back the actual time as a date/time string in the format following the rule
+	 * from the most to the least significant
+	 * @param milliseconds true when milliseconds should be added
+	 * @return a string in the form yyyddMM_hhmmssSSS (milliseconds will be optional)
+	 */
+	public static String getFormattedDateTimeNow(boolean milliseconds)
+	{
+		return getFormattedDateTime(new Date(), milliseconds);
+	}	
 }
