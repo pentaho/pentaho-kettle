@@ -62,7 +62,7 @@ import org.pentaho.di.job.entries.mssqlbulkload.JobEntryMssqlBulkLoad;
 import org.pentaho.di.job.entries.mssqlbulkload.Messages;
 
 /**
- * Dialog class for the MySqlBulkLoader.
+ * Dialog class for the MSSqlBulkLoader.
  * 
  * @author Samatar Hassan
  * @since  Jan-2007
@@ -173,6 +173,11 @@ public class JobEntryMssqlBulkLoadDialog extends JobEntryDialog implements JobEn
 	private Button       wKeepNulls;
 	private FormData     fdlKeepNulls, fdKeepNulls;
 	
+	// Keep Identity?
+	private Label        wlKeepIdentity;
+	private Button       wKeepIdentity;
+	private FormData     fdlKeepIdentity, fdKeepIdentity;
+	
 	// Tablock
 	private Label        wlTablock;
 	private Button       wTablock;
@@ -186,10 +191,10 @@ public class JobEntryMssqlBulkLoadDialog extends JobEntryDialog implements JobEn
 	
 	// Format file
 
-	private Label wlFortmatFilename;
-	private Button wbFortmatFilename;
-	private TextVar wFortmatFilename;
-	private FormData fdlFortmatFilename, fdbFortmatFilename, fdFortmatFilename;
+	private Label wlFormatFilename;
+	private Button wbFormatFilename;
+	private TextVar wFormatFilename;
+	private FormData fdlFormatFilename, fdbFormatFilename, fdFormatFilename;
 	
 	// Order Direction
 	private Label wlOrderDirection;
@@ -611,57 +616,57 @@ public class JobEntryMssqlBulkLoadDialog extends JobEntryDialog implements JobEn
 		
 		
 
-		// FortmatFilename line
-		wlFortmatFilename = new Label(wAdvancedComp, SWT.RIGHT);
-		wlFortmatFilename.setText(Messages.getString("JobMssqlBulkLoad.FortmatFilename.Label"));
-		props.setLook(wlFortmatFilename);
-		fdlFortmatFilename = new FormData();
-		fdlFortmatFilename.left = new FormAttachment(0, 0);
-		fdlFortmatFilename.top = new FormAttachment(wSpecificCodePage, margin);
-		fdlFortmatFilename.right = new FormAttachment(middle, -margin);
-		wlFortmatFilename.setLayoutData(fdlFortmatFilename);
+		// FormatFilename line
+		wlFormatFilename = new Label(wAdvancedComp, SWT.RIGHT);
+		wlFormatFilename.setText(Messages.getString("JobMssqlBulkLoad.FormatFilename.Label"));
+		props.setLook(wlFormatFilename);
+		fdlFormatFilename = new FormData();
+		fdlFormatFilename.left = new FormAttachment(0, 0);
+		fdlFormatFilename.top = new FormAttachment(wSpecificCodePage, margin);
+		fdlFormatFilename.right = new FormAttachment(middle, -margin);
+		wlFormatFilename.setLayoutData(fdlFormatFilename);
 
-		wbFortmatFilename = new Button(wAdvancedComp, SWT.PUSH | SWT.CENTER);
-		props.setLook(wbFortmatFilename);
-		wbFortmatFilename.setText(Messages.getString("System.Button.Browse"));
-		fdbFortmatFilename = new FormData();
-		fdbFortmatFilename.right = new FormAttachment(100, 0);
-		fdbFortmatFilename.top = new FormAttachment(wSpecificCodePage, 0);
-		wbFortmatFilename.setLayoutData(fdbFortmatFilename);
+		wbFormatFilename = new Button(wAdvancedComp, SWT.PUSH | SWT.CENTER);
+		props.setLook(wbFormatFilename);
+		wbFormatFilename.setText(Messages.getString("System.Button.Browse"));
+		fdbFormatFilename = new FormData();
+		fdbFormatFilename.right = new FormAttachment(100, 0);
+		fdbFormatFilename.top = new FormAttachment(wSpecificCodePage, 0);
+		wbFormatFilename.setLayoutData(fdbFormatFilename);
 
-		wFortmatFilename = new TextVar(jobMeta, wAdvancedComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		props.setLook(wFortmatFilename);
-		wFortmatFilename.setToolTipText(Messages.getString("JobMssqlBulkLoad.FortmatFilename.Tooltip"));
-		wFortmatFilename.addModifyListener(lsMod);
-		fdFortmatFilename = new FormData();
-		fdFortmatFilename.left = new FormAttachment(middle, 0);
-		fdFortmatFilename.top = new FormAttachment(wSpecificCodePage, margin);
-		fdFortmatFilename.right = new FormAttachment(wbFortmatFilename, -margin);
-		wFortmatFilename.setLayoutData(fdFortmatFilename);
+		wFormatFilename = new TextVar(jobMeta, wAdvancedComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		props.setLook(wFormatFilename);
+		wFormatFilename.setToolTipText(Messages.getString("JobMssqlBulkLoad.FormatFilename.Tooltip"));
+		wFormatFilename.addModifyListener(lsMod);
+		fdFormatFilename = new FormData();
+		fdFormatFilename.left = new FormAttachment(middle, 0);
+		fdFormatFilename.top = new FormAttachment(wSpecificCodePage, margin);
+		fdFormatFilename.right = new FormAttachment(wbFormatFilename, -margin);
+		wFormatFilename.setLayoutData(fdFormatFilename);
 
 		// Whenever something changes, set the tooltip to the expanded version:
-		wFortmatFilename.addModifyListener(new ModifyListener()
+		wFormatFilename.addModifyListener(new ModifyListener()
 		{
 			public void modifyText(ModifyEvent e)
 			{
-				wFortmatFilename.setToolTipText(jobMeta.environmentSubstitute(wFortmatFilename.getText()));
+				wFormatFilename.setToolTipText(jobMeta.environmentSubstitute(wFormatFilename.getText()));
 			}
 		});
 
-		wbFortmatFilename.addSelectionListener(new SelectionAdapter()
+		wbFormatFilename.addSelectionListener(new SelectionAdapter()
 		{
 			public void widgetSelected(SelectionEvent e)
 			{
 				FileDialog dialog = new FileDialog(shell, SWT.OPEN);
 				dialog.setFilterExtensions(new String[] { "*.txt", "*.csv", "*" });
-				if (wFortmatFilename.getText() != null)
+				if (wFormatFilename.getText() != null)
 				{
-					dialog.setFileName(jobMeta.environmentSubstitute(wFortmatFilename.getText()));
+					dialog.setFileName(jobMeta.environmentSubstitute(wFormatFilename.getText()));
 				}
 				dialog.setFilterNames(FILETYPES);
 				if (dialog.open() != null)
 				{
-					wFortmatFilename.setText(dialog.getFilterPath() + Const.FILE_SEPARATOR
+					wFormatFilename.setText(dialog.getFilterPath() + Const.FILE_SEPARATOR
 						+ dialog.getFileName());
 				}
 			}
@@ -676,7 +681,7 @@ public class JobEntryMssqlBulkLoadDialog extends JobEntryDialog implements JobEn
 		props.setLook(wlFireTriggers);
 		fdlFireTriggers = new FormData();
 		fdlFireTriggers.left = new FormAttachment(0, 0);
-		fdlFireTriggers.top = new FormAttachment(wFortmatFilename, margin);
+		fdlFireTriggers.top = new FormAttachment(wFormatFilename, margin);
 		fdlFireTriggers.right = new FormAttachment(middle, -margin);
 		wlFireTriggers.setLayoutData(fdlFireTriggers);
 		wFireTriggers = new Button(wAdvancedComp, SWT.CHECK);
@@ -684,7 +689,7 @@ public class JobEntryMssqlBulkLoadDialog extends JobEntryDialog implements JobEn
 		wFireTriggers.setToolTipText(Messages.getString("JobMssqlBulkLoad.FireTriggers.Tooltip"));
 		fdFireTriggers = new FormData();
 		fdFireTriggers.left = new FormAttachment(middle, 0);
-		fdFireTriggers.top = new FormAttachment(wFortmatFilename, margin);
+		fdFireTriggers.top = new FormAttachment(wFormatFilename, margin);
 		fdFireTriggers.right = new FormAttachment(100, 0);
 		wFireTriggers.setLayoutData(fdFireTriggers);
 		wFireTriggers.addSelectionListener(new SelectionAdapter()
@@ -746,13 +751,38 @@ public class JobEntryMssqlBulkLoadDialog extends JobEntryDialog implements JobEn
 			}
 		});
 		
+		// Keep Identity
+		wlKeepIdentity = new Label(wAdvancedComp, SWT.RIGHT);
+		wlKeepIdentity.setText(Messages.getString("JobMssqlBulkLoad.KeepIdentity.Label"));
+		props.setLook(wlKeepIdentity);
+		fdlKeepIdentity = new FormData();
+		fdlKeepIdentity.left = new FormAttachment(0, 0);
+		fdlKeepIdentity.top = new FormAttachment(wKeepNulls, margin);
+		fdlKeepIdentity.right = new FormAttachment(middle, -margin);
+		wlKeepIdentity.setLayoutData(fdlKeepIdentity);
+		wKeepIdentity = new Button(wAdvancedComp, SWT.CHECK);
+		props.setLook(wKeepIdentity);
+		wKeepIdentity.setToolTipText(Messages.getString("JobMssqlBulkLoad.KeepIdentity.Tooltip"));
+		fdKeepIdentity = new FormData();
+		fdKeepIdentity.left = new FormAttachment(middle, 0);
+		fdKeepIdentity.top = new FormAttachment(wKeepNulls, margin);
+		fdKeepIdentity.right = new FormAttachment(100, 0);
+		wKeepIdentity.setLayoutData(fdKeepIdentity);
+		wKeepIdentity.addSelectionListener(new SelectionAdapter()
+		{
+			public void widgetSelected(SelectionEvent e)
+			{
+				jobEntry.setChanged();
+			}
+		});
+		
 		// TABBLOCK
 		wlTablock = new Label(wAdvancedComp, SWT.RIGHT);
 		wlTablock.setText(Messages.getString("JobMssqlBulkLoad.Tablock.Label"));
 		props.setLook(wlTablock);
 		fdlTablock = new FormData();
 		fdlTablock.left = new FormAttachment(0, 0);
-		fdlTablock.top = new FormAttachment(wKeepNulls, margin);
+		fdlTablock.top = new FormAttachment(wKeepIdentity, margin);
 		fdlTablock.right = new FormAttachment(middle, -margin);
 		wlTablock.setLayoutData(fdlTablock);
 		wTablock = new Button(wAdvancedComp, SWT.CHECK);
@@ -760,7 +790,7 @@ public class JobEntryMssqlBulkLoadDialog extends JobEntryDialog implements JobEn
 		wTablock.setToolTipText(Messages.getString("JobMssqlBulkLoad.Tablock.Tooltip"));
 		fdTablock = new FormData();
 		fdTablock.left = new FormAttachment(middle, 0);
-		fdTablock.top = new FormAttachment(wKeepNulls, margin);
+		fdTablock.top = new FormAttachment(wKeepIdentity, margin);
 		fdTablock.right = new FormAttachment(100, 0);
 		wTablock.setLayoutData(fdTablock);
 		wTablock.addSelectionListener(new SelectionAdapter()
@@ -886,6 +916,7 @@ public class JobEntryMssqlBulkLoadDialog extends JobEntryDialog implements JobEn
 		wErrorFilename=new TextVar(jobMeta, wAdvancedComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wErrorFilename);
 		wErrorFilename.addModifyListener(lsMod);
+		wErrorFilename.setToolTipText(Messages.getString("JobMysqlBulkLoad.ErrorFilename.Tooltip"));
 		fdErrorFilename=new FormData();
 		fdErrorFilename.left = new FormAttachment(middle, 0);
 		fdErrorFilename.top  = new FormAttachment(wOrderDirection, margin);
@@ -1194,19 +1225,41 @@ public class JobEntryMssqlBulkLoadDialog extends JobEntryDialog implements JobEn
 			wCodePage.setText("RAW");
 		if (jobEntry.getSpecificCodePage() != null)
 			wSpecificCodePage.setText(jobEntry.getSpecificCodePage());
+		if (jobEntry.getFormatFilename() != null)
+			wFormatFilename.setText(jobEntry.getFormatFilename());
 
+		wFireTriggers.setSelection(jobEntry.isFireTriggers());
+		wCheckConstraints.setSelection(jobEntry.isCheckConstraints());
+		wKeepNulls.setSelection(jobEntry.isKeepNulls());
+		wKeepIdentity.setSelection(jobEntry.isKeepIdentity());
+		
+		wTablock.setSelection(jobEntry.isTablock());
 	
-		if (jobEntry.getStartFile() != null)
-			wStartFile.setText(jobEntry.getStartFile());
-		if (jobEntry.getEndFile() != null)
-			wEndFile.setText(jobEntry.getEndFile());
+		wStartFile.setText(""+jobEntry.getStartFile());
+		wEndFile.setText(""+jobEntry.getEndFile());
 		
 		
 		
 		if (jobEntry.getOrderBy() != null)
 			wOrderBy.setText(jobEntry.getOrderBy());
-		     
-
+		if (jobEntry.getOrderDirection() != null)
+		{
+			if(jobEntry.getOrderDirection().equals("Asc"))
+				wOrderDirection.select(0);
+			else
+				wOrderDirection.select(1);
+		}else
+			wOrderDirection.select(0);
+		
+		if (jobEntry.getErrorFilename() != null)
+			wErrorFilename.setText(jobEntry.getErrorFilename());  
+		
+		wMaxErrors.setText(""+jobEntry.getMaxErrors());
+		wBatchSize.setText(""+jobEntry.getBatchSize());
+		wRowsPerBatch.setText(""+jobEntry.getRowsPerBatch());
+		
+		wAddDateTime.setSelection(jobEntry.isAddDatetime());
+		
 		wAddFileToResult.setSelection(jobEntry.isAddFileToResult());
 		
 		wName.selectAll();
@@ -1231,11 +1284,28 @@ public class JobEntryMssqlBulkLoadDialog extends JobEntryDialog implements JobEn
 		jobEntry.setLineterminated(wLineterminated.getText());
 		jobEntry.setCodePage(wCodePage.getText());
 		jobEntry.setSpecificCodePage(wSpecificCodePage.getText());
+		jobEntry.setFormatFilename(wFormatFilename.getText());
+		jobEntry.setFireTriggers(wFireTriggers.getSelection());
+		jobEntry.setCheckConstraints(wCheckConstraints.getSelection());
+		jobEntry.setKeepNulls(wKeepNulls.getSelection());
+		jobEntry.setKeepIdentity(wKeepIdentity.getSelection());
 		
+		jobEntry.setTablock(wTablock.getSelection());
 		
-		jobEntry.setStartFile(wStartFile.getText());
-		jobEntry.setEndFile(wEndFile.getText());
+		jobEntry.setStartFile(Const.toInt(wStartFile.getText(),0));
+		jobEntry.setEndFile(Const.toInt(wEndFile.getText(),0));
 		jobEntry.setOrderBy(wOrderBy.getText());
+		if(wOrderDirection.getSelectionIndex()==0)
+			jobEntry.setOrderDirection("Asc");
+		else
+			jobEntry.setOrderDirection("Desc");
+		
+		jobEntry.setErrorFilename(wErrorFilename.getText());
+		jobEntry.setMaxErrors(Const.toInt(wMaxErrors.getText(), 0));
+		jobEntry.setBatchSize(Const.toInt(wBatchSize.getText(), 0));
+		jobEntry.setRowsPerBatch(Const.toInt(wRowsPerBatch.getText(), 0));
+		
+		jobEntry.setAddDatetime(wAddDateTime.getSelection());
 		
 		jobEntry.setAddFileToResult(wAddFileToResult.getSelection());
 		

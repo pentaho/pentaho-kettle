@@ -725,7 +725,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 	}
 	public String getFullFilename(String filename,boolean add_date,boolean add_time)
 	{
-		String retval="gggg";
+		String retval="";
 		// Replace possible environment variables...
 		if(filename!=null) retval=environmentSubstitute(filename);
 		

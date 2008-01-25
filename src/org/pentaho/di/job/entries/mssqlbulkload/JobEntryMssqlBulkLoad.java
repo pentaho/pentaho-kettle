@@ -22,6 +22,8 @@ import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlank
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.vfs.FileObject;
@@ -67,10 +69,22 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 	private String lineterminated;
 	private String codepage;
 	private String specificcodepage;
-	private String startfile;
-	private String endfile;
+	private int startfile;
+	private int endfile;
 	private String orderby;
 	private boolean addfiletoresult;
+	private String formatfilename;
+	private boolean firetriggers;
+	private boolean checkconstraints;
+	private boolean keepnulls;
+	private boolean tablock;
+	private String errorfilename;
+	private boolean adddatetime;
+	private String orderdirection;
+	private int maxerrors;
+	private int batchsize;
+	private int rowsperbatch;
+	private boolean keepidentity;
 
 	private DatabaseMeta connection;
 
@@ -83,13 +97,27 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 		datafiletype="char";
 		fieldterminator=null;
 		lineterminated=null;
-		codepage="RAW";
+		codepage="OEM";
 		specificcodepage=null;
-		startfile = null;
-		endfile= null;
+		checkconstraints=false;
+		keepnulls=false;
+		tablock=false;
+		startfile = 0;
+		endfile= 0;
 		orderby=null;
+		
+		errorfilename=null;
+		adddatetime=false;
+		orderdirection="Asc";
+		maxerrors=0;
+		batchsize=0;
+		rowsperbatch=0;
+
 		connection=null;
 		addfiletoresult = false;
+		formatfilename=null;
+		firetriggers=false;
+		keepidentity=false;
 		setID(-1L);
 		setJobEntryType(JobEntryType.MSSQL_BULK_LOAD);
 	}
@@ -118,22 +146,36 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 		retval.append("      ").append(XMLHandler.addTagValue("schemaname",      schemaname));
 		retval.append("      ").append(XMLHandler.addTagValue("tablename",       tablename));
 		retval.append("      ").append(XMLHandler.addTagValue("filename",        filename));
-		
-		
-		
+
 		retval.append("      ").append(XMLHandler.addTagValue("datafiletype", datafiletype));
 		retval.append("      ").append(XMLHandler.addTagValue("fieldterminator", fieldterminator));
 		retval.append("      ").append(XMLHandler.addTagValue("lineterminated",  lineterminated));
 		retval.append("      ").append(XMLHandler.addTagValue("codepage",  codepage));
 		retval.append("      ").append(XMLHandler.addTagValue("specificcodepage",  specificcodepage));
+		retval.append("      ").append(XMLHandler.addTagValue("formatfilename",  formatfilename));
+		retval.append("      ").append(XMLHandler.addTagValue("firetriggers",  firetriggers));
+		retval.append("      ").append(XMLHandler.addTagValue("checkconstraints",  checkconstraints));
+		retval.append("      ").append(XMLHandler.addTagValue("keepnulls",  keepnulls));
+		retval.append("      ").append(XMLHandler.addTagValue("keepidentity",  keepidentity));
 		
+		retval.append("      ").append(XMLHandler.addTagValue("tablock",  tablock));
 		
 		
 		retval.append("      ").append(XMLHandler.addTagValue("startfile",     startfile));
 		retval.append("      ").append(XMLHandler.addTagValue("endfile",     endfile));
 		
 		
-		retval.append("      ").append(XMLHandler.addTagValue("orderby",    orderby));		
+		retval.append("      ").append(XMLHandler.addTagValue("orderby",    orderby));	
+		retval.append("      ").append(XMLHandler.addTagValue("orderdirection",    orderdirection));	
+		
+		retval.append("      ").append(XMLHandler.addTagValue("maxerrors",    maxerrors));
+		retval.append("      ").append(XMLHandler.addTagValue("batchsize",    batchsize));
+		retval.append("      ").append(XMLHandler.addTagValue("rowsperbatch",    rowsperbatch));
+		
+		retval.append("      ").append(XMLHandler.addTagValue("errorfilename",    errorfilename));	
+		retval.append("      ").append(XMLHandler.addTagValue("adddatetime",  adddatetime));
+		
+		
 		retval.append("      ").append(XMLHandler.addTagValue("addfiletoresult",  addfiletoresult));
 		retval.append("      ").append(XMLHandler.addTagValue("connection",      connection==null?null:connection.getName()));
 
@@ -156,12 +198,30 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 			lineterminated  = XMLHandler.getTagValue(entrynode, "lineterminated");
 			codepage  = XMLHandler.getTagValue(entrynode, "codepage");
 			specificcodepage  = XMLHandler.getTagValue(entrynode, "specificcodepage");
+			formatfilename  = XMLHandler.getTagValue(entrynode, "formatfilename");
 			
-			startfile     = XMLHandler.getTagValue(entrynode, "startfile");
-			endfile     = XMLHandler.getTagValue(entrynode, "endfile");
+			firetriggers = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "firetriggers"));
+			checkconstraints = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "checkconstraints"));
+			keepnulls = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "keepnulls"));
+			keepidentity = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "keepidentity"));
+			
+			tablock = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "tablock"));
+			
+			
+			startfile     = Const.toInt(XMLHandler.getTagValue(entrynode, "startfile"), 0);
+			endfile     = Const.toInt(XMLHandler.getTagValue(entrynode, "endfile"), 0);
 			
 			orderby    = XMLHandler.getTagValue(entrynode, "orderby");
-
+			orderdirection    = XMLHandler.getTagValue(entrynode, "orderdirection");
+			
+			errorfilename    = XMLHandler.getTagValue(entrynode, "errorfilename");
+			
+			maxerrors             = Const.toInt(XMLHandler.getTagValue(entrynode, "maxerrors"), 0);
+			batchsize             = Const.toInt(XMLHandler.getTagValue(entrynode, "batchsize"), 0);
+			rowsperbatch             = Const.toInt(XMLHandler.getTagValue(entrynode, "rowsperbatch"), 0);
+			adddatetime = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "adddatetime"));
+			
+			
 			String dbname   = XMLHandler.getTagValue(entrynode, "connection");
 			addfiletoresult = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "addfiletoresult"));
 			connection      = DatabaseMeta.findDatabase(databases, dbname);
@@ -191,12 +251,26 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 			lineterminated  =      rep.getJobEntryAttributeString(id_jobentry,  "lineterminated");
 			codepage  =      rep.getJobEntryAttributeString(id_jobentry,  "codepage");
 			specificcodepage  =      rep.getJobEntryAttributeString(id_jobentry,  "specificcodepage");
+			formatfilename  =      rep.getJobEntryAttributeString(id_jobentry,  "formatfilename");
+			firetriggers=rep.getJobEntryAttributeBoolean(id_jobentry, "firetriggers");
+			checkconstraints=rep.getJobEntryAttributeBoolean(id_jobentry, "checkconstraints");
+			keepnulls=rep.getJobEntryAttributeBoolean(id_jobentry, "keepnulls");
+			keepidentity=rep.getJobEntryAttributeBoolean(id_jobentry, "keepidentity");
 			
-			startfile     =      rep.getJobEntryAttributeString(id_jobentry,  "startfile");
-			endfile     =      rep.getJobEntryAttributeString(id_jobentry,  "endfile");
+			tablock=rep.getJobEntryAttributeBoolean(id_jobentry, "tablock");
+			
+			startfile    = (int)rep.getJobEntryAttributeInteger(id_jobentry, "startfile");
+			endfile     = (int)rep.getJobEntryAttributeInteger(id_jobentry, "endfile");
 			
 			orderby    =      rep.getJobEntryAttributeString(id_jobentry,  "orderby");
-
+			orderdirection    =      rep.getJobEntryAttributeString(id_jobentry,  "orderdirection");
+			
+			errorfilename    =      rep.getJobEntryAttributeString(id_jobentry,  "errorfilename");
+			maxerrors             = (int)rep.getJobEntryAttributeInteger(id_jobentry, "maxerrors");
+			batchsize             = (int)rep.getJobEntryAttributeInteger(id_jobentry, "batchsize");
+			rowsperbatch             = (int)rep.getJobEntryAttributeInteger(id_jobentry, "rowsperbatch");
+			adddatetime=rep.getJobEntryAttributeBoolean(id_jobentry, "adddatetime");
+			
 			addfiletoresult=rep.getJobEntryAttributeBoolean(id_jobentry, "addfiletoresult");
 
 			long id_db = rep.getJobEntryAttributeInteger(id_jobentry, "id_database");
@@ -235,10 +309,27 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 			rep.saveJobEntryAttribute(id_job, getID(), "lineterminated", lineterminated);
 			rep.saveJobEntryAttribute(id_job, getID(), "codepage", codepage);
 			rep.saveJobEntryAttribute(id_job, getID(), "specificcodepage", specificcodepage);
+			rep.saveJobEntryAttribute(id_job, getID(), "formatfilename", formatfilename);
+			rep.saveJobEntryAttribute(id_job, getID(), "firetriggers", firetriggers);
+			rep.saveJobEntryAttribute(id_job, getID(), "checkconstraints", checkconstraints);
+			rep.saveJobEntryAttribute(id_job, getID(), "keepnulls", keepnulls);
+			rep.saveJobEntryAttribute(id_job, getID(), "keepidentity", keepidentity);
+			
+			rep.saveJobEntryAttribute(id_job, getID(), "tablock", tablock);
+			
 			
 			rep.saveJobEntryAttribute(id_job, getID(), "startfile",    startfile);
 			rep.saveJobEntryAttribute(id_job, getID(), "endfile",    endfile);
 			rep.saveJobEntryAttribute(id_job, getID(), "orderby",   orderby);
+			rep.saveJobEntryAttribute(id_job, getID(), "orderdirection",   orderdirection);
+			
+			rep.saveJobEntryAttribute(id_job, getID(), "errorfilename",   errorfilename);
+			rep.saveJobEntryAttribute(id_job, getID(), "maxerrors",         maxerrors);
+			rep.saveJobEntryAttribute(id_job, getID(), "batchsize",         batchsize);
+			rep.saveJobEntryAttribute(id_job, getID(), "rowsperbatch",         rowsperbatch);
+			
+			rep.saveJobEntryAttribute(id_job, getID(), "adddatetime", adddatetime);
+	
 			rep.saveJobEntryAttribute(id_job, getID(), "addfiletoresult", addfiletoresult);
 
 			if (connection!=null) rep.saveJobEntryAttribute(id_job, getID(), "connection", connection.getName());
@@ -269,7 +360,30 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 	{
 		return tablename;
 	}
-
+	public void setMaxErrors(int maxerrors)
+	{
+		this.maxerrors=maxerrors;
+	}
+	public int getMaxErrors()
+	{
+		return maxerrors;
+	}
+	public int getBatchSize()
+	{
+		return batchsize;
+	}
+	public void setBatchSize(int batchsize)
+	{
+		this.batchsize=batchsize;
+	}
+	public int getRowsPerBatch()
+	{
+		return rowsperbatch;
+	}
+	public void setRowsPerBatch(int rowsperbatch)
+	{
+		this.rowsperbatch=rowsperbatch;
+	}
 	public void setDatabase(DatabaseMeta database)
 	{
 		this.connection = database;
@@ -292,9 +406,12 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 
 	public Result execute(Result previousResult, int nr, Repository rep, Job parentJob)
 	{
-		String TakeFirstNbrLines=null;
-		String LineTerminatedby=null;
-		String FieldTerminatedby=null;
+		String TakeFirstNbrLines="";
+		String LineTerminatedby="";
+		String FieldTerminatedby="";
+		boolean useFieldSeparator=false;
+		String UseCodepage=""; 
+		String ErrorfileName="";
 
 		LogWriter log = LogWriter.getInstance();
 
@@ -359,30 +476,95 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 								log.logDetailed(toString(), Messages.getString("JobMssqlBulkLoad.TableExists.Label",realTablename));
 	
 								// Add schemaname (Most the time Schemaname.Tablename)
-								if (schemaname !=null)
-									realTablename= realSchemaname + "." + realTablename;
+								if (schemaname !=null)	realTablename= realSchemaname + "." + realTablename;
 	
-								// Take the X first rows
-								String nblinesTake=getRealTakelines();
-								if(Const.toInt(nblinesTake,0)>0)
-									TakeFirstNbrLines="FIRSTROW="+nblinesTake;
-								
 								// FIELDTERMINATOR
 								String Fieldterminator=getRealFieldTerminator();
-								if(!Const.isEmpty(Fieldterminator))	
-									FieldTerminatedby="FIELDTERMINATOR='"+Fieldterminator+"'";
+								if(Const.isEmpty(Fieldterminator) && (datafiletype.equals("char")||datafiletype.equals("widechar")))
+								{
+									log.logError(toString(), Messages.getString("JobMssqlBulkLoad.Error.FieldTerminatorMissing"));
+									return result;
+								}
+								else
+								{
+									if(datafiletype.equals("char")||datafiletype.equals("widechar"))
+									{
+										useFieldSeparator=true;									
+										FieldTerminatedby="FIELDTERMINATOR='"+Fieldterminator+"'";
+									}
+								}
+								// Check Specific Code page
+								if(codepage.equals("Specific"))
+								{
+									if(specificcodepage.length()<0)
+									{
+										log.logError(toString(), Messages.getString("JobMssqlBulkLoad.Error.SpecificCodePageMissing"));
+										return result;
+					
+									}else
+										UseCodepage="CODEPAGE = '" + specificcodepage + "'";
+								}else
+								{
+									UseCodepage="CODEPAGE = '" + codepage + "'";
+								}
+								
+								// Check Error file
+								if(errorfilename!=null)
+								{
+									File errorfile = new File(errorfilename);
+									if(errorfile.exists() && !adddatetime)
+									{
+										// The error file is created when the command is executed. An error occurs if the file already exists.
+										log.logError(toString(), Messages.getString("JobMssqlBulkLoad.Error.ErrorFileExists"));
+										return result;
+									}
+									if(adddatetime)
+									{
+										// Add date time to filename...
+										SimpleDateFormat daf     = new SimpleDateFormat();
+										Date now = new Date();
+										daf.applyPattern("yyyMMdd_HHmmss");
+										String d = daf.format(now);
+	
+										ErrorfileName="ERRORFILE ='"+ errorfilename+"_"+d +"'";
+									}else
+										ErrorfileName="ERRORFILE ='"+ errorfilename+"'";
+								}
+								
 								
 								// ROWTERMINATOR
 								String Rowterminator=getRealLineterminated();
-								if(!Const.isEmpty(Rowterminator))	
-									LineTerminatedby="ROWTERMINATOR='"+Rowterminator+"'";
-						
+								if(!Const.isEmpty(Rowterminator)) 	LineTerminatedby="ROWTERMINATOR='"+Rowterminator+"'";
+								
+								// Start file at
+								if(startfile>0)	TakeFirstNbrLines="FIRSTROW="+startfile;
+								
+								// End file at
+								if(endfile>0)	TakeFirstNbrLines="LASTROW="+endfile;
+
 								// Build BULK Command
 								String SQLBULKLOAD="BULK INSERT " + realTablename + " FROM " + "'"+realFilename.replace('\\', '/')+"'" ;
-								SQLBULKLOAD=SQLBULKLOAD+" WITH (";
-								if(TakeFirstNbrLines!=null) SQLBULKLOAD=SQLBULKLOAD+TakeFirstNbrLines+",";
-								if(FieldTerminatedby!=null)  SQLBULKLOAD=SQLBULKLOAD+FieldTerminatedby;//" INTO TABLE " + realTablename + " " + FieldTerminatedby + " " + LineTerminatedby + " " + IgnoreNbrLignes + " " +  ListOfColumn  + ";";
-								if(LineTerminatedby!=null) SQLBULKLOAD=SQLBULKLOAD+","+LineTerminatedby;
+								SQLBULKLOAD=SQLBULKLOAD+" WITH (" ;
+								if(useFieldSeparator)	
+									SQLBULKLOAD=SQLBULKLOAD	+ FieldTerminatedby;
+								else
+									SQLBULKLOAD=SQLBULKLOAD	+ "DATAFILETYPE ='"+datafiletype+"'";
+
+								if(LineTerminatedby.length()>0) SQLBULKLOAD=SQLBULKLOAD+","+LineTerminatedby;
+								if(TakeFirstNbrLines.length()>0) SQLBULKLOAD=SQLBULKLOAD+","+TakeFirstNbrLines;
+								if(UseCodepage.length()>0) SQLBULKLOAD=SQLBULKLOAD+"," + UseCodepage;
+								if(formatfilename!=null) SQLBULKLOAD=SQLBULKLOAD+", FORMATFILE='" + formatfilename + "'";
+								if(firetriggers) SQLBULKLOAD=SQLBULKLOAD + ",FIRE_TRIGGERS";
+								if(keepnulls) SQLBULKLOAD=SQLBULKLOAD + ",KEEPNULLS";
+								if(keepidentity) SQLBULKLOAD=SQLBULKLOAD + ",KEEPIDENTITY";
+								if(checkconstraints) SQLBULKLOAD=SQLBULKLOAD + ",CHECK_CONSTRAINTS";
+								if(tablock) SQLBULKLOAD=SQLBULKLOAD + ",TABLOCK";
+								if(orderby!=null) SQLBULKLOAD=SQLBULKLOAD + ",ORDER ( " + orderby + " " +orderdirection + ")";
+								if(ErrorfileName.length()>0) SQLBULKLOAD=SQLBULKLOAD + ", " + ErrorfileName;
+								if(maxerrors>0) SQLBULKLOAD=SQLBULKLOAD + ", MAXERRORS="+ maxerrors;
+								if(batchsize>0) SQLBULKLOAD=SQLBULKLOAD + ", BATCHSIZE="+ batchsize;  
+								if(rowsperbatch>0) SQLBULKLOAD=SQLBULKLOAD + ", ROWS_PER_BATCH="+ rowsperbatch;  
+								// End of Bulk command
 								SQLBULKLOAD=SQLBULKLOAD+")";
 								
 								try
@@ -512,6 +694,16 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 	{
 		return specificcodepage;
 	}
+	public void setFormatFilename(String formatfilename)
+	{
+		this.formatfilename =formatfilename;
+	}
+	
+	public String getFormatFilename()
+	{
+		return formatfilename;
+	}
+	
 	public String getFieldTerminator()
 	{
 		return fieldterminator;
@@ -541,27 +733,22 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 		return environmentSubstitute(getFieldTerminator());
 	}
 
-	public void setStartFile(String startfile)
+	public void setStartFile(int startfile)
 	{
 		this.startfile = startfile;
 	}
 
-	public String getStartFile()
+	public int getStartFile()
 	{
 		return startfile;
 	}
-	public void setEndFile(String endfile)
+	public void setEndFile(int endfile)
 	{
 		this.endfile = endfile;
 	}
-	public String getEndFile()
+	public int getEndFile()
 	{
 		return endfile;
-	}
-
-	public String getRealTakelines()
-	{
-		return environmentSubstitute(getStartFile());
 	}
 
 	public void setOrderBy(String orderby)
@@ -572,6 +759,23 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 	public String getOrderBy()
 	{
 		return orderby;
+	}
+	public String getOrderDirection()
+	{
+		return orderdirection;
+	}
+	public void setOrderDirection(String orderdirection)
+	{
+		this.orderdirection = orderdirection;
+	}
+	public void setErrorFilename(String errorfilename)
+	{
+		this.errorfilename = errorfilename;
+	}
+
+	public String getErrorFilename()
+	{
+		return errorfilename;
 	}
 
 	public String getRealOrderBy()
@@ -588,25 +792,60 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 	{
 		return addfiletoresult;
 	}
-
-	private String MysqlString(String listcolumns)
+	public void setAddDatetime(boolean adddatetime)
 	{
-		/*
-		 * Handle forbiden char like '
-		 */
-		String returnString="";
-		String[] split = listcolumns.split(",");
-
-		for (int i=0;i<split.length;i++)
-		{
-			if (returnString.equals(""))
-				returnString =  "`" + Const.trim(split[i]) + "`";
-			else
-				returnString = returnString +  ", `" + Const.trim(split[i]) + "`";
-		}
-
-		return returnString;
+		this.adddatetime = adddatetime;
 	}
+	
+	public boolean isAddDatetime()
+	{
+		return adddatetime;
+	}
+	
+	
+	public void setFireTriggers(boolean firetriggers)
+	{
+		this.firetriggers= firetriggers;
+	}
+
+	public boolean isFireTriggers()
+	{
+		return firetriggers;
+	}
+	
+	public void setCheckConstraints(boolean checkconstraints)
+	{
+		this.checkconstraints= checkconstraints;
+	}
+	public boolean isCheckConstraints()
+	{
+		return checkconstraints;
+	}
+	public void setKeepNulls(boolean keepnulls)
+	{
+		this.keepnulls= keepnulls;
+	}
+	public boolean isKeepNulls()
+	{
+		return keepnulls;
+	}
+	public void setKeepIdentity(boolean keepidentity)
+	{
+		this.keepidentity= keepidentity;
+	}
+	public boolean isKeepIdentity()
+	{
+		return keepidentity;
+	}
+	public void setTablock(boolean tablock)
+	{
+		this.tablock= tablock;
+	}
+	public boolean isTablock()
+	{
+		return tablock;
+	}
+
 
   public List<ResourceReference> getResourceDependencies(JobMeta jobMeta) {
     List<ResourceReference> references = super.getResourceDependencies(jobMeta);
