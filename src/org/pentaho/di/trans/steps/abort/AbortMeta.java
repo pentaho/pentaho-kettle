@@ -35,7 +35,11 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.w3c.dom.Node;
 
-
+/**
+ * Meta data for the abort step.
+ *  
+ * @author sboden
+ */
 public class AbortMeta  extends BaseStepMeta implements StepMetaInterface {
 		
 	/**
@@ -88,7 +92,7 @@ public class AbortMeta  extends BaseStepMeta implements StepMetaInterface {
      
 	public String getXML()
 	{
-        StringBuffer retval = new StringBuffer(200);
+        StringBuilder retval = new StringBuilder(200);
 
         retval.append("      ").append(XMLHandler.addTagValue("row_threshold", rowThreshold)); //$NON-NLS-1$ //$NON-NLS-2$
         retval.append("      ").append(XMLHandler.addTagValue("message", message)); //$NON-NLS-1$ //$NON-NLS-2$
