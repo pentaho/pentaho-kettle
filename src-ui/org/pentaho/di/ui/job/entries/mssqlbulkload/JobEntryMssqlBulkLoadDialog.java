@@ -152,6 +152,11 @@ public class JobEntryMssqlBulkLoadDialog extends JobEntryDialog implements JobEn
 	private Button       wAddFileToResult;
 	private FormData     fdlAddFileToResult, fdAddFileToResult;
 	
+	//  Truncate table
+	private Label        wlTruncate;
+	private Button       wTruncate;
+	private FormData     fdlTruncate, fdTruncate;
+	
 	// Fire Triggers
 	private Label        wlFireTriggers;
 	private Button       wFireTriggers;
@@ -370,6 +375,33 @@ public class JobEntryMssqlBulkLoadDialog extends JobEntryDialog implements JobEn
 		fdTablename.top = new FormAttachment(wSchemaname, margin);
 		fdTablename.right = new FormAttachment(wbTable, -margin);
 		wTablename.setLayoutData(fdTablename);
+		
+		//Truncate table
+		wlTruncate = new Label(wConnectionGroup, SWT.RIGHT);
+		wlTruncate.setText(Messages.getString("JobMssqlBulkLoad.Truncate.Label"));
+		props.setLook(wlTruncate);
+		fdlTruncate = new FormData();
+		fdlTruncate.left = new FormAttachment(0, 0);
+		fdlTruncate.top = new FormAttachment(wTablename, margin);
+		fdlTruncate.right = new FormAttachment(middle, -margin);
+		wlTruncate.setLayoutData(fdlTruncate);
+		wTruncate = new Button(wConnectionGroup, SWT.CHECK);
+		props.setLook(wTruncate);
+		wTruncate.setToolTipText(Messages.getString("JobMssqlBulkLoad.Truncate.Tooltip"));
+		fdTruncate = new FormData();
+		fdTruncate.left = new FormAttachment(middle, 0);
+		fdTruncate.top = new FormAttachment(wTablename, margin);
+		fdTruncate.right = new FormAttachment(100, 0);
+		wTruncate.setLayoutData(fdTruncate);
+		wTruncate.addSelectionListener(new SelectionAdapter()
+		{
+			public void widgetSelected(SelectionEvent e)
+			{
+				jobEntry.setChanged();
+			}
+		});
+		
+		
 		
 	     fdConnectionGroup = new FormData();
 	     fdConnectionGroup .left = new FormAttachment(0, margin);
@@ -1261,6 +1293,7 @@ public class JobEntryMssqlBulkLoadDialog extends JobEntryDialog implements JobEn
 		wAddDateTime.setSelection(jobEntry.isAddDatetime());
 		
 		wAddFileToResult.setSelection(jobEntry.isAddFileToResult());
+		wTruncate.setSelection(jobEntry.isTruncate());
 		
 		wName.selectAll();
 	}
@@ -1308,6 +1341,7 @@ public class JobEntryMssqlBulkLoadDialog extends JobEntryDialog implements JobEn
 		jobEntry.setAddDatetime(wAddDateTime.getSelection());
 		
 		jobEntry.setAddFileToResult(wAddFileToResult.getSelection());
+		jobEntry.setTruncate(wTruncate.getSelection());
 		
 		dispose();
 	}

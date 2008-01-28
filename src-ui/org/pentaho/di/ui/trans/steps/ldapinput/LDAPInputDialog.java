@@ -306,10 +306,6 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		}
 	);
 	
-	
-	
-	
-		
 		// UserName line
 		wlUserName=new Label(wConnectionGroup, SWT.RIGHT);
 		wlUserName.setText(Messages.getString("LDAPInputDialog.Username.Label"));
@@ -801,14 +797,14 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 					transMeta.environmentSubstitute(meta.getPort()));
 			
 		    if(Const.isEmpty(wSearchBase.getText()))
-		     {
+		    {
 			     // get Search Base
 			     Attributes attrs = ctx.getAttributes("", new String[] { "namingContexts" });
 				 Attribute attr = attrs.get("namingContexts");
 				 
 				 // Update Search Base
 				 wSearchBase.setText(attr.get().toString());
-		     } 
+		    } 
 			
 			if(ctx!=null)
 			{
