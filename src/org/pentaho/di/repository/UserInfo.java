@@ -109,6 +109,8 @@ public class UserInfo
 		{
             throw new KettleDatabaseException(Messages.getString("UserInfo.Error.IncorrectPasswortLogin"));
 		}
+		
+		rep.setUserInfo(this);
 	}
 	
 	public void saveRep(Repository rep)

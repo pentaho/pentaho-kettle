@@ -6176,4 +6176,11 @@ public class Repository
 	public RepositoryDirectory getImportBaseDirectory() {
 		return importBaseDirectory;
 	}
+
+	/**
+	 * @param userinfo the UserInfo object to set
+	 */
+	public void setUserInfo(UserInfo userinfo) {
+		this.userinfo = userinfo;
+	}
 }
