@@ -446,6 +446,16 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface
 			}
 		}
 		
+		if (condition.isEmpty())
+		{
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("FilterRowsMeta.CheckResult.NoConditionSpecified"), stepinfo);
+		}
+		else
+		{
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("FilterRowsMeta.CheckResult.ConditionSpecified"), stepinfo); //$NON-NLS-1$
+		}
+		remarks.add(cr);		
+		
 		// Look up fields in the input stream <prev>
 		if (prev!=null && prev.size()>0)
 		{
