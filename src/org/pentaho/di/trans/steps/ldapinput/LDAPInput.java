@@ -255,7 +255,7 @@ public class LDAPInput extends BaseStep implements StepInterface
 	        env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
 	        env.put(Context.PROVIDER_URL, "ldap://"+hostname + ":" + portint);
 	        env.put(Context.SECURITY_AUTHENTICATION, "simple" );
-	        // TODO ; Add referral handling
+	        // TODO : Add referral handling
 	        if (meta.UseAuthentication())
 	        {
 	        	env.put(Context.SECURITY_PRINCIPAL, username);
