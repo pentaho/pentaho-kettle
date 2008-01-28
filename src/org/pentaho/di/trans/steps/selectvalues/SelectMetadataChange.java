@@ -85,7 +85,7 @@ public class SelectMetadataChange implements Cloneable, XMLInterface{
 		length         = Const.toInt(XMLHandler.getTagValue(metaNode, "length"), -2); //$NON-NLS-1$
 		precision      = Const.toInt(XMLHandler.getTagValue(metaNode, "precision"), -2); //$NON-NLS-1$
 		storageType    = ValueMeta.getStorageType( XMLHandler.getTagValue(metaNode, "storage_type") ); //$NON-NLS-1$
-		conversionMask = XMLHandler.getTagValue(metaNode, "mask"); //$NON-NLS-1$
+		conversionMask = XMLHandler.getTagValue(metaNode, "conversion_mask"); //$NON-NLS-1$
 		decimalSymbol  = XMLHandler.getTagValue(metaNode, "decimal_symbol"); //$NON-NLS-1$
 		groupingSymbol = XMLHandler.getTagValue(metaNode, "grouping_symbol"); //$NON-NLS-1$
 		currencySymbol = XMLHandler.getTagValue(metaNode, "currency_symbol"); //$NON-NLS-1$
