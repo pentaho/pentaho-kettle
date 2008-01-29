@@ -588,7 +588,7 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
 						// Delete the file if this is needed!
 						if (remove) 
 						{
-							children[i].delete();
+							new File(localFilename).delete();
 							if (log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobFTPPUT.Log.DeletedFile",filelist[i]));
 						}
 					}
