@@ -821,6 +821,12 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 					{
 						jobMeta.setVariable(name, Const.NVL(value, ""));
 					}
+					
+					// Not only that, we also want to set the variables in the execution configurations...
+					//
+					transExecutionConfiguration.getVariables().put(name, value);
+					jobExecutionConfiguration.getVariables().put(name, value);
+					transDebugExecutionConfiguration.getVariables().put(name, value);
 				} 
 				catch (KettleValueException e) {
 					// Just eat the exception.  getString() should never give an exception.
