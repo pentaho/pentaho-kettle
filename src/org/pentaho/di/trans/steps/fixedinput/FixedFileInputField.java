@@ -78,6 +78,10 @@ public class FixedFileInputField implements Cloneable, XMLInterface {
 	}
 
 	public FixedFileInputField() {
+		type = ValueMetaInterface.TYPE_STRING;
+		length = -1;
+		precision = -1;
+		trimType = ValueMetaInterface.TRIM_TYPE_NONE;
 	}
 	
 	@Override

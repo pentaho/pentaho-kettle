@@ -230,7 +230,7 @@ public class FixedTableDraw extends Canvas
 		int highest_smaller=-1;
 		
 		int position=0;
-		for (int i=0;i<fields.size() && highest_smaller<0;i++)
+		for (int i=0;i<fields.size() && idx<0;i++)
 		{
 			FixedFileInputField field = fields.get(i);
 			
@@ -265,7 +265,7 @@ public class FixedTableDraw extends Canvas
 				// We want to change the previous entry and add another after it.
 				FixedFileInputField prevfield = fields.get(highest_smaller);
 				int prevPosition = getFieldPosition(prevfield);
-				int newlength = prevfield.getLength() - ( x - prevPosition);
+				int newlength = prevfield.getWidth() - ( x - prevPosition);
 				FixedFileInputField field = new FixedFileInputField();
 				field.setName(getNewFieldname());
 				field.setWidth(newlength);
