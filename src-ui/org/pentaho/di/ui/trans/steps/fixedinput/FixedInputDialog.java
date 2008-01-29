@@ -662,6 +662,16 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
     		List<String> rows = getFirst(info, 50);
     		fields = new ArrayList<FixedFileInputField>();
     		fields.addAll( Arrays.asList(info.getFieldDefinition()) );
+    		if (fields.isEmpty()) {
+    			FixedFileInputField field = new FixedFileInputField();
+    			field.setName("Field"+1); // TODO: i18n, see also FixedTableDraw class for other references of this String --> getNewFieldname() method
+    			field.setType(ValueMetaInterface.TYPE_STRING);
+    			field.setTrimType(ValueMetaInterface.TRIM_TYPE_NONE);
+    			field.setWidth(Const.toInt(info.getLineWidth(), 80));
+    			field.setLength(-1);
+    			field.setPrecision(-1);
+    			fields.add(field);
+    		}
     		
     		final FixedFileImportWizardPage1 page1 = new FixedFileImportWizardPage1("1", props, rows, fields);
     		page1.createControl(sh);
