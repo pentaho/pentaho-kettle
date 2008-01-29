@@ -812,8 +812,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		esd.setShellImage(GUIResource.getInstance().getImageVariable());
 		if (esd.open() != null)
 		{
-			// We want to insert the variables into all loaded jobs and transformations
-			//
 			for (int i=0;i<variables.size();i++)
 			{
 				try 
@@ -821,6 +819,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 					String name = variables.getValueMeta(i).getName();
 					String value = variables.getString(i, "");
 
+					// We want to insert the variables into all loaded jobs and transformations
+					//
 					for (TransMeta transMeta : getLoadedTransformations())
 					{
 						transMeta.setVariable(name, Const.NVL(value, ""));
@@ -829,10 +829,17 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 					{
 						jobMeta.setVariable(name, Const.NVL(value, ""));
 					}
+					
+					// Not only that, we also want to set the variables in the execution configurations...
+					//
+					transExecutionConfiguration.getVariables().put(name, value);
+					jobExecutionConfiguration.getVariables().put(name, value);
+					transDebugExecutionConfiguration.getVariables().put(name, value);
 				} 
 				catch (KettleValueException e) {
 					// Just eat the exception.  getString() should never give an exception.
 				}
+
 			}
 		}
 	}
