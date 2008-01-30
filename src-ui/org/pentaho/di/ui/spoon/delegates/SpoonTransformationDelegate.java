@@ -249,6 +249,10 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 			if (mapEntry.getObject() instanceof TransLog)
 			{
 				TransLog transLog = (TransLog) mapEntry.getObject();
+				if (transLog.isDisposed()) {
+					spoon.delegates.tabs.getTabs().remove(transLog);
+					continue;
+				}
 				if (transLog.getMeta().equals(transMeta))
 					return transLog;
 			}
