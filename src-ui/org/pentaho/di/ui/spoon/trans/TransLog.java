@@ -465,7 +465,7 @@ public class TransLog extends Composite implements TabItemInterface
 	}
     
     private void showStepPerformanceGraph() {
-    	if (trans.getStepPerformanceSnapShots()!=null) {
+    	if (trans!=null && trans.getStepPerformanceSnapShots()!=null) {
 			StepPerformanceSnapShotDialog dialog = new StepPerformanceSnapShotDialog(
 				shell, 
 				transMeta.getName(), 
