@@ -13,10 +13,8 @@
 package org.pentaho.di.trans.steps.accessinput;
 
 import java.io.File;
-import java.util.Map;
 
 import com.healthmarketscience.jackcess.Database;
-import com.healthmarketscience.jackcess.Table;
 
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
@@ -53,117 +51,92 @@ public class AccessInput extends BaseStep implements StepInterface
 	
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{
-		data.rownr=0;
-		
-		
-		 if (data.filenr >= data.files.size())
-        {
-            setOutputDone();
-            return false;
-        }
-        
-        if (first)
-        {
-            first = false;
-            // Create the output row meta-data
-            data.outputRowMeta = new RowMeta();
-            meta.getFields(data.outputRowMeta, getStepname(), null, null, this); // get the metadata populated
-            
-            
-            // Create convert meta-data objects that will contain Date & Number formatters
-            //
-            data.convertRowMeta = data.outputRowMeta.clone();
-            for (int i=0;i<data.convertRowMeta.size();i++) data.convertRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);
-
-            
-            
-            // For String to <type> conversions, we allocate a conversion meta data row as well...
-			//
-			data.convertRowMeta = data.outputRowMeta.clone();
-			for (int i=0;i<data.convertRowMeta.size();i++) {
-				data.convertRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);           
-            
-			}
-        }
 	
+		Object[] r=null;
 		
-		for (int i=0;i<data.files.size();i++)
-		{	
-			if ((meta.getRowLimit()>0 &&  data.rownr<meta.getRowLimit()) || meta.getRowLimit()==0) 
-			{		
-				data.file = (FileObject) data.files.get(i);
-		    			    	
-				logBasic(Messages.getString("AccessInput.Log.OpeningFile", data.file.toString()));
-		    	
-				// Fetch files and process each one
-				Processfile(data.file);					
-				
-				if (log.isDetailed()) logDetailed(Messages.getString("AccessInput.Log.FileOpened", data.file.toString()));
-			}
-	    	
-			
-			// Add this to the result file names...
-			ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, data.file, getTransMeta().getName(), getStepname());
-			resultFile.setComment(Messages.getString("AccessInput.Log.FileAddedResult"));
-			addResultFile(resultFile);
-	    	
-			// Move file pointer ahead!
-			data.filenr++;
-			
-			if (meta.resetRowNumber())
+		boolean sendToErrorRow=false;
+		String errorMessage = null;
+		 
+		try{
+			 // Grab one row
+			 Object[] outputRowData=getOneRow();
+			 if (outputRowData==null)
+		     {
+		        setOutputDone();  // signal end to receiver(s)
+		        return false; // end of data or error.
+		     }
+	 
+			 putRow(data.outputRowMeta, outputRowData);  // copy row to output rowset(s);
+
+			  if (meta.getRowLimit()>0 && data.rownr>meta.getRowLimit())  // limit has been reached: stop now.
+		      {
+		            setOutputDone();
+		            return false;
+		      }	
+		}catch(KettleException e)
+		{
+			if (getStepMeta().isDoingErrorHandling())
+	        {
+                sendToErrorRow = true;
+                errorMessage = e.toString();
+	        }
+			else
 			{
-				// Reset Row number for each file
-				data.rownr=0;
+				logError(Messages.getString("AccessInput.ErrorInStepRunning",e.getMessage())); //$NON-NLS-1$
+				setErrors(1);
+				stopAll();
+				setOutputDone();  // signal end to receiver(s)
+				return false;
+			}
+			if (sendToErrorRow)
+	         {
+				 // Simply add this row to the error row
+				putError(getInputRowMeta(), r, 1, errorMessage, null, "AccessInput001");
+	         }
+		}
+		 return true;
+	}		
+	private Object[] getOneRow() throws KettleException
+	{
+		try{
+			if(meta.isFileField())
+			{
+				 while ((data.readrow==null || ((data.rw = data.t.getNextRow())==null)))
+				 { 
+					if (!openNextFile()) return null;
+				 }	
 			}
 			else
 			{
-				// Move Row number pointer ahead
-				data.rownr++;
+				while ((data.file==null || ((data.rw = data.t.getNextRow())==null)))
+				{
+			        if (!openNextFile()) return null;
+				}
 			}
-							
-		}		
-		
-		linesInput++;
-		
-		//setOutputDone();  // signal end to receiver(s)
-		//return false;     // This is the end of this step. 
-
-        if ((linesInput > 0) && (linesInput % Const.ROWS_UPDATE) == 0) logBasic("linenr " + linesInput);
-
-        return true;
-	}		
-	
-	private void Processfile(FileObject file)
-	{
-		Database d = null;
-		Object[] outputRowData = null;
-	
-		
-		try 
-		{	
-			// Read mdb file
-        	d = Database.open(new File(KettleVFS.getFilename(data.file)));	
-        	// Get table
-			Table t=d.getTable(environmentSubstitute(meta.getTableName()));
-
-			
-			Map<String,Object> rw;
 			
 			
-			// Fetch all rows from the table 
-			while (((meta.getRowLimit()>0 &&  data.rownr<meta.getRowLimit()) || meta.getRowLimit()==0)  && ((rw = t.getNextRow()) != null))  
-			{
-				// Create new row				
-				outputRowData = buildEmptyRow();
-						
+		} catch (Exception IO)
+		{
+			return null;
+		}
+
+		 // Build an empty row based on the meta-data		  
+		 Object[] r=buildEmptyRow();
+		 
+		 // Create new row	or clone
+		 if(meta.isFileField())	 r = data.readrow.clone();
+
+		 try{	
+			 
 				// Execute for each Input field...
 				for (int i=0;i<meta.getInputFields().length;i++)
 				{
 
 					// Get field value
-					Object obj = rw.get(meta.getInputFields()[i].getColumn());	
+					Object obj = data.rw.get(meta.getInputFields()[i].getColumn());	
 					String value=String.valueOf(obj);
 					
+
 					// DO Trimming!
 					switch (meta.getInputFields()[i].getTrimType())
 					{
@@ -183,69 +156,171 @@ public class AccessInput extends BaseStep implements StepInterface
 					
 					// DO CONVERSIONS...
 					//
-					ValueMetaInterface targetValueMeta = data.outputRowMeta.getValueMeta(i);
-					ValueMetaInterface sourceValueMeta = data.convertRowMeta.getValueMeta(i);
-					outputRowData[i] = targetValueMeta.convertData(sourceValueMeta, value);
+					ValueMetaInterface targetValueMeta = data.outputRowMeta.getValueMeta(data.totalpreviousfields+i);
+					ValueMetaInterface sourceValueMeta = data.convertRowMeta.getValueMeta(data.totalpreviousfields+i);
+					r[data.totalpreviousfields+i] = targetValueMeta.convertData(sourceValueMeta, value);
 					
 					// Do we need to repeat this field if it is null?
 					if (meta.getInputFields()[i].isRepeated())
 					{
 						if (data.previousRow!=null && Const.isEmpty(value))
 						{
-							outputRowData[i] = data.previousRow[i];
+							r[data.totalpreviousfields+i] = data.previousRow[data.totalpreviousfields+i];
 						}
-					}
-		            
-		    
-		 			
+					}	
 				}    // End of loop over fields...
 		    
 				int rowIndex = meta.getInputFields().length;
 				
 				// See if we need to add the filename to the row...
 				if ( meta.includeFilename() && !Const.isEmpty(meta.getFilenameField()) ) {
-					outputRowData[rowIndex++] = KettleVFS.getFilename(data.file);
+					r[data.totalpreviousfields+rowIndex++] = KettleVFS.getFilename(data.file);
 				}
 				
 				// See if we need to add the table name to the row...
 				if ( meta.includeTablename() && !Const.isEmpty(meta.getTableName()) ) {
-					outputRowData[rowIndex++] = environmentSubstitute(meta.getTableName());
+					r[data.totalpreviousfields+rowIndex++] = environmentSubstitute(meta.getTableName());
 				}
 				
 		        // See if we need to add the row number to the row...  
 		        if (meta.includeRowNumber() && !Const.isEmpty(meta.getRowNumberField()))
 		        {
-		            outputRowData[rowIndex++] = new Long(data.rownr);
+		            r[data.totalpreviousfields+rowIndex++] = new Long(data.rownr);
 		        }
 		        
 				
 				RowMetaInterface irow = getInputRowMeta();
 				
-				data.previousRow = irow==null?outputRowData:(Object[])irow.cloneRow(outputRowData); // copy it to make
+				data.previousRow = irow==null?r:(Object[])irow.cloneRow(r); // copy it to make
 				// surely the next step doesn't change it in between...
-				data.rownr++;
-	    		      
-	           
-				putRow(data.outputRowMeta, outputRowData);  // copy row to output rowset(s);
-			}			       
-		} 
+				
+				 linesInput++;
+				 data.rownr++;
+			
+		 }
+		 catch (Exception e)
+		 {
+			 
+			throw new KettleException("Unable to read row from Access file", e);
+			
+		 }
+		 
+		return r;
+	}
+	private boolean openNextFile()
+	{
+		try
+		{
+			if(!meta.isFileField())
+			{
+	            if (data.filenr>=data.files.nrOfFiles()) // finished processing!
+	            {
+	            	if (log.isDetailed()) logDetailed(Messages.getString("AccessInput.Log.FinishedProcessing"));
+	                return false;
+	            }
+	            
+			    // Is this the last file?
+				data.last_file = ( data.filenr==data.files.nrOfFiles()-1);
+				data.file = (FileObject) data.files.getFile(data.filenr);
+				
+				// Move file pointer ahead!
+				data.filenr++;
+			}else
+			{
+				data.readrow=getRow();     // Get row from input rowset & set row busy!
+				if (data.readrow==null)
+			    {
+					if (log.isDetailed()) logDetailed(Messages.getString("AccessInput.Log.FinishedProcessing"));
+			         return false;
+			    }
+				
+				if (first)
+		        {
+		            first = false;
+		            
+	            	data.inputRowMeta = getInputRowMeta();
+		            data.outputRowMeta = data.inputRowMeta.clone();
+		            meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
+		            
+		            // Get total previous fields
+		            data.totalpreviousfields=data.inputRowMeta.size();
+
+					// Create convert meta-data objects that will contain Date & Number formatters
+		            data.convertRowMeta = data.outputRowMeta.clone();
+		            for (int i=0;i<data.convertRowMeta.size();i++) data.convertRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);
+		  
+		            // For String to <type> conversions, we allocate a conversion meta data row as well...
+					//
+					data.convertRowMeta = data.outputRowMeta.clone();
+					for (int i=0;i<data.convertRowMeta.size();i++) {
+						data.convertRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);            
+					}
+					
+					// Check is filename field is provided
+					if (Const.isEmpty(meta.getFilename_Field()))
+					{
+						logError(Messages.getString("AccessInput.Log.NoField"));
+						throw new KettleException(Messages.getString("AccessInput.Log.NoField"));
+					}
+					
+					// cache the position of the field			
+					if (data.indexOfFilenameField<0)
+					{	
+						data.indexOfFilenameField =getInputRowMeta().indexOfValue(meta.getFilename_Field());
+						if (data.indexOfFilenameField<0)
+						{
+							// The field is unreachable !
+							logError(Messages.getString("AccessInput.Log.ErrorFindingField")+ "[" + meta.getFilename_Field()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+							throw new KettleException(Messages.getString("AccessInput.Exception.CouldnotFindField",meta.getFilename_Field())); //$NON-NLS-1$ //$NON-NLS-2$
+						}
+					}
+	            	
+		            
+		        }  // End if first
+				
+				
+				String filename=getInputRowMeta().getString(data.readrow,data.indexOfFilenameField);
+				if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("AccessInput.Log.FilenameInStream", meta.getFilename_Field(),filename));
+
+				data.file= KettleVFS.getFileObject(filename);
+				// Check if file exists!
+			}
+			
+			// Check if file is empty
+			//long fileSize= data.file.getContent().getSize();
+			
+			if(meta.resetRowNumber()) data.rownr=0;
+            
+			if (log.isDetailed()) logDetailed(Messages.getString("AccessInput.Log.OpeningFile", data.file.toString()));
+    
+			if(meta.isAddResultFile())
+			{
+				// Add this to the result file names...
+				ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, data.file, getTransMeta().getName(), getStepname());
+				resultFile.setComment(Messages.getString("AccessInput.Log.FileAddedResult"));
+				addResultFile(resultFile);
+			}
+			
+			// Read mdb file
+        	data.d = Database.open(new File(KettleVFS.getFilename(data.file)));	
+
+        	// Get table
+			data.t=data.d.getTable(environmentSubstitute(meta.getTableName()));
+
+			if (log.isDetailed()) logDetailed(Messages.getString("AccessInput.Log.FileOpened", data.file.toString()));
+
+
+		}
 		catch(Exception e)
 		{
 			logError(Messages.getString("AccessInput.Log.UnableToOpenFile", ""+data.filenr, data.file.toString(), e.toString()));
 			stopAll();
 			setErrors(1);
-		} 
-		finally
-	    {
-	        // Don't forget to close the bugger.
-	        try
-	        {
-	             if (d!=null) d.close();
-	        }
-	        catch(Exception e)
-	        {}
-	    }
+			return false;
+		}
+		return true;
 	}
+	
 	
 	/**
 	 * Build an empty row based on the meta-data...
@@ -268,14 +343,41 @@ public class AccessInput extends BaseStep implements StepInterface
 		
 		if (super.init(smi, sdi))
 		{
-			data.files = meta.getFiles(this).getFiles();
-			if (data.files==null || data.files.size()==0)
+			if(!meta.isFileField())
 			{
-				logError(Messages.getString("AccessInput.Log.NoFiles"));
-				return false;
-			}
-            
+				data.files = meta.getFiles(this);
+				if (data.files==null || data.files.nrOfFiles()==0)
+				{
+					logError(Messages.getString("AccessInput.Log.NoFiles"));
+					return false;
+				}
+				try{
+					  // Create the output row meta-data
+		            data.outputRowMeta = new RowMeta();
+		            meta.getFields(data.outputRowMeta, getStepname(), null, null, this); // get the metadata populated
+		            
+		            // Create convert meta-data objects that will contain Date & Number formatters
+		            //
+		            data.convertRowMeta = data.outputRowMeta.clone();
+		            for (int i=0;i<data.convertRowMeta.size();i++) data.convertRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);
+		
+		
+		            // For String to <type> conversions, we allocate a conversion meta data row as well...
+					//
+					data.convertRowMeta = data.outputRowMeta.clone();
+					for (int i=0;i<data.convertRowMeta.size();i++) {
+						data.convertRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);           
+					}
+				}
+				catch(Exception e)
+				{
+					logError("Error initializing step: "+e.toString());
+					logError(Const.getStackTracker(e));
+					return false;
+				}
+			} 
 			data.rownr = 1L;
+			data.totalpreviousfields=0;
 			
 			return true;
 		}
@@ -287,6 +389,20 @@ public class AccessInput extends BaseStep implements StepInterface
 		meta=(AccessInputMeta)smi;
 		data=(AccessInputData)sdi;
 
+		if(data.t!=null) data.t=null;
+		if(data.rw!=null) data.rw=null;
+		if(data.readrow!=null) data.readrow=null;
+		if(data.d!=null) 
+		{
+			try
+			{
+				data.d.close();
+				data.d=null;
+			}catch  (Exception e)
+			{
+			}
+		}
+		
 		super.dispose(smi, sdi);
 	}
 	

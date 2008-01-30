@@ -20,7 +20,10 @@ import java.io.File;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.FocusListener;
+import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.ModifyEvent;
@@ -96,7 +99,8 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 	private Button       wbeFilename; // Edit
 	private Button       wbaFilename; // Add or change
 	private TextVar      wFilename;
-	private FormData     fdlFilename, fdbFilename, fdbdFilename, fdbeFilename, fdbaFilename, fdFilename, fdbTablename;
+	private FormData     fdlFilename, fdbFilename, fdbdFilename, fdbeFilename, 
+						fdbaFilename, fdFilename, fdbTablename;
 
 	private Label        wlFilenameList;
 	private TableView    wFilenameList;
@@ -137,7 +141,6 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 	private Button       wResetRownum;
 	private FormData     fdlResetRownum;
 	
-	
 	private Label        wlLimit;
 	private Text         wLimit;
 	private FormData     fdlLimit, fdLimit;
@@ -152,8 +155,15 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
     private FormData     fdlTable, fdTable;
     
 	private Group wAdditionalGroup;
-	private FormData fdAdditionalGroup;
+	private FormData fdAdditionalGroup,fdlAddResult;
+	private Group wOriginFiles,wAddFileResult;
+	
+	private FormData fdOriginFiles,fdFilenameField,fdlFilenameField,fdAddResult,fdAddFileResult;
+    private Button wFileField,wAddResult;
     
+    private Label wlFileField,wlFilenameField,wlAddResult;
+    private CCombo wFilenameField;
+    private FormData fdlFileField,fdFileField;
     
 	
 	public static final int dateLengths[] = new int[]
@@ -230,6 +240,98 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 		fileLayout.marginWidth  = 3;
 		fileLayout.marginHeight = 3;
 		wFileComp.setLayout(fileLayout);
+		
+		
+		// ///////////////////////////////
+		// START OF Origin files GROUP  //
+		///////////////////////////////// 
+
+		wOriginFiles = new Group(wFileComp, SWT.SHADOW_NONE);
+		props.setLook(wOriginFiles);
+		wOriginFiles.setText(Messages.getString("AccessInputDialog.wOriginFiles.Label"));
+		
+		FormLayout OriginFilesgroupLayout = new FormLayout();
+		OriginFilesgroupLayout.marginWidth = 10;
+		OriginFilesgroupLayout.marginHeight = 10;
+		wOriginFiles.setLayout(OriginFilesgroupLayout);
+		
+		//Is Filename defined in a Field		
+		wlFileField = new Label(wOriginFiles, SWT.RIGHT);
+		wlFileField.setText(Messages.getString("AccessInputDialog.FileField.Label"));
+		props.setLook(wlFileField);
+		fdlFileField = new FormData();
+		fdlFileField.left = new FormAttachment(0, 0);
+		fdlFileField.top = new FormAttachment(0, margin);
+		fdlFileField.right = new FormAttachment(middle, -margin);
+		wlFileField.setLayoutData(fdlFileField);
+		
+		
+		wFileField = new Button(wOriginFiles, SWT.CHECK);
+		props.setLook(wFileField);
+		wFileField.setToolTipText(Messages.getString("AccessInputDialog.FileField.Tooltip"));
+		fdFileField = new FormData();
+		fdFileField.left = new FormAttachment(middle, margin);
+		fdFileField.top = new FormAttachment(0, margin);
+		wFileField.setLayoutData(fdFileField);		
+		SelectionAdapter lfilefield = new SelectionAdapter()
+        {
+            public void widgetSelected(SelectionEvent arg0)
+            {
+            	ActiveFileField();
+            	input.setChanged();
+            }
+        };
+        wFileField.addSelectionListener(lfilefield);
+        
+		// Filename field
+		wlFilenameField=new Label(wOriginFiles, SWT.RIGHT);
+        wlFilenameField.setText(Messages.getString("AccessInputDialog.wlFilenameField.Label"));
+        props.setLook(wlFilenameField);
+        fdlFilenameField=new FormData();
+        fdlFilenameField.left = new FormAttachment(0, 0);
+        fdlFilenameField.top  = new FormAttachment(wFileField, margin);
+        fdlFilenameField.right= new FormAttachment(middle, -margin);
+        wlFilenameField.setLayoutData(fdlFilenameField);
+        
+        
+        wFilenameField=new CCombo(wOriginFiles, SWT.BORDER | SWT.READ_ONLY);
+        wFilenameField.setEditable(true);
+        props.setLook(wFilenameField);
+        wFilenameField.addModifyListener(lsMod);
+        fdFilenameField=new FormData();
+        fdFilenameField.left = new FormAttachment(middle, margin);
+        fdFilenameField.top  = new FormAttachment(wFileField, margin);
+        fdFilenameField.right= new FormAttachment(100, -margin);
+        wFilenameField.setLayoutData(fdFilenameField);
+        wFilenameField.addFocusListener(new FocusListener()
+            {
+                public void focusLost(org.eclipse.swt.events.FocusEvent e)
+                {
+                }
+            
+                public void focusGained(org.eclipse.swt.events.FocusEvent e)
+                {
+                    Cursor busy = new Cursor(shell.getDisplay(), SWT.CURSOR_WAIT);
+                    shell.setCursor(busy);
+                    setFileField();
+                    shell.setCursor(null);
+                    busy.dispose();
+                }
+            }
+        );           	
+        
+		fdOriginFiles = new FormData();
+		fdOriginFiles.left = new FormAttachment(0, margin);
+		fdOriginFiles.top = new FormAttachment(wFilenameList, margin);
+		fdOriginFiles.right = new FormAttachment(100, -margin);
+		wOriginFiles.setLayoutData(fdOriginFiles);
+		
+		// ///////////////////////////////////////////////////////////
+		// / END OF Origin files GROUP
+		// ///////////////////////////////////////////////////////////		
+
+		
+		
 
 		// Filename line
 		wlFilename=new Label(wFileComp, SWT.RIGHT);
@@ -237,7 +339,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
  		props.setLook(wlFilename);
 		fdlFilename=new FormData();
 		fdlFilename.left = new FormAttachment(0, 0);
-		fdlFilename.top  = new FormAttachment(0, 0);
+		fdlFilename.top  = new FormAttachment(wOriginFiles,margin);
 		fdlFilename.right= new FormAttachment(middle, -margin);
 		wlFilename.setLayoutData(fdlFilename);
 
@@ -247,7 +349,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 		wbbFilename.setToolTipText(Messages.getString("System.Tooltip.BrowseForFileOrDirAndAdd"));
 		fdbFilename=new FormData();
 		fdbFilename.right= new FormAttachment(100, 0);
-		fdbFilename.top  = new FormAttachment(0, 0);
+		fdbFilename.top  = new FormAttachment(wOriginFiles, margin);
 		wbbFilename.setLayoutData(fdbFilename);
 
 		wbaFilename=new Button(wFileComp, SWT.PUSH| SWT.CENTER);
@@ -256,7 +358,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 		wbaFilename.setToolTipText(Messages.getString("AccessInputDialog.FilenameAdd.Tooltip"));
 		fdbaFilename=new FormData();
 		fdbaFilename.right= new FormAttachment(wbbFilename, -margin);
-		fdbaFilename.top  = new FormAttachment(0, 0);
+		fdbaFilename.top  = new FormAttachment(wOriginFiles, margin);
 		wbaFilename.setLayoutData(fdbaFilename);
 
 	        
@@ -267,7 +369,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 		fdFilename=new FormData();
 		fdFilename.left = new FormAttachment(middle, 0);
 		fdFilename.right= new FormAttachment(wbaFilename, -margin);
-		fdFilename.top  = new FormAttachment(0, 0);
+		fdFilename.top  = new FormAttachment(wOriginFiles, margin);
 		wFilename.setLayoutData(fdFilename);
 
 		wlFilemask=new Label(wFileComp, SWT.RIGHT);
@@ -348,8 +450,6 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 						      );
  		props.setLook(wFilenameList);
 
- 	
- 		
 		fdFilenameList=new FormData();
 		fdFilenameList.left   = new FormAttachment(middle, 0);
 		fdFilenameList.right  = new FormAttachment(wbdFilename, -margin);
@@ -357,7 +457,6 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 		fdFilenameList.bottom = new FormAttachment(wbShowFiles, -margin);
 		wFilenameList.setLayoutData(fdFilenameList);
 		
-	
 		fdFileComp=new FormData();
 		fdFileComp.left  = new FormAttachment(0, 0);
 		fdFileComp.top   = new FormAttachment(0, 0);
@@ -386,6 +485,16 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
  		props.setLook(wContentComp);
 		wContentComp.setLayout(contentLayout);
 		
+		wbbTablename=new Button(wContentComp, SWT.PUSH| SWT.CENTER);
+ 		props.setLook(wbbTablename);
+ 		wbbTablename.setText(Messages.getString("AccessInputDialog.FilenameBrowse.Button"));
+ 		wbbTablename.setToolTipText(Messages.getString("System.Tooltip.BrowseForFileOrDirAndAdd"));
+		fdbTablename=new FormData();
+		fdbTablename.right= new FormAttachment(100, 0);
+		fdbTablename.top  = new FormAttachment(0, 0);
+		wbbTablename.setLayoutData(fdbTablename);
+
+		wbbTablename.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { getTableName(); } } );
 		
 		wlTable=new Label(wContentComp, SWT.RIGHT);
         wlTable.setText(Messages.getString("AccessInputDialog.Table.Label"));
@@ -402,20 +511,8 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
         fdTable=new FormData();
         fdTable.left = new FormAttachment(middle, 0);
         fdTable.top  = new FormAttachment(0, margin);
-        fdTable.right= new FormAttachment(100, -70);
-        wTable.setLayoutData(fdTable);
-        
-        
-		wbbTablename=new Button(wContentComp, SWT.PUSH| SWT.CENTER);
- 		props.setLook(wbbTablename);
- 		wbbTablename.setText(Messages.getString("AccessInputDialog.FilenameBrowse.Button"));
- 		wbbTablename.setToolTipText(Messages.getString("System.Tooltip.BrowseForFileOrDirAndAdd"));
-		fdbTablename=new FormData();
-		fdbTablename.right= new FormAttachment(100, 0);
-		fdbTablename.top  = new FormAttachment(0, 0);
-		wbbTablename.setLayoutData(fdbTablename);
-
-		wbbTablename.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { getTableName(); } } );
+        fdTable.right= new FormAttachment(wbbTablename, -margin);
+        wTable.setLayoutData(fdTable);       
 
 		// /////////////////////////////////
 		// START OF Additional Fields GROUP
@@ -572,6 +669,46 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 		fdLimit.top  = new FormAttachment(wAdditionalGroup, 2*margin);
 		fdLimit.right= new FormAttachment(100, 0);
 		wLimit.setLayoutData(fdLimit);
+		
+		// ///////////////////////////////
+		// START OF AddFileResult GROUP  //
+		///////////////////////////////// 
+
+		wAddFileResult = new Group(wContentComp, SWT.SHADOW_NONE);
+		props.setLook(wAddFileResult);
+		wAddFileResult.setText(Messages.getString("AccessInputDialog.wAddFileResult.Label"));
+		
+		FormLayout AddFileResultgroupLayout = new FormLayout();
+		AddFileResultgroupLayout.marginWidth = 10;
+		AddFileResultgroupLayout.marginHeight = 10;
+		wAddFileResult.setLayout(AddFileResultgroupLayout);
+
+		wlAddResult=new Label(wAddFileResult, SWT.RIGHT);
+		wlAddResult.setText(Messages.getString("AccessInputDialog.AddResult.Label"));
+ 		props.setLook(wlAddResult);
+		fdlAddResult=new FormData();
+		fdlAddResult.left = new FormAttachment(0, 0);
+		fdlAddResult.top  = new FormAttachment(wLimit, margin);
+		fdlAddResult.right= new FormAttachment(middle, -margin);
+		wlAddResult.setLayoutData(fdlAddResult);
+		wAddResult=new Button(wAddFileResult, SWT.CHECK );
+ 		props.setLook(wAddResult);
+		wAddResult.setToolTipText(Messages.getString("AccessInputDialog.AddResult.Tooltip"));
+		fdAddResult=new FormData();
+		fdAddResult.left = new FormAttachment(middle, 0);
+		fdAddResult.top  = new FormAttachment(wLimit, margin);
+		wAddResult.setLayoutData(fdAddResult);
+
+		fdAddFileResult = new FormData();
+		fdAddFileResult.left = new FormAttachment(0, margin);
+		fdAddFileResult.top = new FormAttachment(wLimit, margin);
+		fdAddFileResult.right = new FormAttachment(100, -margin);
+		wAddFileResult.setLayoutData(fdAddFileResult);
+			
+		// ///////////////////////////////////////////////////////////
+		// / END OF AddFileResult GROUP
+		// ///////////////////////////////////////////////////////////	
+       
        
 		fdContentComp = new FormData();
 		fdContentComp.left  = new FormAttachment(0, 0);
@@ -904,6 +1041,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 		setSize();
 		getData(input);
 		input.setChanged(changed);
+		ActiveFileField();
 		wFields.optWidth(true);
 		
 		shell.open();
@@ -913,7 +1051,29 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 		}
 		return stepname;
 	}
-
+	 private void setFileField()
+	 {
+		 try{
+	           
+			 wFilenameField.removeAll();
+				
+			 RowMetaInterface r = transMeta.getPrevStepFields(stepname);
+				if (r!=null)
+				{
+		             r.getFieldNames();
+		             
+		             for (int i=0;i<r.getFieldNames().length;i++)
+						{	
+		            	 wFilenameField.add(r.getFieldNames()[i]);					
+							
+						}
+				}
+			 
+			
+		 }catch(KettleException ke){
+				new ErrorDialog(shell, Messages.getString("AccessInputDialog.FailedToGetFields.DialogTitle"), Messages.getString("AccessInputDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+			}
+	 }
 	private void get()
 	{
 		RowMetaInterface fields = new RowMeta();
@@ -953,36 +1113,21 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 		            // Get column type and Map with PDI values    				
     				
     				if(DataType.INT.equals(c.getType()))
-    				{
     					fieldtype = ValueMetaInterface.TYPE_INTEGER;
-    				}
     				else if(DataType.BOOLEAN.equals(c.getType()))
-    				{
     					fieldtype = ValueMetaInterface.TYPE_BOOLEAN;
-    				}
     				else if(DataType.BINARY.equals(c.getType()))
-    				{
     					fieldtype = ValueMetaInterface.TYPE_BINARY;
-    				}
     				else if((DataType.DOUBLE.equals(c.getType())) || (DataType.LONG.equals(c.getType())) 
     						|| (DataType.NUMERIC.equals(c.getType()) ) )
-    				{
     					fieldtype = ValueMetaInterface.TYPE_NUMBER;
-    				}
     				else if((DataType.FLOAT.equals(c.getType())) || (DataType.MONEY.equals(c.getType())) 
     						|| (DataType.MEMO.equals(c.getType())) )
-    				{
     					fieldtype = ValueMetaInterface.TYPE_BIGNUMBER;
-    				}
     				else if((DataType.SHORT_DATE_TIME.equals(c.getType())))
-    				{
     					fieldtype = ValueMetaInterface.TYPE_DATE;
-    				}
     				else
-    				{
-    					fieldtype = ValueMetaInterface.TYPE_STRING;
-    				}
-    				
+    					fieldtype = ValueMetaInterface.TYPE_STRING;    				
     				if (fieldname!=null && fieldtype!=ValueMetaInterface.TYPE_NONE)
 					{
     					ValueMetaInterface field = new ValueMeta(fieldname, fieldtype);
@@ -1025,7 +1170,31 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
             
  
 	}
-
+	private void ActiveFileField()
+	{
+		wlFilenameField.setEnabled(wFileField.getSelection());
+		wlFilenameField.setEnabled(wFileField.getSelection());
+			
+		wlFilename.setEnabled(!wFileField.getSelection());
+		wbbFilename.setEnabled(!wFileField.getSelection());
+		wbaFilename.setEnabled(!wFileField.getSelection());		
+		wFilename.setEnabled(!wFileField.getSelection());		
+		wlFilemask.setEnabled(!wFileField.getSelection());		
+		wFilemask.setEnabled(!wFileField.getSelection());		
+		wlFilenameList.setEnabled(!wFileField.getSelection());		
+		wbdFilename.setEnabled(!wFileField.getSelection());
+		wbeFilename.setEnabled(!wFileField.getSelection());
+		wbShowFiles.setEnabled(!wFileField.getSelection());
+		wlFilenameList.setEnabled(!wFileField.getSelection());
+		wFilenameList.setEnabled(!wFileField.getSelection());
+		if(wFileField.getSelection()) wInclFilename.setSelection(false);
+		wInclFilename.setEnabled(!wFileField.getSelection());
+		wlInclFilename.setEnabled(!wFileField.getSelection());
+		wLimit.setEnabled(!wFileField.getSelection());	
+		wPreview.setEnabled(!wFileField.getSelection());
+		wbbTablename.setEnabled(!wFileField.getSelection());
+		wGet.setEnabled(!wFileField.getSelection());
+	}
 	public void setIncludeFilename()
 	{
 		wlInclFilenameField.setEnabled(wInclFilename.getSelection());
@@ -1068,8 +1237,15 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 		wInclFilename.setSelection(in.includeFilename());
 		wInclTablename.setSelection(in.includeTablename());
 		wInclRownum.setSelection(in.includeRowNumber());
+		wAddResult.setSelection(in.isAddResultFile());
+		
+		wFileField.setSelection(in.isFileField());
+		
 		if (in.getTableName()!=null) wTable.setText(in.getTableName());
 		if (in.getFilenameField()!=null) wInclFilenameField.setText(in.getFilenameField());
+		if (in.getFilename_Field()!=null) wFilenameField.setText(in.getFilename_Field());
+		
+		
 		if (in.gettablenameField()!=null) wInclTablenameField.setText(in.gettablenameField());
 		if (in.getRowNumberField()!=null) wInclRownumField.setText(in.getRowNumberField());
 		wResetRownum.setSelection(in.resetRowNumber());
@@ -1146,28 +1322,22 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 	{
 		stepname = wStepname.getText(); // return value
 
-		// copy info to TextFileInputMeta class (input)
+		// copy info to AccessInputMeta class (input)
 		in.setRowLimit( Const.toLong(wLimit.getText(), 0L) );
-		
-		
 		in.setTableName( wTable.getText() );
-		
 		in.setIncludeFilename( wInclFilename.getSelection() );
 		in.setFilenameField( wInclFilenameField.getText() );
-		
 		in.setIncludeTablename( wInclTablename.getSelection() );
 		in.setTablenameField( wInclTablenameField.getText() );
-		
 		in.setIncludeRowNumber( wInclRownum.getSelection() );
+		in.setAddResultFile( wAddResult.getSelection() );
+		
+		in.setFilename_Field( wFilenameField.getText() );
+		in.setFileField(wFileField.getSelection() );
 		in.setRowNumberField( wInclRownumField.getText() );
-		
 		in.setResetRowNumber( wResetRownum.getSelection() );
-				
-
-		
 		int nrFiles     = wFilenameList.getItemCount();
 		int nrFields    = wFields.nrNonEmpty();
-         
 		in.allocate(nrFiles, nrFields);
 
 		in.setFileName( wFilenameList.getItems(0) );
@@ -1203,7 +1373,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 	{
         try
         {
-            // Create the XML input step
+            // Create the Access input step
             AccessInputMeta oneMeta = new AccessInputMeta();
             getInfo(oneMeta);
             

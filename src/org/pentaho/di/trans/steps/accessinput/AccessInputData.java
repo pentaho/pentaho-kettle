@@ -19,14 +19,15 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
-import java.util.List;
-import org.apache.commons.vfs.FileObject;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
+import java.util.Map;
 
+import org.apache.commons.vfs.FileObject;
+import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
+import com.healthmarketscience.jackcess.Database;
+import com.healthmarketscience.jackcess.Table;
 
 /**
  * @author Samatar Hassan
@@ -34,7 +35,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
  */
 public class AccessInputData extends BaseStepData implements StepDataInterface 
 {
-	public String thisline;//, nextline, lastline;
+	public String thisline;
 	public RowMetaInterface outputRowMeta;
 	public RowMetaInterface convertRowMeta;
 	public Object[] previousRow;
@@ -46,19 +47,21 @@ public class AccessInputData extends BaseStepData implements StepDataInterface
 	public SimpleDateFormat     daf;
 	public DateFormatSymbols    dafs;
 	
-	public List<FileObject>     files;
+	public FileInputList        files;
 	public boolean              last_file;
 	public FileObject           file;
 	public int                  filenr;
 	
 	public FileInputStream     fr;
 	public BufferedInputStream is;
-    public Document            document;
-    public Node                section;
-    public String              itemElement;
-    public int                 itemCount;
-    public int                 itemPosition;
     public long                rownr;
+    public Database 			d;
+    public Table 				t;
+    public Map<String,Object>   rw; 
+    public RowMetaInterface inputRowMeta;
+    public int totalpreviousfields;
+    public int indexOfFilenameField;
+    public Object[] readrow;
 
 	/**
 	 * 
@@ -80,5 +83,11 @@ public class AccessInputData extends BaseStepData implements StepDataInterface
 		
 		fr=null;
 		is=null;
+		d=null;
+		t=null;
+		rw=null;
+		totalpreviousfields=0;
+		indexOfFilenameField=-1;
+		readrow=null;
 	}
 }
