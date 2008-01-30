@@ -20,6 +20,7 @@ import org.apache.commons.vfs.FileType;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.trans.Trans;
@@ -47,127 +48,202 @@ public class GetFilesRowsCount extends BaseStep implements StepInterface
 	{
 		super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
 	}
-	
+
+
+	private Object[] getOneRow() throws KettleException
+	{
+
+		if (!openNextFile()) return null;
+			
+		// Build an empty row based on the meta-data		  
+		Object[] r=buildEmptyRow();
+		try
+		{ 
+			// Create new row or clone
+			if(meta.isFileField())	 r = data.readrow.clone();
+			
+			r[data.totalpreviousfields]=data.rownr;
+			
+			if (meta.includeCountFiles()) r[data.totalpreviousfields+1]= data.filenr;
+			
+			linesInput++;
+			
+		}
+		 catch (Exception e)
+		 {
+			 
+			throw new KettleException("Unable to read row from file", e);
+			
+		 }
+		 
+		return r;
+	}
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{
-		char separator='\n';
-		
-    	if (data.filenr >= data.files.size())
-        {
-            setOutputDone();
-            return false;
-        }
-        
-        if (first)
-        {           
-            first = false;
-            data.outputRowMeta = new RowMeta();
-            meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
-            
-            if((meta.getRowSeparatorFormat().equals("CUSTOM")) && (Const.isEmpty(meta.getRowSeparator())))
-            {
-            	log.logError(Messages.getString("GetFilesRowsCount.Error.NoSeparator.Title"), Messages.getString("GetFilesRowsCount.Error.NoSeparator.Msg"));
-            	setErrors(1);
-                stopAll(); 
-            }
-            else
-            {
-	            if (meta.getRowSeparatorFormat().equals("CR"))
-	    		{
-	    			separator='\n';
-	    			if (log.isDetailed()) log.logDetailed(Messages.getString("GetFilesRowsCount.Log.Separator.Title"), Messages.getString("GetFilesRowsCount.Log.Separatoris.Infos") + " \\n");
-	    		}
-	            else if (meta.getRowSeparatorFormat().equals("LF"))
-	    		{
-	    			separator='\r';
-	    			if (log.isDetailed()) log.logDetailed(Messages.getString("GetFilesRowsCount.Log.Separator.Title"), Messages.getString("GetFilesRowsCount.Log.Separatoris.Infos") + " \\r");
-	    		}
-	            else if (meta.getRowSeparatorFormat().equals("TAB"))
-	    		{
-	            	separator='\t';
-	            	if (log.isDetailed()) log.logDetailed(Messages.getString("GetFilesRowsCount.Log.Separator.Title"), Messages.getString("GetFilesRowsCount.Log.Separatoris.Infos") + " \\t");
-	    		}
-	            else
-	    		{
-	            	
-	            	separator=environmentSubstitute(meta.getRowSeparator()).charAt(0);
-	            	 
-	            	if (log.isDetailed()) log.logDetailed(Messages.getString("GetFilesRowsCount.Log.Separator.Title"), Messages.getString("GetFilesRowsCount.Log.Separatoris.Infos") + " " +separator);
-	    		}
-            }
-        }	
-		
-		for (int i=0;i<data.files.size();i++)
-		{	
-			data.file = (FileObject) data.files.get(i);
-	    	
-			
-			logBasic(Messages.getString("GetFilesRowsCount.Log.OpeningFile", data.file.toString()));
-	    	
-			// Fetch files and process each one
-			try 
-			{
-				if (data.file.getType() == FileType.FILE)	
-				{
-					data.fr = KettleVFS.getInputStream(data.file);
-					data.isr = new InputStreamReader(new BufferedInputStream(data.fr, BUFFER_SIZE_INPUT_STREAM));
-						
-					int c = 0;				
-					data.lineStringBuffer.setLength(0);
-					
-					 while (c >= 0)
-	                 {
-					     c = data.isr.read();
+		 
+		try{
+			 // Grab one row
+			 Object[] outputRowData=getOneRow();
+			 if (outputRowData==null)
+		     {
+		        setOutputDone();  // signal end to receiver(s)
+		        return false; // end of data or error.
+		     }
+			 if((!meta.isFileField() && data.last_file)||meta.isFileField())
+			 {
+				 putRow(data.outputRowMeta, outputRowData);  // copy row to output rowset(s);
+				 if (log.isDetailed()) log.logDetailed(toString(),Messages.getString("GetFilesRowsCount.Log.TotalRowsFiles"), data.rownr,data.filenr);
+			 }	
 
-	                     if (c == separator)
-	                     {
-	                         // Move Row number pointer ahead
-	                       	 data.rownr ++;	                        	
-	    				 }	                        
-	                 }
-					 data.filesnr++;
-				}				
-			}
-			catch (Exception e)
-			{
-				logError(Messages.getString("GetFilesRowsCount.Log.UnableToOpenFile", ""+data.filenr, data.file.toString(), e.toString()));
-				stopAll();
-				setErrors(1);
-			}
+		}catch(KettleException e)
+		{
 			
-			if (log.isDetailed()) logDetailed(Messages.getString("GetFilesRowsCount.Log.FileOpened", data.file.toString()));
-		
-			// Add this to the result file names...
-			ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, data.file, getTransMeta().getName(), getStepname());
-			resultFile.setComment(Messages.getString("GetFilesRowsCount.Log.FileAddedResult"));
-			addResultFile(resultFile);
-	    	
-			// Move file pointer ahead!
-			data.filenr++;
-		
+			logError(Messages.getString("GetFilesRowsCount.ErrorInStepRunning",e.getMessage())); //$NON-NLS-1$
+			setErrors(1);
+			stopAll();
+			setOutputDone();  // signal end to receiver(s)
+			return false;
 		}
-    		
-		
-		linesInput++;
-		data.rownr--;
-		
-		if (log.isDetailed()) log.logDetailed(Messages.getString("GetFilesRowsCount.Log.TotalRows"),Messages.getString("GetFilesRowsCount.Log.TotalFiles"), data.rownr,data.filesnr);
-		
-		// Create new row				
+		 return true;
 	
-		Object[] outputRow = new Object[data.outputRowMeta.size()];
-		int outputIndex = 0;
-		
-		outputRow[outputIndex++]=data.rownr;
-		if (meta.includeCountFiles())	outputRow[outputIndex++]=data.filesnr;
-		
-		putRow(data.outputRowMeta, outputRow);  // copy row to output rowset(s);
-		
-		
-		 if ((linesInput > 0) && (linesInput % Const.ROWS_UPDATE) == 0) logBasic("linenr " + linesInput);
-        return true;  // This is the end of this step. 
 	}		
+	private void getRowNumber() throws KettleException
+	{
+		try
+		{
+			if (data.file.getType() == FileType.FILE)
+			{
+				data.fr = KettleVFS.getInputStream(data.file);
+				data.isr = new InputStreamReader(new BufferedInputStream(data.fr, BUFFER_SIZE_INPUT_STREAM));
+					
+				int c = 0;				
+				data.lineStringBuffer.setLength(0);
+				
+				 while (c >= 0)
+		         {
+				     c = data.isr.read();
+		
+		             if (c == data.separator)
+		             {
+		                 // Move Row number pointer ahead
+		               	 data.rownr ++;	
+					 }	                        
+		         }
+			}
+			if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("GetFilesRowsCount.Log.RowsInFile", data.file.toString(), ""+data.rownr));
+		}
+		catch (Exception e)
+		{
+			throw new KettleException(e);
+		}
+	  
+	}
+	
+	/**
+	 * Build an empty row based on the meta-data...
+	 * 
+	 * @return
+	 */
 
+	private Object[] buildEmptyRow()
+	{
+        Object[] rowData = RowDataUtil.allocateRowData(data.outputRowMeta.size());
+ 
+		 return rowData;
+	}
+	private boolean openNextFile()
+	{
+		try
+		{
+			if(!meta.isFileField())
+			{
+	            if (data.filenr>=data.files.nrOfFiles()) // finished processing!
+	            {
+	            	if (log.isDetailed()) logDetailed(Messages.getString("GetFilesRowsCount.Log.FinishedProcessing"));
+	                return false;
+	            }
+	            
+			    // Is this the last file?
+				data.last_file = ( data.filenr==data.files.nrOfFiles()-1);
+				data.file = (FileObject) data.files.getFile((int)data.filenr);
+				
+
+			}else
+			{
+				data.readrow=getRow();     // Get row from input rowset & set row busy!
+				if (data.readrow==null)
+			    {
+					if (log.isDetailed()) logDetailed(Messages.getString("GetFilesRowsCount.Log.FinishedProcessing"));
+			         return false;
+			    }
+				
+				if (first)
+		        {
+		            first = false;
+		            
+	            	data.inputRowMeta = getInputRowMeta();
+		            data.outputRowMeta = data.inputRowMeta.clone();
+		            meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
+		            
+		            // Get total previous fields
+		            data.totalpreviousfields=data.inputRowMeta.size();
+
+					// Check is filename field is provided
+					if (Const.isEmpty(meta.getFilename_Field()))
+					{
+						logError(Messages.getString("GetFilesRowsCount.Log.NoField"));
+						throw new KettleException(Messages.getString("GetFilesRowsCount.Log.NoField"));
+					}
+					
+					// cache the position of the field			
+					if (data.indexOfFilenameField<0)
+					{	
+						data.indexOfFilenameField =getInputRowMeta().indexOfValue(meta.getFilename_Field());
+						if (data.indexOfFilenameField<0)
+						{
+							// The field is unreachable !
+							logError(Messages.getString("GetFilesRowsCount.Log.ErrorFindingField", meta.getFilename_Field())); //$NON-NLS-1$ //$NON-NLS-2$
+							throw new KettleException(Messages.getString("GetFilesRowsCount.Exception.CouldnotFindField",meta.getFilename_Field())); //$NON-NLS-1$ //$NON-NLS-2$
+						}
+					}
+	            	
+		            
+		        }  // End if first
+				
+				
+				String filename=getInputRowMeta().getString(data.readrow,data.indexOfFilenameField);
+				if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("GetFilesRowsCount.Log.FilenameInStream", meta.getFilename_Field(),filename));
+
+				data.file= KettleVFS.getFileObject(filename);
+				// Check if file exists!	
+				// Move file pointer ahead!
+				data.filenr++;
+			}
+			
+			if(meta.isAddResultFile())
+			{
+				// Add this to the result file names...
+				ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, data.file, getTransMeta().getName(), getStepname());
+				resultFile.setComment(Messages.getString("GetFilesRowsCount.Log.FileAddedResult"));
+				addResultFile(resultFile);
+			}
+			
+			if (log.isDetailed()) logDetailed(Messages.getString("GetFilesRowsCount.Log.OpeningFile", data.file.toString()));
+			getRowNumber();	
+			if (log.isDetailed()) logDetailed(Messages.getString("GetFilesRowsCount.Log.FileOpened", data.file.toString()));
+						
+			
+		}
+		catch(Exception e)
+		{
+			logError(Messages.getString("GetFilesRowsCount.Log.UnableToOpenFile", ""+data.filenr, data.file.toString(), e.toString()));
+			stopAll();
+			setErrors(1);
+			return false;
+		}
+		return true;
+	}
+	
 	public boolean init(StepMetaInterface smi, StepDataInterface sdi)
 	{
 		meta=(GetFilesRowsCountMeta)smi;
@@ -175,15 +251,62 @@ public class GetFilesRowsCount extends BaseStep implements StepInterface
 		
 		if (super.init(smi, sdi))
 		{
-			data.files = meta.getFiles(this).getFiles();
-			if (data.files==null || data.files.size()==0)
+			  if((meta.getRowSeparatorFormat().equals("CUSTOM")) && (Const.isEmpty(meta.getRowSeparator())))
+	            {
+	            	log.logError(Messages.getString("GetFilesRowsCount.Error.NoSeparator.Title"), Messages.getString("GetFilesRowsCount.Error.NoSeparator.Msg"));
+	            	setErrors(1);
+	                stopAll(); 
+	            }
+	            else
+	            {
+		            if (meta.getRowSeparatorFormat().equals("CR"))
+		    		{
+		    			data.separator='\n';
+		    			if (log.isDetailed()) log.logDetailed(Messages.getString("GetFilesRowsCount.Log.Separator.Title"), Messages.getString("GetFilesRowsCount.Log.Separatoris.Infos") + " \\n");
+		    		}
+		            else if (meta.getRowSeparatorFormat().equals("LF"))
+		    		{
+		            	data.separator='\r';
+		    			if (log.isDetailed()) log.logDetailed(Messages.getString("GetFilesRowsCount.Log.Separator.Title"), Messages.getString("GetFilesRowsCount.Log.Separatoris.Infos") + " \\r");
+		    		}
+		            else if (meta.getRowSeparatorFormat().equals("TAB"))
+		    		{
+		            	data.separator='\t';
+		            	if (log.isDetailed()) log.logDetailed(Messages.getString("GetFilesRowsCount.Log.Separator.Title"), Messages.getString("GetFilesRowsCount.Log.Separatoris.Infos") + " \\t");
+		    		}
+		            else
+		    		{
+		            	
+		            	data.separator=environmentSubstitute(meta.getRowSeparator()).charAt(0);
+		            	 
+		            	if (log.isDetailed()) log.logDetailed(Messages.getString("GetFilesRowsCount.Log.Separator.Title"), Messages.getString("GetFilesRowsCount.Log.Separatoris.Infos") + " " +data.separator);
+		    		}
+	            }
+			  
+			if(!meta.isFileField())
 			{
-				logError(Messages.getString("GetFilesRowsCount.Log.NoFiles"));
-				return false;
-			}
-            
-			data.rownr = 1L;
-			data.filesnr = 0;
+				data.files = meta.getFiles(this);
+				if (data.files==null || data.files.nrOfFiles()==0)
+				{
+					logError(Messages.getString("GetFilesRowsCount.Log.NoFiles"));
+					return false;
+				}
+				try{
+					  // Create the output row meta-data
+		            data.outputRowMeta = new RowMeta();
+		            meta.getFields(data.outputRowMeta, getStepname(), null, null, this); // get the metadata populated
+   
+				}
+				catch(Exception e)
+				{
+					logError("Error initializing step: "+e.toString());
+					logError(Const.getStackTracker(e));
+					return false;
+				}
+			} 
+			data.rownr = 0;
+			data.filenr = 0;
+			data.totalpreviousfields=0;
 			
 			return true;
 		}
@@ -194,6 +317,37 @@ public class GetFilesRowsCount extends BaseStep implements StepInterface
 	{
 		meta = (GetFilesRowsCountMeta)smi;
 		data = (GetFilesRowsCountData)sdi;
+		if(data.file!=null) 
+		{
+			try
+			{
+				data.file.close();
+				data.file=null;
+			}catch  (Exception e)
+			{
+			}
+		}
+		if(data.is!=null) 
+		{
+			try
+			{
+				data.is.close();
+				data.is=null;
+			}catch  (Exception e)
+			{
+			}
+		}
+		if(data.isr!=null) 
+		{
+			try
+			{
+				data.isr.close();
+				data.isr=null;
+			}catch  (Exception e)
+			{
+			}
+		}
+		if(data.lineStringBuffer!=null) data.lineStringBuffer=null;
 
 		super.dispose(smi, sdi);
 	}

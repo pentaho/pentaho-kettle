@@ -15,14 +15,11 @@ package org.pentaho.di.trans.steps.getfilesrowscount;
 import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.List;
 import org.apache.commons.vfs.FileObject;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.core.fileinput.FileInputList;
 
 /**
  * @author Samatar Hassan
@@ -35,23 +32,22 @@ public class GetFilesRowsCountData extends BaseStepData implements StepDataInter
 	public RowMetaInterface convertRowMeta;
 	public Object[] previousRow;
 
-	public List<FileObject>     files;
+	public FileInputList        files;
 	public boolean              last_file;
 	public FileObject           file;
-	public long                 filenr;
-	public long					filesnr;
+	public  long                filenr;
 	
-	public InputStream fr;
-	public InputStreamReader isr;
+	public InputStream 			fr;
+	public InputStreamReader   isr;
 	public BufferedInputStream is;
-    public Document            document;
-    public Node                section;
-    public String              itemElement;
-    public int                 itemCount;
-    public int                 itemPosition;
     public long                rownr;
     public int fileFormatType;
     public StringBuffer lineStringBuffer;
+    public int totalpreviousfields;
+    public int indexOfFilenameField;
+    public Object[] readrow;
+    public RowMetaInterface inputRowMeta;
+    public char separator;
 
 	/**
 	 * 
@@ -62,10 +58,13 @@ public class GetFilesRowsCountData extends BaseStepData implements StepDataInter
 		previousRow = null;
 		thisline=null;
 		previousRow=null;
-		filenr = 0;
 		
 		fr=null;
 		is=null;
 		lineStringBuffer = new StringBuffer(256);
+		totalpreviousfields=0;
+		indexOfFilenameField=-1;
+		readrow=null;
+		separator='\n';
 	}
 }
