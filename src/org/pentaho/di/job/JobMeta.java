@@ -966,6 +966,37 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
             throw new KettleException(Messages.getString("JobMeta.Log.UnableToReadDatabasesFromRepository"), ke); //$NON-NLS-1$
         }
     }
+	
+    /**
+     * Read the slave servers in the repository and add them to this transformation if they are not yet present.
+     * @param rep The repository to load from.
+     * @param overWriteShared if an object with the same name exists, overwrite
+     * @throws KettleException 
+     */
+    public void readSlaves(Repository rep, boolean overWriteShared) throws KettleException
+    {
+        try
+        {
+            long dbids[] = rep.getSlaveIDs();
+            for (int i = 0; i < dbids.length; i++)
+            {
+                SlaveServer slaveServer = new SlaveServer(rep, dbids[i]);
+                SlaveServer check = findSlaveServer(slaveServer.getName()); // Check if there already is one in the transformation
+                if (check==null || overWriteShared) 
+                {
+                    if (!Const.isEmpty(slaveServer.getName()))
+                    {
+                        addOrReplaceSlaveServer(slaveServer);
+                        if (!overWriteShared) slaveServer.setChanged(false);
+                    }
+                }
+            }
+        }
+        catch (KettleDatabaseException dbe)
+        {
+            throw new KettleException(Messages.getString("JobMeta.Log.UnableToReadSlaveServersFromRepository"), dbe); //$NON-NLS-1$
+        }
+    }
     
     public void readSharedObjects(Repository rep) throws KettleException
     {
@@ -995,6 +1026,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
         if (rep!=null)
         {
             readDatabases(rep, true);
+            readSlaves(rep, true);
         }
     }
     
