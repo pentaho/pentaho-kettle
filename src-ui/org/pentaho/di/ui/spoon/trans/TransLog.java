@@ -465,13 +465,22 @@ public class TransLog extends Composite implements TabItemInterface
 	}
     
     private void showStepPerformanceGraph() {
-		StepPerformanceSnapShotDialog dialog = new StepPerformanceSnapShotDialog(
-			shell, 
-			transMeta.getName(), 
-			trans.getStepPerformanceSnapShots(),
-			transMeta.getStepPerformanceCapturingDelay()
-			);
-		dialog.open();
+    	if (trans.getStepPerformanceSnapShots()!=null) {
+			StepPerformanceSnapShotDialog dialog = new StepPerformanceSnapShotDialog(
+				shell, 
+				transMeta.getName(), 
+				trans.getStepPerformanceSnapShots(),
+				transMeta.getStepPerformanceCapturingDelay()
+				);
+			dialog.open();
+    	}
+    	else {
+			MessageBox m = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION);
+			m.setText(Messages.getString("TransLog.Dialog.PerformanceMonitoringNotEnabled.Title")); //$NON-NLS-1$
+			m.setMessage(Messages.getString("TransLog.Dialog.PerformanceMonitoringNotEnabled.Message")); //$NON-NLS-1$
+			m.open();
+    	}
+    		 
 	}
 
 	private void checkStartThreads()
