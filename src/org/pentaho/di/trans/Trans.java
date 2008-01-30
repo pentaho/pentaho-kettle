@@ -31,6 +31,8 @@ import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.database.map.DatabaseConnectionMap;
+import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleTransException;
 import org.pentaho.di.core.logging.Log4jStringAppender;
@@ -1283,6 +1285,12 @@ public class Trans implements VariableSpace
 	{
 		Result result = getResult();
 
+		if (transMeta.isUsingUniqueConnections()) {
+			// Commit or roll back the transaction in the unique database connections...
+			// 
+			closeUniqueDatabaseConnections(result);
+		}
+		
 		logDate     = new Date();
 
 		// Change the logging back to stream...
@@ -1330,6 +1338,51 @@ public class Trans implements VariableSpace
 			}
 		}
 		return true;
+	}
+
+	private void closeUniqueDatabaseConnections(Result result) {
+
+		// First we get all the database connections ...
+		//
+		DatabaseConnectionMap map = DatabaseConnectionMap.getInstance();
+		List<Database> databaseList = new ArrayList<Database>(map.getMap().values());
+        for (Database database : databaseList) {
+        	if (database.getConnectionGroup().equals(getThreadName())) {
+        		try
+        		{
+	        		// This database connection belongs to this transformation.
+	        		// Let's roll it back if there is an error...
+	        		//
+	        		if (result.getNrErrors()>0) {
+	        			try {
+	        				database.rollback(true);
+	        				log.logBasic(toString(), Messages.getString("Trans.Exception.TransactionsRolledBackOnConnection", database.toString()));
+	        			}
+	        			catch(Exception e) {
+	        				throw new KettleDatabaseException(Messages.getString("Trans.Exception.ErrorRollingBackUniqueConnection", database.toString()), e);
+	        			}
+	        		}
+	        		else {
+	        			try {
+	        				database.commit(true);
+	        				log.logBasic(toString(), Messages.getString("Trans.Exception.TransactionsCommittedOnConnection", database.toString()));
+	        			}
+	        			catch(Exception e) {
+	        				throw new KettleDatabaseException(Messages.getString("Trans.Exception.ErrorCommittingUniqueConnection", database.toString()), e);
+	        			}
+	        		}
+	        		database.closeConnectionOnly();
+	        		
+	        		// Remove the database from the list...
+	        		//
+	        		map.removeConnection(database.getConnectionGroup(), database.getPartitionId(), database);
+        		}
+        		catch(Exception e) {
+        			log.logError(toString(), Messages.getString("Trans.Exception.ErrorHandlingTransformationTransaction", database.toString()), e);
+        			result.setNrErrors(result.getNrErrors()+1);
+        		}
+        	}
+        }
 	}
 
 	public BaseStep findRunThread(String stepname)
