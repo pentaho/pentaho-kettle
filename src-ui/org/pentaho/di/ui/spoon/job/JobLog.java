@@ -422,6 +422,7 @@ public class JobLog extends Composite implements TabItemInterface
                         job.shareVariablesWith(jobMeta);
                         log.logMinimal(Spoon.APP_NAME, Messages.getString("JobLog.Log.StartingJob")); //$NON-NLS-1$
 						job.start();
+						previousNrItems = -1;
                         // Link to the new jobTracker!
                         jobTracker = job.getJobTracker();
                         isRunning=true;
