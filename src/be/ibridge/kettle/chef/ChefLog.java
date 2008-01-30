@@ -411,6 +411,7 @@ public class ChefLog extends Composite implements TabItemInterface
 						
                         log.logMinimal(Chef.APP_NAME, Messages.getString("ChefLog.Log.StartingJob")); //$NON-NLS-1$
 						job.start();
+						previousNrItems = -1;
                         // Link to the new jobTracker!
                         jobTracker = job.getJobTracker();
                         isRunning=true;
