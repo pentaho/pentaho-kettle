@@ -125,11 +125,12 @@ public class GroupBy extends BaseStep implements StepInterface
 					data.cumulativeAvgTargetIndexes.add(getInputRowMeta().size()+i);
 				}
 				
-				data.previousSums = new Object[data.cumulativeSumTargetIndexes.size()];
-				
-				data.previousAvgSum = new Object[data.cumulativeAvgTargetIndexes.size()];
-				data.previousAvgCount = new long[data.cumulativeAvgTargetIndexes.size()];
 			}
+
+			data.previousSums = new Object[data.cumulativeSumTargetIndexes.size()];
+			
+			data.previousAvgSum = new Object[data.cumulativeAvgTargetIndexes.size()];
+			data.previousAvgCount = new long[data.cumulativeAvgTargetIndexes.size()];
 			
 			data.groupnrs = new int[meta.getGroupField().length];
 			for (int i=0;i<meta.getGroupField().length;i++)
