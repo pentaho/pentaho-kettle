@@ -82,4 +82,8 @@ public class DatabaseConnectionMap
 
         return key.toString();
     }
+    
+    public Map<String, Database> getMap() {
+		return map;
+	}
 }

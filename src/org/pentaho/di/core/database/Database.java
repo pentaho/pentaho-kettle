@@ -124,7 +124,6 @@ public class Database implements VariableSpace
     private int copy; 
 
     private String connectionGroup;
-    private boolean performRollbackAtLastDisconnect; // Only used in the context of a database connection map
     private String partitionId;
     
     private VariableSpace variables = new Variables();
@@ -149,8 +148,6 @@ public class Database implements VariableSpace
 		rowlimit=0;
 		
 		written=0;
-        
-        performRollbackAtLastDisconnect=false;
 				
 		log.logDetailed(toString(), "New database connection defined");
 	}
@@ -487,32 +484,7 @@ public class Database implements VariableSpace
             // 
             if (!Const.isEmpty(connectionGroup))
             {
-                DatabaseConnectionMap map = DatabaseConnectionMap.getInstance();
-                Database lookup = map.getDatabase(connectionGroup, partitionId, this);
-                if (lookup!=null)
-                {
-                    lookup.opened--;
-                    
-                    if (lookup.opened>0)
-                    {
-                        return;
-                    }
-                    else
-                    {
-                        map.removeConnection(connectionGroup, partitionId, this); // remove the trace of it.
-                        
-                        // Before we close perform commit or rollback.
-                        
-                        if (lookup.performRollbackAtLastDisconnect)
-                        {
-                            rollback(true);
-                        }
-                        else
-                        {
-                            commit(true);
-                        }
-                    }
-                }
+                return;
             }
             else
             {
@@ -522,15 +494,7 @@ public class Database implements VariableSpace
                 }
             }
 
-			if (connection!=null) 
-            { 
-                connection.close(); 
-                if (!databaseMeta.isUsingConnectionPool()) 
-                {
-                    connection=null; 
-                }
-            } 
-			log.logDetailed(toString(), "Connection to database closed!");
+            closeConnectionOnly();
 		}
 		catch(SQLException ex) 
 		{
@@ -541,6 +505,29 @@ public class Database implements VariableSpace
 		{
 			log.logError(toString(), "Error disconnecting from database:"+Const.CR+dbe.getMessage());
             log.logError(toString(), Const.getStackTracker(dbe));
+		}
+	}
+	
+	/**
+	 * Only for unique connections usage, typically you use disconnect() to disconnect() from the database.
+	 * @throws KettleDatabaseException in case there is an error during connection close. 
+	 */
+	public synchronized void closeConnectionOnly() throws KettleDatabaseException {
+		try
+		{
+			if (connection!=null) 
+			{ 
+				connection.close(); 
+				if (!databaseMeta.isUsingConnectionPool()) 
+				{
+					connection=null; 
+				}
+			} 
+			
+			log.logDetailed(toString(), "Connection to database closed!");
+		}
+		catch(SQLException e) {
+			throw new KettleDatabaseException("Error disconnecting from database '"+toString()+"'", e);
 		}
 	}
 	
@@ -602,7 +589,7 @@ public class Database implements VariableSpace
         commit(false);
     }
     
-	private void commit(boolean force) throws KettleDatabaseException
+	public void commit(boolean force) throws KettleDatabaseException
 	{
 		try
 		{
@@ -638,16 +625,13 @@ public class Database implements VariableSpace
         rollback(false);
     }
 
-	private void rollback(boolean force) throws KettleDatabaseException
+	public void rollback(boolean force) throws KettleDatabaseException
 	{
 		try
 		{
             if (!Const.isEmpty(connectionGroup) && !force)
             {
-                DatabaseConnectionMap map = DatabaseConnectionMap.getInstance();
-                Database lookup = map.getDatabase(connectionGroup, partitionId, this);
-                lookup.performRollbackAtLastDisconnect=true;
-                return; 
+                return; // Will be handled by Trans --> endProcessing() 
             }
             if (getDatabaseMetaData().supportsTransactions())
             {
@@ -2167,13 +2151,23 @@ public class Database implements VariableSpace
 
 		return cr_index;
 	}
-	
+
     public String getCreateSequenceStatement(String sequence, long start_at, long increment_by, long max_value, boolean semi_colon)
+    {
+        return getCreateSequenceStatement(null, sequence, Long.toString(start_at), Long.toString(increment_by), Long.toString(max_value), semi_colon);
+    }
+	
+    public String getCreateSequenceStatement(String sequence, String start_at, String increment_by, String max_value, boolean semi_colon)
     {
         return getCreateSequenceStatement(null, sequence, start_at, increment_by, max_value, semi_colon);
     }
+
+    public String getCreateSequenceStatement(String schemaName, String sequence, long start_at, long increment_by, long max_value, boolean semi_colon)
+    {
+        return getCreateSequenceStatement(schemaName, sequence, Long.toString(start_at), Long.toString(increment_by), Long.toString(max_value), semi_colon);
+    }
     
-	public String getCreateSequenceStatement(String schemaName, String sequenceName, long start_at, long increment_by, long max_value, boolean semi_colon)
+	public String getCreateSequenceStatement(String schemaName, String sequenceName, String start_at, String increment_by, String max_value, boolean semi_colon)
 	{
 		String cr_seq="";
 		
@@ -2185,7 +2179,7 @@ public class Database implements VariableSpace
 			cr_seq += "CREATE SEQUENCE "+schemaSequence+" "+Const.CR;  // Works for both Oracle and PostgreSQL :-)
 			cr_seq += "START WITH "+start_at+" "+Const.CR;
 			cr_seq += "INCREMENT BY "+increment_by+" "+Const.CR;
-			if (max_value>0) cr_seq += "MAXVALUE "+max_value+Const.CR;
+			if (max_value != null) cr_seq += "MAXVALUE "+max_value+Const.CR;
 			
 			if (semi_colon) cr_seq+=";"+Const.CR;
 		}
@@ -2224,6 +2218,7 @@ public class Database implements VariableSpace
 		// For now, we just try to get the field layout on the re-bound in the exception block below.
 		//
 		if (databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_ORACLE ||
+			databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_H2 ||
 			databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_GENERIC)
 		{
 			return getQueryFieldsFallback(sql, param, inform, data);
@@ -2485,9 +2480,9 @@ public class Database implements VariableSpace
             	{
             		valtype=ValueMetaInterface.TYPE_INTEGER;
             	}
-                if (precision<=0 && length<=0) // undefined size: BIGNUMBER
+                if (precision<=0 && length<=0) // undefined size: NUMBER
                 {
-                    valtype=ValueMetaInterface.TYPE_BIGNUMBER;
+                    valtype=ValueMetaInterface.TYPE_NUMBER;
                     length=-1;
                     precision=-1;
                 }
@@ -2497,7 +2492,18 @@ public class Database implements VariableSpace
         case java.sql.Types.DATE:
         case java.sql.Types.TIME:
         case java.sql.Types.TIMESTAMP: 
-            valtype=ValueMetaInterface.TYPE_DATE; 
+            valtype=ValueMetaInterface.TYPE_DATE;
+            // 
+            if (databaseMeta.getDatabaseType() == DatabaseMeta.TYPE_DATABASE_MYSQL) {
+                String property = databaseMeta.getConnectionProperties().getProperty("yearIsDateType");
+                if (property != null && property.equalsIgnoreCase("false")
+                		&& rm.getColumnTypeName(index).equalsIgnoreCase("YEAR")) {
+                	valtype = ValueMetaInterface.TYPE_INTEGER;
+                	precision = 0;
+                	length = 4;
+                	break;
+                }
+            } 
             break;
 
         case java.sql.Types.BOOLEAN:

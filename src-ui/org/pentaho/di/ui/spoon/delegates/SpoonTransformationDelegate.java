@@ -250,7 +250,7 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 			{
 				TransLog transLog = (TransLog) mapEntry.getObject();
 				if (transLog.isDisposed()) {
-					spoon.delegates.tabs.getTabs().remove(transLog);
+					// spoon.delegates.tabs.getTabs().remove(transLog);
 					continue;
 				}
 				if (transLog.getMeta().equals(transMeta))
