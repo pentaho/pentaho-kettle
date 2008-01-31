@@ -398,7 +398,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
 				{
 					if (!identical)
 					{
-						if (log.isRowLevel()) logRowlevel(Messages.getString("DimensionLookup.Log.UpdateRowWithValues")+row); //$NON-NLS-1$
+						if (log.isRowLevel()) logRowlevel(Messages.getString("DimensionLookup.Log.UpdateRowWithValues")+getInputRowMeta().getString(row)); //$NON-NLS-1$
 						/*
 						 * UPDATE d_customer
 						 * SET    fieldlookup[] = row.getValue(fieldnrs)

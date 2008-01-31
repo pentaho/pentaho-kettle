@@ -595,8 +595,6 @@ public class GroupBy extends BaseStep implements StepInterface
 		
     private void addToBuffer(Object[] row) throws KettleFileException
     {
-        //System.out.println("Add to buffer: "+row);
-        
         data.bufferList.add(row);
         if (data.bufferList.size()>5000)
         {
