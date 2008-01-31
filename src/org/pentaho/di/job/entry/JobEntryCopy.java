@@ -160,9 +160,7 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 			if (r != null)
 			{
 				// These are the jobentry_copy fields...
-
-				// System.out.println("JobEntryCopy = "+r);
-
+				//
 				long id_jobentry = r.getInteger("ID_JOBENTRY", 0);
 				long id_jobentry_type = r.getInteger("ID_JOBENTRY_TYPE", 0);
 				setNr((int) r.getInteger("NR", 0));

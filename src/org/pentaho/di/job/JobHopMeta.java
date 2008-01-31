@@ -122,8 +122,6 @@ public class JobHopMeta implements Cloneable, XMLInterface
 			RowMetaAndData r = rep.getJobHop(id_job_hop);
 			if (r!=null)
 			{
-				// System.out.println("Got hop row for id="+id_job_hop+" --> "+r);
-	
 				id_jobentry_copy_from  =  r.getInteger("ID_JOBENTRY_COPY_FROM", -1L);
 				id_jobentry_copy_to    =  r.getInteger("ID_JOBENTRY_COPY_TO", -1L);
 				enabled                =  r.getBoolean("ENABLED", true);

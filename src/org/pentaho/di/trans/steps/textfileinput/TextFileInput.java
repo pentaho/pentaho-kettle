@@ -1006,7 +1006,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 						r = convertLineToRow(textLine, meta, data.outputRowMeta, data.convertRowMeta, data.filename, useNumber, data.dataErrorLineHandler);
 						if (r != null)
 						{
-							// System.out.println("Found data row: "+r);
+							if (log.isRowLevel()) logRowlevel("Found data row: "+getInputRowMeta().getString(r));
 							putrow = true;
 						}
 					}

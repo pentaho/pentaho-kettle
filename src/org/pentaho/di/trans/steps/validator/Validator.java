@@ -107,7 +107,7 @@ public class Validator extends BaseStep implements StepInterface
         	}
         }
 
-        if (log.isRowLevel()) log.logRowlevel(toString(), "Wrote row #"+linesWritten+" : "+r);        
+        if (log.isRowLevel()) log.logRowlevel(toString(), "Wrote row #"+linesWritten+" : "+getInputRowMeta().getString(r));        
         if (checkFeedback(linesRead)) logBasic("Linenr "+linesRead);
 
 		return true;

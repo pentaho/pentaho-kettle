@@ -108,7 +108,7 @@ public class SocketWriter extends BaseStep implements StepInterface
         catch (Exception e)
         {
             logError("Error writing to socket : "+e.toString());
-            logError("Failing row : "+r);
+            logError("Failing row : "+getInputRowMeta().getString(r));
             logError("Stack trace: "+Const.CR+Const.getStackTracker(e));
             
             setErrors(1);

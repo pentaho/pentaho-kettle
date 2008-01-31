@@ -368,7 +368,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface
             }
         }
 
-		if (log.isRowLevel()) logRowlevel(Messages.getString("DatabaseLookup.Log.GotRowFromPreviousStep")+r); //$NON-NLS-1$
+		if (log.isRowLevel()) logRowlevel(Messages.getString("DatabaseLookup.Log.GotRowFromPreviousStep")+getInputRowMeta().getString(r)); //$NON-NLS-1$
 
 		try
 		{
@@ -380,7 +380,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 	            // copy row to output rowset(s);
 				putRow(data.outputRowMeta, outputRow);
 	            
-				if (log.isRowLevel()) logRowlevel(Messages.getString("DatabaseLookup.Log.WroteRowToNextStep")+r); //$NON-NLS-1$
+				if (log.isRowLevel()) logRowlevel(Messages.getString("DatabaseLookup.Log.WroteRowToNextStep")+getInputRowMeta().getString(r)); //$NON-NLS-1$
 	            if (checkFeedback(linesRead)) logBasic("linenr "+linesRead); //$NON-NLS-1$
             }
 		}

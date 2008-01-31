@@ -109,13 +109,13 @@ public class AddSequence extends BaseStep implements StepInterface
             meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
         }
 
-        if (log.isRowLevel()) log.logRowlevel(toString(), Messages.getString("AddSequence.Log.ReadRow")+linesRead+" : "+r); //$NON-NLS-1$ //$NON-NLS-2$
+        if (log.isRowLevel()) log.logRowlevel(toString(), Messages.getString("AddSequence.Log.ReadRow")+linesRead+" : "+getInputRowMeta().getString(r)); //$NON-NLS-1$ //$NON-NLS-2$
 
 		try
 		{
 			putRow(data.outputRowMeta, addSequence(getInputRowMeta(), r)); 			
 			
-            if (log.isRowLevel()) log.logRowlevel(toString(), Messages.getString("AddSequence.Log.WriteRow")+linesWritten+" : "+r); //$NON-NLS-1$ //$NON-NLS-2$
+            if (log.isRowLevel()) log.logRowlevel(toString(), Messages.getString("AddSequence.Log.WriteRow")+linesWritten+" : "+getInputRowMeta().getString(r)); //$NON-NLS-1$ //$NON-NLS-2$
 			if (checkFeedback(linesRead)) logBasic(Messages.getString("AddSequence.Log.LineNumber")+linesRead); //$NON-NLS-1$
 		}
 		catch(KettleException e)
