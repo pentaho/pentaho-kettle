@@ -26,10 +26,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
@@ -57,6 +54,7 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
@@ -474,8 +472,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
             List<File> current_file_POP = new ArrayList<File>();
             List<String> current_filepath_POP = new ArrayList<String>();
             int nb_email_POP = 1;
-            DateFormat dateFormat = new SimpleDateFormat("hhmmss_MMddyyyy"); //$NON-NLS-1$
-
+            
             String startpattern = "name"; //$NON-NLS-1$
             if (!Const.isEmpty(getRealFilenamePattern()))
             {
@@ -502,7 +499,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
                 log.logDetailed(toString(), Messages.getString("JobGetMailsFromPOP.EmailSubject.Label", msg_list[i].getSubject())); //$NON-NLS-1$
 
                 String localfilename_message = startpattern
-                    + "_" + dateFormat.format(new Date()) + "_" + (i + 1) + ".mail"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                    + "_" + StringUtil.getFormattedDateTimeNow(true) + "_" + (i + 1) + ".mail"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
                 log.logDetailed(toString(), Messages.getString("JobGetMailsFromPOP.LocalFilename.Label", localfilename_message)); //$NON-NLS-1$
 

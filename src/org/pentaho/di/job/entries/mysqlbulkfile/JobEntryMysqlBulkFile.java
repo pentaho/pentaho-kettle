@@ -19,9 +19,6 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 import org.pentaho.di.cluster.SlaveServer;
@@ -35,6 +32,7 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
@@ -322,19 +320,18 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
 
 					//Format Date
 
-					DateFormat dateFormat = new SimpleDateFormat("hhmmss_MMddyyyy");
 					// Try to clean filename (without wildcard)
 					String wildcard = realFilename.substring(realFilename.length()-4,realFilename.length());
 					if(wildcard.substring(0,1).equals("."))
 					{
 						// Find wildcard
 						realFilename=realFilename.substring(0,realFilename.length()-4) +
-							"_" + dateFormat.format(new Date()) + wildcard;
+							"_" + StringUtil.getFormattedDateTimeNow(true) + wildcard;
 					}
 					else
 					{
 						// did not find wilcard
-						realFilename=realFilename + "_" + dateFormat.format(new Date());
+						realFilename=realFilename + "_" + StringUtil.getFormattedDateTimeNow(true);
 					}
 
 					log.logDebug(toString(), Messages.getString("JobMysqlBulkFile.FileNameChange1.Label") + realFilename +

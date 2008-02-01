@@ -18,9 +18,6 @@ import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.fileExis
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlankValidator;
 
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 import javax.xml.transform.Source;
@@ -41,6 +38,7 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
@@ -261,19 +259,18 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 								// the output file exists and user want to create new one with unique name
 								//Format Date
 
-								DateFormat dateFormat = new SimpleDateFormat("hhmmss_MMddyyyy");
 								// Try to clean filename (without wildcard)
 								String wildcard = realoutputfilename.substring(realoutputfilename.length()-4,realoutputfilename.length());
 								if(wildcard.substring(0,1).equals("."))
 								{
 									// Find wildcard
 									realoutputfilename=realoutputfilename.substring(0,realoutputfilename.length()-4) +
-										"_" + dateFormat.format(new Date()) + wildcard;
+										"_" + StringUtil.getFormattedDateTimeNow(true) + wildcard;
 								}
 								else
 								{
 									// did not find wilcard
-									realoutputfilename=realoutputfilename + "_" + dateFormat.format(new Date());
+									realoutputfilename=realoutputfilename + "_" + StringUtil.getFormattedDateTimeNow(true);
 								}
 							    log.logDebug(toString(),  Messages.getString("JobEntryXSLT.OuputFileExists1.Label") +
 										realoutputfilename +  Messages.getString("JobEntryXSLT.OuputFileExists2.Label"));
