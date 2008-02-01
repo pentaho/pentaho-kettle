@@ -804,36 +804,42 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		esd.setShellImage(GUIResource.getInstance().getImageVariable());
 		if (esd.open() != null)
 		{
-			// We want to insert the variables into all loaded jobs and transformations
-			//
-			for (int i=0;i<variables.size();i++)
+			applyVariables();
+		}
+	}
+	
+	public void applyVariables()
+	{
+		for (int i=0;i<variables.size();i++)
+		{
+			try 
 			{
-				try 
-				{
-					String name = variables.getValueMeta(i).getName();
-					String value = variables.getString(i, "");
+				String name = variables.getValueMeta(i).getName();
+				String value = variables.getString(i, "");
 
-					for (TransMeta transMeta : getLoadedTransformations())
-					{
-						transMeta.setVariable(name, Const.NVL(value, ""));
-					}
-					for (JobMeta jobMeta : getLoadedJobs())
-					{
-						jobMeta.setVariable(name, Const.NVL(value, ""));
-					}
-					
-					// Not only that, we also want to set the variables in the execution configurations...
-					//
-					transExecutionConfiguration.getVariables().put(name, value);
-					jobExecutionConfiguration.getVariables().put(name, value);
-					transDebugExecutionConfiguration.getVariables().put(name, value);
-				} 
-				catch (KettleValueException e) {
-					// Just eat the exception.  getString() should never give an exception.
+				// We want to insert the variables into all loaded jobs and transformations
+				//
+				for (TransMeta transMeta : getLoadedTransformations())
+				{
+					transMeta.setVariable(name, Const.NVL(value, ""));
 				}
+				for (JobMeta jobMeta : getLoadedJobs())
+				{
+					jobMeta.setVariable(name, Const.NVL(value, ""));
+				}
+				
+				// Not only that, we also want to set the variables in the execution configurations...
+				//
+				transExecutionConfiguration.getVariables().put(name, value);
+				jobExecutionConfiguration.getVariables().put(name, value);
+				transDebugExecutionConfiguration.getVariables().put(name, value);
+			} 
+			catch (KettleValueException e) {
+				// Just eat the exception.  getString() should never give an exception.
 			}
 		}
 	}
+
 
 	public void showVariables()
 	{
@@ -3095,6 +3101,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 				mb.setText(Messages.getString("Spoon.UnknownFileType.Title"));
 				mb.open();
 			}
+			else
+			{
+				applyVariables(); // set variables in the newly loaded transformation(s) and job(s).
+			}
         }
         catch(KettleException e)
 		{
@@ -3154,6 +3164,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			transMeta.setName(STRING_TRANSFORMATION + " " + nr); // rename
 		}
 		addTransGraph(transMeta);
+		applyVariables();
 		refreshTree();
 	}
 
@@ -3188,7 +3199,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			}
 
 			delegates.jobs.addJobGraph(jobMeta);
-			
+			applyVariables();
 			refreshTree();
         }
         catch(Exception e)

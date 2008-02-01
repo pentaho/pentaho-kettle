@@ -1631,6 +1631,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 			}
 
 		}
+		spoon.applyVariables();
 	}
 
 	public static void copyInternalJobVariables(JobMeta sourceJobMeta, TransMeta targetTransMeta) {
@@ -1692,6 +1693,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
                 new ErrorDialog(shell, Messages.getString("JobGraph.Dialog.ErrorLaunchingChefCanNotLoadJobFromXML.Title"), Messages.getString("JobGraph.Dialog.ErrorLaunchingChefCanNotLoadJobFromXML.Message"), e);
 			}
 		}
+		spoon.applyVariables();
 	}
 
 	public void paintControl(PaintEvent e) 
