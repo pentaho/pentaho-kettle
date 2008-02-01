@@ -55,9 +55,9 @@ public class JobConfiguration
     public JobConfiguration(Node configNode) throws KettleException
     {
         Node jobNode = XMLHandler.getSubNode(configNode, JobMeta.XML_TAG);
-        jobMeta = new JobMeta(LogWriter.getInstance(), jobNode, null, null);
         Node trecNode = XMLHandler.getSubNode(configNode, JobExecutionConfiguration.XML_TAG);
         jobExecutionConfiguration = new JobExecutionConfiguration(trecNode);
+        jobMeta = new JobMeta(LogWriter.getInstance(), jobNode, jobExecutionConfiguration.getRepository(), null);
     }
     
     public static final JobConfiguration fromXML(String xml) throws KettleException
