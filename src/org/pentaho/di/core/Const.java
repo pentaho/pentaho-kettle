@@ -306,6 +306,14 @@ public class Const
 	private static String numberFormats[];
 
 	/**
+	 * Generalized date/time format:
+	 * Wherever dates are used, date and time values are organized from the most to the least significant.
+	 * see also method StringUtil.getFormattedDateTime()
+	 */
+	public static final String GENERALIZED_DATE_TIME_FORMAT = "yyyyddMM_HHmmss";
+	public static final String GENERALIZED_DATE_TIME_FORMAT_MILLIS = "yyyyddMM_HHmmssSSS";
+
+	/**
 	 * Default we store our information in Unicode UTF-8 character set.
 	 */
 	public static final String XML_ENCODING = "UTF-8";

@@ -703,7 +703,7 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 		
 		if (dateInFilename)
 		{
-			daf.applyPattern("yyyMMdd");
+			daf.applyPattern("yyyyMMdd");
 			String d = daf.format(now);
 			retval+="_"+d;
 		}

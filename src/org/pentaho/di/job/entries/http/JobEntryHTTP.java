@@ -413,7 +413,7 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
           SimpleDateFormat daf = new SimpleDateFormat();
           Date now = new Date();
 
-          daf.applyPattern("yyyMMdd");
+          daf.applyPattern("yyyyMMdd");
           realTargetFile += "_" + daf.format(now);
           daf.applyPattern("HHmmss");
           realTargetFile += "_" + daf.format(now);

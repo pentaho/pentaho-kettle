@@ -18,12 +18,10 @@ import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.andValid
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.fileDoesNotExistValidator;
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlankValidator;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStreamWriter;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.regex.Matcher;

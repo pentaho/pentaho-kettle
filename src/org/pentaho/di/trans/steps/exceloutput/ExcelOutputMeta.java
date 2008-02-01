@@ -591,7 +591,7 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 		
 		if (dateInFilename)
 		{
-			daf.applyPattern("yyyMMdd");
+			daf.applyPattern("yyyyMMdd");
 			String d = daf.format(now);
 			retval+="_"+d;
 		}
