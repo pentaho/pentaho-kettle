@@ -26,6 +26,7 @@ import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobConfiguration;
+import org.pentaho.di.job.JobExecutionConfiguration;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.StepLoader;
@@ -93,7 +94,9 @@ public class AddJobServlet extends HttpServlet
             //
             JobConfiguration jobConfiguration = JobConfiguration.fromXML(xml.toString());
             JobMeta jobMeta = jobConfiguration.getJobMeta();
-            jobMeta.injectVariables(jobConfiguration.getJobExecutionConfiguration().getVariables());
+            JobExecutionConfiguration jobExecutionConfiguration = jobConfiguration.getJobExecutionConfiguration();
+            log.setLogLevel(jobExecutionConfiguration.getLogLevel());
+            jobMeta.injectVariables(jobExecutionConfiguration.getVariables());
             
             // If there was a repository, we know about it at this point in time.
             //
