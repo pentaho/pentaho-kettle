@@ -244,7 +244,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 	{
 		try
 		{
-			spoon.getLog().logBasic(spoon.toString(), "edit job graph entry: " + je.getName()); //$NON-NLS-1$
+			spoon.getLog().logBasic(spoon.toString(), Messages.getString("Spoon.Log.EditJobEntry", je.getName())); //$NON-NLS-1$
 
 			JobEntryCopy before = (JobEntryCopy) je.clone_deep();
 

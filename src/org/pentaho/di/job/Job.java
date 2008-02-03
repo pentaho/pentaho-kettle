@@ -247,7 +247,7 @@ public class Job extends Thread implements VariableSpace
         JobEntryCopy startpoint;
         beginProcessing();
         startpoint = jobMeta.findJobEntry(JobMeta.STRING_SPECIAL_START, 0, false);
-        if (startpoint == null) { throw new KettleJobException("Couldn't find starting point in this job."); }
+        if (startpoint == null) { throw new KettleJobException(Messages.getString("Job.Log.CounldNotFindStartingPoint")); }
         JobEntrySpecial jes = (JobEntrySpecial) startpoint.getEntry();
         Result res = null;
         boolean isFirst = true;
@@ -285,7 +285,7 @@ public class Job extends Thread implements VariableSpace
         startpoint = jobMeta.findJobEntry(JobMeta.STRING_SPECIAL_START, 0, false);
         if (startpoint == null) 
         {
-            throw new KettleJobException("Couldn't find starting point in this job.");
+            throw new KettleJobException(Messages.getString("Job.Log.CounldNotFindStartingPoint"));
         }
 
 		Result res =  execute(nr, result, startpoint, null, Messages.getString("Job.Reason.StartOfJobentry"));
@@ -373,7 +373,7 @@ public class Job extends Thread implements VariableSpace
 			if (  hi.isUnconditional() || ( startpoint.evaluates() && ( ! ( hi.getEvaluation() ^ result.getResult() ) ) ) ) 
 			{				
 				// Start this next step!
-				log.logBasic(jobMeta.toString(), "Starting entry ["+nextEntry.getName()+"]");
+				log.logBasic(jobMeta.toString(), Messages.getString("Job.Log.StartingEntry",nextEntry.getName()));
                 
                 // Pass along the previous result, perhaps the next job can use it...
                 // However, set the number of errors back to 0 (if it should be reset)
@@ -391,10 +391,10 @@ public class Job extends Thread implements VariableSpace
                 catch(Throwable e)
                 {
                     log.logError(toString(), Const.getStackTracker(e));
-                    throw new KettleException("Unexpected error occurred while launching entry ["+nextEntry.toString()+"]", e);
+                    throw new KettleException(Messages.getString("Job.Log.UnexpectedError",nextEntry.toString()), e);
                 }
 				
-				log.logBasic(jobMeta.toString(), "Finished jobentry ["+nextEntry.getName()+"] (result="+res.getResult()+")");
+				log.logBasic(jobMeta.toString(), Messages.getString("Job.Log.FinishedJobEntry",nextEntry.getName(),res.getResult()+""));
 			}
 		}
 		
@@ -490,7 +490,7 @@ public class Job extends Thread implements VariableSpace
                     }
                     catch (KettleValueException e)
                     {
-                        throw new KettleJobException("Conversion error after getting last logdate from "+jobMeta.getLogTable(), e);
+                        throw new KettleJobException(Messages.getString("Job.Log.ConversionError",""+jobMeta.getLogTable()), e);
                     }
 					if (last!=null)
 					{
@@ -522,7 +522,7 @@ public class Job extends Thread implements VariableSpace
 			catch(KettleDatabaseException dbe)
 			{
 				addErrors(1);  // This is even before actual execution 
-				throw new KettleJobException("Unable to begin processing by logging start in logtable "+jobMeta.getLogTable(), dbe);
+				throw new KettleJobException(Messages.getString("Job.Log.UnableToProcessLoggingStart",""+jobMeta.getLogTable()), dbe);
 			}
 			finally
 			{
@@ -937,9 +937,9 @@ public class Job extends Thread implements VariableSpace
 		SlaveServer slaveServer = executionConfiguration.getRemoteServer();
 
 		if (slaveServer == null)
-			throw new KettleException("No slave server specified");
+			throw new KettleException(Messages.getString("Job.Log.NoSlaveServerSpecified"));
 		if (Const.isEmpty(jobMeta.getName()))
-			throw new KettleException("The job needs a name to uniquely identify it by on the remote server.");
+			throw new KettleException(Messages.getString("Job.Log.UniqueJobName"));
 
 		try
 		{
