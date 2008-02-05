@@ -256,6 +256,8 @@ public class EnterOptionsDialog extends Dialog
 
 	private Button tooltipBtn;
 
+	private Button helptipBtn;
+
 	/**
 	 * @deprecated Use CT without <i>props</i> parameter instead
 	 */
@@ -1402,7 +1404,7 @@ public class EnterOptionsDialog extends Dialog
 		props.setLook(tooltipLbl);
 		FormData fdlToolTipData = new FormData();
 		fdlToolTipData.left = new FormAttachment(0, 0);
-		fdlToolTipData.top = new FormAttachment(wClearCustom, margin);
+		fdlToolTipData.top = new FormAttachment(wlClearCustom, margin);
 		fdlToolTipData.right = new FormAttachment(middle, -margin);
 		tooltipLbl.setLayoutData(fdlToolTipData);
 		tooltipBtn = new Button(wGeneralComp, SWT.CHECK);
@@ -1410,9 +1412,27 @@ public class EnterOptionsDialog extends Dialog
 		tooltipBtn.setSelection(props.showToolTips());
 		FormData toolTipBtnData = new FormData();
 		toolTipBtnData.left = new FormAttachment(middle, 0);
-		toolTipBtnData.top = new FormAttachment(wClearCustom, margin);
+		toolTipBtnData.top = new FormAttachment(wlClearCustom, margin);
 		toolTipBtnData.right = new FormAttachment(100, 0);
 		tooltipBtn.setLayoutData(toolTipBtnData);
+
+		// Help tool tips
+		Label helptipLbl = new Label(wGeneralComp, SWT.RIGHT);
+		helptipLbl.setText(Messages.getString("EnterOptionsDialog.HelpToolTipsEnabled.Label"));
+		props.setLook(helptipLbl);
+		FormData fdlHelpTipData = new FormData();
+		fdlHelpTipData.left = new FormAttachment(0, 0);
+		fdlHelpTipData.top = new FormAttachment(tooltipLbl, margin);
+		fdlHelpTipData.right = new FormAttachment(middle, -margin);
+		helptipLbl.setLayoutData(fdlHelpTipData);
+		helptipBtn = new Button(wGeneralComp, SWT.CHECK);
+		props.setLook(helptipBtn);
+		helptipBtn.setSelection(props.isShowingHelpToolTips());
+		FormData helpTipBtnData = new FormData();
+		helpTipBtnData.left = new FormAttachment(middle, 0);
+		helpTipBtnData.top = new FormAttachment(tooltipLbl, margin);
+		helpTipBtnData.right = new FormAttachment(100, 0);
+		helptipBtn.setLayoutData(helpTipBtnData);
 
 		fdGeneralComp = new FormData();
 		fdGeneralComp.left = new FormAttachment(0, 0);
@@ -1436,7 +1456,7 @@ public class EnterOptionsDialog extends Dialog
 		// editables
 		Label refLabel = new Label(wGeneralComp, SWT.RIGHT);
 		refLabel = tooltipLbl;
-		Button lastbtn = tooltipBtn;
+		Button lastbtn = helptipBtn;
 		for (final GUIOption<Object> e : PropsUI.getInstance().getRegisteredEditableComponents())
 		{
 
@@ -1456,6 +1476,7 @@ public class EnterOptionsDialog extends Dialog
 				final Button btn = new Button(wGeneralComp, SWT.CHECK);
 				props.setLook(btn);
 				btn.setSelection(new Boolean(e.getLastValue().toString()).booleanValue());
+				btn.setText(e.getLabelText());
 				FormData btnData = new FormData();
 				btnData.left = new FormAttachment(middle, 0);
 				btnData.top = new FormAttachment(lastbtn, margin);
@@ -1613,6 +1634,7 @@ public class EnterOptionsDialog extends Dialog
 		props.setOSLookShown(wOriginalLook.getSelection());
 		props.setBrandingActive(wBranding.getSelection());
 		props.setShowToolTips(tooltipBtn.getSelection());
+		props.setShowingHelpToolTips(helptipBtn.getSelection());
 
 		int defaultLocaleIndex = wDefaultLocale.getSelectionIndex();
 		if (defaultLocaleIndex < 0 || defaultLocaleIndex >= GlobalMessages.localeCodes.length)

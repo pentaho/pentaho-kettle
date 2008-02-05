@@ -90,6 +90,8 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.StepFieldsDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.XulHelper;
+import org.pentaho.di.ui.core.widget.CheckBoxToolTip;
+import org.pentaho.di.ui.core.widget.CheckBoxToolTipListener;
 import org.pentaho.di.ui.spoon.AreaOwner;
 import org.pentaho.di.ui.spoon.Messages;
 import org.pentaho.di.ui.spoon.Spoon;
@@ -126,7 +128,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     
     private DefaultToolTip   toolTip;
     
-    // private Props            props;
+    private CheckBoxToolTip  helpTip;
 
     private int              iconsize;
 
@@ -239,11 +241,18 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         
 
         toolTip = new DefaultToolTip(canvas, ToolTip.NO_RECREATE, true);
-        // toolTip.setHideOnMouseDown(true);
         toolTip.setRespectMonitorBounds(true);
         toolTip.setRespectDisplayBounds(true);
         toolTip.setPopupDelay(350);
         toolTip.setShift(new org.eclipse.swt.graphics.Point(ConstUI.TOOLTIP_OFFSET,ConstUI.TOOLTIP_OFFSET));
+        
+        helpTip = new CheckBoxToolTip(canvas);
+        helpTip.addCheckBoxToolTipListener(new CheckBoxToolTipListener() {
+		
+			public void checkBoxSelected(boolean enabled) {
+				spoon.props.setShowingHelpToolTips(enabled);
+			}
+		});
         
         iconsize = spoon.props.getIconSize();
 
@@ -359,7 +368,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
                 lastclick = new Point(real.x, real.y);
 
                 // Hide the tooltip!
-                toolTip.hide();
+                hideToolTips();
 
                 // Set the pop-up menu
                 if (e.button==3)
@@ -618,7 +627,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
                 if (noteoffset == null) noteoffset = new Point(0, 0);
                 Point note = new Point(real.x - noteoffset.x, real.y - noteoffset.y);
 
-                if (last_button==0) setToolTip(real.x, real.y);
+                if (last_button==0 && !helpTip.isVisible()) setToolTip(real.x, real.y);
                 
                 // 
                 // First see if the icon we clicked on was selected.
@@ -928,6 +937,13 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     
                         canvas.forceFocus();
                         redraw();
+                        
+                        // See if we want to draw a tool tip explaining how to create new hops...
+                        //
+                        if (newstep && transMeta.nrSteps() > 1 && transMeta.nrSteps()<5  && spoon.props.isShowingHelpToolTips() ) 
+                        {
+                        	showHelpTip(p.x, p.y, Messages.getString("TransGraph.HelpToolTip.CreatingHops.Title"), Messages.getString("TransGraph.HelpToolTip.CreatingHops.Message"));
+                        }
                     }
                     catch(Exception e)
                     {
@@ -950,7 +966,25 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         setBackground(GUIResource.getInstance().getColorBackground());
     }
     
-    /**
+    protected void hideToolTips() {
+    	// toolTip.hide();
+    	// helpTip.hide();
+	}
+
+	private void showHelpTip(int x, int y, String tipTitle, String tipMessage) {
+
+    	helpTip.setTitle(tipTitle);
+    	helpTip.setMessage(tipMessage);
+    	helpTip.setCheckBoxMessage(Messages.getString("TransGraph.HelpToolTip.DoNotShowAnyMoreCheckBox.Message"));
+    	
+    	// helpTip.hide();
+    	// int iconSize = spoon.props.getIconSize();
+    	org.eclipse.swt.graphics.Point location = new org.eclipse.swt.graphics.Point(x-5, y-5);
+    	
+    	helpTip.show(location);   
+	}
+
+	/**
      * Select all the steps in a certain (screen) rectangle
      *
      * @param rect The selection area as a rectangle
@@ -1064,7 +1098,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
                     Point real = screen2real(lastMove.x, lastMove.y);
 
                     // Hide the tooltip!
-                    toolTip.hide();
+                    hideToolTips();
 
                     // Set the pop-up menu
                     StepMeta stepMeta = transMeta.getStep(real.x, real.y, iconsize);

@@ -75,6 +75,7 @@ public class PropsUI extends Props
     
     private static final String SHOW_TOOL_TIPS = "ShowToolTips";
     
+    private static final String SHOW_HELP_TOOL_TIPS = "ShowHelpToolTips";
     
     private static List<GUIOption<Object>> editables;
 
@@ -1110,4 +1111,14 @@ public class PropsUI extends Props
     {
     	return editables;
     }
+
+	public boolean isShowingHelpToolTips() 
+	{
+		return YES.equalsIgnoreCase(properties.getProperty(SHOW_HELP_TOOL_TIPS,YES));
+	}
+	
+	public void setShowingHelpToolTips(boolean show) 
+	{
+		properties.setProperty(SHOW_HELP_TOOL_TIPS, show?YES:NO);
+	}
 }
