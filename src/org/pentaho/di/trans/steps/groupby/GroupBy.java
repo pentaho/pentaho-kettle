@@ -508,7 +508,8 @@ public class GroupBy extends BaseStep implements StepInterface
 				case GroupByMeta.TYPE_GROUP_LAST_INCL_NULL  :					
 				case GroupByMeta.TYPE_GROUP_MIN             : 
 				case GroupByMeta.TYPE_GROUP_MAX             : 
-					vMeta = new ValueMeta(meta.getAggregateField()[i], subjMeta.getType());
+					vMeta = subjMeta.clone();
+					vMeta.setName(meta.getAggregateField()[i]);
 					v = r==null ? null : r[data.subjectnrs[i]]; 
 					break;
                 case GroupByMeta.TYPE_GROUP_CONCAT_COMMA    :
