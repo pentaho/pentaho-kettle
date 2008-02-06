@@ -21,6 +21,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.vfs.AllFileSelector;
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSelectInfo;
+import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.FileType;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.LogWriter;
@@ -119,15 +120,27 @@ public class FileInputList
                                     
                                     public boolean includeFile(FileSelectInfo info)
                                     {
-                                        String name = info.getFile().getName().getBaseName();
-                                        boolean matches = Pattern.matches(onemask, name);
-                                        /*
-                                        if (matches)
-                                        {
-                                            System.out.println("File match: URI: "+info.getFile()+", name="+name+", depth="+info.getDepth());
-                                        }
-                                        */
-                                        return matches;
+                                    	FileObject fileObject = info.getFile();
+                                    	try {
+                                    	    if ( fileObject != null && fileObject.getType() == FileType.FILE )
+                                    	    {
+                                                String name = fileObject.getName().getBaseName();
+                                                boolean matches = Pattern.matches(onemask, name);
+                                                /*
+                                                if (matches)
+                                                {
+                                                    System.out.println("File match: URI: "+info.getFile()+", name="+name+", depth="+info.getDepth());
+                                                }
+                                                */
+                                                return matches;
+                                    	    }
+                                    	    return false;
+                                    	}
+                                    	catch ( FileSystemException ex )
+                                    	{
+                                    		// Upon error don't process the file.
+                                    		return false;
+                                    	}
                                     }
                                 }
                             );
