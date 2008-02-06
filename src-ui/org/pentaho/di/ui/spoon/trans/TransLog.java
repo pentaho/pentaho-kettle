@@ -379,7 +379,12 @@ public class TransLog extends Composite implements TabItemInterface
 
         tim.schedule(timtask, 0L, REFRESH_TIME); // schedule to repeat a couple of times per second to get fast feedback 
 
-
+        addDisposeListener(new DisposeListener() {
+			public void widgetDisposed(DisposeEvent disposeEvent) {
+				tim.cancel();
+			}
+		});
+        
 		lsStart = new SelectionAdapter()
 		{
 			public void widgetSelected(SelectionEvent e)

@@ -327,6 +327,12 @@ public class JobLog extends Composite implements TabItemInterface
 			};
 		tim.schedule( timtask, 10L, 10L);// refresh every 2 seconds... 
 		
+        addDisposeListener(new DisposeListener() {
+			public void widgetDisposed(DisposeEvent disposeEvent) {
+				tim.cancel();
+			}
+		});
+        
 		lsStart = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { startJob(); } };
         lsStop = new SelectionAdapter()  { public void widgetSelected(SelectionEvent e) { stopJob(); } };
 		lsError = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { showErrors(); } };
