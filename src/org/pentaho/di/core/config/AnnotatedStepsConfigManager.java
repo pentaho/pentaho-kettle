@@ -19,6 +19,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.annotations.Inject;
 import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.exception.KettleConfigException;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.util.ResolverUtil;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.StepPluginMeta;
@@ -42,6 +43,9 @@ public class AnnotatedStepsConfigManager<T extends StepPluginMeta> extends Basic
 	@SuppressWarnings("unchecked") //this is ok here because we defined T above.
 	public Collection<T> load() throws KettleConfigException
 	{
+		// saving old value for change the loglevel to BASIC to avoid i18n messages, see below
+		int oldLogLevel=LogWriter.getInstance().getLogLevel(); 
+		
 		ResolverUtil<StepPluginMeta> resolver = new ResolverUtil<StepPluginMeta>();
 		
 		// If there is a system wide property set with name KETTLE_PLUGIN_PACKAGES we search those packages as well
@@ -73,14 +77,19 @@ public class AnnotatedStepsConfigManager<T extends StepPluginMeta> extends Basic
 			
 			// Determine the i18n description of the step description (name)
 			//
+			
+			LogWriter.getInstance().setLogLevel(LogWriter.LOG_LEVEL_BASIC); // avoid i18n messsages for missing locale
 			String description = BaseMessages.getString(packageName, step.description());
 			if (description.startsWith("!") && description.endsWith("!")) description=Messages.getString(step.description());
+			LogWriter.getInstance().setLogLevel(oldLogLevel); // restore loglevel, when the last alternative fails, log it when loglevel is detailed
 			if (description.startsWith("!") && description.endsWith("!")) description=BaseMessages.getString(altPackageName, step.description());
 			
 			// Determine the i18n tool tip text for the step (the extended description)
 			//
+			LogWriter.getInstance().setLogLevel(LogWriter.LOG_LEVEL_BASIC); // avoid i18n messsages for missing locale
 			String tooltip = BaseMessages.getString(packageName, step.tooltip());
 			if (tooltip.startsWith("!") && tooltip.endsWith("!")) tooltip=Messages.getString(step.tooltip());
+			LogWriter.getInstance().setLogLevel(oldLogLevel); // restore loglevel, when the last alternative fails, log it when loglevel is detailed
 			if (tooltip.startsWith("!") && tooltip.endsWith("!")) tooltip=BaseMessages.getString(altPackageName, step.tooltip());
 			
 			// If the step should have a separate category, this is the place to calculate that
@@ -91,8 +100,10 @@ public class AnnotatedStepsConfigManager<T extends StepPluginMeta> extends Basic
 				category = StepCategory.STANDARD_CATEGORIES[step.category()].getName();
 			}
 			else {
+				LogWriter.getInstance().setLogLevel(LogWriter.LOG_LEVEL_BASIC); // avoid i18n messsages for missing locale
 				category = BaseMessages.getString(packageName, step.categoryDescription());
 				if (category.startsWith("!") && category.endsWith("!")) category=Messages.getString(step.categoryDescription());
+				LogWriter.getInstance().setLogLevel(oldLogLevel); // restore loglevel, when the last alternative fails, log it when loglevel is detailed
 				if (category.startsWith("!") && category.endsWith("!")) category=BaseMessages.getString(altPackageName, step.categoryDescription());
 			}
 			
