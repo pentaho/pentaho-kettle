@@ -157,7 +157,7 @@ public class LDAPInput extends BaseStep implements StepInterface
 	                	//Let's try to get all values of this attribute
 	                	
 	                	StringBuilder attrStr = new StringBuilder();
-						for (NamingEnumeration eattr = attr.getAll() ; eattr.hasMore();) 
+						for (NamingEnumeration<?> eattr = attr.getAll() ; eattr.hasMore();) 
 						{
 							if (attrStr.length() > 0) {
 								attrStr.append(data.multi_valuedFieldSeparator);
