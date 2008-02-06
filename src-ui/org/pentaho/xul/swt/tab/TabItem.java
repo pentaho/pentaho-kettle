@@ -18,6 +18,7 @@ import java.util.List;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
 public class TabItem {
@@ -83,6 +84,9 @@ public class TabItem {
 	
 	public void dispose() {
 		if( !isDisposed() ) {
+			if (control instanceof Composite) {
+				((Composite)control).dispose();
+			}
 			item.dispose();
 			tabset.remove( this );
 		}
