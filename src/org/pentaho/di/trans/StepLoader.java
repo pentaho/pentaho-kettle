@@ -402,7 +402,7 @@ public class StepLoader
 		        }
 		        else
 		        {
-		            log.logDetailed(Messages.getString("StepLoader.Log.StepLoader.Title"), "Plugin directory not found: ["+pluginDirectory[dirNr]+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		            log.logDebug(Messages.getString("StepLoader.Log.StepLoader.Title"), "Plugin directory not found, ignoring this: ["+pluginDirectory[dirNr]+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		        }
             }
             catch(Exception e)
