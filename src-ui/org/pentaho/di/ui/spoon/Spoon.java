@@ -326,7 +326,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	private Composite tabComp;
 
 	private ExpandBar mainExpandBar;
-	private ExpandBar expandBar;
+	private ExpandBar coreObjectsExpandBar;
 
 	private TransExecutionConfiguration transExecutionConfiguration;
 	private TransExecutionConfiguration transPreviewExecutionConfiguration;
@@ -367,7 +367,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
       Thread.currentThread ().setContextClassLoader(ClassLoader.getSystemClassLoader());
     }
     
-		// Do some initialisation of environment variables
+		// Do some initialization of environment variables
 		EnvUtil.environmentInit();
 				
 		List<String> args = new ArrayList<String>(java.util.Arrays.asList(a));
@@ -1297,31 +1297,28 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		fillLayout.marginWidth = Const.MARGIN;
 		composite.setLayout(fillLayout);
 
-		mainExpandBar = new ExpandBar(composite, SWT.V_SCROLL);
-		//mainExpandBar.setBackgroundMode(SWT.INHERIT_NONE);
-		// mainExpandBar.setBackground(display.getSystemColor(SWT.COLOR_GRAY));
-		// mainExpandBar.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
+		mainExpandBar = new ExpandBar(composite, SWT.NONE);
 		props.setLook(mainExpandBar);
 		mainExpandBar.setSpacing(0);
 
-		mainExpandBar.addExpandListener(new ExpandAdapter()
-		{
-			public void itemExpanded(ExpandEvent event)
-			{
+		mainExpandBar.addExpandListener(new ExpandAdapter() {
+			public void itemExpanded(ExpandEvent event) {
 				ExpandItem item = (ExpandItem) event.item;
 				int idx = mainExpandBar.indexOf(item);
-				if (idx >= 0)
-				{
-                        for (int i=0;i<mainExpandBar.getItemCount();i++) if (i!=idx) mainExpandBar.getItem(i).setExpanded(false);
+				if (idx >= 0) {
+					for (int i = 0; i < mainExpandBar.getItemCount(); i++) {
+						if (i != idx) {
+							mainExpandBar.getItem(i).setExpanded(false);
+						}
+					}
 					Control control = item.getControl();
 					control.setFocus();
-                        refreshCoreObjectsHistory(); // only refreshes when visible. 
+					refreshCoreObjectsHistory(); // only refreshes when visible.
 				}
 			}
-            }
-        );
+		});
 
-		////////////////////////////////////////////////////////////////////////////////////////////////////
+		// //////////////////////////////////////////////////////////////////////////////////////////////////
 		//
 		// Now set up the transformation/job tree
 		//
@@ -1385,7 +1382,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		for (int i = 0; i < items.length; i++)
 		{
 			ExpandItem item = items[i];
-			item.setHeight(bounds.height - header - 15);
+			item.setHeight(bounds.height - header - 20);
 		}
 	}
 
@@ -1398,44 +1395,44 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		formLayout.marginBottom = Const.MARGIN;
 		composite.setLayout(formLayout);
 
-		expandBar = new ExpandBar(composite, SWT.V_SCROLL);
-		props.setLook(expandBar);
-		expandBar.setSpacing(0);
+		coreObjectsExpandBar = new ExpandBar(composite, SWT.V_SCROLL);
+		props.setLook(coreObjectsExpandBar);
+		coreObjectsExpandBar.setSpacing(1);
 
 		FormData expandData = new FormData();
 		expandData.left = new FormAttachment(0, 0);
 		expandData.right = new FormAttachment(100, 0);
 		expandData.top = new FormAttachment(0, 0);
 		expandData.bottom = new FormAttachment(100, 0);
-		expandBar.setLayoutData(expandData);
+		coreObjectsExpandBar.setLayoutData(expandData);
 
 		// collapse the other expandbar items if one gets expanded...
-		expandBar.addExpandListener(new ExpandAdapter()
+		coreObjectsExpandBar.addExpandListener(new ExpandAdapter()
 		{
 			public void itemExpanded(ExpandEvent event)
 			{
 				ExpandItem item = (ExpandItem) event.item;
-				int idx = expandBar.indexOf(item);
+				int idx = coreObjectsExpandBar.indexOf(item);
 				if (idx >= 0)
 				{
-                        for (int i=0;i<expandBar.getItemCount();i++) if (i!=idx) expandBar.getItem(i).setExpanded(false);
+                        for (int i=0;i<coreObjectsExpandBar.getItemCount();i++) if (i!=idx) coreObjectsExpandBar.getItem(i).setExpanded(false);
 					ScrolledComposite scrolledComposite = (ScrolledComposite) item.getControl();
 					Composite composite = (Composite) scrolledComposite.getContent();
 					composite.setFocus();
 				}
 			}
 		});
-		expandBar.addListener(SWT.Resize, new Listener()
+		coreObjectsExpandBar.addListener(SWT.Resize, new Listener()
 		{
 			public void handleEvent(Event event)
 			{
-				resizeExpandBar(expandBar);
+				resizeExpandBar(coreObjectsExpandBar);
 			}
 		});
 
 		ExpandItem expandItem = new ExpandItem(mainExpandBar, SWT.NONE);
 		expandItem.setControl(composite);
-		expandItem.setHeight(shell.getBounds().height);
+		expandItem.setHeight(shell.getBounds().height-50);
         setHeaderImage(expandItem, GUIResource.getInstance().getImageLogoSmall(), STRING_SPOON_CORE_OBJECTS_TREE, 0, true);
 
 		refreshCoreObjects();
@@ -1578,7 +1575,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		}
 
 		// First remove all the entries that where present...
-		ExpandItem[] expandItems = expandBar.getItems();
+		ExpandItem[] expandItems = coreObjectsExpandBar.getItems();
 		for (int i = 0; i < expandItems.length; i++)
 		{
 			ExpandItem item = expandItems[i];
@@ -1601,7 +1598,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			String basecat[] = steploader.getCategories(StepPlugin.TYPE_ALL, locale);
 			for (int i = 0; i < basecat.length; i++)
 			{
-                ScrolledComposite scrolledComposite = new ScrolledComposite(expandBar, SWT.V_SCROLL | SWT.H_SCROLL | SWT.BORDER);
+                ScrolledComposite scrolledComposite = new ScrolledComposite(coreObjectsExpandBar, SWT.V_SCROLL | SWT.H_SCROLL | SWT.BORDER);
 				scrolledComposite.setLayout(new FillLayout());
 				scrolledComposite.addKeyListener(defKeys);
 
@@ -1615,7 +1612,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 				composite.setLayout(layout);
 				
 
-				ExpandItem item = new ExpandItem(expandBar, SWT.NONE);
+				ExpandItem item = new ExpandItem(coreObjectsExpandBar, SWT.NONE);
 				
 				
 
@@ -1648,7 +1645,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 		if (showJob)
 		{
-            ScrolledComposite scrolledComposite = new ScrolledComposite(expandBar, SWT.V_SCROLL | SWT.H_SCROLL | SWT.BORDER);
+            ScrolledComposite scrolledComposite = new ScrolledComposite(coreObjectsExpandBar, SWT.V_SCROLL | SWT.H_SCROLL | SWT.BORDER);
 			scrolledComposite.setLayout(new FillLayout());
 
 			Composite composite = new Composite(scrolledComposite, SWT.NONE);
@@ -1659,7 +1656,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			layout.verticalSpacing = Const.MARGIN;
 			composite.setLayout(layout);
 
-			ExpandItem item = new ExpandItem(expandBar, SWT.NONE);
+			ExpandItem item = new ExpandItem(coreObjectsExpandBar, SWT.NONE);
 
 			// ////////////////////////////////////////////////////////////////////////////////////////////////
 			// JOBS
@@ -1701,15 +1698,15 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			composite.pack();
 			org.eclipse.swt.graphics.Rectangle bounds = composite.getBounds();
 
-			scrolledComposite.setMinSize(bounds.width, bounds.height);
+			scrolledComposite.setMinSize(bounds.width, bounds.height+100);
 			scrolledComposite.setContent(composite);
 			scrolledComposite.setExpandHorizontal(true);
 			scrolledComposite.setExpandVertical(true);
 
 			item.setControl(scrolledComposite);
             setHeaderImage(item, GUIResource.getInstance().getImageArrow(), STRING_JOB_ENTRIES, layout.marginLeft, true);
-			item.setHeight(scrolledComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT).y + 10);
-			item.setExpanded(true);
+			item.setHeight(scrolledComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT).y + 80);
+			item.setExpanded(false);
 
 			if (mainExpandBar.getItemCount() > 2)
 			{
@@ -2354,7 +2351,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		sashform.setWeights(weights);
 		sashform.setVisible(true);
 
-		tabfolder.addListener(this);
+		tabfolder.addListener(this);  // methods: tabDeselected, tabClose, tabSelected
 
 	}
 
@@ -3696,6 +3693,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			
 		}
 
+        delegates.tabs.renameTabs(); // filename or name of transformation might have changed.
 		refreshTree();
 
 		return saved;
@@ -4865,6 +4863,59 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		props.setLogLevel(log.getLogLevelDesc());
 		props.setLogFilter(log.getFilter());
 		props.setSashWeights(sashform.getWeights());
+		
+		// Also save the open files...
+		// Go over the list of tabs, then add the info to the list
+		// of open tab files in PropsUI
+		//
+		props.getOpenTabFiles().clear();
+		
+		for (TabMapEntry entry : delegates.tabs.getTabs()) 
+		{
+			String fileType = null;
+			String filename = null;
+			String directory = null;
+			int openType = 0;
+			if (entry.getObjectType()==TabMapEntry.OBJECT_TYPE_TRANSFORMATION_GRAPH) 
+			{
+				fileType = LastUsedFile.FILE_TYPE_TRANSFORMATION;
+				TransMeta transMeta = (TransMeta) entry.getObject().getManagedObject();
+				filename = rep!=null ? transMeta.getName() : transMeta.getFilename();
+				directory = transMeta.getDirectory().toString();
+				openType = LastUsedFile.OPENED_ITEM_TYPE_MASK_GRAPH;
+				if (delegates.tabs.findTabItem(delegates.tabs.makeLogTabName(transMeta), TabMapEntry.OBJECT_TYPE_TRANSFORMATION_LOG)!=null)
+				{
+					openType|=LastUsedFile.OPENED_ITEM_TYPE_MASK_LOG;
+				}
+				if (delegates.tabs.findTabItem(delegates.tabs.makeHistoryTabName(transMeta), TabMapEntry.OBJECT_TYPE_TRANSFORMATION_HISTORY)!=null)
+				{
+					openType|=LastUsedFile.OPENED_ITEM_TYPE_MASK_HISTORY;
+				}
+			}
+			else if (entry.getObjectType()==TabMapEntry.OBJECT_TYPE_JOB_GRAPH) 
+			{
+				fileType = LastUsedFile.FILE_TYPE_JOB;
+				JobMeta jobMeta = (JobMeta) entry.getObject().getManagedObject();
+				filename = rep!=null ? jobMeta.getName() : jobMeta.getFilename();
+				directory = jobMeta.getDirectory().toString();
+				openType = LastUsedFile.OPENED_ITEM_TYPE_MASK_GRAPH;
+				if (delegates.tabs.findTabItem(delegates.tabs.makeJobLogTabName(jobMeta), TabMapEntry.OBJECT_TYPE_JOB_LOG)!=null)
+				{
+					openType|=LastUsedFile.OPENED_ITEM_TYPE_MASK_LOG;
+				}
+				if (delegates.tabs.findTabItem(delegates.tabs.makeJobHistoryTabName(jobMeta), TabMapEntry.OBJECT_TYPE_JOB_HISTORY)!=null)
+				{
+					openType|=LastUsedFile.OPENED_ITEM_TYPE_MASK_HISTORY;
+				}
+			}
+				
+			if (fileType!=null)
+			{
+				props.addOpenTabFile(fileType, filename, directory, rep!=null, rep!=null ? rep.getName() : null, openType);
+			}
+		}
+		
+		
 		props.saveProps();
 	}
 
@@ -5589,13 +5640,11 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 				{
                     log.logDetailed(toString(), Messages.getString("Spoon.Log.TryingOpenLastUsedFile"));//"Trying to open the last file used."
 
-					List<LastUsedFile> lastUsedFiles = props.getLastUsedFiles();
-
-					if (lastUsedFiles.size() > 0)
+					List<LastUsedFile> lastUsedFiles = props.getOpenTabFiles();
+					for (LastUsedFile lastUsedFile : lastUsedFiles)
 					{
-						LastUsedFile lastUsedFile = (LastUsedFile) lastUsedFiles.get(0);
 						RepositoryMeta repInfo = (rep == null) ? null : rep.getRepositoryInfo();
-						loadLastUsedFile(lastUsedFile, repInfo);
+						loadLastUsedFile(lastUsedFile, repInfo, false);
 					}
 				}
 			}
@@ -5740,9 +5789,15 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
     private void loadLastUsedFile(LastUsedFile lastUsedFile, RepositoryMeta repositoryMeta) throws KettleException
 	{
+    	loadLastUsedFile(lastUsedFile, repositoryMeta, true);
+	}
+    
+    private void loadLastUsedFile(LastUsedFile lastUsedFile, RepositoryMeta repositoryMeta, boolean trackIt) throws KettleException
+	{
 		boolean useRepository = repositoryMeta != null;
 
 		// Perhaps we need to connect to the repository?
+		// 
 		if (lastUsedFile.isSourceRepository())
 		{
 			if (!Const.isEmpty(lastUsedFile.getRepositoryName()))
@@ -5769,10 +5824,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 						{
                             log.logDetailed(toString(), Messages.getString("Spoon.Log.AutoLoadingTransformation",lastUsedFile.getFilename(), lastUsedFile.getDirectory()));//"Auto loading transformation ["+lastfiles[0]+"] from repository directory ["+lastdirs[0]+"]"
                             TransLoadProgressDialog tlpd = new TransLoadProgressDialog(shell, rep, lastUsedFile.getFilename(), repdir);
-                            TransMeta transMeta = tlpd.open(); // = new TransInfo(log, win.rep, lastfiles[0], repdir);
+                            TransMeta transMeta = tlpd.open();
 							if (transMeta != null)
 							{
-                                props.addLastFile(LastUsedFile.FILE_TYPE_TRANSFORMATION, lastUsedFile.getFilename(), repdir.getPath(), true, rep.getName());
+                                if (trackIt) props.addLastFile(LastUsedFile.FILE_TYPE_TRANSFORMATION, lastUsedFile.getFilename(), repdir.getPath(), true, rep.getName());
 								transMeta.setFilename(lastUsedFile.getFilename());
 								transMeta.clearChanged();
 								addTransGraph(transMeta);
@@ -5784,7 +5839,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 						{
                             JobLoadProgressDialog progressDialog = new JobLoadProgressDialog(shell, rep, lastUsedFile.getFilename(), repdir);
 							JobMeta jobMeta = progressDialog.open();
-                            props.addLastFile(LastUsedFile.FILE_TYPE_JOB, lastUsedFile.getFilename(), repdir.getPath(), true, rep.getName());
+							if (trackIt) props.addLastFile(LastUsedFile.FILE_TYPE_JOB, lastUsedFile.getFilename(), repdir.getPath(), true, rep.getName());
 							jobMeta.clearChanged();
                             delegates.jobs.addJobGraph(jobMeta);
 						}

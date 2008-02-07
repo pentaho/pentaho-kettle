@@ -60,6 +60,7 @@ public class PropsUI extends Props
 	private static Display display;
 		
 	protected List<LastUsedFile> lastUsedFiles;
+	protected List<LastUsedFile> openTabFiles;
 
   protected String overriddenFileName;
   
@@ -159,6 +160,7 @@ public class PropsUI extends Props
 
 		loadScreens();
         loadLastUsedFiles();
+        loadOpenTabFiles();
         
         //load the editables
         ResolverUtil<GUIOption<Object>> res = new ResolverUtil<GUIOption<Object>>();
@@ -189,6 +191,7 @@ public class PropsUI extends Props
 		RGB col;
 
         lastUsedFiles = new ArrayList<LastUsedFile>();
+        openTabFiles = new ArrayList<LastUsedFile>();
 		screens = new Hashtable<String,WindowProperty>();
 
  		properties.setProperty(STRING_LOG_LEVEL,  getLogLevel());
@@ -307,10 +310,11 @@ public class PropsUI extends Props
 
 	public void saveProps()
 	{
-		super.saveProps();
 		storeScreens();
         setLastFiles();
+        setOpenTabFiles();
 
+        super.saveProps();
 	}
     
 	public void setLastFiles()
@@ -327,7 +331,24 @@ public class PropsUI extends Props
 			properties.setProperty("lastrepo"+(i+1), Const.NVL(lastUsedFile.getRepositoryName(), ""));
 		}
 	}
-	
+
+	public void setOpenTabFiles()
+	{
+		properties.setProperty("tabfiles", ""+openTabFiles.size());
+		for (int i=0;i<openTabFiles.size();i++)
+		{
+            LastUsedFile openTabFile = openTabFiles.get(i);
+            
+            properties.setProperty("tabtype"+(i+1), Const.NVL(openTabFile.getFileType(), LastUsedFile.FILE_TYPE_TRANSFORMATION));
+			properties.setProperty("tabfile"+(i+1), Const.NVL(openTabFile.getFilename(), ""));
+			properties.setProperty("tabdir"+(i+1),  Const.NVL(openTabFile.getDirectory(), ""));
+			properties.setProperty("tabrep"+(i+1), openTabFile.isSourceRepository()?YES:NO);
+			properties.setProperty("tabrepname"+(i+1), Const.NVL(openTabFile.getRepositoryName(), ""));
+			properties.setProperty("tabopened"+(i+1), openTabFile.isOpened()?YES:NO);
+			properties.setProperty("tabopentypes"+(i+1), ""+openTabFile.getOpenItemTypes());
+		}
+	}
+
 	/**
 	 * Add a last opened file to the top of the recently used list.
      * @param fileType the type of file to use @see LastUsedFile
@@ -338,7 +359,7 @@ public class PropsUI extends Props
 	 */
 	public void addLastFile(String fileType, String filename, String directory, boolean sourceRepository, String repositoryName)
 	{
-		LastUsedFile lastUsedFile = new LastUsedFile(fileType, filename, directory, sourceRepository, repositoryName);
+		LastUsedFile lastUsedFile = new LastUsedFile(fileType, filename, directory, sourceRepository, repositoryName, false, LastUsedFile.OPENED_ITEM_TYPE_MASK_GRAPH);
         
         int idx = lastUsedFiles.indexOf(lastUsedFile);
         if (idx>=0)
@@ -355,6 +376,20 @@ public class PropsUI extends Props
         }
 	}
 	
+	/**
+	 * Add a last opened file to the top of the recently used list.
+     * @param fileType the type of file to use @see LastUsedFile
+	 * @param filename The name of the file or transformation
+	 * @param directory The repository directory path, null in case lf is an XML file  
+	 * @param sourceRepository True if the file was loaded from repository, false if ld is an XML file.
+	 * @param repositoryName The name of the repository the file was loaded from or save to.
+	 */
+	public void addOpenTabFile(String fileType, String filename, String directory, boolean sourceRepository, String repositoryName, int openTypes)
+	{
+		LastUsedFile lastUsedFile = new LastUsedFile(fileType, filename, directory, sourceRepository, repositoryName, true, openTypes);
+        openTabFiles.add(lastUsedFile);
+	}
+	
     public void loadLastUsedFiles()
     {
         lastUsedFiles = new ArrayList<LastUsedFile>();
@@ -366,8 +401,28 @@ public class PropsUI extends Props
             String directory = properties.getProperty("lastdir"+(i+1), "");
             boolean sourceRepository = YES.equalsIgnoreCase(properties.getProperty("lasttype"+(i+1), NO));
             String repositoryName = properties.getProperty("lastrepo"+(i+1));
+            boolean isOpened = YES.equalsIgnoreCase(properties.getProperty("lastopened"+(i+1), NO));
+            int openItemTypes = Const.toInt(properties.getProperty("lastopentypes"+(i+1), "0"), 0);
             
-            lastUsedFiles.add(new LastUsedFile(fileType, filename, directory, sourceRepository, repositoryName));
+            lastUsedFiles.add(new LastUsedFile(fileType, filename, directory, sourceRepository, repositoryName, isOpened, openItemTypes));
+        }
+    }
+    
+    public void loadOpenTabFiles()
+    {
+        openTabFiles = new ArrayList<LastUsedFile>();
+        int nr = Const.toInt(properties.getProperty("tabfiles"), 0);
+        for (int i=0;i<nr;i++)
+        {
+            String fileType = properties.getProperty("tabtype"+(i+1), LastUsedFile.FILE_TYPE_TRANSFORMATION); // default: transformation
+            String filename = properties.getProperty("tabfile"+(i+1), "");
+            String directory = properties.getProperty("tabdir"+(i+1), "");
+            boolean sourceRepository = YES.equalsIgnoreCase(properties.getProperty("tabrep"+(i+1), NO));
+            String repositoryName = properties.getProperty("tabrepname"+(i+1));
+            boolean isOpened = YES.equalsIgnoreCase(properties.getProperty("tabopened"+(i+1), NO));
+            int openItemTypes = Const.toInt(properties.getProperty("tabopentypes"+(i+1), "0"), 0);
+            
+            openTabFiles.add(new LastUsedFile(fileType, filename, directory, sourceRepository, repositoryName, isOpened, openItemTypes));
         }
     }
     
@@ -1120,5 +1175,19 @@ public class PropsUI extends Props
 	public void setShowingHelpToolTips(boolean show) 
 	{
 		properties.setProperty(SHOW_HELP_TOOL_TIPS, show?YES:NO);
+	}
+
+	/**
+	 * @return the openTabFiles
+	 */
+	public List<LastUsedFile> getOpenTabFiles() {
+		return openTabFiles;
+	}
+
+	/**
+	 * @param openTabFiles the openTabFiles to set
+	 */
+	public void setOpenTabFiles(List<LastUsedFile> openTabFiles) {
+		this.openTabFiles = openTabFiles;
 	}
 }

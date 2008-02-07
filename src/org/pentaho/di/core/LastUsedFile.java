@@ -21,26 +21,38 @@ public class LastUsedFile
     public static final String FILE_TYPE_JOB            = "Job";
     public static final String FILE_TYPE_SCHEMA         = "Schema";
     
+    public static final int OPENED_ITEM_TYPE_MASK_NONE    = 0;
+    public static final int OPENED_ITEM_TYPE_MASK_GRAPH   = 1;
+    public static final int OPENED_ITEM_TYPE_MASK_LOG     = 2;
+    public static final int OPENED_ITEM_TYPE_MASK_HISTORY = 4;
+    
     private String  fileType;
     private String  filename;
     private String  directory;
     private boolean sourceRepository;
     private String  repositoryName;
-
+    
+    private boolean opened;
+    private int     openItemTypes;
+    
     /**
      * @param fileType The type of file to use (FILE_TYPE_TRANSFORMATION, FILE_TYPE_JOB, ...)
      * @param filename
      * @param directory
      * @param sourceRepository
      * @param repositoryName
+     * @param tabMapEntryType 
+     * @param isOpened 
      */
-    public LastUsedFile(String fileType, String filename, String directory, boolean sourceRepository, String repositoryName)
+    public LastUsedFile(String fileType, String filename, String directory, boolean sourceRepository, String repositoryName, boolean opened, int openItemTypes)
     {
         this.fileType = fileType;
         this.filename = filename;
         this.directory = directory;
         this.sourceRepository = sourceRepository;
         this.repositoryName = repositoryName;
+        this.opened = opened;
+        this.openItemTypes = openItemTypes;
     }
     
     public String toString()
@@ -173,4 +185,35 @@ public class LastUsedFile
     {
         return FILE_TYPE_SCHEMA.equalsIgnoreCase(fileType);
     }
+
+	/**
+	 * @return the opened
+	 */
+	public boolean isOpened() {
+		return opened;
+	}
+
+	/**
+	 * @param opened the opened to set
+	 */
+	public void setOpened(boolean opened) {
+		this.opened = opened;
+	}
+
+	/**
+	 * @return the openItemTypes
+	 */
+	public int getOpenItemTypes() {
+		return openItemTypes;
+	}
+
+	/**
+	 * @param openItemTypes the openItemTypes to set
+	 */
+	public void setOpenItemTypes(int openItemTypes) {
+		this.openItemTypes = openItemTypes;
+	}
+
+
+
 }
