@@ -345,7 +345,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 	        	}
         	}
         	
-    		if (str!=null || str.length==0)
+    		if (str!=null && str.length>0)
     		{
     			List<Integer> enclosures = null;
     			
