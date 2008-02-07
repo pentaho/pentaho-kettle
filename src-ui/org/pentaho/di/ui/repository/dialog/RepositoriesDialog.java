@@ -179,7 +179,7 @@ public class RepositoriesDialog
                     gc.fillRectangle(0, 0, canvasBounds.width, canvasBounds.height);
                     if (canvasBounds.width > bounds.width && canvasBounds.height > bounds.height)
                     {
-                        gc.drawImage(logo, (canvasBounds.width - bounds.width) / 2, (canvasBounds.height - bounds.height) / 2);
+                        gc.drawImage(logo, 0, 0);
                     }
                     else
                     {
@@ -407,7 +407,7 @@ public class RepositoriesDialog
 
         if (!Const.isOSX())
         {
-        	shell.setSize(bounds.width + 20, dialogBounds.height);
+        	shell.setSize(bounds.width + 18, dialogBounds.height+40);
         }
         else
         {
