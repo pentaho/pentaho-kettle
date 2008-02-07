@@ -388,7 +388,6 @@ public class ExcelOutput extends BaseStep implements StepInterface
 	public boolean openNewFile()
 	{
 		boolean retval=false;
-		log.logBasic(toString(), "---------------------------------------Create a new file");
 		
 		try
 		{
@@ -457,7 +456,6 @@ public class ExcelOutput extends BaseStep implements StepInterface
 
 				
             	}else{
-            		log.logBasic(toString(), "---------------------------------------Create a new file");
             		// Create a new Workbook
                 	data.outputStream = file.getContent().getOutputStream();
     				data.workbook = Workbook.createWorkbook(data.outputStream, ws);
