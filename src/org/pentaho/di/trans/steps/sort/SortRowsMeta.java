@@ -63,7 +63,7 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
     /** The free memory limit in percentages in case we don't use the sort size */
     private String  freeMemoryLimit;
 
-    /** The sort size: number of rows sorted and kept in memory */
+    /** only pass unique rows to the output stream(s) */
     private boolean onlyPassingUniqueRows;
 
     /**
