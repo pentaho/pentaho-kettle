@@ -2409,25 +2409,37 @@ public class BaseStep extends Thread implements VariableSpace
 		}
 		catch(Throwable t)
 		{
-			log.logBasic(stepInterface.toString(), Messages.getString("System.Log.UnexpectedError")+" : "); //$NON-NLS-1$ //$NON-NLS-2$
-			log.logBasic(stepInterface.toString(), Const.getStackTracker(t));
+			//check for OOME
+			if(t.toString().startsWith("java.lang.OutOfMemoryError")) { //$NON-NLS-1$
+				// Handle this different with as less overhead as possible to get an error message in the log.
+				// Otherwise it crashes likely with another OOME in Messages.getString() and does not log
+				// nor call the setErrors() and stopAll() below.
+				log.logError(stepInterface.toString(), "UnexpectedError: " + t.toString()); //$NON-NLS-1$
+			} else {
+				log.logError(stepInterface.toString(), Messages.getString("System.Log.UnexpectedError")+" : "); //$NON-NLS-1$ //$NON-NLS-2$
+			}
+			log.logError(stepInterface.toString(), Const.getStackTracker(t));
             stepInterface.setErrors(1);
 			stepInterface.stopAll();
 		}
 		finally
 		{
 			stepInterface.dispose(meta, data);
-
-	        log.logBasic(stepInterface.toString(), 
-	        		Messages.getString("BaseStep.Log.SummaryInfo", //$NON-NLS-1$
-	        		String.valueOf(stepInterface.getLinesInput()), 
-	        		String.valueOf(stepInterface.getLinesOutput()), 
-	        		String.valueOf(stepInterface.getLinesRead()), 
-	        		String.valueOf(stepInterface.getLinesWritten()), 
-	        		String.valueOf(stepInterface.getLinesUpdated()), 
-	        		String.valueOf(stepInterface.getErrors()+stepInterface.getLinesRejected())));
-
-			stepInterface.markStop();
+			try {
+		        log.logBasic(stepInterface.toString(), 
+		        		Messages.getString("BaseStep.Log.SummaryInfo", //$NON-NLS-1$
+		        		String.valueOf(stepInterface.getLinesInput()), 
+		        		String.valueOf(stepInterface.getLinesOutput()), 
+		        		String.valueOf(stepInterface.getLinesRead()), 
+		        		String.valueOf(stepInterface.getLinesWritten()), 
+		        		String.valueOf(stepInterface.getLinesUpdated()), 
+		        		String.valueOf(stepInterface.getErrors()+stepInterface.getLinesRejected())));
+			} catch(Throwable t) {
+				// it's likely an OOME, thus no overhead by Messages.getString(), see above
+				log.logError(stepInterface.toString(), "UnexpectedError: " + t.toString()); //$NON-NLS-1$
+			} finally {
+				stepInterface.markStop();
+			}
 		}
 	} 
   
