@@ -651,7 +651,7 @@ public class TextFileInput extends BaseStep implements StepInterface
                         value = valueMeta.convertDataFromString(pol, convertMeta, nullif, ifnull, trim_type);
                     }
                     catch (Exception e)
-                    {
+                    {                               	
                         // OK, give some feedback!
                         String message = "Couldn't parse field [" + valueMeta.toStringMeta() + "] with value [" + pol + "], format ["+valueMeta.getConversionMask()+"]";
                         
@@ -698,8 +698,11 @@ public class TextFileInput extends BaseStep implements StepInterface
                     value = null;
                 }
 
-                // Now add value to the row!
-                r[fieldnr] = value;
+                // Now add value to the row (if we're not skipping the row)
+                if ( r != null )
+                {
+                    r[fieldnr] = value;
+                }
             }
 
             // Support for trailing nullcols!
