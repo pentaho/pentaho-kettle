@@ -59,7 +59,7 @@ import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.cluster.TransSplitter;
 
-public class BaseStep extends Thread implements VariableSpace
+public class BaseStep extends Thread implements VariableSpace, StepInterface
 {
 	private VariableSpace variables = new Variables();
 	    
@@ -278,7 +278,7 @@ public class BaseStep extends Thread implements VariableSpace
     /** A list of server sockets that need to be closed during transformation cleanup. */
     private List<ServerSocket> serverSockets;
 
-    private static int NR_OF_ROWS_IN_BLOCK = 100;
+    private static int NR_OF_ROWS_IN_BLOCK = 500;
 
     private int blockPointer;
     
@@ -294,6 +294,8 @@ public class BaseStep extends Thread implements VariableSpace
     private boolean clusteredPartitioning;
 
 	private boolean usingThreadPriorityManagment;
+	
+	private List<StepListener> stepListeners;
 
     /**
      * This is the base step that forms that basis for all steps. You can derive from this class to implement your own
@@ -386,6 +388,8 @@ public class BaseStep extends Thread implements VariableSpace
 	    checkTransRunning = false;
 	    
 	    blockPointer = 0; 
+	    
+	    stepListeners = new ArrayList<StepListener>();
         
         dispatch();
     }
@@ -744,7 +748,7 @@ public class BaseStep extends Thread implements VariableSpace
     	//
     	while (paused.get() && !stopped.get()) {
     		try {
-				Thread.sleep(100);
+				Thread.sleep(1);
 			} catch (InterruptedException e) {
 				throw new KettleStepException(e);
 			}
@@ -1002,7 +1006,7 @@ public class BaseStep extends Thread implements VariableSpace
     	//
     	while (paused.get() && !stopped.get()) {
     		try {
-				Thread.sleep(100);
+				Thread.sleep(1);
 			} catch (InterruptedException e) {
 				throw new KettleStepException(e);
 			}
@@ -1176,13 +1180,25 @@ public class BaseStep extends Thread implements VariableSpace
 	        return null;
 	    }
 	    
+	    RowSet inputRowSet = null;
+        Object[] row=null;
+        
 	    // Do we need to switch to the next input stream?
     	if (blockPointer>=NR_OF_ROWS_IN_BLOCK) {
-    		nextInputStream();
+    		
+    		// Take a peek at the next input stream.
+    		// If there is no data, process another NR_OF_ROWS_IN_BLOCK on the next input stream.
+    		//
+    		for (int r=0;r<inputRowSets.size() && row==null;r++) {
+    			nextInputStream();
+	    		inputRowSet = currentInputStream();
+	    		row = inputRowSet.getRowImmediate();
+    		}
     	}
-
-    	// What's the current input stream?
-        RowSet inputRowSet = currentInputStream();
+    	else {
+    		// What's the current input stream?
+    		inputRowSet = currentInputStream();
+    	}
         
 	    // To reduce stress on the locking system we are going to allow
 	    // The buffer to grow beyond "a few" entries.
@@ -1202,14 +1218,12 @@ public class BaseStep extends Thread implements VariableSpace
         // So in THIS particular case it is safe to just read 100 rows from one rowset, then switch to another etc.
         // We can use timeouts to switch from one to another...
         // 
-        Object[] row=null;
-        
     	while (row==null && !isStopped()) {
         	// Get a row from the input in row set ...
     		// Timeout almost immediately if nothing is there to read.
     		// We will then switch to the next row set to read from...
     		//
-        	row = inputRowSet.getRowWait(2, TimeUnit.MILLISECONDS);
+        	row = inputRowSet.getRowWait(1, TimeUnit.MILLISECONDS);
         	if (row!=null) {
         		linesRead++;
         		blockPointer++;
@@ -1220,7 +1234,7 @@ public class BaseStep extends Thread implements VariableSpace
         		// the input stream and move on to the next one...
         		//
         		if (inputRowSet.isDone()) {
-        			row = inputRowSet.getRowWait(2, TimeUnit.MILLISECONDS);
+        			row = inputRowSet.getRowWait(1, TimeUnit.MILLISECONDS);
         			if (row==null) {
         				inputRowSets.remove(currentInputRowSetNr);
         				if (inputRowSets.isEmpty()) return null; // We're completely done.
@@ -1408,7 +1422,7 @@ public class BaseStep extends Thread implements VariableSpace
     	//
     	while (paused.get() && !stopped.get()) {
     		try {
-				Thread.sleep(100);
+				Thread.sleep(10);
 			} catch (InterruptedException e) {
 				throw new KettleStepException(e);
 			}
@@ -1827,6 +1841,13 @@ public class BaseStep extends Thread implements VariableSpace
     {
         Calendar cal = Calendar.getInstance();
         stop_time = cal.getTime();
+        
+        // Here we are completely done with the transformation.
+        // Call all the attached listeners and notify the outside world that the step has finished.
+        //
+        for (StepListener stepListener : stepListeners) {
+        	stepListener.stepFinished(trans, stepMeta, this);
+        }
     }
 
     public long getRuntime()
@@ -2441,6 +2462,28 @@ public class BaseStep extends Thread implements VariableSpace
 				stepInterface.markStop();
 			}
 		}
-	} 
-  
+	}
+
+	/**
+	 * @return the stepListeners
+	 */
+	public List<StepListener> getStepListeners() {
+		return stepListeners;
+	}
+
+	/**
+	 * @param stepListeners the stepListeners to set
+	 */
+	public void setStepListeners(List<StepListener> stepListeners) {
+		this.stepListeners = stepListeners;
+	}
+
+	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException {
+		return false;
+	}
+	
+	public void addStepListener(StepListener stepListener) {
+		stepListeners.add(stepListener);
+	}
+	
 }
