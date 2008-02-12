@@ -57,7 +57,7 @@ public class SpoonTreeDelegate extends SpoonDelegate
 	{
 		List<TreeSelection> objects = new ArrayList<TreeSelection>();
 
-		if (tree.equals(selectionTree))
+		if (selectionTree!=null && !selectionTree.isDisposed() && tree.equals(selectionTree))
 		{
 			TreeItem[] selection = selectionTree.getSelection();
 			for (int s = 0; s < selection.length; s++)
@@ -181,7 +181,7 @@ public class SpoonTreeDelegate extends SpoonDelegate
 				}
 			}
 		}
-		if (tree.equals(coreObjectsTree))
+		if (tree!=null && coreObjectsTree!=null && tree.equals(coreObjectsTree))
 		{
 			TreeItem[] selection = coreObjectsTree.getSelection();
 			for (int s = 0; s < selection.length; s++)
