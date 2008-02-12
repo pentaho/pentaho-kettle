@@ -236,11 +236,8 @@ public class JobEntryXSDValidator extends JobEntryBase implements Cloneable, Job
 		catch ( Exception e )
 		{
 
-			log.logError(toString(), Messages.getString("JobEntryXSDValidator.ErrorXSDValidator.Label") + 
-				Messages.getString("JobEntryXSDValidator.ErrorXML1.Label") + realxmlfilename +  
-				Messages.getString("JobEntryXSDValidator.ErrorXML2.Label") + 
-				Messages.getString("JobEntryXSDValidator.ErrorXSD1.Label") + realxsdfilename + 
-				Messages.getString("JobEntryXSDValidator.ErrorXSD2.Label") + e.getMessage());
+			log.logError(toString(), Messages.getString("JobEntryXSDValidator.ErrorXSDValidator.Label", 
+			    realxmlfilename,realxsdfilename,e.getMessage()));
 			result.setResult( false );
 			result.setNrErrors(1);
 		}	
