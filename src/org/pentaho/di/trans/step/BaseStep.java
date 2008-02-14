@@ -2433,7 +2433,7 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
 			//check for OOME
 			if(t.toString().startsWith("java.lang.OutOfMemoryError")) { //$NON-NLS-1$
 				// Handle this different with as less overhead as possible to get an error message in the log.
-				// Otherwise it crashes likely with another OOME in Messages.getString() and does not log
+				// Otherwise it crashes likely with another OOME in Me$$ages.getString() and does not log
 				// nor call the setErrors() and stopAll() below.
 				log.logError(stepInterface.toString(), "UnexpectedError: " + t.toString()); //$NON-NLS-1$
 			} else {
@@ -2456,7 +2456,7 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
 		        		String.valueOf(stepInterface.getLinesUpdated()), 
 		        		String.valueOf(stepInterface.getErrors()+stepInterface.getLinesRejected())));
 			} catch(Throwable t) {
-				// it's likely an OOME, thus no overhead by Messages.getString(), see above
+				// it's likely an OOME, thus no overhead by Me$$ages.getString(), see above
 				log.logError(stepInterface.toString(), "UnexpectedError: " + t.toString()); //$NON-NLS-1$
 			} finally {
 				stepInterface.markStop();
