@@ -1143,6 +1143,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		input.setChanged();
 	
 		wPassword.setEnabled(wProtectSheet.getSelection());
+		wlPassword.setEnabled(wProtectSheet.getSelection());
 	
 	
 	}
