@@ -823,5 +823,15 @@
 		</tooltip>
 		<image-uri>ui/images/VLD.png</image-uri>
 	</step>
+		<step id="SQLFileOutput">
+		<description>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.SQLFileOutput")
+		</description>
+		<class-name>org.pentaho.di.trans.steps.sqlfileoutput.SQLFileOutputMeta</class-name>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<tooltip>ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.SQLFileOutput")
+		</tooltip>
+		<image-uri>ui/images/SFO.png</image-uri>
+	</step>
 	
 </steps>

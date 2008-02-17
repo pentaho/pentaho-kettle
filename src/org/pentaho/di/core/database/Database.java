@@ -4434,4 +4434,107 @@ public class Database implements VariableSpace
 			throw new KettleDatabaseException("Unable to call procedure", ex);
 		}
 	}
+	
+	
+	/**
+     * Return SQL CREATION statement for a Table
+     * @param tableName The table to create
+     * @throws KettleDatabaseException
+     */
+	
+	public String getDDLCreationTable(String tableName, RowMetaInterface fields) throws KettleDatabaseException
+	{
+		String retval;
+		
+		// First, check for reserved SQL in the input row r...
+		databaseMeta.quoteReservedWords(fields);
+		String quotedTk=databaseMeta.quoteField(null);
+		retval=getCreateTableStatement(tableName, fields, quotedTk, false, null, true);
+		
+		return retval;
+	}
+	
+	/**
+	 * Return SQL TRUNCATE statement for a Table
+	 * @param schema The schema
+	 * @param tableName The table to create
+	 * @throws KettleDatabaseException
+	 */
+	public String getDDLTruncateTable(String schema, String tablename) throws KettleDatabaseException
+	{
+        if (Const.isEmpty(connectionGroup))
+        {
+            return(databaseMeta.getTruncateTableStatement(schema, tablename));
+        }
+        else
+        {
+            return("DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(schema, tablename));
+        }
+	}
+	
+	/**
+	 * Return SQL statement (INSERT INTO TableName ...
+	 * @param schemaName tableName The schema 
+	 * @param tableName
+	 * @param fields
+	 * @param dateFormat date format of field
+	 * @throws KettleDatabaseException
+	 */
+
+    public String getSQLOutput(String schemaName, String tableName, RowMetaInterface fields, Object[] r,String dateFormat) throws KettleDatabaseException
+	{
+		StringBuffer ins=new StringBuffer(128);
+		
+		try{
+        String schemaTable = databaseMeta.getQuotedSchemaTableCombination(schemaName, tableName);
+		ins.append("INSERT INTO ").append(schemaTable).append('(');
+
+		// now add the names in the row:
+		for (int i=0;i<fields.size();i++)
+		{
+			if (i>0) ins.append(", ");
+			String name = fields.getValueMeta(i).getName();
+			ins.append(databaseMeta.quoteField(name));
+			
+		}
+		ins.append(") VALUES (");
+		
+		// new add values ...
+		for (int i=0;i<fields.size();i++)
+		{
+			if (i>0) ins.append(",");
+			{
+				if (fields.getValueMeta(i).getType()==ValueMeta.TYPE_STRING)
+					ins.append("'" + fields.getString(r,i) + "'") ;
+				else if (fields.getValueMeta(i).getType()==ValueMeta.TYPE_DATE)
+				{
+					if (Const.isEmpty(dateFormat))
+						ins.append("'" +  fields.getString(r,i)+ "'") ;
+					else
+					{
+						try 
+						{
+							java.text.SimpleDateFormat formatter  = new java.text.SimpleDateFormat(dateFormat);
+							ins.append("'" + formatter.format(fields.getDate(r,i))+ "'") ;
+						}
+						catch(Exception e)
+			            {
+			                throw new KettleDatabaseException("Error : ", e);
+			            }
+					}
+				}
+				else
+				{
+					ins.append( fields.getString(r,i)) ;
+				}				
+			}
+		}
+		ins.append(')');
+		}catch (Exception e)
+		{
+			throw new KettleDatabaseException(e);
+		}
+		return ins.toString();
+	}
+	
 }
