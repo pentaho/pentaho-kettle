@@ -506,7 +506,7 @@ public class SQLFileOutputDialog extends BaseStepDialog implements StepDialogInt
 				{
 					SQLFileOutputMeta tfoi = new SQLFileOutputMeta();
 					getInfo(tfoi);
-					String files[] = tfoi.getFiles();
+					String files[] = tfoi.getFiles(transMeta.environmentSubstitute(wFilename.getText()));
 					if (files!=null && files.length>0)
 					{
 						EnterSelectionDialog esd = new EnterSelectionDialog(shell, files, Messages.getString("SQLFileOutputDialog.SelectOutputFiles.DialogTitle"), Messages.getString("SQLFileOutputDialog.SelectOutputFiles.DialogMessage"));
@@ -1123,26 +1123,7 @@ public class SQLFileOutputDialog extends BaseStepDialog implements StepDialogInt
 		}
 	}
 	
-/*public String WriteSQLtoFile()
-{
-	String SQLString=null;
-	try
-	{
-		SQLFileOutputMeta info = new SQLFileOutputMeta();
-		getInfo(info);
-		Object[] prev = transMeta.getPrevStepFields(stepname);
-	  
-		StepMeta stepMeta = transMeta.findStep(stepname);
-		
-		SQLStatement sql = info.getSQLStatements(transMeta, stepMeta, prev);
-		SQLString=sql.toString();
-	}
-	catch(KettleException ke)
-	{
-		new ErrorDialog(shell, Messages.getString("SQLFileOutputDialog.BuildSQLError.DialogTitle"), Messages.getString("SQLFileOutputDialog.BuildSQLError.DialogMessage"), ke);
-	}
-	return SQLString;
-}*/
+
 	public String toString()
 	{
 		return this.getClass().getName();

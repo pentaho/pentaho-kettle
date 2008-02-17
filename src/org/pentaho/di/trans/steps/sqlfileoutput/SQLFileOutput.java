@@ -188,7 +188,7 @@ public class SQLFileOutput extends BaseStep implements StepInterface
 	}
 	public String buildFilename()
 	{
-		return meta.buildFilename(getCopy(), data.splitnr);
+		return meta.buildFilename(environmentSubstitute(meta.getFileName()),  getCopy(), data.splitnr);
 	}
 	
 	public boolean openNewFile()

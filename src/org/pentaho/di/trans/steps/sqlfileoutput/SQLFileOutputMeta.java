@@ -385,7 +385,7 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
     	this.createparentfolder=createparentfolder;
     }
     
-	public String[] getFiles()
+	public String[] getFiles(String fileName)
 	{
 		int copies=1;
 		int splits=1;
@@ -418,7 +418,7 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
 			{
 				for (int split=0;split<splits;split++)
 				{
-					retval[i]=buildFilename( copy, split);
+					retval[i]=buildFilename( fileName, copy, split);
 					i++;
 				}
 			}
@@ -430,7 +430,7 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
 		
 		return retval;
 	}
-	public String buildFilename(int stepnr, int splitnr)
+	public String buildFilename(String fileName,int stepnr, int splitnr)
 	{
 		SimpleDateFormat daf     = new SimpleDateFormat();
 
