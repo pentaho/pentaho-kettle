@@ -159,6 +159,8 @@ public class DimensionLookup extends BaseStep implements StepInterface
                 data.datefieldnr=-1;
             } 
 
+            determineTechKeyCreation();
+
             data.notFoundTk = new Long( (long)meta.getDatabaseMeta().getNotFoundTK(isAutoIncrement()) );
             // if (meta.getKeyRename()!=null && meta.getKeyRename().length()>0) data.notFoundTk.setName(meta.getKeyRename());
 
@@ -171,7 +173,6 @@ public class DimensionLookup extends BaseStep implements StepInterface
                 data.valueDateNow = new Date(System.currentTimeMillis()); // System date... //$NON-NLS-1$
             }
                         
-            determineTechKeyCreation();
             if (getCopy()==0) checkDimZero();
             
             setDimLookup(data.outputRowMeta);
@@ -447,7 +448,8 @@ public class DimensionLookup extends BaseStep implements StepInterface
                         technicalKey = data.db.getNextValue(getTransMeta().getCounters(), meta.getSchemaName(), meta.getTableName(), meta.getKeyField());
 					}
 
-					dimInsert( rowMeta, row, technicalKey, false, valueVersion, valueDateFrom, valueDateTo ); 
+					// update our technicalKey with the return of the insert
+					technicalKey = dimInsert( rowMeta, row, technicalKey, false, valueVersion, valueDateFrom, valueDateTo ); 
 					linesOutput++;
                     
                     // We need to capture this change in the cache as well...
