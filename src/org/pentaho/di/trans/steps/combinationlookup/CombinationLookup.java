@@ -102,6 +102,9 @@ public class CombinationLookup extends BaseStep implements StepInterface
 
 	private Long lookupInCache(RowMetaInterface rowMeta, Object[] row)
 	{
+	    // Short circuit if cache is disabled.
+        if (meta.getCacheSize() == -1) return null;
+
 		// try to find the row in the cache...
 		// 
 		Long tk = (Long) data.cache.get(new RowMetaAndData(rowMeta, row));
@@ -127,6 +130,9 @@ public class CombinationLookup extends BaseStep implements StepInterface
      */
     private void addToCache(RowMetaInterface rowMeta, Object[] row, Long tk) throws KettleValueException
     {
+        // Short circuit if cache is disabled.
+        if (meta.getCacheSize() == -1) return;
+
         // store it in the cache if needed.
         data.cache.put(new RowMetaAndData(rowMeta, row), tk);
         
@@ -221,10 +227,10 @@ public class CombinationLookup extends BaseStep implements StepInterface
                 hashRow[i] = row[data.keynrs[i]];
             }
 
-            val_hash = new Long( data.hashRowMeta.hashCode(hashRow) );
 			
             if (meta.useHash())
             {
+                val_hash = new Long( data.hashRowMeta.hashCode(hashRow) );
                 lookupRow[lookupIndex] = val_hash;
                 lookupIndex++;
             }
