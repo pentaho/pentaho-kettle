@@ -613,6 +613,28 @@ public class XMLInputSaxMeta extends BaseStepMeta implements StepMetaInterface
 			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, "This step is reading "+files.length+" files.", stepinfo);
 			remarks.add(cr);
 		}
+		
+		if (getInputPosition().length == 0)
+		{
+		    cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, "No location elements given. Please specify the location of the repeating node in the XML document.", stepinfo);
+		    remarks.add(cr);
+		}
+		else
+		{
+		    cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, "At least one location element specified.", stepinfo);
+		    remarks.add(cr);
+		}
+
+		if (getInputFields().length == 0)
+        {
+            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, "No field elements given. Please specify the fields you wish to extract from the XML document.", stepinfo);
+            remarks.add(cr);
+        }
+        else
+        {
+            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, "At least one field element specified.", stepinfo);
+            remarks.add(cr);
+        }
 	}
 	
 	public StepInterface getStep(StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta, Trans trans)

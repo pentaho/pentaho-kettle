@@ -172,6 +172,18 @@ public class XMLInputSax extends BaseStep implements StepInterface
 				logError("No file(s) specified! Stop processing.");
 				return false;
 			}
+			
+			if (meta.getInputPosition().length == 0)
+			{
+			    logError("No location specified! Stop processing.");
+			    return false;
+			}
+
+            if (meta.getInputFields().length == 0)
+            {
+                logError("No fields specified! Stop processing.");
+                return false;
+            }
 
 			data.rownr = 1L;
 
