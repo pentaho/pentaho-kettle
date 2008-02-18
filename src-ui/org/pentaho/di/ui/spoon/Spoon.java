@@ -34,6 +34,8 @@ import java.util.Map.Entry;
 import org.apache.commons.vfs.FileObject;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
+import org.eclipse.jface.window.DefaultToolTip;
+import org.eclipse.jface.window.ToolTip;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
@@ -45,19 +47,20 @@ import org.eclipse.swt.dnd.DragSource;
 import org.eclipse.swt.dnd.DragSourceEvent;
 import org.eclipse.swt.dnd.DragSourceListener;
 import org.eclipse.swt.dnd.Transfer;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
-import org.eclipse.swt.events.ExpandAdapter;
-import org.eclipse.swt.events.ExpandEvent;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.events.TreeAdapter;
+import org.eclipse.swt.events.TreeEvent;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Cursor;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
@@ -67,14 +70,11 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.printing.Printer;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.ExpandBar;
-import org.eclipse.swt.widgets.ExpandItem;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
@@ -304,7 +304,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	private XulMenuBar menuBar;
 
 	private Tree selectionTree;
-	private Tree coreObjectsTree;
 	
 	private org.eclipse.swt.widgets.Menu fileMenus;
 
@@ -325,8 +324,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 	private Composite tabComp;
 
-	private ExpandBar mainExpandBar;
-	private ExpandBar coreObjectsExpandBar;
+	private Tree coreObjectsTree;
 
 	private TransExecutionConfiguration transExecutionConfiguration;
 	private TransExecutionConfiguration transPreviewExecutionConfiguration;
@@ -351,6 +349,25 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	
 	// loads the lifecycle listeners
 	private LifecycleSupport lcsup = new LifecycleSupport();
+	private Composite mainComposite;
+	
+	private Label treeButton;
+	private Label sharedButton;
+	private Label coreButton;
+	private Label historyButton;
+	
+	private boolean treeSelected;
+	private boolean sharedSelected;
+	private boolean coreSelected;
+	private boolean historySelected;
+	
+	private Composite variableComposite;
+	private ScrolledComposite scrolledHistoryComposite;
+	
+	private Map<String, String> coreStepToolTipMap;
+	private Map<String, String> coreJobToolTipMap;
+
+    private DefaultToolTip toolTip;
 
     /**
      * This is the main procedure for Spoon.
@@ -576,8 +593,14 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 		addMenu();
 		addTree();
-		addCoreObjectsExpandBar();
+		// addCoreObjectsExpandBar();
 		addTabs();
+		
+	    // sashform.layout(true, true);
+		// sashform.redraw();
+		// cButtons.layout(true, true);
+		// cButtons.redraw();
+		
 
 		// In case someone dares to press the [X] in the corner ;-)
         shell.addShellListener( 
@@ -598,7 +621,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			showWelcomePage();
 		}
 
-		shell.layout();
+		// shell.layout(true, true);
 	}
 
     private void initFileMenu() {
@@ -863,6 +886,12 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	public void open()
 	{
 		shell.open();
+		mainComposite.setRedraw(true);
+		mainComposite.setVisible(false);
+		mainComposite.setVisible(true);
+		mainComposite.redraw();
+
+		
 		// Perhaps the transformation contains elements at startup?
 		refreshTree(); // Do a complete refresh then...
 
@@ -991,7 +1020,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 				menuBar.addMenuListener((String) info[0], info[1], (String) info[2]); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		} catch (Throwable t ) {
-			// TODO log this
 			t.printStackTrace();
 			new ErrorDialog(shell, Messages.getString("Spoon.Exception.ErrorReadingXULFile.Title"), Messages.getString("Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_MENU_PROPERTIES), new Exception(t));
 		}
@@ -1063,7 +1091,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			this.menuMap = XulHelper.createPopupMenus(XUL_FILE_MENUS, shell,new XulMessages(),ids);// createMenuBarFromXul();
 		} catch (Throwable t)
 		{
-			// TODO log this
 			t.printStackTrace();
 			new ErrorDialog(shell, Messages.getString("Spoon.Exception.ErrorReadingXULFile.Title"), Messages.getString("Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_MENUS), new Exception(t));
 		}
@@ -1288,275 +1315,407 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 	private void addTree()
 	{
-		Composite composite = new Composite(sashform, SWT.NONE);
-		props.setLook(composite);
+		Color background = GUIResource.getInstance().getColorLightPentaho();
+		mainComposite = new Composite(sashform, SWT.BORDER);
+		mainComposite.setBackground(background);
+		mainComposite.setLayout(new FormLayout());
+		
+		int mainMargin = 4;
+				
+		// TODO: add i18n keys
+		//
+		Label sep0 = new Label(mainComposite, SWT.SEPARATOR | SWT.HORIZONTAL);
+		sep0.setBackground(background);
+		FormData fdSep0 = new FormData();
+		fdSep0.left = new FormAttachment(0,0);
+		fdSep0.right = new FormAttachment(100,0);
+		fdSep0.top = new FormAttachment(0,0);
+		sep0.setLayoutData(fdSep0);
+		Control lastControl = sep0;
 
-		FillLayout fillLayout = new FillLayout();
-		fillLayout.spacing = Const.MARGIN;
-		fillLayout.marginHeight = Const.MARGIN;
-		fillLayout.marginWidth = Const.MARGIN;
-		composite.setLayout(fillLayout);
+		Label treeButtonImage = new Label(mainComposite, SWT.NONE);
+		treeButtonImage.setBackground(background);
+		treeButtonImage.setImage(GUIResource.getInstance().getImageLogoSmall());
+		FormData fdTreeButtonImage = new FormData();
+		fdTreeButtonImage.left = new FormAttachment(5,0);
+		fdTreeButtonImage.top = new FormAttachment(lastControl,mainMargin);
+		treeButtonImage.setLayoutData(fdTreeButtonImage);
+		
+		treeButton = new Label(mainComposite, SWT.LEFT );  
+		treeButton.setBackground(background);
+		treeButton.setFont(GUIResource.getInstance().getFontMedium());
+		treeButton.setText(STRING_SPOON_MAIN_TREE); 
+		treeButton.setToolTipText("The tree view of the currently loaded files"); //, GUIResource.getInstance().getImageLogoSmall(), GUIResource.getInstance().getImageKettleLogo());
+		FormData fdTreeButton = new FormData();
+		fdTreeButton.left=new FormAttachment(treeButtonImage,5);
+		fdTreeButton.right=new FormAttachment(95,0);
+		fdTreeButton.top = new FormAttachment(lastControl,mainMargin);
+		treeButton.setLayoutData(fdTreeButton);
+		lastControl = treeButton;
 
-		mainExpandBar = new ExpandBar(composite, SWT.NONE);
-		props.setLook(mainExpandBar);
-		mainExpandBar.setSpacing(0);
+		/*
+		Label sep1 = new Label(mainComposite, SWT.SEPARATOR | SWT.HORIZONTAL);
+		props.setLook(sep1);
+		FormData fdSep1 = new FormData();
+		fdSep1.left = new FormAttachment(0,0);
+		fdSep1.right = new FormAttachment(100,0);
+		fdSep1.top = new FormAttachment(lastControl,2);
+		sep1.setLayoutData(fdSep1);
+		lastControl=sep1;
+		*/
+		
+		Label sharedButtonImage = new Label(mainComposite, SWT.NONE);
+		sharedButtonImage.setBackground(background);
+		sharedButtonImage.setImage(GUIResource.getInstance().getImageLogoSmall());
+		FormData fdSharedButtonImage = new FormData();
+		fdSharedButtonImage.left = new FormAttachment(5,0);
+		fdSharedButtonImage.top = new FormAttachment(lastControl,mainMargin);
+		sharedButtonImage.setLayoutData(fdSharedButtonImage);
 
-		mainExpandBar.addExpandListener(new ExpandAdapter() {
-			public void itemExpanded(ExpandEvent event) {
-				ExpandItem item = (ExpandItem) event.item;
-				int idx = mainExpandBar.indexOf(item);
-				if (idx >= 0) {
-					for (int i = 0; i < mainExpandBar.getItemCount(); i++) {
-						if (i != idx) {
-							mainExpandBar.getItem(i).setExpanded(false);
+		sharedButton = new Label(mainComposite, SWT.LEFT );  
+		sharedButton.setBackground(background);
+		sharedButton.setFont(GUIResource.getInstance().getFontMedium());
+		sharedButton.setText("Shared Objects"); 
+		sharedButton.setToolTipText("Shared connections, steps, etc"); // , GUIResource.getInstance().getImageArrow(), GUIResource.getInstance().getImageConnection());
+		FormData fdSharedButton = new FormData();
+		fdSharedButton.left=new FormAttachment(sharedButtonImage, 5);
+		fdSharedButton.right=new FormAttachment(95,0);
+		fdSharedButton.top = new FormAttachment(lastControl,mainMargin);
+		sharedButton.setLayoutData(fdSharedButton);
+		lastControl = sharedButton;
+		
+		/*
+		Label sep2 = new Label(mainComposite, SWT.SEPARATOR | SWT.HORIZONTAL);
+		props.setLook(sep2);
+		FormData fdSep2 = new FormData();
+		fdSep2.left = new FormAttachment(0,0);
+		fdSep2.right = new FormAttachment(100,0);
+		fdSep2.top = new FormAttachment(lastControl,2);
+		sep2.setLayoutData(fdSep2);
+		lastControl=sep2;
+		*/
+		
+		Label coreButtonImage = new Label(mainComposite, SWT.NONE);
+		coreButtonImage.setBackground(background);
+		coreButtonImage.setImage(GUIResource.getInstance().getImageLogoSmall());
+		FormData fdCoreButtonImage = new FormData();
+		fdCoreButtonImage.left = new FormAttachment(5,0);
+		fdCoreButtonImage.top = new FormAttachment(lastControl,mainMargin);
+		coreButtonImage.setLayoutData(fdCoreButtonImage);
+
+		coreButton = new Label(mainComposite, SWT.LEFT );  
+		coreButton.setBackground(background);
+		coreButton.setFont(GUIResource.getInstance().getFontMedium());
+		coreButton.setText(STRING_SPOON_CORE_OBJECTS_TREE); 
+		coreButton.setToolTipText("Here are the core objects"); //, GUIResource.getInstance().getImageTransGraph(), GUIResource.getInstance().getImageBol());
+		FormData fdCoreButton = new FormData();
+		fdCoreButton.left=new FormAttachment(coreButtonImage,5);
+		fdCoreButton.right=new FormAttachment(95,0);
+		fdCoreButton.top = new FormAttachment(lastControl,mainMargin);
+		coreButton.setLayoutData(fdCoreButton);
+		lastControl=coreButton;
+
+		/*
+		Label sep3 = new Label(mainComposite, SWT.SEPARATOR | SWT.HORIZONTAL);
+		props.setLook(sep3);
+		FormData fdSep3 = new FormData();
+		fdSep3.left = new FormAttachment(0,0);
+		fdSep3.right = new FormAttachment(100,0);
+		fdSep3.top = new FormAttachment(lastControl,2);
+		sep3.setLayoutData(fdSep3);
+		lastControl=sep3;
+		*/
+		
+		Label historyButtonImage = new Label(mainComposite, SWT.NONE);
+		historyButtonImage.setBackground(background);
+		historyButtonImage.setImage(GUIResource.getInstance().getImageLogoSmall());
+		FormData fdHistoryButtonImage = new FormData();
+		fdHistoryButtonImage.left = new FormAttachment(5,0);
+		fdHistoryButtonImage.top = new FormAttachment(lastControl,mainMargin);
+		historyButtonImage.setLayoutData(fdHistoryButtonImage);
+		
+		historyButton = new Label(mainComposite, SWT.LEFT ); 
+		historyButton.setBackground(background);
+		historyButton.setFont(GUIResource.getInstance().getFontMedium());
+		historyButton.setText("History");
+		historyButton.setToolTipText("Resource usage history"); // , GUIResource.getInstance().getImageLogoSmall(), GUIResource.getInstance().getImageLogoSmall());
+		FormData fdHistoryButton = new FormData();
+		fdHistoryButton.left=new FormAttachment(historyButtonImage,5);
+		fdHistoryButton.right=new FormAttachment(95,0);
+		fdHistoryButton.top = new FormAttachment(lastControl,mainMargin);
+		historyButton.setLayoutData(fdHistoryButton);
+		lastControl=historyButton;
+
+		Label sep4 = new Label(mainComposite, SWT.SEPARATOR | SWT.HORIZONTAL);
+		sep4.setBackground(background);
+		FormData fdSep4 = new FormData();
+		fdSep4.left = new FormAttachment(0,0);
+		fdSep4.right = new FormAttachment(100,0);
+		fdSep4.top = new FormAttachment(lastControl,5);
+		sep4.setLayoutData(fdSep4);
+		lastControl=sep4;
+		
+		treeButton.addMouseListener(new MouseAdapter() {
+			public void mouseDown(MouseEvent event) {
+				if (treeSelected) return;
+				disposeVariableComposite(true, false, false, false);
+				refreshTree();	
+			}});
+		sharedButton.addMouseListener(new MouseAdapter() {
+			public void mouseDown(MouseEvent event) {
+				if (sharedSelected) return;
+				disposeVariableComposite(false, true, false, false);
+				refreshSharedObjects();	
+			}});
+		coreButton.addMouseListener(new MouseAdapter() {
+			public void mouseDown(MouseEvent event) {
+				if (coreSelected) return;
+				disposeVariableComposite(false, false, true, false);
+				refreshCoreObjects(); 
+			}});
+		historyButton.addMouseListener(new MouseAdapter() {
+			public void mouseDown(MouseEvent event) {
+				if (historySelected) return;
+				disposeVariableComposite(false, false, false, true);
+				refreshCoreObjectsHistory(); 
+			}});
+
+		variableComposite = new Composite(mainComposite, SWT.NONE);
+		variableComposite.setBackground(GUIResource.getInstance().getColorBackground());
+		variableComposite.setLayout(new FillLayout());
+		FormData fdVariableComposite = new FormData();
+		fdVariableComposite.left=new FormAttachment(0,0);
+		fdVariableComposite.right=new FormAttachment(100,0);
+		fdVariableComposite.top = new FormAttachment(lastControl,0);
+		fdVariableComposite.bottom=new FormAttachment(100,0);
+		variableComposite.setLayoutData(fdVariableComposite);
+		lastControl=variableComposite;
+		
+		disposeVariableComposite(true, false, false, false);
+		
+		coreStepToolTipMap = new Hashtable<String,String>();
+		coreJobToolTipMap = new Hashtable<String,String>();
+	}
+
+	protected void refreshSharedObjects() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void disposeVariableComposite(boolean tree, boolean shared, boolean core, boolean history) {
+		
+		treeSelected = tree;
+		sharedSelected = shared;
+		coreSelected = core;
+		historySelected = history;
+		
+		for (Control control : variableComposite.getChildren()) {
+			control.dispose();
+		}
+		
+		previousShowTrans=false;
+		previousShowJob=false;
+		stepHistoryChanged=true;
+		
+		Font normalFont = GUIResource.getInstance().getFontMedium();
+		Font boldFont = GUIResource.getInstance().getFontMediumBold();
+		
+		Color selectedColor = GUIResource.getInstance().getColorPentaho();
+		Color normalColor = GUIResource.getInstance().getColorLightPentaho();
+		
+		if (tree) {
+			treeButton.setFont(boldFont);
+			treeButton.setBackground(selectedColor);
+		} else {
+			treeButton.setFont(normalFont);
+			treeButton.setBackground(normalColor);
+		}
+		
+		if (shared) { 
+			sharedButton.setFont(boldFont); 
+			sharedButton.setBackground(selectedColor);
+		} else { 
+			sharedButton.setFont(normalFont);
+			sharedButton.setBackground(normalColor);
+		}
+		
+		if (core) {
+			coreButton.setFont(boldFont); 
+			coreButton.setBackground(selectedColor);
+		}
+		else {
+			coreButton.setFont(normalFont);
+			coreButton.setBackground(normalColor);
+		}
+		
+		if (history) {
+			historyButton.setFont(boldFont); 
+			historyButton.setBackground(selectedColor);
+		} else {
+			historyButton.setFont(normalFont);
+			historyButton.setBackground(normalColor);
+		}
+	}
+
+	public void addCoreObjectsTree()
+	{
+		// Now create a new expand bar inside that item
+		// We're going to put the core object in there
+		//
+		coreObjectsTree = new Tree(variableComposite, SWT.V_SCROLL | SWT.SINGLE);
+		props.setLook(coreObjectsTree);
+		
+		coreObjectsTree.addSelectionListener(new SelectionAdapter() {
+		
+			public void widgetSelected(SelectionEvent event) {
+				// expand the selected tree item, collapse the rest
+				//
+				TreeItem[] selection = coreObjectsTree.getSelection();
+				if (selection.length==1) {
+					// expand if clicked on the the top level entry only...
+					//
+					TreeItem top = selection[0];
+					while (top.getParentItem()!=null) top=top.getParentItem();
+					if (top==selection[0]) {
+						boolean expanded = top.getExpanded();
+						for (TreeItem item : coreObjectsTree.getItems()) { item.setExpanded(false); }
+						top.setExpanded(!expanded);
+					}
+				}
+			}
+		});
+		
+		coreObjectsTree.addTreeListener(new TreeAdapter() {
+			public void treeExpanded(TreeEvent treeEvent) {
+				TreeItem treeItem = (TreeItem) treeEvent.item;
+				
+				// expand the selected tree item, collapse the rest
+				//
+				for (TreeItem item : coreObjectsTree.getItems()) { item.setExpanded(false); }
+				treeItem.setExpanded(true);
+			}
+		});
+		
+		coreObjectsTree.addMouseMoveListener(new MouseMoveListener() {
+		
+			public void mouseMove(MouseEvent move) {
+				toolTip.hide();
+				TreeItem item = searchMouseOverTreeItem(coreObjectsTree.getItems(), move.x, move.y);
+				if (item!=null) {
+					String name = item.getText();
+					String tip = coreStepToolTipMap.get(name);
+					if (tip!=null) {
+						StepPlugin plugin = StepLoader.getInstance().findStepPluginWithDescription(name);
+						Image image = GUIResource.getInstance().getImagesSteps().get(plugin.getID()[0]);
+						toolTip.setImage(image);
+						toolTip.setText(name+Const.CR+Const.CR+tip);
+						toolTip.show(new org.eclipse.swt.graphics.Point(move.x+10,move.y+10));
+					}
+					tip = coreJobToolTipMap.get(name);
+					if (tip!=null) {
+						JobPlugin plugin = JobEntryLoader.getInstance().findJobEntriesWithDescription(name);
+						if (plugin!=null) {
+							Image image = GUIResource.getInstance().getImagesJobentries().get(plugin.getID());
+							toolTip.setImage(image);
+							toolTip.setText(name+Const.CR+Const.CR+tip);
+							toolTip.show(new org.eclipse.swt.graphics.Point(move.x+10,move.y+10));
 						}
 					}
-					Control control = item.getControl();
-					control.setFocus();
-					refreshCoreObjectsHistory(); // only refreshes when visible.
 				}
 			}
 		});
-
-		// //////////////////////////////////////////////////////////////////////////////////////////////////
-		//
-		// Now set up the transformation/job tree
-		//
-		selectionTree = new Tree(mainExpandBar, SWT.SINGLE | SWT.BORDER);
-		props.setLook(selectionTree);
-		selectionTree.setLayout(new FillLayout());
-
-		ExpandItem treeItem = new ExpandItem(mainExpandBar, SWT.NONE);
-		treeItem.setControl(selectionTree);
-		treeItem.setHeight(shell.getBounds().height);
-		setHeaderImage(treeItem, GUIResource.getInstance().getImageLogoSmall(), STRING_SPOON_MAIN_TREE, 0, true);
-
-		// Add a tree memory as well...
-		TreeMemory.addTreeListener(selectionTree, STRING_SPOON_MAIN_TREE);
-
-		selectionTree.addMouseListener(new MouseAdapter() {
-				public void mouseDown(MouseEvent event) {
-					if (event.button==3)
-					{
-						setMenu(selectionTree);
-					}
-				}
-			}
-		);
-        selectionTree.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { showSelection(); } });
-        selectionTree.addSelectionListener(new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e){ doubleClickedInTree(selectionTree); } });
-
-		// Keyboard shortcuts!
-		selectionTree.addKeyListener(defKeys);
 		
-		// Set a listener on the tree
-		addDragSourceToTree(selectionTree);
-	
-		// Handle behavior for the main expand bar
-		//
-		mainExpandBar.addKeyListener(defKeys);
+		addDragSourceToTree(coreObjectsTree);
 		
-		mainExpandBar.addListener(SWT.Resize, new Listener()
-			{
-				public void handleEvent(Event event) 
-				{
-					resizeExpandBar(mainExpandBar);
-				}
-            }
-        );
+        toolTip = new DefaultToolTip(variableComposite, ToolTip.RECREATE, true);
+        toolTip.setRespectMonitorBounds(true);
+        toolTip.setRespectDisplayBounds(true);
+        toolTip.setPopupDelay(350);
+        toolTip.setShift(new org.eclipse.swt.graphics.Point(ConstUI.TOOLTIP_OFFSET,ConstUI.TOOLTIP_OFFSET));
 	}
 
-	protected void resizeExpandBar(ExpandBar bar)
-	{
-		Rectangle bounds = bar.getBounds();
-
-		// Adjust the sizes of the
-		int header = 0;
-		ExpandItem[] items = bar.getItems();
-		for (int i = 0; i < items.length; i++)
-		{
-			ExpandItem item = items[i];
-			header += item.getHeaderHeight();
-		}
-
-		for (int i = 0; i < items.length; i++)
-		{
-			ExpandItem item = items[i];
-			item.setHeight(bounds.height - header - 20);
-		}
-	}
-
-	public void addCoreObjectsExpandBar()
-	{
-		Composite composite = new Composite(mainExpandBar, SWT.BORDER);
-		FormLayout formLayout = new FormLayout();
-		formLayout.marginLeft = Const.FORM_MARGIN;
-		formLayout.marginTop = Const.MARGIN;
-		formLayout.marginBottom = Const.MARGIN;
-		composite.setLayout(formLayout);
-
-		coreObjectsExpandBar = new ExpandBar(composite, SWT.V_SCROLL);
-		props.setLook(coreObjectsExpandBar);
-		coreObjectsExpandBar.setSpacing(1);
-
-		FormData expandData = new FormData();
-		expandData.left = new FormAttachment(0, 0);
-		expandData.right = new FormAttachment(100, 0);
-		expandData.top = new FormAttachment(0, 0);
-		expandData.bottom = new FormAttachment(100, 0);
-		coreObjectsExpandBar.setLayoutData(expandData);
-
-		// collapse the other expandbar items if one gets expanded...
-		coreObjectsExpandBar.addExpandListener(new ExpandAdapter()
-		{
-			public void itemExpanded(ExpandEvent event)
-			{
-				ExpandItem item = (ExpandItem) event.item;
-				int idx = coreObjectsExpandBar.indexOf(item);
-				if (idx >= 0)
-				{
-                        for (int i=0;i<coreObjectsExpandBar.getItemCount();i++) if (i!=idx) coreObjectsExpandBar.getItem(i).setExpanded(false);
-					ScrolledComposite scrolledComposite = (ScrolledComposite) item.getControl();
-					Composite composite = (Composite) scrolledComposite.getContent();
-					composite.setFocus();
-				}
+	protected TreeItem searchMouseOverTreeItem(TreeItem[] treeItems, int x, int y) {
+		for (TreeItem treeItem : treeItems) {
+			if (treeItem.getBounds().contains(x,y)) return treeItem;
+			if (treeItem.getItemCount()>0) {
+				treeItem = searchMouseOverTreeItem(treeItem.getItems(), x, y);
+				if (treeItem!=null) return treeItem;
 			}
-		});
-		coreObjectsExpandBar.addListener(SWT.Resize, new Listener()
-		{
-			public void handleEvent(Event event)
-			{
-				resizeExpandBar(coreObjectsExpandBar);
-			}
-		});
-
-		ExpandItem expandItem = new ExpandItem(mainExpandBar, SWT.NONE);
-		expandItem.setControl(composite);
-		expandItem.setHeight(shell.getBounds().height-50);
-        setHeaderImage(expandItem, GUIResource.getInstance().getImageLogoSmall(), STRING_SPOON_CORE_OBJECTS_TREE, 0, true);
-
-		refreshCoreObjects();
-	}
-
-	private void setHeaderImage(ExpandItem expandItem, Image icon, String string, int offset, boolean boldFont)
-	{
-		if (Const.isWindows() || Const.isLinux())
-		{
-			// Draw just an image with text and all...
-			Image img = new Image(display, 1, 1);
-			GC tmpGC = new GC(img);
-			org.eclipse.swt.graphics.Point point = tmpGC.textExtent(STRING_SPOON_MAIN_TREE);
-			tmpGC.dispose();
-			img.dispose();
-	
-			Rectangle rect = new Rectangle(0, 0, point.x + 100 - offset, point.y+3);
-			Rectangle iconBounds = icon.getBounds();
-	
-			final Image image = new Image(display, rect.width, rect.height);
-			GC gc = new GC(image);
-			if (props.isBrandingActive())
-			{
-				GUIResource.getInstance().drawPentahoGradient(display, gc, rect, false);
-			}
-			gc.setBackground(display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
-			gc.setForeground(GUIResource.getInstance().getColorBlack());
-			gc.fillRectangle(rect);
-			gc.drawImage(icon, 0, 0);
-		    if (boldFont) gc.setFont(GUIResource.getInstance().getFontBold());
-			gc.drawText(string, iconBounds.width + 5, (iconBounds.height - point.y) / 2 + 2, false);
-			expandItem.setImage(image);
-			// expandItem.setImage(ImageUtil.makeImageTransparent(display, image, new RGB(255, 255, 255)));
-	        expandItem.addDisposeListener(new DisposeListener() { public void widgetDisposed(DisposeEvent event) { image.dispose(); } });
 		}
-		else
-		{
-            expandItem.setImage(icon);
-            expandItem.setText(string);
-		}
+		return null;
 	}
 
 	private void refreshCoreObjectsHistory()
 	{
-		if (stepHistoryChanged || mainExpandBar.getItemCount() < 3)
-		{
-			boolean showTrans = getActiveTransformation() != null;
+		if (!historySelected) return;
+		
+		boolean showTrans = getActiveTransformation() != null;
 
-			// See if we need to bother.
-			if (2 < mainExpandBar.getItemCount() && mainExpandBar.getItemCount() >= 3 - (showTrans ? 0 : 1))
-			{
-				ExpandItem item = mainExpandBar.getItem(2);
-                if (!item.getExpanded()) return; // no, don't bother
+		if (!showTrans) {
+			if (scrolledHistoryComposite!=null && !scrolledHistoryComposite.isDisposed()) {
+				scrolledHistoryComposite.dispose();
 			}
-
-			if (showTrans)
-			{
-				// create the history expand-item.
-                ScrolledComposite scrolledHistoryComposite = new ScrolledComposite(mainExpandBar, SWT.V_SCROLL | SWT.H_SCROLL | SWT.BORDER);
-
-				scrolledHistoryComposite.setLayout(new FillLayout());
-
-				Composite historyComposite = new Composite(scrolledHistoryComposite, SWT.NONE);
-				props.setLook(historyComposite);
-				GridLayout layout = new GridLayout();
-				layout.marginLeft = 15;
-				layout.verticalSpacing = Const.MARGIN;
-				historyComposite.setLayout(layout);
-
-				ExpandItem historyExpandItem = new ExpandItem(mainExpandBar, SWT.NONE);
-
-				List<ObjectUsageCount> pluginHistory = props.getPluginHistory();
-				String locale = LanguageChoice.getInstance().getDefaultLocale().toString().toLowerCase();
-
-                for (int i=0;i<pluginHistory.size() && i<10;i++) // top 10 maximum, the rest is not interesting anyway -- for GUI performance reasons
-				{
-					ObjectUsageCount usage = (ObjectUsageCount) pluginHistory.get(i);
-
-                    StepPlugin stepPlugin = StepLoader.getInstance().findStepPluginWithID(usage.getObjectName());
-					if (stepPlugin != null)
-					{
-                        final Image stepimg = (Image)GUIResource.getInstance().getImagesStepsSmall().get(stepPlugin.getID()[0]);
-                        String pluginName   = stepPlugin.getDescription(locale)+" ("+usage.getNrUses()+")";
-						String pluginDescription = stepPlugin.getTooltip(locale);
-						boolean isPlugin = stepPlugin.isPlugin();
-
-                        addExpandBarItemLine(historyExpandItem, historyComposite, stepimg, pluginName, pluginDescription, isPlugin, stepPlugin);
-					}
-				}
-
-				historyComposite.layout();
-				org.eclipse.swt.graphics.Rectangle bounds = historyComposite.getBounds();
-
-				scrolledHistoryComposite.setMinSize(bounds.width, bounds.height);
-				scrolledHistoryComposite.setContent(historyComposite);
-				scrolledHistoryComposite.setExpandHorizontal(true);
-				scrolledHistoryComposite.setExpandVertical(true);
-
-				historyExpandItem.setControl(scrolledHistoryComposite);
-				historyExpandItem.setHeight(scrolledHistoryComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT).y);
-                setHeaderImage(historyExpandItem, GUIResource.getInstance().getImageLogoSmall(), STRING_HISTORY, 0, true);
-				scrolledHistoryComposite.layout(true, true);
-			}
-
-			boolean expanded = false;
-			if (mainExpandBar.getItemCount() > 3 - (showTrans ? 0 : 1))
-			{
-				ExpandItem item = mainExpandBar.getItem(2);
-				expanded = item.getExpanded();
-				item.setExpanded(false);
-				// item.getControl().dispose();
-				item.dispose();
-			}
-
-			if (showTrans)
-			{
-				mainExpandBar.getItem(2).setExpanded(expanded);
-			}
-			resizeExpandBar(mainExpandBar);
-
-			mainExpandBar.redraw();
-
-			stepHistoryChanged = false;
+			return;
 		}
+		
+		if (stepHistoryChanged)
+		{
+			if (scrolledHistoryComposite!=null && !scrolledHistoryComposite.isDisposed()) {
+				scrolledHistoryComposite.dispose();
+			}
+			
+			// create the history expand-item.
+            scrolledHistoryComposite = new ScrolledComposite(variableComposite, SWT.V_SCROLL | SWT.H_SCROLL | SWT.BORDER);
+			scrolledHistoryComposite.setLayout(new FillLayout());
+
+			Composite historyComposite = new Composite(scrolledHistoryComposite, SWT.NONE);
+			props.setLook(historyComposite);
+			historyComposite.setLayout(new FormLayout());
+
+			List<ObjectUsageCount> pluginHistory = props.getPluginHistory();
+			String locale = LanguageChoice.getInstance().getDefaultLocale().toString().toLowerCase();
+
+			Control lastControl = null; 
+			
+            for (int i=0;i<pluginHistory.size() && i<10;i++) // top 10 maximum, the rest is not interesting anyway -- for GUI performance reasons
+			{
+				ObjectUsageCount usage = (ObjectUsageCount) pluginHistory.get(i);
+                StepPlugin stepPlugin = StepLoader.getInstance().findStepPluginWithID(usage.getObjectName());
+				if (stepPlugin != null)
+				{
+                    final Image stepimg = (Image)GUIResource.getInstance().getImagesSteps().get(stepPlugin.getID()[0]);
+                    String pluginName   = stepPlugin.getDescription(locale)+" ("+usage.getNrUses()+")";
+					String pluginDescription = stepPlugin.getTooltip(locale);
+					boolean isPlugin = stepPlugin.isPlugin();
+
+					Composite composite = new Composite(historyComposite, SWT.NONE);
+					props.setLook(composite);
+					composite.setLayout(new FormLayout());
+					
+                    addExpandBarItemLine(composite, stepimg, pluginName, pluginDescription, isPlugin, stepPlugin);
+                    
+                    FormData fdComposite = new FormData();
+                    fdComposite.left = new FormAttachment(0,0);
+                    fdComposite.right = new FormAttachment(100,0);
+                    if (lastControl==null) fdComposite.top = new FormAttachment(0,0);
+                    else fdComposite.top = new FormAttachment(lastControl,1);
+                    composite.setLayoutData(fdComposite);
+                    lastControl=composite;
+				}
+			}
+
+			historyComposite.layout(true, true);
+			org.eclipse.swt.graphics.Rectangle bounds = historyComposite.getBounds();
+
+			scrolledHistoryComposite.setMinSize(bounds.width, bounds.height);
+			scrolledHistoryComposite.setContent(historyComposite);
+			scrolledHistoryComposite.setExpandHorizontal(true);
+			scrolledHistoryComposite.setExpandVertical(true);
+		}
+
+		stepHistoryChanged = false;
+		
+		variableComposite.layout(true, true);
 	}
 
 	private boolean previousShowTrans;
@@ -1564,22 +1723,27 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 	public void refreshCoreObjects()
 	{
-		refreshCoreObjectsHistory();
-
+		if (shell.isDisposed()) return;
+		if (!coreSelected) return;
+		
+		if (coreObjectsTree==null || coreObjectsTree.isDisposed()) {
+			addCoreObjectsTree();
+		}
+		
 		boolean showTrans = getActiveTransformation() != null;
 		boolean showJob = getActiveJob() != null;
 
-		if (showTrans == previousShowTrans && showJob == previousShowJob)
+		if ( showTrans == previousShowTrans && showJob == previousShowJob )
 		{
 			return;
 		}
 
 		// First remove all the entries that where present...
-		ExpandItem[] expandItems = coreObjectsExpandBar.getItems();
+		//
+		TreeItem[] expandItems = coreObjectsTree.getItems();
 		for (int i = 0; i < expandItems.length; i++)
 		{
-			ExpandItem item = expandItems[i];
-			item.getControl().dispose();
+			TreeItem item = expandItems[i];
 			item.dispose();
 		}
 
@@ -1598,23 +1762,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			String basecat[] = steploader.getCategories(StepPlugin.TYPE_ALL, locale);
 			for (int i = 0; i < basecat.length; i++)
 			{
-                ScrolledComposite scrolledComposite = new ScrolledComposite(coreObjectsExpandBar, SWT.V_SCROLL | SWT.H_SCROLL | SWT.BORDER);
-				scrolledComposite.setLayout(new FillLayout());
-				scrolledComposite.addKeyListener(defKeys);
-
-				final Composite composite = new Composite(scrolledComposite, SWT.NONE);
-				props.setLook(composite);
-				composite.addKeyListener(defKeys);
-
-				GridLayout layout = new GridLayout();
-				layout.marginLeft = Const.FORM_MARGIN;
-				layout.verticalSpacing = Const.MARGIN;
-				composite.setLayout(layout);
-				
-
-				ExpandItem item = new ExpandItem(coreObjectsExpandBar, SWT.NONE);
-				
-				
+				TreeItem item = new TreeItem(coreObjectsTree, SWT.NONE);
+				item.setText(basecat[i]);
+				item.setImage(GUIResource.getInstance().getImageArrow());
 
 				for (int j = 0; j < basesteps.length; j++)
 				{
@@ -1625,38 +1775,29 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 						String pluginDescription = basesteps[j].getTooltip(locale);
 						boolean isPlugin = basesteps[j].isPlugin();
 
-                        addExpandBarItemLine(item, composite, stepimg, pluginName, pluginDescription, isPlugin, basesteps[j]);
+						TreeItem stepItem = new TreeItem(item, SWT.NONE);
+						stepItem.setImage(stepimg);
+						stepItem.setText(pluginName);
+						stepItem.addListener(SWT.Selection, new Listener() {
+						
+							public void handleEvent(Event arg0) {
+								System.out.println("Tree item Listener fired");
+							}
+						});
+						if (isPlugin) stepItem.setFont(GUIResource.getInstance().getFontBold());
+						
+						coreStepToolTipMap.put(pluginName, pluginDescription);
+                        // addExpandBarItemLine(composite, stepimg, pluginName, pluginDescription, isPlugin, basesteps[j]);
 					}
 				}
-
-				composite.pack();
-				org.eclipse.swt.graphics.Rectangle bounds = composite.getBounds();
-
-				scrolledComposite.setMinSize(bounds.width, bounds.height);
-				scrolledComposite.setContent(composite);
-				scrolledComposite.setExpandHorizontal(true);
-				scrolledComposite.setExpandVertical(true);
-
-				item.setControl(scrolledComposite);
-				item.setHeight(scrolledComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT).y + 10);
-				setHeaderImage(item, GUIResource.getInstance().getImageArrow(), basecat[i], layout.marginLeft, false);
 			}
 		}
 
 		if (showJob)
 		{
-            ScrolledComposite scrolledComposite = new ScrolledComposite(coreObjectsExpandBar, SWT.V_SCROLL | SWT.H_SCROLL | SWT.BORDER);
-			scrolledComposite.setLayout(new FillLayout());
-
-			Composite composite = new Composite(scrolledComposite, SWT.NONE);
-			props.setLook(composite);
-
-			GridLayout layout = new GridLayout();
-			layout.marginLeft = Const.FORM_MARGIN;
-			layout.verticalSpacing = Const.MARGIN;
-			composite.setLayout(layout);
-
-			ExpandItem item = new ExpandItem(coreObjectsExpandBar, SWT.NONE);
+			TreeItem item = new TreeItem(coreObjectsTree, SWT.NONE);
+			item.setText(STRING_JOB_ENTRIES);
+			item.setImage(GUIResource.getInstance().getImageArrow());
 
 			// ////////////////////////////////////////////////////////////////////////////////////////////////
 			// JOBS
@@ -1673,7 +1814,18 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 			for (int i = 0; i < specialText.length; i++)
 			{
-                addExpandBarItemLine(item, composite, specialImage[i], specialText[i], specialTooltip[i], false, specialText[i]);
+				TreeItem specialItem = new TreeItem(item, SWT.NONE);
+				specialItem.setImage(specialImage[i]);
+				specialItem.setText(specialText[i]);
+				specialItem.addListener(SWT.Selection, new Listener() {
+				
+					public void handleEvent(Event arg0) {
+						System.out.println("Tree item Listener fired");
+					}
+				
+				});
+
+				coreJobToolTipMap.put(specialText[i], specialTooltip[i]);
 			}
 
 			JobEntryLoader jobEntryLoader = JobEntryLoader.getInstance();
@@ -1686,44 +1838,30 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 					String pluginName = baseEntries[i].getDescription();
 					String pluginDescription = baseEntries[i].getTooltip();
 					boolean isPlugin = baseEntries[i].isPlugin();
+
+					TreeItem jobItem = new TreeItem(item, SWT.NONE);
+					jobItem.setImage(stepimg);
+					jobItem.setText(pluginName);
+					if (isPlugin) jobItem.setFont(GUIResource.getInstance().getFontBold());
+					jobItem.addListener(SWT.Selection, new Listener() {
 					
-					if (stepimg==null) {
-						System.out.println("WTF");
-					}
-
-                    addExpandBarItemLine(item, composite, stepimg, pluginName, pluginDescription, isPlugin, baseEntries[i]);
+						public void handleEvent(Event arg0) {
+							System.out.println("Tree item Listener fired");
+						}
+					
+					});
+					coreJobToolTipMap.put(pluginName, pluginDescription);
 				}
-			}
-
-			composite.pack();
-			org.eclipse.swt.graphics.Rectangle bounds = composite.getBounds();
-
-			scrolledComposite.setMinSize(bounds.width, bounds.height+100);
-			scrolledComposite.setContent(composite);
-			scrolledComposite.setExpandHorizontal(true);
-			scrolledComposite.setExpandVertical(true);
-
-			item.setControl(scrolledComposite);
-            setHeaderImage(item, GUIResource.getInstance().getImageArrow(), STRING_JOB_ENTRIES, layout.marginLeft, true);
-			item.setHeight(scrolledComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT).y + 80);
-			item.setExpanded(false);
-
-			if (mainExpandBar.getItemCount() > 2)
-			{
-				ExpandItem historyItem = mainExpandBar.getItem(2);
-				historyItem.setExpanded(false);
-				historyItem.getControl().dispose();
-				historyItem.dispose();
 			}
 		}
 
-		mainExpandBar.redraw();
+		variableComposite.layout(true, true);
 
 		previousShowTrans = showTrans;
 		previousShowJob = showJob;
 	}
 
-    private void addExpandBarItemLine(ExpandItem expandItem, Composite composite, Image image, String pluginName, String pluginDescription, boolean isPlugin, Object plugin)
+    private void addExpandBarItemLine(Composite composite, Image image, String pluginName, String pluginDescription, boolean isPlugin, Object plugin)
 	{
 		// Add a line with the step as a new composite
 		Composite lineComposite = new Composite(composite, SWT.NONE);
@@ -1737,22 +1875,22 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		canvas.setImage(image);
 		FormData fdCanvas = new FormData();
 		fdCanvas.left = new FormAttachment(0, 0);
-		fdCanvas.right = new FormAttachment(0, image.getBounds().width);
+		// fdCanvas.right = new FormAttachment(0, image.getBounds().width);
 		fdCanvas.top = new FormAttachment(0, 0);
-		fdCanvas.bottom = new FormAttachment(0, image.getBounds().height);
+		// fdCanvas.bottom = new FormAttachment(0, image.getBounds().height);
 		canvas.setLayoutData(fdCanvas);
-
+    	
 		Label name = new Label(lineComposite, SWT.LEFT);
 		props.setLook(name);
 		name.setText(pluginName);
 		name.setToolTipText(pluginDescription);
         if (isPlugin) name.setFont(GUIResource.getInstance().getFontBold());
-		FormData fdName = new FormData();
-		fdName.left = new FormAttachment(canvas, Const.MARGIN);
+        FormData fdName = new FormData();
+		fdName.left = new FormAttachment(canvas, 2);
 		fdName.right = new FormAttachment(100, 0);
 		fdName.top = new FormAttachment(canvas, 0, SWT.CENTER);
 		name.setLayoutData(fdName);
-
+		
 		addDragSourceToLine(canvas, plugin);
 		addDragSourceToLine(name, plugin);
 	}
@@ -1829,7 +1967,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	private void addDragSourceToTree(final Tree tree)
 	{
 		delegates.tree.addDragSourceToTree(tree, selectionTree, coreObjectsTree);
-
 	}
 
 	/**
@@ -3973,12 +4110,51 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 	/**
 	 * Refresh the object selection tree (on the left of the screen)
-     * @param complete true refreshes the complete tree, false tries to do a differential update to avoid flickering.
 	 */
 	public void refreshTree()
 	{
         if (shell.isDisposed()) return;
+        
+        if (!treeSelected) return; // Nothing to see here, move along...
 
+        if (selectionTree==null || selectionTree.isDisposed()) 
+        {
+			// //////////////////////////////////////////////////////////////////////////////////////////////////
+			//
+			// Now set up the transformation/job tree
+			//
+			selectionTree = new Tree(variableComposite, SWT.SINGLE /*| SWT.BORDER*/);
+			props.setLook(selectionTree);
+			selectionTree.setLayout(new FillLayout());
+
+			/*
+			ExpandItem treeItem = new ExpandItem(mainExpandBar, SWT.NONE);
+			treeItem.setControl(selectionTree);
+			treeItem.setHeight(shell.getBounds().height);
+			setHeaderImage(treeItem, GUIResource.getInstance().getImageLogoSmall(), STRING_SPOON_MAIN_TREE, 0, true);
+			*/
+			
+			// Add a tree memory as well...
+			TreeMemory.addTreeListener(selectionTree, STRING_SPOON_MAIN_TREE);
+	
+			selectionTree.addMouseListener(new MouseAdapter() {
+					public void mouseDown(MouseEvent event) {
+						if (event.button==3)
+						{
+							setMenu(selectionTree);
+						}
+					}
+				}
+			);
+	        selectionTree.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { showSelection(); } });
+	        selectionTree.addSelectionListener(new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e){ doubleClickedInTree(selectionTree); } });
+	
+			// Keyboard shortcuts!
+			selectionTree.addKeyListener(defKeys);
+			
+			// Set a listener on the tree
+			addDragSourceToTree(selectionTree);
+		}
         
 		GUIResource guiResource = GUIResource.getInstance();
 		TransMeta activeTransMeta = getActiveTransformation();
@@ -4269,6 +4445,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		refreshCoreObjectsHistory();
 
 		selectionTree.setFocus();
+		selectionTree.layout();
+		variableComposite.layout(true,true);
 		setShellText();
 	}
 
@@ -6034,7 +6212,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 						partitionerDialog = delegates.steps.getPartitionerDialog(stepMeta.getStepMetaInterface(), stepPartitioningMeta, transMeta);
 						/* String result = */ partitionerDialog.open();
 					} catch (Exception e) {
-						// TODO log this
 						e.printStackTrace();
 					}
 

@@ -110,6 +110,10 @@ public class GUIResource
 
 	private ManagedFont fontFixed;
 
+	private ManagedFont fontMedium;
+
+	private ManagedFont fontMediumBold;
+
 	private ManagedFont fontLarge;
 
 	private ManagedFont fontTiny;
@@ -271,6 +275,8 @@ public class GUIResource
 			fontGraph.dispose();
 			fontNote.dispose();
 			fontFixed.dispose();
+			fontMedium.dispose();
+			fontMediumBold.dispose();
 			fontLarge.dispose();
 			fontTiny.dispose();
 			fontBold.dispose();
@@ -297,7 +303,7 @@ public class GUIResource
 
 			disposeImage(imageEditOptionButton);
 			disposeImage(imageResetOptionButton);
-
+			
 			// big images
 			disposeImages(imagesSteps.values());
 
@@ -399,6 +405,14 @@ public class GUIResource
 		fontGraph = new ManagedFont(display, props.getGraphFont());
 		fontNote = new ManagedFont(display, props.getNoteFont());
 		fontFixed = new ManagedFont(display, props.getFixedFont());
+
+		// Create a medium size version of the graph font
+		FontData mediumFontData = new FontData(props.getGraphFont().getName(), (int)Math.round(props.getGraphFont().getHeight() * 1.2), props.getGraphFont().getStyle());
+		fontMedium = new ManagedFont(display, mediumFontData);
+
+		// Create a medium bold size version of the graph font
+		FontData mediumFontBoldData = new FontData(props.getGraphFont().getName(), (int)Math.round(props.getGraphFont().getHeight() * 1.2), props.getGraphFont().getStyle() | SWT.BOLD);
+		fontMediumBold = new ManagedFont(display, mediumFontBoldData);
 
 		// Create a large version of the graph font
 		FontData largeFontData = new FontData(props.getGraphFont().getName(), props.getGraphFont().getHeight() * 3, props.getGraphFont().getStyle());
@@ -1123,5 +1137,19 @@ public class GUIResource
 		
 		return location;
 		*/
+	}
+
+	/**
+	 * @return the fontMedium
+	 */
+	public Font getFontMedium() {
+		return fontMedium.getFont();
+	}
+
+	/**
+	 * @return the fontMediumBold
+	 */
+	public Font getFontMediumBold() {
+		return fontMediumBold.getFont();
 	}
 }
