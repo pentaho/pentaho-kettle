@@ -53,6 +53,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepErrorMeta;
 import org.pentaho.di.trans.step.StepInitThread;
 import org.pentaho.di.trans.step.StepInterface;
+import org.pentaho.di.trans.step.StepListener;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaDataCombi;
 import org.pentaho.di.trans.step.StepPartitioningMeta;
@@ -152,12 +153,17 @@ public class Trans implements VariableSpace
     private boolean preparing;
     private boolean initializing;
     private boolean running;
+    private boolean finished;
 
     private boolean readyToStart;    
     
     private Map<String,List<StepPerformanceSnapShot>> stepPerformanceSnapShots;
 
     private Timer stepPerformanceSnapShotTimer;
+    
+    private List<TransListener> transListeners;
+    
+    private int nrOfFinishedSteps;
     
 	/**
 	 * Initialize a transformation from transformation meta-data defined in memory
@@ -173,6 +179,7 @@ public class Trans implements VariableSpace
 		
         // This is needed for e.g. database 'unique' connections.
         threadName = Thread.currentThread().getName();
+        transListeners = new ArrayList<TransListener>();
 	}
 
 	public String getName()
@@ -212,6 +219,8 @@ public class Trans implements VariableSpace
 		{
 			throw new KettleException(Messages.getString("Trans.Exception.UnableToOpenTransformation",name), e); //$NON-NLS-1$ //$NON-NLS-2$
 		}
+		
+		transListeners = new ArrayList<TransListener>();
 	}
 
     /**
@@ -598,12 +607,43 @@ public class Trans implements VariableSpace
      */
     public void startThreads() throws KettleException
     {
-        // Now start all the threads...
+        // Now prepare to start all the threads...
+    	// 
+    	nrOfFinishedSteps=0;
+    	final Trans self = this;
+    	
         for (int i=0;i<steps.size();i++)
         {
             final StepMetaDataCombi sid = steps.get(i);
             sid.step.markStart();
             sid.step.initBeforeStart();
+            
+            // also attach a Step Listener to detect when we're done...
+            //
+            StepListener stepListener = new StepListener() 
+	            {
+					public void stepFinished(Trans trans, StepMeta stepMeta, StepInterface step) {
+						nrOfFinishedSteps++;
+						
+						if (nrOfFinishedSteps>=steps.size()) {
+							for (TransListener transListener : transListeners)
+							{
+								transListener.transFinished(self);
+							}
+						}
+						
+						// If a step fails with an error, we want to kill/stop the others too...
+						//
+						if (step.getErrors()>0) {
+
+							log.logMinimal(toString(), Messages.getString("Trans.Log.TransformationDetectedErrors")); //$NON-NLS-1$ //$NON-NLS-2$
+							log.logMinimal(toString(), Messages.getString("Trans.Log.TransformationIsKillingTheOtherSteps")); //$NON-NLS-1$
+
+							killAll();
+						}
+					}
+				};
+			sid.step.addStepListener(stepListener);
         }
 
     	if (transMeta.isCapturingStepPerformanceSnapShots()) 
@@ -622,11 +662,31 @@ public class Trans implements VariableSpace
     	}
     	
         // Now start all the threads...
+    	//
         for (int i=0;i<steps.size();i++)
         {
             steps.get(i).step.start();
         }
-
+        
+        // Now start a thread to monitor the running transformation...
+        //
+        finished=false;
+        
+		TransListener transListener = new TransListener() {
+				public void transFinished(Trans trans) {
+					
+					// First of all, stop the performance snapshot timer if there is is one...
+					//
+					if (transMeta.isCapturingStepPerformanceSnapShots() && stepPerformanceSnapShotTimer!=null) 
+					{
+						stepPerformanceSnapShotTimer.cancel();
+					}
+					
+					finished = true;
+				}
+			};
+		addTransListener(transListener);
+		
         running=true;
         
         log.logDetailed(toString(), Messages.getString("Trans.Log.TransformationHasAllocated",String.valueOf(steps.size()),String.valueOf(rowsets.size()))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -699,26 +759,13 @@ public class Trans implements VariableSpace
 	//
 	public void waitUntilFinished()
 	{
-		int ended=0;
-		int errors=0;
-
+		// We do this the simple way: we attach a transformation listener to this transformation...
+		//
 		try
 		{
-			while (ended!=steps.size() && errors==0)
+			while (!finished)
 			{
-				ended=getEnded();
-				errors=getErrors();
-				Thread.sleep(50); // sleep 1/20th of a second
-			}
-			if (errors==0)
-			{
-				log.logMinimal(toString(), Messages.getString("Trans.Log.TransformationEnded")); //$NON-NLS-1$
-			}
-			else
-			{
-				log.logMinimal(toString(), Messages.getString("Trans.Log.TransformationDetectedErrors")+errors+" steps with errors!"); //$NON-NLS-1$ //$NON-NLS-2$
-				log.logMinimal(toString(), Messages.getString("Trans.Log.TransformationIsKillingTheOtherSteps")); //$NON-NLS-1$
-				killAll();
+				Thread.sleep(0,1); // sleep a very short while
 			}
 		}
 		catch(Exception e)
@@ -773,21 +820,6 @@ public class Trans implements VariableSpace
 
 	public boolean isFinished()
 	{
-        if (steps==null) return false;
-
-		int ended=getEnded();
-
-		boolean finished = ended==steps.size();
-		
-		if (finished) 
-		{
-			// TODO replace by listener system, see PDI-662
-			//
-			if (transMeta.isCapturingStepPerformanceSnapShots() && stepPerformanceSnapShotTimer!=null) 
-			{
-				stepPerformanceSnapShotTimer.cancel();
-			}
-		}
 		return finished;
 	}
 
@@ -2494,5 +2526,23 @@ public class Trans implements VariableSpace
 	 */
 	public void setStepPerformanceSnapShots(Map<String, List<StepPerformanceSnapShot>> stepPerformanceSnapShots) {
 		this.stepPerformanceSnapShots = stepPerformanceSnapShots;
+	}
+
+	/**
+	 * @return the transListeners
+	 */
+	public List<TransListener> getTransListeners() {
+		return transListeners;
+	}
+
+	/**
+	 * @param transListeners the transListeners to set
+	 */
+	public void setTransListeners(List<TransListener> transListeners) {
+		this.transListeners = transListeners;
 	} 
+	
+	public void addTransListener(TransListener transListener) {
+		transListeners.add(transListener);
+	}
 }

@@ -556,7 +556,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 	                {
 	        			while (!runner.isFinished() && !parentJob.isStopped())
 	        			{
-	        				try { Thread.sleep(100);}
+	        				try { Thread.sleep(0,1);}
 	        				catch(InterruptedException e) { }
 	        			}
 	

@@ -144,7 +144,7 @@ public class JobEntryJobRunner implements Runnable
 	{
 		while (!isFinished())
 		{
-			try { Thread.sleep(100); }
+			try { Thread.sleep(0,1); }
 			catch(InterruptedException e) { }
 		}
 	}

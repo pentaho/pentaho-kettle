@@ -663,7 +663,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
                     	//
         				while (!trans.isFinished() && !parentJob.isStopped() && trans.getErrors() == 0)
         				{
-        					try { Thread.sleep(100);}
+        					try { Thread.sleep(0,500);}
         					catch(InterruptedException e) { }
         				}
 

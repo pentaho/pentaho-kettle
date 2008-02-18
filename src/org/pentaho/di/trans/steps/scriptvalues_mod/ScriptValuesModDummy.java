@@ -23,6 +23,7 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.trans.step.RowListener;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
+import org.pentaho.di.trans.step.StepListener;
 import org.pentaho.di.trans.step.StepMetaInterface;
 	/**
 	 * Dummy class used for test().
@@ -214,15 +215,17 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 		public RowMetaInterface getOutputRowMeta() {
 			return outputRowMeta;
 		}
+
 		public void initBeforeStart() throws KettleStepException {
-			
 		}
+
 		public void setLinesRejected(long linesRejected) {
-			// TODO Auto-generated method stub
-			
 		}
+
 		public int getCopy() {
-			// TODO Auto-generated method stub
 			return 0;
+		}
+
+		public void addStepListener(StepListener stepListener) {
 		}
 	}

@@ -242,5 +242,11 @@ public interface StepInterface
 	 * @throws KettleStepException In case there is an error
 	 */
 	public void initBeforeStart() throws KettleStepException;
+
+	/**
+	 * Attach a step listener to be notified when a step arrives in a certain state. (finished) 
+	 * @param stepListener The listener to add to the step
+	 */
+	public void addStepListener(StepListener stepListener);
 		   
 }

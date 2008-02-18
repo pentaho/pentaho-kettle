@@ -422,11 +422,24 @@ public class Job extends Thread implements VariableSpace
 	*/
 	public void waitUntilFinished(long maxMiliseconds)
 	{
+		try
+		{
+			while (isAlive())
+			{
+				Thread.sleep(0,1);
+			}
+		}
+		catch(InterruptedException e) 
+		{
+			
+		}
+		/*
         long time = 0L;
         while (isAlive() && (time<maxMiliseconds || maxMiliseconds<0))
         {
-            try { Thread.sleep(10); time+=10; } catch(InterruptedException e) {}
+            try { Thread.sleep(1); time+=1; } catch(InterruptedException e) {}
         }
+        */
 	}
 
 	/**

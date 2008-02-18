@@ -196,8 +196,10 @@ public class JobEntrySpecial extends JobEntryBase implements Cloneable, JobEntry
 		{
 			try {
 				long sleepTime = getNextExecutionTime();
-                parentJob.getLog().logBasic(parentJob.getName(), "Sleeping: " + (sleepTime/1000/60) + " minutes");
-				Thread.sleep(sleepTime);
+				if (sleepTime>0) {
+					parentJob.getLog().logBasic(parentJob.getName(), "Sleeping: " + (sleepTime/1000/60) + " minutes (sleep time="+sleepTime+")");
+					Thread.sleep(sleepTime);
+				}
 			} catch (InterruptedException e) {
 				throw new KettleJobException(e);
 			}
