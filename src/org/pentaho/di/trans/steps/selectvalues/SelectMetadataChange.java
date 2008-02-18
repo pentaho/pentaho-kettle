@@ -73,7 +73,8 @@ public class SelectMetadataChange implements Cloneable, XMLInterface{
 		retval.append("        ").append(XMLHandler.addTagValue("conversion_mask", conversionMask)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("        ").append(XMLHandler.addTagValue("decimal_symbol",  decimalSymbol)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("        ").append(XMLHandler.addTagValue("grouping_symbol", groupingSymbol)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("        ").append(XMLHandler.addTagValue("currency_symbol", currencySymbol)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("        ").append(XMLHandler.addTagValue("currency_symbol", currencySymbol)); //$NON-NLS-1$ //$NON-NLS-2$		
+		retval.append("        ").append(XMLHandler.addTagValue("storage_type",    ValueMeta.getStorageTypeCode(storageType))); //$NON-NLS-1$ //$NON-NLS-2$		
 		retval.append("      ").append(XMLHandler.closeTag(XML_TAG)); //$NON-NLS-1$
 		return retval.toString();
 	}
