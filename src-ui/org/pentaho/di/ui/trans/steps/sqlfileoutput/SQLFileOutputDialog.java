@@ -1119,7 +1119,7 @@ public class SQLFileOutputDialog extends BaseStepDialog implements StepDialogInt
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, Messages.getString("SQLFileOutputDialog.BuildSQLError.DialogTitle"), Messages.getString("TableOutputDialog.BuildSQLError.DialogMessage"), ke);
+			new ErrorDialog(shell, Messages.getString("SQLFileOutputDialog.BuildSQLError.DialogTitle"), Messages.getString("SQLFileOutputDialog.BuildSQLError.DialogMessage"), ke);
 		}
 	}
 	

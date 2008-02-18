@@ -70,7 +70,7 @@ import org.pentaho.di.job.entries.mssqlbulkload.Messages;
 public class JobEntryMssqlBulkLoadDialog extends JobEntryDialog implements JobEntryDialogInterface
 {
 
-	private static final String[] FILETYPES = new String[] { Messages.getString("JobMssqlBulkLoad.Filetype.Text"), Messages.getString("JobMssqlBulkLoad.Filetype.All") };
+	private static final String[] FILETYPES = new String[] { Messages.getString("JobMssqlBulkLoad.Filetype.Text"),Messages.getString("JobMssqlBulkLoad.Filetype.Csv"), Messages.getString("JobMssqlBulkLoad.Filetype.All") };
 
 	private Label wlName;
 	private Text wName;

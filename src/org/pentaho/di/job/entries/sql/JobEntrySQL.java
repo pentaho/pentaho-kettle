@@ -16,6 +16,13 @@ import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.andValid
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlankValidator;
 
 import java.util.List;
+import java.io.BufferedInputStream;
+import java.io.InputStreamReader;
+import java.io.BufferedReader;
+import java.io.InputStream;
+
+import org.pentaho.di.core.vfs.KettleVFS;
+import org.apache.commons.vfs.FileObject;
 
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
@@ -53,6 +60,8 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
 	private String sql;
 	private DatabaseMeta connection;
 	private boolean useVariableSubstitution = false;
+	private boolean sqlfromfile=false;
+	private String sqlfilename;
 
 	public JobEntrySQL(String n)
 	{
@@ -87,6 +96,10 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
 
 		retval.append("      ").append(XMLHandler.addTagValue("sql",      sql));
 		retval.append("      ").append(XMLHandler.addTagValue("useVariableSubstitution", useVariableSubstitution ? "T" : "F"));
+		retval.append("      ").append(XMLHandler.addTagValue("sqlfromfile", sqlfromfile ? "T" : "F"));
+		retval.append("      ").append(XMLHandler.addTagValue("sqlfilename",      sqlfilename));
+		
+		
 		retval.append("      ").append(XMLHandler.addTagValue("connection", connection==null?null:connection.getName()));
 
 		return retval.toString();
@@ -100,9 +113,19 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
 			sql           = XMLHandler.getTagValue(entrynode, "sql");
 			String dbname = XMLHandler.getTagValue(entrynode, "connection");
 			String sSubs  = XMLHandler.getTagValue(entrynode, "useVariableSubstitution");
+
 			if (sSubs != null && sSubs.equalsIgnoreCase("T"))
 				useVariableSubstitution = true;
 			connection    = DatabaseMeta.findDatabase(databases, dbname);
+			
+			
+			String ssql  = XMLHandler.getTagValue(entrynode, "sqlfromfile");
+			if (ssql != null && ssql.equalsIgnoreCase("T"))
+				sqlfromfile = true;
+			
+			sqlfilename    = XMLHandler.getTagValue(entrynode, "sqlfilename");
+			
+
 		}
 		catch(KettleException e)
 		{
@@ -121,6 +144,14 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
 			String sSubs = rep.getJobEntryAttributeString(id_jobentry, "useVariableSubstitution");
 			if (sSubs != null && sSubs.equalsIgnoreCase("T"))
 				useVariableSubstitution = true;
+			
+			String ssql = rep.getJobEntryAttributeString(id_jobentry, "sqlfromfile");
+			if (ssql != null && ssql.equalsIgnoreCase("T"))
+				sqlfromfile = true;
+			
+			sqlfilename = rep.getJobEntryAttributeString(id_jobentry, "sqlfilename");
+			
+			
 			long id_db = rep.getJobEntryAttributeInteger(id_jobentry, "id_database");
 			if (id_db>0)
 			{
@@ -150,6 +181,9 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
 			if (connection!=null) rep.saveJobEntryAttribute(id_job, getID(), "connection", connection.getName());
 			rep.saveJobEntryAttribute(id_job, getID(), "sql", sql);
 			rep.saveJobEntryAttribute(id_job, getID(), "useVariableSubstitution", useVariableSubstitution ? "T" : "F" );
+			rep.saveJobEntryAttribute(id_job, getID(), "sqlfromfile", useVariableSubstitution ? "T" : "F" );
+			rep.saveJobEntryAttribute(id_job, getID(), "sqlfilename", sqlfilename);
+	
 		}
 		catch(KettleDatabaseException dbe)
 		{
@@ -166,7 +200,17 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
 	{
 		return sql;
 	}
+	
+	 public String getSQLFilename()
+	 {
+	    return sqlfilename;
+	 }
 
+	 public void setSQLFilename(String sqlfilename)
+	{
+		this.sqlfilename = sqlfilename;
+	}
+	 
 	public boolean getUseVariableSubstitution()
 	{
 		return useVariableSubstitution;
@@ -176,6 +220,16 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
 	{
 		useVariableSubstitution = subs;
 	}
+	
+	public void setSQLFromFile(boolean sqlfromfilein)
+	{
+		sqlfromfile = sqlfromfilein;
+	}
+	public boolean getSQLFromFile()
+	{
+		return sqlfromfile;
+	}
+	
 
 	public void setDatabase(DatabaseMeta database)
 	{
@@ -196,31 +250,74 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
 		if (connection!=null)
 		{
 			Database db = new Database(connection);
+			FileObject SQLfile=null;
 			db.shareVariablesWith(this);
 			try
 			{
 				db.connect();
-				String mySQL = null;
-				if (useVariableSubstitution)
-					mySQL = environmentSubstitute(sql);
-				else
-					mySQL = sql;
-				db.execStatements(mySQL);
+				if(sqlfromfile)
+				{
+					if(sqlfilename==null)
+						throw new KettleDatabaseException(Messages.getString("JobSQL.NoSQLFileSpecified"));
+					
+					try{
+						String realfilename=environmentSubstitute(sqlfilename);
+						SQLfile=KettleVFS.getFileObject(realfilename);
+						if(!SQLfile.exists()) 
+						{
+							log.logError(toString(),Messages.getString("JobSQL.SQLFileNotExist",realfilename));
+							throw new KettleDatabaseException(Messages.getString("JobSQL.SQLFileNotExist",realfilename));
+						}
+						if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("JobSQL.SQLFileExists",realfilename));
+						
+						InputStream IS = KettleVFS.getInputStream(SQLfile);
+						InputStreamReader BIS = new InputStreamReader(new BufferedInputStream(IS, 500));
+						
+						StringBuffer lineStringBuffer = new StringBuffer(256);
+						lineStringBuffer.setLength(0);
+						
+						BufferedReader buff = new BufferedReader(BIS);
+						String sLine = null;
+		
+						while((sLine=buff.readLine())!=null) 
+						{
+							db.execStatements(sLine);
+						}
+					}catch (Exception e)
+					{
+						throw new KettleDatabaseException(Messages.getString("JobSQL.ErrorRunningSQLfromFile"),e);
+					}
+					
+				}else
+				{
+					String mySQL = null;
+					if (useVariableSubstitution)
+						mySQL = environmentSubstitute(sql);
+					else
+						mySQL = sql;
+					db.execStatements(mySQL);
+				}
 			}
 			catch(KettleDatabaseException je)
 			{
 				result.setNrErrors(1);
-				log.logError(toString(), "An error occurred executing this job entry : "+je.getMessage());
+				log.logError(toString(), Messages.getString("JobSQL.ErrorRunJobEntry",je.getMessage()));
 			}
 			finally
 			{
 				db.disconnect();
+				if(SQLfile!=null) 
+				{
+					try{
+					SQLfile.close();
+					}catch(Exception e){}
+				}
 			}
 		}
 		else
 		{
 			result.setNrErrors(1);
-			log.logError(toString(), "No database connection is defined.");
+			log.logError(toString(), Messages.getString("JobSQL.NoDatabaseConnection"));
 		}
 
 		if (result.getNrErrors()==0)

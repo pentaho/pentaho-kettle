@@ -852,7 +852,7 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
 					}
 					catch(KettleDatabaseException dbe)
 					{
-						retval.setError(Messages.getString("TableOutputMeta.Error.ErrorConnecting", dbe.getMessage()));
+						retval.setError(Messages.getString("SQLFileOutputMeta.Error.ErrorConnecting", dbe.getMessage()));
 					}
 					finally
 					{
@@ -866,12 +866,12 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
 			}
 			else
 			{
-				retval.setError(Messages.getString("TableOutputMeta.Error.NoInput"));
+				retval.setError(Messages.getString("SQLFileOutputMeta.Error.NoInput"));
 			}
 		}
 		else
 		{
-			retval.setError(Messages.getString("TableOutputMeta.Error.NoConnection"));
+			retval.setError(Messages.getString("SQLFileOutputMeta.Error.NoConnection"));
 		}
 
 		return retval;

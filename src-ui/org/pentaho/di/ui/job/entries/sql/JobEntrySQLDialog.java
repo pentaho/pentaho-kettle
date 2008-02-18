@@ -18,6 +18,7 @@ package org.pentaho.di.ui.job.entries.sql;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.ModifyEvent;
@@ -42,6 +43,7 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.job.JobMeta;
 
 import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.job.dialog.JobDialog;
 import org.pentaho.di.ui.job.entry.JobEntryDialog; 
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
@@ -61,6 +63,9 @@ import org.pentaho.di.job.entries.sql.Messages;
  */
 public class JobEntrySQLDialog extends JobEntryDialog implements JobEntryDialogInterface
 {
+	private static final String[] FILETYPES = new String[] { Messages.getString("JobSQL.Filetype.Sql"), Messages.getString("JobSQL.Filetype.Text"), Messages.getString("JobSQL.Filetype.All") };
+
+	
     private Label wlName;
 
     private Text wName;
@@ -72,8 +77,14 @@ public class JobEntrySQLDialog extends JobEntryDialog implements JobEntryDialogI
     private Label wlUseSubs;
 
     private Button wUseSubs;
+    
+    private Button wSQLFromFile;
+    
+    private Label wlSQLFromFile;
 
     private FormData fdlUseSubs, fdUseSubs;
+    
+    private FormData fdlSQLFromFile, fdSQLFromFile;
 
     private Label wlSQL;
 
@@ -96,6 +107,12 @@ public class JobEntrySQLDialog extends JobEntryDialog implements JobEntryDialogI
     private SelectionAdapter lsDef;
 
     private boolean changed;
+
+	// File
+	private Label wlFilename;
+	private Button wbFilename;
+	private TextVar wFilename;
+	private FormData fdlFilename, fdbFilename, fdFilename;
 
     public JobEntrySQLDialog(Shell parent, JobEntryInterface jobEntryInt, Repository rep, JobMeta jobMeta)
     {
@@ -154,7 +171,7 @@ public class JobEntrySQLDialog extends JobEntryDialog implements JobEntryDialogI
         wName.addModifyListener(lsMod);
         fdName = new FormData();
         fdName.left = new FormAttachment(middle, 0);
-        fdName.top = new FormAttachment(0, margin);
+        fdName.top = new FormAttachment(0,  margin);
         fdName.right = new FormAttachment(100, 0);
         wName.setLayoutData(fdName);
         
@@ -162,15 +179,100 @@ public class JobEntrySQLDialog extends JobEntryDialog implements JobEntryDialogI
 		wConnection = addConnectionLine(shell, wName, middle, margin);
 		if (jobEntry.getDatabase()==null && jobMeta.nrDatabases()==1) wConnection.select(0);
 		wConnection.addModifyListener(lsMod);
+		
+
+        // SQL from file?
+        wlSQLFromFile = new Label(shell, SWT.RIGHT);
+        wlSQLFromFile.setText(Messages.getString("JobSQL.SQLFromFile.Label"));
+        props.setLook(wlSQLFromFile);
+        fdlSQLFromFile = new FormData();
+        fdlSQLFromFile.left = new FormAttachment(0, 0);
+        fdlSQLFromFile.top = new FormAttachment(wConnection,2*margin);
+        fdlSQLFromFile.right = new FormAttachment(middle, -margin);
+        wlSQLFromFile.setLayoutData(fdlSQLFromFile);
+        wSQLFromFile = new Button(shell, SWT.CHECK);
+        props.setLook(wSQLFromFile);
+        wSQLFromFile.setToolTipText(Messages.getString("JobSQL.SQLFromFile.Tooltip"));
+        fdSQLFromFile = new FormData();
+        fdSQLFromFile.left = new FormAttachment(middle, 0);
+        fdSQLFromFile.top = new FormAttachment(wConnection, 2*margin);
+        fdSQLFromFile.right = new FormAttachment(100, 0);
+        wSQLFromFile.setLayoutData(fdSQLFromFile);
+        wSQLFromFile.addSelectionListener(new SelectionAdapter()
+        {
+            public void widgetSelected(SelectionEvent e)
+            {
+            	activeSQLFromFile();	
+                jobEntry.setChanged();
+            }
+        });
 
 
-        // Include Files?
+		// Filename line
+		wlFilename = new Label(shell, SWT.RIGHT);
+		wlFilename.setText(Messages.getString("JobSQL.Filename.Label"));
+		props.setLook(wlFilename);
+		fdlFilename = new FormData();
+		fdlFilename.left = new FormAttachment(0, 0);
+		fdlFilename.top = new FormAttachment(wSQLFromFile,  margin);
+		fdlFilename.right = new FormAttachment(middle, -margin);
+		wlFilename.setLayoutData(fdlFilename);
+
+		wbFilename = new Button(shell, SWT.PUSH | SWT.CENTER);
+		props.setLook(wbFilename);
+		wbFilename.setText(Messages.getString("System.Button.Browse"));
+		fdbFilename = new FormData();
+		fdbFilename.right = new FormAttachment(100, 0);
+		fdbFilename.top = new FormAttachment(wSQLFromFile, margin);
+		wbFilename.setLayoutData(fdbFilename);
+
+		wFilename = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		props.setLook(wFilename);
+		wFilename.setToolTipText(Messages.getString("JobSQL.Filename.Tooltip"));
+		wFilename.addModifyListener(lsMod);
+		fdFilename = new FormData();
+		fdFilename.left = new FormAttachment(middle, 0);
+		fdFilename.top = new FormAttachment(wSQLFromFile,  margin);
+		fdFilename.right = new FormAttachment(wbFilename, -margin);
+		wFilename.setLayoutData(fdFilename);
+
+		// Whenever something changes, set the tooltip to the expanded version:
+		wFilename.addModifyListener(new ModifyListener()
+		{
+			public void modifyText(ModifyEvent e)
+			{
+				wFilename.setToolTipText(jobMeta.environmentSubstitute(wFilename.getText()));
+			}
+		});
+
+		wbFilename.addSelectionListener(new SelectionAdapter()
+		{
+			public void widgetSelected(SelectionEvent e)
+			{
+				FileDialog dialog = new FileDialog(shell, SWT.OPEN);
+				dialog.setFilterExtensions(new String[] { "*.sql", "*.txt", "*" });
+				if (wFilename.getText() != null)
+				{
+					dialog.setFileName(jobMeta.environmentSubstitute(wFilename.getText()));
+				}
+				dialog.setFilterNames(FILETYPES);
+				if (dialog.open() != null)
+				{
+					wFilename.setText(dialog.getFilterPath() + Const.FILE_SEPARATOR
+						+ dialog.getFileName());
+				}
+			}
+		});
+
+		
+		
+        // Use variable substitution?
         wlUseSubs = new Label(shell, SWT.RIGHT);
         wlUseSubs.setText(Messages.getString("JobSQL.UseVariableSubst.Label"));
         props.setLook(wlUseSubs);
         fdlUseSubs = new FormData();
         fdlUseSubs.left = new FormAttachment(0, 0);
-        fdlUseSubs.top = new FormAttachment(wConnection, margin);
+        fdlUseSubs.top = new FormAttachment(wFilename, margin);
         fdlUseSubs.right = new FormAttachment(middle, -margin);
         wlUseSubs.setLayoutData(fdlUseSubs);
         wUseSubs = new Button(shell, SWT.CHECK);
@@ -178,7 +280,7 @@ public class JobEntrySQLDialog extends JobEntryDialog implements JobEntryDialogI
         wUseSubs.setToolTipText(Messages.getString("JobSQL.UseVariableSubst.Tooltip"));
         fdUseSubs = new FormData();
         fdUseSubs.left = new FormAttachment(middle, 0);
-        fdUseSubs.top = new FormAttachment(wConnection, margin);
+        fdUseSubs.top = new FormAttachment(wFilename, margin);
         fdUseSubs.right = new FormAttachment(100, 0);
         wUseSubs.setLayoutData(fdUseSubs);
         wUseSubs.addSelectionListener(new SelectionAdapter()
@@ -204,14 +306,14 @@ public class JobEntrySQLDialog extends JobEntryDialog implements JobEntryDialogI
         props.setLook(wlSQL);
         fdlSQL = new FormData();
         fdlSQL.left = new FormAttachment(0, 0);
-        fdlSQL.top = new FormAttachment(wConnection, margin);
+        fdlSQL.top = new FormAttachment(wUseSubs, margin);
         wlSQL.setLayoutData(fdlSQL);
         wSQL = new Text(shell, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
         props.setLook(wSQL, Props.WIDGET_STYLE_FIXED);
         wSQL.addModifyListener(lsMod);
         fdSQL = new FormData();
         fdSQL.left = new FormAttachment(0, 0);
-        fdSQL.top = new FormAttachment(wUseSubs, margin);
+        fdSQL.top = new FormAttachment(wlSQL, margin);
         fdSQL.right = new FormAttachment(100, -5);
         fdSQL.bottom = new FormAttachment(wlPosition, -margin);
         wSQL.setLayoutData(fdSQL);
@@ -265,6 +367,7 @@ public class JobEntrySQLDialog extends JobEntryDialog implements JobEntryDialogI
         });
 
         getData();
+        activeSQLFromFile();
 
         BaseStepDialog.setSize(shell);
 
@@ -301,7 +404,26 @@ public class JobEntrySQLDialog extends JobEntryDialog implements JobEntryDialogI
             wConnection.setText("");
 
         wUseSubs.setSelection(jobEntry.getUseVariableSubstitution());
+        wSQLFromFile.setSelection(jobEntry.getSQLFromFile());
+        
+        if (jobEntry.getSQLFilename() != null)
+        	wFilename.setText(jobEntry.getSQLFilename());
+        
+        
+        
         wName.selectAll();
+    }
+    private void activeSQLFromFile()
+    {
+    	wlFilename.setEnabled(wSQLFromFile.getSelection());
+    	wFilename.setEnabled(wSQLFromFile.getSelection());
+    	wbFilename.setEnabled(wSQLFromFile.getSelection());
+    	wUseSubs.setEnabled(!wSQLFromFile.getSelection());
+    	wlUseSubs.setEnabled(!wSQLFromFile.getSelection());
+    	wSQL.setEnabled(!wSQLFromFile.getSelection());
+    	wlPosition.setEnabled(!wSQLFromFile.getSelection());
+    	
+    	
     }
 
     private void cancel()
@@ -315,6 +437,10 @@ public class JobEntrySQLDialog extends JobEntryDialog implements JobEntryDialogI
     {
         jobEntry.setName(wName.getText());
         jobEntry.setSQL(wSQL.getText());
+        jobEntry.setUseVariableSubstitution(wUseSubs.getSelection());
+        jobEntry.setSQLFromFile(wSQLFromFile.getSelection());
+        jobEntry.setSQLFilename(wFilename.getText());
+        
         jobEntry.setDatabase(jobMeta.findDatabase(wConnection.getText()));
         dispose();
     }
