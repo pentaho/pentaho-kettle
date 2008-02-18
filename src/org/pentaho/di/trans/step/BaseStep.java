@@ -1176,23 +1176,34 @@ public class BaseStep extends Thread implements VariableSpace
 	        return null;
 	    }
 	    
+	    RowSet inputRowSet = null;
+        Object[] row=null;
+        
 	    // Do we need to switch to the next input stream?
     	if (blockPointer>=NR_OF_ROWS_IN_BLOCK) {
-    		nextInputStream();
+    		
+    		// Take a peek at the next input stream.
+    		// If there is no data, process another NR_OF_ROWS_IN_BLOCK on the next input stream.
+    		//
+    		for (int r=0;r<inputRowSets.size() && row==null;r++) {
+    			nextInputStream();
+	    		inputRowSet = currentInputStream();
+	    		row = inputRowSet.getRowImmediate();
+    		}
     	}
-
-    	// What's the current input stream?
-        RowSet inputRowSet = currentInputStream();
+    	else {
+    		// What's the current input stream?
+    		inputRowSet = currentInputStream();
+    	}
         
 	    // To reduce stress on the locking system we are going to allow
 	    // The buffer to grow beyond "a few" entries.
 	    // We'll only do that if the previous step has not ended...
 	    //
-        if (isUsingThreadPriorityManagment() && !inputRowSet.isDone() && inputRowSet.size()==0)
+        if (isUsingThreadPriorityManagment() && !inputRowSet.isDone() && inputRowSet.size()<= ( transMeta.getSizeRowset()>>6 ) && !isStopped())
         {
-        	try { Thread.sleep(0,10); } catch (InterruptedException e) { }
-        }
-    
+        	try { Thread.sleep(0,1); } catch (InterruptedException e) { }
+        }    
 
         // See if this step is receiving partitioned data...
         // In that case it might be the case that one input row set is receiving all data and
@@ -1202,14 +1213,12 @@ public class BaseStep extends Thread implements VariableSpace
         // So in THIS particular case it is safe to just read 100 rows from one rowset, then switch to another etc.
         // We can use timeouts to switch from one to another...
         // 
-        Object[] row=null;
-        
     	while (row==null && !isStopped()) {
         	// Get a row from the input in row set ...
     		// Timeout almost immediately if nothing is there to read.
     		// We will then switch to the next row set to read from...
     		//
-        	row = inputRowSet.getRowWait(2, TimeUnit.MILLISECONDS);
+        	row = inputRowSet.getRowWait(1, TimeUnit.MILLISECONDS);
         	if (row!=null) {
         		linesRead++;
         		blockPointer++;
@@ -1220,7 +1229,7 @@ public class BaseStep extends Thread implements VariableSpace
         		// the input stream and move on to the next one...
         		//
         		if (inputRowSet.isDone()) {
-        			row = inputRowSet.getRowWait(2, TimeUnit.MILLISECONDS);
+        			row = inputRowSet.getRowWait(1, TimeUnit.MILLISECONDS);
         			if (row==null) {
         				inputRowSets.remove(currentInputRowSetNr);
         				if (inputRowSets.isEmpty()) return null; // We're completely done.
