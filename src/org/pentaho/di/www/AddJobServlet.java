@@ -95,8 +95,8 @@ public class AddJobServlet extends HttpServlet
             JobConfiguration jobConfiguration = JobConfiguration.fromXML(xml.toString());
             JobMeta jobMeta = jobConfiguration.getJobMeta();
             JobExecutionConfiguration jobExecutionConfiguration = jobConfiguration.getJobExecutionConfiguration();
-            jobMeta.injectVariables(jobExecutionConfiguration.getVariables());
             log.setLogLevel(jobExecutionConfiguration.getLogLevel());
+            jobMeta.setArguments(jobExecutionConfiguration.getArgumentStrings());
             
             // If there was a repository, we know about it at this point in time.
             //
@@ -111,6 +111,12 @@ public class AddJobServlet extends HttpServlet
             {
                 throw new Exception("A job with the same name exists and is not idle."+Const.CR+"Please stop this job first.");
             }
+            
+            // Setting variables
+            //
+            job.initializeVariablesFrom(null);
+            job.getJobMeta().setInternalKettleVariables(job);
+            job.injectVariables(jobConfiguration.getJobExecutionConfiguration().getVariables());
             
             jobMap.addJob(jobMeta.getName(), job, jobConfiguration);
             
