@@ -557,7 +557,7 @@ log.logDetailed(toString(), Messages.getString("JobFTPPUT.Log.Starting"));
 					{
 						fileExist=ftpclient.exists(filelist[i]);
 					}
-					catch (FTPException e){
+					catch (Exception e){
 						// Assume file does not exist !!
 					}
 					
