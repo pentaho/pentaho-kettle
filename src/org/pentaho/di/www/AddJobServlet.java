@@ -15,6 +15,8 @@ package org.pentaho.di.www;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.util.Arrays;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -96,7 +98,7 @@ public class AddJobServlet extends HttpServlet
             JobMeta jobMeta = jobConfiguration.getJobMeta();
             JobExecutionConfiguration jobExecutionConfiguration = jobConfiguration.getJobExecutionConfiguration();
             log.setLogLevel(jobExecutionConfiguration.getLogLevel());
-            jobMeta.injectVariables(jobExecutionConfiguration.getVariables());
+            jobMeta.setArguments(jobExecutionConfiguration.getArgumentStrings());
             
             // If there was a repository, we know about it at this point in time.
             //
@@ -111,6 +113,12 @@ public class AddJobServlet extends HttpServlet
             {
                 throw new Exception("A job with the same name exists and is not idle."+Const.CR+"Please stop this job first.");
             }
+            
+            // Setting variables
+            //
+            job.initializeVariablesFrom(null);
+            job.getJobMeta().setInternalKettleVariables(job);
+            job.injectVariables(jobConfiguration.getJobExecutionConfiguration().getVariables());
             
             jobMap.addJob(jobMeta.getName(), job, jobConfiguration);
             
@@ -178,6 +186,20 @@ public class AddJobServlet extends HttpServlet
             out.println("</BODY>");
             out.println("</HTML>");
         }
+    }
+    
+    protected String[] getAllArgumentStrings(Map<String, String> arguments) {
+        if (arguments==null || arguments.size()==0) return null;
+
+        String[] argNames = arguments.keySet().toArray(new String[arguments.size()]);
+        Arrays.sort(argNames);
+
+        String[] values = new String[argNames.length];
+        for (int i=0;i<argNames.length;i++) {
+        	values[i] = arguments.get(argNames[i]);
+        }
+
+        return values;
     }
     
     public String toString()
