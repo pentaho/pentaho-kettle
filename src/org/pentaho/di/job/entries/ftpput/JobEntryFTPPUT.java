@@ -563,8 +563,9 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
 					try
 					{
 						fileExist=ftpclient.exists(filelist[i]);
+						
 					}
-					catch (FTPException e){
+					catch (Exception e){
 						// Assume file does not exist !!
 					}
 					
