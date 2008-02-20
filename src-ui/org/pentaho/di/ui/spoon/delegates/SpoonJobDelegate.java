@@ -890,7 +890,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 			{
 				JobLog jobLog = (JobLog) mapEntry.getObject();
 				if (jobLog.isDisposed()) {
-					spoon.delegates.tabs.getTabs().remove(jobLog);
+					// spoon.delegates.tabs.getTabs().remove(jobLog);
 					continue;
 				}
 				if (jobLog.getMeta().equals(jobMeta))

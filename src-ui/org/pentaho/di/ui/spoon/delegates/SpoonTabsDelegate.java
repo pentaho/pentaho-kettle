@@ -430,6 +430,8 @@ public class SpoonTabsDelegate extends SpoonDelegate
 				setEnabled("trans-verify",isTrans);
 				setEnabled("trans-impact",isTrans);
 				
+				spoon.enableMainEntries(true, false);
+				
 				break;
 			}
 		}

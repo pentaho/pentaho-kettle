@@ -368,6 +368,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	private Map<String, String> coreJobToolTipMap;
 
     private DefaultToolTip toolTip;
+	private Label treeButtonImage;
+	private Label sharedButtonImage;
+	private Label coreButtonImage;
+	private Label historyButtonImage;
 
     /**
      * This is the main procedure for Spoon.
@@ -1333,7 +1337,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		sep0.setLayoutData(fdSep0);
 		Control lastControl = sep0;
 
-		Label treeButtonImage = new Label(mainComposite, SWT.NONE);
+		treeButtonImage = new Label(mainComposite, SWT.NONE);
 		treeButtonImage.setBackground(background);
 		treeButtonImage.setImage(GUIResource.getInstance().getImageLogoSmall());
 		FormData fdTreeButtonImage = new FormData();
@@ -1364,7 +1368,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		lastControl=sep1;
 		*/
 		
-		Label sharedButtonImage = new Label(mainComposite, SWT.NONE);
+		sharedButtonImage = new Label(mainComposite, SWT.NONE);
 		sharedButtonImage.setBackground(background);
 		sharedButtonImage.setImage(GUIResource.getInstance().getImageLogoSmall());
 		FormData fdSharedButtonImage = new FormData();
@@ -1395,7 +1399,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		lastControl=sep2;
 		*/
 		
-		Label coreButtonImage = new Label(mainComposite, SWT.NONE);
+		coreButtonImage = new Label(mainComposite, SWT.NONE);
 		coreButtonImage.setBackground(background);
 		coreButtonImage.setImage(GUIResource.getInstance().getImageLogoSmall());
 		FormData fdCoreButtonImage = new FormData();
@@ -1426,7 +1430,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		lastControl=sep3;
 		*/
 		
-		Label historyButtonImage = new Label(mainComposite, SWT.NONE);
+		historyButtonImage = new Label(mainComposite, SWT.NONE);
 		historyButtonImage.setBackground(background);
 		historyButtonImage.setImage(GUIResource.getInstance().getImageLogoSmall());
 		FormData fdHistoryButtonImage = new FormData();
@@ -2508,6 +2512,31 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 	public void tabSelected(TabItem item)	{
 		delegates.tabs.tabSelected(item);
+	}
+
+	public void enableMainEntries(boolean enableTrans, boolean enableJob) {
+
+		treeButton.setVisible(true);
+		treeButtonImage.setVisible(true);
+		sharedButton.setVisible(true);
+		sharedButtonImage.setVisible(true);
+		coreButton.setVisible(true);
+		coreButtonImage.setVisible(true);
+		historyButton.setVisible(true);
+		historyButtonImage.setVisible(true);
+
+		if (enableTrans) {
+			// All 4 
+			//
+		} else if (enableJob) {
+			historyButton.setVisible(false);
+			historyButtonImage.setVisible(false);
+		} else {
+			historyButton.setVisible(false);
+			historyButtonImage.setVisible(false);
+			coreButton.setVisible(false);
+			coreButtonImage.setVisible(false);
+		}
 	}
 
 	public String getRepositoryName()
@@ -4824,6 +4853,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		toolbar.setEnableById("file-save-as", enableTransMenu || enableJobMenu);
 		toolbar.setEnableById("file-save", enableTransMenu || enableJobMenu);
 		toolbar.setEnableById("explore-database", enableTransMenu || enableJobMenu);
+		
+		enableMainEntries(enableTransMenu, enableJobMenu);
 		
 		// What steps & plugins to show?
 		refreshCoreObjects();
