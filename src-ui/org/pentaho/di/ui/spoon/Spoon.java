@@ -1581,7 +1581,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	            if (object instanceof DatabaseMeta)
 	            {
 	                DatabaseMeta databaseMeta = (DatabaseMeta) object;
-	                TreeItem databaseItem = new TreeItem(stepsItem, SWT.NONE);
+	                TreeItem databaseItem = new TreeItem(databasesItem, SWT.NONE);
 	    			databaseItem.setText(databaseMeta.getName());
 	    			databaseItem.setImage(GUIResource.getInstance().getImageConnection());
 	            }
