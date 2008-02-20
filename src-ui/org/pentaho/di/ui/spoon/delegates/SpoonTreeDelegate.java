@@ -195,11 +195,10 @@ public class SpoonTreeDelegate extends SpoonDelegate
 				{
 				case 0:
 					break;
-				case 1: // Job entries
-					if (path[1].equals(Spoon.STRING_JOB_BASE))
+				case 2: // Job entries
+					if (spoon.showJob)
 					{
-						JobPlugin jobPlugin = JobEntryLoader.getInstance().findJobEntriesWithDescription(
-								path[1]);
+						JobPlugin jobPlugin = JobEntryLoader.getInstance().findJobEntriesWithDescription(path[1]);
 						if (jobPlugin != null)
 						{
 							object = new TreeSelection(path[1], jobPlugin);
@@ -208,9 +207,11 @@ public class SpoonTreeDelegate extends SpoonDelegate
 							object = new TreeSelection(path[1], JobPlugin.class);
 						}
 					}
-					break;
-				case 2: // Steps
-					object = new TreeSelection(path[1], StepLoader.getInstance().findStepPluginWithDescription(path[1]));
+					if (spoon.showTrans)
+					{
+						// Steps
+						object = new TreeSelection(path[1], StepLoader.getInstance().findStepPluginWithDescription(path[1]));
+					}
 					break;
 				default:
 					break;

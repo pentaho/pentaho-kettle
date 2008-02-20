@@ -1720,6 +1720,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 	private boolean previousShowTrans;
 	private boolean previousShowJob;
+	public boolean showTrans;
+	public boolean showJob;
 
 	public void refreshCoreObjects()
 	{
@@ -1730,8 +1732,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			addCoreObjectsTree();
 		}
 		
-		boolean showTrans = getActiveTransformation() != null;
-		boolean showJob = getActiveJob() != null;
+		showTrans = getActiveTransformation() != null;
+		showJob = getActiveJob() != null;
 
 		if ( showTrans == previousShowTrans && showJob == previousShowJob )
 		{
