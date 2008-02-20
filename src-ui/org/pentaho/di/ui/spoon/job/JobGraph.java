@@ -74,6 +74,7 @@ import org.pentaho.di.job.entries.trans.JobEntryTrans;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.PropsUI;
@@ -2347,7 +2348,8 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
         {
             try
             {
-                jobMeta.readSharedObjects(rep);
+                SharedObjects sharedObjects = jobMeta.readSharedObjects(rep);
+                spoon.sharedObjectsFileMap.put(sharedObjects.getFilename(), sharedObjects);
             }
             catch(Exception e)
             {

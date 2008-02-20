@@ -47,6 +47,12 @@ import org.w3c.dom.NodeList;
  */
 public class SharedObjects
 {
+	private static final String XML_TAG = "sharedobjects";
+	
+	private String filename;
+	
+	private Map<SharedEntry, SharedObjectInterface> objectsMap;
+	
     private class SharedEntry
     {
         public String className;
@@ -74,12 +80,6 @@ public class SharedObjects
         }
         
     }
-    private static final String XML_TAG = "sharedobjects";
-    
-    private String filename;
-
-
-    private Map<SharedEntry, SharedObjectInterface> objectsMap;
 
     public SharedObjects(String sharedObjectsFile) throws KettleXMLException
     {
@@ -243,4 +243,18 @@ public class SharedObjects
         out.close();
         outputStream.close();
     }
+
+	/**
+	 * @return the filename
+	 */
+	public String getFilename() {
+		return filename;
+	}
+
+	/**
+	 * @param filename the filename to set
+	 */
+	public void setFilename(String filename) {
+		this.filename = filename;
+	}
 }

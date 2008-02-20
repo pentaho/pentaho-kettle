@@ -206,6 +206,9 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     /** If this is null, we load from the default shared objects file : $KETTLE_HOME/.kettle/shared.xml */
     private String              sharedObjectsFile;
     
+    /** The last load of the shared objects file by this TransMet object */
+    private SharedObjects       sharedObjects;
+    
     private VariableSpace       variables = new Variables();
     
     /** The slave-step-copy/partition distribution.  Only used for slave transformations in a clustering environment. */
@@ -2312,7 +2315,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
                 if (monitor != null) monitor.subTask(Messages.getString("TransMeta.Monitor.ReadingTheAvailableSharedObjectsTask.Title")); //$NON-NLS-1$
                 try
                 {
-                    readSharedObjects(rep);
+                    sharedObjects = readSharedObjects(rep);
                 }
                 catch(Exception e)
                 {
@@ -2800,7 +2803,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
             try
             {
                 sharedObjectsFile = XMLHandler.getTagValue(transnode, "info", "shared_objects_file"); //$NON-NLS-1$ //$NON-NLS-2$
-                readSharedObjects(rep);
+                sharedObjects = readSharedObjects(rep);
             }
             catch(Exception e)
             {
@@ -3179,7 +3182,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
     }
     
-    public void readSharedObjects(Repository rep) throws KettleException
+    public SharedObjects readSharedObjects(Repository rep) throws KettleException
     {
     	if ( rep != null )
     	{
@@ -3231,6 +3234,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
             readSlaves(rep, true);
             readClusters(rep, true);
         }
+        
+        return sharedObjects;
     }
 
 
@@ -5966,5 +5971,19 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 	 */
 	public void setStepPerformanceCapturingDelay(long stepPerformanceCapturingDelay) {
 		this.stepPerformanceCapturingDelay = stepPerformanceCapturingDelay;
+	}
+
+	/**
+	 * @return the sharedObjects
+	 */
+	public SharedObjects getSharedObjects() {
+		return sharedObjects;
+	}
+
+	/**
+	 * @param sharedObjects the sharedObjects to set
+	 */
+	public void setSharedObjects(SharedObjects sharedObjects) {
+		this.sharedObjects = sharedObjects;
 	}
 }

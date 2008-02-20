@@ -166,6 +166,9 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	 * $KETTLE_HOME/.kettle/shared.xml
 	 */
 	protected String sharedObjectsFile;
+	
+	/** The last loaded version of the shared objects */
+	private SharedObjects sharedObjects;
 
 	public JobMeta(LogWriter l) {
 		log = l;
@@ -724,7 +727,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 			// Read objects from the shared XML file & the repository
 			try {
 				sharedObjectsFile = XMLHandler.getTagValue(jobnode, "shared_objects_file"); //$NON-NLS-1$ //$NON-NLS-2$
-				readSharedObjects(rep);
+				sharedObjects = readSharedObjects(rep);
 			} catch (Exception e) {
 				LogWriter.getInstance().logError(toString(),
 						Messages.getString("JobMeta.ErrorReadingSharedObjects.Message", e.toString())); // $NON-NLS-1$
@@ -940,7 +943,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
         }
     }
 
-	public void readSharedObjects(Repository rep) throws KettleException {
+	public SharedObjects readSharedObjects(Repository rep) throws KettleException {
 		// Extract the shared steps, connections, etc. using the SharedObjects
 		// class
 		//
@@ -966,6 +969,8 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 			readDatabases(rep, true);
             readSlaves(rep, true);
 		}
+		
+		return sharedObjects;
 	}
 
 	public boolean saveSharedObjects() {
@@ -1237,7 +1242,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 				// Read objects from the shared XML file & the repository
 				try {
 					sharedObjectsFile = jobRow.getString("SHARED_FILE", null);
-					readSharedObjects(rep);
+					sharedObjects = readSharedObjects(rep);
 				} catch (Exception e) {
 					LogWriter.getInstance().logError(toString(),
 							Messages.getString("JobMeta.ErrorReadingSharedObjects.Message", e.toString())); // $NON-NLS-1$
@@ -2716,5 +2721,19 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		// Rename if required.
 		//
 		je.setName(newname);
+	}
+
+	/**
+	 * @return the sharedObjects
+	 */
+	public SharedObjects getSharedObjects() {
+		return sharedObjects;
+	}
+
+	/**
+	 * @param sharedObjects the sharedObjects to set
+	 */
+	public void setSharedObjects(SharedObjects sharedObjects) {
+		this.sharedObjects = sharedObjects;
 	}
 }

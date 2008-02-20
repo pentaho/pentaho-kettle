@@ -74,6 +74,7 @@ import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.i18n.LanguageChoice;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.DatabaseImpact;
 import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.StepPlugin;
@@ -2505,7 +2506,8 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         {
             try
             {
-            	transMeta.readSharedObjects(rep);
+            	SharedObjects sharedObjects = transMeta.readSharedObjects(rep);
+            	spoon.sharedObjectsFileMap.put(sharedObjects.getFilename(), sharedObjects);
             }
             catch(Exception e)
             {
@@ -2517,7 +2519,8 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         {
             try
             {
-                transMeta.readSharedObjects(rep);
+                SharedObjects sharedObjects = transMeta.readSharedObjects(rep);
+            	spoon.sharedObjectsFileMap.put(sharedObjects.getFilename(), sharedObjects);
             }
             catch(KettleException e)
             {
