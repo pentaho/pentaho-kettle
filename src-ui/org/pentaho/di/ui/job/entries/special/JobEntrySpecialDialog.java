@@ -150,10 +150,14 @@ public class JobEntrySpecialDialog extends JobEntryDialog implements JobEntryDia
         placeControl(shell, Messages.getString("JobSpecial.Type.Label"), wType, wRepeat);
 
         wIntervalSeconds = new Spinner(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wIntervalSeconds.setMinimum(0);
+        wIntervalSeconds.setMaximum(Integer.MAX_VALUE);
         placeControl(shell, Messages.getString("JobSpecial.IntervalSeconds.Label"), wIntervalSeconds,
             wType);
 
         wIntervalMinutes = new Spinner(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wIntervalMinutes.setMinimum(0);
+        wIntervalMinutes.setMaximum(Integer.MAX_VALUE);
         placeControl(shell, Messages.getString("JobSpecial.IntervalMinutes.Label"), wIntervalMinutes,
             wIntervalSeconds);
 
