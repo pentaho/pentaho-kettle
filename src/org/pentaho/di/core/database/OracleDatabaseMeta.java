@@ -140,6 +140,13 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 					(databaseName.startsWith("/") || databaseName.startsWith(":"))) {
 				return "jdbc:oracle:thin:@"+hostname+":"+port+databaseName;
 			}
+			else if (Const.isEmpty(getHostname()) && Const.isEmpty(getDatabasePortNumberString())) {
+				// support RAC with a self defined URL in databaseName like
+				// (DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = host1-vip)(PORT = 1521))(ADDRESS = (PROTOCOL = TCP)(HOST = host2-vip)(PORT = 1521))(LOAD_BALANCE = yes)(CONNECT_DATA =(SERVER = DEDICATED)(SERVICE_NAME = db-service)(FAILOVER_MODE =(TYPE = SELECT)(METHOD = BASIC)(RETRIES = 180)(DELAY = 5))))
+				// or (DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=PRIMARY_NODE_HOSTNAME)(PORT=1521))(ADDRESS=(PROTOCOL=TCP)(HOST=SECONDARY_NODE_HOSTNAME)(PORT=1521)))(CONNECT_DATA=(SERVICE_NAME=DATABASE_SERVICENAME)))
+				// or (DESCRIPTION=(FAILOVER=ON)(ADDRESS_LIST=(LOAD_BALANCE=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=xxxxx)(PORT=1526))(ADDRESS=(PROTOCOL=TCP)(HOST=xxxx)(PORT=1526)))(CONNECT_DATA=(SERVICE_NAME=somesid)))
+				return "jdbc:oracle:thin:@"+getDatabaseName();
+			}
 			else {
 				// by default we assume a SID
 				return "jdbc:oracle:thin:@"+hostname+":"+port+":"+databaseName;
