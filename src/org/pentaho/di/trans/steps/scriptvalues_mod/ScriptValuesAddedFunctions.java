@@ -34,6 +34,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.Format;
@@ -43,6 +44,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
+import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -904,14 +906,40 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 						dfFormatter = new SimpleDateFormat(sArg2, dfLocale);
 						oRC = dfFormatter.parseObject(sArg1);
 					}else{
-						throw Context.reportRuntimeError("");
+						throw Context.reportRuntimeError("Locale is not 2 characters long.");
 					}
 				}catch(Exception e){
 					throw Context.reportRuntimeError("Could not apply the local format : " + e.getMessage());
 				}
-				break;				
+				break;
+			case 4:
+				try{
+					if(isNull(ArgList,new int[]{0,1,2,3})) return null;
+		    		else if(isUndefined(ArgList,new int[]{0,1,2,3})) return Context.getUndefinedValue();
+					String sArg1 = Context.toString(ArgList[0]);
+					DateFormat dfFormatter;
+					String sArg2 = Context.toString(ArgList[1]);
+					String sArg3 = Context.toString(ArgList[2]);
+					String sArg4 = Context.toString(ArgList[3]);
+					
+					// If the timezone is not recognized, java will automatically
+					// take GMT.
+					TimeZone tz = TimeZone.getTimeZone(sArg4);								
+					
+					if(sArg3.length() == 2){
+						Locale dfLocale = new Locale(sArg3);
+						dfFormatter = new SimpleDateFormat(sArg2, dfLocale);
+						dfFormatter.setTimeZone(tz);
+						oRC = dfFormatter.parseObject(sArg1);
+					}else{
+						throw Context.reportRuntimeError("Locale is not 2 characters long.");
+					}
+				}catch(Exception e){
+					throw Context.reportRuntimeError("Could not apply the local format : " + e.getMessage());
+				}
+				break;								
 			default:
-				throw Context.reportRuntimeError("The function call str2date requires 1, 2, or 3 arguments.");
+				throw Context.reportRuntimeError("The function call str2date requires 1, 2, 3, or 4 arguments.");
 		}
 		return oRC;
 	}
@@ -950,7 +978,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 					if(isNull(ArgList,new int[]{0,1,2})) return null;
 		    		else if(isUndefined(ArgList,new int[]{0,1,2})) return Context.getUndefinedValue();
 					java.util.Date dArg1 = (java.util.Date)Context.jsToJava(ArgList[0], java.util.Date.class);
-					Format dfFormatter;
+					DateFormat dfFormatter;
 					String sArg2 = Context.toString(ArgList[1]);
 					String sArg3 = Context.toString(ArgList[2]);
 					if(sArg3.length() == 2){
@@ -958,14 +986,40 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 						dfFormatter = new SimpleDateFormat(sArg2, dfLocale);
 						oRC = dfFormatter.format(dArg1);
 					}else{
-						throw Context.reportRuntimeError("");
+						throw Context.reportRuntimeError("Locale is not 2 characters long.");
 					}
 				}catch(Exception e){
 					throw Context.reportRuntimeError("Could not convert to the given local format.");
 				}
-				break;				
+				break;
+			case 4:
+				try{
+					if(isNull(ArgList,new int[]{0,1,2,3})) return null;
+		    		else if(isUndefined(ArgList,new int[]{0,1,2,3})) return Context.getUndefinedValue();
+					java.util.Date dArg1 = (java.util.Date)Context.jsToJava(ArgList[0], java.util.Date.class);
+					DateFormat dfFormatter;
+					String sArg2 = Context.toString(ArgList[1]);
+					String sArg3 = Context.toString(ArgList[2]);
+					String sArg4 = Context.toString(ArgList[3]);
+					
+					// If the timezone is not recognized, java will automatically
+					// take GMT.
+					TimeZone tz = TimeZone.getTimeZone(sArg4);
+					
+					if(sArg3.length() == 2){
+						Locale dfLocale = new Locale(sArg3.toLowerCase());
+						dfFormatter = new SimpleDateFormat(sArg2, dfLocale);
+						dfFormatter.setTimeZone(tz);
+						oRC = dfFormatter.format(dArg1);
+					}else{
+						throw Context.reportRuntimeError("Locale is not 2 characters long.");
+					}																			
+				}catch(Exception e){
+					throw Context.reportRuntimeError("Could not convert to the given local format.");
+				}
+				break;								
 			default:
-				throw Context.reportRuntimeError("The function call date2str requires 1, 2, or 3 arguments.");
+				throw Context.reportRuntimeError("The function call date2str requires 1, 2, 3, or 4 arguments.");
 		}
 		return oRC;
 	}

@@ -33,31 +33,41 @@ Alert(isNum(str2));
 // str2date(var, var);
 // 1: String - The Variable with the String to convert.
 // 2: String - The Format:
-// yy / yyyy - 06 / 2006
-// MM / MMM / MMMMM - 11 / Nov / November
-// d / dd  - 1 / 01
-// E / EEEE - Tue / Tuesday
-// hh / HH - 11 / 23
-// m / mm - 5 / 05
-// s / ss - 8 / 08
+//        yy / yyyy - 06 / 2006
+//        MM / MMM / MMMMM - 11 / Nov / November
+//        d / dd  - 1 / 01
+//        E / EEEE - Tue / Tuesday
+//        hh / HH - 11 / 23
+//        m / mm - 5 / 05
+//        s / ss - 8 / 08
 //
 // str2date(var, var, var);
 // 1: String - The Variable with the String to convert.
 // 2: String - The Format:
 // 3: String - The Locale Parameter
-// An valid ISO Language Code. (DE = German, EN = English, FR = France, ...)
+//    An valid ISO Language Code. (DE = German, EN = English, FR = France, ...)
+//
+// str2date(var, var, var, var);
+// 1: String - The Variable with the String to convert.
+// 2: String - The Format:
+// 3: String - The Locale Parameter
+//    An valid ISO Language Code. (DE = German, EN = English, FR = France, ...)
+// 4: String - The Timezone Parameter.
+//    A valid timezone: EST, GMT, ... (if invalid GMT will be selected as default)
 // 
 // 2006-11-15
 //
 Alert(str2date("01.12.2006","dd.MM.yyyy"));
 Alert(str2date("01.12.2006 23:23:01","dd.MM.yyyy HH:mm:ss"));
-Alert(str2date("01.Mai.2006","dd.MMM.yyyy","DE"));
-Alert(str2date("Tue.Mar.2006","E.MMM.yyyy","EN"));</sample>
+Alert(str2date("Tue.May.2006","E.MMM.yyyy","EN"));
+Alert(str2date("22.02.2008 23:23:01","dd.MM.yyyy HH:mm:ss","DE"));
+Alert(str2date("22.02.2008 23:23:01","dd.MM.yyyy HH:mm:ss","DE", "EST"));</sample>
        <type>2</type>
       <Arguments>
          <argument id="1">var</argument>
          <argument id="2">var,var</argument>
          <argument id="3">var,var,var</argument>
+         <argument id="4">var,var,var,var</argument>
       </Arguments>
    </jsFunction>
    
@@ -73,19 +83,27 @@ Alert(str2date("Tue.Mar.2006","E.MMM.yyyy","EN"));</sample>
 // date2str(var, var);
 // 1: Date - The Variable with the Date to convert.
 // 2: String - The Format:
-// yy / yyyy - 06 / 2006
-// MM / MMM / MMMMM - 11 / Nov / November
-// d / dd  - 1 / 01
-// E / EEEE - Tue / Tuesday
-// hh / HH - 11 / 23
-// m / mm - 5 / 05
-// s / ss - 8 / 08
+//        yy / yyyy - 06 / 2006
+//        MM / MMM / MMMMM - 11 / Nov / November
+//        d / dd  - 1 / 01
+//        E / EEEE - Tue / Tuesday
+//        hh / HH - 11 / 23
+//        m / mm - 5 / 05
+//        s / ss - 8 / 08
 //
 // date2str(var, var, var);
 // 1: Date - The Variable with the Date to convert.
 // 2: String - The Format:
 // 3: String - The Locale Parameter
-// An valid ISO Language Code. (DE = German, EN = English, FR = France, ...)
+//    A valid ISO Language Code. (DE = German, EN = English, FR = France, ...)
+//
+// date2str(var, var, var, var);
+// 1: Date - The Variable with the Date to convert.
+// 2: String - The Format:
+// 3: String - The Locale Parameter
+//    A valid ISO Language Code. (DE = German, EN = English, FR = France, ...)
+// 4: String - The Timezone Parameter.
+//    A valid timezone: EST, GMT, ... (if invalid GMT will be selected as default)
 // 
 // 2006-11-15
 //
@@ -93,14 +111,16 @@ var dValue = new Date();
 Alert(date2str(dValue));
 Alert(date2str(dValue,"dd.MM.yyyy"));
 Alert(date2str(dValue,"dd.MM.yyyy HH:mm:ss"));
-Alert(date2str(dValue,"dd.MMM.yyyy","GE"));
-Alert(date2str(dValue,"E.MMM.yyyy","EN"));
+Alert(date2str(dValue,"E.MMM.yyyy","DE"));
+Alert(date2str(dValue,"dd.MM.yyyy HH:mm:ss","EN"));
+Alert(date2str(dValue,"dd.MM.yyyy HH:mm:ss","EN", "EST"));
      </sample>
        <type>0</type>
       <Arguments>
          <argument id="1">var</argument>
          <argument id="2">var,var</argument>
          <argument id="3">var,var,var</argument>         
+         <argument id="4">var,var,var,var</argument>
       </Arguments>
    </jsFunction>
 
