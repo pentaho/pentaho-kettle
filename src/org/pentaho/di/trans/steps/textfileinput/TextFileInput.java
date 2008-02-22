@@ -653,7 +653,7 @@ public class TextFileInput extends BaseStep implements StepInterface
                     catch (Exception e)
                     {                               	
                         // OK, give some feedback!
-                        String message = "Couldn't parse field [" + valueMeta.toStringMeta() + "] with value [" + pol + "], format ["+valueMeta.getConversionMask()+"]";
+                        String message = "Couldn't parse field [" + valueMeta.toStringMeta() + "] with value [" + pol + "], format ["+valueMeta.getConversionMask()+"] on data row [" + rowNr + "].";
                         
                         if (info.isErrorIgnored())
                         {
