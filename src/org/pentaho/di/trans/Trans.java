@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.vfs.FileName;
 import org.apache.commons.vfs.FileObject;
@@ -153,7 +154,7 @@ public class Trans implements VariableSpace
     private boolean preparing;
     private boolean initializing;
     private boolean running;
-    private boolean finished;
+    private AtomicBoolean finished;
 
     private boolean readyToStart;    
     
@@ -180,6 +181,8 @@ public class Trans implements VariableSpace
         // This is needed for e.g. database 'unique' connections.
         threadName = Thread.currentThread().getName();
         transListeners = new ArrayList<TransListener>();
+        
+        finished = new AtomicBoolean(false);
 	}
 
 	public String getName()
@@ -221,6 +224,7 @@ public class Trans implements VariableSpace
 		}
 		
 		transListeners = new ArrayList<TransListener>();
+		finished = new AtomicBoolean(false);
 	}
 
     /**
@@ -670,7 +674,7 @@ public class Trans implements VariableSpace
         
         // Now start a thread to monitor the running transformation...
         //
-        finished=false;
+        finished.set(false);
         
 		TransListener transListener = new TransListener() {
 				public void transFinished(Trans trans) {
@@ -682,7 +686,7 @@ public class Trans implements VariableSpace
 						stepPerformanceSnapShotTimer.cancel();
 					}
 					
-					finished = true;
+					finished.set(true);
 				}
 			};
 		addTransListener(transListener);
@@ -763,7 +767,7 @@ public class Trans implements VariableSpace
 		//
 		try
 		{
-			while (!finished)
+			while (!finished.get())
 			{
 				Thread.sleep(0,1); // sleep a very short while
 			}
@@ -820,19 +824,21 @@ public class Trans implements VariableSpace
 
 	public boolean isFinished()
 	{
-		return finished;
+		return finished.get();
 	}
 
 	public void killAll()
 	{
 		if (steps==null) return;
 		
+		int nrStepsFinished = 0;
+		
 		for (int i=0;i<steps.size();i++)
 		{
 			StepMetaDataCombi sid = steps.get(i);
 			BaseStep thr = (BaseStep)sid.step;
 
-			log.logBasic(toString(), Messages.getString("Trans.Log.LookingAtStep")+thr.getStepname()); //$NON-NLS-1$
+			if (log.isDebug()) log.logDebug(toString(), Messages.getString("Trans.Log.LookingAtStep")+thr.getStepname()); //$NON-NLS-1$
 			while (thr.isAlive())
 			{
 				thr.stopAll();
@@ -846,7 +852,11 @@ public class Trans implements VariableSpace
 					return;
 				}
 			}
+			
+			if (!thr.isAlive()) nrStepsFinished++;
 		}
+		
+		if (nrStepsFinished==steps.size()) finished.set(true);
 	}
 
 	public void printStats(int seconds)
