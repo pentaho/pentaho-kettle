@@ -1077,6 +1077,8 @@ public class ValueMeta implements ValueMetaInterface
 
     private byte[] convertStringToBinaryString(String string) throws KettleValueException
     {
+    	if (string==null) return null;
+    	
         if (Const.isEmpty(stringEncoding))
         {
             return string.getBytes();
