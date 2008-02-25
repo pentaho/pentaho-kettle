@@ -238,7 +238,7 @@ public class WebService extends BaseStep implements StepInterface
         xml.append("</soapenv:Envelope>\n");
     }
 
-    private void requestSOAP() throws KettleStepException
+    private synchronized void requestSOAP() throws KettleStepException
     {
         HttpClient vHttpClient = new HttpClient();
         String vURLSansVariable = environmentSubstitute(meta.getUrl());
@@ -315,7 +315,6 @@ public class WebService extends BaseStep implements StepInterface
         {
             vHttpMethod.releaseConnection();
         }
-
     }
 
     public boolean init(StepMetaInterface smi, StepDataInterface sdi)
