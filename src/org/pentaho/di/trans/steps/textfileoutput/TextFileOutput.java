@@ -171,7 +171,10 @@ public class TextFileOutput extends BaseStep implements StepInterface
 					ValueMetaInterface v=rowMeta.getValueMeta(i);
                     Object valueData = r[i];
                     
-					writeField(v, valueData, data.binaryNullValue[i]);
+                    // no special null value default was specified since no fields are specified at all
+                    // As such, we pass null
+                    //
+					writeField(v, valueData, null); 
 				}
                 data.writer.write(data.binaryNewline);
 			}
