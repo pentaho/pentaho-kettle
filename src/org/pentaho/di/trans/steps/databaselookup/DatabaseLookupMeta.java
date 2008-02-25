@@ -473,7 +473,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 
 	public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException
 	{
-		if (Const.isEmpty(info)) // null or length 0
+		if (Const.isEmpty(info) || info[0]==null) // null or length 0 : no info from database
 		{
 			for (int i=0;i<returnValueNewName.length;i++)
 			{
