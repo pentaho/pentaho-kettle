@@ -25,6 +25,7 @@ public class FieldSplitterData extends BaseStepData implements StepDataInterface
 {
 	public RowMetaInterface previousMeta;
 	public RowMetaInterface outputMeta;
+	public RowMetaInterface conversionMeta;
 	public int fieldnr;
 
 

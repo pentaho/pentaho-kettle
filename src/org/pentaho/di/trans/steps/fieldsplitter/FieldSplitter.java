@@ -62,8 +62,16 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 			}
 
 			// prepare the outputMeta
+			//
 			data.outputMeta= getInputRowMeta().clone();
 			meta.getFields(data.outputMeta, getStepname(), null, null, this);
+			
+			// Now create objects to do string to data type conversion...
+			//
+			data.conversionMeta = data.outputMeta.clone();
+			for (ValueMetaInterface valueMeta : data.conversionMeta.getValueMetaList()) {
+				valueMeta.setType(ValueMetaInterface.TYPE_STRING);
+			}
 		}
 		
 		String v=data.previousMeta.getString(r, data.fieldnr);
@@ -128,10 +136,12 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 				try
 				{
-					value = data.outputMeta.getValueMeta(data.fieldnr+i).convertDataFromString
+					ValueMetaInterface valueMeta = data.outputMeta.getValueMeta(data.fieldnr+i);
+					ValueMetaInterface conversionValueMeta = data.conversionMeta.getValueMeta(data.fieldnr+i);
+					value = valueMeta.convertDataFromString
 					(
 						split,
-						data.previousMeta.getValueMeta(data.fieldnr),
+						conversionValueMeta,
 						meta.getFieldDefault()[i],
 						"", // --> The default String value in case a field is empty. //$NON-NLS-1$
 						ValueMetaInterface.TRIM_TYPE_BOTH
@@ -156,10 +166,12 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 				
 				try
 				{
-					value = data.outputMeta.getValueMeta(data.fieldnr+i).convertDataFromString
+					ValueMetaInterface valueMeta = data.outputMeta.getValueMeta(data.fieldnr+i); 
+					ValueMetaInterface conversionValueMeta = data.conversionMeta.getValueMeta(data.fieldnr+i);
+					value = valueMeta.convertDataFromString
 					(
 						pol,
-						data.previousMeta.getValueMeta(data.fieldnr),
+						conversionValueMeta,
 						meta.getFieldDefault()[i],
 						"", // --> The default String value in case a field is empty. //$NON-NLS-1$
 						ValueMetaInterface.TRIM_TYPE_BOTH
