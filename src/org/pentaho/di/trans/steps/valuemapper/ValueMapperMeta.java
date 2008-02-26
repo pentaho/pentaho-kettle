@@ -174,6 +174,11 @@ public class ValueMapperMeta extends BaseStepMeta implements StepMetaInterface
             {
                 if (targetValue[i]!=null && targetValue[i].length()>maxlen) maxlen=targetValue[i].length();
             }
+            
+            // include default value in max length calculation
+            if (nonMatchDefault != null && nonMatchDefault.length()>maxlen)
+              maxlen = nonMatchDefault.length();
+            	
             extra.setLength(maxlen);
             extra.setOrigin(name);
             r.addValueMeta(extra);
