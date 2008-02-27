@@ -930,7 +930,14 @@ public class Job extends Thread implements VariableSpace
         {
         	if (active) 
         	{
-        		message = Trans.STRING_RUNNING;
+        		if (stopped) 
+        		{
+        			message = Trans.STRING_STOPPED;
+        		}
+        		else
+        		{
+        			message = Trans.STRING_RUNNING;
+        		}
         	}
         	else
         	{

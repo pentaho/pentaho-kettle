@@ -95,6 +95,10 @@ public class SpoonSlave extends Composite implements TabItemInterface
     private Timer timer;
     private TimerTask timerTask;
 
+	private TreeItem transParentItem;
+
+	private TreeItem jobParentItem;
+
 	public SpoonSlave(Composite parent, int style, final Spoon spoon, SlaveServer slaveServer)
 	{
 		super(parent, style);
@@ -157,6 +161,15 @@ public class SpoonSlave extends Composite implements TabItemInterface
             treeColumn.setText(columnInfo.getName());
             treeColumn.setWidth(bounds.width/colinf.length);
         }
+
+        transParentItem = new TreeItem(wTree, SWT.NONE);
+        transParentItem.setText(Spoon.STRING_TRANSFORMATIONS);
+        transParentItem.setImage(GUIResource.getInstance().getImageTransGraph());
+        
+        jobParentItem = new TreeItem(wTree, SWT.NONE);
+        jobParentItem.setText(Spoon.STRING_JOBS);
+        jobParentItem.setImage(GUIResource.getInstance().getImageJobGraph());
+        
         wTree.addSelectionListener(new SelectionAdapter()
             {
                 public void widgetSelected(SelectionEvent arg0)
@@ -165,6 +178,7 @@ public class SpoonSlave extends Composite implements TabItemInterface
                 }
             }
         );
+        
         
 		wText = new Text(sash, SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL | SWT.READ_ONLY | SWT.BORDER);
 		spoon.props.setLook(wText);
@@ -283,21 +297,18 @@ public class SpoonSlave extends Composite implements TabItemInterface
         TreeItem ti[] = wTree.getSelection();
         if (ti.length==1)
         {
-            TreeItem treeItem = ti[0];
-            
-            // Search for the top level entry...
-            //
-            while (treeItem.getParentItem()!=null) treeItem = treeItem.getParentItem();
-            
-            int index = wTree.indexOf(treeItem);
-            
-            if (index<0) return;
-            
-            if (index<slaveServerStatus.getTransStatusList().size()) 
+        	TreeItem treeItem = ti[0];
+        	String[] path = ConstUI.getTreeStrings(treeItem);
+        	
+        	if (path.length<=1) {
+        		return;
+        	}
+        	
+            if (path[0].equals(transParentItem.getText())) 
             {
             	// It's a transformation that we clicked on...
             	//
-            	SlaveServerTransStatus transStatus = slaveServerStatus.getTransStatusList().get(index);
+            	SlaveServerTransStatus transStatus = slaveServerStatus.findTransStatus(path[1]);
                 stopEnabled = transStatus.isRunning();
                 
                 StringBuffer message = new StringBuffer();
@@ -315,13 +326,12 @@ public class SpoonSlave extends Composite implements TabItemInterface
                 wText.setText(message.toString());
                 wText.setTopIndex(wText.getLineCount());
             }
-            else
+
+            if (path[0].equals(jobParentItem.getText()))
             {
-            	index-=slaveServerStatus.getTransStatusList().size();
-            	
             	// We clicked on a job line item
             	//
-            	SlaveServerJobStatus jobStatus = slaveServerStatus.getJobStatusList().get(index);
+            	SlaveServerJobStatus jobStatus = slaveServerStatus.findJobStatus(path[1]);
                 stopEnabled = jobStatus.isRunning();
                 
                 StringBuffer message = new StringBuffer();
@@ -344,6 +354,7 @@ public class SpoonSlave extends Composite implements TabItemInterface
         wStart.setEnabled(!stopEnabled);
     }
     
+    
     protected void start()
     {
         TreeItem ti[] = wTree.getSelection();
@@ -351,30 +362,58 @@ public class SpoonSlave extends Composite implements TabItemInterface
         {
             TreeItem treeItem = ti[0];
             String[] path = ConstUI.getTreeStrings(treeItem);
-            if (path.length==1) // transformation name
+            if (path.length<=1) {
+            	return;
+            }
+            
+            if (path[0].equals(transParentItem.getText())) 
             {
-                String transName = path[0];
-                SlaveServerTransStatus transStatus = slaveServerStatus.findTransStatus(transName);
-                if (transStatus!=null)
-                {
-                    if (!transStatus.isRunning())
-                    {
-                        try
-                        {
-                            WebResult webResult = slaveServer.startTransformation(transName);
-                            if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
-                            {
-                                EnterTextDialog dialog = new EnterTextDialog(shell, Messages.getString("SpoonSlave.ErrorStartingTrans.Title"), Messages.getString("SpoonSlave.ErrorStartingTrans.Message"), webResult.getMessage());
-                                dialog.setReadOnly();
-                                dialog.open();
-                            }
-                        }
-                        catch(Exception e)
-                        {
-                            new ErrorDialog(shell, Messages.getString("SpoonSlave.ErrorStartingTrans.Title"), Messages.getString("SpoonSlave.ErrorStartingTrans.Message"), e);
-                        }
-                    }
-                }
+            	SlaveServerTransStatus transStatus = slaveServerStatus.findTransStatus(path[1]);
+            	if (transStatus!=null)
+            	{
+            		if (!transStatus.isRunning())
+            		{
+            			try
+            			{
+            				WebResult webResult = slaveServer.startTransformation(path[1]);
+            				if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
+            				{
+            					EnterTextDialog dialog = new EnterTextDialog(shell, Messages.getString("SpoonSlave.ErrorStartingTrans.Title"), Messages.getString("SpoonSlave.ErrorStartingTrans.Message"), webResult.getMessage());
+            					dialog.setReadOnly();
+            					dialog.open();
+            				}
+            			}
+            			catch(Exception e)
+            			{
+            				new ErrorDialog(shell, Messages.getString("SpoonSlave.ErrorStartingTrans.Title"), Messages.getString("SpoonSlave.ErrorStartingTrans.Message"), e);
+            			}
+            		}
+            	}
+            }
+            
+            if (path[0].equals(jobParentItem.getText())) 
+            {
+            	SlaveServerJobStatus jobStatus = slaveServerStatus.findJobStatus(path[1]);
+            	if (jobStatus!=null)
+            	{
+            		if (!jobStatus.isRunning())
+            		{
+            			try
+            			{
+            				WebResult webResult = slaveServer.startJob(path[1]);
+            				if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
+            				{
+            					EnterTextDialog dialog = new EnterTextDialog(shell, Messages.getString("SpoonSlave.ErrorStartingJob.Title"), Messages.getString("SpoonSlave.ErrorStartingJob.Message"), webResult.getMessage());
+            					dialog.setReadOnly();
+            					dialog.open();
+            				}
+            			}
+            			catch(Exception e)
+            			{
+            				new ErrorDialog(shell, Messages.getString("SpoonSlave.ErrorStartingJob.Title"), Messages.getString("SpoonSlave.ErrorStartingJob.Message"), e);
+            			}
+            		}
+            	}
             }
         }
     }
@@ -386,30 +425,60 @@ public class SpoonSlave extends Composite implements TabItemInterface
         {
             TreeItem treeItem = ti[0];
             String[] path = ConstUI.getTreeStrings(treeItem);
-            if (path.length==1) // transformation name
+            if (path.length<=1) {
+            	return;
+            }
+            
+            String name = path[1];
+            
+            if (path[0].equals(transParentItem.getText())) 
             {
-                String transName = path[0];
-                SlaveServerTransStatus transStatus = slaveServerStatus.findTransStatus(transName);
-                if (transStatus!=null)
-                {
-                    if (transStatus.isRunning())
-                    {
-                        try
-                        {
-                            WebResult webResult = slaveServer.stopTransformation(transName);
-                            if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
-                            {
-                                EnterTextDialog dialog = new EnterTextDialog(shell, Messages.getString("SpoonSlave.ErrorStoppingTrans.Title"), Messages.getString("SpoonSlave.ErrorStoppingTrans.Message"), webResult.getMessage());
-                                dialog.setReadOnly();
-                                dialog.open();
-                            }
-                        }
-                        catch(Exception e)
-                        {
-                            new ErrorDialog(shell, Messages.getString("SpoonSlave.ErrorStoppingTrans.Title"), Messages.getString("SpoonSlave.ErrorStoppingTrans.Message"), e);
-                        }
-                    }
-                }
+            	SlaveServerTransStatus transStatus = slaveServerStatus.findTransStatus(name);
+            	if (transStatus!=null)
+            	{
+            		if (transStatus.isRunning())
+            		{
+            			try
+            			{
+            				WebResult webResult = slaveServer.stopTransformation(name);
+            				if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
+            				{
+            					EnterTextDialog dialog = new EnterTextDialog(shell, Messages.getString("SpoonSlave.ErrorStoppingTrans.Title"), Messages.getString("SpoonSlave.ErrorStoppingTrans.Message"), webResult.getMessage());
+            					dialog.setReadOnly();
+            					dialog.open();
+            				}
+            			}
+            			catch(Exception e)
+            			{
+            				new ErrorDialog(shell, Messages.getString("SpoonSlave.ErrorStoppingTrans.Title"), Messages.getString("SpoonSlave.ErrorStoppingTrans.Message"), e);
+            			}
+            		}
+            	}
+            }
+            
+            if (path[0].equals(jobParentItem.getText())) 
+            {
+            	SlaveServerJobStatus jobStatus = slaveServerStatus.findJobStatus(name);
+            	if (jobStatus!=null)
+            	{
+            		if (jobStatus.isRunning())
+            		{
+            			try
+            			{
+            				WebResult webResult = slaveServer.stopJob(name);
+            				if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
+            				{
+            					EnterTextDialog dialog = new EnterTextDialog(shell, Messages.getString("SpoonSlave.ErrorStoppingJob.Title"), Messages.getString("SpoonSlave.ErrorStoppingJob.Message"), webResult.getMessage());
+            					dialog.setReadOnly();
+            					dialog.open();
+            				}
+            			}
+            			catch(Exception e)
+            			{
+            				new ErrorDialog(shell, Messages.getString("SpoonSlave.ErrorStoppingJob.Title"), Messages.getString("SpoonSlave.ErrorStoppingJob.Message"), e);
+            			}
+            		}
+            	}
             }
         }
     }
@@ -422,7 +491,8 @@ public class SpoonSlave extends Composite implements TabItemInterface
         
         LogWriter.getInstance().logDetailed(Spoon.APP_NAME, "Refresh");
         
-        wTree.removeAll();
+        transParentItem.removeAll();
+        jobParentItem.removeAll();
         
         // Determine the transformations on the slave servers
         try
@@ -435,11 +505,12 @@ public class SpoonSlave extends Composite implements TabItemInterface
             slaveServerStatus.setErrorDescription(Const.getStackTracker(e));
             wText.setText(slaveServerStatus.getErrorDescription());
         }
+
         
         for (int i = 0; i < slaveServerStatus.getTransStatusList().size(); i++)
 		{
             SlaveServerTransStatus transStatus =  slaveServerStatus.getTransStatusList().get(i);
-            TreeItem transItem = new TreeItem(wTree, SWT.NONE);
+            TreeItem transItem = new TreeItem(transParentItem, SWT.NONE);
             transItem.setText(0, transStatus.getTransName());
             transItem.setText(9, transStatus.getStatusDescription());
             transItem.setImage(GUIResource.getInstance().getImageTransGraph());
@@ -465,11 +536,11 @@ public class SpoonSlave extends Composite implements TabItemInterface
                 transStatus.setErrorDescription("Unable to access transformation details : "+Const.CR+Const.getStackTracker(e));
             } 
 		}
-
+        
         for (int i = 0; i < slaveServerStatus.getJobStatusList().size(); i++)
 		{
             SlaveServerJobStatus jobStatus =  slaveServerStatus.getJobStatusList().get(i);
-            TreeItem jobItem = new TreeItem(wTree, SWT.NONE);
+            TreeItem jobItem = new TreeItem(jobParentItem, SWT.NONE);
             jobItem.setText(0, jobStatus.getJobName());
             jobItem.setText(9, jobStatus.getStatusDescription());
             jobItem.setImage(GUIResource.getInstance().getImageJobGraph());

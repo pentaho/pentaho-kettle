@@ -144,6 +144,7 @@ public class Trans implements VariableSpace
     public static final String STRING_PREPARING    = "Preparing executing";
     public static final String STRING_INITIALIZING = "Initializing";
     public static final String STRING_WAITING      = "Waiting";
+    public static final String STRING_STOPPED      = "Stopped";
 
 	private boolean safeModeEnabled;
 

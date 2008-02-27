@@ -53,7 +53,9 @@ import org.pentaho.di.www.GetTransStatusServlet;
 import org.pentaho.di.www.SlaveServerJobStatus;
 import org.pentaho.di.www.SlaveServerStatus;
 import org.pentaho.di.www.SlaveServerTransStatus;
+import org.pentaho.di.www.StartJobServlet;
 import org.pentaho.di.www.StartTransServlet;
+import org.pentaho.di.www.StopJobServlet;
 import org.pentaho.di.www.StopTransServlet;
 import org.pentaho.di.www.WebResult;
 import org.w3c.dom.Node;
@@ -641,9 +643,21 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
         return WebResult.fromXMLString(xml);
     }
     
+    public WebResult stopJob(String transName) throws Exception
+    {
+        String xml = execService(StopJobServlet.CONTEXT_PATH+"/?name="+transName+"&xml=Y"); //$NON-NLS-1$  //$NON-NLS-2$
+        return WebResult.fromXMLString(xml);
+    }
+    
     public WebResult startTransformation(String transName) throws Exception
     {
         String xml = execService(StartTransServlet.CONTEXT_PATH+"/?name="+transName+"&xml=Y");  //$NON-NLS-1$ //$NON-NLS-2$
+        return WebResult.fromXMLString(xml);
+    }
+    
+    public WebResult startJob(String transName) throws Exception
+    {
+        String xml = execService(StartJobServlet.CONTEXT_PATH+"/?name="+transName+"&xml=Y");  //$NON-NLS-1$ //$NON-NLS-2$
         return WebResult.fromXMLString(xml);
     }
 
