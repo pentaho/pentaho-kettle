@@ -16,7 +16,6 @@ import java.util.Hashtable;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
-import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -64,6 +63,7 @@ public class ValueMapper extends BaseStep implements StepInterface
 		    data.previousMeta = getInputRowMeta().clone();
 		    data.outputMeta = data.previousMeta.clone();
 		    meta.getFields(data.outputMeta, getStepname(), null, null, this);
+		    
 		    data.keynr     = data.previousMeta.indexOfValue(meta.getFieldToUse());
             if (data.keynr<0)
             {
@@ -92,10 +92,21 @@ public class ValueMapper extends BaseStep implements StepInterface
                 }
             }
             
+            data.sourceValueMeta = getInputRowMeta().getValueMeta(data.keynr);
+            
+            if (Const.isEmpty(meta.getTargetField()))
+            {
+            	data.outputValueMeta = data.outputMeta.getValueMeta(data.keynr); // Same field
+
+            }
+            else 
+            {
+            	data.outputValueMeta = data.outputMeta.searchValueMeta(meta.getTargetField()); // new field
+            }
 		}
 
-		ValueMetaInterface previousValueMeta = data.previousMeta.getValueMeta(data.keynr);
-		String source = previousValueMeta.getCompatibleString(r[data.keynr]);
+		Object sourceData = r[data.keynr];
+		String source = data.sourceValueMeta.getCompatibleString(sourceData);
         String target = null;
         
         // Null/Empty mapping to value...
@@ -140,7 +151,7 @@ public class ValueMapper extends BaseStep implements StepInterface
             	{
             		// See if the expected type is a String...
             		//
-            		if (previousValueMeta.isString())
+            		if (data.sourceValueMeta.isString())
             		{
             			r[data.keynr]=target;
             		}
@@ -148,7 +159,7 @@ public class ValueMapper extends BaseStep implements StepInterface
             		{
             			// Do implicit conversion of the String to the target type...
             			//
-            			r[data.keynr] = previousValueMeta.convertData(data.stringMeta, target);
+        				r[data.keynr] = data.outputValueMeta.convertData(data.stringMeta, target);
             		}
             	}
                 else
@@ -156,6 +167,16 @@ public class ValueMapper extends BaseStep implements StepInterface
                 	// allow target to be set to null since 3.0
                 	r[data.keynr]=null;
                 }
+            }
+            else
+            {
+            	// Convert to normal storage type.
+            	// Otherwise we're going to be mixing storage types.
+            	//
+            	if (data.sourceValueMeta.isStorageBinaryString()) {
+            		Object normal = data.sourceValueMeta.convertToNormalStorageType(r[data.keynr]);
+            		r[data.keynr] = normal;
+            	}
             }
         }
         putRow(data.outputMeta, r);

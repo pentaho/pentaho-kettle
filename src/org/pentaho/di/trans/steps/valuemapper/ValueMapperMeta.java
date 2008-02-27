@@ -164,11 +164,14 @@ public class ValueMapperMeta extends BaseStepMeta implements StepMetaInterface
 
 	public void getFields(RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space)
 	{
-		if (getTargetField()!=null && getTargetField().length()>0)
+		ValueMetaInterface extra = null;
+		if (!Const.isEmpty(getTargetField()))
         {
-		    ValueMetaInterface extra = new ValueMeta(getTargetField(), ValueMetaInterface.TYPE_STRING);
+		    extra = new ValueMeta(getTargetField(), ValueMetaInterface.TYPE_STRING);
+		    
             // Lengths etc?
             // Take the max length of all the strings...
+		    //
             int maxlen = -1;
             for (int i=0;i<targetValue.length;i++)
             {
@@ -176,13 +179,27 @@ public class ValueMapperMeta extends BaseStepMeta implements StepMetaInterface
             }
             
             // include default value in max length calculation
-            if (nonMatchDefault != null && nonMatchDefault.length()>maxlen)
-              maxlen = nonMatchDefault.length();
-            	
+            //
+            if (nonMatchDefault != null && nonMatchDefault.length()>maxlen) 
+            {
+                maxlen = nonMatchDefault.length();
+            }
             extra.setLength(maxlen);
             extra.setOrigin(name);
             r.addValueMeta(extra);
         }
+		else
+		{
+			if (!Const.isEmpty(getFieldToUse())) {
+				extra = r.searchValueMeta(getFieldToUse());
+			}
+		}
+		
+		if (extra!=null) {
+			// The output of a changed field or new field is always a normal storage type...
+			//
+			extra.setStorageType(ValueMetaInterface.STORAGE_TYPE_NORMAL);
+		}
 	}
 
 	public String getXML()
