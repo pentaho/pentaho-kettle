@@ -37,6 +37,8 @@ public class ValueMapperData extends BaseStepData implements StepDataInterface
     public int emptyFieldIndex;
     
     public ValueMetaInterface stringMeta;
+	public ValueMetaInterface sourceValueMeta;
+	public ValueMetaInterface outputValueMeta;
 
 	/**
 	 * 
