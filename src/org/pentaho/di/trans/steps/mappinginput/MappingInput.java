@@ -145,7 +145,7 @@ public class MappingInput extends BaseStep implements StepInterface
 		return false;
 	}
 
-	public void setConnectorSteps(StepInterface[] sourceSteps, List<MappingValueRename> valueRenames) {
+	public void setConnectorSteps(StepInterface[] sourceSteps, List<MappingValueRename> valueRenames, String mappingStepname) {
 		
         for (int i=0;i<sourceSteps.length;i++) {
         	
@@ -156,7 +156,7 @@ public class MappingInput extends BaseStep implements StepInterface
 	        
 	        // This is always a single copy, both for source and target...
 	        //
-	        rowSet.setThreadNameFromToCopy(sourceSteps[i].getStepname(), 0, getStepname(), 0);
+	        rowSet.setThreadNameFromToCopy(sourceSteps[i].getStepname(), 0, mappingStepname, 0);
 	        
 	        // Make sure to connect it to both sides...
 	        //

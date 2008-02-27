@@ -196,7 +196,7 @@ public class Mapping extends BaseStep implements StepInterface
         	// 
         	if (inputDefinition.isRenamingOnOutput()) addInputRenames(data.inputRenameList, inputDefinition.getValueRenames());
         	
-        	mappingInputTarget.setConnectorSteps(sourceSteps, inputDefinition.getValueRenames());
+        	mappingInputTarget.setConnectorSteps(sourceSteps, inputDefinition.getValueRenames(), getStepname());
         }
         
         // Now we have a List of connector threads.
