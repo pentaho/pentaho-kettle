@@ -37,6 +37,7 @@ import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.dialog.Messages;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
@@ -125,15 +126,21 @@ public class StepFieldsDialog extends Dialog
 		fdlFields.top  = new FormAttachment(wlStepname, margin);
 		wlFields.setLayoutData(fdlFields);
 		
-		final int FieldsCols=5;
 		final int FieldsRows=input.size();
 		
-		ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
-		colinf[0]=new ColumnInfo(Messages.getString("StepFieldsDialog.TableCol.Fieldname"),   ColumnInfo.COLUMN_TYPE_TEXT, false, true );
-		colinf[1]=new ColumnInfo(Messages.getString("StepFieldsDialog.TableCol.Type"),        ColumnInfo.COLUMN_TYPE_TEXT, false, true );
-		colinf[2]=new ColumnInfo(Messages.getString("StepFieldsDialog.TableCol.Length"),      ColumnInfo.COLUMN_TYPE_TEXT, false, true );
-		colinf[3]=new ColumnInfo(Messages.getString("StepFieldsDialog.TableCol.Precision"),   ColumnInfo.COLUMN_TYPE_TEXT, false, true );
-		colinf[4]=new ColumnInfo(Messages.getString("StepFieldsDialog.TableCol.Origin"), ColumnInfo.COLUMN_TYPE_TEXT, false, true );
+		ColumnInfo[] colinf=new ColumnInfo[] {
+			new ColumnInfo(Messages.getString("StepFieldsDialog.TableCol.Fieldname"),   ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
+			new ColumnInfo(Messages.getString("StepFieldsDialog.TableCol.Type"),        ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
+			new ColumnInfo(Messages.getString("StepFieldsDialog.TableCol.Length"),      ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
+			new ColumnInfo(Messages.getString("StepFieldsDialog.TableCol.Precision"),   ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
+			new ColumnInfo(Messages.getString("StepFieldsDialog.TableCol.Origin"), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
+			new ColumnInfo(Messages.getString("StepFieldsDialog.TableCol.StorageType"), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
+			new ColumnInfo(Messages.getString("StepFieldsDialog.TableCol.ConversionMask"), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
+			new ColumnInfo(Messages.getString("StepFieldsDialog.TableCol.Decimal"), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
+			new ColumnInfo(Messages.getString("StepFieldsDialog.TableCol.Group"), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
+			new ColumnInfo(Messages.getString("StepFieldsDialog.TableCol.TrimType"), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
+			new ColumnInfo(Messages.getString("StepFieldsDialog.TableCol.Group"), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
+		};
 		
 		wFields=new TableView(variables, shell, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
@@ -219,12 +226,19 @@ public class StepFieldsDialog extends Dialog
 		{
 			TableItem item = wFields.table.getItem(i);
 			ValueMetaInterface v=input.getValueMeta(i);
-			if (v.getName()!=null) item.setText(1, v.getName());
-			item.setText(2, v.getTypeDesc());
-			item.setText(3, v.getLength()<0?"-":""+v.getLength());
-			item.setText(4, v.getPrecision()<0?"-":""+v.getPrecision());
-			if (v.getOrigin()!=null) item.setText(5, v.getOrigin());
-            // TODO: add comments as well
+			int idx=1;
+			if (v.getName()!=null) item.setText(idx++, v.getName());
+			item.setText(idx++, v.getTypeDesc());
+			item.setText(idx++, v.getLength()<0?"-":""+v.getLength());
+			item.setText(idx++, v.getPrecision()<0?"-":""+v.getPrecision());
+			item.setText(idx++, Const.NVL(v.getOrigin(), ""));
+			item.setText(idx++, ValueMeta.getStorageTypeCode(v.getStorageType()));
+			item.setText(idx++, Const.NVL(v.getConversionMask(), ""));
+			item.setText(idx++, Const.NVL(v.getDecimalSymbol(), ""));
+			item.setText(idx++, Const.NVL(v.getGroupingSymbol(), ""));
+			item.setText(idx++, ValueMeta.getTrimTypeDesc(v.getTrimType()));
+			item.setText(idx++, Const.NVL(v.getComments(), ""));
+			
 		}
 		wFields.optWidth(true);
 	}
