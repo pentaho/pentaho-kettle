@@ -80,7 +80,16 @@ public class FilterRows extends BaseStep implements StepInterface
             if (data.chosesTargetSteps)
             {
             	data.trueRowSet = findOutputRowSet(getStepname(), getCopy(), meta.getSendTrueStepname(), 0);
+            	if ( data.trueRowSet == null )
+            	{
+            		throw new KettleException(Messages.getString("FilterRows.Log.TargetStepInvalid", meta.getSendTrueStepname()));
+            	}
+            	
             	data.falseRowSet = findOutputRowSet(getStepname(), getCopy(), meta.getSendFalseStepname(), 0);
+            	if ( data.falseRowSet == null )
+            	{
+            		throw new KettleException(Messages.getString("FilterRows.Log.TargetStepInvalid", meta.getSendFalseStepname()));
+            	}            	
             }
         }
 
