@@ -377,9 +377,13 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
 						v.setOrigin(name);
 					}
 					// Change the type?
-					if (metaChange.getType()!=ValueMetaInterface.TYPE_NONE)
+					if (metaChange.getType()!=ValueMetaInterface.TYPE_NONE && v.getType()!=metaChange.getType())
 					{
 						v.setType(metaChange.getType());
+						
+						// This also moves the data to normal storage type
+						//
+						v.setStorageType(ValueMetaInterface.STORAGE_TYPE_NORMAL);
 					}
 					if (metaChange.getLength()     != -2) { v.setLength(metaChange.getLength());       v.setOrigin(name); } 
 					if (metaChange.getPrecision()  != -2) { v.setPrecision(metaChange.getPrecision()); v.setOrigin(name); }
