@@ -576,7 +576,8 @@ public class ValueMeta implements ValueMetaInterface
         }
         catch (ParseException e)
         {
-            throw new KettleValueException(toString()+" : couldn't convert string ["+string+"] to a date", e);
+        	String dateFormat = (getDateFormat() != null) ? getDateFormat().toPattern() : "null";
+            throw new KettleValueException(toString()+" : couldn't convert string ["+string+"] to a date using format ["+dateFormat+"]", e);
         }
     }
 
@@ -898,6 +899,7 @@ public class ValueMeta implements ValueMetaInterface
     
     private String convertBooleanToString(Boolean bool)
     {
+    	if (bool==null) return null;
         if (length>=3)
         {
             return bool.booleanValue()?"true":"false";
@@ -910,6 +912,7 @@ public class ValueMeta implements ValueMetaInterface
     
     public static Boolean convertStringToBoolean(String string)
     {
+        if (Const.isEmpty(string)) return null;
         return Boolean.valueOf( "Y".equalsIgnoreCase(string) || "TRUE".equalsIgnoreCase(string) || "YES".equalsIgnoreCase(string) || "1".equals(string) );
     }
     
@@ -917,11 +920,13 @@ public class ValueMeta implements ValueMetaInterface
     
     private Double convertBooleanToNumber(Boolean bool)
     {
+    	if (bool==null) return null;
         return new Double( bool.booleanValue() ? 1.0 : 0.0 );
     }
     
     private Boolean convertNumberToBoolean(Double number)
     {
+    	if (number==null) return null;
         return Boolean.valueOf( number.intValue() != 0 );
     }
 
@@ -929,11 +934,13 @@ public class ValueMeta implements ValueMetaInterface
 
     private Long convertBooleanToInteger(Boolean bool)
     {
+    	if (bool==null) return null;
         return Long.valueOf( bool.booleanValue() ? 1L : 0L );
     }
 
     private Boolean convertIntegerToBoolean(Long number)
     {
+    	if (number==null) return null;
         return Boolean.valueOf( number.longValue() != 0 );
     }
     
@@ -941,11 +948,13 @@ public class ValueMeta implements ValueMetaInterface
     
     private BigDecimal convertBooleanToBigNumber(Boolean bool)
     {
+    	if (bool==null) return null;
         return new BigDecimal( bool.booleanValue() ? 1.0 : 0.0 );
     }
     
     private Boolean convertBigNumberToBoolean(BigDecimal number)
     {
+    	if (number==null) return null;
         return Boolean.valueOf( number.intValue() != 0 );
     }    
     
@@ -1204,7 +1213,8 @@ public class ValueMeta implements ValueMetaInterface
                 case STORAGE_TYPE_INDEXED:        string = object==null ? null : (String) index[((Integer)object).intValue()];  break;
                 default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
                 }
-                string = trim(string);
+                if ( string != null )
+                    string = trim(string);
                 break;
                 
             case TYPE_DATE:
@@ -1987,6 +1997,9 @@ public class ValueMeta implements ValueMetaInterface
                 }
             }
         }
+        catch(ClassCastException e) {
+        	throw new RuntimeException(toString()+" : There was a data type error: the data type of "+object.getClass().getName()+" object ["+object+"] does not correspond to value meta ["+toStringMeta()+"]");
+        }
         catch(IOException e)
         {
             throw new KettleFileException(toString()+" : Unable to write value data to output stream", e);
@@ -2216,20 +2229,24 @@ public class ValueMeta implements ValueMetaInterface
 	                else
 	                {
 	                    outputStream.writeInt(index.length);
-	                    for (int i=0;i<index.length;i++)
-	                    {
-	                        switch(type)
-	                        {
-	                        case TYPE_STRING:    writeString(outputStream, (String)index[i]); break; 
-	                        case TYPE_NUMBER:    writeNumber(outputStream, (Double)index[i]); break; 
-	                        case TYPE_INTEGER:   writeInteger(outputStream, (Long)index[i]); break; 
-	                        case TYPE_DATE:      writeDate(outputStream, (Date)index[i]); break; 
-	                        case TYPE_BIGNUMBER: writeBigNumber(outputStream, (BigDecimal)index[i]); break; 
-	                        case TYPE_BOOLEAN:   writeBoolean(outputStream, (Boolean)index[i]); break; 
-	                        case TYPE_BINARY:    writeBinary(outputStream, (byte[])index[i]); break;
-	                        default: throw new KettleFileException(toString()+" : Unable to serialize indexe storage type for data type "+getType());
-	                        }
-	                    }
+						for (int i=0;i<index.length;i++)
+						{
+		                    try {
+							    switch(type)
+							    {
+							    case TYPE_STRING:    writeString(outputStream, (String)index[i]); break; 
+							    case TYPE_NUMBER:    writeNumber(outputStream, (Double)index[i]); break; 
+							    case TYPE_INTEGER:   writeInteger(outputStream, (Long)index[i]); break; 
+							    case TYPE_DATE:      writeDate(outputStream, (Date)index[i]); break; 
+							    case TYPE_BIGNUMBER: writeBigNumber(outputStream, (BigDecimal)index[i]); break; 
+							    case TYPE_BOOLEAN:   writeBoolean(outputStream, (Boolean)index[i]); break; 
+							    case TYPE_BINARY:    writeBinary(outputStream, (byte[])index[i]); break;
+							    default: throw new KettleFileException(toString()+" : Unable to serialize indexe storage type for data type "+getType());
+							    }
+							} catch (ClassCastException e) {
+					        	throw new RuntimeException(toString()+" : There was a data type error: the data type of "+index[i].getClass().getName()+" object ["+index[i]+"] does not correspond to value meta ["+toStringMeta()+"]");
+							}
+						}
 	                }
 	            }
 	            break;
@@ -2420,20 +2437,23 @@ public class ValueMeta implements ValueMetaInterface
                 {
                     for (int i=0;i<index.length;i++)
                     {
-                        switch(type)
-                        {
-                        case TYPE_STRING:    xml.append( XMLHandler.addTagValue( "value", (String)index[i]) ); break; 
-                        case TYPE_NUMBER:    xml.append( XMLHandler.addTagValue( "value",  (Double)index[i]) ); break; 
-                        case TYPE_INTEGER:   xml.append( XMLHandler.addTagValue( "value", (Long)index[i]) ); break; 
-                        case TYPE_DATE:      xml.append( XMLHandler.addTagValue( "value", (Date)index[i]) ); break; 
-                        case TYPE_BIGNUMBER: xml.append( XMLHandler.addTagValue( "value", (BigDecimal)index[i]) ); break; 
-                        case TYPE_BOOLEAN:   xml.append( XMLHandler.addTagValue( "value", (Boolean)index[i]) ); break; 
-                        case TYPE_BINARY:    xml.append( XMLHandler.addTagValue( "value", (byte[])index[i]) ); break;
-                        default: throw new IOException(toString()+" : Unable to serialize indexe storage type to XML for data type "+getType());
-                        }
+                    	try {
+	                        switch(type)
+	                        {
+	                        case TYPE_STRING:    xml.append( XMLHandler.addTagValue( "value", (String)index[i]) ); break; 
+	                        case TYPE_NUMBER:    xml.append( XMLHandler.addTagValue( "value",  (Double)index[i]) ); break; 
+	                        case TYPE_INTEGER:   xml.append( XMLHandler.addTagValue( "value", (Long)index[i]) ); break; 
+	                        case TYPE_DATE:      xml.append( XMLHandler.addTagValue( "value", (Date)index[i]) ); break; 
+	                        case TYPE_BIGNUMBER: xml.append( XMLHandler.addTagValue( "value", (BigDecimal)index[i]) ); break; 
+	                        case TYPE_BOOLEAN:   xml.append( XMLHandler.addTagValue( "value", (Boolean)index[i]) ); break; 
+	                        case TYPE_BINARY:    xml.append( XMLHandler.addTagValue( "value", (byte[])index[i]) ); break;
+	                        default: throw new IOException(toString()+" : Unable to serialize indexe storage type to XML for data type "+getType());
+	                        }
+						} catch (ClassCastException e) {
+				        	throw new RuntimeException(toString()+" : There was a data type error: the data type of "+index[i].getClass().getName()+" object ["+index[i]+"] does not correspond to value meta ["+toStringMeta()+"]");
+						}
                     }
                 }
-            	
             	xml.append( XMLHandler.closeTag("index"));
             }
             break;
@@ -2561,41 +2581,44 @@ public class ValueMeta implements ValueMetaInterface
     	
         if (object!=null) // otherwise there is no point
         {
-            switch(storageType)
-            {
-            case STORAGE_TYPE_NORMAL:
-                // Handle Content -- only when not NULL
-            	//
-                switch(getType())
-                {
-                case TYPE_STRING     : xml.append( XMLHandler.addTagValue("string-value", (String)object) ); break;
-                case TYPE_NUMBER     : xml.append( XMLHandler.addTagValue("number-value", (Double)object) ); break;
-                case TYPE_INTEGER    : xml.append( XMLHandler.addTagValue("integer-value", (Long)object) ); break;
-                case TYPE_DATE       : xml.append( XMLHandler.addTagValue("date-value", (Date)object) ); break;
-                case TYPE_BIGNUMBER  : xml.append( XMLHandler.addTagValue("bignumber-value", (BigDecimal)object) ); break;
-                case TYPE_BOOLEAN    : xml.append( XMLHandler.addTagValue("boolean-value", (Boolean)object) ); break;
-                case TYPE_BINARY     : xml.append( XMLHandler.addTagValue("binary-value", (byte[])object) ); break;
-                default: throw new IOException(toString()+" : Unable to serialize data type to XML "+getType());
-                }
-                break;
-                
-            case STORAGE_TYPE_BINARY_STRING:
-                // Handle binary string content -- only when not NULL
-            	// In this case, we opt not to convert anything at all for speed.
-            	// That way, we can save on CPU power.
-            	// Since the streams can be compressed, volume shouldn't be an issue at all.
-            	//
-            	xml.append( XMLHandler.addTagValue("binary-string", (byte[])object) );
-                break;
-                
-            case STORAGE_TYPE_INDEXED:
-            	xml.append( XMLHandler.addTagValue("index-value", (Integer)object) ); // just an index 
-                break;
-                
-            default: throw new IOException(toString()+" : Unknown storage type "+getStorageType());
-            }
+        	try {
+	            switch(storageType)
+	            {
+	            case STORAGE_TYPE_NORMAL:
+	                // Handle Content -- only when not NULL
+	            	//
+	                switch(getType())
+	                {
+	                case TYPE_STRING     : xml.append( XMLHandler.addTagValue("string-value", (String)object) ); break;
+	                case TYPE_NUMBER     : xml.append( XMLHandler.addTagValue("number-value", (Double)object) ); break;
+	                case TYPE_INTEGER    : xml.append( XMLHandler.addTagValue("integer-value", (Long)object) ); break;
+	                case TYPE_DATE       : xml.append( XMLHandler.addTagValue("date-value", (Date)object) ); break;
+	                case TYPE_BIGNUMBER  : xml.append( XMLHandler.addTagValue("bignumber-value", (BigDecimal)object) ); break;
+	                case TYPE_BOOLEAN    : xml.append( XMLHandler.addTagValue("boolean-value", (Boolean)object) ); break;
+	                case TYPE_BINARY     : xml.append( XMLHandler.addTagValue("binary-value", (byte[])object) ); break;
+	                default: throw new IOException(toString()+" : Unable to serialize data type to XML "+getType());
+	                }
+	                break;
+	                
+	            case STORAGE_TYPE_BINARY_STRING:
+	                // Handle binary string content -- only when not NULL
+	            	// In this case, we opt not to convert anything at all for speed.
+	            	// That way, we can save on CPU power.
+	            	// Since the streams can be compressed, volume shouldn't be an issue at all.
+	            	//
+	            	xml.append( XMLHandler.addTagValue("binary-string", (byte[])object) );
+	                break;
+	                
+	            case STORAGE_TYPE_INDEXED:
+	            	xml.append( XMLHandler.addTagValue("index-value", (Integer)object) ); // just an index 
+	                break;
+	                
+	            default: throw new IOException(toString()+" : Unknown storage type "+getStorageType());
+	            }
+			} catch (ClassCastException e) {
+		    	throw new RuntimeException(toString()+" : There was a data type error: the data type of "+object.getClass().getName()+" object ["+object+"] does not correspond to value meta ["+toStringMeta()+"]");
+			}
         }
-    	
     	xml.append(XMLHandler.closeTag(XML_META_TAG));
     	
     	return xml.toString();
