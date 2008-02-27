@@ -74,7 +74,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface
                 lookupRow[lookupIndex] = row[data.keynrs[i]];
                 
 				// Try to convert type if needed
-				if (value.getType()!=data.keytypes[i])
+				if (input.getType()!=value.getType())
                 {
                     lookupRow[lookupIndex] = value.convertData(input, lookupRow[lookupIndex]);
                 }
@@ -87,7 +87,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface
                 lookupRow[lookupIndex] = row[data.keynrs2[i]];
                 
                 // Try to convert type if needed
-                if (value.getType()!=data.keytypes[i])
+                if (input.getType()!=value.getType())
                 {
                     lookupRow[lookupIndex] = value.convertData(input, lookupRow[lookupIndex]);
                 }
@@ -343,17 +343,17 @@ public class DatabaseLookup extends BaseStep implements StepInterface
                     // Try to convert type if needed in a clone, we don't want to
                     // change the type in the original row
 
-                    if (value.getType()!=data.keytypes[i]) value.setType(data.keytypes[i]);
+                    value.setType(data.keytypes[i]);
                     data.lookupMeta.addValueMeta( value );
                 }
                 if (data.keynrs2[i]>=0)
                 {
-                    ValueMetaInterface value = getInputRowMeta().getValueMeta(data.keynrs2[i]);
+                    ValueMetaInterface value = getInputRowMeta().getValueMeta(data.keynrs2[i]).clone();
 
                     // Try to convert type if needed in a clone, we don't want to
                     // change the type in the original row
                     
-                    if (value.getType()!=data.keytypes[i]) value.setType(data.keytypes[i]);
+                    value.setType(data.keytypes[i]);
                     data.lookupMeta.addValueMeta( value );
                 }
             }
