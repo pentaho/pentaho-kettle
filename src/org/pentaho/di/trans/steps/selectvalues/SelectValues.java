@@ -314,7 +314,7 @@ public class SelectValues extends BaseStep implements StepInterface
 			{
 				rowData[index] = fromMeta.convertBinaryStringToNativeType((byte[]) rowData[index]);
 			}
-			if (meta.getMeta()[i].getType()!=ValueMetaInterface.TYPE_NONE)
+			if (meta.getMeta()[i].getType()!=ValueMetaInterface.TYPE_NONE && fromMeta.getType()!=toMeta.getType())
             {
                 switch(toMeta.getType())
                 {
