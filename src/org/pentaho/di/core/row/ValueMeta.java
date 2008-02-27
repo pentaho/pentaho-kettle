@@ -899,6 +899,7 @@ public class ValueMeta implements ValueMetaInterface
     
     private String convertBooleanToString(Boolean bool)
     {
+    	if (bool==null) return null;
         if (length>=3)
         {
             return bool.booleanValue()?"true":"false";
@@ -911,6 +912,7 @@ public class ValueMeta implements ValueMetaInterface
     
     public static Boolean convertStringToBoolean(String string)
     {
+        if (Const.isEmpty(string)) return null;
         return Boolean.valueOf( "Y".equalsIgnoreCase(string) || "TRUE".equalsIgnoreCase(string) || "YES".equalsIgnoreCase(string) || "1".equals(string) );
     }
     
@@ -918,11 +920,13 @@ public class ValueMeta implements ValueMetaInterface
     
     private Double convertBooleanToNumber(Boolean bool)
     {
+    	if (bool==null) return null;
         return new Double( bool.booleanValue() ? 1.0 : 0.0 );
     }
     
     private Boolean convertNumberToBoolean(Double number)
     {
+    	if (number==null) return null;
         return Boolean.valueOf( number.intValue() != 0 );
     }
 
@@ -930,11 +934,13 @@ public class ValueMeta implements ValueMetaInterface
 
     private Long convertBooleanToInteger(Boolean bool)
     {
+    	if (bool==null) return null;
         return Long.valueOf( bool.booleanValue() ? 1L : 0L );
     }
 
     private Boolean convertIntegerToBoolean(Long number)
     {
+    	if (number==null) return null;
         return Boolean.valueOf( number.longValue() != 0 );
     }
     
@@ -942,11 +948,13 @@ public class ValueMeta implements ValueMetaInterface
     
     private BigDecimal convertBooleanToBigNumber(Boolean bool)
     {
+    	if (bool==null) return null;
         return new BigDecimal( bool.booleanValue() ? 1.0 : 0.0 );
     }
     
     private Boolean convertBigNumberToBoolean(BigDecimal number)
     {
+    	if (number==null) return null;
         return Boolean.valueOf( number.intValue() != 0 );
     }    
     
