@@ -385,8 +385,26 @@ public class DatabaseDialog extends Dialog
         }
         else
         {
-            if ((password.startsWith(StringUtil.UNIX_OPEN) && password.endsWith(StringUtil.UNIX_CLOSE))
-                    || (password.startsWith(StringUtil.WINDOWS_OPEN) && password.endsWith(StringUtil.WINDOWS_CLOSE)))
+        	String variableName = null;
+            if ((password.startsWith(StringUtil.UNIX_OPEN) && password.endsWith(StringUtil.UNIX_CLOSE)))
+            {
+            	//  ${VAR}
+            	//  012345
+            	// 
+            	variableName = password.substring(StringUtil.UNIX_OPEN.length(), password.length()-StringUtil.UNIX_CLOSE.length());
+            }
+            if ((password.startsWith(StringUtil.WINDOWS_OPEN) && password.endsWith(StringUtil.WINDOWS_CLOSE)))
+            {
+            	//  %VAR%
+            	//  01234
+            	// 
+            	variableName = password.substring(StringUtil.WINDOWS_OPEN.length(), password.length()-StringUtil.WINDOWS_CLOSE.length());
+            }
+            
+            // If there is a variable name in there AND if it's defined in the system properties...
+            // Otherwise, we'll leave it alone.
+            //
+            if (variableName!=null && System.getProperty(variableName)!=null)
             {
                 wPassword.setEchoChar('\0'); // Show it all...
             }
