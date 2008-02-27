@@ -27,19 +27,48 @@ import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.FileSystemManager;
 import org.apache.commons.vfs.VFS;
+import org.apache.commons.vfs.impl.DefaultFileSystemManager;
 import org.apache.commons.vfs.provider.local.LocalFile;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.UUIDUtil;
 
 public class KettleVFS
 {
-  
+	private static KettleVFS kettleVFS;
+	  
     private KettleVFS()
     {
+    	// Install a shutdown hook to make sure that the file system manager is closed
+    	// This will clean up temporary files in vfs_cache
+    	//
+        Thread thread = new Thread(new Runnable(){
+        	public void run() {
+		        try
+		        {
+		            FileSystemManager mgr = VFS.getManager();
+		            if (mgr instanceof DefaultFileSystemManager)
+		            {
+		                ((DefaultFileSystemManager)mgr).close();
+		            }
+		        }
+		        catch (FileSystemException e)
+		        {
+		            e.printStackTrace();
+		        }
+	        }
+        });
+        Runtime.getRuntime().addShutdownHook(thread);
+        
+    }
+    
+    private synchronized static void checkHook() {
+    	if (kettleVFS==null) kettleVFS=new KettleVFS(); 
     }
     
     public static FileObject getFileObject(String vfsFilename) throws IOException
     {
+    	checkHook();
+    	
     	try {
 	        FileSystemManager fsManager = VFS.getManager();
 	        
