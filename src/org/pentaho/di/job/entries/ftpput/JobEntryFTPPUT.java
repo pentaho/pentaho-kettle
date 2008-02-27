@@ -563,8 +563,9 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
 					try
 					{
 						fileExist=ftpclient.exists(filelist[i]);
+						
 					}
-					catch (FTPException e){
+					catch (Exception e){
 						// Assume file does not exist !!
 					}
 					
@@ -589,7 +590,7 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
 						if (remove) 
 						{
 							new File(localFilename).delete();
-							if (log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobFTPPUT.Log.DeletedFile",filelist[i]));
+							if (log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobFTPPUT.Log.DeletedFile",localFilename));
 						}
 					}
 				}
