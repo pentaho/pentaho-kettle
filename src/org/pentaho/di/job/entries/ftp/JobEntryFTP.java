@@ -490,7 +490,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
       if (filelist.length == 1)
       {
         String translatedWildcard = environmentSubstitute(wildcard);
-        if (filelist[0].startsWith(translatedWildcard))
+        if (!filelist[0].matches(translatedWildcard) && !filelist[0].equals(translatedWildcard))
         {
           throw new FTPException(filelist[0]);
         }
