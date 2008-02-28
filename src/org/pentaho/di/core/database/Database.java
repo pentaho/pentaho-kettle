@@ -2490,6 +2490,8 @@ public class Database implements VariableSpace
             break;
 
         case java.sql.Types.DATE:
+        	precision = 1;
+            
         case java.sql.Types.TIME:
         case java.sql.Types.TIMESTAMP: 
             valtype=ValueMetaInterface.TYPE_DATE;
@@ -2712,7 +2714,7 @@ public class Database implements VariableSpace
                         }
                         break;
 					case ValueMetaInterface.TYPE_DATE      :
-                        if (databaseMeta.supportsTimeStampToDateConversion())
+                        if (val.getPrecision()!=1 && databaseMeta.supportsTimeStampToDateConversion())
                         {
                             data[i] = rs.getTimestamp(i+1); break; // Timestamp extends java.util.Date
                         }
