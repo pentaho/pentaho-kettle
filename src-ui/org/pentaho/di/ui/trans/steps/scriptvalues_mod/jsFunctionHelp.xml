@@ -1480,7 +1480,60 @@ getLastModifiedTime(sourcefile,dateformat);</sample>
       <Arguments>
          <argument id="1">var,var</argument>
       </Arguments>
- </jsFunction>      
+ </jsFunction>
+ 
+ 
+  <jsFunction name="trunc">
+ <help>truncates numbers or dates</help>
+ <sample>
+// 
+// Usage:
+// trunc(var1);
+// trunc(var1, var2);
+//
+// 1: date or double - the value to be truncated
+//
+// 2008-02-29
+//
+trunc(1234.9); // gives back 1234</sample>
+       <type>1</type>
+      <Arguments>
+         <argument id="1">var</argument>
+      </Arguments>
+   </jsFunction>
+   
+     <jsFunction name="truncDate">
+ <help>truncates a date to a certain precision</help>
+ <sample>
+// 
+// Usage:
+//  truncDate(var1, var2);
+//
+// 1: a date - the date-time to be truncated
+// 2: the requested precision:
+//    - 5 : truncate MONTHS (set to 1)
+//    - 4 : truncate DAYS (set to 1)
+//    - 3 : truncate HOURS (set to 0)
+//    - 2 : truncate MINUTES (set to 0)
+//    - 1 : truncate SECONDS (set to 0)
+//    - 0 : truncate MILLISECONDS (set to 0)
+//
+// 2008-02-29
+//
+var dateTime = new Date();
+var date0 = truncDate(dateTime, 0); // gives back today at yyyy/MM/dd HH:mm:ss.000
+var date1 = truncDate(dateTime, 1); // gives back today at yyyy/MM/dd HH:mm:00.000
+var date2 = truncDate(dateTime, 2); // gives back today at yyyy/MM/dd HH:00:00.000
+var date3 = truncDate(dateTime, 3); // gives back today at yyyy/MM/dd 00:00:00.000
+var date4 = truncDate(dateTime, 4); // gives back today at yyyy/MM/01 00:00:00.000
+var date5 = truncDate(dateTime, 5); // gives back today at yyyy/01/01 00:00:00.000
+</sample>
+       <type>2</type>
+      <Arguments>
+         <argument id="1">var,var</argument>
+      </Arguments>
+   </jsFunction>
+       
 </jsFunctions>
 
 

@@ -54,6 +54,10 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.FileSelectInfo;
+import org.apache.commons.vfs.FileSelector;
+import org.apache.commons.vfs.FileType;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.EvaluatorException;
 import org.mozilla.javascript.Function;
@@ -61,10 +65,6 @@ import org.mozilla.javascript.JavaScriptException;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.WrappedException;
-import org.apache.commons.vfs.FileType;
-import org.apache.commons.vfs.FileObject;
-import org.apache.commons.vfs.FileSelectInfo;
-import org.apache.commons.vfs.FileSelector;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -98,7 +98,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
         "print", "println", "resolveIP", "trim", "substr", "getVariable", "setVariable" ,"LuhnCheck","getDigitsOnly",
         "indexOf", "getOutputRowMeta", "getInputRowMeta", "createRowCopy", "putRow", 
         "deleteFile","createFolder","copyFile","getFileSize","isFile","isFolder","getShortFilename",
-        "getFileExtension","getParentFoldername","getLastModifiedTime",
+        "getFileExtension","getParentFoldername","getLastModifiedTime", "trunc", "truncDate",
         };
 	
 	// This is only used for reading, so no concurrency problems.
@@ -2079,40 +2079,118 @@ public static String getParentFoldername(Context actualContext, Scriptable actua
 	}
 }
 
-public static String getLastModifiedTime(Context actualContext, Scriptable actualObject, Object[] ArgList, Function FunctionContext){
-	try{
-		if(ArgList.length==2 && !isNull(ArgList[0]) && !isUndefined(ArgList[0])){
-			if(ArgList[0].equals(null)) return null;
-			FileObject file=null;
+	public static String getLastModifiedTime(Context actualContext, Scriptable actualObject, Object[] ArgList, Function FunctionContext) {
+		try {
+			if (ArgList.length == 2 && !isNull(ArgList[0]) && !isUndefined(ArgList[0])) {
+				if (ArgList[0].equals(null))
+					return null;
+				FileObject file = null;
 
-			try
-			{
-				// Source file
-				file= KettleVFS.getFileObject(Context.toString(ArgList[0]));
-				String dateformat= Context.toString(ArgList[1]);
-				if(isNull(dateformat)) dateformat="yyyy-MM-dd";
-				String lastmodifiedtime=null;
-				if(file.exists())
-				{
-					java.util.Date lastmodifiedtimedate=new java.util.Date(file.getContent().getLastModifiedTime());
-					java.text.DateFormat dateFormat = new SimpleDateFormat(dateformat);
-					lastmodifiedtime=dateFormat.format(lastmodifiedtimedate);
-				
-				}else{Context.reportRuntimeError("file [" + Context.toString(ArgList[0]) + "] can not be found!");}
+				try {
+					// Source file
+					file = KettleVFS.getFileObject(Context.toString(ArgList[0]));
+					String dateformat = Context.toString(ArgList[1]);
+					if (isNull(dateformat))
+						dateformat = "yyyy-MM-dd";
+					String lastmodifiedtime = null;
+					if (file.exists()) {
+						java.util.Date lastmodifiedtimedate = new java.util.Date(file.getContent().getLastModifiedTime());
+						java.text.DateFormat dateFormat = new SimpleDateFormat(dateformat);
+						lastmodifiedtime = dateFormat.format(lastmodifiedtimedate);
 
-				return lastmodifiedtime;
-			}catch (IOException e)
-			{
-				throw Context.reportRuntimeError("The function call getLastModifiedTime throw an error : " + e.toString());
-				}finally {if(file!=null) try{file.close();}catch(Exception e){}					
+					} else {
+						Context.reportRuntimeError("file [" + Context.toString(ArgList[0]) + "] can not be found!");
+					}
+
+					return lastmodifiedtime;
+				} catch (IOException e) {
+					throw Context.reportRuntimeError("The function call getLastModifiedTime throw an error : " + e.toString());
+				} finally {
+					if (file != null)
+						try {
+							file.close();
+						} catch (Exception e) {
+						}
+				}
+
+			} else {
+				throw Context.reportRuntimeError("The function call getLastModifiedTime is not valid.");
 			}
-
-			
-		}else{
-			throw Context.reportRuntimeError("The function call getLastModifiedTime is not valid.");
+		} catch (Exception e) {
+			throw Context.reportRuntimeError(e.toString());
 		}
-	}catch(Exception e){
-		throw Context.reportRuntimeError(e.toString());
 	}
-}
+
+	public static Object trunc(Context actualContext, Scriptable actualObject, Object[] ArgList, Function FunctionContext) {
+		try {
+			// 1 argument: normal truncation of numbers
+			//
+			if (ArgList.length == 1) {
+				if (isNull(ArgList[0])) {
+					return null;
+				}
+				else if (isUndefined(ArgList[0])) {
+					return Context.getUndefinedValue();
+				}
+				
+				// This is the truncation of a number...
+				//
+				Double dArg1 = (Double) Context.jsToJava(ArgList[0], Double.class);
+				return Double.valueOf(Math.floor(dArg1));
+					
+			} else {
+				throw Context.reportRuntimeError("The function call trunc requires 1 argument, a number.");
+			}
+		} catch (Exception e) {
+			throw Context.reportRuntimeError(e.toString());
+		}
+	}
+	
+	public static Object truncDate(Context actualContext, Scriptable actualObject, Object[] ArgList, Function FunctionContext) {
+		try {
+			// 2 arguments: truncation of dates to a certain precision
+			//
+			if (ArgList.length == 2) {
+				if (isNull(ArgList[0])) {
+					return null;
+				}
+				else if (isUndefined(ArgList[0])) {
+					return Context.getUndefinedValue();
+				}
+				
+				// This is the truncation of a date...
+				// The second argument specifies the level: ms, s, min, hour, day, month, year
+				//
+				java.util.Date dArg1 = (java.util.Date) Context.jsToJava(ArgList[0], java.util.Date.class);
+				Calendar cal = Calendar.getInstance();
+				cal.setTime(dArg1);
+				
+				Integer level = (Integer) Context.jsToJava(ArgList[1], Integer.class);
+				
+				switch(level.intValue())
+				{
+				// MONTHS
+				case 5: cal.set(Calendar.MONTH, 1);
+				// DAYS
+				case 4: cal.set(Calendar.DAY_OF_MONTH, 1);
+				// HOURS 
+				case 3: cal.set(Calendar.HOUR_OF_DAY, 0);
+				// MINUTES
+				case 2: cal.set(Calendar.MINUTE, 0);
+				// SECONDS
+				case 1: cal.set(Calendar.SECOND, 0);
+	            // MILI-SECONDS
+	            case 0: cal.set(Calendar.MILLISECOND, 0);  break;
+				default:
+					throw Context.reportRuntimeError("Argument of TRUNC of date has to be between 0 and 5");
+				}
+				
+				return cal.getTime();
+			} else {
+				throw Context.reportRuntimeError("The function call truncDate requires 2 arguments: a date and a level (int)");
+			}
+		} catch (Exception e) {
+			throw Context.reportRuntimeError(e.toString());
+		}
+	}
 }
