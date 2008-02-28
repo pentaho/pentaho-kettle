@@ -224,6 +224,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     
     private long       stepPerformanceCapturingDelay;
     
+    private Map<String, RowMetaInterface> stepsFieldsCache;
+    
     // //////////////////////////////////////////////////////////////////////////
 
     public static final int     TYPE_UNDO_CHANGE   = 1;
@@ -245,6 +247,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     private static final String XML_TAG_CLUSTERSCHEMAS      = "clusterschemas";
     private static final String XML_TAG_STEP_ERROR_HANDLING = "step_error_handling";
 
+    
+    
     /**
      * Builds a new empty transformation.
      */
@@ -457,6 +461,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         //
         capturingStepPerformanceSnapShots = true;
         stepPerformanceCapturingDelay = 1000; // every 1 seconds
+        
+        stepsFieldsCache = new HashMap<String, RowMetaInterface>();
     }
 
     public void clearUndo()
@@ -1458,6 +1464,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         }
         return false;
     }
+    
 
     /**
      * Returns the fields that are emitted by a certain step name
@@ -1506,6 +1513,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      */
     public RowMetaInterface getStepFields(StepMeta stepMeta, ProgressMonitorListener monitor) throws KettleStepException
     {
+    	clearStepFieldsCachce();
         return getStepFields(stepMeta, null, monitor);
     }
     
@@ -1522,6 +1530,12 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         RowMetaInterface row = new RowMeta();
 
         if (stepMeta == null) return row;
+        
+        String fromToCacheEntry = stepMeta.getName()+ ( targetStep!=null ? ("-"+targetStep.getName()) : "" );
+        RowMetaInterface rowMeta = stepsFieldsCache.get(fromToCacheEntry);
+        if (rowMeta!=null) {
+        	return rowMeta;
+        }
 
         // See if the step is sending ERROR rows to the specified target step.
         //
@@ -1535,6 +1549,11 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
             // Add to this the error fields...
             StepErrorMeta stepErrorMeta = stepMeta.getStepErrorMeta();
             row.addRowMeta(stepErrorMeta.getErrorFields());
+            
+            // Store this row in the cache
+            //
+            stepsFieldsCache.put(fromToCacheEntry, row);
+            
             return row;
         }
         
@@ -1571,8 +1590,15 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
                 }
             }
         }
+        
         // Finally, see if we need to add/modify/delete fields with this step "name"
-        return getThisStepFields(stepMeta, targetStep, row, monitor);
+        rowMeta = getThisStepFields(stepMeta, targetStep, row, monitor);
+        
+        // Store this row in the cache
+        //
+        stepsFieldsCache.put(fromToCacheEntry, rowMeta);
+
+        return rowMeta;
     }
 
     /**
@@ -1583,6 +1609,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      */
     public RowMetaInterface getPrevStepFields(String stepname) throws KettleStepException
     {
+    	clearStepFieldsCachce();
         return getPrevStepFields(findStep(stepname));
     }
 
@@ -1594,6 +1621,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      */
     public RowMetaInterface getPrevStepFields(StepMeta stepMeta) throws KettleStepException
     {
+    	clearStepFieldsCachce();
         return getPrevStepFields(stepMeta, null);
     }
 
@@ -1606,6 +1634,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      */
     public RowMetaInterface getPrevStepFields(StepMeta stepMeta, ProgressMonitorListener monitor) throws KettleStepException
     {
+    	clearStepFieldsCachce();
+
         RowMetaInterface row = new RowMeta();
 
         if (stepMeta == null) { return null; }
@@ -5985,5 +6015,9 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 	 */
 	public void setSharedObjects(SharedObjects sharedObjects) {
 		this.sharedObjects = sharedObjects;
+	}
+	
+	private void clearStepFieldsCachce() {
+		stepsFieldsCache.clear();
 	}
 }
