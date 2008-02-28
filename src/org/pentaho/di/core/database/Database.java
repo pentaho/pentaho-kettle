@@ -2490,8 +2490,9 @@ public class Database implements VariableSpace
             break;
 
         case java.sql.Types.DATE:
-        	precision = 1;
-            
+            if (databaseMeta.getDatabaseType() == DatabaseMeta.TYPE_DATABASE_TERADATA) {
+            	precision = 1;
+            }
         case java.sql.Types.TIME:
         case java.sql.Types.TIMESTAMP: 
             valtype=ValueMetaInterface.TYPE_DATE;
