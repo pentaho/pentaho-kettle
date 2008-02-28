@@ -48,7 +48,6 @@ import org.w3c.dom.Node;
 import com.enterprisedt.net.ftp.FTPClient;
 import com.enterprisedt.net.ftp.FTPConnectMode;
 import com.enterprisedt.net.ftp.FTPTransferType;
-import com.enterprisedt.net.ftp.FTPException;
 
 /**
  * This defines an FTP put job entry.
