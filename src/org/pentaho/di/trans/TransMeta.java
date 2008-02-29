@@ -24,7 +24,6 @@ import java.util.Map;
 import org.apache.commons.vfs.FileName;
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemException;
-
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResult;
@@ -70,6 +69,7 @@ import org.pentaho.di.core.xml.XMLInterface;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.repository.RepositoryUtil;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceExportInterface;
 import org.pentaho.di.resource.ResourceNamingInterface;
@@ -1855,7 +1855,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
                 // ONLY save the database connection if it has changed and nothing was saved in the repository
                 if(databaseMeta.hasChanged() || databaseMeta.getID()<=0)
                 {
-                    databaseMeta.saveRep(rep);
+                	RepositoryUtil.saveDatabaseMeta(databaseMeta,rep);
                 }
                 if (monitor != null) monitor.worked(1);
             }
@@ -2043,7 +2043,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
             long dbids[] = rep.getDatabaseIDs();
             for (int i = 0; i < dbids.length; i++)
             {
-                DatabaseMeta databaseMeta = new DatabaseMeta(rep, dbids[i]);
+                DatabaseMeta databaseMeta = RepositoryUtil.loadDatabaseMeta(rep, dbids[i]);
                 databaseMeta.shareVariablesWith(this);
                 
                 DatabaseMeta check = findDatabase(databaseMeta.getName()); // Check if there already is one in the transformation

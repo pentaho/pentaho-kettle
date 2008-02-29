@@ -70,6 +70,7 @@ import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.repository.ProfileMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.repository.RepositoryUtil;
 import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.cluster.dialog.ClusterSchemaDialog;
@@ -2235,7 +2236,7 @@ public class RepositoryExplorerDialog extends Dialog
 		try
 		{
 			long idDatabase = rep.getDatabaseID(databasename);
-			DatabaseMeta databaseMeta = new DatabaseMeta(rep, idDatabase);
+			DatabaseMeta databaseMeta = RepositoryUtil.loadDatabaseMeta(rep, idDatabase);
 
 			DatabaseDialog dd = new DatabaseDialog(shell, databaseMeta);
 			String name = dd.open();
@@ -2245,7 +2246,7 @@ public class RepositoryExplorerDialog extends Dialog
 				{
                     rep.lockRepository();
                     rep.insertLogEntry("Updating database connection '"+databaseMeta.getName()+"'");
-                    databaseMeta.saveRep(rep);
+                    RepositoryUtil.saveDatabaseMeta(databaseMeta,rep);
 				}
 				else
 				{
@@ -2289,7 +2290,7 @@ public class RepositoryExplorerDialog extends Dialog
 				{
                     rep.lockRepository();
                     rep.insertLogEntry("Creating new database '"+databaseMeta.getName()+"'");
-					databaseMeta.saveRep(rep);
+                    RepositoryUtil.saveDatabaseMeta(databaseMeta,rep);
 				}
 				else
 				{

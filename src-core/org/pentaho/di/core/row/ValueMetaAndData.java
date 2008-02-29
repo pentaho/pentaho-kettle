@@ -16,12 +16,9 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.RowMetaAndData;
-import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
-import org.pentaho.di.repository.Repository;
 import org.w3c.dom.Node;
 
 
@@ -103,58 +100,6 @@ public class ValueMetaAndData
     public static final String VALUE_REPOSITORY_INTEGER_CONVERSION_MASK = "#";
     public static final String VALUE_REPOSITORY_DECIMAL_SYMBOL = ".";
     public static final String VALUE_REPOSITORY_GROUPING_SYMBOL = ",";
-    
-    public ValueMetaAndData(Repository rep, long id_value) throws KettleException
-    {
-        try
-        {
-            RowMetaAndData r = rep.getValue(id_value);
-            if (r!=null)
-            {
-                String name    = r.getString("NAME", null);
-                int valtype    = ValueMeta.getType( r.getString("VALUE_TYPE", null) );
-                boolean isNull = r.getBoolean("IS_NULL", false);
-                valueMeta = new ValueMeta(name, valtype);
-
-                if (isNull)
-                {
-                    valueData = null;
-                }
-                else
-                {
-                    ValueMetaInterface stringValueMeta = new ValueMeta(name, ValueMetaInterface.TYPE_STRING);
-                    stringValueMeta.setConversionMetadata(valueMeta);
-                    
-                    valueMeta.setDecimalSymbol(VALUE_REPOSITORY_DECIMAL_SYMBOL);
-                    valueMeta.setGroupingSymbol(VALUE_REPOSITORY_GROUPING_SYMBOL);
-                    
-                    switch(valueMeta.getType())
-                    {
-                    case ValueMetaInterface.TYPE_NUMBER:
-                    	valueMeta.setConversionMask(VALUE_REPOSITORY_NUMBER_CONVERSION_MASK);
-                    	break;
-                    case ValueMetaInterface.TYPE_INTEGER:
-                    	valueMeta.setConversionMask(VALUE_REPOSITORY_INTEGER_CONVERSION_MASK);
-                    	break;
-                    default:
-                    	break;
-                    }
-                    
-                    String string = r.getString("VALUE_STR", null);
-                    valueData = stringValueMeta.convertDataUsingConversionMetaData(string);
-                    
-                    // OK, now comes the dirty part...
-                    // We want the defaults back on there...
-                    //
-                    valueMeta = new ValueMeta(name, valueMeta.getType());
-                }
-            }
-        }
-        catch(KettleException dbe)
-        {
-            throw new KettleException("Unable to load Value from repository with id_value="+id_value, dbe);
-        }
-    }
     
     public String toString()
     {

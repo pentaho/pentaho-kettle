@@ -8,7 +8,8 @@ BASEDIR=$(dirname $0)
 cd $BASEDIR
 
 CLASSPATH=$BASEDIR
-CLASSPATH=$CLASSPATH:$BASEDIR/lib/kettle-engine-3.0.jar
+CLASSPATH=$CLASSPATH:$BASEDIR/lib/kettle-core.jar
+CLASSPATH=$CLASSPATH:$BASEDIR/lib/kettle-engine.jar
 
 # **************************************************
 # ** JDBC & other libraries used by Kettle:       **

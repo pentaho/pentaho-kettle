@@ -16,53 +16,94 @@
  <icon href="kettle_logo.png" kind="splash"/> 
 
  <resources>
-  <j2se version="1.4+" java-vm-args="-Xmx256M"/>
-  <jar href="lib/kettle.jar"/>
+  <j2se version="1.5+" java-vm-args="-Xmx256M"/>
 
-  <jar href="libext/activation.jar"/>
-  <jar href="libext/CacheDB.jar"/>
-  <jar href="libext/db2jcc.jar"/>
-  <jar href="libext/db2jcc_license_cu.jar"/>
-  <jar href="libext/edbc.jar"/>
-  <jar href="libext/edtftpj-1.5.3.jar"/>
-  <jar href="libext/jaybird-full-2.1.0.jar"/>
-  <jar href="libext/gis-shape.jar"/>
-  <jar href="libext/hsqldb.jar"/>
-  <jar href="libext/ifxjdbc.jar"/>
-  <jar href="libext/interclient.jar"/>
-  <jar href="libext/javadbf.jar"/>
-  <jar href="libext/jconn2.jar"/>
-  <jar href="libext/js.jar"/>
-  <jar href="libext/jsch-0.1.24.jar"/>
-  <jar href="libext/jt400.jar"/>
-  <jar href="libext/jtds-1.2.jar"/>
-  <jar href="libext/jxl.jar"/>
-  <jar href="libext/log4j-1.2.8.jar"/>
+  <jar href="lib/kettle-core.jar"/>
+  <jar href="lib/kettle-ui-swt.jar"/>
+  <jar href="lib/kettle-engine.jar"/>
+
+  <jar href="libext/commons/commons-validator-1.3.1.jar"/>
+  <jar href="libext/commons/commons-vfs-1.0.jar"/>
+  <jar href="libext/commons/commons-digester-1.8.jar"/>
+  <jar href="libext/commons/commons-codec-1.3.jar"/>
+  <jar href="libext/commons/commons-pool-1.3.jar"/>
+  <jar href="libext/commons/commons-httpclient-3.0.1.jar"/>
+  <jar href="libext/commons/commons-logging-1.1.jar"/>
+  <jar href="libext/commons/commons-fileupload-1.0.jar"/>
+  <jar href="libext/commons/commons-beanutils-1.7.0.jar"/>
+  <jar href="libext/commons/commons-net-1.4.1.jar"/>
+  <jar href="libext/commons/commons-dbcp-1.2.1.jar"/>
+  <jar href="libext/commons/commons-collections-3.1.jar"/>
+  <jar href="libext/commons/commons-lang-2.2.jar"/>
+  <jar href="libext/pentaho/pentaho-vfs-browser-i18n.jar"/>
+  <jar href="libext/pentaho/pentaho-vfs-browser.jar"/>
+  <jar href="libext/pentaho/pentaho-versionchecker.jar"/>
   <jar href="libext/mail.jar"/>
-  <jar href="libext/mysql-connector-java-3.1.14-bin.jar"/>
-  <jar href="libext/ojdbc14.jar"/>
-  <jar href="libext/orai18n.jar"/>
-  <jar href="libext/postgresql-8.1-407.jdbc3.jar"/>
-  <jar href="libext/rdbthin.jar"/>
-  <jar href="libext/sapdbc.jar"/>
-  <jar href="libext/SQLBaseJDBC.jar"/>
-  <jar href="libext/xbasej.jar"/>
-  <jar href="libext/xdbjdbc.jar"/>
-  <jar href="libext/jackcess-1.1.5.jar"/>
-  <jar href="libext/commons-collections-3.1.jar"/>
-  <jar href="libext/commons-logging.jar"/>
-  <jar href="libext/commons-lang-2.2.jar"/>
-  <jar href="libext/commons-dbcp-1.2.1.jar"/>
-  <jar href="libext/commons-pool-1.3.jar"/>
-  <jar href="libext/nzjdbc.jar"/>
-  <jar href="libext/jackcess-1.1.5.jar"/>
-  <jar href="libext/unijdbc.jar"/>
-  <jar href="libext/asjava.zip"/>
+  <jar href="libext/saxon8.jar"/>
+  <jar href="libext/mondrian/eigenbase-properties.jar"/>
+  <jar href="libext/mondrian/commons-math-1.0.jar"/>
+  <jar href="libext/mondrian/mondrian.jar"/>
+  <jar href="libext/mondrian/eigenbase-xom.jar"/>
+  <jar href="libext/mondrian/saxon8-xom.jar"/>
+  <jar href="libext/mondrian/javacup.jar"/>
+  <jar href="libext/mondrian/eigenbase-resgen.jar"/>
+  <jar href="libext/jsch-0.1.24.jar"/>
+  <jar href="libext/log4j-1.2.8.jar"/>
+  <jar href="libext/jfree/jfreechart-1.0.1.jar"/>
+  <jar href="libext/jfree/jcommon-1.0.0.jar"/>
+  <jar href="libext/kettle-version-checker-0.1.0.jar"/>
+  <jar href="libext/junit-4.1.jar"/>
+  <jar href="libext/jaxen-1.1.1.jar"/>
+  <jar href="libext/web/activation.jar"/>
+  <jar href="libext/web/servlet-api-2.5-6.0.2.jar"/>
+  <jar href="libext/web/simple-jndi-0.11.1.jar"/>
+  <jar href="libext/web/jetty-util-6.1.2rc1.jar"/>
+  <jar href="libext/web/jetty-6.1.2rc1.jar"/>
+  <jar href="libext/ldapjdk.jar"/>
+  <jar href="libext/ognl-2.6.9.jar"/>
+  <jar href="libext/spring/spring-core.jar"/>
+  <jar href="libext/JDBC/hsqldb.jar"/>
+  <jar href="libext/JDBC/jaybird-full-2.1.0.jar"/>
+  <jar href="libext/JDBC/orai18n.jar"/>
+  <jar href="libext/JDBC/iijdbc.jar"/>
+  <jar href="libext/JDBC/ojdbc14.jar"/>
+  <jar href="libext/JDBC/interclient.jar"/>
+  <jar href="libext/JDBC/mysql-connector-java-3.1.14-bin.jar"/>
+  <jar href="libext/JDBC/postgresql-8.2-506.jdbc3.jar"/>
+  <jar href="libext/JDBC/sqlitejdbc-v037-nested.jar"/>
+  <jar href="libext/JDBC/db2jcc.jar"/>
+  <jar href="libext/JDBC/sapdbc.jar"/>
+  <jar href="libext/JDBC/ifxjdbc.jar"/>
+  <jar href="libext/JDBC/derbyclient.jar"/>
+  <jar href="libext/JDBC/unijdbc.jar"/>
+  <jar href="libext/JDBC/jt400.jar"/>
+  <jar href="libext/JDBC/derby.jar"/>
+  <jar href="libext/JDBC/jtds-1.2.jar"/>
+  <jar href="libext/JDBC/rdbthin.jar"/>
+  <jar href="libext/JDBC/db2jcc_license_cu.jar"/>
+  <jar href="libext/JDBC/h2.jar"/>
+  <jar href="libext/JDBC/xdbjdbc.jar"/>
+  <jar href="libext/jxl.jar"/>
+  <jar href="libext/jug-lgpl-2.0.0.jar"/>
+  <jar href="libext/webservices/jsr173_api.jar"/>
+  <jar href="libext/webservices/wsdl4j.jar"/>
+  <jar href="libext/webservices/qname.jar"/>
+  <jar href="libext/webservices/wstx-asl-3.2.0.jar"/>
+  <jar href="libext/js.jar"/>
+  <jar href="libext/dom4j-1.6.1.jar"/>
+  <jar href="libext/javadbf.jar"/>
+  <jar href="libext/edtftpj-1.5.4.jar"/>
+  <jar href="libext/jackcess-1.1.9.jar"/>
+  <jar href="libext/jakarta-oro-2.0.8.jar"/>
 
-  <jar href="libswt/jface.jar"/>
-  <jar href="libswt/runtime.jar"/>
   <jar href="libswt/common.jar"/>
   <jar href="libswt/commands.jar"/>
+  <jar href="libswt/jface.jar"/>
+  <jar href="libswt/runtime.jar"/>
+
+  <extension name="sun" href="activation.jnlp"/>
+  <extension name="sun" href="mail.jnlp"/>
+  <extension name="sun" href="swt.jnlp"/>
 
  </resources>
 

@@ -24,6 +24,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryUtil;
 import org.w3c.dom.Node;
 
 
@@ -812,7 +813,7 @@ public class Condition implements Cloneable, XMLInterface
     				long id_value = r.getInteger("ID_VALUE_RIGHT", -1L);
     				if (id_value>0)
     				{
-    					ValueMetaAndData v = new ValueMetaAndData(rep, id_value);
+    					ValueMetaAndData v = RepositoryUtil.loadValueMetaAndData(rep, id_value);
     					right_exact = v;
     				}
     			}

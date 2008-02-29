@@ -12,6 +12,7 @@
 */
 package org.pentaho.di.core.plugins;
 
+
 import org.apache.commons.lang.ObjectUtils;
 import org.pentaho.di.core.config.PropertySetter;
 import org.pentaho.di.core.exception.KettleConfigException;

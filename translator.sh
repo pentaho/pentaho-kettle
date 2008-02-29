@@ -21,8 +21,9 @@ if [ -z "$KETTLE_HOME" ]; then
   BASEDIR=$(dirname $0)
 fi
 CLASSPATH=$BASEDIR
-CLASSPATH=$CLASSPATH:$BASEDIR/lib/kettle-engine-3.0.jar
-CLASSPATH=$CLASSPATH:$BASEDIR/lib/kettle-ui-swt-3.0.jar
+CLASSPATH=$CLASSPATH:$BASEDIR/lib/kettle-core.jar
+CLASSPATH=$CLASSPATH:$BASEDIR/lib/kettle-engine.jar
+CLASSPATH=$CLASSPATH:$BASEDIR/lib/kettle-ui-sw.jar
 
 CLASSPATH=$CLASSPATH:$BASEDIR/libswt/jface.jar
 CLASSPATH=$CLASSPATH:$BASEDIR/libswt/runtime.jar

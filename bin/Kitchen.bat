@@ -24,7 +24,8 @@ REM ******************
 REM   KETTLE Library
 REM ******************
 
-set CLASSPATH=%CLASSPATH%;lib\kettle-engine-3.0.jar
+set CLASSPATH=%CLASSPATH%;lib\kettle-core.jar
+set CLASSPATH=%CLASSPATH%;lib\kettle-engine.jar
 
 REM **********************
 REM   External Libraries

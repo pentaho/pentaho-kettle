@@ -12,6 +12,7 @@
 */
 package org.pentaho.di.job;
 
+
 import org.pentaho.di.core.config.PropertySetter;
 import org.pentaho.di.core.exception.KettleConfigException;
 

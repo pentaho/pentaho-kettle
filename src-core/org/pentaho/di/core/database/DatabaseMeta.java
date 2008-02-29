@@ -14,7 +14,6 @@
 package org.pentaho.di.core.database;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -26,7 +25,6 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleDatabaseException;
-import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
@@ -35,7 +33,6 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.shared.SharedObjectBase;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.w3c.dom.Node;
@@ -349,7 +346,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 	 * 
 	 * @throws KettleDatabaseException when the type could not be found or referenced.
 	 */
-	private static final DatabaseInterface getDatabaseInterface(String databaseType) throws KettleDatabaseException
+	public static final DatabaseInterface getDatabaseInterface(String databaseType) throws KettleDatabaseException
 	{
 		return (DatabaseInterface)findDatabaseInterface(databaseType).clone();
 	}
@@ -375,139 +372,6 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 		throw new KettleDatabaseException("database type ["+databaseTypeDesc+"] couldn't be found!");
 	}
 
-	/**
-     *  
-	 *  Load the Database Info 
-     */ 
-	public DatabaseMeta(Repository rep, long id_database) throws KettleException
-	{
-        this();
-        
-		try
-		{
-			RowMetaAndData r = rep.getDatabase(id_database);
-			
-			if (r!=null)
-			{
-				long id_database_type    = r.getInteger("ID_DATABASE_TYPE", 0); // con_type
-				String dbTypeDesc = rep.getDatabaseTypeCode(id_database_type);
-				if (dbTypeDesc!=null)
-				{
-					databaseInterface = getDatabaseInterface(dbTypeDesc);
-                    setAttributes(new Properties()); // new attributes
-				}
-				else
-				{
-					// throw new KettleException("No database type was specified [id_database_type="+id_database_type+"]");
-				}
-
-				setID(id_database);
-				setName( r.getString("NAME", "") );
-
-				long id_database_contype = r.getInteger("ID_DATABASE_CONTYPE", 0); // con_access 
-				setAccessType( getAccessType( rep.getDatabaseConTypeCode( id_database_contype)) );
-
-				setHostname( r.getString("HOST_NAME", "") );
-				setDBName( r.getString("DATABASE_NAME", "") );
-				setDBPort( r.getString("PORT", "") );
-				setUsername( r.getString("USERNAME", "") );
-				setPassword( Encr.decryptPasswordOptionallyEncrypted( r.getString("PASSWORD", "") ) );
-				setServername( r.getString("SERVERNAME", "") );
-				setDataTablespace( r.getString("DATA_TBS", "") );
-				setIndexTablespace( r.getString("INDEX_TBS", "") );
-                
-                // Also, load all the properties we can find...
-				final Collection<RowMetaAndData> attrs = rep.getDatabaseAttributes(id_database);
-                for (RowMetaAndData row : attrs)
-                {
-                    String code = row.getString("CODE", "");
-                    String attribute = row.getString("VALUE_STR", "");
-                    // System.out.println("Attributes: "+(getAttributes()!=null)+", code: "+(code!=null)+", attribute: "+(attribute!=null));
-                    getAttributes().put(code, Const.NVL(attribute, ""));
-                }
-			}
-		}
-		catch(KettleDatabaseException dbe)
-		{
-			throw new KettleException("Error loading database connection from repository (id_database="+id_database+")", dbe);
-		}
-	}
-
-	/**
-	 * Saves the database information into a given repository.
-	 * 
-	 * @param rep The repository to save the database into.
-	 * 
-	 * @throws KettleException if an error occurs.
-	 */
-	public void saveRep(Repository rep) throws KettleException
-	{
-		try
-		{
-            // If we don't have an ID, we don't know which entry in the database we need to update.
-			// See if a database with the same name is already available...
-			if (getID()<=0)
-			{
-				setID(rep.getDatabaseID(getName()));
-			}
-			
-			// Still not found? --> Insert
-			if (getID()<=0)
-			{
-				// Insert new Note in repository
-				setID(rep.insertDatabase(	getName(), 
-											getDatabaseTypeCode(getDatabaseType()), 
-											getAccessTypeDesc(getAccessType()), 
-											getHostname(), 
-											getDatabaseName(), 
-											getDatabasePortNumberString(), 
-											getUsername(), 
-											getPassword(),
-											getServername(),
-											getDataTablespace(),
-											getIndexTablespace()
-										)
-					); 
-			}
-			else // --> found entry with the same name...
-			{
-				// Update the note...
-				rep.updateDatabase(	getID(),
-											getName(), 
-											getDatabaseTypeCode(getDatabaseType()), 
-											getAccessTypeDesc(getAccessType()), 
-											getHostname(), 
-											getDatabaseName(), 
-											getDatabasePortNumberString(), 
-											getUsername(), 
-											getPassword(),
-											getServername(),
-											getDataTablespace(),
-											getIndexTablespace()
-										);
-			}
-            
-            // For the extra attributes, just delete them and re-add them.
-            rep.delDatabaseAttributes(getID());
-            
-            // OK, now get a list of all the attributes set on the database connection...
-            // 
-            Properties attributes = getAttributes();
-            Enumeration<Object> keys = getAttributes().keys();
-            while (keys.hasMoreElements())
-            {
-                String code = (String) keys.nextElement();
-                String attribute = (String)attributes.get(code);
-                
-                // Save this attribute
-                rep.insertDatabaseAttribute(getID(), code, attribute);
-            }
-		}
-		catch(KettleDatabaseException dbe)
-		{
-			throw new KettleException("Error saving database connection or one of its attributes to the repository.", dbe);
-		}
-	}
 
 	/**
 	 * Returns the database ID of this database connection if a repository was used before.

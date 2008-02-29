@@ -23,8 +23,8 @@ import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.core.gui.UndoInterface;
+import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -32,6 +32,7 @@ import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryUtil;
 import org.pentaho.di.ui.spoon.delegates.SpoonDelegate;
 import org.pentaho.di.ui.spoon.dialog.GetJobSQLProgressDialog;
 import org.pentaho.di.ui.spoon.dialog.GetSQLProgressDialog;
@@ -448,7 +449,7 @@ public class SpoonDBDelegate extends SpoonDelegate
 					rep.lockRepository();
 					rep.insertLogEntry("Saving database '" + db.getName() + "'");
 
-					db.saveRep(rep);
+					RepositoryUtil.saveDatabaseMeta(db, rep);
 					spoon.getLog().logDetailed(toString(),
 							Messages.getString("Spoon.Log.SavedDatabaseConnection", db.getDatabaseName()));
 
@@ -522,7 +523,7 @@ public class SpoonDBDelegate extends SpoonDelegate
 				{
 					if (!spoon.rep.userinfo.isReadonly())
 					{
-						databaseMeta.saveRep(spoon.rep);
+						RepositoryUtil.saveDatabaseMeta(databaseMeta,spoon.rep);
 					}
 					else
 					{

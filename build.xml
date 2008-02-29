@@ -26,6 +26,7 @@
 	    <mkdir dir="${classes}/META-INF"/>
 	    <mkdir dir="${classes-ui}"/>
 	    <mkdir dir="${classes-ui}/ui"/>
+	    <mkdir dir="${classes-core}"/>
 	  	<mkdir dir="${testClasses}"/>
 	    <mkdir dir="${lib}"/>
 		<mkdir dir="${distrib}"/>
@@ -44,8 +45,27 @@
 	            Compile the code
 	       ==========================
 	  -->
+	
+	  <target name="compile-core" depends="init" description="compile the core source code " >
+	  	<echo>Compiling Kettle CORE...</echo>
+	    <javac 
+	    	   destdir="${classes-core}"
+	    	   target="5"
+	    	   source="5"
+	           deprecation="true"
+	    	   debug="${debug}"
+             optimize="${optimize}"
+	    	>
+	    	<src path="${src-core}"/>
+	    	
+	    	<classpath id="cp-kettle-core">
+				<fileset dir="${libext}" 		includes="*.jar *.zip"/>
+				<fileset dir="${libext}/"	    includes="**/*.jar *.zip"/>
+		  		</classpath>
+	    </javac>
+	  </target>
 
-	  <target name="compile" depends="init" description="compile the source " >
+	  <target name="compile" depends="compile-core" description="compile the source " >
 	  	<echo>Compiling Kettle...</echo>
 	    <javac 
 	    	   destdir="${classes}"
@@ -58,9 +78,9 @@
 	    	<src path="${src}"/>
 	    	
 	    	<classpath id="cp-kettle">
+				<fileset dir="${lib}" 			includes="kettle-core.jar"/>
 				<fileset dir="${libext}" 		includes="*.jar *.zip"/>
 				<fileset dir="${libext}/"	    includes="**/*.jar *.zip"/>
-				<fileset dir="${libswt}" 		includes="common.jar"/>
 		  		</classpath>
 	    </javac>
 	  </target>
@@ -81,7 +101,8 @@
 	    	<src path="${src-ui}"/>
 	    	
 	    	<classpath id="cp-kettle-ui">
-				<fileset dir="${lib}" 			includes="kettle-engine-3.0.jar"/>
+				<fileset dir="${lib}" 			includes="kettle-core.jar"/>
+				<fileset dir="${lib}" 			includes="kettle-engine.jar"/>
 				<fileset dir="${libext}" 		includes="*.jar *.zip"/>
 				<fileset dir="${libext}/"	    includes="**/*.jar *.zip"/>
 				<fileset dir="${libswt}" 		includes="*.jar *.zip"/>
@@ -127,7 +148,7 @@
 		    	>
 
 		    	<classpath id="cp-kettle-test">
-		    		<fileset dir="${lib}" 	  		includes="kettle-engine-3.0.jar"/>
+		    		<fileset dir="${lib}" 	  		includes="kettle-engine.jar"/>
 		    		<fileset dir="${testlibext}" 	includes="*.jar"/>
 		    		<fileset dir="${libext}/commons" 	includes="*.jar"/>
 		    		<fileset dir="${libext}" 	    includes="log4j-1.2.8.jar"/>
@@ -141,6 +162,13 @@
 	          Copy additional files
 	       ==========================
 	  -->
+	
+	  <target name="copy-core" depends="compile-core" description="copy images etc from the core source to classes directory" >
+	  	<echo>Copying core images etc to classes directory...</echo>
+	    <copy todir="${classes-core}">
+	    	<fileset dir="${src-core}" includes="**/*.xml **/*properties"/>
+	  	    </copy>
+	  </target>
 
 	  <target name="copy" depends="compile" description="copy images etc to classes directory" >
 	  	<echo>Copying images etc to classes directory...</echo>
@@ -204,29 +232,44 @@
 	             Kettle library
 	       ==========================
 	  -->
+	
+	  <target name="kettle-core" depends="compile-core, copy-core" description="generate the kettle core library kettle-core.jar">
+	  	<echo>Generating the Kettle core library kettle-core.jar ...</echo>
+	  	<jar jarfile="${lib}/kettle-core.jar" 
+	    	 basedir="${classes-core}" 
+	    	 includes="**/* ${version.file.path}"
+	  	     excludes="**/Thumbs.db **/*.jar **/*.swp"
+	  		>
+          <manifest>
+              <attribute name="Implementation-Title" value="${impl.title.engine}" />
+              <attribute name="Implementation-Version" value="${impl.version}" />
+              <attribute name="Implementation-Vendor" value="${impl.vendor}" />
+			<attribute name="Implementation-ProductID" value="${impl.productID}" />
+              <attribute name="Compile-Timestamp" value="${compile.timestamp}" />
+          </manifest>
+        </jar>
+	  </target>
 		
-	  <target name="kettle" depends="compile, revision, copy" description="generate the kettle library kettle-engine-3.0.jar">
-	  	<echo>Generating the Kettle library kettle-engine-3.0.jar ...</echo>
-	  	<jar jarfile="${lib}/kettle-engine-3.0.jar" 
+	  <target name="kettle" depends="compile, revision, copy" description="generate the kettle library kettle-engine.jar">
+	  	<echo>Generating the Kettle library kettle-engine.jar ...</echo>
+	  	<jar jarfile="${lib}/kettle-engine.jar" 
 	    	 basedir="${classes}" 
 	    	 includes="**/* ${version.file.path}"
 	  	     excludes="**/Thumbs.db **/*.jar **/derbyOld/* **/derbyNew/* org/pentaho/di/run/**/*.ktr org/pentaho/di/run/**/*.txt org/pentaho/di/run/**/*.xls org/pentaho/di/run/**/*.swp org/pentaho/di/ui/**/*"
 	  		>
-                <manifest>
-                    <attribute name="Implementation-Title" value="${impl.title.engine}" />
-                    <attribute name="Implementation-Version" value="${impl.version}" />
-                    <attribute name="Implementation-Vendor" value="${impl.vendor}" />
-    				<attribute name="Implementation-ProductID" value="${impl.productID}" />
-                    <attribute name="Compile-Timestamp" value="${compile.timestamp}" />
-                </manifest>
+            <manifest>
+                <attribute name="Implementation-Title" value="${impl.title.engine}" />
+                <attribute name="Implementation-Version" value="${impl.version}" />
+                <attribute name="Implementation-Vendor" value="${impl.vendor}" />
+				<attribute name="Implementation-ProductID" value="${impl.productID}" />
+                <attribute name="Compile-Timestamp" value="${compile.timestamp}" />
+            </manifest>
         </jar>
-	  	
-
 	  </target>	
 
-	  <target name="kettle-ui" depends="compile-ui" description="generate the kettle library kettle-ui-swt-3.0.jar">
-	  	<echo>Generating the Kettle library kettle-ui-swt-3.0.jar ...</echo>
-	  	<jar jarfile="${lib}/kettle-ui-swt-3.0.jar" 
+	  <target name="kettle-ui" depends="compile-ui" description="generate the kettle library kettle-ui-swt.jar">
+	  	<echo>Generating the Kettle library kettle-ui-swt.jar ...</echo>
+	  	<jar jarfile="${lib}/kettle-ui-swt.jar" 
 	    	 basedir="${classes-ui}" 
 	    	 includes="**/* ${version.file.path}"
 	  	     excludes="**/Thumbs.db **/kettle.jar">
@@ -246,7 +289,7 @@
 	        Distribution jar package
 	       ==========================
 	  -->
-	  <target name="distrib" depends="kettle, kettle-ui" description="copy jar file to distribution directory" >
+	  <target name="distrib" depends="kettle-core, kettle, kettle-ui" description="copy jar file to distribution directory" >
 	  	<echo>Construct the distribution package...</echo>
 	  	
 	        <!-- root directory -->
@@ -257,8 +300,9 @@
 
 	  		<!-- base lib -->
 	  		<mkdir dir="${distrib}/lib"/>
-  			<copy todir="${distrib}/lib"  file="${lib}/kettle-engine-3.0.jar"/>
-  			<copy todir="${distrib}/lib"  file="${lib}/kettle-ui-swt-3.0.jar"/>
+			<copy todir="${distrib}/lib"  file="${lib}/kettle-core.jar"/>
+  			<copy todir="${distrib}/lib"  file="${lib}/kettle-engine.jar"/>
+  			<copy todir="${distrib}/lib"  file="${lib}/kettle-ui-swt.jar"/>
 
   	        <!-- external libs (jdbc etc) -->
 	  		<mkdir dir="${distrib}/libext"/>
@@ -517,7 +561,7 @@
 		
 		<junit printsummary="no" fork="yes" forkmode="perTest" jvm="java" maxmemory="512M" showoutput="yes">
 	    	<classpath>
-				<fileset dir="${lib}" includes="kettle-engine-3.0.jar"/>
+				<fileset dir="${lib}" includes="kettle-engine.jar"/>
 				<fileset dir="test/libext/" includes="kettle.jar"/>
 	    		<pathelement path="${testClasses}"/>
 
@@ -548,7 +592,7 @@
 		
 		<junit printsummary="no" fork="yes" forkmode="perTest" jvm="java" maxmemory="512M" showoutput="yes">
 	    	<classpath>
-				<fileset dir="${lib}" includes="kettle-engine-3.0.jar"/>
+				<fileset dir="${lib}" includes="kettle-engine.jar"/>
 				<fileset dir="test/libext/" includes="kettle.jar"/>
 	    		<pathelement path="${testClasses}"/>
 
@@ -575,7 +619,7 @@
 		
 		<junit printsummary="no" fork="yes" forkmode="perTest" jvm="java" maxmemory="512M" showoutput="yes">
 	    	<classpath>
-				<fileset dir="${lib}" includes="kettle-engine-3.0.jar"/>
+				<fileset dir="${lib}" includes="kettle-engine.jar"/>
 				<fileset dir="test/libext/" includes="kettle.jar"/>
 	    		<pathelement path="${testClasses}"/>
 
@@ -610,7 +654,7 @@
 		
 		<junit printsummary="no" fork="yes" forkmode="perTest" jvm="java" maxmemory="512M" showoutput="yes">
 	    	<classpath>
-				<fileset dir="${lib}" includes="kettle-engine-3.0.jar"/>
+				<fileset dir="${lib}" includes="kettle-engine.jar"/>
 				<fileset dir="test/libext/" includes="kettle.jar"/>
 				<!-- fileset dir="test/libext/" includes="junit.jar"/ -->
 	    		<pathelement path="${testClasses}"/>
@@ -680,6 +724,7 @@
 	  <target name="cleandirs" description="clean up generated files">
 	    <delete dir="${classes}"/>
 	    <delete dir="${classes-ui}"/>
+	    <delete dir="${classes-core}"/>
 	    <delete dir="${lib}"/>
 	    <delete dir="${distrib}"/>
 	  	<delete dir="${api}"/>

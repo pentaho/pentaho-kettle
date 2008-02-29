@@ -11,10 +11,10 @@
 
 package org.pentaho.di.repository;
 
-import java.io.IOException;
-import java.io.OutputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.zip.GZIPOutputStream;
 
+import org.apache.commons.codec.binary.Base64;
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Condition;
@@ -57,8 +58,6 @@ import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.StepPlugin;
 import org.pentaho.di.trans.TransMeta;
-
-import org.apache.commons.codec.binary.Base64;
 
 
 /**
@@ -6077,7 +6076,7 @@ public class Repository
         long[] databaseIDs = getDatabaseIDs();
         for (int i=0;i<databaseIDs.length;i++)
         {
-            DatabaseMeta databaseMeta = new DatabaseMeta(this, databaseIDs[i]);
+            DatabaseMeta databaseMeta = RepositoryUtil.loadDatabaseMeta(this, databaseIDs[i]);
             list.add(databaseMeta);
         }
             
@@ -6137,7 +6136,7 @@ public class Repository
 		long[] ids = getDatabaseIDs();
 		for (int i=0;i<ids.length;i++) 
 		{
-			DatabaseMeta databaseMeta = new DatabaseMeta(this, ids[i]);
+			DatabaseMeta databaseMeta = RepositoryUtil.loadDatabaseMeta(this, ids[i]);
 			databases.add(databaseMeta);
 		}
 		return databases;

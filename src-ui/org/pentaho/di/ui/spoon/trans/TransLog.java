@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
@@ -357,7 +358,7 @@ public class TransLog extends Composite implements TabItemInterface
 
         
 		final Timer tim = new Timer("TransLog: " + getMeta().getName());
-        final StringBuffer busy = new StringBuffer("N");
+        final AtomicBoolean busy = new AtomicBoolean(false);
 
         TimerTask timtask = new TimerTask()
         {
@@ -370,14 +371,14 @@ public class TransLog extends Composite implements TabItemInterface
                         {
                             public void run()
                             {
-                                if (busy.toString().equals("N"))
+                                if (!busy.get())
                                 {
-                                    busy.setCharAt(0, 'Y');
+                                    busy.set(true);
                                     checkStartThreads();
                                     checkTransEnded();
                                     checkErrors();
                                     refreshView();
-                                    busy.setCharAt(0, 'N');
+                                    busy.set(false);
                                 }
                             }
                         }

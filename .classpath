@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="src" path="src-ui"/>
+	<classpathentry kind="src" output="classes-ui" path="src-ui"/>
 	<classpathentry kind="src" path="test"/>
+	<classpathentry kind="src" output="classes-core" path="src-core"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="libext/js.jar"/>
 	<classpathentry kind="lib" path="libext/jxl.jar"/>
 	<classpathentry kind="lib" path="libext/mail.jar"/>
 	<classpathentry kind="lib" path="libext/log4j-1.2.8.jar"/>
-	<classpathentry kind="lib" path="libext/javadbf.jar"/>
+	<classpathentry kind="lib" path="libext/javadbf.jar" sourcepath="/javadbf/javadbf"/>
 	<classpathentry kind="lib" path="libext/jsch-0.1.24.jar"/>
 	<classpathentry kind="lib" path="libswt/jface.jar"/>
 	<classpathentry kind="lib" path="libswt/runtime.jar"/>

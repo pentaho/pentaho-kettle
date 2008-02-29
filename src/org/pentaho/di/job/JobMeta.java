@@ -58,6 +58,7 @@ import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.repository.RepositoryUtil;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceExportInterface;
 import org.pentaho.di.resource.ResourceNamingInterface;
@@ -881,7 +882,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		try {
 			long dbids[] = rep.getDatabaseIDs();
 			for (int i = 0; i < dbids.length; i++) {
-				DatabaseMeta databaseMeta = new DatabaseMeta(rep, dbids[i]);
+				DatabaseMeta databaseMeta = RepositoryUtil.loadDatabaseMeta(rep, dbids[i]);
 				databaseMeta.shareVariablesWith(this);
 
 				DatabaseMeta check = findDatabase(databaseMeta.getName()); // Check
@@ -1065,7 +1066,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 				// ONLY save the database connection if it has changed and
 				// nothing was saved in the repository
 				if (databaseMeta.hasChanged() || databaseMeta.getID() <= 0) {
-					databaseMeta.saveRep(rep);
+					RepositoryUtil.saveDatabaseMeta(databaseMeta,rep);
 				}
 				if (monitor != null)
 					monitor.worked(1);
@@ -1225,7 +1226,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 				long id_logdb = jobRow.getInteger("ID_DATABASE_LOG", 0); //$NON-NLS-1$
 				if (id_logdb > 0) {
 					// Get the logconnection
-					logconnection = new DatabaseMeta(rep, id_logdb);
+					logconnection = RepositoryUtil.loadDatabaseMeta(rep, id_logdb);
 					logconnection.shareVariablesWith(this);
 				}
 				useBatchId = jobRow.getBoolean("USE_BATCH_ID", false); //$NON-NLS-1$
