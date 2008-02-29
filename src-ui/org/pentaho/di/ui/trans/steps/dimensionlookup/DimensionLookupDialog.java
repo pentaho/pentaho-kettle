@@ -800,6 +800,8 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
         wVersion.setEnabled( update );
         wlTkRename.setEnabled( !update );
         wTkRename.setEnabled( !update );
+        
+        wCreate.setEnabled( update );
 
         // Set the technical creation key fields correct... then disable 
         // depending on update or not. Then reset if we're updating. It makes
