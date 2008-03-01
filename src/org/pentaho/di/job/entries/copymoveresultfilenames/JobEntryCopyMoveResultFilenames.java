@@ -47,6 +47,7 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.job.entries.addresultfilenames.Messages;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.job.entry.validator.ValidatorContext;
@@ -82,6 +83,8 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 
 	private boolean OverwriteFile;
 	private boolean CreateDestinationFolder;
+	boolean RemovedSourceFilename;
+	boolean AddDestinationFilename;
 	
 	int NrErrors=0;
 	boolean DoNotProcessRest=false;
@@ -89,6 +92,8 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 	public JobEntryCopyMoveResultFilenames(String n)
 	{
 		super(n, "");
+		RemovedSourceFilename=true;
+		AddDestinationFilename=true;
 		CreateDestinationFolder=false;
 		foldername=null;
 		wildcardexclude=null;
@@ -152,8 +157,11 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 		retval.append("      ").append(XMLHandler.addTagValue("AddDateBeforeExtension", AddDateBeforeExtension));
 		retval.append("      ").append(XMLHandler.addTagValue("OverwriteFile", OverwriteFile));
 		retval.append("      ").append(XMLHandler.addTagValue("CreateDestinationFolder", CreateDestinationFolder));
+		retval.append("      ").append(XMLHandler.addTagValue("RemovedSourceFilename", RemovedSourceFilename));
+		retval.append("      ").append(XMLHandler.addTagValue("AddDestinationFilename", AddDestinationFilename));
 		
 		
+				
 		return retval.toString();
 	}
 	
@@ -180,6 +188,8 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 			
 			OverwriteFile = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "OverwriteFile"));
 			CreateDestinationFolder = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "CreateDestinationFolder"));
+			RemovedSourceFilename = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "RemovedSourceFilename"));
+			AddDestinationFilename = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "AddDestinationFilename"));
 			
 			
 			
@@ -212,7 +222,11 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 			action = rep.getJobEntryAttributeString(id_jobentry, "action");
 			
 			OverwriteFile = rep.getJobEntryAttributeBoolean(id_jobentry, "OverwriteFile"); 
-			CreateDestinationFolder = rep.getJobEntryAttributeBoolean(id_jobentry, "CreateDestinationFolder"); 
+			CreateDestinationFolder = rep.getJobEntryAttributeBoolean(id_jobentry, "CreateDestinationFolder");
+			RemovedSourceFilename = rep.getJobEntryAttributeBoolean(id_jobentry, "RemovedSourceFilename");
+			AddDestinationFilename = rep.getJobEntryAttributeBoolean(id_jobentry, "AddDestinationFilename");
+			
+			
 			
 			
 		}
@@ -246,8 +260,10 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 		
 			rep.saveJobEntryAttribute(id_job, getID(), "OverwriteFile", OverwriteFile);
 			rep.saveJobEntryAttribute(id_job, getID(), "CreateDestinationFolder", CreateDestinationFolder);
+			rep.saveJobEntryAttribute(id_job, getID(), "RemovedSourceFilename", RemovedSourceFilename);
+			rep.saveJobEntryAttribute(id_job, getID(), "AddDestinationFilename", AddDestinationFilename);
 			
-			
+				
 	
 		}
 		catch(KettleDatabaseException dbe)
@@ -347,9 +363,22 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
     {
     	return CreateDestinationFolder;
     } 
-    
-    
-    
+    public boolean  isRemovedSourceFilename()
+    {
+    	return RemovedSourceFilename;
+    } 
+    public void setRemovedSourceFilename(boolean RemovedSourceFilename)
+    {
+    	this.RemovedSourceFilename=RemovedSourceFilename;
+    }
+    public void setAddDestinationFilename(boolean AddDestinationFilename)
+    {
+    	this.AddDestinationFilename=AddDestinationFilename;
+    }
+    public boolean  isAddDestinationFilename()
+    {
+    	return AddDestinationFilename;
+    }
     
     
     public boolean  isSpecifyFormat()
@@ -463,7 +492,7 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 			           		if(!DoNotProcessRest)
 			           		{
 				        		// Copy or Move file
-								if(!ProcessFile(file,realdestinationFolder,log))
+								if(!ProcessFile(file,realdestinationFolder,log,result,parentJob))
 								{
 									// Update Errors
 									updateErrors();
@@ -559,7 +588,7 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 		 return false;
 	}
 
-	private boolean ProcessFile(FileObject sourcefile,String destinationFolder,LogWriter log) 
+	private boolean ProcessFile(FileObject sourcefile,String destinationFolder,LogWriter log,Result result,Job parentJob) 
 	{
 		boolean retval=false;
 		boolean filexists=false;
@@ -589,6 +618,22 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 					sourcefile.moveTo(destinationfile);	
 					if(log.isDetailed()) 
 						log.logDetailed(toString(),Messages.getString("JobEntryCopyMoveResultFilenames.log.MovedFile",sourcefile.toString(),destinationFolder));
+				}
+				
+				if(isRemovedSourceFilename())
+				{
+					// Remove source file from result files list
+					result.getResultFiles().remove(sourcefile.toString());
+					if(log.isDetailed())
+						log.logDetailed(toString(),Messages.getString("JobEntryCopyMoveResultFilenames.RemovedFileFromResult",sourcefile.toString()));
+				}
+				if(isAddDestinationFilename())
+				{
+					// Add destination filename to Resultfilenames ...
+					ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(destinationfile.toString()), parentJob.getName(), toString());
+					result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
+					if(log.isDetailed())
+						log.logDetailed(toString(),Messages.getString("JobEntryCopyMoveResultFilenames.AddedFileToResult",destinationfile.toString()));
 				}
 			}
 			retval=true;

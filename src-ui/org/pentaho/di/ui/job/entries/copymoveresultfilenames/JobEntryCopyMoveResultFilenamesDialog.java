@@ -138,6 +138,13 @@ public class JobEntryCopyMoveResultFilenamesDialog extends JobEntryDialog implem
 	private Button       wCreateDestinationFolder;
 	private FormData     fdlCreateDestinationFolder, fdCreateDestinationFolder;
 	
+	private Label        wlRemovedSourceFilename;
+	private Button       wRemovedSourceFilename;
+	private FormData     fdlRemovedSourceFilename, fdRemovedSourceFilename;
+	
+	private Label        wlAddDestinationFilename;
+	private Button       wAddDestinationFilename;
+	private FormData     fdlAddDestinationFilename, fdAddDestinationFilename;
 	
 	
 	 public JobEntryCopyMoveResultFilenamesDialog(Shell parent, JobEntryInterface jobEntryInt, Repository rep, JobMeta jobMeta)
@@ -325,13 +332,64 @@ public class JobEntryCopyMoveResultFilenamesDialog extends JobEntryDialog implem
 			}
 		});
 		
+		// Remove source filename from result filenames
+		wlRemovedSourceFilename = new Label(shell, SWT.RIGHT);
+		wlRemovedSourceFilename.setText(Messages.getString("JobEntryCopyMoveResultFilenames.RemovedSourceFilename.Label"));
+		props.setLook(wlRemovedSourceFilename);
+		fdlRemovedSourceFilename = new FormData();
+		fdlRemovedSourceFilename.left = new FormAttachment(0, 0);
+		fdlRemovedSourceFilename.top = new FormAttachment(wOverwriteFile, margin);
+		fdlRemovedSourceFilename.right = new FormAttachment(middle, -margin);
+		wlRemovedSourceFilename.setLayoutData(fdlRemovedSourceFilename);
+		wRemovedSourceFilename = new Button(shell, SWT.CHECK);
+		props.setLook(wRemovedSourceFilename);
+		wRemovedSourceFilename.setToolTipText(Messages.getString("JobEntryCopyMoveResultFilenames.RemovedSourceFilename.Tooltip"));
+		fdRemovedSourceFilename = new FormData();
+		fdRemovedSourceFilename.left = new FormAttachment(middle, 0);
+		fdRemovedSourceFilename.top = new FormAttachment(wOverwriteFile, margin);
+		fdRemovedSourceFilename.right = new FormAttachment(100, 0);
+		wRemovedSourceFilename.setLayoutData(fdRemovedSourceFilename);
+		wRemovedSourceFilename.addSelectionListener(new SelectionAdapter()
+		{
+			public void widgetSelected(SelectionEvent e)
+			{
+				jobEntry.setChanged();
+			}
+		});
+		
+		// Add destination filename to result filenames
+		wlAddDestinationFilename = new Label(shell, SWT.RIGHT);
+		wlAddDestinationFilename.setText(Messages.getString("JobEntryCopyMoveResultFilenames.AddDestinationFilename.Label"));
+		props.setLook(wlAddDestinationFilename);
+		fdlAddDestinationFilename = new FormData();
+		fdlAddDestinationFilename.left = new FormAttachment(0, 0);
+		fdlAddDestinationFilename.top = new FormAttachment(wRemovedSourceFilename, margin);
+		fdlAddDestinationFilename.right = new FormAttachment(middle, -margin);
+		wlAddDestinationFilename.setLayoutData(fdlAddDestinationFilename);
+		wAddDestinationFilename = new Button(shell, SWT.CHECK);
+		props.setLook(wAddDestinationFilename);
+		wAddDestinationFilename.setToolTipText(Messages.getString("JobEntryCopyMoveResultFilenames.AddDestinationFilename.Tooltip"));
+		fdAddDestinationFilename = new FormData();
+		fdAddDestinationFilename.left = new FormAttachment(middle, 0);
+		fdAddDestinationFilename.top = new FormAttachment(wRemovedSourceFilename, margin);
+		fdAddDestinationFilename.right = new FormAttachment(100, 0);
+		wAddDestinationFilename.setLayoutData(fdAddDestinationFilename);
+		wAddDestinationFilename.addSelectionListener(new SelectionAdapter()
+		{
+			public void widgetSelected(SelectionEvent e)
+			{
+				jobEntry.setChanged();
+			}
+		});
+		
+		
 		// Create multi-part file?
 		wlAddDate=new Label(shell, SWT.RIGHT);
 		wlAddDate.setText(Messages.getString("JobEntryCopyMoveResultFilenames.AddDate.Label"));
  		props.setLook(wlAddDate);
 		fdlAddDate=new FormData();
 		fdlAddDate.left = new FormAttachment(0, 0);
-		fdlAddDate.top  = new FormAttachment(wOverwriteFile, margin);
+		fdlAddDate.top  = new FormAttachment(wAddDestinationFilename, margin);
 		fdlAddDate.right= new FormAttachment(middle, -margin);
 		wlAddDate.setLayoutData(fdlAddDate);
 		wAddDate=new Button(shell, SWT.CHECK);
@@ -339,7 +397,7 @@ public class JobEntryCopyMoveResultFilenamesDialog extends JobEntryDialog implem
  		wAddDate.setToolTipText(Messages.getString("JobEntryCopyMoveResultFilenames.AddDate.Tooltip"));
 		fdAddDate=new FormData();
 		fdAddDate.left = new FormAttachment(middle, 0);
-		fdAddDate.top  = new FormAttachment(wOverwriteFile, margin);
+		fdAddDate.top  = new FormAttachment(wAddDestinationFilename, margin);
 		fdAddDate.right= new FormAttachment(100, 0);
 		wAddDate.setLayoutData(fdAddDate);
 		wAddDate.addSelectionListener(new SelectionAdapter() 
@@ -797,7 +855,11 @@ public class JobEntryCopyMoveResultFilenamesDialog extends JobEntryDialog implem
 		wSpecifyFormat.setSelection(jobEntry.isSpecifyFormat());
 		wAddDateBeforeExtension.setSelection(jobEntry.isAddDateBeforeExtension());
 		wOverwriteFile.setSelection(jobEntry.isOverwriteFile());
-		wCreateDestinationFolder.setSelection(jobEntry.isCreateDestinationFolder());	
+		wCreateDestinationFolder.setSelection(jobEntry.isCreateDestinationFolder());
+		wRemovedSourceFilename.setSelection(jobEntry.isRemovedSourceFilename());
+		wAddDestinationFilename.setSelection(jobEntry.isAddDestinationFilename());
+		
+		
 	}
 
 	private void cancel()
@@ -837,6 +899,9 @@ public class JobEntryCopyMoveResultFilenamesDialog extends JobEntryDialog implem
 		jobEntry.setOverwriteFile(wOverwriteFile.getSelection());
 		
 		jobEntry.setCreateDestinationFolder(wCreateDestinationFolder.getSelection());
+		jobEntry.setRemovedSourceFilename(wRemovedSourceFilename.getSelection());
+		jobEntry.setAddDestinationFilename(wAddDestinationFilename.getSelection());
+		
 		
 		
 		
