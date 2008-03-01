@@ -427,8 +427,6 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 							// Source is a file, destination is a file
 
 							destinationfilefolder.copyFrom(sourcefilefolder, new TextOneToOneFileSelector(destinationfilefolder));
-							
-							
 						}
 						else
 						{

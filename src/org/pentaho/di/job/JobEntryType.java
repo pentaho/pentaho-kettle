@@ -64,7 +64,9 @@ public enum JobEntryType
 	FOLDERS_COMPARE(Messages.getString("JobEntry.FoldersCompare.TypeDesc")),
 	ADD_RESULT_FILENAMES(Messages.getString("JobEntry.AddResultFilenames.TypeDesc")),
 	DELETE_RESULT_FILENAMES(Messages.getString("JobEntry.DeleteResultFilenames.TypeDesc")),
-	MSSQL_BULK_LOAD(Messages.getString("JobEntry.MssqlBulkLoad.TypeDesc")),;
+	MSSQL_BULK_LOAD(Messages.getString("JobEntry.MssqlBulkLoad.TypeDesc")),
+	MOVE_FILES(Messages.getString("JobEntry.MoveFiles.TypeDesc")),
+	COPY_MOVE_RESULT_FILENAMES(Messages.getString("JobEntry.CopyMoveResultFilenames.TypeDesc")),;
 	
 	
 	

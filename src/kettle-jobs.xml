@@ -511,6 +511,28 @@
 		</tooltip>
 		<image-uri>ui/images/MBL.png</image-uri>
 	</job>
-	
-	
+	<job id="MOVE_FILES">
+		<type>
+			ognl:@org.pentaho.di.job.JobEntryType@MOVE_FILES
+		</type>
+		<class-name>
+			org.pentaho.di.job.entries.movefiles.JobEntryMoveFiles
+		</class-name>
+		<tooltip>
+			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.MoveFiles.Tooltip")
+		</tooltip>
+		<image-uri>ui/images/MVF.png</image-uri>
+	</job>
+	<job id="COPY_MOVE_RESULT_FILENAMES">
+		<type>
+			ognl:@org.pentaho.di.job.JobEntryType@COPY_MOVE_RESULT_FILENAMES
+		</type>
+		<class-name>
+			org.pentaho.di.job.entries.copymoveresultfilenames.JobEntryCopyMoveResultFilenames
+		</class-name>
+		<tooltip>
+			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.CopyMoveResultFilenames.Tooltip")
+		</tooltip>
+		<image-uri>ui/images/CMR.png</image-uri>
+	</job>
 </jobs>
