@@ -205,6 +205,10 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 	private Button       wAddDateBeforeExtension;
 	private FormData     fdlAddDateBeforeExtension, fdAddDateBeforeExtension;
 	
+	private Label        wlDoNotKeepFolderStructure;
+	private Button       wDoNotKeepFolderStructure;
+	private FormData     fdlDoNotKeepFolderStructure, fdDoNotKeepFolderStructure;
+	
 	
    public JobEntryMoveFilesDialog(Shell parent, JobEntryInterface jobEntryInt, Repository rep, JobMeta jobMeta)
     {
@@ -843,13 +847,39 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 		groupLayoutFile.marginHeight = 10;
 		wDestinationFile.setLayout(groupLayoutFile);
 		
+		// Do not keep folder structure?
+		wlDoNotKeepFolderStructure=new Label(wDestinationFile, SWT.RIGHT);
+		wlDoNotKeepFolderStructure.setText(Messages.getString("JobMoveFiles.DoNotKeepFolderStructure.Label"));
+ 		props.setLook(wlDoNotKeepFolderStructure);
+		fdlDoNotKeepFolderStructure=new FormData();
+		fdlDoNotKeepFolderStructure.left = new FormAttachment(0, 0);
+		fdlDoNotKeepFolderStructure.top  = new FormAttachment(0, margin);
+		fdlDoNotKeepFolderStructure.right= new FormAttachment(middle, -margin);
+		wlDoNotKeepFolderStructure.setLayoutData(fdlDoNotKeepFolderStructure);
+		wDoNotKeepFolderStructure=new Button(wDestinationFile, SWT.CHECK);
+ 		props.setLook(wDoNotKeepFolderStructure);
+ 		wDoNotKeepFolderStructure.setToolTipText(Messages.getString("JobMoveFiles.DoNotKeepFolderStructure.Tooltip"));
+		fdDoNotKeepFolderStructure=new FormData();
+		fdDoNotKeepFolderStructure.left = new FormAttachment(middle, 0);
+		fdDoNotKeepFolderStructure.top  = new FormAttachment(0, margin);
+		fdDoNotKeepFolderStructure.right= new FormAttachment(100, 0);
+		wDoNotKeepFolderStructure.setLayoutData(fdDoNotKeepFolderStructure);
+		wDoNotKeepFolderStructure.addSelectionListener(new SelectionAdapter() 
+			{
+				public void widgetSelected(SelectionEvent e) 
+				{
+					jobEntry.setChanged();
+				}
+			}
+		);
+		
 		// Create multi-part file?
 		wlAddDate=new Label(wDestinationFile, SWT.RIGHT);
 		wlAddDate.setText(Messages.getString("JobMoveFiles.AddDate.Label"));
  		props.setLook(wlAddDate);
 		fdlAddDate=new FormData();
 		fdlAddDate.left = new FormAttachment(0, 0);
-		fdlAddDate.top  = new FormAttachment(0, margin);
+		fdlAddDate.top  = new FormAttachment(wDoNotKeepFolderStructure, margin);
 		fdlAddDate.right= new FormAttachment(middle, -margin);
 		wlAddDate.setLayoutData(fdlAddDate);
 		wAddDate=new Button(wDestinationFile, SWT.CHECK);
@@ -857,7 +887,7 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
  		wAddDate.setToolTipText(Messages.getString("JobMoveFiles.AddDate.Tooltip"));
 		fdAddDate=new FormData();
 		fdAddDate.left = new FormAttachment(middle, 0);
-		fdAddDate.top  = new FormAttachment(0, margin);
+		fdAddDate.top  = new FormAttachment(wDoNotKeepFolderStructure, margin);
 		fdAddDate.right= new FormAttachment(100, 0);
 		wAddDate.setLayoutData(fdAddDate);
 		wAddDate.addSelectionListener(new SelectionAdapter() 
@@ -1324,6 +1354,8 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 		wAddTime.setSelection(jobEntry.isAddTime());
 		wSpecifyFormat.setSelection(jobEntry.isSpecifyFormat());
 		wAddDateBeforeExtension.setSelection(jobEntry.isAddDateBeforeExtension());
+		wDoNotKeepFolderStructure.setSelection(jobEntry.isDoNotKeepFolderStructure());
+		
 			
 		
 		
@@ -1360,6 +1392,8 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 		jobEntry.setSpecifyFormat(wSpecifyFormat.getSelection());
 		jobEntry.setDateTimeFormat(wDateTimeFormat.getText());
 		jobEntry.setAddDateBeforeExtension(wAddDateBeforeExtension.getSelection());
+		jobEntry.setDoNotKeepFolderStructure(wDoNotKeepFolderStructure.getSelection());
+		
 		
 		
 		int nritems = wFields.nrNonEmpty();

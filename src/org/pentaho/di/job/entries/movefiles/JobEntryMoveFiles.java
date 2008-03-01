@@ -79,6 +79,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 	private boolean SpecifyFormat;
 	private String date_time_format;
 	private boolean AddDateBeforeExtension;
+	boolean DoNotKeepFolderStructure;
 	
 	boolean DoNotProcessRest=false;
 	int NrErrors=0;
@@ -86,6 +87,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 	public JobEntryMoveFiles(String n)
 	{
 		super(n, "");
+		DoNotKeepFolderStructure=false;
 		move_empty_folders=true;
 		arg_from_previous=false;
 		source_filefolder=null;
@@ -144,6 +146,8 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 		retval.append("      ").append(XMLHandler.addTagValue("nr_errors_less_than", nr_errors_less_than));
 		retval.append("      ").append(XMLHandler.addTagValue("success_condition", success_condition));
 		retval.append("      ").append(XMLHandler.addTagValue("AddDateBeforeExtension", AddDateBeforeExtension));
+		retval.append("      ").append(XMLHandler.addTagValue("DoNotKeepFolderStructure", DoNotKeepFolderStructure));
+		
 		
 		retval.append("      <fields>").append(Const.CR);
 		if (source_filefolder!=null)
@@ -180,7 +184,8 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 			add_time = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "add_time"));
 			SpecifyFormat = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "SpecifyFormat"));
 			AddDateBeforeExtension = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "AddDateBeforeExtension"));
-			
+			DoNotKeepFolderStructure = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "DoNotKeepFolderStructure"));
+
 			date_time_format          = XMLHandler.getTagValue(entrynode, "date_time_format");
 			
 			nr_errors_less_than          = XMLHandler.getTagValue(entrynode, "nr_errors_less_than");
@@ -234,7 +239,9 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 			add_time = rep.getJobEntryAttributeBoolean(id_jobentry, "add_time"); 
 			SpecifyFormat = rep.getJobEntryAttributeBoolean(id_jobentry, "SpecifyFormat"); 
 			date_time_format  = rep.getJobEntryAttributeString(id_jobentry, "date_time_format");
-			AddDateBeforeExtension = rep.getJobEntryAttributeBoolean(id_jobentry, "AddDateBeforeExtension"); 
+			AddDateBeforeExtension = rep.getJobEntryAttributeBoolean(id_jobentry, "AddDateBeforeExtension");
+			DoNotKeepFolderStructure = rep.getJobEntryAttributeBoolean(id_jobentry, "DoNotKeepFolderStructure");
+			
 			
 			// How many arguments?
 			int argnr = rep.countNrJobEntryAttributes(id_jobentry, "source_filefolder");
@@ -281,6 +288,8 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 			rep.saveJobEntryAttribute(id_job, getID(), "SpecifyFormat", SpecifyFormat);
 			rep.saveJobEntryAttribute(id_job, getID(), "date_time_format",      date_time_format);
 			rep.saveJobEntryAttribute(id_job, getID(), "AddDateBeforeExtension", AddDateBeforeExtension);
+			rep.saveJobEntryAttribute(id_job, getID(), "DoNotKeepFolderStructure", DoNotKeepFolderStructure);
+			
 			
 			
 			// save the arguments...
@@ -678,14 +687,14 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 			//log.logBasic("-----Current-------", Currentfile.getName().getBaseName());
 			int lenCurrent=Currentfile.getName().getBaseName().length();
 			//log.logBasic("-----short_filename-------", shortfilename);
-			String short_filename_from_basefolder=Currentfile.toString().substring(sourcefilefolder.toString().length(),Currentfile.toString().length());        					
+			String short_filename_from_basefolder=shortfilename;
+			if(!isDoNotKeepFolderStructure())	
+				short_filename_from_basefolder=Currentfile.toString().substring(sourcefilefolder.toString().length(),Currentfile.toString().length());        					
 			//log.logBasic("-----short_filename_from_basefolder-------", short_filename_from_basefolder);
 			short_filename_from_basefolder=short_filename_from_basefolder.substring(0,short_filename_from_basefolder.length()-lenCurrent)+shortfilename;
-			
-			
-			log.logBasic("-----short_filename_from_basefolder-------", short_filename_from_basefolder);
+			//log.logBasic("-----short_filename_from_basefolder-------", short_filename_from_basefolder);
 			// Built destination filename
-			file_name=KettleVFS.getFileObject(realDestinationFilefoldername + Const.FILE_SEPARATOR + short_filename_from_basefolder);//source_folder + Const.FILE_SEPARATOR + info.getFile().getName().getBaseName()); 
+			file_name=KettleVFS.getFileObject(realDestinationFilefoldername + Const.FILE_SEPARATOR + short_filename_from_basefolder); 
 			
 			if (!Currentfile.getParent().toString().equals(sourcefilefolder.toString()))
 			 {
@@ -1090,11 +1099,24 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
    {
    	return AddDateBeforeExtension;
    }
+   public boolean  isDoNotKeepFolderStructure()
+   {
+   	return DoNotKeepFolderStructure;
+   }
+   public void setDoNotKeepFolderStructure(boolean DoNotKeepFolderStructure)
+	{
+		this.DoNotKeepFolderStructure=DoNotKeepFolderStructure;
+	}
+   
     
     public void setIgnoreRestOfFiles(boolean IgnoreRestOfFiles)
 	{
 		this.IgnoreRestOfFiles=IgnoreRestOfFiles;
 	}
+    
+    
+    
+    
 	public void setMoveEmptyFolders(boolean move_empty_foldersin) 
 	{
 		this.move_empty_folders = move_empty_foldersin;
