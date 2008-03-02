@@ -2533,7 +2533,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         Props props = null;
         if (Props.isInitialized()) props=Props.getInstance();
 
-        StringBuffer retval = new StringBuffer(800);
+        StringBuilder retval = new StringBuilder(800);
 
         retval.append(XMLHandler.openTag(XML_TAG)).append(Const.CR); //$NON-NLS-1$
 

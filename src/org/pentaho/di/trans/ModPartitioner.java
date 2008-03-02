@@ -101,7 +101,7 @@ public class ModPartitioner extends BasePartitioner {
 
 		public String getXML()
 		{
-	        StringBuffer xml = new StringBuffer(150);
+	        StringBuilder xml = new StringBuilder(150);
 	        xml.append("           ").append(XMLHandler.addTagValue("field_name", fieldName));
 	        return xml.toString();
 		}

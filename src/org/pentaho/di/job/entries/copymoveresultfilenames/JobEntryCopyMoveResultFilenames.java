@@ -57,7 +57,7 @@ import org.pentaho.di.repository.Repository;
 
 /**
  * This defines a 'copymoveresultfilenames' job entry. Its main use would be to copy or move files in the
- * result filenames to a destination folder²
+ * result filenames to a destination folder.
  * that can be used to control the flow in ETL cycles.
  * 
  * @author Samatar

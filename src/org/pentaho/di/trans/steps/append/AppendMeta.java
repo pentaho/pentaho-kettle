@@ -139,7 +139,7 @@ public class AppendMeta extends BaseStepMeta implements StepMetaInterface
 	
 	public String getXML()
 	{
-        StringBuffer retval = new StringBuffer();
+        StringBuilder retval = new StringBuilder();
 
 		retval.append(XMLHandler.addTagValue("head_name", getHeadStepName()));	//$NON-NLS-1$
 		retval.append(XMLHandler.addTagValue("tail_name", getTailStepName()));	//$NON-NLS-1$

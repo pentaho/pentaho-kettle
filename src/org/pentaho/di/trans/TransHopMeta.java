@@ -266,7 +266,7 @@ public class TransHopMeta implements Cloneable, XMLInterface, Comparable<TransHo
 
 	public String getXML()
 	{
-		StringBuffer retval = new StringBuffer();
+		StringBuilder retval = new StringBuilder(200);
 
 		if (from_step != null && to_step != null)
 		{

@@ -39,7 +39,7 @@ public class TransConfiguration
     
     public String getXML() throws IOException
     {
-        StringBuffer xml = new StringBuffer();
+        StringBuilder xml = new StringBuilder(200);
         
         xml.append("<"+XML_TAG+">").append(Const.CR);
         

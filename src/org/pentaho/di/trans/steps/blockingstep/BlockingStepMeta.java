@@ -151,7 +151,7 @@ public class BlockingStepMeta  extends BaseStepMeta implements StepMetaInterface
     
     public String getXML()
     {
-        StringBuffer retval = new StringBuffer(300);
+        StringBuilder retval = new StringBuilder(300);
 
         retval.append("      ").append(XMLHandler.addTagValue("pass_all_rows", passAllRows));
         retval.append("      ").append(XMLHandler.addTagValue("directory",     directory));
