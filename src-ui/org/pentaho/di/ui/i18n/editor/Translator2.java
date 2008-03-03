@@ -66,7 +66,7 @@ import org.w3c.dom.Node;
 public class Translator2
 {
     public static final String APP_NAME = "Pentaho Translator";
-    public static final String[] ROOT = new String[] { "src", "src-ui", };
+    public static final String[] ROOT = new String[] { "src-core", "src", "src-ui", };
     public static final String SYSTEM_KEY_PREFIX = "System";
     public static final String REFERENCE_LOCALE = "en_US";
     public static final String[] FILES_TO_AVOID = new String[] { 
