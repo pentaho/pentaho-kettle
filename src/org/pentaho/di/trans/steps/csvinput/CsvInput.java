@@ -113,7 +113,7 @@ public class CsvInput extends BaseStep implements StepInterface
 			//
 			// Let's start by looking where we left off reading.
 			//
-			while (!newLineFound) {
+			while (!newLineFound && outputIndex<data.convertRowMeta.size()) {
 				
 				if (data.endBuffer>=data.bufferSize) {
 					// Oops, we need to read more data...
