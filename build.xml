@@ -124,10 +124,10 @@
 		       ===================================
 		  -->
 	  	
-		<target name="revision" depends="compile" description="compile the source " >
+		<target name="revision" depends="compile-core" description="compile the source " >
 	 	  <echo>Bumping revision...</echo>
 	  	  <java classname="org.pentaho.di.version.UpdateBuildVersion"
-		  	    classpath="${classes}"
+		  	    classpath="${classes-core}"
 	  	  	  />
 		 <!-- <concat><filelist dir="." files="build_version.txt"/></concat> -->
 	    </target>
