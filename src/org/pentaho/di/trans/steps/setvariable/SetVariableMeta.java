@@ -113,7 +113,7 @@ public class SetVariableMeta extends BaseStepMeta implements StepMetaInterface
     }
     
     /**
-     * @param fieldName The fieldName to set.
+     * @param defaultValue The defaultValue to set.
      */
     public void setDefaultValue(String[] defaultValue)
     {
