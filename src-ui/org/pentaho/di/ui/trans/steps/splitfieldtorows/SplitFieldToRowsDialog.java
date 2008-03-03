@@ -1,4 +1,4 @@
-package org.pentaho.di.trans.steps.splitfieldtorows;
+package org.pentaho.di.ui.trans.steps.splitfieldtorows;
 
 
 import org.eclipse.swt.SWT;
@@ -22,6 +22,8 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
+import org.pentaho.di.trans.steps.splitfieldtorows.Messages;
+import org.pentaho.di.trans.steps.splitfieldtorows.SplitFieldToRowsMeta;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 
