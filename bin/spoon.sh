@@ -6,11 +6,12 @@
 # ** Gtk2 and Fte enabled.
 # **************************************************
 
-# export MOZILLA_FIVE_HOME=/usr/local/mozilla
-# export LD_LIBRARY_PATH=/usr/local/mozilla
+# set MOZILLA_FIVE_HOME=/usr/local/mozilla
+# set LD_LIBRARY_PATH=/usr/local/mozilla
 
-export MOZILLA_FIVE_HOME=/usr/lib/xulrunner-1.8.1/
-export LD_LIBRARY_PATH=${MOZILLA_FIVE_HOME}:${LD_LIBRARY_PATH}
+set MOZILLA_FIVE_HOME=/usr/lib/xulrunner-1.8.1/
+set LD_LIBRARY_PATH=${MOZILLA_FIVE_HOME}:${LD_LIBRARY_PATH}
+export MOZILLA_FIVE_HOME LD_LIBRARY_PATH
 
 # **************************************************
 # ** Libraries used by Kettle:                    **
