@@ -4,7 +4,7 @@
 # ** Libraries used by Kettle:                    **
 # **************************************************
 
-BASEDIR=$(dirname $0)
+BASEDIR=`dirname $0`
 cd $BASEDIR
 
 CLASSPATH=$BASEDIR
