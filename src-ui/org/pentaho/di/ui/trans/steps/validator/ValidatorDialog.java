@@ -16,10 +16,10 @@
 
 package org.pentaho.di.ui.trans.steps.validator;
 
-import java.util.Collection;
-import java.util.HashMap;
+import java.util.ArrayList;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -41,6 +41,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
@@ -52,7 +53,7 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.validator.Messages;
-import org.pentaho.di.trans.steps.validator.ValidatorField;
+import org.pentaho.di.trans.steps.validator.Validation;
 import org.pentaho.di.trans.steps.validator.ValidatorMeta;
 import org.pentaho.di.ui.core.dialog.EnterStringDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
@@ -61,13 +62,27 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 public class ValidatorDialog extends BaseStepDialog implements StepDialogInterface
 {
 	private ValidatorMeta input;
-	private List wFieldList;
+	private List wValidationsList;
 	private RowMetaInterface inputFields;
 	
-	private ValidatorField selectedField;
+	private Validation selectedField;
+
+	private Label wlDescription;
+	private Text wDescription;
+
+	private Label wlFieldName;
+	private CCombo wFieldName;
+
 	private Label wlNullAllowed;
 	private Button wNullAllowed;
-	private HashMap<String, ValidatorField> selectionMap;
+
+	private Label wlOnlyNullAllowed;
+	private Button wOnlyNullAllowed;
+
+	private Label wlOnlyNumeric;
+	private Button wOnlyNumeric;
+
+	private java.util.List<Validation> selectionList;
 	private Label wlMaxLength;
 	private Text wMaxLength;
 	private Label wlMinLength;
@@ -90,9 +105,30 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 	private Text wMinValue;
 	private Label wlAllowedValues;
 	private List wAllowedValues;
+	
+	
+	
 	private Button wbAddAllowed;
 	private Button wbRemoveAllowed;
 	private Button wClear;
+	private Button wNew;
+	
+	private Label wlStartStringExpected;
+	private Text wStartStringExpected;
+	private Label wlEndStringExpected;
+	private Text wEndStringExpected;
+	private Label wlStartStringDisallowed;
+	private Text wStartStringDisallowed;
+	private Label wlEndStringDisallowed;
+	private Text wEndStringDisallowed;
+	private Label wlRegExpExpected;
+	private Text wRegExpExpected;
+	private Label wlRegExpDisallowed;
+	private Text wRegExpDisallowed;
+	private Label wlErrorCode;
+	private Text wErrorCode;
+	private Label wlErrorDescription;
+	private Text wErrorDescription;
 
 	public ValidatorDialog(Shell parent, Object in, TransMeta tr, String sname)
 	{
@@ -100,12 +136,12 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 		input=(ValidatorMeta)in;
 		
 		selectedField = null;
-		selectionMap = new HashMap<String, ValidatorField>();
+		selectionList = new ArrayList<Validation>();
 		
 		// Copy the data from the input into the map...
 		//
-		for (ValidatorField field : input.getValidatorField()) {
-			selectionMap.put(field.getName(), field.clone());
+		for (Validation field : input.getValidations()) {
+			selectionList.add(field.clone());
 		}
 	}
 
@@ -160,12 +196,14 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
 		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
+		wNew=new Button(shell, SWT.PUSH);
+		wNew.setText(Messages.getString("ValidatorDialog.NewButton.Label")); //$NON-NLS-1$
 		wClear=new Button(shell, SWT.PUSH);
 		wClear.setText(Messages.getString("ValidatorDialog.ClearButton.Label")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
 		
-		setButtonPositions(new Button[] { wOK, wClear, wCancel }, margin, null);
+		setButtonPositions(new Button[] { wOK, wNew, wClear, wCancel }, margin, null);
 
 		// List of fields to the left...
 		//
@@ -177,21 +215,12 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 		fdlFieldList.right= new FormAttachment(100, 0);
 		fdlFieldList.top  = new FormAttachment(wStepname, margin);
 		wlFieldList.setLayoutData(fdlFieldList);
-		wFieldList=new List(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
+		wValidationsList=new List(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
 		
-		// TODO: grab field list in thread in the background...
-		//
-		try {
-			inputFields = transMeta.getPrevStepFields(stepMeta);
-			wFieldList.setItems(inputFields.getFieldNames());
-		} catch (KettleStepException ex) {
-			new ErrorDialog(shell, Messages.getString("ValidatorDialog.Exception.CantGetFieldsFromPreviousSteps.Title"), Messages.getString("ValidatorDialog.Exception.CantGetFieldsFromPreviousSteps.Message"), ex);
-		}
-		
- 		props.setLook(wFieldList);
- 		wFieldList.addSelectionListener(new SelectionAdapter() { 
+ 		props.setLook(wValidationsList);
+ 		wValidationsList.addSelectionListener(new SelectionAdapter() { 
 			public void widgetSelected(SelectionEvent event) {
-				showSelectedValidatorField(wFieldList.getSelection()[0]);
+				showSelectedValidatorField(wValidationsList.getSelection()[0]);
 			}
 		
 		});
@@ -200,7 +229,7 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 		fdFieldList.top    = new FormAttachment(wlFieldList, margin);
 		fdFieldList.right  = new FormAttachment(middle, -margin);
 		fdFieldList.bottom = new FormAttachment(wOK, -margin*2);
-		wFieldList.setLayoutData(fdFieldList);
+		wValidationsList.setLayoutData(fdFieldList);
 		
 		// Create a scrolled composite on the right side...
 		//
@@ -221,7 +250,102 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
         compLayout.marginHeight = 3;
         wComp.setLayout(compLayout);
 		
+		// Description (list key)
+		//
+		wlDescription=new Label(wComp, SWT.RIGHT);
+		wlDescription.setText(Messages.getString("ValidatorDialog.Description.Label")); //$NON-NLS-1$
+ 		props.setLook(wlDescription);
+		FormData fdlDescription = new FormData();
+		fdlDescription.left = new FormAttachment(0, 0);
+		fdlDescription.right= new FormAttachment(middle, -margin);
+		fdlDescription.top  = new FormAttachment(0, 0);
+		wlDescription.setLayoutData(fdlDescription);
+		wDescription=new Text(wComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+ 		props.setLook(wDescription);
+		FormData fdDescription = new FormData();
+		fdDescription.left = new FormAttachment(middle, margin);
+		fdDescription.right= new FormAttachment(100, 0);
+		fdDescription.top  = new FormAttachment(0, 0);
+		wDescription.setLayoutData(fdDescription);
+		wDescription.addModifyListener(new ModifyListener() {
+			public void modifyText(ModifyEvent event) {
+				// See if there is a selected Validation
+				//
+				if (wValidationsList!=null && wValidationsList.getItemCount()>0 && wValidationsList.getSelection().length==1) {
+					int index = wValidationsList.getSelectionIndex();
+					String description = wValidationsList.getItem(index);
+					Validation validation = Validation.findValidation(selectionList, description);
+					String newDescription = wDescription.getText();
+					validation.setName(newDescription);
+					wValidationsList.setItem(index, newDescription);
+					wValidationsList.select(index);
+				}
+			}
+		});
+
+		// The name of the field to validate
+		//
+		wlFieldName=new Label(wComp, SWT.RIGHT);
+		wlFieldName.setText(Messages.getString("ValidatorDialog.FieldName.Label")); //$NON-NLS-1$
+ 		props.setLook(wlFieldName);
+		FormData fdlFieldName = new FormData();
+		fdlFieldName.left = new FormAttachment(0, 0);
+		fdlFieldName.right= new FormAttachment(middle, -margin);
+		fdlFieldName.top  = new FormAttachment(wDescription, margin);
+		wlFieldName.setLayoutData(fdlFieldName);
+		wFieldName=new CCombo(wComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+ 		props.setLook(wFieldName);
+		FormData fdFieldName = new FormData();
+		fdFieldName.left = new FormAttachment(middle, margin);
+		fdFieldName.right= new FormAttachment(100, 0);
+		fdFieldName.top  = new FormAttachment(wDescription, margin);
+		wFieldName.setLayoutData(fdFieldName);
 		
+		// TODO: grab field list in thread in the background...
+		//
+		try {
+			inputFields = transMeta.getPrevStepFields(stepMeta);
+			wFieldName.setItems(inputFields.getFieldNames());
+		} catch (KettleStepException ex) {
+			new ErrorDialog(shell, Messages.getString("ValidatorDialog.Exception.CantGetFieldsFromPreviousSteps.Title"), Messages.getString("ValidatorDialog.Exception.CantGetFieldsFromPreviousSteps.Message"), ex);
+		}
+		
+		// ErrorCode
+		//
+		wlErrorCode=new Label(wComp, SWT.RIGHT);
+		wlErrorCode.setText(Messages.getString("ValidatorDialog.ErrorCode.Label")); //$NON-NLS-1$
+ 		props.setLook(wlErrorCode);
+		FormData fdlErrorCode = new FormData();
+		fdlErrorCode.left = new FormAttachment(0, 0);
+		fdlErrorCode.right= new FormAttachment(middle, -margin);
+		fdlErrorCode.top  = new FormAttachment(wFieldName, margin);
+		wlErrorCode.setLayoutData(fdlErrorCode);
+		wErrorCode=new Text(wComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+ 		props.setLook(wErrorCode);
+		FormData fdErrorCode = new FormData();
+		fdErrorCode.left = new FormAttachment(middle, margin);
+		fdErrorCode.right= new FormAttachment(100, 0);
+		fdErrorCode.top  = new FormAttachment(wFieldName, margin);
+		wErrorCode.setLayoutData(fdErrorCode);
+
+		// ErrorDescription
+		//
+		wlErrorDescription=new Label(wComp, SWT.RIGHT);
+		wlErrorDescription.setText(Messages.getString("ValidatorDialog.ErrorDescription.Label")); //$NON-NLS-1$
+ 		props.setLook(wlErrorDescription);
+		FormData fdlErrorDescription = new FormData();
+		fdlErrorDescription.left = new FormAttachment(0, 0);
+		fdlErrorDescription.right= new FormAttachment(middle, -margin);
+		fdlErrorDescription.top  = new FormAttachment(wErrorCode, margin);
+		wlErrorDescription.setLayoutData(fdlErrorDescription);
+		wErrorDescription=new Text(wComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+ 		props.setLook(wErrorDescription);
+		FormData fdErrorDescription = new FormData();
+		fdErrorDescription.left = new FormAttachment(middle, margin);
+		fdErrorDescription.right= new FormAttachment(100, 0);
+		fdErrorDescription.top  = new FormAttachment(wErrorCode, margin);
+		wErrorDescription.setLayoutData(fdErrorDescription);
+
 		// Data type validations & constants masks...
 		// 
 		wgType = new Group(wComp, SWT.NONE);
@@ -234,7 +358,7 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 		FormData fdType = new FormData();
 		fdType.left = new FormAttachment(0, 0);
 		fdType.right= new FormAttachment(100, 0);
-		fdType.top  = new FormAttachment(0, 0);
+		fdType.top  = new FormAttachment(wErrorDescription, margin*2);
 		wgType.setLayoutData(fdType);
 		
 		// Check for data type correctness?
@@ -245,14 +369,14 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 		FormData fdldataTypeVerified = new FormData();
 		fdldataTypeVerified.left = new FormAttachment(0, 0);
 		fdldataTypeVerified.right= new FormAttachment(middle, -margin);
-		fdldataTypeVerified.top  = new FormAttachment(wlFieldList, margin);
+		fdldataTypeVerified.top  = new FormAttachment(0, 0);
 		wlDataTypeVerified.setLayoutData(fdldataTypeVerified);
 		wDataTypeVerified=new Button(wgType, SWT.CHECK);
  		props.setLook(wDataTypeVerified);
 		FormData fddataTypeVerified = new FormData();
 		fddataTypeVerified.left = new FormAttachment(middle, margin);
 		fddataTypeVerified.right= new FormAttachment(100, 0);
-		fddataTypeVerified.top  = new FormAttachment(wlFieldList, margin);
+		fddataTypeVerified.top  = new FormAttachment(0, 0);
 		wDataTypeVerified.setLayoutData(fddataTypeVerified);
 
 		// Data type
@@ -331,10 +455,6 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 		
 		
 		
-		
-		
-		
-		
 		///////////////////////////////////////////////////////////////////////////////////////////////////
 		//
 		// The data group...
@@ -361,15 +481,51 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 		FormData fdlNullAllowed = new FormData();
 		fdlNullAllowed.left = new FormAttachment(0, 0);
 		fdlNullAllowed.right= new FormAttachment(middle, -margin);
-		fdlNullAllowed.top  = new FormAttachment(wlFieldList, margin);
+		fdlNullAllowed.top  = new FormAttachment(0, 0);
 		wlNullAllowed.setLayoutData(fdlNullAllowed);
 		wNullAllowed=new Button(wgData, SWT.CHECK);
  		props.setLook(wNullAllowed);
 		FormData fdNullAllowed = new FormData();
 		fdNullAllowed.left = new FormAttachment(middle, margin);
 		fdNullAllowed.right= new FormAttachment(100, 0);
-		fdNullAllowed.top  = new FormAttachment(wlFieldList, margin);
+		fdNullAllowed.top  = new FormAttachment(0, 0);
 		wNullAllowed.setLayoutData(fdNullAllowed);
+
+		// Only null allowed?
+		//
+		wlOnlyNullAllowed=new Label(wgData, SWT.RIGHT);
+		wlOnlyNullAllowed.setText(Messages.getString("ValidatorDialog.OnlyNullAllowed.Label")); //$NON-NLS-1$
+ 		props.setLook(wlOnlyNullAllowed);
+		FormData fdlOnlyNullAllowed = new FormData();
+		fdlOnlyNullAllowed.left = new FormAttachment(0, 0);
+		fdlOnlyNullAllowed.right= new FormAttachment(middle, -margin);
+		fdlOnlyNullAllowed.top  = new FormAttachment(wNullAllowed, margin);
+		wlOnlyNullAllowed.setLayoutData(fdlOnlyNullAllowed);
+		wOnlyNullAllowed=new Button(wgData, SWT.CHECK);
+ 		props.setLook(wOnlyNullAllowed);
+		FormData fdOnlyNullAllowed = new FormData();
+		fdOnlyNullAllowed.left = new FormAttachment(middle, margin);
+		fdOnlyNullAllowed.right= new FormAttachment(100, 0);
+		fdOnlyNullAllowed.top  = new FormAttachment(wNullAllowed, margin);
+		wOnlyNullAllowed.setLayoutData(fdOnlyNullAllowed);
+
+		// Only numeric allowed?
+		//
+		wlOnlyNumeric=new Label(wgData, SWT.RIGHT);
+		wlOnlyNumeric.setText(Messages.getString("ValidatorDialog.OnlyNumeric.Label")); //$NON-NLS-1$
+ 		props.setLook(wlOnlyNumeric);
+		FormData fdlOnlyNumeric = new FormData();
+		fdlOnlyNumeric.left = new FormAttachment(0, 0);
+		fdlOnlyNumeric.right= new FormAttachment(middle, -margin);
+		fdlOnlyNumeric.top  = new FormAttachment(wOnlyNullAllowed, margin);
+		wlOnlyNumeric.setLayoutData(fdlOnlyNumeric);
+		wOnlyNumeric=new Button(wgData, SWT.CHECK);
+ 		props.setLook(wOnlyNumeric);
+		FormData fdOnlyNumeric = new FormData();
+		fdOnlyNumeric.left = new FormAttachment(middle, margin);
+		fdOnlyNumeric.right= new FormAttachment(100, 0);
+		fdOnlyNumeric.top  = new FormAttachment(wOnlyNullAllowed, margin);
+		wOnlyNumeric.setLayoutData(fdOnlyNumeric);
 
 		// Maximum length
 		//
@@ -379,16 +535,16 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 		FormData fdlMaxLength = new FormData();
 		fdlMaxLength.left = new FormAttachment(0, 0);
 		fdlMaxLength.right= new FormAttachment(middle, -margin);
-		fdlMaxLength.top  = new FormAttachment(wNullAllowed, margin);
+		fdlMaxLength.top  = new FormAttachment(wOnlyNumeric, margin);
 		wlMaxLength.setLayoutData(fdlMaxLength);
 		wMaxLength=new Text(wgData, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wMaxLength);
 		FormData fdMaxLength = new FormData();
 		fdMaxLength.left = new FormAttachment(middle, margin);
 		fdMaxLength.right= new FormAttachment(100, 0);
-		fdMaxLength.top  = new FormAttachment(wNullAllowed, margin);
+		fdMaxLength.top  = new FormAttachment(wOnlyNumeric, margin);
 		wMaxLength.setLayoutData(fdMaxLength);
-		
+
 		// Minimum length
 		//
 		wlMinLength=new Label(wgData, SWT.RIGHT);
@@ -443,21 +599,129 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 		fdMinValue.top  = new FormAttachment(wMaxValue, margin);
 		wMinValue.setLayoutData(fdMinValue);
 		
+		// Expected start string
+		//
+		wlStartStringExpected=new Label(wgData, SWT.RIGHT);
+		wlStartStringExpected.setText(Messages.getString("ValidatorDialog.StartStringExpected.Label")); //$NON-NLS-1$
+ 		props.setLook(wlStartStringExpected);
+		FormData fdlStartStringExpected = new FormData();
+		fdlStartStringExpected.left = new FormAttachment(0, 0);
+		fdlStartStringExpected.right= new FormAttachment(middle, -margin);
+		fdlStartStringExpected.top  = new FormAttachment(wMinValue, margin);
+		wlStartStringExpected.setLayoutData(fdlStartStringExpected);
+		wStartStringExpected=new Text(wgData, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+ 		props.setLook(wStartStringExpected);
+		FormData fdStartStringExpected = new FormData();
+		fdStartStringExpected.left = new FormAttachment(middle, margin);
+		fdStartStringExpected.right= new FormAttachment(100, 0);
+		fdStartStringExpected.top  = new FormAttachment(wMinValue, margin);
+		wStartStringExpected.setLayoutData(fdStartStringExpected);
+
+		// Expected End string
+		//
+		wlEndStringExpected=new Label(wgData, SWT.RIGHT);
+		wlEndStringExpected.setText(Messages.getString("ValidatorDialog.EndStringExpected.Label")); //$NON-NLS-1$
+ 		props.setLook(wlEndStringExpected);
+		FormData fdlEndStringExpected = new FormData();
+		fdlEndStringExpected.left = new FormAttachment(0, 0);
+		fdlEndStringExpected.right= new FormAttachment(middle, -margin);
+		fdlEndStringExpected.top  = new FormAttachment(wStartStringExpected, margin);
+		wlEndStringExpected.setLayoutData(fdlEndStringExpected);
+		wEndStringExpected=new Text(wgData, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+ 		props.setLook(wEndStringExpected);
+		FormData fdEndStringExpected = new FormData();
+		fdEndStringExpected.left = new FormAttachment(middle, margin);
+		fdEndStringExpected.right= new FormAttachment(100, 0);
+		fdEndStringExpected.top  = new FormAttachment(wStartStringExpected, margin);
+		wEndStringExpected.setLayoutData(fdEndStringExpected);
+
+		// Disallowed start string
+		//
+		wlStartStringDisallowed=new Label(wgData, SWT.RIGHT);
+		wlStartStringDisallowed.setText(Messages.getString("ValidatorDialog.StartStringDisallowed.Label")); //$NON-NLS-1$
+ 		props.setLook(wlStartStringDisallowed);
+		FormData fdlStartStringDisallowed = new FormData();
+		fdlStartStringDisallowed.left = new FormAttachment(0, 0);
+		fdlStartStringDisallowed.right= new FormAttachment(middle, -margin);
+		fdlStartStringDisallowed.top  = new FormAttachment(wEndStringExpected, margin);
+		wlStartStringDisallowed.setLayoutData(fdlStartStringDisallowed);
+		wStartStringDisallowed=new Text(wgData, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+ 		props.setLook(wStartStringDisallowed);
+		FormData fdStartStringDisallowed = new FormData();
+		fdStartStringDisallowed.left = new FormAttachment(middle, margin);
+		fdStartStringDisallowed.right= new FormAttachment(100, 0);
+		fdStartStringDisallowed.top  = new FormAttachment(wEndStringExpected, margin);
+		wStartStringDisallowed.setLayoutData(fdStartStringDisallowed);
+
+		// Disallowed End string
+		//
+		wlEndStringDisallowed=new Label(wgData, SWT.RIGHT);
+		wlEndStringDisallowed.setText(Messages.getString("ValidatorDialog.EndStringDisallowed.Label")); //$NON-NLS-1$
+ 		props.setLook(wlEndStringDisallowed);
+		FormData fdlEndStringDisallowed = new FormData();
+		fdlEndStringDisallowed.left = new FormAttachment(0, 0);
+		fdlEndStringDisallowed.right= new FormAttachment(middle, -margin);
+		fdlEndStringDisallowed.top  = new FormAttachment(wStartStringDisallowed, margin);
+		wlEndStringDisallowed.setLayoutData(fdlEndStringDisallowed);
+		wEndStringDisallowed=new Text(wgData, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+ 		props.setLook(wEndStringDisallowed);
+		FormData fdEndStringDisallowed = new FormData();
+		fdEndStringDisallowed.left = new FormAttachment(middle, margin);
+		fdEndStringDisallowed.right= new FormAttachment(100, 0);
+		fdEndStringDisallowed.top  = new FormAttachment(wStartStringDisallowed, margin);
+		wEndStringDisallowed.setLayoutData(fdEndStringDisallowed);
+
+		// Expected regular expression
+		//
+		wlRegExpExpected=new Label(wgData, SWT.RIGHT);
+		wlRegExpExpected.setText(Messages.getString("ValidatorDialog.RegExpExpected.Label")); //$NON-NLS-1$
+ 		props.setLook(wlRegExpExpected);
+		FormData fdlRegExpExpected = new FormData();
+		fdlRegExpExpected.left = new FormAttachment(0, 0);
+		fdlRegExpExpected.right= new FormAttachment(middle, -margin);
+		fdlRegExpExpected.top  = new FormAttachment(wEndStringDisallowed, margin);
+		wlRegExpExpected.setLayoutData(fdlRegExpExpected);
+		wRegExpExpected=new Text(wgData, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+ 		props.setLook(wRegExpExpected);
+		FormData fdRegExpExpected = new FormData();
+		fdRegExpExpected.left = new FormAttachment(middle, margin);
+		fdRegExpExpected.right= new FormAttachment(100, 0);
+		fdRegExpExpected.top  = new FormAttachment(wEndStringDisallowed, margin);
+		wRegExpExpected.setLayoutData(fdRegExpExpected);
+
+		// Disallowed regular expression
+		//
+		wlRegExpDisallowed=new Label(wgData, SWT.RIGHT);
+		wlRegExpDisallowed.setText(Messages.getString("ValidatorDialog.RegExpDisallowed.Label")); //$NON-NLS-1$
+ 		props.setLook(wlRegExpDisallowed);
+		FormData fdlRegExpDisallowed = new FormData();
+		fdlRegExpDisallowed.left = new FormAttachment(0, 0);
+		fdlRegExpDisallowed.right= new FormAttachment(middle, -margin);
+		fdlRegExpDisallowed.top  = new FormAttachment(wRegExpExpected, margin);
+		wlRegExpDisallowed.setLayoutData(fdlRegExpDisallowed);
+		wRegExpDisallowed=new Text(wgData, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+ 		props.setLook(wRegExpDisallowed);
+		FormData fdRegExpDisallowed = new FormData();
+		fdRegExpDisallowed.left = new FormAttachment(middle, margin);
+		fdRegExpDisallowed.right= new FormAttachment(100, 0);
+		fdRegExpDisallowed.top  = new FormAttachment(wRegExpExpected, margin);
+		wRegExpDisallowed.setLayoutData(fdRegExpDisallowed);
+
 		// Allowed values: a list box.
 		//
 		// Add an entry
+		//
 		wbAddAllowed = new Button(wgData, SWT.PUSH);
-		// props.setLook(wbAddAllowed);
 		wbAddAllowed.setText(Messages.getString("ValidatorDialog.ButtonAddAllowed.Label")); //$NON-NLS-1$
 		FormData fdbAddAllowed = new FormData();
 		fdbAddAllowed.right  = new FormAttachment(100, 0);
-		fdbAddAllowed.top    = new FormAttachment(wMinValue, margin);
+		fdbAddAllowed.top    = new FormAttachment(wRegExpDisallowed, margin);
 		wbAddAllowed.setLayoutData(fdbAddAllowed);
 		wbAddAllowed.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { addAllowedValue(); } });
 
 		// Remove an entry
+		//
 		wbRemoveAllowed = new Button(wgData, SWT.PUSH);
-		// props.setLook(wbRemoveAllowed);
 		wbRemoveAllowed.setText(Messages.getString("ValidatorDialog.ButtonRemoveAllowed.Label")); //$NON-NLS-1$
 		FormData fdbRemoveAllowed = new FormData();
 		fdbRemoveAllowed.right  = new FormAttachment(100, 0);
@@ -465,26 +729,22 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 		wbRemoveAllowed.setLayoutData(fdbRemoveAllowed);
 		wbRemoveAllowed.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { removeAllowedValue(); } });
 
-		
 		wlAllowedValues=new Label(wgData, SWT.RIGHT);
 		wlAllowedValues.setText(Messages.getString("ValidatorDialog.AllowedValues.Label")); //$NON-NLS-1$
  		props.setLook(wlAllowedValues);
 		FormData fdlAllowedValues = new FormData();
 		fdlAllowedValues.left = new FormAttachment(0, 0);
 		fdlAllowedValues.right= new FormAttachment(middle, -margin);
-		fdlAllowedValues.top  = new FormAttachment(wMinValue, margin);
+		fdlAllowedValues.top  = new FormAttachment(wRegExpDisallowed, margin);
 		wlAllowedValues.setLayoutData(fdlAllowedValues);
 		wAllowedValues=new List(wgData, SWT.MULTI | SWT.LEFT | SWT.BORDER);
  		props.setLook(wAllowedValues);
  		FormData fdAllowedValues = new FormData();
  		fdAllowedValues.left   = new FormAttachment(middle, margin);
- 		fdAllowedValues.right  = new FormAttachment(wbRemoveAllowed, -margin);
- 		fdAllowedValues.top    = new FormAttachment(wMinValue, margin);
- 		fdAllowedValues.bottom = new FormAttachment(wMinValue, 200);
+ 		fdAllowedValues.right  = new FormAttachment(wbRemoveAllowed, -20);
+ 		fdAllowedValues.top    = new FormAttachment(wRegExpDisallowed, margin);
+ 		fdAllowedValues.bottom = new FormAttachment(wRegExpDisallowed, 150);
  		wAllowedValues.setLayoutData(fdAllowedValues);
-
-
-
 		
         wComp.pack();
         Rectangle bounds = wComp.getBounds();
@@ -503,24 +763,48 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 		wCancel.addListener(SWT.Selection, lsCancel);
 		wOK.addListener    (SWT.Selection, lsOK    );
 		wClear.addSelectionListener(new SelectionAdapter() {
-		
 			public void widgetSelected(SelectionEvent e) {
 				// Clear the validation rules for a certain field...
 				//
-				int index = wFieldList.getSelectionIndex();
+				int index = wValidationsList.getSelectionIndex();
 				if (index>=0) {
-					String fieldName = wFieldList.getItem(index);
-					selectionMap.remove(fieldName);
+					selectionList.remove(index);
 					selectedField=null;
-					wFieldList.deselectAll();
+					wValidationsList.remove(index);
 					enableFields();
 				}
 			}
-		
 		});
-		
+
+		wNew.addSelectionListener(new SelectionAdapter() {
+			
+			public void widgetSelected(SelectionEvent e) {
+				// Create a new validation rule page ...
+				//
+				EnterStringDialog enterStringDialog = new EnterStringDialog(shell, "", Messages.getString("ValidatorDialog.EnterValidationRuleName.Title"), Messages.getString("ValidatorDialog.EnterValidationRuleName.Message"));
+				String description = enterStringDialog.open();
+				if (description!=null) {
+					if (Validation.findValidation(selectionList, description)!=null) {
+						MessageBox messageBox = new MessageBox(shell, SWT.ICON_ERROR);
+						messageBox.setText(Messages.getString("ValidatorDialog.ValidationRuleNameAlreadyExists.Title"));
+						messageBox.setMessage(Messages.getString("ValidatorDialog.ValidationRuleNameAlreadyExists.Message"));
+						messageBox.open();
+						return;
+					}
+					saveChanges();
+					Validation validation = new Validation();
+					validation.setName(description);
+					selectionList.add(validation);
+					selectedField = validation;
+					refreshValidationsList();
+					wValidationsList.select(selectionList.size()-1);
+					getValidatorFieldData(validation);
+				}
+			}
+		});
+
 		lsDef=new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { ok(); } };
-		
+
 		wStepname.addSelectionListener( lsDef );
 		wConversionMask.addSelectionListener(lsDef);
 		wGroupingSymbol.addSelectionListener(lsDef);
@@ -570,18 +854,34 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 		}
 	}
 
-	private void getValidatorFieldData(ValidatorField field) {
+	private void getValidatorFieldData(Validation field) {
+		
+		wDescription.setText(Const.NVL(field.getName(), ""));
+		wFieldName.setText(Const.NVL(field.getFieldName(), ""));
+
+		wErrorCode.setText(Const.NVL(field.getErrorCode(), ""));
+		wErrorDescription.setText(Const.NVL(field.getErrorDescription(), ""));
+
 		wDataTypeVerified.setSelection(field.isDataTypeVerified());
 		wDataType.setText(ValueMeta.getTypeDesc(field.getDataType()));
 		wConversionMask.setText(Const.NVL(field.getConversionMask(), ""));
-		wGroupingSymbol.setText(Const.NVL(field.getGroupingSymbol(), ""));
 		wDecimalSymbol.setText(Const.NVL(field.getDecimalSymbol(), ""));
+		wGroupingSymbol.setText(Const.NVL(field.getGroupingSymbol(), ""));
 		
 		wNullAllowed.setSelection(field.isNullAllowed());
+		wOnlyNullAllowed.setSelection(field.isOnlyNullAllowed());
+		wOnlyNumeric.setSelection(field.isOnlyNumericAllowed());
+		
 		if (field.getMaximumLength()>=0) wMaxLength.setText(Integer.toString(field.getMaximumLength())); else wMaxLength.setText(""); 
 		if (field.getMinimumLength()>=0) wMinLength.setText(Integer.toString(field.getMinimumLength())); else wMinLength.setText(""); 
 		wMaxValue.setText(Const.NVL(field.getMaximumValue(), ""));
 		wMinValue.setText(Const.NVL(field.getMinimumValue(), ""));
+		wStartStringExpected.setText(Const.NVL(field.getStartString(), ""));
+		wEndStringExpected.setText(Const.NVL(field.getEndString(), ""));
+		wStartStringDisallowed.setText(Const.NVL(field.getStartStringNotAllowed(), ""));
+		wEndStringDisallowed.setText(Const.NVL(field.getEndStringNotAllowed(), ""));
+		wRegExpExpected.setText(Const.NVL(field.getRegularExpression(), ""));
+		wRegExpDisallowed.setText(Const.NVL(field.getRegularExpressionNotAllowed(), ""));
 		
 		wAllowedValues.removeAll();
 		if (field.getAllowedValues()!=null) {
@@ -589,6 +889,7 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 				wAllowedValues.add(Const.NVL(allowedValue, ""));
 			}
 		}
+		
 	}
 	
 	private void enableFields() {
@@ -597,27 +898,14 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 		wgType.setVisible(visible);
 		wgData.setVisible(visible);
 		
-		wlDataTypeVerified.setVisible(visible);
-		wDataTypeVerified.setVisible(visible);
-		wlDataType.setVisible(visible);
-		wDataType.setVisible(visible);
-		wlConversionMask.setVisible(visible);
-		wConversionMask.setVisible(visible);
-		wlGroupingSymbol.setVisible(visible);
-		wGroupingSymbol.setVisible(visible);
-		wlDecimalSymbol.setVisible(visible);
-		wDecimalSymbol.setVisible(visible);
-		
-		wlNullAllowed.setVisible(visible);
-		wNullAllowed.setVisible(visible);
-		wlMaxLength.setVisible(visible);
-		wMaxLength.setVisible(visible);
-		wlMinLength.setVisible(visible);
-		wMinLength.setVisible(visible);
-		wlMaxValue.setVisible(visible);
-		wMaxValue.setVisible(visible);
-		wlMinValue.setVisible(visible);
-		wMinValue.setVisible(visible);
+		wlFieldName.setVisible(visible);
+		wFieldName.setVisible(visible);
+		wlDescription.setVisible(visible);
+		wDescription.setVisible(visible);
+		wlErrorCode.setVisible(visible);
+		wErrorCode.setVisible(visible);
+		wlErrorDescription.setVisible(visible);
+		wErrorDescription.setVisible(visible);
 	}
 
 	private void showSelectedValidatorField(String selection) {
@@ -625,9 +913,9 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 		//
 		saveChanges();
 		
-		ValidatorField field = selectionMap.get(selection);
+		Validation field = Validation.findValidation(selectionList, selection);
 		if (field==null) {
-			field = new ValidatorField(selection);
+			field = new Validation(selection);
 			ValueMetaInterface valueMeta = inputFields.searchValueMeta(selection);
 			if (valueMeta!=null) {
 				// Set the default data type
@@ -647,20 +935,39 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 		if (selectedField!=null) {
 			// First grab the info from the dialog...
 			// 
+			selectedField.setFieldName(wFieldName.getText());
+
+			selectedField.setErrorCode(wErrorCode.getText());
+			selectedField.setErrorDescription(wErrorDescription.getText());
+
 			selectedField.setDataTypeVerified(wDataTypeVerified.getSelection());
 			selectedField.setDataType(ValueMeta.getType(wDataType.getText()));
+			selectedField.setConversionMask(wConversionMask.getText());
+			selectedField.setDecimalSymbol(wDecimalSymbol.getText());
+			selectedField.setGroupingSymbol(wGroupingSymbol.getText());
 			
 			selectedField.setNullAllowed(wNullAllowed.getSelection());
+			selectedField.setOnlyNullAllowed(wOnlyNullAllowed.getSelection());
+			selectedField.setOnlyNumericAllowed(wOnlyNumeric.getSelection());
+			
 			selectedField.setMaximumLength(Const.toInt(wMaxLength.getText(), -1));
 			selectedField.setMinimumLength(Const.toInt(wMinLength.getText(), -1));
 			selectedField.setMaximumValue(wMaxValue.getText());
 			selectedField.setMinimumValue(wMinValue.getText());
 			
+			selectedField.setStartString(wStartStringExpected.getText());
+			selectedField.setEndString(wEndStringExpected.getText());
+			selectedField.setStartStringNotAllowed(wStartStringDisallowed.getText());
+			selectedField.setEndStringNotAllowed(wEndStringDisallowed.getText());
+
+			selectedField.setRegularExpression(wRegExpExpected.getText());
+			selectedField.setRegularExpressionNotAllowed(wRegExpDisallowed.getText());
+
 			selectedField.setAllowedValues(wAllowedValues.getItems());
 
 			// Save the old info in the map
 			// 
-			selectionMap.put(selectedField.getName(), selectedField);
+			// selectionList.add(selectedField);
 		}
 	}
 
@@ -669,22 +976,33 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 	 */ 
 	public void getData()
 	{
-		wStepname.selectAll();
+		// Populate the list of validations...
+		//
+		refreshValidationsList();
 		enableFields();
 		
 		// Select the first available field...
 		//
-		if (input.getValidatorField().length>0) {
-			ValidatorField validatorField = input.getValidatorField()[0];
-			String name = validatorField.getName();
-			int index = wFieldList.indexOf(name);
+		if (input.getValidations().length>0) {
+			Validation validatorField = input.getValidations()[0];
+			String description = validatorField.getName();
+			int index = wValidationsList.indexOf(description);
 			if (index>=0) {
-				wFieldList.select(index);
-				showSelectedValidatorField(name);
+				wValidationsList.select(index);
+				showSelectedValidatorField(description);
 			}
 		}
+		
+		wStepname.selectAll();
 	}
 	
+	private void refreshValidationsList() {
+		wValidationsList.removeAll();
+		for (Validation validation : selectionList) {
+			wValidationsList.add(validation.getName());
+		}
+	}
+
 	private void cancel()
 	{
 		stepname=null;
@@ -700,9 +1018,8 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 		
 		saveChanges();
 		input.setChanged();
-		Collection<ValidatorField> values = selectionMap.values();
-		ValidatorField[] fields = values.toArray(new ValidatorField[values.size()]);
-		input.setValidatorField(fields);
+		Validation[] fields = selectionList.toArray(new Validation[selectionList.size()]);
+		input.setValidations(fields);
 		
 		dispose();
 	}

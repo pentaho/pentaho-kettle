@@ -44,7 +44,7 @@ import org.w3c.dom.Node;
 public class ValidatorMeta extends BaseStepMeta implements StepMetaInterface
 {
     /** The calculations to be performed */
-    private ValidatorField[] validatorField;
+    private Validation[] validations;
     
     public ValidatorMeta()
 	{
@@ -54,18 +54,17 @@ public class ValidatorMeta extends BaseStepMeta implements StepMetaInterface
     
     public void allocate(int nrValidations)
     {
-        validatorField = new ValidatorField[nrValidations];
+    	validations = new Validation[nrValidations];
     }
     
-	public void loadXML(Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters)
-		throws KettleXMLException
+	public void loadXML(Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleXMLException
 	{
-        int nrCalcs   = XMLHandler.countNodes(stepnode,   ValidatorField.XML_TAG);
+        int nrCalcs   = XMLHandler.countNodes(stepnode,   Validation.XML_TAG);
         allocate(nrCalcs);
         for (int i=0;i<nrCalcs;i++)
         {
-            Node calcnode = XMLHandler.getSubNodeByNr(stepnode, ValidatorField.XML_TAG, i);
-            validatorField[i] = new ValidatorField(calcnode);
+            Node calcnode = XMLHandler.getSubNodeByNr(stepnode, Validation.XML_TAG, i);
+            validations[i] = new Validation(calcnode);
         }
 	}
     
@@ -73,10 +72,10 @@ public class ValidatorMeta extends BaseStepMeta implements StepMetaInterface
     {
         StringBuffer retval = new StringBuffer(300);
        
-        if (validatorField!=null)
-        for (int i=0;i<validatorField.length;i++)
+        if (validations!=null)
+        for (int i=0;i<validations.length;i++)
         {
-            retval.append("       ").append(validatorField[i].getXML()).append(Const.CR);
+            retval.append("       ").append(validations[i].getXML()).append(Const.CR);
         }
         
         return retval.toString();
@@ -96,10 +95,10 @@ public class ValidatorMeta extends BaseStepMeta implements StepMetaInterface
 	public Object clone()
 	{
 		ValidatorMeta retval = (ValidatorMeta) super.clone();
-        if (validatorField!=null)
+        if (validations!=null)
         {
-            retval.allocate(validatorField.length);
-            for (int i=0;i<validatorField.length;i++) retval.getValidatorField()[i] = validatorField[i].clone();
+            retval.allocate(validations.length);
+            for (int i=0;i<validations.length;i++) retval.validations[i] = validations[i].clone();
         }
         else
         {
@@ -110,7 +109,7 @@ public class ValidatorMeta extends BaseStepMeta implements StepMetaInterface
 
 	public void setDefault()
 	{
-        validatorField = new ValidatorField[0]; 
+		validations = new Validation[0]; 
 	}
 
 	public void readRep(Repository rep, long id_step, List<DatabaseMeta> databases, Map<String, Counter> counters)
@@ -120,16 +119,16 @@ public class ValidatorMeta extends BaseStepMeta implements StepMetaInterface
         allocate(nrValidationFields);
         for (int i=0;i<nrValidationFields;i++)
         {
-            validatorField[i] = new ValidatorField(rep, id_step, i);
+        	validations[i] = new Validation(rep, id_step, i);
         }
 	}
 	
 	public void saveRep(Repository rep, long id_transformation, long id_step)
 		throws KettleException
 	{
-        for (int i=0;i<validatorField.length;i++)
+        for (int i=0;i<validations.length;i++)
         {
-            validatorField[i].saveRep(rep, id_transformation, id_step, i);
+        	validations[i].saveRep(rep, id_transformation, id_step, i);
         }
 	}
     
@@ -171,23 +170,25 @@ public class ValidatorMeta extends BaseStepMeta implements StepMetaInterface
 	}
 
 
-	/**
-	 * @return the validatorField
-	 */
-	public ValidatorField[] getValidatorField() {
-		return validatorField;
-	}
-
-
-	/**
-	 * @param validatorField the validatorField to set
-	 */
-	public void setValidatorField(ValidatorField[] validatorField) {
-		this.validatorField = validatorField;
-	}
 
 	public boolean supportsErrorHandling() {
 		return true;
+	}
+
+
+	/**
+	 * @return the validations
+	 */
+	public Validation[] getValidations() {
+		return validations;
+	}
+
+
+	/**
+	 * @param validations the validations to set
+	 */
+	public void setValidations(Validation[] validations) {
+		this.validations = validations;
 	}
 
 }

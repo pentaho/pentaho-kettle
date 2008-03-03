@@ -833,5 +833,14 @@
 		</tooltip>
 		<image-uri>ui/images/SFO.png</image-uri>
 	</step>
-	
+	<step id="SplitFieldToRows3">
+		<description>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.SplitFieldToRows3")
+		</description>
+		<class-name>org.pentaho.di.trans.steps.splitfieldtorows.SplitFieldToRowsMeta</class-name>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@TRANSFORM.getName()</category>
+		<tooltip>ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.SplitFieldToRows3")
+		</tooltip>
+		<image-uri>ui/images/SFtR.png</image-uri>
+	</step>	
 </steps>

@@ -48,6 +48,8 @@ import org.w3c.dom.Node;
 
 public class Condition implements Cloneable, XMLInterface
 {
+	public static final String XML_TAG = "condition";
+
 	public static final String[] operators = new String[] { "-", "OR", "AND", "NOT", "OR NOT", "AND NOT", "XOR" };
 	public static final int OPERATOR_NONE       = 0;
 	public static final int OPERATOR_OR         = 1;
@@ -698,7 +700,7 @@ public class Condition implements Cloneable, XMLInterface
 		String indent2 = Const.rightPad(" ", level+1);
 		String indent3 = Const.rightPad(" ", level+2);
 
-		retval+= indent1+"<condition>"+Const.CR;
+		retval+= indent1+XMLHandler.openTag(XML_TAG)+Const.CR;
 
 		retval+=indent2+XMLHandler.addTagValue("negated",    isNegated());
 
@@ -728,7 +730,7 @@ public class Condition implements Cloneable, XMLInterface
 			retval+=indent3+"</conditions>"+Const.CR;
 		}
 
-		retval+=indent2+"</condition>"+Const.CR;
+		retval+=indent2+XMLHandler.closeTag(XML_TAG)+Const.CR;
 
 		return retval;
 	}

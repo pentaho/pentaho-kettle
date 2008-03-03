@@ -12,6 +12,8 @@
 
 package org.pentaho.di.trans.steps.validator;
 
+import java.util.regex.Pattern;
+
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
@@ -30,6 +32,10 @@ public class ValidatorData extends BaseStepData implements StepDataInterface
     public Object[] minimumValue;
     public Object[] maximumValue;
     public Object[] listValues[];
+
+	public Pattern[] patternExpected;
+
+	public Pattern[] patternDisallowed;
 
 	/**
 	 * 
