@@ -19,7 +19,9 @@ import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -1874,11 +1876,32 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			// TRANSFORMATIONS
 			// ////////////////////////////////////////////////////////////////////////////////////////////////
 
-			String locale = LanguageChoice.getInstance().getDefaultLocale().toString().toLowerCase();
+			final String locale = LanguageChoice.getInstance().getDefaultLocale().toString().toLowerCase();
 
 			StepLoader steploader = StepLoader.getInstance();
 			StepPlugin basesteps[] = steploader.getStepsWithType(StepPlugin.TYPE_ALL);
-			String basecat[] = steploader.getCategories(StepPlugin.TYPE_ALL, locale);
+			
+			final String basecat[] = steploader.getCategories(StepPlugin.TYPE_ALL, locale);
+			
+			// Sort these base steps by category and then by step name in the given locale 
+			//
+			Arrays.sort(basesteps, new Comparator<StepPlugin>() {
+			
+				public int compare(StepPlugin one, StepPlugin two) {
+					int idxOne = Const.indexOfString(one.getCategory(locale), basecat);
+					int idxTwo = Const.indexOfString(two.getCategory(locale), basecat);
+					if (idxOne==idxTwo) {
+						String nameOne = one.getDescription(locale);
+						String nameTwo = two.getDescription(locale);
+						return nameOne.compareTo(nameTwo);
+					}
+					else {
+						return idxOne-idxTwo;
+					}
+				}
+			});
+
+			
 			for (int i = 0; i < basecat.length; i++)
 			{
 				TreeItem item = new TreeItem(coreObjectsTree, SWT.NONE);
