@@ -322,7 +322,8 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 				if ((file.exists() && file.canRead()) || isLocalInfile()==false)
 				{
 					// User has specified an existing file, We can continue ...
-					log.logDetailed(toString(), "File ["+realFilename+"] exists.");
+					if(log.isDetailed())	
+						log.logDetailed(toString(), "File ["+realFilename+"] exists.");
 	
 					if (connection!=null)
 					{
@@ -340,7 +341,8 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 							if (db.checkTableExists(realTablename))
 							{
 								// The table existe, We can continue ...
-								log.logDetailed(toString(), "Table ["+realTablename+"] exists.");
+								if(log.isDetailed())	
+									log.logDetailed(toString(), "Table ["+realTablename+"] exists.");
 	
 								// Add schemaname (Most the time Schemaname.Tablename)
 								if (schemaname !=null)
@@ -466,7 +468,8 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 								// Of course, the table should have been created already before the bulk load operation
 								db.disconnect();
 								result.setNrErrors(1);
-								log.logDetailed(toString(), "Table ["+realTablename+"] doesn't exist!");
+								if(log.isDetailed())	
+									log.logDetailed(toString(), "Table ["+realTablename+"] doesn't exist!");
 							}
 						}
 						catch(KettleDatabaseException dbe)

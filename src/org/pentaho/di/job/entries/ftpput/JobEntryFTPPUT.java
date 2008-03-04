@@ -438,8 +438,8 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
 		result.setResult( false );
 		long filesput = 0;
 
-
-		log.logDetailed(toString(), Messages.getString("JobFTPPUT.Log.Starting"));
+		if(log.isDetailed())	
+			log.logDetailed(toString(), Messages.getString("JobFTPPUT.Log.Starting"));
         
         // String substitution..
         String realServerName      = environmentSubstitute(serverName);

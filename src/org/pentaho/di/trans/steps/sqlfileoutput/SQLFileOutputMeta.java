@@ -98,6 +98,8 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
     /** Flag: create parent folder if needed */
     private boolean createparentfolder;
     
+    private boolean DoNotOpenNewFileInit;
+    
 	
 	
 	public void loadXML(Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters)
@@ -325,6 +327,15 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
     {
         return StartNewLine;
     }
+    public boolean isDoNotOpenNewFileInit()
+    {
+        return DoNotOpenNewFileInit;
+    }
+    public void setDoNotOpenNewFileInit(boolean DoNotOpenNewFileInit)
+    {
+        this.DoNotOpenNewFileInit = DoNotOpenNewFileInit;
+    }
+    
     
  
     /**
@@ -499,6 +510,8 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
 			dateInFilename  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "add_date"));
 			timeInFilename  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "add_time"));
 			splitEvery=Const.toInt(XMLHandler.getTagValue(stepnode, "file", "splitevery"), 0);
+			DoNotOpenNewFileInit    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "DoNotOpenNewFileInit"));
+			
 			
 			
 			
@@ -515,7 +528,7 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
 		databaseMeta = null;
 		tablename      = "";
 		createparentfolder=false;
-		
+		DoNotOpenNewFileInit=false;
 		
         
 	}
@@ -545,6 +558,8 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
 		retval.append("      "+XMLHandler.addTagValue("add_time",   timeInFilename));
 		retval.append("      "+XMLHandler.addTagValue("splitevery", splitEvery));
 		retval.append("      "+XMLHandler.addTagValue("create_parent_folder",   createparentfolder));
+		retval.append("      "+XMLHandler.addTagValue("DoNotOpenNewFileInit",     DoNotOpenNewFileInit));
+		
 		
 		retval.append("      </file>"+Const.CR);
 		
@@ -577,6 +592,8 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
 			dateInFilename        =      rep.getStepAttributeBoolean(id_step, "file_add_date");
 			timeInFilename        =      rep.getStepAttributeBoolean(id_step, "file_add_time");
 			createparentfolder        =      rep.getStepAttributeBoolean(id_step, "create_parent_folder");
+			DoNotOpenNewFileInit          =      rep.getStepAttributeBoolean(id_step, "DoNotOpenNewFileInit");
+			
 			
 			
 			
@@ -610,6 +627,8 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "file_add_date",    dateInFilename);
 			rep.saveStepAttribute(id_transformation, id_step, "file_add_time",    timeInFilename);
 			rep.saveStepAttribute(id_transformation, id_step, "create_parent_folder",    createparentfolder);
+			rep.saveStepAttribute(id_transformation, id_step, "DoNotOpenNewFileInit",      DoNotOpenNewFileInit);
+			
 			
 			
 		
@@ -622,18 +641,6 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
 			throw new KettleException("Unable to save step information to the repository for id_step="+id_step, e);
 		}
 	}
-
-	/*public Row getFields(Row r, String name, Row info) throws KettleStepException 
-	{
-		Row row;
-		if (r == null)
-			row = new Row(); // give back values
-		else
-			row = r; // add to the existing row of values...
-
-	
-		return row;
-	}*/
 
 	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
 	{

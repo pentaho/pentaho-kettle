@@ -48,7 +48,7 @@ import org.w3c.dom.Node;
 
 
 /**
- * This defines an SQL job entry.
+ * This defines an MYSQL Bulk file job entry.
  *
  * @author Samatar
  * @since 05-03-2006
@@ -307,7 +307,8 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
 			{
 				// the file exists and user want to do nothing
 				result.setResult( true );
-				log.logDetailed(toString(),Messages.getString("JobMysqlBulkFile.FileExists1.Label") +
+				if(log.isDetailed())	
+					log.logDetailed(toString(),Messages.getString("JobMysqlBulkFile.FileExists1.Label") +
 						realFilename + Messages.getString("JobMysqlBulkFile.FileExists2.Label"));
 
 			}
@@ -342,7 +343,8 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
 				}
 
 				// User has specified an existing file, We can continue ...
-				log.logDetailed(toString(), Messages.getString("JobMysqlBulkFile.FileExists1.Label") +
+				if(log.isDetailed())	
+					log.logDetailed(toString(), Messages.getString("JobMysqlBulkFile.FileExists1.Label") +
 									realFilename + Messages.getString("JobMysqlBulkFile.FileExists2.Label"));
 
 
@@ -362,7 +364,8 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
 						if (db.checkTableExists(realTablename))
 						{
 							// The table existe, We can continue ...
-							log.logDetailed(toString(), Messages.getString("JobMysqlBulkFile.TableExists1.Label")+realTablename+
+							if(log.isDetailed())	
+								log.logDetailed(toString(), Messages.getString("JobMysqlBulkFile.TableExists1.Label")+realTablename+
 									Messages.getString("JobMysqlBulkFile.TableExists2.Label"));
 
 
@@ -435,8 +438,8 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
 
 							try
 							{
-
-								log.logDetailed(toString(), FILEBulkFile);
+								if(log.isDetailed())	
+									log.logDetailed(toString(), FILEBulkFile);
 								// Run the SQL
 								PreparedStatement ps= db.prepareSQL(FILEBulkFile);
 								ps.execute();
@@ -474,7 +477,8 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
 							// Of course, the table should have been created already before the bulk load operation
 							db.disconnect();
 							result.setNrErrors(1);
-							log.logDetailed(toString(), Messages.getString("JobMysqlBulkFile.TableNotExists1.Label") +realTablename+
+							if(log.isDetailed())	
+								log.logDetailed(toString(), Messages.getString("JobMysqlBulkFile.TableNotExists1.Label") +realTablename+
 									Messages.getString("JobMysqlBulkFile.TableNotExists2.Label"));
 						}
 

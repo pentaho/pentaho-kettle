@@ -1533,7 +1533,25 @@ var date5 = truncDate(dateTime, 5); // gives back today at yyyy/01/01 00:00:00.0
          <argument id="1">var,var</argument>
       </Arguments>
    </jsFunction>
-       
+     <jsFunction name="moveFile">
+      <help>moveFile a file</help>
+      <sample>// moveFile a file.
+// 
+// Usage:
+// moveFile(var1,var2,var3);
+// 1: String - The file to move with Path.
+// 2: String - The destination filename with Path.
+// 3: Boolean- Overwrite destination file if exists.
+// 2007-10-29
+//
+var sourcefile="your source filename with path";
+var destinationfile="your destination filename with path";
+moveFile(sourcefile,destinationfile,false);</sample>
+       <type>5</type>
+      <Arguments>
+         <argument id="1">var,var,var</argument>
+      </Arguments>
+   </jsFunction>  
 </jsFunctions>
 
 

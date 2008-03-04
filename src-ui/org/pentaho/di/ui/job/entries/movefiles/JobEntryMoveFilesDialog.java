@@ -68,7 +68,7 @@ import org.pentaho.di.job.entries.movefiles.Messages;
  * This dialog allows you to edit the Move Files job entry settings.
  *
  * @author Samatar Hassan
- * @since  06-05-2007
+ * @since  20-02-2008
  */
 
 public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryDialogInterface
@@ -198,7 +198,7 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 	private FormData     fdlSpecifyFormat, fdSpecifyFormat;
 
   	private Label        wlDateTimeFormat;
-	private CCombo      wDateTimeFormat;
+	private CCombo       wDateTimeFormat;
 	private FormData     fdlDateTimeFormat, fdDateTimeFormat; 
 	
 	private Label        wlAddDateBeforeExtension;
@@ -980,7 +980,7 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
         
         
 
-        // Add Date befor extension?
+        // Add Date before extension?
         wlAddDateBeforeExtension = new Label(wDestinationFile, SWT.RIGHT);
         wlAddDateBeforeExtension.setText(Messages.getString("JobMoveFiles.AddDateBeforeExtension.Label"));
         props.setLook(wlAddDateBeforeExtension);
@@ -1258,7 +1258,12 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 	}
 	private void setDateTimeFormat()
 	{
-		
+		if(wSpecifyFormat.getSelection())
+		{
+			wAddDate.setSelection(false);	
+			wAddTime.setSelection(false);
+		}
+
 		wDateTimeFormat.setEnabled(wSpecifyFormat.getSelection());
 		wlDateTimeFormat.setEnabled(wSpecifyFormat.getSelection());
 		wAddDate.setEnabled(!wSpecifyFormat.getSelection());
@@ -1349,16 +1354,14 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 		}else wSuccessCondition.select(0);
 		
 		if (jobEntry.getDateTimeFormat()!= null) wDateTimeFormat.setText( jobEntry.getDateTimeFormat() );
+		wSpecifyFormat.setSelection(jobEntry.isSpecifyFormat());
 		
 		wAddDate.setSelection(jobEntry.isAddDate());
 		wAddTime.setSelection(jobEntry.isAddTime());
-		wSpecifyFormat.setSelection(jobEntry.isSpecifyFormat());
+		
 		wAddDateBeforeExtension.setSelection(jobEntry.isAddDateBeforeExtension());
 		wDoNotKeepFolderStructure.setSelection(jobEntry.isDoNotKeepFolderStructure());
-		
-			
-		
-		
+	
 	}
 
 	private void cancel()

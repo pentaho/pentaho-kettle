@@ -81,6 +81,8 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 	private boolean createparentfolder;
 	private boolean adddate;
 	private boolean addtime;
+	private boolean SpecifyFormat;
+	private String date_time_format;
 	
 	/**
 	 * Default constructor.
@@ -88,6 +90,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 	public JobEntryZipFile(String n)
 	{
 		super(n, "");
+		date_time_format=null;
 		zipFilename=null;
 		ifzipfileexists=2;
 		afterzip=0;
@@ -101,6 +104,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 		createparentfolder = false;
 		adddate=false;
 		addtime=false;
+		SpecifyFormat=false;
 		setID(-1L);
 		setJobEntryType(JobEntryType.ZIP_FILE);
 	}
@@ -139,6 +143,10 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 		retval.append("      ").append(XMLHandler.addTagValue("createparentfolder",  createparentfolder));
 		retval.append("      ").append(XMLHandler.addTagValue("adddate",  adddate));
 		retval.append("      ").append(XMLHandler.addTagValue("addtime",  addtime));
+		retval.append("      ").append(XMLHandler.addTagValue("SpecifyFormat",  SpecifyFormat));
+		retval.append("      ").append(XMLHandler.addTagValue("date_time_format",  date_time_format));
+		
+		
 		return retval.toString();
 	}
 	
@@ -162,8 +170,10 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 			createparentfolder = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "createparentfolder"));	
 			adddate = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "adddate"));	
 			addtime = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "addtime"));	
+			SpecifyFormat = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "SpecifyFormat"));	
+			date_time_format = XMLHandler.getTagValue(entrynode, "date_time_format");
 			
-
+			
 		}
 		catch(KettleXMLException xe)
 		{
@@ -191,6 +201,8 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 			createparentfolder=rep.getJobEntryAttributeBoolean(id_jobentry, "createparentfolder");
 			adddate=rep.getJobEntryAttributeBoolean(id_jobentry, "adddate");
 			addtime=rep.getJobEntryAttributeBoolean(id_jobentry, "adddate");
+			SpecifyFormat=rep.getJobEntryAttributeBoolean(id_jobentry, "SpecifyFormat");
+			date_time_format = rep.getJobEntryAttributeString(id_jobentry, "date_time_format");
 			
 		}
 		catch(KettleException dbe)
@@ -220,7 +232,8 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 			rep.saveJobEntryAttribute(id_job, getID(), "createparentfolder", createparentfolder);
 			rep.saveJobEntryAttribute(id_job, getID(), "addtime", addtime);
 			rep.saveJobEntryAttribute(id_job, getID(), "adddate", adddate);
-			
+			rep.saveJobEntryAttribute(id_job, getID(), "SpecifyFormat", SpecifyFormat);
+			rep.saveJobEntryAttribute(id_job, getID(), "date_time_format", date_time_format);
 			
 		}
 		catch(KettleDatabaseException dbe)
@@ -382,8 +395,8 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 						filelist = new String[1];
 						filelist[0] =f.getName();
 					}
-					
-					log.logDetailed(toString(), Messages.getString("JobZipFiles.Files_Found1.Label") +filelist.length+ 
+					if(log.isDetailed())	
+						log.logDetailed(toString(), Messages.getString("JobZipFiles.Files_Found1.Label") +filelist.length+ 
 										Messages.getString("JobZipFiles.Files_Found2.Label") + realTargetdirectory + 
 										Messages.getString("JobZipFiles.Files_Found3.Label"));
 					
@@ -707,7 +720,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 			if(!Const.isEmpty(sourcedirectory))
 			{
 				// get values from job entry
-				realZipfilename       = getFullFilename(environmentSubstitute(zipFilename),adddate, addtime);
+				realZipfilename       = getFullFilename(environmentSubstitute(zipFilename),adddate, addtime,SpecifyFormat,date_time_format);
 				realWildcard          = environmentSubstitute(wildcard);
 				realWildcardExclude   = environmentSubstitute(wildcardexclude);	
 				realTargetdirectory   = environmentSubstitute(sourcedirectory);
@@ -723,7 +736,8 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 		// End		
 		return result;
 	}
-	public String getFullFilename(String filename,boolean add_date,boolean add_time)
+	public String getFullFilename(String filename,boolean add_date,boolean add_time, boolean specify_format,
+			String datetime_folder)
 	{
 		String retval="";
 		// Replace possible environment variables...
@@ -732,19 +746,27 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 		SimpleDateFormat daf     = new SimpleDateFormat();
 		Date now = new Date();
 		
-		if (add_date)
+		if(specify_format && !Const.isEmpty(datetime_folder))
 		{
-			daf.applyPattern("yyyyMMdd");
-			String d = daf.format(now);
-			retval+="_"+d;
-		}
-		if (add_time)
+			daf.applyPattern(datetime_folder);
+			String dt = daf.format(now);
+			retval+=dt;
+		}else
 		{
-			daf.applyPattern("HHmmssSSS");
-			String t = daf.format(now);
-			retval+="_"+t;
+		
+			if (add_date)
+			{
+				daf.applyPattern("yyyyMMdd");
+				String d = daf.format(now);
+				retval+="_"+d;
+			}
+			if (add_time)
+			{
+				daf.applyPattern("HHmmssSSS");
+				String t = daf.format(now);
+				retval+="_"+t;
+			}
 		}
-
 		retval+=".zip";
 		return retval;
 
@@ -835,7 +857,22 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 	{
 		return addtime;
 	}
-	
+	 public boolean  isSpecifyFormat()
+	 {
+	   	return SpecifyFormat;
+	 }
+	 public void setSpecifyFormat(boolean SpecifyFormat)
+	 {
+	   	this.SpecifyFormat=SpecifyFormat;
+	 }
+	 public String getDateTimeFormat()
+	 {
+		return date_time_format;
+	 }
+	 public void setDateTimeFormat(String date_time_format)
+	 {
+		this.date_time_format=date_time_format;
+	 }
 	
 	public boolean getcreateparentfolder() 
 	{

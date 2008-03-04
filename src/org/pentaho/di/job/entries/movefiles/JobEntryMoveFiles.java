@@ -335,83 +335,82 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 				log.logDetailed(toString(), Messages.getString("JobMoveFiles.Log.ArgFromPrevious.Found",(rows!=null?rows.size():0)+ ""));
 			
 		}
-
-		
-			if (arg_from_previous && rows!=null) // Copy the input row to the (command line) arguments
+		if (arg_from_previous && rows!=null) // Copy the input row to the (command line) arguments
+		{
+			for (int iteration=0;iteration<rows.size();iteration++) 
 			{
-				for (int iteration=0;iteration<rows.size();iteration++) 
-				{
-				
-					resultRow = rows.get(iteration);
-				
-					// Get source and destination file names, also wildcard
-					String vsourcefilefolder_previous = resultRow.getString(0,null);
-					String vdestinationfilefolder_previous = resultRow.getString(1,null);
-					String vwildcard_previous = resultRow.getString(2,null);
-	
-					if(!Const.isEmpty(vsourcefilefolder_previous) &&  !Const.isEmpty(vdestinationfilefolder_previous))
-					{
-						if(!DoNotProcessRest)
-		           		{
-							if(log.isDetailed())
-								log.logDetailed(toString(), Messages.getString("JobMoveFiles.Log.ProcessingRow",vsourcefilefolder_previous, vdestinationfilefolder_previous, vwildcard_previous));
-	
-							if(! ProcessFileFolder(vsourcefilefolder_previous,vdestinationfilefolder_previous,vwildcard_previous,parentJob,result))
-							{
-								// The move process fail
-								// Update Errors
-								updateErrors();
-							}
-		           		}else
-		           		{
-		           			if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("JobEntryMoveFiles.log.IgnoringFile",vsourcefilefolder_previous));
-		           	
-		           		}
+			
+				resultRow = rows.get(iteration);
+			
+				// Get source and destination file names, also wildcard
+				String vsourcefilefolder_previous = resultRow.getString(0,null);
+				String vdestinationfilefolder_previous = resultRow.getString(1,null);
+				String vwildcard_previous = resultRow.getString(2,null);
 
-					}
-					else
-					{
-					 
+				if(!Const.isEmpty(vsourcefilefolder_previous) &&  !Const.isEmpty(vdestinationfilefolder_previous))
+				{
+					if(!DoNotProcessRest)
+	           		{
 						if(log.isDetailed())
-							log.logDetailed(toString(), Messages.getString("JobMoveFiles.Log.IgnoringRow",vsourcefilefolder[iteration],vdestinationfilefolder[iteration],vwildcard[iteration]));
-				
-					}
+							log.logDetailed(toString(), Messages.getString("JobMoveFiles.Log.ProcessingRow",vsourcefilefolder_previous, vdestinationfilefolder_previous, vwildcard_previous));
+
+						if(! ProcessFileFolder(vsourcefilefolder_previous,vdestinationfilefolder_previous,vwildcard_previous,parentJob,result))
+						{
+							// The move process fail
+							// Update Errors
+							updateErrors();
+						}
+	           		}else
+	           		{
+	           			if(log.isDetailed()) 
+	           				log.logDetailed(toString(),Messages.getString("JobEntryMoveFiles.log.IgnoringFile",vsourcefilefolder_previous));
+	           	
+	           		}
+
+				}
+				else
+				{
+				 
+					if(log.isDetailed())
+						log.logDetailed(toString(), Messages.getString("JobMoveFiles.Log.IgnoringRow",vsourcefilefolder[iteration],vdestinationfilefolder[iteration],vwildcard[iteration]));
+			
 				}
 			}
-			else if (vsourcefilefolder!=null && vdestinationfilefolder!=null)
+		}
+		else if (vsourcefilefolder!=null && vdestinationfilefolder!=null)
+		{
+			for (int i=0;i<vsourcefilefolder.length;i++)
 			{
-				for (int i=0;i<vsourcefilefolder.length;i++)
+				if(!Const.isEmpty(vsourcefilefolder[i]) && !Const.isEmpty(vdestinationfilefolder[i]))
 				{
-					if(!Const.isEmpty(vsourcefilefolder[i]) && !Const.isEmpty(vdestinationfilefolder[i]))
-					{
 
-						// ok we can process this file/folder
-						if(!DoNotProcessRest)
-		           		{
-							if(log.isDetailed())
-								log.logDetailed(toString(), Messages.getString("JobMoveFiles.Log.ProcessingRow",vsourcefilefolder[i],vdestinationfilefolder[i],vwildcard[i]));
-						
-							if(!ProcessFileFolder(vsourcefilefolder[i],vdestinationfilefolder[i],vwildcard[i],parentJob,result))
-							{
-								// Update Errors
-								updateErrors();
-							}
-		           		}else
-		           		{
-		           			if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("JobEntryMoveFiles.log.IgnoringFile",vsourcefilefolder[i]));
-		           	
-		           		}
-					}
-					else
-					{
-								
+					// ok we can process this file/folder
+					if(!DoNotProcessRest)
+	           		{
 						if(log.isDetailed())
-						log.logDetailed(toString(), Messages.getString("JobMoveFiles.Log.IgnoringRow",vsourcefilefolder[i],vdestinationfilefolder[i],vwildcard[i]));
+							log.logDetailed(toString(), Messages.getString("JobMoveFiles.Log.ProcessingRow",vsourcefilefolder[i],vdestinationfilefolder[i],vwildcard[i]));
 					
-					}
+						if(!ProcessFileFolder(vsourcefilefolder[i],vdestinationfilefolder[i],vwildcard[i],parentJob,result))
+						{
+							// Update Errors
+							updateErrors();
+						}
+	           		}else
+	           		{
+	           			if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("JobEntryMoveFiles.log.IgnoringFile",vsourcefilefolder[i]));
+	           	
+	           		}
 				}
-			}	
-			
+				else
+				{
+							
+					if(log.isDetailed())
+						log.logDetailed(toString(), Messages.getString("JobMoveFiles.Log.IgnoringRow",vsourcefilefolder[i],vdestinationfilefolder[i],vwildcard[i]));
+				
+				}
+			}
+		}	
+		
 		// Success Condition
 		if (getStatus())
 		{
@@ -1074,6 +1073,11 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
    {
    	return add_time;
    }
+  
+   public void setAddDateBeforeExtension(boolean AddDateBeforeExtension)
+   {
+   	this.AddDateBeforeExtension=AddDateBeforeExtension;
+   }
    public boolean  isSpecifyFormat()
    {
    	return SpecifyFormat;
@@ -1081,10 +1085,6 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
    public void setSpecifyFormat(boolean SpecifyFormat)
    {
    	this.SpecifyFormat=SpecifyFormat;
-   }
-   public void setAddDateBeforeExtension(boolean AddDateBeforeExtension)
-   {
-   	this.AddDateBeforeExtension=AddDateBeforeExtension;
    }
    public String getDateTimeFormat()
 	{

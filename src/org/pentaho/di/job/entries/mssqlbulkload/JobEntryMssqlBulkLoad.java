@@ -458,7 +458,8 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 							if (db.checkTableExists(realTablename))
 							{
 								// The table existe, We can continue ...
-								log.logDetailed(toString(), Messages.getString("JobMssqlBulkLoad.TableExists.Label",realTablename));
+								if(log.isDetailed())	
+									log.logDetailed(toString(), Messages.getString("JobMssqlBulkLoad.TableExists.Label",realTablename));
 	
 								// Add schemaname (Most the time Schemaname.Tablename)
 								if (schemaname !=null)	realTablename= realSchemaname + "." + realTablename;
@@ -597,7 +598,8 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 								// Of course, the table should have been created already before the bulk load operation
 								db.disconnect();
 								result.setNrErrors(1);
-								log.logDetailed(toString(), Messages.getString("JobMssqlBulkLoad.Error.TableNotExists",realTablename));
+								if(log.isDetailed())	
+									log.logDetailed(toString(), Messages.getString("JobMssqlBulkLoad.Error.TableNotExists",realTablename));
 							}
 						}
 						catch(KettleDatabaseException dbe)

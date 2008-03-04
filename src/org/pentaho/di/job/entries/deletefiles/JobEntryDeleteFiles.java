@@ -188,7 +188,8 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
 
 
     if (argFromPrevious) {
-      log.logDetailed(toString(), Messages.getString("JobEntryDeleteFiles.FoundPreviousRows", String.valueOf((rows != null ? rows.size() : 0)))); //$NON-NLS-1$
+      if(log.isDetailed())	
+    	  log.logDetailed(toString(), Messages.getString("JobEntryDeleteFiles.FoundPreviousRows", String.valueOf((rows != null ? rows.size() : 0)))); //$NON-NLS-1$
     }
 
     if (argFromPrevious && rows != null) // Copy the input row to the (command line) arguments
@@ -201,7 +202,8 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
         String fmasks_previous = resultRow.getString(1, null);
 
           // ok we can process this file/folder
-          log.logDetailed(toString(), Messages.getString("JobEntryDeleteFiles.ProcessingRow", args_previous, fmasks_previous)); //$NON-NLS-1$
+          if(log.isDetailed())	
+        	  log.logDetailed(toString(), Messages.getString("JobEntryDeleteFiles.ProcessingRow", args_previous, fmasks_previous)); //$NON-NLS-1$
 
           if (!ProcessFile(args_previous, fmasks_previous)) {
         	  NrErrFiles = NrErrFiles++;
@@ -213,7 +215,8 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
       for (int i = 0; i < arguments.length; i++) {
         
           // ok we can process this file/folder
-          log.logDetailed(toString(), Messages.getString("JobEntryDeleteFiles.ProcessingArg", arguments[i], filemasks[i])); //$NON-NLS-1$
+    	  if(log.isDetailed())	
+            log.logDetailed(toString(), Messages.getString("JobEntryDeleteFiles.ProcessingArg", arguments[i], filemasks[i])); //$NON-NLS-1$
           if (!ProcessFile(arguments[i], filemasks[i])) {
         	  NrErrFiles = NrErrFiles++;
           }
@@ -267,7 +270,8 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
           rcode = true;
         } else {
           // It's a file
-          log.logDetailed(toString(), Messages.getString("JobEntryDeleteFiles.ProcessingFile", realFilefoldername)); //$NON-NLS-1$
+          if(log.isDetailed())	
+        	  log.logDetailed(toString(), Messages.getString("JobEntryDeleteFiles.ProcessingFile", realFilefoldername)); //$NON-NLS-1$
           boolean deleted = filefolder.delete();
           if (!deleted) {
             log.logError(toString(), Messages.getString("JobEntryDeleteFiles.CouldNotDeleteFile", realFilefoldername)); //$NON-NLS-1$
@@ -335,10 +339,9 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
 						// Not in the Base Folder..Only if include sub folders  
 						 if (includeSubfolders && (info.getFile().getType() == FileType.FILE) && GetFileWildcard(short_filename,file_wildcard))
 						 {
-							if (log.isDetailed())
-							{ 
+							if (log.isDetailed()) 
 								log.logDetailed(toString(), Messages.getString("JobEntryDeleteFiles.DeletingFile",info.getFile().toString())); //$NON-NLS-1$
-							}
+
 							returncode= true; 				
 							 
 						 }
@@ -350,9 +353,8 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
 						 if ((info.getFile().getType() == FileType.FILE) && GetFileWildcard(short_filename,file_wildcard))
 						 {
 							if (log.isDetailed())
-							{ 
 								log.logDetailed(toString(), Messages.getString("JobEntryDeleteFiles.DeletingFile",info.getFile().toString())); //$NON-NLS-1$
-							}
+							
 							returncode= true; 				
 							 
 						 }

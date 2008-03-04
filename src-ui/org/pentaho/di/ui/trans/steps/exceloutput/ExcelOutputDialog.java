@@ -165,6 +165,14 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 	private Label        wlDoNotOpenNewFileInit;
 	private Button       wDoNotOpenNewFileInit;
 	private FormData     fdlDoNotOpenNewFileInit, fdDoNotOpenNewFileInit;
+	
+	private Label        wlSpecifyFormat;
+	private Button       wSpecifyFormat;
+	private FormData     fdlSpecifyFormat, fdSpecifyFormat;
+
+  	private Label        wlDateTimeFormat;
+	private CCombo       wDateTimeFormat;
+	private FormData     fdlDateTimeFormat, fdDateTimeFormat; 
     
 	public ExcelOutputDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
@@ -384,7 +392,57 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 				}
 			}
 		);
+		// Specify date time format?
+		wlSpecifyFormat=new Label(wFileComp, SWT.RIGHT);
+		wlSpecifyFormat.setText(Messages.getString("ExcelOutputDialog.SpecifyFormat.Label"));
+		props.setLook(wlSpecifyFormat);
+		fdlSpecifyFormat=new FormData();
+		fdlSpecifyFormat.left = new FormAttachment(0, 0);
+		fdlSpecifyFormat.top  = new FormAttachment(wAddTime, margin);
+		fdlSpecifyFormat.right= new FormAttachment(middle, -margin);
+		wlSpecifyFormat.setLayoutData(fdlSpecifyFormat);
+		wSpecifyFormat=new Button(wFileComp, SWT.CHECK);
+		props.setLook(wSpecifyFormat);
+		wSpecifyFormat.setToolTipText(Messages.getString("ExcelOutputDialog.SpecifyFormat.Tooltip"));
+	    fdSpecifyFormat=new FormData();
+		fdSpecifyFormat.left = new FormAttachment(middle, 0);
+		fdSpecifyFormat.top  = new FormAttachment(wAddTime, margin);
+		fdSpecifyFormat.right= new FormAttachment(100, 0);
+		wSpecifyFormat.setLayoutData(fdSpecifyFormat);
+		wSpecifyFormat.addSelectionListener(new SelectionAdapter() 
+			{
+				public void widgetSelected(SelectionEvent e) 
+				{
+					input.setChanged();
+					setDateTimeFormat();
+				}
+			}
+		);
 
+		
+		//	Prepare a list of possible DateTimeFormats...
+		String dats[] = Const.getDateFormats();
+		
+ 		// DateTimeFormat
+		wlDateTimeFormat=new Label(wFileComp, SWT.RIGHT);
+        wlDateTimeFormat.setText(Messages.getString("ExcelOutputDialog.DateTimeFormat.Label"));
+        props.setLook(wlDateTimeFormat);
+        fdlDateTimeFormat=new FormData();
+        fdlDateTimeFormat.left = new FormAttachment(0, 0);
+        fdlDateTimeFormat.top  = new FormAttachment(wSpecifyFormat, margin);
+        fdlDateTimeFormat.right= new FormAttachment(middle, -margin);
+        wlDateTimeFormat.setLayoutData(fdlDateTimeFormat);
+        wDateTimeFormat=new CCombo(wFileComp, SWT.BORDER | SWT.READ_ONLY);
+        wDateTimeFormat.setEditable(true);
+        props.setLook(wDateTimeFormat);
+        wDateTimeFormat.addModifyListener(lsMod);
+        fdDateTimeFormat=new FormData();
+        fdDateTimeFormat.left = new FormAttachment(middle, 0);
+        fdDateTimeFormat.top  = new FormAttachment(wSpecifyFormat, margin);
+        fdDateTimeFormat.right= new FormAttachment(100, 0);
+        wDateTimeFormat.setLayoutData(fdDateTimeFormat);
+        for (int x=0;x<dats.length;x++) wDateTimeFormat.add(dats[x]);
+        
 
 
 		wbShowFiles=new Button(wFileComp, SWT.PUSH| SWT.CENTER);
@@ -392,7 +450,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		wbShowFiles.setText(Messages.getString("ExcelOutputDialog.ShowFiles.Button"));
 		fdbShowFiles=new FormData();
 		fdbShowFiles.left = new FormAttachment(middle, 0);
-		fdbShowFiles.top  = new FormAttachment(wAddTime, margin*3);
+		fdbShowFiles.top  = new FormAttachment(wDateTimeFormat, margin*3);
 		wbShowFiles.setLayoutData(fdbShowFiles);
 		wbShowFiles.addSelectionListener(new SelectionAdapter() 
 		{
@@ -984,6 +1042,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		setSize();
 		
 		getData();
+		setDateTimeFormat();
 		input.setChanged(changed);
 		
 		shell.open();
@@ -993,7 +1052,22 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		}
 		return stepname;
 	}
-	
+	private void setDateTimeFormat()
+	{
+		if(wSpecifyFormat.getSelection())
+		{
+			wAddDate.setSelection(false);	
+			wAddTime.setSelection(false);
+		}
+		
+		wDateTimeFormat.setEnabled(wSpecifyFormat.getSelection());
+		wlDateTimeFormat.setEnabled(wSpecifyFormat.getSelection());
+		wAddDate.setEnabled(!wSpecifyFormat.getSelection());
+		wlAddDate.setEnabled(!wSpecifyFormat.getSelection());
+		wAddTime.setEnabled(!wSpecifyFormat.getSelection());
+		wlAddTime.setEnabled(!wSpecifyFormat.getSelection());
+		
+	}
     private void setEncodings()
     {
         // Encoding of the text file:
@@ -1034,6 +1108,11 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		wFooter.setSelection(input.isFooterEnabled());
 		wAddDate.setSelection(input.isDateInFilename());
 		wAddTime.setSelection(input.isTimeInFilename());
+		
+		if (input.getDateTimeFormat()!= null) wDateTimeFormat.setText( input.getDateTimeFormat() );
+		wSpecifyFormat.setSelection(input.isSpecifyFormat());
+		
+		
 		wAddToResult.setSelection(input.isAddToResultFiles());
 		
 
@@ -1093,6 +1172,10 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		tfoi.setStepNrInFilename( wAddStepnr.getSelection() );
 		tfoi.setDateInFilename( wAddDate.getSelection() );
 		tfoi.setTimeInFilename( wAddTime.getSelection() );
+		
+		tfoi.setDateTimeFormat(wDateTimeFormat.getText());
+		tfoi.setSpecifyFormat(wSpecifyFormat.getSelection());
+		
 		tfoi.setAddToResultFiles( wAddToResult.getSelection() );
 		
 		tfoi.setProtectSheet( wProtectSheet.getSelection() );

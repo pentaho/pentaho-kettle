@@ -161,6 +161,10 @@ public class SQLFileOutputDialog extends BaseStepDialog implements StepDialogInt
 	private Button       wCreateParentFolder;
 	private FormData     fdlCreateParentFolder, fdCreateParentFolder;
 	
+	private Label        wlDoNotOpenNewFileInit;
+	private Button       wDoNotOpenNewFileInit;
+	private FormData     fdlDoNotOpenNewFileInit, fdDoNotOpenNewFileInit;
+	
     private SQLFileOutputMeta input;
 	
     
@@ -472,6 +476,31 @@ public class SQLFileOutputDialog extends BaseStepDialog implements StepDialogInt
 		);
 		
 
+		// Open new File at Init
+		wlDoNotOpenNewFileInit=new Label(wFileName, SWT.RIGHT);
+		wlDoNotOpenNewFileInit.setText(Messages.getString("SQLFileOutputDialog.DoNotOpenNewFileInit.Label"));
+ 		props.setLook(wlDoNotOpenNewFileInit);
+		fdlDoNotOpenNewFileInit=new FormData();
+		fdlDoNotOpenNewFileInit.left = new FormAttachment(0, 0);
+		fdlDoNotOpenNewFileInit.top  = new FormAttachment(wCreateParentFolder, margin);
+		fdlDoNotOpenNewFileInit.right= new FormAttachment(middle, -margin);
+		wlDoNotOpenNewFileInit.setLayoutData(fdlDoNotOpenNewFileInit);
+		wDoNotOpenNewFileInit=new Button(wFileName, SWT.CHECK );
+		wDoNotOpenNewFileInit.setToolTipText(Messages.getString("SQLFileOutputDialog.DoNotOpenNewFileInit.Tooltip"));
+ 		props.setLook(wDoNotOpenNewFileInit);
+		fdDoNotOpenNewFileInit=new FormData();
+		fdDoNotOpenNewFileInit.left = new FormAttachment(middle, 0);
+		fdDoNotOpenNewFileInit.top  = new FormAttachment(wCreateParentFolder, margin);
+		fdDoNotOpenNewFileInit.right= new FormAttachment(100, 0);
+		wDoNotOpenNewFileInit.setLayoutData(fdDoNotOpenNewFileInit);
+		wDoNotOpenNewFileInit.addSelectionListener(new SelectionAdapter() 
+			{
+				public void widgetSelected(SelectionEvent e) 
+				{
+					input.setChanged();
+				}
+			}
+		);
 		
 		
 		// Extension line
@@ -480,7 +509,7 @@ public class SQLFileOutputDialog extends BaseStepDialog implements StepDialogInt
  		props.setLook(wlExtension);
 		fdlExtension=new FormData();
 		fdlExtension.left = new FormAttachment(0, 0);
-		fdlExtension.top  = new FormAttachment(wCreateParentFolder, margin);
+		fdlExtension.top  = new FormAttachment(wDoNotOpenNewFileInit, margin);
 		fdlExtension.right= new FormAttachment(middle, -margin);
 		wlExtension.setLayoutData(fdlExtension);
 		
@@ -489,7 +518,7 @@ public class SQLFileOutputDialog extends BaseStepDialog implements StepDialogInt
  		wExtension.addModifyListener(lsMod);
  		fdExtension=new FormData();
 		fdExtension.left = new FormAttachment(middle, 0);
-		fdExtension.top  = new FormAttachment(wCreateParentFolder, margin);
+		fdExtension.top  = new FormAttachment(wDoNotOpenNewFileInit, margin);
 		fdExtension.right= new FormAttachment(100, -margin);
 		wExtension.setLayoutData(fdExtension);
 		
@@ -993,6 +1022,8 @@ public class SQLFileOutputDialog extends BaseStepDialog implements StepDialogInt
         if (input.getEncoding()  !=null) wEncoding.setText(input.getEncoding());
         wAddToResult.setSelection( input.AddToResult() );
         wStartNewLine.setSelection( input.StartNewLine() );
+        wDoNotOpenNewFileInit.setSelection( input.isDoNotOpenNewFileInit() );
+        
         
 		
 		wStepname.selectAll();
@@ -1028,6 +1059,8 @@ public class SQLFileOutputDialog extends BaseStepDialog implements StepDialogInt
 		info.setEncoding( wEncoding.getText() );
 		info.setAddToResult( wAddToResult.getSelection() );
 		info.setStartNewLine( wStartNewLine.getSelection() );
+		info.setDoNotOpenNewFileInit( wDoNotOpenNewFileInit.getSelection() );
+		
 				
 
 	}

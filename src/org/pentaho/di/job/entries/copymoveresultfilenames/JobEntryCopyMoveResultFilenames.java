@@ -469,6 +469,7 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 		{
 			NrErrors=0;
 			DoNotProcessRest=false;
+			FileObject file = null;
 
 			try
 			{
@@ -481,7 +482,7 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 			      	for (Iterator <ResultFile>  it = resultFiles.iterator() ; it.hasNext();)
 			        {
 			       	  ResultFile resultFile = (ResultFile) it.next();
-			          FileObject file = resultFile.getFile();
+			          file = resultFile.getFile();
 			          if (file != null && file.exists())
 			          {
 			           	if(!specifywilcard || 
@@ -518,6 +519,18 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 			{
 				log.logError(toString(), Messages.getString("JobEntryCopyMoveResultFilenames.Error",e.toString()));
 			}	
+			finally 
+			{
+				if ( file != null )
+				{
+					try  
+					{
+						file.close();
+						
+					}
+					catch ( Exception ex ) {};
+				}
+			}
 		}
 		// Success Condition
 		if (getStatus())

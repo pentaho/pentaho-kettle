@@ -54,9 +54,8 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+import org.apache.commons.vfs.FileUtil;
 import org.apache.commons.vfs.FileObject;
-import org.apache.commons.vfs.FileSelectInfo;
-import org.apache.commons.vfs.FileSelector;
 import org.apache.commons.vfs.FileType;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.EvaluatorException;
@@ -98,7 +97,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
         "print", "println", "resolveIP", "trim", "substr", "getVariable", "setVariable" ,"LuhnCheck","getDigitsOnly",
         "indexOf", "getOutputRowMeta", "getInputRowMeta", "createRowCopy", "putRow", 
         "deleteFile","createFolder","copyFile","getFileSize","isFile","isFolder","getShortFilename",
-        "getFileExtension","getParentFoldername","getLastModifiedTime", "trunc", "truncDate",
+        "getFileExtension","getParentFoldername","getLastModifiedTime", "trunc", "truncDate","moveFile",
         };
 	
 	// This is only used for reading, so no concurrency problems.
@@ -1816,9 +1815,10 @@ public static void copyFile(Context actualContext, Scriptable actualObject, Obje
 							// Great..source is a file ...
 							boolean overwrite=false;
 							if(!ArgList[1].equals(null)) overwrite=Context.toBoolean(ArgList[2]);
+							boolean destinationExists=fileDestination.exists();
 							// Let's copy the file...
-							ScriptValuesAddedFunctions toto= new ScriptValuesAddedFunctions();
-							fileDestination.copyFrom(fileSource,toto.new TextOneToOneFileSelector (fileDestination,overwrite));
+							if((destinationExists && overwrite) || !destinationExists) 
+								FileUtil.copyContent(fileSource, fileDestination);
 							
 						}
 					}else{Context.reportRuntimeError("file to copy [" + Context.toString(ArgList[0]) + "] can not be found!");}
@@ -1835,47 +1835,6 @@ public static void copyFile(Context actualContext, Scriptable actualObject, Obje
 			throw Context.reportRuntimeError(e.toString());
 		}
 	}
-
-public class TextOneToOneFileSelector implements FileSelector 
-{
-	FileObject destfile=null;
-	boolean overwrite_files; 
-	
-	public TextOneToOneFileSelector(FileObject destinationfile,boolean overwrite) 
-	 {
-		 if (destinationfile!=null)	 destfile=destinationfile;
-		 overwrite_files=overwrite;
-	 }
-	 
-	public boolean includeFile(FileSelectInfo info) 
-	{
-		boolean resultat=false; 			
-		try
-		{
-				// check if the destination file exists
-				
-				if (destfile.exists())
-				{
-					if (overwrite_files) resultat=true;	
-				}
-				else resultat= true;
-			
-		}
-		catch (Exception e) 
-		{
-			throw Context.reportRuntimeError("Error trying to copy file [" + info.getFile().toString() + "]. Exception : " + e.toString());
-		}
-		
-				
-		return resultat;
-		
-	}
-	public boolean traverseDescendents(FileSelectInfo info) 
-	{
-		return false;
-	}
-}
-
 public static double getFileSize(Context actualContext, Scriptable actualObject, Object[] ArgList, Function FunctionContext){
 	try{
 		if(ArgList.length==1 && !isNull(ArgList[0]) && !isUndefined(ArgList[0])){
@@ -2193,4 +2152,48 @@ public static String getParentFoldername(Context actualContext, Scriptable actua
 			throw Context.reportRuntimeError(e.toString());
 		}
 	}
+	
+public static void moveFile(Context actualContext, Scriptable actualObject, Object[] ArgList, Function FunctionContext){
+		
+		try{
+			if(ArgList.length==3 && !isNull(ArgList[0]) && !isNull(ArgList[1]) && !isUndefined(ArgList[0]) && !isUndefined(ArgList[1])){
+				FileObject fileSource=null,fileDestination=null;
+				
+				try
+				{
+					// Source file to move
+					fileSource = KettleVFS.getFileObject(Context.toString(ArgList[0]));
+					// Destination filename
+					fileDestination = KettleVFS.getFileObject(Context.toString(ArgList[1]));
+					if(fileSource.exists())
+					{
+						// Source file exists...
+						if(fileSource.getType() == FileType.FILE)
+						{
+							// Great..source is a file ...
+							boolean overwrite=false;
+							if(!ArgList[1].equals(null)) overwrite=Context.toBoolean(ArgList[2]);
+							boolean destinationExists=fileDestination.exists();
+							// Let's move the file...
+							if((destinationExists && overwrite) || !destinationExists) 
+								fileSource.moveTo(fileDestination);
+							
+						}
+					}else{Context.reportRuntimeError("file to move [" + Context.toString(ArgList[0]) + "] can not be found!");}
+				}catch (IOException e)
+				{
+					throw Context.reportRuntimeError("The function call moveFile throw an error : " + e.toString());
+				}finally {if(fileSource!=null) try{fileSource.close();}catch(Exception e){}
+				if(fileDestination!=null) try{fileDestination.close();}catch(Exception e){}}
+				
+			}else{
+				throw Context.reportRuntimeError("The function call copyFile is not valid.");
+			}
+		}catch(Exception e){
+			throw Context.reportRuntimeError(e.toString());
+		}
+	}
+
+	
+	
 }

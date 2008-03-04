@@ -74,6 +74,19 @@ public class SQLFileOutput extends BaseStep implements StepInterface
             data.outputRowMeta = getInputRowMeta().clone();
             meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
             data.insertRowMeta = getInputRowMeta().clone();
+            
+            
+        	if(meta.isDoNotOpenNewFileInit())
+			{
+				if (!openNewFile())
+				{
+					logError("Couldn't open file [" + buildFilename() + "]");
+					setErrors(1);
+					return false;
+				}
+			}
+               
+            
         }
 
 		boolean sendToErrorRow=false;
@@ -327,12 +340,14 @@ public class SQLFileOutput extends BaseStep implements StepInterface
 				}		
 				
 				
-				
-				if (!openNewFile())
+				if(!meta.isDoNotOpenNewFileInit())
 				{
-					logError("Couldn't open file [" + buildFilename() + "]");
-					setErrors(1L);
-					stopAll();
+					if (!openNewFile())
+					{
+						logError("Couldn't open file [" + buildFilename() + "]");
+						setErrors(1L);
+						stopAll();
+					}
 				}
                
 				tableName  = environmentSubstitute(meta.getTablename()); 

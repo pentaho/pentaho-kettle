@@ -801,6 +801,11 @@ public class JobEntryCopyMoveResultFilenamesDialog extends JobEntryDialog implem
 	
 	private void setDateTimeFormat()
 	{
+		if(wSpecifyFormat.getSelection())
+		{
+			wAddDate.setSelection(false);	
+			wAddTime.setSelection(false);
+		}
 		
 		wDateTimeFormat.setEnabled(wSpecifyFormat.getSelection());
 		wlDateTimeFormat.setEnabled(wSpecifyFormat.getSelection());

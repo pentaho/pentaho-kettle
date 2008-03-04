@@ -345,9 +345,11 @@ public class JobEntryFoldersCompare extends JobEntryBase implements Cloneable, J
 							int lenList1=list1.length;
 							int lenList2=list2.length;
 							
-							if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("JobFoldersCompare.Log.FolderContains",realFilename1, ""+lenList1 ));
-							if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("JobFoldersCompare.Log.FolderContains",realFilename2, ""+lenList2 ));
-							
+							if(log.isDetailed()) 
+							{
+								log.logDetailed(toString(),Messages.getString("JobFoldersCompare.Log.FolderContains",realFilename1, ""+lenList1 ));
+								log.logDetailed(toString(),Messages.getString("JobFoldersCompare.Log.FolderContains",realFilename2, ""+lenList2 ));
+							}
 							if(lenList1==lenList2)
 							{
 						

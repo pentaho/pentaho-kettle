@@ -279,7 +279,8 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 			
 		if (arg_from_previous)
 		{
-			log.logDetailed(toString(), Messages.getString("JobCopyFiles.Log.ArgFromPrevious.Found",(rows!=null?rows.size():0)+ ""));
+			if(log.isDetailed())	
+				log.logDetailed(toString(), Messages.getString("JobCopyFiles.Log.ArgFromPrevious.Found",(rows!=null?rows.size():0)+ ""));
 			
 		}
 
@@ -311,8 +312,8 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 				}
 				else
 				{
-					 
-					log.logDetailed(toString(), Messages.getString("JobCopyFiles.Log.IgnoringRow",vsourcefilefolder[iteration],vdestinationfilefolder[iteration],vwildcard[iteration]));
+					 if(log.isDetailed())
+						 log.logDetailed(toString(), Messages.getString("JobCopyFiles.Log.IgnoringRow",vsourcefilefolder[iteration],vdestinationfilefolder[iteration],vwildcard[iteration]));
 				
 				}
 			}
@@ -337,8 +338,8 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 				}
 				else
 				{
-								
-					log.logDetailed(toString(), Messages.getString("JobCopyFiles.Log.IgnoringRow",vsourcefilefolder[i],vdestinationfilefolder[i],vwildcard[i]));
+					if(log.isDetailed())			
+						log.logDetailed(toString(), Messages.getString("JobCopyFiles.Log.IgnoringRow",vsourcefilefolder[i],vdestinationfilefolder[i],vwildcard[i]));
 				
 				}
 			}
@@ -417,8 +418,8 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 							// Copy the file to the destination folder				
 							
 							destinationfilefolder.copyFrom(sourcefilefolder.getParent(),new TextOneFileSelector(sourcefilefolder.getParent().toString(),sourcefilefolder.getName().getBaseName(),destinationfilefolder.toString() ) );
-							
-							log.logDetailed(Messages.getString("JobCopyFiles.Log.FileCopiedInfos"), 
+							if(log.isDetailed())	
+								log.logDetailed(Messages.getString("JobCopyFiles.Log.FileCopiedInfos"), 
 									Messages.getString("JobCopyFiles.Log.FileCopied",sourcefilefolder.getName().toString(),destinationfilefolder.getName().toString()));
 							
 						}

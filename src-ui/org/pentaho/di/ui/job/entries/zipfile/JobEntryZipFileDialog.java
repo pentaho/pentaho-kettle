@@ -149,6 +149,14 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 	private Button       wbShowFiles;
 	private FormData     fdbShowFiles;
 	
+	private Label        wlSpecifyFormat;
+	private Button       wSpecifyFormat;
+	private FormData     fdlSpecifyFormat, fdSpecifyFormat;
+
+  	private Label        wlDateTimeFormat;
+	private CCombo       wDateTimeFormat;
+	private FormData     fdlDateTimeFormat, fdDateTimeFormat; 
+	
 	private boolean changed;
     public JobEntryZipFileDialog(Shell parent, JobEntryInterface jobEntryInt, Repository rep, JobMeta jobMeta)
     {
@@ -484,13 +492,65 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 				}
 			}
 		);
+		
+		// Specify date time format?
+		wlSpecifyFormat=new Label(wZipFile, SWT.RIGHT);
+		wlSpecifyFormat.setText(Messages.getString("JobZipFiles.SpecifyFormat.Label"));
+		props.setLook(wlSpecifyFormat);
+		fdlSpecifyFormat=new FormData();
+		fdlSpecifyFormat.left = new FormAttachment(0, 0);
+		fdlSpecifyFormat.top  = new FormAttachment(wAddTime, margin);
+		fdlSpecifyFormat.right= new FormAttachment(middle, -margin);
+		wlSpecifyFormat.setLayoutData(fdlSpecifyFormat);
+		wSpecifyFormat=new Button(wZipFile, SWT.CHECK);
+		props.setLook(wSpecifyFormat);
+		wSpecifyFormat.setToolTipText(Messages.getString("JobZipFiles.SpecifyFormat.Tooltip"));
+	    fdSpecifyFormat=new FormData();
+		fdSpecifyFormat.left = new FormAttachment(middle, 0);
+		fdSpecifyFormat.top  = new FormAttachment(wAddTime, margin);
+		fdSpecifyFormat.right= new FormAttachment(100, 0);
+		wSpecifyFormat.setLayoutData(fdSpecifyFormat);
+		wSpecifyFormat.addSelectionListener(new SelectionAdapter() 
+			{
+				public void widgetSelected(SelectionEvent e) 
+				{
+					jobEntry.setChanged();
+					setDateTimeFormat();
+				}
+			}
+		);
+
+		
+		//	Prepare a list of possible DateTimeFormats...
+		String dats[] = Const.getDateFormats();
+		
+ 		// DateTimeFormat
+		wlDateTimeFormat=new Label(wZipFile, SWT.RIGHT);
+        wlDateTimeFormat.setText(Messages.getString("JobZipFiles.DateTimeFormat.Label"));
+        props.setLook(wlDateTimeFormat);
+        fdlDateTimeFormat=new FormData();
+        fdlDateTimeFormat.left = new FormAttachment(0, 0);
+        fdlDateTimeFormat.top  = new FormAttachment(wSpecifyFormat, margin);
+        fdlDateTimeFormat.right= new FormAttachment(middle, -margin);
+        wlDateTimeFormat.setLayoutData(fdlDateTimeFormat);
+        wDateTimeFormat=new CCombo(wZipFile, SWT.BORDER | SWT.READ_ONLY);
+        wDateTimeFormat.setEditable(true);
+        props.setLook(wDateTimeFormat);
+        wDateTimeFormat.addModifyListener(lsMod);
+        fdDateTimeFormat=new FormData();
+        fdDateTimeFormat.left = new FormAttachment(middle, 0);
+        fdDateTimeFormat.top  = new FormAttachment(wSpecifyFormat, margin);
+        fdDateTimeFormat.right= new FormAttachment(100, 0);
+        wDateTimeFormat.setLayoutData(fdDateTimeFormat);
+        for (int x=0;x<dats.length;x++) wDateTimeFormat.add(dats[x]);
+        
 
 		wbShowFiles=new Button(wZipFile, SWT.PUSH| SWT.CENTER);
 		props.setLook(wbShowFiles);
 		wbShowFiles.setText(Messages.getString("JobZipFiles.ShowFile.Button"));
 		fdbShowFiles=new FormData();
 		fdbShowFiles.left = new FormAttachment(middle, 0);
-		fdbShowFiles.top  = new FormAttachment(wAddTime, margin*2);
+		fdbShowFiles.top  = new FormAttachment(wDateTimeFormat, margin*2);
 		wbShowFiles.setLayoutData(fdbShowFiles);
 		wbShowFiles.addSelectionListener(new SelectionAdapter() 
 		{
@@ -498,7 +558,7 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 			{
 				JobEntryZipFile jobEntry = new JobEntryZipFile();
 				String filename[] = new String[1];
-				filename[0]=jobEntry.getFullFilename(wZipFilename.getText(),wAddDate.getSelection(),wAddTime.getSelection());
+				filename[0]=jobEntry.getFullFilename(wZipFilename.getText(),wAddDate.getSelection(),wAddTime.getSelection(), wSpecifyFormat.getSelection(),wDateTimeFormat.getText());
 				if (filename!=null && filename.length>0)
 				{
 					EnterSelectionDialog esd = new EnterSelectionDialog(shell, filename, Messages.getString("JobZipFiles.SelectOutputFiles.DialogTitle"), Messages.getString("JobZipFiles.SelectOutputFiles.DialogMessage"));
@@ -824,6 +884,7 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 		getData();
 		setGetFromPrevious();
 		AfterZipActivate();
+		setDateTimeFormat();
 
 		BaseStepDialog.setSize(shell);
 
@@ -854,7 +915,23 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 		wbShowFiles.setEnabled(!wgetFromPrevious.getSelection());
 		
 	}
-
+	private void setDateTimeFormat()
+	{
+		if(wSpecifyFormat.getSelection())
+		{
+			wAddDate.setSelection(false);	
+			wAddTime.setSelection(false);
+		}
+		
+		
+		wDateTimeFormat.setEnabled(wSpecifyFormat.getSelection());
+		wlDateTimeFormat.setEnabled(wSpecifyFormat.getSelection());
+		wAddDate.setEnabled(!wSpecifyFormat.getSelection());
+		wlAddDate.setEnabled(!wSpecifyFormat.getSelection());
+		wAddTime.setEnabled(!wSpecifyFormat.getSelection());
+		wlAddTime.setEnabled(!wSpecifyFormat.getSelection());
+		
+	}
 	public void AfterZipActivate()
 	{
 
@@ -926,6 +1003,9 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 		wCreateParentFolder.setSelection(jobEntry.getcreateparentfolder());
 		wAddDate.setSelection(jobEntry.isDateInFilename());
 		wAddTime.setSelection(jobEntry.isTimeInFilename());
+		
+		if (jobEntry.getDateTimeFormat()!= null) wDateTimeFormat.setText( jobEntry.getDateTimeFormat() );
+		wSpecifyFormat.setSelection(jobEntry.isSpecifyFormat());
 
 	}
 
@@ -958,6 +1038,9 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 		jobEntry.setcreateparentfolder(wCreateParentFolder.getSelection());
 		jobEntry.setDateInFilename( wAddDate.getSelection() );
 		jobEntry.setTimeInFilename( wAddTime.getSelection() );
+		jobEntry.setSpecifyFormat(wSpecifyFormat.getSelection());
+		jobEntry.setDateTimeFormat(wDateTimeFormat.getText());
+		
 		dispose();
 	}
 	

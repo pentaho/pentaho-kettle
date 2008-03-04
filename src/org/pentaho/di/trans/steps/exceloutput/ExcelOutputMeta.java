@@ -110,6 +110,10 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
     
     /** Flag : Do not open new file when transformation start  */ 
     private boolean donotopennewfileinit;
+    
+    private boolean SpecifyFormat;
+    
+    private String date_time_format;
 
 	public ExcelOutputMeta()
 	{
@@ -228,6 +232,25 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
         this.headerEnabled = header;
     }
 
+    
+    public boolean  isSpecifyFormat()
+    {
+    	return SpecifyFormat;
+    }
+    public void setSpecifyFormat(boolean SpecifyFormat)
+    {
+    	this.SpecifyFormat=SpecifyFormat;
+    }
+    public String getDateTimeFormat()
+ 	{
+ 		return date_time_format;
+ 	}
+ 	public void setDateTimeFormat(String date_time_format)
+ 	{
+ 		this.date_time_format=date_time_format;
+ 	}
+    
+    
     /**
      * @return Returns the newline.
      */
@@ -479,7 +502,10 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 			stepNrInFilename     = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "split"));
 			dateInFilename       = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "add_date"));
 			timeInFilename       = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "add_time"));
-		
+			SpecifyFormat       = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "SpecifyFormat"));
+			date_time_format         = XMLHandler.getTagValue(stepnode, "file","date_time_format");
+			
+			
 			protectsheet = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "protect_sheet"));
 			password     = Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue(stepnode, "file", "password") );
 			splitEvery   = Const.toInt(XMLHandler.getTagValue(stepnode, "file", "splitevery"), 0);
@@ -540,6 +566,8 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 		stepNrInFilename = false;
 		dateInFilename   = false;
 		timeInFilename   = false;
+		date_time_format  =null;
+		SpecifyFormat	= false;
 		addToResultFilenames=true;
 		protectsheet	 = false;
 		splitEvery       = 0;
@@ -607,17 +635,25 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 		
 		Date now = new Date();
 		
-		if (dateInFilename)
+		if(SpecifyFormat && !Const.isEmpty(date_time_format))
 		{
-			daf.applyPattern("yyyMMdd");
-			String d = daf.format(now);
-			retval+="_"+d;
-		}
-		if (timeInFilename)
+			daf.applyPattern(date_time_format);
+			String dt = daf.format(now);
+			retval+=dt;
+		}else
 		{
-			daf.applyPattern("HHmmss");
-			String t = daf.format(now);
-			retval+="_"+t;
+			if (dateInFilename)
+			{
+				daf.applyPattern("yyyMMdd");
+				String d = daf.format(now);
+				retval+="_"+d;
+			}
+			if (timeInFilename)
+			{
+				daf.applyPattern("HHmmss");
+				String t = daf.format(now);
+				retval+="_"+t;
+			}
 		}
 		if (stepNrInFilename)
 		{
@@ -661,7 +697,8 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 		retval.append("      ").append(XMLHandler.addTagValue("split",      stepNrInFilename));
 		retval.append("      ").append(XMLHandler.addTagValue("add_date",   dateInFilename));
 		retval.append("      ").append(XMLHandler.addTagValue("add_time",   timeInFilename));
-		
+		retval.append("      ").append(XMLHandler.addTagValue("SpecifyFormat",   SpecifyFormat));
+		retval.append("      ").append(XMLHandler.addTagValue("date_time_format",  date_time_format));
 		
 		retval.append("      ").append(XMLHandler.addTagValue("sheetname", sheetname));
 		retval.append("      ").append(XMLHandler.addTagValue("protect_sheet",   protectsheet));
@@ -720,7 +757,8 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 			stepNrInFilename =      rep.getStepAttributeBoolean(id_step, "file_add_stepnr");
 			dateInFilename   =      rep.getStepAttributeBoolean(id_step, "file_add_date");
 			timeInFilename   =      rep.getStepAttributeBoolean(id_step, "file_add_time");
-			
+			SpecifyFormat   =      rep.getStepAttributeBoolean(id_step, "SpecifyFormat");
+			date_time_format  =      rep.getStepAttributeString (id_step, "date_time_format");  
 			
 			protectsheet          = rep.getStepAttributeBoolean(id_step, "protect_sheet");
 			password              = Encr.decryptPasswordOptionallyEncrypted( rep.getStepAttributeString (id_step, "password") );
@@ -767,7 +805,8 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "file_add_stepnr",  stepNrInFilename);
 			rep.saveStepAttribute(id_transformation, id_step, "file_add_date",    dateInFilename);
 			rep.saveStepAttribute(id_transformation, id_step, "file_add_time",    timeInFilename);
-			
+			rep.saveStepAttribute(id_transformation, id_step, "SpecifyFormat",    SpecifyFormat);
+			rep.saveStepAttribute(id_transformation, id_step, "date_time_format",   date_time_format);
 			
 			rep.saveStepAttribute(id_transformation, id_step, "protect_sheet",    protectsheet);
 			rep.saveStepAttribute(id_transformation, id_step, "password",  Encr.encryptPasswordIfNotUsingVariables(password) );

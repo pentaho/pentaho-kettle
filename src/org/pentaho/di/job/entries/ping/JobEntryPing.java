@@ -227,7 +227,8 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
                 Process processPing = Runtime.getRuntime().exec("ping " + ip + " -n " + NbrPaquetsSend);
 
                 // Get ping response
-                log.logDetailed(toString(), Messages.getString("JobPing.Gettingresponse1.Label") + ip
+                if(log.isDetailed())	
+                	log.logDetailed(toString(), Messages.getString("JobPing.Gettingresponse1.Label") + ip
                         + Messages.getString("JobPing.Gettingresponse2.Label"));
 
                 BufferedReader br = new BufferedReader(new InputStreamReader(processPing.getInputStream()));
@@ -235,12 +236,14 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
                 // Read response lines
                 while ((lignePing = br.readLine()) != null)
                 {
-                    log.logDetailed(toString(), lignePing);
+                	if(log.isDetailed())	
+                		log.logDetailed(toString(), lignePing);
                     // We succeed only when 0% lost of data
                 }
                 if (processPing.exitValue()==0)
                 {
-                    log.logDetailed(toString(), Messages.getString("JobPing.OK1.Label") + ip + Messages.getString("JobPing.OK2.Label"));
+                	if(log.isDetailed())	
+                		log.logDetailed(toString(), Messages.getString("JobPing.OK1.Label") + ip + Messages.getString("JobPing.OK2.Label"));
                     result.setNrErrors(0);
                     result.setResult(true);
                 }
