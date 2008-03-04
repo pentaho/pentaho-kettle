@@ -1194,6 +1194,7 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
 	    		inputRowSet = currentInputStream();
 	    		row = inputRowSet.getRowImmediate();
     		}
+    		if (row!=null) linesRead++;
     	}
     	else {
     		// What's the current input stream?
