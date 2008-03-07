@@ -53,6 +53,7 @@ public class GlobalMessages extends AbstractMessageHandler
     	"es_AR", 
     	"no_NO",
     	"it_IT",
+    	"ja_JP",
     	};
     
     public static final String[] localeDescr = { 
@@ -67,6 +68,7 @@ public class GlobalMessages extends AbstractMessageHandler
     	"Espa\u00F1ol (Argentina)", 
     	"Norwegian (Norway)", 
     	"Italian (Italy)",
+    	"Japanese (Japan)",
     	};
  
     protected static GlobalMessages GMinstance = null;
