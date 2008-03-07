@@ -55,7 +55,7 @@ import org.pentaho.di.repository.Repository;
 
 
 /**
- * This defines a 'delete files' job entry.
+ * This defines a 'add result filenames' job entry.
  *
  * @author Samatar Hassan
  * @since 06-05-2007
@@ -201,9 +201,6 @@ public class JobEntryAddResultFilenames extends JobEntryBase implements Cloneabl
     RowMetaAndData resultRow = null;
 
     int NrErrFiles = 0;
-
-    // String args[] = arguments;
-    // String fmasks[] = filemasks;
     result.setResult(true);
 
 

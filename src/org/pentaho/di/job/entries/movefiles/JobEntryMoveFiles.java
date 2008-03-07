@@ -533,7 +533,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 							destinationfile= KettleVFS.getFileObject(destinationfilenamefull);
 							
 							sourcefilefolder.moveTo(destinationfile);
-							if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobMoveFiles.Log.FileCopied",sourcefilefolder.getName().toString(),destinationfile.getName().toString()));
+							if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobMoveFiles.Log.FileMoved",sourcefilefolder.getName().toString(),destinationfile.getName().toString()));
 							// add filename to result filename
 							if(add_result_filesname) addFileToResultFilenames(destinationfile.toString(),log,result,parentJob);
 						}
