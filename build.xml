@@ -78,14 +78,14 @@
 	    	<src path="${src}"/>
 	    	
 	    	<classpath id="cp-kettle">
-				<fileset dir="${lib}" 			includes="kettle-core.jar"/>
+				<pathelement path="${classes-core}"/>
 				<fileset dir="${libext}" 		includes="*.jar *.zip"/>
 				<fileset dir="${libext}/"	    includes="**/*.jar *.zip"/>
 		  		</classpath>
 	    </javac>
 	  </target>
 	  
-	  <target name="compile-ui" depends="kettle" description="compile the UI source " >
+	  <target name="compile-ui" depends="kettle-core, kettle" description="compile the UI source " >
 	  	<echo>Compiling Kettle UI...</echo>
 	    <javac 
 	    	   destdir="${classes-ui}"
