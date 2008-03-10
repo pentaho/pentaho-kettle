@@ -14,6 +14,8 @@ package org.pentaho.di.trans.steps.csvinput;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.provider.local.LocalFile;
@@ -60,6 +62,19 @@ public class CsvInput extends BaseStep implements StepInterface
 			data.outputRowMeta = new RowMeta();
 			meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
 
+			if (data.filenames==null) {
+				// We're expecting the list of filenames from the previous step(s)...
+				//
+				getFilenamesFromPreviousSteps();
+			}
+			
+			// Open the next file...
+			//
+			if (!openNextFile()) {
+				setOutputDone();
+				return false; // nothing to see here, move along...
+			}
+			
 			// The conversion logic for when the lazy conversion is turned of is simple:
 			// Pretend it's a lazy conversion object anyway and get the native type during conversion.
 			//
@@ -77,18 +92,93 @@ public class CsvInput extends BaseStep implements StepInterface
 		Object[] outputRowData=readOneRow(true);    // get row, set busy!
 		if (outputRowData==null)  // no more input to be expected...
 		{
-			setOutputDone();
-			return false;
+			if (openNextFile()) {
+				return true; // try again on the next loop...
+			}
+			else {
+				setOutputDone(); // last file, end here
+				return false;
+			}
 		}
-		
-		putRow(data.outputRowMeta, outputRowData);     // copy row to possible alternate rowset(s).
-
-        if (checkFeedback(linesInput)) logBasic(Messages.getString("CsvInput.Log.LineNumber", Long.toString(linesInput))); //$NON-NLS-1$
+		else 
+		{
+			putRow(data.outputRowMeta, outputRowData);     // copy row to possible alternate rowset(s).
+	        if (checkFeedback(linesInput)) logBasic(Messages.getString("CsvInput.Log.LineNumber", Long.toString(linesInput))); //$NON-NLS-1$
+		}
 			
 		return true;
 	}
 
 	
+	private void getFilenamesFromPreviousSteps() throws KettleException {
+		List<String> filenames = new ArrayList<String>();
+		boolean firstRow = true;
+		int index=-1;
+		Object[] row = getRow();
+		while (row!=null) {
+			
+			if (firstRow) {
+				firstRow=false;
+				
+				// Get the filename field index...
+				//
+				String filenameField = environmentSubstitute(meta.getFilenameField());
+				index = getInputRowMeta().indexOfValue(filenameField);
+				if (index<0) {
+					throw new KettleException(Messages.getString("CsvInput.Exception.FilenameFieldNotFound", filenameField));
+				}
+			}
+				
+			String filename = getInputRowMeta().getString(row, index);
+			filenames.add(filename);  // add it to the list...
+			
+			row = getRow(); // Grab another row...
+		}
+		
+		data.filenames = filenames.toArray(new String[filenames.size()]);
+	}
+
+	private boolean openNextFile() throws KettleException {
+		try {
+			
+			// Close the previous file...
+			//
+			if (data.fc!=null) {
+				data.fc.close();
+			}
+			
+			if (data.fis!=null) {
+				data.fis.close();
+			}
+			
+			if (data.filenr>=data.filenames.length) {
+				return false;
+			}
+
+			// Open the next one...
+			//
+			FileObject fileObject = KettleVFS.getFileObject(data.filenames[data.filenr]);
+			if (!(fileObject instanceof LocalFile)) {
+				// We can only use NIO on local files at the moment, so that's what we limit ourselves to.
+				//
+				throw new KettleException(Messages.getString("CsvInput.Log.OnlyLocalFilesAreSupported"));
+			}
+			
+			data.fis = (FileInputStream)((LocalFile)fileObject).getInputStream();
+			data.fc = data.fis.getChannel();
+			data.bb = ByteBuffer.allocateDirect( data.preferredBufferSize );
+			
+			// Move to the next filename
+			//
+			data.filenr++;
+			
+			return true;
+		}
+		catch(Exception e) {
+			throw new KettleException(e);
+		}
+	}
+
 	/** Read a single row of data from the file... 
 	 * 
 	 * @param doConversions if you want to do conversions, set to false for the header row.
@@ -322,57 +412,52 @@ public class CsvInput extends BaseStep implements StepInterface
 		data=(CsvInputData)sdi;
 		
 		if (super.init(smi, sdi)) {
-			try {
-				data.preferredBufferSize = Integer.parseInt(environmentSubstitute(meta.getBufferSize()));
-				data.filename = environmentSubstitute(meta.getFilename());
-				
-				if (Const.isEmpty(data.filename)) {
+			data.preferredBufferSize = Integer.parseInt(environmentSubstitute(meta.getBufferSize()));
+			
+			// If the step doesn't have any previous steps, we just get the filename.
+			// Otherwise, we'll grab the list of filenames later...
+			//
+			if (getTransMeta().findNrPrevSteps(getStepMeta())==0) {
+				String filename = environmentSubstitute(meta.getFilename());
+
+				if (Const.isEmpty(filename)) {
 					logError(Messages.getString("CsvInput.MissingFilename.Message"));
 					return false;
 				}
-				
-				FileObject fileObject = KettleVFS.getFileObject(data.filename);
-				if (!(fileObject instanceof LocalFile)) {
-					// We can only use NIO on local files at the moment, so that's what we limit ourselves to.
-					//
-					logError(Messages.getString("CsvInput.Log.OnlyLocalFilesAreSupported"));
-					return false;
-				}
-				
-				FileInputStream fis = (FileInputStream)((LocalFile)fileObject).getInputStream();
-				data.fc = fis.getChannel();
-				data.bb = ByteBuffer.allocateDirect( data.preferredBufferSize );
-				
-				data.delimiter = environmentSubstitute(meta.getDelimiter()).getBytes();
 
-				if( Const.isEmpty(meta.getEnclosure()) ) {
-					data.enclosure = null;
-				} else {
-					data.enclosure = environmentSubstitute(meta.getEnclosure()).getBytes();
-				}
-				
-				return true;
-			} catch (IOException e) {
-				logError("Error opening file '"+meta.getFilename()+"' : "+e.toString());
-				logError(Const.getStackTracker(e));
+				data.filenames = new String[] { filename, };
 			}
+			else {
+				data.filenames = null;
+				data.filenr = 0;
+			}
+							
+			data.delimiter = environmentSubstitute(meta.getDelimiter()).getBytes();
+
+			if( Const.isEmpty(meta.getEnclosure()) ) {
+				data.enclosure = null;
+			} else {
+				data.enclosure = environmentSubstitute(meta.getEnclosure()).getBytes();
+			}
+			
+			return true;
+
 		}
 		return false;
 	}
 	
-	@Override
-	public void dispose(StepMetaInterface smi, StepDataInterface sdi) {
+	public void closeFile() throws KettleException {
 		
 		try {
 			if (data.fc!=null) {
 				data.fc.close();
 			}
+			if (data.fis!=null) {
+				data.fis.close();
+			}
 		} catch (IOException e) {
-			logError("Unable to close file channel for file '"+meta.getFilename()+"' : "+e.toString());
-			logError(Const.getStackTracker(e));
+			throw new KettleException("Unable to close file channel for file '"+data.filenames[data.filenr],e);
 		}
-		
-		super.dispose(smi, sdi);
 	}
 	
 	//

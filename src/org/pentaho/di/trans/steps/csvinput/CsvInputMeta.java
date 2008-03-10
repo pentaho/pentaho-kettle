@@ -59,6 +59,8 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
 {
 	private String filename;
 	
+	private String filenameField;
+	
 	private boolean headerPresent;
 
 	private String delimiter;
@@ -101,6 +103,7 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
 		try
 		{
 			filename = XMLHandler.getTagValue(stepnode, "filename");
+			filenameField = XMLHandler.getTagValue(stepnode, "filename_field");
 			delimiter = XMLHandler.getTagValue(stepnode, "separator");
 			enclosure = XMLHandler.getTagValue(stepnode, "enclosure");
 			bufferSize  = XMLHandler.getTagValue(stepnode, "buffer_size");
@@ -144,6 +147,7 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
 		StringBuffer retval = new StringBuffer(500);
 
 		retval.append("    ").append(XMLHandler.addTagValue("filename", filename));
+		retval.append("    ").append(XMLHandler.addTagValue("filename_field", filenameField));
 		retval.append("    ").append(XMLHandler.addTagValue("separator", delimiter));
 		retval.append("    ").append(XMLHandler.addTagValue("enclosure", enclosure));
 		retval.append("    ").append(XMLHandler.addTagValue("header", headerPresent));
@@ -178,6 +182,7 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
 		try
 		{
 			filename = rep.getStepAttributeString(id_step, "filename");
+			filenameField = rep.getStepAttributeString(id_step, "filename_field");
 			delimiter = rep.getStepAttributeString(id_step, "separator");
 			enclosure = rep.getStepAttributeString(id_step, "enclosure");
 			headerPresent = rep.getStepAttributeBoolean(id_step, "header");
@@ -214,6 +219,7 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
 		try
 		{
 			rep.saveStepAttribute(id_transformation, id_step, "filename", filename);
+			rep.saveStepAttribute(id_transformation, id_step, "filename_field", filenameField);
 			rep.saveStepAttribute(id_transformation, id_step, "separator", delimiter);
 			rep.saveStepAttribute(id_transformation, id_step, "enclosure", enclosure);
 			rep.saveStepAttribute(id_transformation, id_step, "buffer_size", bufferSize);
@@ -480,5 +486,19 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
 
 	public boolean isErrorLineSkipped() {
 		return false;
-	}  
+	}
+
+	/**
+	 * @return the filenameField
+	 */
+	public String getFilenameField() {
+		return filenameField;
+	}
+
+	/**
+	 * @param filenameField the filenameField to set
+	 */
+	public void setFilenameField(String filenameField) {
+		this.filenameField = filenameField;
+	}	
 }

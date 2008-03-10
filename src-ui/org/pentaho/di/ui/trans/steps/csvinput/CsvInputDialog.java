@@ -84,6 +84,8 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
 	private Button       wLazyConversion;
 	private Button       wHeaderPresent;
 	private TableView    wFields;
+
+	private boolean isReceivingInput;
 	
 	public CsvInputDialog(Shell parent, Object in, TransMeta tr, String sname)
 	{
@@ -139,38 +141,67 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
 		wStepname.setLayoutData(fdStepname);
 		Control lastControl = wStepname;
 		
-		// Filename...
+		
+		// See if the step receives input.  If so, we don't ask for the filename, but for the filename field.
 		//
-		// The filename browse button
-		//
-        wbbFilename=new Button(shell, SWT.PUSH| SWT.CENTER);
-        props.setLook(wbbFilename);
-        wbbFilename.setText(Messages.getString("System.Button.Browse"));
-        wbbFilename.setToolTipText(Messages.getString("System.Tooltip.BrowseForFileOrDirAndAdd"));
-        FormData fdbFilename = new FormData();
-        fdbFilename.top  = new FormAttachment(lastControl, margin);
-        fdbFilename.right= new FormAttachment(100, 0);
-        wbbFilename.setLayoutData(fdbFilename);
-
-        // The field itself...
-        //
-		Label wlFilename = new Label(shell, SWT.RIGHT);
-		wlFilename.setText(Messages.getString("CsvInputDialog.Filename.Label")); //$NON-NLS-1$
- 		props.setLook(wlFilename);
-		FormData fdlFilename = new FormData();
-		fdlFilename.top  = new FormAttachment(lastControl, margin);
-		fdlFilename.left = new FormAttachment(0, 0);
-		fdlFilename.right= new FormAttachment(middle, -margin);
-		wlFilename.setLayoutData(fdlFilename);
-		wFilename=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
- 		props.setLook(wFilename);
-		wFilename.addModifyListener(lsMod);
-		FormData fdFilename = new FormData();
-		fdFilename.top  = new FormAttachment(lastControl, margin);
-		fdFilename.left = new FormAttachment(middle, 0);
-		fdFilename.right= new FormAttachment(wbbFilename, -margin);
-		wFilename.setLayoutData(fdFilename);
-		lastControl = wFilename;
+		isReceivingInput = transMeta.findNrPrevSteps(stepMeta)>0;
+		if (isReceivingInput) {
+			
+			// The filename field ...
+			//
+			Label wlFilename = new Label(shell, SWT.RIGHT);
+			wlFilename.setText(Messages.getString("CsvInputDialog.FilenameField.Label")); //$NON-NLS-1$
+	 		props.setLook(wlFilename);
+			FormData fdlFilename = new FormData();
+			fdlFilename.top  = new FormAttachment(lastControl, margin);
+			fdlFilename.left = new FormAttachment(0, 0);
+			fdlFilename.right= new FormAttachment(middle, -margin);
+			wlFilename.setLayoutData(fdlFilename);
+			wFilename=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+	 		props.setLook(wFilename);
+			wFilename.addModifyListener(lsMod);
+			FormData fdFilename = new FormData();
+			fdFilename.top  = new FormAttachment(lastControl, margin);
+			fdFilename.left = new FormAttachment(middle, 0);
+			fdFilename.right= new FormAttachment(100, 0);
+			wFilename.setLayoutData(fdFilename);
+			lastControl = wFilename;
+		}
+		else {
+			
+			// Filename...
+			//
+			// The filename browse button
+			//
+	        wbbFilename=new Button(shell, SWT.PUSH| SWT.CENTER);
+	        props.setLook(wbbFilename);
+	        wbbFilename.setText(Messages.getString("System.Button.Browse"));
+	        wbbFilename.setToolTipText(Messages.getString("System.Tooltip.BrowseForFileOrDirAndAdd"));
+	        FormData fdbFilename = new FormData();
+	        fdbFilename.top  = new FormAttachment(lastControl, margin);
+	        fdbFilename.right= new FormAttachment(100, 0);
+	        wbbFilename.setLayoutData(fdbFilename);
+	
+	        // The field itself...
+	        //
+			Label wlFilename = new Label(shell, SWT.RIGHT);
+			wlFilename.setText(Messages.getString("CsvInputDialog.Filename.Label")); //$NON-NLS-1$
+	 		props.setLook(wlFilename);
+			FormData fdlFilename = new FormData();
+			fdlFilename.top  = new FormAttachment(lastControl, margin);
+			fdlFilename.left = new FormAttachment(0, 0);
+			fdlFilename.right= new FormAttachment(middle, -margin);
+			wlFilename.setLayoutData(fdlFilename);
+			wFilename=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+	 		props.setLook(wFilename);
+			wFilename.addModifyListener(lsMod);
+			FormData fdFilename = new FormData();
+			fdFilename.top  = new FormAttachment(lastControl, margin);
+			fdFilename.left = new FormAttachment(middle, 0);
+			fdFilename.right= new FormAttachment(wbbFilename, -margin);
+			wFilename.setLayoutData(fdFilename);
+			lastControl = wFilename;
+		}
 		
 		// delimiter
 		Label wlDelimiter = new Label(shell, SWT.RIGHT);
@@ -186,7 +217,6 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
         wbDelimiter.setText(Messages.getString("CsvInputDialog.Delimiter.Button"));
         FormData fdbDelimiter=new FormData();
         fdbDelimiter.top  = new FormAttachment(lastControl, margin);
-        fdbDelimiter.left = new FormAttachment(wbbFilename, 0, SWT.LEFT);
         fdbDelimiter.right= new FormAttachment(100, 0);        
         wbDelimiter.setLayoutData(fdbDelimiter);
 		wDelimiter=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
@@ -284,8 +314,10 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
 		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
 		wPreview=new Button(shell, SWT.PUSH);
 		wPreview.setText(Messages.getString("System.Button.Preview")); //$NON-NLS-1$
+		wPreview.setEnabled(!isReceivingInput);
 		wGet=new Button(shell, SWT.PUSH);
 		wGet.setText(Messages.getString("System.Button.GetFields")); //$NON-NLS-1$
+		wGet.setEnabled(!isReceivingInput);
 
 		setButtonPositions(new Button[] { wOK, wCancel, wPreview, wGet, }, margin, null);
 
@@ -368,30 +400,32 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
 			}
 		);
 
-		// Listen to the browse button next to the file name
-		wbbFilename.addSelectionListener(
-				new SelectionAdapter()
-				{
-					public void widgetSelected(SelectionEvent e) 
+		if (wbbFilename!=null) {
+			// Listen to the browse button next to the file name
+			wbbFilename.addSelectionListener(
+					new SelectionAdapter()
 					{
-						FileDialog dialog = new FileDialog(shell, SWT.OPEN);
-						dialog.setFilterExtensions(new String[] {"*.txt;*.csv", "*.csv", "*.txt", "*"});
-						if (wFilename.getText()!=null)
+						public void widgetSelected(SelectionEvent e) 
 						{
-							String fname = transMeta.environmentSubstitute(wFilename.getText());
-							dialog.setFileName( fname );
-						}
-						
-						dialog.setFilterNames(new String[] {Messages.getString("System.FileType.CSVFiles")+", "+Messages.getString("System.FileType.TextFiles"), Messages.getString("System.FileType.CSVFiles"), Messages.getString("System.FileType.TextFiles"), Messages.getString("System.FileType.AllFiles")});
-						
-						if (dialog.open()!=null)
-						{
-							String str = dialog.getFilterPath()+System.getProperty("file.separator")+dialog.getFileName();
-							wFilename.setText(str);
+							FileDialog dialog = new FileDialog(shell, SWT.OPEN);
+							dialog.setFilterExtensions(new String[] {"*.txt;*.csv", "*.csv", "*.txt", "*"});
+							if (wFilename.getText()!=null)
+							{
+								String fname = transMeta.environmentSubstitute(wFilename.getText());
+								dialog.setFileName( fname );
+							}
+							
+							dialog.setFilterNames(new String[] {Messages.getString("System.FileType.CSVFiles")+", "+Messages.getString("System.FileType.TextFiles"), Messages.getString("System.FileType.CSVFiles"), Messages.getString("System.FileType.TextFiles"), Messages.getString("System.FileType.AllFiles")});
+							
+							if (dialog.open()!=null)
+							{
+								String str = dialog.getFilterPath()+System.getProperty("file.separator")+dialog.getFileName();
+								wFilename.setText(str);
+							}
 						}
 					}
-				}
-			);
+				);
+		}
 
 		
 		// Detect X or ALT-F4 or something that kills this window...
@@ -422,7 +456,11 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
 	public void getData(CsvInputMeta inputMeta)
 	{
 		wStepname.setText(stepname);
-		wFilename.setText(Const.NVL(inputMeta.getFilename(), ""));
+		if (isReceivingInput) {
+			wFilename.setText(Const.NVL(inputMeta.getFilenameField(), ""));
+		} else {
+			wFilename.setText(Const.NVL(inputMeta.getFilename(), ""));
+		}
 		wDelimiter.setText(Const.NVL(inputMeta.getDelimiter(), ""));
 		wEnclosure.setText(Const.NVL(inputMeta.getEnclosure(), ""));
 		wBufferSize.setText(Const.NVL(inputMeta.getBufferSize(), ""));
@@ -460,7 +498,12 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
 	
 	private void getInfo(CsvInputMeta inputMeta) {
 		
-		inputMeta.setFilename(wFilename.getText());
+		if (isReceivingInput) {
+			inputMeta.setFilenameField(wFilename.getText());
+		} else {
+			inputMeta.setFilename(wFilename.getText());
+		}
+		
 		inputMeta.setDelimiter(wDelimiter.getText());
 		inputMeta.setEnclosure(wEnclosure.getText());
 		inputMeta.setBufferSize(wBufferSize.getText());

@@ -12,6 +12,7 @@
 
 package org.pentaho.di.trans.steps.csvinput;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
@@ -27,7 +28,6 @@ import org.pentaho.di.trans.step.StepDataInterface;
  */
 public class CsvInputData extends BaseStepData implements StepDataInterface
 {
-
 	public FileChannel fc;
 	public ByteBuffer bb;
 	public RowMetaInterface convertRowMeta;
@@ -42,8 +42,10 @@ public class CsvInputData extends BaseStepData implements StepDataInterface
 	public byte[] enclosure;
 	
 	public int preferredBufferSize;
-	public String filename;
+	public String[] filenames;
+	public int      filenr;
 	public long fileSize;
+	public FileInputStream fis;
 			
 	/**
 	 * 
