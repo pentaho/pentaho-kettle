@@ -60,7 +60,9 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
 	private String filename;
 	
 	private String filenameField;
-	
+
+	private boolean includingFilename; 
+
 	private boolean headerPresent;
 
 	private String delimiter;
@@ -104,6 +106,7 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
 		{
 			filename = XMLHandler.getTagValue(stepnode, "filename");
 			filenameField = XMLHandler.getTagValue(stepnode, "filename_field");
+			includingFilename = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "include_filename"));
 			delimiter = XMLHandler.getTagValue(stepnode, "separator");
 			enclosure = XMLHandler.getTagValue(stepnode, "enclosure");
 			bufferSize  = XMLHandler.getTagValue(stepnode, "buffer_size");
@@ -148,6 +151,7 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
 
 		retval.append("    ").append(XMLHandler.addTagValue("filename", filename));
 		retval.append("    ").append(XMLHandler.addTagValue("filename_field", filenameField));
+		retval.append("    ").append(XMLHandler.addTagValue("include_filename", includingFilename));
 		retval.append("    ").append(XMLHandler.addTagValue("separator", delimiter));
 		retval.append("    ").append(XMLHandler.addTagValue("enclosure", enclosure));
 		retval.append("    ").append(XMLHandler.addTagValue("header", headerPresent));
@@ -183,6 +187,7 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
 		{
 			filename = rep.getStepAttributeString(id_step, "filename");
 			filenameField = rep.getStepAttributeString(id_step, "filename_field");
+			includingFilename = rep.getStepAttributeBoolean(id_step, "include_filename");
 			delimiter = rep.getStepAttributeString(id_step, "separator");
 			enclosure = rep.getStepAttributeString(id_step, "enclosure");
 			headerPresent = rep.getStepAttributeBoolean(id_step, "header");
@@ -220,6 +225,7 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
 		{
 			rep.saveStepAttribute(id_transformation, id_step, "filename", filename);
 			rep.saveStepAttribute(id_transformation, id_step, "filename_field", filenameField);
+			rep.saveStepAttribute(id_transformation, id_step, "include_filename", includingFilename);
 			rep.saveStepAttribute(id_transformation, id_step, "separator", delimiter);
 			rep.saveStepAttribute(id_transformation, id_step, "enclosure", enclosure);
 			rep.saveStepAttribute(id_transformation, id_step, "buffer_size", bufferSize);
@@ -249,6 +255,8 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
 	
 	public void getFields(RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException
 	{
+		rowMeta.clear(); // Start with a clean slate, eats the input
+		
 		for (int i=0;i<inputFields.length;i++) {
 			TextFileInputField field = inputFields[i];
 			
@@ -278,6 +286,17 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
 			
 			rowMeta.addValueMeta(valueMeta);
 		}
+		
+		if (!Const.isEmpty(filenameField) && includingFilename) {
+			ValueMetaInterface filenameMeta = new ValueMeta(filenameField, ValueMetaInterface.TYPE_STRING);
+			filenameMeta.setOrigin(origin);
+			if (lazyConversionActive) {
+				filenameMeta.setStorageType(ValueMetaInterface.STORAGE_TYPE_BINARY_STRING);
+				filenameMeta.setStorageMetadata(new ValueMeta(filenameField, ValueMetaInterface.TYPE_STRING));
+			}
+			rowMeta.addValueMeta(filenameMeta);
+		}
+		
 	}
 	
 	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
@@ -500,5 +519,19 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
 	 */
 	public void setFilenameField(String filenameField) {
 		this.filenameField = filenameField;
+	}
+
+	/**
+	 * @return the includingFilename
+	 */
+	public boolean isIncludingFilename() {
+		return includingFilename;
+	}
+
+	/**
+	 * @param includingFilename the includingFilename to set
+	 */
+	public void setIncludingFilename(boolean includingFilename) {
+		this.includingFilename = includingFilename;
 	}	
 }

@@ -164,6 +164,11 @@ public class CsvInput extends BaseStep implements StepInterface
 				throw new KettleException(Messages.getString("CsvInput.Log.OnlyLocalFilesAreSupported"));
 			}
 			
+			if (meta.isLazyConversionActive()) {
+				data.binaryFilename=data.filenames[data.filenr].getBytes();
+			}
+
+			
 			data.fis = (FileInputStream)((LocalFile)fileObject).getInputStream();
 			data.fc = data.fis.getChannel();
 			data.bb = ByteBuffer.allocateDirect( data.preferredBufferSize );
@@ -395,6 +400,17 @@ public class CsvInput extends BaseStep implements StepInterface
 				}
 				data.startBuffer = data.endBuffer;
 			}
+			
+			// Optionally add the current filename to the mix as well...
+			//
+			if (meta.isIncludingFilename() && !Const.isEmpty(meta.getFilenameField())) {
+				if (meta.isLazyConversionActive()) {
+					outputRowData[outputIndex++] = data.binaryFilename;
+				}
+				else {
+					outputRowData[outputIndex++] = data.filenames[data.filenr-1];
+				}
+			}
 		
 			linesInput++;
 			return outputRowData;
@@ -456,7 +472,7 @@ public class CsvInput extends BaseStep implements StepInterface
 				data.fis.close();
 			}
 		} catch (IOException e) {
-			throw new KettleException("Unable to close file channel for file '"+data.filenames[data.filenr],e);
+			throw new KettleException("Unable to close file channel for file '"+data.filenames[data.filenr-1],e);
 		}
 	}
 	

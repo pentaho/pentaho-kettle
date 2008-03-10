@@ -24,6 +24,7 @@ import java.text.DecimalFormat;
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.provider.local.LocalFile;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -45,6 +46,9 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.row.RowMeta;
+import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueDataUtil;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -76,7 +80,9 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
 	private CsvInputMeta inputMeta;
 	
 	private TextVar      wFilename;
+	private CCombo       wFilenameField;
 	private Button       wbbFilename; // Browse for a file
+	private Button       wIncludeFilename;
 	private Button       wbDelimiter;
 	private TextVar      wDelimiter;
 	private TextVar      wEnclosure;
@@ -147,6 +153,15 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
 		isReceivingInput = transMeta.findNrPrevSteps(stepMeta)>0;
 		if (isReceivingInput) {
 			
+			RowMetaInterface previousFields;
+			try {
+				previousFields = transMeta.getPrevStepFields(stepMeta);
+			}
+			catch(KettleStepException e) {
+				new ErrorDialog(shell, Messages.getString("CsvInputDialog.ErrorDialog.UnableToGetInputFields.Title"), Messages.getString("CsvInputDialog.ErrorDialog.UnableToGetInputFields.Message"), e);
+				previousFields = new RowMeta();
+			}
+			
 			// The filename field ...
 			//
 			Label wlFilename = new Label(shell, SWT.RIGHT);
@@ -157,15 +172,36 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
 			fdlFilename.left = new FormAttachment(0, 0);
 			fdlFilename.right= new FormAttachment(middle, -margin);
 			wlFilename.setLayoutData(fdlFilename);
-			wFilename=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-	 		props.setLook(wFilename);
-			wFilename.addModifyListener(lsMod);
+			wFilenameField=new CCombo(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+			wFilenameField.setItems(previousFields.getFieldNames());
+	 		props.setLook(wFilenameField);
+	 		wFilenameField.addModifyListener(lsMod);
 			FormData fdFilename = new FormData();
 			fdFilename.top  = new FormAttachment(lastControl, margin);
 			fdFilename.left = new FormAttachment(middle, 0);
 			fdFilename.right= new FormAttachment(100, 0);
-			wFilename.setLayoutData(fdFilename);
-			lastControl = wFilename;
+			wFilenameField.setLayoutData(fdFilename);
+			lastControl = wFilenameField;
+			
+			// Checkbox to include the filename in the output...
+			//
+			Label wlIncludeFilename = new Label(shell, SWT.RIGHT);
+			wlIncludeFilename.setText(Messages.getString("CsvInputDialog.IncludeFilenameField.Label")); //$NON-NLS-1$
+	 		props.setLook(wlIncludeFilename);
+			FormData fdlIncludeFilename = new FormData();
+			fdlIncludeFilename.top  = new FormAttachment(lastControl, margin);
+			fdlIncludeFilename.left = new FormAttachment(0, 0);
+			fdlIncludeFilename.right= new FormAttachment(middle, -margin);
+			wlIncludeFilename.setLayoutData(fdlIncludeFilename);
+			wIncludeFilename=new Button(shell, SWT.CHECK);
+	 		props.setLook(wIncludeFilename);
+	 		wFilenameField.addModifyListener(lsMod);
+			FormData fdIncludeFilename = new FormData();
+			fdIncludeFilename.top  = new FormAttachment(lastControl, margin);
+			fdIncludeFilename.left = new FormAttachment(middle, 0);
+			fdIncludeFilename.right= new FormAttachment(100, 0);
+			wIncludeFilename.setLayoutData(fdIncludeFilename);
+			lastControl = wIncludeFilename;
 		}
 		else {
 			
@@ -383,7 +419,8 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
 		lsDef=new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { ok(); } };
 		
 		wStepname.addSelectionListener( lsDef );
-		wFilename.addSelectionListener( lsDef );
+		if (wFilename!=null) wFilename.addSelectionListener( lsDef );
+		if (wFilenameField!=null) wFilenameField.addSelectionListener( lsDef );
 		wDelimiter.addSelectionListener( lsDef );
 		wEnclosure.addSelectionListener( lsDef );
 		wBufferSize.addSelectionListener( lsDef );
@@ -457,7 +494,8 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
 	{
 		wStepname.setText(stepname);
 		if (isReceivingInput) {
-			wFilename.setText(Const.NVL(inputMeta.getFilenameField(), ""));
+			wFilenameField.setText(Const.NVL(inputMeta.getFilenameField(), ""));
+			wIncludeFilename.setSelection(inputMeta.isIncludingFilename());
 		} else {
 			wFilename.setText(Const.NVL(inputMeta.getFilename(), ""));
 		}
@@ -499,7 +537,8 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
 	private void getInfo(CsvInputMeta inputMeta) {
 		
 		if (isReceivingInput) {
-			inputMeta.setFilenameField(wFilename.getText());
+			inputMeta.setFilenameField(wFilenameField.getText());
+			inputMeta.setIncludingFilename(wIncludeFilename.getSelection());
 		} else {
 			inputMeta.setFilename(wFilename.getText());
 		}
