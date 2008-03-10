@@ -481,6 +481,7 @@ public class Repository
 	public static final String TRANS_ATTRIBUTE_SHARED_FILE = "SHARED_FILE";
 	public static final String TRANS_ATTRIBUTE_CAPTURE_STEP_PERFORMANCE = "CAPTURE_STEP_PERFORMANCE";
 	public static final String TRANS_ATTRIBUTE_STEP_PERFORMANCE_CAPTURING_DELAY = "STEP_PERFORMANCE_CAPTURING_DELAY";
+	public static final String TRANS_ATTRIBUTE_STEP_PERFORMANCE_LOG_TABLE = "STEP_PERFORMANCE_LOG_TABLE";
 		
     private static Repository currentRepository;
 
@@ -1445,6 +1446,7 @@ public class Repository
         
         insertTransAttribute(transMeta.getId(), 0, TRANS_ATTRIBUTE_CAPTURE_STEP_PERFORMANCE, 0, transMeta.isCapturingStepPerformanceSnapShots()?"Y":"N");
         insertTransAttribute(transMeta.getId(), 0, TRANS_ATTRIBUTE_STEP_PERFORMANCE_CAPTURING_DELAY, transMeta.getStepPerformanceCapturingDelay(), "");
+        insertTransAttribute(transMeta.getId(), 0, TRANS_ATTRIBUTE_STEP_PERFORMANCE_LOG_TABLE, 0, transMeta.getStepPerformanceLogTable());
         
 		// Save the logging connection link...
 		if (transMeta.getLogConnection()!=null) insertStepDatabase(transMeta.getId(), -1L, transMeta.getLogConnection().getID());

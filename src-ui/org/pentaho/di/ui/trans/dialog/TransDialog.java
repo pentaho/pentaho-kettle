@@ -123,6 +123,7 @@ public class TransDialog extends Dialog
 	private Button       wbLogconnection;
 	private CCombo       wLogconnection;
 	private Text         wLogtable;
+	private Text         wStepLogtable;
 	private Button       wBatch;
 	private Button       wLogfield;
 
@@ -186,6 +187,8 @@ public class TransDialog extends Dialog
 	private Button wEnableStepPerfMonitor;
 
 	private Text wEnableStepPerfInterval;
+
+	private Label wlStepLogtable;
 	
     public TransDialog(Shell parent, int style, TransMeta transMeta, Repository rep)
     {
@@ -288,9 +291,11 @@ public class TransDialog extends Dialog
 		wMaxdateoffset.addSelectionListener( lsDef );
 		wMaxdatediff.addSelectionListener( lsDef );
 		wLogtable.addSelectionListener( lsDef );
+		wStepLogtable.addSelectionListener( lsDef );
 		wSizeRowset.addSelectionListener( lsDef );
         wUniqueConnections.addSelectionListener( lsDef );
         wFeedbackSize.addSelectionListener( lsDef );
+        wEnableStepPerfInterval.addSelectionListener( lsDef );
 
 		// Detect X or ALT-F4 or something that kills this window...
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
@@ -771,6 +776,25 @@ public class TransDialog extends Dialog
         fdLogtable.top  = new FormAttachment(wLogconnection, margin);
         fdLogtable.right= new FormAttachment(100, 0);
         wLogtable.setLayoutData(fdLogtable);
+        
+        // step Log table...:
+        //
+        wlStepLogtable = new Label(wLogComp, SWT.RIGHT);
+        wlStepLogtable.setText(Messages.getString("TransDialog.StepLogtable.Label")); //$NON-NLS-1$
+        props.setLook(wlStepLogtable);
+        FormData fdlStepLogtable = new FormData();
+        fdlStepLogtable.left = new FormAttachment(0, 0);
+        fdlStepLogtable.right= new FormAttachment(middle, -margin);
+        fdlStepLogtable.top  = new FormAttachment(wLogtable, margin);
+        wlStepLogtable.setLayoutData(fdlStepLogtable);
+        wStepLogtable=new Text(wLogComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wStepLogtable);
+        wStepLogtable.addModifyListener(lsMod);
+        FormData fdStepLogtable = new FormData();
+        fdStepLogtable.left = new FormAttachment(middle, 0);
+        fdStepLogtable.top  = new FormAttachment(wLogtable, margin);
+        fdStepLogtable.right= new FormAttachment(100, 0);
+        wStepLogtable.setLayoutData(fdStepLogtable);
 
 
         Label wlBatch = new Label(wLogComp, SWT.RIGHT);
@@ -778,14 +802,14 @@ public class TransDialog extends Dialog
         props.setLook(wlBatch);
         FormData fdlBatch = new FormData();
         fdlBatch.left = new FormAttachment(0, 0);
-        fdlBatch.top  = new FormAttachment(wLogtable, margin);
+        fdlBatch.top  = new FormAttachment(wStepLogtable, margin);
         fdlBatch.right= new FormAttachment(middle, -margin);
         wlBatch.setLayoutData(fdlBatch);
         wBatch=new Button(wLogComp, SWT.CHECK);
         props.setLook(wBatch);
         FormData fdBatch = new FormData();
         fdBatch.left = new FormAttachment(middle, 0);
-        fdBatch.top  = new FormAttachment(wLogtable, margin);
+        fdBatch.top  = new FormAttachment(wStepLogtable, margin);
         fdBatch.right= new FormAttachment(100, 0);
         wBatch.setLayoutData(fdBatch);
 
@@ -1321,6 +1345,11 @@ public class TransDialog extends Dialog
         fdEnableStepPerfMonitor.right  = new FormAttachment(100, 0);
         fdEnableStepPerfMonitor.top    = new FormAttachment(0, 0);
         wEnableStepPerfMonitor.setLayoutData(fdEnableStepPerfMonitor);
+        wEnableStepPerfMonitor.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent selectionEvent) {
+				setFlags();
+			}
+		});
 
         // 
         // Step performance interval
@@ -1501,7 +1530,9 @@ public class TransDialog extends Dialog
         if (transMeta.getRejectedStep()!=null)  wRejectedStep.setText     ( transMeta.getRejectedStep().getName() );
 
         if (transMeta.getLogConnection()!=null) wLogconnection.setText    ( transMeta.getLogConnection().getName());
-		if (transMeta.getLogTable()!=null)      wLogtable.setText         ( transMeta.getLogTable());
+		wLogtable.setText( Const.NVL(transMeta.getLogTable(),"") );
+		wStepLogtable.setText( Const.NVL(transMeta.getStepPerformanceLogTable(),"") );
+
 		wBatch.setSelection(transMeta.isBatchIdUsed());
 		wLogfield.setSelection(transMeta.isLogfieldUsed());
 		
@@ -1595,6 +1626,9 @@ public class TransDialog extends Dialog
         wbDirectory.setEnabled(rep!=null);
         // wDirectory.setEnabled(rep!=null);
         wlDirectory.setEnabled(rep!=null);
+        
+        wlStepLogtable.setEnabled(wEnableStepPerfMonitor.getSelection());
+        wStepLogtable.setEnabled(wEnableStepPerfMonitor.getSelection());
      }
 
     private void cancel()
@@ -1609,25 +1643,26 @@ public class TransDialog extends Dialog
 	{
 		boolean OK = true;
 	
-		transMeta.setReadStep(          transMeta.findStep( wReadStep.getText() )            );
-		transMeta.setWriteStep(         transMeta.findStep( wWriteStep.getText() )           );
-		transMeta.setInputStep(         transMeta.findStep( wInputStep.getText() )           );
-		transMeta.setOutputStep(        transMeta.findStep( wOutputStep.getText() )          );
-		transMeta.setUpdateStep(        transMeta.findStep( wUpdateStep.getText() )          );
-        transMeta.setRejectedStep(      transMeta.findStep( wRejectedStep.getText() )        );
+		transMeta.setReadStep( transMeta.findStep( wReadStep.getText() ) );
+		transMeta.setWriteStep( transMeta.findStep( wWriteStep.getText() ) );
+		transMeta.setInputStep( transMeta.findStep( wInputStep.getText() ) );
+		transMeta.setOutputStep( transMeta.findStep( wOutputStep.getText() ) );
+		transMeta.setUpdateStep( transMeta.findStep( wUpdateStep.getText() ) );
+        transMeta.setRejectedStep( transMeta.findStep( wRejectedStep.getText() ) );
         
-		transMeta.setLogConnection(     transMeta.findDatabase(wLogconnection.getText())     );
-		transMeta.setLogTable(          wLogtable.getText()                              );
+		transMeta.setLogConnection( transMeta.findDatabase(wLogconnection.getText()) );
+		transMeta.setLogTable( wLogtable.getText() );
+		transMeta.setStepPerformanceLogTable( wStepLogtable.getText());
 		transMeta.setMaxDateConnection( transMeta.findDatabase(wMaxdateconnection.getText()) );
-		transMeta.setMaxDateTable(      wMaxdatetable.getText()                          );
-		transMeta.setMaxDateField(      wMaxdatefield.getText()                          );
-		transMeta.setBatchIdUsed(       wBatch.getSelection()                            );
-		transMeta.setLogfieldUsed(      wLogfield.getSelection()                         );
-		transMeta.setName(              wTransname.getText()                             );
+		transMeta.setMaxDateTable( wMaxdatetable.getText() );
+		transMeta.setMaxDateField( wMaxdatefield.getText() );
+		transMeta.setBatchIdUsed( wBatch.getSelection() );
+		transMeta.setLogfieldUsed( wLogfield.getSelection() );
+		transMeta.setName( wTransname.getText() );
 
-		transMeta.setDescription(       wTransdescription.getText()                      );
-		transMeta.setExtendedDescription(       wExtendeddescription.getText()           );
-		transMeta.setTransversion(       wTransversion.getText()                         );
+		transMeta.setDescription( wTransdescription.getText() );
+		transMeta.setExtendedDescription( wExtendeddescription.getText() );
+		transMeta.setTransversion( wTransversion.getText() );
 		
 		if ( wTransstatus.getSelectionIndex() != 2 )
 		{
@@ -1792,59 +1827,55 @@ public class TransDialog extends Dialog
 		DatabaseMeta ci = transMeta.findDatabase(wLogconnection.getText());
 		if (ci!=null)
 		{
-			RowMetaInterface r = Database.getTransLogrecordFields(false, wBatch.getSelection(), wLogfield.getSelection());
-			if (r!=null && r.size()>0)
+			String tablename = wLogtable.getText();
+			String stepTablename = wStepLogtable.getText();
+			
+			if (!Const.isEmpty(tablename) || !Const.isEmpty(stepTablename) )
 			{
-				String tablename = wLogtable.getText();
-				if (tablename!=null && tablename.length()>0)
+				Database db = new Database(ci);
+				db.shareVariablesWith(transMeta);
+				try
 				{
-					Database db = new Database(ci);
-					db.shareVariablesWith(transMeta);
-					try
-					{
-						db.connect();
+					db.connect();
 
-						String createTable = db.getDDL(tablename, r);
-						if (createTable!=null && createTable.length()>0)
-						{
-							log.logBasic(toString(), createTable);
-		
-							SQLEditor sqledit = new SQLEditor(shell, SWT.NONE, ci, transMeta.getDbCache(), createTable);
-							sqledit.open();
-						}
-						else
-						{
-							MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION );
-							mb.setText(Messages.getString("TransDialog.NoSqlNedds.DialogTitle")); //$NON-NLS-1$
-							mb.setMessage(Messages.getString("TransDialog.NoSqlNedds.DialogMessage")); //$NON-NLS-1$
-							mb.open(); 
-						}
-					}
-					catch(KettleException e)
+					RowMetaInterface r = Database.getTransLogrecordFields(false, wBatch.getSelection(), wLogfield.getSelection());
+					String createTable = db.getDDL(tablename, r);
+					
+					r = Database.getStepPerformanceLogrecordFields();
+					createTable+= db.getDDL(stepTablename, r);
+					
+					if (!Const.isEmpty(createTable))
 					{
-						MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-						mb.setText(Messages.getString("TransDialog.ErrorOccurred.DialogTitle")); //$NON-NLS-1$
-						mb.setMessage(Messages.getString("TransDialog.ErrorOccurred.DialogMessage")+Const.CR+e.getMessage()); //$NON-NLS-1$
+						log.logBasic(toString(), createTable);
+	
+						SQLEditor sqledit = new SQLEditor(shell, SWT.NONE, ci, transMeta.getDbCache(), createTable);
+						sqledit.open();
+					}
+					else
+					{
+						MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION );
+						mb.setText(Messages.getString("TransDialog.NoSqlNedds.DialogTitle")); //$NON-NLS-1$
+						mb.setMessage(Messages.getString("TransDialog.NoSqlNedds.DialogMessage")); //$NON-NLS-1$
 						mb.open(); 
 					}
-					finally
-					{
-						db.disconnect();
-					}
 				}
-				else
+				catch(KettleException e)
 				{
 					MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-					mb.setText(Messages.getString("TransDialog.NeedLogtableName.DialogTitle")); //$NON-NLS-1$
-					mb.setMessage(Messages.getString("TransDialog.NeedLogtableName.DialogMessage")); //$NON-NLS-1$
+					mb.setText(Messages.getString("TransDialog.ErrorOccurred.DialogTitle")); //$NON-NLS-1$
+					mb.setMessage(Messages.getString("TransDialog.ErrorOccurred.DialogMessage")+Const.CR+e.getMessage()); //$NON-NLS-1$
 					mb.open(); 
+				}
+				finally
+				{
+					db.disconnect();
 				}
 			}
 			else
 			{
 				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-				mb.setText(Messages.getString("TransDialog.CouldnotFindAnyFields.DialogTitle")); //$NON-NLS-1$
-				mb.setMessage(Messages.getString("TransDialog.CouldnotFindAnyFields.DialogMessage")); //$NON-NLS-1$
+				mb.setText(Messages.getString("TransDialog.NeedLogtableName.DialogTitle")); //$NON-NLS-1$
+				mb.setMessage(Messages.getString("TransDialog.NeedLogtableName.DialogMessage")); //$NON-NLS-1$
 				mb.open(); 
 			}
 		}

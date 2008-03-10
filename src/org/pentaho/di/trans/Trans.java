@@ -38,6 +38,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleTransException;
 import org.pentaho.di.core.logging.Log4jStringAppender;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
@@ -1344,6 +1345,8 @@ public class Trans implements VariableSpace
             log.removeAppender(stringAppender);
 		}
 
+		// OK, we have some logging to do...
+		//
 		DatabaseMeta logcon = transMeta.getLogConnection();
 		if (logcon!=null)
 		{
@@ -1353,23 +1356,65 @@ public class Trans implements VariableSpace
 			{
 				ldb.connect();
 
-				ldb.writeLogRecord
-					(
-						transMeta.getLogTable(),
-						transMeta.isBatchIdUsed(),
-						getBatchId(),
-						false,
-						transMeta.getName(),
-						status,
-						result.getNrLinesRead(),
-						result.getNrLinesWritten(),
-						result.getNrLinesUpdated(),
-						result.getNrLinesInput()+result.getNrFilesRetrieved(),
-						result.getNrLinesOutput(),
-						result.getNrErrors(),
-					    startDate, endDate, logDate, depDate,currentDate,
-						log_string
-					);
+				// Write to the standard transformation log table...
+				//
+				if (!Const.isEmpty(transMeta.getLogTable())) {
+					ldb.writeLogRecord
+						(
+							transMeta.getLogTable(),
+							transMeta.isBatchIdUsed(),
+							getBatchId(),
+							false,
+							transMeta.getName(),
+							status,
+							result.getNrLinesRead(),
+							result.getNrLinesWritten(),
+							result.getNrLinesUpdated(),
+							result.getNrLinesInput()+result.getNrFilesRetrieved(),
+							result.getNrLinesOutput(),
+							result.getNrErrors(),
+						    startDate, endDate, logDate, depDate,currentDate,
+							log_string
+						);
+				}
+				
+				// Write to the step performance log table...
+				//
+				if (!Const.isEmpty(transMeta.getStepPerformanceLogTable()) && transMeta.isCapturingStepPerformanceSnapShots()) {
+					// Loop over the steps...
+					//
+					RowMetaInterface rowMeta = Database.getStepPerformanceLogrecordFields();
+					ldb.prepareInsert(rowMeta, transMeta.getStepPerformanceLogTable());
+
+					for (String key : stepPerformanceSnapShots.keySet()) {
+						List<StepPerformanceSnapShot> snapshots = stepPerformanceSnapShots.get(key);
+						long seqNr = 1;
+						for (StepPerformanceSnapShot snapshot : snapshots) {
+							Object[] row = new Object[ rowMeta.size() ];
+							int outputIndex = 0;
+							
+							row[outputIndex++] = new Long(getBatchId());
+							row[outputIndex++] = new Long(seqNr++);
+							row[outputIndex++] = snapshot.getDate();
+							row[outputIndex++] = transMeta.getName();
+							row[outputIndex++] = snapshot.getStepName();
+							row[outputIndex++] = new Long(snapshot.getStepCopy());
+							row[outputIndex++] = new Long(snapshot.getLinesRead()); 
+							row[outputIndex++] = new Long(snapshot.getLinesWritten()); 
+							row[outputIndex++] = new Long(snapshot.getLinesUpdated()); 
+							row[outputIndex++] = new Long(snapshot.getLinesInput()); 
+							row[outputIndex++] = new Long(snapshot.getLinesOutput()); 
+							row[outputIndex++] = new Long(snapshot.getLinesRejected()); 
+							row[outputIndex++] = new Long(snapshot.getInputBufferSize()); 
+							row[outputIndex++] = new Long(snapshot.getOutputBufferSize());
+							
+							ldb.setValuesInsert(rowMeta, row);
+							ldb.insertRow(true);
+						}
+					}
+					
+					ldb.insertFinished(true);
+				}
 			}
 			catch(Exception e)
 			{

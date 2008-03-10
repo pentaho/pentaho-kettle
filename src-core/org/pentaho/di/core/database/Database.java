@@ -3507,7 +3507,7 @@ public class Database implements VariableSpace
 		
 		if (!update) 
 		{
-			v=new ValueMeta("TRANSNAME",       ValueMetaInterface.TYPE_STRING , 50, 0); r.addValueMeta(v);
+			v=new ValueMeta("TRANSNAME",       ValueMetaInterface.TYPE_STRING, 255, 0); r.addValueMeta(v);
 		}
 		v=new ValueMeta("STATUS",          ValueMetaInterface.TYPE_STRING , 15, 0); r.addValueMeta(v);
 		v=new ValueMeta("LINES_READ",      ValueMetaInterface.TYPE_INTEGER, 10, 0); r.addValueMeta(v);
@@ -3548,7 +3548,7 @@ public class Database implements VariableSpace
 		
 		if (!update) 
 		{
-			v=new ValueMeta("JOBNAME",         ValueMetaInterface.TYPE_STRING, 50, 0);    r.addValueMeta(v);
+			v=new ValueMeta("JOBNAME",         ValueMetaInterface.TYPE_STRING,255, 0);    r.addValueMeta(v);
 		}
 		v=new ValueMeta("STATUS",          ValueMetaInterface.TYPE_STRING,  15, 0);    r.addValueMeta(v);
 		v=new ValueMeta("LINES_READ",      ValueMetaInterface.TYPE_INTEGER, 10, 0); r.addValueMeta(v);
@@ -3723,6 +3723,31 @@ public class Database implements VariableSpace
     		}
         }
 	}
+	
+	public static final RowMetaInterface getStepPerformanceLogrecordFields()
+	{
+        RowMetaInterface r = new RowMeta();
+		ValueMetaInterface v;
+		
+		v=new ValueMeta("ID_BATCH",           ValueMetaInterface.TYPE_INTEGER, 8, 0);  r.addValueMeta(v);
+		v=new ValueMeta("SEQ_NR",             ValueMetaInterface.TYPE_INTEGER, 8, 0);  r.addValueMeta(v);
+		v=new ValueMeta("LOGDATE",            ValueMetaInterface.TYPE_DATE         );  r.addValueMeta(v);
+		v=new ValueMeta("TRANSNAME",          ValueMetaInterface.TYPE_STRING ,255, 0); r.addValueMeta(v);
+		v=new ValueMeta("STEPNAME",           ValueMetaInterface.TYPE_STRING ,255, 0); r.addValueMeta(v);
+		v=new ValueMeta("STEP_COPY",          ValueMetaInterface.TYPE_INTEGER,  3, 0); r.addValueMeta(v);
+		v=new ValueMeta("LINES_READ",         ValueMetaInterface.TYPE_INTEGER, 10, 0); r.addValueMeta(v);
+		v=new ValueMeta("LINES_WRITTEN",      ValueMetaInterface.TYPE_INTEGER, 10, 0); r.addValueMeta(v);
+		v=new ValueMeta("LINES_UPDATED",      ValueMetaInterface.TYPE_INTEGER, 10, 0); r.addValueMeta(v);
+		v=new ValueMeta("LINES_INPUT",        ValueMetaInterface.TYPE_INTEGER, 10, 0); r.addValueMeta(v);
+		v=new ValueMeta("LINES_OUTPUT",       ValueMetaInterface.TYPE_INTEGER, 10, 0); r.addValueMeta(v);
+		v=new ValueMeta("LINES_REJECTED",     ValueMetaInterface.TYPE_INTEGER, 10, 0); r.addValueMeta(v);
+		v=new ValueMeta("ERRORS",             ValueMetaInterface.TYPE_INTEGER, 10, 0); r.addValueMeta(v);
+		v=new ValueMeta("INPUT_BUFFER_ROWS",  ValueMetaInterface.TYPE_INTEGER, 10, 0); r.addValueMeta(v);
+		v=new ValueMeta("OUTPUT_BUFFER_ROWS", ValueMetaInterface.TYPE_INTEGER, 10, 0); r.addValueMeta(v);
+
+		return r;
+	}
+
 
 	public Object[] getLastLogDate( String logtable, String name, boolean job, String status ) throws KettleDatabaseException
 	{

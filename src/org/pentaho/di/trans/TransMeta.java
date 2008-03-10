@@ -148,6 +148,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     private StepMeta            rejectedStep;
 
     private String              logTable;
+    private String              stepPerformanceLogTable;
 
     private DatabaseMeta        logConnection;
 
@@ -405,6 +406,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         outputStep = null;
         updateStep = null;
         logTable = null;
+        stepPerformanceLogTable = null;
         logConnection = null;
 
         sizeRowset     = Const.ROWS_IN_ROWSET;
@@ -2236,6 +2238,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
                 //
                 capturingStepPerformanceSnapShots = rep.getTransAttributeBoolean(getID(), 0, Repository.TRANS_ATTRIBUTE_CAPTURE_STEP_PERFORMANCE);
                 stepPerformanceCapturingDelay = rep.getTransAttributeInteger(getID(), 0, Repository.TRANS_ATTRIBUTE_STEP_PERFORMANCE_CAPTURING_DELAY);
+                stepPerformanceLogTable = rep.getTransAttributeString(getID(), 0, Repository.TRANS_ATTRIBUTE_STEP_PERFORMANCE_LOG_TABLE);
             }
         }
         catch (KettleDatabaseException dbe)
@@ -2558,6 +2561,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         retval.append("      ").append(XMLHandler.addTagValue("rejected", rejectedStep == null ? "" : rejectedStep.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         retval.append("      ").append(XMLHandler.addTagValue("connection", logConnection == null ? "" : logConnection.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         retval.append("      ").append(XMLHandler.addTagValue("table", logTable)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("      ").append(XMLHandler.addTagValue("step_performance_table", stepPerformanceLogTable)); //$NON-NLS-1$ //$NON-NLS-2$
         retval.append("      ").append(XMLHandler.addTagValue("use_batchid", useBatchId)); //$NON-NLS-1$ //$NON-NLS-2$
         retval.append("      ").append(XMLHandler.addTagValue("use_logfield", logfieldUsed)); //$NON-NLS-1$ //$NON-NLS-2$
         retval.append("    </log>").append(Const.CR); //$NON-NLS-1$
@@ -3015,6 +3019,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
             String logcon = XMLHandler.getTagValue(infonode, "log", "connection"); //$NON-NLS-1$ //$NON-NLS-2$
             logConnection = findDatabase(logcon);
             logTable = XMLHandler.getTagValue(infonode, "log", "table"); //$NON-NLS-1$ //$NON-NLS-2$
+            stepPerformanceLogTable = XMLHandler.getTagValue(infonode, "log", "step_performance_table"); //$NON-NLS-1$ //$NON-NLS-2$
             useBatchId = "Y".equalsIgnoreCase(XMLHandler.getTagValue(infonode, "log", "use_batchid")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             logfieldUsed= "Y".equalsIgnoreCase(XMLHandler.getTagValue(infonode, "log", "USE_LOGFIELD")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
@@ -4277,19 +4282,33 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
         // Also check the sql for the logtable...
         if (monitor != null) monitor.subTask(Messages.getString("TransMeta.Monitor.GettingTheSQLForTransformationTask.Title2")); //$NON-NLS-1$
-        if (logConnection != null && logTable != null && logTable.length() > 0)
+        if (logConnection != null && ( !Const.isEmpty(logTable) || !Const.isEmpty(stepPerformanceLogTable)) )
         {
             Database db = new Database(logConnection);
             db.shareVariablesWith(this);
             try
             {
                 db.connect();
-                RowMetaInterface fields = Database.getTransLogrecordFields(false, useBatchId, logfieldUsed);
-                String sql = db.getDDL(logTable, fields);
-                if (sql != null && sql.length() > 0)
+                
+                if (!Const.isEmpty(logTable)) 
                 {
-                    SQLStatement stat = new SQLStatement("<this transformation>", logConnection, sql); //$NON-NLS-1$
-                    stats.add(stat);
+	                RowMetaInterface fields = Database.getTransLogrecordFields(false, useBatchId, logfieldUsed);
+	                String sql = db.getDDL(logTable, fields);
+	                if (sql != null && sql.length() > 0)
+	                {
+	                    SQLStatement stat = new SQLStatement("<this transformation>", logConnection, sql); //$NON-NLS-1$
+	                    stats.add(stat);
+	                }
+                }
+                if (!Const.isEmpty(stepPerformanceLogTable)) 
+                {
+	                RowMetaInterface fields = Database.getStepPerformanceLogrecordFields();
+	                String sql = db.getDDL(logTable, fields);
+	                if (sql != null && sql.length() > 0)
+	                {
+	                    SQLStatement stat = new SQLStatement("<this transformation>", logConnection, sql); //$NON-NLS-1$
+	                    stats.add(stat);
+	                }
                 }
             }
             catch (KettleDatabaseException dbe)
@@ -6019,5 +6038,19 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 	
 	private void clearStepFieldsCachce() {
 		stepsFieldsCache.clear();
+	}
+
+	/**
+	 * @return the stepPerformanceLogTable
+	 */
+	public String getStepPerformanceLogTable() {
+		return stepPerformanceLogTable;
+	}
+
+	/**
+	 * @param stepPerformanceLogTable the stepPerformanceLogTable to set
+	 */
+	public void setStepPerformanceLogTable(String stepPerformanceLogTable) {
+		this.stepPerformanceLogTable = stepPerformanceLogTable;
 	}
 }
