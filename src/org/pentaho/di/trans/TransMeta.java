@@ -457,9 +457,9 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         //
         usingThreadPriorityManagment = true; 
 
-        // TODO FIXME Make these performance monitoring options configurable
+        // The performance monitoring options
         //
-        capturingStepPerformanceSnapShots = true;
+        capturingStepPerformanceSnapShots = false;
         stepPerformanceCapturingDelay = 1000; // every 1 seconds
         
         stepsFieldsCache = new HashMap<String, RowMetaInterface>();
