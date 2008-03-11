@@ -68,13 +68,6 @@ public class CsvInput extends BaseStep implements StepInterface
 				getFilenamesFromPreviousSteps();
 			}
 			
-			// Open the next file...
-			//
-			if (!openNextFile()) {
-				setOutputDone();
-				return false; // nothing to see here, move along...
-			}
-			
 			// The conversion logic for when the lazy conversion is turned of is simple:
 			// Pretend it's a lazy conversion object anyway and get the native type during conversion.
 			//
@@ -83,10 +76,14 @@ public class CsvInput extends BaseStep implements StepInterface
 			{
 				valueMeta.setStorageType(ValueMetaInterface.STORAGE_TYPE_BINARY_STRING);
 			}
-						
-			if (meta.isHeaderPresent()) {
-				readOneRow(false); // skip this row.
+			
+			// Open the next file...
+			//
+			if (!openNextFile()) {
+				setOutputDone();
+				return false; // nothing to see here, move along...
 			}
+			
 		}
 		
 		Object[] outputRowData=readOneRow(true);    // get row, set busy!
@@ -168,7 +165,6 @@ public class CsvInput extends BaseStep implements StepInterface
 				data.binaryFilename=data.filenames[data.filenr].getBytes();
 			}
 
-			
 			data.fis = (FileInputStream)((LocalFile)fileObject).getInputStream();
 			data.fc = data.fis.getChannel();
 			data.bb = ByteBuffer.allocateDirect( data.preferredBufferSize );
@@ -176,6 +172,16 @@ public class CsvInput extends BaseStep implements StepInterface
 			// Move to the next filename
 			//
 			data.filenr++;
+			
+			// Reset the row number pointer...
+			//
+			data.rowNumber = 1L;
+			
+			// See if we need to skip the header row...
+			//
+			if (meta.isHeaderPresent()) {
+				readOneRow(false); // skip this row.
+			}
 			
 			return true;
 		}
@@ -411,6 +417,10 @@ public class CsvInput extends BaseStep implements StepInterface
 					outputRowData[outputIndex++] = data.filenames[data.filenr-1];
 				}
 			}
+			
+			if (data.isAddingRowNumber) {
+				outputRowData[outputIndex++] = new Long(data.rowNumber++);
+			}
 		
 			linesInput++;
 			return outputRowData;
@@ -455,6 +465,8 @@ public class CsvInput extends BaseStep implements StepInterface
 			} else {
 				data.enclosure = environmentSubstitute(meta.getEnclosure()).getBytes();
 			}
+			
+			data.isAddingRowNumber = !Const.isEmpty(meta.getRowNumField());
 			
 			return true;
 

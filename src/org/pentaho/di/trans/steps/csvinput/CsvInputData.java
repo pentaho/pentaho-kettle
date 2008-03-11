@@ -47,6 +47,9 @@ public class CsvInputData extends BaseStepData implements StepDataInterface
 	public byte[]   binaryFilename;
 	public long fileSize;
 	public FileInputStream fis;
+	
+	public boolean  isAddingRowNumber;
+	public long     rowNumber;
 			
 	/**
 	 * 

@@ -62,6 +62,8 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
 	private String filenameField;
 
 	private boolean includingFilename; 
+	
+	private String rowNumField;
 
 	private boolean headerPresent;
 
@@ -106,6 +108,7 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
 		{
 			filename = XMLHandler.getTagValue(stepnode, "filename");
 			filenameField = XMLHandler.getTagValue(stepnode, "filename_field");
+			rowNumField = XMLHandler.getTagValue(stepnode, "rownum_field");
 			includingFilename = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "include_filename"));
 			delimiter = XMLHandler.getTagValue(stepnode, "separator");
 			enclosure = XMLHandler.getTagValue(stepnode, "enclosure");
@@ -151,6 +154,7 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
 
 		retval.append("    ").append(XMLHandler.addTagValue("filename", filename));
 		retval.append("    ").append(XMLHandler.addTagValue("filename_field", filenameField));
+		retval.append("    ").append(XMLHandler.addTagValue("rownum_field", rowNumField));
 		retval.append("    ").append(XMLHandler.addTagValue("include_filename", includingFilename));
 		retval.append("    ").append(XMLHandler.addTagValue("separator", delimiter));
 		retval.append("    ").append(XMLHandler.addTagValue("enclosure", enclosure));
@@ -187,6 +191,7 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
 		{
 			filename = rep.getStepAttributeString(id_step, "filename");
 			filenameField = rep.getStepAttributeString(id_step, "filename_field");
+			rowNumField = rep.getStepAttributeString(id_step, "rownum_field");
 			includingFilename = rep.getStepAttributeBoolean(id_step, "include_filename");
 			delimiter = rep.getStepAttributeString(id_step, "separator");
 			enclosure = rep.getStepAttributeString(id_step, "enclosure");
@@ -225,6 +230,7 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
 		{
 			rep.saveStepAttribute(id_transformation, id_step, "filename", filename);
 			rep.saveStepAttribute(id_transformation, id_step, "filename_field", filenameField);
+			rep.saveStepAttribute(id_transformation, id_step, "rownum_field", rowNumField);
 			rep.saveStepAttribute(id_transformation, id_step, "include_filename", includingFilename);
 			rep.saveStepAttribute(id_transformation, id_step, "separator", delimiter);
 			rep.saveStepAttribute(id_transformation, id_step, "enclosure", enclosure);
@@ -295,6 +301,13 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
 				filenameMeta.setStorageMetadata(new ValueMeta(filenameField, ValueMetaInterface.TYPE_STRING));
 			}
 			rowMeta.addValueMeta(filenameMeta);
+		}
+		
+		if (!Const.isEmpty(rowNumField)) {
+			ValueMetaInterface rowNumMeta = new ValueMeta(rowNumField, ValueMetaInterface.TYPE_INTEGER);
+			rowNumMeta.setLength(10);
+			rowNumMeta.setOrigin(origin);
+			rowMeta.addValueMeta(rowNumMeta);
 		}
 		
 	}
@@ -533,5 +546,19 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
 	 */
 	public void setIncludingFilename(boolean includingFilename) {
 		this.includingFilename = includingFilename;
+	}
+
+	/**
+	 * @return the rowNumField
+	 */
+	public String getRowNumField() {
+		return rowNumField;
+	}
+
+	/**
+	 * @param rowNumField the rowNumField to set
+	 */
+	public void setRowNumField(String rowNumField) {
+		this.rowNumField = rowNumField;
 	}	
 }
