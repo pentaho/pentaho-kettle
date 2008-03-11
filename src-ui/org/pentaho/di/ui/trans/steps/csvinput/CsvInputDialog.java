@@ -83,6 +83,7 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
 	private CCombo       wFilenameField;
 	private Button       wbbFilename; // Browse for a file
 	private Button       wIncludeFilename;
+	private TextVar      wRowNumField;
 	private Button       wbDelimiter;
 	private TextVar      wDelimiter;
 	private TextVar      wEnclosure;
@@ -341,6 +342,27 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
 		fdHeaderPresent.right= new FormAttachment(100, 0);
 		wHeaderPresent.setLayoutData(fdHeaderPresent);
 		lastControl = wHeaderPresent;
+		
+        // The field itself...
+        //
+		Label wlRowNumField = new Label(shell, SWT.RIGHT);
+		wlRowNumField.setText(Messages.getString("CsvInputDialog.RowNumField.Label")); //$NON-NLS-1$
+ 		props.setLook(wlRowNumField);
+		FormData fdlRowNumField = new FormData();
+		fdlRowNumField.top  = new FormAttachment(lastControl, margin);
+		fdlRowNumField.left = new FormAttachment(0, 0);
+		fdlRowNumField.right= new FormAttachment(middle, -margin);
+		wlRowNumField.setLayoutData(fdlRowNumField);
+		wRowNumField=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+ 		props.setLook(wRowNumField);
+		wRowNumField.addModifyListener(lsMod);
+		FormData fdRowNumField = new FormData();
+		fdRowNumField.top  = new FormAttachment(lastControl, margin);
+		fdRowNumField.left = new FormAttachment(middle, 0);
+		fdRowNumField.right= new FormAttachment(100, 0);
+		wRowNumField.setLayoutData(fdRowNumField);
+		lastControl = wRowNumField;
+
 
 		// Some buttons first, so that the dialog scales nicely...
 		//
@@ -424,6 +446,7 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
 		wDelimiter.addSelectionListener( lsDef );
 		wEnclosure.addSelectionListener( lsDef );
 		wBufferSize.addSelectionListener( lsDef );
+		wRowNumField.addSelectionListener( lsDef );
 		
 		// Allow the insertion of tabs as separator...
 		wbDelimiter.addSelectionListener(new SelectionAdapter() 
@@ -504,6 +527,7 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
 		wBufferSize.setText(Const.NVL(inputMeta.getBufferSize(), ""));
 		wLazyConversion.setSelection(inputMeta.isLazyConversionActive());
 		wHeaderPresent.setSelection(inputMeta.isHeaderPresent());
+		wRowNumField.setText(Const.NVL(inputMeta.getRowNumField(), ""));
 
 		for (int i=0;i<inputMeta.getInputFields().length;i++) {
 			TextFileInputField field = inputMeta.getInputFields()[i];
@@ -548,7 +572,8 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
 		inputMeta.setBufferSize(wBufferSize.getText());
 		inputMeta.setLazyConversionActive(wLazyConversion.getSelection());
 		inputMeta.setHeaderPresent(wHeaderPresent.getSelection());
-
+		inputMeta.setRowNumField(wRowNumField.getText());
+		
     	int nrNonEmptyFields = wFields.nrNonEmpty(); 
     	inputMeta.allocate(nrNonEmptyFields);
 
