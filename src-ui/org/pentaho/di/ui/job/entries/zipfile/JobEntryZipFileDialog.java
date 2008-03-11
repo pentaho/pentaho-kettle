@@ -57,7 +57,7 @@ import org.pentaho.di.job.entries.zipfile.Messages;
 
 
 /**
- * This dialog allows you to edit the Create File job entry settings.
+ * This dialog allows you to edit the Zip File job entry settings.
  *
  * @author Samatar Hassan
  * @since  27-02-2007
