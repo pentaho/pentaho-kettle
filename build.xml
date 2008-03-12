@@ -323,6 +323,14 @@
 	  		/>
 	  </target>
 
+	  <!--
+	       ==========================
+	             Nightly build
+	       ==========================
+	  -->
+		
+	  <target name="nightly" depends="zip" description="Target for automated nightly builds" />
+	
 	<!--
 	       ==========================
 	            Webstart part...
