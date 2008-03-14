@@ -1701,6 +1701,13 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 	{
 		wlMoveEmptyFolders.setEnabled(wIncludeSubfolders.getSelection());
 		wMoveEmptyFolders.setEnabled(wIncludeSubfolders.getSelection());
+		wlDoNotKeepFolderStructure.setEnabled(wIncludeSubfolders.getSelection());
+		wDoNotKeepFolderStructure.setEnabled(wIncludeSubfolders.getSelection());
+		if(!wIncludeSubfolders.getSelection())
+		{
+			wDoNotKeepFolderStructure.setSelection(false);
+			wMoveEmptyFolders.setSelection(false);
+		}
 	}
 
 	/**

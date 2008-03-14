@@ -17,6 +17,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.pentaho.di.core.ResultFile;
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.provider.local.LocalFile;
 import org.pentaho.di.core.Const;
@@ -168,6 +169,15 @@ public class CsvInput extends BaseStep implements StepInterface
 			data.fis = (FileInputStream)((LocalFile)fileObject).getInputStream();
 			data.fc = data.fis.getChannel();
 			data.bb = ByteBuffer.allocateDirect( data.preferredBufferSize );
+			
+			// Add filename to result filenames ?
+			if(meta.isAddResultFile())
+			{
+				ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, fileObject, getTransMeta().getName(), toString());
+				resultFile.setComment("File was read by an Csv input step");
+				addResultFile(resultFile);
+			}
+			
 			
 			// Move to the next filename
 			//

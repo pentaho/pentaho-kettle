@@ -76,6 +76,8 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
 	
 	private TextFileInputField[] inputFields;
 	
+	private boolean isaddresult;
+	
 	public CsvInputMeta()
 	{
 		super(); // allocate BaseStepMeta
@@ -99,6 +101,7 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
 		enclosure = "\""  ;
 		headerPresent = true;
 		lazyConversionActive=true;
+		isaddresult=false;
 		bufferSize="50000";
 	}
 	
@@ -115,7 +118,8 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
 			bufferSize  = XMLHandler.getTagValue(stepnode, "buffer_size");
 			headerPresent = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "header"));
 			lazyConversionActive= "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "lazy_conversion"));
-
+			isaddresult= "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "add_filename_result"));
+			
 			Node fields = XMLHandler.getSubNode(stepnode, "fields");
 			int nrfields = XMLHandler.countNodes(fields, "field");
 			
@@ -161,6 +165,9 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
 		retval.append("    ").append(XMLHandler.addTagValue("header", headerPresent));
 		retval.append("    ").append(XMLHandler.addTagValue("buffer_size", bufferSize));
 		retval.append("    ").append(XMLHandler.addTagValue("lazy_conversion", lazyConversionActive));
+		retval.append("    ").append(XMLHandler.addTagValue("add_filename_result", isaddresult));
+		
+		
 
 		retval.append("    <fields>").append(Const.CR);
 		for (int i = 0; i < inputFields.length; i++)
@@ -198,6 +205,9 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
 			headerPresent = rep.getStepAttributeBoolean(id_step, "header");
 			bufferSize = rep.getStepAttributeString(id_step, "buffer_size");
 			lazyConversionActive = rep.getStepAttributeBoolean(id_step, "lazy_conversion");
+			isaddresult = rep.getStepAttributeBoolean(id_step, "add_filename_result");
+			
+			
 			
 			int nrfields = rep.countNrStepAttributes(id_step, "field_name");
 
@@ -237,6 +247,9 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
 			rep.saveStepAttribute(id_transformation, id_step, "buffer_size", bufferSize);
 			rep.saveStepAttribute(id_transformation, id_step, "header", headerPresent);
 			rep.saveStepAttribute(id_transformation, id_step, "lazy_conversion", lazyConversionActive);
+			rep.saveStepAttribute(id_transformation, id_step, "add_filename_result", isaddresult);
+			
+			
 
 			for (int i = 0; i < inputFields.length; i++)
 			{
@@ -561,4 +574,21 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
 	public void setRowNumField(String rowNumField) {
 		this.rowNumField = rowNumField;
 	}	
+	
+	 /**
+     * @param isaddresult The isaddresult to set.
+     */
+    public void setAddResultFile(boolean isaddresult)
+    {
+        this.isaddresult = isaddresult;
+    }
+    
+    /**
+     *  @return Returns isaddresult.
+     */
+    public boolean isAddResultFile()
+    {
+        return isaddresult;
+    }
+	
 }

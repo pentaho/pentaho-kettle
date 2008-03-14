@@ -98,7 +98,7 @@ public class TextFileInput extends BaseStep implements StepInterface
                                 // make sure its really a linefeed or cariage return
                                 // raise an error this is not a DOS file
                                 // so we have pulled a character from the next line
-                                throw new KettleFileException("DOS format was specified but only a single line feed character was found, not 2");                                 
+                                throw new KettleFileException(Messages.getString("TextFileInput.Log.SingleLineFound"));                                 
                             }
                             return line.toString();
                         }
@@ -149,7 +149,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 		{
 			if (line.length() == 0)
 			{
-				throw new KettleFileException("Exception reading line: " + e.toString(), e);
+				throw new KettleFileException(Messages.getString("TextFileInput.Log.Error.ExceptionReadingLine",e.toString()), e);
 			}
 			return line.toString();
 		}
@@ -194,7 +194,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 					// "aa;aa";123;"aaa-aaa";000;...
 					if (len_encl > 0 && line.substring(from, from + len_encl).equalsIgnoreCase(inf.getEnclosure()))
 					{
-                        if (log.isRowLevel()) log.logRowlevel("convert line to row", "encl substring=[" + line.substring(from, from + len_encl) + "]");
+                        if (log.isRowLevel()) log.logRowlevel(Messages.getString("TextFileInput.Log.ConvertLineToRowTitle"), Messages.getString("TextFileInput.Log.ConvertLineToRow",line.substring(from, from + len_encl)));
 						encl_found = true;
 						int p = from + len_encl;
 
@@ -247,7 +247,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 						if (p >= length) next = p;
 						else next = p + len_encl;
 
-                        if (log.isRowLevel()) log.logRowlevel("convert line to row", "End of enclosure @ position " + p);
+                        if (log.isRowLevel()) log.logRowlevel(Messages.getString("TextFileInput.Log.ConvertLineToRowTitle"), Messages.getString("TextFileInput.Log.EndOfEnclosure", ""+ p));
 					}
 					else
 					{
@@ -288,12 +288,12 @@ public class TextFileInput extends BaseStep implements StepInterface
 					if (encl_found)
 					{
 						pol = line.substring(from + len_encl, next - len_encl);
-                        if (log.isRowLevel()) log.logRowlevel("convert line to row", "Enclosed field found: [" + pol + "]");
+                        if (log.isRowLevel()) log.logRowlevel(Messages.getString("TextFileInput.Log.ConvertLineToRowTitle"), Messages.getString("TextFileInput.Log.EnclosureFieldFound", ""+ pol));
 					}
 					else
 					{
 						pol = line.substring(from, next);
-                        if (log.isRowLevel()) log.logRowlevel("convert line to row", "Normal field found: [" + pol + "]");
+                        if (log.isRowLevel()) log.logRowlevel(Messages.getString("TextFileInput.Log.ConvertLineToRowTitle"), Messages.getString("TextFileInput.Log.NormalFieldFound",""+ pol));
 					}
 
 					if (dencl)
@@ -334,7 +334,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 				}
 				if ( pos == length )
 				{
-					if (log.isRowLevel()) log.logRowlevel("convert line to row", "End of line empty field found: []");
+					if (log.isRowLevel()) log.logRowlevel(Messages.getString("TextFileInput.Log.ConvertLineToRowTitle"), Messages.getString("TextFileInput.Log.EndOfEmptyLineFound"));
 					strings.add("");
                     fieldnr++;
 				}
@@ -368,7 +368,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 		}
 		catch (Exception e)
 		{
-			throw new KettleException("Error converting line : " + e.toString(), e);
+			throw new KettleException(Messages.getString("TextFileInput.Log.Error.ErrorConvertingLine",e.toString()), e);
 		}
 
 		return strings.toArray(new String[strings.size()]);
@@ -411,7 +411,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 					// "aa;aa";123;"aaa-aaa";000;...
 					if (len_encl > 0 && line.substring(from, from + len_encl).equalsIgnoreCase(inf.getEnclosure()))
 					{
-                        if (log.isRowLevel()) log.logRowlevel("convert line to row", "encl substring=[" + line.substring(from, from + len_encl) + "]");
+                        if (log.isRowLevel()) log.logRowlevel(Messages.getString("TextFileInput.Log.ConvertLineToRowTitle"), Messages.getString("TextFileInput.Log.Encloruse", line.substring(from, from + len_encl)));
 						encl_found = true;
 						int p = from + len_encl;
 
@@ -464,7 +464,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 						if (p >= length) next = p;
 						else next = p + len_encl;
 
-                        if (log.isRowLevel()) log.logRowlevel("convert line to row", "End of enclosure @ position " + p);
+                        if (log.isRowLevel()) log.logRowlevel(Messages.getString("TextFileInput.Log.ConvertLineToRowTitle"), Messages.getString("TextFileInput.Log.EndOfEnclosure",""+ p));
 					}
 					else
 					{
@@ -505,12 +505,12 @@ public class TextFileInput extends BaseStep implements StepInterface
 					if (encl_found)
 					{
 						pol = line.substring(from + len_encl, next - len_encl);
-                        if (log.isRowLevel()) log.logRowlevel("convert line to row", "Enclosed field found: [" + pol + "]");
+                        if (log.isRowLevel()) log.logRowlevel(Messages.getString("TextFileInput.Log.ConvertLineToRowTitle"), Messages.getString("TextFileInput.Log.EnclosureFieldFound",""+ pol ));
 					}
 					else
 					{
 						pol = line.substring(from, next);
-                        if (log.isRowLevel()) log.logRowlevel("convert line to row", "Normal field found: [" + pol + "]");
+                        if (log.isRowLevel()) log.logRowlevel(Messages.getString("TextFileInput.Log.ConvertLineToRowTitle"), Messages.getString("TextFileInput.Log.NormalFieldFound",""+ pol));
 					}
 
 					if (dencl && Const.isEmpty(inf.getEscapeCharacter()))
@@ -562,7 +562,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 				}
 				if ( pos == length)
 				{
-					if (log.isRowLevel()) log.logRowlevel("convert line to row", "End of line empty field found: []");
+					if (log.isRowLevel()) log.logRowlevel(Messages.getString("TextFileInput.Log.ConvertLineToRowTitle"), Messages.getString("TextFileInput.Log.EndOfEmptyLineFound"));
 					if (fieldnr<strings.length) strings[fieldnr]= Const.EMPTY_STRING;
                     fieldnr++;
 				}
@@ -596,7 +596,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 		}
 		catch (Exception e)
 		{
-			throw new KettleException("Error converting line : " + e.toString(), e);
+			throw new KettleException(Messages.getString("TextFileInput.Log.Error.ErrorConvertingLine",e.toString()), e);
 		}
 
 		return strings;
@@ -653,11 +653,11 @@ public class TextFileInput extends BaseStep implements StepInterface
                     catch (Exception e)
                     {                               	
                         // OK, give some feedback!
-                        String message = "Couldn't parse field [" + valueMeta.toStringMeta() + "] with value [" + pol + "], format ["+valueMeta.getConversionMask()+"] on data row [" + rowNr + "].";
+                        String message = Messages.getString("TextFileInput.Log.CoundNotParseField",valueMeta.toStringMeta(),"" + pol,valueMeta.getConversionMask(),""+ rowNr );
                         
                         if (info.isErrorIgnored())
                         {
-                            LogWriter.getInstance().logBasic(fname, "WARNING: " + message+" : " + e.getMessage());
+                            LogWriter.getInstance().logBasic(fname, Messages.getString("TextFileInput.Log.Warning") + message+" : " + e.getMessage());
 
                             value = null;
 
@@ -749,7 +749,7 @@ public class TextFileInput extends BaseStep implements StepInterface
         }
         catch (Exception e)
         {
-            throw new KettleException("Error converting line", e);
+            throw new KettleException(Messages.getString("TextFileInput.Log.Error.ErrorConvertingLineText"), e);
         }
 
         return r;
@@ -1188,9 +1188,12 @@ public class TextFileInput extends BaseStep implements StepInterface
 			
             // Add this files to the result of this transformation.
             //
-			ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, data.file, getTransMeta().getName(), toString());
-			addResultFile(resultFile);
-
+			if(meta.isAddResultFile())
+			{
+				ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, data.file, getTransMeta().getName(), toString());
+				resultFile.setComment("File was read by an Text File input step");
+				addResultFile(resultFile);
+			}
 			logBasic("Opening file: " + data.filename);
 
 			data.fr = KettleVFS.getInputStream(data.file);

@@ -18,7 +18,7 @@
    <localized_description>
      <description locale="en_US">Transform</description>
      <description locale="nl_NL">Transform</description>
-     <description locale="fr_FR">Transform</description>
+     <description locale="fr_FR">Exemple plugiciel</description>
    </localized_description>
    <localized_tooltip>
      <tooltip locale="en_US">This is a dummy plugin test step</tooltip>

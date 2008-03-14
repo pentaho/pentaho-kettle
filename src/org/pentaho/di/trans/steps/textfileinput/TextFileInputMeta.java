@@ -202,6 +202,9 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 
 	/** The step to accept filenames from */
 	private StepMeta acceptingStep;
+	
+    /** The add filenames to result filenames flag */
+    private boolean isaddresult;
 
 	
 	/**
@@ -595,6 +598,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 
 	public void setDefault()
 	{
+		isaddresult=true;
 		separator = ";";
 		enclosure = "\"";
 		breakInEnclosureAllowed = false;
@@ -739,6 +743,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 		retval.append("    ").append(XMLHandler.addTagValue("rownum_field", rowNumberField));
 		retval.append("    ").append(XMLHandler.addTagValue("format", fileFormat));
 		retval.append("    ").append(XMLHandler.addTagValue("encoding", encoding));
+		 retval.append("    "+XMLHandler.addTagValue("add_to_result_filenames",   isaddresult));
 
 		retval.append("    <file>").append(Const.CR);
 		for (int i = 0; i < fileName.length; i++)
@@ -837,6 +842,11 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 			layoutPaged = YES.equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "layout_paged"));
 			nrLinesPerPage = Const.toInt(XMLHandler.getTagValue(stepnode, "nr_lines_per_page"), 1);
 			nrLinesDocHeader = Const.toInt(XMLHandler.getTagValue(stepnode, "nr_lines_doc_header"), 1);
+			String addToResult=XMLHandler.getTagValue(stepnode,  "add_to_result_filenames");
+			if(Const.isEmpty(addToResult)) 
+				isaddresult = true;
+			else
+				isaddresult = "Y".equalsIgnoreCase(addToResult);
 
 			String nempty = XMLHandler.getTagValue(stepnode, "noempty");
 			noEmptyLines = YES.equalsIgnoreCase(nempty) || nempty == null;
@@ -1023,6 +1033,12 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
             
 			fileFormat = rep.getStepAttributeString(id_step, "format");
 			encoding = rep.getStepAttributeString(id_step, "encoding");
+			  String addToResult=rep.getStepAttributeString (id_step, "add_to_result_filenames");
+				if(Const.isEmpty(addToResult)) 
+					isaddresult = true;
+				else
+					isaddresult =  rep.getStepAttributeBoolean(id_step, "add_to_result_filenames");
+				
 
 			rowLimit = (int) rep.getStepAttributeInteger(id_step, "limit");
 
@@ -1139,6 +1155,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
             
 			rep.saveStepAttribute(id_transformation, id_step, "format", fileFormat);
 			rep.saveStepAttribute(id_transformation, id_step, "encoding", encoding);
+			rep.saveStepAttribute(id_transformation, id_step, "add_to_result_filenames",    isaddresult);
 
 			rep.saveStepAttribute(id_transformation, id_step, "limit", rowLimit);
 
@@ -1498,6 +1515,23 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 		this.dateFormatLenient = dateFormatLenient;
 	}
 
+	
+	 /**
+     * @param isaddresult The isaddresult to set.
+     */
+    public void setAddResultFile(boolean isaddresult)
+    {
+        this.isaddresult = isaddresult;
+    }
+    
+    /**
+     *  @return Returns isaddresult.
+     */
+    public boolean isAddResultFile()
+    {
+        return isaddresult;
+    }
+	
 	public boolean isErrorLineSkipped()
 	{
 		return errorLineSkipped;

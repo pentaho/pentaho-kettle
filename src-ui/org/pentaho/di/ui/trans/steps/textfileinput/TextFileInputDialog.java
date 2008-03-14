@@ -345,6 +345,14 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 	private TableView    wFields;
 	private FormData     fdFields;
 
+	private FormData fdlAddResult,fdAddFileResult,fdAddResult;
+	
+	private Group wAddFileResult;
+    
+	private Label wlAddResult;
+    
+    private Button wAddResult;
+	
 	private TextFileInputMeta input;
 
 	// Wizard info...
@@ -1029,7 +1037,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         props.setLook(wlEscape);
         fdlEscape=new FormData();
         fdlEscape.left = new FormAttachment(0, 0);
-        fdlEscape.top  = new FormAttachment(wlEnclBreaks, margin);
+        fdlEscape.top  = new FormAttachment(wEnclBreaks, margin);
         fdlEscape.right= new FormAttachment(middle, -margin);
         wlEscape.setLayoutData(fdlEscape);
         wEscape=new Text(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
@@ -1037,7 +1045,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         wEscape.addModifyListener(lsMod);
         fdEscape=new FormData();
         fdEscape.left = new FormAttachment(middle, 0);
-        fdEscape.top  = new FormAttachment(wlEnclBreaks, margin);
+        fdEscape.top  = new FormAttachment(wEnclBreaks, margin);
         fdEscape.right= new FormAttachment(100, 0);
         wEscape.setLayoutData(fdEscape);
 
@@ -1439,6 +1447,44 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
             }
         );
 
+     // ///////////////////////////////
+		// START OF AddFileResult GROUP  //
+		///////////////////////////////// 
+
+		wAddFileResult = new Group(wContentComp, SWT.SHADOW_NONE);
+		props.setLook(wAddFileResult);
+		wAddFileResult.setText(Messages.getString("TextFileInputDialog.wAddFileResult.Label"));
+		
+		FormLayout AddFileResultgroupLayout = new FormLayout();
+		AddFileResultgroupLayout.marginWidth = 10;
+		AddFileResultgroupLayout.marginHeight = 10;
+		wAddFileResult.setLayout(AddFileResultgroupLayout);
+
+		wlAddResult=new Label(wAddFileResult, SWT.RIGHT);
+		wlAddResult.setText(Messages.getString("TextFileInputDialog.AddResult.Label"));
+ 		props.setLook(wlAddResult);
+		fdlAddResult=new FormData();
+		fdlAddResult.left = new FormAttachment(0, 0);
+		fdlAddResult.top  = new FormAttachment(wDateLocale, margin);
+		fdlAddResult.right= new FormAttachment(middle, -margin);
+		wlAddResult.setLayoutData(fdlAddResult);
+		wAddResult=new Button(wAddFileResult, SWT.CHECK );
+ 		props.setLook(wAddResult);
+		wAddResult.setToolTipText(Messages.getString("TextFileInputDialog.AddResult.Tooltip"));
+		fdAddResult=new FormData();
+		fdAddResult.left = new FormAttachment(middle, 0);
+		fdAddResult.top  = new FormAttachment(wDateLocale, margin);
+		wAddResult.setLayoutData(fdAddResult);
+
+		fdAddFileResult = new FormData();
+		fdAddFileResult.left = new FormAttachment(0, margin);
+		fdAddFileResult.top = new FormAttachment(wDateLocale, margin);
+		fdAddFileResult.right = new FormAttachment(100, -margin);
+		wAddFileResult.setLayoutData(fdAddFileResult);
+			
+		// ///////////////////////////////////////////////////////////
+		// / END OF AddFileResult GROUP
+		// ///////////////////////////////////////////////////////////	
 
         wContentComp.pack();
         // What's the size: 
@@ -2074,6 +2120,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		wInclRownum.setSelection(in.includeRowNumber());
 		wRownumByFile.setSelection(in.isRowNumberByFile());
         wDateLenient.setSelection(in.isDateFormatLenient());
+        wAddResult.setSelection(in.isAddResultFile());
 		
         if (in.getFilenameField()!=null) wInclFilenameField.setText(in.getFilenameField());
 		if (in.getRowNumberField()!=null) wInclRownumField.setText(in.getRowNumberField());
@@ -2229,7 +2276,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		meta.setRowLimit( Const.toLong(wLimit.getText(), 0L) );
 		meta.setFilenameField( wInclFilenameField.getText() );
 		meta.setRowNumberField( wInclRownumField.getText() );
-		
+		meta.setAddResultFile( wAddResult.getSelection() );
 				
 		meta.setIncludeFilename( wInclFilename.getSelection() );
 		meta.setIncludeRowNumber( wInclRownum.getSelection() );

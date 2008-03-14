@@ -451,10 +451,12 @@ public class ExcelInput extends BaseStep implements StepInterface
 				// Open a new openFile..
 				data.file = data.files.getFile(data.filenr);
 				data.filename = KettleVFS.getFilename( data.file );
-				
-				ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, data.file, getTransMeta().getName(), toString());
-				resultFile.setComment("File was read by an Excel input step");
-				addResultFile(resultFile);
+				if(meta.isAddResultFile())
+				{
+					ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, data.file, getTransMeta().getName(), toString());
+					resultFile.setComment("File was read by an Excel input step");
+					addResultFile(resultFile);
+				}
 				
 				if (log.isDetailed()) logDetailed("Opening openFile #" + data.filenr + " : " + data.filename);
                 WorkbookSettings ws = new WorkbookSettings();

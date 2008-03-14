@@ -190,6 +190,9 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
     
     /** The encoding to use for reading: null or empty string means system default encoding */
     private String encoding;
+    
+    /** The add filenames to result filenames flag */
+    private boolean isaddresult;
 
 	public ExcelInputMeta()
 	{
@@ -471,7 +474,12 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 			rowNumberField      = XMLHandler.getTagValue(stepnode, "rownumfield");			
 			rowLimit            = Const.toLong(XMLHandler.getTagValue(stepnode, "limit"), 0);
             encoding            = XMLHandler.getTagValue(stepnode, "encoding");
-			sheetField          = XMLHandler.getTagValue(stepnode, "sheetfield");
+            String addToResult=XMLHandler.getTagValue(stepnode,  "add_to_result_filenames");
+			if(Const.isEmpty(addToResult)) 
+				isaddresult = true;
+			else
+				isaddresult = "Y".equalsIgnoreCase(addToResult);
+            sheetField          = XMLHandler.getTagValue(stepnode, "sheetfield");
 			fileField           = XMLHandler.getTagValue(stepnode, "filefield");
 
             acceptingFilenames = YES.equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "accept_filenames"));
@@ -563,7 +571,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 		ignoreEmptyRows    = true;
 		rowNumberField = "";
 		sheetRowNumberField = "";
-		
+		isaddresult=true;
 		int nrfiles=0;
 		int nrfields=0;
 		int nrsheets=0;
@@ -664,6 +672,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 		retval.append("    ").append(XMLHandler.addTagValue("filefield",       fileField));
 		retval.append("    ").append(XMLHandler.addTagValue("limit",           rowLimit));
         retval.append("    ").append(XMLHandler.addTagValue("encoding",        encoding));
+        retval.append("    "+XMLHandler.addTagValue("add_to_result_filenames",   isaddresult));
 
         retval.append("    ").append(XMLHandler.addTagValue("accept_filenames", acceptingFilenames));
         retval.append("    ").append(XMLHandler.addTagValue("accept_field", acceptingField));
@@ -747,7 +756,12 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 			rowNumberField    =      rep.getStepAttributeString (id_step, "rownumfield");
 			rowLimit          = (int)rep.getStepAttributeInteger(id_step, "limit");
             encoding          =      rep.getStepAttributeString (id_step, "encoding");
-
+            String addToResult=rep.getStepAttributeString (id_step, "add_to_result_filenames");
+			if(Const.isEmpty(addToResult)) 
+				isaddresult = true;
+			else
+				isaddresult =  rep.getStepAttributeBoolean(id_step, "add_to_result_filenames");
+			
             acceptingFilenames = rep.getStepAttributeBoolean(id_step, "accept_filenames");
             acceptingField     = rep.getStepAttributeString (id_step, "accept_field");
             acceptingStepName  = rep.getStepAttributeString (id_step, "accept_stepname");
@@ -823,6 +837,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "rownumfield",     rowNumberField);			
 			rep.saveStepAttribute(id_transformation, id_step, "limit",           rowLimit);
             rep.saveStepAttribute(id_transformation, id_step, "encoding",        encoding);
+            rep.saveStepAttribute(id_transformation, id_step, "add_to_result_filenames",    isaddresult);
 
             rep.saveStepAttribute(id_transformation, id_step, "accept_filenames", acceptingFilenames);
             rep.saveStepAttribute(id_transformation, id_step, "accept_field", acceptingField);
@@ -1174,6 +1189,22 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
     public void setEncoding(String encoding)
     {
         this.encoding = encoding;
+    }
+    
+    /**
+     * @param isaddresult The isaddresult to set.
+     */
+    public void setAddResultFile(boolean isaddresult)
+    {
+        this.isaddresult = isaddresult;
+    }
+    
+    /**
+     *  @return Returns isaddresult.
+     */
+    public boolean isAddResultFile()
+    {
+        return isaddresult;
     }
     
     /**

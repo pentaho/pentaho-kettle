@@ -229,6 +229,12 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 	private int margin;
     private boolean  gotEncodings = false; 
     
+	private FormData fdlAddResult,fdAddFileResult,fdAddResult;
+	private Group wAddFileResult;
+	
+    private Label wlAddResult;
+    private Button wAddResult;
+    
 	private ModifyListener lsMod;
 	
 	public ExcelInputDialog(Shell parent, Object in, TransMeta transMeta, String sname)
@@ -775,6 +781,47 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
                 }
             }
         );
+        
+     // ///////////////////////////////
+		// START OF AddFileResult GROUP  //
+		///////////////////////////////// 
+
+		wAddFileResult = new Group(wContentComp, SWT.SHADOW_NONE);
+		props.setLook(wAddFileResult);
+		wAddFileResult.setText(Messages.getString("ExcelInputDialog.wAddFileResult.Label"));
+		
+		FormLayout AddFileResultgroupLayout = new FormLayout();
+		AddFileResultgroupLayout.marginWidth = 10;
+		AddFileResultgroupLayout.marginHeight = 10;
+		wAddFileResult.setLayout(AddFileResultgroupLayout);
+
+		wlAddResult=new Label(wAddFileResult, SWT.RIGHT);
+		wlAddResult.setText(Messages.getString("ExcelInputDialog.AddResult.Label"));
+ 		props.setLook(wlAddResult);
+		fdlAddResult=new FormData();
+		fdlAddResult.left = new FormAttachment(0, 0);
+		fdlAddResult.top  = new FormAttachment(wEncoding, margin);
+		fdlAddResult.right= new FormAttachment(middle, -margin);
+		wlAddResult.setLayoutData(fdlAddResult);
+		wAddResult=new Button(wAddFileResult, SWT.CHECK );
+ 		props.setLook(wAddResult);
+		wAddResult.setToolTipText(Messages.getString("ExcelInputDialog.AddResult.Tooltip"));
+		fdAddResult=new FormData();
+		fdAddResult.left = new FormAttachment(middle, 0);
+		fdAddResult.top  = new FormAttachment(wEncoding, margin);
+		wAddResult.setLayoutData(fdAddResult);
+
+		fdAddFileResult = new FormData();
+		fdAddFileResult.left = new FormAttachment(0, margin);
+		fdAddFileResult.top = new FormAttachment(wEncoding, margin);
+		fdAddFileResult.right = new FormAttachment(100, -margin);
+		wAddFileResult.setLayoutData(fdAddFileResult);
+			
+		// ///////////////////////////////////////////////////////////
+		// / END OF AddFileResult GROUP
+		// ///////////////////////////////////////////////////////////	
+       
+        
 
 		fdContentComp = new FormData();
 		fdContentComp.left  = new FormAttachment(0, 0);
@@ -1133,6 +1180,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		if (meta.getRowNumberField()!=null) wInclRownumField.setText(meta.getRowNumberField());
 		wLimit.setText(""+meta.getRowLimit());
         if (meta.getEncoding()!=null) wEncoding.setText(meta.getEncoding());
+        wAddResult.setSelection(meta.isAddResultFile());
 		
 		log.logDebug(toString(), "getting fields info...");
 		for (int i=0;i<meta.getField().length;i++)
@@ -1227,6 +1275,8 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		meta.setSheetRowNumberField( wInclSheetRownumField.getText() );
 		meta.setRowNumberField( wInclRownumField.getText() );
 
+		meta.setAddResultFile( wAddResult.getSelection() );
+		
 		meta.setStartsWithHeader( wHeader.getSelection() );
 		meta.setIgnoreEmptyRows( wNoempty.getSelection() );
 		meta.setStopOnEmpty( wStoponempty.getSelection() );

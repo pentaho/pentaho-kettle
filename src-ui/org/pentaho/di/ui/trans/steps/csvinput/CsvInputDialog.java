@@ -90,8 +90,11 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
 	private TextVar      wBufferSize;
 	private Button       wLazyConversion;
 	private Button       wHeaderPresent;
+	private FormData	 fdAddResult;
+	private FormData	 fdlAddResult;
 	private TableView    wFields;
-
+	private Label wlAddResult;
+    private Button wAddResult;
 	private boolean isReceivingInput;
 	
 	public CsvInputDialog(Shell parent, Object in, TransMeta tr, String sname)
@@ -343,6 +346,23 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
 		wHeaderPresent.setLayoutData(fdHeaderPresent);
 		lastControl = wHeaderPresent;
 		
+		wlAddResult=new Label(shell, SWT.RIGHT);
+		wlAddResult.setText(Messages.getString("CsvInputDialog.AddResult.Label"));
+ 		props.setLook(wlAddResult);
+		fdlAddResult=new FormData();
+		fdlAddResult.left = new FormAttachment(0, 0);
+		fdlAddResult.top  = new FormAttachment(wHeaderPresent, margin);
+		fdlAddResult.right= new FormAttachment(middle, -margin);
+		wlAddResult.setLayoutData(fdlAddResult);
+		wAddResult=new Button(shell, SWT.CHECK );
+ 		props.setLook(wAddResult);
+		wAddResult.setToolTipText(Messages.getString("CsvInputDialog.AddResult.Tooltip"));
+		fdAddResult=new FormData();
+		fdAddResult.left = new FormAttachment(middle, 0);
+		fdAddResult.top  = new FormAttachment(wHeaderPresent, margin);
+		wAddResult.setLayoutData(fdAddResult);
+		lastControl = wAddResult;
+		
         // The field itself...
         //
 		Label wlRowNumField = new Label(shell, SWT.RIGHT);
@@ -528,6 +548,7 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
 		wLazyConversion.setSelection(inputMeta.isLazyConversionActive());
 		wHeaderPresent.setSelection(inputMeta.isHeaderPresent());
 		wRowNumField.setText(Const.NVL(inputMeta.getRowNumField(), ""));
+		wAddResult.setSelection(inputMeta.isAddResultFile());
 
 		for (int i=0;i<inputMeta.getInputFields().length;i++) {
 			TextFileInputField field = inputMeta.getInputFields()[i];
@@ -573,6 +594,7 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
 		inputMeta.setLazyConversionActive(wLazyConversion.getSelection());
 		inputMeta.setHeaderPresent(wHeaderPresent.getSelection());
 		inputMeta.setRowNumField(wRowNumField.getText());
+		inputMeta.setAddResultFile( wAddResult.getSelection() );
 		
     	int nrNonEmptyFields = wFields.nrNonEmpty(); 
     	inputMeta.allocate(nrNonEmptyFields);

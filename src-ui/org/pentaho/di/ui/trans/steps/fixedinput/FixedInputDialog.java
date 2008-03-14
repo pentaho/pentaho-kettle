@@ -90,7 +90,10 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
 	
 	private Label  wlFileType;
 	private CCombo wFileType;
-	
+	private Label wlAddResult;
+    private Button wAddResult;
+    private FormData fdlAddResult,fdAddResult;
+    
 	private List<FixedFileInputField> fields;
 
 	private boolean gotEncodings;
@@ -358,6 +361,23 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
             }
         );
 
+
+    	wlAddResult=new Label(shell, SWT.RIGHT);
+		wlAddResult.setText(Messages.getString("FixedInputDialog.AddResult.Label"));
+ 		props.setLook(wlAddResult);
+		fdlAddResult=new FormData();
+		fdlAddResult.left = new FormAttachment(0, 0);
+		fdlAddResult.top  = new FormAttachment(lastControl, margin);
+		fdlAddResult.right= new FormAttachment(middle, -margin);
+		wlAddResult.setLayoutData(fdlAddResult);
+		wAddResult=new Button(shell, SWT.CHECK );
+ 		props.setLook(wAddResult);
+		wAddResult.setToolTipText(Messages.getString("FixedInputDialog.AddResult.Tooltip"));
+		fdAddResult=new FormData();
+		fdAddResult.left = new FormAttachment(middle, 0);
+		fdAddResult.top  = new FormAttachment(lastControl, margin);
+		wAddResult.setLayoutData(fdAddResult);
+		lastControl = wEncoding;
 		
 		// Some buttons first, so that the dialog scales nicely...
 		//
@@ -528,6 +548,7 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
 		wRunningInParallel.setSelection(inputMeta.isRunningInParallel());
 		wFileType.setText(inputMeta.getFileTypeDesc());
         wEncoding.setText( Const.NVL(inputMeta.getEncoding(), "") );
+        wAddResult.setSelection(inputMeta.isAddResultFile());
 
 		for (int i=0;i<inputMeta.getFieldDefinition().length;i++) {
 			TableItem item = new TableItem(wFields.table, SWT.NONE);
@@ -583,6 +604,7 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
 		fixedInputMeta.setRunningInParallel(wRunningInParallel.getSelection());
 		fixedInputMeta.setFileType(FixedInputMeta.getFileType(wFileType.getText()));
         fixedInputMeta.setEncoding(wEncoding.getText());
+        fixedInputMeta.setAddResultFile( wAddResult.getSelection() );
 
     	int nrNonEmptyFields = wFields.nrNonEmpty(); 
 		fixedInputMeta.allocate(nrNonEmptyFields);
