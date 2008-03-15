@@ -377,7 +377,7 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
 		fdAddResult.left = new FormAttachment(middle, 0);
 		fdAddResult.top  = new FormAttachment(lastControl, margin);
 		wAddResult.setLayoutData(fdAddResult);
-		lastControl = wEncoding;
+		lastControl = wAddResult;
 		
 		// Some buttons first, so that the dialog scales nicely...
 		//

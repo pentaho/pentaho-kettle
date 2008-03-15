@@ -174,7 +174,7 @@ public class CsvInput extends BaseStep implements StepInterface
 			if(meta.isAddResultFile())
 			{
 				ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, fileObject, getTransMeta().getName(), toString());
-				resultFile.setComment("File was read by an Csv input step");
+				resultFile.setComment("File was read by a Csv input step");
 				addResultFile(resultFile);
 			}
 			

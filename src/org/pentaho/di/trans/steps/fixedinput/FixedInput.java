@@ -17,6 +17,7 @@ import java.nio.ByteBuffer;
 
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.row.RowDataUtil;
@@ -242,6 +243,14 @@ public class FixedInput extends BaseStep implements StepInterface
 				catch(IOException e) {
 					logError(e.toString());
 					return false;
+				}
+				
+				// Add filename to result filenames ?
+				if(meta.isAddResultFile())
+				{
+					ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, fileObject, getTransMeta().getName(), toString());
+					resultFile.setComment("File was read by a Fixed input step");
+					addResultFile(resultFile);
 				}
 				
 				logBasic("Opened file with name ["+data.filename+"]");

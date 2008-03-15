@@ -788,7 +788,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 
 		wAddFileResult = new Group(wContentComp, SWT.SHADOW_NONE);
 		props.setLook(wAddFileResult);
-		wAddFileResult.setText(Messages.getString("ExcelInputDialog.wAddFileResult.Label"));
+		wAddFileResult.setText(Messages.getString("ExcelInputDialog.AddFileResult.Label"));
 		
 		FormLayout AddFileResultgroupLayout = new FormLayout();
 		AddFileResultgroupLayout.marginWidth = 10;
