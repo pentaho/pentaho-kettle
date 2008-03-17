@@ -178,7 +178,7 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 	 */
 	public String getSheetname()
 	{
-		return StringUtil.environmentSubstitute(sheetname);
+		return sheetname;
 	
 
 	}
