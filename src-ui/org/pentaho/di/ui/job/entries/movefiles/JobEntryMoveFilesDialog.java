@@ -143,6 +143,10 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 	private FormData	 fdGeneralComp,fdAdvancedComp,fdDestinationFileComp;
 	private FormData     fdTabFolder;
 	
+	private Label        wlCreateMoveToFolder;
+	private Button       wCreateMoveToFolder;
+	private FormData     fdlCreateMoveToFolder, fdCreateMoveToFolder;
+	
 	//  Add File to result
     
 	private Group wFileResult;
@@ -1149,6 +1153,31 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 				}
 			}
 		);
+		
+		// Create destination folder/parent folder
+		wlCreateMoveToFolder = new Label(wMoveToGroup, SWT.RIGHT);
+		wlCreateMoveToFolder.setText(Messages.getString("JobMoveFiles.CreateMoveToFolder.Label"));
+		props.setLook(wlCreateMoveToFolder);
+		fdlCreateMoveToFolder = new FormData();
+		fdlCreateMoveToFolder.left = new FormAttachment(0, 0);
+		fdlCreateMoveToFolder.top = new FormAttachment(wDestinationFolder, margin);
+		fdlCreateMoveToFolder.right = new FormAttachment(middle, -margin);
+		wlCreateMoveToFolder.setLayoutData(fdlCreateMoveToFolder);
+		wCreateMoveToFolder = new Button(wMoveToGroup, SWT.CHECK);
+		props.setLook(wCreateMoveToFolder);
+		wCreateMoveToFolder.setToolTipText(Messages.getString("JobMoveFiles.CreateMoveToFolder.Tooltip"));
+		fdCreateMoveToFolder = new FormData();
+		fdCreateMoveToFolder.left = new FormAttachment(middle, 0);
+		fdCreateMoveToFolder.top = new FormAttachment(wDestinationFolder, margin);
+		fdCreateMoveToFolder.right = new FormAttachment(100, 0);
+		wCreateMoveToFolder.setLayoutData(fdCreateMoveToFolder);
+		wCreateMoveToFolder.addSelectionListener(new SelectionAdapter()
+		{
+			public void widgetSelected(SelectionEvent e)
+			{
+				jobEntry.setChanged();
+			}
+		});
 
 		// Create multi-part file?
 		wlAddMovedDate=new Label(wMoveToGroup, SWT.RIGHT);
@@ -1156,7 +1185,7 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
  		props.setLook(wlAddMovedDate);
 		fdlAddMovedDate=new FormData();
 		fdlAddMovedDate.left = new FormAttachment(0, 0);
-		fdlAddMovedDate.top  = new FormAttachment(wDestinationFolder, margin);
+		fdlAddMovedDate.top  = new FormAttachment(wCreateMoveToFolder, margin);
 		fdlAddMovedDate.right= new FormAttachment(middle, -margin);
 		wlAddMovedDate.setLayoutData(fdlAddMovedDate);
 		wAddMovedDate=new Button(wMoveToGroup, SWT.CHECK);
@@ -1164,7 +1193,7 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
  		wAddMovedDate.setToolTipText(Messages.getString("JobMoveFiles.AddMovedDate.Tooltip"));
 		fdAddMovedDate=new FormData();
 		fdAddMovedDate.left = new FormAttachment(middle, 0);
-		fdAddMovedDate.top  = new FormAttachment(wDestinationFolder, margin);
+		fdAddMovedDate.top  = new FormAttachment(wCreateMoveToFolder, margin);
 		fdAddMovedDate.right= new FormAttachment(100, 0);
 		wAddMovedDate.setLayoutData(fdAddMovedDate);
 		wAddMovedDate.addSelectionListener(new SelectionAdapter() 
@@ -1598,21 +1627,23 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 	private void activeDestinationFolder()
 	{
 		
-		wbDestinationFolder.setEnabled(wIfFileExists.getSelectionIndex()==3);
-		wlDestinationFolder.setEnabled(wIfFileExists.getSelectionIndex()==3);
-		wDestinationFolder.setEnabled(wIfFileExists.getSelectionIndex()==3);
-		wlMovedDateTimeFormat.setEnabled(wIfFileExists.getSelectionIndex()==3);
-		wMovedDateTimeFormat.setEnabled(wIfFileExists.getSelectionIndex()==3);
-		wIfMovedFileExists.setEnabled(wIfFileExists.getSelectionIndex()==3);
-		wlIfMovedFileExists.setEnabled(wIfFileExists.getSelectionIndex()==3);
-		wlAddMovedDateBeforeExtension.setEnabled(wIfFileExists.getSelectionIndex()==3);
-		wAddMovedDateBeforeExtension.setEnabled(wIfFileExists.getSelectionIndex()==3);
-		wlAddMovedDate.setEnabled(wIfFileExists.getSelectionIndex()==3);
-		wAddMovedDate.setEnabled(wIfFileExists.getSelectionIndex()==3);
-		wlAddMovedTime.setEnabled(wIfFileExists.getSelectionIndex()==3);
-		wAddMovedTime.setEnabled(wIfFileExists.getSelectionIndex()==3);
-		wlSpecifyMoveFormat.setEnabled(wIfFileExists.getSelectionIndex()==3);
-		wSpecifyMoveFormat.setEnabled(wIfFileExists.getSelectionIndex()==3);
+		wbDestinationFolder.setEnabled(wIfFileExists.getSelectionIndex()==4);
+		wlDestinationFolder.setEnabled(wIfFileExists.getSelectionIndex()==4);
+		wDestinationFolder.setEnabled(wIfFileExists.getSelectionIndex()==4);
+		wlMovedDateTimeFormat.setEnabled(wIfFileExists.getSelectionIndex()==4);
+		wMovedDateTimeFormat.setEnabled(wIfFileExists.getSelectionIndex()==4);
+		wIfMovedFileExists.setEnabled(wIfFileExists.getSelectionIndex()==4);
+		wlIfMovedFileExists.setEnabled(wIfFileExists.getSelectionIndex()==4);
+		wlAddMovedDateBeforeExtension.setEnabled(wIfFileExists.getSelectionIndex()==4);
+		wAddMovedDateBeforeExtension.setEnabled(wIfFileExists.getSelectionIndex()==4);
+		wlAddMovedDate.setEnabled(wIfFileExists.getSelectionIndex()==4);
+		wAddMovedDate.setEnabled(wIfFileExists.getSelectionIndex()==4);
+		wlAddMovedTime.setEnabled(wIfFileExists.getSelectionIndex()==4);
+		wAddMovedTime.setEnabled(wIfFileExists.getSelectionIndex()==4);
+		wlSpecifyMoveFormat.setEnabled(wIfFileExists.getSelectionIndex()==4);
+		wSpecifyMoveFormat.setEnabled(wIfFileExists.getSelectionIndex()==4);
+		wlCreateMoveToFolder.setEnabled(wIfFileExists.getSelectionIndex()==4);
+		wCreateMoveToFolder.setEnabled(wIfFileExists.getSelectionIndex()==4);
 	}
 	private void activeSuccessCondition()
 	{
@@ -1742,6 +1773,9 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 		
 		wAddFileToResult.setSelection(jobEntry.add_result_filesname);
 		
+		
+		wCreateMoveToFolder.setSelection(jobEntry.create_move_to_folder);
+		
 		if (jobEntry.getNrErrorsLessThan()!= null) 
 			wNrErrorsLessThan.setText( jobEntry.getNrErrorsLessThan() );
 		else
@@ -1824,6 +1858,8 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 		jobEntry.setCreateDestinationFolder(wCreateDestinationFolder.getSelection());
 		jobEntry.setDoNotProcessRest(wDoNotProcessRest.getSelection());
 		jobEntry.setNrErrorsLessThan(wNrErrorsLessThan.getText());
+		
+		jobEntry.setCreateMoveToFolder(wCreateMoveToFolder.getSelection());
 		
 		if(wSuccessCondition.getSelectionIndex()==1)
 			jobEntry.setSuccessCondition("success_when_errors_less_than");

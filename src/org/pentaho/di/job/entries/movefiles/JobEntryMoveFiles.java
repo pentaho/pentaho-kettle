@@ -87,13 +87,16 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 	private boolean add_moved_date;
 	private boolean add_moved_time;
 	private boolean SpecifyMoveFormat;
+	public boolean create_move_to_folder;
 	
 	boolean DoNotProcessRest=false;
 	int NrErrors=0;
+	int NrSuccess=0;
 	
 	public JobEntryMoveFiles(String n)
 	{
 		super(n, "");
+		create_move_to_folder=false;
 		SpecifyMoveFormat=false;
 		add_moved_date=false;
 		add_moved_time=false;
@@ -166,6 +169,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 		retval.append("      ").append(XMLHandler.addTagValue("moved_date_time_format", moved_date_time_format));
 		
 		
+		retval.append("      ").append(XMLHandler.addTagValue("create_move_to_folder", create_move_to_folder));
 		
 		retval.append("      ").append(XMLHandler.addTagValue("add_moved_date", add_moved_date));
 		retval.append("      ").append(XMLHandler.addTagValue("add_moved_time", add_moved_time));
@@ -220,6 +224,9 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 			ifmovedfileexists          = XMLHandler.getTagValue(entrynode, "ifmovedfileexists");
 			moved_date_time_format          = XMLHandler.getTagValue(entrynode, "moved_date_time_format");
 			AddMovedDateBeforeExtension = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "AddMovedDateBeforeExtension"));
+			
+			create_move_to_folder = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "create_move_to_folder"));
+			
 			
 			
 			
@@ -283,6 +290,9 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 			
 			AddMovedDateBeforeExtension = rep.getJobEntryAttributeBoolean(id_jobentry, "AddMovedDateBeforeExtension");
 			
+			create_move_to_folder = rep.getJobEntryAttributeBoolean(id_jobentry, "create_move_to_folder");
+			
+			
 			
 			add_moved_date = rep.getJobEntryAttributeBoolean(id_jobentry, "add_moved_date"); 
 			add_moved_time = rep.getJobEntryAttributeBoolean(id_jobentry, "add_moved_time"); 
@@ -345,6 +355,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 			rep.saveJobEntryAttribute(id_job, getID(), "add_moved_time", add_moved_time);
 			rep.saveJobEntryAttribute(id_job, getID(), "SpecifyMoveFormat", SpecifyMoveFormat);
 			
+			rep.saveJobEntryAttribute(id_job, getID(), "create_move_to_folder", create_move_to_folder);
 			
 			rep.saveJobEntryAttribute(id_job, getID(), "AddMovedDateBeforeExtension", AddMovedDateBeforeExtension);
 			
@@ -375,6 +386,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 	    RowMetaAndData resultRow = null;
 		
 	    NrErrors=0;
+	    NrSuccess=0;
 		DoNotProcessRest=false;
 		
 		String MoveToFolder=environmentSubstitute(destinationFolder);
@@ -400,10 +412,17 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 				 folder = KettleVFS.getFileObject(MoveToFolder);
 				 if(!folder.exists())
 				 {
-					log.logError(toString(), Messages.getString("JobMoveFiles.Log.Error.FolderMissing",MoveToFolder));
-					result.setResult( false );
-					result.setNrErrors(1);
-					return result; 
+					 if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobMoveFiles.Log.Error.FolderMissing",MoveToFolder));
+					 if(create_move_to_folder)
+					 {
+						 folder.createFolder();
+					 }else
+					 {
+						 log.logError(toString(), Messages.getString("JobMoveFiles.Log.Error.FolderMissing",MoveToFolder));
+						 result.setResult( false );
+						 result.setNrErrors(1);
+						 return result; 
+					 }
 				 }
 				 if(!folder.getType().equals(FileType.FOLDER))
 				 {
@@ -522,7 +541,15 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 		}else
 			result.setResult(true);
 		
-
+		result.setNrLinesWritten(NrSuccess);
+		
+		if(log.isDetailed())
+		{
+			log.logDetailed(toString(), "----------------------------");
+			log.logDetailed(toString(), "Total files in error : " + NrErrors);
+			log.logDetailed(toString(), "Total files moved : " + NrSuccess);
+			log.logDetailed(toString(), "----------------------------");
+		}
 		
 		return result;
 	}
@@ -791,10 +818,13 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 			// add filename to result filename
 			if(add_result_filesname && !iffileexists.equals("fail") && !iffileexists.equals("do_nothing")) 
 				addFileToResultFilenames(destinationfilename.toString(),log,result,parentJob);
+			
+			updateSuccess();
 		
 		}
 		else
 		{
+			if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobMoveFiles.Log.FileExists",destinationfilename.toString()));
 			if(iffileexists.equals("overwrite_file"))
 			{
 				sourcefilename.moveTo(destinationfilename);
@@ -803,6 +833,8 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 				// add filename to result filename
 				if(add_result_filesname && !iffileexists.equals("fail") && !iffileexists.equals("do_nothing")) 
 					addFileToResultFilenames(destinationfilename.toString(),log,result,parentJob);
+				
+				updateSuccess();
 			
 			}
 			else if(iffileexists.equals("unique_name"))
@@ -824,11 +856,13 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 				
 				
 				sourcefilename.moveTo(destinationfile);
-				if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobMoveFiles.Log.FileOverwrite",destinationfile.getName().toString()));
-			
+				if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobMoveFiles.Log.FileMoved",sourcefilename.getName().toString(),destinationfile.getName().toString()));
+				
 				// add filename to result filename
 				if(add_result_filesname && !iffileexists.equals("fail") && !iffileexists.equals("do_nothing")) 
 					addFileToResultFilenames(destinationfile.toString(),log,result,parentJob);
+				
+				updateSuccess();
 			
 				
 				
@@ -853,39 +887,58 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 				String movetofilenamefull=movetofolderfolder.toString()+Const.FILE_SEPARATOR+short_filename;
 				destinationfile = KettleVFS.getFileObject(movetofilenamefull);
 				
-				if(ifmovedfileexists.equals("overwrite_file"))
+				if(!destinationfile.exists())
 				{
-					sourcefilename.moveTo(destinationfile);
-					if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobMoveFiles.Log.FileOverwrite",destinationfile.getName().toString()));
+					//sourcefilename.moveTo(destinationfile);
+					if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobMoveFiles.Log.FileMoved",sourcefilename.getName().toString(),destinationfile.getName().toString()));
 				
 					// add filename to result filename
 					if(add_result_filesname && !iffileexists.equals("fail") && !iffileexists.equals("do_nothing")) 
-						addFileToResultFilenames(destinationfile.toString(),log,result,parentJob);
-				
-				}
-				else if(ifmovedfileexists.equals("unique_name"))
-				{
-					SimpleDateFormat daf  = new SimpleDateFormat();
-					Date now = new Date();
-					daf.applyPattern("ddMMyyyy_HHmmssSSS");
-					String dt = daf.format(now);
-					short_filename+="_"+dt;
+						addFileToResultFilenames(destinationfile.toString(),log,result,parentJob);	
 					
-					String destinationfilenamefull=movetofolderfolder.toString()+Const.FILE_SEPARATOR+short_filename;
-					destinationfile= KettleVFS.getFileObject(destinationfilenamefull);
-						
-					sourcefilename.moveTo(destinationfile);
-					if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobMoveFiles.Log.FileMoved",destinationfile.getName().toString()));
-				
-					// add filename to result filename
-					if(add_result_filesname && !iffileexists.equals("fail") && !iffileexists.equals("do_nothing")) 
-						addFileToResultFilenames(destinationfile.toString(),log,result,parentJob);
-				
-				}
-				else if(ifmovedfileexists.equals("fail"))
+					updateSuccess();
+					
+				}else
 				{
-					// Update Errors
-					updateErrors();
+				
+					if(ifmovedfileexists.equals("overwrite_file"))
+					{
+						sourcefilename.moveTo(destinationfile);
+						if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobMoveFiles.Log.FileOverwrite",destinationfile.getName().toString()));
+					
+						// add filename to result filename
+						if(add_result_filesname && !iffileexists.equals("fail") && !iffileexists.equals("do_nothing")) 
+							addFileToResultFilenames(destinationfile.toString(),log,result,parentJob);
+						
+						updateSuccess();
+					
+					}
+					else if(ifmovedfileexists.equals("unique_name"))
+					{
+						SimpleDateFormat daf  = new SimpleDateFormat();
+						Date now = new Date();
+						daf.applyPattern("ddMMyyyy_HHmmssSSS");
+						String dt = daf.format(now);
+						short_filename+="_"+dt;
+						
+						String destinationfilenamefull=movetofolderfolder.toString()+Const.FILE_SEPARATOR+short_filename;
+						destinationfile= KettleVFS.getFileObject(destinationfilenamefull);
+							
+						sourcefilename.moveTo(destinationfile);
+						if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobMoveFiles.Log.FileMoved",destinationfile.getName().toString()));
+					
+						// add filename to result filename
+						if(add_result_filesname && !iffileexists.equals("fail") && !iffileexists.equals("do_nothing")) 
+							addFileToResultFilenames(destinationfile.toString(),log,result,parentJob);
+						
+						updateSuccess();
+					
+					}
+					else if(ifmovedfileexists.equals("fail"))
+					{
+						// Update Errors
+						updateErrors();
+					}
 				}
 				
 				
@@ -1197,6 +1250,10 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 			if(getStatus()) DoNotProcessRest=true;
 		}
 	}
+	private void updateSuccess()
+	{
+		NrSuccess++;
+	}
 	private void addFileToResultFilenames(String fileaddentry,LogWriter log,Result result,Job parentJob)
 	{	
 		try
@@ -1419,7 +1476,12 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 	   return ifmovedfileexists;
    }
    
-   
+
+	public void setCreateMoveToFolder(boolean create_move_to_folder)
+	{
+		this.create_move_to_folder=create_move_to_folder;
+	}
+
    
    
    public void setAddTime(boolean addtime)
