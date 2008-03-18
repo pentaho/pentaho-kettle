@@ -85,6 +85,10 @@ public class ErrorDialog extends Dialog
 	
 	private void showErrorDialog(Shell parent, String title, String message, Exception exception)
 	{
+		if (parent.isDisposed()) {
+			exception.printStackTrace();
+			return;
+		}
 		this.props = PropsUI.getInstance();
 
 		Display display  = parent.getDisplay();

@@ -1008,14 +1008,14 @@ public class PropsUI extends Props
             break;
         }
 
-        if (font!=null)
+        if (font!=null && !font.isDisposed())
         {
             control.setFont(font);
         }
         
-        if (background!=null)
+        if (background!=null && !background.isDisposed())
         {
-            control.setBackground(background);
+    		control.setBackground(background);
         }        
     }
 
