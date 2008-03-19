@@ -642,10 +642,10 @@ public class Trans implements VariableSpace
 						//
 						if (step.getErrors()>0) {
 
-							log.logMinimal(toString(), Messages.getString("Trans.Log.TransformationDetectedErrors")); //$NON-NLS-1$ //$NON-NLS-2$
-							log.logMinimal(toString(), Messages.getString("Trans.Log.TransformationIsKillingTheOtherSteps")); //$NON-NLS-1$
+							log.logMinimal(getName(), Messages.getString("Trans.Log.TransformationDetectedErrors")); //$NON-NLS-1$ //$NON-NLS-2$
+							log.logMinimal(getName(), Messages.getString("Trans.Log.TransformationIsKillingTheOtherSteps")); //$NON-NLS-1$
 
-							killAll();
+							killAllNoWait();
 						}
 					}
 				};
@@ -841,6 +841,9 @@ public class Trans implements VariableSpace
 			BaseStep thr = (BaseStep)sid.step;
 
 			if (log.isDebug()) log.logDebug(toString(), Messages.getString("Trans.Log.LookingAtStep")+thr.getStepname()); //$NON-NLS-1$
+			
+			// If thr is a mapping, this is cause for an endless loop
+			//
 			while (thr.isAlive())
 			{
 				thr.stopAll();
@@ -859,6 +862,34 @@ public class Trans implements VariableSpace
 		}
 		
 		if (nrStepsFinished==steps.size()) finished.set(true);
+	}
+	
+	/**
+	 * Ask all steps to stop but don't wait around for it to happen.
+	 * Special method for use with mappings.
+	 */
+	private void killAllNoWait()
+	{
+		if (steps==null) return;
+		
+		for (int i=0;i<steps.size();i++)
+		{
+			StepMetaDataCombi sid = steps.get(i);
+			BaseStep thr = (BaseStep)sid.step;
+
+			if (log.isDebug()) log.logDebug(toString(), Messages.getString("Trans.Log.LookingAtStep")+thr.getStepname()); //$NON-NLS-1$
+			
+			thr.stopAll();
+			try
+			{
+				Thread.sleep(20);
+			}
+			catch(Exception e)
+			{
+				log.logError(toString(), Messages.getString("Trans.Log.TransformationErrors")+e.toString()); //$NON-NLS-1$
+				return;
+			}
+		}
 	}
 
 	public void printStats(int seconds)

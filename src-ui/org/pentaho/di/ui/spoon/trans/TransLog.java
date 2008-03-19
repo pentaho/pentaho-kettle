@@ -193,7 +193,7 @@ public class TransLog extends Composite implements TabItemInterface
 				null, // Listener
 				spoon.props);
 
-		wText = new Text(sash, SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL | SWT.READ_ONLY);
+		wText = new Text(sash, SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL | SWT.READ_ONLY | SWT.BORDER);
 		spoon.props.setLook(wText);
 		wText.setVisible(true);
 
