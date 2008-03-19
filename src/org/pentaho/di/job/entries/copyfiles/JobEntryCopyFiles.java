@@ -122,9 +122,6 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 		retval.append("      ").append(XMLHandler.addTagValue("destination_is_a_file", destination_is_a_file));
 		retval.append("      ").append(XMLHandler.addTagValue("create_destination_folder", create_destination_folder));
 		
-		
-		
-		
 		retval.append("      <fields>").append(Const.CR);
 		if (source_filefolder!=null)
 		{
@@ -156,8 +153,7 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 			add_result_filesname = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "add_result_filesname") );
 			destination_is_a_file = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "destination_is_a_file") );
 			create_destination_folder = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "create_destination_folder") );
-			
-		
+					
 			Node fields = XMLHandler.getSubNode(entrynode, "fields");
 			
 			// How many field arguments?
@@ -198,8 +194,6 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 			add_result_filesname = rep.getJobEntryAttributeBoolean(id_jobentry, "add_result_filesname");
 			destination_is_a_file = rep.getJobEntryAttributeBoolean(id_jobentry, "destination_is_a_file");
 			create_destination_folder = rep.getJobEntryAttributeBoolean(id_jobentry, "create_destination_folder");
-			
-			
 				
 			// How many arguments?
 			int argnr = rep.countNrJobEntryAttributes(id_jobentry, "source_filefolder");
@@ -233,11 +227,10 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 			rep.saveJobEntryAttribute(id_job, getID(), "arg_from_previous",  arg_from_previous);
 			rep.saveJobEntryAttribute(id_job, getID(), "overwrite_files",      overwrite_files);
 			rep.saveJobEntryAttribute(id_job, getID(), "include_subfolders", include_subfolders);
-			rep.saveJobEntryAttribute(id_job, getID(), "remove_sourcefiles", remove_source_files);
+			rep.saveJobEntryAttribute(id_job, getID(), "remove_source_files", remove_source_files);
 			rep.saveJobEntryAttribute(id_job, getID(), "destination_is_a_file", destination_is_a_file);
 			rep.saveJobEntryAttribute(id_job, getID(), "create_destination_folder", create_destination_folder);
-			
-			
+
 			
 			// save the arguments...
 			if (source_filefolder!=null)
