@@ -529,14 +529,25 @@ public class GUIResource
 					image = new Image(display, filename);
 				} catch (Exception e)
 				{
-					log.logError("Kettle", "Unable to find required job entry image file [" + filename
-							+ "] : " + e.toString());
-					image = new Image(display, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE);
-					GC gc = new GC(image);
-					gc.drawRectangle(0, 0, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE);
-					gc.drawLine(0, 0, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE);
-					gc.drawLine(ConstUI.ICON_SIZE, 0, 0, ConstUI.ICON_SIZE);
-					gc.dispose();
+					try 
+					{
+						// Retry in package of the plugin class? (for plugins only)
+						//
+						int lastIndex = plugins[i].getClassname().lastIndexOf('.');
+						String directory = Const.replace(plugins[i].getClassname().substring(0,lastIndex), ".", Const.FILE_SEPARATOR);
+						String altFilename=directory+Const.FILE_SEPARATOR+filename;
+						image = ImageUtil.getImage(display, altFilename);
+					}
+					catch(Exception altE) 
+					{
+						log.logError("Kettle", "Unable to find required job entry image file [" + filename + "] : " + e.toString());
+						image = new Image(display, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE);
+						GC gc = new GC(image);
+						gc.drawRectangle(0, 0, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE);
+						gc.drawLine(0, 0, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE);
+						gc.drawLine(ConstUI.ICON_SIZE, 0, 0, ConstUI.ICON_SIZE);
+						gc.dispose();
+					}
 				}
 			}
 

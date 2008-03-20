@@ -25,7 +25,6 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobEntryCategory;
 import org.pentaho.di.job.JobPluginMeta;
 import org.pentaho.di.job.entry.Messages;
-import org.pentaho.di.trans.step.StepCategory;
 
 
 /**
@@ -101,7 +100,7 @@ import org.pentaho.di.trans.step.StepCategory;
 				category = JobEntryCategory.STANDARD_CATEGORIES[job.category()].getName();
 			}
 			else {
-				LogWriter.getInstance().setLogLevel(LogWriter.LOG_LEVEL_BASIC); // avoid i18n messsages for missing locale
+				LogWriter.getInstance().setLogLevel(LogWriter.LOG_LEVEL_BASIC); // avoid i18n messages for missing locale
 				category = BaseMessages.getString(packageName, job.categoryDescription());
 				if (category.startsWith("!") && category.endsWith("!")) category=Messages.getString(job.categoryDescription());
 				LogWriter.getInstance().setLogLevel(oldLogLevel); // restore loglevel, when the last alternative fails, log it when loglevel is detailed
