@@ -1626,10 +1626,13 @@ public class Const
             {
                 sb.append(c);
             }
-            else
-            if (Character.isWhitespace(c))
+            else if (Character.isWhitespace(c))
             {
                 sb.append(' ');
+            }
+            else if (c=='-')
+            {
+                sb.append(c);
             }
         }
         return sb.toString();
