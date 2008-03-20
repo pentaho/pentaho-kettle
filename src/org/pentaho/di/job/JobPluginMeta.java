@@ -12,21 +12,25 @@
 */
 package org.pentaho.di.job;
 
+
 import org.pentaho.di.core.config.PropertySetter;
 import org.pentaho.di.core.exception.KettleConfigException;
 
 public class JobPluginMeta
 {
-
 	protected Class<?> className;
+	
+	protected JobEntryType type;
 
 	protected String id;
-
-	protected JobEntryType type;
+	
+	protected String name;
 
 	protected String tooltipDesc;
 
 	protected String imageFileName;
+	
+	protected String category;
 
 	protected final PropertySetter psetter = new PropertySetter();
 
@@ -35,15 +39,20 @@ public class JobPluginMeta
 		// for "outside" configurations
 	}
 
+	public JobPluginMeta(Class<?> className, String id, JobEntryType type, String name, String tooltipDesc, String imageFileName)
+	{
+		this(className, id, type, name, tooltipDesc, imageFileName, null);
+	}
 
-	public JobPluginMeta(Class<?> className, String id, JobEntryType type, String tooltipDesc,
-			String imageFileName)
+	public JobPluginMeta(Class<?> className, String id, JobEntryType type, String name, String tooltipDesc, String imageFileName, String category)
 	{
 		this.className = className;
 		this.id = id;
-		this.type = type;
+		this.type=type;
+		this.name = name;
 		this.tooltipDesc = tooltipDesc;
 		this.imageFileName = imageFileName;
+		this.category = category;
 	}
 
 	public Class<?> getClassName()
@@ -76,16 +85,6 @@ public class JobPluginMeta
 		this.imageFileName = imageFileName;
 	}
 
-	public JobEntryType getType()
-	{
-		return type;
-	}
-
-	public void setType(JobEntryType type)
-	{
-		this.type = type;
-	}
-
 	public String getTooltipDesc()
 	{
 		return tooltipDesc;
@@ -99,6 +98,53 @@ public class JobPluginMeta
 	public void set(String property, String value) throws KettleConfigException
 	{
 		psetter.setProperty(this, property, value);
+	}
+
+
+	/**
+	 * @return the category
+	 */
+	public String getCategory() {
+		return category;
+	}
+
+
+	/**
+	 * @param category the category to set
+	 */
+	public void setCategory(String category) {
+		this.category = category;
+	}
+
+	/**
+	 * @return the name
+	 */
+	public String getName() {
+		return name;
+	}
+
+
+	/**
+	 * @param name the name to set
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
+
+
+	/**
+	 * @return the type
+	 */
+	public JobEntryType getType() {
+		return type;
+	}
+
+
+	/**
+	 * @param type the type to set
+	 */
+	public void setType(JobEntryType type) {
+		this.type = type;
 	}
 
 }

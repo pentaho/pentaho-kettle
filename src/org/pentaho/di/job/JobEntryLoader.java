@@ -25,6 +25,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import org.apache.commons.vfs.FileSystemException;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.PDIClassLoader;
 import org.pentaho.di.core.config.ConfigManager;
 import org.pentaho.di.core.config.KettleConfig;
@@ -110,11 +111,17 @@ public class JobEntryLoader
 
 			jobs.addAll(cjobs);
 
-			for (JobPluginMeta job : jobs)
-				if (job.getType() != JobEntryType.NONE)
-					pluginList.add(new JobPlugin(JobPlugin.TYPE_NATIVE, job.getId(), job.getType(), job
-							.getTooltipDesc(), null, null, job.getImageFileName(), job.getClassName()
-							.getName()));
+			for (JobPluginMeta job : jobs) {
+				
+				if (job.getType() != JobEntryType.NONE) {
+					pluginList.add(new JobPlugin(JobPlugin.TYPE_NATIVE, job.getId(), job.getType(), 
+							job.getType().getDescription(), job.getTooltipDesc(), null, new String[] {}, job.getImageFileName(), job.getClassName().getName()));
+				} else {
+					pluginList.add(new JobPlugin(JobPlugin.TYPE_PLUGIN, job.getId(), job.getType(), 
+							job.getName(), job.getTooltipDesc(), null, new String[] {}, job.getImageFileName(), job.getClassName().getName()));
+				}
+			}
+			
 		} catch (KettleConfigException e)
 		{
 			e.printStackTrace();
@@ -266,8 +273,8 @@ public class JobEntryLoader
 		// safe to use filesystem because at this point it is all local
 		// and we are using this so we can do things like */lib/*.jar and so
 		// forth, as with ant
-		ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver(
-				new FileSystemResourceLoader());
+		ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver(new FileSystemResourceLoader());
+		
 		for (int i = 0; i < jarfiles.length; i++)
 		{
 			try
@@ -503,4 +510,14 @@ public class JobEntryLoader
 		}
 		Collections.sort(list);
 		return list.toArray(new String[list.size()]);
-	}}
+	}
+
+	public List<Object[]> getPluginInformation()
+	{
+		List<Object[]> list = new ArrayList<Object[]>();
+		for (JobPlugin plugin : pluginList) {
+			list.add(plugin.getPluginInformation());
+		}
+		return list;
+	}
+}

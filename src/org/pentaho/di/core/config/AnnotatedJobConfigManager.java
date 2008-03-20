@@ -20,6 +20,7 @@ import org.pentaho.di.core.annotations.Inject;
 import org.pentaho.di.core.annotations.Job;
 import org.pentaho.di.core.exception.KettleConfigException;
 import org.pentaho.di.core.util.ResolverUtil;
+import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobPluginMeta;
 import org.pentaho.di.job.entry.Messages;
 
@@ -61,7 +62,29 @@ import org.pentaho.di.job.entry.Messages;
 			if (jobId.equals("")) // default
 				jobId =  clazz.getName();
 
-			jobs.add(new JobPluginMeta(clazz, jobId, job.type(),Messages.getString(job.tooltip()),job.image()));
+			// See if the tool tip is translated or not...
+			//
+			String tooltip = Messages.getString(job.tooltip());
+			if (tooltip.startsWith("!")) {
+				tooltip = job.tooltip();
+			}
+			
+			String description = job.description();
+			if (Const.isEmpty(description)) {
+				// if we have no description...
+				//
+				if (job.type().equals(JobEntryType.NONE)) {
+					// AND we have no entry type (plugin), then we use the tooltip field
+					//
+					description=job.tooltip();
+				} else {
+					// We use the description of the job type
+					//
+					description = job.type().getDescription();
+				}
+			}
+			
+			jobs.add(new JobPluginMeta(clazz, jobId, job.type(), description, tooltip, job.image()));
 		}
 		
 		

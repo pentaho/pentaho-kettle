@@ -3932,6 +3932,19 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		dialog.open();
 	}
 
+	/**
+	 * Show a dialog containing information on the different job entry plugins.
+	 */
+	public void helpShowJobEntryPlugins()
+	{
+		List<Object[]> pluginInformation = JobEntryLoader.getInstance().getPluginInformation();
+		RowMetaInterface pluginInformationRowMeta = StepPlugin.getPluginInformationRowMeta();
+		
+		PreviewRowsDialog dialog = new PreviewRowsDialog(shell, null, SWT.NONE, null, pluginInformationRowMeta, pluginInformation);
+		dialog.setTitleMessage(Messages.getString("Spoon.Dialog.StepPluginList.Title"), Messages.getString("Spoon.Dialog.StepPluginList.Message"));
+		dialog.open();
+	}
+	
 	public void editUnselectAll()
 	{
 		TransMeta transMeta = getActiveTransformation();

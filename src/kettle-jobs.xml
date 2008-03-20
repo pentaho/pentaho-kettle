@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jobs>
+	<!--  
 	<job id="NONE">
 		<type>
 			ognl:@org.pentaho.di.job.JobEntryType@NONE
@@ -10,6 +11,7 @@
 		<tooltip>-</tooltip>
 		<image-uri>ui/images/BLK.png</image-uri>
 	</job>
+	-->
 	
 	<!-- Configured via Job annotation 
 	<job id="TRANS">

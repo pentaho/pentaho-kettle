@@ -24,7 +24,7 @@ import org.pentaho.di.job.JobEntryType;
  * An alternative when defining Jobs. Classes annotated with "Job" are
  * automatically recognized and registered as a job.
  * 
- * Important: The XML definitions alienate annoated steps and the two methods of definition are therefore
+ * Important: The XML definitions alienate annotated job entries and the two methods of definition are therefore
  * mutually exclusive.
  * 
  * @author Alex Silva
@@ -37,11 +37,15 @@ public @interface Job
 {
 	String id();
 
+	JobEntryType type();
+
+	String name() default "";
+	
+	String description() default "";
+
 	String tooltip() default "";
 
 	String image();
 
-	JobEntryType type();
-	
 	String version() default "";
 }

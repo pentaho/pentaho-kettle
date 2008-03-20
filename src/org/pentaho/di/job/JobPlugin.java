@@ -11,7 +11,14 @@
 
 package org.pentaho.di.job;
 
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.plugins.Plugin;
+import org.pentaho.di.core.row.RowMeta;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.trans.Messages;
+import org.pentaho.di.trans.StepPlugin;
 
 /**
  * Contains the description of a job-entry of a job-entry plugin, what jars to
@@ -25,11 +32,11 @@ public class JobPlugin extends Plugin<String>
 {
 	private JobEntryType jobType;
 
-	public JobPlugin(int type, String id, JobEntryType jobType, String tooltip, String directory,
+	public JobPlugin(int type, String id, JobEntryType jobType, String description, String tooltip, String directory,
 			String jarfiles[], String icon_filename, String classname)
 	{
 
-		super(type, id, jobType.getDescription(), tooltip, directory, jarfiles, icon_filename, classname);
+		super(type, id, description, tooltip, directory, jarfiles, icon_filename, classname);
 		this.jobType = jobType;
 	}
 
@@ -37,6 +44,7 @@ public class JobPlugin extends Plugin<String>
 			String jarfiles[], String icon_filename, String classname)
 	{
 		super(type, id, description, tooltip, directory, jarfiles, icon_filename, classname);
+		this.jobType = JobEntryType.NONE;
 	}
 
 	public JobEntryType getJobType()
@@ -56,7 +64,69 @@ public class JobPlugin extends Plugin<String>
 
 	public String toString()
 	{
-		return getClass().getName() + ": " + getID() + "(" + (getType() == TYPE_NATIVE ? "NATIVE" : "PLUGIN")
-				+ ")";
+		return getClass().getName() + ": " + getID() + "(" + (getType() == TYPE_NATIVE ? "NATIVE" : "PLUGIN") + ")";
 	}
+	
+    public String getJarfilesList()
+    {
+    	String list = "";
+    	
+    	String jarfiles[] = super.getJarfiles();
+    	
+    	if (jarfiles!=null)
+    	{
+	    	for (int i=0;i<jarfiles.length;i++)
+	    	{
+	    		if (i>0) list+=Const.PATH_SEPARATOR;
+	    		list+=jarfiles[i];
+	    	}
+    	}
+        return list;
+    }
+    
+    public static RowMetaInterface getPluginInformationRowMeta()
+    {
+    	RowMetaInterface row = new RowMeta();
+    	
+    	row.addValueMeta(new ValueMeta(Messages.getString("StepPlugin.Information.Type.Label"), ValueMetaInterface.TYPE_STRING));
+    	row.addValueMeta(new ValueMeta(Messages.getString("StepPlugin.Information.ID.Label"), ValueMetaInterface.TYPE_STRING));
+    	row.addValueMeta(new ValueMeta(Messages.getString("StepPlugin.Information.Description.Label"), ValueMetaInterface.TYPE_STRING));
+    	row.addValueMeta(new ValueMeta(Messages.getString("StepPlugin.Information.ToolTip.Label"), ValueMetaInterface.TYPE_STRING));
+    	row.addValueMeta(new ValueMeta(Messages.getString("StepPlugin.Information.Directory.Label"), ValueMetaInterface.TYPE_STRING));
+    	row.addValueMeta(new ValueMeta(Messages.getString("StepPlugin.Information.JarFiles.Label"), ValueMetaInterface.TYPE_STRING));
+    	row.addValueMeta(new ValueMeta(Messages.getString("StepPlugin.Information.IconFile.Label"), ValueMetaInterface.TYPE_STRING));
+    	row.addValueMeta(new ValueMeta(Messages.getString("StepPlugin.Information.ClassName.Label"), ValueMetaInterface.TYPE_STRING));
+    	row.addValueMeta(new ValueMeta(Messages.getString("StepPlugin.Information.Category.Label"), ValueMetaInterface.TYPE_STRING));
+    	row.addValueMeta(new ValueMeta(Messages.getString("StepPlugin.Information.ErrorHelpFile.Label"), ValueMetaInterface.TYPE_STRING));
+    	row.addValueMeta(new ValueMeta(Messages.getString("StepPlugin.Information.SeparateClassloader.Label"), ValueMetaInterface.TYPE_BOOLEAN));
+
+        return row;
+    }
+
+    public Object[] getPluginInformation()
+    {
+    	Object[] row = new Object[getPluginInformationRowMeta().size()];
+    	int rowIndex=0;
+    	
+    	String jobTypeDesc;
+    	if (jobType==null || jobType.equals(JobEntryType.NONE)) {
+    		jobTypeDesc = StepPlugin.typeDesc[StepPlugin.TYPE_PLUGIN];
+    	} else {
+    		jobTypeDesc = StepPlugin.typeDesc[StepPlugin.TYPE_NATIVE];
+    	}
+    	
+    	row[rowIndex++] = jobTypeDesc;
+    	row[rowIndex++] = getID();
+    	row[rowIndex++] = getDescription();
+    	row[rowIndex++] = getTooltip();
+    	row[rowIndex++] = getDirectory();
+    	row[rowIndex++] = getJarfilesList();
+    	row[rowIndex++] = getIconFilename();
+    	row[rowIndex++] = getClassname();
+    	row[rowIndex++] = null;
+    	row[rowIndex++] = null;
+    	row[rowIndex++] = false;
+
+        return row;
+    }
 }
