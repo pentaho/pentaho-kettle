@@ -245,6 +245,10 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 	private Button       wSpecifyMoveFormat;
 	private FormData     fdlSpecifyMoveFormat, fdSpecifyMoveFormat;
 	
+	private Label        wlSimulate;
+	private Button       wSimulate;
+	private FormData     fdlSimulate, fdSimulate;
+	
    public JobEntryMoveFilesDialog(Shell parent, JobEntryInterface jobEntryInt, Repository rep, JobMeta jobMeta)
     {
         super(parent, jobEntryInt, rep, jobMeta);
@@ -391,7 +395,31 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 			}
 		});
 		
-		
+		// Simulate?
+		wlSimulate=new Label(wSettings, SWT.RIGHT);
+		wlSimulate.setText(Messages.getString("JobMoveFiles.Simulate.Label"));
+ 		props.setLook(wlSimulate);
+		fdlSimulate=new FormData();
+		fdlSimulate.left = new FormAttachment(0, 0);
+		fdlSimulate.top  = new FormAttachment(wMoveEmptyFolders, margin);
+		fdlSimulate.right= new FormAttachment(middle, -margin);
+		wlSimulate.setLayoutData(fdlSimulate);
+		wSimulate=new Button(wSettings, SWT.CHECK);
+ 		props.setLook(wSimulate);
+ 		wSimulate.setToolTipText(Messages.getString("JobMoveFiles.Simulate.Tooltip"));
+		fdSimulate=new FormData();
+		fdSimulate.left = new FormAttachment(middle, 0);
+		fdSimulate.top  = new FormAttachment(wMoveEmptyFolders, margin);
+		fdSimulate.right= new FormAttachment(100, 0);
+		wSimulate.setLayoutData(fdSimulate);
+		wSimulate.addSelectionListener(new SelectionAdapter() 
+			{
+				public void widgetSelected(SelectionEvent e) 
+				{
+					jobEntry.setChanged();
+				}
+			}
+		);
 		
 		// previous
 		wlPrevious = new Label(wSettings, SWT.RIGHT);
@@ -399,7 +427,7 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 		props.setLook(wlPrevious);
 		fdlPrevious = new FormData();
 		fdlPrevious.left = new FormAttachment(0, 0);
-		fdlPrevious.top = new FormAttachment(wMoveEmptyFolders, margin );
+		fdlPrevious.top = new FormAttachment(wSimulate, margin );
 		fdlPrevious.right = new FormAttachment(middle, -margin);
 		wlPrevious.setLayoutData(fdlPrevious);
 		wPrevious = new Button(wSettings, SWT.CHECK);
@@ -408,7 +436,7 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 		wPrevious.setToolTipText(Messages.getString("JobMoveFiles.Previous.Tooltip"));
 		fdPrevious = new FormData();
 		fdPrevious.left = new FormAttachment(middle, 0);
-		fdPrevious.top = new FormAttachment(wMoveEmptyFolders, margin );
+		fdPrevious.top = new FormAttachment(wSimulate, margin );
 		fdPrevious.right = new FormAttachment(100, 0);
 		wPrevious.setLayoutData(fdPrevious);
 		wPrevious.addSelectionListener(new SelectionAdapter()
@@ -1822,6 +1850,7 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 		}else wIfMovedFileExists.select(0);
 		wDoNotKeepFolderStructure.setSelection(jobEntry.isDoNotKeepFolderStructure());
 		wAddDateBeforeExtension.setSelection(jobEntry.isAddDateBeforeExtension());
+		wSimulate.setSelection(jobEntry.simulate);
 		
 		
 		
@@ -1892,6 +1921,8 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 			jobEntry.setIfMovedFileExists("do_nothing");
 		
 		jobEntry.setDoNotKeepFolderStructure(wDoNotKeepFolderStructure.getSelection());
+		jobEntry.setSimulate(wSimulate.getSelection());
+		
 		
 		jobEntry.setAddDate(wAddDate.getSelection());
 		jobEntry.setAddTime(wAddTime.getSelection());

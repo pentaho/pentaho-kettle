@@ -88,6 +88,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 	private boolean add_moved_time;
 	private boolean SpecifyMoveFormat;
 	public boolean create_move_to_folder;
+	public boolean simulate;
 	
 	boolean DoNotProcessRest=false;
 	int NrErrors=0;
@@ -96,6 +97,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 	public JobEntryMoveFiles(String n)
 	{
 		super(n, "");
+		simulate=false;
 		create_move_to_folder=false;
 		SpecifyMoveFormat=false;
 		add_moved_date=false;
@@ -177,6 +179,9 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 		
 		
 		retval.append("      ").append(XMLHandler.addTagValue("AddMovedDateBeforeExtension", AddMovedDateBeforeExtension));
+		retval.append("      ").append(XMLHandler.addTagValue("simulate", simulate));
+		
+		
 		
 		
 		retval.append("      <fields>").append(Const.CR);
@@ -233,6 +238,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 			add_moved_date = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "add_moved_date"));
 			add_moved_time = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "add_moved_time"));
 			SpecifyMoveFormat = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "SpecifyMoveFormat"));
+			simulate = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "simulate"));
 			
 			
 			Node fields = XMLHandler.getSubNode(entrynode, "fields");
@@ -297,7 +303,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 			add_moved_date = rep.getJobEntryAttributeBoolean(id_jobentry, "add_moved_date"); 
 			add_moved_time = rep.getJobEntryAttributeBoolean(id_jobentry, "add_moved_time"); 
 			SpecifyMoveFormat = rep.getJobEntryAttributeBoolean(id_jobentry, "SpecifyMoveFormat"); 
-			
+			simulate = rep.getJobEntryAttributeBoolean(id_jobentry, "simulate"); 
 			
 			
 			// How many arguments?
@@ -357,7 +363,11 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 			
 			rep.saveJobEntryAttribute(id_job, getID(), "create_move_to_folder", create_move_to_folder);
 			
+			
+			
 			rep.saveJobEntryAttribute(id_job, getID(), "AddMovedDateBeforeExtension", AddMovedDateBeforeExtension);
+			
+			rep.saveJobEntryAttribute(id_job, getID(), "simulate", simulate);
 			
 			// save the arguments...
 			if (source_filefolder!=null)
@@ -388,6 +398,11 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 	    NrErrors=0;
 	    NrSuccess=0;
 		DoNotProcessRest=false;
+		
+		if(log.isDetailed())
+		{
+			if(simulate) log.logDetailed(toString(), Messages.getString("JobMoveFiles.Log.SimulationOn"));
+		}
 		
 		String MoveToFolder=environmentSubstitute(destinationFolder);
 		// Get source and destination files, also wildcard
@@ -545,10 +560,10 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 		
 		if(log.isDetailed())
 		{
-			log.logDetailed(toString(), "----------------------------");
-			log.logDetailed(toString(), "Total files in error : " + NrErrors);
-			log.logDetailed(toString(), "Total files moved : " + NrSuccess);
-			log.logDetailed(toString(), "----------------------------");
+			log.logDetailed(toString(), "=======================================");
+			log.logDetailed(toString(), Messages.getString("JobMoveFiles.Log.Info.FilesInError","" + NrErrors));
+			log.logDetailed(toString(), Messages.getString("JobMoveFiles.Log.Info.FilesInSuccess","" + NrSuccess));
+			log.logDetailed(toString(), "=======================================");
 		}
 		
 		return result;
@@ -1564,6 +1579,10 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 		this.DoNotKeepFolderStructure=DoNotKeepFolderStructure;
 	}
    
+   public void setSimulate(boolean simulate)
+   {
+		this.simulate=simulate;
+   }
     
     public void setIgnoreRestOfFiles(boolean IgnoreRestOfFiles)
 	{
