@@ -465,6 +465,10 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
     {
         return false;
     }
+    
+    public String getExtraOptionsHelpText() {
+    	return "http://jdbc.postgresql.org/documentation/83/connect.html#connection-parameters";
+    }
 
     public String[] getUsedLibraries()
     {
