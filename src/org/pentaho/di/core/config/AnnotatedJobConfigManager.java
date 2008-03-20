@@ -15,6 +15,7 @@ package org.pentaho.di.core.config;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.annotations.Inject;
 import org.pentaho.di.core.annotations.Job;
 import org.pentaho.di.core.exception.KettleConfigException;
@@ -40,9 +41,19 @@ import org.pentaho.di.job.entry.Messages;
 	public Collection<T> load() throws KettleConfigException
 	{
 		ResolverUtil<JobPluginMeta> resolver = new ResolverUtil<JobPluginMeta>();
-		resolver.find(new ResolverUtil.AnnotatedWith(Job.class), packages != null ? packages.split(",")
-				: new String[] {});
+		
+		// If there is a system wide property set with name KETTLE_PLUGIN_PACKAGES we search those packages as well
+		//
+		String allPackages = packages;
+		String extraPackages = System.getProperty(Const.KETTLE_PLUGIN_PACKAGES);
+		if (!Const.isEmpty(extraPackages)) {
+			allPackages+=","+extraPackages;
+		}
+		
+		resolver.find(new ResolverUtil.AnnotatedWith(Job.class), allPackages != null ? allPackages.split(",") : new String[] {});
+
 		Collection<JobPluginMeta> jobs = new LinkedHashSet<JobPluginMeta>(resolver.size());
+		
 		for (Class<?> clazz : resolver.getClasses())
 		{
 			Job job = clazz.getAnnotation(Job.class);
