@@ -312,7 +312,7 @@ public class InsertUpdate extends BaseStep implements StepInterface
         {
             if (i != 0) sql += ", ";
             sql += databaseMeta.quoteField(meta.getUpdateLookup()[i]);
-            data.lookupReturnRowMeta.addValueMeta( rowMeta.searchValueMeta(meta.getUpdateStream()[i]) );
+            data.lookupReturnRowMeta.addValueMeta( rowMeta.searchValueMeta(meta.getUpdateStream()[i]).clone() );
         }
 
         sql += " FROM " + data.schemaTable + " WHERE ";
@@ -371,7 +371,7 @@ public class InsertUpdate extends BaseStep implements StepInterface
                 
                 sql += databaseMeta.quoteField(meta.getUpdateLookup()[i]);
                 sql += " = ?" + Const.CR;
-                data.updateParameterRowMeta.addValueMeta( rowMeta.searchValueMeta(meta.getUpdateStream()[i]) );
+                data.updateParameterRowMeta.addValueMeta( rowMeta.searchValueMeta(meta.getUpdateStream()[i]).clone() );
     		}
         }
 
@@ -395,7 +395,7 @@ public class InsertUpdate extends BaseStep implements StepInterface
             else
             {
                 sql += " "+meta.getKeyCondition()[i]+" ? ";
-                data.updateParameterRowMeta.addValueMeta( rowMeta.searchValueMeta(meta.getKeyStream()[i]) );
+                data.updateParameterRowMeta.addValueMeta( rowMeta.searchValueMeta(meta.getKeyStream()[i]).clone() );
             }
         }
 
