@@ -69,22 +69,22 @@ import org.pentaho.di.job.entry.Messages;
 				tooltip = job.tooltip();
 			}
 			
-			String description = job.description();
-			if (Const.isEmpty(description)) {
+			String name = job.name();
+			if (Const.isEmpty(name)) {
 				// if we have no description...
 				//
 				if (job.type().equals(JobEntryType.NONE)) {
 					// AND we have no entry type (plugin), then we use the tooltip field
 					//
-					description=job.tooltip();
+					name=job.tooltip();
 				} else {
 					// We use the description of the job type
 					//
-					description = job.type().getDescription();
+					name = job.type().getDescription();
 				}
 			}
 			
-			jobs.add(new JobPluginMeta(clazz, jobId, job.type(), description, tooltip, job.image()));
+			jobs.add(new JobPluginMeta(clazz, jobId, job.type(), name, tooltip, job.image()));
 		}
 		
 		

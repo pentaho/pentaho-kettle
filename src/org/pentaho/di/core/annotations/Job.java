@@ -41,8 +41,6 @@ public @interface Job
 
 	String name() default "";
 	
-	String description() default "";
-
 	String tooltip() default "";
 
 	String image();
