@@ -567,4 +567,13 @@ public class JobEntryLoader
         }
         return retval;
     }
+    
+	public List<Object[]> getPluginInformation()
+	{
+		List<Object[]> list = new ArrayList<Object[]>();
+		for (JobPlugin plugin : pluginList) {
+			list.add(plugin.getPluginInformation());
+		}
+		return list;
+	}
 }

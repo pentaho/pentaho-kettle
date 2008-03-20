@@ -37,7 +37,7 @@ public @interface Job
 {
 	String id();
 	
-	String description() default "";
+	String name() default "";
 
 	String tooltip() default "";
 
@@ -47,7 +47,7 @@ public @interface Job
 	
 	String version() default "";
 	
-	int category();
+	int category() default -1;
 	
 	String categoryDescription() default "";
 	

@@ -79,10 +79,11 @@ import org.pentaho.di.job.entry.Messages;
 			// Determine the i18n description of the step description (name)
 			//
 			LogWriter.getInstance().setLogLevel(LogWriter.LOG_LEVEL_BASIC); // avoid i18n messages for missing locale
-			String description = BaseMessages.getString(packageName, job.description());
-			if (description.startsWith("!") && description.endsWith("!")) description=Messages.getString(job.description());
+			String name = BaseMessages.getString(packageName, job.name());
+			if (name.startsWith("!") && name.endsWith("!")) name=Messages.getString(job.name());
 			LogWriter.getInstance().setLogLevel(oldLogLevel); // restore loglevel, when the last alternative fails, log it when loglevel is detailed
-			if (description.startsWith("!") && description.endsWith("!")) description=BaseMessages.getString(altPackageName, job.description());
+			if (name.startsWith("!") && name.endsWith("!")) name=BaseMessages.getString(altPackageName, job.name());
+			if (name.startsWith("!") && name.endsWith("!")) name=job.name(); // Nothing to translate, keep it like it is. 
 			
 			// Determine the i18n tool tip text for the step (the extended description)
 			//
@@ -91,6 +92,9 @@ import org.pentaho.di.job.entry.Messages;
 			if (tooltip.startsWith("!") && tooltip.endsWith("!")) tooltip=Messages.getString(job.tooltip());
 			LogWriter.getInstance().setLogLevel(oldLogLevel); // restore loglevel, when the last alternative fails, log it when loglevel is detailed
 			if (tooltip.startsWith("!") && tooltip.endsWith("!")) tooltip=BaseMessages.getString(altPackageName, job.tooltip());
+			if (tooltip.startsWith("!") && tooltip.endsWith("!")) tooltip=job.tooltip(); // Nothing to translate, keep it like it is. 
+			
+			if (Const.isEmpty(name)) name=tooltip;
 			
 			// If the step should have a separate category, this is the place to calculate that
 			// This calculation is only used if the category is USER_DEFINED
@@ -107,7 +111,7 @@ import org.pentaho.di.job.entry.Messages;
 				if (category.startsWith("!") && category.endsWith("!")) category=BaseMessages.getString(altPackageName, job.categoryDescription());
 			}
 			
-			jobs.add(new JobPluginMeta(clazz, jobId, job.type(), description, tooltip, job.image(), category));
+			jobs.add(new JobPluginMeta(clazz, jobId, job.type(), name, tooltip, job.image(), category));
 		}
 		
 		

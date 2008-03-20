@@ -22,6 +22,7 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.LanguageChoice;
 import org.pentaho.di.trans.Messages;
+import org.pentaho.di.trans.StepPlugin;
 
 /**
  * Contains the description of a job-entry of a job-entry plugin, what jars to
@@ -230,7 +231,14 @@ public class JobPlugin extends Plugin<String>
     	Object[] row = new Object[getPluginInformationRowMeta().size()];
     	int rowIndex=0;
     	
-    	row[rowIndex++] = jobType.getDescription();
+    	String jobTypeDesc;
+    	if (jobType==null || jobType.equals(JobEntryType.NONE)) {
+    		jobTypeDesc = StepPlugin.typeDesc[StepPlugin.TYPE_PLUGIN];
+    	} else {
+    		jobTypeDesc = StepPlugin.typeDesc[StepPlugin.TYPE_NATIVE];
+    	}
+    	    	
+    	row[rowIndex++] = jobTypeDesc;
     	row[rowIndex++] = getID();
     	row[rowIndex++] = getDescription();
     	row[rowIndex++] = getTooltip();

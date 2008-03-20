@@ -1983,25 +1983,29 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 				for (int j = 0; j < baseJobEntries.length; j++)
 				{
-					if (baseJobEntries[j].getCategory(locale).equalsIgnoreCase(baseCategories[i]))
+					if (!baseJobEntries[j].getID().equals("SPECIAL"))
 					{
-                        final Image jobEntryImage = (Image)GUIResource.getInstance().getImagesJobentriesSmall().get(baseJobEntries[j].getID());
-						String pluginName = baseJobEntries[j].getDescription(locale);
-						String pluginDescription = baseJobEntries[j].getTooltip(locale);
-						boolean isPlugin = baseJobEntries[j].isPlugin();
-
-						TreeItem stepItem = new TreeItem(item, SWT.NONE);
-						stepItem.setImage(jobEntryImage);
-						stepItem.setText(pluginName);
-						stepItem.addListener(SWT.Selection, new Listener() {
-						
-							public void handleEvent(Event arg0) {
-								System.out.println("Tree item Listener fired");
-							}
-						});
-						if (isPlugin) stepItem.setFont(GUIResource.getInstance().getFontBold());
-						
-						coreJobToolTipMap.put(pluginName, pluginDescription);
+	
+						if (baseJobEntries[j].getCategory(locale).equalsIgnoreCase(baseCategories[i]))
+						{
+	                        final Image jobEntryImage = (Image)GUIResource.getInstance().getImagesJobentriesSmall().get(baseJobEntries[j].getID());
+							String pluginName = baseJobEntries[j].getDescription(locale);
+							String pluginDescription = baseJobEntries[j].getTooltip(locale);
+							boolean isPlugin = baseJobEntries[j].isPlugin();
+	
+							TreeItem stepItem = new TreeItem(item, SWT.NONE);
+							stepItem.setImage(jobEntryImage);
+							stepItem.setText(pluginName);
+							stepItem.addListener(SWT.Selection, new Listener() {
+							
+								public void handleEvent(Event arg0) {
+									System.out.println("Tree item Listener fired");
+								}
+							});
+							if (isPlugin) stepItem.setFont(GUIResource.getInstance().getFontBold());
+							
+							coreJobToolTipMap.put(pluginName, pluginDescription);
+						}
 					}
 				}
 			}
@@ -4349,6 +4353,19 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		dialog.open();
 	}
 
+	/**
+	 * Show a dialog containing information on the different job entry plugins.
+	 */
+	public void helpShowJobEntryPlugins()
+	{
+		List<Object[]> pluginInformation = JobEntryLoader.getInstance().getPluginInformation();
+		RowMetaInterface pluginInformationRowMeta = StepPlugin.getPluginInformationRowMeta();
+		
+		PreviewRowsDialog dialog = new PreviewRowsDialog(shell, null, SWT.NONE, null, pluginInformationRowMeta, pluginInformation);
+		dialog.setTitleMessage(Messages.getString("Spoon.Dialog.StepPluginList.Title"), Messages.getString("Spoon.Dialog.StepPluginList.Message"));
+		dialog.open();
+	}
+	
 	public void editUnselectAll()
 	{
 		TransMeta transMeta = getActiveTransformation();
