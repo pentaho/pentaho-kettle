@@ -634,7 +634,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 		// If the field already contains quotes, we don't touch it anymore, just
 		// return the same string...
 		// also return it if no spaces are found
-		if (field.indexOf(quote) >= 0 || field.indexOf(' ') < 0)
+		if (field.indexOf(quote) >= 0 || (field.indexOf(' ') < 0 && field.indexOf('=') < 0))
 		{
 			return field;
 		} else
