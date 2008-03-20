@@ -24,10 +24,14 @@ public class JobPluginMeta
 	protected String id;
 
 	protected JobEntryType type;
+	
+	protected String description;
 
 	protected String tooltipDesc;
 
 	protected String imageFileName;
+	
+	protected String category;
 
 	protected final PropertySetter psetter = new PropertySetter();
 
@@ -37,14 +41,16 @@ public class JobPluginMeta
 	}
 
 
-	public JobPluginMeta(Class<?> className, String id, JobEntryType type, String tooltipDesc,
-			String imageFileName)
+	public JobPluginMeta(Class<?> className, String id, JobEntryType type, String description, String tooltipDesc,
+			String imageFileName, String category)
 	{
 		this.className = className;
 		this.id = id;
 		this.type = type;
+		this.description = description;
 		this.tooltipDesc = tooltipDesc;
 		this.imageFileName = imageFileName;
+		this.category = category;
 	}
 
 	public Class<?> getClassName()
@@ -100,6 +106,38 @@ public class JobPluginMeta
 	public void set(String property, String value) throws KettleConfigException
 	{
 		psetter.setProperty(this, property, value);
+	}
+
+
+	/**
+	 * @return the category
+	 */
+	public String getCategory() {
+		return category;
+	}
+
+
+	/**
+	 * @param category the category to set
+	 */
+	public void setCategory(String category) {
+		this.category = category;
+	}
+
+
+	/**
+	 * @return the description
+	 */
+	public String getDescription() {
+		return description;
+	}
+
+
+	/**
+	 * @param description the description to set
+	 */
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 }

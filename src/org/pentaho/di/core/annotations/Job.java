@@ -36,6 +36,8 @@ import org.pentaho.di.job.JobEntryType;
 public @interface Job
 {
 	String id();
+	
+	String description() default "";
 
 	String tooltip() default "";
 
@@ -44,4 +46,10 @@ public @interface Job
 	JobEntryType type();
 	
 	String version() default "";
+	
+	int category();
+	
+	String categoryDescription() default "";
+	
+	String i18nPackageName() default "";
 }

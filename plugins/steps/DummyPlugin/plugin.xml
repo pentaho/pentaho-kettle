@@ -4,16 +4,14 @@
    iconfile="DPL.png"
    description="Dummy Plugin"
    tooltip="This is a dummy plugin test step"
-   category="Transform"
+   category="File management"
    classname="be.ibridge.kettle.dummy.DummyPluginMeta">
    <libraries>
     <library name="dummy.jar"/>
     </libraries>
     
    <localized_category>
-     <category locale="en_US">Transform</category>
-     <category locale="nl_NL">Transform</category>
-     <category locale="fr_FR">Transformation</category>
+     <category locale="en_US">File management</category>
    </localized_category>
    <localized_description>
      <description locale="en_US">Dummy plugin</description>

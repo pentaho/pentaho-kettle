@@ -19,12 +19,14 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import org.apache.commons.vfs.FileSystemException;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.PDIClassLoader;
 import org.pentaho.di.core.config.ConfigManager;
 import org.pentaho.di.core.config.KettleConfig;
@@ -32,6 +34,8 @@ import org.pentaho.di.core.exception.KettleConfigException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepLoaderException;
 import org.pentaho.di.core.plugins.PluginLoader;
+import org.pentaho.di.i18n.LanguageChoice;
+import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.springframework.core.io.FileSystemResourceLoader;
 import org.springframework.core.io.Resource;
@@ -112,9 +116,8 @@ public class JobEntryLoader
 
 			for (JobPluginMeta job : jobs)
 				if (job.getType() != JobEntryType.NONE)
-					pluginList.add(new JobPlugin(JobPlugin.TYPE_NATIVE, job.getId(), job.getType(), job
-							.getTooltipDesc(), null, null, job.getImageFileName(), job.getClassName()
-							.getName()));
+					pluginList.add(new JobPlugin(JobPlugin.TYPE_NATIVE, job.getId(), job.getType(), job.getTooltipDesc(), null, null, job.getImageFileName(), job.getClassName()
+							.getName(), job.getCategory()));
 		} catch (KettleConfigException e)
 		{
 			e.printStackTrace();
@@ -503,4 +506,65 @@ public class JobEntryLoader
 		}
 		Collections.sort(list);
 		return list.toArray(new String[list.size()]);
-	}}
+	}
+	
+    /**
+     * Get a unique list of categories. We can use this to display in trees etc.
+     * 
+     * @param type The type of job entry plugins for which we want to categories...
+     * @return a unique list of categories
+     */
+    public String[] getCategories(int type)
+    {
+        return getCategories(type, LanguageChoice.getInstance().getDefaultLocale().toString().toLowerCase());
+    }
+    
+    /**
+     * Get a unique list of categories. We can use this to display in trees etc.
+     * 
+     * @param type The type of job entry plugins for which we want to categories...
+     * @return a unique list of categories
+     */
+    public String[] getCategories(int type, String locale)
+    {
+        Hashtable<String, String> cat = new Hashtable<String, String>();
+        for (int i = 0; i < nrJobEntriesWithType(type); i++)
+        {
+            JobPlugin sp = getJobEntryWithType(type, i);
+            if (sp != null)
+            {
+                cat.put(sp.getCategory(locale), sp.getCategory(locale));
+            }
+        }
+        Enumeration<String> keys = cat.keys();
+        String retval[] = new String[cat.size()];
+        int i = 0;
+        while (keys.hasMoreElements())
+        {
+            retval[i] = keys.nextElement();
+            i++;
+        }
+
+        // Sort the resulting array...
+        // It has to be sorted the same way as the String array JobStep.category_order
+        //
+        for (int a = 0; a < retval.length; a++)
+        {
+            for (int b = 0; b < retval.length - 1; b++)
+            {
+                // What is the index of retval[b] and retval[b+1]?
+            	//
+                int idx1 = Const.indexOfString(retval[b  ], JobEntryBase.category_order);
+                int idx2 = Const.indexOfString(retval[b+1], JobEntryBase.category_order);
+                
+                if (idx1>idx2)
+                {
+                    String dummy = retval[b];
+                    retval[b] = retval[b + 1];
+                    retval[b + 1] = dummy;
+                }
+            }
+        }
+        return retval;
+    }
+}

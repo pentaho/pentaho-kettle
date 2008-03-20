@@ -40,6 +40,7 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
+import org.pentaho.di.job.JobEntryCategory;
 import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
@@ -66,7 +67,14 @@ import org.w3c.dom.Node;
  * @since 1-10-2003, rewritten on 18-06-2004
  *
  */
-@org.pentaho.di.core.annotations.Job(image="ui/images/TRN.png",id="TRANS",type=JobEntryType.TRANS,tooltip="JobEntry.Trans.Tooltip")
+@org.pentaho.di.core.annotations.Job
+(
+		image="ui/images/TRN.png",
+		id="TRANS",
+		type=JobEntryType.TRANS,
+		tooltip="JobEntry.Trans.Tooltip",
+		category=JobEntryCategory.CATEGORY_GENERAL
+)
 public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryInterface
 {
 	private String              transname;

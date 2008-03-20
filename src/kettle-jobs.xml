@@ -33,11 +33,13 @@
 		<class-name>
 			org.pentaho.di.job.entries.job.JobEntryJob
 		</class-name>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@GENERAL.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.Job.Tooltip")
 		</tooltip>
 		<image-uri>ui/images/JOB.png</image-uri>
 	</job>
+	
 	<job id="SHELL">
 		<type>
 			ognl:@org.pentaho.di.job.JobEntryType@SHELL
@@ -45,11 +47,13 @@
 		<class-name>
 			org.pentaho.di.job.entries.shell.JobEntryShell
 		</class-name>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@SCRIPTING.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.Shell.Tooltip")
 		</tooltip>
 		<image-uri>ui/images/SHL.png</image-uri>
 	</job>
+	
 	<job id="MAIL">
 		<type>
 			ognl:@org.pentaho.di.job.JobEntryType@MAIL
@@ -57,11 +61,13 @@
 		<class-name>
 			org.pentaho.di.job.entries.mail.JobEntryMail
 		</class-name>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@MAIL.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.Mail.Tooltip")
 		</tooltip>
 		<image-uri>ui/images/MAIL.png</image-uri>
 	</job>
+	
 	<job id="SQL">
 		<type>
 			ognl:@org.pentaho.di.job.JobEntryType@SQL
@@ -69,11 +75,13 @@
 		<class-name>
 			org.pentaho.di.job.entries.sql.JobEntrySQL
 		</class-name>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@SCRIPTING.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.SQL.Tooltip")
 		</tooltip>
 		<image-uri>ui/images/SQL.png</image-uri>
 	</job>
+	
 	<job id="FTP">
 		<type>
 			ognl:@org.pentaho.di.job.JobEntryType@FTP
@@ -81,11 +89,13 @@
 		<class-name>
 			org.pentaho.di.job.entries.ftp.JobEntryFTP
 		</class-name>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@FILE_MANAGEMENT.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.FTP.Tooltip")
 		</tooltip>
 		<image-uri>ui/images/FTP.png</image-uri>
 	</job>
+	
 	<job id="TABLE_EXISTS">
 		<type>
 			ognl:@org.pentaho.di.job.JobEntryType@TABLE_EXISTS
@@ -93,11 +103,13 @@
 		<class-name>
 			org.pentaho.di.job.entries.tableexists.JobEntryTableExists
 		</class-name>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@CONDITIONS.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.TableExists.Tooltip")
 		</tooltip>
 		<image-uri>ui/images/TEX.png</image-uri>
 	</job>
+	
 	<job id="FILE_EXISTS">
 		<type>
 			ognl:@org.pentaho.di.job.JobEntryType@FILE_EXISTS
@@ -105,11 +117,13 @@
 		<class-name>
 			org.pentaho.di.job.entries.fileexists.JobEntryFileExists
 		</class-name>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@CONDITIONS.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.FileExists.Tooltip")
 		</tooltip>
 		<image-uri>ui/images/FEX.png</image-uri>
 	</job>
+	
 	<job id="EVAL">
 		<type>
 			ognl:@org.pentaho.di.job.JobEntryType@EVAL
@@ -117,11 +131,13 @@
 		<class-name>
 			org.pentaho.di.job.entries.eval.JobEntryEval
 		</class-name>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@SCRIPTING.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.Evaluation.Tooltip")
 		</tooltip>
 		<image-uri>ui/images/RES.png</image-uri>
 	</job>
+	
 	<job id="SPECIAL">
 		<type>
 			ognl:@org.pentaho.di.job.JobEntryType@SPECIAL
@@ -129,11 +145,13 @@
 		<class-name>
 			org.pentaho.di.job.entries.special.JobEntrySpecial
 		</class-name>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@GENERAL.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.Special.Tooltip")
 		</tooltip>
 		<image-uri></image-uri>
 	</job>
+	
 	<job id="SFTP">
 		<type>
 			ognl:@org.pentaho.di.job.JobEntryType@SFTP
@@ -141,11 +159,13 @@
 		<class-name>
 			org.pentaho.di.job.entries.sftp.JobEntrySFTP
 		</class-name>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@FILE_MANAGEMENT.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.SFTP.Tooltip")
 		</tooltip>
 		<image-uri>ui/images/SFT.png</image-uri>
 	</job>
+	
 	<job id="HTTP">
 		<type>
 			ognl:@org.pentaho.di.job.JobEntryType@HTTP
@@ -153,11 +173,13 @@
 		<class-name>
 			org.pentaho.di.job.entries.http.JobEntryHTTP
 		</class-name>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@FILE_MANAGEMENT.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.HTTP.Tooltip")
 		</tooltip>
 		<image-uri>ui/images/WEB.png</image-uri>
 	</job>
+	
 	<job id="CREATE_FILE">
 		<type>
 			ognl:@org.pentaho.di.job.JobEntryType@CREATE_FILE
@@ -165,11 +187,13 @@
 		<class-name>
 			org.pentaho.di.job.entries.createfile.JobEntryCreateFile
 		</class-name>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@FILE_MANAGEMENT.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.CreateFile.Tooltip")
 		</tooltip>
 		<image-uri>ui/images/CFJ.png</image-uri>
 	</job>
+	
 	<job id="DELETE_FILE">
 		<type>
 			ognl:@org.pentaho.di.job.JobEntryType@DELETE_FILE
@@ -177,11 +201,13 @@
 		<class-name>
 			org.pentaho.di.job.entries.deletefile.JobEntryDeleteFile
 		</class-name>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@FILE_MANAGEMENT.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.DeleteFile.Tooltip")
 		</tooltip>
 		<image-uri>ui/images/DFJ.png</image-uri>
 	</job>
+	
 	<job id="WAIT_FOR_FILE">
 		<type>
 			ognl:@org.pentaho.di.job.JobEntryType@WAIT_FOR_FILE
@@ -189,11 +215,13 @@
 		<class-name>
 			org.pentaho.di.job.entries.waitforfile.JobEntryWaitForFile
 		</class-name>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@FILE_MANAGEMENT.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.WaitForFile.Tooltip")
 		</tooltip>
 		<image-uri>ui/images/WFF.png</image-uri>
 	</job>
+	
 	<job id="SFTPPUT">
 		<type>
 			ognl:@org.pentaho.di.job.JobEntryType@SFTPPUT
@@ -201,11 +229,13 @@
 		<class-name>
 			org.pentaho.di.job.entries.sftpput.JobEntrySFTPPUT
 		</class-name>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@FILE_MANAGEMENT.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.SFTPPut.Tooltip")
 		</tooltip>
 		<image-uri>ui/images/SFP.png</image-uri>
 	</job>
+	
 	<job id="FILE_COMPARE">
 		<type>
 			ognl:@org.pentaho.di.job.JobEntryType@FILE_COMPARE
@@ -213,11 +243,13 @@
 		<class-name>
 			org.pentaho.di.job.entries.filecompare.JobEntryFileCompare
 		</class-name>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@FILE_MANAGEMENT.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.FileCompare.Tooltip")
 		</tooltip>
 		<image-uri>ui/images/BFC.png</image-uri>
 	</job>
+	
 	<job id="MYSQL_BULK_LOAD">
 		<type>
 			ognl:@org.pentaho.di.job.JobEntryType@MYSQL_BULK_LOAD
@@ -225,11 +257,13 @@
 		<class-name>
 			org.pentaho.di.job.entries.mysqlbulkload.JobEntryMysqlBulkLoad
 		</class-name>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@BULK_LOADING.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.MysqlBulkLoad.Tooltip")
 		</tooltip>
 		<image-uri>ui/images/MBL.png</image-uri>
 	</job>
+	
 	<job id="MSGBOX_INFO">
 		<type>
 			ognl:@org.pentaho.di.job.JobEntryType@MSGBOX_INFO
@@ -237,11 +271,13 @@
 		<class-name>
 			org.pentaho.di.job.entries.msgboxinfo.JobEntryMsgBoxInfo
 		</class-name>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@GENERAL.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.MsgBoxInfo.Tooltip")
 		</tooltip>
 		<image-uri>ui/images/INF.png</image-uri>
 	</job>
+	
 	<job id="DELAY">
 		<type>
 			ognl:@org.pentaho.di.job.JobEntryType@DELAY
@@ -249,11 +285,13 @@
 		<class-name>
 			org.pentaho.di.job.entries.delay.JobEntryDelay
 		</class-name>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@CONDITIONS.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.Delay.Tooltip")
 		</tooltip>
 		<image-uri>ui/images/DLT.png</image-uri>
 	</job>
+	
 	<job id="ZIP_FILE">
 		<type>
 			ognl:@org.pentaho.di.job.JobEntryType@ZIP_FILE
@@ -261,11 +299,13 @@
 		<class-name>
 			org.pentaho.di.job.entries.zipfile.JobEntryZipFile
 		</class-name>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@FILE_MANAGEMENT.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.ZipFile.Tooltip")
 		</tooltip>
 		<image-uri>ui/images/ZIP.png</image-uri>
 	</job>
+	
 	<job id="XSLT">
 		<type>
 			ognl:@org.pentaho.di.job.JobEntryType@XSLT
@@ -273,11 +313,13 @@
 		<class-name>
 			org.pentaho.di.job.entries.xslt.JobEntryXSLT
 		</class-name>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@XML.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.XSLT.Tooltip")
 		</tooltip>
 		<image-uri>ui/images/XSLT.png</image-uri>
 	</job>
+	
 	<job id="MYSQL_BULK_FILE">
 		<type>
 			ognl:@org.pentaho.di.job.JobEntryType@MYSQL_BULK_FILE
@@ -285,11 +327,13 @@
 		<class-name>
 			org.pentaho.di.job.entries.mysqlbulkfile.JobEntryMysqlBulkFile
 		</class-name>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@BULK_LOADING.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.MysqlBulkFile.Tooltip")
 		</tooltip>
 		<image-uri>ui/images/MBF.png</image-uri>
 	</job>
+	
 	<job id="ABORT">
 		<type>
 			ognl:@org.pentaho.di.job.JobEntryType@ABORT
@@ -297,11 +341,13 @@
 		<class-name>
 			org.pentaho.di.job.entries.abort.JobEntryAbort
 		</class-name>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@GENERAL.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.Abort.Tooltip")
 		</tooltip>
 		<image-uri>ui/images/ABR.png</image-uri>
 	</job>
+	
 	<job id="GET_POP">
 		<type>
 			ognl:@org.pentaho.di.job.JobEntryType@GET_POP
@@ -309,11 +355,13 @@
 		<class-name>
 			org.pentaho.di.job.entries.getpop.JobEntryGetPOP
 		</class-name>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@MAIL.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.GetPOP.Tooltip")
 		</tooltip>
 		<image-uri>ui/images/GETPOP.png</image-uri>
 	</job>
+	
 	<job id="PING">
 		<type>
 			ognl:@org.pentaho.di.job.JobEntryType@PING
@@ -321,11 +369,13 @@
 		<class-name>
 			org.pentaho.di.job.entries.ping.JobEntryPing
 		</class-name>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@GENERAL.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.Ping.Tooltip")
 		</tooltip>
 		<image-uri>ui/images/PNG.png</image-uri>
 	</job>
+	
 	<job id="DELETE_FILES">
 		<type>
 			ognl:@org.pentaho.di.job.JobEntryType@DELETE_FILES
@@ -333,11 +383,13 @@
 		<class-name>
 			org.pentaho.di.job.entries.deletefiles.JobEntryDeleteFiles
 		</class-name>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@FILE_MANAGEMENT.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.DeleteFiles.Tooltip")
 		</tooltip>
 		<image-uri>ui/images/DFS.png</image-uri>
 	</job>
+	
 	<job id="SUCCESS">
 		<type>
 			ognl:@org.pentaho.di.job.JobEntryType@SUCCESS
@@ -345,11 +397,13 @@
 		<class-name>
 			org.pentaho.di.job.entries.success.JobEntrySuccess
 		</class-name>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@GENERAL.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.Success.Tooltip")
 		</tooltip>
 		<image-uri>ui/images/SUC.png</image-uri>
 	</job>
+	
 	<job id="XSD_VALIDATOR">
 		<type>
 			ognl:@org.pentaho.di.job.JobEntryType@XSD_VALIDATOR
@@ -357,11 +411,13 @@
 		<class-name>
 			org.pentaho.di.job.entries.xsdvalidator.JobEntryXSDValidator
 		</class-name>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@XML.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.XSDValidator.Tooltip")
 		</tooltip>
 		<image-uri>ui/images/XSD.png</image-uri>
 	</job>
+	
 	<job id="WRITE_TO_LOG">
 		<type>
 			ognl:@org.pentaho.di.job.JobEntryType@WRITE_TO_LOG
@@ -369,23 +425,27 @@
 		<class-name>
 			org.pentaho.di.job.entries.writetolog.JobEntryWriteToLog
 		</class-name>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@GENERAL.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.WriteToLog.Tooltip")
 		</tooltip>
 		<image-uri>ui/images/WTL.png</image-uri>
 	</job>
-		<job id="COPY_FILES">
+	
+	<job id="COPY_FILES">
 		<type>
 			ognl:@org.pentaho.di.job.JobEntryType@COPY_FILES
 		</type>
 		<class-name>
 			org.pentaho.di.job.entries.copyfiles.JobEntryCopyFiles
 		</class-name>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@FILE_MANAGEMENT.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.CopyFiles.Tooltip")
 		</tooltip>
 		<image-uri>ui/images/CPY.png</image-uri>
 	</job>
+	
 	<job id="DTD_VALIDATOR">
 		<type>
 			ognl:@org.pentaho.di.job.JobEntryType@DTD_VALIDATOR
@@ -393,25 +453,27 @@
 		<class-name>
 			org.pentaho.di.job.entries.dtdvalidator.JobEntryDTDValidator
 		</class-name>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@XML.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.DTDValidator.Tooltip")
 		</tooltip>
 		<image-uri>ui/images/DTD.png</image-uri>
 	</job>
 	
-	
-		<job id="FTP_PUT">
+	<job id="FTP_PUT">
 		<type>
 			ognl:@org.pentaho.di.job.JobEntryType@FTP_PUT
 		</type>
 		<class-name>
 			org.pentaho.di.job.entries.ftpput.JobEntryFTPPUT
 		</class-name>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@FILE_MANAGEMENT.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.FTPPUT.Tooltip")
 		</tooltip>
 		<image-uri>ui/images/PFP.png</image-uri>
 	</job>
+
 	<job id="UNZIP">
 		<type>
 			ognl:@org.pentaho.di.job.JobEntryType@UNZIP
@@ -419,30 +481,35 @@
 		<class-name>
 			org.pentaho.di.job.entries.unzip.JobEntryUnZip
 		</class-name>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@FILE_MANAGEMENT.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.UnZip.Tooltip")
 		</tooltip>
 		<image-uri>ui/images/UZP.png</image-uri>
 	</job>
-		<job id="CREATE_FOLDER">
+	
+	<job id="CREATE_FOLDER">
 		<type>
 			ognl:@org.pentaho.di.job.JobEntryType@CREATE_FOLDER
 		</type>
 		<class-name>
 			org.pentaho.di.job.entries.createfolder.JobEntryCreateFolder
 		</class-name>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@FILE_MANAGEMENT.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.CreateFolder.Tooltip")
 		</tooltip>
 		<image-uri>ui/images/CRF.png</image-uri>
 	</job>
-		<job id="FOLDER_IS_EMPTY">
+	
+	<job id="FOLDER_IS_EMPTY">
 		<type>
 			ognl:@org.pentaho.di.job.JobEntryType@FOLDER_IS_EMPTY
 		</type>
 		<class-name>
 			org.pentaho.di.job.entries.folderisempty.JobEntryFolderIsEmpty
 		</class-name>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@CONDITIONS.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.FolderIsEmpty.Tooltip")
 		</tooltip>
@@ -456,11 +523,13 @@
 		<class-name>
 			org.pentaho.di.job.entries.filesexist.JobEntryFilesExist
 		</class-name>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@CONDITIONS.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.FilesExist.Tooltip")
 		</tooltip>
 		<image-uri>ui/images/LFE.png</image-uri>
 	</job>
+	
 	<job id="FOLDERS_COMPARE">
 		<type>
 			ognl:@org.pentaho.di.job.JobEntryType@FOLDERS_COMPARE
@@ -468,37 +537,41 @@
 		<class-name>
 			org.pentaho.di.job.entries.folderscompare.JobEntryFoldersCompare
 		</class-name>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@FILE_MANAGEMENT.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.FoldersCompare.Tooltip")
 		</tooltip>
 		<image-uri>ui/images/FCP.png</image-uri>
 	</job>
 	
-		<job id="ADD_RESULT_FILENAMES">
+	<job id="ADD_RESULT_FILENAMES">
 		<type>
 			ognl:@org.pentaho.di.job.JobEntryType@ADD_RESULT_FILENAMES
 		</type>
 		<class-name>
 			org.pentaho.di.job.entries.addresultfilenames.JobEntryAddResultFilenames
 		</class-name>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@FILE_MANAGEMENT.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.AddResultFilenames.Tooltip")
 		</tooltip>
 		<image-uri>ui/images/AFN.png</image-uri>
 	</job>
 	
-		<job id="DELETE_RESULT_FILENAMES">
+	<job id="DELETE_RESULT_FILENAMES">
 		<type>
 			ognl:@org.pentaho.di.job.JobEntryType@DELETE_RESULT_FILENAMES
 		</type>
 		<class-name>
 			org.pentaho.di.job.entries.deleteresultfilenames.JobEntryDeleteResultFilenames
 		</class-name>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@FILE_MANAGEMENT.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.DeleteResultFilenames.Tooltip")
 		</tooltip>
 		<image-uri>ui/images/DFN.png</image-uri>
 	</job>
+	
 	<job id="MSSQL_BULK_LOAD">
 		<type>
 			ognl:@org.pentaho.di.job.JobEntryType@MSSQL_BULK_LOAD
@@ -506,11 +579,13 @@
 		<class-name>
 			org.pentaho.di.job.entries.mssqlbulkload.JobEntryMssqlBulkLoad
 		</class-name>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@BULK_LOADING.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.MssqlBulkLoad.Tooltip")
 		</tooltip>
 		<image-uri>ui/images/MBL.png</image-uri>
 	</job>
+	
 	<job id="MOVE_FILES">
 		<type>
 			ognl:@org.pentaho.di.job.JobEntryType@MOVE_FILES
@@ -518,11 +593,13 @@
 		<class-name>
 			org.pentaho.di.job.entries.movefiles.JobEntryMoveFiles
 		</class-name>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@FILE_MANAGEMENT.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.MoveFiles.Tooltip")
 		</tooltip>
 		<image-uri>ui/images/MVF.png</image-uri>
 	</job>
+	
 	<job id="COPY_MOVE_RESULT_FILENAMES">
 		<type>
 			ognl:@org.pentaho.di.job.JobEntryType@COPY_MOVE_RESULT_FILENAMES
@@ -530,6 +607,7 @@
 		<class-name>
 			org.pentaho.di.job.entries.copymoveresultfilenames.JobEntryCopyMoveResultFilenames
 		</class-name>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@FILE_MANAGEMENT.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.CopyMoveResultFilenames.Tooltip")
 		</tooltip>

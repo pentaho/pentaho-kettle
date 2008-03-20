@@ -29,6 +29,7 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.job.JobEntryCategory;
 import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.Repository;
@@ -65,6 +66,19 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
   private long id;
 
   protected VariableSpace variables = new Variables();
+  
+
+  public static final String category_order[] =
+  {
+      JobEntryCategory.GENERAL.getName(),
+      JobEntryCategory.MAIL.getName(),
+      JobEntryCategory.FILE_MANAGEMENT.getName(),
+      JobEntryCategory.CONDITIONS.getName(),
+      JobEntryCategory.SCRIPTING.getName(),
+      JobEntryCategory.BULK_LOADING.getName(),
+      JobEntryCategory.XML.getName(),
+  };
+
 
   public JobEntryBase()
   {

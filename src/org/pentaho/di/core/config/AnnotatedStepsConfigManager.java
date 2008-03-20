@@ -78,7 +78,7 @@ public class AnnotatedStepsConfigManager<T extends StepPluginMeta> extends Basic
 			// Determine the i18n description of the step description (name)
 			//
 			
-			LogWriter.getInstance().setLogLevel(LogWriter.LOG_LEVEL_BASIC); // avoid i18n messsages for missing locale
+			LogWriter.getInstance().setLogLevel(LogWriter.LOG_LEVEL_BASIC); // avoid i18n messages for missing locale
 			String description = BaseMessages.getString(packageName, step.description());
 			if (description.startsWith("!") && description.endsWith("!")) description=Messages.getString(step.description());
 			LogWriter.getInstance().setLogLevel(oldLogLevel); // restore loglevel, when the last alternative fails, log it when loglevel is detailed

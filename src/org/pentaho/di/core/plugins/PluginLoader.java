@@ -414,8 +414,14 @@ public class PluginLoader
 			Set<JobPlugin> jps = (Set<JobPlugin>) this.plugins.get(Job.class);
 
 			JobPlugin plg = new JobPlugin(Plugin.TYPE_PLUGIN, id, description, tooltip, parent.getName()
-					.getURI(), jarfiles, iconFilename, classname);
+					.getURI(), jarfiles, iconFilename, classname, category);
 			plg.setClassLoader(cl);
+
+			// Add localized information too...
+			plg.setLocalizedCategories(localizedCategories);
+			plg.setLocalizedDescriptions(localizedDescriptions);
+			plg.setLocalizedTooltips(localizedTooltips);
+
 			jps.add(plg);
 		} else
 		{
@@ -451,7 +457,7 @@ public class PluginLoader
 			@SuppressWarnings("unchecked")
 			Set<JobPlugin> jps = (Set<JobPlugin>) this.plugins.get(Job.class);
 			JobPlugin pg = new JobPlugin(Plugin.TYPE_PLUGIN, jobAnnot.id(), jobAnnot.type().getDescription(),
-					jobAnnot.tooltip(), directory.getURL().getFile(), libs, jobAnnot.image(), match.getName());
+					jobAnnot.tooltip(), directory.getURL().getFile(), libs, jobAnnot.image(), match.getName(), jobAnnot.categoryDescription());
 
 			pg.setClassLoader(match.getClassLoader());
 

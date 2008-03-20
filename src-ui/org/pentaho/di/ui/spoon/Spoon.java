@@ -132,6 +132,7 @@ import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.LanguageChoice;
+import org.pentaho.di.job.JobEntryCategory;
 import org.pentaho.di.job.JobEntryLoader;
 import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobExecutionConfiguration;
@@ -1934,7 +1935,106 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 				}
 			}
 		}
+		
+		if (showJob)
+		{
+			// Fill the base components...
+			//
+			//////////////////////////////////////////////////////////////////////////////////////////////////
+			// JOBS
+			//////////////////////////////////////////////////////////////////////////////////////////////////
+            
+			final String locale = LanguageChoice.getInstance().getDefaultLocale().toString().toLowerCase();
 
+			JobEntryLoader jobEntryLoader = JobEntryLoader.getInstance();
+			JobPlugin baseJobEntries[] = jobEntryLoader.getJobEntriesWithType(JobPlugin.TYPE_ALL);
+			
+			final String baseCategories[] = jobEntryLoader.getCategories(JobPlugin.TYPE_ALL, locale);
+			
+			// Sort these base steps by category and then by step name in the given locale 
+			//
+			Arrays.sort(baseJobEntries, new Comparator<JobPlugin>() {
+			
+				public int compare(JobPlugin one, JobPlugin two) {
+					int idxOne = Const.indexOfString(one.getCategory(locale), baseCategories);
+					int idxTwo = Const.indexOfString(two.getCategory(locale), baseCategories);
+					if (idxOne==idxTwo) {
+						String nameOne = one.getDescription(locale);
+						String nameTwo = two.getDescription(locale);
+						return nameOne.compareTo(nameTwo);
+					}
+					else {
+						return idxOne-idxTwo;
+					}
+				}
+			});
+
+			TreeItem generalItem = null;
+			
+			for (int i = 0; i < baseCategories.length; i++)
+			{
+				TreeItem item = new TreeItem(coreObjectsTree, SWT.NONE);
+				item.setText(baseCategories[i]);
+				item.setImage(GUIResource.getInstance().getImageArrow());
+				
+				if (baseCategories[i].equalsIgnoreCase(JobEntryCategory.GENERAL.getName())) {
+					generalItem=item;
+				}
+
+				for (int j = 0; j < baseJobEntries.length; j++)
+				{
+					if (baseJobEntries[j].getCategory(locale).equalsIgnoreCase(baseCategories[i]))
+					{
+                        final Image jobEntryImage = (Image)GUIResource.getInstance().getImagesJobentriesSmall().get(baseJobEntries[j].getID());
+						String pluginName = baseJobEntries[j].getDescription(locale);
+						String pluginDescription = baseJobEntries[j].getTooltip(locale);
+						boolean isPlugin = baseJobEntries[j].isPlugin();
+
+						TreeItem stepItem = new TreeItem(item, SWT.NONE);
+						stepItem.setImage(jobEntryImage);
+						stepItem.setText(pluginName);
+						stepItem.addListener(SWT.Selection, new Listener() {
+						
+							public void handleEvent(Event arg0) {
+								System.out.println("Tree item Listener fired");
+							}
+						});
+						if (isPlugin) stepItem.setFont(GUIResource.getInstance().getFontBold());
+						
+						coreJobToolTipMap.put(pluginName, pluginDescription);
+					}
+				}
+			}
+			
+			// First add a few "Special entries: Start, Dummy, OK, ERROR
+			// We add these to the top of the base category, we don't care about the sort order here.
+			//
+			JobEntryCopy startEntry = JobMeta.createStartEntry();
+			JobEntryCopy dummyEntry = JobMeta.createDummyEntry();
+
+			String specialText[] = new String[] { startEntry.getName(), dummyEntry.getName(), };
+            String specialTooltip[] = new String[] { startEntry.getDescription(), dummyEntry.getDescription(),};
+            Image  specialImage[]= new Image[] { GUIResource.getInstance().getImageStartSmall(), GUIResource.getInstance().getImageDummySmall() };
+
+			for (int i = 0; i < specialText.length; i++)
+			{
+				TreeItem specialItem = new TreeItem(generalItem, SWT.NONE, i);
+				specialItem.setImage(specialImage[i]);
+				specialItem.setText(specialText[i]);
+				specialItem.addListener(SWT.Selection, new Listener() {
+				
+					public void handleEvent(Event arg0) {
+						System.out.println("Tree item Listener fired");
+					}
+				
+				});
+
+				coreJobToolTipMap.put(specialText[i], specialTooltip[i]);
+			}
+		}
+
+
+		/*
 		if (showJob)
 		{
 			TreeItem item = new TreeItem(coreObjectsTree, SWT.NONE);
@@ -1996,6 +2096,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 				}
 			}
 		}
+		*/
 
 		variableComposite.layout(true, true);
 
