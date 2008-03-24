@@ -843,4 +843,14 @@
 		</tooltip>
 		<image-uri>ui/images/SFtR.png</image-uri>
 	</step>	
+		<step id="PropertyInput">
+		<description>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.PropertyInput")
+		</description>
+		<class-name>org.pentaho.di.trans.steps.propertyinput.PropertyInputMeta</class-name>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@INPUT.getName()</category>
+		<tooltip>ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.PropertyInput")
+		</tooltip>
+		<image-uri>ui/images/PFI.png</image-uri>
+	</step>
 </steps>
