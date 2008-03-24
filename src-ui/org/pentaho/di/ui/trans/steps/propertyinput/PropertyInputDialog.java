@@ -924,14 +924,14 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 					else
 					{
 						FileDialog dialog = new FileDialog(shell, SWT.OPEN);
-						dialog.setFilterExtensions(new String[] {"*properties;*.PROPERTIES", "*"});
+						dialog.setFilterExtensions(new String[] {"*.properties;*.PROPERTIES", "*"});
 						if (wFilename.getText()!=null)
 						{
 							String fname = "";//StringUtil.environmentSubstitute(wFilename.getText());
 							dialog.setFileName( fname );
 						}
 						
-						dialog.setFilterNames(new String[] {Messages.getString("PropertyInputDialog.FileType.AccessFiles"), Messages.getString("System.FileType.AllFiles")});
+						dialog.setFilterNames(new String[] {Messages.getString("PropertyInputDialog.FileType.PropertiesFiles"), Messages.getString("System.FileType.AllFiles")});
 						
 						if (dialog.open()!=null)
 						{
