@@ -927,7 +927,7 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 						dialog.setFilterExtensions(new String[] {"*.properties;*.PROPERTIES", "*"});
 						if (wFilename.getText()!=null)
 						{
-							String fname = "";//StringUtil.environmentSubstitute(wFilename.getText());
+							String fname = "";
 							dialog.setFileName( fname );
 						}
 						
@@ -1231,7 +1231,7 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 	{
         try
         {
-            // Create the Access input step
+            
             PropertyInputMeta oneMeta = new PropertyInputMeta();
             getInfo(oneMeta);
       

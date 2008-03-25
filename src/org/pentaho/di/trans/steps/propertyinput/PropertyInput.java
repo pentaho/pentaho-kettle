@@ -214,7 +214,7 @@ public class PropertyInput extends BaseStep implements StepInterface
 		 catch (Exception e)
 		 {
 			 
-			throw new KettleException("Unable to read row from Access file", e);
+			throw new KettleException("Unable to read row from property  file", e);
 			
 		 }
 		 
