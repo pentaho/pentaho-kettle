@@ -580,7 +580,7 @@
 		  	<test todir="${junit}" name="org.pentaho.di.core.row.RowTest" haltonerror="false" />
 		  	<test todir="${junit}" name="org.pentaho.di.core.row.ValueDataUtilTest" haltonerror="false" />
 		  	<test todir="${junit}" name="org.pentaho.di.core.RowSetTest" haltonerror="false" />
-		  	<test todir="${junit}" name="org.pentaho.di.blackbox.BlackBoxTests.java" haltonerror="false" />
+		  	<test todir="${junit}" name="org.pentaho.di.blackbox.BlackBoxTests" haltonerror="false" />
 			
 		</junit>
 	</target>
