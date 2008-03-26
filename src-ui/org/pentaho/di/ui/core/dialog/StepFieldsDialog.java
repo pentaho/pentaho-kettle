@@ -139,7 +139,7 @@ public class StepFieldsDialog extends Dialog
 			new ColumnInfo(Messages.getString("StepFieldsDialog.TableCol.Decimal"), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
 			new ColumnInfo(Messages.getString("StepFieldsDialog.TableCol.Group"), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
 			new ColumnInfo(Messages.getString("StepFieldsDialog.TableCol.TrimType"), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
-			new ColumnInfo(Messages.getString("StepFieldsDialog.TableCol.Group"), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
+			new ColumnInfo(Messages.getString("StepFieldsDialog.TableCol.Comments"), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
 		};
 		
 		wFields=new TableView(variables, shell, 
