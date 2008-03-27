@@ -386,23 +386,25 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 			throw new KettleException(Messages.getString("JobMoveFiles.Error.Exception.UnableSaveRep")+id_job, dbe);
 		}
 	}
-
 	public Result execute(Result previousResult, int nr, Repository rep, Job parentJob) throws KettleException 
 	{
 		LogWriter log = LogWriter.getInstance();
 		Result result = previousResult;
-
 	    List<RowMetaAndData> rows = result.getRows();
-	    RowMetaAndData resultRow = null;
+	    RowMetaAndData resultRow = null; 
 		
 	    NrErrors=0;
 	    NrSuccess=0;
 		DoNotProcessRest=false;
 		
-		if(log.isDetailed())
+		if(simulate)
 		{
-			if(simulate) log.logDetailed(toString(), Messages.getString("JobMoveFiles.Log.SimulationOn"));
+			if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobMoveFiles.Log.SimulationOn"));
 		}
+		if(include_subfolders)
+		{
+			if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobMoveFiles.Log.IncludeSubFoldersOn"));
+		}	
 		
 		String MoveToFolder=environmentSubstitute(destinationFolder);
 		// Get source and destination files, also wildcard
@@ -475,8 +477,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 		if (arg_from_previous && rows!=null) // Copy the input row to the (command line) arguments
 		{
 			for (int iteration=0;iteration<rows.size();iteration++) 
-			{
-			
+			{			
 				resultRow = rows.get(iteration);
 			
 				// Get source and destination file names, also wildcard
@@ -566,6 +567,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 			log.logDetailed(toString(), "=======================================");
 		}
 		
+		
 		return result;
 	}
 	private boolean getStatus()
@@ -608,7 +610,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 		      
 			sourcefilefolder = KettleVFS.getFileObject(realSourceFilefoldername);
 			destinationfilefolder = KettleVFS.getFileObject(realDestinationFilefoldername);
-			movetofolderfolder   =KettleVFS.getFileObject(MoveToFolder);
+			if(!Const.isEmpty(MoveToFolder)) movetofolderfolder  =KettleVFS.getFileObject(MoveToFolder);
 			
 			if (sourcefilefolder.exists())
 			{
@@ -639,6 +641,14 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 							// Source is a file, destination is a folder
 							// return destination short filename
 							String shortfilename=sourcefilefolder.getName().getBaseName();
+							
+							//String SubFolders=sourcefilefolder.toString().substring(0, sourcefilefolder.toString().lastIndexOf(Const.FILE_SEPARATOR));
+							
+							
+							//log.logBasic(toString(), "Base folder : "+ SubFolders);
+							//SubFolders=SubFolders.substring(sourcefilefolder.getName().getBaseName().length(),SubFolders.length());
+							//log.logBasic(toString(), "SubFolders : "+ SubFolders);
+							
 							try{
 							 shortfilename=getDestinationFilename(sourcefilefolder.getName().getBaseName());
 							}catch (Exception e)
@@ -646,6 +656,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 								log.logError(toString(), Messages.getString(Messages.getString("JobMoveFiles.Error.GettingFilename",sourcefilefolder.getName().getBaseName(),e.toString())));
 								return entrystatus;
 							}
+							
 							
 							
 							// Move the file to the destination folder				
@@ -725,7 +736,8 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 	                        {
 	                            for (int j = 0; j < fileObjects.length; j++)
 	                            {
-	                            	// Fetch files list one after one ...
+
+	                            	// Fetch files in list one after one ...
 	                                Currentfile=fileObjects[j];
 	                                if(!DoNotProcessRest)
 	    			           		{
@@ -810,9 +822,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 				}
 				catch ( IOException ex ) {};
 			}
-			
-			
-			
+	
 		}
 
 		return entrystatus;
@@ -822,12 +832,13 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 			FileObject destinationfilename,FileObject movetofolderfolder,
 			LogWriter log,Job parentJob,Result result)
 	{
+		
 		FileObject destinationfile=null;
 		boolean retval =false;
 		try{
 		if(!destinationfilename.exists())
 		{
-			sourcefilename.moveTo(destinationfilename);
+			if(!simulate) sourcefilename.moveTo(destinationfilename);
 			if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobMoveFiles.Log.FileMoved",sourcefilename.getName().toString(),destinationfilename.getName().toString()));
 		
 			// add filename to result filename
@@ -842,7 +853,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 			if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobMoveFiles.Log.FileExists",destinationfilename.toString()));
 			if(iffileexists.equals("overwrite_file"))
 			{
-				sourcefilename.moveTo(destinationfilename);
+				if(!simulate) sourcefilename.moveTo(destinationfilename);
 				if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobMoveFiles.Log.FileOverwrite",destinationfilename.getName().toString()));
 			
 				// add filename to result filename
@@ -870,21 +881,20 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 				destinationfile = KettleVFS.getFileObject(movetofilenamefull);
 				
 				
-				sourcefilename.moveTo(destinationfile);
+				if(!simulate) sourcefilename.moveTo(destinationfile);
 				if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobMoveFiles.Log.FileMoved",sourcefilename.getName().toString(),destinationfile.getName().toString()));
+				
 				
 				// add filename to result filename
 				if(add_result_filesname && !iffileexists.equals("fail") && !iffileexists.equals("do_nothing")) 
 					addFileToResultFilenames(destinationfile.toString(),log,result,parentJob);
-				
-				updateSuccess();
 			
 				
-				
+				updateSuccess();
 			}
 			else if(iffileexists.equals("delete_file"))
 			{
-				destinationfilename.delete();
+				if(!simulate) destinationfilename.delete();
 				if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobMoveFiles.Log.FileDeleted",destinationfilename.getName().toString()));
 			}
 			else if(iffileexists.equals("move_file"))
@@ -901,32 +911,27 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 				
 				String movetofilenamefull=movetofolderfolder.toString()+Const.FILE_SEPARATOR+short_filename;
 				destinationfile = KettleVFS.getFileObject(movetofilenamefull);
-				
 				if(!destinationfile.exists())
 				{
-					//sourcefilename.moveTo(destinationfile);
+					if(!simulate) sourcefilename.moveTo(destinationfile);
 					if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobMoveFiles.Log.FileMoved",sourcefilename.getName().toString(),destinationfile.getName().toString()));
 				
 					// add filename to result filename
 					if(add_result_filesname && !iffileexists.equals("fail") && !iffileexists.equals("do_nothing")) 
 						addFileToResultFilenames(destinationfile.toString(),log,result,parentJob);	
 					
-					updateSuccess();
-					
 				}else
 				{
-				
 					if(ifmovedfileexists.equals("overwrite_file"))
 					{
-						sourcefilename.moveTo(destinationfile);
+						if(!simulate) sourcefilename.moveTo(destinationfile);
 						if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobMoveFiles.Log.FileOverwrite",destinationfile.getName().toString()));
 					
 						// add filename to result filename
 						if(add_result_filesname && !iffileexists.equals("fail") && !iffileexists.equals("do_nothing")) 
 							addFileToResultFilenames(destinationfile.toString(),log,result,parentJob);
-						
-						updateSuccess();
 					
+						updateSuccess();
 					}
 					else if(ifmovedfileexists.equals("unique_name"))
 					{
@@ -939,15 +944,14 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 						String destinationfilenamefull=movetofolderfolder.toString()+Const.FILE_SEPARATOR+short_filename;
 						destinationfile= KettleVFS.getFileObject(destinationfilenamefull);
 							
-						sourcefilename.moveTo(destinationfile);
+						if(!simulate) sourcefilename.moveTo(destinationfile);
 						if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobMoveFiles.Log.FileMoved",destinationfile.getName().toString()));
 					
 						// add filename to result filename
 						if(add_result_filesname && !iffileexists.equals("fail") && !iffileexists.equals("do_nothing")) 
 							addFileToResultFilenames(destinationfile.toString(),log,result,parentJob);
-						
-						updateSuccess();
 					
+						updateSuccess();
 					}
 					else if(ifmovedfileexists.equals("fail"))
 					{
@@ -955,7 +959,6 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 						updateErrors();
 					}
 				}
-				
 				
 			}
 			else if(iffileexists.equals("fail"))
@@ -990,22 +993,27 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 	{
 		boolean entrystatus=false;
 		FileObject file_name=null;
+		
 	try {
      	if (!Currentfile.toString().equals(sourcefilefolder.toString()))
 		{
 			// Pass over the Base folder itself
 			
     		// return destination short filename
-    		String shortfilename=Currentfile.getName().getBaseName();
+     		String sourceshortfilename=Currentfile.getName().getBaseName();
+    		String shortfilename=sourceshortfilename;
 			try{
-			  shortfilename=getDestinationFilename(Currentfile.getName().getBaseName());
+			  shortfilename=getDestinationFilename(sourceshortfilename);
 			}catch (Exception e)
 			{
 				log.logError(toString(), Messages.getString(Messages.getString("JobMoveFiles.Error.GettingFilename",Currentfile.getName().getBaseName(),e.toString())));
 				return entrystatus;
 			}
+			
+			
+			
 			//log.logBasic("-----Current-------", Currentfile.getName().getBaseName());
-			int lenCurrent=Currentfile.getName().getBaseName().length();
+			int lenCurrent=sourceshortfilename.length();
 			//log.logBasic("-----short_filename-------", shortfilename);
 			String short_filename_from_basefolder=shortfilename;
 			if(!isDoNotKeepFolderStructure())	
@@ -1015,9 +1023,12 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 			//log.logBasic("-----short_filename_from_basefolder-------", short_filename_from_basefolder);
 			// Built destination filename
 			file_name=KettleVFS.getFileObject(realDestinationFilefoldername + Const.FILE_SEPARATOR + short_filename_from_basefolder); 
+			 
+
 			
 			if (!Currentfile.getParent().toString().equals(sourcefilefolder.toString()))
 			 {
+				
 				// Not in the Base Folder..Only if include sub folders  
 				 if (include_subfolders)
 				 {
@@ -1028,100 +1039,16 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 						 {
 							 entrystatus=MoveFile(shortfilename,Currentfile,file_name,movetofolderfolder,log,parentJob,result);
 
-							/* if (!file_name.exists())
-							 {
-								// Move Folder
-								Currentfile.moveTo(file_name);
-								 
-								 if(log.isDetailed())
-								 {	                											 
-									 log.logDetailed(toString()," ------ ");
-									 log.logDetailed(toString(), Messages.getString("JobMoveFiles.Log.FolderMoved",Currentfile.getName().toString(),file_name.getName().toString()));
-
-								 }
-								 
-								 // add filename to result filename
-								 if(add_result_filesname && !iffileexists.equals("fail") && !iffileexists.equals("do_nothing")) 
-									 addFileToResultFilenames(file_name.toString(),log,result,parentJob);
-							
-								
-							 }
-							 else
-							 {
-								 if(log.isDetailed()) 
-								 {
-									 log.logDetailed(toString()," ------ ");
-									 log.logDetailed(toString(), Messages.getString("JobMoveFiles.Log.FolderExists", file_name.toString()));
-								 }
-								
-								 entrystatus=MoveFile(shortfilename,Currentfile,file_name,movetofolderfolder,log,parentJob,result);
-
-								if (overwrite_files)
-								 {
-									 // Move File
-									 Currentfile.moveTo(file_name);
-										
-									
-									 if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobMoveFiles.Log.FileOverwrite",file_name.getName().toString()));
-										
-									 // add filename to result filename
-									 if(add_result_filesname && !iffileexists.equals("fail") && iffileexists.equals("do_nothing")) 
-										 addFileToResultFilenames(file_name.toString(),log,result,parentJob);
-								 
-									 
-								 }
-							 } */
 						 }
 						 
 					 }
 					 else
 					 {
-						if (GetFileWildcard(shortfilename,realWildcard))
+					
+						if (GetFileWildcard(sourceshortfilename,realWildcard))
 						{	
 							entrystatus=MoveFile(shortfilename,Currentfile,file_name,movetofolderfolder,log,parentJob,result);
 
-							// Check if the file exists
-							 /*if (!file_name.exists())
-							 {
-								 // Move File
-								 Currentfile.moveTo(file_name);
-								 
-								if(log.isDetailed()) 
-								{
-									log.logDetailed(toString()," ------ ");
-									log.logDetailed(toString(), Messages.getString("JobMoveFiles.Log.FileMoved",Currentfile.toString(),file_name.toString()));
-									
-								}
-								// add filename to result filename
-								if(add_result_filesname && !iffileexists.equals("fail") && iffileexists.equals("do_nothing")) 
-									addFileToResultFilenames(file_name.toString(),log,result,parentJob);
-								
-							
-							 }
-							 else
-							 {
-								
-								 if(log.isDetailed()) 
-								 {
-									 log.logDetailed(toString()," ------ ");
-									 log.logDetailed(toString(), Messages.getString("JobMoveFiles.Log.FileExists",file_name.getName().toString()));
-								 }
-								
-								 if (overwrite_files)
-								 {
-									 // Move File
-									 Currentfile.moveTo(file_name);
-									 
-									 if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobMoveFiles.Log.FileOverwrite",file_name.toString()));
-										
-									 
-									 // add filename to result filename
-									 if(add_result_filesname && !iffileexists.equals("fail") && iffileexists.equals("do_nothing")) 
-										 addFileToResultFilenames(file_name.toString(),log,result,parentJob);
-								 
-
-								 }
-							 }*/
 						}
 					 }
 				 }
@@ -1136,97 +1063,19 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 					 {
 						 entrystatus=MoveFile(shortfilename,Currentfile,file_name,movetofolderfolder,log,parentJob,result);
 
-						 /*if (!file_name.exists())
-						 {
-							 // Move File
-							 Currentfile.moveTo(file_name);
-							 
-							 if(log.isDetailed())  
-							{
-								 log.logDetailed(toString()," ------ ");
-								 log.logDetailed(toString(), Messages.getString("JobMoveFiles.Log.FileMoved",Currentfile.toString(),file_name.toString()));
-								
-							}
-							 // add filename to result filename
-							 if(add_result_filesname && !iffileexists.equals("fail") && iffileexists.equals("do_nothing")) 
-								 addFileToResultFilenames(file_name.toString(),log,result,parentJob);
-						 
-						 }
-						 else
-						 {
-							 if(log.isDetailed())  
-							 {
-								 log.logDetailed(toString()," ------ ");
-								 log.logDetailed(toString(), Messages.getString("JobMoveFiles.Log.FileExists",file_name.getName().toString()));
-							 }
-							 
-							 if (overwrite_files)
-							 {
-								 // Move File
-								 Currentfile.moveTo(file_name);
-								 
-								 if(log.isDetailed())  log.logDetailed(toString(), Messages.getString("JobMoveFiles.Log.FileOverwrite",file_name.toString()));
-									
-								 
-								 // add filename to result filename
-								 if(add_result_filesname && !iffileexists.equals("fail") && iffileexists.equals("do_nothing")) 
-									 addFileToResultFilenames(file_name.toString(),log,result,parentJob);
-							  
-
-							 }
-						 }*/
 
 					 }
 				 }
 				 else
 				 {
+
 					 // file...Check if exists
-					 if (GetFileWildcard(shortfilename,realWildcard))
+					 if (GetFileWildcard(sourceshortfilename,realWildcard))
 					 {	
+						
 						 entrystatus=MoveFile(shortfilename,Currentfile,file_name,movetofolderfolder,log,parentJob,result);
 
-						 /*if (!file_name.exists())
-						 {
-							 // Move File
-							 Currentfile.moveTo(file_name);
-								 
-							 if(log.isDetailed())  
-							 {
-								 log.logDetailed(toString()," ------ ");
-								 log.logDetailed(toString(), Messages.getString("JobMoveFiles.Log.FileMoved",Currentfile.toString(),file_name.toString()));
-								 
-								
-							 }	
-							 // add filename to result filename
-							 if(add_result_filesname && !iffileexists.equals("fail") && iffileexists.equals("do_nothing")) 
-								 addFileToResultFilenames(file_name.toString(),log,result,parentJob);
-						 
-						 }
-						 else
-						 {
-								
-							 if(log.isDetailed())  
-							 {
-								 log.logDetailed(toString()," ------ ");
-								 log.logDetailed(toString(), Messages.getString("JobMoveFiles.Log.FileExists",file_name.getName().toString()));
-							 }
-							 
-
 						
-							 if (overwrite_files)
-							 {
-								 // Move File
-								 Currentfile.moveTo(file_name);
-								 
-								 if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobMoveFiles.Log.FileOverwrite",file_name.toString()));
-								 
-								 // add filename to result filename
-								 if(add_result_filesname && !iffileexists.equals("fail") && iffileexists.equals("do_nothing")) 
-									 addFileToResultFilenames(file_name.toString(),log,result,parentJob);
-							 
-							 } 
-							 
-						 }*/
 					 }
 				 }
 
@@ -1284,7 +1133,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 			
 		}catch (Exception e)
 		{
-			log.logError(toString(),Messages.getString("JobMoveFiles.Error.AddingToFilenameResult"),fileaddentry,e.getMessage());
+			log.logError(Messages.getString("JobMoveFiles.Error.AddingToFilenameResult"),fileaddentry + ""+e.getMessage());
 		}
 
 }
@@ -1491,12 +1340,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 	   return ifmovedfileexists;
    }
    
-
-	public void setCreateMoveToFolder(boolean create_move_to_folder)
-	{
-		this.create_move_to_folder=create_move_to_folder;
-	}
-
+   
    
    
    public void setAddTime(boolean addtime)
@@ -1579,10 +1423,6 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 		this.DoNotKeepFolderStructure=DoNotKeepFolderStructure;
 	}
    
-   public void setSimulate(boolean simulate)
-   {
-		this.simulate=simulate;
-   }
     
     public void setIgnoreRestOfFiles(boolean IgnoreRestOfFiles)
 	{
@@ -1624,6 +1464,12 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 		this.create_destination_folder=create_destination_folder;
 	}
 	
+	public void setCreateMoveToFolder(boolean create_move_to_folder)
+	{
+		this.create_move_to_folder=create_move_to_folder;
+	}
+	
+	
 	public void setDoNotProcessRest(boolean IgnoreRestOfFiles)
 	{
 		this.IgnoreRestOfFiles=IgnoreRestOfFiles;
@@ -1639,6 +1485,10 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 		return nr_errors_less_than;
 	}
 	
+	public void setSimulate(boolean simulate)
+	{
+		this.simulate=simulate;
+	}
 	
 	public void setSuccessCondition(String success_condition)
 	{
@@ -1649,27 +1499,27 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 		return success_condition;
 	}
 	
-	
-   public void check(List<CheckResultInterface> remarks, JobMeta jobMeta) 
-   {
-	    boolean res = andValidator().validate(this, "arguments", remarks, putValidators(notNullValidator())); 
 
-	    if (res == false) 
-	    {
-	      return;
-	    }
+	   public void check(List<CheckResultInterface> remarks, JobMeta jobMeta) 
+	   {
+		    boolean res = andValidator().validate(this, "arguments", remarks, putValidators(notNullValidator())); 
 
-	    ValidatorContext ctx = new ValidatorContext();
-	    putVariableSpace(ctx, getVariables());
-	    putValidators(ctx, notNullValidator(), fileExistsValidator());
+		    if (res == false) 
+		    {
+		      return;
+		    }
 
-	    for (int i = 0; i < source_filefolder.length; i++) 
-	    {
-	      andValidator().validate(this, "arguments[" + i + "]", remarks, ctx);
-	    } 
-	  }
+		    ValidatorContext ctx = new ValidatorContext();
+		    putVariableSpace(ctx, getVariables());
+		    putValidators(ctx, notNullValidator(), fileExistsValidator());
 
-   public boolean evaluates() {
-		return true;
-   }
-}
+		    for (int i = 0; i < source_filefolder.length; i++) 
+		    {
+		      andValidator().validate(this, "arguments[" + i + "]", remarks, ctx);
+		    } 
+		  }
+
+	   public boolean evaluates() {
+			return true;
+	   }
+	}
