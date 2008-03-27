@@ -52,6 +52,8 @@ import org.pentaho.di.core.gui.GUIPositionInterface;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.gui.SpoonFactory;
 import org.pentaho.di.core.gui.UndoInterface;
+import org.pentaho.di.core.listeners.FilenameChangedListener;
+import org.pentaho.di.core.listeners.NameChangedListener;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.reflection.StringSearchResult;
 import org.pentaho.di.core.reflection.StringSearcher;
@@ -227,6 +229,9 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     
     private Map<String, RowMetaInterface> stepsFieldsCache;
     
+    private List<NameChangedListener> nameChangedListeners;
+    private List<FilenameChangedListener> filenameChangedListeners;
+    
     // //////////////////////////////////////////////////////////////////////////
 
     public static final int     TYPE_UNDO_CHANGE   = 1;
@@ -279,7 +284,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     public TransMeta(String filename, String name, String arguments[])
     {
         clear();
-        this.filename = filename;
+        setFilename(filename);
         this.name = name;
         this.arguments = arguments;
         initializeVariablesFrom(null);
@@ -394,12 +399,12 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         
         slaveStepCopyPartitionDistribution = new SlaveStepCopyPartitionDistribution();
         
-        name = null;
+        setName(null);
 		description=null;
 		trans_status=-1;
 		trans_version=null;
 		extended_description=null;
-        filename = null;
+        setFilename(null);
         readStep = null;
         writeStep = null;
         inputStep = null;
@@ -2176,7 +2181,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
             if (r != null)
             {
-                name = r.getString("NAME", null); //$NON-NLS-1$
+                setName( r.getString("NAME", null) ); //$NON-NLS-1$
 
 				// Trans description
 				description = r.getString("DESCRIPTION", null);
@@ -2982,7 +2987,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
             // Name
             //
-            name = XMLHandler.getTagValue(infonode, "name"); //$NON-NLS-1$
+            setName( XMLHandler.getTagValue(infonode, "name") ); //$NON-NLS-1$
 
 			// description
             //
@@ -3330,11 +3335,12 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     /**
      * Set the name of the transformation.
      *
-     * @param n The new name of the transformation
+     * @param newName The new name of the transformation
      */
-    public void setName(String n)
+    public void setName(String newName)
     {
-        name = n;
+    	fireNameChangedListeners(this.name, newName);
+        this.name = newName;
         setInternalKettleVariables();
     }
 
@@ -3345,7 +3351,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     {
         if (!Const.isEmpty(filename))
         {
-            name = Const.createName(filename);
+            setName( Const.createName(filename) );
         }
     }
 
@@ -3366,11 +3372,13 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      */
     public void setFilename(String fname)
     {
-        filename = fname;
+    	fireFilenameChangedListeners(this.filename, fname); 
+        this.filename = fname;
         setInternalKettleVariables();
     }
 
-    /**
+
+	/**
      * Determines if a step has been used in a hop or not.
      *
      * @param stepMeta The step queried.
@@ -6053,4 +6061,53 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 	public void setStepPerformanceLogTable(String stepPerformanceLogTable) {
 		this.stepPerformanceLogTable = stepPerformanceLogTable;
 	}
+	
+	public void addNameChangedListener(NameChangedListener listener) {
+		if (nameChangedListeners==null) {
+			nameChangedListeners = new ArrayList<NameChangedListener>();
+		}
+		nameChangedListeners.add(listener);
+	}
+	
+	public void removeNameChangedListener(NameChangedListener listener) {
+		nameChangedListeners.remove(listener);
+	}
+
+	public void addFilenameChangedListener(FilenameChangedListener listener) {
+		if (filenameChangedListeners==null) {
+			filenameChangedListeners = new ArrayList<FilenameChangedListener>();
+		}
+		filenameChangedListeners.add(listener);
+	}
+
+	public void removeFilenameChangedListener(FilenameChangedListener listener) {
+		filenameChangedListeners.remove(listener);
+	}
+	
+	private boolean nameChanged(String oldFilename, String newFilename) {
+		if (oldFilename==null && newFilename==null) return false;
+		if (oldFilename==null && newFilename!=null) return true;
+		return oldFilename.equals(newFilename);
+	}
+	
+	private void fireFilenameChangedListeners(String oldFilename, String newFilename) {
+		if (nameChanged(oldFilename, newFilename)) {
+			if (filenameChangedListeners!=null) {
+				for (FilenameChangedListener listener : filenameChangedListeners) {
+					listener.filenameChanged(this, oldFilename, newFilename);
+				}
+			}
+		}
+	}
+
+	private void fireNameChangedListeners(String oldName, String newName) {
+		if (nameChanged(oldName, newName)) {
+			if (nameChangedListeners!=null) {
+				for (NameChangedListener listener : nameChangedListeners) {
+					listener.nameChanged(this, oldName, newName);
+				}
+			}
+		}
+	}
+
 }

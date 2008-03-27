@@ -41,6 +41,8 @@ import org.pentaho.di.core.gui.GUIPositionInterface;
 import org.pentaho.di.core.gui.OverwritePrompter;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.gui.UndoInterface;
+import org.pentaho.di.core.listeners.FilenameChangedListener;
+import org.pentaho.di.core.listeners.NameChangedListener;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.reflection.StringSearchResult;
 import org.pentaho.di.core.reflection.StringSearcher;
@@ -171,6 +173,10 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	/** The last loaded version of the shared objects */
 	private SharedObjects sharedObjects;
 
+	private List<NameChangedListener> nameChangedListeners;
+
+	private List<FilenameChangedListener> filenameChangedListeners;
+
 	public JobMeta(LogWriter l) {
 		log = l;
 		clear();
@@ -186,7 +192,8 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	}
 
 	public void clear() {
-		name = null;
+		setName( null );
+		setFilename( null );
 
 		jobcopies = new ArrayList<JobEntryCopy>();
 		jobentries = new ArrayList<JobEntryInterface>();
@@ -350,17 +357,24 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		return name;
 	}
 
-	public void setName(String name) {
-		this.name = name;
-		setInternalKettleVariables();
-	}
-
+    /**
+     * Set the name of the job.
+     *
+     * @param newName The new name of the job
+     */
+    public void setName(String newName)
+    {
+    	fireNameChangedListeners(this.name, newName);
+        this.name = newName;
+        setInternalKettleVariables();
+    }
+    
 	/**
 	 * Builds a name - if no name is set, yet - from the filename
 	 */
 	public void nameFromFilename() {
 		if (!Const.isEmpty(filename)) {
-			name = Const.createName(filename);
+			setName( Const.createName(filename) );
 		}
 	}
 
@@ -384,11 +398,18 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		return filename;
 	}
 
-	public void setFilename(String filename) {
-		this.filename = filename;
-		setInternalKettleVariables();
-	}
-
+    /**
+     * Set the filename of the job
+     *
+     * @param newFilename The new filename of the job
+     */
+    public void setFilename(String newFilename)
+    {
+    	fireFilenameChangedListeners(this.filename, newFilename); 
+        this.filename = newFilename;
+        setInternalKettleVariables();
+    }
+    
 	public DatabaseMeta getLogConnection() {
 		return logconnection;
 	}
@@ -686,7 +707,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 			//
 			// get job info:
 			//
-			name = XMLHandler.getTagValue(jobnode, "name"); //$NON-NLS-1$
+			setName( XMLHandler.getTagValue(jobnode, "name") ); //$NON-NLS-1$
 			
 			// Optionally load the repository directory...
 			//
@@ -1210,7 +1231,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 					monitor.subTask(Messages.getString("JobMeta.Monitor.ReadingJobInformation")); //$NON-NLS-1$
 				RowMetaAndData jobRow = rep.getJob(getID());
 
-				name = jobRow.getString("NAME", null); //$NON-NLS-1$
+				setName( jobRow.getString("NAME", null) ); //$NON-NLS-1$
 				description = jobRow.getString("DESCRIPTION", null); //$NON-NLS-1$
 				extended_description = jobRow.getString("EXTENDED_DESCRIPTION", null); //$NON-NLS-1$
 				job_version = jobRow.getString("JOB_VERSION", null); //$NON-NLS-1$
@@ -2736,5 +2757,53 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	 */
 	public void setSharedObjects(SharedObjects sharedObjects) {
 		this.sharedObjects = sharedObjects;
+	}
+	
+	public void addNameChangedListener(NameChangedListener listener) {
+		if (nameChangedListeners==null) {
+			nameChangedListeners = new ArrayList<NameChangedListener>();
+		}
+		nameChangedListeners.add(listener);
+	}
+	
+	public void removeNameChangedListener(NameChangedListener listener) {
+		nameChangedListeners.remove(listener);
+	}
+
+	public void addFilenameChangedListener(FilenameChangedListener listener) {
+		if (filenameChangedListeners==null) {
+			filenameChangedListeners = new ArrayList<FilenameChangedListener>();
+		}
+		filenameChangedListeners.add(listener);
+	}
+
+	public void removeFilenameChangedListener(FilenameChangedListener listener) {
+		filenameChangedListeners.remove(listener);
+	}
+	
+	private boolean nameChanged(String oldFilename, String newFilename) {
+		if (oldFilename==null && newFilename==null) return false;
+		if (oldFilename==null && newFilename!=null) return true;
+		return oldFilename.equals(newFilename);
+	}
+	
+	private void fireFilenameChangedListeners(String oldFilename, String newFilename) {
+		if (nameChanged(oldFilename, newFilename)) {
+			if (filenameChangedListeners!=null) {
+				for (FilenameChangedListener listener : filenameChangedListeners) {
+					listener.filenameChanged(this, oldFilename, newFilename);
+				}
+			}
+		}
+	}
+
+	private void fireNameChangedListeners(String oldName, String newName) {
+		if (nameChanged(oldName, newName)) {
+			if (nameChangedListeners!=null) {
+				for (NameChangedListener listener : nameChangedListeners) {
+					listener.nameChanged(this, oldName, newName);
+				}
+			}
+		}
 	}
 }
