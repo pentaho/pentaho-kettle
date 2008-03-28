@@ -88,6 +88,7 @@ public class ValueMetaTest extends TestCase
 	public void testIntegerToStringToInteger() throws Exception
 	{
 		ValueMetaInterface intValueMeta = new ValueMeta("i", ValueMetaInterface.TYPE_INTEGER);
+		intValueMeta.setConversionMask(null);
 		intValueMeta.setLength(7);
 		
 		Long originalValue = new Long(123L);
@@ -108,6 +109,7 @@ public class ValueMetaTest extends TestCase
 	public void testNumberToStringToNumber() throws Exception
 	{
 		ValueMetaInterface numValueMeta = new ValueMeta("i", ValueMetaInterface.TYPE_NUMBER);
+		numValueMeta.setConversionMask(null);
 		numValueMeta.setLength(7,3);
 		numValueMeta.setDecimalSymbol(",");
 		numValueMeta.setGroupingSymbol(".");
@@ -234,6 +236,7 @@ public class ValueMetaTest extends TestCase
 	{
 		byte[] data = ("1234").getBytes();
 		ValueMetaInterface intValueMeta = new ValueMeta("i", ValueMetaInterface.TYPE_INTEGER);
+		intValueMeta.setConversionMask(null);
 		intValueMeta.setLength(7);
 		intValueMeta.setStorageType(ValueMetaInterface.STORAGE_TYPE_BINARY_STRING);
 		ValueMetaInterface strValueMeta = new ValueMeta("str", ValueMetaInterface.TYPE_STRING);
@@ -262,6 +265,8 @@ public class ValueMetaTest extends TestCase
 	{
 		byte[] data = ("1,234.56").getBytes();
 		ValueMetaInterface numValueMeta = new ValueMeta("i", ValueMetaInterface.TYPE_NUMBER);
+		numValueMeta.setConversionMask(null);
+
 		// The representation formatting options.
 		//
 		numValueMeta.setLength(12,4);
