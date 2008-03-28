@@ -403,9 +403,17 @@ public class RowMeta implements RowMetaInterface
             index++;
             name = valueMeta.getName()+"_"+index;
         }
+        
+        // Create a copy of the valueMeta object to make sure we don't rename any other value meta objects.
+        // It's only being renamed because of the addition to THIS row metadata object, not another.
+        //
+        ValueMetaInterface copy = valueMeta.clone();
+        
         // OK, this is the new name to pick
-        valueMeta.setName(name);
-        return valueMeta;
+        //
+        copy.setName(name);
+        
+        return copy;
     }
 
     /**
