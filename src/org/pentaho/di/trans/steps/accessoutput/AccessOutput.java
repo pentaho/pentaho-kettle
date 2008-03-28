@@ -254,7 +254,7 @@ public class AccessOutput extends BaseStep implements StepInterface
 	            // Just for good measure.
 	            data.rows.clear();
 	            
-	            data.db.close();
+	            if(data.db!=null) data.db.close();
 			}
 			catch(IOException e)
 			{

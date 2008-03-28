@@ -1360,7 +1360,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		treeButton.setBackground(background);
 		treeButton.setFont(GUIResource.getInstance().getFontMedium());
 		treeButton.setText(STRING_SPOON_MAIN_TREE); 
-		treeButton.setToolTipText("The tree view of the currently loaded files"); //, GUIResource.getInstance().getImageLogoSmall(), GUIResource.getInstance().getImageKettleLogo());
+		treeButton.setToolTipText(Messages.getString("Spoon.MainTree.Tooltip")); //, GUIResource.getInstance().getImageLogoSmall(), GUIResource.getInstance().getImageKettleLogo());
 		FormData fdTreeButton = new FormData();
 		fdTreeButton.left=new FormAttachment(treeButtonImage,5);
 		fdTreeButton.right=new FormAttachment(95,0);
@@ -1390,8 +1390,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		sharedButton = new Label(mainComposite, SWT.LEFT );  
 		sharedButton.setBackground(background);
 		sharedButton.setFont(GUIResource.getInstance().getFontMedium());
-		sharedButton.setText("Shared Objects"); 
-		sharedButton.setToolTipText("Shared connections, steps, etc"); // , GUIResource.getInstance().getImageArrow(), GUIResource.getInstance().getImageConnection());
+		sharedButton.setText(Messages.getString("Spoon.SharedObjects")); 
+		sharedButton.setToolTipText(Messages.getString("Spoon.SharedObjects.Tooltip")); // , GUIResource.getInstance().getImageArrow(), GUIResource.getInstance().getImageConnection());
 		FormData fdSharedButton = new FormData();
 		fdSharedButton.left=new FormAttachment(sharedButtonImage, 5);
 		fdSharedButton.right=new FormAttachment(95,0);
@@ -1422,7 +1422,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		coreButton.setBackground(background);
 		coreButton.setFont(GUIResource.getInstance().getFontMedium());
 		coreButton.setText(STRING_SPOON_CORE_OBJECTS_TREE); 
-		coreButton.setToolTipText("Here are the core objects"); //, GUIResource.getInstance().getImageTransGraph(), GUIResource.getInstance().getImageBol());
+		coreButton.setToolTipText(Messages.getString("Spoon.CoreObjectsTree.Tooltip")); //, GUIResource.getInstance().getImageTransGraph(), GUIResource.getInstance().getImageBol());
 		FormData fdCoreButton = new FormData();
 		fdCoreButton.left=new FormAttachment(coreButtonImage,5);
 		fdCoreButton.right=new FormAttachment(95,0);
@@ -1452,8 +1452,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		historyButton = new Label(mainComposite, SWT.LEFT ); 
 		historyButton.setBackground(background);
 		historyButton.setFont(GUIResource.getInstance().getFontMedium());
-		historyButton.setText("History");
-		historyButton.setToolTipText("Resource usage history"); // , GUIResource.getInstance().getImageLogoSmall(), GUIResource.getInstance().getImageLogoSmall());
+		historyButton.setText(Messages.getString("Spoon.History"));
+		historyButton.setToolTipText(Messages.getString("Spoon.History.Tooltip")); // , GUIResource.getInstance().getImageLogoSmall(), GUIResource.getInstance().getImageLogoSmall());
 		FormData fdHistoryButton = new FormData();
 		fdHistoryButton.left=new FormAttachment(historyButtonImage,5);
 		fdHistoryButton.right=new FormAttachment(95,0);

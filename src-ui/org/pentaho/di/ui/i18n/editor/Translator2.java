@@ -698,7 +698,7 @@ public class Translator2
 					}
 				}
 				catch(KettleException e) {
-					new ErrorDialog(shell, "Error", "There was an error saving the changed messages files:", e);
+					new ErrorDialog(shell, Messages.getString("i18n.UnexpectedError"), "There was an error saving the changed messages files:", e);
 				}
 			}
 			
@@ -714,7 +714,7 @@ public class Translator2
 	protected void search(String searchLocale) {
 		// Ask for the search string...
 		//
-		EnterStringDialog dialog = new EnterStringDialog(shell, Const.NVL(searchString, ""), "Search key", "Search the translated '"+searchLocale+"' strings in this package");
+		EnterStringDialog dialog = new EnterStringDialog(shell, Const.NVL(searchString, ""), Messages.getString("i18nDialog.SearchKey"),"Search the translated '"+searchLocale+"' strings in this package");
 		searchString = dialog.open();
 		
 		lastFoundKey = null;
@@ -960,7 +960,7 @@ public class Translator2
         }
         catch(Throwable e)
         {
-            log.logError(APP_NAME, "An unexpected error occurred : "+e.getMessage());
+            log.logError(APP_NAME, Messages.getString("i18n.UnexpectedError",e.getMessage()));
             log.logError(APP_NAME, Const.getStackTracker(e));
         }
     }
