@@ -55,6 +55,7 @@ import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.i18n.KeyOccurrence;
 import org.pentaho.di.ui.i18n.MessagesSourceCrawler;
+import org.pentaho.di.ui.i18n.editor.Messages;
 import org.pentaho.di.ui.i18n.MessagesStore;
 import org.pentaho.di.ui.i18n.TranslationsStore;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
@@ -65,7 +66,7 @@ import org.w3c.dom.Node;
 
 public class Translator2
 {
-    public static final String APP_NAME = "Pentaho Translator";
+    public static final String APP_NAME = Messages.getString("i18nDialog.ApplicationName");
     public static final String[] ROOT = new String[] { "src-core", "src", "src-ui", };
     public static final String SYSTEM_KEY_PREFIX = "System";
     public static final String REFERENCE_LOCALE = "en_US";
@@ -142,7 +143,7 @@ public class Translator2
     
     public void readFiles(String[] directories) throws KettleFileException
     {
-        log.logBasic(toString(), "Scanning source directories and Java source files for i18n keys...");
+        log.logBasic(toString(), Messages.getString("i18n.Log.ScanningSourceDirectories"));
         try
         {
         	// crawl through the source directories...
@@ -429,7 +430,7 @@ public class Translator2
         int middle = 40;
         
         wAll = new Button(composite, SWT.CHECK);
-        wAll.setText("Show all keys, not just the TODO list");
+        wAll.setText(Messages.getString("i18nDialog.ShowAllkeys"));
         props.setLook(wAll);
         FormData fdAll = new FormData();
         fdAll.left  = new FormAttachment(0, 0);
@@ -439,7 +440,7 @@ public class Translator2
         
         Label wlTodo = new Label(composite, SWT.LEFT);
         props.setLook(wlTodo);
-        wlTodo.setText("Todo list:");
+        wlTodo.setText(Messages.getString("i18nDialog.ToDoList"));
         FormData fdlTodo = new FormData();
         fdlTodo.left  = new FormAttachment(0, 0);
         fdlTodo.right = new FormAttachment(left, 0);
