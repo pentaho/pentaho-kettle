@@ -220,7 +220,7 @@
 	
 	  <target name="javadoc_zip" depends="javadoc" description="generate a zip file containing the Kettle javadoc">
 	  	<echo>Generating the Kettle javadoc zip file ...</echo>
-	  	<jar jarfile="${dist.dir}/Kettle-javadoc-${version}.zip" 
+	  	<jar jarfile="${dist.dir}/Kettle-javadoc-${version}-${release.build.number}.zip" 
 	    	 basedir="${api}" 
 	    	 includes="**/*"
 	  	     excludes="**/Thumbs.db"
@@ -387,9 +387,9 @@
 	       ==========================
 	  -->
 		
-	  <target name="zip" depends="distrib" description="generate the Kettle-${version}.zip file">
-	  	<echo>Generating the Kettle distribution package Kettle-${version}.zip ...</echo>
-	  	<jar jarfile="${dist.dir}/Kettle-${version}.zip" 
+	  <target name="zip" depends="distrib" description="generate the Kettle-${version}-${release.build.number}.zip file">
+	  	<echo>Generating the Kettle distribution package Kettle-${version}-${release.build.number}.zip ...</echo>
+	  	<jar jarfile="${dist.dir}/Kettle-${version}-${release.build.number}.zip" 
 	    	 basedir="${distrib}" 
 	    	 includes="**/*"
 	  	     excludes="**/Thumbs.db"
@@ -402,9 +402,9 @@
 	       ==========================
 	  -->
 		
-	  <target name="sourcezip" depends="" description="generate the Kettle-src-${version}.zip file">
-	  	<echo>Generating the Kettle source packge zip file (Kettle-src-${version}.zip) ...</echo>
-	  	<jar jarfile="${dist.dir}/Kettle-src-${version}.zip" 
+	  <target name="sourcezip" depends="" description="generate the Kettle-src-${version}-${release.build.number}.zip file">
+	  	<echo>Generating the Kettle source packge zip file (Kettle-src-${version}-${release.build.number}.zip) ...</echo>
+	  	<jar jarfile="${dist.dir}/Kettle-src-${version}-${release.build.number}.zip" 
 	  		 basedir="."
 	    	 includes="**/*"
 	  	     excludes="*.zip ${classes}/**/* ${distrib}/**/* homepage/**/* Licenses/**/* ${lib}/**/* ${webstart}/**/*"
@@ -490,9 +490,9 @@
 	   translator.sh
 	--> 
 	
-	<target name="i18n" depends="kettle-ui" description="generate the Kettle-i18n-${version}.zip file">
-		  	<echo>Generating the Kettle i18n distribution package Kettle-i18n-${version}.zip ...</echo>
-		  	<jar jarfile="${dist.dir}/Kettle-i18n-${version}.zip" 
+	<target name="i18n" depends="kettle-ui" description="generate the Kettle-i18n-${version}-${release.build.number}.zip file">
+		  	<echo>Generating the Kettle i18n distribution package Kettle-i18n-${version}-${release.build.number}.zip ...</echo>
+		  	<jar jarfile="${dist.dir}/Kettle-i18n-${version}-${release.build.number}.zip" 
 		    	 basedir="." 
 		    	 includes="src/**/*.java src/**/*.properties src-ui/**/*.java src-ui/**/*.properties lib/*.jar libswt/win32/*.jar libswt/linux/x86/*.jar libswt/*.jar libext/log4j-1.2.8.jar libext/spring/spring-core.jar libext/commons/commons-vfs*.jar libext/commons/commons-logging*.jar ui/*.xul Translator.bat translator.sh translator.xml"
 		  	     excludes="**/Thumbs.db **/.svn"
@@ -770,7 +770,7 @@
 	  	                    name="${ant.project.name}"
 	  	                    mainclass="org.pentaho.di.ui.spoon.Spoon"
 	  	                    icon="${ui}/images/spoon32.icns"
-	  	                    version="${version}"
+	  	                    version="${version} build number ${release.build.number}"
 	  	        			verbose="true"
 	  	        	VMOptions="-Xmx256m"
 				    shortname="Spoon"
@@ -805,7 +805,7 @@
 	  		      <arg value="-volname"/>
 	  		      <arg value="${ant.project.name} ${version}"/>
 	  		      <arg value="-ov"/>
-	  		      <arg value="${macdistrib}/${ant.project.name}-${version}.dmg"/>
+	  		      <arg value="${macdistrib}/${ant.project.name}-${version}-${release.build.number}.dmg"/>
 	  		    </exec>
 	  	    </target>
 	

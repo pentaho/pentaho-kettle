@@ -12,14 +12,37 @@
 */
 package org.pentaho.di.version;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.Date;
+import java.util.Properties;
 
+import org.pentaho.di.core.Const;
+
+/**
+ * Updated : 2008/03/28 : get the build number from build-res/version.properties 
+ * 
+ * @author Matt Casters (mcasters@pentaho.org)
+ *
+ */
 public class UpdateBuildVersion
 {   
-    public static void main(String[] args)
+    public static final String BUILD_VERSION_FILE = "build-res/version.properties";
+    public static final String BUILD_VERSION_PROPERTY = "release.build.number";
+
+	public static void main(String[] args) throws IOException
     {
         BuildVersion buildVersion = BuildVersion.getInstance();
-        buildVersion.setVersion(buildVersion.getVersion()+1);
+        
+        // Get the build number from build-res/version.properties...
+        //
+        Properties properties = new Properties();
+        FileInputStream in = new FileInputStream(new File(BUILD_VERSION_FILE));
+        properties.load(in);
+        in.close();
+        
+        buildVersion.setVersion( Const.toInt(properties.getProperty(BUILD_VERSION_PROPERTY), buildVersion.getVersion()) );
         buildVersion.setBuildDate(new Date());
         buildVersion.save();
     }
