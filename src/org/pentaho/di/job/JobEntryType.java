@@ -66,7 +66,8 @@ public enum JobEntryType
 	DELETE_RESULT_FILENAMES(Messages.getString("JobEntry.DeleteResultFilenames.TypeDesc")),
 	MSSQL_BULK_LOAD(Messages.getString("JobEntry.MssqlBulkLoad.TypeDesc")),
 	MOVE_FILES(Messages.getString("JobEntry.MoveFiles.TypeDesc")),
-	COPY_MOVE_RESULT_FILENAMES(Messages.getString("JobEntry.CopyMoveResultFilenames.TypeDesc")),;
+	COPY_MOVE_RESULT_FILENAMES(Messages.getString("JobEntry.CopyMoveResultFilenames.TypeDesc")),
+	XML_WELL_FORMED(Messages.getString("JobEntry.XMLWellFormed.TypeDesc")),;
 	
 	
 	

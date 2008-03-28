@@ -613,4 +613,17 @@
 		</tooltip>
 		<image-uri>ui/images/CMR.png</image-uri>
 	</job>
+		<job id="XML_WELL_FORMED">
+		<type>
+			ognl:@org.pentaho.di.job.JobEntryType@XML_WELL_FORMED
+		</type>
+		<class-name>
+			org.pentaho.di.job.entries.xmlwellformed.JobEntryXMLWellFormed
+		</class-name>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@XML.getName()</category>
+		<tooltip>
+			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.XMLWellFormed.Tooltip")
+		</tooltip>
+		<image-uri>ui/images/XFC.png</image-uri>
+	</job>
 </jobs>
