@@ -180,7 +180,7 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
 		catch(KettleXMLException xe)
 		{
 			
-			throw new KettleXMLException(Messages.getString("JobMoveFiles.Error.Exception.UnableLoadXML"), xe);
+			throw new KettleXMLException(Messages.getString("JobXMLWellFormed.Error.Exception.UnableLoadXML"), xe);
 		}
 	}
 
@@ -212,7 +212,7 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
 		catch(KettleException dbe)
 		{
 			
-			throw new KettleException(Messages.getString("JobMoveFiles.Error.Exception.UnableLoadRep")+id_jobentry, dbe);
+			throw new KettleException(Messages.getString("JobXMLWellFormed.Error.Exception.UnableLoadRep")+id_jobentry, dbe);
 		}
 	}
 	
