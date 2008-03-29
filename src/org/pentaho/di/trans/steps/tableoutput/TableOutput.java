@@ -307,7 +307,7 @@ public class TableOutput extends BaseStep implements StepInterface
             }
             else
             {
-                data.batchBuffer.add(r);
+                data.batchBuffer.add(outputRowData);
                 outputRowData=null;
                 
                 if (rowIsSafe) // A commit was done and the rows are all safe (no error)
