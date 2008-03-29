@@ -13,7 +13,7 @@
  **                                                                   **
  **********************************************************************/
 
-package org.pentaho.di.trans.steps.tableoutput;
+package org.pentaho.di.trans.steps.tableinput;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -21,6 +21,7 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -41,6 +42,7 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.injector.InjectorMeta;
+import org.pentaho.di.trans.steps.tableinput.TableInputMeta;
 
 
 /**
@@ -50,7 +52,7 @@ import org.pentaho.di.trans.steps.injector.InjectorMeta;
  *
  * @author Sven Boden
  */
-public class TableOutputTest extends TestCase
+public class TableInputTest extends TestCase
 {
     public static final String[] databasesXML = {
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
@@ -66,17 +68,64 @@ public class TableOutputTest extends TestCase
           "</connection>",
     };
 
-    private static String target_table  = "table";
-    private static String target_table1 = "table1";
-    private static String target_table2 = "table2";
+    private static String source_table = "table_source1";
+
+    private static String insertStatement[] = 
+    {
+    	// New rows for the source
+        "INSERT INTO " + source_table + "(ID, CODE) " +
+        "VALUES (1, 100)",
+        
+        "INSERT INTO " + source_table + "(ID, CODE) " +
+        "VALUES (2, 100)",
+        
+        "INSERT INTO " + source_table + "(ID, CODE) " +
+        "VALUES (3, 100)",
+
+        "INSERT INTO " + source_table + "(ID, CODE) " +
+        "VALUES (4, 100)",
+
+        "INSERT INTO " + source_table + "(ID, CODE) " +
+        "VALUES (5, 101)",
+        
+        "INSERT INTO " + source_table + "(ID, CODE) " +
+        "VALUES (6, 101)",
+        
+        "INSERT INTO " + source_table + "(ID, CODE) " +
+        "VALUES (7, 101)",
+
+        "INSERT INTO " + source_table + "(ID, CODE) " +
+        "VALUES (8, 101)",
+        
+        "INSERT INTO " + source_table + "(ID, CODE) " +
+        "VALUES (9,  102)",
+        
+        "INSERT INTO " + source_table + "(ID, CODE) " +
+        "VALUES (10, 102)",
+        
+        "INSERT INTO " + source_table + "(ID, CODE) " +
+        "VALUES (11, 102)",
+
+        "INSERT INTO " + source_table + "(ID, CODE) " +
+        "VALUES (12, 102)",
+        
+        "INSERT INTO " + source_table + "(ID, CODE) " +
+        "VALUES (13, 103)",
+
+        "INSERT INTO " + source_table + "(ID, CODE) " +
+        "VALUES (14, 103)",
+        
+        "INSERT INTO " + source_table + "(ID, CODE) " +
+        "VALUES (15, 103)"        
+    };
     
-	public RowMetaInterface createSourceRowMetaInterface1()
+	public RowMetaInterface createSourceRowMetaInterface()
 	{
 		RowMetaInterface rm = new RowMeta();
 
 		ValueMetaInterface valuesMeta[] = {
 			    new ValueMeta("ID",   ValueMeta.TYPE_INTEGER, 8, 0),
-			    new ValueMeta("CODE", ValueMeta.TYPE_INTEGER, 8, 0),
+			    new ValueMeta("CODE", ValueMeta.TYPE_INTEGER,  8, 0),
 	    };
 
 		for (int i=0; i < valuesMeta.length; i++ )
@@ -88,20 +137,32 @@ public class TableOutputTest extends TestCase
 	}       	
 	
 	/**
-	 * Create table for the normal case.
+	 * Create source table.
 	 */
-	public void createTableNormalCase(Database db) throws Exception
+	public void createTables(Database db) throws Exception
 	{		
-		String source = db.getCreateTableStatement(target_table, createSourceRowMetaInterface1(), null, false, null, true);
+		String source = db.getCreateTableStatement(source_table, createSourceRowMetaInterface(), null, false, null, true);
 		try  {
 		    db.execStatement(source);
 		}
 		catch ( KettleException ex ) 
 		{
-			fail("failure while creating table " + target_table + ": " + ex.getMessage());	
+			fail("failure while creating table " + source_table + ": " + ex.getMessage());	
 		}						
 	}
 
+	/**
+	 * Insert data in the source table.
+	 * 
+	 * @param db database to use. 
+	 */
+	private void createData(Database db) throws Exception
+	{		
+		for ( int idx = 0; idx < insertStatement.length; idx++ )
+		{
+		    db.execStatement(insertStatement[idx]);
+		}
+	}
 	
 	public RowMetaInterface createRowMetaInterface()
 	{
@@ -120,50 +181,45 @@ public class TableOutputTest extends TestCase
 	}
 
 	/**
-	 * Create the input rows used for the normal unit test.
+	 * Create the input rows used for a unit test.
 	 */
-	public List<RowMetaAndData> createNormalDataRows()
+	public List<RowMetaAndData> createDataRows()
 	{
 		List<RowMetaAndData> list = new ArrayList<RowMetaAndData>();	
 		
-		RowMetaInterface rm = createSourceRowMetaInterface1();
+		RowMetaInterface rm = createRowMetaInterface();
 		
-		Object[] r1 = new Object[] { new Long(100L), new Long(1000L) };
-		Object[] r2 = new Object[] { new Long(101L), new Long(1001L) };
-		Object[] r3 = new Object[] { new Long(102L), new Long(1002L) };
-		Object[] r4 = new Object[] { new Long(103L), new Long(1003L) };
-		Object[] r5 = new Object[] { new Long(104L), new Long(1004L) };
-		Object[] r6 = new Object[] { new Long(105L), new Long(1005L) };
-		Object[] r7 = new Object[] { new Long(106L), new Long(1006L) };					
+		Object[] r1 = new Object[] { new Long(100L) };
+		Object[] r2 = new Object[] { new Long(101L) };
+		Object[] r3 = new Object[] { new Long(103L) };
 		
 		list.add(new RowMetaAndData(rm, r1));
 		list.add(new RowMetaAndData(rm, r2));
 		list.add(new RowMetaAndData(rm, r3));
-		list.add(new RowMetaAndData(rm, r4));
-		list.add(new RowMetaAndData(rm, r5));
-		list.add(new RowMetaAndData(rm, r6));
-		list.add(new RowMetaAndData(rm, r7));
 		
 		return list;
 	}	
 
 	/**
-	 * Create the result rows for the normal case.
-	 *
-	public List<RowMetaAndData> createNormalResultDataRows()
+	 * Create the result rows for a test.
+	 */
+	public List<RowMetaAndData> createResultDataRows()
 	{
 		List<RowMetaAndData> list = new ArrayList<RowMetaAndData>();	
 		
-		RowMetaInterface rm = createSourceRowMetaInterface1();
+		RowMetaInterface rm = createSourceRowMetaInterface();
 		
-		Object[] r1  = new Object[] { new Long(100L),   new Long(1000L) };
-		Object[] r2  = new Object[] { new Long(101L),   new Long(1001L) };
-		Object[] r3  = new Object[] { new Long(102L),   new Long(1002L) };
-		Object[] r4  = new Object[] { new Long(103L),   new Long(1003L) };
-		Object[] r5  = new Object[] { new Long(104L),   new Long(1004L) };
-		Object[] r6  = new Object[] { new Long(105L),   new Long(1005L) };
-		Object[] r7  = new Object[] { new Long(106L),   new Long(1006L) };
-	
+		Object[] r1  = new Object[] { new Long(1L),   new Long(100L) };
+		Object[] r2  = new Object[] { new Long(2L),   new Long(100L) };
+		Object[] r3  = new Object[] { new Long(3L),   new Long(100L) };
+		Object[] r4  = new Object[] { new Long(4L),   new Long(100L) };
+		Object[] r5  = new Object[] { new Long(5L),   new Long(101L) };
+		Object[] r6  = new Object[] { new Long(6L),   new Long(101L) };
+		Object[] r7  = new Object[] { new Long(7L),   new Long(101L) };
+		Object[] r8  = new Object[] { new Long(8L),   new Long(101L) };
+		Object[] r9  = new Object[] { new Long(13L),  new Long(103L) };
+		Object[] r10 = new Object[] { new Long(14L),  new Long(103L) };
+		Object[] r11 = new Object[] { new Long(15L),  new Long(103L) };
 		
 		list.add(new RowMetaAndData(rm, r1));
 		list.add(new RowMetaAndData(rm, r2));
@@ -172,9 +228,13 @@ public class TableOutputTest extends TestCase
 		list.add(new RowMetaAndData(rm, r5));
 		list.add(new RowMetaAndData(rm, r6));
 		list.add(new RowMetaAndData(rm, r7));
+		list.add(new RowMetaAndData(rm, r8));
+		list.add(new RowMetaAndData(rm, r9));
+		list.add(new RowMetaAndData(rm, r10));
+		list.add(new RowMetaAndData(rm, r11));
 		
 		return list;
-	} */	
+	}	
 	
 	/**
 	 *  Check the 2 lists comparing the rows in order.
@@ -222,7 +282,11 @@ public class TableOutputTest extends TestCase
     }
     
 	/**
-	 * Test case for normal table output case. 
+	 * Test case for table input which is taking its input from a hop. This is
+	 * a regression test case for JIRA PDI-588.
+	 * 
+	 * The query in the table input step has one '?' and this parameter is filled
+	 * by values read from an input hop.
 	 */
     public void testTableInputWithParam() throws Exception
     {
@@ -233,7 +297,7 @@ public class TableOutputTest extends TestCase
             // Create a new transformation...
             //
             TransMeta transMeta = new TransMeta();
-            transMeta.setName("table output normal test");
+            transMeta.setName("transname");
 
             // Add the database connections
             for (int i=0;i<databasesXML.length;i++)
@@ -247,7 +311,8 @@ public class TableOutputTest extends TestCase
             // Execute our setup SQLs in the database.
             Database database = new Database(dbInfo);
             database.connect();
-            createTableNormalCase(database);
+            createTables(database);
+            createData(database);
 
             StepLoader steploader = StepLoader.getInstance();            
 
@@ -257,7 +322,8 @@ public class TableOutputTest extends TestCase
             String injectorStepname = "injector step";
             InjectorMeta im = new InjectorMeta();
             
-            // Set the information of the injector.                   
+            // Set the information of the injector.
+                    
             String injectorPid = steploader.getStepPluginID(im);
             StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, (StepMetaInterface)im);
             transMeta.addStep(injectorStep);            
@@ -265,14 +331,19 @@ public class TableOutputTest extends TestCase
             // 
             // create the source step...
             //
-            String outputname = "output to [" + target_table + "]";
-            TableOutputMeta tom = new TableOutputMeta();
-            tom.setDatabaseMeta(transMeta.findDatabase("db"));
-            tom.setTablename(target_table);
+            String fromstepname = "read from [" + source_table + "]";
+            TableInputMeta tii = new TableInputMeta();
+            tii.setDatabaseMeta(transMeta.findDatabase("db"));
+            tii.setLookupFromStep(injectorStep);
+            tii.setExecuteEachInputRow(true);
+            String selectSQL = "SELECT "+Const.CR;
+            selectSQL+="ID, CODE ";
+            selectSQL+="FROM " + source_table + " WHERE CODE = ? ORDER BY ID, CODE;";
+            tii.setSQL(selectSQL);
 
-            String fromid = steploader.getStepPluginID(tom);
-            StepMeta fromstep = new StepMeta(fromid, outputname, (StepMetaInterface)tom);
-            fromstep.setDescription("write data to table [" + target_table + "] on database [" + dbInfo + "]");
+            String fromstepid = steploader.getStepPluginID(tii);
+            StepMeta fromstep = new StepMeta(fromstepid, fromstepname, (StepMetaInterface) tii);
+            fromstep.setDescription("Reads information from table [" + source_table + "] on database [" + dbInfo + "]");
             transMeta.addStep(fromstep);
             
             TransHopMeta hi = new TransHopMeta(injectorStep, fromstep);
@@ -283,7 +354,7 @@ public class TableOutputTest extends TestCase
 
             trans.prepareExecution(null);
                     
-            StepInterface si = trans.getStepInterface(outputname, 0);
+            StepInterface si = trans.getStepInterface(fromstepname, 0);
             RowStepCollector rc = new RowStepCollector();
             si.addRowListener(rc);
             
@@ -291,7 +362,7 @@ public class TableOutputTest extends TestCase
             trans.startThreads();
             
             // add rows
-            List<RowMetaAndData> inputList = createNormalDataRows();
+            List<RowMetaAndData> inputList = createDataRows();
             for (RowMetaAndData rm : inputList )
             {
             	rp.putRow(rm.getRowMeta(), rm.getData());
@@ -301,7 +372,7 @@ public class TableOutputTest extends TestCase
             trans.waitUntilFinished();   
 
             List<RowMetaAndData> resultRows = rc.getRowsWritten();
-            List<RowMetaAndData> goldRows = createNormalDataRows();
+            List<RowMetaAndData> goldRows = createResultDataRows();
             checkRows(goldRows, resultRows);
         }    	
         finally {}    
