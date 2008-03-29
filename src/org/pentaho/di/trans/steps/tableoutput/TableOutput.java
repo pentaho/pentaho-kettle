@@ -134,6 +134,11 @@ public class TableOutput extends BaseStep implements StepInterface
                 }
             }
             tableName = rowMeta.getString(r, data.indexOfTableNameField);
+            if ( !meta.isTableNameInTable() ) {
+            	// If the name of the table should not be inserted itself, remove the table name
+            	// from the input row data as well.
+            	r = RowDataUtil.removeItem(r, data.indexOfTableNameField);
+            }
         }
         else
         if (  meta.isPartitioningEnabled() && 
