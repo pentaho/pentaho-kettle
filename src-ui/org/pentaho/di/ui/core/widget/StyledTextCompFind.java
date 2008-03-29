@@ -39,6 +39,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.pentaho.di.ui.core.gui.GUIResource;
 
 
 public class StyledTextCompFind extends org.eclipse.swt.widgets.Dialog {
@@ -66,7 +67,7 @@ public class StyledTextCompFind extends org.eclipse.swt.widgets.Dialog {
 		
 		Shell parent = getParent();
 		sShell = new Shell(parent, SWT.DIALOG_TRIM | SWT.NO_REDRAW_RESIZE | SWT.APPLICATION_MODAL  );
-
+		sShell.setImage(GUIResource.getInstance().getImageSpoon());
 		sShell.setText(strHeader);
 		sShell.setSize(new Point(360, 126));
 		FormLayout formLayout = new FormLayout ();
@@ -80,14 +81,14 @@ public class StyledTextCompFind extends org.eclipse.swt.widgets.Dialog {
 		searchText.setLayoutData(frmData);
 
 		Label lblFind = new Label(sShell,SWT.LEFT);
-		lblFind.setText("Find:");
+		lblFind.setText(Messages.getString("Widget.Styled.Comp.Find.Title"));
 		frmData = new FormData();
 		frmData.right = new FormAttachment(searchText,  -8);
 		frmData.top  = new FormAttachment(12, 0);
 		lblFind.setLayoutData(frmData);
 
 		btnNext = new Button(sShell,SWT.PUSH);
-		btnNext.setText("Find &Next");
+		btnNext.setText(Messages.getString("Widget.Styled.Comp.FindNext"));
 		btnNext.setEnabled(false);
 		frmData = new FormData();
 		frmData.left = new FormAttachment(searchText,  7);
@@ -97,7 +98,7 @@ public class StyledTextCompFind extends org.eclipse.swt.widgets.Dialog {
 		btnNext.setLayoutData(frmData);
 		
 		btnCancel = new Button(sShell,SWT.PUSH);
-		btnCancel.setText("Close");
+		btnCancel.setText(Messages.getString("Widget.Styled.Comp.Close"));
 		frmData = new FormData();
 		frmData.left = new FormAttachment(searchText,  7);
 		frmData.width = 81;
@@ -106,29 +107,29 @@ public class StyledTextCompFind extends org.eclipse.swt.widgets.Dialog {
 		btnCancel.setLayoutData(frmData);
 		
 		btnIgnoreCase = new Button(sShell, SWT.CHECK);
-		btnIgnoreCase.setText("&Case Sensitive");
+		btnIgnoreCase.setText(Messages.getString("Widget.Styled.Comp.CaseSensitive"));
 		frmData = new FormData();
 		frmData.left = new FormAttachment(5,0);
 		frmData.top  = new FormAttachment(54, 0);
 		btnIgnoreCase.setLayoutData(frmData);
 		
 		btnWrapSearch = new Button(sShell, SWT.CHECK);
-		btnWrapSearch.setText("&Wrap Search");
+		btnWrapSearch.setText(Messages.getString("Widget.Styled.Comp.WrapSearch"));
 		frmData = new FormData();
 		frmData.left = new FormAttachment(5,0);
 		frmData.top  = new FormAttachment(70, 0);
 		btnWrapSearch.setLayoutData(frmData);
 		
 		Group grpDir = new Group(sShell, SWT.SHADOW_IN);
-		grpDir.setText("Direction");
+		grpDir.setText(Messages.getString("Widget.Styled.Comp.Direction"));
 		
 		optForward = new Button(grpDir, SWT.RADIO);
-		optForward.setText("F&orward");
+		optForward.setText(Messages.getString("Widget.Styled.Comp.Forward"));
 		optForward.setBounds(5, 15, 75, 15);
 		Button optBackward = new Button(grpDir, SWT.RADIO);
 		optBackward.setBounds(5, 33, 75, 15);
 		optBackward.setSelection(true);
-		optBackward.setText("&Backward");
+		optBackward.setText(Messages.getString("Widget.Styled.Comp.Backward"));
 
 		frmData = new FormData();
 		frmData.top = new FormAttachment(searchText,8);
@@ -140,8 +141,8 @@ public class StyledTextCompFind extends org.eclipse.swt.widgets.Dialog {
 			public void handleEvent(Event e) {
 				if(!findText()){
 					MessageBox messageBox = new MessageBox(sShell, SWT.ICON_INFORMATION | SWT.OK);
-	        		messageBox.setText("Find Item");
-	        		messageBox.setMessage("\""+ searchText.getText() + "\" was not found?");
+	        		messageBox.setText(Messages.getString("Widget.Styled.Comp.FindItem"));
+	        		messageBox.setMessage(Messages.getString("Widget.Styled.CompReplace.ItemNotFound",searchText.getText()));
 	        		messageBox.open();
 				}
 			}

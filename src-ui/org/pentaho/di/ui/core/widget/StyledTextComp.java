@@ -98,7 +98,7 @@ public class StyledTextComp extends Composite{
 					bFullSelection=true;
 					styledText.selectAll();
 				 }else if (e.keyCode == 'f' && (e.stateMask & SWT.CTRL) != 0){
-					new StyledTextCompFind(styledTextPopupmenu.getShell(), styledText, "Find").open();
+					new StyledTextCompFind(styledTextPopupmenu.getShell(), styledText, Messages.getString("WidgetDialog.Styled.Find")).open();
 				}
 		    }
 		}; 
@@ -202,7 +202,7 @@ public class StyledTextComp extends Composite{
 	private void buildingStyledTextMenu(){
 		//styledTextPopupmenu = new Menu(, SWT.POP_UP);
 		MenuItem undoItem = new MenuItem(styledTextPopupmenu, SWT.PUSH);
-		undoItem.setText("Undo\tCtrl+Z");
+		undoItem.setText(Messages.getString("WidgetDialog.Styled.Undo"));
 		undoItem.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event e) {
 				undo();
@@ -210,7 +210,7 @@ public class StyledTextComp extends Composite{
 		});
 			
 		MenuItem redoItem = new MenuItem(styledTextPopupmenu, SWT.PUSH);
-		redoItem.setText("Redo\tCtrl+Y");
+		redoItem.setText(Messages.getString("WidgetDialog.Styled.Redo"));
 		redoItem.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event e) {
 					redo();
@@ -220,7 +220,7 @@ public class StyledTextComp extends Composite{
 			
 		new MenuItem(styledTextPopupmenu, SWT.SEPARATOR);
 		MenuItem cutItem = new MenuItem(styledTextPopupmenu, SWT.PUSH);
-		cutItem.setText("Cut\tCtrl+X");
+		cutItem.setText(Messages.getString("WidgetDialog.Styled.Cut"));
 		cutItem.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event e) {
 				styledText.cut();
@@ -228,7 +228,7 @@ public class StyledTextComp extends Composite{
 		});
 			
 		MenuItem copyItem = new MenuItem(styledTextPopupmenu, SWT.PUSH);
-		copyItem.setText("Copy\tCtrl+C");
+		copyItem.setText(Messages.getString("WidgetDialog.Styled.Copy"));
 		copyItem.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event e) {
 				styledText.copy();
@@ -236,7 +236,7 @@ public class StyledTextComp extends Composite{
 		});
 			
 		MenuItem pasteItem = new MenuItem(styledTextPopupmenu, SWT.PUSH);
-		pasteItem.setText("Paste\tCtrl+V");
+		pasteItem.setText(Messages.getString("WidgetDialog.Styled.Paste"));
 		pasteItem.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event e) {
 				styledText.paste();
@@ -244,7 +244,7 @@ public class StyledTextComp extends Composite{
 		});
 			
 		MenuItem selectAllItem = new MenuItem(styledTextPopupmenu, SWT.PUSH);
-		selectAllItem.setText("Select &All\tCtrl+A");
+		selectAllItem.setText(Messages.getString("WidgetDialog.Styled.SelectAll"));
 		selectAllItem.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event e) {
 				styledText.selectAll();
@@ -253,15 +253,15 @@ public class StyledTextComp extends Composite{
 		
 		new MenuItem(styledTextPopupmenu, SWT.SEPARATOR);
 		MenuItem findItem = new MenuItem(styledTextPopupmenu, SWT.PUSH);
-		findItem.setText("Find\tCtrl+F");
+		findItem.setText(Messages.getString("WidgetDialog.Styled.Find"));
 		findItem.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event e) {
-				StyledTextCompFind stFind = new StyledTextCompFind(styledText.getShell(), styledText, "Find / " + strTabName);
+				StyledTextCompFind stFind = new StyledTextCompFind(styledText.getShell(), styledText, Messages.getString("WidgetDialog.Styled.FindString",strTabName));
 				stFind.open();
 			}
 		});
 		MenuItem replaceItem = new MenuItem(styledTextPopupmenu, SWT.PUSH);
-		replaceItem.setText("Replace\tCtrl+H");
+		replaceItem.setText(Messages.getString("WidgetDialog.Styled.Replace"));
 		replaceItem.setAccelerator(SWT.CTRL + 'H');
 		//(helpMenu, SWT.PUSH, "&About\tCtrl+A", 
         //        null, SWT.CTRL + 'A', true, "doAbout");
