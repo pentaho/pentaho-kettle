@@ -3,7 +3,7 @@ package org.pentaho.di;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.pentaho.di.blackbox.BlackBoxTests;
+//import org.pentaho.di.blackbox.BlackBoxTests;
 import org.pentaho.di.compatibility.ValueBigNumberTest;
 import org.pentaho.di.compatibility.ValueBooleanTest;
 import org.pentaho.di.compatibility.ValueDateTest;
@@ -37,6 +37,7 @@ import org.pentaho.di.trans.steps.scriptvalues_mod.JavaScriptSpecialTest;
 import org.pentaho.di.trans.steps.scriptvalues_mod.JavaScriptStringTest;
 import org.pentaho.di.trans.steps.sort.SortRowsTest;
 import org.pentaho.di.trans.steps.tableinput.TableInputTest;
+import org.pentaho.di.trans.steps.tableoutput.TableOutputTest;
 import org.pentaho.di.trans.steps.valuemapper.ValueMapperTest;
 
 
@@ -91,6 +92,7 @@ public class AllRegressionTests
         suite.addTestSuite(RegexEvalTest.class);
         suite.addTestSuite(AddSequenceTest.class);  
         suite.addTestSuite(TableInputTest.class);        
+        suite.addTestSuite(TableOutputTest.class);
         suite.addTestSuite(DatabaseLookupTest.class);
         suite.addTestSuite(CombinationLookupTest.class);
         suite.addTestSuite(JavaScriptStringTest.class);
