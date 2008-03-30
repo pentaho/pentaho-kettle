@@ -85,5 +85,6 @@
 	<classpathentry kind="lib" path="libext/jfree/jcommon-1.0.0.jar"/>
 	<classpathentry kind="lib" path="libext/jfree/jfreechart-1.0.1.jar"/>
 	<classpathentry kind="lib" path="libswt/win32/swt.jar"/>
+	<classpathentry kind="lib" path="libext/trilead-ssh2-build212.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

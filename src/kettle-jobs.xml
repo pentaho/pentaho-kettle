@@ -626,4 +626,30 @@
 		</tooltip>
 		<image-uri>ui/images/XFC.png</image-uri>
 	</job>
+	<job id="SSH2_GET">
+		<type>
+			ognl:@org.pentaho.di.job.JobEntryType@SSH2_GET
+		</type>
+		<class-name>
+			org.pentaho.di.job.entries.ssh2get.JobEntrySSH2GET
+		</class-name>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@FILE_MANAGEMENT.getName()</category>
+		<tooltip>
+			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.SSH2GET.Tooltip")
+		</tooltip>
+		<image-uri>ui/images/SHG.png</image-uri>
+	</job>
+	<job id="SSH2_PUT">
+		<type>
+			ognl:@org.pentaho.di.job.JobEntryType@SSH2_PUT
+		</type>
+		<class-name>
+			org.pentaho.di.job.entries.ssh2put.JobEntrySSH2PUT
+		</class-name>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@FILE_MANAGEMENT.getName()</category>
+		<tooltip>
+			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.SSH2PUT.Tooltip")
+		</tooltip>
+		<image-uri>ui/images/SHP.png</image-uri>
+	</job>
 </jobs>

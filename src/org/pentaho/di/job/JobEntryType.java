@@ -67,7 +67,9 @@ public enum JobEntryType
 	MSSQL_BULK_LOAD(Messages.getString("JobEntry.MssqlBulkLoad.TypeDesc")),
 	MOVE_FILES(Messages.getString("JobEntry.MoveFiles.TypeDesc")),
 	COPY_MOVE_RESULT_FILENAMES(Messages.getString("JobEntry.CopyMoveResultFilenames.TypeDesc")),
-	XML_WELL_FORMED(Messages.getString("JobEntry.XMLWellFormed.TypeDesc")),;
+	XML_WELL_FORMED(Messages.getString("JobEntry.XMLWellFormed.TypeDesc")),
+	SSH2_GET(Messages.getString("JobEntry.SSH2GET.TypeDesc")),
+	SSH2_PUT(Messages.getString("JobEntry.SSH2PUT.TypeDesc")),;
 	
 	
 	
