@@ -13,6 +13,7 @@
    <localized_category>
      <category locale="en_US">General</category>
      <category locale="nl_NL">Algemeen</category>
+     <category locale="fr_FR">Général</category>
    </localized_category>
    <localized_description>
      <description locale="en_US">Dummy plugin</description>
