@@ -140,7 +140,7 @@ public class ScriptValuesMod extends BaseStep implements StepInterface, ScriptVa
             determineUsedFields(rowMeta);
 
             data.cx = Context.enter();
-            data.cx.setOptimizationLevel(9);
+    		data.cx.setOptimizationLevel(9);
             data.scope = data.cx.initStandardObjects(null, false);
 
             bFirstRun = true;

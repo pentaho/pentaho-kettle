@@ -49,6 +49,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.ui.core.widget.LabelText;
 import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.job.dialog.JobDialog;
 import org.pentaho.di.ui.job.entry.JobEntryDialog;
@@ -385,7 +386,7 @@ public class JobEntrySSH2GETDialog extends JobEntryDialog implements JobEntryDia
         {
             public void modifyText(ModifyEvent e)
             {
-                checkPasswordVisible(wPassword);
+                DatabaseDialog.checkPasswordVisible(wPassword.getTextWidget());
             }
         });
         
@@ -537,7 +538,7 @@ public class JobEntrySSH2GETDialog extends JobEntryDialog implements JobEntryDia
         {
             public void modifyText(ModifyEvent e)
             {
-                checkPasswordVisible(wHTTPProxyPassword);
+                DatabaseDialog.checkPasswordVisible(wHTTPProxyPassword.getTextWidget());
             }
         });
         
@@ -664,7 +665,7 @@ public class JobEntrySSH2GETDialog extends JobEntryDialog implements JobEntryDia
         {
             public void modifyText(ModifyEvent e)
             {
-            	checkPasswordVisible(wkeyfilePass);
+            	DatabaseDialog.checkPasswordVisible(wkeyfilePass.getTextWidget());
             }
         });
         
@@ -1092,21 +1093,6 @@ public class JobEntrySSH2GETDialog extends JobEntryDialog implements JobEntryDia
                 display.sleep();
         }
         return jobEntry;
-    }
-
-    public void checkPasswordVisible(LabelTextVar variable)
-    {
-        String password = variable.getText();
-        List list = new ArrayList();
-        //StringUtil.getUsedVariables(password, list, true);
-        if (list.size() == 0)
-        {
-        	variable.setEchoChar('*');
-        }
-        else
-        {
-        	variable.setEchoChar('\0'); // Show it all...
-        }
     }
 
     public void dispose()

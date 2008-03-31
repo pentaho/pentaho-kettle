@@ -28,12 +28,14 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.EnvUtil;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.trans.RowProducer;
 import org.pentaho.di.trans.RowStepCollector;
 import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.TransTestFactory;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
@@ -134,18 +136,12 @@ public class JavaScriptStringTest extends TestCase
 		List<RowMetaAndData> list = new ArrayList<RowMetaAndData>();	
 		
 		RowMetaInterface rm = createRowMetaInterface1();
-		
-		Object[] r1 = new Object[] { "3.5a" }; 
-		Object[] r2 = new Object[] { "3.a" };
-		Object[] r3 = new Object[] { "2.0" };
-		Object[] r4 = new Object[] { "1.12" };
-		Object[] r5 = new Object[] { "  5.3" };   /* Data for bug JIRA PDI-50 */
-		
-		list.add(new RowMetaAndData(rm, r1));
-		list.add(new RowMetaAndData(rm, r2));
-		list.add(new RowMetaAndData(rm, r3));
-		list.add(new RowMetaAndData(rm, r4));
-		list.add(new RowMetaAndData(rm, r5));
+
+		list.add(new RowMetaAndData(rm, new Object[] { "3.5a" }));
+		list.add(new RowMetaAndData(rm, new Object[] { "3.a" }));
+		list.add(new RowMetaAndData(rm, new Object[] { "2.0" }));
+		list.add(new RowMetaAndData(rm, new Object[] { "1.12" }));
+		list.add(new RowMetaAndData(rm, new Object[] { "  5.3" }));  /* Data for bug JIRA PDI-50 */
 		
 		return list;
 	}		
@@ -665,41 +661,18 @@ public class JavaScriptStringTest extends TestCase
         checkRows(resultRows2, goldenImageRows);
     }
     
-	/**
-	 * Test case for javascript functionality: isNum(), str2num(), num2str().
-	 */
     public void testStringsNum() throws Exception
     {
-        EnvUtil.environmentInit();
-
-        //
-        // Create a new transformation...
-        //
-        TransMeta transMeta = new TransMeta();
-        transMeta.setName("test javascript numerical");
+    	EnvUtil.environmentInit();
     	
-        StepLoader steploader = StepLoader.getInstance();            
-
-        // 
-        // create an injector step...
-        //
-        String injectorStepname = "injector step";
-        InjectorMeta im = new InjectorMeta();
-        
-        // Set the information of the injector.                
-        String injectorPid = steploader.getStepPluginID(im);
-        StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, (StepMetaInterface)im);
-        transMeta.addStep(injectorStep);                       
-
         // 
         // Create a javascript step
         //
-        String javaScriptStepname = "javascript step";            
         ScriptValuesMetaMod svm = new ScriptValuesMetaMod();
         
         ScriptValuesScript[] js = new ScriptValuesScript[] {new ScriptValuesScript(ScriptValuesScript.TRANSFORM_SCRIPT,
         		                                              "script",
-        		                                              "var numb1 = str2num(string.getString());\n" +
+        		                                              "var numb1 = str2num(trim(string.getString()), \"#.#\", \"en\");\n" +
         		                                              "var bool1 = isNum(string.getString());\n" +
         		                                              "var str1  = num2str(numb1);\n") };
         svm.setJSScripts(js);
@@ -712,63 +685,26 @@ public class JavaScriptStringTest extends TestCase
         svm.setPrecision(new int[] { -1, -1, -1 });
         svm.setCompatible(true);
 
-        String javaScriptStepPid = steploader.getStepPluginID(svm);
-        StepMeta javaScriptStep = new StepMeta(javaScriptStepPid, javaScriptStepname, (StepMetaInterface)svm);
-        transMeta.addStep(javaScriptStep);            
-
-        TransHopMeta hi1 = new TransHopMeta(injectorStep, javaScriptStep);
-        transMeta.addTransHop(hi1);        
-        
-        // 
-        // Create a dummy step 
+        // Generate a test transformation with an injector and a dummy:
         //
-        String dummyStepname = "dummy step";            
-        DummyTransMeta dm = new DummyTransMeta();
-
-        String dummyPid = steploader.getStepPluginID(dm);
-        StepMeta dummyStep = new StepMeta(dummyPid, dummyStepname, (StepMetaInterface)dm);
-        transMeta.addStep(dummyStep);                              
-
-        TransHopMeta hi2 = new TransHopMeta(javaScriptStep, dummyStep);
-        transMeta.addTransHop(hi2);        
+        String testStepname = "javascript";
+        TransMeta transMeta = TransTestFactory.generateTestTransformation(new Variables(), svm, testStepname);
         
-        // Now execute the transformation...
-        Trans trans = new Trans(transMeta);
+        // Now execute the transformation and get the result from the dummy step.
+        //
+        List<RowMetaAndData> result = TransTestFactory.executeTestTransformation(
+        		transMeta, 
+        		TransTestFactory.INJECTOR_STEPNAME, 
+        		testStepname, 
+        		TransTestFactory.DUMMY_STEPNAME, 
+        		createData3()
+        	);
 
-        trans.prepareExecution(null);
-                
-        StepInterface si;
-
-        si = trans.getStepInterface(javaScriptStepname, 0);
-        RowStepCollector javaScriptRc = new RowStepCollector();
-        si.addRowListener(javaScriptRc);
-               
-        si = trans.getStepInterface(dummyStepname, 0);
-        RowStepCollector dummyRc = new RowStepCollector();
-        si.addRowListener(dummyRc);
-        
-        RowProducer rp = trans.addRowProducer(injectorStepname, 0);
-        trans.startThreads();
-        
-        // add rows
-        List<RowMetaAndData> inputList = createData3();
-        Iterator<RowMetaAndData> it = inputList.iterator();
-        while ( it.hasNext() )
-        {
-        	RowMetaAndData rm = (RowMetaAndData)it.next();
-        	rp.putRow(rm.getRowMeta(), rm.getData());
-        }   
-        rp.finished();
-
-        trans.waitUntilFinished();   
-        
-        List<RowMetaAndData> goldenImageRows = createResultData3();
-        List<RowMetaAndData> resultRows1 = javaScriptRc.getRowsWritten();
-        checkRows(resultRows1, goldenImageRows);
-                
-        List<RowMetaAndData> resultRows2 = dummyRc.getRowsRead();
-        checkRows(resultRows2, goldenImageRows);
+        // Verify that this is what we expected...
+        //
+        checkRows(result, createResultData3());
     }
+    
     
 	/**
 	 * Test case for javascript functionality: indexOf().
@@ -776,25 +712,6 @@ public class JavaScriptStringTest extends TestCase
     public void testIndexOf() throws Exception
     {
         EnvUtil.environmentInit();
-
-        //
-        // Create a new transformation...
-        //
-        TransMeta transMeta = new TransMeta();
-        transMeta.setName("test javascript indexOf()");
-    	
-        StepLoader steploader = StepLoader.getInstance();            
-
-        // 
-        // create an injector step...
-        //
-        String injectorStepname = "injector step";
-        InjectorMeta im = new InjectorMeta();
-        
-        // Set the information of the injector.                
-        String injectorPid = steploader.getStepPluginID(im);
-        StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, (StepMetaInterface)im);
-        transMeta.addStep(injectorStep);                       
 
         // 
         // Create a javascript step
@@ -817,61 +734,23 @@ public class JavaScriptStringTest extends TestCase
         svm.setPrecision(new int[] { -1, -1, -1 });
         svm.setCompatible(true);
 
-        String javaScriptStepPid = steploader.getStepPluginID(svm);
-        StepMeta javaScriptStep = new StepMeta(javaScriptStepPid, javaScriptStepname, (StepMetaInterface)svm);
-        transMeta.addStep(javaScriptStep);            
-
-        TransHopMeta hi1 = new TransHopMeta(injectorStep, javaScriptStep);
-        transMeta.addTransHop(hi1);        
-        
-        // 
-        // Create a dummy step 
+        // Generate a test transformation with an injector and a dummy:
         //
-        String dummyStepname = "dummy step";            
-        DummyTransMeta dm = new DummyTransMeta();
-
-        String dummyPid = steploader.getStepPluginID(dm);
-        StepMeta dummyStep = new StepMeta(dummyPid, dummyStepname, (StepMetaInterface)dm);
-        transMeta.addStep(dummyStep);                              
-
-        TransHopMeta hi2 = new TransHopMeta(javaScriptStep, dummyStep);
-        transMeta.addTransHop(hi2);        
+        TransMeta transMeta = TransTestFactory.generateTestTransformation(new Variables(), svm, javaScriptStepname);
         
-        // Now execute the transformation...
-        Trans trans = new Trans(transMeta);
+        // Now execute the transformation and get the result from the dummy step.
+        //
+        List<RowMetaAndData> result = TransTestFactory.executeTestTransformation
+        		(
+        			transMeta, 
+        			TransTestFactory.INJECTOR_STEPNAME, 
+        			javaScriptStepname, 
+        			TransTestFactory.DUMMY_STEPNAME, 
+        			createData4()
+        		);
 
-        trans.prepareExecution(null);
-                
-        StepInterface si;
-
-        si = trans.getStepInterface(javaScriptStepname, 0);
-        RowStepCollector javaScriptRc = new RowStepCollector();
-        si.addRowListener(javaScriptRc);
-               
-        si = trans.getStepInterface(dummyStepname, 0);
-        RowStepCollector dummyRc = new RowStepCollector();
-        si.addRowListener(dummyRc);
-        
-        RowProducer rp = trans.addRowProducer(injectorStepname, 0);
-        trans.startThreads();
-        
-        // add rows
-        List<RowMetaAndData> inputList = createData4();
-        Iterator<RowMetaAndData> it = inputList.iterator();
-        while ( it.hasNext() )
-        {
-        	RowMetaAndData rm = (RowMetaAndData)it.next();
-        	rp.putRow(rm.getRowMeta(), rm.getData());
-        }   
-        rp.finished();
-
-        trans.waitUntilFinished();   
-        
-        List<RowMetaAndData> goldenImageRows = createResultData4();
-        List<RowMetaAndData> resultRows1 = javaScriptRc.getRowsWritten();
-        checkRows(resultRows1, goldenImageRows);
-                
-        List<RowMetaAndData> resultRows2 = dummyRc.getRowsRead();
-        checkRows(resultRows2, goldenImageRows);
+        // Verify that this is what we expected...
+        //
+        checkRows(result, createResultData4());
     }        
 }

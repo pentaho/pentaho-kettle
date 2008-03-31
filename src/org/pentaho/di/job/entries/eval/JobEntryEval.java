@@ -131,6 +131,8 @@ public class JobEntryEval extends JobEntryBase implements Cloneable, JobEntryInt
     String debug = "start"; //$NON-NLS-1$
 
     cx = Context.enter();
+	
+    // cx = Context.enter();
 
     debug = "try"; //$NON-NLS-1$
     try {
