@@ -1115,6 +1115,7 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 	 * @return the number of files successfully copied
 	 * @throws Exception
 	 */
+	@SuppressWarnings("unchecked")
 	private void GetFiles(String sourceLocation, String targetLocation,
 		SFTPv3Client sftpClient,String wildcardin) throws Exception 
 	{
@@ -1125,15 +1126,15 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 		else
 			sourceFolder="./";
 		
-		Vector filelist = sftpClient.ls(sourceFolder);
+		Vector<SFTPv3DirectoryEntry> filelist = sftpClient.ls(sourceFolder);
 		
 		if(filelist!=null)
 		{
-			Iterator iterator = filelist.iterator();
+			Iterator<SFTPv3DirectoryEntry> iterator = filelist.iterator();
 	
 			while (iterator.hasNext()) 
 			{
-				SFTPv3DirectoryEntry dirEntry = (SFTPv3DirectoryEntry) iterator.next();
+				SFTPv3DirectoryEntry dirEntry = iterator.next();
 	
 				if (dirEntry == null) continue;
 	            
@@ -1160,6 +1161,7 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 	 * @return the number of files successfully copied
 	 * @throws Exception
 	 */
+	@SuppressWarnings("unchecked")
 	private void copyRecursive(String sourceLocation, String targetLocation,
 		SFTPv3Client sftpClient,String wildcardin) throws Exception 
 	{
@@ -1169,14 +1171,14 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 		if (this.isDirectory(sftpClient, sourceFolder)) 
 		{
 
-			Vector filelist = sftpClient.ls(sourceFolder);
+			Vector<SFTPv3DirectoryEntry> filelist = sftpClient.ls(sourceFolder);
       
-			Iterator iterator = filelist.iterator();
+			Iterator<SFTPv3DirectoryEntry> iterator = filelist.iterator();
 
 			while (iterator.hasNext()) 
 			{
 				
-				SFTPv3DirectoryEntry dirEntry = (SFTPv3DirectoryEntry) iterator	.next();
+				SFTPv3DirectoryEntry dirEntry = iterator.next();
 
 				if (dirEntry == null) continue;
 				

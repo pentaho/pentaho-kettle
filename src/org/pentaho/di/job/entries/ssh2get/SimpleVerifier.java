@@ -1,5 +1,5 @@
 
-package be.ibridge.kettle.job.entry.ssh2get;
+package org.pentaho.di.job.entries.ssh2get;
 
 import com.trilead.ssh2.KnownHosts;
 import com.trilead.ssh2.ServerHostKeyVerifier;

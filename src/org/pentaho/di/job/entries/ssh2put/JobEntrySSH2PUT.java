@@ -1081,7 +1081,7 @@ public class JobEntrySSH2PUT extends JobEntryBase implements Cloneable, JobEntry
 	}  
     private String[] getFiles(String localfolder)
     {
-		ArrayList myFileList = new ArrayList();
+		ArrayList<String> myFileList = new ArrayList<String>();
 		
 		// Get all the files in the local directory...
 		
