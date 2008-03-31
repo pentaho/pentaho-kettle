@@ -26,38 +26,40 @@ public class CalculatorMetaFunction implements Cloneable
 
     public static final int CALC_NONE                 =  0;
     public static final int CALC_CONSTANT             =  1;
-    public static final int CALC_ADD                  =  2;
-    public static final int CALC_SUBTRACT             =  3;
-    public static final int CALC_MULTIPLY             =  4;
-    public static final int CALC_DIVIDE               =  5;
-    public static final int CALC_SQUARE               =  6;
-    public static final int CALC_SQUARE_ROOT          =  7;
-    public static final int CALC_PERCENT_1            =  8;
-    public static final int CALC_PERCENT_2            =  9;
-    public static final int CALC_PERCENT_3            = 10;
-    public static final int CALC_COMBINATION_1        = 11;
-    public static final int CALC_COMBINATION_2        = 12;
-    public static final int CALC_ROUND_1              = 13;
-    public static final int CALC_ROUND_2              = 14;
-    public static final int CALC_NVL                  = 15;
-    public static final int CALC_ADD_DAYS             = 16;
-    public static final int CALC_YEAR_OF_DATE         = 17;
-    public static final int CALC_MONTH_OF_DATE        = 18;
-    public static final int CALC_DAY_OF_YEAR          = 19;
-    public static final int CALC_DAY_OF_MONTH         = 20;
-    public static final int CALC_DAY_OF_WEEK          = 21;
-    public static final int CALC_WEEK_OF_YEAR         = 22;
-    public static final int CALC_WEEK_OF_YEAR_ISO8601 = 23;
-    public static final int CALC_YEAR_OF_DATE_ISO8601 = 24;
-    public static final int CALC_BYTE_TO_HEX_ENCODE   = 25;
-    public static final int CALC_HEX_TO_BYTE_DECODE   = 26;
-    public static final int CALC_CHAR_TO_HEX_ENCODE   = 27;
-    public static final int CALC_HEX_TO_CHAR_DECODE   = 28;
+    public static final int CALC_COPY_OF_FIELD        =  2;
+    public static final int CALC_ADD                  =  3;
+    public static final int CALC_SUBTRACT             =  4;
+    public static final int CALC_MULTIPLY             =  5;
+    public static final int CALC_DIVIDE               =  6;
+    public static final int CALC_SQUARE               =  7;
+    public static final int CALC_SQUARE_ROOT          =  8;
+    public static final int CALC_PERCENT_1            =  9;
+    public static final int CALC_PERCENT_2            = 10;
+    public static final int CALC_PERCENT_3            = 11;
+    public static final int CALC_COMBINATION_1        = 12;
+    public static final int CALC_COMBINATION_2        = 13;
+    public static final int CALC_ROUND_1              = 14;
+    public static final int CALC_ROUND_2              = 15;
+    public static final int CALC_NVL                  = 16;
+    public static final int CALC_ADD_DAYS             = 17;
+    public static final int CALC_YEAR_OF_DATE         = 18;
+    public static final int CALC_MONTH_OF_DATE        = 19;
+    public static final int CALC_DAY_OF_YEAR          = 20;
+    public static final int CALC_DAY_OF_MONTH         = 21;
+    public static final int CALC_DAY_OF_WEEK          = 22;
+    public static final int CALC_WEEK_OF_YEAR         = 23;
+    public static final int CALC_WEEK_OF_YEAR_ISO8601 = 24;
+    public static final int CALC_YEAR_OF_DATE_ISO8601 = 25;
+    public static final int CALC_BYTE_TO_HEX_ENCODE   = 26;
+    public static final int CALC_HEX_TO_BYTE_DECODE   = 27;
+    public static final int CALC_CHAR_TO_HEX_ENCODE   = 28;
+    public static final int CALC_HEX_TO_CHAR_DECODE   = 29;
 
     public static final String calc_desc[] = 
         { 
             "-", 
             "CONSTANT",
+            "COPY_FIELD",
             "ADD",
             "SUBTRACT",
             "MULTIPLY",
@@ -91,6 +93,7 @@ public class CalculatorMetaFunction implements Cloneable
         { 
             "-", 
             Messages.getString("CalculatorMetaFunction.CalcFunctions.SetFieldToConstant"),
+            Messages.getString("CalculatorMetaFunction.CalcFunctions.CreateCopyOfField"),
             "A + B", 
             "A - B", 
             "A * B",

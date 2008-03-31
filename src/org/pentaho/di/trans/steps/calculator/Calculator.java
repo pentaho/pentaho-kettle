@@ -238,6 +238,11 @@ public class Calculator extends BaseStep implements StepInterface
                 {
                 case CalculatorMetaFunction.CALC_NONE: 
                     break;
+                case CalculatorMetaFunction.CALC_COPY_OF_FIELD      : // Create a copy of field A
+	                {
+	                    calcData[index] = dataA;
+	                }
+	                break;
                 case CalculatorMetaFunction.CALC_ADD                :  // A + B
                     {
                         calcData[index] = ValueDataUtil.plus(metaA, dataA, metaB, dataB);
