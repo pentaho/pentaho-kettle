@@ -40,7 +40,7 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
- * Read all Property files, convert them to rows and writes these to one or more output streams.
+ * Read all Properties files, convert them to rows and writes these to one or more output streams.
  * 
  * @author Samatar
  * @since 24-03-2008
