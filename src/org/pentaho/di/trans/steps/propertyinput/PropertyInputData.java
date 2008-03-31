@@ -34,8 +34,6 @@ import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
-import com.healthmarketscience.jackcess.Database;
-import com.healthmarketscience.jackcess.Table;
 
 /**
  * @author Samatar Hassan
@@ -63,8 +61,6 @@ public class PropertyInputData extends BaseStepData implements StepDataInterface
 	public FileInputStream     fr;
 	public BufferedInputStream is;
     public long                rownr;
-    public Database 			d;
-    public Table 				t;
     public Map<String,Object>   rw; 
     public RowMetaInterface inputRowMeta;
     public int totalpreviousfields;
@@ -94,8 +90,6 @@ public class PropertyInputData extends BaseStepData implements StepDataInterface
 		
 		fr=null;
 		is=null;
-		d=null;
-		t=null;
 		rw=null;
 		totalpreviousfields=0;
 		indexOfFilenameField=-1;

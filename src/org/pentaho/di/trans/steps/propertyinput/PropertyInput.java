@@ -406,19 +406,9 @@ public class PropertyInput extends BaseStep implements StepInterface
 		meta=(PropertyInputMeta)smi;
 		data=(PropertyInputData)sdi;
 
-		if(data.t!=null) data.t=null;
 		if(data.rw!=null) data.rw=null;
 		if(data.readrow!=null) data.readrow=null;
-		if(data.d!=null) 
-		{
-			try
-			{
-				data.d.close();
-				data.d=null;
-			}catch  (Exception e)
-			{
-			}
-		}
+		
 		if(data.file!=null) 
 		{
 			try

@@ -563,7 +563,7 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
 			
 		}catch (Exception e)
 		{
-			log.logError(toString(),Messages.getString("JobXMLWellFormed.Error.AddingToFilenameResult"),fileaddentry,e.getMessage());
+			log.logError(toString(),Messages.getString("JobXMLWellFormed.Error.AddingToFilenameResult",fileaddentry,e.getMessage()));
 		}
 
 }
