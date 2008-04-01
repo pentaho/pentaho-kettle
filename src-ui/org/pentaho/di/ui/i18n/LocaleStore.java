@@ -54,7 +54,7 @@ public class LocaleStore {
 	 * @param directories The source directories to reference the packages from
 	 * @throws KettleException
 	 */
-	public void read(String[] directories) throws KettleException {
+	public void read(List<String> directories) throws KettleException {
 		for (String messagePackage : messagesPackages) {
 			MessagesStore messagesStore = new MessagesStore(locale, messagePackage);
 			

@@ -52,7 +52,7 @@ public class TranslationsStore {
 	 * @param directories The reference source directories to search packages in
 	 * @throws KettleException
 	 */
-	public void read(String[] directories) throws KettleException {
+	public void read(List<String> directories) throws KettleException {
 		
 		// The first locale (en_US) takes the lead: we need to find all of those 
 		// The others are optional.

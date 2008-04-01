@@ -50,7 +50,7 @@ public class MessagesSourceCrawler {
 	/**
 	 * The source directories to crawl through
 	 */
-	private String[] sourceDirectories;
+	private List<String> sourceDirectories;
 	
 	/**
 	 * The directories to search for XUL files in
@@ -66,31 +66,35 @@ public class MessagesSourceCrawler {
 	/**
 	 * The file names to avoid (base names)
 	 */
-	private String[] filesToAvoid;
+	private List<String> filesToAvoid;
+
+	private String singleMessagesFile;
 	
 
 	/**
 	 * @param sourceDirectories The source directories to crawl through
+	 * @param singleMessagesFile the messages file if there is only one, otherwise: null
 	 */
-	public MessagesSourceCrawler(String[] sourceDirectories) {
+	public MessagesSourceCrawler(List<String> sourceDirectories, String singleMessagesFile) {
 		super();
 		this.sourceDirectories = sourceDirectories;
+		this.singleMessagesFile = singleMessagesFile;
 		this.occurrences = new ArrayList<KeyOccurrence>();
-		this.filesToAvoid = new String[] {};
+		this.filesToAvoid = new ArrayList<String>();
 		this.xulDirectories = new String[] {};
 	}
 
 	/**
 	 * @return The source directories to crawl through
 	 */
-	public String[] getSourceDirectories() {
+	public List<String> getSourceDirectories() {
 		return sourceDirectories;
 	}
 
 	/**
 	 * @param sourceDirectories The source directories to crawl through
 	 */
-	public void setSourceDirectories(String[] sourceDirectories) {
+	public void setSourceDirectories(List<String> sourceDirectories) {
 		this.sourceDirectories = sourceDirectories;
 	}
 	
@@ -110,16 +114,16 @@ public class MessagesSourceCrawler {
 	}
 	
 	/**
-	 * @return the filesToAvoid
+	 * @return the files to avoid
 	 */
-	public String[] getFilesToAvoid() {
+	public List<String> getFilesToAvoid() {
 		return filesToAvoid;
 	}
 
 	/**
-	 * @param filesToAvoid the filesToAvoid to set
+	 * @param filesToAvoid the files to avoid
 	 */
-	public void setFilesToAvoid(String[] filesToAvoid) {
+	public void setFilesToAvoid(List<String> filesToAvoid) {
 		this.filesToAvoid = filesToAvoid;
 	}
 
@@ -141,16 +145,18 @@ public class MessagesSourceCrawler {
 	}
 	
 	public void crawl() throws IOException {
-		String[] masks = new String[sourceDirectories.length];
-		String[] req = new String[sourceDirectories.length];
-		boolean[] subdirs = new boolean[sourceDirectories.length];
+		String[] dirs = new  String[sourceDirectories.size()];
+		String[] masks = new String[sourceDirectories.size()];
+		String[] req = new String[sourceDirectories.size()];
+		boolean[] subdirs = new boolean[sourceDirectories.size()];
 		
 		for (int i=0;i<masks.length;i++) {
+			dirs[i] = sourceDirectories.get(i);
 			masks[i] = ".*\\.java$";
 			req[i] = "N";
 			subdirs[i] = true;
 		}
-		FileInputList fileInputList = FileInputList.createFileList(new Variables(), sourceDirectories, masks, req, subdirs);
+		FileInputList fileInputList = FileInputList.createFileList(new Variables(), dirs, masks, req, subdirs);
 		
 		/**
 		 * We don't want the Messages.java files, there is nothing in there for us.
@@ -251,7 +257,7 @@ public class MessagesSourceCrawler {
 			//
 			// "import org.pentaho.di.trans.steps.sortedmerge.Messages;"
 			//
-			if (line.matches("^[ \t]*import [a-z\\._]*\\.Messages;[ \t]*$")) {
+			if (line.matches("^[ \t]*import [a-z\\._0-9]*\\.Messages;[ \t]*$")) {
 				int beginIndex = line.indexOf("org.pentaho.");
 				int endIndex = line.indexOf(".Messages;");
 				messagesPackage = line.substring(beginIndex, endIndex); // if there is any specified, we take this one.
@@ -383,14 +389,27 @@ public class MessagesSourceCrawler {
 	}
 
 	public static void main(String[] args) throws IOException {
-		MessagesSourceCrawler crawler = new MessagesSourceCrawler(new String[] { "src", "src-ui", } );
-		crawler.setFilesToAvoid(
-				new String[] { 
-						"MessagesSourceCrawler.java", "KeyOccurence.java", "TransLator.java", 
-						"MenuHelper.java", "Messages.java", "XulMessages.java", 
-						"AnnotatedStepsConfigManager.java", "AnnotatedJobConfigManager.java", 
-						"JobEntryValidatorUtils.java", "Const.java", "XulHelper.java", 
-					});
+		List<String> directories = new ArrayList<String>();
+		directories.add("src-core");
+		directories.add("src");
+		directories.add("src-ui");
+		
+		List<String> filesToAvoid = new ArrayList<String>();
+		filesToAvoid.add("MessagesSourceCrawler.java");
+		filesToAvoid.add("KeyOccurence.java");
+		filesToAvoid.add("TransLator.java");
+		filesToAvoid.add("MenuHelper.java");
+		filesToAvoid.add("Messages.java");
+		filesToAvoid.add("XulMessages.java");
+		filesToAvoid.add("AnnotatedStepsConfigManager.java");
+		filesToAvoid.add("AnnotatedJobConfigManager.java");
+		filesToAvoid.add("JobEntryValidatorUtils.java");
+		filesToAvoid.add("Const.java");
+		filesToAvoid.add("XulHelper.java"); 
+		
+		
+		MessagesSourceCrawler crawler = new MessagesSourceCrawler( directories, null );
+		crawler.setFilesToAvoid(filesToAvoid);
 		crawler.crawl();
 		int mis=0;
 		LanguageChoice.getInstance().setDefaultLocale(Locale.US);
@@ -434,6 +453,20 @@ public class MessagesSourceCrawler {
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * @return the singleMessagesFile
+	 */
+	public String getSingleMessagesFile() {
+		return singleMessagesFile;
+	}
+
+	/**
+	 * @param singleMessagesFile the singleMessagesFile to set
+	 */
+	public void setSingleMessagesFile(String singleMessagesFile) {
+		this.singleMessagesFile = singleMessagesFile;
 	}
 
 }

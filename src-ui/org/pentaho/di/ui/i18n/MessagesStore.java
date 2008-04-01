@@ -18,6 +18,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -54,7 +55,7 @@ public class MessagesStore extends ChangedFlag {
 	}
 	
 	
-	public void read(String[] directories) throws KettleException {
+	public void read(List<String> directories) throws KettleException {
 		try
 		{
 			String filename = getLoadFilename(directories);
@@ -107,7 +108,7 @@ public class MessagesStore extends ChangedFlag {
 	 * @param directories the source directories to try and map the messages files against.
 	 * @return the filename that was found.
 	 */
-	public String getLoadFilename(String[] directories) throws FileNotFoundException {
+	public String getLoadFilename(List<String> directories) throws FileNotFoundException {
 		String localeUpperLower = locale.substring(0, 3).toLowerCase()+locale.substring(3).toUpperCase();
 		
 		String filename="messages_"+localeUpperLower+".properties";
@@ -120,7 +121,7 @@ public class MessagesStore extends ChangedFlag {
 		throw new FileNotFoundException("package '"+(path+Const.FILE_SEPARATOR+"messages"+Const.FILE_SEPARATOR+filename)+"' could not be found");
 	}
 	
-	public String getSourceDirectory(String[] directories) {
+	public String getSourceDirectory(List<String> directories) {
 		String localeUpperLower = locale.substring(0, 3).toLowerCase()+locale.substring(3).toUpperCase();
 		
 		String filename="messages_"+localeUpperLower+".properties";

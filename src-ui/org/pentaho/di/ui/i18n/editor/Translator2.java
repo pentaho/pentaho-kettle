@@ -67,15 +67,15 @@ import org.w3c.dom.Node;
 public class Translator2
 {
     public static final String APP_NAME = Messages.getString("i18nDialog.ApplicationName");
-    public static final String[] ROOT = new String[] { "src-core", "src", "src-ui", };
-    public static final String SYSTEM_KEY_PREFIX = "System";
-    public static final String REFERENCE_LOCALE = "en_US";
-    public static final String[] FILES_TO_AVOID = new String[] { 
+    // public static final String[] ROOT = new String[] { "src-core", "src", "src-ui", };
+    // public static final String REFERENCE_LOCALE = "en_US";
+    /*public static final String[] FILES_TO_AVOID = new String[] { 
 			"MessagesSourceCrawler.java", "KeyOccurence.java", "TransLator.java", 
 			"MenuHelper.java", "Messages.java", "XulMessages.java", 
 			"AnnotatedStepsConfigManager.java", "AnnotatedJobConfigManager.java", 
 			"JobEntryValidatorUtils.java", "Const.java", "XulHelper.java", 
 		  };
+    */
     
     private Display display;
     private Shell shell;
@@ -123,12 +123,16 @@ public class Translator2
     
     private Button wAll;
     
-	private ArrayList<String> localeList;
+    private   String referenceLocale;
+    private   java.util.List<String> rootDirectories;
+	private   java.util.List<String> localeList;
+    private   java.util.List<String> filesToAvoid;
 	protected String lastValue;
 	protected boolean lastValueChanged;
 	protected String selectedKey;
 	protected String searchString;
 	protected String lastFoundKey;
+	private String singleMessagesFile;
 		
     public Translator2(Display display)
     {
@@ -141,22 +145,22 @@ public class Translator2
     	return !key.startsWith("System.") || messagesPackage.equals(BaseMessages.class.getPackage().getName());
     }
     
-    public void readFiles(String[] directories) throws KettleFileException
+    public void readFiles(java.util.List<String> directories) throws KettleFileException
     {
         log.logBasic(toString(), Messages.getString("i18n.Log.ScanningSourceDirectories"));
         try
         {
         	// crawl through the source directories...
         	//
-        	crawler = new MessagesSourceCrawler(directories);
-        	crawler.setFilesToAvoid(FILES_TO_AVOID);
+        	crawler = new MessagesSourceCrawler(directories, singleMessagesFile);
+        	crawler.setFilesToAvoid(filesToAvoid);
         	crawler.setXulDirectories( new String[] { "ui", } );
         	crawler.crawl();
         	
         	// get the packages...
         	//
         	messagesPackages = crawler.getMessagesPackagesList();
-        	store = new TranslationsStore(localeList, messagesPackages, REFERENCE_LOCALE); // en_US : main locale
+        	store = new TranslationsStore(localeList, messagesPackages, referenceLocale); // en_US : main locale
         	store.read(directories);
         	
         	// What are the statistics?
@@ -178,7 +182,7 @@ public class Translator2
 	        			if (!Const.isEmpty(value)) {
 	        				keyCounts[i]++;
 	        			}
-	        			if (locale.equals(REFERENCE_LOCALE)) {
+	        			if (locale.equals(referenceLocale)) {
 	        				nrKeys++;
 	        			}
         			}
@@ -197,34 +201,28 @@ public class Translator2
         }
         catch(Exception e)
         {
-            throw new KettleFileException("Unable to get all files from directory ["+ROOT+"]", e);
+            throw new KettleFileException("Unable to get all files from directories ["+rootDirectories+"]", e);
         }
     }
     
-    public void setLocaleList() {
+    public void loadConfiguration() {
     	// What are the locale to handle?
     	//
     	localeList = new ArrayList<String>();
-    	localeList.add("en_US");
-    	localeList.add("fr_FR");
-    	localeList.add("es_ES");
-    	localeList.add("es_AR");
-    	localeList.add("nl_NL");
-    	localeList.add("de_DE");
-    	localeList.add("zh_CN");
-    	localeList.add("pt_BR");
-    	localeList.add("pt_PT");
-    	localeList.add("es_AR");
-    	localeList.add("no_NO");
-    	
+    	rootDirectories = new ArrayList<String>();
+    	filesToAvoid = new ArrayList<String>();
+
     	File file = new File("translator.xml");
     	if (file.exists()) {
-    		
-    		// TODO: add the other configurations that are now hard coded to the XML document as well.
     		
     		try {
     			Document doc = XMLHandler.loadXMLFile(file);
     			Node configNode = XMLHandler.getSubNode(doc, "translator-config");
+    			
+    			referenceLocale = XMLHandler.getTagValue(configNode, "reference-locale");
+
+    			singleMessagesFile = XMLHandler.getTagValue(configNode, "single-messages-file");
+    			
     			Node localeListNode = XMLHandler.getSubNode(configNode, "locale-list");
     			int nrLocale = XMLHandler.countNodes(localeListNode, "locale");
     			if (nrLocale>0) localeList.clear();
@@ -233,6 +231,25 @@ public class Translator2
     				String locale = XMLHandler.getTagValue(localeNode, "code");
     				localeList.add(locale);
     			}
+
+    			Node rootsNode = XMLHandler.getSubNode(configNode, "source-directories");
+    			int nrRoots = XMLHandler.countNodes(rootsNode, "root");
+    			if (nrRoots>0) rootDirectories.clear();
+    			for (int i=0;i<nrRoots;i++) {
+    				Node rootNode = XMLHandler.getSubNodeByNr(rootsNode, "root", i);
+    				String directory = XMLHandler.getNodeValue(rootNode);
+    				rootDirectories.add(directory);
+    			}
+
+    			Node filesNode = XMLHandler.getSubNode(configNode, "files-to-avoid");
+    			int nrFiles = XMLHandler.countNodes(filesNode, "filename");
+    			if (nrFiles>0) filesToAvoid.clear();
+    			for (int i=0;i<nrFiles;i++) {
+    				Node fileNode = XMLHandler.getSubNodeByNr(filesNode, "filename", i);
+    				String filename = XMLHandler.getNodeValue(fileNode);
+    				filesToAvoid.add(filename);
+    			}
+
     		}
     		catch (Exception e) {
 				log.logError("Translator", "Error reading translator.xml", e);
@@ -249,7 +266,7 @@ public class Translator2
         
         try
         {
-            readFiles(ROOT);
+            readFiles(rootDirectories);
         }
         catch(Exception e)
         {
@@ -309,7 +326,7 @@ public class Translator2
         try
         {
             shell.setCursor(display.getSystemCursor(SWT.CURSOR_WAIT));
-            readFiles(ROOT);
+            readFiles(rootDirectories);
             shell.setCursor(null);
 
             refresh();
@@ -644,14 +661,14 @@ public class Translator2
 
 		wSearch.addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent e) {
-					search(REFERENCE_LOCALE);
+					search(referenceLocale);
 				}
 			}
 		);
 
 		wNext.addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent e) {
-					searchAgain(REFERENCE_LOCALE);
+					searchAgain(referenceLocale);
 				}
 			}
 		);
@@ -681,7 +698,7 @@ public class Translator2
 				// Find the main locale variation for this messages store...
 				//
 				MessagesStore mainLocaleMessagesStore = store.findMainLocaleMessagesStore(messagesStore.getMessagesPackage());
-				String sourceDirectory = mainLocaleMessagesStore.getSourceDirectory(ROOT);
+				String sourceDirectory = mainLocaleMessagesStore.getSourceDirectory(rootDirectories);
 				String filename = messagesStore.getSaveFilename(sourceDirectory);
 				messagesStore.setFilename(filename);
 				msg.append(filename).append(Const.CR);
@@ -768,10 +785,8 @@ public class Translator2
 			applyChangedValue();
 		}
 			
-		String mainLocale = REFERENCE_LOCALE;
-		
 		if (selectedLocale!=null && key!=null && selectedMessagesPackage!=null) {
-			String mainValue = store.lookupKeyValue(mainLocale, selectedMessagesPackage, key);
+			String mainValue = store.lookupKeyValue(referenceLocale, selectedMessagesPackage, key);
 			String value = store.lookupKeyValue(selectedLocale, selectedMessagesPackage, key);
 			KeyOccurrence keyOccurrence = crawler.getKeyOccurrence(key, selectedMessagesPackage);
 			
@@ -948,7 +963,7 @@ public class Translator2
         PropsUI.init(display, Props.TYPE_PROPERTIES_SPOON);
         
         Translator2 translator = new Translator2(display);
-        translator.setLocaleList();
+        translator.loadConfiguration();
         translator.open();
         
         try

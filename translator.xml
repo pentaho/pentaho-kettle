@@ -1,4 +1,14 @@
 <translator-config>
+
+  <system-key-prefix>System</system-key-prefix>
+  <reference-locale>en_US</reference-locale>
+
+  <source-directories>
+    <root>src</root>
+    <root>src-core</root>
+    <root>src-ui</root>
+  </source-directories>
+  
   <locale-list>
     <locale> <code>en_US</code> <language>English</language> <country>United States of America</country> </locale>
     <locale> <code>fr_FR</code> <language>French</language> <country>France</country> </locale>
@@ -12,5 +22,20 @@
     <locale> <code>pt_PT</code> <language>Portuguese</language> <country>Portugal</country> </locale>
     <locale> <code>ja_JP</code> <language>Japanese</language> <country>Japan</country> </locale>
   </locale-list>
+  
+  <files-to-avoid>
+    <filename>MessagesSourceCrawler.java</filename>
+    <filename>KeyOccurence.java</filename>
+    <filename>TransLator.java</filename>
+    <filename>MenuHelper.java</filename>
+    <filename>Messages.java</filename>
+    <filename>XulMessages.java</filename>
+    <filename>AnnotatedStepsConfigManager.java</filename>
+    <filename>AnnotatedJobConfigManager.java</filename>
+    <filename>JobEntryValidatorUtils.java</filename>
+    <filename>Const.java</filename>
+    <filename>XulHelper.java</filename>
+  </files-to-avoid>
+  
 </translator-config>
 
