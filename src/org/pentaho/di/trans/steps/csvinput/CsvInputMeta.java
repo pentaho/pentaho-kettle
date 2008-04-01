@@ -78,6 +78,8 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
 	
 	private boolean isaddresult;
 	
+	private boolean runningInParallel;
+	
 	public CsvInputMeta()
 	{
 		super(); // allocate BaseStepMeta
@@ -119,7 +121,8 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
 			headerPresent = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "header"));
 			lazyConversionActive= "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "lazy_conversion"));
 			isaddresult= "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "add_filename_result"));
-			
+			runningInParallel = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "parallel"));
+
 			Node fields = XMLHandler.getSubNode(stepnode, "fields");
 			int nrfields = XMLHandler.countNodes(fields, "field");
 			
@@ -166,8 +169,7 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
 		retval.append("    ").append(XMLHandler.addTagValue("buffer_size", bufferSize));
 		retval.append("    ").append(XMLHandler.addTagValue("lazy_conversion", lazyConversionActive));
 		retval.append("    ").append(XMLHandler.addTagValue("add_filename_result", isaddresult));
-		
-		
+		retval.append("    ").append(XMLHandler.addTagValue("parallel", runningInParallel));
 
 		retval.append("    <fields>").append(Const.CR);
 		for (int i = 0; i < inputFields.length; i++)
@@ -206,8 +208,7 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
 			bufferSize = rep.getStepAttributeString(id_step, "buffer_size");
 			lazyConversionActive = rep.getStepAttributeBoolean(id_step, "lazy_conversion");
 			isaddresult = rep.getStepAttributeBoolean(id_step, "add_filename_result");
-			
-			
+			runningInParallel = rep.getStepAttributeBoolean(id_step, "parallel");
 			
 			int nrfields = rep.countNrStepAttributes(id_step, "field_name");
 
@@ -248,8 +249,8 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
 			rep.saveStepAttribute(id_transformation, id_step, "header", headerPresent);
 			rep.saveStepAttribute(id_transformation, id_step, "lazy_conversion", lazyConversionActive);
 			rep.saveStepAttribute(id_transformation, id_step, "add_filename_result", isaddresult);
-			
-			
+			rep.saveStepAttribute(id_transformation, id_step, "parallel", runningInParallel);
+
 
 			for (int i = 0; i < inputFields.length; i++)
 			{
@@ -590,5 +591,19 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
     {
         return isaddresult;
     }
+
+	/**
+	 * @return the runningInParallel
+	 */
+	public boolean isRunningInParallel() {
+		return runningInParallel;
+	}
+
+	/**
+	 * @param runningInParallel the runningInParallel to set
+	 */
+	public void setRunningInParallel(boolean runningInParallel) {
+		this.runningInParallel = runningInParallel;
+	}
 	
 }

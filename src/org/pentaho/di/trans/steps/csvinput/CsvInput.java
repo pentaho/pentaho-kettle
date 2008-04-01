@@ -17,10 +17,10 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.pentaho.di.core.ResultFile;
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.provider.local.LocalFile;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.row.RowDataUtil;
@@ -78,13 +78,29 @@ public class CsvInput extends BaseStep implements StepInterface
 				valueMeta.setStorageType(ValueMetaInterface.STORAGE_TYPE_BINARY_STRING);
 			}
 			
+			// Now handle the parallel reading aspect: determine total of all the file sizes
+			// Then skip to the appropriate file and location in the file to start reading...
+			// Also skip to right after the first newline
+			//
+			if (meta.isRunningInParallel()) {
+				prepareToRunInParallel();
+			}
+			
 			// Open the next file...
 			//
 			if (!openNextFile()) {
 				setOutputDone();
 				return false; // nothing to see here, move along...
+			}	
+		}
+		
+		// If we are running in parallel, make sure we don't read too much in this step copy...
+		//
+		if (meta.isRunningInParallel()) {
+			if (data.totalBytesRead>data.blockToRead) {
+				setOutputDone(); // stop reading
+				return false;
 			}
-			
 		}
 		
 		Object[] outputRowData=readOneRow(true);    // get row, set busy!
@@ -108,6 +124,62 @@ public class CsvInput extends BaseStep implements StepInterface
 	}
 
 	
+	private void prepareToRunInParallel() throws KettleException {
+		try {
+			// At this point it doesn't matter if we have 1 or more files.
+			// We'll use the same algorithm...
+			//
+	        for (String filename : data.filenames) { 
+	        	long size = KettleVFS.getFileObject(filename).getContent().getSize();
+	        	data.fileSizes.add(size);
+	        	data.totalFileSize+=size;
+	        }
+	        
+	        // Now we can determine the range to read.
+	        //
+	        // For example, the total file size is 50000, spread over 5 files of 10000
+	        // Suppose we have 2 step copies running (clustered or not)
+	        // That means step 0 has to read 0-24999 and step 1 has to read 25000-49999
+	        //
+	        // The size of the block to read (25000 in the example) :
+	        //
+	        data.blockToRead = Math.round( (double)data.totalFileSize / (double)data.totalNumberOfSteps ); 
+	        
+	        // Now we calculate the position to read (0 and 25000 in our sample) :
+	        //
+	        data.startPosition = data.blockToRead * data.stepNumber;
+	        data.endPosition = data.startPosition + data.blockToRead;
+	        
+	        // Determine the start file number (0 or 2 in our sample) :
+	        // >0<,1000,>2000<,3000,4000
+	        //
+	        long totalFileSize=0L;
+	        for (int i=0;i<data.fileSizes.size();i++) {
+	        	long size = data.fileSizes.get(i);
+	        	if (data.startPosition>=totalFileSize && data.startPosition<=totalFileSize+size) {
+	        		// This is the file number to start reading from...
+	        		//
+	        		data.filenr = i;
+	        		
+	        		// How many bytes do we skip in that first file?
+	        		//
+	        		data.bytesToSkipInFirstFile = totalFileSize - data.startPosition;
+	        		if (data.bytesToSkipInFirstFile<0) {
+	        			data.bytesToSkipInFirstFile+=size;
+	        		}
+	        		
+	        		break;
+	        	}
+	        	totalFileSize+=size;
+	        }
+	        
+	        logBasic(Messages.getString("CsvInput.Log.ParallelFileNrAndPositionFeedback", Integer.toString(data.filenr), Long.toString(data.bytesToSkipInFirstFile), Long.toString(data.blockToRead)));
+		}
+		catch(Exception e) {
+			throw new KettleException(Messages.getString("CsvInput.Exception.ErrorPreparingParallelRun"), e);
+		}
+	}
+
 	private void getFilenamesFromPreviousSteps() throws KettleException {
 		List<String> filenames = new ArrayList<String>();
 		boolean firstRow = true;
@@ -165,11 +237,18 @@ public class CsvInput extends BaseStep implements StepInterface
 			if (meta.isLazyConversionActive()) {
 				data.binaryFilename=data.filenames[data.filenr].getBytes();
 			}
-
+			
 			data.fis = (FileInputStream)((LocalFile)fileObject).getInputStream();
 			data.fc = data.fis.getChannel();
 			data.bb = ByteBuffer.allocateDirect( data.preferredBufferSize );
-			
+
+			// If we are running in parallel and we need to skip bytes in the first file, let's do so here.
+			//
+			if (meta.isRunningInParallel() && data.bytesToSkipInFirstFile>0) {
+				data.fc.position(data.bytesToSkipInFirstFile);
+				data.bytesToSkipInFirstFile=-1L;
+			}
+
 			// Add filename to result filenames ?
 			if(meta.isAddResultFile())
 			{
@@ -261,6 +340,7 @@ public class CsvInput extends BaseStep implements StepInterface
 					else if (data.byteBuffer[data.endBuffer]=='\n' || data.byteBuffer[data.endBuffer]=='\r') {
 						
 						data.endBuffer++;
+						data.totalBytesRead++;
 						newLines=1;
 						
 						if (data.endBuffer>=data.bufferSize) {
@@ -278,6 +358,7 @@ public class CsvInput extends BaseStep implements StepInterface
 						// re-check for double delimiters...
 						if (data.byteBuffer[data.endBuffer]=='\n' || data.byteBuffer[data.endBuffer]=='\r') {
 							data.endBuffer++;
+							data.totalBytesRead++;
 							newLines=2;
 							if (data.endBuffer>=data.bufferSize) {
 								// Oops, we need to read more data...
@@ -341,7 +422,8 @@ public class CsvInput extends BaseStep implements StepInterface
 						
 					else {
 						data.endBuffer++;
-						
+						data.totalBytesRead++;
+
 						if (data.endBuffer>=data.bufferSize) {
 							// Oops, we need to read more data...
 							// Better resize this before we read other things in it...
@@ -413,6 +495,7 @@ public class CsvInput extends BaseStep implements StepInterface
 				if( !newLineFound) 
 				{
 					data.endBuffer++;
+					data.totalBytesRead++;
 				}
 				data.startBuffer = data.endBuffer;
 			}
@@ -467,6 +550,8 @@ public class CsvInput extends BaseStep implements StepInterface
 				data.filenames = null;
 				data.filenr = 0;
 			}
+			
+			data.totalBytesRead=0L;
 							
 			data.delimiter = environmentSubstitute(meta.getDelimiter()).getBytes();
 
@@ -478,6 +563,23 @@ public class CsvInput extends BaseStep implements StepInterface
 			
 			data.isAddingRowNumber = !Const.isEmpty(meta.getRowNumField());
 			
+			// Handle parallel reading capabilities...
+			//
+			data.stopReading = false;
+			
+			if (meta.isRunningInParallel()) {
+				data.stepNumber = getUniqueStepNrAcrossSlaves();
+				data.totalNumberOfSteps = getUniqueStepCountAcrossSlaves();
+				
+				// We are not handling a single file, but possibly a list of files...
+				// As such, the fair thing to do is calculate the total size of the files
+				// Then read the required block.
+				//
+				
+	            data.fileSizes = new ArrayList<Long>();
+	            data.totalFileSize = 0L;
+			}
+						
 			return true;
 
 		}

@@ -16,6 +16,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.util.List;
 
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
@@ -50,7 +51,18 @@ public class CsvInputData extends BaseStepData implements StepDataInterface
 	
 	public boolean  isAddingRowNumber;
 	public long     rowNumber;
+	public boolean stopReading;
+	public int stepNumber;
+	public int totalNumberOfSteps;
+	public List<Long> fileSizes;
+	public long totalFileSize;
+	public long blockToRead;
+	public long startPosition;
+	public long endPosition;
+	public long bytesToSkipInFirstFile;
 			
+	public long totalBytesRead;
+	
 	/**
 	 * 
 	 */
@@ -60,6 +72,7 @@ public class CsvInputData extends BaseStepData implements StepDataInterface
 		byteBuffer = new byte[] {};
 		startBuffer = 0;
 		endBuffer = 0;
+		totalBytesRead = 0;
 	}
 
 	// Resize

@@ -96,7 +96,8 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
 	private Label wlAddResult;
     private Button wAddResult;
 	private boolean isReceivingInput;
-	
+	private Button wRunningInParallel;
+
 	public CsvInputDialog(Shell parent, Object in, TransMeta tr, String sname)
 	{
 		super(parent, (BaseStepMeta)in, tr, sname);
@@ -383,6 +384,23 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
 		wRowNumField.setLayoutData(fdRowNumField);
 		lastControl = wRowNumField;
 
+		// running in parallel?
+		//
+		Label wlRunningInParallel = new Label(shell, SWT.RIGHT);
+		wlRunningInParallel.setText(Messages.getString("CsvInputDialog.RunningInParallel.Label")); //$NON-NLS-1$
+ 		props.setLook(wlRunningInParallel);
+		FormData fdlRunningInParallel = new FormData();
+		fdlRunningInParallel.top  = new FormAttachment(lastControl, margin);
+		fdlRunningInParallel.left = new FormAttachment(0, 0);
+		fdlRunningInParallel.right= new FormAttachment(middle, -margin);
+		wlRunningInParallel.setLayoutData(fdlRunningInParallel);
+		wRunningInParallel = new Button(shell, SWT.CHECK);
+ 		props.setLook(wRunningInParallel);
+		FormData fdRunningInParallel = new FormData();
+		fdRunningInParallel.top  = new FormAttachment(lastControl, margin);
+		fdRunningInParallel.left = new FormAttachment(middle, 0);
+		wRunningInParallel.setLayoutData(fdRunningInParallel);
+		lastControl=wRunningInParallel;
 
 		// Some buttons first, so that the dialog scales nicely...
 		//
@@ -547,9 +565,10 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
 		wBufferSize.setText(Const.NVL(inputMeta.getBufferSize(), ""));
 		wLazyConversion.setSelection(inputMeta.isLazyConversionActive());
 		wHeaderPresent.setSelection(inputMeta.isHeaderPresent());
+		wRunningInParallel.setSelection(inputMeta.isRunningInParallel());
 		wRowNumField.setText(Const.NVL(inputMeta.getRowNumField(), ""));
 		wAddResult.setSelection(inputMeta.isAddResultFile());
-
+		
 		for (int i=0;i<inputMeta.getInputFields().length;i++) {
 			TextFileInputField field = inputMeta.getInputFields()[i];
 			
@@ -595,7 +614,8 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
 		inputMeta.setHeaderPresent(wHeaderPresent.getSelection());
 		inputMeta.setRowNumField(wRowNumField.getText());
 		inputMeta.setAddResultFile( wAddResult.getSelection() );
-		
+		inputMeta.setRunningInParallel(wRunningInParallel.getSelection());
+
     	int nrNonEmptyFields = wFields.nrNonEmpty(); 
     	inputMeta.allocate(nrNonEmptyFields);
 
