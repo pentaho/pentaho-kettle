@@ -201,7 +201,8 @@ public class Translator2
         }
         catch(Exception e)
         {
-            throw new KettleFileException("Unable to get all files from directories ["+rootDirectories+"]", e);
+            throw new KettleFileException(Messages.getString("i18n.Log.UnableToGetFiles",rootDirectories.toString()), e);
+            
         }
     }
     
@@ -342,8 +343,9 @@ public class Translator2
 		java.util.List<MessagesStore> changedMessagesStores = store.getChangedMessagesStores();
 		if (changedMessagesStores.size()>0) {
 			MessageBox mb = new MessageBox(shell, SWT.YES | SWT.NO | SWT.ICON_WARNING);
-            mb.setMessage("There are unsaved changes."+Const.CR+Const.CR+"The number of changed messages files is: "+changedMessagesStores.size()+Const.CR+Const.CR+"Are you sure you want to exit?");
-			mb.setText("Warning!");
+            mb.setMessage(Messages.getString("i18nDialog.ChangedFilesWhenExit",changedMessagesStores.size()+""));
+			mb.setText(Messages.getString("i18nDialog.Warning"));
+			
 			int answer = mb.open();
 			if (answer==SWT.NO) return false;
 		}
