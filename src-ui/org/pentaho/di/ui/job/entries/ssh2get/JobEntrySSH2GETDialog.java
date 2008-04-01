@@ -64,10 +64,8 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 public class JobEntrySSH2GETDialog extends JobEntryDialog implements JobEntryDialogInterface
 {
     private static final String[] FILETYPES = new String[] {
-        Messages
-            .getString("JobSSH2GET.Filetype.Pem"),
-        Messages
-            .getString("JobSSH2GET.Filetype.All") };
+        Messages.getString("JobSSH2GET.Filetype.Pem"),
+        Messages.getString("JobSSH2GET.Filetype.All") };
     
     private LabelText wName;
 
@@ -253,8 +251,8 @@ public class JobEntrySSH2GETDialog extends JobEntryDialog implements JobEntryDia
         int margin = Const.MARGIN;
 
         // Job entry name line
-        wName = new LabelText(shell, Messages.getString("JobSSH2GET.Name.Label"), Messages
-            .getString("JobSSH2GET.Name.Tooltip"));
+        wName = new LabelText(shell, Messages.getString("JobSSH2GET.Name.Label"), 
+        		Messages.getString("JobSSH2GET.Name.Tooltip"));
         wName.addModifyListener(lsMod);
         fdName = new FormData();
         fdName.top = new FormAttachment(0, 0);
@@ -297,8 +295,8 @@ public class JobEntrySSH2GETDialog extends JobEntryDialog implements JobEntryDia
 		wHost.setLayout(HostLayout);
 
         // ServerName line
-        wServerName = new LabelTextVar(jobMeta,wHost, Messages.getString("JobSSH2GET.Server.Label"), Messages
-            .getString("JobSSH2GET.Server.Tooltip"));
+        wServerName = new LabelTextVar(jobMeta,wHost, Messages.getString("JobSSH2GET.Server.Label"), 
+        		Messages.getString("JobSSH2GET.Server.Tooltip"));
         props.setLook(wServerName);
         wServerName.addModifyListener(lsMod);
         fdServerName = new FormData();
@@ -354,8 +352,8 @@ public class JobEntrySSH2GETDialog extends JobEntryDialog implements JobEntryDia
         
         
         // UserName line
-        wUserName = new LabelTextVar(jobMeta,wHost, Messages.getString("JobSSH2GET.User.Label"), Messages
-            .getString("JobSSH2GET.User.Tooltip"));
+        wUserName = new LabelTextVar(jobMeta,wHost, Messages.getString("JobSSH2GET.User.Label"), 
+        		Messages.getString("JobSSH2GET.User.Tooltip"));
         props.setLook(wUserName);
         wUserName.addModifyListener(lsMod);
         fdUserName = new FormData();
@@ -365,8 +363,8 @@ public class JobEntrySSH2GETDialog extends JobEntryDialog implements JobEntryDia
         wUserName.setLayoutData(fdUserName);
 
         // Password line
-        wPassword = new LabelTextVar(jobMeta,wHost, Messages.getString("JobSSH2GET.Password.Label"), Messages
-            .getString("JobSSH2GET.Password.Tooltip"));
+        wPassword = new LabelTextVar(jobMeta,wHost, Messages.getString("JobSSH2GET.Password.Label"), 
+        		Messages.getString("JobSSH2GET.Password.Tooltip"));
         props.setLook(wPassword);
         wPassword.setEchoChar('*');
         wPassword.addModifyListener(lsMod);
@@ -386,8 +384,8 @@ public class JobEntrySSH2GETDialog extends JobEntryDialog implements JobEntryDia
         });
         
         // Timeout line
-        wTimeout = new LabelTextVar(jobMeta,wHost, Messages.getString("JobSSH2GET.Timeout.Label"), Messages
-            .getString("JobSSH2GET.Timeout.Tooltip"));
+        wTimeout = new LabelTextVar(jobMeta,wHost, Messages.getString("JobSSH2GET.Timeout.Label"), 
+        		Messages.getString("JobSSH2GET.Timeout.Tooltip"));
         props.setLook(wTimeout);
         wTimeout.addModifyListener(lsMod);
         fdTimeout = new FormData();
@@ -449,8 +447,8 @@ public class JobEntrySSH2GETDialog extends JobEntryDialog implements JobEntryDia
 		});
         
         // ProxyHost line
-        wHTTPProxyHost = new LabelTextVar(jobMeta,wHTTPProxyGroup, Messages.getString("JobSSH2GET.ProxyHost.Label"), Messages
-            .getString("JobSSH2GET.Server.Tooltip"));
+        wHTTPProxyHost = new LabelTextVar(jobMeta,wHTTPProxyGroup, Messages.getString("JobSSH2GET.ProxyHost.Label"), 
+        		Messages.getString("JobSSH2GET.Server.Tooltip"));
         props.setLook(wHTTPProxyHost);
         wHTTPProxyHost.addModifyListener(lsMod);
         fdHTTPProxyHost = new FormData();
@@ -506,8 +504,8 @@ public class JobEntrySSH2GETDialog extends JobEntryDialog implements JobEntryDia
 		});
         
         // ProxyUsername line
-        wHTTPProxyUsername = new LabelTextVar(jobMeta,wHTTPProxyGroup, Messages.getString("JobSSH2GET.HttpProxyUsername.Label"), Messages
-            .getString("JobSSH2GET.HttpProxyUsername.Tooltip"));
+        wHTTPProxyUsername = new LabelTextVar(jobMeta,wHTTPProxyGroup, Messages.getString("JobSSH2GET.HttpProxyUsername.Label"), 
+        		Messages.getString("JobSSH2GET.HttpProxyUsername.Tooltip"));
         props.setLook(wHTTPProxyUsername);
         wHTTPProxyUsername.addModifyListener(lsMod);
         fdHTTPProxyUsername = new FormData();
@@ -517,8 +515,8 @@ public class JobEntrySSH2GETDialog extends JobEntryDialog implements JobEntryDia
         wHTTPProxyUsername.setLayoutData(fdHTTPProxyUsername);
         
         // HttpProxyPassword line
-        wHTTPProxyPassword = new LabelTextVar(jobMeta,wHTTPProxyGroup, Messages.getString("JobSSH2GET.HttpProxyPassword.Label"), Messages
-            .getString("JobSSH2GET.HttpProxyPassword.Tooltip"));
+        wHTTPProxyPassword = new LabelTextVar(jobMeta,wHTTPProxyGroup, Messages.getString("JobSSH2GET.HttpProxyPassword.Label"), 
+        		Messages.getString("JobSSH2GET.HttpProxyPassword.Tooltip"));
         props.setLook(wHTTPProxyPassword);
         wHTTPProxyPassword.setEchoChar('*');
         wHTTPProxyPassword.addModifyListener(lsMod);
@@ -644,8 +642,8 @@ public class JobEntrySSH2GETDialog extends JobEntryDialog implements JobEntryDia
         });
 
         // keyfilePass line
-        wkeyfilePass = new LabelTextVar(jobMeta,wPublicKey, Messages.getString("JobSSH2GET.keyfilePass.Label"), Messages
-            .getString("JobSSH2GET.keyfilePass.Tooltip"));
+        wkeyfilePass = new LabelTextVar(jobMeta,wPublicKey, Messages.getString("JobSSH2GET.keyfilePass.Label"), 
+        		Messages.getString("JobSSH2GET.keyfilePass.Tooltip"));
         props.setLook(wkeyfilePass);
         wkeyfilePass.setEchoChar('*');
         wkeyfilePass.addModifyListener(lsMod);
@@ -773,8 +771,8 @@ public class JobEntrySSH2GETDialog extends JobEntryDialog implements JobEntryDia
         
         
         // Wildcard line
-        wWildcard = new LabelTextVar(jobMeta,wFiles, Messages.getString("JobSSH2GET.Wildcard.Label"), Messages
-            .getString("JobSSH2GET.Wildcard.Tooltip"));
+        wWildcard = new LabelTextVar(jobMeta,wFiles, Messages.getString("JobSSH2GET.Wildcard.Label"), 
+        		Messages.getString("JobSSH2GET.Wildcard.Tooltip"));
         props.setLook(wWildcard);
         wWildcard.addModifyListener(lsMod);
         fdWildcard = new FormData();
@@ -936,8 +934,8 @@ public class JobEntrySSH2GETDialog extends JobEntryDialog implements JobEntryDia
 		wlDestinationFolder.setLayoutData(fdlDestinationFolder);
 		
 		
-		wDestinationFolder = new TextVar(jobMeta,wFiles, SWT.SINGLE | SWT.LEFT | SWT.BORDER, Messages
-			.getString("JobSSH2GET.DestinationFolder.Tooltip"));
+		wDestinationFolder = new TextVar(jobMeta,wFiles, SWT.SINGLE | SWT.LEFT | SWT.BORDER, 
+				Messages.getString("JobSSH2GET.DestinationFolder.Tooltip"));
 		props.setLook(wDestinationFolder);
 		wDestinationFolder.addModifyListener(lsMod);
 		fdDestinationFolder = new FormData();
