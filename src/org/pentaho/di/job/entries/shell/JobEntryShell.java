@@ -600,6 +600,12 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 						+ "] was " + result.getExitStatus());
 				result.setNrErrors(1);
 			}
+			
+			// close the streams
+			// otherwise you get "Too many open files, java.io.IOException" after a lot of iterations
+			proc.getErrorStream().close();
+			proc.getOutputStream().close();
+	
 		} catch (IOException ioe)
 		{
 			log.logError(toString(), "Error running shell [" + environmentSubstitute(getFilename()) + "] : "
