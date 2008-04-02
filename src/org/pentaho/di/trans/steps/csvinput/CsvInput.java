@@ -69,6 +69,11 @@ public class CsvInput extends BaseStep implements StepInterface
 				getFilenamesFromPreviousSteps();
 			}
 			
+			// We only run in parallel if we have at least one file to process
+			// AND if we have more than one step copy running...
+			//
+			data.parallel = meta.isRunningInParallel() && data.filenames.length>1 && data.totalNumberOfSteps>1;
+			
 			// The conversion logic for when the lazy conversion is turned of is simple:
 			// Pretend it's a lazy conversion object anyway and get the native type during conversion.
 			//
@@ -82,7 +87,7 @@ public class CsvInput extends BaseStep implements StepInterface
 			// Then skip to the appropriate file and location in the file to start reading...
 			// Also skip to right after the first newline
 			//
-			if (meta.isRunningInParallel()) {
+			if (data.parallel) {
 				prepareToRunInParallel();
 			}
 			
@@ -96,7 +101,7 @@ public class CsvInput extends BaseStep implements StepInterface
 		
 		// If we are running in parallel, make sure we don't read too much in this step copy...
 		//
-		if (meta.isRunningInParallel()) {
+		if (data.parallel) {
 			if (data.totalBytesRead>data.blockToRead) {
 				setOutputDone(); // stop reading
 				return false;
@@ -156,16 +161,26 @@ public class CsvInput extends BaseStep implements StepInterface
 	        long totalFileSize=0L;
 	        for (int i=0;i<data.fileSizes.size();i++) {
 	        	long size = data.fileSizes.get(i);
-	        	if (data.startPosition>=totalFileSize && data.startPosition<=totalFileSize+size) {
+
+	        	// Start of file range: totalFileSize
+	        	// End of file range: totalFileSize+size
+	        	
+	        	if (data.startPosition>=totalFileSize && data.startPosition<totalFileSize+size) {
 	        		// This is the file number to start reading from...
 	        		//
 	        		data.filenr = i;
 	        		
+	        		// remember where we started to read to allow us to know that we have to skip the header row in the next files (if any)
+	        		//
+	        		data.startFilenr = i; 
+	        		
+	        		
 	        		// How many bytes do we skip in that first file?
 	        		//
-	        		data.bytesToSkipInFirstFile = totalFileSize - data.startPosition;
-	        		if (data.bytesToSkipInFirstFile<0) {
-	        			data.bytesToSkipInFirstFile+=size;
+	        		if (data.startPosition==0) {
+	        			data.bytesToSkipInFirstFile=0L;
+	        		} else {
+	        			data.bytesToSkipInFirstFile = data.startPosition - totalFileSize;
 	        		}
 	        		
 	        		break;
@@ -173,7 +188,7 @@ public class CsvInput extends BaseStep implements StepInterface
 	        	totalFileSize+=size;
 	        }
 	        
-	        logBasic(Messages.getString("CsvInput.Log.ParallelFileNrAndPositionFeedback", Integer.toString(data.filenr), Long.toString(data.bytesToSkipInFirstFile), Long.toString(data.blockToRead)));
+	        logBasic(Messages.getString("CsvInput.Log.ParallelFileNrAndPositionFeedback", data.filenames[data.filenr], Long.toString(data.fileSizes.get(data.filenr)), Long.toString(data.bytesToSkipInFirstFile), Long.toString(data.blockToRead)));
 		}
 		catch(Exception e) {
 			throw new KettleException(Messages.getString("CsvInput.Exception.ErrorPreparingParallelRun"), e);
@@ -206,6 +221,8 @@ public class CsvInput extends BaseStep implements StepInterface
 		}
 		
 		data.filenames = filenames.toArray(new String[filenames.size()]);
+		
+		logBasic(Messages.getString("CsvInput.Log.ReadingFromNrFiles", Integer.toString(data.filenames.length)));
 	}
 
 	private boolean openNextFile() throws KettleException {
@@ -244,9 +261,14 @@ public class CsvInput extends BaseStep implements StepInterface
 
 			// If we are running in parallel and we need to skip bytes in the first file, let's do so here.
 			//
-			if (meta.isRunningInParallel() && data.bytesToSkipInFirstFile>0) {
-				data.fc.position(data.bytesToSkipInFirstFile);
-				data.bytesToSkipInFirstFile=-1L;
+			if (data.parallel) {
+				if (data.bytesToSkipInFirstFile>0) {
+					data.fc.position(data.bytesToSkipInFirstFile);
+	
+					// Now, we need to skip the first row, until the first CR that is.
+					//
+					readOneRow(false);
+				}
 			}
 
 			// Add filename to result filenames ?
@@ -257,6 +279,15 @@ public class CsvInput extends BaseStep implements StepInterface
 				addResultFile(resultFile);
 			}
 			
+			// See if we need to skip the header row...
+			//
+			if ((meta.isHeaderPresent() && !data.parallel) || // Standard flat file : skip header 
+				(data.parallel && data.filenr==data.startFilenr && data.bytesToSkipInFirstFile<=0) || // parallel processing : first file : nothing to skip
+				(data.parallel && data.filenr>data.startFilenr && data.bytesToSkipInFirstFile<=0)   // parallel processing : start of next file, nothing to skip
+				) {
+				readOneRow(false); // skip this row.
+				logBasic(Messages.getString("CsvInput.Log.HeaderRowSkipped", data.filenames[data.filenr]));
+			}
 			
 			// Move to the next filename
 			//
@@ -265,12 +296,11 @@ public class CsvInput extends BaseStep implements StepInterface
 			// Reset the row number pointer...
 			//
 			data.rowNumber = 1L;
-			
-			// See if we need to skip the header row...
+
+			// Don't skip again in the next file...
 			//
-			if (meta.isHeaderPresent()) {
-				readOneRow(false); // skip this row.
-			}
+			data.bytesToSkipInFirstFile=-1L;
+
 			
 			return true;
 		}
@@ -579,7 +609,7 @@ public class CsvInput extends BaseStep implements StepInterface
 	            data.fileSizes = new ArrayList<Long>();
 	            data.totalFileSize = 0L;
 			}
-						
+			
 			return true;
 
 		}
