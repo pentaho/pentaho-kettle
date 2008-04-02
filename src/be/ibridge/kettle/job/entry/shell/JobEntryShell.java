@@ -555,6 +555,12 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
                 log.logDetailed(toString(), "Exit status of shell ["+StringUtil.environmentSubstitute(getFileName())+"] was "+result.getExitStatus());
                 result.setNrErrors(1);
             } 
+            
+			// close the streams
+			// otherwise you get "Too many open files, java.io.IOException" after a lot of iterations
+			proc.getErrorStream().close();
+			proc.getOutputStream().close();
+			
         }
         catch(IOException ioe)
         {
