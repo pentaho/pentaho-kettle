@@ -853,4 +853,29 @@
 		</tooltip>
 		<image-uri>ui/images/PFI.png</image-uri>
 	</step>
+	
+	<step id="GPBulkLoader">
+		<description>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.GPBulkLoader")
+		</description>
+		<class-name>org.pentaho.di.trans.steps.gpbulkloader.GPBulkLoaderMeta</class-name>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<tooltip>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.GPBulkLoader")
+		</tooltip>
+		<image-uri>ui/images/OBL.png</image-uri>
+	</step>
+	
+		<step id="PGBulkLoader">
+		<description>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.PGBulkLoader")
+		</description>
+		<class-name>org.pentaho.di.trans.steps.pgbulkloader.PGBulkLoaderMeta</class-name>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<tooltip>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.PGBulkLoader")
+		</tooltip>
+		<image-uri>ui/images/OBL.png</image-uri>
+	</step>
+	
 </steps>
