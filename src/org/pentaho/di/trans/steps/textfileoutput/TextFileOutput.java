@@ -14,6 +14,7 @@ package org.pentaho.di.trans.steps.textfileoutput;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -647,6 +648,15 @@ public class TextFileOutput extends BaseStep implements StepInterface
 			{
 				logDebug("Ending running external command");
 				int procStatus = data.cmdProc.waitFor();
+				// close the streams
+				// otherwise you get "Too many open files, java.io.IOException" after a lot of iterations
+				try {
+					data.cmdProc.getErrorStream().close();
+					data.cmdProc.getOutputStream().close();				
+					data.cmdProc.getInputStream().close();
+				} catch (IOException e) {
+					logDetailed("Warning: Error closing streams: " + e.getMessage());
+				}				
 				data.cmdProc = null;
 				logBasic("Command exit status: " + procStatus);
 			}

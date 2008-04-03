@@ -154,6 +154,15 @@ public class JarfileGenerator
         {
             log.logDetailed("Jar generator", "Exit status of jar command was "+proc.exitValue());
         } 
+
+		// close the streams
+		// otherwise you get "Too many open files, java.io.IOException" after a lot of iterations
+        try {
+        	proc.getErrorStream().close();
+        	proc.getInputStream().close();
+	   	} catch (IOException e) {
+	   		log.logDetailed("Jar generator", "Warning: Error closing streams: " + e.getMessage());
+	   	}		
     }
 
     private static void deleteDirectory(File dir)

@@ -597,6 +597,17 @@ public class OraBulkLoader extends BaseStep implements StepInterface
 	       {
 	           logBasic("Deletion of files is not compatible with \'manual load method\'");	   
 	       }
+	       
+	       if (sqlldrProcess != null) {
+				// close the streams
+				// otherwise you get "Too many open files, java.io.IOException" after a lot of iterations
+	    	   try {
+	    		   sqlldrProcess.getErrorStream().close();
+				   sqlldrProcess.getInputStream().close();
+	    	   } catch (IOException e) {
+	    		   logDetailed("Warning: Error closing streams: " + e.getMessage());
+	    	   }
+	       }
 	    }
 	}
 
