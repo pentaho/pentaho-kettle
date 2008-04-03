@@ -48,7 +48,8 @@ public class CleanupTransServlet extends HttpServlet
     {
         if (!request.getContextPath().equals(CONTEXT_PATH)) return;
         
-        if (log.isDebug()) log.logDebug(toString(), "Transformation cleanup requested");
+        if (log.isDebug()) log.logDebug(toString(), Messages.getString("TransStatusServlet.Log.TransCleanupRequested"));
+        
 
         String transName = request.getParameter("name");
         boolean useXML = "Y".equalsIgnoreCase( request.getParameter("xml") );
@@ -81,7 +82,9 @@ public class CleanupTransServlet extends HttpServlet
                 trans.cleanup();
                 trans.endProcessing("end");
 
-                String message = "Transformation '"+transName+"' was cleaned up.";
+                String message =  Messages.getString("TransStatusServlet.Log.TransCleanednup",transName);
+               
+                
                 if (useXML)
                 {
                     out.println(new WebResult(WebResult.STRING_OK, message).getXML());
@@ -90,7 +93,7 @@ public class CleanupTransServlet extends HttpServlet
                 {
                     
                     out.println("<H1>"+message+"</H1>");
-                    out.println("<a href=\"/kettle/transStatus?name="+transName+"\">Back to the transformation status page</a><p>");
+                    out.println("<a href=\"/kettle/transStatus?name="+transName+"\">" + Messages.getString("TransStatusServlet.BackToStatusPage")  + "</a><p>");
                 }
             }
             else
@@ -103,7 +106,7 @@ public class CleanupTransServlet extends HttpServlet
                 else
                 {
                     out.println("<H1>"+message+"</H1>");
-                    out.println("<a href=\"/kettle/status\">Back to the status page</a><p>");
+                    out.println("<a href=\"/kettle/status\">" + Messages.getString("TransStatusServlet.BackToStatusPage") +"</a><p>");
                 }
             }
         }

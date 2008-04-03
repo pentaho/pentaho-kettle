@@ -45,6 +45,8 @@ import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
 import org.w3c.dom.Node;
 
+import org.pentaho.di.core.Const;
+
 
 
 
@@ -181,7 +183,7 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
 			if (connection!=null) rep.saveJobEntryAttribute(id_job, getID(), "connection", connection.getName());
 			rep.saveJobEntryAttribute(id_job, getID(), "sql", sql);
 			rep.saveJobEntryAttribute(id_job, getID(), "useVariableSubstitution", useVariableSubstitution ? "T" : "F" );
-			rep.saveJobEntryAttribute(id_job, getID(), "sqlfromfile", useVariableSubstitution ? "T" : "F" );
+			rep.saveJobEntryAttribute(id_job, getID(), "sqlfromfile", sqlfromfile ? "T" : "F" );
 			rep.saveJobEntryAttribute(id_job, getID(), "sqlfilename", sqlfilename);
 	
 		}
@@ -278,10 +280,24 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
 						
 						BufferedReader buff = new BufferedReader(BIS);
 						String sLine = null;
-		
+						String SFullLine=Const.CR;;
+
 						while((sLine=buff.readLine())!=null) 
 						{
-							db.execStatements(sLine);
+							if(Const.isEmpty(sLine))
+							{
+								SFullLine= SFullLine +  Const.CR;	
+							}
+							else
+							{
+								SFullLine=SFullLine+  Const.CR + sLine;
+							}
+						}
+						
+						if(!Const.isEmpty(SFullLine))
+						{
+							if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("JobSQL.Log.SQlStatement",SFullLine));
+							db.execStatement(SFullLine);
 						}
 					}catch (Exception e)
 					{

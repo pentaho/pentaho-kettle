@@ -56,7 +56,7 @@ public class GetTransStatusServlet extends HttpServlet
     {
         if (!request.getContextPath().equals(CONTEXT_PATH)) return;
         
-        if (log.isDebug()) log.logDebug(toString(), "Transformation status requested");
+        if (log.isDebug()) log.logDebug(toString(),  Messages.getString("TransStatusServlet.Log.TransStatusRequested"));
 
         String transName = request.getParameter("name");
         boolean useXML = "Y".equalsIgnoreCase( request.getParameter("xml") );
@@ -128,17 +128,18 @@ public class GetTransStatusServlet extends HttpServlet
 
                 out.println("<HTML>");
                 out.println("<HEAD>");
-                out.println("<TITLE>Kettle transformation status</TITLE>");
+                out.println("<TITLE>" + Messages.getString("TransStatusServlet.KettleTransStatus")  + "</TITLE>");
                 out.println("<META http-equiv=\"Refresh\" content=\"10;url=/kettle/transStatus?name="+transName+"\">");
                 out.println("</HEAD>");
                 out.println("<BODY>");
-                out.println("<H1>Transformation status</H1>");
+                out.println("<H1>" + Messages.getString("TransStatusServlet.TransStatus") +"</H1>");
+                
                 
         
                 try
                 {
                     out.println("<table border=\"1\">");
-                    out.print("<tr> <th>Transformation name</th> <th>Status</th> </tr>");
+                    out.print("<tr> <th>" + Messages.getString("TransStatusServlet.TransName") + "</th> <th>" + Messages.getString("TransStatusServlet.TransStatus") +  "</th> </tr>");
         
                     out.print("<tr>");
                     out.print("<td>"+transName+"</td>");
@@ -150,24 +151,25 @@ public class GetTransStatusServlet extends HttpServlet
                     
                     if ( (trans.isFinished() && trans.isRunning()) || ( !trans.isRunning() && !trans.isPreparing() && !trans.isInitializing() ))
                     {
-                        out.print("<a href=\"/kettle/startTrans?name="+transName+"\">Start this transformation</a>");
+                        out.print("<a href=\"/kettle/startTrans?name="+transName+"\">" + Messages.getString("TransStatusServlet.StartTrans") +"</a>");
                         out.print("<p>");
-                        out.print("<a href=\"/kettle/prepareExec?name="+transName+"\">Prepare the execution</a><br>");
-                        out.print("<a href=\"/kettle/startExec?name="+transName+"\">Start the execution</a><p>");
+                        out.print("<a href=\"/kettle/prepareExec?name="+transName+"\">" + Messages.getString("TransStatusServlet.PrepareTrans") +"</a><br>");
+                        out.print("<a href=\"/kettle/startExec?name="+transName+"\">" + Messages.getString("TransStatusServlet.StartTrans") + "</a><p>");
                     }
                     else
                     if (trans.isRunning())
                     {
-                        out.print("<a href=\"/kettle/stopTrans?name="+transName+"\">Stop this transformation</a>");
+                        out.print("<a href=\"/kettle/stopTrans?name="+transName+"\">" + Messages.getString("TransStatusServlet.StopTrans")  + "</a>");
                         out.print("<p>");
                     }
-                    out.print("<a href=\"/kettle/cleanupTrans?name="+transName+"\">Cleanup this transformation</a>");
+                    out.print("<a href=\"/kettle/cleanupTrans?name="+transName+"\">" + Messages.getString("TransStatusServlet.CleanupTrans") + "</a>");
                     out.print("<p>");
                     
                     out.println("<table border=\"1\">");
-                    out.print("<tr> <th>Step name</th> <th>Copy Nr</th> <th>Read</th> <th>Written</th> <th>Input</th> <th>Output</th> " +
-                            "<th>Updated</th> <th>Rejected</th> <th>Errors</th> <th>Active</th> <th>Time</th> " +
-                            "<th>Speed</th> <th>pr/in/out</th> </tr>");
+                    out.print("<tr> <th>" +Messages.getString("TransStatusServlet.Stepname") + "</th> <th>"  + Messages.getString("TransStatusServlet.CopyNr") + "</th> <th>" + Messages.getString("TransStatusServlet.Read") + "</th> <th>"+ Messages.getString("TransStatusServlet.Written") + "</th> <th>" +Messages.getString("TransStatusServlet.Input") + "</th> <th>" +Messages.getString("TransStatusServlet.Output") + "</th> " +
+                            "<th>Updated</th> <th>" +  Messages.getString("TransStatusServlet.Rejected") + "</th> <th>" +Messages.getString("TransStatusServlet.Errors")  + "</th> <th>" + Messages.getString("TransStatusServlet.Active")  + "</th> <th>" + Messages.getString("TransStatusServlet.Time") + "</th> " +
+                            "<th>" + Messages.getString("TransStatusServlet.Speed")+"</th> <th>" + Messages.getString("TransStatusServlet.prinout") + "</th> </tr>");
+                   
         
                     for (int i = 0; i < trans.nrSteps(); i++)
                     {
@@ -181,9 +183,9 @@ public class GetTransStatusServlet extends HttpServlet
                     out.println("</table>");
                     out.println("<p>");
                     
-                    out.print("<a href=\"/kettle/transStatus/?name="+transName+"&xml=y\">show as XML</a><br>");
-                    out.print("<a href=\"/kettle/status\">Back to the status page</a><br>");
-                    out.print("<p><a href=\"/kettle/transStatus?name="+transName+"\">Refresh</a>");
+                    out.print("<a href=\"/kettle/transStatus/?name="+transName+"&xml=y\">" +  Messages.getString("TransStatusServlet.ShowAsXml")  +"</a><br>");
+                    out.print("<a href=\"/kettle/status\">" + Messages.getString("TransStatusServlet.BackToStatusPage")  +"</a><br>");
+                    out.print("<p><a href=\"/kettle/transStatus?name="+transName+"\">" +  Messages.getString("TransStatusServlet.Refresh")  + "</a>");
                     
                     // Put the logging below that.
                     Log4jStringAppender appender = (Log4jStringAppender) transformationMap.getAppender(transName);
@@ -220,12 +222,13 @@ public class GetTransStatusServlet extends HttpServlet
         {
             if (useXML)
             {
-                out.println(new WebResult(WebResult.STRING_ERROR, "The specified transformation ["+transName+"] could not be found"));
+                out.println(new WebResult(WebResult.STRING_ERROR, Messages.getString("TransStatusServlet.Log.CoundNotFindSpecTrans",transName)));
             }
             else
             {
-                out.println("<H1>Transformation '"+transName+"' could not be found.</H1>");
-                out.println("<a href=\"/kettle/status\">Back to the status page</a><p>");
+                out.println("<H1>" + Messages.getString("TransStatusServlet.Log.CoundNotFindTrans",transName)  + "</H1>");
+                out.println("<a href=\"/kettle/status\">" + Messages.getString("TransStatusServlet.BackToStatusPage")+ "</a><p>");
+                
             }
         }
     }
