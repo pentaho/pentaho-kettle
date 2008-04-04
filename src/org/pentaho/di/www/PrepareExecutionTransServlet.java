@@ -50,7 +50,8 @@ public class PrepareExecutionTransServlet extends HttpServlet
     {
         if (!request.getContextPath().equals(CONTEXT_PATH)) return;
         
-        if (log.isDebug()) log.logDebug(toString(), "Prepare execution of transformation requested");
+        if (log.isDebug()) log.logDebug(toString(), Messages.getString("PrepareExecutionTransServlet.TransPrepareExecutionRequested"));
+        
 
         String transName = request.getParameter("name");
         boolean useXML = "Y".equalsIgnoreCase( request.getParameter("xml") );
@@ -65,10 +66,11 @@ public class PrepareExecutionTransServlet extends HttpServlet
         }
         else
         {
+        	
             response.setContentType("text/html");
             out.println("<HTML>");
             out.println("<HEAD>");
-            out.println("<TITLE>Prepare execution of transformation</TITLE>");
+            out.println("<TITLE>"+ Messages.getString("PrepareExecutionTransServlet.TransPrepareExecution") + "</TITLE>");
             out.println("<META http-equiv=\"Refresh\" content=\"2;url=/kettle/transStatus?name="+transName+"\">");
             out.println("</HEAD>");
             out.println("<BODY>");
@@ -103,23 +105,26 @@ public class PrepareExecutionTransServlet extends HttpServlet
                     }
                     else
                     {
-                        out.println("<H1>Transformation '"+transName+"' was prepared.</H1>");
-                        out.println("<a href=\"/kettle/transStatus?name="+transName+"\">Back to the transformation status page</a><p>");
+                    	
+                        out.println("<H1>" + Messages.getString("PrepareExecutionTransServlet.TransPrepared",transName) + "</H1>");
+                        out.println("<a href=\"/kettle/transStatus?name="+transName+"\">"+ Messages.getString("TransStatusServlet.BackToTransStatusPage") +"</a><p>");
                     }
                 }
                 catch (Exception e) {
                 	
                     if (useXML)
                     {
-                        out.println(new WebResult(WebResult.STRING_ERROR, "Initialisation of transformation failed: "+Const.CR+appender.getBuffer().toString()));
+                        out.println(new WebResult(WebResult.STRING_ERROR, Messages.getString("PrepareExecutionTransServlet.Error.TransInitFailed",Const.CR+appender.getBuffer().toString())));
+                        
                     }
                     else
                     {
-                        out.println("<H1>Transformation '"+transName+"' was not initialised correctly.</H1>");
+                        out.println("<H1>" + Messages.getString("PrepareExecutionTransServlet.Log.TransNotInit",transName) + "</H1>");
+                        
                         out.println("<pre>");
                         out.println(appender.getBuffer().toString());
                         out.println("</pre>");
-                        out.println("<a href=\"/kettle/transStatus?name="+transName+"\">Back to the transformation status page</a><p>");
+                        out.println("<a href=\"/kettle/transStatus?name="+transName+"\">" + Messages.getString("TransStatusServlet.BackToTransStatusPage") + "</a><p>");
                     }
                 }
             }
@@ -127,12 +132,12 @@ public class PrepareExecutionTransServlet extends HttpServlet
             {
                 if (useXML)
                 {
-                    out.println(new WebResult(WebResult.STRING_ERROR, "The specified transformation ["+transName+"] could not be found"));
+                    out.println(new WebResult(WebResult.STRING_ERROR, Messages.getString("TransStatusServlet.Log.CoundNotFindSpecTrans",transName)));
                 }
                 else
                 {
-                    out.println("<H1>Transformation '"+transName+"' could not be found.</H1>");
-                    out.println("<a href=\"/kettle/status\">Back to the status page</a><p>");
+                    out.println("<H1>" + Messages.getString("TransStatusServlet.Log.CoundNotFindTrans",transName) + "</H1>");
+                    out.println("<a href=\"/kettle/status\">" + Messages.getString("TransStatusServlet.BackToStatusPage")+"</a><p>");
                 }
             }
         }
@@ -140,7 +145,8 @@ public class PrepareExecutionTransServlet extends HttpServlet
         {
             if (useXML)
             {
-                out.println(new WebResult(WebResult.STRING_ERROR, "Unexpected error during transformation execution preparation:"+Const.CR+Const.getStackTracker(ex)));
+                out.println(new WebResult(WebResult.STRING_ERROR, Messages.getString("PrepareExecutionTransServlet.Error.UnexpectedError",Const.CR+Const.getStackTracker(ex))));
+                
             }
             else
             {

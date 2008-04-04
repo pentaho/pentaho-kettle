@@ -59,7 +59,7 @@ public class StartExecutionTransServlet extends HttpServlet
             response.setContentType("text/html");
             out.println("<HTML>");
             out.println("<HEAD>");
-            out.println("<TITLE>Prepare execution of transformation</TITLE>");
+            out.println("<TITLE>" + Messages.getString("PrepareExecutionTransServlet.TransPrepareExecution") +"</TITLE>");
             out.println("<META http-equiv=\"Refresh\" content=\"2;url=/kettle/transStatus?name="+transName+"\">");
             out.println("</HEAD>");
             out.println("<BODY>");
@@ -94,7 +94,7 @@ public class StartExecutionTransServlet extends HttpServlet
                     else
                     {
                         out.println("<H1>"+message+"</H1>");
-                        out.println("<a href=\"/kettle/status\">Back to the status page</a><p>");
+                        out.println("<a href=\"/kettle/status\">"+ Messages.getString("TransStatusServlet.BackToStatusPage")+ "</a><p>");
                     }
                 }
             }
@@ -102,12 +102,12 @@ public class StartExecutionTransServlet extends HttpServlet
             {
                 if (useXML)
                 {
-                    out.println(new WebResult(WebResult.STRING_ERROR, "The specified transformation ["+transName+"] could not be found"));
+                    out.println(new WebResult(WebResult.STRING_ERROR, Messages.getString("TransStatusServlet.Log.CoundNotFindSpecTrans",transName)));
                 }
                 else
                 {
-                    out.println("<H1>Transformation '"+transName+"' could not be found.</H1>");
-                    out.println("<a href=\"/kettle/status\">Back to the status page</a><p>");
+                    out.println("<H1>" + Messages.getString("TransStatusServlet.Log.CoundNotFindTrans",transName) + "</H1>");
+                    out.println("<a href=\"/kettle/status\">"+ Messages.getString("TransStatusServlet.BackToStatusPage")+"</a><p>");
                 }
             }
         }

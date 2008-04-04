@@ -33,10 +33,12 @@ public class Carte
     {
         if (args.length<2 || (Const.isEmpty(args[0]) && Const.isEmpty(args[1])) )
         {
-            System.err.println("Usage: Carte [Interface address] [Port]");
+        	
+            System.err.println(Messages.getString("Carte.Usage.Text"));
             System.err.println();
-            System.err.println("Example1: Carte 127.0.0.1 8080");
-            System.err.println("Example2: Carte 192.168.1.221 8081");
+            
+            System.err.println(Messages.getString("Carte.Usage.Example") + ": Carte 127.0.0.1 8080");
+            System.err.println(Messages.getString("Carte.Usage.Example") + ": Carte 192.168.1.221 8081");
             System.exit(1);
         }
         
@@ -58,7 +60,8 @@ public class Carte
             }
             catch(Exception e)
             {
-                System.out.println("Unable to parse port ["+args[0]+"], using port ["+port+"]");
+                System.out.println(Messages.getString("Carte.Error.CanNotPartPort",args[0],""+port));
+                
             }
         }
         new WebServer(transformationMap, jobMap, hostname, port);
@@ -75,7 +78,8 @@ public class Carte
 		}
 		catch(KettleException e)
         {
-            throw new Exception("Unable to load steps & step plugins", e);
+            throw new Exception(Messages.getString("Carte.Error.UnableLoadSteps"), e);
+            
         }
 
 		try 
@@ -84,7 +88,8 @@ public class Carte
 		}
 		catch(KettleException e)
         {
-            throw new Exception("Unable to load jobs entries & job entry plugins", e);
+            throw new Exception( Messages.getString("Carte.Error.UnableLoadJobEntries"), e);
+           
         }
     }
     

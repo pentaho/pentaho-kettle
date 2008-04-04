@@ -179,7 +179,7 @@ public class WebServer
           server.stop();
         }
       } catch (Exception e) {
-        log.logError("web server error", "failed to stop webserver", e);
+        log.logError(Messages.getString("WebServer.Error.FailedToStop.Title"),Messages.getString("WebServer.Error.FailedToStop.Msg", ""+e));
       }
     }
     
@@ -189,7 +189,7 @@ public class WebServer
         connector.setPort(port);
         connector.setHost(hostname);
         connector.setName(Messages.getString("WebServer.Log.KettleHTTPListener",hostname));
-        log.logBasic(toString(), "Created listener for webserver @ address : " + hostname+":"+port);
+        log.logBasic(toString(), Messages.getString("WebServer.Log.CreateListener",hostname,""+port));
 
         server.setConnectors( new Connector[] { connector });
     }

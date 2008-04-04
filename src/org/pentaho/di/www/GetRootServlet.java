@@ -39,7 +39,7 @@ public class GetRootServlet extends HttpServlet
     {
         if (!request.getRequestURI().equals(CONTEXT_PATH)) return;
         
-        if (log.isDebug()) log.logDebug(toString(), "Root requested");
+        if (log.isDebug()) log.logDebug(toString(), Messages.getString("GetRootServlet.RootRequested"));
         
         response.setContentType("text/html");
         response.setStatus(HttpServletResponse.SC_OK);

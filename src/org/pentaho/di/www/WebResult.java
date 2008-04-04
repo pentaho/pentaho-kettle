@@ -99,7 +99,7 @@ public class WebResult
         }
         catch(Exception e)
         {
-            throw new KettleXMLException("Unable to create webresult from XML", e);
+            throw new KettleXMLException(Messages.getString("WebResult.Error.UnableCreateResult"), e);
         }
     }
 }

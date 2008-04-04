@@ -47,7 +47,7 @@ public class StopTransServlet extends HttpServlet
     {
         if (!request.getContextPath().equals(CONTEXT_PATH)) return;
         
-        if (log.isDebug()) log.logDebug(toString(), "Stop of transformation requested");
+        if (log.isDebug()) log.logDebug(toString(),  Messages.getString("StopTransServlet.StopOfTransRequested"));
 
         String transName = request.getParameter("name");
         boolean useXML = "Y".equalsIgnoreCase( request.getParameter("xml") );
@@ -66,7 +66,7 @@ public class StopTransServlet extends HttpServlet
                 response.setContentType("text/html");
                 out.println("<HTML>");
                 out.println("<HEAD>");
-                out.println("<TITLE>Stop transformation</TITLE>");
+                out.println("<TITLE>" +  Messages.getString("StopTransServlet.StopTrans") + "</TITLE>");
                 out.println("<META http-equiv=\"Refresh\" content=\"2;url=/kettle/transStatus?name="+transName+"\">");
                 out.println("</HEAD>");
                 out.println("<BODY>");
@@ -78,7 +78,8 @@ public class StopTransServlet extends HttpServlet
             {
                 trans.stopAll();
                 
-                String message = "Transformation '"+transName+"' stop requested.";
+                String message =  Messages.getString("StopTransServlet.TransSopRequested",transName);
+               
                 if (useXML)
                 {
                     out.println(new WebResult(WebResult.STRING_OK, message).getXML());
@@ -91,7 +92,8 @@ public class StopTransServlet extends HttpServlet
             }
             else
             {
-                String message = "Transformation '"+transName+"' could not be found.";
+                String message = Messages.getString("StopTransServlet.CanNotFindTrans",transName);
+                
                 if (useXML)
                 {
                     out.println(new WebResult(WebResult.STRING_ERROR, message).getXML());
