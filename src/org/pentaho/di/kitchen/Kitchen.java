@@ -181,16 +181,16 @@ public class Kitchen
 				log.logDebug(STRING_KITCHEN, "Parsing command line options.");
 				if (!Const.isEmpty(optionRepname) && !"Y".equalsIgnoreCase(optionNorep.toString()))
 				{
-					log.logDebug(STRING_KITCHEN, "Loading available repositories.");
+					if(log.isDebug()) log.logDebug(STRING_KITCHEN, "Loading available repositories.");
 					RepositoriesMeta repsinfo = new RepositoriesMeta(log);
 					if (repsinfo.readData())
 					{
-						log.logDebug(STRING_KITCHEN, "Finding repository ["+optionRepname+"]");
+						if(log.isDebug())log.logDebug(STRING_KITCHEN, "Finding repository ["+optionRepname+"]");
 						repinfo = repsinfo.findRepository(optionRepname.toString());
 						if (repinfo!=null)
 						{
 							// Define and connect to the repository...
-							log.logDebug(STRING_KITCHEN, "Allocate & connect to repository.");
+							if(log.isDebug())log.logDebug(STRING_KITCHEN, "Allocate & connect to repository.");
 							repository = new Repository(log, repinfo, userinfo);
 							if (repository.connect("Kitchen commandline"))
 							{
@@ -205,23 +205,23 @@ public class Kitchen
 								if (directory!=null)
 								{
 									// Check username, password
-									log.logDebug(STRING_KITCHEN, "Check supplied username and password.");
+									if(log.isDebug())log.logDebug(STRING_KITCHEN, "Check supplied username and password.");
 									userinfo = new UserInfo(repository, optionUsername.toString(), optionPassword.toString());
 									if (userinfo.getID()>0)
 									{
 									    // Load a job
 										if (!Const.isEmpty(optionJobname))
 										{
-											log.logDebug(STRING_KITCHEN, "Load the job info...");
+											if(log.isDebug())log.logDebug(STRING_KITCHEN, "Load the job info...");
 											jobMeta =  new JobMeta(log, repository, optionJobname.toString(), directory);
-											log.logDebug(STRING_KITCHEN, "Allocate job...");
+											if(log.isDebug())log.logDebug(STRING_KITCHEN, "Allocate job...");
 											job = new Job(log, stepLoader, repository, jobMeta);
 										}
 										else
 										// List the jobs in the repository
 										if ("Y".equalsIgnoreCase(optionListjobs.toString()))
 										{
-										    log.logDebug(STRING_KITCHEN, "Getting list of jobs in directory: "+directory);
+											if(log.isDebug())log.logDebug(STRING_KITCHEN, "Getting list of jobs in directory: "+directory);
 											String jobnames[] = repository.getJobNames(directory.getID());
 											for (int i=0;i<jobnames.length;i++)
 											{
@@ -364,7 +364,7 @@ public class Kitchen
 		
 		if (result!=null && result.getNrErrors()!=0)
 		{
-			log.logError(STRING_KITCHEN, "Finished with errors");
+			log.logError(STRING_KITCHEN, Messages.getString("Kitchen.Error.FinishedWithErrors"));
             returnCode = 1;
 		}
 		cal=Calendar.getInstance();

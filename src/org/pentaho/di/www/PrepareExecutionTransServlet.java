@@ -103,7 +103,7 @@ public class PrepareExecutionTransServlet extends HttpServlet
                     }
                     else
                     {
-                        out.println("<H1>Transformation '"+transName+"' was started.</H1>");
+                        out.println("<H1>Transformation '"+transName+"' was prepared.</H1>");
                         out.println("<a href=\"/kettle/transStatus?name="+transName+"\">Back to the transformation status page</a><p>");
                     }
                 }

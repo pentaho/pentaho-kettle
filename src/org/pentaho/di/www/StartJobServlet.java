@@ -104,7 +104,7 @@ public class StartJobServlet extends HttpServlet
                 
                 job.start(); // runs the thread in the background...
 
-                String message = Messages.getString("StartJobServlet.Log.TransStarted",jobName);
+                String message = Messages.getString("StartJobServlet.Log.JobStarted",jobName);
                 if (useXML)
                 {
                     out.println(new WebResult(WebResult.STRING_OK, message).getXML());
@@ -136,7 +136,7 @@ public class StartJobServlet extends HttpServlet
         {
             if (useXML)
             {
-                out.println(new WebResult(WebResult.STRING_ERROR, "Unexpected error during job start:"+Const.CR+Const.getStackTracker(ex)));
+                out.println(new WebResult(WebResult.STRING_ERROR, Messages.getString("StartJobServlet.Error.UnexpectedError",Const.CR+Const.getStackTracker(ex))));
             }
             else
             {

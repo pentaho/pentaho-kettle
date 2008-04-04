@@ -132,7 +132,7 @@ public class GetTransStatusServlet extends HttpServlet
                 out.println("<META http-equiv=\"Refresh\" content=\"10;url=/kettle/transStatus?name="+transName+"\">");
                 out.println("</HEAD>");
                 out.println("<BODY>");
-                out.println("<H1>" + Messages.getString("TransStatusServlet.TransStatus") +"</H1>");
+                out.println("<H1>" + Messages.getString("TransStatusServlet.TopTransStatus", transName) +"</H1>");
                 
                 
         
@@ -154,7 +154,7 @@ public class GetTransStatusServlet extends HttpServlet
                         out.print("<a href=\"/kettle/startTrans?name="+transName+"\">" + Messages.getString("TransStatusServlet.StartTrans") +"</a>");
                         out.print("<p>");
                         out.print("<a href=\"/kettle/prepareExec?name="+transName+"\">" + Messages.getString("TransStatusServlet.PrepareTrans") +"</a><br>");
-                        out.print("<a href=\"/kettle/startExec?name="+transName+"\">" + Messages.getString("TransStatusServlet.StartTrans") + "</a><p>");
+                        //out.print("<a href=\"/kettle/startExec?name="+transName+"\">" + Messages.getString("TransStatusServlet.StartTrans") + "</a><p>");
                     }
                     else
                     if (trans.isRunning())
@@ -167,7 +167,7 @@ public class GetTransStatusServlet extends HttpServlet
                     
                     out.println("<table border=\"1\">");
                     out.print("<tr> <th>" +Messages.getString("TransStatusServlet.Stepname") + "</th> <th>"  + Messages.getString("TransStatusServlet.CopyNr") + "</th> <th>" + Messages.getString("TransStatusServlet.Read") + "</th> <th>"+ Messages.getString("TransStatusServlet.Written") + "</th> <th>" +Messages.getString("TransStatusServlet.Input") + "</th> <th>" +Messages.getString("TransStatusServlet.Output") + "</th> " +
-                            "<th>Updated</th> <th>" +  Messages.getString("TransStatusServlet.Rejected") + "</th> <th>" +Messages.getString("TransStatusServlet.Errors")  + "</th> <th>" + Messages.getString("TransStatusServlet.Active")  + "</th> <th>" + Messages.getString("TransStatusServlet.Time") + "</th> " +
+                            "<th>" + Messages.getString("TransStatusServlet.Updated") + "</th> <th>" +  Messages.getString("TransStatusServlet.Rejected") + "</th> <th>" +Messages.getString("TransStatusServlet.Errors")  + "</th> <th>" + Messages.getString("TransStatusServlet.Active")  + "</th> <th>" + Messages.getString("TransStatusServlet.Time") + "</th> " +
                             "<th>" + Messages.getString("TransStatusServlet.Speed")+"</th> <th>" + Messages.getString("TransStatusServlet.prinout") + "</th> </tr>");
                    
         

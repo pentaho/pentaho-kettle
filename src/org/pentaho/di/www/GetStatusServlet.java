@@ -53,7 +53,7 @@ public class GetStatusServlet extends HttpServlet
     {
         if (!request.getContextPath().equals(CONTEXT_PATH)) return;
         
-        if (log.isDebug()) log.logDebug(toString(), "Status requested");
+        if (log.isDebug()) log.logDebug(toString(), Messages.getString("GetStatusServlet.StatusRequested"));
         response.setStatus(HttpServletResponse.SC_OK);
         
         boolean useXML = "Y".equalsIgnoreCase( request.getParameter("xml") );
@@ -102,15 +102,15 @@ public class GetStatusServlet extends HttpServlet
         else
         {    
             out.println("<HTML>");
-            out.println("<HEAD><TITLE>Kettle slave server status</TITLE></HEAD>");
+            out.println("<HEAD><TITLE>" + Messages.getString("GetStatusServlet.KettleSlaveServerStatus") + "</TITLE></HEAD>");
             out.println("<BODY>");
-            out.println("<H1>Status</H1>");
+            out.println("<H1>" + Messages.getString("GetStatusServlet.TopStatus") + "</H1>");
     
     
             try
             {
                 out.println("<table border=\"1\">");
-                out.print("<tr> <th>Transformation name</th> <th>Status</th> </tr>");
+                out.print("<tr> <th>" + Messages.getString("GetStatusServlet.TransName") + "</th> <th>" + Messages.getString("GetStatusServlet.Status") + "</th> </tr>");
 
                 for (int i=0;i<transNames.length;i++)
                 {
@@ -126,7 +126,7 @@ public class GetStatusServlet extends HttpServlet
                 out.print("</table><p>");
                 
                 out.println("<table border=\"1\">");
-                out.print("<tr> <th>Job name</th> <th>Status</th> </tr>");
+                out.print("<tr> <th>" + Messages.getString("GetStatusServlet.JobName") + "</th> <th>" + Messages.getString("GetStatusServlet.Status") + "</th> </tr>");
 
                 for (int i=0;i<jobNames.length;i++)
                 {

@@ -49,7 +49,7 @@ public class StartTransServlet extends HttpServlet
     {
         if (!request.getContextPath().equals(CONTEXT_PATH)) return;
         
-        if (log.isDebug()) log.logDebug(toString(), "Start of transformation requested");
+        if (log.isDebug()) log.logDebug(toString(), Messages.getString("StartTransServlet.Log.StartTransRequested"));
 
         String transName = request.getParameter("name");
         boolean useXML = "Y".equalsIgnoreCase( request.getParameter("xml") );
@@ -68,7 +68,7 @@ public class StartTransServlet extends HttpServlet
             response.setContentType("text/html");
             out.println("<HTML>");
             out.println("<HEAD>");
-            out.println("<TITLE>Start transformation</TITLE>");
+            out.println("<TITLE>" + Messages.getString("StartTransServlet.Log.StartOfTrans") + "</TITLE>");
             out.println("<META http-equiv=\"Refresh\" content=\"2;url=/kettle/transStatus?name="+transName+"\">");
             out.println("</HEAD>");
             out.println("<BODY>");
@@ -86,7 +86,7 @@ public class StartTransServlet extends HttpServlet
                 
                 trans.execute(null);
 
-                String message = "Transformation '"+transName+"' was started.";
+                String message = Messages.getString("StartTransServlet.Log.TransStarted",transName);
                 if (useXML)
                 {
                     out.println(new WebResult(WebResult.STRING_OK, message).getXML());
@@ -100,7 +100,7 @@ public class StartTransServlet extends HttpServlet
             }
             else
             {
-                String message = "The specified transformation ["+transName+"] could not be found";
+                String message = Messages.getString("TransStatusServlet.Log.CoundNotFindSpecTrans",transName);
                 if (useXML)
                 {
                     out.println(new WebResult(WebResult.STRING_ERROR, message));
@@ -116,7 +116,7 @@ public class StartTransServlet extends HttpServlet
         {
             if (useXML)
             {
-                out.println(new WebResult(WebResult.STRING_ERROR, "Unexpected error during transformations start:"+Const.CR+Const.getStackTracker(ex)));
+                out.println(new WebResult(WebResult.STRING_ERROR, Messages.getString("StartTransServlet.Error.UnexpectedError",Const.CR+Const.getStackTracker(ex))));
             }
             else
             {
