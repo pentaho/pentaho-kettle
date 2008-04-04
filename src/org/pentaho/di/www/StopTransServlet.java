@@ -86,7 +86,7 @@ public class StopTransServlet extends HttpServlet
                 else
                 {
                     out.println("<H1>"+message+"</H1>");
-                    out.println("<a href=\"/kettle/transStatus?name="+transName+"\">Back to the transformation status page</a><p>");
+                    out.println("<a href=\"/kettle/transStatus?name="+transName+"\">" + Messages.getString("TransStatusServlet.BackToTransStatusPage") + "</a><p>");
                 }
             }
             else
@@ -99,7 +99,7 @@ public class StopTransServlet extends HttpServlet
                 else
                 {
                     out.println("<H1>"+message+"</H1>");
-                    out.println("<a href=\"/kettle/status\">Back to the status page</a><p>");
+                    out.println("<a href=\"/kettle/status\">" +Messages.getString("TransStatusServlet.BackToStatusPage")+"</a><p>");
                 }
             }
         }

@@ -130,9 +130,10 @@ public class Kitchen
         
         // Start the action...
         //
-        if (!Const.isEmpty(optionRepname) && !Const.isEmpty(optionUsername)) log.logDetailed(STRING_KITCHEN, "Repository and username supplied");
+        if (!Const.isEmpty(optionRepname) && !Const.isEmpty(optionUsername)) 	log.logDetailed(STRING_KITCHEN,  Messages.getString("Kitchen.Log.RepUsernameSupplied"));
 
-		log.logMinimal(STRING_KITCHEN, "Start of run.");
+		log.logMinimal(STRING_KITCHEN, Messages.getString("Kitchen.Log.Starting"));
+		
 		
 		/* Load the plugins etc.*/
 		try {
@@ -140,7 +141,8 @@ public class Kitchen
 		}
 		catch(KettleException e)
 		{
-			log.logError(STRING_KITCHEN, "Error loading steps... halting Kitchen!", e);
+			log.logError(STRING_KITCHEN, Messages.getString("Kitchen.Error.LoadingSteps"), e);
+			
 			System.exit(8);
 		}
 		StepLoader stepLoader = StepLoader.getInstance();
@@ -152,7 +154,8 @@ public class Kitchen
 		}
 		catch(KettleException e)
         {
-            log.logError(STRING_KITCHEN, "Error loading job entries & plugins... halting Kitchen!", e);
+            log.logError(STRING_KITCHEN, Messages.getString("Kitchen.Error.LoadingJobEntries"), e);
+            
             return;
         }
 
@@ -162,7 +165,9 @@ public class Kitchen
 		cal=Calendar.getInstance();
 		start=cal.getTime();
 				
-		log.logDebug(STRING_KITCHEN, "Allocate new job.");
+		if(log.isDebug()) log.logDebug(STRING_KITCHEN, Messages.getString("Kitchen.Log.AllocateNewJob"));
+		
+		
 		JobMeta jobMeta = new JobMeta(log);
         
         // In case we use a repository...
@@ -354,7 +359,8 @@ public class Kitchen
             if (repository!=null) repository.disconnect();
         }
         
-		log.logMinimal(STRING_KITCHEN, "Finished!");
+		log.logMinimal(STRING_KITCHEN, Messages.getString("Kitchen.Log.Finished"));
+		
 		
 		if (result!=null && result.getNrErrors()!=0)
 		{

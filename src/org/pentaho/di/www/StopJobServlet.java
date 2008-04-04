@@ -47,8 +47,8 @@ public class StopJobServlet extends HttpServlet
     {
         if (!request.getContextPath().equals(CONTEXT_PATH)) return;
         
-        if (log.isDebug()) log.logDebug(toString(), "Stop of job requested");
-
+        if (log.isDebug()) log.logDebug(toString(), Messages.getString("StopJobServlet.log.StopJobRequested"));
+        
         String jobName = request.getParameter("name");
         boolean useXML = "Y".equalsIgnoreCase( request.getParameter("xml") );
 
@@ -77,7 +77,7 @@ public class StopJobServlet extends HttpServlet
             {
                 job.stopAll();
                 
-                String message = "Job '"+jobName+"' stop requested.";
+                String message =  Messages.getString("JobStatusServlet.Log.JobStopRequested",jobName);
                 if (useXML)
                 {
                     out.println(new WebResult(WebResult.STRING_OK, message).getXML());
@@ -85,12 +85,12 @@ public class StopJobServlet extends HttpServlet
                 else
                 {
                     out.println("<H1>"+message+"</H1>");
-                    out.println("<a href=\"/kettle/jobStatus?name="+jobName+"\">Back to the job status page</a><p>");
+                    out.println("<a href=\"/kettle/jobStatus?name="+jobName+"\">" +Messages.getString("JobStatusServlet.BackToJobStatusPage") + "</a><p>");
                 }
             }
             else
             {
-                String message = "Job '"+jobName+"' could not be found.";
+                String message = Messages.getString("StopJobServlet.Log.CoundNotFindJob",jobName);
                 if (useXML)
                 {
                     out.println(new WebResult(WebResult.STRING_ERROR, message).getXML());
@@ -98,7 +98,7 @@ public class StopJobServlet extends HttpServlet
                 else
                 {
                     out.println("<H1>"+message+"</H1>");
-                    out.println("<a href=\"/kettle/status\">Back to the status page</a><p>");
+                    out.println("<a href=\"/kettle/status\">" +Messages.getString("TransStatusServlet.BackToStatusPage") + "</a><p>");
                 }
             }
         }

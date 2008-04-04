@@ -53,7 +53,8 @@ public class GetJobStatusServlet extends HttpServlet
     {
         if (!request.getContextPath().equals(CONTEXT_PATH)) return;
         
-        if (log.isDebug()) log.logDebug(toString(), "Job status requested");
+        if (log.isDebug()) log.logDebug(toString(), Messages.getString("GetJobStatusServlet.Log.JobStatusRequested"));
+       
 
         String jobName = request.getParameter("name");
         boolean useXML = "Y".equalsIgnoreCase( request.getParameter("xml") );
@@ -112,17 +113,17 @@ public class GetJobStatusServlet extends HttpServlet
 
                 out.println("<HTML>");
                 out.println("<HEAD>");
-                out.println("<TITLE>Kettle job status</TITLE>");
+                out.println("<TITLE>" + Messages.getString("GetJobStatusServlet.KettleJobStatus") + "</TITLE>");
                 out.println("<META http-equiv=\"Refresh\" content=\"10;url=/kettle/jobStatus?name="+jobName+"\">");
                 out.println("</HEAD>");
                 out.println("<BODY>");
-                out.println("<H1>Job status</H1>");
+                out.println("<H1>" + Messages.getString("GetJobStatusServlet.JobStatus") + "</H1>");
                 
         
                 try
                 {
                     out.println("<table border=\"1\">");
-                    out.print("<tr> <th>Job name</th> <th>Status</th> </tr>");
+                    out.print("<tr> <th>" + Messages.getString("GetJobStatusServlet.Jobname") + "</th> <th>" + Messages.getString("TransStatusServlet.TransStatus") +"</th> </tr>");
         
                     out.print("<tr>");
                     out.print("<td>"+jobName+"</td>");
@@ -132,22 +133,24 @@ public class GetJobStatusServlet extends HttpServlet
                     
                     out.print("<p>");
                     
+                   
+                    
                     if (job.isActive())
                     {
-                        out.print("<a href=\"/kettle/stopJob?name="+jobName+"\">Stop this job</a>");
+                        out.print("<a href=\"/kettle/stopJob?name="+jobName+"\">" + Messages.getString("GetJobStatusServlet.StopJob") + "</a>");
                         out.print("<p>");
                     }
                     else
                     {
-                        out.print("<a href=\"/kettle/startJob?name="+jobName+"\">Start this job</a>");
+                        out.print("<a href=\"/kettle/startJob?name="+jobName+"\">" +  Messages.getString("GetJobStatusServlet.StartJob") + "</a>");
                         out.print("<p>");
                     }
                     
                     out.println("<p>");
                                         
-                    out.print("<a href=\"/kettle/jobStatus/?name="+jobName+"&xml=y\">show as XML</a><br>");
-                    out.print("<a href=\"/kettle/status\">Back to the status page</a><br>");
-                    out.print("<p><a href=\"/kettle/jobStatus?name="+jobName+"\">Refresh</a>");
+                    out.print("<a href=\"/kettle/jobStatus/?name="+jobName+"&xml=y\">" + Messages.getString("TransStatusServlet.ShowAsXml") + "</a><br>");
+                    out.print("<a href=\"/kettle/status\">" + Messages.getString("TransStatusServlet.BackToStatusPage") + "</a><br>");
+                    out.print("<p><a href=\"/kettle/jobStatus?name="+jobName+"\">" + Messages.getString("TransStatusServlet.Refresh")+ "</a>");
                     
                     // Put the logging below that.
                     Log4jStringAppender appender = (Log4jStringAppender) jobMap.getAppender(jobName);
@@ -184,12 +187,12 @@ public class GetJobStatusServlet extends HttpServlet
         {
             if (useXML)
             {
-                out.println(new WebResult(WebResult.STRING_ERROR, "The specified job ["+jobName+"] could not be found"));
+                out.println(new WebResult(WebResult.STRING_ERROR, Messages.getString("StartJobServlet.Log.SpecifiedJobNotFound",jobName)));
             }
             else
             {
                 out.println("<H1>Job '"+jobName+"' could not be found.</H1>");
-                out.println("<a href=\"/kettle/status\">Back to the status page</a><p>");
+                out.println("<a href=\"/kettle/status\">" + Messages.getString("TransStatusServlet.BackToStatusPage") + "</a><p>");
             }
         }
     }
