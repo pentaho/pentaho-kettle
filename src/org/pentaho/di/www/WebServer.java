@@ -188,7 +188,7 @@ public class WebServer
         SocketConnector connector = new SocketConnector();
         connector.setPort(port);
         connector.setHost(hostname);
-        connector.setName("Kettle HTTP listener for ["+hostname+"]");
+        connector.setName(Messages.getString("WebServer.Log.KettleHTTPListener",hostname));
         log.logBasic(toString(), "Created listener for webserver @ address : " + hostname+":"+port);
 
         server.setConnectors( new Connector[] { connector });

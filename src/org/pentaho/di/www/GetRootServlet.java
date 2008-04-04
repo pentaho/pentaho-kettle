@@ -47,12 +47,12 @@ public class GetRootServlet extends HttpServlet
         PrintWriter out = response.getWriter();
         
         out.println("<HTML>");
-        out.println("<HEAD><TITLE>Kettle slave server</TITLE></HEAD>");
+        out.println("<HEAD><TITLE>" + Messages.getString("GetRootServlet.KettleSlaveServer.Title")+ "</TITLE></HEAD>");
         out.println("<BODY>");
-        out.println("<H2>Slave server menu</H2>");
+        out.println("<H2>"+ Messages.getString("GetRootServlet.SlaveServerMenu")+ "</H2>");
 
         out.println("<p>");
-        out.println("<a href=\"/kettle/status\">Show status</a><br>");
+        out.println("<a href=\"/kettle/status\">"+ Messages.getString("GetRootServlet.ShowStatus")+"</a><br>");
 
         out.println("<p>");
         out.println("</BODY>");
