@@ -72,7 +72,7 @@ public class CsvInput extends BaseStep implements StepInterface
 			// We only run in parallel if we have at least one file to process
 			// AND if we have more than one step copy running...
 			//
-			data.parallel = meta.isRunningInParallel() && data.filenames.length>1 && data.totalNumberOfSteps>1;
+			data.parallel = meta.isRunningInParallel() && data.totalNumberOfSteps>1;
 			
 			// The conversion logic for when the lazy conversion is turned of is simple:
 			// Pretend it's a lazy conversion object anyway and get the native type during conversion.
