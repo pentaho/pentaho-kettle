@@ -16,6 +16,8 @@
 
 package org.pentaho.di.ui.trans.steps.sortedmerge;
 
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -52,6 +54,8 @@ import org.pentaho.di.ui.core.widget.TableView;
 
 public class SortedMergeDialog extends BaseStepDialog implements StepDialogInterface
 {
+    public static final String STRING_SORT_WARNING_PARAMETER = "SortedMergeSortWarning"; //$NON-NLS-1$
+
     private Label        wlFields;
     private TableView    wFields;
     private FormData     fdlFields, fdFields;
@@ -222,6 +226,25 @@ public class SortedMergeDialog extends BaseStepDialog implements StepDialogInter
             TableItem ti = wFields.getNonEmpty(i);
             input.getFieldName()[i] = ti.getText(1);
             input.getAscending()[i] = Messages.getString("System.Combo.Yes").equalsIgnoreCase(ti.getText(2));
+        }
+        
+        // Show a warning (optional)
+        //
+        if ( "Y".equalsIgnoreCase( props.getCustomParameter(STRING_SORT_WARNING_PARAMETER, "Y") )) //$NON-NLS-1$ //$NON-NLS-2$
+        {
+            MessageDialogWithToggle md = new MessageDialogWithToggle(shell, 
+                 Messages.getString("SortedMergeDialog.InputNeedSort.DialogTitle"),  //$NON-NLS-1$
+                 null,
+                 Messages.getString("SortedMergeDialog.InputNeedSort.DialogMessage", Const.CR )+Const.CR, //$NON-NLS-1$ //$NON-NLS-2$
+                 MessageDialog.WARNING,
+                 new String[] { Messages.getString("SortedMergeDialog.InputNeedSort.Option1") }, //$NON-NLS-1$
+                 0,
+                 Messages.getString("SortedMergeDialog.InputNeedSort.Option2"), //$NON-NLS-1$
+                 "N".equalsIgnoreCase( props.getCustomParameter(STRING_SORT_WARNING_PARAMETER, "Y") ) //$NON-NLS-1$ //$NON-NLS-2$
+            );
+            md.open();
+            props.setCustomParameter(STRING_SORT_WARNING_PARAMETER, md.getToggleState()?"N":"Y"); //$NON-NLS-1$ //$NON-NLS-2$
+            props.saveProps();
         }
 
 		dispose();
