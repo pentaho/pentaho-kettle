@@ -138,7 +138,7 @@
 		       ==========================
 		  -->
 
-		  <target name="compileTests" depends="kettle" description="compile the tests" >
+		  <target name="compileTests" depends="kettle-core,kettle" description="compile the tests" >
 		  	<echo>Compiling Kettle tests...</echo>
 		    <javac srcdir="${test}" 
 		    	   destdir="${testClasses}"
