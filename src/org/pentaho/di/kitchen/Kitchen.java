@@ -118,19 +118,22 @@ public class Kitchen
         if (!Const.isEmpty(optionLoglevel)) 
         {
             log.setLogLevel(optionLoglevel.toString());
-            log.logMinimal(STRING_KITCHEN, "Logging is at level : "+log.getLogLevelLongDesc());
+            log.logMinimal(STRING_KITCHEN, Messages.getString("Kitchen.Log.LogLevel",log.getLogLevelLongDesc()));
         } 
 		
         if (!Const.isEmpty(optionVersion))
         {
             BuildVersion buildVersion = BuildVersion.getInstance();
-            log.logBasic("Pan", "Kettle version "+Const.VERSION+", build "+buildVersion.getVersion()+", build date : "+buildVersion.getBuildDate());
+            log.logBasic("Kitchen", Messages.getString("Kitchen.Log.KettleVersion",Const.VERSION,""+buildVersion.getVersion(),""+buildVersion.getBuildDate()));
             if (a.length==1) System.exit(6);
         }
         
         // Start the action...
         //
-        if (!Const.isEmpty(optionRepname) && !Const.isEmpty(optionUsername)) 	log.logDetailed(STRING_KITCHEN,  Messages.getString("Kitchen.Log.RepUsernameSupplied"));
+        if (!Const.isEmpty(optionRepname) && !Const.isEmpty(optionUsername)) 	
+        {
+        	if(log.isDetailed()) log.logDetailed(STRING_KITCHEN,  Messages.getString("Kitchen.Log.RepUsernameSupplied"));
+        }
 
 		log.logMinimal(STRING_KITCHEN, Messages.getString("Kitchen.Log.Starting"));
 		
@@ -181,11 +184,12 @@ public class Kitchen
 				log.logDebug(STRING_KITCHEN, "Parsing command line options.");
 				if (!Const.isEmpty(optionRepname) && !"Y".equalsIgnoreCase(optionNorep.toString()))
 				{
-					if(log.isDebug()) log.logDebug(STRING_KITCHEN, "Loading available repositories.");
+					if(log.isDebug()) log.logDebug(STRING_KITCHEN, Messages.getString("Kitchen.Log.LoadingRep"));
+					
 					RepositoriesMeta repsinfo = new RepositoriesMeta(log);
 					if (repsinfo.readData())
 					{
-						if(log.isDebug())log.logDebug(STRING_KITCHEN, "Finding repository ["+optionRepname+"]");
+						if(log.isDebug())log.logDebug(STRING_KITCHEN, Messages.getString("Kitchen.Log.FindingRep",""+optionRepname));
 						repinfo = repsinfo.findRepository(optionRepname.toString());
 						if (repinfo!=null)
 						{
@@ -309,7 +313,7 @@ public class Kitchen
 				!"Y".equalsIgnoreCase(optionListrep.toString()) 
 			    )
 			{
-				System.out.println("ERROR: Kitchen can't continue because the job couldn't be loaded.");			    
+				System.out.println(Messages.getString("Kitchen.Error.canNotLoadJob"));			    
 			}
 
             System.exit(7);
