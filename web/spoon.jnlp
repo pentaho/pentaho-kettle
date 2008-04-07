@@ -93,7 +93,7 @@
   <jar href="libext/dom4j-1.6.1.jar"/>
   <jar href="libext/javadbf.jar"/>
   <jar href="libext/edtftpj-1.5.4.jar"/>
-  <jar href="libext/jackcess-1.1.9.jar"/>
+  <jar href="libext/jackcess-1.1.13.jar"/>
   <jar href="libext/jakarta-oro-2.0.8.jar"/>
 
   <jar href="libswt/common.jar"/>

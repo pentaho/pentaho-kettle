@@ -626,7 +626,7 @@ public class AccessOutputMeta extends BaseStepMeta implements StepMetaInterface
     {
         return new String[] 
         { 
-            "jackcess-1.1.9.jar", 
+            "jackcess-1.1.13.jar", 
             "commons-collections-3.1.jar", 
             "commons-logging.jar", 
             "commons-lang-2.2.jar", 
