@@ -17,6 +17,8 @@
 
 package org.pentaho.di.ui.trans.steps.mergejoin;
 
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.ModifyEvent;
@@ -53,6 +55,8 @@ import org.pentaho.di.ui.core.widget.TableView;
 
 public class MergeJoinDialog extends BaseStepDialog implements StepDialogInterface
 {
+	public static final String STRING_SORT_WARNING_PARAMETER = "MergeJoinSortWarning"; //$NON-NLS-1$
+    
 	private Label        wlStep1;
 	private CCombo       wStep1;
 	private FormData     fdlStep1, fdStep1;
@@ -401,6 +405,26 @@ public class MergeJoinDialog extends BaseStepDialog implements StepDialogInterfa
 
         getMeta(input);
 
+        // Show a warning (optional)
+        //
+        if ( "Y".equalsIgnoreCase( props.getCustomParameter(STRING_SORT_WARNING_PARAMETER, "Y") )) //$NON-NLS-1$ //$NON-NLS-2$
+        {
+            MessageDialogWithToggle md = new MessageDialogWithToggle(shell, 
+                 Messages.getString("MergeJoinDialog.InputNeedSort.DialogTitle"),  //$NON-NLS-1$
+                 null,
+                 Messages.getString("MergeJoinDialog.InputNeedSort.DialogMessage", Const.CR )+Const.CR, //$NON-NLS-1$ //$NON-NLS-2$
+                 MessageDialog.WARNING,
+                 new String[] { Messages.getString("MergeJoinDialog.InputNeedSort.Option1") }, //$NON-NLS-1$
+                 0,
+                 Messages.getString("MergeJoinDialog.InputNeedSort.Option2"), //$NON-NLS-1$
+                 "N".equalsIgnoreCase( props.getCustomParameter(STRING_SORT_WARNING_PARAMETER, "Y") ) //$NON-NLS-1$ //$NON-NLS-2$
+            );
+            md.open();
+            props.setCustomParameter(STRING_SORT_WARNING_PARAMETER, md.getToggleState()?"N":"Y"); //$NON-NLS-1$ //$NON-NLS-2$
+            props.saveProps();
+        }
+
+        
         stepname = wStepname.getText(); // return value
 		
 		dispose();
