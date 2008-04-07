@@ -14,6 +14,7 @@ package org.pentaho.di.i18n;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.HashMap;
@@ -138,21 +139,44 @@ public class GlobalMessages extends AbstractMessageHandler
             if (bundle == null)
             {
                 InputStream inputStream = LanguageChoice.getInstance().getClass().getResourceAsStream(filename);
-                /*
-                 *!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                 *!!!!!!!!! TODO: ENABLE THIS PART AGAIN AFTER REFACTORING !!!!!!!!
-                 *!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                 *
+                //
+                //  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                //  !!!!!!!!! TODO: ENABLE THIS PART AGAIN AFTER REFACTORING !!!!!!!!
+                //  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                //
+                // Try to ask the step loader instance to find the input stream for the specified filename
+                // This works for messages files stored in step plugin jars
+                //
                 if (inputStream==null) // Try in the step plugin list: look in the jars over there
                 {
-                    inputStream = StepLoader.getInstance().getInputStreamForFile(filename);
+                	try {
+	                	Class<?> stepLoaderClass = Class.forName("org.pentaho.di.trans.StepLoader");
+	                	Method getInstanceMethod = stepLoaderClass.getMethod("getInstance", new Class[0]);
+	                	LoaderInputStreamProvider inputStreamProvider = (LoaderInputStreamProvider)getInstanceMethod.invoke(null, new Object[0]);
+	                    inputStream = inputStreamProvider.getInputStreamForFile(filename);
+                	}
+                	catch(Exception e) {
+                		// Eat exception, if we can grab a StepLoader instance, we're dealing with a core object instance not inside of Kettle.
+                	}
                 }
-                
-                if (inputStream==null) // job plugins
+                // Try to ask the job entry loader instance to find the input stream for the specified filename
+                // This works for messages files stored in job entry plugin jars
+                //
+                if (inputStream==null) // Try in the step plugin list: look in the jars over there
                 {
-                	inputStream = JobEntryLoader.getInstance().getInputStreamForFile(filename);
+                	try {
+	                	Class<?> stepLoaderClass = Class.forName("org.pentaho.di.job.JobEntryLoader");
+	                	Method getInstanceMethod = stepLoaderClass.getMethod("getInstance", new Class[0]);
+	                	LoaderInputStreamProvider inputStreamProvider = (LoaderInputStreamProvider)getInstanceMethod.invoke(null, new Object[0]);
+	                    inputStream = inputStreamProvider.getInputStreamForFile(filename);
+                	}
+                	catch(Exception e) {
+                		// Eat exception, if we can grab a JobEntryLoader instance, we're dealing with a core object instance not inside of Kettle or in Pan.
+                	}
                 }
-                */
+
+                // Now get the bundle from the messages files input stream
+                //
             	if (inputStream!=null)
             	{
             		bundle = new PropertyResourceBundle(inputStream);

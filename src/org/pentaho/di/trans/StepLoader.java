@@ -35,6 +35,7 @@ import org.pentaho.di.core.exception.KettleStepLoaderException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.LanguageChoice;
+import org.pentaho.di.i18n.LoaderInputStreamProvider;
 import org.pentaho.di.trans.step.BaseStep;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.w3c.dom.Document;
@@ -46,7 +47,7 @@ import org.w3c.dom.Node;
  * @author Matt
  *  
  */
-public class StepLoader
+public class StepLoader implements LoaderInputStreamProvider
 {
     private static StepLoader             stepLoader = null;
     private String                        pluginDirectory[];

@@ -35,6 +35,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepLoaderException;
 import org.pentaho.di.core.plugins.PluginLoader;
 import org.pentaho.di.i18n.LanguageChoice;
+import org.pentaho.di.i18n.LoaderInputStreamProvider;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.springframework.core.io.FileSystemResourceLoader;
@@ -49,7 +50,7 @@ import org.springframework.core.io.support.ResourcePatternResolver;
  * @author Matt	
  * 
  */
-public class JobEntryLoader
+public class JobEntryLoader implements LoaderInputStreamProvider
 {
 	private static JobEntryLoader jobEntryLoader = null;
 
