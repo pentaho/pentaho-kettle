@@ -877,5 +877,14 @@
 		</tooltip>
 		<image-uri>ui/images/OBL.png</image-uri>
 	</step>
-	
+		<step id="LDIFInput">
+		<description>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.LDIFInput")
+		</description>
+		<class-name>org.pentaho.di.trans.steps.ldifinput.LDIFInputMeta</class-name>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@INPUT.getName()</category>
+		<tooltip>ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.LDIFInput")
+		</tooltip>
+		<image-uri>ui/images/LDI.png</image-uri>
+	</step>
 </steps>
