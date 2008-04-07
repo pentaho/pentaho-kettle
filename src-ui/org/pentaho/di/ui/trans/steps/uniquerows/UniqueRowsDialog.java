@@ -49,6 +49,7 @@ import org.pentaho.di.trans.steps.uniquerows.UniqueRowsMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
+import org.pentaho.di.ui.core.gui.GUIResource;
 
 
 public class UniqueRowsDialog extends BaseStepDialog implements StepDialogInterface
@@ -302,6 +303,7 @@ public class UniqueRowsDialog extends BaseStepDialog implements StepDialogInterf
                  Messages.getString("UniqueRowsDialog.InputNeedSort.Option2"), //$NON-NLS-1$
                  "N".equalsIgnoreCase( props.getCustomParameter(STRING_SORT_WARNING_PARAMETER, "Y") ) //$NON-NLS-1$ //$NON-NLS-2$
             );
+            md.setDefaultImage(GUIResource.getInstance().getImageSpoon());
             md.open();
             props.setCustomParameter(STRING_SORT_WARNING_PARAMETER, md.getToggleState()?"N":"Y"); //$NON-NLS-1$ //$NON-NLS-2$
             props.saveProps();
