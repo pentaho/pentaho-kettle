@@ -84,13 +84,9 @@ public class XMLInputSaxDataRetriever extends DefaultHandler
 	 * 
 	 * @param sourceFile
 	 *            The XML file containing data.
-	 * @param pathToRootElement
-	 *            Array of ordered XMLvInputFieldPosition objects. Define the
-	 *            path to the root element.
-	 * @param fieldsDefinition
-	 *            list of fields to be retreived from the Root element, with
-	 *            their definition .
-	 * @param definingAttribute
+	 *            
+	 * @param meta The metadata to use
+	 * @param data the (temporary) data to reference
 	 * 
 	 */
 	public XMLInputSaxDataRetriever(String sourceFile, XMLInputSaxMeta meta, XMLInputSaxData data)

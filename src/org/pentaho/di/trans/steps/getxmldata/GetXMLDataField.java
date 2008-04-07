@@ -28,7 +28,7 @@ import org.pentaho.di.core.exception.KettleValueException;
  * @author Samatar, Brahim
  * @since 20-06-2007
  */
-public class getXMLDataField implements Cloneable
+public class GetXMLDataField implements Cloneable
 {
     public final static int TYPE_TRIM_NONE  = 0;
     public final static int TYPE_TRIM_LEFT  = 1;
@@ -41,10 +41,10 @@ public class getXMLDataField implements Cloneable
     public final static String trimTypeCode[] = { "none", "left", "right", "both" };
     
     public final static String trimTypeDesc[] = {
-      Messages.getString("getXMLDataField.TrimType.None"),
-      Messages.getString("getXMLDataField.TrimType.Left"),
-      Messages.getString("getXMLDataField.TrimType.Right"),
-      Messages.getString("getXMLDataField.TrimType.Both")
+      Messages.getString("GetXMLDataField.TrimType.None"),
+      Messages.getString("GetXMLDataField.TrimType.Left"),
+      Messages.getString("GetXMLDataField.TrimType.Right"),
+      Messages.getString("GetXMLDataField.TrimType.Both")
     };
     
     ////////////////////////////////////////////////////////////////
@@ -65,8 +65,8 @@ public class getXMLDataField implements Cloneable
     public final static String ElementOldTypeCode[] = { "node", "attribut" };
     
     public final static String ElementTypeDesc[] = {
-        Messages.getString("getXMLDataField.ElementType.Node"),
-        Messages.getString("getXMLDataField.ElementType.Attribute")
+        Messages.getString("GetXMLDataField.ElementType.Node"),
+        Messages.getString("GetXMLDataField.ElementType.Attribute")
       };
     
     
@@ -84,7 +84,7 @@ public class getXMLDataField implements Cloneable
 	private String 	  groupSymbol;
 	private boolean   repeat;
 
-	public getXMLDataField(String fieldname)
+	public GetXMLDataField(String fieldname)
 	{
 		this.name           = fieldname;
 		this.xpath          = "";
@@ -100,7 +100,7 @@ public class getXMLDataField implements Cloneable
 		this.repeat         = false;
 	}
     
-    public getXMLDataField()
+    public GetXMLDataField()
     {
        this("");
     }
@@ -128,7 +128,7 @@ public class getXMLDataField implements Cloneable
         return retval.toString();
     }
 
-	public getXMLDataField(Node fnode) throws KettleValueException
+	public GetXMLDataField(Node fnode) throws KettleValueException
     {
         setName( XMLHandler.getTagValue(fnode, "name") );
         setXPath( XMLHandler.getTagValue(fnode, "xpath") );
@@ -229,7 +229,7 @@ public class getXMLDataField implements Cloneable
 	{
 		try
 		{
-			getXMLDataField retval = (getXMLDataField) super.clone();
+			GetXMLDataField retval = (GetXMLDataField) super.clone();
           
             
 			return retval;

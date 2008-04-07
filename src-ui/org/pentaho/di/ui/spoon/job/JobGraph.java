@@ -147,6 +147,8 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 	protected JobEntryCopy jobEntry;
 	protected NotePadMeta ni = null;
 	protected JobHopMeta currentHop;
+
+	// private Text filenameLabel;
     
 	public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) 
 	{
@@ -168,6 +170,28 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
         setLayout(new FillLayout());
         
         canvas = new Canvas(this, SWT.V_SCROLL | SWT.H_SCROLL | SWT.NO_BACKGROUND);
+        /*
+        canvas.setLayout(new FormLayout());
+        
+		filenameLabel = new Text(canvas, SWT.RIGHT | SWT.ON_TOP | SWT.NO_BACKGROUND | SWT.READ_ONLY | SWT.NO_FOCUS);
+		filenameLabel.setText(Const.NVL(jobMeta.getFilename(), ""));
+		filenameLabel.setBackground(GUIResource.getInstance().getColorBackground());
+        FormData fdFilenameLabel = new FormData();
+		// fdFilenameLabel.left = new FormAttachment(0,0);
+		fdFilenameLabel.top = new FormAttachment(0,10);
+		fdFilenameLabel.right = new FormAttachment(90,0);
+        filenameLabel.setLayoutData(fdFilenameLabel);
+        
+        // Add a filename listener to jobMeta to make sure we always show the correct filename in this label...
+        //
+        jobMeta.addFilenameChangedListener(new FilenameChangedListener() {
+		
+			public void filenameChanged(Object object, String oldFilename, String newFilename) {
+				filenameLabel.setText(Const.NVL(newFilename, ""));
+				canvas.layout(true, true);
+			}
+		});
+		*/
         
 		newProps();
 		
@@ -704,8 +728,19 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 		});
 
 		
-		// Keyboard shortcuts...
-		canvas.addKeyListener(new KeyAdapter() 
+		addKeyListener(canvas);
+		// addKeyListener(filenameLabel);
+		
+		// filenameLabel.addKeyListener(spoon.defKeys);
+		canvas.addKeyListener(spoon.defKeys);
+
+		setBackground(GUIResource.getInstance().getColorBackground());
+	}
+
+    private void addKeyListener(Control control) {
+    	// Keyboard shortcuts...
+    	//
+		control.addKeyListener(new KeyAdapter() 
 		{
 			public void keyPressed(KeyEvent e) 
 			{
@@ -715,30 +750,6 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
                     renameJobEntry();
                 }
 
-                /*
-                if (e.character == 3) // CTRL-C
-                {
-                    copyEntry();
-                }
-                if (e.character == 22) // CTRL-V
-                {
-                    String clipcontent = spoon.fromClipboard();
-                    if (clipcontent != null)
-                    {
-                        if (lastMove != null)
-                        {
-                            spoon.pasteXML(jobMeta, clipcontent, lastMove);
-                        }
-                    }
-
-                    //spoon.pasteSteps( );
-                }
-				if (e.keyCode == SWT.ESC) 
-				{
-					jobMeta.unselectAll();
-					redraw();
-				}
-                */
                 // Delete
                 if (e.keyCode == SWT.DEL)
                 {
@@ -786,12 +797,9 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 			}
 		});
 
-		canvas.addKeyListener(spoon.defKeys);
-
-		setBackground(GUIResource.getInstance().getColorBackground());
 	}
 
-    public void selectInRect(JobMeta jobMeta, Rectangle rect)
+	public void selectInRect(JobMeta jobMeta, Rectangle rect)
     {
         int i;
         for (i = 0; i < jobMeta.nrJobEntries(); i++)

@@ -88,7 +88,7 @@ public class AddXMLMeta extends BaseStepMeta  implements StepMetaInterface
 
 
     /**
-     * @param zipped The zipped to set.
+     * @param omitXMLheader The omit XML header flag to set.
      */
     public void setOmitXMLheader(boolean omitXMLheader)
     {
@@ -406,11 +406,11 @@ public class AddXMLMeta extends BaseStepMeta  implements StepMetaInterface
     }
 
     /**
-     * @param rootNode The rootNode to set.
+     * @param rootNode The root node to set.
      */
-    public void setRootNode(String repeatElement)
+    public void setRootNode(String rootNode)
     {
-        this.rootNode = repeatElement;
+        this.rootNode = rootNode;
     }
 
     

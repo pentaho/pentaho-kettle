@@ -219,15 +219,15 @@ public class RegexEvalTest extends TestCase
         
         re.setScript("[a-z]*");
         re.setMatcher("field1");
-        re.setResultfieldname("res");
-        re.setuseVar(false);
-        re.setcanoneq(false);
-        re.setcaseinsensitive(false);
-        re.setcomment(false);
-        re.setdotall(false);
-        re.setmultiline(false);
-        re.setunicode(false);
-        re.setunix(false);
+        re.setResultFieldname("res");
+        re.setUseVar(false);
+        re.setCanoneq(false);
+        re.setCaseinsensitive(false);
+        re.setComment(false);
+        re.setDotAll(false);
+        re.setMultiLine(false);
+        re.setUnicode(false);
+        re.setUnix(false);
 
         String regexEvalPid = steploader.getStepPluginID(re);
         StepMeta regexEvalStep = new StepMeta(regexEvalPid, regexEvalName, (StepMetaInterface)re);

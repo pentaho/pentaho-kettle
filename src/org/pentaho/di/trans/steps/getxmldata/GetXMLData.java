@@ -48,12 +48,12 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  * @author Samatar,Brahim
  * @since 20-06-2007
  */
-public class getXMLData extends BaseStep implements StepInterface  
+public class GetXMLData extends BaseStep implements StepInterface  
 {
-	private getXMLDataMeta meta;
-	private getXMLDataData data;
+	private GetXMLDataMeta meta;
+	private GetXMLDataData data;
 	
-	public getXMLData(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans)
+	public GetXMLData(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans)
 	{
 		super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
 	}
@@ -131,7 +131,7 @@ public class getXMLData extends BaseStep implements StepInterface
 		   
 		   if (data.readrow==null) // finished processing!
            {
-           	if (log.isDetailed()) logDetailed(Messages.getString("getXMLData.Log.FinishedProcessing"));
+           	if (log.isDetailed()) logDetailed(Messages.getString("GetXMLData.Log.FinishedProcessing"));
                return false;
            }
 
@@ -162,8 +162,8 @@ public class getXMLData extends BaseStep implements StepInterface
 					// Check is XML field is provided
 					if (Const.isEmpty(meta.getXMLField()))
 					{
-						logError(Messages.getString("getXMLData.Log.NoField"));
-						throw new KettleException(Messages.getString("getXMLData.Log.NoField"));
+						logError(Messages.getString("GetXMLData.Log.NoField"));
+						throw new KettleException(Messages.getString("GetXMLData.Log.NoField"));
 					}
 					
 					// cache the position of the field			
@@ -173,8 +173,8 @@ public class getXMLData extends BaseStep implements StepInterface
 						if (data.indexOfXmlField<0)
 						{
 							// The field is unreachable !
-							logError(Messages.getString("getXMLData.Log.ErrorFindingField")+ "[" + meta.getXMLField()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
-							throw new KettleException(Messages.getString("getXMLData.Exception.CouldnotFindField",meta.getXMLField())); //$NON-NLS-1$ //$NON-NLS-2$
+							logError(Messages.getString("GetXMLData.Log.ErrorFindingField")+ "[" + meta.getXMLField()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+							throw new KettleException(Messages.getString("GetXMLData.Exception.CouldnotFindField",meta.getXMLField())); //$NON-NLS-1$ //$NON-NLS-2$
 						}
 					}
 				}	
@@ -186,7 +186,7 @@ public class getXMLData extends BaseStep implements StepInterface
 			   // get XML field value
 			   String Fieldvalue= getInputRowMeta().getString(data.readrow,data.indexOfXmlField);
 				
-			   if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("getXMLData.Log.XMLStream", meta.getXMLField(),Fieldvalue));
+			   if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("GetXMLData.Log.XMLStream", meta.getXMLField(),Fieldvalue));
 
 			   if(meta.getIsAFile())
 			   {
@@ -198,18 +198,18 @@ public class getXMLData extends BaseStep implements StepInterface
 						//Open the XML document
 						if(!setDocument(null,file,false)) 
 						{
-							throw new KettleException (Messages.getString("getXMLData.Log.UnableCreateDocument"));
+							throw new KettleException (Messages.getString("GetXMLData.Log.UnableCreateDocument"));
 						}
 						
 						// Apply XPath and set node list
 						if(!applyXPath())
 						{
-							throw new KettleException (Messages.getString("getXMLData.Log.UnableApplyXPath"));
+							throw new KettleException (Messages.getString("GetXMLData.Log.UnableApplyXPath"));
 						}
 						
 						addFileToResultFilesname(file);
 			            
-			            if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("getXMLData.Log.LoopFileOccurences",""+data.nodesize,file.getName().getBaseName()));
+			            if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("GetXMLData.Log.LoopFileOccurences",""+data.nodesize,file.getName().getBaseName()));
 						
 					}
 					catch (Exception e)
@@ -223,15 +223,15 @@ public class getXMLData extends BaseStep implements StepInterface
 					//Open the XML document
 					if(!setDocument(Fieldvalue,null,true)) 
 					{
-						throw new KettleException (Messages.getString("getXMLData.Log.UnableCreateDocument"));
+						throw new KettleException (Messages.getString("GetXMLData.Log.UnableCreateDocument"));
 					}
 	
 					// Apply XPath and set node list
 					if(!applyXPath())
 					{
-						throw new KettleException (Messages.getString("getXMLData.Log.UnableApplyXPath"));
+						throw new KettleException (Messages.getString("GetXMLData.Log.UnableApplyXPath"));
 					}
-					if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("getXMLData.Log.LoopFileOccurences",""+data.nodesize));
+					if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("GetXMLData.Log.LoopFileOccurences",""+data.nodesize));
 						
 				}
 
@@ -240,7 +240,7 @@ public class getXMLData extends BaseStep implements StepInterface
 	   }
 		catch(Exception e)
 		{
-			logError(Messages.getString("getXMLData.Log.UnexpectedError", e.toString()));
+			logError(Messages.getString("GetXMLData.Log.UnexpectedError", e.toString()));
 			stopAll();
 			logError(Const.getStackTracker(e));
 			setErrors(1);
@@ -271,7 +271,7 @@ public class getXMLData extends BaseStep implements StepInterface
 		   data.nodenr=0;
 	   }catch (Exception e)
 	   {
-		   log.logError(toString(),Messages.getString("getXMLData.Log.ErrorApplyXPath",e.getMessage()));
+		   log.logError(toString(),Messages.getString("GetXMLData.Log.ErrorApplyXPath",e.getMessage()));
 		   return false;
 	   }
 	   return true;
@@ -282,7 +282,7 @@ public class getXMLData extends BaseStep implements StepInterface
 		{
             if (data.filenr>=data.files.nrOfFiles()) // finished processing!
             {
-            	if (log.isDetailed()) logDetailed(Messages.getString("getXMLData.Log.FinishedProcessing"));
+            	if (log.isDetailed()) logDetailed(Messages.getString("GetXMLData.Log.FinishedProcessing"));
                 return false;
             }
             
@@ -298,35 +298,35 @@ public class getXMLData extends BaseStep implements StepInterface
             
 			if(meta.isIgnoreEmptyFile() && fileSize==0)
 			{
-				log.logError(toString(),Messages.getString("getXMLData.Error.FileSizeZero", ""+data.file.getName()));
+				log.logError(toString(),Messages.getString("GetXMLData.Error.FileSizeZero", ""+data.file.getName()));
 				openNextFile();
 				
 			}else
 			{
-				if (log.isDetailed()) log.logDetailed(toString(),Messages.getString("getXMLData.Log.OpeningFile", data.file.toString()));
+				if (log.isDetailed()) log.logDetailed(toString(),Messages.getString("GetXMLData.Log.OpeningFile", data.file.toString()));
 	            
 				//Open the XML document
 				if(!setDocument(null,data.file,false)) 
 				{
-					throw new KettleException (Messages.getString("getXMLData.Log.UnableCreateDocument"));
+					throw new KettleException (Messages.getString("GetXMLData.Log.UnableCreateDocument"));
 				}
 				
 				// Apply XPath and set node list
 				if(!applyXPath())
 				{
-					throw new KettleException (Messages.getString("getXMLData.Log.UnableApplyXPath"));
+					throw new KettleException (Messages.getString("GetXMLData.Log.UnableApplyXPath"));
 				}
 				
 				addFileToResultFilesname(data.file);
 	
-	            if (log.isDetailed()) logDetailed(Messages.getString("getXMLData.Log.FileOpened", data.file.toString()));
-	            if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("getXMLData.Log.LoopFileOccurences",""+data.nodesize,data.file.getName().getBaseName()));
+	            if (log.isDetailed()) logDetailed(Messages.getString("GetXMLData.Log.FileOpened", data.file.toString()));
+	            if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("GetXMLData.Log.LoopFileOccurences",""+data.nodesize,data.file.getName().getBaseName()));
 			}
 
 		}
 		catch(Exception e)
 		{
-			logError(Messages.getString("getXMLData.Log.UnableToOpenFile", ""+data.filenr, data.file.toString(), e.toString()));
+			logError(Messages.getString("GetXMLData.Log.UnableToOpenFile", ""+data.filenr, data.file.toString(), e.toString()));
 			stopAll();
 			setErrors(1);
 			return false;
@@ -357,7 +357,7 @@ public class getXMLData extends BaseStep implements StepInterface
 	        return false; // end of data or error.
 	     }
 		 
-		 if (log.isRowLevel()) logRowlevel(Messages.getString("getXMLData.Log.ReadRow", r.toString()));
+		 if (log.isRowLevel()) logRowlevel(Messages.getString("GetXMLData.Log.ReadRow", r.toString()));
 		 linesInput++;
 		 data.rownr++;
 		 putRow(data.outputRowMeta, r);  // copy row to output rowset(s);
@@ -453,7 +453,7 @@ public class getXMLData extends BaseStep implements StepInterface
 			for (int i=0;i<data.nrInputFields;i++)
 			{	
 				// Get field
-				getXMLDataField xmlDataField = meta.getInputFields()[i];
+				GetXMLDataField xmlDataField = meta.getInputFields()[i];
 				// Get the Path to look for
 				String XPathValue = environmentSubstitute(xmlDataField.getXPath());
 				// Get the path type
@@ -474,7 +474,7 @@ public class getXMLData extends BaseStep implements StepInterface
 						String NameVarInputField = XPathValue.substring(indexvarstart+2, indexvarend);
 						for (int k=0;k<meta.getInputFields().length;k++)
 						{
-							getXMLDataField Tmp_xmlInputField = meta.getInputFields()[k];
+							GetXMLDataField Tmp_xmlInputField = meta.getInputFields()[k];
 							if(Tmp_xmlInputField.getName().equalsIgnoreCase(NameVarInputField))
 							{		
 								XPathValue = XPathValue.replaceAll(data.tokenStart+NameVarInputField+data.tokenEnd,"'"+ outputRowData[k] +"'");
@@ -500,13 +500,13 @@ public class getXMLData extends BaseStep implements StepInterface
 				// Do trimming
 				switch (xmlDataField.getTrimType())
 				{
-				case getXMLDataField.TYPE_TRIM_LEFT:
+				case GetXMLDataField.TYPE_TRIM_LEFT:
 					nodevalue = Const.ltrim(nodevalue);
 					break;
-				case getXMLDataField.TYPE_TRIM_RIGHT:
+				case GetXMLDataField.TYPE_TRIM_RIGHT:
 					nodevalue = Const.rtrim(nodevalue);
 					break;
-				case getXMLDataField.TYPE_TRIM_BOTH:
+				case GetXMLDataField.TYPE_TRIM_BOTH:
 					nodevalue = Const.trim(nodevalue);
 					break;
 				default:
@@ -568,8 +568,8 @@ public class getXMLData extends BaseStep implements StepInterface
 
 	public boolean init(StepMetaInterface smi, StepDataInterface sdi)
 	{
-		meta=(getXMLDataMeta)smi;
-		data=(getXMLDataData)sdi;				
+		meta=(GetXMLDataMeta)smi;
+		data=(GetXMLDataData)sdi;				
 		
 		if (super.init(smi, sdi))
 		{
@@ -579,7 +579,7 @@ public class getXMLData extends BaseStep implements StepInterface
 				data.files = meta.getFiles(this);
 				if (data.files.nrOfFiles() == 0 && data.files.nrOfMissingFiles() == 0)
 				{
-					logError(Messages.getString("getXMLData.Log.NoFiles"));
+					logError(Messages.getString("GetXMLData.Log.NoFiles"));
 					return false;
 				}
 				try{
@@ -615,7 +615,7 @@ public class getXMLData extends BaseStep implements StepInterface
 			data.nrInputFields=meta.getInputFields().length;
 			data.PathValue=environmentSubstitute(meta.getLoopXPath());
 			if(!data.PathValue.substring(0,1).equals("/")) data.PathValue="/" + data.PathValue;
-			if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("getXMLData.Log.LoopXPath",data.PathValue));
+			if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("GetXMLData.Log.LoopXPath",data.PathValue));
 				
 			return true;
 		}
@@ -624,8 +624,8 @@ public class getXMLData extends BaseStep implements StepInterface
 	
 	public void dispose(StepMetaInterface smi, StepDataInterface sdi)
 	{
-		meta = (getXMLDataMeta) smi;
-		data = (getXMLDataData) sdi;
+		meta = (GetXMLDataMeta) smi;
+		data = (GetXMLDataData) sdi;
 
 		super.dispose(smi, sdi);
 	}

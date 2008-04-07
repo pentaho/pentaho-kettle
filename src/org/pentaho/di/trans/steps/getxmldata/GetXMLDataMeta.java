@@ -45,7 +45,7 @@ import org.pentaho.di.core.fileinput.FileInputList;
 /**
  * Store run-time data on the XML xpath step.
  */
-public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
+public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 {	
 	private static final String NO = "N";
 	private static final String YES = "Y";
@@ -78,7 +78,7 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
     private  String  loopxpath;
 
 	/** The fields to import... */
-	private getXMLDataField inputFields[];
+	private GetXMLDataField inputFields[];
 	
     /** The encoding to use for reading: null or empty string means system default encoding */
     private String encoding;
@@ -93,10 +93,10 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
     private  boolean IsAFile;
     
     /** Flag: add result filename **/
-    private boolean addresultfile;
+    private boolean addResultFile;
 
     /** Flag: set Namespace aware **/
-    private boolean namespaceaware;
+    private boolean nameSpaceAware;
     
     /** Flag: set XML Validating **/
     private boolean validating;
@@ -108,7 +108,7 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 	private boolean IsIgnoreEmptyFile;
 	
     	
-	public getXMLDataMeta()
+	public GetXMLDataMeta()
 	{
 		super(); // allocate BaseStepMeta
 	}
@@ -118,7 +118,7 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 	 */
 	public boolean addResultFile()
 	{
-		return addresultfile;
+		return addResultFile;
 	}
 	
 
@@ -132,7 +132,7 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 	}
 	
 	/** 
-	 * @param the validating to set
+	 * @param validating the validating flag to set
 	 */
 	public void setValidating(boolean validating)
 	{
@@ -140,15 +140,15 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 	}
 	
 	
-	public void setAddResultFile(boolean addresultfile)
+	public void setAddResultFile(boolean addResultFile)
 	{
-		this.addresultfile=addresultfile;
+		this.addResultFile=addResultFile;
 	}
 	
 	/**
      * @return Returns the input fields.
      */
-    public getXMLDataField[] getInputFields()
+    public GetXMLDataField[] getInputFields()
     {
         return inputFields;
     }
@@ -156,7 +156,7 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
     /**
      * @param inputFields The input fields to set.
      */
-    public void setInputFields(getXMLDataField[] inputFields)
+    public void setInputFields(GetXMLDataField[] inputFields)
     {
         this.inputFields = inputFields;
     }
@@ -315,7 +315,7 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
     }
     
 	/** 
-	 * @param the usetoken to set
+	 * @param usetoken the "use token" flag to set
 	 */
     public void setuseToken(boolean usetoken)
 	{
@@ -323,7 +323,7 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 	}
 	
 	/** 
-	 * @return the usetoken flag
+	 * @return the use token flag
 	 */
 	public boolean isuseToken()
 	{
@@ -339,7 +339,7 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 	}
 	
 	/** 
-	 * @param the IsIgnoreEmptyFile to set
+	 * @param IsIgnoreEmptyFile the IsIgnoreEmptyFile to set
 	 */
 	public void setIgnoreEmptyFile(boolean IsIgnoreEmptyFile)
 	{
@@ -349,21 +349,21 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 	
 	
 	/** 
-	 * @param the namespaceaware to set
+	 * @param nameSpaceAware the name space aware flag to set
 	 */
-	public void setNamespaceAware(boolean namespaceaware)
+	public void setNamespaceAware(boolean nameSpaceAware)
 	{
-		this.namespaceaware= namespaceaware;
+		this.nameSpaceAware= nameSpaceAware;
 	}
 	
 
 	
 	/** 
-	 * @return the namespaceware flag
+	 * @return the name space aware flag
 	 */
 	public boolean isNamespaceAware()
 	{
-		return namespaceaware;
+		return nameSpaceAware;
 	}
 	
     /**
@@ -416,7 +416,7 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 
 	public Object clone()
 	{
-		getXMLDataMeta retval = (getXMLDataMeta)super.clone();
+		GetXMLDataMeta retval = (GetXMLDataMeta)super.clone();
 		
 		int nrFiles  = fileName.length;
 		int nrFields = inputFields.length;
@@ -434,7 +434,7 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 		{
             if (inputFields[i]!=null)
             {
-                retval.inputFields[i] = (getXMLDataField)inputFields[i].clone();
+                retval.inputFields[i] = (GetXMLDataField)inputFields[i].clone();
             }
 		}		
 		return retval;
@@ -447,8 +447,8 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
         retval.append("    ").append(XMLHandler.addTagValue("include",         includeFilename));
         retval.append("    ").append(XMLHandler.addTagValue("include_field",   filenameField));
         retval.append("    ").append(XMLHandler.addTagValue("rownum",          includeRowNumber));
-        retval.append("    ").append(XMLHandler.addTagValue("addresultfile",   addresultfile));
-        retval.append("    ").append(XMLHandler.addTagValue("namespaceaware",  namespaceaware));
+        retval.append("    ").append(XMLHandler.addTagValue("addresultfile",   addResultFile));
+        retval.append("    ").append(XMLHandler.addTagValue("namespaceaware",  nameSpaceAware));
         retval.append("    ").append(XMLHandler.addTagValue("validating",      validating));
         retval.append("    "+XMLHandler.addTagValue("usetoken",   usetoken));
         retval.append("    "+XMLHandler.addTagValue("IsIgnoreEmptyFile",   IsIgnoreEmptyFile));
@@ -469,7 +469,7 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
         retval.append("    <fields>").append(Const.CR);
         for (int i=0;i<inputFields.length;i++)
         {
-            getXMLDataField field = inputFields[i];
+            GetXMLDataField field = inputFields[i];
             retval.append(field.getXML());
         }
         retval.append("    </fields>").append(Const.CR);
@@ -492,8 +492,8 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 			includeFilename   = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "include"));
 			filenameField     = XMLHandler.getTagValue(stepnode, "include_field");
 			
-			addresultfile     = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "addresultfile"));
-			namespaceaware    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "namespaceaware"));
+			addResultFile     = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "addresultfile"));
+			nameSpaceAware    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "namespaceaware"));
 			validating        = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "validating"));
 			usetoken  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "usetoken"));
 			IsIgnoreEmptyFile  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "IsIgnoreEmptyFile"));
@@ -522,7 +522,7 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 			for (int i=0;i<nrFields;i++)
 			{
 				Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i);
-				getXMLDataField field = new getXMLDataField(fnode);
+				GetXMLDataField field = new GetXMLDataField(fnode);
 				inputFields[i] = field;
 			} 
 			
@@ -539,7 +539,7 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException(Messages.getString("getXMLDataMeta.Exception.ErrorLoadingXML", e.toString()));
+			throw new KettleXMLException(Messages.getString("GetXMLDataMeta.Exception.ErrorLoadingXML", e.toString()));
 		}
 	}
 	
@@ -548,7 +548,7 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 		fileName     = new String [nrfiles];
 		fileMask     = new String [nrfiles];
 		fileRequired = new String[nrfiles];
-		inputFields  = new getXMLDataField[nrfields];
+		inputFields  = new GetXMLDataField[nrfields];
 	}
 	
 	public void setDefault()
@@ -560,8 +560,8 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 		includeRowNumber = false;
 		rowNumberField = "";
 		IsAFile = false;
-		addresultfile = false;
-		namespaceaware = false;
+		addResultFile = false;
+		nameSpaceAware = false;
 		validating = false;
 		
 		int nrFiles=0;
@@ -579,7 +579,7 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 		
 		for (int i=0;i<nrFields;i++)
 		{
-		    inputFields[i] = new getXMLDataField("field"+(i+1));
+		    inputFields[i] = new GetXMLDataField("field"+(i+1));
 		}
 
 		rowLimit = 0;
@@ -593,7 +593,7 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 		int i;
 		for (i=0;i<inputFields.length;i++)
 		{
-			getXMLDataField field = inputFields[i];       
+			GetXMLDataField field = inputFields[i];       
 	        
 			int type=field.getType();
 			if (type==ValueMeta.TYPE_NONE) type=ValueMeta.TYPE_STRING;
@@ -630,8 +630,8 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 			includeFilename   =   rep.getStepAttributeBoolean(id_step, "include");  
 			filenameField     =   rep.getStepAttributeString (id_step, "include_field");
 			
-			addresultfile     =   rep.getStepAttributeBoolean(id_step, "addresultfile");
-			namespaceaware    =   rep.getStepAttributeBoolean(id_step, "namespaceaware");
+			addResultFile     =   rep.getStepAttributeBoolean(id_step, "addresultfile");
+			nameSpaceAware    =   rep.getStepAttributeBoolean(id_step, "namespaceaware");
 			validating        =   rep.getStepAttributeBoolean(id_step, "validating");
 			usetoken  =      rep.getStepAttributeBoolean(id_step, "usetoken");
 			IsIgnoreEmptyFile  =      rep.getStepAttributeBoolean(id_step, "IsIgnoreEmptyFile");
@@ -657,11 +657,11 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 
 			for (int i=0;i<nrFields;i++)
 			{
-			    getXMLDataField field = new getXMLDataField();
+			    GetXMLDataField field = new GetXMLDataField();
 			    
 				field.setName( rep.getStepAttributeString (id_step, i, "field_name") );
 				field.setXPath( rep.getStepAttributeString (id_step, i, "field_xpath") );
-				field.setElementType( getXMLDataField.getElementTypeByCode( rep.getStepAttributeString (id_step, i, "element_type") ));
+				field.setElementType( GetXMLDataField.getElementTypeByCode( rep.getStepAttributeString (id_step, i, "element_type") ));
 				field.setType( ValueMeta.getType( rep.getStepAttributeString (id_step, i, "field_type") ) );
 				field.setFormat( rep.getStepAttributeString (id_step, i, "field_format") );
 				field.setCurrencySymbol( rep.getStepAttributeString (id_step, i, "field_currency") );
@@ -669,7 +669,7 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 				field.setGroupSymbol( rep.getStepAttributeString (id_step, i, "field_group") );
 				field.setLength( (int)rep.getStepAttributeInteger(id_step, i, "field_length") );
 				field.setPrecision( (int)rep.getStepAttributeInteger(id_step, i, "field_precision") );
-				field.setTrimType( getXMLDataField.getTrimTypeByCode( rep.getStepAttributeString (id_step, i, "field_trim_type") ));
+				field.setTrimType( GetXMLDataField.getTrimTypeByCode( rep.getStepAttributeString (id_step, i, "field_trim_type") ));
 				field.setRepeated( rep.getStepAttributeBoolean(id_step, i, "field_repeat") );
                 
 				inputFields[i] = field;
@@ -681,7 +681,7 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(Messages.getString("getXMLDataMeta.Exception.ErrorReadingRepository"), e);
+			throw new KettleException(Messages.getString("GetXMLDataMeta.Exception.ErrorReadingRepository"), e);
 		}
 	}
 	
@@ -692,8 +692,8 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			rep.saveStepAttribute(id_transformation, id_step, "include",         includeFilename);
 			rep.saveStepAttribute(id_transformation, id_step, "include_field",   filenameField);
-			rep.saveStepAttribute(id_transformation, id_step, "addresultfile",   addresultfile);
-			rep.saveStepAttribute(id_transformation, id_step, "namespaceaware",   namespaceaware);
+			rep.saveStepAttribute(id_transformation, id_step, "addresultfile",   addResultFile);
+			rep.saveStepAttribute(id_transformation, id_step, "namespaceaware",   nameSpaceAware);
 			rep.saveStepAttribute(id_transformation, id_step, "validating",   validating);
 			rep.saveStepAttribute(id_transformation, id_step, "usetoken",   usetoken);
 			rep.saveStepAttribute(id_transformation, id_step, "IsIgnoreEmptyFile",   IsIgnoreEmptyFile);
@@ -713,7 +713,7 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 			
 			for (int i=0;i<inputFields.length;i++)
 			{
-			    getXMLDataField field = inputFields[i];
+			    GetXMLDataField field = inputFields[i];
 			    
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_name",          field.getName());
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_xpath",         field.getXPath());
@@ -736,7 +736,7 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(Messages.getString("getXMLDataMeta.Exception.ErrorSavingToRepository", ""+id_step), e);
+			throw new KettleException(Messages.getString("GetXMLDataMeta.Exception.ErrorSavingToRepository", ""+id_step), e);
 		}
 	}
 
@@ -756,24 +756,24 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 		// See if we get input...		
 		if (input.length<=0)
 		{		
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("getXMLDataMeta.CheckResult.NoInputExpected"), stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("GetXMLDataMeta.CheckResult.NoInputExpected"), stepMeta);
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("getXMLDataMeta.CheckResult.NoInput"), stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("GetXMLDataMeta.CheckResult.NoInput"), stepMeta);
 			remarks.add(cr);
 		}
 		
 		//	control Xpath	
 		if (getLoopXPath()== null || Const.isEmpty(getLoopXPath()))
 		{		
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("getXMLDataMeta.CheckResult.NoLoopXpath"), stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("GetXMLDataMeta.CheckResult.NoLoopXpath"), stepMeta);
 			remarks.add(cr);
 		}
 		if(getInputFields().length<=0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("getXMLDataMeta.CheckResult.NoInputField"), stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("GetXMLDataMeta.CheckResult.NoInputField"), stepMeta);
 			remarks.add(cr);
 		}		
 		
@@ -781,12 +781,12 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			 if (Const.isEmpty(getXMLField()))
 			 {
-				 cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("getXMLDataMeta.CheckResult.NoField"), stepMeta);
+				 cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("GetXMLDataMeta.CheckResult.NoField"), stepMeta);
 				 remarks.add(cr); 
 			 }
 			 else
 			 {
-				 cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("getXMLDataMeta.CheckResult.FieldOk"), stepMeta);
+				 cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("GetXMLDataMeta.CheckResult.FieldOk"), stepMeta);
 				 remarks.add(cr); 
 			 }		 
 		}
@@ -796,12 +796,12 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 			// String files[] = getFiles();
 			if (fileInputList==null || fileInputList.getFiles().size()==0)
 			{
-				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("getXMLDataMeta.CheckResult.NoFiles"), stepMeta);
+				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("GetXMLDataMeta.CheckResult.NoFiles"), stepMeta);
 				remarks.add(cr);
 			}
 			else
 			{
-				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("getXMLDataMeta.CheckResult.FilesOk", ""+fileInputList.getFiles().size()), stepMeta);
+				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("GetXMLDataMeta.CheckResult.FilesOk", ""+fileInputList.getFiles().size()), stepMeta);
 				remarks.add(cr);
 			}	
 		}	
@@ -809,12 +809,12 @@ public class getXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 	
 	public StepInterface getStep(StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr, Trans trans)
 	{
-		return new getXMLData(stepMeta, stepDataInterface, cnr, tr, trans);
+		return new GetXMLData(stepMeta, stepDataInterface, cnr, tr, trans);
 	}
 
 	public StepDataInterface getStepData()
 	{
-		return new getXMLDataData();
+		return new GetXMLDataData();
 	}
 
     public boolean supportsErrorHandling()

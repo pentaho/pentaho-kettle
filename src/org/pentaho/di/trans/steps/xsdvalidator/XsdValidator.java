@@ -277,14 +277,14 @@ public class XsdValidator extends BaseStep implements StepInterface
 			{
 				// Output type=String
 				if(isvalid)
-					outputRowData =RowDataUtil.addValueData(row, getInputRowMeta().size(),environmentSubstitute(meta.getifXMLValid()));
+					outputRowData =RowDataUtil.addValueData(row, getInputRowMeta().size(),environmentSubstitute(meta.getIfXmlValid()));
 				else
-					outputRowData =RowDataUtil.addValueData(row, getInputRowMeta().size(),environmentSubstitute(meta.getifXMLUnValid()));
+					outputRowData =RowDataUtil.addValueData(row, getInputRowMeta().size(),environmentSubstitute(meta.getIfXmlInvalid()));
 			}else{
 				outputRowData =RowDataUtil.addValueData(row, getInputRowMeta().size(),isvalid);
 			}
 			
-			if(meta.useAddValidationMsg())
+			if(meta.useAddValidationMessage())
 				outputRowData2 =RowDataUtil.addValueData(outputRowData, getInputRowMeta().size()+1,validationmsg);
 			else
 				outputRowData2=outputRowData;

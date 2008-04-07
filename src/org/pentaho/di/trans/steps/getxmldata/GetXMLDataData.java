@@ -36,7 +36,7 @@ import org.dom4j.tree.AbstractNode;
  * @author Samatar
  * @since 21-06-2007
  */
-public class getXMLDataData extends BaseStepData implements StepDataInterface 
+public class GetXMLDataData extends BaseStepData implements StepDataInterface 
 {
 	public String thisline, nextline, lastline;
 	public Object[] previousRow;
@@ -85,7 +85,7 @@ public class getXMLDataData extends BaseStepData implements StepDataInterface
 	/**
 	 * 
 	 */
-	public getXMLDataData()
+	public GetXMLDataData()
 	{
 		super();
 

@@ -75,8 +75,8 @@ import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
-import org.pentaho.di.trans.steps.getxmldata.getXMLDataMeta;
-import org.pentaho.di.trans.steps.getxmldata.getXMLDataField;
+import org.pentaho.di.trans.steps.getxmldata.GetXMLDataMeta;
+import org.pentaho.di.trans.steps.getxmldata.GetXMLDataField;
 import org.pentaho.di.trans.steps.getxmldata.Messages;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -88,7 +88,7 @@ import org.pentaho.di.core.vfs.KettleVFS;
 
 
 
-public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterface
+public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterface
 {
 	private static final String[] YES_NO_COMBO = new String[] { Messages.getString("System.Combo.No"), Messages.getString("System.Combo.Yes") };
 	
@@ -185,7 +185,7 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 	private Button       wIgnoreEmptyFile;
 	private FormData     fdlIgnoreEmptyFile, fdIgnoreEmptyFile;
 
-	private getXMLDataMeta input;
+	private GetXMLDataMeta input;
 	
 	private boolean  gotEncodings = false;
 	
@@ -203,10 +203,10 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 	String precNodeName=null;
 
 	
-	public getXMLDataDialog(Shell parent, Object in, TransMeta transMeta, String sname)
+	public GetXMLDataDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
 		super(parent, (BaseStepMeta)in, transMeta, sname);
-		input=(getXMLDataMeta)in;
+		input=(GetXMLDataMeta)in;
 	}
 
 	public String open()
@@ -232,7 +232,7 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("getXMLDataDialog.DialogTitle"));
+		shell.setText(Messages.getString("GetXMLDataDialog.DialogTitle"));
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
@@ -263,7 +263,7 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		// START OF FILE TAB   ///
 		//////////////////////////
 		wFileTab=new CTabItem(wTabFolder, SWT.NONE);
-		wFileTab.setText(Messages.getString("getXMLDataDialog.File.Tab"));
+		wFileTab.setText(Messages.getString("GetXMLDataDialog.File.Tab"));
 		
 		wFileComp = new Composite(wTabFolder, SWT.NONE);
  		props.setLook(wFileComp);
@@ -281,7 +281,7 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 
 		wOutputField = new Group(wFileComp, SWT.SHADOW_NONE);
 		props.setLook(wOutputField);
-		wOutputField.setText(Messages.getString("getXMLDataDialog.wOutputField.Label"));
+		wOutputField.setText(Messages.getString("GetXMLDataDialog.wOutputField.Label"));
 		
 		FormLayout outputfieldgroupLayout = new FormLayout();
 		outputfieldgroupLayout.marginWidth = 10;
@@ -290,7 +290,7 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		
 		//Is XML string defined in a Field		
 		wlXmlStreamField = new Label(wOutputField, SWT.RIGHT);
-		wlXmlStreamField.setText(Messages.getString("getXMLDataDialog.wlXmlStreamField.Label"));
+		wlXmlStreamField.setText(Messages.getString("GetXMLDataDialog.wlXmlStreamField.Label"));
 		props.setLook(wlXmlStreamField);
 		fdlXMLStreamField = new FormData();
 		fdlXMLStreamField.left = new FormAttachment(0, 0);
@@ -301,7 +301,7 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		
 		wXMLStreamField = new Button(wOutputField, SWT.CHECK);
 		props.setLook(wXMLStreamField);
-		wXMLStreamField.setToolTipText(Messages.getString("getXMLDataDialog.wXmlStreamField.Tooltip"));
+		wXMLStreamField.setToolTipText(Messages.getString("GetXMLDataDialog.wXmlStreamField.Tooltip"));
 		fdXSDFileField = new FormData();
 		fdXSDFileField.left = new FormAttachment(middle, margin);
 		fdXSDFileField.top = new FormAttachment(0, margin);
@@ -320,7 +320,7 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
         
         //Is XML source is a file?		
 		wlXMLIsAFile = new Label(wOutputField, SWT.RIGHT);
-		wlXMLIsAFile.setText(Messages.getString("getXMLDataDialog.XMLIsAFile.Label"));
+		wlXMLIsAFile.setText(Messages.getString("GetXMLDataDialog.XMLIsAFile.Label"));
 		props.setLook(wlXMLIsAFile);
 		fdlXMLIsAFile = new FormData();
 		fdlXMLIsAFile.left = new FormAttachment(0, 0);
@@ -331,7 +331,7 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		
 		wXMLIsAFile = new Button(wOutputField, SWT.CHECK);
 		props.setLook(wXMLIsAFile);
-		wXMLIsAFile.setToolTipText(Messages.getString("getXMLDataDialog.XMLIsAFile.Tooltip"));
+		wXMLIsAFile.setToolTipText(Messages.getString("GetXMLDataDialog.XMLIsAFile.Tooltip"));
 		fdXMLIsAFile = new FormData();
 		fdXMLIsAFile.left = new FormAttachment(middle, margin);
 		fdXMLIsAFile.top = new FormAttachment(wXMLStreamField, margin);
@@ -351,7 +351,7 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
         
 		// If XML string defined in a Field
 		wlXMLField=new Label(wOutputField, SWT.RIGHT);
-        wlXMLField.setText(Messages.getString("getXMLDataDialog.wlXMLField.Label"));
+        wlXMLField.setText(Messages.getString("GetXMLDataDialog.wlXMLField.Label"));
         props.setLook(wlXMLField);
         fdlXMLField=new FormData();
         fdlXMLField.left = new FormAttachment(0, 0);
@@ -398,7 +398,7 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 
 		// Filename line
 		wlFilename=new Label(wFileComp, SWT.RIGHT);
-		wlFilename.setText(Messages.getString("getXMLDataDialog.Filename.Label"));
+		wlFilename.setText(Messages.getString("GetXMLDataDialog.Filename.Label"));
  		props.setLook(wlFilename);
 		fdlFilename=new FormData();
 		fdlFilename.left = new FormAttachment(0, 0);
@@ -408,7 +408,7 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 
 		wbbFilename=new Button(wFileComp, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbbFilename);
-		wbbFilename.setText(Messages.getString("getXMLDataDialog.FilenameBrowse.Button"));
+		wbbFilename.setText(Messages.getString("GetXMLDataDialog.FilenameBrowse.Button"));
 		wbbFilename.setToolTipText(Messages.getString("System.Tooltip.BrowseForFileOrDirAndAdd"));
 		fdbFilename=new FormData();
 		fdbFilename.right= new FormAttachment(100, 0);
@@ -417,8 +417,8 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 
 		wbaFilename=new Button(wFileComp, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbaFilename);
-		wbaFilename.setText(Messages.getString("getXMLDataDialog.FilenameAdd.Button"));
-		wbaFilename.setToolTipText(Messages.getString("getXMLDataDialog.FilenameAdd.Tooltip"));
+		wbaFilename.setText(Messages.getString("GetXMLDataDialog.FilenameAdd.Button"));
+		wbaFilename.setToolTipText(Messages.getString("GetXMLDataDialog.FilenameAdd.Tooltip"));
 		fdbaFilename=new FormData();
 		fdbaFilename.right= new FormAttachment(wbbFilename, -margin);
 		fdbaFilename.top  = new FormAttachment(wOutputField, margin);
@@ -434,7 +434,7 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		wFilename.setLayoutData(fdFilename);
 
 		wlFilemask=new Label(wFileComp, SWT.RIGHT);
-		wlFilemask.setText(Messages.getString("getXMLDataDialog.RegExp.Label"));
+		wlFilemask.setText(Messages.getString("GetXMLDataDialog.RegExp.Label"));
  		props.setLook(wlFilemask);
 		fdlFilemask=new FormData();
 		fdlFilemask.left = new FormAttachment(0, 0);
@@ -452,7 +452,7 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 
 		// Filename list line
 		wlFilenameList=new Label(wFileComp, SWT.RIGHT);
-		wlFilenameList.setText(Messages.getString("getXMLDataDialog.FilenameList.Label"));
+		wlFilenameList.setText(Messages.getString("GetXMLDataDialog.FilenameList.Label"));
  		props.setLook(wlFilenameList);
 		fdlFilenameList=new FormData();
 		fdlFilenameList.left = new FormAttachment(0, 0);
@@ -463,8 +463,8 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		// Buttons to the right of the screen...
 		wbdFilename=new Button(wFileComp, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbdFilename);
-		wbdFilename.setText(Messages.getString("getXMLDataDialog.FilenameRemove.Button"));
-		wbdFilename.setToolTipText(Messages.getString("getXMLDataDialog.FilenameRemove.Tooltip"));
+		wbdFilename.setText(Messages.getString("GetXMLDataDialog.FilenameRemove.Button"));
+		wbdFilename.setToolTipText(Messages.getString("GetXMLDataDialog.FilenameRemove.Tooltip"));
 		fdbdFilename=new FormData();
 		fdbdFilename.right = new FormAttachment(100, 0);
 		fdbdFilename.top  = new FormAttachment (wFilemask, 40);
@@ -472,8 +472,8 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 
 		wbeFilename=new Button(wFileComp, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbeFilename);
-		wbeFilename.setText(Messages.getString("getXMLDataDialog.FilenameEdit.Button"));
-		wbeFilename.setToolTipText(Messages.getString("getXMLDataDialog.FilenameEdit.Tooltip"));
+		wbeFilename.setText(Messages.getString("GetXMLDataDialog.FilenameEdit.Button"));
+		wbeFilename.setToolTipText(Messages.getString("GetXMLDataDialog.FilenameEdit.Tooltip"));
 		fdbeFilename=new FormData();
 		fdbeFilename.right = new FormAttachment(100, 0);
 		fdbeFilename.left  = new FormAttachment(wbdFilename, 0, SWT.LEFT);
@@ -482,21 +482,21 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 
 		wbShowFiles=new Button(wFileComp, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbShowFiles);
-		wbShowFiles.setText(Messages.getString("getXMLDataDialog.ShowFiles.Button"));
+		wbShowFiles.setText(Messages.getString("GetXMLDataDialog.ShowFiles.Button"));
 		fdbShowFiles=new FormData();
 		fdbShowFiles.left   = new FormAttachment(middle, 0);
 		fdbShowFiles.bottom = new FormAttachment(100, 0);
 		wbShowFiles.setLayoutData(fdbShowFiles);
 
 		ColumnInfo[] colinfo=new ColumnInfo[3];
-		colinfo[ 0]=new ColumnInfo( Messages.getString("getXMLDataDialog.Files.Filename.Column"), ColumnInfo.COLUMN_TYPE_TEXT, false);
-		colinfo[ 1]=new ColumnInfo( Messages.getString("getXMLDataDialog.Files.Wildcard.Column"),ColumnInfo.COLUMN_TYPE_TEXT, false );
+		colinfo[ 0]=new ColumnInfo( Messages.getString("GetXMLDataDialog.Files.Filename.Column"), ColumnInfo.COLUMN_TYPE_TEXT, false);
+		colinfo[ 1]=new ColumnInfo( Messages.getString("GetXMLDataDialog.Files.Wildcard.Column"),ColumnInfo.COLUMN_TYPE_TEXT, false );
 
 		colinfo[0].setUsingVariables(true);
 		colinfo[1].setUsingVariables(true);
-		colinfo[1].setToolTip(Messages.getString("getXMLDataDialog.Files.Wildcard.Tooltip"));
-		colinfo[2]=new ColumnInfo(Messages.getString("getXMLDataDialog.Required.Column"),ColumnInfo.COLUMN_TYPE_CCOMBO,  YES_NO_COMBO );
-		colinfo[2].setToolTip(Messages.getString("getXMLDataDialog.Required.Tooltip"));		
+		colinfo[1].setToolTip(Messages.getString("GetXMLDataDialog.Files.Wildcard.Tooltip"));
+		colinfo[2]=new ColumnInfo(Messages.getString("GetXMLDataDialog.Required.Column"),ColumnInfo.COLUMN_TYPE_CCOMBO,  YES_NO_COMBO );
+		colinfo[2].setToolTip(Messages.getString("GetXMLDataDialog.Required.Tooltip"));		
 		
 		wFilenameList = new TableView(transMeta,wFileComp, 
 						      SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, 
@@ -533,7 +533,7 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		// START OF CONTENT TAB///
 		///
 		wContentTab=new CTabItem(wTabFolder, SWT.NONE);
-		wContentTab.setText(Messages.getString("getXMLDataDialog.Content.Tab"));
+		wContentTab.setText(Messages.getString("GetXMLDataDialog.Content.Tab"));
 
 		FormLayout contentLayout = new FormLayout ();
 		contentLayout.marginWidth  = 3;
@@ -549,7 +549,7 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 
 		wXmlConf = new Group(wContentComp, SWT.SHADOW_NONE);
 		props.setLook(wXmlConf);
-		wXmlConf.setText(Messages.getString("getXMLDataDialog.wXmlConf.Label"));
+		wXmlConf.setText(Messages.getString("GetXMLDataDialog.wXmlConf.Label"));
 		
 		FormLayout XmlConfgroupLayout = new FormLayout();
 		XmlConfgroupLayout.marginWidth = 10;
@@ -558,7 +558,7 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		
 		wbbLoopPathList=new Button(wXmlConf, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbbLoopPathList);
- 		wbbLoopPathList.setText(Messages.getString("getXMLDataDialog.LoopPathList.Button"));
+ 		wbbLoopPathList.setText(Messages.getString("GetXMLDataDialog.LoopPathList.Button"));
  		wbbLoopPathList.setToolTipText(Messages.getString("System.Tooltip.BrowseForFileOrDirAndAdd"));
 		fdbLoopPathList=new FormData();
 		fdbLoopPathList.right= new FormAttachment(100, 0);
@@ -570,7 +570,7 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
         
 		
         wlLoopXPath=new Label(wXmlConf, SWT.RIGHT);
-        wlLoopXPath.setText(Messages.getString("getXMLDataDialog.LoopXPath.Label"));
+        wlLoopXPath.setText(Messages.getString("GetXMLDataDialog.LoopXPath.Label"));
         props.setLook(wlLoopXPath);
         fdlLoopXPath=new FormData();
         fdlLoopXPath.left = new FormAttachment(0, 0);
@@ -578,7 +578,7 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
         fdlLoopXPath.right= new FormAttachment(middle, -margin);
         wlLoopXPath.setLayoutData(fdlLoopXPath);
         wLoopXPath=new TextVar(transMeta,wXmlConf, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-        wLoopXPath.setToolTipText(Messages.getString("getXMLDataDialog.LoopXPath.Tooltip"));
+        wLoopXPath.setToolTipText(Messages.getString("GetXMLDataDialog.LoopXPath.Tooltip"));
         props.setLook(wLoopXPath);
         wLoopXPath.addModifyListener(lsMod);
         fdLoopXPath=new FormData();
@@ -590,7 +590,7 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 
         
         wlEncoding=new Label(wXmlConf, SWT.RIGHT);
-        wlEncoding.setText(Messages.getString("getXMLDataDialog.Encoding.Label"));
+        wlEncoding.setText(Messages.getString("GetXMLDataDialog.Encoding.Label"));
         props.setLook(wlEncoding);
         fdlEncoding=new FormData();
         fdlEncoding.left = new FormAttachment(0, 0);
@@ -625,7 +625,7 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
         
         // Set Namespace aware ?
 		wlNameSpaceAware=new Label(wXmlConf, SWT.RIGHT);
-		wlNameSpaceAware.setText(Messages.getString("getXMLDataDialog.NameSpaceAware.Label"));
+		wlNameSpaceAware.setText(Messages.getString("GetXMLDataDialog.NameSpaceAware.Label"));
  		props.setLook(wlNameSpaceAware);
 		fdlNameSpaceAware=new FormData();
 		fdlNameSpaceAware.left = new FormAttachment(0, 0);
@@ -634,7 +634,7 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		wlNameSpaceAware.setLayoutData(fdlNameSpaceAware);
 		wNameSpaceAware=new Button(wXmlConf, SWT.CHECK );
  		props.setLook(wNameSpaceAware);
-		wNameSpaceAware.setToolTipText(Messages.getString("getXMLDataDialog.NameSpaceAware.Tooltip"));
+		wNameSpaceAware.setToolTipText(Messages.getString("GetXMLDataDialog.NameSpaceAware.Tooltip"));
 		fdNameSpaceAware=new FormData();
 		fdNameSpaceAware.left = new FormAttachment(middle, 0);
 		fdNameSpaceAware.top  = new FormAttachment(wEncoding, margin);
@@ -642,7 +642,7 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		
 		// Validate XML?
 		wlValidating=new Label(wXmlConf, SWT.RIGHT);
-		wlValidating.setText(Messages.getString("getXMLDataDialog.Validating.Label"));
+		wlValidating.setText(Messages.getString("GetXMLDataDialog.Validating.Label"));
  		props.setLook(wlValidating);
 		fdlValidating=new FormData();
 		fdlValidating.left = new FormAttachment(0, 0);
@@ -651,7 +651,7 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		wlValidating.setLayoutData(fdlValidating);
 		wValidating=new Button(wXmlConf, SWT.CHECK );
  		props.setLook(wValidating);
-		wValidating.setToolTipText(Messages.getString("getXMLDataDialog.Validating.Tooltip"));
+		wValidating.setToolTipText(Messages.getString("GetXMLDataDialog.Validating.Tooltip"));
 		fdValidating=new FormData();
 		fdValidating.left = new FormAttachment(middle, 0);
 		fdValidating.top  = new FormAttachment(wNameSpaceAware, margin);
@@ -659,7 +659,7 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		
 		 // use Token ?
 		wluseToken=new Label(wXmlConf, SWT.RIGHT);
-		wluseToken.setText(Messages.getString("getXMLDataDialog.useToken.Label"));
+		wluseToken.setText(Messages.getString("GetXMLDataDialog.useToken.Label"));
  		props.setLook(wluseToken);
 		fdluseToken=new FormData();
 		fdluseToken.left = new FormAttachment(0, 0);
@@ -668,7 +668,7 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		wluseToken.setLayoutData(fdluseToken);
 		wuseToken=new Button(wXmlConf, SWT.CHECK );
  		props.setLook(wuseToken);
-		wuseToken.setToolTipText(Messages.getString("getXMLDataDialog.useToken.Tooltip"));
+		wuseToken.setToolTipText(Messages.getString("GetXMLDataDialog.useToken.Tooltip"));
 		fduseToken=new FormData();
 		fduseToken.left = new FormAttachment(middle, 0);
 		fduseToken.top  = new FormAttachment(wValidating, margin);
@@ -676,7 +676,7 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		
 		 // Ignore Empty File
 		wlIgnoreEmptyFile=new Label(wXmlConf, SWT.RIGHT);
-		wlIgnoreEmptyFile.setText(Messages.getString("getXMLDataDialog.IgnoreEmptyFile.Label"));
+		wlIgnoreEmptyFile.setText(Messages.getString("GetXMLDataDialog.IgnoreEmptyFile.Label"));
  		props.setLook(wlIgnoreEmptyFile);
 		fdlIgnoreEmptyFile=new FormData();
 		fdlIgnoreEmptyFile.left = new FormAttachment(0, 0);
@@ -685,14 +685,14 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		wlIgnoreEmptyFile.setLayoutData(fdlIgnoreEmptyFile);
 		wIgnoreEmptyFile=new Button(wXmlConf, SWT.CHECK );
  		props.setLook(wIgnoreEmptyFile);
-		wIgnoreEmptyFile.setToolTipText(Messages.getString("getXMLDataDialog.IgnoreEmptyFile.Tooltip"));
+		wIgnoreEmptyFile.setToolTipText(Messages.getString("GetXMLDataDialog.IgnoreEmptyFile.Tooltip"));
 		fdIgnoreEmptyFile=new FormData();
 		fdIgnoreEmptyFile.left = new FormAttachment(middle, 0);
 		fdIgnoreEmptyFile.top  = new FormAttachment(wuseToken, margin);
 		wIgnoreEmptyFile.setLayoutData(fdIgnoreEmptyFile);
 		
 		wlLimit=new Label(wXmlConf, SWT.RIGHT);
-		wlLimit.setText(Messages.getString("getXMLDataDialog.Limit.Label"));
+		wlLimit.setText(Messages.getString("GetXMLDataDialog.Limit.Label"));
  		props.setLook(wlLimit);
 		fdlLimit=new FormData();
 		fdlLimit.left = new FormAttachment(0, 0);
@@ -728,7 +728,7 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 
 		wAdditionalFields = new Group(wContentComp, SWT.SHADOW_NONE);
 		props.setLook(wAdditionalFields);
-		wAdditionalFields.setText(Messages.getString("getXMLDataDialog.wAdditionalFields.Label"));
+		wAdditionalFields.setText(Messages.getString("GetXMLDataDialog.wAdditionalFields.Label"));
 		
 		FormLayout AdditionalFieldsgroupLayout = new FormLayout();
 		AdditionalFieldsgroupLayout.marginWidth = 10;
@@ -738,7 +738,7 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
         
 
 		wlInclFilename=new Label(wAdditionalFields, SWT.RIGHT);
-		wlInclFilename.setText(Messages.getString("getXMLDataDialog.InclFilename.Label"));
+		wlInclFilename.setText(Messages.getString("GetXMLDataDialog.InclFilename.Label"));
  		props.setLook(wlInclFilename);
 		fdlInclFilename=new FormData();
 		fdlInclFilename.left = new FormAttachment(0, 0);
@@ -747,14 +747,14 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		wlInclFilename.setLayoutData(fdlInclFilename);
 		wInclFilename=new Button(wAdditionalFields, SWT.CHECK );
  		props.setLook(wInclFilename);
-		wInclFilename.setToolTipText(Messages.getString("getXMLDataDialog.InclFilename.Tooltip"));
+		wInclFilename.setToolTipText(Messages.getString("GetXMLDataDialog.InclFilename.Tooltip"));
 		fdInclFilename=new FormData();
 		fdInclFilename.left = new FormAttachment(middle, 0);
 		fdInclFilename.top  = new FormAttachment(wXmlConf, 4*margin);
 		wInclFilename.setLayoutData(fdInclFilename);
 
 		wlInclFilenameField=new Label(wAdditionalFields, SWT.LEFT);
-		wlInclFilenameField.setText(Messages.getString("getXMLDataDialog.InclFilenameField.Label"));
+		wlInclFilenameField.setText(Messages.getString("GetXMLDataDialog.InclFilenameField.Label"));
  		props.setLook(wlInclFilenameField);
 		fdlInclFilenameField=new FormData();
 		fdlInclFilenameField.left = new FormAttachment(wInclFilename, margin);
@@ -770,7 +770,7 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		wInclFilenameField.setLayoutData(fdInclFilenameField);
 
 		wlInclRownum=new Label(wAdditionalFields, SWT.RIGHT);
-		wlInclRownum.setText(Messages.getString("getXMLDataDialog.InclRownum.Label"));
+		wlInclRownum.setText(Messages.getString("GetXMLDataDialog.InclRownum.Label"));
  		props.setLook(wlInclRownum);
 		fdlInclRownum=new FormData();
 		fdlInclRownum.left = new FormAttachment(0, 0);
@@ -779,14 +779,14 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		wlInclRownum.setLayoutData(fdlInclRownum);
 		wInclRownum=new Button(wAdditionalFields, SWT.CHECK );
  		props.setLook(wInclRownum);
-		wInclRownum.setToolTipText(Messages.getString("getXMLDataDialog.InclRownum.Tooltip"));
+		wInclRownum.setToolTipText(Messages.getString("GetXMLDataDialog.InclRownum.Tooltip"));
 		fdRownum=new FormData();
 		fdRownum.left = new FormAttachment(middle, 0);
 		fdRownum.top  = new FormAttachment(wInclFilenameField, margin);
 		wInclRownum.setLayoutData(fdRownum);
 
 		wlInclRownumField=new Label(wAdditionalFields, SWT.RIGHT);
-		wlInclRownumField.setText(Messages.getString("getXMLDataDialog.InclRownumField.Label"));
+		wlInclRownumField.setText(Messages.getString("GetXMLDataDialog.InclRownumField.Label"));
  		props.setLook(wlInclRownumField);
 		fdlInclRownumField=new FormData();
 		fdlInclRownumField.left = new FormAttachment(wInclRownum, margin);
@@ -818,7 +818,7 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 
 		wAddFileResult = new Group(wContentComp, SWT.SHADOW_NONE);
 		props.setLook(wAddFileResult);
-		wAddFileResult.setText(Messages.getString("getXMLDataDialog.wAddFileResult.Label"));
+		wAddFileResult.setText(Messages.getString("GetXMLDataDialog.wAddFileResult.Label"));
 		
 		FormLayout AddFileResultgroupLayout = new FormLayout();
 		AddFileResultgroupLayout.marginWidth = 10;
@@ -826,7 +826,7 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		wAddFileResult.setLayout(AddFileResultgroupLayout);
 
 		wlAddResult=new Label(wAddFileResult, SWT.RIGHT);
-		wlAddResult.setText(Messages.getString("getXMLDataDialog.AddResult.Label"));
+		wlAddResult.setText(Messages.getString("GetXMLDataDialog.AddResult.Label"));
  		props.setLook(wlAddResult);
 		fdlAddResult=new FormData();
 		fdlAddResult.left = new FormAttachment(0, 0);
@@ -835,7 +835,7 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		wlAddResult.setLayoutData(fdlAddResult);
 		wAddResult=new Button(wAddFileResult, SWT.CHECK );
  		props.setLook(wAddResult);
-		wAddResult.setToolTipText(Messages.getString("getXMLDataDialog.AddResult.Tooltip"));
+		wAddResult.setToolTipText(Messages.getString("GetXMLDataDialog.AddResult.Tooltip"));
 		fdAddResult=new FormData();
 		fdAddResult.left = new FormAttachment(middle, 0);
 		fdAddResult.top  = new FormAttachment(wAdditionalFields, margin);
@@ -870,7 +870,7 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		// Fields tab...
 		//
 		wFieldsTab = new CTabItem(wTabFolder, SWT.NONE);
-		wFieldsTab.setText(Messages.getString("getXMLDataDialog.Fields.Tab"));
+		wFieldsTab.setText(Messages.getString("GetXMLDataDialog.Fields.Tab"));
 		
 		FormLayout fieldsLayout = new FormLayout ();
 		fieldsLayout.marginWidth  = Const.FORM_MARGIN;
@@ -881,7 +881,7 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
  		props.setLook(wFieldsComp);
 		
 		wGet=new Button(wFieldsComp, SWT.PUSH);
-		wGet.setText(Messages.getString("getXMLDataDialog.GetFields.Button"));
+		wGet.setText(Messages.getString("GetXMLDataDialog.GetFields.Button"));
 		fdGet=new FormData();
 		fdGet.left=new FormAttachment(50, 0);
 		fdGet.bottom =new FormAttachment(100, 0);
@@ -902,54 +902,54 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		ColumnInfo[] colinf=new ColumnInfo[]
             {
 			 new ColumnInfo(
-         Messages.getString("getXMLDataDialog.FieldsTable.Name.Column"),
+         Messages.getString("GetXMLDataDialog.FieldsTable.Name.Column"),
          ColumnInfo.COLUMN_TYPE_TEXT,
          false),
          new ColumnInfo(
-                 Messages.getString("getXMLDataDialog.FieldsTable.XPath.Column"),
+                 Messages.getString("GetXMLDataDialog.FieldsTable.XPath.Column"),
                  ColumnInfo.COLUMN_TYPE_TEXT,
                  false),
     	 new ColumnInfo(
-    	         Messages.getString("getXMLDataDialog.FieldsTable.Element.Column"),
+    	         Messages.getString("GetXMLDataDialog.FieldsTable.Element.Column"),
     	         ColumnInfo.COLUMN_TYPE_CCOMBO,
-    	         getXMLDataField.ElementTypeDesc,
+    	         GetXMLDataField.ElementTypeDesc,
     	         true ),
 			 new ColumnInfo(
-         Messages.getString("getXMLDataDialog.FieldsTable.Type.Column"),
+         Messages.getString("GetXMLDataDialog.FieldsTable.Type.Column"),
          ColumnInfo.COLUMN_TYPE_CCOMBO,
          ValueMeta.getTypes(),
          true ),
 			 new ColumnInfo(
-         Messages.getString("getXMLDataDialog.FieldsTable.Format.Column"),
+         Messages.getString("GetXMLDataDialog.FieldsTable.Format.Column"),
          ColumnInfo.COLUMN_TYPE_CCOMBO,
          formats),
 			 new ColumnInfo(
-         Messages.getString("getXMLDataDialog.FieldsTable.Length.Column"),
+         Messages.getString("GetXMLDataDialog.FieldsTable.Length.Column"),
          ColumnInfo.COLUMN_TYPE_TEXT,
          false),
 			 new ColumnInfo(
-         Messages.getString("getXMLDataDialog.FieldsTable.Precision.Column"),
+         Messages.getString("GetXMLDataDialog.FieldsTable.Precision.Column"),
          ColumnInfo.COLUMN_TYPE_TEXT,
          false),
 			 new ColumnInfo(
-         Messages.getString("getXMLDataDialog.FieldsTable.Currency.Column"),
+         Messages.getString("GetXMLDataDialog.FieldsTable.Currency.Column"),
          ColumnInfo.COLUMN_TYPE_TEXT,
          false),
 			 new ColumnInfo(
-         Messages.getString("getXMLDataDialog.FieldsTable.Decimal.Column"),
+         Messages.getString("GetXMLDataDialog.FieldsTable.Decimal.Column"),
          ColumnInfo.COLUMN_TYPE_TEXT,
          false),
 			 new ColumnInfo(
-         Messages.getString("getXMLDataDialog.FieldsTable.Group.Column"),
+         Messages.getString("GetXMLDataDialog.FieldsTable.Group.Column"),
          ColumnInfo.COLUMN_TYPE_TEXT,
          false),
 			 new ColumnInfo(
-         Messages.getString("getXMLDataDialog.FieldsTable.TrimType.Column"),
+         Messages.getString("GetXMLDataDialog.FieldsTable.TrimType.Column"),
          ColumnInfo.COLUMN_TYPE_CCOMBO,
-         getXMLDataField.trimTypeDesc,
+         GetXMLDataField.trimTypeDesc,
          true ),
 			 new ColumnInfo(
-         Messages.getString("getXMLDataDialog.FieldsTable.Repeat.Column"),
+         Messages.getString("GetXMLDataDialog.FieldsTable.Repeat.Column"),
          ColumnInfo.COLUMN_TYPE_CCOMBO,
          new String[] { Messages.getString("System.Combo.Yes"), Messages.getString("System.Combo.No") },
          true ),
@@ -957,9 +957,9 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
     };
 		
 		colinf[0].setUsingVariables(true);
-		colinf[0].setToolTip(Messages.getString("getXMLDataDialog.FieldsTable.Name.Column.Tooltip"));
+		colinf[0].setToolTip(Messages.getString("GetXMLDataDialog.FieldsTable.Name.Column.Tooltip"));
 		colinf[1].setUsingVariables(true);
-		colinf[1].setToolTip(Messages.getString("getXMLDataDialog.FieldsTable.XPath.Column.Tooltip"));
+		colinf[1].setToolTip(Messages.getString("GetXMLDataDialog.FieldsTable.XPath.Column.Tooltip"));
 		
 		wFields=new TableView(transMeta,wFieldsComp, 
 						      SWT.FULL_SELECTION | SWT.MULTI, 
@@ -998,7 +998,7 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		wOK.setText(Messages.getString("System.Button.OK"));
 
 		wPreview=new Button(shell, SWT.PUSH);
-		wPreview.setText(Messages.getString("getXMLDataDialog.Button.PreviewRows"));
+		wPreview.setText(Messages.getString("GetXMLDataDialog.Button.PreviewRows"));
 		
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(Messages.getString("System.Button.Cancel"));
@@ -1076,27 +1076,27 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 				{
                     try
                     {
-    					getXMLDataMeta tfii = new getXMLDataMeta();
+    					GetXMLDataMeta tfii = new GetXMLDataMeta();
     					getInfo(tfii);
                         FileInputList fileInputList = tfii.getFiles(transMeta);
     					String files[] = fileInputList.getFileStrings();
     					if (files!=null && files.length>0)
     					{
-    						EnterSelectionDialog esd = new EnterSelectionDialog(shell, files, Messages.getString("getXMLDataDialog.FilesReadSelection.DialogTitle"), Messages.getString("getXMLDataDialog.FilesReadSelection.DialogMessage"));
+    						EnterSelectionDialog esd = new EnterSelectionDialog(shell, files, Messages.getString("GetXMLDataDialog.FilesReadSelection.DialogTitle"), Messages.getString("GetXMLDataDialog.FilesReadSelection.DialogMessage"));
     						esd.setViewOnly();
     						esd.open();
     					}
     					else
     					{
     						MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-    						mb.setMessage(Messages.getString("getXMLDataDialog.NoFileFound.DialogMessage"));
+    						mb.setMessage(Messages.getString("GetXMLDataDialog.NoFileFound.DialogMessage"));
     						mb.setText(Messages.getString("System.Dialog.Error.Title"));
     						mb.open(); 
     					}
                     }
                     catch(KettleException ex)
                     {
-                        new ErrorDialog(shell, Messages.getString("getXMLDataDialog.ErrorParsingData.DialogTitle"), Messages.getString("getXMLDataDialog.ErrorParsingData.DialogMessage"), ex);
+                        new ErrorDialog(shell, Messages.getString("GetXMLDataDialog.ErrorParsingData.DialogTitle"), Messages.getString("GetXMLDataDialog.ErrorParsingData.DialogMessage"), ex);
                     }
 				}
 			}
@@ -1214,7 +1214,7 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 			 
 			
 		 }catch(KettleException ke){
-				new ErrorDialog(shell, Messages.getString("getXMLDataDialog.FailedToGetFields.DialogTitle"), Messages.getString("getXMLDataDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+				new ErrorDialog(shell, Messages.getString("GetXMLDataDialog.FailedToGetFields.DialogTitle"), Messages.getString("GetXMLDataDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 	 }
 	 
@@ -1262,7 +1262,7 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 
 		try
 		{	
-			getXMLDataMeta meta = new getXMLDataMeta ();
+			GetXMLDataMeta meta = new GetXMLDataMeta ();
 			getInfo(meta);
 			FileInputList fileinputList = meta.getFiles(transMeta);
     	
@@ -1303,7 +1303,7 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
    			  	
 					String[] list_xpath = (String[]) listpath.toArray(new String[listpath.size()]);
 
-					EnterSelectionDialog dialog = new EnterSelectionDialog(shell, list_xpath, Messages.getString("getXMLDataDialog.Dialog.SelectALoopPath.Title"), Messages.getString("getXMLDataDialog.Dialog.SelectALoopPath.Message"));
+					EnterSelectionDialog dialog = new EnterSelectionDialog(shell, list_xpath, Messages.getString("GetXMLDataDialog.Dialog.SelectALoopPath.Title"), Messages.getString("GetXMLDataDialog.Dialog.SelectALoopPath.Message"));
 					String listxpaths = dialog.open();
 					if (listxpaths != null) {
 						wLoopXPath.setText(listxpaths);
@@ -1314,7 +1314,7 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
    					}
 				} else {
 					// The file not exists !
-					throw new KettleException(Messages.getString("getXMLDataDialog.Exception.FileDoesNotExist", KettleVFS
+					throw new KettleException(Messages.getString("GetXMLDataDialog.Exception.FileDoesNotExist", KettleVFS
 							.getFilename(fileinputList.getFile(0))));
 					}
            		}
@@ -1323,7 +1323,7 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 			{
 				// No file specified
 				 MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-		            mb.setMessage(Messages.getString("getXMLDataDialog.FilesMissing.DialogMessage"));
+		            mb.setMessage(Messages.getString("GetXMLDataDialog.FilesMissing.DialogMessage"));
 		            mb.setText(Messages.getString("System.Dialog.Error.Title"));
 		            mb.open(); 
 			}
@@ -1331,7 +1331,7 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		}
 		catch(Throwable e)
 	    {
-	        new ErrorDialog(shell, Messages.getString("getXMLDataDialog.UnableToGetListOfPaths.Title"), Messages.getString("getXMLDataDialog.UnableToGetListOfPaths.Message"), e);
+	        new ErrorDialog(shell, Messages.getString("GetXMLDataDialog.UnableToGetListOfPaths.Title"), Messages.getString("GetXMLDataDialog.UnableToGetListOfPaths.Message"), e);
 	    }
 	}
 	private void get()
@@ -1339,7 +1339,7 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
         try
         {
         	list.clear();
-        	getXMLDataMeta meta = new getXMLDataMeta();
+        	GetXMLDataMeta meta = new GetXMLDataMeta();
         	getInfo(meta);
         	
         	//	 check if the path is given 
@@ -1388,7 +1388,7 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
         }     
         catch(Exception e)
         {
-            new ErrorDialog(shell, Messages.getString("getXMLDataDialog.ErrorParsingData.DialogTitle"), Messages.getString("getXMLDataDialog.ErrorParsingData.DialogMessage"), e);
+            new ErrorDialog(shell, Messages.getString("GetXMLDataDialog.ErrorParsingData.DialogTitle"), Messages.getString("GetXMLDataDialog.ErrorParsingData.DialogMessage"), e);
         }
 	}
 	private void getLoopNodes(Node node)
@@ -1514,7 +1514,7 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		            TableItem item = new TableItem(wFields.table, SWT.NONE);
 		            item.setText(1, attributname);
 		            item.setText(2, attributnametxt);
-		            item.setText(3, getXMLDataField.ElementTypeDesc[0]);
+		            item.setText(3, GetXMLDataField.ElementTypeDesc[0]);
 		            
 		            // Get attribute value
 		            String valueNode =childnode.getNodeValue();
@@ -1552,7 +1552,7 @@ public class getXMLDataDialog extends BaseStepDialog implements StepDialogInterf
             TableItem item = new TableItem(wFields.table, SWT.NONE);
             item.setText(1, nodename);
             item.setText(2, nodenametxt);
-            item.setText(3, getXMLDataField.ElementTypeDesc[0]);
+            item.setText(3, GetXMLDataField.ElementTypeDesc[0]);
 
             // Get Node value
             String valueNode=null;
@@ -1649,7 +1649,7 @@ private boolean IsDate(String str)
 	 * 
 	 * @param in The TextFileInputMeta object to obtain the data from.
 	 */
-	public void getData(getXMLDataMeta in)
+	public void getData(GetXMLDataMeta in)
 	{
 		if (in.getFileName() !=null) 
 		{
@@ -1687,10 +1687,10 @@ private boolean IsDate(String str)
         	wEncoding.setText("UTF-8");        
         }
 		
-		log.logDebug(toString(), Messages.getString("getXMLDataDialog.Log.GettingFieldsInfo"));
+		log.logDebug(toString(), Messages.getString("GetXMLDataDialog.Log.GettingFieldsInfo"));
 		for (int i=0;i<in.getInputFields().length;i++)
 		{
-		    getXMLDataField field = in.getInputFields()[i];
+		    GetXMLDataField field = in.getInputFields()[i];
 		    
             if (field!=null)
             {
@@ -1748,12 +1748,12 @@ private boolean IsDate(String str)
         }
         catch(KettleException e)
         {
-            new ErrorDialog(shell, Messages.getString("getXMLDataDialog.ErrorParsingData.DialogTitle"), Messages.getString("getXMLDataDialog.ErrorParsingData.DialogMessage"), e);
+            new ErrorDialog(shell, Messages.getString("GetXMLDataDialog.ErrorParsingData.DialogTitle"), Messages.getString("GetXMLDataDialog.ErrorParsingData.DialogMessage"), e);
         }
 		dispose();
 	}
 	
-	private void getInfo(getXMLDataMeta in) throws KettleException
+	private void getInfo(GetXMLDataMeta in) throws KettleException
 	{
 		stepname = wStepname.getText(); // return value
 
@@ -1787,13 +1787,13 @@ private boolean IsDate(String str)
 
 		for (int i=0;i<nrFields;i++)
 		{
-		    getXMLDataField field = new getXMLDataField();
+		    GetXMLDataField field = new GetXMLDataField();
 		    
 			TableItem item  = wFields.getNonEmpty(i);
             
 			field.setName( item.getText(1) );
 			field.setXPath( item.getText(2) );
-			field.setElementType( getXMLDataField.getElementTypeByDesc(item.getText(3)) );
+			field.setElementType( GetXMLDataField.getElementTypeByDesc(item.getText(3)) );
 			field.setType( ValueMeta.getType(item.getText(4)) );
 			field.setFormat( item.getText(5) );
 			field.setLength( Const.toInt(item.getText(6), -1) );
@@ -1801,7 +1801,7 @@ private boolean IsDate(String str)
 			field.setCurrencySymbol( item.getText(8) );
 			field.setDecimalSymbol( item.getText(9) );
 			field.setGroupSymbol( item.getText(10) );
-			field.setTrimType( getXMLDataField.getTrimTypeByDesc(item.getText(11)) );
+			field.setTrimType( GetXMLDataField.getTrimTypeByDesc(item.getText(11)) );
 			field.setRepeated( Messages.getString("System.Combo.Yes").equalsIgnoreCase(item.getText(12)) );		
             
 			in.getInputFields()[i] = field;
@@ -1810,11 +1810,11 @@ private boolean IsDate(String str)
 	}
 	
 	// check if the loop xpath is given
-	private boolean checkLoopXPath(getXMLDataMeta meta){
+	private boolean checkLoopXPath(GetXMLDataMeta meta){
         if (meta.getLoopXPath()==null || meta.getLoopXPath().length()<1)
         {
             MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-            mb.setMessage(Messages.getString("getXMLDataDialog.SpecifyRepeatingElement.DialogMessage"));
+            mb.setMessage(Messages.getString("GetXMLDataDialog.SpecifyRepeatingElement.DialogMessage"));
             mb.setText(Messages.getString("System.Dialog.Error.Title"));
             mb.open();
             return false;
@@ -1832,14 +1832,14 @@ private boolean IsDate(String str)
         try
         {
             // Create the XML input step
-            getXMLDataMeta oneMeta = new getXMLDataMeta();
+            GetXMLDataMeta oneMeta = new GetXMLDataMeta();
             getInfo(oneMeta);
             
             // check if the path is given
     		if (!checkLoopXPath(oneMeta)) return;
     		 TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(transMeta, oneMeta, wStepname.getText());
             
-            EnterNumberDialog numberDialog = new EnterNumberDialog(shell, props.getDefaultPreviewSize(), Messages.getString("getXMLDataDialog.NumberRows.DialogTitle"), Messages.getString("getXMLDataDialog.NumberRows.DialogMessage"));
+            EnterNumberDialog numberDialog = new EnterNumberDialog(shell, props.getDefaultPreviewSize(), Messages.getString("GetXMLDataDialog.NumberRows.DialogTitle"), Messages.getString("GetXMLDataDialog.NumberRows.DialogMessage"));
             
             int previewSize = numberDialog.open();
             if (previewSize>0)
@@ -1870,7 +1870,7 @@ private boolean IsDate(String str)
         }
         catch(KettleException e)
         {
-            new ErrorDialog(shell, Messages.getString("getXMLDataDialog.ErrorPreviewingData.DialogTitle"), Messages.getString("getXMLDataDialog.ErrorPreviewingData.DialogMessage"), e);
+            new ErrorDialog(shell, Messages.getString("GetXMLDataDialog.ErrorPreviewingData.DialogTitle"), Messages.getString("GetXMLDataDialog.ErrorPreviewingData.DialogMessage"), e);
         }
 	}
 

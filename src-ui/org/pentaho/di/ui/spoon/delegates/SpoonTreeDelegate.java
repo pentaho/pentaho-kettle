@@ -134,18 +134,20 @@ public class SpoonTreeDelegate extends SpoonDelegate
 					if (path[0].equals(Spoon.STRING_TRANSFORMATIONS)) // The name of a transformation
 					{
 						TransMeta transMeta = spoon.delegates.trans.getTransformation(path[1]);
-						if (path[2].equals(Spoon.STRING_CONNECTIONS))
-							object = new TreeSelection(path[3], transMeta.findDatabase(path[3]), transMeta);
-						if (path[2].equals(Spoon.STRING_STEPS))
-							object = new TreeSelection(path[3], transMeta.findStep(path[3]), transMeta);
-						if (path[2].equals(Spoon.STRING_HOPS))
-							object = new TreeSelection(path[3], transMeta.findTransHop(path[3]), transMeta);
-						if (path[2].equals(Spoon.STRING_PARTITIONS))
-							object = new TreeSelection(path[3], transMeta.findPartitionSchema(path[3]), transMeta);
-						if (path[2].equals(Spoon.STRING_SLAVES))
-							object = new TreeSelection(path[3], transMeta.findSlaveServer(path[3]), transMeta);
-						if (path[2].equals(Spoon.STRING_CLUSTERS))
-							object = new TreeSelection(path[3], transMeta.findClusterSchema(path[3]), transMeta);
+						if (transMeta!=null) {
+							if (path[2].equals(Spoon.STRING_CONNECTIONS))
+								object = new TreeSelection(path[3], transMeta.findDatabase(path[3]), transMeta);
+							if (path[2].equals(Spoon.STRING_STEPS))
+								object = new TreeSelection(path[3], transMeta.findStep(path[3]), transMeta);
+							if (path[2].equals(Spoon.STRING_HOPS))
+								object = new TreeSelection(path[3], transMeta.findTransHop(path[3]), transMeta);
+							if (path[2].equals(Spoon.STRING_PARTITIONS))
+								object = new TreeSelection(path[3], transMeta.findPartitionSchema(path[3]), transMeta);
+							if (path[2].equals(Spoon.STRING_SLAVES))
+								object = new TreeSelection(path[3], transMeta.findSlaveServer(path[3]), transMeta);
+							if (path[2].equals(Spoon.STRING_CLUSTERS))
+								object = new TreeSelection(path[3], transMeta.findClusterSchema(path[3]), transMeta);
+						}
 					}
 					if (path[0].equals(Spoon.STRING_JOBS)) // The name of a job
 					{

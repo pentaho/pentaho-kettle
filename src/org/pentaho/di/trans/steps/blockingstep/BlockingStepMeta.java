@@ -204,9 +204,9 @@ public class BlockingStepMeta  extends BaseStepMeta implements StepMetaInterface
     /**
      * @param cacheSize The cacheSize to set.
      */
-    public void setCacheSize(int tmpSize)
+    public void setCacheSize(int cacheSize)
     {
-        this.cacheSize = tmpSize;
+        this.cacheSize = cacheSize;
     }
     
     /**
@@ -242,7 +242,7 @@ public class BlockingStepMeta  extends BaseStepMeta implements StepMetaInterface
     }    
  
     /**
-     * @param Returns where all rows are passed or only the last one. 
+     * @return true when all rows are passed and false when only the last one is passed. 
      */
 	public boolean isPassAllRows() 
 	{
@@ -250,7 +250,7 @@ public class BlockingStepMeta  extends BaseStepMeta implements StepMetaInterface
 	}
 
 	/**
-	 *  @param passAllRows Whether to pass all rows or only the last one.
+	 *  @param passAllRows set to true if all rows should be passed and false if only the last one should be passed
 	 */
 	public void setPassAllRows(boolean passAllRows) 
 	{

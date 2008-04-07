@@ -58,10 +58,10 @@ public class GetFilesRowsCountMeta extends BaseStepMeta implements StepMetaInter
 	private  boolean includeFilesCount;
 	
 	/** The name of the field in the output containing the file number*/
-	private  String  FilesCountFieldName;
+	private  String  filesCountFieldName;
 	
 	/** The name of the field in the output containing the row number*/
-	private String RowsCountFieldName;
+	private String rowsCountFieldName;
 	
 	/** The row separator type*/
 	private String RowSeparator_format;
@@ -74,7 +74,7 @@ public class GetFilesRowsCountMeta extends BaseStepMeta implements StepMetaInter
 	
 	private boolean isaddresult;
 	
-	private String filename_Field;
+	private String outputFilenameField;
 	
 	
 	public GetFilesRowsCountMeta()
@@ -122,19 +122,19 @@ public class GetFilesRowsCountMeta extends BaseStepMeta implements StepMetaInter
         return isaddresult;
     }
     /**
-     * @return Returns the filename_Field.
+     * @return Returns the output filename_Field.
      */
-    public String getFilename_Field()
+    public String setOutputFilenameField()
     {
-        return filename_Field;
+        return outputFilenameField;
     }   
     
     /**
-     * @param filename The filename_field to set.
+     * @param outputFilenameField The output filename_field to set.
      */
-    public void setFilename_Field(String filename_Field)
+    public void setOutputFilenameField(String outputFilenameField)
     {
-        this.filename_Field = filename_Field;
+        this.outputFilenameField = outputFilenameField;
     }
     /**
      * @return Returns the File field.
@@ -144,7 +144,7 @@ public class GetFilesRowsCountMeta extends BaseStepMeta implements StepMetaInter
         return filefield;
     }
     /**
-     * @param filefield The filefield to set.
+     * @param filefield The file field to set.
      */
     public void setFileField(boolean filefield)
     {
@@ -201,11 +201,11 @@ public class GetFilesRowsCountMeta extends BaseStepMeta implements StepMetaInter
     
    
     /**
-     * @param includeFilesCount The includeFilesCount to set.
+     * @param includeFilesCount The "includes files count" flag to set.
      */
-    public void setIncludeCountFiles(boolean includeFilesCountin)
+    public void setIncludeCountFiles(boolean includeFilesCount)
     {
-        this.includeFilesCount = includeFilesCountin;
+        this.includeFilesCount = includeFilesCount;
     }
     
    
@@ -215,7 +215,7 @@ public class GetFilesRowsCountMeta extends BaseStepMeta implements StepMetaInter
      */
     public String getFilesCountFieldName()
     {
-        return FilesCountFieldName;
+        return filesCountFieldName;
     }
     
    
@@ -224,7 +224,7 @@ public class GetFilesRowsCountMeta extends BaseStepMeta implements StepMetaInter
      */
     public String getRowsCountFieldName()
     {
-        return RowsCountFieldName;
+        return rowsCountFieldName;
     }
     
     
@@ -233,19 +233,19 @@ public class GetFilesRowsCountMeta extends BaseStepMeta implements StepMetaInter
     
     
     /**
-     * @param FilesCountFieldName The FilesCountFieldName to set.
+     * @param filesCountFieldName The filesCountFieldName to set.
      */
-    public void setFilesCountFieldName(String FilesCountFieldNamein)
+    public void setFilesCountFieldName(String filesCountFieldName)
     {
-        this.FilesCountFieldName = FilesCountFieldNamein;
+        this.filesCountFieldName = filesCountFieldName;
     }
     
     /**
-     * @param RowsCountFieldName The RowsCountFieldName to set.
+     * @param rowsCountFieldName The rowsCountFieldName to set.
      */
-    public void setRowsCountFieldName(String RowsCountFieldNamein)
+    public void setRowsCountFieldName(String rowsCountFieldName)
     {
-        this.RowsCountFieldName = RowsCountFieldNamein;
+        this.rowsCountFieldName = rowsCountFieldName;
     }
     
     
@@ -273,13 +273,13 @@ public class GetFilesRowsCountMeta extends BaseStepMeta implements StepMetaInter
         StringBuffer retval=new StringBuffer(300);
         
         retval.append("    ").append(XMLHandler.addTagValue("files_count",   includeFilesCount));
-        retval.append("    ").append(XMLHandler.addTagValue("files_count_fieldname",FilesCountFieldName));
-        retval.append("    ").append(XMLHandler.addTagValue("rows_count_fieldname",RowsCountFieldName));
+        retval.append("    ").append(XMLHandler.addTagValue("files_count_fieldname",filesCountFieldName));
+        retval.append("    ").append(XMLHandler.addTagValue("rows_count_fieldname",rowsCountFieldName));
         retval.append("    ").append(XMLHandler.addTagValue("rowseparator_format",RowSeparator_format));
         retval.append("    ").append(XMLHandler.addTagValue("row_separator",RowSeparator));
         retval.append("    ").append(XMLHandler.addTagValue("isaddresult",isaddresult));
         retval.append("    ").append(XMLHandler.addTagValue("filefield",filefield));
-        retval.append("    ").append(XMLHandler.addTagValue("filename_Field",filename_Field));
+        retval.append("    ").append(XMLHandler.addTagValue("filename_Field",outputFilenameField));
         
         
         retval.append("    <file>").append(Const.CR);
@@ -300,8 +300,8 @@ public class GetFilesRowsCountMeta extends BaseStepMeta implements StepMetaInter
 		{
 
 			includeFilesCount  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "files_count"));
-			FilesCountFieldName    = XMLHandler.getTagValue(stepnode, "files_count_fieldname");
-			RowsCountFieldName    = XMLHandler.getTagValue(stepnode, "rows_count_fieldname");
+			filesCountFieldName    = XMLHandler.getTagValue(stepnode, "files_count_fieldname");
+			rowsCountFieldName    = XMLHandler.getTagValue(stepnode, "rows_count_fieldname");
 
 			RowSeparator_format    = XMLHandler.getTagValue(stepnode, "rowseparator_format");
 			RowSeparator    = XMLHandler.getTagValue(stepnode, "row_separator");
@@ -312,7 +312,7 @@ public class GetFilesRowsCountMeta extends BaseStepMeta implements StepMetaInter
 				isaddresult="Y".equalsIgnoreCase(addresult);
 			
 			filefield  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "filefield"));
-			filename_Field    = XMLHandler.getTagValue(stepnode, "filename_Field");
+			outputFilenameField    = XMLHandler.getTagValue(stepnode, "filename_Field");
 			
 			
 			Node filenode   = XMLHandler.getSubNode(stepnode,  "file");
@@ -343,12 +343,12 @@ public class GetFilesRowsCountMeta extends BaseStepMeta implements StepMetaInter
 	
 	public void setDefault()
 	{
-		filename_Field="";
+		outputFilenameField="";
 		filefield=false;
 		isaddresult=true;
 		includeFilesCount = false;
-		FilesCountFieldName   = "";
-		RowsCountFieldName   = "rowscount";
+		filesCountFieldName   = "";
+		rowsCountFieldName   = "rowscount";
 		RowSeparator_format="CR";
 		RowSeparator ="";
 		int nrFiles  =0;
@@ -366,14 +366,14 @@ public class GetFilesRowsCountMeta extends BaseStepMeta implements StepMetaInter
 
 	public void getFields(RowMetaInterface r, String name, RowMetaInterface info[], StepMeta nextStep, VariableSpace space) throws KettleStepException
 	{
-		ValueMetaInterface v = new ValueMeta(space.environmentSubstitute(RowsCountFieldName), ValueMeta.TYPE_INTEGER);
+		ValueMetaInterface v = new ValueMeta(space.environmentSubstitute(rowsCountFieldName), ValueMeta.TYPE_INTEGER);
 		v.setLength(ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0);
 		v.setOrigin(name);
 		r.addValueMeta(v);	
 
 		if (includeFilesCount)
 		{
-			v = new ValueMeta(space.environmentSubstitute(FilesCountFieldName), ValueMeta.TYPE_INTEGER); 
+			v = new ValueMeta(space.environmentSubstitute(filesCountFieldName), ValueMeta.TYPE_INTEGER); 
 			v.setLength(ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0);
 			v.setOrigin(name);
 			r.addValueMeta(v);
@@ -388,8 +388,8 @@ public class GetFilesRowsCountMeta extends BaseStepMeta implements StepMetaInter
 		{
 			
 			includeFilesCount  = rep.getStepAttributeBoolean(id_step, "files_count");
-			FilesCountFieldName    = rep.getStepAttributeString (id_step, "files_count_fieldname");
-			RowsCountFieldName    = rep.getStepAttributeString (id_step, "rows_count_fieldname");
+			filesCountFieldName    = rep.getStepAttributeString (id_step, "files_count_fieldname");
+			rowsCountFieldName    = rep.getStepAttributeString (id_step, "rows_count_fieldname");
 			
 			RowSeparator_format    = rep.getStepAttributeString (id_step, "rowseparator_format");
 			RowSeparator    = rep.getStepAttributeString (id_step, "row_separator");
@@ -401,7 +401,7 @@ public class GetFilesRowsCountMeta extends BaseStepMeta implements StepMetaInter
 				isaddresult    = rep.getStepAttributeBoolean (id_step, "isaddresult");
 			
 			filefield    = rep.getStepAttributeBoolean (id_step, "filefield");
-			filename_Field    = rep.getStepAttributeString (id_step, "filename_Field");
+			outputFilenameField    = rep.getStepAttributeString (id_step, "filename_Field");
 
 			int nrFiles       = rep.countNrStepAttributes(id_step, "file_name");
             
@@ -428,13 +428,13 @@ public class GetFilesRowsCountMeta extends BaseStepMeta implements StepMetaInter
 		{
 
 			rep.saveStepAttribute(id_transformation, id_step, "files_count",        includeFilesCount);
-			rep.saveStepAttribute(id_transformation, id_step, "files_count_fieldname",  FilesCountFieldName);
-			rep.saveStepAttribute(id_transformation, id_step, "rows_count_fieldname",  RowsCountFieldName);
+			rep.saveStepAttribute(id_transformation, id_step, "files_count_fieldname",  filesCountFieldName);
+			rep.saveStepAttribute(id_transformation, id_step, "rows_count_fieldname",  rowsCountFieldName);
 			rep.saveStepAttribute(id_transformation, id_step, "rowseparator_format",  RowSeparator_format);
 			rep.saveStepAttribute(id_transformation, id_step, "row_separator",  RowSeparator);
 			rep.saveStepAttribute(id_transformation, id_step, "isaddresult",        isaddresult);
 			rep.saveStepAttribute(id_transformation, id_step, "filefield",        filefield);
-			rep.saveStepAttribute(id_transformation, id_step, "filename_Field",  filename_Field);
+			rep.saveStepAttribute(id_transformation, id_step, "filename_Field",  outputFilenameField);
 			
 			
 					

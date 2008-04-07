@@ -62,7 +62,7 @@ public class AccessOutputMeta extends BaseStepMeta implements StepMetaInterface
 	/** Flag: add the filenames to result filenames */
     private boolean      addToResultFilenames;
     /** Flag : Do not open new file when transformation start  */ 
-    private boolean donotopennewfileinit;
+    private boolean doNotOpeNnewFileInit;
 
     public AccessOutputMeta()
 	{
@@ -126,7 +126,7 @@ public class AccessOutputMeta extends BaseStepMeta implements StepMetaInterface
             else
             	addToResultFilenames  = "Y".equalsIgnoreCase(addToResultFiles);
             
-            donotopennewfileinit          = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "do_not_open_newfile_init"));
+            doNotOpeNnewFileInit          = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "do_not_open_newfile_init"));
             
           
         }
@@ -142,7 +142,7 @@ public class AccessOutputMeta extends BaseStepMeta implements StepMetaInterface
         tableCreated = true;
         tableTruncated = false;	
         commitSize = AccessOutput.COMMIT_SIZE;
-        donotopennewfileinit=false;
+        doNotOpeNnewFileInit=false;
         addToResultFilenames=true;
     }
 
@@ -157,7 +157,7 @@ public class AccessOutputMeta extends BaseStepMeta implements StepMetaInterface
         retval.append("    ").append(XMLHandler.addTagValue("create_table",  tableCreated));
         retval.append("    ").append(XMLHandler.addTagValue("commit_size",   commitSize));
         retval.append("    ").append(XMLHandler.addTagValue("add_to_result_filenames",   addToResultFilenames));
-        retval.append("    ").append(XMLHandler.addTagValue("do_not_open_newfile_init",   donotopennewfileinit));
+        retval.append("    ").append(XMLHandler.addTagValue("do_not_open_newfile_init",   doNotOpeNnewFileInit));
         
 
 		return retval.toString();
@@ -177,7 +177,7 @@ public class AccessOutputMeta extends BaseStepMeta implements StepMetaInterface
             	addToResultFilenames=true;
             else
             	addToResultFilenames  =      rep.getStepAttributeBoolean(id_step, "add_to_result_filenames");
-            donotopennewfileinit          =      rep.getStepAttributeBoolean(id_step, "do_not_open_newfile_init"); 
+            doNotOpeNnewFileInit          =      rep.getStepAttributeBoolean(id_step, "do_not_open_newfile_init"); 
             
 		}
 		catch(Exception e)
@@ -196,7 +196,7 @@ public class AccessOutputMeta extends BaseStepMeta implements StepMetaInterface
             rep.saveStepAttribute(id_transformation, id_step, "create_table",    tableCreated);
             rep.saveStepAttribute(id_transformation, id_step, "commit_size",     commitSize);
             rep.saveStepAttribute(id_transformation, id_step, "add_to_result_filenames",    addToResultFilenames);
-            rep.saveStepAttribute(id_transformation, id_step, "do_not_open_newfile_init",    donotopennewfileinit);
+            rep.saveStepAttribute(id_transformation, id_step, "do_not_open_newfile_init",    doNotOpeNnewFileInit);
             
 		}
 		catch(Exception e)
@@ -607,19 +607,19 @@ public class AccessOutputMeta extends BaseStepMeta implements StepMetaInterface
         this.addToResultFilenames = addtoresultfilenamesin;
     }
     /**
-     * @return Returns the donotopennewfileinit.
+     * @return Returns the "do not open new file init" flag
      */    
     public boolean isDoNotOpenNewFileInit()
     {
-    	return donotopennewfileinit;
+    	return doNotOpeNnewFileInit;
     }
 
     /**
-     * @param donotopennewfileinit The donotopennewfileinit to set.
+     * @param doNotOpenNewFileInit The "do not open new file init" flag to set.
      */
-    public void setDoNotOpenNewFileInit(boolean donotopennewfileinitv)
+    public void setDoNotOpenNewFileInit(boolean doNotOpenNewFileInit)
     {
-    	this.donotopennewfileinit=donotopennewfileinitv;
+    	this.doNotOpeNnewFileInit=doNotOpenNewFileInit;
     }
     
     public String[] getUsedLibraries()

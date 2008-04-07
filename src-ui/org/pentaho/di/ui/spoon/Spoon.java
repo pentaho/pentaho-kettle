@@ -357,7 +357,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	private Composite mainComposite;
 	
 	private Label treeButton;
-	private Label sharedButton;
+	// private Label sharedButton;
 	private Label coreButton;
 	private Label historyButton;
 	
@@ -374,7 +374,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
     private DefaultToolTip toolTip;
 	private Label treeButtonImage;
-	private Label sharedButtonImage;
+	// private Label sharedButtonImage;
 	private Label coreButtonImage;
 	private Label historyButtonImage;
 	
@@ -1379,6 +1379,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		lastControl=sep1;
 		*/
 		
+		/*
 		sharedButtonImage = new Label(mainComposite, SWT.NONE);
 		sharedButtonImage.setBackground(background);
 		sharedButtonImage.setImage(GUIResource.getInstance().getImageLogoSmall());
@@ -1386,7 +1387,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		fdSharedButtonImage.left = new FormAttachment(5,0);
 		fdSharedButtonImage.top = new FormAttachment(lastControl,mainMargin);
 		sharedButtonImage.setLayoutData(fdSharedButtonImage);
-
+		*/
+		
+		/*
 		sharedButton = new Label(mainComposite, SWT.LEFT );  
 		sharedButton.setBackground(background);
 		sharedButton.setFont(GUIResource.getInstance().getFontMedium());
@@ -1398,6 +1401,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		fdSharedButton.top = new FormAttachment(lastControl,mainMargin);
 		sharedButton.setLayoutData(fdSharedButton);
 		lastControl = sharedButton;
+		*/
 		
 		/*
 		Label sep2 = new Label(mainComposite, SWT.SEPARATOR | SWT.HORIZONTAL);
@@ -1476,12 +1480,14 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 				disposeVariableComposite(true, false, false, false);
 				refreshTree();	
 			}});
+		/*
 		sharedButton.addMouseListener(new MouseAdapter() {
 			public void mouseDown(MouseEvent event) {
 				if (sharedSelected) return;
 				disposeVariableComposite(false, true, false, false);
 				refreshSharedObjects();	
 			}});
+		*/
 		coreButton.addMouseListener(new MouseAdapter() {
 			public void mouseDown(MouseEvent event) {
 				if (coreSelected) return;
@@ -1651,6 +1657,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			treeButton.setBackground(normalColor);
 		}
 		
+		/*
 		if (shared) { 
 			sharedButton.setFont(boldFont); 
 			sharedButton.setBackground(selectedColor);
@@ -1658,6 +1665,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			sharedButton.setFont(normalFont);
 			sharedButton.setBackground(normalColor);
 		}
+		*/
 		
 		if (core) {
 			coreButton.setFont(boldFont); 
@@ -2759,8 +2767,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 		treeButton.setVisible(true);
 		treeButtonImage.setVisible(true);
-		sharedButton.setVisible(true);
-		sharedButtonImage.setVisible(true);
+		// sharedButton.setVisible(true);
+		// sharedButtonImage.setVisible(true);
 		coreButton.setVisible(true);
 		coreButtonImage.setVisible(true);
 		historyButton.setVisible(true);
@@ -4027,8 +4035,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 
 						// Keep info on who & when this job was changed...
-						jobMeta.modifiedDate = new Date();
-						jobMeta.modifiedUser = rep.getUserInfo().getLogin();
+						jobMeta.setModifiedDate( new Date() );
+						jobMeta.setModifiedUser( rep.getUserInfo().getLogin() );
 
 						JobSaveProgressDialog jspd = new JobSaveProgressDialog(shell, rep, jobMeta);
 						if (jspd.open())

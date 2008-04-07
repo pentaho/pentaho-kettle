@@ -174,9 +174,9 @@ public class PGBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
     /**
      * @param fieldTable The fieldTable to set.
      */
-    public void setFieldTable(String[] updateLookup)
+    public void setFieldTable(String[] fieldTable)
     {
-        this.fieldTable = updateLookup;
+        this.fieldTable = fieldTable;
     }
 
     /**
@@ -190,9 +190,9 @@ public class PGBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
     /**
      * @param fieldStream The fieldStream to set.
      */
-    public void setFieldStream(String[] updateStream)
+    public void setFieldStream(String[] fieldStream)
     {
-        this.fieldStream = updateStream;
+        this.fieldStream = fieldStream;
     }
 
 	public String[] getDateMask() {

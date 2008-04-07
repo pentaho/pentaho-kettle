@@ -1090,7 +1090,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		in.setHost( wHost.getText() );
 		in.setUserName( wUserName.getText() );
 		in.setPassword(wPassword.getText());
-		in.setBaseDn( wPort.getText() );
+		in.setPort( wPort.getText() );
 		in.setFilterString( wFilterString.getText() );
 		in.setSearchBase( wSearchBase.getText() );
 		

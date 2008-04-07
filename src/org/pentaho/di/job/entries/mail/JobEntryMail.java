@@ -126,7 +126,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
   
   private String importance;
   
-  private String secureconnectiontype;
+  private String secureConnectionType;
 
   /** The encoding to use for reading: null or empty string means system default encoding */
   private String encoding;
@@ -190,7 +190,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
     retval.append("      ").append(XMLHandler.addTagValue("priority", priority));
     retval.append("      ").append(XMLHandler.addTagValue("importance", importance));
     
-    retval.append("      ").append(XMLHandler.addTagValue("secureconnectiontype", secureconnectiontype));
+    retval.append("      ").append(XMLHandler.addTagValue("secureconnectiontype", secureConnectionType));
     
     
     
@@ -298,7 +298,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
       onlySendComment = rep.getJobEntryAttributeBoolean(id_jobentry, "only_comment");
       useHTML = rep.getJobEntryAttributeBoolean(id_jobentry, "use_HTML");
       usePriority = rep.getJobEntryAttributeBoolean(id_jobentry, "use_Priority");
-      secureconnectiontype = rep.getJobEntryAttributeString(id_jobentry, "secureconnectiontype");
+      secureConnectionType = rep.getJobEntryAttributeString(id_jobentry, "secureconnectiontype");
 
       
       int nrTypes = rep.countNrJobEntryAttributes(id_jobentry, "file_type");
@@ -351,7 +351,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
       rep.saveJobEntryAttribute(id_job, getID(), "only_comment", onlySendComment);
       rep.saveJobEntryAttribute(id_job, getID(), "use_HTML", useHTML);
       rep.saveJobEntryAttribute(id_job, getID(), "use_Priority", usePriority);
-      rep.saveJobEntryAttribute(id_job, getID(), "secureconnectiontype", secureconnectiontype);
+      rep.saveJobEntryAttribute(id_job, getID(), "secureconnectiontype", secureConnectionType);
       
       
 
@@ -609,9 +609,9 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
   /**
    * @param useHTML the useHTML to set
    */
-  public void setUseHTML(boolean UseHTML)
+  public void setUseHTML(boolean useHTML)
   {
-    this.useHTML = UseHTML;
+    this.useHTML = useHTML;
   }
 
   /**
@@ -628,15 +628,15 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
    */
   public String getSecureConnectionType()
   {
-    return secureconnectiontype;
+    return secureConnectionType;
   }
   
   /**
-   * @param secureconnectiontype the secureconnectiontype to set
+   * @param secureConnectionType the secure connection type to set
    */
-  public void setSecureConnectionType(String secureconnectiontypein)
+  public void setSecureConnectionType(String secureConnectionType)
   {
-    this.secureconnectiontype=secureconnectiontypein;
+    this.secureConnectionType=secureConnectionType;
   }
   
 
@@ -654,9 +654,9 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
   /**
    * @param usePriority the usePriority to set
    */
-  public void setUsePriority(boolean usePriorityin)
+  public void setUsePriority(boolean usePriority)
   {
-    this.usePriority = usePriorityin;
+    this.usePriority = usePriority;
   }
   
   /**
@@ -679,9 +679,9 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
   /**
    * @param importance the importance to set
    */
-  public void setImportance(String importancein)
+  public void setImportance(String importance)
   {
-    this.importance = importancein;
+    this.importance = importance;
   }
 
   
@@ -696,9 +696,9 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
   /**
    * @param priority the priority to set
    */
-  public void setPriority(String priorityin)
+  public void setPriority(String priority)
   {
-    this.priority = priorityin;
+    this.priority = priority;
   }
 
   
@@ -724,7 +724,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
     String protocol = "smtp";
     if (usingSecureAuthentication)
     {
-    	if (secureconnectiontype.equals("TLS"))
+    	if (secureConnectionType.equals("TLS"))
     	{
     		// Allow TLS authentication
     		props.put("mail.smtp.starttls.enable","true"); 

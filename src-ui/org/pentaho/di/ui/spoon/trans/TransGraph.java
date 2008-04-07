@@ -193,6 +193,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 	protected TransHopMeta currentHop;
 	protected StepMeta currentStep;
 	private List<AreaOwner> areaOwners;
+	// private Text filenameLabel;
 
 	public void setCurrentNote( NotePadMeta ni ) {
 		this.ni = ni;
@@ -231,6 +232,29 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         
         canvas = new Canvas(this, SWT.V_SCROLL | SWT.H_SCROLL | SWT.NO_BACKGROUND);
 
+        /*
+        canvas.setLayout(new FormLayout());
+        
+		filenameLabel = new Text(canvas, SWT.RIGHT | SWT.ON_TOP | SWT.NO_BACKGROUND | SWT.READ_ONLY | SWT.NO_FOCUS);
+		filenameLabel.setText(Const.NVL(transMeta.getFilename(), ""));
+		filenameLabel.setBackground(GUIResource.getInstance().getColorBackground());
+        FormData fdFilenameLabel = new FormData();
+		// fdFilenameLabel.left = new FormAttachment(0,0);
+		fdFilenameLabel.top = new FormAttachment(0,10);
+		fdFilenameLabel.right = new FormAttachment(90,0);
+        filenameLabel.setLayoutData(fdFilenameLabel);
+        
+        // Add a filename listener to transMeta to make sure we always show the correct filename in this label...
+        //
+        transMeta.addFilenameChangedListener(new FilenameChangedListener() {
+		
+			public void filenameChanged(Object object, String oldFilename, String newFilename) {
+				filenameLabel.setText(Const.NVL(newFilename, ""));
+				canvas.layout(true, true);
+			}
+		});
+		*/
+
 		try {
     		// first get the XML document
     			menuMap = XulHelper.createPopupMenus(SpoonInterface.XUL_FILE_MENUS, shell, new XulMessages(),"trans-graph-hop",
@@ -239,7 +263,6 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 			// TODO log this
 			t.printStackTrace();
 		}
-        
 
         toolTip = new DefaultToolTip(canvas, ToolTip.NO_RECREATE, true);
         toolTip.setRespectMonitorBounds(true);
@@ -617,6 +640,10 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
             public void mouseMove(MouseEvent e)
             {
 				boolean shift = (e.stateMask & SWT.SHIFT) != 0;
+				
+				// disable the tooltip
+				//
+				toolTip.hide();
 
                 // Remember the last position of the mouse for paste with keyboard
                 lastMove = new Point(e.x, e.y);
@@ -961,8 +988,10 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         // Keyboard shortcuts...
         addKeyListener(canvas);
         addKeyListener(this);
+        // addKeyListener(filenameLabel);
 
         canvas.addKeyListener(spoon.defKeys);
+        // filenameLabel.addKeyListener(spoon.defKeys);
 
         setBackground(GUIResource.getInstance().getColorBackground());
     }

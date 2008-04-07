@@ -109,7 +109,7 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
     private  boolean append;
     
     /** Flag : Do not open new file when transformation start  */ 
-    private boolean donotopennewfileinit;
+    private boolean doNotOpenNewFileInit;
     
     private boolean SpecifyFormat;
     
@@ -423,19 +423,19 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 	
 	
     /**
-     * @return Returns the donotopennewfileinit.
+     * @return Returns the "do not open new file at init" flag.
      */    
     public boolean isDoNotOpenNewFileInit()
     {
-    	return donotopennewfileinit;
+    	return doNotOpenNewFileInit;
     }
 
     /**
-     * @param donotopennewfileinit The donotopennewfileinit to set.
+     * @param doNotOpenNewFileInit The "do not open new file at init" flag to set.
      */
-    public void setDoNotOpenNewFileInit(boolean donotopennewfileinitv)
+    public void setDoNotOpenNewFileInit(boolean doNotOpenNewFileInit)
     {
-    	this.donotopennewfileinit=donotopennewfileinitv;
+    	this.doNotOpenNewFileInit=doNotOpenNewFileInit;
     }
 	
     /**
@@ -498,7 +498,7 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
             fileName             = XMLHandler.getTagValue(stepnode, "file", "name");
 			extension            = XMLHandler.getTagValue(stepnode, "file", "extention");
 			
-			donotopennewfileinit       = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "do_not_open_newfile_init"));
+			doNotOpenNewFileInit       = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "do_not_open_newfile_init"));
 			stepNrInFilename     = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "split"));
 			dateInFilename       = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "add_date"));
 			timeInFilename       = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "add_time"));
@@ -562,7 +562,7 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 		footerEnabled    = false;
 		fileName         = "file";
 		extension        = "xls";
-		donotopennewfileinit=false;
+		doNotOpenNewFileInit=false;
 		stepNrInFilename = false;
 		dateInFilename   = false;
 		timeInFilename   = false;
@@ -693,7 +693,7 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 		retval.append("    <file>").append(Const.CR);
 		retval.append("      ").append(XMLHandler.addTagValue("name",       fileName));
 		retval.append("      ").append(XMLHandler.addTagValue("extention",  extension));
-		retval.append("      ").append(XMLHandler.addTagValue("do_not_open_newfile_init",   donotopennewfileinit));
+		retval.append("      ").append(XMLHandler.addTagValue("do_not_open_newfile_init",   doNotOpenNewFileInit));
 		retval.append("      ").append(XMLHandler.addTagValue("split",      stepNrInFilename));
 		retval.append("      ").append(XMLHandler.addTagValue("add_date",   dateInFilename));
 		retval.append("      ").append(XMLHandler.addTagValue("add_time",   timeInFilename));
@@ -751,7 +751,7 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 			fileName         =      rep.getStepAttributeString (id_step, "file_name");  
 			extension        =      rep.getStepAttributeString (id_step, "file_extention");
 			
-			donotopennewfileinit =      rep.getStepAttributeBoolean(id_step, "do_not_open_newfile_init");
+			doNotOpenNewFileInit =      rep.getStepAttributeBoolean(id_step, "do_not_open_newfile_init");
 			
 			splitEvery       = (int)rep.getStepAttributeInteger(id_step, "file_split");
 			stepNrInFilename =      rep.getStepAttributeBoolean(id_step, "file_add_stepnr");
@@ -798,7 +798,7 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
             rep.saveStepAttribute(id_transformation, id_step, "append",           append);
             rep.saveStepAttribute(id_transformation, id_step, "add_to_result_filenames",    addToResultFilenames);
 			rep.saveStepAttribute(id_transformation, id_step, "file_name",        fileName);
-			rep.saveStepAttribute(id_transformation, id_step, "do_not_open_newfile_init",  donotopennewfileinit);
+			rep.saveStepAttribute(id_transformation, id_step, "do_not_open_newfile_init",  doNotOpenNewFileInit);
 			
 			rep.saveStepAttribute(id_transformation, id_step, "file_extention",   extension);
 			rep.saveStepAttribute(id_transformation, id_step, "file_split",       splitEvery);

@@ -128,7 +128,7 @@ public interface JobEntryInterface
 	 *  
 	 * @param space The variable space to resolve (environment) variables with.
 	 * @param definitions The map containing the filenames and content
-	 * @param resourceNamingInterface The resource naming interface allows the object to name appropriately
+	 * @param namingInterface The resource naming interface allows the object to name appropriately
 	 * @return The filename for this object. (also contained in the definitions map)
 	 * @throws KettleException in case something goes wrong during the export
 	 */

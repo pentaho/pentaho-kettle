@@ -51,18 +51,18 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 public class XsdValidatorMeta extends BaseStepMeta implements StepMetaInterface
 {
-	private String  xdsfilename;
-	private String  xmlstream;
-	private String  resultfieldname;
-	private boolean addvalidationmsg;
-	private String validationmsgfield;
-	private boolean outputstringfield;
-	private String ifxmlvalid;
-	private String ifxmlunvalid;
-	private boolean xmlsourcefile;
-	private String xsddefinedfield;
+	private String  xdsFilename;
+	private String  xmlStream;
+	private String  resultFieldname;
+	private boolean addValidationMessage;
+	private String validationMessageField;
+	private boolean outputStringField;
+	private String ifXmlValid;
+	private String ifXmlInvalid;
+	private boolean xmlSourceFile;
+	private String xsdDefinedField;
 	
-	private String xsdsource;
+	private String xsdSource;
 	
 	public String SPECIFY_FILENAME="filename";
 	public String SPECIFY_FIELDNAME="fieldname";
@@ -71,86 +71,86 @@ public class XsdValidatorMeta extends BaseStepMeta implements StepMetaInterface
 	
 	public void setXSDSource(String xsdsourcein)
 	{
-		this.xsdsource=xsdsourcein;
+		this.xsdSource=xsdsourcein;
 	}
 	
 	public String getXSDSource()
 	{
-		return xsdsource;
+		return xsdSource;
 	}
 	
 	public void setXSDDefinedField(String xsddefinedfieldin)
 	{
-		this.xsddefinedfield=xsddefinedfieldin;
+		this.xsdDefinedField=xsddefinedfieldin;
 	}
 	
 	public String getXSDDefinedField()
 	{
-		return xsddefinedfield;
+		return xsdDefinedField;
 	}
 	
 	public boolean getXMLSourceFile()
 	{
-		return xmlsourcefile;
+		return xmlSourceFile;
 	}
 	
 	public void setXMLSourceFile(boolean xmlsourcefilein)
 	{
-		this.xmlsourcefile=xmlsourcefilein;
+		this.xmlSourceFile=xmlsourcefilein;
 	}
 	
-	public String getifXMLValid()
+	public String getIfXmlValid()
 	{
-		return ifxmlvalid;
+		return ifXmlValid;
 	}
 	
-	public String getifXMLUnValid()
+	public String getIfXmlInvalid()
 	{
-		return ifxmlunvalid;
+		return ifXmlInvalid;
 	}
 	
-	public void setifXMLValid(String ifxmlvalidin)
+	public void setIfXMLValid(String ifXmlValid)
 	{
-		this.ifxmlvalid=ifxmlvalidin;
+		this.ifXmlValid=ifXmlValid;
 	}
 	
 	
-	public void setifXMLUnValid(String ifxmlunvalidin)
+	public void setIfXmlInvalid(String ifXmlInvalid)
 	{
-		this.ifxmlunvalid=ifxmlunvalidin;
+		this.ifXmlInvalid=ifXmlInvalid;
 	}
 	
 	
 	public boolean getOutputStringField()
 	{
-		return outputstringfield;
+		return outputStringField;
 	}
 	
 	
-	public void setOutputStringField(boolean outputstringfieldin)
+	public void setOutputStringField(boolean outputStringField)
 	{
-		this.outputstringfield=outputstringfieldin;
+		this.outputStringField=outputStringField;
 	}
 	
-	public String getValidationMsgField()
+	public String getValidationMessageField()
 	{
-		return validationmsgfield;
+		return validationMessageField;
 	}
 	
-	public void setValidationMsgField(String validationmsgfieldin)
+	public void setValidationMessageField(String validationMessageField)
 	{
-		this.validationmsgfield=validationmsgfieldin;
+		this.validationMessageField=validationMessageField;
 	}
 	
-	public boolean useAddValidationMsg()
+	public boolean useAddValidationMessage()
 	{
-		return addvalidationmsg;
+		return addValidationMessage;
 	}
 	
 	
-	public void setAddValidationMsg(boolean addvalidationmsgin)
+	public void setAddValidationMessage(boolean addValidationMessage)
 	{
-		this.addvalidationmsg=addvalidationmsgin;
+		this.addValidationMessage=addValidationMessage;
 	}
 	
 	public XsdValidatorMeta()
@@ -165,39 +165,38 @@ public class XsdValidatorMeta extends BaseStepMeta implements StepMetaInterface
      */
     public String getXSDFilename()
     {
-        return xdsfilename;
+        return xdsFilename;
     }
     
     public String getResultfieldname()
     {
-    	return resultfieldname;
+    	return resultFieldname;
     }
     
 
     public String getXMLStream()
     {
-    	return xmlstream;
+    	return xmlStream;
     }
     
     /**
-     * @param script The XSD filename to set.
+     * @param xdsFilename The XSD filename to set.
      */
-    public void setXSDfilename(String xdsfilenamein)
+    public void setXSDfilename(String xdsFilename)
     {
-        this.xdsfilename = xdsfilenamein;
+        this.xdsFilename = xdsFilename;
     }
     
-    
-    public void setResultfieldname(String resultfield)
+    public void setResultfieldname(String resultFieldname)
     {
-        this.resultfieldname = resultfield;
+        this.resultFieldname = resultFieldname;
     }
     
 
     
-    public void setXMLStream(String xmlstreamin)
+    public void setXMLStream(String xmlStream)
     {
-        this.xmlstream =  xmlstreamin;
+        this.xmlStream =  xmlStream;
     }
     
 
@@ -225,20 +224,20 @@ public class XsdValidatorMeta extends BaseStepMeta implements StepMetaInterface
 		{
 
 			
-			xdsfilename     = XMLHandler.getTagValue(stepnode, "xdsfilename"); //$NON-NLS-1$
-			xmlstream     = XMLHandler.getTagValue(stepnode, "xmlstream"); //$NON-NLS-1$
-			resultfieldname     = XMLHandler.getTagValue(stepnode, "resultfieldname"); //$NON-NLS-1$
-			xsddefinedfield     = XMLHandler.getTagValue(stepnode, "xsddefinedfield");
-			xsdsource     = XMLHandler.getTagValue(stepnode, "xsdsource");
+			xdsFilename     = XMLHandler.getTagValue(stepnode, "xdsfilename"); //$NON-NLS-1$
+			xmlStream     = XMLHandler.getTagValue(stepnode, "xmlstream"); //$NON-NLS-1$
+			resultFieldname     = XMLHandler.getTagValue(stepnode, "resultfieldname"); //$NON-NLS-1$
+			xsdDefinedField     = XMLHandler.getTagValue(stepnode, "xsddefinedfield");
+			xsdSource     = XMLHandler.getTagValue(stepnode, "xsdsource");
 			
 			
-			addvalidationmsg = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "addvalidationmsg"));
+			addValidationMessage = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "addvalidationmsg"));
 			
-			validationmsgfield     = XMLHandler.getTagValue(stepnode, "validationmsgfield"); //$NON-NLS-1$
-			ifxmlvalid     = XMLHandler.getTagValue(stepnode, "ifxmlvalid");
-			ifxmlunvalid     = XMLHandler.getTagValue(stepnode, "ifxmlunvalid");
-			outputstringfield = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "outputstringfield"));
-			xmlsourcefile = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "xmlsourcefile"));
+			validationMessageField     = XMLHandler.getTagValue(stepnode, "validationmsgfield"); //$NON-NLS-1$
+			ifXmlValid     = XMLHandler.getTagValue(stepnode, "ifxmlvalid");
+			ifXmlInvalid     = XMLHandler.getTagValue(stepnode, "ifxmlunvalid");
+			outputStringField = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "outputstringfield"));
+			xmlSourceFile = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "xmlsourcefile"));
 			
 	
 		}
@@ -250,25 +249,25 @@ public class XsdValidatorMeta extends BaseStepMeta implements StepMetaInterface
 
 	public void setDefault()
 	{
-		xdsfilename = ""; //$NON-NLS-1$
-		xmlstream = "";
-		resultfieldname="result";
-		addvalidationmsg=false;
-		validationmsgfield="ValidationMsgField";
-		ifxmlvalid="";
-		ifxmlunvalid="";
-		outputstringfield=false;
-		xmlsourcefile=false;
-		xsddefinedfield="";
-		xsdsource=SPECIFY_FILENAME;
+		xdsFilename = ""; //$NON-NLS-1$
+		xmlStream = "";
+		resultFieldname="result";
+		addValidationMessage=false;
+		validationMessageField="ValidationMsgField";
+		ifXmlValid="";
+		ifXmlInvalid="";
+		outputStringField=false;
+		xmlSourceFile=false;
+		xsdDefinedField="";
+		xsdSource=SPECIFY_FILENAME;
 		
 
 	}
 	public void getFields(RowMetaInterface inputRowMeta, String name, RowMetaInterface info[], StepMeta nextStep, VariableSpace space) throws KettleStepException
 	{
-	   if (!Const.isEmpty(resultfieldname))
+	   if (!Const.isEmpty(resultFieldname))
         {
-		   if (outputstringfield)
+		   if (outputStringField)
 	        {
 	            // Output field (String)	
 	            ValueMetaInterface v = new ValueMeta(space.environmentSubstitute(getResultfieldname()), ValueMeta.TYPE_STRING);
@@ -284,9 +283,9 @@ public class XsdValidatorMeta extends BaseStepMeta implements StepMetaInterface
 
         }
 	   // Add String Field that contain validation message (most the time, errors)
-        if(addvalidationmsg && !Const.isEmpty(validationmsgfield))
+        if(addValidationMessage && !Const.isEmpty(validationMessageField))
         {
-	          ValueMetaInterface v = new ValueMeta(space.environmentSubstitute(validationmsgfield), ValueMeta.TYPE_STRING);
+	          ValueMetaInterface v = new ValueMeta(space.environmentSubstitute(validationMessageField), ValueMeta.TYPE_STRING);
 	          inputRowMeta.addValueMeta(v);
         }
 
@@ -297,18 +296,18 @@ public class XsdValidatorMeta extends BaseStepMeta implements StepMetaInterface
 	{
         StringBuffer retval = new StringBuffer();
 		
-		retval.append("    "+XMLHandler.addTagValue("xdsfilename", xdsfilename)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    "+XMLHandler.addTagValue("xmlstream", xmlstream)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    "+XMLHandler.addTagValue("resultfieldname",resultfieldname));
-		retval.append("    "+XMLHandler.addTagValue("addvalidationmsg",addvalidationmsg));
-		retval.append("    "+XMLHandler.addTagValue("validationmsgfield", validationmsgfield));
-		retval.append("    "+XMLHandler.addTagValue("ifxmlunvalid", ifxmlunvalid));
-		retval.append("    "+XMLHandler.addTagValue("ifxmlvalid", ifxmlvalid));
+		retval.append("    "+XMLHandler.addTagValue("xdsfilename", xdsFilename)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    "+XMLHandler.addTagValue("xmlstream", xmlStream)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    "+XMLHandler.addTagValue("resultfieldname",resultFieldname));
+		retval.append("    "+XMLHandler.addTagValue("addvalidationmsg",addValidationMessage));
+		retval.append("    "+XMLHandler.addTagValue("validationmsgfield", validationMessageField));
+		retval.append("    "+XMLHandler.addTagValue("ifxmlunvalid", ifXmlInvalid));
+		retval.append("    "+XMLHandler.addTagValue("ifxmlvalid", ifXmlValid));
 		
-		retval.append("    "+XMLHandler.addTagValue("outputstringfield",outputstringfield));
-		retval.append("    "+XMLHandler.addTagValue("xmlsourcefile",xmlsourcefile));
-		retval.append("    "+XMLHandler.addTagValue("xsddefinedfield", xsddefinedfield));
-		retval.append("    "+XMLHandler.addTagValue("xsdsource", xsdsource));
+		retval.append("    "+XMLHandler.addTagValue("outputstringfield",outputStringField));
+		retval.append("    "+XMLHandler.addTagValue("xmlsourcefile",xmlSourceFile));
+		retval.append("    "+XMLHandler.addTagValue("xsddefinedfield", xsdDefinedField));
+		retval.append("    "+XMLHandler.addTagValue("xsdsource", xsdSource));
 		
 		return retval.toString();
 	}
@@ -318,19 +317,19 @@ public class XsdValidatorMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			xdsfilename     = rep.getStepAttributeString(id_step, "xdsfilename"); //$NON-NLS-1$
-			xmlstream     = rep.getStepAttributeString(id_step, "xmlstream"); //$NON-NLS-1$
-			resultfieldname     = rep.getStepAttributeString(id_step, "resultfieldname"); //$NON-NLS-1$
+			xdsFilename     = rep.getStepAttributeString(id_step, "xdsfilename"); //$NON-NLS-1$
+			xmlStream     = rep.getStepAttributeString(id_step, "xmlstream"); //$NON-NLS-1$
+			resultFieldname     = rep.getStepAttributeString(id_step, "resultfieldname"); //$NON-NLS-1$
 			
-			xmlsourcefile    =      rep.getStepAttributeBoolean(id_step, "xmlsourcefile"); 
-			addvalidationmsg    =      rep.getStepAttributeBoolean(id_step, "addvalidationmsg"); 
-			validationmsgfield     = rep.getStepAttributeString(id_step, "validationmsgfield");
-			ifxmlvalid     = rep.getStepAttributeString(id_step, "ifxmlvalid");
-			ifxmlunvalid     = rep.getStepAttributeString(id_step, "ifxmlunvalid");
+			xmlSourceFile    =      rep.getStepAttributeBoolean(id_step, "xmlsourcefile"); 
+			addValidationMessage    =      rep.getStepAttributeBoolean(id_step, "addvalidationmsg"); 
+			validationMessageField     = rep.getStepAttributeString(id_step, "validationmsgfield");
+			ifXmlValid     = rep.getStepAttributeString(id_step, "ifxmlvalid");
+			ifXmlInvalid     = rep.getStepAttributeString(id_step, "ifxmlunvalid");
 			
-			outputstringfield    =      rep.getStepAttributeBoolean(id_step, "outputstringfield"); 
-			xsddefinedfield     = rep.getStepAttributeString(id_step, "xsddefinedfield");
-			xsdsource     = rep.getStepAttributeString(id_step, "xsdsource");
+			outputStringField    =      rep.getStepAttributeBoolean(id_step, "outputstringfield"); 
+			xsdDefinedField     = rep.getStepAttributeString(id_step, "xsddefinedfield");
+			xsdSource     = rep.getStepAttributeString(id_step, "xsdsource");
 			
 		}
 		catch(Exception e)
@@ -344,17 +343,17 @@ public class XsdValidatorMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			rep.saveStepAttribute(id_transformation, id_step, "xdsfilename", xdsfilename); //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "xmlstream", xmlstream); //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "resultfieldname",resultfieldname);
-			rep.saveStepAttribute(id_transformation, id_step, "xmlsourcefile",  xmlsourcefile);
-			rep.saveStepAttribute(id_transformation, id_step, "addvalidationmsg",  addvalidationmsg);
-			rep.saveStepAttribute(id_transformation, id_step, "validationmsgfield", validationmsgfield); 
-			rep.saveStepAttribute(id_transformation, id_step, "ifxmlvalid", ifxmlvalid); 
-			rep.saveStepAttribute(id_transformation, id_step, "ifxmlunvalid", ifxmlunvalid); 
-			rep.saveStepAttribute(id_transformation, id_step, "outputstringfield",  outputstringfield);
-			rep.saveStepAttribute(id_transformation, id_step, "xsddefinedfield", xsddefinedfield);
-			rep.saveStepAttribute(id_transformation, id_step, "xsdsource", xsdsource);
+			rep.saveStepAttribute(id_transformation, id_step, "xdsfilename", xdsFilename); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "xmlstream", xmlStream); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "resultfieldname",resultFieldname);
+			rep.saveStepAttribute(id_transformation, id_step, "xmlsourcefile",  xmlSourceFile);
+			rep.saveStepAttribute(id_transformation, id_step, "addvalidationmsg",  addValidationMessage);
+			rep.saveStepAttribute(id_transformation, id_step, "validationmsgfield", validationMessageField); 
+			rep.saveStepAttribute(id_transformation, id_step, "ifxmlvalid", ifXmlValid); 
+			rep.saveStepAttribute(id_transformation, id_step, "ifxmlunvalid", ifXmlInvalid); 
+			rep.saveStepAttribute(id_transformation, id_step, "outputstringfield",  outputStringField);
+			rep.saveStepAttribute(id_transformation, id_step, "xsddefinedfield", xsdDefinedField);
+			rep.saveStepAttribute(id_transformation, id_step, "xsdsource", xsdSource);
 			
 			
 			
@@ -372,7 +371,7 @@ public class XsdValidatorMeta extends BaseStepMeta implements StepMetaInterface
 		CheckResult cr;
 		
 		// Check XML stream field
-		if(Const.isEmpty(xmlstream))
+		if(Const.isEmpty(xmlStream))
 		{
 			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("XsdValidatorMeta.CheckResult.XMLStreamFieldEmpty"), stepinfo); //$NON-NLS-1$ //$NON-NLS-2$
 			remarks.add(cr);
@@ -382,7 +381,7 @@ public class XsdValidatorMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		
 		// Check result fieldname
-		if(Const.isEmpty(resultfieldname))
+		if(Const.isEmpty(resultFieldname))
 		{
 			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("XsdValidatorMeta.CheckResult.ResultFieldEmpty"), stepinfo); //$NON-NLS-1$ //$NON-NLS-2$
 			remarks.add(cr);
@@ -391,9 +390,9 @@ public class XsdValidatorMeta extends BaseStepMeta implements StepMetaInterface
 			remarks.add(cr);
 		}
 		
-		if(xsdsource.equals(SPECIFY_FILENAME))
+		if(xsdSource.equals(SPECIFY_FILENAME))
 		{
-			if(Const.isEmpty(xdsfilename))
+			if(Const.isEmpty(xdsFilename))
 			{
 				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("XsdValidatorMeta.CheckResult.XSDFieldEmpty"), stepinfo); //$NON-NLS-1$ //$NON-NLS-2$
 				remarks.add(cr);				

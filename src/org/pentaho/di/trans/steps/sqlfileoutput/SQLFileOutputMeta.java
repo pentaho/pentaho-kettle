@@ -277,18 +277,17 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
     
     
     /**
-     * @param date format The desired date format of output field date
-     * used.
+     * @param dateFormat The desired date format of output field date used.
      */
-    public void setDateFormat(String date_format)
+    public void setDateFormat(String dateFormat)
     {
-        this.dateformat = date_format;
+        this.dateformat = dateFormat;
     }
     
     
     
     /**
-     * @return Returns the tablename.
+     * @return Returns the table name.
      */
     public String getTablename()
     {
@@ -296,7 +295,7 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
     }
     
     /**
-     * @param tablename The tablename to set.
+     * @param tablename The table name to set.
      */
     public void setTablename(String tablename)
     {

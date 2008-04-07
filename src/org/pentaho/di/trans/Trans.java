@@ -1972,9 +1972,9 @@ public class Trans implements VariableSpace
     }
     
     /**
-     * executes an existing transSplitter, with tranformation already split.
+     * executes an existing transSplitter, with transformation already split.
      * 
-     * @see Spoon-Transformation-Delegate
+     * See also : org.pentaho.di.ui.spoon.delegates.SpoonTransformationDelegate
      * 
      * @param transSplitter
      * @param executionConfiguration
@@ -2435,7 +2435,7 @@ public class Trans implements VariableSpace
 
     /**
      * @return true if the transformation was prepared for execution successfully.
-     * @see Trans.prepareExecution
+     * @see org.pentaho.di.trans.Trans#prepareExecution(String[])
      */
     public boolean isReadyToStart()
     {

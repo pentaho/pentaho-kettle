@@ -461,7 +461,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 		return rowNumberByFile;
 	}
 	/** 
-	 * @param rowNumberByFile. True if row number field is reset for each file
+	 * @param rowNumberByFile True if row number field is reset for each file
 	 */
 	public void setRowNumberByFile(boolean rowNumberByFile)
 	{
@@ -541,7 +541,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 	}
 
 	/**
-	 * @param Set the compression type
+	 * @param fileCompression Sets the compression type
 	 */
 	public void setFileCompression(String fileCompression)
 	{

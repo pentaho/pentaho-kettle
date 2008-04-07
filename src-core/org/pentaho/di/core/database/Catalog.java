@@ -34,6 +34,10 @@ public class Catalog
 		this.items = items;
 	}
 	
+	public Catalog(String catalogName)
+	{
+		this(catalogName, new String[] {});
+	}
 	/**
 	 * @return Returns the catalogName.
 	 */

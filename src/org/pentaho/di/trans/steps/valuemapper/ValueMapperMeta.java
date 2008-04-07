@@ -340,15 +340,16 @@ public class ValueMapperMeta extends BaseStepMeta implements StepMetaInterface
     }
 
     /**
-     * Get the non match default. The string that will be used
-     * to fill in the data when no match is found.
-     * @return
+     * @return the non match default. This is the string that will be used to fill in the data when no match is found.
      */
 	public String getNonMatchDefault() 
 	{
 		return nonMatchDefault;
 	}
 
+	/**
+	 * @param nonMatchDefault the non match default. This is the string that will be used to fill in the data when no match is found.
+	 */
 	public void setNonMatchDefault(String nonMatchDefault) 
 	{
 		this.nonMatchDefault = nonMatchDefault;

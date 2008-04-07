@@ -68,7 +68,7 @@ public class PropertyInputData extends BaseStepData implements StepDataInterface
     public Object[] readrow;
     public Properties pro;
 
-    public Iterator it;
+    public Iterator<Object> it;
 
 	/**
 	 * 

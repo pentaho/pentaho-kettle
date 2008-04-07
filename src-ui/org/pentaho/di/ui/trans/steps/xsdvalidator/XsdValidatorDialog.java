@@ -688,10 +688,10 @@ public class XsdValidatorDialog extends BaseStepDialog implements StepDialogInte
 		
 		// Output Fields
 		if (input.getResultfieldname() != null) wResultField.setText( input.getResultfieldname() );
-		wAddValidationMsg.setSelection(input.useAddValidationMsg());
-		if (input.getValidationMsgField() !=null) 
+		wAddValidationMsg.setSelection(input.useAddValidationMessage());
+		if (input.getValidationMessageField() !=null) 
 		{
-			wValidationMsg.setText(input.getValidationMsgField());
+			wValidationMsg.setText(input.getValidationMessageField());
 		}
 		else
 		{
@@ -700,8 +700,8 @@ public class XsdValidatorDialog extends BaseStepDialog implements StepDialogInte
 		
 		wOutputStringField.setSelection(input.getOutputStringField());
 		
-		if(input.getifXMLValid()!=null) wIfXMLValid.setText(input.getifXMLValid());
-		if(input.getifXMLUnValid()!=null) wIfXMLUnValid.setText(input.getifXMLUnValid());
+		if(input.getIfXmlValid()!=null) wIfXMLValid.setText(input.getIfXmlValid());
+		if(input.getIfXmlInvalid()!=null) wIfXMLUnValid.setText(input.getIfXmlInvalid());
 		
 		
 		if (input.getXSDSource()!=null)
@@ -758,10 +758,10 @@ public class XsdValidatorDialog extends BaseStepDialog implements StepDialogInte
 		
 		
 		input.setOutputStringField(wOutputStringField.getSelection());
-		input.setAddValidationMsg(wAddValidationMsg.getSelection());
-		input.setValidationMsgField(wValidationMsg.getText());
-		input.setifXMLValid(wIfXMLValid.getText());
-		input.setifXMLUnValid(wIfXMLUnValid.getText());
+		input.setAddValidationMessage(wAddValidationMsg.getSelection());
+		input.setValidationMessageField(wValidationMsg.getText());
+		input.setIfXMLValid(wIfXMLValid.getText());
+		input.setIfXmlInvalid(wIfXMLUnValid.getText());
 		
 		input.setXMLSourceFile(wXMLSourceFile.getSelection());
 		

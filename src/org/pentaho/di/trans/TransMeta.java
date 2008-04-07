@@ -5397,8 +5397,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     }
 
     /**
-     * Get the available partition schema names.
-     * @return
+     * @return the available partition schema names.
      */
     public String[] getPartitionSchemasNames()
     {

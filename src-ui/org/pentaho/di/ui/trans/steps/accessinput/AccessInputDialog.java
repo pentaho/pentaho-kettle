@@ -1243,7 +1243,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 		
 		if (in.getTableName()!=null) wTable.setText(in.getTableName());
 		if (in.getFilenameField()!=null) wInclFilenameField.setText(in.getFilenameField());
-		if (in.getFilename_Field()!=null) wFilenameField.setText(in.getFilename_Field());
+		if (in.getDynamicFilenameField()!=null) wFilenameField.setText(in.getDynamicFilenameField());
 		
 		
 		if (in.gettablenameField()!=null) wInclTablenameField.setText(in.gettablenameField());
@@ -1332,7 +1332,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 		in.setIncludeRowNumber( wInclRownum.getSelection() );
 		in.setAddResultFile( wAddResult.getSelection() );
 		
-		in.setFilename_Field( wFilenameField.getText() );
+		in.setDynamicFilenameField( wFilenameField.getText() );
 		in.setFileField(wFileField.getSelection() );
 		in.setRowNumberField( wInclRownumField.getText() );
 		in.setResetRowNumber( wResetRownum.getSelection() );

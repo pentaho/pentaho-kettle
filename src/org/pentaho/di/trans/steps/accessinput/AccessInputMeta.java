@@ -88,7 +88,7 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface
 	
 	private boolean isaddresult;
 	
-	private String filename_Field;
+	private String dynamicFilenameField;
 	
 	private static final String YES = "Y";
 	
@@ -157,19 +157,19 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface
     } 
     
     /**
-     * @return Returns the filename_Field.
+     * @return Returns the dynamic filename field (from previous steps)
      */
-    public String getFilename_Field()
+    public String getDynamicFilenameField()
     {
-        return filename_Field;
+        return dynamicFilenameField;
     }   
     
     /**
-     * @param filename The filename_field to set.
+     * @param dynamicFilenameField The dynamic filename field to set.
      */
-    public void setFilename_Field(String filename_Field)
+    public void setDynamicFilenameField(String dynamicFilenameField)
     {
-        this.filename_Field = filename_Field;
+        this.dynamicFilenameField = dynamicFilenameField;
     }
 
     /**
@@ -270,9 +270,9 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface
     /**
      * @param resetRowNumber The resetRowNumber to set.
      */
-    public void setResetRowNumber(boolean resetRowNumberin)
+    public void setResetRowNumber(boolean resetRowNumber)
     {
-        this.resetRowNumber = resetRowNumberin;
+        this.resetRowNumber = resetRowNumber;
     }
     
     
@@ -327,7 +327,7 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface
     }
     
     /**
-     * @param rowNumberField The tablenameField to set.
+     * @param tablenameField The tablenameField to set.
      */
     public void setTablenameField(String tablenameField)
     {
@@ -372,7 +372,7 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface
         retval.append("    ").append(XMLHandler.addTagValue("include",         includeFilename));
         retval.append("    ").append(XMLHandler.addTagValue("include_field",   filenameField));
         retval.append("    ").append(XMLHandler.addTagValue("tablename",       includeTablename));
-        retval.append("    ").append(XMLHandler.addTagValue("filename_Field",  filename_Field));
+        retval.append("    ").append(XMLHandler.addTagValue("filename_Field",  dynamicFilenameField));
         retval.append("    ").append(XMLHandler.addTagValue("tablename_field", tablenameField));
         retval.append("    ").append(XMLHandler.addTagValue("rownum",          includeRowNumber));
         retval.append("    ").append(XMLHandler.addTagValue("isaddresult",     isaddresult));
@@ -434,7 +434,7 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface
 			filefield  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "filefield"));
 			rowNumberField    = XMLHandler.getTagValue(stepnode, "rownum_field");
 			TableName    = XMLHandler.getTagValue(stepnode, "table_name");
-			filename_Field    = XMLHandler.getTagValue(stepnode, "filename_Field");
+			dynamicFilenameField    = XMLHandler.getTagValue(stepnode, "filename_Field");
 			resetRowNumber  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "resetrownumber"));
 	
 			Node filenode   = XMLHandler.getSubNode(stepnode,  "file");
@@ -503,7 +503,7 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface
 		includeRowNumber = false;
 		rowNumberField   = "";
 		TableName   = "";
-		filename_Field ="";
+		dynamicFilenameField ="";
 		
 		int nrFiles  =0;
 		int nrFields =0;
@@ -589,7 +589,7 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface
 			filenameField     = rep.getStepAttributeString (id_step, "include_field");
 			TableName          = rep.getStepAttributeString(id_step, "table_name");
 			includeTablename  = rep.getStepAttributeBoolean(id_step, "tablename");
-			filename_Field  = rep.getStepAttributeString(id_step, "filename_Field");
+			dynamicFilenameField  = rep.getStepAttributeString(id_step, "filename_Field");
 			tablenameField    = rep.getStepAttributeString (id_step, "tablename_field");
 			includeRowNumber  = rep.getStepAttributeBoolean(id_step, "rownum");
 			
@@ -651,7 +651,7 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "rownum",          includeRowNumber);
 			rep.saveStepAttribute(id_transformation, id_step, "isaddresult",     isaddresult);
 			rep.saveStepAttribute(id_transformation, id_step, "filefield",          filefield);
-			rep.saveStepAttribute(id_transformation, id_step, "filename_Field",    filename_Field);
+			rep.saveStepAttribute(id_transformation, id_step, "filename_Field",    dynamicFilenameField);
 			rep.saveStepAttribute(id_transformation, id_step, "rownum_field",    rowNumberField);
 			rep.saveStepAttribute(id_transformation, id_step, "limit",           rowLimit);
 			rep.saveStepAttribute(id_transformation, id_step, "table_name",      TableName);

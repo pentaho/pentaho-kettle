@@ -189,7 +189,7 @@ public class GetFilesRowsCount extends BaseStep implements StepInterface
 		            data.totalpreviousfields=data.inputRowMeta.size();
 
 					// Check is filename field is provided
-					if (Const.isEmpty(meta.getFilename_Field()))
+					if (Const.isEmpty(meta.setOutputFilenameField()))
 					{
 						logError(Messages.getString("GetFilesRowsCount.Log.NoField"));
 						throw new KettleException(Messages.getString("GetFilesRowsCount.Log.NoField"));
@@ -198,12 +198,12 @@ public class GetFilesRowsCount extends BaseStep implements StepInterface
 					// cache the position of the field			
 					if (data.indexOfFilenameField<0)
 					{	
-						data.indexOfFilenameField =getInputRowMeta().indexOfValue(meta.getFilename_Field());
+						data.indexOfFilenameField =getInputRowMeta().indexOfValue(meta.setOutputFilenameField());
 						if (data.indexOfFilenameField<0)
 						{
 							// The field is unreachable !
-							logError(Messages.getString("GetFilesRowsCount.Log.ErrorFindingField", meta.getFilename_Field())); //$NON-NLS-1$ //$NON-NLS-2$
-							throw new KettleException(Messages.getString("GetFilesRowsCount.Exception.CouldnotFindField",meta.getFilename_Field())); //$NON-NLS-1$ //$NON-NLS-2$
+							logError(Messages.getString("GetFilesRowsCount.Log.ErrorFindingField", meta.setOutputFilenameField())); //$NON-NLS-1$ //$NON-NLS-2$
+							throw new KettleException(Messages.getString("GetFilesRowsCount.Exception.CouldnotFindField",meta.setOutputFilenameField())); //$NON-NLS-1$ //$NON-NLS-2$
 						}
 					}
 	            	
@@ -212,7 +212,7 @@ public class GetFilesRowsCount extends BaseStep implements StepInterface
 				
 				
 				String filename=getInputRowMeta().getString(data.readrow,data.indexOfFilenameField);
-				if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("GetFilesRowsCount.Log.FilenameInStream", meta.getFilename_Field(),filename));
+				if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("GetFilesRowsCount.Log.FilenameInStream", meta.setOutputFilenameField(),filename));
 
 				data.file= KettleVFS.getFileObject(filename);
 				// Check if file exists!	

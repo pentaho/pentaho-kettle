@@ -50,12 +50,12 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 public class XsltMeta extends BaseStepMeta implements StepMetaInterface
 {
-	private String  xslfilename;
-	private String  fieldname;
-	private String  resultfieldname;
-	private String  xslfilefield;
-	private boolean xslfilefielduse;
-	private String xslfactory;
+	private String  xslFilename;
+	private String  fieldName;
+	private String  resultFieldname;
+	private String  xslFileField;
+	private boolean xslFileFieldUse;
+	private String xslFactory;
 
 	
 	public XsltMeta()
@@ -70,61 +70,61 @@ public class XsltMeta extends BaseStepMeta implements StepMetaInterface
      */
     public String getXslFilename()
     {
-        return xslfilename;
+        return xslFilename;
     }
   
     public void setXSLFileField(String xslfilefieldin)
     {
-    	xslfilefield=xslfilefieldin;
+    	xslFileField=xslfilefieldin;
     }
     public void setXSLFactory(String xslfactoryin)
     {
-    	xslfactory=xslfactoryin;
+    	xslFactory=xslfactoryin;
     }
     /**
      * @return Returns the XSL factory type.
      */
     public String getXSLFactory()
     {
-        return xslfactory;
+        return xslFactory;
     }
   
     public String getXSLFileField()
     {
-        return xslfilefield;
+        return xslFileField;
     }
     
     
     public String getResultfieldname()
     {
-    	return resultfieldname;
+    	return resultFieldname;
     }
     
     
     public String getFieldname()
     {
-    	return fieldname;
+    	return fieldName;
     }
     
     /**
-     * @param script The Xsl filename to set.
+     * @param xslFilename The Xsl filename to set.
      */
-    public void setXslFilename(String xslfilenamein)
+    public void setXslFilename(String xslFilename)
     {
-        this.xslfilename = xslfilenamein;
+        this.xslFilename = xslFilename;
     }
     
     
     public void setResultfieldname(String resultfield)
     {
-        this.resultfieldname = resultfield;
+        this.resultFieldname = resultfield;
     }
     
 
     
     public void setFieldname(String fieldnamein)
     {
-        this.fieldname =  fieldnamein;
+        this.fieldName =  fieldnamein;
     }
     
 
@@ -148,13 +148,13 @@ public class XsltMeta extends BaseStepMeta implements StepMetaInterface
     
     public boolean useXSLFileFieldUse()
     {
-        return xslfilefielduse;
+        return xslFileFieldUse;
     }
     
       
     public void setXSLFileFieldUse(boolean xslfilefieldusein)
     {
-        this.xslfilefielduse = xslfilefieldusein;
+        this.xslFileFieldUse = xslfilefieldusein;
     }
     
   
@@ -166,12 +166,12 @@ public class XsltMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{		
-			xslfilename     = XMLHandler.getTagValue(stepnode, "xslfilename"); //$NON-NLS-1$
-			fieldname     = XMLHandler.getTagValue(stepnode, "fieldname"); //$NON-NLS-1$
-			resultfieldname     = XMLHandler.getTagValue(stepnode, "resultfieldname"); //$NON-NLS-1$
-			xslfilefield     = XMLHandler.getTagValue(stepnode, "xslfilefield");
-			xslfilefielduse = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "xslfilefielduse"));
-			xslfactory     = XMLHandler.getTagValue(stepnode, "xslfactory"); 
+			xslFilename     = XMLHandler.getTagValue(stepnode, "xslfilename"); //$NON-NLS-1$
+			fieldName     = XMLHandler.getTagValue(stepnode, "fieldname"); //$NON-NLS-1$
+			resultFieldname     = XMLHandler.getTagValue(stepnode, "resultfieldname"); //$NON-NLS-1$
+			xslFileField     = XMLHandler.getTagValue(stepnode, "xslfilefield");
+			xslFileFieldUse = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "xslfilefielduse"));
+			xslFactory     = XMLHandler.getTagValue(stepnode, "xslfactory"); 
 			
 		}
 		catch(Exception e)
@@ -182,12 +182,12 @@ public class XsltMeta extends BaseStepMeta implements StepMetaInterface
 
 	public void setDefault()
 	{
-		xslfilename = null; //$NON-NLS-1$
-		fieldname = null;
-		resultfieldname="result";
-		xslfactory="JAXP";
-		xslfilefield=null;
-		xslfilefielduse=false;		
+		xslFilename = null; //$NON-NLS-1$
+		fieldName = null;
+		resultFieldname="result";
+		xslFactory="JAXP";
+		xslFileField=null;
+		xslFileFieldUse=false;		
 	}
 	
 	public void getFields(RowMetaInterface inputRowMeta, String name, RowMetaInterface info[], StepMeta nextStep, VariableSpace space) throws KettleStepException
@@ -203,12 +203,12 @@ public class XsltMeta extends BaseStepMeta implements StepMetaInterface
 	{
         StringBuffer retval = new StringBuffer();
 		
-		retval.append("    "+XMLHandler.addTagValue("xslfilename", xslfilename)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    "+XMLHandler.addTagValue("fieldname", fieldname)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    "+XMLHandler.addTagValue("resultfieldname", resultfieldname)); //$NON-NLS-1$ //$NON-NLS-2$	
-		retval.append("    "+XMLHandler.addTagValue("xslfilefield", xslfilefield));
-		retval.append("    "+XMLHandler.addTagValue("xslfilefielduse",  xslfilefielduse));
-		retval.append("    "+XMLHandler.addTagValue("xslfactory", xslfactory)); 
+		retval.append("    "+XMLHandler.addTagValue("xslfilename", xslFilename)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    "+XMLHandler.addTagValue("fieldname", fieldName)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    "+XMLHandler.addTagValue("resultfieldname", resultFieldname)); //$NON-NLS-1$ //$NON-NLS-2$	
+		retval.append("    "+XMLHandler.addTagValue("xslfilefield", xslFileField));
+		retval.append("    "+XMLHandler.addTagValue("xslfilefielduse",  xslFileFieldUse));
+		retval.append("    "+XMLHandler.addTagValue("xslfactory", xslFactory)); 
 		
 		return retval.toString();
 	}
@@ -217,12 +217,12 @@ public class XsltMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			xslfilename     = rep.getStepAttributeString(id_step, "xslfilename"); //$NON-NLS-1$
-			fieldname     = rep.getStepAttributeString(id_step, "fieldname"); //$NON-NLS-1$
-			resultfieldname     = rep.getStepAttributeString(id_step, "resultfieldname"); //$NON-NLS-1
-			xslfilefield     = rep.getStepAttributeString(id_step, "xslfilefield");
-			xslfilefielduse    =      rep.getStepAttributeBoolean(id_step, "xslfilefielduse"); 
-			xslfactory     = rep.getStepAttributeString(id_step, "xslfactory");
+			xslFilename     = rep.getStepAttributeString(id_step, "xslfilename"); //$NON-NLS-1$
+			fieldName     = rep.getStepAttributeString(id_step, "fieldname"); //$NON-NLS-1$
+			resultFieldname     = rep.getStepAttributeString(id_step, "resultfieldname"); //$NON-NLS-1
+			xslFileField     = rep.getStepAttributeString(id_step, "xslfilefield");
+			xslFileFieldUse    =      rep.getStepAttributeBoolean(id_step, "xslfilefielduse"); 
+			xslFactory     = rep.getStepAttributeString(id_step, "xslfactory");
 			
 
 		}
@@ -237,14 +237,14 @@ public class XsltMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			rep.saveStepAttribute(id_transformation, id_step, "xslfilename", xslfilename); //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "fieldname", fieldname); //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "resultfieldname", resultfieldname); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "xslfilename", xslFilename); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "fieldname", fieldName); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "resultfieldname", resultFieldname); //$NON-NLS-1$
 			
-			rep.saveStepAttribute(id_transformation, id_step, "xslfilefield", xslfilefield);
+			rep.saveStepAttribute(id_transformation, id_step, "xslfilefield", xslFileField);
 			
-			rep.saveStepAttribute(id_transformation, id_step, "xslfilefielduse",  xslfilefielduse);
-			rep.saveStepAttribute(id_transformation, id_step, "xslfactory", xslfactory);
+			rep.saveStepAttribute(id_transformation, id_step, "xslfilefielduse",  xslFileFieldUse);
+			rep.saveStepAttribute(id_transformation, id_step, "xslfactory", xslFactory);
 
 		}
 		catch(Exception e)
@@ -289,7 +289,7 @@ public class XsltMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		
 		// Check if XSL Filename field is provided
-		if(xslfilefielduse)
+		if(xslFileFieldUse)
 		{
 			if (getXSLFileField()==null)
 			{
@@ -304,7 +304,7 @@ public class XsltMeta extends BaseStepMeta implements StepMetaInterface
 		          remarks.add(cr);
 			}
 		}else{
-			if(xslfilename==null)
+			if(xslFilename==null)
 			{
 				 // Result Field is missing !
 				  cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("XsltMeta.CheckResult.ErrorXSLFileNameMissing"), stepMeta); //$NON-NLS-1$
@@ -312,7 +312,7 @@ public class XsltMeta extends BaseStepMeta implements StepMetaInterface
 
 			}else{
 				// Check if it's exist and it's a file
-				String RealFilename=transMeta.environmentSubstitute(xslfilename);
+				String RealFilename=transMeta.environmentSubstitute(xslFilename);
 				File f=new File(RealFilename);
 				
 				if (f.exists())

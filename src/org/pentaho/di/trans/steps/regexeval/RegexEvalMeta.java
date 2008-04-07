@@ -47,13 +47,13 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface
 {
 	private String  script;
 	private String  matcher;
-	private String  resultfieldname;
+	private String  resultFieldname;
 	private boolean usevar;
 	private boolean canoneq;
-	private boolean caseinsensitive;
+	private boolean caseInsensitive;
 	private boolean comment;
-	private boolean dotall;
-	private boolean multiline;
+	private boolean dotAll;
+	private boolean multiLine;
 	private boolean unicode;
 	private boolean unix;
 
@@ -77,7 +77,7 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface
     
     public String getResultfieldname()
     {
-    	return resultfieldname;
+    	return resultFieldname;
     }
     
     
@@ -97,9 +97,9 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface
     }
     
     
-    public void setResultfieldname(String resultfield)
+    public void setResultFieldname(String resultfield)
     {
-        this.resultfieldname = resultfield;
+        this.resultFieldname = resultfield;
     }
     
 
@@ -135,21 +135,21 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface
         return canoneq;
     }
     
-    public boolean caseinsensitive()
+    public boolean caseInsensitive()
     {
-        return caseinsensitive;
+        return caseInsensitive;
     }
     public boolean comment()
     {
         return comment;
     }
-    public boolean dotall()
+    public boolean dotAll()
     {
-        return dotall;
+        return dotAll;
     }
-    public boolean multiline()
+    public boolean multiLine()
     {
-        return multiline;
+        return multiLine;
     }
     
     public boolean unicode()
@@ -167,36 +167,36 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface
     /**
      * @param useVar The useVar flag to set.
      */
-    public void setuseVar(boolean usevar)
+    public void setUseVar(boolean useVar)
     {
-        this.usevar = usevar;
+        this.usevar = useVar;
     }
   
-    public void setcanoneq(boolean canoneq)
+    public void setCanoneq(boolean canoneq)
     {
         this.canoneq = canoneq;
     }
-    public void setcaseinsensitive(boolean caseinsensitive)
+    public void setCaseinsensitive(boolean caseinsensitive)
     {
-        this.caseinsensitive = caseinsensitive;
+        this.caseInsensitive = caseinsensitive;
     }
-    public void setcomment(boolean comment)
+    public void setComment(boolean comment)
     {
         this.comment = comment;
     }
-    public void setdotall(boolean dotall)
+    public void setDotAll(boolean dotall)
     {
-        this.dotall = dotall;
+        this.dotAll = dotall;
     }
-    public void setmultiline(boolean multiline)
+    public void setMultiLine(boolean multiline)
     {
-        this.multiline = multiline;
+        this.multiLine = multiline;
     }
-    public void setunicode(boolean unicode)
+    public void setUnicode(boolean unicode)
     {
         this.unicode = unicode;
     }
-    public void setunix(boolean unix)
+    public void setUnix(boolean unix)
     {
         this.unix = unix;
     }
@@ -211,13 +211,13 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface
 			
 			script     = XMLHandler.getTagValue(stepnode, "script"); //$NON-NLS-1$
 			matcher     = XMLHandler.getTagValue(stepnode, "matcher"); //$NON-NLS-1$
-			resultfieldname     = XMLHandler.getTagValue(stepnode, "resultfieldname"); //$NON-NLS-1$
+			resultFieldname     = XMLHandler.getTagValue(stepnode, "resultfieldname"); //$NON-NLS-1$
 			usevar = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "usevar"));
 			canoneq = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "canoneq"));
-			caseinsensitive = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "caseinsensitive"));
+			caseInsensitive = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "caseinsensitive"));
 			comment = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "comment"));
-			dotall = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "dotall"));
-			multiline = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "multiline"));
+			dotAll = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "dotall"));
+			multiLine = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "multiline"));
 			unicode = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "unicode"));
 			unix = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "unix"));
 				
@@ -233,13 +233,13 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		script = ""; //$NON-NLS-1$
 		matcher = "";
-		resultfieldname="result";
+		resultFieldname="result";
 		usevar = false;
 		canoneq = false;
-		caseinsensitive = false;
+		caseInsensitive = false;
 		comment = false;
-		dotall = false;
-		multiline = false;
+		dotAll = false;
+		multiLine = false;
 		unicode = false;
 		unix = false;
 
@@ -263,13 +263,13 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface
 		
 		retval.append("    "+XMLHandler.addTagValue("script", script)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("    "+XMLHandler.addTagValue("matcher", matcher)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    "+XMLHandler.addTagValue("resultfieldname", resultfieldname)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    "+XMLHandler.addTagValue("resultfieldname", resultFieldname)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("    "+XMLHandler.addTagValue("usevar",  usevar));
 		retval.append("    "+XMLHandler.addTagValue("canoneq", canoneq));
-		retval.append("    "+XMLHandler.addTagValue("caseinsensitive",  caseinsensitive));
+		retval.append("    "+XMLHandler.addTagValue("caseinsensitive",  caseInsensitive));
 		retval.append("    "+XMLHandler.addTagValue("comment", comment));
-		retval.append("    "+XMLHandler.addTagValue("dotall", dotall));
-		retval.append("    "+XMLHandler.addTagValue("multiline",  multiline));
+		retval.append("    "+XMLHandler.addTagValue("dotall", dotAll));
+		retval.append("    "+XMLHandler.addTagValue("multiline",  multiLine));
 		retval.append("    "+XMLHandler.addTagValue("unicode",unicode));
 		retval.append("    "+XMLHandler.addTagValue("unix",unix));
 
@@ -284,13 +284,13 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			script     = rep.getStepAttributeString(id_step, "script"); //$NON-NLS-1$
 			matcher     = rep.getStepAttributeString(id_step, "matcher"); //$NON-NLS-1$
-			resultfieldname     = rep.getStepAttributeString(id_step, "resultfieldname"); //$NON-NLS-1$
+			resultFieldname     = rep.getStepAttributeString(id_step, "resultfieldname"); //$NON-NLS-1$
 			usevar    =      rep.getStepAttributeBoolean(id_step, "usevar"); 
 			canoneq    =      rep.getStepAttributeBoolean(id_step, "canoneq"); 
-			caseinsensitive    =      rep.getStepAttributeBoolean(id_step, "caseinsensitive"); 
+			caseInsensitive    =      rep.getStepAttributeBoolean(id_step, "caseinsensitive"); 
 			comment    =      rep.getStepAttributeBoolean(id_step, "comment"); 
-			multiline    =      rep.getStepAttributeBoolean(id_step, "multiline"); 
-			dotall    =      rep.getStepAttributeBoolean(id_step, "dotall");
+			multiLine    =      rep.getStepAttributeBoolean(id_step, "multiline"); 
+			dotAll    =      rep.getStepAttributeBoolean(id_step, "dotall");
 			unicode    =      rep.getStepAttributeBoolean(id_step, "unicode"); 
 			unix    =      rep.getStepAttributeBoolean(id_step, "unix"); 
 	
@@ -309,13 +309,13 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			rep.saveStepAttribute(id_transformation, id_step, "script", script); //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "matcher", matcher); //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "resultfieldname", resultfieldname); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "resultfieldname", resultFieldname); //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "usevar",  usevar);
 			rep.saveStepAttribute(id_transformation, id_step, "canoneq",  canoneq);
-			rep.saveStepAttribute(id_transformation, id_step, "caseinsensitive",  caseinsensitive);
+			rep.saveStepAttribute(id_transformation, id_step, "caseinsensitive",  caseInsensitive);
 			rep.saveStepAttribute(id_transformation, id_step, "comment",  comment);
-			rep.saveStepAttribute(id_transformation, id_step, "dotall",  dotall);
-			rep.saveStepAttribute(id_transformation, id_step, "multiline",  multiline);
+			rep.saveStepAttribute(id_transformation, id_step, "dotall",  dotAll);
+			rep.saveStepAttribute(id_transformation, id_step, "multiline",  multiLine);
 			rep.saveStepAttribute(id_transformation, id_step, "unicode",  unicode);
 			rep.saveStepAttribute(id_transformation, id_step, "unix",  unix);
 			

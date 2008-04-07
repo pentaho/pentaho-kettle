@@ -183,9 +183,9 @@ public class XMLInputSaxField implements Cloneable
     /**
      * @param xmlInputFieldPositions The xmlInputFieldPositions to set.
      */
-    public void setFieldPosition(XMLInputSaxFieldPosition[] xmlvInputFieldPositions)
+    public void setFieldPosition(XMLInputSaxFieldPosition[] xmlInputFieldPositions)
     {
-        this.fieldPosition = xmlvInputFieldPositions;
+        this.fieldPosition = xmlInputFieldPositions;
     }
 
     public int getLength()

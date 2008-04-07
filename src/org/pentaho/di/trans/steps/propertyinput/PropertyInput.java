@@ -270,7 +270,7 @@ public class PropertyInput extends BaseStep implements StepInterface
 					}
 					
 					// Check is filename field is provided
-					if (Const.isEmpty(meta.getFilename_Field()))
+					if (Const.isEmpty(meta.getDynamicFilenameField()))
 					{
 						logError(Messages.getString("PropertyInput.Log.NoField"));
 						throw new KettleException(Messages.getString("PropertyInput.Log.NoField"));
@@ -279,12 +279,12 @@ public class PropertyInput extends BaseStep implements StepInterface
 					// cache the position of the field			
 					if (data.indexOfFilenameField<0)
 					{	
-						data.indexOfFilenameField =getInputRowMeta().indexOfValue(meta.getFilename_Field());
+						data.indexOfFilenameField =getInputRowMeta().indexOfValue(meta.getDynamicFilenameField());
 						if (data.indexOfFilenameField<0)
 						{
 							// The field is unreachable !
-							logError(Messages.getString("PropertyInput.Log.ErrorFindingField")+ "[" + meta.getFilename_Field()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
-							throw new KettleException(Messages.getString("PropertyInput.Exception.CouldnotFindField",meta.getFilename_Field())); //$NON-NLS-1$ //$NON-NLS-2$
+							logError(Messages.getString("PropertyInput.Log.ErrorFindingField")+ "[" + meta.getDynamicFilenameField()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+							throw new KettleException(Messages.getString("PropertyInput.Exception.CouldnotFindField",meta.getDynamicFilenameField())); //$NON-NLS-1$ //$NON-NLS-2$
 						}
 					}
 	            	
@@ -293,7 +293,7 @@ public class PropertyInput extends BaseStep implements StepInterface
 				
 				
 				String filename=getInputRowMeta().getString(data.readrow,data.indexOfFilenameField);
-				if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("PropertyInput.Log.FilenameInStream", meta.getFilename_Field(),filename));
+				if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("PropertyInput.Log.FilenameInStream", meta.getDynamicFilenameField(),filename));
 
 				data.file= KettleVFS.getFileObject(filename);
 				// Check if file exists!

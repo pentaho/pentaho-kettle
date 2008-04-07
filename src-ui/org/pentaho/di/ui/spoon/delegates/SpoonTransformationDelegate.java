@@ -193,8 +193,7 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 			// If yes, select that tab
 			//
 			String tabName = spoon.delegates.tabs.makeTransGraphTabName(transMeta);
-			TabItem tabItem = spoon.delegates.tabs.findTabItem(tabName,
-					TabMapEntry.OBJECT_TYPE_TRANSFORMATION_GRAPH);
+			TabItem tabItem = spoon.delegates.tabs.findTabItem(tabName, TabMapEntry.OBJECT_TYPE_TRANSFORMATION_GRAPH);
 			if (tabItem == null)
 			{
 				TransGraph transGraph = new TransGraph(spoon.tabfolder.getSwtTabset(), spoon, transMeta);
@@ -205,8 +204,7 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 				tabItem.setImage(GUIResource.getInstance().getImageTransGraph());
 				tabItem.setControl(transGraph);
 
-				spoon.delegates.tabs.addTab(new TabMapEntry(tabItem, tabName, transGraph,
-						TabMapEntry.OBJECT_TYPE_TRANSFORMATION_GRAPH));
+				spoon.delegates.tabs.addTab(new TabMapEntry(tabItem, tabName, transGraph, TabMapEntry.OBJECT_TYPE_TRANSFORMATION_GRAPH));
 			}
 			int idx = spoon.tabfolder.indexOf(tabItem);
 

@@ -1105,7 +1105,7 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 		wFileField.setSelection(in.isFileField());
 		
 		if (in.getFilenameField()!=null) wInclFilenameField.setText(in.getFilenameField());
-		if (in.getFilename_Field()!=null) wFilenameField.setText(in.getFilename_Field());
+		if (in.getDynamicFilenameField()!=null) wFilenameField.setText(in.getDynamicFilenameField());
 		
 		
 		if (in.getRowNumberField()!=null) wInclRownumField.setText(in.getRowNumberField());
@@ -1190,7 +1190,7 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 		in.setIncludeRowNumber( wInclRownum.getSelection() );
 		in.setAddResultFile( wAddResult.getSelection() );
 		
-		in.setFilename_Field( wFilenameField.getText() );
+		in.setDynamicFilenameField( wFilenameField.getText() );
 		in.setFileField(wFileField.getSelection() );
 		in.setRowNumberField( wInclRownumField.getText() );
 		in.setResetRowNumber( wResetRownum.getSelection() );

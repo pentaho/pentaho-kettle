@@ -266,11 +266,11 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
     }
 
     /**
-     * @param onlyGettingNewFiles The onlyGettingNewFiles to set.
+     * @param onlyPuttingNewFiles Only transfer new files to the remote host
      */
-    public void setOnlyPuttingNewFiles(boolean onlyPuttingNewFilesin)
+    public void setOnlyPuttingNewFiles(boolean onlyPuttingNewFiles)
     {
-        this.onlyPuttingNewFiles = onlyPuttingNewFilesin;
+        this.onlyPuttingNewFiles = onlyPuttingNewFiles;
     }
     
     /**
@@ -423,11 +423,11 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
     }
 
     /**
-     * @param activeConnection the activeConnection to set
+     * @param activeConnection set to true to get an active FTP connection
      */
-    public void setActiveConnection(boolean passive)
+    public void setActiveConnection(boolean activeConnection)
     {
-        this.activeConnection = passive;
+        this.activeConnection = activeConnection;
     }
 	
 	public Result execute(Result previousResult, int nr, Repository rep, Job parentJob)

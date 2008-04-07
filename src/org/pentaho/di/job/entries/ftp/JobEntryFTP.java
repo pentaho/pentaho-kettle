@@ -718,11 +718,11 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
   }
 
   /**
-   * @param activeConnection the activeConnection to set
+   * @param activeConnection set to true to open an active FTP connection
    */
-  public void setActiveConnection(boolean passive)
+  public void setActiveConnection(boolean activeConnection)
   {
-    this.activeConnection = passive;
+    this.activeConnection = activeConnection;
   }
 
   public void check(List<CheckResultInterface> remarks, JobMeta jobMeta)

@@ -98,9 +98,7 @@ public class MondrianHelper {
 
     /**
      * Outputs one row per tuple on the rows axis.
-     * @param result Result set to serialize
-     * @param pw Print writer to print result to
-     * @throws KettleDatabaseException 
+     * @throws KettleDatabaseException in case some or other error occurs 
 	 */
     public void createRectangularOutput() throws KettleDatabaseException {
     	

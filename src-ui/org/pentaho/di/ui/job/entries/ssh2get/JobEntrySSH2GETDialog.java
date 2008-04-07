@@ -1152,7 +1152,7 @@ public class JobEntrySSH2GETDialog extends JobEntryDialog implements JobEntryDia
         
         wusePublicKey.setSelection(jobEntry.isUsePublicKey());
         if(jobEntry.getKeyFilename()!=null) wKeyFilename.setText(jobEntry.getKeyFilename());
-        if(jobEntry.getKeyFilepass()!=null) wkeyfilePass.setText(jobEntry.getKeyFilepass());
+        if(jobEntry.getKeyFilePass()!=null) wkeyfilePass.setText(jobEntry.getKeyFilePass());
         
         wuseBasicAuthentication.setSelection(jobEntry.isUseBasicAuthentication());
         if(jobEntry.getAfterFTPPut()!=null)
@@ -1206,7 +1206,7 @@ public class JobEntrySSH2GETDialog extends JobEntryDialog implements JobEntryDia
         
         jobEntry.setUsePublicKey(wusePublicKey.getSelection());
         jobEntry.setKeyFilename(wKeyFilename.getText());
-        jobEntry.setKeyFilepass(wkeyfilePass.getText());
+        jobEntry.setKeyFilePass(wkeyfilePass.getText());
         
         jobEntry.setUseBasicAuthentication(wuseBasicAuthentication.getSelection());
         

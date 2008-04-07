@@ -23,7 +23,6 @@ import org.apache.commons.vfs.FileSystemException;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.DBCache;
 import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.LastUsedFile;
 import org.pentaho.di.core.NotePadMeta;
@@ -93,11 +92,11 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
 	protected String description;
 
-	protected String extended_description;
+	protected String extendedDescription;
 
-	protected String job_version;
+	protected String jobVersion;
 
-	protected int job_status;
+	protected int jobStatus;
 
 	protected String filename;
 
@@ -117,13 +116,11 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
 	protected String arguments[];
 
-	protected boolean changed_entries, changed_hops, changed_notes, changed_databases;
+	protected boolean changedEntries, changedHops, changedNotes, changedDatabases;
 
-	protected DatabaseMeta logconnection;
+	protected DatabaseMeta logConnection;
 
 	protected String logTable;
-
-	public DBCache dbcache;
 
 	protected List<TransAction> undo;
 
@@ -154,9 +151,9 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	// Remember the size and position of the different windows...
 	public boolean max[] = new boolean[1];
 
-	public String created_user, modifiedUser;
+	private String created_user, modifiedUser;
 
-	public Date created_date, modifiedDate;
+	private Date created_date, modifiedDate;
 
 	protected boolean useBatchId;
 
@@ -202,13 +199,11 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		databases = new ArrayList<DatabaseMeta>();
 		slaveServers = new ArrayList<SlaveServer>();
 
-		logconnection = null;
+		logConnection = null;
 		logTable = null;
 		arguments = null;
 
 		max_undo = Const.MAX_UNDO;
-
-		dbcache = DBCache.getInstance();
 
 		undo = new ArrayList<TransAction>();
 		undo_position = -1;
@@ -223,9 +218,9 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		modifiedDate = new Date();
 		directory = new RepositoryDirectory();
 		description = null;
-		job_status = -1;
-		job_version = null;
-		extended_description = null;
+		jobStatus = -1;
+		jobVersion = null;
+		extendedDescription = null;
 		useBatchId = true;
 		logfieldUsed = true;
 
@@ -411,11 +406,11 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
     }
     
 	public DatabaseMeta getLogConnection() {
-		return logconnection;
+		return logConnection;
 	}
 
 	public void setLogConnection(DatabaseMeta ci) {
-		logconnection = ci;
+		logConnection = ci;
 	}
 
 	/**
@@ -441,10 +436,10 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	}
 
 	public void clearChanged() {
-		changed_entries = false;
-		changed_hops = false;
-		changed_notes = false;
-		changed_databases = false;
+		changedEntries = false;
+		changedHops = false;
+		changedNotes = false;
+		changedDatabases = false;
 
 		for (int i = 0; i < nrJobEntries(); i++) {
 			JobEntryCopy entry = getJobEntry(i);
@@ -484,9 +479,9 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	protected void saveRepJob(Repository rep) throws KettleException {
 		try {
 			// The ID has to be assigned, even when it's a new item...
-			rep.insertJob(getID(), directory.getID(), getName(), logconnection == null ? -1 : logconnection.getID(), logTable,
+			rep.insertJob(getID(), directory.getID(), getName(), logConnection == null ? -1 : logConnection.getID(), logTable,
 					modifiedUser, modifiedDate, useBatchId, batchIdPassed, logfieldUsed, sharedObjectsFile, description,
-					extended_description, job_version, job_status, created_user, created_date);
+					extendedDescription, jobVersion, jobStatus, created_user, created_date);
 		} catch (KettleDatabaseException dbe) {
 			throw new KettleException(Messages.getString("JobMeta.Exception.UnableToSaveJobToRepository"), dbe); //$NON-NLS-1$
 		}
@@ -524,7 +519,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 			}
 		}
 
-		if (logconnection != null && logconnection.equals(databaseMeta))
+		if (logConnection != null && logConnection.equals(databaseMeta))
 			return true;
 
 		return false;
@@ -559,10 +554,10 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		retval.append("  ").append(XMLHandler.addTagValue("name", getName())); //$NON-NLS-1$ //$NON-NLS-2$
 
 		retval.append("    ").append(XMLHandler.addTagValue("description", description)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    ").append(XMLHandler.addTagValue("extended_description", extended_description));
-		retval.append("    ").append(XMLHandler.addTagValue("job_version", job_version));
-		if (job_status >= 0) {
-			retval.append("    ").append(XMLHandler.addTagValue("job_status", job_status));
+		retval.append("    ").append(XMLHandler.addTagValue("extended_description", extendedDescription));
+		retval.append("    ").append(XMLHandler.addTagValue("job_version", jobVersion));
+		if (jobStatus >= 0) {
+			retval.append("    ").append(XMLHandler.addTagValue("job_status", jobStatus));
 		}
 
 		retval.append("  ").append(XMLHandler.addTagValue("directory", directory.getPath())); //$NON-NLS-1$ //$NON-NLS-2$
@@ -722,13 +717,13 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 			description = XMLHandler.getTagValue(jobnode, "description");
 
 			// extended description
-			extended_description = XMLHandler.getTagValue(jobnode, "extended_description");
+			extendedDescription = XMLHandler.getTagValue(jobnode, "extended_description");
 
 			// job version
-			job_version = XMLHandler.getTagValue(jobnode, "job_version");
+			jobVersion = XMLHandler.getTagValue(jobnode, "job_version");
 
 			// job status
-			job_status = Const.toInt(XMLHandler.getTagValue(jobnode, "job_status"), -1);
+			jobStatus = Const.toInt(XMLHandler.getTagValue(jobnode, "job_status"), -1);
 
 			// Created user/date
 			created_user = XMLHandler.getTagValue(jobnode, "created_user"); //$NON-NLS-1$
@@ -813,7 +808,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 			 * Get the log database connection & log table
 			 */
 			String logcon = XMLHandler.getTagValue(jobnode, "logconnection"); //$NON-NLS-1$
-			logconnection = findDatabase(logcon);
+			logConnection = findDatabase(logcon);
 			logTable = XMLHandler.getTagValue(jobnode, "logtable"); //$NON-NLS-1$
 
 			useBatchId = "Y".equalsIgnoreCase(XMLHandler.getTagValue(jobnode, "use_batchid")); //$NON-NLS-1$ //$NON-NLS-2$
@@ -1233,9 +1228,9 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
 				setName( jobRow.getString("NAME", null) ); //$NON-NLS-1$
 				description = jobRow.getString("DESCRIPTION", null); //$NON-NLS-1$
-				extended_description = jobRow.getString("EXTENDED_DESCRIPTION", null); //$NON-NLS-1$
-				job_version = jobRow.getString("JOB_VERSION", null); //$NON-NLS-1$
-				job_status = Const.toInt(jobRow.getString("JOB_STATUS", null), -1); //$NON-NLS-1$
+				extendedDescription = jobRow.getString("EXTENDED_DESCRIPTION", null); //$NON-NLS-1$
+				jobVersion = jobRow.getString("JOB_VERSION", null); //$NON-NLS-1$
+				jobStatus = Const.toInt(jobRow.getString("JOB_STATUS", null), -1); //$NON-NLS-1$
 				logTable = jobRow.getString("TABLE_NAME_LOG", null); //$NON-NLS-1$
 
 				created_user = jobRow.getString("CREATED_USER", null); //$NON-NLS-1$
@@ -1247,8 +1242,8 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 				long id_logdb = jobRow.getInteger("ID_DATABASE_LOG", 0); //$NON-NLS-1$
 				if (id_logdb > 0) {
 					// Get the logconnection
-					logconnection = RepositoryUtil.loadDatabaseMeta(rep, id_logdb);
-					logconnection.shareVariablesWith(this);
+					logConnection = RepositoryUtil.loadDatabaseMeta(rep, id_logdb);
+					logConnection.shareVariablesWith(this);
 				}
 				useBatchId = jobRow.getBoolean("USE_BATCH_ID", false); //$NON-NLS-1$
 				batchIdPassed = jobRow.getBoolean("PASS_BATCH_ID", false); //$NON-NLS-1$
@@ -1408,27 +1403,27 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
 	public void addDatabase(DatabaseMeta ci) {
 		databases.add(ci);
-		changed_databases = true;
+		changedDatabases = true;
 	}
 
 	public void addJobEntry(int p, JobEntryCopy si) {
 		jobcopies.add(p, si);
-		changed_entries = true;
+		changedEntries = true;
 	}
 
 	public void addJobHop(int p, JobHopMeta hi) {
 		jobhops.add(p, hi);
-		changed_hops = true;
+		changedHops = true;
 	}
 
 	public void addNote(int p, NotePadMeta ni) {
 		notes.add(p, ni);
-		changed_notes = true;
+		changedNotes = true;
 	}
 
 	public void addDatabase(int p, DatabaseMeta ci) {
 		databases.add(p, ci);
-		changed_databases = true;
+		changedDatabases = true;
 	}
 
 	/*
@@ -1444,7 +1439,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 			DatabaseMeta previous = getDatabase(index);
 			previous.replaceMeta(databaseMeta);
 		}
-		changed_databases = true;
+		changedDatabases = true;
 	}
 
 	/**
@@ -1485,7 +1480,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		if ((p >= 0) && (p < notes.size() - 1)) {
 			NotePadMeta note = notes.remove(p);
 			notes.add(note);
-			changed_notes = true;
+			changedNotes = true;
 		}
 	}
 
@@ -1494,7 +1489,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		if ((p > 0) && (p < notes.size())) {
 			NotePadMeta note = notes.remove(p);
 			notes.add(0, note);
-			changed_notes = true;
+			changedNotes = true;
 		}
 	}
 
@@ -1502,7 +1497,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		if (i < 0 || i >= databases.size())
 			return;
 		databases.remove(i);
-		changed_databases = true;
+		changedDatabases = true;
 	}
 
 	public int indexOfJobHop(JobHopMeta he) {
@@ -2102,18 +2097,18 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		// Also check the sql for the logtable...
 		if (monitor != null)
 			monitor.subTask(Messages.getString("JobMeta.Monitor.GettingSQLStatementsForJobLogTables")); //$NON-NLS-1$
-		if (logconnection != null && logTable != null && logTable.length() > 0) {
-			Database db = new Database(logconnection);
+		if (logConnection != null && logTable != null && logTable.length() > 0) {
+			Database db = new Database(logConnection);
 			try {
 				db.connect();
 				RowMetaInterface fields = Database.getJobLogrecordFields(false, useBatchId, logfieldUsed);
 				String sql = db.getDDL(logTable, fields);
 				if (sql != null && sql.length() > 0) {
-					SQLStatement stat = new SQLStatement(Messages.getString("JobMeta.SQLFeedback.ThisJob"), logconnection, sql); //$NON-NLS-1$
+					SQLStatement stat = new SQLStatement(Messages.getString("JobMeta.SQLFeedback.ThisJob"), logConnection, sql); //$NON-NLS-1$
 					stats.add(stat);
 				}
 			} catch (KettleDatabaseException dbe) {
-				SQLStatement stat = new SQLStatement(Messages.getString("JobMeta.SQLFeedback.ThisJob"), logconnection, null); //$NON-NLS-1$
+				SQLStatement stat = new SQLStatement(Messages.getString("JobMeta.SQLFeedback.ThisJob"), logConnection, null); //$NON-NLS-1$
 				stat.setError(Messages.getString("JobMeta.SQLFeedback.ErrorObtainingJobLogTableInfo") + dbe.getMessage()); //$NON-NLS-1$
 				stats.add(stat);
 			} finally {
@@ -2242,7 +2237,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	}
 
 	public boolean haveConnectionsChanged() {
-		if (changed_databases)
+		if (changedDatabases)
 			return true;
 
 		for (int i = 0; i < nrDatabases(); i++) {
@@ -2254,7 +2249,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	}
 
 	public boolean haveJobEntriesChanged() {
-		if (changed_entries)
+		if (changedEntries)
 			return true;
 
 		for (int i = 0; i < nrJobEntries(); i++) {
@@ -2266,7 +2261,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	}
 
 	public boolean haveJobHopsChanged() {
-		if (changed_hops)
+		if (changedHops)
 			return true;
 
 		for (JobHopMeta hi : jobhops) // Look at all the hops
@@ -2278,7 +2273,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	}
 
 	public boolean haveNotesChanged() {
-		if (changed_notes)
+		if (changedNotes)
 			return true;
 
 		for (int i = 0; i < nrNotes(); i++) {
@@ -2308,8 +2303,8 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	 * @param modifiedUser
 	 *            The modifiedUser to set.
 	 */
-	public void setModifiedUser(String modified_User) {
-		modifiedUser = modified_User;
+	public void setModifiedUser(String modifiedUser) {
+		this.modifiedUser = modifiedUser;
 	}
 
 	/**
@@ -2323,8 +2318,8 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	 * @param modifiedDate
 	 *            The modifiedDate to set.
 	 */
-	public void setModifiedDate(Date modified_Date) {
-		modifiedDate = modified_Date;
+	public void setModifiedDate(Date modifiedDate) {
+		this.modifiedDate = modifiedDate;
 	}
 
 	/**
@@ -2345,61 +2340,61 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	 * @return The extended description of the job
 	 */
 	public String getExtendedDescription() {
-		return extended_description;
+		return extendedDescription;
 	}
 
 	/**
 	 * @return The version of the job
 	 */
 	public String getJobversion() {
-		return job_version;
+		return jobVersion;
 	}
 
 	/**
 	 * Get the status of the job
 	 */
 	public int getJobstatus() {
-		return job_status;
+		return jobStatus;
 	}
 
 	/**
 	 * Set the description of the job.
 	 * 
-	 * @param n
+	 * @param description
 	 *            The new description of the job
 	 */
-	public void setDescription(String n) {
-		description = n;
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 	/**
 	 * Set the description of the job.
 	 * 
-	 * @param n
+	 * @param extendedDescription
 	 *            The new extended description of the job
 	 */
-	public void setExtendedDescription(String n) {
-		extended_description = n;
+	public void setExtendedDescription(String extendedDescription) {
+		this.extendedDescription = extendedDescription;
 	}
 
 	/**
 	 * Set the version of the job.
 	 * 
-	 * @param n
+	 * @param jobVersion
 	 *            The new version description of the job
 	 */
-	public void setJobversion(String n) {
-		job_version = n;
+	public void setJobversion(String jobVersion) {
+		this.jobVersion = jobVersion;
 	}
 
 	/**
 	 * Set the status of the job.
 	 * 
-	 * @param n
+	 * @param jobStatus
 	 *            The new status description of the job
 	 */
-	public void setJobstatus(int n) {
-		job_status = n;
+	public void setJobstatus(int jobStatus) {
+		this.jobStatus = jobStatus;
 	}
 
 	/**
@@ -2413,16 +2408,16 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	 * @param createdDate
 	 *            The createdDate to set.
 	 */
-	public void setCreatedDate(Date createddate) {
-		created_date = createddate;
+	public void setCreatedDate(Date createdDate) {
+		created_date = createdDate;
 	}
 
 	/**
 	 * @param createdUser
 	 *            The createdUser to set.
 	 */
-	public void setCreatedUser(String createduser) {
-		created_user = createduser;
+	public void setCreatedUser(String createdUser) {
+		created_user = createdUser;
 	}
 
 	/**

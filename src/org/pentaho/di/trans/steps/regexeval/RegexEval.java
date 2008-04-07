@@ -127,7 +127,7 @@ public class RegexEval extends BaseStep implements StepInterface
 		// Embedded options
 		String options="";
 		
-		if (meta.caseinsensitive())
+		if (meta.caseInsensitive())
 		{
 			options = options + "(?i)";
 		}
@@ -135,11 +135,11 @@ public class RegexEval extends BaseStep implements StepInterface
 		{
 			options = options + "(?x)";
 		}
-		if (meta.dotall())
+		if (meta.dotAll())
 		{
 			options = options + "(?s)";
 		}
-		if (meta.multiline())
+		if (meta.multiLine())
 		{
 			options = options + "(?m)";
 		}

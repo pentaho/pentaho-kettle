@@ -22,8 +22,8 @@ public class ResourceReference {
 	private List<ResourceEntry> entries;
   
 	/**
-	 * @param referenceHolder
-	 * @param entries
+	 * @param resourceReferenceHolder Where to put the resource references
+	 * @param entries the resource entries list
 	 */
 	public ResourceReference(ResourceHolderInterface resourceReferenceHolder, List<ResourceEntry> entries) {
 		super();
@@ -37,15 +37,15 @@ public class ResourceReference {
 	}
 
 	/**
-	 * @return the referenceHolder
+	 * @return the resource reference holder
 	 */
 	public ResourceHolderInterface getReferenceHolder() {
 		return resourceReferenceHolder;
 	}
 
 	/**
-	 * @param referenceHolder
-	 *            the referenceHolder to set
+	 * @param resourceReferenceHolder
+	 *            the resource reference holder to set
 	 */
 	public void setReferenceHolder(ResourceHolderInterface resourceReferenceHolder) {
 		this.resourceReferenceHolder = resourceReferenceHolder;

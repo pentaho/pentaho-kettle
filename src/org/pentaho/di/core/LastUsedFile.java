@@ -41,8 +41,8 @@ public class LastUsedFile
      * @param directory
      * @param sourceRepository
      * @param repositoryName
-     * @param tabMapEntryType 
-     * @param isOpened 
+     * @param opened
+     * @param openItemTypes
      */
     public LastUsedFile(String fileType, String filename, String directory, boolean sourceRepository, String repositoryName, boolean opened, int openItemTypes)
     {

@@ -67,7 +67,7 @@ import org.xml.sax.SAXException;
  * 
  * Plugins are configured by modifying the kettle-plugins.xml file.
  * 
- * @see PluginLocation
+ * @see org.pentaho.di.core.plugins.PluginLocation
  * @see org.pentaho.di.job.JobEntryLoader
  * 
  * @author Alex Silva

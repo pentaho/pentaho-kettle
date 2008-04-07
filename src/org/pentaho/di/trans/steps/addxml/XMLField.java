@@ -204,13 +204,15 @@ public class XMLField implements Cloneable
     }
 
     /**
-     * Flags if the field should be encoded as attribute instead of a child node.
-     * @return
+     * @return true if the field should be encoded as attribute instead of a child node.
      */
     public boolean isAttribute() {
         return attribute;
     }
 
+    /**
+     * @param attribute set to true if the field should be encoded as attribute instead of a child node
+     */
     public void setAttribute(boolean attribute) {
         this.attribute = attribute;
     }   

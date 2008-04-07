@@ -49,7 +49,8 @@ public class SlaveServerStatus
 
     /**
      * @param statusDescription
-     * @param transStatus
+     * @param transStatusList
+     * @param jobStatusList
      */
     public SlaveServerStatus(String statusDescription, List<SlaveServerTransStatus> transStatusList, List<SlaveServerJobStatus> jobStatusList)
     {

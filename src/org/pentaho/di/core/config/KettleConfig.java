@@ -31,14 +31,12 @@ import org.xml.sax.Attributes;
  * The gateway for all configuration operations.
  * 
  * <h3>Configuration Managers Property Injection:</h3>
- * This class reads "<property>" elements from kettle-config.xml and attemps to
+ * This class reads "<property>" elements from kettle-config.xml and attempts to
  * inject the value of such fields into the corresponding
  * <code>ConfigManager</code> implementation, following the rules established
  * the
  * 
- * @Inject annotation.
- * 
- * @see org.pentaho.core.annotations.Inject
+ * @see org.pentaho.di.core.annotations.Inject
  * 
  * @author Alex Silva
  * 
@@ -90,9 +88,7 @@ public class KettleConfig
 	}
 
 	/**
-	 * Returns all loaders defined in kettle-config.xml.
-	 * 
-	 * @return
+	 * @return all loaders defined in kettle-config.xml.
 	 */
 	public Collection<ConfigManager<?>> getManagers()
 	{

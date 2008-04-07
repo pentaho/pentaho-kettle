@@ -21,6 +21,7 @@ import java.util.Collections;
 
 import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.logging.LogWriter;
 
 /**
  * Contains the schema's, catalogs, tables, views, synonyms, etc we can find in the databases...
@@ -150,6 +151,17 @@ public class DatabaseMetaInformation
 		}
 
 		Database db = new Database(dbInfo);	
+		
+		/*
+		ResultSet tableResultSet = null;
+		
+		ResultSet schemaTablesResultSet = null;
+		ResultSet schemaResultSet = null;
+		
+		ResultSet catalogResultSet = null;
+		ResultSet catalogTablesResultSet = null;
+		*/
+		
 		try
 		{
 			if (monitor!=null) monitor.subTask("Connecting to database");
@@ -166,39 +178,58 @@ public class DatabaseMetaInformation
 			if (dbInfo.supportsCatalogs() && dbmd.supportsCatalogsInTableDefinitions())
 			{
 				ArrayList<Catalog> catalogList = new ArrayList<Catalog>();
-				ResultSet catalogs = dbmd.getCatalogs();
-				while (catalogs!=null && catalogs.next())
+				ResultSet catalogResultSet = dbmd.getCatalogs();
+				
+				// Grab all the catalog names and put them in an array list
+				// Then we can close the resultset as soon as possible.
+				// This is the safest route to take for a lot of databases
+				//
+				while (catalogResultSet!=null && catalogResultSet.next())
 				{
-					String catalogName = catalogs.getString(1);
-					ArrayList<String> catalogItems = new ArrayList<String>();
-					ResultSet tables = null;
+					String catalogName = catalogResultSet.getString(1);
+					catalogList.add(new Catalog(catalogName));
+				}
+				
+				// Close the catalogs resultset immediately
+				//
+				catalogResultSet.close();
+				
+				// Now loop over the catalogs...
+				//
+				for (Catalog catalog : catalogList) 
+				{
+					ArrayList<String> catalogTables = new ArrayList<String>();
+					
 					try
 					{
-						tables = dbmd.getTables(catalogName, null,  null, null );
-						while (tables.next())
+						ResultSet catalogTablesResultSet = dbmd.getTables(catalog.getCatalogName(), null,  null, null );
+						while (catalogTablesResultSet.next())
 						{
-							String table_name = tables.getString(3);
+							String tableName = catalogTablesResultSet.getString(3);
 							
-							if (!db.isSystemTable(table_name)) 
+							if (!db.isSystemTable(tableName)) 
 							{
-								catalogItems.add(table_name);
+								catalogTables.add(tableName);
 							}
 						}
+						// Immediately close the catalog tables ResultSet
+						//
+						catalogTablesResultSet.close();
+
+						// Sort the tables by names
+						Collections.sort(catalogTables);
 					}
 					catch(Exception e)
 					{
 						// Obviously, we're not allowed to snoop around in this catalog.
 						// Just ignore it!
+						LogWriter.getInstance().logError(getClass().getName(), "Unexpected error getting catalog information", e);
 					}
-					finally 
-					{
-						if ( tables != null ) tables.close();
-					}
-					
-					Catalog catalog = new Catalog(catalogName, catalogItems.toArray(new String[catalogItems.size()]));
-					catalogList.add(catalog);
+
+					// Save the list of tables in the catalog (can be empty)
+					//
+					catalog.setItems( catalogTables.toArray(new String[catalogTables.size()]) );
 				}
-				catalogs.close();
 				
 				// Save for later...
 				setCatalogs(catalogList.toArray(new Catalog[catalogList.size()]));
@@ -210,45 +241,53 @@ public class DatabaseMetaInformation
 			if (dbInfo.supportsSchemas() && dbmd.supportsSchemasInTableDefinitions())
 			{
 				ArrayList<Schema> schemaList = new ArrayList<Schema>();
-				ResultSet schemas = null;
 				try 
 				{
-					schemas = dbmd.getSchemas();
-					while (schemas!=null && schemas.next())
+					ResultSet schemaResultSet = dbmd.getSchemas();
+					while (schemaResultSet!=null && schemaResultSet.next())
 					{
-						ArrayList<String> schemaItems = new ArrayList<String>();
-						String schemaName = schemas.getString(1);
-						ResultSet tables = null;
+						String schemaName = schemaResultSet.getString(1);
+						schemaList.add(new Schema(schemaName));
+					}
+					// Close the schema ResultSet immediately
+					//
+					schemaResultSet.close();
+						
+					for (Schema schema : schemaList) 
+					{
+						ArrayList<String> schemaTables = new ArrayList<String>();
+						
 						try
 						{
-							tables = dbmd.getTables(null, schemaName,  null, null );
-							while (tables.next())
+							ResultSet schemaTablesResultSet = dbmd.getTables(null, schema.getSchemaName(),  null, null );
+							while (schemaTablesResultSet.next())
 							{
-								String table_name = tables.getString(3);
-								if (!db.isSystemTable(table_name)) 
+								String tableName = schemaTablesResultSet.getString(3);
+								if (!db.isSystemTable(tableName)) 
 								{
-									schemaItems.add(table_name);
+									schemaTables.add(tableName);
 								}
 							}
-							Collections.sort(schemaItems);
+							// Immediately close the schema tables ResultSet
+							//
+							schemaTablesResultSet.close();
+
+							// Sort the tables by names
+							Collections.sort(schemaTables);
 						}
 						catch(Exception e)
 						{
 							// Obviously, we're not allowed to snoop around in this catalog.
 							// Just ignore it!
 						}
-						finally
-						{
-							if ( tables != null ) tables.close();
-						}
-						Schema schema = new Schema(schemaName, schemaItems.toArray(new String[schemaItems.size()]));
-						schemaList.add(schema);
+
+						schema.setItems( schemaTables.toArray(new String[schemaTables.size()]) );
 					}
 				}
-				finally 
+				catch(Exception e)
 				{
-				    if ( schemas != null ) schemas.close();
-				}				
+					LogWriter.getInstance().logError(getClass().getName(), "Unexpected error getting schema information", e);
+				}
 				
 				// Save for later...
 				setSchemas(schemaList.toArray(new Schema[schemaList.size()]));
@@ -283,6 +322,7 @@ public class DatabaseMetaInformation
 		finally
 		{
 			if (monitor!=null) monitor.subTask("Closing database connection");
+
 			db.disconnect();
 			if (monitor!=null) monitor.worked(1);
 		}

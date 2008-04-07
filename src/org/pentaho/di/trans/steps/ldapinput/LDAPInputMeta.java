@@ -65,28 +65,28 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 	private  String  Host;
 	
 	/** The User name*/
-	private  String  UserName;
+	private  String  userName;
 	
 	/** The Password to use in LDAP authentication*/
-	private String Password;
+	private String password;
 	
 	/** The Port*/
-	private  String  Port;
+	private  String  port;
 	
 	/** The Filter string*/
-	private  String  FilterString;
+	private  String  filterString;
 	
 	/** The Search Base*/
-	private  String  SearchBase;
+	private  String  searchBase;
 	
 	/** The fields to import... */
 	private LDAPInputField inputFields[];
 	
 	/** The Time limit **/
-	private int timelimit;
+	private int timeLimit;
 	
 	/** Multi valued separator **/
-	private String multivaluedseparator;
+	private String multiValuedSeparator;
 	
 	private static final String YES = "Y";
 	
@@ -108,9 +108,9 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 	 /**
      * @param useAuthentication The useAuthentication to set.
      */
-	public void setUseAuthentication(boolean useauthenticationin)
+	public void setUseAuthentication(boolean useAuthentication)
 	{
-		this.useAuthentication=useauthenticationin;
+		this.useAuthentication=useAuthentication;
 	}
 		
 	/**
@@ -159,9 +159,9 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
     /**
      * @param host The host to set.
      */
-    public void setHost(String hostin)
+    public void setHost(String host)
     {
-    	this.Host=hostin;
+    	this.Host=host;
     }
     
     
@@ -170,23 +170,23 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
      */
     public String getUserName()
     {
-    	return UserName;
+    	return userName;
     }
     
     /**
-     * @param username The username to set.
+     * @param userName The username to set.
      */
-    public void setUserName(String usernamein)
+    public void setUserName(String userName)
     {
-    	this.UserName=usernamein;
+    	this.userName=userName;
     }
     
     /**
      * @param password The password to set.
      */
-    public void setPassword(String passwordin)
+    public void setPassword(String password)
     {
-    	this.Password=passwordin;
+    	this.password=password;
     }
     
     /**
@@ -194,7 +194,7 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
      */
     public String getPassword()
     {
-    	return Password;
+    	return password;
     }
     
   
@@ -206,16 +206,16 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
      */
     public String getPort()
     {
-    	return Port;
+    	return port;
     }
     
     
     /**
      * @param port The port to set.
      */
-    public void setBaseDn(String portin)
+    public void setPort(String port)
     {
-    	this.Port=portin;
+    	this.port=port;
     }
     
     
@@ -224,15 +224,15 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
      */
     public String getFilterString()
     {
-    	return FilterString;
+    	return filterString;
     }
     
     /**
-     * @param filter string The filter string to set.
+     * @param filterString The filter string to set.
      */
-    public void setFilterString(String filterstringin)
+    public void setFilterString(String filterString)
     {
-    	this.FilterString=filterstringin;
+    	this.filterString=filterString;
     }
     
     
@@ -242,15 +242,15 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
      */
     public String getSearchBase()
     {
-    	return SearchBase;
+    	return searchBase;
     }
     
     /**
-     * @param Search Base The filter Search Base to set.
+     * @param searchBase The filter Search Base to set.
      */
-    public void setSearchBase(String searchbasein)
+    public void setSearchBase(String searchBase)
     {
-    	this.SearchBase=searchbasein;
+    	this.searchBase=searchBase;
     }
     
     
@@ -264,30 +264,30 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
     }
     
     /**
-     * @param timeout The timeout to set.
+     * @param timeLimit The timeout time limit to set.
      */
-    public void setTimeLimit(int timelimit)
+    public void setTimeLimit(int timeLimit)
     {
-        this.timelimit = timelimit;
+        this.timeLimit = timeLimit;
     }
     
     
     /**
-     * @return Returns the timelimit.
+     * @return Returns the time limit.
      */
     public int getTimeLimit()
     {
-        return timelimit;
+        return timeLimit;
     }
     
     
     
     /**
-     * @param multivaluedseparator The multi valued separator filed.
+     * @param multiValuedSeparator The multi-valued separator filed.
      */
-    public void setMultiValuedSeparator(String multivaluedseparator)
+    public void setMultiValuedSeparator(String multiValuedSeparator)
     {
-        this.multivaluedseparator = multivaluedseparator;
+        this.multiValuedSeparator = multiValuedSeparator;
     }
     
     
@@ -296,7 +296,7 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
      */
     public String getMultiValuedSeparator()
     {
-        return multivaluedseparator;
+        return multiValuedSeparator;
     }
     
     /**
@@ -364,12 +364,12 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
         retval.append("    ").append(XMLHandler.addTagValue("rownum",          includeRowNumber));
         retval.append("    ").append(XMLHandler.addTagValue("rownum_field",    rowNumberField));
         retval.append("    ").append(XMLHandler.addTagValue("host",    Host));
-        retval.append("    ").append(XMLHandler.addTagValue("username",    UserName));
-        retval.append("    ").append(XMLHandler.addTagValue("password", Encr.encryptPasswordIfNotUsingVariables(Password)));
+        retval.append("    ").append(XMLHandler.addTagValue("username",    userName));
+        retval.append("    ").append(XMLHandler.addTagValue("password", Encr.encryptPasswordIfNotUsingVariables(password)));
 
-        retval.append("    ").append(XMLHandler.addTagValue("port",    Port));
-        retval.append("    ").append(XMLHandler.addTagValue("filterstring",    FilterString));
-        retval.append("    ").append(XMLHandler.addTagValue("searchbase",    SearchBase));
+        retval.append("    ").append(XMLHandler.addTagValue("port",    port));
+        retval.append("    ").append(XMLHandler.addTagValue("filterstring",    filterString));
+        retval.append("    ").append(XMLHandler.addTagValue("searchbase",    searchBase));
          
         /*
 		 * Describe the fields to read
@@ -396,8 +396,8 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
         
         
         retval.append("    ").append(XMLHandler.addTagValue("limit", rowLimit));
-        retval.append("    ").append(XMLHandler.addTagValue("timelimit", timelimit));
-        retval.append("    ").append(XMLHandler.addTagValue("multivaluedseparator", multivaluedseparator));
+        retval.append("    ").append(XMLHandler.addTagValue("timelimit", timeLimit));
+        retval.append("    ").append(XMLHandler.addTagValue("multivaluedseparator", multiValuedSeparator));
         
         
         
@@ -415,12 +415,12 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 			includeRowNumber  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "rownum"));
 			rowNumberField    = XMLHandler.getTagValue(stepnode, "rownum_field");
 			Host    = XMLHandler.getTagValue(stepnode, "host");
-			UserName    = XMLHandler.getTagValue(stepnode, "username");
+			userName    = XMLHandler.getTagValue(stepnode, "username");
 			setPassword(Encr.decryptPasswordOptionallyEncrypted(XMLHandler.getTagValue(stepnode, "password")));
 
-			Port    = XMLHandler.getTagValue(stepnode, "port");
-			FilterString    = XMLHandler.getTagValue(stepnode, "filterstring");
-			SearchBase = XMLHandler.getTagValue(stepnode, "searchbase");
+			port    = XMLHandler.getTagValue(stepnode, "port");
+			filterString    = XMLHandler.getTagValue(stepnode, "filterstring");
+			searchBase = XMLHandler.getTagValue(stepnode, "searchbase");
 	
 			Node fields     = XMLHandler.getSubNode(stepnode,  "fields");
 			int nrFields    = XMLHandler.countNodes(fields,    "field");
@@ -453,8 +453,8 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 			
 			// Is there a limit on the number of rows we process?
 			rowLimit = Const.toLong(XMLHandler.getTagValue(stepnode, "limit"), 0L);
-			timelimit = Const.toInt(XMLHandler.getTagValue(stepnode, "timelimit"), 0);
-			multivaluedseparator = XMLHandler.getTagValue(stepnode, "multivaluedseparator");
+			timeLimit = Const.toInt(XMLHandler.getTagValue(stepnode, "timelimit"), 0);
+			multiValuedSeparator = XMLHandler.getTagValue(stepnode, "multivaluedseparator");
 			
 			
 			
@@ -478,12 +478,12 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 		includeRowNumber = false;
 		rowNumberField   = "";
 		Host="";
-		UserName="";
-		Password="";
-		Port="389";
-		FilterString="objectclass=*";
-		SearchBase="";
-		multivaluedseparator=";";
+		userName="";
+		password="";
+		port="389";
+		filterString="objectclass=*";
+		searchBase="";
+		multiValuedSeparator=";";
 
 		int nrFields =0;
 
@@ -495,7 +495,7 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 		}
 
 		rowLimit=0;
-		timelimit=0;
+		timeLimit=0;
 	}
 	public void getFields(RowMetaInterface r, String name, RowMetaInterface info[], StepMeta nextStep, VariableSpace space) throws KettleStepException
 	{
@@ -550,16 +550,16 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 			includeRowNumber  = rep.getStepAttributeBoolean(id_step, "rownum");
 			rowNumberField    = rep.getStepAttributeString (id_step, "rownum_field");
 			Host    = rep.getStepAttributeString (id_step, "host");
-			UserName    = rep.getStepAttributeString (id_step, "username");
-			Password = Encr.decryptPasswordOptionallyEncrypted(rep.getJobEntryAttributeString(id_step, "password"));
+			userName    = rep.getStepAttributeString (id_step, "username");
+			password = Encr.decryptPasswordOptionallyEncrypted(rep.getJobEntryAttributeString(id_step, "password"));
 
-			Port    = rep.getStepAttributeString (id_step, "port");
-			FilterString    = rep.getStepAttributeString (id_step, "filterstring");
-			SearchBase    = rep.getStepAttributeString (id_step, "searchbase");
+			port    = rep.getStepAttributeString (id_step, "port");
+			filterString    = rep.getStepAttributeString (id_step, "filterstring");
+			searchBase    = rep.getStepAttributeString (id_step, "searchbase");
 			
 			rowLimit          = rep.getStepAttributeInteger(id_step, "limit");
-			timelimit          = (int)rep.getStepAttributeInteger(id_step, "timelimit");
-			multivaluedseparator    = rep.getStepAttributeString (id_step, "multivaluedseparator");
+			timeLimit          = (int)rep.getStepAttributeInteger(id_step, "timelimit");
+			multiValuedSeparator    = rep.getStepAttributeString (id_step, "multivaluedseparator");
 			
 	
 			int nrFields      = rep.countNrStepAttributes(id_step, "field_name");
@@ -602,15 +602,15 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "rownum",          includeRowNumber);
 			rep.saveStepAttribute(id_transformation, id_step, "rownum_field",    rowNumberField);
 			rep.saveStepAttribute(id_transformation, id_step, "host",    Host);
-			rep.saveStepAttribute(id_transformation, id_step, "username", UserName);
-			rep.saveJobEntryAttribute(id_transformation, id_step, "password", Encr.encryptPasswordIfNotUsingVariables(Password));
+			rep.saveStepAttribute(id_transformation, id_step, "username", userName);
+			rep.saveJobEntryAttribute(id_transformation, id_step, "password", Encr.encryptPasswordIfNotUsingVariables(password));
 
-			rep.saveStepAttribute(id_transformation, id_step, "port",   Port);
-			rep.saveStepAttribute(id_transformation, id_step, "filterstring",   FilterString);
-			rep.saveStepAttribute(id_transformation, id_step, "searchbase",  SearchBase);
+			rep.saveStepAttribute(id_transformation, id_step, "port",   port);
+			rep.saveStepAttribute(id_transformation, id_step, "filterstring",   filterString);
+			rep.saveStepAttribute(id_transformation, id_step, "searchbase",  searchBase);
 			rep.saveStepAttribute(id_transformation, id_step, "limit",           rowLimit);
-			rep.saveStepAttribute(id_transformation, id_step, "timelimit",           timelimit);
-			rep.saveStepAttribute(id_transformation, id_step, "multivaluedseparator", multivaluedseparator);
+			rep.saveStepAttribute(id_transformation, id_step, "timelimit",           timeLimit);
+			rep.saveStepAttribute(id_transformation, id_step, "multivaluedseparator", multiValuedSeparator);
 			
 			for (int i=0;i<inputFields.length;i++)
 			{

@@ -236,8 +236,7 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 	/**
 	 * Open a socket for writing.
 	 * 
-	 * @param maxRowsetSize
-	 * @return
+	 * @return the RowSet created that will accept the rows for the remote step
 	 * @throws IOException
 	 */
 	public RowSet openWriterSocket() throws IOException {
@@ -266,7 +265,7 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 					
 					// Create the output stream...
 					if (compressingStreams) {
-						gzipOutputStream = new GZIPOutputStream(socket.getOutputStream());
+						gzipOutputStream = new GZIPOutputStream(socket.getOutputStream(), 50000);
 				        outputStream = new DataOutputStream(new BufferedOutputStream(gzipOutputStream, bufferSize));
 					}
 					else {

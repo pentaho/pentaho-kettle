@@ -57,7 +57,7 @@ public class StepPartitioningMeta implements XMLInterface, Cloneable
     
     /**
      * @param method
-     * @param fieldName
+     * @param partitionSchema
      */
     public StepPartitioningMeta(String method, PartitionSchema partitionSchema)
     {
@@ -81,7 +81,9 @@ public class StepPartitioningMeta implements XMLInterface, Cloneable
     @Override
     public boolean equals(Object obj) {
     	if (obj==null) return false;
+    	if (partitionSchemaName==null) return false;
     	StepPartitioningMeta meta = (StepPartitioningMeta) obj;
+    	if (meta.partitionSchemaName==null) return false;
     	return partitionSchemaName.equalsIgnoreCase(meta.partitionSchemaName);
     }
     

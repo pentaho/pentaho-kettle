@@ -28,14 +28,19 @@ public class Schema
 	private String   schemaName;
 	private String[] items;
 	
-	public Schema(String catalogName, String[] items)
+	public Schema(String schemaName, String[] items)
 	{
-		this.schemaName = catalogName;
+		this.schemaName = schemaName;
 		this.items = items;
 	}
 	
+	public Schema(String schemaName)
+	{
+		this(schemaName, new String[] { } );
+	}
+	
 	/**
-	 * @return Returns the catalogName.
+	 * @return Returns the schemaName.
 	 */
 	public String getSchemaName()
 	{
@@ -43,11 +48,11 @@ public class Schema
 	}
 	
 	/**
-	 * @param catalogName The catalogName to set.
+	 * @param schemaName The catalogName to set.
 	 */
-	public void setSchemaName(String catalogName)
+	public void setSchemaName(String schemaName)
 	{
-		this.schemaName = catalogName;
+		this.schemaName = schemaName;
 	}
 	
 	/**

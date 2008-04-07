@@ -54,7 +54,6 @@ public final class Wsdl implements java.io.Serializable {
      * @param wsdlURI      URI of a WSDL file.
      * @param serviceQName Name of the service in the WSDL, if null default to first service in WSDL.
      * @param portName     The service port name, if null default to first port in service.
-     * @throws
      */
     public Wsdl(URI wsdlURI, QName serviceQName, String portName) {
 

@@ -39,7 +39,7 @@ public @interface Inject
 	 * <li><u>Methods:</u>The name of the property being set by the method, as defined by <code>Introspector.decapitalize</code> and 
 	 * the Java Beans API.</li>
 	 * </ol>
-	 * @return
+	 * @return the property name to be injected
 	 */
 	String property() default "";
 }

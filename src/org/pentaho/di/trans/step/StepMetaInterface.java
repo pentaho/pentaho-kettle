@@ -243,17 +243,17 @@ public interface StepMetaInterface
      * Get a list of all the resource dependencies that the step is depending on.
      * 
      * @param transMeta
-     * @param stepinfo
+     * @param stepMeta
      * 
      * @return a list of all the resource dependencies that the step is depending on
      */
-    public List<ResourceReference> getResourceDependencies(TransMeta transMeta, StepMeta stepInfo);
+    public List<ResourceReference> getResourceDependencies(TransMeta transMeta, StepMeta stepMeta);
     
     /**
      * 
      * @param definitions
      * @param resourceNamingInterface
-     * @return
+     * @return the filename of the exported resource
      */
     public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface) throws KettleException ;
 

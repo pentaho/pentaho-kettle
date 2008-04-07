@@ -785,11 +785,11 @@
 	</step>
 		<step id="getXMLData">
 		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.getXMLData")
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.GetXMLData")
 		</description>
-		<class-name>org.pentaho.di.trans.steps.getxmldata.getXMLDataMeta</class-name>
+		<class-name>org.pentaho.di.trans.steps.getxmldata.GetXMLDataMeta</class-name>
 		<category>ognl:@org.pentaho.di.trans.step.StepCategory@INPUT.getName()</category>
-		<tooltip>ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.getXMLData")
+		<tooltip>ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.GetXMLData")
 		</tooltip>
 		<image-uri>ui/images/GXD.png</image-uri>
 	</step>

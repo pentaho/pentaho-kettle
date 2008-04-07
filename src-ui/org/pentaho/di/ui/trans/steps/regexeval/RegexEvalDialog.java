@@ -568,10 +568,10 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
 
 		wUseVar.setSelection(input.useVar());
 		wCanonEq.setSelection(input.canoeq());
-		wCaseInsensitive.setSelection(input.caseinsensitive());
+		wCaseInsensitive.setSelection(input.caseInsensitive());
 		wComment.setSelection(input.comment());
-		wDotAll.setSelection(input.dotall());
-		wMultiline.setSelection(input.multiline());
+		wDotAll.setSelection(input.dotAll());
+		wMultiline.setSelection(input.multiLine());
 		wUnicode.setSelection(input.unicode());
 		wUnix.setSelection(input.unix());
 
@@ -592,16 +592,16 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
 		stepname = wStepname.getText(); // return value
 
 		input.setScript( wScript.getText() );
-		input.setResultfieldname(wResultField.getText() );
+		input.setResultFieldname(wResultField.getText() );
 		input.setMatcher(wfieldevaluate.getText() );
-		input.setuseVar(wUseVar.getSelection());
-		input.setcanoneq(wCanonEq.getSelection());
-		input.setcaseinsensitive(wCaseInsensitive.getSelection());
-		input.setcomment(wComment.getSelection());
-		input.setdotall(wDotAll.getSelection());
-		input.setmultiline(wMultiline.getSelection());
-		input.setunicode(wUnicode.getSelection());
-		input.setunix(wUnix.getSelection());
+		input.setUseVar(wUseVar.getSelection());
+		input.setCanoneq(wCanonEq.getSelection());
+		input.setCaseinsensitive(wCaseInsensitive.getSelection());
+		input.setComment(wComment.getSelection());
+		input.setDotAll(wDotAll.getSelection());
+		input.setMultiLine(wMultiline.getSelection());
+		input.setUnicode(wUnicode.getSelection());
+		input.setUnix(wUnix.getSelection());
 						
 		dispose();
 	}

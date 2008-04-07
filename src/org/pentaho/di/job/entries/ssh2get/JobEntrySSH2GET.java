@@ -83,15 +83,15 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 	private String wildcard;
     private boolean onlyGettingNewFiles;  /* Don't overwrite files */
     private boolean usehttpproxy;
-    private String httpproxyhost;
+    private String httpProxyHost;
     private String httpproxyport;
     private String httpproxyusername;
-    private String httpproxypassword;
+    private String httpProxyPassword;
     private boolean publicpublickey;
-    private String keyfilename;
-    private String keyfilepass;
-    private boolean usebasicauthentication;
-    private String afterftpput;
+    private String keyFilename;
+    private String keyFilePass;
+    private boolean useBasicAuthentication;
+    private String afterFtpPut;
     private String destinationfolder;
     private boolean createdestinationfolder;
     private boolean cachehostkey;
@@ -111,16 +111,16 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 		super(n, "");
 		serverName=null;
 		publicpublickey=false;
-		keyfilename=null;
-		keyfilepass=null;
+		keyFilename=null;
+		keyFilePass=null;
 		usehttpproxy=false;
-		httpproxyhost=null;
+		httpProxyHost=null;
 		httpproxyport=null;
 		httpproxyusername=null;
-		httpproxypassword=null;
+		httpProxyPassword=null;
 		serverPort="22";
-		usebasicauthentication=false;
-		afterftpput="do_nothing";
+		useBasicAuthentication=false;
+		afterFtpPut="do_nothing";
 		destinationfolder=null;
 		includeSubFolders=false;
 		createdestinationfolder=false;
@@ -164,18 +164,18 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
         retval.append("      ").append(XMLHandler.addTagValue("only_new",     onlyGettingNewFiles));
         
         retval.append("      ").append(XMLHandler.addTagValue("usehttpproxy",     usehttpproxy));
-        retval.append("      ").append(XMLHandler.addTagValue("httpproxyhost",   httpproxyhost));
+        retval.append("      ").append(XMLHandler.addTagValue("httpproxyhost",   httpProxyHost));
         retval.append("      ").append(XMLHandler.addTagValue("httpproxyport",   httpproxyport));
         retval.append("      ").append(XMLHandler.addTagValue("httpproxyusername",     httpproxyusername));
-        retval.append("      ").append(XMLHandler.addTagValue("httpproxypassword",     httpproxypassword));
+        retval.append("      ").append(XMLHandler.addTagValue("httpproxypassword",     httpProxyPassword));
         
         
         retval.append("      ").append(XMLHandler.addTagValue("publicpublickey",     publicpublickey));
-        retval.append("      ").append(XMLHandler.addTagValue("keyfilename",   keyfilename));
-        retval.append("      ").append(XMLHandler.addTagValue("keyfilepass",   keyfilepass));
+        retval.append("      ").append(XMLHandler.addTagValue("keyfilename",   keyFilename));
+        retval.append("      ").append(XMLHandler.addTagValue("keyfilepass",   keyFilePass));
         
-        retval.append("      ").append(XMLHandler.addTagValue("usebasicauthentication",     usebasicauthentication));
-        retval.append("      ").append(XMLHandler.addTagValue("afterftpput",   afterftpput));
+        retval.append("      ").append(XMLHandler.addTagValue("usebasicauthentication",     useBasicAuthentication));
+        retval.append("      ").append(XMLHandler.addTagValue("afterftpput",   afterFtpPut));
         retval.append("      ").append(XMLHandler.addTagValue("destinationfolder",   destinationfolder));
         retval.append("      ").append(XMLHandler.addTagValue("createdestinationfolder",     createdestinationfolder));
         retval.append("      ").append(XMLHandler.addTagValue("cachehostkey",     cachehostkey));
@@ -204,17 +204,17 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
             onlyGettingNewFiles = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "only_new") );
             
             usehttpproxy = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "usehttpproxy") );
-            httpproxyhost          = XMLHandler.getTagValue(entrynode, "httpproxyhost");
+            httpProxyHost          = XMLHandler.getTagValue(entrynode, "httpproxyhost");
             httpproxyport      = XMLHandler.getTagValue(entrynode, "httpproxyport");
             httpproxyusername            = XMLHandler.getTagValue(entrynode, "httpproxyusername");
-            httpproxypassword            = XMLHandler.getTagValue(entrynode, "httpproxypassword");
+            httpProxyPassword            = XMLHandler.getTagValue(entrynode, "httpproxypassword");
             
             publicpublickey = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "publicpublickey") );
-            keyfilename          = XMLHandler.getTagValue(entrynode, "keyfilename");
-            keyfilepass          = XMLHandler.getTagValue(entrynode, "keyfilepass");
+            keyFilename          = XMLHandler.getTagValue(entrynode, "keyfilename");
+            keyFilePass          = XMLHandler.getTagValue(entrynode, "keyfilepass");
             
-            usebasicauthentication = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "usebasicauthentication") );
-            afterftpput          = XMLHandler.getTagValue(entrynode, "afterftpput");
+            useBasicAuthentication = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "usebasicauthentication") );
+            afterFtpPut          = XMLHandler.getTagValue(entrynode, "afterftpput");
             destinationfolder          = XMLHandler.getTagValue(entrynode, "destinationfolder");
             
             createdestinationfolder = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "createdestinationfolder") );
@@ -248,16 +248,16 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 			onlyGettingNewFiles = rep.getJobEntryAttributeBoolean(id_jobentry, "only_new");
 			
 			usehttpproxy = rep.getJobEntryAttributeBoolean(id_jobentry, "usehttpproxy");
-			httpproxyhost          = rep.getJobEntryAttributeString(id_jobentry, "httpproxyhost");
+			httpProxyHost          = rep.getJobEntryAttributeString(id_jobentry, "httpproxyhost");
 			httpproxyusername            = rep.getJobEntryAttributeString(id_jobentry, "httpproxyusername");
-			httpproxypassword            = rep.getJobEntryAttributeString(id_jobentry, "httpproxypassword");
+			httpProxyPassword            = rep.getJobEntryAttributeString(id_jobentry, "httpproxypassword");
 			
 			publicpublickey = rep.getJobEntryAttributeBoolean(id_jobentry, "publicpublickey");
-			keyfilename            = rep.getJobEntryAttributeString(id_jobentry, "keyfilename");
-			keyfilepass            = rep.getJobEntryAttributeString(id_jobentry, "keyfilepass");
+			keyFilename            = rep.getJobEntryAttributeString(id_jobentry, "keyfilename");
+			keyFilePass            = rep.getJobEntryAttributeString(id_jobentry, "keyfilepass");
 			
-			usebasicauthentication = rep.getJobEntryAttributeBoolean(id_jobentry, "usebasicauthentication");
-			afterftpput            = rep.getJobEntryAttributeString(id_jobentry, "afterftpput");
+			useBasicAuthentication = rep.getJobEntryAttributeBoolean(id_jobentry, "usebasicauthentication");
+			afterFtpPut            = rep.getJobEntryAttributeString(id_jobentry, "afterftpput");
 			destinationfolder            = rep.getJobEntryAttributeString(id_jobentry, "destinationfolder");
 			
 			createdestinationfolder = rep.getJobEntryAttributeBoolean(id_jobentry, "createdestinationfolder");
@@ -293,19 +293,19 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 			rep.saveJobEntryAttribute(id_job, getID(), "only_new",        onlyGettingNewFiles);
 			
 			rep.saveJobEntryAttribute(id_job, getID(), "usehttpproxy",        usehttpproxy);
-			rep.saveJobEntryAttribute(id_job, getID(), "httpproxyhost",      httpproxyhost);
+			rep.saveJobEntryAttribute(id_job, getID(), "httpproxyhost",      httpProxyHost);
 			rep.saveJobEntryAttribute(id_job, getID(), "httpproxyport",      httpproxyport);
 			rep.saveJobEntryAttribute(id_job, getID(), "httpproxyusername",        httpproxyusername);
-			rep.saveJobEntryAttribute(id_job, getID(), "httpproxypassword",        httpproxypassword);
+			rep.saveJobEntryAttribute(id_job, getID(), "httpproxypassword",        httpProxyPassword);
 			
 			
 			rep.saveJobEntryAttribute(id_job, getID(), "publicpublickey",        publicpublickey);
-			rep.saveJobEntryAttribute(id_job, getID(), "keyfilename",      keyfilename);
-			rep.saveJobEntryAttribute(id_job, getID(), "keyfilepass",      keyfilepass);
+			rep.saveJobEntryAttribute(id_job, getID(), "keyfilename",      keyFilename);
+			rep.saveJobEntryAttribute(id_job, getID(), "keyfilepass",      keyFilePass);
 			
-			rep.saveJobEntryAttribute(id_job, getID(), "usebasicauthentication",        usebasicauthentication);
+			rep.saveJobEntryAttribute(id_job, getID(), "usebasicauthentication",        useBasicAuthentication);
 			
-			rep.saveJobEntryAttribute(id_job, getID(), "afterftpput",        afterftpput);
+			rep.saveJobEntryAttribute(id_job, getID(), "afterftpput",        afterFtpPut);
 			rep.saveJobEntryAttribute(id_job, getID(), "destinationfolder",        destinationfolder);
 			
 			
@@ -361,24 +361,24 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 	 */
 	public String getAfterFTPPut()
 	{
-		return afterftpput;
+		return afterFtpPut;
 	}
 	/**
-	 * @param password The password to set.
+	 * @param afterFtpPut The action after (FTP/SSH) transfer to execute
 	 */
-	public void setAfterFTPPut(String afterftpputin)
+	public void setAfterFTPPut(String afterFtpPut)
 	{
-		this.afterftpput = afterftpputin;
+		this.afterFtpPut = afterFtpPut;
 	}
 	
 	
 	
 	/**
-	 * @param proxypassword The httpproxypassword to set.
+	 * @param proxyPassword The httpproxypassword to set.
 	 */
-	public void setHTTPProxyPassword(String proxypassword)
+	public void setHTTPProxyPassword(String proxyPassword)
 	{
-		this.httpproxypassword = proxypassword;
+		this.httpProxyPassword = proxyPassword;
 	}
 	
 	/**
@@ -386,25 +386,25 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 	 */
 	public String getHTTPProxyPassword()
 	{
-		return httpproxypassword;
+		return httpProxyPassword;
 	}
 
 	
 	/**
-	 * @param keypass The keyfilepass to set.
+	 * @param keyFilePass The key file pass to set.
 	 */
-	public void setKeyFilepass(String keypass)
+	public void setKeyFilePass(String keyFilePass)
 	{
-		this.keyfilepass = keypass;
+		this.keyFilePass = keyFilePass;
 	}
 	
 	
 	/**
-	 * @return Returns the keyfilepass.
+	 * @return Returns the key file pass.
 	 */
-	public String getKeyFilepass()
+	public String getKeyFilePass()
 	{
-		return keyfilepass;
+		return keyFilePass;
 	}
 
 	
@@ -430,32 +430,32 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 	 */
 	public void setHTTPProxyHost(String proxyhost)
 	{
-		this.httpproxyhost = proxyhost;
+		this.httpProxyHost = proxyhost;
 	}
 	
 	/**
-	 * @return Returns the httpproxyhost.
+	 * @return Returns the HTTP proxy host.
 	 */
 	public String getHTTPProxyHost()
 	{
-		return httpproxyhost;
+		return httpProxyHost;
 	}
 	
 	/**
-	 * @param filename The keyfilename to set.
+	 * @param keyfilename The key filename to set.
 	 */
-	public void setKeyFilename(String keyfile)
+	public void setKeyFilename(String keyfilename)
 	{
-		this.keyfilename = keyfile;
+		this.keyFilename = keyfilename;
 	}
 	
 	
 	/**
-	 * @return Returns the keyfilename.
+	 * @return Returns the key filename.
 	 */
 	public String getKeyFilename()
 	{
-		return keyfilename;
+		return keyFilename;
 	}
 	
 	
@@ -584,31 +584,32 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 
     
     /**
-     * @return Returns the usebasicauthentication.
+     * @return Returns the use basic authentication flag.
      */
     public boolean isUseBasicAuthentication()
     {
-        return usebasicauthentication;
+        return useBasicAuthentication;
     }
  
     /**
-     * @param httpproxy The usebasicauthentication to set.
+     * @param useBasicAuthentication The use basic authentication flag to set.
      */
-    public void setUseBasicAuthentication(boolean usebasicauthenticationin)
+    public void setUseBasicAuthentication(boolean useBasicAuthentication)
     {
-        this.usebasicauthentication = usebasicauthenticationin;
+        this.useBasicAuthentication = useBasicAuthentication;
     }
   
     
     /**
-     * @param includeSubFoldersin The includeSubFolders to set.
+     * @param includeSubFolders The include sub folders flag to set.
      */
-    public void setIncludeSubFolders(boolean includeSubFoldersin)
+    public void setIncludeSubFolders(boolean includeSubFolders)
     {
-        this.includeSubFolders = includeSubFoldersin;
+        this.includeSubFolders = includeSubFolders;
     }
+    
     /**
-     * @return Returns the includeSubFolders.
+     * @return Returns the include sub folders flag.
      */
     public boolean isIncludeSubFolders()
     {
@@ -723,13 +724,13 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 		String realUserName=environmentSubstitute(userName);
 		String realServerPassword=environmentSubstitute(password);
 		// Proxy Host
-		String realProxyHost=environmentSubstitute(httpproxyhost);
+		String realProxyHost=environmentSubstitute(httpProxyHost);
 		int realProxyPort=Const.toInt(environmentSubstitute(httpproxyport),22);
 		String realproxyUserName=environmentSubstitute(httpproxyusername);
-		String realProxyPassword=environmentSubstitute(httpproxypassword);
+		String realProxyPassword=environmentSubstitute(httpProxyPassword);
 		// Key file
-		String realKeyFilename=environmentSubstitute(keyfilename);
-		String relKeyFilepass=environmentSubstitute(keyfilepass);
+		String realKeyFilename=environmentSubstitute(keyFilename);
+		String relKeyFilepass=environmentSubstitute(keyFilePass);
 		// target files
 		String realLocalDirectory=environmentSubstitute(localDirectory);
 		String realwildcard=environmentSubstitute(wildcard);
@@ -799,7 +800,7 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 				}
 			}
 		}
-		if(afterftpput.equals("move_file"))
+		if(afterFtpPut.equals("move_file"))
 		{
 			if(Const.isEmpty(realDestinationFolder))
 			{
@@ -939,7 +940,7 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 		
 			/* Now connect */
 			// if the proxy requires basic authentication:
-			if(usebasicauthentication)
+			if(useBasicAuthentication)
 			{
 				conn.setProxyData(new HTTPProxyData(proxyhost, proxyport, proxyusername, proxypassword));
 			}
@@ -1077,7 +1078,7 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
     	boolean retval=false;
 
     	// Delete the file if this is needed!
-		if (afterftpput.equals("delete_file")) 
+		if (afterFtpPut.equals("delete_file")) 
 		{
 			try
 			{
@@ -1090,7 +1091,7 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 			}
 			
 		}
-		else if (afterftpput.equals("move_file"))
+		else if (afterFtpPut.equals("move_file"))
 		{
 			String DestinationFullFilename=destinationFolder+Const.FILE_SEPARATOR+filename;
 			try
@@ -1267,7 +1268,7 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 				}
 			}
 			// Let's now delete or move file if needed...
-			if(filecopied && !afterftpput.equals("do_nothing"))
+			if(filecopied && !afterFtpPut.equals("do_nothing"))
 			{
 				deleteOrMoveFiles(sftpClient, sourceLocation,environmentSubstitute(destinationfolder));
 			}
