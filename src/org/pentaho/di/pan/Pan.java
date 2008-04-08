@@ -127,7 +127,8 @@ public class Pan
         if (!Const.isEmpty(optionLoglevel)) 
         {
             log.setLogLevel(optionLoglevel.toString());
-            log.logMinimal("Pan", "Logging is at level : "+log.getLogLevelLongDesc());
+            log.logMinimal("Pan",  Messages.getString("Pan.Log.Loglevel",log.getLogLevelLongDesc()));
+           
         }
         
         if (!Const.isEmpty(optionVersion))
@@ -186,7 +187,7 @@ public class Pan
 		cal=Calendar.getInstance();
 		start=cal.getTime();
 
-		log.logDebug("Pan", "Allocate new transformation.");
+		if(log.isDebug()) log.logDebug("Pan", "Allocate new transformation.");
 		TransMeta transMeta = new TransMeta();
 
 		try

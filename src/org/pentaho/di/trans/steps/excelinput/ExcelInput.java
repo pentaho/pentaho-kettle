@@ -94,7 +94,8 @@ public class ExcelInput extends BaseStep implements StepInterface
 			catch (KettleException ex)
 			{
 				if (!meta.isErrorIgnored()) throw ex;
-				logBasic("Warning processing [" + targetMeta + "] from Excel file [" + data.filename + "] : " + ex.getMessage());
+				logBasic(Messages.getString("ExcelInput.Log.WarningProcessingExcelFile",""+targetMeta,""+data.filename, ex.getMessage()));
+				
 				if (!errorHandled)
 				{
 					data.errorHandler.handleLineError(excelInputRow.rownr, excelInputRow.sheetName);
@@ -158,7 +159,8 @@ public class ExcelInput extends BaseStep implements StepInterface
 						}
 						else
 						{
-							if (log.isDetailed()) logDetailed("Unknown type : " + cell.getType().toString() + " : [" + cell.getContents() + "]");
+							if (log.isDetailed()) logDetailed(Messages.getString("ExcelInput.Log.UnknownType", cell.getType().toString(),cell.getContents()));
+							
                             r[rowcolumn] = null;
 						}
 					}
@@ -215,7 +217,7 @@ public class ExcelInput extends BaseStep implements StepInterface
 			catch (KettleException ex)
 			{
 				if (!meta.isErrorIgnored()) throw ex;
-				logBasic("Warning processing [" + targetMeta + "] from Excel file [" + data.filename + "] : " + ex.toString());
+				logBasic(Messages.getString("ExcelInput.Log.WarningProcessingExcelFile",""+targetMeta,""+data.filename, ex.toString()));
 				if (!errorHandled) // check if we didn't log an error already for this one.
 				{
 					data.errorHandler.handleLineError(excelInputRow.rownr, excelInputRow.sheetName);
@@ -273,17 +275,20 @@ public class ExcelInput extends BaseStep implements StepInterface
 		if (cellType.equals(CellType.BOOLEAN))
 		{
 			if (!(v.getType() == ValueMetaInterface.TYPE_STRING || v.getType() == ValueMetaInterface.TYPE_NONE || v.getType() == ValueMetaInterface.TYPE_BOOLEAN))
-				throw new KettleException("Invalid type Boolean, expected " + v.getTypeDesc());
+				throw new KettleException(Messages.getString("ExcelInput.Exception.InvalidTypeBoolean",v.getTypeDesc()));
+			
 		}
 		else if (cellType.equals(CellType.DATE))
 		{
 			if (!(v.getType() == ValueMetaInterface.TYPE_STRING || v.getType() == ValueMetaInterface.TYPE_NONE || v.getType() == ValueMetaInterface.TYPE_DATE))
-				throw new KettleException("Invalid type Date: " + cell.getContents() + ", expected " + v.getTypeDesc());
+				throw new KettleException(Messages.getString("ExcelInput.Exception.InvalidTypeDate", cell.getContents(),v.getTypeDesc()));
+			
 		}
 		else if (cellType.equals(CellType.LABEL))
 		{
 			if (v.getType() == ValueMetaInterface.TYPE_BOOLEAN || v.getType() == ValueMetaInterface.TYPE_DATE || v.getType() == ValueMetaInterface.TYPE_INTEGER || v.getType() == ValueMetaInterface.TYPE_NUMBER)
-				throw new KettleException("Invalid type Label: " + cell.getContents() + ", expected " + v.getTypeDesc());
+				throw new KettleException(Messages.getString("ExcelInput.Exception.InvalidTypeLabel", cell.getContents(),v.getTypeDesc()));
+			
 		}
 		else if (cellType.equals(CellType.EMPTY))
 		{
@@ -292,11 +297,13 @@ public class ExcelInput extends BaseStep implements StepInterface
 		else if (cellType.equals(CellType.NUMBER))
 		{
 			if (!(v.getType() == ValueMetaInterface.TYPE_STRING || v.getType() == ValueMetaInterface.TYPE_NONE || v.getType() == ValueMetaInterface.TYPE_INTEGER || v.getType() == ValueMetaInterface.TYPE_BIGNUMBER || v.getType() == ValueMetaInterface.TYPE_NUMBER))
-				throw new KettleException("Invalid type Number: " + cell.getContents() + ", expected " + v.getTypeDesc());
+				throw new KettleException(Messages.getString("ExcelInput.Exception.InvalidTypeNumber", cell.getContents(),v.getTypeDesc()));
+			
 		}
 		else
 		{
-			throw new KettleException("Unsupported type " + cellType + " with value: " + cell.getContents());
+			throw new KettleException(Messages.getString("ExcelInput.Exception.UnsupportedType", ""+cellType,cell.getContents()));
+			
 		}
 	}
 
@@ -327,7 +334,8 @@ public class ExcelInput extends BaseStep implements StepInterface
                         idx = rowSet.getRowMeta().indexOfValue(meta.getAcceptingField());
                         if (idx<0)
                         {
-                            logError("The filename field ["+meta.getAcceptingField()+"] could not be found in the input rows.");
+                            logError(Messages.getString("ExcelInput.Error.FilenameFieldNotFound",""+meta.getAcceptingField()));
+                            
                             setErrors(1);
                             stopAll();
                             return false;
@@ -340,7 +348,8 @@ public class ExcelInput extends BaseStep implements StepInterface
                     }
                     catch(IOException e)
                     {
-                        throw new KettleException("Unexpected error creating file object for "+fileValue, e);
+                        throw new KettleException(Messages.getString("ExcelInput.Exception.CanNotCreateFileObject",fileValue), e);
+                        
                     }
                     
                     // Grab another row
@@ -356,7 +365,8 @@ public class ExcelInput extends BaseStep implements StepInterface
 		// We are done processing if the filenr >= number of files.
 		if (data.filenr >= data.files.nrOfFiles())
 		{
-			if (log.isDetailed()) logDetailed("No more files to be processed! (" + data.filenr + " files done)");
+			if (log.isDetailed()) logDetailed(Messages.getString("ExcelInput.Log.NoMoreFiles",""+data.filenr));
+			
 			setOutputDone(); // signal end to receiver(s)
 			return false; // end of data or error.
 		}
@@ -364,7 +374,8 @@ public class ExcelInput extends BaseStep implements StepInterface
 		if (meta.getRowLimit() > 0 && data.rownr > meta.getRowLimit())
 		{
 			// The close of the openFile is in dispose()
-			if (log.isDetailed()) logDetailed("Row limit of [" + meta.getRowLimit() + "] reached: stop processing.");
+			if (log.isDetailed()) logDetailed(Messages.getString("ExcelInput.Log.RowLimitReached",""+meta.getRowLimit()));
+			
 			setOutputDone(); // signal end to receiver(s)
 			return false; // end of data or error.
 		}
@@ -411,28 +422,33 @@ public class ExcelInput extends BaseStep implements StepInterface
 		if (nonExistantFiles.size() != 0)
 		{
 			String message = FileInputList.getRequiredFilesDescription(nonExistantFiles);
-			log.logBasic("Required files", "WARNING: Missing " + message);
+			log.logBasic(Messages.getString("ExcelInput.Log.RequiredFilesTitle"), Messages.getString("ExcelInput.Warning.MissingFiles", message));
+			
 			if (meta.isErrorIgnored())
 				for (FileObject fileObject : nonExistantFiles)
 				{
 					data.errorHandler.handleNonExistantFile( fileObject );
 				}
 			else
-				throw new KettleException("Following required files are missing: " + message);
+				throw new KettleException(Messages.getString("ExcelInput.Exception.MissingRequiredFiles", message));
+			
+			
 		}
 
 		List<FileObject> nonAccessibleFiles = data.files.getNonAccessibleFiles();
 		if (nonAccessibleFiles.size() != 0)
 		{
 			String message = FileInputList.getRequiredFilesDescription(nonAccessibleFiles);
-			log.logBasic("Required files", "WARNING: Not accessible " + message);
+			log.logBasic(Messages.getString("ExcelInput.Log.RequiredFilesTitle"), Messages.getString("ExcelInput.Log.RequiredFilesMsgNotAccessible",message));
+			
 			if (meta.isErrorIgnored())
 				for (FileObject fileObject : nonAccessibleFiles)
 				{
 					data.errorHandler.handleNonAccessibleFile(fileObject);
 				}
 			else
-				throw new KettleException("Following required files are not accessible: " + message);
+				throw new KettleException(Messages.getString("ExcelInput.Exception.RequiredFilesNotAccessible",message));
+			
 		}
 	}
 
@@ -454,11 +470,12 @@ public class ExcelInput extends BaseStep implements StepInterface
 				if(meta.isAddResultFile())
 				{
 					ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, data.file, getTransMeta().getName(), toString());
-					resultFile.setComment("File was read by an Excel input step");
+					resultFile.setComment(Messages.getString("ExcelInput.Log.FileReadByStep"));
 					addResultFile(resultFile);
 				}
 				
-				if (log.isDetailed()) logDetailed("Opening openFile #" + data.filenr + " : " + data.filename);
+				if (log.isDetailed()) logDetailed(Messages.getString("ExcelInput.Log.OpeningFile",""+data.filenr + " : " + data.filename));
+				
                 WorkbookSettings ws = new WorkbookSettings();
                 if (!Const.isEmpty(meta.getEncoding()))
                 {
@@ -488,7 +505,8 @@ public class ExcelInput extends BaseStep implements StepInterface
 			boolean nextsheet = false;
 
 			// What sheet were we handling?
-			if (log.isDebug()) logDetailed("Get sheet #" + data.filenr + "." + data.sheetnr);
+			if (log.isDebug()) logDetailed(Messages.getString("ExcelInput.Log.GetSheet",""+data.filenr + "." + data.sheetnr));
+			
 			String sheetName = data.sheetNames[data.sheetnr];
 			Sheet sheet = data.workbook.getSheet(sheetName);
 			if (sheet != null)
@@ -520,13 +538,14 @@ public class ExcelInput extends BaseStep implements StepInterface
 					}
 					else
 					{
-						if (log.isRowLevel()) logRowlevel("Get line #" + lineNr + " from sheet #" + data.filenr + "." + data.sheetnr);
-
-						if (log.isRowLevel()) logRowlevel("Read line with " + line.length + " cells");
+						if (log.isRowLevel()) logRowlevel(Messages.getString("ExcelInput.Log.GetLine",""+lineNr,data.filenr + "." + data.sheetnr));
+						
+						if (log.isRowLevel()) logRowlevel(Messages.getString("ExcelInput.Log.ReadLineWith",""+line.length));
+						
 						ExcelInputRow excelInputRow = new ExcelInputRow(sheet.getName(), lineNr, line);
 						Object[] r = fillRow(data.colnr, excelInputRow);
-						if (log.isRowLevel()) logRowlevel("Converted line to row #" + lineNr + " : " + data.outputRowMeta.getString(r));
-
+						if (log.isRowLevel()) logRowlevel(Messages.getString("ExcelInput.Log.ConvertedLinToRow",""+lineNr,data.outputRowMeta.getString(r)));
+						
                         boolean isEmpty = isLineEmpty(line);
 						if (!isEmpty || !meta.ignoreEmptyRows())
 						{
@@ -549,7 +568,8 @@ public class ExcelInput extends BaseStep implements StepInterface
 				}
 				catch (ArrayIndexOutOfBoundsException e)
 				{
-					if (log.isRowLevel()) logRowlevel("Out of index error: move to next sheet!");
+					if (log.isRowLevel()) logRowlevel(Messages.getString("ExcelInput.Log.OutOfIndex"));
+					
 					// We tried to read below the last line in the sheet.
 					// Go to the next sheet...
 					nextsheet = true;
@@ -581,7 +601,8 @@ public class ExcelInput extends BaseStep implements StepInterface
 		}
 		catch (Exception e)
 		{
-			logError("Error processing row from Excel file [" + data.filename + "] : " + e.toString());
+			logError(Messages.getString("ExcelInput.Error.ProcessRowFromExcel",data.filename+"", e.toString()));
+			
 			setErrors(1);
 			stopAll();
 			return null;
@@ -656,7 +677,8 @@ public class ExcelInput extends BaseStep implements StepInterface
 			data.files = meta.getFileList(this);
 			if (data.files.nrOfFiles() == 0 && data.files.nrOfMissingFiles() == 0 && !meta.isAcceptingFilenames())
 			{
-				logError("No file(s) specified! Stop processing.");
+				
+				logError(Messages.getString("ExcelInput.Error.NoFileSpecified"));
 				return false;
 			}
 
@@ -715,7 +737,8 @@ public class ExcelInput extends BaseStep implements StepInterface
 			}
 			else
 			{
-				logError("No input fields defined!");
+				logError(Messages.getString("ExcelInput.Error.NotInputFieldsDefined"));
+				
 			}
 
 		}
@@ -742,7 +765,8 @@ public class ExcelInput extends BaseStep implements StepInterface
 		{
 			if (log.isDebug()) 
             {
-                logDebug("Could not close errorHandler: "+e.toString());
+                logDebug(Messages.getString("ExcelInput.Error.CouldNotCloseErrorHandler",e.toString()));
+                
                 logDebug(Const.getStackTracker(e));
             }
 		}
