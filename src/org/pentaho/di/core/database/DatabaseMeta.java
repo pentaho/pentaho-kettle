@@ -213,6 +213,10 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 	 */
 	public static final int TYPE_DATABASE_SYBASEIQ      = 30;
     
+	/**
+	 * Connection to a Greenplum database
+	 */
+	public static final int TYPE_DATABASE_GREENPLUM    = 31;
     
 	/**
 	 * Connect natively through JDBC thin driver to the database.
