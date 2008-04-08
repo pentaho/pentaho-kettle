@@ -59,6 +59,7 @@ public interface DatabaseInterface extends Cloneable
             RemedyActionRequestSystemDatabaseMeta.class,
             PALODatabaseMeta.class,
             SybaseIQDatabaseMeta.class,
+            GreenplumDatabaseMeta.class,
             MonetDBDatabaseMeta.class,
             KingbaseESDatabaseMeta.class
 		};
