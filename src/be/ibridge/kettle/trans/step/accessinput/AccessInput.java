@@ -299,7 +299,12 @@ public class AccessInput extends BaseStep implements StepInterface
 	{
 		meta=(AccessInputMeta)smi;
 		data=(AccessInputData)sdi;
-
+		if(data.file!=null)
+		{
+			try {
+				data.file.close();
+			}catch (Exception e){}
+		}
 		super.dispose(smi, sdi);
 	}
 	
