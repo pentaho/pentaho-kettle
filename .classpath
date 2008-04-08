@@ -86,5 +86,7 @@
 	<classpathentry kind="lib" path="libext/trilead-ssh2-build212.jar"/>
 	<classpathentry kind="lib" path="libext/jackcess-1.1.13.jar"/>
 	<classpathentry kind="lib" path="libswt/win32/swt.jar"/>
+	<classpathentry kind="lib" path="libext/JDBC/kingbasejdbc.jar"/>
+	<classpathentry kind="lib" path="libext/JDBC/monetdb-1.7-jdbc.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

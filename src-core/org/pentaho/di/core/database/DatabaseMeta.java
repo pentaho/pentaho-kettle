@@ -215,6 +215,11 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 	 */
 	public static final int TYPE_DATABASE_MONETDB     = 31;
 
+	/**
+	 * Connection to a MonetDB database
+	 */
+	public static final int TYPE_DATABASE_KINGBASEES  = 32;
+
     
 	/**
 	 * Connect natively through JDBC thin driver to the database.

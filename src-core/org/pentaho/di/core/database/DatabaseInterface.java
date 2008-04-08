@@ -60,6 +60,7 @@ public interface DatabaseInterface extends Cloneable
             PALODatabaseMeta.class,
             SybaseIQDatabaseMeta.class,
             MonetDBDatabaseMeta.class,
+            KingbaseESDatabaseMeta.class
 		};
 	
 	/**
