@@ -587,7 +587,6 @@ public class LDIFInputMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		
         FileInputList fileInputList = getFiles(transMeta);
-		// String files[] = getFiles();
 		if (fileInputList==null || fileInputList.getFiles().size()==0)
 		{
 			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("LDIFInputMeta.CheckResult.NoFiles"), stepMeta);
@@ -608,4 +607,8 @@ public class LDIFInputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		return new LDIFInput(stepMeta, stepDataInterface, cnr, tr, trans);
 	}
+    public boolean supportsErrorHandling()
+    {
+        return true;
+    } 
 }

@@ -98,7 +98,8 @@ public class Pan
 
 		// Parse the options...
 		if( !CommandLineOption.parseArguments(args, options, log) ) {
-            log.logError("Pan", "Command line option not understood");
+            log.logError("Pan",  Messages.getString("Pan.Error.CommandLineError"));
+           
             System.exit(8);
 		}
 		
@@ -153,7 +154,8 @@ public class Pan
         /////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-        log.logMinimal("Pan", "Start of run.");
+        log.logMinimal("Pan", Messages.getString("Pan.Log.StartingToRun"));
+        
 		
 		/* Load the plugins etc.*/
 		try {
@@ -161,7 +163,8 @@ public class Pan
 		}
 		catch(KettleException e)
 		{
-			log.logError("Pan", "Error loading steps... halting Pan!");
+			log.logError("Pan", Messages.getString("Pan.Error.LoadingStepsHaltPan"));
+			
             System.exit(8);
 		}
 		
@@ -172,7 +175,8 @@ public class Pan
 		}
 		catch(KettleException e)
         {
-            log.logError("Pan", "Error loading job entries & plugins... halting Pan!", e);
+            log.logError("Pan", Messages.getString("Pan.Error.LoadingJobEntriesHaltPan"), e);
+            
             System.exit(8);
         }
         
@@ -191,19 +195,19 @@ public class Pan
 			// Read kettle transformation specified on command-line?
 			if (!Const.isEmpty(optionRepname) || !Const.isEmpty(optionFilename) || !Const.isEmpty(optionJarFilename))
 			{			
-				log.logDebug("Pan", "Parsing command line options.");
+				if(log.isDebug()) log.logDebug("Pan", "Parsing command line options.");
 				if (!Const.isEmpty(optionRepname) && !"Y".equalsIgnoreCase(optionNorep.toString()))
 				{
-					log.logDebug("Pan", "Loading available repositories.");
+					if(log.isDebug()) log.logDebug("Pan", "Loading available repositories.");
 					RepositoriesMeta repsinfo = new RepositoriesMeta(log);
 					if (repsinfo.readData())
 					{
-						log.logDebug("Pan", "Finding repository ["+optionRepname+"]");
+						if(log.isDebug()) log.logDebug("Pan", "Finding repository ["+optionRepname+"]");
 						repinfo = repsinfo.findRepository(optionRepname.toString());
 						if (repinfo!=null)
 						{
 							// Define and connect to the repository...
-							log.logDebug("Pan", "Allocate & connect to repository.");
+							if(log.isDebug()) log.logDebug("Pan", "Allocate & connect to repository.");
 							Repository rep = new Repository(log, repinfo, userinfo);
 							if (rep.connect("Pan commandline"))
 							{
@@ -218,16 +222,16 @@ public class Pan
 								if (directory!=null)
 								{
 									// Check username, password
-									log.logDebug("Pan", "Check supplied username and password.");
+									if(log.isDebug()) log.logDebug("Pan", "Check supplied username and password.");
 									userinfo = new UserInfo(rep, optionUsername.toString(), optionPassword.toString());
 									if (userinfo.getID()>0)
 									{
 										// Load a transformation
 										if (!Const.isEmpty(optionTransname))
 										{
-											log.logDebug("Pan", "Load the transformation info...");
+											if(log.isDebug()) log.logDebug("Pan", "Load the transformation info...");
 											transMeta = new TransMeta(rep, optionTransname.toString(), directory);
-											log.logDebug("Pan", "Allocate transformation...");
+											if(log.isDebug()) log.logDebug("Pan", "Allocate transformation...");
 											trans = new Trans(transMeta);
 											trans.setRepository(rep);
 										}
@@ -235,7 +239,7 @@ public class Pan
 										// List the transformations in the repository
 										if ("Y".equalsIgnoreCase(optionListtrans.toString()))
 										{
-										    log.logDebug("Pan", "Getting list of transformations in directory: "+directory);
+											if(log.isDebug()) log.logDebug("Pan", "Getting list of transformations in directory: "+directory);
 											String transnames[] = rep.getTransformationNames(directory.getID());
 											for (int i=0;i<transnames.length;i++)
 											{
@@ -301,7 +305,7 @@ public class Pan
                 //
 				if (trans==null && !Const.isEmpty(optionFilename))
 				{
-                    log.logDetailed("Pan", "Loading transformation from XML file ["+optionFilename+"]");
+					if(log.isDetailed()) log.logDetailed("Pan", "Loading transformation from XML file ["+optionFilename+"]");
 					transMeta = new TransMeta(optionFilename.toString());
 					trans = new Trans(transMeta);
 				}
@@ -312,7 +316,7 @@ public class Pan
                 {
                     try
                     {
-                        log.logDetailed("Pan", "Loading transformation from jar file ["+optionJarFilename+"]");
+                    	if(log.isDetailed())  log.logDetailed("Pan", "Loading transformation from jar file ["+optionJarFilename+"]");
                         InputStream inputStream = Pan.class.getResourceAsStream(optionJarFilename.toString());
                         StringBuffer xml = new StringBuffer();
                         int c;
@@ -333,7 +337,7 @@ public class Pan
 			
 			if ("Y".equalsIgnoreCase(optionListrep.toString()))
 			{
-				log.logDebug("Pan", "Getting the list of repositories...");
+				if(log.isDebug()) log.logDebug("Pan", "Getting the list of repositories...");
 				RepositoriesMeta ri = new RepositoriesMeta(log);
 				if (ri.readData())
 				{

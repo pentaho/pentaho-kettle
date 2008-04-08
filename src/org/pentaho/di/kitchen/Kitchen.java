@@ -181,7 +181,7 @@ public class Kitchen
 			// Read kettle job specified on command-line?
 			if (!Const.isEmpty(optionRepname) || !Const.isEmpty(optionFilename))
 			{
-				log.logDebug(STRING_KITCHEN, "Parsing command line options.");
+				if(log.isDebug()) log.logDebug(STRING_KITCHEN, Messages.getString("Kitchen.Log.ParsingCommandLine"));
 				if (!Const.isEmpty(optionRepname) && !"Y".equalsIgnoreCase(optionNorep.toString()))
 				{
 					if(log.isDebug()) log.logDebug(STRING_KITCHEN, Messages.getString("Kitchen.Log.LoadingRep"));
@@ -194,7 +194,8 @@ public class Kitchen
 						if (repinfo!=null)
 						{
 							// Define and connect to the repository...
-							if(log.isDebug())log.logDebug(STRING_KITCHEN, "Allocate & connect to repository.");
+							if(log.isDebug())log.logDebug(STRING_KITCHEN, Messages.getString("Kitchen.Log.Alocate&ConnectRep"));
+							 
 							repository = new Repository(log, repinfo, userinfo);
 							if (repository.connect("Kitchen commandline"))
 							{
@@ -209,23 +210,27 @@ public class Kitchen
 								if (directory!=null)
 								{
 									// Check username, password
-									if(log.isDebug())log.logDebug(STRING_KITCHEN, "Check supplied username and password.");
+									if(log.isDebug())log.logDebug(STRING_KITCHEN, Messages.getString("Kitchen.Log.CheckUserPass"));
+									
 									userinfo = new UserInfo(repository, optionUsername.toString(), optionPassword.toString());
 									if (userinfo.getID()>0)
 									{
 									    // Load a job
 										if (!Const.isEmpty(optionJobname))
 										{
-											if(log.isDebug())log.logDebug(STRING_KITCHEN, "Load the job info...");
+											if(log.isDebug())log.logDebug(STRING_KITCHEN,Messages.getString("Kitchen.Log.LoadingJobInfo"));
+											
 											jobMeta =  new JobMeta(log, repository, optionJobname.toString(), directory);
-											if(log.isDebug())log.logDebug(STRING_KITCHEN, "Allocate job...");
+											if(log.isDebug())log.logDebug(STRING_KITCHEN, Messages.getString("Kitchen.Log.AllocateJob"));
+											
 											job = new Job(log, stepLoader, repository, jobMeta);
 										}
 										else
 										// List the jobs in the repository
 										if ("Y".equalsIgnoreCase(optionListjobs.toString()))
 										{
-											if(log.isDebug())log.logDebug(STRING_KITCHEN, "Getting list of jobs in directory: "+directory);
+											if(log.isDebug())log.logDebug(STRING_KITCHEN, Messages.getString("Kitchen.Log.GettingLostJobsInDirectory",""+directory));
+											
 											String jobnames[] = repository.getJobNames(directory.getID());
 											for (int i=0;i<jobnames.length;i++)
 											{
@@ -245,31 +250,36 @@ public class Kitchen
 									}
 									else
 									{
-										System.out.println("ERROR: Can't verify username and password.");
+										System.out.println(Messages.getString("Kitchen.Error.CanNotVerifyUserPass"));
+										
 										userinfo=null;
 										repinfo=null;
 									}
 								}
 								else
 								{
-									System.out.println("ERROR: Can't find the supplied directory ["+optionDirname+"]");
+									System.out.println(Messages.getString("Kitchen.Error.CanNotFindSuppliedDirectory",optionDirname+""));
+									
 									userinfo=null;
 									repinfo=null;
 								}
 							}
 							else
 							{
-								System.out.println("ERROR: Can't connect to the repository.");
+								System.out.println(Messages.getString("Kitchen.Error.CanNotConnectRep"));
+								
 							}
 						}
 						else
 						{
-							System.out.println("ERROR: No repository provided, can't load job.");
+							System.out.println(Messages.getString("Kitchen.Error.NoRepProvided"));
+							
 						}
 					}
 					else
 					{
-						System.out.println("ERROR: No repositories defined on this system.");
+						System.out.println(Messages.getString("Kitchen.Error.NoRepDefinied"));
+						
 					}
 				}
 				
@@ -286,7 +296,8 @@ public class Kitchen
 				RepositoriesMeta ri = new RepositoriesMeta(log);
 				if (ri.readData())
 				{
-					System.out.println("List of repositories:");
+					System.out.println(Messages.getString("Kitchen.Log.ListRep"));
+					
 					for (int i=0;i<ri.nrRepositories();i++)
 					{
 						RepositoryMeta rinfo = ri.getRepository(i);
@@ -295,7 +306,8 @@ public class Kitchen
 				}
 				else
 				{
-					System.out.println("ERROR: Unable to read/parse the repositories XML file.");
+					System.out.println(Messages.getString("Kitchen.Error.UnableToReadXMLFile"));
+					
 				}
 			}
 		}
@@ -303,7 +315,8 @@ public class Kitchen
 		{
 			job=null;
 			jobMeta=null;
-			System.out.println("Processing stopped because of an error: "+e.getMessage());
+			System.out.println(Messages.getString("Kitchen.Error.StopProcess",e.getMessage()));
+			
 		}
 
 		if (job==null)
@@ -354,7 +367,8 @@ public class Kitchen
 			}
 			catch(KettleJobException je2)
 			{
-				log.logError(job.getName(), "A serious error occured : "+je2.getMessage());
+				log.logError(job.getName(), Messages.getString("Kitchen.Error.SeriousError",je2.getMessage()));
+				
                 returnCode = 2;
 			}
 		}
@@ -376,9 +390,11 @@ public class Kitchen
 		String begin=df.format(start).toString();
 		String end  =df.format(stop).toString();
 
-		log.logMinimal(STRING_KITCHEN, "Start="+begin+", Stop="+end);
+		log.logMinimal(STRING_KITCHEN, Messages.getString("Kitchen.Log.StartStop",begin,end));
+		
 		long millis=stop.getTime()-start.getTime();
-		log.logMinimal(STRING_KITCHEN, "Processing ended after "+(millis/1000)+" seconds.");
+		log.logMinimal(STRING_KITCHEN,  Messages.getString("Kitchen.Log.ProcessEndAfter",""+(millis/1000)));
+		
         
         System.exit(returnCode);
 
