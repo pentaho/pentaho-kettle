@@ -371,6 +371,12 @@ public class LDIFInput extends BaseStep implements StepInterface
 	{
 		meta=(LDIFInputMeta)smi;
 		data=(LDIFInputData)sdi;
+		if(data.file!=null) 
+		{
+			try{
+			data.file.close();
+			}catch (Exception e){}
+		}
 		if(data.InputLDIF!=null) data.InputLDIF=null;
 		if(data.attributes_LDIF!=null) data.attributes_LDIF=null;
 		if(data.recordLDIF!=null) data.recordLDIF=null;

@@ -770,7 +770,10 @@ public class TextFileOutput extends BaseStep implements StepInterface
 		data=(TextFileOutputData)sdi;
 		
 		if(data.oneFileOpened) closeFile();
-
+		
+		try{
+			if(data.fos!=null) data.fos.close();
+			}catch (Exception e){}
         super.dispose(smi, sdi);
 	}
 	

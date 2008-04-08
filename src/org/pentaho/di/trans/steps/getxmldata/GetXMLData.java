@@ -626,7 +626,12 @@ public class GetXMLData extends BaseStep implements StepInterface
 	{
 		meta = (GetXMLDataMeta) smi;
 		data = (GetXMLDataData) sdi;
-
+		if(data.file!=null) 
+		{
+			try{
+			data.file.close();
+			}catch (Exception e){}
+		}
 		super.dispose(smi, sdi);
 	}
 
