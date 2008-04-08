@@ -18,6 +18,7 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
+import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -53,7 +54,7 @@ public class DBProc extends BaseStep implements StepInterface
         	
 			// get the RowMeta for the output 
         	// 
-			data.outputMeta = getInputRowMeta().clone();
+			data.outputMeta = data.inputRowMeta.clone();
 			meta.getFields(data.outputMeta, getStepname(), null, null, this);
         	
 			data.argnrs=new int[meta.getArgument().length];
@@ -120,16 +121,29 @@ public class DBProc extends BaseStep implements StepInterface
 		// However, we would still need to know how many times it gets executed.
 		// In short: the procedure gets executed once for every input row.
 		//
-		Object[] r=getRow();       // Get row from input rowset & set row busy!
-		if (r==null)  // no more input to be expected...
+		Object[] r;
+		
+		if (data.readsRows)
 		{
-			setOutputDone();
-			return false;
+			r=getRow();       // Get row from input rowset & set row busy!
+			if (r==null)  // no more input to be expected...
+			{
+				setOutputDone();
+				return false;
+			}
+			data.inputRowMeta = getInputRowMeta();
+		}
+		else
+		{
+			r=new Object[] {}; // empty row
+            linesRead++;
+            data.inputRowMeta = new RowMeta(); // empty row metadata too
+            data.readsRows=true; // make it drop out of the loop at the next entrance to this method
 		}
 		
 		try
 		{
-			Object[] outputRowData = runProc(getInputRowMeta(), r); // add new values to the row in rowset[0].
+			Object[] outputRowData = runProc(data.inputRowMeta, r); // add new values to the row in rowset[0].
 			putRow(data.outputMeta, outputRowData);  // copy row to output rowset(s);
 				
             if (checkFeedback(linesRead)) logBasic(Messages.getString("DBProc.LineNumber")+linesRead); //$NON-NLS-1$
@@ -169,6 +183,13 @@ public class DBProc extends BaseStep implements StepInterface
 
 		if (super.init(smi, sdi))
 		{
+			data.readsRows = false;
+			StepMeta previous[] = getTransMeta().getPrevSteps(getStepMeta()); 
+			if (previous!=null && previous.length>0)
+			{
+				data.readsRows = true;
+			}
+
 			data.db=new Database(meta.getDatabase());
 			try
 			{

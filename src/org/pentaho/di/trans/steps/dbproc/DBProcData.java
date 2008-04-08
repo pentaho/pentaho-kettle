@@ -29,6 +29,10 @@ public class DBProcData extends BaseStepData implements StepDataInterface
 
 	public RowMetaInterface outputMeta;
 	public Database db;
+
+	public boolean readsRows;
+
+	public RowMetaInterface inputRowMeta;
     
 	/**
 	 * 
