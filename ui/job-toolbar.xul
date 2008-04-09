@@ -1,0 +1,25 @@
+<window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" align="vertical" >
+	 
+	 <toolbox>
+		<toolbar id="nav-toolbar" mode="full">
+			<toolbarbutton value="file-new" image="ui/images/new.png" tooltiptext="%Spoon.Tooltip.NewFile"/>
+			<toolbarseparator />
+			<toolbarbutton value="file-open" image="ui/images/open.png" tooltiptext="%Spoon.Tooltip.OpenTranformation" />
+			<toolbarbutton value="file-save" image="ui/images/save.png" tooltiptext="%Spoon.Tooltip.SaveCurrentTranformation" />
+			<toolbarbutton value="file-save-as" image="ui/images/saveas.png" tooltiptext="%Spoon.Tooltip.SaveDifferentNameTranformation" />
+			<toolbarseparator />
+			<toolbarbutton value="file-print" image="ui/images/print.png" tooltiptext="%Spoon.Tooltip.Print"/>
+			<toolbarseparator />
+			<toolbarbutton value="job-run" image="ui/images/run.png" tooltiptext="%Spoon.Tooltip.RunJob"/>
+			<toolbarseparator />
+			<toolbarbutton value="job-get-sql" image="ui/images/SQLbutton.png" tooltiptext="%Spoon.Tooltip.GenerateSQLForJob"/>
+			<toolbarseparator />
+			<toolbarbutton value="explore-database" image="ui/images/exploredb.png" tooltiptext="%Spoon.Tooltip.ExploreConnection"/>
+			<toolbarseparator />
+			<toolbarbutton value="job-show-log" image="ui/images/show-log.png" tooltiptext="%Spoon.Tooltip.ShowJobLogView"/>
+			<toolbarbutton value="job-show-grid" image="ui/images/show-grid.png" tooltiptext="%Spoon.Tooltip.ShowJobGridView"/>
+			<toolbarbutton value="job-show-history" image="ui/images/show-history.png" tooltiptext="%Spoon.Tooltip.ShowJobHistoryView"/>
+		</toolbar>
+	</toolbox>
+
+</window>

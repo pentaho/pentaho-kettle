@@ -32,4 +32,5 @@ public interface XulToolbar extends XulItem {
 	
 	public XulToolbarButton getButtonById(String id);
 
+	public String[] getMenuItemIds();
 }

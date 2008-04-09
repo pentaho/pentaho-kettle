@@ -12,23 +12,22 @@
 */
 package org.pentaho.di.ui.spoon.trans;
 
-import org.pentaho.di.ui.spoon.trans.TransHistory;
 import org.pentaho.xul.swt.tab.TabItem;
 import org.pentaho.xul.swt.tab.TabListener;
 
 public class TransHistoryRefresher implements TabListener {
 
 	private final TabItem tiTabsHist;
-	private final TransHistory spoonhist;
+	private final TransGraph transGraph;
 
-	public TransHistoryRefresher(TabItem tiTabsHist, TransHistory spoonhist) {
+	public TransHistoryRefresher(TabItem tiTabsHist, TransGraph transGraph) {
 		this.tiTabsHist = tiTabsHist;
-		this.spoonhist = spoonhist;
+		this.transGraph = transGraph;
 	}
 
 	public void tabSelected(TabItem item) {
 		if(item == tiTabsHist)
-			spoonhist.refreshHistoryIfNeeded();
+			transGraph.transHistoryDelegate.refreshHistoryIfNeeded();
 	}
 
 	public void tabDeselected(TabItem item) {
@@ -40,7 +39,7 @@ public class TransHistoryRefresher implements TabListener {
 	
 	public void markRefreshNeeded()
 	{
-		spoonhist.markRefreshNeeded();
+		transGraph.transHistoryDelegate.markRefreshNeeded();
 	}
 
 }

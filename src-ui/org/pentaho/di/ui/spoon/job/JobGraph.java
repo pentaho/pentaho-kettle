@@ -12,14 +12,22 @@
  
 package org.pentaho.di.ui.spoon.job;
 
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabFolder2Adapter;
+import org.eclipse.swt.custom.CTabFolderEvent;
+import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.dnd.DropTargetEvent;
@@ -44,6 +52,8 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
+import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -53,19 +63,24 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.ToolBar;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.NotePadMeta;
+import org.pentaho.di.core.Result;
 import org.pentaho.di.core.dnd.DragAndDropContainer;
 import org.pentaho.di.core.dnd.XMLTransfer;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleJobException;
 import org.pentaho.di.core.gui.GUIPositionInterface;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.gui.Redrawable;
 import org.pentaho.di.core.gui.SnapAllignDistribute;
 import org.pentaho.di.core.gui.SpoonInterface;
+import org.pentaho.di.core.listeners.FilenameChangedListener;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobHopMeta;
 import org.pentaho.di.job.JobMeta;
@@ -92,6 +107,8 @@ import org.pentaho.xul.menu.XulMenu;
 import org.pentaho.xul.menu.XulMenuChoice;
 import org.pentaho.xul.menu.XulPopupMenu;
 import org.pentaho.xul.swt.tab.TabItem;
+import org.pentaho.xul.toolbar.XulToolbar;
+import org.pentaho.di.ui.spoon.XulMessages;
 
 
 /**
@@ -103,12 +120,22 @@ import org.pentaho.xul.swt.tab.TabItem;
  */
 public class JobGraph extends Composite implements Redrawable, TabItemInterface
 {
+	private static final String XUL_FILE_JOB_TOOLBAR = "ui/job-toolbar.xul";
+	public static final String XUL_FILE_JOB_TOOLBAR_PROPERTIES = "ui/job-toolbar.properties";
+	
+	public final static String START_TEXT = Messages.getString("JobLog.Button.Start"); //$NON-NLS-1$
+	// public final static String PAUSE_TEXT = Messages.getString("JobLog.Button.PauseJob"); //$NON-NLS-1$    TODO 
+	// public final static String RESUME_TEXT = Messages.getString("JobLog.Button.ResumeJob"); //$NON-NLS-1$  TODO
+	public final static String STOP_TEXT = Messages.getString("JobLog.Button.Stop"); //$NON-NLS-1$
+
 	private static final int HOP_SEL_MARGIN = 9;
 
 	protected Shell shell;
 	protected Canvas canvas;
 	protected LogWriter log;
     protected JobMeta jobMeta;
+    private   Job job;
+    
     // protected Props props;
     
 	protected int iconsize;
@@ -148,8 +175,29 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 	protected NotePadMeta ni = null;
 	protected JobHopMeta currentHop;
 
-	// private Text filenameLabel;
-    
+	private Text filenameLabel;
+	private SashForm sashForm;
+	public Composite extraViewComposite;
+	public CTabFolder extraViewTabFolder;
+	
+    private XulToolbar       toolbar;
+
+	private Button wStart;
+	// private Button wPause;
+    private Button wStop;
+	private Button wError;
+	private Button wClear;
+	private Button wLog;
+	private Button wSafeMode;
+	private Composite buttonsComposite;
+	
+	public JobLogDelegate jobLogDelegate;
+	public JobHistoryDelegate jobHistoryDelegate;
+	public JobGridDelegate jobGridDelegate;
+
+	private boolean isRunning;
+	private Composite mainComposite;
+	
 	public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) 
 	{
 		super(par, SWT.NONE);
@@ -158,31 +206,52 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 		this.spoon = spoon;
 		this.jobMeta = jobMeta;
         // this.props = Props.getInstance();
-        
-		try {
-    			menuMap = XulHelper.createPopupMenus(SpoonInterface.XUL_FILE_MENUS, shell,new XulMessages(), "job-graph-hop",
-    					 "job-graph-note","job-graph-background","job-graph-entry" );
-		} catch (Throwable t ) {
-			log.logError(toString(), Const.getStackTracker(t));
-			new ErrorDialog(shell, Messages.getString("JobGraph.Exception.ErrorReadingXULFile.Title"), Messages.getString("JobGraph.Exception.ErrorReadingXULFile.Message", Spoon.XUL_FILE_MENUS), new Exception(t));
-		}
+		
+		jobLogDelegate = new JobLogDelegate(spoon, this);
+		jobHistoryDelegate = new JobHistoryDelegate(spoon, this);
+		jobGridDelegate = new JobGridDelegate(spoon, this);
+		
+		setLayout(new FormLayout());
+		
+        // Add a tool-bar at the top of the tab
+        // The form-data is set on the native widget automatically
+        //
+        addToolBar();
 
-        setLayout(new FillLayout());
+        // The main composite contains the graph view, but if needed also 
+        // a view with an extra tab containing log, etc.
+        //
+        mainComposite = new Composite(this, SWT.NONE);
+        mainComposite.setLayout(new FillLayout());
+        FormData fdMainComposite = new FormData();
+		fdMainComposite.left = new FormAttachment(0,0);
+		fdMainComposite.top = new FormAttachment((Control)toolbar.getNativeObject(),0);
+		fdMainComposite.right = new FormAttachment(100,0);
+		fdMainComposite.bottom= new FormAttachment(100,0);
+        mainComposite.setLayoutData(fdMainComposite);
         
-        canvas = new Canvas(this, SWT.V_SCROLL | SWT.H_SCROLL | SWT.NO_BACKGROUND);
-        /*
-        canvas.setLayout(new FormLayout());
+        // To allow for a splitter later on, we will add the splitter here...
+        //
+        sashForm = new SashForm(mainComposite, SWT.VERTICAL );
+        // sashForm.setForeground(GUIResource.getInstance().getColorBlack())
         
-		filenameLabel = new Text(canvas, SWT.RIGHT | SWT.ON_TOP | SWT.NO_BACKGROUND | SWT.READ_ONLY | SWT.NO_FOCUS);
+        // Add a canvas below it, use up all space initially
+        //
+        canvas = new Canvas(sashForm, SWT.V_SCROLL | SWT.H_SCROLL | SWT.NO_BACKGROUND );
+        
+        sashForm.setWeights(new int[] { 100, } );
+
+        
+		filenameLabel = new Text(this, SWT.LEFT | SWT.ON_TOP | SWT.NO_BACKGROUND | SWT.READ_ONLY | SWT.NO_FOCUS | SWT.BORDER);
 		filenameLabel.setText(Const.NVL(jobMeta.getFilename(), ""));
 		filenameLabel.setBackground(GUIResource.getInstance().getColorBackground());
         FormData fdFilenameLabel = new FormData();
-		// fdFilenameLabel.left = new FormAttachment(0,0);
-		fdFilenameLabel.top = new FormAttachment(0,10);
-		fdFilenameLabel.right = new FormAttachment(90,0);
+		fdFilenameLabel.left = new FormAttachment((Control)toolbar.getNativeObject(), 10);
+		fdFilenameLabel.top = new FormAttachment(0,0);
+		fdFilenameLabel.right = new FormAttachment(100,0);
         filenameLabel.setLayoutData(fdFilenameLabel);
         
-        // Add a filename listener to jobMeta to make sure we always show the correct filename in this label...
+        // Add a filename listener to transMeta to make sure we always show the correct filename in this label...
         //
         jobMeta.addFilenameChangedListener(new FilenameChangedListener() {
 		
@@ -191,7 +260,13 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 				canvas.layout(true, true);
 			}
 		});
-		*/
+        
+		try {
+			menuMap = XulHelper.createPopupMenus(SpoonInterface.XUL_FILE_MENUS, shell, new org.pentaho.di.ui.spoon.job.XulMessages(), "job-graph-hop", "job-graph-note", "job-graph-background", "job-graph-entry");
+		} catch (Throwable t) {
+			log.logError(toString(), Const.getStackTracker(t));
+			new ErrorDialog(shell, Messages.getString("JobGraph.Exception.ErrorReadingXULFile.Title"), Messages.getString("JobGraph.Exception.ErrorReadingXULFile.Message", Spoon.XUL_FILE_MENUS), new Exception(t));
+		}
         
 		newProps();
 		
@@ -736,6 +811,51 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 
 		setBackground(GUIResource.getInstance().getColorBackground());
 	}
+	
+	   private void addToolBar()
+		{
+
+			try {
+				toolbar = XulHelper.createToolbar(XUL_FILE_JOB_TOOLBAR, JobGraph.this, JobGraph.this, new XulMessages());
+				
+				// Add a few default key listeners
+				//
+				ToolBar toolBar = (ToolBar) toolbar.getNativeObject();
+				toolBar.addKeyListener(spoon.defKeys);
+				
+				addToolBarListeners();
+			} catch (Throwable t ) {
+				log.logError(toString(), Const.getStackTracker(t));
+				new ErrorDialog(shell, Messages.getString("Spoon.Exception.ErrorReadingXULFile.Title"), Messages.getString("Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_JOB_TOOLBAR), new Exception(t));
+			}
+		}
+
+		public void addToolBarListeners()
+		{
+			try
+			{
+				// first get the XML document
+				URL url = XulHelper.getAndValidate(XUL_FILE_JOB_TOOLBAR_PROPERTIES);
+				Properties props = new Properties();
+				props.load(url.openStream());
+				String ids[] = toolbar.getMenuItemIds();
+				for (int i = 0; i < ids.length; i++)
+				{
+					String methodName = (String) props.get(ids[i]);
+					if (methodName != null)
+					{
+						toolbar.addMenuListener(ids[i], this, methodName);
+
+					}
+				}
+
+			} catch (Throwable t ) {
+				t.printStackTrace();
+				new ErrorDialog(shell, Messages.getString("Spoon.Exception.ErrorReadingXULFile.Title"), 
+						Messages.getString("Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_JOB_TOOLBAR_PROPERTIES), new Exception(t));
+			}
+		}
+
 
     private void addKeyListener(Control control) {
     	// Keyboard shortcuts...
@@ -2389,4 +2509,371 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 		this.lastMove = lastMove;
 	}
 
+	
+	/**
+	 * Add an extra view to the main composite SashForm
+	 */
+	public void addExtraView() {
+		extraViewComposite = new Composite(sashForm, SWT.NONE);
+		FormLayout extraCompositeFormLayout = new FormLayout();
+		extraCompositeFormLayout.marginWidth=2;
+		extraCompositeFormLayout.marginHeight=2;
+		extraViewComposite.setLayout(extraCompositeFormLayout);
+		
+		// Add a buttons panel to the right...
+		//
+		buttonsComposite = new Composite(extraViewComposite, SWT.NONE);
+		FormLayout buttonsCompositeFormLayout = new FormLayout();
+		buttonsCompositeFormLayout.marginWidth=2;
+		buttonsCompositeFormLayout.marginHeight=2;
+		buttonsComposite.setLayout(buttonsCompositeFormLayout);
+		
+        FormData fdButtonsComposite = new FormData();
+        fdButtonsComposite.left = new FormAttachment(80,0);
+        fdButtonsComposite.right = new FormAttachment(100,0);
+        fdButtonsComposite.top = new FormAttachment(0,0);
+        fdButtonsComposite.bottom = new FormAttachment(100,0);
+        buttonsComposite.setLayoutData(fdButtonsComposite);
+		
+        // ROW 1
+        
+        // Start...
+        wStart = new Button(buttonsComposite, SWT.PUSH);
+		wStart.setText(START_TEXT);
+        FormData fdStart = new FormData();
+        fdStart.left = new FormAttachment(0,Const.MARGIN);
+        fdStart.right = new FormAttachment(50,0);
+        fdStart.top = new FormAttachment(0,20);
+        wStart.setLayoutData(fdStart);
+
+        /*
+        // Pause...
+        wPause = new Button(buttonsComposite, SWT.PUSH);
+		wPause.setText(PAUSE_TEXT);
+        FormData fdPause = new FormData();
+        fdPause.left = new FormAttachment(50,Const.MARGIN);
+        fdPause.right = new FormAttachment(100,0);
+        fdPause.top = new FormAttachment(0,20);
+        wPause.setLayoutData(fdPause);
+        */
+        Control lastControl = wStart;
+
+        // ROW 2
+        
+        // Stop...
+        wStop = new Button(buttonsComposite, SWT.PUSH);
+        wStop.setText(STOP_TEXT);
+        FormData fdStop = new FormData();
+        fdStop.left = new FormAttachment(0,Const.MARGIN);
+        fdStop.right = new FormAttachment(50,0);
+        fdStop.top = new FormAttachment(lastControl,2);
+        wStop.setLayoutData(fdStop);
+        lastControl = wStop;
+
+        // ROW 3
+        
+        // Show errors lines...
+        wError = new Button(buttonsComposite, SWT.PUSH);
+		wError.setText(Messages.getString("JobLog.Button.ShowErrorLines")); //$NON-NLS-1$
+        FormData fdError = new FormData();
+        fdError.left = new FormAttachment(0,Const.MARGIN);
+        fdError.right = new FormAttachment(50,0);
+        fdError.top = new FormAttachment(lastControl,2);
+        wError.setLayoutData(fdError);
+
+        // Clear
+        wClear = new Button(buttonsComposite, SWT.PUSH);
+		wClear.setText(Messages.getString("JobLog.Button.ClearLog")); //$NON-NLS-1$
+        FormData fdClear = new FormData();
+        fdClear.left = new FormAttachment(50,Const.MARGIN);
+        fdClear.right = new FormAttachment(100,0);
+        fdClear.top = new FormAttachment(lastControl,2);
+        wClear.setLayoutData(fdClear);
+        lastControl = wError;
+
+        // Row 4
+        
+        // Log
+        wLog = new Button(buttonsComposite, SWT.PUSH);
+		wLog.setText(Messages.getString("JobLog.Button.LogSettings")); //$NON-NLS-1$
+        FormData fdLog = new FormData();
+        fdLog.left = new FormAttachment(0,Const.MARGIN);
+        fdLog.right = new FormAttachment(50,0);
+        fdLog.top = new FormAttachment(lastControl,2);
+        wLog.setLayoutData(fdLog);
+
+        lastControl = wLog;
+
+        // Row 5
+        
+		// Safe mode
+		wSafeMode = new Button(buttonsComposite, SWT.CHECK);
+		wSafeMode.setText(Messages.getString("JobLog.Button.SafeMode")); //$NON-NLS-1$
+        FormData fdSafeMode = new FormData();
+        fdSafeMode.left = new FormAttachment(0,Const.MARGIN);
+        fdSafeMode.right = new FormAttachment(100,0);
+        fdSafeMode.top = new FormAttachment(lastControl,2);
+        wSafeMode.setLayoutData(fdSafeMode);
+        lastControl = wSafeMode;
+        
+        
+		// Attach listeners to the buttons
+		//
+        wStart.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { spoon.executeJob(jobMeta, true, false, null, wSafeMode.getSelection()); }});
+        // wPause.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { pauseJob();}}); TODO implement pause later
+        wStop.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { stopJob(); }});
+		wError.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { jobLogDelegate.showErrors(); } });
+		wClear.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { jobLogDelegate.clearLog(); }});
+		wLog.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { spoon.setLog(); }});
+		
+		
+		// Add a tab folder ...
+		//
+        extraViewTabFolder= new CTabFolder(extraViewComposite, SWT.MULTI);
+        extraViewTabFolder.setSimple(false);
+        extraViewTabFolder.setUnselectedImageVisible(true);
+        extraViewTabFolder.setUnselectedCloseVisible(true);
+        
+        // If the last tab is closed, see if we need to close the bottom view.
+        //
+        extraViewTabFolder.addCTabFolder2Listener(new CTabFolder2Adapter() {
+			public void close(CTabFolderEvent event) {
+				CTabItem tabItem = (CTabItem) event.item;
+				if (tabItem == jobLogDelegate.getJobLogTab()) {
+					showLogView();
+				}
+				/*
+				if (tabItem == transGridDelegate.getTransGridTab()) {
+					showGridView();
+				}
+				*/
+				if (tabItem == jobHistoryDelegate.getJobHistoryTab()) {
+					showHistoryView();
+				}
+				
+				event.doit=false;
+			}
+		});
+        
+        extraViewTabFolder.addMouseListener(new MouseAdapter() {
+		
+			@Override
+			public void mouseDoubleClick(MouseEvent arg0) {
+				if (sashForm.getMaximizedControl()==null) { 
+					sashForm.setMaximizedControl(extraViewComposite);
+				} else {
+					sashForm.setMaximizedControl(null);
+				}
+			}
+		
+		});
+        
+        FormData fdTabFolder = new FormData();
+        fdTabFolder.left = new FormAttachment(0,0);
+        fdTabFolder.right = new FormAttachment(80,0);
+        fdTabFolder.top = new FormAttachment(0,0);
+        fdTabFolder.bottom = new FormAttachment(100,0);
+        extraViewTabFolder.setLayoutData(fdTabFolder);
+        
+		sashForm.setWeights(new int[] { 70, 30, });
+	}
+
+    /**
+     * If the extra tab view at the bottom is empty, we close it.
+     */
+    public void checkEmptyExtraView() {
+    	if (extraViewTabFolder.getItemCount()==0) {
+    		disposeExtraView();
+    	}
+    }
+
+    private void disposeExtraView() {
+    	extraViewComposite.dispose();
+		sashForm.layout();
+		sashForm.setWeights( new int[] { 100, });
+	}
+
+    public void showLogView() {
+    	jobLogDelegate.showLogView();
+    }
+    
+    public void showHistoryView() {
+    	jobHistoryDelegate.showHistoryView();
+    }
+    
+    public void showGridView() {
+    	jobGridDelegate.showGridView();
+    }
+    
+
+    
+    public void newFileDropDown() {
+    	spoon.newFileDropDown(toolbar);
+    }
+
+    public void openFile() {
+    	spoon.openFile();
+    }
+
+    public void saveFile() {
+    	spoon.saveFile();
+    }
+
+    public void saveFileAs() {
+    	spoon.saveFileAs();
+    }
+
+    public void saveXMLFileToVfs() {
+    	spoon.saveXMLFileToVfs();
+    }
+
+    public void printFile() {
+    	spoon.printFile();
+    }
+
+    public void runJob() {
+    	spoon.runFile();
+    }
+
+    public void getSQL() {
+    	spoon.getSQL();
+    }
+    
+    public void exploreDatabase() {
+    	spoon.exploreDatabase();
+    }
+    
+	public synchronized void startJob(Date replayDate)
+	{
+		if (job==null) // Not running, start the transformation...
+		{
+			// Auto save feature...
+			if (jobMeta.hasChanged())
+			{
+				if (spoon.props.getAutoSave()) 
+				{
+					log.logDetailed(toString(), Messages.getString("JobLog.Log.AutoSaveFileBeforeRunning")); //$NON-NLS-1$
+					System.out.println(Messages.getString("JobLog.Log.AutoSaveFileBeforeRunning2")); //$NON-NLS-1$
+					spoon.saveToFile(jobMeta);
+				}
+				else
+				{
+					MessageDialogWithToggle md = new MessageDialogWithToggle(shell, 
+						 Messages.getString("JobLog.Dialog.SaveChangedFile.Title"),  //$NON-NLS-1$
+						 null,
+						 Messages.getString("JobLog.Dialog.SaveChangedFile.Message")+Const.CR+Messages.getString("JobLog.Dialog.SaveChangedFile.Message2")+Const.CR, //$NON-NLS-1$ //$NON-NLS-2$
+						 MessageDialog.QUESTION,
+						 new String[] { Messages.getString("System.Button.Yes"), Messages.getString("System.Button.No") }, //$NON-NLS-1$ //$NON-NLS-2$
+						 0,
+						 Messages.getString("JobLog.Dialog.SaveChangedFile.Toggle"), //$NON-NLS-1$
+						 spoon.props.getAutoSave()
+						 );
+					int answer = md.open();
+					if ( (answer&0xFF) == 0)
+					{
+						spoon.saveToFile(jobMeta);
+					}
+					spoon.props.setAutoSave(md.getToggleState());
+				}
+			}
+			
+            if ( ((jobMeta.getName()!=null && spoon.rep!=null) ||     // Repository available & name set
+			      (jobMeta.getFilename()!=null && spoon.rep==null )   // No repository & filename set
+			      ) && !jobMeta.hasChanged()                             // Didn't change
+			   )
+			{
+				if (job==null || (job!=null && !job.isActive()) )
+				{
+					try
+					{
+                        // TODO: clean up this awful mess...
+                        //
+                        job = new Job(log, jobMeta.getName(), jobMeta.getFilename(), null);
+						job.open(spoon.rep, jobMeta.getFilename(), jobMeta.getName(), jobMeta.getDirectory().getPath(), spoon);
+                        job.getJobMeta().setArguments(jobMeta.getArguments());
+                        job.shareVariablesWith(jobMeta);
+                        log.logMinimal(Spoon.APP_NAME, Messages.getString("JobLog.Log.StartingJob")); //$NON-NLS-1$
+						job.start();
+						jobGridDelegate.previousNrItems = -1;
+                        // Link to the new jobTracker!
+						jobGridDelegate.jobTracker = job.getJobTracker();
+                        isRunning=true;
+					}
+					catch(KettleException e)
+					{
+						new ErrorDialog(shell, Messages.getString("JobLog.Dialog.CanNotOpenJob.Title"), Messages.getString("JobLog.Dialog.CanNotOpenJob.Message"), e);  //$NON-NLS-1$ //$NON-NLS-2$
+						job=null;
+					}
+				}
+				else
+				{
+					MessageBox m = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
+					m.setText(Messages.getString("JobLog.Dialog.JobIsAlreadyRunning.Title")); //$NON-NLS-1$
+					m.setMessage(Messages.getString("JobLog.Dialog.JobIsAlreadyRunning.Message"));	 //$NON-NLS-1$
+					m.open();
+				}
+			}
+			else
+			{
+				if (jobMeta.hasChanged())
+				{
+					MessageBox m = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
+					m.setText(Messages.getString("JobLog.Dialog.JobHasChangedSave.Title")); //$NON-NLS-1$
+					m.setMessage(Messages.getString("JobLog.Dialog.JobHasChangedSave.Message"));	 //$NON-NLS-1$
+					m.open();
+				}
+				else
+				if (spoon.rep!=null && jobMeta.getName()==null)
+				{
+					MessageBox m = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
+					m.setText(Messages.getString("JobLog.Dialog.PleaseGiveThisJobAName.Title")); //$NON-NLS-1$
+					m.setMessage(Messages.getString("JobLog.Dialog.PleaseGiveThisJobAName.Message"));	 //$NON-NLS-1$
+					m.open();
+				}
+				else
+				{
+					MessageBox m = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
+					m.setText(Messages.getString("JobLog.Dialog.NoFilenameSaveYourJobFirst.Title")); //$NON-NLS-1$
+					m.setMessage(Messages.getString("JobLog.Dialog.NoFilenameSaveYourJobFirst.Message"));	 //$NON-NLS-1$
+					m.open();
+				}
+			}
+            enableFields();
+		} 
+	}
+	
+    
+	private synchronized void stopJob()
+    {
+        try
+        {
+            if (job!=null && isRunning && job.isInitialized()) 
+            {
+                job.stopAll();
+                job.endProcessing("stop", new Result()); //$NON-NLS-1$
+                job.waitUntilFinished(5000); // wait until everything is stopped, maximum 5 seconds...
+                job=null;
+                isRunning=false;
+                log.logMinimal(Spoon.APP_NAME, Messages.getString("JobLog.Log.JobWasStopped")); //$NON-NLS-1$
+            }
+        }
+        catch(KettleJobException je)
+        {
+            MessageBox m = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
+            m.setText(Messages.getString("JobLog.Dialog.UnableToSaveStopLineInLoggingTable.Title")); //$NON-NLS-1$
+            m.setMessage(Messages.getString("JobLog.Dialog.UnableToSaveStopLineInLoggingTable.Message")+Const.CR+je.toString());    //$NON-NLS-1$
+            m.open();
+        }
+        finally
+        {
+            enableFields();
+        }
+    }
+
+
+    public void enableFields()
+    {
+        wStart.setEnabled(!isRunning);
+        wStop.setEnabled(isRunning);
+    }	
 }

@@ -19,7 +19,7 @@ import java.util.Set;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
-import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.ToolBar;
 import org.pentaho.xul.EventHandler;
 import org.pentaho.xul.XulObject;
@@ -39,10 +39,10 @@ public class Toolbar extends XulObject implements XulToolbar {
     private int mode = MODE_ICONS;
 	private Map<String,XulToolbarButton> buttonMap = new HashMap<String,XulToolbarButton>();
 	
-	public Toolbar(Shell shell, String id, XulToolbox parent) {
+	public Toolbar(Composite composite, String id, XulToolbox parent) {
 		super( id, parent );
 		handler = new EventHandler();
-		toolBar = new ToolBar(shell, SWT.HORIZONTAL | SWT.FLAT );
+		toolBar = new ToolBar(composite, SWT.HORIZONTAL | SWT.FLAT );
 
         FormData fdBar = new FormData();
         fdBar.left = new FormAttachment(0, 0);
@@ -129,4 +129,7 @@ public class Toolbar extends XulObject implements XulToolbar {
 		this.mode = mode;
 	}
 
+	public String[] getMenuItemIds() {
+		return handler.getMenuItemIds();
+	}
 }

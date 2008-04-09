@@ -204,15 +204,17 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 				tabItem.setImage(GUIResource.getInstance().getImageTransGraph());
 				tabItem.setControl(transGraph);
 
+				// OK, also see if we need to open a new history window.
+				if (transMeta.getLogConnection() != null && !Const.isEmpty(transMeta.getLogTable()) && !transMeta.isSlaveTransformation())
+				{
+					// addTransHistory(transMeta, false);
+					transGraph.transHistoryDelegate.addTransHistory();
+				}
+
 				spoon.delegates.tabs.addTab(new TabMapEntry(tabItem, tabName, transGraph, TabMapEntry.OBJECT_TYPE_TRANSFORMATION_GRAPH));
 			}
 			int idx = spoon.tabfolder.indexOf(tabItem);
 
-			// OK, also see if we need to open a new history window.
-			if (transMeta.getLogConnection() != null && !Const.isEmpty(transMeta.getLogTable()) && !transMeta.isSlaveTransformation())
-			{
-				addTransHistory(transMeta, false);
-			}
 			// keep the focus on the graph
 			spoon.tabfolder.setSelected(idx);
 
@@ -272,23 +274,20 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 		{
 			TransLog transLog = new TransLog(spoon.tabfolder.getSwtTabset(), spoon, transMeta);
 			tabItem = new TabItem(spoon.tabfolder, tabName, tabName);
-			tabItem.setToolTipText(Messages.getString("Spoon.Title.ExecLogTransView.Tooltip",
-					spoon.delegates.tabs.makeTransGraphTabName(transMeta)));
+			tabItem.setToolTipText(Messages.getString("Spoon.Title.ExecLogTransView.Tooltip", spoon.delegates.tabs.makeTransGraphTabName(transMeta)));
 			tabItem.setControl(transLog);
 
 			// If there is an associated history window, we want to keep that
 			// one up-to-date as well.
 			//
-			TransHistory transHistory = findTransHistoryOfTransformation(transMeta);
-			TabItem historyItem = spoon.delegates.tabs.findTabItem(spoon.delegates.tabs
-					.makeHistoryTabName(transMeta), TabMapEntry.OBJECT_TYPE_TRANSFORMATION_HISTORY);
+			TransGraph transGraph = findTransGraphOfTransformation(transMeta);
+			TabItem historyItem = spoon.delegates.tabs.findTabItem(spoon.delegates.tabs.makeHistoryTabName(transMeta), TabMapEntry.OBJECT_TYPE_TRANSFORMATION_HISTORY);
 
-			if (transHistory != null && historyItem != null)
+			if (transGraph != null && historyItem != null)
 			{
-				TransHistoryRefresher transHistoryRefresher = new TransHistoryRefresher(historyItem,
-						transHistory);
+				TransHistoryRefresher transHistoryRefresher = new TransHistoryRefresher(historyItem, transGraph);
 				spoon.tabfolder.addListener(transHistoryRefresher);
-				transLog.setTransHistoryRefresher(transHistoryRefresher);
+				// transLog.setTransHistoryRefresher(transHistoryRefresher);
 			}
 
 			spoon.delegates.tabs.addTab(new TabMapEntry(tabItem, tabName, transLog,
@@ -301,6 +300,7 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 		}
 	}
 
+	/*
 	public void addTransHistory(TransMeta transMeta, boolean select)
 	{
 		// See if there already is a tab for this history view
@@ -320,14 +320,14 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 
 			// If there is an associated log window that's open, find it and add
 			// a refresher
-			TransLog transLog = findTransLogOfTransformation(transMeta);
-			if (transLog != null)
+			TransGraph transGraph = findTransGraphOfTransformation(transMeta);
+			if (transGraph != null)
 			{
 				TransHistoryRefresher transHistoryRefresher = new TransHistoryRefresher(tabItem, transHistory);
 				spoon.tabfolder.addListener(transHistoryRefresher);
-				transLog.setTransHistoryRefresher(transHistoryRefresher);
+				transGraph.setTransHistoryRefresher(transHistoryRefresher);
 			}
-			transHistory.markRefreshNeeded(); // will refresh when first
+			transGraph.transHistoryDelegate.markRefreshNeeded(); // will refresh when first
 			// selected
 
 			spoon.delegates.tabs.addTab(new TabMapEntry(tabItem, tabName, transHistory,
@@ -339,7 +339,8 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 			spoon.tabfolder.setSelected(idx);
 		}
 	}
-
+	*/
+	
 	public void tabSelected(TabItem item)
 	{
 		List<TabMapEntry> collection = spoon.delegates.tabs.getTabs();
@@ -1015,16 +1016,17 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 			
 
 			
-			addTransLog(transMeta, executionConfiguration.isExecutingLocally());
-			TransLog transLog = spoon.getActiveTransLog();
+			// addTransLog(transMeta, executionConfiguration.isExecutingLocally());
+			// TransLog transLog = spoon.getActiveTransLog();
+			TransGraph activeTransGraph = spoon.getActiveTransGraph();
 
 			// Is this a local execution?
 			//
 			if (executionConfiguration.isExecutingLocally()) {
 				if (debug || preview) {
-					transLog.debug(executionConfiguration, transDebugMeta);
+					activeTransGraph.debug(executionConfiguration, transDebugMeta);
 				} else {
-					transLog.start(executionConfiguration);
+					activeTransGraph.start(executionConfiguration);
 				}
 				
 			// Are we executing remotely?

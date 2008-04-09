@@ -1,21 +1,12 @@
- /* Copyright (c) 2007 Pentaho Corporation.  All rights reserved. 
- * This software was developed by Pentaho Corporation and is provided under the terms 
- * of the GNU Lesser General Public License, Version 2.1. You may not use 
- * this file except in compliance with the license. If you need a copy of the license, 
- * please go to http://www.gnu.org/licenses/lgpl-2.1.txt. The Original Code is Pentaho 
- * Data Integration.  The Initial Developer is Pentaho Corporation.
- *
- * Software distributed under the GNU Lesser Public License is distributed on an "AS IS" 
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or  implied. Please refer to 
- * the license for the specific language governing your rights and limitations.*/
- 
 package org.pentaho.di.ui.spoon.trans;
+
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
@@ -27,11 +18,9 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.exception.KettleException;
@@ -46,26 +35,16 @@ import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.spoon.Messages;
 import org.pentaho.di.ui.spoon.Spoon;
-import org.pentaho.di.ui.spoon.TabItemInterface;
+import org.pentaho.di.ui.spoon.delegates.SpoonDelegate;
 
+public class TransHistoryDelegate extends SpoonDelegate {
+	
+	// private static final LogWriter log = LogWriter.getInstance();
+	
+	private TransGraph transGraph;
 
-
-/**
- * TransHistory handles the display of the historical information regarding earlier runs of this transformation.
- * The idea is that this Composite is only populated when after loading of a transformation, we find a connection and logging table.
- * We then read from this table and populate the grid and log.
- *  
- * @see org.pentaho.di.ui.spoon.Spoon
- * @author Matt
- * @since  16-mar-2006
- */
-public class TransHistory extends Composite implements TabItemInterface
-{
-    // private static final LogWriter log = LogWriter.getInstance();
-    
-    private Spoon spoon;
-    private TransMeta transMeta;
-
+	private CTabItem transHistoryTab;
+	
     private ColumnInfo[] colinf;	
 	
 	private Text   wText;
@@ -73,11 +52,8 @@ public class TransHistory extends Composite implements TabItemInterface
     private TableView wFields;
     
 	private FormData fdText, fdSash, fdRefresh, fdReplay; 
-	
 
     private List<RowMetaAndData> rowList;
-
-	private final Shell shell;
 
 	private boolean refreshNeeded = true;
 	
@@ -85,24 +61,44 @@ public class TransHistory extends Composite implements TabItemInterface
 	
 	private ValueMetaInterface durationMeta;
 	private ValueMetaInterface replayDateMeta;
+
+	/**
+	 * @param spoon
+	 * @param transGraph
+	 */
+	public TransHistoryDelegate(Spoon spoon, TransGraph transGraph) {
+		super(spoon);
+		this.transGraph = transGraph;
+	}
 	
-	public TransHistory(Composite parent, final Spoon spoon, final TransMeta transMeta)
-	{
-		super(parent, SWT.NONE);
-		this.spoon = spoon;
-		this.shell = parent.getShell();
-        this.transMeta = transMeta;
+	public void addTransHistory() {
+		// First, see if we need to add the extra view...
+		//
+		if (transGraph.extraViewComposite==null || transGraph.extraViewComposite.isDisposed()) {
+			transGraph.addExtraView();
+		} else {
+			if (transHistoryTab!=null && !transHistoryTab.isDisposed()) {
+				// just set this one active and get out...
+				//
+				transGraph.extraViewTabFolder.setSelection(transHistoryTab);
+				return; 
+			}
+		}
 		
-		FormLayout formLayout = new FormLayout ();
-		formLayout.marginWidth  = Const.FORM_MARGIN;
-		formLayout.marginHeight = Const.FORM_MARGIN;
+		// Add a transLogTab : display the logging...
+		//
+		transHistoryTab = new CTabItem(transGraph.extraViewTabFolder, SWT.CLOSE | SWT.MAX);
+		transHistoryTab.setImage(GUIResource.getInstance().getImageShowHistory());
+		transHistoryTab.setText(Messages.getString("Spoon.TransGraph.HistoryTab.Name"));
 		
-		setLayout(formLayout);
+		// Create a composite, slam everything on there like it was in the history tab.
+		//
+		Composite historyComposite = new Composite(transGraph.extraViewTabFolder, SWT.NONE);
+		historyComposite.setLayout(new FormLayout());
 		
-		setVisible(true);
-        spoon.props.setLook(this);
+        spoon.props.setLook(historyComposite);
 		
-		SashForm sash = new SashForm(this, SWT.VERTICAL);
+		SashForm sash = new SashForm(historyComposite, SWT.VERTICAL);
 		spoon.props.setLook(sash);
 		
 		sash.setLayout(new FillLayout());
@@ -134,7 +130,7 @@ public class TransHistory extends Composite implements TabItemInterface
         durationMeta.setConversionMask("0");
         colinf[2].setValueMeta(durationMeta);
         
-        wFields=new TableView(transMeta, 
+        wFields=new TableView(transGraph.getManagedObject(), 
         		              sash, 
 							  SWT.BORDER | SWT.FULL_SELECTION | SWT.SINGLE, 
 							  colinf, 
@@ -149,7 +145,7 @@ public class TransHistory extends Composite implements TabItemInterface
 		wText.setVisible(true);
         wText.setText(Messages.getString("TransHistory.PleaseRefresh.Message"));
 		
-		wRefresh = new Button(this, SWT.PUSH);
+		wRefresh = new Button(historyComposite, SWT.PUSH);
 		wRefresh.setText(Messages.getString("TransHistory.Button.Refresh")); //$NON-NLS-1$
 
 		fdRefresh    = new FormData(); 
@@ -157,7 +153,7 @@ public class TransHistory extends Composite implements TabItemInterface
 		fdRefresh.bottom = new FormAttachment(100, 0);
 		wRefresh.setLayoutData(fdRefresh);
 		
-		wReplay = new Button(this, SWT.PUSH);
+		wReplay = new Button(historyComposite, SWT.PUSH);
 		wReplay.setText(Messages.getString("TransHistory.Button.Replay")); //$NON-NLS-1$
 
 		fdReplay    = new FormData(); 
@@ -183,7 +179,7 @@ public class TransHistory extends Composite implements TabItemInterface
 		
 		// sash.setWeights(new int[] { 60, 40} );
 
-		pack();
+		historyComposite.pack();
 		
 		setupReplayListener();
         
@@ -218,8 +214,31 @@ public class TransHistory extends Composite implements TabItemInterface
             
             }
         );
+
+		
+		transHistoryTab.setControl(historyComposite);
+		
+		transGraph.extraViewTabFolder.setSelection(transHistoryTab);
 	}
 
+    
+    public void showHistoryView() {
+    	
+    	// What button?
+    	//
+    	// XulToolbarButton showLogXulButton = toolbar.getButtonById("trans-show-log");
+    	// ToolItem toolBarButton = (ToolItem) showLogXulButton.getNativeObject();
+    	
+    	if (transHistoryTab==null || transHistoryTab.isDisposed()) {
+    		addTransHistory();
+    	} else {
+    		transHistoryTab.dispose();
+    		
+    		transGraph.checkEmptyExtraView();
+    	}
+    }
+    
+    
 	private void setupReplayListener() {
 		SelectionAdapter lsReplay = new SelectionAdapter()
         {
@@ -234,9 +253,9 @@ public class TransHistory extends Composite implements TabItemInterface
 						
 						Date replayDate = stringValueMeta.getDate(dateString);
 						
-						spoon.executeTransformation(transMeta, true, false, false, false, false, replayDate, false);
+						spoon.executeTransformation(transGraph.getManagedObject(), true, false, false, false, false, replayDate, false);
 					} catch (KettleException e1) {
-						new ErrorDialog(shell, 
+						new ErrorDialog(transGraph.getShell(), 
 								Messages.getString("TransHistory.Error.ReplayingTransformation2"), //$NON-NLS-1$
 								Messages.getString("TransHistory.Error.InvalidReplayDate") + dateString, e1); //$NON-NLS-1$
 					}
@@ -246,13 +265,13 @@ public class TransHistory extends Composite implements TabItemInterface
 	
         wReplay.addSelectionListener(lsReplay);
 	}
-	
+
     /**
      * Refreshes the history window in Spoon: reads entries from the specified log table in the Transformation Settings dialog.
      */
 	private void refreshHistory()
 	{
-        shell.getDisplay().asyncExec(
+        transGraph.getDisplay().asyncExec(
             new Runnable()
             {
                 public void run()
@@ -266,6 +285,7 @@ public class TransHistory extends Composite implements TabItemInterface
     public void getHistoryData()
     {
         // See if there is a transformation loaded that has a connection table specified.
+    	TransMeta transMeta = transGraph.getManagedObject();
         if (transMeta!=null && !Const.isEmpty(transMeta.getName()))
         {
             if (transMeta.getLogConnection()!=null)
@@ -429,8 +449,9 @@ public class TransHistory extends Composite implements TabItemInterface
             wFields.clearAll(false);
         }
 	}
-    	
-	private void showLogEntry()
+
+	
+	public void showLogEntry()
     {
         if (rowList==null) 
         {
@@ -454,13 +475,8 @@ public class TransHistory extends Composite implements TabItemInterface
             }
         }
     }
-
-    public String toString()
-	{
-		return Spoon.APP_NAME;
-	}
-
-	private void refreshHistoryIfNeeded() {
+	
+	public void refreshHistoryIfNeeded() {
 		boolean reallyRefresh = false;
 		synchronized (refreshNeededLock) {
 			reallyRefresh = refreshNeeded;
@@ -472,54 +488,17 @@ public class TransHistory extends Composite implements TabItemInterface
 		}
 	}
 
-	private void markRefreshNeeded() {
+	public void markRefreshNeeded() {
 		synchronized (refreshNeededLock) {
 			refreshNeeded = true;
 		}
 	}
 
-    public EngineMetaInterface getMeta() {
-    	return transMeta;
-    }
+	/**
+	 * @return the transHistoryTab
+	 */
+	public CTabItem getTransHistoryTab() {
+		return transHistoryTab;
+	}
 
-    /**
-     * @return the transMeta
-     * /
-    public TransMeta getTransMeta()
-    {
-        return transMeta;
-    }
-
-    /**
-     * @param transMeta the transMeta to set
-     */
-    public void setTransMeta(TransMeta transMeta)
-    {
-        this.transMeta = transMeta;
-    }
-
-    public boolean canBeClosed()
-    {
-        return true; // You can close this one at any time.
-    }
-    
-    public boolean applyChanges()
-    {
-        return true;
-    }
-
-    public int showChangedWarning()
-    {
-        return SWT.NONE;
-    }
-
-    public Object getManagedObject()
-    {
-        return transMeta;
-    }
-    
-    public boolean hasContentChanged()
-    {
-        return false;
-    }
 }

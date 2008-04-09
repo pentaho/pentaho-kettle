@@ -420,7 +420,7 @@ public class MergeJoinDialog extends BaseStepDialog implements StepDialogInterfa
                  Messages.getString("MergeJoinDialog.InputNeedSort.Option2"), //$NON-NLS-1$
                  "N".equalsIgnoreCase( props.getCustomParameter(STRING_SORT_WARNING_PARAMETER, "Y") ) //$NON-NLS-1$ //$NON-NLS-2$
             );
-            md.setDefaultImage(GUIResource.getInstance().getImageSpoon());
+            MessageDialogWithToggle.setDefaultImage(GUIResource.getInstance().getImageSpoon());
             md.open();
             props.setCustomParameter(STRING_SORT_WARNING_PARAMETER, md.getToggleState()?"N":"Y"); //$NON-NLS-1$ //$NON-NLS-2$
             props.saveProps();

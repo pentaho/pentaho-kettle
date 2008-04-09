@@ -1042,6 +1042,7 @@ public class LDIFInputDialog extends BaseStepDialog implements
 		return true;
 	}
 
+	@SuppressWarnings("unchecked")
 	private String GetValue(LDAPAttribute[] attributes_LDIF,
 			String AttributValue) {
 		String Stringvalue = null;
@@ -1049,9 +1050,9 @@ public class LDIFInputDialog extends BaseStepDialog implements
 		for (int j = 0; j < attributes_LDIF.length; j++) {
 			LDAPAttribute attribute_DIF = attributes_LDIF[j];
 			if (attribute_DIF.getName().equalsIgnoreCase(AttributValue)) {
-				Enumeration valuesLDIF = attribute_DIF.getStringValues();
+				Enumeration<String> valuesLDIF = attribute_DIF.getStringValues();
 				// Get the first occurence
-				Stringvalue = (String) valuesLDIF.nextElement();
+				Stringvalue = valuesLDIF.nextElement();
 			}
 		}
 

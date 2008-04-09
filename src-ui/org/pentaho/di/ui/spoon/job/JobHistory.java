@@ -231,7 +231,7 @@ public class JobHistory extends Composite implements TabItemInterface
                     try
                     {
                         Date date = df.parse(dateString);
-                        spoon.executeJob(jobMeta, true, false, date);
+                        spoon.executeJob(jobMeta, true, false, date, false);
                     }
                     catch (ParseException e1)
                     {
@@ -248,7 +248,7 @@ public class JobHistory extends Composite implements TabItemInterface
     /**
      * Refreshes the history window in Spoon: reads entries from the specified log table in the Job Settings dialog.
      */
-	public void refreshHistory()
+	private void refreshHistory()
 	{
         // See if there is a job loaded that has a connection table specified.
         if (jobMeta!=null && !Const.isEmpty(jobMeta.getName()))
@@ -343,7 +343,7 @@ public class JobHistory extends Composite implements TabItemInterface
         }
 	}
     	
-	public void showLogEntry()
+	private void showLogEntry()
     {
         if (rowList==null) 
         {

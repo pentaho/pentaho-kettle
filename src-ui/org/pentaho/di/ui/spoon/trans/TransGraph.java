@@ -12,10 +12,13 @@
 package org.pentaho.di.ui.spoon.trans;
 
 import java.lang.reflect.InvocationTargetException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.StringTokenizer;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -25,6 +28,11 @@ import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.window.DefaultToolTip;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabFolder2Adapter;
+import org.eclipse.swt.custom.CTabFolderEvent;
+import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.dnd.DropTargetEvent;
@@ -49,6 +57,8 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
+import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -58,6 +68,8 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.ToolItem;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.EngineMetaInterface;
@@ -70,6 +82,7 @@ import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.gui.Redrawable;
 import org.pentaho.di.core.gui.SnapAllignDistribute;
 import org.pentaho.di.core.gui.SpoonInterface;
+import org.pentaho.di.core.listeners.FilenameChangedListener;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.i18n.LanguageChoice;
@@ -78,8 +91,14 @@ import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.DatabaseImpact;
 import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.StepPlugin;
+import org.pentaho.di.trans.Trans;
+import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransHopMeta;
+import org.pentaho.di.trans.TransListener;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.debug.BreakPointListener;
+import org.pentaho.di.trans.debug.StepDebugMeta;
+import org.pentaho.di.trans.debug.TransDebugMeta;
 import org.pentaho.di.trans.step.RemoteStep;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.tableinput.TableInputMeta;
@@ -88,6 +107,7 @@ import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
 import org.pentaho.di.ui.core.dialog.StepFieldsDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.XulHelper;
@@ -100,12 +120,14 @@ import org.pentaho.di.ui.spoon.TabItemInterface;
 import org.pentaho.di.ui.spoon.TransPainter;
 import org.pentaho.di.ui.spoon.XulMessages;
 import org.pentaho.di.ui.spoon.dialog.DeleteMessageBox;
+import org.pentaho.di.ui.spoon.dialog.EnterPreviewRowsDialog;
 import org.pentaho.di.ui.spoon.dialog.SearchFieldsProgressDialog;
 import org.pentaho.di.ui.trans.dialog.TransDialog;
 import org.pentaho.xul.menu.XulMenu;
 import org.pentaho.xul.menu.XulMenuChoice;
 import org.pentaho.xul.menu.XulPopupMenu;
 import org.pentaho.xul.swt.menu.MenuChoice;
+import org.pentaho.xul.toolbar.XulToolbar;
 
 
 /**
@@ -120,17 +142,32 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 {
     private static final LogWriter log = LogWriter.getInstance();
     private static final int HOP_SEL_MARGIN = 9;
+    
+	private static final String XUL_FILE_TRANS_TOOLBAR = "ui/trans-toolbar.xul";
+	public static final String XUL_FILE_TRANS_TOOLBAR_PROPERTIES = "ui/trans-toolbar.properties";
+	
+	public final static String START_TEXT = Messages.getString("TransLog.Button.StartTransformation"); //$NON-NLS-1$
+	public final static String PAUSE_TEXT = Messages.getString("TransLog.Button.PauseTransformation"); //$NON-NLS-1$
+	public final static String RESUME_TEXT = Messages.getString("TransLog.Button.ResumeTransformation"); //$NON-NLS-1$
+	public final static String STOP_TEXT = Messages.getString("TransLog.Button.StopTransformation"); //$NON-NLS-1$
+
 
     private TransMeta        transMeta;
+    
+    public  Trans            trans;
 
     private Shell            shell;
 
+    private Composite        mainComposite;
+    
     private Canvas           canvas;
     
     private DefaultToolTip   toolTip;
     
     private CheckBoxToolTip  helpTip;
-
+    
+    private XulToolbar       toolbar;
+    
     private int              iconsize;
 
     private Point            lastclick;
@@ -182,9 +219,14 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     private List<DatabaseImpact> impact;
 
     /**
-     * Indicates whether or not an impact analyses has already run.
+     * Indicates whether or not an impact analysis has already run.
      */
     private boolean impactFinished;
+    
+	private TransHistoryRefresher spoonHistoryRefresher;
+	
+	private TransDebugMeta lastTransDebugMeta;
+
 
     protected static Map<String, org.pentaho.xul.swt.menu.Menu> menuMap = new HashMap<String, org.pentaho.xul.swt.menu.Menu>();
 	protected int currentMouseX = 0;
@@ -193,8 +235,34 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 	protected TransHopMeta currentHop;
 	protected StepMeta currentStep;
 	private List<AreaOwner> areaOwners;
-	// private Text filenameLabel;
+	private Text filenameLabel;
+	private SashForm sashForm;
+	public Composite extraViewComposite;
+	public CTabFolder extraViewTabFolder;
+	private boolean initialized;
+	private boolean running;
+	private boolean halted;
+	private boolean halting;
+	private boolean debug;
+	private boolean pausing;
+	
+	private Button wStart;
+	private Button wPause;
+    private Button wStop;
+	private Button wPreview;
+	private Button wError;
+	private Button wClear;
+	private Button wLog;
+	private Button wOnlyActive;
+	private Button wSafeMode;
+	private Composite buttonsComposite;
 
+	
+	public TransLogDelegate transLogDelegate; 
+	public TransGridDelegate transGridDelegate; 
+	public TransHistoryDelegate transHistoryDelegate; 
+	public TransPerfDelegate transPerfDelegate; 
+	
 	public void setCurrentNote( NotePadMeta ni ) {
 		this.ni = ni;
 	}
@@ -225,23 +293,51 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         this.shell = parent.getShell();
         this.spoon = spoon;
         this.transMeta = transMeta;
-        
         this.areaOwners = new ArrayList<AreaOwner>();
         
-        setLayout(new FillLayout());
+        transLogDelegate = new TransLogDelegate(spoon, this);
+        transGridDelegate = new TransGridDelegate(spoon, this);
+        transHistoryDelegate = new TransHistoryDelegate(spoon, this);
+        transPerfDelegate = new TransPerfDelegate(spoon, this);
         
-        canvas = new Canvas(this, SWT.V_SCROLL | SWT.H_SCROLL | SWT.NO_BACKGROUND);
+        setLayout(new FormLayout());
+        
+        // Add a tool-bar at the top of the tab
+        // The form-data is set on the native widget automatically
+        //
+        addToolBar();
 
-        /*
-        canvas.setLayout(new FormLayout());
+        // The main composite contains the graph view, but if needed also 
+        // a view with an extra tab containing log, etc.
+        //
+        mainComposite = new Composite(this, SWT.NONE);
+        mainComposite.setLayout(new FillLayout());
+        FormData fdMainComposite = new FormData();
+		fdMainComposite.left = new FormAttachment(0,0);
+		fdMainComposite.top = new FormAttachment((Control)toolbar.getNativeObject(),0);
+		fdMainComposite.right = new FormAttachment(100,0);
+		fdMainComposite.bottom= new FormAttachment(100,0);
+        mainComposite.setLayoutData(fdMainComposite);
         
-		filenameLabel = new Text(canvas, SWT.RIGHT | SWT.ON_TOP | SWT.NO_BACKGROUND | SWT.READ_ONLY | SWT.NO_FOCUS);
+        // To allow for a splitter later on, we will add the splitter here...
+        //
+        sashForm = new SashForm(mainComposite, SWT.VERTICAL );
+        // sashForm.setForeground(GUIResource.getInstance().getColorBlack())
+        
+        // Add a canvas below it, use up all space initially
+        //
+        canvas = new Canvas(sashForm, SWT.V_SCROLL | SWT.H_SCROLL | SWT.NO_BACKGROUND );
+        
+        sashForm.setWeights(new int[] { 100, } );
+
+        
+		filenameLabel = new Text(this, SWT.LEFT | SWT.ON_TOP | SWT.NO_BACKGROUND | SWT.READ_ONLY | SWT.NO_FOCUS | SWT.BORDER);
 		filenameLabel.setText(Const.NVL(transMeta.getFilename(), ""));
 		filenameLabel.setBackground(GUIResource.getInstance().getColorBackground());
         FormData fdFilenameLabel = new FormData();
-		// fdFilenameLabel.left = new FormAttachment(0,0);
-		fdFilenameLabel.top = new FormAttachment(0,10);
-		fdFilenameLabel.right = new FormAttachment(90,0);
+		fdFilenameLabel.left = new FormAttachment((Control)toolbar.getNativeObject(), 10);
+		fdFilenameLabel.top = new FormAttachment(0,0);
+		fdFilenameLabel.right = new FormAttachment(100,0);
         filenameLabel.setLayoutData(fdFilenameLabel);
         
         // Add a filename listener to transMeta to make sure we always show the correct filename in this label...
@@ -253,7 +349,6 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 				canvas.layout(true, true);
 			}
 		});
-		*/
 
 		try {
     		// first get the XML document
@@ -995,6 +1090,50 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 
         setBackground(GUIResource.getInstance().getColorBackground());
     }
+	
+    private void addToolBar()
+	{
+
+		try {
+			toolbar = XulHelper.createToolbar(XUL_FILE_TRANS_TOOLBAR, TransGraph.this, TransGraph.this, new XulMessages());
+			
+			// Add a few default key listeners
+			//
+			ToolBar toolBar = (ToolBar) toolbar.getNativeObject();
+			toolBar.addKeyListener(spoon.defKeys);
+			
+			addToolBarListeners();
+		} catch (Throwable t ) {
+			log.logError(toString(), Const.getStackTracker(t));
+			new ErrorDialog(shell, Messages.getString("Spoon.Exception.ErrorReadingXULFile.Title"), Messages.getString("Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_TOOLBAR), new Exception(t));
+		}
+	}
+
+	public void addToolBarListeners()
+	{
+		try
+		{
+			// first get the XML document
+			URL url = XulHelper.getAndValidate(XUL_FILE_TRANS_TOOLBAR_PROPERTIES);
+			Properties props = new Properties();
+			props.load(url.openStream());
+			String ids[] = toolbar.getMenuItemIds();
+			for (int i = 0; i < ids.length; i++)
+			{
+				String methodName = (String) props.get(ids[i]);
+				if (methodName != null)
+				{
+					toolbar.addMenuListener(ids[i], this, methodName);
+
+				}
+			}
+
+		} catch (Throwable t ) {
+			t.printStackTrace();
+			new ErrorDialog(shell, Messages.getString("Spoon.Exception.ErrorReadingXULFile.Title"), 
+					Messages.getString("Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_TOOLBAR_PROPERTIES), new Exception(t));
+		}
+	}
     
     protected void hideToolTips() {
     	// toolTip.hide();
@@ -2562,5 +2701,792 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         spoon.setShellText();
         return ti!=null;
     }
+    
+    
+    public void newFileDropDown() {
+    	spoon.newFileDropDown(toolbar);
+    }
 
+    public void openFile() {
+    	spoon.openFile();
+    }
+
+    public void saveFile() {
+    	spoon.saveFile();
+    }
+
+    public void saveFileAs() {
+    	spoon.saveFileAs();
+    }
+
+    public void saveXMLFileToVfs() {
+    	spoon.saveXMLFileToVfs();
+    }
+
+    public void printFile() {
+    	spoon.printFile();
+    }
+
+    public void runFile() {
+    	spoon.runFile();
+    }
+
+    public void previewFile() {
+    	spoon.previewFile();
+    }
+
+    public void debugFile() {
+    	spoon.debugFile();
+    }
+    
+    public void transReplay() {
+    	spoon.replayTransformation();
+    }
+
+    public void checkTrans() {
+    	spoon.checkTrans();
+    }
+
+    public void analyseImpact() {
+    	spoon.analyseImpact();
+    }
+
+    public void getSQL() {
+    	spoon.getSQL();
+    }
+
+    public void exploreDatabase() {
+    	spoon.exploreDatabase();
+    }
+
+    public void showLogView() {
+    	transLogDelegate.showLogView();
+    }
+
+    
+    public void showGridView() {
+    	transGridDelegate.showGridView();
+    }
+
+    
+    /**
+     * If the extra tab view at the bottom is empty, we close it.
+     */
+    public void checkEmptyExtraView() {
+    	if (extraViewTabFolder.getItemCount()==0) {
+    		disposeExtraView();
+    	}
+    }
+    
+    private void disposeExtraView() {
+    	extraViewComposite.dispose();
+		sashForm.layout();
+		sashForm.setWeights( new int[] { 100, });
+	}
+
+	public void showHistoryView() {
+    	transHistoryDelegate.showHistoryView();
+    }
+	
+	public void showPerfView() {
+		transPerfDelegate.showPerfView();
+	}
+
+	/**
+	 * @return the toolbar
+	 */
+	public XulToolbar getToolbar() {
+		return toolbar;
+	}
+
+	/**
+	 * @param toolbar the toolbar to set
+	 */
+	public void setToolbar(XulToolbar toolbar) {
+		this.toolbar = toolbar;
+	}    
+
+    
+	/**
+	 * Add an extra view to the main composite SashForm
+	 */
+	public void addExtraView() {
+		extraViewComposite = new Composite(sashForm, SWT.NONE);
+		FormLayout extraCompositeFormLayout = new FormLayout();
+		extraCompositeFormLayout.marginWidth=2;
+		extraCompositeFormLayout.marginHeight=2;
+		extraViewComposite.setLayout(extraCompositeFormLayout);
+		
+		// Add a buttons panel to the right...
+		//
+		buttonsComposite = new Composite(extraViewComposite, SWT.NONE);
+		FormLayout buttonsCompositeFormLayout = new FormLayout();
+		buttonsCompositeFormLayout.marginWidth=2;
+		buttonsCompositeFormLayout.marginHeight=2;
+		buttonsComposite.setLayout(buttonsCompositeFormLayout);
+		
+        FormData fdButtonsComposite = new FormData();
+        fdButtonsComposite.left = new FormAttachment(80,0);
+        fdButtonsComposite.right = new FormAttachment(100,0);
+        fdButtonsComposite.top = new FormAttachment(0,0);
+        fdButtonsComposite.bottom = new FormAttachment(100,0);
+        buttonsComposite.setLayoutData(fdButtonsComposite);
+		
+        // ROW 1
+        
+        // Start...
+        wStart = new Button(buttonsComposite, SWT.PUSH);
+		wStart.setText(START_TEXT);
+        FormData fdStart = new FormData();
+        fdStart.left = new FormAttachment(0,Const.MARGIN);
+        fdStart.right = new FormAttachment(50,0);
+        fdStart.top = new FormAttachment(0,20);
+        wStart.setLayoutData(fdStart);
+
+        // Pause...
+        wPause = new Button(buttonsComposite, SWT.PUSH);
+		wPause.setText(PAUSE_TEXT);
+        FormData fdPause = new FormData();
+        fdPause.left = new FormAttachment(50,Const.MARGIN);
+        fdPause.right = new FormAttachment(100,0);
+        fdPause.top = new FormAttachment(0,20);
+        wPause.setLayoutData(fdPause);
+        Control lastControl = wStart;
+
+        // ROW 2
+        
+        // Stop...
+        wStop = new Button(buttonsComposite, SWT.PUSH);
+        wStop.setText(STOP_TEXT);
+        FormData fdStop = new FormData();
+        fdStop.left = new FormAttachment(0,Const.MARGIN);
+        fdStop.right = new FormAttachment(50,0);
+        fdStop.top = new FormAttachment(lastControl,2);
+        wStop.setLayoutData(fdStop);
+
+        // Preview...
+        wPreview = new Button(buttonsComposite, SWT.PUSH);
+		wPreview.setText(Messages.getString("TransLog.Button.Preview")); //$NON-NLS-1$
+        FormData fdPreview = new FormData();
+        fdPreview.left = new FormAttachment(50,Const.MARGIN);
+        fdPreview.right = new FormAttachment(100,0);
+        fdPreview.top = new FormAttachment(lastControl,2);
+        wPreview.setLayoutData(fdPreview);
+        lastControl = wStop;
+
+        // ROW 3
+        
+        // Show errors lines...
+        wError = new Button(buttonsComposite, SWT.PUSH);
+		wError.setText(Messages.getString("TransLog.Button.ShowErrorLines")); //$NON-NLS-1$
+        FormData fdError = new FormData();
+        fdError.left = new FormAttachment(0,Const.MARGIN);
+        fdError.right = new FormAttachment(50,0);
+        fdError.top = new FormAttachment(lastControl,2);
+        wError.setLayoutData(fdError);
+
+        // Clear
+        wClear = new Button(buttonsComposite, SWT.PUSH);
+		wClear.setText(Messages.getString("TransLog.Button.ClearLog")); //$NON-NLS-1$
+        FormData fdClear = new FormData();
+        fdClear.left = new FormAttachment(50,Const.MARGIN);
+        fdClear.right = new FormAttachment(100,0);
+        fdClear.top = new FormAttachment(lastControl,2);
+        wClear.setLayoutData(fdClear);
+        lastControl = wError;
+
+        // Row 4
+        
+        // Log
+        wLog = new Button(buttonsComposite, SWT.PUSH);
+		wLog.setText(Messages.getString("TransLog.Button.LogSettings")); //$NON-NLS-1$
+        FormData fdLog = new FormData();
+        fdLog.left = new FormAttachment(0,Const.MARGIN);
+        fdLog.right = new FormAttachment(50,0);
+        fdLog.top = new FormAttachment(lastControl,2);
+        wLog.setLayoutData(fdLog);
+
+        lastControl = wLog;
+
+        // Row 5
+        
+        // OnlyActive
+        wOnlyActive = new Button(buttonsComposite, SWT.CHECK);
+		wOnlyActive.setText(Messages.getString("TransLog.Button.ShowOnlyActiveSteps")); //$NON-NLS-1$
+        FormData fdOnlyActive = new FormData();
+        fdOnlyActive.left = new FormAttachment(0,Const.MARGIN);
+        fdOnlyActive.right = new FormAttachment(100,0);
+        fdOnlyActive.top = new FormAttachment(lastControl,2);
+        wOnlyActive.setLayoutData(fdOnlyActive);
+		wOnlyActive.setSelection(spoon.props.getOnlyActiveSteps());
+		wOnlyActive.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { 
+			spoon.props.setOnlyActiveSteps(wOnlyActive.getSelection()); } });
+		lastControl = wOnlyActive;
+
+		// Row 6
+		
+		// Safe mode
+		wSafeMode = new Button(buttonsComposite, SWT.CHECK);
+		wSafeMode.setText(Messages.getString("TransLog.Button.SafeMode")); //$NON-NLS-1$
+        FormData fdSafeMode = new FormData();
+        fdSafeMode.left = new FormAttachment(0,Const.MARGIN);
+        fdSafeMode.right = new FormAttachment(100,0);
+        fdSafeMode.top = new FormAttachment(lastControl,2);
+        wSafeMode.setLayoutData(fdSafeMode);
+        lastControl = wSafeMode;
+        
+        
+		// Attach listeners to the buttons
+		//
+        wStart.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { spoon.executeTransformation(transMeta, true, false, false, false, false, null, wSafeMode.getSelection()); }});
+        wPause.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { pauseResume();}});
+        wStop.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { stop(); }});
+        wPreview.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { spoon.executeTransformation(transMeta, true, false, false, true, false, null, wSafeMode.getSelection()); }});
+		wError.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { transLogDelegate.showErrors(); } });
+		wClear.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { transLogDelegate.clearLog(); }});
+		wLog.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { spoon.setLog(); }});
+		
+		
+		// Add a tab folder ...
+		//
+        extraViewTabFolder= new CTabFolder(extraViewComposite, SWT.MULTI);
+        extraViewTabFolder.setSimple(false);
+        extraViewTabFolder.setUnselectedImageVisible(true);
+        extraViewTabFolder.setUnselectedCloseVisible(true);
+        
+        // If the last tab is closed, see if we need to close the bottom view.
+        //
+        extraViewTabFolder.addCTabFolder2Listener(new CTabFolder2Adapter() {
+			public void close(CTabFolderEvent event) {
+				CTabItem tabItem = (CTabItem) event.item;
+				if (tabItem == transLogDelegate.getTransLogTab()) {
+					showLogView();
+				}
+				if (tabItem == transGridDelegate.getTransGridTab()) {
+					showGridView();
+				}
+				if (tabItem == transHistoryDelegate.getTransHistoryTab()) {
+					showHistoryView();
+				}
+				if (tabItem == transPerfDelegate.getTransPerfTab()) {
+					showPerfView();
+				}
+				
+				event.doit=false;
+			}
+		});
+        
+        extraViewTabFolder.addMouseListener(new MouseAdapter() {
+		
+			@Override
+			public void mouseDoubleClick(MouseEvent arg0) {
+				if (sashForm.getMaximizedControl()==null) { 
+					sashForm.setMaximizedControl(extraViewComposite);
+				} else {
+					sashForm.setMaximizedControl(null);
+				}
+			}
+		
+		});
+        
+        FormData fdTabFolder = new FormData();
+        fdTabFolder.left = new FormAttachment(0,0);
+        fdTabFolder.right = new FormAttachment(80,0);
+        fdTabFolder.top = new FormAttachment(0,0);
+        fdTabFolder.bottom = new FormAttachment(100,0);
+        extraViewTabFolder.setLayoutData(fdTabFolder);
+        
+		sashForm.setWeights(new int[] { 70, 30, });
+	}
+
+	
+
+	public void checkErrors()
+	{
+		if (trans != null)
+		{
+			if (!trans.isFinished())
+			{
+				if (trans.getErrors() != 0)
+				{
+					trans.killAll();
+				}
+			}
+		}
+	}
+	
+	public synchronized void start(TransExecutionConfiguration executionConfiguration)
+	{
+		if (!running) // Not running, start the transformation...
+		{
+			// Auto save feature...
+			if (transMeta.hasChanged())
+			{
+				if (spoon.props.getAutoSave())
+				{
+					spoon.saveToFile(transMeta);
+				}
+				else
+				{
+					MessageDialogWithToggle md = new MessageDialogWithToggle(shell, Messages.getString("TransLog.Dialog.FileHasChanged.Title"), //$NON-NLS-1$
+							null, Messages.getString("TransLog.Dialog.FileHasChanged1.Message") + Const.CR + Messages.getString("TransLog.Dialog.FileHasChanged2.Message") + Const.CR, //$NON-NLS-1$ //$NON-NLS-2$
+							MessageDialog.QUESTION, new String[] { Messages.getString("System.Button.Yes"), Messages.getString("System.Button.No") }, //$NON-NLS-1$ //$NON-NLS-2$
+							0, Messages.getString("TransLog.Dialog.Option.AutoSaveTransformation"), //$NON-NLS-1$
+							spoon.props.getAutoSave());
+					int answer = md.open();
+					if ( (answer & 0xFF) == 0)
+					{
+						spoon.saveToFile(transMeta);
+					}
+					spoon.props.setAutoSave(md.getToggleState());
+				}
+			}
+
+			if (((transMeta.getName() != null && spoon.rep != null) || // Repository available & name set
+					(transMeta.getFilename() != null && spoon.rep == null) // No repository & filename set
+					) && !transMeta.hasChanged() // Didn't change
+			)
+			{
+				if (trans == null || (trans != null && trans.isFinished()))
+				{
+					try
+					{
+                        // Set the requested logging level.
+                        log.setLogLevel(executionConfiguration.getLogLevel());
+
+						transMeta.injectVariables(executionConfiguration.getVariables());
+
+						trans = new Trans(transMeta, spoon.rep, transMeta.getName(), transMeta.getDirectory().getPath(), transMeta.getFilename());
+						trans.setReplayDate(executionConfiguration.getReplayDate());
+						trans.setRepository(executionConfiguration.getRepository());
+						trans.setMonitored(true);
+						log.logBasic(toString(), Messages.getString("TransLog.Log.TransformationOpened")); //$NON-NLS-1$
+					}
+					catch (KettleException e)
+					{
+						trans = null;
+						new ErrorDialog(shell, Messages.getString("TransLog.Dialog.ErrorOpeningTransformation.Title"), Messages.getString("TransLog.Dialog.ErrorOpeningTransformation.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+					}
+					if (trans != null)
+					{
+						Map<String,String> arguments = executionConfiguration.getArguments();
+                        final String args[];
+						if (arguments != null) args = convertArguments(arguments); else args = null;
+                        
+						log.logMinimal(Spoon.APP_NAME, Messages.getString("TransLog.Log.LaunchingTransformation") + trans.getTransMeta().getName() + "]..."); //$NON-NLS-1$ //$NON-NLS-2$
+						trans.setSafeModeEnabled(executionConfiguration.isSafeModeEnabled());
+                        
+                        // Launch the step preparation in a different thread. 
+                        // That way Spoon doesn't block anymore and that way we can follow the progress of the initialization
+                        //
+                        
+                        final Thread parentThread = Thread.currentThread();
+                        
+                        shell.getDisplay().asyncExec(
+                                new Runnable() 
+                                {
+                                    public void run() 
+                                    {
+                                    	transLogDelegate.addTransLog();
+                                    	transGridDelegate.addTransGrid();
+                                        prepareTrans(parentThread, args);
+                                    }
+                                }
+                            );
+                        
+						log.logMinimal(Spoon.APP_NAME, Messages.getString("TransLog.Log.StartedExecutionOfTransformation")); //$NON-NLS-1$
+						enableStartActions(false);
+						enablePauseActions(true);
+                        enableStopActions(true);
+					}
+				}
+				else
+				{
+					MessageBox m = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
+					m.setText(Messages.getString("TransLog.Dialog.DoNoStartTransformationTwice.Title")); //$NON-NLS-1$
+					m.setMessage(Messages.getString("TransLog.Dialog.DoNoStartTransformationTwice.Message")); //$NON-NLS-1$
+					m.open();
+				}
+			}
+			else
+			{
+				if (transMeta.hasChanged())
+				{
+					MessageBox m = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
+					m.setText(Messages.getString("TransLog.Dialog.SaveTransformationBeforeRunning.Title")); //$NON-NLS-1$
+					m.setMessage(Messages.getString("TransLog.Dialog.SaveTransformationBeforeRunning.Message")); //$NON-NLS-1$
+					m.open();
+				}
+				else if (spoon.rep != null && transMeta.getName() == null)
+				{
+					MessageBox m = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
+					m.setText(Messages.getString("TransLog.Dialog.GiveTransformationANameBeforeRunning.Title")); //$NON-NLS-1$
+					m.setMessage(Messages.getString("TransLog.Dialog.GiveTransformationANameBeforeRunning.Message")); //$NON-NLS-1$
+					m.open();
+				}
+				else
+				{
+					MessageBox m = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
+					m.setText(Messages.getString("TransLog.Dialog.SaveTransformationBeforeRunning2.Title")); //$NON-NLS-1$
+					m.setMessage(Messages.getString("TransLog.Dialog.SaveTransformationBeforeRunning2.Message")); //$NON-NLS-1$
+					m.open();
+				}
+			}
+		}
+	}
+	
+	public synchronized void debug(TransExecutionConfiguration executionConfiguration, TransDebugMeta transDebugMeta)
+	{
+        if (!running)
+        {
+    		try
+    		{
+    			this.lastTransDebugMeta = transDebugMeta;
+    			
+                log.setLogLevel(executionConfiguration.getLogLevel());
+    			log.logDetailed(toString(), Messages.getString("TransLog.Log.DoPreview")); //$NON-NLS-1$
+                String[] args=null;
+				Map<String,String> arguments = executionConfiguration.getArguments();
+				if (arguments != null)
+				{
+					args = convertArguments(arguments);
+                }
+				transMeta.injectVariables(executionConfiguration.getVariables());
+
+                // Create a new transformation to execution
+                //
+				trans = new Trans(transMeta);
+                trans.setSafeModeEnabled(executionConfiguration.isSafeModeEnabled());
+				trans.prepareExecution(args);
+				
+				// Add the row listeners to the allocated threads
+				//
+				transDebugMeta.addRowListenersToTransformation(trans);
+				
+				// What method should we call back when a break-point is hit?
+				//
+				transDebugMeta.addBreakPointListers(new BreakPointListener() {
+						public void breakPointHit(TransDebugMeta transDebugMeta, StepDebugMeta stepDebugMeta, RowMetaInterface rowBufferMeta, List<Object[]> rowBuffer) {
+							showPreview(transDebugMeta, stepDebugMeta, rowBufferMeta, rowBuffer);
+						}
+					}
+				);
+
+				// Start the threads for the steps...
+				//
+				trans.startThreads();
+
+				running = !running;
+    			debug=true;
+
+                enableStartActions(false);
+                enablePauseActions(true);
+                enableStopActions(true);
+    		}
+    		catch (Exception e)
+    		{
+    			new ErrorDialog(shell, Messages.getString("TransLog.Dialog.UnexpectedErrorDuringPreview.Title"), Messages.getString("TransLog.Dialog.UnexpectedErrorDuringPreview.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+    		}
+        }
+        else
+        {
+            MessageBox m = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
+            m.setText(Messages.getString("TransLog.Dialog.DoNoPreviewWhileRunning.Title")); //$NON-NLS-1$
+            m.setMessage(Messages.getString("TransLog.Dialog.DoNoPreviewWhileRunning.Message")); //$NON-NLS-1$
+            m.open();
+        }
+	}
+
+	public synchronized void showPreview(final TransDebugMeta transDebugMeta, final StepDebugMeta stepDebugMeta, final RowMetaInterface rowBufferMeta, final List<Object[]> rowBuffer)
+	{
+		shell.getDisplay().asyncExec(new Runnable() {
+		
+			public void run() {
+				
+				if (isDisposed() || wPause.isDisposed()) return;
+				
+				spoon.enableMenus();
+				
+				// The transformation is now paused, indicate this in the log dialog...
+				//
+				pausing=true;
+				wPause.setText(RESUME_TEXT);
+				
+				PreviewRowsDialog previewRowsDialog = new PreviewRowsDialog(shell, transMeta, SWT.APPLICATION_MODAL, stepDebugMeta.getStepMeta().getName(), rowBufferMeta, rowBuffer);
+				previewRowsDialog.setProposingToGetMoreRows(true);
+				previewRowsDialog.setProposingToStop(true);
+				previewRowsDialog.open();
+
+				if (previewRowsDialog.isAskingForMoreRows()) {
+					// clear the row buffer.
+					// That way if you click resume, you get the next N rows for the step :-)
+					//
+					rowBuffer.clear();
+
+					// Resume running: find more rows...
+					//
+					pauseResume();
+				}
+
+				if (previewRowsDialog.isAskingToStop()) {
+					// Stop running
+					//
+					stop();
+				}
+
+			}
+		
+		});
+	}
+
+    
+	private String[] convertArguments(Map<String, String> arguments)
+	{
+		String[] argumentNames = arguments.keySet().toArray(new String[arguments.size()]);
+		Arrays.sort(argumentNames);
+		
+		String args[] = new String[argumentNames.length];
+		for (int i = 0; i < args.length; i++)
+		{
+			String argumentName = argumentNames[i];
+			args[i] = arguments.get(argumentName);
+		}
+		return args;
+	}
+	
+    public void stop()
+    {
+        if (running && !halting)
+        {
+            halting = true;
+            trans.stopAll();
+            try
+            {
+                trans.endProcessing("stop"); //$NON-NLS-1$
+                log.logMinimal(Spoon.APP_NAME, Messages.getString("TransLog.Log.ProcessingOfTransformationStopped")); //$NON-NLS-1$
+            }
+            catch (KettleException e)
+            {
+                new ErrorDialog(shell, Messages.getString("TransLog.Dialog.ErrorWritingLogRecord.Title"), Messages.getString("TransLog.Dialog.ErrorWritingLogRecord.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+            }
+            enableStartActions(true);
+            enablePauseActions(false);
+            enableStopActions(false);
+            running = false;
+            initialized = false;
+            halted = false;
+            halting = false;
+            transMeta.setInternalKettleVariables(); // set the original vars back as they may be changed by a mapping
+        }
+    }
+    
+    public synchronized void pauseResume()
+    {
+        if (running)
+        {
+        	if (!pausing)
+        	{
+                pausing = true;
+                trans.pauseRunning();
+
+                wPause.setText(RESUME_TEXT);
+                enableStartActions(false);
+                enablePauseActions(true);
+                enableStopActions(true);
+        	}
+        	else
+        	{
+                pausing = false;
+                trans.resumeRunning();
+
+                wPause.setText(PAUSE_TEXT);
+                enableStartActions(false);
+                enablePauseActions(true);
+                enableStopActions(true);
+        	}
+        }
+    }
+    
+	private synchronized void prepareTrans(final Thread parentThread, final String[] args)
+    {
+        Runnable runnable = new Runnable()
+        {
+            public void run()
+            {
+                try {
+					trans.prepareExecution(args);
+					initialized = true;
+				} catch (KettleException e) {
+					initialized = false;
+				}
+                halted = trans.hasHaltedSteps();
+                checkStartThreads();// After init, launch the threads.
+            }
+        };
+        Thread thread = new Thread(runnable);
+        thread.start();
+    }
+	
+	private void checkStartThreads()
+    {
+        if (initialized && !running && trans!=null)
+        {
+            startThreads();
+        }
+    }
+	
+    private synchronized void startThreads()
+    {
+        running=true;
+        try
+        {
+        	// Add a listener to the transformation.
+        	// If the transformation is done, we want to do the end processing, etc.
+        	//
+        	trans.addTransListener(new TransListener() {
+				
+					public void transFinished(Trans trans) {
+			            checkTransEnded();
+			            // checkErrors();
+					}
+				}
+        	);
+
+        	
+        	trans.startThreads();
+        }
+        catch(KettleException e)
+        {
+        	log.logError(toString(), "Error starting step threads", e);
+        }
+    }
+    
+	public void setTransHistoryRefresher(TransHistoryRefresher spoonHistoryRefresher)
+	{
+		this.spoonHistoryRefresher = spoonHistoryRefresher;
+	}
+	
+    private void checkTransEnded()
+    {
+        if (trans != null)
+        {
+            if (trans.isFinished() && ( running || halted ))
+            {
+                log.logMinimal(Spoon.APP_NAME, Messages.getString("TransLog.Log.TransformationHasFinished")); //$NON-NLS-1$
+    
+                running = false;
+                initialized=false;
+                halted = false;
+                halting = false;
+                
+                try
+                {
+                    trans.endProcessing("end"); //$NON-NLS-1$
+                    if (spoonHistoryRefresher!=null) spoonHistoryRefresher.markRefreshNeeded();
+                }
+                catch (KettleException e)
+                {
+                    new ErrorDialog(shell, Messages.getString("TransLog.Dialog.ErrorWritingLogRecord.Title"), Messages.getString("TransLog.Dialog.ErrorWritingLogRecord.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+                }
+                
+                enableStartActions(true);
+                enablePauseActions(false);
+                enableStopActions(false);
+                
+                // OK, also see if we had a debugging session going on.
+                // If so and we didn't hit a breakpoint yet, display the show preview dialog...
+                //
+                if (debug && lastTransDebugMeta!=null && lastTransDebugMeta.getTotalNumberOfHits()==0) {
+                	debug=false;
+                	showLastPreviewResults();
+                }
+            	debug=false;
+            }
+        }
+    }
+
+    public void enableStartActions(final boolean enabled) {
+    	getDisplay().asyncExec(new Runnable() {
+		
+			public void run() {
+		    	wStart.setEnabled(enabled);
+		    	((ToolItem)toolbar.getButtonById("trans-run").getNativeObject()).setEnabled(enabled);
+		    	((ToolItem)toolbar.getButtonById("trans-preview").getNativeObject()).setEnabled(enabled);
+		    	((ToolItem)toolbar.getButtonById("trans-debug").getNativeObject()).setEnabled(enabled);
+			}
+		});
+    }
+    
+    public void enablePauseActions(final boolean enabled) {
+    	getDisplay().asyncExec(new Runnable() {
+			public void run() {
+				wPause.setEnabled(enabled);
+			}
+    	});
+    }
+    
+    public void enableStopActions(final boolean enabled) {
+    	getDisplay().asyncExec(new Runnable() {
+			public void run() {
+				wStop.setEnabled(enabled);
+			}
+    	});
+    }
+    
+	public synchronized void showLastPreviewResults() {
+		if (lastTransDebugMeta==null || lastTransDebugMeta.getStepDebugMetaMap().isEmpty()) return;
+		
+		List<String> stepnames = new ArrayList<String>();
+		List<RowMetaInterface> rowMetas = new ArrayList<RowMetaInterface>();
+		List<List<Object[]>> rowBuffers = new ArrayList<List<Object[]>>();
+
+		// Assemble the buffers etc in the old style...
+		//
+		for (StepMeta stepMeta : lastTransDebugMeta.getStepDebugMetaMap().keySet() ) {
+			StepDebugMeta stepDebugMeta = lastTransDebugMeta.getStepDebugMetaMap().get(stepMeta);
+			
+			stepnames.add(stepMeta.getName());
+			rowMetas.add(stepDebugMeta.getRowBufferMeta());
+			rowBuffers.add(stepDebugMeta.getRowBuffer());
+		}
+		
+		EnterPreviewRowsDialog dialog = new EnterPreviewRowsDialog(shell, SWT.NONE, stepnames, rowMetas, rowBuffers);
+		dialog.open();
+	}
+	
+	/**
+	 * @return the running
+	 */
+	public boolean isRunning() {
+		return running;
+	}
+
+	/**
+	 * @param running the running to set
+	 */
+	public void setRunning(boolean running) {
+		this.running = running;
+	}
+
+	/**
+	 * @return the lastTransDebugMeta
+	 */
+	public TransDebugMeta getLastTransDebugMeta() {
+		return lastTransDebugMeta;
+	}
+
+	/**
+	 * @return the halting
+	 */
+	public boolean isHalting() {
+		return halting;
+	}
+
+	/**
+	 * @param halting the halting to set
+	 */
+	public void setHalting(boolean halting) {
+		this.halting = halting;
+	}
+    
 }

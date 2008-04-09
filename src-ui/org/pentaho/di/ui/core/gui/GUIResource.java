@@ -166,6 +166,14 @@ public class GUIResource
 	private Image imageEditOptionButton;
 
 	private Image imageResetOptionButton;
+	
+	private Image imageShowLog;
+
+	private Image imageShowGrid;
+
+	private Image imageShowHistory;
+
+	private Image imageShowPerf;
 
 	private ManagedFont fontBold;
 
@@ -303,7 +311,12 @@ public class GUIResource
 
 			disposeImage(imageEditOptionButton);
 			disposeImage(imageResetOptionButton);
-			
+
+			disposeImage(imageShowLog);
+			disposeImage(imageShowGrid);
+			disposeImage(imageShowHistory);
+			disposeImage(imageShowPerf);
+
 			// big images
 			disposeImages(imagesSteps.values());
 
@@ -447,6 +460,11 @@ public class GUIResource
 		imageEditOptionButton = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("EditOption_image")); // , "ui/images/edit_option.png"
 		imageResetOptionButton = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("ResetOption_image")); // , "ui/images/reset_option.png"
 
+		imageShowLog = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("ShowLog_image")); // , "ui/images/show-log.png"
+		imageShowGrid = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("ShowGrid_image")); // , "ui/images/show-grid.png"
+		imageShowHistory = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("ShowHistory_image")); // , "ui/images/show-history.png"
+		imageShowPerf = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("ShowPerf_image")); // , "ui/images/show-perf.png"
+		
 		imageStartSmall = new Image(display, 16, 16);
 		GC gc = new GC(imageStartSmall);
 		gc.drawImage(imageStart, 0, 0, 32, 32, 0, 0, 16, 16);
@@ -1163,4 +1181,33 @@ public class GUIResource
 	public Font getFontMediumBold() {
 		return fontMediumBold.getFont();
 	}
+
+	/**
+	 * @return the imageShowLog
+	 */
+	public Image getImageShowLog() {
+		return imageShowLog;
+	}
+
+	/**
+	 * @return the imageShowGrid
+	 */
+	public Image getImageShowGrid() {
+		return imageShowGrid;
+	}
+
+	/**
+	 * @return the imageShowHistory
+	 */
+	public Image getImageShowHistory() {
+		return imageShowHistory;
+	}
+	
+	/**
+	 * @return the imageShowPerf
+	 */
+	public Image getImageShowPerf() {
+		return imageShowPerf;
+	}
+
 }

@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -100,16 +101,15 @@ public class XulHelper
 		return createPopupMenus(menusFile, shell, xulMessages,Arrays.asList(ids));
 	}
 
-	public static Toolbar createToolbar(String resource, Shell shell, Object caller,Messages xulMessages) throws KettleException
+	public static Toolbar createToolbar(String resource, Composite parentComposite, Object caller,Messages xulMessages) throws KettleException
 	{
-
 		try
 		{
 			// first get the XML document
 			URL xulFile = getAndValidate(resource); //$NON-NLS-1$
 
 			Document doc = XMLHandler.loadXMLFile(xulFile);
-			return MenuHelper.createToolbarFromXul(doc, shell, xulMessages, caller);
+			return MenuHelper.createToolbarFromXul(doc, parentComposite, xulMessages, caller);
 		} catch (IOException e)
 		{
 			throw new KettleException(e);

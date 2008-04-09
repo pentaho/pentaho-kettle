@@ -276,13 +276,8 @@ public class TransLog extends Composite implements TabItemInterface
         fdOnlyActive.left = new FormAttachment(wGraph, Const.MARGIN);
 		fdOnlyActive.bottom = new FormAttachment(100, 0);
 		wOnlyActive.setLayoutData(fdOnlyActive);
-		wOnlyActive.addSelectionListener(new SelectionAdapter()
-		{
-			public void widgetSelected(SelectionEvent arg0)
-			{
-				spoon.props.setOnlyActiveSteps(wOnlyActive.getSelection());
-			}
-		});
+		wOnlyActive.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { 
+			spoon.props.setOnlyActiveSteps(wOnlyActive.getSelection()); } });
 		wOnlyActive.setSelection(spoon.props.getOnlyActiveSteps());
 
         fdSafeMode = new FormData();
@@ -536,7 +531,7 @@ public class TransLog extends Composite implements TabItemInterface
         }
     }
 
-	public synchronized void start(TransExecutionConfiguration executionConfiguration)
+	private synchronized void start(TransExecutionConfiguration executionConfiguration)
 	{
 		if (!running) // Not running, start the transformation...
 		{
@@ -654,7 +649,7 @@ public class TransLog extends Composite implements TabItemInterface
 		}
 	}
     
-    public void stop()
+    private void stop()
     {
         if (running && !halting)
         {
@@ -680,7 +675,7 @@ public class TransLog extends Composite implements TabItemInterface
         }
     }
     
-    public synchronized void pauseResume()
+    private synchronized void pauseResume()
     {
         if (running)
         {
@@ -741,7 +736,7 @@ public class TransLog extends Composite implements TabItemInterface
         }
     }
 
-	public void checkErrors()
+	private void checkErrors()
 	{
 		if (trans != null)
 		{
@@ -850,7 +845,7 @@ public class TransLog extends Composite implements TabItemInterface
 		refresh_busy = false;
 	}
 
-	public synchronized void debug(TransExecutionConfiguration executionConfiguration, TransDebugMeta transDebugMeta)
+	private synchronized void debug(TransExecutionConfiguration executionConfiguration, TransDebugMeta transDebugMeta)
 	{
         if (!running)
         {
@@ -926,7 +921,7 @@ public class TransLog extends Composite implements TabItemInterface
 		return args;
 	}
 
-	public synchronized void showPreview(final TransDebugMeta transDebugMeta, final StepDebugMeta stepDebugMeta, final RowMetaInterface rowBufferMeta, final List<Object[]> rowBuffer)
+	private synchronized void showPreview(final TransDebugMeta transDebugMeta, final StepDebugMeta stepDebugMeta, final RowMetaInterface rowBufferMeta, final List<Object[]> rowBuffer)
 	{
 		display.asyncExec(new Runnable() {
 		
@@ -981,7 +976,7 @@ public class TransLog extends Composite implements TabItemInterface
 		lsd.open();
 	}
 
-	public void showErrors()
+	private void showErrors()
 	{
 		String all = wText.getText();
 		ArrayList<String> err = new ArrayList<String>();
@@ -1052,17 +1047,17 @@ public class TransLog extends Composite implements TabItemInterface
 	/**
 	 * @return Returns the running.
 	 */
-	public boolean isRunning()
+	private boolean isRunning()
 	{
 		return running;
 	}
 
-	public void setTransHistoryRefresher(TransHistoryRefresher spoonHistoryRefresher)
+	private void setTransHistoryRefresher(TransHistoryRefresher spoonHistoryRefresher)
 	{
 		this.spoonHistoryRefresher = spoonHistoryRefresher;
 	}
 
-    public boolean isSafeModeChecked()
+    private boolean isSafeModeChecked()
     {
         return wSafeMode.getSelection();
     }
@@ -1121,11 +1116,11 @@ public class TransLog extends Composite implements TabItemInterface
 	/**
 	 * @return the lastTransDebugMeta
 	 */
-	public TransDebugMeta getLastTransDebugMeta() {
+	private TransDebugMeta getLastTransDebugMeta() {
 		return lastTransDebugMeta;
 	}
 
-	public synchronized void showLastPreviewResults() {
+	private synchronized void showLastPreviewResults() {
 		if (lastTransDebugMeta==null || lastTransDebugMeta.getStepDebugMetaMap().isEmpty()) return;
 		
 		List<String> stepnames = new ArrayList<String>();
@@ -1149,14 +1144,14 @@ public class TransLog extends Composite implements TabItemInterface
 	/**
 	 * @return the halting
 	 */
-	public boolean isHalting() {
+	private boolean isHalting() {
 		return halting;
 	}
 
 	/**
 	 * @param halting the halting to set
 	 */
-	public void setHalting(boolean halting) {
+	private void setHalting(boolean halting) {
 		this.halting = halting;
 	}
 }

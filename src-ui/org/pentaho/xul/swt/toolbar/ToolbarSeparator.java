@@ -13,7 +13,7 @@
 package org.pentaho.xul.swt.toolbar;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.pentaho.xul.XulObject;
@@ -23,7 +23,7 @@ public class ToolbarSeparator extends XulObject {
 
 	private ToolItem toolItem;
     
-	public ToolbarSeparator( Shell shell, XulToolbar parent ) {
+	public ToolbarSeparator( Composite parentComposite, XulToolbar parent ) {
 		super( "", parent );
 
 		toolItem = new ToolItem((ToolBar) parent.getNativeObject(), SWT.SEPARATOR);

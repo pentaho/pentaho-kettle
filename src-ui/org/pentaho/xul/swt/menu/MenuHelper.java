@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.ui.util.ImageUtil;
@@ -30,7 +31,7 @@ import org.w3c.dom.NodeList;
 
 public class MenuHelper {
 
-	public static Toolbar createToolbarFromXul( Document doc, Shell shell, Messages xulMessages, Object caller ) {
+	public static Toolbar createToolbarFromXul( Document doc, Composite parentComposite, Messages xulMessages, Object caller ) {
 		NodeList list = doc.getElementsByTagName( "toolbox" ); //$NON-NLS-1$
 		Toolbar toolbar = null;
 		if( list != null && list.getLength() > 0 ) {
@@ -43,7 +44,7 @@ public class MenuHelper {
 			        	// create a top-level item
 					String id = XMLHandler.getTagAttribute( toolbarNode, "id" ); //$NON-NLS-1$
 					String mode = XMLHandler.getTagAttribute( toolbarNode, "mode" ); //$NON-NLS-1$
-				    	toolbar = new Toolbar(shell, id, null);
+				    	toolbar = new Toolbar(parentComposite, id, null);
 				    	if( "full".equals( mode ) ) toolbar.setMode(Toolbar.MODE_FULL);
 				    	else if( "icons".equals( mode ) ) toolbar.setMode(Toolbar.MODE_ICONS);
 				    	else if( "text".equals( mode ) ) toolbar.setMode(Toolbar.MODE_TEXT);
@@ -57,16 +58,16 @@ public class MenuHelper {
 								hint = localizeXulText( hint, xulMessages );
 								String label = XMLHandler.getTagAttribute( buttonNode, "label" ); //$NON-NLS-1$
 								label = localizeXulText( label, xulMessages );
-								ToolbarButton button = new ToolbarButton(shell, value, toolbar);
+								ToolbarButton button = new ToolbarButton(parentComposite, value, toolbar);
 								button.setHint(hint);
 								button.setText(label);
 								
-							    button.setImage(ImageUtil.getImage(shell.getDisplay(),imagePath));
+							    button.setImage(ImageUtil.getImage(parentComposite.getDisplay(),imagePath));
 								
 							    toolbar.register(button, value, null);
 							}
 							else if( "toolbarseparator".equals( buttonNode.getNodeName() ) ) { //$NON-NLS-1$
-								new ToolbarSeparator(shell, toolbar);
+								new ToolbarSeparator(parentComposite, toolbar);
 							}
 							buttonNode = buttonNode.getNextSibling();
 						}

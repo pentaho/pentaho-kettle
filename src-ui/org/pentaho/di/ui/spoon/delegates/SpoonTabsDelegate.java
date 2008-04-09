@@ -426,9 +426,9 @@ public class SpoonTabsDelegate extends SpoonDelegate
 					}
 				}
 				
-				setEnabled("trans-preview",isTrans);
-				setEnabled("trans-verify",isTrans);
-				setEnabled("trans-impact",isTrans);
+				// setEnabled("trans-preview",isTrans);
+				// setEnabled("trans-verify",isTrans);
+				// setEnabled("trans-impact",isTrans);
 				
 				spoon.enableMainEntries(true, false);
 				
@@ -443,9 +443,11 @@ public class SpoonTabsDelegate extends SpoonDelegate
 		
 	}
 	
+	/*
 	private void setEnabled(String id,boolean enable)
 	{
 		spoon.getToolbar().getButtonById(id).setEnable(enable);
 	}
+	*/
 	
 }

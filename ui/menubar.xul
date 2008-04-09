@@ -112,6 +112,8 @@ align="vertical" >
 			<toolbarbutton value="file-new" label="%Spoon.Menu.File.New" image="ui/images/new.png" tooltiptext="%Spoon.Tooltip.NewFile"/>
 			<toolbarseparator />
 			<toolbarbutton value="file-open" label="%Spoon.Menu.File.Open" image="ui/images/open.png" tooltiptext="%Spoon.Tooltip.OpenTranformation" />
+			
+			<!-- 
 			<toolbarbutton value="file-save" label="%Spoon.Menu.File.Save" image="ui/images/save.png" tooltiptext="%Spoon.Tooltip.SaveCurrentTranformation" />
 			<toolbarbutton value="file-save-as" label="%Spoon.Menu.File.SaveAs" image="ui/images/saveas.png" tooltiptext="%Spoon.Tooltip.SaveDifferentNameTranformation" />
 			<toolbarseparator />
@@ -127,6 +129,7 @@ align="vertical" >
 			<toolbarbutton value="trans-get-sql" label="%Spoon.Menu.Transformation.GetSQL" image="ui/images/SQLbutton.png" tooltiptext="%Spoon.Tooltip.GenerateSQLForTranformation"/>
 			<toolbarseparator />
 			<toolbarbutton value="explore-database" label="%Spoon.Menu.ExploreConnection" image="ui/images/exploredb.png" tooltiptext="%Spoon.Tooltip.ExploreConnection"/>
+			 -->
 		</toolbar>
 	</toolbox>
 

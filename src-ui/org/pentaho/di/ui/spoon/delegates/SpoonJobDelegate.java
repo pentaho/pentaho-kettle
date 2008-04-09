@@ -809,7 +809,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 		return jobMeta;
 	}
 
-	public void addJobHistory(JobMeta jobMeta, boolean select)
+	private void addJobHistory(JobMeta jobMeta, boolean select)
 	{
 		// See if there already is a tab for this history view
 		// If no, add it
@@ -832,7 +832,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 			{
 				JobHistoryRefresher jobHistoryRefresher = new JobHistoryRefresher(tabItem, jobHistory);
 				spoon.tabfolder.addListener(jobHistoryRefresher);
-				jobLog.setJobHistoryRefresher(jobHistoryRefresher);
+				// jobLog.setJobHistoryRefresher(jobHistoryRefresher);
 			}
 			jobHistory.markRefreshNeeded(); // will refresh when first selected
 
@@ -1005,14 +1005,16 @@ public class SpoonJobDelegate extends SpoonDelegate
 
 				spoon.delegates.tabs.addTab(new TabMapEntry(tabItem, tabName, jobGraph,
 						TabMapEntry.OBJECT_TYPE_JOB_GRAPH));
+
+				// OK, also see if we need to open a new history window.
+				if (jobMeta.getLogConnection() != null && !Const.isEmpty(jobMeta.getLogTable()))
+				{
+					jobGraph.jobHistoryDelegate.addJobHistory();
+					// addJobHistory(jobMeta, false);
+				}
 			}
 			int idx = spoon.tabfolder.indexOf(tabItem);
 
-			// OK, also see if we need to open a new history window.
-			if (jobMeta.getLogConnection() != null && !Const.isEmpty(jobMeta.getLogTable()))
-			{
-				addJobHistory(jobMeta, false);
-			}
 			// keep the focus on the graph
 			spoon.tabfolder.setSelected(idx);
 
@@ -1021,7 +1023,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 		}
 	}
 
-	public void addJobLog(JobMeta jobMeta)
+	private void addJobLog(JobMeta jobMeta)
 	{
 		// See if there already is a tab for this log
 		// If no, add it
@@ -1049,7 +1051,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 			{
 				JobHistoryRefresher jobHistoryRefresher = new JobHistoryRefresher(historyItem, jobHistory);
 				spoon.tabfolder.addListener(jobHistoryRefresher);
-				jobLog.setJobHistoryRefresher(jobHistoryRefresher);
+				// jobLog.setJobHistoryRefresher(jobHistoryRefresher);
 			}
 
 			spoon.delegates.tabs.addTab(new TabMapEntry(tabItem, tabName, jobLog,
@@ -1438,7 +1440,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 		}
 	}
 	
-	public void executeJob(JobMeta jobMeta, boolean local, boolean remote, Date replayDate) throws KettleException {
+	public void executeJob(JobMeta jobMeta, boolean local, boolean remote, Date replayDate, boolean safe) throws KettleException {
 		
 		if (jobMeta == null) {
 			return;
@@ -1457,13 +1459,14 @@ public class SpoonJobDelegate extends SpoonDelegate
 		executionConfiguration.getUsedVariables(jobMeta);
 		executionConfiguration.setReplayDate(replayDate);
 		executionConfiguration.setRepository(spoon.rep);
+		executionConfiguration.setSafeModeEnabled(safe);
 
 		executionConfiguration.setLogLevel(spoon.getLog().getLogLevel());
 
 		JobExecutionConfigurationDialog dialog = new JobExecutionConfigurationDialog(spoon.getShell(), executionConfiguration, jobMeta);
 		if (dialog.open()) {
-			addJobLog(jobMeta);
-			JobLog jobLog = spoon.getActiveJobLog();
+			// addJobLog(jobMeta);
+			JobGraph jobGraph = spoon.getActiveJobGraph();
 
 			// Is this a local execution?
 			//
@@ -1476,7 +1479,8 @@ public class SpoonJobDelegate extends SpoonDelegate
 					jobMeta.setVariable(varName, varValue);
 				}
 				
-				jobLog.startJob(executionConfiguration.getReplayDate());
+				
+				jobGraph.startJob(executionConfiguration.getReplayDate());
 			}
 				
 			// Are we executing remotely?

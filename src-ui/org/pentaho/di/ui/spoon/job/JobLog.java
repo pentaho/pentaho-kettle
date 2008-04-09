@@ -100,7 +100,7 @@ public class JobLog extends Composite implements TabItemInterface
 	private Log4jStringAppender stringAppender;
 	private int textSize;
 
-    private static final String STRING_CHEF_LOG_TREE_NAME = "Job Log Tree";
+    private static final String STRING_CHEF_LOG_TREE_NAME = "Job Log Tree"; // TODO : i18n !!!
     
 	public JobLog(Composite parent, final Spoon spoon, final JobMeta jobMeta)
 	{
@@ -377,7 +377,7 @@ public class JobLog extends Composite implements TabItemInterface
     }
     
 	
-	public synchronized void startJob(Date replayDate)
+	private synchronized void startJob(Date replayDate)
 	{
 		if (job==null) // Not running, start the transformation...
 		{
@@ -503,14 +503,14 @@ public class JobLog extends Composite implements TabItemInterface
         }
     }
 
-    public void enableFields()
+    private void enableFields()
     {
         wStart.setEnabled(!isRunning);
         wStop.setEnabled(isRunning);
         // spoon.tiFileRun.setEnabled(!isRunning); TODO: make spoons menu's smarter
     }
 
-    public void readLog()
+    private void readLog()
 	{
 		try
 		{
@@ -662,12 +662,12 @@ public class JobLog extends Composite implements TabItemInterface
 		return this.getClass().getName();
 	}
 
-    public boolean isRunning()
+    private boolean isRunning()
     {
         return job!=null;
     }
     
-	public void showErrors()
+	private void showErrors()
 	{
 		String all = wText.getText();
 		ArrayList<String> err = new ArrayList<String>();
@@ -724,7 +724,7 @@ public class JobLog extends Composite implements TabItemInterface
 	}
     
 
-    public void setJobHistoryRefresher(JobHistoryRefresher chefHistoryRefresher)
+    private void setJobHistoryRefresher(JobHistoryRefresher chefHistoryRefresher)
     {
         this.chefHistoryRefresher = chefHistoryRefresher;
     }

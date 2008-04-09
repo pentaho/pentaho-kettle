@@ -282,6 +282,7 @@ public class LDIFInput extends BaseStep implements StepInterface
 		}
 		return true;
 	}
+	@SuppressWarnings("unchecked")
 	private String GetValue(LDAPAttribute[] attributes_LDIF ,String AttributValue)
 	{
 		String Stringvalue=null;
@@ -292,7 +293,7 @@ public class LDIFInput extends BaseStep implements StepInterface
 			LDAPAttribute attribute_DIF = attributes_LDIF[j];
 			if (attribute_DIF.getName().equalsIgnoreCase(AttributValue))
 			{
-				Enumeration valuesLDIF = attribute_DIF.getStringValues();
+				Enumeration<String> valuesLDIF = attribute_DIF.getStringValues();
 				
 				while (valuesLDIF.hasMoreElements()) 
 				{

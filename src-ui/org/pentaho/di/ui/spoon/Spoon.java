@@ -204,6 +204,7 @@ import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog.RepositoryOb
 import org.pentaho.di.ui.spoon.delegates.SpoonDelegates;
 import org.pentaho.di.ui.spoon.dialog.AnalyseImpactProgressDialog;
 import org.pentaho.di.ui.spoon.dialog.CheckTransProgressDialog;
+import org.pentaho.di.ui.spoon.dialog.LogSettingsDialog;
 import org.pentaho.di.ui.spoon.dialog.SaveProgressDialog;
 import org.pentaho.di.ui.spoon.dialog.ShowCreditsDialog;
 import org.pentaho.di.ui.spoon.dialog.TipsDialog;
@@ -1140,9 +1141,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	}
 
     public void showLastTransPreview() {
-		TransLog transLog = getActiveTransLog();
-    	if (transLog!=null) {
-			transLog.showLastPreviewResults();
+		TransGraph transGraph = getActiveTransGraph();
+    	if (transGraph!=null) {
+			transGraph.showLastPreviewResults();
 		}
 	}
 
@@ -1159,7 +1160,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	}
 
     public void executeJob() {
-		executeJob(getActiveJob(), true, false, null);
+		executeJob(getActiveJob(), true, false, null, false);
 	}
 
     public void copyJob() {
@@ -2309,11 +2310,20 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	}
 
     public void addTransLog() {
-		addTransLog((TransMeta) selectionObject);
+    	TransGraph activeTransGraph = getActiveTransGraph();
+    	if (activeTransGraph!=null) {
+    		activeTransGraph.transLogDelegate.addTransLog();
+    		activeTransGraph.transGridDelegate.addTransGrid();
+    	}
+		// addTransLog((TransMeta) selectionObject);
 	}
 
     public void addTransHistory() {
-		addTransHistory((TransMeta) selectionObject, true);
+    	TransGraph activeTransGraph = getActiveTransGraph();
+    	if (activeTransGraph!=null) {
+    		activeTransGraph.transHistoryDelegate.addTransHistory();
+    	}
+		// addTransLog((TransMeta) selectionObject);
 	}
 
     public Map<String, Menu> getMenuMap() {
@@ -2330,7 +2340,12 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	}
 
 	public void addJobLog()	{
-		delegates.jobs.addJobLog((JobMeta) selectionObject);
+		JobGraph activeJobGraph = getActiveJobGraph();
+		if (activeJobGraph!=null) {
+    		activeJobGraph.jobLogDelegate.addJobLog();
+    		activeJobGraph.jobGridDelegate.addJobGrid();
+		}
+		// delegates.jobs.addJobLog((JobMeta) selectionObject);
 	}
 
     public void addJobHistory() {
@@ -3539,13 +3554,23 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     public PropsUI getProperties() {
 		return props;
 	}
-    
+
     public void newFileDropDown()
     {
+    	newFileDropDown(toolbar);
+    }
+
+    public void newFileDropDown(XulToolbar usedToolBar)
+    {
+    	if (usedToolBar==null) {
+    		System.out.println("Blocked new file drop down attempt");
+    		return; // call it a day
+    	}
+    	
     	// Drop down a list below the "New" icon (new.png)
     	// First problem: where is that icon?
     	//
-    	XulToolbarButton button = toolbar.getButtonById("file-new");
+    	XulToolbarButton button = usedToolBar.getButtonById("file-new");
     	Object object = button.getNativeObject();
     	if (object instanceof ToolItem)
     	{
@@ -3776,12 +3801,12 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 					}
 					// A running transformation?
 					//
-					if (mapEntry.getObject() instanceof TransLog)
+					if (mapEntry.getObject() instanceof TransGraph)
 					{
-						TransLog transLog = (TransLog) mapEntry.getObject();
-						if (transLog.isRunning())
+						TransGraph transGraph = (TransGraph) mapEntry.getObject();
+						if (transGraph.isRunning())
 						{
-							transLog.stop();
+							transGraph.stop();
 							mapEntry.getTabItem().dispose();
 						}
 					}
@@ -4780,10 +4805,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 	public void refreshHistory()
 	{
-		final TransHistory transHistory = getActiveTransHistory();
-		if (transHistory != null)
+		final TransGraph transGraph = getActiveTransGraph();
+		if (transGraph != null)
 		{
-			transHistory.markRefreshNeeded();
+			transGraph.transHistoryDelegate.markRefreshNeeded();
 		}
 	}
 
@@ -5051,13 +5076,13 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		boolean enableLastPreviewMenu = false;
 		boolean disablePreviewButton = false;
 		
-		TransLog transLog = getActiveTransLog();
-		if (transLog!=null)
+		TransGraph transGraph = getActiveTransGraph();
+		if (transGraph!=null)
 		{
-			TransDebugMeta lastTransDebugMeta = transLog.getLastTransDebugMeta();
+			TransDebugMeta lastTransDebugMeta = transGraph.getLastTransDebugMeta();
 			enableLastPreviewMenu = !(lastTransDebugMeta==null || lastTransDebugMeta.getStepDebugMetaMap().isEmpty());
 			
-			disablePreviewButton = transLog.isRunning() && !transLog.isHalting();
+			disablePreviewButton = transGraph.isRunning() && !transGraph.isHalting();
 		}
 
 		// Only enable certain menu-items if we need to.
@@ -5207,12 +5232,16 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	}
 
     
-	private TransGraph getActiveTransGraph()
+	public TransGraph getActiveTransGraph()
 	{
 		if (tabfolder.getSelected()==null) return null;
 		
 		TabMapEntry mapEntry = delegates.tabs.getTab(tabfolder.getSelected());
-		if (mapEntry.getObject() instanceof TransGraph)	return (TransGraph) mapEntry.getObject();
+		if (mapEntry!=null) {
+			if (mapEntry.getObject() instanceof TransGraph)	{
+				return (TransGraph) mapEntry.getObject();
+			}
+		}
 		return null;
 	}
 
@@ -5222,17 +5251,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
          if (mapEntry.getObject() instanceof JobGraph) return (JobGraph) mapEntry.getObject();
          return null;
      }
-
-	/**
-	 * @return the Log tab associated with the active transformation
-	 */
-	public TransLog getActiveTransLog()
-	{
-		TransMeta transMeta = getActiveTransformation();
-        if (transMeta==null) return null; // nothing to work with.
-
-        return delegates.trans.findTransLogOfTransformation(transMeta);
-    }
 	
 	
 	/**
@@ -5245,17 +5263,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
         return delegates.jobs.findJobLogOfJob(jobMeta);
     }
-
-	/**
-	 * @return the history tab associated with the active transformation
-	 */
-	private TransHistory getActiveTransHistory()
-	{
-		TransMeta transMeta = getActiveTransformation();
-        if (transMeta==null) return null; // nothing to work with.
-
-		return delegates.trans.findTransHistoryOfTransformation(transMeta);
-	}
 
 	public EngineMetaInterface getActiveMeta()
 	{
@@ -6719,7 +6726,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		if (transMeta != null)	executeTransformation(transMeta, local, remote, cluster, preview, debug, replayDate, safe);
 
 		JobMeta jobMeta = getActiveJob();
-		if (jobMeta != null) executeJob(jobMeta, local, remote, replayDate);
+		if (jobMeta != null) executeJob(jobMeta, local, remote, replayDate, safe);
 
 	}
 
@@ -6735,7 +6742,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		}
 	}
 
-	public void executeJob(JobMeta jobMeta, boolean local, boolean remote, Date replayDate)
+	public void executeJob(JobMeta jobMeta, boolean local, boolean remote, Date replayDate, boolean safe)
 	{
 		// delegates.jobs.addJobLog(jobMeta);
 		// JobLog jobLog = getActiveJobLog();
@@ -6743,7 +6750,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 		try
 		{
-			delegates.jobs.executeJob(jobMeta, local, remote, replayDate);
+			delegates.jobs.executeJob(jobMeta, local, remote, replayDate, safe);
 		} 
 		catch (Exception e)
 		{
@@ -6762,14 +6769,21 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		delegates.trans.addTransLog(transMeta, true);
 	}
 
+	/*
 	public void addTransHistory(TransMeta transMeta, boolean select)
 	{
 		delegates.trans.addTransHistory(transMeta, select);
 	}
+	*/
 
 	public void addJobHistory(JobMeta jobMeta, boolean select)
 	{
-		delegates.jobs.addJobHistory(jobMeta, select);
+    	JobGraph activeJobGraph = getActiveJobGraph();
+    	if (activeJobGraph!=null) {
+    		activeJobGraph.jobHistoryDelegate.addJobHistory();
+    	}
+		
+		// delegates.jobs.addJobHistory(jobMeta, select);
 	}
 
 	public void pasteSteps()
@@ -7128,6 +7142,20 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			box.open();
 		}
 		
+	}
+	
+	
+	public void setLog()
+	{
+		LogSettingsDialog lsd = new LogSettingsDialog(shell, SWT.NONE, log, props);
+		lsd.open();
+	}
+
+	/**
+	 * @return the display
+	 */
+	public Display getDisplay() {
+		return display;
 	}
 
 	
