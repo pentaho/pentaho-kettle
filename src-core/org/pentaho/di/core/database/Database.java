@@ -2221,7 +2221,7 @@ public class Database implements VariableSpace
 			databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_H2 ||
 			databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_GENERIC)
 		{
-			return getQueryFieldsFallback(sql, param, inform, data);
+			fields=getQueryFieldsFallback(sql, param, inform, data);
 		}
 		else
 		{
