@@ -63,6 +63,7 @@ import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.ScrollBar;
@@ -2817,6 +2818,19 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 		extraCompositeFormLayout.marginHeight=2;
 		extraViewComposite.setLayout(extraCompositeFormLayout);
 		
+		// Add a label at the top: Results
+		//
+		Label wResultsLabel = new Label(extraViewComposite, SWT.LEFT);
+		wResultsLabel.setFont(GUIResource.getInstance().getFontMediumBold());
+		wResultsLabel.setBackground(GUIResource.getInstance().getColorLightGray());
+		wResultsLabel.setText(Messages.getString("TransLog.ResultsPanel.NameLabel"));
+        FormData fdResultsLabel = new FormData();
+        fdResultsLabel.left = new FormAttachment(0,0);
+        fdResultsLabel.right = new FormAttachment(100,0);
+        fdResultsLabel.top = new FormAttachment(0,0);
+        wResultsLabel.setLayoutData(fdResultsLabel);
+        
+        
 		// Add a buttons panel to the right...
 		//
 		buttonsComposite = new Composite(extraViewComposite, SWT.NONE);
@@ -2828,7 +2842,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         FormData fdButtonsComposite = new FormData();
         fdButtonsComposite.left = new FormAttachment(80,0);
         fdButtonsComposite.right = new FormAttachment(100,0);
-        fdButtonsComposite.top = new FormAttachment(0,0);
+        fdButtonsComposite.top = new FormAttachment(wResultsLabel,Const.MARGIN);
         fdButtonsComposite.bottom = new FormAttachment(100,0);
         buttonsComposite.setLayoutData(fdButtonsComposite);
 		
@@ -2840,7 +2854,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         FormData fdStart = new FormData();
         fdStart.left = new FormAttachment(0,Const.MARGIN);
         fdStart.right = new FormAttachment(50,0);
-        fdStart.top = new FormAttachment(0,20);
+        fdStart.top = new FormAttachment(0,0);
         wStart.setLayoutData(fdStart);
 
         // Pause...
@@ -2849,7 +2863,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         FormData fdPause = new FormData();
         fdPause.left = new FormAttachment(50,Const.MARGIN);
         fdPause.right = new FormAttachment(100,0);
-        fdPause.top = new FormAttachment(0,20);
+        fdPause.top = new FormAttachment(0,0);
         wPause.setLayoutData(fdPause);
         Control lastControl = wStart;
 
@@ -2992,7 +3006,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         FormData fdTabFolder = new FormData();
         fdTabFolder.left = new FormAttachment(0,0);
         fdTabFolder.right = new FormAttachment(80,0);
-        fdTabFolder.top = new FormAttachment(0,0);
+        fdTabFolder.top = new FormAttachment(wResultsLabel,Const.MARGIN);
         fdTabFolder.bottom = new FormAttachment(100,0);
         extraViewTabFolder.setLayoutData(fdTabFolder);
         
@@ -3359,13 +3373,21 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         {
         	log.logError(toString(), "Error starting step threads", e);
         }
+        
+        // See if we have to fire off the performance graph updater etc.
+        //
+        getDisplay().asyncExec(new Runnable() {
+			public void run() {
+			   if (transPerfDelegate.getTransPerfTab()!=null ) {
+		        	// If there is a tab open, try to the correct content on there now
+		        	//
+		        	transPerfDelegate.setupContent();
+		    		transPerfDelegate.layoutPerfComposite();
+		        }
+			}
+		});
     }
-    
-	public void setTransHistoryRefresher(TransHistoryRefresher spoonHistoryRefresher)
-	{
-		this.spoonHistoryRefresher = spoonHistoryRefresher;
-	}
-	
+
     private void checkTransEnded()
     {
         if (trans != null)

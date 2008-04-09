@@ -30,6 +30,8 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.CategoryAxis;
@@ -83,6 +85,7 @@ public class TransPerfDelegate extends SpoonDelegate {
 	private String title;
 	private org.eclipse.swt.widgets.List dataList;
 	private Composite perfComposite;
+	private boolean emptyGraph;
 
 	
 	/**
@@ -122,7 +125,7 @@ public class TransPerfDelegate extends SpoonDelegate {
 		
         spoon.props.setLook(perfComposite);
 
-        setupContent(perfComposite);
+        setupContent();
 		
 		transPerfTab.setControl(perfComposite);
 		
@@ -130,11 +133,29 @@ public class TransPerfDelegate extends SpoonDelegate {
 	}
 
     
-    private void setupContent(Composite perfComposite) {
+    public void setupContent() {
+    	if (transGraph.trans==null) {
+    		showEmptyGraph();
+    		return; // TODO: display help text and rerty button
+    	}
+    	
+    	// Remove anything on the perf composite, like an empty page message
+    	//
+    	for (Control control : perfComposite.getChildren()) control.dispose();
+    	
+    	emptyGraph=false;
+    	
     	this.title = transGraph.trans.getTransMeta().getName();
     	this.timeDifference = transGraph.trans.getTransMeta().getStepPerformanceCapturingDelay();
 		this.stepPerformanceSnapShots = transGraph.trans.getStepPerformanceSnapShots();
 
+		// Wait a second for the first data to pour in...
+		// TODO: make this wait more elegant...
+		//
+		while(stepPerformanceSnapShots.isEmpty()) {
+			try { Thread.sleep(100L); } catch (InterruptedException e) { }
+		}
+		
 		Set<String> stepsSet = stepPerformanceSnapShots.keySet();
 		steps = stepsSet.toArray(new String[stepsSet.size()]);
 		Arrays.sort(steps);
@@ -226,7 +247,23 @@ public class TransPerfDelegate extends SpoonDelegate {
 				updateGraph();
 			}
 		}, 0, 5000);
-		
+				
+	}
+
+    /**
+     * Tell the user that the transformation is not running or that there is no monitoring configured.
+     */
+	private void showEmptyGraph() {
+		emptyGraph = true;
+		Label label = new Label(perfComposite, SWT.CENTER);
+		label.setText(Messages.getString("TransLog.Dialog.PerformanceMonitoringNotEnabled.Message"));
+		label.setBackground(perfComposite.getBackground());
+		label.setFont(GUIResource.getInstance().getFontMedium());
+		FormData fdLabel = new FormData();
+		fdLabel.left=new FormAttachment(5,0);
+		fdLabel.right=new FormAttachment(95,0);
+		fdLabel.top=new FormAttachment(5,0);
+		label.setLayoutData(fdLabel);
 	}
 
 	public void showPerfView() {
@@ -252,7 +289,9 @@ public class TransPerfDelegate extends SpoonDelegate {
 		
 			public void run() {
 				if (!perfComposite.isDisposed() && !canvas.isDisposed()) {
-					updateCanvas();
+					if (transPerfTab.isShowing()) {
+						updateCanvas();
+					}
 				}
 			}
 		
@@ -415,6 +454,17 @@ public class TransPerfDelegate extends SpoonDelegate {
 	 */
 	public CTabItem getTransPerfTab() {
 		return transPerfTab;
+	}
+
+	/**
+	 * @return the emptyGraph
+	 */
+	public boolean isEmptyGraph() {
+		return emptyGraph;
+	}
+	
+	public void layoutPerfComposite() {
+		perfComposite.layout(true,true);
 	}
 
 }

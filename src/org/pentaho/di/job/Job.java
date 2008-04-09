@@ -12,6 +12,7 @@
 package org.pentaho.di.job;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -92,8 +93,13 @@ public class Job extends Thread implements VariableSpace
     private boolean initialized;
     private Log4jStringAppender stringAppender;
     
+    private List<JobListener> jobListeners;
+    
+    private boolean finished;
+    
     public Job(LogWriter lw, String name, String file, String args[])
     {
+    	this();
         init(lw, name, file, args);
     }
     
@@ -119,6 +125,7 @@ public class Job extends Thread implements VariableSpace
 
 	public Job(LogWriter lw, StepLoader steploader, Repository rep, JobMeta ti)
 	{
+		this();
         open(lw, steploader, rep, ti);
         if (ti.getName()!=null) setName(ti.getName()+" ("+super.getName()+")");
 	}
@@ -126,6 +133,7 @@ public class Job extends Thread implements VariableSpace
     // Empty constructor, for Class.newInstance()
     public Job()
     {
+    	jobListeners = new ArrayList<JobListener>();
     }
     
     public void open(LogWriter lw, StepLoader steploader, Repository rep, JobMeta ti)
@@ -198,14 +206,18 @@ public class Job extends Thread implements VariableSpace
 	{
 		try
 		{
-            // Create a new variable name space as we want jobs to have their own set of variables.
+			finished=false;
             initialized = true;
     
+            // Create a new variable name space as we want jobs to have their own set of variables.
             // initialize from parentjob or null
+            //
             variables.initializeVariablesFrom(parentJob);
             setInternalKettleVariables(variables);                        
             
-            result = execute(); // Run the job
+            // Run the job, don't fire the job listeners at the end
+            //
+            result = execute(false); 
 		}
 		catch(KettleException je)
 		{
@@ -232,11 +244,36 @@ public class Job extends Thread implements VariableSpace
 				log.logError(toString(), Messages.getString("Job.Log.ErrorExecJob", e.getMessage()));
 	            log.logError(toString(), Const.getStackTracker(e));
 			}
+			
+			fireJobListeners();
 		}
 	}
 
+	/**
+	 * Execute a job without previous results.  This is a job entry point (not recursive)<br>
+	 * Fire the job listeners at the end.<br>
+	 * <br>
+	 * @return the result of the execution
+	 * 
+	 * @throws KettleException
+	 */
 	public Result execute() throws KettleException
     {
+		return execute(true);
+    }
+	
+	/**
+	 * Execute a job without previous results.  This is a job entry point (not recursive)<br>
+	 * <br>
+	 * @param fireJobListeners true if the job listeners need to be fired off
+	 * @return the result of the execution
+	 * 
+	 * @throws KettleException
+	 */
+	private Result execute(boolean fireJobListeners) throws KettleException
+    {
+		finished=false;
+        
         // Start the tracking...
         JobEntryResult jerStart = new JobEntryResult(null, Messages.getString("Job.Comment.JobStarted"), Messages.getString("Job.Reason.Started"), null);
         jobTracker.addJobTracker(new JobTracker(jobMeta, jerStart));
@@ -261,18 +298,29 @@ public class Job extends Thread implements VariableSpace
         jobTracker.addJobTracker(new JobTracker(jobMeta, jerEnd));
 
         active = false;
-        return res;
+        
+		// Tell the world that we've finished processing this job...
+		//
+        if (fireJobListeners) {
+        	fireJobListeners();
+        }
+        
+		return res;
     }
 
 	/**
-	 * Execute called by JobEntryJob: don't clear the jobEntryResults...
-	 * @param nr
-	 * @param result
+	 * Execute a job with previous results passed in.<br>
+	 * <br>
+	 * Execute called by JobEntryJob: don't clear the jobEntryResults.
+	 * @param nr The job entry number
+	 * @param result the result of the previous execution
 	 * @return Result of the job execution
 	 * @throws KettleJobException
 	 */
 	public Result execute(int nr, Result result) throws KettleException
 	{
+		finished=false;
+        
         // Where do we start?
         JobEntryCopy startpoint;
 
@@ -290,9 +338,38 @@ public class Job extends Thread implements VariableSpace
 
 		Result res =  execute(nr, result, startpoint, null, Messages.getString("Job.Reason.StartOfJobentry"));
 
+		// Tell the world that we've finished processing this job...
+		//
+		fireJobListeners();
+		
 		return res;
 	}
 	
+	/**
+	 * Sets the finished flag.<b>
+	 * Then launch all the job listeners and call the jobFinished method for each.<br>
+	 * 
+	 * @see JobListener#JobFinished(Job)
+	 */
+	private void fireJobListeners() {
+		finished=true;
+		for (JobListener jobListener : jobListeners) {
+			jobListener.JobFinished(this);
+		}
+	}
+	
+	/**
+	 * Execute a job entry recursively and move to the next job entry automatically.<br>
+	 * Uses a back-tracking algorithm.<br>
+	 * 
+	 * @param nr
+	 * @param prev_result
+	 * @param startpoint
+	 * @param previous
+	 * @param reason
+	 * @return
+	 * @throws KettleException
+	 */
 	private Result execute(int nr, Result prev_result, JobEntryCopy startpoint, JobEntryCopy previous, String reason) throws KettleException
 	{
 		Result res = null;
@@ -990,5 +1067,40 @@ public class Job extends Thread implements VariableSpace
 		}
 	}
 
+	/**
+	 * @return the jobListeners
+	 */
+	public List<JobListener> getJobListeners() {
+		return jobListeners;
+	}
+
+	/**
+	 * @param jobListeners the jobListeners to set
+	 */
+	public void setJobListeners(List<JobListener> jobListeners) {
+		this.jobListeners = jobListeners;
+	}
+
+	/**
+	 * Add a job listener to the job
+	 * @param jobListener the job listener to add
+	 */
+	public void addJobListener(JobListener jobListener) {
+		jobListeners.add(jobListener);
+	}
+
+	/**
+	 * @return the finished
+	 */
+	public boolean isFinished() {
+		return finished;
+	}
+
+	/**
+	 * @param finished the finished to set
+	 */
+	public void setFinished(boolean finished) {
+		this.finished = finished;
+	}
 
 }

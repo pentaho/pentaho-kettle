@@ -2,11 +2,16 @@ package org.pentaho.di.ui.spoon.job;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
@@ -81,6 +86,19 @@ public class JobGridDelegate extends SpoonDelegate {
 		jobGridTab.setImage(GUIResource.getInstance().getImageShowGrid());
 		jobGridTab.setText(Messages.getString("Spoon.TransGraph.GridTab.Name"));
 
+		addControls();
+		
+		
+		jobGridTab.setControl(wTree);
+
+		jobGraph.extraViewTabFolder.setSelection(jobGridTab);		
+	}
+	
+	/**
+	 * Add the controls to the tab
+	 */
+	private void addControls() {
+		
 		// Create the tree table...
 		wTree = new Tree(jobGraph.extraViewTabFolder, SWT.V_SCROLL | SWT.H_SCROLL);
         wTree.setHeaderVisible(true);
@@ -121,9 +139,44 @@ public class JobGridDelegate extends SpoonDelegate {
 		fdTree.bottom = new FormAttachment(100, 0);
 		wTree.setLayoutData(fdTree);
 		
-		jobGridTab.setControl(wTree);
+		
+		final Timer tim = new Timer("JobGrid: " + jobGraph.getMeta().getName());
+		TimerTask timtask = 
+			new TimerTask() 
+			{
+				public void run() 
+				{
+					Display display = jobGraph.getDisplay();
+					if (display!=null && !display.isDisposed())
+					display.asyncExec(
+						new Runnable() 
+						{
+							public void run() 
+							{
+								// Chef if the widgets are not disposed.  
+								// This happens is the rest of the window is not yet disposed.
+								// We ARE running in a different thread after all.
+								//
+								if (!jobGraph.wAuto.isDisposed() && !jobGraph.wStart.isDisposed() && !wTree.isDisposed())
+								{
+                                    if (jobGraph.wAuto.getSelection())
+	                                {
+	    								refreshTreeTable();
+	                                }
+								}
+							}
+						}
+					);
+				}
+			};
+		tim.schedule( timtask, 10L, 10L);// refresh every 2 seconds... 
+		
+        jobGraph.jobLogDelegate.getJobLogTab().addDisposeListener(new DisposeListener() {
+			public void widgetDisposed(DisposeEvent disposeEvent) {
+				tim.cancel();
+			}
+		});
 
-		jobGraph.extraViewTabFolder.setSelection(jobGridTab);		
 	}
 
 	   /**

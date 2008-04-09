@@ -28,7 +28,7 @@ public class JobLogDelegate extends SpoonDelegate {
 
 	private CTabItem jobLogTab;
 	
-	private Text jobLogText;
+	public  Text jobLogText;
 	
     /**
      * The number of lines in the log tab

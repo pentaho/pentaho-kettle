@@ -8,6 +8,8 @@ import java.util.List;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -29,7 +31,6 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.job.JobMeta;
-import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
@@ -37,7 +38,6 @@ import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.spoon.Messages;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.delegates.SpoonDelegate;
-import org.pentaho.di.ui.spoon.trans.TransGraph;
 
 public class JobHistoryDelegate extends SpoonDelegate {
 	
@@ -57,10 +57,6 @@ public class JobHistoryDelegate extends SpoonDelegate {
 
     private List<RowMetaAndData> rowList;
 
-	private boolean refreshNeeded = true;
-	
-	private Object refreshNeededLock = new Object();
-	
 	private ValueMetaInterface durationMeta;
 	private ValueMetaInterface replayDateMeta;
 
@@ -221,6 +217,31 @@ public class JobHistoryDelegate extends SpoonDelegate {
 		jobHistoryTab.setControl(historyComposite);
 		
 		jobGraph.extraViewTabFolder.setSelection(jobHistoryTab);
+		
+		
+		// Also add a listener to JobGraph to see if a transformation finished...
+		//
+		final RefreshListener jobRefreshListener = new RefreshListener() {
+		
+			public void refreshNeeded() {
+				jobGraph.getDisplay().asyncExec(new Runnable() {
+					
+					public void run() {
+						refreshHistory();
+					}
+				});
+
+			}
+		
+		};
+		jobGraph.addRefreshListener(jobRefreshListener);
+		
+		// Make sure to clean it up afterwards too.
+		jobHistoryTab.addDisposeListener(new DisposeListener() {
+			public void widgetDisposed(DisposeEvent e) {
+				jobGraph.getRefreshListeners().remove(jobRefreshListener);
+			}
+		});
 	}
 
     
@@ -403,6 +424,7 @@ public class JobHistoryDelegate extends SpoonDelegate {
     }
 
 
+	
 	/**
 	 * @return the transHistoryTab
 	 */

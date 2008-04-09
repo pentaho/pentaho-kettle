@@ -58,6 +58,7 @@ import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.ScrollBar;
@@ -83,6 +84,7 @@ import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobHopMeta;
+import org.pentaho.di.job.JobListener;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.job.JobEntryJob;
 import org.pentaho.di.job.entries.trans.JobEntryTrans;
@@ -182,11 +184,12 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 	
     private XulToolbar       toolbar;
 
-	private Button wStart;
+	public  Button wStart;
 	// private Button wPause;
     private Button wStop;
 	private Button wError;
 	private Button wClear;
+	public  Button wAuto;
 	private Button wLog;
 	private Button wSafeMode;
 	private Composite buttonsComposite;
@@ -197,6 +200,8 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 
 	private boolean isRunning;
 	private Composite mainComposite;
+	
+	private List<RefreshListener> refreshListeners;
 	
 	public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) 
 	{
@@ -210,6 +215,8 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 		jobLogDelegate = new JobLogDelegate(spoon, this);
 		jobHistoryDelegate = new JobHistoryDelegate(spoon, this);
 		jobGridDelegate = new JobGridDelegate(spoon, this);
+		
+		refreshListeners = new ArrayList<RefreshListener>(); 
 		
 		setLayout(new FormLayout());
 		
@@ -2520,6 +2527,19 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 		extraCompositeFormLayout.marginHeight=2;
 		extraViewComposite.setLayout(extraCompositeFormLayout);
 		
+		// Add a label at the top: Results
+		//
+		Label wResultsLabel = new Label(extraViewComposite, SWT.LEFT);
+		wResultsLabel.setFont(GUIResource.getInstance().getFontMediumBold());
+		wResultsLabel.setBackground(GUIResource.getInstance().getColorLightGray());
+		wResultsLabel.setText(Messages.getString("JobLog.ResultsPanel.NameLabel"));
+        FormData fdResultsLabel = new FormData();
+        fdResultsLabel.left = new FormAttachment(0,0);
+        fdResultsLabel.right = new FormAttachment(100,0);
+        fdResultsLabel.top = new FormAttachment(0,0);
+        wResultsLabel.setLayoutData(fdResultsLabel);
+
+		
 		// Add a buttons panel to the right...
 		//
 		buttonsComposite = new Composite(extraViewComposite, SWT.NONE);
@@ -2531,7 +2551,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
         FormData fdButtonsComposite = new FormData();
         fdButtonsComposite.left = new FormAttachment(80,0);
         fdButtonsComposite.right = new FormAttachment(100,0);
-        fdButtonsComposite.top = new FormAttachment(0,0);
+        fdButtonsComposite.top = new FormAttachment(wResultsLabel,Const.MARGIN);
         fdButtonsComposite.bottom = new FormAttachment(100,0);
         buttonsComposite.setLayoutData(fdButtonsComposite);
 		
@@ -2543,7 +2563,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
         FormData fdStart = new FormData();
         fdStart.left = new FormAttachment(0,Const.MARGIN);
         fdStart.right = new FormAttachment(50,0);
-        fdStart.top = new FormAttachment(0,20);
+        fdStart.top = new FormAttachment(0,0);
         wStart.setLayoutData(fdStart);
 
         /*
@@ -2553,7 +2573,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
         FormData fdPause = new FormData();
         fdPause.left = new FormAttachment(50,Const.MARGIN);
         fdPause.right = new FormAttachment(100,0);
-        fdPause.top = new FormAttachment(0,20);
+        fdPause.top = new FormAttachment(0,0);
         wPause.setLayoutData(fdPause);
         */
         Control lastControl = wStart;
@@ -2604,7 +2624,17 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 
         lastControl = wLog;
 
-        // Row 5
+        // Row 6
+        
+        wAuto = new Button(this, SWT.CHECK);
+        wAuto.setText(Messages.getString("JobLog.Button.AutoRefresh")); //$NON-NLS-1$
+        wAuto.setSelection(true);
+        FormData fdAuto = new FormData();
+        fdAuto.left = new FormAttachment(0,Const.MARGIN);
+        fdAuto.right = new FormAttachment(50,0);
+        fdAuto.top = new FormAttachment(lastControl,2);
+        wAuto.setLayoutData(fdAuto);
+        lastControl = wAuto;
         
 		// Safe mode
 		wSafeMode = new Button(buttonsComposite, SWT.CHECK);
@@ -2671,7 +2701,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
         FormData fdTabFolder = new FormData();
         fdTabFolder.left = new FormAttachment(0,0);
         fdTabFolder.right = new FormAttachment(80,0);
-        fdTabFolder.top = new FormAttachment(0,0);
+        fdTabFolder.top = new FormAttachment(wResultsLabel,Const.MARGIN);
         fdTabFolder.bottom = new FormAttachment(100,0);
         extraViewTabFolder.setLayoutData(fdTabFolder);
         
@@ -2798,6 +2828,20 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
                         // Link to the new jobTracker!
 						jobGridDelegate.jobTracker = job.getJobTracker();
                         isRunning=true;
+                        
+                        // Attach a listener to notify us that the transformation has finished.
+                        job.addJobListener(new JobListener() {
+						
+							public void JobFinished(Job job) {
+								jobFinished();
+							}
+						
+						});
+                        
+                        // Show the log views
+                        //
+                        jobLogDelegate.addJobLog();
+                        jobGridDelegate.addJobGrid();
 					}
 					catch(KettleException e)
 					{
@@ -2841,6 +2885,27 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
             enableFields();
 		} 
 	}
+
+	/**
+	 * This gets called at the very end, when everything is done.
+	 */
+    private synchronized void jobFinished()
+	{
+    	// Do a final check to see if it all ended...
+    	//
+		if (isRunning && job!=null && job.isInitialized() && job.isFinished())
+        {
+            job=null;
+            isRunning=false;
+            for (RefreshListener listener : refreshListeners) listener.refreshNeeded();
+            log.logMinimal(Spoon.APP_NAME, Messages.getString("JobLog.Log.JobHasEnded")); //$NON-NLS-1$
+        }
+		
+		if (!wStart.isDisposed())
+		{
+            enableFields();
+		}
+	}
 	
     
 	private synchronized void stopJob()
@@ -2873,7 +2938,33 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 
     public void enableFields()
     {
-        wStart.setEnabled(!isRunning);
-        wStop.setEnabled(isRunning);
-    }	
+    	getDisplay().asyncExec(new Runnable() {
+		
+			public void run() {
+				wStart.setEnabled(!isRunning);
+				wStop.setEnabled(isRunning);
+			}
+		});
+    }
+
+	/**
+	 * @return the refresh listeners
+	 */
+	public List<RefreshListener> getRefreshListeners() {
+		return refreshListeners;
+	}
+
+	/**
+	 * @param refreshListeners the refresh listeners to set
+	 */
+	public void setRefreshListeners(List<RefreshListener> refreshListeners) {
+		this.refreshListeners = refreshListeners;
+	}	
+	
+	/**
+	 * @param refreshListener the job refresh listener to add
+	 */
+	public void addRefreshListener(RefreshListener refreshListener) {
+		refreshListeners.add(refreshListener);
+	}
 }
