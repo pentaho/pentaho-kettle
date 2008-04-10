@@ -660,6 +660,9 @@ public class Job extends Thread implements VariableSpace
 			{
 				boolean lockedTable=false;
 				ldb.connect();
+				
+				// Enable transactions to make table locking possible
+				//
 			    ldb.setCommit(100);
 			    
                 // See if we have to add a batch id...

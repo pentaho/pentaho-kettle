@@ -1106,11 +1106,13 @@ public class Trans implements VariableSpace
     				}
     				
     			    ldb = new Database(logcon);
-    			    ldb.setCommit(100);
     			    ldb.shareVariablesWith(this);
 				    log.logDetailed(toString(), Messages.getString("Trans.Log.OpeningLogConnection",""+transMeta.getLogConnection())); //$NON-NLS-1$ //$NON-NLS-2$
 					ldb.connect();
 
+					// Use transactions!
+					ldb.setCommit(100);
+					
 					// See if we have to add a batch id...
 					// Do this first, before anything else to lock the complete table exclusively
 					//
