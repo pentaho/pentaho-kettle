@@ -610,7 +610,13 @@ public class ExcelOutput extends BaseStep implements StepInterface
 		data=(ExcelOutputData)sdi;
 
 		if(data.oneFileOpened) closeFile();
-        
+        if(data.file!=null)
+        {
+        	try{
+        		data.file.close();
+        		data.file=null;
+        	}catch(Exception e){}
+        }
         super.dispose(smi, sdi);
 	}
 	
