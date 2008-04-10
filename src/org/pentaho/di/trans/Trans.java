@@ -1094,6 +1094,7 @@ public class Trans implements VariableSpace
             Database ldb = null;
             try
             {
+            	boolean lockedTable = false;
 				DatabaseMeta logcon = transMeta.getLogConnection();
     			if (logcon!=null)
     			{
@@ -1105,9 +1106,32 @@ public class Trans implements VariableSpace
     				}
     				
     			    ldb = new Database(logcon);
+    			    ldb.setCommit(100);
     			    ldb.shareVariablesWith(this);
 				    log.logDetailed(toString(), Messages.getString("Trans.Log.OpeningLogConnection",""+transMeta.getLogConnection())); //$NON-NLS-1$ //$NON-NLS-2$
 					ldb.connect();
+
+					// See if we have to add a batch id...
+					// Do this first, before anything else to lock the complete table exclusively
+					//
+					if (transMeta.isBatchIdUsed())
+					{
+						// Make sure we lock the logging table!
+						//
+						ldb.lockTables( new String[] { transMeta.getLogTable(), } );
+						lockedTable=true;
+						
+						// Now insert value -1 to create a real write lock blocking the other requests.. FCFS
+						//
+						String sql = "INSERT INTO "+logcon.quoteField(transMeta.getLogTable())+"("+logcon.quoteField("ID_BATCH")+") values (-1)";
+						ldb.execStatement(sql);
+						
+						
+						// Now this next lookup will stall on the other connections
+						//
+						Long id_batch = ldb.getNextValue(transMeta.getCounters(), transMeta.getLogTable(), "ID_BATCH");
+						setBatchId( id_batch.longValue() );
+					}
 
 					//
 					// Get the date range from the logging table: from the last end_date to now. (currentDate)
@@ -1180,7 +1204,7 @@ public class Trans implements VariableSpace
 					{
 						log.logDetailed(toString(), Messages.getString("Trans.Log.CheckingForMaxDependencyDate")); //$NON-NLS-1$
 						//
-						// Maybe one of the tables where this transformation is dependend on has changed?
+						// Maybe one of the tables where this transformation is dependent on has changed?
 						// If so we need to change the start-date!
 						//
 						depDate = Const.MIN_DATE;
@@ -1260,13 +1284,6 @@ public class Trans implements VariableSpace
 					{
 						depDate = currentDate;
 					}
-
-					// See if we have to add a batch id...
-					if (transMeta.isBatchIdUsed())
-					{
-						Long id_batch = ldb.getNextValue(transMeta.getCounters(), transMeta.getLogTable(), "ID_BATCH");
-						setBatchId( id_batch.longValue() );
-					}
 				}
 
                 // OK, now we have a date-range.  See if we need to set a maximum!
@@ -1302,6 +1319,15 @@ public class Trans implements VariableSpace
                                startDate, endDate, logDate, depDate,currentDate,
                                null
                              );
+                }
+
+                if (lockedTable) {
+                	// Remove the -1 record again...
+                	//
+					String sql = "DELETE FROM "+logcon.quoteField(transMeta.getLogTable())+" WHERE "+logcon.quoteField("ID_BATCH")+"= -1";
+					ldb.execStatement(sql);
+					
+                	ldb.unlockTables( new String[] { transMeta.getLogTable(), } );
                 }
 
             }

@@ -18,11 +18,13 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.Database;
+import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -48,10 +50,10 @@ public class TransHistoryDelegate extends SpoonDelegate {
     private ColumnInfo[] colinf;	
 	
 	private Text   wText;
-	private Button wRefresh, wReplay;
+	private Button wRefresh, wReplay, wClear;
     private TableView wFields;
     
-	private FormData fdText, fdSash, fdRefresh, fdReplay; 
+	private FormData fdText, fdSash, fdRefresh, fdReplay, fdClear; 
 
     private List<RowMetaAndData> rowList;
 
@@ -93,7 +95,7 @@ public class TransHistoryDelegate extends SpoonDelegate {
 		
 		// Create a composite, slam everything on there like it was in the history tab.
 		//
-		Composite historyComposite = new Composite(transGraph.extraViewTabFolder, SWT.NONE);
+		final Composite historyComposite = new Composite(transGraph.extraViewTabFolder, SWT.NONE);
 		historyComposite.setLayout(new FormLayout());
 		
         spoon.props.setLook(historyComposite);
@@ -143,7 +145,7 @@ public class TransHistoryDelegate extends SpoonDelegate {
 		wText = new Text(sash, SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL | SWT.READ_ONLY );
 		spoon.props.setLook(wText);
 		wText.setVisible(true);
-        wText.setText(Messages.getString("TransHistory.PleaseRefresh.Message"));
+        // wText.setText(Messages.getString("TransHistory.PleaseRefresh.Message"));
 		
 		wRefresh = new Button(historyComposite, SWT.PUSH);
 		wRefresh.setText(Messages.getString("TransHistory.Button.Refresh")); //$NON-NLS-1$
@@ -161,6 +163,14 @@ public class TransHistoryDelegate extends SpoonDelegate {
 		fdReplay.bottom = new FormAttachment(100, 0);
 		wReplay.setLayoutData(fdReplay);
 
+		wClear = new Button(historyComposite, SWT.PUSH);
+		wClear.setText(Messages.getString("TransHistory.Button.Clear")); //$NON-NLS-1$
+
+		fdClear    = new FormData(); 
+		fdClear.left   = new FormAttachment(wReplay, Const.MARGIN);  
+		fdClear.bottom = new FormAttachment(100, 0);
+		wClear.setLayoutData(fdClear);
+
 		// Put text in the middle
 		fdText=new FormData();
 		fdText.left   = new FormAttachment(0, 0);
@@ -177,7 +187,7 @@ public class TransHistoryDelegate extends SpoonDelegate {
 		fdSash.bottom = new FormAttachment(wRefresh, -5);
 		sash.setLayoutData(fdSash);
 		
-		// sash.setWeights(new int[] { 60, 40} );
+		sash.setWeights(new int[] { 60, 40} );
 
 		historyComposite.pack();
 		
@@ -214,15 +224,69 @@ public class TransHistoryDelegate extends SpoonDelegate {
             
             }
         );
-
+        
+        wClear.addSelectionListener(new SelectionAdapter()
+		        {
+		            public void widgetSelected(SelectionEvent e)
+		            {
+		                clearLogTable();
+		            }
+		        }
+	        );
 		
 		transHistoryTab.setControl(historyComposite);
 		
 		transGraph.extraViewTabFolder.setSelection(transHistoryTab);
+		
+		
+		// Launch a refresh in the background...
+		//
+		transGraph.getDisplay().asyncExec(new Runnable() {
+			public void run() {
+				refreshHistory();
+				historyComposite.layout(true, true);
+			}
+		});
 	}
 
-    
-    public void showHistoryView() {
+    /**
+     * User requested to clear the log table.<br>
+     * Better ask confirmation
+     */
+    protected void clearLogTable() {
+    	String logTable = transGraph.getManagedObject().getLogTable();
+    	DatabaseMeta databaseMeta = transGraph.getManagedObject().getLogConnection();
+    	
+    	if (databaseMeta!=null && !Const.isEmpty(logTable)) {
+    	
+	    	MessageBox mb = new MessageBox(transGraph.getShell(), SWT.YES | SWT.NO | SWT.ICON_QUESTION);
+	        mb.setMessage(Messages.getString("TransGraph.Dialog.AreYouSureYouWantToRemoveAllLogEntries.Message", logTable)); // Nothing found that matches your criteria
+			mb.setText(Messages.getString("TransGraph.Dialog.AreYouSureYouWantToRemoveAllLogEntries.Title")); // Sorry!
+			if (mb.open()==SWT.YES) {
+				Database database = new Database(databaseMeta);
+				try {
+					database.connect();
+					database.truncateTable(logTable);
+				}
+				catch(Exception e) {
+					new ErrorDialog(transGraph.getShell(), Messages.getString("TransGraph.Dialog.ErrorClearningLoggingTable.Title"), 
+							Messages.getString("TransGraph.Dialog.ErrorClearningLoggingTable.Message"), e);
+				}
+				finally
+				{
+					if (database!=null) {
+						database.disconnect();
+					}
+					
+					refreshHistory();
+					wText.setText("");
+				}
+			}
+
+    	}
+	}
+
+	public void showHistoryView() {
     	
     	// What button?
     	//
@@ -313,10 +377,10 @@ public class TransHistoryDelegate extends SpoonDelegate {
                         }
                         database.closeQuery(resultSet);
 
+                        wFields.table.clearAll();
+
                         if (rowList.size()>0)
                         {
-                            wFields.table.clearAll();
-                            
                             RowMetaInterface displayMeta = null;
 
                             // OK, now that we have a series of rows, we can add them to the table view...
@@ -417,6 +481,10 @@ public class TransHistoryDelegate extends SpoonDelegate {
                             wFields.table.setSelection(0);
                             
                             showLogEntry();
+                        }
+                        else
+                        {
+                        	new TableItem(wFields.table, SWT.NONE); // Give it an item to prevent errors on various platforms.
                         }
                     }
                     catch(KettleException e)

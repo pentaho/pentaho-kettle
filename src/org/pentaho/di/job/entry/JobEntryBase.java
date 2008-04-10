@@ -64,7 +64,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
   private JobEntryType type;
 
   private long id;
-
+  
   protected VariableSpace variables = new Variables();
   
 
@@ -270,6 +270,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
       retval.append("      ").append(XMLHandler.addTagValue("type", getTypeCode()));
     if (pluginID != null)
       retval.append("      ").append(XMLHandler.addTagValue("type", pluginID));
+    retval.append("      ").append(XMLHandler.addTagValue("launch_in_parallel", getDescription()));
 
     return retval.toString();
   }
@@ -282,8 +283,8 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
       setDescription(XMLHandler.getTagValue(entrynode, "description"));
       String stype = XMLHandler.getTagValue(entrynode, "type");
       setJobEntryType(JobEntryCopy.getType(stype));
-		}
-		catch(Exception e)
+      setDescription(XMLHandler.getTagValue(entrynode, "description"));
+	} catch(Exception e)
     {
       throw new KettleXMLException("Unable to load base info for job entry", e);
     }
@@ -297,7 +298,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
   {
     try
     {
-      setID(rep.insertJobEntry(id_job, getName(), getDescription(), getTypeCode()));
+      setID(rep.insertJobEntry(id_job, this));
 		}
 		catch(KettleDatabaseException dbe)
     {

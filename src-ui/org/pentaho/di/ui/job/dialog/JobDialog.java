@@ -80,6 +80,10 @@ public class JobDialog extends Dialog
 	private Text         wJobname;
     private FormData     fdlJobname, fdJobname;
 
+	private Label        wlJobFilename;
+	private Text         wJobFilename;
+    private FormData     fdlJobFilename, fdJobFilename;
+
     private Label        wlDirectory;
 	private Text         wDirectory;
 	private Button       wbDirectory;
@@ -265,7 +269,7 @@ public class JobDialog extends Dialog
 
 
 		
-		// Job name:
+		// Jobname:
 		wlJobname=new Label(wJobComp, SWT.RIGHT);
 		wlJobname.setText(Messages.getString("JobDialog.JobName.Label"));
 		props.setLook(wlJobname);
@@ -283,6 +287,24 @@ public class JobDialog extends Dialog
 		fdJobname.right= new FormAttachment(100, 0);
 		wJobname.setLayoutData(fdJobname);
 
+		// JobFilename:
+		wlJobFilename=new Label(wJobComp, SWT.RIGHT);
+		wlJobFilename.setText(Messages.getString("JobDialog.JobFilename.Label"));
+		props.setLook(wlJobFilename);
+		fdlJobFilename=new FormData();
+		fdlJobFilename.left = new FormAttachment(0, 0);
+		fdlJobFilename.right= new FormAttachment(middle, -margin);
+		fdlJobFilename.top  = new FormAttachment(wJobname, margin);
+		wlJobFilename.setLayoutData(fdlJobFilename);
+		wJobFilename=new Text(wJobComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		props.setLook(		wJobFilename);
+		wJobFilename.addModifyListener(lsMod);
+		fdJobFilename=new FormData();
+		fdJobFilename.left = new FormAttachment(middle, 0);
+		fdJobFilename.top  = new FormAttachment(wJobname, margin);
+		fdJobFilename.right= new FormAttachment(100, 0);
+		wJobFilename.setLayoutData(fdJobFilename);
+
 
 		// Job description:
 		Label wlJobdescription = new Label(wJobComp, SWT.RIGHT);
@@ -291,14 +313,14 @@ public class JobDialog extends Dialog
 		FormData fdlJobdescription = new FormData();
 		fdlJobdescription.left = new FormAttachment(0, 0);
 		fdlJobdescription.right= new FormAttachment(middle, -margin);
-		fdlJobdescription.top  = new FormAttachment(wJobname, margin);
+		fdlJobdescription.top  = new FormAttachment(wJobFilename, margin);
 		wlJobdescription.setLayoutData(fdlJobdescription);
 		wJobdescription=new Text(wJobComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wJobdescription);
 		wJobdescription.addModifyListener(lsMod);
 		FormData fdJobdescription = new FormData();
 		fdJobdescription.left = new FormAttachment(middle, 0);
-		fdJobdescription.top  = new FormAttachment(wJobname, margin);
+		fdJobdescription.top  = new FormAttachment(wJobFilename, margin);
 		fdJobdescription.right= new FormAttachment(100, 0);
 		wJobdescription.setLayoutData(fdJobdescription);
         
@@ -705,10 +727,11 @@ public class JobDialog extends Dialog
 	{
 		log.logDebug(toString(), "getting transformation info...");
 	
-		if (jobMeta.getName()!=null)           wJobname.setText      ( jobMeta.getName());
-		if (jobMeta.getDescription()!=null)    wJobdescription.setText      ( jobMeta.getDescription());
-		if (jobMeta.getExtendedDescription()!=null)    wExtendeddescription.setText      ( jobMeta.getExtendedDescription());
-		if (jobMeta.getJobversion()!=null)   wJobversion.setText        ( jobMeta.getJobversion());
+		wJobname.setText( Const.NVL(jobMeta.getName(), "") );
+		wJobFilename.setText( Const.NVL(jobMeta.getFilename(), "") );
+		wJobdescription.setText(  Const.NVL(jobMeta.getDescription(), "") );
+		wExtendeddescription.setText( Const.NVL(jobMeta.getExtendedDescription(), "") );
+		wJobversion.setText( Const.NVL(jobMeta.getJobversion(), "") );
 		wJobstatus.select( jobMeta.getJobstatus() -1);
 		
 		if (jobMeta.getDirectory()!=null)      wDirectory.setText    ( jobMeta.getDirectory().getPath() );

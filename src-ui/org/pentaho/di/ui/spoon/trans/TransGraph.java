@@ -75,6 +75,7 @@ import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.NotePadMeta;
+import org.pentaho.di.core.Props;
 import org.pentaho.di.core.dnd.DragAndDropContainer;
 import org.pentaho.di.core.dnd.XMLTransfer;
 import org.pentaho.di.core.exception.KettleException;
@@ -83,7 +84,6 @@ import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.gui.Redrawable;
 import org.pentaho.di.core.gui.SnapAllignDistribute;
 import org.pentaho.di.core.gui.SpoonInterface;
-import org.pentaho.di.core.listeners.FilenameChangedListener;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.i18n.LanguageChoice;
@@ -236,7 +236,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 	protected TransHopMeta currentHop;
 	protected StepMeta currentStep;
 	private List<AreaOwner> areaOwners;
-	private Text filenameLabel;
+	// private Text filenameLabel;
 	private SashForm sashForm;
 	public Composite extraViewComposite;
 	public CTabFolder extraViewTabFolder;
@@ -331,7 +331,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         
         sashForm.setWeights(new int[] { 100, } );
 
-        
+        /*
 		filenameLabel = new Text(this, SWT.LEFT | SWT.ON_TOP | SWT.NO_BACKGROUND | SWT.READ_ONLY | SWT.NO_FOCUS | SWT.BORDER);
 		filenameLabel.setText(Const.NVL(transMeta.getFilename(), ""));
 		filenameLabel.setBackground(GUIResource.getInstance().getColorBackground());
@@ -350,7 +350,8 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 				canvas.layout(true, true);
 			}
 		});
-
+		*/
+        
 		try {
     		// first get the XML document
     			menuMap = XulHelper.createPopupMenus(SpoonInterface.XUL_FILE_MENUS, shell, new XulMessages(),"trans-graph-hop",
@@ -2964,9 +2965,13 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 		// Add a tab folder ...
 		//
         extraViewTabFolder= new CTabFolder(extraViewComposite, SWT.MULTI);
+        spoon.props.setLook(extraViewTabFolder, Props.WIDGET_STYLE_TAB);
+        
+        /*
         extraViewTabFolder.setSimple(false);
         extraViewTabFolder.setUnselectedImageVisible(true);
         extraViewTabFolder.setUnselectedCloseVisible(true);
+        */
         
         // If the last tab is closed, see if we need to close the bottom view.
         //
@@ -3010,7 +3015,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         fdTabFolder.bottom = new FormAttachment(100,0);
         extraViewTabFolder.setLayoutData(fdTabFolder);
         
-		sashForm.setWeights(new int[] { 70, 30, });
+		sashForm.setWeights(new int[] { 60, 40, });
 	}
 
 	

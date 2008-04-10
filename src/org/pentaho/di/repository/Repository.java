@@ -54,6 +54,7 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.JobEntryLoader;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.JobPlugin;
+import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.StepPlugin;
@@ -2170,22 +2171,22 @@ public class Repository
 		return id_value;
 	}
 
-	public synchronized long insertJobEntry(long id_job, String name, String description, String jobentrytype)
+	public synchronized long insertJobEntry(long id_job, JobEntryBase jobEntryBase)
 			throws KettleException
 	{
 		long id = getNextJobEntryID();
 
-		long id_jobentry_type = getJobEntryTypeID(jobentrytype);
+		long id_jobentry_type = getJobEntryTypeID(jobEntryBase.getTypeCode());
 
-		log.logDebug(toString(), "ID_JobEntry_type = " + id_jobentry_type + " for type = [" + jobentrytype + "]");
+		log.logDebug(toString(), "ID_JobEntry_type = " + id_jobentry_type + " for type = [" + jobEntryBase.getTypeCode() + "]");
 
 		RowMetaAndData table = new RowMetaAndData();
 
 		table.addValue(new ValueMeta(FIELD_JOBENTRY_ID_JOBENTRY, ValueMetaInterface.TYPE_INTEGER), new Long(id));
 		table.addValue(new ValueMeta(FIELD_JOBENTRY_ID_JOB, ValueMetaInterface.TYPE_INTEGER), new Long(id_job));
 		table.addValue(new ValueMeta(FIELD_JOBENTRY_ID_JOBENTRY_TYPE, ValueMetaInterface.TYPE_INTEGER), new Long(id_jobentry_type));
-		table.addValue(new ValueMeta(FIELD_JOBENTRY_NAME, ValueMetaInterface.TYPE_STRING), name);
-		table.addValue(new ValueMeta(FIELD_JOBENTRY_DESCRIPTION, ValueMetaInterface.TYPE_STRING), description);
+		table.addValue(new ValueMeta(FIELD_JOBENTRY_NAME, ValueMetaInterface.TYPE_STRING), jobEntryBase.getName());
+		table.addValue(new ValueMeta(FIELD_JOBENTRY_DESCRIPTION, ValueMetaInterface.TYPE_STRING), jobEntryBase.getDescription());
 
 		database.prepareInsert(table.getRowMeta(), TABLE_R_JOBENTRY);
 		database.setValuesInsert(table);

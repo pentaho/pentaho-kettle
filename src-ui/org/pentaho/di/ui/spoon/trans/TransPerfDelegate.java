@@ -241,13 +241,20 @@ public class TransPerfDelegate extends SpoonDelegate {
 		
 		// Refresh automatically every 5 seconds as well.
 		//
-		Timer timer = new Timer();
+		final Timer timer = new Timer();
 		timer.schedule(new TimerTask() {
 			public void run() {
 				updateGraph();
 			}
 		}, 0, 5000);
-				
+
+		// When the tab is closed, we remove the update timer
+		//
+		transPerfTab.addDisposeListener(new DisposeListener() {
+			public void widgetDisposed(DisposeEvent arg0) {
+				timer.cancel();
+			}
+		});
 	}
 
     /**
@@ -288,7 +295,7 @@ public class TransPerfDelegate extends SpoonDelegate {
 		transGraph.getDisplay().asyncExec(new Runnable() {
 		
 			public void run() {
-				if (!perfComposite.isDisposed() && !canvas.isDisposed()) {
+				if (!perfComposite.isDisposed() && !canvas.isDisposed() && !transPerfTab.isDisposed()) {
 					if (transPerfTab.isShowing()) {
 						updateCanvas();
 					}

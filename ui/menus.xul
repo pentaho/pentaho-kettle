@@ -171,6 +171,7 @@
     <menuitem value="job-graph-entry-launch" label="%JobGraph.PopupMenu.JobEntry.LaunchSpoon"/>
     <menuitem value="job-graph-entry-edit" label="%JobGraph.PopupMenu.JobEntry.Edit"/>
     <menuitem value="job-graph-entry-edit-description" label="%JobGraph.PopupMenu.JobEntry.EditDescription"/>
+    <menuitem value="job-graph-entry-parallel" type="checkbox" label="%JobGraph.PopupMenu.JobEntry.LaunchParallel"/>
 	<menuseparator/>
     <menuitem value="job-graph-entry-duplicate" label="%JobGraph.PopupMenu.JobEntry.Duplicate"/>
     <menuitem value="job-graph-entry-copy" label="%JobGraph.PopupMenu.JobEntry.CopyToClipboard"/>

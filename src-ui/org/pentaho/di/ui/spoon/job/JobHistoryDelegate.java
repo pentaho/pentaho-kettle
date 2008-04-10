@@ -20,11 +20,13 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.Database;
+import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -35,7 +37,6 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
-import org.pentaho.di.ui.spoon.Messages;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.delegates.SpoonDelegate;
 
@@ -50,10 +51,10 @@ public class JobHistoryDelegate extends SpoonDelegate {
     private ColumnInfo[] colinf;	
 	
 	private Text   wText;
-	private Button wRefresh, wReplay;
+	private Button wRefresh, wReplay, wClear;
     private TableView wFields;
     
-	private FormData fdText, fdSash, fdRefresh, fdReplay; 
+	private FormData fdText, fdSash, fdRefresh, fdReplay, fdClear; 
 
     private List<RowMetaAndData> rowList;
 
@@ -91,7 +92,7 @@ public class JobHistoryDelegate extends SpoonDelegate {
 		
 		// Create a composite, slam everything on there like it was in the history tab.
 		//
-		Composite historyComposite = new Composite(jobGraph.extraViewTabFolder, SWT.NONE);
+		final Composite historyComposite = new Composite(jobGraph.extraViewTabFolder, SWT.NONE);
 		historyComposite.setLayout(new FormLayout());
 		
         spoon.props.setLook(historyComposite);
@@ -141,7 +142,7 @@ public class JobHistoryDelegate extends SpoonDelegate {
 		wText = new Text(sash, SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL | SWT.READ_ONLY );
 		spoon.props.setLook(wText);
 		wText.setVisible(true);
-        wText.setText(Messages.getString("TransHistory.PleaseRefresh.Message"));
+        // wText.setText(Messages.getString("TransHistory.PleaseRefresh.Message"));
 		
 		wRefresh = new Button(historyComposite, SWT.PUSH);
 		wRefresh.setText(Messages.getString("TransHistory.Button.Refresh")); //$NON-NLS-1$
@@ -159,6 +160,14 @@ public class JobHistoryDelegate extends SpoonDelegate {
 		fdReplay.bottom = new FormAttachment(100, 0);
 		wReplay.setLayoutData(fdReplay);
 
+		wClear = new Button(historyComposite, SWT.PUSH);
+		wClear.setText(Messages.getString("JobHistory.Button.Clear")); //$NON-NLS-1$
+
+		fdClear    = new FormData(); 
+		fdClear.left   = new FormAttachment(wReplay, Const.MARGIN);  
+		fdClear.bottom = new FormAttachment(100, 0);
+		wClear.setLayoutData(fdClear);
+
 		// Put text in the middle
 		fdText=new FormData();
 		fdText.left   = new FormAttachment(0, 0);
@@ -175,7 +184,7 @@ public class JobHistoryDelegate extends SpoonDelegate {
 		fdSash.bottom = new FormAttachment(wRefresh, -5);
 		sash.setLayoutData(fdSash);
 		
-		// sash.setWeights(new int[] { 60, 40} );
+		sash.setWeights(new int[] { 60, 40} );
 
 		historyComposite.pack();
 		
@@ -242,8 +251,53 @@ public class JobHistoryDelegate extends SpoonDelegate {
 				jobGraph.getRefreshListeners().remove(jobRefreshListener);
 			}
 		});
+		
+		// Launch a refresh in the background...
+		//
+		jobGraph.getDisplay().asyncExec(new Runnable() {
+			public void run() {
+				refreshHistory();
+				historyComposite.layout(true, true);
+			}
+		});
 	}
 
+    /**
+     * User requested to clear the log table.<br>
+     * Better ask confirmation
+     */
+    protected void clearLogTable() {
+    	String logTable = jobGraph.getManagedObject().getLogTable();
+    	DatabaseMeta databaseMeta = jobGraph.getManagedObject().getLogConnection();
+    	
+    	if (databaseMeta!=null && !Const.isEmpty(logTable)) {
+    	
+	    	MessageBox mb = new MessageBox(jobGraph.getShell(), SWT.YES | SWT.NO | SWT.ICON_QUESTION);
+	        mb.setMessage(Messages.getString("JobGraph.Dialog.AreYouSureYouWantToRemoveAllLogEntries.Message", logTable)); // Nothing found that matches your criteria
+			mb.setText(Messages.getString("JobGraph.Dialog.AreYouSureYouWantToRemoveAllLogEntries.Title")); // Sorry!
+			if (mb.open()==SWT.YES) {
+				Database database = new Database(databaseMeta);
+				try {
+					database.connect();
+					database.truncateTable(logTable);
+				}
+				catch(Exception e) {
+					new ErrorDialog(jobGraph.getShell(), Messages.getString("JobGraph.Dialog.ErrorClearningLoggingTable.Title"), 
+							Messages.getString("JobGraph.Dialog.ErrorClearningLoggingTable.Message"), e);
+				}
+				finally
+				{
+					if (database!=null) {
+						database.disconnect();
+					}
+					
+					refreshHistory();
+					wText.setText("");
+				}
+			}
+
+    	}
+	}
     
     public void showHistoryView() {
     	

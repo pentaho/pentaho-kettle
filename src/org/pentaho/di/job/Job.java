@@ -370,7 +370,7 @@ public class Job extends Thread implements VariableSpace
 	 * @return
 	 * @throws KettleException
 	 */
-	private Result execute(int nr, Result prev_result, JobEntryCopy startpoint, JobEntryCopy previous, String reason) throws KettleException
+	private Result execute(final int nr, Result prev_result, final JobEntryCopy startpoint, JobEntryCopy previous, String reason) throws KettleException
 	{
 		Result res = null;
        
@@ -405,7 +405,7 @@ public class Job extends Thread implements VariableSpace
         // Execute this entry...
         JobEntryInterface cloneJei = (JobEntryInterface)jei.clone();
         ((VariableSpace)cloneJei).copyVariablesFrom(this);        
-        Result result = cloneJei.execute(prevResult, nr, rep, this);
+        final Result result = cloneJei.execute(prevResult, nr, rep, this);
 
         Thread.currentThread().setContextClassLoader(cl);
 		addErrors((int)result.getNrErrors());
@@ -413,20 +413,30 @@ public class Job extends Thread implements VariableSpace
         // Save this result as well...
         JobEntryResult jerAfter = new JobEntryResult(result, Messages.getString("Job.Comment.JobFinished"), null, startpoint);
         jobTracker.addJobTracker(new JobTracker(jobMeta, jerAfter));
-				
+			
 		// Try all next job entries.
-		// Launch only those where the hopinfo indicates true or false
+        //
+        // Keep track of all the threads we fired in case of parallel execution...
+        // Keep track of the results of these executions too.
+        //
+        final List<Thread> threads = new ArrayList<Thread>();
+        final List<Result> threadResults = new ArrayList<Result>(); 
+        final List<KettleException> threadExceptions = new ArrayList<KettleException>(); 
+        final List<JobEntryCopy> threadEntries= new ArrayList<JobEntryCopy>(); 
+        
+		// Launch only those where the hop indicates true or false
+        //
 		int nrNext = jobMeta.findNrNextJobEntries(startpoint);
 		for (int i=0;i<nrNext && !isStopped();i++)
 		{
 			// The next entry is...
-			JobEntryCopy nextEntry = jobMeta.findNextJobEntry(startpoint, i);
+			final JobEntryCopy nextEntry = jobMeta.findNextJobEntry(startpoint, i);
 			
 			// See if we need to execute this...
-			JobHopMeta hi = jobMeta.findJobHop(startpoint, nextEntry);
+			final JobHopMeta hi = jobMeta.findJobHop(startpoint, nextEntry);
 
 			// The next comment...
-			String nextComment = null;
+			final String nextComment;
 			if (hi.isUnconditional()) 
 			{
 				nextComment = Messages.getString("Job.Comment.FollowedUnconditional");
@@ -445,7 +455,7 @@ public class Job extends Thread implements VariableSpace
 
 			// 
 			// If the link is unconditional, execute the next job entry (entries).
-			// If the startpoint was an evaluation and the link color is correct: green or red, execute the next job entry...
+			// If the start point was an evaluation and the link color is correct: green or red, execute the next job entry...
 			//
 			if (  hi.isUnconditional() || ( startpoint.evaluates() && ( ! ( hi.getEvaluation() ^ result.getResult() ) ) ) ) 
 			{				
@@ -461,18 +471,73 @@ public class Job extends Thread implements VariableSpace
 				}
                 
                 // Now execute!
-                try
-                {
-                    res = execute(nr+1, result, nextEntry, startpoint, nextComment);
-                }
-                catch(Throwable e)
-                {
-                    log.logError(toString(), Const.getStackTracker(e));
-                    throw new KettleException(Messages.getString("Job.Log.UnexpectedError",nextEntry.toString()), e);
-                }
-				
-				log.logBasic(jobMeta.toString(), Messages.getString("Job.Log.FinishedJobEntry",nextEntry.getName(),res.getResult()+""));
+				// 
+            	// if (we launch in parallel, fire the execution off in a new thread...
+            	//
+            	if (startpoint.isLaunchingInParallel())
+            	{
+            		threadEntries.add(nextEntry);
+            		
+            		Runnable runnable = new Runnable() {
+            			public void run() {
+            				try {
+            					Result threadResult = execute(nr+1, result, nextEntry, startpoint, nextComment);
+            					threadResults.add(threadResult);
+            				}
+            				catch(Throwable e)
+                            {
+                            	log.logError(toString(), Const.getStackTracker(e));
+                            	threadExceptions.add(new KettleException(Messages.getString("Job.Log.UnexpectedError",nextEntry.toString()), e));
+                            	Result threadResult = new Result();
+                            	threadResult.setResult(false);
+                            	threadResult.setNrErrors(1L);
+                            	threadResults.add(threadResult);
+                            }
+            			}
+            		};
+            		Thread thread = new Thread(runnable);
+            		threads.add(thread);
+            		thread.start();
+                    log.logBasic(jobMeta.toString(), Messages.getString("Job.Log.LaunchedJobEntryInParallel",nextEntry.getName()));
+            	}
+            	else
+            	{
+                    try
+                    {
+	            		// Same as before: blocks until it's done
+	            		//
+	            		res = execute(nr+1, result, nextEntry, startpoint, nextComment);
+                    }
+                    catch(Throwable e)
+                    {
+                    	log.logError(toString(), Const.getStackTracker(e));
+                    	throw new KettleException(Messages.getString("Job.Log.UnexpectedError",nextEntry.toString()), e);
+                    }
+                    log.logBasic(jobMeta.toString(), Messages.getString("Job.Log.FinishedJobEntry",nextEntry.getName(),res.getResult()+""));
+            	}
 			}
+		}
+		
+		// OK, if we run in parallel, we need to wait for all the job entries to finish...
+		//
+		if (startpoint.isLaunchingInParallel())
+		{
+			for (int i=0;i<threads.size();i++)
+			{
+				Thread thread = threads.get(i);
+				JobEntryCopy nextEntry = threadEntries.get(i);
+				
+				try 
+				{
+					thread.join();
+				} 
+				catch (InterruptedException e) 
+				{
+	                log.logError(jobMeta.toString(), Messages.getString("Job.Log.UnexpectedErrorWhileWaitingForJobEntry",nextEntry.getName()));
+	                threadExceptions.add(new KettleException(Messages.getString("Job.Log.UnexpectedErrorWhileWaitingForJobEntry",nextEntry.getName()), e));
+				}
+			}
+            log.logBasic(jobMeta.toString(), Messages.getString("Job.Log.FinishedJobEntry",startpoint.getName()));
 		}
 		
 		// Perhaps we don't have next steps??
@@ -482,6 +547,30 @@ public class Job extends Thread implements VariableSpace
 			res=prevResult;
 		}
 
+		// See if there where any errors in the parallel execution
+		//
+		if (threadExceptions.size()>0) 
+		{
+			res.setResult(false);
+			res.setNrErrors(threadExceptions.size());
+			
+			for (KettleException e : threadExceptions) 
+			{
+				log.logError(jobMeta.toString(), e.getMessage(), e);
+			}
+			
+			// Now throw the first Exception for good measure...
+			//
+			throw threadExceptions.get(0);
+		}
+		
+		// In parallel execution, we aggregate all the results, simply add them to the previous result...
+		//
+		for (Result threadResult : threadResults)
+		{
+			res.add(threadResult);
+		}
+		
 		return res;
 	}
 	
@@ -569,7 +658,35 @@ public class Job extends Thread implements VariableSpace
 			ldb.shareVariablesWith(this);
 			try
 			{
+				boolean lockedTable=false;
 				ldb.connect();
+			    ldb.setCommit(100);
+			    
+                // See if we have to add a batch id...
+                Long id_batch = new Long(1);
+                if (jobMeta.isBatchIdUsed())
+                {
+                    // Make sure we lock that table to avoid concurrency issues
+                    //
+                    ldb.lockTables( new String[] { jobMeta.getLogTable(), } );
+                    lockedTable=true;
+                    
+					// Now insert value -1 to create a real write lock blocking the other requests.. FCFS
+					//
+					String sql = "INSERT INTO "+logcon.quoteField(jobMeta.getLogTable())+"("+logcon.quoteField("ID_JOB")+") values (-1)";
+					ldb.execStatement(sql);
+					
+					// Now this next lookup will stall on the other connections
+					//
+                    id_batch = ldb.getNextValue(null, jobMeta.getLogTable(), "ID_JOB");
+
+                    setBatchId( id_batch.longValue() );
+                    if (getPassedBatchId()<=0) 
+                    {
+                        setPassedBatchId(id_batch.longValue());
+                    }
+                }
+			    
 				Object[] lastr = ldb.getLastLogDate(jobMeta.getLogTable(), jobMeta.getName(), true, "end"); // $NON-NLS-1$
 				if (!Const.isEmpty(lastr))
 				{
@@ -589,24 +706,21 @@ public class Job extends Thread implements VariableSpace
 				}
 
 				depDate = currentDate;
-                
-                // See if we have to add a batch id...
-                Long id_batch = new Long(1);
-                if (jobMeta.isBatchIdUsed())
-                {
-                    id_batch = ldb.getNextValue(null, jobMeta.getLogTable(), "ID_JOB");
-                    setBatchId( id_batch.longValue() );
-                    if (getPassedBatchId()<=0) 
-                    {
-                        setPassedBatchId(id_batch.longValue());
-                    }
-                }
 
 				ldb.writeLogRecord(jobMeta.getLogTable(), jobMeta.isBatchIdUsed(), getBatchId(), true, jobMeta.getName(), "start",  // $NON-NLS-1$ 
 				                   0L, 0L, 0L, 0L, 0L, 0L, 
 				                   startDate, endDate, logDate, depDate, currentDate,
 								   null
 								   );
+                if (lockedTable) {
+
+                	// Remove the -1 record again...
+                	//
+					String sql = "DELETE FROM "+logcon.quoteField(jobMeta.getLogTable())+" WHERE "+logcon.quoteField("ID_JOB")+"= -1";
+					ldb.execStatement(sql);
+
+                	ldb.unlockTables( new String[] { jobMeta.getLogTable(), } );
+                }
 				ldb.disconnect();
 			}
 			catch(KettleDatabaseException dbe)

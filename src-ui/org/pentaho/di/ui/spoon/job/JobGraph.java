@@ -48,6 +48,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.LineAttributes;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
@@ -68,6 +69,7 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.NotePadMeta;
+import org.pentaho.di.core.Props;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.dnd.DragAndDropContainer;
 import org.pentaho.di.core.dnd.XMLTransfer;
@@ -78,7 +80,6 @@ import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.gui.Redrawable;
 import org.pentaho.di.core.gui.SnapAllignDistribute;
 import org.pentaho.di.core.gui.SpoonInterface;
-import org.pentaho.di.core.listeners.FilenameChangedListener;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.job.Job;
@@ -104,13 +105,13 @@ import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.TabItemInterface;
 import org.pentaho.di.ui.spoon.TabMapEntry;
 import org.pentaho.di.ui.spoon.TransPainter;
+import org.pentaho.di.ui.spoon.XulMessages;
 import org.pentaho.di.ui.spoon.dialog.DeleteMessageBox;
 import org.pentaho.xul.menu.XulMenu;
 import org.pentaho.xul.menu.XulMenuChoice;
 import org.pentaho.xul.menu.XulPopupMenu;
 import org.pentaho.xul.swt.tab.TabItem;
 import org.pentaho.xul.toolbar.XulToolbar;
-import org.pentaho.di.ui.spoon.XulMessages;
 
 
 /**
@@ -130,6 +131,8 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 	// public final static String RESUME_TEXT = Messages.getString("JobLog.Button.ResumeJob"); //$NON-NLS-1$  TODO
 	public final static String STOP_TEXT = Messages.getString("JobLog.Button.Stop"); //$NON-NLS-1$
 
+	private final static String STRING_PARALLEL_WARNING_PARAMETER = "ParallelJobEntriesWarning";
+	
 	private static final int HOP_SEL_MARGIN = 9;
 
 	protected Shell shell;
@@ -177,7 +180,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 	protected NotePadMeta ni = null;
 	protected JobHopMeta currentHop;
 
-	private Text filenameLabel;
+	// private Text filenameLabel;
 	private SashForm sashForm;
 	public Composite extraViewComposite;
 	public CTabFolder extraViewTabFolder;
@@ -244,11 +247,11 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
         
         // Add a canvas below it, use up all space initially
         //
-        canvas = new Canvas(sashForm, SWT.V_SCROLL | SWT.H_SCROLL | SWT.NO_BACKGROUND );
+        canvas = new Canvas(sashForm, SWT.V_SCROLL | SWT.H_SCROLL | SWT.NO_BACKGROUND | SWT.BORDER);
         
         sashForm.setWeights(new int[] { 100, } );
 
-        
+        /*
 		filenameLabel = new Text(this, SWT.LEFT | SWT.ON_TOP | SWT.NO_BACKGROUND | SWT.READ_ONLY | SWT.NO_FOCUS | SWT.BORDER);
 		filenameLabel.setText(Const.NVL(jobMeta.getFilename(), ""));
 		filenameLabel.setBackground(GUIResource.getInstance().getColorBackground());
@@ -267,6 +270,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 				canvas.layout(true, true);
 			}
 		});
+		*/
         
 		try {
 			menuMap = XulHelper.createPopupMenus(SpoonInterface.XUL_FILE_MENUS, shell, new org.pentaho.di.ui.spoon.job.XulMessages(), "job-graph-hop", "job-graph-note", "job-graph-background", "job-graph-entry");
@@ -1218,6 +1222,37 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 		String des = dd.open();
 		if (des != null) jobEntry.setDescription(des);
 	}
+	
+	/**
+	 * Go from serial to parallel to serial execution
+	 */
+	public void editEntryParallel()
+	{
+		getJobEntry().setLaunchingInParallel(!getJobEntry().isLaunchingInParallel());
+		if (getJobEntry().isLaunchingInParallel()) 
+		{
+			// Show a warning (optional)
+	        //
+	        if ( "Y".equalsIgnoreCase( spoon.props.getCustomParameter(STRING_PARALLEL_WARNING_PARAMETER, "Y") )) //$NON-NLS-1$ //$NON-NLS-2$
+	        {
+	            MessageDialogWithToggle md = new MessageDialogWithToggle(shell, 
+	                 Messages.getString("JobGraph.ParallelJobEntriesWarning.DialogTitle"),  //$NON-NLS-1$
+	                 null,
+	                 Messages.getString("JobGraph.ParallelJobEntriesWarning.DialogMessage", Const.CR )+Const.CR, //$NON-NLS-1$ //$NON-NLS-2$
+	                 MessageDialog.WARNING,
+	                 new String[] { Messages.getString("JobGraph.ParallelJobEntriesWarning.Option1") }, //$NON-NLS-1$
+	                 0,
+	                 Messages.getString("JobGraph.ParallelJobEntriesWarning.Option2"), //$NON-NLS-1$
+	                 "N".equalsIgnoreCase( spoon.props.getCustomParameter(STRING_PARALLEL_WARNING_PARAMETER, "Y") ) //$NON-NLS-1$ //$NON-NLS-2$
+	            );
+	            MessageDialogWithToggle.setDefaultImage(GUIResource.getInstance().getImageSpoon());
+	            md.open();
+	            spoon.props.setCustomParameter(STRING_PARALLEL_WARNING_PARAMETER, md.getToggleState()?"N":"Y"); //$NON-NLS-1$ //$NON-NLS-2$
+	            spoon.props.saveProps();
+	        }
+		}
+		redraw();
+	}
 
 	public void duplicateEntry() throws KettleException
 	{
@@ -1337,6 +1372,11 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 				if( item != null ) {
 					item.setEnabled( jobEntry.isDrawn() );
 				}
+				
+				item = menu.getMenuItemById( "job-graph-entry-parallel" ); // $NON-NLS-1$
+				if (item != null ) {
+					item.setChecked( jobEntry.isLaunchingInParallel() );
+				}
 
 				menu.addMenuListener( "job-graph-entry-align-left", this, "allignleft" ); //$NON-NLS-1$ //$NON-NLS-2$
 				menu.addMenuListener( "job-graph-entry-align-right", this, "allignright" ); //$NON-NLS-1$ //$NON-NLS-2$
@@ -1348,6 +1388,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 
 				menu.addMenuListener( "job-graph-entry-edit", this, "editEntryClick" ); //$NON-NLS-1$ //$NON-NLS-2$ 
 				menu.addMenuListener( "job-graph-entry-edit-description", this, "editEntryDescription" ); //$NON-NLS-1$ //$NON-NLS-2$ 
+				menu.addMenuListener( "job-graph-entry-parallel", this, "editEntryParallel" ); //$NON-NLS-1$ //$NON-NLS-2$ 
 				menu.addMenuListener( "job-graph-entry-duplicate", this, "duplicateEntry" ); //$NON-NLS-1$ //$NON-NLS-2$ 
 				menu.addMenuListener( "job-graph-entry-copy", this, "copyEntry" ); //$NON-NLS-1$ //$NON-NLS-2$ 
 				menu.addMenuListener( "job-graph-entry-detach", this, "detatchEntry" ); //$NON-NLS-1$ //$NON-NLS-2$ 
@@ -1923,13 +1964,13 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 		drawRect(gc, selrect);
 	}
 
-	protected void drawJobHop(GC gc, JobHopMeta hi, boolean candidate) 
+	protected void drawJobHop(GC gc, JobHopMeta hop, boolean candidate) 
 	{
-		if (hi==null || hi.from_entry==null || hi.to_entry==null) return;
-		if (!hi.from_entry.isDrawn() || !hi.to_entry.isDrawn())	return;
+		if (hop==null || hop.from_entry==null || hop.to_entry==null) return;
+		if (!hop.from_entry.isDrawn() || !hop.to_entry.isDrawn())	return;
 		
-		if (shadowsize>0) drawLineShadow(gc, hi);
-		drawLine(gc, hi, candidate);
+		if (shadowsize>0) drawLineShadow(gc, hop);
+		drawLine(gc, hop, candidate);
 	}
 	
 	public Image getIcon(JobEntryCopy je)
@@ -2077,27 +2118,38 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 		ni.height = height;
 	}
 
-	protected void drawLine(GC gc, JobHopMeta hi, boolean is_candidate) 
+	protected void drawLine(GC gc, JobHopMeta hop, boolean is_candidate) 
 	{
-		int line[] = getLine(hi.from_entry, hi.to_entry);
+		int line[] = getLine(hop.from_entry, hop.to_entry);
 
 		gc.setLineWidth(linewidth);
 		Color col;
 
+		if (hop.from_entry.isLaunchingInParallel())
+		{
+			gc.setLineAttributes(new LineAttributes((float)linewidth, SWT.CAP_FLAT, SWT.JOIN_MITER, SWT.LINE_CUSTOM, new float[] { 5, 3, }, 0, 10));
+			
+			// gc.setLineStyle(SWT.LINE_DASH);
+		}
+		else
+		{
+			gc.setLineStyle(SWT.LINE_SOLID);
+		}
+		
 		if (is_candidate) 
 		{
 			col = GUIResource.getInstance().getColorBlue();
 		}
 		else 
-		if (hi.isEnabled()) 
+		if (hop.isEnabled()) 
 		{
-			if (hi.isUnconditional())
+			if (hop.isUnconditional())
 			{
 				col = GUIResource.getInstance().getColorBlack();
 			}
 			else
 			{
-				if (hi.getEvaluation()) 
+				if (hop.getEvaluation()) 
 				{
 					col = GUIResource.getInstance().getColorGreen(); 
 				}
@@ -2114,12 +2166,13 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 
 		gc.setForeground(col);
 
-		if (hi.isSplit()) gc.setLineWidth(linewidth + 2);
+		if (hop.isSplit()) gc.setLineWidth(linewidth + 2);
 		drawArrow(gc, line);
-		if (hi.isSplit()) gc.setLineWidth(linewidth);
+		if (hop.isSplit()) gc.setLineWidth(linewidth);
 
 		gc.setForeground(GUIResource.getInstance().getColorBlack());
 		gc.setBackground(GUIResource.getInstance().getColorBackground());
+		gc.setLineStyle(SWT.LINE_SOLID);
 	}
 
 	protected void drawLineShadow(GC gc, JobHopMeta hi)
@@ -2527,6 +2580,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 		extraCompositeFormLayout.marginHeight=2;
 		extraViewComposite.setLayout(extraCompositeFormLayout);
 		
+		
 		// Add a label at the top: Results
 		//
 		Label wResultsLabel = new Label(extraViewComposite, SWT.LEFT);
@@ -2660,9 +2714,13 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 		// Add a tab folder ...
 		//
         extraViewTabFolder= new CTabFolder(extraViewComposite, SWT.MULTI);
+        spoon.props.setLook(extraViewTabFolder, Props.WIDGET_STYLE_TAB);
+        
+        /*
         extraViewTabFolder.setSimple(false);
         extraViewTabFolder.setUnselectedImageVisible(true);
         extraViewTabFolder.setUnselectedCloseVisible(true);
+        */
         
         // If the last tab is closed, see if we need to close the bottom view.
         //
@@ -2705,7 +2763,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
         fdTabFolder.bottom = new FormAttachment(100,0);
         extraViewTabFolder.setLayoutData(fdTabFolder);
         
-		sashForm.setWeights(new int[] { 70, 30, });
+		sashForm.setWeights(new int[] { 60, 40, });
 	}
 
     /**

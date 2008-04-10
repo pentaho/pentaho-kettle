@@ -112,24 +112,6 @@ align="vertical" >
 			<toolbarbutton value="file-new" label="%Spoon.Menu.File.New" image="ui/images/new.png" tooltiptext="%Spoon.Tooltip.NewFile"/>
 			<toolbarseparator />
 			<toolbarbutton value="file-open" label="%Spoon.Menu.File.Open" image="ui/images/open.png" tooltiptext="%Spoon.Tooltip.OpenTranformation" />
-			
-			<!-- 
-			<toolbarbutton value="file-save" label="%Spoon.Menu.File.Save" image="ui/images/save.png" tooltiptext="%Spoon.Tooltip.SaveCurrentTranformation" />
-			<toolbarbutton value="file-save-as" label="%Spoon.Menu.File.SaveAs" image="ui/images/saveas.png" tooltiptext="%Spoon.Tooltip.SaveDifferentNameTranformation" />
-			<toolbarseparator />
-			<toolbarbutton value="file-print" label="%Spoon.Menu.File.Print" image="ui/images/print.png" tooltiptext="%Spoon.Tooltip.Print"/>
-			<toolbarseparator />
-			<toolbarbutton value="trans-run" label="%Spoon.Menu.Transformation.Run" image="ui/images/run.png" tooltiptext="%Spoon.Tooltip.RunTranformation"/>
-			<toolbarbutton value="trans-preview" label="%Spoon.Menu.Transformation.Preview" image="ui/images/preview.png" tooltiptext="%Spoon.Tooltip.PreviewTranformation"/>
-			<toolbarbutton value="trans-debug" label="%Spoon.Menu.Transformation.Debug" image="ui/images/debug.png" tooltiptext="%Spoon.Tooltip.DebugTranformation"/>
-			<toolbarbutton value="trans-replay"  label="%Spoon.Menu.Transformation.Replay" image="ui/images/replay.png" tooltiptext="%Spoon.Tooltip.ReplayTranformation"/>
-			<toolbarseparator />
-			<toolbarbutton value="trans-verify" label="%Spoon.Menu.Transformation.Verify" image="ui/images/check.png" tooltiptext="%Spoon.Tooltip.VerifyTranformation"/>
-			<toolbarbutton value="trans-impact" label="%Spoon.Menu.Transformation.Impact" image="ui/images/impact.png" tooltiptext="%Spoon.Tooltip.AnalyzeTranformation"/>
-			<toolbarbutton value="trans-get-sql" label="%Spoon.Menu.Transformation.GetSQL" image="ui/images/SQLbutton.png" tooltiptext="%Spoon.Tooltip.GenerateSQLForTranformation"/>
-			<toolbarseparator />
-			<toolbarbutton value="explore-database" label="%Spoon.Menu.ExploreConnection" image="ui/images/exploredb.png" tooltiptext="%Spoon.Tooltip.ExploreConnection"/>
-			 -->
 		</toolbar>
 	</toolbox>
 

@@ -83,7 +83,6 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
@@ -304,7 +303,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	 * This contains a map with all the unnamed transformation (just a filename)
 	 */
 
-	private XulToolbar toolbar;
+	// private XulToolbar toolbar;
 
 	private XulMenuBar menuBar;
 
@@ -582,7 +581,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			}
 		};
         
-        addBar();
+        // addBar();
         
         initFileMenu();
 
@@ -593,7 +592,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 		FormData fdSash = new FormData();
 		fdSash.left = new FormAttachment(0, 0);
-		fdSash.top = new FormAttachment((org.eclipse.swt.widgets.ToolBar) toolbar.getNativeObject(), 0);
+		// fdSash.top = new FormAttachment((org.eclipse.swt.widgets.ToolBar) toolbar.getNativeObject(), 0);
+		fdSash.top = new FormAttachment(0, 0);
 		fdSash.bottom = new FormAttachment(100, 0);
 		fdSash.right = new FormAttachment(100, 0);
 		sashform.setLayoutData(fdSash);
@@ -654,7 +654,18 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	     miNewJob.setText(Messages.getString("Spoon.Menu.File.NewJob")); //$NON-NLS-1$
 	     miNewJob.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent arg0) { newJobFile(); } });
 	     miNewJob.setImage(GUIResource.getInstance().getImageJobGraph());
-	     
+
+	     new MenuItem(fileMenus, SWT.SEPARATOR);
+
+	     MenuItem miNewDB= new MenuItem(fileMenus, SWT.CASCADE);
+	     miNewDB.setText(Messages.getString("Spoon.Menu.File.NewDB")); //$NON-NLS-1$
+	     miNewDB.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent arg0) { newConnection(); } });
+	     miNewDB.setImage(GUIResource.getInstance().getImageConnection());
+
+	     MenuItem miNewSlave= new MenuItem(fileMenus, SWT.CASCADE);
+	     miNewSlave.setText(Messages.getString("Spoon.Menu.File.NewSlave")); //$NON-NLS-1$
+	     miNewSlave.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent arg0) { newSlaveServer(); } });
+	     miNewSlave.setImage(GUIResource.getInstance().getImageBol());
 	}
 
 	public Shell getShell() {
@@ -1007,7 +1018,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 					if (methodName != null)
 					{
 						menuBar.addMenuListener(ids[i], this, methodName);
-						toolbar.addMenuListener(ids[i], this, methodName);
+						// toolbar.addMenuListener(ids[i], this, methodName);
 
 					}
 				}
@@ -1307,6 +1318,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 	}
 
+    /*
     private void addBar()
 	{
 
@@ -1322,6 +1334,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			new ErrorDialog(shell, Messages.getString("Spoon.Exception.ErrorReadingXULFile.Title"), Messages.getString("Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_MENUBAR), new Exception(t));
 		}
 	}
+	*/
 
 	private static final String STRING_SPOON_MAIN_TREE = Messages.getString("Spoon.MainTree.Label");
     private static final String STRING_SPOON_CORE_OBJECTS_TREE= Messages.getString("Spoon.CoreObjectsTree.Label");
@@ -3555,10 +3568,12 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		return props;
 	}
 
+    /*
     public void newFileDropDown()
     {
     	newFileDropDown(toolbar);
     }
+    */
 
     public void newFileDropDown(XulToolbar usedToolBar)
     {
@@ -5136,6 +5151,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		menuBar.setEnableById("trans-last-preview", enableLastPreviewMenu);
 
 		// Do the bar as well
+		/*
 		toolbar.setEnableById("trans-get-sql", enableTransMenu || enableJobMenu);
 		toolbar.setEnableById("trans-impact", enableTransMenu);
 		toolbar.setEnableById("trans-check", enableTransMenu);
@@ -5147,6 +5163,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		toolbar.setEnableById("file-save-as", enableTransMenu || enableJobMenu);
 		toolbar.setEnableById("file-save", enableTransMenu || enableJobMenu);
 		toolbar.setEnableById("explore-database", enableTransMenu || enableJobMenu);
+		*/
 		
 		enableMainEntries(enableTransMenu, enableJobMenu);
 		
@@ -7103,10 +7120,12 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		this.jobExecutionConfiguration = jobExecutionConfiguration;
 	}
 	
+	/*
 	public XulToolbar getToolbar()
 	{
 		return toolbar;
 	}
+	*/
 
 	public void update(ChangedFlagInterface o, Object arg)
 	{

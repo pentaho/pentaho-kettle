@@ -90,6 +90,8 @@ public class TransDialog extends Dialog
 
 	private Text         wTransname;
 
+	private Text         wTransFilename;
+
 	// Trans description
 	private Text         wTransdescription;
 	
@@ -348,7 +350,26 @@ public class TransDialog extends Dialog
         fdTransname.top  = new FormAttachment(0, margin);
         fdTransname.right= new FormAttachment(100, 0);
         wTransname.setLayoutData(fdTransname);
-        
+
+        // Transformation name:
+        Label wlTransFilename = new Label(wTransComp, SWT.RIGHT);
+        wlTransFilename.setText(Messages.getString("TransDialog.TransFilename.Label")); //$NON-NLS-1$
+        props.setLook(wlTransFilename);
+        FormData fdlTransFilename = new FormData();
+        fdlTransFilename.left = new FormAttachment(0, 0);
+        fdlTransFilename.right= new FormAttachment(middle, -margin);
+        fdlTransFilename.top  = new FormAttachment(wTransname, margin);
+        wlTransFilename.setLayoutData(fdlTransFilename);
+        wTransFilename=new Text(wTransComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wTransFilename);
+        wTransFilename.addModifyListener(lsMod);
+        FormData fdTransFilename = new FormData();
+        fdTransFilename.left = new FormAttachment(middle, 0);
+        fdTransFilename.top  = new FormAttachment(wTransname, margin);
+        fdTransFilename.right= new FormAttachment(100, 0);
+        wTransFilename.setLayoutData(fdTransFilename);
+        wTransFilename.setEditable(false);
+
 		// Transformation description:
 		Label wlTransdescription = new Label(wTransComp, SWT.RIGHT);
 		wlTransdescription.setText(Messages.getString("TransDialog.Transdescription.Label")); //$NON-NLS-1$
@@ -356,14 +377,14 @@ public class TransDialog extends Dialog
 		FormData fdlTransdescription = new FormData();
 		fdlTransdescription.left = new FormAttachment(0, 0);
 		fdlTransdescription.right= new FormAttachment(middle, -margin);
-		fdlTransdescription.top  = new FormAttachment(wTransname, margin);
+		fdlTransdescription.top  = new FormAttachment(wTransFilename, margin);
 		wlTransdescription.setLayoutData(fdlTransdescription);
 		wTransdescription=new Text(wTransComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wTransdescription);
 		wTransdescription.addModifyListener(lsMod);
 		FormData fdTransdescription = new FormData();
 		fdTransdescription.left = new FormAttachment(middle, 0);
-		fdTransdescription.top  = new FormAttachment(wTransname, margin);
+		fdTransdescription.top  = new FormAttachment(wTransFilename, margin);
 		fdTransdescription.right= new FormAttachment(100, 0);
 		wTransdescription.setLayoutData(fdTransdescription);
         
@@ -1507,11 +1528,11 @@ public class TransDialog extends Dialog
 	{
 		log.logDebug(toString(), Messages.getString("TransDialog.Log.GettingTransformationInfo")); //$NON-NLS-1$
 
-		if (transMeta.getName()!=null)         wTransname.setText        ( transMeta.getName());
-		
-		if (transMeta.getDescription()!=null)   wTransdescription.setText        ( transMeta.getDescription());
-		if (transMeta.getExtendedDescription()!=null)   wExtendeddescription.setText        ( transMeta.getExtendedDescription());
-		if (transMeta.getTransversion()!=null)   wTransversion.setText        ( transMeta.getTransversion());
+		wTransname.setText( Const.NVL(transMeta.getName(), "") );
+		wTransFilename.setText(Const.NVL(transMeta.getFilename(), "") );
+		wTransdescription.setText( Const.NVL(transMeta.getDescription(), "") );
+		wExtendeddescription.setText( Const.NVL(transMeta.getExtendedDescription(), "") );
+		wTransversion.setText( Const.NVL(transMeta.getTransversion(), "") );
 		wTransstatus.select( transMeta.getTransstatus()-1 );
 				
 

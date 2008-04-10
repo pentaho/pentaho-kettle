@@ -3756,6 +3756,7 @@ public class Database implements VariableSpace
         Long nextValue = null;
         
         String schemaTable = databaseMeta.getQuotedSchemaTableCombination(schemaName, tableName);
+    
 		String lookup = schemaTable+"."+databaseMeta.quoteField(val_key);
 		
 		// Try to find the previous sequence value...

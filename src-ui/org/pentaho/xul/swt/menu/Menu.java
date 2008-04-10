@@ -126,6 +126,7 @@ public class Menu extends MenuItem implements XulMenu {
 	}
 	
 	public int getItemCount() {
+		if (menu.isDisposed()) return 0;
 		return menu.getItemCount();
 	}
 	

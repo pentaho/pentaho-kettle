@@ -533,6 +533,8 @@ public class ExcelOutput extends BaseStep implements StepInterface
 
 			if ( data.workbook != null )
 			{
+				System.gc();
+				
 			    data.workbook.write();
                 data.workbook.close();
                 data.workbook = null;
