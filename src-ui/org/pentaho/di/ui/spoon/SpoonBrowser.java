@@ -67,10 +67,10 @@ public class SpoonBrowser implements TabItemInterface
         ToolBar navBar = new ToolBar(compTools, SWT.NONE);
         navBar.setLayoutData(new GridData(GridData.FILL_HORIZONTAL | GridData.HORIZONTAL_ALIGN_END));
         final ToolItem back = new ToolItem(navBar, SWT.PUSH);
-        back.setText("Back");
+        back.setText(Messages.getString("SpoonBrowser.Dialog.Back"));
         back.setEnabled(false);
         final ToolItem forward = new ToolItem(navBar, SWT.PUSH);
-        forward.setText("Forward");
+        forward.setText(Messages.getString("SpoonBrowser.Dialog.Forward"));
         forward.setEnabled(false);
         
         final Composite comp = new Composite(composite, SWT.NONE);

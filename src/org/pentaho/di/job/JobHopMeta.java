@@ -89,7 +89,7 @@ public class JobHopMeta implements Cloneable, XMLInterface
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException("Unable to load job hop info from XML node", e);
+			throw new KettleXMLException(Messages.getString("JobHopMeta.Exception.UnableToLoadHopInfoXML"), e);
 		}
 	}
 
@@ -134,7 +134,8 @@ public class JobHopMeta implements Cloneable, XMLInterface
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException("Unable to load job hop with id_job_hop = "+id_job_hop, dbe);
+			throw new KettleException(Messages.getString("JobHopMeta.Exception.UnableToLoadHopInfoRep",""+id_job_hop) , dbe);
+			
 		}
 	}
 
@@ -153,7 +154,8 @@ public class JobHopMeta implements Cloneable, XMLInterface
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException("Unable to save job hop with id_job = "+id_job, dbe);
+			throw new KettleException(Messages.getString("JobHopMeta.Exception.UnableToSaveHopInfoRep",""+id_job), dbe);
+			
 		}
 	}
 	
@@ -256,11 +258,11 @@ public class JobHopMeta implements Cloneable, XMLInterface
 	
 	public String getDescription()
 	{
-		if (isUnconditional()) return "Execute the next job entry unconditonally";
+		if (isUnconditional()) return Messages.getString("JobHopMeta.Msg.ExecNextJobEntryUncondition");
 		else
 		{
-			if (getEvaluation()) return "Execute the next job entry if the previous one ran flawless.";
-			else                 return "Execute the next job entry if the previous one failed.";
+			if (getEvaluation()) return Messages.getString("JobHopMeta.Msg.ExecNextJobEntryFlawLess");
+			else                 return Messages.getString("JobHopMeta.Msg.ExecNextJobEntryFailed");
 		}
 	}
 

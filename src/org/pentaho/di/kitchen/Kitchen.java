@@ -63,20 +63,20 @@ public class Kitchen
 
 		CommandLineOption options[] = new CommandLineOption[] 
             {
-			    new CommandLineOption("rep", "Repository name", optionRepname=new StringBuffer()),
-			    new CommandLineOption("user", "Repository username", optionUsername=new StringBuffer()),
-			    new CommandLineOption("pass", "Repository password", optionPassword=new StringBuffer()),
-			    new CommandLineOption("job", "The name of the transformation to launch", optionJobname=new StringBuffer()),
-			    new CommandLineOption("dir", "The directory (don't forget the leading /)", optionDirname=new StringBuffer()),
-			    new CommandLineOption("file", "The filename (Job XML) to launch", optionFilename=new StringBuffer()),
-			    new CommandLineOption("level", "The logging level (Basic, Detailed, Debug, Rowlevel, Error, Nothing)", optionLoglevel=new StringBuffer()),
-			    new CommandLineOption("logfile", "The logging file to write to", optionLogfile=new StringBuffer()),
-			    new CommandLineOption("log", "The logging file to write to (deprecated)", optionLogfileOld=new StringBuffer(), false, true),
-			    new CommandLineOption("listdir", "List the directories in the repository", optionListdir=new StringBuffer(), true, false),
-			    new CommandLineOption("listjobs", "List the jobs in the specified directory", optionListjobs=new StringBuffer(), true, false),
-			    new CommandLineOption("listrep", "List the available repositories", optionListrep=new StringBuffer(), true, false),
-		        new CommandLineOption("norep", "Do not log into the repository", optionNorep=new StringBuffer(), true, false),
-                new CommandLineOption("version", "show the version, revision and build date", optionVersion=new StringBuffer(), true, false),
+			    new CommandLineOption("rep", Messages.getString("Kitchen.CmdLine.RepName"), optionRepname=new StringBuffer()),
+			    new CommandLineOption("user", Messages.getString("Kitchen.CmdLine.RepUsername"), optionUsername=new StringBuffer()),
+			    new CommandLineOption("pass", Messages.getString("Kitchen.CmdLine.RepPassword"), optionPassword=new StringBuffer()),
+			    new CommandLineOption("job", Messages.getString("Kitchen.CmdLine.RepJobName") , optionJobname=new StringBuffer()),
+			    new CommandLineOption("dir", Messages.getString("Kitchen.CmdLine.RepDir"), optionDirname=new StringBuffer()),
+			    new CommandLineOption("file", Messages.getString("Kitchen.CmdLine.XMLJob"), optionFilename=new StringBuffer()),
+			    new CommandLineOption("level", Messages.getString("Kitchen.CmdLine.LogLevel"), optionLoglevel=new StringBuffer()),
+			    new CommandLineOption("logfile", Messages.getString("Kitchen.CmdLine.LogFile"), optionLogfile=new StringBuffer()),
+			    new CommandLineOption("log", Messages.getString("Kitchen.CmdLine.LogFileOld"), optionLogfileOld=new StringBuffer(), false, true),
+			    new CommandLineOption("listdir", Messages.getString("Kitchen.CmdLine.ListDir"), optionListdir=new StringBuffer(), true, false),
+			    new CommandLineOption("listjobs", Messages.getString("Kitchen.CmdLine.ListJobsDir"), optionListjobs=new StringBuffer(), true, false),
+			    new CommandLineOption("listrep", Messages.getString("Kitchen.CmdLine.ListAvailableReps"), optionListrep=new StringBuffer(), true, false),
+		        new CommandLineOption("norep", Messages.getString("Kitchen.CmdLine.NoRep"), optionNorep=new StringBuffer(), true, false),
+                new CommandLineOption("version", Messages.getString("Kitchen.CmdLine.Version") , optionVersion=new StringBuffer(), true, false),
             };
 
 		if (args.size()==0 ) 
