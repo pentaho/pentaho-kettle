@@ -479,8 +479,39 @@ public class Job extends Thread implements VariableSpace
 			ldb.shareVariablesWith(this);
 			try
 			{
+				boolean lockedTable=false;
 				ldb.connect();
-				Object[] lastr = ldb.getLastLogDate(jobMeta.getLogTable(), jobMeta.getName(), true, "end"); // $NON-NLS-1$
+				
+				// Enable transactions to make table locking possible
+				//
+			    ldb.setCommit(100);
+			    
+			    // See if we have to add a batch id...
+			    Long id_batch = new Long(1);
+			    if (jobMeta.isBatchIdUsed())
+			    {
+			    	// Make sure we lock that table to avoid concurrency issues
+                    //
+                    ldb.lockTables( new String[] { jobMeta.getLogTable(), } );
+                    lockedTable=true;
+                    
+                 // Now insert value -1 to create a real write lock blocking the other requests.. FCFS
+					//
+					String sql = "INSERT INTO "+logcon.quoteField(jobMeta.getLogTable())+"("+logcon.quoteField("ID_JOB")+") values (-1)";
+					ldb.execStatement(sql);
+					
+					// Now this next lookup will stall on the other connections
+					//
+					id_batch = ldb.getNextValue(null, jobMeta.getLogTable(), "ID_JOB");
+					
+			    	setBatchId( id_batch.longValue() );
+			    	if (getPassedBatchId()<=0) 
+			    	{
+			    		setPassedBatchId(id_batch.longValue());
+			    	}
+			    }
+
+			    Object[] lastr = ldb.getLastLogDate(jobMeta.getLogTable(), jobMeta.getName(), true, "end"); // $NON-NLS-1$
 				if (!Const.isEmpty(lastr))
 				{
                     Date last;
@@ -499,24 +530,23 @@ public class Job extends Thread implements VariableSpace
 				}
 
 				depDate = currentDate;
-                
-                // See if we have to add a batch id...
-                Long id_batch = new Long(1);
-                if (jobMeta.isBatchIdUsed())
-                {
-                    id_batch = ldb.getNextValue(null, jobMeta.getLogTable(), "ID_JOB");
-                    setBatchId( id_batch.longValue() );
-                    if (getPassedBatchId()<=0) 
-                    {
-                        setPassedBatchId(id_batch.longValue());
-                    }
-                }
 
 				ldb.writeLogRecord(jobMeta.getLogTable(), jobMeta.isBatchIdUsed(), getBatchId(), true, jobMeta.getName(), "start",  // $NON-NLS-1$ 
 				                   0L, 0L, 0L, 0L, 0L, 0L, 
 				                   startDate, endDate, logDate, depDate, currentDate,
 								   null
 								   );
+                
+				if (lockedTable) {
+
+                	// Remove the -1 record again...
+                	//
+					String sql = "DELETE FROM "+logcon.quoteField(jobMeta.getLogTable())+" WHERE "+logcon.quoteField("ID_JOB")+"= -1";
+					ldb.execStatement(sql);
+
+                	ldb.unlockTables( new String[] { jobMeta.getLogTable(), } );
+                }
+				
 				ldb.disconnect();
 			}
 			catch(KettleDatabaseException dbe)
