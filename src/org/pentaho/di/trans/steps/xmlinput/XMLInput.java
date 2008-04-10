@@ -352,7 +352,14 @@ public class XMLInput extends BaseStep implements StepInterface
 	{
 		meta = (XMLInputMeta) smi;
 		data = (XMLInputData) sdi;
-
+		if(data.file!=null)
+		{
+			try
+			{
+				data.file.close();
+				data.file=null;
+			}catch(Exception e){}
+		}
 		super.dispose(smi, sdi);
 	}
 

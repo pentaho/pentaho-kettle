@@ -725,6 +725,13 @@ public class ExcelInput extends BaseStep implements StepInterface
 		meta = (ExcelInputMeta) smi;
 		data = (ExcelInputData) sdi;
 
+		if(data.file!=null)
+		{
+			try{
+				data.file.close();
+			}catch(Exception e){}
+			
+		}
 		if (data.workbook != null) data.workbook.close();
 		try
 		{

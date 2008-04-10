@@ -1393,7 +1393,15 @@ public class TextFileInput extends BaseStep implements StepInterface
 	{
 		meta = (TextFileInputMeta) smi;
 		data = (TextFileInputData) sdi;
-
+		if(data.file!=null)
+		{
+			try
+			{
+				data.file.close();
+				data.file=null;
+			}catch(Exception e){}
+		}
+	
 		super.dispose(smi, sdi);
 		
 		// This is for bug #5797 : it tries to assure that the file handle

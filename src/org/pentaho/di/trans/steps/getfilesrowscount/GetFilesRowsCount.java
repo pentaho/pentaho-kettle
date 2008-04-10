@@ -194,7 +194,13 @@ public class GetFilesRowsCount extends BaseStep implements StepInterface
 	{
 		meta = (GetFilesRowsCountMeta)smi;
 		data = (GetFilesRowsCountData)sdi;
-
+		if(data.file!=null)
+		{
+			try
+			{
+				data.file.close();
+			}catch(Exception e){}
+		}
 		super.dispose(smi, sdi);
 	}
 	
