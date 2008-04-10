@@ -71,28 +71,15 @@ public class ExcelOutput extends BaseStep implements StepInterface
 			if(meta.isDoNotOpenNewFileInit())
 			{
 				data.oneFileOpened=true;
-				try
-		         {
-					 PrepareFile();
-		         }
-		         catch(Exception we)
-		         {
-		             logError("Unexpected error preparing to write to Excel file : "+we.toString());
-		             logError(Const.getStackTracker(we));
-		             return false;
-		         }
-		         
-		         
+			
 		         if (!openNewFile())
 				 {
 					 logError("Couldn't open file "+meta.getFileName());
 					 return false;
 				 }
 		         
-		         
 			}
-          
-			
+
 		}
 		
 		// If we split the data stream in small XLS files, we need to do this here...
@@ -166,6 +153,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
 				{
 					v=r[i];
 					if(!writeField(v, data.previousMeta.getValueMeta(i), null, i)) return false;
+					
 				}
                 // go to the next line
                 data.positionX = 0;
@@ -223,6 +211,8 @@ public class ExcelOutput extends BaseStep implements StepInterface
      */
 	private boolean writeField(Object v, ValueMetaInterface vMeta, ExcelField excelField, int column, boolean isHeader)
 	{
+
+		WritableFont writableFont = new WritableFont(WritableFont.ARIAL, 10, WritableFont.NO_BOLD);
 		try
 		{
             String hashName = vMeta.getName();
@@ -280,7 +270,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
                     {
                         if (cellFormat==null)
                         {
-                            cellFormat = new WritableCellFormat(data.writableFont);
+                            cellFormat = new WritableCellFormat(writableFont);
                             data.formats.put(hashName, cellFormat);
                         }
                         Label label = new Label(data.positionX, data.positionY, vMeta.getString(v), cellFormat);
@@ -399,12 +389,13 @@ public class ExcelOutput extends BaseStep implements StepInterface
                 ws.setEncoding(meta.getEncoding());
             }
             String filename=buildFilename();
-            FileObject file = KettleVFS.getFileObject(filename);
+            if(log.isDebug()) log.logDebug(toString(),Messages.getString("ExcelOutput.Log.OpeningFile",filename));
+            data.file = KettleVFS.getFileObject(filename);
 
             if(meta.isAddToResultFiles())
             {
 				// Add this to the result file names...
-				ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, file, getTransMeta().getName(), getStepname());
+				ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, data.file, getTransMeta().getName(), getStepname());
 				resultFile.setComment("This file was created with an Excel output step by Pentaho Data Integration");
 	            addResultFile(resultFile);
             }
@@ -421,7 +412,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
             	}*/
             	
             	
-               	if(meta.isAppend() && file.exists())
+               	if(meta.isAppend() && data.file.exists())
             	{
                		File fle = new File(filename);
                     boolean find=false;
@@ -436,7 +427,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
             		// Let's see if this sheet already exist...
             		for (int i=0;i<listSheets.length;i++)
             		{
-            			if(listSheets[i].equals(meta.getSheetname()))
+            			if(listSheets[i].equals(data.realSheetname))
             			{
             				// We find the sheet
             				find=true;
@@ -452,33 +443,30 @@ public class ExcelOutput extends BaseStep implements StepInterface
             		}
             		
                 	// and now .. we create the new sheet
-                	data.sheet = data.workbook.createSheet(meta.getSheetname(),data.workbook.getNumberOfSheets()+1);
+                	data.sheet = data.workbook.createSheet(data.realSheetname,data.workbook.getNumberOfSheets()+1);
 
 				
             	}else{
+                
             		// Create a new Workbook
-                	data.outputStream = file.getContent().getOutputStream();
-    				data.workbook = Workbook.createWorkbook(data.outputStream, ws);
-
+    				data.workbook = Workbook.createWorkbook(data.file.getContent().getOutputStream(), ws);
+    				
     				// Create a sheet?
     				String sheetname = "Sheet1";
                 	data.sheet = data.workbook.getSheet(sheetname);
                 	if (data.sheet==null)
                 	{
                 		data.sheet = data.workbook.createSheet(sheetname, 0);
-                	}
+                	} 
             	}
             	
-            	
-		
-
             } else {
 
             	FileObject fo = KettleVFS.getFileObject(environmentSubstitute(meta.getTemplateFileName()));
 				// create the openFile from the template
 
 				Workbook tmpWorkbook=Workbook.getWorkbook(fo.getContent().getInputStream(), ws);
-				data.workbook = Workbook.createWorkbook(file.getContent().getOutputStream(), tmpWorkbook);
+				data.workbook = Workbook.createWorkbook(data.file.getContent().getOutputStream(), tmpWorkbook);
 				
             	tmpWorkbook.close();
             	// use only the first sheet as template
@@ -490,7 +478,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
             // Rename Sheet
 			if (!Const.isEmpty(environmentSubstitute(meta.getSheetname()))) 
 			{
-				data.sheet.setName(environmentSubstitute(meta.getSheetname())); 
+				data.sheet.setName(data.realSheetname); 
 			}
 
 			if (meta.isSheetProtected())
@@ -517,6 +505,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
             	writeHeader();
             }
 
+            if(log.isDebug()) log.logDebug(toString(),Messages.getString("ExcelOutput.Log.FileOpened",filename));
 			retval=true;
 		}
 		catch(Exception e)
@@ -534,7 +523,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
 	private boolean closeFile()
 	{
 		boolean retval=false;
-		
+		String filename=null;
 		try
 		{
 			if (meta.isFooterEnabled())
@@ -556,19 +545,26 @@ public class ExcelOutput extends BaseStep implements StepInterface
                 if (data.sheet!=null) {
                 	data.sheet = null;
                 }
+                if(data.file!=null)
+                {
+                	filename=data.file.toString();
+                	data.file.close();
+                	data.file=null;
+                }
                
 			}
             //data.formats.clear();
-
+			if(log.isDebug()) log.logDebug(toString(),Messages.getString("ExcelOutput.Log.FileClosed",filename));
             // Explicitly call garbage collect to have file handle
             // released. Bug tracker: PDI-48
 			System.gc();
+			
             
 			retval=true;
 		}
 		catch(Exception e)
 		{
-            logError("Unable to close openFile file", e);
+            logError("Unable to close openFile file : " + data.file.toString(), e);
 			setErrors(1);
 		}
 
@@ -583,20 +579,11 @@ public class ExcelOutput extends BaseStep implements StepInterface
 		if (super.init(smi, sdi))
 		{
 			data.splitnr=0;
+			data.realSheetname=environmentSubstitute(meta.getSheetname());
 			if(!meta.isDoNotOpenNewFileInit())
 			{
 				data.oneFileOpened=true;
-				 try
-		         {
-					 PrepareFile();
-		         }
-		         catch(Exception we)
-		         {
-		             logError("Unexpected error preparing to write to Excel file : "+we.toString());
-		             logError(Const.getStackTracker(we));
-		             return false;
-		         }
-	           
+				
 				if (openNewFile())
 				{
 					return true;
@@ -608,22 +595,18 @@ public class ExcelOutput extends BaseStep implements StepInterface
 					stopAll();
 				}
 			}else
+			{
 				return true;
+			}
 		}
 		return false;
 	}
-	private void PrepareFile() throws Exception
-	{
-
-        // Create the default font TODO: allow to change this later on.
-        data.writableFont = new WritableFont(WritableFont.ARIAL, 10, WritableFont.NO_BOLD);
-    
-	}
+	
 	public void dispose(StepMetaInterface smi, StepDataInterface sdi)
 	{
 		meta=(ExcelOutputMeta)smi;
 		data=(ExcelOutputData)sdi;
-		
+
 		if(data.oneFileOpened) closeFile();
         
         super.dispose(smi, sdi);

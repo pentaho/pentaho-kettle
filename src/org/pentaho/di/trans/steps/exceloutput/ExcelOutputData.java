@@ -21,6 +21,7 @@ import jxl.write.WritableFont;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 
+import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
@@ -44,8 +45,6 @@ public class ExcelOutputData extends BaseStepData implements StepDataInterface
     
     public int templateColumns; // initial number of columns in the template
 
-    public WritableFont writableFont;
-
     public WritableCellFormat writableCellFormat;
     
     public Map<String,WritableCellFormat> formats;
@@ -58,7 +57,11 @@ public class ExcelOutputData extends BaseStepData implements StepDataInterface
 
 	public OutputStream outputStream;
 	
+	public FileObject file;
+	
 	public boolean oneFileOpened;
+	
+	public String realSheetname;
 
 	/**
 	 * 
@@ -69,6 +72,8 @@ public class ExcelOutputData extends BaseStepData implements StepDataInterface
         
         formats = new Hashtable<String,WritableCellFormat>();
         oneFileOpened=false;
+        file=null;
+        realSheetname=null;
 	}
 
 }
