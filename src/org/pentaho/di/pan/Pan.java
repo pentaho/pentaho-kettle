@@ -134,7 +134,8 @@ public class Pan
         if (!Const.isEmpty(optionVersion))
         {
             BuildVersion buildVersion = BuildVersion.getInstance();
-            log.logBasic("Pan", "Kettle version "+Const.VERSION+", build "+buildVersion.getVersion()+", build date : "+buildVersion.getBuildDate());
+            log.logBasic("Pan", Messages.getString("Pan.Log.KettleVersion",""+Const.VERSION,""+buildVersion.getVersion(),""+buildVersion.getBuildDate()));
+            
             if (a.length==1) System.exit(6);
         }
         
@@ -187,28 +188,34 @@ public class Pan
 		cal=Calendar.getInstance();
 		start=cal.getTime();
 
-		if(log.isDebug()) log.logDebug("Pan", "Allocate new transformation.");
+		if(log.isDebug()) log.logDebug("Pan",Messages.getString("Pan.Log.AllocatteNewTrans"));
+		
 		TransMeta transMeta = new TransMeta();
 
 		try
 		{
-			log.logDebug("Pan", "Starting to look at options...");
+			if(log.isDebug()) log.logDebug("Pan",Messages.getString("Pan.Log.StartingToLookOptions"));
+			
 			// Read kettle transformation specified on command-line?
 			if (!Const.isEmpty(optionRepname) || !Const.isEmpty(optionFilename) || !Const.isEmpty(optionJarFilename))
 			{			
-				if(log.isDebug()) log.logDebug("Pan", "Parsing command line options.");
+				if(log.isDebug()) log.logDebug("Pan", Messages.getString("Pan.Log.ParsingCommandline"));
+				
 				if (!Const.isEmpty(optionRepname) && !"Y".equalsIgnoreCase(optionNorep.toString()))
 				{
-					if(log.isDebug()) log.logDebug("Pan", "Loading available repositories.");
+					if(log.isDebug()) log.logDebug("Pan", Messages.getString("Pan.Log.LoadingAvailableRep"));
+					
 					RepositoriesMeta repsinfo = new RepositoriesMeta(log);
 					if (repsinfo.readData())
 					{
-						if(log.isDebug()) log.logDebug("Pan", "Finding repository ["+optionRepname+"]");
+						if(log.isDebug()) log.logDebug("Pan", Messages.getString("Pan.Log.FindingRep",""+optionRepname));
+						
 						repinfo = repsinfo.findRepository(optionRepname.toString());
 						if (repinfo!=null)
 						{
 							// Define and connect to the repository...
-							if(log.isDebug()) log.logDebug("Pan", "Allocate & connect to repository.");
+							if(log.isDebug()) log.logDebug("Pan", Messages.getString("Pan.Log.Allocate&ConnectRep"));
+							
 							Repository rep = new Repository(log, repinfo, userinfo);
 							if (rep.connect("Pan commandline"))
 							{
@@ -223,16 +230,19 @@ public class Pan
 								if (directory!=null)
 								{
 									// Check username, password
-									if(log.isDebug()) log.logDebug("Pan", "Check supplied username and password.");
+									if(log.isDebug()) log.logDebug("Pan", Messages.getString("Pan.Log.CheckSuppliedUserPass"));
+									
 									userinfo = new UserInfo(rep, optionUsername.toString(), optionPassword.toString());
 									if (userinfo.getID()>0)
 									{
 										// Load a transformation
 										if (!Const.isEmpty(optionTransname))
 										{
-											if(log.isDebug()) log.logDebug("Pan", "Load the transformation info...");
+											if(log.isDebug()) log.logDebug("Pan", Messages.getString("Pan.Log.LoadTransInfo"));
+											
 											transMeta = new TransMeta(rep, optionTransname.toString(), directory);
-											if(log.isDebug()) log.logDebug("Pan", "Allocate transformation...");
+											if(log.isDebug()) log.logDebug("Pan", Messages.getString("Pan.Log.AllocateTrans"));
+											
 											trans = new Trans(transMeta);
 											trans.setRepository(rep);
 										}
@@ -240,7 +250,8 @@ public class Pan
 										// List the transformations in the repository
 										if ("Y".equalsIgnoreCase(optionListtrans.toString()))
 										{
-											if(log.isDebug()) log.logDebug("Pan", "Getting list of transformations in directory: "+directory);
+											if(log.isDebug()) log.logDebug("Pan", Messages.getString("Pan.Log.GettingListTransDirectory",""+directory));
+											
 											String transnames[] = rep.getTransformationNames(directory.getID());
 											for (int i=0;i<transnames.length;i++)
 											{
@@ -261,25 +272,26 @@ public class Pan
                                         // Export the repository
                                         if (!Const.isEmpty(optionExprep))
                                         {
-                                            System.out.println("Exporting all objects in the repository to file ["+optionExprep+"]");
+                                            System.out.println(Messages.getString("Pan.Log.ExportingObjectsRepToFile",""+optionExprep));
+                                            
                                             rep.exportAllObjects(null, optionExprep.toString(), directory);
-                                            System.out.println("Finished exporting all objects in the repository to file ["+optionExprep+"]");
+                                            System.out.println(Messages.getString("Pan.Log.FinishedExportObjectsRepToFile",""+optionExprep));
                                         }
 										else
 										{
-											System.out.println("ERROR: No transformation name supplied: which one should be run?");
+											System.out.println(Messages.getString("Pan.Error.NoTransNameSupplied"));
 										}
 									}
 									else
 									{
-										System.out.println("ERROR: Can't verify username and password.");
+										System.out.println(Messages.getString("Pan.Error.CanNotVerifyUserPass"));
 										userinfo=null;
 										repinfo=null;
 									}
 								}
 								else
 								{
-									System.out.println("ERROR: Can't find the specified directory ["+optionDirname+"]");
+									System.out.println(Messages.getString("Pan.Error.CanNotFindSpecifiedDirectory",""+optionDirname));
 									userinfo=null;
 									repinfo=null;
 								}
@@ -287,17 +299,17 @@ public class Pan
 							}
 							else
 							{
-								System.out.println("ERROR: Can't connect to the repository.");
+								System.out.println(Messages.getString("Pan.Error.CanNotConnectRep"));
 							}
 						}
 						else
 						{
-							System.out.println("ERROR: No repository provided, can't load transformation.");
+							System.out.println(Messages.getString("Pan.Error.NoRepProvided"));
 						}
 					}
 					else
 					{
-						System.out.println("ERROR: No repositories defined on this system.");
+						System.out.println(Messages.getString("Pan.Error.NoRepsDefined"));
 					}
 				}
 
@@ -306,7 +318,8 @@ public class Pan
                 //
 				if (trans==null && !Const.isEmpty(optionFilename))
 				{
-					if(log.isDetailed()) log.logDetailed("Pan", "Loading transformation from XML file ["+optionFilename+"]");
+					if(log.isDetailed()) log.logDetailed("Pan", Messages.getString("Pan.Log.LoadingTransXML",""+optionFilename));
+					
 					transMeta = new TransMeta(optionFilename.toString());
 					trans = new Trans(transMeta);
 				}
@@ -317,8 +330,9 @@ public class Pan
                 {
                     try
                     {
-                    	if(log.isDetailed())  log.logDetailed("Pan", "Loading transformation from jar file ["+optionJarFilename+"]");
-                        InputStream inputStream = Pan.class.getResourceAsStream(optionJarFilename.toString());
+                    	if(log.isDetailed())  log.logDetailed("Pan", Messages.getString("Pan.Log.LoadingTransJar",""+optionJarFilename));
+                    	
+                    	InputStream inputStream = Pan.class.getResourceAsStream(optionJarFilename.toString());
                         StringBuffer xml = new StringBuffer();
                         int c;
                         while ((c=inputStream.read()) != -1) xml.append((char)c);
@@ -329,7 +343,8 @@ public class Pan
                     }
                     catch(Exception e)
                     {
-                        System.out.println("Error reading jarfile: "+e.toString());
+                        System.out.println(Messages.getString("Pan.Error.ReadingJar",e.toString()));
+                        
                         System.out.println(Const.getStackTracker(e));
                         throw e;
                     }
@@ -338,20 +353,24 @@ public class Pan
 			
 			if ("Y".equalsIgnoreCase(optionListrep.toString()))
 			{
-				if(log.isDebug()) log.logDebug("Pan", "Getting the list of repositories...");
+				if(log.isDebug()) log.logDebug("Pan", Messages.getString("Pan.Log.GettingListReps"));
+				
 				RepositoriesMeta ri = new RepositoriesMeta(log);
 				if (ri.readData())
 				{
-					System.out.println("List of repositories:");
+					System.out.println(Messages.getString("Pan.Log.ListReps"));
+					
 					for (int i=0;i<ri.nrRepositories();i++)
 					{
 						RepositoryMeta rinfo = ri.getRepository(i);
-						System.out.println("#"+(i+1)+" : "+rinfo.getName()+" ["+rinfo.getDescription()+"] ");
+						System.out.println(Messages.getString("Pan.Log.RepNameDesc",""+(i+1),rinfo.getName(),rinfo.getDescription()));
+						
 					}
 				}
 				else
 				{
-					System.out.println("ERROR: Unable to read/parse the repositories XML file.");
+					System.out.println(Messages.getString("Pan.Error.UnableReadXML"));
+					
 				}
 			}
 		}
@@ -359,7 +378,8 @@ public class Pan
 		{
 			trans=null;
 			transMeta=null;
-			System.out.println("Processing has stopped because of an error: "+e.getMessage());
+			System.out.println(Messages.getString("Pan.Error.ProcessStopError",e.getMessage()));
+			
 			e.printStackTrace();
 			System.exit(1);
 		}
@@ -372,7 +392,8 @@ public class Pan
                 Const.isEmpty(optionExprep)
                )
             {
-                System.out.println("ERROR: Pan can't continue because the transformation couldn't be loaded.");
+                System.out.println(Messages.getString("Pan.Error.CanNotLoadTrans"));
+                
                 System.exit(7);
             }
 			else
@@ -398,23 +419,27 @@ public class Pan
 				trans.execute((String[])args.toArray(new String[args.size()]));
 			}
 			catch(KettleException e) {
-                System.out.println("Unable to prepare and initialize this transformation");
+                System.out.println( Messages.getString("Pan.Error.UnablePrepareInitTrans"));
+               
                 System.exit(3);
 			}
 
 			trans.waitUntilFinished();
 			trans.endProcessing("end");
 
-			log.logMinimal("Pan", "Finished!");
+			log.logMinimal("Pan", Messages.getString("Pan.Log.Finished"));
+			 
 			
 			cal=Calendar.getInstance();
 			stop=cal.getTime();
 			String begin=df.format(start).toString();
 			String end  =df.format(stop).toString();
 
-			log.logMinimal("Pan", "Start="+begin+", Stop="+end);
+			log.logMinimal("Pan", Messages.getString("Pan.Log.StartStop",begin,end));
+			
 			long millis=stop.getTime()-start.getTime();
-			log.logMinimal("Pan", "Processing ended after "+(millis/1000)+" seconds.");
+			log.logMinimal("Pan", Messages.getString("Pan.Log.ProcessingEndAfter",""+(millis/1000)));
+			
 			if (trans.getResult().getNrErrors()==0) 
 			{
 				trans.printStats((int)millis/1000);
@@ -427,8 +452,10 @@ public class Pan
 		}
 		catch(KettleException ke)
 		{
-			System.out.println("ERROR occurred: "+ke.getMessage());
-            log.logError("Pan", "Unexpected error occurred: "+ke.getMessage());
+			System.out.println(Messages.getString("Pan.Log.ErrorOccurred",""+ke.getMessage()));
+			
+            log.logError("Pan", Messages.getString("Pan.Log.UnexpectedErrorOccurred",""+ke.getMessage()));
+            
             System.exit(2);
 		}
 
