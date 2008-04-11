@@ -359,8 +359,8 @@ public class Condition implements Cloneable, XMLInterface
 	 */
 	public void clearFieldPositions()
 	{
-		left_fieldnr = -1;
-		right_fieldnr = -1;
+		left_fieldnr = -2;
+		right_fieldnr = -2;
 	}
 	
 	//
