@@ -224,7 +224,12 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 	 * Connection to a KingbaseES database
 	 */
 	public static final int TYPE_DATABASE_KINGBASEES  = 33;
-	
+
+	/**
+	 * Connection to a Vertica database
+	 */
+	public static final int TYPE_DATABASE_VERTICA     = 34;
+
     
 	/**
 	 * Connect natively through JDBC thin driver to the database.

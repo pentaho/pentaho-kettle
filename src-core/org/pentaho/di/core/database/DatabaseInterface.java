@@ -61,8 +61,9 @@ public interface DatabaseInterface extends Cloneable
             SybaseIQDatabaseMeta.class,
             GreenplumDatabaseMeta.class,
             MonetDBDatabaseMeta.class,
-            KingbaseESDatabaseMeta.class
-		};
+            KingbaseESDatabaseMeta.class,
+            VerticaDatabaseMeta.class,
+         };
 	
 	/**
 	 * 
