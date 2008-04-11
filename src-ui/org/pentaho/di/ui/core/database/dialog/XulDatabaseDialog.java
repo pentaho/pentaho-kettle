@@ -12,22 +12,17 @@
 package org.pentaho.di.ui.core.database.dialog;
 
 import java.io.InputStream;
-import java.util.Map;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.io.SAXReader;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.ui.core.PropsUI;
-import org.pentaho.test.ui.database.DatabaseDialogHarness;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
-import org.pentaho.ui.xul.containers.XulListbox;
 import org.pentaho.ui.xul.containers.XulWindow;
 import org.pentaho.ui.xul.impl.XulEventHandler;
 import org.pentaho.ui.xul.swt.SwtXulLoader;
@@ -36,23 +31,23 @@ public class XulDatabaseDialog extends Dialog {
 
   private DatabaseMeta databaseMeta;
 
-  private Shell shell;
+  // private Shell shell;
 
   private String databaseName;
 
-  private ModifyListener lsMod;
+  // private ModifyListener lsMod;
 
-  private boolean changed;
+  // private boolean changed;
 
-  private PropsUI props;
+  // private PropsUI props;
 
-  private String previousDatabaseType;
+  // private String previousDatabaseType;
 
   private java.util.List<DatabaseMeta> databases;
 
-  private Map<String, String> extraOptions;
+  // private Map<String, String> extraOptions;
 
-  private long database_id;
+  // private long database_id;
 
   private boolean modalDialog;
 
@@ -62,14 +57,14 @@ public class XulDatabaseDialog extends Dialog {
     super(parent, SWT.NONE);
     this.databaseMeta = databaseMeta;
     this.databaseName = databaseMeta.getName();
-    this.props = PropsUI.getInstance();
+    // this.props = PropsUI.getInstance();
     this.databases = null;
-    this.extraOptions = databaseMeta.getExtraOptions();
-    this.database_id = databaseMeta.getID();
+    // this.extraOptions = databaseMeta.getExtraOptions();
+    // this.database_id = databaseMeta.getID();
   }
 
   public String open() {
-    Shell parent = getParent();
+    // Shell parent = getParent();
 
     // Load the XUL definition to a dom4j document...
     InputStream in = XulDatabaseDialog.class.getClassLoader().getResourceAsStream(

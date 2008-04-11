@@ -70,7 +70,6 @@ import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
-import org.eclipse.swt.widgets.ToolItem;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.EngineMetaInterface;
@@ -129,6 +128,7 @@ import org.pentaho.xul.menu.XulMenuChoice;
 import org.pentaho.xul.menu.XulPopupMenu;
 import org.pentaho.xul.swt.menu.MenuChoice;
 import org.pentaho.xul.toolbar.XulToolbar;
+import org.pentaho.xul.toolbar.XulToolbarButton;
 
 
 /**
@@ -247,10 +247,6 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 	private boolean debug;
 	private boolean pausing;
 	
-	private Button wStart;
-	private Button wPause;
-    private Button wStop;
-	private Button wPreview;
 	private Button wError;
 	private Button wClear;
 	private Button wLog;
@@ -308,6 +304,8 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         //
         addToolBar();
 
+        setControlStates(); // enable / disable the icons in the toolbar too.
+        
         // The main composite contains the graph view, but if needed also 
         // a view with an extra tab containing log, etc.
         //
@@ -2729,8 +2727,16 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     	spoon.printFile();
     }
 
-    public void runFile() {
+    public void runTransformation() {
     	spoon.runFile();
+    }
+
+    public void pauseTransformation() {
+    	pauseResume();
+    }
+
+    public void stopTransformation() {
+    	stop();
     }
 
     public void previewFile() {
@@ -2847,6 +2853,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         fdButtonsComposite.bottom = new FormAttachment(100,0);
         buttonsComposite.setLayoutData(fdButtonsComposite);
 		
+        /*
         // ROW 1
         
         // Start...
@@ -2888,7 +2895,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         fdPreview.top = new FormAttachment(lastControl,2);
         wPreview.setLayoutData(fdPreview);
         lastControl = wStop;
-
+		*/
         // ROW 3
         
         // Show errors lines...
@@ -2897,7 +2904,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         FormData fdError = new FormData();
         fdError.left = new FormAttachment(0,Const.MARGIN);
         fdError.right = new FormAttachment(50,0);
-        fdError.top = new FormAttachment(lastControl,2);
+        fdError.top = new FormAttachment(0,20);
         wError.setLayoutData(fdError);
 
         // Clear
@@ -2906,9 +2913,9 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         FormData fdClear = new FormData();
         fdClear.left = new FormAttachment(50,Const.MARGIN);
         fdClear.right = new FormAttachment(100,0);
-        fdClear.top = new FormAttachment(lastControl,2);
+        fdClear.top = new FormAttachment(0,20);
         wClear.setLayoutData(fdClear);
-        lastControl = wError;
+        Control lastControl = wError;
 
         // Row 4
         
@@ -2953,10 +2960,10 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         
 		// Attach listeners to the buttons
 		//
-        wStart.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { spoon.executeTransformation(transMeta, true, false, false, false, false, null, wSafeMode.getSelection()); }});
-        wPause.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { pauseResume();}});
-        wStop.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { stop(); }});
-        wPreview.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { spoon.executeTransformation(transMeta, true, false, false, true, false, null, wSafeMode.getSelection()); }});
+        // wStart.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { spoon.executeTransformation(transMeta, true, false, false, false, false, null, wSafeMode.getSelection()); }});
+        // wPause.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { pauseResume();}});
+        // wStop.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { stop(); }});
+        // wPreview.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { spoon.executeTransformation(transMeta, true, false, false, true, false, null, wSafeMode.getSelection()); }});
 		wError.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { transLogDelegate.showErrors(); } });
 		wClear.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { transLogDelegate.clearLog(); }});
 		wLog.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { spoon.setLog(); }});
@@ -3098,7 +3105,6 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
                         // Launch the step preparation in a different thread. 
                         // That way Spoon doesn't block anymore and that way we can follow the progress of the initialization
                         //
-                        
                         final Thread parentThread = Thread.currentThread();
                         
                         shell.getDisplay().asyncExec(
@@ -3106,17 +3112,19 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
                                 {
                                     public void run() 
                                     {
+                                    	transHistoryDelegate.addTransHistory();
                                     	transLogDelegate.addTransLog();
                                     	transGridDelegate.addTransGrid();
+                                    	transPerfDelegate.addTransPerf();
+                                    	extraViewTabFolder.setSelection(transGridDelegate.getTransGridTab());
                                         prepareTrans(parentThread, args);
                                     }
                                 }
                             );
                         
 						log.logMinimal(Spoon.APP_NAME, Messages.getString("TransLog.Log.StartedExecutionOfTransformation")); //$NON-NLS-1$
-						enableStartActions(false);
-						enablePauseActions(true);
-                        enableStopActions(true);
+						
+						setControlStates();
 					}
 				}
 				else
@@ -3198,9 +3206,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 				running = !running;
     			debug=true;
 
-                enableStartActions(false);
-                enablePauseActions(true);
-                enableStopActions(true);
+    			setControlStates();
     		}
     		catch (Exception e)
     		{
@@ -3222,14 +3228,15 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 		
 			public void run() {
 				
-				if (isDisposed() || wPause.isDisposed()) return;
+				if (isDisposed()) return;
 				
 				spoon.enableMenus();
 				
 				// The transformation is now paused, indicate this in the log dialog...
 				//
 				pausing=true;
-				wPause.setText(RESUME_TEXT);
+				
+				setControlStates();
 				
 				PreviewRowsDialog previewRowsDialog = new PreviewRowsDialog(shell, transMeta, SWT.APPLICATION_MODAL, stepDebugMeta.getStepMeta().getName(), rowBufferMeta, rowBuffer);
 				previewRowsDialog.setProposingToGetMoreRows(true);
@@ -3288,13 +3295,14 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
             {
                 new ErrorDialog(shell, Messages.getString("TransLog.Dialog.ErrorWritingLogRecord.Title"), Messages.getString("TransLog.Dialog.ErrorWritingLogRecord.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
             }
-            enableStartActions(true);
-            enablePauseActions(false);
-            enableStopActions(false);
+            
             running = false;
             initialized = false;
             halted = false;
             halting = false;
+            
+            setControlStates();
+
             transMeta.setInternalKettleVariables(); // set the original vars back as they may be changed by a mapping
         }
     }
@@ -3303,29 +3311,76 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     {
         if (running)
         {
+            // Get the pause toolbar item
+            //
         	if (!pausing)
         	{
                 pausing = true;
                 trans.pauseRunning();
-
-                wPause.setText(RESUME_TEXT);
-                enableStartActions(false);
-                enablePauseActions(true);
-                enableStopActions(true);
+                setControlStates();
         	}
         	else
         	{
                 pausing = false;
                 trans.resumeRunning();
-
-                wPause.setText(PAUSE_TEXT);
-                enableStartActions(false);
-                enablePauseActions(true);
-                enableStopActions(true);
+                setControlStates();
         	}
         }
     }
     
+	private void setControlStates() {
+		getDisplay().asyncExec(new Runnable() {
+		
+			public void run() {
+				// Start/Run button...
+				//
+			    XulToolbarButton runButton = toolbar.getButtonById("trans-run");
+		        if (runButton!=null)
+		        {
+		        	runButton.setEnable(!running);
+		        }
+
+				// Pause button...
+				//
+			    XulToolbarButton pauseButton = toolbar.getButtonById("trans-pause");
+		        if (pauseButton!=null)
+		        {
+		        	pauseButton.setEnable(running);
+		        	pauseButton.setText( pausing ? RESUME_TEXT : PAUSE_TEXT );
+		        	pauseButton.setHint( pausing ? Messages.getString("Spoon.Tooltip.ResumeTranformation") : Messages.getString("Spoon.Tooltip.PauseTranformation"));
+		        }
+
+				// Stop button...
+				//
+			    XulToolbarButton stopButton = toolbar.getButtonById("trans-stop");
+		        if (stopButton!=null)
+		        {
+		        	stopButton.setEnable(running);
+		        }
+
+				// Debug button...
+				//
+			    XulToolbarButton debugButton = toolbar.getButtonById("trans-debug");
+		        if (debugButton!=null)
+		        {
+		        	debugButton.setEnable(!running);
+		        }
+
+				// Preview button...
+				//
+			    XulToolbarButton previewButton = toolbar.getButtonById("trans-preview");
+		        if (previewButton!=null)
+		        {
+		        	previewButton.setEnable(!running);
+		        }
+		        
+		        // TODO: enable/disable Transformation menu entries too
+			}
+		
+		});
+
+	}
+
 	private synchronized void prepareTrans(final Thread parentThread, final String[] args)
     {
         Runnable runnable = new Runnable()
@@ -3373,6 +3428,8 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 
         	
         	trans.startThreads();
+        	
+        	setControlStates();
         }
         catch(KettleException e)
         {
@@ -3416,9 +3473,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
                     new ErrorDialog(shell, Messages.getString("TransLog.Dialog.ErrorWritingLogRecord.Title"), Messages.getString("TransLog.Dialog.ErrorWritingLogRecord.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
                 }
                 
-                enableStartActions(true);
-                enablePauseActions(false);
-                enableStopActions(false);
+                setControlStates();
                 
                 // OK, also see if we had a debugging session going on.
                 // If so and we didn't hit a breakpoint yet, display the show preview dialog...
@@ -3432,34 +3487,6 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         }
     }
 
-    public void enableStartActions(final boolean enabled) {
-    	getDisplay().asyncExec(new Runnable() {
-		
-			public void run() {
-		    	if (wStart!=null && !wStart.isDisposed()) wStart.setEnabled(enabled);
-		    	((ToolItem)toolbar.getButtonById("trans-run").getNativeObject()).setEnabled(enabled);
-		    	((ToolItem)toolbar.getButtonById("trans-preview").getNativeObject()).setEnabled(enabled);
-		    	((ToolItem)toolbar.getButtonById("trans-debug").getNativeObject()).setEnabled(enabled);
-			}
-		});
-    }
-    
-    public void enablePauseActions(final boolean enabled) {
-    	getDisplay().asyncExec(new Runnable() {
-			public void run() {
-				if (wPause!=null && !wPause.isDisposed()) wPause.setEnabled(enabled);
-			}
-    	});
-    }
-    
-    public void enableStopActions(final boolean enabled) {
-    	getDisplay().asyncExec(new Runnable() {
-			public void run() {
-				if (wStop!=null && !wStop.isDisposed()) wStop.setEnabled(enabled);
-			}
-    	});
-    }
-    
 	public synchronized void showLastPreviewResults() {
 		if (lastTransDebugMeta==null || lastTransDebugMeta.getStepDebugMetaMap().isEmpty()) return;
 		

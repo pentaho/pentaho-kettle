@@ -89,7 +89,7 @@ public class TransHistoryDelegate extends SpoonDelegate {
 		
 		// Add a transLogTab : display the logging...
 		//
-		transHistoryTab = new CTabItem(transGraph.extraViewTabFolder, SWT.CLOSE | SWT.MAX);
+		transHistoryTab = new CTabItem(transGraph.extraViewTabFolder, SWT.NONE);
 		transHistoryTab.setImage(GUIResource.getInstance().getImageShowHistory());
 		transHistoryTab.setText(Messages.getString("Spoon.TransGraph.HistoryTab.Name"));
 		

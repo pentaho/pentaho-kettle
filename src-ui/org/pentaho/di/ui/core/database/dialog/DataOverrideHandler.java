@@ -11,7 +11,6 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
 import org.pentaho.ui.database.event.DataHandler;
-import org.pentaho.ui.xul.containers.XulListbox;
 
 public class DataOverrideHandler extends DataHandler {
   

@@ -59,7 +59,7 @@ public class TransLogDelegate extends SpoonDelegate {
 		
 		// Add a transLogTab : display the logging...
 		//
-		transLogTab = new CTabItem(transGraph.extraViewTabFolder, SWT.CLOSE | SWT.MAX);
+		transLogTab = new CTabItem(transGraph.extraViewTabFolder, SWT.NONE);
 		transLogTab.setImage(GUIResource.getInstance().getImageShowLog());
 		transLogTab.setText(Messages.getString("Spoon.TransGraph.LogTab.Name"));
 		// TODO: set image on tab item.

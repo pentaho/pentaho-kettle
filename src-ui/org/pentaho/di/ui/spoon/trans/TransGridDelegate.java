@@ -76,7 +76,7 @@ public class TransGridDelegate extends SpoonDelegate {
 			}
 		}
 
-		transGridTab = new CTabItem(transGraph.extraViewTabFolder, SWT.CLOSE | SWT.MAX);
+		transGridTab = new CTabItem(transGraph.extraViewTabFolder, SWT.NONE);
 		transGridTab.setImage(GUIResource.getInstance().getImageShowGrid());
 		transGridTab.setText(Messages.getString("Spoon.TransGraph.GridTab.Name"));
 		// wFields = new Text(extraViewTabFolder, SWT.READ_ONLY | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);

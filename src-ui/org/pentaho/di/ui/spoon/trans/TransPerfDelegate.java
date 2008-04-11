@@ -113,7 +113,7 @@ public class TransPerfDelegate extends SpoonDelegate {
 		
 		// Add a transLogTab : display the logging...
 		//
-		transPerfTab = new CTabItem(transGraph.extraViewTabFolder, SWT.CLOSE );
+		transPerfTab = new CTabItem(transGraph.extraViewTabFolder, SWT.NONE );
 		transPerfTab.setImage(GUIResource.getInstance().getImageShowPerf());
 		transPerfTab.setText(Messages.getString("Spoon.TransGraph.PerfTab.Name"));
 		
@@ -125,7 +125,12 @@ public class TransPerfDelegate extends SpoonDelegate {
 		
         spoon.props.setLook(perfComposite);
 
-        setupContent();
+        transGraph.getDisplay().asyncExec(new Runnable() {
+		
+			public void run() {
+				setupContent();
+			}
+		});
 		
 		transPerfTab.setControl(perfComposite);
 		
@@ -134,7 +139,7 @@ public class TransPerfDelegate extends SpoonDelegate {
 
     
     public void setupContent() {
-    	if (transGraph.trans==null) {
+    	if (transGraph.trans==null || !transGraph.trans.getTransMeta().isCapturingStepPerformanceSnapShots()) {
     		showEmptyGraph();
     		return; // TODO: display help text and rerty button
     	}
@@ -152,7 +157,8 @@ public class TransPerfDelegate extends SpoonDelegate {
 		// Wait a second for the first data to pour in...
 		// TODO: make this wait more elegant...
 		//
-		while(stepPerformanceSnapShots.isEmpty()) {
+		while(this.stepPerformanceSnapShots==null || stepPerformanceSnapShots.isEmpty()) {
+			this.stepPerformanceSnapShots = transGraph.trans.getStepPerformanceSnapShots();
 			try { Thread.sleep(100L); } catch (InterruptedException e) { }
 		}
 		
