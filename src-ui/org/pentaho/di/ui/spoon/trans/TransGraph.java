@@ -3436,7 +3436,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     	getDisplay().asyncExec(new Runnable() {
 		
 			public void run() {
-		    	wStart.setEnabled(enabled);
+		    	if (wStart!=null && !wStart.isDisposed()) wStart.setEnabled(enabled);
 		    	((ToolItem)toolbar.getButtonById("trans-run").getNativeObject()).setEnabled(enabled);
 		    	((ToolItem)toolbar.getButtonById("trans-preview").getNativeObject()).setEnabled(enabled);
 		    	((ToolItem)toolbar.getButtonById("trans-debug").getNativeObject()).setEnabled(enabled);
@@ -3447,7 +3447,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     public void enablePauseActions(final boolean enabled) {
     	getDisplay().asyncExec(new Runnable() {
 			public void run() {
-				wPause.setEnabled(enabled);
+				if (wPause!=null && !wPause.isDisposed()) wPause.setEnabled(enabled);
 			}
     	});
     }
@@ -3455,7 +3455,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     public void enableStopActions(final boolean enabled) {
     	getDisplay().asyncExec(new Runnable() {
 			public void run() {
-				wStop.setEnabled(enabled);
+				if (wStop!=null && !wStop.isDisposed()) wStop.setEnabled(enabled);
 			}
     	});
     }
