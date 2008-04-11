@@ -24,7 +24,6 @@ import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.gui.UndoInterface;
-import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -33,9 +32,6 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryUtil;
-import org.pentaho.di.ui.spoon.delegates.SpoonDelegate;
-import org.pentaho.di.ui.spoon.dialog.GetJobSQLProgressDialog;
-import org.pentaho.di.ui.spoon.dialog.GetSQLProgressDialog;
 import org.pentaho.di.trans.HasDatabasesInterface;
 import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.TransHopMeta;
@@ -47,10 +43,14 @@ import org.pentaho.di.trans.steps.tableoutput.TableOutputMeta;
 import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.database.dialog.DatabaseExplorerDialog;
 import org.pentaho.di.ui.core.database.dialog.SQLEditor;
+import org.pentaho.di.ui.core.database.dialog.XulDatabaseDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.SQLStatementsDialog;
+import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.spoon.Messages;
 import org.pentaho.di.ui.spoon.Spoon;
+import org.pentaho.di.ui.spoon.dialog.GetJobSQLProgressDialog;
+import org.pentaho.di.ui.spoon.dialog.GetSQLProgressDialog;
 
 public class SpoonDBDelegate extends SpoonDelegate
 {
@@ -73,11 +73,13 @@ public class SpoonDBDelegate extends SpoonDelegate
 
 		DatabaseMeta before = (DatabaseMeta) databaseMeta.clone();
 
-		DatabaseDialog con = new DatabaseDialog(spoon.getShell(), databaseMeta);
+//		DatabaseDialog con = new DatabaseDialog(spoon.getShell(), databaseMeta);
+    XulDatabaseDialog con = new XulDatabaseDialog(spoon.getShell(), databaseMeta);
 		con.setDatabases(hasDatabasesInterface.getDatabases());
 		String newname = con.open();
 		if (!Const.isEmpty(newname)) // null: CANCEL
 		{
+		  databaseMeta = con.getDatabaseMeta();
 			// newname =
 			// db.verifyAndModifyDatabaseName(transMeta.getDatabases(), name);
 
@@ -502,10 +504,12 @@ public class SpoonDBDelegate extends SpoonDelegate
 			databaseMeta.shareVariablesWith((VariableSpace)hasDatabasesInterface);
 		}
 		
-		DatabaseDialog con = new DatabaseDialog(spoon.getShell(), databaseMeta);
-		String con_name = con.open();
-		if (!Const.isEmpty(con_name))
-		{
+    //DatabaseDialog con = new DatabaseDialog(spoon.getShell(), databaseMeta);
+    XulDatabaseDialog con = new XulDatabaseDialog(spoon.getShell(), databaseMeta);
+    String con_name = con.open();
+    if (!Const.isEmpty(con_name))
+    {
+      databaseMeta = con.getDatabaseMeta();
 			if (hasDatabasesInterface!=null)
 			{
 				databaseMeta.verifyAndModifyDatabaseName(hasDatabasesInterface.getDatabases(), null);
