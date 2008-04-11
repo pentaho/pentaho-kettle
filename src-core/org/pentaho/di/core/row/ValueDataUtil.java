@@ -117,6 +117,8 @@ public class ValueDataUtil
             return new Long( metaA.getInteger(dataA).longValue()-metaB.getInteger(dataB).longValue());
         case ValueMetaInterface.TYPE_BIGNUMBER : 
             return metaA.getBigNumber(dataA).subtract( metaB.getBigNumber(dataB));
+        case ValueMetaInterface.TYPE_DATE    : 
+            return new Long( metaA.getInteger(dataA).longValue()-metaB.getInteger(dataB).longValue());
             
         default: throw new KettleValueException("The 'minus' function only works on numeric data." );
         }

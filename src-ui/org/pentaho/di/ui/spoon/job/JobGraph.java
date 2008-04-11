@@ -2128,8 +2128,6 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 		if (hop.from_entry.isLaunchingInParallel())
 		{
 			gc.setLineAttributes(new LineAttributes((float)linewidth, SWT.CAP_FLAT, SWT.JOIN_MITER, SWT.LINE_CUSTOM, new float[] { 5, 3, }, 0, 10));
-			
-			// gc.setLineStyle(SWT.LINE_DASH);
 		}
 		else
 		{
