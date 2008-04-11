@@ -181,6 +181,8 @@ public class GUIResource
 
 	private Image imageMinimizePanel;
 
+	private Image imageShowErrorLines;
+
 	private ManagedFont fontBold;
 
 	/**
@@ -326,6 +328,8 @@ public class GUIResource
 			disposeImage(imageClosePanel);
 			disposeImage(imageMaximizePanel);
 			disposeImage(imageMinimizePanel);
+
+			disposeImage(imageShowErrorLines);
 
 			// big images
 			disposeImages(imagesSteps.values());
@@ -478,6 +482,8 @@ public class GUIResource
 		imageClosePanel= ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("ClosePanel_image")); // , "ui/images/show-perf.png"
 		imageMaximizePanel = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("MaximizePanel_image")); // , "ui/images/show-perf.png"
 		imageMinimizePanel = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("MinimizePanel_image")); // , "ui/images/show-perf.png"
+
+		imageShowErrorLines = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("ShowErrorLines_image")); // , "ui/images/show-perf.png"
 
 		imageStartSmall = new Image(display, 16, 16);
 		GC gc = new GC(imageStartSmall);
@@ -1243,6 +1249,13 @@ public class GUIResource
 	 */
 	public Image getImageMinimizePanel() {
 		return imageMinimizePanel;
+	}
+
+	/**
+	 * @return the show error lines image
+	 */
+	public Image getImageShowErrorLines() {
+		return imageShowErrorLines;
 	}
 
 }

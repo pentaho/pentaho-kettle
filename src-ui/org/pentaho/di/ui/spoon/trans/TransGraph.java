@@ -3155,11 +3155,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
                                 {
                                     public void run() 
                                     {
-                                    	transHistoryDelegate.addTransHistory();
-                                    	transLogDelegate.addTransLog();
-                                    	transGridDelegate.addTransGrid();
-                                    	transPerfDelegate.addTransPerf();
-                                    	extraViewTabFolder.setSelection(transGridDelegate.getTransGridTab());
+                                    	addAllTabs();
                                         prepareTrans(parentThread, args);
                                     }
                                 }
@@ -3205,6 +3201,14 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 		}
 	}
 	
+	protected void addAllTabs() {
+    	transHistoryDelegate.addTransHistory();
+    	transLogDelegate.addTransLog();
+    	transGridDelegate.addTransGrid();
+    	transPerfDelegate.addTransPerf();
+    	extraViewTabFolder.setSelection(transGridDelegate.getTransGridTab()); // TODO: remember last selected?
+	}
+
 	public synchronized void debug(TransExecutionConfiguration executionConfiguration, TransDebugMeta transDebugMeta)
 	{
         if (!running)
@@ -3248,6 +3252,18 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 
 				running = !running;
     			debug=true;
+    			
+    			// Show the execution results view...
+    			//
+                shell.getDisplay().asyncExec(
+                        new Runnable() 
+                        {
+                            public void run() 
+                            {
+                            	addAllTabs();
+                            }
+                        }
+                    );
 
     			setControlStates();
     		}
