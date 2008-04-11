@@ -247,6 +247,7 @@ public class Calculator extends BaseStep implements StepInterface
                 case CalculatorMetaFunction.CALC_SUBTRACT           :   // A - B
                     {
                         calcData[index] = ValueDataUtil.minus(metaA, dataA, metaB, dataB);
+                        if (metaA.isDate()) resultType=ValueMetaInterface.TYPE_INTEGER; 
                     }
                     break;
                 case CalculatorMetaFunction.CALC_MULTIPLY           :   // A * B
