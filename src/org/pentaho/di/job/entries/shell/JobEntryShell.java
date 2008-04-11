@@ -81,6 +81,10 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 	public boolean execPerRow;
 	
 	public boolean setAppendLogfile;
+	
+	public boolean insertScript;
+	
+	public String script;
 
 	public JobEntryShell(String name)
 	{
@@ -122,6 +126,10 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 		retval.append("      ").append(XMLHandler.addTagValue("logext", logext));
 		retval.append("      ").append(XMLHandler.addTagValue("add_date", addDate));
 		retval.append("      ").append(XMLHandler.addTagValue("add_time", addTime));
+		retval.append("      ").append(XMLHandler.addTagValue("insertScript", insertScript));
+		retval.append("      ").append(XMLHandler.addTagValue("script", script));
+		
+		
 		retval.append("      ").append(
 				XMLHandler.addTagValue("loglevel", LogWriter.getLogLevelDesc(loglevel)));
 
@@ -153,7 +161,10 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 			logfile = XMLHandler.getTagValue(entrynode, "logfile");
 			logext = XMLHandler.getTagValue(entrynode, "logext");
 			loglevel = LogWriter.getLogLevel(XMLHandler.getTagValue(entrynode, "loglevel"));
-
+			insertScript = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "insertScript"));
+			
+			script= XMLHandler.getTagValue(entrynode, "script");
+			
 			// How many arguments?
 			int argnr = 0;
 			while (XMLHandler.getTagValue(entrynode, "argument" + argnr) != null)
@@ -191,7 +202,9 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 			logfile = rep.getJobEntryAttributeString(id_jobentry, "logfile");
 			logext = rep.getJobEntryAttributeString(id_jobentry, "logext");
 			loglevel = LogWriter.getLogLevel(rep.getJobEntryAttributeString(id_jobentry, "loglevel"));
-
+			insertScript = rep.getJobEntryAttributeBoolean(id_jobentry, "insertScript");
+			
+			script = rep.getJobEntryAttributeString(id_jobentry, "script");
 			// How many arguments?
 			int argnr = rep.countNrJobEntryAttributes(id_jobentry, "argument");
 			arguments = new String[argnr];
@@ -228,7 +241,9 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 			rep.saveJobEntryAttribute(id_job, getID(), "logfile", logfile);
 			rep.saveJobEntryAttribute(id_job, getID(), "logext", logext);
 			rep.saveJobEntryAttribute(id_job, getID(), "loglevel", LogWriter.getLogLevelDesc(loglevel));
-
+			rep.saveJobEntryAttribute(id_job, getID(), "insertScript", insertScript);
+			rep.saveJobEntryAttribute(id_job, getID(), "script", script);
+			
 			// save the arguments...
 			if (arguments != null)
 			{
@@ -258,6 +273,8 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 		setLogfile = false;
 		execPerRow = false;
 		setAppendLogfile=false;
+		insertScript=false;
+		script=null;
 	}
 
 	public void setFileName(String n)
@@ -283,6 +300,16 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 	public String getWorkDirectory()
 	{
 		return workDirectory;
+	}
+	
+	public void setScript(String scriptin)
+	{
+		script=scriptin;
+	}
+	
+	public String getScript()
+	{
+		return script;
 	}
 
 	public String getLogFilename()
@@ -323,8 +350,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 				appender = LogWriter.createFileAppender(environmentSubstitute(getLogFilename()), true,setAppendLogfile);
 			} catch (KettleException e)
 			{
-				log.logError(toString(), "Unable to open file appender for file [" + getLogFilename()
-						+ "] : " + e.toString());
+				log.logError(toString(),Messages.getString("JobEntryShell.Error.UnableopenAppenderFile",getLogFilename(), e.toString()));
 				log.logError(toString(), Const.getStackTracker(e));
 				result.setNrErrors(1);
 				result.setResult(false);
@@ -352,8 +378,10 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 		RowMetaAndData resultRow = null;
 		boolean first = true;
 		List<RowMetaAndData> rows = result.getRows();
-
-		log.logDetailed(toString(), "Found " + (rows != null ? rows.size() : 0) + " previous result rows");
+		
+		if(log.isDetailed())
+			log.logDetailed(toString(), Messages.getString("JobEntryShell.Log.FoundPreviousRows",""+(rows != null ? rows.size() : 0)));
+		
 
 		while ((first && !execPerRow)
 				|| (execPerRow && rows != null && iteration < rows.size() && result.getNrErrors() == 0))
@@ -435,7 +463,8 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 	private void executeShell(Result result, List<RowMetaAndData> cmdRows, String[] args)
 	{
 		LogWriter log = LogWriter.getInstance();
-
+		FileObject fileObject = null;
+		String realScript=null;
 		try
 		{
 			// What's the exact command?
@@ -444,10 +473,14 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 
 			log.logBasic(toString(), "Running on platform : " + Const.getOS());
 
-			FileObject fileObject = null;
-
-			String realFilename = environmentSubstitute(getFilename());
-			fileObject = KettleVFS.getFileObject(realFilename);
+			if(insertScript)
+			{
+				realScript=environmentSubstitute(script);
+			}else
+			{
+				String realFilename = environmentSubstitute(getFilename());
+				fileObject = KettleVFS.getFileObject(realFilename);	
+			}
 
 			if (Const.getOS().equals("Windows 95"))
 			{
@@ -476,7 +509,10 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 					StringBuffer cmdline = new StringBuffer(300);
 
 					cmdline.append('"');
-					cmdline.append(optionallyQuoteField(KettleVFS.getFilename(fileObject), "\""));
+					if(insertScript)
+						cmdline.append(realScript);
+					else
+						cmdline.append(optionallyQuoteField(KettleVFS.getFilename(fileObject), "\""));
 					// Add the arguments from previous results...
 					for (int i = 0; i < cmdRows.size(); i++) // Normally just
 																// one row, but
@@ -530,7 +566,10 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 					StringBuffer cmdline = new StringBuffer(300);
 
 					cmdline.append('"');
-					cmdline.append(optionallyQuoteField(KettleVFS.getFilename(fileObject), "\""));
+					if(insertScript)
+						cmdline.append(realScript);
+					else
+						cmdline.append(optionallyQuoteField(KettleVFS.getFilename(fileObject), "\""));
 
 					for (int i = 0; i < args.length; i++)
 					{

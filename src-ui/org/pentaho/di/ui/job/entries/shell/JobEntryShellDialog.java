@@ -13,6 +13,8 @@ package org.pentaho.di.ui.job.entries.shell;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -23,6 +25,7 @@ import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
@@ -33,6 +36,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.Props;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.ui.core.gui.WindowProperty;
@@ -152,12 +156,25 @@ public class JobEntryShellDialog extends JobEntryDialog implements JobEntryDialo
     
     private Label wlAppendLogfile;
 
-    private Button wAppendLogfile;
+    private Button wAppendLogfile,wInsertScript;
 
     private FormData fdlAppendLogfile, fdAppendLogfile;
 
     private Display display;
+    
+	private CTabFolder   wTabFolder;
+	
+	private Composite    wGeneralComp,wScriptComp;	
+	
+	private CTabItem     wGeneralTab,wScriptTab;
+	
+	private FormData     fdTabFolder,fdGeneralComp,fdScriptComp;
 
+    private Label wlScript,wlInsertScript;
+
+    private Text wScript;
+
+    private FormData  fdScript,fdInsertScript,fdlInsertScript;
 
     public JobEntryShellDialog(Shell parent, JobEntryInterface jobEntryInt, Repository rep, JobMeta jobMeta)
     {
@@ -214,40 +231,87 @@ public class JobEntryShellDialog extends JobEntryDialog implements JobEntryDialo
         fdName.left = new FormAttachment(middle, 0);
         fdName.right = new FormAttachment(100, 0);
         wName.setLayoutData(fdName);
+        
+        wTabFolder = new CTabFolder(shell, SWT.BORDER);
+		props.setLook(wTabFolder, Props.WIDGET_STYLE_TAB);
+		
+		//////////////////////////
+		// START OF GENERAL TAB   ///
+		//////////////////////////
+	
+		wGeneralTab=new CTabItem(wTabFolder, SWT.NONE);
+		wGeneralTab.setText(Messages.getString("JobShell.Tab.General.Label"));
+	
+	
+		wGeneralComp = new Composite(wTabFolder, SWT.NONE);			
+		props.setLook(wGeneralComp);
+	
+		FormLayout generalLayout = new FormLayout();
+		generalLayout.marginWidth  = 3;
+		generalLayout.marginHeight = 3;
+		wGeneralComp.setLayout(generalLayout);
+
+        
+        // Insert Script?
+        wlInsertScript = new Label(wGeneralComp, SWT.RIGHT);
+        wlInsertScript.setText(Messages.getString("JobShell.InsertScript.Label"));
+        props.setLook(wlInsertScript);
+        fdlInsertScript = new FormData();
+        fdlInsertScript.left = new FormAttachment(0, 0);
+        fdlInsertScript.top = new FormAttachment(wName, margin);
+        fdlInsertScript.right = new FormAttachment(middle, -margin);
+        wlInsertScript.setLayoutData(fdlInsertScript);
+        wInsertScript = new Button(wGeneralComp, SWT.CHECK);
+        wInsertScript.setToolTipText(Messages.getString("JobShell.InsertScript.Tooltip"));
+        props.setLook(wInsertScript);
+        fdInsertScript = new FormData();
+        fdInsertScript.left = new FormAttachment(middle, 0);
+        fdInsertScript.top = new FormAttachment(wName, margin);
+        fdInsertScript.right = new FormAttachment(100, 0);
+        wInsertScript.setLayoutData(fdInsertScript);
+        wInsertScript.addSelectionListener(new SelectionAdapter()
+        {
+            public void widgetSelected(SelectionEvent e)
+            {
+            	ActiveInsertScript();
+                jobEntry.setChanged();
+            }
+        });
+
 
         ///////////////////////
         // Filename line
         ///////////////////////
-        wlFilename = new Label(shell, SWT.RIGHT);
+        wlFilename = new Label(wGeneralComp, SWT.RIGHT);
         wlFilename.setText(Messages.getString("JobShell.Filename.Label"));
         props.setLook(wlFilename);
         fdlFilename = new FormData();
         fdlFilename.left = new FormAttachment(0, 0);
-        fdlFilename.top = new FormAttachment(wName, margin);
+        fdlFilename.top = new FormAttachment(wInsertScript, margin);
         fdlFilename.right = new FormAttachment(middle, 0);
         wlFilename.setLayoutData(fdlFilename);
 
-        wbFilename = new Button(shell, SWT.PUSH | SWT.CENTER);
+        wbFilename = new Button(wGeneralComp, SWT.PUSH | SWT.CENTER);
         props.setLook(wbFilename);
         wbFilename.setText(Messages.getString("System.Button.Browse"));
         fdbFilename = new FormData();
-        fdbFilename.top = new FormAttachment(wName, margin);
+        fdbFilename.top = new FormAttachment(wInsertScript, margin);
         fdbFilename.right = new FormAttachment(100, 0);
         wbFilename.setLayoutData(fdbFilename);
 
-        wFilename = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wFilename = new TextVar(jobMeta, wGeneralComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wFilename);
         wFilename.addModifyListener(lsMod);
         fdFilename = new FormData();
         fdFilename.left = new FormAttachment(middle, 0);
         fdFilename.right = new FormAttachment(wbFilename, -margin);
-        fdFilename.top = new FormAttachment(wName, margin);
+        fdFilename.top = new FormAttachment(wInsertScript, margin);
         wFilename.setLayoutData(fdFilename);
         
         ///////////////////////
         // Working dir line
         ///////////////////////
-        wlWorkDirectory = new Label(shell, SWT.RIGHT);
+        wlWorkDirectory = new Label(wGeneralComp, SWT.RIGHT);
         wlWorkDirectory.setText(Messages.getString("JobShell.WorkingDirectory.Label"));
         props.setLook(wlWorkDirectory);
         fdlWorkDirectory = new FormData();
@@ -256,7 +320,7 @@ public class JobEntryShellDialog extends JobEntryDialog implements JobEntryDialo
         fdlWorkDirectory.right = new FormAttachment(middle, 0);
         wlWorkDirectory.setLayoutData(fdlWorkDirectory);
 
-        wWorkDirectory = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wWorkDirectory = new TextVar(jobMeta, wGeneralComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wWorkDirectory);
         wWorkDirectory.addModifyListener(lsMod);
         fdWorkDirectory = new FormData();
@@ -268,7 +332,7 @@ public class JobEntryShellDialog extends JobEntryDialog implements JobEntryDialo
         // ////////////////////////
         // START OF LOGGING GROUP
         //
-        wLogging = new Group(shell, SWT.SHADOW_NONE);
+        wLogging = new Group(wGeneralComp, SWT.SHADOW_NONE);
         props.setLook(wLogging);
         wLogging.setText(Messages.getString("JobShell.LogSettings.Group.Label"));
 
@@ -444,7 +508,7 @@ public class JobEntryShellDialog extends JobEntryDialog implements JobEntryDialo
         // / END OF LOGGING GROUP
         // ///////////////////////////////////////////////////////////
 
-        wlPrevious = new Label(shell, SWT.RIGHT);
+        wlPrevious = new Label(wGeneralComp, SWT.RIGHT);
         wlPrevious.setText(Messages.getString("JobShell.Previous.Label"));
         props.setLook(wlPrevious);
         fdlPrevious = new FormData();
@@ -452,7 +516,7 @@ public class JobEntryShellDialog extends JobEntryDialog implements JobEntryDialo
         fdlPrevious.top = new FormAttachment(wLogging, margin * 3);
         fdlPrevious.right = new FormAttachment(middle, -margin);
         wlPrevious.setLayoutData(fdlPrevious);
-        wPrevious = new Button(shell, SWT.CHECK);
+        wPrevious = new Button(wGeneralComp, SWT.CHECK);
         props.setLook(wPrevious);
         wPrevious.setSelection(jobEntry.argFromPrevious);
         wPrevious.setToolTipText(Messages.getString("JobShell.Previous.Tooltip"));
@@ -472,7 +536,7 @@ public class JobEntryShellDialog extends JobEntryDialog implements JobEntryDialo
             }
         });
 
-        wlEveryRow = new Label(shell, SWT.RIGHT);
+        wlEveryRow = new Label(wGeneralComp, SWT.RIGHT);
         wlEveryRow.setText(Messages.getString("JobShell.ExecForEveryInputRow.Label"));
         props.setLook(wlEveryRow);
         fdlEveryRow = new FormData();
@@ -480,7 +544,7 @@ public class JobEntryShellDialog extends JobEntryDialog implements JobEntryDialo
         fdlEveryRow.top = new FormAttachment(wPrevious, margin * 3);
         fdlEveryRow.right = new FormAttachment(middle, -margin);
         wlEveryRow.setLayoutData(fdlEveryRow);
-        wEveryRow = new Button(shell, SWT.CHECK);
+        wEveryRow = new Button(wGeneralComp, SWT.CHECK);
         props.setLook(wEveryRow);
         wEveryRow.setSelection(jobEntry.execPerRow);
         wEveryRow.setToolTipText(Messages.getString("JobShell.ExecForEveryInputRow.Tooltip"));
@@ -498,7 +562,7 @@ public class JobEntryShellDialog extends JobEntryDialog implements JobEntryDialo
             }
         });
 
-        wlFields = new Label(shell, SWT.NONE);
+        wlFields = new Label(wGeneralComp, SWT.NONE);
         wlFields.setText(Messages.getString("JobShell.Fields.Label"));
         props.setLook(wlFields);
         fdlFields = new FormData();
@@ -519,18 +583,91 @@ public class JobEntryShellDialog extends JobEntryDialog implements JobEntryDialo
                                    ColumnInfo.COLUMN_TYPE_TEXT, false);
         colinf[0].setUsingVariables(true);
 
-        wFields = new TableView(jobMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf,
+        wFields = new TableView(jobMeta, wGeneralComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf,
                                 FieldsRows, lsMod, props);
 
         fdFields = new FormData();
         fdFields.left = new FormAttachment(0, 0);
         fdFields.top = new FormAttachment(wlFields, margin);
         fdFields.right = new FormAttachment(100, 0);
-        fdFields.bottom = new FormAttachment(100, -50);
+        fdFields.bottom = new FormAttachment(100, -margin);
         wFields.setLayoutData(fdFields);
 
         wlFields.setEnabled(!jobEntry.argFromPrevious);
         wFields.setEnabled(!jobEntry.argFromPrevious);
+        
+		fdGeneralComp=new FormData();
+		fdGeneralComp.left  = new FormAttachment(0, 0);
+		fdGeneralComp.top   = new FormAttachment(0, 0);
+		fdGeneralComp.right = new FormAttachment(100, 0);
+		fdGeneralComp.bottom= new FormAttachment(500, -margin);
+		wGeneralComp.setLayoutData(fdGeneralComp);
+		
+		wGeneralComp.layout();
+		wGeneralTab.setControl(wGeneralComp);
+ 		props.setLook(wGeneralComp);
+ 		
+ 		
+ 		
+		/////////////////////////////////////////////////////////////
+		/// END OF GENERAL TAB
+		/////////////////////////////////////////////////////////////
+ 		
+ 		//////////////////////////////////////
+		// START OF Script          TAB   ///
+		/////////////////////////////////////
+		
+		
+		
+		wScriptTab=new CTabItem(wTabFolder, SWT.NONE);
+		wScriptTab.setText(Messages.getString("JobShell.Tab.Script.Label"));
+
+		FormLayout ScriptLayout = new FormLayout ();
+		ScriptLayout.marginWidth  = 3;
+		ScriptLayout.marginHeight = 3;
+		
+		wScriptComp = new Composite(wTabFolder, SWT.NONE);
+ 		props.setLook(wScriptComp);
+ 		wScriptComp.setLayout(ScriptLayout);
+ 		
+        // Script line
+        
+ 	   wScript=new Text(wScriptComp, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
+       props.setLook(wScript);
+       wScript.addModifyListener(lsMod);
+       fdScript = new FormData();
+       fdScript.left = new FormAttachment(0, margin);
+       fdScript.top = new FormAttachment(wlScript, margin);
+       fdScript.right = new FormAttachment(100, 0);
+       fdScript.bottom = new FormAttachment(100, -margin);
+       wScript.setLayoutData(fdScript);
+
+ 		
+ 		
+ 		
+		fdScriptComp = new FormData();
+		fdScriptComp.left  = new FormAttachment(0, 0);
+		fdScriptComp.top   = new FormAttachment(0, 0);
+		fdScriptComp.right = new FormAttachment(100, 0);
+		fdScriptComp.bottom= new FormAttachment(100, 0);
+		wScriptComp.setLayoutData(wScriptComp);
+
+		wScriptComp.layout();
+		wScriptTab.setControl(wScriptComp);
+
+
+		/////////////////////////////////////////////////////////////
+		/// END OF Script TAB
+		/////////////////////////////////////////////////////////////
+ 		
+ 		
+		fdTabFolder = new FormData();
+		fdTabFolder.left  = new FormAttachment(0, 0);
+		fdTabFolder.top   = new FormAttachment(wName, margin);
+		fdTabFolder.right = new FormAttachment(100, 0);
+		fdTabFolder.bottom= new FormAttachment(100, -50);
+		wTabFolder.setLayoutData(fdTabFolder);
+
 
         // Some buttons
         wOK = new Button(shell, SWT.PUSH);
@@ -538,7 +675,7 @@ public class JobEntryShellDialog extends JobEntryDialog implements JobEntryDialo
         wCancel = new Button(shell, SWT.PUSH);
         wCancel.setText(Messages.getString("System.Button.Cancel"));
 
-        BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wFields);
+        BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wTabFolder);
 
         // Add listeners
         lsCancel = new Listener()
@@ -602,6 +739,8 @@ public class JobEntryShellDialog extends JobEntryDialog implements JobEntryDialo
 
         getData();
         setActive();
+        ActiveInsertScript();
+        wTabFolder.setSelection(0);
 
         BaseStepDialog.setSize(shell);
 
@@ -614,7 +753,35 @@ public class JobEntryShellDialog extends JobEntryDialog implements JobEntryDialo
         }
         return jobEntry;
     }
-
+    private void ActiveInsertScript()
+    {
+    	wFilename.setEnabled(!wInsertScript.getSelection());
+    	wlFilename.setEnabled(!wInsertScript.getSelection());
+    	wbFilename.setEnabled(!wInsertScript.getSelection());
+    	wScript.setEnabled(wInsertScript.getSelection());
+    	// We can not use arguments !!!
+    	if(wInsertScript.getSelection())
+    	{
+    		wFields.clearAll(false);
+    		wFields.setEnabled(false);
+    		wlFields.setEnabled(false);
+    		wPrevious.setSelection(false);
+    		wPrevious.setEnabled(false);
+    		wlPrevious.setEnabled(false);
+    		wEveryRow.setSelection(false);
+    		wEveryRow.setEnabled(false);
+    		wlEveryRow.setEnabled(false);
+    	}else
+    	{
+    		wFields.setEnabled(true);	
+    		wlFields.setEnabled(true);
+    		wPrevious.setEnabled(true);
+    		wlPrevious.setEnabled(true);
+    		wEveryRow.setEnabled(true);
+    		wlEveryRow.setEnabled(true);
+    	}
+    	
+    }
     public void dispose()
     {
         WindowProperty winprop = new WindowProperty(shell);
@@ -683,6 +850,10 @@ public class JobEntryShellDialog extends JobEntryDialog implements JobEntryDialo
         wAddTime.setSelection(jobEntry.addTime);
         wAppendLogfile.setSelection(jobEntry.setAppendLogfile);
         wLoglevel.select(jobEntry.loglevel + 1);
+        
+        wInsertScript.setSelection(jobEntry.insertScript);
+        if (jobEntry.getScript() != null)
+            wScript.setText(jobEntry.getScript());
     }
 
     private void cancel()
@@ -726,6 +897,8 @@ public class JobEntryShellDialog extends JobEntryDialog implements JobEntryDialo
         jobEntry.logext = wLogext.getText();
         jobEntry.loglevel = wLoglevel.getSelectionIndex() - 1;
         jobEntry.setAppendLogfile = wAppendLogfile.getSelection();
+        jobEntry.setScript(wScript.getText());
+        jobEntry.insertScript=wInsertScript.getSelection();
         dispose();
     }
 }
