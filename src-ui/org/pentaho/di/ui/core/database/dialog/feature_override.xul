@@ -1,0 +1,11 @@
+	<!--  ###############################################################################  -->
+	<!--     TEST BUTTON BOX: A box for the test button.                                   -->
+	<!--  ###############################################################################  -->
+		<hbox id="test-button-box">
+			<label id="spacer-label" flex="5" />
+			<button id="test-button" label="Test" flex="1" onclick="dataHandler.testDatabaseConnection()" />
+			<button id="feature-button" label="Feature List" flex="1" onclick="featureHandler.explore()" />
+			<button id="explore-button" label="Explore" flex="1" onclick="featureHandler.showFeatureList()" />
+			<label id="spacer-label" flex="5" />
+			
+		</hbox>
