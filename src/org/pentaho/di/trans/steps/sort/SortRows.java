@@ -68,9 +68,9 @@ public class SortRows extends BaseStep implements StepInterface
 		{
 			// Do we need to convert binary string keys?
 			//
-			if (data.convertKeysToNative)
+			for (int i=0;i<data.fieldnrs.length;i++)
 			{
-				for (int i=0;i<data.fieldnrs.length;i++)
+				if (data.convertKeysToNative[i]) 
 				{
 					int index = data.fieldnrs[i];
 					r[index] = rowMeta.getValueMeta(index).convertBinaryStringToNativeType((byte[]) r[index]);
@@ -384,7 +384,7 @@ public class SortRows extends BaseStep implements StepInterface
 		if (first && r!=null)
 		{
 			first=false;
-			data.convertKeysToNative = false;
+			data.convertKeysToNative = new boolean[meta.getFieldName().length];
 			data.fieldnrs=new int[meta.getFieldName().length];
 			for (i=0;i<meta.getFieldName().length;i++)
 			{
@@ -395,7 +395,7 @@ public class SortRows extends BaseStep implements StepInterface
 					setOutputDone();
 					return false;
 				}
-				if (getInputRowMeta().getValueMeta(i).isStorageBinaryString()) data.convertKeysToNative=true;
+				data.convertKeysToNative[i] = getInputRowMeta().getValueMeta(data.fieldnrs[i]).isStorageBinaryString();
  			}
             
             // Metadata
