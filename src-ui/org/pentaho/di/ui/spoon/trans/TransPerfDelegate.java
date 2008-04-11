@@ -277,6 +277,8 @@ public class TransPerfDelegate extends SpoonDelegate {
 		fdLabel.right=new FormAttachment(95,0);
 		fdLabel.top=new FormAttachment(5,0);
 		label.setLayoutData(fdLabel);
+		
+		perfComposite.layout(true, true);
 	}
 
 	public void showPerfView() {

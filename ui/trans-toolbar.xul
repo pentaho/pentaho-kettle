@@ -1,6 +1,6 @@
 <window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" align="vertical" >
 	 <toolbox>
-		<toolbar id="nav-toolbar" mode="icons">
+		<toolbar id="nav-toolbar" mode="full">
 			<toolbarbutton value="file-new" label="%Spoon.Menu.File.New" image="ui/images/new.png" tooltiptext="%Spoon.Tooltip.NewFile"/>
 			<toolbarseparator />
 			<toolbarbutton value="file-open" label="%Spoon.Menu.File.Open" image="ui/images/open.png" tooltiptext="%Spoon.Tooltip.OpenTranformation" />
@@ -20,10 +20,13 @@
 			<toolbarbutton value="explore-database" label="%Spoon.Menu.ExploreConnection" image="ui/images/exploredb.png" tooltiptext="%Spoon.Tooltip.ExploreConnection"/>
 			<toolbarseparator />
 			<toolbarbutton value="trans-show-results" label="%Spoon.Menu.ShowExecutionResults" image="ui/images/show-grid.png" tooltiptext="%Spoon.Tooltip.ShowExecutionResults"/>
+			<toolbarseparator />
+		<!-- 
 			<toolbarbutton value="trans-show-grid" label="%Spoon.Menu.ShowTransGrid" image="ui/images/show-grid.png" tooltiptext="%Spoon.Tooltip.ShowGridView"/>
 			<toolbarbutton value="trans-show-log" label="%Spoon.Menu.ShowTransLog" image="ui/images/show-log.png" tooltiptext="%Spoon.Tooltip.ShowLogView"/>
 			<toolbarbutton value="trans-show-history" label="%Spoon.Menu.ShowTransHistory" image="ui/images/show-history.png" tooltiptext="%Spoon.Tooltip.ShowHistoryView"/>
 			<toolbarbutton value="trans-show-perf" label="%Spoon.Menu.ShowTransPerf" image="ui/images/show-perf.png" tooltiptext="%Spoon.Tooltip.ShowPerfView"/>
+		 -->
 		</toolbar>
 	</toolbox>
 </window>

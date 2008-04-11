@@ -46,6 +46,7 @@ public class Toolbar extends XulObject implements XulToolbar {
 
         FormData fdBar = new FormData();
         fdBar.left = new FormAttachment(0, 0);
+        fdBar.right = new FormAttachment(100, 0);
         fdBar.top = new FormAttachment(0, 0);
         toolBar.setLayoutData(fdBar);
 	}

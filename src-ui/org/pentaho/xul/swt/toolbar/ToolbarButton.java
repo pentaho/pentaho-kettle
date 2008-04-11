@@ -77,13 +77,13 @@ public class ToolbarButton extends XulObject implements XulToolbarButton, Select
 	
 	public void setImage( Image image ) {
 		if( image != null && mode != Toolbar.MODE_TEXT ) {
-			toolItem.setImage( (Image) image);
+			if (!toolItem.isDisposed()) toolItem.setImage( (Image) image);
 		}
 	}
 	
 	public void setSelectedImage( Image image ) {
 		if( image != null && mode != Toolbar.MODE_TEXT ) {
-			toolItem.setHotImage(image);
+			if (!toolItem.isDisposed()) toolItem.setHotImage(image);
 		}
 	}
 	
@@ -94,18 +94,18 @@ public class ToolbarButton extends XulObject implements XulToolbarButton, Select
 	}
 	
 	public void setEnable(boolean enabled) {
-		toolItem.setEnabled( enabled );
+		if (!toolItem.isDisposed()) toolItem.setEnabled( enabled );
 	}
 
 	public void setHint(String text) {
 		if( text != null ) {
-			toolItem.setToolTipText( text );
+			if (!toolItem.isDisposed()) toolItem.setToolTipText( text );
 		}
 	}
 	
 	public void setText( String text ) {
 		if( text != null && mode != Toolbar.MODE_ICONS ) {
-			toolItem.setText( text );
+			if (!toolItem.isDisposed()) toolItem.setText( text );
 		}
 	}
 	

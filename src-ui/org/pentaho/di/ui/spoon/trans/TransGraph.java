@@ -2766,6 +2766,14 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     public void exploreDatabase() {
     	spoon.exploreDatabase();
     }
+    
+    public void showExecutionResults() {
+    	if (extraViewComposite==null || extraViewComposite.isDisposed()) {
+    		addAllTabs();
+    	} else {
+    		disposeExtraView();
+    	}
+    }
 
     public void showLogView() {
     	transLogDelegate.showLogView();
