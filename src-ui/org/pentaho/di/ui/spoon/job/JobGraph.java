@@ -40,6 +40,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.LineAttributes;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
@@ -102,6 +103,8 @@ import org.pentaho.xul.swt.tab.TabItem;
  */
 public class JobGraph extends Composite implements Redrawable, TabItemInterface
 {
+	private final static String STRING_PARALLEL_WARNING_PARAMETER = "ParallelJobEntriesWarning";
+	
 	private static final int HOP_SEL_MARGIN = 9;
 
 	protected Shell shell;
@@ -1082,6 +1085,37 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 		String des = dd.open();
 		if (des != null) jobEntry.setDescription(des);
 	}
+	
+	/**
+	 * Go from serial to parallel to serial execution
+	 */
+	public void editEntryParallel()
+	{
+		getJobEntry().setLaunchingInParallel(!getJobEntry().isLaunchingInParallel());
+		if (getJobEntry().isLaunchingInParallel()) 
+		{
+			// Show a warning (optional)
+	        //
+	        if ( "Y".equalsIgnoreCase( spoon.props.getCustomParameter(STRING_PARALLEL_WARNING_PARAMETER, "Y") )) //$NON-NLS-1$ //$NON-NLS-2$
+	        {
+	            MessageDialogWithToggle md = new MessageDialogWithToggle(shell, 
+	                 Messages.getString("JobGraph.ParallelJobEntriesWarning.DialogTitle"),  //$NON-NLS-1$
+	                 null,
+	                 Messages.getString("JobGraph.ParallelJobEntriesWarning.DialogMessage", Const.CR )+Const.CR, //$NON-NLS-1$ //$NON-NLS-2$
+	                 MessageDialog.WARNING,
+	                 new String[] { Messages.getString("JobGraph.ParallelJobEntriesWarning.Option1") }, //$NON-NLS-1$
+	                 0,
+	                 Messages.getString("JobGraph.ParallelJobEntriesWarning.Option2"), //$NON-NLS-1$
+	                 "N".equalsIgnoreCase( spoon.props.getCustomParameter(STRING_PARALLEL_WARNING_PARAMETER, "Y") ) //$NON-NLS-1$ //$NON-NLS-2$
+	            );
+	            MessageDialogWithToggle.setDefaultImage(GUIResource.getInstance().getImageSpoon());
+	            md.open();
+	            spoon.props.setCustomParameter(STRING_PARALLEL_WARNING_PARAMETER, md.getToggleState()?"N":"Y"); //$NON-NLS-1$ //$NON-NLS-2$
+	            spoon.props.saveProps();
+	        }
+		}
+		redraw();
+	}
 
 	public void duplicateEntry() throws KettleException
 	{
@@ -1202,6 +1236,11 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 					item.setEnabled( jobEntry.isDrawn() );
 				}
 
+				item = menu.getMenuItemById( "job-graph-entry-parallel" ); // $NON-NLS-1$
+				if (item != null ) {
+					item.setChecked( jobEntry.isLaunchingInParallel() );
+				}
+
 				menu.addMenuListener( "job-graph-entry-align-left", this, "allignleft" ); //$NON-NLS-1$ //$NON-NLS-2$
 				menu.addMenuListener( "job-graph-entry-align-right", this, "allignright" ); //$NON-NLS-1$ //$NON-NLS-2$
 				menu.addMenuListener( "job-graph-entry-align-top", this, "alligntop" ); //$NON-NLS-1$ //$NON-NLS-2$
@@ -1212,6 +1251,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 
 				menu.addMenuListener( "job-graph-entry-edit", this, "editEntryClick" ); //$NON-NLS-1$ //$NON-NLS-2$ 
 				menu.addMenuListener( "job-graph-entry-edit-description", this, "editEntryDescription" ); //$NON-NLS-1$ //$NON-NLS-2$ 
+				menu.addMenuListener( "job-graph-entry-parallel", this, "editEntryParallel" ); //$NON-NLS-1$ //$NON-NLS-2$ 
 				menu.addMenuListener( "job-graph-entry-duplicate", this, "duplicateEntry" ); //$NON-NLS-1$ //$NON-NLS-2$ 
 				menu.addMenuListener( "job-graph-entry-copy", this, "copyEntry" ); //$NON-NLS-1$ //$NON-NLS-2$ 
 				menu.addMenuListener( "job-graph-entry-detach", this, "detatchEntry" ); //$NON-NLS-1$ //$NON-NLS-2$ 
@@ -1941,27 +1981,36 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 		ni.height = height;
 	}
 
-	protected void drawLine(GC gc, JobHopMeta hi, boolean is_candidate) 
+	protected void drawLine(GC gc, JobHopMeta hop, boolean is_candidate) 
 	{
-		int line[] = getLine(hi.from_entry, hi.to_entry);
+		int line[] = getLine(hop.from_entry, hop.to_entry);
 
 		gc.setLineWidth(linewidth);
 		Color col;
+
+		if (hop.from_entry.isLaunchingInParallel())
+		{
+			gc.setLineAttributes(new LineAttributes((float)linewidth, SWT.CAP_FLAT, SWT.JOIN_MITER, SWT.LINE_CUSTOM, new float[] { 5, 3, }, 0, 10));
+		}
+		else
+		{
+			gc.setLineStyle(SWT.LINE_SOLID);
+		}
 
 		if (is_candidate) 
 		{
 			col = GUIResource.getInstance().getColorBlue();
 		}
 		else 
-		if (hi.isEnabled()) 
+		if (hop.isEnabled()) 
 		{
-			if (hi.isUnconditional())
+			if (hop.isUnconditional())
 			{
 				col = GUIResource.getInstance().getColorBlack();
 			}
 			else
 			{
-				if (hi.getEvaluation()) 
+				if (hop.getEvaluation()) 
 				{
 					col = GUIResource.getInstance().getColorGreen(); 
 				}
@@ -1978,12 +2027,13 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 
 		gc.setForeground(col);
 
-		if (hi.isSplit()) gc.setLineWidth(linewidth + 2);
+		if (hop.isSplit()) gc.setLineWidth(linewidth + 2);
 		drawArrow(gc, line);
-		if (hi.isSplit()) gc.setLineWidth(linewidth);
+		if (hop.isSplit()) gc.setLineWidth(linewidth);
 
 		gc.setForeground(GUIResource.getInstance().getColorBlack());
 		gc.setBackground(GUIResource.getInstance().getColorBackground());
+		gc.setLineStyle(SWT.LINE_SOLID);
 	}
 
 	protected void drawLineShadow(GC gc, JobHopMeta hi)

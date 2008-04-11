@@ -3586,7 +3586,7 @@ public class Database implements VariableSpace
 
 		if (update) {
 
-			String sql = "UPDATE " + databaseMeta.quoteField(logtable) + " SET ";
+			String sql = "UPDATE " + logtable + " SET ";
 			for (int i = 0; i < rowMeta.size() - 1; i++) // Without ID_JOB or ID_BATCH
 			{
 				ValueMetaInterface valueMeta = rowMeta.getValueMeta(i);
@@ -3614,7 +3614,7 @@ public class Database implements VariableSpace
 
 			execStatement(sql, rowMeta, data);
 		} else {
-			String sql = "INSERT INTO " + databaseMeta.quoteField(logtable) + " ( ";
+			String sql = "INSERT INTO " + logtable + " ( ";
 
 			for (int i = 0; i < rowMeta.size(); i++) {
 				ValueMetaInterface valueMeta = rowMeta.getValueMeta(i);

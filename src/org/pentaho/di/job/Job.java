@@ -12,6 +12,7 @@
 package org.pentaho.di.job;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -293,7 +294,7 @@ public class Job extends Thread implements VariableSpace
 		return res;
 	}
 	
-	private Result execute(int nr, Result prev_result, JobEntryCopy startpoint, JobEntryCopy previous, String reason) throws KettleException
+	private Result execute(final int nr, Result prev_result, final JobEntryCopy startpoint, JobEntryCopy previous, String reason) throws KettleException
 	{
 		Result res = null;
        
@@ -328,7 +329,7 @@ public class Job extends Thread implements VariableSpace
         // Execute this entry...
         JobEntryInterface cloneJei = (JobEntryInterface)jei.clone();
         ((VariableSpace)cloneJei).copyVariablesFrom(this);        
-        Result result = cloneJei.execute(prevResult, nr, rep, this);
+        final Result result = cloneJei.execute(prevResult, nr, rep, this);
 
         Thread.currentThread().setContextClassLoader(cl);
 		addErrors((int)result.getNrErrors());
@@ -338,18 +339,28 @@ public class Job extends Thread implements VariableSpace
         jobTracker.addJobTracker(new JobTracker(jobMeta, jerAfter));
 				
 		// Try all next job entries.
-		// Launch only those where the hopinfo indicates true or false
+        //
+        // Keep track of all the threads we fired in case of parallel execution...
+        // Keep track of the results of these executions too.
+        //
+        final List<Thread> threads = new ArrayList<Thread>();
+        final List<Result> threadResults = new ArrayList<Result>(); 
+        final List<KettleException> threadExceptions = new ArrayList<KettleException>(); 
+        final List<JobEntryCopy> threadEntries= new ArrayList<JobEntryCopy>(); 
+        
+        // Launch only those where the hopinfo indicates true or false
+        //
 		int nrNext = jobMeta.findNrNextJobEntries(startpoint);
 		for (int i=0;i<nrNext && !isStopped();i++)
 		{
 			// The next entry is...
-			JobEntryCopy nextEntry = jobMeta.findNextJobEntry(startpoint, i);
+			final JobEntryCopy nextEntry = jobMeta.findNextJobEntry(startpoint, i);
 			
 			// See if we need to execute this...
 			JobHopMeta hi = jobMeta.findJobHop(startpoint, nextEntry);
 
 			// The next comment...
-			String nextComment = null;
+			final String nextComment;
 			if (hi.isUnconditional()) 
 			{
 				nextComment = Messages.getString("Job.Comment.FollowedUnconditional");
@@ -384,18 +395,51 @@ public class Job extends Thread implements VariableSpace
 				}
                 
                 // Now execute!
-                try
-                {
-                    res = execute(nr+1, result, nextEntry, startpoint, nextComment);
-                }
-                catch(Throwable e)
-                {
-                    log.logError(toString(), Const.getStackTracker(e));
-                    throw new KettleException("Unexpected error occurred while launching entry ["+nextEntry.toString()+"]", e);
-                }
-				
-				log.logBasic(jobMeta.toString(), "Finished jobentry ["+nextEntry.getName()+"] (result="+res.getResult()+")");
-			}
+				// 
+            	// if (we launch in parallel, fire the execution off in a new thread...
+            	//
+            	if (startpoint.isLaunchingInParallel())
+            	{
+            		threadEntries.add(nextEntry);
+            		
+            		Runnable runnable = new Runnable() {
+            			public void run() {
+            				try {
+            					Result threadResult = execute(nr+1, result, nextEntry, startpoint, nextComment);
+            					threadResults.add(threadResult);
+            				}
+            				catch(Throwable e)
+                            {
+                            	log.logError(toString(), Const.getStackTracker(e));
+                            	threadExceptions.add(new KettleException(Messages.getString("Job.Log.UnexpectedError",nextEntry.toString()), e));
+                            	Result threadResult = new Result();
+                            	threadResult.setResult(false);
+                            	threadResult.setNrErrors(1L);
+                            	threadResults.add(threadResult);
+                            }
+            			}
+            		};
+            		Thread thread = new Thread(runnable);
+            		threads.add(thread);
+            		thread.start();
+                    log.logBasic(jobMeta.toString(), Messages.getString("Job.Log.LaunchedJobEntryInParallel",nextEntry.getName()));
+            	}
+            	else
+            	{
+                    try
+                    {
+	            		// Same as before: blocks until it's done
+	            		//
+	            		res = execute(nr+1, result, nextEntry, startpoint, nextComment);
+                    }
+                    catch(Throwable e)
+                    {
+                    	log.logError(toString(), Const.getStackTracker(e));
+                    	throw new KettleException(Messages.getString("Job.Log.UnexpectedError",nextEntry.toString()), e);
+                    }
+                    log.logBasic(jobMeta.toString(), Messages.getString("Job.Log.FinishedJobEntry",nextEntry.getName(),res.getResult()+""));
+            	}
+            }
 		}
 		
 		// Perhaps we don't have next steps??

@@ -54,7 +54,10 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 
 	private Point location;
 
-	private boolean parallel;
+    /**
+     * Flag to indicate that the job entries following this one are launched in parallel
+     */
+	private boolean launchingInParallel;
 
 	private boolean draw;
 
@@ -86,7 +89,7 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 		retval.append("    <entry>").append(Const.CR);
 		retval.append(entry.getXML());
 
-		retval.append("      ").append(XMLHandler.addTagValue("parallel", parallel));
+		retval.append("      ").append(XMLHandler.addTagValue("parallel", launchingInParallel));
 		retval.append("      ").append(XMLHandler.addTagValue("draw", draw));
 		retval.append("      ").append(XMLHandler.addTagValue("nr", nr));
 		retval.append("      ").append(XMLHandler.addTagValue("xloc", location.x));
@@ -116,7 +119,7 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 
 				// Handle GUI information: nr & location?
 				setNr(Const.toInt(XMLHandler.getTagValue(entrynode, "nr"), 0));
-				setParallel("Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "parallel")));
+				setLaunchingInParallel("Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "parallel")));
 				setDrawn("Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "draw")));
 				int x = Const.toInt(XMLHandler.getTagValue(entrynode, "xloc"), 0);
 				int y = Const.toInt(XMLHandler.getTagValue(entrynode, "yloc"), 0);
@@ -208,7 +211,7 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 
 				setLocation(locx, locy);
 				setDrawn(isdrawn);
-				setParallel(isparallel);
+				setLaunchingInParallel(isparallel);
 			}
 		} catch (KettleDatabaseException dbe)
 		{
@@ -249,7 +252,7 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 
 			// Save the entry copy..
 			setID(rep.insertJobEntryCopy(id_job, id_jobentry, id_jobentry_type, getNr(), getLocation().x,
-					getLocation().y, isDrawn(), isParallel()));
+					getLocation().y, isDrawn(), isLaunchingInParallel()));
 		} catch (KettleDatabaseException dbe)
 		{
 			throw new KettleException("Unable to save job entry copy to the repository, id_job=" + id_job,
@@ -262,7 +265,7 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 		location = null;
 		entry = null;
 		nr = 0;
-		parallel = false;
+		launchingInParallel = false;
 		setID(-1L);
 	}
 
@@ -282,7 +285,7 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 		selected = jobEntryCopy.selected;
 		if (jobEntryCopy.location != null)
 			location = new Point(jobEntryCopy.location.x, jobEntryCopy.location.y);
-		parallel = jobEntryCopy.parallel;
+		launchingInParallel = jobEntryCopy.launchingInParallel;
 		draw = jobEntryCopy.draw;
 
 		id = jobEntryCopy.id;
@@ -396,14 +399,9 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 		nr = n;
 	}
 
-	public void setParallel()
+	public void setLaunchingInParallel(boolean launchingInParallel)
 	{
-		setParallel(true);
-	}
-
-	public void setParallel(boolean p)
-	{
-		parallel = p;
+		this.launchingInParallel = launchingInParallel;
 	}
 
 	public boolean isDrawn()
@@ -421,9 +419,9 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 		draw = d;
 	}
 
-	public boolean isParallel()
+	public boolean isLaunchingInParallel()
 	{
-		return parallel;
+		return launchingInParallel;
 	}
 
 	public static final JobEntryType getType(String dsc)
