@@ -2791,6 +2791,25 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 		sashForm.layout();
 		sashForm.setWeights( new int[] { 100, });
 	}
+    
+    private void minMaxExtraView() {
+    	// What is the state?
+    	//
+    	boolean maximized = sashForm.getMaximizedControl() != null;
+    	if (maximized) {
+    		// Minimize 
+    		//
+    		sashForm.setMaximizedControl(null);
+    		minMaxButton.setImage(GUIResource.getInstance().getImageMaximizePanel());
+    		minMaxButton.setToolTipText(Messages.getString("TransGraph.ExecutionResultsPanel.MaxButton.Tooltip"));
+    	} else {
+    		// Maximize
+    		//
+    		sashForm.setMaximizedControl(extraViewComposite);
+    		minMaxButton.setImage(GUIResource.getInstance().getImageMinimizePanel());
+    		minMaxButton.setToolTipText(Messages.getString("TransGraph.ExecutionResultsPanel.MinButton.Tooltip"));
+    	}
+    }
 
 	public void showHistoryView() {
     	transHistoryDelegate.showHistoryView();
@@ -2813,6 +2832,9 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 	public void setToolbar(XulToolbar toolbar) {
 		this.toolbar = toolbar;
 	}    
+	
+	private Button closeButton;
+	private Button minMaxButton;
 
     
 	/**
@@ -2825,6 +2847,27 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 		extraCompositeFormLayout.marginHeight=2;
 		extraViewComposite.setLayout(extraCompositeFormLayout);
 		
+		// Put a close and max button to the upper right corner...
+		//
+		closeButton = new Button(extraViewComposite, SWT.PUSH);
+		closeButton.setImage(GUIResource.getInstance().getImageClosePanel());
+		closeButton.setToolTipText(Messages.getString("TransGraph.ExecutionResultsPanel.CloseButton.Tooltip"));
+		FormData fdClose = new FormData();
+		fdClose.right = new FormAttachment(100,0);
+		fdClose.top = new FormAttachment(0,0);
+		closeButton.setLayoutData(fdClose);
+		closeButton.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { disposeExtraView(); } });
+
+		minMaxButton = new Button(extraViewComposite, SWT.PUSH);
+		minMaxButton.setImage(GUIResource.getInstance().getImageMaximizePanel());
+		minMaxButton.setToolTipText(Messages.getString("TransGraph.ExecutionResultsPanel.MaxButton.Tooltip"));
+		FormData fdMinMax = new FormData();
+		fdMinMax.right = new FormAttachment(closeButton,Const.MARGIN);
+		fdMinMax.top = new FormAttachment(0,0);
+		minMaxButton.setLayoutData(fdMinMax);
+		minMaxButton.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { minMaxExtraView(); } });
+		
+
 		// Add a label at the top: Results
 		//
 		Label wResultsLabel = new Label(extraViewComposite, SWT.LEFT);
@@ -2833,7 +2876,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 		wResultsLabel.setText(Messages.getString("TransLog.ResultsPanel.NameLabel"));
         FormData fdResultsLabel = new FormData();
         fdResultsLabel.left = new FormAttachment(0,0);
-        fdResultsLabel.right = new FormAttachment(100,0);
+        fdResultsLabel.right = new FormAttachment(minMaxButton,-Const.MARGIN);
         fdResultsLabel.top = new FormAttachment(0,0);
         wResultsLabel.setLayoutData(fdResultsLabel);
         

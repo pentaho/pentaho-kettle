@@ -175,6 +175,12 @@ public class GUIResource
 
 	private Image imageShowPerf;
 
+	private Image imageClosePanel;
+
+	private Image imageMaximizePanel;
+
+	private Image imageMinimizePanel;
+
 	private ManagedFont fontBold;
 
 	/**
@@ -316,6 +322,10 @@ public class GUIResource
 			disposeImage(imageShowGrid);
 			disposeImage(imageShowHistory);
 			disposeImage(imageShowPerf);
+
+			disposeImage(imageClosePanel);
+			disposeImage(imageMaximizePanel);
+			disposeImage(imageMinimizePanel);
 
 			// big images
 			disposeImages(imagesSteps.values());
@@ -464,7 +474,11 @@ public class GUIResource
 		imageShowGrid = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("ShowGrid_image")); // , "ui/images/show-grid.png"
 		imageShowHistory = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("ShowHistory_image")); // , "ui/images/show-history.png"
 		imageShowPerf = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("ShowPerf_image")); // , "ui/images/show-perf.png"
-		
+
+		imageClosePanel= ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("ClosePanel_image")); // , "ui/images/show-perf.png"
+		imageMaximizePanel = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("MaximizePanel_image")); // , "ui/images/show-perf.png"
+		imageMinimizePanel = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("MinimizePanel_image")); // , "ui/images/show-perf.png"
+
 		imageStartSmall = new Image(display, 16, 16);
 		GC gc = new GC(imageStartSmall);
 		gc.drawImage(imageStart, 0, 0, 32, 32, 0, 0, 16, 16);
@@ -1208,6 +1222,27 @@ public class GUIResource
 	 */
 	public Image getImageShowPerf() {
 		return imageShowPerf;
+	}
+
+	/**
+	 * @return the close panel image
+	 */
+	public Image getImageClosePanel() {
+		return imageClosePanel;
+	}
+
+	/**
+	 * @return the maximize panel image
+	 */
+	public Image getImageMaximizePanel() {
+		return imageMaximizePanel;
+	}
+
+	/**
+	 * @return the minimize panel image
+	 */
+	public Image getImageMinimizePanel() {
+		return imageMinimizePanel;
 	}
 
 }
