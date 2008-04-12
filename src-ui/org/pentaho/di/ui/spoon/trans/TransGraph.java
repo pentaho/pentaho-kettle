@@ -1103,6 +1103,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 			toolBar.addKeyListener(spoon.defKeys);
 			
 			addToolBarListeners();
+	        toolBar.layout(true, true);
 		} catch (Throwable t ) {
 			log.logError(toString(), Const.getStackTracker(t));
 			new ErrorDialog(shell, Messages.getString("Spoon.Exception.ErrorReadingXULFile.Title"), Messages.getString("Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_TOOLBAR), new Exception(t));

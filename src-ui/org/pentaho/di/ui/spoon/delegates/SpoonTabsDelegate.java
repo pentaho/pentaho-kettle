@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.widgets.Composite;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
@@ -241,7 +242,8 @@ public class SpoonTabsDelegate extends SpoonDelegate
 			TabItem tabItem = findTabItem(name, TabMapEntry.OBJECT_TYPE_BROWSER);
 			if (tabItem == null)
 			{
-				SpoonBrowser browser = new SpoonBrowser(tabfolder.getSwtTabset(), spoon, urlString,isURL);
+				CTabFolder cTabFolder = tabfolder.getSwtTabset();
+				SpoonBrowser browser = new SpoonBrowser(cTabFolder, spoon, urlString,isURL);
 				tabItem = new TabItem(tabfolder, name, name);
 				tabItem.setImage(GUIResource.getInstance().getImageLogoSmall());
 				tabItem.setControl(browser.getComposite());

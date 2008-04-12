@@ -34,7 +34,6 @@ public class ToolbarButton extends XulObject implements XulToolbarButton, Select
 		toolItem = new ToolItem((ToolBar) parent.getNativeObject(), SWT.PUSH);
     	toolItem.addSelectionListener( this );
     	mode = parent.getMode();
-
 	}
 	
 	public void dispose() {

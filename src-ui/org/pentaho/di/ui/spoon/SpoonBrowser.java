@@ -11,23 +11,29 @@
 
 package org.pentaho.di.ui.spoon;
 
+import java.net.URL;
+import java.util.Properties;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTError;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.LocationEvent;
 import org.eclipse.swt.browser.LocationListener;
-import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.FormAttachment;
+import org.eclipse.swt.layout.FormData;
+import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
-import org.eclipse.swt.widgets.ToolItem;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.EngineMetaInterface;
-import org.pentaho.di.ui.spoon.Spoon;
-import org.pentaho.di.ui.spoon.TabItemInterface;
+import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.gui.XulHelper;
+import org.pentaho.xul.swt.toolbar.Toolbar;
+import org.pentaho.xul.toolbar.XulToolbarButton;
 
 /**
  * This class handles the display of help information like the welcome page and JDBC info in an embedded browser.
@@ -39,62 +45,67 @@ import org.pentaho.di.ui.spoon.TabItemInterface;
 
 public class SpoonBrowser implements TabItemInterface
 {
+	private static final LogWriter log = LogWriter.getInstance();
+	
+	private static final String XUL_FILE_BROWSER_TOOLBAR = "ui/browser-toolbar.xul";
+	public static final String XUL_FILE_BROWSER_TOOLBAR_PROPERTIES = "ui/browser-toolbar.properties";
+
     private Shell            shell;
     private Spoon            spoon;
     private String           stringUrl;
     private Composite        composite;
+	private Toolbar toolbar;
     
-    private static Browser browser;
-    
-    public SpoonBrowser(Composite parent, final Spoon spoon, final String stringUrl) throws SWTError
-    {
-    	this(parent,spoon,stringUrl,true);
-    }
-  
+    private Browser browser;
+
     public SpoonBrowser(Composite parent, final Spoon spoon, final String stringUrl,boolean isURL) throws SWTError
     {
+    	composite = new Composite(parent, SWT.NONE);
+    	
         this.shell = parent.getShell();
         this.spoon = spoon;
         this.stringUrl = stringUrl;
         
-        composite = new Composite(parent, SWT.NONE);
-        composite.setLayout(new GridLayout());
+        composite.setLayout(new FormLayout());
         
-        Composite compTools = new Composite(composite, SWT.NONE);
-        GridData data = new GridData(GridData.FILL_HORIZONTAL);
-        compTools.setLayoutData(data);
-        compTools.setLayout(new GridLayout(2, false));
-        ToolBar navBar = new ToolBar(compTools, SWT.NONE);
-        navBar.setLayoutData(new GridData(GridData.FILL_HORIZONTAL | GridData.HORIZONTAL_ALIGN_END));
-        final ToolItem back = new ToolItem(navBar, SWT.PUSH);
-        back.setText(Messages.getString("SpoonBrowser.Dialog.Back"));
-        back.setEnabled(false);
-        final ToolItem forward = new ToolItem(navBar, SWT.PUSH);
+        addToolBar();
+        addToolBarListeners();
+        
+        // HACK ALERT : setting this in some sort of property would be far nicer
+        //
+        Control swtToolBar = (Control)toolbar.getNativeObject();
+        FormData fdToolBar= (FormData) swtToolBar.getLayoutData();
+        fdToolBar.right = null;
+        
+        // Add a URL
+        final Text urlText = new Text(composite, SWT.SINGLE | SWT.LEFT | SWT.READ_ONLY | SWT.BORDER);
+        FormData fdUrlText = new FormData();
+        fdUrlText.top = new FormAttachment(swtToolBar, 0, SWT.CENTER);
+        fdUrlText.left = new FormAttachment(swtToolBar, 20);
+        fdUrlText.right = new FormAttachment(100,0);
+        urlText.setLayoutData(fdUrlText);
+        
+        
+        final XulToolbarButton back = toolbar.getButtonById("browse-back");
+        back.setEnable(false);
+        final XulToolbarButton forward = toolbar.getButtonById("browse-forward");
         forward.setText(Messages.getString("SpoonBrowser.Dialog.Forward"));
-        forward.setEnabled(false);
+        forward.setEnable(false);
         
-        final Composite comp = new Composite(composite, SWT.NONE);
-        data = new GridData(GridData.FILL_BOTH);
-        comp.setLayoutData(data);
-        comp.setLayout(new FillLayout());
+        browser = new Browser(composite, SWT.NONE);
+        FormData fdBrowser = new FormData();
+        fdBrowser.left = new FormAttachment(0,0);
+        fdBrowser.right = new FormAttachment(100,0);
+        fdBrowser.top = new FormAttachment((Control)toolbar.getNativeObject(),2);
+        fdBrowser.bottom = new FormAttachment(100,0);
+        browser.setLayoutData(fdBrowser);
 
-        browser = new Browser(comp, SWT.NONE);
-
-        back.addListener(SWT.Selection, new Listener() {
-            public void handleEvent(Event event) {
-                browser.back();
-            }
-        });
-        forward.addListener(SWT.Selection, new Listener() {
-            public void handleEvent(Event event) {
-                browser.forward();
-            }
-        });
         LocationListener locationListener = new LocationListener() {
             public void changed(LocationEvent event) {
                   Browser browser = (Browser)event.widget;
-                  back.setEnabled(browser.isBackEnabled());
-                  forward.setEnabled(browser.isForwardEnabled());
+                  back.setEnable(browser.isBackEnabled());
+                  forward.setEnable(browser.isForwardEnabled());
+                  urlText.setText(browser.getUrl());
                }
             public void changing(LocationEvent event) {
                }
@@ -102,7 +113,6 @@ public class SpoonBrowser implements TabItemInterface
             
         browser.addLocationListener(locationListener);
          
-        comp.addKeyListener(spoon.defKeys);
         composite.addKeyListener(spoon.defKeys);
         browser.addKeyListener(spoon.defKeys);
                  
@@ -111,9 +121,69 @@ public class SpoonBrowser implements TabItemInterface
     	   browser.setUrl(stringUrl);
        else
     	   browser.setText(stringUrl);
-
     }
 
+    private void addToolBar()
+	{
+
+		try {
+			toolbar = XulHelper.createToolbar(XUL_FILE_BROWSER_TOOLBAR, composite, SpoonBrowser.this, new XulMessages());
+			
+			// Add a few default key listeners
+			//
+			ToolBar toolBar = (ToolBar) toolbar.getNativeObject();
+			toolBar.addKeyListener(spoon.defKeys);
+			
+			addToolBarListeners();
+		} catch (Throwable t ) {
+			log.logError(toString(), Const.getStackTracker(t));
+			new ErrorDialog(shell, Messages.getString("Spoon.Exception.ErrorReadingXULFile.Title"), Messages.getString("Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_BROWSER_TOOLBAR), new Exception(t));
+		}
+	}
+
+	public void addToolBarListeners()
+	{
+		try
+		{
+			// first get the XML document
+			URL url = XulHelper.getAndValidate(XUL_FILE_BROWSER_TOOLBAR_PROPERTIES);
+			Properties props = new Properties();
+			props.load(url.openStream());
+			String ids[] = toolbar.getMenuItemIds();
+			for (int i = 0; i < ids.length; i++)
+			{
+				String methodName = (String) props.get(ids[i]);
+				if (methodName != null)
+				{
+					toolbar.addMenuListener(ids[i], this, methodName);
+
+				}
+			}
+
+		} catch (Throwable t ) {
+			t.printStackTrace();
+			new ErrorDialog(shell, Messages.getString("Spoon.Exception.ErrorReadingXULFile.Title"), 
+					Messages.getString("Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_BROWSER_TOOLBAR_PROPERTIES), new Exception(t));
+		}
+	}
+	
+    public void newFileDropDown() {
+    	spoon.newFileDropDown(toolbar);
+    }
+
+    public void openFile() {
+    	spoon.openFile();
+    }
+
+	public void browseBack() {
+		browser.back();
+	}
+	
+	public void browseForward() {
+		browser.forward();
+	}
+	
+  
     /**
      * @return the browser
      */

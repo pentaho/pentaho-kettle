@@ -630,14 +630,12 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         );
 
 		shell.addKeyListener(defKeys);
-
+		
 		// Add a browser widget
 		if (props.showWelcomePageOnStartup())
 		{
 			showWelcomePage();
 		}
-
-		// shell.layout(true, true);
 	}
 
     private void initFileMenu() {
