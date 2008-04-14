@@ -97,6 +97,7 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.XulHelper;
 import org.pentaho.di.ui.job.dialog.JobDialog;
+import org.pentaho.di.ui.spoon.job.Messages;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.TabItemInterface;
 import org.pentaho.di.ui.spoon.TabMapEntry;
@@ -202,6 +203,8 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 	private Composite mainComposite;
 	
 	private List<RefreshListener> refreshListeners;
+	private Label closeButton;
+	private Label minMaxButton;
 	
 	public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) 
 	{
@@ -2559,6 +2562,26 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 		extraCompositeFormLayout.marginHeight=2;
 		extraViewComposite.setLayout(extraCompositeFormLayout);
 		
+		// Put a close and max button to the upper right corner...
+		//
+		closeButton = new Label(extraViewComposite, SWT.NONE);
+		closeButton.setImage(GUIResource.getInstance().getImageClosePanel());
+		closeButton.setToolTipText(Messages.getString("JobGraph.ExecutionResultsPanel.CloseButton.Tooltip"));
+		FormData fdClose = new FormData();
+		fdClose.right = new FormAttachment(100,0);
+		fdClose.top = new FormAttachment(0,0);
+		closeButton.setLayoutData(fdClose);
+		closeButton.addMouseListener(new MouseAdapter() { public void mouseDown(MouseEvent e) { disposeExtraView(); }});
+
+		minMaxButton = new Label(extraViewComposite, SWT.NONE);
+		minMaxButton.setImage(GUIResource.getInstance().getImageMaximizePanel());
+		minMaxButton.setToolTipText(Messages.getString("JobGraph.ExecutionResultsPanel.MaxButton.Tooltip"));
+		FormData fdMinMax = new FormData();
+		fdMinMax.right = new FormAttachment(closeButton, -Const.MARGIN);
+		fdMinMax.top = new FormAttachment(0,0);
+		minMaxButton.setLayoutData(fdMinMax);
+		minMaxButton.addMouseListener(new MouseAdapter() { public void mouseDown(MouseEvent e) { minMaxExtraView(); }});
+
 		
 		// Add a label at the top: Results
 		//
@@ -2615,6 +2638,25 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 		sashForm.layout();
 		sashForm.setWeights( new int[] { 100, });
 	}
+    
+    private void minMaxExtraView() {
+    	// What is the state?
+    	//
+    	boolean maximized = sashForm.getMaximizedControl() != null;
+    	if (maximized) {
+    		// Minimize 
+    		//
+    		sashForm.setMaximizedControl(null);
+    		minMaxButton.setImage(GUIResource.getInstance().getImageMaximizePanel());
+    		minMaxButton.setToolTipText(Messages.getString("JobGraph.ExecutionResultsPanel.MaxButton.Tooltip"));
+    	} else {
+    		// Maximize
+    		//
+    		sashForm.setMaximizedControl(extraViewComposite);
+    		minMaxButton.setImage(GUIResource.getInstance().getImageMinimizePanel());
+    		minMaxButton.setToolTipText(Messages.getString("JobGraph.ExecutionResultsPanel.MinButton.Tooltip"));
+    	}
+    }
 
     public void showExecutionResults() {
     	if (extraViewComposite==null || extraViewComposite.isDisposed()) {

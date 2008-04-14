@@ -55,7 +55,6 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -2799,8 +2798,8 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 		this.toolbar = toolbar;
 	}    
 	
-	private Button closeButton;
-	private Button minMaxButton;
+	private Label closeButton;
+	private Label minMaxButton;
 
     
 	/**
@@ -2815,23 +2814,23 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 		
 		// Put a close and max button to the upper right corner...
 		//
-		closeButton = new Button(extraViewComposite, SWT.PUSH);
+		closeButton = new Label(extraViewComposite, SWT.NONE);
 		closeButton.setImage(GUIResource.getInstance().getImageClosePanel());
 		closeButton.setToolTipText(Messages.getString("TransGraph.ExecutionResultsPanel.CloseButton.Tooltip"));
 		FormData fdClose = new FormData();
 		fdClose.right = new FormAttachment(100,0);
 		fdClose.top = new FormAttachment(0,0);
 		closeButton.setLayoutData(fdClose);
-		closeButton.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { disposeExtraView(); } });
+		closeButton.addMouseListener(new MouseAdapter() { public void mouseDown(MouseEvent e) { disposeExtraView(); }});
 
-		minMaxButton = new Button(extraViewComposite, SWT.PUSH);
+		minMaxButton = new Label(extraViewComposite, SWT.NONE);
 		minMaxButton.setImage(GUIResource.getInstance().getImageMaximizePanel());
 		minMaxButton.setToolTipText(Messages.getString("TransGraph.ExecutionResultsPanel.MaxButton.Tooltip"));
 		FormData fdMinMax = new FormData();
-		fdMinMax.right = new FormAttachment(closeButton,Const.MARGIN);
+		fdMinMax.right = new FormAttachment(closeButton, -Const.MARGIN);
 		fdMinMax.top = new FormAttachment(0,0);
 		minMaxButton.setLayoutData(fdMinMax);
-		minMaxButton.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { minMaxExtraView(); } });
+		minMaxButton.addMouseListener(new MouseAdapter() { public void mouseDown(MouseEvent e) { minMaxExtraView(); }});
 		
 
 		// Add a label at the top: Results
