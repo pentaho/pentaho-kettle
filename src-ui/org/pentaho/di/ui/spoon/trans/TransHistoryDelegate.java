@@ -213,7 +213,7 @@ public class TransHistoryDelegate extends SpoonDelegate {
 		transGraph.getDisplay().asyncExec(new Runnable() {
 			public void run() {
 				refreshHistory();
-				transHistoryComposite.layout(true, true);
+				if (!transHistoryComposite.isDisposed()) transHistoryComposite.layout(true, true);
 				showLogEntry();
 			}
 		});
@@ -396,6 +396,7 @@ public class TransHistoryDelegate extends SpoonDelegate {
                         }
                         database.closeQuery(resultSet);
 
+                        if (wFields.isDisposed()) return;
                         wFields.table.clearAll();
 
                         if (rowList.size()>0)
@@ -523,23 +524,25 @@ public class TransHistoryDelegate extends SpoonDelegate {
                 }
                 else
                 {
-                    wFields.clearAll(false);
+                	if (!wFields.isDisposed()) wFields.clearAll(false);
                 }
             }
             else
             {
-                wFields.clearAll(false);
+                if (!wFields.isDisposed()) wFields.clearAll(false);
             }
         }
         else
         {
-            wFields.clearAll(false);
+        	if (!wFields.isDisposed())  wFields.clearAll(false);
         }
 	}
 
 	
 	public void showLogEntry()
     {
+		if (wText.isDisposed()) return;
+		
         if (rowList==null) 
         {
         	String message;

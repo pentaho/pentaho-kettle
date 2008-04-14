@@ -28,7 +28,7 @@ import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.XulHelper;
 import org.pentaho.di.ui.spoon.Messages;
 import org.pentaho.di.ui.spoon.Spoon;
-import org.pentaho.di.ui.spoon.XulMessages;
+import org.pentaho.di.ui.spoon.job.XulMessages;
 import org.pentaho.di.ui.spoon.delegates.SpoonDelegate;
 import org.pentaho.xul.swt.toolbar.Toolbar;
 
@@ -187,29 +187,13 @@ public class JobLogDelegate extends SpoonDelegate {
 		}
 	}
 
-
-    
-    public void showLogView() {
-    	
-    	// What button?
-    	//
-    	// XulToolbarButton showLogXulButton = toolbar.getButtonById("trans-show-log");
-    	// ToolItem toolBarButton = (ToolItem) showLogXulButton.getNativeObject();
-    	
-    	if (jobLogTab==null || jobLogTab.isDisposed()) {
-    		addJobLog();
-    	} else {
-    		jobLogTab.dispose();
-    		
-    		jobGraph.checkEmptyExtraView();
-    	}
-    	
-    	// spoon.addTransLog(transMeta);
-    }
-    
 	public void clearLog()
 	{
 		jobLogText.setText(""); //$NON-NLS-1$
+	}
+	
+	public void showLogSettings() {
+		spoon.setLog();
 	}
 
 	public void showErrors()

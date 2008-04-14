@@ -1,0 +1,12 @@
+<window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" align="vertical" >
+	 
+	 <toolbox>
+		<toolbar id="nav-toolbar" mode="icons">
+			<toolbarbutton value="refresh-history" label="%JobHistory.Button.Refresh" image="ui/images/refresh.png" tooltiptext="%JobHistory.Button.Refresh"/>
+			<toolbarbutton value="replay-history" label="%JobHistory.Button.Replay" image="ui/images/replay.png" tooltiptext="%JobHistory.Button.Replay" />
+			<toolbarseparator />
+			<toolbarbutton value="clear-history" label="%JobHistory.Button.Clear" image="ui/images/clear-log.png" tooltiptext="%JobHistory.Button.Clear" />
+		</toolbar>
+	</toolbox>
+
+</window>

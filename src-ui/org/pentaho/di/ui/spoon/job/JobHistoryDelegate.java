@@ -1,9 +1,11 @@
 package org.pentaho.di.ui.spoon.job;
 
+import java.net.URL;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Properties;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabItem;
@@ -18,31 +20,41 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.ToolBar;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
+import org.pentaho.di.ui.core.gui.XulHelper;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
+import org.pentaho.di.ui.spoon.Messages;
 import org.pentaho.di.ui.spoon.Spoon;
+import org.pentaho.di.ui.spoon.job.XulMessages;
 import org.pentaho.di.ui.spoon.delegates.SpoonDelegate;
+import org.pentaho.xul.toolbar.XulToolbar;
+import org.pentaho.xul.toolbar.XulToolbarButton;
 
 public class JobHistoryDelegate extends SpoonDelegate {
 	
-	// private static final LogWriter log = LogWriter.getInstance();
+	private static final String XUL_FILE_TRANS_GRID_TOOLBAR = "ui/job-history-toolbar.xul";
+	public static final String XUL_FILE_TRANS_GRID_TOOLBAR_PROPERTIES = "ui/job-history-toolbar.properties";
+
+	private static final LogWriter log = LogWriter.getInstance();
 	
 	private JobGraph jobGraph;
 
@@ -51,16 +63,18 @@ public class JobHistoryDelegate extends SpoonDelegate {
     private ColumnInfo[] colinf;	
 	
 	private Text   wText;
-	private Button wRefresh, wReplay, wClear;
     private TableView wFields;
     
-	private FormData fdText, fdSash, fdRefresh, fdReplay, fdClear; 
+	private FormData fdText, fdSash;  
 
     private List<RowMetaAndData> rowList;
 
 	private ValueMetaInterface durationMeta;
 	private ValueMetaInterface replayDateMeta;
 
+	private XulToolbar       toolbar;
+	private Composite jobHistoryComposite;
+	
 	/**
 	 * @param spoon
 	 * @param jobGraph
@@ -92,19 +106,23 @@ public class JobHistoryDelegate extends SpoonDelegate {
 		
 		// Create a composite, slam everything on there like it was in the history tab.
 		//
-		final Composite historyComposite = new Composite(jobGraph.extraViewTabFolder, SWT.NONE);
-		historyComposite.setLayout(new FormLayout());
+		jobHistoryComposite = new Composite(jobGraph.extraViewTabFolder, SWT.NONE);
+		jobHistoryComposite.setLayout(new FormLayout());
+		spoon.props.setLook(jobHistoryComposite);
 		
-        spoon.props.setLook(historyComposite);
+		// Create a composite, slam everything on there like it was in the history tab.
+		//
+		addToolBar();
+		addToolBarListeners();
 		
-		SashForm sash = new SashForm(historyComposite, SWT.VERTICAL);
+		SashForm sash = new SashForm(jobHistoryComposite, SWT.VERTICAL);
 		spoon.props.setLook(sash);
 		
 		sash.setLayout(new FillLayout());
 		
 		final int FieldsRows=1;
 		colinf=new ColumnInfo[] {
-            new ColumnInfo(Messages.getString("TransHistory.Column.Name"),           ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
+            new ColumnInfo(Messages.getString("JobHistory.Column.Name"),             ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
             new ColumnInfo(Messages.getString("TransHistory.Column.BatchID"),        ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
     		new ColumnInfo(Messages.getString("TransHistory.Column.Status"),         ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
     		new ColumnInfo(Messages.getString("TransHistory.Column.Duration"),       ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
@@ -144,30 +162,6 @@ public class JobHistoryDelegate extends SpoonDelegate {
 		wText.setVisible(true);
         // wText.setText(Messages.getString("TransHistory.PleaseRefresh.Message"));
 		
-		wRefresh = new Button(historyComposite, SWT.PUSH);
-		wRefresh.setText(Messages.getString("TransHistory.Button.Refresh")); //$NON-NLS-1$
-
-		fdRefresh    = new FormData(); 
-		fdRefresh.left   = new FormAttachment(15, 0);  
-		fdRefresh.bottom = new FormAttachment(100, 0);
-		wRefresh.setLayoutData(fdRefresh);
-		
-		wReplay = new Button(historyComposite, SWT.PUSH);
-		wReplay.setText(Messages.getString("TransHistory.Button.Replay")); //$NON-NLS-1$
-
-		fdReplay    = new FormData(); 
-		fdReplay.left   = new FormAttachment(wRefresh, Const.MARGIN);  
-		fdReplay.bottom = new FormAttachment(100, 0);
-		wReplay.setLayoutData(fdReplay);
-
-		wClear = new Button(historyComposite, SWT.PUSH);
-		wClear.setText(Messages.getString("JobHistory.Button.Clear")); //$NON-NLS-1$
-
-		fdClear    = new FormData(); 
-		fdClear.left   = new FormAttachment(wReplay, Const.MARGIN);  
-		fdClear.bottom = new FormAttachment(100, 0);
-		wClear.setLayoutData(fdClear);
-
 		// Put text in the middle
 		fdText=new FormData();
 		fdText.left   = new FormAttachment(0, 0);
@@ -179,28 +173,16 @@ public class JobHistoryDelegate extends SpoonDelegate {
 		
 		fdSash     = new FormData(); 
 		fdSash.left   = new FormAttachment(0, 0);  // First one in the left top corner
-		fdSash.top    = new FormAttachment(0, 0);
+		fdSash.top    = new FormAttachment((Control)toolbar.getNativeObject(), 0);
 		fdSash.right  = new FormAttachment(100, 0);
-		fdSash.bottom = new FormAttachment(wRefresh, -5);
+		fdSash.bottom = new FormAttachment(100, 0);
 		sash.setLayoutData(fdSash);
 		
 		sash.setWeights(new int[] { 60, 40} );
 
-		historyComposite.pack();
+		jobHistoryComposite.pack();
 		
-		setupReplayListener();
-        
-        SelectionAdapter lsRefresh = new SelectionAdapter()
-            {
-                public void widgetSelected(SelectionEvent e)
-                {
-                    refreshHistory();
-                }
-            };
-		
-		wRefresh.addSelectionListener(lsRefresh);
-        
-        wFields.table.addSelectionListener(new SelectionAdapter()
+		wFields.table.addSelectionListener(new SelectionAdapter()
             {
                 public void widgetSelected(SelectionEvent e)
                 {
@@ -223,7 +205,7 @@ public class JobHistoryDelegate extends SpoonDelegate {
         );
 
 		
-		jobHistoryTab.setControl(historyComposite);
+		jobHistoryTab.setControl(jobHistoryComposite);
 		
 		jobGraph.extraViewTabFolder.setSelection(jobHistoryTab);
 		
@@ -257,16 +239,71 @@ public class JobHistoryDelegate extends SpoonDelegate {
 		jobGraph.getDisplay().asyncExec(new Runnable() {
 			public void run() {
 				refreshHistory();
-				historyComposite.layout(true, true);
+				if (!jobHistoryComposite.isDisposed()) jobHistoryComposite.layout(true, true);
 			}
 		});
 	}
+	
+	   private void addToolBar()
+		{
+
+			try {
+				toolbar = XulHelper.createToolbar(XUL_FILE_TRANS_GRID_TOOLBAR, jobHistoryComposite, JobHistoryDelegate.this, new XulMessages());
+				
+				
+				// set the selected icon for the show inactive button.
+				// This is not a XUL standard apparently
+				//
+				XulToolbarButton onlyActiveButton = toolbar.getButtonById("show-inactive");
+				if (onlyActiveButton!=null) {
+					onlyActiveButton.setSelectedImage(GUIResource.getInstance().getImageHideInactive());
+				}
+			
+				// Add a few default key listeners
+				//
+				ToolBar toolBar = (ToolBar) toolbar.getNativeObject();
+				toolBar.addKeyListener(spoon.defKeys);
+				
+				addToolBarListeners();
+		        toolBar.layout(true, true);
+			} catch (Throwable t ) {
+				log.logError(toString(), Const.getStackTracker(t));
+				new ErrorDialog(jobHistoryComposite.getShell(), Messages.getString("Spoon.Exception.ErrorReadingXULFile.Title"), Messages.getString("Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_GRID_TOOLBAR), new Exception(t));
+			}
+		}
+
+		public void addToolBarListeners()
+		{
+			try
+			{
+				// first get the XML document
+				URL url = XulHelper.getAndValidate(XUL_FILE_TRANS_GRID_TOOLBAR_PROPERTIES);
+				Properties props = new Properties();
+				props.load(url.openStream());
+				String ids[] = toolbar.getMenuItemIds();
+				for (int i = 0; i < ids.length; i++)
+				{
+					String methodName = (String) props.get(ids[i]);
+					if (methodName != null)
+					{
+						toolbar.addMenuListener(ids[i], this, methodName);
+
+					}
+				}
+
+			} catch (Throwable t ) {
+				t.printStackTrace();
+				new ErrorDialog(jobHistoryComposite.getShell(), Messages.getString("Spoon.Exception.ErrorReadingXULFile.Title"), 
+						Messages.getString("Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_GRID_TOOLBAR_PROPERTIES), new Exception(t));
+			}
+		}
+
 
     /**
      * User requested to clear the log table.<br>
      * Better ask confirmation
      */
-    protected void clearLogTable() {
+    public void clearLogTable() {
     	String logTable = jobGraph.getManagedObject().getLogTable();
     	DatabaseMeta databaseMeta = jobGraph.getManagedObject().getLogConnection();
     	
@@ -299,48 +336,24 @@ public class JobHistoryDelegate extends SpoonDelegate {
     	}
 	}
     
-    public void showHistoryView() {
-    	
-    	// What button?
-    	//
-    	// XulToolbarButton showLogXulButton = toolbar.getButtonById("trans-show-log");
-    	// ToolItem toolBarButton = (ToolItem) showLogXulButton.getNativeObject();
-    	
-    	if (jobHistoryTab==null || jobHistoryTab.isDisposed()) {
-    		addJobHistory();
-    	} else {
-    		jobHistoryTab.dispose();
-    		
-    		jobGraph.checkEmptyExtraView();
-    	}
-    }
-    
-    
-	private void setupReplayListener() {
-		SelectionAdapter lsReplay = new SelectionAdapter()
-        {
-			public void widgetSelected(SelectionEvent e) {
-				int idx = wFields.getSelectionIndex();
-				if (idx >= 0) {
-					String fields[] = wFields.getItem(idx);
-					String dateString = fields[13];
-					try {
-						ValueMetaInterface stringValueMeta = replayDateMeta.clone();
-						stringValueMeta.setType(ValueMetaInterface.TYPE_STRING);
-						
-						Date replayDate = stringValueMeta.getDate(dateString);
-						
-						spoon.executeJob(jobGraph.getManagedObject(), true, false, replayDate, false);
-					} catch (KettleException e1) {
-						new ErrorDialog(jobGraph.getShell(), 
-								Messages.getString("TransHistory.Error.ReplayingTransformation2"), //$NON-NLS-1$
-								Messages.getString("TransHistory.Error.InvalidReplayDate") + dateString, e1); //$NON-NLS-1$
-					}
-				}
+	public void replayHistory() {
+		int idx = wFields.getSelectionIndex();
+		if (idx >= 0) {
+			String fields[] = wFields.getItem(idx);
+			String dateString = fields[13];
+			try {
+				ValueMetaInterface stringValueMeta = replayDateMeta.clone();
+				stringValueMeta.setType(ValueMetaInterface.TYPE_STRING);
+				
+				Date replayDate = stringValueMeta.getDate(dateString);
+				
+				spoon.executeJob(jobGraph.getManagedObject(), true, false, replayDate, false);
+			} catch (KettleException e1) {
+				new ErrorDialog(jobGraph.getShell(), 
+						Messages.getString("TransHistory.Error.ReplayingTransformation2"), //$NON-NLS-1$
+						Messages.getString("TransHistory.Error.InvalidReplayDate") + dateString, e1); //$NON-NLS-1$
 			}
-		};
-	
-        wReplay.addSelectionListener(lsReplay);
+		}
 	}
 
     /**
@@ -381,12 +394,56 @@ public class JobHistoryDelegate extends SpoonDelegate {
 
                         if (rowList.size()>0)
                         {
+                        	RowMetaInterface displayMeta = null;
+                        	if (wFields.table.isDisposed()) return; 
                             wFields.table.clearAll();
                             
                             // OK, now that we have a series of rows, we can add them to the table view...
                             for (int i=0;i<rowList.size();i++)
                             {
                                 RowMetaAndData row = rowList.get(i);
+                                
+                                if (displayMeta==null)
+                                {
+                                	displayMeta = row.getRowMeta();
+                                	                                	
+                                    // Displaying it just like that adds way too many zeroes to the numbers.
+                                    // So we set the lengths to -1 of the integers...
+                                    //
+                                    for (int v=0;v<displayMeta.size();v++)
+                                    {
+                                    	ValueMetaInterface valueMeta = displayMeta.getValueMeta(v);
+                                    	
+                                    	if (valueMeta.isNumeric())
+                                    	{
+                                    		valueMeta.setLength(-1,-1);
+                                    	}
+                                    	if (valueMeta.isDate())
+                                    	{
+                                    		valueMeta.setConversionMask("yyyy/MM/dd HH:mm:ss");
+                                    	}
+                                    }
+                                    
+                                    // Set the correct valueMeta objects on the view
+                                    //
+                                    colinf[ 0].setValueMeta(displayMeta.searchValueMeta("JOBNAME"));
+                                    colinf[ 1].setValueMeta(displayMeta.searchValueMeta("ID_JOB"));
+                                    colinf[ 2].setValueMeta(displayMeta.searchValueMeta("STATUS"));
+                                    colinf[ 3].setValueMeta(durationMeta);
+                                    colinf[ 4].setValueMeta(displayMeta.searchValueMeta("LINES_READ"));
+                                    colinf[ 5].setValueMeta(displayMeta.searchValueMeta("LINES_WRITTEN"));
+                                    colinf[ 6].setValueMeta(displayMeta.searchValueMeta("LINES_UPDATED"));
+                                    colinf[ 7].setValueMeta(displayMeta.searchValueMeta("LINES_INPUT"));
+                                    colinf[ 8].setValueMeta(displayMeta.searchValueMeta("LINES_OUTPUT"));
+                                    colinf[ 9].setValueMeta(displayMeta.searchValueMeta("ERRORS"));
+                                    colinf[10].setValueMeta(displayMeta.searchValueMeta("STARTDATE"));
+                                    colinf[11].setValueMeta(displayMeta.searchValueMeta("ENDDATE"));
+                                    colinf[12].setValueMeta(displayMeta.searchValueMeta("LOGDATE"));
+                                    colinf[13].setValueMeta(displayMeta.searchValueMeta("DEPDATE"));
+                                    replayDateMeta = displayMeta.searchValueMeta("REPLAYDATE");
+                                    colinf[14].setValueMeta(replayDateMeta);
+                                }
+                                
                                 TableItem item = new TableItem(wFields.table, SWT.NONE);
                                 String batchID = row.getString("ID_JOB", "");
                                 if(batchID != null)
@@ -429,17 +486,17 @@ public class JobHistoryDelegate extends SpoonDelegate {
                 }
                 else
                 {
-                    wFields.clearAll(false);
+                	if (!wFields.isDisposed()) wFields.clearAll(false);
                 }
             }
             else
             {
-                wFields.clearAll(false);
+            	if (!wFields.isDisposed()) wFields.clearAll(false);
             }
         }
         else
         {
-            wFields.clearAll(false);
+            if (!wFields.isDisposed()) wFields.clearAll(false);
         }
 	}
     

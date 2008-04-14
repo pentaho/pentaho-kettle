@@ -267,6 +267,8 @@ public class TransPerfDelegate extends SpoonDelegate {
      * Tell the user that the transformation is not running or that there is no monitoring configured.
      */
 	private void showEmptyGraph() {
+		if (perfComposite.isDisposed()) return;
+		
 		emptyGraph = true;
 		Label label = new Label(perfComposite, SWT.CENTER);
 		label.setText(Messages.getString("TransLog.Dialog.PerformanceMonitoringNotEnabled.Message"));

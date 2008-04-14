@@ -987,8 +987,8 @@ public class SpoonJobDelegate extends SpoonDelegate
 				// OK, also see if we need to open a new history window.
 				if (jobMeta.getLogConnection() != null && !Const.isEmpty(jobMeta.getLogTable()))
 				{
-					jobGraph.jobHistoryDelegate.addJobHistory();
-					// addJobHistory(jobMeta, false);
+					jobGraph.addAllTabs();
+					jobGraph.extraViewTabFolder.setSelection(jobGraph.jobHistoryDelegate.getJobHistoryTab());
 				}
 			}
 			int idx = spoon.tabfolder.indexOf(tabItem);

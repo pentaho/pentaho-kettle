@@ -205,8 +205,8 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 				// OK, also see if we need to open a new history window.
 				if (transMeta.getLogConnection() != null && !Const.isEmpty(transMeta.getLogTable()) && !transMeta.isSlaveTransformation())
 				{
-					// addTransHistory(transMeta, false);
 					transGraph.addAllTabs();
+					transGraph.extraViewTabFolder.setSelection(transGraph.transHistoryDelegate.getTransHistoryTab());
 				}
 
 				spoon.delegates.tabs.addTab(new TabMapEntry(tabItem, tabName, transGraph, TabMapEntry.OBJECT_TYPE_TRANSFORMATION_GRAPH));

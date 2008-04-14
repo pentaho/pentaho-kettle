@@ -19,6 +19,7 @@ import java.util.StringTokenizer;
 
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.ui.util.ImageUtil;
 import org.pentaho.xul.Messages;
@@ -56,6 +57,10 @@ public class MenuHelper {
 								String imagePath = XMLHandler.getTagAttribute( buttonNode, "image" ); //$NON-NLS-1$
 								String hint = XMLHandler.getTagAttribute( buttonNode, "tooltiptext" ); //$NON-NLS-1$
 								hint = localizeXulText( hint, xulMessages );
+								if (hint!=null) {
+									// Remove ampersands from tooltips.  They work great on labels, not in tooltips
+									hint = Const.replace(hint, "&", "");
+								}
 								String label = XMLHandler.getTagAttribute( buttonNode, "label" ); //$NON-NLS-1$
 								label = localizeXulText( label, xulMessages );
 								ToolbarButton button = new ToolbarButton(parentComposite, value, toolbar);

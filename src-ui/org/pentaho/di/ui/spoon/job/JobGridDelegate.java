@@ -50,18 +50,6 @@ public class JobGridDelegate extends SpoonDelegate {
 		this.jobGraph = transGraph;
 	}
 	
-	
-    public void showGridView() {
-    	
-    	if (jobGridTab==null || jobGridTab.isDisposed()) {
-    		addJobGrid();
-    	} else {
-    		jobGridTab.dispose();
-    		
-    		jobGraph.checkEmptyExtraView();
-    	}
-    }
-    
 	/**
 	 *  Add a grid with the execution metrics per step in a table view
 	 *  

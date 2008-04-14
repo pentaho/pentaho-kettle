@@ -97,7 +97,6 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.XulHelper;
 import org.pentaho.di.ui.job.dialog.JobDialog;
-import org.pentaho.di.ui.spoon.Messages;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.TabItemInterface;
 import org.pentaho.di.ui.spoon.TabMapEntry;
@@ -798,6 +797,8 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 		canvas.addKeyListener(spoon.defKeys);
 
 		setBackground(GUIResource.getInstance().getColorBackground());
+		
+		setControlStates();
 	}
 	
 	   private void addToolBar()
@@ -2621,7 +2622,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
     }
     
 	
-	protected void addAllTabs() {
+	public void addAllTabs() {
     	jobHistoryDelegate.addJobHistory();
     	jobLogDelegate.addJobLog();
     	jobGridDelegate.addJobGrid();
@@ -2774,7 +2775,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 					m.open();
 				}
 			}
-            enableFields();
+            setControlStates();
 		} 
 	}
 
@@ -2792,7 +2793,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
             for (RefreshListener listener : refreshListeners) listener.refreshNeeded();
             log.logMinimal(Spoon.APP_NAME, Messages.getString("JobLog.Log.JobHasEnded")); //$NON-NLS-1$
         }
-        enableFields();
+        setControlStates();
 	}
 	
     
@@ -2819,12 +2820,12 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
         }
         finally
         {
-            enableFields();
+            setControlStates();
         }
     }
 
 
-	private void enableFields() {
+	private void setControlStates() {
 		getDisplay().asyncExec(new Runnable() {
 		
 			public void run() {

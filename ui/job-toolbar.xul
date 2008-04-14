@@ -15,10 +15,6 @@
 			<toolbarseparator />
 			<toolbarbutton value="explore-database" label="%Spoon.Menu.ExploreConnection" image="ui/images/exploredb.png" tooltiptext="%Spoon.Tooltip.ExploreConnection"/>
 			<toolbarseparator />
-			<toolbarbutton value="job-show-log" label="%Spoon.Menu.ShowLog" image="ui/images/show-log.png" tooltiptext="%Spoon.Tooltip.ShowJobLogView"/>
-			<toolbarbutton value="job-show-grid" label="%Spoon.Menu.ShowGrid" image="ui/images/show-grid.png" tooltiptext="%Spoon.Tooltip.ShowJobGridView"/>
-			<toolbarbutton value="job-show-history" label="%Spoon.Menu.ShowHistory" image="ui/images/show-history.png" tooltiptext="%Spoon.Tooltip.ShowJobHistoryView"/>
-			<toolbarseparator />
 			<toolbarbutton value="job-show-results" label="%Spoon.Menu.ShowExecutionResults" image="ui/images/show-grid.png" tooltiptext="%Spoon.Tooltip.ShowExecutionResults"/>
 			<toolbarseparator />
 		</toolbar>
