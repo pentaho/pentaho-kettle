@@ -1,9 +1,11 @@
 package org.pentaho.di.ui.spoon.trans;
 
+import java.net.URL;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Properties;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabItem;
@@ -16,32 +18,41 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.ToolBar;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
+import org.pentaho.di.ui.core.gui.XulHelper;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.spoon.Messages;
 import org.pentaho.di.ui.spoon.Spoon;
+import org.pentaho.di.ui.spoon.XulMessages;
 import org.pentaho.di.ui.spoon.delegates.SpoonDelegate;
+import org.pentaho.xul.toolbar.XulToolbar;
+import org.pentaho.xul.toolbar.XulToolbarButton;
 
 public class TransHistoryDelegate extends SpoonDelegate {
 	
-	// private static final LogWriter log = LogWriter.getInstance();
+	private static final String XUL_FILE_TRANS_GRID_TOOLBAR = "ui/trans-history-toolbar.xul";
+	public static final String XUL_FILE_TRANS_GRID_TOOLBAR_PROPERTIES = "ui/trans-history-toolbar.properties";
+
+	private static final LogWriter log = LogWriter.getInstance();
 	
 	private TransGraph transGraph;
 
@@ -50,10 +61,9 @@ public class TransHistoryDelegate extends SpoonDelegate {
     private ColumnInfo[] colinf;	
 	
 	private Text   wText;
-	private Button wRefresh, wReplay, wClear;
-    private TableView wFields;
+	private TableView wFields;
     
-	private FormData fdText, fdSash, fdRefresh, fdReplay, fdClear; 
+	private FormData fdText, fdSash; 
 
     private List<RowMetaAndData> rowList;
 
@@ -64,6 +74,9 @@ public class TransHistoryDelegate extends SpoonDelegate {
 	private ValueMetaInterface durationMeta;
 	private ValueMetaInterface replayDateMeta;
 
+	private XulToolbar       toolbar;
+	private Composite transHistoryComposite;
+	
 	/**
 	 * @param spoon
 	 * @param transGraph
@@ -95,12 +108,14 @@ public class TransHistoryDelegate extends SpoonDelegate {
 		
 		// Create a composite, slam everything on there like it was in the history tab.
 		//
-		final Composite historyComposite = new Composite(transGraph.extraViewTabFolder, SWT.NONE);
-		historyComposite.setLayout(new FormLayout());
+		transHistoryComposite = new Composite(transGraph.extraViewTabFolder, SWT.NONE);
+		transHistoryComposite.setLayout(new FormLayout());
+		spoon.props.setLook(transHistoryComposite);
 		
-        spoon.props.setLook(historyComposite);
+		addToolBar();
+		addToolBarListeners();
 		
-		SashForm sash = new SashForm(historyComposite, SWT.VERTICAL);
+		SashForm sash = new SashForm(transHistoryComposite, SWT.VERTICAL);
 		spoon.props.setLook(sash);
 		
 		sash.setLayout(new FillLayout());
@@ -147,30 +162,6 @@ public class TransHistoryDelegate extends SpoonDelegate {
 		wText.setVisible(true);
         // wText.setText(Messages.getString("TransHistory.PleaseRefresh.Message"));
 		
-		wRefresh = new Button(historyComposite, SWT.PUSH);
-		wRefresh.setText(Messages.getString("TransHistory.Button.Refresh")); //$NON-NLS-1$
-
-		fdRefresh    = new FormData(); 
-		fdRefresh.left   = new FormAttachment(15, 0);  
-		fdRefresh.bottom = new FormAttachment(100, 0);
-		wRefresh.setLayoutData(fdRefresh);
-		
-		wReplay = new Button(historyComposite, SWT.PUSH);
-		wReplay.setText(Messages.getString("TransHistory.Button.Replay")); //$NON-NLS-1$
-
-		fdReplay    = new FormData(); 
-		fdReplay.left   = new FormAttachment(wRefresh, Const.MARGIN);  
-		fdReplay.bottom = new FormAttachment(100, 0);
-		wReplay.setLayoutData(fdReplay);
-
-		wClear = new Button(historyComposite, SWT.PUSH);
-		wClear.setText(Messages.getString("TransHistory.Button.Clear")); //$NON-NLS-1$
-
-		fdClear    = new FormData(); 
-		fdClear.left   = new FormAttachment(wReplay, Const.MARGIN);  
-		fdClear.bottom = new FormAttachment(100, 0);
-		wClear.setLayoutData(fdClear);
-
 		// Put text in the middle
 		fdText=new FormData();
 		fdText.left   = new FormAttachment(0, 0);
@@ -182,26 +173,14 @@ public class TransHistoryDelegate extends SpoonDelegate {
 		
 		fdSash     = new FormData(); 
 		fdSash.left   = new FormAttachment(0, 0);  // First one in the left top corner
-		fdSash.top    = new FormAttachment(0, 0);
+		fdSash.top    = new FormAttachment((Control)toolbar.getNativeObject(), 0);
 		fdSash.right  = new FormAttachment(100, 0);
-		fdSash.bottom = new FormAttachment(wRefresh, -5);
+		fdSash.bottom = new FormAttachment(100, 0);
 		sash.setLayoutData(fdSash);
 		
 		sash.setWeights(new int[] { 60, 40} );
 
-		historyComposite.pack();
-		
-		setupReplayListener();
-        
-        SelectionAdapter lsRefresh = new SelectionAdapter()
-            {
-                public void widgetSelected(SelectionEvent e)
-                {
-                    refreshHistory();
-                }
-            };
-		
-		wRefresh.addSelectionListener(lsRefresh);
+		transHistoryComposite.pack();
         
         wFields.table.addSelectionListener(new SelectionAdapter()
             {
@@ -225,16 +204,7 @@ public class TransHistoryDelegate extends SpoonDelegate {
             }
         );
         
-        wClear.addSelectionListener(new SelectionAdapter()
-		        {
-		            public void widgetSelected(SelectionEvent e)
-		            {
-		                clearLogTable();
-		            }
-		        }
-	        );
-		
-		transHistoryTab.setControl(historyComposite);
+        transHistoryTab.setControl(transHistoryComposite);
 		
 		transGraph.extraViewTabFolder.setSelection(transHistoryTab);
 		
@@ -244,16 +214,71 @@ public class TransHistoryDelegate extends SpoonDelegate {
 		transGraph.getDisplay().asyncExec(new Runnable() {
 			public void run() {
 				refreshHistory();
-				historyComposite.layout(true, true);
+				transHistoryComposite.layout(true, true);
 			}
 		});
 	}
+	
+    private void addToolBar()
+	{
+
+		try {
+			toolbar = XulHelper.createToolbar(XUL_FILE_TRANS_GRID_TOOLBAR, transHistoryComposite, TransHistoryDelegate.this, new XulMessages());
+			
+			
+			// set the selected icon for the show inactive button.
+			// This is not a XUL standard apparently
+			//
+			XulToolbarButton onlyActiveButton = toolbar.getButtonById("show-inactive");
+			if (onlyActiveButton!=null) {
+				onlyActiveButton.setSelectedImage(GUIResource.getInstance().getImageHideInactive());
+			}
+		
+			// Add a few default key listeners
+			//
+			ToolBar toolBar = (ToolBar) toolbar.getNativeObject();
+			toolBar.addKeyListener(spoon.defKeys);
+			
+			addToolBarListeners();
+	        toolBar.layout(true, true);
+		} catch (Throwable t ) {
+			log.logError(toString(), Const.getStackTracker(t));
+			new ErrorDialog(transHistoryComposite.getShell(), Messages.getString("Spoon.Exception.ErrorReadingXULFile.Title"), Messages.getString("Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_GRID_TOOLBAR), new Exception(t));
+		}
+	}
+
+	public void addToolBarListeners()
+	{
+		try
+		{
+			// first get the XML document
+			URL url = XulHelper.getAndValidate(XUL_FILE_TRANS_GRID_TOOLBAR_PROPERTIES);
+			Properties props = new Properties();
+			props.load(url.openStream());
+			String ids[] = toolbar.getMenuItemIds();
+			for (int i = 0; i < ids.length; i++)
+			{
+				String methodName = (String) props.get(ids[i]);
+				if (methodName != null)
+				{
+					toolbar.addMenuListener(ids[i], this, methodName);
+
+				}
+			}
+
+		} catch (Throwable t ) {
+			t.printStackTrace();
+			new ErrorDialog(transHistoryComposite.getShell(), Messages.getString("Spoon.Exception.ErrorReadingXULFile.Title"), 
+					Messages.getString("Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_GRID_TOOLBAR_PROPERTIES), new Exception(t));
+		}
+	}
+
 
     /**
      * User requested to clear the log table.<br>
      * Better ask confirmation
      */
-    protected void clearLogTable() {
+    public void clearLogTable() {
     	String logTable = transGraph.getManagedObject().getLogTable();
     	DatabaseMeta databaseMeta = transGraph.getManagedObject().getLogConnection();
     	
@@ -303,37 +328,30 @@ public class TransHistoryDelegate extends SpoonDelegate {
     }
     
     
-	private void setupReplayListener() {
-		SelectionAdapter lsReplay = new SelectionAdapter()
-        {
-			public void widgetSelected(SelectionEvent e) {
-				int idx = wFields.getSelectionIndex();
-				if (idx >= 0) {
-					String fields[] = wFields.getItem(idx);
-					String dateString = fields[13];
-					try {
-						ValueMetaInterface stringValueMeta = replayDateMeta.clone();
-						stringValueMeta.setType(ValueMetaInterface.TYPE_STRING);
-						
-						Date replayDate = stringValueMeta.getDate(dateString);
-						
-						spoon.executeTransformation(transGraph.getManagedObject(), true, false, false, false, false, replayDate, false);
-					} catch (KettleException e1) {
-						new ErrorDialog(transGraph.getShell(), 
-								Messages.getString("TransHistory.Error.ReplayingTransformation2"), //$NON-NLS-1$
-								Messages.getString("TransHistory.Error.InvalidReplayDate") + dateString, e1); //$NON-NLS-1$
-					}
-				}
+	public void replayHistory() {
+		int idx = wFields.getSelectionIndex();
+		if (idx >= 0) {
+			String fields[] = wFields.getItem(idx);
+			String dateString = fields[13];
+			try {
+				ValueMetaInterface stringValueMeta = replayDateMeta.clone();
+				stringValueMeta.setType(ValueMetaInterface.TYPE_STRING);
+				
+				Date replayDate = stringValueMeta.getDate(dateString);
+				
+				spoon.executeTransformation(transGraph.getManagedObject(), true, false, false, false, false, replayDate, false);
+			} catch (KettleException e1) {
+				new ErrorDialog(transGraph.getShell(), 
+						Messages.getString("TransHistory.Error.ReplayingTransformation2"), //$NON-NLS-1$
+						Messages.getString("TransHistory.Error.InvalidReplayDate") + dateString, e1); //$NON-NLS-1$
 			}
-		};
-	
-        wReplay.addSelectionListener(lsReplay);
+		}
 	}
 
     /**
      * Refreshes the history window in Spoon: reads entries from the specified log table in the Transformation Settings dialog.
      */
-	private void refreshHistory()
+	public void refreshHistory()
 	{
         transGraph.getDisplay().asyncExec(
             new Runnable()
