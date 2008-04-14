@@ -433,6 +433,9 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
                 
                 Point real = screen2real(e.x, e.y);
 
+                // Hide the tooltip!
+                hideToolTips();
+                
                 StepMeta stepMeta = transMeta.getStep(real.x, real.y, iconsize);
                 if (stepMeta != null)
                 {
@@ -3257,10 +3260,9 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 
 				// Start the threads for the steps...
 				//
-				trans.startThreads();
+				startThreads();
 
-				running = !running;
-    			debug=true;
+				debug=true;
     			
     			// Show the execution results view...
     			//
@@ -3273,8 +3275,6 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
                             }
                         }
                     );
-
-    			setControlStates();
     		}
     		catch (Exception e)
     		{
@@ -3558,9 +3558,9 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 	public synchronized void showLastPreviewResults() {
 		if (lastTransDebugMeta==null || lastTransDebugMeta.getStepDebugMetaMap().isEmpty()) return;
 		
-		List<String> stepnames = new ArrayList<String>();
-		List<RowMetaInterface> rowMetas = new ArrayList<RowMetaInterface>();
-		List<List<Object[]>> rowBuffers = new ArrayList<List<Object[]>>();
+		final List<String> stepnames = new ArrayList<String>();
+		final List<RowMetaInterface> rowMetas = new ArrayList<RowMetaInterface>();
+		final List<List<Object[]>> rowBuffers = new ArrayList<List<Object[]>>();
 
 		// Assemble the buffers etc in the old style...
 		//
@@ -3572,8 +3572,12 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 			rowBuffers.add(stepDebugMeta.getRowBuffer());
 		}
 		
-		EnterPreviewRowsDialog dialog = new EnterPreviewRowsDialog(shell, SWT.NONE, stepnames, rowMetas, rowBuffers);
-		dialog.open();
+		getDisplay().asyncExec(new Runnable() {
+				public void run() {
+					EnterPreviewRowsDialog dialog = new EnterPreviewRowsDialog(shell, SWT.NONE, stepnames, rowMetas, rowBuffers);
+					dialog.open();
+				}
+			});
 	}
 	
 	/**
