@@ -100,7 +100,7 @@ public class JobHistoryDelegate extends SpoonDelegate {
 		
 		// Add a transLogTab : display the logging...
 		//
-		jobHistoryTab = new CTabItem(jobGraph.extraViewTabFolder, SWT.CLOSE | SWT.MAX);
+		jobHistoryTab = new CTabItem(jobGraph.extraViewTabFolder, SWT.NONE);
 		jobHistoryTab.setImage(GUIResource.getInstance().getImageShowHistory());
 		jobHistoryTab.setText(Messages.getString("Spoon.TransGraph.HistoryTab.Name"));
 		

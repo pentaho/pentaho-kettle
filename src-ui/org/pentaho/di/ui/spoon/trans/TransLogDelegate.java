@@ -81,7 +81,7 @@ public class TransLogDelegate extends SpoonDelegate {
 		transLogTab.setImage(GUIResource.getInstance().getImageShowLog());
 		transLogTab.setText(Messages.getString("Spoon.TransGraph.LogTab.Name"));
 		
-		transLogComposite = new Composite(transGraph.extraViewTabFolder, SWT.NONE);
+		transLogComposite = new Composite(transGraph.extraViewTabFolder, SWT.NO_BACKGROUND | SWT.NO_FOCUS);
 		transLogComposite.setLayout(new FormLayout());
 		
 		addToolBar();

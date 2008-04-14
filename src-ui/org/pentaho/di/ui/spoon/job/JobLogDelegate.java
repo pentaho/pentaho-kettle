@@ -77,7 +77,7 @@ public class JobLogDelegate extends SpoonDelegate {
 		
 		// Add a transLogTab : display the logging...
 		//
-		jobLogTab = new CTabItem(jobGraph.extraViewTabFolder, SWT.CLOSE | SWT.MAX);
+		jobLogTab = new CTabItem(jobGraph.extraViewTabFolder, SWT.NONE);
 		jobLogTab.setImage(GUIResource.getInstance().getImageShowLog());
 		jobLogTab.setText(Messages.getString("Spoon.TransGraph.LogTab.Name"));
 
@@ -88,7 +88,6 @@ public class JobLogDelegate extends SpoonDelegate {
 		addToolBarListeners();
 		
 		jobLogText = new Text(jobLogComposite, SWT.READ_ONLY | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
-		jobLogTab.setControl(jobLogComposite);
 		
 		FormData fdText = new FormData();
 		fdText.left = new FormAttachment(0,0);
@@ -96,6 +95,8 @@ public class JobLogDelegate extends SpoonDelegate {
 		fdText.top = new FormAttachment((Control)toolbar.getNativeObject(),0);
 		fdText.bottom = new FormAttachment(100,0);
 		jobLogText.setLayoutData(fdText);
+
+		jobLogTab.setControl(jobLogComposite);
 
 		// Create a new String appender to the log and capture that directly...
 		//

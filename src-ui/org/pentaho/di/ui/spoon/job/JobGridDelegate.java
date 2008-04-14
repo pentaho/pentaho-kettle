@@ -69,7 +69,7 @@ public class JobGridDelegate extends SpoonDelegate {
 			}
 		}
 
-		jobGridTab = new CTabItem(jobGraph.extraViewTabFolder, SWT.CLOSE | SWT.MAX);
+		jobGridTab = new CTabItem(jobGraph.extraViewTabFolder, SWT.NONE);
 		jobGridTab.setImage(GUIResource.getInstance().getImageShowGrid());
 		jobGridTab.setText(Messages.getString("Spoon.TransGraph.GridTab.Name"));
 
