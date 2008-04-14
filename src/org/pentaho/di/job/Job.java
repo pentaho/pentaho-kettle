@@ -381,7 +381,7 @@ public class Job extends Thread implements VariableSpace
 			return res;
 		}
 		
-		log.logDetailed(toString(), "exec("+nr+", "+(prev_result!=null?prev_result.getNrErrors():0)+", "+(startpoint!=null?startpoint.toString():"null")+")");
+		if(log.isDetailed()) log.logDetailed(toString(), "exec("+nr+", "+(prev_result!=null?prev_result.getNrErrors():0)+", "+(startpoint!=null?startpoint.toString():"null")+")");
 		
 		// What entry is next?
 		JobEntryInterface jei = startpoint.getEntry();
@@ -460,7 +460,7 @@ public class Job extends Thread implements VariableSpace
 			if (  hi.isUnconditional() || ( startpoint.evaluates() && ( ! ( hi.getEvaluation() ^ result.getResult() ) ) ) ) 
 			{				
 				// Start this next step!
-				log.logBasic(jobMeta.toString(), Messages.getString("Job.Log.StartingEntry",nextEntry.getName()));
+				if(log.isBasic()) log.logBasic(jobMeta.toString(), Messages.getString("Job.Log.StartingEntry",nextEntry.getName()));
                 
                 // Pass along the previous result, perhaps the next job can use it...
                 // However, set the number of errors back to 0 (if it should be reset)
@@ -498,7 +498,7 @@ public class Job extends Thread implements VariableSpace
             		Thread thread = new Thread(runnable);
             		threads.add(thread);
             		thread.start();
-                    log.logBasic(jobMeta.toString(), Messages.getString("Job.Log.LaunchedJobEntryInParallel",nextEntry.getName()));
+            		if(log.isBasic()) log.logBasic(jobMeta.toString(), Messages.getString("Job.Log.LaunchedJobEntryInParallel",nextEntry.getName()));
             	}
             	else
             	{
@@ -513,7 +513,7 @@ public class Job extends Thread implements VariableSpace
                     	log.logError(toString(), Const.getStackTracker(e));
                     	throw new KettleException(Messages.getString("Job.Log.UnexpectedError",nextEntry.toString()), e);
                     }
-                    log.logBasic(jobMeta.toString(), Messages.getString("Job.Log.FinishedJobEntry",nextEntry.getName(),res.getResult()+""));
+                    if(log.isBasic()) log.logBasic(jobMeta.toString(), Messages.getString("Job.Log.FinishedJobEntry",nextEntry.getName(),res.getResult()+""));
             	}
 			}
 		}
@@ -537,7 +537,7 @@ public class Job extends Thread implements VariableSpace
 	                threadExceptions.add(new KettleException(Messages.getString("Job.Log.UnexpectedErrorWhileWaitingForJobEntry",nextEntry.getName()), e));
 				}
 			}
-            log.logBasic(jobMeta.toString(), Messages.getString("Job.Log.FinishedJobEntry",startpoint.getName()));
+			if(log.isBasic()) log.logBasic(jobMeta.toString(), Messages.getString("Job.Log.FinishedJobEntry",startpoint.getName()));
 		}
 		
 		// Perhaps we don't have next steps??

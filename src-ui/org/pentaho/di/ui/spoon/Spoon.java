@@ -475,7 +475,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		if (!Props.isInitialized())
 		{
 			// log.logDetailed(toString(), "Load properties for Spoon...");
-			log.logDetailed(toString(), Messages.getString("Spoon.Log.LoadProperties"));
+			if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("Spoon.Log.LoadProperties"));
             PropsUI.init(display, Props.TYPE_PROPERTIES_SPOON);  // things to remember...
 		}
 		props = PropsUI.getInstance();
@@ -2831,7 +2831,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 			Node stepsnode = XMLHandler.getSubNode(transnode, "steps");
 			int nr = XMLHandler.countNodes(stepsnode, "step");
-            log.logDebug(toString(), Messages.getString("Spoon.Log.FoundSteps",""+nr)+loc);//"I found "+nr+" steps to paste on location: "
+			if(log.isDebug()) log.logDebug(toString(), Messages.getString("Spoon.Log.FoundSteps",""+nr)+loc);//"I found "+nr+" steps to paste on location: "
 			StepMeta steps[] = new StepMeta[nr];
 
 			// Point min = new Point(loc.x, loc.y);
@@ -2855,7 +2855,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			// Load the hops...
 			Node hopsnode = XMLHandler.getSubNode(transnode, "order");
 			nr = XMLHandler.countNodes(hopsnode, "hop");
-            log.logDebug(toString(), Messages.getString("Spoon.Log.FoundHops",""+nr));//"I found "+nr+" hops to paste."
+			if(log.isDebug()) log.logDebug(toString(), Messages.getString("Spoon.Log.FoundHops",""+nr));//"I found "+nr+" hops to paste."
 			TransHopMeta hops[] = new TransHopMeta[nr];
 
 			ArrayList<StepMeta> alSteps = new ArrayList<StepMeta>();
@@ -2898,7 +2898,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			// Load the notes...
 			Node notesnode = XMLHandler.getSubNode(transnode, "notepads");
 			nr = XMLHandler.countNodes(notesnode, "notepad");
-            log.logDebug(toString(), Messages.getString("Spoon.Log.FoundNotepads",""+nr));//"I found "+nr+" notepads to paste."
+			if(log.isDebug()) log.logDebug(toString(), Messages.getString("Spoon.Log.FoundNotepads",""+nr));//"I found "+nr+" notepads to paste."
 			NotePadMeta notes[] = new NotePadMeta[nr];
 
 			for (int i = 0; i < notes.length; i++)
@@ -3428,7 +3428,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 					setTransMetaVariables(transMeta);	
 					if (transMeta != null)
 					{
-                        log.logDetailed(toString(),Messages.getString("Spoon.Log.LoadToTransformation",name,repdir.getDirectoryName()) );//"Transformation ["+transname+"] in directory ["+repdir+"] loaded from the repository."
+						if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("Spoon.Log.LoadToTransformation",name,repdir.getDirectoryName()) );//"Transformation ["+transname+"] in directory ["+repdir+"] loaded from the repository."
                         props.addLastFile(LastUsedFile.FILE_TYPE_TRANSFORMATION, name, repdir.getPath(), true, rep.getName());
 						addMenuLast();
 						transMeta.clearChanged();
@@ -3737,7 +3737,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 	public boolean quitFile()
 	{
-        log.logDetailed(toString(), Messages.getString("Spoon.Log.QuitApplication"));//"Quit application."
+		if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("Spoon.Log.QuitApplication"));//"Quit application."
 
 		boolean exit = true;
 
@@ -3863,7 +3863,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 		boolean saved = false;
 
-        log.logDetailed(toString(), Messages.getString("Spoon.Log.SaveToFileOrRepository"));//"Save to file or repository..."
+		if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("Spoon.Log.SaveToFileOrRepository"));//"Save to file or repository..."
 
 		if (rep != null)
 		{
@@ -3908,7 +3908,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 	public boolean saveToRepository(EngineMetaInterface meta, boolean ask_name)
 	{
-        log.logDetailed(toString(), Messages.getString("Spoon.Log.SaveToRepository"));//"Save to repository..."
+		if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("Spoon.Log.SaveToRepository"));//"Save to repository..."
 		if (rep != null)
 		{
 			boolean answer = true;
@@ -4023,7 +4023,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 	public boolean saveJobRepository(JobMeta jobMeta, boolean ask_name)
 	{
-		log.logDetailed(toString(), "Save to repository..."); //$NON-NLS-1$
+		if(log.isDetailed()) log.logDetailed(toString(), "Save to repository..."); //$NON-NLS-1$
 		if (rep != null)
 		{
 			boolean answer = true;
@@ -4141,7 +4141,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	{
 		boolean saved = false;
 
-        log.logBasic(toString(), Messages.getString("Spoon.Log.SaveAs"));//"Save as..."
+        if(log.isBasic()) log.logBasic(toString(), Messages.getString("Spoon.Log.SaveAs"));//"Save as..."
 
 		if (rep != null)
 		{
@@ -4179,7 +4179,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 	public boolean saveXMLFile(EngineMetaInterface meta,boolean export)
 	{
-		log.logBasic(toString(), "Save file as..."); //$NON-NLS-1$
+		if(log.isBasic()) log.logBasic(toString(), "Save file as..."); //$NON-NLS-1$
 		boolean saved = false;
 
 		FileDialog dialog = new FileDialog(shell, SWT.SAVE);
@@ -4244,7 +4244,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 	public boolean saveXMLFileToVfs(EngineMetaInterface meta)
 	{
-		log.logBasic(toString(), "Save file as..."); //$NON-NLS-1$
+		if(log.isBasic()) log.logBasic(toString(), "Save file as..."); //$NON-NLS-1$
 		boolean saved = false;
 
 		FileObject rootFile = null;
@@ -4356,14 +4356,14 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			saveSettings();
 			addMenuLast();
 
-            log.logDebug(toString(), Messages.getString("Spoon.Log.FileWritten")+" ["+fname+"]"); //"File written to
+			if(log.isDebug()) log.logDebug(toString(), Messages.getString("Spoon.Log.FileWritten")+" ["+fname+"]"); //"File written to
 			meta.setFilename(fname);
 			meta.clearChanged();
 			setShellText();
         }
         catch(Exception e)
 		{
-            log.logDebug(toString(), Messages.getString("Spoon.Log.ErrorOpeningFileForWriting")+e.toString());//"Error opening file for writing! --> "
+        	if(log.isDebug()) log.logDebug(toString(), Messages.getString("Spoon.Log.ErrorOpeningFileForWriting")+e.toString());//"Error opening file for writing! --> "
             new ErrorDialog(shell, Messages.getString("Spoon.Dialog.ErrorSavingFile.Title"), Messages.getString("Spoon.Dialog.ErrorSavingFile.Message")+Const.CR+e.toString(), e);
 		}
 		return saved;
@@ -4839,7 +4839,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		if (ti.length == 1)
 		{
 			String steptype = ti[0].getText();
-            log.logDebug(toString(), Messages.getString("Spoon.Log.NewStep")+steptype);//"New step: "
+			if(log.isDebug()) log.logDebug(toString(), Messages.getString("Spoon.Log.NewStep")+steptype);//"New step: "
 
 			inf = newStep(transMeta, steptype, steptype, openit, rename);
 		}
@@ -5674,7 +5674,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	 */
 	public void pasteTransformation()
 	{
-        log.logDetailed(toString(), Messages.getString("Spoon.Log.PasteTransformationFromClipboard"));//"Paste transformation from the clipboard!"
+		if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("Spoon.Log.PasteTransformationFromClipboard"));//"Paste transformation from the clipboard!"
 		String xml = fromClipboard();
 		try
 		{
@@ -5879,12 +5879,17 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			log = LogWriter.getInstance(optionLogfile.toString(), true, LogWriter.LOG_LEVEL_BASIC);
 		}
 
-        if (log.getRealFilename()!=null) log.logBasic(toString(), Messages.getString("Spoon.Log.LoggingToFile")+log.getRealFilename());//"Logging goes to "
+        if (log.getRealFilename()!=null) 
+        {
+        	if(log.isBasic()) 
+        		log.logBasic(toString(), Messages.getString("Spoon.Log.LoggingToFile")+log.getRealFilename());//"Logging goes to "
+        }
 
 		if (!Const.isEmpty(optionLoglevel))
 		{
 			log.setLogLevel(optionLoglevel.toString());
-            log.logBasic(toString(), Messages.getString("Spoon.Log.LoggingAtLevel")+log.getLogLevelDesc());//"Logging is at level : "
+			if(log.isBasic()) 
+				log.logBasic(toString(), Messages.getString("Spoon.Log.LoggingAtLevel")+log.getLogLevelDesc());//"Logging is at level : "
 		}
 
 		/* Load the plugins etc. */
@@ -5916,7 +5921,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		setDestroy(true);
 		GUIFactory.setThreadDialogs( new ThreadGuiResources() );
 
-        log.logBasic(toString(), Messages.getString("Spoon.Log.MainWindowCreated"));//Main window is created.
+		if(log.isBasic()) 
+			log.logBasic(toString(), Messages.getString("Spoon.Log.MainWindowCreated"));//Main window is created.
         
 
 	}
@@ -5983,7 +5989,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		
         if (Const.isEmpty(optionRepname) && Const.isEmpty(optionFilename) && props.showRepositoriesDialogAtStartup())
 		{
-            log.logBasic(APP_NAME, Messages.getString("Spoon.Log.AskingForRepository"));//"Asking for repository"
+        	if(log.isBasic()) 
+        		log.logBasic(APP_NAME, Messages.getString("Spoon.Log.AskingForRepository"));//"Asking for repository"
 
             splash.hide();
 			RepositoriesDialog rd = new RepositoriesDialog(display, perms, Messages.getString("Spoon.Application.Name"));//"Spoon"
@@ -6126,7 +6133,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 				if (props.openLastFile())
 				{
-                    log.logDetailed(toString(), Messages.getString("Spoon.Log.TryingOpenLastUsedFile"));//"Trying to open the last file used."
+					if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("Spoon.Log.TryingOpenLastUsedFile"));//"Trying to open the last file used."
 
 					List<LastUsedFile> lastUsedFiles = props.getOpenTabFiles();
 					for (LastUsedFile lastUsedFile : lastUsedFiles)
@@ -6178,8 +6185,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 			}
 			dispose();
-
-            log.logBasic(toString(), APP_NAME+" "+Messages.getString("Spoon.Log.AppHasEnded"));//" has ended."
+			if(log.isBasic()) 
+				log.logBasic(toString(), APP_NAME+" "+Messages.getString("Spoon.Log.AppHasEnded"));//" has ended."
 
 			// Close the logfile
 			log.close();
@@ -6310,7 +6317,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 						// Are we loading a transformation or a job?
 						if (lastUsedFile.isTransformation())
 						{
-                            log.logDetailed(toString(), Messages.getString("Spoon.Log.AutoLoadingTransformation",lastUsedFile.getFilename(), lastUsedFile.getDirectory()));//"Auto loading transformation ["+lastfiles[0]+"] from repository directory ["+lastdirs[0]+"]"
+							if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("Spoon.Log.AutoLoadingTransformation",lastUsedFile.getFilename(), lastUsedFile.getDirectory()));//"Auto loading transformation ["+lastfiles[0]+"] from repository directory ["+lastdirs[0]+"]"
                             TransLoadProgressDialog tlpd = new TransLoadProgressDialog(shell, rep, lastUsedFile.getFilename(), repdir);
                             TransMeta transMeta = tlpd.open();
 							if (transMeta != null)

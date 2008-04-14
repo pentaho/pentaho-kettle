@@ -176,8 +176,8 @@ public class Trans implements VariableSpace
 	{
 		this.transMeta=transMeta;
         
-		log.logDetailed(toString(), Messages.getString("Trans.Log.TransformationIsPreloaded")); //$NON-NLS-1$
-		log.logDebug(toString(), Messages.getString("Trans.Log.NumberOfStepsToRun",String.valueOf(transMeta.nrSteps()) ,String.valueOf(transMeta.nrTransHops()))); //$NON-NLS-1$ //$NON-NLS-2$
+		if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("Trans.Log.TransformationIsPreloaded")); //$NON-NLS-1$
+		if (log.isDebug()) log.logDebug(toString(), Messages.getString("Trans.Log.NumberOfStepsToRun",String.valueOf(transMeta.nrSteps()) ,String.valueOf(transMeta.nrTransHops()))); //$NON-NLS-1$ //$NON-NLS-2$
 		initializeVariablesFrom(transMeta);
 		
         // This is needed for e.g. database 'unique' connections.
@@ -304,9 +304,11 @@ public class Trans implements VariableSpace
 
 		List<StepMeta> hopsteps=transMeta.getTransHopSteps(false);
 
-		log.logDetailed(toString(), Messages.getString("Trans.Log.FoundDefferentSteps",String.valueOf(hopsteps.size())));	 //$NON-NLS-1$ //$NON-NLS-2$
-		log.logDetailed(toString(), Messages.getString("Trans.Log.AllocatingRowsets")); //$NON-NLS-1$
-
+		if(log.isDetailed()) 
+		{
+			log.logDetailed(toString(), Messages.getString("Trans.Log.FoundDefferentSteps",String.valueOf(hopsteps.size())));	 //$NON-NLS-1$ //$NON-NLS-2$
+			log.logDetailed(toString(), Messages.getString("Trans.Log.AllocatingRowsets")); //$NON-NLS-1$
+		}
 		// First allocate all the rowsets required!
 		// Note that a mapping doesn't receive ANY input or output rowsets...
 		//
@@ -315,7 +317,8 @@ public class Trans implements VariableSpace
 			StepMeta thisStep=hopsteps.get(i);
 			if (thisStep.isMapping()) continue; // handled and allocated by the mapping step itself.
 			
-			log.logDetailed(toString(), Messages.getString("Trans.Log.AllocateingRowsetsForStep",String.valueOf(i),thisStep.getName())); //$NON-NLS-1$ //$NON-NLS-2$
+			if(log.isDetailed()) 
+				log.logDetailed(toString(), Messages.getString("Trans.Log.AllocateingRowsetsForStep",String.valueOf(i),thisStep.getName())); //$NON-NLS-1$ //$NON-NLS-2$
 
 			int nrTargets = transMeta.findNrNextSteps(thisStep);
 
@@ -332,7 +335,8 @@ public class Trans implements VariableSpace
                 int nextCopies = nextStep.getCopies();
                 
                 int nrCopies;
-				log.logDetailed(toString(), Messages.getString("Trans.Log.copiesInfo",String.valueOf(thisCopies),String.valueOf(nextCopies))); //$NON-NLS-1$ //$NON-NLS-2$
+                if(log.isDetailed()) 
+                	log.logDetailed(toString(), Messages.getString("Trans.Log.copiesInfo",String.valueOf(thisCopies),String.valueOf(nextCopies))); //$NON-NLS-1$ //$NON-NLS-2$
 				int dispatchType;
 				     if (thisCopies==1 && nextCopies==1) { dispatchType=TYPE_DISP_1_1; nrCopies = 1; }
 				else if (thisCopies==1 && nextCopies >1) { dispatchType=TYPE_DISP_1_N; nrCopies = nextCopies; }
@@ -379,7 +383,7 @@ public class Trans implements VariableSpace
 			log.logDetailed(toString(), Messages.getString("Trans.Log.AllocatedRowsets",String.valueOf(rowsets.size()),String.valueOf(i),thisStep.getName())+" "); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 		}
 
-		log.logDetailed(toString(), Messages.getString("Trans.Log.AllocatingStepsAndStepData")); //$NON-NLS-1$
+		if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("Trans.Log.AllocatingStepsAndStepData")); //$NON-NLS-1$
         
 		// Allocate the steps & the data...
 		//
@@ -388,7 +392,7 @@ public class Trans implements VariableSpace
 			StepMeta stepMeta=hopsteps.get(i);
 			String stepid = stepMeta.getStepID();
 
-			log.logDetailed(toString(), Messages.getString("Trans.Log.TransformationIsToAllocateStep",stepMeta.getName(),stepid)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("Trans.Log.TransformationIsToAllocateStep",stepMeta.getName(),stepid)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
 			// How many copies are launched of this step?
 			int nrCopies=stepMeta.getCopies();
@@ -442,7 +446,7 @@ public class Trans implements VariableSpace
 					// Add to the bunch...
 					steps.add(combi);
 
-					log.logDetailed(toString(), Messages.getString("Trans.Log.TransformationHasAllocatedANewStep",stepMeta.getName(),String.valueOf(c))); //$NON-NLS-1$ //$NON-NLS-2$
+					if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("Trans.Log.TransformationHasAllocatedANewStep",stepMeta.getName(),String.valueOf(c))); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 			}
 		}
@@ -574,7 +578,7 @@ public class Trans implements VariableSpace
             else
             {
                 combi.data.setStatus(StepDataInterface.STATUS_IDLE);
-                log.logDetailed(toString(), Messages.getString("Trans.Log.StepInitialized", combi.stepname+"."+combi.copy));
+                if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("Trans.Log.StepInitialized", combi.stepname+"."+combi.copy));
             }
         }
         
@@ -696,7 +700,7 @@ public class Trans implements VariableSpace
 		
         running=true;
         
-        log.logDetailed(toString(), Messages.getString("Trans.Log.TransformationHasAllocated",String.valueOf(steps.size()),String.valueOf(rowsets.size()))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("Trans.Log.TransformationHasAllocated",String.valueOf(steps.size()),String.valueOf(rowsets.size()))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
     
     protected void addStepPerformanceSnapShot() {
@@ -1107,7 +1111,7 @@ public class Trans implements VariableSpace
     				
     			    ldb = new Database(logcon);
     			    ldb.shareVariablesWith(this);
-				    log.logDetailed(toString(), Messages.getString("Trans.Log.OpeningLogConnection",""+transMeta.getLogConnection())); //$NON-NLS-1$ //$NON-NLS-2$
+    			    if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("Trans.Log.OpeningLogConnection",""+transMeta.getLogConnection())); //$NON-NLS-1$ //$NON-NLS-2$
 					ldb.connect();
 
 					// Use transactions!
@@ -1142,7 +1146,7 @@ public class Trans implements VariableSpace
 					if (lastr!=null && lastr.length>0)
 					{
                         startDate = (Date) lastr[0]; 
-						log.logDetailed(toString(), Messages.getString("Trans.Log.StartDateFound")+startDate); //$NON-NLS-1$
+                        if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("Trans.Log.StartDateFound")+startDate); //$NON-NLS-1$
 					}
 
 					//
@@ -1154,7 +1158,7 @@ public class Trans implements VariableSpace
 						transMeta.getMaxDateField()!=null && transMeta.getMaxDateField().length()>0
 						)
 					{
-						log.logDetailed(toString(), Messages.getString("Trans.Log.LookingForMaxdateConnection",""+transMeta.getMaxDateConnection())); //$NON-NLS-1$ //$NON-NLS-2$
+						if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("Trans.Log.LookingForMaxdateConnection",""+transMeta.getMaxDateConnection())); //$NON-NLS-1$ //$NON-NLS-2$
 						DatabaseMeta maxcon = transMeta.getMaxDateConnection();
 						if (maxcon!=null)
 						{
@@ -1162,7 +1166,7 @@ public class Trans implements VariableSpace
 							maxdb.shareVariablesWith(this);
 							try
 							{
-							    log.logDetailed(toString(), Messages.getString("Trans.Log.OpeningMaximumDateConnection")); //$NON-NLS-1$
+								if(log.isDetailed())  log.logDetailed(toString(), Messages.getString("Trans.Log.OpeningMaximumDateConnection")); //$NON-NLS-1$
 								maxdb.connect();
 
 								//
@@ -1176,13 +1180,13 @@ public class Trans implements VariableSpace
 									Date maxvalue = r1.getRowMeta().getDate(r1.getData(), 0);
 									if (maxvalue!=null)
 									{
-									    log.logDetailed(toString(), Messages.getString("Trans.Log.LastDateFoundOnTheMaxdateConnection")+r1); //$NON-NLS-1$
+										if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("Trans.Log.LastDateFoundOnTheMaxdateConnection")+r1); //$NON-NLS-1$
 										endDate.setTime( (long)( maxvalue.getTime() + ( transMeta.getMaxDateOffset()*1000 ) ));
 									}
 								}
 								else
 								{
-								    log.logDetailed(toString(), Messages.getString("Trans.Log.NoLastDateFoundOnTheMaxdateConnection")); //$NON-NLS-1$
+									if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("Trans.Log.NoLastDateFoundOnTheMaxdateConnection")); //$NON-NLS-1$
 								}
 							}
 							catch(KettleException e)
@@ -1204,7 +1208,7 @@ public class Trans implements VariableSpace
 					// Get the maximum in depdate...
 					if (transMeta.nrDependencies()>0)
 					{
-						log.logDetailed(toString(), Messages.getString("Trans.Log.CheckingForMaxDependencyDate")); //$NON-NLS-1$
+						if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("Trans.Log.CheckingForMaxDependencyDate")); //$NON-NLS-1$
 						//
 						// Maybe one of the tables where this transformation is dependent on has changed?
 						// If so we need to change the start-date!
@@ -1240,7 +1244,7 @@ public class Trans implements VariableSpace
 										Date maxvalue = (Date) r1.getData()[0];
 										if (maxvalue!=null)
 										{
-											log.logDetailed(toString(), Messages.getString("Trans.Log.FoundDateFromTable",td.getTablename(),"."+td.getFieldname()," = "+maxvalue.toString())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+											if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("Trans.Log.FoundDateFromTable",td.getTablename(),"."+td.getFieldname()," = "+maxvalue.toString())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 											if ( maxvalue.getTime() > maxdepdate.getTime() )
 											{
 												maxdepdate=maxvalue;
@@ -1269,7 +1273,7 @@ public class Trans implements VariableSpace
 							{
 								throw new KettleTransException(Messages.getString("Trans.Exception.ConnectionCouldNotBeFound",""+td.getDatabase())); //$NON-NLS-1$ //$NON-NLS-2$
 							}
-							log.logDetailed(toString(), Messages.getString("Trans.Log.Maxdepdate")+(XMLHandler.date2string(maxdepdate))); //$NON-NLS-1$ //$NON-NLS-2$
+							if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("Trans.Log.Maxdepdate")+(XMLHandler.date2string(maxdepdate))); //$NON-NLS-1$ //$NON-NLS-2$
 						}
 
 						// OK, so we now have the maximum depdate;
@@ -2213,11 +2217,11 @@ public class Trans implements VariableSpace
                 {
                     SlaveServerTransStatus transStatus = slaveServers[s].getTransStatus(slaves[s].getName());
                     if (transStatus.isRunning()) {
-                        log.logDetailed(logSubject, "Slave transformation on '"+slaveServers[s]+"' is still running.");
+                    	if(log.isDetailed()) log.logDetailed(logSubject, "Slave transformation on '"+slaveServers[s]+"' is still running.");
                     	allFinished = false;
                     }
                     else {
-                        log.logDetailed(logSubject, "Slave transformation on '"+slaveServers[s]+"' has finished.");
+                    	if(log.isDetailed()) log.logDetailed(logSubject, "Slave transformation on '"+slaveServers[s]+"' has finished.");
                     }
                     errors+=transStatus.getNrStepErrors();
                 }
@@ -2235,11 +2239,11 @@ public class Trans implements VariableSpace
                 {
                     SlaveServerTransStatus transStatus = masterServer.getTransStatus(master.getName());
                     if (transStatus.isRunning()) {
-                        log.logDetailed(logSubject, "Master transformation is still running.");
+                    	if(log.isDetailed()) log.logDetailed(logSubject, "Master transformation is still running.");
                     	allFinished = false;
                     }
                     else {
-                        log.logDetailed(logSubject, "Master transformation has finished.");
+                    	if(log.isDetailed()) log.logDetailed(logSubject, "Master transformation has finished.");
                     }
                     Result result = transStatus.getResult(transSplitter.getOriginalTransformation());
                     errors+=result.getNrErrors();
@@ -2295,7 +2299,7 @@ public class Trans implements VariableSpace
             if (!allFinished)
             {
                 // Not finished or error: wait a bit longer
-                log.logDetailed(logSubject, "Clustered transformation is still running, waiting a few seconds...");
+            	if(log.isDetailed()) log.logDetailed(logSubject, "Clustered transformation is still running, waiting a few seconds...");
                 try { Thread.sleep(5000); } catch(Exception e) {} // Check all slaves every 5 seconds. TODO: add 5s as parameter
             }
         }
