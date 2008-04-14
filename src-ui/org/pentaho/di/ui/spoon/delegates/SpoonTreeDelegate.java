@@ -247,6 +247,8 @@ public class SpoonTreeDelegate extends SpoonDelegate
 					return;
 				}
 				
+				spoon.hideToolTips();
+				
 				TreeSelection treeObject = treeObjects[0];
 				Object object = treeObject.getSelection();
 				TransMeta transMeta = spoon.getActiveTransformation();

@@ -2231,6 +2231,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	{
 		delegates.tree.addDragSourceToTree(tree, selectionTree, coreObjectsTree);
 	}
+	
+    public void hideToolTips() {
+    	toolTip.hide();
+	}
 
 	/**
      * If you click in the tree, you might want to show the corresponding window.

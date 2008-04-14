@@ -1645,6 +1645,9 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 		if (!spoon.getProperties().showToolTips())
 			return;
 		
+		canvas.setToolTipText("-"); // Some stupid bug in GTK+ causes a phantom tool tip to pop up, even if the tip is null
+		canvas.setToolTipText(null);
+		
         String newTip=null;
         
 		final JobEntryCopy je = jobMeta.getJobEntryCopy(x, y, iconsize);

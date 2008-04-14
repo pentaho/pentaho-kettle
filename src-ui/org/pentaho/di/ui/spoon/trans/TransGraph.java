@@ -1108,8 +1108,8 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 	}
     
     protected void hideToolTips() {
-    	// toolTip.hide();
-    	// helpTip.hide();
+    	toolTip.hide();
+    	helpTip.hide();
 	}
 
 	private void showHelpTip(int x, int y, String tipTitle, String tipMessage) {
@@ -2014,6 +2014,9 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     {
     	if (!spoon.getProperties().showToolTips())
 			return;
+    	
+    	canvas.setToolTipText("'"); // Some stupid bug in GTK+ causes a phantom tool tip to pop up, even if the tip is null
+    	canvas.setToolTipText(null);
     	
     	String newTip = null;
         Image  tipImage = null;
