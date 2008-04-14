@@ -206,7 +206,7 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 				if (transMeta.getLogConnection() != null && !Const.isEmpty(transMeta.getLogTable()) && !transMeta.isSlaveTransformation())
 				{
 					// addTransHistory(transMeta, false);
-					transGraph.transHistoryDelegate.addTransHistory();
+					transGraph.addAllTabs();
 				}
 
 				spoon.delegates.tabs.addTab(new TabMapEntry(tabItem, tabName, transGraph, TabMapEntry.OBJECT_TYPE_TRANSFORMATION_GRAPH));

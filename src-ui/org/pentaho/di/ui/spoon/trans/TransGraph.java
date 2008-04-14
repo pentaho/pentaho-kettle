@@ -3004,7 +3004,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 		}
 	}
 	
-	protected void addAllTabs() {
+	public void addAllTabs() {
     	transHistoryDelegate.addTransHistory();
     	transLogDelegate.addTransLog();
     	transGridDelegate.addTransGrid();
