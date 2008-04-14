@@ -245,15 +245,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 	private boolean halted;
 	private boolean halting;
 	private boolean debug;
-	private boolean pausing;
-	
-	private Button wError;
-	private Button wClear;
-	private Button wLog;
-	private Button wOnlyActive;
-	private Button wSafeMode;
-	private Composite buttonsComposite;
-
+	private boolean pausing;	
 	
 	public TransLogDelegate transLogDelegate; 
 	public TransGridDelegate transGridDelegate; 
@@ -328,27 +320,6 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         canvas = new Canvas(sashForm, SWT.V_SCROLL | SWT.H_SCROLL | SWT.NO_BACKGROUND );
         
         sashForm.setWeights(new int[] { 100, } );
-
-        /*
-		filenameLabel = new Text(this, SWT.LEFT | SWT.ON_TOP | SWT.NO_BACKGROUND | SWT.READ_ONLY | SWT.NO_FOCUS | SWT.BORDER);
-		filenameLabel.setText(Const.NVL(transMeta.getFilename(), ""));
-		filenameLabel.setBackground(GUIResource.getInstance().getColorBackground());
-        FormData fdFilenameLabel = new FormData();
-		fdFilenameLabel.left = new FormAttachment((Control)toolbar.getNativeObject(), 10);
-		fdFilenameLabel.top = new FormAttachment(0,0);
-		fdFilenameLabel.right = new FormAttachment(100,0);
-        filenameLabel.setLayoutData(fdFilenameLabel);
-        
-        // Add a filename listener to transMeta to make sure we always show the correct filename in this label...
-        //
-        transMeta.addFilenameChangedListener(new FilenameChangedListener() {
-		
-			public void filenameChanged(Object object, String oldFilename, String newFilename) {
-				filenameLabel.setText(Const.NVL(newFilename, ""));
-				canvas.layout(true, true);
-			}
-		});
-		*/
         
 		try {
     		// first get the XML document
@@ -2891,149 +2862,11 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         fdResultsLabel.right = new FormAttachment(minMaxButton,-Const.MARGIN);
         fdResultsLabel.top = new FormAttachment(0,0);
         wResultsLabel.setLayoutData(fdResultsLabel);
-        
-        
-		// Add a buttons panel to the right...
-		//
-		buttonsComposite = new Composite(extraViewComposite, SWT.NONE);
-		FormLayout buttonsCompositeFormLayout = new FormLayout();
-		buttonsCompositeFormLayout.marginWidth=2;
-		buttonsCompositeFormLayout.marginHeight=2;
-		buttonsComposite.setLayout(buttonsCompositeFormLayout);
-		
-        FormData fdButtonsComposite = new FormData();
-        fdButtonsComposite.left = new FormAttachment(80,0);
-        fdButtonsComposite.right = new FormAttachment(100,0);
-        fdButtonsComposite.top = new FormAttachment(wResultsLabel,Const.MARGIN);
-        fdButtonsComposite.bottom = new FormAttachment(100,0);
-        buttonsComposite.setLayoutData(fdButtonsComposite);
-		
-        /*
-        // ROW 1
-        
-        // Start...
-        wStart = new Button(buttonsComposite, SWT.PUSH);
-		wStart.setText(START_TEXT);
-        FormData fdStart = new FormData();
-        fdStart.left = new FormAttachment(0,Const.MARGIN);
-        fdStart.right = new FormAttachment(50,0);
-        fdStart.top = new FormAttachment(0,0);
-        wStart.setLayoutData(fdStart);
-
-        // Pause...
-        wPause = new Button(buttonsComposite, SWT.PUSH);
-		wPause.setText(PAUSE_TEXT);
-        FormData fdPause = new FormData();
-        fdPause.left = new FormAttachment(50,Const.MARGIN);
-        fdPause.right = new FormAttachment(100,0);
-        fdPause.top = new FormAttachment(0,0);
-        wPause.setLayoutData(fdPause);
-        Control lastControl = wStart;
-
-        // ROW 2
-        
-        // Stop...
-        wStop = new Button(buttonsComposite, SWT.PUSH);
-        wStop.setText(STOP_TEXT);
-        FormData fdStop = new FormData();
-        fdStop.left = new FormAttachment(0,Const.MARGIN);
-        fdStop.right = new FormAttachment(50,0);
-        fdStop.top = new FormAttachment(lastControl,2);
-        wStop.setLayoutData(fdStop);
-
-        // Preview...
-        wPreview = new Button(buttonsComposite, SWT.PUSH);
-		wPreview.setText(Messages.getString("TransLog.Button.Preview")); //$NON-NLS-1$
-        FormData fdPreview = new FormData();
-        fdPreview.left = new FormAttachment(50,Const.MARGIN);
-        fdPreview.right = new FormAttachment(100,0);
-        fdPreview.top = new FormAttachment(lastControl,2);
-        wPreview.setLayoutData(fdPreview);
-        lastControl = wStop;
-		*/
-        // ROW 3
-        
-        // Show errors lines...
-        wError = new Button(buttonsComposite, SWT.PUSH);
-		wError.setText(Messages.getString("TransLog.Button.ShowErrorLines")); //$NON-NLS-1$
-        FormData fdError = new FormData();
-        fdError.left = new FormAttachment(0,Const.MARGIN);
-        fdError.right = new FormAttachment(50,0);
-        fdError.top = new FormAttachment(0,20);
-        wError.setLayoutData(fdError);
-
-        // Clear
-        wClear = new Button(buttonsComposite, SWT.PUSH);
-		wClear.setText(Messages.getString("TransLog.Button.ClearLog")); //$NON-NLS-1$
-        FormData fdClear = new FormData();
-        fdClear.left = new FormAttachment(50,Const.MARGIN);
-        fdClear.right = new FormAttachment(100,0);
-        fdClear.top = new FormAttachment(0,20);
-        wClear.setLayoutData(fdClear);
-        Control lastControl = wError;
-
-        // Row 4
-        
-        // Log
-        wLog = new Button(buttonsComposite, SWT.PUSH);
-		wLog.setText(Messages.getString("TransLog.Button.LogSettings")); //$NON-NLS-1$
-        FormData fdLog = new FormData();
-        fdLog.left = new FormAttachment(0,Const.MARGIN);
-        fdLog.right = new FormAttachment(50,0);
-        fdLog.top = new FormAttachment(lastControl,2);
-        wLog.setLayoutData(fdLog);
-
-        lastControl = wLog;
-
-        // Row 5
-        
-        // OnlyActive
-        wOnlyActive = new Button(buttonsComposite, SWT.CHECK);
-		wOnlyActive.setText(Messages.getString("TransLog.Button.ShowOnlyActiveSteps")); //$NON-NLS-1$
-        FormData fdOnlyActive = new FormData();
-        fdOnlyActive.left = new FormAttachment(0,Const.MARGIN);
-        fdOnlyActive.right = new FormAttachment(100,0);
-        fdOnlyActive.top = new FormAttachment(lastControl,2);
-        wOnlyActive.setLayoutData(fdOnlyActive);
-		wOnlyActive.setSelection(spoon.props.getOnlyActiveSteps());
-		wOnlyActive.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { 
-			spoon.props.setOnlyActiveSteps(wOnlyActive.getSelection()); } });
-		lastControl = wOnlyActive;
-
-		// Row 6
-		
-		// Safe mode
-		wSafeMode = new Button(buttonsComposite, SWT.CHECK);
-		wSafeMode.setText(Messages.getString("TransLog.Button.SafeMode")); //$NON-NLS-1$
-        FormData fdSafeMode = new FormData();
-        fdSafeMode.left = new FormAttachment(0,Const.MARGIN);
-        fdSafeMode.right = new FormAttachment(100,0);
-        fdSafeMode.top = new FormAttachment(lastControl,2);
-        wSafeMode.setLayoutData(fdSafeMode);
-        lastControl = wSafeMode;
-        
-        
-		// Attach listeners to the buttons
-		//
-        // wStart.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { spoon.executeTransformation(transMeta, true, false, false, false, false, null, wSafeMode.getSelection()); }});
-        // wPause.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { pauseResume();}});
-        // wStop.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { stop(); }});
-        // wPreview.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { spoon.executeTransformation(transMeta, true, false, false, true, false, null, wSafeMode.getSelection()); }});
-		wError.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { transLogDelegate.showErrors(); } });
-		wClear.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { transLogDelegate.clearLog(); }});
-		wLog.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { spoon.setLog(); }});
-		
 		
 		// Add a tab folder ...
 		//
         extraViewTabFolder= new CTabFolder(extraViewComposite, SWT.MULTI);
         spoon.props.setLook(extraViewTabFolder, Props.WIDGET_STYLE_TAB);
-        
-        /*
-        extraViewTabFolder.setSimple(false);
-        extraViewTabFolder.setUnselectedImageVisible(true);
-        extraViewTabFolder.setUnselectedCloseVisible(true);
-        */
         
         // If the last tab is closed, see if we need to close the bottom view.
         //
@@ -3072,7 +2905,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         
         FormData fdTabFolder = new FormData();
         fdTabFolder.left = new FormAttachment(0,0);
-        fdTabFolder.right = new FormAttachment(80,0);
+        fdTabFolder.right = new FormAttachment(100,0);
         fdTabFolder.top = new FormAttachment(wResultsLabel,Const.MARGIN);
         fdTabFolder.bottom = new FormAttachment(100,0);
         extraViewTabFolder.setLayoutData(fdTabFolder);

@@ -1,12 +1,20 @@
 package org.pentaho.di.ui.spoon.trans;
 
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Properties;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.layout.FormAttachment;
+import org.eclipse.swt.layout.FormData;
+import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.ToolBar;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.logging.BufferChangedListener;
@@ -15,13 +23,20 @@ import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
+import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
+import org.pentaho.di.ui.core.gui.XulHelper;
 import org.pentaho.di.ui.spoon.Messages;
 import org.pentaho.di.ui.spoon.Spoon;
+import org.pentaho.di.ui.spoon.XulMessages;
 import org.pentaho.di.ui.spoon.delegates.SpoonDelegate;
+import org.pentaho.xul.toolbar.XulToolbar;
 
 public class TransLogDelegate extends SpoonDelegate {
 	
+	private static final String XUL_FILE_TRANS_LOG_TOOLBAR = "ui/trans-log-toolbar.xul";
+	public static final String XUL_FILE_TRANS_LOG_TOOLBAR_PROPERTIES = "ui/trans-log-toolbar.properties";
+
 	private static final LogWriter log = LogWriter.getInstance();
 	
 	private TransGraph transGraph;
@@ -34,6 +49,9 @@ public class TransLogDelegate extends SpoonDelegate {
      * The number of lines in the log tab
      */
 	private int textSize;
+
+	private XulToolbar       toolbar;
+	private Composite transLogComposite;
 	
 	/**
 	 * @param spoon
@@ -62,9 +80,22 @@ public class TransLogDelegate extends SpoonDelegate {
 		transLogTab = new CTabItem(transGraph.extraViewTabFolder, SWT.NONE);
 		transLogTab.setImage(GUIResource.getInstance().getImageShowLog());
 		transLogTab.setText(Messages.getString("Spoon.TransGraph.LogTab.Name"));
-		// TODO: set image on tab item.
-		transLogText = new Text(transGraph.extraViewTabFolder, SWT.READ_ONLY | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
-		transLogTab.setControl(transLogText);
+		
+		transLogComposite = new Composite(transGraph.extraViewTabFolder, SWT.NONE);
+		transLogComposite.setLayout(new FormLayout());
+		
+		addToolBar();
+		addToolBarListeners();
+		
+		transLogText = new Text(transLogComposite, SWT.READ_ONLY | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
+		FormData fdText = new FormData();
+		fdText.left = new FormAttachment(0,0);
+		fdText.right = new FormAttachment(100,0);
+		fdText.top = new FormAttachment((Control)toolbar.getNativeObject(),0);
+		fdText.bottom = new FormAttachment(100,0);
+		transLogText.setLayoutData(fdText);
+		
+		transLogTab.setControl(transLogComposite);
 		
 		// Create a new String appender to the log and capture that directly...
 		//
@@ -110,6 +141,51 @@ public class TransLogDelegate extends SpoonDelegate {
 		
 		transGraph.extraViewTabFolder.setSelection(transLogTab);
 	}
+	
+    private void addToolBar()
+	{
+
+		try {
+			toolbar = XulHelper.createToolbar(XUL_FILE_TRANS_LOG_TOOLBAR, transLogComposite, TransLogDelegate.this, new XulMessages());
+			
+			// Add a few default key listeners
+			//
+			ToolBar toolBar = (ToolBar) toolbar.getNativeObject();
+			toolBar.addKeyListener(spoon.defKeys);
+			
+			addToolBarListeners();
+	        toolBar.layout(true, true);
+		} catch (Throwable t ) {
+			log.logError(toString(), Const.getStackTracker(t));
+			new ErrorDialog(transLogComposite.getShell(), Messages.getString("Spoon.Exception.ErrorReadingXULFile.Title"), Messages.getString("Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_LOG_TOOLBAR), new Exception(t));
+		}
+	}
+
+	public void addToolBarListeners()
+	{
+		try
+		{
+			// first get the XML document
+			URL url = XulHelper.getAndValidate(XUL_FILE_TRANS_LOG_TOOLBAR_PROPERTIES);
+			Properties props = new Properties();
+			props.load(url.openStream());
+			String ids[] = toolbar.getMenuItemIds();
+			for (int i = 0; i < ids.length; i++)
+			{
+				String methodName = (String) props.get(ids[i]);
+				if (methodName != null)
+				{
+					toolbar.addMenuListener(ids[i], this, methodName);
+
+				}
+			}
+
+		} catch (Throwable t ) {
+			t.printStackTrace();
+			new ErrorDialog(transLogComposite.getShell(), Messages.getString("Spoon.Exception.ErrorReadingXULFile.Title"), 
+					Messages.getString("Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_LOG_TOOLBAR_PROPERTIES), new Exception(t));
+		}
+	}
 
     
     public void showLogView() {
@@ -128,6 +204,10 @@ public class TransLogDelegate extends SpoonDelegate {
     	}
     	
     	// spoon.addTransLog(transMeta);
+    }
+    
+    public void showLogSettings() {
+    	spoon.setLog();
     }
     
 	public void clearLog()

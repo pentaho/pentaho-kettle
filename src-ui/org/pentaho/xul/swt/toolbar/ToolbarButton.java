@@ -112,4 +112,7 @@ public class ToolbarButton extends XulObject implements XulToolbarButton, Select
 		return toolItem;
 	}
 
+	public void setSelection(boolean selection) {
+		toolItem.setSelection(selection);
+	}
 }

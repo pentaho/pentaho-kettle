@@ -27,4 +27,6 @@ public interface XulToolbarButton extends XulItem {
 	public void setText( String text );
 
 	public void setHint(String text);
+	
+	public void setSelection(boolean selection);
 }

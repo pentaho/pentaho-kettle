@@ -174,6 +174,9 @@ public class GUIResource
 	private Image imageShowHistory;
 
 	private Image imageShowPerf;
+	
+	private Image imageShowInactive;
+	private Image imageHideInactive;
 
 	private Image imageClosePanel;
 
@@ -324,6 +327,9 @@ public class GUIResource
 			disposeImage(imageShowGrid);
 			disposeImage(imageShowHistory);
 			disposeImage(imageShowPerf);
+			
+			disposeImage(imageShowInactive);
+			disposeImage(imageHideInactive);
 
 			disposeImage(imageClosePanel);
 			disposeImage(imageMaximizePanel);
@@ -478,6 +484,9 @@ public class GUIResource
 		imageShowGrid = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("ShowGrid_image")); // , "ui/images/show-grid.png"
 		imageShowHistory = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("ShowHistory_image")); // , "ui/images/show-history.png"
 		imageShowPerf = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("ShowPerf_image")); // , "ui/images/show-perf.png"
+
+		imageShowInactive = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("ShowInactive_image")); // ui/images/show-inactive-selected.png
+		imageHideInactive = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("HideInactive_image")); // ui/images/show-inactive-selected.png
 
 		imageClosePanel= ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("ClosePanel_image")); // , "ui/images/show-perf.png"
 		imageMaximizePanel = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("MaximizePanel_image")); // , "ui/images/show-perf.png"
@@ -1229,6 +1238,21 @@ public class GUIResource
 	public Image getImageShowPerf() {
 		return imageShowPerf;
 	}
+
+	/**
+	 * @return the "hide inactive" image 
+	 */
+	public Image getImageHideInactive() {
+		return imageHideInactive;
+	}
+
+	/**
+	 * @return the "show inactive" image 
+	 */
+	public Image getImageShowInactive() {
+		return imageShowInactive;
+	}
+
 
 	/**
 	 * @return the close panel image

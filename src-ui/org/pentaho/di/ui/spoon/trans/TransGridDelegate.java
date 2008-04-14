@@ -1,6 +1,8 @@
 package org.pentaho.di.ui.spoon.trans;
 
+import java.net.URL;
 import java.util.Date;
+import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -9,20 +11,37 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.layout.FormAttachment;
+import org.eclipse.swt.layout.FormData;
+import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.ToolBar;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.trans.step.BaseStep;
+import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepStatus;
+import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
+import org.pentaho.di.ui.core.gui.XulHelper;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.spoon.Messages;
 import org.pentaho.di.ui.spoon.Spoon;
+import org.pentaho.di.ui.spoon.XulMessages;
 import org.pentaho.di.ui.spoon.delegates.SpoonDelegate;
+import org.pentaho.xul.toolbar.XulToolbar;
+import org.pentaho.xul.toolbar.XulToolbarButton;
 
 public class TransGridDelegate extends SpoonDelegate {
 	
-	// private static final LogWriter log = LogWriter.getInstance();
+	private static final String XUL_FILE_TRANS_GRID_TOOLBAR = "ui/trans-grid-toolbar.xul";
+	public static final String XUL_FILE_TRANS_GRID_TOOLBAR_PROPERTIES = "ui/trans-grid-toolbar.properties";
+
+	private static final LogWriter log = LogWriter.getInstance();
 	
 	public static final long REFRESH_TIME = 100L;
     public static final long UPDATE_TIME_VIEW = 1000L;
@@ -36,6 +55,10 @@ public class TransGridDelegate extends SpoonDelegate {
 	private boolean refresh_busy;
 	private long lastUpdateView;
 	
+	private XulToolbar       toolbar;
+	private Composite transGridComposite;
+	private boolean hideInactiveSteps;
+	
 	/**
 	 * @param spoon
 	 * @param transGraph
@@ -43,6 +66,8 @@ public class TransGridDelegate extends SpoonDelegate {
 	public TransGridDelegate(Spoon spoon, TransGraph transGraph) {
 		super(spoon);
 		this.transGraph = transGraph;
+		
+		hideInactiveSteps = false;
 	}
 	
 	
@@ -79,7 +104,12 @@ public class TransGridDelegate extends SpoonDelegate {
 		transGridTab = new CTabItem(transGraph.extraViewTabFolder, SWT.NONE);
 		transGridTab.setImage(GUIResource.getInstance().getImageShowGrid());
 		transGridTab.setText(Messages.getString("Spoon.TransGraph.GridTab.Name"));
-		// wFields = new Text(extraViewTabFolder, SWT.READ_ONLY | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
+
+		transGridComposite = new Composite(transGraph.extraViewTabFolder, SWT.NONE);
+		transGridComposite.setLayout(new FormLayout());
+		
+		addToolBar();
+		addToolBarListeners();
 		
 		ColumnInfo[] colinf = new ColumnInfo[] { 
                 new ColumnInfo(Messages.getString("TransLog.Column.Stepname"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
@@ -110,9 +140,15 @@ public class TransGridDelegate extends SpoonDelegate {
 		colinf[11].setAllignement(SWT.RIGHT);
         colinf[12].setAllignement(SWT.RIGHT);
 
-		transGridView = new TableView(transGraph.getManagedObject(), transGraph.extraViewTabFolder, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, 1, true, // readonly!
+		transGridView = new TableView(transGraph.getManagedObject(), transGridComposite, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, 1, true, // readonly!
 				null, // Listener
 				spoon.props);
+		FormData fdView = new FormData();
+		fdView.left = new FormAttachment(0,0);
+		fdView.right = new FormAttachment(100,0);
+		fdView.top = new FormAttachment((Control)toolbar.getNativeObject(),0);
+		fdView.bottom = new FormAttachment(100,0);
+		transGridView.setLayoutData(fdView);
 		
 		// Add a timer to update this view every couple of seconds...
 		//
@@ -151,11 +187,79 @@ public class TransGridDelegate extends SpoonDelegate {
 			}
 		});
 		
-		transGridTab.setControl(transGridView);
+		transGridTab.setControl(transGridComposite);
 
 		transGraph.extraViewTabFolder.setSelection(transGridTab);		
 	}
 
+    private void addToolBar()
+	{
+
+		try {
+			toolbar = XulHelper.createToolbar(XUL_FILE_TRANS_GRID_TOOLBAR, transGridComposite, TransGridDelegate.this, new XulMessages());
+			
+			
+			// set the selected icon for the show inactive button.
+			// This is not a XUL standard apparently
+			//
+			XulToolbarButton onlyActiveButton = toolbar.getButtonById("show-inactive");
+			if (onlyActiveButton!=null) {
+				onlyActiveButton.setSelectedImage(GUIResource.getInstance().getImageHideInactive());
+			}
+		
+			// Add a few default key listeners
+			//
+			ToolBar toolBar = (ToolBar) toolbar.getNativeObject();
+			toolBar.addKeyListener(spoon.defKeys);
+			
+			addToolBarListeners();
+	        toolBar.layout(true, true);
+		} catch (Throwable t ) {
+			log.logError(toString(), Const.getStackTracker(t));
+			new ErrorDialog(transGridComposite.getShell(), Messages.getString("Spoon.Exception.ErrorReadingXULFile.Title"), Messages.getString("Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_GRID_TOOLBAR), new Exception(t));
+		}
+	}
+
+	public void addToolBarListeners()
+	{
+		try
+		{
+			// first get the XML document
+			URL url = XulHelper.getAndValidate(XUL_FILE_TRANS_GRID_TOOLBAR_PROPERTIES);
+			Properties props = new Properties();
+			props.load(url.openStream());
+			String ids[] = toolbar.getMenuItemIds();
+			for (int i = 0; i < ids.length; i++)
+			{
+				String methodName = (String) props.get(ids[i]);
+				if (methodName != null)
+				{
+					toolbar.addMenuListener(ids[i], this, methodName);
+
+				}
+			}
+
+		} catch (Throwable t ) {
+			t.printStackTrace();
+			new ErrorDialog(transGridComposite.getShell(), Messages.getString("Spoon.Exception.ErrorReadingXULFile.Title"), 
+					Messages.getString("Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_GRID_TOOLBAR_PROPERTIES), new Exception(t));
+		}
+	}
+
+	public void showHideInactive() {
+		hideInactiveSteps=!hideInactiveSteps;
+		
+		// TODO: change icon
+		XulToolbarButton onlyActiveButton = toolbar.getButtonById("show-inactive");
+		if (onlyActiveButton!=null) {
+			onlyActiveButton.setSelection(hideInactiveSteps);
+			if (hideInactiveSteps) {
+				onlyActiveButton.setImage(GUIResource.getInstance().getImageHideInactive());
+			} else {
+				onlyActiveButton.setImage(GUIResource.getInstance().getImageShowInactive());
+			}
+		}
+	}
 	
 	private void refreshView()
 	{
@@ -174,7 +278,7 @@ public class TransGridDelegate extends SpoonDelegate {
 		{
             lastUpdateView = time;
 			int nrSteps = transGraph.trans.nrSteps();
-			// if (wOnlyActive.getSelection()) nrSteps = trans.nrActiveSteps(); TODO: re-add this check button
+			if (hideInactiveSteps) nrSteps = transGraph.trans.nrActiveSteps();
 
 			if (table.getItemCount() != nrSteps)
             {
@@ -196,8 +300,8 @@ public class TransGridDelegate extends SpoonDelegate {
 				BaseStep baseStep = transGraph.trans.getRunThread(i);
 				//when "Hide active" steps is enabled show only alive steps
 				//otherwise only those that have not STATUS_EMPTY
-				// if ( (wOnlyActive.getSelection() && baseStep.isAlive() ) || 
-				// 		( !wOnlyActive.getSelection() && baseStep.getStatus()!=StepDataInterface.STATUS_EMPTY) )  TODO: re-add check box
+				if ( (hideInactiveSteps && baseStep.isAlive() ) || 
+				 		( !hideInactiveSteps && baseStep.getStatus()!=StepDataInterface.STATUS_EMPTY) ) 
 				{
                     StepStatus stepStatus = new StepStatus(baseStep);
                     TableItem ti;
