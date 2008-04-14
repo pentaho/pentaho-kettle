@@ -88,7 +88,7 @@ public class JobLogDelegate extends SpoonDelegate {
 		addToolBarListeners();
 		
 		jobLogText = new Text(jobLogComposite, SWT.READ_ONLY | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
-		
+		spoon.props.setLook(jobLogText);
 		FormData fdText = new FormData();
 		fdText.left = new FormAttachment(0,0);
 		fdText.right = new FormAttachment(100,0);

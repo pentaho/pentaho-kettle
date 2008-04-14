@@ -88,6 +88,7 @@ public class TransLogDelegate extends SpoonDelegate {
 		addToolBarListeners();
 		
 		transLogText = new Text(transLogComposite, SWT.READ_ONLY | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
+		spoon.props.setLook(transLogText);
 		FormData fdText = new FormData();
 		fdText.left = new FormAttachment(0,0);
 		fdText.right = new FormAttachment(100,0);
