@@ -55,6 +55,7 @@ public class GlobalMessages extends AbstractMessageHandler
     	"no_NO",
     	"it_IT",
     	"ja_JP",
+    	"ko_KR"
     	};
     
     public static final String[] localeDescr = { 
@@ -70,6 +71,7 @@ public class GlobalMessages extends AbstractMessageHandler
     	"Norwegian (Norway)", 
     	"Italian (Italy)",
     	"Japanese (Japan)",
+    	"Korean (Korea)",
     	};
  
     protected static GlobalMessages GMinstance = null;
