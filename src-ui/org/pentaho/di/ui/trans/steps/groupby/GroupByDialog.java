@@ -87,6 +87,11 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
     private Text         wLineNrField;
     private FormData     fdlLineNrField, fdLineNrField;
 
+    private Label        wlAlwaysAddResult;
+    private Button       wAlwaysAddResult;
+    private FormData     fdlAlwaysAddResult, fdAlwaysAddResult;
+    
+
 	private Button wGet, wGetAgg;
 	private FormData fdGet, fdGetAgg;
 	private Listener lsGet, lsGetAgg;
@@ -288,13 +293,33 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
         fdLineNrField.right = new FormAttachment(100, 0);
         wLineNrField.setLayoutData(fdLineNrField);
 
+        // Always pass a result rows as output
+        //
+        wlAlwaysAddResult=new Label(shell, SWT.RIGHT);
+        wlAlwaysAddResult.setText(Messages.getString("GroupByDialog.AlwaysAddResult.Label")); //$NON-NLS-1$
+        wlAlwaysAddResult.setToolTipText(Messages.getString("GroupByDialog.AlwaysAddResult.ToolTip")); //$NON-NLS-1$
+        props.setLook(wlAlwaysAddResult);
+        fdlAlwaysAddResult=new FormData();
+        fdlAlwaysAddResult.left = new FormAttachment(0, 0);
+        fdlAlwaysAddResult.top  = new FormAttachment(wLineNrField, margin);
+        fdlAlwaysAddResult.right= new FormAttachment(middle, -margin);
+        wlAlwaysAddResult.setLayoutData(fdlAlwaysAddResult);
+        wAlwaysAddResult=new Button(shell, SWT.CHECK );
+        wAlwaysAddResult.setToolTipText(Messages.getString("GroupByDialog.AlwaysAddResult.ToolTip")); //$NON-NLS-1$
+        props.setLook(wAlwaysAddResult);
+        fdAlwaysAddResult=new FormData();
+        fdAlwaysAddResult.left = new FormAttachment(middle, 0);
+        fdAlwaysAddResult.top  = new FormAttachment(wLineNrField, margin);
+        fdAlwaysAddResult.right= new FormAttachment(100, 0);
+        wAlwaysAddResult.setLayoutData(fdAlwaysAddResult);
+
         
 		wlGroup=new Label(shell, SWT.NONE);
 		wlGroup.setText(Messages.getString("GroupByDialog.Group.Label")); //$NON-NLS-1$
  		props.setLook(wlGroup);
 		fdlGroup=new FormData();
 		fdlGroup.left  = new FormAttachment(0, 0);
-		fdlGroup.top   = new FormAttachment(wLineNrField, margin);
+		fdlGroup.top   = new FormAttachment(wAlwaysAddResult, margin);
 		wlGroup.setLayoutData(fdlGroup);
 
 		int nrKeyCols=1;
@@ -434,6 +459,7 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
         if (input.getDirectory() != null) wSortDir.setText(input.getDirectory());
         wAddLineNr.setSelection( input.isAddingLineNrInGroup() );
         if (input.getLineNrInGroupField()!=null) wLineNrField.setText( input.getLineNrInGroupField() );
+        wAlwaysAddResult.setSelection(input.isAlwaysGivingBackOneRow());
         
 		if (input.getGroupField()!=null)
 		for (i=0;i<input.getGroupField().length;i++)
@@ -478,6 +504,7 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
         input.setDirectory( wSortDir.getText() );
 
         input.setLineNrInGroupField( wLineNrField.getText() );
+        input.setAlwaysGivingBackOneRow( wAlwaysAddResult.getSelection() );
         
 		input.allocate(sizegroup, nrfields);
 				

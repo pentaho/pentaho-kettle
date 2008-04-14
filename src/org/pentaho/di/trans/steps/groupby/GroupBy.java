@@ -212,7 +212,9 @@ public class GroupBy extends BaseStep implements StepInterface
     				calcAggregate(data.previous);
     			} 
 				Object[] result = buildResult(data.previous);
-				putRow(data.groupAggMeta, result);
+				if (result!=null) {
+					putRow(data.groupAggMeta, result);
+				}
     		}
 			setOutputDone();
 			return false;
@@ -287,7 +289,9 @@ public class GroupBy extends BaseStep implements StepInterface
             else
             {
     			Object[] result = buildResult(data.previous);
-    			putRow(data.groupAggMeta, result);        // copy row to possible alternate rowset(s).
+    			if (result!=null) {
+    				putRow(data.groupAggMeta, result);        // copy row to possible alternate rowset(s).
+    			}
             }
             newAggregate(r);       // Create a new group aggregate (init)
 		}
@@ -541,16 +545,19 @@ public class GroupBy extends BaseStep implements StepInterface
 	
 	private Object[] buildResult(Object[] r) throws KettleValueException
 	{
-		Object[] result = RowDataUtil.allocateRowData(data.groupnrs.length);
-		if (r!=null)
-		{
-			for (int i=0;i<data.groupnrs.length;i++)
+		Object[] result=null;
+		if (r!=null || meta.isAlwaysGivingBackOneRow()) {
+			result = RowDataUtil.allocateRowData(data.groupnrs.length);
+			if (r!=null)
 			{
-				result[i]=r[data.groupnrs[i]]; 
+				for (int i=0;i<data.groupnrs.length;i++)
+				{
+					result[i]=r[data.groupnrs[i]]; 
+				}
 			}
+			
+			result=RowDataUtil.addRowData(result, data.groupnrs.length, getAggregateResult());
 		}
-		
-		result=RowDataUtil.addRowData(result, data.groupnrs.length, getAggregateResult());
         
 		return result;
 	}

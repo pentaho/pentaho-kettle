@@ -112,6 +112,9 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
     /** The fieldname that will contain the added integer field */
     private String lineNrInGroupField;
     
+    /** Flag to indicate that we always give back one row.  Defaults to true for existing transformations. */
+    private boolean alwaysGivingBackOneRow;
+    
 	public GroupByMeta()
 	{
 		super(); // allocate BaseStepMeta
@@ -265,7 +268,14 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
 
             addingLineNrInGroup = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "add_linenr")); // $NON-NLS-1$
             lineNrInGroupField = XMLHandler.getTagValue(stepnode, "linenr_fieldname");
-            
+
+            String giveBackRow = XMLHandler.getTagValue(stepnode, "give_back_row"); // $NON-NLS-1$
+            if (Const.isEmpty(giveBackRow)) {
+            	alwaysGivingBackOneRow = true;
+            } else {
+            	alwaysGivingBackOneRow = "Y".equalsIgnoreCase( giveBackRow ); // $NON-NLS-1$
+            }
+
 			Node groupn = XMLHandler.getSubNode(stepnode, "group"); //$NON-NLS-1$
 			Node fields = XMLHandler.getSubNode(stepnode, "fields"); //$NON-NLS-1$
 			
@@ -450,6 +460,7 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
         retval.append("      ").append(XMLHandler.addTagValue("prefix",    prefix)); //$NON-NLS-1$ //$NON-NLS-2$
         retval.append("      ").append(XMLHandler.addTagValue("add_linenr",  addingLineNrInGroup)); //$NON-NLS-1$ //$NON-NLS-2$
         retval.append("      ").append(XMLHandler.addTagValue("linenr_fieldname", lineNrInGroupField)); //$NON-NLS-1$
+        retval.append("      ").append(XMLHandler.addTagValue("give_back_row",  alwaysGivingBackOneRow)); //$NON-NLS-1$ //$NON-NLS-2$
         
 		retval.append("      <group>").append(Const.CR); //$NON-NLS-1$
 		for (int i=0;i<groupField.length;i++)
@@ -486,6 +497,7 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
             prefix           =      rep.getStepAttributeString (id_step, "prefix"); //$NON-NLS-1$
             addingLineNrInGroup = rep.getStepAttributeBoolean(id_step, "add_linenr"); // $NON-NLS-1$
             lineNrInGroupField = rep.getStepAttributeString(id_step, "linenr_fieldname"); // $NON-NLS-1$
+            alwaysGivingBackOneRow = rep.getStepAttributeBoolean(id_step, 0, "give_back_row", true); // $NON-NLS-1$
             
 			int groupsize = rep.countNrStepAttributes(id_step, "group_name"); //$NON-NLS-1$
 			int nrvalues  = rep.countNrStepAttributes(id_step, "aggregate_name"); //$NON-NLS-1$
@@ -522,7 +534,8 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
             rep.saveStepAttribute(id_transformation, id_step, "prefix",           prefix); //$NON-NLS-1$
             rep.saveStepAttribute(id_transformation, id_step, "add_linenr",       addingLineNrInGroup); // $NON-NLS-1$
             rep.saveStepAttribute(id_transformation, id_step, "linenr_fieldname", lineNrInGroupField); // $NON-NLS-1$
-            
+            rep.saveStepAttribute(id_transformation, id_step, "give_back_row",    alwaysGivingBackOneRow); // $NON-NLS-1$
+
 			for (int i=0;i<groupField.length;i++)
 			{
 				rep.saveStepAttribute(id_transformation, id_step, i, "group_name",       groupField[i]); //$NON-NLS-1$
@@ -631,4 +644,20 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
     {
         this.lineNrInGroupField = lineNrInGroupField;
     }
+
+	/**
+	 * @return the alwaysGivingBackOneRow
+	 */
+	public boolean isAlwaysGivingBackOneRow() {
+		return alwaysGivingBackOneRow;
+	}
+
+	/**
+	 * @param alwaysGivingBackOneRow the alwaysGivingBackOneRow to set
+	 */
+	public void setAlwaysGivingBackOneRow(boolean alwaysGivingBackOneRow) {
+		this.alwaysGivingBackOneRow = alwaysGivingBackOneRow;
+	}
+    
+    
 }
