@@ -68,9 +68,6 @@ import org.pentaho.di.ui.spoon.Messages;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.TabMapEntry;
 import org.pentaho.di.ui.spoon.job.JobGraph;
-import org.pentaho.di.ui.spoon.job.JobHistory;
-import org.pentaho.di.ui.spoon.job.JobHistoryRefresher;
-import org.pentaho.di.ui.spoon.job.JobLog;
 import org.pentaho.di.ui.spoon.wizards.RipDatabaseWizardPage1;
 import org.pentaho.di.ui.spoon.wizards.RipDatabaseWizardPage2;
 import org.pentaho.di.ui.spoon.wizards.RipDatabaseWizardPage3;
@@ -809,6 +806,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 		return jobMeta;
 	}
 
+	/*
 	private void addJobHistory(JobMeta jobMeta, boolean select)
 	{
 		// See if there already is a tab for this history view
@@ -845,6 +843,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 			spoon.tabfolder.setSelected(idx);
 		}
 	}
+	*/
 
 	public boolean isDefaultJobName(String name)
 	{
@@ -880,27 +879,6 @@ public class SpoonJobDelegate extends SpoonDelegate
 		}
 		return null;
 	}
-
-	public JobLog findJobLogOfJob(JobMeta jobMeta)
-	{
-		// Now loop over the entries in the tab-map
-		for (TabMapEntry mapEntry : spoon.delegates.tabs.getTabs())
-		{
-			if (mapEntry.getObject() instanceof JobLog)
-			{
-				JobLog jobLog = (JobLog) mapEntry.getObject();
-				if (jobLog.isDisposed()) {
-					// spoon.delegates.tabs.getTabs().remove(jobLog);
-					continue;
-				}
-				if (jobLog.getMeta().equals(jobMeta))
-					return jobLog;
-			}
-		}
-		return null;
-	}
-
-
 
 	/**
 	 * Add a job to the job map
@@ -1023,6 +1001,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 		}
 	}
 
+	/*
 	private void addJobLog(JobMeta jobMeta)
 	{
 		// See if there already is a tab for this log
@@ -1060,6 +1039,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 		int idx = spoon.tabfolder.indexOf(tabItem);
 		spoon.tabfolder.setSelected(idx);
 	}
+	*/
 
 	public List<JobMeta> getJobList()
 	{
@@ -1085,24 +1065,6 @@ public class SpoonJobDelegate extends SpoonDelegate
 	public void removeJob(String key)
 	{
 		jobMap.remove(key);
-	}
-
-	public JobHistory findJobHistoryOfJob(JobMeta jobMeta)
-	{
-		if (jobMeta == null)
-			return null;
-
-		// Now loop over the entries in the tab-map
-		for (TabMapEntry mapEntry : spoon.delegates.tabs.getTabs())
-		{
-			if (mapEntry.getObject() instanceof JobHistory)
-			{
-				JobHistory jobHistory = (JobHistory) mapEntry.getObject();
-				if (jobHistory.getMeta() != null && jobHistory.getMeta().equals(jobMeta))
-					return jobHistory;
-			}
-		}
-		return null;
 	}
 
 	public void redoJobAction(JobMeta jobMeta, TransAction transAction)

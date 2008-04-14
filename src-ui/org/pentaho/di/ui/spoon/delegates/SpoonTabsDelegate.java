@@ -32,11 +32,7 @@ import org.pentaho.di.ui.spoon.SpoonBrowser;
 import org.pentaho.di.ui.spoon.TabItemInterface;
 import org.pentaho.di.ui.spoon.TabMapEntry;
 import org.pentaho.di.ui.spoon.job.JobGraph;
-import org.pentaho.di.ui.spoon.job.JobHistory;
-import org.pentaho.di.ui.spoon.job.JobLog;
 import org.pentaho.di.ui.spoon.trans.TransGraph;
-import org.pentaho.di.ui.spoon.trans.TransHistory;
-import org.pentaho.di.ui.spoon.trans.TransLog;
 import org.pentaho.xul.swt.tab.TabItem;
 import org.pentaho.xul.swt.tab.TabSet;
 
@@ -192,15 +188,7 @@ public class SpoonTabsDelegate extends SpoonDelegate
 		{
 			if (mapEntry.getObject() instanceof TransGraph)
 				meta = (mapEntry.getObject()).getMeta();
-			if (mapEntry.getObject() instanceof TransLog)
-				meta = (mapEntry.getObject()).getMeta();
-			if (mapEntry.getObject() instanceof TransHistory)
-				meta = (mapEntry.getObject()).getMeta();
 			if (mapEntry.getObject() instanceof JobGraph)
-				meta = (mapEntry.getObject()).getMeta();
-			if (mapEntry.getObject() instanceof JobLog)
-				meta = (mapEntry.getObject()).getMeta();
-			if (mapEntry.getObject() instanceof JobHistory)
 				meta = (mapEntry.getObject()).getMeta();
 		}
 
@@ -305,14 +293,6 @@ public class SpoonTabsDelegate extends SpoonDelegate
 					if (Const.isWindows() && !Const.isEmpty(transMeta.getFilename())) toolTipText+=Const.CR+Const.CR+transMeta.getFilename();
 					entry.getTabItem().setToolTipText(toolTipText);
 				} 
-				else if (entry.getObject() instanceof TransLog)
-				{
-					entry.getTabItem().setText(makeLogTabName((TransMeta) managedObject));
-				}
-				else if (entry.getObject() instanceof TransHistory)
-				{
-					entry.getTabItem().setText(makeHistoryTabName((TransMeta) managedObject));
-				}
 				else if (entry.getObject() instanceof JobGraph)
 				{
 					JobMeta jobMeta = (JobMeta) managedObject;
@@ -320,13 +300,6 @@ public class SpoonTabsDelegate extends SpoonDelegate
 					String toolTipText = Messages.getString("Spoon.TabJob.Tooltip", makeJobGraphTabName(jobMeta));
 					if (Const.isWindows() && !Const.isEmpty(jobMeta.getFilename())) toolTipText+=Const.CR+Const.CR+jobMeta.getFilename();
 					entry.getTabItem().setToolTipText(toolTipText);
-				} else if (entry.getObject() instanceof JobLog)
-				{
-					entry.getTabItem().setText(makeJobLogTabName((JobMeta) managedObject));
-				}
-				else if (entry.getObject() instanceof JobHistory)
-				{
-					entry.getTabItem().setText(makeJobHistoryTabName((JobMeta) managedObject));
 				}
 			}
 

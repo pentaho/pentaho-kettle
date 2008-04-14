@@ -208,11 +208,7 @@ import org.pentaho.di.ui.spoon.dialog.SaveProgressDialog;
 import org.pentaho.di.ui.spoon.dialog.ShowCreditsDialog;
 import org.pentaho.di.ui.spoon.dialog.TipsDialog;
 import org.pentaho.di.ui.spoon.job.JobGraph;
-import org.pentaho.di.ui.spoon.job.JobHistory;
-import org.pentaho.di.ui.spoon.job.JobLog;
 import org.pentaho.di.ui.spoon.trans.TransGraph;
-import org.pentaho.di.ui.spoon.trans.TransHistory;
-import org.pentaho.di.ui.spoon.trans.TransLog;
 import org.pentaho.di.ui.spoon.wizards.CopyTableWizardPage1;
 import org.pentaho.di.ui.spoon.wizards.CopyTableWizardPage2;
 import org.pentaho.di.ui.trans.dialog.TransHopDialog;
@@ -5267,17 +5263,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
          return null;
      }
 	
-	
-	/**
-     * @return the Log tab associated with the active job
-     */
-    public JobLog getActiveJobLog()
-    {
-        JobMeta jobMeta = getActiveJob();
-        if (jobMeta==null) return null; // nothing to work with.
-
-        return delegates.jobs.findJobLogOfJob(jobMeta);
-    }
 
 	public EngineMetaInterface getActiveMeta()
 	{
@@ -5293,11 +5278,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		if (mapEntry != null)
 		{
             if (mapEntry.getObject() instanceof TransGraph) meta = (mapEntry.getObject()).getMeta();
-            if (mapEntry.getObject() instanceof TransLog) meta = ( mapEntry.getObject()).getMeta();
-            if (mapEntry.getObject() instanceof TransHistory) meta = ( mapEntry.getObject()).getMeta();
             if (mapEntry.getObject() instanceof JobGraph) meta = ( mapEntry.getObject()).getMeta();
-            if (mapEntry.getObject() instanceof JobLog) meta = ( mapEntry.getObject()).getMeta();
-            if (mapEntry.getObject() instanceof JobHistory) meta = ( mapEntry.getObject()).getMeta();
 		}
 
 		return meta;
@@ -6778,18 +6759,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	{
 		delegates.slaves.addSpoonSlave(slaveServer);
 	}
-
-	public void addTransLog(TransMeta transMeta)
-	{
-		delegates.trans.addTransLog(transMeta, true);
-	}
-
-	/*
-	public void addTransHistory(TransMeta transMeta, boolean select)
-	{
-		delegates.trans.addTransHistory(transMeta, select);
-	}
-	*/
 
 	public void addJobHistory(JobMeta jobMeta, boolean select)
 	{

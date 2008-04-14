@@ -8,9 +8,8 @@
 			<toolbarbutton value="file-save" label="%Spoon.Menu.File.Save" image="ui/images/save.png" tooltiptext="%Spoon.Tooltip.SaveCurrentTranformation" />
 			<toolbarbutton value="file-save-as" label="%Spoon.Menu.File.SaveAs" image="ui/images/saveas.png" tooltiptext="%Spoon.Tooltip.SaveDifferentNameTranformation" />
 			<toolbarseparator />
-			<toolbarbutton value="file-print" label="%Spoon.Menu.File.Print" image="ui/images/print.png" tooltiptext="%Spoon.Tooltip.Print"/>
-			<toolbarseparator />
 			<toolbarbutton value="job-run" label="%Spoon.Menu.Job.Run" image="ui/images/run.png" tooltiptext="%Spoon.Tooltip.RunJob"/>
+			<toolbarbutton value="job-stop" label="%Spoon.Menu.Job.Stop" image="ui/images/stop.png" tooltiptext="%Spoon.Tooltip.StopJob"/>
 			<toolbarseparator />
 			<toolbarbutton value="job-get-sql" label="%Spoon.Menu.Job.GetSQL" image="ui/images/SQLbutton.png" tooltiptext="%Spoon.Tooltip.GenerateSQLForJob"/>
 			<toolbarseparator />
@@ -19,6 +18,9 @@
 			<toolbarbutton value="job-show-log" label="%Spoon.Menu.ShowLog" image="ui/images/show-log.png" tooltiptext="%Spoon.Tooltip.ShowJobLogView"/>
 			<toolbarbutton value="job-show-grid" label="%Spoon.Menu.ShowGrid" image="ui/images/show-grid.png" tooltiptext="%Spoon.Tooltip.ShowJobGridView"/>
 			<toolbarbutton value="job-show-history" label="%Spoon.Menu.ShowHistory" image="ui/images/show-history.png" tooltiptext="%Spoon.Tooltip.ShowJobHistoryView"/>
+			<toolbarseparator />
+			<toolbarbutton value="job-show-results" label="%Spoon.Menu.ShowExecutionResults" image="ui/images/show-grid.png" tooltiptext="%Spoon.Tooltip.ShowExecutionResults"/>
+			<toolbarseparator />
 		</toolbar>
 	</toolbox>
 

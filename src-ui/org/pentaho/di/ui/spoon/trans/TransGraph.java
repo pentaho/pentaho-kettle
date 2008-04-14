@@ -29,9 +29,6 @@ import org.eclipse.jface.window.DefaultToolTip;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
-import org.eclipse.swt.custom.CTabFolder2Adapter;
-import org.eclipse.swt.custom.CTabFolderEvent;
-import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTarget;
@@ -2750,15 +2747,6 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     	}
     }
 
-    public void showLogView() {
-    	transLogDelegate.showLogView();
-    }
-
-    
-    public void showGridView() {
-    	transGridDelegate.showGridView();
-    }
-
     
     /**
      * If the extra tab view at the bottom is empty, we close it.
@@ -2793,14 +2781,6 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     		minMaxButton.setToolTipText(Messages.getString("TransGraph.ExecutionResultsPanel.MinButton.Tooltip"));
     	}
     }
-
-	public void showHistoryView() {
-    	transHistoryDelegate.showHistoryView();
-    }
-	
-	public void showPerfView() {
-		transPerfDelegate.showPerfView();
-	}
 
 	/**
 	 * @return the toolbar
@@ -2867,29 +2847,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 		//
         extraViewTabFolder= new CTabFolder(extraViewComposite, SWT.MULTI);
         spoon.props.setLook(extraViewTabFolder, Props.WIDGET_STYLE_TAB);
-        
-        // If the last tab is closed, see if we need to close the bottom view.
-        //
-        extraViewTabFolder.addCTabFolder2Listener(new CTabFolder2Adapter() {
-			public void close(CTabFolderEvent event) {
-				CTabItem tabItem = (CTabItem) event.item;
-				if (tabItem == transLogDelegate.getTransLogTab()) {
-					showLogView();
-				}
-				if (tabItem == transGridDelegate.getTransGridTab()) {
-					showGridView();
-				}
-				if (tabItem == transHistoryDelegate.getTransHistoryTab()) {
-					showHistoryView();
-				}
-				if (tabItem == transPerfDelegate.getTransPerfTab()) {
-					showPerfView();
-				}
-				
-				event.doit=false;
-			}
-		});
-        
+                
         extraViewTabFolder.addMouseListener(new MouseAdapter() {
 		
 			@Override

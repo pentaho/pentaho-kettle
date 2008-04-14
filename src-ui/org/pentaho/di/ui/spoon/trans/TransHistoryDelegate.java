@@ -160,7 +160,6 @@ public class TransHistoryDelegate extends SpoonDelegate {
 		wText = new Text(sash, SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL | SWT.READ_ONLY );
 		spoon.props.setLook(wText);
 		wText.setVisible(true);
-        // wText.setText(Messages.getString("TransHistory.PleaseRefresh.Message"));
 		
 		// Put text in the middle
 		fdText=new FormData();
@@ -215,8 +214,10 @@ public class TransHistoryDelegate extends SpoonDelegate {
 			public void run() {
 				refreshHistory();
 				transHistoryComposite.layout(true, true);
+				showLogEntry();
 			}
 		});
+		
 	}
 	
     private void addToolBar()
@@ -541,7 +542,14 @@ public class TransHistoryDelegate extends SpoonDelegate {
     {
         if (rowList==null) 
         {
-            wText.setText(""); //$NON-NLS-1$
+        	String message;
+        	TransMeta transMeta = transGraph.getManagedObject();
+        	if (transMeta.getLogConnection()==null || Const.isEmpty(transMeta.getLogTable())) {
+        		message = Messages.getString("TransHistory.HistoryConfiguration.Message");
+        	} else {
+            	message = Messages.getString("TransHistory.PleaseRefresh.Message");
+        	}
+        	wText.setText(message);
             return;
         }
         

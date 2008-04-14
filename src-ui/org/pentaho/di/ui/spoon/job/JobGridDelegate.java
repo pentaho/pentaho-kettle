@@ -23,7 +23,6 @@ import org.pentaho.di.job.JobEntryResult;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.TreeMemory;
-import org.pentaho.di.ui.spoon.job.Messages;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.delegates.SpoonDelegate;
 
@@ -153,16 +152,14 @@ public class JobGridDelegate extends SpoonDelegate {
 						{
 							public void run() 
 							{
-								// Chef if the widgets are not disposed.  
+								// Check if the widgets are not disposed.  
 								// This happens is the rest of the window is not yet disposed.
 								// We ARE running in a different thread after all.
 								//
-								if (!jobGraph.wAuto.isDisposed() && !jobGraph.wStart.isDisposed() && !wTree.isDisposed())
+								// TODO: add a "auto refresh" check box somewhere
+								if (!wTree.isDisposed())
 								{
-                                    if (jobGraph.wAuto.getSelection())
-	                                {
-	    								refreshTreeTable();
-	                                }
+    								refreshTreeTable();
 								}
 							}
 						}

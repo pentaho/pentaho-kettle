@@ -49,8 +49,6 @@ import org.pentaho.di.ui.spoon.TabMapEntry;
 import org.pentaho.di.ui.spoon.job.JobGraph;
 import org.pentaho.di.ui.spoon.trans.TransGraph;
 import org.pentaho.di.ui.spoon.trans.TransHistory;
-import org.pentaho.di.ui.spoon.trans.TransHistoryRefresher;
-import org.pentaho.di.ui.spoon.trans.TransLog;
 import org.pentaho.di.ui.trans.debug.TransDebugDialog;
 import org.pentaho.di.ui.trans.dialog.TransExecutionConfigurationDialog;
 import org.pentaho.xul.swt.tab.TabItem;
@@ -241,106 +239,6 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 		return null;
 	}
 
-	public TransLog findTransLogOfTransformation(TransMeta transMeta)
-	{
-		// Now loop over the entries in the tab-map
-		for (TabMapEntry mapEntry : spoon.delegates.tabs.getTabs())
-		{
-			if (mapEntry.getObject() instanceof TransLog)
-			{
-				TransLog transLog = (TransLog) mapEntry.getObject();
-				if (transLog.isDisposed()) {
-					// spoon.delegates.tabs.getTabs().remove(transLog);
-					continue;
-				}
-				if (transLog.getMeta().equals(transMeta))
-					return transLog;
-			}
-		}
-		return null;
-	}
-
-	public void addTransLog(TransMeta transMeta, boolean setActive)
-	{
-		// See if there already is a tab for this log
-		// If no, add it
-		// If yes, select that tab
-		// if setActive is true
-		//
-		String tabName = spoon.delegates.tabs.makeLogTabName(transMeta);
-		TabItem tabItem = spoon.delegates.tabs.findTabItem(tabName,
-				TabMapEntry.OBJECT_TYPE_TRANSFORMATION_LOG);
-		if (tabItem == null)
-		{
-			TransLog transLog = new TransLog(spoon.tabfolder.getSwtTabset(), spoon, transMeta);
-			tabItem = new TabItem(spoon.tabfolder, tabName, tabName);
-			tabItem.setToolTipText(Messages.getString("Spoon.Title.ExecLogTransView.Tooltip", spoon.delegates.tabs.makeTransGraphTabName(transMeta)));
-			tabItem.setControl(transLog);
-
-			// If there is an associated history window, we want to keep that
-			// one up-to-date as well.
-			//
-			TransGraph transGraph = findTransGraphOfTransformation(transMeta);
-			TabItem historyItem = spoon.delegates.tabs.findTabItem(spoon.delegates.tabs.makeHistoryTabName(transMeta), TabMapEntry.OBJECT_TYPE_TRANSFORMATION_HISTORY);
-
-			if (transGraph != null && historyItem != null)
-			{
-				TransHistoryRefresher transHistoryRefresher = new TransHistoryRefresher(historyItem, transGraph);
-				spoon.tabfolder.addListener(transHistoryRefresher);
-				// transLog.setTransHistoryRefresher(transHistoryRefresher);
-			}
-
-			spoon.delegates.tabs.addTab(new TabMapEntry(tabItem, tabName, transLog,
-					TabMapEntry.OBJECT_TYPE_TRANSFORMATION_LOG));
-		}
-		if (setActive)
-		{
-			int idx = spoon.tabfolder.indexOf(tabItem);
-			spoon.tabfolder.setSelected(idx);
-		}
-	}
-
-	/*
-	public void addTransHistory(TransMeta transMeta, boolean select)
-	{
-		// See if there already is a tab for this history view
-		// If no, add it
-		// If yes, select that tab
-		//
-		String tabName = spoon.delegates.tabs.makeHistoryTabName(transMeta);
-		TabItem tabItem = spoon.delegates.tabs.findTabItem(tabName,
-				TabMapEntry.OBJECT_TYPE_TRANSFORMATION_HISTORY);
-		if (tabItem == null)
-		{
-			TransHistory transHistory = new TransHistory(spoon.tabfolder.getSwtTabset(), spoon, transMeta);
-			tabItem = new TabItem(spoon.tabfolder, tabName, tabName);
-			tabItem.setToolTipText(Messages.getString("Spoon.Title.ExecHistoryTransView.Tooltip",
-					spoon.delegates.tabs.makeTransGraphTabName(transMeta)));
-			tabItem.setControl(transHistory);
-
-			// If there is an associated log window that's open, find it and add
-			// a refresher
-			TransGraph transGraph = findTransGraphOfTransformation(transMeta);
-			if (transGraph != null)
-			{
-				TransHistoryRefresher transHistoryRefresher = new TransHistoryRefresher(tabItem, transHistory);
-				spoon.tabfolder.addListener(transHistoryRefresher);
-				transGraph.setTransHistoryRefresher(transHistoryRefresher);
-			}
-			transGraph.transHistoryDelegate.markRefreshNeeded(); // will refresh when first
-			// selected
-
-			spoon.delegates.tabs.addTab(new TabMapEntry(tabItem, tabName, transHistory,
-					TabMapEntry.OBJECT_TYPE_TRANSFORMATION_HISTORY));
-		}
-		if (select)
-		{
-			int idx = spoon.tabfolder.indexOf(tabItem);
-			spoon.tabfolder.setSelected(idx);
-		}
-	}
-	*/
-	
 	public void tabSelected(TabItem item)
 	{
 		List<TabMapEntry> collection = spoon.delegates.tabs.getTabs();

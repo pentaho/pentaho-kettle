@@ -79,9 +79,11 @@ public class TransHistory extends Composite implements TabItemInterface
 
 	private final Shell shell;
 
+	/*
 	private boolean refreshNeeded = true;
 	
 	private Object refreshNeededLock = new Object();
+	*/
 	
 	private ValueMetaInterface durationMeta;
 	private ValueMetaInterface replayDateMeta;
@@ -460,6 +462,7 @@ public class TransHistory extends Composite implements TabItemInterface
 		return Spoon.APP_NAME;
 	}
 
+    /*
 	private void refreshHistoryIfNeeded() {
 		boolean reallyRefresh = false;
 		synchronized (refreshNeededLock) {
@@ -477,6 +480,7 @@ public class TransHistory extends Composite implements TabItemInterface
 			refreshNeeded = true;
 		}
 	}
+	*/
 
     public EngineMetaInterface getMeta() {
     	return transMeta;

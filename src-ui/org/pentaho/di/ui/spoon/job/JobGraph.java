@@ -24,9 +24,6 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
-import org.eclipse.swt.custom.CTabFolder2Adapter;
-import org.eclipse.swt.custom.CTabFolderEvent;
-import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTarget;
@@ -54,7 +51,6 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -101,6 +97,7 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.XulHelper;
 import org.pentaho.di.ui.job.dialog.JobDialog;
+import org.pentaho.di.ui.spoon.Messages;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.TabItemInterface;
 import org.pentaho.di.ui.spoon.TabMapEntry;
@@ -112,6 +109,7 @@ import org.pentaho.xul.menu.XulMenuChoice;
 import org.pentaho.xul.menu.XulPopupMenu;
 import org.pentaho.xul.swt.tab.TabItem;
 import org.pentaho.xul.toolbar.XulToolbar;
+import org.pentaho.xul.toolbar.XulToolbarButton;
 
 
 /**
@@ -187,21 +185,21 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 	
     private XulToolbar       toolbar;
 
-	public  Button wStart;
+	// public  Button wStart;
 	// private Button wPause;
-    private Button wStop;
-	private Button wError;
-	private Button wClear;
-	public  Button wAuto;
-	private Button wLog;
-	private Button wSafeMode;
-	private Composite buttonsComposite;
+    // private Button wStop;
+	// private Button wError;
+	// private Button wClear;
+	// public  Button wAuto;
+	// private Button wLog;
+	// private Button wSafeMode;
+	// private Composite buttonsComposite;
 	
 	public JobLogDelegate jobLogDelegate;
 	public JobHistoryDelegate jobHistoryDelegate;
 	public JobGridDelegate jobGridDelegate;
 
-	private boolean isRunning;
+	private boolean running;
 	private Composite mainComposite;
 	
 	private List<RefreshListener> refreshListeners;
@@ -250,27 +248,6 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
         canvas = new Canvas(sashForm, SWT.V_SCROLL | SWT.H_SCROLL | SWT.NO_BACKGROUND | SWT.BORDER);
         
         sashForm.setWeights(new int[] { 100, } );
-
-        /*
-		filenameLabel = new Text(this, SWT.LEFT | SWT.ON_TOP | SWT.NO_BACKGROUND | SWT.READ_ONLY | SWT.NO_FOCUS | SWT.BORDER);
-		filenameLabel.setText(Const.NVL(jobMeta.getFilename(), ""));
-		filenameLabel.setBackground(GUIResource.getInstance().getColorBackground());
-        FormData fdFilenameLabel = new FormData();
-		fdFilenameLabel.left = new FormAttachment((Control)toolbar.getNativeObject(), 10);
-		fdFilenameLabel.top = new FormAttachment(0,0);
-		fdFilenameLabel.right = new FormAttachment(100,0);
-        filenameLabel.setLayoutData(fdFilenameLabel);
-        
-        // Add a filename listener to transMeta to make sure we always show the correct filename in this label...
-        //
-        jobMeta.addFilenameChangedListener(new FilenameChangedListener() {
-		
-			public void filenameChanged(Object object, String oldFilename, String newFilename) {
-				filenameLabel.setText(Const.NVL(newFilename, ""));
-				canvas.layout(true, true);
-			}
-		});
-		*/
         
 		try {
 			menuMap = XulHelper.createPopupMenus(SpoonInterface.XUL_FILE_MENUS, shell, new org.pentaho.di.ui.spoon.job.XulMessages(), "job-graph-hop", "job-graph-note", "job-graph-background", "job-graph-entry");
@@ -2591,155 +2568,11 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
         fdResultsLabel.top = new FormAttachment(0,0);
         wResultsLabel.setLayoutData(fdResultsLabel);
 
-		
-		// Add a buttons panel to the right...
-		//
-		buttonsComposite = new Composite(extraViewComposite, SWT.NONE);
-		FormLayout buttonsCompositeFormLayout = new FormLayout();
-		buttonsCompositeFormLayout.marginWidth=2;
-		buttonsCompositeFormLayout.marginHeight=2;
-		buttonsComposite.setLayout(buttonsCompositeFormLayout);
-		
-        FormData fdButtonsComposite = new FormData();
-        fdButtonsComposite.left = new FormAttachment(80,0);
-        fdButtonsComposite.right = new FormAttachment(100,0);
-        fdButtonsComposite.top = new FormAttachment(wResultsLabel,Const.MARGIN);
-        fdButtonsComposite.bottom = new FormAttachment(100,0);
-        buttonsComposite.setLayoutData(fdButtonsComposite);
-		
-        // ROW 1
-        
-        // Start...
-        wStart = new Button(buttonsComposite, SWT.PUSH);
-		wStart.setText(START_TEXT);
-        FormData fdStart = new FormData();
-        fdStart.left = new FormAttachment(0,Const.MARGIN);
-        fdStart.right = new FormAttachment(50,0);
-        fdStart.top = new FormAttachment(0,0);
-        wStart.setLayoutData(fdStart);
-
-        /*
-        // Pause...
-        wPause = new Button(buttonsComposite, SWT.PUSH);
-		wPause.setText(PAUSE_TEXT);
-        FormData fdPause = new FormData();
-        fdPause.left = new FormAttachment(50,Const.MARGIN);
-        fdPause.right = new FormAttachment(100,0);
-        fdPause.top = new FormAttachment(0,0);
-        wPause.setLayoutData(fdPause);
-        */
-        Control lastControl = wStart;
-
-        // ROW 2
-        
-        // Stop...
-        wStop = new Button(buttonsComposite, SWT.PUSH);
-        wStop.setText(STOP_TEXT);
-        FormData fdStop = new FormData();
-        fdStop.left = new FormAttachment(0,Const.MARGIN);
-        fdStop.right = new FormAttachment(50,0);
-        fdStop.top = new FormAttachment(lastControl,2);
-        wStop.setLayoutData(fdStop);
-        lastControl = wStop;
-
-        // ROW 3
-        
-        // Show errors lines...
-        wError = new Button(buttonsComposite, SWT.PUSH);
-		wError.setText(Messages.getString("JobLog.Button.ShowErrorLines")); //$NON-NLS-1$
-        FormData fdError = new FormData();
-        fdError.left = new FormAttachment(0,Const.MARGIN);
-        fdError.right = new FormAttachment(50,0);
-        fdError.top = new FormAttachment(lastControl,2);
-        wError.setLayoutData(fdError);
-
-        // Clear
-        wClear = new Button(buttonsComposite, SWT.PUSH);
-		wClear.setText(Messages.getString("JobLog.Button.ClearLog")); //$NON-NLS-1$
-        FormData fdClear = new FormData();
-        fdClear.left = new FormAttachment(50,Const.MARGIN);
-        fdClear.right = new FormAttachment(100,0);
-        fdClear.top = new FormAttachment(lastControl,2);
-        wClear.setLayoutData(fdClear);
-        lastControl = wError;
-
-        // Row 4
-        
-        // Log
-        wLog = new Button(buttonsComposite, SWT.PUSH);
-		wLog.setText(Messages.getString("JobLog.Button.LogSettings")); //$NON-NLS-1$
-        FormData fdLog = new FormData();
-        fdLog.left = new FormAttachment(0,Const.MARGIN);
-        fdLog.right = new FormAttachment(50,0);
-        fdLog.top = new FormAttachment(lastControl,2);
-        wLog.setLayoutData(fdLog);
-
-        lastControl = wLog;
-
-        // Row 6
-        
-        wAuto = new Button(this, SWT.CHECK);
-        wAuto.setText(Messages.getString("JobLog.Button.AutoRefresh")); //$NON-NLS-1$
-        wAuto.setSelection(true);
-        FormData fdAuto = new FormData();
-        fdAuto.left = new FormAttachment(0,Const.MARGIN);
-        fdAuto.right = new FormAttachment(50,0);
-        fdAuto.top = new FormAttachment(lastControl,2);
-        wAuto.setLayoutData(fdAuto);
-        lastControl = wAuto;
-        
-		// Safe mode
-		wSafeMode = new Button(buttonsComposite, SWT.CHECK);
-		wSafeMode.setText(Messages.getString("JobLog.Button.SafeMode")); //$NON-NLS-1$
-        FormData fdSafeMode = new FormData();
-        fdSafeMode.left = new FormAttachment(0,Const.MARGIN);
-        fdSafeMode.right = new FormAttachment(100,0);
-        fdSafeMode.top = new FormAttachment(lastControl,2);
-        wSafeMode.setLayoutData(fdSafeMode);
-        lastControl = wSafeMode;
-        
-        
-		// Attach listeners to the buttons
-		//
-        wStart.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { spoon.executeJob(jobMeta, true, false, null, wSafeMode.getSelection()); }});
-        // wPause.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { pauseJob();}}); TODO implement pause later
-        wStop.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { stopJob(); }});
-		wError.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { jobLogDelegate.showErrors(); } });
-		wClear.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { jobLogDelegate.clearLog(); }});
-		wLog.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { spoon.setLog(); }});
-		
-		
 		// Add a tab folder ...
 		//
         extraViewTabFolder= new CTabFolder(extraViewComposite, SWT.MULTI);
         spoon.props.setLook(extraViewTabFolder, Props.WIDGET_STYLE_TAB);
-        
-        /*
-        extraViewTabFolder.setSimple(false);
-        extraViewTabFolder.setUnselectedImageVisible(true);
-        extraViewTabFolder.setUnselectedCloseVisible(true);
-        */
-        
-        // If the last tab is closed, see if we need to close the bottom view.
-        //
-        extraViewTabFolder.addCTabFolder2Listener(new CTabFolder2Adapter() {
-			public void close(CTabFolderEvent event) {
-				CTabItem tabItem = (CTabItem) event.item;
-				if (tabItem == jobLogDelegate.getJobLogTab()) {
-					showLogView();
-				}
-				/*
-				if (tabItem == transGridDelegate.getTransGridTab()) {
-					showGridView();
-				}
-				*/
-				if (tabItem == jobHistoryDelegate.getJobHistoryTab()) {
-					showHistoryView();
-				}
-				
-				event.doit=false;
-			}
-		});
+       
         
         extraViewTabFolder.addMouseListener(new MouseAdapter() {
 		
@@ -2756,7 +2589,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
         
         FormData fdTabFolder = new FormData();
         fdTabFolder.left = new FormAttachment(0,0);
-        fdTabFolder.right = new FormAttachment(80,0);
+        fdTabFolder.right = new FormAttachment(100,0);
         fdTabFolder.top = new FormAttachment(wResultsLabel,Const.MARGIN);
         fdTabFolder.bottom = new FormAttachment(100,0);
         extraViewTabFolder.setLayoutData(fdTabFolder);
@@ -2779,18 +2612,22 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 		sashForm.setWeights( new int[] { 100, });
 	}
 
-    public void showLogView() {
-    	jobLogDelegate.showLogView();
+    public void showExecutionResults() {
+    	if (extraViewComposite==null || extraViewComposite.isDisposed()) {
+    		addAllTabs();
+    	} else {
+    		disposeExtraView();
+    	}
     }
     
-    public void showHistoryView() {
-    	jobHistoryDelegate.showHistoryView();
-    }
-    
-    public void showGridView() {
-    	jobGridDelegate.showGridView();
-    }
-    
+	
+	protected void addAllTabs() {
+    	jobHistoryDelegate.addJobHistory();
+    	jobLogDelegate.addJobLog();
+    	jobGridDelegate.addJobGrid();
+    	extraViewTabFolder.setSelection(jobGridDelegate.getJobGridTab()); // TODO: remember last selected?
+	}
+
 
     
     public void newFileDropDown() {
@@ -2883,7 +2720,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 						jobGridDelegate.previousNrItems = -1;
                         // Link to the new jobTracker!
 						jobGridDelegate.jobTracker = job.getJobTracker();
-                        isRunning=true;
+                        running=true;
                         
                         // Attach a listener to notify us that the transformation has finished.
                         job.addJobListener(new JobListener() {
@@ -2894,10 +2731,9 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 						
 						});
                         
-                        // Show the log views
+                        // Show the execution results views
                         //
-                        jobLogDelegate.addJobLog();
-                        jobGridDelegate.addJobGrid();
+                        addAllTabs();
 					}
 					catch(KettleException e)
 					{
@@ -2949,32 +2785,28 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 	{
     	// Do a final check to see if it all ended...
     	//
-		if (isRunning && job!=null && job.isInitialized() && job.isFinished())
+		if (running && job!=null && job.isInitialized() && job.isFinished())
         {
             job=null;
-            isRunning=false;
+            running=false;
             for (RefreshListener listener : refreshListeners) listener.refreshNeeded();
             log.logMinimal(Spoon.APP_NAME, Messages.getString("JobLog.Log.JobHasEnded")); //$NON-NLS-1$
         }
-		
-		if (!wStart.isDisposed())
-		{
-            enableFields();
-		}
+        enableFields();
 	}
 	
     
-	private synchronized void stopJob()
+	public synchronized void stopJob()
     {
         try
         {
-            if (job!=null && isRunning && job.isInitialized()) 
+            if (job!=null && running && job.isInitialized()) 
             {
                 job.stopAll();
                 job.endProcessing("stop", new Result()); //$NON-NLS-1$
                 job.waitUntilFinished(5000); // wait until everything is stopped, maximum 5 seconds...
                 job=null;
-                isRunning=false;
+                running=false;
                 log.logMinimal(Spoon.APP_NAME, Messages.getString("JobLog.Log.JobWasStopped")); //$NON-NLS-1$
             }
         }
@@ -2992,16 +2824,44 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
     }
 
 
-    public void enableFields()
-    {
-    	getDisplay().asyncExec(new Runnable() {
+	private void enableFields() {
+		getDisplay().asyncExec(new Runnable() {
 		
 			public void run() {
-				wStart.setEnabled(!isRunning);
-				wStop.setEnabled(isRunning);
+				// Start/Run button...
+				//
+			    XulToolbarButton runButton = toolbar.getButtonById("job-run");
+		        if (runButton!=null)
+		        {
+		        	runButton.setEnable(!running);
+		        }
+
+		        /* TODO add pause button
+		         *
+				// Pause button...
+				//
+			    XulToolbarButton pauseButton = toolbar.getButtonById("trans-pause");
+		        if (pauseButton!=null)
+		        {
+		        	pauseButton.setEnable(running);
+		        	pauseButton.setText( pausing ? RESUME_TEXT : PAUSE_TEXT );
+		        	pauseButton.setHint( pausing ? Messages.getString("Spoon.Tooltip.ResumeTranformation") : Messages.getString("Spoon.Tooltip.PauseTranformation"));
+		        }
+				*/
+				// Stop button...
+				//
+			    XulToolbarButton stopButton = toolbar.getButtonById("job-stop");
+		        if (stopButton!=null)
+		        {
+		        	stopButton.setEnable(running);
+		        }
+
+		        // TODO: enable/disable Job menu entries too
 			}
+		
 		});
-    }
+
+	}
 
 	/**
 	 * @return the refresh listeners
