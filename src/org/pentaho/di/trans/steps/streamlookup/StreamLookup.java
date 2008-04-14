@@ -197,11 +197,11 @@ public class StreamLookup extends BaseStep implements StepInterface
 	}
 
 
-    private Object[] lookupValues(RowMetaInterface rowMeta, Object[] row) throws KettleStepException
+    private Object[] lookupValues(RowMetaInterface rowMeta, Object[] row) throws KettleException
 	{
 		// See if we need to stop.
 		if (isStopped()) return null;
-
+		
 		if ( data.lookupColumnIndex == null ) 
 		{
 			String names[] = data.lookupMeta.getFieldNames();
@@ -221,7 +221,15 @@ public class StreamLookup extends BaseStep implements StepInterface
 		// Copy value references to lookup table.
 		//
         Object[] lu = new Object[data.keynrs.length];
-        for (int i=0;i<data.keynrs.length;i++) lu[i] = row[data.keynrs[i]];
+        for (int i=0;i<data.keynrs.length;i++) {
+        	// If the input is binary storage data, we convert it to normal storage.
+        	//
+        	if (data.convertKeysToNative[i]) {
+        		lu[i] = data.lookupMeta.getValueMeta(i).convertBinaryStringToNativeType((byte[])row[data.keynrs[i]]);
+        	} else {
+        		lu[i] = row[data.keynrs[i]];
+        	}
+        }
 
         // Handle conflicting types (Number-Integer-String conversion to lookup type in hashtable)
         if (data.keyTypes!=null)
@@ -407,6 +415,7 @@ public class StreamLookup extends BaseStep implements StepInterface
             // read the lookup values!
             data.keynrs = new int[meta.getKeystream().length];
             data.lookupMeta = new RowMeta();
+            data.convertKeysToNative =  new boolean[meta.getKeystream().length];
             
             for (int i=0;i<meta.getKeystream().length;i++)
             {
@@ -422,6 +431,11 @@ public class StreamLookup extends BaseStep implements StepInterface
                 }
                 
                 data.lookupMeta.addValueMeta( getInputRowMeta().getValueMeta(data.keynrs[i]).clone() );
+                
+                // If we have binary storage data coming in, we convert it to normal data storage.
+                // The storage in the lookup data store is also normal data storage. TODO: enforce normal data storage??
+                //
+                data.convertKeysToNative[i] = getInputRowMeta().getValueMeta(data.keynrs[i]).isStorageBinaryString();
             }
             
             data.outputRowMeta = getInputRowMeta().clone();

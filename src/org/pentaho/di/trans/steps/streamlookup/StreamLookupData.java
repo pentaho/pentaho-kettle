@@ -73,6 +73,9 @@ public class StreamLookupData extends BaseStepData implements StepDataInterface
 
 	public boolean metadataVerifiedIntegerPair;
 	
+	/** See if we need to convert the keys to a native data type */
+	public boolean[] convertKeysToNative;
+	
 	// Did we read rows from the lookup hop.
 	public boolean hasLookupRows;
 	
