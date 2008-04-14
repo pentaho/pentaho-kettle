@@ -269,13 +269,6 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
             addingLineNrInGroup = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "add_linenr")); // $NON-NLS-1$
             lineNrInGroupField = XMLHandler.getTagValue(stepnode, "linenr_fieldname");
             
-            String giveBackRow = XMLHandler.getTagValue(stepnode, "give_back_row"); // $NON-NLS-1$
-            if (Const.isEmpty(giveBackRow)) {
-            	alwaysGivingBackOneRow = true;
-            } else {
-            	alwaysGivingBackOneRow = "Y".equalsIgnoreCase( giveBackRow ); // $NON-NLS-1$
-            }
-
 			Node groupn = XMLHandler.getSubNode(stepnode, "group"); //$NON-NLS-1$
 			Node fields = XMLHandler.getSubNode(stepnode, "fields"); //$NON-NLS-1$
 			
@@ -290,13 +283,25 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
 				groupField[i] = XMLHandler.getTagValue(fnode, "name");		 //$NON-NLS-1$
 			}
 	
+			boolean hasNumberOfValues = false;
 			for (int i=0;i<nrfields;i++)
 			{
 				Node fnode         = XMLHandler.getSubNodeByNr(fields, "field", i); //$NON-NLS-1$
 				aggregateField[i]  = XMLHandler.getTagValue(fnode, "aggregate");		 //$NON-NLS-1$
 				subjectField[i]    = XMLHandler.getTagValue(fnode, "subject");		 //$NON-NLS-1$
 				aggregateType[i]   = getType(XMLHandler.getTagValue(fnode, "type"));	 //$NON-NLS-1$
+				
+				if (aggregateType[i]==TYPE_GROUP_COUNT_ALL) {
+					hasNumberOfValues = true;
+				}
 			}
+			
+            String giveBackRow = XMLHandler.getTagValue(stepnode, "give_back_row"); // $NON-NLS-1$
+            if (Const.isEmpty(giveBackRow)) {
+            	alwaysGivingBackOneRow = hasNumberOfValues;
+            } else {
+            	alwaysGivingBackOneRow = "Y".equalsIgnoreCase( giveBackRow ); // $NON-NLS-1$
+            }
 		}
 		catch(Exception e)
 		{
@@ -497,7 +502,6 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
             prefix           =      rep.getStepAttributeString (id_step, "prefix"); //$NON-NLS-1$
             addingLineNrInGroup = rep.getStepAttributeBoolean(id_step, "add_linenr"); // $NON-NLS-1$
             lineNrInGroupField = rep.getStepAttributeString(id_step, "linenr_fieldname"); // $NON-NLS-1$
-            alwaysGivingBackOneRow = rep.getStepAttributeBoolean(id_step, 0, "give_back_row", true); // $NON-NLS-1$
             
 			int groupsize = rep.countNrStepAttributes(id_step, "group_name"); //$NON-NLS-1$
 			int nrvalues  = rep.countNrStepAttributes(id_step, "aggregate_name"); //$NON-NLS-1$
@@ -509,12 +513,19 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
 				groupField[i] = rep.getStepAttributeString(id_step, i, "group_name"); //$NON-NLS-1$
 			}
 	
+			boolean hasNumberOfValues = false;
 			for (int i=0;i<nrvalues;i++)
 			{
 				aggregateField[i] = rep.getStepAttributeString(id_step, i, "aggregate_name"); //$NON-NLS-1$
 				subjectField[i]   = rep.getStepAttributeString(id_step, i, "aggregate_subject"); //$NON-NLS-1$
 				aggregateType[i]      = getType( rep.getStepAttributeString(id_step, i, "aggregate_type") ); //$NON-NLS-1$
+				
+				if (aggregateType[i]==TYPE_GROUP_COUNT_ALL) {
+					hasNumberOfValues = true;
+				}
 			}
+			
+            alwaysGivingBackOneRow = rep.getStepAttributeBoolean(id_step, 0, "give_back_row", hasNumberOfValues); // $NON-NLS-1$
 		}
 		catch(Exception e)
 		{
