@@ -26,6 +26,7 @@ import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -40,11 +41,12 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
- * Output rows to RSS feed and create a file.
+ * Output rows to Properties file and create a file.
  * 
  * @author Samatar
- * @since 6-nov-2007
+ * @since 13-Apr-2008
  */
+ 
  
 public class PropertyOutputMeta extends BaseStepMeta implements StepMetaInterface
 {
@@ -457,6 +459,47 @@ public class PropertyOutputMeta extends BaseStepMeta implements StepMetaInterfac
 			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("PropertyOutputMeta.CheckResult.ExpectedInputError"), stepMeta);
 			remarks.add(cr);
 		}
+		
+		// Check if filename is given
+		if(!Const.isEmpty(fileName))
+		{
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("PropertyOutputMeta.CheckResult.FilenameOk"), stepMeta);
+			remarks.add(cr);
+		}
+		else
+		{
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("PropertyOutputMeta.CheckResult.FilenameError"), stepMeta);
+			remarks.add(cr);
+		}
+		
+		// Check for Key field
+		
+		ValueMetaInterface v = prev.searchValueMeta(keyfield);
+		if(v==null)
+		{
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("PropertyOutputMeta.CheckResult.KeyFieldMissing"), stepMeta);
+			remarks.add(cr);
+		}
+		else
+		{
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("PropertyOutputMeta.CheckResult.KeyFieldOk"), stepMeta); 
+			remarks.add(cr);
+		}
+		
+		// Check for Value field
+		
+		v = prev.searchValueMeta(valuefield);
+		if(v==null)
+		{
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("PropertyOutputMeta.CheckResult.ValueFieldMissing"), stepMeta);
+			remarks.add(cr);
+		}
+		else
+		{
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("PropertyOutputMeta.CheckResult.ValueFieldOk"), stepMeta); 
+			remarks.add(cr);
+		}
+		
 	}
 
 	

@@ -27,9 +27,12 @@ import org.pentaho.di.trans.step.StepDataInterface;
 
 
 /**
+ * Output rows to Properties file and create a file.
+ * 
  * @author Samatar
- * @since 4-Nov-2007
+ * @since 13-Apr-2008
  */
+ 
 public class PropertyOutputData extends BaseStepData implements StepDataInterface
 {
 	public RowMetaInterface inputRowMeta;

@@ -37,11 +37,12 @@ import java.io.*;
 
 
 /**
- * Output rows to RSS feed and create a file.
+ * Output rows to Properties file and create a file.
  * 
  * @author Samatar
- * @since 6-nov-2007
+ * @since 13-Apr-2008
  */
+ 
 public class PropertyOutput extends BaseStep implements StepInterface
 {
 	private PropertyOutputMeta meta;

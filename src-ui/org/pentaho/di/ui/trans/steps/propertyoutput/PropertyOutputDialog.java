@@ -56,7 +56,13 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
 
 
 
-
+/**
+ * Output rows to Properties file and create a file.
+ * 
+ * @author Samatar
+ * @since 13-Apr-2008
+ */
+ 
 public class PropertyOutputDialog extends BaseStepDialog implements StepDialogInterface
 {
 
