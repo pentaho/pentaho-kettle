@@ -142,7 +142,7 @@ public class TeradataDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 	 */
 	public String getTruncateTableStatement(String tableName)
 	{
-	    return "TRUNCATE TABLE "+tableName;
+	    return "DELETE FROM "+tableName;
 	}
 
 
