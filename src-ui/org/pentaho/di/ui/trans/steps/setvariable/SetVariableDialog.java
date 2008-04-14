@@ -17,6 +17,8 @@
 
 package org.pentaho.di.ui.trans.steps.setvariable;
 
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -47,12 +49,15 @@ import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.setvariable.Messages;
 import org.pentaho.di.trans.steps.setvariable.SetVariableMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
 
 
 public class SetVariableDialog extends BaseStepDialog implements StepDialogInterface
 {
+	public static final String STRING_USAGE_WARNING_PARAMETER = "SetVariableUsageWarning"; //$NON-NLS-1$
+    
 	private Label        wlStepname;
 	private Text         wStepname;
     private FormData     fdlStepname, fdStepname;
@@ -243,6 +248,27 @@ public class SetVariableDialog extends BaseStepDialog implements StepDialogInter
             input.getVariableType()[i] = SetVariableMeta.getVariableType(item.getText(3));
             input.getDefaultValue()[i] = item.getText(4);
 		}
+		
+        // Show a warning (optional)
+        //
+        if ( "Y".equalsIgnoreCase( props.getCustomParameter(STRING_USAGE_WARNING_PARAMETER, "Y") )) //$NON-NLS-1$ //$NON-NLS-2$
+        {
+            MessageDialogWithToggle md = new MessageDialogWithToggle(shell, 
+                 Messages.getString("SetVariableDialog.UsageWarning.DialogTitle"),  //$NON-NLS-1$
+                 null,
+                 Messages.getString("SetVariableDialog.UsageWarning.DialogMessage", Const.CR )+Const.CR, //$NON-NLS-1$ //$NON-NLS-2$
+                 MessageDialog.WARNING,
+                 new String[] { Messages.getString("SetVariableDialog.UsageWarning.Option1") }, //$NON-NLS-1$
+                 0,
+                 Messages.getString("SetVariableDialog.UsageWarning.Option2"), //$NON-NLS-1$
+                 "N".equalsIgnoreCase( props.getCustomParameter(STRING_USAGE_WARNING_PARAMETER, "Y") ) //$NON-NLS-1$ //$NON-NLS-2$
+            );
+            MessageDialogWithToggle.setDefaultImage(GUIResource.getInstance().getImageSpoon());
+            md.open();
+            props.setCustomParameter(STRING_USAGE_WARNING_PARAMETER, md.getToggleState()?"N":"Y"); //$NON-NLS-1$ //$NON-NLS-2$
+            props.saveProps();
+        }
+		
 		dispose();
 	}
     

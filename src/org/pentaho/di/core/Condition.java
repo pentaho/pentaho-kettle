@@ -12,6 +12,7 @@
  
 package org.pentaho.di.core;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.regex.Pattern;
@@ -98,6 +99,12 @@ public class Condition implements Cloneable, XMLInterface
 	private ArrayList<Condition> list;
 
     private String right_string;
+
+    /**
+     * Temporary variable, no need to persist this one.
+     * Contains the sorted array of strings in an IN LIST condition  
+     */
+	private String[] inList;
 	
 	public Condition()
 	{
@@ -449,10 +456,14 @@ public class Condition implements Cloneable, XMLInterface
                         break;
 					case FUNC_NULL          : retval = (fieldMeta.isNull(field));           break;
 					case FUNC_NOT_NULL      : retval = (!fieldMeta.isNull(field));          break;
-					case FUNC_IN_LIST		: 
-					    	String list[] = Const.splitString(fieldMeta2.getString(field2), ';');
-					    	retval = Const.indexOfString(fieldMeta.getCompatibleString(field), list)>=0; // Compatible string doesn't pad with 0's etc.
-					    	break;
+					case FUNC_IN_LIST		:
+							if (inList==null) {
+								inList = Const.splitString(fieldMeta2.getString(field2), ';');
+								Arrays.sort(inList);
+							}
+							String searchString = fieldMeta.getCompatibleString(field);
+							int inIndex = Arrays.binarySearch(inList, searchString);
+							retval = Boolean.valueOf(inIndex>=0); 
 					case FUNC_CONTAINS      : 
                         retval = fieldMeta.getCompatibleString(field)!=null?fieldMeta.getCompatibleString(field).indexOf(fieldMeta2.getCompatibleString(field2))>=0:false; 
                         break;
