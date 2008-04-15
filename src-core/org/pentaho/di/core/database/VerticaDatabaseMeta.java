@@ -170,7 +170,8 @@ public class VerticaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 		
 		String fieldname = v.getName();
 		int    length    = v.getLength();
-		int    precision = v.getPrecision();
+		// Unused in vertica
+		//int    precision = v.getPrecision();
 		
 		if (add_fieldname) retval+=fieldname+" ";
 		
