@@ -2416,18 +2416,15 @@ public class Value implements Cloneable, XMLInterface, Serializable
 		{
 			if (getString()!=null)
 			{
-				StringBuffer s;
+			    String s;
 				if (getType()==VALUE_TYPE_STRING)
 				{
-					s = new StringBuffer(getString());
+					s = Const.ltrim(getString());
 				}
 				else
 				{
-					s = new StringBuffer(toString());
+					s = Const.ltrim(toString());
 				}
-				
-				// Left trim
-				while (s.length()>0 && s.charAt(0)==' ') s.deleteCharAt(0);
 				
 				setValue(s);
 			}
@@ -2617,18 +2614,15 @@ public class Value implements Cloneable, XMLInterface, Serializable
 		}
 		else
 		{
-			StringBuffer s;
+			String s;
 			if (getType()==VALUE_TYPE_STRING)
 			{
-				s = new StringBuffer(getString());
+				s = Const.rtrim(getString());
 			}
 			else
 			{
-				s = new StringBuffer(toString());
+				s = Const.rtrim(toString());
 			}
-
-			// Right trim
-			while (s.length()>0 && s.charAt(s.length()-1)==' ') s.deleteCharAt(s.length()-1);
 			
 			setValue(s);
 		}

@@ -21,25 +21,20 @@ import org.pentaho.di.core.exception.KettleValueException;
 
 public class ValueDataUtil
 {
+    /**
+     * @deprecated Use {@link Const#ltrim(String)} instead
+     */
     public static final String leftTrim(String string)
     {
-        int min = 0;
-        int max = string.length() - 1;
-        
-        while (min <= max && isSpace(string.charAt(min)))
-            min++;
-
-        return string.substring(min);
+        return Const.ltrim(string);
     }
     
+    /**
+     * @deprecated Use {@link Const#rtrim(String)} instead
+     */
     public static final String rightTrim(String string)
     {
-        int max = string.length() - 1;
-        
-        while (max >= 0  && isSpace(string.charAt(max)))
-            max--;
-
-        return string.substring(0, max + 1);
+        return Const.rtrim(string);
     }
 
     /**
@@ -47,31 +42,22 @@ public class ValueDataUtil
      * A character is considered a space in Kettle if it is a space, a tab, a newline or a cariage return.
      * @param c The character to verify if it is a space.
      * @return true if the character is a space. false otherwise. 
+     * @deprecated Use {@link Const#isSpace(char)} instead
      */
     public static final boolean isSpace(char c)
     {
-        return c == ' ' || c == '\t' || c == '\r' || c == '\n';
+        return Const.isSpace(c);
     }
     
     /**
      * Trims a string: removes the leading and trailing spaces of a String.
      * @param string The string to trim
      * @return The trimmed string.
+     * @deprecated Use {@link Const#trim(String)} instead
      */
     public static final String trim(String string)
     {
-        int max = string.length() - 1;
-        int min = 0;    
-
-        while (min <= max && isSpace(string.charAt(min)))
-            min++;
-        while (max >= 0 && isSpace(string.charAt(max)))
-            max--;
-
-        if (max < min)
-            return "";
-
-        return string.substring(min, max + 1);
+        return Const.trim(string);
     }
     
     

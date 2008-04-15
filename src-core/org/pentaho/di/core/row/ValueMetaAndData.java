@@ -187,7 +187,7 @@ public class ValueMetaAndData
                     originMeta.setGroupingSymbol(null);
                     originMeta.setCurrencySymbol(null);
                 }
-                valueData = ValueDataUtil.trim(text);
+                valueData = Const.trim(text);
                 valueData = valueMeta.convertData(originMeta, valueData);
             }
 

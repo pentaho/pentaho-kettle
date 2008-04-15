@@ -21,7 +21,6 @@ import java.util.jar.Attributes;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.core.row.ValueDataUtil;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.util.StreamLogger;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -50,7 +49,7 @@ public class JarfileGenerator
         String filename = "kettle-engine-3.0.jar";
         if (!Const.isEmpty(transMeta.getFilename()))
         {
-            filename = ValueDataUtil.replace(transMeta.getFilename(), " ", "_").toLowerCase()+".kar";
+            filename = Const.replace(transMeta.getFilename(), " ", "_").toLowerCase()+".kar";
         }
         
         File karFile = new File(filename);

@@ -34,7 +34,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleValueException;
-import org.pentaho.di.core.row.ValueDataUtil;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaAndData;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -288,7 +287,7 @@ public class EnterValueDialog extends Dialog
 			// remove white spaces if needed
 			if (string.startsWith(" ") || string.endsWith(" ")) 
 			{
-				string = ValueDataUtil.trim(string);
+				string = Const.trim(string);
 				wInputString.setText(string);
 			}
 			if (Const.isEmpty(string) || Const.isEmpty(formatString))
@@ -301,7 +300,7 @@ public class EnterValueDialog extends Dialog
 			// remove white spaces if needed
 			if (string.startsWith(" ") || string.endsWith(" ")) 
 			{
-				string = ValueDataUtil.trim(string);
+				string = Const.trim(string);
 				wInputString.setText(string);
 			}
 			if (Const.isEmpty(string) || Const.isEmpty(formatString)) 
@@ -314,7 +313,7 @@ public class EnterValueDialog extends Dialog
 			// remove white spaces if needed
 			if (string.startsWith(" ") || string.endsWith(" ")) 
 			{
-				string = ValueDataUtil.trim(string);
+				string = Const.trim(string);
 				wInputString.setText(string);
 			}
 			if (Const.isEmpty(string) || Const.isEmpty(formatString))
@@ -327,7 +326,7 @@ public class EnterValueDialog extends Dialog
 			wFormat.setText("");
 			if (string.startsWith(" ") || string.endsWith(" ")) 
 			{
-				string = ValueDataUtil.trim(string);
+				string = Const.trim(string);
 				wInputString.setText(string);
 			}
 			break;

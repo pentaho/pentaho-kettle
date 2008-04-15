@@ -18,12 +18,12 @@ import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.util.Date;
 
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueDataUtil;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
@@ -176,7 +176,7 @@ public class XBase
 					}
 					break;
 				case DBFField.FIELD_TYPE_C: // Character
-					r[i] = ValueDataUtil.rightTrim( (String)rowobj[i] ); 
+					r[i] = Const.rtrim( (String)rowobj[i] ); 
 					break; 
 				case DBFField.FIELD_TYPE_N: // Numeric
 			    	// Convert to Double!!

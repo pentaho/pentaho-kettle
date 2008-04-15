@@ -9,9 +9,14 @@ import org.pentaho.di.core.exception.KettleValueException;
  * Not yet completely finished.
  * 
  * @author sboden
+ *
  */
 public class ValueDataUtilTest extends TestCase
 {
+    /**
+     * @deprecated Use {@link Const#ltrim(String)} instead
+     * @throws KettleValueException
+     */
     public void testLeftTrim() throws KettleValueException
     {
     	assertEquals("", ValueDataUtil.leftTrim(""));
@@ -31,6 +36,10 @@ public class ValueDataUtilTest extends TestCase
     	assertEquals("", ValueDataUtil.leftTrim("   "));    	
     }
 
+    /**
+     * @deprecated Use {@link Const#rtrim(String)} instead
+     * @throws KettleValueException
+     */
     public void testRightTrim() throws KettleValueException
     {
     	assertEquals("", ValueDataUtil.rightTrim(""));
@@ -50,6 +59,10 @@ public class ValueDataUtilTest extends TestCase
     	assertEquals("", ValueDataUtil.rightTrim("   "));    	    	
     }
 
+    /**
+     * @deprecated Use {@link Const#isSpace(char)} instead
+     * @throws KettleValueException
+     */
     public void testIsSpace() throws KettleValueException
     {
     	assertTrue(ValueDataUtil.isSpace(' '));
@@ -61,6 +74,10 @@ public class ValueDataUtilTest extends TestCase
     	assertFalse(ValueDataUtil.isSpace('b'));
     }
     
+    /**
+     * @deprecated Use {@link Const#trim(String)} instead
+     * @throws KettleValueException
+     */
     public void testTrim() throws KettleValueException
     {
     	assertEquals("", ValueDataUtil.trim(""));

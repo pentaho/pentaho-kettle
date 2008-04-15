@@ -41,7 +41,6 @@ import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueDataUtil;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -478,7 +477,7 @@ public class ScriptValuesMod extends BaseStep implements StepInterface, ScriptVa
                             	catch(Exception e)
                             	{
 	                                String string = Context.toString(result);
-	                                return new Double( Double.parseDouble(ValueDataUtil.trim(string)) );
+	                                return new Double( Double.parseDouble(Const.trim(string)) );
                             	}
                             }
                             else
@@ -510,7 +509,7 @@ public class ScriptValuesMod extends BaseStep implements StepInterface, ScriptVa
 								return value.getInteger();
 							} catch (Exception e2) {
 								String string = Context.toString(result);
-								return new Long(Long.parseLong(ValueDataUtil.trim(string)));
+								return new Long(Long.parseLong(Const.trim(string)));
 							}
 						} else if (classType.equalsIgnoreCase("org.mozilla.javascript.UniqueTag")) {
 							return Long.valueOf(Long.parseLong(((UniqueTag)result).toString()));

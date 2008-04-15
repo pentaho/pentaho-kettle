@@ -568,7 +568,7 @@ public class ValueMeta implements ValueMetaInterface
     {
         if (Const.isEmpty(string)) return null;
         
-        string = trim(string); // see if  trimming needs to be performed before conversion
+        string = Const.trimToType(string, getTrimType()); // see if  trimming needs to be performed before conversion
 
         try
         {
@@ -658,7 +658,7 @@ public class ValueMeta implements ValueMetaInterface
     {
         if (Const.isEmpty(string)) return null;
         
-        string = trim(string); // see if  trimming needs to be performed before conversion
+        string = Const.trimToType(string, getTrimType()); // see if  trimming needs to be performed before conversion
 
         try
         {
@@ -851,7 +851,7 @@ public class ValueMeta implements ValueMetaInterface
     {
         if (Const.isEmpty(string)) return null;
         
-        string = trim(string); // see if  trimming needs to be performed before conversion
+        string = Const.trimToType(string, getTrimType()); // see if  trimming needs to be performed before conversion
 
         try
         {
@@ -876,7 +876,7 @@ public class ValueMeta implements ValueMetaInterface
     {
         if (Const.isEmpty(string)) return null;
 
-        string = trim(string); // see if  trimming needs to be performed before conversion
+        string = Const.trimToType(string, getTrimType()); // see if  trimming needs to be performed before conversion
 
         /*
         if (!".".equalsIgnoreCase(decimalSymbol))
@@ -1307,9 +1307,9 @@ public class ValueMeta implements ValueMetaInterface
     private String trim(String string) {
         switch(getTrimType()) {
         case TRIM_TYPE_NONE : break;
-        case TRIM_TYPE_RIGHT : string = ValueDataUtil.rightTrim(string); break;
-        case TRIM_TYPE_LEFT  : string = ValueDataUtil.leftTrim(string); break;
-        case TRIM_TYPE_BOTH  : string = ValueDataUtil.trim(string); break;
+        case TRIM_TYPE_RIGHT : string = Const.rtrim(string); break;
+        case TRIM_TYPE_LEFT  : string = Const.ltrim(string); break;
+        case TRIM_TYPE_BOTH  : string = Const.trim(string); break;
         default: break;
         }
         return string;

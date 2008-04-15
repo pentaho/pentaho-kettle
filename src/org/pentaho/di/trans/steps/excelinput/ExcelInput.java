@@ -36,7 +36,6 @@ import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.playlist.FilePlayListAll;
 import org.pentaho.di.core.playlist.FilePlayListReplay;
 import org.pentaho.di.core.row.RowMeta;
-import org.pentaho.di.core.row.ValueDataUtil;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -144,13 +143,13 @@ public class ExcelInput extends BaseStep implements StepInterface
 						switch (meta.getField()[rowcolumn].getTrimType())
 						{
 						case ExcelInputMeta.TYPE_TRIM_LEFT:
-							string = ValueDataUtil.leftTrim(string);
+							string = Const.ltrim(string);
 							break;
 						case ExcelInputMeta.TYPE_TRIM_RIGHT:
-							string = ValueDataUtil.rightTrim(string);
+							string = Const.rtrim(string);
 							break;
 						case ExcelInputMeta.TYPE_TRIM_BOTH:
-							string = ValueDataUtil.trim(string);
+							string = Const.trim(string);
 							break;
 						default:
 							break;

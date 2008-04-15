@@ -36,7 +36,6 @@ import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueDataUtil;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -188,7 +187,7 @@ public class WebService extends BaseStep implements StepInterface
                     }
                     else
                     {
-                        xml.append(ValueDataUtil.trim(vCurrentValue.getString(data)));
+                        xml.append(Const.trim(vCurrentValue.getString(data)));
                     }
                     xml.append("</").append(NS_PREFIX).append(":").append(field.getWsName()).append(">\n");
                 }
