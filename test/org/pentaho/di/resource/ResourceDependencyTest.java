@@ -48,7 +48,7 @@ public class ResourceDependencyTest extends TestCase {
     assertEquals(5, resourceReferences.size());
     for (int i=0; i<5; i++ ) {
       ResourceReference genRef = resourceReferences.get(i);
-      System.out.println(genRef.toXml());
+      // System.out.println(genRef.toXml());
       ResourceHolderInterface refHolder = genRef.getReferenceHolder();
       boolean checkDatabaseStuff = false;
       if (i == 0) {
@@ -89,19 +89,27 @@ public class ResourceDependencyTest extends TestCase {
     
     StepLoader.init();
     
-    TransMeta transMeta = new TransMeta("test/org/pentaho/di/run/textfileinput/TextFileInputCSV.ktr"); //$NON-NLS-1$
+    TransMeta transMeta = new TransMeta("test/org/pentaho/di/resource/trans/General - Change log processing.ktr"); //$NON-NLS-1$
     List<ResourceReference> resourceReferences = transMeta.getResourceDependencies();
     // printResourceReferences(resourceReferences);    
-    assertEquals(1, resourceReferences.size());
-    ResourceReference genRef = resourceReferences.get(0);
-    System.out.println(genRef.toXml());
+    assertEquals(2, resourceReferences.size());
+    ResourceReference genRef = null;
+    for (ResourceReference look : resourceReferences) {
+    	if (look.getReferenceHolder().getTypeId().equals("TextFileInput")) {
+    		genRef = look;
+    	}
+    }
+    assertNotNull(genRef);
+    // System.out.println(genRef.toXml());
+    
     ResourceHolderInterface refHolder = genRef.getReferenceHolder();
-    List<ResourceEntry> entries = genRef.getEntries();
     assertEquals("TextFileInput", refHolder.getTypeId()); //$NON-NLS-1$
+    
+    List<ResourceEntry> entries = genRef.getEntries();
     assertEquals(1, entries.size());
     ResourceEntry theEntry = entries.get(0);
     assertEquals(ResourceType.FILE, theEntry.getResourcetype());
-    assertTrue(theEntry.getResource().endsWith("customers-random-100k.txt")); //$NON-NLS-1$
+    assertTrue(theEntry.getResource().endsWith("changelog.txt")); //$NON-NLS-1$
     
   }
 

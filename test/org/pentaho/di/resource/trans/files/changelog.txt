@@ -1,0 +1,15 @@
+flag;id;text
+N;1;a
+N;2;b
+N;3;c
+N;4;d
+N;5;e
+N;6;f
+N;7;g
+N;8;h
+N;9;i
+N;10;j
+C;3;c-modified
+C;6;f-modified
+D;8;h-delete
+N;8;h-replaced
