@@ -775,11 +775,11 @@
 	  	        	VMOptions="-Xmx256m"
 				    shortname="Spoon"
 	  	        	arguments=""
-	  	        	workingdirectory="$APP_PACKAGE/Contents/Resources"
+                    workingdirectory="$APP_PACKAGE/Contents/Resources/Java"
 	  	            jvmversion="1.5+">
-	  	        	<javaproperty name="java.library.path" value="$APP_PACKAGE/Contents/Resources"/>
+                    <javaproperty name="java.library.path" value="$APP_PACKAGE/Contents/Resources/Java"/>
 	  	        	<jarfileset dir="${distrib}">
-	  	                <include name="${lib}/*.jar"/>
+	  	        		<include name="${lib}/*.jar"/>
 	  	        		<include name="${libext}/*.jar"/>
 	  	        		<include name="${libext}/**/*.jar"/>
 	  	        		<include name="${libswt}/*.jar"/>
@@ -793,9 +793,11 @@
 	  	        		<include name="simple-jndi/**/*"/>
 	  	        		<include name="pwd/**/*"/>
 	  	        		<include name="plugins/**/*"/>
+	  	        		<include name="${ui}/*"/>
+	  	        		<include name="${ui}/**/*"/>
 	  	        	</jarfileset>
 	  	        </jarbundler>
-	  			<!-- patch Info.plist with StartOnMainTrhead property need to make sure that the token is in the right place-->
+	  			<!-- patch Info.plist with StartOnMainThread property need to make sure that the token is in the right place-->
 	  			<replace file="${macdistrib}/${ant.project.name}.app/Contents/Info.plist" token="&lt;key&gt;ClassPath" value="&lt;key&gt;StartOnMainThread&lt;/key&gt;&lt;true/&gt; &lt;key&gt;ClassPath" />
 	  			<!-- Create a .dmg file containing the app and docs -->
 	  		    <exec executable="/usr/bin/hdiutil" os="Mac OS X">
