@@ -1,8 +1,7 @@
 package org.pentaho.di.trans.steps.excelinput;
 
-import java.text.MessageFormat;
-
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleValueException;
 
 /**
  * Extended {@link KettleValueException} that allows passing extra
@@ -51,10 +50,8 @@ public class KettleCellValueException extends KettleException {
 
 	@Override
 	public String getMessage() {
-		String msgText = MessageFormat.format(
-			// TODO: I18N
-			"Cannot convert field \"{3}\" from cell on sheet {0}, row {1}, column {2}: {4}",
-			sheetnr, rownr, colnr, fieldName, super.getMessage());
+		String msgText = Messages.getString("KettleCellValueException.CannotConvertFieldFromCell", 
+					Integer.toString(sheetnr), Integer.toString(rownr), Integer.toString(colnr), fieldName, super.getMessage());
 		return msgText;
 	}
 
