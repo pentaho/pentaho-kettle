@@ -169,30 +169,37 @@ public class FieldSplitterDialog extends BaseStepDialog implements StepDialogInt
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, null);
 
+        final int fieldsRows = input.getFieldName().length;
 
-		final int FieldsCols=11;
-		final int FieldsRows=input.getField().length;
-		
-		ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
-		colinf[ 0]=new ColumnInfo(Messages.getString("FieldSplitterDialog.ColumnInfo.NewField"),   ColumnInfo.COLUMN_TYPE_TEXT,   false ); //$NON-NLS-1$
-		colinf[ 1]=new ColumnInfo(Messages.getString("FieldSplitterDialog.ColumnInfo.ID"),          ColumnInfo.COLUMN_TYPE_TEXT,   false ); //$NON-NLS-1$
-		colinf[ 2]=new ColumnInfo(Messages.getString("FieldSplitterDialog.ColumnInfo.RemoveID"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "Y", "N" } ); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		colinf[ 3]=new ColumnInfo(Messages.getString("FieldSplitterDialog.ColumnInfo.Type"),        ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() ); //$NON-NLS-1$
-		colinf[ 4]=new ColumnInfo(Messages.getString("FieldSplitterDialog.ColumnInfo.Length"),      ColumnInfo.COLUMN_TYPE_TEXT,   false ); //$NON-NLS-1$
-		colinf[ 5]=new ColumnInfo(Messages.getString("FieldSplitterDialog.ColumnInfo.Precision"),   ColumnInfo.COLUMN_TYPE_TEXT,   false ); //$NON-NLS-1$
-		colinf[ 6]=new ColumnInfo(Messages.getString("FieldSplitterDialog.ColumnInfo.Format"),      ColumnInfo.COLUMN_TYPE_TEXT,   false ); //$NON-NLS-1$
-		colinf[ 7]=new ColumnInfo(Messages.getString("FieldSplitterDialog.ColumnInfo.Group"),       ColumnInfo.COLUMN_TYPE_TEXT,   false ); //$NON-NLS-1$
-		colinf[ 8]=new ColumnInfo(Messages.getString("FieldSplitterDialog.ColumnInfo.Decimal"),     ColumnInfo.COLUMN_TYPE_TEXT,   false ); //$NON-NLS-1$
-		colinf[ 9]=new ColumnInfo(Messages.getString("FieldSplitterDialog.ColumnInfo.Currency"),    ColumnInfo.COLUMN_TYPE_TEXT,   false ); //$NON-NLS-1$
-		colinf[10]=new ColumnInfo(Messages.getString("FieldSplitterDialog.ColumnInfo.Nullif"),      ColumnInfo.COLUMN_TYPE_TEXT,   false ); //$NON-NLS-1$
-		
-		wFields=new TableView(transMeta, shell, 
-						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
-						      colinf, 
-						      FieldsRows,  
-						      lsMod,
-							  props
-						      );
+        final ColumnInfo[] colinf = new ColumnInfo[] {
+                new ColumnInfo(
+                        Messages.getString("FieldSplitterDialog.ColumnInfo.NewField"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
+                new ColumnInfo(
+                        Messages.getString("FieldSplitterDialog.ColumnInfo.ID"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
+                new ColumnInfo(
+                        Messages.getString("FieldSplitterDialog.ColumnInfo.RemoveID"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "Y", "N" }), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                new ColumnInfo(
+                        Messages.getString("FieldSplitterDialog.ColumnInfo.Type"), ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes()), //$NON-NLS-1$
+                new ColumnInfo(
+                        Messages.getString("FieldSplitterDialog.ColumnInfo.Length"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
+                new ColumnInfo(
+                        Messages.getString("FieldSplitterDialog.ColumnInfo.Precision"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
+                new ColumnInfo(
+                        Messages.getString("FieldSplitterDialog.ColumnInfo.Format"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
+                new ColumnInfo(
+                        Messages.getString("FieldSplitterDialog.ColumnInfo.Group"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
+                new ColumnInfo(
+                        Messages.getString("FieldSplitterDialog.ColumnInfo.Decimal"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
+                new ColumnInfo(
+                        Messages.getString("FieldSplitterDialog.ColumnInfo.Currency"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
+                new ColumnInfo(
+                        Messages.getString("FieldSplitterDialog.ColumnInfo.Nullif"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
+                new ColumnInfo(
+                        Messages.getString("FieldSplitterDialog.ColumnInfo.IfNull"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
+                new ColumnInfo(Messages.getString("FieldSplitterDialog.ColumnInfo.TrimType"),
+                        ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.trimTypeDesc, true), };
+        wFields = new TableView(transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, fieldsRows,
+                lsMod, props);
 
 		fdFields=new FormData();
 		fdFields.left = new FormAttachment(0, 0);
@@ -237,20 +244,22 @@ public class FieldSplitterDialog extends BaseStepDialog implements StepDialogInt
 		if (input.getSplitField()!=null) wSplitfield.setText(input.getSplitField());
 		if (input.getDelimiter()!=null)  wDelimiter.setText(input.getDelimiter());
 		
-		for (i=0;i<input.getField().length;i++)
+        for (i = 0; i < input.getFieldName().length; i++)
 		{
-			TableItem ti = wFields.table.getItem(i);
-			if (input.getField()[i]   != null) ti.setText( 1, input.getField()[i]); 
+            final TableItem ti = wFields.table.getItem(i);
+            if (input.getFieldName()[i] != null) ti.setText(1, input.getFieldName()[i]);
 			if (input.getFieldID()[i]      != null) ti.setText( 2, input.getFieldID()[i]); 
-							              ti.setText( 3, input.removeID()[i]?"Y":"N");  //$NON-NLS-1$ //$NON-NLS-2$
-							              ti.setText( 4, ValueMeta.getTypeDesc(input.getFieldType()[i]));
-							              ti.setText( 5, ""+input.getFieldLength()[i]);  //$NON-NLS-1$
-							              ti.setText( 6, ""+input.getFieldPrecision()[i]);  //$NON-NLS-1$
+            ti.setText(3, input.getFieldRemoveID()[i] ? "Y" : "N"); //$NON-NLS-1$ //$NON-NLS-2$
+            ti.setText(4, ValueMeta.getTypeDesc(input.getFieldType()[i]));
+            ti.setText(5, "" + input.getFieldLength()[i]); //$NON-NLS-1$
+            ti.setText(6, "" + input.getFieldPrecision()[i]); //$NON-NLS-1$
 			if (input.getFieldFormat()[i]  != null) ti.setText( 7, input.getFieldFormat()[i]); 
 			if (input.getFieldGroup()[i]   != null) ti.setText( 8, input.getFieldGroup()[i]); 
 			if (input.getFieldDecimal()[i] != null) ti.setText( 9, input.getFieldDecimal()[i]); 
 			if (input.getFieldCurrency()[i]!= null) ti.setText(10, input.getFieldCurrency()[i]); 
-			if (input.getFieldDefault()[i]  != null) ti.setText(11, input.getFieldDefault()[i]); 
+            if (input.getFieldNullIf()[i] != null) ti.setText(11, input.getFieldNullIf()[i]);
+            if (input.getFieldIfNull()[i] != null) ti.setText(12, input.getFieldIfNull()[i]);
+            ti.setText(13, ValueMeta.getTrimTypeDesc(input.getFieldTrimType()[i]));
 		}
 		wFields.setRowNums();
 		wFields.optWidth(true);
@@ -279,12 +288,12 @@ public class FieldSplitterDialog extends BaseStepDialog implements StepDialogInt
 		
 		input.allocate(nrfields);
 		
-		for (int i=0;i<input.getField().length;i++)
+        for (int i = 0; i < input.getFieldName().length; i++)
 		{
-			TableItem ti      = wFields.getNonEmpty(i);
-			input.getField()[i]    = ti.getText(  1 ); 
+            final TableItem ti = wFields.getNonEmpty(i);
+            input.getFieldName()[i] = ti.getText(1);
 			input.getFieldID()[i]       = ti.getText(  2 );
-			input.removeID()[i]    = "Y".equalsIgnoreCase( ti.getText( 3 ) );  //$NON-NLS-1$
+            input.getFieldRemoveID()[i] = "Y".equalsIgnoreCase(ti.getText(3)); //$NON-NLS-1$
 			input.getFieldType()[i]     = ValueMeta.getType( ti.getText( 4 ) );
 			input.getFieldLength()   [i] = Const.toInt( ti.getText( 5 ), -1 );
 			input.getFieldPrecision()[i] = Const.toInt( ti.getText( 6 ), -1 );
@@ -292,7 +301,9 @@ public class FieldSplitterDialog extends BaseStepDialog implements StepDialogInt
 			input.getFieldGroup()[i]    = ti.getText(  8 ); 
 			input.getFieldDecimal()[i]  = ti.getText(  9 ); 
 			input.getFieldCurrency()[i] = ti.getText( 10 ); 
-			input.getFieldDefault()[i]   = ti.getText( 11 ); 
+            input.getFieldNullIf()[i] = ti.getText(11);
+            input.getFieldIfNull()[i] = ti.getText(12);
+            input.getFieldTrimType()[i] = ValueMeta.getTrimTypeByDesc(ti.getText(13));
 		}
 		
 		dispose();

@@ -11,6 +11,7 @@
  
 package org.pentaho.di.trans.steps.fieldsplitter;
 
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowDataUtil;
@@ -29,8 +30,10 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  * 
  * @author Matt
  * @since 31-Okt-2003
+ * @author Daniel Einspanjer
+ * @since 15-01-2008
  */
- public class FieldSplitter extends BaseStep implements StepInterface
+public class FieldSplitter extends BaseStep implements StepInterface
 {
 	private FieldSplitterMeta meta;
 	private FieldSplitterData data;
@@ -91,6 +94,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 		boolean use_ids = meta.getFieldID().length>0 && meta.getFieldID()[0]!=null && meta.getFieldID()[0].length()>0;
 		
 		Object value=null;
+        final String delimiter = meta.getDelimiter();
 		if (use_ids)
 		{
 			if (log.isDebug()) logDebug(Messages.getString("FieldSplitter.Log.UsingIds")); //$NON-NLS-1$
@@ -99,19 +103,31 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 			// Loop over the specified field list
 			// If we spot the corresponding id[] entry in pol, add the value
 			//
-			String pol[] = new String[meta.getField().length];
+            int polSize = 0;
+            if (v != null)
+            {
+                polSize++;
+                for (int i = 0; i < v.length(); i++)
+                {
+                    i = v.indexOf(delimiter, i);
+                    if (i == -1) break;
+                    else polSize++;
+                }
+            }
+            final String pol[] = new String[polSize];
 			int prev=0;
 			int i=0;
 			while(v!=null && prev<v.length() && i<pol.length)
 			{
-				pol[i]=polNext(v, meta.getDelimiter(), prev);
-				if (log.isDebug()) logDebug(Messages.getString("FieldSplitter.Log.SplitFieldsInfo",pol[i],String.valueOf(prev))); //$NON-NLS-1$ //$NON-NLS-2$
-				prev+=pol[i].length()+meta.getDelimiter().length();
+                pol[i] = polNext(v, delimiter, prev);
+                if (log.isDebug())
+                    logDebug(Messages.getString("FieldSplitter.Log.SplitFieldsInfo", pol[i], String.valueOf(prev))); //$NON-NLS-1$ //$NON-NLS-2$
+                prev += pol[i].length() + delimiter.length();
 				i++;
 			}
 
 			// We have to add info.field.length variables!
-			for (i=0;i<meta.getField().length;i++)
+            for (i = 0; i < meta.getFieldName().length; i++)
 			{
 				// We have a field, search the corresponding pol[] entry.
 				String split=null;
@@ -119,14 +135,18 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 				for (int p=0; p<pol.length && split==null; p++) 
 				{
 					// With which line does pol[p] correspond?
-					if (pol[p]!=null && pol[p].indexOf(meta.getFieldID()[i])>=0) split=pol[p];
-				}
+                    if (pol[p] != null)
+                    {
+                        if (Const.trimToType(pol[p], meta.getFieldTrimType()[i]).indexOf(meta.getFieldID()[i]) == 0)
+                            split = pol[p];
+                    }
+                }
 				
 				// Optionally remove the indicator				
-				if (split!=null && meta.removeID()[i])
+                if (split != null && meta.getFieldRemoveID()[i])
 				{
-					StringBuffer sb = new StringBuffer(split);
-					int idx = sb.indexOf(meta.getFieldID()[i]);
+                    final StringBuilder sb = new StringBuilder(split);
+                    final int idx = sb.indexOf(meta.getFieldID()[i]);
 					sb.delete(idx, idx+meta.getFieldID()[i].length());
 					split=sb.toString();
 				}
@@ -142,9 +162,9 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 					(
 						split,
 						conversionValueMeta,
-						meta.getFieldDefault()[i],
-						"", // --> The default String value in case a field is empty. //$NON-NLS-1$
-						ValueMetaInterface.TRIM_TYPE_BOTH
+						meta.getFieldNullIf()[i],
+						meta.getFieldIfNull()[i],
+						meta.getFieldTrimType()[i]
 					);
 				}
 				catch(Exception e)
@@ -158,11 +178,11 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 		{
 			if (log.isDebug()) logDebug(Messages.getString("FieldSplitter.Log.UsingPositionOfValue")); //$NON-NLS-1$
 			int prev=0;
-			for (int i=0;i<meta.getField().length;i++)
+			for (int i=0;i<meta.getFieldName().length;i++)
 			{
-				String pol = polNext(v, meta.getDelimiter(), prev);
+				String pol = polNext(v, delimiter, prev);
 				if (log.isDebug()) logDebug(Messages.getString("FieldSplitter.Log.SplitFieldsInfo",pol,String.valueOf(prev))); //$NON-NLS-1$ //$NON-NLS-2$
-				prev+=(pol==null?0:pol.length()) + meta.getDelimiter().length();
+				prev+=(pol==null?0:pol.length()) + delimiter.length();
 				
 				try
 				{
@@ -172,9 +192,9 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 					(
 						pol,
 						conversionValueMeta,
-						meta.getFieldDefault()[i],
-						"", // --> The default String value in case a field is empty. //$NON-NLS-1$
-						ValueMetaInterface.TRIM_TYPE_BOTH
+						meta.getFieldNullIf()[i],
+						meta.getFieldIfNull()[i],
+						meta.getFieldTrimType()[i]
 					);
 				}
 				catch(Exception e)
