@@ -288,7 +288,7 @@ public class Job extends Thread implements VariableSpace
         JobEntrySpecial jes = (JobEntrySpecial) startpoint.getEntry();
         Result res = null;
         boolean isFirst = true;
-        while (jes.isRepeat() || isFirst && !isStopped())
+        while ( (jes.isRepeat() || isFirst) && !isStopped())
         {
             isFirst = false;
             res = execute(0, null, startpoint, null, Messages.getString("Job.Reason.Started"));
