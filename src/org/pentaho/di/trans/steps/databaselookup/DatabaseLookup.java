@@ -97,6 +97,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 
         Object[] add = null;
         boolean cache_now=false;        
+        boolean cacheHit = false;
 
 		// First, check if we looked up before
 		if (meta.isCached())
@@ -105,6 +106,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface
             if (timedRow!=null)
             {
                 add=timedRow.getRow();
+                cacheHit=true;
             }
         }
 		else add=null; 
@@ -151,23 +153,28 @@ public class DatabaseLookup extends BaseStep implements StepInterface
         {
         	if (log.isRowLevel()) logRowlevel(Messages.getString("DatabaseLookup.Log.FoundResultsAfterLookup")+add); //$NON-NLS-1$
 
-        	int types[] = meta.getReturnValueDefaultType();
-
-        	// The assumption here is that the types are in the same order
-        	// as the returned lookup row, but since we make the lookup row
-        	// that should not be a problem.
-            //
-            for (int i=0;i<types.length;i++)
-        	{  
-        		ValueMetaInterface returned = data.db.getReturnRowMeta().getValueMeta(i);
-                ValueMetaInterface expected = data.returnMeta.getValueMeta(i);
-                
-                if ( returned != null && types[i] > 0 && types[i] !=  returned.getType() )
-        		{
-        			// Set the type to the default return type
-        		    add[i] = expected.convertData(returned, add[i]);
-        		}
-        	}        	
+        	// Only verify the data types if the data comes from the DB, NOT when we have a cache hit
+        	// In that case, we already know the data type is OK.
+        	if (!cacheHit)
+        	{
+	        	int types[] = meta.getReturnValueDefaultType();
+	
+	        	// The assumption here is that the types are in the same order
+	        	// as the returned lookup row, but since we make the lookup row
+	        	// that should not be a problem.
+	            //
+	            for (int i=0;i<types.length;i++)
+	        	{  
+	        		ValueMetaInterface returned = data.db.getReturnRowMeta().getValueMeta(i);
+	                ValueMetaInterface expected = data.returnMeta.getValueMeta(i);
+	                
+	                if ( returned != null && types[i] > 0 && types[i] !=  returned.getType() )
+	        		{
+	        			// Set the type to the default return type
+	        		    add[i] = expected.convertData(returned, add[i]);
+	        		}
+	        	}
+        	}
         } 
 
 		// Store in cache if we need to!
