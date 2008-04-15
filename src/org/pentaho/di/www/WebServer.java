@@ -17,6 +17,7 @@ import org.mortbay.jetty.Handler;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.bio.SocketConnector;
 import org.mortbay.jetty.handler.ContextHandlerCollection;
+import org.mortbay.jetty.plus.jaas.JAASUserRealm;
 import org.mortbay.jetty.security.Constraint;
 import org.mortbay.jetty.security.ConstraintMapping;
 import org.mortbay.jetty.security.HashUserRealm;
@@ -79,7 +80,18 @@ public class WebServer
         constraintMapping.setConstraint(constraint);
         constraintMapping.setPathSpec("/*");
 
+        // Set up the security handler, optionally with JAAS
+        //
         SecurityHandler securityHandler = new SecurityHandler();
+        
+        if(System.getProperty("loginmodulename") != null && System.getProperty("java.security.auth.login.config") != null){
+        	JAASUserRealm jaasRealm = new JAASUserRealm("Kettle");
+        	jaasRealm.setLoginModuleName(System.getProperty("loginmodulename"));
+        	securityHandler.setUserRealm(jaasRealm);
+        }else{
+        	securityHandler.setUserRealm(new HashUserRealm("Kettle", "pwd/kettle.pwd"));
+        }
+        
         securityHandler.setUserRealm(new HashUserRealm("Kettle", "pwd/kettle.pwd"));
         securityHandler.setConstraintMappings(new ConstraintMapping[]{constraintMapping});
                

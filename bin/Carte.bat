@@ -64,6 +64,13 @@ REM ******************************************************************
 
 set OPT=-Xmx512M -cp %CLASSPATH% -Djava.library.path=libswt\win32\ -DKETTLE_HOME="%KETTLE_HOME%" -DKETTLE_REPOSITORY="%KETTLE_REPOSITORY%" -DKETTLE_USER="%KETTLE_USER%" -DKETTLE_PASSWORD="%KETTLE_PASSWORD%" -DKETTLE_PLUGIN_PACKAGES="%KETTLE_PLUGIN_PACKAGES%"
 
+# ***********************************************************************
+# ** Optionally set up the options for JAAS (uncomment to make active) **
+# ***********************************************************************
+
+REM set OPT=%OPT% -Djava.security.auth.login.config=%JAAS_LOGIN_MODULE_CONFIG%
+REM set	OPT=%OPT% -Dloginmodulename=%JAAS_LOGIN_MODULE_NAME%
+
 REM ***************
 REM ** Run...    **
 REM ***************

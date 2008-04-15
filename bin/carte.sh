@@ -28,6 +28,15 @@ done
 
 OPT="-Xmx256m -cp $CLASSPATH -Djava.library.path=$LIBPATH -DKETTLE_HOME=$KETTLE_HOME -DKETTLE_REPOSITORY=$KETTLE_REPOSITORY -DKETTLE_USER=$KETTLE_USER -DKETTLE_PASSWORD=$KETTLE_PASSWORD -DKETTLE_PLUGIN_PACKAGES=$KETTLE_PLUGIN_PACKAGES"
 
+# ******************************************************************
+# ** Set up the options for JAAS                                  **
+# ******************************************************************
+
+if [ ! "x$JAAS_LOGIN_MODULE_CONFIG" = "x" -a ! "x$JAAS_LOGIN_MODULE_NAME" = "x" ]; then
+	OPT=$OPT" -Djava.security.auth.login.config=$JAAS_LOGIN_MODULE_CONFIG"
+	OPT=$OPT" -Dloginmodulename=$JAAS_LOGIN_MODULE_NAME"
+fi
+
 # ***************
 # ** Run...    **
 # ***************
