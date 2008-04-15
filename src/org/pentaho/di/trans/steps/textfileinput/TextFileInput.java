@@ -502,7 +502,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 					}
 					if (next == -1) next = length;
 
-					if (encl_found)
+					if (encl_found && ((from + len_encl) <= (next - len_encl)))
 					{
 						pol = line.substring(from + len_encl, next - len_encl);
                         if (log.isRowLevel()) log.logRowlevel(Messages.getString("TextFileInput.Log.ConvertLineToRowTitle"), Messages.getString("TextFileInput.Log.EnclosureFieldFound",""+ pol ));
