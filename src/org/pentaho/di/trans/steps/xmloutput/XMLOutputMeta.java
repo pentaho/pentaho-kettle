@@ -76,6 +76,12 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface
 	 */
 	private String encoding;
 
+	/**
+	 * The name space for the XML document: null or empty string means no 
+	 * xmlns is written 
+	 */
+	private String nameSpace;
+
 	/** The name of the parent XML element */
 	private String mainElement;
 
@@ -303,6 +309,7 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface
 		try
 		{
 			encoding = XMLHandler.getTagValue(stepnode, "encoding");
+			nameSpace = XMLHandler.getTagValue(stepnode, "name_space");
 			mainElement = XMLHandler.getTagValue(stepnode, "xml_main_element");
 			repeatElement = XMLHandler.getTagValue(stepnode, "xml_repeat_element");
 
@@ -377,6 +384,7 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface
 		zipped = false;
 		splitEvery = 0;
 		encoding = Const.XML_ENCODING;
+		nameSpace = "";
 
 		mainElement = "Rows";
 		repeatElement = "Row";
@@ -517,6 +525,7 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface
 		StringBuffer retval = new StringBuffer(600);
 
 		retval.append("    ").append(XMLHandler.addTagValue("encoding", encoding));
+		retval.append("    ").append(XMLHandler.addTagValue("name_space", nameSpace));
 		retval.append("    ").append(XMLHandler.addTagValue("xml_main_element", mainElement));
 		retval.append("    ").append(XMLHandler.addTagValue("xml_repeat_element", repeatElement));
 
@@ -563,6 +572,7 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface
 		try
 		{
 			encoding = rep.getStepAttributeString(id_step, "encoding");
+			nameSpace = rep.getStepAttributeString(id_step, "name_space");
 			mainElement = rep.getStepAttributeString(id_step, "xml_main_element");
 			repeatElement = rep.getStepAttributeString(id_step, "xml_repeat_element");
 
@@ -608,6 +618,7 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface
 		try
 		{
 			rep.saveStepAttribute(id_transformation, id_step, "encoding", encoding);
+			rep.saveStepAttribute(id_transformation, id_step, "name_space", nameSpace);
 			rep.saveStepAttribute(id_transformation, id_step, "xml_main_element", mainElement);
 			rep.saveStepAttribute(id_transformation, id_step, "xml_repeat_element", repeatElement);
 			rep.saveStepAttribute(id_transformation, id_step, "file_name", fileName);
@@ -751,5 +762,21 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface
 	public void setRepeatElement(String repeatElement)
 	{
 		this.repeatElement = repeatElement;
+	}
+
+
+	/**
+	 * @return Returns the nameSpace.
+	 */
+	public String getNameSpace() {
+		return nameSpace;
+	}
+
+	/**
+	 * @param nameSpace
+	 *            The nameSpace to set.
+	 */
+	public void setNameSpace(String nameSpace) {
+		this.nameSpace = nameSpace;
 	}
 }

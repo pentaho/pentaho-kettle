@@ -183,7 +183,7 @@ public class RepositoriesDialog
                     }
                     else
                     {
-                        gc.drawImage(logo, 0, 0, bounds.width, bounds.height, 0, 0, canvasBounds.width, canvasBounds.height);
+                        gc.drawImage(logo, 0, 0);
                     }
                     pe.gc.drawImage(image, 0, 0); // no flicker anymore!
                     gc.dispose();

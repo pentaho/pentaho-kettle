@@ -464,8 +464,16 @@ public class XMLOutput extends BaseStep implements StepInterface
 				data.writer.write(XMLHandler.getXMLHeader(Const.XML_ENCODING).toCharArray());
 			}
 
+			// Add the name space if defined
+			StringBuffer nameSpace = new StringBuffer();
+			if ((meta.getNameSpace() != null) && (!"".equals(meta.getNameSpace())))  {
+				nameSpace.append(" xmlns=\"");
+				nameSpace.append(meta.getNameSpace());
+				nameSpace.append("\"");
+			}
+
 			// OK, write the header & the parent element:
-			data.writer.write(("<" + meta.getMainElement() + ">" + Const.CR).toCharArray());
+			data.writer.write(("<" + meta.getMainElement() + nameSpace.toString() + ">" + Const.CR).toCharArray());
 
 			retval = true;
 		} catch (Exception e)

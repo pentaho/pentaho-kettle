@@ -110,6 +110,10 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
     private CCombo       wEncoding;
     private FormData     fdlEncoding, fdEncoding;
 
+	private Label        wlNameSpace;
+	private Text         wNameSpace;
+	private FormData     fdlNameSpace, fdNameSpace;
+
     private Label        wlMainElement;
     private CCombo       wMainElement;
     private FormData     fdlMainElement, fdMainElement;
@@ -502,12 +506,29 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
             }
         );
 
+		wlNameSpace=new Label(wContentComp, SWT.RIGHT);
+		wlNameSpace.setText(Messages.getString("XMLOutputDialog.NameSpace.Label"));
+ 		props.setLook(wlNameSpace);
+		fdlNameSpace=new FormData();
+		fdlNameSpace.left = new FormAttachment(0, 0);
+		fdlNameSpace.top  = new FormAttachment(wEncoding, margin);
+		fdlNameSpace.right= new FormAttachment(middle, -margin);
+		wlNameSpace.setLayoutData(fdlNameSpace);
+		wNameSpace=new Text(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+ 		props.setLook(wNameSpace);
+		wNameSpace.addModifyListener(lsMod);
+		fdNameSpace=new FormData();
+		fdNameSpace.left = new FormAttachment(middle, 0);
+		fdNameSpace.top  = new FormAttachment(wEncoding, margin);
+		fdNameSpace.right= new FormAttachment(100, 0);
+		wNameSpace.setLayoutData(fdNameSpace);
+
         wlMainElement=new Label(wContentComp, SWT.RIGHT);
         wlMainElement.setText(Messages.getString("XMLOutputDialog.MainElement.Label"));
         props.setLook(wlMainElement);
         fdlMainElement=new FormData();
         fdlMainElement.left = new FormAttachment(0, 0);
-        fdlMainElement.top  = new FormAttachment(wEncoding, margin);
+        fdlMainElement.top  = new FormAttachment(wNameSpace, margin);
         fdlMainElement.right= new FormAttachment(middle, -margin);
         wlMainElement.setLayoutData(fdlMainElement);
         wMainElement=new CCombo(wContentComp, SWT.BORDER | SWT.READ_ONLY);
@@ -516,7 +537,7 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
         wMainElement.addModifyListener(lsMod);
         fdMainElement=new FormData();
         fdMainElement.left = new FormAttachment(middle, 0);
-        fdMainElement.top  = new FormAttachment(wEncoding, margin);
+        fdMainElement.top  = new FormAttachment(wNameSpace, margin);
         fdMainElement.right= new FormAttachment(100, 0);
         wMainElement.setLayoutData(fdMainElement);
 
@@ -767,6 +788,7 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
 		if (input.getExtension()     != null) wExtension.setText(input.getExtension());
 		wDoNotOpenNewFileInit.setSelection(input.isDoNotOpenNewFileInit());
         if (input.getEncoding()      != null) wEncoding.setText(input.getEncoding());
+        if (input.getNameSpace()     != null) wNameSpace.setText(input.getNameSpace());
         if (input.getMainElement()   != null) wMainElement.setText(input.getMainElement());
         if (input.getRepeatElement() != null) wRepeatElement.setText(input.getRepeatElement());
         
@@ -827,6 +849,7 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
 	{
 		tfoi.setFileName(   wFilename.getText() );
         tfoi.setEncoding( wEncoding.getText() );
+        tfoi.setNameSpace( wNameSpace.getText() );
         tfoi.setMainElement( wMainElement.getText() );
         tfoi.setRepeatElement( wRepeatElement.getText() );
 		tfoi.setExtension(  wExtension.getText() );
