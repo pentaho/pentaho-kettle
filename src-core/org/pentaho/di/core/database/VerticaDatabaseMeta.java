@@ -178,59 +178,19 @@ public class VerticaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 		switch(type)
 		{
 		case ValueMetaInterface.TYPE_DATE   : retval+="TIMESTAMP"; break;
+		
+		// XXX: Vertica supports BOOLEAN properly, but it seems like most 
+		// DBMeta classes just use CHAR(1) so I didn't change this.
 		case ValueMetaInterface.TYPE_BOOLEAN: retval+="CHAR(1)"; break;
 		case ValueMetaInterface.TYPE_NUMBER : 
-		case ValueMetaInterface.TYPE_INTEGER: 
-        case ValueMetaInterface.TYPE_BIGNUMBER: 
-			if (fieldname.equalsIgnoreCase(tk) || // Technical key
-			    fieldname.equalsIgnoreCase(pk)    // Primary key
-			    ) 
-			{
-				retval+="BIGSERIAL";
-			} 
-			else
-			{
-				if (length>0)
-				{
-					if (precision>0 || length>18)
-					{
-						retval+="NUMERIC("+length+", "+precision+")";
-					}
-					else
-					{
-						if (length>9)
-						{
-							retval+="BIGINT";
-						}
-						else
-						{
-							if (length<5)
-							{
-								retval+="SMALLINT";
-							}
-							else
-							{
-								retval+="INTEGER";
-							}
-						}
-					}
-					
-				}
-				else
-				{
-					retval+="DOUBLE PRECISION";
-				}
-			}
+        case ValueMetaInterface.TYPE_BIGNUMBER:
+        	retval+="FLOAT";
+        	break;
+		case ValueMetaInterface.TYPE_INTEGER:
+			retval+="INTEGER";
 			break;
 		case ValueMetaInterface.TYPE_STRING:
-			if (length<1 || length>=DatabaseMeta.CLOB_LENGTH)
-			{
-				retval+="TEXT";
-			}
-			else
-			{
-				retval+="VARCHAR("+length+")"; 
-			}
+			retval+="VARCHAR("+length+")"; 
 			break;
 		default:
 			retval+=" UNKNOWN";
