@@ -936,7 +936,6 @@ public class SpoonJobDelegate extends SpoonDelegate
 		if (graphTab != null)
 		{
 			spoon.delegates.tabs.removeTab(graphTab);
-			graphTab.dispose();
 		}
 
 		// Logging
@@ -944,7 +943,6 @@ public class SpoonJobDelegate extends SpoonDelegate
 		TabItem logTab = spoon.delegates.tabs.findTabItem(logTabName, TabMapEntry.OBJECT_TYPE_JOB_LOG);
 		if (logTab != null)
 		{
-			logTab.dispose();
 			spoon.delegates.tabs.removeTab(logTab);
 		}
 
@@ -953,7 +951,6 @@ public class SpoonJobDelegate extends SpoonDelegate
 		TabItem historyTab = spoon.delegates.tabs.findTabItem(historyTabName, TabMapEntry.OBJECT_TYPE_JOB_HISTORY);
 		if (historyTab != null)
 		{
-			historyTab.dispose();
 			spoon.delegates.tabs.removeTab(historyTab);
 		}
 

@@ -376,8 +376,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	
 	public Map<String,SharedObjects> sharedObjectsFileMap;
 
-
-    /**
+	/**
      * This is the main procedure for Spoon.
      * 
      * @param a Arguments are available in the "Get System Info" step.
@@ -694,9 +693,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	public void closeSpoonBrowser()
 	{
 		delegates.tabs.removeTab(STRING_WELCOME_TAB_NAME, TabMapEntry.OBJECT_TYPE_BROWSER);
-		TabItem tab = delegates.tabs.findTabItem(STRING_WELCOME_TAB_NAME, TabMapEntry.OBJECT_TYPE_BROWSER);
-		if (tab != null)
-			tab.dispose();
+		TabItem browserTab = delegates.tabs.findTabItem(STRING_WELCOME_TAB_NAME, TabMapEntry.OBJECT_TYPE_BROWSER);
+		if (browserTab != null) {
+			delegates.tabs.removeTab(browserTab);
+		}
 	}
 
 	/**
@@ -2760,9 +2760,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		props.setLook(tabfolder.getSwtTabset(), Props.WIDGET_STYLE_TAB);
 
 		tabfolder.addKeyListener(defKeys);
-
-		// tabfolder.setSelection(0);
-
+		
 		sashform.addKeyListener(defKeys);
 
 		int weights[] = props.getSashWeights();
@@ -2770,7 +2768,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		sashform.setVisible(true);
 
 		tabfolder.addListener(this);  // methods: tabDeselected, tabClose, tabSelected
-
 	}
 
 	public void tabDeselected(TabItem item)	{
@@ -3809,7 +3806,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 						TransMeta transMeta = (TransMeta) mapEntry.getObject().getManagedObject();
 						if (transMeta.hasChanged())
 						{
-							mapEntry.getTabItem().dispose();
+							delegates.tabs.removeTab( mapEntry.getTabItem() );
 						}
 					}
 					// A running transformation?
@@ -3820,7 +3817,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 						if (transGraph.isRunning())
 						{
 							transGraph.stop();
-							mapEntry.getTabItem().dispose();
+							delegates.tabs.removeTab( mapEntry.getTabItem() );
 						}
 					}
 				}

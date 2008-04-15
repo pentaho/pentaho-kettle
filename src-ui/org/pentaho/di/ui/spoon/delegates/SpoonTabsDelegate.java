@@ -119,17 +119,6 @@ public class SpoonTabsDelegate extends SpoonDelegate
 			idx+=1;
 		}
 		
-		//select a tab
-		if (idx-1>=0)
-		{
-			TabMapEntry entry = collection.get(idx-1);
-			if (entry!=null){
-				spoon.tabfolder.setSelected(entry.getTabItem());
-				tabSelected(entry.getTabItem());
-				spoon.showSelection();
-			}
-		}
-		
 		return close;
 	}
 
@@ -141,6 +130,7 @@ public class SpoonTabsDelegate extends SpoonDelegate
 				return;
 			}
 		}
+		if (!tabItem.isDisposed()) tabItem.dispose();
 	}
 	
 	public void removeTab(String tabText, int tabMapEntryType)

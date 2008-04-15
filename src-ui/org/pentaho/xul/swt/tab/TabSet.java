@@ -34,6 +34,8 @@ public class TabSet implements SelectionListener, CTabFolder2Listener {
     protected Font unchangedFont;
 	private List<TabListener> listeners = new ArrayList<TabListener>();
     
+	public List<TabItem> lastUsedTabs = new ArrayList<TabItem>();
+
 	public TabSet( Composite parent ) {
 		super();
         tabfolder= new CTabFolder(parent, SWT.MULTI);
@@ -47,9 +49,10 @@ public class TabSet implements SelectionListener, CTabFolder2Listener {
 	
 	public void widgetSelected( SelectionEvent event ) {
 		for( int i=0; i<tabList.size(); i++ ) {
-			if( event.item.equals( (tabList.get(i)).getSwtTabItem() ) ) {
+			TabItem item = tabList.get(i);
+			if( event.item.equals( item.getSwtTabItem() ) ) {
 				selectedIndex = i;
-				notifySelectListeners( (tabList.get(i)) );
+				notifySelectListeners( item );
 			}
 		}
 	}
@@ -60,8 +63,9 @@ public class TabSet implements SelectionListener, CTabFolder2Listener {
 
 	 public void close(CTabFolderEvent event) {
 			for( int i=0; i<tabList.size(); i++ ) {
-				if( event.item.equals( (tabList.get(i)).getSwtTabItem() ) ) {
-					event.doit = notifyCloseListeners( (tabList.get(i)) );
+				TabItem item = tabList.get(i);
+				if( event.item.equals( item.getSwtTabItem() ) ) {
+					event.doit = notifyCloseListeners( item );
 				}
 			}
 	 }
@@ -87,7 +91,30 @@ public class TabSet implements SelectionListener, CTabFolder2Listener {
 		for( int i=0; i<listeners.size(); i++ ) {
 			(listeners.get(i)).tabSelected( item );
 		}
+		// add to the lat used tab
+		addItemToHistory(item);
 	}
+
+	/**
+	 * Add a tab item to the tab usage history
+	 * @param item the tab item to add
+	 */
+	private void addItemToHistory(TabItem item) {
+		// Just don't add the same item twice in a row
+		//
+		if (lastUsedTabs.size()==0 || lastUsedTabs.lastIndexOf(item)!=lastUsedTabs.size()-1) {
+			lastUsedTabs.add(item);
+		}
+	}
+
+	/**
+	 *  Remove all occurrences of the specified item from the last used list.
+	 * @param item the tab item to remove
+	 */
+	private void removeItemFromHistory(TabItem item) {
+		while (lastUsedTabs.remove(item));	
+	}
+
 
 	public void notifyDeselectListeners( TabItem item ) {
 		for( int i=0; i<listeners.size(); i++ ) {
@@ -100,7 +127,20 @@ public class TabSet implements SelectionListener, CTabFolder2Listener {
 		for( int i=0; i<listeners.size(); i++ ) {
 			doit  &= (listeners.get(i)).tabClose( item );
 		}
+		removeItemFromHistory(item);
+		selectLastUsedTab();
 		return doit;
+	}
+
+	/**
+	 * Select the last tab in the tab usage history list
+	 */
+	private void selectLastUsedTab() {
+		int historySize = lastUsedTabs.size();
+		if (historySize>0) { 
+			TabItem lastItem = lastUsedTabs.get(historySize-1);
+			setSelected(lastItem);
+		}	
 	}
 
 	public CTabFolder getSwtTabset() {
@@ -134,7 +174,8 @@ public class TabSet implements SelectionListener, CTabFolder2Listener {
 
 	public void setSelected( int index ) {
 		if( index >= 0 && index < tabList.size() ) {
-		    tabfolder.setSelection( (tabList.get( index )).getSwtTabItem() );
+			TabItem item = (tabList.get( index ));
+		    tabfolder.setSelection( item.getSwtTabItem() );
 			selectedIndex = index;
 			notifySelectListeners( tabList.get( index ) );
 		}

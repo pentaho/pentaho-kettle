@@ -154,7 +154,6 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 				TabMapEntry.OBJECT_TYPE_TRANSFORMATION_GRAPH);
 		if (graphTab != null)
 		{
-			graphTab.dispose();
 			spoon.delegates.tabs.removeTab(graphTab);
 		}
 
@@ -164,7 +163,6 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 				TabMapEntry.OBJECT_TYPE_TRANSFORMATION_LOG);
 		if (logTab != null)
 		{
-			logTab.dispose();
 			spoon.delegates.tabs.removeTab(logTab);
 		}
 
@@ -174,7 +172,6 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 				TabMapEntry.OBJECT_TYPE_TRANSFORMATION_HISTORY);
 		if (historyTab != null)
 		{
-			historyTab.dispose();
 			spoon.delegates.tabs.removeTab(historyTab);
 		}
 
