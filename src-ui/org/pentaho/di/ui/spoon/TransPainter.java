@@ -73,6 +73,7 @@ public class TransPainter
     private TransHopMeta candidate;
     private Point        drop_candidate;
     private int          iconsize;
+    private int          gridSize;
     private Rectangle    selrect;
     private int          linewidth;
     private Map<String, Image> images;
@@ -166,6 +167,11 @@ public class TransPainter
         areaOwners.clear(); // clear it before we start filling it up again.
         
         shadowsize = props.getShadowSize();
+        gridSize = props.getCanvasGridSize();
+        
+        if (gridSize>1) {
+        	drawGrid(gc);
+        }
 
         Point max   = transMeta.getMaximum();
         Point thumb = getThumb(area, max);
@@ -226,7 +232,16 @@ public class TransPainter
         drawRect(gc, selrect);
     }
 
-    private void drawHop(GC gc, TransHopMeta hi)
+    private void drawGrid(GC gc) {
+    	Rectangle bounds = gc.getDevice().getBounds();
+		for (int x=0;x<bounds.width;x+=gridSize) {
+			for (int y=0;y<bounds.height;y+=gridSize) {
+				gc.drawPoint(x,y);
+			}
+		}
+	}
+
+	private void drawHop(GC gc, TransHopMeta hi)
     {
         drawHop(gc, hi, false);
     }

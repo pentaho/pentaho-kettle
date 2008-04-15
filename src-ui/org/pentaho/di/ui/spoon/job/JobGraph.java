@@ -617,11 +617,10 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 							JobEntryCopy je = jobMeta.getJobEntry(i);
 							if (je.isSelected()) 
 							{
-								je.setLocation(je.getLocation().x + dx, je.getLocation().y + dy);
+								setLocation(je, je.getLocation().x + dx, je.getLocation().y + dy);
 
 							}
 						}
-						// selected_icon.setLocation(icon.x, icon.y);
 
 						redraw();
 					} 
@@ -655,7 +654,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 					if (last_button==1)
 					{
 						Point note = new Point(real.x - noteoffset.x, real.y - noteoffset.y);
-						selected_note.setLocation(note.x, note.y);
+						setLocation(selected_note, note.x, note.y);
 						redraw();
 						//spoon.refreshGraph();  removed in 2.4.1 (SB: defect #4862)
 					}
@@ -714,7 +713,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
                             JobEntryCopy jge = spoon.newJobEntry(jobMeta, entry, false);
                             if (jge != null) 
                             {
-                                jge.setLocation(p.x, p.y);
+                            	setLocation(jge,p.x, p.y);
                                 jge.setDrawn();
                                 redraw();
                             }
@@ -761,7 +760,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
                                     log.logDebug(toString(), jge.toString()+" is not drawn"); //$NON-NLS-1$
                                     jge_changed=true;
                                 }
-                                newjge.setLocation(p.x, p.y);
+                                setLocation(newjge,p.x, p.y);
                                 newjge.setDrawn();
                                 if (jge_changed)
                                 {
@@ -804,49 +803,63 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 		setControlStates();
 	}
 	
-	   private void addToolBar()
-		{
+    protected void setLocation(GUIPositionInterface guiElement, int x, int y) {
+    	int gridSize = spoon.props.getCanvasGridSize();
+    	if (gridSize>1) {
+    		// Snap to grid...
+    		//
+    		int gridX = (int)gridSize*Math.round(x/gridSize);
+    		int gridY = (int)gridSize*Math.round(y/gridSize);
+    		guiElement.setLocation(gridX, gridY);
+    	} else {
+    		guiElement.setLocation(x, y);
+    	}
+	}
 
-			try {
-				toolbar = XulHelper.createToolbar(XUL_FILE_JOB_TOOLBAR, JobGraph.this, JobGraph.this, new XulMessages());
-				
-				// Add a few default key listeners
-				//
-				ToolBar toolBar = (ToolBar) toolbar.getNativeObject();
-				toolBar.addKeyListener(spoon.defKeys);
-				
-				addToolBarListeners();
-			} catch (Throwable t ) {
-				log.logError(toString(), Const.getStackTracker(t));
-				new ErrorDialog(shell, Messages.getString("Spoon.Exception.ErrorReadingXULFile.Title"), Messages.getString("Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_JOB_TOOLBAR), new Exception(t));
-			}
+
+	private void addToolBar()
+	{
+
+		try {
+			toolbar = XulHelper.createToolbar(XUL_FILE_JOB_TOOLBAR, JobGraph.this, JobGraph.this, new XulMessages());
+			
+			// Add a few default key listeners
+			//
+			ToolBar toolBar = (ToolBar) toolbar.getNativeObject();
+			toolBar.addKeyListener(spoon.defKeys);
+			
+			addToolBarListeners();
+		} catch (Throwable t ) {
+			log.logError(toString(), Const.getStackTracker(t));
+			new ErrorDialog(shell, Messages.getString("Spoon.Exception.ErrorReadingXULFile.Title"), Messages.getString("Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_JOB_TOOLBAR), new Exception(t));
 		}
+	}
 
-		public void addToolBarListeners()
+	public void addToolBarListeners()
+	{
+		try
 		{
-			try
+			// first get the XML document
+			URL url = XulHelper.getAndValidate(XUL_FILE_JOB_TOOLBAR_PROPERTIES);
+			Properties props = new Properties();
+			props.load(url.openStream());
+			String ids[] = toolbar.getMenuItemIds();
+			for (int i = 0; i < ids.length; i++)
 			{
-				// first get the XML document
-				URL url = XulHelper.getAndValidate(XUL_FILE_JOB_TOOLBAR_PROPERTIES);
-				Properties props = new Properties();
-				props.load(url.openStream());
-				String ids[] = toolbar.getMenuItemIds();
-				for (int i = 0; i < ids.length; i++)
+				String methodName = (String) props.get(ids[i]);
+				if (methodName != null)
 				{
-					String methodName = (String) props.get(ids[i]);
-					if (methodName != null)
-					{
-						toolbar.addMenuListener(ids[i], this, methodName);
+					toolbar.addMenuListener(ids[i], this, methodName);
 
-					}
 				}
-
-			} catch (Throwable t ) {
-				t.printStackTrace();
-				new ErrorDialog(shell, Messages.getString("Spoon.Exception.ErrorReadingXULFile.Title"), 
-						Messages.getString("Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_JOB_TOOLBAR_PROPERTIES), new Exception(t));
 			}
+
+		} catch (Throwable t ) {
+			t.printStackTrace();
+			new ErrorDialog(shell, Messages.getString("Spoon.Exception.ErrorReadingXULFile.Title"), 
+					Messages.getString("Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_JOB_TOOLBAR_PROPERTIES), new Exception(t));
 		}
+	}
 
 
     private void addKeyListener(Control control) {
@@ -1881,13 +1894,15 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
         
 		shadowsize = spoon.props.getShadowSize();
 
+		drawGrid(gc);
+		
 		gc.setBackground(GUIResource.getInstance().getColorBackground());
 
 		Point area = getArea();
 		Point max = jobMeta.getMaximum();
 		Point thumb = getThumb(area, max);
 		offset = getOffset(thumb, area);
-
+		
 		hori.setThumb(thumb.x);
 		vert.setThumb(thumb.y);
 
@@ -1946,6 +1961,16 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 		}
 
 		drawRect(gc, selrect);
+	}
+
+    private void drawGrid(GC gc) {
+    	int gridSize = spoon.props.getCanvasGridSize();
+    	Rectangle bounds = gc.getDevice().getBounds();
+		for (int x=0;x<bounds.width;x+=gridSize) {
+			for (int y=0;y<bounds.height;y+=gridSize) {
+				gc.drawPoint(x,y);
+			}
+		}
 	}
 
 	protected void drawJobHop(GC gc, JobHopMeta hop, boolean candidate) 

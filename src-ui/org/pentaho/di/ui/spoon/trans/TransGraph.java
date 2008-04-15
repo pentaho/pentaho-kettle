@@ -794,16 +794,21 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
                             selected_steps = transMeta.getSelectedSteps();
 
                             // Adjust location of selected steps...
-                            if (selected_steps != null) for (int i = 0; i < selected_steps.length; i++)
-                            {
-                                StepMeta stepMeta = selected_steps[i];
-                                stepMeta.setLocation(stepMeta.getLocation().x + dx, stepMeta.getLocation().y + dy);
+                            if (selected_steps != null) { 
+                            	for (int i = 0; i < selected_steps.length; i++)
+                            	{
+                            		StepMeta stepMeta = selected_steps[i];
+                            		setLocation(stepMeta, stepMeta.getLocation().x + dx, stepMeta.getLocation().y + dy);
+                            	}
                             }
                             // Adjust location of selected hops...
-                            if (selected_notes != null) for (int i = 0; i < selected_notes.length; i++)
+                            if (selected_notes != null) 
                             {
-                                NotePadMeta ni = selected_notes[i];
-                                ni.setLocation(ni.getLocation().x + dx, ni.getLocation().y + dy);
+								for (int i = 0; i < selected_notes.length; i++) 
+								{
+									NotePadMeta ni = selected_notes[i];
+									setLocation(ni, ni.getLocation().x + dx, ni.getLocation().y + dy);
+								}
                             }
 
                             redraw();
@@ -853,13 +858,13 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
                                 if (selected_steps != null) for (int i = 0; i < selected_steps.length; i++)
                                 {
                                     StepMeta stepMeta = selected_steps[i];
-                                    stepMeta.setLocation(stepMeta.getLocation().x + dx, stepMeta.getLocation().y + dy);
+                                    setLocation(stepMeta, stepMeta.getLocation().x + dx, stepMeta.getLocation().y + dy);
                                 }
                                 // Adjust location of selected hops...
                                 if (selected_notes != null) for (int i = 0; i < selected_notes.length; i++)
                                 {
                                     NotePadMeta ni = selected_notes[i];
-                                    ni.setLocation(ni.getLocation().x + dx, ni.getLocation().y + dy);
+                                    setLocation(ni, ni.getLocation().x + dx, ni.getLocation().y + dy);
                                 }
 
                                 redraw();
@@ -1017,7 +1022,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     
                         stepMeta.drawStep();
                         stepMeta.setSelected(true);
-                        stepMeta.setLocation(p.x, p.y);
+                        setLocation(stepMeta, p.x, p.y);
     
                         if (newstep)
                         {
@@ -1061,7 +1066,20 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         setBackground(GUIResource.getInstance().getColorBackground());
     }
 	
-    private void addToolBar()
+    protected void setLocation(GUIPositionInterface guiElement, int x, int y) {
+    	int gridSize = spoon.props.getCanvasGridSize();
+    	if (gridSize>1) {
+    		// Snap to grid...
+    		//
+    		int gridX = (int)gridSize*Math.round(x/gridSize);
+    		int gridY = (int)gridSize*Math.round(y/gridSize);
+    		guiElement.setLocation(gridX, gridY);
+    	} else {
+    		guiElement.setLocation(x, y);
+    	}
+	}
+
+	private void addToolBar()
 	{
 
 		try {
@@ -1789,7 +1807,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     public void newStep( String description )
     {
         StepMeta stepMeta = spoon.newStep(transMeta, description, description, false, true);
-        stepMeta.setLocation(currentMouseX, currentMouseY);
+        setLocation(stepMeta, currentMouseX, currentMouseY);
         stepMeta.setDraw(true);
         redraw();
     }

@@ -160,6 +160,10 @@ public class EnterOptionsDialog extends Dialog
 
 	private Text wMiddlePct;
 
+	private Label wlGridSize;
+
+	private Text wGridSize;
+
 	private Label wlAntiAlias;
 
 	private Button wAntiAlias;
@@ -909,13 +913,31 @@ public class EnterOptionsDialog extends Dialog
 		fdMiddlePct.top = new FormAttachment(wShadowSize, margin);
 		wMiddlePct.setLayoutData(fdMiddlePct);
 
+		// GridSize line
+		wlGridSize = new Label(wLookComp, SWT.RIGHT);
+		wlGridSize.setText(Messages.getString("EnterOptionsDialog.DialogGridSize.Label"));
+		props.setLook(wlGridSize);
+		FormData fdlGridSize = new FormData();
+		fdlGridSize.left = new FormAttachment(0, 0);
+		fdlGridSize.right = new FormAttachment(middle, -margin);
+		fdlGridSize.top = new FormAttachment(wMiddlePct, margin);
+		wlGridSize.setLayoutData(fdlGridSize);
+		wGridSize = new Text(wLookComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wGridSize.setText(Integer.toString(props.getCanvasGridSize()));
+		props.setLook(wGridSize);
+		FormData fdGridSize = new FormData();
+		fdGridSize.left = new FormAttachment(middle, 0);
+		fdGridSize.right = new FormAttachment(100, -margin);
+		fdGridSize.top = new FormAttachment(wMiddlePct, margin);
+		wGridSize.setLayoutData(fdGridSize);
+
 		// Enable anti-aliasing
 		wlAntiAlias = new Label(wLookComp, SWT.RIGHT);
 		wlAntiAlias.setText(Messages.getString("EnterOptionsDialog.CanvasAntiAliasing.Label"));
 		props.setLook(wlAntiAlias);
 		FormData fdlAntiAlias = new FormData();
 		fdlAntiAlias.left = new FormAttachment(0, 0);
-		fdlAntiAlias.top = new FormAttachment(wMiddlePct, margin);
+		fdlAntiAlias.top = new FormAttachment(wGridSize, margin);
 		fdlAntiAlias.right = new FormAttachment(middle, -margin);
 		wlAntiAlias.setLayoutData(fdlAntiAlias);
 		wAntiAlias = new Button(wLookComp, SWT.CHECK);
@@ -923,7 +945,7 @@ public class EnterOptionsDialog extends Dialog
 		wAntiAlias.setSelection(props.isAntiAliasingEnabled());
 		FormData fdAntiAlias = new FormData();
 		fdAntiAlias.left = new FormAttachment(middle, 0);
-		fdAntiAlias.top = new FormAttachment(wMiddlePct, margin);
+		fdAntiAlias.top = new FormAttachment(wGridSize, margin);
 		fdAntiAlias.right = new FormAttachment(100, 0);
 		wAntiAlias.setLayoutData(fdAntiAlias);
 
@@ -1611,6 +1633,7 @@ public class EnterOptionsDialog extends Dialog
 		props.setLineWidth(Const.toInt(wLineWidth.getText(), props.getLineWidth()));
 		props.setShadowSize(Const.toInt(wShadowSize.getText(), props.getShadowSize()));
 		props.setMiddlePct(Const.toInt(wMiddlePct.getText(), props.getMiddlePct()));
+		props.setCanvasGridSize(Const.toInt(wGridSize.getText(), 1));
 
 		props.setDefaultPreviewSize(Const.toInt(wDefaultPreview.getText(), props.getDefaultPreviewSize()));
 

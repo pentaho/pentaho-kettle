@@ -77,7 +77,9 @@ public class PropsUI extends Props
     private static final String SHOW_TOOL_TIPS = "ShowToolTips";
     
     private static final String SHOW_HELP_TOOL_TIPS = "ShowHelpToolTips";
-    
+
+    private static final String CANVAS_GRID_SIZE = "CanvasGridSize";
+
     private static List<GUIOption<Object>> editables;
 
 	/**
@@ -1190,4 +1192,16 @@ public class PropsUI extends Props
 	public void setOpenTabFiles(List<LastUsedFile> openTabFiles) {
 		this.openTabFiles = openTabFiles;
 	}
+	
+	public int getCanvasGridSize() 
+	{
+		return Const.toInt(properties.getProperty(CANVAS_GRID_SIZE,"1"), 1);
+	}
+	
+	public void setCanvasGridSize(int gridSize) 
+	{
+		properties.setProperty(CANVAS_GRID_SIZE, Integer.toString(gridSize));
+	}
+
+
 }
