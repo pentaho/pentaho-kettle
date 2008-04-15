@@ -92,7 +92,6 @@ public class WebServer
         	securityHandler.setUserRealm(new HashUserRealm("Kettle", "pwd/kettle.pwd"));
         }
         
-        securityHandler.setUserRealm(new HashUserRealm("Kettle", "pwd/kettle.pwd"));
         securityHandler.setConstraintMappings(new ConstraintMapping[]{constraintMapping});
                
         // Add all the servlets...
