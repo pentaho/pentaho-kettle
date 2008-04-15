@@ -179,13 +179,15 @@ public class StreamLookup extends BaseStep implements StepInterface
             Object[] keyData = new Object[keyNrs.length];
             for (int i=0;i<keyNrs.length;i++)
             {
-                keyData[i] = rowData[ keyNrs[i] ];
+            	ValueMetaInterface keyMeta = data.keyMeta.getValueMeta(i);
+                keyData[i] = keyMeta.convertToNormalStorageType( rowData[ keyNrs[i] ] ); // Make sure only normal storage goes in
             }
 
             Object[] valueData = new Object[valueNrs.length];
             for (int i=0;i<valueNrs.length;i++)
             {
-                valueData[i] = rowData[ valueNrs[i] ];
+            	ValueMetaInterface valueMeta = data.valueMeta.getValueMeta(i);
+                valueData[i] = valueMeta.convertToNormalStorageType( rowData[ valueNrs[i] ] ); // make sure only normal storage goes in
             }
 
             addToCache(data.keyMeta, keyData, data.valueMeta, valueData);
@@ -397,6 +399,16 @@ public class StreamLookup extends BaseStep implements StepInterface
 				setErrors(1);
 				stopAll();
 				return false;
+			}
+			
+			// At this point, all the values in the cache are of normal storage data type...
+			// We should reflect this in the metadata...
+			//
+			for (ValueMetaInterface valueMeta : data.keyMeta.getValueMetaList()) {
+				valueMeta.setStorageType(ValueMetaInterface.STORAGE_TYPE_NORMAL);
+			}
+			for (ValueMetaInterface valueMeta : data.valueMeta.getValueMetaList()) {
+				valueMeta.setStorageType(ValueMetaInterface.STORAGE_TYPE_NORMAL);
 			}
 	    }
 	    

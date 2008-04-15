@@ -373,6 +373,7 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface
 				{
 					v.setName(valueName[i]);
 					v.setOrigin(origin);
+					v.setStorageType(ValueMetaInterface.STORAGE_TYPE_NORMAL); // Only normal storage goes into the cache
 					row.addValueMeta(v);
 				}
 				else
