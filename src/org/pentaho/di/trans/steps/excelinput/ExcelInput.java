@@ -57,6 +57,7 @@ import org.pentaho.di.trans.step.errorhandling.FileErrorHandlerMissingFiles;
  * This class reads data from one or more Microsoft Excel files.
  * 
  * @author Matt
+ * @author timh
  * @since 19-NOV-2003
  */
 public class ExcelInput extends BaseStep implements StepInterface
@@ -78,9 +79,10 @@ public class ExcelInput extends BaseStep implements StepInterface
 		boolean errorHandled = false;
 
 		// Set values in the row...
+		Cell cell = null;
 		for (int i = startcolumn; i < excelInputRow.cells.length && i - startcolumn < r.length; i++)
 		{
-			Cell cell = excelInputRow.cells[i];
+			cell = excelInputRow.cells[i];
 
 			int rowcolumn = i - startcolumn;
 
@@ -93,7 +95,14 @@ public class ExcelInput extends BaseStep implements StepInterface
 			}
 			catch (KettleException ex)
 			{
-				if (!meta.isErrorIgnored()) throw ex;
+				if (!meta.isErrorIgnored()) {
+					ex = new KettleCellValueException(ex,
+					this.data.sheetnr,
+					this.data.rownr,
+					i,
+					"");
+					throw ex;
+				}
 				logBasic(Messages.getString("ExcelInput.Log.WarningProcessingExcelFile",""+targetMeta,""+data.filename, ex.getMessage()));
 				
 				if (!errorHandled)
@@ -216,7 +225,14 @@ public class ExcelInput extends BaseStep implements StepInterface
 			}
 			catch (KettleException ex)
 			{
-				if (!meta.isErrorIgnored()) throw ex;
+				if (!meta.isErrorIgnored()) {
+					ex = new KettleCellValueException(ex,
+					this.data.sheetnr,
+					cell.getRow(),
+					i,
+					field.getName());
+					throw ex;
+				}
 				logBasic(Messages.getString("ExcelInput.Log.WarningProcessingExcelFile",""+targetMeta,""+data.filename, ex.toString()));
 				if (!errorHandled) // check if we didn't log an error already for this one.
 				{

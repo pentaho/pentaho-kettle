@@ -58,6 +58,7 @@ import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.fileinput.FileInputList;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
@@ -88,6 +89,11 @@ import org.pentaho.di.ui.trans.steps.textfileinput.VariableButtonListenerFactory
 
 public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterface
 {
+	/**
+	 * Marker put on tab to indicate attention required
+	 */
+	private static final String TAB_FLAG = "!";
+
 	private static final String[] YES_NO_COMBO = new String[] { Messages.getString("System.Combo.No"), Messages.getString("System.Combo.Yes") };
 	
 	private CTabFolder   wTabFolder;
@@ -98,12 +104,15 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 	private Composite    wFileComp, wSheetComp, wContentComp, wErrorComp, wFieldsComp;
 	private FormData     fdFileComp, fdSheetComp, fdContentComp, fdFieldsComp;
 
+	private Label		 wlStatusMessage;
+	
 	private Label        wlFilename;
 	private Button       wbbFilename; // Browse: add file or directory
 	private Button       wbdFilename; // Delete
 	private Button       wbeFilename; // Edit
 	private Button       wbaFilename; // Add or change
 	private TextVar      wFilename;
+	private FormData     fdlStatusMessage;
 	private FormData     fdlFilename, fdbFilename, fdbdFilename, fdbeFilename, fdbaFilename, fdFilename;
 
 	private Label        wlFilenameList;
@@ -257,6 +266,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 			public void modifyText(ModifyEvent e) 
 			{
 				input.setChanged();
+				checkAlerts();
 			}
 		};
 		changed         = input.hasChanged();
@@ -290,9 +300,23 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		fdStepname.right= new FormAttachment(100, 0);
 		wStepname.setLayoutData(fdStepname);
 
+ 		// Status Message
+ 		wlStatusMessage = new Label(shell, SWT.RIGHT);
+ 		wlStatusMessage.setText("(This Space To Let)");
+ 		wlStatusMessage.setForeground(
+ 			display.getSystemColor(SWT.COLOR_RED));
+ 		props.setLook(wlStatusMessage);
+		fdlStatusMessage=new FormData();
+		fdlStatusMessage.left = new FormAttachment(0, 0);
+		fdlStatusMessage.top  = new FormAttachment(wlStepname, margin);
+		fdlStatusMessage.right= new FormAttachment(middle, -margin);
+		wlStatusMessage.setLayoutData(fdlStatusMessage);
+
+		// Tabs
 		wTabFolder = new CTabFolder(shell, SWT.BORDER);
  		props.setLook(wTabFolder, Props.WIDGET_STYLE_TAB);
 		
+
 		//////////////////////////
 		// START OF FILE TAB   ///
 		//////////////////////////
@@ -576,6 +600,12 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		fdFilenameList.top    = new FormAttachment(0, 0);
 		fdFilenameList.bottom = new FormAttachment(wbGetSheets, -margin);
 		wSheetnameList.setLayoutData(fdFilenameList);
+		
+		wSheetnameList.addModifyListener(new ModifyListener() {
+			public void modifyText(ModifyEvent arg0) {
+				checkAlerts();
+			}
+		});
 		
 		fdSheetComp=new FormData();
 		fdSheetComp.left  = new FormAttachment(0, 0);
@@ -898,6 +928,12 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 							  props
 						      );
 		wFields.setSize(FieldsWidth,FieldsHeight);
+		wFields.addModifyListener(new ModifyListener() {
+
+			public void modifyText(ModifyEvent arg0) {
+				checkAlerts();			}
+
+		});
 
 		fdFields=new FormData();
 		fdFields.left  = new FormAttachment(0, 0);
@@ -919,7 +955,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		
 		fdTabFolder = new FormData();
 		fdTabFolder.left  = new FormAttachment(0, 0);
-		fdTabFolder.top   = new FormAttachment(wStepname, margin);
+		fdTabFolder.top   = new FormAttachment(wlStatusMessage, margin);
 		fdTabFolder.right = new FormAttachment(100, 0);
 		fdTabFolder.bottom= new FormAttachment(100, -50);
 		wTabFolder.setLayoutData(fdTabFolder);
@@ -963,6 +999,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 				wFilenameList.removeEmptyRows();
 				wFilenameList.setRowNums();
                 wFilenameList.optWidth(true);
+                checkAlerts();
 			}
 		};
 		wbaFilename.addSelectionListener(selA);
@@ -977,6 +1014,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 				wFilenameList.remove(idx);
 				wFilenameList.removeEmptyRows();
 				wFilenameList.setRowNums();
+				checkAlerts();
 			}
 		});
 
@@ -1089,6 +1127,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		getData(input);
 		input.setChanged(changed);
 		wFields.optWidth(true);
+		checkAlerts(); // resyncing after setup
 		
 		shell.open();
 		while (!shell.isDisposed())
@@ -1719,6 +1758,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 			wSheetnameList.removeEmptyRows();
 			wSheetnameList.setRowNums();
 			wSheetnameList.optWidth(true);
+			checkAlerts();
 		}
 	}
 
@@ -1918,7 +1958,75 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
         }
     }
 
+    /**
+     * It is perfectly permissible to put away an incomplete
+     * step definition. However, to assist the user in setting
+     * up the full kit, this method is invoked whenever
+     * data changes in the dialog. It scans the dialog's model
+     * looking for missing and/or inconsistent data. Tabs needing
+     * attention are visually flagged and attention messages
+     * are displayed in the statusMessage line (a la Eclipse).
+     * 
+     * Since there's only one statusMessage line, messages are
+     * prioritized. As each higher-level item is corrected, the
+     * next lower level message is displayed.
+     * 
+     * @author Tim Holloway <timh@mousetech.com>
+     * @since 15-FEB-2008
+     */
+    private void checkAlerts() {
+    	log.println(LogWriter.LOG_LEVEL_BASIC, "checkAlerts");
+    	//# Check the fields tab. At least one field is required.
+    	//# Check the Sheets tab. At least one sheet is required.
+    	//# Check the Files tab.
 
+    	final boolean fieldsOk = wFields.nrNonEmpty() != 0; 
+    	final boolean sheetsOk = wSheetnameList.nrNonEmpty() != 0; 
+    	final boolean filesOk = wFilenameList.nrNonEmpty() != 0;
+    	String msgText = ""; // Will clear status if no actions.
+
+    	// Assign the highest-priority action message.
+    	if ( ! fieldsOk ) {
+    		//TODO: NLS
+    		msgText = ("Add Field(s)");
+    	} else if ( ! sheetsOk ) {
+    		//TODO: NLS
+    		msgText = ("Add sheet(s)");
+    	} else if ( !filesOk ) {
+    		//TODO: NLS
+    		msgText = ("Add filename(s)");
+    	}
+    	tagTab(!fieldsOk, wFieldsTab,
+    		Messages.getString("ExcelInputDialog.FieldsTab.TabTitle"));
+    	tagTab(!sheetsOk, wSheetTab, 
+    		Messages.getString("ExcelInputDialog.SheetsTab.TabTitle"));
+    	tagTab(!filesOk, wFileTab, 
+    		Messages.getString("ExcelInputDialog.FileTab.TabTitle"));
+    	
+    	wPreview.setEnabled(fieldsOk && sheetsOk && filesOk );
+
+   		wlStatusMessage.setText(msgText);
+    }
+    
+
+	/**
+	 * Hilight (or not) tab to indicate if action is required.
+	 * 
+	 * @param hilightMe <code>true</code> to highlight,
+	 * <code>false</code> if not.
+	 * @param tabItem Tab to highlight
+	 * @param tabCaption Tab text (normally fetched from resource).
+	 */
+    private void tagTab(boolean hilightMe, CTabItem tabItem,
+			String tabCaption) {
+		if ( hilightMe ) {
+			tabItem.setText(TAB_FLAG + tabCaption);
+		} else {
+			tabItem.setText(tabCaption);
+		}
+	}
+
+	@Override
 	public String toString()
 	{
 		return this.getClass().getName();

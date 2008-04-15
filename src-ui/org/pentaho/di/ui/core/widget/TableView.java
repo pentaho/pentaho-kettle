@@ -1362,6 +1362,7 @@ public class TableView extends Composite
 			table.removeAll();
 			new TableItem(table, SWT.NONE);
 			if (!readonly) edit(0,1);
+			this.setModified(); // timh
 		}
 	}
 
