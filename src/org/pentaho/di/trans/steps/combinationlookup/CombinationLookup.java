@@ -683,7 +683,15 @@ public class CombinationLookup extends BaseStep implements StepInterface
 			data.db.shareVariablesWith(this);
 			try
 			{
-				data.db.connect(getPartitionID());
+				if (getTransMeta().isUsingUniqueConnections()) 
+				{
+					synchronized (getTrans()) { data.db.connect(getTrans().getThreadName(), getPartitionID()); }
+				} 
+				else 
+				{
+					data.db.connect(getPartitionID()); 
+				}
+
 				logBasic(Messages.getString("CombinationLookup.Log.ConnectedToDB")); //$NON-NLS-1$
 				data.db.setCommit(meta.getCommitSize());
 
