@@ -3098,8 +3098,8 @@ public class ValueMeta implements ValueMetaInterface
 		// For example, we might want to convert null into "Empty".
     	//
         if (!Const.isEmpty(ifNull)) {
-			String nullCmp = Const.rightPad(new StringBuffer(null_value), pol.length());
-			if (Const.isEmpty(pol) || pol.equalsIgnoreCase(nullCmp))
+			// Note that you can't pull the pad method up here as a nullComp variable because you could get an NPE since you haven't checked isEmpty(pol) yet!
+			if (Const.isEmpty(pol) || pol.equalsIgnoreCase(Const.rightPad(new StringBuffer(null_value), pol.length())))
 			{
 				pol = ifNull;
 			}
