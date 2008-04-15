@@ -18,6 +18,7 @@ package org.pentaho.di.trans.steps.scriptvalues_mod;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 
 import junit.framework.TestCase;
 
@@ -664,6 +665,7 @@ public class JavaScriptStringTest extends TestCase
     public void testStringsNum() throws Exception
     {
     	EnvUtil.environmentInit();
+    	Locale.setDefault(Locale.ENGLISH);
     	
         // 
         // Create a javascript step
