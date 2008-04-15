@@ -617,8 +617,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 							JobEntryCopy je = jobMeta.getJobEntry(i);
 							if (je.isSelected()) 
 							{
-								setLocation(je, je.getLocation().x + dx, je.getLocation().y + dy);
-
+								PropsUI.setLocation(je, je.getLocation().x + dx, je.getLocation().y + dy);
 							}
 						}
 
@@ -654,7 +653,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 					if (last_button==1)
 					{
 						Point note = new Point(real.x - noteoffset.x, real.y - noteoffset.y);
-						setLocation(selected_note, note.x, note.y);
+						PropsUI.setLocation(selected_note, note.x, note.y);
 						redraw();
 						//spoon.refreshGraph();  removed in 2.4.1 (SB: defect #4862)
 					}
@@ -670,7 +669,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 		{
 			public void dragEnter(DropTargetEvent event) 
 			{
-				drop_candidate = getRealPosition(canvas, event.x, event.y);
+				drop_candidate = PropsUI.calculateGridPosition(getRealPosition(canvas, event.x, event.y));
 				redraw();
 			}
 
@@ -686,7 +685,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 
 			public void dragOver(DropTargetEvent event) 
 			{
-				drop_candidate = getRealPosition(canvas, event.x, event.y);
+				drop_candidate = PropsUI.calculateGridPosition(getRealPosition(canvas, event.x, event.y));
 				redraw();
 			}
 
@@ -713,7 +712,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
                             JobEntryCopy jge = spoon.newJobEntry(jobMeta, entry, false);
                             if (jge != null) 
                             {
-                            	setLocation(jge,p.x, p.y);
+                            	PropsUI.setLocation(jge,p.x, p.y);
                                 jge.setDrawn();
                                 redraw();
                             }
@@ -760,7 +759,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
                                     log.logDebug(toString(), jge.toString()+" is not drawn"); //$NON-NLS-1$
                                     jge_changed=true;
                                 }
-                                setLocation(newjge,p.x, p.y);
+                                PropsUI.setLocation(newjge,p.x, p.y);
                                 newjge.setDrawn();
                                 if (jge_changed)
                                 {
@@ -802,20 +801,6 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 		
 		setControlStates();
 	}
-	
-    protected void setLocation(GUIPositionInterface guiElement, int x, int y) {
-    	int gridSize = spoon.props.getCanvasGridSize();
-    	if (gridSize>1) {
-    		// Snap to grid...
-    		//
-    		int gridX = (int)gridSize*Math.round(x/gridSize);
-    		int gridY = (int)gridSize*Math.round(y/gridSize);
-    		guiElement.setLocation(gridX, gridY);
-    	} else {
-    		guiElement.setLocation(x, y);
-    	}
-	}
-
 
 	private void addToolBar()
 	{

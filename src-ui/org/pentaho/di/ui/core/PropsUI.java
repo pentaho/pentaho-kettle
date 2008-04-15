@@ -37,6 +37,8 @@ import org.pentaho.di.core.LastUsedFile;
 import org.pentaho.di.core.ObjectUsageCount;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.gui.GUIOption;
+import org.pentaho.di.core.gui.GUIPositionInterface;
+import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.util.ResolverUtil;
 import org.pentaho.di.laf.BasePropertyHandler;
 import org.pentaho.di.ui.core.gui.GUIResource;
@@ -1203,5 +1205,22 @@ public class PropsUI extends Props
 		properties.setProperty(CANVAS_GRID_SIZE, Integer.toString(gridSize));
 	}
 
+    public static final void setLocation(GUIPositionInterface guiElement, int x, int y) {
+    	guiElement.setLocation(calculateGridPosition(new Point(x,y)));
+	}
+    
+    public static final Point calculateGridPosition(Point p) {
+    	int gridSize = PropsUI.getInstance().getCanvasGridSize();
+    	if (gridSize>1) {
+    		// Snap to grid...
+    		//
+    		return new Point(gridSize*Math.round(p.x/gridSize), gridSize*Math.round(p.y/gridSize));
+    	} else {
+    		// Normal draw
+    		//
+    		return p;
+    	}
+    }
+    
 
 }

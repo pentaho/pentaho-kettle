@@ -798,7 +798,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
                             	for (int i = 0; i < selected_steps.length; i++)
                             	{
                             		StepMeta stepMeta = selected_steps[i];
-                            		setLocation(stepMeta, stepMeta.getLocation().x + dx, stepMeta.getLocation().y + dy);
+                            		PropsUI.setLocation(stepMeta, stepMeta.getLocation().x + dx, stepMeta.getLocation().y + dy);
                             	}
                             }
                             // Adjust location of selected hops...
@@ -807,7 +807,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 								for (int i = 0; i < selected_notes.length; i++) 
 								{
 									NotePadMeta ni = selected_notes[i];
-									setLocation(ni, ni.getLocation().x + dx, ni.getLocation().y + dy);
+									PropsUI.setLocation(ni, ni.getLocation().x + dx, ni.getLocation().y + dy);
 								}
                             }
 
@@ -858,13 +858,13 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
                                 if (selected_steps != null) for (int i = 0; i < selected_steps.length; i++)
                                 {
                                     StepMeta stepMeta = selected_steps[i];
-                                    setLocation(stepMeta, stepMeta.getLocation().x + dx, stepMeta.getLocation().y + dy);
+                                    PropsUI.setLocation(stepMeta, stepMeta.getLocation().x + dx, stepMeta.getLocation().y + dy);
                                 }
                                 // Adjust location of selected hops...
                                 if (selected_notes != null) for (int i = 0; i < selected_notes.length; i++)
                                 {
                                     NotePadMeta ni = selected_notes[i];
-                                    setLocation(ni, ni.getLocation().x + dx, ni.getLocation().y + dy);
+                                    PropsUI.setLocation(ni, ni.getLocation().x + dx, ni.getLocation().y + dy);
                                 }
 
                                 redraw();
@@ -883,7 +883,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
                 {
                     clearSettings();
     
-                    drop_candidate = getRealPosition(canvas, event.x, event.y);
+                    drop_candidate = PropsUI.calculateGridPosition(getRealPosition(canvas, event.x, event.y));
     
                     redraw();
                 }
@@ -900,7 +900,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     
                 public void dragOver(DropTargetEvent event)
                 {
-                    drop_candidate = getRealPosition(canvas, event.x, event.y);
+                    drop_candidate = PropsUI.calculateGridPosition(getRealPosition(canvas, event.x, event.y));
     
                     redraw();
                 }
@@ -1022,7 +1022,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     
                         stepMeta.drawStep();
                         stepMeta.setSelected(true);
-                        setLocation(stepMeta, p.x, p.y);
+                        PropsUI.setLocation(stepMeta, p.x, p.y);
     
                         if (newstep)
                         {
@@ -1065,19 +1065,6 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 
         setBackground(GUIResource.getInstance().getColorBackground());
     }
-	
-    protected void setLocation(GUIPositionInterface guiElement, int x, int y) {
-    	int gridSize = spoon.props.getCanvasGridSize();
-    	if (gridSize>1) {
-    		// Snap to grid...
-    		//
-    		int gridX = (int)gridSize*Math.round(x/gridSize);
-    		int gridY = (int)gridSize*Math.round(y/gridSize);
-    		guiElement.setLocation(gridX, gridY);
-    	} else {
-    		guiElement.setLocation(x, y);
-    	}
-	}
 
 	private void addToolBar()
 	{
@@ -1807,7 +1794,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     public void newStep( String description )
     {
         StepMeta stepMeta = spoon.newStep(transMeta, description, description, false, true);
-        setLocation(stepMeta, currentMouseX, currentMouseY);
+        PropsUI.setLocation(stepMeta, currentMouseX, currentMouseY);
         stepMeta.setDraw(true);
         redraw();
     }
