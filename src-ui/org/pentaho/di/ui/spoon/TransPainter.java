@@ -169,18 +169,18 @@ public class TransPainter
         //
     	Transform shadow = new Transform(device);
     	shadow.scale(magnification, magnification);
-    	shadow.translate(translationX, translationX);
+    	shadow.translate(translationX, translationY);
 
         shadowsize = props.getShadowSize();
         if (shadowsize>0) {
         	
-        	shadow.translate(translationX+props.getShadowSize(), translationX+props.getShadowSize());
+        	shadow.translate(translationX+props.getShadowSize(), translationY+props.getShadowSize());
             gc.setAlpha(30);
         	gc.setTransform(shadow);
         	
         	drawTrans(gc, true);
         	
-        	shadow.translate(translationX, translationX);
+        	shadow.translate(translationX, translationY);
         	gc.setAlpha(255);
         }
         

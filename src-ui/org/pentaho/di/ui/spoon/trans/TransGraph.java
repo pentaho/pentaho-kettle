@@ -1462,7 +1462,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         Point real;
         if (offset != null)
         {
-            real = new Point(Math.round((x - offset.x)/magnification), Math.round((y - offset.y)/magnification));
+            real = new Point(Math.round((x/magnification - offset.x)), Math.round((y/magnification - offset.y)));
         }
         else
         {

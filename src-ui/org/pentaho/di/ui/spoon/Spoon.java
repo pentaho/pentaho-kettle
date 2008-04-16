@@ -5238,7 +5238,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		img_gc.fillRectangle(0, 0, max.x, max.y);
 
 		// Draw the transformation...
-		jobGraph.drawJob(img_gc, false);
+		jobGraph.drawJob(printer, img_gc, false);
 
 		ps.printImage(shell, img);
 
@@ -7160,16 +7160,22 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	public void zoomIn() {
 		TransGraph transGraph = getActiveTransGraph();
 		if (transGraph!=null) transGraph.zoomIn();
+		JobGraph jobGraph = getActiveJobGraph();
+		if (jobGraph!=null) jobGraph.zoomIn();
 	}
 	
 	public void zoomOut() {
 		TransGraph transGraph = getActiveTransGraph();
 		if (transGraph!=null) transGraph.zoomOut();
+		JobGraph jobGraph = getActiveJobGraph();
+		if (jobGraph!=null) jobGraph.zoomOut();
 	}
 
 	public void zoom100Percent() {
 		TransGraph transGraph = getActiveTransGraph();
 		if (transGraph!=null) transGraph.zoom100Percent();
+		JobGraph jobGraph = getActiveJobGraph();
+		if (jobGraph!=null) jobGraph.zoom100Percent();
 	}
 	
 }

@@ -43,10 +43,12 @@ import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.LineAttributes;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.graphics.Transform;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
@@ -58,10 +60,12 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MessageBox;
+import org.eclipse.swt.widgets.Scale;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.ToolItem;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.NotePadMeta;
@@ -97,7 +101,6 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.XulHelper;
 import org.pentaho.di.ui.job.dialog.JobDialog;
-import org.pentaho.di.ui.spoon.job.Messages;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.TabItemInterface;
 import org.pentaho.di.ui.spoon.TabMapEntry;
@@ -185,16 +188,9 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 	
     private XulToolbar       toolbar;
 
-	// public  Button wStart;
-	// private Button wPause;
-    // private Button wStop;
-	// private Button wError;
-	// private Button wClear;
-	// public  Button wAuto;
-	// private Button wLog;
-	// private Button wSafeMode;
-	// private Composite buttonsComposite;
-	
+	private int magnificationIndex=TransPainter.MAGNIFICATION_100_PERCENT_INDEX;
+	private float magnification = TransPainter.magnifications[magnificationIndex];
+
 	public JobLogDelegate jobLogDelegate;
 	public JobHistoryDelegate jobHistoryDelegate;
 	public JobGridDelegate jobGridDelegate;
@@ -205,6 +201,10 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 	private List<RefreshListener> refreshListeners;
 	private Label closeButton;
 	private Label minMaxButton;
+	private Label zoomLabel;
+	private int gridSize;
+	private float translationX;
+	private float translationY;
 	
 	public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) 
 	{
@@ -807,10 +807,60 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 
 		try {
 			toolbar = XulHelper.createToolbar(XUL_FILE_JOB_TOOLBAR, JobGraph.this, JobGraph.this, new XulMessages());
+			ToolBar toolBar = (ToolBar) toolbar.getNativeObject();
+			toolBar.pack();
+			int h = toolBar.getBounds().height;
+			
+			// Hack alert : more XUL limitations...
+			//
+			ToolItem sep = new ToolItem(toolBar, SWT.SEPARATOR);
+			
+			Composite zoom = new Composite(toolBar, SWT.LEFT);
+			zoom.setLayout(new FormLayout());
+			
+			final Scale zoomScale = new Scale(zoom, SWT.HORIZONTAL);
+			zoomScale.setMinimum(0);
+			zoomScale.setMaximum(TransPainter.magnifications.length-1);
+			zoomScale.setIncrement(1);
+			zoomScale.setPageIncrement(1);
+			zoomScale.setSelection(magnificationIndex);
+			zoomScale.addSelectionListener(new SelectionAdapter() {
+				public void widgetSelected(SelectionEvent arg0) {
+					magnificationIndex=zoomScale.getSelection();
+					magnification=TransPainter.magnifications[magnificationIndex];
+					redraw();
+				}
+			});
+			zoomScale.addKeyListener(spoon.defKeys);
+			zoomScale.setSize(150, h);
+
+			FormData fdScale = new FormData();
+			fdScale.left=new FormAttachment(0,0);
+			fdScale.right=new FormAttachment(50,0);
+			fdScale.top = new FormAttachment(0,0);
+			fdScale.bottom = new FormAttachment(100,0);
+			zoomScale.setLayoutData(fdScale);
+
+			zoomLabel = new Label(zoom, SWT.LEFT);
+			setZoomLabel();
+			zoomLabel.pack();
+			
+			
+			FormData fdLabel = new FormData();
+			fdLabel.left=new FormAttachment(50,0);
+			fdLabel.right=new FormAttachment(100,0);
+			fdLabel.top = new FormAttachment(zoomScale,0,SWT.CENTER);
+			zoomLabel.setLayoutData(fdLabel);
+
+			
+			zoom.setSize(100, h);
+			zoom.layout();
+			sep.setWidth(100);
+			sep.setControl(zoom);
+			toolBar.pack();
 			
 			// Add a few default key listeners
 			//
-			ToolBar toolBar = (ToolBar) toolbar.getNativeObject();
 			toolBar.addKeyListener(spoon.defKeys);
 			
 			addToolBarListeners();
@@ -820,6 +870,10 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 		}
 	}
 
+	private void setZoomLabel() {
+		zoomLabel.setText(TransPainter.magnificationDescriptions[magnificationIndex]);
+	}
+	
 	public void addToolBarListeners()
 	{
 		try
@@ -924,6 +978,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
     public void redraw()
     {
         canvas.redraw();
+        setZoomLabel();
     }
     
     public boolean forceFocus()
@@ -1092,7 +1147,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 		Point real;
 		if (offset != null)
 		{
-			real = new Point(x - offset.x, y - offset.y);
+			real = new Point(Math.round((x/magnification - offset.x)), Math.round((y/magnification - offset.y)));
 		}
 		else
 		{
@@ -1865,7 +1920,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
         
 		Image img = new Image(disp, area.x, area.y);
 		GC gc = new GC(img);
-		drawJob(gc, PropsUI.getInstance().isBrandingActive());
+		drawJob(disp, gc, PropsUI.getInstance().isBrandingActive());
 		e.gc.drawImage(img, 0, 0);
 		gc.dispose();
 		img.dispose();
@@ -1873,21 +1928,20 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 		// spoon.setShellText();
 	}
     
-	public void drawJob(GC gc, boolean branded) 
+	public void drawJob(Device device, GC gc, boolean branded) 
 	{
         if (spoon.props.isAntiAliasingEnabled()) gc.setAntialias(SWT.ON);
         
 		shadowsize = spoon.props.getShadowSize();
-
-		drawGrid(gc);
-		
-		gc.setBackground(GUIResource.getInstance().getColorBackground());
-
+		gridSize = spoon.props.getCanvasGridSize();
+        
 		Point area = getArea();
 		Point max = jobMeta.getMaximum();
 		Point thumb = getThumb(area, max);
 		offset = getOffset(thumb, area);
 		
+		gc.setBackground(GUIResource.getInstance().getColorBackground());
+
 		hori.setThumb(thumb.x);
 		vert.setThumb(thumb.y);
 
@@ -1901,6 +1955,36 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
             gc.drawImage(logo, 20, area.y-logoBounds.height);
         }
         
+        // If there is a shadow, we draw the transformation first with an alpha setting
+        //
+    	Transform shadow = new Transform(device);
+    	shadow.scale(magnification, magnification);
+    	shadow.translate(translationX, translationY);
+
+        shadowsize = spoon.props.getShadowSize();
+        if (shadowsize>0) {
+        	
+        	shadow.translate(translationX+spoon.props.getShadowSize(), translationY+spoon.props.getShadowSize());
+            gc.setAlpha(30);
+        	gc.setTransform(shadow);
+        	
+        	drawJobElements(gc, true);
+        	
+        	shadow.translate(translationX, translationX);
+        	gc.setAlpha(255);
+        }
+        
+        // Draw the transformation onto the image
+        drawJobElements(gc, false);
+
+	}
+	
+	private void drawJobElements(GC gc, boolean shadow) 
+	{
+		if (!shadow && gridSize>1) {
+        	drawGrid(gc);
+        }
+
 		// First draw the notes...
         gc.setFont(GUIResource.getInstance().getFontNote());
 
@@ -1912,13 +1996,6 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
         
         gc.setFont(GUIResource.getInstance().getFontGraph());
 		
-		if (shadowsize>0)
-		for (int j = 0; j < jobMeta.nrJobEntries(); j++)
-		{
-			JobEntryCopy cge = jobMeta.getJobEntry(j);
-			drawJobGraphEntryShadow(gc, cge);
-		}
-
 		// ... and then the rest on top of it...
 		for (int i = 0; i < jobMeta.nrJobHops(); i++) 
 		{
@@ -1953,7 +2030,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
     	Rectangle bounds = gc.getDevice().getBounds();
 		for (int x=0;x<bounds.width;x+=gridSize) {
 			for (int y=0;y<bounds.height;y+=gridSize) {
-				gc.drawPoint(x,y);
+				gc.drawPoint(x+(offset.x%gridSize),y+(offset.y%gridSize));
 			}
 		}
 	}
@@ -1963,7 +2040,6 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 		if (hop==null || hop.from_entry==null || hop.to_entry==null) return;
 		if (!hop.from_entry.isDrawn() || !hop.to_entry.isDrawn())	return;
 		
-		if (shadowsize>0) drawLineShadow(gc, hop);
 		drawLine(gc, hop, candidate);
 	}
 	
@@ -2039,25 +2115,6 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 
 	}
 
-	protected void drawJobGraphEntryShadow(GC gc, JobEntryCopy je) 
-	{
-		if (je==null) return;
-		if (!je.isDrawn()) return;
-		
-		Point pt = je.getLocation();
-
-		int x, y;
-		if (pt != null) { x = pt.x; y = pt.y; }	else { x = 50; y = 50; }
-
-		Point screen = real2screen(x, y);
-
-		// Draw the shadow...
-		gc.setBackground(GUIResource.getInstance().getColorLightGray());
-		gc.setForeground(GUIResource.getInstance().getColorLightGray());
-		int s = shadowsize;
-		gc.fillRectangle(screen.x + s, screen.y + s, iconsize, iconsize);
-	}
-
 	protected void drawNote(GC gc, NotePadMeta ni)
 	{
 		int flags = SWT.DRAW_DELIMITER | SWT.DRAW_TAB | SWT.DRAW_TRANSPARENT;
@@ -2086,25 +2143,12 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 			note.x + width, note.y + height + 2 * margin, // bottom right 2
 			note.x, note.y + height + 2 * margin // bottom left
 		};
-		int s = spoon.props.getShadowSize();
-		int shadow[] = new int[] { note.x+s, note.y+s, // Top left
-			note.x + width + 2 * margin+s, note.y+s, // Top right
-			note.x + width + 2 * margin+s, note.y + height+s, // bottom right 1
-			note.x + width+s, note.y + height + 2 * margin+s, // bottom right 2
-			note.x+s, note.y + height + 2 * margin+s // bottom left
-		};
-
-		gc.setForeground(GUIResource.getInstance().getColorLightGray());
-		gc.setBackground(GUIResource.getInstance().getColorLightGray());
-		gc.fillPolygon(shadow);
 		
 		gc.setForeground(GUIResource.getInstance().getColorDarkGray());
 		gc.setBackground(GUIResource.getInstance().getColorYellow());
 
 		gc.fillPolygon(noteshape);
 		gc.drawPolygon(noteshape);
-		//gc.fillRectangle(ni.xloc, ni.yloc, width+2*margin, heigth+2*margin);
-		//gc.drawRectangle(ni.xloc, ni.yloc, width+2*margin, heigth+2*margin);
 		gc.setForeground(GUIResource.getInstance().getColorBlack());
 		gc.drawText(ni.getNote(), note.x + margin, note.y + margin, flags);
 
@@ -2167,19 +2211,6 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 		gc.setLineStyle(SWT.LINE_SOLID);
 	}
 
-	protected void drawLineShadow(GC gc, JobHopMeta hi)
-	{
-		int line[] = getLine(hi.from_entry, hi.to_entry);
-		int s = shadowsize;
-		for (int i=0;i<line.length;i++) line[i]+=s;
-
-		gc.setLineWidth(linewidth);
-		
-		gc.setForeground(GUIResource.getInstance().getColorLightGray());
-
-		drawArrow(gc, line);
-	}
-
 	protected Point getArea() 
 	{
         org.eclipse.swt.graphics.Rectangle rect = canvas.getClientArea();
@@ -2187,18 +2218,28 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 
 		return area;
 	}
+	
+    private Point magnifyPoint(Point p) {
+    	return new Point(Math.round(p.x * magnification), Math.round(p.y*magnification));
+    }
 
-	protected Point getThumb(Point area, Point max)
-	{
-		Point thumb = new Point(0, 0);
-		if (max.x <= area.x) thumb.x = 100;
-		else                 thumb.x = 100 * area.x / max.x;
-		
-		if (max.y <= area.y) thumb.y = 100;
-		else                 thumb.y = 100 * area.y / max.y;
+    private Point getThumb(Point area, Point transMax)
+    {
+    	Point resizedMax = magnifyPoint(transMax);
+    	
+        Point thumb = new Point(0, 0);
+        if (resizedMax.x <= area.x)
+            thumb.x = 100;
+        else
+            thumb.x = 100 * area.x / resizedMax.x;
 
-		return thumb;
-	}
+        if (resizedMax.y <= area.y)
+            thumb.y = 100;
+        else
+            thumb.y = 100 * area.y / resizedMax.y;
+
+        return thumb;
+    }
 
 	protected Point getOffset() 
 	{
@@ -2399,6 +2440,31 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
     {
         createSnapAllignDistribute().distributevertical();
     }
+    
+    public void zoomIn()
+    {
+    	if (magnificationIndex+1<TransPainter.magnifications.length) {
+    		magnification = TransPainter.magnifications[++magnificationIndex];
+    	}
+    	
+    	redraw();
+    }
+    
+    public void zoomOut()
+    {
+    	if (magnificationIndex>0) {
+    		magnification = TransPainter.magnifications[--magnificationIndex];
+    	}
+    	redraw();
+    }
+
+    public void zoom100Percent()
+    {
+    	magnificationIndex=TransPainter.MAGNIFICATION_100_PERCENT_INDEX;
+    	magnification = TransPainter.magnifications[magnificationIndex];
+    	redraw();
+    }
+
 
 	protected void drawRect(GC gc, Rectangle rect) 
 	{
