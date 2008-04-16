@@ -252,7 +252,8 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 	public TransGridDelegate transGridDelegate; 
 	public TransHistoryDelegate transHistoryDelegate; 
 	public TransPerfDelegate transPerfDelegate;
-	private Label zoomLabel; 
+	private Label zoomLabel;
+	private Scale zoomScale; 
 	
 	public void setCurrentNote( NotePadMeta ni ) {
 		this.ni = ni;
@@ -1088,7 +1089,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 			Composite zoom = new Composite(toolBar, SWT.LEFT);
 			zoom.setLayout(new FormLayout());
 			
-			final Scale zoomScale = new Scale(zoom, SWT.HORIZONTAL);
+			zoomScale = new Scale(zoom, SWT.HORIZONTAL);
 			zoomScale.setMinimum(0);
 			zoomScale.setMaximum(TransPainter.magnifications.length-1);
 			zoomScale.setIncrement(1);
@@ -1143,6 +1144,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 
 	private void setZoomLabel() {
 		zoomLabel.setText(TransPainter.magnificationDescriptions[magnificationIndex]);
+		zoomScale.setSelection(magnificationIndex);
 	}
 
 	public void addToolBarListeners()

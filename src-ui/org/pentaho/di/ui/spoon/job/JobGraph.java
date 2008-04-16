@@ -205,6 +205,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 	private int gridSize;
 	private float translationX;
 	private float translationY;
+	private Scale zoomScale;
 	
 	public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) 
 	{
@@ -818,7 +819,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 			Composite zoom = new Composite(toolBar, SWT.LEFT);
 			zoom.setLayout(new FormLayout());
 			
-			final Scale zoomScale = new Scale(zoom, SWT.HORIZONTAL);
+			zoomScale = new Scale(zoom, SWT.HORIZONTAL);
 			zoomScale.setMinimum(0);
 			zoomScale.setMaximum(TransPainter.magnifications.length-1);
 			zoomScale.setIncrement(1);
@@ -872,6 +873,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 
 	private void setZoomLabel() {
 		zoomLabel.setText(TransPainter.magnificationDescriptions[magnificationIndex]);
+		zoomScale.setSelection(magnificationIndex);
 	}
 	
 	public void addToolBarListeners()
@@ -1961,11 +1963,10 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
     	shadow.scale(magnification, magnification);
     	shadow.translate(translationX, translationY);
 
-        shadowsize = spoon.props.getShadowSize();
         if (shadowsize>0) {
         	
         	shadow.translate(translationX+spoon.props.getShadowSize(), translationY+spoon.props.getShadowSize());
-            gc.setAlpha(30);
+            gc.setAlpha(50);
         	gc.setTransform(shadow);
         	
         	drawJobElements(gc, true);
@@ -2022,7 +2023,9 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 			gc.drawRectangle(screen.x, screen.y, iconsize, iconsize);
 		}
 
-		drawRect(gc, selrect);
+		if (!shadow) {
+			drawRect(gc, selrect);
+		}
 	}
 
     private void drawGrid(GC gc) {
@@ -2104,12 +2107,6 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 		int xpos = offset.x + x + (iconsize / 2) - (textsize.x / 2);
 		int ypos = offset.y + y + iconsize + 5;
 
-		if (shadowsize>0)
-		{
-			gc.setForeground(GUIResource.getInstance().getColorLightGray());
-			gc.drawText(""+name, xpos+shadowsize, ypos+shadowsize, SWT.DRAW_TRANSPARENT);
-		}
-		
 		gc.setForeground(GUIResource.getInstance().getColorBlack());
 		gc.drawText(name, xpos, ypos, true);
 

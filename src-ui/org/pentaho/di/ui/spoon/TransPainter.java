@@ -251,7 +251,9 @@ public class TransPainter
             gc.drawRectangle(screen.x, screen.y,          iconsize, iconsize);
         }
 
-        if (!shadow) drawRect(gc, selrect);
+        if (!shadow) {
+        	drawRect(gc, selrect);
+        }
     }
 
     private void drawGrid(GC gc) {
