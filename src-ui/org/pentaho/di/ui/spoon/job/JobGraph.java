@@ -553,7 +553,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 				Point real = screen2real(e.x, e.y);
 				Point icon = new Point(real.x - iconoffset.x, real.y - iconoffset.y);
 
-				setToolTip(real.x, real.y);
+				setToolTip(real.x, real.y, e.x, e.y);
 
 				// First see if the icon we clicked on was selected.
 				// If the icon was not selected, we should unselect all other icons,
@@ -1699,7 +1699,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 		return currentHop;
 	}
 	
-	protected void setToolTip(int x, int y) 
+	protected void setToolTip(int x, int y, int screenX, int screenY) 
 	{
 		if (!spoon.getProperties().showToolTips())
 			return;

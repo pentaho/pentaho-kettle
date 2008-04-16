@@ -727,7 +727,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
                 if (noteoffset == null) noteoffset = new Point(0, 0);
                 Point note = new Point(real.x - noteoffset.x, real.y - noteoffset.y);
 
-                if (last_button==0 && !helpTip.isVisible()) setToolTip(real.x, real.y);
+                if (last_button==0 && !helpTip.isVisible()) setToolTip(real.x, real.y, e.x, e.y);
                 
                 // 
                 // First see if the icon we clicked on was selected.
@@ -2067,7 +2067,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         return enabled;
     }
 
-    private void setToolTip(int x, int y)
+    private void setToolTip(int x, int y, int screenX, int screenY)
     {
     	if (!spoon.getProperties().showToolTips())
 			return;
@@ -2185,7 +2185,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     		}
             toolTip.setText(newTip);
             toolTip.hide();
-            toolTip.show(new org.eclipse.swt.graphics.Point(x,y));
+            toolTip.show(new org.eclipse.swt.graphics.Point(screenX,screenY));
     	}
     }
 
