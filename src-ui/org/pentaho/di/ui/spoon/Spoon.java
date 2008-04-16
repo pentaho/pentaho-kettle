@@ -549,6 +549,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 					key = "right";break; //$NON-NLS-1$
 				case SWT.HOME:
 					key = "home";break; //$NON-NLS-1$
+				case SWT.PAGE_UP:
+					key = "pageup";break; //$NON-NLS-1$
+				case SWT.PAGE_DOWN:
+					key = "pagedown";break; //$NON-NLS-1$
 				default:
 					;
 				}
@@ -5203,7 +5207,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		// Create an image of the screen
 		Point max = transMeta.getMaximum();
 
-		Image img = transGraph.getTransformationImage(printer, max.x, max.y, false);
+		Image img = transGraph.getTransformationImage(printer, max.x, max.y, false, 1.0f);
 
 		ps.printImage(shell, img);
 
@@ -5731,7 +5735,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		Clipboard clipboard = GUIResource.getInstance().getNewClipboard();
 
 		Point area = transMeta.getMaximum();
-		Image image = transGraph.getTransformationImage(Display.getCurrent(), area.x, area.y, false);
+		Image image = transGraph.getTransformationImage(Display.getCurrent(), area.x, area.y, false, 1.0f);
         clipboard.setContents(new Object[] { image.getImageData() }, new Transfer[]{ImageDataTransfer.getInstance()});
 	}
 
@@ -7151,6 +7155,21 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	public Display getDisplay() {
 		return display;
 	}
+	
 
+	public void zoomIn() {
+		TransGraph transGraph = getActiveTransGraph();
+		if (transGraph!=null) transGraph.zoomIn();
+	}
+	
+	public void zoomOut() {
+		TransGraph transGraph = getActiveTransGraph();
+		if (transGraph!=null) transGraph.zoomOut();
+	}
+
+	public void zoom100Percent() {
+		TransGraph transGraph = getActiveTransGraph();
+		if (transGraph!=null) transGraph.zoom100Percent();
+	}
 	
 }

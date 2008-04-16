@@ -62,10 +62,12 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MessageBox;
+import org.eclipse.swt.widgets.Scale;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.ToolItem;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.EngineMetaInterface;
@@ -243,10 +245,14 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 	private boolean debug;
 	private boolean pausing;	
 	
+	private int magnificationIndex=4;
+	private float magnification = TransPainter.magnifications[magnificationIndex];
+	
 	public TransLogDelegate transLogDelegate; 
 	public TransGridDelegate transGridDelegate; 
 	public TransHistoryDelegate transHistoryDelegate; 
-	public TransPerfDelegate transPerfDelegate; 
+	public TransPerfDelegate transPerfDelegate;
+	private Label zoomLabel; 
 	
 	public void setCurrentNote( NotePadMeta ni ) {
 		this.ni = ni;
@@ -313,7 +319,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         
         // Add a canvas below it, use up all space initially
         //
-        canvas = new Canvas(sashForm, SWT.V_SCROLL | SWT.H_SCROLL | SWT.NO_BACKGROUND );
+        canvas = new Canvas(sashForm, SWT.V_SCROLL | SWT.H_SCROLL /*| SWT.NO_BACKGROUND*/ | SWT.BORDER );
         
         sashForm.setWeights(new int[] { 100, } );
         
@@ -1071,10 +1077,60 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 
 		try {
 			toolbar = XulHelper.createToolbar(XUL_FILE_TRANS_TOOLBAR, TransGraph.this, TransGraph.this, new XulMessages());
+			ToolBar toolBar = (ToolBar) toolbar.getNativeObject();
+			toolBar.pack();
+			int h = toolBar.getBounds().height;
+			
+			// Hack alert : more XUL limitations...
+			//
+			ToolItem sep = new ToolItem(toolBar, SWT.SEPARATOR);
+			
+			Composite zoom = new Composite(toolBar, SWT.LEFT);
+			zoom.setLayout(new FormLayout());
+			
+			final Scale zoomScale = new Scale(zoom, SWT.HORIZONTAL);
+			zoomScale.setMinimum(0);
+			zoomScale.setMaximum(TransPainter.magnifications.length-1);
+			zoomScale.setIncrement(1);
+			zoomScale.setPageIncrement(1);
+			zoomScale.setSelection(magnificationIndex);
+			zoomScale.addSelectionListener(new SelectionAdapter() {
+				public void widgetSelected(SelectionEvent arg0) {
+					magnificationIndex=zoomScale.getSelection();
+					magnification=TransPainter.magnifications[magnificationIndex];
+					redraw();
+				}
+			});
+			zoomScale.addKeyListener(spoon.defKeys);
+			zoomScale.setSize(150, h);
+
+			FormData fdScale = new FormData();
+			fdScale.left=new FormAttachment(0,0);
+			fdScale.right=new FormAttachment(50,0);
+			fdScale.top = new FormAttachment(0,0);
+			fdScale.bottom = new FormAttachment(100,0);
+			zoomScale.setLayoutData(fdScale);
+
+			zoomLabel = new Label(zoom, SWT.LEFT);
+			setZoomLabel();
+			zoomLabel.pack();
+			
+			
+			FormData fdLabel = new FormData();
+			fdLabel.left=new FormAttachment(50,0);
+			fdLabel.right=new FormAttachment(100,0);
+			fdLabel.top = new FormAttachment(zoomScale,0,SWT.CENTER);
+			zoomLabel.setLayoutData(fdLabel);
+
+			
+			zoom.setSize(100, h);
+			zoom.layout();
+			sep.setWidth(100);
+			sep.setControl(zoom);
+			toolBar.pack();
 			
 			// Add a few default key listeners
 			//
-			ToolBar toolBar = (ToolBar) toolbar.getNativeObject();
 			toolBar.addKeyListener(spoon.defKeys);
 			
 			addToolBarListeners();
@@ -1083,6 +1139,10 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 			log.logError(toString(), Const.getStackTracker(t));
 			new ErrorDialog(shell, Messages.getString("Spoon.Exception.ErrorReadingXULFile.Title"), Messages.getString("Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_TOOLBAR), new Exception(t));
 		}
+	}
+
+	private void setZoomLabel() {
+		zoomLabel.setText(TransPainter.magnificationDescriptions[magnificationIndex]);
 	}
 
 	public void addToolBarListeners()
@@ -1237,6 +1297,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
                     snaptogrid(ConstUI.GRID_SIZE);
                 }
 
+
                 // SPACE : over a step: show output fields...
                 if (e.character == ' ' && lastMove != null)
                 {
@@ -1261,6 +1322,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     public void redraw()
     {
         canvas.redraw();
+        setZoomLabel();
     }
         
     public boolean forceFocus()
@@ -1400,7 +1462,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         Point real;
         if (offset != null)
         {
-            real = new Point(x - offset.x, y - offset.y);
+            real = new Point(Math.round((x - offset.x)/magnification), Math.round((y - offset.y)/magnification));
         }
         else
         {
@@ -2263,16 +2325,17 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 
         Display disp = shell.getDisplay();
 
-        Image img = getTransformationImage(disp, area.x, area.y, true);
+        Image img = getTransformationImage(disp, area.x, area.y, true, magnification);
         e.gc.drawImage(img, 0, 0);
         img.dispose();
 
         // spoon.setShellText();
     }
 
-    public Image getTransformationImage(Device device, int x, int y, boolean branded)
+    public Image getTransformationImage(Device device, int x, int y, boolean branded, float magnificationFactor)
     {
         TransPainter transPainter = new TransPainter(transMeta, new Point(x, y), hori, vert, candidate, drop_candidate, selrect, areaOwners);
+        transPainter.setMagnification(magnificationFactor);
         Image img = transPainter.getTransformationImage(device, PropsUI.getInstance().isBrandingActive());
 
         return img;
@@ -2286,19 +2349,25 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 
         return area;
     }
+    
+    private Point magnifyPoint(Point p) {
+    	return new Point(Math.round(p.x * magnification), Math.round(p.y*magnification));
+    }
 
-    private Point getThumb(Point area, Point max)
+    private Point getThumb(Point area, Point transMax)
     {
+    	Point resizedMax = magnifyPoint(transMax);
+    	
         Point thumb = new Point(0, 0);
-        if (max.x <= area.x)
+        if (resizedMax.x <= area.x)
             thumb.x = 100;
         else
-            thumb.x = 100 * area.x / max.x;
+            thumb.x = 100 * area.x / resizedMax.x;
 
-        if (max.y <= area.y)
+        if (resizedMax.y <= area.y)
             thumb.y = 100;
         else
-            thumb.y = 100 * area.y / max.y;
+            thumb.y = 100 * area.y / resizedMax.y;
 
         return thumb;
     }
@@ -2453,6 +2522,31 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     {
         createSnapAllignDistribute().distributevertical();
     }
+    
+    public void zoomIn()
+    {
+    	if (magnificationIndex+1<TransPainter.magnifications.length) {
+    		magnification = TransPainter.magnifications[++magnificationIndex];
+    	}
+    	
+    	redraw();
+    }
+    
+    public void zoomOut()
+    {
+    	if (magnificationIndex>0) {
+    		magnification = TransPainter.magnifications[--magnificationIndex];
+    	}
+    	redraw();
+    }
+
+    public void zoom100Percent()
+    {
+    	magnificationIndex=4;
+    	magnification = TransPainter.magnifications[magnificationIndex];
+    	redraw();
+    }
+
 
     private void detach(StepMeta stepMeta)
     {

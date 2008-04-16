@@ -1,6 +1,6 @@
 <window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" align="vertical" >
 	 <toolbox>
-		<toolbar id="nav-toolbar" mode="full">
+		<toolbar id="nav-toolbar" mode="icons">
 			<toolbarbutton value="file-new" label="%Spoon.Menu.File.New" image="ui/images/new.png" tooltiptext="%Spoon.Tooltip.NewFile"/>
 			<toolbarseparator />
 			<toolbarbutton value="file-open" label="%Spoon.Menu.File.Open" image="ui/images/open.png" tooltiptext="%Spoon.Tooltip.OpenTranformation" />
@@ -22,6 +22,7 @@
 			<toolbarbutton value="trans-show-results" label="%Spoon.Menu.ShowExecutionResults" image="ui/images/show-grid.png" tooltiptext="%Spoon.Tooltip.ShowExecutionResults"/>
 			<toolbarseparator />
 		<!-- 
+			<toolbarbutton value="trans-zoom" label="%Spoon.Menu.ZoomTransformation" image="ui/images/zoom.png" tooltiptext="%Spoon.Tooltip.ZoomTransformation"/>
 			<toolbarbutton value="trans-show-grid" label="%Spoon.Menu.ShowTransGrid" image="ui/images/show-grid.png" tooltiptext="%Spoon.Tooltip.ShowGridView"/>
 			<toolbarbutton value="trans-show-log" label="%Spoon.Menu.ShowTransLog" image="ui/images/show-log.png" tooltiptext="%Spoon.Tooltip.ShowLogView"/>
 			<toolbarbutton value="trans-show-history" label="%Spoon.Menu.ShowTransHistory" image="ui/images/show-history.png" tooltiptext="%Spoon.Tooltip.ShowHistoryView"/>

@@ -23,12 +23,11 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.graphics.Transform;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.NotePadMeta;
-import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.core.gui.Point;
-import org.pentaho.di.ui.spoon.AreaOwner;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
@@ -36,6 +35,7 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.step.StepPartitioningMeta;
 import org.pentaho.di.ui.core.PropsUI;
+import org.pentaho.di.ui.core.gui.GUIResource;
 
 
 
@@ -47,6 +47,11 @@ public class TransPainter
 	public static final String STRING_REMOTE_INPUT_STEPS        = "RemoteInputSteps";        // $NON-NLS-1$
 	public static final String STRING_REMOTE_OUTPUT_STEPS       = "RemoteOutputSteps";       // $NON-NLS-1$
     
+	public static final String[] magnificationDescriptions = 
+		new String[] { "  10% ", "  25% ", "  50% ", "  75% ", " 100% ", " 125% ", " 150% ", " 200% ", " 300% ", " 400% ", " 500% ", " 750% ", "1000% ", };
+	public static final float[] magnifications = 
+		new float[] { 0.10f, 0.25f, 0.50f, 0.75f, 1.00f, 1.25f, 1.50f, 2.00f, 3.00f, 4.00f, 5.00f, 7.50f, 10.00f, };
+	
 	private PropsUI      props;
     private int          shadowsize;
     private Point        area;
@@ -64,7 +69,7 @@ public class TransPainter
     private Color        blue;
     private Color        magenta;
     private Color        gray;
-    private Color        lightGray;
+    // private Color        lightGray;
     private Color        darkGray;
 
     private Font         noteFont;
@@ -79,6 +84,10 @@ public class TransPainter
     private Map<String, Image> images;
     
     private List<AreaOwner> areaOwners;
+    
+    private float           magnification;
+    private float           translationX;
+    private float           translationY;
 
     public TransPainter(TransMeta transMeta)
     {
@@ -108,7 +117,7 @@ public class TransPainter
         this.blue           = GUIResource.getInstance().getColorBlue();
         this.magenta        = GUIResource.getInstance().getColorMagenta();
         this.gray           = GUIResource.getInstance().getColorGray();
-        this.lightGray      = GUIResource.getInstance().getColorLightGray();
+        // this.lightGray      = GUIResource.getInstance().getColorLightGray();
         this.darkGray       = GUIResource.getInstance().getColorDarkGray();
         
         this.area           = area;
@@ -126,6 +135,8 @@ public class TransPainter
         props = PropsUI.getInstance();
         iconsize = props.getIconSize(); 
         linewidth = props.getLineWidth();
+        
+        magnification = 1.0f;
     }
 
     public Image getTransformationImage(Device device)
@@ -151,32 +162,50 @@ public class TransPainter
             org.eclipse.swt.graphics.Rectangle logoBounds = logo.getBounds();
             gc.drawImage(logo, 20, area.y-logoBounds.height);
         }
+
+        // If there is a shadow, we draw the transformation first with an alpha setting
+        //
+    	Transform shadow = new Transform(device);
+    	shadow.scale(magnification, magnification);
+    	shadow.translate(translationX, translationX);
+
+        shadowsize = props.getShadowSize();
+        if (shadowsize>0) {
+        	
+        	shadow.translate(translationX+props.getShadowSize(), translationX+props.getShadowSize());
+            gc.setAlpha(30);
+        	gc.setTransform(shadow);
+        	
+        	drawTrans(gc, true);
+        	
+        	shadow.translate(translationX, translationX);
+        	gc.setAlpha(255);
+        }
         
         // Draw the transformation onto the image
-        drawTrans(gc);
+        drawTrans(gc, false);
         
         gc.dispose();
         
         return img;
     }
 
-    private void drawTrans(GC gc)
+    private void drawTrans(GC gc, boolean shadow)
     {
         if (props.isAntiAliasingEnabled()) gc.setAntialias(SWT.ON);
-        
+                
         areaOwners.clear(); // clear it before we start filling it up again.
         
-        shadowsize = props.getShadowSize();
         gridSize = props.getCanvasGridSize();
         
-        if (gridSize>1) {
-        	drawGrid(gc);
-        }
-
         Point max   = transMeta.getMaximum();
         Point thumb = getThumb(area, max);
         offset = getOffset(thumb, area);
 
+        if (!shadow && gridSize>1) {
+        	drawGrid(gc);
+        }
+        
         if (hori!=null && vert!=null)
         {
             hori.setThumb(thumb.x);
@@ -194,15 +223,6 @@ public class TransPainter
 
         gc.setFont(graphFont);
         gc.setBackground(background);
-
-        if (shadowsize > 0)
-        {
-            for (int i = 0; i < transMeta.nrSteps(); i++)
-            {
-                StepMeta stepMeta = transMeta.getStep(i);
-                if (stepMeta.isDrawn()) drawStepShadow(gc, stepMeta);
-            }
-        }
 
         for (int i = 0; i < transMeta.nrTransHops(); i++)
         {
@@ -229,14 +249,14 @@ public class TransPainter
             gc.drawRectangle(screen.x, screen.y,          iconsize, iconsize);
         }
 
-        drawRect(gc, selrect);
+        if (!shadow) drawRect(gc, selrect);
     }
 
     private void drawGrid(GC gc) {
     	Rectangle bounds = gc.getDevice().getBounds();
 		for (int x=0;x<bounds.width;x+=gridSize) {
 			for (int y=0;y<bounds.height;y+=gridSize) {
-				gc.drawPoint(x,y);
+				gc.drawPoint(x+(offset.x%gridSize),y+(offset.y%gridSize));
 			}
 		}
 	}
@@ -281,27 +301,13 @@ public class TransPainter
                 note.x + width, note.y + height + 2 * margin, // bottom right 2
                 note.x, note.y + height + 2 * margin // bottom left
         };
-        int s = props.getShadowSize();
-        int shadow[] = new int[] { note.x + s, note.y + s, // Top left
-                note.x + width + 2 * margin + s, note.y + s, // Top right
-                note.x + width + 2 * margin + s, note.y + height + s, // bottom
-                // right 1
-                note.x + width + s, note.y + height + 2 * margin + s, // bottom
-                // right 2
-                note.x + s, note.y + height + 2 * margin + s // bottom left
-        };
-
-        gc.setForeground(lightGray);
-        gc.setBackground(lightGray);
-        gc.fillPolygon(shadow);
 
         gc.setForeground(darkGray);
         gc.setBackground(yellow);
 
         gc.fillPolygon(noteshape);
         gc.drawPolygon(noteshape);
-        //gc.fillRectangle(ni.xloc, ni.yloc, width+2*margin, heigth+2*margin);
-        //gc.drawRectangle(ni.xloc, ni.yloc, width+2*margin, heigth+2*margin);
+        
         gc.setForeground(black);
         if ( !Const.isEmpty(notePadMeta.getNote()) )
         {
@@ -325,35 +331,8 @@ public class TransPainter
 
         if (fs != null && ts != null)
         {
-            if (shadowsize > 0) drawLineShadow(gc, fs, ts, hi, false);
             drawLine(gc, fs, ts, hi, is_candidate);
         }
-    }
-
-    private void drawStepShadow(GC gc, StepMeta stepMeta)
-    {
-        if (stepMeta == null) return;
-
-        Point pt = stepMeta.getLocation();
-
-        int x, y;
-        if (pt != null)
-        {
-            x = pt.x;
-            y = pt.y;
-        } else
-        {
-            x = 50;
-            y = 50;
-        }
-
-        Point screen = real2screen(x, y, offset);
-
-        // First draw the shadow...
-        gc.setBackground(lightGray);
-        gc.setForeground(lightGray);
-        int s = shadowsize;
-        gc.fillRectangle(screen.x + s, screen.y + s, iconsize, iconsize);
     }
 
     private void drawStep(GC gc, StepMeta stepMeta)
@@ -500,13 +479,6 @@ public class TransPainter
 
         Point namePosition = getNamePosition(gc, name, screen, iconsize );
         
-        if (shadowsize > 0)
-        {
-            gc.setForeground(lightGray);
-            gc.setFont(GUIResource.getInstance().getFontGraph());
-            gc.drawText(name, namePosition.x + shadowsize, namePosition.y + shadowsize, SWT.DRAW_TRANSPARENT);
-        }
-
         gc.setForeground(black);
         gc.setFont(GUIResource.getInstance().getFontGraph());
         gc.drawText(name, namePosition.x, namePosition.y, SWT.DRAW_TRANSPARENT);
@@ -546,20 +518,6 @@ public class TransPainter
         return new Point(xpos, ypos);
     }
 
-    private void drawLineShadow(GC gc, StepMeta fs, StepMeta ts, TransHopMeta hi, boolean is_candidate)
-    {
-        int line[] = getLine(fs, ts);
-        int s = shadowsize;
-        for (int i = 0; i < line.length; i++)
-            line[i] += s;
-
-        gc.setLineWidth(linewidth);
-        
-        gc.setForeground(lightGray);
-
-        drawArrow(gc, line, null, null);
-    }
-
     private void drawLine(GC gc, StepMeta fs, StepMeta ts, TransHopMeta hi, boolean is_candidate)
     {
         StepMetaInterface fsii = fs.getStepMetaInterface();
@@ -581,9 +539,6 @@ public class TransPainter
             {
                 String[] targetSteps = fsii.getTargetSteps();
                 String[] infoSteps = tsii.getInfoSteps();
-
-                // System.out.println("Normal step: "+fs+" --> "+ts+",
-                // "+(infoSteps!=null)+", "+(targetSteps!=null));
 
                 if (fs.isSendingErrorRowsToStep(ts))
                 {
@@ -650,20 +605,26 @@ public class TransPainter
         gc.setLineStyle(SWT.LINE_SOLID);
     }
 
-    private static final Point getThumb(Point area, Point max)
+    private Point getThumb(Point area, Point transMax)
     {
+    	Point resizedMax = magnifyPoint(transMax);
+    	
         Point thumb = new Point(0, 0);
-        if (max.x <= area.x)
+        if (resizedMax.x <= area.x)
             thumb.x = 100;
         else
-            thumb.x = 100 * area.x / max.x;
+            thumb.x = 100 * area.x / resizedMax.x;
 
-        if (max.y <= area.y)
+        if (resizedMax.y <= area.y)
             thumb.y = 100;
         else
-            thumb.y = 100 * area.y / max.y;
+            thumb.y = 100 * area.y / resizedMax.y;
 
         return thumb;
+    }
+    
+    private Point magnifyPoint(Point p) {
+    	return new Point(Math.round(p.x * magnification), Math.round(p.y*magnification));
     }
     
     private Point getOffset(Point thumb, Point area)
@@ -768,74 +729,53 @@ public class TransPainter
         x4 = (int) (mx + Math.cos(angle + theta) * size);
         y4 = (int) (my + Math.sin(angle + theta) * size);
 
-        // draw arrowhead
-        //gc.drawLine( mx, my, x3, y3 );
-        //gc.drawLine( mx, my, x4, y4 );
-        //gc.drawLine( x3, y3, x4, y4 );
-
         Color fore = gc.getForeground();
         Color back = gc.getBackground();
         gc.setBackground(fore);
         gc.fillPolygon(new int[] { mx, my, x3, y3, x4, y4 });
         gc.setBackground(back);
-
-        // Show message at the start/end of the arrow
-        // Only show this message when the length is sufficiently long
-        //
-        /*
-        if (startObject!=null && startObject instanceof StepMeta) {
-        	String startMessage = null;
-        	StepMeta fs = (StepMeta) startObject;
-            if ( fs.isPartitioned()) {
-            	startMessage = "x"+fs.getStepPartitioningMeta().getPartitionSchema().getPartitionIDs().size()+Const.CR+fs.getStepPartitioningMeta().getPartitionSchema().getName();
-            }
-	        if (startMessage!=null && dist >= 2 * iconsize) {
-	        	gc.setFont(GUIResource.getInstance().getFontTiny());
-	        	gc.setForeground(GUIResource.getInstance().getColorRed());
-	        	factor = 0.50;
-	        	mx = (int) (x1 + factor * (x2 - x1) / 2);
-	            my = (int) (y1 + factor * (y2 - y1) / 2);
-	            org.eclipse.swt.graphics.Point textExtent = gc.textExtent(startMessage);
-	            gc.drawText(startMessage, mx-textExtent.x/3, my-textExtent.y/2, true);
-	            gc.setForeground(GUIResource.getInstance().getColorLightGray());
-	            gc.drawRectangle(mx-textExtent.x/3-2, my-textExtent.y/2-2, textExtent.x+4, textExtent.y+4);
-	            
-	            areaOwners.add(new AreaOwner(mx-textExtent.x/3, my-textExtent.y/2, textExtent.x+4, textExtent.y+4, fs, STRING_PARTITIONING_CURRENT_STEP));
-	        }
-        }
-        if (endObject!=null && endObject instanceof StepMeta) {
-            String endMessage = null;
-            StepMeta ts = (StepMeta) endObject;
-            if (ts.isPartitioned()) {
-            	int x = 0;
-            	String name = "unknown";
-            	StepPartitioningMeta stepPartitioningMeta = ts.getStepPartitioningMeta();
-            		PartitionSchema partitionSchema = stepPartitioningMeta.getPartitionSchema();
-            		if( stepPartitioningMeta != null ) {
-            		if( partitionSchema != null ) {
-            			List<String> ids = partitionSchema.getPartitionIDs();
-            			name = partitionSchema.getName();
-            			if( ids != null ) {
-            				x = ids.size();
-            			}
-            		}
-            	}
-            	endMessage = "x"+x+Const.CR+name;
-            }
-            if (endMessage!=null && dist >= 2 * iconsize) {
-            	gc.setFont(GUIResource.getInstance().getFontTiny());
-            	gc.setForeground(GUIResource.getInstance().getColorRed());
-            	factor = 1.55;
-            	mx = (int) (x1 + factor * (x2 - x1) / 2);
-                my = (int) (y1 + factor * (y2 - y1) / 2);
-                org.eclipse.swt.graphics.Point textExtent = gc.textExtent(endMessage);
-                gc.drawText(endMessage, mx-textExtent.x/3, my-textExtent.y/2, true);
-                gc.setForeground(GUIResource.getInstance().getColorLightGray());
-                gc.drawRectangle(mx-textExtent.x/3-2, my-textExtent.y/2-2, textExtent.x+4, textExtent.y+4);
-	            areaOwners.add(new AreaOwner(mx-textExtent.x/3, my-textExtent.y/2, textExtent.x+4, textExtent.y+4, ts, STRING_PARTITIONING_CURRENT_NEXT));
-            }
-        }
-        */
     }
+
+	/**
+	 * @return the magnification
+	 */
+	public float getMagnification() {
+		return magnification;
+	}
+
+	/**
+	 * @param magnification the magnification to set
+	 */
+	public void setMagnification(float magnification) {
+		this.magnification = magnification;
+	}
+
+	/**
+	 * @return the translationX
+	 */
+	public float getTranslationX() {
+		return translationX;
+	}
+
+	/**
+	 * @param translationX the translationX to set
+	 */
+	public void setTranslationX(float translationX) {
+		this.translationX = translationX;
+	}
+
+	/**
+	 * @return the translationY
+	 */
+	public float getTranslationY() {
+		return translationY;
+	}
+
+	/**
+	 * @param translationY the translationY to set
+	 */
+	public void setTranslationY(float translationY) {
+		this.translationY = translationY;
+	}
 
 }

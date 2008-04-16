@@ -33,4 +33,10 @@ public interface XulToolbar extends XulItem {
 	public XulToolbarButton getButtonById(String id);
 
 	public String[] getMenuItemIds();
+	
+	/**
+	 * @return the last native item to allow you to change it if it's a separator
+	 * TODO: this is somewhat of a hack
+	 */
+	public Object getLastNativeItem();
 }

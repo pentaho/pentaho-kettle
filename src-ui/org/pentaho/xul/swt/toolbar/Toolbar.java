@@ -133,4 +133,8 @@ public class Toolbar extends XulObject implements XulToolbar {
 	public String[] getMenuItemIds() {
 		return handler.getMenuItemIds();
 	}
+	
+	public Object getLastNativeItem() {
+		return toolBar.getItems()[toolBar.getItemCount()-1];
+	}
 }

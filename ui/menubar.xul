@@ -46,6 +46,14 @@ align="vertical" >
                     <menuitem value="edit-options" label="%Spoon.Menu.Edit.Options"/>
                </menupopup>
           </menu>
+          <menu value="view" label="%Spoon.Menu.View">
+               <menupopup>
+                    <menuitem value="view-zoom-in" acceltext="PAGE-UP"  accesskey="pageup" label="%Spoon.Menu.View.ZoomIn"/>
+                    <menuitem value="view-zoom-out" acceltext="PAGE-DOWN"  accesskey="pagedown" label="%Spoon.Menu.View.ZoomOut"/>
+					<menuseparator/>
+                    <menuitem value="view-zoom-100pct" acceltext="HOME"  accesskey="home" label="%Spoon.Menu.View.Zoom100"/>
+               </menupopup>
+          </menu>
           <menu value="repository" label="%Spoon.Menu.Repository">
                <menupopup>
                     <menuitem value="repository-connect" acceltext="CTRL-R"  accesskey="ctrl-r" label="%Spoon.Menu.Repository.ConnectToRepository"/>
