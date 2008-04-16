@@ -319,7 +319,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         
         // Add a canvas below it, use up all space initially
         //
-        canvas = new Canvas(sashForm, SWT.V_SCROLL | SWT.H_SCROLL /*| SWT.NO_BACKGROUND*/ | SWT.BORDER );
+        canvas = new Canvas(sashForm, SWT.V_SCROLL | SWT.H_SCROLL | SWT.NO_BACKGROUND | SWT.BORDER );
         
         sashForm.setWeights(new int[] { 100, } );
         
