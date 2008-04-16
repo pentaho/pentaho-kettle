@@ -245,7 +245,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 	private boolean debug;
 	private boolean pausing;	
 	
-	private int magnificationIndex=4;
+	private int magnificationIndex=TransPainter.MAGNIFICATION_100_PERCENT_INDEX;
 	private float magnification = TransPainter.magnifications[magnificationIndex];
 	
 	public TransLogDelegate transLogDelegate; 
@@ -2542,7 +2542,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 
     public void zoom100Percent()
     {
-    	magnificationIndex=4;
+    	magnificationIndex=TransPainter.MAGNIFICATION_100_PERCENT_INDEX;
     	magnification = TransPainter.magnifications[magnificationIndex];
     	redraw();
     }
