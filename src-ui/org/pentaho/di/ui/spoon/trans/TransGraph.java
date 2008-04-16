@@ -1243,17 +1243,6 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
                 // F2 --> rename step
                 if (e.keyCode == SWT.F2)    { renameStep(); }
 
-                if (e.character == 1) // CTRL-A
-                {
-                    transMeta.selectAll();
-                    redraw();
-                }
-                if (e.keyCode == SWT.ESC)
-                {
-                    transMeta.unselectAll();
-                    clearSettings();
-                    redraw();
-                }
                 if (e.keyCode == SWT.DEL)
                 {
                     StepMeta stepMeta[] = transMeta.getSelectedSteps();

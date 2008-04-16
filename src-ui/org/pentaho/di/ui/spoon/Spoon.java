@@ -4416,19 +4416,31 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	public void editUnselectAll()
 	{
 		TransMeta transMeta = getActiveTransformation();
-		if (transMeta!=null) transMeta.unselectAll();
+		if (transMeta!=null) {
+			transMeta.unselectAll();
+			getActiveTransGraph().redraw();
+		}
 		
 		JobMeta jobMeta = getActiveJob();
-		if (jobMeta!=null) jobMeta.unselectAll();
+		if (jobMeta!=null) {
+			jobMeta.unselectAll();
+			getActiveJobGraph().redraw();
+		}
 	}
 
 	public void editSelectAll()
 	{
 		TransMeta transMeta = getActiveTransformation();
-		if (transMeta!=null) transMeta.selectAll();
+		if (transMeta!=null) { 
+			transMeta.selectAll();
+			getActiveTransGraph().redraw();
+		}
 		
 		JobMeta jobMeta = getActiveJob();
-		if (jobMeta!=null) jobMeta.selectAll();
+		if (jobMeta!=null) {
+			jobMeta.selectAll();
+			getActiveJobGraph().redraw();
+		}
 	}
 
 	public void editOptions()
