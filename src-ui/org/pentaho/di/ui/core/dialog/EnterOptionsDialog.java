@@ -915,7 +915,8 @@ public class EnterOptionsDialog extends Dialog
 
 		// GridSize line
 		wlGridSize = new Label(wLookComp, SWT.RIGHT);
-		wlGridSize.setText(Messages.getString("EnterOptionsDialog.DialogGridSize.Label"));
+		wlGridSize.setText(Messages.getString("EnterOptionsDialog.GridSize.Label"));
+		wlGridSize.setToolTipText(Messages.getString("EnterOptionsDialog.GridSize.ToolTip"));
 		props.setLook(wlGridSize);
 		FormData fdlGridSize = new FormData();
 		fdlGridSize.left = new FormAttachment(0, 0);
@@ -924,6 +925,7 @@ public class EnterOptionsDialog extends Dialog
 		wlGridSize.setLayoutData(fdlGridSize);
 		wGridSize = new Text(wLookComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		wGridSize.setText(Integer.toString(props.getCanvasGridSize()));
+		wGridSize.setToolTipText(Messages.getString("EnterOptionsDialog.GridSize.ToolTip"));
 		props.setLook(wGridSize);
 		FormData fdGridSize = new FormData();
 		fdGridSize.left = new FormAttachment(middle, 0);
