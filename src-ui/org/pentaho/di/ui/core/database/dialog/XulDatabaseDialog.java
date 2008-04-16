@@ -16,10 +16,10 @@ import java.io.InputStream;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.io.SAXReader;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.ui.core.PropsUI;
+import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
@@ -27,44 +27,35 @@ import org.pentaho.ui.xul.containers.XulWindow;
 import org.pentaho.ui.xul.impl.XulEventHandler;
 import org.pentaho.ui.xul.swt.SwtXulLoader;
 
-public class XulDatabaseDialog extends Dialog {
+public class XulDatabaseDialog {
 
   private DatabaseMeta databaseMeta;
 
-  // private Shell shell;
+  private Shell shell;
+  
+  private Shell parentShell;
 
   private String databaseName;
 
-  // private ModifyListener lsMod;
-
-  // private boolean changed;
-
-  // private PropsUI props;
-
-  // private String previousDatabaseType;
+  private PropsUI props;
 
   private java.util.List<DatabaseMeta> databases;
-
-  // private Map<String, String> extraOptions;
-
-  // private long database_id;
 
   private boolean modalDialog;
 
   XulEventHandler dataHandler = null;
 
-  public XulDatabaseDialog(Shell parent, DatabaseMeta databaseMeta) {
-    super(parent, SWT.NONE);
-    this.databaseMeta = databaseMeta;
-    this.databaseName = databaseMeta.getName();
-    // this.props = PropsUI.getInstance();
-    this.databases = null;
-    // this.extraOptions = databaseMeta.getExtraOptions();
-    // this.database_id = databaseMeta.getID();
+  public XulDatabaseDialog(Shell parent, DatabaseMeta dbMeta) {
+    parentShell = parent;
+    databaseMeta = dbMeta;
+    if(dbMeta != null){
+      databaseName = databaseMeta.getName();
+    }
+    props = PropsUI.getInstance();
+    databases = null;
   }
 
   public String open() {
-    // Shell parent = getParent();
 
     // Load the XUL definition to a dom4j document...
     InputStream in = XulDatabaseDialog.class.getClassLoader().getResourceAsStream(
@@ -112,6 +103,11 @@ public class XulDatabaseDialog extends Dialog {
     }
     
     XulWindow dialog = (XulWindow) container.getDocumentRoot().getRootElement();
+    shell = (Shell)dialog.getManagedObject();
+    shell.setParent(parentShell);
+    props.setLook(shell);
+    shell.setImage(GUIResource.getInstance().getImageConnection());
+    
     dialog.open();
 
     try {
@@ -120,30 +116,6 @@ public class XulDatabaseDialog extends Dialog {
       e.printStackTrace();
     }
     databaseName = databaseMeta.getDatabaseName();
-
-    /*    shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN
-            | (modalDialog ? SWT.APPLICATION_MODAL : SWT.NONE));
-        props.setLook(shell);
-        shell.setImage(GUIResource.getInstance().getImageConnection());
-
-        lsMod = new ModifyListener() {
-          public void modifyText(ModifyEvent e) {
-            databaseMeta.setChanged();
-          }
-        };
-        changed = databaseMeta.hasChanged();
-
-        shell.setText(Messages.getString("DatabaseDialog.Shell.title")); //$NON-NLS-1$
-        BaseStepDialog.setSize(shell);
-
-        databaseMeta.setChanged(changed);
-        shell.open();
-        Display display = parent.getDisplay();
-        while (!shell.isDisposed()) {
-          if (!display.readAndDispatch())
-            display.sleep();
-        }
-    */
     return databaseName;
   }
 
