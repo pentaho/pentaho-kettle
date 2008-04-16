@@ -206,6 +206,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 	private float translationX;
 	private float translationY;
 	private Scale zoomScale;
+	private boolean shadow;
 	
 	public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) 
 	{
@@ -1959,28 +1960,30 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
         
         // If there is a shadow, we draw the transformation first with an alpha setting
         //
-    	Transform shadow = new Transform(device);
-    	shadow.scale(magnification, magnification);
-    	shadow.translate(translationX, translationY);
+    	if (shadowsize>0) {
+    		Transform transform = new Transform(device);
+        	transform.scale(magnification, magnification);
+        	transform.translate(translationX+shadowsize*magnification, translationY+shadowsize*magnification);
+            gc.setAlpha(20);
+        	gc.setTransform(transform);
 
-        if (shadowsize>0) {
-        	
-        	shadow.translate(translationX+spoon.props.getShadowSize(), translationY+spoon.props.getShadowSize());
-            gc.setAlpha(50);
-        	gc.setTransform(shadow);
-        	
-        	drawJobElements(gc, true);
-        	
-        	shadow.translate(translationX, translationX);
-        	gc.setAlpha(255);
+        	shadow=true;
+        	drawJobElements(gc);
         }
         
         // Draw the transformation onto the image
-        drawJobElements(gc, false);
+		Transform transform = new Transform(device);
+    	transform.scale(magnification, magnification);
+    	transform.translate(translationX, translationY);
+        gc.setAlpha(255);
+    	gc.setTransform(transform);
+    	
+    	shadow=false;
+        drawJobElements(gc);
 
 	}
 	
-	private void drawJobElements(GC gc, boolean shadow) 
+	private void drawJobElements(GC gc) 
 	{
 		if (!shadow && gridSize>1) {
         	drawGrid(gc);

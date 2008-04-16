@@ -90,6 +90,7 @@ public class TransPainter
     private float           magnification;
     private float           translationX;
     private float           translationY;
+	private boolean shadow;
 
     public TransPainter(TransMeta transMeta)
     {
@@ -151,6 +152,17 @@ public class TransPainter
         Image img = new Image(device, area.x, area.y);
         GC gc = new GC(img);
         
+        if (props.isAntiAliasingEnabled()) gc.setAntialias(SWT.ON);
+        
+        areaOwners.clear(); // clear it before we start filling it up again.
+        
+        gridSize = props.getCanvasGridSize();
+        shadowsize = props.getShadowSize();
+        
+        Point max   = transMeta.getMaximum();
+        Point thumb = getThumb(area, max);
+        offset = getOffset(thumb, area);
+
         // First clear the image in the background color
         gc.setBackground(background);
         gc.fillRectangle(0, 0, area.x, area.y);
@@ -165,45 +177,37 @@ public class TransPainter
             gc.drawImage(logo, 20, area.y-logoBounds.height);
         }
 
+        
         // If there is a shadow, we draw the transformation first with an alpha setting
         //
-    	Transform shadow = new Transform(device);
-    	shadow.scale(magnification, magnification);
-    	shadow.translate(translationX, translationY);
-
-        shadowsize = props.getShadowSize();
         if (shadowsize>0) {
+        	shadow = true;
+        	Transform transform = new Transform(device);
+        	transform.translate(translationX+shadowsize*magnification, translationY+shadowsize*magnification);
+        	transform.scale(magnification, magnification);
+        	gc.setTransform(transform);
+            gc.setAlpha(20);
         	
-        	shadow.translate(translationX+props.getShadowSize(), translationY+props.getShadowSize());
-            gc.setAlpha(30);
-        	gc.setTransform(shadow);
-        	
-        	drawTrans(gc, true);
-        	
-        	shadow.translate(translationX, translationY);
-        	gc.setAlpha(255);
+        	drawTrans(gc, thumb);
         }
         
         // Draw the transformation onto the image
-        drawTrans(gc, false);
+        //
+        shadow = false;
+    	Transform transform = new Transform(device);
+    	transform.translate(translationX, translationY);
+    	transform.scale(magnification, magnification);
+    	gc.setTransform(transform);
+        gc.setAlpha(255);
+        drawTrans(gc, thumb);
         
         gc.dispose();
         
         return img;
     }
 
-    private void drawTrans(GC gc, boolean shadow)
+    private void drawTrans(GC gc, Point thumb)
     {
-        if (props.isAntiAliasingEnabled()) gc.setAntialias(SWT.ON);
-                
-        areaOwners.clear(); // clear it before we start filling it up again.
-        
-        gridSize = props.getCanvasGridSize();
-        
-        Point max   = transMeta.getMaximum();
-        Point thumb = getThumb(area, max);
-        offset = getOffset(thumb, area);
-
         if (!shadow && gridSize>1) {
         	drawGrid(gc);
         }
@@ -325,7 +329,9 @@ public class TransPainter
         
         // Add to the list of areas...
         //
-        areaOwners.add(new AreaOwner(note.x, note.y, width, height, transMeta, notePadMeta));
+        if (!shadow) {
+        	areaOwners.add(new AreaOwner(note.x, note.y, width, height, transMeta, notePadMeta));
+        }
     }
 
     private void drawHop(GC gc, TransHopMeta hi, boolean is_candidate)
@@ -384,7 +390,9 @@ public class TransPainter
          	drawArrow(gc, screen.x-iconsize/2, point.y+textExtent.y/2, screen.x+iconsize/3, screen.y, Math.toRadians(15), 15, 1.8, null, null );
          	
             // Add to the list of areas...
-            areaOwners.add(new AreaOwner(point.x, point.y, textExtent.x, textExtent.y, stepMeta, STRING_REMOTE_INPUT_STEPS));
+            if (!shadow) {
+            	areaOwners.add(new AreaOwner(point.x, point.y, textExtent.x, textExtent.y, stepMeta, STRING_REMOTE_INPUT_STEPS));
+            }
         }
 
         // Then draw an extra indicator for remote output steps...
@@ -412,7 +420,9 @@ public class TransPainter
          	drawArrow(gc, screen.x+2*iconsize/3, screen.y, screen.x+iconsize+iconsize/2, point.y+textExtent.y/2, Math.toRadians(15), 15, 1.8, null, null );
 
          	// Add to the list of areas...
-            areaOwners.add(new AreaOwner(point.x, point.y, textExtent.x, textExtent.y, stepMeta, STRING_REMOTE_OUTPUT_STEPS));
+            if (!shadow) {
+            	areaOwners.add(new AreaOwner(point.x, point.y, textExtent.x, textExtent.y, stepMeta, STRING_REMOTE_OUTPUT_STEPS));
+            }
         }
         
         // PARTITIONING
@@ -454,7 +464,9 @@ public class TransPainter
 	         	
 	            // Add to the list of areas...
 	         	//
-	            areaOwners.add(new AreaOwner(point.x, point.y, textExtent.x, textExtent.y, stepMeta, STRING_PARTITIONING_CURRENT_STEP));
+	            if (!shadow) {
+	            	areaOwners.add(new AreaOwner(point.x, point.y, textExtent.x, textExtent.y, stepMeta, STRING_PARTITIONING_CURRENT_STEP));
+	            }
             }
         }
         
@@ -469,7 +481,9 @@ public class TransPainter
         gc.fillRectangle(screen.x, screen.y, iconsize, iconsize);
         
         // Add to the list of areas...
-        areaOwners.add(new AreaOwner(screen.x, screen.y, iconsize, iconsize, transMeta, stepMeta));
+        if (!shadow) {
+        	areaOwners.add(new AreaOwner(screen.x, screen.y, iconsize, iconsize, transMeta, stepMeta));
+        }
         
         String steptype = stepMeta.getStepID();
         Image im = (Image) images.get(steptype);
