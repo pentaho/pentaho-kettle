@@ -220,7 +220,7 @@
 	
 	  <target name="javadoc_zip" depends="javadoc" description="generate a zip file containing the Kettle javadoc">
 	  	<echo>Generating the Kettle javadoc zip file ...</echo>
-	  	<jar jarfile="${dist.dir}/${product.name}-${product.release.type}-javadoc-${release.version}${release.status.token}.zip" 
+	  	<jar jarfile="${dist.dir}/${product.name}-${product.release.type}-javadoc-${release.version}${}.zip" 
 	    	 basedir="${api}" 
 	    	 includes="**/*"
 	  	     excludes="**/Thumbs.db"
@@ -388,8 +388,8 @@
 	  -->
 		
 	  <target name="zip" depends="distrib" description="generate the Kettle-${version}-${release.build.number}.zip file">
-	  	<echo>Generating the Kettle distribution package ${product.name}-${product.release.type}-${release.version}-${release.status.token}.zip ...</echo>
-	  	<jar jarfile="${dist.dir}/${product.name}-${product.release.type}-${release.version}-${release.status.token}.zip" 
+	  	<echo>Generating the Kettle distribution package ${product.name}-${product.release.type}-${release.version}${r.zip ...</echo>
+	  	<jar jarfile="${dist.dir}/${product.name}-${product.release.type}-${release.version}${r.zip" 
 	    	 basedir="${distrib}" 
 	    	 includes="**/*"
 	  	     excludes="**/Thumbs.db"
@@ -403,8 +403,8 @@
 	  -->
 		
 	  <target name="sourcezip" depends="" description="generate the Kettle-src-${version}-${release.build.number}.zip file">
-	  	<echo>Generating the Kettle source packge zip file (${product.name}-${product.release.type}-src-${release.version}${release.status.token}.zip) ...</echo>
-	  	<jar jarfile="${dist.dir}/${product.name}-${product.release.type}-src-${release.version}${release.status.token}.zip" 
+	  	<echo>Generating the Kettle source packge zip file (${product.name}-${product.release.type}-src-${release.version}${}.zip) ...</echo>
+	  	<jar jarfile="${dist.dir}/${product.name}-${product.release.type}-src-${release.version}${}.zip" 
 	  		 basedir="."
 	    	 includes="**/*"
 	  	     excludes="*.zip ${classes}/**/* ${distrib}/**/* homepage/**/* Licenses/**/* ${lib}/**/* ${webstart}/**/*"
