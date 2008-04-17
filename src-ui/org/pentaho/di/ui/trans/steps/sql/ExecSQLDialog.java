@@ -14,8 +14,14 @@ package org.pentaho.di.ui.trans.steps.sql;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.events.FocusAdapter;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
@@ -101,6 +107,9 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
     
 	private ExecSQLMeta input;
 	private boolean changedInDialog;
+	
+	private Label        wlPosition;
+	private FormData     fdlPosition;
 
 	public ExecSQLDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
@@ -180,6 +189,40 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
 		fdSQL.right = new FormAttachment(100, 0);
 		fdSQL.bottom = new FormAttachment(100, -250);
 		wSQL.setLayoutData(fdSQL);
+		wSQL.addModifyListener(new ModifyListener()
+        {
+            public void modifyText(ModifyEvent arg0)
+            {
+                setPosition();
+            }
+
+		        }
+		    );
+				
+		wSQL.addKeyListener(new KeyAdapter(){
+			public void keyPressed(KeyEvent e) { setPosition(); }
+			public void keyReleased(KeyEvent e) { setPosition(); }
+			} 
+		);
+		wSQL.addFocusListener(new FocusAdapter(){
+			public void focusGained(FocusEvent e) { setPosition(); }
+			public void focusLost(FocusEvent e) { setPosition(); }
+			}
+		);
+		wSQL.addMouseListener(new MouseAdapter(){
+			public void mouseDoubleClick(MouseEvent e) { setPosition(); }
+			public void mouseDown(MouseEvent e) { setPosition(); }
+			public void mouseUp(MouseEvent e) { setPosition(); }
+			}
+		);
+		
+		wlPosition=new Label(shell, SWT.NONE);
+		props.setLook(wlPosition);
+		fdlPosition=new FormData();
+		fdlPosition.left  = new FormAttachment(0,0);
+		fdlPosition.right = new FormAttachment(100, 0);
+		fdlPosition.top = new FormAttachment(wSQL, margin);
+		wlPosition.setLayoutData(fdlPosition);
 
 		// Execute for each row?
     
@@ -200,7 +243,7 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
 		fdlEachRow = new FormData();
 		fdlEachRow.left = new FormAttachment(0, margin);
 		fdlEachRow.right = new FormAttachment(0, width);
-		fdlEachRow.top = new FormAttachment(wSQL, margin);
+		fdlEachRow.top = new FormAttachment(wlPosition, margin);
 		wlEachRow.setLayoutData(fdlEachRow);
     
     // Setup the "execute for each row" checkbox
@@ -208,7 +251,7 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
 		props.setLook(wEachRow);
 		fdEachRow = new FormData();
 		fdEachRow.left = new FormAttachment(wlEachRow, margin);
-		fdEachRow.top = new FormAttachment(wSQL, margin);
+		fdEachRow.top = new FormAttachment(wlPosition, margin);
 		fdEachRow.right = new FormAttachment(middle, 0);
 		wEachRow.setLayoutData(fdEachRow);
 
@@ -399,7 +442,23 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
 		}
 		return stepname;
 	}
+	public void setPosition(){
+		
+		String scr = wSQL.getText();
+		int linenr = wSQL.getLineAtOffset(wSQL.getCaretOffset())+1;
+		int posnr  = wSQL.getCaretOffset();
+				
+		// Go back from position to last CR: how many positions?
+		int colnr=0;
+		while (posnr>0 && scr.charAt(posnr-1)!='\n' && scr.charAt(posnr-1)!='\r')
+		{
+			posnr--;
+			colnr++;
+		}
+		log.logBasic(toString(),Messages.getString("ExecSQLDialog.Position.Label",""+linenr,""+colnr));
+		wlPosition.setText(Messages.getString("ExecSQLDialog.Position.Label",""+linenr,""+colnr));
 
+	}
 	/**
 	 * Copy information from the meta-data input to the dialog fields.
 	 */

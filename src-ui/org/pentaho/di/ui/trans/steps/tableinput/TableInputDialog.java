@@ -18,8 +18,14 @@ package org.pentaho.di.ui.trans.steps.tableinput;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.events.FocusAdapter;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
@@ -94,6 +100,9 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 
 	private TableInputMeta input;
 	private boolean changedInDialog;
+	
+	private Label        wlPosition;
+	private FormData     fdlPosition;
 
 	public TableInputDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
@@ -263,6 +272,15 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
         wLazyConversion.setLayoutData(fdLazyConversion);
         wLazyConversion.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent arg0) { setSQLToolTip(); } });
 
+		wlPosition=new Label(shell, SWT.NONE); 
+		props.setLook(wlPosition);
+		fdlPosition=new FormData();
+		fdlPosition.left  = new FormAttachment(0,0);
+		fdlPosition.right = new FormAttachment(100, 0);
+		fdlPosition.bottom = new FormAttachment(wLazyConversion, -margin);
+		wlPosition.setLayoutData(fdlPosition);
+		
+		
 		// Table line...
 		wlSQL=new Label(shell, SWT.NONE);
 		wlSQL.setText(Messages.getString("TableInputDialog.SQL")); //$NON-NLS-1$
@@ -287,17 +305,37 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 		fdSQL.left  = new FormAttachment(0, 0);
 		fdSQL.top   = new FormAttachment(wbTable, margin );
 		fdSQL.right = new FormAttachment(100, 0);
-		fdSQL.bottom= new FormAttachment(wLazyConversion, -margin );
+		fdSQL.bottom= new FormAttachment(wlPosition, -margin );
 		wSQL.setLayoutData(fdSQL);
 		wSQL.addModifyListener(new ModifyListener()
             {
                 public void modifyText(ModifyEvent arg0)
                 {
                     setSQLToolTip();
+                    setPosition(); 
                 }
             }
         );
 
+		
+		wSQL.addKeyListener(new KeyAdapter(){
+			public void keyPressed(KeyEvent e) { setPosition(); }
+			public void keyReleased(KeyEvent e) { setPosition(); }
+			} 
+		);
+		wSQL.addFocusListener(new FocusAdapter(){
+			public void focusGained(FocusEvent e) { setPosition(); }
+			public void focusLost(FocusEvent e) { setPosition(); }
+			}
+		);
+		wSQL.addMouseListener(new MouseAdapter(){
+			public void mouseDoubleClick(MouseEvent e) { setPosition(); }
+			public void mouseDown(MouseEvent e) { setPosition(); }
+			public void mouseUp(MouseEvent e) { setPosition(); }
+			}
+		);
+		
+		
 		// Add listeners
 		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel();  } };
         lsPreview  = new Listener() { public void handleEvent(Event e) { preview(); } };
@@ -336,7 +374,22 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 		}
 		return stepname;
 	}
-	
+public void setPosition(){
+		
+		String scr = wSQL.getText();
+		int linenr = wSQL.getLineAtOffset(wSQL.getCaretOffset())+1;
+		int posnr  = wSQL.getCaretOffset();
+				
+		// Go back from position to last CR: how many positions?
+		int colnr=0;
+		while (posnr>0 && scr.charAt(posnr-1)!='\n' && scr.charAt(posnr-1)!='\r')
+		{
+			posnr--;
+			colnr++;
+		}
+		wlPosition.setText(Messages.getString("TableInputDialog.Position.Label",""+linenr,""+colnr));
+
+	}
 	protected void setSQLToolTip()
     {
        if (wVariables.getSelection())

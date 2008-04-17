@@ -22,8 +22,14 @@ package org.pentaho.di.ui.trans.steps.databasejoin;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.events.FocusAdapter;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
@@ -81,6 +87,9 @@ public class DatabaseJoinDialog extends BaseStepDialog implements StepDialogInte
 	private Listener lsGet;
 
 	private DatabaseJoinMeta input;
+	
+	private Label        wlPosition;
+	private FormData     fdlPosition;
 
 	public DatabaseJoinDialog(Shell parent, Object in, TransMeta tr, String sname)
 	{
@@ -159,6 +168,44 @@ public class DatabaseJoinDialog extends BaseStepDialog implements StepDialogInte
 		fdSQL.bottom= new FormAttachment(60, 0     );
 		wSQL.setLayoutData(fdSQL);
 		
+		
+		wSQL.addModifyListener(new ModifyListener()
+        {
+            public void modifyText(ModifyEvent arg0)
+            {
+                setPosition();
+            }
+
+	        }
+	    );
+			
+		
+		wSQL.addKeyListener(new KeyAdapter(){
+			public void keyPressed(KeyEvent e) { setPosition(); }
+			public void keyReleased(KeyEvent e) { setPosition(); }
+			} 
+		);
+		wSQL.addFocusListener(new FocusAdapter(){
+			public void focusGained(FocusEvent e) { setPosition(); }
+			public void focusLost(FocusEvent e) { setPosition(); }
+			}
+		);
+		wSQL.addMouseListener(new MouseAdapter(){
+			public void mouseDoubleClick(MouseEvent e) { setPosition(); }
+			public void mouseDown(MouseEvent e) { setPosition(); }
+			public void mouseUp(MouseEvent e) { setPosition(); }
+			}
+		);
+		
+		
+		wlPosition=new Label(shell, SWT.NONE);
+		props.setLook(wlPosition);
+		fdlPosition=new FormData();
+		fdlPosition.left  = new FormAttachment(0,0);
+		fdlPosition.top = new FormAttachment(wSQL, margin);
+		fdlPosition.right = new FormAttachment(100, 0);
+		wlPosition.setLayoutData(fdlPosition);
+		
 		// Limit the number of lines returns
 		wlLimit=new Label(shell, SWT.RIGHT);
 		wlLimit.setText(Messages.getString("DatabaseJoinDialog.Limit.Label")); //$NON-NLS-1$
@@ -166,7 +213,7 @@ public class DatabaseJoinDialog extends BaseStepDialog implements StepDialogInte
 		fdlLimit=new FormData();
 		fdlLimit.left   = new FormAttachment(0, 0);
 		fdlLimit.right  = new FormAttachment(middle, -margin);
-		fdlLimit.top    = new FormAttachment(wSQL, margin);
+		fdlLimit.top    = new FormAttachment(wlPosition, margin);
 		wlLimit.setLayoutData(fdlLimit);
 		wLimit=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wLimit);
@@ -174,7 +221,7 @@ public class DatabaseJoinDialog extends BaseStepDialog implements StepDialogInte
 		fdLimit=new FormData();
 		fdLimit.left   = new FormAttachment(middle, 0);
 		fdLimit.right  = new FormAttachment(100, 0);
-		fdLimit.top    = new FormAttachment(wSQL, margin);
+		fdLimit.top    = new FormAttachment(wlPosition, margin);
 		wLimit.setLayoutData(fdLimit);
 
 		// Outer join?
@@ -275,7 +322,23 @@ public class DatabaseJoinDialog extends BaseStepDialog implements StepDialogInte
 		}
 		return stepname;
 	}
+	public void setPosition(){
+		
+		String scr = wSQL.getText();
+		int linenr = wSQL.getLineAtOffset(wSQL.getCaretOffset())+1;
+		int posnr  = wSQL.getCaretOffset();
+				
+		// Go back from position to last CR: how many positions?
+		int colnr=0;
+		while (posnr>0 && scr.charAt(posnr-1)!='\n' && scr.charAt(posnr-1)!='\r')
+		{
+			posnr--;
+			colnr++;
+		}
 
+		wlPosition.setText(Messages.getString("DatabaseJoinDialog.Position.Label",""+linenr, ""+colnr));
+
+	}
 	/**
 	 * Copy information from the meta-data input to the dialog fields.
 	 */ 
