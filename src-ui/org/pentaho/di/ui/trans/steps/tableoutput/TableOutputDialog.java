@@ -179,6 +179,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 		wConnection = addConnectionLine(shell, wStepname, middle, margin);
 		if (input.getDatabaseMeta()==null && transMeta.nrDatabases()==1) wConnection.select(0);
 		wConnection.addModifyListener(lsMod);
+		wConnection.addModifyListener(new ModifyListener() { public void modifyText(ModifyEvent event) { setFlags(); }});
 
         // Schema line...
         wlSchema=new Label(shell, SWT.RIGHT);
@@ -607,6 +608,9 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 	
     public void setFlags()
     {
+    	DatabaseMeta databaseMeta = transMeta.findDatabase(wConnection.getText());
+    	boolean hasErrorHandling = transMeta.findStep(stepname).isDoingErrorHandling();
+    	
     	// Do we want to return keys?
     	boolean returnKeys        = wReturnKeys.getSelection();
     	
@@ -615,6 +619,14 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
     	
     	// Only enable batch option when not returning keys.
     	boolean enableBatch       = !returnKeys && !transMeta.isUsingUniqueConnections();
+    	
+    	// If we are on PostgreSQL (and look-a-likes), error handling is not supported. (PDI-366)
+    	enableBatch = enableBatch && !(
+    			databaseMeta!=null && 
+    				( databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_POSTGRES || 
+    					databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_GREENPLUM )
+    				&& hasErrorHandling
+    			 	);
     	
         // Can't ignore errors when using batch inserts.
         boolean useIgnore          = !useBatch; 

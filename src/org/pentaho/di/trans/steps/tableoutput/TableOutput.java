@@ -20,6 +20,7 @@ import java.util.List;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.Database;
+import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseBatchException;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
@@ -391,6 +392,16 @@ public class TableOutput extends BaseStep implements StepInterface
 			try
 			{
                 data.batchMode = meta.getCommitSize()>0 && meta.useBatchUpdate();
+                
+                // Batch updates are not supported on PostgreSQL (and look-a-likes) together with error handling (PDI-366)
+                //
+                if (data.batchMode && getStepMeta().isDoingErrorHandling() && 
+                		( meta.getDatabaseMeta().getDatabaseType()==DatabaseMeta.TYPE_DATABASE_POSTGRES || 
+                		  meta.getDatabaseMeta().getDatabaseType()==DatabaseMeta.TYPE_DATABASE_GREENPLUM ) )
+                {
+                	data.batchMode = false;
+                	log.logBasic(toString(), Messages.getString("TableOutput.Log.BatchModeDisabled"));
+                }
                 
 				data.db=new Database(meta.getDatabaseMeta());
 				data.db.shareVariablesWith(this);
