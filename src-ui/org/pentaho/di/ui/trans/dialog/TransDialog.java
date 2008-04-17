@@ -1862,12 +1862,12 @@ public class TransDialog extends Dialog
 					RowMetaInterface r;
 					String createTable = "";
 					
-					if (Const.isEmpty(tablename)) {
+					if (!Const.isEmpty(tablename)) {
 						r = Database.getTransLogrecordFields(false, wBatch.getSelection(), wLogfield.getSelection());
 						createTable += db.getDDL(tablename, r);
 					}
 					
-					if (Const.isEmpty(stepTablename)) {
+					if (!Const.isEmpty(stepTablename)) {
 						r = Database.getStepPerformanceLogrecordFields();
 						createTable += db.getDDL(stepTablename, r);
 					}
