@@ -161,7 +161,7 @@
 		<mkdir dir="${dist.dir}"/>
 		<mkdir dir="${deploy.dir}"/>
 		
-		<zip destfile="${dist.dir}/kettle-reports-${version}.zip">
+		<zip destfile="${dist.dir}/${product.name}-${product.release.type}-reports-${release.version}${release.status.token}.zip">
 			<zipfileset dir="${reports.dir}" prefix="kettle-tests" />
 			<zipfileset dir="${coverage.dir}" prefix="kettle-coverage" />
 		</zip>
