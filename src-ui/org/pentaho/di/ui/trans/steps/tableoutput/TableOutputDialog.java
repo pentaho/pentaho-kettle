@@ -42,7 +42,6 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
@@ -52,6 +51,7 @@ import org.pentaho.di.ui.core.database.dialog.DatabaseExplorerDialog;
 import org.pentaho.di.ui.core.database.dialog.SQLEditor;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.TextVar;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 
 
@@ -179,6 +179,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 		wConnection = addConnectionLine(shell, wStepname, middle, margin);
 		if (input.getDatabaseMeta()==null && transMeta.nrDatabases()==1) wConnection.select(0);
 		wConnection.addModifyListener(lsMod);
+		wConnection.addModifyListener(new ModifyListener() { public void modifyText(ModifyEvent event) { setFlags(); }});
 
         // Schema line...
         wlSchema=new Label(shell, SWT.RIGHT);
@@ -600,13 +601,16 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 		shell.open();
 		while (!shell.isDisposed())
 		{
-				if (!display.readAndDispatch()) display.sleep();
+			if (!display.readAndDispatch()) display.sleep();
 		}
 		return stepname;
 	}
 	
     public void setFlags()
     {
+    	DatabaseMeta databaseMeta = transMeta.findDatabase(wConnection.getText());
+    	boolean hasErrorHandling = transMeta.findStep(stepname).isDoingErrorHandling();
+    	
     	// Do we want to return keys?
     	boolean returnKeys        = wReturnKeys.getSelection();
     	
@@ -616,7 +620,15 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
     	// Only enable batch option when not returning keys.
     	boolean enableBatch       = !returnKeys && !transMeta.isUsingUniqueConnections();
     	
-        // Can't ignore errors when using batch inserts.
+    	// If we are on PostgreSQL (and look-a-likes), error handling is not supported. (PDI-366)
+    	enableBatch = enableBatch && !(
+    			databaseMeta!=null && 
+    				( databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_POSTGRES || 
+    					databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_GREENPLUM )
+    				&& hasErrorHandling
+    			 	);
+
+    	// Can't ignore errors when using batch inserts.
         boolean useIgnore          = !useBatch; 
         
         // Do we use partitioning?
