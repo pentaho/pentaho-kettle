@@ -17,10 +17,14 @@
 package org.pentaho.di.ui.job.entries.eval;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.FocusAdapter;
+import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
@@ -47,6 +51,7 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.job.entries.eval.JobEntryEval;
 import org.pentaho.di.job.entries.eval.Messages;
+import org.pentaho.di.ui.core.widget.StyledTextComp;
 
 /**
  * This dialog allows you to edit a JobEntryEval object.
@@ -64,7 +69,7 @@ public class JobEntryEvalDialog extends JobEntryDialog implements JobEntryDialog
 
     private Label wlScript;
 
-    private Text wScript;
+    private StyledTextComp wScript;
 
     private FormData fdlScript, fdScript;
 
@@ -161,7 +166,7 @@ public class JobEntryEvalDialog extends JobEntryDialog implements JobEntryDialog
         fdlScript.left = new FormAttachment(0, 0);
         fdlScript.top = new FormAttachment(wName, margin);
         wlScript.setLayoutData(fdlScript);
-        wScript = new Text(shell, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
+        wScript=new StyledTextComp(shell, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "");
         wScript.setText(Messages.getString("JobEval.Script.Default"));
         props.setLook(wScript, Props.WIDGET_STYLE_FIXED);
         wScript.addModifyListener(lsMod);
@@ -171,7 +176,33 @@ public class JobEntryEvalDialog extends JobEntryDialog implements JobEntryDialog
         fdScript.right = new FormAttachment(100, -5);
         fdScript.bottom = new FormAttachment(wlPosition, -margin);
         wScript.setLayoutData(fdScript);
-
+        wScript.addModifyListener(new ModifyListener()
+        {
+            public void modifyText(ModifyEvent arg0)
+            {
+                setPosition();
+            }
+	
+	        }
+	    );
+		
+	        wScript.addKeyListener(new KeyAdapter(){
+			public void keyPressed(KeyEvent e) { setPosition(); }
+			public void keyReleased(KeyEvent e) { setPosition(); }
+			} 
+		);
+	        wScript.addFocusListener(new FocusAdapter(){
+			public void focusGained(FocusEvent e) { setPosition(); }
+			public void focusLost(FocusEvent e) { setPosition(); }
+			}
+		);
+	        wScript.addMouseListener(new MouseAdapter(){
+			public void mouseDoubleClick(MouseEvent e) { setPosition(); }
+			public void mouseDown(MouseEvent e) { setPosition(); }
+			public void mouseUp(MouseEvent e) { setPosition(); }
+			}
+		);
+        wScript.addModifyListener(lsMod);
         // Add listeners
         lsCancel = new Listener()
         {
@@ -210,15 +241,7 @@ public class JobEntryEvalDialog extends JobEntryDialog implements JobEntryDialog
             }
         });
 
-        wScript.addKeyListener(new KeyAdapter()
-        {
-            public void keyReleased(KeyEvent e)
-            {
-                int linenr = wScript.getCaretLineNumber() + 1;
-                wlPosition.setText(Messages.getString("JobEval.LineNr.Label", Integer
-                    .toString(linenr)));
-            }
-        });
+
 
         getData();
 
@@ -233,7 +256,22 @@ public class JobEntryEvalDialog extends JobEntryDialog implements JobEntryDialog
         }
         return jobEntry;
     }
+	public void setPosition(){
+		
+		String scr = wScript.getText();
+		int linenr = wScript.getLineAtOffset(wScript.getCaretOffset())+1;
+		int posnr  = wScript.getCaretOffset();
+				
+		// Go back from position to last CR: how many positions?
+		int colnr=0;
+		while (posnr>0 && scr.charAt(posnr-1)!='\n' && scr.charAt(posnr-1)!='\r')
+		{
+			posnr--;
+			colnr++;
+		}
+		wlPosition.setText(Messages.getString("JobEval.Position.Label",""+linenr,""+colnr));
 
+	}
     public void dispose()
     {
         WindowProperty winprop = new WindowProperty(shell);
