@@ -181,7 +181,7 @@ public class JobEntryDeleteFile extends JobEntryBase implements Cloneable, JobEn
 					{
 						// File already deleted, no reason to try to delete it
 					    result.setResult( true );
-					    log.logBasic(toString(), Messages.getString("JobEntryDeleteFile.File_Already_Deleted", realFilename)); //$NON-NLS-1$
+					    if(log.isBasic()) log.logBasic(toString(), Messages.getString("JobEntryDeleteFile.File_Already_Deleted", realFilename)); //$NON-NLS-1$
 					}
 				}
 				else
@@ -199,7 +199,7 @@ public class JobEntryDeleteFile extends JobEntryBase implements Cloneable, JobEn
 						result.setResult( false );
 						result.setNrErrors(1);
 				    }
-					log.logBasic(toString(), Messages.getString("JobEntryDeleteFile.File_Deleted", realFilename)); //$NON-NLS-1$
+				    if(log.isBasic()) log.logBasic(toString(), Messages.getString("JobEntryDeleteFile.File_Deleted", realFilename)); //$NON-NLS-1$
 					result.setResult( true );
 				}
 			}

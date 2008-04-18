@@ -815,7 +815,7 @@ public class TextFileInput extends BaseStep implements StepInterface
                 
                 if (data.files.nrOfFiles()==0)
                 {
-                    logBasic(Messages.getString("TextFileInput.Log.Error.NoFilesSpecified"));
+                    if(log.isBasic()) logBasic(Messages.getString("TextFileInput.Log.Error.NoFilesSpecified"));
                     setOutputDone();
                     return false;
                 }
@@ -1060,7 +1060,10 @@ public class TextFileInput extends BaseStep implements StepInterface
 			}
 		}
 
-        if (checkFeedback(linesInput)) logBasic("linenr " + linesInput);
+        if (checkFeedback(linesInput)) 
+        {
+        	if(log.isBasic()) logBasic("linenr " + linesInput);
+        }
 
 		return retval;
 	}
@@ -1100,7 +1103,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 		if (nonExistantFiles.size() != 0)
 		{
 			String message = FileInputList.getRequiredFilesDescription(nonExistantFiles);
-			log.logBasic("Required files", "WARNING: Missing " + message);
+			if(log.isBasic()) log.logBasic("Required files", "WARNING: Missing " + message);
 			if (meta.isErrorIgnored()) {
 				for (FileObject fileObject : nonExistantFiles) {
 					data.dataErrorLineHandler.handleNonExistantFile(fileObject);
@@ -1115,7 +1118,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 		if (nonAccessibleFiles.size() != 0)
 		{
 			String message = FileInputList.getRequiredFilesDescription(nonAccessibleFiles);
-			log.logBasic("Required files", "WARNING: Not accessible " + message);
+			if(log.isBasic()) log.logBasic("Required files", "WARNING: Not accessible " + message);
 			if (meta.isErrorIgnored()) {
 				for (FileObject fileObject : nonAccessibleFiles) {
 					data.dataErrorLineHandler.handleNonAccessibleFile(fileObject);
@@ -1194,7 +1197,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 				resultFile.setComment("File was read by an Text File input step");
 				addResultFile(resultFile);
 			}
-			logBasic("Opening file: " + data.filename);
+			if(log.isBasic()) logBasic("Opening file: " + data.filename);
 
 			data.fr = KettleVFS.getInputStream(data.file);
 			data.dataErrorLineHandler.handleFile(data.file);
@@ -1202,7 +1205,7 @@ public class TextFileInput extends BaseStep implements StepInterface
             String sFileCompression = meta.getFileCompression();
 			if (sFileCompression != null && sFileCompression.equals("Zip"))
 			{
-				logBasic("This is a zipped file");
+				if(log.isBasic()) logBasic("This is a zipped file");
 				data.zi = new ZipInputStream(data.fr);
 				data.zi.getNextEntry();
 
@@ -1217,7 +1220,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 			}
 			else if (sFileCompression != null && sFileCompression.equals("GZip"))
 			{
-				logBasic("This is a gzipped file");
+				if(log.isBasic()) logBasic("This is a gzipped file");
 				data.gzi = new GZIPInputStream(data.fr);
 
 				if (meta.getEncoding() != null && meta.getEncoding().length() > 0)
@@ -1353,7 +1356,7 @@ public class TextFileInput extends BaseStep implements StepInterface
             if (!Const.isEmpty(nr))
             {
                 // TODO: add metadata to configure this.
-                logBasic("Running on slave server #"+nr+" : assuming that each slave reads a dedicated part of the same file(s)."); 
+            	if(log.isBasic()) logBasic("Running on slave server #"+nr+" : assuming that each slave reads a dedicated part of the same file(s)."); 
             }
             
             // If no nullif field is supplied, take the default.

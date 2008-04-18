@@ -169,7 +169,10 @@ public class SQLFileOutput extends BaseStep implements StepInterface
 	        putRow(data.outputRowMeta, r ); // in case we want it go further...
             linesOutput++;
 
-            if (checkFeedback(linesRead)) logBasic("linenr "+linesRead);
+            if (checkFeedback(linesRead)) 
+            {
+            	if(log.isBasic()) logBasic("linenr "+linesRead);
+            }
 		}
 		catch(KettleException e)
 		{
@@ -222,25 +225,25 @@ public class SQLFileOutput extends BaseStep implements StepInterface
 			}
             OutputStream outputStream;
             
-            log.logDetailed(toString(), "Opening output stream in nocompress mode");
+            if(log.isDetailed()) log.logDetailed(toString(), "Opening output stream in nocompress mode");
             OutputStream fos = KettleVFS.getOutputStream(filename, meta.isFileAppended());
             outputStream=fos;
 			
-            log.logBasic(toString(), "Opening output stream in default encoding");
+            if(log.isDetailed()) log.logDetailed(toString(), "Opening output stream in default encoding");
             data.writer = new OutputStreamWriter(new BufferedOutputStream(outputStream, 5000));
         
             if (!Const.isEmpty(meta.getEncoding()))
             {
-                log.logBasic(toString(), "Opening output stream in encoding: "+meta.getEncoding());
+            	if(log.isBasic()) log.logDetailed(toString(), "Opening output stream in encoding: "+meta.getEncoding());
                 data.writer = new OutputStreamWriter(new BufferedOutputStream(outputStream, 5000), environmentSubstitute(meta.getEncoding()));
             }
             else
             {
-                log.logBasic(toString(), "Opening output stream in default encoding");
+                if(log.isBasic()) log.logDetailed(toString(), "Opening output stream in default encoding");
                 data.writer = new OutputStreamWriter(new BufferedOutputStream(outputStream, 5000));
             }
             
-            logDetailed("Opened new file with name ["+filename+"]");
+            if(log.isDetailed()) logDetailed("Opened new file with name ["+filename+"]");
             
             data.splitnr++;
 			
@@ -261,13 +264,13 @@ public class SQLFileOutput extends BaseStep implements StepInterface
 		
 		try
 		{
-			logDebug("Closing output stream");
+			if(log.isDebug()) logDebug("Closing output stream");
 			data.writer.close();
-			logDebug("Closed output stream");
+			if(log.isDebug()) logDebug("Closed output stream");
 			data.writer = null;
 		
 			
-			logDebug("Closing normal file ..");
+			if(log.isDebug()) logDebug("Closing normal file ..");
 		
             if (data.fos!=null)
             {

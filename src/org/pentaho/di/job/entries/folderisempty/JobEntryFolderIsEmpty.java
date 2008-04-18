@@ -235,7 +235,8 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
 						// File provided is a folder, so we can process ...
 						FolderObject.findFiles(new TextFileSelector(FolderObject.toString()));
 						
-						log.logBasic("Total files", "We found : "+filescount + " file(s)");
+						if(log.isBasic())
+							log.logBasic("Total files", "We found : "+filescount + " file(s)");
 						
 						if(filescount==0) result.setResult(true);
 						
@@ -250,8 +251,9 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
 				}
 				else
 				{
-					//  No Folder found					
-					log.logBasic(toString(), "we can not find ["+realFoldername+"] !");
+					//  No Folder found	
+					if(log.isBasic())
+						log.logBasic(toString(), "we can not find ["+realFoldername+"] !");
 				}
 			} catch (IOException e) {
 				log.logError(toString(), "Could not create Folder ["+realFoldername+"], exception: " + e.getMessage());

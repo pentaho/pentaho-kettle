@@ -157,7 +157,10 @@ public class TableInput extends BaseStep implements StepInterface
                         putRow(data.rowMeta, data.thisrow); // fill the rowset(s). (wait for empty)
                         data.thisrow = data.nextrow;
 
-                        if (checkFeedback(linesInput)) logBasic("linenr " + linesInput);
+                        if (checkFeedback(linesInput)) 
+                        {
+                        	if(log.isBasic()) logBasic("linenr " + linesInput);
+                        }
                     }
                 }
             }
@@ -177,7 +180,10 @@ public class TableInput extends BaseStep implements StepInterface
             putRow(data.rowMeta, data.thisrow); // fill the rowset(s). (wait for empty)
             data.thisrow = data.nextrow;
 
-            if (checkFeedback(linesInput)) logBasic("linenr " + linesInput);
+            if (checkFeedback(linesInput)) 
+            {
+            	if(log.isBasic()) logBasic("linenr " + linesInput);
+            }
         }
 		
 		return true;
@@ -225,7 +231,7 @@ public class TableInput extends BaseStep implements StepInterface
 	
 	public void dispose(StepMetaInterface smi, StepDataInterface sdi)
 	{
-		logBasic("Finished reading query, closing connection.");
+		if(log.isBasic()) logBasic("Finished reading query, closing connection.");
 		try
 		{
 		    closePreviousQuery();

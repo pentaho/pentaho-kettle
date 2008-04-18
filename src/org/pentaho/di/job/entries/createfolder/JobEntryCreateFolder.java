@@ -189,7 +189,8 @@ public class JobEntryCreateFolder extends JobEntryBase implements Cloneable, Job
 						{
 							// Folder already exists, no reason to try to create it
 						    result.setResult( true );
-						    log.logBasic(toString(), "Folder ["+realFoldername+"] already exists, not recreating.");
+						    if(log.isDetailed())
+						    	log.logDetailed(toString(), "Folder ["+realFoldername+"] already exists, not recreating.");
 						}
 				
 					
@@ -197,8 +198,9 @@ public class JobEntryCreateFolder extends JobEntryBase implements Cloneable, Job
 				else
 				{
 					//  No Folder yet, create an empty Folder.
-					FolderObject.createFolder();					
-					log.logBasic(toString(), "Folder ["+realFoldername+"] created!");
+					FolderObject.createFolder();
+					if(log.isDetailed())
+						log.logDetailed(toString(), "Folder ["+realFoldername+"] created!");
 					result.setResult( true );
 				}
 			} catch (IOException e) {

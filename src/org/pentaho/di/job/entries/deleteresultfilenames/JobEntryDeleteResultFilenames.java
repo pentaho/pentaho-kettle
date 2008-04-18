@@ -222,7 +222,8 @@ public class JobEntryDeleteResultFilenames extends JobEntryBase implements Clone
 			try
 			{
 				int size=previousResult.getResultFiles().size();
-				log.logBasic(toString(),Messages.getString("JobEntryDeleteResultFilenames.log.FilesFound",""+size));
+				if(log.isBasic())
+					log.logBasic(toString(),Messages.getString("JobEntryDeleteResultFilenames.log.FilesFound",""+size));
 				if(!specifywilcard)
 				{
 					// Delete all files

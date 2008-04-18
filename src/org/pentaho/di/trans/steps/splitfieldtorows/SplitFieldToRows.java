@@ -99,7 +99,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 		}
 					
         if (checkFeedback(linesRead)) {
-			logBasic(Messages.getString("SplitFieldToRows.Log.LineNumber")+linesRead); //$NON-NLS-1$
+			if(log.isBasic()) logBasic(Messages.getString("SplitFieldToRows.Log.LineNumber")+linesRead); //$NON-NLS-1$
 		}
 			
 		return true;

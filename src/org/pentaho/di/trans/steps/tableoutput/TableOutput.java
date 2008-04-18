@@ -81,7 +81,10 @@ public class TableOutput extends BaseStep implements StepInterface
                 linesOutput++;
             }
             
-            if (checkFeedback(linesRead)) logBasic("linenr "+linesRead);
+            if (checkFeedback(linesRead)) 
+            {
+            	if(log.isBasic()) logBasic("linenr "+linesRead);
+            }
 		}
 		catch(KettleException e)
 		{
@@ -264,12 +267,12 @@ public class TableOutput extends BaseStep implements StepInterface
     		    {
     		        if (data.warnings<20)
     		        {
-    		            logBasic("WARNING: Couldn't insert row into table: "+rowMeta.getString(r)+Const.CR+dbe.getMessage());
+    		            if(log.isBasic()) logBasic("WARNING: Couldn't insert row into table: "+rowMeta.getString(r)+Const.CR+dbe.getMessage());
     		        }
     		        else
     		        if (data.warnings==20)
     		        {
-    		            logBasic("FINAL WARNING (no more then 20 displayed): Couldn't insert row into table: "+rowMeta.getString(r)+Const.CR+dbe.getMessage());
+    		        	if(log.isBasic()) logBasic("FINAL WARNING (no more then 20 displayed): Couldn't insert row into table: "+rowMeta.getString(r)+Const.CR+dbe.getMessage());
     		        }
     		        data.warnings++;
     		    }
@@ -400,7 +403,7 @@ public class TableOutput extends BaseStep implements StepInterface
                 		  meta.getDatabaseMeta().getDatabaseType()==DatabaseMeta.TYPE_DATABASE_GREENPLUM ) )
                 {
                 	data.batchMode = false;
-                	log.logBasic(toString(), Messages.getString("TableOutput.Log.BatchModeDisabled"));
+                	if(log.isBasic()) log.logBasic(toString(), Messages.getString("TableOutput.Log.BatchModeDisabled"));
                 }
                 
 				data.db=new Database(meta.getDatabaseMeta());
@@ -415,7 +418,7 @@ public class TableOutput extends BaseStep implements StepInterface
                     data.db.connect(getPartitionID());
                 }
                 
-				logBasic("Connected to database ["+meta.getDatabaseMeta()+"] (commit="+meta.getCommitSize()+")");
+                if(log.isBasic()) logBasic("Connected to database ["+meta.getDatabaseMeta()+"] (commit="+meta.getCommitSize()+")");
 				data.db.setCommit(meta.getCommitSize());
 				
                 if (!meta.isPartitioningEnabled() && !meta.isTableNameInField())

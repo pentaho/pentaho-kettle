@@ -201,12 +201,16 @@ public class JobEntryFilesExist extends JobEntryBase implements Cloneable, JobEn
 		    		   file = KettleVFS.getFileObject(realFilefoldername);
 		    		  
 		    		    if (file.exists() && file.isReadable())
-		                    log.logDetailed(toString(), Messages.getString("JobEntryFilesExist.File_Exists", realFilefoldername)); //$NON-NLS-1$
+		    		    {
+		    		    	if(log.isDetailed())
+		    		    		log.logDetailed(toString(), Messages.getString("JobEntryFilesExist.File_Exists", realFilefoldername)); //$NON-NLS-1$
+		    		    }
 		                else
 		                {
 		                	missingfiles ++;
 		                	result.setNrErrors(missingfiles);
-		                    log.logDetailed(toString(), Messages.getString("JobEntryFilesExist.File_Does_Not_Exist", realFilefoldername)); //$NON-NLS-1$
+		                	if(log.isDetailed())
+		                		log.logDetailed(toString(), Messages.getString("JobEntryFilesExist.File_Does_Not_Exist", realFilefoldername)); //$NON-NLS-1$
 		                }
 		    		  
 		            }

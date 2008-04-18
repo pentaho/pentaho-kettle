@@ -100,7 +100,10 @@ public class LDAPInput extends BaseStep implements StepInterface
 		    
 			if(log.isDebug()) log.logDebug(Messages.getString("LDAPInput.log.ReadRow"), outputRowData.toString());
 			
-		    if ((linesInput > 0) && (linesInput % Const.ROWS_UPDATE) == 0) logBasic(Messages.getString("LDAPInput.log.LineRow") + linesInput);
+		    if ((linesInput > 0) && (linesInput % Const.ROWS_UPDATE) == 0) 
+		    {
+		    	if(log.isBasic()) logBasic(Messages.getString("LDAPInput.log.LineRow") + linesInput);
+		    }
 		    
 		    return true; 
 		} 
@@ -269,7 +272,7 @@ public class LDAPInput extends BaseStep implements StepInterface
 			   logError(Messages.getString("LDAPInput.Error.UnableToConnectToServer"));
 			   throw new KettleException(Messages.getString("LDAPInput.Error.UnableToConnectToServer"));
 		   }
-		   logBasic(Messages.getString("LDAPInput.Log.ConnectedToServer",hostname,username));
+	       if(log.isBasic()) logBasic(Messages.getString("LDAPInput.Log.ConnectedToServer",hostname,username));
 		   if (log.isDetailed()) logDetailed(Messages.getString("LDAPInput.ClassUsed.Message",data.ctx.getClass().getName()));
 		   // Get the schema tree root
 		   //DirContext schema = data.ctx.getSchema("");  
@@ -300,7 +303,7 @@ public class LDAPInput extends BaseStep implements StepInterface
 				Attribute attr = attrs.get("namingContexts");
 				  
 				searchbase=attr.get().toString();
-				if (log.isDetailed()) logBasic(Messages.getString("LDAPInput.SearchBaseFound",searchbase) );
+				if(log.isBasic()) logBasic(Messages.getString("LDAPInput.SearchBaseFound",searchbase) );
 		    } 
 		
 	        controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
@@ -353,7 +356,7 @@ public class LDAPInput extends BaseStep implements StepInterface
 			{
 				data.ctx.close();
 				if(data.results!=null) data.results=null;
-				log.logBasic(toString(),Messages.getString("LDAPInput.log.Disconnection.Done"));
+				if(log.isBasic()) log.logBasic(toString(),Messages.getString("LDAPInput.log.Disconnection.Done"));
 			}
 			catch (Exception e)
 			{

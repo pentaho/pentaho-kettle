@@ -102,7 +102,7 @@ public class ExcelInput extends BaseStep implements StepInterface
 					"");
 					throw ex;
 				}
-				logBasic(Messages.getString("ExcelInput.Log.WarningProcessingExcelFile",""+targetMeta,""+data.filename, ex.getMessage()));
+				if(log.isBasic()) logBasic(Messages.getString("ExcelInput.Log.WarningProcessingExcelFile",""+targetMeta,""+data.filename, ex.getMessage()));
 				
 				if (!errorHandled)
 				{
@@ -232,7 +232,7 @@ public class ExcelInput extends BaseStep implements StepInterface
 					field.getName());
 					throw ex;
 				}
-				logBasic(Messages.getString("ExcelInput.Log.WarningProcessingExcelFile",""+targetMeta,""+data.filename, ex.toString()));
+				if(log.isBasic()) logBasic(Messages.getString("ExcelInput.Log.WarningProcessingExcelFile",""+targetMeta,""+data.filename, ex.toString()));
 				if (!errorHandled) // check if we didn't log an error already for this one.
 				{
 					data.errorHandler.handleLineError(excelInputRow.rownr, excelInputRow.sheetName);
@@ -437,7 +437,7 @@ public class ExcelInput extends BaseStep implements StepInterface
 		if (nonExistantFiles.size() != 0)
 		{
 			String message = FileInputList.getRequiredFilesDescription(nonExistantFiles);
-			log.logBasic(Messages.getString("ExcelInput.Log.RequiredFilesTitle"), Messages.getString("ExcelInput.Warning.MissingFiles", message));
+			if(log.isBasic()) log.logBasic(Messages.getString("ExcelInput.Log.RequiredFilesTitle"), Messages.getString("ExcelInput.Warning.MissingFiles", message));
 			
 			if (meta.isErrorIgnored())
 				for (FileObject fileObject : nonExistantFiles)
@@ -454,7 +454,7 @@ public class ExcelInput extends BaseStep implements StepInterface
 		if (nonAccessibleFiles.size() != 0)
 		{
 			String message = FileInputList.getRequiredFilesDescription(nonAccessibleFiles);
-			log.logBasic(Messages.getString("ExcelInput.Log.RequiredFilesTitle"), Messages.getString("ExcelInput.Log.RequiredFilesMsgNotAccessible",message));
+			if(log.isBasic()) log.logBasic(Messages.getString("ExcelInput.Log.RequiredFilesTitle"), Messages.getString("ExcelInput.Log.RequiredFilesMsgNotAccessible",message));
 			
 			if (meta.isErrorIgnored())
 				for (FileObject fileObject : nonAccessibleFiles)

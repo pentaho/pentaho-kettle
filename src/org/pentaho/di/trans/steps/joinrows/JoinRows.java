@@ -182,7 +182,7 @@ public class JoinRows extends BaseStep implements StepInterface
 				
 				if (data.size[filenr]==0)
 				{
-					logBasic(Messages.getString("JoinRows.Log.NoRowsComingFromStep")+data.rs[filenr].getOriginStepName()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+					if(log.isBasic()) logBasic(Messages.getString("JoinRows.Log.NoRowsComingFromStep")+data.rs[filenr].getOriginStepName()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
 					return null;
 				}
 				
@@ -236,7 +236,7 @@ public class JoinRows extends BaseStep implements StepInterface
 			{
 				if (data.size[filenr]==0)
 				{
-					logBasic(Messages.getString("JoinRows.Log.NoRowsComingFromStep")+data.rs[filenr].getOriginStepName()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+					if(log.isBasic()) logBasic(Messages.getString("JoinRows.Log.NoRowsComingFromStep")+data.rs[filenr].getOriginStepName()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
 					return null;
 				}
 				rowData = (Object[]) data.cache[filenr].get(data.position[data.filenr]);

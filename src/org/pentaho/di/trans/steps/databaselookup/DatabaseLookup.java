@@ -269,7 +269,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface
             		          environmentSubstitute(meta.getTablename()), meta.getTableKeyField(), meta.getKeyCondition(), meta.getReturnValueField(), meta.getReturnValueNewName(), meta.getOrderByClause(), meta.isFailingOnMultipleResults());
 
             // lookup the values!
-            if (log.isRowLevel()) logDetailed(Messages.getString("DatabaseLookup.Log.CheckingRow")+getInputRowMeta().getString(r)); //$NON-NLS-1$
+            if (log.isDetailed()) logDetailed(Messages.getString("DatabaseLookup.Log.CheckingRow")+getInputRowMeta().getString(r)); //$NON-NLS-1$
             
             data.keynrs = new int[meta.getStreamKeyField1().length];
             data.keynrs2= new int[meta.getStreamKeyField1().length];

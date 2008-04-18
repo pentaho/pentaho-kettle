@@ -245,7 +245,10 @@ public class Update extends BaseStep implements StepInterface
             
 			Object[] outputRow = lookupValues(getInputRowMeta(), r); // add new values to the row in rowset[0].
 	        if (outputRow!=null) putRow(data.outputRowMeta, outputRow); // copy non-ignored rows to output rowset(s);
-	        if (checkFeedback(linesRead)) logBasic(Messages.getString("Update.Log.LineNumber")+linesRead); //$NON-NLS-1$
+	        if (checkFeedback(linesRead)) 
+	        {
+	        	if(log.isBasic()) logBasic(Messages.getString("Update.Log.LineNumber")+linesRead); //$NON-NLS-1$
+	        }
         }
         catch(KettleException e)
 		{
@@ -318,7 +321,7 @@ public class Update extends BaseStep implements StepInterface
         
         try
         {
-            log.logDetailed(toString(), "Setting preparedStatement to [" + sql + "]");
+            if(log.isDetailed()) log.logDetailed(toString(), "Setting preparedStatement to [" + sql + "]");
             data.prepStatementLookup = data.db.getConnection().prepareStatement(databaseMeta.stripCR(sql));
         }
         catch (SQLException ex)
@@ -370,7 +373,7 @@ public class Update extends BaseStep implements StepInterface
 
         try
         {            
-            log.logDetailed(toString(), "Setting update preparedStatement to ["+sql+"]");
+        	if(log.isDetailed()) log.logDetailed(toString(), "Setting update preparedStatement to ["+sql+"]");
             data.prepStatementUpdate=data.db.getConnection().prepareStatement(databaseMeta.stripCR(sql));
         }
         catch(SQLException ex) 

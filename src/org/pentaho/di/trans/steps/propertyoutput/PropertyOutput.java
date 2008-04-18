@@ -130,15 +130,20 @@ public class PropertyOutput extends BaseStep implements StepInterface
 
             if(!data.KeySet.contains(propkey))
             {
-                log.logBasic(toString(),"Key :"+ propkey);
-                log.logBasic(toString(),"Value :"+ propvalue);
-                
+            	if(log.isDetailed()) 
+            	{
+            		log.logDetailed(toString(),Messages.getString("PropertyOutput.Log.Key", propkey));
+            		log.logDetailed(toString(),Messages.getString("PropertyOutput.Log.Value" ,propvalue));
+            	}
                 // Update property
                 data.pro.setProperty(propkey, propvalue);
             	putRow(data.outputRowMeta, r);       // in case we want it to go further...
             	linesOutput++;
 
-            	if (checkFeedback(linesRead)) logBasic("linenr "+linesRead);
+            	if (checkFeedback(linesRead)) 
+            	{
+            		if(log.isBasic()) logBasic("linenr "+linesRead);
+            	}
             	data.KeySet.add(propkey);
             }
             	

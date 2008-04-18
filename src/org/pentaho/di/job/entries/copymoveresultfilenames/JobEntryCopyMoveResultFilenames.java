@@ -473,7 +473,7 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 			try
 			{
 				int size=result.getResultFiles().size();
-				log.logBasic(toString(),Messages.getString("JobEntryCopyMoveResultFilenames.log.FilesFound",""+size));
+				if(log.isBasic()) log.logBasic(toString(),Messages.getString("JobEntryCopyMoveResultFilenames.log.FilesFound",""+size));
 
 				List <ResultFile> resultFiles = result.getResultFilesList();
 			    if (resultFiles != null && resultFiles.size() > 0)
@@ -576,7 +576,7 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
     				folder.createFolder();
     			else
     				return false;
-    			log.logBasic(toString(), Messages.getString("JobEntryCopyMoveResultFilenames.Log.FolderCreated",foldername));
+    			if(log.isBasic()) log.logBasic(toString(), Messages.getString("JobEntryCopyMoveResultFilenames.Log.FolderCreated",foldername));
     		}else
     		{
     			if(log.isDetailed())

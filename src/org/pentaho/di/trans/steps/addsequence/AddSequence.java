@@ -116,7 +116,10 @@ public class AddSequence extends BaseStep implements StepInterface
 			putRow(data.outputRowMeta, addSequence(getInputRowMeta(), r)); 			
 			
             if (log.isRowLevel()) log.logRowlevel(toString(), Messages.getString("AddSequence.Log.WriteRow")+linesWritten+" : "+getInputRowMeta().getString(r)); //$NON-NLS-1$ //$NON-NLS-2$
-			if (checkFeedback(linesRead)) logBasic(Messages.getString("AddSequence.Log.LineNumber")+linesRead); //$NON-NLS-1$
+			if (checkFeedback(linesRead)) 
+			{
+				if(log.isBasic()) logBasic(Messages.getString("AddSequence.Log.LineNumber")+linesRead); //$NON-NLS-1$
+			}
 		}
 		catch(KettleException e)
 		{
@@ -145,7 +148,7 @@ public class AddSequence extends BaseStep implements StepInterface
 				try
 				{
 					data.getDb().connect(getPartitionID());
-					logBasic(Messages.getString("AddSequence.Log.ConnectedDB")); //$NON-NLS-1$
+					if(log.isBasic()) logBasic(Messages.getString("AddSequence.Log.ConnectedDB")); //$NON-NLS-1$
 					return true;
 				}
 				catch(KettleDatabaseException dbe)

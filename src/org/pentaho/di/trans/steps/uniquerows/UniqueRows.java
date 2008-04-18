@@ -111,7 +111,10 @@ public class UniqueRows extends BaseStep implements StepInterface
 			data.counter++;
 		}
 
-        if (checkFeedback(linesRead)) logBasic(Messages.getString("UniqueRows.Log.LineNumber")+linesRead); //$NON-NLS-1$
+        if (checkFeedback(linesRead)) 
+        {
+        	if(log.isBasic()) logBasic(Messages.getString("UniqueRows.Log.LineNumber")+linesRead); //$NON-NLS-1$
+        }
 			
 		return true;
 	}

@@ -274,7 +274,10 @@ public class InsertUpdate extends BaseStep implements StepInterface
 			lookupValues(getInputRowMeta(), r); // add new values to the row in rowset[0].
             putRow(data.outputRowMeta, r);      // Nothing changed to the input, return the same row, pass a "cloned" metadata row.
 			
-			if (checkFeedback(linesRead)) logBasic(Messages.getString("InsertUpdate.Log.LineNumber")+linesRead); //$NON-NLS-1$
+			if (checkFeedback(linesRead)) 
+			{
+				if(log.isBasic()) logBasic(Messages.getString("InsertUpdate.Log.LineNumber")+linesRead); //$NON-NLS-1$
+			}
 		}
 		catch(KettleException e)
 		{
@@ -343,7 +346,7 @@ public class InsertUpdate extends BaseStep implements StepInterface
         
         try
         {
-            log.logDetailed(toString(), "Setting preparedStatement to [" + sql + "]");
+            if(log.isDetailed()) log.logDetailed(toString(), "Setting preparedStatement to [" + sql + "]");
             data.prepStatementLookup = data.db.getConnection().prepareStatement(databaseMeta.stripCR(sql));
         }
         catch (SQLException ex)
@@ -401,7 +404,7 @@ public class InsertUpdate extends BaseStep implements StepInterface
 
         try
         {
-            log.logDetailed(toString(), "Setting update preparedStatement to ["+sql+"]");
+        	if(log.isDetailed()) log.logDetailed(toString(), "Setting update preparedStatement to ["+sql+"]");
             data.prepStatementUpdate=data.db.getConnection().prepareStatement(databaseMeta.stripCR(sql));
         }
         catch(SQLException ex) 

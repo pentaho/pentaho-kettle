@@ -135,7 +135,10 @@ public class Delete extends BaseStep implements StepInterface
 			deleteValues(getInputRowMeta(), r); // add new values to the row in rowset[0].
 			putRow(data.outputRowMeta, r);      // output the same rows of data, but with a copy of the metadata
 			
-            if (checkFeedback(linesRead)) logBasic(Messages.getString("Delete.Log.LineNumber")+linesRead); //$NON-NLS-1$
+            if (checkFeedback(linesRead)) 
+            {
+            	if(log.isBasic()) logBasic(Messages.getString("Delete.Log.LineNumber")+linesRead); //$NON-NLS-1$
+            }
 		}
 		catch(KettleException e)
 		{
@@ -229,7 +232,7 @@ public class Delete extends BaseStep implements StepInterface
                     data.db.connect(getPartitionID());
                 }
 				
-				logBasic(Messages.getString("Delete.Log.ConnectedToDB")); //$NON-NLS-1$
+				if(log.isBasic()) logBasic(Messages.getString("Delete.Log.ConnectedToDB")); //$NON-NLS-1$
 				
 				data.db.setCommit(meta.getCommitSize());
 

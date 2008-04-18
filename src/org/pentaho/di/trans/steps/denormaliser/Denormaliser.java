@@ -180,7 +180,10 @@ public class Denormaliser extends BaseStep implements StepInterface
 
 		data.previous=r;
         
-        if (checkFeedback(linesRead)) logBasic(Messages.getString("Denormaliser.Log.LineNumber")+linesRead); //$NON-NLS-1$
+        if (checkFeedback(linesRead)) 
+        {
+        	if(log.isBasic()) logBasic(Messages.getString("Denormaliser.Log.LineNumber")+linesRead); //$NON-NLS-1$
+        }
 			
 		return true;
 	}

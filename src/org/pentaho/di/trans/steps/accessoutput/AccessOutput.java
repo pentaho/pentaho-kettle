@@ -81,7 +81,10 @@ public class AccessOutput extends BaseStep implements StepInterface
 			writeToTable(r);
 			putRow(data.outputRowMeta, r);       // in case we want it go further...
 
-            if (checkFeedback(linesOutput)) logBasic("linenr "+linesOutput);
+            if (checkFeedback(linesOutput)) 
+            {
+            	if(log.isBasic()) logBasic("linenr "+linesOutput);
+            }
 		}
 		catch(KettleException e)
 		{
@@ -205,7 +208,8 @@ public class AccessOutput extends BaseStep implements StepInterface
 	{
 		data.oneFileOpened=true;
         String realFilename = environmentSubstitute(meta.getFilename());
-        logBasic(Messages.getString("AccessOutput.log.WritingToFile", realFilename));
+        if(log.isBasic())
+        	logBasic(Messages.getString("AccessOutput.log.WritingToFile", realFilename));
         FileObject fileObject = KettleVFS.getFileObject(realFilename);
         File file = new File(KettleVFS.getFilename(fileObject));
         

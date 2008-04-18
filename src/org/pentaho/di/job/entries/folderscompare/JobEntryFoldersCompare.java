@@ -383,7 +383,8 @@ public class JobEntryFoldersCompare extends JobEntryBase implements Cloneable, J
 								   if(!collection2.containsKey(entree.getKey() ))
 								   {
 									   ok=false;
-									   log.logBasic(toString(), Messages.getString("JobFoldersCompare.Log.FileCanNotBeFoundIn",entree.getKey().toString(),realFilename2));
+									   if(log.isDetailed())
+										   log.logDetailed(toString(), Messages.getString("JobFoldersCompare.Log.FileCanNotBeFoundIn",entree.getKey().toString(),realFilename2));
 								   }
 								   else
 								   {
@@ -396,7 +397,8 @@ public class JobEntryFoldersCompare extends JobEntryBase implements Cloneable, J
 									   {
 										   // The file1 exist in the folder2..but they don't have the same type
 										   ok=false;
-										   log.logBasic(toString(),Messages.getString("JobFoldersCompare.Log.FilesNotSameType", filefolder1.toString(),filefolder2.toString()));
+										   if(log.isDetailed())
+											   log.logDetailed(toString(),Messages.getString("JobFoldersCompare.Log.FilesNotSameType", filefolder1.toString(),filefolder2.toString()));
 									
 										   if(filefolder1.getType()==FileType.FILE)
 												log.logError(toString(),Messages.getString("JobFoldersCompare.Log.IsAFile",filefolder1.toString()));
@@ -427,10 +429,13 @@ public class JobEntryFoldersCompare extends JobEntryBase implements Cloneable, J
 												   if(filefolder1_size!=filefolder2_size)
 												   {
 													   ok=false;
-													   log.logBasic(toString(),Messages.getString("JobFoldersCompare.Log.FilesNotSameSize",filefolder1.toString(),filefolder2.toString()));
-													   log.logBasic(toString(),Messages.getString("JobFoldersCompare.Log.SizeFileIs",filefolder1.toString(),""+filefolder1_size));
-													   log.logBasic(toString(),Messages.getString("JobFoldersCompare.Log.SizeFileIs",filefolder2.toString(),""+filefolder2_size));
-												   }
+													   if(log.isDetailed())
+													   {
+														   log.logDetailed(toString(),Messages.getString("JobFoldersCompare.Log.FilesNotSameSize",filefolder1.toString(),filefolder2.toString()));
+														   log.logDetailed(toString(),Messages.getString("JobFoldersCompare.Log.SizeFileIs",filefolder1.toString(),""+filefolder1_size));
+														   log.logDetailed(toString(),Messages.getString("JobFoldersCompare.Log.SizeFileIs",filefolder2.toString(),""+filefolder2_size));
+													   }
+													 }
 											   }
 											   
 											   if(ok)
@@ -441,7 +446,8 @@ public class JobEntryFoldersCompare extends JobEntryBase implements Cloneable, J
 													   if (!equalFileContents(filefolder1, filefolder2) )
 														{
 														   ok=false;
-														   log.logBasic(toString(),Messages.getString("JobFoldersCompare.Log.FilesNotSameContent",filefolder1.toString(),filefolder2.toString()));
+														   if(log.isDetailed())
+															   log.logDetailed(toString(),Messages.getString("JobFoldersCompare.Log.FilesNotSameContent",filefolder1.toString(),filefolder2.toString()));
 														}
 												   }
 											   }
@@ -458,7 +464,8 @@ public class JobEntryFoldersCompare extends JobEntryBase implements Cloneable, J
 							else
 							{
 								// The 2 folders don't have the same files number
-								log.logBasic(toString(), Messages.getString("JobFoldersCompare.Log.FoldersDifferentFiles",realFilename1.toString(),realFilename2.toString()));
+								if(log.isDetailed())
+									log.logDetailed(toString(), Messages.getString("JobFoldersCompare.Log.FoldersDifferentFiles",realFilename1.toString(),realFilename2.toString()));
 							}
 							
 						}

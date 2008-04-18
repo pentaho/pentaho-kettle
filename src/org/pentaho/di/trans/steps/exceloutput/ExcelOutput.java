@@ -115,7 +115,10 @@ public class ExcelOutput extends BaseStep implements StepInterface
 		
 		putRow(data.previousMeta, r);       // in case we want it to go further...
 		
-        if (checkFeedback(linesOutput)) logBasic("linenr "+linesOutput);
+        if (checkFeedback(linesOutput)) 
+        {
+        	if(log.isBasic()) logBasic("linenr "+linesOutput);
+        }
 		
 		return result;
 	}

@@ -75,7 +75,10 @@ public class CubeInput extends BaseStep implements StepInterface
 			throw new KettleException(e); // shouldn't happen on files
 		}
 
-        if (checkFeedback(linesInput)) logBasic(Messages.getString("CubeInput.Log.LineNumber")+linesInput); //$NON-NLS-1$
+        if (checkFeedback(linesInput)) 
+        {
+        	if(log.isBasic()) logBasic(Messages.getString("CubeInput.Log.LineNumber")+linesInput); //$NON-NLS-1$
+        }
 
 		return true;
 	}

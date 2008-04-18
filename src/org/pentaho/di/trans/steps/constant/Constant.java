@@ -206,7 +206,10 @@ public class Constant extends BaseStep implements StepInterface
             log.logRowlevel(toString(), Messages.getString("Constant.Log.Wrote.Row", Long.toString(linesWritten), getInputRowMeta().getString(r)) );
         }
         
-        if (checkFeedback(linesWritten)) logBasic( Messages.getString("Constant.Log.LineNr", Long.toString(linesWritten) ));
+        if (checkFeedback(linesWritten)) 
+        {
+        	if(log.isBasic()) logBasic( Messages.getString("Constant.Log.LineNr", Long.toString(linesWritten) ));
+        }
 		
 		return true;
 	}

@@ -146,7 +146,10 @@ public class DBProc extends BaseStep implements StepInterface
 			Object[] outputRowData = runProc(data.inputRowMeta, r); // add new values to the row in rowset[0].
 			putRow(data.outputMeta, outputRowData);  // copy row to output rowset(s);
 				
-            if (checkFeedback(linesRead)) logBasic(Messages.getString("DBProc.LineNumber")+linesRead); //$NON-NLS-1$
+            if (checkFeedback(linesRead)) 
+            {
+            	if(log.isBasic()) logBasic(Messages.getString("DBProc.LineNumber")+linesRead); //$NON-NLS-1$
+            }
 		}
 		catch(KettleException e)
 		{
@@ -204,10 +207,10 @@ public class DBProc extends BaseStep implements StepInterface
 
                 if (!meta.isAutoCommit())
                 {
-                    logBasic(Messages.getString("DBProc.Log.AutoCommit")); //$NON-NLS-1$
+                    if(log.isBasic()) logBasic(Messages.getString("DBProc.Log.AutoCommit")); //$NON-NLS-1$
                     data.db.setCommit(9999);
                 }
-				logBasic(Messages.getString("DBProc.Log.ConnectedToDB")); //$NON-NLS-1$
+                if(log.isBasic()) logBasic(Messages.getString("DBProc.Log.ConnectedToDB")); //$NON-NLS-1$
 				
 				return true;
 			}

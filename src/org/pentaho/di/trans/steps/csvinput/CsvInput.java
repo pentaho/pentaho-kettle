@@ -122,7 +122,10 @@ public class CsvInput extends BaseStep implements StepInterface
 		else 
 		{
 			putRow(data.outputRowMeta, outputRowData);     // copy row to possible alternate rowset(s).
-	        if (checkFeedback(linesInput)) logBasic(Messages.getString("CsvInput.Log.LineNumber", Long.toString(linesInput))); //$NON-NLS-1$
+	        if (checkFeedback(linesInput)) 
+	        {
+	        	if(log.isBasic()) logBasic(Messages.getString("CsvInput.Log.LineNumber", Long.toString(linesInput))); //$NON-NLS-1$
+	        }
 		}
 			
 		return true;

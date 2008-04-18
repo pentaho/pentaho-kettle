@@ -121,7 +121,7 @@ public class BlockingStep extends BaseStep implements StepInterface {
 		// Open all files at once and read one row from each file...
 		if (data.files.size()>0 && ( data.dis.size()==0 || data.fis.size()==0 ))
 		{
-			logBasic(Messages.getString("BlockingStep.Log.Openfiles"));	
+			if(log.isBasic()) logBasic(Messages.getString("BlockingStep.Log.Openfiles"));	
 	
 			try
 			{

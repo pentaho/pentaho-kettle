@@ -530,7 +530,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 		{
             if (meta.isFileAsCommand())
             {
-            	logDebug("Spawning external process");
+            	if(log.isDebug()) logDebug("Spawning external process");
             	if (data.cmdProc != null)
             	{
             		logError("Previous command not correctly terminated");
@@ -548,7 +548,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
                         cmdstr = "cmd.exe /C " + cmdstr;
                     }
                 }
-            	logDetailed("Starting: " + cmdstr);
+            	if(log.isDebug()) logDetailed("Starting: " + cmdstr);
             	Runtime r = Runtime.getRuntime();
             	data.cmdProc = r.exec(cmdstr, EnvUtil.getEnvironmentVariablesForRuntimeExec());
             	data.writer = data.cmdProc.getOutputStream();
@@ -575,7 +575,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
                 {
     				if (meta.getFileCompression().equals(FILE_COMPRESSION_TYPE_ZIP))
     				{
-    		            log.logDetailed(toString(), "Opening output stream in zipped mode");
+    					if(log.isDetailed()) log.logDetailed(toString(), "Opening output stream in zipped mode");
                         
                         data.fos = KettleVFS.getOutputStream(filename, meta.isFileAppended());
                         data.zip = new ZipOutputStream(data.fos);
@@ -587,7 +587,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
     				}
     				else if (meta.getFileCompression().equals(FILE_COMPRESSION_TYPE_GZIP))
     				{
-    		            log.logDetailed(toString(), "Opening output stream in gzipped mode");
+    					if(log.isDetailed()) log.logDetailed(toString(), "Opening output stream in gzipped mode");
                         data.fos = KettleVFS.getOutputStream(filename, meta.isFileAppended());
                         data.gzip = new GZIPOutputStream(data.fos);
     					outputStream=data.gzip;
@@ -599,23 +599,23 @@ public class TextFileOutput extends BaseStep implements StepInterface
                 }
 				else
 				{
-		            log.logDetailed(toString(), "Opening output stream in nocompress mode");
+					if(log.isDetailed()) log.logDetailed(toString(), "Opening output stream in nocompress mode");
                     data.fos = KettleVFS.getOutputStream(filename, meta.isFileAppended());
                     outputStream=data.fos;
 				}
                 
 	            if (!Const.isEmpty(meta.getEncoding()))
 	            {
-	                log.logBasic(toString(), "Opening output stream in encoding: "+meta.getEncoding());
+	            	if(log.isBasic()) log.logBasic(toString(), "Opening output stream in encoding: "+meta.getEncoding());
 	                data.writer = new BufferedOutputStream(outputStream, 5000);
 	            }
 	            else
 	            {
-	                log.logBasic(toString(), "Opening output stream in default encoding");
+	            	if(log.isBasic()) log.logBasic(toString(), "Opening output stream in default encoding");
 	                data.writer = new BufferedOutputStream(outputStream, 5000);
 	            }
 	
-	            logDetailed("Opened new file with name ["+filename+"]");
+	            if(log.isDetailed()) logDetailed("Opened new file with name ["+filename+"]");
 				
 				retval=true;
             }
@@ -639,14 +639,14 @@ public class TextFileOutput extends BaseStep implements StepInterface
 		{			
 			if ( data.writer != null )
 			{
-				logDebug("Closing output stream");
+				if(log.isDebug()) logDebug("Closing output stream");
 			    data.writer.close();
-			    logDebug("Closed output stream");
+			    if(log.isDebug()) logDebug("Closed output stream");
 			}			
 			data.writer = null;
 			if (data.cmdProc != null)
 			{
-				logDebug("Ending running external command");
+				if(log.isDebug()) logDebug("Ending running external command");
 				int procStatus = data.cmdProc.waitFor();
 				// close the streams
 				// otherwise you get "Too many open files, java.io.IOException" after a lot of iterations
@@ -655,14 +655,14 @@ public class TextFileOutput extends BaseStep implements StepInterface
 					data.cmdProc.getOutputStream().close();				
 					data.cmdProc.getInputStream().close();
 				} catch (IOException e) {
-					logDetailed("Warning: Error closing streams: " + e.getMessage());
+					if(log.isDetailed()) logDetailed("Warning: Error closing streams: " + e.getMessage());
 				}				
 				data.cmdProc = null;
-				logBasic("Command exit status: " + procStatus);
+				if(log.isBasic()) logBasic("Command exit status: " + procStatus);
 			}
 			else
 			{
-				logDebug("Closing normal file ...");
+				if(log.isDebug()) logDebug("Closing normal file ...");
 				if (meta.getFileCompression() == "Zip")
 				{
 					data.zip.closeEntry();

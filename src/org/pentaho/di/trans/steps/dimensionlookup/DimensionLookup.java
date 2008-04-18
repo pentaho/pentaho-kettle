@@ -183,7 +183,10 @@ public class DimensionLookup extends BaseStep implements StepInterface
             Object[] outputRow = lookupValues(getInputRowMeta(), r); // add new values to the row in rowset[0].
             putRow(data.outputRowMeta, outputRow);       // copy row to output rowset(s);
             
-            if (checkFeedback(linesRead)) logBasic(Messages.getString("DimensionLookup.Log.LineNumber")+linesRead); //$NON-NLS-1$
+            if (checkFeedback(linesRead)) 
+            {
+            	if(log.isBasic()) logBasic(Messages.getString("DimensionLookup.Log.LineNumber")+linesRead); //$NON-NLS-1$
+            }
         }
         catch(KettleException e)
         {
@@ -1192,7 +1195,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
                     data.db.connect(getPartitionID());
                 }
 				
-				logBasic(Messages.getString("DimensionLookup.Log.ConnectedToDB")); //$NON-NLS-1$
+                if(log.isBasic()) logBasic(Messages.getString("DimensionLookup.Log.ConnectedToDB")); //$NON-NLS-1$
 				data.db.setCommit(meta.getCommitSize());
 				
 				return true;

@@ -77,20 +77,17 @@ public class LDIFInput extends BaseStep implements StepInterface
 
 		if(contentLDIF.getType()== LDIFContent.DELETE_CONTENT)
 		{
-			if(log.isDetailed())
-				log.logDetailed(toString(),Messages.getString("LDIFInput.Log.ContentType","DELETE_CONTENT"));
+			if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("LDIFInput.Log.ContentType","DELETE_CONTENT"));
 			contentTYPE="DELETE_CONTENT";
 		}
 		else if(contentLDIF.getType()== LDIFContent.ADD_CONTENT)
 		{
-			if(log.isDetailed())
-				log.logDetailed(toString(),Messages.getString("LDIFInput.Log.ContentType","ADD_CONTENT"));
+			if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("LDIFInput.Log.ContentType","ADD_CONTENT"));
 			contentTYPE="ADD_CONTENT";
 		}
 		else if(contentLDIF.getType()== LDIFContent.MODDN_CONTENT)
 		{
-			if(log.isDetailed())
-				log.logDetailed(toString(),Messages.getString("LDIFInput.Log.ContentType","MODDN_CONTENT"));
+			if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("LDIFInput.Log.ContentType","MODDN_CONTENT"));
 			contentTYPE="MODDN_CONTENT";
 		}
 		else if(contentLDIF.getType()== LDIFContent.MODIFICATION_CONTENT)

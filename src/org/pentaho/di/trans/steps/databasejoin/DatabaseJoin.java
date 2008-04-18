@@ -150,7 +150,10 @@ public class DatabaseJoin extends BaseStep implements StepInterface
 		{
 			lookupValues(getInputRowMeta(), r); // add new values to the row in rowset[0].
 			
-            if (checkFeedback(linesRead)) logBasic(Messages.getString("DatabaseJoin.Log.LineNumber")+linesRead); //$NON-NLS-1$
+            if (checkFeedback(linesRead)) 
+            {
+            	if(log.isBasic()) logBasic(Messages.getString("DatabaseJoin.Log.LineNumber")+linesRead); //$NON-NLS-1$
+            }
 		}
 		catch(KettleException e)
 		{

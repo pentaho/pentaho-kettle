@@ -532,7 +532,8 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
             
             try
             {
-                log.logBasic(toString(), Messages.getString("SlaveServer.DEBUG_ConnectingTo", urlToUse)); //$NON-NLS-1$
+                if(log.isBasic())
+                	log.logBasic(toString(), Messages.getString("SlaveServer.DEBUG_ConnectingTo", urlToUse)); //$NON-NLS-1$
 
                 if (proxyHostname!=null) 
                 {
@@ -571,9 +572,10 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
                     result.append(line).append(Const.CR);
                     bytesRead+=line.length();
                 }
-                
-                log.logBasic(toString(), Messages.getString("SlaveServer.FinishedReadingResponse"), bytesRead); //$NON-NLS-1$
-                log.logDebug(toString(), "response from the webserver: {0}", result);
+                if(log.isBasic())
+                	log.logBasic(toString(), Messages.getString("SlaveServer.FinishedReadingResponse"), bytesRead); //$NON-NLS-1$
+                if(log.isDebug())
+                	log.logDebug(toString(), "response from the webserver: {0}", result);
             }
             catch(MalformedURLException e)
             {

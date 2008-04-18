@@ -237,11 +237,13 @@ public class JobEntryDTDValidator extends JobEntryBase implements Cloneable, Job
 						// DTD find in the XML document
 						if (xmlStartDTD != -1)
 						{
-							log.logBasic(toString(),  Messages.getString("JobEntryDTDValidator.ERRORDTDFound.Label", realxmlfilename));
+							if(log.isBasic())
+								log.logBasic(toString(),  Messages.getString("JobEntryDTDValidator.ERRORDTDFound.Label", realxmlfilename));
 						}
 						else
 						{
-							log.logBasic(toString(),  Messages.getString("JobEntryDTDValidator.ERRORDTDNotFound.Label", realxmlfilename));
+							if(log.isBasic())
+								log.logBasic(toString(),  Messages.getString("JobEntryDTDValidator.ERRORDTDNotFound.Label", realxmlfilename));
 						}
 							
 					
@@ -292,8 +294,8 @@ public class JobEntryDTDValidator extends JobEntryBase implements Cloneable, Job
 						// Let's parse now ...
 											
 						xmlDocDTD = DocBuilder.parse(new ByteArrayInputStream(xmlStringbuffer.toString().getBytes(encoding)));
-	
-						log.logBasic(Messages.getString("JobEntryDTDValidator.DTDValidatorOK.Subject"),
+						if(log.isDetailed())
+							log.logDetailed(Messages.getString("JobEntryDTDValidator.DTDValidatorOK.Subject"),
 								Messages.getString("JobEntryDTDValidator.DTDValidatorOK.Label",		
 										realxmlfilename));
 						

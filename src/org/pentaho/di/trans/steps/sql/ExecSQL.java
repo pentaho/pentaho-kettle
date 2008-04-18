@@ -181,8 +181,9 @@ public class ExecSQL extends BaseStep implements StepInterface
 		putRow(data.outputRowMeta,row); // send it out!
 
 		if (checkFeedback(linesWritten))
-			logBasic(Messages.getString("ExecSQL.Log.LineNumber") + linesWritten); //$NON-NLS-1$
-
+		{
+			if(log.isBasic()) logBasic(Messages.getString("ExecSQL.Log.LineNumber") + linesWritten); //$NON-NLS-1$
+		}
 		return true;
 	}
 	
@@ -192,7 +193,7 @@ public class ExecSQL extends BaseStep implements StepInterface
 		meta = (ExecSQLMeta) smi;
 		data = (ExecSQLData) sdi;
 
-		logBasic(Messages.getString("ExecSQL.Log.FinishingReadingQuery")); //$NON-NLS-1$
+		if(log.isBasic()) logBasic(Messages.getString("ExecSQL.Log.FinishingReadingQuery")); //$NON-NLS-1$
 
 		data.db.disconnect();
 

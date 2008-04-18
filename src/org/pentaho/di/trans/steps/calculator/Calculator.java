@@ -163,7 +163,10 @@ public class Calculator extends BaseStep implements StepInterface
 		putRow(data.outputRowMeta, row);     // copy row to possible alternate rowset(s).
 
         if (log.isRowLevel()) log.logRowlevel(toString(), "Wrote row #"+linesWritten+" : "+getInputRowMeta().getString(r));
-        if (checkFeedback(linesRead)) logBasic("Linenr "+linesRead);
+        if (checkFeedback(linesRead)) 
+        {
+        	if(log.isBasic()) logBasic("Linenr "+linesRead);
+        }
 
 		return true;
 	}

@@ -109,7 +109,7 @@ public class GetXMLData extends BaseStep implements StepInterface
 		if (nonExistantFiles.size() != 0)
 		{
 			String message = FileInputList.getRequiredFilesDescription(nonExistantFiles);
-			log.logBasic("Required files", "WARNING: Missing " + message);
+			if(log.isBasic()) log.logBasic("Required files", "WARNING: Missing " + message);
 
 			throw new KettleException("Following required files are missing " +message);
 		}
@@ -118,7 +118,7 @@ public class GetXMLData extends BaseStep implements StepInterface
 		if (nonAccessibleFiles.size() != 0)
 		{
 			String message = FileInputList.getRequiredFilesDescription(nonAccessibleFiles);
-			log.logBasic("Required files", "WARNING: Not accessible " + message);
+			if(log.isBasic()) log.logBasic("Required files", "WARNING: Not accessible " + message);
 
 				throw new KettleException("Following required files are not accessible " +message);
 		}
@@ -319,9 +319,12 @@ public class GetXMLData extends BaseStep implements StepInterface
 				
 				addFileToResultFilesname(data.file);
 	
-	            if (log.isDetailed()) logDetailed(Messages.getString("GetXMLData.Log.FileOpened", data.file.toString()));
-	            if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("GetXMLData.Log.LoopFileOccurences",""+data.nodesize,data.file.getName().getBaseName()));
-			}
+	            if (log.isDetailed()) 
+	            {
+	            	logDetailed(Messages.getString("GetXMLData.Log.FileOpened", data.file.toString()));
+	               log.logDetailed(toString(),Messages.getString("GetXMLData.Log.LoopFileOccurences",""+data.nodesize,data.file.getName().getBaseName()));
+	            }   
+	         }
 
 		}
 		catch(Exception e)

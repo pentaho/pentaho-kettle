@@ -169,7 +169,7 @@ public class Xslt extends BaseStep implements StepInterface
 		boolean sendToErrorRow=false;
 	    String errorMessage = null;
 		try {			
-			logDetailed(Messages.getString("Xslt.Log.Filexsl") + xslfilename);
+			if(log.isDetailed()) logDetailed(Messages.getString("Xslt.Log.Filexsl") + xslfilename);
 			TransformerFactory factory = TransformerFactory.newInstance();
 			
 			if (meta.getXSLFactory().equals("SAXON"))
@@ -186,10 +186,12 @@ public class Xslt extends BaseStep implements StepInterface
 			Source source = new StreamSource(new StringReader(Fieldvalue));			
 		    StreamResult resultat = new StreamResult(new StringWriter());	   
 			xformer.transform(source, resultat);
-			xmlString = resultat.getWriter().toString();			
-			logDetailed(Messages.getString("Xslt.Log.FileResult"));
-			logDetailed(xmlString);		
-			
+			xmlString = resultat.getWriter().toString();	
+			if(log.isDetailed()) 
+			{
+				logDetailed(Messages.getString("Xslt.Log.FileResult"));
+				logDetailed(xmlString);		
+			}
 			Object[] outputRowData =RowDataUtil.addValueData(row, getInputRowMeta().size(),xmlString);
 			
 			if (log.isRowLevel()) logRowlevel(Messages.getString("Xslt.Log.ReadRow") + " " +  getInputRowMeta().getString(row)); 
