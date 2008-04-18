@@ -791,23 +791,26 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
                 }
                 else
                 {
-                    boolean askOverwrite = Props.isInitialized() ? props.askAboutReplacingDatabaseConnections() : false;
-                    boolean overwrite = Props.isInitialized() ? props.replaceExistingDatabaseConnections() : true;
-                    if (askOverwrite && prompter != null)
-                    {
-                    	
-                    	overwrite = prompter.overwritePrompt(
-                    			Messages.getString("JobMeta.Dialog.ConnectionExistsOverWrite.Message", dbcon.getName() ), 
-                    			Messages.getString("JobMeta.Dialog.ConnectionExistsOverWrite.DontShowAnyMoreMessage"), 
-                    			Props.STRING_ASK_ABOUT_REPLACING_DATABASES);
-                    }
-
-                    if (overwrite)
-                    {
-                        int idx = indexOfDatabase(exist);
-                        removeDatabase(idx);
-                        addDatabase(idx, dbcon);
-                    }
+                	if (!exist.isShared()) // skip shared connections
+					{
+	                    boolean askOverwrite = Props.isInitialized() ? props.askAboutReplacingDatabaseConnections() : false;
+	                    boolean overwrite = Props.isInitialized() ? props.replaceExistingDatabaseConnections() : true;
+	                    if (askOverwrite && prompter != null)
+	                    {
+	                    	
+	                    	overwrite = prompter.overwritePrompt(
+	                    			Messages.getString("JobMeta.Dialog.ConnectionExistsOverWrite.Message", dbcon.getName() ), 
+	                    			Messages.getString("JobMeta.Dialog.ConnectionExistsOverWrite.DontShowAnyMoreMessage"), 
+	                    			Props.STRING_ASK_ABOUT_REPLACING_DATABASES);
+	                    }
+	
+	                    if (overwrite)
+	                    {
+	                        int idx = indexOfDatabase(exist);
+	                        removeDatabase(idx);
+	                        addDatabase(idx, dbcon);
+	                    }
+					}
                 }
             }
             
