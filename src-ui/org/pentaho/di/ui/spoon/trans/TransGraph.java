@@ -43,6 +43,7 @@ import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseMoveListener;
+import org.eclipse.swt.events.MouseWheelListener;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -391,6 +392,21 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
                 if (!spoon.isStopped()) TransGraph.this.paintControl(e);
             }
         });
+        
+        canvas.addMouseWheelListener(new MouseWheelListener() {
+		
+			public void mouseScrolled(MouseEvent e) {
+				if (e.count==3) {
+					// scroll up
+					zoomIn();
+				} else if (e.count==-3) 
+				{
+					// scroll down 
+					zoomOut();
+				}
+				
+			}
+		});
 
         selected_steps = null;
         lastclick = null;

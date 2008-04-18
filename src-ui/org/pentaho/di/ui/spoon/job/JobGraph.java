@@ -38,6 +38,7 @@ import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseMoveListener;
+import org.eclipse.swt.events.MouseWheelListener;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -293,6 +294,22 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 		canvas.addPaintListener(new PaintListener() {
 			public void paintControl(PaintEvent e) {
 				JobGraph.this.paintControl(e);
+			}
+		});
+
+        
+        canvas.addMouseWheelListener(new MouseWheelListener() {
+		
+			public void mouseScrolled(MouseEvent e) {
+				if (e.count==3) {
+					// scroll up
+					zoomIn();
+				} else if (e.count==-3) 
+				{
+					// scroll down 
+					zoomOut();
+				}
+				
 			}
 		});
 
@@ -2090,9 +2107,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 		String name = je.getName();
 		if (je.isSelected()) gc.setLineWidth(3);
 		else			     gc.setLineWidth(1);
-		gc.setBackground(GUIResource.getInstance().getColorRed());
-		gc.setForeground(GUIResource.getInstance().getColorBlack());
-		gc.fillRectangle(offset.x + x, offset.y + y, iconsize, iconsize);
+
 		Image im = getIcon(je);
 		if (im != null) // Draw the icon!
 		{
