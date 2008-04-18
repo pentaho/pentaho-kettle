@@ -247,12 +247,25 @@ public class SQLValuesHighlight implements LineStyleListener {
 				"difference","len","nchar","quotename","replicate","reverse","str","stuff",
 				"unicode","ascii","char",
 				
-				"to_char","to_date","nvl","sysdate","corr","count","grouping","max","min","stdev","sum",
+				"to_char","to_date","to_number","nvl","sysdate","corr","count","grouping","max","min","stdev","sum",
 				"concat","length","locate","ltrim","posstr","repeat","replace","rtrim",
 				"soundex","space","substr","substring","trunc","nextval","currval","getclobval",
 				
-				"char_length","compare","patindex","sortkey","uscalar"
-			};
+				"char_length","compare","patindex","sortkey","uscalar",
+				
+				"current_date","current_time","current_timestamp","current_user","session_user","system_user",
+				"curdate","curtime","database","now","sysdate","today","user","version","coalesce",
+				"nullif","octet_length","datalength","decode","greatest","ifnull","least","||",
+				"char_length","character_length","collate","concatenate","like","lower","position",
+				"translate","upper","char_octet_length","character_maximum_length","character_octet_length",
+				"ilike","initcap","instr","lcase","lpad","patindex","rpad","ucase","bit_length","&","|","^",
+				"%","+","-","*","/","(",")","abs","asin","atan","ceiling","cos","cot","exp","floor","ln","log",
+				"log10","mod","pi","power","rand","round","sign","sin","sqrt","tan","trunc","extract",
+				"interval","overlaps","adddate","age","date_add","dateformat","date_part","date_sub",
+				"datediff","dateadd","datename","datepart","day","dayname","dayofmonth","dayofweek",
+				"dayofyear","hour","last_day","minute","month","month_between","monthname","next_day","second",
+				"sub_date","week","year"
+		};
 			
 			private String[] fgKeywords= { 
 					"create","procedure","as","set","nocount","on","declare","varchar","print","table","int",
@@ -267,6 +280,10 @@ public class SQLValuesHighlight implements LineStyleListener {
 					"else","eval","escape","having","limit","offset","of","intersect","except","using",
 					"variance","specific","language","body","returns","specific","deterministic",
 					"not","external","action","reads","static","inherit","called","order","group","by",
+					"natural","full","exists","between","some","any","unique","match","value","limite",
+					"minus","references","grant","on",
+					
+					
 					
 					"if","in",
 					"new", "Number", "null",
