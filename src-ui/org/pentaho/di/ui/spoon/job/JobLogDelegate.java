@@ -199,7 +199,7 @@ public class JobLogDelegate extends SpoonDelegate {
 
 	public void showErrors()
 	{
-		String all = jobLogTab.getText();
+		String all = jobLogText.getText();
 		ArrayList<String> err = new ArrayList<String>();
 		
 		int i = 0;
