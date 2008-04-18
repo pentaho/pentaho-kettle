@@ -439,6 +439,14 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 
 	private void get()
 	{
+		if (transMeta.findStep(wStep.getText())==null) {
+			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
+			mb.setMessage(Messages.getString("StreamLookupDialog.PleaseSelectAStepToReadFrom.DialogMessage")); //$NON-NLS-1$
+			mb.setText(Messages.getString("StreamLookupDialog.PleaseSelectAStepToReadFrom.DialogTitle")); //$NON-NLS-1$
+			mb.open(); 
+			return;
+		}
+		
 		try
 		{
 			RowMetaInterface r = transMeta.getPrevStepFields(stepname);
