@@ -61,6 +61,7 @@ import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.StyledTextComp;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.trans.steps.tableinput.SQLValuesHighlight;
 
 
 public class DatabaseJoinDialog extends BaseStepDialog implements StepDialogInterface
@@ -90,6 +91,8 @@ public class DatabaseJoinDialog extends BaseStepDialog implements StepDialogInte
 	
 	private Label        wlPosition;
 	private FormData     fdlPosition;
+	
+	private SQLValuesHighlight lineStyler = new SQLValuesHighlight();
 
 	public DatabaseJoinDialog(Shell parent, Object in, TransMeta tr, String sname)
 	{
@@ -197,6 +200,9 @@ public class DatabaseJoinDialog extends BaseStepDialog implements StepDialogInte
 			}
 		);
 		
+		// SQL Higlighting
+		lineStyler = new SQLValuesHighlight();;
+		wSQL.addLineStyleListener(lineStyler);
 		
 		wlPosition=new Label(shell, SWT.NONE);
 		props.setLook(wlPosition);

@@ -103,6 +103,8 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 	
 	private Label        wlPosition;
 	private FormData     fdlPosition;
+	
+	private SQLValuesHighlight lineStyler = new SQLValuesHighlight();
 
 	public TableInputDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
@@ -335,6 +337,9 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 			}
 		);
 		
+		// Text Higlighting
+		lineStyler = new SQLValuesHighlight();
+		wSQL.addLineStyleListener(lineStyler);
 		
 		// Add listeners
 		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel();  } };

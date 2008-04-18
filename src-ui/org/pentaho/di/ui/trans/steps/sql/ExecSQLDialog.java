@@ -54,6 +54,7 @@ import org.pentaho.di.ui.core.widget.StyledTextComp;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.spoon.job.JobGraph;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.trans.steps.tableinput.SQLValuesHighlight;
 
 public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
 {
@@ -111,6 +112,8 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
 	private Label        wlPosition;
 	private FormData     fdlPosition;
 
+	private SQLValuesHighlight lineStyler = new SQLValuesHighlight();
+	
 	public ExecSQLDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
 		super(parent, (BaseStepMeta) in, transMeta, sname);
@@ -215,6 +218,10 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
 			public void mouseUp(MouseEvent e) { setPosition(); }
 			}
 		);
+		
+		// Text Higlighting
+		lineStyler = new SQLValuesHighlight();;
+		wSQL.addLineStyleListener(lineStyler);
 		
 		wlPosition=new Label(shell, SWT.NONE);
 		props.setLook(wlPosition);
@@ -455,7 +462,6 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
 			posnr--;
 			colnr++;
 		}
-		log.logBasic(toString(),Messages.getString("ExecSQLDialog.Position.Label",""+linenr,""+colnr));
 		wlPosition.setText(Messages.getString("ExecSQLDialog.Position.Label",""+linenr,""+colnr));
 
 	}
@@ -539,8 +545,8 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
 		
 		int nrargs = wFields.nrNonEmpty();
 		input.allocate(nrargs);
-
-		log.logDebug(toString(), Messages.getString("ExecSQLDialog.Log.FoundArguments", +nrargs + "")); //$NON-NLS-1$ //$NON-NLS-2$
+		if (log.isDebug())
+			log.logDebug(toString(), Messages.getString("ExecSQLDialog.Log.FoundArguments", +nrargs + "")); //$NON-NLS-1$ //$NON-NLS-2$
 		for (int i = 0; i < nrargs; i++)
 		{
 			TableItem item = wFields.getNonEmpty(i);

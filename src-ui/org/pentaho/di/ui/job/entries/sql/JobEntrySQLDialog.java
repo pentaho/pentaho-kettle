@@ -19,10 +19,14 @@ package org.pentaho.di.ui.job.entries.sql;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.events.FocusAdapter;
+import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
@@ -41,6 +45,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.ui.core.widget.StyledTextComp;
 
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.TextVar;
@@ -52,6 +57,8 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.job.entries.sql.JobEntrySQL;
 import org.pentaho.di.job.entries.sql.Messages;
+import org.pentaho.di.ui.trans.steps.tableinput.SQLValuesHighlight;
+
 
 
 /**
@@ -88,7 +95,7 @@ public class JobEntrySQLDialog extends JobEntryDialog implements JobEntryDialogI
 
     private Label wlSQL;
 
-    private Text wSQL;
+    private StyledTextComp wSQL;
 
     private FormData fdlSQL, fdSQL;
 
@@ -113,6 +120,8 @@ public class JobEntrySQLDialog extends JobEntryDialog implements JobEntryDialogI
 	private Button wbFilename;
 	private TextVar wFilename;
 	private FormData fdlFilename, fdbFilename, fdFilename;
+	
+	private SQLValuesHighlight lineStyler = new SQLValuesHighlight();
 
     public JobEntrySQLDialog(Shell parent, JobEntryInterface jobEntryInt, Repository rep, JobMeta jobMeta)
     {
@@ -308,7 +317,8 @@ public class JobEntrySQLDialog extends JobEntryDialog implements JobEntryDialogI
         fdlSQL.left = new FormAttachment(0, 0);
         fdlSQL.top = new FormAttachment(wUseSubs, margin);
         wlSQL.setLayoutData(fdlSQL);
-        wSQL = new Text(shell, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
+        //wSQL = new Text(shell, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
+        wSQL=new StyledTextComp(shell, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "");
         props.setLook(wSQL, Props.WIDGET_STYLE_FIXED);
         wSQL.addModifyListener(lsMod);
         fdSQL = new FormData();
@@ -356,15 +366,39 @@ public class JobEntrySQLDialog extends JobEntryDialog implements JobEntryDialogI
             }
         });
 
-        wSQL.addKeyListener(new KeyAdapter()
+        wSQL.addModifyListener(new ModifyListener()
         {
-            public void keyReleased(KeyEvent e)
+            public void modifyText(ModifyEvent arg0)
             {
-                int linenr = wSQL.getCaretLineNumber() + 1;
-                wlPosition.setText(Messages.getString("JobSQL.LineNr.Label", Integer
-                    .toString(linenr)));
+                setPosition();
             }
-        });
+
+	        }
+	    );
+		
+		wSQL.addKeyListener(new KeyAdapter(){
+			public void keyPressed(KeyEvent e) { setPosition(); }
+			public void keyReleased(KeyEvent e) { setPosition(); }
+			} 
+		);
+		wSQL.addFocusListener(new FocusAdapter(){
+			public void focusGained(FocusEvent e) { setPosition(); }
+			public void focusLost(FocusEvent e) { setPosition(); }
+			}
+		);
+		wSQL.addMouseListener(new MouseAdapter(){
+			public void mouseDoubleClick(MouseEvent e) { setPosition(); }
+			public void mouseDown(MouseEvent e) { setPosition(); }
+			public void mouseUp(MouseEvent e) { setPosition(); }
+			}
+		);
+		wSQL.addModifyListener(lsMod);
+		
+		
+		// Text Higlighting
+		lineStyler = new SQLValuesHighlight();
+		wSQL.addLineStyleListener(lineStyler);
+		
 
         getData();
         activeSQLFromFile();
@@ -381,6 +415,22 @@ public class JobEntrySQLDialog extends JobEntryDialog implements JobEntryDialogI
         return jobEntry;
     }
 
+	public void setPosition(){
+		
+		String scr = wSQL.getText();
+		int linenr = wSQL.getLineAtOffset(wSQL.getCaretOffset())+1;
+		int posnr  = wSQL.getCaretOffset();
+				
+		// Go back from position to last CR: how many positions?
+		int colnr=0;
+		while (posnr>0 && scr.charAt(posnr-1)!='\n' && scr.charAt(posnr-1)!='\r')
+		{
+			posnr--;
+			colnr++;
+		}
+		wlPosition.setText(Messages.getString("JobSQL.Position.Label",""+linenr,""+colnr));
+
+	}
     public void dispose()
     {
         WindowProperty winprop = new WindowProperty(shell);
