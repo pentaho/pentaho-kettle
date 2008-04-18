@@ -242,8 +242,8 @@ public class SQLValuesHighlight implements LineStyleListener {
 		protected boolean fEofSeen= false;
 
 		private String[] kfKeywords ={
-			"getdate","case","convert","left","right","isnumeric","isdate",
-			"number", "finally", "cast","var","fetch_status"
+				"getdate","case","convert","left","right","isnumeric","isdate",
+				"number", "finally", "cast","var","fetch_status","isnull"
 		};
 		
 		private String[] fgKeywords= { 
@@ -255,7 +255,7 @@ public class SQLValuesHighlight implements LineStyleListener {
 				"array","minute","second","millisecond","view","function",
 				"catch", "const","continue",
 				"date", "default", "delete", "do",
-				"else","eval","escape",
+				"else","eval","escape","having",
 				
 				"if","in",
 				"new", "Number", "null",
