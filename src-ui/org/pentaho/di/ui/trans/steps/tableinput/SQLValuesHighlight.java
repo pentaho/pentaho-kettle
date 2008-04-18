@@ -242,28 +242,40 @@ public class SQLValuesHighlight implements LineStyleListener {
 		protected boolean fEofSeen= false;
 
 		private String[] kfKeywords ={
-				"getdate","case","convert","left","right","isnumeric","isdate",
-				"number", "finally", "cast","var","fetch_status","isnull"
-		};
-		
-		private String[] fgKeywords= { 
-				"create","procedure","as","set","nocount","on","declare","varchar","print","table","int",
-				"select","from","where","and","or","insert","into","cursor","read_only","for","open","fetch",
-				"next","end","deallocate","table","drop","exec","begin","close","update","delete","truncate",
-				"inner","outer","left","join","union","all","float","when",
-				"nolock","with","false","datetime","dare","time","hour",
-				"array","minute","second","millisecond","view","function",
-				"catch", "const","continue",
-				"date", "default", "delete", "do",
-				"else","eval","escape","having",
+				"getdate","case","convert","left","right","isnumeric","isdate","isnumber",
+				"number", "finally", "cast","var","fetch_status","isnull","charindex",
+				"difference","len","nchar","quotename","replicate","reverse","str","stuff",
+				"unicode","ascii","char",
 				
-				"if","in",
-				"new", "Number", "null",
-				"string", "switch",
-				"this","then","throw", "true","false","try",
-				"return",
-				"with", "while"
-		};
+				"to_char","to_date","nvl","sysdate","corr","count","grouping","max","min","stdev","sum",
+				"concat","length","locate","ltrim","posstr","repeat","replace","rtrim",
+				"soundex","space","substr","substring","trunc","nextval","currval","getclobval",
+				
+				"char_length","compare","patindex","sortkey","uscalar"
+			};
+			
+			private String[] fgKeywords= { 
+					"create","procedure","as","set","nocount","on","declare","varchar","print","table","int",
+					"select","from","where","and","or","insert","into","cursor","read_only","for","open","fetch",
+					"next","end","deallocate","table","drop","exec","begin","close","update","delete","truncate",
+					"inner","outer","left","join","union","all","float","when",
+					"nolock","with","false","datetime","dare","time","hour",
+					"array","minute","second","millisecond","view","function",
+					"catch", "const","continue","compute","browse","option",
+					"date", "default", "delete", "do","raw","auto","explicit","xmldata",
+					"elements","binary","base64","read","outfile","asc","desc",
+					"else","eval","escape","having","limit","offset","of","intersect","except","using",
+					"variance","specific","language","body","returns","specific","deterministic",
+					"not","external","action","reads","static","inherit","called","order","group","by",
+					
+					"if","in",
+					"new", "Number", "null",
+					"string", "switch",
+					"this","then","throw", "true","false","try",
+					"return",
+					"with", "while",
+					"start","connect","optimize","first","only","rows","sequence","blob","image","binary"
+			};
 
 		public JavaScanner() {
 			initialize();
