@@ -126,7 +126,7 @@ class ScriptValuesHighlight implements LineStyleListener {
 		StyleRange lastStyle;
 		
 		if (inBlockComment(event.lineOffset, event.lineOffset + event.lineText.length())) {
-			styles.addElement(new StyleRange(event.lineOffset, event.lineText.length()+4, colors[1], null));
+			styles.addElement(new StyleRange(event.lineOffset, event.lineText.length()+4, colors[2], null));
 			event.styles = new StyleRange[styles.size()];
 			styles.copyInto(event.styles);
 			return;
