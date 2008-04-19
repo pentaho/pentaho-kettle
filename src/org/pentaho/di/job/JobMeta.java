@@ -1081,7 +1081,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 			// First of all we need to verify that all database connections are
 			// saved.
 			//
-			log.logDebug(toString(), Messages.getString("JobMeta.Log.SavingDatabaseConnections")); //$NON-NLS-1$
+			if(log.isDebug()) log.logDebug(toString(), Messages.getString("JobMeta.Log.SavingDatabaseConnections")); //$NON-NLS-1$
 			for (int i = 0; i < nrDatabases(); i++) {
 				if (monitor != null)
 					monitor.subTask(Messages.getString("JobMeta.Monitor.SavingDatabaseTask.Title") + (i + 1) + "/" + nrDatabases()); //$NON-NLS-1$ //$NON-NLS-2$
@@ -1101,7 +1101,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 			// entries to the save job. (retry)
 			if (monitor != null)
 				monitor.subTask(Messages.getString("JobMeta.Monitor.SavingJobDetails")); //$NON-NLS-1$
-			log.logDetailed(toString(), "Saving job info to repository..."); //$NON-NLS-1$
+			if(log.isDetailed()) log.logDetailed(toString(), "Saving job info to repository..."); //$NON-NLS-1$
 			saveRepJob(rep);
 			if (monitor != null)
 				monitor.worked(1);
@@ -1116,7 +1116,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 			//
 			// Save the notes
 			//
-			log.logDetailed(toString(), "Saving notes to repository..."); //$NON-NLS-1$
+			if(log.isDetailed()) log.logDetailed(toString(), "Saving notes to repository..."); //$NON-NLS-1$
 			for (int i = 0; i < nrNotes(); i++) {
 				if (monitor != null)
 					monitor.subTask(Messages.getString("JobMeta.Monitor.SavingNoteNr") + (i + 1) + "/" + nrNotes()); //$NON-NLS-1$ //$NON-NLS-2$
@@ -1132,7 +1132,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 			//
 			// Save the job entries
 			//
-			log.logDetailed(toString(), "Saving " + nrJobEntries() + " Job enty copies to repository..."); //$NON-NLS-1$ //$NON-NLS-2$
+			if(log.isDetailed()) log.logDetailed(toString(), "Saving " + nrJobEntries() + " Job enty copies to repository..."); //$NON-NLS-1$ //$NON-NLS-2$
 			rep.updateJobEntryTypes();
 			for (int i = 0; i < nrJobEntries(); i++) {
 				if (monitor != null)
@@ -1143,7 +1143,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 					monitor.worked(1);
 			}
 
-			log.logDetailed(toString(), "Saving job hops to repository..."); //$NON-NLS-1$
+			if(log.isDetailed()) log.logDetailed(toString(), "Saving job hops to repository..."); //$NON-NLS-1$
 			for (int i = 0; i < nrJobHops(); i++) {
 				if (monitor != null)
 					monitor.subTask("Saving job hop #" + (i + 1) + "/" + nrJobHops()); //$NON-NLS-1$ //$NON-NLS-2$
@@ -1276,7 +1276,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 				if (monitor != null)
 					monitor.worked(1);
 
-				log.logDetailed(toString(), "Loading " + noteids.length + " notes"); //$NON-NLS-1$ //$NON-NLS-2$
+				if(log.isDetailed()) log.logDetailed(toString(), "Loading " + noteids.length + " notes"); //$NON-NLS-1$ //$NON-NLS-2$
 				for (int i = 0; i < noteids.length; i++) {
 					if (monitor != null)
 						monitor.subTask(Messages.getString("JobMeta.Monitor.ReadingNoteNr") + (i + 1) + "/" + noteids.length); //$NON-NLS-1$ //$NON-NLS-2$
@@ -1288,7 +1288,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 				}
 
 				// Load the job entries...
-				log.logDetailed(toString(), "Loading " + jecids.length + " job entries"); //$NON-NLS-1$ //$NON-NLS-2$
+				if(log.isDetailed()) log.logDetailed(toString(), "Loading " + jecids.length + " job entries"); //$NON-NLS-1$ //$NON-NLS-2$
 				for (int i = 0; i < jecids.length; i++) {
 					if (monitor != null)
 						monitor.subTask(Messages.getString("JobMeta.Monitor.ReadingJobEntryNr") + (i + 1) + "/" + (jecids.length)); //$NON-NLS-1$ //$NON-NLS-2$
@@ -1318,7 +1318,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 				}
 
 				// Load the hops...
-				log.logDetailed(toString(), "Loading " + hopid.length + " job hops"); //$NON-NLS-1$ //$NON-NLS-2$
+				if(log.isDetailed()) log.logDetailed(toString(), "Loading " + hopid.length + " job hops"); //$NON-NLS-1$ //$NON-NLS-2$
 				for (int i = 0; i < hopid.length; i++) {
 					if (monitor != null)
 						monitor.subTask(Messages.getString("JobMeta.Monitor.ReadingJobHopNr") + (i + 1) + "/" + (jecids.length)); //$NON-NLS-1$ //$NON-NLS-2$

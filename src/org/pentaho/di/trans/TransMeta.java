@@ -1566,7 +1566,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         
         // Resume the regular program...
 
-        log.logDebug(toString(), Messages.getString("TransMeta.Log.FromStepALookingAtPreviousStep", stepMeta.getName(), String.valueOf(findNrPrevSteps(stepMeta)) )); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        if(log.isDebug()) log.logDebug(toString(), Messages.getString("TransMeta.Log.FromStepALookingAtPreviousStep", stepMeta.getName(), String.valueOf(findNrPrevSteps(stepMeta)) )); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         for (int i = 0; i < findNrPrevSteps(stepMeta); i++)
         {
             StepMeta prevStepMeta = findPrevStep(stepMeta, i);
@@ -1578,7 +1578,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
             RowMetaInterface add = getStepFields(prevStepMeta, stepMeta, monitor);
             if (add == null) add = new RowMeta();
-            log.logDebug(toString(), Messages.getString("TransMeta.Log.FoundFieldsToAdd") + add.toString()); //$NON-NLS-1$
+            if(log.isDebug()) log.logDebug(toString(), Messages.getString("TransMeta.Log.FoundFieldsToAdd") + add.toString()); //$NON-NLS-1$
             if (i == 0)
             {
                 row.addRowMeta(add);
@@ -1647,7 +1647,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
         if (stepMeta == null) { return null; }
 
-        log.logDebug(toString(), Messages.getString("TransMeta.Log.FromStepALookingAtPreviousStep", stepMeta.getName(), String.valueOf(findNrPrevSteps(stepMeta)) )); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        if(log.isDebug()) log.logDebug(toString(), Messages.getString("TransMeta.Log.FromStepALookingAtPreviousStep", stepMeta.getName(), String.valueOf(findNrPrevSteps(stepMeta)) )); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         for (int i = 0; i < findNrPrevSteps(stepMeta); i++)
         {
             StepMeta prevStepMeta = findPrevStep(stepMeta, i);
@@ -1659,7 +1659,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
             
             RowMetaInterface add = getStepFields(prevStepMeta, stepMeta, monitor);
             
-            log.logDebug(toString(), Messages.getString("TransMeta.Log.FoundFieldsToAdd2") + add.toString()); //$NON-NLS-1$
+            if(log.isDebug()) log.logDebug(toString(), Messages.getString("TransMeta.Log.FoundFieldsToAdd2") + add.toString()); //$NON-NLS-1$
             if (i == 0) // we expect all input streams to be of the same layout!
             {
                 row.addRowMeta(add); // recursive!
@@ -1719,7 +1719,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     public RowMetaInterface getThisStepFields(StepMeta stepMeta, StepMeta nextStep, RowMetaInterface row, ProgressMonitorListener monitor) throws KettleStepException
     {
         // Then this one.
-        log.logDebug(toString(), Messages.getString("TransMeta.Log.GettingFieldsFromStep",stepMeta.getName(), stepMeta.getStepID())); //$NON-NLS-1$ //$NON-NLS-2$
+    	if(log.isDebug()) log.logDebug(toString(), Messages.getString("TransMeta.Log.GettingFieldsFromStep",stepMeta.getName(), stepMeta.getStepID())); //$NON-NLS-1$ //$NON-NLS-2$
         String name = stepMeta.getName();
 
         if (monitor != null)
@@ -1811,7 +1811,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
             int nrWorks = 2 + nrDatabases() + nrNotes() + nrSteps() + nrTransHops();
             if (monitor != null) monitor.beginTask(Messages.getString("TransMeta.Monitor.SavingTransformationTask.Title") + getPathAndName(), nrWorks); //$NON-NLS-1$
-            log.logDebug(toString(), Messages.getString("TransMeta.Log.SavingOfTransformationStarted")); //$NON-NLS-1$
+            if(log.isDebug()) log.logDebug(toString(), Messages.getString("TransMeta.Log.SavingOfTransformationStarted")); //$NON-NLS-1$
 
             if (monitor!=null && monitor.isCanceled()) throw new KettleDatabaseException();
 
@@ -1834,13 +1834,13 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
                 // If we have a valid ID, we need to make sure everything is cleared out
                 // of the database for this id_transformation, before we put it back in...
                 if (monitor != null) monitor.subTask(Messages.getString("TransMeta.Monitor.DeletingOldVersionTransformationTask.Title")); //$NON-NLS-1$
-                log.logDebug(toString(), Messages.getString("TransMeta.Log.DeletingOldVersionTransformation")); //$NON-NLS-1$
+                if(log.isDebug()) log.logDebug(toString(), Messages.getString("TransMeta.Log.DeletingOldVersionTransformation")); //$NON-NLS-1$
                 rep.delAllFromTrans(getID());
-                log.logDebug(toString(), Messages.getString("TransMeta.Log.OldVersionOfTransformationRemoved")); //$NON-NLS-1$
+                if(log.isDebug()) log.logDebug(toString(), Messages.getString("TransMeta.Log.OldVersionOfTransformationRemoved")); //$NON-NLS-1$
             }
             if (monitor != null) monitor.worked(1);
 
-            log.logDebug(toString(), Messages.getString("TransMeta.Log.SavingNotes")); //$NON-NLS-1$
+            if(log.isDebug()) log.logDebug(toString(), Messages.getString("TransMeta.Log.SavingNotes")); //$NON-NLS-1$
             for (int i = 0; i < nrNotes(); i++)
             {
                 if (monitor!=null && monitor.isCanceled()) throw new KettleDatabaseException(Messages.getString("TransMeta.Log.UserCancelledTransSave"));
@@ -1852,7 +1852,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
                 if (monitor != null) monitor.worked(1);
             }
 
-            log.logDebug(toString(), Messages.getString("TransMeta.Log.SavingDatabaseConnections")); //$NON-NLS-1$
+            if(log.isDebug()) log.logDebug(toString(), Messages.getString("TransMeta.Log.SavingDatabaseConnections")); //$NON-NLS-1$
             for (int i = 0; i < nrDatabases(); i++)
             {
                 if (monitor!=null && monitor.isCanceled()) throw new KettleDatabaseException(Messages.getString("TransMeta.Log.UserCancelledTransSave"));
@@ -1869,10 +1869,10 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
             // Before saving the steps, make sure we have all the step-types.
             // It is possible that we received another step through a plugin.
-            log.logDebug(toString(), Messages.getString("TransMeta.Log.CheckingStepTypes")); //$NON-NLS-1$
+            if(log.isDebug()) log.logDebug(toString(), Messages.getString("TransMeta.Log.CheckingStepTypes")); //$NON-NLS-1$
             rep.updateStepTypes();
 
-            log.logDebug(toString(), Messages.getString("TransMeta.Log.SavingSteps")); //$NON-NLS-1$
+            if(log.isDebug()) log.logDebug(toString(), Messages.getString("TransMeta.Log.SavingSteps")); //$NON-NLS-1$
             for (int i = 0; i < nrSteps(); i++)
             {
                 if (monitor!=null && monitor.isCanceled()) throw new KettleDatabaseException(Messages.getString("TransMeta.Log.UserCancelledTransSave"));
@@ -1885,7 +1885,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
             }
             rep.closeStepAttributeInsertPreparedStatement();
 
-            log.logDebug(toString(), Messages.getString("TransMeta.Log.SavingHops")); //$NON-NLS-1$
+            if(log.isDebug()) log.logDebug(toString(), Messages.getString("TransMeta.Log.SavingHops")); //$NON-NLS-1$
             for (int i = 0; i < nrTransHops(); i++)
             {
                 if (monitor!=null && monitor.isCanceled()) throw new KettleDatabaseException(Messages.getString("TransMeta.Log.UserCancelledTransSave"));
@@ -1897,7 +1897,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
             }
 
             if (monitor != null) monitor.subTask(Messages.getString("TransMeta.Monitor.FinishingTask.Title")); //$NON-NLS-1$
-            log.logDebug(toString(), Messages.getString("TransMeta.Log.SavingTransformationInfo")); //$NON-NLS-1$
+            if(log.isDebug()) log.logDebug(toString(), Messages.getString("TransMeta.Log.SavingTransformationInfo")); //$NON-NLS-1$
             
             rep.insertTransformation(this); // save the top level information for the transformation
             rep.closeTransAttributeInsertPreparedStatement();
@@ -1937,7 +1937,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
                 clusterSchema.saveRep(rep, getID(), isUsedByTransformation);
             }
             
-            log.logDebug(toString(), Messages.getString("TransMeta.Log.SavingDependencies")); //$NON-NLS-1$
+            if(log.isDebug()) log.logDebug(toString(), Messages.getString("TransMeta.Log.SavingDependencies")); //$NON-NLS-1$
             for (int i = 0; i < nrDependencies(); i++)
             {
                 if (monitor!=null && monitor.isCanceled()) throw new KettleDatabaseException(Messages.getString("TransMeta.Log.UserCancelledTransSave"));
@@ -1958,7 +1958,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
             }
             rep.closeStepAttributeInsertPreparedStatement();
             
-            log.logDebug(toString(), Messages.getString("TransMeta.Log.SavingFinished")); //$NON-NLS-1$
+            if(log.isDebug()) log.logDebug(toString(), Messages.getString("TransMeta.Log.SavingFinished")); //$NON-NLS-1$
 
         	if (monitor!=null) monitor.subTask(Messages.getString("TransMeta.Monitor.UnlockingRepository")); //$NON-NLS-1$
             rep.unlockRepository();
@@ -2229,7 +2229,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
                 long id_directory = r.getInteger("ID_DIRECTORY", -1L); //$NON-NLS-1$
                 if (id_directory >= 0)
                 {
-                    log.logDetailed(toString(), "ID_DIRECTORY=" + id_directory); //$NON-NLS-1$
+                	if(log.isDetailed()) log.logDetailed(toString(), "ID_DIRECTORY=" + id_directory); //$NON-NLS-1$
                     // Set right directory...
                     directory = directoryTree.findDirectory(id_directory);
                 }
@@ -2330,7 +2330,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
             directoryTree = directory.findRoot();
 
             // Get the transformation id
-            log.logDetailed(toString(), Messages.getString("TransMeta.Log.LookingForTransformation", transname ,directory.getPath() )); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("TransMeta.Log.LookingForTransformation", transname ,directory.getPath() )); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
             if (monitor != null) monitor.subTask(Messages.getString("TransMeta.Monitor.ReadingTransformationInfoTask.Title")); //$NON-NLS-1$
             setID(rep.getTransformationID(transname, directory.getID()));
@@ -2347,7 +2347,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
                 if (monitor != null) monitor.beginTask(Messages.getString("TransMeta.Monitor.LoadingTransformationTask.Title") + pathAndName, nrWork); //$NON-NLS-1$
 
-                log.logDetailed(toString(), Messages.getString("TransMeta.Log.LoadingTransformation", getName() )); //$NON-NLS-1$ //$NON-NLS-2$
+                if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("TransMeta.Log.LoadingTransformation", getName() )); //$NON-NLS-1$ //$NON-NLS-2$
 
                 // Load the common database connections
                 if (monitor != null) monitor.subTask(Messages.getString("TransMeta.Monitor.ReadingTheAvailableSharedObjectsTask.Title")); //$NON-NLS-1$
@@ -2376,7 +2376,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
                 rep.fillStepAttributesBuffer(getID()); // read all the attributes on one go!
                 for (int i = 0; i < stepids.length; i++)
                 {
-                    log.logDetailed(toString(), Messages.getString("TransMeta.Log.LoadingStepWithID") + stepids[i]); //$NON-NLS-1$
+                	if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("TransMeta.Log.LoadingStepWithID") + stepids[i]); //$NON-NLS-1$
                     if (monitor != null) monitor.subTask(Messages.getString("TransMeta.Monitor.ReadingStepTask.Title") + (i + 1) + "/" + (stepids.length)); //$NON-NLS-1$ //$NON-NLS-2$
                     StepMeta stepMeta = new StepMeta(rep, stepids[i], databases, counters, partitionSchemas);
                     // In this case, we just add or replace the shared steps.
@@ -2456,11 +2456,11 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
             {
                 throw new KettleException(Messages.getString("TransMeta.Exception.TransformationDoesNotExist") + name); //$NON-NLS-1$
             }
-
-            log.logDetailed(toString(), Messages.getString("TransMeta.Log.LoadedTransformation2", transname , String.valueOf(directory == null))); //$NON-NLS-1$ //$NON-NLS-2$
-
-            log.logDetailed(toString(), Messages.getString("TransMeta.Log.LoadedTransformation", transname , directory.getPath() )); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-
+            if(log.isDetailed()) 
+            {
+            	log.logDetailed(toString(), Messages.getString("TransMeta.Log.LoadedTransformation2", transname , String.valueOf(directory == null))); //$NON-NLS-1$ //$NON-NLS-2$
+            	log.logDetailed(toString(), Messages.getString("TransMeta.Log.LoadedTransformation", transname , directory.getPath() )); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            }
         }
         catch (KettleDatabaseException e)
         {
@@ -2852,10 +2852,10 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
             // Handle connections
             int n = XMLHandler.countNodes(transnode, DatabaseMeta.XML_TAG); //$NON-NLS-1$
-            log.logDebug(toString(), Messages.getString("TransMeta.Log.WeHaveConnections", String.valueOf(n) )); //$NON-NLS-1$ //$NON-NLS-2$
+            if(log.isDebug()) log.logDebug(toString(), Messages.getString("TransMeta.Log.WeHaveConnections", String.valueOf(n) )); //$NON-NLS-1$ //$NON-NLS-2$
             for (int i = 0; i < n; i++)
             {
-                log.logDebug(toString(), Messages.getString("TransMeta.Log.LookingAtConnection") + i); //$NON-NLS-1$
+            	if(log.isDebug()) log.logDebug(toString(), Messages.getString("TransMeta.Log.LookingAtConnection") + i); //$NON-NLS-1$
                 Node nodecon = XMLHandler.getSubNodeByNr(transnode, DatabaseMeta.XML_TAG, i); //$NON-NLS-1$
 
                 DatabaseMeta dbcon = new DatabaseMeta(nodecon);
@@ -2914,12 +2914,12 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
             // Handle Steps
             int s = XMLHandler.countNodes(transnode, StepMeta.XML_TAG); //$NON-NLS-1$
 
-            log.logDebug(toString(), Messages.getString("TransMeta.Log.ReadingSteps") + s + " steps..."); //$NON-NLS-1$ //$NON-NLS-2$
+            if(log.isDebug()) log.logDebug(toString(), Messages.getString("TransMeta.Log.ReadingSteps") + s + " steps..."); //$NON-NLS-1$ //$NON-NLS-2$
             for (int i = 0; i < s; i++)
             {
                 Node stepnode = XMLHandler.getSubNodeByNr(transnode, StepMeta.XML_TAG, i); //$NON-NLS-1$
 
-                log.logDebug(toString(), Messages.getString("TransMeta.Log.LookingAtStep") + i); //$NON-NLS-1$
+                if(log.isDebug()) log.logDebug(toString(), Messages.getString("TransMeta.Log.LookingAtStep") + i); //$NON-NLS-1$
                 StepMeta stepMeta = new StepMeta(stepnode, databases, counters);
                 
                 // Check if the step exists and if it's a shared step.
@@ -2970,10 +2970,10 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
             Node ordernode = XMLHandler.getSubNode(transnode, XML_TAG_ORDER); //$NON-NLS-1$
             n = XMLHandler.countNodes(ordernode, TransHopMeta.XML_TAG); //$NON-NLS-1$
 
-            log.logDebug(toString(), Messages.getString("TransMeta.Log.WeHaveHops") + n + " hops..."); //$NON-NLS-1$ //$NON-NLS-2$
+            if(log.isDebug()) log.logDebug(toString(), Messages.getString("TransMeta.Log.WeHaveHops") + n + " hops..."); //$NON-NLS-1$ //$NON-NLS-2$
             for (int i = 0; i < n; i++)
             {
-                log.logDebug(toString(), Messages.getString("TransMeta.Log.LookingAtHop") + i); //$NON-NLS-1$
+            	if(log.isDebug()) log.logDebug(toString(), Messages.getString("TransMeta.Log.LookingAtHop") + i); //$NON-NLS-1$
                 Node hopnode = XMLHandler.getSubNodeByNr(ordernode, TransHopMeta.XML_TAG, i); //$NON-NLS-1$
 
                 TransHopMeta hopinf = new TransHopMeta(hopnode, steps);
@@ -3202,10 +3202,11 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
             // Is this a slave transformation?
             //
             slaveTransformation = "Y".equalsIgnoreCase(XMLHandler.getTagValue(transnode, "slave_transformation"));
-            
-            log.logDebug(toString(), Messages.getString("TransMeta.Log.NumberOfStepsReaded") + nrSteps()); //$NON-NLS-1$
-            log.logDebug(toString(), Messages.getString("TransMeta.Log.NumberOfHopsReaded") + nrTransHops()); //$NON-NLS-1$
-
+            if(log.isDebug()) 
+            {
+            	log.logDebug(toString(), Messages.getString("TransMeta.Log.NumberOfStepsReaded") + nrSteps()); //$NON-NLS-1$
+            	log.logDebug(toString(), Messages.getString("TransMeta.Log.NumberOfHopsReaded") + nrTransHops()); //$NON-NLS-1$
+            }
             sortSteps();
         }
         catch (KettleXMLException xe)
