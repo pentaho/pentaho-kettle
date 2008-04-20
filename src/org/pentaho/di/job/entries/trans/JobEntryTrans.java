@@ -489,7 +489,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 
     		try
     		{
-                log.logDetailed(toString(), "Starting transformation...(file="+getFilename()+", name="+getName()+"), repinfo="+getDescription());
+                if(log.isDetailed()) log.logDetailed(toString(), "Starting transformation...(file="+getFilename()+", name="+getName()+"), repinfo="+getDescription());
 
                 // Set the result rows for the next one...
                 transMeta.setPreviousResult(result);

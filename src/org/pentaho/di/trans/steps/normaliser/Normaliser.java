@@ -143,7 +143,10 @@ public class Normaliser extends BaseStep implements StepInterface
 			putRow(data.outputRowMeta, outputRowData);
 		}
 
-        if (checkFeedback(linesRead)) logBasic(Messages.getString("Normaliser.Log.LineNumber")+linesRead); //$NON-NLS-1$
+        if (checkFeedback(linesRead)) 
+        {
+        	if(log.isBasic()) logBasic(Messages.getString("Normaliser.Log.LineNumber")+linesRead); //$NON-NLS-1$
+        }
 			
 		return true;
 	}

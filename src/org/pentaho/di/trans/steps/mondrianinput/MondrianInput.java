@@ -74,7 +74,7 @@ public class MondrianInput extends BaseStep implements StepInterface
     
 	public void dispose(StepMetaInterface smi, StepDataInterface sdi)
 	{
-		logBasic("Finished reading query, closing connection.");
+		if(log.isBasic()) logBasic("Finished reading query, closing connection.");
 		
 	    data.mondrianHelper.close();
 

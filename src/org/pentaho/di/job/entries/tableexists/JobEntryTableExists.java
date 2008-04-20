@@ -196,12 +196,12 @@ public class JobEntryTableExists extends JobEntryBase implements Cloneable, JobE
                 String realTablename = environmentSubstitute(tablename);
 				if (db.checkTableExists(realTablename))
 				{
-					log.logDetailed(toString(), "Table ["+realTablename+"] exists.");
+					if(log.isDetailed()) log.logDetailed(toString(), "Table ["+realTablename+"] exists.");
 					result.setResult(true);
 				}
 				else
 				{
-					log.logDetailed(toString(), "Table ["+realTablename+"] doesn't exist!");
+					if(log.isDetailed()) log.logDetailed(toString(), "Table ["+realTablename+"] doesn't exist!");
 				}
 				db.disconnect();
 			}

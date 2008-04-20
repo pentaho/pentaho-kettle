@@ -115,7 +115,10 @@ public class FilterRows extends BaseStep implements StepInterface
 		    }
 		}
 		
-        if (checkFeedback(linesRead)) logBasic(Messages.getString("FilterRows.Log.LineNumber")+linesRead); //$NON-NLS-1$
+        if (checkFeedback(linesRead)) 
+        {
+        	if(log.isBasic()) logBasic(Messages.getString("FilterRows.Log.LineNumber")+linesRead); //$NON-NLS-1$
+        }
 			
 		return true;
 	}

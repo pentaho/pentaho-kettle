@@ -307,7 +307,7 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 		result.setResult( false );
 		long filesRetrieved = 0;
 
-		log.logDetailed(toString(), "Start of SFTP job entry");
+		if(log.isDetailed()) log.logDetailed(toString(), "Start of SFTP job entry");
 
 		SFTPClient sftpclient = null;
 
@@ -324,7 +324,7 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 		{
 			// Create sftp client to host ...
 			sftpclient = new SFTPClient(InetAddress.getByName(realServerName), Const.toInt(realServerPort, 22), realUsername);
-			log.logDetailed(toString(), "Opened SFTP connection to server ["+realServerName+"] on port ["+realServerPort+"] with username ["+realUsername+"]");
+			if(log.isDetailed()) log.logDetailed(toString(), "Opened SFTP connection to server ["+realServerName+"] on port ["+realServerPort+"] with username ["+realUsername+"]");
 
 			// login to ftp host ...
 			sftpclient.login(realPassword);
@@ -335,12 +335,12 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 			if (!Const.isEmpty(realSftpDirString))
 			{
 				sftpclient.chdir(realSftpDirString);
-				log.logDetailed(toString(), "Changed to directory ["+realSftpDirString+"]");
+				if(log.isDetailed()) log.logDetailed(toString(), "Changed to directory ["+realSftpDirString+"]");
 			}
 
 			// Get all the files in the current directory...
 			String[] filelist = sftpclient.dir();
-			log.logDetailed(toString(), "Found "+filelist.length+" files in the remote directory");
+			if(log.isDetailed()) log.logDetailed(toString(), "Found "+filelist.length+" files in the remote directory");
 
 			Pattern pattern = null;
 			if (!Const.isEmpty(realWildcard))
@@ -363,7 +363,7 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 
 				if (getIt)
 				{
-					log.logDebug(toString(), "Getting file ["+filelist[i]+"] to directory ["+realTargetDirectory+"]");
+					if(log.isDebug()) log.logDebug(toString(), "Getting file ["+filelist[i]+"] to directory ["+realTargetDirectory+"]");
 
 					String targetFilename = realTargetDirectory+Const.FILE_SEPARATOR+filelist[i];
 					sftpclient.get(targetFilename, filelist[i]);
@@ -373,13 +373,13 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 					ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(targetFilename), parentJob.getJobname(), toString());
                     result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
 
-					log.logDetailed(toString(), "Transferred file ["+filelist[i]+"]");
+                    if(log.isDetailed()) log.logDetailed(toString(), "Transferred file ["+filelist[i]+"]");
 
 					// Delete the file if this is needed!
 					if (remove)
 					{
 						sftpclient.delete(filelist[i]);
-						log.logDetailed(toString(), "Deleted file ["+filelist[i]+"]");
+						if(log.isDetailed()) log.logDetailed(toString(), "Deleted file ["+filelist[i]+"]");
 					}
 				}
 			}

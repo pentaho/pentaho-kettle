@@ -73,7 +73,7 @@ public class HTTP extends BaseStep implements StepInterface
         String url = determineUrl(rowMeta, rowData);
         try
         {
-            logDetailed("Connecting to : ["+url+"]");
+            if(log.isDetailed()) logDetailed("Connecting to : ["+url+"]");
             
             // Prepare HTTP get
             // 

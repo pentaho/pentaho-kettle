@@ -390,14 +390,14 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
             boolean fromXMLFile = !Const.isEmpty(filename);
             if (fromRepository) // load from the repository...
             {
-                log.logDetailed(toString(), "Loading job from repository : ["+directory+" : "+environmentSubstitute(jobname)+"]");
+                if(log.isDetailed()) log.logDetailed(toString(), "Loading job from repository : ["+directory+" : "+environmentSubstitute(jobname)+"]");
                 jobMeta = new JobMeta(logwriter, rep, environmentSubstitute(jobname), directory);
                 jobMeta.setParentVariableSpace(parentJob);
             }
             else // Get it from the XML file
             if (fromXMLFile)
             {
-                log.logDetailed(toString(), "Loading job from XML file : ["+environmentSubstitute(filename)+"]");
+            	if(log.isDetailed()) log.logDetailed(toString(), "Loading job from XML file : ["+environmentSubstitute(filename)+"]");
                 jobMeta = new JobMeta(logwriter, environmentSubstitute(filename), rep, null);
                 jobMeta.setParentVariableSpace(parentJob);
             }
@@ -412,12 +412,12 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
             // Tell logging what job entry we are launching...
             if (fromRepository)
             {
-                log.logBasic(toString(), "Starting job, loaded from repository : ["+directory+" : "+environmentSubstitute(jobname)+"]");
+                if(log.isBasic()) log.logBasic(toString(), "Starting job, loaded from repository : ["+directory+" : "+environmentSubstitute(jobname)+"]");
             }
             else
             if (fromXMLFile)
             {
-                log.logDetailed(toString(), "Starting job, loaded from XML file : ["+environmentSubstitute(filename)+"]");
+            	if(log.isDetailed()) log.logDetailed(toString(), "Starting job, loaded from XML file : ["+environmentSubstitute(filename)+"]");
             }
 
             int iteration = 0;

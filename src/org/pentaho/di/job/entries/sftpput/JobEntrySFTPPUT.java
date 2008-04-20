@@ -305,7 +305,7 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
         Result result = previousResult;
 		result.setResult( false );
 
-		log.logDetailed(toString(), "Start of SFTP job entry");
+		if(log.isDetailed()) log.logDetailed(toString(), "Start of SFTP job entry");
 
 		SFTPClient sftpclient = null;
 
@@ -322,7 +322,7 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 		{
 			// Create sftp client to host ...
 			sftpclient = new SFTPClient(InetAddress.getByName(realServerName), Const.toInt(realServerPort, 22), realUsername);
-			log.logDetailed(toString(), "Opened SFTP connection to server ["+realServerName+"] on port ["+realServerPort+"] with username ["+realUsername+"]");
+			if(log.isDetailed()) log.logDetailed(toString(), "Opened SFTP connection to server ["+realServerName+"] on port ["+realServerPort+"] with username ["+realUsername+"]");
 
 			// login to ftp host ...
 			sftpclient.login(realPassword);
@@ -333,7 +333,7 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 			if (!Const.isEmpty(realSftpDirString))
 			{
 				sftpclient.chdir(realSftpDirString);
-				log.logDetailed(toString(), "Changed to directory ["+realSftpDirString+"]");
+				if(log.isDetailed()) log.logDetailed(toString(), "Changed to directory ["+realSftpDirString+"]");
 			} // end if
 
 			// Get all the files in the local directory...
@@ -360,7 +360,7 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 			myFileList.toArray(filelist);
 
 
-			log.logDetailed(toString(), "Found "+filelist.length+" files in the local directory");
+			if(log.isDetailed()) log.logDetailed(toString(), "Found "+filelist.length+" files in the local directory");
 
 
 			Pattern pattern = null;
@@ -384,7 +384,7 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 
 				if (getIt)
 				{
-					log.logDebug(toString(), "putting file ["+filelist[i]+"] to directory ["+realSftpDirString+"]");
+					if(log.isDebug()) log.logDebug(toString(), "putting file ["+filelist[i]+"] to directory ["+realSftpDirString+"]");
 
 					String localFilename = realLocalDirectory+Const.FILE_SEPARATOR+filelist[i];
 					sftpclient.put(localFilename, filelist[i]);
@@ -393,13 +393,13 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 					// ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, new File(localFilename), parentJob.getJobname(), toString());
                     // result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
 
-					log.logDetailed(toString(), "Transfered file ["+filelist[i]+"]");
+					if(log.isDetailed()) log.logDetailed(toString(), "Transfered file ["+filelist[i]+"]");
 
 					// Delete the file if this is needed!
 					if (remove)
 					{
 						new File(localFilename).delete();
-						log.logDetailed(toString(), "deleted local file ["+localFilename+"]");
+						if(log.isDetailed()) log.logDetailed(toString(), "deleted local file ["+localFilename+"]");
 					}
 				}
 			} // end for

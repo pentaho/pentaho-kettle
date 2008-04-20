@@ -435,7 +435,7 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
         String realUploadFilename = environmentSubstitute(uploadFilename);
         if (!Const.isEmpty(realUploadFilename))
         {
-          log.logDetailed(toString(), "Start sending content of file [" + realUploadFilename + "] to server.");
+          if(log.isDetailed()) log.logDetailed(toString(), "Start sending content of file [" + realUploadFilename + "] to server.");
 
           connection.setDoOutput(true);
 
@@ -456,10 +456,10 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
           fileStream.close();
           fileStream = null;
 
-          log.logDetailed(toString(), "Finished sending content to server.");
+          if(log.isDetailed()) log.logDetailed(toString(), "Finished sending content to server.");
         }
 
-        log.logDetailed(toString(), "Start reading reply from webserver.");
+        if(log.isDetailed()) log.logDetailed(toString(), "Start reading reply from webserver.");
 
         // Read the result from the server...
         input = server.openStream();

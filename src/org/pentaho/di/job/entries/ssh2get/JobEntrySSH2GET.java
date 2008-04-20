@@ -899,11 +899,14 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 						}
 						
 						/********************************RESULT ********************/
-						if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobSSH2GET.Log.Result.JobEntryEnd1"));
-						if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobSSH2GET.Log.Result.TotalFiles",""+nbfilestoget));
-						if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobSSH2GET.Log.Result.TotalFilesPut",""+nbgot));
-						if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobSSH2GET.Log.Result.TotalFilesError",""+nbrerror));
-						if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobSSH2GET.Log.Result.JobEntryEnd2"));
+						if(log.isDetailed()) 
+						{
+							log.logDetailed(toString(), Messages.getString("JobSSH2GET.Log.Result.JobEntryEnd1"));
+						    log.logDetailed(toString(), Messages.getString("JobSSH2GET.Log.Result.TotalFiles",""+nbfilestoget));
+							log.logDetailed(toString(), Messages.getString("JobSSH2GET.Log.Result.TotalFilesPut",""+nbgot));
+							log.logDetailed(toString(), Messages.getString("JobSSH2GET.Log.Result.TotalFilesError",""+nbrerror));
+							log.logDetailed(toString(), Messages.getString("JobSSH2GET.Log.Result.JobEntryEnd2"));
+						}
 						if(nbrerror==0) result.setResult(true);
 						/********************************RESULT ********************/
 					}

@@ -629,13 +629,14 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 			new Thread(outputLogger).start();
 
 			proc.waitFor();
-			log.logDetailed(toString(), "Command " + command.toString() + " has finished");
+			if(log.isDetailed()) log.logDetailed(toString(), "Command " + command.toString() + " has finished");
 
 			// What's the exit status?
 			result.setExitStatus(proc.exitValue());
 			if (result.getExitStatus() != 0)
 			{
-				log.logDetailed(toString(), "Exit status of shell [" + environmentSubstitute(getFilename())
+				if(log.isDetailed()) 
+					log.logDetailed(toString(), "Exit status of shell [" + environmentSubstitute(getFilename())
 						+ "] was " + result.getExitStatus());
 				result.setNrErrors(1);
 			}

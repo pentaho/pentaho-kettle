@@ -132,7 +132,7 @@ public class XMLInputSax extends BaseStep implements StepInterface
 		{
 			if (data.filenr >= data.files.length) // finished processing!
 			{
-				logDetailed("Finished processing files.");
+				if(log.isDetailed()) logDetailed("Finished processing files.");
 				return false;
 			}
 
@@ -140,7 +140,7 @@ public class XMLInputSax extends BaseStep implements StepInterface
 			data.last_file = (data.filenr == data.files.length - 1);
 			data.filename = environmentSubstitute(data.files[data.filenr]);
 
-			logBasic("Opening file: " + data.filename);
+			if(log.isBasic()) logBasic("Opening file: " + data.filename);
 
 			// Move file pointer ahead!
 			data.filenr++;

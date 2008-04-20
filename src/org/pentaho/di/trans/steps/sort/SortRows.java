@@ -229,7 +229,7 @@ public class SortRows extends BaseStep implements StepInterface
 		// Open all files at once and read one row from each file...
 		if (data.files.size()>0 && ( data.dis.size()==0 || data.fis.size()==0 ))
 		{
-			logBasic("Opening "+data.files.size()+" tmp-files...");
+			if(log.isBasic()) logBasic("Opening "+data.files.size()+" tmp-files...");
 		
 			try
 			{
@@ -451,7 +451,10 @@ public class SortRows extends BaseStep implements StepInterface
 			return false;
 		}
 
-        if (checkFeedback(linesRead)) logBasic("Linenr "+linesRead);
+        if (checkFeedback(linesRead)) 
+        {
+        	if(log.isBasic()) logBasic("Linenr "+linesRead);
+        }
 
 		return true;
 	}
@@ -551,7 +554,7 @@ public class SortRows extends BaseStep implements StepInterface
             	nrConversions+=valueMeta.getNumberOfBinaryStringConversions();
             	valueMeta.setNumberOfBinaryStringConversions(0L);
             }
-            logDetailed("The number of binary string to data type conversions done in this sort block is "+nrConversions);
+            if(log.isDetailed()) logDetailed("The number of binary string to data type conversions done in this sort block is "+nrConversions);
 		}
 		if (log.isDetailed()) logDetailed("QuickSort algorithm has finished.");
 	}
