@@ -21,6 +21,7 @@
     <locale> <code>pt_BR</code> <language>Portuguese</language> <country>Brazil</country> </locale>
     <locale> <code>pt_PT</code> <language>Portuguese</language> <country>Portugal</country> </locale>
     <locale> <code>ja_JP</code> <language>Japanese</language> <country>Japan</country> </locale>
+    <locale> <code>ko_KR</code> <language>Korean</language> <country>Korea</country> </locale>
   </locale-list>
   
   <files-to-avoid>
