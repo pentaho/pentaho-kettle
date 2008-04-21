@@ -2714,6 +2714,19 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     {
         this(fname, true);
     }
+    
+    /**
+     * Parse a file containing the XML that describes the transformation.
+     * No default connections are loaded since no repository is available at this time.
+     * Since the filename is set, internal variables are being set that relate to this.
+     *
+     * @param fname The filename
+     * @param parentVariableSpace
+     */
+    public TransMeta(String fname, VariableSpace parentVariableSpace) throws KettleXMLException
+    {
+        this(fname, null, true, parentVariableSpace);
+    }
 
     /**
      * Parse a file containing the XML that describes the transformation.
@@ -2731,7 +2744,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      * Parse a file containing the XML that describes the transformation.
      *
      * @param fname The filename
-     * @param rep The repository to load the default set of connections from, null if no repository is avaailable
+     * @param rep The repository to load the default set of connections from, null if no repository is available
       */
     public TransMeta(String fname, Repository rep) throws KettleXMLException
     {
@@ -2742,10 +2755,23 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      * Parse a file containing the XML that describes the transformation.
      *
      * @param fname The filename
-     * @param rep The repository to load the default set of connections from, null if no repository is avaailable
+     * @param rep The repository to load the default set of connections from, null if no repository is available
      * @param setInternalVariables true if you want to set the internal variables based on this transformation information
       */
     public TransMeta(String fname, Repository rep, boolean setInternalVariables ) throws KettleXMLException
+    {
+    	this(fname, rep, setInternalVariables, null);
+    }
+    
+    /**
+     * Parse a file containing the XML that describes the transformation.
+     *
+     * @param fname The filename
+     * @param rep The repository to load the default set of connections from, null if no repository is available
+     * @param setInternalVariables true if you want to set the internal variables based on this transformation information
+     * @param parentVariableSpace the parent variable space to use during TransMeta construction
+      */
+    public TransMeta(String fname, Repository rep, boolean setInternalVariables, VariableSpace parentVariableSpace ) throws KettleXMLException
     {
         // OK, try to load using the VFS stuff...
         Document doc=null;
@@ -2768,7 +2794,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
             Node transnode = XMLHandler.getSubNode(doc, XML_TAG); //$NON-NLS-1$
 
             // Load from this node...
-            loadXML(transnode, rep, setInternalVariables);
+            loadXML(transnode, rep, setInternalVariables, parentVariableSpace);
 
             setFilename(fname);
         }
@@ -2777,31 +2803,6 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
             throw new KettleXMLException(Messages.getString("TransMeta.Exception.ErrorOpeningOrValidatingTheXMLFile", fname)); //$NON-NLS-1$
         }
     }
-
-    /*
-     * Load the transformation from an XML node
-     *
-     * @param transnode The XML node to parse
-     * @throws KettleXMLException
-     *
-    public TransMeta(Node transnode) throws KettleXMLException
-    {
-        loadXML(transnode);
-    }
-    */
-
-    /*
-     * Parse a file containing the XML that describes the transformation.
-     * (no repository is available to load default list of database connections from)
-     *
-     * @param transnode The XML node to load from
-     * @throws KettleXMLException
-     *
-    private void loadXML(Node transnode) throws KettleXMLException
-    {
-        loadXML(transnode, null, false);
-    }
-    */
     
     /**
      * Parse a file containing the XML that describes the transformation.
@@ -2815,7 +2816,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     {
     	loadXML(transnode, rep, false);
     }
-
+    
     /**
      * Parse a file containing the XML that describes the transformation.
      *
@@ -2826,10 +2827,28 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      */
     public void loadXML(Node transnode, Repository rep, boolean setInternalVariables ) throws KettleXMLException
     {
+    	loadXML(transnode, rep, setInternalVariables, null);
+    }
+
+    /**
+     * Parse a file containing the XML that describes the transformation.
+     *
+     * @param transnode The XML node to load from
+     * @param rep The repository to load the default list of database connections from (null if no repository is available)
+     * @param setInternalVariables true if you want to set the internal variables based on this transformation information
+     * @param parentVariableSpace the parent variable space to use during TransMeta construction
+     * @throws KettleXMLException
+     */
+    public void loadXML(Node transnode, Repository rep, boolean setInternalVariables, VariableSpace parentVariableSpace ) throws KettleXMLException
+    {
         Props props = null;
         if (Props.isInitialized())
         {
             props=Props.getInstance();
+        }
+        
+        if (parentVariableSpace!=null) {
+        	initializeVariablesFrom(parentVariableSpace);
         }
         
         try
@@ -3233,7 +3252,10 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         // Extract the shared steps, connections, etc. using the SharedObjects class
         //
         String soFile = environmentSubstitute(sharedObjectsFile);
-        SharedObjects sharedObjects = new SharedObjects(soFile); 
+        SharedObjects sharedObjects = new SharedObjects(soFile);
+        if (sharedObjects.getObjectsMap().isEmpty()) {
+        	log.logDetailed(toString(), Messages.getString("TransMeta.Log.EmptySharedObjectsFile", soFile));
+        }
         
         // First read the databases...
         // We read databases & slaves first because there might be dependencies that need to be resolved.
