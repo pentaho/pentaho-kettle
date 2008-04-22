@@ -76,17 +76,27 @@ public String open() {
 
     XulDomContainer container = null;
     try {
-      container = new SwtXulLoader().loadXul(doc);
+      SwtXulLoader loader = new SwtXulLoader();
+      loader.register("VARIABLETEXTBOX", "org.pentaho.di.ui.core.database.dialog.tags.ExtTextbox");
+      container = loader.loadXul(doc);
+
+      container.addEventHandler("dataHandler", DataOverrideHandler.class.getName());
+
       dataHandler = container.getEventHandler("dataHandler");
       if (databaseMeta != null) {
         dataHandler.setData(databaseMeta);
       }
-    } catch (Exception e) {
-		new ErrorDialog(parentShell, Messages.getString("XulDatabaseDialog.Error.Titel"), Messages.getString("XulDatabaseDialog.Error.LoadXul"), e);
-		return null;
+      
+      ((DataOverrideHandler) container.getEventHandler("dataHandler")).setDatabases(databases);
+      ((DataOverrideHandler) container.getEventHandler("dataHandler")).getControls();
+
+    } catch (XulException e1) {
+      e1.printStackTrace();
     }
 
     try {
+    // Inject the button panel that contains the "Feature List" and "Explore" buttons
+
         XulComponent boxElement = container.getDocumentRoot().getElementById("test-button-box");
         XulComponent parentElement = boxElement.getParent();
 
@@ -100,8 +110,6 @@ public String open() {
 		XulComponent newBox = fragmentContainer.getDocumentRoot().getFirstChild();
 		parentElement.replaceChild(boxElement, newBox);
 		  
-		container.addEventHandler("featureHandler", DataOverrideHandler.class.getName());
-		((DataOverrideHandler)container.getEventHandler("featureHandler")).setDatabases(databases);
       
     } catch (XulException e) {
 		new ErrorDialog(parentShell, Messages.getString("XulDatabaseDialog.Error.Titel"), Messages.getString("XulDatabaseDialog.Error.HandleXul"), e);
@@ -112,7 +120,7 @@ public String open() {
         XulWindow dialog = (XulWindow) container.getDocumentRoot().getRootElement();
         shell = (Shell)dialog.getManagedObject();
         shell.setParent(parentShell);
-        props.setLook(shell);
+    // props.setLook(shell);
         shell.setImage(GUIResource.getInstance().getImageConnection());
         
         dialog.open();
