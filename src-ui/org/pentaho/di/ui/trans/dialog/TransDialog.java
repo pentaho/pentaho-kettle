@@ -1776,7 +1776,22 @@ public class TransDialog extends Dialog
 		// Performance monitoring tab:
 		//
 		transMeta.setCapturingStepPerformanceSnapShots(wEnableStepPerfMonitor.getSelection());
-		transMeta.setStepPerformanceCapturingDelay(Long.parseLong(wEnableStepPerfInterval.getText()));
+
+    try
+    {
+      transMeta.setStepPerformanceCapturingDelay(Long.parseLong(wEnableStepPerfInterval.getText()));
+    }
+    catch(Exception e)
+    {
+      MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
+      mb.setText(Messages.getString("TransDialog.InvalidStepPerfIntervalNumber.DialogTitle")); //$NON-NLS-1$
+      mb.setMessage(Messages.getString("TransDialog.InvalidStepPerfIntervalNumber.DialogMessage")); //$NON-NLS-1$
+      mb.open();
+      wEnableStepPerfInterval.setFocus();
+      wEnableStepPerfInterval.selectAll();
+      OK=false;
+    }
+
 
         // Also get the partition schemas...
         applySchema(); // get last changes too...
