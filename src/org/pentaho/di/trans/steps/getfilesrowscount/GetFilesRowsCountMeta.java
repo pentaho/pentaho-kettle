@@ -47,6 +47,8 @@ import org.pentaho.di.core.fileinput.FileInputList;
 
 public class GetFilesRowsCountMeta extends BaseStepMeta implements StepMetaInterface
 {	
+	public static final String DEFAULT_ROWSCOUNT_FIELDNAME = "rowscount";
+
 	/** Array of filenames */
 	private  String  fileName[]; 
 
@@ -379,7 +381,7 @@ public class GetFilesRowsCountMeta extends BaseStepMeta implements StepMetaInter
 			r.addValueMeta(v);
 		}
 	}
-	 
+		 
 	public void readRep(Repository rep, long id_step, List<DatabaseMeta> databases, Map<String, Counter> counters)
 	throws KettleException
 	{

@@ -52,7 +52,6 @@ public class GetFilesRowsCount extends BaseStep implements StepInterface
 
 	private Object[] getOneRow() throws KettleException
 	{
-
 		if (!openNextFile()) return null;
 			
 		// Build an empty row based on the meta-data		  
@@ -153,6 +152,8 @@ public class GetFilesRowsCount extends BaseStep implements StepInterface
 	}
 	private boolean openNextFile()
 	{
+		if (data.last_file) return false; // Done!
+
 		try
 		{
 			if(!meta.isFileField())

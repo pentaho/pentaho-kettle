@@ -973,7 +973,7 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
 		if (in.getRowsCountFieldName()!=null) 
 			wRowsCountField.setText(in.getRowsCountFieldName());
 		else
-			wRowsCountField.setText("rowscount");
+			wRowsCountField.setText(GetFilesRowsCountMeta.DEFAULT_ROWSCOUNT_FIELDNAME);
 
 		if (in.getRowSeparatorFormat()!=null)
 		{
