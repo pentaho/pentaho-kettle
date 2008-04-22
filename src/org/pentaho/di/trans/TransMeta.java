@@ -2683,6 +2683,19 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
       */
     public TransMeta(String fname, Repository rep, boolean setInternalVariables ) throws KettleXMLException
     {
+    	this(fname, rep, setInternalVariables, null);
+    }
+    
+    /**
+     * Parse a file containing the XML that describes the transformation.
+     *
+     * @param fname The filename
+     * @param rep The repository to load the default set of connections from, null if no repository is available
+     * @param setInternalVariables true if you want to set the internal variables based on this transformation information
+     * @param parentVariableSpace the parent variable space to use during TransMeta construction
+      */
+    public TransMeta(String fname, Repository rep, boolean setInternalVariables, VariableSpace parentVariableSpace ) throws KettleXMLException
+    {
         // OK, try to load using the VFS stuff...
         Document doc=null;
         try
@@ -2704,7 +2717,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
             Node transnode = XMLHandler.getSubNode(doc, XML_TAG); //$NON-NLS-1$
 
             // Load from this node...
-            loadXML(transnode, rep, setInternalVariables);
+            loadXML(transnode, rep, setInternalVariables, parentVariableSpace);
 
             setFilename(fname);
         }
@@ -2762,10 +2775,28 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      */
     public void loadXML(Node transnode, Repository rep, boolean setInternalVariables ) throws KettleXMLException
     {
+    	loadXML(transnode, rep, setInternalVariables, null);
+    }
+    
+    /**
+     * Parse a file containing the XML that describes the transformation.
+     *
+     * @param transnode The XML node to load from
+     * @param rep The repository to load the default list of database connections from (null if no repository is available)
+     * @param setInternalVariables true if you want to set the internal variables based on this transformation information
+     * @param parentVariableSpace the parent variable space to use during TransMeta construction
+     * @throws KettleXMLException
+     */
+    public void loadXML(Node transnode, Repository rep, boolean setInternalVariables, VariableSpace parentVariableSpace ) throws KettleXMLException
+    {
         Props props = null;
         if (Props.isInitialized())
         {
             props=Props.getInstance();
+        }
+        
+        if (parentVariableSpace!=null) {
+        	initializeVariablesFrom(parentVariableSpace);
         }
         
         try

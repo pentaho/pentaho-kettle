@@ -743,7 +743,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 	        {
 	        	String filename = environmentSubstitute(getFilename());
 	            log.logBasic(toString(), "Loading transformation from XML file ["+filename+"]");
-	            transMeta = new TransMeta(filename);
+	            transMeta = new TransMeta(filename, null, true, this);
 	            transMeta.copyVariablesFrom(this);
 	        }
 	        else

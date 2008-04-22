@@ -25,7 +25,6 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import org.apache.commons.vfs.FileSystemException;
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.PDIClassLoader;
 import org.pentaho.di.core.config.ConfigManager;
 import org.pentaho.di.core.config.KettleConfig;

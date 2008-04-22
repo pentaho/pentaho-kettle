@@ -1170,9 +1170,8 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 		redraw();
 	}
 
-	protected void setMenu(int x, int y) 
+	protected synchronized void setMenu(int x, int y) 
 	{
-
         currentMouseX = x;
         currentMouseY = y;
 

@@ -1627,7 +1627,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
      * @param x X-coordinate on screen
      * @param y Y-coordinate on screen
      */
-    private void setMenu(int x, int y)
+    private synchronized void setMenu(int x, int y)
     {
     	try
     	{
