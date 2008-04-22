@@ -55,7 +55,6 @@ import org.pentaho.di.ui.core.widget.LabelTextVar;
 import org.pentaho.di.ui.job.dialog.JobDialog;
 import org.pentaho.di.ui.job.entry.JobEntryDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.ui.trans.steps.textfileinput.VariableButtonListenerFactory;
 
 
 /**

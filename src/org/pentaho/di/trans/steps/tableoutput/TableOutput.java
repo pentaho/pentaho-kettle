@@ -11,9 +11,11 @@
  
 package org.pentaho.di.trans.steps.tableoutput;
 
+import java.sql.BatchUpdateException;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -74,10 +76,9 @@ public class TableOutput extends BaseStep implements StepInterface
 		try
 		{
 			Object[] outputRowData = writeToTable(getInputRowMeta(), r);
-            
             if (outputRowData!=null)
             {
-                putRow(data.outputRowMeta, outputRowData ); // in case we want it go further...
+                putRow(data.outputRowMeta, outputRowData); // in case we want it go further...
                 linesOutput++;
             }
             
@@ -88,7 +89,7 @@ public class TableOutput extends BaseStep implements StepInterface
 		}
 		catch(KettleException e)
 		{
-			logError("Because of an error, this step can't continue: "+e.getMessage());
+			logError("Because of an error, this step can't continue: ", e);
 			setErrors(1);
 			stopAll();
 			setOutputDone();  // signal end to receiver(s)
@@ -100,7 +101,6 @@ public class TableOutput extends BaseStep implements StepInterface
 
 	private Object[] writeToTable(RowMetaInterface rowMeta, Object[] r) throws KettleException
 	{
-        Object[] outputRowData = r; // just return the input
         
 		if (r==null) // Stop: last line or error encountered 
 		{
@@ -109,6 +109,8 @@ public class TableOutput extends BaseStep implements StepInterface
 		}
 
         PreparedStatement insertStatement = null;
+        Object[] insertRowData; 
+        Object[] outputRowData = r;
         
         String tableName = null;
         
@@ -140,8 +142,13 @@ public class TableOutput extends BaseStep implements StepInterface
             tableName = rowMeta.getString(r, data.indexOfTableNameField);
             if ( !meta.isTableNameInTable() ) {
             	// If the name of the table should not be inserted itself, remove the table name
-            	// from the input row data as well.
-            	r = RowDataUtil.removeItem(r, data.indexOfTableNameField);
+            	// from the input row data as well.  This forcibly creates a copy of r
+            	//
+            	insertRowData = RowDataUtil.removeItem(rowMeta.cloneRow(r), data.indexOfTableNameField);
+            }
+            else 
+            {
+                insertRowData = r;
             }
         }
         else
@@ -177,19 +184,21 @@ public class TableOutput extends BaseStep implements StepInterface
             
             Object partitioningValueData = rowMeta.getDate(r, data.indexOfPartitioningField); 
             tableName=environmentSubstitute(meta.getTablename())+"_"+data.dateFormater.format((Date)partitioningValueData);
+            insertRowData = r;
         }
         else
         {
             tableName  = data.tableName;
+            insertRowData = r;
         }
         
         if (Const.isEmpty(tableName))
         {
             throw new KettleStepException("The tablename is not defined (empty)");
         }
-          
-        String schemaTable = data.db.getDatabaseMeta().getQuotedSchemaTableCombination(meta.getSchemaName(), tableName);
-        insertStatement = (PreparedStatement) data.preparedStatements.get(schemaTable);
+        
+        
+        insertStatement = (PreparedStatement) data.preparedStatements.get(tableName);
         if (insertStatement==null)
         {
             String sql = data.db.getInsertStatement(
@@ -198,14 +207,88 @@ public class TableOutput extends BaseStep implements StepInterface
                                   data.insertRowMeta);
             if (log.isDetailed()) logDetailed("Prepared statement : "+sql);
             insertStatement = data.db.prepareSQL(sql, meta.isReturningGeneratedKeys());
-            data.preparedStatements.put(schemaTable, insertStatement);
+            data.preparedStatements.put(tableName, insertStatement);
         }
         
 		try
 		{
-			data.db.setValues(data.insertRowMeta, r, insertStatement);
-			rowIsSafe = data.db.insertRow(insertStatement, data.batchMode);
+			// For PG & GP, we add a savepoint before the row.
+			// Then revert to the savepoint afterwards... (not a transaction, so hopefully still fast)
+			//
+			if (data.specialErrorHandling) {
+				data.savepoint = data.db.setSavepoint();
+			}
+			data.db.setValues(data.insertRowMeta, insertRowData, insertStatement);
+			data.db.insertRow(insertStatement, data.batchMode);
+			if (log.isRowLevel()) {
+				logRowlevel("Written row: "+data.insertRowMeta.getString(insertRowData));
+			}
 			
+			// Get a commit counter per prepared statement to keep track of separate tables, etc. 
+		    //
+			Integer commitCounter = data.commitCounterMap.get(tableName);
+		    if (commitCounter==null) commitCounter=Integer.valueOf(0);
+		    data.commitCounterMap.put(tableName, Integer.valueOf(commitCounter.intValue()+1));
+
+		    // Release the savepoint if needed
+		    //
+			if (data.specialErrorHandling) {
+				data.db.releaseSavepoint(data.savepoint);
+			}
+			
+			// Perform a commit if needed
+			//
+			if (commitCounter>0 && (commitCounter%meta.getCommitSize())==0) 
+			{
+				if (data.batchMode)
+				{
+					try {
+		                insertStatement.executeBatch();
+						data.db.commit();
+		                insertStatement.clearBatch();
+					}
+					catch(BatchUpdateException ex) {
+						KettleDatabaseBatchException kdbe = new KettleDatabaseBatchException("Error updating batch", ex);
+					    kdbe.setUpdateCounts(ex.getUpdateCounts());
+			            List<Exception> exceptions = new ArrayList<Exception>();
+			            
+			            // 'seed' the loop with the root exception
+			            SQLException nextException = ex;
+			            do 
+			            {
+			                exceptions.add(nextException);
+			                // while current exception has next exception, add to list
+			            } 
+			            while ((nextException = nextException.getNextException())!=null);            
+			            kdbe.setExceptionsList(exceptions);
+					    throw kdbe;
+					}
+					catch(SQLException ex) 
+					{
+					    // log.logError(toString(), Const.getStackTracker(ex));
+						throw new KettleDatabaseException("Error inserting row", ex);
+					}
+					catch(Exception ex)
+					{
+					    // System.out.println("Unexpected exception in ["+debug+"] : "+e.getMessage());
+						throw new KettleDatabaseException("Unexpected error inserting row", ex);
+					}
+				}
+				else
+				{
+				    //  insertRow normal commit
+	                data.db.commit();
+				}
+				// Clear the batch/commit counter...
+				//
+				data.commitCounterMap.put(tableName, Integer.valueOf(0));
+	            rowIsSafe=true;
+			}
+			else
+			{
+				rowIsSafe=false;
+			}
+
 			// See if we need to get back the keys as well...
 			if (meta.isReturningGeneratedKeys())
 			{
@@ -237,7 +320,7 @@ public class TableOutput extends BaseStep implements StepInterface
             if (getStepMeta().isDoingErrorHandling())
             {
                 data.db.clearBatch(insertStatement);
-                data.db.commit();
+                data.db.commit(true);
             }
             else
             {
@@ -258,6 +341,16 @@ public class TableOutput extends BaseStep implements StepInterface
 		{
             if (getStepMeta().isDoingErrorHandling())
             {
+    			if (log.isRowLevel()) {
+    				logRowlevel("Written row to error handling : "+getInputRowMeta().getString(r));
+    			}
+    			
+            	if (data.specialErrorHandling) {
+            		data.db.rollback(data.savepoint);
+            		data.db.releaseSavepoint(data.savepoint);
+            		// data.db.commit(true); // force a commit on the connection too.
+            	}
+            	
                 sendToErrorRow = true;
                 errorMessage = dbe.toString();
             }
@@ -305,7 +398,7 @@ public class TableOutput extends BaseStep implements StepInterface
                 else
                 {
                     // Simply add this row to the error row
-                    putError(data.outputRowMeta, outputRowData, 1L, errorMessage, null, "TOP001");
+                    putError(rowMeta, r, 1L, errorMessage, null, "TOP001");
                     outputRowData=null;
                 }
             }
@@ -331,8 +424,8 @@ public class TableOutput extends BaseStep implements StepInterface
         {
             if (sendToErrorRow)
             {
-                putError(data.outputRowMeta, outputRowData, 1, errorMessage, null, "TOP001");
-                outputRowData=null;
+                putError(rowMeta, r, 1, errorMessage, null, "TOP001");
+                insertRowData=null;
             }
         }
         
@@ -394,19 +487,23 @@ public class TableOutput extends BaseStep implements StepInterface
 		{
 			try
 			{
+				data.databaseMeta = meta.getDatabaseMeta();
+				
                 data.batchMode = meta.getCommitSize()>0 && meta.useBatchUpdate();
                 
                 // Batch updates are not supported on PostgreSQL (and look-a-likes) together with error handling (PDI-366)
                 //
-                if (data.batchMode && getStepMeta().isDoingErrorHandling() && 
-                		( meta.getDatabaseMeta().getDatabaseType()==DatabaseMeta.TYPE_DATABASE_POSTGRES || 
-                		  meta.getDatabaseMeta().getDatabaseType()==DatabaseMeta.TYPE_DATABASE_GREENPLUM ) )
+                data.specialErrorHandling = getStepMeta().isDoingErrorHandling() && 
+	        		( meta.getDatabaseMeta().getDatabaseType()==DatabaseMeta.TYPE_DATABASE_POSTGRES || 
+	              		  meta.getDatabaseMeta().getDatabaseType()==DatabaseMeta.TYPE_DATABASE_GREENPLUM );
+                
+                if (data.batchMode && data.specialErrorHandling )
                 {
                 	data.batchMode = false;
                 	if(log.isBasic()) log.logBasic(toString(), Messages.getString("TableOutput.Log.BatchModeDisabled"));
                 }
-                
-				data.db=new Database(meta.getDatabaseMeta());
+
+                data.db=new Database(meta.getDatabaseMeta());
 				data.db.shareVariablesWith(this);
 				
                 if (getTransMeta().isUsingUniqueConnections())
@@ -423,14 +520,13 @@ public class TableOutput extends BaseStep implements StepInterface
 				
                 if (!meta.isPartitioningEnabled() && !meta.isTableNameInField())
                 {    
-                	data.tableName = environmentSubstitute(meta.getTablename());                
+                	data.tableName = meta.getDatabaseMeta().getQuotedSchemaTableCombination(environmentSubstitute(meta.getSchemaName()), environmentSubstitute(meta.getTablename()));                
                 	
                     // Only the first one truncates in a non-partitioned step copy
                     //
                     if (meta.truncateTable() && ( ( getCopy()==0 && getUniqueStepNrAcrossSlaves()==0 ) || !Const.isEmpty(getPartitionID())) )
     				{                	
-    					data.db.truncateTable(environmentSubstitute(meta.getSchemaName()), 
-    							              data.tableName);
+    					data.db.truncateTable(environmentSubstitute(meta.getSchemaName()), environmentSubstitute(meta.getTablename()));
     				}
                 }
                 
@@ -453,9 +549,18 @@ public class TableOutput extends BaseStep implements StepInterface
 
 		try
 		{
-            for (PreparedStatement insertStatement : data.preparedStatements.values())
+            for (String schemaTable : data.preparedStatements.keySet())
             {
-                data.db.insertFinished(insertStatement, data.batchMode);
+            	// Get a commit counter per prepared statement to keep track of separate tables, etc. 
+    		    //
+    			Integer batchCounter = data.commitCounterMap.get(schemaTable);
+    		    if (batchCounter==null) {
+    		    	batchCounter = 0;
+    		    }
+    		    
+    		    PreparedStatement insertStatement = data.preparedStatements.get(schemaTable);
+    		    
+                data.db.emptyAndCommit(insertStatement, data.batchMode, batchCounter);
             }
             for (int i=0;i<data.batchBuffer.size();i++)
             {
@@ -470,7 +575,7 @@ public class TableOutput extends BaseStep implements StepInterface
 		{
             if (getStepMeta().isDoingErrorHandling())
             {
-                // Right at the back we are expesriencing a batch commit problem...
+                // Right at the back we are experiencing a batch commit problem...
                 // OK, we have the numbers...
                 try
                 {

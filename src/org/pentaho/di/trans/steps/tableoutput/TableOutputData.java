@@ -13,13 +13,16 @@
 package org.pentaho.di.trans.steps.tableoutput;
 
 import java.sql.PreparedStatement;
+import java.sql.Savepoint;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
 import org.pentaho.di.core.database.Database;
+import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
@@ -55,6 +58,12 @@ public class TableOutputData extends BaseStepData implements StepDataInterface
     public boolean sendToErrorRow;
     public RowMetaInterface outputRowMeta;
     public RowMetaInterface insertRowMeta;
+	public boolean specialErrorHandling;
+	public Savepoint savepoint;
+
+	public DatabaseMeta databaseMeta;
+	
+	public Map<String, Integer> commitCounterMap;
     
 	public TableOutputData()
 	{
@@ -70,6 +79,6 @@ public class TableOutputData extends BaseStepData implements StepDataInterface
         indexOfTableNameField = -1;
         
         batchBuffer = new ArrayList<Object[]>();
+        commitCounterMap = new HashMap<String, Integer>();
 	}
-
 }

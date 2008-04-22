@@ -2564,7 +2564,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		addSpoonSlave(slaveServer);
 	}
 
-	private void setMenu(Tree tree)
+	private synchronized void setMenu(Tree tree)
 	{
 		TreeSelection[] objects = getTreeObjects(tree);
         if (objects.length!=1) return; // not yet supported, we can do this later when the OSX bug goes away

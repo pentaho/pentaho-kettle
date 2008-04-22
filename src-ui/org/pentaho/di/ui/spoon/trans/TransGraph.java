@@ -57,13 +57,13 @@ import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Canvas;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MessageBox;
-import org.eclipse.swt.widgets.Scale;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
@@ -253,8 +253,8 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 	public TransGridDelegate transGridDelegate; 
 	public TransHistoryDelegate transHistoryDelegate; 
 	public TransPerfDelegate transPerfDelegate;
-	private Label zoomLabel;
-	private Scale zoomScale; 
+	private Combo zoomLabel;
+	// private Scale zoomScale; 
 	
 	public void setCurrentNote( NotePadMeta ni ) {
 		this.ni = ni;
@@ -1096,54 +1096,25 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 			toolbar = XulHelper.createToolbar(XUL_FILE_TRANS_TOOLBAR, TransGraph.this, TransGraph.this, new XulMessages());
 			ToolBar toolBar = (ToolBar) toolbar.getNativeObject();
 			toolBar.pack();
-			int h = toolBar.getBounds().height;
 			
 			// Hack alert : more XUL limitations...
 			//
 			ToolItem sep = new ToolItem(toolBar, SWT.SEPARATOR);
 			
-			Composite zoom = new Composite(toolBar, SWT.LEFT);
-			zoom.setLayout(new FormLayout());
-			
-			zoomScale = new Scale(zoom, SWT.HORIZONTAL);
-			zoomScale.setMinimum(0);
-			zoomScale.setMaximum(TransPainter.magnifications.length-1);
-			zoomScale.setIncrement(1);
-			zoomScale.setPageIncrement(1);
-			zoomScale.setSelection(magnificationIndex);
-			zoomScale.addSelectionListener(new SelectionAdapter() {
+			zoomLabel = new Combo(toolBar, SWT.READ_ONLY);
+			zoomLabel.setItems(TransPainter.magnificationDescriptions);
+			zoomLabel.addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent arg0) {
-					magnificationIndex=zoomScale.getSelection();
+					magnificationIndex=zoomLabel.getSelectionIndex();
 					magnification=TransPainter.magnifications[magnificationIndex];
 					redraw();
 				}
 			});
-			zoomScale.addKeyListener(spoon.defKeys);
-			zoomScale.setSize(150, h);
-
-			FormData fdScale = new FormData();
-			fdScale.left=new FormAttachment(0,0);
-			fdScale.right=new FormAttachment(50,0);
-			fdScale.top = new FormAttachment(0,0);
-			fdScale.bottom = new FormAttachment(100,0);
-			zoomScale.setLayoutData(fdScale);
-
-			zoomLabel = new Label(zoom, SWT.LEFT);
 			setZoomLabel();
 			zoomLabel.pack();
 			
-			
-			FormData fdLabel = new FormData();
-			fdLabel.left=new FormAttachment(50,0);
-			fdLabel.right=new FormAttachment(100,0);
-			fdLabel.top = new FormAttachment(zoomScale,0,SWT.CENTER);
-			zoomLabel.setLayoutData(fdLabel);
-
-			
-			zoom.setSize(100, h);
-			zoom.layout();
-			sep.setWidth(100);
-			sep.setControl(zoom);
+			sep.setWidth(80);
+			sep.setControl(zoomLabel);
 			toolBar.pack();
 			
 			// Add a few default key listeners
@@ -1159,8 +1130,8 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 	}
 
 	private void setZoomLabel() {
-		zoomLabel.setText(TransPainter.magnificationDescriptions[magnificationIndex]);
-		zoomScale.setSelection(magnificationIndex);
+		zoomLabel.select(magnificationIndex);
+		// zoomScale.setSelection(magnificationIndex);
 	}
 
 	public void addToolBarListeners()
@@ -1875,7 +1846,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
      * @param x X-coordinate on screen
      * @param y Y-coordinate on screen
      */
-    private void setMenu(int x, int y)
+    private synchronized void setMenu(int x, int y)
     {
     	try
     	{

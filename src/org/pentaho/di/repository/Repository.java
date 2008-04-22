@@ -3240,7 +3240,7 @@ public class Repository
 	{
 	    if (psStepAttributesInsert!=null)
 	    {
-		    database.insertFinished(psStepAttributesInsert, useBatchProcessing); // batch mode!
+		    database.emptyAndCommit(psStepAttributesInsert, useBatchProcessing, 1); // batch mode!
 			psStepAttributesInsert = null;
 	    }
 	}
@@ -3249,7 +3249,7 @@ public class Repository
     {
         if (psTransAttributesInsert!=null)
         {
-            database.insertFinished(psTransAttributesInsert, useBatchProcessing); // batch mode!
+            database.emptyAndCommit(psTransAttributesInsert, useBatchProcessing, 1); // batch mode!
             psTransAttributesInsert = null;
         }
     }

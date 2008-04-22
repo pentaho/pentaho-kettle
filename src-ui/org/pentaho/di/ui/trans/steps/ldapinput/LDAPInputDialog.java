@@ -74,7 +74,6 @@ import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.ui.trans.steps.textfileinput.VariableButtonListenerFactory;
 
 public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterface
 {

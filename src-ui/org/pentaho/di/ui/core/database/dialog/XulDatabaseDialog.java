@@ -17,7 +17,6 @@ import org.dom4j.Document;
 import org.dom4j.io.SAXReader;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.ui.xul.XulComponent;
@@ -37,7 +36,7 @@ public class XulDatabaseDialog {
 
   private String databaseName;
 
-  private PropsUI props;
+  // private PropsUI props;
 
   private java.util.List<DatabaseMeta> databases;
 
@@ -51,7 +50,7 @@ public class XulDatabaseDialog {
     if(dbMeta != null){
       databaseName = databaseMeta.getName();
     }
-    props = PropsUI.getInstance();
+    // props = PropsUI.getInstance();
     databases = null;
   }
 

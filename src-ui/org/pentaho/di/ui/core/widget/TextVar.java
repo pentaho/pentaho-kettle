@@ -28,7 +28,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.variables.VariableSpace;
-import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
 
 /**
@@ -41,7 +40,7 @@ import org.pentaho.di.ui.core.gui.GUIResource;
 public class TextVar extends Composite {
   private String toolTipText;
 
-  private static final PropsUI props = PropsUI.getInstance();
+  // private static final PropsUI props = PropsUI.getInstance();
 
   private ControlDecoration controlDecoration;
 

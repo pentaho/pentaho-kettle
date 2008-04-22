@@ -476,9 +476,6 @@ public class TransPainter
             gc.setLineWidth(linewidth + 2);
         else
             gc.setLineWidth(linewidth);
-        gc.setBackground(red);
-        gc.setForeground(black);
-        gc.fillRectangle(screen.x, screen.y, iconsize, iconsize);
         
         // Add to the list of areas...
         if (!shadow) {

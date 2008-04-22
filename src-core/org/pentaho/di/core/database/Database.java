@@ -40,9 +40,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Savepoint;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -107,11 +107,12 @@ public class Database implements VariableSpace
 	
 	private LogWriter log;
 	
-	/**
+	/*
 	 * Counts the number of rows written to a batch for a certain PreparedStatement.
-	 */
+	 *
 	private Map<PreparedStatement, Integer> batchCounterMap;
-
+	*/
+	
     /**
      * Number of times a connection was opened using this object.
      * Only used in the context of a database connection map
@@ -138,8 +139,6 @@ public class Database implements VariableSpace
 		log=LogWriter.getInstance();
 		databaseMeta = inf;
 		shareVariablesWith(inf);
-		
-		batchCounterMap = new HashMap<PreparedStatement, Integer>();
 		
 		pstmt = null;
 		rowMeta = null;
@@ -579,6 +578,19 @@ public class Database implements VariableSpace
         {
             log.logError(toString(), "Can't turn auto commit "+onOff);
         }
+	}
+	
+	public void setAutoCommit(boolean useAutoCommit) throws KettleDatabaseException {
+		try {
+			connection.setAutoCommit(useAutoCommit);
+		} catch (SQLException e) {
+			if (useAutoCommit) {
+				throw new KettleDatabaseException(Messages.getString("Database.Exception.UnableToEnableAutoCommit", toString()));
+			} else {
+				throw new KettleDatabaseException(Messages.getString("Database.Exception.UnableToDisableAutoCommit", toString()));
+			}
+			
+		}
 	}
 	
     /**
@@ -1211,22 +1223,6 @@ public class Database implements VariableSpace
 		insertRow(ps, false);
 	}
 	
-	/**
-     * @param batchCounterMap The batch counter map to set.
-     */
-    public void setBatchCounterMap(Map<PreparedStatement, Integer> batchCounterMap)
-    {
-        this.batchCounterMap = batchCounterMap;
-    }
-    
-    /**
-     * @return Returns the batch counter map.
-     */
-    public Map<PreparedStatement, Integer> getBatchCounterMap()
-    {
-        return batchCounterMap;
-    }
-
     /**
      * Insert a row into the database using a prepared statement that has all values set.
      * @param ps The prepared statement
@@ -1238,7 +1234,6 @@ public class Database implements VariableSpace
 	{
 	    String debug="insertRow start";
         boolean rowsAreSafe=false;
-        Integer batchCounter = null;
         
 		try
 		{
@@ -1255,17 +1250,6 @@ public class Database implements VariableSpace
 				if (useBatchInsert)
 				{
 				    debug="insertRow add batch";
-				    
-				    // Increment the counter...
-				    //
-				    batchCounter = batchCounterMap.get(ps);
-				    if (batchCounter==null) {
-				    	batchCounterMap.put(ps, 1);
-				    }
-				    else {
-				    	batchCounterMap.put(ps, Integer.valueOf(batchCounter.intValue()+1));
-				    }
-				    
 					ps.addBatch(); // Add the batch, but don't forget to run the batch
 				}
 				else
@@ -1281,6 +1265,7 @@ public class Database implements VariableSpace
 
 			written++;
 			
+			/*
 			if (!isAutoCommit() && (written%commitsize)==0)
 			{
 				if (useBatchInsert)
@@ -1299,6 +1284,7 @@ public class Database implements VariableSpace
 				}
                 rowsAreSafe=true;
 			}
+			*/
             return rowsAreSafe;
 		}
 		catch(BatchUpdateException ex)
@@ -1357,14 +1343,81 @@ public class Database implements VariableSpace
 	    insertFinished(prepStatementInsert, batch);
 		prepStatementInsert = null;
 	}
+	
+		/**
+		 * Close the prepared statement of the insert statement.
+		 * 
+		 * @param ps The prepared statement to empty and close.
+		 * @param batch true if you are using batch processing
+		 * @param psBatchCounter The number of rows on the batch queue
+		 * @throws KettleDatabaseException
+		 */
+	public void emptyAndCommit(PreparedStatement ps, boolean batch, int batchCounter) throws KettleDatabaseException {
+
+		try
+		{
+			if (ps!=null)
+			{
+			    if (!isAutoCommit())
+			    {
+			    	// Execute the batch or just perform a commit.
+			    	//
+					if (batch && getDatabaseMetaData().supportsBatchUpdates() && batchCounter>0)
+					{
+					    // The problem with the batch counters is that you can't just execute the current batch.
+						// Certain databases have a problem if you execute the batch and if there are no statements in it.
+						// You can't just catch the exception either because you would have to roll back on certain databases before you can then continue to do anything.
+						// That leaves the task of keeping track of the number of rows up to our responsibility.
+						//
+						ps.executeBatch();
+						commit();
+					}
+					else
+					{
+						commit();
+					}
+			    }
+	
+			    // Let's not forget to close the prepared statement.
+			    //
+				ps.close();
+			}
+		}
+        catch(BatchUpdateException ex)
+        {
+            KettleDatabaseBatchException kdbe = new KettleDatabaseBatchException("Error updating batch", ex);
+            kdbe.setUpdateCounts(ex.getUpdateCounts());
+            List<Exception> exceptions = new ArrayList<Exception>();
+            SQLException nextException = ex.getNextException();
+            SQLException oldException = null;
+            
+            // This construction is specifically done for some JDBC drivers, these drivers
+            // always return the same exception on getNextException() (and thus go into an infinite loop).
+            // So it's not "equals" but != (comments from Sven Boden).
+            while ( (nextException != null) && (oldException != nextException) )
+            {
+                exceptions.add(nextException);
+                oldException = nextException;
+               	nextException = nextException.getNextException();
+            }
+            kdbe.setExceptionsList(exceptions);
+            throw kdbe;
+        }
+		catch(SQLException ex) 
+		{
+			throw new KettleDatabaseException("Unable to empty ps and commit connection.", ex);
+		}
+	}
 
 	/**
-	 * Empty and close a prepared statement.
+	 * Close the prepared statement of the insert statement.
 	 * 
 	 * @param ps The prepared statement to empty and close.
 	 * @param batch true if you are using batch processing (typically true for this method)
 	 * @param psBatchCounter The number of rows on the batch queue
 	 * @throws KettleDatabaseException
+	 * 
+	 * @deprecated use emptyAndCommit() instead (pass in the number of rows left in the batch)
 	 */
 	public void insertFinished(PreparedStatement ps, boolean batch) throws KettleDatabaseException
 	{		
@@ -1374,14 +1427,9 @@ public class Database implements VariableSpace
 			{
 			    if (!isAutoCommit())
 			    {
-			    	// Get the batch counter.  This counter is unique per Prepared Statement.
-			    	// It is increased in method insertRow()
-			    	//
-			    	Integer batchCounter = batchCounterMap.get(ps);
-			    	
 			    	// Execute the batch or just perform a commit.
 			    	//
-					if (batch && getDatabaseMetaData().supportsBatchUpdates() && batchCounter!=null && batchCounter.intValue()>0)
+					if (batch && getDatabaseMetaData().supportsBatchUpdates())
 					{
 					    // The problem with the batch counters is that you can't just execute the current batch.
 						// Certain databases have a problem if you execute the batch and if there are no statements in it.
@@ -1425,12 +1473,6 @@ public class Database implements VariableSpace
 		catch(SQLException ex) 
 		{
 			throw new KettleDatabaseException("Unable to commit connection after having inserted rows.", ex);
-		}
-		finally
-		{
-			// Remove the batch counter to avoid memory leaks in the database driver
-			//
-			batchCounterMap.remove(ps);
 		}
 	}
 	
@@ -3290,7 +3332,7 @@ public class Database implements VariableSpace
 	{
         if (Const.isEmpty(connectionGroup))
         {
-            execStatement(databaseMeta.getTruncateTableStatement(schema, tablename));
+        	execStatement(databaseMeta.getTruncateTableStatement(schema, tablename));
         }
         else
         {
@@ -4521,5 +4563,38 @@ public class Database implements VariableSpace
 		}
 		return ins.toString();
 	}
+    
+    public Savepoint setSavepoint() throws KettleDatabaseException {
+    	try {
+			return connection.setSavepoint();
+		} catch (SQLException e) {
+			throw new KettleDatabaseException(Messages.getString("Database.Exception.UnableToSetSavepoint"), e);
+		}
+    }
+
+    public Savepoint setSavepoint(String savePointName) throws KettleDatabaseException {
+    	try {
+			return connection.setSavepoint(savePointName);
+		} catch (SQLException e) {
+			throw new KettleDatabaseException(Messages.getString("Database.Exception.UnableToSetSavepointName", savePointName), e);
+		}
+    }
+
+	public void releaseSavepoint(Savepoint savepoint) throws KettleDatabaseException {
+		try {
+			connection.releaseSavepoint(savepoint);
+		} catch (SQLException e) {
+			throw new KettleDatabaseException(Messages.getString("Database.Exception.UnableToReleaseSavepoint"), e);
+		}
+	}
+
+	public void rollback(Savepoint savepoint) throws KettleDatabaseException {
+		try {
+			connection.rollback(savepoint);
+		} catch (SQLException e) {
+			throw new KettleDatabaseException(Messages.getString("Database.Exception.UnableToRollbackToSavepoint"), e);
+		}
+	}
+
 	
 }
