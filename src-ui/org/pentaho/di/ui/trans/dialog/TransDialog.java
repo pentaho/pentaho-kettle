@@ -1787,7 +1787,7 @@ public class TransDialog extends Dialog
       mb.setText(Messages.getString("TransDialog.InvalidStepPerfIntervalNumber.DialogTitle")); //$NON-NLS-1$
       mb.setMessage(Messages.getString("TransDialog.InvalidStepPerfIntervalNumber.DialogMessage")); //$NON-NLS-1$
       mb.open();
-      wEnableStepPerfInterval.setFocus();
+      wEnableStepPerfInterval.setFocus();  
       wEnableStepPerfInterval.selectAll();
       OK=false;
     }
