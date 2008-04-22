@@ -73,7 +73,7 @@ public class SpoonDBDelegate extends SpoonDelegate
 
 		DatabaseMeta before = (DatabaseMeta) databaseMeta.clone();
 
-//		DatabaseDialog con = new DatabaseDialog(spoon.getShell(), databaseMeta);
+		// DatabaseDialog con = new DatabaseDialog(spoon.getShell(), databaseMeta);
     XulDatabaseDialog con = new XulDatabaseDialog(spoon.getShell(), databaseMeta);
 		con.setDatabases(hasDatabasesInterface.getDatabases());
 		String newname = con.open();
@@ -504,7 +504,7 @@ public class SpoonDBDelegate extends SpoonDelegate
 			databaseMeta.shareVariablesWith((VariableSpace)hasDatabasesInterface);
 		}
 		
-    //DatabaseDialog con = new DatabaseDialog(spoon.getShell(), databaseMeta);
+    // DatabaseDialog con = new DatabaseDialog(spoon.getShell(), databaseMeta);
     XulDatabaseDialog con = new XulDatabaseDialog(spoon.getShell(), databaseMeta);
     String con_name = con.open();
     if (!Const.isEmpty(con_name))

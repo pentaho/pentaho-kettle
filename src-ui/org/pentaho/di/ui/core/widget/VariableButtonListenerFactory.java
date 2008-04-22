@@ -28,7 +28,7 @@ import org.pentaho.di.ui.core.widget.InsertTextInterface;
 public class VariableButtonListenerFactory
 {
     // Listen to the Variable... button
-    public static final SelectionAdapter getSelectionAdapter(final Composite composite, final Text destination, VariableSpace space)
+    public static final SelectionAdapter getSelectionAdapter(final Composite composite, final Text destination, final VariableSpace space)
     {
         return getSelectionAdapter(composite, destination, null, null, space);
     }

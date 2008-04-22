@@ -36,17 +36,17 @@ import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.job.JobMeta;
-import org.pentaho.di.ui.core.gui.WindowProperty;
-import org.pentaho.di.ui.core.widget.TextVar;
-import org.pentaho.di.ui.job.dialog.JobDialog;
-import org.pentaho.di.ui.job.entry.JobEntryDialog; 
+import org.pentaho.di.job.entries.msgboxinfo.JobEntryMsgBoxInfo;
+import org.pentaho.di.job.entries.msgboxinfo.Messages;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.ui.core.widget.ControlSpaceKeyAdapter;
+import org.pentaho.di.ui.core.widget.TextVar;
+import org.pentaho.di.ui.job.dialog.JobDialog;
+import org.pentaho.di.ui.job.entry.JobEntryDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.ui.trans.steps.textfileinput.VariableButtonListenerFactory;
-import org.pentaho.di.job.entries.msgboxinfo.JobEntryMsgBoxInfo;
-import org.pentaho.di.job.entries.msgboxinfo.Messages;
 
 /**
  * This dialog allows you to edit a JobEntryEval object.
@@ -190,8 +190,8 @@ public class JobEntryMsgBoxInfoDialog extends JobEntryDialog implements JobEntry
 		fdBodyMessage.bottom =new FormAttachment(wOK, -margin);
         wBodyMessage.setLayoutData(fdBodyMessage);
 
-		SelectionAdapter lsVar = VariableButtonListenerFactory.getSelectionAdapter(shell, wBodyMessage, jobMeta);
-		wBodyMessage.addKeyListener(TextVar.getControlSpaceKeyListener(jobMeta, wBodyMessage, lsVar));
+		// SelectionAdapter lsVar = VariableButtonListenerFactory.getSelectionAdapter(shell, wBodyMessage, jobMeta);
+		wBodyMessage.addKeyListener(new ControlSpaceKeyAdapter(jobMeta, wBodyMessage));
 
         // Add listeners
         lsCancel = new Listener()

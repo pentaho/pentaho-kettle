@@ -34,22 +34,21 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.repository.Repository;
-import org.pentaho.di.ui.core.gui.WindowProperty;
-import org.pentaho.di.ui.core.widget.TextVar;
-import org.pentaho.di.ui.job.dialog.JobDialog;
-import org.pentaho.di.ui.job.entry.JobEntryDialog; 
 import org.pentaho.di.job.JobMeta;
-import org.pentaho.di.job.entry.JobEntryDialogInterface;
-import org.pentaho.di.job.entry.JobEntryInterface;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.ui.trans.steps.textfileinput.VariableButtonListenerFactory;
 import org.pentaho.di.job.entries.writetolog.JobEntryWriteToLog;
 import org.pentaho.di.job.entries.writetolog.Messages;
+import org.pentaho.di.job.entry.JobEntryDialogInterface;
+import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.repository.Repository;
+import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.ui.core.widget.ControlSpaceKeyAdapter;
+import org.pentaho.di.ui.core.widget.TextVar;
+import org.pentaho.di.ui.job.dialog.JobDialog;
+import org.pentaho.di.ui.job.entry.JobEntryDialog;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * This dialog allows you to edit a JobEntryWriteToLog object.
@@ -225,8 +224,8 @@ public class JobEntryWriteToLogDialog extends JobEntryDialog implements JobEntry
 		fdLogMessage.bottom =new FormAttachment(wOK, -margin);
         wLogMessage.setLayoutData(fdLogMessage);
 
-		SelectionAdapter lsVar = VariableButtonListenerFactory.getSelectionAdapter(shell, wLogMessage, jobMeta);
-		wLogMessage.addKeyListener(TextVar.getControlSpaceKeyListener(jobMeta, wLogMessage, lsVar));
+		// SelectionAdapter lsVar = VariableButtonListenerFactory.getSelectionAdapter(shell, wLogMessage, jobMeta);
+		wLogMessage.addKeyListener(new ControlSpaceKeyAdapter(jobMeta, wLogMessage));
 
         // Add listeners
         lsCancel = new Listener()

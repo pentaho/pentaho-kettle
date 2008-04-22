@@ -8,9 +8,11 @@ import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.ui.core.database.dialog.tags.ExtTextbox;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
 import org.pentaho.ui.database.event.DataHandler;
+import org.pentaho.ui.xul.components.XulTextbox;
 
 public class DataOverrideHandler extends DataHandler {
   
@@ -68,7 +70,25 @@ public class DataOverrideHandler extends DataHandler {
           Messages.getString("DatabaseDialog.FeatureListError.title"), Messages.getString("DatabaseDialog.FeatureListError.description"), e); //$NON-NLS-1$ //$NON-NLS-2$
     }
   }
+  
+  @Override
+  protected void getControls() {
+    
+    super.getControls();
+    
+    XulTextbox[] boxes = new XulTextbox[] {hostNameBox, databaseNameBox, portNumberBox, userNameBox, passwordBox,
+        customDriverClassBox, customUrlBox, dataTablespaceBox, indexTablespaceBox, poolSizeBox, maxPoolSizeBox};
 
+    for (int i = 0; i < boxes.length; i++) {
+      XulTextbox xulTextbox = boxes[i];
+      if ((xulTextbox != null) && (xulTextbox instanceof ExtTextbox)){
+        ExtTextbox ext = (ExtTextbox)xulTextbox;
+        ext.setVariableSpace(databaseMeta);
+      }
+    }
+    
+  }
+  
   public java.util.List<DatabaseMeta> getDatabases() {
     return databases;
   }

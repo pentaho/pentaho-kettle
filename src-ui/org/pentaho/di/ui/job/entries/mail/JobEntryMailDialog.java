@@ -49,9 +49,9 @@ import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.ui.core.widget.ControlSpaceKeyAdapter;
 import org.pentaho.di.ui.core.widget.LabelText;
 import org.pentaho.di.ui.core.widget.LabelTextVar;
-import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.job.dialog.JobDialog;
 import org.pentaho.di.ui.job.entry.JobEntryDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
@@ -842,8 +842,8 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
         fdComment.right = new FormAttachment(100, 0);
         fdComment.bottom = new FormAttachment(100, -margin);
         wComment.setLayoutData(fdComment);
-        SelectionAdapter lsVar = VariableButtonListenerFactory.getSelectionAdapter(shell, wComment, jobMeta);
-        wComment.addKeyListener(TextVar.getControlSpaceKeyListener(jobMeta, wComment, lsVar));
+        //SelectionAdapter lsVar = VariableButtonListenerFactory.getSelectionAdapter(shell, wComment, jobMeta);
+        wComment.addKeyListener(new ControlSpaceKeyAdapter(jobMeta, wComment));
         
         fdMessageGroup = new FormData();
         fdMessageGroup.left = new FormAttachment(0, margin);
