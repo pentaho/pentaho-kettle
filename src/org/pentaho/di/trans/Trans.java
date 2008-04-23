@@ -1469,6 +1469,7 @@ public class Trans implements VariableSpace
 							row[outputIndex++] = new Long(snapshot.getLinesInput()); 
 							row[outputIndex++] = new Long(snapshot.getLinesOutput()); 
 							row[outputIndex++] = new Long(snapshot.getLinesRejected()); 
+							row[outputIndex++] = new Long(snapshot.getErrors()); 
 							row[outputIndex++] = new Long(snapshot.getInputBufferSize()); 
 							row[outputIndex++] = new Long(snapshot.getOutputBufferSize());
 							
