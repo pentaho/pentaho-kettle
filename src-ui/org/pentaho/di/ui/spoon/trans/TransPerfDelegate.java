@@ -481,7 +481,7 @@ public class TransPerfDelegate extends SpoonDelegate {
 	}
 	
 	public void layoutPerfComposite() {
-		perfComposite.layout(true,true);
+		if (!perfComposite.isDisposed()) perfComposite.layout(true,true);
 	}
 
 }
