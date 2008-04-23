@@ -230,6 +230,10 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 	 */
 	public static final int TYPE_DATABASE_VERTICA     = 34;
 
+	/**
+	 * Connection to a Neoview database
+	 */
+	public static final int TYPE_DATABASE_NEOVIEW     = 35;
     
 	/**
 	 * Connect natively through JDBC thin driver to the database.

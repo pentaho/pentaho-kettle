@@ -63,6 +63,7 @@ public interface DatabaseInterface extends Cloneable
             MonetDBDatabaseMeta.class,
             KingbaseESDatabaseMeta.class,
             VerticaDatabaseMeta.class,
+            NeoviewDatabaseMeta.class
          };
 	
 	/**

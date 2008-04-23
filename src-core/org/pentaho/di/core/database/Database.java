@@ -2773,11 +2773,16 @@ public class Database implements VariableSpace
                         }
                         break;
 					case ValueMetaInterface.TYPE_DATE      :
-                        if (val.getPrecision()!=1 && databaseMeta.supportsTimeStampToDateConversion())
+						if (databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_NEOVIEW && val.getOriginalColumnType()==java.sql.Types.TIME)
+						{
+							// Neoview can not handle getDate / getTimestamp for a Time column
+							data[i] = rs.getTime(i+1); break;  // Time is a subclass of java.util.Date, the default date will be 1970-01-01
+						}
+						else if (val.getPrecision()!=1 && databaseMeta.supportsTimeStampToDateConversion())
                         {
                             data[i] = rs.getTimestamp(i+1); break; // Timestamp extends java.util.Date
                         }
-                        else
+                        else 
                         {
                             data[i] = rs.getDate(i+1); break;
                         }
@@ -3231,6 +3236,12 @@ public class Database implements VariableSpace
 			retval+="TABLESPACE "+databaseMeta.getDataTablespace();
 		}
 
+		if (pk==null && tk==null && databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_NEOVIEW)
+		{
+			retval+="NO PARTITION"; // use this as a default when no pk/tk is there, otherwise you get an error 
+		}
+		
+		
 		if (semicolon) retval+=";";
 		retval+=Const.CR;
 		
@@ -3968,7 +3979,12 @@ public class Database implements VariableSpace
      */
 	public List<Object[]> getFirstRows(String table_name, int limit, ProgressMonitorListener monitor) throws KettleDatabaseException
 	{
-		String sql = "SELECT * FROM "+table_name;
+		String sql = "SELECT";
+		if (databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_NEOVIEW)
+		{
+			sql+=" [FIRST " + limit +"]";
+		}
+		sql += " * FROM "+table_name;
 		
         if (limit>0)
 		{
