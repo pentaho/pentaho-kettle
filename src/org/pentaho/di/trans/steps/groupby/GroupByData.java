@@ -34,8 +34,8 @@ public class GroupByData extends BaseStepData implements StepDataInterface
 {
 	public Object previous[];
 	
-	public Object  agg[];
 	public RowMetaInterface aggMeta;
+	public Object  agg[];
 	public RowMetaInterface groupMeta;
 	public RowMetaInterface groupAggMeta; // for speed: groupMeta+aggMeta
 	public int  groupnrs[];
@@ -79,6 +79,8 @@ public class GroupByData extends BaseStepData implements StepDataInterface
 
 	public ValueMetaInterface valueMetaInteger;
 	public ValueMetaInterface valueMetaNumber;
+
+	public double[] mean;
     
 	/**
 	 * 

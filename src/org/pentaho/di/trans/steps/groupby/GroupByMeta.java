@@ -58,10 +58,13 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
     public static final int TYPE_GROUP_LAST_INCL_NULL     = 10;
 	public static final int TYPE_GROUP_CUMULATIVE_SUM     = 11;
 	public static final int TYPE_GROUP_CUMULATIVE_AVERAGE = 12;
+	public static final int TYPE_GROUP_STANDARD_DEVIATION = 13;
 
 	public static final String typeGroupCode[] =  /* WARNING: DO NOT TRANSLATE THIS. WE ARE SERIOUS, DON'T TRANSLATE! */ 
 		{
-			"-", "SUM", "AVERAGE", "MIN", "MAX", "COUNT_ALL", "CONCAT_COMMA", "FIRST", "LAST", "FIRST_INCL_NULL", "LAST_INCL_NULL", "CUM_SUM", "CUM_AVG",  	 //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$ //$NON-NLS-13$
+			"-", "SUM", "AVERAGE", "MIN", "MAX", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ 
+			"COUNT_ALL", "CONCAT_COMMA", "FIRST", "LAST", "FIRST_INCL_NULL", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ 
+			"LAST_INCL_NULL", "CUM_SUM", "CUM_AVG", "STD_DEV", 	 //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ 
 		};
 
 	public static final String typeGroupLongDesc[] = 
@@ -79,6 +82,7 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
             Messages.getString("GroupByMeta.TypeGroupLongDesc.LAST_INCL_NULL"),      //$NON-NLS-1$ 
             Messages.getString("GroupByMeta.TypeGroupLongDesc.CUMUMALTIVE_SUM"),     //$NON-NLS-1$ 
             Messages.getString("GroupByMeta.TypeGroupLongDesc.CUMUMALTIVE_AVERAGE"), //$NON-NLS-1$ 
+            Messages.getString("GroupByMeta.TypeGroupLongDesc.STANDARD_DEVIATION"),  //$NON-NLS-1$ 
 		};
 
 	
@@ -399,6 +403,7 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
 					case TYPE_GROUP_MAX                : value_type = subj.getType(); break;
 					case TYPE_GROUP_COUNT_ALL          : value_type = ValueMetaInterface.TYPE_INTEGER; break;
                     case TYPE_GROUP_CONCAT_COMMA       : value_type = ValueMetaInterface.TYPE_STRING; break;
+                    case TYPE_GROUP_STANDARD_DEVIATION : value_type = ValueMetaInterface.TYPE_NUMBER; break;
 					default: break;
 				}
 				
@@ -423,7 +428,7 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
 					precision=-1;
 					length=-1;       	
                 }
-                
+
 				if (value_type != ValueMetaInterface.TYPE_NONE)
 				{
 					ValueMetaInterface v = new ValueMeta(value_name, value_type);

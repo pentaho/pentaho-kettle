@@ -437,7 +437,21 @@ public class GroupBy extends BaseStep implements StepInterface
 					break; 
 				case GroupByMeta.TYPE_GROUP_AVERAGE        :
 					data.agg[i]=ValueDataUtil.sum(valueMeta, value, subjMeta, subj);
-				data.counts[i]++;
+					data.counts[i]++;
+					break; 
+				case GroupByMeta.TYPE_GROUP_STANDARD_DEVIATION :
+					data.counts[i]++;
+					double n = data.counts[i];
+					double x = subjMeta.getNumber(subj);
+					double sum = (Double)value;
+					double mean = data.mean[i];
+					
+					double delta = x - mean;
+					mean = mean + (delta/n);
+					sum = sum + delta*(x-mean);
+					
+					data.mean[i] = mean;
+					data.agg[i] = sum;
 					break; 
 				case GroupByMeta.TYPE_GROUP_COUNT_ALL      :
 					data.counts[i]++;
@@ -483,6 +497,7 @@ public class GroupBy extends BaseStep implements StepInterface
 		for (int i=0;i<data.counts.length;i++) data.counts[i]=0;
 		
 		data.agg = new Object[data.subjectnrs.length];
+		data.mean = new double[data.subjectnrs.length]; // sets all doubles to 0.0
 		data.aggMeta=new RowMeta();
 		
 		for (int i=0;i<data.subjectnrs.length;i++)
@@ -505,6 +520,10 @@ public class GroupBy extends BaseStep implements StepInterface
                     default:                         v=new Double(0.0); break;
                     }
 					break; 					
+				case GroupByMeta.TYPE_GROUP_STANDARD_DEVIATION :
+                    vMeta = new ValueMeta(meta.getAggregateField()[i], ValueMetaInterface.TYPE_NUMBER);
+                    v=new Double(0.0);
+                    break;
 				case GroupByMeta.TYPE_GROUP_COUNT_ALL       :
                     vMeta = new ValueMeta(meta.getAggregateField()[i], ValueMetaInterface.TYPE_INTEGER);
                     v=new Long(0L);                   
@@ -595,6 +614,10 @@ public class GroupBy extends BaseStep implements StepInterface
                     case GroupByMeta.TYPE_GROUP_COUNT_ALL      : ag=new Long(data.counts[i]); break;
                     case GroupByMeta.TYPE_GROUP_MIN            : break; 
                     case GroupByMeta.TYPE_GROUP_MAX            : break; 
+                    case GroupByMeta.TYPE_GROUP_STANDARD_DEVIATION :
+                    	double sum = (Double)ag / data.counts[i];
+                    	ag = Double.valueOf( Math.sqrt( sum ) );
+                    	break;
                     default: break;
                 }
                 result[i]=ag;
