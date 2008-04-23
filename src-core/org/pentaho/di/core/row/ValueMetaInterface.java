@@ -225,7 +225,32 @@ public interface ValueMetaInterface extends Cloneable
      * @param dateFormatLocale the date format locale to set
      */
     public void setDateFormatLocale(Locale dateFormatLocale);
-    
+
+    /**
+     *  store original JDBC RecordSetMetaData for later use
+     *	@see java.sql.ResultSetMetaData
+     */
+
+    public int    getOriginalColumnType(); 
+    public void	  setOriginalColumnType(int originalColumnType);
+
+    public String getOriginalColumnTypeName(); 
+    public void	  setOriginalColumnTypeName(String originalColumnTypeName);
+   
+    public int    getOriginalPrecision(); 
+    public void	  setOriginalPrecision(int originalPrecision);
+
+    public int    getOriginalScale(); 
+    public void	  setOriginalScale(int originalScale);
+
+    public boolean isOriginalAutoIncrement(); 
+    public void	  setOriginalAutoIncrement(boolean originalAutoIncrement);
+
+    public int    isOriginalNullable(); 
+    public void	  setOriginalNullable(int originalNullable);
+
+    public boolean isOriginalSigned(); 
+    public void	  setOriginalSigned(boolean originalSigned);
     
     /* Conversion methods */
     
@@ -532,4 +557,5 @@ public interface ValueMetaInterface extends Cloneable
 	 * @param numberOfBinaryStringConversions the number of binary string to native data type done with this object conversions to set
 	 */
 	public void setNumberOfBinaryStringConversions(long numberOfBinaryStringConversions);
+	
 }

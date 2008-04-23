@@ -2592,12 +2592,28 @@ public class Database implements VariableSpace
         
         // Grab the comment as a description to the field as well.
         String comments=rm.getColumnLabel(index);
+        
+        // get & store more result set meta data for later use
+        int originalColumnType=rm.getColumnType(index);
+        String originalColumnTypeName=rm.getColumnTypeName(index);
+        int originalPrecision=rm.getPrecision(index);
+        int originalScale=rm.getScale(index);
+        boolean originalAutoIncrement=rm.isAutoIncrement(index);
+        int originalNullable=rm.isNullable(index);
+        boolean originalSigned=rm.isSigned(index);
 
         ValueMetaInterface v=new ValueMeta(name, valtype);
         v.setLength(length);
         v.setPrecision(precision);
         v.setComments(comments);
         v.setLargeTextField(isClob);
+        v.setOriginalColumnType(originalColumnType);
+        v.setOriginalColumnTypeName(originalColumnTypeName);
+        v.setOriginalPrecision(originalPrecision);
+        v.setOriginalScale(originalScale);
+        v.setOriginalAutoIncrement(originalAutoIncrement);
+        v.setOriginalNullable(originalNullable);
+        v.setOriginalSigned(originalSigned);
 
         // See if we need to enable lazy conversion...
         //

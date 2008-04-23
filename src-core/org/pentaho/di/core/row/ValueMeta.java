@@ -37,6 +37,10 @@ import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.w3c.dom.Node;
 
+/**
+ * @author jb
+ *
+ */
 public class ValueMeta implements ValueMetaInterface
 {
     public static final String DEFAULT_DATE_FORMAT_MASK = "yyyy/MM/dd HH:mm:ss.SSS";
@@ -79,6 +83,16 @@ public class ValueMeta implements ValueMetaInterface
 	boolean singleByteEncoding;
 	
 	private long numberOfBinaryStringConversions;
+
+    // get & store original result set meta data for later use
+	// @see java.sql.ResultSetMetaData
+    private int originalColumnType;
+    private String originalColumnTypeName;
+    private int originalPrecision;
+    private int originalScale;
+    private boolean originalAutoIncrement;
+    private int originalNullable;
+    private boolean originalSigned;
 	
 	/**
 	 * The trim type codes
@@ -3455,5 +3469,106 @@ public class ValueMeta implements ValueMetaInterface
 	 */
 	public void setNumberOfBinaryStringConversions(long numberOfBinaryStringConversions) {
 		this.numberOfBinaryStringConversions = numberOfBinaryStringConversions;
+	}
+
+	/* Original JDBC RecordSetMetaData
+	 * @see java.sql.ResultSetMetaData#isAutoIncrement()
+	 */
+	public boolean isOriginalAutoIncrement() {
+		return originalAutoIncrement;
+	}
+
+	/* Original JDBC RecordSetMetaData
+	 * @see java.sql.ResultSetMetaData#setAutoIncrement(boolean)
+	 */
+	public void setOriginalAutoIncrement(boolean originalAutoIncrement) {
+		this.originalAutoIncrement=originalAutoIncrement;
+	}
+
+	/* Original JDBC RecordSetMetaData
+	 * @see java.sql.ResultSetMetaData#getColumnType()
+	 */
+	public int getOriginalColumnType() {
+		return originalColumnType;
+	}
+
+	/* Original JDBC RecordSetMetaData
+	 * @see java.sql.ResultSetMetaData#setColumnType(int)
+	 */
+	public void setOriginalColumnType(int originalColumnType) {
+		this.originalColumnType=originalColumnType;
+	}
+
+	/* Original JDBC RecordSetMetaData
+	 * @see java.sql.ResultSetMetaData#getColumnTypeName()
+	 */
+	public String getOriginalColumnTypeName() {
+		return originalColumnTypeName;
+	}
+
+	/* Original JDBC RecordSetMetaData
+	 * @see java.sql.ResultSetMetaData#setColumnTypeName(java.lang.String)
+	 */
+	public void setOriginalColumnTypeName(String originalColumnTypeName) {
+		this.originalColumnTypeName=originalColumnTypeName;
+		
+	}
+
+	/* Original JDBC RecordSetMetaData
+	 * @see java.sql.ResultSetMetaData#isNullable()
+	 */
+	public int isOriginalNullable() {
+		return originalNullable;
+	}
+
+	/* Original JDBC RecordSetMetaData
+	 * @see java.sql.ResultSetMetaData#setNullable(int)
+	 */
+	public void setOriginalNullable(int originalNullable) {
+		this.originalNullable=originalNullable;
+		
+	}
+
+	/* Original JDBC RecordSetMetaData
+	 * @see java.sql.ResultSetMetaData#getPrecision()
+	 */
+	public int getOriginalPrecision() {
+		return originalPrecision;
+	}
+
+	/* Original JDBC RecordSetMetaData
+	 * @see java.sql.ResultSetMetaData#setPrecision(int)
+	 */
+	public void setOriginalPrecision(int originalPrecision) {
+		this.originalPrecision=originalPrecision;
+	}
+
+	/* Original JDBC RecordSetMetaData
+	 * @see java.sql.ResultSetMetaData#getScale()
+	 */
+	public int getOriginalScale() {
+		return originalScale;
+	}
+
+	/* Original JDBC RecordSetMetaData
+	 * @see java.sql.ResultSetMetaData#setScale(int)
+	 */
+	public void setOriginalScale(int originalScale) {
+		this.originalScale=originalScale;
+		
+	}
+	
+	/* Original JDBC RecordSetMetaData
+	 * @see java.sql.ResultSetMetaData#isSigned()
+	 */
+	public boolean isOriginalSigned() {
+		return originalSigned;
+	}
+
+	/* Original JDBC RecordSetMetaData
+	 * @see java.sql.ResultSetMetaData#setOriginalSigned(boolean)
+	 */
+	public void setOriginalSigned(boolean originalSigned) {
+		this.originalSigned=originalSigned;
 	}
 }
