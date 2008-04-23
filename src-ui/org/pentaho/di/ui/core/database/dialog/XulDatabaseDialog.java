@@ -31,7 +31,7 @@ public class XulDatabaseDialog {
   private DatabaseMeta databaseMeta;
 
   private Shell shell;
-  
+
   private Shell parentShell;
 
   private String databaseName;
@@ -47,7 +47,7 @@ public class XulDatabaseDialog {
   public XulDatabaseDialog(Shell parent, DatabaseMeta dbMeta) {
     parentShell = parent;
     databaseMeta = dbMeta;
-    if(dbMeta != null){
+    if (dbMeta != null) {
       databaseName = databaseMeta.getName();
     }
     // props = PropsUI.getInstance();
@@ -56,21 +56,22 @@ public class XulDatabaseDialog {
 
   /**
    * Opens the XUL database dialog
- * @return databaseName (or NULL on error or cancel)
- */
-public String open() {
+  * @return databaseName (or NULL on error or cancel)
+  */
+  public String open() {
 
     // Load the XUL definition to a dom4j document...
-	Document doc = null;
-	try {	  
-		InputStream in = XulDatabaseDialog.class.getClassLoader().getResourceAsStream(
-        	"org/pentaho/ui/database/databasedialog.xul");
+    Document doc = null;
+    try {
+      InputStream in = XulDatabaseDialog.class.getClassLoader().getResourceAsStream(
+          "org/pentaho/ui/database/databasedialog.xul");
 
-		SAXReader rdr = new SAXReader();
-		doc = rdr.read(in);
+      SAXReader rdr = new SAXReader();
+      doc = rdr.read(in);
     } catch (Exception e) {
-		new ErrorDialog(parentShell, Messages.getString("XulDatabaseDialog.Error.Titel"), Messages.getString("XulDatabaseDialog.Error.SAXReader"), e);
-		return null;
+      new ErrorDialog(parentShell, Messages.getString("XulDatabaseDialog.Error.Titel"), Messages
+          .getString("XulDatabaseDialog.Error.SAXReader"), e);
+      return null;
     }
 
     XulDomContainer container = null;
@@ -85,7 +86,7 @@ public String open() {
       if (databaseMeta != null) {
         dataHandler.setData(databaseMeta);
       }
-      
+
       ((DataOverrideHandler) container.getEventHandler("dataHandler")).setDatabases(databases);
       ((DataOverrideHandler) container.getEventHandler("dataHandler")).getControls();
 
@@ -94,41 +95,42 @@ public String open() {
     }
 
     try {
-    // Inject the button panel that contains the "Feature List" and "Explore" buttons
+      // Inject the button panel that contains the "Feature List" and "Explore" buttons
 
-        XulComponent boxElement = container.getDocumentRoot().getElementById("test-button-box");
-        XulComponent parentElement = boxElement.getParent();
+      XulComponent boxElement = container.getDocumentRoot().getElementById("test-button-box");
+      XulComponent parentElement = boxElement.getParent();
 
-        XulDomContainer fragmentContainer = null;
-      
-		// Get new box fragment ...
-		// This will effectively set up the SWT parent child relationship...
-		  
-		String pkg = getClass().getPackage().getName().replace('.', '/');
-		fragmentContainer = container.loadFragment(pkg.concat("/feature_override.xul"));
-		XulComponent newBox = fragmentContainer.getDocumentRoot().getFirstChild();
-		parentElement.replaceChild(boxElement, newBox);
-		  
-      
+      XulDomContainer fragmentContainer = null;
+
+      // Get new box fragment ...
+      // This will effectively set up the SWT parent child relationship...
+
+      String pkg = getClass().getPackage().getName().replace('.', '/');
+      fragmentContainer = container.loadFragment(pkg.concat("/feature_override.xul"));
+      XulComponent newBox = fragmentContainer.getDocumentRoot().getFirstChild();
+      parentElement.replaceChild(boxElement, newBox);
+
     } catch (XulException e) {
-		new ErrorDialog(parentShell, Messages.getString("XulDatabaseDialog.Error.Titel"), Messages.getString("XulDatabaseDialog.Error.HandleXul"), e);
-		return null;
+      new ErrorDialog(parentShell, Messages.getString("XulDatabaseDialog.Error.Titel"), Messages
+          .getString("XulDatabaseDialog.Error.HandleXul"), e);
+      return null;
     }
 
     try {
-        XulWindow dialog = (XulWindow) container.getDocumentRoot().getRootElement();
-        shell = (Shell)dialog.getManagedObject();
-        shell.setParent(parentShell);
-    // props.setLook(shell);
-        shell.setImage(GUIResource.getInstance().getImageConnection());
-        
-        dialog.open();
-    	
-        databaseMeta = (DatabaseMeta)dataHandler.getData();
-        databaseName = databaseMeta.getDatabaseName();
+      XulWindow dialog = (XulWindow) container.getDocumentRoot().getRootElement();
+      shell = (Shell) dialog.getManagedObject();
+      shell.setParent(parentShell);
+      // props.setLook(shell);
+      shell.setImage(GUIResource.getInstance().getImageConnection());
+
+      dialog.open();
+
+      databaseMeta = (DatabaseMeta) dataHandler.getData();
+      databaseName = databaseMeta.getDatabaseName();
     } catch (Exception e) {
-		new ErrorDialog(parentShell, Messages.getString("XulDatabaseDialog.Error.Titel"), Messages.getString("XulDatabaseDialog.Error.Dialog"), e);
-		return null;
+      new ErrorDialog(parentShell, Messages.getString("XulDatabaseDialog.Error.Titel"), Messages
+          .getString("XulDatabaseDialog.Error.Dialog"), e);
+      return null;
     }
     return databaseName;
   }

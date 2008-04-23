@@ -110,11 +110,11 @@
 		  		</classpath>
 	    </javac>
 	    <copy todir="${classes-ui}">
-	    	<fileset dir="${src-ui}" includes="**/*.png **/*.xml **/*properties"/>
+	    	<fileset dir="${src-ui}" includes="**/*.png **/*.xml **/*.xul **/*properties"/>
 	  	    </copy>
         <!-- embedd the UI definition files in the jar so that webstart will work -->
 	    <copy todir="${classes-ui}/ui">
-	    	<fileset dir="${ui}" includes="**/*.png **/*.xml menus.xul menubar.xul **/*.properties"/>
+	    	<fileset dir="${ui}" includes="**/*.png **/*.xml **/*.xul **/*.properties"/>
 	  	    </copy>
 	  </target>
 	  
