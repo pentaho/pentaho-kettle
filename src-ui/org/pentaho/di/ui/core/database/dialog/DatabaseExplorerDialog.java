@@ -49,15 +49,20 @@ import org.pentaho.di.core.database.Schema;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.trans.Trans;
+import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.TransProfileFactory;
 import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
+import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
 import org.pentaho.di.ui.core.dialog.StepFieldsDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 
@@ -602,7 +607,13 @@ public class DatabaseExplorerDialog extends Dialog
             miDDL2.setEnabled(databases!=null);
 			MenuItem miSQL  = new MenuItem(mTree, SWT.PUSH); miSQL.setText(Messages.getString("DatabaseExplorerDialog.Menu.OpenSQL", table));
 			miSQL.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { getSQL(table); }});
-            
+
+			new MenuItem(mTree, SWT.SEPARATOR);
+			
+			MenuItem miProfile  = new MenuItem(mTree, SWT.PUSH); miProfile.setText(Messages.getString("DatabaseExplorerDialog.Menu.ProfileTable", table));
+			miProfile.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { profileTable(table); }});
+
+			
             wTree.setMenu(mTree);
 		}
         else
@@ -754,6 +765,50 @@ public class DatabaseExplorerDialog extends Dialog
 	{
 		SQLEditor sql = new SQLEditor(shell, SWT.NONE, dbMeta, dbcache, "SELECT * FROM "+tableName);
 		sql.open();
+	}
+	
+	/**
+	 * Fire off a transformation that data profiles the specified table...<br>
+	 * 
+	 * 
+	 * @param tableName
+	 */
+	public void profileTable(String tableName)
+	{
+		try {
+			TransProfileFactory profileFactory = new TransProfileFactory(dbMeta, tableName);
+			TransMeta transMeta = profileFactory.generateTransformation();
+			TransPreviewProgressDialog progressDialog = new TransPreviewProgressDialog(shell, 
+					transMeta, 
+					new String[] { TransProfileFactory.RESULT_STEP_NAME, }, new int[] { 25000, } );
+			progressDialog.open();
+			
+            if (!progressDialog.isCancelled())
+            {
+                Trans trans = progressDialog.getTrans();
+                String loggingText = progressDialog.getLoggingText();
+                
+                if (trans.getResult()!=null && trans.getResult().getNrErrors()>0)
+                {
+                	EnterTextDialog etd = new EnterTextDialog(shell, Messages.getString("System.Dialog.PreviewError.Title"),  
+                			Messages.getString("System.Dialog.PreviewError.Message"), loggingText, true );
+                	etd.setReadOnly();
+                	etd.open();
+                }
+                         
+                PreviewRowsDialog prd = new PreviewRowsDialog(shell, transMeta, SWT.NONE, TransProfileFactory.RESULT_STEP_NAME,
+						progressDialog.getPreviewRowsMeta(TransProfileFactory.RESULT_STEP_NAME), progressDialog
+								.getPreviewRows(TransProfileFactory.RESULT_STEP_NAME), loggingText);
+				prd.open();
+                
+            }
+
+			
+		} catch(Exception e) {
+			new ErrorDialog(shell, Messages.getString("DatabaseExplorerDialog.UnexpectedProfilingError.Title"),
+					Messages.getString("DatabaseExplorerDialog.UnexpectedProfilingError.Message"), e);
+		}
+		
 	}
     
     
