@@ -2596,7 +2596,8 @@ public class Database implements VariableSpace
         // get & store more result set meta data for later use
         int originalColumnType=rm.getColumnType(index);
         String originalColumnTypeName=rm.getColumnTypeName(index);
-        int originalPrecision=rm.getPrecision(index);
+        int originalPrecision=-1;
+        if (!ignoreLength) rm.getPrecision(index); // Throws exception on MySQL
         int originalScale=rm.getScale(index);
         boolean originalAutoIncrement=rm.isAutoIncrement(index);
         int originalNullable=rm.isNullable(index);
