@@ -158,6 +158,8 @@ public class GetFilesRowsCount extends BaseStep implements StepInterface
 		{
 			if(!meta.isFileField())
 			{
+				log.logBasic("----------------------","Total file " +data.files.nrOfFiles());
+				log.logBasic("----------------------","Current file " +data.filenr);
 	            if (data.filenr>=data.files.nrOfFiles()) // finished processing!
 	            {
 	            	if (log.isDetailed()) logDetailed(Messages.getString("GetFilesRowsCount.Log.FinishedProcessing"));
@@ -217,9 +219,11 @@ public class GetFilesRowsCount extends BaseStep implements StepInterface
 
 				data.file= KettleVFS.getFileObject(filename);
 				// Check if file exists!	
-				// Move file pointer ahead!
-				data.filenr++;
+
 			}
+			
+			// Move file pointer ahead!
+			data.filenr++;
 			
 			if(meta.isAddResultFile())
 			{
