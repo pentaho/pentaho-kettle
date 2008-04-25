@@ -7,6 +7,7 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulDomContainer;
+import org.pentaho.ui.xul.containers.XulTree;
 import org.pentaho.ui.xul.impl.AbstractXulComponent;
 import org.pentaho.ui.xul.swt.tags.SwtTextbox;
 
@@ -16,11 +17,21 @@ public class ExtTextbox extends SwtTextbox {
   private VariableSpace variableSpace;
   private XulComponent xulParent;
 
+  private int style = SWT.NONE;
+  
   public ExtTextbox(XulComponent parent, XulDomContainer container, String tagName) {
     super(parent, container, tagName);
     xulParent = parent;
-    variableSpace = new DatabaseMeta();
-    extText = new TextVar(variableSpace, parentComposite, SWT.BORDER);
+
+    if ((xulParent != null) && (xulParent instanceof XulTree)){
+      variableSpace = (DatabaseMeta)((XulTree)xulParent).getData();
+      
+    }else{
+      variableSpace = new DatabaseMeta();
+      style = SWT.BORDER;
+    }
+
+    extText = new TextVar(variableSpace, parentComposite, style);
     textBox = extText.getTextWidget();
     managedObject = extText;
   }
@@ -32,11 +43,18 @@ public class ExtTextbox extends SwtTextbox {
     }
     return null;
   }
+  
+  @Override
+  public Object getTextControl() {
+    getManagedObject();
+    return extText.getTextWidget();
+  }
+
 
   public Object getManagedObject() {
     if (textBox.isDisposed()){
-      int style = isMultiline()? SWT.MULTI|SWT.BORDER|SWT.WRAP|SWT.V_SCROLL : SWT.BORDER;
-      extText = new TextVar(variableSpace, parentComposite, style);
+      int thisStyle = isMultiline()? SWT.MULTI|SWT.BORDER|SWT.WRAP|SWT.V_SCROLL : style;
+      extText = new TextVar(variableSpace, parentComposite, thisStyle);
       setDisabled(isDisabled());
       setMaxlength(getMaxlength());
       setValue(getValue());

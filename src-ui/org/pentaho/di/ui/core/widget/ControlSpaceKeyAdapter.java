@@ -53,6 +53,11 @@ public class ControlSpaceKeyAdapter extends KeyAdapter {
     if (e.character == ' ' && ((e.stateMask & SWT.CONTROL) != 0) && ((e.stateMask & SWT.ALT) == 0)) {
       e.doit = false;
 
+      // textField.setData(TRUE) indicates we have transitioned from the textbox to list mode...
+      // This will be set to false when the list selection has been processed
+      // and the list is being disposed of. 
+      textField.setData(Boolean.TRUE);
+      
       final int position;
       if (getCaretPositionInterface != null)
         position = getCaretPositionInterface.getCaretPosition();
@@ -115,6 +120,7 @@ public class ControlSpaceKeyAdapter extends KeyAdapter {
       list.addFocusListener(new FocusAdapter() {
         public void focusLost(FocusEvent event) {
           shell.dispose();
+          if (!textField.isDisposed()) textField.setData(Boolean.FALSE);
         }
       });
       
@@ -138,6 +144,7 @@ public class ControlSpaceKeyAdapter extends KeyAdapter {
     }
     if (!shell.isDisposed())
       shell.dispose();
+    if (!textField.isDisposed()) textField.setData(Boolean.FALSE);
   }
 
   public static final String[] getVariableNames(VariableSpace space) {
