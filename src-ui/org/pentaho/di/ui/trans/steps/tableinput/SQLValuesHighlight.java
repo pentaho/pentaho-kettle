@@ -281,7 +281,7 @@ public class SQLValuesHighlight implements LineStyleListener {
 					"variance","specific","language","body","returns","specific","deterministic",
 					"not","external","action","reads","static","inherit","called","order","group","by",
 					"natural","full","exists","between","some","any","unique","match","value","limite",
-					"minus","references","grant","on",
+					"minus","references","grant","on","top",
 					
 					
 					
