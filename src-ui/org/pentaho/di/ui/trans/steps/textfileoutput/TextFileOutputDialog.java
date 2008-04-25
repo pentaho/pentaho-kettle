@@ -485,8 +485,6 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 				}
 			}
 		);
-		//	Prepare a list of possible DateTimeFormats...
-		String datl[] = Const.getDateFormats();
 		
  		// DateTimeFormat
 		wlDateTimeFormat=new Label(wFileComp, SWT.RIGHT);
@@ -506,7 +504,8 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
         fdDateTimeFormat.top  = new FormAttachment(wSpecifyFormat, margin);
         fdDateTimeFormat.right= new FormAttachment(100, 0);
         wDateTimeFormat.setLayoutData(fdDateTimeFormat);
-        for (int x=0;x<datl.length;x++) wDateTimeFormat.add(datl[x]);
+		String dats[] = Const.getDateFormats();
+        for (int x=0;x<dats.length;x++) wDateTimeFormat.add(dats[x]);
         
 
 
@@ -950,7 +949,6 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		final int FieldsRows=input.getOutputFields().length;
 		
 		// Prepare a list of possible formats...
-		String dats[] = Const.getDateFormats();
 		String nums[] = Const.getNumberFormats();
 		int totsize = dats.length + nums.length;
 		String formats[] = new String[totsize];
