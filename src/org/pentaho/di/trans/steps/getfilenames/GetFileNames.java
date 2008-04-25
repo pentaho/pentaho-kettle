@@ -68,48 +68,48 @@ public class GetFileNames extends BaseStep implements StepInterface
             Object[] outputRow = new Object[data.outputRowMeta.size()];
             int outputIndex = 0;
 
-            FileObject file = data.files.getFile(data.filenr);
+            data.file = data.files.getFile(data.filenr);
 
             if (meta.getFilterFileType()==null || 
             	meta.getFilterFileType().equals("all_files") || 
-            	(meta.getFilterFileType().equals("only_files") && file.getType() == FileType.FILE) ||
-                meta.getFilterFileType().equals("only_folders") && file.getType() == FileType.FOLDER)
+            	(meta.getFilterFileType().equals("only_files") && data.file.getType() == FileType.FILE) ||
+                meta.getFilterFileType().equals("only_folders") && data.file.getType() == FileType.FOLDER)
             {
 
                 // filename
-                outputRow[outputIndex++] = KettleVFS.getFilename(file);
+                outputRow[outputIndex++] = KettleVFS.getFilename(data.file);
 
                 // short_filename
-                outputRow[outputIndex++] = file.getName().getBaseName();
+                outputRow[outputIndex++] = data.file.getName().getBaseName();
 
                 try
                 {
                     // path
-                    outputRow[outputIndex++] = KettleVFS.getFilename(file.getParent());
+                    outputRow[outputIndex++] = KettleVFS.getFilename(data.file.getParent());
 
                     // type
-                    outputRow[outputIndex++] = file.getType().toString();
+                    outputRow[outputIndex++] = data.file.getType().toString();
 
                     // exists
-                    outputRow[outputIndex++] = Boolean.valueOf(file.exists());
+                    outputRow[outputIndex++] = Boolean.valueOf(data.file.exists());
 
                     // ishidden
-                    outputRow[outputIndex++] = Boolean.valueOf(file.isHidden());
+                    outputRow[outputIndex++] = Boolean.valueOf(data.file.isHidden());
 
                     // isreadable
-                    outputRow[outputIndex++] = Boolean.valueOf(file.isReadable());
+                    outputRow[outputIndex++] = Boolean.valueOf(data.file.isReadable());
 
                     // iswriteable
-                    outputRow[outputIndex++] = Boolean.valueOf(file.isWriteable());
+                    outputRow[outputIndex++] = Boolean.valueOf(data.file.isWriteable());
 
                     // lastmodifiedtime
-                    outputRow[outputIndex++] = new Date( file.getContent().getLastModifiedTime() );
-
+                    outputRow[outputIndex++] = new Date( data.file.getContent().getLastModifiedTime() );
+                    
                     // size
                     Long size = null;
-                    if (file.getType().equals(FileType.FILE))
+                    if (data.file.getType().equals(FileType.FILE))
                     {
-                        size = new Long( file.getContent().getSize() );
+                        size = new Long( data.file.getContent().getSize() );
                     }
                     outputRow[outputIndex++] = size;
                 }
@@ -119,13 +119,13 @@ public class GetFileNames extends BaseStep implements StepInterface
                 }
 
                 // extension
-                outputRow[outputIndex++] = file.getName().getExtension();
+                outputRow[outputIndex++] = data.file.getName().getExtension();
 
                 // uri
-                outputRow[outputIndex++] = file.getName().getURI();
+                outputRow[outputIndex++] = data.file.getName().getURI();
 
                 // rooturi
-                outputRow[outputIndex++] = file.getName().getRootURI();
+                outputRow[outputIndex++] = data.file.getName().getRootURI();
                 
                 putRow(data.outputRowMeta, outputRow);
             }
@@ -190,7 +190,14 @@ public class GetFileNames extends BaseStep implements StepInterface
     {
         meta = (GetFileNamesMeta) smi;
         data = (GetFileNamesData) sdi;
-
+        if(data.file!=null)
+        {
+        	try{
+        	    	data.file.close();
+        	    	data.file=null;
+        	}catch(Exception e){}
+        	
+        }
         super.dispose(smi, sdi);
     }
 

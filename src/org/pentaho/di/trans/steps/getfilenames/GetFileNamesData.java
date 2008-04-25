@@ -29,6 +29,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.errorhandling.FileErrorHandler;
+import org.apache.commons.vfs.FileObject;
 
 /**
  * @author Matt
@@ -62,8 +63,6 @@ public class GetFileNamesData extends BaseStepData implements StepDataInterface
 
 	public String filename;
 
-	public File file;
-
 	public int filenr;
 
 	public FileInputStream fr;
@@ -85,6 +84,8 @@ public class GetFileNamesData extends BaseStepData implements StepDataInterface
 	public FileErrorHandler dataErrorLineHandler;
 
 	public FilePlayList filePlayList;
+	
+	public FileObject file;
 
 	/**
 	 * 
@@ -108,6 +109,7 @@ public class GetFileNamesData extends BaseStepData implements StepDataInterface
 
 		fr = null;
 		zi = null;
+		file=null;
 	}
 
 	public void setDateFormatLenient(boolean lenient)
