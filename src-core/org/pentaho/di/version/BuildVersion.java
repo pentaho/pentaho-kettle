@@ -107,6 +107,21 @@ public class BuildVersion
             SimpleDateFormat format = new SimpleDateFormat(BUILD_DATE_FORMAT);
             buildDate = format.parse(parts[1]);
             
+            // Now try to get a more accurate build date: check the date of kettle-engine.3.0.jar
+            //
+            try {
+            	File engineJar = new File("lib/kettle-engine.jar");
+            	long lastModifiedJar = engineJar.lastModified();
+            	if (lastModifiedJar!=0L) {
+            		buildDate = new Date(lastModifiedJar);
+            	} else {
+                	System.out.println("Unable to find kettle engine jar file to set build date. (ingored)");
+            	}
+            }
+            catch(Exception e) {
+            	// Eat this exception, keep things the way the were before.
+            	// Eats security exceptions, etc.
+            }
         }
         catch(Exception e)
         {
