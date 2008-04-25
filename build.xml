@@ -13,7 +13,7 @@
         <!-- Look for user-override properties file first -->        
 		<property file="override.properties"/>
 	    <!-- version properites -->
-	    <property file="build-res/version.properties" />
+	    <property file="build-res/version.properties" /> <!-- version.properties file has build number -->
         <!-- set global properties for this build -->
 		<property file="build.properties"/>
 		  
