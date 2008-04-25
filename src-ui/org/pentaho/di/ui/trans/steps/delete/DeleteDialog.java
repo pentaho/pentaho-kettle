@@ -37,6 +37,7 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
+import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -69,12 +70,12 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
 	private FormData     fdlKey, fdKey;
 
     private Label        wlSchema;
-    private Text         wSchema;
+    private TextVar      wSchema;
     private FormData     fdlSchema, fdSchema;
 
 	private Label        wlTable;
 	private Button       wbTable;
-	private Text         wTable;
+	private TextVar         wTable;
 	private FormData     fdlTable, fdbTable, fdTable;
 
 	private Label        wlCommit;
@@ -151,7 +152,7 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
         fdlSchema.top  = new FormAttachment(wConnection, margin*2);
         wlSchema.setLayoutData(fdlSchema);
 
-        wSchema=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wSchema=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wSchema);
         wSchema.addModifyListener(lsMod);
         fdSchema=new FormData();
@@ -178,7 +179,7 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
 		fdbTable.top  = new FormAttachment(wSchema, margin);
 		wbTable.setLayoutData(fdbTable);
 
-		wTable=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wTable=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wTable);
 		wTable.addModifyListener(lsMod);
 		fdTable=new FormData();
