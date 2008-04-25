@@ -84,6 +84,7 @@
 	<classpathentry kind="lib" path="libswt/win32/swt.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/kingbasejdbc.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/monetdb-1.7-jdbc.jar"/>
+	<classpathentry kind="lib" path="libext/JDBC/vertica_2.1_jdk_5.jar"/>
 	<classpathentry kind="lib" path="libext/jxl.jar"/>
 	<classpathentry kind="lib" path="libext/web/jetty-6.1.9.jar"/>
 	<classpathentry kind="lib" path="libext/web/jetty-plus-6.1.9.jar"/>
