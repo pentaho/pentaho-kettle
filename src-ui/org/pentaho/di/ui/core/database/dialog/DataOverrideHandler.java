@@ -13,6 +13,7 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
 import org.pentaho.ui.database.event.DataHandler;
 import org.pentaho.ui.xul.components.XulTextbox;
+import org.pentaho.ui.xul.containers.XulTree;
 
 public class DataOverrideHandler extends DataHandler {
   
@@ -58,7 +59,7 @@ public class DataOverrideHandler extends DataHandler {
         for (RowMetaAndData row : buffer)
           rowData.add(row.getData());
 
-        PreviewRowsDialog prd = new PreviewRowsDialog(parent, dbinfo, SWT.NONE, null, rowMeta, rowData); //$NON-NLS-1$
+        PreviewRowsDialog prd = new PreviewRowsDialog(parent, dbinfo, SWT.NONE, null, rowMeta, rowData); 
         prd
             .setTitleMessage(
                 Messages.getString("DatabaseDialog.FeatureList.title"), Messages.getString("DatabaseDialog.FeatureList.title")); //$NON-NLS-1$ //$NON-NLS-2$
@@ -77,7 +78,8 @@ public class DataOverrideHandler extends DataHandler {
     super.getControls();
     
     XulTextbox[] boxes = new XulTextbox[] {hostNameBox, databaseNameBox, portNumberBox, userNameBox, passwordBox,
-        customDriverClassBox, customUrlBox, dataTablespaceBox, indexTablespaceBox, poolSizeBox, maxPoolSizeBox};
+        customDriverClassBox, customUrlBox, dataTablespaceBox, indexTablespaceBox, poolSizeBox, maxPoolSizeBox,
+        languageBox, systemNumberBox, clientBox};
 
     for (int i = 0; i < boxes.length; i++) {
       XulTextbox xulTextbox = boxes[i];
@@ -87,6 +89,14 @@ public class DataOverrideHandler extends DataHandler {
       }
     }
     
+    XulTree[] trees = new XulTree[] {poolParameterTree, clusterParameterTree, optionsParameterTree};
+
+    for (int i = 0; i < trees.length; i++) {
+      XulTree xulTree = trees[i];
+      if (xulTree != null){
+        xulTree.setData(databaseMeta);
+      }
+    }
   }
   
   public java.util.List<DatabaseMeta> getDatabases() {
