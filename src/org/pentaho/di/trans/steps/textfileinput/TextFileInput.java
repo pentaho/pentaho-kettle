@@ -657,7 +657,7 @@ public class TextFileInput extends BaseStep implements StepInterface
                         
                         if (info.isErrorIgnored())
                         {
-                            LogWriter.getInstance().logBasic(fname, Messages.getString("TextFileInput.Log.Warning") + message+" : " + e.getMessage());
+                            LogWriter.getInstance().logBasic(fname, Messages.getString("TextFileInput.Log.Warning")+": "  + message+" : " + e.getMessage());
 
                             value = null;
 
