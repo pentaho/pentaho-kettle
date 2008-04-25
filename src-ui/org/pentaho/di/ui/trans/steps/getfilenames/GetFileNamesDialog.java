@@ -109,7 +109,7 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 
 	private Label wlFilemask;
 
-	private Text wFilemask;
+	private TextVar wFilemask;
 
 	private FormData fdlFilemask, fdFilemask;
 
@@ -244,7 +244,7 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 		fdlFilemask.top = new FormAttachment(wFilename, margin);
 		fdlFilemask.right = new FormAttachment(middle, -margin);
 		wlFilemask.setLayoutData(fdlFilemask);
-		wFilemask = new Text(wFileComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wFilemask = new TextVar(transMeta, wFileComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wFilemask);
 		wFilemask.addModifyListener(lsMod);
 		fdFilemask = new FormData();
@@ -298,6 +298,7 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 						ColumnInfo.COLUMN_TYPE_TEXT, false), };
 
         colinfo[0].setUsingVariables(true);
+        colinfo[1].setUsingVariables(true);
 		colinfo[1].setToolTip(Messages.getString("GetFileNamesDialog.RegExpColumn.Column"));
 
 		wFilenameList = new TableView(transMeta, wFileComp, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, colinfo,
