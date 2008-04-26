@@ -1194,6 +1194,8 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 		wPreview.setEnabled(!wFileField.getSelection());
 		wbbTablename.setEnabled(!wFileField.getSelection());
 		wGet.setEnabled(!wFileField.getSelection());
+		wLimit.setEnabled(!wFileField.getSelection());
+		wlLimit.setEnabled(!wFileField.getSelection());
 	}
 	public void setIncludeFilename()
 	{

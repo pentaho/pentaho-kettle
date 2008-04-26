@@ -68,11 +68,116 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
 	/** Filter indicating file filter */
 	private String filterfiletype;
 	
+	/** The name of the field in the output containing the filename */
+	private  String  filenameField;
+	
+	/** Flag indicating that a row number field should be included in the output */
+	private  boolean includeRowNumber;
+	
+	/** The name of the field in the output containing the row number*/
+	private  String  rowNumberField;
+	
+	private String dynamicFilenameField;
+	
+	/** file name from previous fields **/
+	private boolean filefield;
+	
+	private boolean isaddresult;
+	
+	/** The maximum number or lines to read */
+	private  long  rowLimit;
+	
 	public GetFileNamesMeta()
 	{
 		super(); // allocate BaseStepMeta
 	}
+	/**
+     * @return Returns the filenameField.
+     */
+    public String getFilenameField()
+    {
+        return filenameField;
+    } 
+    /**
+     * @return Returns the rowNumberField.
+     */
+    public String getRowNumberField()
+    {
+        return rowNumberField;
+    }
+    /**
+     * @param dynamicFilenameField The dynamic filename field to set.
+     */
+    public void setDynamicFilenameField(String dynamicFilenameField)
+    {
+        this.dynamicFilenameField = dynamicFilenameField;
+    }
+    /**
+     * @param rowNumberField The rowNumberField to set.
+     */
+    public void setRowNumberField(String rowNumberField)
+    {
+        this.rowNumberField = rowNumberField;
+    }
+    
+    /**
+     * @return Returns the dynamic filename field (from previous steps)
+     */
+    public String getDynamicFilenameField()
+    {
+        return dynamicFilenameField;
+    }   
+    
+    /**
+     * @return Returns the includeRowNumber.
+     */
+    public boolean includeRowNumber()
+    {
+        return includeRowNumber;
+    }
+    
+    /**
+     * @return Returns the File field.
+     */
+    public boolean isFileField()
+    {
+        return filefield;
+    }
+    /**
+     * @param filefield The filefield to set.
+     */
+    public void setFileField(boolean filefield)
+    {
+        this.filefield = filefield;
+    }
+    
 
+
+    
+    
+    /**
+     * @param includeRowNumber The includeRowNumber to set.
+     */
+    public void setIncludeRowNumber(boolean includeRowNumber)
+    {
+        this.includeRowNumber = includeRowNumber;
+    }
+    
+    /**
+     * @param isaddresult The isaddresult to set.
+     */
+    public void setAddResultFile(boolean isaddresult)
+    {
+        this.isaddresult = isaddresult;
+    }
+    
+    /**
+     *  @return Returns isaddresult.
+     */
+    public boolean isAddResultFile()
+    {
+        return isaddresult;
+    }
 	/**
 	 * @return Returns the fileMask.
 	 */
@@ -120,7 +225,22 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		this.fileName = fileName;
 	}
-	
+    
+    /**
+     * @return Returns the rowLimit.
+     */
+    public long getRowLimit()
+    {
+        return rowLimit;
+    }
+    
+    /**
+     * @param rowLimit The rowLimit to set.
+     */
+    public void setRowLimit(long rowLimit)
+    {
+        this.rowLimit = rowLimit;
+    }
 	public void setFilterFileType(int filtertypevalue)
 	{
 		if (filtertypevalue==0)
@@ -169,8 +289,12 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		int nrfiles = 0;
 		filterfiletype="all_files";
-
-
+		isaddresult=true;
+		filefield=false;
+		includeRowNumber = false;
+		rowNumberField   = "";
+		dynamicFilenameField ="";
+		
 		allocate(nrfiles);
 
 		for (int i = 0; i < nrfiles; i++)
@@ -257,6 +381,14 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
 		ValueMetaInterface rooturi = new ValueMeta("rooturi", ValueMeta.TYPE_STRING);
 		rooturi.setOrigin(name);
 		row.addValueMeta(rooturi); 
+		
+		if (includeRowNumber)
+		{
+			ValueMetaInterface v = new ValueMeta(space.environmentSubstitute(rowNumberField), ValueMeta.TYPE_INTEGER);
+			v.setLength(ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0);
+			v.setOrigin(name);
+			row.addValueMeta(v);
+		}
  
 	}
 
@@ -267,8 +399,14 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
 		retval.append("    <filter>").append(Const.CR);
 		retval.append("      ").append(XMLHandler.addTagValue("filterfiletype",  filterfiletype));
 		retval.append("    </filter>").append(Const.CR);
-			
-
+		
+		retval.append("    ").append(XMLHandler.addTagValue("rownum",          includeRowNumber));
+	    retval.append("    ").append(XMLHandler.addTagValue("isaddresult",     isaddresult));
+	    retval.append("    ").append(XMLHandler.addTagValue("filefield",       filefield));
+	    retval.append("    ").append(XMLHandler.addTagValue("rownum_field",    rowNumberField));
+        retval.append("    ").append(XMLHandler.addTagValue("filename_Field",  dynamicFilenameField));
+        retval.append("    ").append(XMLHandler.addTagValue("limit", rowLimit));
+        
 		retval.append("    <file>").append(Const.CR);
 		
 		for (int i = 0; i < fileName.length; i++)
@@ -289,7 +427,15 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
 			Node filternode         = XMLHandler.getSubNode(stepnode, "filter");
 			Node filterfiletypenode = XMLHandler.getSubNode(filternode, "filterfiletype");
 			filterfiletype          = XMLHandler.getNodeValue(filterfiletypenode);
-					
+			
+			includeRowNumber  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "rownum"));
+			isaddresult  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "isaddresult"));
+			filefield  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "filefield"));
+			rowNumberField    = XMLHandler.getTagValue(stepnode, "rownum_field");
+			dynamicFilenameField    = XMLHandler.getTagValue(stepnode, "filename_Field");
+			// Is there a limit on the number of rows we process?
+			rowLimit = Const.toLong(XMLHandler.getTagValue(stepnode, "limit"), 0L);
+			
 			Node filenode = XMLHandler.getSubNode(stepnode, "file");
 			int nrfiles   = XMLHandler.countNodes(filenode, "name");
 				
@@ -317,6 +463,13 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			int nrfiles = rep.countNrStepAttributes(id_step, "file_name");
 			filterfiletype=rep.getStepAttributeString(id_step, "filterfiletype");
+			
+			dynamicFilenameField  = rep.getStepAttributeString(id_step, "filename_Field");
+			includeRowNumber  = rep.getStepAttributeBoolean(id_step, "rownum");
+			isaddresult  = rep.getStepAttributeBoolean(id_step, rep.getStepAttributeString(id_step, "isaddresult"));
+			filefield  = rep.getStepAttributeBoolean(id_step, "filefield");
+			rowNumberField    = rep.getStepAttributeString (id_step, "rownum_field");
+			rowLimit          = rep.getStepAttributeInteger(id_step, "limit");
 						
 			allocate(nrfiles);
 
@@ -339,6 +492,13 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
 		try
 		{			
 			rep.saveStepAttribute(id_transformation, id_step, "filterfiletype", filterfiletype);
+			
+			rep.saveStepAttribute(id_transformation, id_step, "rownum",          includeRowNumber);
+			rep.saveStepAttribute(id_transformation, id_step, "isaddresult",     isaddresult);
+			rep.saveStepAttribute(id_transformation, id_step, "filefield",          filefield);
+			rep.saveStepAttribute(id_transformation, id_step, "filename_Field",    dynamicFilenameField);
+			rep.saveStepAttribute(id_transformation, id_step, "rownum_field",    rowNumberField);
+			rep.saveStepAttribute(id_transformation, id_step, "limit",           rowLimit);
 			
 			for (int i = 0; i < fileName.length; i++)
 			{

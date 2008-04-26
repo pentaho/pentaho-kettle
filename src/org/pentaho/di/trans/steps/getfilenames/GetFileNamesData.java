@@ -11,7 +11,6 @@
 
 package org.pentaho.di.trans.steps.getfilenames;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.text.DateFormatSymbols;
@@ -86,6 +85,19 @@ public class GetFileNamesData extends BaseStepData implements StepDataInterface
 	public FilePlayList filePlayList;
 	
 	public FileObject file;
+	
+    public long                rownr;
+    
+    public int totalpreviousfields;
+    
+    public int indexOfFilenameField;
+    
+    public RowMetaInterface inputRowMeta;
+    
+    public Object[] readrow;
+    
+    public int nrStepFields;
+    
 
 	/**
 	 * 
@@ -110,6 +122,10 @@ public class GetFileNamesData extends BaseStepData implements StepDataInterface
 		fr = null;
 		zi = null;
 		file=null;
+		totalpreviousfields=0;
+		indexOfFilenameField=-1;
+		readrow=null;
+		nrStepFields=0;
 	}
 
 	public void setDateFormatLenient(boolean lenient)
