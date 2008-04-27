@@ -194,6 +194,11 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
 	private FormData     fdTabFolder;
 	
     private LabelTextVar wProxyHost;
+    
+    private FormData     fdPort;
+
+    private LabelTextVar wPort;
+
 
     private FormData     fdProxyHost;
 
@@ -378,6 +383,16 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
         fdServerName.top = new FormAttachment(wName, margin);
         fdServerName.right = new FormAttachment(100, 0);
         wServerName.setLayoutData(fdServerName);
+        
+        // Server port line
+        wPort = new LabelTextVar(jobMeta,wServerSettings, Messages.getString("JobFTP.Port.Label"), Messages.getString("JobFTP.Port.Tooltip"));
+        props.setLook(wPort);
+        wPort.addModifyListener(lsMod);
+        fdPort = new FormData();
+        fdPort.left 	= new FormAttachment(0, 0);
+        fdPort.top  	= new FormAttachment(wServerName, margin);
+        fdPort.right	= new FormAttachment(100, 0);
+        wPort.setLayoutData(fdPort);
 
         // UserName line
         wUserName = new LabelTextVar(jobMeta,wServerSettings, Messages.getString("JobFTP.User.Label"), Messages
@@ -386,7 +401,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
         wUserName.addModifyListener(lsMod);
         fdUserName = new FormData();
         fdUserName.left = new FormAttachment(0, 0);
-        fdUserName.top = new FormAttachment(wServerName, margin);
+        fdUserName.top = new FormAttachment(wPort, margin);
         fdUserName.right = new FormAttachment(100, 0);
         wUserName.setLayoutData(fdUserName);
 
@@ -1488,6 +1503,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
         wName.getTextWidget().selectAll();
 
         wServerName.setText(Const.NVL(jobEntry.getServerName(), ""));
+        wPort.setText(Const.NVL(jobEntry.getPort(), "21"));
         wUserName.setText(Const.NVL(jobEntry.getUserName(), ""));
         wPassword.setText(Const.NVL(jobEntry.getPassword(), ""));
         wFtpDirectory.setText(Const.NVL(jobEntry.getFtpDirectory(), ""));
@@ -1548,6 +1564,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
     private void ok()
     {
         jobEntry.setName(wName.getText());
+        jobEntry.setPort(wPort.getText());
         jobEntry.setServerName(wServerName.getText());
         jobEntry.setUserName(wUserName.getText());
         jobEntry.setPassword(wPassword.getText());
