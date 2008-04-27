@@ -26,6 +26,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.vfs.FileObject;
+import org.apache.derby.impl.sql.execute.rts.RealProjectRestrictStatistics;
 import org.apache.log4j.Logger;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
@@ -101,7 +102,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 	private boolean AddDateBeforeExtension;
 	private boolean isaddresult;
     private boolean createmovefolder;
-    
+    private String port;
     private String proxyHost;
      
     private String proxyPort;    /* string to allow variable substitution */
@@ -141,6 +142,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 	{
 		super(n, "");
 		nr_limit_success="10";
+		port="21";
 		success_condition=SUCCESS_IF_ALL_FILES_DOWNLOADED;
 		ifFileExists=ifFileExistsSkip;
 		SifFileExists=SifFileExistsSkip;
@@ -181,7 +183,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
         StringBuffer retval = new StringBuffer(128);
 		
 		retval.append(super.getXML());
-		
+		retval.append("      ").append(XMLHandler.addTagValue("port",   port));
 		retval.append("      ").append(XMLHandler.addTagValue("servername",   serverName));
 		retval.append("      ").append(XMLHandler.addTagValue("username",     userName));
 		retval.append("      ").append(XMLHandler.addTagValue("password",     password));
@@ -223,6 +225,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 	    try
 	    {
 	      super.loadXML(entrynode, databases, slaveServers);
+	      	port          = XMLHandler.getTagValue(entrynode, "port");
 			serverName          = XMLHandler.getTagValue(entrynode, "servername");
 			userName            = XMLHandler.getTagValue(entrynode, "username");
 			password            = XMLHandler.getTagValue(entrynode, "password");
@@ -294,6 +297,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 	    try
 	    {
 	      super.loadRep(rep, id_jobentry, databases, slaveServers);
+	      	port          = rep.getJobEntryAttributeString(id_jobentry, "port");
 			serverName          = rep.getJobEntryAttributeString(id_jobentry, "servername");
 			userName            = rep.getJobEntryAttributeString(id_jobentry, "username");
 			password            = rep.getJobEntryAttributeString(id_jobentry, "password");
@@ -364,7 +368,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 		try
 		{
 			super.saveRep(rep, id_job);
-			
+			rep.saveJobEntryAttribute(id_job, getID(), "port",      port);
 			rep.saveJobEntryAttribute(id_job, getID(), "servername",      serverName);
 			rep.saveJobEntryAttribute(id_job, getID(), "username",        userName);
 			rep.saveJobEntryAttribute(id_job, getID(), "password",        password);
@@ -602,6 +606,24 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 	}
 
 	/**
+	 * @return Returns the port.
+	 */
+	public String getPort()
+	{
+		return port;
+	}
+
+	/**
+	 * @param port The port to set.
+	 */
+	public void setPort(String port)
+	{
+		this.port = port;
+	}
+
+	
+	
+	/**
 	 * @return Returns the userName.
 	 */
 	public String getUserName()
@@ -817,8 +839,12 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 			// Create ftp client to host:port ...
 			ftpclient = new FTPClient();
             String realServername = environmentSubstitute(serverName);
+            String realServerPort = environmentSubstitute(port);
             ftpclient.setRemoteAddr(InetAddress.getByName(realServername));
-            
+            if(Const.isEmpty(realServerPort))
+            {
+            	 ftpclient.setRemotePort(Const.toInt(realServerPort, 21));
+            }
             if (!Const.isEmpty(proxyHost)) 
             {
           	  String realProxy_host = environmentSubstitute(proxyHost);
