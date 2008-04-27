@@ -428,7 +428,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
         wProxyPort.addModifyListener(lsMod);
         fdProxyPort = new FormData();
         fdProxyPort.left 	= new FormAttachment(0, 0);
-        fdProxyPort.top  	= new FormAttachment(wPassword, 2*margin);
+        fdProxyPort.top  	= new FormAttachment(wProxyHost, margin);
         fdProxyPort.right	= new FormAttachment(100, 0);
         wProxyPort.setLayoutData(fdProxyPort);
 
