@@ -929,12 +929,12 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 		return result;
 	}
 	
-	private Connection getConnection(String servername,int serverpassword,
+	private Connection getConnection(String servername,int serverport,
 			String proxyhost,int proxyport,String proxyusername,String proxypassword)
 	{
 		/* Create a connection instance */
 
-		Connection conn = new Connection(servername,serverpassword);
+		Connection conn = new Connection(servername,serverport);
 	
 		/* We want to connect through a HTTP proxy */
 		if(usehttpproxy)
