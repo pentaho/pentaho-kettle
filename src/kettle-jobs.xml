@@ -652,4 +652,17 @@
 		</tooltip>
 		<image-uri>ui/images/SHP.png</image-uri>
 	</job>
+		<job id="FTP_DELETE">
+		<type>
+			ognl:@org.pentaho.di.job.JobEntryType@FTP_DELETE
+		</type>
+		<class-name>
+			org.pentaho.di.job.entries.ftpdelete.JobEntryFTPDelete
+		</class-name>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@FILE_MANAGEMENT.getName()</category>
+		<tooltip>
+			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.FTPDELETE.Tooltip")
+		</tooltip>
+		<image-uri>ui/images/FTPD.png</image-uri>
+	</job>
 </jobs>
