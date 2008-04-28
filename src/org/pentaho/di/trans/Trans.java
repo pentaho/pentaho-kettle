@@ -636,7 +636,16 @@ public class Trans implements VariableSpace
 						nrOfFinishedSteps++;
 						
 						if (nrOfFinishedSteps>=steps.size()) {
+							// Set the finished flag
+							//
 							finished.set(true);
+							
+							// Grab the performance statistics one last time (if enabled)
+							//
+							addStepPerformanceSnapShot();
+							
+							// Fire the listeners (if any are registered)
+							//
 							for (TransListener transListener : transListeners)
 							{
 								transListener.transFinished(self);
