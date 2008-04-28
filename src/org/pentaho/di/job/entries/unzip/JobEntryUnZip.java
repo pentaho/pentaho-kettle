@@ -52,6 +52,10 @@ import org.pentaho.di.job.entry.validator.ValidatorContext;
 import org.pentaho.di.repository.Repository;
 import org.w3c.dom.Node;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.OutputStream;
+
 /**
  * This defines a 'unzip' job entry. Its main use would be to 
  * unzip files in a directory
@@ -245,6 +249,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 								}
 								else
 								{
+									
 									// We can now start the unzip process ...
 									zipfile = new ZipFile(new File(realZipfilename));
 									Enumeration<? extends ZipEntry> zipEnum =zipfile.entries();
