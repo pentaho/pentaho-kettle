@@ -3783,7 +3783,7 @@ public class Database implements VariableSpace
 		
 		String sql = "";
 		sql+=" SELECT "+databaseMeta.quoteField("ENDDATE")+", "+databaseMeta.quoteField("DEPDATE")+", "+databaseMeta.quoteField("STARTDATE");
-		sql+=" FROM "+databaseMeta.quoteField(logtable);
+		sql+=" FROM "+logtable;
 		sql+=" WHERE  "+databaseMeta.quoteField("ERRORS")+"    = 0";
 		sql+=" AND    "+databaseMeta.quoteField("STATUS")+"    = 'end'";
 		sql+=" AND    "+jobtrans+" = ?";
