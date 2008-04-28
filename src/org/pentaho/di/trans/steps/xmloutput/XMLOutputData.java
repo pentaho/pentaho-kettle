@@ -39,7 +39,7 @@ public class XMLOutputData extends BaseStepData implements StepDataInterface
 
 	public DecimalFormat df;
 
-	public RowMetaInterface previousMeta;
+	public RowMetaInterface formatRowMeta;
 
 	public RowMetaInterface outputRowMeta;
 

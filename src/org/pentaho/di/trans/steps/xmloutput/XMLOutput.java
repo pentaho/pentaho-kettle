@@ -14,7 +14,6 @@ package org.pentaho.di.trans.steps.xmloutput;
 import java.io.File;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -23,9 +22,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
-import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMetaAndData;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -123,26 +120,33 @@ public class XMLOutput extends BaseStep implements StepInterface
 
 	private void writeRowToFile(RowMetaInterface rowMeta, Object[] r) throws KettleException
 	{
-		ValueMetaAndData v;
-
 		try
 		{
 			if (first)
 			{
-				data.previousMeta = rowMeta.clone();
+				data.formatRowMeta = rowMeta.clone();
 
 				first = false;
 
 				data.fieldnrs = new int[meta.getOutputFields().length];
 				for (int i = 0; i < meta.getOutputFields().length; i++)
 				{
-					data.fieldnrs[i] = data.previousMeta.indexOfValue(meta.getOutputFields()[i].getFieldName());
+					data.fieldnrs[i] = data.formatRowMeta.indexOfValue(meta.getOutputFields()[i].getFieldName());
 					if (data.fieldnrs[i] < 0)
 					{
 						throw new KettleException("Field [" + meta.getOutputFields()[i].getFieldName()+ "] couldn't be found in the input stream!");
 					}
-				}
 				
+					// Apply the formatting settings to the valueMeta object...
+					//
+					ValueMetaInterface valueMeta = data.formatRowMeta.getValueMeta(data.fieldnrs[i]);
+					XMLField field = meta.getOutputFields()[i];
+					valueMeta.setConversionMask(field.getFormat());
+					valueMeta.setLength(field.getLength(), field.getPrecision());
+					valueMeta.setDecimalSymbol(field.getDecimalSymbol());
+					valueMeta.setGroupingSymbol(field.getGroupingSymbol());
+					valueMeta.setCurrencySymbol(field.getCurrencySymbol());
+				}
 			}
 
 			if (meta.getOutputFields() == null || meta.getOutputFields().length == 0)
@@ -154,16 +158,16 @@ public class XMLOutput extends BaseStep implements StepInterface
 				// OK, write a new row to the XML file:
 				data.writer.write((" <" + meta.getRepeatElement() + ">").toCharArray());
 
-				for (int i = 0; i < data.previousMeta.size(); i++)
+				for (int i = 0; i < data.formatRowMeta.size(); i++)
 				{
 					// Put a space between the XML elements of the row
 					//
 					if (i > 0) data.writer.write(' ');
 
-					ValueMetaInterface valueMeta = data.previousMeta.getValueMeta(i);
+					ValueMetaInterface valueMeta = data.formatRowMeta.getValueMeta(i);
 					Object valueData = r[i];
 					
-					writeField(new ValueMetaAndData(valueMeta, valueData), -1, valueMeta.getName());
+					writeField(valueMeta, valueData, valueMeta.getName());
 				}
 			} 
 			else
@@ -183,31 +187,16 @@ public class XMLOutput extends BaseStep implements StepInterface
 						data.writer.write(' '); // a space between
 					// elements
 
-					Object obj = r[data.fieldnrs[i]];
+					ValueMetaInterface valueMeta = data.formatRowMeta.getValueMeta(data.fieldnrs[i]);
+					Object valueData = r[data.fieldnrs[i]];
 
-					if (obj instanceof ValueMetaAndData)
-						v = (ValueMetaAndData) r[data.fieldnrs[i]];
-					else
+					String elementName = outputField.getElementName();
+					if ( Const.isEmpty(elementName) )
 					{
-						String elementName = outputField.getElementName();
-						if ( Const.isEmpty(elementName) )
-						{
-							elementName = outputField.getFieldName();
-						}
-						v = new ValueMetaAndData(elementName,obj);
+						elementName = outputField.getFieldName();
 					}
 
-					v.getValueMeta().setLength(outputField.getLength(), outputField.getPrecision());
-
-					String element;
-					if (outputField.getElementName() != null && outputField.getElementName().length() > 0)
-					{
-						element = outputField.getElementName();
-					} else
-					{
-						element = v.getValueMeta().getName();
-					}
-					writeField(v, i, element);
+					writeField(valueMeta, valueData, elementName);
 				}
 			}
 			
@@ -222,189 +211,11 @@ public class XMLOutput extends BaseStep implements StepInterface
 		linesOutput++;
 	}
 
-	private String formatField(ValueMetaAndData v, int idx) throws KettleValueException
-	{
-		String retval = "";
-
-		XMLField field = null;
-		if (idx >= 0)
-		{
-			field = meta.getOutputFields()[idx];
-		}
-
-		if (v.getValueMeta().isNumeric())
-		{
-			if (idx >= 0 && field != null && !Const.isEmpty(field.getFormat()))
-			{
-				if (v.getValueData() == null)
-				{
-					if (!Const.isEmpty(field.getNullString()))
-					{
-						retval = field.getNullString();
-					} else
-					{
-						retval = Const.NULL_NUMBER;
-					}
-				} else
-				{
-					// Formatting
-					if (!Const.isEmpty(field.getFormat()))
-					{
-						data.df.applyPattern(field.getFormat());
-					} else
-					{
-						data.df.applyPattern(data.defaultDecimalFormat.toPattern());
-					}
-					// Decimal
-					if (!Const.isEmpty(field.getDecimalSymbol()))
-					{
-						data.dfs.setDecimalSeparator(field.getDecimalSymbol().charAt(0));
-					} else
-					{
-						data.dfs.setDecimalSeparator(data.defaultDecimalFormatSymbols.getDecimalSeparator());
-					}
-					// Grouping
-					if (!Const.isEmpty(field.getGroupingSymbol()))
-					{
-						data.dfs.setGroupingSeparator(field.getGroupingSymbol().charAt(0));
-					} else
-					{
-						data.dfs
-								.setGroupingSeparator(data.defaultDecimalFormatSymbols.getGroupingSeparator());
-					}
-					// Currency symbol
-					if (!Const.isEmpty(field.getCurrencySymbol()))
-					{
-						data.dfs.setCurrencySymbol(field.getCurrencySymbol());
-					} else
-					{
-						data.dfs.setCurrencySymbol(data.defaultDecimalFormatSymbols.getCurrencySymbol());
-					}
-
-					data.df.setDecimalFormatSymbols(data.dfs);
-
-					if (v.getValueMeta().isBigNumber())
-					{
-						retval = data.df.format(v.getValueData());
-					} else if (v.getValueMeta().isNumber())
-					{
-						retval = data.df.format(v.getValueData());
-					} else
-					// Integer
-					{
-						retval = data.df.format(v.getValueData());
-					}
-				}
-			} else
-			{
-				if (v.getValueData() == null)
-				{
-					if (idx >= 0 && field != null && !Const.isEmpty(field.getNullString()))
-					{
-						retval = field.getNullString();
-					} else
-					{
-						retval = Const.NULL_NUMBER;
-					}
-				} else
-				{
-					retval = v.toString();
-				}
-			}
-		} else if (v.getValueMeta().isDate())
-		{
-			if (idx >= 0 && field != null && !Const.isEmpty(field.getFormat()) && v.getValueData() != null)
-			{
-				if (!Const.isEmpty(field.getFormat()))
-				{
-					data.daf.applyPattern(field.getFormat());
-				} else
-				{
-					data.daf.applyPattern(data.defaultDateFormat.toPattern());
-				}
-				data.daf.setDateFormatSymbols(data.dafs);
-				retval = data.daf.format(v.getValueData());
-			} else
-			{
-				if (v.getValueData() == null)
-				{
-					if (idx >= 0 && field != null && !Const.isEmpty(field.getNullString()))
-					{
-						retval = field.getNullString();
-					} else
-					{
-						retval = Const.NULL_DATE;
-					}
-				} else
-				{
-					retval = v.toString();
-				}
-			}
-		} else if (v.getValueMeta().isString())
-		{
-			if (v.getValueData() == null)
-			{
-				if (idx >= 0 && field != null && !Const.isEmpty(field.getNullString()))
-				{
-					retval = field.getNullString();
-				} else
-				{
-					retval = Const.NULL_STRING;
-				}
-			} else
-			{
-				retval = v.toString();
-			}
-		} else if (v.getValueMeta().isBinary())
-		{
-			if (v.getValueData() == null)
-			{
-				if (!Const.isEmpty(field.getNullString()))
-				{
-					retval = field.getNullString();
-				} else
-				{
-					retval = Const.NULL_BINARY;
-				}
-			} else
-			{
-				try
-				{
-					retval = new String(v.getValueMeta().getBinary(v.getValueData()), "UTF-8");
-				} catch (UnsupportedEncodingException e)
-				{
-					// chances are small we'll get here. UTF-8 is
-					// mandatory.
-					retval = Const.NULL_BINARY;
-				}
-
-			}
-		} else
-		// Boolean
-		{
-			if (v.getValueData() == null)
-			{
-				if (idx >= 0 && field != null && !Const.isEmpty(field.getNullString()))
-				{
-					retval = field.getNullString();
-				} else
-				{
-					retval = Const.NULL_BOOLEAN;
-				}
-			} else
-			{
-				retval = v.toString();
-			}
-		}
-
-		return retval;
-	}
-
-	private void writeField(ValueMetaAndData v, int idx, String element) throws KettleStepException
+	private void writeField(ValueMetaInterface valueMeta, Object valueData, String element) throws KettleStepException
 	{
 		try
 		{
-			String str = XMLHandler.addTagValue(element, formatField(v, idx), false);
+			String str = XMLHandler.addTagValue(element, valueMeta.getString(valueData), false);
 			if (str != null)
 				data.writer.write(str.toCharArray());
 		} catch (Exception e)
