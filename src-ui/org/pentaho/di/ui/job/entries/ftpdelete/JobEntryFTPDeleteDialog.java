@@ -1252,7 +1252,7 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
     public void checkPasswordVisible()
     {
         String password = wPassword.getText();
-        List list = new ArrayList();
+        List<String> list = new ArrayList<String>();
         StringUtil.getUsedVariables(password, list, true);
         if (list.size() == 0)
         {

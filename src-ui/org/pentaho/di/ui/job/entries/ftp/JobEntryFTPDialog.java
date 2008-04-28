@@ -1458,7 +1458,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
     public void checkPasswordVisible()
     {
         String password = wPassword.getText();
-        List list = new ArrayList();
+        List<String> list = new ArrayList<String>();
         StringUtil.getUsedVariables(password, list, true);
         if (list.size() == 0)
         {

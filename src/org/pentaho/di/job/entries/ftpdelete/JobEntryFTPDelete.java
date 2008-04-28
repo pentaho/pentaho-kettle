@@ -586,6 +586,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
     }
     
     
+	@SuppressWarnings("unchecked") // Needed for the Vector coming from sshclient.ls()
 	public Result execute(Result previousResult, int nr, Repository rep, Job parentJob)
 	{
 		LogWriter log = LogWriter.getInstance();
@@ -675,6 +676,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 				else
 					sourceFolder="./";
 				
+				// NOTE: Source of the unchecked warning suppression for the declaration of this method.
 				Vector<SFTPv3DirectoryEntry> vfilelist = sshclient.ls(sourceFolder);
 				int i=0;
 				if(vfilelist!=null)
