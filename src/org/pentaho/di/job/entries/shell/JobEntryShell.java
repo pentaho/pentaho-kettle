@@ -471,7 +471,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 			String base[] = null;
 			List<String> cmds = new ArrayList<String>();
 
-			log.logBasic(toString(), "Running on platform : " + Const.getOS());
+			if(log.isBasic()) log.logBasic(toString(), Messages.getString("JobShell.RunningOn",Const.getOS()));
 
 			if(insertScript)
 			{
@@ -599,7 +599,8 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 					first = false;
 				command.append((String) it.next());
 			}
-			log.logBasic(toString(), "Executing command : " + command.toString());
+			if(log.isBasic()) log.logBasic(toString(), Messages.getString("JobShell.ExecCommand",command.toString()));
+			
 
 			// Build the environment variable list...
 			ProcessBuilder procBuilder = new ProcessBuilder(cmds);
@@ -629,15 +630,18 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 			new Thread(outputLogger).start();
 
 			proc.waitFor();
-			if(log.isDetailed()) log.logDetailed(toString(), "Command " + command.toString() + " has finished");
+			if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobShell.CommandFinished",command.toString()));
+			
+			
+			
 
 			// What's the exit status?
 			result.setExitStatus(proc.exitValue());
 			if (result.getExitStatus() != 0)
 			{
 				if(log.isDetailed()) 
-					log.logDetailed(toString(), "Exit status of shell [" + environmentSubstitute(getFilename())
-						+ "] was " + result.getExitStatus());
+					log.logDetailed(toString(), Messages.getString("JobShell.ExitStatus",environmentSubstitute(getFilename()),""+result.getExitStatus()));
+
 				result.setNrErrors(1);
 			}
 			
@@ -648,18 +652,15 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 	
 		} catch (IOException ioe)
 		{
-			log.logError(toString(), "Error running shell [" + environmentSubstitute(getFilename()) + "] : "
-					+ ioe.toString());
+			log.logError(toString(), Messages.getString("JobShell.ErrorRunningShell",environmentSubstitute(getFilename()),ioe.toString()));
 			result.setNrErrors(1);
 		} catch (InterruptedException ie)
 		{
-			log.logError(toString(), "Shell [" + environmentSubstitute(getFilename()) + "] was interupted : "
-					+ ie.toString());
+			log.logError(toString(), Messages.getString("JobShell.Shellinterupted",environmentSubstitute(getFilename()),ie.toString()));
 			result.setNrErrors(1);
 		} catch (Exception e)
 		{
-			log.logError(toString(), "Unexpected error running shell ["
-					+ environmentSubstitute(getFilename()) + "] : " + e.toString());
+			log.logError(toString(), Messages.getString("JobShell.UnexpectedError",environmentSubstitute(getFilename()),e.toString()));
 			result.setNrErrors(1);
 		}
 
