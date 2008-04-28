@@ -84,7 +84,7 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
 	private FormData     fdlFilename, fdbFilename, fdFilename;
 
 	private Label        wlExtension;
-	private Text         wExtension;
+	private TextVar         wExtension;
 	private FormData     fdlExtension, fdExtension;
 
 	private Label        wlAddStepnr;
@@ -276,7 +276,7 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
 		fdlExtension.top  = new FormAttachment(wDoNotOpenNewFileInit, margin);
 		fdlExtension.right= new FormAttachment(middle, -margin);
 		wlExtension.setLayoutData(fdlExtension);
-		wExtension=new Text(wFileComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wExtension=new TextVar(transMeta,wFileComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		wExtension.setText("");
  		props.setLook(wExtension);
 		wExtension.addModifyListener(lsMod);

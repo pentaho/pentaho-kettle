@@ -632,6 +632,7 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 
 		// Replace possible environment variables...
 		String retval=space.environmentSubstitute( fileName );
+		String realextension=space.environmentSubstitute( extension );
 		
 		Date now = new Date();
 		
@@ -664,9 +665,9 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 			retval+="_"+splitnr;
 		}
 		
-		if (extension!=null && extension.length()!=0) 
+		if (realextension!=null && realextension.length()!=0) 
 		{
-			retval+="."+extension;
+			retval+="."+realextension;
 		} 
 
         return retval;

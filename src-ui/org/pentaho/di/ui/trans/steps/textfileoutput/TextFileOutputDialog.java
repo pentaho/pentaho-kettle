@@ -88,7 +88,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 	private FormData     fdlFileIsCommand, fdFileIsCommand;
 
 	private Label        wlExtension;
-	private Text         wExtension;
+	private TextVar         wExtension;
 	private FormData     fdlExtension, fdExtension;
 
 	private Label        wlAddStepnr;
@@ -349,7 +349,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		fdlExtension.top  = new FormAttachment(wDoNotOpenNewFileInit, margin);
 		fdlExtension.right= new FormAttachment(middle, -margin);
 		wlExtension.setLayoutData(fdlExtension);
-		wExtension=new Text(wFileComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wExtension=new TextVar(transMeta, wFileComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		wExtension.setText("");
  		props.setLook(wExtension);
 		wExtension.addModifyListener(lsMod);

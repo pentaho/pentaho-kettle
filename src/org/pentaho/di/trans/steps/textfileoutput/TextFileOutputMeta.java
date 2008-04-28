@@ -772,6 +772,7 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 
 		// Replace possible environment variables...
 		String retval=space.environmentSubstitute( fileName );
+		String realextension=space.environmentSubstitute( extension );
 		
 		if (fileAsCommand)
 			return retval;
@@ -819,17 +820,17 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 			}
 			else
 			{
-				if (extension!=null && extension.length()!=0) 
+				if (realextension!=null && realextension.length()!=0) 
 				{
-					retval+="."+extension;
+					retval+="."+realextension;
 				} 
 			}
 		}
 		else
 		{
-			if (extension!=null && extension.length()!=0) 
+			if (realextension!=null && realextension.length()!=0) 
 			{
-				retval+="."+extension;
+				retval+="."+realextension;
 			}
 			if (fileCompression.equals("GZip"))
 			{
