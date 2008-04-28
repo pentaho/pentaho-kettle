@@ -416,7 +416,8 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
             }
             catch(KettleException e)
             {
-                log.logError(toString(), "Unable to open file appender for file ["+getLogFilename()+"] : "+e.toString());
+                log.logError(toString(), Messages.getString("JobTrans.Error.UnableOpenAppender",getLogFilename(),e.toString()));
+                
                 log.logError(toString(), Const.getStackTracker(e));
                 result.setNrErrors(1);
                 result.setResult(false);
@@ -429,15 +430,16 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 		// Open the transformation...
 		// Default directory for now...
 
-        log.logBasic(toString(), "Opening filename : ["+environmentSubstitute(getFilename())+"]");
-
+        log.logBasic(toString(), Messages.getString("JobTrans.Log.OpeningFile",environmentSubstitute(getFilename())));
+        
+     
         if (!Const.isEmpty(getFilename()))
         {
-            log.logBasic(toString(), "Opening transformation: ["+environmentSubstitute(getFilename())+"]");
+            log.logBasic(toString(), Messages.getString("JobTrans.Log.OpeningTrans",environmentSubstitute(getFilename())));
         }
         else
         {
-            log.logBasic(toString(), "Opening transformation: ["+environmentSubstitute(getTransname())+"] in directory ["+directory.getPath()+"]");
+        	log.logBasic(toString(), Messages.getString("JobTrans.Log.OpeningTransInDirec",environmentSubstitute(getFilename()),directory.getPath()));
         }
 
         // Load the transformation only once for the complete loop!
@@ -489,7 +491,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 
     		try
     		{
-                if(log.isDetailed()) log.logDetailed(toString(), "Starting transformation...(file="+getFilename()+", name="+getName()+"), repinfo="+getDescription());
+                if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobTrans.StartingTrans",getFilename(),getName(),getDescription()));
 
                 // Set the result rows for the next one...
                 transMeta.setPreviousResult(result);
@@ -628,7 +630,8 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 							}
 						} 
                 		catch (Exception e1) {
-							log.logError(toString(), "Unable to contact slave server ["+remoteSlaveServer+"] to verify the status of transformation ["+transMeta.getName()+"]");
+                			
+							log.logError(toString(), Messages.getString("JobTrans.Error.UnableContactSlaveServer",""+remoteSlaveServer,transMeta.getName()));
 							result.setNrErrors(result.getNrErrors()+1L);
 							break; // Stop looking too, chances are too low the server will come back on-line
 						}
@@ -701,14 +704,16 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
         				}
                     }
                     catch (KettleException e) {
-                        log.logError(toString(), "Unable to prepare for execution of the transformation");
+                    	
+                        log.logError(toString(), Messages.getString("JobTrans.Error.UnablePrepareExec"));
         				result.setNrErrors(1);
 					}
                 }
     		}
     		catch(Exception e)
     		{
-    			log.logError(toString(), "Unable to open transformation: "+e.getMessage());
+    			
+    			log.logError(toString(), Messages.getString("JobTrans.ErrorUnableOpenTrans",e.getMessage()));
                 log.logError(toString(), Const.getStackTracker(e));
     			result.setNrErrors(1);
     		}
@@ -763,7 +768,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 	        {
 	        	String filename = environmentSubstitute(getTransname());
 	        	
-	            log.logBasic(toString(), "Loading transformation from repository ["+filename+"] in directory ["+getDirectory()+"]");
+	            log.logBasic(toString(), Messages.getString("JobTrans.Log.LoadingTransRepDirec",filename,""+getDirectory()));
 	
 	            if ( rep != null )
 	            {
@@ -775,12 +780,13 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 	            }
 	            else
 	            {
-	            	throw new KettleException("No repository defined!");
+	            	
+	            	throw new KettleException(Messages.getString("JobTrans.Exception.NoRepDefined"));
 	            }
 	        }
 	        else
 	        {
-	            throw new KettleJobException("The transformation to execute is not specified!");
+	            throw new KettleJobException(Messages.getString("JobTrans.Exception.TransNotSpecified"));
 	        }
 	
 	        // Set the arguments...
@@ -790,7 +796,8 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 		}
 		catch(Exception e)
 		{
-			throw new KettleException("Unexpected error during transformation metadata load", e);
+			
+			throw new KettleException(Messages.getString("JobTrans.Exception.MetaDataLoad"), e);
 		}
     }
 
