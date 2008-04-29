@@ -48,7 +48,7 @@ public class TransPainter
 	public static final String STRING_REMOTE_OUTPUT_STEPS       = "RemoteOutputSteps";       // $NON-NLS-1$
     
 	public static final String[] magnificationDescriptions = 
-		new String[] { "  10% ", "  15% ", "  20% ", "  25% ", "  30% ", "  35% ", "  40% ", "  45% ", "  50% ", "  55% ","  60% ", "  65% ", "  70% ", "  75% ", "  80% ", "  85% ", "  90% ", "  95% ", " 100% ", " 125% ", " 150% ", " 200% ", " 300% ", " 400% ", " 500% ", " 750% ", "1000% ", };
+		new String[] { "  25% ", "  50% ", "  75% ", "  100% " };
 	public static final float[] magnifications = 
 		new float[] { 0.10f, 0.15f, 0.20f, 0.25f, 0.30f, 0.35f, 0.40f, 0.45f, 0.50f, 0.55f, 0.60f, 0.65f, 0.70f, 0.75f, 0.80f, 0.85f, 0.90f, 0.95f, 1.00f, 1.25f, 1.50f, 2.00f, 3.00f, 4.00f, 5.00f, 7.50f, 10.00f, };
 	
