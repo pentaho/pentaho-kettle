@@ -383,15 +383,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	 */
 	public static void main(String[] a) throws KettleException
 	{
-        // Workaround for a Mac OS/X Leopard issue where getContextClassLoader() is returning 
-        // null when run from the eclipse IDE
-	    // http://lists.apple.com/archives/java-dev/2007/Nov/msg00385.html - DM
-	    //
-        if ( Thread.currentThread().getContextClassLoader() == null ) 
-        {
-          Thread.currentThread ().setContextClassLoader(ClassLoader.getSystemClassLoader());
-        }
-    
+		// Mac Leopard hack moved to KettleConfig() - DRE
+		
 		// Do some initialization of environment variables
 		EnvUtil.environmentInit();
 				
