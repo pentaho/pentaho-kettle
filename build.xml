@@ -751,7 +751,7 @@
 	 	<ant antfile="build_coverage.xml" dir="." target="coverage" />
 	 </target>
 	
-	 <target name="nightly" depends="clean, zip, sourcezip, javadoc_zip" > <!-- , compileTests, tests-core, tests-resource, tests-trans, tests-run -->
+	 <target name="nightly" depends="clean, zip, sourcezip, javadoc_zip, compileTests" > <!-- , tests-core, tests-resource, tests-trans, tests-run -->
 	 	<ant antfile="build_coverage.xml" dir="." target="zip-reports" />
 	 </target>
 	
