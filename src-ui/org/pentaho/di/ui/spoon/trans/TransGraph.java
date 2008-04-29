@@ -2713,9 +2713,14 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     
     public static boolean editProperties(TransMeta transMeta, Spoon spoon, Repository rep, boolean allowDirectoryChange)
     {
+      return editProperties(transMeta, spoon, rep, allowDirectoryChange, null);
+      
+    }
+    public static boolean editProperties(TransMeta transMeta, Spoon spoon, Repository rep, boolean allowDirectoryChange, TransDialog.Tabs currentTab)
+    {
         if (transMeta==null) return false;
         
-        TransDialog tid = new TransDialog(spoon.getShell(), SWT.NONE, transMeta, rep);
+        TransDialog tid = new TransDialog(spoon.getShell(), SWT.NONE, transMeta, rep, currentTab);
         tid.setDirectoryChangeAllowed(allowDirectoryChange);
         TransMeta ti = tid.open();
         

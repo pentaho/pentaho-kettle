@@ -28,6 +28,7 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -36,7 +37,6 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.CategoryAxis;
 import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.block.BlockBorder;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.category.LineAndShapeRenderer;
@@ -48,6 +48,7 @@ import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.spoon.Messages;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.delegates.SpoonDelegate;
+import org.pentaho.di.ui.trans.dialog.TransDialog;
 import org.pentaho.di.ui.util.ImageUtil;
 
 public class TransPerfDelegate extends SpoonDelegate {
@@ -294,17 +295,36 @@ public class TransPerfDelegate extends SpoonDelegate {
 		if (perfComposite.isDisposed()) return;
 		
 		emptyGraph = true;
+
 		Label label = new Label(perfComposite, SWT.CENTER);
 		label.setText(Messages.getString("TransLog.Dialog.PerformanceMonitoringNotEnabled.Message"));
 		label.setBackground(perfComposite.getBackground());
 		label.setFont(GUIResource.getInstance().getFontMedium());
+		
 		FormData fdLabel = new FormData();
 		fdLabel.left=new FormAttachment(5,0);
 		fdLabel.right=new FormAttachment(95,0);
 		fdLabel.top=new FormAttachment(5,0);
 		label.setLayoutData(fdLabel);
 		
-		perfComposite.layout(true, true);
+    Button button = new Button(perfComposite, SWT.CENTER);
+    button.setText(Messages.getString("TransLog.Dialog.PerformanceMonitoring.Button"));
+    button.setBackground(perfComposite.getBackground());
+    button.setFont(GUIResource.getInstance().getFontMedium());
+    
+    button.addSelectionListener(new SelectionAdapter(){
+      public void widgetSelected(SelectionEvent event){
+        TransGraph.editProperties(spoon.getActiveTransformation(), spoon, spoon.rep, true, TransDialog.Tabs.MONITOR_TAB);
+      }
+    });
+
+    FormData fdButton = new FormData();
+    fdButton.left=new FormAttachment(40,0);
+    fdButton.right=new FormAttachment(60,0);
+    fdButton.top=new FormAttachment(label, 5);
+    button.setLayoutData(fdButton);
+
+    perfComposite.layout(true, true);
 	}
 
 	public void showPerfView() {

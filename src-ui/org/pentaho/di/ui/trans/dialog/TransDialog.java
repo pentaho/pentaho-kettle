@@ -81,7 +81,10 @@ import org.pentaho.di.ui.repository.dialog.SelectDirectoryDialog;
 
 public class TransDialog extends Dialog
 {
-	private LogWriter    log;
+
+  public static enum Tabs {TRANS_TAB, LOG_TAB, DATE_TAB, DEP_TAB, MISC_TAB, PART_TAB, MONITOR_TAB};
+  
+  private LogWriter    log;
 	
 	private CTabFolder   wTabFolder;
 	private FormData     fdTabFolder;
@@ -192,7 +195,15 @@ public class TransDialog extends Dialog
 
 	private Label wlStepLogtable;
 	
-    public TransDialog(Shell parent, int style, TransMeta transMeta, Repository rep)
+	private Tabs currentTab = null;
+	
+  public TransDialog(Shell parent, int style, TransMeta transMeta, Repository rep, Tabs currentTab)
+  {
+      this(parent, style, transMeta, rep);
+      this.currentTab = currentTab;
+  }
+
+  public TransDialog(Shell parent, int style, TransMeta transMeta, Repository rep)
     {
         super(parent, style);
         this.log      = LogWriter.getInstance();
@@ -302,8 +313,12 @@ public class TransDialog extends Dialog
 		// Detect X or ALT-F4 or something that kills this window...
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
 
-		wTabFolder.setSelection(0);
-		
+		if (currentTab != null){
+		  setCurrentTab(currentTab);
+		}else{
+	    wTabFolder.setSelection(0);
+		}
+
 		getData();
 
 		BaseStepDialog.setSize(shell);
@@ -1947,5 +1962,34 @@ public class TransDialog extends Dialog
 
 	public void setDirectoryChangeAllowed(boolean directoryChangeAllowed) {
 		this.directoryChangeAllowed = directoryChangeAllowed;
+	}
+	
+	private void setCurrentTab(Tabs currentTab){
+	  
+	  switch(currentTab){
+	    case TRANS_TAB:
+	      wTabFolder.setSelection(wTransTab);
+	      break;
+      case PART_TAB:
+        wTabFolder.setSelection(wPartTab);
+        break;
+      case MISC_TAB:
+        wTabFolder.setSelection(wMiscTab);
+        break;
+      case DATE_TAB:
+        wTabFolder.setSelection(wDateTab);
+        break;
+      case LOG_TAB:
+        wTabFolder.setSelection(wLogTab);
+        break;
+      case DEP_TAB:
+        wTabFolder.setSelection(wDepTab);
+        break;
+      case MONITOR_TAB:
+        wTabFolder.setSelection(wMonitorTab);
+        break;
+	  
+	    
+	  }
 	}
 }
