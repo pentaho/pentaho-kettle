@@ -36,9 +36,11 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.CategoryAxis;
 import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.block.BlockBorder;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.category.LineAndShapeRenderer;
+import org.jfree.chart.title.TextTitle;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.trans.performance.StepPerformanceSnapShot;
@@ -170,6 +172,16 @@ public class TransPerfDelegate extends SpoonDelegate {
 		// Display 2 lists with the data types and the steps on the left side.
 		// Then put a canvas with the graph on the right side
 		// 
+		Label dataListLabel = new Label(perfComposite, SWT.NONE);
+		dataListLabel.setText(Messages.getString("StepPerformanceSnapShotDialog.Metrics.Label"));
+		spoon.props.setLook(dataListLabel);
+    FormData fdDataListLabel = new FormData();
+
+    fdDataListLabel.left   = new FormAttachment(0, 0);
+    fdDataListLabel.right  = new FormAttachment(spoon.props.getMiddlePct()/2, Const.MARGIN);
+    fdDataListLabel.top    = new FormAttachment(0, Const.MARGIN+5);
+    dataListLabel.setLayoutData(fdDataListLabel);
+		
 		dataList = new org.eclipse.swt.widgets.List(perfComposite, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.LEFT | SWT.BORDER);
 		spoon.props.setLook(dataList);
 		dataList.setItems(dataChoices);
@@ -186,13 +198,25 @@ public class TransPerfDelegate extends SpoonDelegate {
 				updateGraph();
 			}
 		});
+
 		FormData fdDataList = new FormData();
 		fdDataList.left   = new FormAttachment(0, 0);
 		fdDataList.right  = new FormAttachment(spoon.props.getMiddlePct()/2, Const.MARGIN);
-		fdDataList.top    = new FormAttachment(0, 0);
-		fdDataList.bottom = new FormAttachment(30, 0);
+    fdDataList.top    = new FormAttachment(dataListLabel, Const.MARGIN);
+    fdDataList.bottom = new FormAttachment(40, Const.MARGIN);
 		dataList.setLayoutData(fdDataList);
 
+    Label stepsListLabel = new Label(perfComposite, SWT.NONE);
+    stepsListLabel.setText(Messages.getString("StepPerformanceSnapShotDialog.Steps.Label"));
+    
+    spoon.props.setLook(stepsListLabel);
+
+    FormData fdStepsListLabel = new FormData();
+    fdStepsListLabel.left   = new FormAttachment(0, 0);
+    fdStepsListLabel.right  = new FormAttachment(spoon.props.getMiddlePct()/2, Const.MARGIN);
+    fdStepsListLabel.top    = new FormAttachment(dataList, Const.MARGIN);
+    stepsListLabel.setLayoutData(fdStepsListLabel);
+    
 		stepsList = new org.eclipse.swt.widgets.List(perfComposite, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.LEFT | SWT.BORDER);
 		spoon.props.setLook(stepsList);
 		stepsList.setItems(steps);
@@ -212,7 +236,7 @@ public class TransPerfDelegate extends SpoonDelegate {
 		FormData fdStepsList = new FormData();
 		fdStepsList.left   = new FormAttachment(0, 0);
 		fdStepsList.right  = new FormAttachment(spoon.props.getMiddlePct()/2, Const.MARGIN);
-		fdStepsList.top    = new FormAttachment(dataList, Const.MARGIN);
+		fdStepsList.top    = new FormAttachment(stepsListLabel, Const.MARGIN);
 		fdStepsList.bottom = new FormAttachment(100, Const.MARGIN);
 		stepsList.setLayoutData(fdStepsList);
 		
@@ -220,9 +244,9 @@ public class TransPerfDelegate extends SpoonDelegate {
 		canvas = new Canvas(perfComposite, SWT.NONE );
 		spoon.props.setLook(canvas);
 		FormData fdCanvas = new FormData();
-		fdCanvas.left   = new FormAttachment(spoon.props.getMiddlePct()/2, 0);
+		fdCanvas.left   = new FormAttachment(spoon.props.getMiddlePct()/2,Const.MARGIN);
 		fdCanvas.right  = new FormAttachment(100, 0);
-		fdCanvas.top    = new FormAttachment(0, 0);
+		fdCanvas.top    = new FormAttachment(0,Const.MARGIN);
 		fdCanvas.bottom = new FormAttachment(100, 0);
 		canvas.setLayoutData(fdCanvas);
 		
@@ -429,6 +453,13 @@ public class TransPerfDelegate extends SpoonDelegate {
 				false // urls
 				);
 		chart.setBackgroundPaint(Color.white);
+		TextTitle title = new TextTitle(chartTitle);
+		title.setExpandToFitSpace(true);
+		org.eclipse.swt.graphics.Color pentahoColor = GUIResource.getInstance().getColorPentaho();
+		java.awt.Color color = new java.awt.Color(pentahoColor.getRed(), pentahoColor.getGreen(),pentahoColor.getBlue());
+		title.setBackgroundPaint(color);
+		title.setFont(new java.awt.Font("SansSerif", java.awt.Font.PLAIN, 16));
+		chart.setTitle(title);
 		CategoryPlot plot = (CategoryPlot) chart.getPlot();
 		plot.setBackgroundPaint(Color.white);
 		plot.setForegroundAlpha(0.5f);
