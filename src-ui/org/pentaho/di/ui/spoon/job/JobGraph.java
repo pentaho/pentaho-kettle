@@ -101,7 +101,7 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.XulHelper;
 import org.pentaho.di.ui.job.dialog.JobDialog;
-import org.pentaho.di.ui.spoon.Messages;
+import org.pentaho.di.ui.spoon.job.Messages;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.TabItemInterface;
 import org.pentaho.di.ui.spoon.TabMapEntry;
@@ -293,8 +293,8 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
           "job-graph-entry");
     } catch (Throwable t) {
       log.logError(toString(), Const.getStackTracker(t));
-      new ErrorDialog(shell, Messages.getString("JobGraph.Exception.ErrorReadingXULFile.Title"), Messages.getString(
-          "JobGraph.Exception.ErrorReadingXULFile.Message", Spoon.XUL_FILE_MENUS), new Exception(t));
+      new ErrorDialog(shell, Messages.getString("JobGraph.Exception.ErrorReadingXULFile.Title"), 
+    		  Messages.getString("JobGraph.Exception.ErrorReadingXULFile.Message", Spoon.XUL_FILE_MENUS), new Exception(t));
     }
 
     newProps();
@@ -751,8 +751,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
               break;
           }
         } catch (Exception e) {
-          new ErrorDialog(shell, Messages.getString("JobGraph.Dialog.ErrorDroppingObject.Message"), Messages
-              .getString("JobGraph.Dialog.ErrorDroppingObject.Title"), e);
+          new ErrorDialog(shell, Messages.getString("JobGraph.Dialog.ErrorDroppingObject.Message"), Messages.getString("JobGraph.Dialog.ErrorDroppingObject.Title"), e);
         }
       }
 
@@ -814,8 +813,8 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
       addToolBarListeners();
     } catch (Throwable t) {
       log.logError(toString(), Const.getStackTracker(t));
-      new ErrorDialog(shell, Messages.getString("Spoon.Exception.ErrorReadingXULFile.Title"), Messages.getString(
-          "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_JOB_TOOLBAR), new Exception(t));
+      new ErrorDialog(shell, Messages.getString("Spoon.Exception.ErrorReadingXULFile.Title"), 
+    		  Messages.getString("Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_JOB_TOOLBAR), new Exception(t));
     }
   }
 
@@ -863,8 +862,8 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
 
     } catch (Throwable t) {
       t.printStackTrace();
-      new ErrorDialog(shell, Messages.getString("Spoon.Exception.ErrorReadingXULFile.Title"), Messages.getString(
-          "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_JOB_TOOLBAR_PROPERTIES), new Exception(t));
+      new ErrorDialog(shell, Messages.getString("Spoon.Exception.ErrorReadingXULFile.Title"), 
+    		  Messages.getString("Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_JOB_TOOLBAR_PROPERTIES), new Exception(t));
     }
   }
 
@@ -1691,9 +1690,8 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
         spoon.addTransGraph(launchTransMeta);
         spoon.open();
       } catch (Throwable e) {
-        new ErrorDialog(shell, Messages
-            .getString("JobGraph.Dialog.ErrorLaunchingSpoonCanNotLoadTransformationFromXML.Title"), Messages
-            .getString("JobGraph.Dialog.ErrorLaunchingSpoonCanNotLoadTransformationFromXML.Message"), (Exception) e);
+        new ErrorDialog(shell, Messages.getString("JobGraph.Dialog.ErrorLaunchingSpoonCanNotLoadTransformationFromXML.Title"), 
+        		Messages.getString("JobGraph.Dialog.ErrorLaunchingSpoonCanNotLoadTransformationFromXML.Message"), (Exception) e);
       }
 
     }
@@ -1721,8 +1719,8 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
         newJobMeta.clearChanged();
         spoon.delegates.jobs.addJobGraph(newJobMeta);
       } catch (Throwable e) {
-        new ErrorDialog(shell, Messages.getString("JobGraph.Dialog.ErrorLaunchingChefCanNotLoadJob.Title"), Messages
-            .getString("JobGraph.Dialog.ErrorLaunchingChefCanNotLoadJob.Message"), e);
+        new ErrorDialog(shell, Messages.getString("JobGraph.Dialog.ErrorLaunchingChefCanNotLoadJob.Title"), 
+        		Messages.getString("JobGraph.Dialog.ErrorLaunchingChefCanNotLoadJob.Message"), e);
       }
     } else {
       try {
@@ -2372,8 +2370,8 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
         SharedObjects sharedObjects = jobMeta.readSharedObjects(rep);
         spoon.sharedObjectsFileMap.put(sharedObjects.getFilename(), sharedObjects);
       } catch (Exception e) {
-        new ErrorDialog(spoon.getShell(), Messages.getString("Spoon.Dialog.ErrorReadingSharedObjects.Title"), Messages
-            .getString("Spoon.Dialog.ErrorReadingSharedObjects.Message", spoon.delegates.tabs
+        new ErrorDialog(spoon.getShell(), Messages.getString("Spoon.Dialog.ErrorReadingSharedObjects.Title"), 
+        		Messages.getString("Spoon.Dialog.ErrorReadingSharedObjects.Message", spoon.delegates.tabs
                 .makeJobGraphTabName(jobMeta)), e);
       }
     }

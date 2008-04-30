@@ -986,8 +986,8 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
                 .getString("TransGraph.HelpToolTip.CreatingHops.Message"));
           }
         } catch (Exception e) {
-          new ErrorDialog(shell, Messages.getString("TransGraph.Dialog.ErrorDroppingObject.Message"), Messages
-              .getString("TransGraph.Dialog.ErrorDroppingObject.Title"), e);
+          new ErrorDialog(shell, Messages.getString("TransGraph.Dialog.ErrorDroppingObject.Message"), 
+        		  Messages.getString("TransGraph.Dialog.ErrorDroppingObject.Title"), e);
         }
       }
 
@@ -1048,8 +1048,8 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
       toolBar.layout(true, true);
     } catch (Throwable t) {
       log.logError(toString(), Const.getStackTracker(t));
-      new ErrorDialog(shell, Messages.getString("Spoon.Exception.ErrorReadingXULFile.Title"), Messages.getString(
-          "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_TOOLBAR), new Exception(t));
+      new ErrorDialog(shell, Messages.getString("Spoon.Exception.ErrorReadingXULFile.Title"), 
+    		  Messages.getString("Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_TOOLBAR), new Exception(t));
     }
   }
 
@@ -1096,8 +1096,8 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 
     } catch (Throwable t) {
       t.printStackTrace();
-      new ErrorDialog(shell, Messages.getString("Spoon.Exception.ErrorReadingXULFile.Title"), Messages.getString(
-          "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_TOOLBAR_PROPERTIES), new Exception(t));
+      new ErrorDialog(shell, Messages.getString("Spoon.Exception.ErrorReadingXULFile.Title"), 
+    		  Messages.getString("Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_TOOLBAR_PROPERTIES), new Exception(t));
     }
   }
 
