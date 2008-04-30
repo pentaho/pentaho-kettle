@@ -15,7 +15,7 @@
 			<toolbarseparator />
 			<toolbarbutton value="explore-database" label="%Spoon.Menu.ExploreConnection" image="ui/images/exploredb.png" tooltiptext="%Spoon.Tooltip.ExploreConnection"/>
 			<toolbarseparator />
-			<toolbarbutton value="job-show-results" label="%Spoon.Menu.ShowExecutionResults" image="ui/images/show-grid.png" tooltiptext="%Spoon.Tooltip.ShowExecutionResults"/>
+			<toolbarbutton value="job-show-results" label="%Spoon.Menu.ShowExecutionResults" image="ui/images/show-results.png" tooltiptext="%Spoon.Tooltip.ShowExecutionResults"/>
 			<toolbarseparator />
 		</toolbar>
 	</toolbox>

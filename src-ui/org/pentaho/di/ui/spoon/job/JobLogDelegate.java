@@ -79,7 +79,7 @@ public class JobLogDelegate extends SpoonDelegate {
 		//
 		jobLogTab = new CTabItem(jobGraph.extraViewTabFolder, SWT.NONE);
 		jobLogTab.setImage(GUIResource.getInstance().getImageShowLog());
-		jobLogTab.setText(Messages.getString("Spoon.TransGraph.LogTab.Name"));
+		jobLogTab.setText(Messages.getString("JobGraph.LogTab.Name"));
 
 		jobLogComposite = new Composite(jobGraph.extraViewTabFolder, SWT.NONE);
 		jobLogComposite.setLayout(new FormLayout());

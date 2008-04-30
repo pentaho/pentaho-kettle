@@ -2604,12 +2604,12 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 
   private void disposeExtraView() {
 
-    XulToolbarButton button = toolbar.getButtonById("trans-show-results");
 
     extraViewComposite.dispose();
     sashForm.layout();
     sashForm.setWeights(new int[] { 100, });
 
+    XulToolbarButton button = toolbar.getButtonById("trans-show-results");
     button.setImage(GUIResource.getInstance().getImageShowResults());
     button.setHint(Messages.getString("Spoon.Tooltip.ShowExecutionResults"));
 
@@ -2846,7 +2846,6 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 
   public void addAllTabs() {
 
-    XulToolbarButton button = toolbar.getButtonById("trans-show-results");
 
     transHistoryDelegate.addTransHistory();
     transLogDelegate.addTransLog();
@@ -2854,6 +2853,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     transPerfDelegate.addTransPerf();
     extraViewTabFolder.setSelection(transGridDelegate.getTransGridTab()); // TODO: remember last selected?
     
+    XulToolbarButton button = toolbar.getButtonById("trans-show-results");
     button.setImage(GUIResource.getInstance().getImageHideResults());
     button.setHint(Messages.getString("Spoon.Tooltip.HideExecutionResults"));
 

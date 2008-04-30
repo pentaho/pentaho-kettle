@@ -2490,6 +2490,11 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
     extraViewComposite.dispose();
     sashForm.layout();
     sashForm.setWeights(new int[] { 100, });
+    
+    XulToolbarButton button = toolbar.getButtonById("job-show-results");
+    button.setImage(GUIResource.getInstance().getImageShowResults());
+    button.setHint(Messages.getString("Spoon.Tooltip.ShowExecutionResults"));
+
   }
 
   private void minMaxExtraView() {
@@ -2524,6 +2529,11 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
     jobLogDelegate.addJobLog();
     jobGridDelegate.addJobGrid();
     extraViewTabFolder.setSelection(jobGridDelegate.getJobGridTab()); // TODO: remember last selected?
+    
+    XulToolbarButton button = toolbar.getButtonById("job-show-results");
+    button.setImage(GUIResource.getInstance().getImageHideResults());
+    button.setHint(Messages.getString("Spoon.Tooltip.HideExecutionResults"));
+
   }
 
   public void newFileDropDown() {
