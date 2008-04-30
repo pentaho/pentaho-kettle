@@ -26,6 +26,21 @@
 		<fileset dir="${libswt}/win32/" includes="*.jar *.zip"/>
 	</path>
 
+	<!-- Declare filesets for classes that will be instrumented. -->
+	<!-- Ignore classes with names ending in "Test".             -->
+	<fileset id="classes" dir="${classes}">
+		<include name="**/*.class" />
+		<exclude name="**/*Test.class" />
+	</fileset>
+	<fileset id="classes-core" dir="${classes-core}">
+		<include name="**/*.class" />
+		<exclude name="**/*Test.class" />
+	</fileset>
+	<fileset id="classes-ui" dir="${classes-ui}">
+		<include name="**/*.class" />
+		<exclude name="**/*Test.class" />
+	</fileset>
+
 	<taskdef classpathref="kettle_classpath" resource="tasks.properties" />
 
 	<target name="clean-all" description="Remove all files created by the build/test process.">
@@ -87,15 +102,25 @@
 			-->
 			<ignore regex="org.pentaho.logging.*" />
 
-			<fileset dir="${classes}">
-				<!--
-					Instrument all the application classes, but
-					don't instrument the test classes.
-				-->
-				<include name="**/*.class" />
-				<exclude name="**/*Test.class" />
-			</fileset>
+			<fileset refid="classes"/>
+			<fileset refid="classes-core"/>
+			<fileset refid="classes-ui"/>
+
 		</cobertura-instrument>
+
+		<!--
+			Cobertura does not instrument all of the classes.  Some are skipped, which
+			leaves an incomplete list of classes for testing, which will cause the tests
+			to throw exceptions for the missing classes.  To fix this, we do a non-overwriting
+			copy from the original classs directory tree to the instrumented class directory tree.
+			This finds the missing class files and puts copies of them into the instrumented tree.
+		-->
+		<copy todir="${instrumented.dir}" overwrite="false" verbose="true">
+			<fileset refid="classes"/>
+			<fileset refid="classes-core"/>
+			<fileset refid="classes-ui"/>
+		</copy>
+
 
 	</target>
 
