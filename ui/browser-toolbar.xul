@@ -1,7 +1,7 @@
 <window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" align="vertical" >
 	 
 	 <toolbox>
-		<toolbar id="nav-toolbar" mode="full">
+		<toolbar id="nav-toolbar" mode="icons">
 			<toolbarbutton value="file-new" label="%Spoon.Menu.File.New" image="ui/images/new.png" tooltiptext="%Spoon.Tooltip.NewFile"/>
 			<toolbarbutton value="file-open" label="%Spoon.Menu.File.Open" image="ui/images/open.png" tooltiptext="%Spoon.Tooltip.OpenTranformation" />
 			<toolbarseparator />
