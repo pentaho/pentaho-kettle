@@ -191,7 +191,8 @@ public class CsvInput extends BaseStep implements StepInterface
 	        	totalFileSize+=size;
 	        }
 	        
-	        logBasic(Messages.getString("CsvInput.Log.ParallelFileNrAndPositionFeedback", data.filenames[data.filenr], Long.toString(data.fileSizes.get(data.filenr)), Long.toString(data.bytesToSkipInFirstFile), Long.toString(data.blockToRead)));
+	        if (data.filenames.length > 0)
+	        	logBasic(Messages.getString("CsvInput.Log.ParallelFileNrAndPositionFeedback", data.filenames[data.filenr], Long.toString(data.fileSizes.get(data.filenr)), Long.toString(data.bytesToSkipInFirstFile), Long.toString(data.blockToRead)));
 		}
 		catch(Exception e) {
 			throw new KettleException(Messages.getString("CsvInput.Exception.ErrorPreparingParallelRun"), e);
