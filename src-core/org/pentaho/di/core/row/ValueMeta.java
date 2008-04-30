@@ -2633,7 +2633,7 @@ public class ValueMeta implements ValueMetaInterface
 		    	throw new RuntimeException(toString()+" : There was a data type error: the data type of "+object.getClass().getName()+" object ["+object+"] does not correspond to value meta ["+toStringMeta()+"]");
 			}
         }
-    	xml.append(XMLHandler.closeTag(XML_META_TAG));
+    	xml.append(XMLHandler.closeTag(XML_DATA_TAG));
     	
     	return xml.toString();
     }
