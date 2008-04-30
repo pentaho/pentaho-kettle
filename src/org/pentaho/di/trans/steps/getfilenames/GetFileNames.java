@@ -276,12 +276,6 @@ public class GetFileNames extends BaseStep implements StepInterface
 				if(!meta.isFileField())
 				{
 	                data.files = meta.getTextFileList(getTransMeta());
-	                
-					if (data.files==null || data.files.nrOfFiles()==0)
-					{
-						logError(Messages.getString("GetFileNames.Log.NoFiles"));
-						return false;
-					}
 					handleMissingFiles();
 	          
 				}
