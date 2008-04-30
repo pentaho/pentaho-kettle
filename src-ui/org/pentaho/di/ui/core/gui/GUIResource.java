@@ -186,6 +186,10 @@ public class GUIResource
 
 	private Image imageShowErrorLines;
 
+  private Image imageShowResults;
+
+  private Image imageHideResults;
+
 	private ManagedFont fontBold;
 
 	/**
@@ -319,6 +323,9 @@ public class GUIResource
 			imageVariable.dispose();
 			imageTransGraph.dispose();
 			imageJobGraph.dispose();
+		  imageShowResults.dispose();
+		  imageHideResults.dispose();
+
 
 			disposeImage(imageEditOptionButton);
 			disposeImage(imageResetOptionButton);
@@ -494,7 +501,10 @@ public class GUIResource
 
 		imageShowErrorLines = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("ShowErrorLines_image")); // , "ui/images/show-perf.png"
 
-		imageStartSmall = new Image(display, 16, 16);
+    imageShowResults = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("ShowResults_image")); // , "ui/images/show-results.png
+    imageHideResults = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("HideResults_image")); // , "ui/images/hide-results.png
+
+    imageStartSmall = new Image(display, 16, 16);
 		GC gc = new GC(imageStartSmall);
 		gc.drawImage(imageStart, 0, 0, 32, 32, 0, 0, 16, 16);
 		gc.dispose();
@@ -1281,5 +1291,13 @@ public class GUIResource
 	public Image getImageShowErrorLines() {
 		return imageShowErrorLines;
 	}
+
+  public Image getImageShowResults() {
+    return imageShowResults;
+  }
+
+  public Image getImageHideResults() {
+    return imageHideResults;
+  }
 
 }

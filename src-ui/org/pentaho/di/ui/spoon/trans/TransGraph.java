@@ -1012,7 +1012,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
       toolbar = XulHelper.createToolbar(XUL_FILE_TRANS_TOOLBAR, TransGraph.this, TransGraph.this, new XulMessages());
       ToolBar toolBar = (ToolBar) toolbar.getNativeObject();
       toolBar.pack();
-
+      
       // Hack alert : more XUL limitations...
       //
       ToolItem sep = new ToolItem(toolBar, SWT.SEPARATOR);
@@ -2585,6 +2585,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
   }
 
   public void showExecutionResults() {
+    
     if (extraViewComposite == null || extraViewComposite.isDisposed()) {
       addAllTabs();
     } else {
@@ -2602,9 +2603,16 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
   }
 
   private void disposeExtraView() {
+
+    XulToolbarButton button = toolbar.getButtonById("trans-show-results");
+
     extraViewComposite.dispose();
     sashForm.layout();
     sashForm.setWeights(new int[] { 100, });
+
+    button.setImage(GUIResource.getInstance().getImageShowResults());
+    button.setHint(Messages.getString("Spoon.Tooltip.ShowExecutionResults"));
+
   }
 
   private void minMaxExtraView() {
@@ -2837,11 +2845,18 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
   }
 
   public void addAllTabs() {
+
+    XulToolbarButton button = toolbar.getButtonById("trans-show-results");
+
     transHistoryDelegate.addTransHistory();
     transLogDelegate.addTransLog();
     transGridDelegate.addTransGrid();
     transPerfDelegate.addTransPerf();
     extraViewTabFolder.setSelection(transGridDelegate.getTransGridTab()); // TODO: remember last selected?
+    
+    button.setImage(GUIResource.getInstance().getImageHideResults());
+    button.setHint(Messages.getString("Spoon.Tooltip.HideExecutionResults"));
+
   }
 
   public synchronized void debug(TransExecutionConfiguration executionConfiguration, TransDebugMeta transDebugMeta) {
