@@ -20,13 +20,17 @@ do
   CLASSPATH=$CLASSPATH:$f
 done
 
+if [ -z "$JAVAMEMOPTIONS" ]; then
+    JAVAMEMOPTIONS="-Xmx256m"
+fi
 
 # ******************************************************************
 # ** Set java runtime options                                     **
-# ** Change 256m to higher values in case you run out of memory.  **
+# ** Set JAVAMEMOPTIONS to a higher value e.g. -Xms512m -Xmx512m  **
+# ** in case you run out of memory.                               **
 # ******************************************************************
 
-OPT="-Xmx256m -cp $CLASSPATH -Djava.library.path=$LIBPATH -DKETTLE_HOME=$KETTLE_HOME -DKETTLE_REPOSITORY=$KETTLE_REPOSITORY -DKETTLE_USER=$KETTLE_USER -DKETTLE_PASSWORD=$KETTLE_PASSWORD -DKETTLE_PLUGIN_PACKAGES=$KETTLE_PLUGIN_PACKAGES"
+OPT="$JAVAMEMOPTIONS -cp $CLASSPATH -Djava.library.path=$LIBPATH -DKETTLE_HOME=$KETTLE_HOME -DKETTLE_REPOSITORY=$KETTLE_REPOSITORY -DKETTLE_USER=$KETTLE_USER -DKETTLE_PASSWORD=$KETTLE_PASSWORD -DKETTLE_PLUGIN_PACKAGES=$KETTLE_PLUGIN_PACKAGES"
 
 # ******************************************************************
 # ** Set up the options for JAAS                                  **
