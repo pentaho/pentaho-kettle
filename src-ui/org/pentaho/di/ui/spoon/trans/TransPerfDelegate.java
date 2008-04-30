@@ -474,11 +474,11 @@ public class TransPerfDelegate extends SpoonDelegate {
 				);
 		chart.setBackgroundPaint(Color.white);
 		TextTitle title = new TextTitle(chartTitle);
-		title.setExpandToFitSpace(true);
-		org.eclipse.swt.graphics.Color pentahoColor = GUIResource.getInstance().getColorPentaho();
-		java.awt.Color color = new java.awt.Color(pentahoColor.getRed(), pentahoColor.getGreen(),pentahoColor.getBlue());
-		title.setBackgroundPaint(color);
-		title.setFont(new java.awt.Font("SansSerif", java.awt.Font.PLAIN, 16));
+		//title.setExpandToFitSpace(true);
+		//org.eclipse.swt.graphics.Color pentahoColor = GUIResource.getInstance().getColorPentaho();
+		//java.awt.Color color = new java.awt.Color(pentahoColor.getRed(), pentahoColor.getGreen(),pentahoColor.getBlue());
+		//title.setBackgroundPaint(color);
+		title.setFont(new java.awt.Font("SansSerif", java.awt.Font.BOLD, 12));
 		chart.setTitle(title);
 		CategoryPlot plot = (CategoryPlot) chart.getPlot();
 		plot.setBackgroundPaint(Color.white);
