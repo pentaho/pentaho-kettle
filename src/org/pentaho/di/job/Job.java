@@ -208,7 +208,7 @@ public class Job extends Thread implements VariableSpace
             
             result = execute(); // Run the job
 		}
-		catch(KettleException je)
+		catch(Throwable je)
 		{
 			log.logError(toString(), Messages.getString("Job.Log.ErrorExecJob", je.getMessage()));
             log.logError(toString(), Const.getStackTracker(je));
@@ -219,6 +219,7 @@ public class Job extends Thread implements VariableSpace
             result = new Result();
             result.setNrErrors(1L);
             result.setResult(false);
+            addErrors(1);  // This can be before actual execution
 		}
 		finally
 		{
