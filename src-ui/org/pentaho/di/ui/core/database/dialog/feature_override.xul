@@ -3,9 +3,9 @@
 	<!--  ###############################################################################  -->
 		<hbox id="test-button-box">
 			<label id="spacer-label" flex="5" />
-			<button id="test-button" label="Test" flex="1" onclick="dataHandler.testDatabaseConnection()" />
-			<button id="feature-button" label="Feature List" flex="1" onclick="dataHandler.showFeatureList()" />
-			<button id="explore-button" label="Explore" flex="1" onclick="dataHandler.explore()" />
+			<button id="test-button" label="${DatabaseDialog.button.Test}" flex="1" onclick="dataHandler.testDatabaseConnection()" />
+			<button id="feature-button" label="${DatabaseDialog.button.FeatureList}" flex="1" onclick="dataHandler.showFeatureList()" />
+			<button id="explore-button" label="${DatabaseDialog.button.Explore}" flex="1" onclick="dataHandler.explore()" />
 			<label id="spacer-label" flex="5" />
 			
 		</hbox>

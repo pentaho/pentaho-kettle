@@ -11,19 +11,17 @@
 
 package org.pentaho.di.ui.core.database.dialog;
 
-import java.io.InputStream;
+import java.util.ResourceBundle;
 
-import org.dom4j.Document;
-import org.dom4j.io.SAXReader;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
+import org.pentaho.ui.database.DatabaseConnectionDialog;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.containers.XulWindow;
-import org.pentaho.ui.xul.impl.XulEventHandler;
 import org.pentaho.ui.xul.swt.SwtXulLoader;
 
 public class XulDatabaseDialog {
@@ -36,21 +34,30 @@ public class XulDatabaseDialog {
 
   private String databaseName;
 
-  // private PropsUI props;
-
   private java.util.List<DatabaseMeta> databases;
 
   private boolean modalDialog;
 
-  XulEventHandler dataHandler = null;
-
+  DataOverrideHandler dataHandler = null;
+  
+  private static final String EVENT_ID = "dataHandler"; //$NON-NLS-1$
+  
+  private static final String MESSAGES = "org.pentaho.di.ui.core.database.dialog.messages.messages"; //$NON-NLS-1$
+  
+  private static final String DIALOG_FRAGMENT_FILE = "/feature_override.xul"; //$NON-NLS-1$
+  
+  private static final String FRAGMENT_ID = "test-button-box"; //$NON-NLS-1$
+  
+  private static final String EXTENDED_WIDGET_CLASSNAME = "org.pentaho.di.ui.core.database.dialog.tags.ExtTextbox"; //$NON-NLS-1$
+  
+  private static final String EXTENDED_WIDGET_ID = "VARIABLETEXTBOX"; //$NON-NLS-1$
+  
   public XulDatabaseDialog(Shell parent, DatabaseMeta dbMeta) {
     parentShell = parent;
     databaseMeta = dbMeta;
     if (dbMeta != null) {
       databaseName = databaseMeta.getName();
     }
-    // props = PropsUI.getInstance();
     databases = null;
   }
 
@@ -60,59 +67,44 @@ public class XulDatabaseDialog {
   */
   public String open() {
 
-    // Load the XUL definition to a dom4j document...
-    Document doc = null;
-    try {
-      InputStream in = XulDatabaseDialog.class.getClassLoader().getResourceAsStream(
-          "org/pentaho/ui/database/databasedialog.xul");
-
-      SAXReader rdr = new SAXReader();
-      doc = rdr.read(in);
-    } catch (Exception e) {
-      new ErrorDialog(parentShell, Messages.getString("XulDatabaseDialog.Error.Titel"), Messages
-          .getString("XulDatabaseDialog.Error.SAXReader"), e);
-      return null;
-    }
-
     XulDomContainer container = null;
     try {
-      SwtXulLoader loader = new SwtXulLoader();
-      loader.register("VARIABLETEXTBOX", "org.pentaho.di.ui.core.database.dialog.tags.ExtTextbox");
-      container = loader.loadXul(doc);
+      DatabaseConnectionDialog dcDialog = new DatabaseConnectionDialog();
+      dcDialog.registerClass(EXTENDED_WIDGET_ID, EXTENDED_WIDGET_CLASSNAME);
+      container = dcDialog.getSwtInstance();
 
-      container.addEventHandler("dataHandler", DataOverrideHandler.class.getName());
+      container.addEventHandler(EVENT_ID, DataOverrideHandler.class.getName());
 
-      dataHandler = container.getEventHandler("dataHandler");
+      dataHandler = (DataOverrideHandler)container.getEventHandler(EVENT_ID);
       if (databaseMeta != null) {
         dataHandler.setData(databaseMeta);
       }
+      dataHandler.setDatabases(databases);
+      dataHandler.getControls();
 
-      ((DataOverrideHandler) container.getEventHandler("dataHandler")).setDatabases(databases);
-      ((DataOverrideHandler) container.getEventHandler("dataHandler")).getControls();
-
-    } catch (XulException e1) {
-      e1.printStackTrace();
+    } catch (XulException e) {
+      new ErrorDialog(parentShell, Messages.getString("XulDatabaseDialog.Error.Titel"), Messages //$NON-NLS-1$
+          .getString("XulDatabaseDialog.Error.HandleXul"), e); //$NON-NLS-1$
+      return null;
     }
 
     try {
       // Inject the button panel that contains the "Feature List" and "Explore" buttons
 
-      XulComponent boxElement = container.getDocumentRoot().getElementById("test-button-box");
+      XulComponent boxElement = container.getDocumentRoot().getElementById(FRAGMENT_ID);
       XulComponent parentElement = boxElement.getParent();
 
       XulDomContainer fragmentContainer = null;
-
-      // Get new box fragment ...
-      // This will effectively set up the SWT parent child relationship...
+      ResourceBundle res = ResourceBundle.getBundle(MESSAGES);
 
       String pkg = getClass().getPackage().getName().replace('.', '/');
-      fragmentContainer = container.loadFragment(pkg.concat("/feature_override.xul"));
+      fragmentContainer = container.loadFragment(pkg.concat(DIALOG_FRAGMENT_FILE), res);
       XulComponent newBox = fragmentContainer.getDocumentRoot().getFirstChild();
       parentElement.replaceChild(boxElement, newBox);
 
-    } catch (XulException e) {
-      new ErrorDialog(parentShell, Messages.getString("XulDatabaseDialog.Error.Titel"), Messages
-          .getString("XulDatabaseDialog.Error.HandleXul"), e);
+    } catch (Exception e) {
+      new ErrorDialog(parentShell, Messages.getString("XulDatabaseDialog.Error.Titel"), Messages //$NON-NLS-1$
+          .getString("XulDatabaseDialog.Error.HandleXul"), e); //$NON-NLS-1$
       return null;
     }
 
@@ -127,9 +119,10 @@ public class XulDatabaseDialog {
 
       databaseMeta = (DatabaseMeta) dataHandler.getData();
       databaseName = databaseMeta.getDatabaseName();
+
     } catch (Exception e) {
-      new ErrorDialog(parentShell, Messages.getString("XulDatabaseDialog.Error.Titel"), Messages
-          .getString("XulDatabaseDialog.Error.Dialog"), e);
+      new ErrorDialog(parentShell, Messages.getString("XulDatabaseDialog.Error.Titel"), Messages  //$NON-NLS-1$
+          .getString("XulDatabaseDialog.Error.Dialog"), e); //$NON-NLS-1$
       return null;
     }
     return databaseName;
