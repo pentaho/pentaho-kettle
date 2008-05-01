@@ -43,7 +43,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.core.fileinput.FileInputList;
 
 /**
- * Store run-time data on the XML xpath step.
+ * Store run-time data on the getXMLData step.
  */
 public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 {	
@@ -598,16 +598,21 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 			int type=field.getType();
 			if (type==ValueMeta.TYPE_NONE) type=ValueMeta.TYPE_STRING;
 			ValueMetaInterface v=new ValueMeta(space.environmentSubstitute(field.getName()), type);
-			v.setLength(field.getLength(), field.getPrecision());
+			v.setLength(field.getLength());
+			v.setPrecision(field.getPrecision());
 			v.setOrigin(name);
-			r.addValueMeta(v);
-	        
+			v.setConversionMask(field.getFormat());
+	        v.setDecimalSymbol(field.getDecimalSymbol());
+	        v.setGroupingSymbol(field.getGroupSymbol());
+	        v.setCurrencySymbol(field.getCurrencySymbol());
+			r.addValueMeta(v);    
 		}
 		
 		if (includeFilename)
 		{
 			ValueMetaInterface v = new ValueMeta(space.environmentSubstitute(filenameField), ValueMeta.TYPE_STRING);
-			v.setLength(100, -1);
+			v.setLength(250);
+            v.setPrecision(-1);
 			v.setOrigin(name);
 			r.addValueMeta(v);
 		}
@@ -615,7 +620,7 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 		if (includeRowNumber)
 		{
 			ValueMetaInterface v = new ValueMeta(space.environmentSubstitute(rowNumberField), ValueMeta.TYPE_INTEGER);
-			v.setLength(ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0);
+	        v.setLength(ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0);
 			v.setOrigin(name);
 			r.addValueMeta(v);
 		}

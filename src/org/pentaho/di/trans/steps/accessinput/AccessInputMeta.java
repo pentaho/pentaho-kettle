@@ -534,16 +534,22 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface
 			int type=field.getType();
 			if (type==ValueMeta.TYPE_NONE) type=ValueMeta.TYPE_STRING;
 			ValueMetaInterface v=new ValueMeta(space.environmentSubstitute(field.getName()), type);
-			v.setLength(field.getLength(), field.getPrecision());
+			v.setLength(field.getLength());
+			v.setPrecision(field.getPrecision());
 			v.setOrigin(name);
-			r.addValueMeta(v);
-	        
+			v.setConversionMask(field.getFormat());
+	        v.setDecimalSymbol(field.getDecimalSymbol());
+	        v.setGroupingSymbol(field.getGroupSymbol());
+	        v.setCurrencySymbol(field.getCurrencySymbol());
+			r.addValueMeta(v);  
+  
 		}
 		
 		if (includeFilename)
 		{
 			ValueMetaInterface v = new ValueMeta(space.environmentSubstitute(filenameField), ValueMeta.TYPE_STRING);
-			v.setLength(100, -1);
+            v.setLength(250);
+            v.setPrecision(-1);
 			v.setOrigin(name);
 			r.addValueMeta(v);
 		}
@@ -552,7 +558,8 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			
 		    ValueMetaInterface v = new ValueMeta(space.environmentSubstitute(tablenameField), ValueMeta.TYPE_STRING);
-			v.setLength(100, -1);
+            v.setLength(250);
+            v.setPrecision(-1);
 			v.setOrigin(name);
 			r.addValueMeta(v);
 		}		
