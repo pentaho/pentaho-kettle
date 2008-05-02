@@ -223,8 +223,12 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
                     log.logDetailed(toString(), Messages.getString("JobPing.NbrPackets.Label") + NbrPaquetsSend);
                     log.logDetailed(toString(), Messages.getString("JobPing.PingingHost1.Label") + ip + Messages.getString("JobPing.PingingHost2.Label"));
                 }
-
-                Process processPing = Runtime.getRuntime().exec("ping " + ip + " -n " + NbrPaquetsSend);
+                String cmdping="ping ";
+            	if(Const.getOS().startsWith("Windows"))
+            		cmdping+= ip + " -n " + NbrPaquetsSend;
+            	else
+            		cmdping+= ip + " -c " + NbrPaquetsSend;
+                Process processPing = Runtime.getRuntime().exec(cmdping);
 
                 // Get ping response
                 log.logDetailed(toString(), Messages.getString("JobPing.Gettingresponse1.Label") + ip
