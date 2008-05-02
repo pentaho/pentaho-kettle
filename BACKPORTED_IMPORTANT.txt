@@ -68,3 +68,4 @@ The following bug where fixes backported from the 3.1 series to 2.5.3:
 - Fix for PDI-674: FTPPut job entry deletes directory instead of file - Samatar - 18-Jan-2008
 - Fix for PDI-807 : Put a file with FTP Error - Samatar - 19-Feb-2008
 - Fix for PDI-672 : TextFileInput does not always close input file - Samatar - 08-Apr-2008
+- Fix for PDI-1163 : Job stopped at "Ping a host" entry. - Samatar - 02-May-2008
