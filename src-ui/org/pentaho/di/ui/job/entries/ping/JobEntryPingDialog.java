@@ -17,6 +17,7 @@
 package org.pentaho.di.ui.job.entries.ping;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -62,9 +63,9 @@ public class JobEntryPingDialog extends JobEntryDialog implements JobEntryDialog
     private TextVar  wHostname;
     private FormData fdlHostname,  fdHostname;
 
-	private Label    wlNbrPackets;
-	private TextVar  wNbrPackets;
-	private FormData fdlNbrPackets, fdNbrPackets;
+	private Label    wlTimeOut;
+	private TextVar  wTimeOut;
+	private FormData fdlTimeOut, fdTimeOut;
 
     private Button   wOK, wCancel;
 
@@ -75,6 +76,14 @@ public class JobEntryPingDialog extends JobEntryDialog implements JobEntryDialog
     private Shell shell;
 
     private SelectionAdapter lsDef;
+    
+    private Label wlPingType;
+    private  CCombo wPingType;
+    private FormData fdlPingType, fdPingType;
+    
+	private Label    wlNbrPackets;
+	private TextVar  wNbrPackets;
+	private FormData fdNbrPackets,fdlNbrPackets;
     
     private boolean changed;
 
@@ -160,25 +169,76 @@ public class JobEntryPingDialog extends JobEntryDialog implements JobEntryDialog
                 wHostname.setToolTipText(jobMeta.environmentSubstitute(wHostname.getText()));
             }
         });
+        
+    	wlPingType = new Label(shell, SWT.RIGHT);
+     	wlPingType.setText(Messages.getString("JobPing.PingType.Label"));
+     	props.setLook(wlPingType);
+     	fdlPingType = new FormData();
+     	fdlPingType.left = new FormAttachment(0, 0);
+     	fdlPingType.right = new FormAttachment(middle, 0);
+     	fdlPingType.top = new FormAttachment(wHostname, margin);
+     	wlPingType.setLayoutData(fdlPingType);
+     	wPingType = new CCombo(shell, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
+     	wPingType.add(Messages.getString("JobPing.ClassicPing.Label"));
+     	wPingType.add(Messages.getString("JobPing.SystemPing.Label"));
+     	wPingType.add(Messages.getString("JobPing.BothPings.Label"));
+     	wPingType.select(1); // +1: starts at -1
+     	props.setLook(wPingType);
+     	fdPingType = new FormData();
+     	fdPingType.left = new FormAttachment(middle, 0);
+     	fdPingType.top = new FormAttachment(wHostname, margin);
+     	fdPingType.right = new FormAttachment(100, 0);
+     	wPingType.setLayoutData(fdPingType);
+     	wPingType.addSelectionListener(new SelectionAdapter() 
+		{
+			public void widgetSelected(SelectionEvent e) 
+			{
+				setPingType();
+				jobEntry.setChanged();
+			}
+		}
+	);
 
-		// Nbr response to get
+		// Timeout
+		wlTimeOut = new Label(shell, SWT.RIGHT);
+		wlTimeOut.setText(Messages.getString("JobPing.TimeOut.Label"));
+		props.setLook(wlTimeOut);
+		fdlTimeOut = new FormData();
+		fdlTimeOut.left = new FormAttachment(0, 0);
+		fdlTimeOut.right = new FormAttachment(middle, 0);
+		fdlTimeOut.top = new FormAttachment(wPingType, margin);
+		wlTimeOut.setLayoutData(fdlTimeOut);
+
+		wTimeOut = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wlTimeOut.setToolTipText(Messages.getString("JobPing.TimeOut.Tooltip"));
+		props.setLook(wTimeOut);
+		wTimeOut.addModifyListener(lsMod);
+		fdTimeOut = new FormData();
+		fdTimeOut.left = new FormAttachment(middle, 0);
+		fdTimeOut.top = new FormAttachment(wPingType, margin);
+		fdTimeOut.right = new FormAttachment(100, 0);
+		wTimeOut.setLayoutData(fdTimeOut);
+		
+
+		// Nbr packets to send
 		wlNbrPackets = new Label(shell, SWT.RIGHT);
-		wlNbrPackets.setText(Messages.getString("JobPing.NbrPaquets.Label"));
+		wlNbrPackets.setText(Messages.getString("JobPing.NrPackets.Label"));
 		props.setLook(wlNbrPackets);
 		fdlNbrPackets = new FormData();
 		fdlNbrPackets.left = new FormAttachment(0, 0);
 		fdlNbrPackets.right = new FormAttachment(middle, 0);
-		fdlNbrPackets.top = new FormAttachment(wHostname, margin);
+		fdlNbrPackets.top = new FormAttachment(wTimeOut, margin);
 		wlNbrPackets.setLayoutData(fdlNbrPackets);
 
-		wNbrPackets = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wNbrPackets = new TextVar(jobMeta,shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wNbrPackets);
 		wNbrPackets.addModifyListener(lsMod);
 		fdNbrPackets = new FormData();
 		fdNbrPackets.left = new FormAttachment(middle, 0);
-		fdNbrPackets.top = new FormAttachment(wHostname, margin);
+		fdNbrPackets.top = new FormAttachment(wTimeOut, margin);
 		fdNbrPackets.right = new FormAttachment(100, 0);
 		wNbrPackets.setLayoutData(fdNbrPackets);
+
 
         wOK = new Button(shell, SWT.PUSH);
         wOK.setText(Messages.getString("System.Button.OK"));
@@ -236,7 +296,7 @@ public class JobEntryPingDialog extends JobEntryDialog implements JobEntryDialog
         });
 
         getData();
-
+        setPingType();
         BaseStepDialog.setSize(shell);
 
         shell.open();
@@ -249,6 +309,13 @@ public class JobEntryPingDialog extends JobEntryDialog implements JobEntryDialog
         return jobEntry;
     }
 
+    private void setPingType()
+    {
+    	wlTimeOut.setEnabled(wPingType.getSelectionIndex()==jobEntry.isystemPing || wPingType.getSelectionIndex()==jobEntry.ibothPings);
+    	wTimeOut.setEnabled(wPingType.getSelectionIndex()==jobEntry.isystemPing || wPingType.getSelectionIndex()==jobEntry.ibothPings);
+    	wlNbrPackets.setEnabled(wPingType.getSelectionIndex()==jobEntry.iclassicPing || wPingType.getSelectionIndex()==jobEntry.ibothPings);
+       	wNbrPackets.setEnabled(wPingType.getSelectionIndex()==jobEntry.iclassicPing || wPingType.getSelectionIndex()==jobEntry.ibothPings);
+    }
     public void dispose()
     {
         WindowProperty winprop = new WindowProperty(shell);
@@ -266,8 +333,17 @@ public class JobEntryPingDialog extends JobEntryDialog implements JobEntryDialog
         wName.selectAll();
         if (jobEntry.getHostname() != null)
             wHostname.setText(jobEntry.getHostname());
-		if (jobEntry.getNbrPackets() != null)
+        if (jobEntry.getNbrPackets() != null)
 			wNbrPackets.setText(jobEntry.getNbrPackets());
+		else
+			wNbrPackets.setText("2");
+		
+		if (jobEntry.getTimeOut() != null)
+			wTimeOut.setText(jobEntry.getTimeOut());
+		else
+			wTimeOut.setText("3000");
+
+		wPingType.select(jobEntry.ipingtype);
     }
 
     private void cancel()
@@ -282,6 +358,15 @@ public class JobEntryPingDialog extends JobEntryDialog implements JobEntryDialog
         jobEntry.setName(wName.getText());
         jobEntry.setHostname(wHostname.getText());
 		jobEntry.setNbrPackets(wNbrPackets.getText());
+		jobEntry.setTimeOut(wTimeOut.getText());
+		jobEntry.ipingtype=wPingType.getSelectionIndex();
+		if(wPingType.getSelectionIndex()==jobEntry.isystemPing)
+			jobEntry.pingtype=jobEntry.systemPing;
+		else if(wPingType.getSelectionIndex()==jobEntry.ibothPings)
+			jobEntry.pingtype=jobEntry.bothPings;
+		else
+			jobEntry.pingtype=jobEntry.classicPing;
+	
 	
         dispose();
     }

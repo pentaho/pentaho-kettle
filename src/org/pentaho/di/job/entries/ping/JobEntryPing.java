@@ -19,6 +19,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
+import java.net.InetAddress;
 
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
@@ -41,6 +42,7 @@ import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
 import org.w3c.dom.Node;
 
+
 /**
  * This defines a ping job entry.
  *
@@ -51,13 +53,29 @@ import org.w3c.dom.Node;
 public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInterface
 {
 	private String hostname;
+	private String timeout;
+	public String defaultTimeOut="3000";
 	private String nbrPackets;
+	private String Windows_CHAR="-n";
+	private String NIX_CHAR="-c";
+	
+ 	public String classicPing="classicPing";
+ 	public int iclassicPing=0;
+ 	public String systemPing="systemPing";
+	public int isystemPing=1;
+ 	public String bothPings="bothPings";
+	public int ibothPings=2;
+	
+	public String pingtype;
+	public int ipingtype;
 
 	public JobEntryPing(String n)
 	{
 		super(n, "");
+		pingtype=classicPing;
 		hostname=null;
 		nbrPackets="2";
+		timeout=defaultTimeOut;
 		setID(-1L);
 		setJobEntryType(JobEntryType.PING);
 	}
@@ -88,6 +106,9 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
 
 		// TODO: The following line may be removed 3 versions after 2.5.0
 		retval.append("      ").append(XMLHandler.addTagValue("nbrpaquets",  nbrPackets));
+		retval.append("      ").append(XMLHandler.addTagValue("timeout",   timeout));
+		
+		retval.append("      ").append(XMLHandler.addTagValue("pingtype",   pingtype));
 
 		return retval.toString();
 	}
@@ -98,7 +119,6 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
 		try
 		{
 			String nbrPaquets;
-
 			super.loadXML(entrynode, databases, slaveServers);
 			hostname   = XMLHandler.getTagValue(entrynode, "hostname");
 			nbrPackets = XMLHandler.getTagValue(entrynode, "nbr_packets");
@@ -110,6 +130,22 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
 				// if only nbrpaquets exists this means that the file was
 				// save by a version 2.5.0 ping job entry
 				nbrPackets = nbrPaquets;
+			}
+			timeout     = XMLHandler.getTagValue(entrynode, "timeout");
+			pingtype     = XMLHandler.getTagValue(entrynode, "pingtype");
+			if(Const.isEmpty(pingtype))
+			{
+				pingtype=classicPing;
+				ipingtype=iclassicPing;
+			}else
+			{
+				if(pingtype.equals(systemPing))
+					ipingtype=isystemPing;
+				else if(pingtype.equals(bothPings))
+					ipingtype=ibothPings;
+				else
+					ipingtype=iclassicPing;
+				
 			}
 		}
 		catch(KettleXMLException xe)
@@ -124,7 +160,6 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
 		try
 		{
 			String nbrPaquets;
-
 			super.loadRep(rep, id_jobentry, databases, slaveServers);
 			hostname   = rep.getJobEntryAttributeString(id_jobentry, "hostname");
 			nbrPackets = rep.getJobEntryAttributeString(id_jobentry, "nbr_packets");
@@ -136,6 +171,21 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
 				// if only nbrpaquets exists this means that the file was
 				// save by a version 2.5.0 ping job entry
 				nbrPackets = nbrPaquets;
+			}
+			timeout = rep.getJobEntryAttributeString(id_jobentry, "timeout");
+			
+			pingtype  = rep.getJobEntryAttributeString(id_jobentry, "pingtype");
+			if(Const.isEmpty(pingtype))
+			{
+				pingtype=classicPing;
+				ipingtype=iclassicPing;
+			}else{
+				if(pingtype.equals(systemPing))
+					ipingtype=isystemPing;
+				else if(pingtype.equals(bothPings))
+					ipingtype=ibothPings;
+				else
+					ipingtype=iclassicPing;
 			}
 		}
 		catch(KettleException dbe)
@@ -155,13 +205,28 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
 			rep.saveJobEntryAttribute(id_job, getID(), "nbr_packets", nbrPackets);
 			// TODO: The following line may be removed 3 versions after 2.5.0
 			rep.saveJobEntryAttribute(id_job, getID(), "nbrpaquets",  nbrPackets);
+			rep.saveJobEntryAttribute(id_job, getID(), "timeout",      timeout);
+			rep.saveJobEntryAttribute(id_job, getID(), "pingtype",      pingtype);
 		}
 		catch(KettleDatabaseException dbe)
 		{
 			throw new KettleException("Unable to save job entry of type 'ping' to the repository for id_job="+id_job, dbe);
 		}
 	}
+	public String getNbrPackets()
+	{
+		return nbrPackets;
+	}
 
+	public String getRealNbrPackets()
+	{
+		return environmentSubstitute(getNbrPackets());
+	}
+
+	public void setNbrPackets(String nbrPackets)
+	{
+		this.nbrPackets = nbrPackets;
+	}
 	public void setHostname(String hostname)
 	{
 		this.hostname = hostname;
@@ -177,88 +242,79 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
         return environmentSubstitute(getHostname());
     }
 
-	public String getNbrPackets()
+	public String getTimeOut()
 	{
-		return nbrPackets;
+		return timeout;
 	}
 
-	public String getRealNbrPackets()
+	public String getRealTimeOut()
 	{
-		return environmentSubstitute(getNbrPackets());
+		return environmentSubstitute(getTimeOut());
 	}
 
-	public void setNbrPackets(String nbrPackets)
+	public void setTimeOut(String timeout)
 	{
-		this.nbrPackets = nbrPackets;
+		this.timeout = timeout;
 	}
 
 	public Result execute(Result previousResult, int nr, Repository rep, Job parentJob)
     {
         LogWriter log = LogWriter.getInstance();
         Result result = previousResult;
-
+        
         result.setNrErrors(1);
         result.setResult(false);
 
         String hostname = getRealHostname();
-
-        if (!Const.isEmpty(hostname))
+    	int timeoutInt = Const.toInt(getRealTimeOut(), 300);
+    	int packets = Const.toInt(getRealNbrPackets(), 2);
+        boolean status =false;
+        
+        if (Const.isEmpty(hostname))
         {
-            String ip = hostname;
-
-            try
-            {
-                String lignePing = "";
-
-                int NbrPaquetsSend = Const.toInt(getRealNbrPackets(), -1);
-
-                if (NbrPaquetsSend < 1 || NbrPaquetsSend > 1000)
-                {
-                    // Value must be between 1 and 1000
-                    NbrPaquetsSend = 2;
-                }
-
-                if ( log.isDetailed() )
-                {
-                    log.logDetailed(toString(), Messages.getString("JobPing.NbrPackets.Label") + NbrPaquetsSend);
-                    log.logDetailed(toString(), Messages.getString("JobPing.PingingHost1.Label") + ip + Messages.getString("JobPing.PingingHost2.Label"));
-                }
-
-                Process processPing = Runtime.getRuntime().exec("ping " + ip + " -n " + NbrPaquetsSend);
-
-                // Get ping response
-                if(log.isDetailed())	
-                	log.logDetailed(toString(), Messages.getString("JobPing.Gettingresponse1.Label") + ip
-                        + Messages.getString("JobPing.Gettingresponse2.Label"));
-
-                BufferedReader br = new BufferedReader(new InputStreamReader(processPing.getInputStream()));
-
-                // Read response lines
-                while ((lignePing = br.readLine()) != null)
-                {
-                	if(log.isDetailed())	
-                		log.logDetailed(toString(), lignePing);
-                    // We succeed only when 0% lost of data
-                }
-                if (processPing.exitValue()==0)
-                {
-                	if(log.isDetailed())	
-                		log.logDetailed(toString(), Messages.getString("JobPing.OK1.Label") + ip + Messages.getString("JobPing.OK2.Label"));
-                    result.setNrErrors(0);
-                    result.setResult(true);
-                }
-            }
-            catch (IOException ex)
-            {
-                log.logError(toString(), Messages.getString("JobPing.Error.Label") + ex.getMessage());
-            }
-        }
-        else
-        {
-            // No host was specified
+            // No Host was specified
             log.logError(toString(), Messages.getString("JobPing.SpecifyHost.Label"));
+            return result;
         }
 
+        try
+        {
+        	if(ipingtype==isystemPing || ipingtype==ibothPings)
+        	{
+        		// Perform a system (Java) ping ...
+	        	status=SystemPing(hostname, timeoutInt,log);
+	        	if(status)
+	        	{
+	                if(log.isDetailed())
+	                	log.logDetailed(Messages.getString("JobPing.SystemPing"), Messages.getString("JobPing.OK.Label",hostname));
+	        	}else
+	        		log.logError(Messages.getString("JobPing.SystemPing"),Messages.getString("JobPing.NOK.Label",hostname));
+        	}
+        	if((ipingtype==iclassicPing) || (ipingtype==ibothPings && !status))
+        	{
+        		// Perform a classic ping ..
+        		status=ClassicPing(hostname, packets,log);
+        		if(status)
+        		{
+                    if(log.isDetailed())
+                    	log.logDetailed(Messages.getString("JobPing.ClassicPing"), Messages.getString("JobPing.OK.Label",hostname));
+        		}else
+        			log.logError(Messages.getString("JobPing.ClassicPing"),Messages.getString("JobPing.NOK.Label",hostname));
+        	}	
+        }
+
+        catch (Exception ex)
+        {
+            log.logError(toString(), Messages.getString("JobPing.Error.Label") + ex.getMessage());
+        }
+    	if (status)
+        {
+        	if(log.isDetailed())
+        		log.logDetailed(toString(), Messages.getString("JobPing.OK.Label",hostname));
+            result.setNrErrors(0);
+            result.setResult(true);
+        }else
+        	log.logError(toString(), Messages.getString("JobPing.NOK.Label",hostname));
         return result;
     }
 
@@ -266,7 +322,72 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
 	{
 		return true;
 	}
+	private boolean SystemPing(String hostname, int timeout,LogWriter log)
+	{
+		boolean retval=false;
+		
+		InetAddress address=null;
+    	try{
+    	address=InetAddress.getByName(hostname);
+    	if(address==null)
+    	{
+    		log.logError(toString(),Messages.getString("JobPing.CanNotGetAddress",hostname));
+    		return retval;
+    	}
+    	
+        if(log.isDetailed()) 
+        {
+        	log.logDetailed(toString(),Messages.getString("JobPing.HostName",address.getHostName()));
+        	log.logDetailed(toString(),Messages.getString("JobPing.HostAddress",address.getHostAddress()));
+        }
+        	
+        retval = address.isReachable(timeout);
+    	}catch(Exception e)
+    	{
+    		log.logError(toString(),Messages.getString("JobPing.ErrorFirstPing",hostname,e.getMessage()));
+    	}
+		return retval;
+	}
+	private boolean ClassicPing(String hostname, int nrpackets,LogWriter log)
+	{
+		boolean retval=false;
+		  try
+          {
+              String lignePing = "";
+              String CmdPing="ping " ;
+              if(Const.getOS().startsWith("Windows"))
+            	  CmdPing+= hostname + " " + Windows_CHAR + " " + nrpackets;
+              else
+            	  CmdPing+= hostname + " " + NIX_CHAR + " " + nrpackets;
+              
+        	  if(log.isDetailed()) 
+        	  {
+        		  log.logDetailed(toString(), Messages.getString("JobPing.NbrPackets.Label", ""+nrpackets));
+        		  log.logDetailed(toString(), Messages.getString("JobPing.ExecSecondPing.Label", CmdPing));
+        	  }
+        	  Process processPing = Runtime.getRuntime().exec(CmdPing);
+        	  if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobPing.Gettingresponse.Label",hostname));
+        	  // Get ping response
+              BufferedReader br = new BufferedReader(new InputStreamReader(processPing.getInputStream()));
 
+              // Read response lines
+              while ((lignePing = br.readLine()) != null)
+              {
+                  if(log.isDetailed()) log.logDetailed(toString(), lignePing);
+              }
+              // We succeed only when 0% lost of data
+              if (processPing.exitValue()==0)
+              {
+                  retval=true;
+              }
+          }
+
+          catch (IOException ex)
+          {
+              log.logError(toString(), Messages.getString("JobPing.Error.Label") + ex.getMessage());
+          }
+          return retval;
+	}
   public List<ResourceReference> getResourceDependencies(JobMeta jobMeta) {
     List<ResourceReference> references = super.getResourceDependencies(jobMeta);
     if (!Const.isEmpty(hostname)) {
