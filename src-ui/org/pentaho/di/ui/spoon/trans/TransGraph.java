@@ -1197,7 +1197,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         }
         // ALT-HOME : snap to grid
         if (e.keyCode == SWT.HOME && (e.stateMask & SWT.ALT) != 0) {
-          snaptogrid(ConstUI.GRID_SIZE);
+        snaptogrid(ConstUI.GRID_SIZE);
         }
 
         // SPACE : over a step: show output fields...
@@ -2215,7 +2215,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 
   private void editHop(TransHopMeta transHopMeta) {
     String name = transHopMeta.toString();
-    log.logDebug(toString(), Messages.getString("TransGraph.Logging.EditingHop") + name); //$NON-NLS-1$
+    if(log.isDebug()) log.logDebug(toString(), Messages.getString("TransGraph.Logging.EditingHop") + name); //$NON-NLS-1$
     spoon.editHop(transMeta, transHopMeta);
   }
 
@@ -2865,7 +2865,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         this.lastTransDebugMeta = transDebugMeta;
 
         log.setLogLevel(executionConfiguration.getLogLevel());
-        log.logDetailed(toString(), Messages.getString("TransLog.Log.DoPreview")); //$NON-NLS-1$
+        if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("TransLog.Log.DoPreview")); //$NON-NLS-1$
         String[] args = null;
         Map<String, String> arguments = executionConfiguration.getArguments();
         if (arguments != null) {

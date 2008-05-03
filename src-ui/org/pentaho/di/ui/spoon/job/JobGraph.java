@@ -718,7 +718,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
                   newjge = (JobEntryCopy) jge.clone();
                   if (newjge != null) {
                     // newjge.setEntry(jge.getEntry());
-                    log.logDebug(toString(), "entry aft = " + ((Object) jge.getEntry()).toString()); //$NON-NLS-1$
+                    if(log.isDebug()) log.logDebug(toString(), "entry aft = " + ((Object) jge.getEntry()).toString()); //$NON-NLS-1$
 
                     newjge.setNr(jobMeta.findUnusedNr(newjge.getName()));
 
@@ -726,10 +726,10 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
                     spoon.addUndoNew(jobMeta, new JobEntryCopy[] { newjge }, new int[] { jobMeta
                         .indexOfJobEntry(newjge) });
                   } else {
-                    log.logDebug(toString(), "jge is not cloned!"); //$NON-NLS-1$
+                	  if(log.isDebug()) log.logDebug(toString(), "jge is not cloned!"); //$NON-NLS-1$
                   }
                 } else {
-                  log.logDebug(toString(), jge.toString() + " is not drawn"); //$NON-NLS-1$
+                	if(log.isDebug()) log.logDebug(toString(), jge.toString() + " is not drawn"); //$NON-NLS-1$
                   jge_changed = true;
                 }
                 PropsUI.setLocation(newjge, p.x, p.y);
@@ -2578,7 +2578,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
       // Auto save feature...
       if (jobMeta.hasChanged()) {
         if (spoon.props.getAutoSave()) {
-          log.logDetailed(toString(), Messages.getString("JobLog.Log.AutoSaveFileBeforeRunning")); //$NON-NLS-1$
+        	if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobLog.Log.AutoSaveFileBeforeRunning")); //$NON-NLS-1$
           System.out.println(Messages.getString("JobLog.Log.AutoSaveFileBeforeRunning2")); //$NON-NLS-1$
           spoon.saveToFile(jobMeta);
         } else {
