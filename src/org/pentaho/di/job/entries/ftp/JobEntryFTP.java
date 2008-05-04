@@ -124,9 +124,9 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 	
 	public  String SUCCESS_IF_AT_LEAST_X_FILES_DOWNLOADED="success_when_at_least";
 	public  String SUCCESS_IF_ERRORS_LESS="success_if_errors_less";
-	public  String SUCCESS_IF_ALL_FILES_DOWNLOADED="success_is_all_files_downloaded";
+	public  String SUCCESS_IF_NO_ERRORS="success_if_no_errors";
 	
-	private String nr_limit_success;
+	private String nr_limit;
 	private String success_condition;
 	
 	
@@ -140,9 +140,9 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 	public JobEntryFTP(String n)
 	{
 		super(n, "");
-		nr_limit_success="10";
+		nr_limit="10";
 		port="21";
-		success_condition=SUCCESS_IF_ALL_FILES_DOWNLOADED;
+		success_condition=SUCCESS_IF_NO_ERRORS;
 		ifFileExists=ifFileExistsSkip;
 		SifFileExists=SifFileExistsSkip;
 		
@@ -213,7 +213,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 	    
 	    retval.append("      ").append(XMLHandler.addTagValue("ifFileExists", SifFileExists));
 	    
-		retval.append("      ").append(XMLHandler.addTagValue("nr_limit_success", nr_limit_success));
+		retval.append("      ").append(XMLHandler.addTagValue("nr_limit", nr_limit));
 		retval.append("      ").append(XMLHandler.addTagValue("success_condition", success_condition));
 	    
 		return retval.toString();
@@ -281,7 +281,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 			    
 			    
 		    }
-		    nr_limit_success          = XMLHandler.getTagValue(entrynode, "nr_limit_success");
+		    nr_limit          = XMLHandler.getTagValue(entrynode, "nr_limit");
 			success_condition          = XMLHandler.getTagValue(entrynode, "success_condition");
 		      
 		}
@@ -351,7 +351,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 			    else
 			    	ifFileExists=ifFileExistsSkip;
 		    }
-		    nr_limit_success  = rep.getJobEntryAttributeString(id_jobentry, "nr_limit_success");
+		    nr_limit  = rep.getJobEntryAttributeString(id_jobentry, "nr_limit");
 			success_condition  = rep.getJobEntryAttributeString(id_jobentry, "success_condition");
 			
 		}
@@ -399,7 +399,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 		    rep.saveJobEntryAttribute(id_job, getID(), "proxy_password", proxyPassword); //$NON-NLS-1$
 		    rep.saveJobEntryAttribute(id_job, getID(), "ifFileExists", SifFileExists);
 		    
-			rep.saveJobEntryAttribute(id_job, getID(), "nr_limit_success",  nr_limit_success);
+			rep.saveJobEntryAttribute(id_job, getID(), "nr_limit",  nr_limit);
 			rep.saveJobEntryAttribute(id_job, getID(), "success_condition",    success_condition);
 			
 		}
@@ -412,7 +412,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 	{
 		boolean retval=false;
 		
-		if ((NrErrors==0 && getSuccessCondition().equals(SUCCESS_IF_ALL_FILES_DOWNLOADED))
+		if ((NrErrors==0 && getSuccessCondition().equals(SUCCESS_IF_NO_ERRORS))
 				|| (NrfilesRetrieved>=limitFiles && getSuccessCondition().equals(SUCCESS_IF_AT_LEAST_X_FILES_DOWNLOADED))
 				|| (NrErrors<=limitFiles && getSuccessCondition().equals(SUCCESS_IF_ERRORS_LESS)))
 			{
@@ -422,14 +422,14 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 		return retval;
 	}
 	
-	public void setLimitSuccess(String nr_limit_successin)
+	public void setLimit(String nr_limitin)
 	{
-		this.nr_limit_success=nr_limit_successin;
+		this.nr_limit=nr_limitin;
 	}
 	
-	public String getLimitSuccess()
+	public String getLimit()
 	{
-		return nr_limit_success;
+		return nr_limit;
 	}
 	
 	
@@ -964,8 +964,8 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
                 pattern = Pattern.compile(realWildcard);
 			}
 			
-			if(!getSuccessCondition().equals(SUCCESS_IF_ALL_FILES_DOWNLOADED))
-				limitFiles=Const.toInt(environmentSubstitute(getLimitSuccess()),10);
+			if(!getSuccessCondition().equals(SUCCESS_IF_NO_ERRORS))
+				limitFiles=Const.toInt(environmentSubstitute(getLimit()),10);
 			
 			// Get the files in the list...
 			for (int i=0;i<filelist.length && !parentJob.isStopped();i++)

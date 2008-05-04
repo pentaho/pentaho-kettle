@@ -506,7 +506,7 @@ public class JobEntryCopyFilesDialog extends JobEntryDialog implements JobEntryD
 		fdbSourceFileFolder.top  = new FormAttachment(wSettings, margin);
 		wbSourceFileFolder.setLayoutData(fdbSourceFileFolder);
 		
-		// Browse Destination file add button ...
+		// Browse Source file add button ...
 		wbaSourceFileFolder=new Button(wGeneralComp, SWT.PUSH| SWT.CENTER);
 		props.setLook(wbaSourceFileFolder);
 		wbaSourceFileFolder.setText(Messages.getString("JobCopyFiles.FilenameAdd.Button"));

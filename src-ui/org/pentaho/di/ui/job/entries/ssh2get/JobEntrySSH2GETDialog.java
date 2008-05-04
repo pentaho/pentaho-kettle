@@ -994,18 +994,12 @@ public class JobEntrySSH2GETDialog extends JobEntryDialog implements JobEntryDia
 		fdFilesComp.bottom= new FormAttachment(500, -margin);
 		wFilesComp.setLayoutData(fdFilesComp);
 		/////////////////////////////////////////////////////////////
-		/// END OF GENERAL TAB
+		/// END OF FILES TAB
 		/////////////////////////////////////////////////////////////
 		
 		wFilesComp.layout();
 		wFilesTab.setControl(wFilesComp);
  		props.setLook(wFilesComp);
-		
-		
-		
-		
-		
-		
 		
  		
 		fdTabFolder = new FormData();

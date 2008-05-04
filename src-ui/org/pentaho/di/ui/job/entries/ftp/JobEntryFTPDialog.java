@@ -1535,8 +1535,8 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
         
         wIfFileExists.select(jobEntry.ifFileExists);
         
-    	if (jobEntry.getLimitSuccess()!= null) 
-			wNrErrorsLessThan.setText( jobEntry.getLimitSuccess());
+    	if (jobEntry.getLimit()!= null) 
+			wNrErrorsLessThan.setText( jobEntry.getLimit());
 		else
 			wNrErrorsLessThan.setText("10");
 		
@@ -1611,7 +1611,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
         }
         
         
-        jobEntry.setLimitSuccess(wNrErrorsLessThan.getText());
+        jobEntry.setLimit(wNrErrorsLessThan.getText());
 
 		
 		if(wSuccessCondition.getSelectionIndex()==1)
@@ -1619,7 +1619,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
 		else if(wSuccessCondition.getSelectionIndex()==2)
 			jobEntry.setSuccessCondition(jobEntry.SUCCESS_IF_ERRORS_LESS);
 		else
-			jobEntry.setSuccessCondition(jobEntry.SUCCESS_IF_ALL_FILES_DOWNLOADED);	
+			jobEntry.setSuccessCondition(jobEntry.SUCCESS_IF_NO_ERRORS);	
 		
 		// Close FTP connection if necessary
 		if (ftpclient != null && ftpclient.connected())
