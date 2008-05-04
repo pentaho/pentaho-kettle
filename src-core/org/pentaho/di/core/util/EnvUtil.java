@@ -75,6 +75,15 @@ public class EnvUtil
 	@SuppressWarnings({"unchecked"})
     public static void environmentInit()
 	{
+        // Workaround for a Mac OS/X Leopard issue where getContextClassLoader() is returning 
+        // null when run from the eclipse IDE
+	    // http://lists.apple.com/archives/java-dev/2007/Nov/msg00385.html - DM
+	    // Moving this hack to the first place where the NPE is triggered so all entrypoints can be debugged in Mac Eclipse
+        if ( Thread.currentThread().getContextClassLoader() == null ) 
+        {
+          Thread.currentThread ().setContextClassLoader(ClassLoader.getSystemClassLoader());
+        }
+
 		Map kettleProperties = EnvUtil.readProperties(Const.KETTLE_PROPERTIES);
         System.getProperties().putAll(kettleProperties);
         

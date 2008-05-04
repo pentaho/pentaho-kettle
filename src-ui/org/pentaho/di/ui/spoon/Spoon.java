@@ -383,7 +383,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	 */
 	public static void main(String[] a) throws KettleException
 	{
-		// Mac Leopard hack moved to KettleConfig() - DRE
+		// Mac Leopard hack moved to EnvUtil.environmentInit() - DRE
 		
 		// Do some initialization of environment variables
 		EnvUtil.environmentInit();
