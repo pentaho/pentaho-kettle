@@ -324,7 +324,7 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 		{
 			// Create sftp client to host ...
 			sftpclient = new SFTPClient(InetAddress.getByName(realServerName), Const.toInt(realServerPort, 22), realUsername);
-			if(log.isDetailed()) log.logDetailed(toString(), "Opened SFTP connection to server ["+realServerName+"] on port ["+realServerPort+"] with username ["+realUsername+"]");
+			if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("SFTP.Log.OpenedConnection",realServerName,realServerPort,realUsername));
 
 			// login to ftp host ...
 			sftpclient.login(realPassword);
@@ -335,12 +335,12 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 			if (!Const.isEmpty(realSftpDirString))
 			{
 				sftpclient.chdir(realSftpDirString);
-				if(log.isDetailed()) log.logDetailed(toString(), "Changed to directory ["+realSftpDirString+"]");
+				if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("SFTP.Log.ChangedDirectory",realSftpDirString));
 			}
 
 			// Get all the files in the current directory...
 			String[] filelist = sftpclient.dir();
-			if(log.isDetailed()) log.logDetailed(toString(), "Found "+filelist.length+" files in the remote directory");
+			if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("SFTP.Log.Found",""+filelist.length));
 
 			Pattern pattern = null;
 			if (!Const.isEmpty(realWildcard))
@@ -363,7 +363,7 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 
 				if (getIt)
 				{
-					if(log.isDebug()) log.logDebug(toString(), "Getting file ["+filelist[i]+"] to directory ["+realTargetDirectory+"]");
+					if(log.isDebug()) log.logDebug(toString(), Messages.getString("SFTP.Log.GettingFiles",filelist[i],realTargetDirectory));
 
 					String targetFilename = realTargetDirectory+Const.FILE_SEPARATOR+filelist[i];
 					sftpclient.get(targetFilename, filelist[i]);
@@ -373,13 +373,13 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 					ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(targetFilename), parentJob.getJobname(), toString());
                     result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
 
-                    if(log.isDetailed()) log.logDetailed(toString(), "Transferred file ["+filelist[i]+"]");
+                    if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("SFTP.Log.TransferedFile",filelist[i]));
 
 					// Delete the file if this is needed!
 					if (remove)
 					{
 						sftpclient.delete(filelist[i]);
-						if(log.isDetailed()) log.logDetailed(toString(), "Deleted file ["+filelist[i]+"]");
+						if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("SFTP.Log.DeletedFile",filelist[i]));
 					}
 				}
 			}
