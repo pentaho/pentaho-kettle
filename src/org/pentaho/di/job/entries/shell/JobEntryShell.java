@@ -490,7 +490,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 				base = new String[] { "cmd.exe", "/C" };
 			} else
 			{
-				base = new String[] { KettleVFS.getFilename(fileObject) };
+				if(!insertScript) base = new String[] { KettleVFS.getFilename(fileObject) };
 			}
 
 			// Construct the arguments...
