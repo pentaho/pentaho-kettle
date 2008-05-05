@@ -504,7 +504,14 @@ public class TransSplitter
                                     if (masterStep==null) {
                                         masterStep = (StepMeta) previousStep.clone();
                                         masterStep.setLocation(previousStep.getLocation().x, previousStep.getLocation().y);
+                                        
                                         master.addStep(masterStep); 
+                                    }
+
+                                    // Verify that the number of copies is equal to the number of slaves or 1
+                                    //
+                                    if (masterStep.getCopies()!=1 && masterStep.getCopies()!=referenceClusterSchema.findNrSlaves()) {
+                                    	throw new KettleException("The number of step copies on the master has to be 1 or equal to the number of slaves ("+referenceClusterSchema.findNrSlaves()+") to work.  Note that you can insert a dummy step to make the transformation work as desired.");
                                     }
                                     
                                     // SLAVE : add remote input step to the reference slave step...

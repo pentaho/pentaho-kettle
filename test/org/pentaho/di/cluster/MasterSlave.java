@@ -24,8 +24,9 @@ public class MasterSlave extends BaseCluster {
 	
 
 	/**
-	 * This test reads a CSV file in parallel on the master in 3 copies.<br>
+	 * This test reads a CSV file in parallel on the master in 1 copy.<br>
 	 * It then passes the data over to a dummy step on the slaves.<br>
+	 * We want to make sure that only 1 copy is considered.<br>
 	 */
 	public void testParallelFileReadOnMaster() throws Exception {
 		init();
@@ -63,6 +64,45 @@ public class MasterSlave extends BaseCluster {
 		}
 	}
 
+	/**
+	 * This test reads a CSV file in parallel on the master in 3 copies.<br>
+	 * It then passes the data over to a dummy step on the slaves.<br>
+	 */
+	public void testParallelFileReadOnMasterWithCopies() throws Exception {
+		init();
+		
+		ClusterGenerator clusterGenerator = new ClusterGenerator();
+		try {
+			clusterGenerator.launchSlaveServers();
+			
+			TransMeta transMeta = generateParallelFileReadOnMasterWithCopiesTransMeta(clusterGenerator);
+			TransExecutionConfiguration config = new TransExecutionConfiguration();
+			config.setExecutingClustered(true);
+			config.setExecutingLocally(false);
+			config.setExecutingRemotely(false);
+			config.setClusterPosting(true);
+			config.setClusterPreparing(true);
+			config.setClusterStarting(true);
+			config.setLogLevel(LogWriter.LOG_LEVEL_BASIC);
+			TransSplitter transSplitter = Trans.executeClustered(transMeta, config);
+			long nrErrors = Trans.monitorClusteredTransformation("testParallelFileReadOnMasterWithCopies", transSplitter, null);
+			assertEquals(0L, nrErrors);
+			String result = loadFileContent(transMeta, "${java.io.tmpdir}/test-parallel-file-read-on-master-result-with-copies.txt");
+			assertEqualsIgnoreWhitespacesAndCase("100", result);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail(e.toString());
+		}
+		finally {
+			try {
+				clusterGenerator.stopSlaveServers();
+			} catch (Exception e) {
+				e.printStackTrace();
+				fail(e.toString());
+			}
+		}
+	}
 
 	private TransMeta generateParallelFileReadOnMasterTransMeta(ClusterGenerator clusterGenerator) throws KettleXMLException {
 		TransMeta transMeta = new TransMeta("test/org/pentaho/di/cluster/test-parallel-file-read-on-master.ktr");
@@ -82,5 +122,23 @@ public class MasterSlave extends BaseCluster {
 
 		return transMeta;
 	}
-	
+
+	private TransMeta generateParallelFileReadOnMasterWithCopiesTransMeta(ClusterGenerator clusterGenerator) throws KettleXMLException {
+		TransMeta transMeta = new TransMeta("test/org/pentaho/di/cluster/test-parallel-file-read-on-master-with-copies.ktr");
+		
+		// Add the slave servers
+		//
+		for (SlaveServer slaveServer : ClusterGenerator.LOCAL_TEST_SLAVES) {
+			transMeta.getSlaveServers().add(slaveServer);
+		}
+		
+		// Replace the slave servers in the specified cluster schema...
+		//
+		ClusterSchema clusterSchema = transMeta.findClusterSchema(ClusterGenerator.TEST_CLUSTER_NAME);
+		assertNotNull("Cluster schema '"+ClusterGenerator.TEST_CLUSTER_NAME+"' couldn't be found", clusterSchema);
+		clusterSchema.getSlaveServers().clear();
+		clusterSchema.getSlaveServers().addAll(Arrays.asList(ClusterGenerator.LOCAL_TEST_SLAVES));
+
+		return transMeta;
+	}
 }

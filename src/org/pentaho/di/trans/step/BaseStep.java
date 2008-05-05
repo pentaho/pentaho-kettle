@@ -496,20 +496,30 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
         // 
         try
         {
+			// If this is on the master, separate logic applies.
+			//
+			boolean isMaster = "Y".equalsIgnoreCase(getVariable(Const.INTERNAL_VARIABLE_CLUSTER_MASTER));
+
         	remoteOutputSteps = new ArrayList<RemoteStep>();
-	        for (RemoteStep remoteStep : stepMeta.getRemoteOutputSteps()) {
-	        	// Open a server socket to allow the remote output step to connect.
-	        	//
-	        	RemoteStep copy = (RemoteStep) remoteStep.clone();
-	        	try {
-	        		copy.openServerSocket(this);
-	        		if (log.isDetailed()) logDetailed("Opened a server socket connection to "+copy);
-	        	}
-	        	catch(Exception e) {
-	            	log.logError(toString(), "Unable to open server socket during step initialisation: "+copy.toString(), e);
-	            	throw new Exception(e);
-	        	}
-	        	remoteOutputSteps.add(copy);
+	        for (int i=0;i<stepMeta.getRemoteOutputSteps().size();i++) {
+	        	RemoteStep remoteStep = stepMeta.getRemoteOutputSteps().get(i);
+	        	
+	        	// If the step is on a master and run in multiple copies, we only want to open every socket once.
+	        	// 
+				if (!isMaster || stepMeta.getCopies()==1 || ( isMaster && getCopy()==i ) ) {
+		        	// Open a server socket to allow the remote output step to connect.
+		        	//
+		        	RemoteStep copy = (RemoteStep) remoteStep.clone();
+		        	try {
+		        		copy.openServerSocket(this);
+		        		if (log.isDetailed()) logDetailed("Opened a server socket connection to "+copy);
+		        	}
+		        	catch(Exception e) {
+		            	log.logError(toString(), "Unable to open server socket during step initialisation: "+copy.toString(), e);
+		            	throw new Exception(e);
+		        	}
+		        	remoteOutputSteps.add(copy);
+				}
 	        }
         }
         catch(Exception e) {
@@ -1331,6 +1341,7 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
     protected void openRemoteOutputStepSocketsOnce() throws KettleStepException {
         if (!remoteOutputSteps.isEmpty()) {
         	if (!remoteOutputStepsInitialized) {
+        		
 				// Set the current slave target name on all the current output steps (local)
 				//
 				for (int c=0;c<outputRowSets.size();c++) {
@@ -1343,7 +1354,8 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
 				
 				// Start threads: one per remote step to funnel the data through...
 				//
-				for (RemoteStep remoteStep : remoteOutputSteps) {
+				for (int i=0;i<remoteOutputSteps.size();i++) {
+					RemoteStep remoteStep = remoteOutputSteps.get(i);
 					try {
 						if (remoteStep.getTargetSlaveServerName()==null) {
 		    				throw new KettleStepException("The target slave server name is not defined for remote output step: "+remoteStep);
