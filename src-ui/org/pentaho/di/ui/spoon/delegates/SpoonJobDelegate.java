@@ -1438,6 +1438,10 @@ public class SpoonJobDelegate extends SpoonDelegate
 					jobMeta.setVariable(varName, varValue);
 				}
 				
+				// Set the arguments too...
+				//
+				jobMeta.setArguments(executionConfiguration.getArgumentStrings());
+				
 				
 				jobGraph.startJob(executionConfiguration.getReplayDate());
 			}
@@ -1455,7 +1459,6 @@ public class SpoonJobDelegate extends SpoonDelegate
 					mb.setText(Messages.getString("Spoon.Dialog.NoRemoteServerSpecified.Title"));
 					mb.open();
 				}
-				
 			}
 		}
 	}
