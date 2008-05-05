@@ -2182,6 +2182,26 @@ public class Trans implements VariableSpace
     }
 
     /** Consider that all the transformations in a cluster schema are running now...<br>
+	    Now we should verify that they are all running as they should.<br>
+	    If a transformation has an error, we should kill them all..<br>
+	    This should happen in a separate thread to prevent blocking of the UI.<br>
+	    <br>
+	    When the master and slave transformations have all finished, we should also run<br>
+	    a cleanup on those transformations to release sockets, etc.<br>
+	    <br>
+	    
+	   @param logSubject the subject to use for logging
+	   @param transSplitter the transformation splitter object
+	   @param parentJob the parent job when executed in a job, otherwise just set to null
+	   @param sleepTimeSeconds the sleep time in seconds in between slave transformation status polling
+	   @return the number of errors encountered
+	*/
+	public static final long monitorClusteredTransformation(String logSubject, TransSplitter transSplitter, Job parentJob)
+	{
+		return monitorClusteredTransformation(logSubject, transSplitter, parentJob, 5); // monitor every 5 seconds
+	}
+	
+    /** Consider that all the transformations in a cluster schema are running now...<br>
         Now we should verify that they are all running as they should.<br>
         If a transformation has an error, we should kill them all..<br>
         This should happen in a separate thread to prevent blocking of the UI.<br>
@@ -2193,9 +2213,10 @@ public class Trans implements VariableSpace
        @param logSubject the subject to use for logging
        @param transSplitter the transformation splitter object
        @param parentJob the parent job when executed in a job, otherwise just set to null
+       @param sleepTimeSeconds the sleep time in seconds in between slave transformation status polling
        @return the number of errors encountered
 	*/
-    public static final long monitorClusteredTransformation(String logSubject, TransSplitter transSplitter, Job parentJob)
+    public static final long monitorClusteredTransformation(String logSubject, TransSplitter transSplitter, Job parentJob, int sleepTimeSeconds)
     {
         long errors = 0L;
 
@@ -2313,7 +2334,7 @@ public class Trans implements VariableSpace
             {
                 // Not finished or error: wait a bit longer
             	if(log.isDetailed()) log.logDetailed(logSubject, "Clustered transformation is still running, waiting a few seconds...");
-                try { Thread.sleep(5000); } catch(Exception e) {} // Check all slaves every 5 seconds. TODO: add 5s as parameter
+                try { Thread.sleep(sleepTimeSeconds*1000); } catch(Exception e) {} // Check all slaves every x seconds. 
             }
         }
         

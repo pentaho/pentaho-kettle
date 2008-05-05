@@ -2296,11 +2296,17 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	}
 
     public void newDatabasePartitioningSchema() {
-		newPartitioningSchema((TransMeta) selectionObjectParent);
+    	TransMeta transMeta = getActiveTransformation();
+    	if (transMeta!=null) {
+    		newPartitioningSchema(transMeta);
+    	}
 	}
 
     public void newClusteringSchema() {
-		newClusteringSchema((TransMeta) selectionObjectParent);
+    	TransMeta transMeta = getActiveTransformation();
+    	if (transMeta!=null) {
+    		newClusteringSchema(transMeta);
+    	}
 	}
 
     public void newSlaveServer() {

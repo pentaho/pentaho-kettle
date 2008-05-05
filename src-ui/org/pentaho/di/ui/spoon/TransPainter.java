@@ -372,6 +372,7 @@ public class TransPainter
         // First draw an extra indicator for remote input steps...
         //
         if (!stepMeta.getRemoteInputSteps().isEmpty()) {
+        	gc.setLineWidth(1);
         	gc.setForeground(GUIResource.getInstance().getColorGray());
         	gc.setBackground(GUIResource.getInstance().getColorBackground());
             gc.setFont(GUIResource.getInstance().getFontGraph());
@@ -401,6 +402,7 @@ public class TransPainter
         // Then draw an extra indicator for remote output steps...
         //
         if (!stepMeta.getRemoteOutputSteps().isEmpty()) {
+        	gc.setLineWidth(1);
         	gc.setForeground(GUIResource.getInstance().getColorGray());
         	gc.setBackground(GUIResource.getInstance().getColorBackground());
             gc.setFont(GUIResource.getInstance().getFontGraph());
@@ -433,6 +435,7 @@ public class TransPainter
         // If this step is partitioned, we're drawing a small symbol indicating this...
         //
         if (stepMeta.isPartitioned()) {
+        	gc.setLineWidth(1);
         	gc.setForeground(GUIResource.getInstance().getColorRed());
         	gc.setBackground(GUIResource.getInstance().getColorBackground());
             gc.setFont(GUIResource.getInstance().getFontGraph());
@@ -493,6 +496,7 @@ public class TransPainter
             gc.drawImage(im, 0, 0, bounds.width, bounds.height, screen.x, screen.y, iconsize, iconsize);
         }
         gc.setBackground(background);
+        gc.setForeground(black);
         gc.drawRectangle(screen.x - 1, screen.y - 1, iconsize + 1, iconsize + 1);
 
         Point namePosition = getNamePosition(gc, name, screen, iconsize );

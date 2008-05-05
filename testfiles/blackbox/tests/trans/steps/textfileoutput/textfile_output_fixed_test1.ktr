@@ -222,7 +222,7 @@
       <add_date>N</add_date>
       <add_time>N</add_time>
       <pad>N</pad>
-      <fast_dump>Y</fast_dump>
+      <fast_dump>N</fast_dump>
       <splitevery>0</splitevery>
       </file>
     <fields>
