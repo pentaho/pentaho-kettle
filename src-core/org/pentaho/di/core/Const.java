@@ -419,6 +419,9 @@ public class Const
     /** The slave transformation number */
     public static final String INTERNAL_VARIABLE_STEP_UNIQUE_NUMBER = INTERNAL_VARIABLE_PREFIX+".Step.Unique.Number";
 
+    /** Is this transformation running clustered, on the master? */
+    public static final String INTERNAL_VARIABLE_CLUSTER_MASTER = INTERNAL_VARIABLE_PREFIX+".Cluster.Master";
+
     /** The size of the cluster : number of slaves */
     public static final String INTERNAL_VARIABLE_STEP_UNIQUE_COUNT = INTERNAL_VARIABLE_PREFIX+".Step.Unique.Count";
     

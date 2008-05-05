@@ -400,7 +400,9 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
 
         String slaveNr = transMeta.getVariable(Const.INTERNAL_VARIABLE_SLAVE_SERVER_NUMBER);
         String clusterSize = transMeta.getVariable(Const.INTERNAL_VARIABLE_CLUSTER_SIZE);
-        if (!Const.isEmpty(slaveNr) && !Const.isEmpty(clusterSize))
+        boolean master = "Y".equalsIgnoreCase(transMeta.getVariable(Const.INTERNAL_VARIABLE_CLUSTER_MASTER));
+        
+        if (!Const.isEmpty(slaveNr) && !Const.isEmpty(clusterSize) && !master)
         {
             this.slaveNr = Integer.parseInt(slaveNr);
             this.clusterSize = Integer.parseInt(clusterSize);

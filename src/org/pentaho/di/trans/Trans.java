@@ -2048,7 +2048,8 @@ public class Trans implements VariableSpace
                 	TransConfiguration transConfiguration = new TransConfiguration(master, executionConfiguration);
                 	Map<String, String> variables = transConfiguration.getTransExecutionConfiguration().getVariables();
                     variables.put(Const.INTERNAL_VARIABLE_CLUSTER_SIZE, Integer.toString(slaves.length));
-
+                    variables.put(Const.INTERNAL_VARIABLE_CLUSTER_MASTER, "Y");
+                    
                     String masterReply = masterServer.sendXML(transConfiguration.getXML(), AddTransServlet.CONTEXT_PATH+"/?xml=Y");
                     WebResult webResult = WebResult.fromXMLString(masterReply);
                     if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
@@ -2081,6 +2082,8 @@ public class Trans implements VariableSpace
                               variables.put(Const.INTERNAL_VARIABLE_SLAVE_SERVER_NUMBER, Integer.toString(index));
                               variables.put(Const.INTERNAL_VARIABLE_SLAVE_SERVER_NAME, slaves[index].getName());
                               variables.put(Const.INTERNAL_VARIABLE_CLUSTER_SIZE, Integer.toString(slaves.length));
+                              variables.put(Const.INTERNAL_VARIABLE_CLUSTER_MASTER, "N");
+                              
                               String slaveReply = slaves[index].sendXML(transConfiguration.getXML(), AddTransServlet.CONTEXT_PATH+"/?xml=Y");
                               WebResult webResult = WebResult.fromXMLString(slaveReply);
                               if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))

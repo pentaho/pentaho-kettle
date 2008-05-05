@@ -29,6 +29,23 @@ import org.pentaho.di.trans.steps.rowgenerator.RowGeneratorMeta;
 
 public class Carte
 {
+	private String hostname;
+	private int port;
+	private WebServer webServer;
+
+	public Carte(String hostname, int port, boolean join) throws Exception {
+		this.hostname = hostname;
+		this.port = port;
+		
+        TransformationMap transformationMap = new TransformationMap();
+        JobMap jobMap = new JobMap();
+
+        Trans trans = generateTestTransformation();
+        transformationMap.addTransformation(trans.getName(), trans, new TransConfiguration(trans.getTransMeta(), new TransExecutionConfiguration()));
+        
+		this.webServer = new WebServer(transformationMap, jobMap, hostname, port, join);
+	}
+	
     public static void main(String[] args) throws Exception
     {
         if (args.length<2 || (Const.isEmpty(args[0]) && Const.isEmpty(args[1])) )
@@ -42,32 +59,30 @@ public class Carte
             System.exit(1);
         }
         
+        runCarte(args[0], args[1]);
+    }
+
+    public static void runCarte(String hostnameArgument, String portArgument) throws Exception {
         init();
         
-        TransformationMap transformationMap = new TransformationMap(Thread.currentThread().getName());
-        JobMap jobMap = new JobMap();
-        
-        Trans trans = generateTestTransformation();
-        transformationMap.addTransformation(trans.getName(), trans, new TransConfiguration(trans.getTransMeta(), new TransExecutionConfiguration()));
-        
-        String hostname = args[0];
+        String hostname = hostnameArgument;
         int port = WebServer.PORT;
-        if (args.length>=2)
+        if (!Const.isEmpty(portArgument))
         {
             try
             {
-                port = Integer.parseInt(args[1]);
+                port = Integer.parseInt(portArgument);
             }
             catch(Exception e)
             {
-                System.out.println(Messages.getString("Carte.Error.CanNotPartPort",args[0],""+port));
+                System.out.println(Messages.getString("Carte.Error.CanNotPartPort", hostnameArgument, ""+port));
                 
             }
         }
-        new WebServer(transformationMap, jobMap, hostname, port);
-    }
+        new Carte(hostname, port, true);
+	}
 
-    private static void init() throws Exception
+	private static void init() throws Exception
     {
         EnvUtil.environmentInit();
         LogWriter.getInstance( LogWriter.LOG_LEVEL_BASIC );
@@ -123,4 +138,46 @@ public class Carte
         return new Trans(transMeta);
         
     }
+
+	/**
+	 * @return the webServer
+	 */
+	public WebServer getWebServer() {
+		return webServer;
+	}
+
+	/**
+	 * @param webServer the webServer to set
+	 */
+	public void setWebServer(WebServer webServer) {
+		this.webServer = webServer;
+	}
+
+	/**
+	 * @return the port
+	 */
+	public int getPort() {
+		return port;
+	}
+
+	/**
+	 * @param port the port to set
+	 */
+	public void setPort(int port) {
+		this.port = port;
+	}
+
+	/**
+	 * @return the hostname
+	 */
+	public String getHostname() {
+		return hostname;
+	}
+
+	/**
+	 * @param hostname the hostname to set
+	 */
+	public void setHostname(String hostname) {
+		this.hostname = hostname;
+	}
 }

@@ -35,14 +35,19 @@ public class TransformationMap
     private Map<String, TransConfiguration> configurationMap;
     private Map<String, Appender> loggingMap;
     
-    private String parentThreadName;
-    
     private Map<String, Integer> serverSocketPorts; 
     
+    /**
+     * @param parentThreadName
+     * @deprecated The parent thread name is no longer used.
+     */
     public TransformationMap(String parentThreadName)
     {
-        this.parentThreadName = parentThreadName;
-        
+    	this();
+    }
+    
+    public TransformationMap()
+    {
         transformationMap = new Hashtable<String, Trans>();
         configurationMap  = new Hashtable<String, TransConfiguration>();
         loggingMap        = new Hashtable<String, Appender>();
@@ -98,14 +103,6 @@ public class TransformationMap
     {
         Set<String> keySet = transformationMap.keySet();
         return keySet.toArray(new String[keySet.size()]);
-    }
-
-    /**
-     * @return the parentThreadName
-     */
-    public String getParentThreadName()
-    {
-        return parentThreadName;
     }
 
     /**
