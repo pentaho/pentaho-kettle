@@ -330,6 +330,12 @@ public class DimensionLookup extends BaseStep implements StepInterface
                 returnIndex++;
                 
                 // See if we need to store this record in the cache as well...
+                /*
+                 * TODO: we can't really assume like this that the cache layout of the incoming rows (below) is the same as the stored data.
+                 * Storing this in the cache gives us data/metadata collision errors. (class cast problems etc)
+                 * Perhaps we need to convert this data to the target data types.  Alternatively, we can use a separate cache in the future.
+                 * Reference: PDI-911
+                 * 
                 if (meta.getCacheSize()>=0)
                 {
                     Object[] values = getCacheValues(rowMeta, row, technicalKey, valueVersion, valueDateFrom, valueDateTo);
@@ -340,6 +346,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
                     	addToCache(lookupRow, values);
                     }
                 }
+                */
                 
 				if (log.isRowLevel()) logRowlevel(Messages.getString("DimensionLookup.Log.AddedDimensionEntry")+data.returnRowMeta.getString(returnRow)); //$NON-NLS-1$
 			}
