@@ -1476,6 +1476,10 @@ public class SpoonJobDelegate extends SpoonDelegate
 					jobMeta.setVariable(varName, varValue);
 				}
 				
+				// Set the arguments too...
+				//
+				jobMeta.setArguments(executionConfiguration.getArgumentStrings());
+				
 				jobLog.startJob(executionConfiguration.getReplayDate());
 			}
 				

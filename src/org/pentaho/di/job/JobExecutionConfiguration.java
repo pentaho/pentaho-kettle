@@ -24,7 +24,6 @@ import java.util.Properties;
 
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.Props;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
@@ -448,9 +447,7 @@ public class JobExecutionConfiguration implements Cloneable
         
         String[] values = new String[argNames.length];
         for (int i=0;i<argNames.length;i++) {
-        	if (argNames[i].equalsIgnoreCase(Props.STRING_ARGUMENT_NAME_PREFIX+(i+1))) {
-        		values[i] = arguments.get(argNames[i]);
-        	}
+        	values[i] = arguments.get(argNames[i]);
         }
         
         return values;

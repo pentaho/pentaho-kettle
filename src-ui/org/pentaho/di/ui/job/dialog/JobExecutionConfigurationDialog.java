@@ -12,6 +12,7 @@
 */
 package org.pentaho.di.ui.job.dialog;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -350,15 +351,16 @@ public class JobExecutionConfigurationDialog extends Dialog
         List<String> argumentNames = new ArrayList<String>( configuration.getArguments().keySet() );
         Collections.sort(argumentNames);
         
-        for (int i=0;i<argumentNames.size();i++)
+        for (int i=0;i<10;i++)
         {
-        	String argumentName = argumentNames.get(i);
+        	String argumentName = new DecimalFormat("00").format(i+1); 
         	String argumentValue = configuration.getArguments().get(argumentName);
         	
             TableItem tableItem = new TableItem(wArguments.table, SWT.NONE);
             tableItem.setText(1, Const.NVL(argumentName, ""));
             tableItem.setText(2, Const.NVL(argumentValue, ""));
         }
+                
         wArguments.removeEmptyRows();
         wArguments.setRowNums();
         wArguments.optWidth(true);
