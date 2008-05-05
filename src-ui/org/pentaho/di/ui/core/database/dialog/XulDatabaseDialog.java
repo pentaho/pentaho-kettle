@@ -11,10 +11,13 @@
 
 package org.pentaho.di.ui.core.database.dialog;
 
+import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.i18n.GlobalMessages;
+import org.pentaho.di.i18n.LanguageChoice;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.ui.database.DatabaseConnectionDialog;
@@ -22,7 +25,6 @@ import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.containers.XulWindow;
-import org.pentaho.ui.xul.swt.SwtXulLoader;
 
 public class XulDatabaseDialog {
 
@@ -94,9 +96,18 @@ public class XulDatabaseDialog {
       XulComponent boxElement = container.getDocumentRoot().getElementById(FRAGMENT_ID);
       XulComponent parentElement = boxElement.getParent();
 
-      XulDomContainer fragmentContainer = null;
-      ResourceBundle res = ResourceBundle.getBundle(MESSAGES);
+      ResourceBundle res = null;
+      try{
+        res = ResourceBundle.getBundle(MESSAGES, GlobalMessages.getLocale());
+      }catch(MissingResourceException e){
+        try{
+          res = ResourceBundle.getBundle(MESSAGES, LanguageChoice.getInstance().getFailoverLocale());
+        }catch(MissingResourceException e2){
+          res = null;
+        }
+      }
 
+      XulDomContainer fragmentContainer = null;
       String pkg = getClass().getPackage().getName().replace('.', '/');
       fragmentContainer = container.loadFragment(pkg.concat(DIALOG_FRAGMENT_FILE), res);
       XulComponent newBox = fragmentContainer.getDocumentRoot().getFirstChild();
