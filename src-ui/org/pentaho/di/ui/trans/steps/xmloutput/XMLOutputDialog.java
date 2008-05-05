@@ -143,6 +143,15 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
 	private Button       wDoNotOpenNewFileInit;
 	private FormData     fdlDoNotOpenNewFileInit, fdDoNotOpenNewFileInit;
 	
+	private Label        wlSpecifyFormat;
+	private Button       wSpecifyFormat;
+	private FormData     fdlSpecifyFormat, fdSpecifyFormat;
+
+  	private Label        wlDateTimeFormat;
+	private CCombo       wDateTimeFormat;
+	private FormData     fdlDateTimeFormat, fdDateTimeFormat; 
+    
+	
 	public XMLOutputDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
 		super(parent, (BaseStepMeta)in, transMeta, sname);
@@ -359,13 +368,65 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
 				}
 			}
 		);
+		
+		// Specify date time format?
+		wlSpecifyFormat=new Label(wFileComp, SWT.RIGHT);
+		wlSpecifyFormat.setText(Messages.getString("XMLOutputDialog.SpecifyFormat.Label"));
+		props.setLook(wlSpecifyFormat);
+		fdlSpecifyFormat=new FormData();
+		fdlSpecifyFormat.left = new FormAttachment(0, 0);
+		fdlSpecifyFormat.top  = new FormAttachment(wAddTime, margin);
+		fdlSpecifyFormat.right= new FormAttachment(middle, -margin);
+		wlSpecifyFormat.setLayoutData(fdlSpecifyFormat);
+		wSpecifyFormat=new Button(wFileComp, SWT.CHECK);
+		props.setLook(wSpecifyFormat);
+		wSpecifyFormat.setToolTipText(Messages.getString("XMLOutputDialog.SpecifyFormat.Tooltip"));
+	    fdSpecifyFormat=new FormData();
+		fdSpecifyFormat.left = new FormAttachment(middle, 0);
+		fdSpecifyFormat.top  = new FormAttachment(wAddTime, margin);
+		fdSpecifyFormat.right= new FormAttachment(100, 0);
+		wSpecifyFormat.setLayoutData(fdSpecifyFormat);
+		wSpecifyFormat.addSelectionListener(new SelectionAdapter() 
+			{
+				public void widgetSelected(SelectionEvent e) 
+				{
+					input.setChanged();
+					setDateTimeFormat();
+				}
+			}
+		);
+
+		
+		//	Prepare a list of possible DateTimeFormats...
+		String dats[] = Const.getDateFormats();
+		
+ 		// DateTimeFormat
+		wlDateTimeFormat=new Label(wFileComp, SWT.RIGHT);
+        wlDateTimeFormat.setText(Messages.getString("XMLOutputDialog.DateTimeFormat.Label"));
+        props.setLook(wlDateTimeFormat);
+        fdlDateTimeFormat=new FormData();
+        fdlDateTimeFormat.left = new FormAttachment(0, 0);
+        fdlDateTimeFormat.top  = new FormAttachment(wSpecifyFormat, margin);
+        fdlDateTimeFormat.right= new FormAttachment(middle, -margin);
+        wlDateTimeFormat.setLayoutData(fdlDateTimeFormat);
+        wDateTimeFormat=new CCombo(wFileComp, SWT.BORDER | SWT.READ_ONLY);
+        wDateTimeFormat.setEditable(true);
+        props.setLook(wDateTimeFormat);
+        wDateTimeFormat.addModifyListener(lsMod);
+        fdDateTimeFormat=new FormData();
+        fdDateTimeFormat.left = new FormAttachment(middle, 0);
+        fdDateTimeFormat.top  = new FormAttachment(wSpecifyFormat, margin);
+        fdDateTimeFormat.right= new FormAttachment(100, 0);
+        wDateTimeFormat.setLayoutData(fdDateTimeFormat);
+        for (int x=0;x<dats.length;x++) wDateTimeFormat.add(dats[x]);
+        
 
 		wbShowFiles=new Button(wFileComp, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbShowFiles);
 		wbShowFiles.setText(Messages.getString("XMLOutputDialog.ShowFiles.Button"));
 		fdbShowFiles=new FormData();
 		fdbShowFiles.left = new FormAttachment(middle, 0);
-		fdbShowFiles.top  = new FormAttachment(wAddTime, margin*2);
+		fdbShowFiles.top  = new FormAttachment(wDateTimeFormat, margin*2);
 		wbShowFiles.setLayoutData(fdbShowFiles);
 		wbShowFiles.addSelectionListener(new SelectionAdapter() 
 			{
@@ -616,7 +677,6 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
 		final int FieldsRows=input.getOutputFields().length;
 		
 		// Prepare a list of possible formats...
-		String dats[] = Const.getDateFormats();
 		String nums[] = Const.getNumberFormats();
 		int totsize = dats.length + nums.length;
 		String formats[] = new String[totsize];
@@ -746,6 +806,7 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
 		setSize();
 		
 		getData();
+		setDateTimeFormat();
 		input.setChanged(changed);
 		
 		shell.open();
@@ -755,7 +816,22 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
 		}
 		return stepname;
 	}
-	
+	private void setDateTimeFormat()
+	{
+		if(wSpecifyFormat.getSelection())
+		{
+			wAddDate.setSelection(false);	
+			wAddTime.setSelection(false);
+		}
+		
+		wDateTimeFormat.setEnabled(wSpecifyFormat.getSelection());
+		wlDateTimeFormat.setEnabled(wSpecifyFormat.getSelection());
+		wAddDate.setEnabled(!wSpecifyFormat.getSelection());
+		wlAddDate.setEnabled(!wSpecifyFormat.getSelection());
+		wAddTime.setEnabled(!wSpecifyFormat.getSelection());
+		wlAddTime.setEnabled(!wSpecifyFormat.getSelection());
+		
+	}
     private void setEncodings()
     {
         // Encoding of the text file:
@@ -800,6 +876,9 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
 		wAddStepnr.setSelection(input.isStepNrInFilename());
 
 		wAddToResult.setSelection(input.isAddToResultFiles());
+		
+		if (input.getDateTimeFormat()!= null) wDateTimeFormat.setText( input.getDateTimeFormat() );
+		wSpecifyFormat.setSelection(input.isSpecifyFormat());
 		
 		log.logDebug(toString(), Messages.getString("XMLOutputDialog.Log.GettingFieldsInfo"));
 		
@@ -856,6 +935,9 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
 		tfoi.setDoNotOpenNewFileInit(wDoNotOpenNewFileInit.getSelection() );
 		tfoi.setSplitEvery( Const.toInt(wSplitEvery.getText(), 0) );
 
+		tfoi.setDateTimeFormat(wDateTimeFormat.getText());
+		tfoi.setSpecifyFormat(wSpecifyFormat.getSelection());
+		
 		tfoi.setStepNrInFilename( wAddStepnr.getSelection() );
 		tfoi.setDateInFilename( wAddDate.getSelection() );
 		tfoi.setTimeInFilename( wAddTime.getSelection() );

@@ -344,7 +344,7 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
         retval = address.isReachable(timeout);
     	}catch(Exception e)
     	{
-    		log.logError(toString(),Messages.getString("JobPing.ErrorFirstPing",hostname,e.getMessage()));
+    		log.logError(toString(),Messages.getString("JobPing.ErrorSystemPing",hostname,e.getMessage()));
     	}
 		return retval;
 	}
@@ -363,7 +363,7 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
         	  if(log.isDetailed()) 
         	  {
         		  log.logDetailed(toString(), Messages.getString("JobPing.NbrPackets.Label", ""+nrpackets));
-        		  log.logDetailed(toString(), Messages.getString("JobPing.ExecSecondPing.Label", CmdPing));
+        		  log.logDetailed(toString(), Messages.getString("JobPing.ExecClassicPing.Label", CmdPing));
         	  }
         	  Process processPing = Runtime.getRuntime().exec(CmdPing);
         	  if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobPing.Gettingresponse.Label",hostname));
