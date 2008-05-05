@@ -7,12 +7,20 @@ import junit.framework.TestCase;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.variables.VariableSpace;
-import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.job.JobEntryLoader;
 import org.pentaho.di.trans.StepLoader;
 
 public class BaseCluster extends TestCase {
+	
+	/*
+	public void testIgnoreWhiteSpaces() {
+		assertEqualsIgnoreWhitespaces("a  b   c", "a b c");
+		assertEqualsIgnoreWhitespaces("a, b, c", "a,b,c   ");
+		assertEqualsIgnoreWhitespacesAndCase("A  B   C", "a b c");
+		assertEqualsIgnoreWhitespacesAndCase("a, b, c", "A,B,C  ");
+	}
+	*/
 	
 	protected void init() throws Exception {
         EnvUtil.environmentInit();
