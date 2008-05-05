@@ -334,6 +334,12 @@ public class DimensionLookup extends BaseStep implements StepInterface
                 returnIndex++;
                 
                 // See if we need to store this record in the cache as well...
+                /*
+                 * TODO: we can't really assume like this that the cache layout of the incoming rows (below) is the same as the stored data.
+                 * Storing this in the cache gives us data/metadata collision errors. (class cast problems etc)
+                 * Perhaps we need to convert this data to the target data types.  Alternatively, we can use a separate cache in the future.
+                 * Reference: PDI-911
+                 * 
                 if (meta.getCacheSize()>=0)
                 {
                     Object[] values = getCacheValues(rowMeta, row, technicalKey, valueVersion, valueDateFrom, valueDateTo);
@@ -344,6 +350,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
                     	addToCache(lookupRow, values);
                     }
                 }
+                */
                 
 				if (log.isRowLevel()) logRowlevel(Messages.getString("DimensionLookup.Log.AddedDimensionEntry")+data.returnRowMeta.getString(returnRow)); //$NON-NLS-1$
 			}
@@ -1011,7 +1018,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
     {
         if (data.cacheValueRowMeta==null)
         {
-            data.cacheValueRowMeta = data.returnRowMeta.clone();
+            data.cacheValueRowMeta = assembleCacheValueRowMeta();
         }
 
         // store it in the cache if needed.
@@ -1091,14 +1098,32 @@ public class DimensionLookup extends BaseStep implements StepInterface
         if (log.isRowLevel()) logRowlevel("Cache store: key="+keyValues+"    values="+returnValues);
     }
 
-    private Object[] getFromCache(Object[] keyValues, Date dateValue) throws KettleValueException
+	/**
+	 * @return the cache value row metadata.
+	 * The items that are cached is basically the return row metadata:<br>
+	 * - Technical key (Integer)
+	 * - Version (Integer)
+	 * - 
+	 */
+    private RowMetaInterface assembleCacheValueRowMeta() {
+    	RowMetaInterface cacheRowMeta = data.returnRowMeta.clone();
+    	// The technical key and version are always an Integer...
+        //
+    	/*
+        cacheRowMeta.getValueMeta(0).setType(ValueMetaInterface.TYPE_INTEGER);
+        cacheRowMeta.getValueMeta(1).setType(ValueMetaInterface.TYPE_INTEGER);
+        */
+        return cacheRowMeta;
+	}
+
+	private Object[] getFromCache(Object[] keyValues, Date dateValue) throws KettleValueException
     {
         if (data.cacheValueRowMeta==null)
         {
         	// nothing in the cache yet, no lookup was ever performed
         	if (data.returnRowMeta==null) return null; 
         	
-            data.cacheValueRowMeta = data.returnRowMeta.clone();
+            data.cacheValueRowMeta = assembleCacheValueRowMeta();
         }
     	
     	byte[] key = RowMeta.extractData(data.cacheKeyRowMeta, keyValues);
