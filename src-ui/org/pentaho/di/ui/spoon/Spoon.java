@@ -860,12 +860,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		refreshTree(); // Do a complete refresh then...
 
 		setShellText();
-
-		if (props.showTips())
-		{
-			TipsDialog tip = new TipsDialog(shell);
-			tip.open();
-		}
 	}
 
 	public boolean readAndDispatch()
@@ -5629,6 +5623,12 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			handleStartOptions();
 			open();
 
+			if (props.showTips())
+			{
+				TipsDialog tip = new TipsDialog(shell);
+				tip.open();
+			}
+			
             if( splash != null ) {
 				splash.dispose();
 			}
