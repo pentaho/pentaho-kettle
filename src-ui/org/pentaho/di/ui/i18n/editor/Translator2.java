@@ -13,8 +13,12 @@
 package org.pentaho.di.ui.i18n.editor;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
@@ -31,6 +35,7 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.MessageBox;
@@ -109,6 +114,7 @@ public class Translator2
     private Button wApply;
     private Button wRevert;
     private Button wSave;
+    private Button wZip;
 
     private Button wSearch;
     private Button wNext;
@@ -310,7 +316,16 @@ public class Translator2
                 }
             }
         );
-        
+
+        wZip.addSelectionListener(new SelectionAdapter()
+	        {
+	            public void widgetSelected(SelectionEvent arg0)
+	            {
+	                saveFilesToZip();
+	            }
+	        }
+	    );
+
         wClose.addSelectionListener(new SelectionAdapter()
             {
                 public void widgetSelected(SelectionEvent arg0)
@@ -424,10 +439,13 @@ public class Translator2
         wReload.setText(Messages.getString("i18nDialog.Reload"));
         wSave= new Button(composite, SWT.NONE);
         wSave.setText(Messages.getString("i18nDialog.Save"));
+        wZip= new Button(composite, SWT.NONE);
+        wZip.setText(Messages.getString("i18nDialog.Zip"));
+        wZip.setToolTipText(Messages.getString("i18nDialog.Zip.Tip"));
         wClose = new Button(composite, SWT.NONE);
         wClose.setText(Messages.getString("i18nDialog.Close"));
         
-        BaseStepDialog.positionBottomButtons(composite, new Button[] { wReload, wSave, wClose, } , Const.MARGIN*3, null);
+        BaseStepDialog.positionBottomButtons(composite, new Button[] { wReload, wSave, wZip, wClose, } , Const.MARGIN*3, null);
 
         /*
         wSearchG = new Button(composite, SWT.PUSH);
@@ -691,7 +709,7 @@ public class Translator2
 
      }
     
-    protected void saveFiles() {
+    protected boolean saveFiles() {
 		java.util.List<MessagesStore> changedMessagesStores = store.getChangedMessagesStores();
 		if (changedMessagesStores.size()>0) {
 				
@@ -718,17 +736,78 @@ public class Translator2
 				}
 				catch(KettleException e) {
 					new ErrorDialog(shell, Messages.getString("i18n.UnexpectedError"), "There was an error saving the changed messages files:", e);
+					return false;
 				}
+				return true;
+			}
+			else 
+			{
+				return false;
 			}
 			
 		}
 		else {
 			// Nothing was saved.
 			// TODO: disable the button if nothing changed.
-			
+			return true;
 		}
 
 	}
+    
+    protected void saveFilesToZip() {
+    	if (saveFiles()) {
+			java.util.List<MessagesStore> messagesStores = store.getMessagesStores(selectedLocale, null);
+			if (messagesStores.size()>0) {
+					
+				StringBuffer msg = new StringBuffer();
+				for (MessagesStore messagesStore : messagesStores) {
+					// Find the main locale variation for this messages store...
+					//
+					MessagesStore mainLocaleMessagesStore = store.findMainLocaleMessagesStore(messagesStore.getMessagesPackage());
+					String sourceDirectory = mainLocaleMessagesStore.getSourceDirectory(rootDirectories);
+					String filename = messagesStore.getSaveFilename(sourceDirectory);
+					messagesStore.setFilename(filename);
+					msg.append(filename).append(Const.CR);
+				}
+				
+				// Ask for the target filename if we're still here...
+				
+				FileDialog dialog = new FileDialog(shell, SWT.OPEN);
+				dialog.setFilterExtensions(new String[] {"*.zip", "*"});
+				dialog.setFilterNames(new String[] {Messages.getString("System.FileType.ZIPFiles"), Messages.getString("System.FileType.AllFiles")});
+				if (dialog.open()!=null)
+				{
+					String zipFilename = dialog.getFilterPath()+System.getProperty("file.separator")+dialog.getFileName();
+	
+					try
+					{
+						ZipOutputStream out = new ZipOutputStream(new FileOutputStream(zipFilename));
+						byte[] buf = new byte[1024];
+						for (MessagesStore messagesStore : messagesStores) {
+							FileInputStream in = new FileInputStream(messagesStore.getFilename());
+							out.putNextEntry(new ZipEntry(messagesStore.getFilename()));
+							int len;
+							while ((len=in.read(buf))>0) {
+								out.write(buf,0,len);
+							}
+							out.closeEntry();
+							in.close();
+						}
+						out.close();
+					}
+					catch(Exception e) {
+						new ErrorDialog(shell, Messages.getString("i18n.UnexpectedError"), "There was an error saving the changed messages files:", e);
+					}
+					
+				}
+				
+
+				
+				
+			}
+    	}
+	}
+
 
 	protected void search(String searchLocale) {
 		// Ask for the search string...
