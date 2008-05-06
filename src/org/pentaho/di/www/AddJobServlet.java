@@ -128,15 +128,20 @@ public class AddJobServlet extends HttpServlet
 	            new Thread(new Runnable() {
 					public void run() 
 					{
-						while (job.isActive() || !job.isInitialized() )
+						// First wait until the job got started.
+						// 
+						while (!job.isActive() )
 						{
-							try { Thread.sleep(250); } catch (InterruptedException e) { }
+							try { Thread.sleep(100); } catch (InterruptedException e) { }
 						}
+						
+						// Then wait until it's finished.
+						//
+						job.waitUntilFinished();
 
-						// Once we're done, we disconnect from the repository...
+						// Then disconnect from the repository
 						//
 						repository.disconnect();
-						
 					}
 				
 				}).start();
