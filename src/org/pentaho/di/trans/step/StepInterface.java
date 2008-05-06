@@ -248,5 +248,15 @@ public interface StepInterface
 	 * @param stepListener The listener to add to the step
 	 */
 	public void addStepListener(StepListener stepListener);
+	
+	/**
+	 * @return true if the thread is a special mapping step
+	 */
+	public boolean isMapping();
+	
+	/**
+	 * @return The metadata for this step 
+	 */
+	public StepMeta getStepMeta();
 		   
 }

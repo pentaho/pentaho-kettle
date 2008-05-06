@@ -149,19 +149,23 @@ public class MappingInput extends BaseStep implements StepInterface
 		
         for (int i=0;i<sourceSteps.length;i++) {
         	
-	        // OK, before we leave, make sure there is a rowset that covers the path to this target step.
-	        // We need to create a new RowSet and add it to the Input RowSets of the target step
+        	// We don't want to add the mapping-to-mapping rowset
         	//
-	        RowSet rowSet = new RowSet(getTransMeta().getSizeRowset());
-	        
-	        // This is always a single copy, both for source and target...
-	        //
-	        rowSet.setThreadNameFromToCopy(sourceSteps[i].getStepname(), 0, mappingStepname, 0);
-	        
-	        // Make sure to connect it to both sides...
-	        //
-	        sourceSteps[i].getOutputRowSets().add(rowSet);
-	        getInputRowSets().add(rowSet);
+        	if (!sourceSteps[i].isMapping()) {
+		        // OK, before we leave, make sure there is a rowset that covers the path to this target step.
+		        // We need to create a new RowSet and add it to the Input RowSets of the target step
+	        	//
+		        RowSet rowSet = new RowSet(getTransMeta().getSizeRowset());
+		        
+		        // This is always a single copy, both for source and target...
+		        //
+		        rowSet.setThreadNameFromToCopy(sourceSteps[i].getStepname(), 0, mappingStepname, 0);
+		        
+		        // Make sure to connect it to both sides...
+		        //
+		        sourceSteps[i].getOutputRowSets().add(rowSet);
+		        getInputRowSets().add(rowSet);
+        	}
         }
         data.valueRenames = valueRenames;
         

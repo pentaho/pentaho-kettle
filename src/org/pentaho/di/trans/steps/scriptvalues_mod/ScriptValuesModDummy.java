@@ -24,6 +24,7 @@ import org.pentaho.di.trans.step.RowListener;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepListener;
+import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 	/**
 	 * Dummy class used for test().
@@ -227,5 +228,13 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 		}
 
 		public void addStepListener(StepListener stepListener) {
+		}
+		
+		public boolean isMapping() {
+			return false;
+		}
+		
+		public StepMeta getStepMeta() {
+			return null;
 		}
 	}

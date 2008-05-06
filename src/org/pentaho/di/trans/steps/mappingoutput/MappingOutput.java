@@ -119,7 +119,16 @@ public class MappingOutput extends BaseStep implements StepInterface
 	        // Make sure to connect it to both sides...
 	        //
 	        getOutputRowSets().add(rowSet);
-	        targetSteps[i].getInputRowSets().add(rowSet);
+	        
+	        // Add the row set to the target step as input.
+	        // This will appropriately drain the buffer as data comes in.
+	        // However, as an exception, we can't attach it to another mapping step.
+	        // We need to attach it to the appropriate mapping input step.
+	        // The main problem is that we can't do it here since we don't know that the other step has initialized properly yet.
+	        // This method is called during init() and we can't tell for sure it's done already.
+	        // As such, we'll simply grab the remaining row sets at the Mapping#processRow() level and assign them to a Mapping Input step. 
+	        //
+        	targetSteps[i].getInputRowSets().add(rowSet);
         }
         
         data.inputValueRenames = inputValueRenames;

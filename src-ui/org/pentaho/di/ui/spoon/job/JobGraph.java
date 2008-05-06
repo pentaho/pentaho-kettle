@@ -777,7 +777,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
       toolbar = XulHelper.createToolbar(XUL_FILE_JOB_TOOLBAR, JobGraph.this, JobGraph.this, new XulMessages());
       ToolBar toolBar = (ToolBar) toolbar.getNativeObject();
       toolBar.pack();
-      int h = toolBar.getBounds().height;
+      // int h = toolBar.getBounds().height;
 
       // Hack alert : more XUL limitations...
       //

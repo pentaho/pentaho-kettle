@@ -2501,4 +2501,7 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
 		stepListeners.add(stepListener);
 	}
 	
+	public boolean isMapping() {
+		return stepMeta.isMapping();
+	}
 }
