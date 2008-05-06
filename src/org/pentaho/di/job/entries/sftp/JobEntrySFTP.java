@@ -387,7 +387,7 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 				boolean TargetFolderExists=TargetFolder.exists();
 				if(TargetFolderExists)
 				{
-					if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("SFTP.Log.TargetFolderExists", realTargetDirectory));
+					if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobSFTP.Log.TargetFolderExists", realTargetDirectory));
 				}else
 				{
 					log.logError(toString(), Messages.getString("JobSFTP.Error.TargetFolderNotExists", realTargetDirectory));	

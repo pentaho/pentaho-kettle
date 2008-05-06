@@ -585,28 +585,27 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface
 
         if (prev != null && prev.size() > 0)
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString(
-                    "RegexEvalMeta.CheckResult.ConnectedStepOK", String.valueOf(prev.size())), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
+            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("RegexEvalMeta.CheckResult.ConnectedStepOK", String.valueOf(prev.size())), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
             remarks.add(cr);
         }
         else
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages
-                    .getString("RegexEvalMeta.CheckResult.NoInputReceived"), stepMeta); //$NON-NLS-1$
+            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, 
+            		Messages.getString("RegexEvalMeta.CheckResult.NoInputReceived"), stepMeta); //$NON-NLS-1$
             remarks.add(cr);
         }
 
         // Check Field to evaluate
         if (!Const.isEmpty(matcher))
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages
-                    .getString("RegexEvalMeta.CheckResult.MatcherOK"), stepMeta);
+            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, 
+            		Messages.getString("RegexEvalMeta.CheckResult.MatcherOK"), stepMeta);
             remarks.add(cr);
         }
         else
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages
-                    .getString("RegexEvalMeta.CheckResult.NoMatcher"), stepMeta);
+            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, 
+            		Messages.getString("RegexEvalMeta.CheckResult.NoMatcher"), stepMeta);
             remarks.add(cr);
 
         }
@@ -614,14 +613,14 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface
         // Check Result Field name
         if (!Const.isEmpty(resultfieldname))
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages
-                    .getString("RegexEvalMeta.CheckResult.ResultFieldnameOK"), stepMeta);
+            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, 
+            		Messages.getString("RegexEvalMeta.CheckResult.ResultFieldnameOK"), stepMeta);
             remarks.add(cr);
         }
         else
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages
-                    .getString("RegexEvalMeta.CheckResult.NoResultFieldname"), stepMeta);
+            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, 
+            		Messages.getString("RegexEvalMeta.CheckResult.NoResultFieldname"), stepMeta);
             remarks.add(cr);
         }
 
