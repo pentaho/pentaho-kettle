@@ -11,11 +11,13 @@
 
 package org.pentaho.di.ui.core.database.dialog;
 
+import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.i18n.GlobalMessages;
 import org.pentaho.di.i18n.LanguageChoice;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
@@ -42,6 +44,8 @@ public class XulDatabaseDialog {
 
   DataOverrideHandler dataHandler = null;
   
+  private LogWriter log;
+  
   private static final String EVENT_ID = "dataHandler"; //$NON-NLS-1$
   
   private static final String MESSAGES = "org.pentaho.di.ui.core.database.dialog.messages.messages"; //$NON-NLS-1$
@@ -55,12 +59,15 @@ public class XulDatabaseDialog {
   private static final String EXTENDED_WIDGET_ID = "VARIABLETEXTBOX"; //$NON-NLS-1$
   
   public XulDatabaseDialog(Shell parent, DatabaseMeta dbMeta) {
+
     parentShell = parent;
     databaseMeta = dbMeta;
     if (dbMeta != null) {
       databaseName = databaseMeta.getName();
     }
     databases = null;
+    
+    log = LogWriter.getInstance();
   }
 
   /**
@@ -97,13 +104,20 @@ public class XulDatabaseDialog {
       XulComponent parentElement = boxElement.getParent();
 
       ResourceBundle res = null;
+      Locale primaryLocale = GlobalMessages.getLocale();
+      Locale failOverLocale = LanguageChoice.getInstance().getFailoverLocale();
       try{
-        res = ResourceBundle.getBundle(MESSAGES, GlobalMessages.getLocale());
+        res = ResourceBundle.getBundle(MESSAGES, primaryLocale);
       }catch(MissingResourceException e){
         try{
-          res = ResourceBundle.getBundle(MESSAGES, LanguageChoice.getInstance().getFailoverLocale());
+          res = ResourceBundle.getBundle(MESSAGES, failOverLocale);
         }catch(MissingResourceException e2){
           res = null;
+          log.logError(Messages.getString("XulDatabaseDialog.Error.ResourcesNotFound.Title"),  //$NON-NLS-1$
+              Messages.getString("XulDatabaseDialog.Error.ResourcesNotFound",   //$NON-NLS-1$
+                  primaryLocale == null ? "" : primaryLocale.toString(),  //$NON-NLS-1$
+                  failOverLocale == null ? "" : failOverLocale.toString()),   //$NON-NLS-1$
+              e2);
         }
       }
 
