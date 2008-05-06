@@ -23,7 +23,7 @@ import org.pentaho.di.version.BuildVersion;
 
 public class Log4jKettleLayout extends Layout implements Log4JLayoutInterface
 {
-	private static final ThreadLocal<SimpleDateFormat>  LOCAL_SIMPLE_DATE_PARSER = new ThreadLocal<SimpleDateFormat>() {
+	private static final ThreadLocal<SimpleDateFormat> LOCAL_SIMPLE_DATE_PARSER = new ThreadLocal<SimpleDateFormat>() {
 		protected SimpleDateFormat initialValue() {
 			return new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
      	}
@@ -49,7 +49,7 @@ public class Log4jKettleLayout extends Layout implements Log4JLayoutInterface
         }
 
         Object object = event.getMessage();
-        if (object != null && object instanceof Log4jMessage)
+        if (object instanceof Log4jMessage)
         {
             Log4jMessage message = (Log4jMessage)object;
 
@@ -81,7 +81,7 @@ public class Log4jKettleLayout extends Layout implements Log4JLayoutInterface
         }
         else
         {
-            line+=dateTimeString+object.toString();
+            line+=dateTimeString + (object!=null?object.toString():"<null>");
         }
         
         return line;
@@ -105,5 +105,4 @@ public class Log4jKettleLayout extends Layout implements Log4JLayoutInterface
     {
         this.timeAdded = addTime;
     }
-
 }
