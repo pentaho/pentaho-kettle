@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Appender;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -110,11 +111,21 @@ public class AddJobServlet extends HttpServlet
             final Job job = new Job(LogWriter.getInstance(), StepLoader.getInstance(), repository, jobMeta);
             
             Job oldOne = jobMap.getJob(job.getName());
-            if ( oldOne!=null && oldOne.isActive())
+            if ( oldOne!=null)
             {
-                throw new Exception("A job with the same name exists and is not idle."+Const.CR+"Please stop this job first.");
+            	if (oldOne.isActive()) {
+            		throw new Exception("A job with the same name exists and is not idle."+Const.CR+"Please stop this job first.");
+            	}
             }
-            
+
+        	// Remove the old log appender to avoid memory leaks!
+        	//
+        	Appender appender = jobMap.getAppender(job.getName());
+        	if (appender!=null) {
+        		log.removeAppender(appender);
+        		appender.close();
+        	}
+
             // Setting variables
             //
             job.initializeVariablesFrom(null);

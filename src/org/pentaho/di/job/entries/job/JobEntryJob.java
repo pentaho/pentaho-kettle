@@ -591,7 +591,8 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
                 	jobExecutionConfiguration.setVariables(this);
                 	jobExecutionConfiguration.setRemoteServer(remoteSlaveServer);
                 	jobExecutionConfiguration.setRepository(rep);
-                	
+                	jobExecutionConfiguration.setLogLevel(log.getLogLevel());
+
                 	// Send the XML over to the slave server
                 	// Also start the job over there...
                 	//

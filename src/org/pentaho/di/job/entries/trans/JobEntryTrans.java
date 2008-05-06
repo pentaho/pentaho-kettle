@@ -606,6 +606,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
                 	transExecutionConfiguration.setArgumentStrings(args);
                 	transExecutionConfiguration.setVariables(this);
                 	transExecutionConfiguration.setRemoteServer(remoteSlaveServer);
+                	transExecutionConfiguration.setLogLevel(log.getLogLevel());
                 	
                 	// Send the XML over to the slave server
                 	// Also start the transformation over there...
@@ -636,7 +637,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 							break; // Stop looking too, chances are too low the server will come back on-line
 						}
                 		
-                		try { Thread.sleep(10000); } catch(InterruptedException e) {} ; // sleep for 10 seconds
+                		try { Thread.sleep(2000); } catch(InterruptedException e) {} ; // sleep for 2 seconds
                 	}
                 }
                 // Execute this transformation on the local machine

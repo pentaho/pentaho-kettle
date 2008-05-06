@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Appender;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -106,14 +107,24 @@ public class AddTransServlet extends HttpServlet
             trans.setRepository(repository);
             
             Trans oldOne = transformationMap.getTransformation(trans.getName());
-            if ( oldOne!=null && !oldOne.isFinished())
+            if ( oldOne!=null)
             {
-                if ( oldOne.isRunning() || oldOne.isPreparing() || oldOne.isInitializing() )
-                {
-                    throw new Exception("A transformation with the same name exists and is not idle."+Const.CR+"Please stop the transformation first.");
-                }
+            	if (!oldOne.isFinished()) {
+	                if ( oldOne.isRunning() || oldOne.isPreparing() || oldOne.isInitializing() )
+	                {
+	                    throw new Exception("A transformation with the same name exists and is not idle."+Const.CR+"Please stop the transformation first.");
+	                }
+            	}
             }
-            
+
+        	// Remove the old log appender to avoid memory leaks!
+        	//
+        	Appender appender = transformationMap.getAppender(trans.getName());
+        	if (appender!=null) {
+        		log.removeAppender(appender);
+        		appender.close();
+        	}
+
             transformationMap.addTransformation(transMeta.getName(), trans, transConfiguration);
 
             if (repository!=null)
