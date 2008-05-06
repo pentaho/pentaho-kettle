@@ -109,7 +109,15 @@ public class XulDatabaseDialog {
 
       XulDomContainer fragmentContainer = null;
       String pkg = getClass().getPackage().getName().replace('.', '/');
-      fragmentContainer = container.loadFragment(pkg.concat(DIALOG_FRAGMENT_FILE), res);
+      
+      // Kludge: paths of execution do not account for a null resourcebundle gracefully, need 
+      // to check for it here. 
+      if (res != null){
+        fragmentContainer = container.loadFragment(pkg.concat(DIALOG_FRAGMENT_FILE), res);
+      } else{
+        fragmentContainer = container.loadFragment(pkg.concat(DIALOG_FRAGMENT_FILE));
+      }
+      
       XulComponent newBox = fragmentContainer.getDocumentRoot().getFirstChild();
       parentElement.replaceChild(boxElement, newBox);
 
