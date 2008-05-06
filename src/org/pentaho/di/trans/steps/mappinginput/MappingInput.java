@@ -26,6 +26,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.steps.mapping.Mapping;
 import org.pentaho.di.trans.steps.mapping.MappingValueRename;
 
 
@@ -150,19 +151,23 @@ public class MappingInput extends BaseStep implements StepInterface
 		
         for (int i=0;i<sourceSteps.length;i++) {
         	
-	        // OK, before we leave, make sure there is a rowset that covers the path to this target step.
-	        // We need to create a new RowSet and add it to the Input RowSets of the target step
+        	// If this source step is the mapping itself, we don't add the rowset. (no data comes from over there)
         	//
-	        RowSet rowSet = new RowSet(getTransMeta().getSizeRowset());
-	        
-	        // This is always a single copy, both for source and target...
-	        //
-	        rowSet.setThreadNameFromToCopy(sourceSteps[i].getStepname(), 0, mappingStepname, 0);
-	        
-	        // Make sure to connect it to both sides...
-	        //
-	        sourceSteps[i].getOutputRowSets().add(rowSet);
-	        getInputRowSets().add(rowSet);
+        	if (!(sourceSteps[i] instanceof Mapping)) {
+		        // OK, before we leave, make sure there is a rowset that covers the path to this target step.
+		        // We need to create a new RowSet and add it to the Input RowSets of the target step
+	        	//
+		        RowSet rowSet = new RowSet(getTransMeta().getSizeRowset());
+		        
+		        // This is always a single copy, both for source and target...
+		        //
+		        rowSet.setThreadNameFromToCopy(sourceSteps[i].getStepname(), 0, mappingStepname, 0);
+		        
+		        // Make sure to connect it to both sides...
+		        //
+		        sourceSteps[i].getOutputRowSets().add(rowSet);
+		        getInputRowSets().add(rowSet);
+        	}
         }
         data.valueRenames = valueRenames;
         

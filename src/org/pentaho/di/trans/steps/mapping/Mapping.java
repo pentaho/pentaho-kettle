@@ -11,10 +11,12 @@
  
 package org.pentaho.di.trans.steps.mapping;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
+import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -52,6 +54,28 @@ public class Mapping extends BaseStep implements StepInterface
 		meta=(MappingMeta)smi;
 		data=(MappingData)sdi;
 		
+		// Before we start, let's see if there are loose ends to tie up...
+		//
+		if (!inputRowSets.isEmpty()) {
+			MappingInput[] mappingInputs = data.mappingTrans.findMappingInput();
+			for (RowSet rowSet : new ArrayList<RowSet>(inputRowSets)) {
+				// Pass this rowset down to a mapping input step in the sub-transformation...
+				//
+				if (mappingInputs.length==1) {
+					// Simple case: only one input mapping.  Move the RowSet over
+					//
+					inputRowSets.remove(rowSet);
+					mappingInputs[0].getInputRowSets().add(rowSet);
+					
+				} else {
+					// Difficult to see what's going on here.
+					// TODO: figure out where this RowSet needs to go and where it comes from.
+					//
+					throw new KettleException("Unsupported situation detected.  To solve it, insert a dummy step.");
+				}
+			}
+		}
+
 		// Start the mapping/sub-transformation threads
         //
         data.mappingTrans.startThreads();
