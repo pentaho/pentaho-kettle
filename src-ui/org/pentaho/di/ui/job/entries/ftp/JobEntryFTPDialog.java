@@ -1023,7 +1023,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
        
        // Add filenames to result filenames...
        wlAddFilenameToResult = new Label(wLocalSettings, SWT.RIGHT);
-       wlAddFilenameToResult.setText(Messages.getString("JobFTP.DontOverwrite.Label"));
+       wlAddFilenameToResult.setText(Messages.getString("JobFTP.AddFilenameToResult.Label"));
        props.setLook(wlAddFilenameToResult);
        fdlAddFilenameToResult = new FormData();
        fdlAddFilenameToResult.left = new FormAttachment(0, 0);
@@ -1031,7 +1031,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
        fdlAddFilenameToResult.right = new FormAttachment(middle, 0);
        wlAddFilenameToResult.setLayoutData(fdlAddFilenameToResult);
        wAddFilenameToResult = new Button(wLocalSettings, SWT.CHECK);
-       wAddFilenameToResult.setToolTipText(Messages.getString("JobFTP.DontOverwrite.Tooltip"));
+       wAddFilenameToResult.setToolTipText(Messages.getString("JobFTP.AddFilenameToResult.Tooltip"));
        props.setLook(wAddFilenameToResult);
        fdAddFilenameToResult = new FormData();
        fdAddFilenameToResult.left = new FormAttachment(middle, margin);

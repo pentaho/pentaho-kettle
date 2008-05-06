@@ -50,8 +50,10 @@ import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
 import org.w3c.dom.Node;
 
+import org.apache.commons.vfs.FileObject;
+
 /**
- * This defines an FTP job entry.
+ * This defines a SFTP job entry.
  *
  * @author Matt
  * @since 05-11-2003
@@ -67,12 +69,16 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 	private String targetDirectory;
 	private String wildcard;
 	private boolean remove;
+	private boolean isaddresult;
+	private boolean createtargetfolder;
 
 	public JobEntrySFTP(String n)
 	{
 		super(n, "");
 		serverName=null;
         serverPort="22";
+        isaddresult=true;
+        createtargetfolder=false;
 		setID(-1L);
 		setJobEntryType(JobEntryType.SFTP);
 	}
@@ -107,6 +113,10 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 		retval.append("      ").append(XMLHandler.addTagValue("targetdirectory", targetDirectory));
 		retval.append("      ").append(XMLHandler.addTagValue("wildcard",     wildcard));
 		retval.append("      ").append(XMLHandler.addTagValue("remove",       remove));
+		retval.append("      ").append(XMLHandler.addTagValue("isaddresult",       isaddresult));
+		retval.append("      ").append(XMLHandler.addTagValue("createtargetfolder",       createtargetfolder));
+		
+		
 
 		return retval.toString();
 	}
@@ -124,6 +134,18 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 			targetDirectory = XMLHandler.getTagValue(entrynode, "targetdirectory");
 			wildcard        = XMLHandler.getTagValue(entrynode, "wildcard");
 			remove          = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "remove") );
+
+			String addresult = XMLHandler.getTagValue(entrynode, "isaddresult");	
+			
+			if(Const.isEmpty(addresult)) 
+				isaddresult = true;
+			else
+				isaddresult = "Y".equalsIgnoreCase(addresult);
+			
+			createtargetfolder          = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "createtargetfolder") );
+			
+			
+			
 		}
 		catch(KettleXMLException xe)
 		{
@@ -149,6 +171,17 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 			targetDirectory = rep.getJobEntryAttributeString(id_jobentry, "targetdirectory");
 			wildcard        = rep.getJobEntryAttributeString(id_jobentry, "wildcard");
 			remove          = rep.getJobEntryAttributeBoolean(id_jobentry, "remove");
+		  
+			String addToResult=rep.getStepAttributeString (id_jobentry, "add_to_result_filenames");
+			if(Const.isEmpty(addToResult)) 
+				isaddresult = true;
+			else
+				isaddresult =  rep.getStepAttributeBoolean(id_jobentry, "add_to_result_filenames");
+			
+			createtargetfolder          = rep.getJobEntryAttributeBoolean(id_jobentry, "createtargetfolder");
+			
+			
+			
 		}
 		catch(KettleException dbe)
 		{
@@ -171,6 +204,10 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 			rep.saveJobEntryAttribute(id_job, getID(), "targetdirectory", targetDirectory);
 			rep.saveJobEntryAttribute(id_job, getID(), "wildcard",        wildcard);
 			rep.saveJobEntryAttribute(id_job, getID(), "remove",          remove);
+			rep.saveJobEntryAttribute(id_job, getID(), "isaddresult",          isaddresult);
+			rep.saveJobEntryAttribute(id_job, getID(), "createtargetfolder",          createtargetfolder);
+			
+			
 		}
 		catch(KettleDatabaseException dbe)
 		{
@@ -257,6 +294,15 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 	{
 		this.wildcard = wildcard;
 	}
+	public void setAddToResult(boolean isaddresultin)
+	   {
+			this.isaddresult=isaddresultin;
+	   }
+		 
+		public boolean isAddToResult()
+		{
+			return isaddresult;
+		}
 
 	/**
 	 * @return Returns the targetDirectory.
@@ -266,6 +312,16 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 		return targetDirectory;
 	}
 
+	public void setcreateTargetFolder(boolean createtargetfolder)
+	{
+		this.createtargetfolder=createtargetfolder;
+	}
+	
+	public boolean iscreateTargetFolder()
+	{
+		return createtargetfolder;
+	}
+	
 	/**
 	 * @param targetDirectory The targetDirectory to set.
 	 */
@@ -319,12 +375,47 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
         String realSftpDirString   = environmentSubstitute(sftpDirectory);
         String realWildcard        = environmentSubstitute(wildcard);
         String realTargetDirectory = environmentSubstitute(targetDirectory);
+        
+        FileObject TargetFolder=null;
 
 		try
 		{
+			// Let's perform some checks before starting
+			if(!Const.isEmpty(realTargetDirectory))
+			{
+				TargetFolder=KettleVFS.getFileObject(realTargetDirectory);
+				boolean TargetFolderExists=TargetFolder.exists();
+				if(TargetFolderExists)
+				{
+					if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("SFTP.Log.TargetFolderExists", realTargetDirectory));
+				}else
+				{
+					log.logError(toString(), Messages.getString("JobSFTP.Error.TargetFolderNotExists", realTargetDirectory));	
+					if(!createtargetfolder)
+					{
+						// Error..Target folder can not be found !
+						result.setNrErrors(1);
+						return result;
+					}else
+					{
+						// create target folder
+						TargetFolder.createFolder();
+						if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobSFTP.Log.TargetFolderCreated", realTargetDirectory));
+					}
+						
+				}
+			}
+			
+			if(TargetFolder!=null) 
+			{
+				TargetFolder.close();
+				TargetFolder=null;
+			}
+			
+			
 			// Create sftp client to host ...
 			sftpclient = new SFTPClient(InetAddress.getByName(realServerName), Const.toInt(realServerPort, 22), realUsername);
-			if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("SFTP.Log.OpenedConnection",realServerName,realServerPort,realUsername));
+			if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobSFTP.Log.OpenedConnection",realServerName,realServerPort,realUsername));
 
 			// login to ftp host ...
 			sftpclient.login(realPassword);
@@ -334,13 +425,27 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 			// move to spool dir ...
 			if (!Const.isEmpty(realSftpDirString))
 			{
-				sftpclient.chdir(realSftpDirString);
-				if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("SFTP.Log.ChangedDirectory",realSftpDirString));
+				try
+				{
+					sftpclient.chdir(realSftpDirString);
+				}catch(Exception e)
+				{
+					log.logError(toString(), Messages.getString("JobSFTP.Error.CanNotFindRemoteFolder",realSftpDirString));
+					throw new Exception (e);
+				}
+				if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobSFTP.Log.ChangedDirectory",realSftpDirString));
 			}
 
 			// Get all the files in the current directory...
 			String[] filelist = sftpclient.dir();
-			if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("SFTP.Log.Found",""+filelist.length));
+			if(filelist==null)
+			{
+				// Nothing was found !!! exit
+				result.setResult( true );
+				if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobSFTP.Log.Found",""+0));
+				return result;
+			}
+			if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobSFTP.Log.Found",""+filelist.length));
 
 			Pattern pattern = null;
 			if (!Const.isEmpty(realWildcard))
@@ -363,23 +468,26 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 
 				if (getIt)
 				{
-					if(log.isDebug()) log.logDebug(toString(), Messages.getString("SFTP.Log.GettingFiles",filelist[i],realTargetDirectory));
+					if(log.isDebug()) log.logDebug(toString(), Messages.getString("JobSFTP.Log.GettingFiles",filelist[i],realTargetDirectory));
 
 					String targetFilename = realTargetDirectory+Const.FILE_SEPARATOR+filelist[i];
 					sftpclient.get(targetFilename, filelist[i]);
 					filesRetrieved++;
 
-					// Add to the result files...
-					ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(targetFilename), parentJob.getJobname(), toString());
-                    result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
-
-                    if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("SFTP.Log.TransferedFile",filelist[i]));
+					if(isaddresult)
+					{
+						// Add to the result files...
+						ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(targetFilename), parentJob.getJobname(), toString());
+						result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
+						if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobSFTP.Log.FilenameAddedToResultFilenames",filelist[i]));
+					}
+                    if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobSFTP.Log.TransferedFile",filelist[i]));
 
 					// Delete the file if this is needed!
 					if (remove)
 					{
 						sftpclient.delete(filelist[i]);
-						if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("SFTP.Log.DeletedFile",filelist[i]));
+						if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobSFTP.Log.DeletedFile",filelist[i]));
 					}
 				}
 			}
@@ -390,7 +498,7 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 		catch(Exception e)
 		{
 			result.setNrErrors(1);
-			log.logError(toString(), Messages.getString("SFTP.Error.GettingFiles",e.getMessage()));
+			log.logError(toString(), Messages.getString("JobSFTP.Error.GettingFiles",e.getMessage()));
             log.logError(toString(), Const.getStackTracker(e));
 		} finally {
 			// close connection, if possible
@@ -399,6 +507,14 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 			} catch (Exception e) {
 				// just ignore this, makes no big difference
 			}
+			
+			try{
+				if (TargetFolder!=null){
+					TargetFolder.close();
+					TargetFolder=null;
+				}
+			}catch (Exception e){}
+			
 		}
 
 		return result;

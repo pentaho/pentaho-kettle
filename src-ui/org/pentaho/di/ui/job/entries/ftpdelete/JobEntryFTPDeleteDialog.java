@@ -264,7 +264,7 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
             public void modifyText(ModifyEvent e)
             {
             	ftpclient=null;
-            	ftpclient=null;
+            	sftpclient=null;
             	conn=null;
                 jobEntry.setChanged();
             }
@@ -595,7 +595,7 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
 		//fdTest.left = new FormAttachment(middle, 0);
 		fdTest.top  = new FormAttachment(wkeyfilePass, margin);
 		fdTest.right= new FormAttachment(100, 0);
-		 wTest.setLayoutData(fdTest);
+		wTest.setLayoutData(fdTest);
         
 
 	     fdServerSettings = new FormData();

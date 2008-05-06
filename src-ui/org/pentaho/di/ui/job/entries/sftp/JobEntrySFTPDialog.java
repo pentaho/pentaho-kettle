@@ -16,6 +16,8 @@
 
 package org.pentaho.di.ui.job.entries.sftp;
 
+import java.net.InetAddress;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -27,10 +29,13 @@ import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
@@ -45,6 +50,7 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.job.entries.sftp.JobEntrySFTP;
 import org.pentaho.di.job.entries.sftp.Messages;
+import org.pentaho.di.job.entries.sftp.SFTPClient;
 
 /**
  * This dialog allows you to edit the SQL job entry settings. (select the connection and the sql
@@ -112,6 +118,8 @@ public class JobEntrySFTPDialog extends JobEntryDialog implements JobEntryDialog
     private Button wOK, wCancel;
 
     private Listener lsOK, lsCancel;
+    
+	private Listener lsCheckChangeFolder;
 
     private JobEntrySFTP jobEntry;
 
@@ -120,6 +128,46 @@ public class JobEntrySFTPDialog extends JobEntryDialog implements JobEntryDialog
     private SelectionAdapter lsDef;
     
     private boolean changed;
+    
+	private Button wTest;
+	
+	private FormData fdTest;
+	
+	private Listener lsTest;
+	
+	private Button wbTestChangeFolderExists;
+	
+	private FormData fdbTestChangeFolderExists;
+	
+    private Button wbTargetDirectory;
+    
+    private FormData fdbTargetDirectory;  
+    
+    private Group wServerSettings;
+    
+    private FormData fdServerSettings;
+    
+    private Group wSourceFiles;
+    
+    private FormData fdSourceFiles;
+    
+    private Group wTargetFiles;
+    
+    private FormData fdTargetFiles;
+	
+    private Label wlAddFilenameToResult;
+
+    private Button wAddFilenameToResult;
+    
+    private FormData fdlAddFilenameToResult,fdAddFilenameToResult;
+    
+    private Label wlCreateTargetFolder;
+    
+    private Button wCreateTargetFolder;
+    
+    private FormData fdlCreateTargetFolder,fdCreateTargetFolder;
+    
+	private SFTPClient sftpclient = null;
 
 
     public JobEntrySFTPDialog(Shell parent, JobEntryInterface jobEntryInt, Repository rep, JobMeta jobMeta)
@@ -143,6 +191,7 @@ public class JobEntrySFTPDialog extends JobEntryDialog implements JobEntryDialog
         {
             public void modifyText(ModifyEvent e)
             {
+            	sftpclient=null;
                 jobEntry.setChanged();
             }
         };
@@ -175,9 +224,21 @@ public class JobEntrySFTPDialog extends JobEntryDialog implements JobEntryDialog
         fdName.top = new FormAttachment(0, margin);
         fdName.right = new FormAttachment(100, 0);
         wName.setLayoutData(fdName);
+        
+        
+	     // ////////////////////////
+	     // START OF SERVER SETTINGS GROUP///
+	     // /
+	    wServerSettings = new Group(shell, SWT.SHADOW_NONE);
+	    props.setLook(wServerSettings);
+	    wServerSettings.setText(Messages.getString("JobSFTP.ServerSettings.Group.Label"));
+	    FormLayout ServerSettingsgroupLayout = new FormLayout();
+	    ServerSettingsgroupLayout.marginWidth = 10;
+	    ServerSettingsgroupLayout.marginHeight = 10;
+	    wServerSettings.setLayout(ServerSettingsgroupLayout);
 
         // ServerName line
-        wlServerName = new Label(shell, SWT.RIGHT);
+        wlServerName = new Label(wServerSettings, SWT.RIGHT);
         wlServerName.setText(Messages.getString("JobSFTP.Server.Label"));
         props.setLook(wlServerName);
         fdlServerName = new FormData();
@@ -185,7 +246,7 @@ public class JobEntrySFTPDialog extends JobEntryDialog implements JobEntryDialog
         fdlServerName.top = new FormAttachment(wName, margin);
         fdlServerName.right = new FormAttachment(middle, -margin);
         wlServerName.setLayoutData(fdlServerName);
-        wServerName = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wServerName = new TextVar(jobMeta, wServerSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wServerName);
         wServerName.addModifyListener(lsMod);
         fdServerName = new FormData();
@@ -195,7 +256,7 @@ public class JobEntrySFTPDialog extends JobEntryDialog implements JobEntryDialog
         wServerName.setLayoutData(fdServerName);
 
         // ServerPort line
-        wlServerPort = new Label(shell, SWT.RIGHT);
+        wlServerPort = new Label(wServerSettings, SWT.RIGHT);
         wlServerPort.setText(Messages.getString("JobSFTP.Port.Label"));
         props.setLook(wlServerPort);
         fdlServerPort = new FormData();
@@ -203,7 +264,7 @@ public class JobEntrySFTPDialog extends JobEntryDialog implements JobEntryDialog
         fdlServerPort.top = new FormAttachment(wServerName, margin);
         fdlServerPort.right = new FormAttachment(middle, -margin);
         wlServerPort.setLayoutData(fdlServerPort);
-        wServerPort = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wServerPort = new TextVar(jobMeta, wServerSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wServerPort);
         wServerPort.setToolTipText(Messages.getString("JobSFTP.Port.Tooltip"));
         wServerPort.addModifyListener(lsMod);
@@ -214,7 +275,7 @@ public class JobEntrySFTPDialog extends JobEntryDialog implements JobEntryDialog
         wServerPort.setLayoutData(fdServerPort);
 
         // UserName line
-        wlUserName = new Label(shell, SWT.RIGHT);
+        wlUserName = new Label(wServerSettings, SWT.RIGHT);
         wlUserName.setText(Messages.getString("JobSFTP.Username.Label"));
         props.setLook(wlUserName);
         fdlUserName = new FormData();
@@ -222,7 +283,7 @@ public class JobEntrySFTPDialog extends JobEntryDialog implements JobEntryDialog
         fdlUserName.top = new FormAttachment(wServerPort, margin);
         fdlUserName.right = new FormAttachment(middle, -margin);
         wlUserName.setLayoutData(fdlUserName);
-        wUserName = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wUserName = new TextVar(jobMeta, wServerSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wUserName);
         wUserName.addModifyListener(lsMod);
         fdUserName = new FormData();
@@ -232,7 +293,7 @@ public class JobEntrySFTPDialog extends JobEntryDialog implements JobEntryDialog
         wUserName.setLayoutData(fdUserName);
 
         // Password line
-        wlPassword = new Label(shell, SWT.RIGHT);
+        wlPassword = new Label(wServerSettings, SWT.RIGHT);
         wlPassword.setText(Messages.getString("JobSFTP.Password.Label"));
         props.setLook(wlPassword);
         fdlPassword = new FormData();
@@ -240,7 +301,7 @@ public class JobEntrySFTPDialog extends JobEntryDialog implements JobEntryDialog
         fdlPassword.top = new FormAttachment(wUserName, margin);
         fdlPassword.right = new FormAttachment(middle, -margin);
         wlPassword.setLayoutData(fdlPassword);
-        wPassword = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wPassword = new TextVar(jobMeta, wServerSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wPassword);
         wPassword.setEchoChar('*');
         wPassword.addModifyListener(lsMod);
@@ -249,85 +310,230 @@ public class JobEntrySFTPDialog extends JobEntryDialog implements JobEntryDialog
         fdPassword.top = new FormAttachment(wUserName, margin);
         fdPassword.right = new FormAttachment(100, 0);
         wPassword.setLayoutData(fdPassword);
+        
+		// Test connection button
+		wTest=new Button(wServerSettings,SWT.PUSH);
+		wTest.setText(Messages.getString("JobSFTP.TestConnection.Label"));
+	 	props.setLook(wTest);
+		fdTest=new FormData();
+		wTest.setToolTipText(Messages.getString("JobSFTP.TestConnection.Tooltip"));
+		fdTest.top  = new FormAttachment(wPassword, margin);
+		fdTest.right= new FormAttachment(100, 0);
+		wTest.setLayoutData(fdTest);
 
+	     fdServerSettings = new FormData();
+	     fdServerSettings.left = new FormAttachment(0, margin);
+	     fdServerSettings.top = new FormAttachment(wName, margin);
+	     fdServerSettings.right = new FormAttachment(100, -margin);
+	     wServerSettings.setLayoutData(fdServerSettings);
+	     // ///////////////////////////////////////////////////////////
+	     // / END OF SERVER SETTINGS GROUP
+	     // ///////////////////////////////////////////////////////////
+      
+	     // ////////////////////////
+	     // START OF Source files GROUP///
+	     // /
+	     wSourceFiles = new Group(shell, SWT.SHADOW_NONE);
+	     props.setLook(wSourceFiles);
+	     wSourceFiles.setText(Messages.getString("JobSFTP.SourceFiles.Group.Label"));
+	     FormLayout SourceFilesgroupLayout = new FormLayout();
+	     SourceFilesgroupLayout.marginWidth = 10;
+	     SourceFilesgroupLayout.marginHeight = 10;
+	     wSourceFiles.setLayout(SourceFilesgroupLayout);
+		
         // FtpDirectory line
-        wlScpDirectory = new Label(shell, SWT.RIGHT);
+        wlScpDirectory = new Label(wSourceFiles, SWT.RIGHT);
         wlScpDirectory.setText(Messages.getString("JobSFTP.RemoteDir.Label"));
         props.setLook(wlScpDirectory);
         fdlScpDirectory = new FormData();
         fdlScpDirectory.left = new FormAttachment(0, 0);
-        fdlScpDirectory.top = new FormAttachment(wPassword, margin);
+        fdlScpDirectory.top = new FormAttachment(wServerSettings, 2*margin);
         fdlScpDirectory.right = new FormAttachment(middle, -margin);
         wlScpDirectory.setLayoutData(fdlScpDirectory);
-        wScpDirectory = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER, Messages.getString("JobSFTP.RemoteDir.Tooltip"));
+        
+        
+	    // Test remote folder  button ...
+		wbTestChangeFolderExists=new Button(wSourceFiles, SWT.PUSH| SWT.CENTER);
+		props.setLook(wbTestChangeFolderExists);
+		wbTestChangeFolderExists.setText(Messages.getString("JobSFTP.TestFolderExists.Label"));
+		fdbTestChangeFolderExists=new FormData();
+		fdbTestChangeFolderExists.right= new FormAttachment(100, 0);
+		fdbTestChangeFolderExists.top  = new FormAttachment(wServerSettings, 2*margin);
+		wbTestChangeFolderExists.setLayoutData(fdbTestChangeFolderExists);
+        
+        wScpDirectory = new TextVar(jobMeta, wSourceFiles, SWT.SINGLE | SWT.LEFT | SWT.BORDER, Messages.getString("JobSFTP.RemoteDir.Tooltip"));
         props.setLook(wScpDirectory);
         wScpDirectory.addModifyListener(lsMod);
         fdScpDirectory = new FormData();
         fdScpDirectory.left = new FormAttachment(middle, 0);
-        fdScpDirectory.top = new FormAttachment(wPassword, margin);
-        fdScpDirectory.right = new FormAttachment(100, 0);
+        fdScpDirectory.top = new FormAttachment(wServerSettings, 2*margin);
+        fdScpDirectory.right = new FormAttachment(wbTestChangeFolderExists, -margin);
         wScpDirectory.setLayoutData(fdScpDirectory);
-
-        // TargetDirectory line
-        wlTargetDirectory = new Label(shell, SWT.RIGHT);
-        wlTargetDirectory.setText(Messages.getString("JobSFTP.TargetDir.Label"));
-        props.setLook(wlTargetDirectory);
-        fdlTargetDirectory = new FormData();
-        fdlTargetDirectory.left = new FormAttachment(0, 0);
-        fdlTargetDirectory.top = new FormAttachment(wScpDirectory, margin);
-        fdlTargetDirectory.right = new FormAttachment(middle, -margin);
-        wlTargetDirectory.setLayoutData(fdlTargetDirectory);
-        wTargetDirectory = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER, Messages.getString("JobSFTP.TargetDir.Tooltip"));
-        props.setLook(wTargetDirectory);
-        wTargetDirectory.addModifyListener(lsMod);
-        fdTargetDirectory = new FormData();
-        fdTargetDirectory.left = new FormAttachment(middle, 0);
-        fdTargetDirectory.top = new FormAttachment(wScpDirectory, margin);
-        fdTargetDirectory.right = new FormAttachment(100, 0);
-        wTargetDirectory.setLayoutData(fdTargetDirectory);
-
+        
         // Wildcard line
-        wlWildcard = new Label(shell, SWT.RIGHT);
+        wlWildcard = new Label(wSourceFiles, SWT.RIGHT);
         wlWildcard.setText(Messages.getString("JobSFTP.Wildcard.Label"));
         props.setLook(wlWildcard);
         fdlWildcard = new FormData();
         fdlWildcard.left = new FormAttachment(0, 0);
-        fdlWildcard.top = new FormAttachment(wTargetDirectory, margin);
+        fdlWildcard.top = new FormAttachment(wScpDirectory, margin);
         fdlWildcard.right = new FormAttachment(middle, -margin);
         wlWildcard.setLayoutData(fdlWildcard);
-        wWildcard = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER, Messages.getString("JobSFTP.Wildcard.Tooltip"));
+        wWildcard = new TextVar(jobMeta, wSourceFiles, SWT.SINGLE | SWT.LEFT | SWT.BORDER, Messages.getString("JobSFTP.Wildcard.Tooltip"));
         props.setLook(wWildcard);
         wWildcard.addModifyListener(lsMod);
         fdWildcard = new FormData();
         fdWildcard.left = new FormAttachment(middle, 0);
-        fdWildcard.top = new FormAttachment(wTargetDirectory, margin);
+        fdWildcard.top = new FormAttachment(wScpDirectory, margin);
         fdWildcard.right = new FormAttachment(100, 0);
         wWildcard.setLayoutData(fdWildcard);
 
+	     fdSourceFiles = new FormData();
+	     fdSourceFiles.left = new FormAttachment(0, margin);
+	     fdSourceFiles.top = new FormAttachment(wServerSettings, 2*margin);
+	     fdSourceFiles.right = new FormAttachment(100, -margin);
+	     wSourceFiles.setLayoutData(fdSourceFiles);
+	     // ///////////////////////////////////////////////////////////
+	     // / END OF Source files GROUP
+	     // ///////////////////////////////////////////////////////////
+
+	     // ////////////////////////
+	     // START OF Target files GROUP///
+	     // /
+	     wTargetFiles = new Group(shell, SWT.SHADOW_NONE);
+	     props.setLook(wTargetFiles);
+	     wTargetFiles.setText(Messages.getString("JobSFTP.TargetFiles.Group.Label"));
+	     FormLayout TargetFilesgroupLayout = new FormLayout();
+	     TargetFilesgroupLayout.marginWidth = 10;
+	     TargetFilesgroupLayout.marginHeight = 10;
+	     wTargetFiles.setLayout(TargetFilesgroupLayout);
+        
+        // TargetDirectory line
+        wlTargetDirectory = new Label(wTargetFiles, SWT.RIGHT);
+        wlTargetDirectory.setText(Messages.getString("JobSFTP.TargetDir.Label"));
+        props.setLook(wlTargetDirectory);
+        fdlTargetDirectory = new FormData();
+        fdlTargetDirectory.left = new FormAttachment(0, 0);
+        fdlTargetDirectory.top = new FormAttachment(wSourceFiles, margin);
+        fdlTargetDirectory.right = new FormAttachment(middle, -margin);
+        wlTargetDirectory.setLayoutData(fdlTargetDirectory);
+        
+        
+	    // Browse folders button ...
+		wbTargetDirectory=new Button(wTargetFiles, SWT.PUSH| SWT.CENTER);
+		props.setLook(wbTargetDirectory);
+		wbTargetDirectory.setText(Messages.getString("JobSFTP.BrowseFolders.Label"));
+		fdbTargetDirectory=new FormData();
+		fdbTargetDirectory.right= new FormAttachment(100, 0);
+		fdbTargetDirectory.top  = new FormAttachment(wSourceFiles, margin);
+		wbTargetDirectory.setLayoutData(fdbTargetDirectory);
+		wbTargetDirectory.addSelectionListener
+			(
+				new SelectionAdapter()
+				{
+					public void widgetSelected(SelectionEvent e)
+					{
+						DirectoryDialog ddialog = new DirectoryDialog(shell, SWT.OPEN);
+						if (wTargetDirectory.getText()!=null)
+						{
+							ddialog.setFilterPath(jobMeta.environmentSubstitute(wTargetDirectory.getText()) );
+						}
+						
+						 // Calling open() will open and run the dialog.
+				        // It will return the selected directory, or
+				        // null if user cancels
+				        String dir = ddialog.open();
+				        if (dir != null) {
+				          // Set the text box to the new selection
+				        	wTargetDirectory.setText(dir);
+				        }
+						
+					}
+				}
+			);
+        
+        wTargetDirectory = new TextVar(jobMeta, wTargetFiles, SWT.SINGLE | SWT.LEFT | SWT.BORDER, Messages.getString("JobSFTP.TargetDir.Tooltip"));
+        props.setLook(wTargetDirectory);
+        wTargetDirectory.addModifyListener(lsMod);
+        fdTargetDirectory = new FormData();
+        fdTargetDirectory.left = new FormAttachment(middle, 0);
+        fdTargetDirectory.top = new FormAttachment(wSourceFiles, margin);
+        fdTargetDirectory.right = new FormAttachment(wbTargetDirectory, -margin);
+        wTargetDirectory.setLayoutData(fdTargetDirectory);
+
+        // Create target folder if necessary...
+        wlCreateTargetFolder = new Label(wTargetFiles, SWT.RIGHT);
+        wlCreateTargetFolder.setText(Messages.getString("JobSFTP.CreateTargetFolder.Label"));
+        props.setLook(wlCreateTargetFolder);
+        fdlCreateTargetFolder = new FormData();
+        fdlCreateTargetFolder.left = new FormAttachment(0, 0);
+        fdlCreateTargetFolder.top = new FormAttachment(wTargetDirectory, margin);
+        fdlCreateTargetFolder.right = new FormAttachment(middle, -margin);
+        wlCreateTargetFolder.setLayoutData(fdlCreateTargetFolder);
+        wCreateTargetFolder = new Button(wTargetFiles, SWT.CHECK);
+        wCreateTargetFolder.setToolTipText(Messages.getString("JobSFTP.CreateTargetFolder.Tooltip"));
+        props.setLook(wCreateTargetFolder);
+        fdCreateTargetFolder = new FormData();
+        fdCreateTargetFolder.left = new FormAttachment(middle, 0);
+        fdCreateTargetFolder.top = new FormAttachment(wTargetDirectory, margin);
+        fdCreateTargetFolder.right = new FormAttachment(100, 0);
+        wCreateTargetFolder.setLayoutData(fdCreateTargetFolder);
+        
+        
         // Remove files after retrieval...
-        wlRemove = new Label(shell, SWT.RIGHT);
+        wlRemove = new Label(wTargetFiles, SWT.RIGHT);
         wlRemove.setText(Messages.getString("JobSFTP.RemoveFiles.Label"));
         props.setLook(wlRemove);
         fdlRemove = new FormData();
         fdlRemove.left = new FormAttachment(0, 0);
-        fdlRemove.top = new FormAttachment(wWildcard, margin);
+        fdlRemove.top = new FormAttachment(wCreateTargetFolder, margin);
         fdlRemove.right = new FormAttachment(middle, -margin);
         wlRemove.setLayoutData(fdlRemove);
-        wRemove = new Button(shell, SWT.CHECK);
+        wRemove = new Button(wTargetFiles, SWT.CHECK);
         props.setLook(wRemove);
         wRemove.setToolTipText(Messages.getString("JobSFTP.RemoveFiles.Tooltip"));
         fdRemove = new FormData();
         fdRemove.left = new FormAttachment(middle, 0);
-        fdRemove.top = new FormAttachment(wWildcard, margin);
+        fdRemove.top = new FormAttachment(wCreateTargetFolder, margin);
         fdRemove.right = new FormAttachment(100, 0);
         wRemove.setLayoutData(fdRemove);
+        
+        // Add filenames to result filenames...
+        wlAddFilenameToResult = new Label(wTargetFiles, SWT.RIGHT);
+        wlAddFilenameToResult.setText(Messages.getString("JobSFTP.AddfilenametoResult.Label"));
+        props.setLook(wlAddFilenameToResult);
+        fdlAddFilenameToResult = new FormData();
+        fdlAddFilenameToResult.left = new FormAttachment(0, 0);
+        fdlAddFilenameToResult.top = new FormAttachment(wRemove, margin);
+        fdlAddFilenameToResult.right = new FormAttachment(middle, -margin);
+        wlAddFilenameToResult.setLayoutData(fdlAddFilenameToResult);
+        wAddFilenameToResult = new Button(wTargetFiles, SWT.CHECK);
+        wAddFilenameToResult.setToolTipText(Messages.getString("JobSFTP.AddfilenametoResult.Tooltip"));
+        props.setLook(wAddFilenameToResult);
+        fdAddFilenameToResult = new FormData();
+        fdAddFilenameToResult.left = new FormAttachment(middle, 0);
+        fdAddFilenameToResult.top = new FormAttachment(wRemove, margin);
+        fdAddFilenameToResult.right = new FormAttachment(100, 0);
+        wAddFilenameToResult.setLayoutData(fdAddFilenameToResult);
+        
+        
+
+	     fdTargetFiles = new FormData();
+	     fdTargetFiles.left = new FormAttachment(0, margin);
+	     fdTargetFiles.top = new FormAttachment(wSourceFiles, margin);
+	     fdTargetFiles.right = new FormAttachment(100, -margin);
+	     wTargetFiles.setLayoutData(fdTargetFiles);
+	     // ///////////////////////////////////////////////////////////
+	     // / END OF Target files GROUP
+	     // ///////////////////////////////////////////////////////////
+
 
         wOK = new Button(shell, SWT.PUSH);
         wOK.setText(Messages.getString("System.Button.OK"));
         wCancel = new Button(shell, SWT.PUSH);
         wCancel.setText(Messages.getString("System.Button.Cancel"));
 
-        BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wRemove);
+        BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wTargetFiles);
 
         // Add listeners
         lsCancel = new Listener()
@@ -344,9 +550,13 @@ public class JobEntrySFTPDialog extends JobEntryDialog implements JobEntryDialog
                 ok();
             }
         };
-
+        lsTest     = new Listener() { public void handleEvent(Event e) { test(); } };
+        lsCheckChangeFolder     = new Listener() { public void handleEvent(Event e) { checkRemoteFolder(); } };
+        
         wCancel.addListener(SWT.Selection, lsCancel);
         wOK.addListener(SWT.Selection, lsOK);
+        wTest.addListener    (SWT.Selection, lsTest    );
+        wbTestChangeFolderExists.addListener    (SWT.Selection, lsCheckChangeFolder    );
 
         lsDef = new SelectionAdapter()
         {
@@ -386,7 +596,88 @@ public class JobEntrySFTPDialog extends JobEntryDialog implements JobEntryDialog
         }
         return jobEntry;
     }
-
+    private void test()
+    {
+		
+    	if(connectToSFTP(false,null))
+    	{
+			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION );
+			mb.setMessage(Messages.getString("JobSFTP.Connected.OK",wServerName.getText()) +Const.CR);
+			mb.setText(Messages.getString("JobSFTP.Connected.Title.Ok"));
+			mb.open();
+		}else
+		{
+			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
+			mb.setMessage(Messages.getString("JobSFTP.Connected.NOK.ConnectionBad",wServerName.getText()) +Const.CR);
+			mb.setText(Messages.getString("JobSFTP.Connected.Title.Bad"));
+			mb.open(); 
+	    }
+	   
+    }
+    private void closeFTPConnections()
+	{
+		
+		// Close SecureFTP connection if necessary
+		if (sftpclient != null)
+	      {
+	        try
+	        {
+	        	sftpclient.disconnect();
+	        	sftpclient=null;
+	        } catch (Exception e) {}
+	      }
+	}
+    private boolean connectToSFTP(boolean checkFolder, String Remotefoldername)
+    {
+    	boolean retval=false;
+		try
+		{
+			if(sftpclient==null)
+			{
+				// Create sftp client to host ...
+				sftpclient = new SFTPClient(InetAddress.getByName(jobMeta.environmentSubstitute(wServerName.getText())), 
+						Const.toInt(jobMeta.environmentSubstitute(wServerPort.getText()), 22), 
+						jobMeta.environmentSubstitute(wUserName.getText()));
+			
+				// login to ftp host ...
+				sftpclient.login(jobMeta.environmentSubstitute(wPassword.getText()));
+			}  
+	       if(checkFolder)
+	       {
+	    	   sftpclient.chdir(Remotefoldername);
+	       }
+	        	
+	        retval=true;
+		}
+	     catch (Exception e)
+	    {
+			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
+			mb.setMessage(Messages.getString("JobSFTP.ErrorConnect.NOK",wServerName.getText(),e.getMessage()) +Const.CR);
+			mb.setText(Messages.getString("JobSFTP.ErrorConnect.Title.Bad"));
+			mb.open(); 
+	    } 
+	    return retval;
+    }
+    private void checkRemoteFolder()
+    {
+    	String changeFTPFolder=jobMeta.environmentSubstitute(wScpDirectory.getText());
+    	if(!Const.isEmpty(changeFTPFolder))
+    	{
+	    	if(connectToSFTP(true,changeFTPFolder))
+	    	{
+				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION );
+				mb.setMessage(Messages.getString("JobSFTP.FolderExists.OK",changeFTPFolder) +Const.CR);
+				mb.setText(Messages.getString("JobSFTP.FolderExists.Title.Ok"));
+				mb.open();
+			}else
+			{
+				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
+				mb.setMessage(Messages.getString("JobSFTP.FolderExists.NOK",changeFTPFolder) +Const.CR);
+				mb.setText(Messages.getString("JobSFTP.FolderExists.Title.Bad"));
+				mb.open(); 
+		    }
+    	}
+    }
     public void dispose()
     {
         WindowProperty winprop = new WindowProperty(shell);
@@ -411,6 +702,9 @@ public class JobEntrySFTPDialog extends JobEntryDialog implements JobEntryDialog
         wTargetDirectory.setText(Const.NVL(jobEntry.getTargetDirectory(), ""));
         wWildcard.setText(Const.NVL(jobEntry.getWildcard(), ""));
         wRemove.setSelection(jobEntry.getRemove());
+    	wAddFilenameToResult.setSelection(jobEntry.isAddToResult());
+    	wCreateTargetFolder.setSelection(jobEntry.iscreateTargetFolder());
+    	
     }
 
     private void cancel()
@@ -431,6 +725,11 @@ public class JobEntrySFTPDialog extends JobEntryDialog implements JobEntryDialog
         jobEntry.setTargetDirectory(wTargetDirectory.getText());
         jobEntry.setWildcard(wWildcard.getText());
         jobEntry.setRemove(wRemove.getSelection());
+    	jobEntry.setAddToResult(wAddFilenameToResult.getSelection());
+    	jobEntry.setcreateTargetFolder(wCreateTargetFolder.getSelection());
+    	
+        
+        closeFTPConnections();
 
         dispose();
     }
