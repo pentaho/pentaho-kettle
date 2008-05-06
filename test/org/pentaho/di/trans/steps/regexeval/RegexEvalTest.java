@@ -15,30 +15,16 @@
 
 package org.pentaho.di.trans.steps.regexeval;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import org.pentaho.di.core.RowMetaAndData;
-import org.pentaho.di.core.exception.KettleValueException;
-import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
-import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.trans.RowProducer;
 import org.pentaho.di.trans.RowStepCollector;
-import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.Trans;
-import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
-import org.pentaho.di.trans.steps.injector.InjectorMeta;
 
 /**
  * Test class for the RegexEval step.
@@ -46,246 +32,209 @@ import org.pentaho.di.trans.steps.injector.InjectorMeta;
  * Needs a lot more cases.
  *
  * @author Sven Boden
+ * @author Daniel Einspanjer
+ * @since 05-05-2008
  */
-public class RegexEvalTest extends TestCase
+public class RegexEvalTest extends TransformationTestCase
 {
-	public RowMetaInterface createRowMetaInterface()
-	{
-		RowMetaInterface rm = new RowMeta();
-		
-		ValueMetaInterface valuesMeta[] = {
-			    new ValueMeta("field1", ValueMeta.TYPE_STRING)
-	    };
-
-		for (int i=0; i < valuesMeta.length; i++ )
-		{
-			rm.addValueMeta(valuesMeta[i]);
-		}
-		
-		return rm;
-	}
+    public RowMetaInterface createSourceRowMetaInterface()
+    {
+        return createRowMetaInterface(
+                new ValueMeta("field1", ValueMeta.TYPE_STRING)
+        );
+    }
+    
+    public RowMetaInterface createResultRowMetaInterface1()
+    {
+        RowMetaInterface rm = createSourceRowMetaInterface();
+        rm.addValueMeta(
+                new ValueMeta("res",    ValueMeta.TYPE_BOOLEAN)            
+        );
+        return rm;
+    }
+    public RowMetaInterface createResultRowMetaInterface2()
+    {
+        RowMetaInterface rm = createResultRowMetaInterface1();
+        rm.addValueMeta(
+                new ValueMeta("cap", ValueMeta.TYPE_INTEGER)
+        );
+        return rm;
+    }
+    
+    public RowMetaInterface createResultRowMetaInterface3()
+    {
+        return createRowMetaInterface(
+            new ValueMeta("field1", ValueMeta.TYPE_STRING),
+            new ValueMeta("res",    ValueMeta.TYPE_BOOLEAN),
+            new ValueMeta("cap", ValueMeta.TYPE_STRING),
+            new ValueMeta("capIfNull", ValueMeta.TYPE_STRING),
+            new ValueMeta("capNullIf", ValueMeta.TYPE_STRING),
+            new ValueMeta("capIfNullNullIf", ValueMeta.TYPE_INTEGER)
+        );
+    }
+    
+    public List<RowMetaAndData> createSourceData()
+    {
+        return createData(createSourceRowMetaInterface(),
+                new Object[][] {
+                        new Object[] { "abc" },
+                        new Object[] { "ABC" },
+                        new Object[] { "123" },
+                        new Object[] { "abc" }
+                }
+        );
+    }
 	
-	public RowMetaInterface createResultRowMetaInterface()
-	{
-		RowMetaInterface rm = new RowMeta();
-		
-		ValueMetaInterface valuesMeta[] = {
-			    new ValueMeta("field1", ValueMeta.TYPE_STRING),
-			    new ValueMeta("res",    ValueMeta.TYPE_BOOLEAN)			   
-	    };
-
-		for (int i=0; i < valuesMeta.length; i++ )
-		{
-			rm.addValueMeta(valuesMeta[i]);
-		}
-		
-		return rm;
-	}	
-	
-	public List<RowMetaAndData> createData()
-	{
-		List<RowMetaAndData> list = new ArrayList<RowMetaAndData>();	
-		
-		RowMetaInterface rm = createRowMetaInterface();
-		
-		Object[] r1 = new Object[] { "abc" };
-		Object[] r2 = new Object[] { "ABC" };
-		Object[] r3 = new Object[] { "123" };
-		Object[] r4 = new Object[] { "abc" };
-		
-		list.add(new RowMetaAndData(rm, r1));
-		list.add(new RowMetaAndData(rm, r2));
-		list.add(new RowMetaAndData(rm, r3));
-		list.add(new RowMetaAndData(rm, r4));
-		
-		return list;
-	}
-
-	
-	/**
-	 * Create result data for test case 1.
-	 */
 	public List<RowMetaAndData> createResultData1()
 	{
-		List<RowMetaAndData> list = new ArrayList<RowMetaAndData>();	
-		
-		RowMetaInterface rm = createResultRowMetaInterface();
-		
-		Object[] r1 = new Object[] { "abc", Boolean.valueOf(true)  };
-		Object[] r2 = new Object[] { "ABC", Boolean.valueOf(false) };
-		Object[] r3 = new Object[] { "123", Boolean.valueOf(false) };
-		Object[] r4 = new Object[] { "abc", Boolean.valueOf(true)  };
-		
-		list.add(new RowMetaAndData(rm, r1));
-		list.add(new RowMetaAndData(rm, r2));
-		list.add(new RowMetaAndData(rm, r3));
-		list.add(new RowMetaAndData(rm, r4));
-		
-		return list;
+        return createData(createResultRowMetaInterface1(),
+                new Object[][] {
+                        new Object[] { "abc", Boolean.valueOf(true) },
+                        new Object[] { "ABC", Boolean.valueOf(false) },
+                        new Object[] { "123", Boolean.valueOf(false) },
+                        new Object[] { "abc", Boolean.valueOf(true) }
+                }
+        );
 	}	
 
-	
-	/**
-	 *  Check the 2 lists comparing the rows in order.
-	 *  If they are not the same fail the test. 
-	 */
-    public void checkRows(List<RowMetaAndData> rows1, List<RowMetaAndData> rows2)
+    public List<RowMetaAndData> createResultData2()
     {
-    	int idx = 1;
-        if ( rows1.size() != rows2.size() )
-        {
-        	fail("Number of rows is not the same: " + 
-          		 rows1.size() + " and " + rows2.size());
-        }
-        Iterator<RowMetaAndData> it1 = rows1.iterator();
-        Iterator<RowMetaAndData> it2 = rows2.iterator();
-        
-        while ( it1.hasNext() && it2.hasNext() )
-        {
-        	RowMetaAndData rm1 = it1.next();
-        	RowMetaAndData rm2 = it2.next();
-        	
-        	Object[] r1 = rm1.getData();
-        	Object[] r2 = rm2.getData();
-        	
-        	if ( rm1.size() != rm2.size() )
-        	{
-        		fail("row nr " + idx + " is not equal");
-        	}
-        	int fields[] = new int[r1.length];
-        	for ( int ydx = 0; ydx < r1.length; ydx++ )
-        	{
-        		fields[ydx] = ydx;
-        	}
-            try {
-				if ( rm1.getRowMeta().compare(r1, r2, fields) != 0 )
-				{
-					fail("row nr " + idx + " is not equal");
-				}
-			} catch (KettleValueException e) {
-				fail("row nr " + idx + " is not equal");
-			}
-            	
-            idx++;
-        }
+        return createData(createResultRowMetaInterface2(),
+                new Object[][] {
+                        new Object[] { "abc", Boolean.valueOf(false) },
+                        new Object[] { "ABC", Boolean.valueOf(false) },
+                        new Object[] { "123", Boolean.valueOf(true), Long.valueOf(2) },
+                        new Object[] { "abc", Boolean.valueOf(false) }
+                }
+        );
     }
+    
 
-	
-	/**
-	 * Test case for regexeval step. Injector step to a regexeval step
-	 * to a dummy step. 
-	 */
+    public List<RowMetaAndData> createResultData3()
+    {
+        return createData(createResultRowMetaInterface3(),
+                new Object[][] { // ((a)|([A1]))([B2]?).*
+                        new Object[] { "abc", Boolean.valueOf(true), "a", "a", null, Long.valueOf(0) },
+                        new Object[] { "ABC", Boolean.valueOf(true), "A", "x", "A", Long.valueOf(0) },
+                        new Object[] { "123", Boolean.valueOf(true), "1", "x", null, Long.valueOf(2) },
+                        new Object[] { "abc", Boolean.valueOf(true), "a", "a", null, Long.valueOf(0) }
+                }
+        );
+    }
     public void testRegexEval1() throws Exception
     {
-        EnvUtil.environmentInit();
-
-        //
-        // Create a new transformation...
-        //
         TransMeta transMeta = new TransMeta();
         transMeta.setName("regexeval1");
     	
-        StepLoader steploader = StepLoader.getInstance();            
-
-        // 
-        // create an injector step...
-        //
-        String injectorStepname = "injector step";
-        InjectorMeta im = new InjectorMeta();
+        RegexEvalMeta regexEvalMeta = new RegexEvalMeta();
         
-        // Set the information of the injector.                
-        String injectorPid = steploader.getStepPluginID(im);
-        StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, (StepMetaInterface)im);
-        transMeta.addStep(injectorStep);
+        regexEvalMeta.setScript("[abc]*");
+        regexEvalMeta.setMatcher("field1");
+        regexEvalMeta.setResultFieldName("res");
 
-        // 
-        // Create a dummy step 1
-        //
-        String dummyStepname1 = "dummy step 1";            
-        DummyTransMeta dm1 = new DummyTransMeta();
+        StepMeta injectorStep = createInjectorStepForTrans("injector step", transMeta);
+        StepMeta dummyStep = createConnectedDummyStepForTrans("dummy step", transMeta, injectorStep);
+        StepMeta regexEvalStep = createConnectedStepForTrans("regexeval step", regexEvalMeta, transMeta, dummyStep);
 
-        String dummyPid1 = steploader.getStepPluginID(dm1);
-        StepMeta dummyStep1 = new StepMeta(dummyPid1, dummyStepname1, (StepMetaInterface)dm1);
-        transMeta.addStep(dummyStep1);                              
-
-        TransHopMeta hi = new TransHopMeta(injectorStep, dummyStep1);
-        transMeta.addTransHop(hi);
-
-        // 
-        // Create a RegexEval step
-        //
-        String regexEvalName = "regexeval step";            
-        RegexEvalMeta re = new RegexEvalMeta();
-        
-        re.setScript("[a-z]*");
-        re.setMatcher("field1");
-        re.setResultFieldname("res");
-        re.setUseVar(false);
-        re.setCanoneq(false);
-        re.setCaseinsensitive(false);
-        re.setComment(false);
-        re.setDotAll(false);
-        re.setMultiLine(false);
-        re.setUnicode(false);
-        re.setUnix(false);
-
-        String regexEvalPid = steploader.getStepPluginID(re);
-        StepMeta regexEvalStep = new StepMeta(regexEvalPid, regexEvalName, (StepMetaInterface)re);
-        transMeta.addStep(regexEvalStep);                              
-
-        TransHopMeta hi2 = new TransHopMeta(dummyStep1, regexEvalStep);
-        transMeta.addTransHop(hi2);        
-        
-        // 
-        // Create a dummy step 2
-        //
-        String dummyStepname2 = "dummy step 2";            
-        DummyTransMeta dm2 = new DummyTransMeta();
-
-        String dummyPid2 = steploader.getStepPluginID(dm2);
-        StepMeta dummyStep2 = new StepMeta(dummyPid2, dummyStepname2, (StepMetaInterface)dm2);
-        transMeta.addStep(dummyStep2);                              
-
-        TransHopMeta hi3 = new TransHopMeta(regexEvalStep, dummyStep2);
-        transMeta.addTransHop(hi3);        
-        
-                
-        // Now execute the transformation...
         Trans trans = new Trans(transMeta);
-
         trans.prepareExecution(null);
-                
-        StepInterface si = trans.getStepInterface(dummyStepname1, 0);
-        RowStepCollector dummyRc1 = new RowStepCollector();
-        si.addRowListener(dummyRc1);
-
-        si = trans.getStepInterface(regexEvalName, 0);
-        RowStepCollector nullIfRc = new RowStepCollector();
-        si.addRowListener(nullIfRc);
                
-        si = trans.getStepInterface(dummyStepname2, 0);
-        RowStepCollector dummyRc = new RowStepCollector();
-        si.addRowListener(dummyRc);
-        
-        RowProducer rp = trans.addRowProducer(injectorStepname, 0);
+        RowProducer rp = trans.addRowProducer(injectorStep.getName(), 0);
+        RowStepCollector rc = new RowStepCollector();
+        trans.getStepInterface(regexEvalStep.getName(), 0).addRowListener(rc);
+
         trans.startThreads();
         
-        // add rows
-        List<RowMetaAndData> inputList = createData();
-        Iterator<RowMetaAndData> it = inputList.iterator();
-        while ( it.hasNext() )
-        {
-        	RowMetaAndData rm = it.next();
-        	rp.putRow(rm.getRowMeta(), rm.getData());
-        }   
-        rp.finished();
+        feedSourceRows(rp, createSourceData());
 
         trans.waitUntilFinished();   
         
-        // Compare the results                        
-        List<RowMetaAndData> resultRows = dummyRc.getRowsWritten();
-        List<RowMetaAndData> goldenImageRows = createResultData1();
+        checkRows(createResultData1(), rc.getRowsWritten());
+    }
+
+    public void testRegexEval2() throws Exception
+    {
+        TransMeta transMeta = new TransMeta();
+        transMeta.setName("regexeval2");
         
-        checkRows(goldenImageRows, resultRows);
+        RegexEvalMeta regexEvalMeta = new RegexEvalMeta();
+        
+        regexEvalMeta.setScript("\\d(\\d)\\d");
+        regexEvalMeta.setMatcher("field1");
+        regexEvalMeta.setResultFieldName("res");
+        regexEvalMeta.setAllowCaptureGroupsFlag(true);
+        regexEvalMeta.allocate(1);
+        regexEvalMeta.getFieldName()[0] = "cap";
+        regexEvalMeta.getFieldType()[0] = ValueMeta.TYPE_INTEGER;
+        
+
+        StepMeta injectorStep = createInjectorStepForTrans("injector step", transMeta);
+        StepMeta dummyStep = createConnectedDummyStepForTrans("dummy step", transMeta, injectorStep);
+        StepMeta regexEvalStep = createConnectedStepForTrans("regexeval step", regexEvalMeta, transMeta, dummyStep);
+
+        Trans trans = new Trans(transMeta);
+        trans.prepareExecution(null);
+               
+        RowProducer rp = trans.addRowProducer(injectorStep.getName(), 0);
+        RowStepCollector rc = new RowStepCollector();
+        trans.getStepInterface(regexEvalStep.getName(), 0).addRowListener(rc);
+
+        trans.startThreads();
+        
+        feedSourceRows(rp, createSourceData());
+
+        trans.waitUntilFinished();   
+        
+        checkRows(createResultData2(), rc.getRowsWritten());
+    }
+
+    public void testRegexEval3() throws Exception
+    {
+        TransMeta transMeta = new TransMeta();
+        transMeta.setName("regexeval2");
+        
+        RegexEvalMeta regexEvalMeta = new RegexEvalMeta();
+        
+        regexEvalMeta.setScript("((a)|([A1]))([B2]?).*");
+        regexEvalMeta.setMatcher("field1");
+        regexEvalMeta.setResultFieldName("res");
+        regexEvalMeta.setAllowCaptureGroupsFlag(true);
+        
+        regexEvalMeta.allocate(4);
+        
+        regexEvalMeta.getFieldName()[0] = "cap";
+        regexEvalMeta.getFieldType()[0] = ValueMeta.TYPE_STRING;
+        
+        regexEvalMeta.getFieldName()[1] = "capIfNull";
+        regexEvalMeta.getFieldType()[1] = ValueMeta.TYPE_STRING;
+        regexEvalMeta.getFieldIfNull()[1] = "x";
+        
+        regexEvalMeta.getFieldName()[2] = "capNullIf";
+        regexEvalMeta.getFieldType()[2] = ValueMeta.TYPE_STRING;
+        regexEvalMeta.getFieldNullIf()[2] = "1";
+        
+        regexEvalMeta.getFieldName()[3] = "capIfNullNullIf";
+        regexEvalMeta.getFieldType()[3] = ValueMeta.TYPE_INTEGER;
+        regexEvalMeta.getFieldIfNull()[3] = "0";
+        regexEvalMeta.getFieldNullIf()[3] = "B";
+        
+        StepMeta injectorStep = createInjectorStepForTrans("injector step", transMeta);
+        StepMeta dummyStep = createConnectedDummyStepForTrans("dummy step", transMeta, injectorStep);
+        StepMeta regexEvalStep = createConnectedStepForTrans("regexeval step", regexEvalMeta, transMeta, dummyStep);
+
+        Trans trans = new Trans(transMeta);
+        trans.prepareExecution(null);
+               
+        RowProducer rp = trans.addRowProducer(injectorStep.getName(), 0);
+        RowStepCollector rc = new RowStepCollector();
+        trans.getStepInterface(regexEvalStep.getName(), 0).addRowListener(rc);
+
+        trans.startThreads();
+        
+        feedSourceRows(rp, createSourceData());
+
+        trans.waitUntilFinished();   
+        
+        checkRows(createResultData3(), rc.getRowsWritten());
     }
 }

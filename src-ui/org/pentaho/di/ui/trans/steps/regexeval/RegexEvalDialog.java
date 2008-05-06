@@ -21,6 +21,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -38,14 +39,18 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.LabelTextVar;
+import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -75,19 +80,28 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
 	private Group wStepSettings,wRegexSettings;
 	private FormData fdStepSettings,fdRegexSettings;
 	
-	private Label        wlCanonEq,wlCaseInsensitive, wlComment,wlDotAll,wlMultiline,wlUnicode,wlUnix,wlUseVar;
-	private Button       wCanonEq,wCaseInsensitive, wComment,wDotAll,wMultiline,wUnicode,wUnix,wUseVar;
+	private Label        wlCanonEq,wlCaseInsensitive, wlComment,wlDotAll,wlMultiline,wlUnicode,wlUnix,wlUseVar,wlAllowCaptureGroups;
+	private Button       wCanonEq,wCaseInsensitive, wComment,wDotAll,wMultiline,wUnicode,wUnix,wUseVar,wAllowCaptureGroups;
 	private FormData     fdlCanonEq, fdCanonEq,fdlCaseInsensitive,fdCaseInsensitive,fdComment,
 							fdlComment,fdDotAll,fdlDotAll,fdMultiline,fdlMultiline,fdUnicode,
-							fdlUnicode,fdUnix,fdlUnix,fdUseVar,fdlUseVar;
+							fdlUnicode,fdUnix,fdlUnix,fdUseVar,fdlUseVar,fdAllowCaptureGroups,fdlAllowCaptureGroups;
 	
 	private CTabFolder   wTabFolder;
 	private FormData     fdTabFolder;
 	
 	private CTabItem     wGeneralTab,wContentTab;
-	private Composite    wGeneralComp,wContentComp;
-	private FormData     fdGeneralComp,fdContentComp;
+	private Composite    wGeneralComp,wContentComp, wBottom;
+	private FormData     fdGeneralComp,fdContentComp, fdBottom;
 	
+	private SashForm     wSash;
+	private FormData     fdSash;
+
+	private Label        wSeparator;
+	private FormData     fdSeparator;
+
+	private Label        wlFields;
+	private TableView    wFields;
+	private FormData     fdlFields, fdFields;
 	
 
 	public RegexEvalDialog(Shell parent, Object in, TransMeta tr, String sname)
@@ -143,7 +157,10 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
 		fdStepname.right= new FormAttachment(100, 0);
 		wStepname.setLayoutData(fdStepname);
 
-		wTabFolder = new CTabFolder(shell, SWT.BORDER);
+		wSash = new SashForm(shell, SWT.VERTICAL );
+ 		props.setLook(wSash);
+
+		wTabFolder = new CTabFolder(wSash, SWT.BORDER);
  		props.setLook(wTabFolder, Props.WIDGET_STYLE_TAB);
  		
  		//////////////////////////
@@ -230,7 +247,30 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
         fdResultField .right = new FormAttachment(100, 0);
         wResultField .setLayoutData(fdResultField );
         
+        // Allow capture groups?
+        wlAllowCaptureGroups=new Label(wStepSettings, SWT.RIGHT);
+        wlAllowCaptureGroups.setText(Messages.getString("RegexEvalDialog.AllowCaptureGroups.Label"));
+        props.setLook(wlAllowCaptureGroups);
+        fdlAllowCaptureGroups=new FormData();
+        fdlAllowCaptureGroups.left  = new FormAttachment(0, 0);
+        fdlAllowCaptureGroups.top   = new FormAttachment(wResultField, margin);
+        fdlAllowCaptureGroups.right = new FormAttachment(middle, -margin);
+        wlAllowCaptureGroups.setLayoutData(fdlAllowCaptureGroups);
+        wAllowCaptureGroups=new Button(wStepSettings, SWT.CHECK);
+        wAllowCaptureGroups.setToolTipText(Messages.getString("RegexEvalDialog.AllowCaptureGroups.Tooltip"));
+        props.setLook(wAllowCaptureGroups);
+        fdAllowCaptureGroups=new FormData();
+        fdAllowCaptureGroups.left  = new FormAttachment(middle, 0);
+        fdAllowCaptureGroups.top   = new FormAttachment(wResultField, margin);
+        fdAllowCaptureGroups.right = new FormAttachment(100,0);
+        wAllowCaptureGroups.setLayoutData(fdAllowCaptureGroups);
         
+        wAllowCaptureGroups.addSelectionListener(new SelectionAdapter() {
+            public void widgetSelected(SelectionEvent e)
+            {
+                setFieldsEnabledStatus();
+            }
+        });
     	fdStepSettings = new FormData();
 		fdStepSettings.left = new FormAttachment(0, margin);
 		fdStepSettings.top = new FormAttachment(wStepname, margin);
@@ -259,31 +299,85 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
 		fdScript.left   = new FormAttachment(0, 0);
 		fdScript.top    = new FormAttachment(wlScript, margin);
 		fdScript.right  = new FormAttachment(100, -5);
-		fdScript.bottom = new FormAttachment(100, -30);
+		fdScript.bottom = new FormAttachment(100, -25);
 		wScript.setLayoutData(fdScript);
         //SelectionAdapter lsVar = VariableButtonListenerFactory.getSelectionAdapter(shell, wScript);
         //wScript.addKeyListener(TextVar.getControlSpaceKeyListener(wScript, lsVar));
 
         
 		// Variable substitution?
-		wlUseVar=new Label(wGeneralComp, SWT.RIGHT);
+		wlUseVar=new Label(wGeneralComp, SWT.NONE);
 		wlUseVar.setText(Messages.getString("RegexEvalDialog.UseVar.Label"));
  		props.setLook(wlUseVar);
 		fdlUseVar=new FormData();
-		fdlUseVar.left  = new FormAttachment(0, 0);
+		fdlUseVar.left  = new FormAttachment(0, margin);
 		fdlUseVar.top   = new FormAttachment(wScript, margin);
-		fdlUseVar.right = new FormAttachment(middle, -margin);
+
 		wlUseVar.setLayoutData(fdlUseVar);
 		wUseVar=new Button(wGeneralComp, SWT.CHECK);
 		wUseVar.setToolTipText(Messages.getString("RegexEvalDialog.UseVar.Tooltip"));
  		props.setLook(wUseVar);
 		fdUseVar=new FormData();
-		fdUseVar.left  = new FormAttachment(middle, 0);
+		fdUseVar.left  = new FormAttachment(wlUseVar, margin);
 		fdUseVar.top   = new FormAttachment(wScript, margin);
-		fdUseVar.right = new FormAttachment(100, 0);
 		wUseVar.setLayoutData(fdUseVar);
 
+		wBottom = new Composite(wSash, SWT.NONE);
+ 		props.setLook(wBottom);
+
+ 		FormLayout bottomLayout  = new FormLayout ();
+		bottomLayout.marginWidth  = Const.FORM_MARGIN;
+		bottomLayout.marginHeight = Const.FORM_MARGIN;
+		wBottom.setLayout(bottomLayout);
+		
+		wSeparator = new Label(wBottom, SWT.SEPARATOR | SWT.HORIZONTAL);
+		fdSeparator= new FormData();
+		fdSeparator.left  = new FormAttachment(0, 0);
+		fdSeparator.right = new FormAttachment(100, 0);
+		fdSeparator.top   = new FormAttachment(0, -margin+2);
+		wSeparator.setLayoutData(fdSeparator);
+
+		wlFields=new Label(wBottom, SWT.NONE);
+		wlFields.setText(Messages.getString("RegexEvalDialog.Fields.Label")); //$NON-NLS-1$
+		wlFields.setToolTipText(Messages.getString("RegexEvalDialog.Fields.Tooltip")); //$NON-NLS-1$
+ 		props.setLook(wlFields);
+		fdlFields=new FormData();
+		fdlFields.left = new FormAttachment(0, 0);
+		fdlFields.top  = new FormAttachment(wSeparator, 0);
+		wlFields.setLayoutData(fdlFields);
         
+
+		final int fieldsRows=input.getFieldName().length;
+		
+		ColumnInfo[] columnInfo = new ColumnInfo[] {
+			new ColumnInfo(Messages.getString("RegexEvalDialog.ColumnInfo.NewField"),    ColumnInfo.COLUMN_TYPE_TEXT,   false ), //$NON-NLS-1$
+			new ColumnInfo(Messages.getString("RegexEvalDialog.ColumnInfo.Type"),        ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() ), //$NON-NLS-1$
+			new ColumnInfo(Messages.getString("RegexEvalDialog.ColumnInfo.Length"),      ColumnInfo.COLUMN_TYPE_TEXT,   false ), //$NON-NLS-1$
+			new ColumnInfo(Messages.getString("RegexEvalDialog.ColumnInfo.Precision"),   ColumnInfo.COLUMN_TYPE_TEXT,   false ), //$NON-NLS-1$
+			new ColumnInfo(Messages.getString("RegexEvalDialog.ColumnInfo.Format"),      ColumnInfo.COLUMN_TYPE_TEXT,   false ), //$NON-NLS-1$
+			new ColumnInfo(Messages.getString("RegexEvalDialog.ColumnInfo.Group"),       ColumnInfo.COLUMN_TYPE_TEXT,   false ), //$NON-NLS-1$
+			new ColumnInfo(Messages.getString("RegexEvalDialog.ColumnInfo.Decimal"),     ColumnInfo.COLUMN_TYPE_TEXT,   false ), //$NON-NLS-1$
+			new ColumnInfo(Messages.getString("RegexEvalDialog.ColumnInfo.Currency"),    ColumnInfo.COLUMN_TYPE_TEXT,   false ), //$NON-NLS-1$
+			new ColumnInfo(Messages.getString("RegexEvalDialog.ColumnInfo.Nullif"),      ColumnInfo.COLUMN_TYPE_TEXT,   false ), //$NON-NLS-1$
+			new ColumnInfo(Messages.getString("RegexEvalDialog.ColumnInfo.IfNull"),      ColumnInfo.COLUMN_TYPE_TEXT,   false ), //$NON-NLS-1$
+			new ColumnInfo(Messages.getString("RegexEvalDialog.ColumnInfo.TrimType"),    ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.trimTypeDesc, true), //$NON-NLS-1$
+		};
+		
+		wFields=new TableView(transMeta, wBottom, 
+						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
+						      columnInfo, 
+						      fieldsRows,  
+						      lsMod,
+							  props
+						      );
+
+		fdFields=new FormData();
+		fdFields.left = new FormAttachment(0, 0);
+		fdFields.top  = new FormAttachment(wlFields, margin);
+		fdFields.right  = new FormAttachment(100, 0);
+		fdFields.bottom = new FormAttachment(100, 0);
+		wFields.setLayoutData(fdFields);
+
         
 		fdGeneralComp=new FormData();
 		fdGeneralComp.left  = new FormAttachment(0, 0);
@@ -494,13 +588,29 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
 		fdTabFolder.bottom= new FormAttachment(100, -50);
 		wTabFolder.setLayoutData(fdTabFolder);
 
+		fdBottom=new FormData();
+		fdBottom.left  = new FormAttachment(0, 0);
+		fdBottom.top   = new FormAttachment(0, 0);
+		fdBottom.right = new FormAttachment(100, 0);
+		fdBottom.bottom= new FormAttachment(100, 0);
+		wBottom.setLayoutData(fdBottom);
+
+		fdSash = new FormData();
+		fdSash.left  = new FormAttachment(0, 0);
+		fdSash.top   = new FormAttachment(wStepname, 0);
+		fdSash.right = new FormAttachment(100, 0);
+		fdSash.bottom= new FormAttachment(100, -50);
+		wSash.setLayoutData(fdSash);
+		
+		wSash.setWeights(new int[] {60,40});
+
 		wOK=new Button(shell, SWT.PUSH);
 		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
 
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
 
-		setButtonPositions(new Button[] { wOK, wCancel }, margin, wTabFolder);
+		setButtonPositions(new Button[] { wOK, wCancel }, margin, null);
 
 
 		// Add listeners
@@ -523,6 +633,9 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
 		setSize();
 		
 		getData();
+		
+		setFieldsEnabledStatus();
+		
 		input.setChanged(changed);
 	
 		shell.open();
@@ -563,17 +676,35 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
 	{
 	
 		if (input.getScript() != null) wScript.setText( input.getScript() );
-		if (input.getResultfieldname() != null) wResultField.setText( input.getResultfieldname() );
+		if (input.getResultFieldName() != null) wResultField.setText( input.getResultFieldName() );
 		if (input.getMatcher() != null) wfieldevaluate.setText( input.getMatcher() );
 
-		wUseVar.setSelection(input.useVar());
-		wCanonEq.setSelection(input.canoeq());
-		wCaseInsensitive.setSelection(input.caseInsensitive());
-		wComment.setSelection(input.comment());
-		wDotAll.setSelection(input.dotAll());
-		wMultiline.setSelection(input.multiLine());
-		wUnicode.setSelection(input.unicode());
-		wUnix.setSelection(input.unix());
+		wUseVar.setSelection(input.isUseVariableInterpolationFlagSet());
+		wAllowCaptureGroups.setSelection(input.isAllowCaptureGroupsFlagSet());
+		wCanonEq.setSelection(input.isCanonicalEqualityFlagSet());
+		wCaseInsensitive.setSelection(input.isCaseInsensitiveFlagSet());
+		wComment.setSelection(input.isCommentFlagSet());
+		wDotAll.setSelection(input.isDotAllFlagSet());
+		wMultiline.setSelection(input.isMultilineFlagSet());
+		wUnicode.setSelection(input.isUnicodeFlagSet());
+		wUnix.setSelection(input.isUnixLineEndingsFlagSet());
+		for (int i = 0; i < input.getFieldName().length; i++)
+		{
+			TableItem ti = wFields.table.getItem(i);
+			if (input.getFieldName()[i]   != null) ti.setText( 1, input.getFieldName()[i]); 
+	              ti.setText(2, ValueMeta.getTypeDesc(input.getFieldType()[i]));
+	              ti.setText(3, ""+input.getFieldLength()[i]);  //$NON-NLS-1$
+	              ti.setText(4, ""+input.getFieldPrecision()[i]);  //$NON-NLS-1$
+			if (input.getFieldFormat()[i]  != null) ti.setText(5, input.getFieldFormat()[i]); 
+			if (input.getFieldGroup()[i]   != null) ti.setText(6, input.getFieldGroup()[i]); 
+			if (input.getFieldDecimal()[i] != null) ti.setText(7, input.getFieldDecimal()[i]); 
+			if (input.getFieldCurrency()[i]!= null) ti.setText(8, input.getFieldCurrency()[i]); 
+            if (input.getFieldNullIf()[i] != null) ti.setText(9, input.getFieldNullIf()[i]);
+            if (input.getFieldIfNull()[i] != null) ti.setText(10, input.getFieldIfNull()[i]);
+            ti.setText(11, ValueMeta.getTrimTypeDesc(input.getFieldTrimType()[i]));
+		}
+		wFields.setRowNums();
+		wFields.optWidth(true);
 
 		wStepname.selectAll();
 	}
@@ -592,17 +723,39 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
 		stepname = wStepname.getText(); // return value
 
 		input.setScript( wScript.getText() );
-		input.setResultFieldname(wResultField.getText() );
+		input.setResultFieldName(wResultField.getText() );
 		input.setMatcher(wfieldevaluate.getText() );
-		input.setUseVar(wUseVar.getSelection());
-		input.setCanoneq(wCanonEq.getSelection());
-		input.setCaseinsensitive(wCaseInsensitive.getSelection());
-		input.setComment(wComment.getSelection());
-		input.setDotAll(wDotAll.getSelection());
-		input.setMultiLine(wMultiline.getSelection());
-		input.setUnicode(wUnicode.getSelection());
-		input.setUnix(wUnix.getSelection());
+		input.setUseVariableInterpolationFlag(wUseVar.getSelection());
+		input.setAllowCaptureGroupsFlag(wAllowCaptureGroups.getSelection());
+		input.setCanonicalEqualityFlag(wCanonEq.getSelection());
+		input.setCaseInsensitiveFlag(wCaseInsensitive.getSelection());
+		input.setCommentFlag(wComment.getSelection());
+		input.setDotAllFlag(wDotAll.getSelection());
+		input.setMultilineFlag(wMultiline.getSelection());
+		input.setUnicodeFlag(wUnicode.getSelection());
+		input.setUnixLineEndingsFlag(wUnix.getSelection());
 						
+		//Table table = wFields.table;
+		int nrfields = wFields.nrNonEmpty();
+		
+		input.allocate(nrfields);
+		
+		for (int i = 0; i < input.getFieldName().length; i++)
+		{
+			TableItem ti      = wFields.getNonEmpty(i);
+			input.getFieldName()     [i] = ti.getText( 1 ); 
+			input.getFieldType()     [i] = ValueMeta.getType( ti.getText( 2 ) );
+			input.getFieldLength()   [i] = Const.toInt( ti.getText( 3 ), -1 );
+			input.getFieldPrecision()[i] = Const.toInt( ti.getText( 4 ), -1 );
+			input.getFieldFormat()   [i] = ti.getText( 5 ); 
+			input.getFieldGroup()    [i] = ti.getText( 6 ); 
+			input.getFieldDecimal()  [i] = ti.getText( 7 ); 
+			input.getFieldCurrency() [i] = ti.getText( 8 ); 
+            input.getFieldNullIf()[i] = ti.getText(9);
+            input.getFieldIfNull()[i] = ti.getText(10);
+            input.getFieldTrimType()[i] = ValueMeta.getTrimTypeByDesc(ti.getText(11));
+		}
+
 		dispose();
 	}
 	
@@ -613,4 +766,10 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
 	{
 		return this.getClass().getName();
 	}
+
+    private void setFieldsEnabledStatus()
+    {
+        wlFields.setEnabled(wAllowCaptureGroups.getSelection());
+        wFields.setEnabled(wAllowCaptureGroups.getSelection());
+    }
 }

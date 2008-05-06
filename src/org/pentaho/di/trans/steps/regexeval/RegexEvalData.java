@@ -9,6 +9,8 @@
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or  implied. Please refer to 
  * the license for the specific language governing your rights and limitations.*/
 
+/* Modifications to original RegexEval step made by Daniel Einspanjer */
+
 package org.pentaho.di.trans.steps.regexeval;
 
 import java.util.regex.Pattern;
@@ -21,12 +23,22 @@ import org.pentaho.di.trans.step.StepDataInterface;
  * Runtime data for the RegexEval step.
  * 
  * @author Samatar Hassan
+ * @author Daniel Einspanjer
+ * @since 27-03-2008
  */
 public class RegexEvalData extends BaseStepData implements StepDataInterface
 {	
+	
+	public RowMetaInterface previousRowMeta;
 	public RowMetaInterface outputRowMeta;
+	public RowMetaInterface conversionRowMeta;
 	public int              indexOfFieldToEvaluate;
+	public int indexOfMatchResultField;
+	public int indexOfFirstCaptureGroupField;
 	public Pattern          pattern;
+	
+	public int nrExtraFields;
+
 	
 	public RegexEvalData()
 	{

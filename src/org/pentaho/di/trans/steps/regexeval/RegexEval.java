@@ -9,6 +9,7 @@
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or  implied. Please refer to 
  * the license for the specific language governing your rights and limitations.*/
  
+/* Modifications to original RegexEval step made by Daniel Einspanjer */
 
 package org.pentaho.di.trans.steps.regexeval;
 
@@ -18,6 +19,7 @@ import java.util.regex.Pattern;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -28,8 +30,10 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 
 /**
- * Validate Field with regular expression.
+ * Use regular expression to validate a field or capture new fields out of an existing field.
  * 
+ * @author deinspanjer
+ * @since 27-03-2008
  * @author Matt
  * @since 15-08-2007
  */
@@ -60,8 +64,12 @@ public class RegexEval extends BaseStep implements StepInterface
 		if (first) // we just got started
 		{
 			first=false;
+			// get the RowMeta
+			data.previousRowMeta = getInputRowMeta().clone();
 			data.outputRowMeta = getInputRowMeta().clone();
 			meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
+			
+			data.nrExtraFields = meta.isAllowCaptureGroupsFlagSet() ? meta.getFieldName().length : 0;
 			
 			// Check if a Field (matcher) is given
 			if (meta.getMatcher()!=null)
@@ -69,7 +77,13 @@ public class RegexEval extends BaseStep implements StepInterface
 				 // Cache the position of the Field
 				if (data.indexOfFieldToEvaluate<0)
 				{
-					data.indexOfFieldToEvaluate = getInputRowMeta().indexOfValue(meta.getMatcher());
+					data.indexOfFieldToEvaluate = data.previousRowMeta.indexOfValue(meta.getMatcher());
+					data.indexOfMatchResultField = data.outputRowMeta.indexOfValue(meta.getResultFieldName());
+					
+					if (data.nrExtraFields > 0)
+					{
+						data.indexOfFirstCaptureGroupField = data.outputRowMeta.indexOfValue(meta.getFieldName()[0]);
+					}
 					
 					if (data.indexOfFieldToEvaluate<0)
 		            {                    
@@ -77,9 +91,10 @@ public class RegexEval extends BaseStep implements StepInterface
 						logError(Messages.getString("RegexEval.Log.ErrorFindingField")+ "[" + meta.getMatcher()+"]"); 
 						throw new KettleStepException(Messages.getString("RegexEval.Exception.CouldnotFindField",meta.getMatcher())); 
 					}		                
+		                
 					
 					// Let's check that Result Field is given
-					if (environmentSubstitute(meta.getResultfieldname()) == null )
+					if (environmentSubstitute(meta.getResultFieldName()) == null )
 					{
 						//	Result field is missing !
 						logError(Messages.getString("RegexEval.Log.ErrorResultFieldMissing")); 
@@ -94,83 +109,74 @@ public class RegexEval extends BaseStep implements StepInterface
 				log.logError("Error",Messages.getString("RegexEval.Log.ErrorMatcherMissing"));
 				throw new KettleStepException(Messages.getString("RegexEval.Exception.ErrorMatcherMissing")); 
 			}
+			
+			// Now create objects to do string to data type conversion...
+			data.conversionRowMeta = data.outputRowMeta.clone();
+			for (ValueMetaInterface valueMeta : data.conversionRowMeta.getValueMetaList()) {
+				valueMeta.setType(ValueMetaInterface.TYPE_STRING);
+			}
+
+		}
+		
+		// reserve room
+		Object[] outputRow = RowDataUtil.allocateRowData(data.outputRowMeta.size());
+				
+		for (int i = 0; i < data.previousRowMeta.size(); i++)
+		{
+			outputRow[i] = row[i];
 		}
 		
 		// Get the Field value
-		String Fieldvalue= getInputRowMeta().getString(row,data.indexOfFieldToEvaluate);
-			
-		// Search engine	
-		Matcher m = data.pattern.matcher(Fieldvalue);
+		String fieldValue= getInputRowMeta().getString(row,data.indexOfFieldToEvaluate);
 		
-		// Start search
-		boolean b = m.matches();
-		
-		// Add result field to input stream
-		Object[] outputRowData2 =RowDataUtil.addValueData(row, getInputRowMeta().size(),b);
-		
-		if (log.isRowLevel()) logRowlevel(Messages.getString("RegexEval.Log.ReadRow") + " " +  getInputRowMeta().getString(row)); 
-		
-		putRow(data.outputRowMeta, outputRowData2);  // copy row to output rowset(s);
-       
-		return true;
-	}
-    
-    /**
-     * Compile a pattern.
-     * 
-     * @param meta the metadata of the step.
-     */
-    private Pattern compilePattern(RegexEvalMeta meta)
-    {
-    	Pattern p;
-    	
-		// Embedded options
-		String options="";
-		
-		if (meta.caseInsensitive())
+		if (fieldValue == null)
 		{
-			options = options + "(?i)";
-		}
-		if (meta.comment())
-		{
-			options = options + "(?x)";
-		}
-		if (meta.dotAll())
-		{
-			options = options + "(?s)";
-		}
-		if (meta.multiLine())
-		{
-			options = options + "(?m)";
-		}
-		if (meta.unicode())
-		{
-			options = options + "(?u)";
-		}
-		if (meta.unix())
-		{
-			options = options + "(?d)";
-		}
-	
-		// Regular expression
-		String regularexpression= meta.getScript();
-		if (meta.useVar())
-		{
-			regularexpression = environmentSubstitute(meta.getScript());
-		}
-		if (log.isDetailed()) logDetailed(Messages.getString("RegexEval.Log.Regexp") + " " + options+regularexpression); 
-		
-		if (meta.canoeq())
-		{
-			p = Pattern.compile(options+regularexpression,Pattern.CANON_EQ);
+			outputRow[data.indexOfMatchResultField] = false;
 		}
 		else
 		{
-			p = Pattern.compile(options+regularexpression);	
+			// Search engine
+			Matcher m = data.pattern.matcher(fieldValue);
+
+			// Start search
+			boolean isMatch = m.matches();
+			outputRow[data.indexOfMatchResultField] = isMatch;
+
+			String[] values = new String[data.nrExtraFields];
+
+			for (int i = 0; i < data.nrExtraFields; i++)
+			{
+				if (isMatch)
+				{
+					if (data.nrExtraFields != m.groupCount())
+					{
+						// Runtime exception case. The number of capture groups in the regex doesn't match the number of fields.
+						log.logError("Error",Messages.getString("RegexEval.Log.ErrorCaptureGroupFieldsMismatch", String.valueOf(m.groupCount()), String.valueOf(data.nrExtraFields)));
+						throw new KettleStepException(Messages.getString("RegexEval.Exception.ErrorCaptureGroupFieldsMismatch", String.valueOf(m.groupCount()), String.valueOf(data.nrExtraFields))); 
+					}
+					values[i] = m.group(i+1);
+				}
+
+				ValueMetaInterface valueMeta = data.outputRowMeta.getValueMeta(data.indexOfFirstCaptureGroupField+i); 
+				ValueMetaInterface conversionValueMeta = data.conversionRowMeta.getValueMeta(data.indexOfFirstCaptureGroupField+i);
+				Object convertedValue = valueMeta.convertDataFromString
+				(
+						values[i],
+						conversionValueMeta,
+						meta.getFieldNullIf()[i],
+						meta.getFieldIfNull()[i],
+						meta.getFieldTrimType()[i]
+				);
+
+				outputRow[data.indexOfFirstCaptureGroupField+i] = convertedValue;
+			}
 		}
+		if (log.isRowLevel()) logRowlevel(Messages.getString("RegexEval.Log.ReadRow") + " " +  getInputRowMeta().getString(row)); 
 		
-		return p;
-    }
+		putRow(data.outputRowMeta, outputRow);  // copy row to output rowset(s);
+       
+		return true;
+	}
 		
 	public boolean init(StepMetaInterface smi, StepDataInterface sdi)
 	{
@@ -179,16 +185,55 @@ public class RegexEval extends BaseStep implements StepInterface
 		
 		if (super.init(smi, sdi))
 		{
-            // Add init code here.
-			data.pattern = compilePattern(meta);
-		    
+			// Embedded options
+			StringBuilder options = new StringBuilder();
+			
+			if (meta.isCaseInsensitiveFlagSet())
+			{
+				options.append("(?i)");
+			}
+			if (meta.isCommentFlagSet())
+			{
+				options.append("(?x)");
+			}
+			if (meta.isDotAllFlagSet())
+			{
+				options.append("(?s)");
+			}
+			if (meta.isMultilineFlagSet())
+			{
+				options.append("(?m)");
+			}
+			if (meta.isUnicodeFlagSet())
+			{
+				options.append("(?u)");
+			}
+			if (meta.isUnixLineEndingsFlagSet())
+			{
+				options.append("(?d)");
+			}
+		
+			// Regular expression
+			String regularexpression= meta.getScript();
+			if (meta.isUseVariableInterpolationFlagSet())
+			{
+				regularexpression = environmentSubstitute(meta.getScript());
+			}
+			if (log.isDetailed()) logDetailed(Messages.getString("RegexEval.Log.Regexp") + " " + options+regularexpression); 
+			
+			if (meta.isCanonicalEqualityFlagSet())
+			{
+				data.pattern = Pattern.compile(options+regularexpression,Pattern.CANON_EQ);
+			}
+			else
+			{
+				data.pattern = Pattern.compile(options+regularexpression);	
+			}
 		    return true;
 		}
 		return false;
 	}
 
-	//
-	// Run is were the action happens!
 	public void run()
 	{
     	BaseStep.runStepThread(this, meta, data);
