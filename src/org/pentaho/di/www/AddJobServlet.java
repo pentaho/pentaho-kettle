@@ -29,6 +29,7 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobConfiguration;
 import org.pentaho.di.job.JobExecutionConfiguration;
+import org.pentaho.di.job.JobListener;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.StepLoader;
@@ -122,26 +123,15 @@ public class AddJobServlet extends HttpServlet
             
             jobMap.addJob(jobMeta.getName(), job, jobConfiguration);
             
-            if (repository!=null)
-            {
-	            // The repository connection is open: make sure we disconnect from the repository once we
-	            // are done with this transformation.
-	            //
-	            new Thread(new Runnable() {
-					public void run() 
-					{
-						while (job.isActive() || !job.isInitialized() )
-						{
-							try { Thread.sleep(250); } catch (InterruptedException e) { }
+            // Make sure to disconnect from the repository when the job finishes.
+            // 
+            if (repository!=null) {
+	            job.addJobListener(new JobListener() {
+						public void JobFinished(Job job) {
+							repository.disconnect();
 						}
-
-						// Once we're done, we disconnect from the repository...
-						//
-						repository.disconnect();
-						
 					}
-				
-				}).start();
+	            );
             }
 
             String message;

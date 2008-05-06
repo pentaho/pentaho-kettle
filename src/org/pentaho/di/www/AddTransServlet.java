@@ -28,6 +28,7 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransConfiguration;
 import org.pentaho.di.trans.TransExecutionConfiguration;
+import org.pentaho.di.trans.TransListener;
 import org.pentaho.di.trans.TransMeta;
 
 
@@ -120,19 +121,11 @@ public class AddTransServlet extends HttpServlet
 	            // The repository connection is open: make sure we disconnect from the repository once we
 	            // are done with this transformation.
 	            //
-	            new Thread(new Runnable() {
-					public void run() 
-					{
-						while (!trans.isFinished())
-						{
-							try { Thread.sleep(250); } catch (InterruptedException e) { }
-						}
-						// Once we're done, we disconnect from the repository...
-						//
+            	trans.addTransListener(new TransListener() {
+					public void transFinished(Trans trans) {
 						repository.disconnect();
 					}
-				
-				}).start();
+				});
             }
             
 
