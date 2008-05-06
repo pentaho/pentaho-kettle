@@ -615,8 +615,7 @@ public class JobEntrySFTPDialog extends JobEntryDialog implements JobEntryDialog
 	   
     }
     private void closeFTPConnections()
-	{
-		
+	{	
 		// Close SecureFTP connection if necessary
 		if (sftpclient != null)
 	      {
