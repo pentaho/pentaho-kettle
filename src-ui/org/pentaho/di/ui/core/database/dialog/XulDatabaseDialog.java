@@ -107,10 +107,10 @@ public class XulDatabaseDialog {
       Locale primaryLocale = GlobalMessages.getLocale();
       Locale failOverLocale = LanguageChoice.getInstance().getFailoverLocale();
       try{
-        res = ResourceBundle.getBundle(MESSAGES, primaryLocale);
+        res = GlobalMessages.getBundle(primaryLocale, MESSAGES);
       }catch(MissingResourceException e){
         try{
-          res = ResourceBundle.getBundle(MESSAGES, failOverLocale);
+          res = GlobalMessages.getBundle(failOverLocale, MESSAGES);
         }catch(MissingResourceException e2){
           res = null;
           log.logError(Messages.getString("XulDatabaseDialog.Error.ResourcesNotFound.Title"),  //$NON-NLS-1$

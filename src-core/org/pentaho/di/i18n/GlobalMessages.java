@@ -130,7 +130,7 @@ public class GlobalMessages extends AbstractMessageHandler
         return packageName + "." + BUNDLE_NAME;
     }
 
-    protected static ResourceBundle getBundle(Locale locale, String packageName) throws MissingResourceException
+    public static ResourceBundle getBundle(Locale locale, String packageName) throws MissingResourceException
     {
     	String filename = buildHashKey(locale, packageName);
     	filename = "/"+filename.replace('.', '/') + ".properties";
