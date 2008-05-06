@@ -458,7 +458,7 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 						baseStep.linesInput++;
 						// baseStep.linesRead--;
 
-						if (baseStep.log.isDebug()) baseStep.logDebug("Received row from remote step: "+rowSet.getRowMeta().getString(rowData));
+						if (baseStep.log.isDebug()) baseStep.logDebug("Received row from remote step: "+rowMeta.getString(rowData));
 
 						baseStep.putRowTo(rowMeta, rowData, rowSet);
 						baseStep.linesWritten--;
