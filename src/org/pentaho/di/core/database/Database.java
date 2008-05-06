@@ -3504,7 +3504,7 @@ public class Database implements VariableSpace
 		
 		if (!update) 
 		{
-			v=new ValueMeta("TRANSNAME",       ValueMetaInterface.TYPE_STRING , 50, 0); r.addValueMeta(v);
+			v=new ValueMeta("TRANSNAME",       ValueMetaInterface.TYPE_STRING , 255, 0); r.addValueMeta(v);
 		}
 		v=new ValueMeta("STATUS",          ValueMetaInterface.TYPE_STRING , 15, 0); r.addValueMeta(v);
 		v=new ValueMeta("LINES_READ",      ValueMetaInterface.TYPE_INTEGER, 10, 0); r.addValueMeta(v);
