@@ -55,20 +55,27 @@ public class TableInput extends BaseStep implements StepInterface
         Object[] parametersData = new Object[] {};
 
         RowSet rowSet = findInputRowSet(meta.getLookupStepname());
-        Object[] rowData = getRowFrom(rowSet); // rows are originating from "lookup_from"
-        while (rowData!=null)
+        if (rowSet!=null) 
         {
-            parametersData = RowDataUtil.addRowData(parametersData, parametersMeta.size(), rowData);
-            parametersMeta.addRowMeta(rowSet.getRowMeta());
-            
-            rowData = getRowFrom(rowSet); // take all input rows if needed!
+	        Object[] rowData = getRowFrom(rowSet); // rows are originating from "lookup_from"
+	        while (rowData!=null)
+	        {
+	            parametersData = RowDataUtil.addRowData(parametersData, parametersMeta.size(), rowData);
+	            parametersMeta.addRowMeta(rowSet.getRowMeta());
+	            
+	            rowData = getRowFrom(rowSet); // take all input rows if needed!
+	        }
+	        
+	        if (parametersMeta.size()==0)
+	        {
+	            throw new KettleException("Expected to read parameters from step ["+meta.getLookupStepname()+"] but none were found.");
+	        }
         }
-        
-        if (parametersMeta.size()==0)
+        else
         {
-            throw new KettleException("Expected to read parameters from step ["+meta.getLookupStepname()+"] but none were found.");
+            throw new KettleException("Unable to find rowset to read from, perhaps step ["+meta.getLookupStepname()+"] doesn't exist. (or perhaps you are trying a preview?)");
         }
-
+	
         RowMetaAndData parameters = new RowMetaAndData(parametersMeta, parametersData);
 
         return parameters;

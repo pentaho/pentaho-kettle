@@ -25,6 +25,7 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -215,7 +216,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
         boolean param=false;
 
 		Database db = new Database(databaseMeta);
-        databases = new Database[] { db }; // keep track of it for cancelling purposes...
+        databases = new Database[] { db }; // keep track of it for canceling purposes...
 
 		// First try without connecting to the database... (can be  S L O W)
         String sNewSQL = sql; 
@@ -246,9 +247,19 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 			{
 				db.connect();
 				
-				if (getLookupStepname()!=null) param=true;
+				RowMetaInterface paramRowMeta=null;
+				Object[] paramData=null;
 				
-				add = db.getQueryFields(sNewSQL, param);
+				if (getLookupStepname()!=null) 
+				{
+					param=true;
+					if (info.length>=0 && info[0]!=null) {
+						paramRowMeta=info[0];
+						paramData = RowDataUtil.allocateRowData(paramRowMeta.size());
+					}
+				}
+				
+				add = db.getQueryFields(sNewSQL, param, paramRowMeta, paramData);
 				
 				if (add==null) return;
 				for (int i=0;i<add.size();i++)
