@@ -196,7 +196,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 
 	private void storeRowInCache(RowMetaInterface lookupMeta, Object[] lookupRow, Object[] add) {
 		
-		data.look.put(new RowMetaAndData(data.lookupMeta, lookupRow), new TimedRow(add));
+		data.look.put(new RowMetaAndData(lookupMeta, lookupRow), new TimedRow(add));
 
         // See if we have to limit the cache_size.
         // Sample 10% of the rows in the cache.
@@ -250,7 +250,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface
         	{
         		// OK, all data is loaded in memory and we still don't have a cache hit.
         		// 
-        		if (!data.allEquals)
+        		if (!data.allEquals && !data.hasDBCondition)
         		{
         			// TODO: find an alternative way to look up the data based on the condition.
         			// Not all conditions are "=" so we are going to have to evaluate row by row
@@ -262,9 +262,10 @@ public class DatabaseLookup extends BaseStep implements StepInterface
         				// Now verify that the key is matching our conditions...
         				//
         				boolean match = true;
+        				int lookupIndex=0;
     					for (int i=0;i<data.conditions.length && match;i++) {
-        					ValueMetaInterface cmpMeta = lookupMeta.getValueMeta(i);
-        					Object cmpData = lookupRow[i];
+        					ValueMetaInterface cmpMeta = lookupMeta.getValueMeta(lookupIndex);
+        					Object cmpData = lookupRow[lookupIndex];
         					ValueMetaInterface keyMeta = key.getValueMeta(i);
         					Object keyData = key.getData()[i];
         					
@@ -277,9 +278,20 @@ public class DatabaseLookup extends BaseStep implements StepInterface
         					case DatabaseLookupMeta.CONDITION_GE : match = (cmpMeta.compare(cmpData, keyMeta, keyData)<=0); break;
         					case DatabaseLookupMeta.CONDITION_IS_NULL: match = keyMeta.isNull(keyData); break;
         					case DatabaseLookupMeta.CONDITION_IS_NOT_NULL: match = !keyMeta.isNull(keyData); break;
+        					case DatabaseLookupMeta.CONDITION_BETWEEN :
+        						// Between key >= cmp && key <= cmp2
+        						ValueMetaInterface cmpMeta2 = lookupMeta.getValueMeta(lookupIndex+1);
+        						Object cmpData2 = lookupRow[lookupIndex+1];
+        						match = (keyMeta.compare(keyData, cmpMeta, cmpData)>=0);
+        						if (match) {
+        							match = (keyMeta.compare(keyData, cmpMeta2, cmpData2)<=0);
+        						}
+        						lookupIndex++;
+        						break;
         					default: match=false; break; 
-        					// TODO: add LIKE, BETWEEN operators
+        					// TODO: add LIKE operator
         					}
+        					lookupIndex++;
         				}
     					if (match) {
     						timedRow = data.look.get(key);
@@ -500,10 +512,13 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 	    	// We only want to get the used table fields...
 	    	//
 	    	String sql = "SELECT ";
-	    	for (int i=0;i<meta.getTableKeyField().length;i++) {
-	    		if (i>0) sql+=", ";
-	    		sql+=dbMeta.quoteField(meta.getTableKeyField()[i]);
-	    	}
+	    	
+            for (int i=0;i<meta.getStreamKeyField1().length;i++)
+            {
+            	if (i>0) sql+=", ";
+            	sql+=dbMeta.quoteField(meta.getTableKeyField()[i]);
+            }
+
 	    	// Also grab the return field...
 	    	//
 	    	for (int i=0;i<meta.getReturnValueField().length;i++) {
@@ -517,21 +532,26 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 	    	//
 	    	List<Object[]> rows = data.db.getRows(sql, 0);
 	    	if (rows!=null && rows.size()>0) {
+	    		RowMetaInterface returnRowMeta = data.db.getReturnRowMeta();
 	    		// Copy the data into 2 parts: key and value...
 	    		// 
 	    		for (Object[] row : rows) {
 	    			int index=0;
-	    			Object[] lookupData = new Object[data.lookupMeta.size()];
-	    			for (int i=0;i<data.lookupMeta.size();i++) {
-	    				lookupData[i] = row[index++];
+	    			RowMeta keyMeta = new RowMeta();
+	    			Object[] keyData = new Object[meta.getStreamKeyField1().length];
+	    			for (int i=0;i<meta.getStreamKeyField1().length;i++) {
+	    				keyData[i] = row[index];
+	    				keyMeta.addValueMeta(returnRowMeta.getValueMeta(index++));
 	    			}
-	    			Object[] returnData = new Object[data.returnMeta.size()];
+	    			// RowMeta valueMeta = new RowMeta();
+	    			Object[] valueData = new Object[data.returnMeta.size()];
 	    			for (int i=0;i<data.returnMeta.size();i++) {
-	    				returnData[i] = row[index++];
+	    				valueData[i] = row[index++];
+	    				// valueMeta.addValueMeta(returnRowMeta.getValueMeta(index++));
 	    			}
 	    			// Store the data...
 	    			//
-	    			storeRowInCache(data.lookupMeta, lookupData, returnData);
+	    			storeRowInCache(keyMeta, keyData, valueData);
 	    			linesInput++;
 	    		}
 	    	}
@@ -587,11 +607,15 @@ public class DatabaseLookup extends BaseStep implements StepInterface
                 // This might speed up things in the case when we load all data in the cache
                 //
                 data.allEquals = true;
+                data.hasDBCondition = false;
                 data.conditions = new int[meta.getKeyCondition().length];
                 for (int i=0;i<meta.getKeyCondition().length;i++) {
                 	data.conditions[i] = Const.indexOfString(meta.getKeyCondition()[i], DatabaseLookupMeta.conditionStrings);
                 	if (!("=".equals(meta.getKeyCondition()[i]))) {
                 		data.allEquals = false;
+                	}
+                	if (data.conditions[i]==DatabaseLookupMeta.CONDITION_LIKE) {
+                		data.hasDBCondition = true;
                 	}
                 }
 

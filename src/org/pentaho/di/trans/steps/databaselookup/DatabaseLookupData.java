@@ -44,6 +44,7 @@ public class DatabaseLookupData extends BaseStepData implements StepDataInterfac
 	public boolean isCanceled;
 	public boolean allEquals;
 	public int[] conditions;
+	public boolean hasDBCondition;
 
 
 	/**
