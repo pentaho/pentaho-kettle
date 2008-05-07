@@ -12,8 +12,8 @@
 */
 package org.pentaho.di.www;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.Map;
@@ -65,8 +65,9 @@ public class AddJobServlet extends HttpServlet
         boolean useXML = "Y".equalsIgnoreCase( request.getParameter("xml") );
         
         PrintWriter out = response.getWriter();
-        InputStream is = request.getInputStream(); // read from the client
-
+        BufferedReader in = request.getReader(); // read from the client
+        if (log.isDetailed()) log.logDetailed(toString(), "Encoding: "+request.getCharacterEncoding());
+        
         if (useXML)
         {
             response.setContentType("text/xml");
@@ -84,12 +85,12 @@ public class AddJobServlet extends HttpServlet
 
         try
         {
-            // First read the complete job in memory from the inputStream
-            int c;
+            // First read the complete transformation in memory from the request
             StringBuffer xml = new StringBuffer();
-            while ( (c=is.read())!=-1)
+            String line;
+            while ((line = in.readLine()) != null)
             {
-                xml.append((char)c);
+                xml.append(line);
             }
             
             // Parse the XML, create a job configuration
