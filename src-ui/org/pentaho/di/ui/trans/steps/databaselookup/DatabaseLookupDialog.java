@@ -74,6 +74,10 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 	private Button       wCache;
 	private FormData     fdlCache, fdCache;
 
+	private Label        wlCacheLoadAll;
+	private Button       wCacheLoadAll;
+	private FormData     fdlCacheLoadAll, fdCacheLoadAll;
+
 	private Label        wlCachesize;
 	private Text         wCachesize;
 	private FormData     fdlCachesize, fdCachesize;
@@ -246,22 +250,20 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 		fdlCache=new FormData();
 		fdlCache.left = new FormAttachment(0, 0);
 		fdlCache.right= new FormAttachment(middle, -margin);
-		fdlCache.top  = new FormAttachment(wbTable, margin);
+		fdlCache.top  = new FormAttachment(wTable, margin);
 		wlCache.setLayoutData(fdlCache);
 		wCache=new Button(shell, SWT.CHECK);
  		props.setLook(wCache);
 		fdCache=new FormData();
 		fdCache.left = new FormAttachment(middle, 0);
-		fdCache.top  = new FormAttachment(wbTable, margin);
+		fdCache.top  = new FormAttachment(wTable, margin);
 		wCache.setLayoutData(fdCache);
 		wCache.addSelectionListener(new SelectionAdapter() 
 			{
 				public void widgetSelected(SelectionEvent e) 
 				{
 					input.setChanged();
-					
-					wCachesize.setEnabled(wCache.getSelection());
-					wlCachesize.setEnabled(wCache.getSelection());
+					enableFields();
 				}
 			}
 		);
@@ -274,7 +276,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 		fdlCachesize=new FormData();
 		fdlCachesize.left   = new FormAttachment(0, 0);
 		fdlCachesize.right  = new FormAttachment(middle, -margin);
-		fdlCachesize.top    = new FormAttachment(wlCache, margin);
+		fdlCachesize.top    = new FormAttachment(wCache, margin);
 		wlCachesize.setLayoutData(fdlCachesize);
 		wCachesize=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wCachesize);
@@ -283,8 +285,33 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 		fdCachesize=new FormData();
 		fdCachesize.left   = new FormAttachment(middle, 0);
 		fdCachesize.right  = new FormAttachment(100, 0);
-		fdCachesize.top    = new FormAttachment(wlCache, margin);
+		fdCachesize.top    = new FormAttachment(wCache, margin);
 		wCachesize.setLayoutData(fdCachesize);
+
+		// Cache : Load all?
+		wlCacheLoadAll=new Label(shell, SWT.RIGHT);
+		wlCacheLoadAll.setText(Messages.getString("DatabaseLookupDialog.CacheLoadAll.Label")); //$NON-NLS-1$
+ 		props.setLook(wlCacheLoadAll);
+		fdlCacheLoadAll=new FormData();
+		fdlCacheLoadAll.left = new FormAttachment(0, 0);
+		fdlCacheLoadAll.right= new FormAttachment(middle, -margin);
+		fdlCacheLoadAll.top  = new FormAttachment(wCachesize, margin);
+		wlCacheLoadAll.setLayoutData(fdlCacheLoadAll);
+		wCacheLoadAll=new Button(shell, SWT.CHECK);
+ 		props.setLook(wCacheLoadAll);
+		fdCacheLoadAll=new FormData();
+		fdCacheLoadAll.left = new FormAttachment(middle, 0);
+		fdCacheLoadAll.top  = new FormAttachment(wCachesize, margin);
+		wCacheLoadAll.setLayoutData(fdCacheLoadAll);
+		wCacheLoadAll.addSelectionListener(new SelectionAdapter() 
+			{
+				public void widgetSelected(SelectionEvent e) 
+				{
+					input.setChanged();
+					enableFields();
+				}
+			}
+		);
 
 
 		wlKey=new Label(shell, SWT.NONE);
@@ -292,7 +319,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
  		props.setLook(wlKey);
 		fdlKey=new FormData();
 		fdlKey.left  = new FormAttachment(0, 0);
-		fdlKey.top   = new FormAttachment(wCachesize, margin);
+		fdlKey.top   = new FormAttachment(wCacheLoadAll, margin);
 		wlKey.setLayoutData(fdlKey);
 
 		int nrKeyCols=4;
@@ -300,7 +327,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 
 		ColumnInfo[] ciKey=new ColumnInfo[nrKeyCols];
 		ciKey[0]=new ColumnInfo(Messages.getString("DatabaseLookupDialog.ColumnInfo.Tablefield"),   ColumnInfo.COLUMN_TYPE_CCOMBO, new String[]{""},  false); //$NON-NLS-1$
-		ciKey[1]=new ColumnInfo(Messages.getString("DatabaseLookupDialog.ColumnInfo.Comparator"),   ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "=", "<>", "<", "<=", ">", ">=", "LIKE", "BETWEEN", "IS NULL", "IS NOT NULL" } ); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$
+		ciKey[1]=new ColumnInfo(Messages.getString("DatabaseLookupDialog.ColumnInfo.Comparator"),   ColumnInfo.COLUMN_TYPE_CCOMBO, DatabaseLookupMeta.conditionStrings);
 		ciKey[2]=new ColumnInfo(Messages.getString("DatabaseLookupDialog.ColumnInfo.Field1"),       ColumnInfo.COLUMN_TYPE_CCOMBO, new String[]{""},   false); //$NON-NLS-1$
 		ciKey[3]=new ColumnInfo(Messages.getString("DatabaseLookupDialog.ColumnInfo.Field2"),       ColumnInfo.COLUMN_TYPE_CCOMBO, new String[]{""},   false); //$NON-NLS-1$
 		tableFieldColumns.add(ciKey[0]);
@@ -318,7 +345,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 		fdKey.left  = new FormAttachment(0, 0);
 		fdKey.top   = new FormAttachment(wlKey, margin);
 		fdKey.right = new FormAttachment(100, 0);
-		fdKey.bottom= new FormAttachment(wlKey, 150);
+		fdKey.bottom= new FormAttachment(wlKey, 250);
 		wKey.setLayoutData(fdKey);
 
 		// THE BUTTONS
@@ -369,7 +396,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
             {
                 public void widgetSelected(SelectionEvent e)
                 {
-                    setFlags();
+                    enableFields();
                 }
             }
         );
@@ -393,7 +420,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
             {
                 public void widgetSelected(SelectionEvent e)
                 {
-                    setFlags();
+                    enableFields();
                 }
             }
         );
@@ -482,7 +509,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 		}
 		return stepname;
 	}
-
+	
 	private void setComboValues() {
 		Runnable fieldLoader = new Runnable() {
 			public void run() {
@@ -547,10 +574,15 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 		shell.getDisplay().asyncExec(fieldLoader);
 	}
 	
-	private void setFlags()
+	private void enableFields()
     {
         wlOrderBy.setEnabled( !wFailMultiple.getSelection() );
         wOrderBy.setEnabled( !wFailMultiple.getSelection() );
+        
+		wCachesize.setEnabled(wCache.getSelection() && !wCacheLoadAll.getSelection());
+		wlCachesize.setEnabled(wCache.getSelection() && !wCacheLoadAll.getSelection());
+		wCacheLoadAll.setEnabled(wCache.getSelection());
+		wlCacheLoadAll.setEnabled(wCache.getSelection());
     }
 
     /**
@@ -563,6 +595,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 		
 		wCache.setSelection(input.isCached());
 		wCachesize.setText(""+input.getCacheSize()); //$NON-NLS-1$
+		wCacheLoadAll.setSelection(input.isLoadingAllDataInCache());
 		
 		if (input.getStreamKeyField1()!=null)
 		for (i=0;i<input.getStreamKeyField1().length;i++)
@@ -603,7 +636,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 		wReturn.setRowNums();
 		wReturn.optWidth(true);
         
-        setFlags();
+        enableFields();
 	}
 	
 	private void cancel()
@@ -624,6 +657,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 		
 		input.setCached( wCache.getSelection() );
 		input.setCacheSize( Const.toInt(wCachesize.getText(), 0) );
+		input.setLoadingAllDataInCache( wCacheLoadAll.getSelection() );
 		
 		log.logDebug(toString(), Messages.getString("DatabaseLookupDialog.Log.FoundKeys",String.valueOf(nrkeys))); //$NON-NLS-1$ //$NON-NLS-2$
 		for (int i=0;i<nrkeys;i++)

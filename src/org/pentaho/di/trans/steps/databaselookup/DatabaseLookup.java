@@ -181,7 +181,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 		// Store in cache if we need to!
 		// If we already loaded all data into the cache, storing more makes no sense.
 		//
-		if (meta.isCached() && cache_now && !meta.isLoadingAllDataInCache())
+		if (meta.isCached() && cache_now && !meta.isLoadingAllDataInCache() && data.allEquals)
 		{
 			storeRowInCache(data.lookupMeta, lookupRow, add);
 		}
@@ -293,11 +293,6 @@ public class DatabaseLookup extends BaseStep implements StepInterface
     				        }
     					}
         			}
-        		}
-        		else
-        		{
-        			// TODO: this is some program error, we should have gotten a hit here!
-        			// throw new KettleException("Unexpected cache miss while loading all data");
         		}
         	}
         }
