@@ -29,6 +29,7 @@ import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
+import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -65,6 +66,7 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 	private String localDirectory;
 	private String wildcard;
 	private boolean remove;
+	private boolean copyprevious;
 
 
 	public JobEntrySFTPPUT(String n)
@@ -72,6 +74,7 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 		super(n, "");
 		serverName=null;
         serverPort="22";
+        copyprevious=false;
 		setID(-1L);
 		setJobEntryType(JobEntryType.SFTPPUT);
 	}
@@ -106,6 +109,8 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 		retval.append("      ").append(XMLHandler.addTagValue("localdirectory", localDirectory));
 		retval.append("      ").append(XMLHandler.addTagValue("wildcard",     wildcard));
 		retval.append("      ").append(XMLHandler.addTagValue("remove",       remove));
+		retval.append("      ").append(XMLHandler.addTagValue("copyprevious", copyprevious));
+		
 
 		return retval.toString();
 	}
@@ -123,6 +128,8 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 			localDirectory  = XMLHandler.getTagValue(entrynode, "localdirectory");
 			wildcard        = XMLHandler.getTagValue(entrynode, "wildcard");
 			remove          = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "remove") );
+			copyprevious    = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "copyprevious") );
+			
 
 		}
 		catch(KettleXMLException xe)
@@ -148,6 +155,8 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 			localDirectory  = rep.getJobEntryAttributeString(id_jobentry, "localdirectory");
 			wildcard        = rep.getJobEntryAttributeString(id_jobentry, "wildcard");
 			remove          = rep.getJobEntryAttributeBoolean(id_jobentry, "remove");
+			copyprevious          = rep.getJobEntryAttributeBoolean(id_jobentry, "copyprevious");
+			
 		}
 		catch(KettleException dbe)
 		{
@@ -170,6 +179,8 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 			rep.saveJobEntryAttribute(id_job, getID(), "localdirectory", localDirectory);
 			rep.saveJobEntryAttribute(id_job, getID(), "wildcard",        wildcard);
 			rep.saveJobEntryAttribute(id_job, getID(), "remove",          remove);
+			rep.saveJobEntryAttribute(id_job, getID(), "copyprevious",          copyprevious);
+			
 		}
 		catch(KettleDatabaseException dbe)
 		{
@@ -288,7 +299,15 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 	{
 		return remove;
 	}
-
+	public boolean isCopyPrevious()
+	{
+		return copyprevious;
+	}
+	
+	public void setCopyPrevious(boolean copyprevious)
+	{
+		this.copyprevious=copyprevious;
+	}
 	public String getServerPort() {
 		return serverPort;
 	}
@@ -303,10 +322,49 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 		LogWriter log = LogWriter.getInstance();
 
         Result result = previousResult;
+		List<RowMetaAndData> rows = result.getRows();
 		result.setResult( false );
 
-		if(log.isDetailed()) log.logDetailed(toString(), "Start of SFTP job entry");
-
+		if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobSFTPPUT.Log.StartJobEntry"));
+		ArrayList<String> myFileList = new ArrayList<String>();
+		
+		if(copyprevious)
+		{
+			if(rows.size()==0)
+			{
+				if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobSFTPPUT.ArgsFromPreviousNothing"));
+				result.setResult(true);
+				return result;
+			}
+			
+			try{
+				RowMetaAndData resultRow = null;
+				// Copy the input row to the (command line) arguments
+				for (int iteration=0;iteration<rows.size();iteration++) 
+				{			
+					resultRow = rows.get(iteration);
+				
+					// Get file names
+					String file_previous = resultRow.getString(0,null);
+					if(!Const.isEmpty(file_previous))
+					{
+						File file=new File(file_previous);
+						if(!file.exists())
+							log.logError(toString(),Messages.getString("JobSFTPPUT.Log.FilefromPreviousNotFound",file_previous));
+						else
+						{
+							myFileList.add(file_previous);
+							if(log.isDebug()) log.logDebug(toString(), Messages.getString("JobSFTPPUT.Log.FilenameFromResult",file_previous));
+						}
+					}
+				}
+			}catch(Exception e)	{
+				log.logError(toString(), Messages.getString("JobSFTPPUT.Error.ArgFromPrevious"));
+				result.setNrErrors(1);
+				return result;
+			}
+			
+		}
 		SFTPClient sftpclient = null;
 
         // String substitution..
@@ -336,39 +394,40 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 				if(log.isDetailed()) log.logDetailed(toString(), "Changed to directory ["+realSftpDirString+"]");
 			} // end if
 
-			// Get all the files in the local directory...
-			int x = 0;
-			ArrayList<String> myFileList = new ArrayList<String>();
-
-
-			File localFiles = new File(realLocalDirectory);
-			File[] children = localFiles.listFiles();
-			for (int i=0; i<children.length; i++) {
-	            // Get filename of file or directory
-				if (!children[i].isDirectory()) {
-					// myFileList.add(children[i].getAbsolutePath());
-					myFileList.add(children[i].getName());
-					x = x+1;
-
-				}
-	        } // end for
-
-			// Joerg:  ..that's for Java5
-			// String[] filelist = myFileList.toArray(new String[myFileList.size()]);
-
+			if(!copyprevious)
+			{
+				// Get all the files in the local directory...
+				myFileList = new ArrayList<String>();
+	
+				File localFiles = new File(realLocalDirectory);
+				File[] children = localFiles.listFiles();
+				for (int i=0; i<children.length; i++) {
+		            // Get filename of file or directory
+					if (!children[i].isDirectory()) {
+						// myFileList.add(children[i].getAbsolutePath());
+						myFileList.add(children[i].getName());
+					}
+		        } // end for
+	
+				// Joerg:  ..that's for Java5
+				// String[] filelist = myFileList.toArray(new String[myFileList.size()]);
+			}
+			if(myFileList==null)
+			{
+				log.logError(toString(), Messages.getString("SFTPPUT.Error.NoFileToSend"));
+				result.setNrErrors(1);
+				return result;
+			}
 			String[] filelist = new String[myFileList.size()];
 			myFileList.toArray(filelist);
 
-
 			if(log.isDetailed()) log.logDetailed(toString(), "Found "+filelist.length+" files in the local directory");
 
-
 			Pattern pattern = null;
-			if (!Const.isEmpty(realWildcard))
+			if(!copyprevious)
 			{
-				pattern = Pattern.compile(realWildcard);
-
-			} // end if
+				if (!Const.isEmpty(realWildcard))	pattern = Pattern.compile(realWildcard);
+			}
 
 			// Get the files in the list and execute sftp.put() for each file
 			for (int i=0;i<filelist.length && !parentJob.isStopped();i++)
@@ -384,16 +443,25 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 
 				if (getIt)
 				{
-					if(log.isDebug()) log.logDebug(toString(), "putting file ["+filelist[i]+"] to directory ["+realSftpDirString+"]");
-
 					String localFilename = realLocalDirectory+Const.FILE_SEPARATOR+filelist[i];
-					sftpclient.put(localFilename, filelist[i]);
+					String destinationFilename=filelist[i];
+					
+					if(copyprevious) 
+					{
+						localFilename=filelist[i];
+						File file = new File(localFilename);
+						destinationFilename=file.getName();
+					}
+					
+					if(log.isDebug()) log.logDebug(toString(), "putting file ["+localFilename+"] to directory ["+realSftpDirString+"]");
+					
+					sftpclient.put(localFilename, destinationFilename);
 
 					// Add to the result files...JKU:  no idea if this is needed!!!
 					// ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, new File(localFilename), parentJob.getJobname(), toString());
                     // result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
 
-					if(log.isDetailed()) log.logDetailed(toString(), "Transfered file ["+filelist[i]+"]");
+					if(log.isDetailed()) log.logDetailed(toString(), "Transfered file ["+localFilename+"]");
 
 					// Delete the file if this is needed!
 					if (remove)
@@ -411,7 +479,7 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 		catch(Exception e)
 		{
 			result.setNrErrors(1);
-			log.logError(toString(), "Error getting files from SCP : "+e.getMessage());
+			log.logError(toString(), "Error putting to remote host : "+e.getMessage());
             log.logError(toString(), Const.getStackTracker(e));
 		} finally {
 			// close connection, if possible

@@ -1488,6 +1488,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
     }
     public void dispose()
     {
+    	closeFTPConnection();
         WindowProperty winprop = new WindowProperty(shell);
         props.setScreen(winprop);
         shell.dispose();
@@ -1621,7 +1622,13 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
 		else
 			jobEntry.setSuccessCondition(jobEntry.SUCCESS_IF_NO_ERRORS);	
 		
-		// Close FTP connection if necessary
+		
+        dispose();
+    }
+    
+    private void closeFTPConnection()
+    {
+    	// Close FTP connection if necessary
 		if (ftpclient != null && ftpclient.connected())
 	      {
 	        try
@@ -1630,9 +1637,6 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
 	          ftpclient=null;
 	        } catch (Exception e) {}
 	      }
-		
-		
-        dispose();
     }
 
     public String toString()

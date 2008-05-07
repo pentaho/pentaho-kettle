@@ -23,6 +23,8 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
 import com.jcraft.jsch.ChannelSftp.LsEntry;
+import com.jcraft.jsch.SftpATTRS;
+import org.apache.commons.vfs.FileType;
 
 public class SFTPClient {
 	
@@ -153,6 +155,66 @@ public class SFTPClient {
 		}
 	}
 	
+	/**
+ 	 * Creates this file as a folder.
+ 	 */
+	public void createFolder(String foldername) throws KettleJobException
+ 	{
+ 		try{
+ 			c.mkdir(foldername);
+ 		} catch (SftpException e) {
+			throw new KettleJobException(e);
+		}
+ 	}
+ 
+ 	/**
+ 	 	 * Rename the file.
+ 	 	 */
+	public void renameFile(String sourcefilename, String destinationfilename) throws KettleJobException
+ 	 	{
+ 	 		try{
+ 	 			c.rename(sourcefilename, destinationfilename);
+ 	 		} catch (SftpException e) {
+ 				throw new KettleJobException(e);
+ 			}
+ 	 	}
+ 	 	
+	public FileType getFileType(String filename) throws KettleJobException
+ 	 {
+		try {
+			SftpATTRS attrs=c.stat(filename);
+	 		if (attrs == null)	return FileType.IMAGINARY;
+	 		
+	 		if ((attrs.getFlags() & SftpATTRS.SSH_FILEXFER_ATTR_PERMISSIONS) == 0)
+	 			throw new KettleJobException("Unknown permissions error");
+
+	 		if (attrs.isDir())
+	 			return FileType.FOLDER;
+	 		else
+	 			return FileType.FILE;
+		} catch (Exception e) {
+				throw new KettleJobException(e);
+			}
+ 	}
+	
+	public boolean folderExists(String foldername) 
+	 {
+		boolean retval =false;
+		try {
+			SftpATTRS attrs=c.stat(foldername);
+	 		if (attrs == null) return false;
+	 		
+	 		if ((attrs.getFlags() & SftpATTRS.SSH_FILEXFER_ATTR_PERMISSIONS) == 0)
+	 			throw new KettleJobException("Unknown permissions error");
+
+	 		retval=attrs.isDir();
+		} catch (Exception e) {
+			// Folder can not be found!
+			}
+		return retval;
+	}
+	
+ 	
 	public void disconnect() {
 		c.disconnect();
 		s.disconnect();
