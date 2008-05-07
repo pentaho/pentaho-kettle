@@ -380,8 +380,8 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 		{
 			// Create sftp client to host ...
 			sftpclient = new SFTPClient(InetAddress.getByName(realServerName), Const.toInt(realServerPort, 22), realUsername);
-			if(log.isDetailed()) log.logDetailed(toString(), "Opened SFTP connection to server ["+realServerName+"] on port ["+realServerPort+"] with username ["+realUsername+"]");
-
+			if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobSFTPPUT.Log.OpenedConnection",realServerName,""+realServerPort,realUsername));
+			
 			// login to ftp host ...
 			sftpclient.login(realPassword);
 			// Don't show the password in the logs, it's not good for security audits
@@ -391,7 +391,7 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 			if (!Const.isEmpty(realSftpDirString))
 			{
 				sftpclient.chdir(realSftpDirString);
-				if(log.isDetailed()) log.logDetailed(toString(), "Changed to directory ["+realSftpDirString+"]");
+				if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobSFTPPUT.Log.ChangedDirectory",realSftpDirString));
 			} // end if
 
 			if(!copyprevious)
@@ -414,14 +414,14 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 			}
 			if(myFileList==null)
 			{
-				log.logError(toString(), Messages.getString("SFTPPUT.Error.NoFileToSend"));
+				log.logError(toString(), Messages.getString("JobSFTPPUT.Error.NoFileToSend"));
 				result.setNrErrors(1);
 				return result;
 			}
 			String[] filelist = new String[myFileList.size()];
 			myFileList.toArray(filelist);
 
-			if(log.isDetailed()) log.logDetailed(toString(), "Found "+filelist.length+" files in the local directory");
+			if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobSFTPPUT.Log.RowsFromPreviousResult",""+filelist.length));
 
 			Pattern pattern = null;
 			if(!copyprevious)
@@ -453,21 +453,21 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 						destinationFilename=file.getName();
 					}
 					
-					if(log.isDebug()) log.logDebug(toString(), "putting file ["+localFilename+"] to directory ["+realSftpDirString+"]");
-					
+					if(log.isDebug()) log.logDebug(toString(), Messages.getString("JobSFTPPUT.Log.PuttingFile",localFilename,realSftpDirString));
+
 					sftpclient.put(localFilename, destinationFilename);
 
 					// Add to the result files...JKU:  no idea if this is needed!!!
 					// ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, new File(localFilename), parentJob.getJobname(), toString());
                     // result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
 
-					if(log.isDetailed()) log.logDetailed(toString(), "Transfered file ["+localFilename+"]");
-
+					if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobSFTPPUT.Log.TransferedFile",localFilename));
+					
 					// Delete the file if this is needed!
 					if (remove)
 					{
 						new File(localFilename).delete();
-						if(log.isDetailed()) log.logDetailed(toString(), "deleted local file ["+localFilename+"]");
+						if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobSFTPPUT.Log.DeletedFile",localFilename));
 					}
 				}
 			} // end for
@@ -479,7 +479,7 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 		catch(Exception e)
 		{
 			result.setNrErrors(1);
-			log.logError(toString(), "Error putting to remote host : "+e.getMessage());
+			log.logError(toString(), Messages.getString("JobSFTPPUT.Exception",e.getMessage()));
             log.logError(toString(), Const.getStackTracker(e));
 		} finally {
 			// close connection, if possible
