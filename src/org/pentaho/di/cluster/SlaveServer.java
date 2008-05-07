@@ -25,6 +25,7 @@ import java.net.URLConnection;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
@@ -383,7 +384,8 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
         
         put.setRequestEntity(entity);
         put.setDoAuthentication(true);
-        
+        put.addRequestHeader(new Header("Content-Type", "text/xml;charset=" + Const.XML_ENCODING));
+
         // post.setContentChunked(true);
         
         // Get HTTP client
