@@ -14,6 +14,7 @@ package org.pentaho.di.trans.steps.databaselookup;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -21,6 +22,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.TimedRow;
 import org.pentaho.di.core.database.Database;
+import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
@@ -102,12 +104,11 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 		// First, check if we looked up before
 		if (meta.isCached())
         {
-            TimedRow timedRow = (TimedRow) data.look.get(new RowMetaAndData(data.lookupMeta, lookupRow));
-            if (timedRow!=null)
-            {
-                add=timedRow.getRow();
-                cacheHit = true;
-            }
+			add = getRowFromCache(data.lookupMeta, lookupRow);
+			if (add!=null) 
+			{
+				cacheHit=true;
+			}
         }
 		else add=null; 
 
@@ -178,48 +179,11 @@ public class DatabaseLookup extends BaseStep implements StepInterface
         } 
 
 		// Store in cache if we need to!
-		if (meta.isCached() && cache_now)
+		// If we already loaded all data into the cache, storing more makes no sense.
+		//
+		if (meta.isCached() && cache_now && !meta.isLoadingAllDataInCache())
 		{
-			data.look.put(new RowMetaAndData(data.lookupMeta, lookupRow), new TimedRow(add));
-
-            // See if we have to limit the cache_size.
-            // Sample 10% of the rows in the cache.
-            // Remove everything below the second lowest date.
-            // That should on average remove more than 10% of the entries
-            // It's not exact science, but it will be faster than the old algorithm
-            // 
-            if (meta.getCacheSize()>0 && data.look.size()>meta.getCacheSize())
-            {
-                List<RowMetaAndData> keys = new ArrayList<RowMetaAndData>(data.look.keySet());
-                List<Date> samples = new ArrayList<Date>();
-                int incr = keys.size()/10;
-                if (incr==0) incr=1;
-                for (int k=0;k<keys.size();k+=incr)
-                {
-                    RowMetaAndData key = (RowMetaAndData) keys.get(k);
-                    TimedRow timedRow = (TimedRow) data.look.get(key);
-                    samples.add(timedRow.getLogDate());
-                }
-                
-                Collections.sort(samples);
-                
-                if (samples.size()>1)
-                {
-                    Date smallest = (Date) samples.get(1);
-                    
-                    // Everything below the smallest date goes away...
-                    for (int k=0;k<keys.size();k++)
-                    {
-                        RowMetaAndData key = (RowMetaAndData) keys.get(k);
-                        TimedRow timedRow = (TimedRow) data.look.get(key);
-                        
-                        if (timedRow.getLogDate().compareTo(smallest)<0)
-                        {
-                            data.look.remove(key);
-                        }
-                    }
-                }
-            }
+			storeRowInCache(data.lookupMeta, lookupRow, add);
 		}
 
 		for (int i=0;i<data.returnMeta.size();i++)
@@ -228,6 +192,116 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 		}
 
 		return outputRow;
+	}
+
+	private void storeRowInCache(RowMetaInterface lookupMeta, Object[] lookupRow, Object[] add) {
+		
+		data.look.put(new RowMetaAndData(data.lookupMeta, lookupRow), new TimedRow(add));
+
+        // See if we have to limit the cache_size.
+        // Sample 10% of the rows in the cache.
+        // Remove everything below the second lowest date.
+        // That should on average remove more than 10% of the entries
+        // It's not exact science, but it will be faster than the old algorithm
+        // 
+        if (meta.getCacheSize()>0 && data.look.size()>meta.getCacheSize())
+        {
+            List<RowMetaAndData> keys = new ArrayList<RowMetaAndData>(data.look.keySet());
+            List<Date> samples = new ArrayList<Date>();
+            int incr = keys.size()/10;
+            if (incr==0) incr=1;
+            for (int k=0;k<keys.size();k+=incr)
+            {
+                RowMetaAndData key = (RowMetaAndData) keys.get(k);
+                TimedRow timedRow = (TimedRow) data.look.get(key);
+                samples.add(timedRow.getLogDate());
+            }
+            
+            Collections.sort(samples);
+            
+            if (samples.size()>1)
+            {
+                Date smallest = (Date) samples.get(1);
+                
+                // Everything below the smallest date goes away...
+                for (int k=0;k<keys.size();k++)
+                {
+                    RowMetaAndData key = (RowMetaAndData) keys.get(k);
+                    TimedRow timedRow = (TimedRow) data.look.get(key);
+                    
+                    if (timedRow.getLogDate().compareTo(smallest)<0)
+                    {
+                        data.look.remove(key);
+                    }
+                }
+            }
+        }	
+	}
+
+	private Object[] getRowFromCache(RowMetaInterface lookupMeta, Object[] lookupRow) throws KettleException {
+        TimedRow timedRow = (TimedRow) data.look.get(new RowMetaAndData(data.lookupMeta, lookupRow));
+        if (timedRow!=null)
+        {
+            return timedRow.getRow();
+        }
+        else
+        {
+        	if (meta.isLoadingAllDataInCache())
+        	{
+        		// OK, all data is loaded in memory and we still don't have a cache hit.
+        		// 
+        		if (!data.allEquals)
+        		{
+        			// TODO: find an alternative way to look up the data based on the condition.
+        			// Not all conditions are "=" so we are going to have to evaluate row by row
+        			// A sorted list or index might be a good solution here...
+        			// 
+        			Enumeration<RowMetaAndData> keys = data.look.keys();
+        			while (keys.hasMoreElements()) {
+        				RowMetaAndData key = keys.nextElement();
+        				// Now verify that the key is matching our conditions...
+        				//
+        				boolean match = true;
+    					for (int i=0;i<data.conditions.length && match;i++) {
+        					ValueMetaInterface cmpMeta = lookupMeta.getValueMeta(i);
+        					Object cmpData = lookupRow[i];
+        					ValueMetaInterface keyMeta = key.getValueMeta(i);
+        					Object keyData = key.getData()[i];
+        					
+        					switch(data.conditions[i]) {
+        					case DatabaseLookupMeta.CONDITION_EQ : match = (cmpMeta.compare(cmpData, keyMeta, keyData)==0); break;
+        					case DatabaseLookupMeta.CONDITION_NE : match = (cmpMeta.compare(cmpData, keyMeta, keyData)!=0); break;
+        					case DatabaseLookupMeta.CONDITION_LT : match = (cmpMeta.compare(cmpData, keyMeta, keyData)>0); break;
+        					case DatabaseLookupMeta.CONDITION_LE : match = (cmpMeta.compare(cmpData, keyMeta, keyData)>=0); break;
+        					case DatabaseLookupMeta.CONDITION_GT : match = (cmpMeta.compare(cmpData, keyMeta, keyData)<0); break;
+        					case DatabaseLookupMeta.CONDITION_GE : match = (cmpMeta.compare(cmpData, keyMeta, keyData)<=0); break;
+        					case DatabaseLookupMeta.CONDITION_IS_NULL: match = keyMeta.isNull(keyData); break;
+        					case DatabaseLookupMeta.CONDITION_IS_NOT_NULL: match = !keyMeta.isNull(keyData); break;
+        					default: match=false; break; 
+        					// TODO: add LIKE, BETWEEN operators
+        					}
+        				}
+    					if (match) {
+    						timedRow = data.look.get(key);
+    				        if (timedRow!=null)
+    				        {
+    				            return timedRow.getRow();
+    				        }
+    				        else
+    				        {
+    				        	// This should never occur
+    				        }
+    					}
+        			}
+        		}
+        		else
+        		{
+        			// TODO: this is some program error, we should have gotten a hit here!
+        			// throw new KettleException("Unexpected cache miss while loading all data");
+        		}
+        	}
+        }
+        return null;
 	}
 
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
@@ -373,6 +447,13 @@ public class DatabaseLookup extends BaseStep implements StepInterface
                 ValueMetaInterface v = data.outputRowMeta.getValueMeta(getInputRowMeta().size()+i).clone();
                 data.returnMeta.addValueMeta(v);
             }
+            
+            // If the user selected to load all data into the cache at startup, that's what we do now...
+            //
+            if (meta.isLoadingAllDataInCache()) {
+            	loadAllTableDataIntoTheCache();
+            }
+            
         }
 
 		if (log.isRowLevel()) logRowlevel(Messages.getString("DatabaseLookup.Log.GotRowFromPreviousStep")+getInputRowMeta().getString(r)); //$NON-NLS-1$
@@ -417,7 +498,59 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 		return true;
 	}
     
-    /** Stop the running query */
+    private void loadAllTableDataIntoTheCache() throws KettleException {
+    	DatabaseMeta dbMeta = meta.getDatabaseMeta();
+    	
+    	try {
+	    	// We only want to get the used table fields...
+	    	//
+	    	String sql = "SELECT ";
+	    	for (int i=0;i<meta.getTableKeyField().length;i++) {
+	    		if (i>0) sql+=", ";
+	    		sql+=dbMeta.quoteField(meta.getTableKeyField()[i]);
+	    	}
+	    	// Also grab the return field...
+	    	//
+	    	for (int i=0;i<meta.getReturnValueField().length;i++) {
+	    		sql+=", "+dbMeta.quoteField(meta.getReturnValueField()[i]);
+	    	}
+	    	// The schema/table
+	    	//
+	    	sql+=" FROM "+dbMeta.getQuotedSchemaTableCombination(meta.getSchemaName(), meta.getTablename());
+	    	
+	    	// Now that we have the SQL constructed, let's store the rows...
+	    	//
+	    	List<Object[]> rows = data.db.getRows(sql, 0);
+	    	if (rows!=null && rows.size()>0) {
+	    		// Copy the data into 2 parts: key and value...
+	    		// 
+	    		for (Object[] row : rows) {
+	    			int index=0;
+	    			Object[] lookupData = new Object[data.lookupMeta.size()];
+	    			for (int i=0;i<data.lookupMeta.size();i++) {
+	    				lookupData[i] = row[index++];
+	    			}
+	    			Object[] returnData = new Object[data.returnMeta.size()];
+	    			for (int i=0;i<data.returnMeta.size();i++) {
+	    				returnData[i] = row[index++];
+	    			}
+	    			// Store the data...
+	    			//
+	    			storeRowInCache(data.lookupMeta, lookupData, returnData);
+	    			linesInput++;
+	    		}
+	    	}
+	    	else
+	    	{
+	    		throw new KettleException("Unable to find rows in the specified lookup table");
+	    	}
+    	}
+    	catch(Exception e) {
+    		throw new KettleException(e);
+    	}
+	}
+
+	/** Stop the running query */
     public synchronized void stopRunning(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
     {
         meta=(DatabaseLookupMeta)smi;
@@ -454,6 +587,18 @@ public class DatabaseLookup extends BaseStep implements StepInterface
                 data.db.setCommit(100); // we never get a commit, but it just turns off auto-commit.
                                 
                 logBasic(Messages.getString("DatabaseLookup.Log.ConnectedToDatabase")); //$NON-NLS-1$
+                
+                // See if all the lookup conditions are "equal"
+                // This might speed up things in the case when we load all data in the cache
+                //
+                data.allEquals = true;
+                data.conditions = new int[meta.getKeyCondition().length];
+                for (int i=0;i<meta.getKeyCondition().length;i++) {
+                	data.conditions[i] = Const.indexOfString(meta.getKeyCondition()[i], DatabaseLookupMeta.conditionStrings);
+                	if (!("=".equals(meta.getKeyCondition()[i]))) {
+                		data.allEquals = false;
+                	}
+                }
 
 				return true;
 			}

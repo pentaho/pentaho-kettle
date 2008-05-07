@@ -42,6 +42,8 @@ public class DatabaseLookupData extends BaseStepData implements StepDataInterfac
     public RowMetaInterface lookupMeta;
     public RowMetaInterface returnMeta;
 	public boolean isCanceled;
+	public boolean allEquals;
+	public int[] conditions;
 
 
 	/**

@@ -48,6 +48,19 @@ import org.w3c.dom.Node;
 
 public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterface
 {
+	public static final String[] conditionStrings = new String[] { "=", "<>", "<", "<=", ">", ">=", "LIKE", "BETWEEN", "IS NULL", "IS NOT NULL", };  //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$
+	
+	public static final int CONDITION_EQ          = 0;
+	public static final int CONDITION_NE          = 1;
+	public static final int CONDITION_LT          = 2;
+	public static final int CONDITION_LE          = 3;
+	public static final int CONDITION_GT          = 4;
+	public static final int CONDITION_GE          = 5;
+	public static final int CONDITION_LIKE        = 6;
+	public static final int CONDITION_BETWEEN     = 7;
+	public static final int CONDITION_IS_NULL     = 8;
+	public static final int CONDITION_IS_NOT_NULL = 9;
+	
     /** what's the lookup schema name? */
     private String schemaName;
     
@@ -90,6 +103,9 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 	
 	/** Limit the cache size to this! */
 	private int     cacheSize;      
+	
+	/** Flag to make it load all data into the cache at startup */
+	private boolean loadingAllDataInCache;
     
     /** Have the lookup fail if multiple results were found, renders the orderByClause useless */
     private boolean failingOnMultipleResults;
@@ -386,6 +402,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 			String con = XMLHandler.getTagValue(stepnode, "connection"); //$NON-NLS-1$
 			databaseMeta = DatabaseMeta.findDatabase(databases, con);
 			cached      = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "cache")); //$NON-NLS-1$ //$NON-NLS-2$
+			loadingAllDataInCache = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "cache_load_all")); //$NON-NLS-1$ //$NON-NLS-2$
 			csize      = XMLHandler.getTagValue(stepnode, "cache_size"); //$NON-NLS-1$
 			cacheSize=Const.toInt(csize, 0);
             schemaName = XMLHandler.getTagValue(stepnode, "lookup", "schema"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -503,6 +520,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 		
 		retval.append("    ").append(XMLHandler.addTagValue("connection", databaseMeta==null?"":databaseMeta.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		retval.append("    ").append(XMLHandler.addTagValue("cache", cached)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    ").append(XMLHandler.addTagValue("cache_load_all", loadingAllDataInCache)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("    ").append(XMLHandler.addTagValue("cache_size", cacheSize)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("    <lookup>").append(Const.CR); //$NON-NLS-1$
         retval.append("      ").append(XMLHandler.addTagValue("schema", schemaName)); //$NON-NLS-1$ //$NON-NLS-2$
@@ -545,6 +563,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 			databaseMeta       = DatabaseMeta.findDatabase( databases, id_connection);
 			
 			cached                   =      rep.getStepAttributeBoolean(id_step, "cache"); //$NON-NLS-1$
+			loadingAllDataInCache    =      rep.getStepAttributeBoolean(id_step, "cache_load_all"); //$NON-NLS-1$
 			cacheSize                = (int)rep.getStepAttributeInteger(id_step, "cache_size"); //$NON-NLS-1$
             schemaName               =      rep.getStepAttributeString (id_step, "lookup_schema");  //$NON-NLS-1$
 			tablename                =      rep.getStepAttributeString (id_step, "lookup_table");  //$NON-NLS-1$
@@ -587,6 +606,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 		{
 			rep.saveStepAttribute(id_transformation, id_step, "id_connection",      databaseMeta==null?-1:databaseMeta.getID()); //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "cache",              cached); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "cache_load_all",     loadingAllDataInCache); //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "cache_size",         cacheSize); //$NON-NLS-1$
             rep.saveStepAttribute(id_transformation, id_step, "lookup_schema",      schemaName); //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "lookup_table",       tablename); //$NON-NLS-1$
@@ -905,4 +925,18 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
     {
         return true;
     }
+
+	/**
+	 * @return the loadingAllDataInCache
+	 */
+	public boolean isLoadingAllDataInCache() {
+		return loadingAllDataInCache;
+	}
+
+	/**
+	 * @param loadingAllDataInCache the loadingAllDataInCache to set
+	 */
+	public void setLoadingAllDataInCache(boolean loadingAllDataInCache) {
+		this.loadingAllDataInCache = loadingAllDataInCache;
+	}
 }
