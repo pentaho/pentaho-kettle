@@ -282,7 +282,7 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
         	if(ipingtype==isystemPing || ipingtype==ibothPings)
         	{
         		// Perform a system (Java) ping ...
-	        	status=SystemPing(hostname, timeoutInt,log);
+	        	status=systemPing(hostname, timeoutInt,log);
 	        	if(status)
 	        	{
 	                if(log.isDetailed())
@@ -293,7 +293,7 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
         	if((ipingtype==iclassicPing) || (ipingtype==ibothPings && !status))
         	{
         		// Perform a classic ping ..
-        		status=ClassicPing(hostname, packets,log);
+        		status=classicPing(hostname, packets,log);
         		if(status)
         		{
                     if(log.isDetailed())
@@ -322,40 +322,40 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
 	{
 		return true;
 	}
-	private boolean SystemPing(String hostname, int timeout,LogWriter log)
+	private boolean systemPing(String hostname, int timeout,LogWriter log)
 	{
 		boolean retval=false;
 		
 		InetAddress address=null;
     	try{
-    	address=InetAddress.getByName(hostname);
-    	if(address==null)
-    	{
-    		log.logError(toString(),Messages.getString("JobPing.CanNotGetAddress",hostname));
-    		return retval;
-    	}
+    		address=InetAddress.getByName(hostname);
+	    	if(address==null)
+	    	{
+	    		log.logError(toString(),Messages.getString("JobPing.CanNotGetAddress",hostname));
+	    		return retval;
+	    	}
     	
-        if(log.isDetailed()) 
-        {
-        	log.logDetailed(toString(),Messages.getString("JobPing.HostName",address.getHostName()));
-        	log.logDetailed(toString(),Messages.getString("JobPing.HostAddress",address.getHostAddress()));
-        }
+	        if(log.isDetailed()) 
+	        {
+	        	log.logDetailed(toString(),Messages.getString("JobPing.HostName",address.getHostName()));
+	        	log.logDetailed(toString(),Messages.getString("JobPing.HostAddress",address.getHostAddress()));
+	        }
         	
-        retval = address.isReachable(timeout);
-    	}catch(Exception e)
-    	{
-    		log.logError(toString(),Messages.getString("JobPing.ErrorSystemPing",hostname,e.getMessage()));
-    	}
-		return retval;
+	        retval = address.isReachable(timeout);
+	    	}catch(Exception e)
+	    	{
+	    		log.logError(toString(),Messages.getString("JobPing.ErrorSystemPing",hostname,e.getMessage()));
+	    	}
+			return retval;
 	}
-	private boolean ClassicPing(String hostname, int nrpackets,LogWriter log)
+	private boolean classicPing(String hostname, int nrpackets,LogWriter log)
 	{
 		boolean retval=false;
 		  try
           {
               String lignePing = "";
               String CmdPing="ping " ;
-              if(Const.getOS().startsWith("Windows"))
+              if(Const.isWindows())
             	  CmdPing+= hostname + " " + Windows_CHAR + " " + nrpackets;
               else
             	  CmdPing+= hostname + " " + NIX_CHAR + " " + nrpackets;
