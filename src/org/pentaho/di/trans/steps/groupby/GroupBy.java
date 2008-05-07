@@ -77,13 +77,9 @@ public class GroupBy extends BaseStep implements StepInterface
         	// However... the problem then is that we don't know the layout from receiving it from the previous step over the row set.
         	// So we need to calculated based on the metadata...
         	//
-        	if (data.inputRowMeta==null && meta.isAlwaysGivingBackOneRow())
+        	if (data.inputRowMeta==null)
         	{
         		data.inputRowMeta = getTransMeta().getPrevStepFields(getStepMeta());
-        	}
-        	else
-        	{
-        		data.inputRowMeta = new RowMeta();
         	}
         	
         	data.outputRowMeta = data.inputRowMeta.clone();
