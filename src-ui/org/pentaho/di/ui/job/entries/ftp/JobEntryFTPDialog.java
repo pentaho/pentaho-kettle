@@ -495,11 +495,9 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
 	     wAdvancedSettings = new Group(wGeneralComp, SWT.SHADOW_NONE);
 	     props.setLook(wAdvancedSettings);
 	     wAdvancedSettings.setText(Messages.getString("JobFTP.AdvancedSettings.Group.Label"));
-
 	     FormLayout AdvancedSettingsgroupLayout = new FormLayout();
 	     AdvancedSettingsgroupLayout.marginWidth = 10;
 	     AdvancedSettingsgroupLayout.marginHeight = 10;
-
 	     wAdvancedSettings.setLayout(AdvancedSettingsgroupLayout);
 
 	    
@@ -1104,9 +1102,6 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
       // ///////////////////////////////////////////////////////////
       // / END OF LOCAL SETTINGSGROUP
       // ///////////////////////////////////////////////////////////
-
-		
-		
 		
 		fdFilesComp=new FormData();
 		fdFilesComp.left  = new FormAttachment(0, 0);
@@ -1118,8 +1113,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
 		wFilesComp.layout();
 		wFilesTab.setControl(wFilesComp);
  		props.setLook(wFilesComp);
- 		
- 		
+ 	
  		
 		/////////////////////////////////////////////////////////////
 		/// END OF Files TAB
@@ -1129,8 +1123,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
 		// START OF Advanced TAB   ///
 		//////////////////////////
 		
-		
-		
+
 		wAdvancedTab=new CTabItem(wTabFolder, SWT.NONE);
 		wAdvancedTab.setText(Messages.getString("JobFTP.Tab.Advanced.Label"));
 		

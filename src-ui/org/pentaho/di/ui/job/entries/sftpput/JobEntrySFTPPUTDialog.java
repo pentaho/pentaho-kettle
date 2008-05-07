@@ -54,7 +54,7 @@ import org.pentaho.di.job.entries.sftpput.JobEntrySFTPPUT;
 import org.pentaho.di.job.entries.sftpput.Messages;
 
 /**
- * This dialog allows you to edit the DFTP Put job entry settings. 
+ * This dialog allows you to edit the FTP Put job entry settings. 
  * @author Matt
  * @since  19-06-2003
  */
@@ -139,6 +139,13 @@ public class JobEntrySFTPPUTDialog extends JobEntryDialog implements JobEntryDia
     private Button wgetPrevious;
 
     private FormData fdlgetPrevious, fdgetPrevious;
+    
+	
+    private Label wlAddFilenameToResult;
+
+    private Button wAddFilenameToResult;
+    
+    private FormData fdlAddFilenameToResult,fdAddFilenameToResult;
 	
 	private SFTPClient sftpclient = null;
 	
@@ -431,6 +438,34 @@ public class JobEntrySFTPPUTDialog extends JobEntryDialog implements JobEntryDia
 		fdRemove.top  = new FormAttachment(wWildcard, margin);
 		fdRemove.right= new FormAttachment(100, 0);
 		wRemove.setLayoutData(fdRemove);
+		wRemove.addSelectionListener(new SelectionAdapter()
+		{
+			public void widgetSelected(SelectionEvent e)
+			{
+				 activeRemoveFilename();
+				jobEntry.setChanged();
+			}
+		});
+		
+		// Add filenames to result filenames...
+        wlAddFilenameToResult = new Label(wSourceFiles, SWT.RIGHT);
+        wlAddFilenameToResult.setText(Messages.getString("JobSFTPPUT.AddfilenametoResult.Label"));
+        props.setLook(wlAddFilenameToResult);
+        fdlAddFilenameToResult = new FormData();
+        fdlAddFilenameToResult.left = new FormAttachment(0, 0);
+        fdlAddFilenameToResult.top = new FormAttachment(wRemove, margin);
+        fdlAddFilenameToResult.right = new FormAttachment(middle, -margin);
+        wlAddFilenameToResult.setLayoutData(fdlAddFilenameToResult);
+        wAddFilenameToResult = new Button(wSourceFiles, SWT.CHECK);
+        wAddFilenameToResult.setToolTipText(Messages.getString("JobSFTPPUT.AddfilenametoResult.Tooltip"));
+        props.setLook(wAddFilenameToResult);
+        fdAddFilenameToResult = new FormData();
+        fdAddFilenameToResult.left = new FormAttachment(middle, 0);
+        fdAddFilenameToResult.top = new FormAttachment(wRemove, margin);
+        fdAddFilenameToResult.right = new FormAttachment(100, 0);
+        wAddFilenameToResult.setLayoutData(fdAddFilenameToResult);
+
+        
 		
 	     fdSourceFiles = new FormData();
 	     fdSourceFiles.left = new FormAttachment(0, margin);
@@ -534,6 +569,7 @@ public class JobEntrySFTPPUTDialog extends JobEntryDialog implements JobEntryDia
 				
 		getData();
 		activeCopyFromPrevious();
+		activeRemoveFilename();
 		BaseStepDialog.setSize(shell);
 
 		shell.open();
@@ -542,6 +578,12 @@ public class JobEntrySFTPPUTDialog extends JobEntryDialog implements JobEntryDia
 		    if (!display.readAndDispatch()) display.sleep();
 		}
 		return jobEntry;
+	}
+	private void activeRemoveFilename()
+	{
+		wAddFilenameToResult.setEnabled(!wRemove.getSelection());
+		wlAddFilenameToResult.setEnabled(!wRemove.getSelection());
+		if(wRemove.getSelection())	wAddFilenameToResult.setSelection(false);
 	}
     private void activeCopyFromPrevious()
     {
@@ -657,6 +699,8 @@ public class JobEntrySFTPPUTDialog extends JobEntryDialog implements JobEntryDia
 		wWildcard.setText(Const.NVL(jobEntry.getWildcard(), ""));
 		wRemove.setSelection(jobEntry.getRemove());
         wgetPrevious.setSelection(jobEntry.isCopyPrevious());
+        wAddFilenameToResult.setSelection(jobEntry.isAddFilenameResut());
+        
 	}
 	
 	private void cancel()
@@ -678,7 +722,7 @@ public class JobEntrySFTPPUTDialog extends JobEntryDialog implements JobEntryDia
 		jobEntry.setWildcard(wWildcard.getText());
 		jobEntry.setRemove(wRemove.getSelection());
 	    jobEntry.setCopyPrevious(wgetPrevious.getSelection());
-
+	    jobEntry.setAddFilenameResut(wAddFilenameToResult.getSelection());
 		dispose();
 	}
 

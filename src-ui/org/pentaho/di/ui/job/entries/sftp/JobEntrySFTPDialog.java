@@ -547,7 +547,6 @@ public class JobEntrySFTPDialog extends JobEntryDialog implements JobEntryDialog
         fdAddFilenameToResult.right = new FormAttachment(100, 0);
         wAddFilenameToResult.setLayoutData(fdAddFilenameToResult);
         
-        
 
 	     fdTargetFiles = new FormData();
 	     fdTargetFiles.left = new FormAttachment(0, margin);

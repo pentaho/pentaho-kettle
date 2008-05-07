@@ -36,10 +36,12 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.job.entries.sftp.Messages;
 import org.pentaho.di.job.entries.sftp.SFTPClient;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -47,6 +49,7 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
+import org.pentaho.di.core.ResultFile;
 import org.w3c.dom.Node;
 
 /**
@@ -67,6 +70,7 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 	private String wildcard;
 	private boolean remove;
 	private boolean copyprevious;
+	private boolean addFilenameResut;
 
 
 	public JobEntrySFTPPUT(String n)
@@ -75,6 +79,7 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 		serverName=null;
         serverPort="22";
         copyprevious=false;
+        addFilenameResut=false;
 		setID(-1L);
 		setJobEntryType(JobEntryType.SFTPPUT);
 	}
@@ -110,6 +115,8 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 		retval.append("      ").append(XMLHandler.addTagValue("wildcard",     wildcard));
 		retval.append("      ").append(XMLHandler.addTagValue("remove",       remove));
 		retval.append("      ").append(XMLHandler.addTagValue("copyprevious", copyprevious));
+		retval.append("      ").append(XMLHandler.addTagValue("addFilenameResut", addFilenameResut));
+		
 		
 
 		return retval.toString();
@@ -129,6 +136,8 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 			wildcard        = XMLHandler.getTagValue(entrynode, "wildcard");
 			remove          = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "remove") );
 			copyprevious    = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "copyprevious") );
+			addFilenameResut    = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "addFilenameResut") );
+			
 			
 
 		}
@@ -156,6 +165,8 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 			wildcard        = rep.getJobEntryAttributeString(id_jobentry, "wildcard");
 			remove          = rep.getJobEntryAttributeBoolean(id_jobentry, "remove");
 			copyprevious          = rep.getJobEntryAttributeBoolean(id_jobentry, "copyprevious");
+			addFilenameResut          = rep.getJobEntryAttributeBoolean(id_jobentry, "addFilenameResut");
+			
 			
 		}
 		catch(KettleException dbe)
@@ -179,7 +190,9 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 			rep.saveJobEntryAttribute(id_job, getID(), "localdirectory", localDirectory);
 			rep.saveJobEntryAttribute(id_job, getID(), "wildcard",        wildcard);
 			rep.saveJobEntryAttribute(id_job, getID(), "remove",          remove);
-			rep.saveJobEntryAttribute(id_job, getID(), "copyprevious",          copyprevious);
+			rep.saveJobEntryAttribute(id_job, getID(), "copyprevious",   copyprevious);
+			rep.saveJobEntryAttribute(id_job, getID(), "addFilenameResut",   addFilenameResut);
+			
 			
 		}
 		catch(KettleDatabaseException dbe)
@@ -308,6 +321,16 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 	{
 		this.copyprevious=copyprevious;
 	}
+	public boolean isAddFilenameResut()
+	{
+		return addFilenameResut;
+	}
+	public void setAddFilenameResut(boolean addFilenameResut)
+	{
+		this.addFilenameResut=addFilenameResut;
+	}
+	
+	
 	public String getServerPort() {
 		return serverPort;
 	}
@@ -457,10 +480,7 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 
 					sftpclient.put(localFilename, destinationFilename);
 
-					// Add to the result files...JKU:  no idea if this is needed!!!
-					// ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, new File(localFilename), parentJob.getJobname(), toString());
-                    // result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
-
+					
 					if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobSFTPPUT.Log.TransferedFile",localFilename));
 					
 					// Delete the file if this is needed!
@@ -468,6 +488,15 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 					{
 						new File(localFilename).delete();
 						if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobSFTPPUT.Log.DeletedFile",localFilename));
+					}else
+					{
+						if(addFilenameResut)
+						{
+							// Add to the result files...
+							ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(localFilename), parentJob.getJobname(), toString());
+							result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
+							if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobSFTPPUT.Log.FilenameAddedToResultFilenames",filelist[i]));
+						}
 					}
 				}
 			} // end for
