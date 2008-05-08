@@ -32,6 +32,7 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Dialog;
+import org.pentaho.di.ui.core.gui.GUIResource;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.MessageBox;
@@ -238,6 +239,7 @@ public class RepositoryImportProgressDialog extends Dialog
     				1,
     				Messages.getString("RepositoryImportDialog.DontAskAgain.Label"),
     				!askDirectory);
+    			MessageDialogWithToggle.setDefaultImage(GUIResource.getInstance().getImageSpoon());
     			int answer = mb.open();
     			makeDirectory = (answer & 0xFF) == 0;
     			askDirectory = !mb.getToggleState();

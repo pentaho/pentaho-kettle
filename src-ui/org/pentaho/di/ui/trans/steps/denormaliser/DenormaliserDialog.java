@@ -45,6 +45,7 @@ import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
+import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.trans.steps.denormaliser.DenormaliserMeta;
 import org.pentaho.di.trans.steps.denormaliser.DenormaliserTargetField;
 import org.pentaho.di.trans.steps.denormaliser.Messages;
@@ -378,6 +379,7 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
                  Messages.getString("DenormaliserDialog.WarningMessage.Option.2"), //$NON-NLS-1$
                  "N".equalsIgnoreCase( props.getCustomParameter(STRING_SORT_WARNING_PARAMETER, "Y") ) //$NON-NLS-1$ //$NON-NLS-2$
             );
+            MessageDialogWithToggle.setDefaultImage(GUIResource.getInstance().getImageSpoon());
             md.open();
             props.setCustomParameter(STRING_SORT_WARNING_PARAMETER, md.getToggleState()?"N":"Y"); //$NON-NLS-1$ //$NON-NLS-2$
             props.saveProps();

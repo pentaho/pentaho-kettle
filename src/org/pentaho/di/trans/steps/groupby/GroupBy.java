@@ -485,6 +485,17 @@ public class GroupBy extends BaseStep implements StepInterface
                         data.agg[i]=vString+subjMeta.getString(subj);
                     }
                     break; 
+                case GroupByMeta.TYPE_GROUP_CONCAT_STRING   :
+                    if (!(subj==null)) 
+                    {
+                    	String separator="";
+                    	if(!Const.isEmpty(meta.getValueField()[i])) separator=environmentSubstitute(meta.getValueField()[i]);
+                    	String vString=valueMeta.getString(value);
+                        if (vString.length()>0) vString=vString+separator; //$NON-NLS-1$
+                        data.agg[i]=vString+subjMeta.getString(subj);
+                    }
+                    
+                    break; 
 				default: break;
 			}
 		}
@@ -539,6 +550,10 @@ public class GroupBy extends BaseStep implements StepInterface
 					v = r==null ? null : r[data.subjectnrs[i]]; 
 					break;
                 case GroupByMeta.TYPE_GROUP_CONCAT_COMMA    :
+                    vMeta = new ValueMeta(meta.getAggregateField()[i], ValueMetaInterface.TYPE_STRING);
+                    v = ""; //$NON-NLS-1$
+                    break; 
+                case GroupByMeta.TYPE_GROUP_CONCAT_STRING   :
                     vMeta = new ValueMeta(meta.getAggregateField()[i], ValueMetaInterface.TYPE_STRING);
                     v = ""; //$NON-NLS-1$
                     break; 

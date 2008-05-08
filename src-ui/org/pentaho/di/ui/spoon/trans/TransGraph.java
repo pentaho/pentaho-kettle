@@ -604,6 +604,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
                         Messages.getString("TransGraph.Dialog.SplitHop.Title"), null, //$NON-NLS-1$
                         Messages.getString("TransGraph.Dialog.SplitHop.Message") + Const.CR + hi.toString(), MessageDialog.QUESTION, new String[] { //$NON-NLS-1$
                         Messages.getString("System.Button.Yes"), Messages.getString("System.Button.No") }, 0, Messages.getString("TransGraph.Dialog.Option.SplitHop.DoNotAskAgain"), spoon.props.getAutoSplit()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                    MessageDialogWithToggle.setDefaultImage(GUIResource.getInstance().getImageSpoon());
                     id = md.open();
                     spoon.props.setAutoSplit(md.getToggleState());
                   }

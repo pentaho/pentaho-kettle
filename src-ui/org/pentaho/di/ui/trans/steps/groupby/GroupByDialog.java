@@ -49,6 +49,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
@@ -359,13 +360,16 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
 		fdlAgg.top   = new FormAttachment(wGroup, margin);
 		wlAgg.setLayoutData(fdlAgg);
 		
-		int UpInsCols=3;
+		int UpInsCols=4;
 		int UpInsRows= (input.getAggregateField()!=null?input.getAggregateField().length:1);
 		
 		ColumnInfo[] ciReturn=new ColumnInfo[UpInsCols];
 		ciReturn[0]=new ColumnInfo(Messages.getString("GroupByDialog.ColumnInfo.Name"),     ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
 		ciReturn[1]=new ColumnInfo(Messages.getString("GroupByDialog.ColumnInfo.Subject"),  ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
 		ciReturn[2]=new ColumnInfo(Messages.getString("GroupByDialog.ColumnInfo.Type"),     ColumnInfo.COLUMN_TYPE_CCOMBO, GroupByMeta.typeGroupLongDesc); //$NON-NLS-1$
+		ciReturn[3]=new ColumnInfo(Messages.getString("GroupByDialog.ColumnInfo.Value"), ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
+		ciReturn[3].setToolTip(Messages.getString("GroupByDialog.ColumnInfo.Value.Tooltip"));
+		ciReturn[3].setUsingVariables(true);
 		
 		wAgg=new TableView(transMeta, shell, 
 							  SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, 
@@ -475,6 +479,7 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
 			if (input.getAggregateField()[i]!=null     ) item.setText(1, input.getAggregateField()[i]);
 			if (input.getSubjectField()[i]!=null       ) item.setText(2, input.getSubjectField()[i]);
 			item.setText(3, GroupByMeta.getTypeDescLong(input.getAggregateType()[i]));
+			if (input.getValueField()[i]!=null       ) item.setText(4, input.getValueField()[i]);
 		}
         
 		wStepname.selectAll();
@@ -519,7 +524,8 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
 			TableItem item      = wAgg.getNonEmpty(i);
 			input.getAggregateField()[i]  = item.getText(1);		
 			input.getSubjectField()[i]    = item.getText(2);		
-			input.getAggregateType()[i]       = GroupByMeta.getType(item.getText(3));		
+			input.getAggregateType()[i]       = GroupByMeta.getType(item.getText(3));
+			input.getValueField()[i]    = item.getText(4);
 		}
 		
 		stepname = wStepname.getText();
@@ -536,6 +542,7 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
                  Messages.getString("GroupByDialog.GroupByWarningDialog.Option2"), //$NON-NLS-1$
                  "N".equalsIgnoreCase( props.getCustomParameter(STRING_SORT_WARNING_PARAMETER, "Y") ) //$NON-NLS-1$ //$NON-NLS-2$
             );
+            MessageDialogWithToggle.setDefaultImage(GUIResource.getInstance().getImageSpoon());
             md.open();
             props.setCustomParameter(STRING_SORT_WARNING_PARAMETER, md.getToggleState()?"N":"Y"); //$NON-NLS-1$ //$NON-NLS-2$
             props.saveProps();

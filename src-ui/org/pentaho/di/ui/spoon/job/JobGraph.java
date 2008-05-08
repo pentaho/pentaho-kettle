@@ -506,6 +506,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
                     + Const.CR + hi.from_entry.getName() + " --> " + hi.to_entry.getName(), MessageDialog.QUESTION,
                     new String[] { Messages.getString("System.Button.Yes"), Messages.getString("System.Button.No") },
                     0, Messages.getString("JobGraph.Dialog.SplitHop.Toggle"), spoon.props.getAutoSplit());
+                MessageDialogWithToggle.setDefaultImage(GUIResource.getInstance().getImageSpoon());
                 id = md.open();
                 spoon.props.setAutoSplit(md.getToggleState());
               }
