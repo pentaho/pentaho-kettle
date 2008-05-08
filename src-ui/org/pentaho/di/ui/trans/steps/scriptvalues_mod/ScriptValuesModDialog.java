@@ -351,6 +351,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		fdlCompatible.top   = new FormAttachment(wlPosition, margin);
 		wlCompatible.setLayoutData(fdlCompatible);
 		wCompatible = new Button(wTop, SWT.CHECK);
+		wCompatible.setToolTipText(Messages.getString("ScriptValuesDialogMod.Compatible.Tooltip")); 
 		props.setLook(wCompatible);
 		FormData fdCompatible = new FormData();
 		fdCompatible.left  = new FormAttachment(wlCompatible, margin);
