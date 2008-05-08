@@ -133,7 +133,7 @@ public class JobEntrySuccessDialog extends JobEntryDialog implements JobEntryDia
         wCancel.setText(Messages.getString("System.Button.Cancel"));
 
         // at the bottom
-        BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, null);
+        BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wName);
 	
 	
 		// Add listeners
