@@ -113,12 +113,6 @@ public class JobEntrySuccess extends JobEntryBase implements Cloneable, JobEntry
 		}
 	}
 
-	public boolean evaluate(Result result)
-	{
-
-		return true;
-
-	}
 
 	/**
 	 * Execute this job entry and return the result.
@@ -128,16 +122,11 @@ public class JobEntrySuccess extends JobEntryBase implements Cloneable, JobEntry
 	 */
 	public Result execute(Result previousResult, int nr, Repository rep, Job parentJob)
 	{
-		previousResult.setResult( evaluate(previousResult) );
-
-		return previousResult;
-	}
-
-	public boolean resetErrorsBeforeExecution()
-	{
-		// we should be able to evaluate the errors in
-		// the previous jobentry.
-	    return false;
+		Result result = previousResult;
+		result.setNrErrors(0);
+		result.setResult(true);
+		
+		return result;
 	}
 
 	public boolean evaluates()
