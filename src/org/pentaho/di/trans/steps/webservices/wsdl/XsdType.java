@@ -63,6 +63,11 @@ public class XsdType
     		{
     			vRet = ValueMetaInterface.TYPE_BIGNUMBER;
     		}
+    		else  
+    		{
+    			// When all else fails, map it to a String
+    			vRet = ValueMetaInterface.TYPE_STRING;
+    		}
         }
 		return vRet;
 	}

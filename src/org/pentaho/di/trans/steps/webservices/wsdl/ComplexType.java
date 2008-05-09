@@ -30,7 +30,7 @@ import java.util.List;
 /*
  This looks a little scary, but isn't so bad.  Pretty much all that needs to be done here is to
  parse a NAMED complex type in the wsdl's types section.  We really only care about the <element>'s
- contained within the complex type.  The sematics don't matter (choice, sequence, etc).  The end result
+ contained within the complex type.  The semantics don't matter (choice, sequence, etc).  The end result
  should be a ComplexType object which contains only elements.  This type will be used during client
  type registration.
  */

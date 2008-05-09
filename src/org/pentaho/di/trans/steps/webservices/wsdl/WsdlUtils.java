@@ -16,6 +16,10 @@
  */
 package org.pentaho.di.trans.steps.webservices.wsdl;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+
 import javax.wsdl.Binding;
 import javax.wsdl.BindingInput;
 import javax.wsdl.BindingOperation;
@@ -28,9 +32,6 @@ import javax.wsdl.extensions.soap.SOAPBinding;
 import javax.wsdl.extensions.soap.SOAPBody;
 import javax.wsdl.extensions.soap.SOAPHeader;
 import javax.wsdl.extensions.soap.SOAPOperation;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
 
 /**
  * Utilities for getting extensibility elements.
@@ -87,7 +88,9 @@ final class WsdlUtils {
                 findExtensibilityElement(binding, SOAP_BINDING_ELEMENT_NAME);
 
         if (soapBindingElem != null) {
-            style = ((SOAPBinding) soapBindingElem).getStyle();
+        	if (soapBindingElem instanceof SOAPBinding) {
+        		style = ((SOAPBinding) soapBindingElem).getStyle(); 
+        	}
         }
         return style;
     }
@@ -111,17 +114,19 @@ final class WsdlUtils {
         // first try getting the use setting from the input message
         BindingInput bindingInput = bindingOperation.getBindingInput();
         if (bindingInput != null) {
-            ExtensibilityElement soapBodyElem =
-                    WsdlUtils.findExtensibilityElement(bindingInput, SOAP_BODY_ELEMENT_NAME);
-            return ((SOAPBody) soapBodyElem).getUse();
+            ExtensibilityElement soapBodyElem = WsdlUtils.findExtensibilityElement(bindingInput, SOAP_BODY_ELEMENT_NAME);
+            if (soapBodyElem!=null) {
+            	return ((SOAPBody) soapBodyElem).getUse();
+            }
         }
 
         // if there was no input message try getting the use from the output message
         BindingOutput bindingOutput = bindingOperation.getBindingOutput();
         if (bindingOutput != null) {
-            ExtensibilityElement soapBodyElem =
-                    WsdlUtils.findExtensibilityElement(bindingOutput, SOAP_BODY_ELEMENT_NAME);
-            return ((SOAPBody) soapBodyElem).getUse();
+            ExtensibilityElement soapBodyElem = WsdlUtils.findExtensibilityElement(bindingOutput, SOAP_BODY_ELEMENT_NAME);
+            if (soapBodyElem!=null) {
+            	return ((SOAPBody) soapBodyElem).getUse();
+            }
         }
 
         throw new RuntimeException("Unable to determine SOAP use for operation: " + operationName);

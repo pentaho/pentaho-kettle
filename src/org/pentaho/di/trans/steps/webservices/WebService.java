@@ -44,6 +44,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.steps.webservices.wsdl.Wsdl;
 import org.pentaho.di.trans.steps.webservices.wsdl.XsdType;
 
 import com.ctc.wstx.exc.WstxParsingException;
@@ -117,7 +118,7 @@ public class WebService extends BaseStep implements StepInterface
             || (vCurrentRow == null && (!meta.hasFieldsIn())))
         {
             endXML();
-            requestSOAP();
+            requestSOAP(vCurrentRow, getInputRowMeta());
 
             startXML();
         }
@@ -174,6 +175,10 @@ public class WebService extends BaseStep implements StepInterface
                     else if (XsdType.DATE.equals(field.getXsdType()))
                     {
                         xml.append(dateFormat.format(vCurrentValue.getDate(data)));
+                    }
+                    else if (XsdType.BOOLEAN.equals(field.getXsdType()))
+                    {
+                        xml.append(vCurrentValue.getBoolean(data) ? "true" : "false");
                     }
                     else if (XsdType.DATE_TIME.equals(field.getXsdType()))
                     {
@@ -237,14 +242,18 @@ public class WebService extends BaseStep implements StepInterface
         xml.append("</soapenv:Envelope>\n");
     }
 
-    private synchronized void requestSOAP() throws KettleStepException
+    private synchronized void requestSOAP(Object[] rowData, RowMetaInterface rowMeta) throws KettleStepException
     {
+        Wsdl wsdl;
+        try{
+         wsdl = new Wsdl(new java.net.URI(meta.getUrl()), null, null);
+        }
+        catch(Exception e){
+         throw new KettleStepException(Messages.getString("WebServices.ERROR0013.ExceptionLoadingWSDL"), e);
+        }
+        String vURLService = wsdl.getServiceEndpoint();
+        
         HttpClient vHttpClient = new HttpClient();
-        String vURLSansVariable = environmentSubstitute(meta.getUrl());
-        String vURLService;
-        int questionMarkIndex = vURLSansVariable.lastIndexOf("?");
-        if (questionMarkIndex<0) vURLService = vURLSansVariable;
-        else vURLService = vURLSansVariable.substring(0, questionMarkIndex);
         PostMethod vHttpMethod = new PostMethod(vURLService);
         HostConfiguration vHostConfiguration = new HostConfiguration();
 
@@ -274,7 +283,7 @@ public class WebService extends BaseStep implements StepInterface
             int responseCode = vHttpClient.executeMethod(vHostConfiguration, vHttpMethod);
             if (responseCode == 200)
             {
-                processRows(vHttpMethod.getResponseBodyAsStream());
+                processRows(vHttpMethod.getResponseBodyAsStream(), rowData, rowMeta);
             }
             else if (responseCode == 401)
             {
@@ -332,7 +341,7 @@ public class WebService extends BaseStep implements StepInterface
         super.dispose(smi, sdi);
     }
 
-    private void processRows(InputStream anXml) throws KettleStepException
+    private void processRows(InputStream anXml, Object[] rowData, RowMetaInterface rowMeta) throws KettleStepException
     {
     	// First we should get the complete string
     	// The problem is that the string can contain XML or any other format such as HTML saying the service is no longer available.
@@ -368,13 +377,14 @@ public class WebService extends BaseStep implements StepInterface
             XMLInputFactory vFactory = XMLInputFactory.newInstance();
             XMLStreamReader vReader = vFactory.createXMLStreamReader(stringReader);
             
-            Object[] outputRowData = RowDataUtil.allocateRowData(data.outputRowMeta.size());
-            int outputIndex = 0;
+            Object[] outputRowData = rowData==null ? RowDataUtil.allocateRowData(data.outputRowMeta.size()) : RowDataUtil.createResizedCopy(rowData, data.outputRowMeta.size());
+            int outputIndex = rowData==null ? 0 : rowMeta.size();
             
             boolean processing = false;
             boolean oneValueRowProcessing = false;
-            for (int event = vReader.next(); vReader.hasNext(); event = vReader.next())
+            while (vReader.hasNext())
             {
+            	int event = vReader.next();
                 switch (event)
                 {
                     case XMLStreamConstants.START_ELEMENT:
@@ -441,7 +451,33 @@ public class WebService extends BaseStep implements StepInterface
                                     	//
                                     	try
                                     	{
-                                    		outputRowData[outputIndex++] = getValue(vReader.getElementText(), field);
+                                    		// If it's a complex type, we will try to grab all data at the lowest level and concat the string values
+                                    		// 
+                                    		StringBuffer content = new StringBuffer();
+                                    		if (vReader.hasText()) {
+                                    			// Probably a simple type
+                                    			//
+                                    			content.append(vReader.getElementText());
+                                    		} else {
+                                    			// A complex type result : get all text elements and concatenate with tabs in between.
+                                    			//
+	                                    		boolean first=true;
+	                                    		while (vReader.hasNext()) {
+		                                    		while ((!vReader.hasText() || vReader.isWhiteSpace()) && vReader.hasNext()) {
+		                                    			vReader.next();
+		                                    		}
+		                                    		if (vReader.hasText()) { 
+		                                    			if (!first) {
+		                                    				content.append('\t');
+		                                    			} else  {
+		                                    				first=false;
+		                                    			}
+		                                    			content.append(vReader.getText());
+		                                    		}
+		                                    		if (vReader.hasNext()) vReader.next();
+	                                    		}
+                                    		}
+                                    		outputRowData[outputIndex++] = getValue(content.toString(), field);
                                     		putRow(data.outputRowMeta, outputRowData);
                                     	}
                                     	catch(WstxParsingException e)
