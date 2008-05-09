@@ -510,7 +510,7 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 					getIt = matcher.matches();
 				}
 
-				if (getIt && list_previous_filenames.contains(filelist[i]))
+				if (getIt || list_previous_filenames.contains(filelist[i]))
 				{
 					if(log.isDebug()) log.logDebug(toString(), Messages.getString("JobSFTP.Log.GettingFiles",filelist[i],realTargetDirectory));
 
