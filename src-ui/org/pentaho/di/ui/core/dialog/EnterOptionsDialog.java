@@ -1,5 +1,4 @@
-/* Copyright (c) 2007 Pentaho Corporation.  All rights reserved. 
- * This software was developed by Pentaho Corporation and is provided under the terms 
+ /* This software was developed by Pentaho Corporation and is provided under the terms 
  * of the GNU Lesser General Public License, Version 2.1. You may not use 
  * this file except in compliance with the license. If you need a copy of the license, 
  * please go to http://www.gnu.org/licenses/lgpl-2.1.txt. The Original Code is Pentaho 
@@ -260,7 +259,10 @@ public class EnterOptionsDialog extends Dialog
 
 	private Button tooltipBtn;
 
-	private Button helptipBtn;
+  private Button helptipBtn;
+
+  private Button autoCollapseBtn;
+
 
 	/**
 	 * @deprecated Use CT without <i>props</i> parameter instead
@@ -1422,13 +1424,31 @@ public class EnterOptionsDialog extends Dialog
 			}
 		});
 
-		// Tooltips
+    // Auto-collapse core objects tree branches? 
+    Label autoCollapseLbl = new Label(wGeneralComp, SWT.RIGHT);
+    autoCollapseLbl.setText(Messages.getString("EnterOptionsDialog.EnableAutoCollapseCoreObjectTree.Label"));
+    props.setLook(autoCollapseLbl);
+    FormData fdautoCollapse = new FormData();
+    fdautoCollapse.left = new FormAttachment(0, 0);
+    fdautoCollapse.top = new FormAttachment(wlClearCustom, margin);
+    fdautoCollapse.right = new FormAttachment(middle, -margin);
+    autoCollapseLbl.setLayoutData(fdautoCollapse);
+    autoCollapseBtn = new Button(wGeneralComp, SWT.CHECK);
+    props.setLook(autoCollapseBtn);
+    autoCollapseBtn.setSelection(props.getAutoCollapseCoreObjectsTree());
+    FormData helpautoCollapse = new FormData();
+    helpautoCollapse.left = new FormAttachment(middle, 0);
+    helpautoCollapse.top = new FormAttachment(wlClearCustom, margin);
+    helpautoCollapse.right = new FormAttachment(100, 0);
+    autoCollapseBtn.setLayoutData(helpautoCollapse);
+
+    // Tooltips
 		Label tooltipLbl = new Label(wGeneralComp, SWT.RIGHT);
 		tooltipLbl.setText(Messages.getString("EnterOptionsDialog.ToolTipsEnabled.Label"));
 		props.setLook(tooltipLbl);
 		FormData fdlToolTipData = new FormData();
 		fdlToolTipData.left = new FormAttachment(0, 0);
-		fdlToolTipData.top = new FormAttachment(wlClearCustom, margin);
+		fdlToolTipData.top = new FormAttachment(autoCollapseLbl, margin);
 		fdlToolTipData.right = new FormAttachment(middle, -margin);
 		tooltipLbl.setLayoutData(fdlToolTipData);
 		tooltipBtn = new Button(wGeneralComp, SWT.CHECK);
@@ -1436,7 +1456,7 @@ public class EnterOptionsDialog extends Dialog
 		tooltipBtn.setSelection(props.showToolTips());
 		FormData toolTipBtnData = new FormData();
 		toolTipBtnData.left = new FormAttachment(middle, 0);
-		toolTipBtnData.top = new FormAttachment(wlClearCustom, margin);
+		toolTipBtnData.top = new FormAttachment(autoCollapseLbl, margin);
 		toolTipBtnData.right = new FormAttachment(100, 0);
 		tooltipBtn.setLayoutData(toolTipBtnData);
 
@@ -1458,7 +1478,8 @@ public class EnterOptionsDialog extends Dialog
 		helpTipBtnData.right = new FormAttachment(100, 0);
 		helptipBtn.setLayoutData(helpTipBtnData);
 
-		fdGeneralComp = new FormData();
+
+    fdGeneralComp = new FormData();
 		fdGeneralComp.left = new FormAttachment(0, 0);
 		fdGeneralComp.right = new FormAttachment(100, 0);
 		fdGeneralComp.top = new FormAttachment(0, 0);
@@ -1659,6 +1680,7 @@ public class EnterOptionsDialog extends Dialog
 		props.setOSLookShown(wOriginalLook.getSelection());
 		props.setBrandingActive(wBranding.getSelection());
 		props.setShowToolTips(tooltipBtn.getSelection());
+    props.setAutoCollapseCoreObjectsTree(autoCollapseBtn.getSelection());
 		props.setShowingHelpToolTips(helptipBtn.getSelection());
 
 		int defaultLocaleIndex = wDefaultLocale.getSelectionIndex();

@@ -100,6 +100,7 @@ public class Props implements Cloneable
 	public static final String STRING_AUTO_SAVE               = "AutoSave";
 	public static final String STRING_SAVE_CONF               = "SaveConfirmation";
 	public static final String STRING_AUTO_SPLIT              = "AutoSplit";
+	public static final String STRING_AUTO_COLLAPSE_CORE_TREE = "AutoCollapseCoreObjectsTree";
 
 	public static final String STRING_USE_DB_CACHE            = "UseDBCache";
 	public static final String STRING_OPEN_LAST_FILE          = "OpenLastFile";

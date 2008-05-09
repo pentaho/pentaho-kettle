@@ -896,7 +896,18 @@ public class PropsUI extends Props
 		return YES.equalsIgnoreCase(autosplit); // Default = OFF
 	}
 
-    public boolean showRepositoriesDialogAtStartup()
+  public void setAutoCollapseCoreObjectsTree(boolean autoCollapse)
+  {
+    properties.setProperty(STRING_AUTO_COLLAPSE_CORE_TREE, autoCollapse?YES:NO);
+  }
+
+  public boolean getAutoCollapseCoreObjectsTree()
+  {
+    String autoCollapse=properties.getProperty(STRING_AUTO_COLLAPSE_CORE_TREE);
+    return YES.equalsIgnoreCase(autoCollapse); // Default = OFF
+  }
+
+  public boolean showRepositoriesDialogAtStartup()
     {
         String show = properties.getProperty(STRING_START_SHOW_REPOSITORIES, YES);
         return YES.equalsIgnoreCase(show); // Default: show warning before tool exit.

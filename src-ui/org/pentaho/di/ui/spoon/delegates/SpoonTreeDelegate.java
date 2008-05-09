@@ -240,7 +240,7 @@ public class SpoonTreeDelegate extends SpoonDelegate
 		{
 			public void dragStart(DragSourceEvent event)
 			{
-				TreeSelection[] treeObjects = getTreeObjects(tree,selectionTree,coreObjectsTree);
+			TreeSelection[] treeObjects = getTreeObjects(tree,selectionTree,coreObjectsTree);
 				if (treeObjects.length == 0)
 				{
 					event.doit = false;

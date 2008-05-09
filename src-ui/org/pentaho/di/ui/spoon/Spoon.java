@@ -73,6 +73,7 @@ import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.printing.Printer;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -83,6 +84,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
@@ -303,6 +305,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 	private XulMenuBar menuBar;
 
+	private ToolItem view, design;
+	
+	private Label selectionLabel;
 	
 	private org.eclipse.swt.widgets.Menu fileMenus;
 
@@ -325,7 +330,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 	private Tree selectionTree;
 	private Tree coreObjectsTree;
-	private Tree sharedTree;
+	//private Tree sharedTree;
 
 	private TransExecutionConfiguration transExecutionConfiguration;
 	private TransExecutionConfiguration transPreviewExecutionConfiguration;
@@ -339,7 +344,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 	private int coreObjectsState = STATE_CORE_OBJECTS_NONE;
 
-	private boolean stepHistoryChanged;
+	// private boolean stepHistoryChanged;
 
 	protected Map<String, FileListener> fileExtensionMap = new HashMap<String, FileListener>();
 	protected Map<String, FileListener> fileNodeMap = new HashMap<String, FileListener>();
@@ -352,27 +357,27 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	private LifecycleSupport lcsup = new LifecycleSupport();
 	private Composite mainComposite;
 	
-	private Label treeButton;
+	//private Button treeButton;
 	// private Label sharedButton;
-	private Label coreButton;
-	private Label historyButton;
+	//private Button coreButton;
+	// private Label historyButton;
 	
 	private boolean treeSelected;
-	private boolean sharedSelected;
+	// private boolean sharedSelected;
 	private boolean coreSelected;
-	private boolean historySelected;
+	// private boolean historySelected;
 	
 	private Composite variableComposite;
-	private ScrolledComposite scrolledHistoryComposite;
+	// private ScrolledComposite scrolledHistoryComposite;
 	
 	private Map<String, String> coreStepToolTipMap;
 	private Map<String, String> coreJobToolTipMap;
 
     private DefaultToolTip toolTip;
-	private Label treeButtonImage;
+	// private Label treeButtonImage;
 	// private Label sharedButtonImage;
-	private Label coreButtonImage;
-	private Label historyButtonImage;
+// private Label coreButtonImage;
+	// private Label historyButtonImage;
 	
 	public Map<String,SharedObjects> sharedObjectsFileMap;
 
@@ -1331,7 +1336,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	{
 		Color background = GUIResource.getInstance().getColorLightPentaho();
 		mainComposite = new Composite(sashform, SWT.BORDER);
-		mainComposite.setBackground(background);
+		//mainComposite.setBackground(GUIResource.getInstance().getColorWhite());
 		mainComposite.setLayout(new FormLayout());
 		
 		int mainMargin = 4;
@@ -1339,7 +1344,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		// TODO: add i18n keys
 		//
 		Label sep0 = new Label(mainComposite, SWT.SEPARATOR | SWT.HORIZONTAL);
-		sep0.setBackground(background);
+		sep0.setBackground(GUIResource.getInstance().getColorWhite());
 		FormData fdSep0 = new FormData();
 		fdSep0.left = new FormAttachment(0,0);
 		fdSep0.right = new FormAttachment(100,0);
@@ -1347,159 +1352,103 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		sep0.setLayoutData(fdSep0);
 		Control lastControl = sep0;
 
-		treeButtonImage = new Label(mainComposite, SWT.NONE);
-		treeButtonImage.setBackground(background);
-		treeButtonImage.setImage(GUIResource.getInstance().getImageLogoSmall());
-		FormData fdTreeButtonImage = new FormData();
-		fdTreeButtonImage.left = new FormAttachment(5,0);
-		fdTreeButtonImage.top = new FormAttachment(lastControl,mainMargin);
-		treeButtonImage.setLayoutData(fdTreeButtonImage);
-		
-		treeButton = new Label(mainComposite, SWT.LEFT );  
-		treeButton.setBackground(background);
-		treeButton.setFont(GUIResource.getInstance().getFontMedium());
-		treeButton.setText(STRING_SPOON_MAIN_TREE); 
-		treeButton.setToolTipText(Messages.getString("Spoon.MainTree.Tooltip")); //, GUIResource.getInstance().getImageLogoSmall(), GUIResource.getInstance().getImageKettleLogo());
-		FormData fdTreeButton = new FormData();
-		fdTreeButton.left=new FormAttachment(treeButtonImage,5);
-		fdTreeButton.right=new FormAttachment(95,0);
-		fdTreeButton.top = new FormAttachment(lastControl,mainMargin);
-		treeButton.setLayoutData(fdTreeButton);
-		lastControl = treeButton;
+    ToolBar tb = new ToolBar(mainComposite, SWT.HORIZONTAL | SWT.FLAT);
+    tb.setBackground(GUIResource.getInstance().getColorWhite());
+    view = new ToolItem(tb,SWT.CHECK);
+    view.setImage(GUIResource.getInstance().getImageSpoon());
+    view.setText(STRING_SPOON_MAIN_TREE);
+    design = new ToolItem(tb,SWT.CHECK);
+    design.setImage(GUIResource.getInstance().getImageSpoon());
+    design.setText(STRING_SPOON_CORE_OBJECTS_TREE);
 
-		/*
-		Label sep1 = new Label(mainComposite, SWT.SEPARATOR | SWT.HORIZONTAL);
-		props.setLook(sep1);
-		FormData fdSep1 = new FormData();
-		fdSep1.left = new FormAttachment(0,0);
-		fdSep1.right = new FormAttachment(100,0);
-		fdSep1.top = new FormAttachment(lastControl,2);
-		sep1.setLayoutData(fdSep1);
-		lastControl=sep1;
-		*/
-		
-		/*
-		sharedButtonImage = new Label(mainComposite, SWT.NONE);
-		sharedButtonImage.setBackground(background);
-		sharedButtonImage.setImage(GUIResource.getInstance().getImageLogoSmall());
-		FormData fdSharedButtonImage = new FormData();
-		fdSharedButtonImage.left = new FormAttachment(5,0);
-		fdSharedButtonImage.top = new FormAttachment(lastControl,mainMargin);
-		sharedButtonImage.setLayoutData(fdSharedButtonImage);
-		*/
-		
-		/*
-		sharedButton = new Label(mainComposite, SWT.LEFT );  
-		sharedButton.setBackground(background);
-		sharedButton.setFont(GUIResource.getInstance().getFontMedium());
-		sharedButton.setText(Messages.getString("Spoon.SharedObjects")); 
-		sharedButton.setToolTipText(Messages.getString("Spoon.SharedObjects.Tooltip")); // , GUIResource.getInstance().getImageArrow(), GUIResource.getInstance().getImageConnection());
-		FormData fdSharedButton = new FormData();
-		fdSharedButton.left=new FormAttachment(sharedButtonImage, 5);
-		fdSharedButton.right=new FormAttachment(95,0);
-		fdSharedButton.top = new FormAttachment(lastControl,mainMargin);
-		sharedButton.setLayoutData(fdSharedButton);
-		lastControl = sharedButton;
-		*/
-		
-		/*
-		Label sep2 = new Label(mainComposite, SWT.SEPARATOR | SWT.HORIZONTAL);
-		props.setLook(sep2);
-		FormData fdSep2 = new FormData();
-		fdSep2.left = new FormAttachment(0,0);
-		fdSep2.right = new FormAttachment(100,0);
-		fdSep2.top = new FormAttachment(lastControl,2);
-		sep2.setLayoutData(fdSep2);
-		lastControl=sep2;
-		*/
-		
-		coreButtonImage = new Label(mainComposite, SWT.NONE);
-		coreButtonImage.setBackground(background);
-		coreButtonImage.setImage(GUIResource.getInstance().getImageLogoSmall());
-		FormData fdCoreButtonImage = new FormData();
-		fdCoreButtonImage.left = new FormAttachment(5,0);
-		fdCoreButtonImage.top = new FormAttachment(lastControl,mainMargin);
-		coreButtonImage.setLayoutData(fdCoreButtonImage);
+    FormData fdTreeButton = new FormData();
+    fdTreeButton.left = new FormAttachment(0,0);
+    fdTreeButton.top = new FormAttachment(sep0, 0);
+    fdTreeButton.right=new FormAttachment(100,0);
+    tb.setLayoutData(fdTreeButton);
+    lastControl = tb;
 
-		coreButton = new Label(mainComposite, SWT.LEFT );  
-		coreButton.setBackground(background);
-		coreButton.setFont(GUIResource.getInstance().getFontMedium());
-		coreButton.setText(STRING_SPOON_CORE_OBJECTS_TREE); 
-		coreButton.setToolTipText(Messages.getString("Spoon.CoreObjectsTree.Tooltip")); //, GUIResource.getInstance().getImageTransGraph(), GUIResource.getInstance().getImageBol());
-		FormData fdCoreButton = new FormData();
-		fdCoreButton.left=new FormAttachment(coreButtonImage,5);
-		fdCoreButton.right=new FormAttachment(95,0);
-		fdCoreButton.top = new FormAttachment(lastControl,mainMargin);
-		coreButton.setLayoutData(fdCoreButton);
-		lastControl=coreButton;
+    Label sep3 = new Label(mainComposite, SWT.SEPARATOR | SWT.HORIZONTAL);
+    sep3.setBackground(GUIResource.getInstance().getColorWhite());
+    FormData fdSep3 = new FormData();
+    fdSep3.left = new FormAttachment(0,0);
+    fdSep3.right = new FormAttachment(100,0);
+    fdSep3.top = new FormAttachment(lastControl,0);
+    sep3.setLayoutData(fdSep3);
+    lastControl=sep3;
+    
+    selectionLabel = new Label(mainComposite, SWT.HORIZONTAL);
+    selectionLabel.setFont(GUIResource.getInstance().getFontMediumBold());
+    FormData fdsLabel = new FormData();
+    fdsLabel.left = new FormAttachment(0,0);
+    fdsLabel.top = new FormAttachment(lastControl,5);
+    selectionLabel.setLayoutData(fdsLabel);
+    lastControl=selectionLabel;
 
-		/*
-		Label sep3 = new Label(mainComposite, SWT.SEPARATOR | SWT.HORIZONTAL);
-		props.setLook(sep3);
-		FormData fdSep3 = new FormData();
-		fdSep3.left = new FormAttachment(0,0);
-		fdSep3.right = new FormAttachment(100,0);
-		fdSep3.top = new FormAttachment(lastControl,2);
-		sep3.setLayoutData(fdSep3);
-		lastControl=sep3;
-		*/
-		
-		historyButtonImage = new Label(mainComposite, SWT.NONE);
-		historyButtonImage.setBackground(background);
-		historyButtonImage.setImage(GUIResource.getInstance().getImageLogoSmall());
-		FormData fdHistoryButtonImage = new FormData();
-		fdHistoryButtonImage.left = new FormAttachment(5,0);
-		fdHistoryButtonImage.top = new FormAttachment(lastControl,mainMargin);
-		historyButtonImage.setLayoutData(fdHistoryButtonImage);
-		
-		historyButton = new Label(mainComposite, SWT.LEFT ); 
-		historyButton.setBackground(background);
-		historyButton.setFont(GUIResource.getInstance().getFontMedium());
-		historyButton.setText(Messages.getString("Spoon.History"));
-		historyButton.setToolTipText(Messages.getString("Spoon.History.Tooltip")); // , GUIResource.getInstance().getImageLogoSmall(), GUIResource.getInstance().getImageLogoSmall());
-		FormData fdHistoryButton = new FormData();
-		fdHistoryButton.left=new FormAttachment(historyButtonImage,5);
-		fdHistoryButton.right=new FormAttachment(95,0);
-		fdHistoryButton.top = new FormAttachment(lastControl,mainMargin);
-		historyButton.setLayoutData(fdHistoryButton);
-		lastControl=historyButton;
+    Button expandAllButton = new Button(mainComposite, SWT.PUSH);
+    expandAllButton.setFont(GUIResource.getInstance().getFontMediumBold());
+    expandAllButton.setText(" + ");
 
-		Label sep4 = new Label(mainComposite, SWT.SEPARATOR | SWT.HORIZONTAL);
-		sep4.setBackground(background);
+    expandAllButton.addSelectionListener(new SelectionAdapter() {
+      public void widgetSelected(SelectionEvent event) {
+        if (coreSelected){
+          tidyBranches(coreObjectsTree.getItems(), true);
+        }
+        if (treeSelected){
+          tidyBranches(selectionTree.getItems(), true);
+        }
+      }});
+
+    Button collapseAllButton = new Button(mainComposite, SWT.PUSH);
+    collapseAllButton.setFont(GUIResource.getInstance().getFontMediumBold());
+    collapseAllButton.setText(" - ");
+
+    collapseAllButton.addSelectionListener(new SelectionAdapter() {
+      public void widgetSelected(SelectionEvent event) {
+        if (coreSelected){
+          tidyBranches(coreObjectsTree.getItems(), false);
+        }
+        if (treeSelected){
+          tidyBranches(selectionTree.getItems(), false);
+        }
+      }});
+
+    FormData fdExpandAll = new FormData();
+    fdExpandAll.right = new FormAttachment(collapseAllButton, -5);
+    fdExpandAll.top = new FormAttachment(sep3,0);
+    expandAllButton.setLayoutData(fdExpandAll);
+    lastControl=expandAllButton;
+
+    FormData fdCollapseAll = new FormData();
+    fdCollapseAll.right = new FormAttachment(95,5);
+    fdCollapseAll.top = new FormAttachment(sep3,0);
+    collapseAllButton.setLayoutData(fdCollapseAll);
+    lastControl=selectionLabel;
+
+    view.addSelectionListener(new SelectionAdapter() {
+      public void widgetSelected(SelectionEvent event) {
+        if (treeSelected) return;
+        disposeVariableComposite(true, false, false, false);
+        refreshTree();  
+      }});
+
+    design.addSelectionListener(new SelectionAdapter() {
+      public void widgetSelected(SelectionEvent event) {
+        if (coreSelected) return;
+        disposeVariableComposite(false, false, true, false);
+        refreshCoreObjects(); 
+      }});
+    
+    
+    Label sep4 = new Label(mainComposite, SWT.SEPARATOR | SWT.HORIZONTAL);
+    sep4.setBackground(GUIResource.getInstance().getColorWhite());
 		FormData fdSep4 = new FormData();
 		fdSep4.left = new FormAttachment(0,0);
 		fdSep4.right = new FormAttachment(100,0);
 		fdSep4.top = new FormAttachment(lastControl,5);
 		sep4.setLayoutData(fdSep4);
 		lastControl=sep4;
-		
-		treeButton.addMouseListener(new MouseAdapter() {
-			public void mouseDown(MouseEvent event) {
-				if (treeSelected) return;
-				disposeVariableComposite(true, false, false, false);
-				refreshTree();	
-			}});
-		/*
-		sharedButton.addMouseListener(new MouseAdapter() {
-			public void mouseDown(MouseEvent event) {
-				if (sharedSelected) return;
-				disposeVariableComposite(false, true, false, false);
-				refreshSharedObjects();	
-			}});
-		*/
-		coreButton.addMouseListener(new MouseAdapter() {
-			public void mouseDown(MouseEvent event) {
-				if (coreSelected) return;
-				disposeVariableComposite(false, false, true, false);
-				refreshCoreObjects(); 
-			}});
-		historyButton.addMouseListener(new MouseAdapter() {
-			public void mouseDown(MouseEvent event) {
-				if (historySelected) return;
-				disposeVariableComposite(false, false, false, true);
-				refreshCoreObjectsHistory(); 
-			}});
-
+    
 		variableComposite = new Composite(mainComposite, SWT.NONE);
 		variableComposite.setBackground(GUIResource.getInstance().getColorBackground());
 		variableComposite.setLayout(new FillLayout());
@@ -1516,7 +1465,16 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		coreStepToolTipMap = new Hashtable<String,String>();
 		coreJobToolTipMap = new Hashtable<String,String>();
 	}
+	
+	private void tidyBranches(TreeItem[] items, boolean expand){
 
+	  for (TreeItem item : items) { 
+	    item.setExpanded(expand);
+	    tidyBranches(item.getItems(), expand);
+    }
+	}
+
+	/*
 	protected void refreshSharedObjects() {
         if (shell.isDisposed()) return;
         
@@ -1626,13 +1584,17 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         
 		variableComposite.layout(true,true);
 	}
+*/
 
 	public void disposeVariableComposite(boolean tree, boolean shared, boolean core, boolean history) {
 		
 		treeSelected = tree;
-		sharedSelected = shared;
+		view.setSelection(treeSelected);
 		coreSelected = core;
-		historySelected = history;
+		design.setSelection(coreSelected);
+
+		//historySelected = history;
+    //sharedSelected = shared;
 		
 		for (Control control : variableComposite.getChildren()) {
 			control.dispose();
@@ -1640,48 +1602,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		
 		previousShowTrans=false;
 		previousShowJob=false;
-		stepHistoryChanged=true;
 		
-		Font normalFont = GUIResource.getInstance().getFontMedium();
-		Font boldFont = GUIResource.getInstance().getFontMediumBold();
+		//stepHistoryChanged=true;
 		
-		Color selectedColor = GUIResource.getInstance().getColorPentaho();
-		Color normalColor = GUIResource.getInstance().getColorLightPentaho();
-		
-		if (tree) {
-			treeButton.setFont(boldFont);
-			treeButton.setBackground(selectedColor);
-		} else {
-			treeButton.setFont(normalFont);
-			treeButton.setBackground(normalColor);
-		}
-		
-		/*
-		if (shared) { 
-			sharedButton.setFont(boldFont); 
-			sharedButton.setBackground(selectedColor);
-		} else { 
-			sharedButton.setFont(normalFont);
-			sharedButton.setBackground(normalColor);
-		}
-		*/
-		
-		if (core) {
-			coreButton.setFont(boldFont); 
-			coreButton.setBackground(selectedColor);
-		}
-		else {
-			coreButton.setFont(normalFont);
-			coreButton.setBackground(normalColor);
-		}
-		
-		if (history) {
-			historyButton.setFont(boldFont); 
-			historyButton.setBackground(selectedColor);
-		} else {
-			historyButton.setFont(normalFont);
-			historyButton.setBackground(normalColor);
-		}
+    selectionLabel.setText(tree ? "Explorer" : "Steps");
 	}
 
 	public void addCoreObjectsTree()
@@ -1697,32 +1621,36 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			public void widgetSelected(SelectionEvent event) {
 				// expand the selected tree item, collapse the rest
 				//
-				TreeItem[] selection = coreObjectsTree.getSelection();
-				if (selection.length==1) {
-					// expand if clicked on the the top level entry only...
-					//
-					TreeItem top = selection[0];
-					while (top.getParentItem()!=null) top=top.getParentItem();
-					if (top==selection[0]) {
-						boolean expanded = top.getExpanded();
-						for (TreeItem item : coreObjectsTree.getItems()) { item.setExpanded(false); }
-						top.setExpanded(!expanded);
-					}
-				}
+			  if (props.getAutoCollapseCoreObjectsTree()){
+	        TreeItem[] selection = coreObjectsTree.getSelection();
+	        if (selection.length==1) {
+	          // expand if clicked on the the top level entry only...
+	          //
+	          TreeItem top = selection[0];
+	          while (top.getParentItem()!=null) top=top.getParentItem();
+	          if (top==selection[0]) {
+	            boolean expanded = top.getExpanded();
+	            for (TreeItem item : coreObjectsTree.getItems()) { item.setExpanded(false); }
+	            top.setExpanded(!expanded);
+	          }
+	        }
+	      }
 			}
 		});
 		
 		coreObjectsTree.addTreeListener(new TreeAdapter() {
 			public void treeExpanded(TreeEvent treeEvent) {
-				TreeItem treeItem = (TreeItem) treeEvent.item;
-				
-				// expand the selected tree item, collapse the rest
-				//
-				for (TreeItem item : coreObjectsTree.getItems()) { item.setExpanded(false); }
-				treeItem.setExpanded(true);
+        if (props.getAutoCollapseCoreObjectsTree()){
+  				TreeItem treeItem = (TreeItem) treeEvent.item;
+  				
+  				// expand the selected tree item, collapse the rest
+  				//
+  				for (TreeItem item : coreObjectsTree.getItems()) { item.setExpanded(false); }
+  				treeItem.setExpanded(true);
+        }
 			}
 		});
-		
+	
 		coreObjectsTree.addMouseMoveListener(new MouseMoveListener() {
 		
 			public void mouseMove(MouseEvent move) {
@@ -1772,6 +1700,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		return null;
 	}
 
+	/*
 	private void refreshCoreObjectsHistory()
 	{
 		if (!historySelected) return;
@@ -1845,6 +1774,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		variableComposite.layout(true, true);
 	}
 
+  */
 	private boolean previousShowTrans;
 	private boolean previousShowJob;
 	public boolean showTrans;
@@ -1941,6 +1871,39 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 					}
 				}
 			}
+			
+      // Add History Items...
+      TreeItem item = new TreeItem(coreObjectsTree, SWT.NONE);
+      item.setText("History");
+      item.setImage(GUIResource.getInstance().getImageArrow());
+
+      List<ObjectUsageCount> pluginHistory = props.getPluginHistory();
+      
+      for (int i=0;i<pluginHistory.size() && i<10;i++) // top 10 maximum, the rest is not interesting anyway -- for GUI performance reasons
+      {
+        ObjectUsageCount usage = pluginHistory.get(i);
+        StepPlugin stepPlugin = StepLoader.getInstance().findStepPluginWithID(usage.getObjectName());
+        if (stepPlugin != null)
+        {
+          final Image stepimg = GUIResource.getInstance().getImagesSteps().get(stepPlugin.getID()[0]);
+          String pluginName   = stepPlugin.getDescription(locale);
+          String pluginDescription = stepPlugin.getTooltip(locale);
+          boolean isPlugin = stepPlugin.isPlugin();
+          TreeItem stepItem = new TreeItem(item, SWT.NONE);
+          stepItem.setImage(stepimg);
+          stepItem.setText(pluginName);
+          stepItem.addListener(SWT.Selection, new Listener() {
+          
+            public void handleEvent(Event arg0) {
+              System.out.println("Tree item Listener fired");
+            }
+          });
+          if (isPlugin) stepItem.setFont(GUIResource.getInstance().getFontBold());
+          
+          coreStepToolTipMap.put(stepPlugin.getDescription(locale), pluginDescription +" ("+usage.getNrUses()+")");
+
+        }
+      }
 		}
 		
 		if (showJob)
@@ -2785,26 +2748,26 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 	public void enableMainEntries(boolean enableTrans, boolean enableJob) {
 
-		treeButton.setVisible(true);
-		treeButtonImage.setVisible(true);
+		//treeButton.setVisible(true);
+		// treeButtonImage.setVisible(true);
 		// sharedButton.setVisible(true);
 		// sharedButtonImage.setVisible(true);
-		coreButton.setVisible(true);
-		coreButtonImage.setVisible(true);
-		historyButton.setVisible(true);
-		historyButtonImage.setVisible(true);
+		//coreButton.setVisible(true);
+		// coreButtonImage.setVisible(true);
+		// historyButton.setVisible(true);
+    //	historyButtonImage.setVisible(true);
 
 		if (enableTrans) {
 			// All 4 
 			//
 		} else if (enableJob) {
-			historyButton.setVisible(false);
-			historyButtonImage.setVisible(false);
+		// historyButton.setVisible(false);
+		//	historyButtonImage.setVisible(false);
 		} else {
-			historyButton.setVisible(false);
-			historyButtonImage.setVisible(false);
-			coreButton.setVisible(false);
-			coreButtonImage.setVisible(false);
+		// 	historyButton.setVisible(false);
+		//	historyButtonImage.setVisible(false);
+			//coreButton.setVisible(false);
+		// 	coreButtonImage.setVisible(false);
 		}
 	}
 
@@ -4786,7 +4749,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		// Set the expanded state of the complete tree.
 		TreeMemory.setExpandedFromMemory(selectionTree, STRING_SPOON_MAIN_TREE);
 
-		refreshCoreObjectsHistory();
+		// refreshCoreObjectsHistory();
 
 		selectionTree.setFocus();
 		selectionTree.layout();
@@ -4935,7 +4898,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 					// Also store it in the pluginHistory list...
 					props.increasePluginHistory(stepPlugin.getID()[0]);
-					stepHistoryChanged = true;
+					// stepHistoryChanged = true;
 
 					refreshTree();
                 }
@@ -5423,7 +5386,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 	public void changeLooks()
 	{
-		props.setLook(selectionTree);
+	  if (!selectionTree.isDisposed())
+	    props.setLook(selectionTree);
 		props.setLook(tabfolder.getSwtTabset(), Props.WIDGET_STYLE_TAB);
 
 		GUIResource.getInstance().reload();
