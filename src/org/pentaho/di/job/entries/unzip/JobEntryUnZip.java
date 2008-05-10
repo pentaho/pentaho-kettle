@@ -22,6 +22,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -36,6 +38,7 @@ import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.ResultFile;
+import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
@@ -49,8 +52,14 @@ import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.job.entry.validator.ValidatorContext;
+import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.repository.Repository;
 import org.w3c.dom.Node;
+
+
+ 
+
+
 
 /**
  * This defines a 'unzip' job entry. Its main use would be to 
@@ -70,8 +79,61 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 	private String targetdirectory;
 	private String movetodirectory;
 	private boolean addfiletoresult;
+	private boolean isfromprevious;
+	private boolean adddate;
+	private boolean addtime;
+	private boolean SpecifyFormat;
+	private String date_time_format;
+	private boolean rootzip;
+	private boolean createfolder;
+	private String nr_limit;
+	private String wildcardSource;
+	private int     iffileexist;
+	
+	public  String SUCCESS_IF_AT_LEAST_X_FILES_UN_ZIPPED="success_when_at_least";
+	public  String SUCCESS_IF_ERRORS_LESS="success_if_errors_less";
+	public  String SUCCESS_IF_NO_ERRORS="success_if_no_errors";
+	private String success_condition;
 	
 
+	public static final int IF_FILE_EXISTS_SKIP              		 =  0;
+	public static final int IF_FILE_EXISTS_OVERWRITE               	 =  1;
+	public static final int IF_FILE_EXISTS_UNIQ               		 =  2;
+	public static final int IF_FILE_EXISTS_FAIL            			 =  3;
+	public static final int IF_FILE_EXISTS_OVERWRITE_DIFF_SIZE       =  4;
+	public static final int IF_FILE_EXISTS_OVERWRITE_EQUAL_SIZE      =  5;
+	public static final int IF_FILE_EXISTS_OVERWRITE_ZIP_BIG         =  6;
+	public static final int IF_FILE_EXISTS_OVERWRITE_ZIP_BIG_EQUAL   =  7;
+	public static final int IF_FILE_EXISTS_OVERWRITE_ZIP_SMALL       =  8;
+	public static final int IF_FILE_EXISTS_OVERWRITE_ZIP_SMALL_EQUAL =  9;
+	
+	public static final String typeIfFileExistsCode[] =  /* WARNING: DO NOT TRANSLATE THIS. */ 
+	{
+		"SKIP", "OVERWRITE", "UNIQ", "FAIL", "OVERWRITE_DIFF_SIZE", 
+		"OVERWRITE_EQUAL_SIZE", "OVERWRITE_ZIP_BIG", "OVERWRITE_ZIP_BIG_EQUAL", "OVERWRITE_ZIP_BIG_SMALL", 
+		"OVERWRITE_ZIP_BIG_SMALL_EQUAL",  
+	};
+	
+	public static final String typeIfFileExistsDesc[] = 
+	{
+		Messages.getString("JobUnZip.Skip.Label"),
+		Messages.getString("JobUnZip.Overwrite.Label"),
+        Messages.getString("JobUnZip.Give_Unique_Name.Label"),
+        Messages.getString("JobUnZip.Fail.Label"),
+        Messages.getString("JobUnZip.OverwriteIfSizeDifferent.Label"),
+        Messages.getString("JobUnZip.OverwriteIfSizeEquals.Label"),
+        Messages.getString("JobUnZip.OverwriteIfZipBigger.Label"),
+        Messages.getString("JobUnZip.OverwriteIfZipBiggerOrEqual.Label"),
+        Messages.getString("JobUnZip.OverwriteIfZipSmaller.Label"),
+        Messages.getString("JobUnZip.OverwriteIfZipSmallerOrEqual.Label"),
+	};
+	
+	private int NrErrors=0;
+	private int NrSuccess=0;
+	boolean successConditionBroken=false;
+	boolean successConditionBrokenExit=false;
+	int limitFiles=0;
+	
 	public JobEntryUnZip(String n)
 	{
 		super(n, "");
@@ -82,6 +144,16 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 		targetdirectory=null;
 		movetodirectory=null;
 		addfiletoresult = false;
+		isfromprevious = false;
+		adddate=false;
+		addtime=false;
+		SpecifyFormat=false;
+		rootzip=false;
+		createfolder=false;
+		nr_limit="10";
+		wildcardSource=null;
+		iffileexist=IF_FILE_EXISTS_SKIP;
+		success_condition=SUCCESS_IF_NO_ERRORS;
 		setID(-1L);
 		setJobEntryType(JobEntryType.UNZIP);
 	}
@@ -114,6 +186,18 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 		retval.append("      ").append(XMLHandler.addTagValue("movetodirectory",  movetodirectory));
 		retval.append("      ").append(XMLHandler.addTagValue("afterunzip",  afterunzip));
 		retval.append("      ").append(XMLHandler.addTagValue("addfiletoresult",  addfiletoresult));
+		retval.append("      ").append(XMLHandler.addTagValue("isfromprevious",  isfromprevious));
+		retval.append("      ").append(XMLHandler.addTagValue("adddate",  adddate));
+		retval.append("      ").append(XMLHandler.addTagValue("addtime",  addtime));
+		retval.append("      ").append(XMLHandler.addTagValue("SpecifyFormat",  SpecifyFormat));
+		retval.append("      ").append(XMLHandler.addTagValue("date_time_format",  date_time_format));
+		retval.append("      ").append(XMLHandler.addTagValue("rootzip",  rootzip));
+		retval.append("      ").append(XMLHandler.addTagValue("createfolder",  createfolder));
+		retval.append("      ").append(XMLHandler.addTagValue("nr_limit",  nr_limit));
+		retval.append("      ").append(XMLHandler.addTagValue("wildcardSource",  wildcardSource));
+		retval.append("      ").append(XMLHandler.addTagValue("success_condition", success_condition));
+		retval.append("      ").append(XMLHandler.addTagValue("iffileexists", getIfFileExistsCode(iffileexist))); 
+		
 		return retval.toString();
 	}
 	
@@ -130,8 +214,19 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 			wildcardexclude = XMLHandler.getTagValue(entrynode, "wildcardexclude");
 			targetdirectory = XMLHandler.getTagValue(entrynode, "targetdirectory");
 			movetodirectory = XMLHandler.getTagValue(entrynode, "movetodirectory");
-			addfiletoresult = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "addfiletoresult"));	
-
+			addfiletoresult = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "addfiletoresult"));
+			isfromprevious = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "isfromprevious"));	
+			adddate = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "adddate"));	
+			addtime = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "addtime"));	
+			SpecifyFormat = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "SpecifyFormat"));	
+			date_time_format = XMLHandler.getTagValue(entrynode, "date_time_format");
+			rootzip = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "rootzip"));
+			createfolder = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "createfolder"));
+			nr_limit = XMLHandler.getTagValue(entrynode, "nr_limit");
+			wildcardSource = XMLHandler.getTagValue(entrynode, "wildcardSource");
+			success_condition          = XMLHandler.getTagValue(entrynode, "success_condition");
+			iffileexist   = getIfFileExistsInt(XMLHandler.getTagValue(entrynode, "iffileexists"));	
+			
 		}
 		catch(KettleXMLException xe)
 		{
@@ -152,7 +247,17 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 			targetdirectory = rep.getJobEntryAttributeString(id_jobentry, "targetdirectory");
 			movetodirectory = rep.getJobEntryAttributeString(id_jobentry, "movetodirectory");
 			addfiletoresult=rep.getJobEntryAttributeBoolean(id_jobentry, "addfiletoresult");
-		
+			isfromprevious=rep.getJobEntryAttributeBoolean(id_jobentry, "isfromprevious");
+			adddate=rep.getJobEntryAttributeBoolean(id_jobentry, "adddate");
+			addtime=rep.getJobEntryAttributeBoolean(id_jobentry, "adddate");
+			SpecifyFormat=rep.getJobEntryAttributeBoolean(id_jobentry, "SpecifyFormat");
+			date_time_format = rep.getJobEntryAttributeString(id_jobentry, "date_time_format");
+			rootzip=rep.getJobEntryAttributeBoolean(id_jobentry, "rootzip");
+			createfolder=rep.getJobEntryAttributeBoolean(id_jobentry, "createfolder");
+			nr_limit=rep.getJobEntryAttributeString(id_jobentry, "nr_limit");
+			wildcardSource=rep.getJobEntryAttributeString(id_jobentry, "wildcardSource");
+			success_condition  = rep.getJobEntryAttributeString(id_jobentry, "success_condition");
+			iffileexist    = getIfFileExistsInt(rep.getStepAttributeString(id_jobentry,"iffileexists") );
 		}
 
 
@@ -171,12 +276,22 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 			
 			rep.saveJobEntryAttribute(id_job, getID(), "zipfilename", zipFilename);
 			rep.saveJobEntryAttribute(id_job, getID(), "afterunzip", afterunzip);
-
 			rep.saveJobEntryAttribute(id_job, getID(), "wildcard", wildcard);
 			rep.saveJobEntryAttribute(id_job, getID(), "wildcardexclude", wildcardexclude);
 			rep.saveJobEntryAttribute(id_job, getID(), "targetdirectory", targetdirectory);
 			rep.saveJobEntryAttribute(id_job, getID(), "movetodirectory", movetodirectory);
 			rep.saveJobEntryAttribute(id_job, getID(), "addfiletoresult", addfiletoresult);
+			rep.saveJobEntryAttribute(id_job, getID(), "isfromprevious", isfromprevious);
+			rep.saveJobEntryAttribute(id_job, getID(), "addtime", addtime);
+			rep.saveJobEntryAttribute(id_job, getID(), "adddate", adddate);
+			rep.saveJobEntryAttribute(id_job, getID(), "SpecifyFormat", SpecifyFormat);
+			rep.saveJobEntryAttribute(id_job, getID(), "date_time_format", date_time_format);
+			rep.saveJobEntryAttribute(id_job, getID(), "rootzip", rootzip);
+			rep.saveJobEntryAttribute(id_job, getID(), "createfolder", createfolder);
+			rep.saveJobEntryAttribute(id_job, getID(), "nr_limit", nr_limit);
+			rep.saveJobEntryAttribute(id_job, getID(), "wildcardSource", wildcardSource);
+			rep.saveJobEntryAttribute(id_job, getID(), "success_condition",    success_condition);
+			rep.saveStepAttribute(id_job, getID(), "iffileexists", getIfFileExistsCode(iffileexist));
 		}
 		catch(KettleDatabaseException dbe)
 		{
@@ -190,287 +305,705 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 		LogWriter log = LogWriter.getInstance();
 		Result result = previousResult;
 		result.setResult( false );
+		result.setEntryNr(1);
 
-		String realZipfilename       = environmentSubstitute(zipFilename);
+		 List<RowMetaAndData> rows = result.getRows();
+		 RowMetaAndData resultRow = null;
+		
+		String realFilenameSource    = environmentSubstitute(zipFilename);
+		String realWildcardSource    = environmentSubstitute(wildcardSource);
 		String realWildcard          = environmentSubstitute(wildcard);
 		String realWildcardExclude   = environmentSubstitute(wildcardexclude);
 		String realTargetdirectory   = environmentSubstitute(targetdirectory);
 		String realMovetodirectory   = environmentSubstitute(movetodirectory);
 
+		limitFiles=Const.toInt(environmentSubstitute(getLimit()),10);
+		NrErrors=0;
+		NrSuccess=0;
+		successConditionBroken=false;
+		successConditionBrokenExit=false;
 		
-		if(!Const.isEmpty(zipFilename))
+		
+		
+		if(isfromprevious)
 		{
-			FileObject fileObject = null;
-			FileObject targetdir=null;
-			FileObject movetodir=null;
+			if(log.isDetailed())	
+				log.logDetailed(toString(), Messages.getString("JobUnZip.Log.ArgFromPrevious.Found",(rows!=null?rows.size():0)+ ""));	
 			
-			ZipFile zipfile=null;
-			
-			try 
+			if(rows.size()==0)	return result;	
+		}else
+		{
+			if(Const.isEmpty(zipFilename))
 			{
-				// Let's check zip file
-				fileObject = KettleVFS.getFileObject(realZipfilename);	
-				if ( fileObject.exists())
-				{
-					if (log.isDetailed()) log.logDetailed(toString(),Messages.getString("JobUnZip.Zip_FileExists.Label",realZipfilename));
-					// Let's check target folder
-					if(!Const.isEmpty(targetdirectory))
-					{
-						targetdir = KettleVFS.getFileObject(realTargetdirectory);	
-						if ((targetdir.exists()) && (targetdir.getType() == FileType.FOLDER))
-						{
-							if (log.isDetailed()) log.logDetailed(toString(),Messages.getString("JobUnZip.TargetFolderNotExists.Label",realTargetdirectory));
-							
-							// If user want to move zip files after process
-							// movetodirectory must be provided 
-							if((afterunzip==2) && (Const.isEmpty(movetodirectory)))
-							{
-								log.logError(Messages.getString("JobUnZip.Error.Label"), Messages.getString("JobUnZip.MoveToDirectoryEmpty.Label"));
-							}
-							else
-							{
-								boolean move_tofolder=false;
-								if(afterunzip==2)
-								{
-									movetodir = KettleVFS.getFileObject(realMovetodirectory);
-									
-									if  (!movetodir.exists()) move_tofolder=true;
-									
-								}
-								
-								if(move_tofolder)
-								{
-									log.logError(Messages.getString("JobUnZip.Error.Label"), Messages.getString("JobUnZip.MoveToDirectoryNotExists.Label"));
-								
-								}
-								else
-								{
-									
-									// We can now start the unzip process ...
-									zipfile = new ZipFile(new File(realZipfilename));
-									Enumeration<? extends ZipEntry> zipEnum =zipfile.entries();
-									
-									File folder = new File(realTargetdirectory);
-									String foldername=folder.getAbsolutePath();
-									
-									Pattern pattern = null;
-									if (!Const.isEmpty(realWildcard)) 
-									{
-										pattern = Pattern.compile(realWildcard);
-								
-									}
-									Pattern patternexclude = null;
-									if (!Const.isEmpty(realWildcardExclude)) 
-									{
-										patternexclude = Pattern.compile(realWildcardExclude);
-								
-									}
-									
-									  while( zipEnum.hasMoreElements() )
-							          {
-										  ZipEntry item = (ZipEntry) zipEnum.nextElement();
-										  
-										  if( item.isDirectory())
-										  {
-											 // Directory 
-								             File newdir = new File( foldername+ Const.FILE_SEPARATOR + item.getName() );
-								             if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("JobUnZip.CreatingDirectory.Label",newdir.getAbsolutePath()));
-
-								             // Create Directory if necessary ...
-								             if(!newdir.exists())  newdir.mkdir();
-										  }
-										  else
-										  {
-											// File
-											boolean getIt = true;
-											boolean getItexclude = false;
-												
-										    // First see if the file matches the regular expression!
-											if (pattern!=null)
-											{
-												Matcher matcher = pattern.matcher(item.getName());
-												getIt = matcher.matches();
-											}
-
-											if (patternexclude!=null)
-											{
-												Matcher matcherexclude = patternexclude.matcher(item.getName());
-												getItexclude = matcherexclude.matches();
-											}  
-											  
-											if (getIt && !getItexclude)
-											{
-											  
-												String newfile = foldername+ Const.FILE_SEPARATOR + item.getName();
-								                    
-												if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("JobUnZip.ExtractingEntry.Label",item.getName(),newfile));
-												
-								                InputStream is = zipfile.getInputStream(item);
-								                FileOutputStream fos = new FileOutputStream(newfile);
-								                
-								           
-								                
-								                if(is!=null)
-								                {
-									                byte[] buff=new byte[2048];
-								                	int len;
-								                	
-								                	while((len=is.read(buff))>0)
-								                	{
-								                		fos.write(buff,0,len);
-								          
-								                	}
-								               
-								                    if(is!=null) is.close();
-									                if(fos!=null) fos.close();
-								                  
-									                if (addfiletoresult)
-													{
-									                	// Add file to result files name
-									                	ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL , KettleVFS.getFileObject(newfile), parentJob.getName(), toString());
-									                    result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
-													}
-								                }
-								                
-											}    		
-										  }
-  
-							          }
-
-									  zipfile.close();  
-									  
-									 // Here gc() is explicitly called if e.g. createfile is used in the same
-									 // job for the same file. The problem is that after creating the file the
-									 // file object is not properly garbaged collected and thus the file cannot
-									 // be deleted anymore. This is a known problem in the JVM.
-										
-									 System.gc();
-									  
-									  // Unzip done...
-									  if (afterunzip==1)
-									  {
-										  // delete zip file
-										  boolean deleted = fileObject.delete();
-										  if ( ! deleted )	
-										  {	
-								    			result.setResult( false );
-												result.setNrErrors(1);
-												log.logError(toString(), Messages.getString("JobUnZip.Cant_Delete_File.Label",realZipfilename));
-
-											}
-											// File deleted
-											log.logDebug(toString(), Messages.getString("JobUnZip.File_Deleted.Label",realZipfilename));
-										  
-									  }
-									  else if(afterunzip == 2)
-									  {
-											// Move File	
-											try
-											{
-												fileObject.moveTo(movetodir);
-											}
-											catch (IOException e) 
-											{
-												log.logError(toString(), Messages.getString("JobUnZip.Cant_Move_File.Label",realZipfilename,realMovetodirectory,e.getMessage()));
-												result.setResult( false );
-												result.setNrErrors(1);				
-											}
-											// File moved
-											log.logDebug(toString(), Messages.getString("JobUnZip.File_Moved.Label",realZipfilename,realMovetodirectory));
-									 }
-									  
-									  
-									  result.setResult( true );
-
-									
-								}
-							}
-						
-						}
-						else
-						{
-							log.logError(Messages.getString("JobUnZip.Error.Label"), Messages.getString("JobUnZip.TargetFolderNotFound.Label"));
-						}
-					}
-					else
-					{
-						log.logError(Messages.getString("JobUnZip.Error.Label"), Messages.getString("JobUnZip.TargetFolderMissing.Label"));
-					}
-					
-				
-				}
-				else
-				{
-					log.logError(Messages.getString("JobUnZip.Error.Label"), Messages.getString("JobUnZip.ZipFile.NotExists.Label",realZipfilename));
-				}
-				
-			}
-			catch (IOException e) 
-			{
-       			log.logError(Messages.getString("JobUnZip.Error.Label"), Messages.getString("JobUnZip.ErrorUnzip.Label",realZipfilename,e.getMessage()));
-				result.setResult( false );
-				result.setNrErrors(1);				
-			}
-			finally 
-			{
-				if ( fileObject != null )
-				{
-					try  
-					{
-						fileObject.close();
-					}
-					catch ( IOException ex ) {};
-				}
-				if ( targetdir != null )
-				{
-					try  
-					{
-						targetdir.close();
-					}
-					catch ( IOException ex ) {};
-				}
-				if ( movetodir != null )
-				{
-					try  
-					{
-						movetodir.close();
-					}
-					catch ( IOException ex ) {};
-				}
-				if ( zipfile != null )
-				{
-					try  
-					{
-						zipfile.close();
-					}
-					catch ( IOException ex ) {};
-				}
-				
-				
-				
+				// Zip file/folder is missing
+				log.logError(toString(), Messages.getString("JobUnZip.No_ZipFile_Defined.Label"));
+				return result;
 			}
 		}
-		else
+		
+	
+		FileObject fileObject = null;
+		FileObject targetdir=null;
+		FileObject movetodir=null;
+	
+		
+		try 
 		{
-			// Zipfile is missing
-			log.logError(toString(), Messages.getString("JobUnZip.No_ZipFile_Defined.Label"));
+			
+			// Let's make some checks here, before running job entry ...	
+			
+			boolean exitjobentry=false;
+			// Target folder
+			targetdir = KettleVFS.getFileObject(realTargetdirectory);	
+			if (!targetdir.exists())
+			{
+				if(createfolder)
+				{
+					targetdir.createFolder();
+					if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("JobUnZip.Log.TargetFolderCreated",realTargetdirectory));
+						
+				}else
+				{
+					log.logError(Messages.getString("JobUnZip.Error.Label"), Messages.getString("JobUnZip.TargetFolderNotFound.Label"));
+					exitjobentry=true;
+				}
+			}else{
+				if (!(targetdir.getType() == FileType.FOLDER))
+				{
+					log.logError(Messages.getString("JobUnZip.Error.Label"), Messages.getString("JobUnZip.TargetFolderNotFolder.Label",realTargetdirectory));
+					exitjobentry=true;
+				}else
+				{
+					if (log.isDetailed()) log.logDetailed(toString(),Messages.getString("JobUnZip.TargetFolderExists.Label",realTargetdirectory));
+				}
+			}
+			
+			// If user want to move zip files after process
+			// movetodirectory must be provided 
+			if(afterunzip==2)
+			{
+				if(Const.isEmpty(movetodirectory))
+				{
+					log.logError(Messages.getString("JobUnZip.Error.Label"), Messages.getString("JobUnZip.MoveToDirectoryEmpty.Label"));
+					exitjobentry=true;
+				}else
+				{
+					movetodir = KettleVFS.getFileObject(realMovetodirectory);
+					if (!(movetodir.exists()) || !(movetodir.getType() == FileType.FOLDER))
+					{
+						log.logError(Messages.getString("JobUnZip.Error.Label"), Messages.getString("JobUnZip.MoveToDirectoryNotExists.Label"));
+						exitjobentry=true;
+					}
+				}
+			}
+			
+			// We found errors...now exit
+			if(exitjobentry) return result;
+			
+			if(isfromprevious)
+			{
+				if (rows!=null) // Copy the input row to the (command line) arguments
+				{
+					for (int iteration=0;iteration<rows.size();iteration++) 
+					{
+						if(successConditionBroken)
+						{
+							if(!successConditionBrokenExit)
+							{
+								log.logError(toString(), Messages.getString("JobUnZip.Error.SuccessConditionbroken",""+NrErrors));
+								successConditionBrokenExit=true;
+							}
+							result.setEntryNr(NrErrors);
+							return result;
+						}
+						
+						resultRow = rows.get(iteration);
+						
+						// Get sourcefile/folder and wildcard
+						realFilenameSource = resultRow.getString(0,null);
+						realWildcardSource = resultRow.getString(1,null);
+			
+						fileObject = KettleVFS.getFileObject(realFilenameSource);
+						if(fileObject.exists())
+						{
+							processOneFile(log, result,parentJob, 
+									fileObject,realTargetdirectory,
+									realWildcard,realWildcardExclude, movetodir,realMovetodirectory,
+									realWildcardSource);	
+						}else
+						{
+							updateErrors();
+							log.logError(toString(),  Messages.getString("JobUnZip.Error.CanNotFindFile", realFilenameSource));
+						}
+						
+					}
+				}
+			}else{
+				fileObject = KettleVFS.getFileObject(realFilenameSource);
+				if(!fileObject.exists())
+				{
+					log.logError(Messages.getString("JobUnZip.Error.Label"), Messages.getString("JobUnZip.ZipFile.NotExists.Label",realFilenameSource));
+					return result;
+				}
+		
+				if (log.isDetailed()) log.logDetailed(toString(),Messages.getString("JobUnZip.Zip_FileExists.Label",realFilenameSource));
+				if(Const.isEmpty(targetdirectory))
+				{
+					log.logError(Messages.getString("JobUnZip.Error.Label"), Messages.getString("JobUnZip.TargetFolderNotFound.Label"));
+					return result;
+				}
+				
+				processOneFile(log, result,parentJob, 
+						fileObject,realTargetdirectory,
+						realWildcard,realWildcardExclude, movetodir,realMovetodirectory,
+						realWildcardSource);
+			}	
+		}
+		catch (Exception e) 
+		{
+   			log.logError(Messages.getString("JobUnZip.Error.Label"), Messages.getString("JobUnZip.ErrorUnzip.Label",realFilenameSource,e.getMessage()));
+   			updateErrors();			
+		}
+		finally 
+		{
+			if ( fileObject != null )
+			{
+				try{
+					fileObject.close();
+				}catch ( IOException ex ) {};
+			}
+			if ( targetdir != null )
+			{
+				try{
+					targetdir.close();
+				}catch ( IOException ex ) {};
+			}
+			if ( movetodir != null )
+			{
+				try{
+					movetodir.close();
+				}catch ( IOException ex ) {};
+			}
 		}
 	
+		result.setNrErrors(NrErrors);
+		if(getSuccessStatus())	result.setResult(true);
+		
 		
 		return result;
 	}
+	private boolean processOneFile(LogWriter log, Result result,Job parentJob, 
+			FileObject fileObject,String realTargetdirectory,
+			String realWildcard,String realWildcardExclude, FileObject movetodir,String realMovetodirectory,
+			String realWildcardSource)
+	{
+		boolean retval=false;
+		
+		try{
+			String sourceFilename=KettleVFS.getFilename(fileObject);
+			if(fileObject.getType()==FileType.FILE)
+			{
+				// We have to unzip one zip file
+				if(!unzipFile(log,sourceFilename,fileObject.getName().getBaseName(),realTargetdirectory,realWildcard,
+					realWildcardExclude,result, parentJob, fileObject,movetodir,realMovetodirectory))
+					updateErrors();
+				else
+					updateSuccess();
+			}else
+			{
+				// Folder..let's see wildcard
+				File[] children = new File(sourceFilename).listFiles();
+				
+				for (int i=0; i<children.length; i++) 
+				{
+					if(successConditionBroken)
+					{
+						if(!successConditionBrokenExit)
+						{
+							log.logError(toString(), Messages.getString("JobUnZip.Error.SuccessConditionbroken",""+NrErrors));
+							successConditionBrokenExit=true;
+						}
+						return false;
+					}
+		            // Get only file!
+					if (!children[i].isDirectory()) 
+					{
+						boolean unzip=true;
+						
+						String filename=children[i].getAbsolutePath();
+						String shortfilename=children[i].getName();
+						
+						Pattern patternSource = null;
+	
+						if (!Const.isEmpty(realWildcardSource))  
+							patternSource = Pattern.compile(realWildcardSource);
+						
+						// First see if the file matches the regular expression!
+						if (patternSource!=null)
+						{
+							Matcher matcher = patternSource.matcher(filename);
+							unzip = matcher.matches();
+						}
+						if(unzip)
+						{	
+							if(!unzipFile(log,filename,shortfilename,realTargetdirectory,realWildcard,
+									realWildcardExclude,result, parentJob, fileObject,movetodir,
+									realMovetodirectory))
+								updateErrors();
+							else
+								updateSuccess();
+						}
+					}
+				}
+			}
+		}catch(Exception e)
+		{
+			updateErrors();
+			log.logError(toString(), Messages.getString("JobUnZip.Error.Label",e.getMessage()));
+		}finally 
+		{	
+			if ( fileObject != null )
+			{
+				try {
+					fileObject.close();
+				}catch ( IOException ex ) {};
+			}
+		}
+		return retval;
+	}
+	private boolean unzipFile(LogWriter log,String sourceFilename,String shortSourceFilename, String realTargetdirectory,String realWildcard,
+			String realWildcardExclude,Result result, Job parentJob, FileObject fileObject,FileObject movetodir,
+			String realMovetodirectory)
+	{
+		boolean retval=false;
+		ZipFile zipfile=null;
+		
+		try{
+			
+			 if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobUnZip.Log.ProcessingFile",sourceFilename));
+		
+			 File folder = new File(realTargetdirectory);
+			 String foldername=folder.getAbsolutePath();
+			 
+			 // Do you create a root folder?
+			 if(rootzip)
+			 {
+	        	int lenstring=shortSourceFilename.length();
+	        	int lastindexOfDot=shortSourceFilename.lastIndexOf('.');
+	        	if(lastindexOfDot==-1) lastindexOfDot=lenstring;
+	        		
+	        	foldername=foldername+ Const.FILE_SEPARATOR + shortSourceFilename.substring(0, lastindexOfDot);
+				File rootfolder=new File(foldername);
+				if(!rootfolder.exists())
+				{
+					 if(rootfolder.mkdir())
+					 {
+						 // root folder was created
+						 if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobUnZip.Log.RootFolderCreated",foldername));
+					 }
+					 else
+					 {
+						 throw new Exception(Messages.getString("JobUnZip.Error.CanNotCreateRootFolder",foldername));
+					 }
+				}
+			 }
+			 
+			// We can now start the unzip process ...
+			zipfile = new ZipFile(new File(sourceFilename));
 
+			Enumeration<? extends ZipEntry> zipEnum =zipfile.entries();
+			
+			Pattern pattern = null;
+			if (!Const.isEmpty(realWildcard)) 
+			{
+				pattern = Pattern.compile(realWildcard);
+		
+			}
+			Pattern patternexclude = null;
+			if (!Const.isEmpty(realWildcardExclude)) 
+			{
+				patternexclude = Pattern.compile(realWildcardExclude);
+		
+			}
+			
+			  while( zipEnum.hasMoreElements() )
+	          {
+					if(successConditionBroken)
+					{
+					  if(!successConditionBrokenExit)
+					  {
+						log.logError(toString(), Messages.getString("JobUnZip.Error.SuccessConditionbroken",""+NrErrors));
+						successConditionBrokenExit=true;
+					  }
+					  return false;
+				  }
+					
+				  ZipEntry item = (ZipEntry) zipEnum.nextElement();
+				  try{
+					  if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobUnZip.Log.ProcessingZipEntry",item.getName(),sourceFilename));
+							
+					  if( item.isDirectory())
+					  {
+						 // Directory 
+			             File newdir = new File( foldername+ Const.FILE_SEPARATOR + item.getName() );
+			             if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("JobUnZip.CreatingDirectory.Label",newdir.getAbsolutePath()));
+		
+			             // Create Directory if necessary ...
+			             if(!newdir.exists())  newdir.mkdir();
+					  }
+					  else
+					  {
+						// File
+						boolean getIt = true;
+						boolean getItexclude = false;
+							
+					    // First see if the file matches the regular expression!
+						if (pattern!=null)
+						{
+							Matcher matcher = pattern.matcher(item.getName());
+							getIt = matcher.matches();
+						}
+		
+						if (patternexclude!=null)
+						{
+							Matcher matcherexclude = patternexclude.matcher(item.getName());
+							getItexclude = matcherexclude.matches();
+						}
+						
+						// get real destination filename  
+						String newfile = foldername+ Const.FILE_SEPARATOR + getTargetFilename(item.getName());
+	
+						boolean take=takeThisFile(log, item,newfile);
+						
+						if (getIt && !getItexclude && take)
+						{
+							if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("JobUnZip.ExtractingEntry.Label",item.getName(),newfile));
+							
+							if(iffileexist==IF_FILE_EXISTS_UNIQ)
+							{
+				        		// Create file with unique name
+				        		
+				        		int lenstring=newfile.length();
+				        		int lastindexOfDot=newfile.lastIndexOf('.');
+				        		if(lastindexOfDot==-1) lastindexOfDot=lenstring;
+				        		
+				        		newfile=newfile.substring(0, lastindexOfDot)
+				        		+ StringUtil.getFormattedDateTimeNow(true) 
+				        		+ newfile.substring(lastindexOfDot, lenstring);
+				        		
+				        		if(log.isDebug()) log.logDebug(toString(), Messages.getString("JobUnZip.Log.CreatingUniqFile",newfile));
+							}
+							
+			                InputStream is = zipfile.getInputStream(item);
+			                FileOutputStream fos = new FileOutputStream(newfile);
+			                
+			                
+			                if(is!=null)
+			                {
+				                byte[] buff=new byte[2048];
+			                	int len;
+			                	
+			                	while((len=is.read(buff))>0)
+			                	{
+			                		fos.write(buff,0,len);
+			                	}
+			               
+			                    if(is!=null) is.close();
+				                if(fos!=null) fos.close();
+			                  
+				               // Add filename to result filenames
+				               addFilenameToResultFilenames(result, parentJob, newfile);
+			                }
+						}// end if take    		
+					 }
+				  } catch(Exception e)
+				  {
+					  updateErrors();
+					  log.logError(toString(), Messages.getString("JobUnZip.Error.CanNotProcessZipEntry",item.getName(),sourceFilename));
+				  }
+	         }// End while
+
+		     zipfile.close();  
+				  
+		     // Here gc() is explicitly called if e.g. createfile is used in the same
+			 // job for the same file. The problem is that after creating the file the
+			 // file object is not properly garbaged collected and thus the file cannot
+			 // be deleted anymore. This is a known problem in the JVM.
+				
+			 //System.gc();
+			  
+			  // Unzip done...
+			  if (afterunzip==1)
+			  {
+				  // delete zip file
+				  boolean deleted = fileObject.delete();
+				  if ( ! deleted )	
+				  {	
+					  updateErrors();
+					  log.logError(toString(), Messages.getString("JobUnZip.Cant_Delete_File.Label",sourceFilename));
+				   }
+				   // File deleted
+				   if(log.isDebug()) log.logDebug(toString(), Messages.getString("JobUnZip.File_Deleted.Label",sourceFilename));
+			  }
+			  else if(afterunzip == 2)
+			  {
+					// Move File	
+					try
+					{
+						fileObject.moveTo(movetodir);
+						if(log.isDebug()) log.logDebug(toString(),Messages.getString("JobUnZip.Log.FileMovedTo",fileObject.toString(),movetodir.toString()));
+					}
+					catch (Exception e) 
+					{
+						updateErrors();
+						log.logError(toString(), Messages.getString("JobUnZip.Cant_Move_File.Label",sourceFilename,realMovetodirectory,e.getMessage()));
+					}
+					// File moved
+					if(log.isDebug()) log.logDebug(toString(), Messages.getString("JobUnZip.File_Moved.Label",sourceFilename,realMovetodirectory));
+			 }
+			  
+			 retval=true;
+		}
+		catch (Exception e) 
+		{
+			updateErrors();
+   			log.logError(Messages.getString("JobUnZip.Error.Label"), Messages.getString("JobUnZip.ErrorUnzip.Label",sourceFilename,e.getMessage()));
+		}
+		finally 
+		{	
+			if ( zipfile != null )
+			{
+				try {
+					zipfile.close();
+				}catch ( IOException ex ) {};
+			}
+		}
+	
+		
+		return retval;
+	}
+
+	private void addFilenameToResultFilenames(Result result, Job parentJob, String newfile) throws Exception
+	{
+		if (addfiletoresult)
+	 	{
+			// Add file to result files name
+			ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL , KettleVFS.getFileObject(newfile), parentJob.getName(), toString());
+			result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
+	 	}
+	}
+	private void updateErrors()
+	{
+		NrErrors++;
+		if(checkIfSuccessConditionBroken())
+		{
+			// Success condition was broken
+			successConditionBroken=true;
+		}
+	}
+	
+	private void updateSuccess()
+	{
+		NrSuccess++;
+	}
+	private boolean checkIfSuccessConditionBroken()
+	{
+		boolean retval=false;
+		if ((NrErrors>0 && getSuccessCondition().equals(SUCCESS_IF_NO_ERRORS))
+				|| (NrErrors>=limitFiles && getSuccessCondition().equals(SUCCESS_IF_ERRORS_LESS)))
+		{
+			retval=true;	
+		}
+		return retval;
+	}
+	private boolean getSuccessStatus()
+	{
+		boolean retval=false;
+		
+		if ((NrErrors==0 && getSuccessCondition().equals(SUCCESS_IF_NO_ERRORS))
+				|| (NrSuccess>=limitFiles && getSuccessCondition().equals(SUCCESS_IF_AT_LEAST_X_FILES_UN_ZIPPED))
+				|| (NrErrors<=limitFiles && getSuccessCondition().equals(SUCCESS_IF_ERRORS_LESS)))
+			{
+				retval=true;	
+			}
+		
+		return retval;
+	}
+	
+	private boolean takeThisFile(LogWriter log, ZipEntry sourceFile, String destinationFile)
+	{
+		boolean retval=false;
+		File destination= new File(destinationFile);
+		if(!destination.exists())
+		{
+			if(log.isDebug()) log.logDebug(toString(), Messages.getString("JobUnZip.Log.CanNotFindFile",destinationFile));
+			return true;
+		}
+		if(log.isDebug()) log.logDebug(toString(), Messages.getString("JobUnZip.Log.FileExists",destinationFile));
+		if(iffileexist==IF_FILE_EXISTS_SKIP)
+		{
+			if(log.isDebug()) log.logDebug(toString(), Messages.getString("JobUnZip.Log.FileSkip",destinationFile));
+			return false;
+		}
+		if(iffileexist==IF_FILE_EXISTS_FAIL)
+		{
+			updateErrors();
+			log.logError(toString(), Messages.getString("JobUnZip.Log.FileError",destinationFile,""+NrErrors));
+			return false;
+		}
+		
+		if(iffileexist==IF_FILE_EXISTS_OVERWRITE)
+		{
+			if(log.isDebug()) log.logDebug(toString(), Messages.getString("JobUnZip.Log.FileOverwrite",destinationFile));
+			return true;
+		}
+		
+		Long entrySize=sourceFile.getSize();
+		Long destinationSize=destination.length();
+		
+		if(iffileexist==IF_FILE_EXISTS_OVERWRITE_DIFF_SIZE)
+		{
+			if(entrySize!=destinationSize)
+			{
+				if(log.isDebug()) log.logDebug(toString(), Messages.getString("JobUnZip.Log.FileDiffSize.Diff",
+						sourceFile.getName(),""+entrySize,destinationFile,""+destinationSize));
+				return true;
+			}
+			else
+			{
+				if(log.isDebug()) log.logDebug(toString(), Messages.getString("JobUnZip.Log.FileDiffSize.Same",
+						sourceFile.getName(),""+entrySize,destinationFile,""+destinationSize));
+				return false;
+			}
+		}
+		if(iffileexist==IF_FILE_EXISTS_OVERWRITE_EQUAL_SIZE)
+		{
+			if(entrySize==destinationSize)
+			{
+				if(log.isDebug()) log.logDebug(toString(), Messages.getString("JobUnZip.Log.FileEqualSize.Same",
+						sourceFile.getName(),""+entrySize,destinationFile,""+destinationSize));
+				return true;
+			}
+			else
+			{
+				if(log.isDebug()) log.logDebug(toString(), Messages.getString("JobUnZip.Log.FileEqualSize.Diff",
+						sourceFile.getName(),""+entrySize,destinationFile,""+destinationSize));
+				return false;
+			}
+		}
+		if(iffileexist==IF_FILE_EXISTS_OVERWRITE_ZIP_BIG)
+		{
+			if(entrySize>destinationSize)
+			{
+				if(log.isDebug()) log.logDebug(toString(), Messages.getString("JobUnZip.Log.FileBigSize.Big",
+						sourceFile.getName(),""+entrySize,destinationFile,""+destinationSize));
+				return true;
+			}
+			else
+			{
+				if(log.isDebug()) log.logDebug(toString(), Messages.getString("JobUnZip.Log.FileBigSize.Small",
+						sourceFile.getName(),""+entrySize,destinationFile,""+destinationSize));
+				return false;
+			}
+		}
+		if(iffileexist==IF_FILE_EXISTS_OVERWRITE_ZIP_BIG_EQUAL)
+		{
+			if(entrySize>=destinationSize)
+			{
+				if(log.isDebug()) log.logDebug(toString(), 
+						Messages.getString("JobUnZip.Log.FileBigEqualSize.Big",	
+								sourceFile.getName(),""+entrySize,destinationFile,""+destinationSize));
+				return true;
+			}
+			else
+			{
+				if(log.isDebug()) log.logDebug(toString(), 
+						Messages.getString("JobUnZip.Log.FileBigEqualSize.Small",	
+								sourceFile.getName(),""+entrySize,destinationFile,""+destinationSize));
+				return false;
+			}
+		}
+		if(iffileexist==IF_FILE_EXISTS_OVERWRITE_ZIP_SMALL)
+		{
+			if(entrySize<destinationSize)
+			{
+				if(log.isDebug()) log.logDebug(toString(), 
+						Messages.getString("JobUnZip.Log.FileSmallSize.Small",	
+								sourceFile.getName(),""+entrySize,destinationFile,""+destinationSize));
+				return true;
+			}
+			else
+			{
+				if(log.isDebug()) log.logDebug(toString(), 
+						Messages.getString("JobUnZip.Log.FileSmallSize.Big",	
+								sourceFile.getName(),""+entrySize,destinationFile,""+destinationSize));
+				return false;
+			}
+		}
+		if(iffileexist==IF_FILE_EXISTS_OVERWRITE_ZIP_SMALL_EQUAL)
+		{
+			if(entrySize<=destinationSize)
+			{
+				if(log.isDebug()) log.logDebug(toString(), 
+						Messages.getString("JobUnZip.Log.FileSmallEqualSize.Small",	
+								sourceFile.getName(),""+entrySize,destinationFile,""+destinationSize));
+				return true;
+			}
+			else
+			{
+				if(log.isDebug()) log.logDebug(toString(), 
+						Messages.getString("JobUnZip.Log.FileSmallEqualSize.Big",	
+								sourceFile.getName(),""+entrySize,destinationFile,""+destinationSize));
+				return false;
+			}
+		}
+		if(iffileexist==IF_FILE_EXISTS_UNIQ)
+		{
+    		// Create file with unique name
+			return true;
+		}
+		
+		return retval;
+	}
+	
 	public boolean evaluates()
 	{
 		return true;
 	}
     
-
+	public static final int getIfFileExistsInt(String desc)
+	{
+		for (int i=0;i<typeIfFileExistsCode.length;i++)
+		{
+			if (typeIfFileExistsCode[i].equalsIgnoreCase(desc)) return i;
+		}
+		return 0;
+	}
+	public static final String getIfFileExistsCode(int i)
+	{
+		if (i<0 || i>=typeIfFileExistsCode.length) return null;
+		return typeIfFileExistsCode[i];
+	}
+	   /**
+     * @return Returns the iffileexist.
+     */
+    public int getIfFileExist()
+    {
+        return iffileexist;
+    }
+    
+    /**
+     * @param setIfFileExist The iffileexist to set.
+     */
+    public void setIfFileExists(int iffileexist)
+    {
+        this.iffileexist = iffileexist;
+    }
 	public void setZipFilename(String zipFilename)
 	{
 		this.zipFilename = zipFilename;
 	}
-	
+
 	public void setWildcard(String wildcard)
 	{
 		this.wildcard = wildcard;
@@ -504,7 +1037,16 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 	{
 		return zipFilename;
 	}
-
+	
+	public String getWildcardSource()
+	{
+		return wildcardSource;
+	}
+	public void setWildcardSource(String wildcardSource)
+	{
+		this.wildcardSource=wildcardSource;
+	}
+	
 	public String getWildcard()
 	{
 		return wildcard;
@@ -523,6 +1065,136 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 	{
 		return addfiletoresult;
 	}
+	public void setDateInFilename(boolean adddate) 
+	{
+		this.adddate= adddate;
+	}
+	
+	public boolean isDateInFilename() 
+	{
+		return adddate;
+	}
+	public void setTimeInFilename(boolean addtime) 
+	{
+		this.addtime= addtime;
+	}
+	public boolean isTimeInFilename() 
+	{
+		return addtime;
+	}
+	 public boolean  isSpecifyFormat()
+	 {
+	   	return SpecifyFormat;
+	 }
+	 public void setSpecifyFormat(boolean SpecifyFormat)
+	 {
+	   	this.SpecifyFormat=SpecifyFormat;
+	 }
+	 public String getDateTimeFormat()
+	 {
+		return date_time_format;
+	 }
+	 public void setDateTimeFormat(String date_time_format)
+	 {
+		this.date_time_format=date_time_format;
+	 }
+	public void setDatafromprevious(boolean isfromprevious) 
+	{
+		this.isfromprevious = isfromprevious;
+	}
+	
+	public boolean getDatafromprevious() 
+	{
+		return isfromprevious;
+	}	
+	
+	public void setCreateRootFolder(boolean rootzip)
+	{
+		this.rootzip=rootzip;
+	}
+	public boolean isCreateRootFolder() 
+	{
+		return rootzip;
+	}	
+	
+	public void setCreateFolder(boolean createfolder)
+	{
+		this.createfolder=createfolder;
+	}
+	public boolean isCreateFolder() 
+	{
+		return createfolder;
+	}	
+	
+	public void setLimit(String nr_limitin)
+	{
+		this.nr_limit=nr_limitin;
+	}
+	
+	public String getLimit()
+	{
+		return nr_limit;
+	}
+	public void setSuccessCondition(String success_condition)
+	{
+		this.success_condition=success_condition;
+	}
+	public String getSuccessCondition()
+	{
+		return success_condition;
+	}
+	
+	
+    /**
+     * @param string the filename from the FTP server
+     * 
+     * @return the calculated target filename
+     */
+	protected String getTargetFilename(String filename)
+    {
+		
+        String retval="";
+		// Replace possible environment variables...
+		if(filename!=null) retval=filename;
+		
+		int lenstring=retval.length();
+		int lastindexOfDot=retval.lastIndexOf('.');
+		if(lastindexOfDot==-1) lastindexOfDot=lenstring;
+		
+		retval=retval.substring(0, lastindexOfDot);
+		
+		SimpleDateFormat daf     = new SimpleDateFormat();
+		Date now = new Date();
+		
+		if(SpecifyFormat && !Const.isEmpty(date_time_format))
+		{
+			daf.applyPattern(date_time_format);
+			String dt = daf.format(now);
+			retval+=dt;
+		}else
+		{
+		
+			if (adddate)
+			{
+				daf.applyPattern("yyyyMMdd");
+				String d = daf.format(now);
+				retval+="_"+d;
+			}
+			if (addtime)
+			{
+				daf.applyPattern("HHmmssSSS");
+				String t = daf.format(now);
+				retval+="_"+t;
+			}
+		}
+		
+		retval+=filename.substring(lastindexOfDot, lenstring);
+
+		return retval;
+
+        
+    }
+	
 	 @Override
 	  public void check(List<CheckResultInterface> remarks, JobMeta jobMeta)
 	  {
