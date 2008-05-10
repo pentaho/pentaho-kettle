@@ -487,6 +487,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 		}
 	
 		result.setNrErrors(NrErrors);
+		result.setNrLinesWritten(NrSuccess);
 		if(getSuccessStatus())	result.setResult(true);
 		
 		

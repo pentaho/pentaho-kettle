@@ -178,10 +178,6 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 	private TextVar wNrErrorsLessThan;
 	private FormData fdlNrErrorsLessThan, fdNrErrorsLessThan;
 	
-	private Label        wlDoNotProcessRest;
-	private Button       wDoNotProcessRest;
-	private FormData     fdlDoNotProcessRest, fdDoNotProcessRest;
-	
 	private Group wDestinationFile;
 	private FormData fdDestinationFile;
 	
@@ -1448,7 +1444,9 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 	  	wlSuccessCondition.setLayoutData(fdlSuccessCondition);
 	  	wSuccessCondition = new CCombo(wSuccessOn, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
 	  	wSuccessCondition.add(Messages.getString("JobMoveFiles.SuccessWhenAllWorksFine.Label"));
+	  	wSuccessCondition.add(Messages.getString("JobMoveFiles.SuccessWhenAtLeat.Label"));
 	  	wSuccessCondition.add(Messages.getString("JobMoveFiles.SuccessWhenErrorsLessThan.Label"));
+	  	
 	  	wSuccessCondition.select(0); // +1: starts at -1
 	  	
 		props.setLook(wSuccessCondition);
@@ -1487,34 +1485,6 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 		fdNrErrorsLessThan.right = new FormAttachment(100, -margin);
 		wNrErrorsLessThan.setLayoutData(fdNrErrorsLessThan);
 		
-		
-
-		// Do Not process rest of files
-		wlDoNotProcessRest = new Label(wSuccessOn, SWT.RIGHT);
-		wlDoNotProcessRest.setText(Messages.getString("JobMoveFiles.DoNotProcessRest.Label"));
-		props.setLook(wlDoNotProcessRest);
-		fdlDoNotProcessRest = new FormData();
-		fdlDoNotProcessRest.left = new FormAttachment(0, 0);
-		fdlDoNotProcessRest.top = new FormAttachment(wNrErrorsLessThan, margin);
-		fdlDoNotProcessRest.right = new FormAttachment(middle, -margin);
-		wlDoNotProcessRest.setLayoutData(fdlDoNotProcessRest);
-		wDoNotProcessRest = new Button(wSuccessOn, SWT.CHECK);
-		props.setLook(wDoNotProcessRest);
-		wDoNotProcessRest.setToolTipText(Messages.getString("JobMoveFiles.DoNotProcessRest.Tooltip"));
-		fdDoNotProcessRest = new FormData();
-		fdDoNotProcessRest.left = new FormAttachment(middle, 0);
-		fdDoNotProcessRest.top = new FormAttachment(wNrErrorsLessThan, margin);
-		fdDoNotProcessRest.right = new FormAttachment(100, 0);
-		wDoNotProcessRest.setLayoutData(fdDoNotProcessRest);
-		wDoNotProcessRest.addSelectionListener(new SelectionAdapter()
-		{
-			public void widgetSelected(SelectionEvent e)
-			{
-				jobEntry.setChanged();
-			}
-		});
-		
-		
 	    fdSuccessOn= new FormData();
 	    fdSuccessOn.left = new FormAttachment(0, margin);
 	    fdSuccessOn.top = new FormAttachment(wDestinationFile, margin);
@@ -1524,9 +1494,6 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 	     // / END OF Success ON GROUP
 	     // ///////////////////////////////////////////////////////////
 
- 		
- 		
- 		
  		
 		 // fileresult grouping?
 	     // ////////////////////////
@@ -1797,10 +1764,8 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 		wIncludeSubfolders.setSelection(jobEntry.include_subfolders);
 		wDestinationIsAFile.setSelection(jobEntry.destination_is_a_file);
 		wCreateDestinationFolder.setSelection(jobEntry.create_destination_folder);
-		wDoNotProcessRest.setSelection(jobEntry.IgnoreRestOfFiles);
 		
 		wAddFileToResult.setSelection(jobEntry.add_result_filesname);
-		
 		
 		wCreateMoveToFolder.setSelection(jobEntry.create_move_to_folder);
 		
@@ -1809,11 +1774,12 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 		else
 			wNrErrorsLessThan.setText("10");
 		
-		
 		if(jobEntry.getSuccessCondition()!=null)
 		{
-			if(jobEntry.getSuccessCondition().equals("success_when_errors_less_than"))
+			if(jobEntry.getSuccessCondition().equals(jobEntry.SUCCESS_IF_AT_LEAST_X_FILES_UN_ZIPPED))
 				wSuccessCondition.select(1);
+			else if(jobEntry.getSuccessCondition().equals(jobEntry.SUCCESS_IF_ERRORS_LESS))
+				wSuccessCondition.select(2);
 			else
 				wSuccessCondition.select(0);	
 		}else wSuccessCondition.select(0);
@@ -1885,15 +1851,16 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 		jobEntry.setAddresultfilesname(wAddFileToResult.getSelection());
 		jobEntry.setDestinationIsAFile(wDestinationIsAFile.getSelection());
 		jobEntry.setCreateDestinationFolder(wCreateDestinationFolder.getSelection());
-		jobEntry.setDoNotProcessRest(wDoNotProcessRest.getSelection());
 		jobEntry.setNrErrorsLessThan(wNrErrorsLessThan.getText());
 		
 		jobEntry.setCreateMoveToFolder(wCreateMoveToFolder.getSelection());
 		
 		if(wSuccessCondition.getSelectionIndex()==1)
-			jobEntry.setSuccessCondition("success_when_errors_less_than");
+			jobEntry.setSuccessCondition(jobEntry.SUCCESS_IF_AT_LEAST_X_FILES_UN_ZIPPED);
+		else if(wSuccessCondition.getSelectionIndex()==2)
+			jobEntry.setSuccessCondition(jobEntry.SUCCESS_IF_ERRORS_LESS);
 		else
-			jobEntry.setSuccessCondition("success_when_all_works_fine");	
+			jobEntry.setSuccessCondition(jobEntry.SUCCESS_IF_NO_ERRORS);	
 		
 		if(wIfFileExists.getSelectionIndex()==1)
 			jobEntry.setIfFileExists("overwrite_file");
