@@ -69,7 +69,9 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
 
 	public  String SUCCESS_IF_AT_LEAST_X_FILES_WELL_FORMED="success_when_at_least";
 	public  String SUCCESS_IF_BAD_FORMED_FILES_LESS="success_if_bad_formed_files_less";
-	public  String SUCCESS_IF_ALL_FILES_WELL_FORMED="success_is_all_files_well_formed";
+	public  String SUCCESS_IF_NO_ERRORS="success_if_no_errors";
+
+	
 	
 	public String ADD_ALL_FILENAMES="all_filenames";
 	public String ADD_WELL_FORMED_FILES_ONLY="only_well_formed_filenames";
@@ -87,6 +89,9 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
 	int NrErrors=0;
 	int NrBadFormed=0;
 	int NrWellFormed=0;
+	int limitFiles=0;
+	boolean successConditionBroken=false;
+	boolean successConditionBrokenExit=false;
 	
 	public JobEntryXMLWellFormed(String n)
 	{
@@ -97,7 +102,7 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
 		wildcard=null;
 		include_subfolders=false;
 		nr_errors_less_than="10";
-		success_condition=SUCCESS_IF_ALL_FILES_WELL_FORMED;
+		success_condition=SUCCESS_IF_NO_ERRORS;
 		
 		setID(-1L);
 		setJobEntryType(JobEntryType.XML_WELL_FORMED);
@@ -250,6 +255,8 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
 	{
 		LogWriter log = LogWriter.getInstance();
 		Result result = previousResult;
+		result.setNrErrors(1);
+		result.setResult(false);
 
 	    List<RowMetaAndData> rows = result.getRows();
 	    RowMetaAndData resultRow = null;
@@ -257,13 +264,13 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
 	    NrErrors=0;
 	    NrWellFormed=0;
 	    NrBadFormed=0;
-
+	    limitFiles=Const.toInt(environmentSubstitute(getNrErrorsLessThan()),10);
+		successConditionBroken=false;
+		successConditionBrokenExit=false;
 
 		// Get source and destination files, also wildcard
 		String vsourcefilefolder[] = source_filefolder;
 		String vwildcard[] = wildcard;
-		
-		result.setResult( true );
 		
 			
 		if (arg_from_previous)
@@ -277,6 +284,16 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
 			for (int iteration=0;iteration<rows.size();iteration++) 
 			{
 			
+				if(successConditionBroken)
+				{
+					if(!successConditionBrokenExit)
+					{
+						log.logError(toString(), Messages.getString("JobXMLWellFormed.Error.SuccessConditionbroken",""+NrErrors));
+						successConditionBrokenExit=true;
+					}
+					result.setEntryNr(NrErrors);
+					return result;
+				}
 				resultRow = rows.get(iteration);
 			
 				// Get source and destination file names, also wildcard
@@ -286,12 +303,24 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
 				if(log.isDetailed())
 					log.logDetailed(toString(), Messages.getString("JobXMLWellFormed.Log.ProcessingRow",vsourcefilefolder_previous,vwildcard_previous));
 
+				ProcessFileFolder(vsourcefilefolder_previous, vwildcard_previous,parentJob,result);
 			}
 		}
 		else if (vsourcefilefolder!=null)
 		{
 			for (int i=0;i<vsourcefilefolder.length;i++)
 			{
+				if(successConditionBroken)
+				{
+					if(!successConditionBrokenExit)
+					{
+						log.logError(toString(), Messages.getString("JobXMLWellFormed.Error.SuccessConditionbroken",""+NrErrors));
+						successConditionBrokenExit=true;
+					}
+					result.setEntryNr(NrErrors);
+					return result;
+				}
+				
 				if(log.isDetailed())
 					log.logDetailed(toString(), Messages.getString("JobXMLWellFormed.Log.ProcessingRow",vsourcefilefolder[i],vwildcard[i]));
 					
@@ -301,15 +330,9 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
 		}	
 		
 		// Success Condition
-		if (getStatus())
-			result.setResult( true );		
-		else
-		{
-			result.setResult(false);
-			result.setNrErrors(NrErrors);
-		}
-		
+		result.setNrErrors(NrErrors);
 		result.setNrLinesWritten(NrWellFormed);
+		if(getSuccessStatus())	result.setResult(true);
 		
 		if(log.isDetailed())
 		{
@@ -322,11 +345,21 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
 		
 		return result;
 	}
-	private boolean getStatus()
+	private boolean checkIfSuccessConditionBroken()
 	{
 		boolean retval=false;
-		int limitFiles=Const.toInt(environmentSubstitute(getNrErrorsLessThan()),10);
-		if ((NrBadFormed==0 && getSuccessCondition().equals(SUCCESS_IF_ALL_FILES_WELL_FORMED))
+		if ((NrErrors>0 && getSuccessCondition().equals(SUCCESS_IF_NO_ERRORS))
+				|| (NrErrors>=limitFiles && getSuccessCondition().equals(SUCCESS_IF_BAD_FORMED_FILES_LESS)))
+		{
+			retval=true;	
+		}
+		return retval;
+	}
+	private boolean getSuccessStatus()
+	{
+		boolean retval=false;
+		
+		if ((NrErrors==0 && getSuccessCondition().equals(SUCCESS_IF_NO_ERRORS))
 				|| (NrWellFormed>=limitFiles && getSuccessCondition().equals(SUCCESS_IF_AT_LEAST_X_FILES_WELL_FORMED))
 				|| (NrBadFormed<=limitFiles && getSuccessCondition().equals(SUCCESS_IF_BAD_FORMED_FILES_LESS)))
 			{
@@ -335,6 +368,16 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
 		
 		return retval;
 	}
+	private void updateErrors()
+	{
+		NrErrors++;
+		if(checkIfSuccessConditionBroken())
+		{
+			// Success condition was broken
+			successConditionBroken=true;
+		}
+	}
+	
 	 public static class XMLTreeHandler extends DefaultHandler {
 		   
 	 }
@@ -428,7 +471,15 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
                      {
                          for (int j = 0; j < fileObjects.length; j++)
                          {
-
+                        	 if(successConditionBroken)
+             				{
+             					if(!successConditionBrokenExit)
+             					{
+             						log.logError(toString(), Messages.getString("JobXMLWellFormed.Error.SuccessConditionbroken",""+NrErrors));
+             						successConditionBrokenExit=true;
+             					}
+             					return false;
+             				}
                          	// Fetch files in list one after one ...
                              CurrentFile=fileObjects[j];
                              
@@ -450,20 +501,15 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
           						{	
                 					checkOneFile(CurrentFile,log,result,parentJob);
           						}
-                			 }
-                                   
+                			 }        
                          }
-                     }
-					 
-					 
-					 
+                     }	 
 				 }else
 				 {
 					 log.logError(toString(), Messages.getString("JobXMLWellFormed.Error.UnknowFileFormat",sourcefilefolder.toString()));					
 					 // Update Errors
 					 updateErrors(); 
 				 }
-				
 			} 
 			else
 			{	
@@ -483,25 +529,18 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
 		{
 			if ( sourcefilefolder != null )
 			{
-				try  
-				{
+				try{
 					sourcefilefolder.close();
-				}
-				catch ( IOException ex ) {};
+				}catch ( IOException ex ) {};
 
 			}
 			if ( CurrentFile != null )
 			{
-				try  
-				{
+				try {
 					CurrentFile.close();
-				}
-				catch ( IOException ex ) {};
-
+				}catch ( IOException ex ) {};
 			}
-	
 		}
-
 		return entrystatus;
 	}
 	
@@ -536,11 +575,6 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
 		 return retval;
 	}
 
-	private void updateErrors()
-	{
-		NrErrors++;
-		
-	}
 	private void updateWellFormed()
 	{
 		NrWellFormed++;

@@ -133,9 +133,10 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 	long NrErrors=0;
 	long NrfilesRetrieved=0;
 	boolean successConditionBroken=false;
+	int limitFiles=0;
 	
 	String targetFilename =null;
-	int limitFiles=0;
+	
 
 	public JobEntryFTP(String n)
 	{
@@ -810,10 +811,12 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 		log4j.info(Messages.getString("JobEntryFTP.Started", serverName)); //$NON-NLS-1$
 		
 		Result result = previousResult;
+		result.setNrErrors(1);
 		result.setResult( false );
 		NrErrors = 0;
 		NrfilesRetrieved=0;
 		successConditionBroken=false;
+		limitFiles=Const.toInt(environmentSubstitute(getLimit()),10);
 
 		
 		// Here let's put some controls before stating the job
@@ -970,9 +973,13 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 			// Get the files in the list...
 			for (int i=0;i<filelist.length && !parentJob.isStopped();i++)
 			{
-				if(successConditionBroken) 
-					throw new Exception(Messages.getString("JobEntryFTP.SuccesConditionBroken"));
+				if(successConditionBroken)
+				{
+					log.logError(toString(), Messages.getString("JobEntryFTP.Error.SuccessConditionbroken",""+NrErrors));
+					throw new Exception(Messages.getString("JobEntryFTP.SuccesConditionBroken",""+NrErrors));
+				}
 				
+
 				boolean getIt = true;
 				
 				if(log.isDebug()) log.logDebug(toString(), Messages.getString("JobEntryFTP.AnalysingFile",filelist[i]));
@@ -1089,21 +1096,44 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
             }
         }
 		
-		result.setResult(!successConditionBroken );
-		result.setNrFilesRetrieved(NrfilesRetrieved);
+		
 		result.setNrErrors(NrErrors);
+		result.setNrFilesRetrieved(NrfilesRetrieved);
+		if(getSuccessStatus())	result.setResult(true);
 		
 		return result;
 	}
-	
+	private boolean getSuccessStatus()
+	{
+		boolean retval=false;
+		
+		if ((NrErrors==0 && getSuccessCondition().equals(SUCCESS_IF_NO_ERRORS))
+				|| (NrfilesRetrieved>=limitFiles && getSuccessCondition().equals(SUCCESS_IF_AT_LEAST_X_FILES_DOWNLOADED))
+				|| (NrErrors<=limitFiles && getSuccessCondition().equals(SUCCESS_IF_ERRORS_LESS)))
+			{
+				retval=true;	
+			}
+		
+		return retval;
+	}
 	private void updateErrors()
 	{
 		NrErrors++;
-		if(!getStatus())
+		if(checkIfSuccessConditionBroken())
 		{
 			// Success condition was broken
 			successConditionBroken=true;
 		}
+	}
+	private boolean checkIfSuccessConditionBroken()
+	{
+		boolean retval=false;
+		if ((NrErrors>0 && getSuccessCondition().equals(SUCCESS_IF_NO_ERRORS))
+				|| (NrErrors>=limitFiles && getSuccessCondition().equals(SUCCESS_IF_ERRORS_LESS)))
+		{
+			retval=true;	
+		}
+		return retval;
 	}
 	private void updateRetrievedFiles()
 	{

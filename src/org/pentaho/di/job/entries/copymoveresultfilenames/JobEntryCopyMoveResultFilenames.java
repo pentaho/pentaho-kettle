@@ -47,6 +47,7 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.job.entries.unzip.Messages;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.job.entry.validator.ValidatorContext;
@@ -72,7 +73,13 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 	private String destination_folder;
 	public boolean IgnoreRestOfFiles;
 	private String nr_errors_less_than;
+	
+	public  String SUCCESS_IF_AT_LEAST_X_FILES_UN_ZIPPED="success_when_at_least";
+	public  String SUCCESS_IF_ERRORS_LESS="success_if_errors_less";
+	public  String SUCCESS_IF_NO_ERRORS="success_if_no_errors";
 	private String success_condition;
+	
+	
 	private boolean add_date;
 	private boolean add_time;
 	private boolean SpecifyFormat;
@@ -86,7 +93,10 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 	boolean AddDestinationFilename;
 	
 	int NrErrors=0;
-	boolean DoNotProcessRest=false;
+	private int NrSuccess=0;
+	boolean successConditionBroken=false;
+	boolean successConditionBrokenExit=false;
+	int limitFiles=0;
 	
 	public JobEntryCopyMoveResultFilenames(String n)
 	{
@@ -110,7 +120,7 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 		nr_errors_less_than="10";
 
 		action="copy";
-		success_condition="success_when_all_works_fine";
+		success_condition=SUCCESS_IF_NO_ERRORS;
 		setID(-1L);
 		setJobEntryType(JobEntryType.COPY_MOVE_RESULT_FILENAMES);
 		
@@ -454,20 +464,25 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 	{
 		LogWriter log = LogWriter.getInstance();
 		Result result = previousResult;
+		result.setNrErrors(1);
 		result.setResult(false);
 		String realdestinationFolder=environmentSubstitute(getDestinationFolder());
 		
 		if(!CreateDestinationFolder(realdestinationFolder, log))
 		{
-			result.setResult( false );
-			result.setNrErrors(1);
+			return result;
 		}
 			
 		
 		if(previousResult!=null)
 		{
 			NrErrors=0;
-			DoNotProcessRest=false;
+			limitFiles=Const.toInt(environmentSubstitute(getNrErrorsLessThan()),10);
+			NrErrors=0;
+			NrSuccess=0;
+			successConditionBroken=false;
+			successConditionBrokenExit=false;
+			
 			FileObject file = null;
 
 			try
@@ -480,6 +495,13 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 			    {
 			      	for (Iterator <ResultFile>  it = resultFiles.iterator() ; it.hasNext();)
 			        {
+			      		
+			      		if(successConditionBroken)
+						{
+							log.logError(toString(), Messages.getString("JobEntryCopyMoveResultFilenames.Error.SuccessConditionbroken",""+NrErrors));
+							throw new Exception(Messages.getString("JobEntryCopyMoveResultFilenames.Error.SuccessConditionbroken",""+NrErrors));	
+						}
+			      		
 			       	  ResultFile resultFile = (ResultFile) it.next();
 			          file = resultFile.getFile();
 			          if (file != null && file.exists())
@@ -489,19 +511,12 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 			           			&& !CheckFileWildcard(file.getName().getBaseName(),  environmentSubstitute(wildcardexclude),false)
 			           			&&specifywilcard))
 			  			{
-			           		if(!DoNotProcessRest)
-			           		{
-				        		// Copy or Move file
-								if(!ProcessFile(file,realdestinationFolder,log,result,parentJob))
-								{
-									// Update Errors
-									updateErrors();
-								}
-			           		}else
-			           		{
-			           			if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("JobEntryCopyMoveResultFilenames.log.IgnoringFile",file.toString()));
-			           	
-			           		}
+			        		// Copy or Move file
+							if(!ProcessFile(file,realdestinationFolder,log,result,parentJob))
+							{
+								// Update Errors
+								updateErrors();
+							}
 			           	}  
 			           	 
 			           }else
@@ -522,40 +537,46 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 			{
 				if ( file != null )
 				{
-					try  
-					{
+					try {
 						file.close();
-						
-					}
-					catch ( Exception ex ) {};
+					}catch ( Exception ex ) {};
 				}
 			}
 		}
 		// Success Condition
-		if (getStatus())
-		{
-			result.setResult( false );
-			result.setNrErrors(NrErrors);	
-		}else
-			result.setResult(true);
+		result.setNrErrors(NrErrors);
+		result.setNrLinesWritten(NrSuccess);
+		if(getSuccessStatus())	result.setResult(true);
 		
 		return result;
 	}
 	private void updateErrors()
 	{
 		NrErrors++;
-		if(isIgnoreRestOfFiles()) 
+		if(checkIfSuccessConditionBroken())
 		{
-			if(getStatus()) DoNotProcessRest=true;
+			// Success condition was broken
+			successConditionBroken=true;
 		}
 	}
-	private boolean getStatus()
+	private boolean checkIfSuccessConditionBroken()
 	{
 		boolean retval=false;
-		int limitErrors=Const.toInt(environmentSubstitute(getNrErrorsLessThan()),10);
-		if ((NrErrors>0 && getSuccessCondition().equals("success_when_all_works_fine"))
-				|| (NrErrors>=limitErrors && !getSuccessCondition().equals("success_when_all_works_fine")))
-				//|| (NrErrors>0 &&  limitErrors==0))
+		if ((NrErrors>0 && getSuccessCondition().equals(SUCCESS_IF_NO_ERRORS))
+				|| (NrErrors>=limitFiles && getSuccessCondition().equals(SUCCESS_IF_ERRORS_LESS)))
+		{
+			retval=true;	
+		}
+		return retval;
+	}
+
+	private boolean getSuccessStatus()
+	{
+		boolean retval=false;
+		
+		if ((NrErrors==0 && getSuccessCondition().equals(SUCCESS_IF_NO_ERRORS))
+				|| (NrSuccess>=limitFiles && getSuccessCondition().equals(SUCCESS_IF_AT_LEAST_X_FILES_UN_ZIPPED))
+				|| (NrErrors<=limitFiles && getSuccessCondition().equals(SUCCESS_IF_ERRORS_LESS)))
 			{
 				retval=true;	
 			}

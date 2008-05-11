@@ -911,7 +911,7 @@ public class JobEntryXMLWellFormedDialog extends JobEntryDialog implements JobEn
 		else if(wSuccessCondition.getSelectionIndex()==2)
 			jobEntry.setSuccessCondition(jobEntry.SUCCESS_IF_BAD_FORMED_FILES_LESS);
 		else
-			jobEntry.setSuccessCondition(jobEntry.SUCCESS_IF_ALL_FILES_WELL_FORMED);	
+			jobEntry.setSuccessCondition(jobEntry.SUCCESS_IF_NO_ERRORS);	
 		
 		if(wAddFilenameToResult.getSelectionIndex()==1)
 			jobEntry.setResultFilenames(jobEntry.ADD_WELL_FORMED_FILES_ONLY);

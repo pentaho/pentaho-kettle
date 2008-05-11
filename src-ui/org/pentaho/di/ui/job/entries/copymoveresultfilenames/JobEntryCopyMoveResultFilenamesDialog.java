@@ -660,6 +660,7 @@ public class JobEntryCopyMoveResultFilenamesDialog extends JobEntryDialog implem
 	  	wlSuccessCondition.setLayoutData(fdlSuccessCondition);
 	  	wSuccessCondition = new CCombo(wSuccessOn, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
 	  	wSuccessCondition.add(Messages.getString("JobEntryCopyMoveResultFilenames.SuccessWhenAllWorksFine.Label"));
+	  	wSuccessCondition.add(Messages.getString("JobEntryCopyMoveResultFilenames.SuccessWhenAtLeat.Label"));
 	  	wSuccessCondition.add(Messages.getString("JobEntryCopyMoveResultFilenames.SuccessWhenErrorsLessThan.Label"));
 	  	wSuccessCondition.select(0); // +1: starts at -1
 	  	
@@ -836,14 +837,18 @@ public class JobEntryCopyMoveResultFilenamesDialog extends JobEntryDialog implem
 		else
 			wNrErrorsLessThan.setText("10");
 		
-		
+
 		if(jobEntry.getSuccessCondition()!=null)
 		{
-			if(jobEntry.getSuccessCondition().equals("success_when_errors_less_than"))
+			if(jobEntry.getSuccessCondition().equals(jobEntry.SUCCESS_IF_AT_LEAST_X_FILES_UN_ZIPPED))
 				wSuccessCondition.select(1);
+			else if(jobEntry.getSuccessCondition().equals(jobEntry.SUCCESS_IF_ERRORS_LESS))
+				wSuccessCondition.select(2);
 			else
 				wSuccessCondition.select(0);	
 		}else wSuccessCondition.select(0);
+		
+		
 		
 		if(jobEntry.getAction()!=null)
 		{
@@ -885,11 +890,13 @@ public class JobEntryCopyMoveResultFilenamesDialog extends JobEntryDialog implem
 		jobEntry.setIgnoreRestOfFiles(wIgnoreRestOfFiles.getSelection());
 		jobEntry.setNrErrorsLessThan(wNrErrorsLessThan.getText());
 		
+
 		if(wSuccessCondition.getSelectionIndex()==1)
-			jobEntry.setSuccessCondition("success_when_errors_less_than");
+			jobEntry.setSuccessCondition(jobEntry.SUCCESS_IF_AT_LEAST_X_FILES_UN_ZIPPED);
+		else if(wSuccessCondition.getSelectionIndex()==2)
+			jobEntry.setSuccessCondition(jobEntry.SUCCESS_IF_ERRORS_LESS);
 		else
-			jobEntry.setSuccessCondition("success_when_all_works_fine");	
-		
+			jobEntry.setSuccessCondition(jobEntry.SUCCESS_IF_NO_ERRORS);
 		
 		if(wAction.getSelectionIndex()==1)
 			jobEntry.setAction("move");
