@@ -70,7 +70,6 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 	private String wildcard;
 	private String wildcardexclude;
 	private String destination_folder;
-	public boolean IgnoreRestOfFiles;
 	private String nr_errors_less_than;
 	
 	public  String SUCCESS_IF_AT_LEAST_X_FILES_UN_ZIPPED="success_when_at_least";
@@ -115,7 +114,6 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 		date_time_format=null;
 		AddDateBeforeExtension=false;
 		destination_folder=null;
-		IgnoreRestOfFiles=true;
 		nr_errors_less_than="10";
 
 		action="copy";
@@ -154,7 +152,6 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 		retval.append("      ").append(XMLHandler.addTagValue("wildcard",   wildcard));
 		retval.append("      ").append(XMLHandler.addTagValue("wildcardexclude",   wildcardexclude));
 		retval.append("      ").append(XMLHandler.addTagValue("destination_folder",   destination_folder));
-		retval.append("      ").append(XMLHandler.addTagValue("IgnoreRestOfFiles", IgnoreRestOfFiles));
 		retval.append("      ").append(XMLHandler.addTagValue("nr_errors_less_than", nr_errors_less_than));
 		retval.append("      ").append(XMLHandler.addTagValue("success_condition", success_condition));
 		retval.append("      ").append(XMLHandler.addTagValue("add_date", add_date));
@@ -183,7 +180,6 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 			wildcard = XMLHandler.getTagValue(entrynode, "wildcard");
 			wildcardexclude = XMLHandler.getTagValue(entrynode, "wildcardexclude");	
 			destination_folder = XMLHandler.getTagValue(entrynode, "destination_folder");
-			IgnoreRestOfFiles = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "IgnoreRestOfFiles") );
 			nr_errors_less_than          = XMLHandler.getTagValue(entrynode, "nr_errors_less_than");
 			success_condition          = XMLHandler.getTagValue(entrynode, "success_condition");
 			add_date = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "add_date"));
@@ -219,7 +215,6 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 			wildcard = rep.getJobEntryAttributeString(id_jobentry, "wildcard");
 			wildcardexclude = rep.getJobEntryAttributeString(id_jobentry, "wildcardexclude");
 			destination_folder = rep.getJobEntryAttributeString(id_jobentry, "destination_folder");
-			IgnoreRestOfFiles = rep.getJobEntryAttributeBoolean(id_jobentry, "IgnoreRestOfFiles");
 			nr_errors_less_than  = rep.getJobEntryAttributeString(id_jobentry, "nr_errors_less_than");
 			success_condition  = rep.getJobEntryAttributeString(id_jobentry, "success_condition");
 			add_date = rep.getJobEntryAttributeBoolean(id_jobentry, "add_date"); 
@@ -256,7 +251,6 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 			rep.saveJobEntryAttribute(id_job, getID(), "wildcardexclude", wildcardexclude);
 
 			rep.saveJobEntryAttribute(id_job, getID(), "destination_folder", destination_folder);
-			rep.saveJobEntryAttribute(id_job, getID(), "IgnoreRestOfFiles", IgnoreRestOfFiles);
 			rep.saveJobEntryAttribute(id_job, getID(), "nr_errors_less_than",      nr_errors_less_than);
 			rep.saveJobEntryAttribute(id_job, getID(), "success_condition",      success_condition);
 			rep.saveJobEntryAttribute(id_job, getID(), "add_date", add_date);
@@ -408,18 +402,6 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
     {
     	return destination_folder;
     }
-    
-    public boolean isIgnoreRestOfFiles()
-    {
-    	return IgnoreRestOfFiles;
-    }
-    
-    
-    
-    public void setIgnoreRestOfFiles(boolean IgnoreRestOfFiles)
-	{
-		this.IgnoreRestOfFiles=IgnoreRestOfFiles;
-	}
 	
 	public void setNrErrorsLessThan(String nr_errors_less_than)
 	{

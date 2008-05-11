@@ -47,7 +47,7 @@ import org.pentaho.di.job.entries.copymoveresultfilenames.Messages;
 
 
 /**
- * This dialog allows you to edit the Create Folder job entry settings.
+ * This dialog allows you to edit the Copy/Move result filenames job entry settings.
  *
  * @author Samatar
  * @since  26-02-2008
@@ -125,10 +125,6 @@ public class JobEntryCopyMoveResultFilenamesDialog extends JobEntryDialog implem
 	private Label wlNrErrorsLessThan;
 	private TextVar wNrErrorsLessThan;
 	private FormData fdlNrErrorsLessThan, fdNrErrorsLessThan;
-	
-	private Label        wlIgnoreRestOfFiles;
-	private Button       wIgnoreRestOfFiles;
-	private FormData     fdlIgnoreRestOfFiles, fdIgnoreRestOfFiles;
 	
 	private Label        wlOverwriteFile;
 	private Button       wOverwriteFile;
@@ -701,33 +697,6 @@ public class JobEntryCopyMoveResultFilenamesDialog extends JobEntryDialog implem
 		wNrErrorsLessThan.setLayoutData(fdNrErrorsLessThan);
 		
 		
-
-		// Ignore rest of files
-		wlIgnoreRestOfFiles = new Label(wSuccessOn, SWT.RIGHT);
-		wlIgnoreRestOfFiles.setText(Messages.getString("JobEntryCopyMoveResultFilenames.IgnoreRestOfFiles.Label"));
-		props.setLook(wlIgnoreRestOfFiles);
-		fdlIgnoreRestOfFiles = new FormData();
-		fdlIgnoreRestOfFiles.left = new FormAttachment(0, 0);
-		fdlIgnoreRestOfFiles.top = new FormAttachment(wNrErrorsLessThan, margin);
-		fdlIgnoreRestOfFiles.right = new FormAttachment(middle, -margin);
-		wlIgnoreRestOfFiles.setLayoutData(fdlIgnoreRestOfFiles);
-		wIgnoreRestOfFiles = new Button(wSuccessOn, SWT.CHECK);
-		props.setLook(wIgnoreRestOfFiles);
-		wIgnoreRestOfFiles.setToolTipText(Messages.getString("JobEntryCopyMoveResultFilenames.IgnoreRestOfFiles.Tooltip"));
-		fdIgnoreRestOfFiles = new FormData();
-		fdIgnoreRestOfFiles.left = new FormAttachment(middle, 0);
-		fdIgnoreRestOfFiles.top = new FormAttachment(wNrErrorsLessThan, margin);
-		fdIgnoreRestOfFiles.right = new FormAttachment(100, 0);
-		wIgnoreRestOfFiles.setLayoutData(fdIgnoreRestOfFiles);
-		wIgnoreRestOfFiles.addSelectionListener(new SelectionAdapter()
-		{
-			public void widgetSelected(SelectionEvent e)
-			{
-				jobEntry.setChanged();
-			}
-		});
-		
-		
 	    fdSuccessOn= new FormData();
 	    fdSuccessOn.left = new FormAttachment(0, margin);
 	    fdSuccessOn.top = new FormAttachment(wLimitTo, margin);
@@ -830,7 +799,6 @@ public class JobEntryCopyMoveResultFilenamesDialog extends JobEntryDialog implem
 		
 
 		if (jobEntry.getDestinationFolder()!= null) wFoldername.setText( jobEntry.getDestinationFolder() );
-		wIgnoreRestOfFiles.setSelection(jobEntry.isIgnoreRestOfFiles());
 
 		if (jobEntry.getNrErrorsLessThan()!= null) 
 			wNrErrorsLessThan.setText( jobEntry.getNrErrorsLessThan() );
@@ -887,7 +855,6 @@ public class JobEntryCopyMoveResultFilenamesDialog extends JobEntryDialog implem
 		jobEntry.setWildcardExclude(wWildcardExclude.getText());
 
 		jobEntry.setDestinationFolder(wFoldername.getText());
-		jobEntry.setIgnoreRestOfFiles(wIgnoreRestOfFiles.getSelection());
 		jobEntry.setNrErrorsLessThan(wNrErrorsLessThan.getText());
 		
 
