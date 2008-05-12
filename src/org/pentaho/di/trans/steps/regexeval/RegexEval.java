@@ -125,56 +125,74 @@ public class RegexEval extends BaseStep implements StepInterface
 		{
 			outputRow[i] = row[i];
 		}
-		
-		// Get the Field value
-		String fieldValue= getInputRowMeta().getString(row,data.indexOfFieldToEvaluate);
-		
-		if (fieldValue == null)
-		{
-			outputRow[data.indexOfMatchResultField] = false;
-		}
-		else
-		{
-			// Search engine
-			Matcher m = data.pattern.matcher(fieldValue);
-
-			// Start search
-			boolean isMatch = m.matches();
-			outputRow[data.indexOfMatchResultField] = isMatch;
-
-			String[] values = new String[data.nrExtraFields];
-
-			for (int i = 0; i < data.nrExtraFields; i++)
+		boolean sendToErrorRow=false;
+		String errorMessage = null;
+		try{
+			// Get the Field value
+			String fieldValue= getInputRowMeta().getString(row,data.indexOfFieldToEvaluate);
+			
+			if (fieldValue == null)
 			{
-				if (isMatch)
-				{
-					if (data.nrExtraFields != m.groupCount())
-					{
-						// Runtime exception case. The number of capture groups in the regex doesn't match the number of fields.
-						log.logError("Error",Messages.getString("RegexEval.Log.ErrorCaptureGroupFieldsMismatch", String.valueOf(m.groupCount()), String.valueOf(data.nrExtraFields)));
-						throw new KettleStepException(Messages.getString("RegexEval.Exception.ErrorCaptureGroupFieldsMismatch", String.valueOf(m.groupCount()), String.valueOf(data.nrExtraFields))); 
-					}
-					values[i] = m.group(i+1);
-				}
-
-				ValueMetaInterface valueMeta = data.outputRowMeta.getValueMeta(data.indexOfFirstCaptureGroupField+i); 
-				ValueMetaInterface conversionValueMeta = data.conversionRowMeta.getValueMeta(data.indexOfFirstCaptureGroupField+i);
-				Object convertedValue = valueMeta.convertDataFromString
-				(
-						values[i],
-						conversionValueMeta,
-						meta.getFieldNullIf()[i],
-						meta.getFieldIfNull()[i],
-						meta.getFieldTrimType()[i]
-				);
-
-				outputRow[data.indexOfFirstCaptureGroupField+i] = convertedValue;
+				outputRow[data.indexOfMatchResultField] = false;
 			}
+			else
+			{
+				// Search engine
+				Matcher m = data.pattern.matcher(fieldValue);
+	
+				// Start search
+				boolean isMatch = m.matches();
+				outputRow[data.indexOfMatchResultField] = isMatch;
+	
+				String[] values = new String[data.nrExtraFields];
+	
+				for (int i = 0; i < data.nrExtraFields; i++)
+				{
+					if (isMatch)
+					{
+						if (data.nrExtraFields != m.groupCount())
+						{
+							// Runtime exception case. The number of capture groups in the regex doesn't match the number of fields.
+							log.logError("Error",Messages.getString("RegexEval.Log.ErrorCaptureGroupFieldsMismatch", String.valueOf(m.groupCount()), String.valueOf(data.nrExtraFields)));
+							throw new KettleStepException(Messages.getString("RegexEval.Exception.ErrorCaptureGroupFieldsMismatch", String.valueOf(m.groupCount()), String.valueOf(data.nrExtraFields))); 
+						}
+						values[i] = m.group(i+1);
+					}
+	
+					ValueMetaInterface valueMeta = data.outputRowMeta.getValueMeta(data.indexOfFirstCaptureGroupField+i); 
+					ValueMetaInterface conversionValueMeta = data.conversionRowMeta.getValueMeta(data.indexOfFirstCaptureGroupField+i);
+					Object convertedValue = valueMeta.convertDataFromString
+					(
+							values[i],
+							conversionValueMeta,
+							meta.getFieldNullIf()[i],
+							meta.getFieldIfNull()[i],
+							meta.getFieldTrimType()[i]
+					);
+	
+					outputRow[data.indexOfFirstCaptureGroupField+i] = convertedValue;
+				}
+			}
+			if (log.isRowLevel()) logRowlevel(Messages.getString("RegexEval.Log.ReadRow") + " " +  getInputRowMeta().getString(row)); 
+			
+			putRow(data.outputRowMeta, outputRow);  // copy row to output rowset(s);
+		}catch(KettleException e)
+		{
+			if (getStepMeta().isDoingErrorHandling())
+	        {
+                sendToErrorRow = true;
+                errorMessage = e.toString();
+	        }else
+	        {
+				throw new KettleStepException(Messages.getString("RegexEval.Log.ErrorInStep"), e); //$NON-NLS-1$
+	        }
+			 
+			 if (sendToErrorRow)
+	         {
+				 // Simply add this row to the error row
+	             putError(getInputRowMeta(), outputRow, 1, errorMessage, null, "REGEX001");
+	         }
 		}
-		if (log.isRowLevel()) logRowlevel(Messages.getString("RegexEval.Log.ReadRow") + " " +  getInputRowMeta().getString(row)); 
-		
-		putRow(data.outputRowMeta, outputRow);  // copy row to output rowset(s);
-       
 		return true;
 	}
 		
