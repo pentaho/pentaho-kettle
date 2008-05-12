@@ -117,7 +117,7 @@ public class HTTP extends BaseStep implements StepInterface
     {
     	try
     	{
-	        StringBuffer url = new StringBuffer(environmentSubstitute(meta.getUrl())); // the base URL
+	        StringBuffer url = new StringBuffer(environmentSubstitute(meta.getUrl())); // the base URL with variable substitution
 	        
 	        for (int i=0;i<data.argnrs.length;i++)
 	        {
