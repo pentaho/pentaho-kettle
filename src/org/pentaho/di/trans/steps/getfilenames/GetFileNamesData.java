@@ -63,6 +63,8 @@ public class GetFileNamesData extends BaseStepData implements StepDataInterface
 	public String filename;
 
 	public int filenr;
+	
+	public int filessize;
 
 	public FileInputStream fr;
 
@@ -92,6 +94,8 @@ public class GetFileNamesData extends BaseStepData implements StepDataInterface
     
     public int indexOfFilenameField;
     
+    public int indexOfWildcardField;
+    
     public RowMetaInterface inputRowMeta;
     
     public Object[] readrow;
@@ -116,6 +120,7 @@ public class GetFileNamesData extends BaseStepData implements StepDataInterface
 		nr_repeats = 0;
 		previous_row = null;
 		filenr = 0;
+		filessize=0;
 
 		nrLinesOnPage = 0;
 
@@ -124,6 +129,7 @@ public class GetFileNamesData extends BaseStepData implements StepDataInterface
 		file=null;
 		totalpreviousfields=0;
 		indexOfFilenameField=-1;
+		indexOfWildcardField=-1;
 		readrow=null;
 		nrStepFields=0;
 	}

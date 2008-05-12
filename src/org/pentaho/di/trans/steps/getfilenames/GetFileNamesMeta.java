@@ -79,6 +79,8 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
 	
 	private String dynamicFilenameField;
 	
+	private String dynamicWildcardField;
+	
 	/** file name from previous fields **/
 	private boolean filefield;
 	
@@ -112,6 +114,15 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
     {
         this.dynamicFilenameField = dynamicFilenameField;
     }
+    
+    /**
+     * @param dynamicWildcardField The dynamic wildcard field to set.
+     */
+    public void setDynamicWildcardField(String dynamicWildcardField)
+    {
+        this.dynamicWildcardField = dynamicWildcardField;
+    }
+    
     /**
      * @param rowNumberField The rowNumberField to set.
      */
@@ -127,6 +138,14 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
     {
         return dynamicFilenameField;
     }   
+    
+    /**
+     * @return Returns the dynamic wildcard field (from previous steps)
+     */
+    public String getDynamicWildcardField()
+    {
+        return dynamicWildcardField;
+    }  
     
     /**
      * @return Returns the includeRowNumber.
@@ -294,6 +313,7 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
 		includeRowNumber = false;
 		rowNumberField   = "";
 		dynamicFilenameField ="";
+		dynamicWildcardField="";
 		
 		allocate(nrfiles);
 
@@ -405,6 +425,8 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
 	    retval.append("    ").append(XMLHandler.addTagValue("filefield",       filefield));
 	    retval.append("    ").append(XMLHandler.addTagValue("rownum_field",    rowNumberField));
         retval.append("    ").append(XMLHandler.addTagValue("filename_Field",  dynamicFilenameField));
+        retval.append("    ").append(XMLHandler.addTagValue("wildcard_Field",  dynamicWildcardField));
+        
         retval.append("    ").append(XMLHandler.addTagValue("limit", rowLimit));
         
 		retval.append("    <file>").append(Const.CR);
@@ -433,6 +455,8 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
 			filefield  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "filefield"));
 			rowNumberField    = XMLHandler.getTagValue(stepnode, "rownum_field");
 			dynamicFilenameField    = XMLHandler.getTagValue(stepnode, "filename_Field");
+			dynamicWildcardField    = XMLHandler.getTagValue(stepnode, "wildcard_Field");
+			
 			// Is there a limit on the number of rows we process?
 			rowLimit = Const.toLong(XMLHandler.getTagValue(stepnode, "limit"), 0L);
 			
@@ -465,6 +489,8 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
 			filterfiletype=rep.getStepAttributeString(id_step, "filterfiletype");
 			
 			dynamicFilenameField  = rep.getStepAttributeString(id_step, "filename_Field");
+			dynamicWildcardField  = rep.getStepAttributeString(id_step, "wildcard_Field");
+			
 			includeRowNumber  = rep.getStepAttributeBoolean(id_step, "rownum");
 			isaddresult  = rep.getStepAttributeBoolean(id_step, rep.getStepAttributeString(id_step, "isaddresult"));
 			filefield  = rep.getStepAttributeBoolean(id_step, "filefield");
@@ -497,6 +523,8 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "isaddresult",     isaddresult);
 			rep.saveStepAttribute(id_transformation, id_step, "filefield",          filefield);
 			rep.saveStepAttribute(id_transformation, id_step, "filename_Field",    dynamicFilenameField);
+			rep.saveStepAttribute(id_transformation, id_step, "wildcard_Field",    dynamicWildcardField);
+			
 			rep.saveStepAttribute(id_transformation, id_step, "rownum_field",    rowNumberField);
 			rep.saveStepAttribute(id_transformation, id_step, "limit",           rowLimit);
 			
@@ -522,6 +550,11 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		return FileInputList.createFileList(space, fileName, fileMask, fileRequired);
 	}
+	public FileInputList getDynamicTextFileList(VariableSpace space, String[] filename, String[] filemask, String[] filerequired)
+	{
+		return FileInputList.createFileList(space, filename, filemask, filerequired);
+	}
+
 
 	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
 	{

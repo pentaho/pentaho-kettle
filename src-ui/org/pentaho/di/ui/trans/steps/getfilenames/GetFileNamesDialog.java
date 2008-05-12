@@ -40,10 +40,8 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
-import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -144,6 +142,10 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
     private CCombo wFilenameField;
     private FormData fdlFileField,fdFileField;
     
+    private Label wlWildcardField;
+    private CCombo wWildcardField;
+    private FormData fdlWildcardField,fdWildcardField;
+    
 	private Group wAdditionalGroup;
 	private FormData fdAdditionalGroup,fdlAddResult;
 	private Group wAddFileResult;
@@ -162,6 +164,8 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 	private Label        wlInclRownumField;
 	private TextVar      wInclRownumField;
 	private FormData     fdlInclRownumField, fdInclRownumField;
+	
+	private boolean 	getpreviousFields=false;
 	
     private Label wlAddResult;
 	
@@ -271,10 +275,12 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
             public void widgetSelected(SelectionEvent arg0)
             {
             	ActiveFileField();
+            	setFileField();
             	input.setChanged();
             }
         };
         wFileField.addSelectionListener(lfilefield);
+        
         
 		// Filename field
 		wlFilenameField=new Label(wOriginFiles, SWT.RIGHT);
@@ -295,24 +301,30 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
         fdFilenameField.left = new FormAttachment(middle, 0);
         fdFilenameField.top  = new FormAttachment(wFileField, margin);
         fdFilenameField.right= new FormAttachment(100, -margin);
-        wFilenameField.setLayoutData(fdFilenameField);
-        wFilenameField.addFocusListener(new FocusListener()
-            {
-                public void focusLost(org.eclipse.swt.events.FocusEvent e)
-                {
-                }
-            
-                public void focusGained(org.eclipse.swt.events.FocusEvent e)
-                {
-                    Cursor busy = new Cursor(shell.getDisplay(), SWT.CURSOR_WAIT);
-                    shell.setCursor(busy);
-                    setFileField();
-                    shell.setCursor(null);
-                    busy.dispose();
-                }
-            }
-        );           	
+        wFilenameField.setLayoutData(fdFilenameField);   	
         
+
+        // Wildcard field
+ 		 wlWildcardField=new Label(wOriginFiles, SWT.RIGHT);
+         wlWildcardField.setText(Messages.getString("GetFileNamesDialog.wlWildcardField.Label"));
+         props.setLook(wlWildcardField);
+         fdlWildcardField=new FormData();
+         fdlWildcardField.left = new FormAttachment(0, 0);
+         fdlWildcardField.top  = new FormAttachment(wFilenameField, margin);
+         fdlWildcardField.right= new FormAttachment(middle, -margin);
+         wlWildcardField.setLayoutData(fdlWildcardField);
+         
+         
+         wWildcardField=new CCombo(wOriginFiles, SWT.BORDER | SWT.READ_ONLY);
+         wWildcardField.setEditable(true);
+         props.setLook(wWildcardField);
+         wWildcardField.addModifyListener(lsMod);
+         fdWildcardField=new FormData();
+         fdWildcardField.left = new FormAttachment(middle, 0);
+         fdWildcardField.top  = new FormAttachment(wFilenameField, margin);
+         fdWildcardField.right= new FormAttachment(100, -margin);
+         wWildcardField.setLayoutData(fdWildcardField);
+        	  
 		fdOriginFiles = new FormData();
 		fdOriginFiles.left = new FormAttachment(0, margin);
 		fdOriginFiles.top = new FormAttachment(wFilenameList, margin);
@@ -799,6 +811,7 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 		wTabFolder.setSelection(0);
 
 		// Set the shell size, based upon previous time...
+		setFileField();
 		getData(input);
 		ActiveFileField();
 		setSize();
@@ -814,20 +827,24 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 	 private void setFileField()
 	 {
 		 try{
-	           
-			 wFilenameField.removeAll();
-				
-			 RowMetaInterface r = transMeta.getPrevStepFields(stepname);
-				if (r!=null)
-				{
+	         if(!getpreviousFields)
+	         {
+	        	 getpreviousFields=true;
+				 wFilenameField.removeAll();
+				 wWildcardField.removeAll();
+					
+				 RowMetaInterface r = transMeta.getPrevStepFields(stepname);
+				 if (r!=null)
+				 {
 		             r.getFieldNames();
 		             
-		             for (int i=0;i<r.getFieldNames().length;i++)
-						{	
-		            	 wFilenameField.add(r.getFieldNames()[i]);					
-							
-						}
-				}
+		            for (int i=0;i<r.getFieldNames().length;i++)
+					{	
+	            	 	wFilenameField.add(r.getFieldNames()[i]);					
+	            	 	wWildcardField.add(r.getFieldNames()[i]);
+					}
+				 }
+	         }
 			 
 			
 		 }catch(KettleException ke){
@@ -839,7 +856,9 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 		if(wFileField.getSelection())
 			wLimit.setText("0");
 		wlFilenameField.setEnabled(wFileField.getSelection());
-		wlFilenameField.setEnabled(wFileField.getSelection());
+		wFilenameField.setEnabled(wFileField.getSelection());
+		wlWildcardField.setEnabled(wFileField.getSelection());
+		wWildcardField.setEnabled(wFileField.getSelection());
 			
 		wlFilename.setEnabled(!wFileField.getSelection());
 		wbbFilename.setEnabled(!wFileField.getSelection());
@@ -906,6 +925,7 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 			wFileField.setSelection(in.isFileField());
 			if (in.getRowNumberField()!=null) wInclRownumField.setText(in.getRowNumberField());
 			if (in.getDynamicFilenameField()!=null) wFilenameField.setText(in.getDynamicFilenameField());
+			if (in.getDynamicWildcardField()!=null) wWildcardField.setText(in.getDynamicWildcardField());
 			wLimit.setText(""+in.getRowLimit());
 
 		}
@@ -942,6 +962,7 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 		in.setIncludeRowNumber( wInclRownum.getSelection() );
 		in.setAddResultFile( wAddResult.getSelection() );
 		in.setDynamicFilenameField( wFilenameField.getText() );
+		in.setDynamicWildcardField( wWildcardField.getText() );
 		in.setFileField(wFileField.getSelection() );
 		in.setRowNumberField( wInclRownumField.getText() );
 		in.setRowLimit( Const.toLong(wLimit.getText(), 0L) );

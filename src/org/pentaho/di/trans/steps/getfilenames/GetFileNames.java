@@ -65,31 +65,31 @@ public class GetFileNames extends BaseStep implements StepInterface
 
     public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
     {
-  		
     	if(!meta.isFileField())
 		{
-    		if (data.filenr >= data.files.nrOfFiles())
+    		if (data.filenr >= data.filessize)
   	        {
   	            setOutputDone();
   	            return false;
   	        }
-
-    		
 		}else
 		{
+			if (data.filenr >= data.filessize)
+  	        {
+				// Grab one row from previous step ...
+				data.readrow=getRow();
+  	        }
 
-			data.readrow=getRow();
 			if (data.readrow==null)
   	        {
   	            setOutputDone();
   	            return false;
   	        }
-    		
 			
 	        if (first)
-	        {
+	        {	        	
 	            first = false;
-				
+
 				data.inputRowMeta = getInputRowMeta();
 				data.outputRowMeta = data.inputRowMeta.clone();
 		        meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
@@ -103,6 +103,7 @@ public class GetFileNames extends BaseStep implements StepInterface
 					logError(Messages.getString("GetFileNames.Log.NoField"));
 					throw new KettleException(Messages.getString("GetFileNames.Log.NoField"));
 				}
+				
 	            
 				// cache the position of the field			
 				if (data.indexOfFilenameField<0)
@@ -114,7 +115,22 @@ public class GetFileNames extends BaseStep implements StepInterface
 						logError(Messages.getString("GetFileNames.Log.ErrorFindingField")+ "[" + meta.getDynamicFilenameField()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
 						throw new KettleException(Messages.getString("GetFileNames.Exception.CouldnotFindField",meta.getDynamicFilenameField())); //$NON-NLS-1$ //$NON-NLS-2$
 					}
-				}   
+				}  
+				
+	        	// If wildcard field is specified, Check if field exists
+				if (!Const.isEmpty(meta.getDynamicWildcardField()))
+				{
+					if (data.indexOfWildcardField<0)
+					{
+						data.indexOfWildcardField =data.inputRowMeta.indexOfValue(meta.getDynamicWildcardField());
+						if (data.indexOfWildcardField<0)
+						{
+							// The field is unreachable !
+							logError(Messages.getString("GetFileNames.Log.ErrorFindingField")+ "[" + meta.getDynamicWildcardField()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+							throw new KettleException(Messages.getString("GetFileNames.Exception.CouldnotFindField",meta.getDynamicWildcardField())); //$NON-NLS-1$ //$NON-NLS-2$
+						}
+					}
+				}
 
 	        }
 		}// end if first
@@ -126,104 +142,117 @@ public class GetFileNames extends BaseStep implements StepInterface
 			Object extraData[] = new Object[data.nrStepFields];
         	if(meta.isFileField())
         	{
-        		String filename=getInputRowMeta().getString(data.readrow,data.indexOfFilenameField);
-        		data.file=KettleVFS.getFileObject(filename);
+    			if (data.filenr >= data.filessize)
+    		    {
+    				// Get value of dynamic filename field ...
+    	    		String filename=getInputRowMeta().getString(data.readrow,data.indexOfFilenameField);
+    	    		String wildcard=".*";
+    	    		if(data.indexOfWildcardField>=0)
+    	    			wildcard=getInputRowMeta().getString(data.readrow,data.indexOfWildcardField);
+    	    		
+    	    		String[] filesname={filename};
+    		      	String[] filesmask={wildcard};
+    		      	String[] filesrequired={"N"};
+    		      	// Get files list
+    		      	data.files = meta.getDynamicTextFileList(getTransMeta(), filesname, filesmask, filesrequired);
+    		      	data.filessize=data.files.nrOfFiles();
+    		      	data.filenr=0;
+    		     }
         		
+        		// Clone current input row
     			outputRow = data.readrow.clone();
-        	
-        	}else
-        	{
-        		data.file = data.files.getFile(data.filenr);
         	}
-        	
-            if (meta.getFilterFileType()==null || 
-            	meta.getFilterFileType().equals("all_files") || 
-            	(meta.getFilterFileType().equals("only_files") && data.file.getType() == FileType.FILE) ||
-                meta.getFilterFileType().equals("only_folders") && data.file.getType() == FileType.FOLDER)
-            {
-
-            	
-                if(meta.isAddResultFile())
-                {
-         			// Add this to the result file names...
-         			ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, data.file, getTransMeta().getName(), getStepname());
-         			resultFile.setComment("File was read by a get file names step");
-         			addResultFile(resultFile);
-                }
-            	
-                // filename
-        		extraData[outputIndex++]=KettleVFS.getFilename(data.file);
-
-                // short_filename
-        		extraData[outputIndex++]=data.file.getName().getBaseName();
-
-                try
-                {
-                	
-    				 // Path
-                	 extraData[outputIndex++]=KettleVFS.getFilename(data.file.getParent());
-
-                	 // type
-    				 extraData[outputIndex++]=data.file.getType().toString();
-    				 
-                     // exists
-    				 extraData[outputIndex++]=Boolean.valueOf(data.file.exists());
-                    
-                     // ishidden
-    				 extraData[outputIndex++]=Boolean.valueOf(data.file.isHidden());
-
-                     // isreadable
-    				 extraData[outputIndex++]=Boolean.valueOf(data.file.isReadable());
-    				
-                     // iswriteable
-    				 extraData[outputIndex++]=Boolean.valueOf(data.file.isWriteable());
-
-                     // lastmodifiedtime
-    				 extraData[outputIndex++]=new Date( data.file.getContent().getLastModifiedTime() );
-
-                     // size
-                     Long size = null;
-                     if (data.file.getType().equals(FileType.FILE))
-                     {
-                         size = new Long( data.file.getContent().getSize() );
-                     }
-   
-   				 	 extraData[outputIndex++]=size;
-   				 	
-                }
-                catch (IOException e)
-                {
-                    throw new KettleException(e);
-                }
-
-                 // extension
-	 		  	 extraData[outputIndex++]=data.file.getName().getExtension();
-   	
-                 // uri	
-				 extraData[outputIndex++]= data.file.getName().getURI();
-   	
-                 // rooturi	
-				 extraData[outputIndex++]= data.file.getName().getRootURI();
-  
-		         // See if we need to add the row number to the row...  
-		         if (meta.includeRowNumber() && !Const.isEmpty(meta.getRowNumberField()))
-		         {
-					  extraData[outputIndex++]= new Long(data.rownr);
-		         }
-		
-		         data.rownr++;
-		        // Add row data
-		        outputRow = RowDataUtil.addRowData(outputRow,data.totalpreviousfields, extraData);
-                // Send row
-		        putRow(data.outputRowMeta, outputRow);
-		        
-	      		if (meta.getRowLimit()>0 && data.rownr>=meta.getRowLimit())  // limit has been reached: stop now.
-	      		{
-	   	           setOutputDone();
-	   	           return false;
-	      		}
-	      		
-            }
+        	if(data.filessize>0)
+        	{
+	        	data.file = data.files.getFile(data.filenr);
+	
+	            if (meta.getFilterFileType()==null || 
+	            	meta.getFilterFileType().equals("all_files") || 
+	            	(meta.getFilterFileType().equals("only_files") && data.file.getType() == FileType.FILE) ||
+	                meta.getFilterFileType().equals("only_folders") && data.file.getType() == FileType.FOLDER)
+	            {
+	
+	                if(meta.isAddResultFile())
+	                {
+	         			// Add this to the result file names...
+	         			ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, data.file, getTransMeta().getName(), getStepname());
+	         			resultFile.setComment(Messages.getString("GetFileNames.Log.FileReadByStep"));
+	         			addResultFile(resultFile);
+	                }
+	            	
+	                // filename
+	        		extraData[outputIndex++]=KettleVFS.getFilename(data.file);
+	
+	                // short_filename
+	        		extraData[outputIndex++]=data.file.getName().getBaseName();
+	
+	                try
+	                {
+	    				 // Path
+	                	 extraData[outputIndex++]=KettleVFS.getFilename(data.file.getParent());
+	
+	                	 // type
+	    				 extraData[outputIndex++]=data.file.getType().toString();
+	    				 
+	                     // exists
+	    				 extraData[outputIndex++]=Boolean.valueOf(data.file.exists());
+	                    
+	                     // ishidden
+	    				 extraData[outputIndex++]=Boolean.valueOf(data.file.isHidden());
+	
+	                     // isreadable
+	    				 extraData[outputIndex++]=Boolean.valueOf(data.file.isReadable());
+	    				
+	                     // iswriteable
+	    				 extraData[outputIndex++]=Boolean.valueOf(data.file.isWriteable());
+	
+	                     // lastmodifiedtime
+	    				 extraData[outputIndex++]=new Date( data.file.getContent().getLastModifiedTime() );
+	
+	                     // size
+	                     Long size = null;
+	                     if (data.file.getType().equals(FileType.FILE))
+	                     {
+	                         size = new Long( data.file.getContent().getSize() );
+	                     }
+	   
+	   				 	 extraData[outputIndex++]=size;
+	   				 	
+	                }
+	                catch (IOException e)
+	                {
+	                    throw new KettleException(e);
+	                }
+	
+	                 // extension
+		 		  	 extraData[outputIndex++]=data.file.getName().getExtension();
+	   	
+	                 // uri	
+					 extraData[outputIndex++]= data.file.getName().getURI();
+	   	
+	                 // rooturi	
+					 extraData[outputIndex++]= data.file.getName().getRootURI();
+	  
+			         // See if we need to add the row number to the row...  
+			         if (meta.includeRowNumber() && !Const.isEmpty(meta.getRowNumberField()))
+			         {
+						  extraData[outputIndex++]= new Long(data.rownr);
+			         }
+			
+			         data.rownr++;
+			        // Add row data
+			        outputRow = RowDataUtil.addRowData(outputRow,data.totalpreviousfields, extraData);
+	                // Send row
+			        putRow(data.outputRowMeta, outputRow);
+			        
+		      		if (meta.getRowLimit()>0 && data.rownr>=meta.getRowLimit())  // limit has been reached: stop now.
+		      		{
+		   	           setOutputDone();
+		   	           return false;
+		      		}
+		      		
+	            }
+        	}
         }
         catch (Exception e)
         {
@@ -232,7 +261,10 @@ public class GetFileNames extends BaseStep implements StepInterface
 
         data.filenr++;
 
-        if ((linesInput > 0) && (linesInput % Const.ROWS_UPDATE) == 0) logBasic("linenr " + linesInput);
+        if ((linesInput > 0) && (linesInput % Const.ROWS_UPDATE) == 0) 	
+        {
+        	if(log.isBasic()) logBasic(Messages.getString("GetFileNames.Log.NrLine",""+linesInput));
+        }
 
         return true;
     }
@@ -267,7 +299,6 @@ public class GetFileNames extends BaseStep implements StepInterface
         	
 			try
 			{
-				
 				 // Create the output row meta-data
 	            data.outputRowMeta = new RowMeta();
 	            meta.getFields(data.outputRowMeta, getStepname(), null, null, this); // get the metadata populated
@@ -276,9 +307,10 @@ public class GetFileNames extends BaseStep implements StepInterface
 				if(!meta.isFileField())
 				{
 	                data.files = meta.getTextFileList(getTransMeta());
+	                data.filessize=data.files.nrOfFiles();
 					handleMissingFiles();
-	          
-				}
+				}else
+					data.filessize=0;
 		            
 			}
 			catch(Exception e)
@@ -288,9 +320,7 @@ public class GetFileNames extends BaseStep implements StepInterface
 				return false;
 			}
 		
-            
             data.rownr = 1L;
-			data.rownr = 0;
 			data.filenr = 0;
 			data.totalpreviousfields=0;
             
