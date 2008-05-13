@@ -102,6 +102,8 @@ public class GUIResource
 	private ManagedColor colorPentaho;
 
 	private ManagedColor colorLightPentaho;
+	
+	private ManagedColor colorCreamPentaho;
 
 	/* * * Fonts * * */
 	private ManagedFont fontGraph;
@@ -189,6 +191,14 @@ public class GUIResource
   private Image imageShowResults;
 
   private Image imageHideResults;
+  
+  private Image imageDesignPanel;
+  
+  private Image imageViewPanel;
+  
+  private Image imageExpandAll;
+  
+  private Image imageCollapseAll;
 
 	private ManagedFont fontBold;
 
@@ -256,6 +266,7 @@ public class GUIResource
 		// colorPentaho = new ManagedColor(display, 239, 128, 51 ); // Orange
 		colorPentaho = new ManagedColor(display, 188, 198, 82);
 		colorLightPentaho = new ManagedColor(display, 238, 248, 152);
+    colorCreamPentaho = new ManagedColor(display, 248, 246, 231);
 
 		// Load all images from files...
 		if (!reload)
@@ -291,6 +302,7 @@ public class GUIResource
 		colorDirectory.dispose();
 		colorPentaho.dispose();
 		colorLightPentaho.dispose();
+		colorCreamPentaho.dispose();
 
 		if (!reload) // display shutdown, clean up our mess
 		{
@@ -325,7 +337,10 @@ public class GUIResource
 			imageJobGraph.dispose();
 		  imageShowResults.dispose();
 		  imageHideResults.dispose();
-
+		  imageCollapseAll.dispose();
+		  imageExpandAll.dispose();
+		  imageViewPanel.dispose();
+		  imageDesignPanel.dispose();
 
 			disposeImage(imageEditOptionButton);
 			disposeImage(imageResetOptionButton);
@@ -504,7 +519,13 @@ public class GUIResource
     imageShowResults = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("ShowResults_image")); // , "ui/images/show-results.png
     imageHideResults = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("HideResults_image")); // , "ui/images/hide-results.png
 
-    imageStartSmall = new Image(display, 16, 16);
+    imageDesignPanel = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("DesignPanel_image")); // , "ui/images/Design.png;
+    imageViewPanel = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("ViewPanel_image")); // , "ui/images/View.png;
+    
+    imageExpandAll = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("ExpandAll_image")); // , "ui/images/ExpandAll.png;
+    imageCollapseAll = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("CollapseAll_image")); // , "ui/images/CollapseAll.png;
+
+   imageStartSmall = new Image(display, 16, 16);
 		GC gc = new GC(imageStartSmall);
 		gc.drawImage(imageStart, 0, 0, 32, 32, 0, 0, 16, 16);
 		gc.dispose();
@@ -1117,7 +1138,15 @@ public class GUIResource
 		return colorLightPentaho.getColor();
 	}
 
-	public void drawPentahoGradient(Display display, GC gc, Rectangle rect, boolean vertical)
+  /**
+   * @return the colorCreamPentaho
+   */
+  public Color getColorCreamPentaho()
+  {
+    return colorCreamPentaho.getColor();
+  }
+
+  public void drawPentahoGradient(Display display, GC gc, Rectangle rect, boolean vertical)
 	{
 		if (!vertical)
 		{
@@ -1299,5 +1328,20 @@ public class GUIResource
   public Image getImageHideResults() {
     return imageHideResults;
   }
+  
+  public Image getImageDesignPanel(){
+    return imageDesignPanel;
+  }
 
+  public Image getImageViewPanel(){
+    return imageViewPanel;
+  }
+
+  public Image getImageExpandAll(){
+    return imageExpandAll;
+  }
+  
+  public Image getImageCollapseAll(){
+    return imageCollapseAll;
+  }
 }

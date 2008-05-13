@@ -305,7 +305,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 	private XulMenuBar menuBar;
 
-	private ToolItem view, design;
+	private ToolItem view, design, expandAll, collapseAll;
 	
 	private Label selectionLabel;
 	
@@ -1353,12 +1353,12 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		Control lastControl = sep0;
 
     ToolBar tb = new ToolBar(mainComposite, SWT.HORIZONTAL | SWT.FLAT);
-    tb.setBackground(GUIResource.getInstance().getColorWhite());
+    tb.setBackground(GUIResource.getInstance().getColorCreamPentaho());
     view = new ToolItem(tb,SWT.CHECK);
-    view.setImage(GUIResource.getInstance().getImageSpoon());
+    view.setImage(GUIResource.getInstance().getImageViewPanel());
     view.setText(STRING_SPOON_MAIN_TREE);
     design = new ToolItem(tb,SWT.CHECK);
-    design.setImage(GUIResource.getInstance().getImageSpoon());
+    design.setImage(GUIResource.getInstance().getImageDesignPanel());
     design.setText(STRING_SPOON_CORE_OBJECTS_TREE);
 
     FormData fdTreeButton = new FormData();
@@ -1378,18 +1378,27 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     lastControl=sep3;
     
     selectionLabel = new Label(mainComposite, SWT.HORIZONTAL);
-    selectionLabel.setFont(GUIResource.getInstance().getFontMediumBold());
+    selectionLabel.setFont(GUIResource.getInstance().getFontMedium());
     FormData fdsLabel = new FormData();
     fdsLabel.left = new FormAttachment(0,0);
     fdsLabel.top = new FormAttachment(lastControl,5);
     selectionLabel.setLayoutData(fdsLabel);
     lastControl=selectionLabel;
 
-    Button expandAllButton = new Button(mainComposite, SWT.PUSH);
-    expandAllButton.setFont(GUIResource.getInstance().getFontMediumBold());
-    expandAllButton.setText(" + ");
+    ToolBar treeTb = new ToolBar(mainComposite, SWT.HORIZONTAL | SWT.FLAT);
+    //treeTb.setBackground(GUIResource.getInstance().getColorWhite());
+    expandAll = new ToolItem(treeTb,SWT.PUSH);
+    expandAll.setImage(GUIResource.getInstance().getImageExpandAll());
+    collapseAll = new ToolItem(treeTb,SWT.PUSH);
+    collapseAll.setImage(GUIResource.getInstance().getImageCollapseAll());
 
-    expandAllButton.addSelectionListener(new SelectionAdapter() {
+    FormData fdTreeToolbar = new FormData();
+    fdTreeToolbar.top = new FormAttachment(sep3, 0);
+    fdTreeToolbar.right=new FormAttachment(95,5);
+    treeTb.setLayoutData(fdTreeToolbar);
+    lastControl = treeTb;
+    
+    expandAll.addSelectionListener(new SelectionAdapter() {
       public void widgetSelected(SelectionEvent event) {
         if (coreSelected){
           tidyBranches(coreObjectsTree.getItems(), true);
@@ -1399,11 +1408,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         }
       }});
 
-    Button collapseAllButton = new Button(mainComposite, SWT.PUSH);
-    collapseAllButton.setFont(GUIResource.getInstance().getFontMediumBold());
-    collapseAllButton.setText(" - ");
-
-    collapseAllButton.addSelectionListener(new SelectionAdapter() {
+    collapseAll.addSelectionListener(new SelectionAdapter() {
       public void widgetSelected(SelectionEvent event) {
         if (coreSelected){
           tidyBranches(coreObjectsTree.getItems(), false);
@@ -1413,20 +1418,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         }
       }});
 
-    FormData fdExpandAll = new FormData();
-    fdExpandAll.right = new FormAttachment(collapseAllButton, -5);
-    fdExpandAll.top = new FormAttachment(sep3,0);
-    expandAllButton.setLayoutData(fdExpandAll);
-    lastControl=expandAllButton;
-
-    FormData fdCollapseAll = new FormData();
-    fdCollapseAll.right = new FormAttachment(95,5);
-    fdCollapseAll.top = new FormAttachment(sep3,0);
-    collapseAllButton.setLayoutData(fdCollapseAll);
-    lastControl=selectionLabel;
-
     view.addSelectionListener(new SelectionAdapter() {
       public void widgetSelected(SelectionEvent event) {
+        
         if (treeSelected) return;
         disposeVariableComposite(true, false, false, false);
         refreshTree();  
