@@ -147,9 +147,11 @@ public class TransPerfDelegate extends SpoonDelegate {
     		return; // TODO: display help text and rerty button
     	}
     	
+    	if (perfComposite.isDisposed()) return;
+    	
     	// Remove anything on the perf composite, like an empty page message
     	//
-    	for (Control control : perfComposite.getChildren()) control.dispose();
+    	for (Control control : perfComposite.getChildren()) if (!control.isDisposed()) control.dispose();
     	
     	emptyGraph=false;
     	
