@@ -4724,7 +4724,7 @@ public class Repository
 		table.addValue(new Value("ID_JOB", Value.VALUE_TYPE_INTEGER, KEY, 0));
 		table.addValue(new Value("ID_JOBENTRY_TYPE", Value.VALUE_TYPE_INTEGER, KEY, 0));
 		table.addValue(new Value("NAME", Value.VALUE_TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-		table.addValue(new Value("DESCRIPTION", Value.VALUE_TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+		table.addValue(new Value("DESCRIPTION", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
 		sql = database.getDDL(tablename, table, null, false, "ID_JOBENTRY", false);
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
