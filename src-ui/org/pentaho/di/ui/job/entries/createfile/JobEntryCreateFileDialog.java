@@ -74,6 +74,10 @@ public class JobEntryCreateFileDialog extends JobEntryDialog implements JobEntry
     private Label        wlAbortExists;
     private Button       wAbortExists;
     private FormData     fdlAbortExists, fdAbortExists;
+    
+    private Label wlAddFilenameToResult;
+    private Button wAddFilenameToResult;
+    private FormData fdlAddFilenameToResult, fdAddFilenameToResult;
 
 	private Button wOK, wCancel;
 	private Listener lsOK, lsCancel;
@@ -220,13 +224,32 @@ public class JobEntryCreateFileDialog extends JobEntryDialog implements JobEntry
                 jobEntry.setChanged();
             }
         });
+        
+        // Add filenames to result filenames...
+        wlAddFilenameToResult = new Label(shell, SWT.RIGHT);
+        wlAddFilenameToResult.setText(Messages.getString("JobCreateFile.AddFilenameToResult.Label"));
+        props.setLook(wlAddFilenameToResult);
+        fdlAddFilenameToResult = new FormData();
+        fdlAddFilenameToResult.left = new FormAttachment(0, 0);
+        fdlAddFilenameToResult.top = new FormAttachment(wAbortExists, margin);
+        fdlAddFilenameToResult.right = new FormAttachment(middle, -margin);
+        wlAddFilenameToResult.setLayoutData(fdlAddFilenameToResult);
+        wAddFilenameToResult = new Button(shell, SWT.CHECK);
+        wAddFilenameToResult.setToolTipText(Messages.getString("JobCreateFile.AddFilenameToResult.Tooltip"));
+        props.setLook(wAddFilenameToResult);
+        fdAddFilenameToResult = new FormData();
+        fdAddFilenameToResult.left = new FormAttachment(middle, 0);
+        fdAddFilenameToResult.top = new FormAttachment(wAbortExists, margin);
+        fdAddFilenameToResult.right = new FormAttachment(100, 0);
+        wAddFilenameToResult.setLayoutData(fdAddFilenameToResult);
+        
 		
         wOK = new Button(shell, SWT.PUSH);
         wOK.setText(Messages.getString("System.Button.OK"));
         wCancel = new Button(shell, SWT.PUSH);
         wCancel.setText(Messages.getString("System.Button.Cancel"));
         
-		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wAbortExists);
+		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wAddFilenameToResult);
 
 		// Add listeners
 		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel(); } };
@@ -271,6 +294,7 @@ public class JobEntryCreateFileDialog extends JobEntryDialog implements JobEntry
 		wName.selectAll();
 		if (jobEntry.getFilename()!= null) wFilename.setText( jobEntry.getFilename() );
 		wAbortExists.setSelection(jobEntry.isFailIfFileExists());
+		wAddFilenameToResult.setSelection(jobEntry.isAddFilenameToResult());
 	}
 
 	private void cancel()
@@ -285,6 +309,7 @@ public class JobEntryCreateFileDialog extends JobEntryDialog implements JobEntry
 		jobEntry.setName(wName.getText());
 		jobEntry.setFilename(wFilename.getText());
 		jobEntry.setFailIfFileExists(wAbortExists.getSelection());
+		jobEntry.setAddFilenameToResult(wAddFilenameToResult.getSelection());
 		dispose();
 	}
 

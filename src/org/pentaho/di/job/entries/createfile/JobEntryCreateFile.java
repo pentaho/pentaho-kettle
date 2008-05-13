@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.pentaho.di.core.ResultFile;
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
@@ -54,12 +55,14 @@ public class JobEntryCreateFile extends JobEntryBase implements Cloneable, JobEn
   private String filename;
 
   private boolean failIfFileExists;
+  private boolean addfilenameresult;
 
   public JobEntryCreateFile(String n)
   {
     super(n, "");
     filename = null;
     failIfFileExists = true;
+    addfilenameresult=false;
     setID(-1L);
     setJobEntryType(JobEntryType.CREATE_FILE);
   }
@@ -87,6 +90,8 @@ public class JobEntryCreateFile extends JobEntryBase implements Cloneable, JobEn
     retval.append(super.getXML());
     retval.append("      ").append(XMLHandler.addTagValue("filename", filename));
     retval.append("      ").append(XMLHandler.addTagValue("fail_if_file_exists", failIfFileExists));
+    retval.append("      ").append(XMLHandler.addTagValue("add_filename_result", addfilenameresult));
+    
 
     return retval.toString();
   }
@@ -98,6 +103,8 @@ public class JobEntryCreateFile extends JobEntryBase implements Cloneable, JobEn
       super.loadXML(entrynode, databases, slaveServers);
       filename = XMLHandler.getTagValue(entrynode, "filename");
       failIfFileExists = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "fail_if_file_exists"));
+      addfilenameresult = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "add_filename_result"));
+      
     } catch (KettleXMLException xe)
     {
       throw new KettleXMLException("Unable to load job entry of type 'create file' from XML node", xe);
@@ -111,6 +118,8 @@ public class JobEntryCreateFile extends JobEntryBase implements Cloneable, JobEn
       super.loadRep(rep, id_jobentry, databases, slaveServers);
       filename = rep.getJobEntryAttributeString(id_jobentry, "filename");
       failIfFileExists = rep.getJobEntryAttributeBoolean(id_jobentry, "fail_if_file_exists");
+      addfilenameresult = rep.getJobEntryAttributeBoolean(id_jobentry, "add_filename_result");
+      
     } catch (KettleException dbe)
     {
       throw new KettleException("Unable to load job entry of type 'create file' from the repository for id_jobentry="
@@ -126,6 +135,8 @@ public class JobEntryCreateFile extends JobEntryBase implements Cloneable, JobEn
 
       rep.saveJobEntryAttribute(id_job, getID(), "filename", filename);
       rep.saveJobEntryAttribute(id_job, getID(), "fail_if_file_exists", failIfFileExists);
+      rep.saveJobEntryAttribute(id_job, getID(), "add_filename_result", addfilenameresult);
+      
     } catch (KettleDatabaseException dbe)
     {
       throw new KettleException(
@@ -175,11 +186,17 @@ public class JobEntryCreateFile extends JobEntryBase implements Cloneable, JobEn
             result.setResult(true);
             log.logBasic(toString(), "File [" + realFilename + "] already exists, not recreating.");
           }
+          // add filename to result filenames if needed
+          if(isAddFilenameToResult())
+        	  addFilenameToResult(realFilename,log,result, parentJob);
         } else
         {
           //  No file yet, create an empty file.
           fileObject.createFile();
           log.logBasic(toString(), "File [" + realFilename + "] created!");
+          // add filename to result filenames if needed
+          if(isAddFilenameToResult())
+        	  addFilenameToResult(realFilename,log,result, parentJob);
           result.setResult(true);
         }
       } catch (IOException e)
@@ -207,6 +224,31 @@ public class JobEntryCreateFile extends JobEntryBase implements Cloneable, JobEn
 
     return result;
   }
+private void addFilenameToResult(String targetFilename,LogWriter log,Result result, Job parentJob) throws  IOException
+{
+	FileObject targetFile=null;
+	try
+	{
+		targetFile = KettleVFS.getFileObject(targetFilename);
+		
+		// Add to the result files...
+		ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, targetFile, parentJob.getJobname(), toString());
+        resultFile.setComment(""); //$NON-NLS-1$
+		result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
+		
+        if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryCreateFile.FileAddedToResult",targetFilename)); //$NON-NLS-1$
+	}catch(Exception e)
+	{
+		throw new IOException(e);
+	}
+	finally
+	{
+		try{
+			targetFile.close();
+			targetFile=null;
+		}catch(Exception e){}
+	}
+}
 
   public boolean evaluates()
   {
@@ -222,7 +264,16 @@ public class JobEntryCreateFile extends JobEntryBase implements Cloneable, JobEn
   {
     this.failIfFileExists = failIfFileExists;
   }
-
+  public boolean isAddFilenameToResult()
+  {
+    return addfilenameresult;
+  }
+  
+  public void setAddFilenameToResult(boolean addfilenameresult)
+  {
+    this.addfilenameresult = addfilenameresult;
+  }
+  
   public static void main(String[] args)
   {
     List<CheckResultInterface> remarks = new ArrayList<CheckResultInterface>();

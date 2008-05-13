@@ -197,7 +197,7 @@ public class JobEntrySpecialDialog extends JobEntryDialog implements JobEntryDia
         wCancel = new Button(shell, SWT.PUSH);
         wCancel.setText(Messages.getString("System.Button.Cancel"));
 
-        BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, null);
+        BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wDayOfMonth);
 
         // Add listeners
         lsCancel = new Listener()

@@ -55,6 +55,7 @@ public class CubeInputMeta extends BaseStepMeta implements StepMetaInterface
 {
 	private String filename;
 	private int rowLimit;
+	private boolean addfilenameresult;
 
 	public CubeInputMeta()
 	{
@@ -99,6 +100,22 @@ public class CubeInputMeta extends BaseStepMeta implements StepMetaInterface
 		return rowLimit;
 	}
 	
+	/**
+	 * @return Returns the addfilenameresult.
+	 */
+	public boolean isAddResultFile()
+	{
+		return addfilenameresult;
+	}
+	
+	/**
+	 * @param addfilenameresult The addfilenameresult to set.
+	 */
+	public void setAddResultFile(boolean addfilenameresult)
+	{
+		this.addfilenameresult=addfilenameresult;
+	}
+	
 	public Object clone()
 	{
 		CubeInputMeta retval = (CubeInputMeta)super.clone();
@@ -112,6 +129,8 @@ public class CubeInputMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			filename  = XMLHandler.getTagValue(stepnode, "file", "name"); //$NON-NLS-1$ //$NON-NLS-2$
 			rowLimit  = Const.toInt( XMLHandler.getTagValue(stepnode, "limit"), 0); //$NON-NLS-1$
+			addfilenameresult = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "addfilenameresult"));
+			
 		}
 		catch(Exception e)
 		{
@@ -123,6 +142,7 @@ public class CubeInputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		filename = "file"; //$NON-NLS-1$
 		rowLimit = 0;
+		addfilenameresult=false;
 	}
 	
 	public void getFields(RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space)
@@ -175,6 +195,8 @@ public class CubeInputMeta extends BaseStepMeta implements StepMetaInterface
 		retval.append("      ").append(XMLHandler.addTagValue("name", filename)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("    </file>").append(Const.CR); //$NON-NLS-1$
 		retval.append("    ").append(XMLHandler.addTagValue("limit",  rowLimit)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    ").append(XMLHandler.addTagValue("addfilenameresult", addfilenameresult));
+		
 
 		return retval.toString();
 	}
@@ -185,6 +207,8 @@ public class CubeInputMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			filename         =      rep.getStepAttributeString (id_step, "file_name"); //$NON-NLS-1$
 			rowLimit         = (int)rep.getStepAttributeInteger(id_step, "limit"); //$NON-NLS-1$
+			addfilenameresult = rep.getStepAttributeBoolean(id_step, "addfilenameresult");
+			
 		}
 		catch(Exception e)
 		{
@@ -199,6 +223,8 @@ public class CubeInputMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			rep.saveStepAttribute(id_transformation, id_step, "file_name",   filename); //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "limit",       rowLimit); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "addfilenameresult", addfilenameresult);
+			
 		}
 		catch(KettleException e)
 		{

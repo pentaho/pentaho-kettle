@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.util.zip.GZIPInputStream;
 
+import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleEOFException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
@@ -92,7 +93,17 @@ public class CubeInput extends BaseStep implements StepInterface
 		{
 			try
 			{
-				data.fis=KettleVFS.getInputStream(environmentSubstitute(meta.getFilename()));
+				String filename=environmentSubstitute(meta.getFilename());
+				
+				// Add filename to result filenames ?
+				if(meta.isAddResultFile())
+				{
+					ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(filename), getTransMeta().getName(), toString());
+					resultFile.setComment("File was read by a Cube Input step");
+					addResultFile(resultFile);
+				}
+				
+				data.fis=KettleVFS.getInputStream(filename);
 				data.zip = new GZIPInputStream(data.fis);
 				data.dis = new DataInputStream(data.zip);
 				

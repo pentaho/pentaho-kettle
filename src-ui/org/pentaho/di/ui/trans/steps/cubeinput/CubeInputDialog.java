@@ -51,12 +51,13 @@ public class CubeInputDialog extends BaseStepDialog implements StepDialogInterfa
 	private Label        wlFilename;
 	private Button       wbFilename;
 	private TextVar      wFilename;
-	private FormData     fdlFilename, fdbFilename, fdFilename;
+	private FormData     fdlFilename, fdbFilename, fdFilename,fdlAddResult,fdAddResult;
 
 	private Label        wlLimit;
 	private Text         wLimit;
 	private FormData     fdlLimit, fdLimit;
-	
+	private Label wlAddResult;
+    private Button wAddResult;
 	private CubeInputMeta input;
 
 	public CubeInputDialog(Shell parent,  Object in, TransMeta tr, String sname)
@@ -155,6 +156,23 @@ public class CubeInputDialog extends BaseStepDialog implements StepDialogInterfa
 		fdLimit.top  = new FormAttachment(wFilename, margin);
 		fdLimit.right= new FormAttachment(100, 0);
 		wLimit.setLayoutData(fdLimit);
+		
+		// Add filename to result filenames
+		wlAddResult=new Label(shell, SWT.RIGHT);
+		wlAddResult.setText(Messages.getString("CubeInputDialog.AddResult.Label"));
+ 		props.setLook(wlAddResult);
+		fdlAddResult=new FormData();
+		fdlAddResult.left = new FormAttachment(0, 0);
+		fdlAddResult.top  = new FormAttachment(wLimit, 2*margin);
+		fdlAddResult.right= new FormAttachment(middle, -margin);
+		wlAddResult.setLayoutData(fdlAddResult);
+		wAddResult=new Button(shell, SWT.CHECK );
+ 		props.setLook(wAddResult);
+		wAddResult.setToolTipText(Messages.getString("CubeInputDialog.AddResult.Tooltip"));
+		fdAddResult=new FormData();
+		fdAddResult.left = new FormAttachment(middle, 0);
+		fdAddResult.top  = new FormAttachment(wLimit, 2*margin);
+		wAddResult.setLayoutData(fdAddResult);
 
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
@@ -162,7 +180,7 @@ public class CubeInputDialog extends BaseStepDialog implements StepDialogInterfa
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
 
-		setButtonPositions(new Button[] { wOK, wCancel }, margin, wLimit);
+		setButtonPositions(new Button[] { wOK, wCancel }, margin, wAddResult);
 
 		// Add listeners
 		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel(); } };
@@ -222,7 +240,7 @@ public class CubeInputDialog extends BaseStepDialog implements StepDialogInterfa
 	{
 		if (input.getFilename() != null) wFilename.setText(input.getFilename());
 		wLimit.setText(""+(int)input.getRowLimit()); //$NON-NLS-1$
-
+		wAddResult.setSelection(input.isAddResultFile());
 		wStepname.selectAll();
 	}
 	
@@ -241,6 +259,7 @@ public class CubeInputDialog extends BaseStepDialog implements StepDialogInterfa
 		// copy info to Meta class (input)
 		input.setFilename( wFilename.getText() );
 		input.setRowLimit( Const.toInt(wLimit.getText(), 0) );
+		input.setAddResultFile( wAddResult.getSelection() );
 				
 		dispose();
 	}	
