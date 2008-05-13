@@ -42,7 +42,6 @@ import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
-import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DragSource;
@@ -62,7 +61,6 @@ import org.eclipse.swt.events.TreeAdapter;
 import org.eclipse.swt.events.TreeEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Cursor;
-import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
@@ -73,7 +71,6 @@ import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.printing.Printer;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -1334,9 +1331,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 	private void addTree()
 	{
-		Color background = GUIResource.getInstance().getColorLightPentaho();
+		//Color background = GUIResource.getInstance().getColorLightPentaho();
 		mainComposite = new Composite(sashform, SWT.BORDER);
-		//mainComposite.setBackground(GUIResource.getInstance().getColorWhite());
+		mainComposite.setBackground(GUIResource.getInstance().getColorWhite());
 		mainComposite.setLayout(new FormLayout());
 		
 		int mainMargin = 4;
@@ -1360,7 +1357,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     design = new ToolItem(tb,SWT.CHECK);
     design.setImage(GUIResource.getInstance().getImageDesignPanel());
     design.setText(STRING_SPOON_CORE_OBJECTS_TREE);
-
+    design.setEnabled(false);
+    
     FormData fdTreeButton = new FormData();
     fdTreeButton.left = new FormAttachment(0,0);
     fdTreeButton.top = new FormAttachment(sep0, 0);
@@ -1386,7 +1384,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     lastControl=selectionLabel;
 
     ToolBar treeTb = new ToolBar(mainComposite, SWT.HORIZONTAL | SWT.FLAT);
-    //treeTb.setBackground(GUIResource.getInstance().getColorWhite());
+    treeTb.setBackground(GUIResource.getInstance().getColorWhite());
     expandAll = new ToolItem(treeTb,SWT.PUSH);
     expandAll.setImage(GUIResource.getInstance().getImageExpandAll());
     collapseAll = new ToolItem(treeTb,SWT.PUSH);
@@ -2701,6 +2699,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 	private void addTabs()
 	{
+	  
 		if (tabComp != null)
 		{
 			tabComp.dispose();
@@ -2724,6 +2723,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		sashform.setVisible(true);
 
 		tabfolder.addListener(this);  // methods: tabDeselected, tabClose, tabSelected
+		
 	}
 
 	public void tabDeselected(TabItem item)	{
@@ -5062,6 +5062,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			
 			disablePreviewButton = transGraph.isRunning() && !transGraph.isHalting();
 		}
+		
+		design.setEnabled(enableTransMenu || enableJobMenu);
 
 		// Only enable certain menu-items if we need to.
 		menuBar.setEnableById("file-save", enableTransMenu || enableJobMenu);
