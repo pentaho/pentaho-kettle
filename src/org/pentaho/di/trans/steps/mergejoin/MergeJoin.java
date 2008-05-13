@@ -88,7 +88,7 @@ public class MergeJoin extends BaseStep implements StepInterface
             else
             {
             	data.one=null;
-            	data.oneMeta=new RowMeta();
+            	data.oneMeta=getTransMeta().getStepFields(meta.getStepName1());
             }
             
             data.two=getRowFrom(data.twoRowSet);
@@ -99,7 +99,7 @@ public class MergeJoin extends BaseStep implements StepInterface
             else
             {
             	data.two=null;
-            	data.twoMeta=new RowMeta();
+            	data.twoMeta=getTransMeta().getStepFields(meta.getStepName2());
             }
             
             // just for speed: oneMeta+twoMeta
