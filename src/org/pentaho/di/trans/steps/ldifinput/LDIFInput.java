@@ -37,6 +37,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.steps.accessinput.Messages;
 import org.pentaho.di.trans.steps.ldifinput.LDIFInputField;
 
 
@@ -60,9 +61,17 @@ public class LDIFInput extends BaseStep implements StepInterface
 	{
 
 		try{
-			while ((data.file==null) || ((data.recordLDIF = data.InputLDIF.nextRecord())==null))
+			if(meta.isFileField())
 			{
-		        if (!openNextFile()) return null;
+				 while ((data.readrow==null || ((data.recordLDIF = data.InputLDIF.nextRecord())==null)))
+				 { 
+					if (!openNextFile()) return null;
+				 }	
+			}else{
+				while ((data.file==null) || ((data.recordLDIF = data.InputLDIF.nextRecord())==null))
+				{
+			        if (!openNextFile()) return null;
+				}
 			}
 			
 		} catch (Exception IO)
@@ -109,6 +118,9 @@ public class LDIFInput extends BaseStep implements StepInterface
 
 		 // Build an empty row based on the meta-data		  
 		 Object[] outputRowData=buildEmptyRow();
+		 
+		 // Create new row	or clone
+		 if(meta.isFileField())	 outputRowData = data.readrow.clone();
 
 		 try{	
 			
@@ -140,35 +152,35 @@ public class LDIFInput extends BaseStep implements StepInterface
 					
 					// Do conversions
 					//
-					ValueMetaInterface targetValueMeta = data.outputRowMeta.getValueMeta(+i);
-					ValueMetaInterface sourceValueMeta = data.convertRowMeta.getValueMeta(+i);
-					outputRowData[i] = targetValueMeta.convertData(sourceValueMeta, Value);
+					ValueMetaInterface targetValueMeta = data.outputRowMeta.getValueMeta(data.totalpreviousfields+i);
+					ValueMetaInterface sourceValueMeta = data.convertRowMeta.getValueMeta(data.totalpreviousfields+i);
+					outputRowData[data.totalpreviousfields+i] = targetValueMeta.convertData(sourceValueMeta, Value);
 
 					// Do we need to repeat this field if it is null?
 					if (meta.getInputFields()[i].isRepeated())
 					{
 						if (data.previousRow!=null && Const.isEmpty(Value))
 						{
-							outputRowData[i] = data.previousRow[i];
+							outputRowData[data.totalpreviousfields+i] = data.previousRow[data.totalpreviousfields+i];
 						}
 					}
 				}    // End of loop over fields...
-				int rowIndex = data.nrInputFields;
+				int rowIndex = meta.getInputFields().length;
 				
 				// See if we need to add the filename to the row...
 				if ( meta.includeFilename() && !Const.isEmpty(meta.getFilenameField()) ) {
-					outputRowData[rowIndex++] = KettleVFS.getFilename(data.file);
+					outputRowData[data.totalpreviousfields+rowIndex++] = KettleVFS.getFilename(data.file);
 				}
 				 // See if we need to add the row number to the row...  
 		        if (meta.includeRowNumber() && !Const.isEmpty(meta.getRowNumberField()))
 		        {
-		            outputRowData[rowIndex++] = new Long(data.rownr);
+		            outputRowData[data.totalpreviousfields+rowIndex++] = new Long(data.rownr);
 		        }
 		        
 				 // See if we need to add the content type to the row...  
 		        if (meta.includeContentType()&& !Const.isEmpty(meta.getContentTypeField()))
 		        {
-		            outputRowData[rowIndex++] = contentTYPE;
+		            outputRowData[data.totalpreviousfields+rowIndex++] = contentTYPE;
 		        }
 				
 				RowMetaInterface irow = getInputRowMeta();
@@ -181,10 +193,8 @@ public class LDIFInput extends BaseStep implements StepInterface
 			
 		 }
 		 catch (Exception e)
-		 {
-			 
-			throw new KettleException("Unable to read row from LDIF file", e);
-			
+		 { 
+			throw new KettleException(Messages.getString("LDIFInput.Exception.UnableToReadFile",data.file.toString()), e);
 		 }
 		 
 		return outputRowData;
@@ -241,18 +251,76 @@ public class LDIFInput extends BaseStep implements StepInterface
 	{
 		try
 		{
-		    if (data.filenr>=data.files.nrOfFiles()) // finished processing!
-            {
-            	if (log.isDetailed()) logDetailed(Messages.getString("LDIFInput.Log.FinishedProcessing"));
-                return false;
-            }
-            
-		    // Is this the last file?
-			data.last_file = ( data.filenr==data.files.nrOfFiles()-1);
-			data.file = (FileObject) data.files.getFile(data.filenr);
-			
-			// Move file pointer ahead!
-			data.filenr++;
+			if(!meta.isFileField())
+			{
+			    if (data.filenr>=data.files.nrOfFiles()) // finished processing!
+	            {
+	            	if (log.isDetailed()) logDetailed(Messages.getString("LDIFInput.Log.FinishedProcessing"));
+	                return false;
+	            }
+	            
+			    // Is this the last file?
+				data.last_file = ( data.filenr==data.files.nrOfFiles()-1);
+				data.file = (FileObject) data.files.getFile(data.filenr);
+				
+				// Move file pointer ahead!
+				data.filenr++;
+			}else
+			{
+				data.readrow=getRow();     // Get row from input rowset & set row busy!
+				if (data.readrow==null)
+			    {
+					if (log.isDetailed()) logDetailed(Messages.getString("LDIFInput.Log.FinishedProcessing"));
+			         return false;
+			    }
+				
+				if (first)
+		        {
+		            first = false;
+		            
+		            data.inputRowMeta = getInputRowMeta();
+		            data.outputRowMeta = data.inputRowMeta.clone();
+		            meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
+		            
+		            // Get total previous fields
+		            data.totalpreviousfields=data.inputRowMeta.size();
+
+					// Create convert meta-data objects that will contain Date & Number formatters
+		            data.convertRowMeta = data.outputRowMeta.clone();
+		            for (int i=0;i<data.convertRowMeta.size();i++) data.convertRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);
+		  
+		            // For String to <type> conversions, we allocate a conversion meta data row as well...
+					//
+					data.convertRowMeta = data.outputRowMeta.clone();
+					for (int i=0;i<data.convertRowMeta.size();i++) {
+						data.convertRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);            
+					}
+					
+					// Check is filename field is provided
+					if (Const.isEmpty(meta.getDynamicFilenameField()))
+					{
+						logError(Messages.getString("LDIFInput.Log.NoField"));
+						throw new KettleException(Messages.getString("LDIFInput.Log.NoField"));
+					}
+					
+					// cache the position of the field			
+					if (data.indexOfFilenameField<0)
+					{	
+						data.indexOfFilenameField =getInputRowMeta().indexOfValue(meta.getDynamicFilenameField());
+						if (data.indexOfFilenameField<0)
+						{
+							// The field is unreachable !
+							logError(Messages.getString("LDIFInput.Log.ErrorFindingField")+ "[" + meta.getDynamicFilenameField()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+							throw new KettleException(Messages.getString("LDIFInput.Exception.CouldnotFindField",meta.getDynamicFilenameField())); //$NON-NLS-1$ //$NON-NLS-2$
+						}
+					}
+	            	
+		        }// End if first
+				String filename=getInputRowMeta().getString(data.readrow,data.indexOfFilenameField);
+				if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("LDIFInput.Log.FilenameInStream", meta.getDynamicFilenameField(),filename));
+
+				data.file= KettleVFS.getFileObject(filename);
+			}
 						
 
 			if (log.isDetailed()) logDetailed(Messages.getString("LDIFInput.Log.OpeningFile", data.file.toString()));
@@ -326,40 +394,42 @@ public class LDIFInput extends BaseStep implements StepInterface
 		
 		if (super.init(smi, sdi))
 		{
-			data.files = meta.getFiles(this);
-			if (data.files.nrOfFiles() == 0 && data.files.nrOfMissingFiles() == 0)
+			if(!meta.isFileField())
 			{
-				logError(Messages.getString("LDIFInput.Log.NoFiles"));
-				return false;
-			}
-			try
-			{
-				// Create the output row meta-data
-	            data.outputRowMeta = new RowMeta();
-	
-				meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
-				
-				// Create convert meta-data objects that will contain Date & Number formatters
-	            data.convertRowMeta = data.outputRowMeta.clone();
-	            for (int i=0;i<data.convertRowMeta.size();i++) data.convertRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);
-	  
-	            // For String to <type> conversions, we allocate a conversion meta data row as well...
-				//
-				data.convertRowMeta = data.outputRowMeta.clone();
-				for (int i=0;i<data.convertRowMeta.size();i++) {
-					data.convertRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);            
+				data.files = meta.getFiles(this);
+				if (data.files.nrOfFiles() == 0 && data.files.nrOfMissingFiles() == 0)
+				{
+					logError(Messages.getString("LDIFInput.Log.NoFiles"));
+					return false;
 				}
-	            
-				data.rownr = 1L;
-				data.nrInputFields=meta.getInputFields().length;
-				data.multiValueSeparator=environmentSubstitute(meta.getMultiValuedSeparator());
-			}catch(Exception e)
-			{
-				logError("Error initializing step: "+e.toString());
-				logError(Const.getStackTracker(e));
-				return false;
+				try
+				{
+					// Create the output row meta-data
+		            data.outputRowMeta = new RowMeta();
+		
+					meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
+					
+					// Create convert meta-data objects that will contain Date & Number formatters
+		            data.convertRowMeta = data.outputRowMeta.clone();
+		            for (int i=0;i<data.convertRowMeta.size();i++) data.convertRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);
+		  
+		            // For String to <type> conversions, we allocate a conversion meta data row as well...
+					//
+					data.convertRowMeta = data.outputRowMeta.clone();
+					for (int i=0;i<data.convertRowMeta.size();i++) {
+						data.convertRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);            
+					}
+					data.nrInputFields=meta.getInputFields().length;
+					data.multiValueSeparator=environmentSubstitute(meta.getMultiValuedSeparator());
+				}catch(Exception e)
+				{
+					logError("Error initializing step: "+e.toString());
+					logError(Const.getStackTracker(e));
+					return false;
+				}
 			}
-			
+			data.rownr = 1L;
+			data.totalpreviousfields=0;
 			return true;
 		}
 		return false;

@@ -409,19 +409,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 			throw new KettleException("Unable to save job entry of type 'ftp' to the repository for id_job="+id_job, dbe);
 		}
 	}
-	private boolean getStatus()
-	{
-		boolean retval=false;
-		
-		if ((NrErrors==0 && getSuccessCondition().equals(SUCCESS_IF_NO_ERRORS))
-				|| (NrfilesRetrieved>=limitFiles && getSuccessCondition().equals(SUCCESS_IF_AT_LEAST_X_FILES_DOWNLOADED))
-				|| (NrErrors<=limitFiles && getSuccessCondition().equals(SUCCESS_IF_ERRORS_LESS)))
-			{
-				retval=true;	
-			}
-		
-		return retval;
-	}
+
 	
 	public void setLimit(String nr_limitin)
 	{
@@ -935,7 +923,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 			// Get all the files in the current directory...
 			String[] filelist = ftpclient.dir();
 		    if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryFTP.FoundNFiles", String.valueOf(filelist.length))); //$NON-NLS-1$
-
+		    
 			// set transfertype ...
 			if (binaryMode) 
 			{
@@ -951,9 +939,11 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 			// Some FTP servers return a message saying no files found as a string in the filenlist
 			// e.g. Solaris 8
 			// CHECK THIS !!!
+			
 			if (filelist.length == 1)
 			{
-                String translatedWildcard = environmentSubstitute(wildcard);
+				String translatedWildcard = environmentSubstitute(wildcard);
+				if(Const.isEmpty(translatedWildcard)) translatedWildcard=".*";
                 if (filelist[0].startsWith(translatedWildcard))
 				{
 					throw new FTPException(filelist[0]);

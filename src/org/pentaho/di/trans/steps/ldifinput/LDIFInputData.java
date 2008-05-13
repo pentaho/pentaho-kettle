@@ -75,6 +75,9 @@ public class LDIFInputData extends BaseStepData implements StepDataInterface
 	public LDIFRecord recordLDIF;
 	public LDIF InputLDIF;
 	public String multiValueSeparator;
+    public int totalpreviousfields;
+    public Object[] readrow;    
+    public int indexOfFilenameField;
 	/**
 	 * 
 	 */
@@ -99,6 +102,8 @@ public class LDIFInputData extends BaseStepData implements StepDataInterface
 		InputLDIF=null;
 		recordLDIF=null;
 		multiValueSeparator=",";
-		
+		totalpreviousfields=0;
+		readrow=null;
+		indexOfFilenameField=-1;
 	}
 }

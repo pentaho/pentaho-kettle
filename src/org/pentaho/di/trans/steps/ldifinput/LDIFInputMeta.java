@@ -76,6 +76,11 @@ public class LDIFInputMeta extends BaseStepMeta implements StepMetaInterface
 	
 	private String  contentTypeField;
 	
+	/** file name from previous fields **/
+	private boolean filefield;
+	
+	private String dynamicFilenameField;
+	
 	
 	public LDIFInputMeta()
 	{
@@ -131,21 +136,20 @@ public class LDIFInputMeta extends BaseStepMeta implements StepMetaInterface
     }
     
     /**
-     * @return Returns the filenameField.
+     * @param filefield The filefield to set.
      */
-    public String getFilenameField()
+    public void setFileField(boolean filefield)
     {
-        return filenameField;
-    }    
-    
-    /**
-     * @param filenameField The filenameField to set.
-     */
-    public void setFilenameField(String filenameField)
-    {
-        this.filenameField = filenameField;
+        this.filefield = filefield;
     }
     
+    /**
+     * @return Returns the File field.
+     */
+    public boolean isFileField()
+    {
+        return filefield;
+    }
     /**
      * @return Returns the includeFilename.
      */
@@ -262,6 +266,39 @@ public class LDIFInputMeta extends BaseStepMeta implements StepMetaInterface
     }
     
     /**
+     * @return Returns the filenameField.
+     */
+    public String getFilenameField()
+    {
+        return filenameField;
+    } 
+    
+    /**
+     * @return Returns the dynamic filename field (from previous steps)
+     */
+    public String getDynamicFilenameField()
+    {
+        return dynamicFilenameField;
+    }   
+    
+    /**
+     * @param dynamicFilenameField The dynamic filename field to set.
+     */
+    public void setDynamicFilenameField(String dynamicFilenameField)
+    {
+        this.dynamicFilenameField = dynamicFilenameField;
+    }
+
+    /**
+     * @param filenameField The filenameField to set.
+     */
+    public void setFilenameField(String filenameField)
+    {
+        this.filenameField = filenameField;
+    }
+    
+    
+    /**
      * @return Returns the contentTypeField.
      */
     public String getContentTypeField()
@@ -307,6 +344,8 @@ public class LDIFInputMeta extends BaseStepMeta implements StepMetaInterface
     {
         StringBuffer retval=new StringBuffer();
         
+        retval.append("    ").append(XMLHandler.addTagValue("filefield",       filefield));
+        retval.append("    ").append(XMLHandler.addTagValue("dynamicFilenameField",  dynamicFilenameField));
         retval.append("    "+XMLHandler.addTagValue("include",         includeFilename));
         retval.append("    "+XMLHandler.addTagValue("include_field",   filenameField));
         retval.append("    "+XMLHandler.addTagValue("rownum",          includeRowNumber));
@@ -340,6 +379,8 @@ public class LDIFInputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
+			filefield  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "filefield"));
+			dynamicFilenameField    = XMLHandler.getTagValue(stepnode, "dynamicFilenameField");
 			includeFilename   = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "include"));
 			filenameField     = XMLHandler.getTagValue(stepnode, "include_field");
 			includeRowNumber  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "rownum"));
@@ -390,6 +431,8 @@ public class LDIFInputMeta extends BaseStepMeta implements StepMetaInterface
 	
 	public void setDefault()
 	{
+		filefield=false;
+		dynamicFilenameField ="";
 		includeFilename  = false;
 		filenameField    = "";
 		includeRowNumber = false;
@@ -463,6 +506,8 @@ public class LDIFInputMeta extends BaseStepMeta implements StepMetaInterface
    {
 		try
 		{
+			filefield  = rep.getStepAttributeBoolean(id_step, "filefield");
+			dynamicFilenameField  = rep.getStepAttributeString(id_step, "dynamicFilenameField");
 			includeFilename   = rep.getStepAttributeBoolean(id_step, "include");  
 			filenameField     = rep.getStepAttributeString (id_step, "include_field");
 			addtoresultfilename   = rep.getStepAttributeBoolean(id_step, "addtoresultfilename");  
@@ -516,6 +561,8 @@ public class LDIFInputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
+			rep.saveStepAttribute(id_transformation, id_step, "filefield",          filefield);
+			rep.saveStepAttribute(id_transformation, id_step, "dynamicFilenameField",    dynamicFilenameField);
 			rep.saveStepAttribute(id_transformation, id_step, "include",         includeFilename);
 			rep.saveStepAttribute(id_transformation, id_step, "include_field",   filenameField);
 			rep.saveStepAttribute(id_transformation, id_step, "rownum",          includeRowNumber);
@@ -564,7 +611,7 @@ public class LDIFInputMeta extends BaseStepMeta implements StepMetaInterface
         boolean subdirs[] = new boolean[fileName.length];
         for (int i=0;i<required.length;i++)
         {
-            required[i]="Y";
+            required[i]="N";
             subdirs[i]=false;
         }
         return FileInputList.createFileList(space,space.environmentSubstitute(fileName), space.environmentSubstitute(fileMask), required, subdirs);

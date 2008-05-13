@@ -25,7 +25,10 @@ import netscape.ldap.util.LDIFAttributeContent;
 import netscape.ldap.util.LDIFContent;
 import netscape.ldap.util.LDIFRecord;
 
+import org.eclipse.swt.graphics.Cursor;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.ModifyEvent;
@@ -55,6 +58,7 @@ import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.fileinput.FileInputList;
+import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.trans.Trans;
@@ -164,6 +168,17 @@ public class LDIFInputDialog extends BaseStepDialog implements
 	private TextVar      wMultiValuedSeparator;
 	
 	private FormData     fdlMultiValuedSeparator, fdMultiValuedSeparator;
+	
+	private FormData fdOriginFiles;
+	private Group wOriginFiles;
+	
+    private Label wlFileField,wlFilenameField;
+    private CCombo wFilenameField;
+    private FormData fdlFileField,fdFileField;
+    
+	private FormData fdFilenameField,fdlFilenameField;
+    private Button wFileField;
+	
 
 	public static final int dateLengths[] = new int[] { 23, 19, 14, 10, 10, 10,
 			10, 8, 8, 8, 8, 6, 6 };
@@ -235,6 +250,98 @@ public class LDIFInputDialog extends BaseStepDialog implements
 		fileLayout.marginWidth = 3;
 		fileLayout.marginHeight = 3;
 		wFileComp.setLayout(fileLayout);
+		
+		// ///////////////////////////////
+		// START OF Origin files GROUP  //
+		///////////////////////////////// 
+
+		wOriginFiles = new Group(wFileComp, SWT.SHADOW_NONE);
+		props.setLook(wOriginFiles);
+		wOriginFiles.setText(Messages.getString("LDIFInputDialog.wOriginFiles.Label"));
+		
+		FormLayout OriginFilesgroupLayout = new FormLayout();
+		OriginFilesgroupLayout.marginWidth = 10;
+		OriginFilesgroupLayout.marginHeight = 10;
+		wOriginFiles.setLayout(OriginFilesgroupLayout);
+		
+		//Is Filename defined in a Field		
+		wlFileField = new Label(wOriginFiles, SWT.RIGHT);
+		wlFileField.setText(Messages.getString("LDIFInputDialog.FileField.Label"));
+		props.setLook(wlFileField);
+		fdlFileField = new FormData();
+		fdlFileField.left = new FormAttachment(0, 0);
+		fdlFileField.top = new FormAttachment(0, margin);
+		fdlFileField.right = new FormAttachment(middle, -margin);
+		wlFileField.setLayoutData(fdlFileField);
+		
+		
+		wFileField = new Button(wOriginFiles, SWT.CHECK);
+		props.setLook(wFileField);
+		wFileField.setToolTipText(Messages.getString("LDIFInputDialog.FileField.Tooltip"));
+		fdFileField = new FormData();
+		fdFileField.left = new FormAttachment(middle, 0);
+		fdFileField.top = new FormAttachment(0, margin);
+		wFileField.setLayoutData(fdFileField);		
+		SelectionAdapter lfilefield = new SelectionAdapter()
+        {
+            public void widgetSelected(SelectionEvent arg0)
+            {
+            	ActiveFileField();
+            	input.setChanged();
+            }
+        };
+        wFileField.addSelectionListener(lfilefield);
+        
+		// Filename field
+		wlFilenameField=new Label(wOriginFiles, SWT.RIGHT);
+        wlFilenameField.setText(Messages.getString("LDIFInputDialog.wlFilenameField.Label"));
+        props.setLook(wlFilenameField);
+        fdlFilenameField=new FormData();
+        fdlFilenameField.left = new FormAttachment(0, 0);
+        fdlFilenameField.top  = new FormAttachment(wFileField, margin);
+        fdlFilenameField.right= new FormAttachment(middle, -margin);
+        wlFilenameField.setLayoutData(fdlFilenameField);
+        
+        
+        wFilenameField=new CCombo(wOriginFiles, SWT.BORDER | SWT.READ_ONLY);
+        wFilenameField.setEditable(true);
+        props.setLook(wFilenameField);
+        wFilenameField.addModifyListener(lsMod);
+        fdFilenameField=new FormData();
+        fdFilenameField.left = new FormAttachment(middle, 0);
+        fdFilenameField.top  = new FormAttachment(wFileField, margin);
+        fdFilenameField.right= new FormAttachment(100, -margin);
+        wFilenameField.setLayoutData(fdFilenameField);
+        wFilenameField.addFocusListener(new FocusListener()
+            {
+                public void focusLost(org.eclipse.swt.events.FocusEvent e)
+                {
+                }
+            
+                public void focusGained(org.eclipse.swt.events.FocusEvent e)
+                {
+                    Cursor busy = new Cursor(shell.getDisplay(), SWT.CURSOR_WAIT);
+                    shell.setCursor(busy);
+                    setFileField();
+                    shell.setCursor(null);
+                    busy.dispose();
+                }
+            }
+        );           	
+        
+		fdOriginFiles = new FormData();
+		fdOriginFiles.left = new FormAttachment(0, margin);
+		fdOriginFiles.top = new FormAttachment(wFilenameList, margin);
+		fdOriginFiles.right = new FormAttachment(100, -margin);
+		wOriginFiles.setLayoutData(fdOriginFiles);
+		
+		// ///////////////////////////////////////////////////////////
+		// / END OF Origin files GROUP
+		// ///////////////////////////////////////////////////////////		
+
+		
+		
+		
 
 		// Filename line
 		wlFilename = new Label(wFileComp, SWT.RIGHT);
@@ -243,7 +350,7 @@ public class LDIFInputDialog extends BaseStepDialog implements
 		props.setLook(wlFilename);
 		fdlFilename = new FormData();
 		fdlFilename.left = new FormAttachment(0, 0);
-		fdlFilename.top = new FormAttachment(0, 0);
+		fdlFilename.top = new FormAttachment(wOriginFiles, margin);
 		fdlFilename.right = new FormAttachment(middle, -margin);
 		wlFilename.setLayoutData(fdlFilename);
 
@@ -255,7 +362,7 @@ public class LDIFInputDialog extends BaseStepDialog implements
 				.getString("System.Tooltip.BrowseForFileOrDirAndAdd"));
 		fdbFilename = new FormData();
 		fdbFilename.right = new FormAttachment(100, 0);
-		fdbFilename.top = new FormAttachment(0, 0);
+		fdbFilename.top = new FormAttachment(wOriginFiles, margin);
 		wbbFilename.setLayoutData(fdbFilename);
 
 		wbaFilename = new Button(wFileComp, SWT.PUSH | SWT.CENTER);
@@ -266,7 +373,7 @@ public class LDIFInputDialog extends BaseStepDialog implements
 				.getString("LDIFInputDialog.FilenameAdd.Tooltip"));
 		fdbaFilename = new FormData();
 		fdbaFilename.right = new FormAttachment(wbbFilename, -margin);
-		fdbaFilename.top = new FormAttachment(0, 0);
+		fdbaFilename.top = new FormAttachment(wOriginFiles, margin);
 		wbaFilename.setLayoutData(fdbaFilename);
 
 		wFilename = new TextVar(transMeta,wFileComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
@@ -275,7 +382,7 @@ public class LDIFInputDialog extends BaseStepDialog implements
 		fdFilename = new FormData();
 		fdFilename.left = new FormAttachment(middle, 0);
 		fdFilename.right = new FormAttachment(wbaFilename, -margin);
-		fdFilename.top = new FormAttachment(0, 0);
+		fdFilename.top = new FormAttachment(wOriginFiles, margin);
 		wFilename.setLayoutData(fdFilename);
 
 		wlFilemask = new Label(wFileComp, SWT.RIGHT);
@@ -915,6 +1022,7 @@ public class LDIFInputDialog extends BaseStepDialog implements
 		// Set the shell size, based upon previous time...
 		setSize();
 		getData(input);
+		ActiveFileField();
 		input.setChanged(changed);
 		wFields.optWidth(true);
 
@@ -925,7 +1033,56 @@ public class LDIFInputDialog extends BaseStepDialog implements
 		}
 		return stepname;
 	}
-
+	private void ActiveFileField()
+	{
+		wlFilenameField.setEnabled(wFileField.getSelection());
+		wFilenameField.setEnabled(wFileField.getSelection());
+			
+		wlFilename.setEnabled(!wFileField.getSelection());
+		wbbFilename.setEnabled(!wFileField.getSelection());
+		wbaFilename.setEnabled(!wFileField.getSelection());		
+		wFilename.setEnabled(!wFileField.getSelection());		
+		wlFilemask.setEnabled(!wFileField.getSelection());		
+		wFilemask.setEnabled(!wFileField.getSelection());		
+		wlFilenameList.setEnabled(!wFileField.getSelection());		
+		wbdFilename.setEnabled(!wFileField.getSelection());
+		wbeFilename.setEnabled(!wFileField.getSelection());
+		wbShowFiles.setEnabled(!wFileField.getSelection());
+		wlFilenameList.setEnabled(!wFileField.getSelection());
+		wFilenameList.setEnabled(!wFileField.getSelection());
+		if(wFileField.getSelection()) wInclFilename.setSelection(false);
+		wInclFilename.setEnabled(!wFileField.getSelection());
+		wlInclFilename.setEnabled(!wFileField.getSelection());
+		wLimit.setEnabled(!wFileField.getSelection());	
+		wPreview.setEnabled(!wFileField.getSelection());
+		wGet.setEnabled(!wFileField.getSelection());
+		wLimit.setEnabled(!wFileField.getSelection());
+		wlLimit.setEnabled(!wFileField.getSelection());
+	}
+	
+	 private void setFileField()
+	 {
+		 try{
+	           
+			 wFilenameField.removeAll();
+				
+			 RowMetaInterface r = transMeta.getPrevStepFields(stepname);
+				if (r!=null)
+				{
+		             r.getFieldNames();
+		             
+		             for (int i=0;i<r.getFieldNames().length;i++)
+						{	
+		            	 wFilenameField.add(r.getFieldNames()[i]);					
+							
+						}
+				}
+			 
+			
+		 }catch(KettleException ke){
+				new ErrorDialog(shell, Messages.getString("LDIFInputDialog.FailedToGetFields.DialogTitle"), Messages.getString("LDIFInputDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+			}
+	 }
 	private void get() {
 
 		try {
@@ -935,27 +1092,24 @@ public class LDIFInputDialog extends BaseStepDialog implements
 			FileInputList inputList = meta.getFiles(transMeta);
 			// Clear Fields Grid
 			wFields.removeAll();
-
+			
 			if (inputList.getFiles().size() > 0) {
 				// Open the file (only first file)...
-				LDIF InputLDIF = new LDIF(KettleVFS.getFilename(inputList
-						.getFile(0)));
+				
+				LDIF InputLDIF = new LDIF(KettleVFS.getFilename(inputList.getFile(0)));
 
 				HashSet<String> attributeSet = new HashSet<String>();
 
-				for (LDIFRecord recordLDIF = InputLDIF.nextRecord(); recordLDIF != null; recordLDIF = InputLDIF
-						.nextRecord()) {
+				for (LDIFRecord recordLDIF = InputLDIF.nextRecord(); recordLDIF != null; recordLDIF = InputLDIF.nextRecord()) {
 					// Get LDIF Content
 					LDIFContent contentLDIF = recordLDIF.getContent();
-
+					
 					if (contentLDIF.getType() == LDIFContent.ATTRIBUTE_CONTENT) 
 					{
 						// Get only ATTRIBUTE_CONTENT
 
 						LDIFAttributeContent attrContentLDIF = (LDIFAttributeContent) contentLDIF;
-						LDAPAttribute[] attributes_LDIF = attrContentLDIF
-								.getAttributes();
-
+						LDAPAttribute[] attributes_LDIF = attrContentLDIF.getAttributes();
 
 						for (int j = 0; j < attributes_LDIF.length; j++) 
 						{
@@ -966,8 +1120,7 @@ public class LDIFInputDialog extends BaseStepDialog implements
 							if (!attributeSet.contains(attributeName)) 
 							{
 								// Get attribut Name
-								TableItem item = new TableItem(wFields.table,
-										SWT.NONE);
+								TableItem item = new TableItem(wFields.table,SWT.NONE);
 								item.setText(1, attributeName);
 								item.setText(2, attributeName);
 
@@ -1078,6 +1231,10 @@ public class LDIFInputDialog extends BaseStepDialog implements
 	 *            The TextFileInputMeta object to obtain the data from.
 	 */
 	public void getData(LDIFInputMeta in) {
+		
+		wFileField.setSelection(in.isFileField());
+		if (in.getDynamicFilenameField()!=null) wFilenameField.setText(in.getDynamicFilenameField());
+		
 		if (in.getFileName() != null) {
 			wFilenameList.removeAll();
 			for (int i = 0; i < in.getFileName().length; i++) {
@@ -1183,8 +1340,11 @@ public class LDIFInputDialog extends BaseStepDialog implements
 
 	private void getInfo(LDIFInputMeta in) throws KettleException {
 		stepname = wStepname.getText(); // return value
-
+		
 		// copy info to TextFileInputMeta class (input)
+		in.setDynamicFilenameField( wFilenameField.getText() );
+		in.setFileField(wFileField.getSelection() );
+		
 		in.setRowLimit(Const.toLong(wLimit.getText(), 0L));
 		in.setFilenameField(wInclFilenameField.getText());
 		in.setRowNumberField(wInclRownumField.getText());
