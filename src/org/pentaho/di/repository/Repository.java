@@ -5248,7 +5248,7 @@ public class Repository
 		table.addValueMeta(new ValueMeta(FIELD_JOBENTRY_ID_JOB, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_JOBENTRY_ID_JOBENTRY_TYPE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_JOBENTRY_NAME, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta(FIELD_JOBENTRY_DESCRIPTION, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+		table.addValueMeta(new ValueMeta(FIELD_JOBENTRY_DESCRIPTION, ValueMetaInterface.TYPE_STRING, REP_STRING_LENGTH, 0));
 		sql = database.getDDL(tablename, table, null, false, FIELD_JOBENTRY_ID_JOBENTRY, false);
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
