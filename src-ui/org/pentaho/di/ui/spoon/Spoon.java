@@ -1333,7 +1333,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	{
 		//Color background = GUIResource.getInstance().getColorLightPentaho();
 		mainComposite = new Composite(sashform, SWT.BORDER);
-		mainComposite.setBackground(GUIResource.getInstance().getColorWhite());
 		mainComposite.setLayout(new FormLayout());
 		
 		int mainMargin = 4;
@@ -1384,7 +1383,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     lastControl=selectionLabel;
 
     ToolBar treeTb = new ToolBar(mainComposite, SWT.HORIZONTAL | SWT.FLAT);
-    treeTb.setBackground(GUIResource.getInstance().getColorWhite());
     expandAll = new ToolItem(treeTb,SWT.PUSH);
     expandAll.setImage(GUIResource.getInstance().getImageExpandAll());
     collapseAll = new ToolItem(treeTb,SWT.PUSH);
