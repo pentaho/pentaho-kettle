@@ -59,7 +59,6 @@ import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.events.TreeAdapter;
 import org.eclipse.swt.events.TreeEvent;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
@@ -1595,7 +1594,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		
 		//stepHistoryChanged=true;
 		
-    selectionLabel.setText(tree ? "Explorer" : "Steps");
+    selectionLabel.setText(tree ? Messages.getString("Spoon.Explorer") : Messages.getString("Spoon.Steps") );
 	}
 
 	public void addCoreObjectsTree()
