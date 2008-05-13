@@ -21,11 +21,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.pentaho.di.core.ResultFile;
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Result;
+import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
@@ -239,7 +239,7 @@ private void addFilenameToResult(String targetFilename,LogWriter log,Result resu
         if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryCreateFile.FileAddedToResult",targetFilename)); //$NON-NLS-1$
 	}catch(Exception e)
 	{
-		throw new IOException(e);
+		throw new IOException(e.getLocalizedMessage());
 	}
 	finally
 	{
