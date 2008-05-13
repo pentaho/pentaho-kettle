@@ -2181,7 +2181,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	}
 	
     public void hideToolTips() {
-    	toolTip.hide();
+      if (toolTip != null){
+        toolTip.hide();
+      }
 	}
 
 	/**
