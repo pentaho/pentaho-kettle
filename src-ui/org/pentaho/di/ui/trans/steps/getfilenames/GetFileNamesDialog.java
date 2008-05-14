@@ -900,20 +900,9 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 			wFilenameList.setRowNums();
 			wFilenameList.optWidth(true);
 
-			if (in.getFilterFileType() != null)
+			if (in.getFileTypeFilter() != null)
 			{
-
-				if (in.getFilterFileType().equals("only_files"))
-				{
-					wFilterFileType.select(1);
-				} else if (in.getFilterFileType().equals("only_folders"))
-				{
-					wFilterFileType.select(2);
-				} else
-				{
-					wFilterFileType.select(0);
-				}
-
+			    wFilterFileType.select(in.getFileTypeFilter().ordinal());
 			} else
 			{
 				wFilterFileType.select(0);

@@ -13,6 +13,8 @@
 package org.pentaho.di.core.fileinput;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -33,6 +35,51 @@ public class FileInputList
     private List<FileObject>    files              = new ArrayList<FileObject>();
     private List<FileObject>    nonExistantFiles   = new ArrayList<FileObject>(1);
     private List<FileObject>    nonAccessibleFiles = new ArrayList<FileObject>(1);
+    
+    public enum FileTypeFilter
+    {
+        FILES_AND_FOLDERS("all_files", FileType.FILE, FileType.FOLDER),
+        ONLY_FILES("only_files", FileType.FILE),
+        ONLY_FOLDERS("only_folders", FileType.FOLDER);
+        
+        private String name;
+        private final Collection<FileType> allowedFileTypes;
+        private FileTypeFilter(String name, FileType... allowedFileTypes)
+        {
+            this.name = name;
+            this.allowedFileTypes = Collections.unmodifiableCollection(Arrays.asList(allowedFileTypes));
+        }
+        public boolean isFileTypeAllowed(FileType fileType)
+        {
+            return allowedFileTypes.contains(fileType);
+        }
+        public String toString()
+        {
+            return name;
+        }
+        public static FileTypeFilter getByOrdinal(int ordinal)
+        {
+            for (FileTypeFilter filter : FileTypeFilter.values())
+            {
+                if (filter.ordinal() == ordinal)
+                {
+                    return filter;
+                }
+            }
+            return ONLY_FILES;
+        }
+        public static FileTypeFilter getByName(String name)
+        {
+            for (FileTypeFilter filter : FileTypeFilter.values())
+            {
+                if (filter.name.equals(name))
+                {
+                    return filter;
+                }
+            }
+            return ONLY_FILES;
+        }
+    }
     
     private static final String YES                = "Y";
 
@@ -59,13 +106,19 @@ public class FileInputList
     public static String[] createFilePathList(VariableSpace space, String[] fileName, String[] fileMask, String[] fileRequired)
     {
         boolean[] includeSubdirs = includeSubdirsFalse(fileName.length);
-        return createFilePathList(space, fileName, fileMask, fileRequired, includeSubdirs);
+        return createFilePathList(space, fileName, fileMask, fileRequired, includeSubdirs, null);
     }
     
     public static String[] createFilePathList(VariableSpace space, String[] fileName, String[] fileMask, String[] fileRequired,
         boolean[] includeSubdirs)
     {
-    	List<FileObject> fileList = createFileList( space, fileName, fileMask, fileRequired, includeSubdirs ).getFiles();
+        return createFilePathList(space, fileName, fileMask, fileRequired, includeSubdirs, null);
+    }
+
+    public static String[] createFilePathList(VariableSpace space, String[] fileName, String[] fileMask, String[] fileRequired,
+        boolean[] includeSubdirs, FileTypeFilter[] filters)
+    {
+    	List<FileObject> fileList = createFileList( space, fileName, fileMask, fileRequired, includeSubdirs, filters ).getFiles();
         String[] filePaths = new String[fileList.size()];
         for (int i = 0; i < filePaths.length; i++)
         {
@@ -78,10 +131,15 @@ public class FileInputList
     public static FileInputList createFileList(VariableSpace space, String[] fileName, String[] fileMask, String[] fileRequired)
     {
         boolean[] includeSubdirs = includeSubdirsFalse(fileName.length);
-        return createFileList(space, fileName, fileMask, fileRequired, includeSubdirs);
+        return createFileList(space, fileName, fileMask, fileRequired, includeSubdirs, null);
     }
     
     public static FileInputList createFileList(VariableSpace space, String[] fileName, String[] fileMask, String[] fileRequired, boolean[] includeSubdirs)
+    {
+        return createFileList(space, fileName, fileMask, fileRequired, includeSubdirs, null);
+    }
+
+    public static FileInputList createFileList(VariableSpace space, String[] fileName, String[] fileMask, String[] fileRequired, boolean[] includeSubdirs, FileTypeFilter[] fileTypeFilters)
     {
         FileInputList fileInputList = new FileInputList();
 
@@ -95,6 +153,9 @@ public class FileInputList
             final String onemask = realmask[i];
             final boolean onerequired = YES.equalsIgnoreCase(fileRequired[i]);
             final boolean subdirs = includeSubdirs[i];
+            final FileTypeFilter filter = (
+                    (fileTypeFilters == null || fileTypeFilters[i] == null) ?
+                            FileTypeFilter.ONLY_FILES : fileTypeFilters[i]);
             
             if (Const.isEmpty(onefile)) continue;
 
@@ -120,9 +181,14 @@ public class FileInputList
                                     
                                     public boolean includeFile(FileSelectInfo info)
                                     {
+                                        // Never return the parent directory of a file list.
+                                        if (info.getDepth() == 0) {
+                                            return false;
+                                        }
+                                        
                                     	FileObject fileObject = info.getFile();
                                     	try {
-                                    	    if ( fileObject != null && fileObject.getType() == FileType.FILE )
+                                    	    if ( fileObject != null && filter.isFileTypeAllowed(fileObject.getType()))
                                     	    {
                                                 String name = fileObject.getName().getBaseName();
                                                 boolean matches = Pattern.matches(onemask, name);

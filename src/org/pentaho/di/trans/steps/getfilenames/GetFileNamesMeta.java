@@ -66,7 +66,7 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
 	private String             fileRequired[];
 	
 	/** Filter indicating file filter */
-	private String filterfiletype;
+	private FileInputList.FileTypeFilter fileTypeFilter;
 	
 	/** The name of the field in the output containing the filename */
 	private  String  filenameField;
@@ -262,23 +262,12 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
     }
 	public void setFilterFileType(int filtertypevalue)
 	{
-		if (filtertypevalue==0)
-		{
-			this.filterfiletype= "all_files";
-		}
-		else if (filtertypevalue==1)
-		{
-			this.filterfiletype= "only_files";
-		}
-		else if (filtertypevalue==2)
-		{
-			this.filterfiletype= "only_folders";
-		}
+	    this.fileTypeFilter = FileInputList.FileTypeFilter.getByOrdinal(filtertypevalue);
 	}
 	
-	public String getFilterFileType()
+	public FileInputList.FileTypeFilter getFileTypeFilter()
 	{	
-		return filterfiletype;
+		return fileTypeFilter;
 	}
 	
 	public void loadXML(Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleXMLException
@@ -307,7 +296,7 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
 	public void setDefault()
 	{
 		int nrfiles = 0;
-		filterfiletype="all_files";
+		fileTypeFilter=FileInputList.FileTypeFilter.FILES_AND_FOLDERS;
 		isaddresult=true;
 		filefield=false;
 		includeRowNumber = false;
@@ -417,7 +406,7 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
 		StringBuffer retval = new StringBuffer(300);
 			
 		retval.append("    <filter>").append(Const.CR);
-		retval.append("      ").append(XMLHandler.addTagValue("filterfiletype",  filterfiletype));
+		retval.append("      ").append(XMLHandler.addTagValue("filterfiletype",  fileTypeFilter.toString()));
 		retval.append("    </filter>").append(Const.CR);
 		
 		retval.append("    ").append(XMLHandler.addTagValue("rownum",          includeRowNumber));
@@ -448,7 +437,7 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			Node filternode         = XMLHandler.getSubNode(stepnode, "filter");
 			Node filterfiletypenode = XMLHandler.getSubNode(filternode, "filterfiletype");
-			filterfiletype          = XMLHandler.getNodeValue(filterfiletypenode);
+			fileTypeFilter          = FileInputList.FileTypeFilter.getByName(XMLHandler.getNodeValue(filterfiletypenode));
 			
 			includeRowNumber  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "rownum"));
 			isaddresult  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "isaddresult"));
@@ -486,7 +475,7 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
 		try
 		{
 			int nrfiles = rep.countNrStepAttributes(id_step, "file_name");
-			filterfiletype=rep.getStepAttributeString(id_step, "filterfiletype");
+			fileTypeFilter=FileInputList.FileTypeFilter.getByName(rep.getStepAttributeString(id_step, "filterfiletype"));
 			
 			dynamicFilenameField  = rep.getStepAttributeString(id_step, "filename_Field");
 			dynamicWildcardField  = rep.getStepAttributeString(id_step, "wildcard_Field");
@@ -517,7 +506,7 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{			
-			rep.saveStepAttribute(id_transformation, id_step, "filterfiletype", filterfiletype);
+			rep.saveStepAttribute(id_transformation, id_step, "filterfiletype", fileTypeFilter.toString());
 			
 			rep.saveStepAttribute(id_transformation, id_step, "rownum",          includeRowNumber);
 			rep.saveStepAttribute(id_transformation, id_step, "isaddresult",     isaddresult);
@@ -541,18 +530,35 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 
+    private boolean[] buildSubdirsFlagsArray()
+    {
+        boolean[] flags = new boolean[fileName.length];
+        for (int i = 0; i < fileName.length; i++) {
+            flags[i] = false;
+        }
+        return flags;
+    }
+    private FileInputList.FileTypeFilter[] buildFileTypeFiltersArray()
+    {
+        FileInputList.FileTypeFilter[] filters = new FileInputList.FileTypeFilter[fileName.length];
+        for (int i = 0; i < fileName.length; i++) {
+            filters[i] = getFileTypeFilter();
+        }
+        return filters;
+    }
+
 	public String[] getFilePaths(VariableSpace space)
 	{
-		return FileInputList.createFilePathList(space, fileName, fileMask, fileRequired);
+		return FileInputList.createFilePathList(space, fileName, fileMask, fileRequired, buildSubdirsFlagsArray(), buildFileTypeFiltersArray());
 	}
     
-	public FileInputList getTextFileList(VariableSpace space)
+	public FileInputList getFileList(VariableSpace space)
 	{
-		return FileInputList.createFileList(space, fileName, fileMask, fileRequired);
+		return FileInputList.createFileList(space, fileName, fileMask, fileRequired, buildSubdirsFlagsArray(), buildFileTypeFiltersArray());
 	}
-	public FileInputList getDynamicTextFileList(VariableSpace space, String[] filename, String[] filemask, String[] filerequired)
+	public FileInputList getDynamicFileList(VariableSpace space, String[] filename, String[] filemask, String[] filerequired)
 	{
-		return FileInputList.createFileList(space, filename, filemask, filerequired);
+		return FileInputList.createFileList(space, filename, filemask, filerequired, buildSubdirsFlagsArray(), buildFileTypeFiltersArray());
 	}
 
 
@@ -572,15 +578,15 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
 			remarks.add(cr);
 		}
 
-		FileInputList textFileList = getTextFileList(transMeta);
-		if (textFileList.nrOfFiles() == 0)
+		FileInputList fileList = getFileList(transMeta);
+		if (fileList.nrOfFiles() == 0)
 		{
 			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("GetFileNamesMeta.CheckResult.ExpectedFilesError"), stepinfo);
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("GetFileNamesMeta.CheckResult.ExpectedFilesOk", ""+textFileList.nrOfFiles()), stepinfo);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("GetFileNamesMeta.CheckResult.ExpectedFilesOk", ""+fileList.nrOfFiles()), stepinfo);
 			remarks.add(cr);
 		}
 	}
@@ -591,10 +597,10 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
      ResourceReference reference = new ResourceReference(stepInfo);
      references.add(reference);
 
-     String[] textFiles = getFilePaths(transMeta);
-     if ( textFiles!=null ) {
-       for (int i=0; i<textFiles.length; i++) {
-         reference.getEntries().add( new ResourceEntry(textFiles[i], ResourceType.FILE));
+     String[] files = getFilePaths(transMeta);
+     if ( files!=null ) {
+       for (int i=0; i<files.length; i++) {
+         reference.getEntries().add( new ResourceEntry(files[i], ResourceType.FILE));
        }
      }
      return references;
