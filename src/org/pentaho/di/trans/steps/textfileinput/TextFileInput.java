@@ -940,6 +940,22 @@ public class TextFileInput extends BaseStep implements StepInterface
 					long useNumber = meta.isRowNumberByFile() ? data.lineInFile : linesWritten + 1;
 					r = convertLineToRow(textLine, meta, data.outputRowMeta, data.convertRowMeta, data.filename, useNumber, data.dataErrorLineHandler);
 					if (r != null) putrow = true;
+					
+					// Possible fix for bug PDI-1121 - paged layout header and line count off by 1 
+					// We need to reset these BEFORE the next header line is read, so that it 
+					// is treated as a header ... obviously, only if there is no footer, and we are 
+					// done reading data. 
+          if (!meta.hasFooter() && (data.pageLinesRead == meta.getNrLinesPerPage()))
+          {
+            /* OK, we are done reading the footer lines, start again
+               on 'next page' with the header
+             */
+            data.doneWithHeader = false;
+            data.headerLinesRead = 0;
+            data.pageLinesRead = 0;
+            data.footerLinesRead = 0;
+            if (log.isRowLevel()) logRowlevel("RESTART PAGE");
+          }
 				}
 				else
 				// done reading the data lines, skip the footer lines
@@ -1259,7 +1275,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 			   The nr rows in the page : optional
 			   The footer rows
 			 */
-			int bufferSize = 1; // try to read at least one line.
+			int bufferSize = 1; 
 			bufferSize += meta.hasHeader() ? meta.getNrHeaderLines() : 0;
 			bufferSize += meta.isLayoutPaged() ? meta.getNrLinesPerPage() : 0;
 			bufferSize += meta.hasFooter() ? meta.getNrFooterLines() : 0;
