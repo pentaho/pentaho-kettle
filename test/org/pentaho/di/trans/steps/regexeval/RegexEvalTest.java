@@ -20,11 +20,10 @@ import java.util.List;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
-import org.pentaho.di.trans.RowProducer;
-import org.pentaho.di.trans.RowStepCollector;
-import org.pentaho.di.trans.Trans;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.TransTestFactory;
+import org.pentaho.di.trans.TransformationTestCase;
 
 /**
  * Test class for the RegexEval step.
@@ -123,40 +122,32 @@ public class RegexEvalTest extends TransformationTestCase
     }
     public void testRegexEval1() throws Exception
     {
-        TransMeta transMeta = new TransMeta();
-        transMeta.setName("regexeval1");
-    	
+        String regexStepName = "regexeval";
         RegexEvalMeta regexEvalMeta = new RegexEvalMeta();
-        
+
         regexEvalMeta.setScript("[abc]*");
         regexEvalMeta.setMatcher("field1");
         regexEvalMeta.setResultFieldName("res");
 
-        StepMeta injectorStep = createInjectorStepForTrans("injector step", transMeta);
-        StepMeta dummyStep = createConnectedDummyStepForTrans("dummy step", transMeta, injectorStep);
-        StepMeta regexEvalStep = createConnectedStepForTrans("regexeval step", regexEvalMeta, transMeta, dummyStep);
-
-        Trans trans = new Trans(transMeta);
-        trans.prepareExecution(null);
-               
-        RowProducer rp = trans.addRowProducer(injectorStep.getName(), 0);
-        RowStepCollector rc = new RowStepCollector();
-        trans.getStepInterface(regexEvalStep.getName(), 0).addRowListener(rc);
-
-        trans.startThreads();
+        TransMeta transMeta = TransTestFactory.generateTestTransformation(new Variables(), regexEvalMeta, regexStepName);
         
-        feedSourceRows(rp, createSourceData());
-
-        trans.waitUntilFinished();   
+        // Now execute the transformation and get the result from the dummy step.
+        //
+        List<RowMetaAndData> result = TransTestFactory.executeTestTransformation
+                (
+                    transMeta, 
+                    TransTestFactory.INJECTOR_STEPNAME, 
+                    regexStepName, 
+                    TransTestFactory.DUMMY_STEPNAME, 
+                    createSourceData()
+                );
         
-        checkRows(createResultData1(), rc.getRowsWritten());
+        checkRows(createResultData1(), result);
     }
 
     public void testRegexEval2() throws Exception
     {
-        TransMeta transMeta = new TransMeta();
-        transMeta.setName("regexeval2");
-        
+        String regexStepName = "regexeval";
         RegexEvalMeta regexEvalMeta = new RegexEvalMeta();
         
         regexEvalMeta.setScript("\\d(\\d)\\d");
@@ -167,32 +158,25 @@ public class RegexEvalTest extends TransformationTestCase
         regexEvalMeta.getFieldName()[0] = "cap";
         regexEvalMeta.getFieldType()[0] = ValueMeta.TYPE_INTEGER;
         
-
-        StepMeta injectorStep = createInjectorStepForTrans("injector step", transMeta);
-        StepMeta dummyStep = createConnectedDummyStepForTrans("dummy step", transMeta, injectorStep);
-        StepMeta regexEvalStep = createConnectedStepForTrans("regexeval step", regexEvalMeta, transMeta, dummyStep);
-
-        Trans trans = new Trans(transMeta);
-        trans.prepareExecution(null);
-               
-        RowProducer rp = trans.addRowProducer(injectorStep.getName(), 0);
-        RowStepCollector rc = new RowStepCollector();
-        trans.getStepInterface(regexEvalStep.getName(), 0).addRowListener(rc);
-
-        trans.startThreads();
+        TransMeta transMeta = TransTestFactory.generateTestTransformation(new Variables(), regexEvalMeta, regexStepName);
         
-        feedSourceRows(rp, createSourceData());
+        // Now execute the transformation and get the result from the dummy step.
+        //
+        List<RowMetaAndData> result = TransTestFactory.executeTestTransformation
+                (
+                    transMeta, 
+                    TransTestFactory.INJECTOR_STEPNAME, 
+                    regexStepName, 
+                    TransTestFactory.DUMMY_STEPNAME, 
+                    createSourceData()
+                );
 
-        trans.waitUntilFinished();   
-        
-        checkRows(createResultData2(), rc.getRowsWritten());
+        checkRows(createResultData2(), result);
     }
 
     public void testRegexEval3() throws Exception
     {
-        TransMeta transMeta = new TransMeta();
-        transMeta.setName("regexeval2");
-        
+        String regexStepName = "regexeval";
         RegexEvalMeta regexEvalMeta = new RegexEvalMeta();
         
         regexEvalMeta.setScript("((a)|([A1]))([B2]?).*");
@@ -218,23 +202,19 @@ public class RegexEvalTest extends TransformationTestCase
         regexEvalMeta.getFieldIfNull()[3] = "0";
         regexEvalMeta.getFieldNullIf()[3] = "B";
         
-        StepMeta injectorStep = createInjectorStepForTrans("injector step", transMeta);
-        StepMeta dummyStep = createConnectedDummyStepForTrans("dummy step", transMeta, injectorStep);
-        StepMeta regexEvalStep = createConnectedStepForTrans("regexeval step", regexEvalMeta, transMeta, dummyStep);
-
-        Trans trans = new Trans(transMeta);
-        trans.prepareExecution(null);
-               
-        RowProducer rp = trans.addRowProducer(injectorStep.getName(), 0);
-        RowStepCollector rc = new RowStepCollector();
-        trans.getStepInterface(regexEvalStep.getName(), 0).addRowListener(rc);
-
-        trans.startThreads();
+        TransMeta transMeta = TransTestFactory.generateTestTransformation(new Variables(), regexEvalMeta, regexStepName);
         
-        feedSourceRows(rp, createSourceData());
+        // Now execute the transformation and get the result from the dummy step.
+        //
+        List<RowMetaAndData> result = TransTestFactory.executeTestTransformation
+                (
+                    transMeta, 
+                    TransTestFactory.INJECTOR_STEPNAME, 
+                    regexStepName, 
+                    TransTestFactory.DUMMY_STEPNAME, 
+                    createSourceData()
+                );
 
-        trans.waitUntilFinished();   
-        
-        checkRows(createResultData3(), rc.getRowsWritten());
+        checkRows(createResultData3(), result);
     }
 }

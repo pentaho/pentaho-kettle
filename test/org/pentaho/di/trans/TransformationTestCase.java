@@ -1,9 +1,10 @@
-package org.pentaho.di.trans.steps.regexeval;
+package org.pentaho.di.trans;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+
+import junit.framework.TestCase;
 
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleValueException;
@@ -11,15 +12,6 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.util.EnvUtil;
-import org.pentaho.di.trans.RowProducer;
-import org.pentaho.di.trans.TransHopMeta;
-import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
-import org.pentaho.di.trans.steps.injector.InjectorMeta;
-
-import junit.framework.TestCase;
 
 public abstract class TransformationTestCase extends TestCase
 {
@@ -101,49 +93,4 @@ public abstract class TransformationTestCase extends TestCase
     		}
         }
     }
-
-    public StepMeta createInjectorStepForTrans(String name, TransMeta transMeta)
-    {
-        InjectorMeta injectorMeta = new InjectorMeta();
-        
-        StepMeta injectorStep = new StepMeta(name, injectorMeta);
-        transMeta.addStep(injectorStep);
-        
-        return injectorStep;
-    }
-
-    public StepMeta createConnectedDummyStepForTrans(String name, TransMeta transMeta, StepMeta connectTo)
-    {
-        DummyTransMeta dummyTransMeta = new DummyTransMeta();
-    
-        StepMeta dummyStep = new StepMeta(name, dummyTransMeta);
-        transMeta.addStep(dummyStep);                              
-        TransHopMeta hop = new TransHopMeta(connectTo, dummyStep);
-        transMeta.addTransHop(hop);
-        
-        return dummyStep;
-    }
-
-    public StepMeta createConnectedStepForTrans(String name, StepMetaInterface stepMetaInterface, TransMeta transMeta, StepMeta connectTo)
-    {
-        StepMeta stepMeta = new StepMeta(name, stepMetaInterface);
-        transMeta.addStep(stepMeta);                              
-    
-        TransHopMeta hop = new TransHopMeta(connectTo, stepMeta);
-        transMeta.addTransHop(hop);    
-        
-        return stepMeta;
-    }
-
-    public void feedSourceRows(RowProducer rp, List<RowMetaAndData> inputList)
-    {
-        Iterator<RowMetaAndData> it = inputList.iterator();
-        while ( it.hasNext() )
-        {
-        	RowMetaAndData rm = it.next();
-        	rp.putRow(rm.getRowMeta(), rm.getData());
-        }   
-        rp.finished();
-    }
-
 }
