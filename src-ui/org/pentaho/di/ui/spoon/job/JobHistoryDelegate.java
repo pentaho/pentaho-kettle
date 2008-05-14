@@ -116,7 +116,6 @@ public class JobHistoryDelegate extends SpoonDelegate {
 		addToolBarListeners();
 		
 		SashForm sash = new SashForm(jobHistoryComposite, SWT.VERTICAL);
-		spoon.props.setLook(sash);
 		
 		sash.setLayout(new FillLayout());
 		

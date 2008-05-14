@@ -279,8 +279,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
     // To allow for a splitter later on, we will add the splitter here...
     //
     sashForm = new SashForm(mainComposite, SWT.VERTICAL);
-    // sashForm.setForeground(GUIResource.getInstance().getColorBlack())
-
+    
     // Add a canvas below it, use up all space initially
     //
     canvas = new Canvas(sashForm, SWT.V_SCROLL | SWT.H_SCROLL | SWT.NO_BACKGROUND | SWT.BORDER);

@@ -116,7 +116,6 @@ public class TransHistoryDelegate extends SpoonDelegate {
 		addToolBarListeners();
 		
 		SashForm sash = new SashForm(transHistoryComposite, SWT.VERTICAL);
-		spoon.props.setLook(sash);
 		
 		sash.setLayout(new FillLayout());
 		

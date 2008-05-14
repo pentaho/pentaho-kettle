@@ -575,8 +575,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         
 
 		sashform = new SashForm(shell, SWT.HORIZONTAL);
-		props.setLook(sashform);
-
+		
 		FormData fdSash = new FormData();
 		fdSash.left = new FormAttachment(0, 0);
 		// fdSash.top = new FormAttachment((org.eclipse.swt.widgets.ToolBar) toolbar.getNativeObject(), 0);
@@ -5380,8 +5379,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	  if (!selectionTree.isDisposed())
 	    props.setLook(selectionTree);
 		props.setLook(tabfolder.getSwtTabset(), Props.WIDGET_STYLE_TAB);
-
-		GUIResource.getInstance().reload();
 
 		refreshTree();
 		refreshGraph();

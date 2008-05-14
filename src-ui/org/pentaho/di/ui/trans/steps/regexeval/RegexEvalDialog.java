@@ -158,8 +158,7 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
 		wStepname.setLayoutData(fdStepname);
 
 		wSash = new SashForm(shell, SWT.VERTICAL );
- 		props.setLook(wSash);
-
+ 		
 		wTabFolder = new CTabFolder(wSash, SWT.BORDER);
  		props.setLook(wTabFolder, Props.WIDGET_STYLE_TAB);
  		

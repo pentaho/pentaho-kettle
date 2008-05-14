@@ -282,8 +282,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		wStepname.setLayoutData(fdStepname);
 
 		wSash = new SashForm(shell, SWT.VERTICAL );
- 		props.setLook(wSash);
-		
+ 		
 		// Top sash form
 		//
 		wTop = new Composite(wSash, SWT.NONE);
