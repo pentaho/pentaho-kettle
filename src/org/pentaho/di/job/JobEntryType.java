@@ -70,12 +70,9 @@ public enum JobEntryType
 	XML_WELL_FORMED(Messages.getString("JobEntry.XMLWellFormed.TypeDesc")),
 	SSH2_GET(Messages.getString("JobEntry.SSH2GET.TypeDesc")),
 	SSH2_PUT(Messages.getString("JobEntry.SSH2PUT.TypeDesc")),
-	FTP_DELETE(Messages.getString("JobEntry.FTPDELETE.TypeDesc")),;
-	
-	
-	
-	
-	
+	FTP_DELETE(Messages.getString("JobEntry.FTPDELETE.TypeDesc")),
+	DELETE_FOLDERS(Messages.getString("JobEntry.DeleteFolders.TypeDesc")),;
+
 	private String description;
 	
 	JobEntryType(String description)

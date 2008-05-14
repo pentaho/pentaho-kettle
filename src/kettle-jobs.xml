@@ -665,4 +665,18 @@
 		</tooltip>
 		<image-uri>ui/images/FTPD.png</image-uri>
 	</job>
+	
+		<job id="DELETE_FOLDERS">
+		<type>
+			ognl:@org.pentaho.di.job.JobEntryType@DELETE_FOLDERS
+		</type>
+		<class-name>
+			org.pentaho.di.job.entries.deletefolders.JobEntryDeleteFolders
+		</class-name>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@FILE_MANAGEMENT.getName()</category>
+		<tooltip>
+			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.DeleteFolders.Tooltip")
+		</tooltip>
+		<image-uri>ui/images/DSF.png</image-uri>
+	</job>
 </jobs>
