@@ -154,8 +154,7 @@ public class TransLog extends Composite implements TabItemInterface
 		spoon.props.setLook(this);
 
 		SashForm sash = new SashForm(this, SWT.VERTICAL);
-		spoon.props.setLook(sash);
-
+		
 		sash.setLayout(new FillLayout());
 
 		colinf = new ColumnInfo[] { 

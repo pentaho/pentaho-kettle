@@ -2343,8 +2343,6 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 
     public void newProps()
     {
-        GUIResource.getInstance().reload();
-
         iconsize = spoon.props.getIconSize();
     }
 

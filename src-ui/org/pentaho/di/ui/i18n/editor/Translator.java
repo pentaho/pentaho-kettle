@@ -198,7 +198,6 @@ public class Translator
         // Put something on the screen
         sashform = new SashForm(shell, SWT.HORIZONTAL);
         sashform.setLayout(new FillLayout());
-        props.setLook(sashform);
         
         addList();
         addGrid();
