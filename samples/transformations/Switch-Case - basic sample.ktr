@@ -290,7 +290,7 @@ Initial version : Matt Casters (Pentaho), 2008&#47;05&#47;14</note>
     </attributes>
   </connection>
   <order>
-  <hop> <from>A</from><to>Switch &#47; Case</to><enabled>Y</enabled> </hop>  <hop> <from>B</from><to>Switch &#47; Case</to><enabled>Y</enabled> </hop>  <hop> <from>Switch &#47; Case</from><to>Target A</to><enabled>Y</enabled> </hop>  <hop> <from>Switch &#47; Case</from><to>Target B</to><enabled>Y</enabled> </hop>  <hop> <from>null</from><to>Switch &#47; Case</to><enabled>Y</enabled> </hop>  <hop> <from>Switch &#47; Case</from><to>Target null</to><enabled>Y</enabled> </hop>  <hop> <from>C</from><to>Switch &#47; Case</to><enabled>Y</enabled> </hop>  <hop> <from>D</from><to>Switch &#47; Case</to><enabled>Y</enabled> </hop>  <hop> <from>Switch &#47; Case</from><to>Default</to><enabled>Y</enabled> </hop>  </order>
+  <hop> <from>A</from><to>Switch &#47; Case</to><enabled>Y</enabled> </hop>  <hop> <from>B</from><to>Switch &#47; Case</to><enabled>Y</enabled> </hop>  <hop> <from>Switch &#47; Case</from><to>Target A</to><enabled>Y</enabled> </hop>  <hop> <from>Switch &#47; Case</from><to>Target B</to><enabled>Y</enabled> </hop>  <hop> <from>null</from><to>Switch &#47; Case</to><enabled>Y</enabled> </hop>  <hop> <from>Switch &#47; Case</from><to>Target null</to><enabled>Y</enabled> </hop>  <hop> <from>C</from><to>Switch &#47; Case</to><enabled>Y</enabled> </hop>  <hop> <from>D</from><to>Switch &#47; Case</to><enabled>Y</enabled> </hop>  <hop> <from>Switch &#47; Case</from><to>Default</to><enabled>Y</enabled> </hop>  <hop> <from>B2</from><to>Switch &#47; Case</to><enabled>Y</enabled> </hop>  </order>
   <step>
     <name>A</name>
     <type>RowGenerator</type>
@@ -325,11 +325,11 @@ Initial version : Matt Casters (Pentaho), 2008&#47;05&#47;14</note>
         <precision>-1</precision>
       </field>
     </fields>
-    <limit>10000</limit>
+    <limit>100000</limit>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>100</xloc>
-      <yloc>40</yloc>
+      <yloc>0</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -368,11 +368,11 @@ Initial version : Matt Casters (Pentaho), 2008&#47;05&#47;14</note>
         <precision>-1</precision>
       </field>
     </fields>
-    <limit>10000</limit>
+    <limit>100000</limit>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>100</xloc>
-      <yloc>100</yloc>
+      <yloc>60</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -396,6 +396,8 @@ Initial version : Matt Casters (Pentaho), 2008&#47;05&#47;14</note>
 <cases><case><value>A</value>
 <target_step>Target A</target_step>
 </case><case><value>B</value>
+<target_step>Target B</target_step>
+</case><case><value>B2</value>
 <target_step>Target B</target_step>
 </case><case><value/>
 <target_step>Target null</target_step>
@@ -495,11 +497,11 @@ Initial version : Matt Casters (Pentaho), 2008&#47;05&#47;14</note>
         <precision>-1</precision>
       </field>
     </fields>
-    <limit>10000</limit>
+    <limit>100000</limit>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>100</xloc>
-      <yloc>280</yloc>
+      <yloc>300</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -538,11 +540,11 @@ Initial version : Matt Casters (Pentaho), 2008&#47;05&#47;14</note>
         <precision>-1</precision>
       </field>
     </fields>
-    <limit>10000</limit>
+    <limit>100000</limit>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>100</xloc>
-      <yloc>160</yloc>
+      <yloc>180</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -581,11 +583,11 @@ Initial version : Matt Casters (Pentaho), 2008&#47;05&#47;14</note>
         <precision>-1</precision>
       </field>
     </fields>
-    <limit>10000</limit>
+    <limit>100000</limit>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>100</xloc>
-      <yloc>220</yloc>
+      <yloc>240</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -604,6 +606,49 @@ Initial version : Matt Casters (Pentaho), 2008&#47;05&#47;14</note>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>460</xloc>
       <yloc>280</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>B2</name>
+    <type>RowGenerator</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+    <fields>
+      <field>
+        <name>value</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>B2</nullif>
+        <length>-1</length>
+        <precision>-1</precision>
+      </field>
+      <field>
+        <name>name</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>Bar</nullif>
+        <length>-1</length>
+        <precision>-1</precision>
+      </field>
+    </fields>
+    <limit>100000</limit>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>100</xloc>
+      <yloc>120</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
