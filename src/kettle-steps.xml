@@ -300,6 +300,7 @@
 		</tooltip>
 		<image-uri>ui/images/XLI.png</image-uri>
 	</step>
+
 	<step id="CombinationLookup">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.CombinationUpdate")
@@ -719,6 +720,7 @@
 		</tooltip>
 		<image-uri>ui/images/RGE.png</image-uri>
 	</step>
+
 	<step id="AccessInput">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.AccessInput")
@@ -740,7 +742,6 @@
 		</tooltip>
 		<image-uri>ui/images/XIN.png</image-uri>
 	</step>
-
 	
 	<step id="AggregateRows">
 		<description>
@@ -763,6 +764,7 @@
 		</tooltip>
 		<image-uri>ui/images/MON.png</image-uri>
 	</step>
+	
 	<step id="GetFilesRowsCount">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.GetFilesRowsCount")
@@ -773,6 +775,7 @@
 		</tooltip>
 		<image-uri>ui/images/FRC.png</image-uri>
 	</step>
+	
 	<step id="LDAPInput">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.LDAPInput")
@@ -783,7 +786,8 @@
 		</tooltip>
 		<image-uri>ui/images/LIP.png</image-uri>
 	</step>
-		<step id="getXMLData">
+	
+	<step id="getXMLData">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.GetXMLData")
 		</description>
@@ -793,6 +797,7 @@
 		</tooltip>
 		<image-uri>ui/images/GXD.png</image-uri>
 	</step>
+	
 	<step id="XSDValidator">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.XSDValidator")
@@ -803,6 +808,7 @@
 		</tooltip>
 		<image-uri>ui/images/XSD.png</image-uri>
 	</step>
+	
 	<step id="XSLT">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.XSLT")
@@ -813,6 +819,7 @@
 		</tooltip>
 		<image-uri>ui/images/XSLT.png</image-uri>
 	</step>
+	
 	<step id="Validator">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.Validator")
@@ -823,7 +830,8 @@
 		</tooltip>
 		<image-uri>ui/images/VLD.png</image-uri>
 	</step>
-		<step id="SQLFileOutput">
+	
+	<step id="SQLFileOutput">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.SQLFileOutput")
 		</description>
@@ -833,6 +841,7 @@
 		</tooltip>
 		<image-uri>ui/images/SFO.png</image-uri>
 	</step>
+	
 	<step id="SplitFieldToRows3">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.SplitFieldToRows3")
@@ -843,7 +852,8 @@
 		</tooltip>
 		<image-uri>ui/images/SFtR.png</image-uri>
 	</step>	
-		<step id="PropertyInput">
+	
+	<step id="PropertyInput">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.PropertyInput")
 		</description>
@@ -866,7 +876,7 @@
 		<image-uri>ui/images/OBL.png</image-uri>
 	</step>
 	
-		<step id="PGBulkLoader">
+	<step id="PGBulkLoader">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.PGBulkLoader")
 		</description>
@@ -877,7 +887,8 @@
 		</tooltip>
 		<image-uri>ui/images/OBL.png</image-uri>
 	</step>
-		<step id="LDIFInput">
+	
+	<step id="LDIFInput">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.LDIFInput")
 		</description>
@@ -887,7 +898,8 @@
 		</tooltip>
 		<image-uri>ui/images/LDI.png</image-uri>
 	</step>
-		<step id="PropertyOutput">
+	
+	<step id="PropertyOutput">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.PropertyOutput")
 		</description>
@@ -896,5 +908,16 @@
 		<tooltip>ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.PropertyOutput")
 		</tooltip>
 		<image-uri>ui/images/PFO.png</image-uri>
+	</step>
+	
+	<step id="SwitchCase">
+		<description>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.SwitchCase")
+		</description>
+		<class-name>org.pentaho.di.trans.steps.switchcase.SwitchCaseMeta</class-name>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@TRANSFORM.getName()</category>
+		<tooltip>ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.SwitchCase")
+		</tooltip>
+		<image-uri>ui/images/SWC.png</image-uri>
 	</step>
 </steps>
