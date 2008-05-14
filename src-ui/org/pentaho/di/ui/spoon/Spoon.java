@@ -43,10 +43,6 @@ import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.dnd.Clipboard;
-import org.eclipse.swt.dnd.DND;
-import org.eclipse.swt.dnd.DragSource;
-import org.eclipse.swt.dnd.DragSourceEvent;
-import org.eclipse.swt.dnd.DragSourceListener;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
@@ -100,8 +96,6 @@ import org.pentaho.di.core.changed.ChangedFlagInterface;
 import org.pentaho.di.core.changed.PDIObserver;
 import org.pentaho.di.core.clipboard.ImageDataTransfer;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.dnd.DragAndDropContainer;
-import org.pentaho.di.core.dnd.XMLTransfer;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleRowException;
 import org.pentaho.di.core.exception.KettleValueException;
@@ -1334,7 +1328,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		mainComposite = new Composite(sashform, SWT.BORDER);
 		mainComposite.setLayout(new FormLayout());
 		
-		int mainMargin = 4;
+		// int mainMargin = 4;
 				
 		// TODO: add i18n keys
 		//
@@ -2067,6 +2061,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		previousShowJob = showJob;
 	}
 
+	/*
     private void addExpandBarItemLine(Composite composite, Image image, String pluginName, String pluginDescription, boolean isPlugin, Object plugin)
 	{
 		// Add a line with the step as a new composite
@@ -2150,6 +2145,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		);
 
 	}
+	*/
 
     
     

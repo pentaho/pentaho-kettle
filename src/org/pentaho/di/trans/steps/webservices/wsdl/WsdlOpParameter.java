@@ -263,7 +263,7 @@ public final class WsdlOpParameter extends WsdlOpReturnType implements java.io.S
             // no children / no type map to 'any'
             return new QName("http://www.w3.org/2001/XMLSchema", "any");
         }
-        throw new RuntimeException("Cannot determine type of element: " + getName());
+        return new QName("http://www.w3.org/2001/XMLSchema", "String"); // throw new RuntimeException("Cannot determine type of element: " + getName());
     }
 
     /**

@@ -37,6 +37,8 @@ import javax.wsdl.xml.WSDLLocator;
 import javax.wsdl.xml.WSDLReader;
 import javax.xml.namespace.QName;
 
+import org.pentaho.di.core.logging.LogWriter;
+
 /**
  * Wsdl abstraction.
  */
@@ -149,10 +151,15 @@ public final class Wsdl implements java.io.Serializable {
         PortType pt = b.getPortType();
         Operation op = pt.getOperation(operationName, null, null);
         if (op != null) {
-            WsdlOperation wop = new WsdlOperation(b, op, _wsdlTypes);
-            // cache the operation
-            _operationCache.put(operationName, wop);
-            return wop;
+        	try {
+	            WsdlOperation wop = new WsdlOperation(b, op, _wsdlTypes);
+	            // cache the operation
+	            _operationCache.put(operationName, wop);
+	            return wop;
+        	}
+        	catch(Exception e) {
+        		LogWriter.getInstance().logError("WSDL", "Could retrieve WSDL Operator for operation name: "+operationName, e);
+        	}
         }
         return null;
     }
@@ -170,7 +177,10 @@ public final class Wsdl implements java.io.Serializable {
 
         List<Operation> operations = pt.getOperations();
         for (Iterator<Operation> itr = operations.iterator(); itr.hasNext();) {
-            opList.add(getOperation(((Operation) itr.next()).getName()));
+        	WsdlOperation operation = getOperation(((Operation) itr.next()).getName());
+        	if (operation!=null) {
+        		opList.add(operation);
+        	}
         }
         return opList;
     }

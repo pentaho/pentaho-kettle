@@ -21,11 +21,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.pentaho.di.core.ResultFile;
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Result;
-import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
@@ -159,7 +159,7 @@ public class JobEntryCreateFile extends JobEntryBase implements Cloneable, JobEn
     return environmentSubstitute(getFilename());
   }
 
-  public Result execute(Result previousResult, int nr, Repository rep, Job parentJob)
+  public Result execute(Result previousResult, int nr, Repository rep, Job parentJob) throws KettleException
   {
     LogWriter log = LogWriter.getInstance();
     Result result = previousResult;
@@ -224,7 +224,7 @@ public class JobEntryCreateFile extends JobEntryBase implements Cloneable, JobEn
 
     return result;
   }
-private void addFilenameToResult(String targetFilename,LogWriter log,Result result, Job parentJob) throws  IOException
+private void addFilenameToResult(String targetFilename,LogWriter log,Result result, Job parentJob) throws  KettleException
 {
 	FileObject targetFile=null;
 	try
@@ -237,16 +237,16 @@ private void addFilenameToResult(String targetFilename,LogWriter log,Result resu
 		result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
 		
         if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryCreateFile.FileAddedToResult",targetFilename)); //$NON-NLS-1$
-	}catch(Exception e)
+	} catch(Exception e)
 	{
-		throw new IOException(e.getLocalizedMessage());
+		throw new KettleException(e);
 	}
 	finally
 	{
-		try{
+		try {
 			targetFile.close();
 			targetFile=null;
-		}catch(Exception e){}
+		} catch(Exception e){}
 	}
 }
 
