@@ -75,6 +75,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.MessageBox;
+import org.eclipse.swt.widgets.Sash;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
@@ -581,7 +582,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		fdSash.bottom = new FormAttachment(100, 0);
 		fdSash.right = new FormAttachment(100, 0);
 		sashform.setLayoutData(fdSash);
-
+		
 		// Set the shell size, based upon previous time...
 		WindowProperty winprop = props.getScreen(APPL_TITLE);
         if (winprop!=null) winprop.setShell(shell); 
@@ -1444,6 +1445,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		
 		coreStepToolTipMap = new Hashtable<String,String>();
 		coreJobToolTipMap = new Hashtable<String,String>();
+		
 	}
 	
 	private void tidyBranches(TreeItem[] items, boolean expand){
@@ -2711,6 +2713,33 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		int weights[] = props.getSashWeights();
 		sashform.setWeights(weights);
 		sashform.setVisible(true);
+
+		// Set a minimum width on the sash so that the view and design buttons on
+		// the left panel are always visible. 
+    Control[] comps = sashform.getChildren();
+    for (int i=0; i < comps.length; i++){
+      
+      if (comps[i] instanceof Sash){
+        int limit = 10;
+        for (ToolItem item : view.getParent().getItems()){
+          limit += item.getWidth();
+        }
+        
+        final int SASH_LIMIT = limit;
+        final Sash sash = (Sash)comps[i];
+
+        sash.addSelectionListener (new SelectionAdapter () {
+          public void widgetSelected (SelectionEvent event) {
+            Rectangle rect = sash.getParent().getClientArea();
+            event.x = Math.min (Math.max (event.x, SASH_LIMIT), rect.width - SASH_LIMIT);
+            if (event.detail != SWT.DRAG) {
+              sash.setBounds (event.x, event.y, event.width, event.height);
+              sashform.layout();
+            }
+          }
+        });
+      }
+    }
 
 		tabfolder.addListener(this);  // methods: tabDeselected, tabClose, tabSelected
 		
