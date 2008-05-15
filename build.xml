@@ -730,7 +730,9 @@
 	    <delete dir="${classes}"/>
 	    <delete dir="${classes-ui}"/>
 	    <delete dir="${classes-core}"/>
+	    <delete dir="${testClasses}"/>
 	    <delete dir="${lib}"/>
+	    <delete dir="${junit}"/>
 	    <delete dir="${distrib}"/>
 	  	<delete dir="${api}"/>
 	  	<delete dir="${webstart}"/>
