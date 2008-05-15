@@ -86,6 +86,7 @@ import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.dialog.EnterConditionDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.util.ImageUtil;
 
 /**
@@ -2065,9 +2066,7 @@ public class TableView extends Composite
         props.setLook(button, Props.WIDGET_STYLE_TABLE);
         String buttonText = columns[colnr-1].getButtonText(); 
         if (buttonText!=null) button.setText(buttonText);
-        Image image = ImageUtil.getImage(parent.getDisplay(),"ui/images/edittext.png");
-        		//new Image(parent.getDisplay(), getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"edittext.png"));
-		button.setImage(image);
+		button.setImage(GUIResource.getInstance().getImage("ui/images/edittext.png"));
 	
 		SelectionAdapter selAdpt = columns[colnr-1].getSelectionAdapter();
 		if (selAdpt!=null) button.addSelectionListener(selAdpt);

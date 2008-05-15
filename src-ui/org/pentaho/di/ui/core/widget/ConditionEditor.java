@@ -17,8 +17,6 @@ import java.util.ArrayList;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.MouseAdapter;
@@ -53,7 +51,6 @@ import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.EnterValueDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
-import org.pentaho.di.ui.util.ImageUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -135,17 +132,7 @@ public class ConditionEditor extends Composite
 		this.active_condition = co;
 		this.fields           = inputFields;
 
-		imageAdd = ImageUtil.getImage(composite.getDisplay(),"ui/images/eq_add.png");//new Image(composite.getDisplay(), getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "eq_add.png"));
-		
-		addDisposeListener(
-		    new DisposeListener()
-	        {
-	            public void widgetDisposed(DisposeEvent arg0)
-	            {
-	                imageAdd.dispose();
-	            }
-	        }
-		);
+		imageAdd = GUIResource.getInstance().getImage("ui/images/eq_add.png");
 		
 		modListeners = new ArrayList<ModifyListener>();
 		

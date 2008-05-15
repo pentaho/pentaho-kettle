@@ -118,11 +118,11 @@ import org.pentaho.di.trans.steps.scriptvalues_mod.ScriptValuesMetaMod;
 import org.pentaho.di.trans.steps.scriptvalues_mod.ScriptValuesModDummy;
 import org.pentaho.di.trans.steps.scriptvalues_mod.ScriptValuesScript;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.StyledTextComp;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.ui.util.ImageUtil;
 
 
 public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogInterface
@@ -212,10 +212,10 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		input=(ScriptValuesMetaMod)in;
 		try{
 			//ImageLoader xl = new ImageLoader();
-			imageActiveScript = ImageUtil.getImage(parent.getDisplay(),"ui/images/faScript.png");
-			imageInactiveScript = ImageUtil.getImage(parent.getDisplay(),"ui/images/fScript.png");
-			imageActiveStartScript = ImageUtil.getImage(parent.getDisplay(),"ui/images/sScript.png");
-			imageActiveEndScript = ImageUtil.getImage(parent.getDisplay(),"ui/images/eScript.png");
+			imageActiveScript = GUIResource.getInstance().getImage("ui/images/faScript.png");
+			imageInactiveScript = GUIResource.getInstance().getImage("ui/images/fScript.png");
+			imageActiveStartScript = GUIResource.getInstance().getImage("ui/images/sScript.png");
+			imageActiveEndScript = GUIResource.getInstance().getImage("ui/images/eScript.png");
 		}catch(Exception e){
 			imageActiveScript = new Image(parent.getDisplay(), 16, 16);
 			imageInactiveScript = new Image(parent.getDisplay(), 16, 16);

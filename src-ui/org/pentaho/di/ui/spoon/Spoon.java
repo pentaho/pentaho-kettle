@@ -387,6 +387,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
        
 		Display display = new Display();
 		
+		// if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("Spoon.Log.LoadProperties"));
+        PropsUI.init(display, Props.TYPE_PROPERTIES_SPOON);  // things to remember...
+		
 		Spoon spoon = new Spoon(display);
 		
 		spoon.run(args);
@@ -419,6 +422,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			display = new Display();
 			destroy = true;
 		}
+		
+		props = PropsUI.getInstance();
+		
 		shell = new Shell(display);
 		shell.setText(APPL_TITLE);
 		staticSpoon = this;
@@ -458,14 +464,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		// INIT Data structure
 		if (ti != null)
 			delegates.trans.addTransformation(ti);
-
-		if (!Props.isInitialized())
-		{
-			// log.logDetailed(toString(), "Load properties for Spoon...");
-			if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("Spoon.Log.LoadProperties"));
-            PropsUI.init(display, Props.TYPE_PROPERTIES_SPOON);  // things to remember...
-		}
-		props = PropsUI.getInstance();
 
 		// Load settings in the props
 		loadSettings();

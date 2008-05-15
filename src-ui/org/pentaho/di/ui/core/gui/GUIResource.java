@@ -13,6 +13,7 @@
 package org.pentaho.di.ui.core.gui;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 
@@ -188,17 +189,19 @@ public class GUIResource
 
 	private Image imageShowErrorLines;
 
-  private Image imageShowResults;
+    private Image imageShowResults;
 
-  private Image imageHideResults;
+    private Image imageHideResults;
+    
+    private Image imageDesignPanel;
   
-  private Image imageDesignPanel;
+    private Image imageViewPanel;
   
-  private Image imageViewPanel;
+    private Image imageExpandAll;
   
-  private Image imageExpandAll;
-  
-  private Image imageCollapseAll;
+    private Image imageCollapseAll;
+    
+    private Map<String,Image> imageMap;
 
 	private ManagedFont fontBold;
 
@@ -247,6 +250,7 @@ public class GUIResource
 	private void getResources(boolean reload)
 	{
 		PropsUI props = PropsUI.getInstance();
+		imageMap = new HashMap<String,Image>();
 
 		colorBackground = new ManagedColor(display, props.getBackgroundRGB());
 		colorGraph = new ManagedColor(display, props.getGraphColorRGB());
@@ -270,7 +274,7 @@ public class GUIResource
 		// colorPentaho = new ManagedColor(display, 239, 128, 51 ); // Orange
 		colorPentaho = new ManagedColor(display, 188, 198, 82);
 		colorLightPentaho = new ManagedColor(display, 238, 248, 152);
-    colorCreamPentaho = new ManagedColor(display, 248, 246, 231);
+        colorCreamPentaho = new ManagedColor(display, 248, 246, 231);
 
 		// Load all images from files...
 		if (!reload)
@@ -339,12 +343,12 @@ public class GUIResource
 			imageVariable.dispose();
 			imageTransGraph.dispose();
 			imageJobGraph.dispose();
-		  imageShowResults.dispose();
-		  imageHideResults.dispose();
-		  imageCollapseAll.dispose();
-		  imageExpandAll.dispose();
-		  imageViewPanel.dispose();
-		  imageDesignPanel.dispose();
+		    imageShowResults.dispose();
+		    imageHideResults.dispose();
+		    imageCollapseAll.dispose();
+		    imageExpandAll.dispose();
+		    imageViewPanel.dispose();
+		    imageDesignPanel.dispose();
 
 			disposeImage(imageEditOptionButton);
 			disposeImage(imageResetOptionButton);
@@ -368,6 +372,9 @@ public class GUIResource
 
 			// Small images
 			disposeImages(imagesStepsSmall.values());
+			
+			// Dispose of the images in the map 
+			disposeImages(imageMap.values());
 		}
 	}
 
@@ -1348,4 +1355,29 @@ public class GUIResource
   public Image getImageCollapseAll(){
     return imageCollapseAll;
   }
+  
+  /**
+   * Loads an image from a location once.  The second time, the image comes from a cache.
+   * Because of this, it's important to never dispose of the image you get from here. (easy!)
+   * The images are automatically disposed when the application ends.
+   * 
+   * @param location
+   * @return
+   */
+  public Image getImage(String location) {
+	  Image image = imageMap.get(location);
+	  if (image==null) {
+		  image = ImageUtil.getImage(display, location);
+		  imageMap.put(location, image);
+	  }
+	  return image;
+  }
+  
+  /**
+   * @return The image map used to cache images loaded from certain location using getImage(String location);
+   */
+  public Map<String, Image> getImageMap() {
+	return imageMap;
+  }
+  
 }

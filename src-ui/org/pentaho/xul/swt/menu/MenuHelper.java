@@ -21,7 +21,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.xml.XMLHandler;
-import org.pentaho.di.ui.util.ImageUtil;
+import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.xul.Messages;
 import org.pentaho.xul.swt.toolbar.Toolbar;
 import org.pentaho.xul.swt.toolbar.ToolbarButton;
@@ -67,7 +67,7 @@ public class MenuHelper {
 								button.setHint(hint);
 								button.setText(label);
 								
-							    button.setImage(ImageUtil.getImage(parentComposite.getDisplay(),imagePath));
+							    button.setImage(GUIResource.getInstance().getImage(imagePath));
 								
 							    toolbar.register(button, value, null);
 							}

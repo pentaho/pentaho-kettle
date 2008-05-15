@@ -244,22 +244,24 @@ public class PropsUI extends Props
 			properties.setProperty(STRING_MAX_UNDO,      ""+getMaxUndo());
 			
 			setSashWeights(getSashWeights());
-      // Set Default Look for all dialogs and sizes.
-      String prop = BasePropertyHandler.getProperty("Default_UI_Properties_Resource", "org.pentaho.di.ui.core.default"); //$NON-NLS-1$ //$NON-NLS-2$
-      try {
-        ResourceBundle bundle = ResourceBundle.getBundle(prop);
-        if (bundle != null) {
-          Enumeration<String> enumer = bundle.getKeys();
-          String theKey;
-          while (enumer.hasMoreElements()) {
-            theKey = enumer.nextElement();
-            properties.setProperty(theKey, bundle.getString(theKey));
-          }
-        }
-      } catch (Exception ex) {
-        // don't throw an exception, but log it.
-        ex.printStackTrace();
-      }
+			
+			// Set Default Look for all dialogs and sizes.
+			String prop = BasePropertyHandler.getProperty("Default_UI_Properties_Resource", "org.pentaho.di.ui.core.default"); //$NON-NLS-1$ //$NON-NLS-2$
+			try {
+				ResourceBundle bundle = ResourceBundle.getBundle(prop);
+				// ResourceBundle bundle = ResourceBundle.getBundle(prop);
+				if (bundle != null) {
+					Enumeration<String> enumer = bundle.getKeys();
+					String theKey;
+					while (enumer.hasMoreElements()) {
+						theKey = enumer.nextElement();
+						properties.setProperty(theKey, bundle.getString(theKey));
+					}
+				}
+			} catch (Exception ex) {
+				// don't throw an exception, but log it.
+				ex.printStackTrace();
+			}
 		}
     
 	}
