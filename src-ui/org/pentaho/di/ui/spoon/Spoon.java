@@ -2817,7 +2817,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
           limit += item.getWidth();
         }
         
-        final int SASH_LIMIT = limit;
+        final int SASH_LIMIT = Const.isOSX() ? 150 : limit;
         final Sash sash = (Sash)comps[i];
 
         sash.addSelectionListener (new SelectionAdapter () {
