@@ -379,27 +379,119 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	 */
 	public static void main(String[] a) throws KettleException
 	{
-		// Mac Leopard hack moved to EnvUtil.environmentInit() - DRE
+		try {
+			// Do some initialization of environment variables
+			EnvUtil.environmentInit();
+					
+			List<String> args = new ArrayList<String>(java.util.Arrays.asList(a));
+	       
+			Display display = new Display();
 		
-		// Do some initialization of environment variables
-		EnvUtil.environmentInit();
-				
-		List<String> args = new ArrayList<String>(java.util.Arrays.asList(a));
-       
-		Display display = new Display();
-		
-		// if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("Spoon.Log.LoadProperties"));
-        PropsUI.init(display, Props.TYPE_PROPERTIES_SPOON);  // things to remember...
-		
-		Spoon spoon = new Spoon(display);
-		
-		spoon.run(args);
+    		Splash splash = new Splash(display);
 
+			CommandLineOption[] commandLineOptions = getCommandLineArgs(args);
+			
+			initLogging(commandLineOptions);
+			initPlugins();
+			
+			// if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("Spoon.Log.LoadProperties"));
+	        PropsUI.init(display, Props.TYPE_PROPERTIES_SPOON);  // things to remember...
+			
+			staticSpoon = new Spoon(display);
+			staticSpoon.init(null);
+			SpoonFactory.setSpoonInstance(staticSpoon);
+			staticSpoon.setDestroy(true);
+			GUIFactory.setThreadDialogs( new ThreadGuiResources() );
+
+			if(LogWriter.getInstance().isBasic()) {
+				LogWriter.getInstance().logBasic(APP_NAME, Messages.getString("Spoon.Log.MainWindowCreated"));//Main window is created.
+			}
+			
+			//listeners
+			//
+			try
+			{
+				staticSpoon.lcsup.onStart(staticSpoon);
+			}
+			catch(LifecycleException e)
+			{
+				//if severe, we have to quit
+				MessageBox box = new MessageBox(staticSpoon.shell, (e.isSevere()?SWT.ICON_ERROR:SWT.ICON_WARNING) | SWT.OK);
+	            box.setMessage(e.getMessage());
+				box.open();
+			}
+			
+			
+			staticSpoon.setArguments(args.toArray(new String[args.size()]));
+			staticSpoon.start(splash, commandLineOptions);
+    	} catch (Throwable t) {
+    		// avoid calls to Messages i18n method getString() in this block 
+    		// We do this to (hopefully) also catch Out of Memory Exceptions
+    		//
+			LogWriter.getInstance().logError(APP_NAME, "Fatal error : " + Const.NVL(t.toString(), Const.NVL(t.getMessage(), "Unknown error")) ); //$NON-NLS-1$ //$NON-NLS-2$
+			LogWriter.getInstance().logError(APP_NAME, Const.getStackTracker(t));
+			// inform the user with a dialog when possible
+			new ErrorDialog(staticSpoon.shell, Messages.getString("Spoon.Dialog.FatalError"), "Fatal error : " + Const.NVL(t.toString(), Const.NVL(t.getMessage(), "Unknown error")), t); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		}
+    	
 		// Kill all remaining things in this VM!
 		System.exit(0);
 	}	
 	
-    public Spoon(Display d) {
+    private static void initPlugins() throws KettleException {
+		/* Load the plugins etc. */
+		try {
+			StepLoader.init();
+		}
+		catch(KettleException e)
+		{
+            throw new KettleException(Messages.getString("Spoon.Log.ErrorLoadingAndHaltSystem"), e);
+		}
+
+		/* Load the plugins etc. we need to load jobentry */
+		try 
+		{
+			JobEntryLoader.init();
+		}
+		catch(KettleException e)
+		{
+			throw new KettleException("Error loading job entries & plugins... halting Spoon!", e);
+		}
+	}
+
+	private static void initLogging(CommandLineOption[] options) throws KettleException {
+		StringBuffer optionLogfile = getCommandLineOption(options, "logfile").getArgument();
+		StringBuffer optionLoglevel = getCommandLineOption(options, "level").getArgument();
+
+		// Set default Locale:
+		Locale.setDefault(Const.DEFAULT_LOCALE);
+
+		LogWriter.setConsoleAppenderDebug();
+		LogWriter log;
+		if (Const.isEmpty(optionLogfile))
+		{
+			log = LogWriter.getInstance(Const.SPOON_LOG_FILE, false, LogWriter.LOG_LEVEL_BASIC);
+        }
+        else
+		{
+			log = LogWriter.getInstance(optionLogfile.toString(), true, LogWriter.LOG_LEVEL_BASIC);
+		}
+
+        if (log.getRealFilename()!=null) 
+        {
+        	if(log.isBasic()) 
+        		log.logBasic(APP_NAME, Messages.getString("Spoon.Log.LoggingToFile")+log.getRealFilename());//"Logging goes to "
+        }
+
+		if (!Const.isEmpty(optionLoglevel))
+		{
+			log.setLogLevel(optionLoglevel.toString());
+			if(log.isBasic()) 
+				log.logBasic(APP_NAME, Messages.getString("Spoon.Log.LoggingAtLevel")+log.getLogLevelDesc());//"Logging is at level : "
+		}
+	}
+
+	public Spoon(Display d) {
 		this(d, null);
 	}
 
@@ -5837,81 +5929,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		return APP_NAME;
 	}
 
-    public void createSpoon( ) throws KettleException {
-
-		StringBuffer optionLogfile = getCommandLineOption("logfile").getArgument();
-		StringBuffer optionLoglevel = getCommandLineOption("level").getArgument();
-
-		// Before anything else, check the runtime version!!!
-		String version = Const.JAVA_VERSION;
-		if ("1.5".compareToIgnoreCase(version) > 0)
-		{
-			System.out.println("The System is running on Java version " + version);
-			System.out.println("Unfortunately, it needs version 1.5 or higher to run.");
-			return;
-		}
-
-		// Set default Locale:
-		Locale.setDefault(Const.DEFAULT_LOCALE);
-
-		LogWriter.setConsoleAppenderDebug();
-		if (Const.isEmpty(optionLogfile))
-		{
-			log = LogWriter.getInstance(Const.SPOON_LOG_FILE, false, LogWriter.LOG_LEVEL_BASIC);
-        }
-        else
-		{
-			log = LogWriter.getInstance(optionLogfile.toString(), true, LogWriter.LOG_LEVEL_BASIC);
-		}
-
-        if (log.getRealFilename()!=null) 
-        {
-        	if(log.isBasic()) 
-        		log.logBasic(toString(), Messages.getString("Spoon.Log.LoggingToFile")+log.getRealFilename());//"Logging goes to "
-        }
-
-		if (!Const.isEmpty(optionLoglevel))
-		{
-			log.setLogLevel(optionLoglevel.toString());
-			if(log.isBasic()) 
-				log.logBasic(toString(), Messages.getString("Spoon.Log.LoggingAtLevel")+log.getLogLevelDesc());//"Logging is at level : "
-		}
-
-		/* Load the plugins etc. */
-		try {
-			StepLoader.init();
-		}
-		catch(KettleException e)
-		{
-            log.logError(toString(), Messages.getString("Spoon.Log.ErrorLoadingAndHaltSystem"), e);//Error loading steps & plugins... halting Spoon!
-			return;
-		}
-
-		/* Load the plugins etc. we need to load jobentry */
-		try 
-		{
-			JobEntryLoader.init();
-		}
-		catch(KettleException e)
-		{
-			log.logError(toString(), "Error loading job entries & plugins... halting Spoon!", e);
-			return;
-		}
-
-        
-		init(null);
-
-		SpoonFactory.setSpoonInstance(this);
-		staticSpoon = this;
-		setDestroy(true);
-		GUIFactory.setThreadDialogs( new ThreadGuiResources() );
-
-		if(log.isBasic()) 
-			log.logBasic(toString(), Messages.getString("Spoon.Log.MainWindowCreated"));//Main window is created.
-        
-
-	}
-    
     //Added this method to avoid code pasting... SEMINOLE-69
     private boolean openRepositoryDialog(RepositoriesDialog rd,RepositoryMeta repositoryMeta,UserInfo userinfo)
     {
@@ -5964,12 +5981,12 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     	return true;
     }
 
-    public boolean selectRep( Splash splash ) {
+    public boolean selectRep( Splash splash, CommandLineOption[] options ) {
 		RepositoryMeta repositoryMeta = null;
 		UserInfo userinfo = null;
 
-		StringBuffer optionRepname = getCommandLineOption("rep").getArgument();
-		StringBuffer optionFilename = getCommandLineOption("file").getArgument();
+		StringBuffer optionRepname = getCommandLineOption(options, "rep").getArgument();
+		StringBuffer optionFilename = getCommandLineOption(options, "file").getArgument();
 		int perms[] = new int[] { PermissionMeta.TYPE_PERMISSION_TRANSFORMATION, PermissionMeta.TYPE_PERMISSION_JOB };
 		
         if (Const.isEmpty(optionRepname) && Const.isEmpty(optionFilename) && props.showRepositoriesDialogAtStartup())
@@ -6008,16 +6025,15 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		return true;
 	}
 
-    public void handleStartOptions( ) {
+    public void handleStartOptions(CommandLineOption[] options ) {
 
-		StringBuffer optionRepname = getCommandLineOption("rep").getArgument();
-		StringBuffer optionFilename = getCommandLineOption("file").getArgument();
-		StringBuffer optionDirname = getCommandLineOption("dir").getArgument();
-		StringBuffer optionTransname = getCommandLineOption("trans").getArgument();
-		StringBuffer optionJobname = getCommandLineOption("job").getArgument();
-		StringBuffer optionUsername = getCommandLineOption("user").getArgument();
-		StringBuffer optionPassword = getCommandLineOption("pass").getArgument();
-
+		StringBuffer optionRepname = getCommandLineOption(options, "rep").getArgument();
+		StringBuffer optionFilename = getCommandLineOption(options, "file").getArgument();
+		StringBuffer optionDirname = getCommandLineOption(options, "dir").getArgument();
+		StringBuffer optionTransname = getCommandLineOption(options, "trans").getArgument();
+		StringBuffer optionJobname = getCommandLineOption(options, "job").getArgument();
+		StringBuffer optionUsername = getCommandLineOption(options, "user").getArgument();
+		StringBuffer optionPassword = getCommandLineOption(options, "pass").getArgument();
 	    
 		try
 		{
@@ -6140,16 +6156,16 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 	}
 
-    public void start() {
+    public void start(Splash splash, CommandLineOption[] options) {
 
-    	boolean stop = !selectRep( splash );
+    	boolean stop = !selectRep( splash, options );
     	if (stop) {
     		splash.dispose();
 			stop = quitFile();
     	}
     	
     	if(!stop) {
-			handleStartOptions();
+			handleStartOptions(options);
 			open();
 
 			if (props.showTips())
@@ -6185,11 +6201,11 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 	}
 
-	public Splash splash;
+	// public Splash splash;
 
-	public CommandLineOption options[];
+	// public CommandLineOption options[];
 
-    public CommandLineOption getCommandLineOption( String opt ) {
+    public static CommandLineOption getCommandLineOption(CommandLineOption[] options, String opt ) {
     	for( int i=0; i<options.length;i++ ) {
     		if( options[i].getOption().equals( opt ) ) {
 				return options[i];
@@ -6198,10 +6214,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		return null;
 	}
 
-    public void getCommandLineArgs( List<String> args ) {
+    public static CommandLineOption[] getCommandLineArgs( List<String> args ) {
 
-		options = new CommandLineOption[] 
-	{
+    	CommandLineOption[] clOptions = new CommandLineOption[] 
+    	   {
 				new CommandLineOption("rep", "Repository name", new StringBuffer()),
 				new CommandLineOption("user", "Repository username", new StringBuffer()),
 				new CommandLineOption("pass", "Repository password", new StringBuffer()),
@@ -6220,7 +6236,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         log=LogWriter.getInstance( LogWriter.LOG_LEVEL_BASIC );
 
 		// Parse the options...
-		if( !CommandLineOption.parseArguments(args, options, log) ) {
+		if( !CommandLineOption.parseArguments(args, clOptions, log) ) {
             log.logError("Spoon", "Command line option not understood");
             System.exit(8);
 		}
@@ -6229,48 +6245,11 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		String kettleUsername = Const.getEnvironmentVariable("KETTLE_USER", null);
 		String kettlePassword = Const.getEnvironmentVariable("KETTLE_PASSWORD", null);
 
-        if (!Const.isEmpty(kettleRepname )) options[0].setArgument(new StringBuffer(kettleRepname));
-        if (!Const.isEmpty(kettleUsername)) options[1].setArgument(new StringBuffer(kettleUsername));
-        if (!Const.isEmpty(kettlePassword)) options[2].setArgument(new StringBuffer(kettlePassword));
+        if (!Const.isEmpty(kettleRepname )) clOptions[0].setArgument(new StringBuffer(kettleRepname));
+        if (!Const.isEmpty(kettleUsername)) clOptions[1].setArgument(new StringBuffer(kettleUsername));
+        if (!Const.isEmpty(kettlePassword)) clOptions[2].setArgument(new StringBuffer(kettlePassword));
 
-	}
-
-    public void createSplash() throws KettleException {
-		splash = new Splash(display);
-	}
-
-    public void run( List<String> args ) {
-    	try {
-			createSplash();
-			getCommandLineArgs(args);
-			createSpoon();
-			
-			//listeners
-			
-			try
-			{
-				lcsup.onStart(this);
-			}
-			catch(LifecycleException e)
-			{
-				//if severe, we have to quit
-				MessageBox box = new MessageBox(shell, (e.isSevere()?SWT.ICON_ERROR:SWT.ICON_WARNING) | SWT.OK);
-	            box.setMessage(e.getMessage());
-				box.open();
-			}
-			
-			
-			setArguments(args.toArray(new String[args.size()]));
-			start();
-    	} catch (Throwable t) {
-    		// avoid calls to Messages i18n method getString() in this block 
-    		// We do this to (hopefully) also catch Out of Memory Exceptions
-    		//
-			log.logError(toString(), "Fatal error : " + Const.NVL(t.toString(), Const.NVL(t.getMessage(), "Unknown error")) ); //$NON-NLS-1$ //$NON-NLS-2$
-			log.logError(toString(), Const.getStackTracker(t));
-			// inform the user with a dialog when possible
-			new ErrorDialog(shell, Messages.getString("Spoon.Dialog.FatalError"), "Fatal error : " + Const.NVL(t.toString(), Const.NVL(t.getMessage(), "Unknown error")), t); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		}
+        return clOptions;
 	}
 
     private void loadLastUsedFile(LastUsedFile lastUsedFile, RepositoryMeta repositoryMeta) throws KettleException

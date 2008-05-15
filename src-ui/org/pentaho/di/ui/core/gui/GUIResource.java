@@ -216,7 +216,7 @@ public class GUIResource
 	{
 		this.display = display;
 
-		getResources(false);
+		getResources();
 
 		display.addListener(SWT.Dispose, new Listener()
 		{
@@ -244,10 +244,10 @@ public class GUIResource
 	public void reload()
 	{
 		dispose(true);
-		getResources(true);
+		getResources();
 	}
 
-	private void getResources(boolean reload)
+	private void getResources()
 	{
 		PropsUI props = PropsUI.getInstance();
 		imageMap = new HashMap<String,Image>();
@@ -277,13 +277,10 @@ public class GUIResource
         colorCreamPentaho = new ManagedColor(display, 248, 246, 231);
 
 		// Load all images from files...
-		if (!reload)
-		{
-			loadFonts();
-			loadCommonImages();
-			loadStepImages();
-			loadJobEntryImages();
-		}
+		loadFonts();
+		loadCommonImages();
+		loadStepImages();
+		loadJobEntryImages();
 	}
 
 	private void dispose(boolean reload)
