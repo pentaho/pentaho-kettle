@@ -65,6 +65,7 @@ import org.eclipse.swt.widgets.FileDialog;
 
 import com.enterprisedt.net.ftp.FTPClient;
 import com.trilead.ssh2.Connection;
+import com.trilead.ssh2.HTTPProxyData;
 import com.trilead.ssh2.SFTPv3Client;
 import com.trilead.ssh2.SFTPv3FileAttributes;
 
@@ -1214,28 +1215,39 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
     private boolean connectToSSH()
     {
     	boolean retval=false;
-		try
-		{
-			if(conn==null)
-			{	// Create a connection instance 
+		try	{
+			if(conn==null){	// Create a connection instance 
 				conn = new Connection(jobMeta.environmentSubstitute(wServerName.getText()),Const.toInt(jobMeta.environmentSubstitute(wPort.getText()), 22));				
+
+				/* We want to connect through a HTTP proxy */
+				if(wuseProxy.getSelection()){
+					/* Now connect */
+					// if the proxy requires basic authentication:
+					if(!Const.isEmpty(wProxyUsername.getText())){
+						conn.setProxyData(new HTTPProxyData(jobMeta.environmentSubstitute(wProxyHost.getText()), 
+								Const.toInt(wProxyPort.getText(),22), 
+								jobMeta.environmentSubstitute(wProxyUsername.getText()), 
+								jobMeta.environmentSubstitute(wProxyPassword.getText())));
+					}else{
+						conn.setProxyData(new HTTPProxyData(jobMeta.environmentSubstitute(wProxyHost.getText()), 
+								Const.toInt(wProxyPort.getText(),22)));
+					}
+				}
+				
 				conn.connect();
 
 				// Authenticate
-				if(wusePublicKey.getSelection())
-				{
+				if(wusePublicKey.getSelection()){
 					retval=conn.authenticateWithPublicKey(jobMeta.environmentSubstitute(wUserName.getText()), 
 							new java.io.File(jobMeta.environmentSubstitute(wKeyFilename.getText())), jobMeta.environmentSubstitute(wkeyfilePass.getText()));
-				}else
-				{
+				}else{
 					retval=conn.authenticateWithPassword(jobMeta.environmentSubstitute(wUserName.getText()), jobMeta.environmentSubstitute(wPassword.getText()));
 				}
 			}  
 	
 	        retval=true;
 		}
-	     catch (Exception e)
-	    {
+	     catch (Exception e) {
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
 			mb.setMessage(Messages.getString("JobFTPDelete.ErrorConnect.NOK",e.getMessage()) +Const.CR);
 			mb.setText(Messages.getString("JobFTPDelete.ErrorConnect.Title.Bad"));
@@ -1266,6 +1278,7 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
 
     public void dispose()
     {
+    	closeFTPConnections();
         WindowProperty winprop = new WindowProperty(shell);
         props.setScreen(winprop);
         shell.dispose();
@@ -1367,9 +1380,6 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
 	        
 	     jobEntry.setCopyPrevious(wgetPrevious.getSelection());
 	     
-	     
-	     closeFTPConnections();
-		
         dispose();
     }
 	private void closeFTPConnections()
@@ -1403,7 +1413,6 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
 	        	
 	        } catch (Exception e) {}
 	      }
-		
 	}
     public String toString()
     {

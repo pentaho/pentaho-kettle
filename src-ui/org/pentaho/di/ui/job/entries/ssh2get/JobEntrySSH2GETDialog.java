@@ -37,6 +37,7 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
@@ -54,6 +55,11 @@ import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.job.dialog.JobDialog;
 import org.pentaho.di.ui.job.entry.JobEntryDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+
+import com.trilead.ssh2.Connection;
+import com.trilead.ssh2.HTTPProxyData;
+import com.trilead.ssh2.SFTPv3Client;
+import com.trilead.ssh2.SFTPv3FileAttributes;
 
 /**
  * This dialog allows you to edit the SSH2 GET job entry settings.
@@ -91,7 +97,11 @@ public class JobEntrySSH2GETDialog extends JobEntryDialog implements JobEntryDia
 
     private FormData fdkeyfilePass;
 
-    private LabelTextVar wFtpDirectory;
+    private TextVar wFtpDirectory;
+    
+    private Label wlFtpDirectory;
+    
+    private FormData fdlFtpDirectory;
 
     private FormData fdFtpDirectory;
 
@@ -214,6 +224,20 @@ public class JobEntrySSH2GETDialog extends JobEntryDialog implements JobEntryDia
 	
     private boolean changed;
     
+	private Button wTest;
+	
+	private FormData fdTest;
+	
+	private Listener lsTest;
+	
+	private Listener lsCheckFolder;
+	
+	private Button wbTestChangeFolderExists;
+	
+	private FormData fdbTestChangeFolderExists;
+	
+	private Connection conn = null;
+    
     public JobEntrySSH2GETDialog(Shell parent, JobEntryInterface jobEntryInt, Repository rep, JobMeta jobMeta)
     {
         super(parent, jobEntryInt, rep, jobMeta);
@@ -235,6 +259,7 @@ public class JobEntrySSH2GETDialog extends JobEntryDialog implements JobEntryDia
         {
             public void modifyText(ModifyEvent e)
             {
+            	conn=null;
                 jobEntry.setChanged();
             }
         };
@@ -393,6 +418,17 @@ public class JobEntrySSH2GETDialog extends JobEntryDialog implements JobEntryDia
         fdTimeout.top = new FormAttachment(wPassword, margin);
         fdTimeout.right = new FormAttachment(100, 0);
         wTimeout.setLayoutData(fdTimeout);
+        
+		// Test connection button
+		wTest=new Button(wHost,SWT.PUSH);
+		wTest.setText(Messages.getString("JobSSH2GET.TestConnection.Label"));
+	 	props.setLook(wTest);
+		fdTest=new FormData();
+		wTest.setToolTipText(Messages.getString("JobSSH2GET.TestConnection.Tooltip"));
+		//fdTest.left = new FormAttachment(middle, 0);
+		fdTest.top  = new FormAttachment(wTimeout, margin);
+		fdTest.right= new FormAttachment(100, 0);
+		wTest.setLayoutData(fdTest);
         
         
     	fdHost = new FormData();
@@ -721,17 +757,35 @@ public class JobEntrySSH2GETDialog extends JobEntryDialog implements JobEntryDia
 		FilesLayout.marginWidth = 10;
 		FilesLayout.marginHeight = 10;
 		wFiles.setLayout(FilesLayout);
+		
+        // FTP directory
+        wlFtpDirectory = new Label(wFiles, SWT.RIGHT);
+        wlFtpDirectory.setText(Messages.getString("JobSSH2GET.RemoteDir.Label"));
+        props.setLook(wlFtpDirectory);
+        fdlFtpDirectory= new FormData();
+        fdlFtpDirectory.left = new FormAttachment(0, 0);
+        fdlFtpDirectory.top = new FormAttachment(0, margin);
+        fdlFtpDirectory.right = new FormAttachment(middle, 0);
+        wlFtpDirectory.setLayoutData(fdlFtpDirectory);
        
-        
-        // FtpDirectory line
-        wFtpDirectory = new LabelTextVar(jobMeta,wFiles, Messages.getString("JobSSH2GET.RemoteDir.Label"),
-            Messages.getString("JobSSH2GET.RemoteDir.Tooltip"));
+		// Test remote folder  button ...
+		wbTestChangeFolderExists=new Button(wFiles, SWT.PUSH| SWT.CENTER);
+		props.setLook(wbTestChangeFolderExists);
+		wbTestChangeFolderExists.setText(Messages.getString("JobSSH2GET.TestFolderExists.Label"));
+		fdbTestChangeFolderExists=new FormData();
+		fdbTestChangeFolderExists.right= new FormAttachment(100, 0);
+		fdbTestChangeFolderExists.top  = new FormAttachment(0, margin);
+		wbTestChangeFolderExists.setLayoutData(fdbTestChangeFolderExists);
+		
+		// FtpDirectory line
+        wFtpDirectory = new TextVar(jobMeta,wFiles, SWT.SINGLE | SWT.LEFT | SWT.BORDER,Messages.getString("JobSSH2GET.RemoteDir.Label"));
         props.setLook(wFtpDirectory);
+        wFtpDirectory.setToolTipText(Messages.getString("JobSSH2GET.RemoteDir.Tooltip"));
         wFtpDirectory.addModifyListener(lsMod);
         fdFtpDirectory = new FormData();
-        fdFtpDirectory.left = new FormAttachment(0, 0);
-        fdFtpDirectory.top = new FormAttachment(0, margin);
-        fdFtpDirectory.right = new FormAttachment(100, 0);
+        fdFtpDirectory.left = new FormAttachment(middle, margin);
+        fdFtpDirectory.top = new FormAttachment(wWildcard, 2*margin);
+        fdFtpDirectory.right = new FormAttachment(wbTestChangeFolderExists, -margin);
         wFtpDirectory.setLayoutData(fdFtpDirectory);
         // Whenever something changes, set the tooltip to the expanded version:
         wFtpDirectory.addModifyListener(new ModifyListener()
@@ -740,8 +794,7 @@ public class JobEntrySSH2GETDialog extends JobEntryDialog implements JobEntryDia
 			{
 				wFtpDirectory.setToolTipText(jobMeta.environmentSubstitute( wFtpDirectory.getText() ) );
 			}
-		}
-		);  
+		});
         
         // includeSubFolders 
         wlincludeSubFolders = new Label(wFiles, SWT.RIGHT);
@@ -1034,9 +1087,17 @@ public class JobEntrySSH2GETDialog extends JobEntryDialog implements JobEntryDia
             }
         };
 
+        lsTest     = new Listener() { public void handleEvent(Event e) { test(); } };
+        lsCheckFolder     = new Listener() { public void handleEvent(Event e) { checkFTPFolder(); } };
+        
         wCancel.addListener(SWT.Selection, lsCancel);
         wOK.addListener(SWT.Selection, lsOK);
+        wTest.addListener    (SWT.Selection, lsTest    );
+        wbTestChangeFolderExists.addListener    (SWT.Selection, lsCheckFolder    );
 
+
+        
+        
         lsDef = new SelectionAdapter()
         {
             public void widgetDefaultSelected(SelectionEvent e)
@@ -1081,9 +1142,138 @@ public class JobEntrySSH2GETDialog extends JobEntryDialog implements JobEntryDia
         }
         return jobEntry;
     }
+    private void test()
+    {
+    	if(connect())
+    	{
+			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION );
+			mb.setMessage(Messages.getString("JobSSH2GET.Connected.OK",wServerName.getText()) +Const.CR);
+			mb.setText(Messages.getString("JobSSH2GET.Connected.Title.Ok"));
+			mb.open();
+		}else
+		{
+			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
+			mb.setMessage(Messages.getString("JobSSH2GET.Connected.NOK.ConnectionBad",wServerName.getText()) +Const.CR);
+			mb.setText(Messages.getString("JobSSH2GET.Connected.Title.Bad"));
+			mb.open(); 
+	    }
+	   
+    }
+    /**
+     * Checks if a directory exists
+     * 
+     * @param sftpClient
+     * @param directory
+     * @return true, if directory exists
+     */
+    public boolean sshDirectoryExists(SFTPv3Client sftpClient, String directory)  {
+    try {
+           SFTPv3FileAttributes attributes = sftpClient.stat(directory);
+              
+            if (attributes != null) {
+                 return (attributes.isDirectory());
+              } else {
+                  return false;
+              }
+              
+        } catch (Exception e) {
+              return false;
+        }
+    }
+    private void checkFTPFolder()
+    {
+    	boolean folderexists=false;
+    	String errmsg="";
+    	try	{
+	    	String realfoldername=jobMeta.environmentSubstitute(wFtpDirectory.getText());
+	    	if(!Const.isEmpty(realfoldername)) 	{
+	    		if(connect()){
+    				SFTPv3Client client = new SFTPv3Client(conn);
+    				boolean folderexist=sshDirectoryExists(client,realfoldername);
+    				client.close();
+    				if(folderexist)	{
+    					// Folder exists
+    					folderexists=true;
+    				}else	{
+    					// we can not find folder
+    					folderexists=false;
+    				}
+    			}
+    		}
+	    	
+    	}catch(Exception e)	{
+    		errmsg=e.getMessage();
+    	}
+    	if(folderexists)
+    	{
+			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION );
+			mb.setMessage(Messages.getString("JobSSH2GET.FolderExists.OK",wFtpDirectory.getText()) +Const.CR);
+			mb.setText(Messages.getString("JobSSH2GET.FolderExists.Title.Ok"));
+			mb.open();	
+    	}else
+    	{
+			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
+			mb.setMessage(Messages.getString("JobSSH2GET.FolderExists.NOK",wFtpDirectory.getText()) +Const.CR + errmsg);
+			mb.setText(Messages.getString("JobSSH2GET.FolderExists.Title.Bad"));
+			mb.open(); 
+    	}
+    }
+    private void closeFTPConnections()
+	{
+		// Close SSH connection if necessary
+		if (conn != null){
+	        try{
+	        	conn.close();
+	        	conn=null;
+	        } catch (Exception e) {}
+	      }
+	}
+    private boolean connect()
+    {
+    	boolean retval=false;
+		try	{
+			if(conn==null){	// Create a connection instance 
+				conn = new Connection(jobMeta.environmentSubstitute(wServerName.getText()),Const.toInt(jobMeta.environmentSubstitute(wServerPort.getText()), 22));				
 
+				/* We want to connect through a HTTP proxy */
+				if(wuseHTTPProxy.getSelection()){
+					/* Now connect */
+					// if the proxy requires basic authentication:
+					if(wuseBasicAuthentication.getSelection()){
+						conn.setProxyData(new HTTPProxyData(jobMeta.environmentSubstitute(wHTTPProxyHost.getText()), 
+								Const.toInt(wHTTPProxyPort.getText(),22), 
+								jobMeta.environmentSubstitute(wHTTPProxyUsername.getText()), 
+								jobMeta.environmentSubstitute(wHTTPProxyPassword.getText())));
+					}else{
+						conn.setProxyData(new HTTPProxyData(jobMeta.environmentSubstitute(wHTTPProxyHost.getText()), 
+								Const.toInt(wHTTPProxyPort.getText(),22)));
+					}
+				}
+				
+				conn.connect();
+
+				// Authenticate
+				if(wusePublicKey.getSelection()){
+					retval=conn.authenticateWithPublicKey(jobMeta.environmentSubstitute(wUserName.getText()), 
+							new java.io.File(jobMeta.environmentSubstitute(wKeyFilename.getText())), jobMeta.environmentSubstitute(wkeyfilePass.getText()));
+				}else{
+					retval=conn.authenticateWithPassword(jobMeta.environmentSubstitute(wUserName.getText()), jobMeta.environmentSubstitute(wPassword.getText()));
+				}
+			}  
+	
+	        retval=true;
+		}
+	     catch (Exception e) {
+			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
+			mb.setMessage(Messages.getString("JobSSH2GET.ErrorConnect.NOK",e.getMessage()) +Const.CR);
+			mb.setText(Messages.getString("JobSSH2GET.ErrorConnect.Title.Bad"));
+			mb.open(); 
+	    } 
+	    return retval;
+    }
     public void dispose()
     {
+    	closeFTPConnections();
         WindowProperty winprop = new WindowProperty(shell);
         props.setScreen(winprop);
         shell.dispose();
