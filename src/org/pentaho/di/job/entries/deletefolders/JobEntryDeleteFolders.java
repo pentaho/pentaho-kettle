@@ -52,7 +52,7 @@ import org.w3c.dom.Node;
  * This defines a 'delete folders' job entry.
  *
  * @author Samatar Hassan
- * @since 06-05-2007
+ * @since 13-05-2008
  */
 public class JobEntryDeleteFolders extends JobEntryBase implements Cloneable, JobEntryInterface {
 

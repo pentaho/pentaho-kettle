@@ -60,7 +60,7 @@ import org.pentaho.di.job.entries.deletefolders.Messages;
  * This dialog allows you to edit the Delete Folders job entry settings.
  *
  * @author Samatar Hassan
- * @since  06-05-2007
+ * @since  13-05-2008
  */
 public class JobEntryDeleteFoldersDialog extends JobEntryDialog implements JobEntryDialogInterface
 {
