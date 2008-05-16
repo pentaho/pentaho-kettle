@@ -836,7 +836,7 @@
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.SQLFileOutput")
 		</description>
 		<class-name>org.pentaho.di.trans.steps.sqlfileoutput.SQLFileOutputMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@OUTPUT.getName()</category>
 		<tooltip>ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.SQLFileOutput")
 		</tooltip>
 		<image-uri>ui/images/SFO.png</image-uri>
@@ -904,7 +904,7 @@
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.PropertyOutput")
 		</description>
 		<class-name>org.pentaho.di.trans.steps.propertyoutput.PropertyOutputMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@OUTPUT.getName()</category>
 		<tooltip>ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.PropertyOutput")
 		</tooltip>
 		<image-uri>ui/images/PFO.png</image-uri>
