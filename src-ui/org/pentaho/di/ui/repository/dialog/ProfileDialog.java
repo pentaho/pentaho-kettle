@@ -82,7 +82,7 @@ public class ProfileDialog extends Dialog
 		Shell parent = getParent();
 		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN );
  		props.setLook(shell);
-		shell.setImage(GUIResource.getInstance().getImageLogoSmall());
+		shell.setImage(GUIResource.getInstance().getImageProfil());
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;

@@ -253,6 +253,7 @@ public class SelectObjectDialog extends Dialog
             wTree.removeAll();
             
             TreeItem ti = new TreeItem(wTree, SWT.NONE);
+            ti.setImage(GUIResource.getInstance().getImageFolderConnections());
             ti.setExpanded(true);
             
 			RepositoryDirectoryUI.getTreeWithNames(ti, rep, dircolor, sortColumn, ascending, showTrans, showJobs, rep.getDirectoryTree());

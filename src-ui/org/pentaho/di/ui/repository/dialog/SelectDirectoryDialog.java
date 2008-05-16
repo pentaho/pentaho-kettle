@@ -222,6 +222,7 @@ public class SelectDirectoryDialog extends Dialog
             tiTree.dispose();
 
         tiTree = new TreeItem(wTree, SWT.NONE);
+        tiTree.setImage(GUIResource.getInstance().getImageFolderConnections());
         RepositoryDirectoryUI.getDirectoryTree(tiTree, dircolor, rep.getDirectoryTree());
         tiTree.setExpanded(true);
 

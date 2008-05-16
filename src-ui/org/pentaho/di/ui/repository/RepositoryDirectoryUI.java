@@ -25,6 +25,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryObject;
+import org.pentaho.di.ui.core.gui.GUIResource;
 
 public class RepositoryDirectoryUI {
 
@@ -52,6 +53,7 @@ public class RepositoryDirectoryUI {
 		{
 			RepositoryDirectory subdir = dir.getSubdirectory(i);
 			TreeItem subti = new TreeItem(ti, SWT.NONE);
+			subti.setImage(GUIResource.getInstance().getImageArrow());
 			getTreeWithNames(subti, rep, dircolor, sortPosition, ascending, getTransformations, getJobs, subdir);
 		}
 		
@@ -85,6 +87,10 @@ public class RepositoryDirectoryUI {
             {
                 TreeItem tiObject = new TreeItem(ti, SWT.NONE);
                 RepositoryObject repositoryObject = (RepositoryObject)repositoryObjects.get(i);
+                if(repositoryObject.getObjectType()==RepositoryObject.STRING_OBJECT_TYPE_TRANSFORMATION)
+                	tiObject.setImage(GUIResource.getInstance().getImageTransGraph());
+                else if(repositoryObject.getObjectType()==RepositoryObject.STRING_OBJECT_TYPE_JOB)
+                	tiObject.setImage(GUIResource.getInstance().getImageJobGraph());
                 
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
                 tiObject.setText(0, Const.NVL(repositoryObject.getName(), ""));
@@ -119,6 +125,7 @@ public class RepositoryDirectoryUI {
 		{
 			RepositoryDirectory subdir = dir.getSubdirectory(i);
 			TreeItem subti = new TreeItem(ti, SWT.NONE);
+			subti.setImage(GUIResource.getInstance().getImageArrow());
 			getDirectoryTree(subti, dircolor, subdir);
 		}
 	}

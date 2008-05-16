@@ -1287,10 +1287,12 @@ public class RepositoryExplorerDialog extends Dialog
 			rep.setDirectoryTree( new RepositoryDirectory(rep) );
 	
 			TreeItem tiTree = new TreeItem(wTree, SWT.NONE); 
+			tiTree.setImage(GUIResource.getInstance().getImageFolderConnections());
 			tiTree.setText(rep.getName()==null?"-":rep.getName()); //$NON-NLS-1$
 			
 			// The Databases...				
 			TreeItem tiParent = new TreeItem(tiTree, SWT.NONE); 
+			tiParent.setImage(GUIResource.getInstance().getImageConnection());
 			tiParent.setText(STRING_DATABASES);
             if (!userinfo.isReadonly()) TreeItemAccelerator.addDoubleClick(tiParent, new DoubleClickInterface() { public void action(TreeItem treeItem) { newDatabase(); } });
 	
@@ -1298,12 +1300,14 @@ public class RepositoryExplorerDialog extends Dialog
 			for (int i=0;i<names.length;i++)
 			{
 				TreeItem newDB = new TreeItem(tiParent, SWT.NONE);
+				newDB.setImage(GUIResource.getInstance().getImageConnection());
 				newDB.setText(Const.NVL(names[i], ""));
                 if (!userinfo.isReadonly()) TreeItemAccelerator.addDoubleClick(newDB, new DoubleClickInterface() { public void action(TreeItem treeItem) { editDatabase(treeItem.getText()); } });
 			}
 	
             // The partition schemas...             
             tiParent = new TreeItem(tiTree, SWT.NONE); 
+            tiParent.setImage(GUIResource.getInstance().getImageConnection());
             tiParent.setText(STRING_PARTITIONS);
             if (!userinfo.isReadonly()) TreeItemAccelerator.addDoubleClick(tiParent, 
             		new DoubleClickInterface() { public void action(TreeItem treeItem) { newPartitionSchema(); } });            
@@ -1312,6 +1316,7 @@ public class RepositoryExplorerDialog extends Dialog
             for (int i=0;i<names.length;i++)
             {
                 TreeItem newItem = new TreeItem(tiParent, SWT.NONE);
+                newItem.setImage(GUIResource.getInstance().getImageConnection());
                 newItem.setText(Const.NVL(names[i], ""));
                 if (!userinfo.isReadonly()) TreeItemAccelerator.addDoubleClick(newItem, 
                 		new DoubleClickInterface() { public void action(TreeItem treeItem) { editPartitionSchema(treeItem.getText()); } });                            
@@ -1319,6 +1324,7 @@ public class RepositoryExplorerDialog extends Dialog
             
             // The slaves...         
             tiParent = new TreeItem(tiTree, SWT.NONE); 
+            tiParent.setImage(GUIResource.getInstance().getImageArrow());
             tiParent.setText(STRING_SLAVES);
             if (!userinfo.isReadonly()) TreeItemAccelerator.addDoubleClick(tiParent, new DoubleClickInterface() { public void action(TreeItem treeItem) { newSlaveServer(); } });
 
@@ -1326,12 +1332,14 @@ public class RepositoryExplorerDialog extends Dialog
             for (int i=0;i<names.length;i++)
             {
                 TreeItem newItem = new TreeItem(tiParent, SWT.NONE);
+                newItem.setImage(GUIResource.getInstance().getImageArrow());
                 newItem.setText(Const.NVL(names[i], ""));
                 if (!userinfo.isReadonly()) TreeItemAccelerator.addDoubleClick(newItem, new DoubleClickInterface() { public void action(TreeItem treeItem) { editSlaveServer(treeItem.getText()); } });
             }
             
             // The clusters ...
             tiParent = new TreeItem(tiTree, SWT.NONE); 
+            tiParent.setImage(GUIResource.getInstance().getImageArrow());
             tiParent.setText(STRING_CLUSTERS);
             if (!userinfo.isReadonly()) TreeItemAccelerator.addDoubleClick(tiParent, 
             		new DoubleClickInterface() { public void action(TreeItem treeItem) { newCluster(); } });            
@@ -1340,6 +1348,7 @@ public class RepositoryExplorerDialog extends Dialog
             for (int i=0;i<names.length;i++)
             {
                 TreeItem newItem = new TreeItem(tiParent, SWT.NONE);
+                newItem.setImage(GUIResource.getInstance().getImageArrow());
                 newItem.setText(Const.NVL(names[i], ""));
                 if (!userinfo.isReadonly()) TreeItemAccelerator.addDoubleClick(newItem, 
                 		new DoubleClickInterface() { public void action(TreeItem treeItem) { editCluster(treeItem.getText()); } });                            
@@ -1349,9 +1358,11 @@ public class RepositoryExplorerDialog extends Dialog
 			if (userinfo.useTransformations())
 			{
 				TreeItem tiTrans = new TreeItem(tiTree, SWT.NONE); 
+				tiTrans.setImage(GUIResource.getInstance().getImageTransGraph());
 				tiTrans.setText(STRING_TRANSFORMATIONS);
 				
 				TreeItem newCat = new TreeItem(tiTrans, SWT.NONE);
+				newCat.setImage(GUIResource.getInstance().getImageLogoSmall());
 	    		Color dircolor = GUIResource.getInstance().getColorDirectory();
 				RepositoryDirectoryUI.getTreeWithNames(newCat, rep, dircolor, sortColumn, ascending, true, false, rep.getDirectoryTree());
 			}
@@ -1360,9 +1371,11 @@ public class RepositoryExplorerDialog extends Dialog
 			if (userinfo.useJobs())
 			{
 				TreeItem tiJob = new TreeItem(tiTree, SWT.NONE); 
+				tiJob.setImage(GUIResource.getInstance().getImageJobGraph());
 				tiJob.setText(STRING_JOBS);
 	
 				TreeItem newJob = new TreeItem(tiJob, SWT.NONE);
+				newJob.setImage(GUIResource.getInstance().getImageLogoSmall());
 	    		Color dircolor = GUIResource.getInstance().getColorDirectory();
 				RepositoryDirectoryUI.getTreeWithNames(newJob, rep, dircolor, sortColumn, ascending, false, true, rep.getDirectoryTree());
 			}
@@ -1371,6 +1384,7 @@ public class RepositoryExplorerDialog extends Dialog
 			// Add the users or only yourself
 			//
 			TreeItem tiUser = new TreeItem(tiTree, SWT.NONE);
+			tiUser.setImage(GUIResource.getInstance().getImageUser());
 			tiUser.setText(STRING_USERS);
             if (!userinfo.isReadonly()) TreeItemAccelerator.addDoubleClick(tiUser, new DoubleClickInterface() { public void action(TreeItem treeItem) { newUser(); } });
 			
@@ -1384,6 +1398,7 @@ public class RepositoryExplorerDialog extends Dialog
 						// If users[i] is null TreeWidget will throw exceptions.
 						// The solution is to verify on saving a user.
 					    TreeItem newUser = new TreeItem(tiUser, SWT.NONE);
+					    newUser.setImage(GUIResource.getInstance().getImageUser());
 					    newUser.setText(users[i]);
                         if (!userinfo.isReadonly()) TreeItemAccelerator.addDoubleClick(newUser, new DoubleClickInterface() { public void action(TreeItem treeItem) { editUser(treeItem.getText()); } });
 					}
@@ -1396,6 +1411,7 @@ public class RepositoryExplorerDialog extends Dialog
 			if (userinfo.isAdministrator())
 			{
 				TreeItem tiProf = new TreeItem(tiTree, SWT.NONE);
+				tiProf.setImage(GUIResource.getInstance().getImageProfil());
 				tiProf.setText(STRING_PROFILES);
                 TreeItemAccelerator.addDoubleClick(tiProf, new DoubleClickInterface() { public void action(TreeItem treeItem) { newProfile(); } });
 
@@ -1403,6 +1419,7 @@ public class RepositoryExplorerDialog extends Dialog
 				for (int i=0;i<prof.length;i++)
 				{
 					TreeItem newProf = new TreeItem(tiProf, SWT.NONE);
+					newProf.setImage(GUIResource.getInstance().getImageProfil());
 					newProf.setText(prof[i]);
                     TreeItemAccelerator.addDoubleClick(newProf, new DoubleClickInterface() { public void action(TreeItem treeItem) { editProfile(treeItem.getText()); } });
 				}

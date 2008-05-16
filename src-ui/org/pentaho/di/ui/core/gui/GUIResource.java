@@ -165,6 +165,12 @@ public class GUIResource
 	private Image imageTransGraph;
 
 	private Image imageJobGraph;
+	
+	private Image imageUser;
+	
+	private Image imageProfil;
+	
+	private Image imageFolderConnections;
 
 	private Image imageEditOptionButton;
 
@@ -340,6 +346,9 @@ public class GUIResource
 			imageVariable.dispose();
 			imageTransGraph.dispose();
 			imageJobGraph.dispose();
+			imageUser.dispose();
+			imageProfil.dispose();
+			imageFolderConnections.dispose();
 		    imageShowResults.dispose();
 		    imageHideResults.dispose();
 		    imageCollapseAll.dispose();
@@ -557,6 +566,20 @@ public class GUIResource
 		imageBanner = ImageUtil.makeImageTransparent(display, ImageUtil.getImageAsResource(display, 
 				BasePropertyHandler.getProperty("Banner_bg_image")), // , "ui/images/bg_banner.png"
 				new RGB(255, 255, 255));
+		
+		imageUser = ImageUtil.makeImageTransparent(display, ImageUtil.getImageAsResource(display, 
+				BasePropertyHandler.getProperty("User_image")), // , "ui/images/user.png"
+				new RGB(255, 255, 255));
+		imageProfil = ImageUtil.makeImageTransparent(display, ImageUtil.getImageAsResource(display, 
+				BasePropertyHandler.getProperty("Profil_image")), // , "ui/images/profil.png"
+				new RGB(255, 255, 255));
+		
+		imageFolderConnections = ImageUtil.makeImageTransparent(display, ImageUtil.getImageAsResource(display, 
+				BasePropertyHandler.getProperty("FolderConnections_image")), // , "ui/images/folder_connection.png"
+				new RGB(255, 255, 255));
+		
+		
+		
 	}
 	
 	/**
@@ -1013,6 +1036,20 @@ public class GUIResource
 		return imageTransGraph;
 	}
 
+	public Image getImageUser()
+	{
+		return imageUser;
+	}
+	
+	public Image getImageProfil()
+	{
+		return imageProfil;
+	}
+	
+	public Image getImageFolderConnections()
+	{
+		return imageFolderConnections;
+	}
 	public Image getImageJobGraph()
 	{
 		return imageJobGraph;
