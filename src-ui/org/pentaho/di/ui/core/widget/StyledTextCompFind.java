@@ -127,7 +127,7 @@ public class StyledTextCompFind extends org.eclipse.swt.widgets.Dialog {
 		optForward.setBounds(5, 15, 75, 15);
 		Button optBackward = new Button(grpDir, SWT.RADIO);
 		optBackward.setBounds(5, 33, 75, 15);
-		optBackward.setSelection(true);
+		optForward.setSelection(true);
 		optBackward.setText("&Backward");
 
 		frmData = new FormData();
