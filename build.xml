@@ -644,6 +644,7 @@
   			<test todir="${junit}" name="org.pentaho.di.trans.steps.rowgenerator.RowGeneratorTest" haltonerror="false" />
   			<test todir="${junit}" name="org.pentaho.di.trans.steps.sort.SortRowsTest" haltonerror="false" />
 		  	<test todir="${junit}" name="org.pentaho.di.trans.steps.valuemapper.ValueMapperTest" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.trans.steps.regexeval.RegexEvalTest" haltonerror="false" />
 
 		</junit>
 	</target>
