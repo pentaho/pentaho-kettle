@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TreeEditor;
 import org.eclipse.swt.dnd.DND;
@@ -54,6 +55,7 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
@@ -196,6 +198,10 @@ public class RepositoryExplorerDialog extends Dialog
     
     private RepositoryObjectReference lastOpened;
 	private VariableSpace variableSpace;
+	
+	private ToolItem expandAll, collapseAll;
+    
+    private FormData     fdexpandAll;
     
 	private RepositoryExplorerDialog(Shell par, int style, Repository rep, UserInfo ui, VariableSpace variableSpace)
 	{
@@ -269,6 +275,15 @@ public class RepositoryExplorerDialog extends Dialog
             miFileClose.setText(Messages.getString("RepositoryExplorerDialog.Menu.FileClose")); //$NON-NLS-1$
             miFileClose.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { commit(); } });
             
+            ToolBar treeTb = new ToolBar(shell, SWT.HORIZONTAL | SWT.FLAT);
+            expandAll = new ToolItem(treeTb,SWT.PUSH);
+            expandAll.setImage(GUIResource.getInstance().getImageExpandAll());
+            collapseAll = new ToolItem(treeTb,SWT.PUSH);
+            collapseAll.setImage(GUIResource.getInstance().getImageCollapseAll());
+    		fdexpandAll=new FormData();
+    		fdexpandAll.right = new FormAttachment(100, -20);
+    		fdexpandAll.top  = new FormAttachment(0, 0);
+    		treeTb.setLayoutData(fdexpandAll);
             
      		// Tree
      		wTree = new Tree(shell, SWT.MULTI | SWT.BORDER /*| (multiple?SWT.CHECK:SWT.NONE)*/);
@@ -279,6 +294,7 @@ public class RepositoryExplorerDialog extends Dialog
             nameColumn = new TreeColumn(wTree, SWT.LEFT);
             nameColumn.setText(Messages.getString("RepositoryExplorerDialog.Column.Name")); //$NON-NLS-1$
             nameColumn.setWidth(350);
+            nameColumn.setAlignment(10);
             nameColumn.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { setSort(0); } });
             
             // No sorting on the type column just yet.
@@ -372,6 +388,17 @@ public class RepositoryExplorerDialog extends Dialog
     				}
     			}
     		);
+    		
+    		expandAll.addSelectionListener(new SelectionAdapter() {
+    		      public void widgetSelected(SelectionEvent event) {
+    		    	expandAllItems(wTree.getItems(),true);
+    		      }});
+    		
+    		collapseAll.addSelectionListener(new SelectionAdapter() {
+  		      public void widgetSelected(SelectionEvent event) {
+  		    	expandAllItems(wTree.getItems(),false);
+  		      }});
+
     		
     		// Drag & Drop
     		Transfer[] ttypes = new Transfer[] {TextTransfer.getInstance() };
@@ -584,7 +611,14 @@ public class RepositoryExplorerDialog extends Dialog
 		return lastOpened;
 
 	}
-	
+	private void expandAllItems(TreeItem[] treeitems,boolean expand)
+	{
+	  for (TreeItem item : treeitems) { 
+		    item.setExpanded(expand);
+		    if(item.getItemCount()>0)
+		    	expandAllItems(item.getItems(),expand);
+	    }
+	}
 	protected void setSort(int i)
     {
         if (sortColumn==i)

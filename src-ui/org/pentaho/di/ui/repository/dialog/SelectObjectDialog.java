@@ -13,6 +13,7 @@
 
 package org.pentaho.di.ui.repository.dialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -30,6 +31,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
@@ -59,7 +61,7 @@ public class SelectObjectDialog extends Dialog
 {
 	private Label        wlTree;
 	private Tree         wTree;
-    private FormData     fdlTree, fdTree;
+    private FormData     fdlTree, fdTree,fdexpandAll;
 		
 	private Button wOK, wCancel;
 	private Listener lsOK, lsCancel;
@@ -86,6 +88,8 @@ public class SelectObjectDialog extends Dialog
     private boolean showTrans;
     private boolean showJobs;
     private TreeColumn descriptionColumn;
+	
+	private ToolItem expandAll, collapseAll;
 
     public SelectObjectDialog(Shell parent, Repository rep)
     {
@@ -127,7 +131,17 @@ public class SelectObjectDialog extends Dialog
 		shell.setText(shellText);
 		
 		int margin = Const.MARGIN;
-
+		
+        ToolBar treeTb = new ToolBar(shell, SWT.HORIZONTAL | SWT.FLAT);
+        expandAll = new ToolItem(treeTb,SWT.PUSH);
+        expandAll.setImage(GUIResource.getInstance().getImageExpandAll());
+        collapseAll = new ToolItem(treeTb,SWT.PUSH);
+        collapseAll.setImage(GUIResource.getInstance().getImageCollapseAll());
+		fdexpandAll=new FormData();
+		fdexpandAll.right = new FormAttachment(100, -margin);
+		fdexpandAll.top  = new FormAttachment(0, margin);
+		treeTb.setLayoutData(fdexpandAll);
+		
 		// From step line
 		wlTree=new Label(shell, SWT.NONE);
 		wlTree.setText(lineText);
@@ -136,6 +150,8 @@ public class SelectObjectDialog extends Dialog
 		fdlTree.left = new FormAttachment(0, 0);
 		fdlTree.top  = new FormAttachment(0, margin);
 		wlTree.setLayoutData(fdlTree);
+		
+		
 		wTree=new Tree(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
         wTree.setHeaderVisible(true);
         props.setLook(wTree);
@@ -171,7 +187,7 @@ public class SelectObjectDialog extends Dialog
 		fdTree=new FormData();
 		fdTree.left = new FormAttachment(0, 0);
 		fdTree.right= new FormAttachment(100, 0);
-		fdTree.top  = new FormAttachment(wlTree, margin);
+		fdTree.top  = new FormAttachment(treeTb, margin);
 		fdTree.bottom= new FormAttachment(100, -30);
 		wTree.setLayoutData(fdTree);
 
@@ -199,6 +215,18 @@ public class SelectObjectDialog extends Dialog
 				}
 			}
 		);
+		
+
+		expandAll.addSelectionListener(new SelectionAdapter() {
+		      public void widgetSelected(SelectionEvent event) {
+		    	expandAllItems(wTree.getItems(),true);
+		      }});
+		
+		collapseAll.addSelectionListener(new SelectionAdapter() {
+		      public void widgetSelected(SelectionEvent event) {
+		    	expandAllItems(wTree.getItems(),false);
+		      }});
+		
 		// Detect [X] or ALT-F4 or something that kills this window...
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
 
@@ -223,7 +251,14 @@ public class SelectObjectDialog extends Dialog
 		}
 		return objectName;
 	}
-    
+	private void expandAllItems(TreeItem[] treeitems,boolean expand)
+	{
+	  for (TreeItem item : treeitems) { 
+		    item.setExpanded(expand);
+		    if(item.getItemCount()>0)
+		    	expandAllItems(item.getItems(),expand);
+	    }
+	}
     protected void setSort(int i)
     {
         if (sortColumn==i)
