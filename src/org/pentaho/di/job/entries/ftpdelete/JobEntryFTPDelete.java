@@ -647,11 +647,15 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 				// CHECK THIS !!!
 				if (filelist.length == 1)
 				{
-	                String translatedWildcard = environmentSubstitute(wildcard);
-	                if (filelist[0].startsWith(translatedWildcard))
-					{
-						throw new FTPException(filelist[0]);
-					}
+          String translatedWildcard = environmentSubstitute(wildcard);
+          if (!Const.isEmpty(translatedWildcard))
+          {
+            if (filelist[0].startsWith(translatedWildcard))
+            {
+              throw new FTPException(filelist[0]);
+            }
+            
+          }
 				}
 			}
 			else if(protocol.equals("SFTP"))
