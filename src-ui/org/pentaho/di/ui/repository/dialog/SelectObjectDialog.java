@@ -121,7 +121,7 @@ public class SelectObjectDialog extends Dialog
 
 		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL | SWT.RESIZE | SWT.MIN | SWT.MAX );
  		props.setLook(shell);
-		shell.setImage(GUIResource.getInstance().getImageConnection());
+		shell.setImage(GUIResource.getInstance().getImageFolderConnections());
 
 		FormLayout formLayout = new FormLayout ();
 		formLayout.marginWidth  = Const.FORM_MARGIN;

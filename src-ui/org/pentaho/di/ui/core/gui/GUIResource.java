@@ -133,7 +133,15 @@ public class GUIResource
 	private Image imageHop;
 
 	private Image imageConnection;
+	
+	private Image imageTable;
+	
+	private Image imageSchema;
+	
+	private Image imageSynonym;
 
+	private Image imageView;
+	
 	private Image imageKettleLogo;
 
 	private Image imageLogoSmall;
@@ -330,6 +338,10 @@ public class GUIResource
 			// Common images
 			imageHop.dispose();
 			imageConnection.dispose();
+			imageTable.dispose();
+			imageSchema.dispose();
+			imageSynonym.dispose();
+			imageView.dispose();
 			imageLogoSmall.dispose();
 			imageKettleLogo.dispose();
 			imageBanner.dispose();
@@ -506,6 +518,13 @@ public class GUIResource
 	{
 		imageHop = ImageUtil.getImageAsResource(display,BasePropertyHandler.getProperty("HOP_image")); // "ui/images/HOP.png"
 		imageConnection = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("CNC_image")); // , "ui/images/CNC.png"
+		
+		
+		imageTable = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Table_image")); // , "ui/images/table.png"
+		imageSchema = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Schema_image")); // , "ui/images/schema.png"
+		imageSynonym = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Synonym_image")); // , "ui/images/synonym.png"
+		imageView = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("View_image")); // , "ui/images/view.png"
+		
 		imageKettleLogo = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Logo_lrg_image")); // , "ui/images/logo_kettle_lrg.png"
 		imageBanner = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Banner_bg_image")); // , "ui/images/bg_banner.png"
 		imageBol = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("BOL_image")); // , "ui/images/BOL.png"
@@ -853,7 +872,41 @@ public class GUIResource
 	{
 		return imageConnection;
 	}
+	
+	/**
+	 * @return Returns the imageTable.
+	 */
+	public Image getImageTable()
+	{
+		return imageTable;
+	}
+	
+	/**
+	 * @return Returns the imageSchema.
+	 */
+	public Image getImageSchema()
+	{
+		return imageSchema;
+	}
 
+	/**
+	 * @return Returns the imageSynonym.
+	 */
+	public Image getImageSynonym()
+	{
+		return imageSynonym;
+	}
+	
+	/**
+	 * @return Returns the imageView.
+	 */
+	public Image getImageView()
+	{
+		return imageView;
+	}
+	
+	
+	
 	/**
 	 * @return Returns the imageCredits.
 	 */

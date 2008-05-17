@@ -417,6 +417,7 @@ public class DatabaseExplorerDialog extends Dialog
 				
 			// New entry in the tree
 			tiTree = new TreeItem(wTree, SWT.NONE); 
+			tiTree.setImage(GUIResource.getInstance().getImageFolderConnections());
 			tiTree.setText(dbMeta==null?"":dbMeta.getName());
 
 			// Show the catalogs...
@@ -424,11 +425,13 @@ public class DatabaseExplorerDialog extends Dialog
 			if (catalogs!=null)
 			{
 				TreeItem tiCat = new TreeItem(tiTree, SWT.NONE); 
+				tiCat.setImage(GUIResource.getInstance().getImageConnection());
 				tiCat.setText(STRING_CATALOG);
 				
 				for (int i=0;i<catalogs.length;i++)
 				{
 					TreeItem newCat = new TreeItem(tiCat, SWT.NONE);
+					newCat.setImage(GUIResource.getInstance().getImageConnection());
 					newCat.setText(catalogs[i].getCatalogName());
 					
 					for (int j=0;j<catalogs[i].getItems().length;j++)
@@ -436,6 +439,7 @@ public class DatabaseExplorerDialog extends Dialog
 						String tableName = catalogs[i].getItems()[j];
 	
 						TreeItem ti = new TreeItem(newCat, SWT.NONE);
+						ti.setImage(GUIResource.getInstance().getImageTable());
 						ti.setText(tableName);
 					}
 				}
@@ -446,11 +450,13 @@ public class DatabaseExplorerDialog extends Dialog
 			if (schemas!=null)
 			{
 				TreeItem tiSch = new TreeItem(tiTree, SWT.NONE); 
+				tiSch.setImage(GUIResource.getInstance().getImageSchema());
 				tiSch.setText(STRING_SCHEMAS);
 	
 				for (int i=0;i<schemas.length;i++)
 				{
 					TreeItem newSch = new TreeItem(tiSch, SWT.NONE);
+					newSch.setImage(GUIResource.getInstance().getImageSchema());
 					newSch.setText(schemas[i].getSchemaName());
 					
 					for (int j=0;j<schemas[i].getItems().length;j++)
@@ -458,6 +464,7 @@ public class DatabaseExplorerDialog extends Dialog
 						String tableName = schemas[i].getItems()[j];
 	
 						TreeItem ti = new TreeItem(newSch, SWT.NONE);
+						ti.setImage(GUIResource.getInstance().getImageSchema());
 						ti.setText(tableName);
 					}
 				}
@@ -469,12 +476,14 @@ public class DatabaseExplorerDialog extends Dialog
 			if (tabnames!=null)
 			{
 				tiTab = new TreeItem(tiTree, SWT.NONE); 
+				tiTab.setImage(GUIResource.getInstance().getImageTable());
 				tiTab.setText(STRING_TABLES);
 				tiTab.setExpanded(true);
 				
 				for (int i = 0; i < tabnames.length; i++)
 				{
 					TreeItem newTab = new TreeItem(tiTab, SWT.NONE);
+					newTab.setImage(GUIResource.getInstance().getImageTable());
 					newTab.setText(tabnames[i]);
 				}
 			}
@@ -485,10 +494,12 @@ public class DatabaseExplorerDialog extends Dialog
 			if (views!=null)
 			{
 				tiView = new TreeItem(tiTree, SWT.NONE); 
+				tiView.setImage(GUIResource.getInstance().getImageView());
 				tiView.setText(STRING_VIEWS);
 				for (int i = 0; i < views.length; i++)
 				{
 					TreeItem newView = new TreeItem(tiView, SWT.NONE);
+					newView.setImage(GUIResource.getInstance().getImageView());
 					newView.setText(views[i]);
 				}
 			}
@@ -500,10 +511,12 @@ public class DatabaseExplorerDialog extends Dialog
 			if (syn!=null)
 			{
 				tiSyn = new TreeItem(tiTree, SWT.NONE); 
+				tiSyn.setImage(GUIResource.getInstance().getImageSynonym());
 				tiSyn.setText(STRING_SYNONYMS);
 				for (int i = 0; i < syn.length; i++)
 				{
 					TreeItem newSyn = new TreeItem(tiSyn, SWT.NONE);
+					newSyn.setImage(GUIResource.getInstance().getImageSynonym());
 					newSyn.setText(syn[i]);
 				}
 			}
