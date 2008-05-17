@@ -114,7 +114,7 @@ public class PrepareExecutionTransServlet extends HttpServlet
                 	
                     if (useXML)
                     {
-                        out.println(new WebResult(WebResult.STRING_ERROR, Messages.getString("PrepareExecutionTransServlet.Error.TransInitFailed",Const.CR+appender.getBuffer().toString())));
+                        out.println(new WebResult(WebResult.STRING_ERROR, Messages.getString("PrepareExecutionTransServlet.Error.TransInitFailed",Const.CR+appender.getBuffer().toString()+Const.CR+e.getLocalizedMessage())));
                         
                     }
                     else
@@ -123,6 +123,7 @@ public class PrepareExecutionTransServlet extends HttpServlet
                         
                         out.println("<pre>");
                         out.println(appender.getBuffer().toString());
+                        out.println(e.getLocalizedMessage());
                         out.println("</pre>");
                         out.println("<a href=\"/kettle/transStatus?name="+transName+"\">" + Messages.getString("TransStatusServlet.BackToTransStatusPage") + "</a><p>");
                     }
