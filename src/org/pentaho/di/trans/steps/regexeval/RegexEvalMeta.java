@@ -451,7 +451,7 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface
     {
         StringBuilder retval = new StringBuilder();
 
-        retval.append("    " + XMLHandler.addTagValue("script", XMLHandler.buildCDATA(script))); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("    " + XMLHandler.openTag("script") + XMLHandler.buildCDATA(script) + XMLHandler.closeTag("script")); //$NON-NLS-1$ //$NON-NLS-2$
         retval.append("    " + XMLHandler.addTagValue("matcher", matcher)); //$NON-NLS-1$ //$NON-NLS-2$
         retval.append("    " + XMLHandler.addTagValue("resultfieldname", resultfieldname)); //$NON-NLS-1$ //$NON-NLS-2$
         retval.append("    " + XMLHandler.addTagValue("usevar", usevar));
