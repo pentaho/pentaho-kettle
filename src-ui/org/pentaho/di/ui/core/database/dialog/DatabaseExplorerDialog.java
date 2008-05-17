@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -37,6 +38,7 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.pentaho.di.core.Const;
@@ -116,6 +118,8 @@ public class DatabaseExplorerDialog extends Dialog
     private Button bSQL;
     private String activeSchemaTable;
     private Button bTruncate;
+    FormData fdexpandAll,fdcollapseAll;
+	private ToolItem expandAll, collapseAll;
 
 	public DatabaseExplorerDialog(Shell parent, int style, DatabaseMeta conn, List<DatabaseMeta> databases)
 	{
@@ -288,6 +292,29 @@ public class DatabaseExplorerDialog extends Dialog
 
         activeSchemaTable=null;
         
+        ToolBar treeTb = new ToolBar(shell, SWT.HORIZONTAL | SWT.FLAT);
+        expandAll = new ToolItem(treeTb,SWT.PUSH);
+        expandAll.setImage(GUIResource.getInstance().getImageExpandAll());
+        collapseAll = new ToolItem(treeTb,SWT.PUSH);
+        collapseAll.setImage(GUIResource.getInstance().getImageCollapseAll());
+		fdexpandAll=new FormData();
+		fdexpandAll.right = new FormAttachment(100, 0);
+		fdexpandAll.top  = new FormAttachment(0, 0);
+		treeTb.setLayoutData(fdexpandAll);
+
+
+	
+    		expandAll.addSelectionListener(new SelectionAdapter() {
+  		      public void widgetSelected(SelectionEvent event) {
+  		    	expandAllItems(wTree.getItems(),true);
+  		      }});
+  		
+  		collapseAll.addSelectionListener(new SelectionAdapter() {
+		      public void widgetSelected(SelectionEvent event) {
+		    	expandAllItems(wTree.getItems(),false);
+		      }});
+
+        
         bPrev  = new Button(buttonsComposite, SWT.PUSH); 
         bPrev.setText(Messages.getString("DatabaseExplorerDialog.Menu.Preview100", Const.NVL(activeSchemaTable, "?")));
         bPrev.setEnabled(activeSchemaTable!=null);
@@ -374,7 +401,14 @@ public class DatabaseExplorerDialog extends Dialog
         fdComposite.top   = new FormAttachment(0, 20);
         buttonsComposite.setLayoutData(fdComposite);        
     }
-
+    private void expandAllItems(TreeItem[] treeitems,boolean expand)
+	{
+	  for (TreeItem item : treeitems) { 
+		    item.setExpanded(expand);
+		    if(item.getItemCount()>0)
+		    	expandAllItems(item.getItems(),expand);
+	    }
+	}
 
     private void refreshButtons(String table)
     {
