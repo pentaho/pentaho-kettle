@@ -4630,7 +4630,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 					//
 					TreeItem tiDbTitle = new TreeItem(tiTransName, SWT.NONE);
 					tiDbTitle.setText(STRING_CONNECTIONS);
-					tiDbTitle.setImage(guiResource.getImageConnection());
+					tiDbTitle.setImage(guiResource.getImageFolderConnections());
 
 					// Draw the connections themselves below it.
 					for (int i = 0; i < transMeta.nrDatabases(); i++)
@@ -4687,7 +4687,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 					//
 					TreeItem tiPartitionTitle = new TreeItem(tiTransName, SWT.NONE);
 					tiPartitionTitle.setText(STRING_PARTITIONS);
-					tiPartitionTitle.setImage(guiResource.getImageConnection());
+					tiPartitionTitle.setImage(guiResource.getImageFolderConnections());
 
 					// Put the steps below it.
 					for (int i = 0; i < transMeta.getPartitionSchemas().size(); i++)
