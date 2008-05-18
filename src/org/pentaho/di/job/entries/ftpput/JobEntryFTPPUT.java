@@ -37,6 +37,7 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.job.entries.ftp.Messages;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
@@ -71,6 +72,13 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
     private boolean onlyPuttingNewFiles;  /* Don't overwrite files */
     private boolean activeConnection;
     private String  controlEncoding;      /* how to convert list of filenames e.g. */
+    private String proxyHost;
+    
+    private String proxyPort;    /* string to allow variable substitution */
+     
+    private String proxyUsername;
+     
+    private String proxyPassword;
     
     /**
      * Implicit encoding used before PDI v2.4.1
@@ -129,6 +137,12 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
         retval.append("      ").append(XMLHandler.addTagValue("only_new",     onlyPuttingNewFiles));
         retval.append("      ").append(XMLHandler.addTagValue("active",       activeConnection));
         retval.append("      ").append(XMLHandler.addTagValue("control_encoding",  controlEncoding));
+        
+	    retval.append("      ").append(XMLHandler.addTagValue("proxy_host", proxyHost)); //$NON-NLS-1$ //$NON-NLS-2$
+	    retval.append("      ").append(XMLHandler.addTagValue("proxy_port", proxyPort)); //$NON-NLS-1$ //$NON-NLS-2$
+	    retval.append("      ").append(XMLHandler.addTagValue("proxy_username", proxyUsername)); //$NON-NLS-1$ //$NON-NLS-2$
+	    retval.append("      ").append(XMLHandler.addTagValue("proxy_password", proxyPassword)); //$NON-NLS-1$ //$NON-NLS-2$
+	    
 		
 		return retval.toString();
 	}
@@ -151,6 +165,12 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
 			onlyPuttingNewFiles = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "only_new") );
             activeConnection    = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "active") );
             controlEncoding     = XMLHandler.getTagValue(entrynode, "control_encoding");
+            
+		    proxyHost = XMLHandler.getTagValue(entrynode, "proxy_host"); //$NON-NLS-1$
+		    proxyPort = XMLHandler.getTagValue(entrynode, "proxy_port"); //$NON-NLS-1$
+		    proxyUsername = XMLHandler.getTagValue(entrynode, "proxy_username"); //$NON-NLS-1$
+		    proxyPassword = XMLHandler.getTagValue(entrynode, "proxy_password"); //$NON-NLS-1$
+            
             if ( controlEncoding == null )
             {
             	// if we couldn't retrieve an encoding, assume it's an old instance and
@@ -191,6 +211,11 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
             	// put in the the encoding used before v 2.4.0
             	controlEncoding = LEGACY_CONTROL_ENCODING;
             }
+            
+		    proxyHost	= rep.getJobEntryAttributeString(id_jobentry, "proxy_host"); //$NON-NLS-1$
+		    proxyPort	= rep.getJobEntryAttributeString(id_jobentry, "proxy_port"); //$NON-NLS-1$
+		    proxyUsername	= rep.getJobEntryAttributeString(id_jobentry, "proxy_username"); //$NON-NLS-1$
+		    proxyPassword = rep.getJobEntryAttributeString(id_jobentry, "proxy_password"); //$NON-NLS-1$
 		}
 		catch(KettleException dbe)
 		{
@@ -218,6 +243,11 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
 			rep.saveJobEntryAttribute(id_job, getID(), "only_new",        onlyPuttingNewFiles);
             rep.saveJobEntryAttribute(id_job, getID(), "active",          activeConnection);
             rep.saveJobEntryAttribute(id_job, getID(), "control_encoding",controlEncoding);
+            
+		    rep.saveJobEntryAttribute(id_job, getID(), "proxy_host", proxyHost); //$NON-NLS-1$
+		    rep.saveJobEntryAttribute(id_job, getID(), "proxy_port", proxyPort); //$NON-NLS-1$
+		    rep.saveJobEntryAttribute(id_job, getID(), "proxy_username", proxyUsername); //$NON-NLS-1$
+		    rep.saveJobEntryAttribute(id_job, getID(), "proxy_password", proxyPassword); //$NON-NLS-1$
 		}
 		catch(KettleDatabaseException dbe)
 		{
@@ -429,7 +459,69 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
     {
         this.activeConnection = activeConnection;
     }
-	
+
+    /**
+     * @return Returns the hostname of the ftp-proxy.
+     */
+    public String getProxyHost() 
+    {
+    	return proxyHost;
+    }
+      
+    /**
+     * @param proxyHost The hostname of the proxy.
+     */
+    public void setProxyHost(String proxyHost) 
+    {
+     	this.proxyHost = proxyHost;
+    }
+    
+    /**
+     * @return Returns the password which is used to authenticate at the proxy.
+     */
+    public String getProxyPassword() 
+    {
+     	return proxyPassword;
+    }
+    
+    /**
+     * @param proxyPassword The password which is used to authenticate at the proxy.
+     */
+    public void setProxyPassword(String proxyPassword) 
+    {
+     	this.proxyPassword = proxyPassword;
+    }
+
+    /**
+     * @return Returns the port of the ftp-proxy.
+     */
+    public String getProxyPort() 
+    {
+      return proxyPort;
+    }
+
+    /**
+     * @param proxyPort The port of the ftp-proxy. 
+     */
+    public void setProxyPort(String proxyPort) 
+    {
+      this.proxyPort = proxyPort;
+    }
+      
+    /**
+     * @return Returns the username which is used to authenticate at the proxy.
+     */
+    public String getProxyUsername() {
+      return proxyUsername;
+    }
+      
+    /**
+     * @param proxyUsername The username which is used to authenticate at the proxy.
+     */
+    public void setProxyUsername(String proxyUsername) {
+    	this.proxyUsername = proxyUsername;
+    }
+    
 	public Result execute(Result previousResult, int nr, Repository rep, Job parentJob)
 	{
 		LogWriter log = LogWriter.getInstance();
@@ -458,9 +550,33 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
 			// Create ftp client to host:port ...
 			ftpclient = new FTPClient();
             ftpclient.setRemoteAddr(InetAddress.getByName(realServerName));
-            ftpclient.setRemotePort(Const.toInt(realServerPort, 21));
+            if(Const.isEmpty(realServerPort))
+            {
+            	 ftpclient.setRemotePort(Const.toInt(realServerPort, 21));
+            }
             
-            if (log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobFTPPUT.Log.OpenConnection",realServerName));
+            if (!Const.isEmpty(proxyHost)) 
+            {
+          	  String realProxy_host = environmentSubstitute(proxyHost);
+          	  ftpclient.setRemoteAddr(InetAddress.getByName(realProxy_host));
+          	  if ( log.isDetailed() )
+          	      log.logDetailed(toString(), Messages.getString("JobEntryFTPPUT.OpenedProxyConnectionOn",realProxy_host));
+
+          	  // FIXME: Proper default port for proxy    	  
+          	  int port = Const.toInt(environmentSubstitute(proxyPort), 21);
+          	  if (port != 0) 
+          	  {
+          	     ftpclient.setRemotePort(port);
+          	  }
+            } 
+            else 
+            {
+                ftpclient.setRemoteAddr(InetAddress.getByName(realServerName));
+                
+                if ( log.isDetailed() )
+          	      log.logDetailed(toString(), Messages.getString("JobEntryFTPPUT.OpenConnection",realServerName));                
+            }
+            
 
 			// set activeConnection connectmode ...
             if (activeConnection)
