@@ -114,7 +114,7 @@ public class PartitionSchemaDialog extends Dialog
 		Shell parent = getParent();
 		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN );
  		props.setLook(shell);
-		shell.setImage((Image) GUIResource.getInstance().getImageConnection());
+		shell.setImage((Image) GUIResource.getInstance().getImageFolderConnections());
 		
 		lsMod = new ModifyListener() 
 		{

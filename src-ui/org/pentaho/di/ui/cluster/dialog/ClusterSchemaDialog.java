@@ -109,7 +109,7 @@ public class ClusterSchemaDialog extends Dialog
 		Shell parent = getParent();
 		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN );
  		props.setLook(shell);
-		shell.setImage( GUIResource.getInstance().getImageConnection());
+		shell.setImage( GUIResource.getInstance().getImageCluster());
 
 		lsMod = new ModifyListener() 
 		{

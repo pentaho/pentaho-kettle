@@ -130,8 +130,7 @@ public class ScriptValuesMod extends BaseStep implements StepInterface, ScriptVa
     }
 
     if (log.isDetailed())
-      logDetailed(Messages.getString(
-          "ScriptValuesMod.Log.UsingValuesFromInputStream", String.valueOf(data.fields_used.length))); //$NON-NLS-1$ //$NON-NLS-2$
+      logDetailed(Messages.getString("ScriptValuesMod.Log.UsingValuesFromInputStream", String.valueOf(data.fields_used.length))); //$NON-NLS-1$ //$NON-NLS-2$
   }
 
   private boolean addValues(RowMetaInterface rowMeta, Object[] row) throws KettleValueException {

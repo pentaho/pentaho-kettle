@@ -1341,7 +1341,7 @@ public class RepositoryExplorerDialog extends Dialog
 	
             // The partition schemas...             
             tiParent = new TreeItem(tiTree, SWT.NONE); 
-            tiParent.setImage(GUIResource.getInstance().getImageConnection());
+            tiParent.setImage(GUIResource.getInstance().getImageFolderConnections());
             tiParent.setText(STRING_PARTITIONS);
             if (!userinfo.isReadonly()) TreeItemAccelerator.addDoubleClick(tiParent, 
             		new DoubleClickInterface() { public void action(TreeItem treeItem) { newPartitionSchema(); } });            
@@ -1350,7 +1350,7 @@ public class RepositoryExplorerDialog extends Dialog
             for (int i=0;i<names.length;i++)
             {
                 TreeItem newItem = new TreeItem(tiParent, SWT.NONE);
-                newItem.setImage(GUIResource.getInstance().getImageConnection());
+                newItem.setImage(GUIResource.getInstance().getImageFolderConnections());
                 newItem.setText(Const.NVL(names[i], ""));
                 if (!userinfo.isReadonly()) TreeItemAccelerator.addDoubleClick(newItem, 
                 		new DoubleClickInterface() { public void action(TreeItem treeItem) { editPartitionSchema(treeItem.getText()); } });                            
@@ -1358,7 +1358,7 @@ public class RepositoryExplorerDialog extends Dialog
             
             // The slaves...         
             tiParent = new TreeItem(tiTree, SWT.NONE); 
-            tiParent.setImage(GUIResource.getInstance().getImageArrow());
+            tiParent.setImage(GUIResource.getInstance().getImageSlave());
             tiParent.setText(STRING_SLAVES);
             if (!userinfo.isReadonly()) TreeItemAccelerator.addDoubleClick(tiParent, new DoubleClickInterface() { public void action(TreeItem treeItem) { newSlaveServer(); } });
 
@@ -1366,14 +1366,14 @@ public class RepositoryExplorerDialog extends Dialog
             for (int i=0;i<names.length;i++)
             {
                 TreeItem newItem = new TreeItem(tiParent, SWT.NONE);
-                newItem.setImage(GUIResource.getInstance().getImageArrow());
+                newItem.setImage(GUIResource.getInstance().getImageSlave());
                 newItem.setText(Const.NVL(names[i], ""));
                 if (!userinfo.isReadonly()) TreeItemAccelerator.addDoubleClick(newItem, new DoubleClickInterface() { public void action(TreeItem treeItem) { editSlaveServer(treeItem.getText()); } });
             }
             
             // The clusters ...
             tiParent = new TreeItem(tiTree, SWT.NONE); 
-            tiParent.setImage(GUIResource.getInstance().getImageArrow());
+            tiParent.setImage(GUIResource.getInstance().getImageCluster());
             tiParent.setText(STRING_CLUSTERS);
             if (!userinfo.isReadonly()) TreeItemAccelerator.addDoubleClick(tiParent, 
             		new DoubleClickInterface() { public void action(TreeItem treeItem) { newCluster(); } });            
@@ -1382,7 +1382,7 @@ public class RepositoryExplorerDialog extends Dialog
             for (int i=0;i<names.length;i++)
             {
                 TreeItem newItem = new TreeItem(tiParent, SWT.NONE);
-                newItem.setImage(GUIResource.getInstance().getImageArrow());
+                newItem.setImage(GUIResource.getInstance().getImageCluster());
                 newItem.setText(Const.NVL(names[i], ""));
                 if (!userinfo.isReadonly()) TreeItemAccelerator.addDoubleClick(newItem, 
                 		new DoubleClickInterface() { public void action(TreeItem treeItem) { editCluster(treeItem.getText()); } });                            

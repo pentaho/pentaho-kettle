@@ -398,7 +398,8 @@ public class JobDialog extends Dialog
 		wlDirectory.setLayoutData(fdlDirectory);
 
 		wbDirectory=new Button(wJobComp, SWT.PUSH);
-		wbDirectory.setText("...");
+		wbDirectory.setToolTipText(Messages.getString("JobDialog.SelectJobFolderFolder.Tooltip"));
+		wbDirectory.setImage(GUIResource.getInstance().getImageArrow());
 		props.setLook(wbDirectory);
 		fdbDirectory=new FormData();
 		fdbDirectory.top  = new FormAttachment(wJobversion, margin);

@@ -4636,7 +4636,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 					//
 					TreeItem tiDbTitle = new TreeItem(tiTransName, SWT.NONE);
 					tiDbTitle.setText(STRING_CONNECTIONS);
-					tiDbTitle.setImage(guiResource.getImageFolderConnections());
+					tiDbTitle.setImage(guiResource.getImageConnection());
 
 					// Draw the connections themselves below it.
 					for (int i = 0; i < transMeta.nrDatabases(); i++)
@@ -4701,7 +4701,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 						PartitionSchema partitionSchema = transMeta.getPartitionSchemas().get(i);
 						TreeItem tiPartition = new TreeItem(tiPartitionTitle, SWT.NONE);
 						tiPartition.setText(partitionSchema.getName());
-						tiPartition.setImage(guiResource.getImageBol());
+						tiPartition.setImage(guiResource.getImageFolderConnections());
                         if (partitionSchema.isShared()) tiPartition.setFont(guiResource.getFontBold());
 					}
 
@@ -4711,7 +4711,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 					//
 					TreeItem tiSlaveTitle = new TreeItem(tiTransName, SWT.NONE);
 					tiSlaveTitle.setText(STRING_SLAVES);
-					tiSlaveTitle.setImage(guiResource.getImageBol());
+					tiSlaveTitle.setImage(guiResource.getImageSlave());
 
 					// Put the slaves below it.
 					//
@@ -4720,7 +4720,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 						SlaveServer slaveServer = transMeta.getSlaveServers().get(i);
 						TreeItem tiSlave = new TreeItem(tiSlaveTitle, SWT.NONE);
 						tiSlave.setText(slaveServer.getName());
-						tiSlave.setImage(guiResource.getImageBol());
+						tiSlave.setImage(guiResource.getImageSlave());
                         if (slaveServer.isShared()) tiSlave.setFont(guiResource.getFontBold());
 					}
 
@@ -4730,7 +4730,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 					//
 					TreeItem tiClusterTitle = new TreeItem(tiTransName, SWT.NONE);
 					tiClusterTitle.setText(STRING_CLUSTERS);
-					tiClusterTitle.setImage(guiResource.getImageBol());
+					tiClusterTitle.setImage(guiResource.getImageCluster());
 
 					// Put the steps below it.
 					for (int i = 0; i < transMeta.getClusterSchemas().size(); i++)
@@ -4738,7 +4738,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 						ClusterSchema clusterSchema = transMeta.getClusterSchemas().get(i);
 						TreeItem tiCluster = new TreeItem(tiClusterTitle, SWT.NONE);
 						tiCluster.setText(clusterSchema.toString());
-						tiCluster.setImage(guiResource.getImageBol());
+						tiCluster.setImage(guiResource.getImageCluster());
                         if (clusterSchema.isShared()) tiCluster.setFont(guiResource.getFontBold());
 					}
 				}

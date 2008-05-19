@@ -151,6 +151,10 @@ public class GUIResource
 	private Image imageBanner;
 
 	private Image imageBol;
+	
+	private Image imageCluster;
+	
+	private Image imageSlave;
 
 	private Image imageArrow;
 
@@ -351,6 +355,8 @@ public class GUIResource
 			imageKettleLogo.dispose();
 			imageBanner.dispose();
 			imageBol.dispose();
+			imageCluster.dispose();
+			imageSlave.dispose();
 			imageArrow.dispose();
 			imageCredits.dispose();
 			imageStart.dispose();
@@ -529,6 +535,10 @@ public class GUIResource
 		imageSchema = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Schema_image")); // , "ui/images/schema.png"
 		imageSynonym = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Synonym_image")); // , "ui/images/synonym.png"
 		imageView = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("View_image")); // , "ui/images/view.png"
+		
+		imageCluster = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Cluster_image")); // , "ui/images/cluster.png"
+		imageSlave = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Slave_image")); // , "ui/images/slave.png"
+		
 		
 		imageKettleLogo = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Logo_lrg_image")); // , "ui/images/logo_kettle_lrg.png"
 		imageBanner = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Banner_bg_image")); // , "ui/images/bg_banner.png"
@@ -878,6 +888,23 @@ public class GUIResource
 	{
 		return imageBol;
 	}
+	
+	/**
+	 * @return Returns the imageCluster.
+	 */
+	public Image getImageCluster()
+	{
+		return imageCluster;
+	}
+	
+	/**
+	 * @return Returns the imageSlave.
+	 */
+	public Image getImageSlave()
+	{
+		return imageSlave;
+	}
+	
 
 	/**
 	 * @return Returns the imageConnection.

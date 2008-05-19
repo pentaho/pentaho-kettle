@@ -476,7 +476,8 @@ public class TransDialog extends Dialog
 		wlDirectory.setLayoutData(fdlDirectory);
 
 		wbDirectory=new Button(wTransComp, SWT.PUSH);
-		wbDirectory.setText("..."); //$NON-NLS-1$
+		wbDirectory.setToolTipText(Messages.getString("TransDialog.selectTransFolder.Tooltip")); //$NON-NLS-1$
+		wbDirectory.setImage(GUIResource.getInstance().getImageArrow());
 		props.setLook(wbDirectory);
 		FormData fdbDirectory = new FormData();
 		fdbDirectory.right= new FormAttachment(100, 0);
