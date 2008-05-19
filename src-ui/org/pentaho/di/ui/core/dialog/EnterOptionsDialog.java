@@ -358,6 +358,8 @@ public class EnterOptionsDialog extends Dialog
 		wMaxUndo.addSelectionListener(lsDef);
 		wMiddlePct.addSelectionListener(lsDef);
 		wDefaultPreview.addSelectionListener(lsDef);
+		wMaxNrLogLines.addSelectionListener(lsDef);
+		wGridSize.addSelectionListener(lsDef);
 
 		// Detect [X] or ALT-F4 or something that kills this window...
 		shell.addShellListener(new ShellAdapter()
@@ -1668,6 +1670,7 @@ public class EnterOptionsDialog extends Dialog
 		props.setUseDBCache(wUseCache.getSelection());
 		props.setOpenLastFile(wOpenLast.getSelection());
 		props.setAutoSave(wAutoSave.getSelection());
+		props.setOnlyActiveFileShownInTree(wOnlyActiveFile.getSelection());
 		props.setOnlyUsedConnectionsSavedToXML(wDBConnXML.getSelection());
 		props.setAskAboutReplacingDatabaseConnections(wAskReplaceDB.getSelection());
 		props.setReplaceDatabaseConnections(wReplaceDB.getSelection());
