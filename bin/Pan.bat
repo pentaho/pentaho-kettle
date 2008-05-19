@@ -35,6 +35,7 @@ FOR %%F IN (libext\commons\*.jar) DO call :addcp %%F
 FOR %%F IN (libext\web\*.jar) DO call :addcp %%F
 FOR %%F IN (libext\pentaho\*.jar) DO call :addcp %%F
 FOR %%F IN (libext\spring\*.jar) DO call :addcp %%F
+FOR %%F IN (libext\mondrian\*.jar) DO call :addcp %%F
 
 goto extlibe
 
