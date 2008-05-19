@@ -30,7 +30,7 @@ fi
 # ** in case you run out of memory.                               **
 # ******************************************************************
 
-OPT="$JAVAMEMOPTIONS -cp $CLASSPATH -Djava.library.path=$LIBPATH -DKETTLE_HOME=$KETTLE_HOME -DKETTLE_REPOSITORY=$KETTLE_REPOSITORY -DKETTLE_USER=$KETTLE_USER -DKETTLE_PASSWORD=$KETTLE_PASSWORD -DKETTLE_PLUGIN_PACKAGES=$KETTLE_PLUGIN_PACKAGES"
+OPT="$JAVAMEMOPTIONS -cp $CLASSPATH -Dorg.mortbay.util.URI.charset=UTF-8 -Djava.library.path=$LIBPATH -DKETTLE_HOME=$KETTLE_HOME -DKETTLE_REPOSITORY=$KETTLE_REPOSITORY -DKETTLE_USER=$KETTLE_USER -DKETTLE_PASSWORD=$KETTLE_PASSWORD -DKETTLE_PLUGIN_PACKAGES=$KETTLE_PLUGIN_PACKAGES"
 
 # ******************************************************************
 # ** Set up the options for JAAS                                  **

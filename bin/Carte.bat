@@ -63,7 +63,7 @@ REM ** Set java runtime options                                     **
 REM ** Change 512m to higher values in case you run out of memory.  **
 REM ******************************************************************
 
-set OPT=-Xmx512M -cp %CLASSPATH% -Djava.library.path=libswt\win32\ -DKETTLE_HOME="%KETTLE_HOME%" -DKETTLE_REPOSITORY="%KETTLE_REPOSITORY%" -DKETTLE_USER="%KETTLE_USER%" -DKETTLE_PASSWORD="%KETTLE_PASSWORD%" -DKETTLE_PLUGIN_PACKAGES="%KETTLE_PLUGIN_PACKAGES%"
+set OPT=-Xmx512M -cp %CLASSPATH% -Dorg.mortbay.util.URI.charset=UTF-8 -Djava.library.path=libswt\win32\ -DKETTLE_HOME="%KETTLE_HOME%" -DKETTLE_REPOSITORY="%KETTLE_REPOSITORY%" -DKETTLE_USER="%KETTLE_USER%" -DKETTLE_PASSWORD="%KETTLE_PASSWORD%" -DKETTLE_PLUGIN_PACKAGES="%KETTLE_PLUGIN_PACKAGES%"
 
 # ***********************************************************************
 # ** Optionally set up the options for JAAS (uncomment to make active) **
