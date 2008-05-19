@@ -214,6 +214,7 @@ public class SetVariable extends BaseStep implements StepInterface
                 }
                 
             }
+            break;
         case SetVariableMeta.VARIABLE_TYPE_PARENT_JOB:
             {                        
             	// Set variable in this step
