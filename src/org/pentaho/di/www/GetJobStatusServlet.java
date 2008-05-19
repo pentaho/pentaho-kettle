@@ -15,6 +15,7 @@ package org.pentaho.di.www;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URLEncoder;
 import java.util.zip.GZIPOutputStream;
 
 import javax.servlet.ServletException;
@@ -114,7 +115,7 @@ public class GetJobStatusServlet extends HttpServlet
                 out.println("<HTML>");
                 out.println("<HEAD>");
                 out.println("<TITLE>" + Messages.getString("GetJobStatusServlet.KettleJobStatus") + "</TITLE>");
-                out.println("<META http-equiv=\"Refresh\" content=\"10;url=/kettle/jobStatus?name="+jobName+"\">");
+                out.println("<META http-equiv=\"Refresh\" content=\"10;url=/kettle/jobStatus?name="+URLEncoder.encode(jobName, "UTF-8")+"\">");
                 out.println("</HEAD>");
                 out.println("<BODY>");
                 out.println("<H1>" + Messages.getString("GetJobStatusServlet.JobStatus") + "</H1>");
@@ -137,20 +138,20 @@ public class GetJobStatusServlet extends HttpServlet
                     
                     if (job.isActive())
                     {
-                        out.print("<a href=\"/kettle/stopJob?name="+jobName+"\">" + Messages.getString("GetJobStatusServlet.StopJob") + "</a>");
+                        out.print("<a href=\"/kettle/stopJob?name="+URLEncoder.encode(jobName, "UTF-8")+"\">" + Messages.getString("GetJobStatusServlet.StopJob") + "</a>");
                         out.print("<p>");
                     }
                     else
                     {
-                        out.print("<a href=\"/kettle/startJob?name="+jobName+"\">" +  Messages.getString("GetJobStatusServlet.StartJob") + "</a>");
+                        out.print("<a href=\"/kettle/startJob?name="+URLEncoder.encode(jobName, "UTF-8")+"\">" +  Messages.getString("GetJobStatusServlet.StartJob") + "</a>");
                         out.print("<p>");
                     }
                     
                     out.println("<p>");
                                         
-                    out.print("<a href=\"/kettle/jobStatus/?name="+jobName+"&xml=y\">" + Messages.getString("TransStatusServlet.ShowAsXml") + "</a><br>");
+                    out.print("<a href=\"/kettle/jobStatus/?name="+URLEncoder.encode(jobName, "UTF-8")+"&xml=y\">" + Messages.getString("TransStatusServlet.ShowAsXml") + "</a><br>");
                     out.print("<a href=\"/kettle/status\">" + Messages.getString("TransStatusServlet.BackToStatusPage") + "</a><br>");
-                    out.print("<p><a href=\"/kettle/jobStatus?name="+jobName+"\">" + Messages.getString("TransStatusServlet.Refresh")+ "</a>");
+                    out.print("<p><a href=\"/kettle/jobStatus?name="+URLEncoder.encode(jobName, "UTF-8")+"\">" + Messages.getString("TransStatusServlet.Refresh")+ "</a>");
                     
                     // Put the logging below that.
                     Log4jStringAppender appender = (Log4jStringAppender) jobMap.getAppender(jobName);

@@ -14,6 +14,7 @@ package org.pentaho.di.www;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URLEncoder;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -60,7 +61,7 @@ public class StartExecutionTransServlet extends HttpServlet
             out.println("<HTML>");
             out.println("<HEAD>");
             out.println("<TITLE>" + Messages.getString("PrepareExecutionTransServlet.TransPrepareExecution") +"</TITLE>");
-            out.println("<META http-equiv=\"Refresh\" content=\"2;url=/kettle/transStatus?name="+transName+"\">");
+            out.println("<META http-equiv=\"Refresh\" content=\"2;url=/kettle/transStatus?name="+URLEncoder.encode(transName, "UTF-8")+"\">");
             out.println("</HEAD>");
             out.println("<BODY>");
         }
@@ -81,7 +82,7 @@ public class StartExecutionTransServlet extends HttpServlet
                     else
                     {
                         out.println("<H1>Transformation '"+transName+"' has been executed.</H1>");
-                        out.println("<a href=\"/kettle/transStatus?name="+transName+"\">Back to the transformation status page</a><p>");
+                        out.println("<a href=\"/kettle/transStatus?name="+URLEncoder.encode(transName, "UTF-8")+"\">Back to the transformation status page</a><p>");
                     }
                 }
                 else

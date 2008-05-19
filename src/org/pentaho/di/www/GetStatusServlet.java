@@ -14,6 +14,7 @@ package org.pentaho.di.www;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.net.URLEncoder;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -119,7 +120,7 @@ public class GetStatusServlet extends HttpServlet
                     String status = trans.getStatus();
                     
                     out.print("<tr>");
-                    out.print("<td><a href=\"/kettle/transStatus?name="+name+"\">"+name+"</a></td>");
+                    out.print("<td><a href=\"/kettle/transStatus?name="+URLEncoder.encode(name, "UTF-8")+"\">"+name+"</a></td>");
                     out.print("<td>"+status+"</td>");
                     out.print("</tr>");
                 }
@@ -135,7 +136,7 @@ public class GetStatusServlet extends HttpServlet
                     String status = job.getStatus();
                     
                     out.print("<tr>");
-                    out.print("<td><a href=\"/kettle/jobStatus?name="+name+"\">"+name+"</a></td>");
+                    out.print("<td><a href=\"/kettle/jobStatus?name="+URLEncoder.encode(name, "UTF-8")+"\">"+name+"</a></td>");
                     out.print("<td>"+status+"</td>");
                     out.print("</tr>");
                 }

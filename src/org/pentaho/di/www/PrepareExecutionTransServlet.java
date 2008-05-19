@@ -14,6 +14,7 @@ package org.pentaho.di.www;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URLEncoder;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -71,7 +72,7 @@ public class PrepareExecutionTransServlet extends HttpServlet
             out.println("<HTML>");
             out.println("<HEAD>");
             out.println("<TITLE>"+ Messages.getString("PrepareExecutionTransServlet.TransPrepareExecution") + "</TITLE>");
-            out.println("<META http-equiv=\"Refresh\" content=\"2;url=/kettle/transStatus?name="+transName+"\">");
+            out.println("<META http-equiv=\"Refresh\" content=\"2;url=/kettle/transStatus?name="+URLEncoder.encode(transName, "UTF-8")+"\">");
             out.println("</HEAD>");
             out.println("<BODY>");
         }
@@ -83,7 +84,7 @@ public class PrepareExecutionTransServlet extends HttpServlet
             if (trans!=null && transConfiguration!=null)
             {
                 TransExecutionConfiguration executionConfiguration = transConfiguration.getTransExecutionConfiguration();
-                // Set the appropriate logging, variables, arguments, replaydate, ...
+                // Set the appropriate logging, variables, arguments, replay date, ...
                 // etc.
                 log.setLogLevel(executionConfiguration.getLogLevel());
                 trans.getTransMeta().setArguments(executionConfiguration.getArgumentStrings());
@@ -107,7 +108,7 @@ public class PrepareExecutionTransServlet extends HttpServlet
                     {
                     	
                         out.println("<H1>" + Messages.getString("PrepareExecutionTransServlet.TransPrepared",transName) + "</H1>");
-                        out.println("<a href=\"/kettle/transStatus?name="+transName+"\">"+ Messages.getString("TransStatusServlet.BackToTransStatusPage") +"</a><p>");
+                        out.println("<a href=\"/kettle/transStatus?name="+URLEncoder.encode(transName, "UTF-8")+"\">"+ Messages.getString("TransStatusServlet.BackToTransStatusPage") +"</a><p>");
                     }
                 }
                 catch (Exception e) {
@@ -125,7 +126,7 @@ public class PrepareExecutionTransServlet extends HttpServlet
                         out.println(appender.getBuffer().toString());
                         out.println(e.getLocalizedMessage());
                         out.println("</pre>");
-                        out.println("<a href=\"/kettle/transStatus?name="+transName+"\">" + Messages.getString("TransStatusServlet.BackToTransStatusPage") + "</a><p>");
+                        out.println("<a href=\"/kettle/transStatus?name="+URLEncoder.encode(transName, "UTF-8")+"\">" + Messages.getString("TransStatusServlet.BackToTransStatusPage") + "</a><p>");
                     }
                 }
             }

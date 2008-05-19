@@ -14,6 +14,7 @@ package org.pentaho.di.www;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URLEncoder;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -69,7 +70,7 @@ public class CleanupTransServlet extends HttpServlet
             out.println("<HTML>");
             out.println("<HEAD>");
             out.println("<TITLE>Transformation cleanup</TITLE>");
-            out.println("<META http-equiv=\"Refresh\" content=\"2;url=/kettle/transStatus?name="+transName+"\">");
+            out.println("<META http-equiv=\"Refresh\" content=\"2;url=/kettle/transStatus?name="+URLEncoder.encode(transName, "UTF-8")+"\">");
             out.println("</HEAD>");
             out.println("<BODY>");
         }
@@ -93,7 +94,7 @@ public class CleanupTransServlet extends HttpServlet
                 {
                     
                     out.println("<H1>"+message+"</H1>");
-                    out.println("<a href=\"/kettle/transStatus?name="+transName+"\">" + Messages.getString("TransStatusServlet.BackToStatusPage")  + "</a><p>");
+                    out.println("<a href=\"/kettle/transStatus?name="+URLEncoder.encode(transName, "UTF-8")+"\">" + Messages.getString("TransStatusServlet.BackToStatusPage")  + "</a><p>");
                 }
             }
             else

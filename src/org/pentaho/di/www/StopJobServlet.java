@@ -14,6 +14,7 @@ package org.pentaho.di.www;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URLEncoder;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -67,7 +68,7 @@ public class StopJobServlet extends HttpServlet
                 out.println("<HTML>");
                 out.println("<HEAD>");
                 out.println("<TITLE>Stop job</TITLE>");
-                out.println("<META http-equiv=\"Refresh\" content=\"2;url=/kettle/jobStatus?name="+jobName+"\">");
+                out.println("<META http-equiv=\"Refresh\" content=\"2;url=/kettle/jobStatus?name="+URLEncoder.encode(jobName, "UTF-8")+"\">");
                 out.println("</HEAD>");
                 out.println("<BODY>");
             }
@@ -85,7 +86,7 @@ public class StopJobServlet extends HttpServlet
                 else
                 {
                     out.println("<H1>"+message+"</H1>");
-                    out.println("<a href=\"/kettle/jobStatus?name="+jobName+"\">" +Messages.getString("JobStatusServlet.BackToJobStatusPage") + "</a><p>");
+                    out.println("<a href=\"/kettle/jobStatus?name="+URLEncoder.encode(jobName, "UTF-8")+"\">" +Messages.getString("JobStatusServlet.BackToJobStatusPage") + "</a><p>");
                 }
             }
             else

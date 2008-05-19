@@ -17,11 +17,13 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.Authenticator;
 import java.net.MalformedURLException;
 import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
 
@@ -344,10 +346,10 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
         return portSpec;
     }
     
-    public String constructUrl(String serviceAndArguments)
+    public String constructUrl(String serviceAndArguments) throws UnsupportedEncodingException
     {
         String realHostname = environmentSubstitute(hostname);
-        String retval =  "http://"+realHostname+getPortSpecification()+serviceAndArguments; //$NON-NLS-1$
+        String retval =  "http://"+realHostname+getPortSpecification()+URLEncoder.encode(serviceAndArguments, "UTF-8"); //$NON-NLS-1$ $NON-NLS-2$
         retval = Const.replace(retval, " ", "%20"); //$NON-NLS-1$  //$NON-NLS-2$
         return retval;
     }
