@@ -1671,6 +1671,12 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     //sharedSelected = shared;
 		
 		for (Control control : variableComposite.getChildren()) {
+		  
+		  // PDI-1247 - these menus are coded for reuse, so make sure 
+		  // they don't get disposed of here (alert: dirty design)
+		  if (control instanceof Tree){
+		    ((Tree)control).setMenu(null);
+		  }
 			control.dispose();
 		}
 		
