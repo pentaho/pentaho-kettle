@@ -481,7 +481,7 @@ public class TransDialog extends Dialog
 		props.setLook(wbDirectory);
 		FormData fdbDirectory = new FormData();
 		fdbDirectory.right= new FormAttachment(100, 0);
-		fdbDirectory.top  = new FormAttachment(wTransversion, margin);
+		fdbDirectory.top  = new FormAttachment(wTransversion, 0);
 		wbDirectory.setLayoutData(fdbDirectory);
 		wbDirectory.addSelectionListener(new SelectionAdapter()
 		{

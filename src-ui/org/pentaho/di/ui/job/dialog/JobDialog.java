@@ -402,7 +402,7 @@ public class JobDialog extends Dialog
 		wbDirectory.setImage(GUIResource.getInstance().getImageArrow());
 		props.setLook(wbDirectory);
 		fdbDirectory=new FormData();
-		fdbDirectory.top  = new FormAttachment(wJobversion, margin);
+		fdbDirectory.top  = new FormAttachment(wJobversion, 0);
 		fdbDirectory.right= new FormAttachment(100, 0);
 		wbDirectory.setLayoutData(fdbDirectory);
 		wbDirectory.addSelectionListener(new SelectionAdapter()
