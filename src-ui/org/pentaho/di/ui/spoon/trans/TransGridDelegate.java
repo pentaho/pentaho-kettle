@@ -332,7 +332,10 @@ public class TransGridDelegate extends SpoonDelegate {
 					}
 					else
 					{
-						ti.setBackground(GUIResource.getInstance().getColorWhite());
+						if(i%2==0)
+							ti.setBackground(GUIResource.getInstance().getColorBlueCustomGrid());
+						else
+							ti.setBackground(GUIResource.getInstance().getColorWhite());
 					}
 
 					nr++;

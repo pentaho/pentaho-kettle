@@ -75,6 +75,8 @@ public class GUIResource
 	private ManagedColor colorTab;
 
 	private ManagedColor colorRed;
+	
+	private ManagedColor colorBlueCustomGrid;
 
 	private ManagedColor colorGreen;
 
@@ -276,6 +278,8 @@ public class GUIResource
 		colorYellow = new ManagedColor(display, 255, 255, 0);
 		colorMagenta = new ManagedColor(display, 255, 0, 255);
 		colorOrange = new ManagedColor(display, 255, 165, 0);
+		
+		colorBlueCustomGrid=  new ManagedColor(display,224, 238, 238);
 
 		colorWhite = new ManagedColor(display, 255, 255, 255);
 		colorDemoGray = new ManagedColor(display, 240, 240, 240);
@@ -311,6 +315,7 @@ public class GUIResource
 		colorYellow.dispose();
 		colorMagenta.dispose();
 		colorOrange.dispose();
+		colorBlueCustomGrid.dispose();
 
 		colorWhite.dispose();
 		colorDemoGray.dispose();
@@ -800,6 +805,15 @@ public class GUIResource
 	{
 		return colorRed.getColor();
 	}
+	/**
+	 * @return Returns the colorBlueCustomGrid.
+	 */
+	public Color getColorBlueCustomGrid()
+	{
+		return colorBlueCustomGrid.getColor();
+	}
+	
+	
 
 	/**
 	 * @return Returns the colorTab.
