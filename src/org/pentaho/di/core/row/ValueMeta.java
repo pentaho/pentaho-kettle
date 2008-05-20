@@ -656,10 +656,10 @@ public class ValueMeta implements ValueMetaInterface
     
     private synchronized Double convertStringToNumber(String string) throws KettleValueException
     {
-        if (Const.isEmpty(string)) return null;
-        
         string = trim(string); // see if  trimming needs to be performed before conversion
 
+        if (Const.isEmpty(string)) return null;
+        
         try
         {
             return new Double( getDecimalFormat().parse(string).doubleValue() );
@@ -849,9 +849,9 @@ public class ValueMeta implements ValueMetaInterface
     
     private synchronized Long convertStringToInteger(String string) throws KettleValueException
     {
-        if (Const.isEmpty(string)) return null;
-        
         string = trim(string); // see if  trimming needs to be performed before conversion
+
+        if (Const.isEmpty(string)) return null;
 
         try
         {
@@ -874,9 +874,9 @@ public class ValueMeta implements ValueMetaInterface
     
     private synchronized BigDecimal convertStringToBigNumber(String string) throws KettleValueException
     {
-        if (Const.isEmpty(string)) return null;
-
         string = trim(string); // see if  trimming needs to be performed before conversion
+
+        if (Const.isEmpty(string)) return null;
 
         /*
         if (!".".equalsIgnoreCase(decimalSymbol))
