@@ -616,7 +616,7 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 			    LDAPInputField field = inputFields[i];
 			    
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_name",          field.getName());
-				rep.saveStepAttribute(id_transformation, id_step, i, "fied_attribute",       field.getAttribute());
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_attribute",     field.getAttribute());
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_type",          field.getTypeDesc());
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_format",        field.getFormat());
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_currency",      field.getCurrencySymbol());
