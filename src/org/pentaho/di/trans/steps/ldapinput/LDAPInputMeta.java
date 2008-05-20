@@ -551,8 +551,7 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 			rowNumberField    = rep.getStepAttributeString (id_step, "rownum_field");
 			Host    = rep.getStepAttributeString (id_step, "host");
 			userName    = rep.getStepAttributeString (id_step, "username");
-			password = Encr.decryptPasswordOptionallyEncrypted(rep.getJobEntryAttributeString(id_step, "password"));
-
+			password              = Encr.decryptPasswordOptionallyEncrypted( rep.getStepAttributeString (id_step, "password") );	
 			port    = rep.getStepAttributeString (id_step, "port");
 			filterString    = rep.getStepAttributeString (id_step, "filterstring");
 			searchBase    = rep.getStepAttributeString (id_step, "searchbase");
@@ -603,7 +602,7 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "rownum_field",    rowNumberField);
 			rep.saveStepAttribute(id_transformation, id_step, "host",    Host);
 			rep.saveStepAttribute(id_transformation, id_step, "username", userName);
-			rep.saveJobEntryAttribute(id_transformation, id_step, "password", Encr.encryptPasswordIfNotUsingVariables(password));
+			rep.saveStepAttribute(id_transformation, id_step, "password", Encr.encryptPasswordIfNotUsingVariables(password));
 
 			rep.saveStepAttribute(id_transformation, id_step, "port",   port);
 			rep.saveStepAttribute(id_transformation, id_step, "filterstring",   filterString);
