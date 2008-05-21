@@ -15,8 +15,14 @@ package org.pentaho.di.ui.core.database.dialog;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.FocusAdapter;
+import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.layout.FormAttachment;
@@ -30,7 +36,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.DBCache;
 import org.pentaho.di.core.Props;
@@ -41,9 +46,11 @@ import org.pentaho.di.ui.core.database.dialog.Messages;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.ui.core.widget.StyledTextComp;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.trans.steps.tableinput.SQLValuesHighlight;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
@@ -62,7 +69,7 @@ public class SQLEditor extends Dialog
 	private PropsUI        props;
 		
 	private Label        wlScript;
-	private Text         wScript;
+	private StyledTextComp    wScript;
 	private FormData     fdlScript, fdScript;
 
 	private Label        wlPosition;
@@ -75,7 +82,8 @@ public class SQLEditor extends Dialog
 	private DatabaseMeta     connection;
 	private Shell            shell;
 	private DBCache          dbcache;
-
+	private SQLValuesHighlight lineStyler = new SQLValuesHighlight();
+	
 	public SQLEditor(Shell parent, int style, DatabaseMeta ci, DBCache dbc, String sql)
 	{
 			super(parent, style);
@@ -113,7 +121,7 @@ public class SQLEditor extends Dialog
 		fdlScript.left = new FormAttachment(0, 0);
 		fdlScript.top  = new FormAttachment(0, 0);
 		wlScript.setLayoutData(fdlScript);
-		wScript=new Text(shell, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
+		wScript=new StyledTextComp(shell, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "");
 		wScript.setText("");
  		props.setLook(wScript, Props.WIDGET_STYLE_FIXED);
 		fdScript=new FormData();
@@ -122,6 +130,39 @@ public class SQLEditor extends Dialog
 		fdScript.right  = new FormAttachment(100, -5);
 		fdScript.bottom = new FormAttachment(100, -70);
 		wScript.setLayoutData(fdScript);
+		
+		wScript.addModifyListener(new ModifyListener()
+        {
+            public void modifyText(ModifyEvent arg0)
+            {
+                setPosition();
+            }
+
+	        }
+	    );
+			
+		
+		wScript.addKeyListener(new KeyAdapter(){
+			public void keyPressed(KeyEvent e) { setPosition(); }
+			public void keyReleased(KeyEvent e) { setPosition(); }
+			} 
+		);
+		wScript.addFocusListener(new FocusAdapter(){
+			public void focusGained(FocusEvent e) { setPosition(); }
+			public void focusLost(FocusEvent e) { setPosition(); }
+			}
+		);
+		wScript.addMouseListener(new MouseAdapter(){
+			public void mouseDoubleClick(MouseEvent e) { setPosition(); }
+			public void mouseDown(MouseEvent e) { setPosition(); }
+			public void mouseUp(MouseEvent e) { setPosition(); }
+			}
+		);
+		
+		
+		// SQL Higlighting
+		lineStyler = new SQLValuesHighlight();;
+		wScript.addLineStyleListener(lineStyler);
 
 		wlPosition=new Label(shell, SWT.NONE);
 		wlPosition.setText(Messages.getString("SQLEditor.LineNr.Label", "0"));
@@ -129,6 +170,7 @@ public class SQLEditor extends Dialog
 		fdlPosition=new FormData();
 		fdlPosition.left = new FormAttachment(0, 0);
 		fdlPosition.top  = new FormAttachment(wScript, margin);
+		fdlPosition.right = new FormAttachment(100, 0);
 		wlPosition.setLayoutData(fdlPosition);
 
 		wExec=new Button(shell, SWT.PUSH);
@@ -153,16 +195,6 @@ public class SQLEditor extends Dialog
 		
 		// Detect X or ALT-F4 or something that kills this window...
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
-
-
-		wScript.addKeyListener(new KeyAdapter() {
-			public void keyReleased(KeyEvent e) 
-			{
-				int linenr = wScript.getCaretLineNumber()+1;
-				wlPosition.setText(Messages.getString("SQLEditor.LineNr.Label", Integer.toString(linenr)));
-			}
-		})
-		;
 		
 		BaseStepDialog.setSize(shell);
 
@@ -174,7 +206,23 @@ public class SQLEditor extends Dialog
 				if (!display.readAndDispatch()) display.sleep();
 		}
 	}
+	public void setPosition(){
+		
+		String scr = wScript.getText();
+		int linenr = wScript.getLineAtOffset(wScript.getCaretOffset())+1;
+		int posnr  = wScript.getCaretOffset();
+				
+		// Go back from position to last CR: how many positions?
+		int colnr=0;
+		while (posnr>0 && scr.charAt(posnr-1)!='\n' && scr.charAt(posnr-1)!='\r')
+		{
+			posnr--;
+			colnr++;
+		}
 
+		wlPosition.setText(Messages.getString("SQLEditor.Position.Label",""+linenr, ""+colnr));
+
+	}
 	private void clearCache()
     {
         MessageBox mb = new MessageBox(shell, SWT.ICON_QUESTION | SWT.NO | SWT.YES | SWT.CANCEL);
