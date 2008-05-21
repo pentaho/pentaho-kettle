@@ -307,7 +307,7 @@ public class RepositoriesDialog
             public void widgetSelected(SelectionEvent arg0)
             {
                 RepositoryMeta ri = new RepositoryMeta();
-                RepositoryDialog dd = new RepositoryDialog(shell, SWT.APPLICATION_MODAL, log, props, ri, input, steploader);
+                RepositoryDialog dd = new RepositoryDialog(shell, SWT.NONE, log, props, ri, input, steploader);
                 if (dd.open() != null)
                 {
                     input.addRepository(ri);
@@ -326,7 +326,7 @@ public class RepositoriesDialog
                 RepositoryMeta ri = input.searchRepository(wRepository.getText());
                 if (ri != null)
                 {
-                    RepositoryDialog dd = new RepositoryDialog(shell, SWT.APPLICATION_MODAL, log, props, ri, input, steploader);
+                    RepositoryDialog dd = new RepositoryDialog(shell, SWT.NONE, log, props, ri, input, steploader);
                     if (dd.open() != null)
                     {
                         fillRepositories();
