@@ -33,9 +33,10 @@ public class XMLField implements Cloneable
     private String  decimalSymbol;
     private String  groupingSymbol;
     private boolean attribute;
+    private String  attributeParentName;
     private String  nullString;
     
-    public XMLField(String fieldName, String elementName, int type, String format, int length, int precision, String currencySymbol, String decimalSymbol, String groupSymbol, String nullString, boolean attribute)
+    public XMLField(String fieldName, String elementName, int type, String format, int length, int precision, String currencySymbol, String decimalSymbol, String groupSymbol, String nullString, boolean attribute, String attributeParentName)
     {
         this.fieldName      = fieldName;
         this.elementName    = elementName;
@@ -48,6 +49,7 @@ public class XMLField implements Cloneable
         this.groupingSymbol = groupSymbol;
         this.nullString     = nullString;
         this.attribute      = attribute;
+        this.attributeParentName  = attributeParentName;
     }
     
     public XMLField()
@@ -215,5 +217,21 @@ public class XMLField implements Cloneable
      */
     public void setAttribute(boolean attribute) {
         this.attribute = attribute;
-    }   
+    } 
+    
+    /**
+     * @return Returns the attributeParentName.
+     */
+    public String getAttributeParentName()
+    {
+        return attributeParentName;
+    }
+
+    /**
+     * @param attributeParentName The attributeParentName to set.
+     */
+    public void setAttributeParentName(String attributeParentName)
+    {
+        this.attributeParentName = attributeParentName;
+    }
 }

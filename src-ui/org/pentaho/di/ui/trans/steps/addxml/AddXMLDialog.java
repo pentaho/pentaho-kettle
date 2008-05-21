@@ -322,7 +322,8 @@ public class AddXMLDialog extends BaseStepDialog implements StepDialogInterface
             new ColumnInfo(Messages.getString("AddXMLDialog.Decimal.Column"),     ColumnInfo.COLUMN_TYPE_TEXT,   false),
             new ColumnInfo(Messages.getString("AddXMLDialog.Group.Column"),       ColumnInfo.COLUMN_TYPE_TEXT,   false),
             new ColumnInfo(Messages.getString("AddXMLDialog.Null.Column"),        ColumnInfo.COLUMN_TYPE_TEXT,   false),
-            new ColumnInfo(Messages.getString("AddXMLDialog.Attribute.Column"),   ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { Messages.getString("System.Combo.Yes"), Messages.getString("System.Combo.No") }, true)
+            new ColumnInfo(Messages.getString("AddXMLDialog.Attribute.Column"),   ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { Messages.getString("System.Combo.Yes"), Messages.getString("System.Combo.No") }, true),
+            new ColumnInfo(Messages.getString("AddXMLDialog.AttributeParentName.Column"), ColumnInfo.COLUMN_TYPE_TEXT,   false)
           };
         wFields=new TableView(transMeta, wFieldsComp, 
                               SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
@@ -463,6 +464,7 @@ public class AddXMLDialog extends BaseStepDialog implements StepDialogInterface
             if (field.getGroupingSymbol()!=null) item.setText(9, field.getGroupingSymbol());
             if (field.getNullString()!=null) item.setText(10, field.getNullString());
             item.setText(11, field.isAttribute() ? Messages.getString("System.Combo.Yes") : Messages.getString("System.Combo.No"));
+            if (field.getAttributeParentName()!=null) item.setText(12, field.getAttributeParentName());
         }
         
         wFields.optWidth(true);
@@ -511,6 +513,7 @@ public class AddXMLDialog extends BaseStepDialog implements StepDialogInterface
             field.setGroupingSymbol( item.getText(9) );
             field.setNullString( item.getText(10) );
             field.setAttribute( Messages.getString("System.Combo.Yes").equals(item.getText(11)) );
+            field.setAttributeParentName(item.getText(12));
             
             tfoi.getOutputFields()[i]  = field;
         }

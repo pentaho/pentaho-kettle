@@ -168,6 +168,7 @@ public class AddXMLMeta extends BaseStepMeta  implements StepMetaInterface
                 outputFields[i].setLength( Const.toInt(XMLHandler.getTagValue(fnode, "length"), -1) );
                 outputFields[i].setPrecision( Const.toInt(XMLHandler.getTagValue(fnode, "precision"), -1) );
                 outputFields[i].setAttribute( "Y".equalsIgnoreCase( XMLHandler.getTagValue(fnode, "attribute") ) );
+                outputFields[i].setAttributeParentName( XMLHandler.getTagValue(fnode, "attributeParentName") );
             }
         }
         catch(Exception e)
@@ -204,6 +205,7 @@ public class AddXMLMeta extends BaseStepMeta  implements StepMetaInterface
             outputFields[i].setLength( -1 );
             outputFields[i].setPrecision( -1 );
             outputFields[i].setAttribute( false );
+            outputFields[i].setElementName( "field"+i ); 
         }
     }
     
@@ -244,6 +246,7 @@ public class AddXMLMeta extends BaseStepMeta  implements StepMetaInterface
                 retval.append("        ").append(XMLHandler.addTagValue("length",    field.getLength()));
                 retval.append("        ").append(XMLHandler.addTagValue("precision", field.getPrecision()));
                 retval.append("        ").append(XMLHandler.addTagValue("attribute", field.isAttribute()));
+                retval.append("        ").append(XMLHandler.addTagValue("attributeParentName",   field.getAttributeParentName()));
                 retval.append("        </field>").append(Const.CR);
             }
         }
@@ -280,6 +283,7 @@ public class AddXMLMeta extends BaseStepMeta  implements StepMetaInterface
                 outputFields[i].setLength(     (int)rep.getStepAttributeInteger(id_step, i, "field_length") );
                 outputFields[i].setPrecision(  (int)rep.getStepAttributeInteger(id_step, i, "field_precision") );
                 outputFields[i].setAttribute(       rep.getStepAttributeBoolean(id_step, i, "field_attribute") );
+                outputFields[i].setAttributeParentName(   rep.getStepAttributeString(id_step, i, "field_attributeName") );
             }       
         }
         catch(Exception e)
@@ -312,6 +316,7 @@ public class AddXMLMeta extends BaseStepMeta  implements StepMetaInterface
                 rep.saveStepAttribute(id_transformation, id_step, i, "field_length",    field.getLength());
                 rep.saveStepAttribute(id_transformation, id_step, i, "field_precision", field.getPrecision());
                 rep.saveStepAttribute(id_transformation, id_step, i, "field_attribute", field.isAttribute());
+                rep.saveStepAttribute(id_transformation, id_step, i, "field_attributeName", field.getAttributeParentName());
             }
         }
         catch(Exception e)
@@ -422,4 +427,5 @@ public class AddXMLMeta extends BaseStepMeta  implements StepMetaInterface
     public void setValueName(String valueName) {
         this.valueName = valueName;
     }
+    
 }

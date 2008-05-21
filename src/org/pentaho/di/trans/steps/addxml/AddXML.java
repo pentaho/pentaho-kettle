@@ -41,6 +41,7 @@ import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 /**
  * Converts input rows to one or more XML files.
@@ -114,13 +115,37 @@ public class AddXML extends BaseStep implements StepInterface
                 throw new KettleException("XML does not allow empty strings for element names.");
             }
             if(outputField.isAttribute() ){
-                root.setAttribute(element, value);
+            	String attributeParentName = outputField.getAttributeParentName();
+            	
+            	Element node;
+            	
+            	if (attributeParentName == null || attributeParentName.length() == 0){
+            		node = root;
+            	}
+            	else{
+            		NodeList nodelist = root.getElementsByTagName(attributeParentName);
+            		if(nodelist.getLength()> 0){
+            			node = (Element)nodelist.item(0);
+            		}
+            		else{
+            			node = root;
+            		}
+            	}
+            	
+            	node.setAttribute(element, value);
+            	
             }
             else { /* encode as subnode */
-                Element e = xmldoc.createElement(element);
-                Node n = xmldoc.createTextNode(value);
-                e.appendChild(n);
-                root.appendChild(e);
+            	if(!element.equals(meta.getRootNode())){
+	                Element e = xmldoc.createElement(element);
+	                Node n = xmldoc.createTextNode(value);
+	                e.appendChild(n);
+	                root.appendChild(e);
+            	}
+            	else{
+            		Node n = xmldoc.createTextNode(value);
+            		root.appendChild(n);
+            	}
             }
         }
         
