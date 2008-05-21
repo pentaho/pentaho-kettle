@@ -25,6 +25,7 @@ import java.util.zip.ZipOutputStream;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
+import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -79,8 +80,26 @@ public class TextFileOutput extends BaseStep implements StepInterface
             data.outputRowMeta = getInputRowMeta().clone();
             meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
             
-            if(meta.isDoNotOpenNewFileInit())
-            {
+            //if file name in field is enabled then set field name and open file
+          if(meta.isFileNameInField()){
+            	
+				// get the first input row set (assume only one)
+				RowSet zero = (RowSet)inputRowSets.get(0);
+				RowMetaInterface inputRowMeta = zero.getRowMeta();
+				//find and set index of file name field in input stream
+				data.fileNameFieldIndex = inputRowMeta.indexOfValue(meta.getFileNameField());	
+				//set the file name for this row
+				String fileName = "";
+				if(data.fileNameFieldIndex != -1){
+					fileName = (String) r[data.fileNameFieldIndex];
+				}
+				else{
+					 throw new KettleStepException("File name field ["+meta.getFileNameField()+"] couldn't be found in the input stream!");
+				}
+            	
+            	//open new file only if new file name
+            	meta.setFileName(fileName);
+            
             	// Open a new file here
             	if (openNewFile())
 				{
@@ -93,9 +112,28 @@ public class TextFileOutput extends BaseStep implements StepInterface
 						logError(Const.getStackTracker(e));
 						return false;
 					}
-				}	
+					//mark file as previously opened
+	            	data.previouslyOpenedFiles.add(buildFilename(true));
+				}
             	
             }
+          
+          if(meta.isDoNotOpenNewFileInit()&& !meta.isFileNameInField())
+          {
+        	  // Open a new file here
+        	  if (openNewFile())
+        	  {
+        		  data.oneFileOpened=true;
+        		  try {
+        			  setSettings();
+			
+        		  } catch (UnsupportedEncodingException e) {
+        			  logError("Encoding problem: "+e.toString());
+        			  logError(Const.getStackTracker(e));
+        			  return false;
+        		  }
+        	  }	
+          }	
             
             if (!meta.isFileAppended() && ( meta.isHeaderEnabled() || meta.isFooterEnabled())) // See if we have to write a header-line)
             {
@@ -164,6 +202,26 @@ public class TextFileOutput extends BaseStep implements StepInterface
 			return false;
 		}
 		
+		//first handle if file name in field
+		if(meta.isFileNameInField()){
+			String fileName = (String) r[data.fileNameFieldIndex];
+			
+			if (! meta.getFileName().equals(fileName)){
+				//close current file
+				closeFile();
+				meta.setFileName(fileName);
+				if (!openNewFile())
+				{
+					logError("Unable to open new file "+ fileName +"...");
+					setErrors(1);
+					return false;
+				}
+				if(!checkPreviouslyOpened(buildFilename(true))){
+					data.previouslyOpenedFiles.add(buildFilename(true));
+					if (!meta.isFileAppended() && ( meta.isHeaderEnabled() || meta.isFooterEnabled())) if (writeHeader()) linesOutput++;
+				}
+			}
+		}
 		writeRowToFile(data.outputRowMeta, r);
 		putRow(data.outputRowMeta, r);       // in case we want it to go further...
 		
@@ -462,16 +520,16 @@ public class TextFileOutput extends BaseStep implements StepInterface
                     
 					if (i>0 && meta.getSeparator()!=null && meta.getSeparator().length()>0)
 					{
-						header+=meta.getSeparator();
+						header+=environmentSubstitute(meta.getSeparator());
 					}
                     if (meta.isEnclosureForced() && meta.getEnclosure()!=null && v!=null && v.isString())
                     {
-                        header+=meta.getEnclosure();
+                        header+=environmentSubstitute(meta.getEnclosure());
                     }
 					header+=fieldName;
                     if (meta.isEnclosureForced() && meta.getEnclosure()!=null && v!=null && v.isString())
                     {
-                        header+=meta.getEnclosure();
+                        header+=environmentSubstitute(meta.getEnclosure());
                     }
 				}
 				header+=meta.getNewline();
@@ -523,6 +581,9 @@ public class TextFileOutput extends BaseStep implements StepInterface
 	
 	public boolean openNewFile()
 	{
+		//No need to run if first line and File name in field is set
+		if(first && meta.isFileNameInField()) return false;
+		
 		boolean retval=false;
 		data.writer=null;
 		
@@ -577,7 +638,11 @@ public class TextFileOutput extends BaseStep implements StepInterface
     				{
     					if(log.isDetailed()) log.logDetailed(toString(), "Opening output stream in zipped mode");
                         
-                        data.fos = KettleVFS.getOutputStream(filename, meta.isFileAppended());
+    		            if(checkPreviouslyOpened(filename)){
+    		            	data.fos = KettleVFS.getOutputStream(filename, true);
+    		            }else{
+    		            	data.fos = KettleVFS.getOutputStream(filename, meta.isFileAppended());
+    		            }
                         data.zip = new ZipOutputStream(data.fos);
     					File entry = new File(buildFilename(false));
     					ZipEntry zipentry = new ZipEntry(entry.getName());
@@ -588,7 +653,11 @@ public class TextFileOutput extends BaseStep implements StepInterface
     				else if (meta.getFileCompression().equals(FILE_COMPRESSION_TYPE_GZIP))
     				{
     					if(log.isDetailed()) log.logDetailed(toString(), "Opening output stream in gzipped mode");
-                        data.fos = KettleVFS.getOutputStream(filename, meta.isFileAppended());
+    		            if(checkPreviouslyOpened(filename)){
+    		            	data.fos = KettleVFS.getOutputStream(filename, true);
+    		            }else{
+    		            	data.fos = KettleVFS.getOutputStream(filename, meta.isFileAppended());
+    		            }
                         data.gzip = new GZIPOutputStream(data.fos);
     					outputStream=data.gzip;
     				}
@@ -600,7 +669,11 @@ public class TextFileOutput extends BaseStep implements StepInterface
 				else
 				{
 					if(log.isDetailed()) log.logDetailed(toString(), "Opening output stream in nocompress mode");
-                    data.fos = KettleVFS.getOutputStream(filename, meta.isFileAppended());
+                    if(checkPreviouslyOpened(filename)){
+    		            	data.fos = KettleVFS.getOutputStream(filename, true);
+    		            }else{
+    		            	data.fos = KettleVFS.getOutputStream(filename, meta.isFileAppended());
+    		            }
                     outputStream=data.fos;
 				}
                 
@@ -692,6 +765,12 @@ public class TextFileOutput extends BaseStep implements StepInterface
 		return retval;
 	}
 	
+	public boolean checkPreviouslyOpened(String filename){
+		
+		return data.previouslyOpenedFiles.contains(filename);
+		
+	}
+	
 	public boolean init(StepMetaInterface smi, StepDataInterface sdi)
 	{
 		meta=(TextFileOutputMeta)smi;
@@ -704,7 +783,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 			// In that case, DO NOT create file at Init
 			if(!meta.isDoNotOpenNewFileInit())
 			{
-				if (openNewFile())
+				if (openNewFile()||meta.isFileNameInField())
 				{
 					data.oneFileOpened=true;
 					try{

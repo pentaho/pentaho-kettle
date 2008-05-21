@@ -116,6 +116,12 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
     /** The string to use for append to end line of the whole file: null or empty string means no line needed */
     private String endedLine;
     
+    /* Specification if file name is in field*/
+    
+    private boolean fileNameInField;
+    
+    private String fileNameField;
+    
     
 	/** Calculated value ... */
     private  String newline;
@@ -542,6 +548,33 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
         this.endedLine = endedLine;
     }    
     
+    /**
+     * @return Is the file name coded in a field?
+     */
+	public boolean isFileNameInField() {
+		return fileNameInField;
+	}
+	
+	/**
+     * @param fileNameInField Is the file name coded in a field?
+     */
+	public void setFileNameInField(boolean fileNameInField) {
+		this.fileNameInField = fileNameInField;
+	}
+	/**
+     * @return The field name that contains the output file name.
+     */
+	public String getFileNameField() {
+		return fileNameField;
+	}
+	
+	/**
+     * @param fileNameField Name of the field that contains the file name
+     */
+	public void setFileNameField(String fileNameField) {
+		this.fileNameField = fileNameField;
+	}
+
 	public void loadXML(Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters)
 		throws KettleXMLException
 	{
@@ -624,7 +657,10 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 			splitEvery   = Const.toInt(XMLHandler.getTagValue(stepnode, "file", "splitevery"), 0);
 			
 			newline = getNewLine(fileFormat);
-			
+
+			fileNameInField="Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "fileNameInField"));
+			fileNameField       = XMLHandler.getTagValue(stepnode, "fileNameField");
+						
 			Node fields  = XMLHandler.getSubNode(stepnode, "fields");
 			int nrfields = XMLHandler.countNodes(fields, "field");
 	
@@ -886,6 +922,8 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 		retval.append("    ").append(XMLHandler.addTagValue("compression",    fileCompression));
         retval.append("    ").append(XMLHandler.addTagValue("encoding",  encoding));
         retval.append("    ").append(XMLHandler.addTagValue("endedLine",  endedLine));
+        retval.append("    "+XMLHandler.addTagValue("fileNameInField",  fileNameInField));
+        retval.append("    "+XMLHandler.addTagValue("fileNameField",  fileNameField));        
 
 		retval.append("    <file>").append(Const.CR);
 		retval.append("      ").append(XMLHandler.addTagValue("name",       fileName));
@@ -945,6 +983,8 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 			footerEnabled   =      rep.getStepAttributeBoolean(id_step, "footer");   
 			fileFormat      =      rep.getStepAttributeString (id_step, "format");  
 			fileCompression =      rep.getStepAttributeString (id_step, "compression");
+			fileNameInField =      rep.getStepAttributeBoolean (id_step, "fileNameInField");
+			fileNameField	=	   rep.getStepAttributeString (id_step, "fileNameField");
 			if (fileCompression == null)
 			{
 				if (rep.getStepAttributeBoolean(id_step, "zipped"))
@@ -1042,6 +1082,8 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 			rep.saveStepAttribute(id_transformation, id_step, "file_add_time",    timeInFilename);
 			rep.saveStepAttribute(id_transformation, id_step, "file_pad",         padded);
 			rep.saveStepAttribute(id_transformation, id_step, "file_fast_dump",   fastDump);
+			rep.saveStepAttribute(id_transformation, id_step, "fileNameInField",   fileNameInField);
+			rep.saveStepAttribute(id_transformation, id_step, "fileNameField",   fileNameField);
 			
 			for (int i=0;i<outputFields.length;i++)
 			{

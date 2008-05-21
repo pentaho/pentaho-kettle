@@ -109,6 +109,16 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 
 	private Button       wbShowFiles;
 	private FormData     fdbShowFiles;
+	
+	/* Additional fields*/
+	private Label        wlFileNameInField;
+    private Button       wFileNameInField;
+    private FormData     fdlFileNameInField, fdFileNameInField;
+	
+	private Label        wlFileNameField;
+	private TextVar      wFileNameField;
+	private FormData     fdlFileNameField, fdFileNameField;
+	/*END*/
 
 	private Label        wlAppend;
 	private Button       wAppend;
@@ -116,11 +126,11 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 
 	private Label        wlSeparator;
 	private Button       wbSeparator;
-	private Text         wSeparator;
+	private TextVar         wSeparator;
 	private FormData     fdlSeparator, fdbSeparator, fdSeparator;
 
 	private Label        wlEnclosure;
-	private Text         wEnclosure;
+	private TextVar      wEnclosure;
 	private FormData     fdlEnclosure, fdEnclosure;
 
 	private Label        wlEndedLine;
@@ -339,6 +349,67 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 			}
 		);
 		
+		/*next Lines*/
+		// FileNameInField line
+        wlFileNameInField=new Label(wFileComp, SWT.RIGHT);
+        wlFileNameInField.setText(Messages.getString("TextFileOutputDialog.FileNameInField.Label"));
+        props.setLook(wlFileNameInField);
+        fdlFileNameInField=new FormData();
+        fdlFileNameInField.left = new FormAttachment(0, 0);
+        fdlFileNameInField.top  = new FormAttachment(wDoNotOpenNewFileInit, margin);
+        fdlFileNameInField.right= new FormAttachment(middle, -margin);
+        wlFileNameInField.setLayoutData(fdlFileNameInField);
+        wFileNameInField=new Button(wFileComp, SWT.CHECK );
+        props.setLook(wFileNameInField);
+        fdFileNameInField=new FormData();
+        fdFileNameInField.left = new FormAttachment(middle, 0);
+        fdFileNameInField.top  = new FormAttachment(wDoNotOpenNewFileInit, margin);
+        fdFileNameInField.right= new FormAttachment(100, 0);
+        wFileNameInField.setLayoutData(fdFileNameInField);
+        wFileNameInField.addSelectionListener(new SelectionAdapter() 
+            {
+                public void widgetSelected(SelectionEvent e) 
+                {
+                	input.setChanged();
+                	
+                	if(wFileNameInField.getSelection()){
+                		wFileNameField.setEnabled(true);
+                		wbFilename.setEnabled(false);
+                		wFilename.setEnabled(false);
+                		wFileIsCommand.setEnabled(false);
+                		wbShowFiles.setEnabled(false);
+                	}
+                	else{
+                		wFileNameField.setEnabled(false);
+                		wbFilename.setEnabled(true);
+                		wFilename.setEnabled(true);
+                		wFileIsCommand.setEnabled(true);
+                		wbShowFiles.setEnabled(true);
+                	}              
+                }
+            }
+        );
+
+		// FileNameField Line
+		wlFileNameField=new Label(wFileComp, SWT.RIGHT);
+		wlFileNameField.setText(Messages.getString("TextFileOutputDialog.FileNameField.Label")); //$NON-NLS-1$
+ 		props.setLook(wlFileNameField);
+		fdlFileNameField=new FormData();
+		fdlFileNameField.left = new FormAttachment(0, 0);
+		fdlFileNameField.right= new FormAttachment(middle, -margin);
+		fdlFileNameField.top  = new FormAttachment(wFileNameInField, margin);
+		wlFileNameField.setLayoutData(fdlFileNameField);
+
+    	wFileNameField=new TextVar(transMeta, wFileComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		props.setLook(wFileNameField);
+		wFileNameField.addModifyListener(lsMod);
+		fdFileNameField=new FormData();
+		fdFileNameField.left = new FormAttachment(middle, 0);
+		fdFileNameField.top  = new FormAttachment(wFileNameInField, margin);
+		fdFileNameField.right= new FormAttachment(100, 0);
+		wFileNameField.setLayoutData(fdFileNameField);
+		wFileNameField.setEnabled(false);
+		/*End*/
 
 		// Extension line
 		wlExtension=new Label(wFileComp, SWT.RIGHT);
@@ -346,7 +417,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
  		props.setLook(wlExtension);
 		fdlExtension=new FormData();
 		fdlExtension.left = new FormAttachment(0, 0);
-		fdlExtension.top  = new FormAttachment(wDoNotOpenNewFileInit, margin);
+		fdlExtension.top  = new FormAttachment(wFileNameField, margin);
 		fdlExtension.right= new FormAttachment(middle, -margin);
 		wlExtension.setLayoutData(fdlExtension);
 		wExtension=new TextVar(transMeta, wFileComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
@@ -355,7 +426,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		wExtension.addModifyListener(lsMod);
 		fdExtension=new FormData();
 		fdExtension.left = new FormAttachment(middle, 0);
-		fdExtension.top  = new FormAttachment(wDoNotOpenNewFileInit, margin);
+		fdExtension.top  = new FormAttachment(wFileNameField, margin);
 		fdExtension.right= new FormAttachment(100, 0);
 		wExtension.setLayoutData(fdExtension);
 
@@ -642,12 +713,13 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 			{
 				public void widgetSelected(SelectionEvent se) 
 				{
-					wSeparator.insert("\t");
+					//wSeparator.insert("\t");
+					wSeparator.getTextWidget().insert("\t");
 				}
 			}
 		);
 
-		wSeparator=new Text(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wSeparator=new TextVar(transMeta,wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wSeparator);
 		wSeparator.addModifyListener(lsMod);
 		fdSeparator=new FormData();
@@ -665,7 +737,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		fdlEnclosure.top  = new FormAttachment(wSeparator, margin);
 		fdlEnclosure.right= new FormAttachment(middle, -margin);
 		wlEnclosure.setLayoutData(fdlEnclosure);
-		wEnclosure=new Text(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wEnclosure=new TextVar(transMeta, wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wEnclosure);
 		wEnclosure.addModifyListener(lsMod);
 		fdEnclosure=new FormData();
@@ -1153,6 +1225,16 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
         if (input.getEncoding()  !=null) wEncoding.setText(input.getEncoding());
         if (input.getEndedLine() !=null) wEndedLine.setText(input.getEndedLine());
         
+        wFileNameInField.setSelection(input.isFileNameInField());
+        if (input.getFileNameField() !=null) wFileNameField.setText(input.getFileNameField());
+        if(input.isFileNameInField()){
+        	wFileNameField.setEnabled(true);
+        	wbFilename.setEnabled(false);
+    		wFilename.setEnabled(false);
+    		wFileIsCommand.setEnabled(false);
+    		wbShowFiles.setEnabled(false);
+        }
+        
 		wSplitEvery.setText(""+input.getSplitEvery());
 
         wEnclForced.setSelection(input.isEnclosureForced());
@@ -1218,6 +1300,9 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		tfoi.setExtension(  wExtension.getText() );
 		tfoi.setSplitEvery( Const.toInt(wSplitEvery.getText(), 0) );
 		tfoi.setEndedLine( wEndedLine.getText() );
+		
+		tfoi.setFileNameField(   wFileNameField.getText() );
+		tfoi.setFileNameInField( wFileNameInField.getSelection() );
 
         tfoi.setEnclosureForced( wEnclForced.getSelection() ); 
 		tfoi.setHeaderEnabled( wHeader.getSelection() ); 

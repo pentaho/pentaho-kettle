@@ -18,6 +18,8 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipOutputStream;
 
@@ -69,6 +71,10 @@ public class TextFileOutputData extends BaseStepData implements StepDataInterfac
 	
 	public boolean oneFileOpened;
 
+	public List<String> previouslyOpenedFiles;
+	
+	public int  fileNameFieldIndex;
+
     /**
 	 * 
 	 */
@@ -88,6 +94,9 @@ public class TextFileOutputData extends BaseStepData implements StepDataInterfac
 
         defaultDateFormat = new SimpleDateFormat();
         defaultDateFormatSymbols = new DateFormatSymbols();
+        
+        previouslyOpenedFiles = new ArrayList<String>();
+        fileNameFieldIndex = -1;
 
         cmdProc = null;
         oneFileOpened=false;
