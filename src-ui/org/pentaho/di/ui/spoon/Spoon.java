@@ -3211,6 +3211,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
                         Messages.getString("Spoon.Message.Warning.NotShowWarning"),//"Please, don't show this warning anymore."
                         !props.showCopyOrDistributeWarning()
                     );
+                MessageDialogWithToggle.setDefaultImage(GUIResource.getInstance().getImageSpoon());
 				int idx = md.open();
 				props.setShowCopyOrDistributeWarning(!md.getToggleState());
 				props.saveProps();

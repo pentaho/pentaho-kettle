@@ -103,10 +103,7 @@ public class PropertyInput extends BaseStep implements StepInterface
 		 return true;
 	}		
 	private Object[] getOneRow() throws KettleException
-	{
-
-		
-		
+	{	
 		try{
 			if(meta.isFileField())
 			{
@@ -122,15 +119,11 @@ public class PropertyInput extends BaseStep implements StepInterface
 			        if (!openNextFile()) return null;
 				}
 			}
-			
-			
+
 		} catch (Exception IO)
 		{
 			return null;
 		}
-
-
-		
 		 // Build an empty row based on the meta-data		  
 		 Object[] r=buildEmptyRow();
 		 
@@ -241,8 +234,7 @@ public class PropertyInput extends BaseStep implements StepInterface
 			}else
 			{
 				data.readrow=getRow();     // Get row from input rowset & set row busy!
-				if (data.readrow==null)
-			    {
+				if (data.readrow==null) {
 					if (log.isDetailed()) logDetailed(Messages.getString("PropertyInput.Log.FinishedProcessing"));
 			         return false;
 			    }

@@ -207,7 +207,7 @@ public class LDAPInput extends BaseStep implements StepInterface
 		        // See if we need to add the row number to the row...  
 		        if (meta.includeRowNumber() && !Const.isEmpty(meta.getRowNumberField()))
 		        {
-		            outputRowData[ data.nrfields++] = new Long(data.rownr);
+		            outputRowData[ data.nrfields] = new Long(data.rownr);
 		        }
 		        
 				RowMetaInterface irow = getInputRowMeta();
