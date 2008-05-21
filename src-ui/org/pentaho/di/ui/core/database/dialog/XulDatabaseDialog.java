@@ -15,7 +15,10 @@ import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.widgets.Shell;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.i18n.GlobalMessages;
@@ -142,16 +145,26 @@ public class XulDatabaseDialog {
     }
 
     try {
-      XulWindow dialog = (XulWindow) container.getDocumentRoot().getRootElement();
+      final XulWindow dialog = (XulWindow) container.getDocumentRoot().getRootElement();
       shell = (Shell) dialog.getManagedObject();
       shell.setParent(parentShell);
       // props.setLook(shell);
       shell.setImage(GUIResource.getInstance().getImageConnection());
+      parentShell.addDisposeListener(new DisposeListener(){
 
+        public void widgetDisposed(DisposeEvent arg0) {
+          dialog.close();
+        }
+        
+      });
+      
       dialog.open();
 
       databaseMeta = (DatabaseMeta) dataHandler.getData();
-      databaseName = databaseMeta.getDatabaseName();
+      databaseName = Const.isEmpty(databaseMeta.getDatabaseName()) ? null : databaseMeta.getDatabaseName();
+      
+      // HACK for PDI-1256; remove when dialog converted to XulDialog instead of XulWindow
+      databaseName = dialog.isClosed() ? null : databaseName;
 
     } catch (Exception e) {
       new ErrorDialog(parentShell, Messages.getString("XulDatabaseDialog.Error.Titel"), Messages  //$NON-NLS-1$
