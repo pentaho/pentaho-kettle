@@ -102,7 +102,7 @@ public class LDAPInput extends BaseStep implements StepInterface
 			
 		    if ((linesInput > 0) && (linesInput % Const.ROWS_UPDATE) == 0) 
 		    {
-		    	if(log.isBasic()) logBasic(Messages.getString("LDAPInput.log.LineRow") + linesInput);
+		    	if(log.isDetailed()) logDetailed(Messages.getString("LDAPInput.log.LineRow") + linesInput);
 		    }
 		    
 		    return true; 
@@ -147,7 +147,6 @@ public class LDAPInput extends BaseStep implements StepInterface
              
              if(attributes!=null)
              {
-			
 				// Execute for each Input field...
 				for (int i=0;i<meta.getInputFields().length;i++)
 				{
@@ -222,7 +221,7 @@ public class LDAPInput extends BaseStep implements StepInterface
 		 }
 		 catch (Exception e)
 		 {
-			throw new KettleException("Unable to read row from LDAP", e);
+			throw new KettleException(Messages.getString("LDAPInput.Exception.CanNotReadLDAP"), e);
 		 }
 		return outputRowData;
 	}
@@ -256,7 +255,10 @@ public class LDAPInput extends BaseStep implements StepInterface
 	        Hashtable<String, String> env = new Hashtable<String, String>();
 
 	        env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
-	        env.put(Context.PROVIDER_URL, "ldap://"+hostname + ":" + portint);
+	        if(hostname.indexOf("ldap://")>=0)
+	        	env.put(Context.PROVIDER_URL,hostname + ":" + portint);
+	        else
+	        	env.put(Context.PROVIDER_URL, "ldap://"+hostname + ":" + portint);
 	        env.put(Context.SECURITY_AUTHENTICATION, "simple" );
 	        // TODO : Add referral handling
 	        if (meta.UseAuthentication())
@@ -312,7 +314,7 @@ public class LDAPInput extends BaseStep implements StepInterface
 	        
 		 }catch (Exception e)
 		 {
-			 throw new KettleException("Error : " + e.getMessage());
+			 throw new KettleException(Messages.getString("LDAPinput.Exception.ErrorConnecting", e.getMessage()));
 		 }
 	    }
 	
@@ -360,11 +362,8 @@ public class LDAPInput extends BaseStep implements StepInterface
 			}
 			catch (Exception e)
 			{
-				if (log.isDebug()) 
-	            {
-	                logDebug("Could not close LDAP Connection: "+e.toString());
-	                logDebug(Const.getStackTracker(e));
-	            }
+	             logError(Messages.getString("LDAPInput.Exception.ErrorDisconecting",e.toString()));
+	             logError(Const.getStackTracker(e));
 			}
 			
 		}

@@ -643,21 +643,40 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 	
 		CheckResult cr;
 
+		// Check output fields
+		if(inputFields.length==0)
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("LDAPInputMeta.CheckResult.NoOutputFields"), stepMeta);
+		else
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("LDAPInputMeta.CheckResult.OutputFieldsOk"), stepMeta);
+		remarks.add(cr);
+		
 		// See if we get input...
 		if (input.length>0)
-		{		
 			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("LDAPInputMeta.CheckResult.NoInputExpected"), stepMeta);
-			remarks.add(cr);
-		}
 		else
-		{
 			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("LDAPInputMeta.CheckResult.NoInput"), stepMeta);
-			remarks.add(cr);
-		}
+		remarks.add(cr);
 		
-      
+		// Check hostname
+		if(Const.isEmpty(Host))
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("LDAPInputMeta.CheckResult.HostnameMissing"), stepMeta);
+		else
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("LDAPInputMeta.CheckResult.HostnameOk"), stepMeta);
+		remarks.add(cr);
 		
-	
+		// Check search base
+		if(Const.isEmpty(searchBase))
+			cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, Messages.getString("LDAPInputMeta.CheckResult.SearchBaseMissing"), stepMeta);
+		else
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("LDAPInputMeta.CheckResult.SearchBaseOk"), stepMeta);
+		remarks.add(cr);
+		
+		// Check filter String
+		if(Const.isEmpty(filterString))
+			cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, Messages.getString("LDAPInputMeta.CheckResult.FilterStringMissing"), stepMeta);
+		else
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("LDAPInputMeta.CheckResult.FilterStringOk"), stepMeta);
+		remarks.add(cr);
 		
 	}
 	
