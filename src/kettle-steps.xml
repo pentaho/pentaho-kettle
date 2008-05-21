@@ -873,7 +873,7 @@
 		<tooltip>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.GPBulkLoader")
 		</tooltip>
-		<image-uri>ui/images/OBL.png</image-uri>
+		<image-uri>ui/images/GBL.png</image-uri>
 	</step>
 	
 	<step id="PGBulkLoader">
@@ -885,7 +885,7 @@
 		<tooltip>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.PGBulkLoader")
 		</tooltip>
-		<image-uri>ui/images/OBL.png</image-uri>
+		<image-uri>ui/images/PGBL.png</image-uri>
 	</step>
 	
 	<step id="LDIFInput">
