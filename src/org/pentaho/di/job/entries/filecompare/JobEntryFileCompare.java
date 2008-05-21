@@ -23,10 +23,12 @@ import java.io.IOException;
 import java.util.List;
 
 import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.FileType;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
+import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
@@ -60,12 +62,14 @@ public class JobEntryFileCompare extends JobEntryBase implements Cloneable, JobE
 {
 	private String filename1;
 	private String filename2;
+	private boolean addFilenameToResult;
 
 	public JobEntryFileCompare(String n)
 	{
 		super(n, ""); //$NON-NLS-1$
      	filename1 = null;
      	filename2=null;
+     	addFilenameToResult=false;
 		setID(-1L);
 		setJobEntryType(JobEntryType.FILE_COMPARE);
 	}
@@ -93,7 +97,7 @@ public class JobEntryFileCompare extends JobEntryBase implements Cloneable, JobE
 		retval.append(super.getXML());
 		retval.append("      ").append(XMLHandler.addTagValue("filename1", filename1)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("      ").append(XMLHandler.addTagValue("filename2", filename2)); //$NON-NLS-1$ //$NON-NLS-2$
-
+		retval.append("      ").append(XMLHandler.addTagValue("add_filename_result", addFilenameToResult));
 		return retval.toString();
 	}
 
@@ -105,6 +109,7 @@ public class JobEntryFileCompare extends JobEntryBase implements Cloneable, JobE
 			super.loadXML(entrynode, databases, slaveServers);
 			filename1 = XMLHandler.getTagValue(entrynode, "filename1"); //$NON-NLS-1$
 			filename2 = XMLHandler.getTagValue(entrynode, "filename2"); //$NON-NLS-1$
+			addFilenameToResult = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "add_filename_result"));
 		}
 		catch(KettleXMLException xe)
 		{
@@ -119,6 +124,7 @@ public class JobEntryFileCompare extends JobEntryBase implements Cloneable, JobE
 			super.loadRep(rep, id_jobentry, databases, slaveServers);
 			filename1 = rep.getJobEntryAttributeString(id_jobentry, "filename1"); //$NON-NLS-1$
 			filename2 = rep.getJobEntryAttributeString(id_jobentry, "filename2"); //$NON-NLS-1$
+			addFilenameToResult = rep.getJobEntryAttributeBoolean(id_jobentry, "add_filename_result");
 		}
 		catch(KettleException dbe)
 		{
@@ -135,6 +141,7 @@ public class JobEntryFileCompare extends JobEntryBase implements Cloneable, JobE
 
 			rep.saveJobEntryAttribute(id_job, getID(), "filename1", filename1); //$NON-NLS-1$
 			rep.saveJobEntryAttribute(id_job, getID(), "filename2", filename2); //$NON-NLS-1$
+            rep.saveJobEntryAttribute(id_job, getID(), "add_filename_result", addFilenameToResult);
 		}
 		catch(KettleDatabaseException dbe)
 		{
@@ -217,6 +224,17 @@ public class JobEntryFileCompare extends JobEntryBase implements Cloneable, JobE
 					{
 						result.setResult( false );
 					}
+					
+					//add filename to result filenames
+					if(addFilenameToResult && file1.getType()==FileType.FILE && file2.getType()==FileType.FILE)
+					{
+						ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL , file1, parentJob.getName(), toString());
+						resultFile.setComment(Messages.getString("JobWaitForFile.FilenameAdded"));
+						result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
+						resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL , file2, parentJob.getName(), toString());
+						resultFile.setComment(Messages.getString("JobWaitForFile.FilenameAdded"));
+						result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
+					 }
 				}
 				else
 				{
@@ -280,7 +298,13 @@ public class JobEntryFileCompare extends JobEntryBase implements Cloneable, JobE
 	{
 		return filename2;
 	}
-
+	public boolean isAddFilenameToResult() {
+		return addFilenameToResult;
+	}
+	
+	public void setAddFilenameToResult(boolean addFilenameToResult) {
+		this.addFilenameToResult = addFilenameToResult;
+	}
   public List<ResourceReference> getResourceDependencies(JobMeta jobMeta) {
     List<ResourceReference> references = super.getResourceDependencies(jobMeta);
     if ((!Const.isEmpty(filename1)) && (!Const.isEmpty(filename2)) ) {

@@ -81,6 +81,9 @@ public class JobEntryFileCompareDialog extends JobEntryDialog implements JobEntr
 
 	private JobEntryFileCompare jobEntry;
 	private Shell       	shell;
+    private Label        wlAddFilenameResult;
+    private Button       wAddFilenameResult;
+    private FormData     fdlAddFilenameResult, fdAddFilenameResult; 
 
 	private SelectionAdapter lsDef;
 	
@@ -251,13 +254,37 @@ public class JobEntryFileCompareDialog extends JobEntryDialog implements JobEntr
 				}
 			}
 		);
-
+		// Add filename to result filenames		
+        wlAddFilenameResult = new Label(shell, SWT.RIGHT);
+        wlAddFilenameResult.setText(Messages.getString("JobFileCompare.AddFilenameResult.Label"));
+        props.setLook(wlAddFilenameResult);
+        fdlAddFilenameResult = new FormData();
+        fdlAddFilenameResult.left = new FormAttachment(0, 0);
+        fdlAddFilenameResult.top = new FormAttachment(wbFilename2, margin);
+        fdlAddFilenameResult.right = new FormAttachment(middle, -margin);
+        wlAddFilenameResult.setLayoutData(fdlAddFilenameResult);
+        wAddFilenameResult = new Button(shell, SWT.CHECK);
+        props.setLook(wAddFilenameResult);
+        wAddFilenameResult.setToolTipText(Messages.getString("JobFileCompare.AddFilenameResult.Tooltip"));
+        fdAddFilenameResult = new FormData();
+        fdAddFilenameResult.left = new FormAttachment(middle, 0);
+        fdAddFilenameResult.top = new FormAttachment(wbFilename2, margin);
+        fdAddFilenameResult.right = new FormAttachment(100, 0);
+        wAddFilenameResult.setLayoutData(fdAddFilenameResult);
+        wAddFilenameResult.addSelectionListener(new SelectionAdapter()
+        {
+            public void widgetSelected(SelectionEvent e)
+            {
+                jobEntry.setChanged();
+            }
+        }); 
+        
         wOK = new Button(shell, SWT.PUSH);
         wOK.setText(Messages.getString("System.Button.OK"));
         wCancel = new Button(shell, SWT.PUSH);
         wCancel.setText(Messages.getString("System.Button.Cancel"));
 
-		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wFilename2);
+		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wAddFilenameResult);
 
 		// Add listeners
 		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel(); } };
@@ -303,6 +330,7 @@ public class JobEntryFileCompareDialog extends JobEntryDialog implements JobEntr
 		wName.selectAll();
 		if (jobEntry.getFilename1()!= null) wFilename1.setText( jobEntry.getFilename1() );
 		if (jobEntry.getFilename2()!= null) wFilename2.setText( jobEntry.getFilename2() );
+		wAddFilenameResult.setSelection(jobEntry.isAddFilenameToResult());
 	}
 
 	private void cancel()
@@ -317,6 +345,7 @@ public class JobEntryFileCompareDialog extends JobEntryDialog implements JobEntr
 		jobEntry.setName(wName.getText());
 		jobEntry.setFilename1(wFilename1.getText());
 		jobEntry.setFilename2(wFilename2.getText());
+		jobEntry.setAddFilenameToResult(wAddFilenameResult.getSelection());
 		dispose();
 	}
 

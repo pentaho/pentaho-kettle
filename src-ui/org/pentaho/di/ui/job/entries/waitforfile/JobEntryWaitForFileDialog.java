@@ -87,6 +87,10 @@ public class JobEntryWaitForFileDialog extends JobEntryDialog implements JobEntr
     private Button       wFileSizeCheck;
     private FormData     fdlFileSizeCheck, fdFileSizeCheck;   
     
+    private Label        wlAddFilenameResult;
+    private Button       wAddFilenameResult;
+    private FormData     fdlAddFilenameResult, fdAddFilenameResult;   
+    
 	private Button       wOK, wCancel;
 	private Listener     lsOK, lsCancel;
 
@@ -271,7 +275,7 @@ public class JobEntryWaitForFileDialog extends JobEntryDialog implements JobEntr
             }
         });
 
-        // Success on timeout		
+        // Check file size		
         wlFileSizeCheck = new Label(shell, SWT.RIGHT);
         wlFileSizeCheck.setText(Messages.getString("JobWaitForFile.FileSizeCheck.Label"));
         props.setLook(wlFileSizeCheck);
@@ -295,13 +299,36 @@ public class JobEntryWaitForFileDialog extends JobEntryDialog implements JobEntr
                 jobEntry.setChanged();
             }
         });        
-        
+        // Add filename to result filenames		
+        wlAddFilenameResult = new Label(shell, SWT.RIGHT);
+        wlAddFilenameResult.setText(Messages.getString("JobWaitForFile.AddFilenameResult.Label"));
+        props.setLook(wlAddFilenameResult);
+        fdlAddFilenameResult = new FormData();
+        fdlAddFilenameResult.left = new FormAttachment(0, 0);
+        fdlAddFilenameResult.top = new FormAttachment(wFileSizeCheck, margin);
+        fdlAddFilenameResult.right = new FormAttachment(middle, -margin);
+        wlAddFilenameResult.setLayoutData(fdlAddFilenameResult);
+        wAddFilenameResult = new Button(shell, SWT.CHECK);
+        props.setLook(wAddFilenameResult);
+        wAddFilenameResult.setToolTipText(Messages.getString("JobWaitForFile.AddFilenameResult.Tooltip"));
+        fdAddFilenameResult = new FormData();
+        fdAddFilenameResult.left = new FormAttachment(middle, 0);
+        fdAddFilenameResult.top = new FormAttachment(wFileSizeCheck, margin);
+        fdAddFilenameResult.right = new FormAttachment(100, 0);
+        wAddFilenameResult.setLayoutData(fdAddFilenameResult);
+        wAddFilenameResult.addSelectionListener(new SelectionAdapter()
+        {
+            public void widgetSelected(SelectionEvent e)
+            {
+                jobEntry.setChanged();
+            }
+        }); 
         wOK = new Button(shell, SWT.PUSH);
         wOK.setText(Messages.getString("System.Button.OK"));
         wCancel = new Button(shell, SWT.PUSH);
         wCancel.setText(Messages.getString("System.Button.Cancel"));
 
-		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wFileSizeCheck);
+		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wAddFilenameResult);
 
 		// Add listeners
 		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel(); } };
@@ -353,6 +380,7 @@ public class JobEntryWaitForFileDialog extends JobEntryDialog implements JobEntr
 		wCheckCycleTime.setText(Const.NVL(jobEntry.getCheckCycleTime(), ""));
 		wSuccesOnTimeout.setSelection(jobEntry.isSuccessOnTimeout());		
 		wFileSizeCheck.setSelection(jobEntry.isFileSizeCheck());
+		wAddFilenameResult.setSelection(jobEntry.isAddFilenameToResult());
 	}
 
 	private void cancel()
@@ -370,6 +398,7 @@ public class JobEntryWaitForFileDialog extends JobEntryDialog implements JobEntr
 		jobEntry.setCheckCycleTime(wCheckCycleTime.getText());
 		jobEntry.setSuccessOnTimeout(wSuccesOnTimeout.getSelection());		
 		jobEntry.setFileSizeCheck(wFileSizeCheck.getSelection());
+		jobEntry.setAddFilenameToResult(wAddFilenameResult.getSelection());
 		dispose();
 	}
 
