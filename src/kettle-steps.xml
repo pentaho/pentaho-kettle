@@ -920,4 +920,16 @@
 		</tooltip>
 		<image-uri>ui/images/SWC.png</image-uri>
 	</step>
+	
+	<step id="XMLJoin">
+		<description>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.XMLJoin")
+		</description>
+		<class-name>org.pentaho.di.trans.steps.xmljoin.XMLJoinMeta</class-name>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@JOINS.getName()</category>
+		<tooltip>ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.XMLJoin")
+		</tooltip>
+		<image-uri>ui/images/XJN.png</image-uri>
+	</step>
+
 </steps>
