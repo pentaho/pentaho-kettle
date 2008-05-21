@@ -25,13 +25,11 @@ import java.util.zip.ZipOutputStream;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
-import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.util.StreamLogger;
@@ -65,169 +63,138 @@ public class TextFileOutput extends BaseStep implements StepInterface
 		super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
 	}
     
-	public synchronized boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
-	{
-		meta=(TextFileOutputMeta)smi;
-		data=(TextFileOutputData)sdi;
+	public synchronized boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException {
+		meta = (TextFileOutputMeta) smi;
+		data = (TextFileOutputData) sdi;
 
-		boolean result=true;
-		boolean bEndedLineWrote=false;
-		Object[] r=getRow();       // This also waits for a row to be finished.
+		boolean result = true;
+		boolean bEndedLineWrote = false;
+		Object[] r = getRow(); // This also waits for a row to be finished.
 
-        if (r!=null && first)
-        {
-            first=false;
-            data.outputRowMeta = getInputRowMeta().clone();
-            meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
-            
-            //if file name in field is enabled then set field name and open file
-          if(meta.isFileNameInField()){
-            	
-				// get the first input row set (assume only one)
-				RowSet zero = (RowSet)inputRowSets.get(0);
-				RowMetaInterface inputRowMeta = zero.getRowMeta();
-				//find and set index of file name field in input stream
-				data.fileNameFieldIndex = inputRowMeta.indexOfValue(meta.getFileNameField());	
-				//set the file name for this row
-				String fileName = "";
-				if(data.fileNameFieldIndex != -1){
-					fileName = (String) r[data.fileNameFieldIndex];
-				}
-				else{
-					 throw new KettleStepException("File name field ["+meta.getFileNameField()+"] couldn't be found in the input stream!");
-				}
-            	
-            	//open new file only if new file name
-            	meta.setFileName(fileName);
-            
-            	// Open a new file here
-            	if (openNewFile())
-				{
-            		data.oneFileOpened=true;
-					try {
-						setSettings();
-						
-					} catch (UnsupportedEncodingException e) {
-						logError("Encoding problem: "+e.toString());
-						logError(Const.getStackTracker(e));
-						return false;
-					}
-					//mark file as previously opened
-	            	data.previouslyOpenedFiles.add(buildFilename(true));
-				}
-            	
-            }
-          
-          if(meta.isDoNotOpenNewFileInit()&& !meta.isFileNameInField())
-          {
-        	  // Open a new file here
-        	  if (openNewFile())
-        	  {
-        		  data.oneFileOpened=true;
-        		  try {
-        			  setSettings();
-			
-        		  } catch (UnsupportedEncodingException e) {
-        			  logError("Encoding problem: "+e.toString());
-        			  logError(Const.getStackTracker(e));
-        			  return false;
-        		  }
-        	  }	
-          }	
-            
-            if (!meta.isFileAppended() && ( meta.isHeaderEnabled() || meta.isFooterEnabled())) // See if we have to write a header-line)
-            {
-                if (meta.isHeaderEnabled() && data.outputRowMeta!=null)
-                {
-                    writeHeader();
-                }
-            }
-            
-            data.fieldnrs=new int[meta.getOutputFields().length];
-            for (int i=0;i<meta.getOutputFields().length;i++)
-            {
-                data.fieldnrs[i]=data.outputRowMeta.indexOfValue(meta.getOutputFields()[i].getName());
-                if (data.fieldnrs[i]<0)
-                {
-                    throw new KettleStepException("Field ["+meta.getOutputFields()[i].getName()+"] couldn't be found in the input stream!");
-                }
-            }
-        }
+		if (r != null && first) {
+			first = false;
+			data.outputRowMeta = getInputRowMeta().clone();
+			meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
 
-		if ( ( r==null && data.outputRowMeta!=null && meta.isFooterEnabled() ) ||
-		     ( r!=null && linesOutput>0 && meta.getSplitEvery()>0 && ((linesOutput+1)%meta.getSplitEvery())==0)
-		   )
-		{
-			if (data.outputRowMeta!=null) 
-			{
-			   if ( meta.isFooterEnabled() )
-			   {
-			      writeHeader();
-			   }
+			// if file name in field is enabled then set field name and open file
+			//
+			if (meta.isFileNameInField()) {
+
+				// find and set index of file name field in input stream
+				//
+				data.fileNameFieldIndex = getInputRowMeta().indexOfValue(meta.getFileNameField());
+
+				// set the file name for this row
+				//
+				if (data.fileNameFieldIndex < 0) {
+					throw new KettleStepException(Messages.getString("TextFileOutput.Exception.FileNameFieldNotFound", meta.getFileNameField())); // $NON-NLS-1$
+				}
+				
+				data.fileNameMeta = getInputRowMeta().getValueMeta(data.fileNameFieldIndex);
+				data.fileName = data.fileNameMeta.getString(r[data.fileNameFieldIndex]);
+				setDataWriterForFilename(data.fileName);
+			} 
+			else  if (meta.isDoNotOpenNewFileInit() && !meta.isFileNameInField()) {
+				// Open a new file here
+				// 
+				openNewFile(meta.getFileName());
+				data.oneFileOpened = true;
+				initBinaryDataFields();
 			}
-			
-			if (r==null)
+
+			if (!meta.isFileAppended() && (meta.isHeaderEnabled() || meta.isFooterEnabled())) // See if we have to write a header-line)
 			{
-				//add tag to last line if needed
+				if (!meta.isFileNameInField() && meta.isHeaderEnabled() && data.outputRowMeta != null) {
+					writeHeader();
+				}
+			}
+
+			data.fieldnrs = new int[meta.getOutputFields().length];
+			for (int i = 0; i < meta.getOutputFields().length; i++) {
+				data.fieldnrs[i] = data.outputRowMeta.indexOfValue(meta.getOutputFields()[i].getName());
+				if (data.fieldnrs[i] < 0) {
+					throw new KettleStepException("Field [" + meta.getOutputFields()[i].getName() + "] couldn't be found in the input stream!");
+				}
+			}
+		}
+
+		if ((r == null && data.outputRowMeta != null && meta.isFooterEnabled()) || (r != null && linesOutput > 0 && meta.getSplitEvery() > 0 && ((linesOutput + 1) % meta.getSplitEvery()) == 0)) {
+			if (data.outputRowMeta != null) {
+				if (meta.isFooterEnabled()) {
+					writeHeader();
+				}
+			}
+
+			if (r == null) {
+				// add tag to last line if needed
 				writeEndedLine();
-				bEndedLineWrote=true;
+				bEndedLineWrote = true;
 			}
 			// Done with this part or with everything.
 			closeFile();
-			
-			// Not finished: open another file...
-			if (r!=null)
-			{
-				if (!openNewFile())
-				{
-					logError("Unable to open new file (split #"+data.splitnr+"...");
-					setErrors(1);
-					return false;
-				}
 
-				if (meta.isHeaderEnabled() && data.outputRowMeta!=null) if (writeHeader()) linesOutput++;
+			// Not finished: open another file...
+			if (r != null) {
+				openNewFile(meta.getFileName());
+
+				if (meta.isHeaderEnabled() && data.outputRowMeta != null)
+					if (writeHeader())
+						linesOutput++;
 			}
 		}
-		
-		if (r==null)  // no more input to be expected...
+
+		if (r == null) // no more input to be expected...
 		{
-			if (false==bEndedLineWrote)
-			{
-				//add tag to last line if needed
+			if (false == bEndedLineWrote) {
+				// add tag to last line if needed
 				writeEndedLine();
-				bEndedLineWrote=true;
+				bEndedLineWrote = true;
 			}
-			
+
 			setOutputDone();
 			return false;
 		}
+
+		// First handle the file name in field
+		// Write a header line as well if needed
+		//
+		if (meta.isFileNameInField()) {
+			String baseFilename = data.fileNameMeta.getString(r[data.fileNameFieldIndex]);
+			setDataWriterForFilename(baseFilename);
+		}
+		writeRowToFile(data.outputRowMeta, r);
+		putRow(data.outputRowMeta, r); // in case we want it to go further...
+
+		if (checkFeedback(linesOutput))
+			logBasic("linenr " + linesOutput);
+
+		return result;
+	}
+
+	/**
+	 * This method should only be used when you have a filename in the input stream.
+	 * 
+	 * @param filename the filename to set the data.writer field for
+	 * @throws KettleException 
+	 */
+	private void setDataWriterForFilename(String filename) throws KettleException {
+		// First handle the writers themselves.
+		// If we didn't have a writer yet, we create one.
+		// Basically we open a new file
+		//
+		data.writer = data.fileWriterMap.get(filename);
+		if (data.writer==null) {
+			openNewFile(filename);
+			data.fileWriterMap.put(filename, data.writer);
 		
-		//first handle if file name in field
-		if(meta.isFileNameInField()){
-			String fileName = (String) r[data.fileNameFieldIndex];
-			
-			if (! meta.getFileName().equals(fileName)){
-				//close current file
-				closeFile();
-				meta.setFileName(fileName);
-				if (!openNewFile())
-				{
-					logError("Unable to open new file "+ fileName +"...");
-					setErrors(1);
-					return false;
-				}
-				if(!checkPreviouslyOpened(buildFilename(true))){
-					data.previouslyOpenedFiles.add(buildFilename(true));
-					if (!meta.isFileAppended() && ( meta.isHeaderEnabled() || meta.isFooterEnabled())) if (writeHeader()) linesOutput++;
+			// If it's the first time we open it and we have a header, we write a header...
+			//
+			if (!meta.isFileAppended() && meta.isHeaderEnabled()) {
+				if (writeHeader()) {
+					linesOutput++;
 				}
 			}
 		}
-		writeRowToFile(data.outputRowMeta, r);
-		putRow(data.outputRowMeta, r);       // in case we want it to go further...
-		
-        if (checkFeedback(linesOutput)) logBasic("linenr "+linesOutput);
-		
-		return result;
 	}
 
 	private void writeRowToFile(RowMetaInterface rowMeta, Object[] r) throws KettleStepException
@@ -241,7 +208,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 				 */
 				for (int i=0;i<rowMeta.size();i++)
 				{
-					if (i>0 && meta.getSeparator()!=null && meta.getSeparator().length()>0)
+					if (i>0 && data.binarySeparator.length>0)
                     {
 						data.writer.write(data.binarySeparator);
                     }
@@ -262,7 +229,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 				 */
 				for (int i=0;i<meta.getOutputFields().length;i++)
 				{
-					if (i>0 && meta.getSeparator()!=null && meta.getSeparator().length()>0)
+					if (i>0 && data.binarySeparator.length>0)
 						data.writer.write(data.binarySeparator);
 	
 					ValueMetaInterface v = rowMeta.getValueMeta(data.fieldnrs[i]);
@@ -512,47 +479,43 @@ public class TextFileOutput extends BaseStep implements StepInterface
 			// If we have fields specified: list them in this order!
 			if (meta.getOutputFields()!=null && meta.getOutputFields().length>0)
 			{
-				String header = "";
 				for (int i=0;i<meta.getOutputFields().length;i++)
 				{
                     String fieldName = meta.getOutputFields()[i].getName();
                     ValueMetaInterface v = r.searchValueMeta(fieldName);
                     
-					if (i>0 && meta.getSeparator()!=null && meta.getSeparator().length()>0)
+					if (i>0 && data.binarySeparator.length>0)
 					{
-						header+=environmentSubstitute(meta.getSeparator());
+						data.writer.write(data.binarySeparator);
 					}
-                    if (meta.isEnclosureForced() && meta.getEnclosure()!=null && v!=null && v.isString())
+                    if (meta.isEnclosureForced() && data.binaryEnclosure.length>0 && v!=null && v.isString())
                     {
-                        header+=environmentSubstitute(meta.getEnclosure());
+                    	data.writer.write(data.binaryEnclosure);
                     }
-					header+=fieldName;
-                    if (meta.isEnclosureForced() && meta.getEnclosure()!=null && v!=null && v.isString())
+                    data.writer.write(getBinaryString(fieldName));
+                    if (meta.isEnclosureForced() && data.binaryEnclosure.length>0 && v!=null && v.isString())
                     {
-                        header+=environmentSubstitute(meta.getEnclosure());
-                    }
+                    	data.writer.write(data.binaryEnclosure);                    }
 				}
-				header+=meta.getNewline();
-                data.writer.write(getBinaryString(header));
+				data.writer.write(data.binaryNewline);
 			}
 			else
 			if (r!=null)  // Just put all field names in the header/footer
 			{
 				for (int i=0;i<r.size();i++)
 				{
-					if (i>0 && meta.getSeparator()!=null && meta.getSeparator().length()>0)
+					if (i>0 && data.binarySeparator.length>0) 
+					{
 						data.writer.write(data.binarySeparator);
+					}
 					ValueMetaInterface v = r.getValueMeta(i);
 					
-                    // Header-value contains the name of the value
-					ValueMetaInterface header_value = new ValueMeta(v.getName(), ValueMetaInterface.TYPE_STRING);
-
-                    if (meta.isEnclosureForced() && meta.getEnclosure()!=null && v.isString())
+                    if (meta.isEnclosureForced() && data.binaryEnclosure.length>0 && v.isString())
                     {
                         data.writer.write(data.binaryEnclosure);
                     }
-                    data.writer.write(getBinaryString(header_value.getName()));
-                    if (meta.isEnclosureForced() && meta.getEnclosure()!=null && v.isString())
+                    data.writer.write(getBinaryString(v.getName()));
+                    if (meta.isEnclosureForced() && data.binaryEnclosure.length>0 && v.isString())
                     {
                         data.writer.write(data.binaryEnclosure);
                     }
@@ -574,18 +537,18 @@ public class TextFileOutput extends BaseStep implements StepInterface
 		return retval;
 	}
 
-	public String buildFilename(boolean ziparchive)
+	public String buildFilename(String filename, boolean ziparchive)
 	{
-		return meta.buildFilename(this, getCopy(), getPartitionID(), data.splitnr, ziparchive);
+		return TextFileOutputMeta.buildFilename(filename, meta.getExtension(), this, getCopy(), getPartitionID(), data.splitnr, ziparchive, meta);
 	}
 	
-	public boolean openNewFile()
+	public void openNewFile(String baseFilename) throws KettleException
 	{
-		//No need to run if first line and File name in field is set
-		if(first && meta.isFileNameInField()) return false;
-		
-		boolean retval=false;
 		data.writer=null;
+		
+		ResultFile resultFile = null;
+		
+		String filename = buildFilename(environmentSubstitute(baseFilename), true);
 		
 		try
 		{
@@ -617,19 +580,14 @@ public class TextFileOutput extends BaseStep implements StepInterface
             	StreamLogger stderrLogger = new StreamLogger( data.cmdProc.getErrorStream(), "(stderr)" );
             	new Thread(stdoutLogger).start();
             	new Thread(stderrLogger).start();
-            	retval = true;
             }
             else
             {
-                String filename = buildFilename(true);
-                if(meta.isAddToResultFiles())
-                {
-					// Add this to the result file names...
-					ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(filename), getTransMeta().getName(), getStepname());
-					resultFile.setComment("This file was created with a text file output step");
-		            addResultFile(resultFile);
-                }
-	
+            	// Add this to the result file names...
+				resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(filename), getTransMeta().getName(), getStepname());
+				resultFile.setComment("This file was created with a text file output step");
+	            addResultFile(resultFile);
+
 	            OutputStream outputStream;
                 
                 if (!Const.isEmpty(meta.getFileCompression()) && !meta.getFileCompression().equals(FILE_COMPRESSION_TYPE_NONE))
@@ -644,7 +602,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
     		            	data.fos = KettleVFS.getOutputStream(filename, meta.isFileAppended());
     		            }
                         data.zip = new ZipOutputStream(data.fos);
-    					File entry = new File(buildFilename(false));
+    					File entry = new File( filename );
     					ZipEntry zipentry = new ZipEntry(entry.getName());
     					zipentry.setComment("Compressed by Kettle");
     					data.zip.putNextEntry(zipentry);
@@ -689,19 +647,21 @@ public class TextFileOutput extends BaseStep implements StepInterface
 	            }
 	
 	            if(log.isDetailed()) logDetailed("Opened new file with name ["+filename+"]");
-				
-				retval=true;
             }
 		}
 		catch(Exception e)
 		{
-			logError("Error opening new file : "+e.toString());
+			throw new KettleException("Error opening new file : "+e.toString());
 		}
 		// System.out.println("end of newFile(), splitnr="+splitnr);
 
 		data.splitnr++;
 
-		return retval;
+        if(resultFile!=null && meta.isAddToResultFiles())
+        {
+			// Add this to the result file names...
+            addResultFile(resultFile);
+        }
 	}
 	
 	private boolean closeFile()
@@ -783,21 +743,18 @@ public class TextFileOutput extends BaseStep implements StepInterface
 			// In that case, DO NOT create file at Init
 			if(!meta.isDoNotOpenNewFileInit())
 			{
-				if (openNewFile()||meta.isFileNameInField())
-				{
-					data.oneFileOpened=true;
-					try{
-						setSettings();
-					} catch (UnsupportedEncodingException e) {
-						logError("Encoding problem: "+e.toString());
-						logError(Const.getStackTracker(e));
-						return false;
+				try {
+					if (!meta.isFileNameInField()) {
+						openNewFile(meta.getFileName());
 					}
+
+					data.oneFileOpened=true;
+					initBinaryDataFields();
 					return true;
 				}	
-				else
+				catch(Exception e)
 				{
-					logError("Couldn't open file "+meta.getFileName());
+					logError("Couldn't open file "+meta.getFileName(), e);
 					setErrors(1L);
 					stopAll();
 				}
@@ -807,40 +764,46 @@ public class TextFileOutput extends BaseStep implements StepInterface
 	
 		return false;
 	}
-	private void setSettings() throws UnsupportedEncodingException
+	
+	private void initBinaryDataFields() throws KettleException
 	{
-		data.hasEncoding = !Const.isEmpty(meta.getEncoding());
-		data.binarySeparator = new byte[] {};
-		data.binaryEnclosure = new byte[] {};
-		data.binaryNewline   = new byte[] {};
-		
-		if (data.hasEncoding) {
-			if (!Const.isEmpty(meta.getSeparator())) data.binarySeparator= meta.getSeparator().getBytes(meta.getEncoding());
-			if (!Const.isEmpty(meta.getEnclosure())) data.binaryEnclosure = meta.getEnclosure().getBytes(meta.getEncoding());
-			if (!Const.isEmpty(meta.getNewline()))   data.binaryNewline   = meta.getNewline().getBytes(meta.getEncoding());
-		}
-		else {
-			if (!Const.isEmpty(meta.getSeparator())) data.binarySeparator= meta.getSeparator().getBytes();
-			if (!Const.isEmpty(meta.getEnclosure())) data.binaryEnclosure = meta.getEnclosure().getBytes();
-			if (!Const.isEmpty(meta.getNewline()))   data.binaryNewline   = meta.getNewline().getBytes();
-		}
-		
-		data.binaryNullValue = new byte[meta.getOutputFields().length][];
-		for (int i=0;i<meta.getOutputFields().length;i++)
-		{
-			data.binaryNullValue[i] = null;
-			String nullString = meta.getOutputFields()[i].getNullString();
-			if (!Const.isEmpty(nullString)) 
+		try {
+			data.hasEncoding = !Const.isEmpty(meta.getEncoding());
+			data.binarySeparator = new byte[] {};
+			data.binaryEnclosure = new byte[] {};
+			data.binaryNewline   = new byte[] {};
+			
+			if (data.hasEncoding) {
+				if (!Const.isEmpty(meta.getSeparator())) data.binarySeparator= environmentSubstitute(meta.getSeparator()).getBytes(meta.getEncoding());
+				if (!Const.isEmpty(meta.getEnclosure())) data.binaryEnclosure = environmentSubstitute(meta.getEnclosure()).getBytes(meta.getEncoding());
+				if (!Const.isEmpty(meta.getNewline()))   data.binaryNewline   = meta.getNewline().getBytes(meta.getEncoding());
+			}
+			else {
+				if (!Const.isEmpty(meta.getSeparator())) data.binarySeparator= environmentSubstitute(meta.getSeparator()).getBytes();
+				if (!Const.isEmpty(meta.getEnclosure())) data.binaryEnclosure = environmentSubstitute(meta.getEnclosure()).getBytes();
+				if (!Const.isEmpty(meta.getNewline()))   data.binaryNewline   = environmentSubstitute(meta.getNewline()).getBytes();
+			}
+			
+			data.binaryNullValue = new byte[meta.getOutputFields().length][];
+			for (int i=0;i<meta.getOutputFields().length;i++)
 			{
-				if (data.hasEncoding)
+				data.binaryNullValue[i] = null;
+				String nullString = meta.getOutputFields()[i].getNullString();
+				if (!Const.isEmpty(nullString)) 
 				{
-					data.binaryNullValue[i] = nullString.getBytes(meta.getEncoding());
-				}
-				else
-				{
-					data.binaryNullValue[i] = nullString.getBytes();
+					if (data.hasEncoding)
+					{
+						data.binaryNullValue[i] = nullString.getBytes(meta.getEncoding());
+					}
+					else
+					{
+						data.binaryNullValue[i] = nullString.getBytes();
+					}
 				}
 			}
+		}
+		catch(Exception e) {
+			throw new KettleException("Unexpected error while encoding binary fields", e);
 		}
 	}
 	public void dispose(StepMetaInterface smi, StepDataInterface sdi)
@@ -851,8 +814,23 @@ public class TextFileOutput extends BaseStep implements StepInterface
 		if(data.oneFileOpened) closeFile();
 		
 		try{
-			if(data.fos!=null) data.fos.close();
-			}catch (Exception e){}
+			if(data.fos!=null) { 
+				data.fos.close();
+			}
+		}
+		catch (Exception e)
+		{
+			
+		}
+		
+		for (OutputStream outputStream : data.fileWriterMap.values()) {
+			try {
+				outputStream.close();
+			} catch (IOException e) {
+				// Eat exception.
+			}
+		}
+		
         super.dispose(smi, sdi);
 	}
 	

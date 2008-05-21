@@ -132,9 +132,9 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
     /** Flag : Do not open new file when transformation start  */ 
     private boolean doNotOpenNewFileInit;
     
-    private boolean SpecifyFormat;
+    private boolean specifyingFormat;
     
-    private String date_time_format;
+    private String dateTimeFormat;
 
 	public TextFileOutputMeta()
     {
@@ -481,21 +481,24 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 
 
     
-    public boolean  isSpecifyFormat()
+    public boolean  isSpecifyingFormat()
     {
-    	return SpecifyFormat;
+    	return specifyingFormat;
     }
-    public void setSpecifyFormat(boolean SpecifyFormat)
+    
+    public void setSpecifyingFormat(boolean specifyingFormat)
     {
-    	this.SpecifyFormat=SpecifyFormat;
+    	this.specifyingFormat=specifyingFormat;
     }
+    
     public String getDateTimeFormat()
  	{
- 		return date_time_format;
+ 		return dateTimeFormat;
  	}
- 	public void setDateTimeFormat(String date_time_format)
+    
+ 	public void setDateTimeFormat(String dateTimeFormat)
  	{
- 		this.date_time_format=date_time_format;
+ 		this.dateTimeFormat=dateTimeFormat;
  	}
     
     
@@ -643,8 +646,8 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 			partNrInFilename      = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "haspartno"));
 			dateInFilename        = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "add_date"));
 			timeInFilename        = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "add_time"));
-			SpecifyFormat        = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "SpecifyFormat"));
-			date_time_format             = XMLHandler.getTagValue(stepnode, "file", "date_time_format");
+			specifyingFormat        = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "SpecifyFormat"));
+			dateTimeFormat             = XMLHandler.getTagValue(stepnode, "file", "date_time_format");
 			
 			String AddToResultFiles= XMLHandler.getTagValue(stepnode, "file", "add_to_result_filenames");
 			if(Const.isEmpty(AddToResultFiles))
@@ -713,8 +716,8 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 	{
 		separator  = ";";
 		enclosure  = "\"";
-		SpecifyFormat=false;
-		date_time_format=null;
+		specifyingFormat=false;
+		dateTimeFormat=null;
         enclosureForced  = false;
 		headerEnabled    = true;
 		footerEnabled    = false;
@@ -804,51 +807,57 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 	
 	public String buildFilename(VariableSpace space, int stepnr, String partnr, int splitnr, boolean ziparchive)
 	{
-		SimpleDateFormat daf     = new SimpleDateFormat();
+		return buildFilename(fileName, extension, space, stepnr, partnr, splitnr, ziparchive, this);
+	}
+	
+	public static String buildFilename(String filename, String extension, VariableSpace space, int stepnr, String partnr, int splitnr, boolean ziparchive, TextFileOutputMeta meta)
+	{
+		SimpleDateFormat daf = new SimpleDateFormat();
 
 		// Replace possible environment variables...
-		String retval=space.environmentSubstitute( fileName );
+		String retval=space.environmentSubstitute( filename );
 		String realextension=space.environmentSubstitute( extension );
 		
-		if (fileAsCommand)
+		if (meta.isFileAsCommand()) {
 			return retval;
+		}
 
 		Date now = new Date();
 		
-		if(SpecifyFormat && !Const.isEmpty(date_time_format))
+		if(meta.isSpecifyingFormat() && !Const.isEmpty(meta.getDateTimeFormat()))
 		{
-			daf.applyPattern(date_time_format);
+			daf.applyPattern(meta.getDateTimeFormat());
 			String dt = daf.format(now);
 			retval+=dt;
 		}else
 		{
-			if (dateInFilename)
+			if (meta.isDateInFilename())
 			{
 				daf.applyPattern("yyyMMdd");
 				String d = daf.format(now);
 				retval+="_"+d;
 			}
-			if (timeInFilename)
+			if (meta.isTimeInFilename())
 			{
 				daf.applyPattern("HHmmss");
 				String t = daf.format(now);
 				retval+="_"+t;
 			}
 		}
-		if (stepNrInFilename)
+		if (meta.isStepNrInFilename())
 		{
 			retval+="_"+stepnr;
 		}
-		if (partNrInFilename)
+		if (meta.isPartNrInFilename())
 		{
 			retval+="_"+partnr;
 		}
-		if (splitEvery>0)
+		if (meta.getSplitEvery()>0)
 		{
 			retval+="_"+splitnr;
 		}
 		
-		if (fileCompression.equals("Zip"))
+		if (meta.getFileCompression().equals("Zip"))
 		{
 			if (ziparchive)
 			{
@@ -868,7 +877,7 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 			{
 				retval+="."+realextension;
 			}
-			if (fileCompression.equals("GZip"))
+			if (meta.getFileCompression().equals("GZip"))
 			{
 				retval += ".gz";
 			}
@@ -935,8 +944,8 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 		retval.append("      ").append(XMLHandler.addTagValue("haspartno",  partNrInFilename));
 		retval.append("      ").append(XMLHandler.addTagValue("add_date",   dateInFilename));
 		retval.append("      ").append(XMLHandler.addTagValue("add_time",   timeInFilename));
-		retval.append("      ").append(XMLHandler.addTagValue("SpecifyFormat",   SpecifyFormat));
-		retval.append("      ").append(XMLHandler.addTagValue("date_time_format",  date_time_format));
+		retval.append("      ").append(XMLHandler.addTagValue("SpecifyFormat",   specifyingFormat));
+		retval.append("      ").append(XMLHandler.addTagValue("date_time_format",  dateTimeFormat));
 		
 		
 		retval.append("      ").append(XMLHandler.addTagValue("add_to_result_filenames",   addToResultFilenames));
@@ -1008,8 +1017,8 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 			partNrInFilename      =      rep.getStepAttributeBoolean(id_step, "file_add_partnr");
 			dateInFilename        =      rep.getStepAttributeBoolean(id_step, "file_add_date");
 			timeInFilename        =      rep.getStepAttributeBoolean(id_step, "file_add_time");
-			SpecifyFormat        =      rep.getStepAttributeBoolean(id_step, "SpecifyFormat");
-			date_time_format       =      rep.getStepAttributeString (id_step, "date_time_format");
+			specifyingFormat        =      rep.getStepAttributeBoolean(id_step, "SpecifyFormat");
+			dateTimeFormat       =      rep.getStepAttributeString (id_step, "date_time_format");
 			
 			
 			String AddToResultFiles = rep.getStepAttributeString (id_step, "add_to_result_filenames");  
@@ -1074,9 +1083,9 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 			rep.saveStepAttribute(id_transformation, id_step, "file_add_stepnr",  stepNrInFilename);
 			rep.saveStepAttribute(id_transformation, id_step, "file_add_partnr",  partNrInFilename);
 			rep.saveStepAttribute(id_transformation, id_step, "file_add_date",    dateInFilename);
-			rep.saveStepAttribute(id_transformation, id_step, "date_time_format",   date_time_format);
+			rep.saveStepAttribute(id_transformation, id_step, "date_time_format",   dateTimeFormat);
 			
-			rep.saveStepAttribute(id_transformation, id_step, "SpecifyFormat",    SpecifyFormat);
+			rep.saveStepAttribute(id_transformation, id_step, "SpecifyFormat",    specifyingFormat);
 			
 			rep.saveStepAttribute(id_transformation, id_step, "add_to_result_filenames",    addToResultFilenames);
 			rep.saveStepAttribute(id_transformation, id_step, "file_add_time",    timeInFilename);

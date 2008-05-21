@@ -19,11 +19,14 @@ import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipOutputStream;
 
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
 
@@ -75,6 +78,12 @@ public class TextFileOutputData extends BaseStepData implements StepDataInterfac
 	
 	public int  fileNameFieldIndex;
 
+	public ValueMetaInterface fileNameMeta;
+	
+	public Map<String,OutputStream> fileWriterMap;
+
+	public String fileName;
+
     /**
 	 * 
 	 */
@@ -100,5 +109,7 @@ public class TextFileOutputData extends BaseStepData implements StepDataInterfac
 
         cmdProc = null;
         oneFileOpened=false;
+        
+        fileWriterMap = new HashMap<String,OutputStream>();
 	}
 }
