@@ -52,7 +52,7 @@ public class RowGenerator extends BaseStep implements StepInterface
 		data=(RowGeneratorData)stepDataInterface;
 	}
 	
-    public static final RowMetaAndData buildRow(RowGeneratorMeta meta, List<CheckResultInterface> remarks)
+    public static final RowMetaAndData buildRow(RowGeneratorMeta meta, List<CheckResultInterface> remarks, String origin)
     {
         RowMetaInterface rowMeta=new RowMeta();
         Object[] rowData = RowDataUtil.allocateRowData(meta.getFieldName().length);
@@ -68,6 +68,7 @@ public class RowGenerator extends BaseStep implements StepInterface
                 valueMeta.setConversionMask(meta.getFieldFormat()[i]);
                 valueMeta.setGroupingSymbol(meta.getGroup()[i]);
                 valueMeta.setDecimalSymbol(meta.getDecimal()[i]);
+                valueMeta.setOrigin(origin);
 
                 ValueMetaInterface stringMeta = valueMeta.clone();
                 stringMeta.setType(ValueMetaInterface.TYPE_STRING);
@@ -190,7 +191,7 @@ public class RowGenerator extends BaseStep implements StepInterface
             
             // Create a row (constants) with all the values in it...
             List<CheckResultInterface> remarks = new ArrayList<CheckResultInterface>(); // stores the errors...
-            RowMetaAndData outputRow = buildRow(meta, remarks);
+            RowMetaAndData outputRow = buildRow(meta, remarks, getStepname());
             if (!remarks.isEmpty()) 
             { 
                 for (int i=0;i<remarks.size();i++)
