@@ -88,7 +88,7 @@ public class ValueNumberTest extends TestCase
 		assertEquals(new BigDecimal(-4L), vs1.getBigNumber());
 		assertEquals(new BigDecimal(0L),  vs2.getBigNumber());
 		assertEquals(new BigDecimal(3L),  vs3.getBigNumber());
-		assertEquals(new BigDecimal(3.5D),  vs4.getBigNumber());
+		assertEquals(BigDecimal.valueOf(3.5D),  vs4.getBigNumber());
 		
 		assertEquals(-4L, vs1.getDate().getTime());
 		assertEquals(0L, vs2.getDate().getTime());

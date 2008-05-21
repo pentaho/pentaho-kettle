@@ -836,9 +836,9 @@ public class ValueTest extends TestCase
 	    assertFalse(vs1.isEqualTo("test1"));
 
 	    Value vs2 = new Value("Name", Value.VALUE_TYPE_STRING);
-	    vs2.setValue(new BigDecimal(1.0D));
-	    assertTrue(vs2.isEqualTo(new BigDecimal(1.0D)));
-	    assertFalse(vs2.isEqualTo(new BigDecimal(2.0D)));
+	    vs2.setValue(BigDecimal.ONE);
+	    assertTrue(vs2.isEqualTo(BigDecimal.ONE));
+	    assertFalse(vs2.isEqualTo(BigDecimal.valueOf(2.0D)));
 
 	    Value vs3 = new Value("Name", Value.VALUE_TYPE_NUMBER);
 	    vs3.setValue(10.0D);

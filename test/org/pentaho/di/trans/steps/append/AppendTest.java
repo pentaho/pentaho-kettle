@@ -83,16 +83,16 @@ public class AppendTest extends TestCase
 		
 		Object[] r1 = new Object[] { "KETTLE1", new Long(123L), 
                                      new Double(10.5D), new Date(),
-                                     Boolean.TRUE, new BigDecimal(123.45),
-                                     new BigDecimal(123.60) };
+                                     Boolean.TRUE, BigDecimal.valueOf(123.45),
+                                     BigDecimal.valueOf(123.60) };
 		Object[] r2 = new Object[] { "KETTLE1", new Long(500L), 
                                      new Double(20.0D), new Date(),
-                                     Boolean.FALSE, new BigDecimal(123.45),
-                                     new BigDecimal(123.60) };
+                                     Boolean.FALSE, BigDecimal.valueOf(123.45),
+                                     BigDecimal.valueOf(123.60) };
 		Object[] r3 = new Object[] { "KETTLE1", new Long(501L), 
                                      new Double(21.0D), new Date(),
-                                     Boolean.FALSE, new BigDecimal(123.45),
-                                     new BigDecimal(123.70) };
+                                     Boolean.FALSE, BigDecimal.valueOf(123.45),
+                                     BigDecimal.valueOf(123.70) };
 		
 		list.add(new RowMetaAndData(rm, r1));
 		list.add(new RowMetaAndData(rm, r2));
@@ -112,16 +112,16 @@ public class AppendTest extends TestCase
 		
 		Object[] r1 = new Object[] { "KETTLE1", Long.valueOf(123L), 
                                      new Double(10.5D), new Date(),
-                                     Boolean.TRUE, new BigDecimal(123.45),
-                                     new BigDecimal(123.60) };
+                                     Boolean.TRUE, BigDecimal.valueOf(123.45),
+                                     BigDecimal.valueOf(123.60) };
 		Object[] r2 = new Object[] { "KETTLE1", Long.valueOf(500L), 
                                      new Double(20.0D), new Date(),
-                                     Boolean.FALSE, new BigDecimal(123.45),
-                                     new BigDecimal(123.60) };
+                                     Boolean.FALSE, BigDecimal.valueOf(123.45),
+                                     BigDecimal.valueOf(123.60) };
 		Object[] r3 = new Object[] { "KETTLE1", Long.valueOf(501L), 
                                      new Double(21.0D), new Date(),
-                                     Boolean.FALSE, new BigDecimal(123.45),
-                                     new BigDecimal(123.70) };
+                                     Boolean.FALSE, BigDecimal.valueOf(123.45),
+                                     BigDecimal.valueOf(123.70) };
 		
 		list.add(new RowMetaAndData(rm, r1));
 		list.add(new RowMetaAndData(rm, r2));

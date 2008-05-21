@@ -43,7 +43,7 @@ public class ValueBigNumberTest extends TestCase
 		assertEquals(-1, vs.getLength());
 		assertEquals(-1, vs.getPrecision());
 
-		ValueBigNumber vs1 = new ValueBigNumber(new BigDecimal(1.0));
+		ValueBigNumber vs1 = new ValueBigNumber(BigDecimal.ONE);
  
 		vs1.setLength(2);
 		assertEquals(2, vs1.getLength());
@@ -63,8 +63,8 @@ public class ValueBigNumberTest extends TestCase
 	public void testGetters()
 	{
 		ValueBigNumber vs1 = new ValueBigNumber();
-		ValueBigNumber vs2 = new ValueBigNumber(new BigDecimal(0.0D));
-		ValueBigNumber vs3 = new ValueBigNumber(new BigDecimal(1.0D));
+		ValueBigNumber vs2 = new ValueBigNumber(BigDecimal.ZERO);
+		ValueBigNumber vs3 = new ValueBigNumber(BigDecimal.ONE);
 
 		assertEquals(false,  vs1.getBoolean());
 		assertEquals(false, vs2.getBoolean());
@@ -91,8 +91,8 @@ public class ValueBigNumberTest extends TestCase
 		assertEquals(1L, vs3.getDate().getTime());	
 		
 		assertNull(vs1.getSerializable());
-		assertEquals(new BigDecimal(0.0D), vs2.getSerializable());		
-		assertEquals(new BigDecimal(1.0D), vs3.getSerializable());
+		assertEquals(BigDecimal.ZERO, vs2.getSerializable());		
+		assertEquals(BigDecimal.ONE, vs3.getSerializable());
 	}
 
 	/**
@@ -103,13 +103,13 @@ public class ValueBigNumberTest extends TestCase
 		ValueBigNumber vs = new ValueBigNumber();
 		
 		vs.setString("unknown");
-		assertEquals(new BigDecimal(0.0D), vs.getBigNumber());
+		assertEquals(BigDecimal.ZERO, vs.getBigNumber());
 		vs.setString("-4.0");
 		assertEquals(new BigDecimal(-4), vs.getBigNumber());
 		vs.setString("0.0");
-		assertEquals(new BigDecimal(0), vs.getBigNumber());
+		assertEquals(BigDecimal.ZERO, vs.getBigNumber());
 		vs.setString("0");
-		assertEquals(new BigDecimal(0), vs.getBigNumber());
+		assertEquals(BigDecimal.ZERO, vs.getBigNumber());
 		
 		SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS", Locale.US);		
 	    Date dt = null;
@@ -122,22 +122,22 @@ public class ValueBigNumberTest extends TestCase
 	       dt = null;	
 	    }
 		vs.setDate(dt);
-		assertEquals(new BigDecimal(1.149634923004E12), vs.getBigNumber());
+		assertEquals(BigDecimal.valueOf(1.149634923004E12), vs.getBigNumber());
 
 		vs.setBoolean(true);
-		assertEquals(new BigDecimal(1.0D), vs.getBigNumber());
+		assertEquals(BigDecimal.ONE, vs.getBigNumber());
 		vs.setBoolean(false);
-		assertEquals(new BigDecimal(0.0D), vs.getBigNumber());
+		assertEquals(BigDecimal.ZERO, vs.getBigNumber());
 
 		vs.setNumber(5.0D);
-		assertEquals(new BigDecimal(5.0D), vs.getBigNumber());
+		assertEquals(BigDecimal.valueOf(5.0D), vs.getBigNumber());
 		vs.setNumber(0.0D);
-		assertEquals(new BigDecimal(0.0D), vs.getBigNumber());
+		assertEquals(BigDecimal.ZERO, vs.getBigNumber());
 		
 		vs.setInteger(5L);
-		assertEquals(new BigDecimal(5.0D), vs.getBigNumber());
+		assertEquals(BigDecimal.valueOf(5.0D), vs.getBigNumber());
 		vs.setInteger(0L);
-		assertEquals(new BigDecimal(0.0D), vs.getBigNumber());
+		assertEquals(BigDecimal.ZERO, vs.getBigNumber());
 
 		vs.setBigNumber(new BigDecimal(5));
 		assertEquals(5.0D, vs.getNumber(), 0.1D);

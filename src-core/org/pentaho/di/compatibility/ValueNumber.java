@@ -151,7 +151,7 @@ public class ValueNumber implements ValueInterface, Cloneable
 
     public BigDecimal getBigNumber()
     {
-        return new BigDecimal(number);
+        return BigDecimal.valueOf(number);
     }
 
     public void setBigNumber(BigDecimal number)

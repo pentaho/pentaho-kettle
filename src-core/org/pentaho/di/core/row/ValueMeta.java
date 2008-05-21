@@ -963,7 +963,7 @@ public class ValueMeta implements ValueMetaInterface
     private BigDecimal convertBooleanToBigNumber(Boolean bool)
     {
     	if (bool==null) return null;
-        return new BigDecimal( bool.booleanValue() ? 1.0 : 0.0 );
+        return bool.booleanValue() ? BigDecimal.ONE : BigDecimal.ZERO;
     }
     
     private Boolean convertBigNumberToBoolean(BigDecimal number)
@@ -1500,17 +1500,17 @@ public class ValueMeta implements ValueMetaInterface
         case TYPE_INTEGER:
             switch(storageType)
             {
-            case STORAGE_TYPE_NORMAL:         return new BigDecimal( ((Long)object).doubleValue() );
-            case STORAGE_TYPE_BINARY_STRING:  return new BigDecimal( ((Long)convertBinaryStringToNativeType((byte[])object)).longValue() );
-            case STORAGE_TYPE_INDEXED:        return new BigDecimal( ((Long)index[((Integer)object).intValue()]).doubleValue() );
+            case STORAGE_TYPE_NORMAL:         return BigDecimal.valueOf( ((Long)object).doubleValue() );
+            case STORAGE_TYPE_BINARY_STRING:  return BigDecimal.valueOf( ((Long)convertBinaryStringToNativeType((byte[])object)).longValue() );
+            case STORAGE_TYPE_INDEXED:        return BigDecimal.valueOf( ((Long)index[((Integer)object).intValue()]).doubleValue() );
             default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
             }
         case TYPE_NUMBER:
             switch(storageType)
             {
-            case STORAGE_TYPE_NORMAL:         return new BigDecimal( ((Double)object).doubleValue() );
-            case STORAGE_TYPE_BINARY_STRING:  return new BigDecimal( ((Double)convertBinaryStringToNativeType((byte[])object)).doubleValue() );
-            case STORAGE_TYPE_INDEXED:        return new BigDecimal( ((Double)index[((Integer)object).intValue()]).doubleValue() );
+            case STORAGE_TYPE_NORMAL:         return BigDecimal.valueOf( ((Double)object).doubleValue() );
+            case STORAGE_TYPE_BINARY_STRING:  return BigDecimal.valueOf( ((Double)convertBinaryStringToNativeType((byte[])object)).doubleValue() );
+            case STORAGE_TYPE_INDEXED:        return BigDecimal.valueOf( ((Double)index[((Integer)object).intValue()]).doubleValue() );
             default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
             }
         case TYPE_DATE:

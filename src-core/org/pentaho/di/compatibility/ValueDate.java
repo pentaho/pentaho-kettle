@@ -153,7 +153,7 @@ public class ValueDate implements ValueInterface, Cloneable
 
     public BigDecimal getBigNumber()
     {
-        if (date==null) return new BigDecimal(0.0);
+        if (date==null) return BigDecimal.ZERO;
         return new BigDecimal(date.getTime());
     }
 

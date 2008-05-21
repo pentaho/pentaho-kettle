@@ -540,7 +540,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 				    if (valueMeta.isString()) valueData = "test value test value test value test value test value test value test value test value test value test value"; //$NON-NLS-1$
                     if (valueMeta.isInteger()) valueData = Long.valueOf(0L);
                     if (valueMeta.isNumber()) valueData = new Double(0.0);
-                    if (valueMeta.isBigNumber()) valueData = new BigDecimal(0.0);
+                    if (valueMeta.isBigNumber()) valueData = BigDecimal.ZERO;
                     if (valueMeta.isBoolean()) valueData = Boolean.TRUE;
                     if (valueMeta.isBinary()) valueData = new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, };
                     

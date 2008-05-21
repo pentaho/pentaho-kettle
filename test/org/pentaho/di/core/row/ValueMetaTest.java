@@ -287,7 +287,7 @@ public class ValueMetaTest extends TestCase
 		Double numberValue = numValueMeta.getNumber(data);
 		assertEquals(new Double(1234.56), numberValue);
 		BigDecimal bigNumberValue = numValueMeta.getBigNumber(data);
-		assertEquals(new BigDecimal(1234.56), bigNumberValue);
+		assertEquals(BigDecimal.valueOf(1234.56), bigNumberValue);
 		Date dateValue = numValueMeta.getDate(data);
 		assertEquals(new Date(1234L), dateValue);
 		String string = numValueMeta.getString(data);

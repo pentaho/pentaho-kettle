@@ -474,7 +474,7 @@ public class Const
 
 	public static final double round(double f, int places)
 	{
-		java.math.BigDecimal bdtemp = new java.math.BigDecimal(f);
+		java.math.BigDecimal bdtemp = java.math.BigDecimal.valueOf(f);
 		bdtemp = bdtemp.setScale(places, java.math.BigDecimal.ROUND_HALF_EVEN);
 		return bdtemp.doubleValue();
 	}

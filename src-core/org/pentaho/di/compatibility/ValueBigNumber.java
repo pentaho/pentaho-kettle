@@ -16,8 +16,6 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import org.pentaho.di.core.Const;
-
 
 /**
  * This class contains a Value of type BigNumber and the length/precision by which it is described.
@@ -94,27 +92,34 @@ public class ValueBigNumber implements ValueInterface, Cloneable
 	
 	public void    setString(String string)
 	{
-		this.number = new BigDecimal( Const.toDouble(string, 0.0) );
+		try
+        {
+            this.number = new BigDecimal( string );
+        }
+        catch (NumberFormatException e)
+        {
+            this.number = BigDecimal.ZERO;
+        }
 	}
 	
 	public void    setNumber(double number)
 	{
-		this.number = new BigDecimal(number);
+		this.number = BigDecimal.valueOf(number);
 	}
 	
 	public void    setDate(Date date)
 	{
-		this.number = new BigDecimal( (double)date.getTime() );
+		this.number = new BigDecimal( date.getTime() );
 	}
 	
 	public void    setBoolean(boolean bool)
 	{
-		this.number = new BigDecimal(bool?1.0:0.0);
+		this.number = bool ? BigDecimal.ONE : BigDecimal.ZERO;
 	}
 	
 	public void    setInteger(long number)
 	{
-		this.number = new BigDecimal( (double) number );
+		this.number = new BigDecimal( number );
 	}
 
     public void setSerializable(Serializable ser) {

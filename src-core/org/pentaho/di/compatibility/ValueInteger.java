@@ -149,7 +149,7 @@ public class ValueInteger implements ValueInterface, Cloneable
 
     public BigDecimal getBigNumber()
     {
-        return new BigDecimal((double)number);
+        return new BigDecimal(number);
     }
 
     public void setBigNumber(BigDecimal number)

@@ -180,7 +180,7 @@ public class ValueDataUtil
         case ValueMetaInterface.TYPE_INTEGER   : 
             return new Long( Math.round( Math.sqrt( metaA.getNumber(dataA).doubleValue()) ) );
         case ValueMetaInterface.TYPE_BIGNUMBER : 
-            return new BigDecimal( Math.sqrt( metaA.getNumber(dataA).doubleValue()) );
+            return BigDecimal.valueOf( Math.sqrt( metaA.getNumber(dataA).doubleValue()) );
             
         default: throw new KettleValueException("The 'multiply' function only works on numeric data optionally multiplying strings." );
         }
@@ -322,7 +322,7 @@ public class ValueDataUtil
             return new Long( Math.round( Math.sqrt( metaA.getInteger(dataA).longValue() * metaA.getInteger(dataA).longValue() + metaB.getInteger(dataB).longValue() / metaB.getInteger(dataB).longValue() )));
 
         case ValueMetaInterface.TYPE_BIGNUMBER : 
-            return new BigDecimal( Math.sqrt( metaA.getNumber(dataA).doubleValue() * metaA.getNumber(dataA).doubleValue() + metaB.getNumber(dataB).doubleValue() * metaB.getNumber(dataB).doubleValue() ));
+            return BigDecimal.valueOf( Math.sqrt( metaA.getNumber(dataA).doubleValue() * metaA.getNumber(dataA).doubleValue() + metaB.getNumber(dataB).doubleValue() * metaB.getNumber(dataB).doubleValue() ));
             
         default: throw new KettleValueException("The 'combination2' function only works on numeric data" );
         }
