@@ -1243,7 +1243,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		wAddDate.setSelection(input.isDateInFilename());
 		wAddTime.setSelection(input.isTimeInFilename());
 		if (input.getDateTimeFormat()!= null) wDateTimeFormat.setText( input.getDateTimeFormat() );
-		wSpecifyFormat.setSelection(input.isSpecifyFormat());
+		wSpecifyFormat.setSelection(input.isSpecifyingFormat());
 		
 		wAppend.setSelection(input.isFileAppended());
 		wAddStepnr.setSelection(input.isStepNrInFilename());
@@ -1313,7 +1313,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		tfoi.setDateInFilename( wAddDate.getSelection() );
 		tfoi.setTimeInFilename( wAddTime.getSelection() );
 		tfoi.setDateTimeFormat(wDateTimeFormat.getText());
-		tfoi.setSpecifyFormat(wSpecifyFormat.getSelection());
+		tfoi.setSpecifyingFormat(wSpecifyFormat.getSelection());
 		tfoi.setPadded( wPad.getSelection() );
 		tfoi.setAddToResultFiles( wAddToResult.getSelection() );
 		tfoi.setFastDump( wFastDump.getSelection() );
