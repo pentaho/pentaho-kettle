@@ -766,6 +766,12 @@
 	<target name="macapplication" depends="distrib" description="Build OS X executable">
 		
 	  	        <delete dir="${macdistrib}/${ant.project.name}.app"/>
+			  	<delete>
+			        <fileset dir=".">
+					  <include name="*.dmg"/>
+			    	</fileset>
+			  	</delete>
+
 	  	        <taskdef name="jarbundler"
 	  	                 classpath="${jarbundler.jar}"
 	  	                 classname="net.sourceforge.jarbundler.JarBundler"/>
