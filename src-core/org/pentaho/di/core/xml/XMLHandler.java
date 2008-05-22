@@ -629,14 +629,14 @@ public class XMLHandler
             try
             {
             	if (Const.isEmpty(systemID)) {
-            		doc  = db.parse(fileObject.getContent().getInputStream());
+            		doc  = db.parse(KettleVFS.getInputStream(fileObject));
             	} else {
             		String systemIDwithEndingSlash=systemID.trim();
             		//make sure we have an ending slash, otherwise the last part will be ignored
             		if (!systemIDwithEndingSlash.endsWith("/") && !systemIDwithEndingSlash.endsWith("\\")) {
             			systemIDwithEndingSlash=systemIDwithEndingSlash.concat("/");
             		}
-            		doc  = db.parse(fileObject.getContent().getInputStream(),systemIDwithEndingSlash);
+            		doc  = db.parse(KettleVFS.getInputStream(fileObject),systemIDwithEndingSlash);
             	}
             }
             catch(FileNotFoundException ef)

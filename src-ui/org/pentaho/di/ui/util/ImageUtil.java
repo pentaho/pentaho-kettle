@@ -71,7 +71,8 @@ public class ImageUtil
 			}
 		}
 		try {
-			return new Image(display,VFS.getManager().resolveFile(base,location).getContent().getInputStream());
+			FileObject imageFileObject = VFS.getManager().resolveFile(base,location);
+			return new Image(display,KettleVFS.getInputStream(imageFileObject));
 		} catch (FileSystemException e) {
 			throw new RuntimeException("Unable to load image with name ["+location+"]", e);
 		}

@@ -417,12 +417,11 @@ public class ExcelOutput extends BaseStep implements StepInterface
             	
                	if(meta.isAppend() && data.file.exists())
             	{
-               		File fle = new File(filename);
-                    boolean find=false;
+               		boolean find=false;
                     int position=0;
                     
             		// Update Workbook
-            		data.workbook = Workbook.createWorkbook(fle ,Workbook.getWorkbook(fle));
+            		data.workbook = Workbook.createWorkbook(KettleVFS.getOutputStream(data.file,false) ,Workbook.getWorkbook(KettleVFS.getInputStream(data.file)));
             		
             		// get available sheets
             		String listSheets[]=data.workbook.getSheetNames();
@@ -452,7 +451,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
             	}else{
                 
             		// Create a new Workbook
-    				data.workbook = Workbook.createWorkbook(data.file.getContent().getOutputStream(), ws);
+    				data.workbook = Workbook.createWorkbook(KettleVFS.getOutputStream(data.file, false), ws);
     				
     				// Create a sheet?
     				String sheetname = "Sheet1";
@@ -468,8 +467,8 @@ public class ExcelOutput extends BaseStep implements StepInterface
             	FileObject fo = KettleVFS.getFileObject(environmentSubstitute(meta.getTemplateFileName()));
 				// create the openFile from the template
 
-				Workbook tmpWorkbook=Workbook.getWorkbook(fo.getContent().getInputStream(), ws);
-				data.workbook = Workbook.createWorkbook(data.file.getContent().getOutputStream(), tmpWorkbook);
+				Workbook tmpWorkbook=Workbook.getWorkbook(KettleVFS.getInputStream(fo), ws);
+				data.workbook = Workbook.createWorkbook(KettleVFS.getOutputStream(data.file,false), tmpWorkbook);
 				
             	tmpWorkbook.close();
             	// use only the first sheet as template

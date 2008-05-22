@@ -24,6 +24,7 @@ import java.util.Set;
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.vfs.KettleVFS;
 
 class FilePlayListReplayLineNumberFile extends FilePlayListReplayFile
 {
@@ -41,9 +42,9 @@ class FilePlayListReplayLineNumberFile extends FilePlayListReplayFile
         try
         {
             if (encoding == null)
-                reader = new BufferedReader(new InputStreamReader(lineNumberFile.getContent().getInputStream()));
+                reader = new BufferedReader(new InputStreamReader(KettleVFS.getInputStream(lineNumberFile)));
             else
-                reader = new BufferedReader(new InputStreamReader(lineNumberFile.getContent().getInputStream(), encoding));
+                reader = new BufferedReader(new InputStreamReader(KettleVFS.getInputStream(lineNumberFile), encoding));
             String line = null;
             while ((line = reader.readLine()) != null)
             {

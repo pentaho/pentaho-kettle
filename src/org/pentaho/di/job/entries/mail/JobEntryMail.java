@@ -56,6 +56,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.gui.JobTracker;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobEntryResult;
@@ -986,7 +987,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
                   zipOutputStream.putNextEntry(zipEntry);
 
                   // Now put the content of this file into this archive...
-                  BufferedInputStream inputStream = new BufferedInputStream(file.getContent().getInputStream());
+                  BufferedInputStream inputStream = new BufferedInputStream(KettleVFS.getInputStream(file));
                   int c;
                   while ((c = inputStream.read()) >= 0)
                   {

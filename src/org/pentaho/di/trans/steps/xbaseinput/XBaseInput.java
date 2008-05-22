@@ -205,7 +205,7 @@ public class XBaseInput extends BaseStep implements StepInterface
                 
         try
         {
-            data.xbi=new XBase(data.file_dbf.getContent().getInputStream());
+            data.xbi=new XBase(KettleVFS.getInputStream(data.file_dbf));
             data.xbi.setDbfFile(data.file_dbf.getName().getURI());
             if (!Const.isEmpty(meta.getCharactersetName())) {
             	data.xbi.getReader().setCharactersetName(meta.getCharactersetName());

@@ -29,6 +29,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
@@ -314,7 +315,7 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface
         XBase xbi=null;
 		try
 		{
-            xbi = new XBase(files.getFile(0).getContent().getInputStream());
+            xbi = new XBase(KettleVFS.getInputStream(files.getFile(0)));
             xbi.setDbfFile(files.getFile(0).getName().getURI());
             xbi.open();
 			RowMetaInterface add = xbi.getFields();

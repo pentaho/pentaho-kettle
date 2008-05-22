@@ -496,7 +496,7 @@ public class ExcelInput extends BaseStep implements StepInterface
                 {
                     ws.setEncoding(meta.getEncoding());
                 }
-				data.workbook = Workbook.getWorkbook(data.file.getContent().getInputStream(), ws);
+				data.workbook = Workbook.getWorkbook(KettleVFS.getInputStream(data.file), ws);
                 
 				data.errorHandler.handleFile(data.file);
 				// Start at the first sheet again...

@@ -87,6 +87,7 @@ import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.gui.TextFileInputFieldInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransPreviewFactory;
@@ -2408,7 +2409,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 				wFields.table.removeAll();
 
                 FileObject fileObject = textFileList.getFile(0);
-				fileInputStream = fileObject.getContent().getInputStream();
+				fileInputStream = KettleVFS.getInputStream(fileObject);
 				Table table = wFields.table;
 				
 				if (meta.getFileCompression().equals("Zip"))
@@ -2729,7 +2730,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 			FileObject file = textFileList.getFile(0);
 			try
 			{
-				fi = file.getContent().getInputStream();
+				fi = KettleVFS.getInputStream(file);
 				
 				if (meta.getFileCompression().equals("Zip"))
 				{

@@ -48,6 +48,7 @@ import org.pentaho.di.core.config.KettleConfig;
 import org.pentaho.di.core.exception.KettleConfigException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.util.ResolverUtil;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.JobPlugin;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -306,7 +307,7 @@ public class PluginLoader
 	{
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		DocumentBuilder db = dbf.newDocumentBuilder();
-		Document doc = db.parse(xml.getContent().getInputStream());
+		Document doc = db.parse(KettleVFS.getInputStream(xml));
 		Node plugin = XMLHandler.getSubNode(doc, Plugin.PLUGIN);
 		String id = XMLHandler.getTagAttribute(plugin, Plugin.ID);
 		String description = XMLHandler.getTagAttribute(plugin, Plugin.DESCRIPTION);

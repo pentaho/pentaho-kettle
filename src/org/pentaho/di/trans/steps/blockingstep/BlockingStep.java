@@ -74,7 +74,7 @@ public class BlockingStep extends BaseStep implements StepInterface {
 				FileObject fileObject=KettleVFS.createTempFile(meta.getPrefix(), ".tmp", environmentSubstitute(meta.getDirectory()));
 				
 				data.files.add(fileObject); // Remember the files!
-				OutputStream outputStream = fileObject.getContent().getOutputStream();
+				OutputStream outputStream = KettleVFS.getOutputStream(fileObject,false);
 				if (meta.getCompress())
 				{
 					gzos = new GZIPOutputStream(new BufferedOutputStream(outputStream));
@@ -128,7 +128,7 @@ public class BlockingStep extends BaseStep implements StepInterface {
 				FileObject fileObject = (FileObject)data.files.get(0);
 				String filename = KettleVFS.getFilename(fileObject);
 				if (log.isDetailed()) logDetailed(Messages.getString("BlockingStep.Log.Openfilename1")+filename+Messages.getString("BlockingStep.Log.Openfilename2"));
-				InputStream fi=fileObject.getContent().getInputStream();
+				InputStream fi=KettleVFS.getInputStream(fileObject);
 				DataInputStream di;
 				data.fis.add(fi);
 				if (meta.getCompress())
