@@ -197,7 +197,7 @@ public class JobEntryTableExistsDialog extends JobEntryDialog implements JobEntr
 
         wCancel.addListener(SWT.Selection, lsCancel);
         wOK.addListener(SWT.Selection, lsOK);
-
+		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wTablename);
         lsDef = new SelectionAdapter()
         {
             public void widgetDefaultSelected(SelectionEvent e)

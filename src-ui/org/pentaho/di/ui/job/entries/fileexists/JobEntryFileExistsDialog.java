@@ -235,7 +235,8 @@ public class JobEntryFileExistsDialog extends JobEntryDialog implements JobEntry
 		fd.bottom = new FormAttachment(100, 0);
 		fd.width = 100;
 		wCancel.setLayoutData(fd);
-
+		
+		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wFilename);
 		// Add listeners
 		lsCancel = new Listener()
 		{
