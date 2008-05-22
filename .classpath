@@ -46,7 +46,7 @@
 	<classpathentry kind="lib" path="libext/webservices/qname.jar"/>
 	<classpathentry kind="lib" path="libext/webservices/wsdl4j.jar"/>
 	<classpathentry kind="lib" path="libext/webservices/wstx-asl-3.2.0.jar"/>
-	<classpathentry kind="lib" path="libext/commons/commons-vfs-1.0.jar"/>
+	<classpathentry kind="lib" path="libext/commons/commons-vfs-1.0.jar" sourcepath="libext-src/vfs-1.0.zip"/>
 	<classpathentry kind="lib" path="libext/JDBC/derbyclient.jar"/>
 	<classpathentry kind="lib" path="libext/ldapjdk.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/derby.jar"/>
