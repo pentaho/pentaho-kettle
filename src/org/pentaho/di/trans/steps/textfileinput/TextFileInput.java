@@ -604,7 +604,7 @@ public class TextFileInput extends BaseStep implements StepInterface
     
     public static final Object[] convertLineToRow(TextFileLine textFileLine, InputFileMetaInterface info, RowMetaInterface outputRowMeta, RowMetaInterface convertRowMeta, String fname, long rowNr, FileErrorHandler errorHandler) throws KettleException
     {
-        if (textFileLine == null || textFileLine.line == null || textFileLine.line.length() == 0) return null;
+      if (textFileLine == null || textFileLine.line == null /*|| textFileLine.line.length() == 0*/) return null;
         Object[] r = RowDataUtil.allocateRowData(outputRowMeta.size()); // over-allocate a bit in the row producing steps...
         
         int nrfields = info.getInputFields().length;
