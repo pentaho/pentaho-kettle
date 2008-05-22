@@ -781,7 +781,7 @@
 	  	                    icon="${ui}/images/spoon32.icns"
 	  	                    version="${version} build number ${release.build.number}"
 	  	        			verbose="true"
-	  	        	VMOptions="-Xmx256m"
+	  	        	VMOptions="${macappmaxmem}"
 				    shortname="Spoon"
 	  	        	arguments=""
                     workingdirectory="$APP_PACKAGE/Contents/Resources/Java"
