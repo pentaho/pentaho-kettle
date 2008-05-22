@@ -1166,7 +1166,7 @@ public class Database implements VariableSpace
 		StringBuffer ins=new StringBuffer(128);
 		
         String schemaTable = databaseMeta.getQuotedSchemaTableCombination(schemaName, tableName);
-		ins.append("INSERT INTO ").append(schemaTable).append('(');
+		ins.append("INSERT INTO ").append(schemaTable).append(" (");
 		
 		// now add the names in the row:
 		for (int i=0;i<fields.size();i++)
