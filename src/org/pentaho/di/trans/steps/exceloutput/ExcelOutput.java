@@ -12,7 +12,6 @@
 
 package org.pentaho.di.trans.steps.exceloutput;
 
-import java.io.File;
 import java.util.Locale;
 
 import jxl.Workbook;
