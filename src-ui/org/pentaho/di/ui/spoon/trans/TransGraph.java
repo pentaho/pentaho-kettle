@@ -1764,7 +1764,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
           menu.addMenuListener("trans-graph-entry-clustering", this, "clustering"); //$NON-NLS-1$ //$NON-NLS-2$
           menu.addMenuListener("trans-graph-entry-errors", this, "errorHandling"); //$NON-NLS-1$ //$NON-NLS-2$
 
-          displayMenu(menu, canvas);
+          ConstUI.displayMenu((Menu)menu.getNativeObject(), canvas);
         }
       } else {
         final TransHopMeta hi = findHop(x, y);
@@ -1788,7 +1788,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
             menu.addMenuListener("trans-graph-hop-enabled", this, "enableHop"); //$NON-NLS-1$ //$NON-NLS-2$
             menu.addMenuListener("trans-graph-hop-delete", this, "deleteHop"); //$NON-NLS-1$ //$NON-NLS-2$
 
-            displayMenu(menu, canvas);
+            ConstUI.displayMenu((Menu)menu.getNativeObject(), canvas);
           }
         } else {
           // Clicked on the background: maybe we hit a note?
@@ -1803,7 +1803,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
               menu.addMenuListener("trans-graph-note-delete", this, "deleteNote"); //$NON-NLS-1$ //$NON-NLS-2$
               menu.addMenuListener("trans-graph-note-raise", this, "raiseNote"); //$NON-NLS-1$ //$NON-NLS-2$
               menu.addMenuListener("trans-graph-note-lower", this, "lowerNote"); //$NON-NLS-1$ //$NON-NLS-2$
-              displayMenu(menu, canvas);
+              ConstUI.displayMenu((Menu)menu.getNativeObject(), canvas);
             }
           } else {
 
@@ -1848,7 +1848,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 
               }
 
-              displayMenu(menu, canvas);
+              ConstUI.displayMenu((Menu)menu.getNativeObject(), canvas);
             }
 
           }
@@ -1858,16 +1858,6 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
       // TODO: fix this: log somehow, is IGNORED for now.
       t.printStackTrace();
     }
-  }
-
-  private void displayMenu(XulPopupMenu menu, Control control) {
-    Menu nativeMenu = (Menu) menu.getNativeObject();
-    Menu oldMenu = control.getMenu();
-    if (oldMenu != null && oldMenu != nativeMenu) {
-      oldMenu.setVisible(false);
-    }
-    control.setMenu(nativeMenu);
-    nativeMenu.setVisible(true);
   }
 
   private boolean checkNumberOfCopies(TransMeta transMeta, StepMeta stepMeta) {

@@ -1330,7 +1330,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
         menu.addMenuListener("job-graph-entry-hide", this, "hideEntry"); //$NON-NLS-1$ //$NON-NLS-2$ 
         menu.addMenuListener("job-graph-entry-delete", this, "deleteEntry"); //$NON-NLS-1$ //$NON-NLS-2$ 
 
-        displayMenu(menu, canvas);
+        ConstUI.displayMenu((Menu)menu.getNativeObject(), canvas);
       }
 
     } else // Clear the menu
@@ -1397,7 +1397,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
             else
               miDisHop.setText(Messages.getString("JobGraph.PopupMenu.Hop.Enable")); //$NON-NLS-1$
           }
-          displayMenu(menu, canvas);
+          ConstUI.displayMenu((Menu)menu.getNativeObject(), canvas);
         }
 
       } else {
@@ -1415,7 +1415,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
             menu.addMenuListener("job-graph-note-raise", this, "raiseNote"); //$NON-NLS-1$ //$NON-NLS-2$
             menu.addMenuListener("job-graph-note-lower", this, "lowerNote"); //$NON-NLS-1$ //$NON-NLS-2$
 
-            displayMenu(menu, canvas);
+            ConstUI.displayMenu((Menu)menu.getNativeObject(), canvas);
           }
         } else {
           XulPopupMenu menu = (XulPopupMenu) menuMap.get("job-graph-background"); //$NON-NLS-1$
@@ -1431,21 +1431,11 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
               item.setEnabled(clipcontent != null);
             }
 
-            displayMenu(menu, canvas);
+            ConstUI.displayMenu((Menu)menu.getNativeObject(), canvas);
           }
         }
       }
     }
-  }
-
-  private void displayMenu(XulPopupMenu menu, Control control) {
-    Menu nativeMenu = (Menu) menu.getNativeObject();
-    Menu oldMenu = control.getMenu();
-    if (oldMenu != null && oldMenu != nativeMenu) {
-      oldMenu.setVisible(false);
-    }
-    control.setMenu(nativeMenu);
-    nativeMenu.setVisible(true);
   }
 
   public void editJobProperties() {

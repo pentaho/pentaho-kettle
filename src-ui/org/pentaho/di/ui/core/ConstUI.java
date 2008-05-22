@@ -12,6 +12,8 @@
 package org.pentaho.di.ui.core;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.TreeItem;
 import org.pentaho.di.core.Const;
 
@@ -237,6 +239,20 @@ public class ConstUI
             }
         }
         return null;
+    }
+
+    public static void displayMenu(Menu menu, Control control) {
+        Menu oldMenu = control.getMenu();
+        if (oldMenu != null && oldMenu != menu) {
+            oldMenu.setVisible(false);
+        }
+
+        //XXX: Stubbing out this line prevents context dialogs from appearing twice
+        // on OS X.  Tested on Windows to be sure there is no adverse effect.
+        // Unfortunately, I do *not* understand why this works.  I ran it by
+        // mcasters and he didn't know for sure either.
+        //control.setMenu(menu);
+        menu.setVisible(true);
     }
 
 }

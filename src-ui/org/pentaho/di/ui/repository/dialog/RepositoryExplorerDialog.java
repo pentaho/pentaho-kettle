@@ -1195,14 +1195,7 @@ public class RepositoryExplorerDialog extends Dialog
 			}
 		}
 		
-		Menu oldMenu = wTree.getMenu();
-		if (oldMenu!=null)
-		{
-			oldMenu.setVisible(false);
-		}
-		
-		wTree.setMenu(mTree);
-		mTree.setVisible(true);
+		ConstUI.displayMenu(mTree, wTree);
 	}
 	
 	public void renameInTree()
