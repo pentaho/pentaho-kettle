@@ -767,7 +767,7 @@
 		
 	  	        <delete dir="${macdistrib}/${ant.project.name}.app"/>
 			  	<delete>
-			        <fileset dir=".">
+			        <fileset dir="${macdistrib}">
 					  <include name="*.dmg"/>
 			    	</fileset>
 			  	</delete>
@@ -781,7 +781,7 @@
 	  	                    icon="${ui}/images/spoon32.icns"
 	  	                    version="${version} build number ${release.build.number}"
 	  	        			verbose="true"
-	  	        	VMOptions="${macappmaxmem}"
+	  	        	VMOptions="${macappmaxmem} ${macappextravmoptions}"
 				    shortname="Spoon"
 	  	        	arguments=""
                     workingdirectory="$APP_PACKAGE/Contents/Resources/Java"
