@@ -108,11 +108,11 @@ public abstract class AbstractFileErrorHandler implements FileErrorHandler {
     		try {
     			if (encoding == null)
                 {
-    				outputStreamWriter = new OutputStreamWriter(file.getContent().getOutputStream());
+    				outputStreamWriter = new OutputStreamWriter(KettleVFS.getOutputStream(file,false));
                 }
     			else
                 {
-    				outputStreamWriter = new OutputStreamWriter(file.getContent().getOutputStream(), encoding);
+    				outputStreamWriter = new OutputStreamWriter(KettleVFS.getOutputStream(file,false), encoding);
                 }
     		} 
             catch (Exception e) 

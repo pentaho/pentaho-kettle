@@ -393,7 +393,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
             	}
             	
 				// Create a new Workbook
-            	data.outputStream = file.getContent().getOutputStream();
+            	data.outputStream = KettleVFS.getOutputStream(file,false);
 				data.workbook = Workbook.createWorkbook(data.outputStream, ws);
 
 				// Create a sheet?
@@ -409,8 +409,8 @@ public class ExcelOutput extends BaseStep implements StepInterface
             	FileObject fo = KettleVFS.getFileObject(environmentSubstitute(meta.getTemplateFileName()));
 				// create the openFile from the template
 
-				Workbook tmpWorkbook=Workbook.getWorkbook(fo.getContent().getInputStream(), ws);
-				data.workbook = Workbook.createWorkbook(file.getContent().getOutputStream(), tmpWorkbook);
+				Workbook tmpWorkbook=Workbook.getWorkbook(KettleVFS.getInputStream(fo), ws);
+				data.workbook = Workbook.createWorkbook(KettleVFS.getOutputStream(file,false), tmpWorkbook);
 				
             	tmpWorkbook.close();
             	// use only the first sheet as template
