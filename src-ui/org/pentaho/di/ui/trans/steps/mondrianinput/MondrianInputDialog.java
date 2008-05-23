@@ -181,8 +181,8 @@ public class MondrianInputDialog extends BaseStepDialog implements StepDialogInt
         fdlVariables.bottom = new FormAttachment(wCatalog, -margin);
         wlVariables.setLayoutData(fdlVariables);
         wVariables = new Button(shell, SWT.CHECK);
-        wlVariables.setToolTipText(Messages.getString("MondrianInputDialog.ReplaceVariables.Tooltip")); //$NON-NLS-1$
         props.setLook(wVariables);
+        wVariables.setToolTipText(Messages.getString("MondrianInputDialog.ReplaceVariables.Tooltip")); //$NON-NLS-1$
         fdVariables = new FormData();
         fdVariables.left = new FormAttachment(middle, 0);
         fdVariables.right = new FormAttachment(100, 0);
