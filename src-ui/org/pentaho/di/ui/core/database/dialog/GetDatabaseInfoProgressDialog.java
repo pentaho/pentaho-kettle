@@ -65,7 +65,7 @@ public class GetDatabaseInfoProgressDialog
 				}
 				catch(Exception e)
 				{
-					throw new InvocationTargetException(e, "Problem encountered getting information from the database: "+e.toString());
+					throw new InvocationTargetException(e, Messages.getString("GetDatabaseInfoProgressDialog.Error.GettingInfoTable",e.toString()));
 				}
 			}
 		};

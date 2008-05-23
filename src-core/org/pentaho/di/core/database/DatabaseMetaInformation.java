@@ -147,7 +147,7 @@ public class DatabaseMetaInformation
 	{
 		if (monitor!=null)
 		{
-			monitor.beginTask("Getting information from the database...", 8);
+			monitor.beginTask(Messages.getString("DatabaseMeta.Info.GettingInfoFromDb"), 8);
 		}
 
 		Database db = new Database(dbInfo);	
@@ -164,17 +164,17 @@ public class DatabaseMetaInformation
 		
 		try
 		{
-			if (monitor!=null) monitor.subTask("Connecting to database");
+			if (monitor!=null) monitor.subTask(Messages.getString("DatabaseMeta.Info.ConnectingDb"));
 			db.connect();
 			if (monitor!=null) monitor.worked(1);
 			
 			if (monitor!=null && monitor.isCanceled()) return;
-			if (monitor!=null) monitor.subTask("Getting database metadata");
+			if (monitor!=null) monitor.subTask(Messages.getString("DatabaseMeta.Info.GettingMetaData"));
 			DatabaseMetaData dbmd = db.getDatabaseMetaData();
 			if (monitor!=null) monitor.worked(1);
 
 			if (monitor!=null && monitor.isCanceled()) return;
-			if (monitor!=null) monitor.subTask("Getting catalog information");
+			if (monitor!=null) monitor.subTask(Messages.getString("DatabaseMeta.Info.GettingInfo"));
 			if (dbInfo.supportsCatalogs() && dbmd.supportsCatalogsInTableDefinitions())
 			{
 				ArrayList<Catalog> catalogList = new ArrayList<Catalog>();
@@ -223,7 +223,7 @@ public class DatabaseMetaInformation
 					{
 						// Obviously, we're not allowed to snoop around in this catalog.
 						// Just ignore it!
-						LogWriter.getInstance().logError(getClass().getName(), "Unexpected error getting catalog information", e);
+						LogWriter.getInstance().logError(getClass().getName(),Messages.getString("DatabaseMeta.Error.UnexpectedCatalogError"), e);
 					}
 
 					// Save the list of tables in the catalog (can be empty)
@@ -237,7 +237,7 @@ public class DatabaseMetaInformation
 			if (monitor!=null) monitor.worked(1);
 	
 			if (monitor!=null && monitor.isCanceled()) return;
-			if (monitor!=null) monitor.subTask("Getting schema information");
+			if (monitor!=null) monitor.subTask(Messages.getString("DatabaseMeta.Info.GettingSchemaInfo"));
 			if (dbInfo.supportsSchemas() && dbmd.supportsSchemasInTableDefinitions())
 			{
 				ArrayList<Schema> schemaList = new ArrayList<Schema>();
@@ -286,7 +286,7 @@ public class DatabaseMetaInformation
 				}
 				catch(Exception e)
 				{
-					LogWriter.getInstance().logError(getClass().getName(), "Unexpected error getting schema information", e);
+					LogWriter.getInstance().logError(getClass().getName(), Messages.getString("DatabaseMeta.Error.UnexpectedError"), e);
 				}
 				
 				// Save for later...
@@ -295,12 +295,12 @@ public class DatabaseMetaInformation
 			if (monitor!=null) monitor.worked(1);
 	
 			if (monitor!=null && monitor.isCanceled()) return;
-			if (monitor!=null) monitor.subTask("Getting tables");
+			if (monitor!=null) monitor.subTask(Messages.getString("DatabaseMeta.Info.GettingTables"));
 			setTables(db.getTablenames());
 			if (monitor!=null) monitor.worked(1);
 	
 			if (monitor!=null && monitor.isCanceled()) return;
-			if (monitor!=null) monitor.subTask("Getting views");
+			if (monitor!=null) monitor.subTask(Messages.getString("DatabaseMeta.Info.GettingViews"));
 			if (dbInfo.supportsViews())
 			{
 				setViews(db.getViews());
@@ -308,7 +308,7 @@ public class DatabaseMetaInformation
 			if (monitor!=null) monitor.worked(1);
 	
 			if (monitor!=null && monitor.isCanceled()) return;
-			if (monitor!=null) monitor.subTask("Getting synonyms");
+			if (monitor!=null) monitor.subTask(Messages.getString("DatabaseMeta.Info.GettingSynonyms"));
 			if (dbInfo.supportsSynonyms())
 			{
 				setSynonyms(db.getSynonyms());
@@ -317,11 +317,11 @@ public class DatabaseMetaInformation
 		}
 		catch(Exception e)
 		{
-			throw new KettleDatabaseException("Unable to retrieve database information because of an error", e);
+			throw new KettleDatabaseException(Messages.getString("DatabaseMeta.Error.UnableRetrieveDbInfo"), e);
 		}
 		finally
 		{
-			if (monitor!=null) monitor.subTask("Closing database connection");
+			if (monitor!=null) monitor.subTask(Messages.getString("DatabaseMeta.Info.ClosingDbConnection"));
 
 			db.disconnect();
 			if (monitor!=null) monitor.worked(1);

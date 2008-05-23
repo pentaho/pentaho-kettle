@@ -666,10 +666,12 @@ public class Repository
 	            // this means the R_VERSION table doesn't exist.
 	            // This table was introduced in version 2.3.0
 	            //
-	            log.logBasic(toString(), "There was an error getting information from the version table "+quote(TABLE_R_VERSION)+".");
-	            log.logBasic(toString(), "This table was introduced in version 2.3.0. so we assume the version is 2.2.2");
-	            log.logBasic(toString(), "Stack trace: "+Const.getStackTracker(e));
-	
+	            if(log.isBasic()) 
+	            {
+	            	log.logBasic(toString(), Messages.getString("Repository.Error.GettingInfoVersionTable",quote(TABLE_R_VERSION)));
+	            	log.logBasic(toString(), Messages.getString("Repository.Error.NewTable"));
+	            	log.logBasic(toString(), "Stack trace: "+Const.getStackTracker(e));
+	            }
 	            majorVersion = 2;
 	            minorVersion = 2;
 	
