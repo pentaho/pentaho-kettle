@@ -49,6 +49,7 @@ public class MondrianInputMeta extends BaseStepMeta implements StepMetaInterface
 	private DatabaseMeta databaseMeta;
 	private String sql;
 	private String catalog;
+    private boolean variableReplacementActive;
 
 	public MondrianInputMeta()
 	{
@@ -70,6 +71,23 @@ public class MondrianInputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		this.databaseMeta = database;
 	}
+	
+    /**
+     * @return Returns the variableReplacementActive.
+     */
+    public boolean isVariableReplacementActive()
+    {
+        return variableReplacementActive;
+    }
+
+    /**
+     * @param variableReplacementActive The variableReplacementActive to set.
+     */
+    public void setVariableReplacementActive(boolean variableReplacementActive)
+    {
+        this.variableReplacementActive = variableReplacementActive;
+    }
+
 	
 	/**
 	 * @return Returns the sql.
@@ -107,6 +125,7 @@ public class MondrianInputMeta extends BaseStepMeta implements StepMetaInterface
 			databaseMeta              = DatabaseMeta.findDatabase(databases, XMLHandler.getTagValue(stepnode, "connection"));
 			sql                       = XMLHandler.getTagValue(stepnode, "sql");
 			catalog                   = XMLHandler.getTagValue(stepnode, "catalog");
+            variableReplacementActive = "Y".equals(XMLHandler.getTagValue(stepnode, "variables_active"));
 		}
 		catch(Exception e)
 		{
@@ -124,6 +143,7 @@ public class MondrianInputMeta extends BaseStepMeta implements StepMetaInterface
 				      " CrossJoin([Marital Status].Members,\n" +
 				      "           [Product].Children) on rows\n" +
 				      "from [Sales]";
+		variableReplacementActive=false;
 	}
     
     public void getFields(RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException 
@@ -165,6 +185,7 @@ public class MondrianInputMeta extends BaseStepMeta implements StepMetaInterface
 		retval.append("    "+XMLHandler.addTagValue("connection", databaseMeta==null?"":databaseMeta.getName()));
 		retval.append("    "+XMLHandler.addTagValue("sql",        sql));
 		retval.append("    "+XMLHandler.addTagValue("catalog",    catalog));
+        retval.append("    "+XMLHandler.addTagValue("variables_active",   variableReplacementActive));
         
 		return retval.toString();
 	}
@@ -179,6 +200,7 @@ public class MondrianInputMeta extends BaseStepMeta implements StepMetaInterface
 			
 			sql                       =      rep.getStepAttributeString (id_step, "sql");
 			catalog                   =      rep.getStepAttributeString(id_step, "catalog");
+            variableReplacementActive =      rep.getStepAttributeBoolean(id_step, "variables_active");
 		}
 		catch(Exception e)
 		{
@@ -194,6 +216,7 @@ public class MondrianInputMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "id_connection",    databaseMeta==null?-1:databaseMeta.getID());
 			rep.saveStepAttribute(id_transformation, id_step, "sql",              sql);
 			rep.saveStepAttribute(id_transformation, id_step, "limit",            catalog);
+            rep.saveStepAttribute(id_transformation, id_step, "variables_active", variableReplacementActive);
 			
 			// Also, save the step-database relationship!
 			if (databaseMeta!=null) rep.insertStepDatabase(id_transformation, id_step, databaseMeta.getID());

@@ -759,7 +759,7 @@
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.MondrianInput")
 		</description>
 		<class-name>org.pentaho.di.trans.steps.mondrianinput.MondrianInputMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@INPUT.getName()</category>
 		<tooltip>ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.MondrianInput")
 		</tooltip>
 		<image-uri>ui/images/MON.png</image-uri>

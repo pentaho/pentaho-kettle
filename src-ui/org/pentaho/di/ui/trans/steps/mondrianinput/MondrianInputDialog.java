@@ -18,8 +18,14 @@ package org.pentaho.di.ui.trans.steps.mondrianinput;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.events.FocusAdapter;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
@@ -47,6 +53,7 @@ import org.pentaho.di.trans.steps.mondrianinput.Messages;
 import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
+import org.pentaho.di.ui.core.widget.StyledTextComp;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
@@ -55,7 +62,7 @@ public class MondrianInputDialog extends BaseStepDialog implements StepDialogInt
 	private CCombo       wConnection;
 
 	private Label        wlSQL;
-	private Text         wSQL;
+	private StyledTextComp         wSQL;
 	private FormData     fdlSQL, fdSQL;
 
 	private Label        wlCatalog;
@@ -63,6 +70,15 @@ public class MondrianInputDialog extends BaseStepDialog implements StepDialogInt
 	private FormData     fdlCatalog, fdCatalog;
  
 	private MondrianInputMeta input;
+	
+	private MDXValuesHighlight lineStyler = new MDXValuesHighlight();
+	
+	private Label        wlPosition;
+	private FormData     fdlPosition;
+
+    private Label        wlVariables;
+    private Button       wVariables;
+    private FormData     fdlVariables, fdVariables; 
 
 	public MondrianInputDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
@@ -153,6 +169,35 @@ public class MondrianInputDialog extends BaseStepDialog implements StepDialogInt
 		fdCatalog.right= new FormAttachment(100, 0);
 		fdCatalog.bottom = new FormAttachment(wOK, -2*margin);
 		wCatalog.setLayoutData(fdCatalog);
+		
+        // Replace variables in MDX?
+		//
+        wlVariables = new Label(shell, SWT.RIGHT);
+        wlVariables.setText(Messages.getString("MondrianInputDialog.ReplaceVariables")); //$NON-NLS-1$
+        props.setLook(wlVariables);
+        fdlVariables = new FormData();
+        fdlVariables.left = new FormAttachment(0, 0);
+        fdlVariables.right = new FormAttachment(middle, -margin);
+        fdlVariables.bottom = new FormAttachment(wCatalog, -margin);
+        wlVariables.setLayoutData(fdlVariables);
+        wVariables = new Button(shell, SWT.CHECK);
+        wlVariables.setToolTipText(Messages.getString("MondrianInputDialog.ReplaceVariables.Tooltip")); //$NON-NLS-1$
+        props.setLook(wVariables);
+        fdVariables = new FormData();
+        fdVariables.left = new FormAttachment(middle, 0);
+        fdVariables.right = new FormAttachment(100, 0);
+        fdVariables.bottom = new FormAttachment(wCatalog, -margin);
+        wVariables.setLayoutData(fdVariables);
+        wVariables.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent arg0) { setSQLToolTip(); } });
+
+		
+		wlPosition=new Label(shell, SWT.NONE); 
+		props.setLook(wlPosition);
+		fdlPosition=new FormData();
+		fdlPosition.left  = new FormAttachment(0,0);
+		fdlPosition.right = new FormAttachment(100, 0);
+		fdlPosition.bottom = new FormAttachment(wVariables, -margin);
+		wlPosition.setLayoutData(fdlPosition);
 
 		// Table line...
 		//
@@ -164,15 +209,49 @@ public class MondrianInputDialog extends BaseStepDialog implements StepDialogInt
 		fdlSQL.top  = new FormAttachment(wConnection, margin*2);
 		wlSQL.setLayoutData(fdlSQL);
 
-		wSQL=new Text(shell, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
+		wSQL=new StyledTextComp(shell, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "");
  		props.setLook(wSQL, Props.WIDGET_STYLE_FIXED);
 		wSQL.addModifyListener(lsMod);
 		fdSQL=new FormData();
 		fdSQL.left  = new FormAttachment(0, 0);
 		fdSQL.top   = new FormAttachment(wlSQL, margin );
 		fdSQL.right = new FormAttachment(100, 0);
-		fdSQL.bottom= new FormAttachment(wCatalog, -margin );
+		fdSQL.bottom= new FormAttachment(wlPosition, -margin );
 		wSQL.setLayoutData(fdSQL);
+		
+		wSQL.addModifyListener(new ModifyListener()
+        {
+            public void modifyText(ModifyEvent arg0)
+            {
+                setSQLToolTip();
+                setPosition(); 
+            }
+        }
+    );
+
+	
+		wSQL.addKeyListener(new KeyAdapter(){
+			public void keyPressed(KeyEvent e) { setPosition(); }
+			public void keyReleased(KeyEvent e) { setPosition(); }
+			} 
+		);
+		wSQL.addFocusListener(new FocusAdapter(){
+			public void focusGained(FocusEvent e) { setPosition(); }
+			public void focusLost(FocusEvent e) { setPosition(); }
+			}
+		);
+		wSQL.addMouseListener(new MouseAdapter(){
+			public void mouseDoubleClick(MouseEvent e) { setPosition(); }
+			public void mouseDown(MouseEvent e) { setPosition(); }
+			public void mouseUp(MouseEvent e) { setPosition(); }
+			}
+		);
+		
+		
+		
+		// Text Higlighting
+		lineStyler = new MDXValuesHighlight();
+		wSQL.addLineStyleListener(lineStyler);
 
 		// Add listeners
 		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel();  } };
@@ -204,7 +283,27 @@ public class MondrianInputDialog extends BaseStepDialog implements StepDialogInt
 		}
 		return stepname;
 	}
+	public void setPosition(){
+		
+		String scr = wSQL.getText();
+		int linenr = wSQL.getLineAtOffset(wSQL.getCaretOffset())+1;
+		int posnr  = wSQL.getCaretOffset();
+				
+		// Go back from position to last CR: how many positions?
+		int colnr=0;
+		while (posnr>0 && scr.charAt(posnr-1)!='\n' && scr.charAt(posnr-1)!='\r')
+		{
+			posnr--;
+			colnr++;
+		}
+		wlPosition.setText(Messages.getString("MondrianInputDialog.Position.Label",""+linenr,""+colnr));
 
+	}
+	protected void setSQLToolTip()
+    {
+		if(wVariables.getSelection())
+			wSQL.setToolTipText(transMeta.environmentSubstitute(wSQL.getText()));
+    }
     /**
 	 * Copy information from the meta-data input to the dialog fields.
 	 */ 
@@ -213,7 +312,8 @@ public class MondrianInputDialog extends BaseStepDialog implements StepDialogInt
 		if (input.getSQL() != null) wSQL.setText(input.getSQL());
 		if (input.getDatabaseMeta() != null) wConnection.setText(input.getDatabaseMeta().getName());
 		if (input.getCatalog() != null) wCatalog.setText(input.getCatalog());
-		
+        wVariables.setSelection(input.isVariableReplacementActive());
+        
 		wStepname.selectAll();
 	}
 
@@ -229,6 +329,7 @@ public class MondrianInputDialog extends BaseStepDialog implements StepDialogInt
         meta.setSQL( wSQL.getText() );
         meta.setDatabaseMeta( transMeta.findDatabase(wConnection.getText()) );
         meta.setCatalog( wCatalog.getText() );
+        meta.setVariableReplacementActive(wVariables.getSelection());
     }
     
 	private void ok()

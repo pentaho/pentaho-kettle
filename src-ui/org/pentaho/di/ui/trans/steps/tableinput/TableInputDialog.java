@@ -255,7 +255,7 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
         wVariables.setLayoutData(fdVariables);
         wVariables.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent arg0) { setSQLToolTip(); } });
 
-        // Replace variables in SQL?
+        // Lazy conversion?
 		//
         wlLazyConversion = new Label(shell, SWT.RIGHT);
         wlLazyConversion.setText(Messages.getString("TableInputDialog.LazyConversion")); //$NON-NLS-1$
