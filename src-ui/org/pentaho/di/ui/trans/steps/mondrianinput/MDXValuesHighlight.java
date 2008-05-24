@@ -242,13 +242,14 @@ public class MDXValuesHighlight implements LineStyleListener {
 		protected boolean fEofSeen= false;
 
 		private String[] kfKeywords ={
-				"Ancestor","ClosingPeriod","Cousin","CurrentMember","DataMember","DefaultMember",
-				"FirstChild","FirstSibling","Item","Lag","LastChild","LastSibling","Lead","LinkMember",
-				"Members","NextMember","OpeningPeriod","ParallelPeriod","Parent","PrevMember","StrToMember",
+				"Ancestor","ClosingPeriod","Cousin","FirstChild","FirstSibling","Item","Lag","LastChild",
+				"LastSibling","Lead","LinkMember",
+				"OpeningPeriod","ParallelPeriod","Parent","PrevMember","StrToMember",
 				"UnknownMember","ValidMeasure",
 				"Error","Current","Item","Root","StrToTuple","Leaves","This","UserName","UniqueName",
 				"TupleToStr","SetToStr","Properties","Name","MemberToStr","LookupCube","IIf","Generate",
-				"CoalesceEmpty","CalculationPassValue"
+				"CoalesceEmpty","CalculationPassValue","ISEMPTY","ABSOLUTE","COUNT","AVERAGE","min","max"
+				
  
 		};
 			
@@ -258,8 +259,10 @@ public class MDXValuesHighlight implements LineStyleListener {
 				"axis","false","true","for","null","union","global","select","columns","row","rows",
 				"from","cell","call","filter","topsum","freeze","tree","totals","topcount","type",
 				"unique","use","pass","post","ignore","value","where","with","xor","lead","LASTCHILD",
-				"value","group","generate","cell","calculations","totals","drop","min","max","sort",
-				"level","sort","DESCENDANTS","DRILLDOWNLEVEL","DRILLDOWNLEVELBOTTOM"
+				"value","group","generate","cell","calculations","totals","drop","sort",
+				"level","sort","DESCENDANTS","DRILLDOWNLEVEL","DRILLDOWNLEVELBOTTOM","members","DEFAULT_MEMBER",
+				"DEFAULTMEMBER","CHILDREN","PAGES","DIMENSIONS","DIMENSION","INDEX","var","RECURSIVE",
+				"WITH","CACHE","filter","NEXTMEMBER","EMPTY","MEASURE","DISTINCTCOUNT","UPDATE","CUBE","error"
 			};
 
 		public JavaScanner() {
