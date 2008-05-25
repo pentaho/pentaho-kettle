@@ -6175,20 +6175,27 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
             if( splash != null ) {
 				splash.dispose();
 			}
-			try
-			{
-				while (!isDisposed())
+            boolean retryAfterError=false; //Enable the user to retry and continue after fatal error
+            do {
+				try
 				{
-                    if (!readAndDispatch ()) sleep ();
+					while (!isDisposed())
+					{
+	                    if (!readAndDispatch ()) sleep ();
+					}
+	            }
+	            catch(Throwable e)
+				{
+	                log.logError(toString(), Messages.getString("Spoon.Log.UnexpectedErrorOccurred")+Const.CR+e.getMessage());//"An unexpected error occurred in Spoon: probable cause: please close all windows before stopping Spoon! "
+					log.logError(toString(), Const.getStackTracker(e));
+					new ErrorDialog(shell, Messages.getString("Spoon.Log.UnexpectedErrorOccurred"), Messages.getString("Spoon.Log.UnexpectedErrorOccurred")+Const.CR+e.getMessage(), e);
+					// Retry dialog
+			        MessageBox mb = new MessageBox(shell, SWT.ICON_QUESTION | SWT.NO | SWT.YES);
+			        mb.setText(Messages.getString("Spoon.Log.UnexpectedErrorRetry.Titel"));
+			        mb.setMessage(Messages.getString("Spoon.Log.UnexpectedErrorRetry.Message"));
+			        if (mb.open()==SWT.YES) retryAfterError=true;
 				}
-            }
-            catch(Throwable e)
-			{
-                log.logError(toString(), Messages.getString("Spoon.Log.UnexpectedErrorOccurred")+Const.CR+e.getMessage());//"An unexpected error occurred in Spoon: probable cause: please close all windows before stopping Spoon! "
-				log.logError(toString(), Const.getStackTracker(e));
-				new ErrorDialog(shell, Messages.getString("Spoon.Log.UnexpectedErrorOccurred"), Messages.getString("Spoon.Log.UnexpectedErrorOccurred")+Const.CR+e.getMessage(), e);
-
-			}
+            } while (retryAfterError); 
 			dispose();
 			if(log.isBasic()) 
 				log.logBasic(toString(), APP_NAME+" "+Messages.getString("Spoon.Log.AppHasEnded"));//" has ended."
