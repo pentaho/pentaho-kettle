@@ -90,6 +90,7 @@ public class SystemDataMeta extends BaseStepMeta implements StepMetaInterface
     public final static int TYPE_SYSTEM_INFO_KETTLE_VERSION        = 38; 
     public final static int TYPE_SYSTEM_INFO_KETTLE_BUILD_VERSION  = 39; 
     public final static int TYPE_SYSTEM_INFO_KETTLE_BUILD_DATE     = 40; 
+    public final static int TYPE_SYSTEM_INFO_CURRENT_PID     = 41; 
 
     public static final SystemDataMetaFunction functions[] = new SystemDataMetaFunction[] {
             null,
@@ -134,6 +135,7 @@ public class SystemDataMeta extends BaseStepMeta implements StepMetaInterface
             new SystemDataMetaFunction(TYPE_SYSTEM_INFO_KETTLE_VERSION       , "kettle version",       Messages.getString("SystemDataMeta.TypeDesc.KettleVersion")),
             new SystemDataMetaFunction(TYPE_SYSTEM_INFO_KETTLE_BUILD_VERSION , "kettle build version", Messages.getString("SystemDataMeta.TypeDesc.KettleBuildVersion")),
             new SystemDataMetaFunction(TYPE_SYSTEM_INFO_KETTLE_BUILD_DATE    , "kettle build date",    Messages.getString("SystemDataMeta.TypeDesc.KettleBuildDate")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_CURRENT_PID    , "Current PID",    Messages.getString("SystemDataMeta.TypeDesc.CurrentPID")),
 };
     
 	private String fieldName[];
@@ -318,6 +320,9 @@ public class SystemDataMeta extends BaseStepMeta implements StepMetaInterface
 			case TYPE_SYSTEM_INFO_IP_ADDRESS:
             case TYPE_SYSTEM_INFO_KETTLE_VERSION:
 				v=new ValueMeta(fieldName[i], ValueMetaInterface.TYPE_STRING);
+            case TYPE_SYSTEM_INFO_CURRENT_PID:
+				v=new ValueMeta(fieldName[i], ValueMetaInterface.TYPE_INTEGER);
+				v.setLength(ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0);
 				break;
 			default: 
 				v = new ValueMeta(fieldName[i], ValueMetaInterface.TYPE_NONE);

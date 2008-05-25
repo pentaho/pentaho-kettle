@@ -14,6 +14,10 @@ package org.pentaho.di.trans.steps.systemdata;
 import java.util.Calendar;
 import java.util.Date;
 
+
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
+
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMeta;
@@ -242,6 +246,13 @@ public class SystemData extends BaseStep implements StepInterface
                 break;
             case SystemDataMeta.TYPE_SYSTEM_INFO_KETTLE_BUILD_DATE:
                 row[index] = BuildVersion.getInstance().getBuildDate();
+                break;
+            case SystemDataMeta.TYPE_SYSTEM_INFO_CURRENT_PID:
+        		RuntimeMXBean mx = ManagementFactory.getRuntimeMXBean();
+        		String pid=mx.getName();
+        		int indexOf=pid.indexOf("@");
+        		if(indexOf>0) pid=pid.substring(0,indexOf);
+                row[index] =new Long(pid);
                 break;
 			default: break;
 			}
