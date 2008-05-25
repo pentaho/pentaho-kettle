@@ -97,7 +97,7 @@ public class ErrorDialog extends Dialog
 
 		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN | SWT.APPLICATION_MODAL);
  		props.setLook(shell);
-		shell.setImage(GUIResource.getInstance().getImageLogoSmall());
+ 		shell.setImage(GUIResource.getInstance().getImageShowErrorLines());
 
 		FormLayout formLayout = new FormLayout ();
 		formLayout.marginWidth  = Const.FORM_MARGIN;
@@ -105,8 +105,7 @@ public class ErrorDialog extends Dialog
 
 		shell.setLayout(formLayout);
 		shell.setText(title);
-		shell.setImage(GUIResource.getInstance().getImageLogoSmall());
-
+	
 		int margin = Const.MARGIN;
 
 		// From step line
