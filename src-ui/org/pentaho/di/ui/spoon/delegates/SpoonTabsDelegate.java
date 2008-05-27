@@ -127,20 +127,31 @@ public class SpoonTabsDelegate extends SpoonDelegate
 		for (TabMapEntry tabMapEntry : getTabs()) {
 			if (tabMapEntry.getTabItem().equals(tabItem)) {
 				tabMap.remove(tabMapEntry);
-				return;
+				break;
 			}
 		}
-		if (!tabItem.isDisposed()) tabItem.dispose();
+		if (!tabItem.isDisposed()){
+		  tabItem.dispose();
+		}
 	}
 	
 	public void removeTab(String tabText, int tabMapEntryType)
 	{
+	  TabItem tabItem = null;
 		for (TabMapEntry tabMapEntry : getTabs()) {
 			if (tabMapEntry.getObjectName().equals(tabText) && tabMapEntry.getObjectType()==tabMapEntryType) {
+        tabItem = tabMapEntry.getTabItem();
 				tabMap.remove(tabMapEntry);
-				return;
+				break;
 			}
 		}
+
+		if(tabItem != null){
+	    if (!tabItem.isDisposed()){
+	      tabItem.dispose();
+	    }
+		}
+
 	}
 
 	public List<TabMapEntry> getTabs()
