@@ -166,7 +166,7 @@ public class JobEntryDelay extends JobEntryBase implements Cloneable, JobEntryIn
       // starttime (in seconds ,Minutes or Hours)
       long timeStart = System.currentTimeMillis() / Multiple;
 
-      long iMaximumTimeout = Const.toInt(getMaximumTimeout(), Const.toInt(DEFAULT_MAXIMUM_TIMEOUT, 0));
+      long iMaximumTimeout = Const.toInt(getrealMaximumTimeout(), Const.toInt(DEFAULT_MAXIMUM_TIMEOUT, 0));
 
       if (log.isDetailed())
       {
@@ -239,9 +239,12 @@ public class JobEntryDelay extends JobEntryBase implements Cloneable, JobEntryIn
 
   public String getMaximumTimeout()
   {
-    return environmentSubstitute(maximumTimeout);
+    return maximumTimeout;
   }
-
+  public String getrealMaximumTimeout()
+  {
+    return environmentSubstitute(getMaximumTimeout());
+  }
   public void setMaximumTimeout(String s)
   {
     maximumTimeout = s;

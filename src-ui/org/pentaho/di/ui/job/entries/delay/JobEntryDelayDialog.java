@@ -129,7 +129,7 @@ public class JobEntryDelayDialog extends JobEntryDialog implements JobEntryDialo
 		props.setLook(wName);
 		wName.addModifyListener(lsMod);
 		fdName=new FormData();
-		fdName.left = new FormAttachment(middle, 0);
+		fdName.left = new FormAttachment(middle, margin);
 		fdName.top  = new FormAttachment(0, margin);
 		fdName.right= new FormAttachment(100, 0);
 		wName.setLayoutData(fdName);
@@ -139,7 +139,7 @@ public class JobEntryDelayDialog extends JobEntryDialog implements JobEntryDialo
 		props.setLook(wMaximumTimeout);
 		wMaximumTimeout.addModifyListener(lsMod);
 		fdMaximumTimeout = new FormData();
-		fdMaximumTimeout.left = new FormAttachment(0, -margin);
+		fdMaximumTimeout.left = new FormAttachment(0, 0);
 		fdMaximumTimeout.top = new FormAttachment(wName, margin);
 		fdMaximumTimeout.right = new FormAttachment(100, 0);
 		wMaximumTimeout.setLayoutData(fdMaximumTimeout);
@@ -177,7 +177,7 @@ public class JobEntryDelayDialog extends JobEntryDialog implements JobEntryDialo
 		wScaleTime.setLayoutData(fdScaleTime);
 
 		fdScaleTime = new FormData();
-		fdScaleTime.left = new FormAttachment(middle, 0);
+		fdScaleTime.left = new FormAttachment(middle, margin);
 		fdScaleTime.top = new FormAttachment(wMaximumTimeout, margin);
 		fdScaleTime.right = new FormAttachment(100, 0);
 		wScaleTime.setLayoutData(fdScaleTime);

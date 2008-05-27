@@ -1210,10 +1210,6 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
 	     // / END OF Success ON GROUP
 	     // ///////////////////////////////////////////////////////////
 
-		
-		
-		
-		
 		fdAdvancedComp=new FormData();
 		fdAdvancedComp.left  = new FormAttachment(0, 0);
 		fdAdvancedComp.top   = new FormAttachment(0, 0);
