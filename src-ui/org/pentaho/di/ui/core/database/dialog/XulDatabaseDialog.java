@@ -164,7 +164,7 @@ public class XulDatabaseDialog {
       databaseName = Const.isEmpty(databaseMeta.getDatabaseName()) ? null : databaseMeta.getDatabaseName();
       
       // HACK for PDI-1256; remove when dialog converted to XulDialog instead of XulWindow
-      databaseName = dialog.isClosed() ? null : databaseName;
+      //databaseName = dialog.isClosed() ? null : databaseName;
 
     } catch (Exception e) {
       new ErrorDialog(parentShell, Messages.getString("XulDatabaseDialog.Error.Titel"), Messages  //$NON-NLS-1$
