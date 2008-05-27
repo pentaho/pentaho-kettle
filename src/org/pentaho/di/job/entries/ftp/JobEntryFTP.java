@@ -55,6 +55,7 @@ import com.enterprisedt.net.ftp.FTPClient;
 import com.enterprisedt.net.ftp.FTPConnectMode;
 import com.enterprisedt.net.ftp.FTPException;
 import com.enterprisedt.net.ftp.FTPTransferType;
+import com.enterprisedt.net.ftp.FTPFile;
 
 /**
  * This defines an FTP job entry.
@@ -813,7 +814,6 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 			if(Const.isEmpty(movetodirectory))
 			{
 				log.logError(toString(), Messages.getString("JobEntryFTP.MoveToFolderEmpty"));
-				result.setNrErrors(1);
 				return result;
 			}
 				
@@ -899,20 +899,25 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
                 String realFtpDirectory = environmentSubstitute(ftpDirectory);
                 ftpclient.chdir(realFtpDirectory);
                 if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryFTP.ChangedDir", realFtpDirectory)); //$NON-NLS-1$
-			}
-			
+			}	
+
 			//Create move to folder if necessary
-			if(movefiles && !Const.isEmpty(movetodirectory))
-			{
+			if(movefiles && !Const.isEmpty(movetodirectory)){
 				realMoveToFolder=environmentSubstitute(movetodirectory);
-				if(!ftpclient.exists(realMoveToFolder))
-				{
-					if(createmovefolder)
-					{
+				// Folder exists?
+				boolean folderExist=true;
+				try{
+					folderExist=ftpclient.exists(realMoveToFolder);
+				}
+				catch (Exception e){
+					// Assume file does not exist !!
+				}
+				
+				if(!folderExist){
+					if(createmovefolder){
 						ftpclient.mkdir(realMoveToFolder);
 						if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryFTP.MoveToFolderCreated",realMoveToFolder));
-					}else
-					{
+					}else{
 						log.logError(toString(),Messages.getString("JobEntryFTP.MoveToFolderNotExist"));
 						result.setNrErrors(1);
 						return result;
@@ -951,6 +956,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 				}
 			}
 
+			
 			Pattern pattern = null;
 			if (!Const.isEmpty(wildcard)) 
 			{
@@ -964,36 +970,38 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 			// Get the files in the list...
 			for (int i=0;i<filelist.length && !parentJob.isStopped();i++)
 			{
-				if(successConditionBroken)
-				{
+				if(successConditionBroken){
 					log.logError(toString(), Messages.getString("JobEntryFTP.Error.SuccessConditionbroken",""+NrErrors));
+					displayResults(log);
 					throw new Exception(Messages.getString("JobEntryFTP.SuccesConditionBroken",""+NrErrors));
 				}
-				
-
+			
 				boolean getIt = true;
 				
 				if(log.isDebug()) log.logDebug(toString(), Messages.getString("JobEntryFTP.AnalysingFile",filelist[i]));
 				
 				try
 				{
-					
 					// First see if the file matches the regular expression!
-					if (pattern!=null)
-					{
+					if (pattern!=null){
 						Matcher matcher = pattern.matcher(filelist[i]);
 						getIt = matcher.matches();
 					}
-	
+					//The idea here is to take only files (exclude folders)
+					// also exclude fetching sub folders !
+					// Please do not use fileDetails(
+					// because this method use command called MLST. 
+					// which is a recent feature not supported by all FTP servers
+					FTPFile[] finfo = ftpclient.dirDetails(filelist[i]); 
+					if(finfo[0].isDir() || !filelist[i].equals(finfo[0].getName())) getIt=false;
+					
 					if (getIt)
 					{
-						
 						targetFilename = getTargetFilename(filelist[i]);
 
 	                    if ((!onlyGettingNewFiles) ||
 	                    	(onlyGettingNewFiles && needsDownload(targetFilename)))
 	                    {
-	                    	
 	                    	if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryFTP.GettingFile", filelist[i], environmentSubstitute(targetDirectory)));  //$NON-NLS-1$
 	    					ftpclient.get(targetFilename, filelist[i]);
 									
@@ -1001,87 +1009,44 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 	    					updateRetrievedFiles();
     			            if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryFTP.GotFile", filelist[i])); //$NON-NLS-1$
 	    					
-	    					if(isaddresult)
-	    					{
-	    						FileObject targetFile = null;
-	    						try
-	    						{
-	    							targetFile = KettleVFS.getFileObject(targetFilename);
-	    							
-		    						// Add to the result files...
-		    						ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, targetFile, parentJob.getJobname(), toString());
-		    			            resultFile.setComment(Messages.getString("JobEntryFTP.Downloaded", serverName)); //$NON-NLS-1$
-		    						result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
-		    						
-		    			            if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryFTP.FileAddedToResult", filelist[i])); //$NON-NLS-1$
-	    						}
-	    						finally
-	    						{
-	    							try{
-	    								targetFile.close();
-	    								targetFile=null;
-	    							}catch(Exception e){}
-	    						}
-	    					}
-	    					
-	                    }
-	
-	
-	                    
-						// Delete the file if this is needed!
-						if (remove) 
-						{
-							ftpclient.delete(filelist[i]);
-							if(log.isDetailed()) 
-					            if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryFTP.DeletedFile", filelist[i])); //$NON-NLS-1$
-						
-						}else
-						{
-							if(movefiles)
-							{
-								// Try to move file to destination folder ...
-								
-								ftpclient.rename(filelist[i], realMoveToFolder+'/'+filelist[i]);
-								
+    			            // Add filename to result filenames
+    			            addFilenameToResultFilenames(log, result, parentJob, targetFilename);
+
+							// Delete the file if this is needed!
+							if (remove) {
+								ftpclient.delete(filelist[i]);
 								if(log.isDetailed()) 
-									log.logDetailed(toString(), Messages.getString("JobEntryFTP.MovedFile",filelist[i],realMoveToFolder));
-							
+						            if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryFTP.DeletedFile", filelist[i])); //$NON-NLS-1$
+							}else
+							{
+								if(movefiles){
+									// Try to move file to destination folder ...
+									ftpclient.rename(filelist[i], realMoveToFolder+'/'+filelist[i]);
+									
+									if(log.isDetailed()) 
+										log.logDetailed(toString(), Messages.getString("JobEntryFTP.MovedFile",filelist[i],realMoveToFolder));
+								}
 							}
-						}
+	                    }
 					}
-				}catch (Exception e)
-				{
+				}catch (Exception e){
 					// Update errors number
 					updateErrors();
 					log.logError(toString(),Messages.getString("JobFTP.UnexpectedError",e.getMessage()));
-					
-					if(successConditionBroken) 
-						throw new Exception(Messages.getString("JobEntryFTP.SuccesConditionBroken"));
-					
 				}
-				
-				
 			} // end for
-
-			
 		}
-		catch(Exception e)
-		{
+		catch(Exception e){
 			updateErrors();
 			log.logError(toString(), Messages.getString("JobEntryFTP.ErrorGetting", e.getMessage())); //$NON-NLS-1$
             log.logError(toString(), Const.getStackTracker(e));
 		}
-        finally
-        {
-            if (ftpclient!=null && ftpclient.connected())
-            {
-                try
-                {
-
+        finally{
+            if (ftpclient!=null && ftpclient.connected()) {
+                try {
                     ftpclient.quit();
                 }
-                catch(Exception e)
-                {
+                catch(Exception e) {
                 	log.logError(toString(), Messages.getString("JobEntryFTP.ErrorQuitting", e.getMessage())); //$NON-NLS-1$
                 }
             }
@@ -1091,8 +1056,41 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 		result.setNrErrors(NrErrors);
 		result.setNrFilesRetrieved(NrfilesRetrieved);
 		if(getSuccessStatus())	result.setResult(true);
-		
+		displayResults(log);
 		return result;
+	}
+	private void addFilenameToResultFilenames(LogWriter log, Result result, Job parentJob, String filename ) throws  KettleException
+	{
+		if(isaddresult){
+		FileObject targetFile = null;
+		try{
+			targetFile = KettleVFS.getFileObject(filename);
+			
+			// Add to the result files...
+			ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, targetFile, parentJob.getJobname(), toString());
+            resultFile.setComment(Messages.getString("JobEntryFTP.Downloaded", serverName)); //$NON-NLS-1$
+			result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
+			
+            if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryFTP.FileAddedToResult", filename)); //$NON-NLS-1$
+		}catch (Exception e){
+			throw new KettleException(e);
+		}
+		finally{
+			try{
+				targetFile.close();
+				targetFile=null;
+			}catch(Exception e){}
+		}
+	 }
+	}
+	private void displayResults(LogWriter log)
+	{
+		if(log.isDetailed()){
+			log.logDetailed(toString(), "=======================================");
+			log.logDetailed(toString(), Messages.getString("JobEntryFTP.Log.Info.FilesInError","" + NrErrors));
+			log.logDetailed(toString(), Messages.getString("JobEntryFTP.Log.Info.FilesRetrieved","" + NrfilesRetrieved));
+			log.logDetailed(toString(), "=======================================");
+		}
 	}
 	private boolean getSuccessStatus()
 	{

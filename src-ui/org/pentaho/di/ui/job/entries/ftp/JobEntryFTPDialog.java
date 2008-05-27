@@ -695,7 +695,6 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
 				{
 					wMove.setSelection(false);
 					activateMoveTo();
-					
 				}
 				
 			}
@@ -726,7 +725,6 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
 				if(wMove.getSelection())
 				{
 					wRemove.setSelection(false);
-					
 				}
 				
 			}
@@ -734,7 +732,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
         
         // Move to directory
         wlMoveToDirectory = new Label(wRemoteSettings, SWT.RIGHT);
-        wlMoveToDirectory.setText(Messages.getString("JobFTP.CreateMoveFolder.Label"));
+        wlMoveToDirectory.setText(Messages.getString("JobFTP.MoveFolder.Label"));
         props.setLook(wlMoveToDirectory);
         fdlMoveToDirectory= new FormData();
         fdlMoveToDirectory.left = new FormAttachment(0, 0);
@@ -753,6 +751,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
         
         wMoveToDirectory = new TextVar(jobMeta,wRemoteSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER, Messages
             .getString("JobFTP.MoveToDirectory.Tooltip"));
+        wMoveToDirectory.setToolTipText(Messages.getString("JobFTP.MoveFolder.Tooltip"));
         props.setLook(wMoveToDirectory);
         wMoveToDirectory.addModifyListener(lsMod);
         fdMoveToDirectory = new FormData();
@@ -1265,8 +1264,8 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
             }
         };
         lsTest     = new Listener() { public void handleEvent(Event e) { test(); } };
-        lsCheckFolder     = new Listener() { public void handleEvent(Event e) { checkRemoteFolder(wMoveToDirectory.getText()); } };
-        lsCheckChangeFolder     = new Listener() { public void handleEvent(Event e) { checkRemoteFolder(wFtpDirectory.getText()); } };
+        lsCheckFolder     = new Listener() { public void handleEvent(Event e) { checkRemoteFolder(false,true,wMoveToDirectory.getText()); } };
+        lsCheckChangeFolder     = new Listener() { public void handleEvent(Event e) { checkRemoteFolder(true,false,wFtpDirectory.getText()); } };
         
         wCancel.addListener(SWT.Selection, lsCancel);
         wOK.addListener(SWT.Selection, lsOK);
@@ -1328,7 +1327,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
     private void test()
     {
 		
-    	if(connectToFTP(false,null))
+    	if(connectToFTP(false,false))
     	{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION );
 			mb.setMessage(Messages.getString("JobFTP.Connected.OK",wServerName.getText()) +Const.CR);
@@ -1343,26 +1342,26 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
 	    }
 	   
     }
-    private void checkRemoteFolder(String remoteFoldername)
+    private void checkRemoteFolder(boolean FTPFolfer,boolean checkMoveFolder,String foldername)
     {
-    	if(!Const.isEmpty(remoteFoldername))
+    	if(!Const.isEmpty(foldername))
     	{
-	    	if(connectToFTP(true,remoteFoldername))
+	    	if(connectToFTP(FTPFolfer,checkMoveFolder))
 	    	{
 				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION );
-				mb.setMessage(Messages.getString("JobFTP.FolderExists.OK",wMoveToDirectory.getText()) +Const.CR);
+				mb.setMessage(Messages.getString("JobFTP.FolderExists.OK",foldername) +Const.CR);
 				mb.setText(Messages.getString("JobFTP.FolderExists.Title.Ok"));
 				mb.open();
 			}else
 			{
 				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-				mb.setMessage(Messages.getString("JobFTP.FolderExists.NOK",wMoveToDirectory.getText()) +Const.CR);
+				mb.setMessage(Messages.getString("JobFTP.FolderExists.NOK",foldername) +Const.CR);
 				mb.setText(Messages.getString("JobFTP.FolderExists.Title.Bad"));
 				mb.open(); 
 		    }
     	}
     }
-    private boolean connectToFTP(boolean checkfolder,String remoteFoldername)
+    private boolean connectToFTP(boolean checkfolder,boolean checkmoveToFolder)
     {
     	boolean retval=false;
 		try
@@ -1404,19 +1403,34 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
 		        // login now ...
 		        ftpclient.login(realUsername, realPassword);
 			}  
+			
+			
+			String realFtpDirectory ="";
+			if (!Const.isEmpty(wFtpDirectory.getText()))
+				realFtpDirectory = jobMeta.environmentSubstitute(wFtpDirectory.getText());
+			
 	        if(checkfolder)
 	        {
+	        	ftpclient.chdir("/");
 	        	// move to spool dir ...
-				if (!Const.isEmpty(remoteFoldername))
-				{
-	                String realFtpDirectory = jobMeta.environmentSubstitute(remoteFoldername);
+				if (!Const.isEmpty(realFtpDirectory))
 					ftpclient.chdir(realFtpDirectory);
-				}
-	        	retval=true;
-	        	
 	        }
-	        	
-	        	
+	        if(checkmoveToFolder)
+	        {	   
+	        	ftpclient.chdir("/");
+	        	// move to folder ...
+				if (!Const.isEmpty(wMoveToDirectory.getText()))
+				{
+	                String realMoveDirectory = jobMeta.environmentSubstitute(wMoveToDirectory.getText());
+	                if(!Const.isEmpty(realFtpDirectory))
+	                {
+	                	realMoveDirectory=realFtpDirectory+"/"+realMoveDirectory;
+	                	ftpclient.chdir(realMoveDirectory);
+	                }
+				}	
+	        }
+
 	        retval=true;
 		}
 	     catch (Exception e)
