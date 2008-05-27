@@ -216,6 +216,8 @@ public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface
 				field.setWidth( (int) rep.getStepAttributeInteger(id_step, i, "field_width") );
 				field.setLength(  (int) rep.getStepAttributeInteger(id_step, i, "field_length") );
 				field.setPrecision( (int) rep.getStepAttributeInteger(id_step, i, "field_precision") );
+				
+				fieldDefinition[i] = field;
 			}
 		}
 		catch (Exception e)
