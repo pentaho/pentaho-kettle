@@ -47,10 +47,25 @@ public class ControlSpaceKeyAdapter extends KeyAdapter {
     this.insertTextInterface = insertTextInterface;
     
   }
+  
+  /**
+   *  PDI-1284
+   *  in chinese window, Ctrl-SPACE is reversed by system for input chinese character.
+   *  use Ctrl-ALT-SPACE instead.
+   * @param e
+   * @return
+   */
+  private boolean isHotKey(KeyEvent e)
+  {
+	  if (System.getProperty("user.language").equals("zh")) 
+		  return e.character == ' ' && ((e.stateMask & SWT.CONTROL) != 0) && ((e.stateMask & SWT.ALT) != 0);
+	  else
+		  return e.character == ' ' && ((e.stateMask & SWT.CONTROL) != 0) && ((e.stateMask & SWT.ALT) == 0);
+  }
 
   public void keyPressed(KeyEvent e) {
     // CTRL-<SPACE> --> Insert a variable
-    if (e.character == ' ' && ((e.stateMask & SWT.CONTROL) != 0) && ((e.stateMask & SWT.ALT) == 0)) {
+    if (isHotKey(e)) {
       e.doit = false;
 
       // textField.setData(TRUE) indicates we have transitioned from the textbox to list mode...
