@@ -51,6 +51,7 @@ import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
@@ -209,7 +210,7 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 		fdlName = new FormData();
 		fdlName.left = new FormAttachment(0, 0);
 		fdlName.top = new FormAttachment(0, 0);
-		fdlName.right = new FormAttachment(middle, 0);
+		fdlName.right = new FormAttachment(middle, -margin);
 		wlName.setLayoutData(fdlName);
 
 		wName = new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
@@ -228,12 +229,14 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 		fdlTransname = new FormData();
 		fdlTransname.top = new FormAttachment(wName, margin * 2);
 		fdlTransname.left = new FormAttachment(0, 0);
-		fdlTransname.right = new FormAttachment(middle, 0);
+		fdlTransname.right = new FormAttachment(middle, -margin);
 		wlTransname.setLayoutData(fdlTransname);
 
 		wbTransname = new Button(shell, SWT.PUSH | SWT.CENTER);
 		props.setLook(wbTransname);
-		wbTransname.setText(Messages.getString("JobTrans.Browse.Label"));
+		//wbTransname.setText(Messages.getString("JobTrans.Browse.Label"));
+		wbTransname.setImage(GUIResource.getInstance().getImageTransGraph());
+		wbTransname.setToolTipText(Messages.getString("JobTrans.SelectTransRep.Tooltip"));
 		fdbTransname = new FormData();
 		fdbTransname.top = new FormAttachment(wName, margin * 2);
 		fdbTransname.right = new FormAttachment(100, 0);
@@ -256,7 +259,7 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 		fdlDirectory = new FormData();
 		fdlDirectory.top = new FormAttachment(wTransname, margin * 2);
 		fdlDirectory.left = new FormAttachment(0, 0);
-		fdlDirectory.right = new FormAttachment(middle, 0);
+		fdlDirectory.right = new FormAttachment(middle, -margin);
 		wlDirectory.setLayoutData(fdlDirectory);
 
 		wDirectory = new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
@@ -276,12 +279,14 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 		fdlFilename = new FormData();
 		fdlFilename.top = new FormAttachment(wDirectory, margin);
 		fdlFilename.left = new FormAttachment(0, 0);
-		fdlFilename.right = new FormAttachment(middle, 0);
+		fdlFilename.right = new FormAttachment(middle, -margin);
 		wlFilename.setLayoutData(fdlFilename);
 
 		wbFilename = new Button(shell, SWT.PUSH | SWT.CENTER);
 		props.setLook(wbFilename);
-		wbFilename.setText(Messages.getString("JobTrans.Browse.Label"));
+		//wbFilename.setText(Messages.getString("JobTrans.Browse.Label"));
+		wbFilename.setImage(GUIResource.getInstance().getImageTransGraph());
+		wbFilename.setToolTipText(Messages.getString("JobTrans.SelectTrans.Tooltip"));
 		fdbFilename = new FormData();
 		fdbFilename.top = new FormAttachment(wDirectory, margin);
 		fdbFilename.right = new FormAttachment(100, 0);
@@ -364,7 +369,7 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 		fdlLogfile = new FormData();
 		fdlLogfile.left = new FormAttachment(0, 0);
 		fdlLogfile.top = new FormAttachment(wAppendLogfile, margin);
-		fdlLogfile.right = new FormAttachment(middle, 0);
+		fdlLogfile.right = new FormAttachment(middle, -margin);
 		wlLogfile.setLayoutData(fdlLogfile);
 		wLogfile = new TextVar(jobMeta, wLogging, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		wLogfile.setText("");
@@ -382,7 +387,7 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 		fdlLogext = new FormData();
 		fdlLogext.left = new FormAttachment(0, 0);
 		fdlLogext.top = new FormAttachment(wLogfile, margin);
-		fdlLogext.right = new FormAttachment(middle, 0);
+		fdlLogext.right = new FormAttachment(middle, -margin);
 		wlLogext.setLayoutData(fdlLogext);
 		wLogext = new TextVar(jobMeta, wLogging, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		wLogext.setText("");

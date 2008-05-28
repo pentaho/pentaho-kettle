@@ -56,6 +56,7 @@ import com.enterprisedt.net.ftp.FTPTransferType;
  * @since 15-09-2007
  *
  */
+
 public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryInterface
 {
 	private String serverName;

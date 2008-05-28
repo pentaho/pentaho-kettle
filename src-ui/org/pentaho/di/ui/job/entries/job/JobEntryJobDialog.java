@@ -52,6 +52,7 @@ import org.pentaho.di.job.entries.job.Messages;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
@@ -199,7 +200,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 		fdlName = new FormData();
 		fdlName.left = new FormAttachment(0, 0);
 		fdlName.top = new FormAttachment(0, 0);
-		fdlName.right = new FormAttachment(middle, 0);
+		fdlName.right = new FormAttachment(middle, -margin);
 		wlName.setLayoutData(fdlName);
 
 		wName = new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
@@ -218,12 +219,14 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 		fdlJobname = new FormData();
 		fdlJobname.top = new FormAttachment(wName, margin * 2);
 		fdlJobname.left = new FormAttachment(0, 0);
-		fdlJobname.right = new FormAttachment(middle, 0);
+		fdlJobname.right = new FormAttachment(middle, -margin);
 		wlJobname.setLayoutData(fdlJobname);
 
 		wbJobname = new Button(shell, SWT.PUSH | SWT.CENTER);
-		props.setLook(wbJobname);
-		wbJobname.setText("...");
+		//props.setLook(wbJobname);
+		//wbJobname.setText("...");
+		wbJobname.setImage(GUIResource.getInstance().getImageJobGraph());
+		wbJobname.setToolTipText(Messages.getString("JobJob.SelectJobRep.Tooltip"));
 		fdbJobname = new FormData();
 		fdbJobname.top = new FormAttachment(wName, margin * 2);
 		fdbJobname.right = new FormAttachment(100, 0);
@@ -247,7 +250,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 		fdlDirectory = new FormData();
 		fdlDirectory.top = new FormAttachment(wJobname, margin * 2);
 		fdlDirectory.left = new FormAttachment(0, 0);
-		fdlDirectory.right = new FormAttachment(middle, 0);
+		fdlDirectory.right = new FormAttachment(middle, -margin);
 		wlDirectory.setLayoutData(fdlDirectory);
 
 		wDirectory = new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
@@ -268,12 +271,14 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 		fdlFilename = new FormData();
 		fdlFilename.top = new FormAttachment(wDirectory, margin);
 		fdlFilename.left = new FormAttachment(0, 0);
-		fdlFilename.right = new FormAttachment(middle, 0);
+		fdlFilename.right = new FormAttachment(middle, -margin);
 		wlFilename.setLayoutData(fdlFilename);
 
 		wbFilename = new Button(shell, SWT.PUSH | SWT.CENTER);
 		props.setLook(wbFilename);
-		wbFilename.setText("...");
+		//wbFilename.setText("...");
+		wbFilename.setImage(GUIResource.getInstance().getImageJobGraph());
+		wbFilename.setToolTipText(Messages.getString("JobJob.SelectFilename.Tooltip"));
 		fdbFilename = new FormData();
 		fdbFilename.top = new FormAttachment(wDirectory, margin);
 		fdbFilename.right = new FormAttachment(100, 0);
@@ -357,7 +362,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 		fdlLogfile = new FormData();
 		fdlLogfile.left = new FormAttachment(0, 0);
 		fdlLogfile.top = new FormAttachment(wAppendLogfile, margin);
-		fdlLogfile.right = new FormAttachment(middle, 0);
+		fdlLogfile.right = new FormAttachment(middle, -margin);
 		wlLogfile.setLayoutData(fdlLogfile);
 		wLogfile = new TextVar(jobMeta, wLogging, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		wLogfile.setText("");
@@ -375,7 +380,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 		fdlLogext = new FormData();
 		fdlLogext.left = new FormAttachment(0, 0);
 		fdlLogext.top = new FormAttachment(wLogfile, margin);
-		fdlLogext.right = new FormAttachment(middle, 0);
+		fdlLogext.right = new FormAttachment(middle, -margin);
 		wlLogext.setLayoutData(fdlLogext);
 		wLogext = new TextVar(jobMeta, wLogging, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		wLogext.setText("");

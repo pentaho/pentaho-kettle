@@ -67,6 +67,7 @@ import com.enterprisedt.net.ftp.FTPClient;
  * @author Samatar
  * @since 15-09-2007
  */
+
 public class JobEntryFTPPUTDialog extends JobEntryDialog implements JobEntryDialogInterface
 {
     private Label wlName;
