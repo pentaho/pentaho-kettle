@@ -271,6 +271,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
 	private FormData fdlSuccessCondition, fdSuccessCondition;
 	
 	private FTPClient ftpclient = null;
+	private String pwdFolder=null;
     
     // These should not be translated, they are required to exist on all
     // platforms according to the documentation of "Charset".
@@ -313,6 +314,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
         {
             public void modifyText(ModifyEvent e)
             {
+            	pwdFolder=null;
             	ftpclient=null;
                 jobEntry.setChanged();
             }
@@ -1322,7 +1324,6 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
     }
     private void test()
     {
-		
     	if(connectToFTP(false,false))
     	{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION );
@@ -1383,8 +1384,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
 		        } 
 		        else 
 		        {
-		            ftpclient.setRemoteAddr(InetAddress.getByName(realServername));
-		                           
+		            ftpclient.setRemoteAddr(InetAddress.getByName(realServername));             
 		        }
 	
 		        // login to ftp host ...
@@ -1398,6 +1398,8 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
 		                              (!Const.isEmpty(wProxyPassword.getText()) ? " " + jobMeta.environmentSubstitute(wProxyPassword.getText()) : "" );
 		        // login now ...
 		        ftpclient.login(realUsername, realPassword);
+		        
+		        pwdFolder=ftpclient.pwd();
 			}  
 			
 			
@@ -1407,14 +1409,14 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
 			
 	        if(checkfolder)
 	        {
-	        	ftpclient.chdir("/");
+	        	if(pwdFolder!=null) ftpclient.chdir(pwdFolder);
 	        	// move to spool dir ...
 				if (!Const.isEmpty(realFtpDirectory))
 					ftpclient.chdir(realFtpDirectory);
 	        }
 	        if(checkmoveToFolder)
 	        {	   
-	        	ftpclient.chdir("/");
+	        	if(pwdFolder!=null) ftpclient.chdir(pwdFolder);
 	        	// move to folder ...
 				if (!Const.isEmpty(wMoveToDirectory.getText()))
 				{

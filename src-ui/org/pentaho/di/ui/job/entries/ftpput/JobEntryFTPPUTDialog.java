@@ -228,6 +228,7 @@ public class JobEntryFTPPUTDialog extends JobEntryDialog implements JobEntryDial
     private FormData fdbLocalDirectory;
 
 	private FTPClient ftpclient = null;
+	private String  pwdFolder=null;
     
     public JobEntryFTPPUTDialog(Shell parent, JobEntryInterface jobEntryInt, Repository rep, JobMeta jobMeta)
     {
@@ -251,6 +252,7 @@ public class JobEntryFTPPUTDialog extends JobEntryDialog implements JobEntryDial
             public void modifyText(ModifyEvent e)
             {
             	ftpclient=null;
+            	pwdFolder=null;
                 jobEntry.setChanged();
             }
         };
@@ -864,7 +866,6 @@ public class JobEntryFTPPUTDialog extends JobEntryDialog implements JobEntryDial
     }
     private void test()
     {
-		
     	if(connectToFTP(false,null))
     	{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION );
@@ -926,30 +927,34 @@ public class JobEntryFTPPUTDialog extends JobEntryDialog implements JobEntryDial
 		        } 
 		        else 
 		        {
-		            ftpclient.setRemoteAddr(InetAddress.getByName(realServername));
-		                           
+		            ftpclient.setRemoteAddr(InetAddress.getByName(realServername));                  
 		        }
-	
 	
 		        // login to ftp host ...
 		        ftpclient.connect();     
-		        String realUsername = jobMeta.environmentSubstitute(wUserName.getText());            
-		        String realPassword = jobMeta.environmentSubstitute(wPassword.getText());
+		        String realUsername = jobMeta.environmentSubstitute(wUserName.getText()) +
+		                              (!Const.isEmpty(wProxyHost.getText()) ? "@" + realServername : "") + 
+		                              (!Const.isEmpty(wProxyUsername.getText()) ? " " + jobMeta.environmentSubstitute(wProxyUsername.getText()) 
+		                          		                           : ""); 
+		           		            
+		        String realPassword = jobMeta.environmentSubstitute(wPassword.getText()) + 
+		                              (!Const.isEmpty(wProxyPassword.getText()) ? " " + jobMeta.environmentSubstitute(wProxyPassword.getText()) : "" );
 		        // login now ...
 		        ftpclient.login(realUsername, realPassword);
+		        
+		        pwdFolder=ftpclient.pwd();
 			}  
+			
 	        if(checkfolder)
 	        {
+	        	if(pwdFolder!=null)ftpclient.chdir(pwdFolder);
 	        	// move to spool dir ...
 				if (!Const.isEmpty(remoteFoldername))
 				{
 	                String realFtpDirectory = jobMeta.environmentSubstitute(remoteFoldername);
 					ftpclient.chdir(realFtpDirectory);
 				}
-	        	retval=true;
-	        	
 	        }
-	        	
 	        	
 	        retval=true;
 		}

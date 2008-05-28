@@ -226,7 +226,7 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
 	private FTPClient ftpclient = null;
 	private SFTPClient sftpclient = null;
 	private Connection conn = null;
-    
+    private String pwdFolder=null;
     
     private static final String[] FILETYPES = new String[] {
         Messages.getString("JobFTPDelete.Filetype.Pem"),
@@ -264,6 +264,7 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
         {
             public void modifyText(ModifyEvent e)
             {
+            	pwdFolder=null;
             	ftpclient=null;
             	sftpclient=null;
             	conn=null;
@@ -1053,11 +1054,13 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
 	    		{
 	    			if(wProtocol.getText().equals("FTP"))
 	    			{
+	    				ftpclient.chdir(pwdFolder);
 	    				ftpclient.chdir(realfoldername);
 	    				folderexists=true;
 	    			}
-	    			else if(wProtocol.getText().equals("FTP"))
+	    			else if(wProtocol.getText().equals("SFTP"))
 	    			{
+	    				sftpclient.chdir(pwdFolder);
 	    				sftpclient.chdir(realfoldername);
 	    				folderexists=true;
 	    			}
@@ -1170,9 +1173,8 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
 		                              (!Const.isEmpty(wProxyPassword.getText()) ? " " + jobMeta.environmentSubstitute(wProxyPassword.getText()) : "" );
 		        // login now ...
 		        ftpclient.login(realUsername, realPassword);
-			}  
-	       
-	        	
+		        pwdFolder=ftpclient.pwd();
+			}  	
 	        retval=true;
 		}
 	     catch (Exception e)
@@ -1198,6 +1200,7 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
 			
 				// login to ftp host ...
 				sftpclient.login(jobMeta.environmentSubstitute(wPassword.getText()));
+				pwdFolder=sftpclient.pwd();
 			}  
 	       
 	        	

@@ -137,7 +137,15 @@ public class SFTPClient {
 			throw new KettleJobException(e);
 		}
 	}
-	
+
+	public String pwd() throws KettleJobException 
+	{
+		try {
+		return c.pwd();
+		} catch (SftpException e) {
+			throw new KettleJobException(e);
+		}
+	}
 	public void put (String localFilePath, String remoteFile) throws KettleJobException {
 		int mode=ChannelSftp.OVERWRITE;
 		try {
