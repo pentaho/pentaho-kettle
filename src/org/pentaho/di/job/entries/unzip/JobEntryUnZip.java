@@ -57,10 +57,6 @@ import org.pentaho.di.repository.Repository;
 import org.w3c.dom.Node;
 
 
- 
-
-
-
 /**
  * This defines a 'unzip' job entry. Its main use would be to 
  * unzip files in a directory
@@ -69,6 +65,7 @@ import org.w3c.dom.Node;
  * @since 25-09-2007
  *
  */
+
 public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryInterface
 {
 
@@ -323,8 +320,6 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 		successConditionBroken=false;
 		successConditionBrokenExit=false;
 		
-		
-		
 		if(isfromprevious)
 		{
 			if(log.isDetailed())	
@@ -406,10 +401,8 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 				{
 					for (int iteration=0;iteration<rows.size();iteration++) 
 					{
-						if(successConditionBroken)
-						{
-							if(!successConditionBrokenExit)
-							{
+						if(successConditionBroken){
+							if(!successConditionBrokenExit){
 								log.logError(toString(), Messages.getString("JobUnZip.Error.SuccessConditionbroken",""+NrErrors));
 								successConditionBrokenExit=true;
 							}
@@ -435,7 +428,6 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 							updateErrors();
 							log.logError(toString(),  Messages.getString("JobUnZip.Error.CanNotFindFile", realFilenameSource));
 						}
-						
 					}
 				}
 			}else{
@@ -466,20 +458,17 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 		}
 		finally 
 		{
-			if ( fileObject != null )
-			{
+			if ( fileObject != null ){
 				try{
 					fileObject.close();
 				}catch ( IOException ex ) {};
 			}
-			if ( targetdir != null )
-			{
+			if ( targetdir != null ){
 				try{
 					targetdir.close();
 				}catch ( IOException ex ) {};
 			}
-			if ( movetodir != null )
-			{
+			if ( movetodir != null ){
 				try{
 					movetodir.close();
 				}catch ( IOException ex ) {};
@@ -489,10 +478,20 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 		result.setNrErrors(NrErrors);
 		result.setNrLinesWritten(NrSuccess);
 		if(getSuccessStatus())	result.setResult(true);
-		
+		displayResults(log);
 		
 		return result;
 	}
+	private void displayResults(LogWriter log)
+	{
+		if(log.isDetailed()){
+			log.logDetailed(toString(), "=======================================");
+			log.logDetailed(toString(), Messages.getString("JobUnZip.Log.Info.FilesInError","" + NrErrors));
+			log.logDetailed(toString(), Messages.getString("JobUnZip.Log.Info.FilesInSuccess","" + NrSuccess));
+			log.logDetailed(toString(), "=======================================");
+		}
+	}
+	
 	private boolean processOneFile(LogWriter log, Result result,Job parentJob, 
 			FileObject fileObject,String realTargetdirectory,
 			String realWildcard,String realWildcardExclude, FileObject movetodir,String realMovetodirectory,
@@ -517,10 +516,8 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 				
 				for (int i=0; i<children.length; i++) 
 				{
-					if(successConditionBroken)
-					{
-						if(!successConditionBrokenExit)
-						{
+					if(successConditionBroken){
+						if(!successConditionBrokenExit){
 							log.logError(toString(), Messages.getString("JobUnZip.Error.SuccessConditionbroken",""+NrErrors));
 							successConditionBrokenExit=true;
 						}
@@ -629,10 +626,8 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 			
 			  while( zipEnum.hasMoreElements() )
 	          {
-					if(successConditionBroken)
-					{
-					  if(!successConditionBrokenExit)
-					  {
+					if(successConditionBroken){
+					  if(!successConditionBrokenExit){
 						log.logError(toString(), Messages.getString("JobUnZip.Error.SuccessConditionbroken",""+NrErrors));
 						successConditionBrokenExit=true;
 					  }
@@ -772,15 +767,12 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 		}
 		finally 
 		{	
-			if ( zipfile != null )
-			{
+			if ( zipfile != null ){
 				try {
 					zipfile.close();
 				}catch ( IOException ex ) {};
 			}
 		}
-	
-		
 		return retval;
 	}
 

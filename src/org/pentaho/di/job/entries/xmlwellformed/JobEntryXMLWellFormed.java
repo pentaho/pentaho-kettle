@@ -64,6 +64,7 @@ import org.w3c.dom.Node;
  * @author Samatar Hassan
  * @since 26-03-2008
  */
+
 public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, JobEntryInterface
 {
 
@@ -283,7 +284,6 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
 		{
 			for (int iteration=0;iteration<rows.size();iteration++) 
 			{
-			
 				if(successConditionBroken)
 				{
 					if(!successConditionBrokenExit)
@@ -334,6 +334,12 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
 		result.setNrLinesWritten(NrWellFormed);
 		if(getSuccessStatus())	result.setResult(true);
 		
+		displayResults(log);
+		
+		return result;
+	}
+	private void displayResults(LogWriter log)
+	{
 		if(log.isDetailed())
 		{
 			log.logDetailed(toString(), "=======================================");
@@ -342,9 +348,8 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
 			log.logDetailed(toString(), Messages.getString("JobXMLWellFormed.Log.Info.FilesInWellFormed","" + NrWellFormed));
 			log.logDetailed(toString(), "=======================================");
 		}
-		
-		return result;
 	}
+	
 	private boolean checkIfSuccessConditionBroken()
 	{
 		boolean retval=false;
