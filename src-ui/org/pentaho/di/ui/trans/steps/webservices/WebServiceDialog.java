@@ -393,16 +393,13 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         ColumnInfo[] colinf = new ColumnInfo[] {
             new ColumnInfo(Messages.getString("WebServiceDialog.NameColumn.Column"), //$NON-NLS-1$
 		                   ColumnInfo.COLUMN_TYPE_TEXT,
-		                   false,
 		                   false),
             new ColumnInfo(Messages.getString("WebServiceDialog.WsNameColumn.Column"), //$NON-NLS-1$
                            ColumnInfo.COLUMN_TYPE_TEXT,
-                           false,
-                           true),
+                           false),
             new ColumnInfo(Messages.getString("WebServiceDialog.TypeColumn.Column"), //$NON-NLS-1$
                            ColumnInfo.COLUMN_TYPE_TEXT,
-                           false,
-                           true),
+                           false),
            };
         fieldInTableView = new TableView(transMeta, vCompositeTabField, SWT.FULL_SELECTION | SWT.MULTI, colinf, 0,  lsMod, props);
         fieldInTableView.setReadonly(false);
@@ -541,12 +538,10 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
                                false),
                 new ColumnInfo(Messages.getString("WebServiceDialog.WsNameColumn.Column"), //$NON-NLS-1$
                                ColumnInfo.COLUMN_TYPE_TEXT,
-                               false,
-                               true),
+                               false),
                 new ColumnInfo(Messages.getString("WebServiceDialog.TypeColumn.Column"), //$NON-NLS-1$
                                ColumnInfo.COLUMN_TYPE_TEXT,
-                               false,
-                               true)
+                               false)
         	};
         fieldOutTableView = new TableView(transMeta, vCompositeTabFieldOut, SWT.FULL_SELECTION | SWT.MULTI, colinf, 0,  lsMod, props);
         fieldOutTableView.table.removeAll();
