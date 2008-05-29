@@ -503,7 +503,7 @@ public class JobEntrySFTPPUTDialog extends JobEntryDialog implements JobEntryDia
 		wbTestChangeFolderExists.setText(Messages.getString("JobSFTPPUT.TestFolderExists.Label"));
 		fdbTestChangeFolderExists=new FormData();
 		fdbTestChangeFolderExists.right= new FormAttachment(100, 0);
-		fdbTestChangeFolderExists.top  = new FormAttachment(wServerSettings, 2*margin);
+		fdbTestChangeFolderExists.top  = new FormAttachment(wSourceFiles, margin);
 		wbTestChangeFolderExists.setLayoutData(fdbTestChangeFolderExists);
 		
 		// Target (remote) folder

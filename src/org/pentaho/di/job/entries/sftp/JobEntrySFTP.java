@@ -373,6 +373,7 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 
         Result result = previousResult;
 		List<RowMetaAndData> rows = result.getRows();
+		RowMetaAndData resultRow = null;
 		
 		result.setResult( false );
 		long filesRetrieved = 0;
@@ -389,7 +390,7 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 				return result;
 			}
 			try{
-				RowMetaAndData resultRow = null;
+				
 				// Copy the input row to the (command line) arguments
 				for (int iteration=0;iteration<rows.size();iteration++) 
 				{			

@@ -58,6 +58,7 @@ import org.pentaho.di.job.entries.sftp.SFTPClient;
  * @author Matt
  * @since 19-06-2003
  */
+
 public class JobEntrySFTPDialog extends JobEntryDialog implements JobEntryDialogInterface
 {
     private Label wlName;
@@ -629,7 +630,6 @@ public class JobEntrySFTPDialog extends JobEntryDialog implements JobEntryDialog
     }
     private void test()
     {
-		
     	if(connectToSFTP(false,null))
     	{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION );
@@ -680,7 +680,6 @@ public class JobEntrySFTPDialog extends JobEntryDialog implements JobEntryDialog
 				retval=true;
 			}  
 	        if(checkFolder) retval=sftpclient.folderExists(Remotefoldername);
- 
 		}
 	     catch (Exception e)
 	    {
