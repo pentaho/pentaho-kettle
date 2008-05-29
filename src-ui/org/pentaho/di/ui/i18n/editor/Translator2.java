@@ -200,10 +200,13 @@ public class Translator2
         	double donePct[] = new double[localeList.size()];
         	System.out.println(Messages.getString("i18n.Log.NumberOfKeysFound",""+nrKeys));
         	for (int i=0;i<localeList.size();i++) {
-        		donePct[i] = 100 * (double)keyCounts[i] / (double)nrKeys;
-            	System.out.println(localeList.get(i)+" : "+df.format(donePct[i])+"% complete  ("+keyCounts[i]+")");
+        	    donePct[i] = 100 * (double)keyCounts[i] / (double)nrKeys;
+        	    int missingKeys = nrKeys - keyCounts[i];
+        	    String statusKeys = localeList.get(i)+" : "+df.format(donePct[i])+"% complete  ("+keyCounts[i]+")" +
+        	    	(missingKeys!=0 ? ("...missing " + missingKeys) : "");
+        	    System.out.println(statusKeys);
         	}
-        	
+
         }
         catch(Exception e)
         {
@@ -1006,7 +1009,7 @@ public class Translator2
 	        	} else if (todo.size()>5) {
 	        		item.setBackground(GUIResource.getInstance().getColorGray());
 	        	} else if (todo.size()>0) {
-	        		item.setBackground(GUIResource.getInstance().getColorLightGray());
+	        		item.setBackground(GUIResource.getInstance().getColorGreen());
 	        	}
         	}
         }
