@@ -23,50 +23,50 @@ public class XsdType
 		int vRet = ValueMetaInterface.TYPE_NONE;
         if (aXsdType != null)
         {
-    		if(aXsdType.equals(DATE))
+    		if(aXsdType.equalsIgnoreCase(DATE))
     		{
     			vRet = ValueMetaInterface.TYPE_DATE;
     		}
-    		else if(aXsdType.equals(TIME))
+    		else if(aXsdType.equalsIgnoreCase(TIME))
     		{
     			vRet = ValueMetaInterface.TYPE_DATE;
     		}
-    		else if(aXsdType.equals(DATE_TIME))
+    		else if(aXsdType.equalsIgnoreCase(DATE_TIME))
     		{
     			vRet = ValueMetaInterface.TYPE_DATE; 
     		}
-    		else if(aXsdType.equals(INTEGER))
+    		else if(aXsdType.equalsIgnoreCase(INTEGER))
     		{
     			vRet = ValueMetaInterface.TYPE_INTEGER;
     		}
-    		else if(aXsdType.equals(SHORT))
+    		else if(aXsdType.equalsIgnoreCase(SHORT))
     		{
     			vRet = ValueMetaInterface.TYPE_INTEGER;
     		}
-    		else if(aXsdType.equals(BOOLEAN))
+    		else if(aXsdType.equalsIgnoreCase(BOOLEAN))
     		{
     			vRet = ValueMetaInterface.TYPE_BOOLEAN;
     		}
-    		else if(aXsdType.equals(STRING))
+    		else if(aXsdType.equalsIgnoreCase(STRING))
     		{
     			vRet = ValueMetaInterface.TYPE_STRING;
     		}
-    		else if(aXsdType.equals(DOUBLE))
+    		else if(aXsdType.equalsIgnoreCase(DOUBLE))
     		{
     			vRet = ValueMetaInterface.TYPE_NUMBER;
     		}
-    		else if(aXsdType.equals(BINARY))
+    		else if(aXsdType.equalsIgnoreCase(BINARY))
     		{
     			vRet = ValueMetaInterface.TYPE_BINARY;
     		}
-    		else if(aXsdType.equals(DECIMAL))
+    		else if(aXsdType.equalsIgnoreCase(DECIMAL))
     		{
     			vRet = ValueMetaInterface.TYPE_BIGNUMBER;
     		}
     		else  
     		{
     			// When all else fails, map it to a String
-    			vRet = ValueMetaInterface.TYPE_STRING;
+    			vRet = ValueMetaInterface.TYPE_NONE;
     		}
         }
 		return vRet;

@@ -39,30 +39,31 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface
     
     public static final int DEFAULT_STEP = 1000;
     
-    /** Champs disponible dans le web services en entrees */
+    /** The input web service fields */
     private List<WebServiceField> fieldsIn;
 
-    /** Champs disponible dans le web services en sortie */
+    /** The output web service fields */
     private List<WebServiceField> fieldsOut;
 
-    /** Url du webService */
+    /** Web service URL */
     private String url;
 
-    /** Nom de l'operation utilise dans le web service */
+    /** Name of the web service operation to use  */
     private String operationName;
     
+    /** The name-space of the operation */
     private String operationNamespace;
 
-    /** Nom de l'objet qui encapsule les champs en entree lorsque l'on a un tableau */
+    /** The name of the object that encapsulates the input fields in case we're dealing with a table */
     private String inFieldContainerName;
 
-    /** Nom de l'objet en entree */
+    /** Name of the input object */
     private String inFieldArgumentName;
 
-    /** Nom de l'objet qui encapsule les champs en sortie lorsque l'on a un tableau */
+    /** Name of the object that encapsulates the output fields in case we're dealing with a table */
     private String outFieldContainerName;
 
-    /** Nom de l'objet en sortie */
+    /** Name of the output object */
     private String outFieldArgumentName;
     
     private String proxyHost;
@@ -73,10 +74,14 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface
     
     private String httpPassword;
     
+    /** Flag to allow input data to pass to the output */
     private boolean passingInputData;
     
-    /** Nombre de row a envoyer a chaque appel */
+    /** The number of rows to send with each call */
     private int callStep = DEFAULT_STEP;
+    
+    /** Use the 2.5/3.0 parsing logic (available for compatibility reasons) */
+    private boolean compatible;
 
     public WebServiceMeta()
     {
@@ -112,6 +117,12 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface
         for (WebServiceField field : getFieldsOut())
         {
             ValueMetaInterface vValue = new ValueMeta(field.getName(), field.getType());
+            
+            // If the type is unrecognized we give back the XML as a String...
+            //
+            if (field.getType()==ValueMetaInterface.TYPE_NONE) {
+            	vValue.setType(ValueMetaInterface.TYPE_STRING);
+            }
             vValue.setOrigin(name);
             r.addValueMeta(vValue);
         }
@@ -160,12 +171,12 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface
     {
         StringBuffer retval = new StringBuffer();
 
-        //SAUVEGARDE DES DONNEES COMMUNES
-
-        //Sauvegarde de l'URL du webService
+        // Store the WebService URL
+        //
         retval.append("    " + XMLHandler.addTagValue("wsURL", getUrl()));
 
-        //Sauvegarde de l'op�ration 
+        // Store the operation
+        //
         retval.append("    " + XMLHandler.addTagValue("wsOperation", getOperationName()));
         retval.append("    " + XMLHandler.addTagValue("wsOperationNamespace", getOperationNamespace()));
         retval.append("    " + XMLHandler.addTagValue("wsInFieldContainer", getInFieldContainerName()));
@@ -178,10 +189,13 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface
         retval.append("    " + XMLHandler.addTagValue("httpPassword", getHttpPassword()));
         retval.append("    " + XMLHandler.addTagValue("callStep", getCallStep()));
         retval.append("    " + XMLHandler.addTagValue("passingInputData", isPassingInputData()));
+        retval.append("    " + XMLHandler.addTagValue("compatible", isCompatible()));
 
-        //SAUVEGARDE DU PARAMETRAGE DES DONNEES EN ENTREES
+        // Store the field parameters
+        //
 
-        //Sauvegarde du lien entre les champs de l'�tape pr�c�dente et l'URL du WebService
+        // Store the link between the input fields and the WebService input
+        //
         retval.append("    <fieldsIn>" + Const.CR);
         for (int i = 0; i < getFieldsIn().size(); i++)
         {
@@ -194,7 +208,8 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface
         }
         retval.append("      </fieldsIn>" + Const.CR);
 
-        //SAUVEGARDE DU PARAMETRAGE DES DONNES EN SORTIES
+        // Store the link between the input fields and the WebService output
+        //
         retval.append("    <fieldsOut>" + Const.CR);
         for (int i = 0; i < getFieldsOut().size(); i++)
         {
@@ -212,11 +227,12 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface
 
     public void loadXML(Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleXMLException 
     {
-    	// TODO Auto-generated method stub
-        //Chargement de l'Url
+        // Load the URL
+    	//
         setUrl(XMLHandler.getTagValue(stepnode, "wsURL"));
 
-        //Chargement de l'op�ration
+        // Load the operation
+        //
         setOperationName(XMLHandler.getTagValue(stepnode, "wsOperation"));
         setOperationNamespace(XMLHandler.getTagValue(stepnode, "wsOperationNamespace"));
         setInFieldContainerName(XMLHandler.getTagValue(stepnode, "wsInFieldContainer"));
@@ -229,10 +245,11 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface
         setHttpPassword(XMLHandler.getTagValue(stepnode, "httpPassword"));
         setCallStep(Const.toInt(XMLHandler.getTagValue(stepnode, "callStep"), DEFAULT_STEP));
         setPassingInputData("Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "passingInputData")));
+        String compat = XMLHandler.getTagValue(stepnode, "compatible");
+        setCompatible( Const.isEmpty(compat) || "Y".equalsIgnoreCase(compat) );
 
-        //CHARGEMENT DES DONNEES EN ENTREES
-
-        //Chargement des champs disponible dans l'�tape pr�c�dente et de leur matching
+        // Load the input fields mapping
+        //
         getFieldsIn().clear();
         Node fields = XMLHandler.getSubNode(stepnode, "fieldsIn");
         int nrfields = XMLHandler.countNodes(fields, "field");
@@ -249,10 +266,10 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface
 
         }
 
-        //CHARGEMENT DES DONNES EN SORTIES
+        // Load the output fields mapping
+        //
         getFieldsOut().clear();
 
-        //Chargement des champs disponibles dans l'�tape suivante
         fields = XMLHandler.getSubNode(stepnode, "fieldsOut");
         nrfields = XMLHandler.countNodes(fields, "field");
 
@@ -271,11 +288,11 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface
     public void readRep(Repository rep, long id_step, List<DatabaseMeta> databases, Map<String, Counter> counters)
     		throws KettleException 
     {
-        // chargement de l'url
+        // Load the URL
     	//
         setUrl(rep.getStepAttributeString(id_step, "wsUrl"));
 
-        // Chargement de l'operation du web services
+        // Load the operation
         //
         setOperationName(rep.getStepAttributeString(id_step, "wsOperation"));
         setOperationNamespace(rep.getStepAttributeString(id_step, "wsOperationNamespace"));
@@ -289,10 +306,10 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface
         setHttpPassword(rep.getStepAttributeString(id_step, "httpPassword"));
         setCallStep((int) rep.getStepAttributeInteger(id_step, "callStep"));
         setPassingInputData(rep.getStepAttributeBoolean(id_step, "passingInputData"));
+        setCompatible(rep.getStepAttributeBoolean(id_step, 0, "compatible", true)); // Default to true for backward compatibility
 
-        //RESTAURATION DU PARAMETRAGE DES DONNEES EN ENTREES
-
-        //Restauration des champs du web services
+        // Load the input fields mapping
+        //
         int nb = rep.countNrStepAttributes(id_step, "fieldIn_ws_name");
         getFieldsIn().clear();
         for (int i = 0; i < nb; ++i)
@@ -304,7 +321,8 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface
             getFieldsIn().add(field);
         }
 
-        //RESTAURATION DU PARAMETRAGE DES DONNES EN SORTIES
+        // Load the output fields mapping
+        //
         nb = rep.countNrStepAttributes(id_step, "fieldOut_ws_name");
         getFieldsOut().clear();
         for (int i = 0; i < nb; ++i)
@@ -320,11 +338,12 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface
 
     public void saveRep(Repository rep, long id_transformation, long id_step) throws KettleException
     {
-
-        //Sauvegarde de l'URL du web services
+        // Store the URL
+    	//
         rep.saveStepAttribute(id_transformation, id_step, "wsUrl", getUrl());
 
-        //Sauvegarde de l'op�ration du web services
+        // Store the WS Operation
+        //
         rep.saveStepAttribute(id_transformation, id_step, "wsOperation", getOperationName());
         rep.saveStepAttribute(id_transformation, id_step, "wsOperationNamespace", getOperationNamespace());
         rep.saveStepAttribute(id_transformation, id_step, "wsInFieldContainer", getInFieldContainerName());
@@ -337,10 +356,10 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface
         rep.saveStepAttribute(id_transformation, id_step, "httpPassword", getHttpPassword());
         rep.saveStepAttribute(id_transformation, id_step, "callStep", getCallStep());
         rep.saveStepAttribute(id_transformation, id_step, "passingInputData", isPassingInputData());
+        rep.saveStepAttribute(id_transformation, id_step, "compatible", isCompatible());
 
-        //SAUVEGARDE DU PARAMETRAGE DES DONNEES EN ENTREES
-
-        //Sauvegarde des champs du web services 
+        // Load the input fields mapping
+        //
         for (int i = 0; i < getFieldsIn().size(); ++i)
         {
             WebServiceField vField = (WebServiceField) getFieldsIn().get(i);
@@ -349,7 +368,8 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface
             rep.saveStepAttribute(id_transformation, id_step, i, "fieldIn_xsd_type", vField.getXsdType());
         }
 
-        //SAUVEGARDE DU PARAMETRAGE DES DONNES EN SORTIES
+        // Load the output fields mapping
+        //
         for (int i = 0; i < getFieldsOut().size(); ++i)
         {
             WebServiceField vField = (WebServiceField) getFieldsOut().get(i);
@@ -379,23 +399,6 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface
         return new WebServiceData();
     }
 
-    public String[] getUsedVariables()
-    {
-        // Voir s'il faut retourner les variables que l'on peut mettre pour le proxy,
-        // l'url du serveur et l'authentification http
-        return null;
-        //        List vList = new ArrayList();
-//        for (Iterator iter = valueInLinkWebServiceFieldList.iterator(); iter.hasNext();)
-//        {
-//            FieldLinkWebServiceField vField = (FieldLinkWebServiceField) iter.next();
-//            if (!vField.getField().isNull() && vField.getField().getString().startsWith("${"))
-//            {
-//                vList.add(vField.getField().getString());
-//            }
-//        }
-//        return (String[])vList.toArray(new String[vList.size()]);
-    }
-
     public WebServiceField getFieldInFromName(String name)
     {
         WebServiceField param = null;
@@ -410,7 +413,6 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface
         }
         return param;
     }
-    
     
     public WebServiceField getFieldOutFromWsName(String wsName)
     {
@@ -574,5 +576,19 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface
 	 */
 	public void setPassingInputData(boolean passingInputData) {
 		this.passingInputData = passingInputData;
+	}
+
+	/**
+	 * @return the compatible
+	 */
+	public boolean isCompatible() {
+		return compatible;
+	}
+
+	/**
+	 * @param compatible the compatible to set
+	 */
+	public void setCompatible(boolean compatible) {
+		this.compatible = compatible;
 	}
 }

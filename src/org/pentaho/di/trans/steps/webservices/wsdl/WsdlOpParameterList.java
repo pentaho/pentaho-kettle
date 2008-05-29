@@ -30,7 +30,7 @@ import javax.wsdl.Part;
 import org.w3c.dom.Element;
 
 /**
- * WsdlOpParameterList represents the list of parameters for an operaiton.
+ * WsdlOpParameterList represents the list of parameters for an operation.
  */
 public final class WsdlOpParameterList extends ArrayList<WsdlOpParameter>
 {
@@ -79,6 +79,13 @@ public final class WsdlOpParameterList extends ArrayList<WsdlOpParameter>
         return _parameterStyle;
     }
 
+    /** 
+     * @return the operation for this parameter list
+     */
+    public Operation getOperation() {
+    	return _operation;
+    }
+    
     /**
      * Add a parameter to this list.
      *
@@ -97,7 +104,7 @@ public final class WsdlOpParameterList extends ArrayList<WsdlOpParameter>
 
             if (requestPart) {
                 // just set mode and add
-                op.setMode(WsdlOpParameter.ParameterMode.IN);
+                op.setMode(op.getMode()); // TODO: WTF??
                 add(op);
             }
             else {
@@ -158,15 +165,17 @@ public final class WsdlOpParameterList extends ArrayList<WsdlOpParameter>
         //
         // is this in IN/OUT param ?
         //
+    	/*
         for (WsdlOpParameter param : this) {
             if (param.equals(responseParam)) {
                 param.setMode(WsdlOpParameter.ParameterMode.INOUT);
                 return;
             }
         }
+        */
 
-        // if made it to here it is an out mode param
-        responseParam.setMode(WsdlOpParameter.ParameterMode.OUT);
+        // If made we it to this far, we're talking about an out mode param
+        // responseParam.setMode(WsdlOpParameter.ParameterMode.OUT);
 
         List<String> parameterOrder = _operation.getParameterOrdering();
         if (parameterOrder != null) {

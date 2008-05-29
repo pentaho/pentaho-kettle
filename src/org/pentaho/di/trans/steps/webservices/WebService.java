@@ -3,6 +3,7 @@ package org.pentaho.di.trans.steps.webservices;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
+import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.UnknownHostException;
@@ -17,6 +18,11 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.httpclient.Credentials;
@@ -37,6 +43,7 @@ import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -46,6 +53,9 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.webservices.wsdl.Wsdl;
 import org.pentaho.di.trans.steps.webservices.wsdl.XsdType;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import com.ctc.wstx.exc.WstxParsingException;
 
@@ -242,7 +252,7 @@ public class WebService extends BaseStep implements StepInterface
         xml.append("</soapenv:Envelope>\n");
     }
 
-    private synchronized void requestSOAP(Object[] rowData, RowMetaInterface rowMeta) throws KettleStepException
+    private synchronized void requestSOAP(Object[] rowData, RowMetaInterface rowMeta) throws KettleException
     {
         Wsdl wsdl;
         try{
@@ -340,17 +350,8 @@ public class WebService extends BaseStep implements StepInterface
 
         super.dispose(smi, sdi);
     }
-
-    private void processRows(InputStream anXml, Object[] rowData, RowMetaInterface rowMeta) throws KettleStepException
-    {
-    	// First we should get the complete string
-    	// The problem is that the string can contain XML or any other format such as HTML saying the service is no longer available.
-    	// We're talking about a WEB service here.
-    	// As such, to keep the original parsing scheme, we first read the content.
-    	// Then we create an input stream from the content again.
-    	// It's elaborate, but that way we can report on the failure more correctly.
-    	//
-    	
+    
+    private String readStringFromInputStream(InputStream anXml) throws KettleStepException {
 		StringBuffer response = new StringBuffer();
 		try
     	{
@@ -361,224 +362,151 @@ public class WebService extends BaseStep implements StepInterface
     			c=anXml.read();
     		}
     		anXml.close();
+    		
+    		return response.toString();
     	}
     	catch(Exception e)
     	{
     		throw new KettleStepException("Unable to read web service response data from input stream", e);
     	}
-    	
-    	// Create a new reader to feed into the XML Input Factory below...
+    }
+
+    private void processRows(InputStream anXml, Object[] rowData, RowMetaInterface rowMeta) throws KettleException
+    {
+    	// Just to make sure the old transformations keep working...
     	//
-    	StringReader stringReader = new StringReader(response.toString());
+    	if (meta.isCompatible()) {
+    		compatibleProcessRows(anXml, rowData, rowMeta);
+    		return;
+    	}
     	
-    	// TODO Very empirical : see if we can do something better here
-        try
-        {
-            XMLInputFactory vFactory = XMLInputFactory.newInstance();
-            XMLStreamReader vReader = vFactory.createXMLStreamReader(stringReader);
-            
+    	// First we should get the complete string
+    	// The problem is that the string can contain XML or any other format such as HTML saying the service is no longer available.
+    	// We're talking about a WEB service here.
+    	// As such, to keep the original parsing scheme, we first read the content.
+    	// Then we create an input stream from the content again.
+    	// It's elaborate, but that way we can report on the failure more correctly.
+    	//
+    	String response = readStringFromInputStream(anXml);
+
+    	try {
+
+	    	// What is the expected response object for the operation?
+	    	//
+	    	Document doc = XMLHandler.loadXMLString(response);
+	    	Node enveloppeNode = XMLHandler.getSubNode(doc, "soapenv:Envelope");
+	    	Node bodyNode = XMLHandler.getSubNode(enveloppeNode, "soapenv:body");
+	    	
+	    	// The node directly below the body is the response node
+	    	// It's apparently a hassle to get the name in a consistent way, but we know it's the first element node
+	    	//
+	    	Node responseNode = null;
+	    	NodeList responseChildren = bodyNode.getChildNodes();
+	    	for (int i=0;i<responseChildren.getLength();i++) {
+	    		Node responseChild = responseChildren.item(i);
+	    		if (responseChild.getNodeType()==Node.ELEMENT_NODE) {
+	    			responseNode = responseChild;
+	    			break;
+	    		}
+	    	}
+	    	
+	    	if (responseNode==null) return;
+
+	    	TransformerFactory transformerFactory = TransformerFactory.newInstance();
+	    	Transformer transformer = transformerFactory.newTransformer();
+	    	transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+
+	    	StringWriter responseXML = new StringWriter();
+			transformer.transform(new DOMSource(responseNode), new StreamResult(responseXML));
+
+            // Allocate a result row in case we are dealing with a single result row
+            //
             Object[] outputRowData = rowData==null ? RowDataUtil.allocateRowData(data.outputRowMeta.size()) : RowDataUtil.createResizedCopy(rowData, data.outputRowMeta.size());
             int outputIndex = rowData==null ? 0 : rowMeta.size();
             
-            boolean processing = false;
-            boolean oneValueRowProcessing = false;
-            while (vReader.hasNext())
-            {
-            	int event = vReader.next();
-                switch (event)
-                {
-                    case XMLStreamConstants.START_ELEMENT:
-                    	
-                    	// Start new code
-                    	//START_ELEMENT= 1
-                    	//
-                    	if (log.isRowLevel()) logRowlevel("START_ELEMENT / "+ vReader.getAttributeCount()+" / "+vReader.getNamespaceCount());
-                        
-                        // If we start the xml element named like the return type,
-                        // we start a new row
-                        //
-                        if (log.isRowLevel()) logRowlevel("vReader.getLocalName = "+vReader.getLocalName());
-                        if ( Const.isEmpty(meta.getOutFieldArgumentName()) )
-                        {
-                        	//getOutFieldArgumentName() == null
-                        	if (oneValueRowProcessing)
-                            {
-                                WebServiceField field = meta.getFieldOutFromWsName(vReader.getLocalName());
-                                if (field != null)
-                                {
-                                    outputRowData[outputIndex++] = getValue(vReader.getElementText(), field);
-                                    putRow(data.outputRowMeta, outputRowData);
-                                    oneValueRowProcessing = false;
-                                }
-                                else
-                                {
-                                	if (meta.getOutFieldContainerName().equals(vReader.getLocalName()))
-                                	{
-                                		// meta.getOutFieldContainerName() = vReader.getLocalName()
-                                        if (log.isRowLevel()) logRowlevel("OutFieldContainerName = "+meta.getOutFieldContainerName());
-                                        oneValueRowProcessing = true;
-                                	}
-                                }
-                            }
-                        }
-                        else
-                        {
-                        	//getOutFieldArgumentName() != null
-                            if (log.isRowLevel()) logRowlevel("OutFieldArgumentName = "+meta.getOutFieldArgumentName());
-                            if (meta.getOutFieldArgumentName().equals(vReader.getLocalName()))
-                            {
-                                if (log.isRowLevel()) logRowlevel("vReader.getLocalName = "+vReader.getLocalName());
-                                if (log.isRowLevel()) logRowlevel("OutFieldArgumentName = ");
-                                if (processing)
-                                {
-                                	WebServiceField field = meta.getFieldOutFromWsName(vReader.getLocalName());
-                                    if (field != null)
-                                    {
-                                    	int index = data.outputRowMeta.indexOfValue(field.getName());
-                                        if (index>=0)
-                                        {
-                                            outputRowData[index] = getValue(vReader.getElementText(), field);
-                                        }
-                                    }
-                                    processing = false;
-                                }
-                                else
-                                {
-                                	WebServiceField field = meta.getFieldOutFromWsName(vReader.getLocalName());
-                                    if (meta.getFieldsOut().size() == 1 && field != null)
-                                    {
-                                    	// This can be either a simple return element, or a complex type...
-                                    	//
-                                    	try
-                                    	{
-                                    		// If it's a complex type, we will try to grab all data at the lowest level and concat the string values
-                                    		// 
-                                    		StringBuffer content = new StringBuffer();
-                                    		if (vReader.hasText()) {
-                                    			// Probably a simple type
-                                    			//
-                                    			content.append(vReader.getElementText());
-                                    		} else {
-                                    			// A complex type result : get all text elements and concatenate with tabs in between.
-                                    			//
-	                                    		boolean first=true;
-	                                    		while (vReader.hasNext()) {
-		                                    		while ((!vReader.hasText() || vReader.isWhiteSpace()) && vReader.hasNext()) {
-		                                    			vReader.next();
-		                                    		}
-		                                    		if (vReader.hasText()) { 
-		                                    			if (!first) {
-		                                    				content.append('\t');
-		                                    			} else  {
-		                                    				first=false;
-		                                    			}
-		                                    			content.append(vReader.getText());
-		                                    		}
-		                                    		if (vReader.hasNext()) vReader.next();
-	                                    		}
-                                    		}
-                                    		outputRowData[outputIndex++] = getValue(content.toString(), field);
-                                    		putRow(data.outputRowMeta, outputRowData);
-                                    	}
-                                    	catch(WstxParsingException e)
-                                    	{
-                                    		throw new KettleStepException("Unable to get value for field ["+field.getName()+"].  Verify that this is not a complex data type by looking at the response XML.", e);
-                                    	}
-                                    }
-                                    else
-                                    {
-                                        for (WebServiceField curField : meta.getFieldsOut())
-                                        {
-                                            if ( !Const.isEmpty(curField.getName()) )
-                                            {
-                                            	outputRowData[outputIndex++] = getValue(vReader.getElementText(), curField);
-                                            }
-                                        }
-                                        processing = true;
-                                    }
-                                }
-                            	
-                            }
-                            else
-                            {
-                                if (log.isRowLevel()) logRowlevel("vReader.getLocalName = "+vReader.getLocalName());
-                                if (log.isRowLevel()) logRowlevel("OutFieldArgumentName = "+meta.getOutFieldArgumentName());
-                            }
-                        }
-                        break;
-                        
-                    case XMLStreamConstants.END_ELEMENT:
-                    	//END_ELEMENT= 2
-                        if (log.isRowLevel()) logRowlevel("END_ELEMENT");
-                        // If we end the xml element named as the return type, we
-                        // finish a row
-                        if ((meta.getOutFieldArgumentName() == null && meta.getOperationName().equals(vReader.getLocalName())))
-                        {
-                            oneValueRowProcessing = false;
-                        }
-                        else if (meta.getOutFieldArgumentName() != null && meta.getOutFieldArgumentName().equals(vReader.getLocalName()))
-                        {
-                            putRow(data.outputRowMeta, outputRowData);
-                            processing = false;
-                        }
-                        break;
-                    case XMLStreamConstants.PROCESSING_INSTRUCTION:
-                    	//PROCESSING_INSTRUCTION= 3
-                        if (log.isRowLevel()) logRowlevel("PROCESSING_INSTRUCTION");
-                        break;
-                    case XMLStreamConstants.CHARACTERS:
-                    	//CHARACTERS= 4
-                        if (log.isRowLevel()) logRowlevel("CHARACTERS");
-                        break;
-                    case XMLStreamConstants.COMMENT:
-                    	//COMMENT= 5
-                        if (log.isRowLevel()) logRowlevel("COMMENT");
-                        break;
-                    case XMLStreamConstants.SPACE:
-                    	//PROCESSING_INSTRUCTION= 6
-                        if (log.isRowLevel()) logRowlevel("PROCESSING_INSTRUCTION");
-                        break;
-                    case XMLStreamConstants.START_DOCUMENT:
-                    	//START_DOCUMENT= 7
-                        if (log.isRowLevel()) logRowlevel("START_DOCUMENT");
-                        if (log.isRowLevel()) logRowlevel(vReader.getText());
-                        break;
-                    case XMLStreamConstants.END_DOCUMENT:
-                    	//END_DOCUMENT= 8
-                        if (log.isRowLevel()) logRowlevel("END_DOCUMENT");
-                        break;
-                    case XMLStreamConstants.ENTITY_REFERENCE:
-                    	//ENTITY_REFERENCE= 9
-                        if (log.isRowLevel()) logRowlevel("ENTITY_REFERENCE");
-                        break;
-                    case XMLStreamConstants.ATTRIBUTE:
-                    	//ATTRIBUTE= 10
-                        if (log.isRowLevel()) logRowlevel("ATTRIBUTE");
-                        break;
-                    case XMLStreamConstants.DTD:
-                    	//DTD= 11
-                        if (log.isRowLevel()) logRowlevel("DTD");
-                        break;
-                    case XMLStreamConstants.CDATA:
-                    	//CDATA= 12
-                        if (log.isRowLevel()) logRowlevel("CDATA");
-                        break;
-                    case XMLStreamConstants.NAMESPACE:
-                    	//NAMESPACE= 13
-                        if (log.isRowLevel()) logRowlevel("NAMESPACE");
-                        break;
-                    case XMLStreamConstants.NOTATION_DECLARATION:
-                    	//NOTATION_DECLARATION= 14
-                        if (log.isRowLevel()) logRowlevel("NOTATION_DECLARATION");
-                        break;
-                    case XMLStreamConstants.ENTITY_DECLARATION:
-                    	//ENTITY_DECLARATION= 15
-                        if (log.isRowLevel()) logRowlevel("ENTITY_DECLARATION");
-                        break;
-                    default:
-                        break;
-                }
-            }
+	    	// The top level children are the rows...
+	    	//
+            boolean singleRow = false;
+            int fieldsFound = 0;
+	    	NodeList nodeList = responseNode.getChildNodes();
+	    	for (int i=0;i<nodeList.getLength();i++) {
+	    		Node node = nodeList.item(i);
+	    		
+    			// This node either contains the data for a single row or it contains the first element of a single result response
+    			// If we find the node name in out output result fields list, we are going to consider it a single row result.
+    			//
+    			WebServiceField field = meta.getFieldOutFromWsName(node.getNodeName());
+    			if (field!=null) {
+    				if (getNodeValue(outputRowData, outputIndex, node, field, transformer, true)) {
+    					// We found a match.
+    					// This means that we are dealing with a single row
+    					// It also means that we need to update the output index pointer
+    					//
+    					singleRow=true;
+    					fieldsFound++;
+    					outputIndex++;
+    					
+    					if (outputIndex>=data.outputRowMeta.size()) {
+    						// Hang on!  It's not a single row anyway, we get multiple results back.
+    						// In that case, just send the data out and create a new row...
+    						//
+    						putRow(data.outputRowMeta, outputRowData);
+    						outputRowData = rowData==null ? RowDataUtil.allocateRowData(data.outputRowMeta.size()) : RowDataUtil.createResizedCopy(rowData, data.outputRowMeta.size());
+    			            outputIndex = rowData==null ? 0 : rowMeta.size();
+    			            fieldsFound=0;
+    					}
+    				}
+    			} else {
+    				// Sticking with the multiple-results scenario...
+    				//
+    				
+    				// TODO: remove next 2 lines, added for debug reasons.
+    				//
+	    			StringWriter nodeXML = new StringWriter();
+	    			transformer.transform(new DOMSource(node), new StreamResult(nodeXML));
+	    			
+		    		// Allocate a new row...
+	    			//
+	    			outputRowData = rowData==null ? RowDataUtil.allocateRowData(data.outputRowMeta.size()) : RowDataUtil.createResizedCopy(rowData, data.outputRowMeta.size());
+		            outputIndex = rowData==null ? 0 : rowMeta.size();
+		    		
+		            // Let's see what's in there...
+		            //
+		    		NodeList childNodes = node.getChildNodes();
+		    		for (int j=0;j<childNodes.getLength();j++) {
+		    			Node childNode = childNodes.item(j);
+		    			
+		    			field = meta.getFieldOutFromWsName(node.getNodeName());
+		    			if (field!=null) {
+		    			
+			    			if (getNodeValue(outputRowData, outputIndex, childNode, field, transformer, false)) {
+		    					// We found a match.
+		    					// This means that we are dealing with a single row
+		    					// It also means that we need to update the output index pointer
+		    					//
+		    					fieldsFound++;
+		    					outputIndex++;
+		    				}
+		    			}
+		    		}
+		    		
+		    		// Prevent empty rows from being sent out.
+		    		//
+		    		if (fieldsFound>0) {
+		    			// Send a row in a series of rows on its way.
+		    			//
+		    			putRow(data.outputRowMeta, outputRowData);
+		    		}
+    			}
+	    		
+    		}
+
+    		if (singleRow && fieldsFound>0) {
+    			// Send the single row on its way.
+    			//
+    			putRow(data.outputRowMeta, outputRowData);
+    		}
         }
         catch (Exception e)
         {
@@ -586,7 +514,239 @@ public class WebService extends BaseStep implements StepInterface
         }
     }
     
-    private Object getValue(String vNodeValue, WebServiceField field) throws XMLStreamException, ParseException
+    private void compatibleProcessRows(InputStream anXml, Object[] rowData, RowMetaInterface rowMeta) throws KettleException {
+
+		// First we should get the complete string
+		// The problem is that the string can contain XML or any other format such as HTML saying the service is no longer available.
+		// We're talking about a WEB service here.
+		// As such, to keep the original parsing scheme, we first read the content.
+		// Then we create an input stream from the content again.
+		// It's elaborate, but that way we can report on the failure more correctly.
+		//
+		String response = readStringFromInputStream(anXml);
+
+		// Create a new reader to feed into the XML Input Factory below...
+		//
+		StringReader stringReader = new StringReader(response.toString());
+
+		// TODO Very empirical : see if we can do something better here
+		try {
+			XMLInputFactory vFactory = XMLInputFactory.newInstance();
+			XMLStreamReader vReader = vFactory.createXMLStreamReader(stringReader);
+
+			Object[] outputRowData = RowDataUtil.allocateRowData(data.outputRowMeta.size());
+			int outputIndex = 0;
+
+			boolean processing = false;
+			boolean oneValueRowProcessing = false;
+			for (int event = vReader.next(); vReader.hasNext(); event = vReader.next()) {
+				switch (event) {
+				case XMLStreamConstants.START_ELEMENT:
+
+					// Start new code
+					//START_ELEMENT= 1
+					//
+					if (log.isRowLevel())
+						logRowlevel("START_ELEMENT / " + vReader.getAttributeCount() + " / " + vReader.getNamespaceCount());
+
+					// If we start the xml element named like the return type,
+					// we start a new row
+					//
+					if (log.isRowLevel())
+						logRowlevel("vReader.getLocalName = " + vReader.getLocalName());
+					if (Const.isEmpty(meta.getOutFieldArgumentName())) {
+						//getOutFieldArgumentName() == null
+						if (oneValueRowProcessing) {
+							WebServiceField field = meta.getFieldOutFromWsName(vReader.getLocalName());
+							if (field != null) {
+								outputRowData[outputIndex++] = getValue(vReader.getElementText(), field);
+								putRow(data.outputRowMeta, outputRowData);
+								oneValueRowProcessing = false;
+							} else {
+								if (meta.getOutFieldContainerName().equals(vReader.getLocalName())) {
+									// meta.getOutFieldContainerName() = vReader.getLocalName()
+									if (log.isRowLevel())
+										logRowlevel("OutFieldContainerName = " + meta.getOutFieldContainerName());
+									oneValueRowProcessing = true;
+								}
+							}
+						}
+					} else {
+						//getOutFieldArgumentName() != null
+						if (log.isRowLevel())
+							logRowlevel("OutFieldArgumentName = " + meta.getOutFieldArgumentName());
+						if (meta.getOutFieldArgumentName().equals(vReader.getLocalName())) {
+							if (log.isRowLevel())
+								logRowlevel("vReader.getLocalName = " + vReader.getLocalName());
+							if (log.isRowLevel())
+								logRowlevel("OutFieldArgumentName = ");
+							if (processing) {
+								WebServiceField field = meta.getFieldOutFromWsName(vReader.getLocalName());
+								if (field != null) {
+									int index = data.outputRowMeta.indexOfValue(field.getName());
+									if (index >= 0) {
+										outputRowData[index] = getValue(vReader.getElementText(), field);
+									}
+								}
+								processing = false;
+							} else {
+								WebServiceField field = meta.getFieldOutFromWsName(vReader.getLocalName());
+								if (meta.getFieldsOut().size() == 1 && field != null) {
+									// This can be either a simple return element, or a complex type...
+									//
+									try {
+										outputRowData[outputIndex++] = getValue(vReader.getElementText(), field);
+										putRow(data.outputRowMeta, outputRowData);
+									} catch (WstxParsingException e) {
+										throw new KettleStepException("Unable to get value for field [" + field.getName() + "].  Verify that this is not a complex data type by looking at the response XML.", e);
+									}
+								} else {
+									for (WebServiceField curField : meta.getFieldsOut()) {
+										if (!Const.isEmpty(curField.getName())) {
+											outputRowData[outputIndex++] = getValue(vReader.getElementText(), curField);
+										}
+									}
+									processing = true;
+								}
+							}
+
+						} else {
+							if (log.isRowLevel())
+								logRowlevel("vReader.getLocalName = " + vReader.getLocalName());
+							if (log.isRowLevel())
+								logRowlevel("OutFieldArgumentName = " + meta.getOutFieldArgumentName());
+						}
+					}
+					break;
+
+				case XMLStreamConstants.END_ELEMENT:
+					//END_ELEMENT= 2
+					if (log.isRowLevel())
+						logRowlevel("END_ELEMENT");
+					// If we end the xml element named as the return type, we
+					// finish a row
+					if ((meta.getOutFieldArgumentName() == null && meta.getOperationName().equals(vReader.getLocalName()))) {
+						oneValueRowProcessing = false;
+					} else if (meta.getOutFieldArgumentName() != null && meta.getOutFieldArgumentName().equals(vReader.getLocalName())) {
+						putRow(data.outputRowMeta, outputRowData);
+						processing = false;
+					}
+					break;
+				case XMLStreamConstants.PROCESSING_INSTRUCTION:
+					//PROCESSING_INSTRUCTION= 3
+					if (log.isRowLevel())
+						logRowlevel("PROCESSING_INSTRUCTION");
+					break;
+				case XMLStreamConstants.CHARACTERS:
+					//CHARACTERS= 4
+					if (log.isRowLevel())
+						logRowlevel("CHARACTERS");
+					break;
+				case XMLStreamConstants.COMMENT:
+					//COMMENT= 5
+					if (log.isRowLevel())
+						logRowlevel("COMMENT");
+					break;
+				case XMLStreamConstants.SPACE:
+					//PROCESSING_INSTRUCTION= 6
+					if (log.isRowLevel())
+						logRowlevel("PROCESSING_INSTRUCTION");
+					break;
+				case XMLStreamConstants.START_DOCUMENT:
+					//START_DOCUMENT= 7
+					if (log.isRowLevel())
+						logRowlevel("START_DOCUMENT");
+					if (log.isRowLevel())
+						logRowlevel(vReader.getText());
+					break;
+				case XMLStreamConstants.END_DOCUMENT:
+					//END_DOCUMENT= 8
+					if (log.isRowLevel())
+						logRowlevel("END_DOCUMENT");
+					break;
+				case XMLStreamConstants.ENTITY_REFERENCE:
+					//ENTITY_REFERENCE= 9
+					if (log.isRowLevel())
+						logRowlevel("ENTITY_REFERENCE");
+					break;
+				case XMLStreamConstants.ATTRIBUTE:
+					//ATTRIBUTE= 10
+					if (log.isRowLevel())
+						logRowlevel("ATTRIBUTE");
+					break;
+				case XMLStreamConstants.DTD:
+					//DTD= 11
+					if (log.isRowLevel())
+						logRowlevel("DTD");
+					break;
+				case XMLStreamConstants.CDATA:
+					//CDATA= 12
+					if (log.isRowLevel())
+						logRowlevel("CDATA");
+					break;
+				case XMLStreamConstants.NAMESPACE:
+					//NAMESPACE= 13
+					if (log.isRowLevel())
+						logRowlevel("NAMESPACE");
+					break;
+				case XMLStreamConstants.NOTATION_DECLARATION:
+					//NOTATION_DECLARATION= 14
+					if (log.isRowLevel())
+						logRowlevel("NOTATION_DECLARATION");
+					break;
+				case XMLStreamConstants.ENTITY_DECLARATION:
+					//ENTITY_DECLARATION= 15
+					if (log.isRowLevel())
+						logRowlevel("ENTITY_DECLARATION");
+					break;
+				default:
+					break;
+				}
+			}
+		} catch (Exception e) {
+			throw new KettleStepException(Messages.getString("WebServices.ERROR0010.OutputParsingError", response.toString()), e);
+		}
+	}
+    
+    private boolean getNodeValue(Object[] outputRowData, int outputIndex, Node node, WebServiceField field, Transformer transformer, boolean singleRowScenario) throws KettleException {
+		
+    	// if it's a text node or if we recognize the field type, we just grab the value 
+    	//
+    	if (node.getNodeType()==Node.TEXT_NODE || !field.isComplex()) {
+			Object rowValue = null;
+			
+			// See if this is a node we expect as a return value...
+			//
+			String textContent = node.getTextContent();
+        	try {
+        		rowValue = getValue(textContent, field);
+        		outputRowData[outputIndex] = rowValue;
+				return true;
+        	}
+        	catch(Exception e) {
+        		throw new KettleException("Unable to convert value ["+textContent+"] for field ["+field.getWsName()+"], type ["+field.getXsdType()+"]", e);
+        	}
+		} else if (node.getNodeType()==Node.ELEMENT_NODE) {
+			// Perhaps we're dealing with complex data types.
+			// Perhaps we can just ship the XML snippet over to the next steps.
+			//
+			try {
+				StringWriter childNodeXML = new StringWriter();
+    			transformer.transform(new DOMSource(node), new StreamResult(childNodeXML));
+    			outputRowData[outputIndex] = childNodeXML.toString();
+				return true;
+			}
+			catch(Exception e) {
+        		throw new KettleException("Unable to transform DOM node with name ["+node.getNodeName()+"] to XML", e);
+			}
+		}
+    	
+    	// Nothing found, return false
+    	//
+		return false;
+	}
+
+	private Object getValue(String vNodeValue, WebServiceField field) throws XMLStreamException, ParseException
     {
         if (vNodeValue == null)
         {

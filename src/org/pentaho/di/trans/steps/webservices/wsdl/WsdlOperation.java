@@ -172,10 +172,10 @@ public final class WsdlOperation implements java.io.Serializable {
      *
      * @return An ordered list of parameters, empty list if this operation has no parameters.
      */
-    public List<WsdlOpParameter> getParameters() {
+    public WsdlOpParameterList getParameters() {
         return _params;
     }
-
+    
     /**
      * Get the return type for this operation.
      *

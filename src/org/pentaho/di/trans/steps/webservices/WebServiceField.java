@@ -1,5 +1,6 @@
 package org.pentaho.di.trans.steps.webservices;
 
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.steps.webservices.wsdl.XsdType;
 
 
@@ -44,5 +45,14 @@ public class WebServiceField
     public int getType()
     {
         return XsdType.xsdTypeToKettleType(xsdType);
+    }
+    
+    /**
+     * We consider a field to be complex if it's a type we don't recognize.
+     * In that case, we will give back XML as a string.
+     * @return
+     */
+    public boolean isComplex() {
+    	return getType()==ValueMetaInterface.TYPE_NONE;
     }
 }

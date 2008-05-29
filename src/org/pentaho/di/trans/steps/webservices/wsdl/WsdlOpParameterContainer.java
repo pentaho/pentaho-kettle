@@ -79,7 +79,7 @@ public class WsdlOpParameterContainer implements WsdlParamContainer
     {
         if (parameter.isArray())
         {
-            if (!WebServiceMeta.XSD_NS_URI.equals(parameter.getItemXmlType().getNamespaceURI()))
+            if (parameter.getItemXmlType()!=null && !WebServiceMeta.XSD_NS_URI.equals(parameter.getItemXmlType().getNamespaceURI()))
             {
                 return parameter.getItemXmlType().getLocalPart();
             }

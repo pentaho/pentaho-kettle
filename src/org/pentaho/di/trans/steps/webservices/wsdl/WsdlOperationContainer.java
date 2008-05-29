@@ -51,7 +51,7 @@ public class WsdlOperationContainer implements WsdlParamContainer
 
     public String getItemName()
     {
-        // This method is only revelant for output containers
+        // This method is only relevant for output containers
         return null;
     }
 

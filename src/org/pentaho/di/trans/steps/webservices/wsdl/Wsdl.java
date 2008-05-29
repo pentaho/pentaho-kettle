@@ -32,6 +32,7 @@ import javax.wsdl.Port;
 import javax.wsdl.PortType;
 import javax.wsdl.Service;
 import javax.wsdl.WSDLException;
+import javax.wsdl.extensions.ExtensionRegistry;
 import javax.wsdl.factory.WSDLFactory;
 import javax.wsdl.xml.WSDLLocator;
 import javax.wsdl.xml.WSDLReader;
@@ -260,6 +261,8 @@ public final class Wsdl implements java.io.Serializable {
 
         WSDLFactory wsdlFactory = WSDLFactory.newInstance();
         WSDLReader wsdlReader = wsdlFactory.newWSDLReader();
+        ExtensionRegistry registry = wsdlFactory.newPopulatedExtensionRegistry();
+        wsdlReader.setExtensionRegistry(registry);
         wsdlReader.setFeature("javax.wsdl.verbose", true);
         wsdlReader.setFeature("javax.wsdl.importDocuments", true);
         return wsdlReader;
