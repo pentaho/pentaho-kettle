@@ -405,7 +405,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
                            true),
            };
         fieldInTableView = new TableView(transMeta, vCompositeTabField, SWT.FULL_SELECTION | SWT.MULTI, colinf, 0,  lsMod, props);
-        fieldInTableView.setReadonly(true);
+        fieldInTableView.setReadonly(false);
         fieldInTableView.table.removeAll();
         String containerName = inWsdlParamContainer == null ? meta.getInFieldContainerName() : inWsdlParamContainer.getContainerName();
         tabItemFieldIn.setText(containerName == null ? "in" : containerName);
