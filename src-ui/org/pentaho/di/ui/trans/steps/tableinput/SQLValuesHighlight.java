@@ -284,7 +284,7 @@ public class SQLValuesHighlight implements LineStyleListener {
 					"minus","references","grant","on","top","index",
 					"bigint","text","char","use","move",
 					"exec","init","name","noskip","skip","noformat","format","stats","disk","from","to","rownum",
-					
+					"alter","add","delete","remove",
 					"if","else","in",
 					"new", "Number", "null",
 					"string", "switch",
