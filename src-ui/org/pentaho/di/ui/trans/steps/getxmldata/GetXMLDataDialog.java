@@ -310,7 +310,7 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
         {
             public void widgetSelected(SelectionEvent arg0)
             {
-            	ActivewlXmlStreamField();
+            	ActiveXmlStreamField();
             	input.setChanged();
             }
         };
@@ -340,7 +340,7 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
         {
             public void widgetSelected(SelectionEvent arg0)
             {
-            	ActivewlXmlStreamField();
+            	ActiveXmlStreamField();
             	input.setChanged();
             }
         };
@@ -734,8 +734,6 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		AdditionalFieldsgroupLayout.marginWidth = 10;
 		AdditionalFieldsgroupLayout.marginHeight = 10;
 		wAdditionalFields.setLayout(AdditionalFieldsgroupLayout);
-		
-        
 
 		wlInclFilename=new Label(wAdditionalFields, SWT.RIGHT);
 		wlInclFilename.setText(Messages.getString("GetXMLDataDialog.InclFilename.Label"));
@@ -1183,7 +1181,10 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		// Set the shell size, based upon previous time...
 		setSize();
 		getData(input);
-		ActivewlXmlStreamField();
+		ActiveXmlStreamField();
+		setIncludeFilename();
+		setIncludeRownum();
+		setIncludeFilename();
 		input.setChanged(changed);
 		wFields.optWidth(true);
 		
@@ -1218,7 +1219,7 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 			}
 	 }
 	 
-	private void ActivewlXmlStreamField()
+	private void ActiveXmlStreamField()
 	{		
 		wlXMLField.setEnabled(wXMLStreamField.getSelection());
 		wXMLField.setEnabled(wXMLStreamField.getSelection());
@@ -1241,6 +1242,17 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		wInclFilename.setEnabled(!wXMLStreamField.getSelection());
 		wlInclFilename.setEnabled(!wXMLStreamField.getSelection());
 		
+		if(wXMLStreamField.getSelection())
+		{
+			wInclFilename.setSelection(false);
+			wlInclFilenameField.setEnabled(false);
+			wInclFilenameField.setEnabled(false);
+		}else
+		{
+			wlInclFilenameField.setEnabled(wInclFilename.getSelection());
+			wInclFilenameField.setEnabled(wInclFilename.getSelection());
+		}
+		
 		if(wXMLStreamField.getSelection() && !wXMLIsAFile.getSelection())
 		{
 			wEncoding.setEnabled(false);
@@ -1255,7 +1267,8 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		wlAddResult.setEnabled(!wXMLStreamField.getSelection());
 		wLimit.setEnabled(!wXMLStreamField.getSelection());	
 		wPreview.setEnabled(!wXMLStreamField.getSelection());
-		wGet.setEnabled(!wXMLStreamField.getSelection());		
+		wGet.setEnabled(!wXMLStreamField.getSelection());
+		
 	}
 	private void getLoopPathList()
 	{
@@ -1422,25 +1435,17 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 						&& child.getChildNodes().getLength()> 0)
 				{
 					listn.add(childNodeName);
-					
-					
+
 					//log.logBasic("current Node....", childNodeName);
 
-					
 					String completeNodeName=parentNodeName+"/"+childNodeName;
 					// Add path to the list
 					listpath.add(completeNodeName);
 					getLoopNodes(child);
-		
-					
-					
 				}
 			}
 			
 		}
-		
-		
-		
 	}
 	private void setNodes(Node widgetNode,String NodeStart, int round)
 	{
@@ -1728,8 +1733,6 @@ private boolean IsDate(String str)
         wFields.setRowNums();
         wFields.optWidth(true);
 
-		setIncludeFilename();
-		setIncludeRownum();
 		wStepname.selectAll();
 	}
 	
