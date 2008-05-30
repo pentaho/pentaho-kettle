@@ -87,7 +87,6 @@ import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.dialog.EnterConditionDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
-import org.pentaho.di.ui.util.ImageUtil;
 
 /**
  * Widget to display or modify data, displayed in a Table format.
@@ -98,7 +97,6 @@ import org.pentaho.di.ui.util.ImageUtil;
 public class TableView extends Composite 
 {
 	private Composite     parent;
-	private int           style;
 	private ColumnInfo[]  columns;
 	private int           rows;
 	private boolean       readonly;
@@ -161,22 +159,21 @@ public class TableView extends Composite
     
     private VariableSpace variables;
     
-	public TableView(VariableSpace space, Composite par, int st, ColumnInfo[] c, int r, ModifyListener lsm, PropsUI pr)
+	public TableView(VariableSpace space, Composite parent, int style, ColumnInfo[] columnInfo, int nrRows, ModifyListener lsm, PropsUI pr)
 	{
-		this(space, par, st, c, r, false, lsm, pr);
+		this(space, parent, style, columnInfo, nrRows, false, lsm, pr);
 	}
 
-	public TableView(VariableSpace space, Composite par, int st, ColumnInfo[] c, int r, boolean ro, ModifyListener lsm, PropsUI pr)
+	public TableView(VariableSpace space, Composite parent, int style, ColumnInfo[] columnInfo, int nrRows, boolean readOnly, ModifyListener lsm, PropsUI pr)
 	{
-		super(par, SWT.NO_BACKGROUND | SWT.NO_FOCUS | SWT.NO_MERGE_PAINTS | SWT.NO_RADIO_GROUP);
-		parent  = par;
-		style   = st;
-		columns = c;
-		rows    = r;
-		props   = pr;
-		readonly= ro;
-		clipboard=null;
-		variables=space;
+		super(parent, SWT.NO_BACKGROUND | SWT.NO_FOCUS | SWT.NO_MERGE_PAINTS | SWT.NO_RADIO_GROUP);
+		this.parent  = parent;
+		this.columns = columnInfo;
+		this.rows    = nrRows;
+		this.props   = pr;
+		this.readonly= readOnly;
+		this.clipboard=null;
+		this.variables=space;
 				
 		sortfield = 0;
 		sortingDescending = false;
@@ -1345,6 +1342,11 @@ public class TableView extends Composite
 		setRowNums();
 
 		edit(rownr+1, 1);	
+	}
+	
+	public void clearAll()
+	{
+		clearAll(false);
 	}
 	
 	public void clearAll(boolean ask)
