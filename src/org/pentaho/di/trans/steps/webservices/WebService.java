@@ -54,6 +54,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.webservices.wsdl.Wsdl;
 import org.pentaho.di.trans.steps.webservices.wsdl.XsdType;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -73,11 +74,11 @@ public class WebService extends BaseStep implements StepInterface
 
     private long requestTime;
 
-    private SimpleDateFormat heureFormat = new SimpleDateFormat("HH:mm:ss");
+    private SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
 
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-    private SimpleDateFormat dateHeureFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+    private SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
     private DecimalFormat decFormat = new DecimalFormat("00");
 
@@ -90,7 +91,7 @@ public class WebService extends BaseStep implements StepInterface
         // Reference date used to format hours
         try
         {
-            dateRef = heureFormat.parse("00:00:00");
+            dateRef = timeFormat.parse("00:00:00");
         }
         catch (ParseException e)
         {
@@ -192,7 +193,7 @@ public class WebService extends BaseStep implements StepInterface
                     }
                     else if (XsdType.DATE_TIME.equals(field.getXsdType()))
                     {
-                        xml.append(dateHeureFormat.format(vCurrentValue.getDate(data)));
+                        xml.append(dateTimeFormat.format(vCurrentValue.getDate(data)));
                     }
                     else if (vCurrentValue.isNumber())
                     {
@@ -397,39 +398,58 @@ public class WebService extends BaseStep implements StepInterface
 	    	Node enveloppeNode = XMLHandler.getSubNode(doc, "soapenv:Envelope");
 	    	Node bodyNode = XMLHandler.getSubNode(enveloppeNode, "soapenv:body");
 	    	
-	    	// The node directly below the body is the response node
-	    	// It's apparently a hassle to get the name in a consistent way, but we know it's the first element node
-	    	//
-	    	Node responseNode = null;
-	    	NodeList responseChildren = bodyNode.getChildNodes();
-	    	for (int i=0;i<responseChildren.getLength();i++) {
-	    		Node responseChild = responseChildren.item(i);
-	    		if (responseChild.getNodeType()==Node.ELEMENT_NODE) {
-	    			responseNode = responseChild;
-	    			break;
-	    		}
-	    	}
-	    	
-	    	if (responseNode==null) return;
-
+	    	// Create a few objects to help do the layout of XML snippets we find along the way
+	    	// 
 	    	TransformerFactory transformerFactory = TransformerFactory.newInstance();
 	    	Transformer transformer = transformerFactory.newTransformer();
 	    	transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 
-	    	StringWriter responseXML = new StringWriter();
-			transformer.transform(new DOMSource(responseNode), new StreamResult(responseXML));
+	    	StringWriter bodyXML = new StringWriter();
+			transformer.transform(new DOMSource(bodyNode), new StreamResult(bodyXML));
+
+	    	// The node directly below the body is the response node
+	    	// It's apparently a hassle to get the name in a consistent way, but we know it's the first element node
+	    	//
+	    	Node responseNode = null;
+	    	NodeList nodeList = null;
+	    	if (!Const.isEmpty(meta.getRepeatingElementName())) {
+	    	
+	    		// We have specified the repeating element name : use it
+	    		//
+	    		nodeList = ((Element)bodyNode).getElementsByTagName(meta.getRepeatingElementName());
+	    		
+	    	} else {
+	    		
+	    		// We just grab the list of nodes from the children of the body
+	    		// Look for the first element node (first real child) and take that one.
+	    		// For that child-element, we consider all the children below
+	    		//
+		    	NodeList responseChildren = bodyNode.getChildNodes();
+		    	for (int i=0;i<responseChildren.getLength();i++) {
+		    		Node responseChild = responseChildren.item(i);
+		    		if (responseChild.getNodeType()==Node.ELEMENT_NODE) {
+		    			responseNode = responseChild;
+		    			break;
+		    		}
+		    	}
+		    	if (responseNode!=null) {
+		    		nodeList = responseNode.getChildNodes();
+		    	}
+		    	
+	    	}
+	    	
+	    	if (nodeList==null) return;
 
             // Allocate a result row in case we are dealing with a single result row
             //
             Object[] outputRowData = rowData==null ? RowDataUtil.allocateRowData(data.outputRowMeta.size()) : RowDataUtil.createResizedCopy(rowData, data.outputRowMeta.size());
             int outputIndex = rowData==null ? 0 : rowMeta.size();
             
-	    	// The top level children are the rows...
+	    	// Now loop over the node list found above...
 	    	//
             boolean singleRow = false;
             int fieldsFound = 0;
-	    	NodeList nodeList = responseNode.getChildNodes();
 	    	for (int i=0;i<nodeList.getLength();i++) {
 	    		Node node = nodeList.item(i);
 	    		
@@ -477,7 +497,7 @@ public class WebService extends BaseStep implements StepInterface
 		    		for (int j=0;j<childNodes.getLength();j++) {
 		    			Node childNode = childNodes.item(j);
 		    			
-		    			field = meta.getFieldOutFromWsName(node.getNodeName());
+		    			field = meta.getFieldOutFromWsName(childNode.getNodeName());
 		    			if (field!=null) {
 		    			
 			    			if (getNodeValue(outputRowData, outputIndex, childNode, field, transformer, false)) {
@@ -776,7 +796,7 @@ public class WebService extends BaseStep implements StepInterface
             {
                 try
                 {
-                    return heureFormat.parse(vNodeValue);
+                    return timeFormat.parse(vNodeValue);
                 }
                 catch (ParseException e)
                 {
@@ -790,7 +810,7 @@ public class WebService extends BaseStep implements StepInterface
             {
                 try
                 {
-                    return dateHeureFormat.parse(vNodeValue);
+                    return dateTimeFormat.parse(vNodeValue);
                 }
                 catch (ParseException e)
                 {
@@ -800,11 +820,11 @@ public class WebService extends BaseStep implements StepInterface
                 	return null;
                 }
             }
-            else if (XsdType.INTEGER.equals(field.getXsdType()) || XsdType.SHORT.equals(field.getXsdType()))
+            else if (XsdType.INTEGER.equals(field.getXsdType()) || XsdType.SHORT.equals(field.getXsdType()) || XsdType.INTEGER_DESC.equals(field.getXsdType()))
             {
                 try
                 {
-                    return Integer.parseInt(vNodeValue);
+                    return Long.parseLong(vNodeValue);
                 }
                 catch (NumberFormatException e)
                 {

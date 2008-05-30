@@ -191,89 +191,6 @@ public class XMLHandler
 		return count;
 	}
 
-	/**
-	 * Count nodes with a certain tag and where the subtag as a certain value.
-	 * @param n The node to look in
-	 * @param tag The tag to consider looking further in
-	 * @param subtag The tag in the child to consider
-	 * @param subtagvalue The value that the subtag should have
-	 * @return The nr of sub-nodes found.
-	 */
-	public static final int countNodesWithTagValue(Node n, String tag, String subtag, String subtagvalue)
-	{
-		NodeList children;
-		Node childnode, tagnode;
-		String value;
-		
-		int count=0;
-		
-		children=n.getChildNodes();
-		for (int i=0;i<children.getLength();i++)
-		{
-			childnode=children.item(i);
-			if (childnode.getNodeName().equalsIgnoreCase(tag))  // <hop>
-			{
-				tagnode=getSubNode(childnode, subtag);
-				if (tagnode!=null)
-				{
-					value=getNodeValue(tagnode);
-					if (value!=null && value.equalsIgnoreCase(subtagvalue))
-					{
-						count++;
-					}
-				}
-			}
-		}
-		return count;
-	}
-
-	/**
-	 * Count nodes with a certain tag and where 2 tags are set as specified.
-	 * 
-	 * @param n The node to search in
-	 * @param tag The tag to look for in the node
-	 * @param subtag The subtag to look for in the children of the node
-	 * @param subtagvalue The value the first subtag should have
-	 * @param valtag The second subtag to look for in the children of the node
-	 * @param valcont The value the second subtag should have
-	 * @return The number of nodes found
-	 */
-	public static final int countNodesWithTagValueAndAnother(Node n, String tag, String subtag, String subtagvalue, String valtag, String valcont)
-	{
-		NodeList children;
-		Node childnode, tagnode;
-		String value;
-		
-		int count=0;
-		
-		children=n.getChildNodes();
-		for (int i=0;i<children.getLength();i++)
-		{
-			childnode=children.item(i);
-			if (childnode.getNodeName().equalsIgnoreCase(tag))  // <hop>
-			{
-				tagnode=getSubNode(childnode, subtag);
-				if (tagnode!=null)
-				{
-					value=getNodeValue(tagnode);
-					if (value!=null && value.equalsIgnoreCase(subtagvalue))
-					{
-						// Now also check another field of the same childnode 
-						tagnode=getSubNode(childnode, valtag);
-						if (tagnode!=null)
-						{
-							value=getNodeValue(tagnode);
-							if (value!=null && value.equalsIgnoreCase(valcont))
-							{
-								count++;
-							}
-						}
-					}
-				}
-			}
-		}
-		return count;
-	}
 
 
 	/**
@@ -335,53 +252,6 @@ public class XMLHandler
 				
 				if (attribute!=null && attributeValue.equals(attribute.getTextContent()))
 					return childnode;
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * Get the n'th node with a certain tag and where 2 tags are set as specified.
-	 * 
-	 * @param n The node to search in
-	 * @param tag The tag to look for in the node
-	 * @param subtag The subtag to look for in the children of the node
-	 * @param subtagvalue The value the first subtag should have
-	 * @param nr The position of the subnode
-	 * @param valtag The second subtag to look for in the children of the node
-	 * @param valcont The value the second subtag should have
-	 * @return The number of nodes found
-	 */
-	public static final Node getNodeWithTagValueAndAnother(Node n, String tag, String subtag, String subtagvalue, int nr, String valtag, String valcont)
-	{
-		NodeList children;
-		Node childnode, tagnode;
-		String value;
-		
-		int count=0;
-		
-		children=n.getChildNodes();
-		for (int i=0;i<children.getLength();i++)
-		{
-			childnode=children.item(i);
-			if (childnode.getNodeName().equalsIgnoreCase(tag))  // <hop>
-			{
-				tagnode=getSubNode(childnode, subtag);
-				value=getNodeValue(tagnode);
-				if (value!=null && value.equalsIgnoreCase(subtagvalue))
-				{
-					// Now also check another field of the same childnode 
-					tagnode=getSubNode(childnode, valtag);
-					if (tagnode!=null)
-					{
-						value=getNodeValue(tagnode);
-						if (value!=null && value.equalsIgnoreCase(valcont))
-						{
-							if (count==nr) return childnode;
-							count++;
-						}
-					}
-				}
 			}
 		}
 		return null;
@@ -501,40 +371,6 @@ public class XMLHandler
 		return null;
 	}
 	
-	/**
-	 * In a node, find the direct subnode where a given tag has a value 
-	 * 
-	 * @param n The node to search in
-	 * @param tag The tag to look at
-	 * @param tagvalue The tag value to search for
-	 * @return The node found or null in case we don't find anything.
-	 */
-	public static final Node getSubNodeByValue(Node n, String tag, String tagvalue)
-	{
-		int i;
-		NodeList children;
-		Node childnode;
-		String retval;
-		
-		if (n==null) return null;
-		
-		// Find the child-nodes of this Node n:
-		children=n.getChildNodes();
-		for (i=0;i<children.getLength();i++)  // Try all children
-		{
-			childnode=children.item(i);
-			if (childnode.getNodeName().equalsIgnoreCase(tag))  // We found the right tag
-			{
-				retval=childnode.getNodeValue();
-				if (retval.equalsIgnoreCase(tagvalue))
-				{
-					return childnode;
-				}
-			}
-		}
-		return null;
-	}
-
 	/**
 	 * Find the value entry in a node
 	 * @param n The node
