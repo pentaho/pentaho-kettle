@@ -87,6 +87,9 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
     private Label wlCompatible;
     private Button wCompatible;
 
+    private Label wlRepeatingElement;
+    private TextVar wRepeatingElement;
+
     private Label wlHttpLogin;
     private TextVar wHttpLogin;
 
@@ -704,6 +707,8 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         wStep.setText(Integer.toString(meta.getCallStep()));
         wPassInputData.setSelection(meta.isPassingInputData());
         wCompatible.setSelection(meta.isCompatible());
+        wRepeatingElement.setText(Const.NVL(meta.getRepeatingElementName(), ""));
+        
         if (wURL.getText() != null && !"".equals(wURL.getText())) //$NON-NLS-1$
         {
             wOperation.setText(meta.getOperationName() == null ? "" : meta.getOperationName());
@@ -770,6 +775,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
     	webServiceMeta.setCallStep(Const.toInt(wStep.getText(), WebServiceMeta.DEFAULT_STEP));
     	webServiceMeta.setPassingInputData(wPassInputData.getSelection());
     	webServiceMeta.setCompatible(wCompatible.getSelection());
+    	webServiceMeta.setRepeatingElementName(wRepeatingElement.getText());
 
         if (wsdlOperation != null)
         {
@@ -1053,6 +1059,26 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         fdCompatible.right = new FormAttachment(100, 0);
         wCompatible.setLayoutData(fdCompatible);
         
+        // HTTP Login
+        wlRepeatingElement = new Label(compositeTabWebService, SWT.RIGHT);
+        wlRepeatingElement.setText(Messages.getString("WebServiceDialog.RepeatingElement.Label")); //$NON-NLS-1$
+        props.setLook(wlRepeatingElement);
+        FormData fdlRepeatingElement = new FormData();
+        fdlRepeatingElement.top = new FormAttachment(wCompatible, margin);
+        fdlRepeatingElement.left = new FormAttachment(0, 0);
+        fdlRepeatingElement.right = new FormAttachment(middle, -margin);
+        wlRepeatingElement.setLayoutData(fdlRepeatingElement);
+        wRepeatingElement = new TextVar(transMeta, compositeTabWebService, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wRepeatingElement.addModifyListener(lsMod);
+        wRepeatingElement.setToolTipText(Messages.getString("WebServiceDialog.RepeatingElement.Tooltip")); //$NON-NLS-1$
+        props.setLook(wRepeatingElement);
+        FormData fdRepeatingElement = new FormData();
+        fdRepeatingElement.top = new FormAttachment(wCompatible, margin);
+        fdRepeatingElement.left = new FormAttachment(middle, 0);
+        fdRepeatingElement.right = new FormAttachment(100, 0);
+        wRepeatingElement.setLayoutData(fdRepeatingElement);
+
+
 
         //////////////////////////
         // START HTTP AUTH GROUP
@@ -1107,7 +1133,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         FormData fdHttpAuth = new FormData();
         fdHttpAuth.left = new FormAttachment(0, 0);
         fdHttpAuth.right = new FormAttachment(100, 0);
-        fdHttpAuth.top = new FormAttachment(wCompatible, margin);
+        fdHttpAuth.top = new FormAttachment(wRepeatingElement, margin);
         gHttpAuth.setLayoutData(fdHttpAuth);
 
         // END HTTP AUTH GROUP

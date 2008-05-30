@@ -82,6 +82,9 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface
     
     /** Use the 2.5/3.0 parsing logic (available for compatibility reasons) */
     private boolean compatible;
+    
+    /** The name of the repeating element name.  Empty = a single row return */
+    private String repeatingElementName;
 
     public WebServiceMeta()
     {
@@ -190,6 +193,7 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface
         retval.append("    " + XMLHandler.addTagValue("callStep", getCallStep()));
         retval.append("    " + XMLHandler.addTagValue("passingInputData", isPassingInputData()));
         retval.append("    " + XMLHandler.addTagValue("compatible", isCompatible()));
+        retval.append("    " + XMLHandler.addTagValue("repeating_element", getRepeatingElementName()));
 
         // Store the field parameters
         //
@@ -247,7 +251,8 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface
         setPassingInputData("Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "passingInputData")));
         String compat = XMLHandler.getTagValue(stepnode, "compatible");
         setCompatible( Const.isEmpty(compat) || "Y".equalsIgnoreCase(compat) );
-
+        setRepeatingElementName(XMLHandler.getTagValue(stepnode, "repeating_element"));
+        
         // Load the input fields mapping
         //
         getFieldsIn().clear();
@@ -307,6 +312,7 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface
         setCallStep((int) rep.getStepAttributeInteger(id_step, "callStep"));
         setPassingInputData(rep.getStepAttributeBoolean(id_step, "passingInputData"));
         setCompatible(rep.getStepAttributeBoolean(id_step, 0, "compatible", true)); // Default to true for backward compatibility
+        setRepeatingElementName(rep.getStepAttributeString(id_step, "repeating_element"));
 
         // Load the input fields mapping
         //
@@ -357,6 +363,7 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface
         rep.saveStepAttribute(id_transformation, id_step, "callStep", getCallStep());
         rep.saveStepAttribute(id_transformation, id_step, "passingInputData", isPassingInputData());
         rep.saveStepAttribute(id_transformation, id_step, "compatible", isCompatible());
+        rep.saveStepAttribute(id_transformation, id_step, "repeating_element", getRepeatingElementName());
 
         // Load the input fields mapping
         //
@@ -590,5 +597,19 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface
 	 */
 	public void setCompatible(boolean compatible) {
 		this.compatible = compatible;
+	}
+
+	/**
+	 * @return the repeatingElementName
+	 */
+	public String getRepeatingElementName() {
+		return repeatingElementName;
+	}
+
+	/**
+	 * @param repeatingElementName the repeatingElementName to set
+	 */
+	public void setRepeatingElementName(String repeatingElementName) {
+		this.repeatingElementName = repeatingElementName;
 	}
 }

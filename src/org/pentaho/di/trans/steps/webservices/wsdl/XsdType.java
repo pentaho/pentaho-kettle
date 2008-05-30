@@ -8,6 +8,7 @@ public class XsdType
 	public final static String TIME = "time";
 	public final static String DATE_TIME = "datetime";
 	public final static String INTEGER = "int";
+	public final static String INTEGER_DESC = "integer";
 	public final static String SHORT = "short";
 	public final static String BOOLEAN = "boolean";
 	public final static String STRING = "string";
@@ -16,7 +17,7 @@ public class XsdType
 	public final static String BINARY = "base64Binary";
 	public final static String DECIMAL = "decimal";
 	
-    public final static String[] TYPES = new String[] {STRING, INTEGER, SHORT, BOOLEAN, DATE, TIME, DATE_TIME, DOUBLE, FLOAT, BINARY, DECIMAL, };
+    public final static String[] TYPES = new String[] {STRING, INTEGER, INTEGER_DESC, SHORT, BOOLEAN, DATE, TIME, DATE_TIME, DOUBLE, FLOAT, BINARY, DECIMAL, };
 	
 	public static int xsdTypeToKettleType(String aXsdType)
 	{
@@ -35,7 +36,7 @@ public class XsdType
     		{
     			vRet = ValueMetaInterface.TYPE_DATE; 
     		}
-    		else if(aXsdType.equalsIgnoreCase(INTEGER))
+    		else if(aXsdType.equalsIgnoreCase(INTEGER) || aXsdType.equalsIgnoreCase(INTEGER_DESC))
     		{
     			vRet = ValueMetaInterface.TYPE_INTEGER;
     		}
