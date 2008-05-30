@@ -320,6 +320,7 @@ public class SystemDataMeta extends BaseStepMeta implements StepMetaInterface
 			case TYPE_SYSTEM_INFO_IP_ADDRESS:
             case TYPE_SYSTEM_INFO_KETTLE_VERSION:
 				v=new ValueMeta(fieldName[i], ValueMetaInterface.TYPE_STRING);
+				break;
             case TYPE_SYSTEM_INFO_CURRENT_PID:
 				v=new ValueMeta(fieldName[i], ValueMetaInterface.TYPE_INTEGER);
 				v.setLength(ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0);
