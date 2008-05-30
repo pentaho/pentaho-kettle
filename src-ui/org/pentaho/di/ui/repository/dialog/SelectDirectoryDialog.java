@@ -273,6 +273,7 @@ public class SelectDirectoryDialog extends Dialog
                                     dir.addSubdirectory(subdir);
                                     TreeItem tiNew = new TreeItem(ti, SWT.NONE);
                                     tiNew.setText(newdir);
+                                    tiNew.setImage(GUIResource.getInstance().getImageArrow());
                                     wTree.setSelection(new TreeItem[] { tiNew });
                                 }
                                 else

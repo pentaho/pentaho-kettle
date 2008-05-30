@@ -70,6 +70,7 @@ import com.trilead.ssh2.HTTPProxyData;
  * @since 17-12-2007
  *
  */
+
 public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntryInterface
 {
 	LogWriter log = LogWriter.getInstance();

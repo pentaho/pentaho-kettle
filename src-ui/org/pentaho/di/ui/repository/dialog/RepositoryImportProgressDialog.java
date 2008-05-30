@@ -114,6 +114,7 @@ public class RepositoryImportProgressDialog extends Dialog
         formLayout.marginHeight = Const.FORM_MARGIN;
 
         shell.setText(Messages.getString("RepositoryImportDialog.Title"));
+        shell.setImage(GUIResource.getInstance().getImageSpoon());
         shell.setLayout(formLayout);
 
         //
@@ -275,6 +276,7 @@ public class RepositoryImportProgressDialog extends Dialog
     			1,
     			Messages.getString("RepositoryImportDialog.DontAskAgain.Label"),
     			!askOverwrite);
+    		MessageDialogWithToggle.setDefaultImage(GUIResource.getInstance().getImageSpoon());
     		int answer = md.open();
     		overwrite = (answer & 0xFF) == 0;
     		askOverwrite = !md.getToggleState();
@@ -409,7 +411,7 @@ public class RepositoryImportProgressDialog extends Dialog
 			for (int ii = 0; ii < filenames.length; ++ii) {
 				
 				final String filename = ((fileDirectory != null) && (fileDirectory.length() > 0)) ? fileDirectory + Const.FILE_SEPARATOR + filenames[ii] : filenames[ii];
-				log.logBasic("Repository", "Import objects from XML file [" + filename + "]"); //$NON-NLS-1$ //$NON-NLS-2$
+				if(log.isBasic()) log.logBasic("Repository", "Import objects from XML file [" + filename + "]"); //$NON-NLS-1$ //$NON-NLS-2$
 				addLog(Messages.getString("RepositoryImportDialog.WhichFile.Log", filename));
 
 				// To where?

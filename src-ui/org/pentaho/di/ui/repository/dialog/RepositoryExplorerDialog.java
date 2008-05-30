@@ -2727,7 +2727,7 @@ public class RepositoryExplorerDialog extends Dialog
 					for (int i=0;i<trans.length;i++)
 					{
 						TransMeta ti = new TransMeta(rep, trans[i], repdir);
-						log.logBasic("Exporting transformation", "["+trans[i]+"] in directory ["+repdir.getPath()+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+						if(log.isBasic()) log.logBasic("Exporting transformation", "["+trans[i]+"] in directory ["+repdir.getPath()+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 
 						String xml = XMLHandler.getXMLHeader() + ti.getXML();
 							

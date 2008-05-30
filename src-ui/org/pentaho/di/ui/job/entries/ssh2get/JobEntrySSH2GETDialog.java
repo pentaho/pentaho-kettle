@@ -67,6 +67,7 @@ import com.trilead.ssh2.SFTPv3FileAttributes;
  * @author Samatar
  * @since 17-12-2007
  */
+
 public class JobEntrySSH2GETDialog extends JobEntryDialog implements JobEntryDialogInterface
 {
     private static final String[] FILETYPES = new String[] {
