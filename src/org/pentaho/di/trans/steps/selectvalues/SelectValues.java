@@ -345,7 +345,7 @@ public class SelectValues extends BaseStep implements StepInterface
 			setOutputDone();
 			return false;
 		}
-		if (log.isRowLevel()) logRowlevel(Messages.getString("SelectValues.Log.GotRowFromPreviousStep")+rowData); //$NON-NLS-1$
+		if (log.isRowLevel()) logRowlevel(Messages.getString("SelectValues.Log.GotRowFromPreviousStep")+getInputRowMeta().getString(rowData)); //$NON-NLS-1$
 
 		if (first)
 		{
@@ -374,7 +374,7 @@ public class SelectValues extends BaseStep implements StepInterface
         // Send the row on its way
 		putRow(data.metadataRowMeta, outputData);
         
-		if (log.isRowLevel()) logRowlevel(Messages.getString("SelectValues.Log.WroteRowToNextStep")+rowData); //$NON-NLS-1$
+		if (log.isRowLevel()) logRowlevel(Messages.getString("SelectValues.Log.WroteRowToNextStep")+getInputRowMeta().getString(rowData)); //$NON-NLS-1$
 
         if (checkFeedback(linesRead)) logBasic(Messages.getString("SelectValues.Log.LineNumber")+linesRead); //$NON-NLS-1$
 			

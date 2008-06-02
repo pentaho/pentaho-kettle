@@ -204,7 +204,7 @@ public class JoinRows extends BaseStep implements StepInterface
 					stopAll();
 					return null;
 				}
-				if (log.isRowLevel()) logRowlevel(Messages.getString("JoinRows.Log.ReadRowFromFile")+filenr+" : "+rowData); //$NON-NLS-1$ //$NON-NLS-2$
+				if (log.isRowLevel()) logRowlevel(Messages.getString("JoinRows.Log.ReadRowFromFile")+filenr+" : "+getInputRowMeta().getString(rowData)); //$NON-NLS-1$ //$NON-NLS-2$
 
 				data.position[filenr]++;
 				
