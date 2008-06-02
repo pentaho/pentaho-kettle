@@ -448,7 +448,7 @@ public class WebService extends BaseStep implements StepInterface
             // Allocate a result row in case we are dealing with a single result row
             //
             Object[] outputRowData = rowData==null ? RowDataUtil.allocateRowData(data.outputRowMeta.size()) : RowDataUtil.createResizedCopy(rowData, data.outputRowMeta.size());
-            int outputIndex = rowData==null ? 0 : rowMeta.size();
+            int outputIndex = ( rowData==null || !meta.isPassingInputData() ) ? 0 : rowMeta.size();
             
 	    	// Now loop over the node list found above...
 	    	//
@@ -477,7 +477,7 @@ public class WebService extends BaseStep implements StepInterface
     						//
     						putRow(data.outputRowMeta, outputRowData);
     						outputRowData = rowData==null ? RowDataUtil.allocateRowData(data.outputRowMeta.size()) : RowDataUtil.createResizedCopy(rowData, data.outputRowMeta.size());
-    			            outputIndex = rowData==null ? 0 : rowMeta.size();
+    			            outputIndex = ( rowData==null || !meta.isPassingInputData() ) ? 0 : rowMeta.size();
     			            fieldsFound=0;
     					}
     				}
@@ -496,7 +496,7 @@ public class WebService extends BaseStep implements StepInterface
 		    		// Allocate a new row...
 	    			//
 	    			outputRowData = rowData==null ? RowDataUtil.allocateRowData(data.outputRowMeta.size()) : RowDataUtil.createResizedCopy(rowData, data.outputRowMeta.size());
-		            outputIndex = rowData==null ? 0 : rowMeta.size();
+		            outputIndex = ( rowData==null || !meta.isPassingInputData() ) ? 0 : rowMeta.size();
 		    		
 		            // Let's see what's in there...
 		            //

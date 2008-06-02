@@ -131,9 +131,17 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface
         }
     }
 
-    public Object clone()
+    public WebServiceMeta clone()
     {
-        Object retval = super.clone();
+        WebServiceMeta retval = (WebServiceMeta) super.clone();
+        retval.fieldsIn = new ArrayList<WebServiceField>();
+        for (WebServiceField field : fieldsIn) {
+        	retval.fieldsIn.add(field.clone());
+        }
+        retval.fieldsOut = new ArrayList<WebServiceField>();
+        for (WebServiceField field : fieldsOut) {
+        	retval.fieldsOut.add(field.clone());
+        }
         return retval;
     }
 

@@ -4,13 +4,23 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.steps.webservices.wsdl.XsdType;
 
 
-public class WebServiceField
+public class WebServiceField implements Cloneable
 {
     private String name;
     
     private String wsName;
     
     private String xsdType;
+    
+    public WebServiceField clone() {
+    	try {
+    		return (WebServiceField) super.clone();
+    	}
+    	catch(CloneNotSupportedException e) {
+    		e.printStackTrace();
+    		return null;
+    	}
+    }
 
     public String getName()
     {
