@@ -405,8 +405,12 @@ public class WebService extends BaseStep implements StepInterface
 	    	transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 
-	    	StringWriter bodyXML = new StringWriter();
-			transformer.transform(new DOMSource(bodyNode), new StreamResult(bodyXML));
+            if (log.isDetailed()) {
+		    	StringWriter bodyXML = new StringWriter();
+				transformer.transform(new DOMSource(bodyNode), new StreamResult(bodyXML));
+				
+				logDetailed(bodyXML.toString());
+            }			
 
 	    	// The node directly below the body is the response node
 	    	// It's apparently a hassle to get the name in a consistent way, but we know it's the first element node
@@ -483,8 +487,11 @@ public class WebService extends BaseStep implements StepInterface
     				
     				// TODO: remove next 2 lines, added for debug reasons.
     				//
-	    			StringWriter nodeXML = new StringWriter();
-	    			transformer.transform(new DOMSource(node), new StreamResult(nodeXML));
+    				if (log.isDetailed()) {
+		    			StringWriter nodeXML = new StringWriter();
+		    			transformer.transform(new DOMSource(node), new StreamResult(nodeXML));
+		    			logDetailed(Messages.getString("WebServices.Log.ResultRowDataFound", nodeXML.toString()));
+    				}
 	    			
 		    		// Allocate a new row...
 	    			//
