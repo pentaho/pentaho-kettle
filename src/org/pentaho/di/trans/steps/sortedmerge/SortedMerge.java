@@ -68,7 +68,15 @@ public class SortedMerge extends BaseStep implements StepInterface
         	data.sortedBuffer = new ArrayList<RowSetRow>();
         	data.rowMeta = null;
         	
-        	for (int i=0;i<inputRowSets.size() && !isStopped();i++) {
+        	// PDI-1212:
+        	// If one of the inputRowSets holds a null row (the input yields 
+        	// 0 rows), then the null rowSet is removed from the InputRowSet buffer.. (BaseStep.getRowFrom())
+        	// which throws this loop off by one (the next set never gets processed). 
+        	// Instead of modifying BaseStep, I figure reversing the loop here would
+        	// effect change in less areas. If the reverse loop causes a problem, please
+        	// re-open http://jira.pentaho.com/browse/PDI-1212.
+        	
+        	for (int i=inputRowSets.size()-1; i >= 0 && !isStopped(); i--) {
         		
         		RowSet rowSet = inputRowSets.get(i);
                 Object[] row = getRowFrom(rowSet);
