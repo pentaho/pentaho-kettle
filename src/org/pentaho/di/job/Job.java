@@ -12,6 +12,7 @@
 package org.pentaho.di.job;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -1172,7 +1173,7 @@ public class Job extends Thread implements VariableSpace
 				throw new KettleException("There was an error posting the job on the remote server: " + Const.CR+ webResult.getMessage());
 			}
 
-			reply = slaveServer.getContentFromServer(StartJobServlet.CONTEXT_PATH + "/?name="+ jobMeta.getName() + "&xml=Y");
+			reply = slaveServer.getContentFromServer(StartJobServlet.CONTEXT_PATH + "/?name="+ URLEncoder.encode(jobMeta.getName(), "UTF-8") + "&xml=Y");
 			webResult = WebResult.fromXMLString(reply);
 			if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
 			{

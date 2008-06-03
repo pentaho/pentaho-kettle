@@ -13,6 +13,7 @@
 package org.pentaho.di.trans;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -2125,7 +2126,7 @@ public class Trans implements VariableSpace
                     // Prepare the master...
                     if (masterSteps.size()>0) // If there is something that needs to be done on the master...
                     {
-                        String masterReply = masterServer.getContentFromServer(PrepareExecutionTransServlet.CONTEXT_PATH+"/?name="+master.getName()+"&xml=Y");
+                        String masterReply = masterServer.getContentFromServer(PrepareExecutionTransServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(master.getName(), "UTF-8")+"&xml=Y");
                         WebResult webResult = WebResult.fromXMLString(masterReply);
                         if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
                         {
@@ -2138,7 +2139,7 @@ public class Trans implements VariableSpace
                     for (int i=0;i<slaves.length;i++)
                     {
                         TransMeta slaveTrans = (TransMeta) transSplitter.getSlaveTransMap().get(slaves[i]);
-                        String slaveReply = slaves[i].getContentFromServer(PrepareExecutionTransServlet.CONTEXT_PATH+"/?name="+slaveTrans.getName()+"&xml=Y");
+                        String slaveReply = slaves[i].getContentFromServer(PrepareExecutionTransServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(slaveTrans.getName(), "UTF-8")+"&xml=Y");
                         WebResult webResult = WebResult.fromXMLString(slaveReply);
                         if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
                         {
@@ -2152,7 +2153,7 @@ public class Trans implements VariableSpace
                     // Start the master...
                     if (masterSteps.size()>0) // If there is something that needs to be done on the master...
                     {
-                        String masterReply = masterServer.getContentFromServer(StartExecutionTransServlet.CONTEXT_PATH+"/?name="+master.getName()+"&xml=Y");
+                        String masterReply = masterServer.getContentFromServer(StartExecutionTransServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(master.getName(), "UTF-8")+"&xml=Y");
                         WebResult webResult = WebResult.fromXMLString(masterReply);
                         if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
                         {
@@ -2165,7 +2166,7 @@ public class Trans implements VariableSpace
                     for (int i=0;i<slaves.length;i++)
                     {
                         TransMeta slaveTrans = (TransMeta) transSplitter.getSlaveTransMap().get(slaves[i]);
-                        String slaveReply = slaves[i].getContentFromServer(StartExecutionTransServlet.CONTEXT_PATH+"/?name="+slaveTrans.getName()+"&xml=Y");
+                        String slaveReply = slaves[i].getContentFromServer(StartExecutionTransServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(slaveTrans.getName(), "UTF-8")+"&xml=Y");
                         WebResult webResult = WebResult.fromXMLString(slaveReply);
                         if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
                         {
@@ -2478,14 +2479,14 @@ public class Trans implements VariableSpace
 				throw new KettleException( "There was an error posting the transformation on the remote server: " + Const.CR + webResult.getMessage());
 			}
 
-			reply = slaveServer.getContentFromServer(PrepareExecutionTransServlet.CONTEXT_PATH + "/?name=" + transMeta.getName() + "&xml=Y");
+			reply = slaveServer.getContentFromServer(PrepareExecutionTransServlet.CONTEXT_PATH + "/?name=" + URLEncoder.encode(transMeta.getName(), "UTF-8") + "&xml=Y");
 			webResult = WebResult.fromXMLString(reply);
 			if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
 			{
 				throw new KettleException("There was an error preparing the transformation for excution on the remote server: "+ Const.CR + webResult.getMessage());
 			}
 
-			reply = slaveServer.getContentFromServer(StartExecutionTransServlet.CONTEXT_PATH + "/?name=" + transMeta.getName() + "&xml=Y");
+			reply = slaveServer.getContentFromServer(StartExecutionTransServlet.CONTEXT_PATH + "/?name=" + URLEncoder.encode(transMeta.getName(), "UTF-8") + "&xml=Y");
 			webResult = WebResult.fromXMLString(reply);
 
 			if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))

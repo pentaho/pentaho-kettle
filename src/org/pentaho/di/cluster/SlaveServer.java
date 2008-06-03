@@ -349,7 +349,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     public String constructUrl(String serviceAndArguments) throws UnsupportedEncodingException
     {
         String realHostname = environmentSubstitute(hostname);
-        String retval =  "http://"+realHostname+getPortSpecification()+URLEncoder.encode(serviceAndArguments, "UTF-8"); //$NON-NLS-1$ $NON-NLS-2$
+        String retval =  "http://"+realHostname+getPortSpecification()+serviceAndArguments; //$NON-NLS-1$ $NON-NLS-2$
         retval = Const.replace(retval, " ", "%20"); //$NON-NLS-1$  //$NON-NLS-2$
         return retval;
     }
@@ -633,43 +633,43 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
 
     public SlaveServerTransStatus getTransStatus(String transName) throws Exception
     {
-        String xml = execService(GetTransStatusServlet.CONTEXT_PATH+"/?name="+transName+"&xml=Y"); //$NON-NLS-1$  //$NON-NLS-2$
+        String xml = execService(GetTransStatusServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(transName, "UTF-8")+"&xml=Y"); //$NON-NLS-1$  //$NON-NLS-2$
         return SlaveServerTransStatus.fromXML(xml);
     }
     
     public SlaveServerJobStatus getJobStatus(String jobName) throws Exception
     {
-        String xml = execService(GetJobStatusServlet.CONTEXT_PATH+"/?name="+jobName+"&xml=Y"); //$NON-NLS-1$  //$NON-NLS-2$
+        String xml = execService(GetJobStatusServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(jobName, "UTF-8")+"&xml=Y"); //$NON-NLS-1$  //$NON-NLS-2$
         return SlaveServerJobStatus.fromXML(xml);
     }
     
     public WebResult stopTransformation(String transName) throws Exception
     {
-        String xml = execService(StopTransServlet.CONTEXT_PATH+"/?name="+transName+"&xml=Y"); //$NON-NLS-1$  //$NON-NLS-2$
+        String xml = execService(StopTransServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(transName, "UTF-8")+"&xml=Y"); //$NON-NLS-1$  //$NON-NLS-2$
         return WebResult.fromXMLString(xml);
     }
     
     public WebResult stopJob(String transName) throws Exception
     {
-        String xml = execService(StopJobServlet.CONTEXT_PATH+"/?name="+transName+"&xml=Y"); //$NON-NLS-1$  //$NON-NLS-2$
+        String xml = execService(StopJobServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(transName, "UTF-8")+"&xml=Y"); //$NON-NLS-1$  //$NON-NLS-2$
         return WebResult.fromXMLString(xml);
     }
     
     public WebResult startTransformation(String transName) throws Exception
     {
-        String xml = execService(StartTransServlet.CONTEXT_PATH+"/?name="+transName+"&xml=Y");  //$NON-NLS-1$ //$NON-NLS-2$
+        String xml = execService(StartTransServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(transName, "UTF-8")+"&xml=Y");  //$NON-NLS-1$ //$NON-NLS-2$
         return WebResult.fromXMLString(xml);
     }
     
     public WebResult startJob(String transName) throws Exception
     {
-        String xml = execService(StartJobServlet.CONTEXT_PATH+"/?name="+transName+"&xml=Y");  //$NON-NLS-1$ //$NON-NLS-2$
+        String xml = execService(StartJobServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(transName, "UTF-8")+"&xml=Y");  //$NON-NLS-1$ //$NON-NLS-2$
         return WebResult.fromXMLString(xml);
     }
 
     public WebResult cleanupTransformation(String transName) throws Exception
     {
-        String xml = execService(CleanupTransServlet.CONTEXT_PATH+"/?name="+transName+"&xml=Y"); //$NON-NLS-1$  //$NON-NLS-2$
+        String xml = execService(CleanupTransServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(transName, "UTF-8")+"&xml=Y"); //$NON-NLS-1$  //$NON-NLS-2$
         return WebResult.fromXMLString(xml);
     }
     
