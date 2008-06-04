@@ -53,8 +53,6 @@ public class Xslt extends BaseStep implements StepInterface
 	
 	static final String JAXP_SCHEMA_LANGUAGE = "http://java.sun.com/xml/jaxp/properties/schemaLanguage";	
 	static final String JAXP_SCHEMA_SOURCE = "http://java.sun.com/xml/jaxp/properties/schemaSource";
-	
-	String xslfilename= null;
 
 	
 	public Xslt(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans)
@@ -80,74 +78,74 @@ public class Xslt extends BaseStep implements StepInterface
 			meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
 			
 			// Check if The result field is given
-			if (meta.getResultfieldname()!=null)
+			if (Const.isEmpty(meta.getResultfieldname()))
 			{
-				// Try to get XML Field index
-				data.fieldposition = getInputRowMeta().indexOfValue(meta.getFieldname());
-				// Let's check the Field
-				if (data.fieldposition<0)
-				{
-					// The field is unreachable !
-					logError(Messages.getString("Xslt.Log.ErrorFindingField")+ "[" + meta.getFieldname()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
-					throw new KettleStepException(Messages.getString("Xslt.Exception.CouldnotFindField",meta.getFieldname())); //$NON-NLS-1$ //$NON-NLS-2$
-				}
-				// Check if the XSL Filename is given
+				// Result Field is missing !
+				logError(Messages.getString("Xslt.Log.ErrorResultFieldMissing")); //$NON-NLS-1$ //$NON-NLS-2$
+				throw new KettleStepException(Messages.getString("Xslt.Exception.ErrorResultFieldMissing")); 
+			}
+		
+			// Check if The XML field is given
+			if (Const.isEmpty(meta.getFieldname()))
+			{
+				// Result Field is missing !
+				logError(Messages.getString("Xslt.Exception.ErrorXMLFieldMissing")); //$NON-NLS-1$ //$NON-NLS-2$
+				throw new KettleStepException(Messages.getString("Xslt.Exception.ErrorXMLFieldMissing")); 
+			}
+			
+			// Try to get XML Field index
+			data.fieldposition = getInputRowMeta().indexOfValue(meta.getFieldname());
+			// Let's check the Field
+			if (data.fieldposition<0)
+			{
+				// The field is unreachable !
+				logError(Messages.getString("Xslt.Log.ErrorFindingField")+ "[" + meta.getFieldname()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+				throw new KettleStepException(Messages.getString("Xslt.Exception.CouldnotFindField",meta.getFieldname())); //$NON-NLS-1$ //$NON-NLS-2$
+			}
 				
+			// Check if the XSL Filename is contained in a column
+			if (meta.useXSLFileFieldUse())
+			{
+				if (Const.isEmpty(meta.getXSLFileField()))
+				{
+					// The field is missing
+					//	Result field is missing !
+					logError(Messages.getString("Xslt.Log.ErrorXSLFileFieldMissing")); //$NON-NLS-1$ //$NON-NLS-2$
+					throw new KettleStepException(Messages.getString("Xslt.Exception.ErrorXSLFileFieldMissing")); //$NON-NLS-1$ //$NON-NLS-2$
+				}
+			
+				// Try to get Field index
+				data.fielxslfiledposition = getInputRowMeta().indexOfValue(meta.getXSLFileField());
+			
+				//  Let's check the Field
+				if (data.fielxslfiledposition<0)
+				{
+					//	 The field is unreachable !
+					logError(Messages.getString("Xslt.Log.ErrorXSLFileFieldFinding")+ "[" + meta.getXSLFileField()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+					throw new KettleStepException(Messages.getString("Xslt.Exception.ErrorXSLFileFieldFinding",meta.getXSLFileField())); //$NON-NLS-1$ //$NON-NLS-2$
+				}	
+				
+			}else
+			{
 				if(Const.isEmpty(meta.getXslFilename()))
 				{
 					logError(Messages.getString("Xslt.Log.ErrorXSLFile")); 
 					throw new KettleStepException(Messages.getString("Xslt.Exception.ErrorXSLFile"));
 				}
-				else
+				
+				// Check if XSL File exists!
+				data.xslfilename = environmentSubstitute(meta.getXslFilename());
+				java.io.File file=new java.io.File(data.xslfilename);
+				if(!file.exists())
 				{
-					
-					// Check if the XSL Filename is contained in a column
-					if (meta.useXSLFileFieldUse())
-					{
-						if (Const.isEmpty(meta.getXSLFileField()))
-						{
-							// The field is missing
-							//	Result field is missing !
-							logError(Messages.getString("Xslt.Log.ErrorXSLFileFieldMissing")); //$NON-NLS-1$ //$NON-NLS-2$
-							throw new KettleStepException(Messages.getString("Xslt.Exception.ErrorXSLFileFieldMissing")); //$NON-NLS-1$ //$NON-NLS-2$
-						}
-						else
-						{
-							// Try to get Field index
-							data.fielxslfiledposition = getInputRowMeta().indexOfValue(meta.getXSLFileField());
-						
-						
-							//  Let's check the Field
-							if (data.fielxslfiledposition<0)
-							{
-								//	 The field is unreachable !
-								logError(Messages.getString("Xslt.Log.ErrorXSLFileFieldFinding")+ "[" + meta.getXSLFileField()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
-								throw new KettleStepException(Messages.getString("Xslt.Exception.ErrorXSLFileFieldFinding",meta.getXSLFileField())); //$NON-NLS-1$ //$NON-NLS-2$
-							}	
-						}
-					}else
-					{
-						// Check if XSL File exists!
-						xslfilename = environmentSubstitute(meta.getXslFilename());
-						java.io.File file=new java.io.File(xslfilename);
-						if(!file.exists())
-						{
-							logError(Messages.getString("Xslt.Log.ErrorXSLFileNotExists",xslfilename)); //$NON-NLS-1$ //$NON-NLS-2$
-							throw new KettleStepException(Messages.getString("Xslt.Exception.ErrorXSLFileNotExists",xslfilename)); //$NON-NLS-1$ //$NON-NLS-2$
-						}
-						if(!file.isFile())
-						{
-							logError(Messages.getString("Xslt.Log.ErrorXSLNotAFile",xslfilename)); //$NON-NLS-1$ //$NON-NLS-2$
-							throw new KettleStepException(Messages.getString("Xslt.Exception.ErrorXSLNotAFile",xslfilename)); //$NON-NLS-1$ //$NON-NLS-2$
-						}
-					}
+					logError(Messages.getString("Xslt.Log.ErrorXSLFileNotExists",data.xslfilename)); //$NON-NLS-1$ //$NON-NLS-2$
+					throw new KettleStepException(Messages.getString("Xslt.Exception.ErrorXSLFileNotExists",data.xslfilename)); //$NON-NLS-1$ //$NON-NLS-2$
 				}
-			}
-			else
-			{
-				// Result Field is missing !
-				logError(Messages.getString("Xslt.Log.ErrorMatcherMissing")); //$NON-NLS-1$ //$NON-NLS-2$
-				throw new KettleStepException(Messages.getString("Xslt.Exception.ErrorMatcherMissing")); 
+				if(!file.isFile())
+				{
+					logError(Messages.getString("Xslt.Log.ErrorXSLNotAFile",data.xslfilename)); //$NON-NLS-1$ //$NON-NLS-2$
+					throw new KettleStepException(Messages.getString("Xslt.Exception.ErrorXSLNotAFile",data.xslfilename)); //$NON-NLS-1$ //$NON-NLS-2$
+				}
 			}
 		}	
 		
@@ -159,17 +157,14 @@ public class Xslt extends BaseStep implements StepInterface
 		if (meta.useXSLFileFieldUse())
 		{
 			// Get the value	
-			xslfilename= getInputRowMeta().getString(row,data.fielxslfiledposition);	
-			if (log.isDetailed()) logDetailed(Messages.getString("Xslt.Log.XslfileNameFromFied",xslfilename,meta.getXSLFileField()));			
+			data.xslfilename= getInputRowMeta().getString(row,data.fielxslfiledposition);	
+			if (log.isDetailed()) logDetailed(Messages.getString("Xslt.Log.XslfileNameFromFied",data.xslfilename,meta.getXSLFileField()));			
 		}
-		else
-		{		
-				xslfilename = environmentSubstitute(meta.getXslFilename());
-		}
+
 		boolean sendToErrorRow=false;
 	    String errorMessage = null;
 		try {			
-			if(log.isDetailed()) logDetailed(Messages.getString("Xslt.Log.Filexsl") + xslfilename);
+			if(log.isDetailed()) logDetailed(Messages.getString("Xslt.Log.Filexsl") + data.xslfilename);
 			TransformerFactory factory = TransformerFactory.newInstance();
 			
 			if (meta.getXSLFactory().equals("SAXON"))
@@ -180,7 +175,7 @@ public class Xslt extends BaseStep implements StepInterface
 			}
 			
 			// Use the factory to create a template containing the xsl file
-			Templates template = factory.newTemplates(new StreamSource(	new FileInputStream(xslfilename)));
+			Templates template = factory.newTemplates(new StreamSource(	new FileInputStream(data.xslfilename)));
 			// Use the template to create a transformer
 			Transformer xformer = template.newTransformer();
 			Source source = new StreamSource(new StringReader(Fieldvalue));			

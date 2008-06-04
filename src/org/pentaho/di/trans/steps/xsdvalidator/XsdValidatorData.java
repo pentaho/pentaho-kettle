@@ -26,9 +26,6 @@ import org.pentaho.di.trans.step.StepDataInterface;
  */
 public class XsdValidatorData extends BaseStepData implements StepDataInterface
 {
-
-	
-	//public int fields_used[];
 	public int xmlindex;
 	public int xsdindex;
 	public RowMetaInterface outputRowMeta;
@@ -39,8 +36,6 @@ public class XsdValidatorData extends BaseStepData implements StepDataInterface
 	public XsdValidatorData()
 	{
 		super();
-
-		//fields_used=null;
 		xmlindex=-1;
 		xsdindex=-1;
 		

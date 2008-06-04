@@ -30,6 +30,7 @@ public class XsltData extends BaseStepData implements StepDataInterface
 	public RowMetaInterface outputRowMeta;
 	public int fieldposition;
 	public int fielxslfiledposition;
+	public String xslfilename;
 	
 	public int fields_used[];
 	
@@ -39,10 +40,9 @@ public class XsltData extends BaseStepData implements StepDataInterface
 	public XsltData()
 	{
 		super();
-
-		fields_used=null;
 		fieldposition=-1;
 		fielxslfiledposition=-1;
+		xslfilename=null;
 	}
 
 }

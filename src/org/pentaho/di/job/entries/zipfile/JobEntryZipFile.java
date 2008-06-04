@@ -745,8 +745,16 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 			String datetime_folder)
 	{
 		String retval="";
+		if(Const.isEmpty(filename)) return null;
+		
 		// Replace possible environment variables...
-		if(filename!=null) retval=environmentSubstitute(filename);
+		String realfilename=StringUtil.environmentSubstitute(filename);
+		int lenstring=realfilename.length();
+		int lastindexOfDot=realfilename.lastIndexOf('.');
+		if(lastindexOfDot==-1) lastindexOfDot=lenstring;
+		
+		retval=realfilename.substring(0, lastindexOfDot);
+		
 		
 		SimpleDateFormat daf     = new SimpleDateFormat();
 		Date now = new Date();
@@ -758,7 +766,6 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 			retval+=dt;
 		}else
 		{
-		
 			if (add_date)
 			{
 				daf.applyPattern("yyyyMMdd");
@@ -772,11 +779,10 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 				retval+="_"+t;
 			}
 		}
-		retval+=".zip";
+		retval+=realfilename.substring(lastindexOfDot, lenstring);
 		return retval;
 
 	}
-
 	public boolean evaluates()
 	{
 		return true;
