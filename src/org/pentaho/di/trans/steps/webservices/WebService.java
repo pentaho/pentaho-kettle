@@ -12,6 +12,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Hashtable;
 import java.util.List;
 
 import javax.xml.stream.XMLInputFactory;
@@ -145,6 +146,8 @@ public class WebService extends BaseStep implements StepInterface
     
     private void defineIndexList(RowMetaInterface rowMeta, Object[] vCurrentRow)
     {
+    	// Create an index list for the input fields
+    	//
         indexList = new ArrayList<Integer>();
         for (WebServiceField curField : meta.getFieldsIn())
         {
@@ -154,6 +157,21 @@ public class WebService extends BaseStep implements StepInterface
             	indexList.add(index);
             }
         }
+        
+        // Create a map for the output values too
+        //
+        for (WebServiceField curField : meta.getFieldsOut())
+        {
+            int index = data.outputRowMeta.indexOfValue(curField.getName());
+            if (index>=0)
+            {
+            	// Keep a mapping between the web service name and the index of the target field.
+            	// This makes it easier to populate the fields later on, reading back the result.
+            	//
+            	data.indexMap.put(curField.getWsName(), index); 
+            }
+        }
+    	
     }
     
     private void parseRow(RowMetaInterface rowMeta, Object[] vCurrentRow) throws KettleValueException
@@ -340,6 +358,8 @@ public class WebService extends BaseStep implements StepInterface
     {
         meta = (WebServiceMeta) smi;
         data = (WebServiceData) sdi;
+        
+        data.indexMap = new Hashtable<String,Integer>();
 
         return super.init(smi, sdi);
     }
@@ -448,7 +468,6 @@ public class WebService extends BaseStep implements StepInterface
             // Allocate a result row in case we are dealing with a single result row
             //
             Object[] outputRowData = rowData==null ? RowDataUtil.allocateRowData(data.outputRowMeta.size()) : RowDataUtil.createResizedCopy(rowData, data.outputRowMeta.size());
-            int outputIndex = ( rowData==null || !meta.isPassingInputData() ) ? 0 : rowMeta.size();
             
 	    	// Now loop over the node list found above...
 	    	//
@@ -462,24 +481,13 @@ public class WebService extends BaseStep implements StepInterface
     			//
     			WebServiceField field = meta.getFieldOutFromWsName(node.getNodeName());
     			if (field!=null) {
-    				if (getNodeValue(outputRowData, outputIndex, node, field, transformer, true)) {
+    				if (getNodeValue(outputRowData, node, field, transformer, true)) {
     					// We found a match.
     					// This means that we are dealing with a single row
     					// It also means that we need to update the output index pointer
     					//
     					singleRow=true;
     					fieldsFound++;
-    					outputIndex++;
-    					
-    					if (outputIndex>=data.outputRowMeta.size()) {
-    						// Hang on!  It's not a single row anyway, we get multiple results back.
-    						// In that case, just send the data out and create a new row...
-    						//
-    						putRow(data.outputRowMeta, outputRowData);
-    						outputRowData = rowData==null ? RowDataUtil.allocateRowData(data.outputRowMeta.size()) : RowDataUtil.createResizedCopy(rowData, data.outputRowMeta.size());
-    			            outputIndex = ( rowData==null || !meta.isPassingInputData() ) ? 0 : rowMeta.size();
-    			            fieldsFound=0;
-    					}
     				}
     			} else {
     				// Sticking with the multiple-results scenario...
@@ -496,8 +504,7 @@ public class WebService extends BaseStep implements StepInterface
 		    		// Allocate a new row...
 	    			//
 	    			outputRowData = rowData==null ? RowDataUtil.allocateRowData(data.outputRowMeta.size()) : RowDataUtil.createResizedCopy(rowData, data.outputRowMeta.size());
-		            outputIndex = ( rowData==null || !meta.isPassingInputData() ) ? 0 : rowMeta.size();
-		    		
+		            
 		            // Let's see what's in there...
 		            //
 		    		NodeList childNodes = node.getChildNodes();
@@ -507,13 +514,12 @@ public class WebService extends BaseStep implements StepInterface
 		    			field = meta.getFieldOutFromWsName(childNode.getNodeName());
 		    			if (field!=null) {
 		    			
-			    			if (getNodeValue(outputRowData, outputIndex, childNode, field, transformer, false)) {
+			    			if (getNodeValue(outputRowData, childNode, field, transformer, false)) {
 		    					// We found a match.
 		    					// This means that we are dealing with a single row
 		    					// It also means that we need to update the output index pointer
 		    					//
 		    					fieldsFound++;
-		    					outputIndex++;
 		    				}
 		    			}
 		    		}
@@ -735,8 +741,15 @@ public class WebService extends BaseStep implements StepInterface
 		}
 	}
     
-    private boolean getNodeValue(Object[] outputRowData, int outputIndex, Node node, WebServiceField field, Transformer transformer, boolean singleRowScenario) throws KettleException {
+    private boolean getNodeValue(Object[] outputRowData, Node node, WebServiceField field, Transformer transformer, boolean singleRowScenario) throws KettleException {
 		
+    	Integer outputIndex = data.indexMap.get(field.getWsName());
+    	if (outputIndex==null) {
+    		// Unknown field : don't look any further, it's not a field we want to use.
+    		//
+    		return false;
+    	}
+    	
     	// if it's a text node or if we recognize the field type, we just grab the value 
     	//
     	if (node.getNodeType()==Node.TEXT_NODE || !field.isComplex()) {
