@@ -20,6 +20,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -277,62 +278,46 @@ public class EnterValueDialog extends Dialog
 	{
 		// What is the selected type?
 		//
-		String formatString = wFormat.getText();
+    // The index must be set on the combobox after 
+    // calling setItems(), otherwise the zeroth element 
+    // is displayed, but the selectedIndex will be -1. 
+
+	  int formatIndex = wFormat.getSelectionIndex();
+		String formatString = formatIndex >= 0 ? wFormat.getItem(formatIndex): "";
 		int type = ValueMeta.getType(wValueType.getText());
 		String string = wInputString.getText();
+
+		// remove white spaces if needed
+    if (string.startsWith(" ") || string.endsWith(" ")) 
+    {
+      string = Const.trim(string);
+      wInputString.setText(string);
+    }
 		switch(type)
 		{
 		case ValueMetaInterface.TYPE_INTEGER:
 			wFormat.setItems(Const.getNumberFormats());
-			// remove white spaces if needed
-			if (string.startsWith(" ") || string.endsWith(" ")) 
-			{
-				string = Const.trim(string);
-				wInputString.setText(string);
-			}
-			if (Const.isEmpty(string) || Const.isEmpty(formatString))
-			{
-				wFormat.setText("#"); // default
-			}
+      int index = (!Const.isEmpty(formatString)) ? wFormat.indexOf(formatString) : wFormat.indexOf("#"); // default;
+      index = (index <0) ? 0 : index; 
+      wFormat.select(index); //default
 			break;
 		case ValueMetaInterface.TYPE_NUMBER:
 			wFormat.setItems(Const.getNumberFormats());
-			// remove white spaces if needed
-			if (string.startsWith(" ") || string.endsWith(" ")) 
-			{
-				string = Const.trim(string);
-				wInputString.setText(string);
-			}
-			if (Const.isEmpty(string) || Const.isEmpty(formatString)) 
-			{
-				wFormat.setText("#.#"); // default
-			}
+			index = (!Const.isEmpty(formatString)) ? wFormat.indexOf(formatString) : wFormat.indexOf("#.#"); // default;
+			index = (index <0) ? 0 : index; 
+      wFormat.select(index); //default
 			break;
 		case ValueMetaInterface.TYPE_DATE:
 			wFormat.setItems(Const.getDateFormats());
-			// remove white spaces if needed
-			if (string.startsWith(" ") || string.endsWith(" ")) 
-			{
-				string = Const.trim(string);
-				wInputString.setText(string);
-			}
-			if (Const.isEmpty(string) || Const.isEmpty(formatString))
-			{
-				wFormat.setText("yyyy/MM/dd HH:mm:ss"); // default
-			}
+      index = (!Const.isEmpty(formatString)) ? wFormat.indexOf(formatString) : wFormat.indexOf("yyyy/MM/dd HH:mm:ss"); // default;
+      index = (index <0) ? 0 : index; 
+      wFormat.select(index); //default
 			break;
 		case ValueMetaInterface.TYPE_BIGNUMBER:
 			wFormat.setItems(new String[] {});
-			wFormat.setText("");
-			if (string.startsWith(" ") || string.endsWith(" ")) 
-			{
-				string = Const.trim(string);
-				wInputString.setText(string);
-			}
 			break;
 		default: 
 			wFormat.setItems(new String[] {});
-			wFormat.setText("");
 			break;
 		}
 	}
@@ -358,16 +343,21 @@ public class EnterValueDialog extends Dialog
             wInputString.setText(valueMeta.toString());
         }
 		setFormats();
+
+		int index = wFormat.indexOf(valueMeta.getConversionMask()); 
+    wFormat.select(index);
 		
+    /*
 		if (valueMeta.isNumber())
 		{
-			wFormat.setText(Const.getNumberFormats()[0]);
+		  wFormat.setText(Const.getNumberFormats()[0]);
 		}
 		if (valueMeta.isDate())
 		{
 			wFormat.setText(Const.getDateFormats()[0]);
 		}
-		
+		*/
+    
 		wLength.setText(Integer.toString(valueMeta.getLength()));
 		wPrecision.setText(Integer.toString(valueMeta.getPrecision()));
 		
@@ -393,7 +383,8 @@ public class EnterValueDialog extends Dialog
 		Object valueData = val.getValueData();
 		
 		valueMeta.setType( valtype );
-		valueMeta.setConversionMask( Const.isEmpty(wFormat.getText())?null:wFormat.getText());
+		int formatIndex = wFormat.getSelectionIndex();
+		valueMeta.setConversionMask( formatIndex >=0 ? wFormat.getItem(formatIndex) : null);
 		valueMeta.setLength( Const.toInt( wLength.getText(), -1) );
 		valueMeta.setPrecision( Const.toInt( wPrecision.getText(), -1) );
         

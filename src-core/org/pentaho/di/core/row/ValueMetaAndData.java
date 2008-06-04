@@ -140,6 +140,7 @@ public class ValueMetaAndData
         retval.append(XMLHandler.addTagValue("length", meta.getLength(), false));
         retval.append(XMLHandler.addTagValue("precision", meta.getPrecision(), false));
         retval.append(XMLHandler.addTagValue("isnull", meta.isNull(valueData), false));
+        retval.append(XMLHandler.addTagValue("mask", meta.getConversionMask(), false));
         retval.append("</"+XML_TAG+">");
 
         return retval.toString();
@@ -172,11 +173,15 @@ public class ValueMetaAndData
             boolean isnull =  "Y".equalsIgnoreCase(XMLHandler.getTagValue(valnode, "isnull"));
             int len        =  Const.toInt(XMLHandler.getTagValue(valnode, "length"), -1);
             int prec       =  Const.toInt(XMLHandler.getTagValue(valnode, "precision"), -1);
-
+            String mask    =  XMLHandler.getTagValue(valnode, "mask");
+            
             valueMeta = new ValueMeta(valname, valtype);
             valueData = text;
             valueMeta.setLength(len);
             valueMeta.setPrecision(prec);
+            if (mask != null){
+              valueMeta.setConversionMask(mask);
+            }
 
             if (valtype!=ValueMetaInterface.TYPE_STRING) 
             {
