@@ -435,15 +435,16 @@ public class TransSplitter
                             
                             // Also add the reference step to the master. (cloned)
                             //
-                            StepMeta target = master.findStep(referenceStep.getName());
-                            if (target==null) {
-                                target = (StepMeta) referenceStep.clone();
-                                target.setLocation(target.getLocation().x, target.getLocation().y);
-                                master.addStep(target);
+                            StepMeta masterStep = master.findStep(referenceStep.getName());
+                            if (masterStep==null) {
+                                masterStep = (StepMeta) referenceStep.clone();
+                                masterStep.setLocation(masterStep.getLocation().x, masterStep.getLocation().y);
+                                master.addStep(masterStep);
                             }
                             
                             // Then add the remote input/output steps to master and slave 
                             // 
+                            int slaveStepCopyNr = -1;
                             int nrSlaves = previousClusterSchema.getSlaveServers().size();
                             for (int slaveNr=0;slaveNr<nrSlaves;slaveNr++)
                             {
@@ -451,14 +452,16 @@ public class TransSplitter
                                 
                                 if (!slaveServer.isMaster())
                                 {
+                                	slaveStepCopyNr++;
+                                	
                                 	// MASTER: add remote input steps to the master step.  That way it can receive data over sockets.
                                 	// 
-                                	int port = getPort(previousClusterSchema, slaveServer, previousStep.getName() + " - " + referenceStep.getName());
+                                	// int port = getPort(previousClusterSchema, slaveServer, previousStep.getName() + " - " + referenceStep.getName());
                                 	
                                 	// Default: we send/receive to/from copy 0 of the remote step.
                                 	//
-                                    RemoteStep remoteSlaveStep = new RemoteStep(slaveServer.getHostname(), masterServer.getHostname(), Integer.toString(port), previousStep.getName(), 0, target.getName(), 0, slaveServer.getName(), socketsBufferSize, compressingSocketStreams);
-                                	target.getRemoteInputSteps().add(remoteSlaveStep);
+                                    // RemoteStep remoteSlaveStep = new RemoteStep(slaveServer.getHostname(), masterServer.getHostname(), Integer.toString(port), previousStep.getName(), 0, masterStep.getName(), 0, slaveServer.getName(), socketsBufferSize, compressingSocketStreams);
+                                	// masterStep.getRemoteInputSteps().add(remoteSlaveStep);
                                 	
                                     // SLAVE : add remote output steps to the previous step
                                 	//
@@ -466,20 +469,101 @@ public class TransSplitter
 
                                     // See if we can add a link to the previous using the Remote Steps concept.
                                 	//
-                                    StepMeta previous = slave.findStep(previousStep.getName());
-                                    if (previous==null)
+                                    StepMeta slaveStep = slave.findStep(previousStep.getName());
+                                    if (slaveStep==null)
                                     {
-                                        previous = addSlaveCopy(slave, previousStep, slaveServer);
+                                        slaveStep = addSlaveCopy(slave, previousStep, slaveServer);
+                                    }
+                                    
+                                    // TODO: verify partitioning logic.
+                                    // Make sure the data finds its way back to the master.
+                                    //
+                                    int nrOfSourceCopies = slaveStep.getCopies();
+                                    
+                                    // Verify that the number of copies is equal to the number of slaves or 1
+                                    //
+                                    if (masterStep.getCopies()!=1 && masterStep.getCopies()!=(referenceClusterSchema.findNrSlaves()*nrOfSourceCopies)) {
+                                    	throw new KettleException("The number of step copies on the master has to be 1 or equal to the number of slaves ("+referenceClusterSchema.findNrSlaves()+") to work.  Note that you can insert a dummy step to make the transformation work as desired.");
                                     }
                                     
                                     // Default: we send/receive to/from copy 0 of the remote step.
                                 	//
-                                    RemoteStep remoteMasterStep = new RemoteStep(masterServer.getHostname(), slaveServer.getHostname(), Integer.toString(port), previous.getName(), 0, target.getName(), 0, masterServer.getName(), socketsBufferSize, compressingSocketStreams);
-                                    previous.getRemoteOutputSteps().add(remoteMasterStep);
+                                    // RemoteStep remoteMasterStep = new RemoteStep(masterServer.getHostname(), slaveServer.getHostname(), Integer.toString(port), slaveStep.getName(), 0, masterStep.getName(), 0, masterServer.getName(), socketsBufferSize, compressingSocketStreams);
+                                    // slaveStep.getRemoteOutputSteps().add(remoteMasterStep);
 
-                                    // TODO: verify partitioning logic.
-                                    // Make sure the data finds its way back to the master.
-                                    //
+                                    // Verify the partitioning for this slave step.
+                        			// It's running in 1 or more copies depending on the number of partitions
+                        			// Get the number of target partitions...
+                        			//
+                        			Map<PartitionSchema, List<String>> partitionsMap = slaveServerPartitionsMap.get(slaveServer);
+                        			StepPartitioningMeta previousStepPartitioningMeta = previousStep.getStepPartitioningMeta();
+                        			PartitionSchema previousPartitionSchema = previousStepPartitioningMeta.getPartitionSchema();
+                        			int nrOfPreviousPartitions = 1;
+                        			if (slaveStep.isPartitioned() && previousPartitionSchema!=null) {
+                            			List<String> sourcePartitionsList = partitionsMap.get(previousPartitionSchema);
+                            			nrOfPreviousPartitions = sourcePartitionsList.size();
+                        			}
+
+                        			// Add the required remote input and output steps to make the partitioning a reality.
+                        			//
+                        			for (int sourceCopyNr=0;sourceCopyNr<(nrOfPreviousPartitions*nrOfSourceCopies);sourceCopyNr++) {
+                        			    // The masterStepCopy number is increasing for each remote copy on each slave.
+                        			    // This makes the master distribute to each copy of the slave properly.
+                        			    // There is a check above to make sure that the master has either 1 copy or the same as slave*copies
+                        			    slaveStepCopyNr += sourceCopyNr;
+                        			    if (masterStep.getCopies()==1) {
+                        			        slaveStepCopyNr = 0;
+                        			    }
+                        				int port = getPort(previousClusterSchema, slaveServer, slaveServer+"-"+masterStep.getName()+"."+slaveStepCopyNr+" --> "+slaveStep.getName()+"."+sourceCopyNr);
+
+                                        RemoteStep remoteMasterStep = new RemoteStep(slaveServer.getHostname(), masterServer.getHostname(), Integer.toString(port), slaveStep.getName(), sourceCopyNr, masterStep.getName(), slaveStepCopyNr, masterServer.getName(), socketsBufferSize, compressingSocketStreams);
+                                        slaveStep.getRemoteOutputSteps().add(remoteMasterStep);
+
+                                        RemoteStep remoteSlaveStep = new RemoteStep(slaveServer.getHostname(), masterServer.getHostname(), Integer.toString(port), slaveStep.getName(), sourceCopyNr, masterStep.getName(), slaveStepCopyNr, masterServer.getName(), socketsBufferSize, compressingSocketStreams);
+                                        masterStep.getRemoteInputSteps().add(remoteSlaveStep);
+                                        
+                                        // OK, create a partition number for the target step in the partition distribution...
+                            			//
+                                        if (slaveStep.isPartitioned()) {
+                                        	slaveStepCopyPartitionDistribution.addPartition(slaveServer.getName(), previousPartitionSchema.getName(), sourceCopyNr);
+                                        }
+                        			}
+                        			
+                        			// Also set the target partitioning on the slave step.
+                        			// A copy of the original previous step partitioning schema
+                        			//
+                        			if (previousStepPartitioningMeta.isPartitioned()) {
+                        				
+                        				// Set the target partitioning schema for the source step (master)
+                        				//
+                        				StepPartitioningMeta stepPartitioningMeta = previousStepPartitioningMeta.clone();
+                        				PartitionSchema partitionSchema = stepPartitioningMeta.getPartitionSchema();
+                        				partitionSchema.setName( createTargetPartitionSchemaName(partitionSchema.getName())) ;
+                        				
+                        				if (partitionSchema.isDynamicallyDefined()) {
+                        					// Expand the cluster definition to: nrOfSlaves*nrOfPartitionsPerSlave...
+                        					//
+                        					partitionSchema.expandPartitionsDynamically(previousClusterSchema.findNrSlaves(), originalTransformation);
+                        				}
+                        				masterStep.setTargetStepPartitioningMeta( stepPartitioningMeta );
+                    					master.addOrReplacePartitionSchema(partitionSchema);
+                        				
+                    					// Now set the partitioning schema for the slave step...
+                    					// For the slave step, we only should those partition IDs that are interesting for the current slave...
+                        				//
+                        				stepPartitioningMeta = previousStepPartitioningMeta.clone();
+                        				partitionSchema = stepPartitioningMeta.getPartitionSchema();
+                        				partitionSchema.setName( createSlavePartitionSchemaName(partitionSchema.getName())) ;
+                        				
+                        				if (partitionSchema.isDynamicallyDefined()) {
+                        					// Expand the cluster definition to: nrOfSlaves*nrOfPartitionsPerSlave...
+                        					//
+                        					partitionSchema.expandPartitionsDynamically(previousClusterSchema.findNrSlaves(), originalTransformation);
+                        				}
+                        				
+                        				partitionSchema.retainPartitionsForSlaveServer(referenceClusterSchema.findNrSlaves(), getSlaveServerNumber(referenceClusterSchema, slaveServer));
+                    					slave.addOrReplacePartitionSchema( partitionSchema );
+                        			}
                                 }
                             }
                         }

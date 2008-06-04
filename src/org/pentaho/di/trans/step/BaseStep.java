@@ -516,15 +516,15 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
         {
 			// If this is on the master, separate logic applies.
 			//
-			boolean isMaster = "Y".equalsIgnoreCase(getVariable(Const.INTERNAL_VARIABLE_CLUSTER_MASTER));
+			// boolean isMaster = "Y".equalsIgnoreCase(getVariable(Const.INTERNAL_VARIABLE_CLUSTER_MASTER));
 
         	remoteOutputSteps = new ArrayList<RemoteStep>();
 	        for (int i=0;i<stepMeta.getRemoteOutputSteps().size();i++) {
 	        	RemoteStep remoteStep = stepMeta.getRemoteOutputSteps().get(i);
 	        	
-	        	// If the step is on a master and run in multiple copies, we only want to open every socket once.
+	        	// If the step run in multiple copies, we only want to open every socket once.
 	        	// 
-				if (!isMaster || stepMeta.getCopies()==1 || ( isMaster && getCopy()==i ) ) {
+				if (stepMeta.getCopies()==1 || (stepMeta.getCopies()>1 && getCopy()==i ) ) {
 		        	// Open a server socket to allow the remote output step to connect.
 		        	//
 		        	RemoteStep copy = (RemoteStep) remoteStep.clone();
