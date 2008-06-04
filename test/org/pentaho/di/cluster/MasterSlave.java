@@ -45,7 +45,7 @@ public class MasterSlave extends BaseCluster {
 			config.setClusterStarting(true);
 			config.setLogLevel(LogWriter.LOG_LEVEL_BASIC);
 			TransSplitter transSplitter = Trans.executeClustered(transMeta, config);
-			long nrErrors = Trans.monitorClusteredTransformation("testParallelFileReadOnMaster", transSplitter, null, 1);
+			long nrErrors = Trans.monitorClusteredTransformation("cluster unit test <testParallelFileReadOnMaster>", transSplitter, null, 1);
 			assertEquals(0L, nrErrors);
 			String result = loadFileContent(transMeta, "${java.io.tmpdir}/test-parallel-file-read-on-master-result.txt");
 			assertEqualsIgnoreWhitespacesAndCase("100", result);
@@ -85,7 +85,7 @@ public class MasterSlave extends BaseCluster {
 			config.setClusterStarting(true);
 			config.setLogLevel(LogWriter.LOG_LEVEL_BASIC);
 			TransSplitter transSplitter = Trans.executeClustered(transMeta, config);
-			long nrErrors = Trans.monitorClusteredTransformation("testParallelFileReadOnMasterWithCopies", transSplitter, null, 1);
+			long nrErrors = Trans.monitorClusteredTransformation("cluster unit test <testParallelFileReadOnMasterWithCopies>", transSplitter, null, 1);
 			assertEquals(0L, nrErrors);
 			String result = loadFileContent(transMeta, "${java.io.tmpdir}/test-parallel-file-read-on-master-result-with-copies.txt");
 			assertEqualsIgnoreWhitespacesAndCase("100", result);
@@ -126,7 +126,7 @@ public class MasterSlave extends BaseCluster {
 			config.setClusterStarting(true);
 			config.setLogLevel(LogWriter.LOG_LEVEL_BASIC);
 			TransSplitter transSplitter = Trans.executeClustered(transMeta, config);
-			long nrErrors = Trans.monitorClusteredTransformation("testParallelFileReadOnSlaves", transSplitter, null, 1);
+			long nrErrors = Trans.monitorClusteredTransformation("cluster unit test <testParallelFileReadOnSlaves>", transSplitter, null, 1);
 			assertEquals(0L, nrErrors);
 			String result = loadFileContent(transMeta, "${java.io.tmpdir}/test-parallel-file-read-on-slaves.txt");
 			assertEqualsIgnoreWhitespacesAndCase("100", result);
@@ -166,7 +166,7 @@ public class MasterSlave extends BaseCluster {
 			config.setClusterStarting(true);
 			config.setLogLevel(LogWriter.LOG_LEVEL_BASIC);
 			TransSplitter transSplitter = Trans.executeClustered(transMeta, config);
-			long nrErrors = Trans.monitorClusteredTransformation("testParallelFileReadOnSlavesWithPartitioning", transSplitter, null, 1);
+			long nrErrors = Trans.monitorClusteredTransformation("cluster unit test <testParallelFileReadOnSlavesWithPartitioning>", transSplitter, null, 1);
 			assertEquals(0L, nrErrors);
 			String result = loadFileContent(transMeta, "${java.io.tmpdir}/test-parallel-file-read-on-slaves-with-partitioning.txt");
 			assertEqualsIgnoreWhitespacesAndCase("100", result);
@@ -207,7 +207,7 @@ public class MasterSlave extends BaseCluster {
 			config.setClusterStarting(true);
 			config.setLogLevel(LogWriter.LOG_LEVEL_BASIC);
 			TransSplitter transSplitter = Trans.executeClustered(transMeta, config);
-			long nrErrors = Trans.monitorClusteredTransformation("testParallelFileReadOnSlavesWithPartitioning2", transSplitter, null, 1);
+			long nrErrors = Trans.monitorClusteredTransformation("cluster unit test <testParallelFileReadOnSlavesWithPartitioning2>", transSplitter, null, 1);
 			assertEquals(0L, nrErrors);
 			String result = loadFileContent(transMeta, "${java.io.tmpdir}/test-parallel-file-read-on-slaves-with-partitioning2.txt");
 			assertEqualsIgnoreWhitespacesAndCase("100", result);
@@ -225,6 +225,59 @@ public class MasterSlave extends BaseCluster {
 			}
 		}
 	}
+	
+	/**
+	 * This test reads a CSV file and sends the data to 3 copies on 3 slave servers.<br>
+	 */
+	public void testMultipleCopiesOnMultipleSlaves() throws Exception {
+		init();
+		
+		ClusterGenerator clusterGenerator = new ClusterGenerator();
+		try {
+			clusterGenerator.launchSlaveServers();
+			
+			TransMeta transMeta = generateMultipleCopiesOnMultipleSlaves(clusterGenerator);
+			TransExecutionConfiguration config = new TransExecutionConfiguration();
+			config.setExecutingClustered(true);
+			config.setExecutingLocally(false);
+			config.setExecutingRemotely(false);
+			config.setClusterPosting(true);
+			config.setClusterPreparing(true);
+			config.setClusterStarting(true);
+			config.setLogLevel(LogWriter.LOG_LEVEL_BASIC);
+			TransSplitter transSplitter = Trans.executeClustered(transMeta, config);
+			long nrErrors = Trans.monitorClusteredTransformation("cluster unit test <testMultipleCopiesOnMultipleSlaves>", transSplitter, null, 1);
+			assertEquals(0L, nrErrors);
+			String result = loadFileContent(transMeta, "${java.io.tmpdir}/test-multiple-copies-on-multiple-slaves.txt");
+			assertEqualsIgnoreWhitespacesAndCase("100", result);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail(e.toString());
+		}
+		finally {
+			try {
+				clusterGenerator.stopSlaveServers();
+			} catch (Exception e) {
+				e.printStackTrace();
+				fail(e.toString());
+			}
+		}
+	}
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
 	private TransMeta generateParallelFileReadOnMasterTransMeta(ClusterGenerator clusterGenerator) throws KettleXMLException {
 		TransMeta transMeta = new TransMeta("test/org/pentaho/di/cluster/test-parallel-file-read-on-master.ktr");
@@ -309,6 +362,25 @@ public class MasterSlave extends BaseCluster {
 
 	private TransMeta generateParallelFileReadOnSlavesWithPartitioning2TransMeta(ClusterGenerator clusterGenerator) throws KettleXMLException {
 		TransMeta transMeta = new TransMeta("test/org/pentaho/di/cluster/test-parallel-file-read-on-slaves-with-partitioning2.ktr");
+		
+		// Add the slave servers
+		//
+		for (SlaveServer slaveServer : ClusterGenerator.LOCAL_TEST_SLAVES) {
+			transMeta.getSlaveServers().add(slaveServer);
+		}
+		
+		// Replace the slave servers in the specified cluster schema...
+		//
+		ClusterSchema clusterSchema = transMeta.findClusterSchema(ClusterGenerator.TEST_CLUSTER_NAME);
+		assertNotNull("Cluster schema '"+ClusterGenerator.TEST_CLUSTER_NAME+"' couldn't be found", clusterSchema);
+		clusterSchema.getSlaveServers().clear();
+		clusterSchema.getSlaveServers().addAll(Arrays.asList(ClusterGenerator.LOCAL_TEST_SLAVES));
+
+		return transMeta;
+	}
+	
+	private TransMeta generateMultipleCopiesOnMultipleSlaves(ClusterGenerator clusterGenerator) throws KettleXMLException {
+		TransMeta transMeta = new TransMeta("test/org/pentaho/di/cluster/test-multiple-copies-on-multiple-slaves.ktr");
 		
 		// Add the slave servers
 		//
