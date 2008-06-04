@@ -440,6 +440,16 @@ public class RowMeta implements RowMetaInterface
     {
         // Write all values in the row
         for (int i=0;i<size();i++) getValueMeta(i).writeData(outputStream, data[i]);
+        
+        // If there are 0 values in the row, we write a marker flag to be able to detect an EOF on the other end (sockets etc)
+        // 
+        if (size()==0) {
+    		try {
+				outputStream.writeBoolean(true);
+			} catch (IOException e) {
+				throw new KettleFileException("Error writing marker flag", e);
+			}
+        }
     }
 
     /**
@@ -496,6 +506,26 @@ public class RowMeta implements RowMetaInterface
         for (int i=0;i<size();i++)
         {
             data[i] = getValueMeta(i).readData(inputStream);
+        }
+        if (size()==0) 
+        {
+        	try 
+        	{
+				inputStream.readBoolean();
+			}
+        	catch(EOFException e)
+	        {
+	        	throw new KettleEOFException(e);
+	        }
+	        catch(SocketTimeoutException e)
+	        {
+	        	throw e;
+	        }
+	        catch(IOException e)
+	        {
+	            throw new KettleFileException(toString()+" : Unable to read the marker flag data from input stream", e);
+	        }
+
         }
         return data;
     }
