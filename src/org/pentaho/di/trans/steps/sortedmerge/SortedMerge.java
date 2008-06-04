@@ -188,7 +188,7 @@ public class SortedMerge extends BaseStep implements StepInterface
         
 		putRow(data.rowMeta,row);     // copy row to possible alternate rowset(s).
 
-        if (checkFeedback(linesRead)) logBasic(Messages.getString("SortedMerge.Log.LineNumber")+linesRead); //$NON-NLS-1$
+        if (checkFeedback(getLinesRead())) logBasic(Messages.getString("SortedMerge.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
 			
 		return true;
 	}

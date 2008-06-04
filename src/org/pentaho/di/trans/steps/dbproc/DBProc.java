@@ -136,7 +136,7 @@ public class DBProc extends BaseStep implements StepInterface
 		else
 		{
 			r=new Object[] {}; // empty row
-            linesRead++;
+            incrementLinesRead();
             data.inputRowMeta = new RowMeta(); // empty row metadata too
             data.readsRows=true; // make it drop out of the loop at the next entrance to this method
 		}
@@ -146,9 +146,9 @@ public class DBProc extends BaseStep implements StepInterface
 			Object[] outputRowData = runProc(data.inputRowMeta, r); // add new values to the row in rowset[0].
 			putRow(data.outputMeta, outputRowData);  // copy row to output rowset(s);
 				
-            if (checkFeedback(linesRead)) 
+            if (checkFeedback(getLinesRead())) 
             {
-            	if(log.isBasic()) logBasic(Messages.getString("DBProc.LineNumber")+linesRead); //$NON-NLS-1$
+            	if(log.isBasic()) logBasic(Messages.getString("DBProc.LineNumber")+getLinesRead()); //$NON-NLS-1$
             }
 		}
 		catch(KettleException e)

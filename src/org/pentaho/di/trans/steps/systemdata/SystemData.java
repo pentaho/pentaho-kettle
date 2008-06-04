@@ -284,7 +284,7 @@ public class SystemData extends BaseStep implements StepInterface
 		else
 		{
 			row=new Object[] {}; // empty row
-            linesRead++;
+            incrementLinesRead();
 
             if (first)
             {

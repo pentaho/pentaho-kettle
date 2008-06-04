@@ -83,7 +83,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
 		
 		// If we split the data stream in small XLS files, we need to do this here...
 		//
-		if ( r!=null && linesOutput>0 && meta.getSplitEvery()>0 && ((linesOutput+1)%meta.getSplitEvery())==0)
+		if ( r!=null && getLinesOutput()>0 && meta.getSplitEvery()>0 && ((getLinesOutput()+1)%meta.getSplitEvery())==0)
 		{
 			// Not finished: open another file...
 			if (r!=null)
@@ -114,9 +114,9 @@ public class ExcelOutput extends BaseStep implements StepInterface
 		
 		putRow(data.previousMeta, r);       // in case we want it to go further...
 		
-        if (checkFeedback(linesOutput)) 
+        if (checkFeedback(getLinesOutput())) 
         {
-        	if(log.isBasic()) logBasic("linenr "+linesOutput);
+        	if(log.isBasic()) logBasic("linenr "+getLinesOutput());
         }
 		
 		return result;
@@ -184,7 +184,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
 			return false;
 		}
 
-		linesOutput++;
+		incrementLinesOutput();
 		
 		return true;
 	}
@@ -368,7 +368,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
             data.positionX=0;
             data.positionY++;
         }
-		linesOutput++;
+        incrementLinesOutput();
 		return retval;
 	}
 

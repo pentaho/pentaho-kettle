@@ -72,7 +72,7 @@ public class Delete extends BaseStep implements StepInterface
 		if (log.isDebug()) logDebug(Messages.getString("Delete.Log.SetValuesForDelete",data.deleteParameterRowMeta.getString(deleteRow),rowMeta.getString(row))); //$NON-NLS-1$
 
 		data.db.insertRow(data.prepStatementDelete);
-		linesUpdated++;
+		incrementLinesUpdated();
 	}
 	
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
@@ -135,9 +135,9 @@ public class Delete extends BaseStep implements StepInterface
 			deleteValues(getInputRowMeta(), r); // add new values to the row in rowset[0].
 			putRow(data.outputRowMeta, r);      // output the same rows of data, but with a copy of the metadata
 			
-            if (checkFeedback(linesRead)) 
+            if (checkFeedback(getLinesRead())) 
             {
-            	if(log.isBasic()) logBasic(Messages.getString("Delete.Log.LineNumber")+linesRead); //$NON-NLS-1$
+            	if(log.isBasic()) logBasic(Messages.getString("Delete.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
             }
 		}
 		catch(KettleException e)

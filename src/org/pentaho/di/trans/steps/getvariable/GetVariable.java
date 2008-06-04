@@ -57,7 +57,7 @@ public class GetVariable extends BaseStep implements StepInterface
 		else
 		{
 			rowData=RowDataUtil.allocateRowData(0);
-			linesRead++;
+			incrementLinesRead();
 		}
 		
 		// initialize 

@@ -93,9 +93,9 @@ public class SwitchCase extends BaseStep implements StepInterface
         	putRowTo(data.outputRowMeta, r, rowSet);
         }
         
-        if (checkFeedback(linesRead)) 
+        if (checkFeedback(getLinesRead())) 
         {
-        	if (log.isBasic()) logBasic(Messages.getString("SwitchCase.Log.LineNumber")+linesRead); //$NON-NLS-1$
+        	if (log.isBasic()) logBasic(Messages.getString("SwitchCase.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
         }
 			
 		return true;

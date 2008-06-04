@@ -512,7 +512,7 @@ public class OraBulkLoader extends BaseStep implements StepInterface
 				output.writeLine(getInputRowMeta(), r);
 			}
 			putRow(getInputRowMeta(), r);
-			linesOutput++;
+			incrementLinesOutput();
 		
 		}
 		catch(KettleException e)

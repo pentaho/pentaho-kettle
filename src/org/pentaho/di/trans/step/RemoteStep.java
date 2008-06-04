@@ -284,13 +284,14 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 					// Send that row to the remote step
 					//
 					while (rowData!=null && !baseStep.isStopped()) {
-						baseStep.linesRead--; // It's too confusing to count these twice
-						baseStep.linesWritten--; // It's too confusing to count these twice
+						// It's too confusing to count these twice, so decrement
+						baseStep.decrementLinesRead();
+						baseStep.decrementLinesWritten(); 
 						
 						// Write the row to the remote step via the output stream....
 						//
 						rowSet.getRowMeta().writeData(outputStream, rowData);
-						baseStep.linesOutput++;
+						baseStep.incrementLinesOutput();
 
 						if (baseStep.log.isDebug()) baseStep.logDebug("Sent row to port "+port+" : "+rowSet.getRowMeta().getString(rowData));
 						rowData = baseStep.getRowFrom(rowSet);
@@ -455,13 +456,13 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 					// Now get the data itself, row by row...
 					//
 					while (rowData!=null && !baseStep.isStopped()) {
-						baseStep.linesInput++;
-						// baseStep.linesRead--;
+						baseStep.incrementLinesInput();
+						baseStep.decrementLinesRead();
 
 						if (baseStep.log.isDebug()) baseStep.logDebug("Received row from remote step: "+rowMeta.getString(rowData));
 
 						baseStep.putRowTo(rowMeta, rowData, rowSet);
-						baseStep.linesWritten--;
+						baseStep.decrementLinesWritten();
 						rowData = getRowOfData(rowMeta);
 					}
 				}

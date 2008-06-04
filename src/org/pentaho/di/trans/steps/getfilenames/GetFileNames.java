@@ -254,9 +254,9 @@ public class GetFileNames extends BaseStep implements StepInterface
 
         data.filenr++;
 
-        if ((linesInput > 0) && (linesInput % Const.ROWS_UPDATE) == 0) 	
+        if (checkFeedback(getLinesInput())) 	
         {
-        	if(log.isBasic()) logBasic(Messages.getString("GetFileNames.Log.NrLine",""+linesInput));
+        	if(log.isBasic()) logBasic(Messages.getString("GetFileNames.Log.NrLine",""+getLinesInput()));
         }
 
         return true;

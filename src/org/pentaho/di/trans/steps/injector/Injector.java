@@ -11,7 +11,6 @@
  
 package org.pentaho.di.trans.steps.injector;
 
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -54,7 +53,7 @@ public class Injector extends BaseStep implements StepInterface
 		
 		putRow(getInputRowMeta(), row);  // copy row to possible alternate rowset(s).
 
-		if ((linesRead>0) && (linesRead%Const.ROWS_UPDATE)==0) logBasic(Messages.getString("Injector.Log.LineNumber")+linesRead); //$NON-NLS-1$
+		if (checkFeedback(getLinesRead())) logBasic(Messages.getString("Injector.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
 			
 		return true;
 	}

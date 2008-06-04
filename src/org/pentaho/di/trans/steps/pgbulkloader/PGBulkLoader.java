@@ -368,7 +368,7 @@ public class PGBulkLoader extends BaseStep implements StepInterface
 			writeRowToPostgres(getInputRowMeta(), r);
 			
 			putRow(getInputRowMeta(), r);
-			linesOutput++;
+			incrementLinesOutput();
 			
 			return true;
 		}

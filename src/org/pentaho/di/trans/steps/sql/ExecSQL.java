@@ -180,9 +180,9 @@ public class ExecSQL extends BaseStep implements StepInterface
 		
 		putRow(data.outputRowMeta,row); // send it out!
 
-		if (checkFeedback(linesWritten))
+		if (checkFeedback(getLinesWritten()))
 		{
-			if(log.isBasic()) logBasic(Messages.getString("ExecSQL.Log.LineNumber") + linesWritten); //$NON-NLS-1$
+			if(log.isBasic()) logBasic(Messages.getString("ExecSQL.Log.LineNumber") + getLinesWritten()); //$NON-NLS-1$
 		}
 		return true;
 	}

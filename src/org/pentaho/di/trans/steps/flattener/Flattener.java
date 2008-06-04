@@ -12,7 +12,6 @@
 */
  package org.pentaho.di.trans.steps.flattener;
 
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.trans.Trans;
@@ -103,7 +102,7 @@ public class Flattener extends BaseStep implements StepInterface
         // Keep track in case we want to send out the last couple of flattened values.
         data.previousRow = r;
 
-        if ((linesRead>0) && (linesRead%Const.ROWS_UPDATE)==0) logBasic(Messages.getString("Flattener.Log.LineNumber")+linesRead); //$NON-NLS-1$
+        if (checkFeedback(getLinesRead())) logBasic(Messages.getString("Flattener.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
 			
 		return true;
 	}

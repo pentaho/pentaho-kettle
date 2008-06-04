@@ -451,9 +451,9 @@ public class SortRows extends BaseStep implements StepInterface
 			return false;
 		}
 
-        if (checkFeedback(linesRead)) 
+        if (checkFeedback(getLinesRead())) 
         {
-        	if(log.isBasic()) logBasic("Linenr "+linesRead);
+        	if(log.isBasic()) logBasic("Linenr "+getLinesRead());
         }
 
 		return true;

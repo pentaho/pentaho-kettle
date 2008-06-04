@@ -13,7 +13,6 @@ package org.pentaho.di.trans.steps.filestoresult;
 
 import java.io.IOException;
 
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -98,8 +97,9 @@ public class FilesToResult extends BaseStep implements StepInterface
 		putRow(data.outputRowMeta, r); // copy row to possible alternate
 		// rowset(s).
 
-		if ((linesRead > 0) && (linesRead % Const.ROWS_UPDATE) == 0)
-			logBasic(Messages.getString("FilesToResult.Log.LineNumber") + linesRead); //$NON-NLS-1$
+		if (checkFeedback(getLinesRead())) {
+			logBasic(Messages.getString("FilesToResult.Log.LineNumber") + getLinesRead()); //$NON-NLS-1$
+		}
 
 		return true;
 	}

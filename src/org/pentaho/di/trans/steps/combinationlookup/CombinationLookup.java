@@ -251,7 +251,7 @@ public class CombinationLookup extends BaseStep implements StepInterface
 		{
 			data.db.setValues(data.lookupRowMeta, lookupRow, data.prepStatementLookup);
 			Object[] add = data.db.getLookup(data.prepStatementLookup);
-            linesInput++;
+            incrementLinesInput();
 
 			if (add==null) // The dimension entry was not found, we need to add it!
 			{
@@ -272,7 +272,7 @@ public class CombinationLookup extends BaseStep implements StepInterface
 				}
 
 				val_key = combiInsert( rowMeta, row, val_key, val_hash );
-				linesOutput++;
+				incrementLinesOutput();
 
                 if (log.isRowLevel()) log.logRowlevel(toString(), Messages.getString("CombinationLookup.Log.AddedDimensionEntry")+val_key); //$NON-NLS-1$
 
@@ -382,9 +382,9 @@ public class CombinationLookup extends BaseStep implements StepInterface
 			Object[] outputRow = lookupValues(getInputRowMeta(), r); // add new values to the row in rowset[0].
 			putRow(data.outputRowMeta, outputRow);       // copy row to output rowset(s);
 
-            if (checkFeedback(linesRead)) 
+            if (checkFeedback(getLinesRead())) 
             {
-            	if(log.isBasic()) logBasic(Messages.getString("CombinationLookup.Log.LineNumber")+linesRead); //$NON-NLS-1$
+            	if(log.isBasic()) logBasic(Messages.getString("CombinationLookup.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
             }
 		}
 		catch(KettleException e)

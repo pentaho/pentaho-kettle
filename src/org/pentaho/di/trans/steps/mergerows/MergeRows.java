@@ -198,9 +198,9 @@ public class MergeRows extends BaseStep implements StepInterface
         // send the row to the next steps...
         putRow(data.outputRowMeta, RowDataUtil.addValueData(outputRow, outputIndex, flagField));
 
-        if (checkFeedback(linesRead)) 
+        if (checkFeedback(getLinesRead())) 
         {
-        	if(log.isBasic()) logBasic(Messages.getString("MergeRows.LineNumber")+linesRead); //$NON-NLS-1$
+        	if(log.isBasic()) logBasic(Messages.getString("MergeRows.LineNumber")+getLinesRead()); //$NON-NLS-1$
         }
 
 		return true;

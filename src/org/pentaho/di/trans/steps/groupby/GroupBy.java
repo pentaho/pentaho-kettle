@@ -298,9 +298,9 @@ public class GroupBy extends BaseStep implements StepInterface
 
 		data.previous=data.inputRowMeta.cloneRow(r);
 
-		if ((linesRead>0) && (linesRead%Const.ROWS_UPDATE)==0) 
+		if (checkFeedback(getLinesRead())) 
 		{
-			if(log.isBasic()) logBasic(Messages.getString("GroupBy.LineNumber")+linesRead); //$NON-NLS-1$
+			if(log.isBasic()) logBasic(Messages.getString("GroupBy.LineNumber")+getLinesRead()); //$NON-NLS-1$
 		}
 			
 		return true;

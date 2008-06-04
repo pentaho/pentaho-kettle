@@ -92,7 +92,7 @@ public class SQLFileOutput extends BaseStep implements StepInterface
 		boolean sendToErrorRow=false;
 		String errorMessage = null;
 		
-		if ( r!=null && linesOutput>0 && meta.getSplitEvery()>0 && ((linesOutput+1)%meta.getSplitEvery())==0)   
+		if ( r!=null && getLinesOutput()>0 && meta.getSplitEvery()>0 && ((getLinesOutput()+1)%meta.getSplitEvery())==0)   
 		{
 			
 			// Done with this part or with everything.
@@ -119,7 +119,7 @@ public class SQLFileOutput extends BaseStep implements StepInterface
 
 		try
 		{
-	        if (linesOutput==0)
+	        if (getLinesOutput()==0)
 	        {
 		        // Add creation table once to the top
 		        if (meta.createTable())
@@ -167,11 +167,11 @@ public class SQLFileOutput extends BaseStep implements StepInterface
 			}
             
 	        putRow(data.outputRowMeta, r ); // in case we want it go further...
-            linesOutput++;
+	        incrementLinesOutput();
 
-            if (checkFeedback(linesRead)) 
+            if (checkFeedback(getLinesRead())) 
             {
-            	if(log.isBasic()) logBasic("linenr "+linesRead);
+            	if(log.isBasic()) logBasic("linenr "+getLinesRead());
             }
 		}
 		catch(KettleException e)

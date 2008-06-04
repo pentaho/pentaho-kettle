@@ -157,15 +157,15 @@ public class Calculator extends BaseStep implements StepInterface
             }
         }
 
-        if (log.isRowLevel()) log.logRowlevel(toString(), "Read row #"+linesRead+" : "+getInputRowMeta().getString(r));
+        if (log.isRowLevel()) log.logRowlevel(toString(), "Read row #"+getLinesRead()+" : "+getInputRowMeta().getString(r));
 
         Object[] row = calcFields(getInputRowMeta(), r);		
 		putRow(data.outputRowMeta, row);     // copy row to possible alternate rowset(s).
 
-        if (log.isRowLevel()) log.logRowlevel(toString(), "Wrote row #"+linesWritten+" : "+getInputRowMeta().getString(r));
-        if (checkFeedback(linesRead)) 
+        if (log.isRowLevel()) log.logRowlevel(toString(), "Wrote row #"+getLinesWritten()+" : "+getInputRowMeta().getString(r));
+        if (checkFeedback(getLinesRead())) 
         {
-        	if(log.isBasic()) logBasic("Linenr "+linesRead);
+        	if(log.isBasic()) logBasic("Linenr "+getLinesRead());
         }
 
 		return true;

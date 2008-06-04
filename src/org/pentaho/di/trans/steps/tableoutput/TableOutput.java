@@ -79,12 +79,12 @@ public class TableOutput extends BaseStep implements StepInterface
             if (outputRowData!=null)
             {
                 putRow(data.outputRowMeta, outputRowData); // in case we want it go further...
-                linesOutput++;
+                incrementLinesOutput();
             }
             
-            if (checkFeedback(linesRead)) 
+            if (checkFeedback(getLinesRead())) 
             {
-            	if(log.isBasic()) logBasic("linenr "+linesRead);
+            	if(log.isBasic()) logBasic("linenr "+getLinesRead());
             }
 		}
 		catch(KettleException e)
@@ -413,7 +413,7 @@ public class TableOutput extends BaseStep implements StepInterface
                     {
                         Object[] row = (Object[]) data.batchBuffer.get(i);
                         putRow(data.outputRowMeta, row);
-                        linesOutput++;
+                        incrementLinesOutput();
                     }
                     // Clear the buffer
                     data.batchBuffer.clear();
@@ -447,7 +447,7 @@ public class TableOutput extends BaseStep implements StepInterface
                 {
                     // send the error foward
                     putRow(data.outputRowMeta, row);
-                    linesOutput++;
+                    incrementLinesOutput();
                 }
                 else
                 {
@@ -566,7 +566,7 @@ public class TableOutput extends BaseStep implements StepInterface
             {
                 Object[] row = (Object[]) data.batchBuffer.get(i);
                 putRow(data.outputRowMeta, row);
-                linesOutput++;
+                incrementLinesOutput();
             }
             // Clear the buffer
             data.batchBuffer.clear();            

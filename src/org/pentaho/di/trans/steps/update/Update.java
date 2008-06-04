@@ -83,7 +83,7 @@ public class Update extends BaseStep implements StepInterface
 		if (log.isDebug()) logDebug(Messages.getString("Update.Log.ValuesSetForLookup", data.lookupParameterRowMeta.getString(lookupRow), rowMeta.getString(row))); //$NON-NLS-1$ //$NON-NLS-2$
 		Object[] add = data.db.getLookup(data.prepStatementLookup);  // Got back the complete row!
 		RowMetaInterface returnRowMeta = data.db.getReturnRowMeta();
-		linesInput++;
+		incrementLinesInput();
 		
 		if (add==null) 
 		{
@@ -158,11 +158,11 @@ public class Update extends BaseStep implements StepInterface
 				if (log.isRowLevel()) logRowlevel(Messages.getString("Update.Log.UpdateRow")+data.lookupParameterRowMeta.getString(lookupRow)); //$NON-NLS-1$
 				data.db.setValues(data.updateParameterRowMeta, updateRow, data.prepStatementUpdate);
 				data.db.insertRow(data.prepStatementUpdate);
-				linesUpdated++;
+				incrementLinesUpdated();
 			}
 			else
 			{
-				linesSkipped++;
+				incrementLinesSkipped();
 			}
             
             if (!Const.isEmpty(meta.getIgnoreFlagField())) // add flag field!
@@ -247,9 +247,9 @@ public class Update extends BaseStep implements StepInterface
             
 			Object[] outputRow = lookupValues(getInputRowMeta(), r); // add new values to the row in rowset[0].
 	        if (outputRow!=null) putRow(data.outputRowMeta, outputRow); // copy non-ignored rows to output rowset(s);
-	        if (checkFeedback(linesRead)) 
+	        if (checkFeedback(getLinesRead())) 
 	        {
-	        	if(log.isBasic()) logBasic(Messages.getString("Update.Log.LineNumber")+linesRead); //$NON-NLS-1$
+	        	if(log.isBasic()) logBasic(Messages.getString("Update.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
 	        }
         }
         catch(KettleException e)

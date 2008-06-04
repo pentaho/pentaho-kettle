@@ -415,7 +415,7 @@ public class StreamLookup extends BaseStep implements StepInterface
 		Object[] r=getRow();      // Get row from input rowset & set row busy!
 		if (r==null)         // no more input to be expected...
 		{
-			if (log.isDetailed()) logDetailed(Messages.getString("StreamLookup.Log.StoppedProcessingWithEmpty",linesRead+"")); //$NON-NLS-1$ //$NON-NLS-2$
+			if (log.isDetailed()) logDetailed(Messages.getString("StreamLookup.Log.StoppedProcessingWithEmpty",getLinesRead()+"")); //$NON-NLS-1$ //$NON-NLS-2$
 			setOutputDone();
 			return false;
 		}
@@ -466,9 +466,9 @@ public class StreamLookup extends BaseStep implements StepInterface
 		
 		putRow(data.outputRowMeta, outputRow);       // copy row to output rowset(s);
 			
-        if (checkFeedback(linesRead)) 
+        if (checkFeedback(getLinesRead())) 
         {
-        	if(log.isBasic()) logBasic(Messages.getString("StreamLookup.Log.LineNumber")+linesRead); //$NON-NLS-1$
+        	if(log.isBasic()) logBasic(Messages.getString("StreamLookup.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
         }
 			
 		return true;

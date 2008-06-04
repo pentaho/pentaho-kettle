@@ -92,12 +92,12 @@ public class Mapping extends BaseStep implements StepInterface
 	        //
 	    	Result result = data.mappingTrans.getResult();
 	    	setErrors(result.getNrErrors());
-	    	linesRead = result.getNrLinesRead();
-	    	linesWritten = result.getNrLinesWritten();
-	    	linesInput = result.getNrLinesInput();
-	    	linesOutput = result.getNrLinesOutput();
-	    	linesUpdated = result.getNrLinesUpdated();
-	    	linesRejected = result.getNrLinesRejected();
+	    	setLinesRead( result.getNrLinesRead() );
+	    	setLinesWritten( result.getNrLinesWritten() );
+	    	setLinesInput( result.getNrLinesInput() );
+	    	setLinesOutput( result.getNrLinesOutput() );
+	    	setLinesUpdated( result.getNrLinesUpdated() );
+	    	setLinesRejected( result.getNrLinesRejected() );
 	    	
 	    	return false;
 		}

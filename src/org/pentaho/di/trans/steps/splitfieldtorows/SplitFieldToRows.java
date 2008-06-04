@@ -98,10 +98,10 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 			return false;
 		}
 					
-        if (checkFeedback(linesRead)) {
+        if (checkFeedback(getLinesRead())) {
 			if(log.isBasic()) 
 			{
-				if(log.isBasic()) logBasic(Messages.getString("SplitFieldToRows.Log.LineNumber")+linesRead); //$NON-NLS-1$
+				if(log.isBasic()) logBasic(Messages.getString("SplitFieldToRows.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
 			}
 		}
 			

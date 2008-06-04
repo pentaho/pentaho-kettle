@@ -172,9 +172,9 @@ public class HTTP extends BaseStep implements StepInterface
 			Object[] outputRowData = execHttp(getInputRowMeta(), r); // add new values to the row
 			putRow(data.outputRowMeta, outputRowData);  // copy row to output rowset(s);
 				
-            if (checkFeedback(linesRead)) 
+            if (checkFeedback(getLinesRead())) 
             {
-            	if(log.isBasic()) logBasic(Messages.getString("HTTP.LineNumber")+linesRead); //$NON-NLS-1$
+            	if(log.isBasic()) logBasic(Messages.getString("HTTP.LineNumber")+getLinesRead()); //$NON-NLS-1$
             }
 		}
 		catch(KettleException e)

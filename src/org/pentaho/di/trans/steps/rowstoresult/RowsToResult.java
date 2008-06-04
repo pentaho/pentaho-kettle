@@ -60,8 +60,8 @@ public class RowsToResult extends BaseStep implements StepInterface
 		putRow(data.outputRowMeta, r); // copy row to possible alternate
 										// rowset(s).
 
-		if (checkFeedback(linesRead))
-			logBasic(Messages.getString("RowsToResult.Log.LineNumber") + linesRead); //$NON-NLS-1$
+		if (checkFeedback(getLinesRead()))
+			logBasic(Messages.getString("RowsToResult.Log.LineNumber") + getLinesRead()); //$NON-NLS-1$
 
 		return true;
 	}

@@ -78,7 +78,7 @@ public class XMLInput extends BaseStep implements StepInterface
 		if (log.isRowLevel())
 			logRowlevel(Messages.getString("XMLInput.Log.ReadRow", outputRowData.toString()));
 
-		linesInput++;
+		incrementLinesInput();
 
 		putRow(data.outputRowMeta, outputRowData);
 

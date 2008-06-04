@@ -46,13 +46,13 @@ public class RowsFromResult extends BaseStep implements StepInterface
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{
 		Result previousResult = getTransMeta().getPreviousResult();
-		if (previousResult == null || linesRead >= previousResult.getRows().size())
+		if (previousResult == null || getLinesRead() >= previousResult.getRows().size())
 		{
 			setOutputDone();
 			return false;
 		}
-        RowMetaAndData row = previousResult.getRows().get((int) linesRead);
-        linesRead++;
+        RowMetaAndData row = previousResult.getRows().get((int) getLinesRead());
+        incrementLinesRead();
         
 		data = (RowsFromResultData) sdi;
 		
@@ -64,9 +64,9 @@ public class RowsFromResult extends BaseStep implements StepInterface
 		//
 		putRow(data.outputRowMeta, row.getData());
 
-		if (checkFeedback(linesRead)) 
+		if (checkFeedback(getLinesRead())) 
 		{
-			if(log.isBasic()) logBasic(Messages.getString("RowsFromResult.Log.LineNumber") + linesRead); //$NON-NLS-1$
+			if(log.isBasic()) logBasic(Messages.getString("RowsFromResult.Log.LineNumber") + getLinesRead()); //$NON-NLS-1$
 		}
 
 		return true;

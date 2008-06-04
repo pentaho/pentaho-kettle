@@ -200,7 +200,7 @@ public class PropertyInput extends BaseStep implements StepInterface
 				data.previousRow = irow==null?r:(Object[])irow.cloneRow(r); // copy it to make
 				// surely the next step doesn't change it in between...
 				
-				 linesInput++;
+				 incrementLinesInput();
 				 data.rownr++;
 			
 		 }

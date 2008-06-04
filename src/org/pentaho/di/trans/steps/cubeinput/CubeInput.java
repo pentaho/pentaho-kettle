@@ -58,9 +58,9 @@ public class CubeInput extends BaseStep implements StepInterface
 		{
             Object[] r = data.meta.readData(data.dis);
             putRow(data.meta, r);  // fill the rowset(s). (sleeps if full)
-            linesInput++;
+            incrementLinesInput();
 			
-			if (meta.getRowLimit()>0 && linesInput>=meta.getRowLimit()) // finished!
+			if (meta.getRowLimit()>0 && getLinesInput()>=meta.getRowLimit()) // finished!
 			{
 				setOutputDone();
 				return false;
@@ -76,9 +76,9 @@ public class CubeInput extends BaseStep implements StepInterface
 			throw new KettleException(e); // shouldn't happen on files
 		}
 
-        if (checkFeedback(linesInput)) 
+        if (checkFeedback(getLinesInput())) 
         {
-        	if(log.isBasic()) logBasic(Messages.getString("CubeInput.Log.LineNumber")+linesInput); //$NON-NLS-1$
+        	if(log.isBasic()) logBasic(Messages.getString("CubeInput.Log.LineNumber")+getLinesInput()); //$NON-NLS-1$
         }
 
 		return true;

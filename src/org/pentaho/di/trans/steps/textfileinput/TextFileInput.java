@@ -892,7 +892,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 		   the buffer
 		*/
 		TextFileLine textLine = (TextFileLine) data.lineBuffer.get(0);
-		linesInput++;
+		incrementLinesInput();
 		lineNumberInFile++;
 
 		data.lineBuffer.remove(0);
@@ -937,7 +937,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 					// Read a normal line on a page of data.
 					data.pageLinesRead++;
 					data.lineInFile ++;
-					long useNumber = meta.isRowNumberByFile() ? data.lineInFile : linesWritten + 1;
+					long useNumber = meta.isRowNumberByFile() ? data.lineInFile : getLinesWritten() + 1;
 					r = convertLineToRow(textLine, meta, data.outputRowMeta, data.convertRowMeta, data.filename, useNumber, data.dataErrorLineHandler);
 					if (r != null) putrow = true;
 					
@@ -1021,7 +1021,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 					if (data.filePlayList.isProcessingNeeded(textLine.file, textLine.lineNumber, AbstractFileErrorHandler.NO_PARTS))
 					{
 						data.lineInFile ++;
-						long useNumber = meta.isRowNumberByFile() ? data.lineInFile : linesWritten + 1;
+						long useNumber = meta.isRowNumberByFile() ? data.lineInFile : getLinesWritten() + 1;
 						r = convertLineToRow(textLine, meta, data.outputRowMeta, data.convertRowMeta, data.filename, useNumber, data.dataErrorLineHandler);
 						if (r != null)
 						{
@@ -1068,7 +1068,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 			if (log.isRowLevel()) logRowlevel("Putting row: " + data.outputRowMeta.getString(r));			
 			putRow(data.outputRowMeta, r);
 
-			if ( linesInput >= meta.getRowLimit() && meta.getRowLimit() >0 )
+			if ( getLinesInput() >= meta.getRowLimit() && meta.getRowLimit() >0 )
 			{
 			    closeLastFile();
 			    setOutputDone(); // signal end to receiver(s)
@@ -1076,9 +1076,9 @@ public class TextFileInput extends BaseStep implements StepInterface
 			}
 		}
 
-        if (checkFeedback(linesInput)) 
+        if (checkFeedback(getLinesInput())) 
         {
-        	if(log.isBasic()) logBasic("linenr " + linesInput);
+        	if(log.isBasic()) logBasic("linenr " + getLinesInput());
         }
 
 		return retval;

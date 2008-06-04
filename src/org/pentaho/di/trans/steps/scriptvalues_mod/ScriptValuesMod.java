@@ -645,8 +645,8 @@ public class ScriptValuesMod extends BaseStep implements StepInterface, ScriptVa
       }
     }
 
-    if (checkFeedback(linesRead))
-      logBasic(Messages.getString("ScriptValuesMod.Log.LineNumber") + linesRead); //$NON-NLS-1$
+    if (checkFeedback(getLinesRead()))
+      logBasic(Messages.getString("ScriptValuesMod.Log.LineNumber") + getLinesRead()); //$NON-NLS-1$
     return bRC;
   }
 

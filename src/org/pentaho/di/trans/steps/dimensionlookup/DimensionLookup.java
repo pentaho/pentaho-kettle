@@ -183,9 +183,9 @@ public class DimensionLookup extends BaseStep implements StepInterface
             Object[] outputRow = lookupValues(getInputRowMeta(), r); // add new values to the row in rowset[0].
             putRow(data.outputRowMeta, outputRow);       // copy row to output rowset(s);
             
-            if (checkFeedback(linesRead)) 
+            if (checkFeedback(getLinesRead())) 
             {
-            	if(log.isBasic()) logBasic(Messages.getString("DimensionLookup.Log.LineNumber")+linesRead); //$NON-NLS-1$
+            	if(log.isBasic()) logBasic(Messages.getString("DimensionLookup.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
             }
         }
         catch(KettleException e)
@@ -257,7 +257,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
             returnRow=data.db.getLookup(data.prepStatementLookup);
             data.returnRowMeta = data.db.getReturnRowMeta();
             
-            linesInput++;
+            incrementLinesInput();
             
             if (returnRow!=null && meta.getCacheSize()>=0)
             {
@@ -326,7 +326,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
 				
 				technicalKey = dimInsert(getInputRowMeta(), row, technicalKey, true, valueVersion, valueDateFrom, valueDateTo); 
 								
-				linesOutput++;
+				incrementLinesOutput();
 				returnRow = new Object[data.returnRowMeta.size()];
                 int returnIndex=0;
                 
@@ -416,7 +416,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
 						 * WHERE  returnkey = dimkey
 						 */
 						dimUpdate(rowMeta, row, technicalKey);
-						linesUpdated++;
+						incrementLinesUpdated();
                         
                         // We need to capture this change in the cache as well...
                         if (meta.getCacheSize()>=0)
@@ -429,7 +429,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
 					{
 						if (log.isRowLevel()) logRowlevel(Messages.getString("DimensionLookup.Log.SkipLine")); //$NON-NLS-1$
 						// Don't do anything, everything is file in de dimension.
-						linesSkipped++;
+						incrementLinesSkipped();
 					}
 				}
 				else
@@ -460,7 +460,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
 
 					// update our technicalKey with the return of the insert
 					technicalKey = dimInsert( rowMeta, row, technicalKey, false, valueVersion, valueDateFrom, valueDateTo ); 
-					linesOutput++;
+					incrementLinesOutput();
                     
                     // We need to capture this change in the cache as well...
                     if (meta.getCacheSize()>=0)
@@ -481,7 +481,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
 					 * --> update ALL versions in the dimension table.
 					 */
 					dimPunchThrough( rowMeta, row );
-					linesUpdated++;
+					incrementLinesUpdated();
 				}
 				
 				returnRow = new Object[data.returnRowMeta.size()];

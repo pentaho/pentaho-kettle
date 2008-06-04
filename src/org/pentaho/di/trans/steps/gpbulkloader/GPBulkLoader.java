@@ -516,7 +516,7 @@ public class GPBulkLoader extends BaseStep implements StepInterface
 				output.writeLine(getInputRowMeta(), r);
 			}
 			putRow(getInputRowMeta(), r);
-			linesOutput++;
+			incrementLinesOutput();
 		
 		}
 		catch(KettleException e)

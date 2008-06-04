@@ -1383,12 +1383,12 @@ public class Trans implements VariableSpace
 			result.setNrErrors(result.getNrErrors()+sid.step.getErrors());
 			result.getResultFiles().putAll(rt.getResultFiles());
 
-			if (transMeta.getReadStep()    !=null && rt.getStepname().equals(transMeta.getReadStep().getName()))     result.setNrLinesRead(result.getNrLinesRead()+ rt.linesRead);
-			if (transMeta.getInputStep()   !=null && rt.getStepname().equals(transMeta.getInputStep().getName()))    result.setNrLinesInput(result.getNrLinesInput() + rt.linesInput);
-			if (transMeta.getWriteStep()   !=null && rt.getStepname().equals(transMeta.getWriteStep().getName()))    result.setNrLinesWritten(result.getNrLinesWritten()+rt.linesWritten);
-			if (transMeta.getOutputStep()  !=null && rt.getStepname().equals(transMeta.getOutputStep().getName()))   result.setNrLinesOutput(result.getNrLinesOutput()+rt.linesOutput);
-			if (transMeta.getUpdateStep()  !=null && rt.getStepname().equals(transMeta.getUpdateStep().getName()))   result.setNrLinesUpdated(result.getNrLinesUpdated()+rt.linesUpdated);
-            if (transMeta.getRejectedStep()!=null && rt.getStepname().equals(transMeta.getRejectedStep().getName())) result.setNrLinesRejected(result.getNrLinesRejected()+rt.linesRejected);
+			if (transMeta.getReadStep()    !=null && rt.getStepname().equals(transMeta.getReadStep().getName()))     result.setNrLinesRead(result.getNrLinesRead()+ rt.getLinesRead());
+			if (transMeta.getInputStep()   !=null && rt.getStepname().equals(transMeta.getInputStep().getName()))    result.setNrLinesInput(result.getNrLinesInput() + rt.getLinesInput());
+			if (transMeta.getWriteStep()   !=null && rt.getStepname().equals(transMeta.getWriteStep().getName()))    result.setNrLinesWritten(result.getNrLinesWritten()+rt.getLinesWritten());
+			if (transMeta.getOutputStep()  !=null && rt.getStepname().equals(transMeta.getOutputStep().getName()))   result.setNrLinesOutput(result.getNrLinesOutput()+rt.getLinesOutput());
+			if (transMeta.getUpdateStep()  !=null && rt.getStepname().equals(transMeta.getUpdateStep().getName()))   result.setNrLinesUpdated(result.getNrLinesUpdated()+rt.getLinesUpdated());
+            if (transMeta.getRejectedStep()!=null && rt.getStepname().equals(transMeta.getRejectedStep().getName())) result.setNrLinesRejected(result.getNrLinesRejected()+rt.getLinesRejected());
 		}
 
 		result.setRows( transMeta.getResultRows() );

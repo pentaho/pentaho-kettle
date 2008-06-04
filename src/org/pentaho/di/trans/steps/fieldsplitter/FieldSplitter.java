@@ -246,9 +246,9 @@ public class FieldSplitter extends BaseStep implements StepInterface
 		Object[] outputRowData = splitField(r);
 		putRow(data.outputMeta, outputRowData);
 
-        if (checkFeedback(linesRead)) 
+        if (checkFeedback(getLinesRead())) 
         {
-        	if(log.isBasic()) logBasic(Messages.getString("FieldSplitter.Log.LineNumber")+linesRead); //$NON-NLS-1$
+        	if(log.isBasic()) logBasic(Messages.getString("FieldSplitter.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
         }
 			
 		return true;

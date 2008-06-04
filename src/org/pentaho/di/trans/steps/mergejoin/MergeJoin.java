@@ -406,7 +406,7 @@ public class MergeJoin extends BaseStep implements StepInterface
     	    data.two = getRowFrom(data.twoRowSet);
     	    break;
         }
-        if (checkFeedback(linesRead)) logBasic(Messages.getString("MergeJoin.LineNumber")+linesRead); //$NON-NLS-1$
+        if (checkFeedback(getLinesRead())) logBasic(Messages.getString("MergeJoin.LineNumber")+getLinesRead()); //$NON-NLS-1$
 		return true;
 	}
 		

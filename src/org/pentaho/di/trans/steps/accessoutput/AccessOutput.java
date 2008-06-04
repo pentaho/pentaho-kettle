@@ -81,9 +81,9 @@ public class AccessOutput extends BaseStep implements StepInterface
 			writeToTable(r);
 			putRow(data.outputRowMeta, r);       // in case we want it go further...
 
-            if (checkFeedback(linesOutput)) 
+            if (checkFeedback(getLinesOutput())) 
             {
-            	if(log.isBasic()) logBasic("linenr "+linesOutput);
+            	if(log.isBasic()) logBasic("linenr "+getLinesOutput());
             }
 		}
 		catch(KettleException e)

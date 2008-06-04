@@ -46,25 +46,25 @@ public class FilesFromResult extends BaseStep implements StepInterface
 
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{
-		if (data.resultFilesList == null || linesRead >= data.resultFilesList.size())
+		if (data.resultFilesList == null || getLinesRead() >= data.resultFilesList.size())
 		{
 			setOutputDone();
 			return false;
 		}
 
-		ResultFile resultFile = (ResultFile) data.resultFilesList.get((int) linesRead);
+		ResultFile resultFile = (ResultFile) data.resultFilesList.get((int) getLinesRead());
 		RowMetaAndData r = resultFile.getRow();
 		
 		data.outputRowMeta = r.getRowMeta();
 		
 		smi.getFields(data.outputRowMeta, getStepname(), null, null, this);
-		linesRead++;
+		incrementLinesRead();
 
 		putRow(data.outputRowMeta, r.getData()); // copy row to possible alternate
 										// rowset(s).
 
-		if (checkFeedback(linesRead))
-			logBasic(Messages.getString("FilesFromResult.Log.LineNumber") + linesRead); //$NON-NLS-1$
+		if (checkFeedback(getLinesRead()))
+			logBasic(Messages.getString("FilesFromResult.Log.LineNumber") + getLinesRead()); //$NON-NLS-1$
 
 		return true;
 	}

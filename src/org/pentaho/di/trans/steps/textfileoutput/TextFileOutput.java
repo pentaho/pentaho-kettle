@@ -118,7 +118,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 			}
 		}
 
-		if ((r == null && data.outputRowMeta != null && meta.isFooterEnabled()) || (r != null && linesOutput > 0 && meta.getSplitEvery() > 0 && ((linesOutput + 1) % meta.getSplitEvery()) == 0)) {
+		if ((r == null && data.outputRowMeta != null && meta.isFooterEnabled()) || (r != null && getLinesOutput() > 0 && meta.getSplitEvery() > 0 && ((getLinesOutput() + 1) % meta.getSplitEvery()) == 0)) {
 			if (data.outputRowMeta != null) {
 				if (meta.isFooterEnabled()) {
 					writeHeader();
@@ -139,7 +139,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 
 				if (meta.isHeaderEnabled() && data.outputRowMeta != null)
 					if (writeHeader())
-						linesOutput++;
+						incrementLinesOutput();
 			}
 		}
 
@@ -165,8 +165,8 @@ public class TextFileOutput extends BaseStep implements StepInterface
 		writeRowToFile(data.outputRowMeta, r);
 		putRow(data.outputRowMeta, r); // in case we want it to go further...
 
-		if (checkFeedback(linesOutput))
-			logBasic("linenr " + linesOutput);
+		if (checkFeedback(getLinesOutput()))
+			logBasic("linenr " + getLinesOutput());
 
 		return result;
 	}
@@ -191,7 +191,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 			//
 			if (!meta.isFileAppended() && meta.isHeaderEnabled()) {
 				if (writeHeader()) {
-					linesOutput++;
+					incrementLinesOutput();
 				}
 			}
 		}
@@ -239,7 +239,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
                 data.writer.write(data.binaryNewline);
 			}
 
-            linesOutput++;
+			incrementLinesOutput();
             
             // flush every 4k lines
             // if (linesOutput>0 && (linesOutput&0xFFF)==0) data.writer.flush();
@@ -455,7 +455,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 				if (sLine.trim().length()>0)
 				{
 					data.writer.write(getBinaryString(sLine));
-					linesOutput++;
+					incrementLinesOutput();
 				}
 			}
 		}
@@ -533,7 +533,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
             logError(Const.getStackTracker(e));
 			retval=true;
 		}
-		linesOutput++;
+		incrementLinesOutput();
 		return retval;
 	}
 

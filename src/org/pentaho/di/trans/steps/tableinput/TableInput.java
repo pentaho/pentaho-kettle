@@ -134,7 +134,7 @@ public class TableInput extends BaseStep implements StepInterface
             if (data.thisrow!=null) // We can expect more rows
             {
                 data.nextrow=data.db.getRow(data.rs, meta.isLazyConversionActive()); 
-                if (data.nextrow!=null) linesInput++;
+                if (data.nextrow!=null) incrementLinesInput();
             }
         }
 
@@ -164,9 +164,9 @@ public class TableInput extends BaseStep implements StepInterface
                         putRow(data.rowMeta, data.thisrow); // fill the rowset(s). (wait for empty)
                         data.thisrow = data.nextrow;
 
-                        if (checkFeedback(linesInput)) 
+                        if (checkFeedback(getLinesInput())) 
                         {
-                        	if(log.isBasic()) logBasic("linenr " + linesInput);
+                        	if(log.isBasic()) logBasic("linenr " + getLinesInput());
                         }
                     }
                 }
@@ -187,9 +187,9 @@ public class TableInput extends BaseStep implements StepInterface
             putRow(data.rowMeta, data.thisrow); // fill the rowset(s). (wait for empty)
             data.thisrow = data.nextrow;
 
-            if (checkFeedback(linesInput)) 
+            if (checkFeedback(getLinesInput())) 
             {
-            	if(log.isBasic()) logBasic("linenr " + linesInput);
+            	if(log.isBasic()) logBasic("linenr " + getLinesInput());
             }
         }
 		
@@ -227,9 +227,9 @@ public class TableInput extends BaseStep implements StepInterface
             data.thisrow = data.db.getRow(data.rs);
             if (data.thisrow != null)
             {
-                linesInput++;
+                incrementLinesInput();
                 data.nextrow = data.db.getRow(data.rs);
-                if (data.nextrow != null) linesInput++;
+                if (data.nextrow != null) incrementLinesInput();
             }
         }
         return success;

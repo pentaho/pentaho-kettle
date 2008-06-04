@@ -65,7 +65,7 @@ public class GetFilesRowsCount extends BaseStep implements StepInterface
 			
 			if (meta.includeCountFiles()) r[data.totalpreviousfields+1]= data.filenr;
 			
-			linesInput++;
+			incrementLinesInput();
 			
 		}
 		 catch (Exception e)

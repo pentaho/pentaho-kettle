@@ -76,7 +76,7 @@ public class InsertUpdate extends BaseStep implements StepInterface
 		
 		if (log.isDebug()) logDebug(Messages.getString("InsertUpdate.Log.ValuesSetForLookup")+data.lookupParameterRowMeta.getString(lookupRow)); //$NON-NLS-1$
         Object[] add = data.db.getLookup(data.prepStatementLookup);  // Got back the complete row!
-        linesInput++;
+        incrementLinesInput();
 		
 		if (add==null) 
 		{
@@ -102,7 +102,7 @@ public class InsertUpdate extends BaseStep implements StepInterface
 			// Insert the row
             data.db.insertRow();
             
-			linesOutput++;
+            incrementLinesOutput();
 		}
 		else
 		{
@@ -154,17 +154,17 @@ public class InsertUpdate extends BaseStep implements StepInterface
                     if (log.isRowLevel()) logRowlevel(Messages.getString("InsertUpdate.Log.UpdateRow")+data.lookupParameterRowMeta.getString(lookupRow)); //$NON-NLS-1$
                     data.db.setValues(data.updateParameterRowMeta, updateRow, data.prepStatementUpdate);
                     data.db.insertRow(data.prepStatementUpdate);
-                    linesUpdated++;
+                    incrementLinesUpdated();
                 }
                 else
                 {
-                    linesSkipped++;
+                    incrementLinesSkipped();
                 }
 			}
 			else
 			{
 				if (log.isRowLevel()) logRowlevel(Messages.getString("InsertUpdate.Log.UpdateBypassed")+rowMeta.getString(row)); //$NON-NLS-1$
-				linesSkipped++;
+				incrementLinesSkipped();
 			}
 		}
 	}
@@ -274,9 +274,9 @@ public class InsertUpdate extends BaseStep implements StepInterface
 			lookupValues(getInputRowMeta(), r); // add new values to the row in rowset[0].
             putRow(data.outputRowMeta, r);      // Nothing changed to the input, return the same row, pass a "cloned" metadata row.
 			
-			if (checkFeedback(linesRead)) 
+			if (checkFeedback(getLinesRead())) 
 			{
-				if(log.isBasic()) logBasic(Messages.getString("InsertUpdate.Log.LineNumber")+linesRead); //$NON-NLS-1$
+				if(log.isBasic()) logBasic(Messages.getString("InsertUpdate.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
 			}
 		}
 		catch(KettleException e)

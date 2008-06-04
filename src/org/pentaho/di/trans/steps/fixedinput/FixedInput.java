@@ -83,7 +83,7 @@ public class FixedInput extends BaseStep implements StepInterface
 		
 		putRow(data.outputRowMeta, outputRowData);     // copy row to possible alternate rowset(s).
 
-        if (checkFeedback(linesInput)) logBasic(Messages.getString("FixedInput.Log.LineNumber", Long.toString(linesInput))); //$NON-NLS-1$
+        if (checkFeedback(getLinesInput())) logBasic(Messages.getString("FixedInput.Log.LineNumber", Long.toString(getLinesInput()))); //$NON-NLS-1$
         
 		return true;
 	}
@@ -102,7 +102,7 @@ public class FixedInput extends BaseStep implements StepInterface
 	        // See if we need to call it a day...
 	        //
 	        if (meta.isRunningInParallel()) {
-	        	if (linesInput>=data.rowsToRead) {
+	        	if (getLinesInput()>=data.rowsToRead) {
 	        		return null; // We're done.  The rest is for the other steps in the cluster
 	        	}
 	        }
@@ -207,7 +207,7 @@ public class FixedInput extends BaseStep implements StepInterface
 				data.endBuffer = data.startBuffer;
 			}
 		
-			linesInput++;
+			incrementLinesInput();
 			return outputRowData;
 		}
 		catch (Exception e)

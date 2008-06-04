@@ -50,9 +50,9 @@ public class DummyTrans extends BaseStep implements StepInterface
 		
 		putRow(getInputRowMeta(), r);     // copy row to possible alternate rowset(s).
 
-        if (checkFeedback(linesRead)) 
+        if (checkFeedback(getLinesRead())) 
         {
-        	if(log.isBasic()) logBasic(Messages.getString("DummyTrans.Log.LineNumber")+linesRead); //$NON-NLS-1$
+        	if(log.isBasic()) logBasic(Messages.getString("DummyTrans.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
         }
 			
 		return true;

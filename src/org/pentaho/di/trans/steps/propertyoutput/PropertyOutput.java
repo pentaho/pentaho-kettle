@@ -138,11 +138,11 @@ public class PropertyOutput extends BaseStep implements StepInterface
                 // Update property
                 data.pro.setProperty(propkey, propvalue);
             	putRow(data.outputRowMeta, r);       // in case we want it to go further...
-            	linesOutput++;
+            	incrementLinesOutput();
 
-            	if (checkFeedback(linesRead)) 
+            	if (checkFeedback(getLinesRead())) 
             	{
-            		if(log.isBasic()) logBasic("linenr "+linesRead);
+            		if(log.isBasic()) logBasic("linenr "+getLinesRead());
             	}
             	data.KeySet.add(propkey);
             }

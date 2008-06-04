@@ -476,7 +476,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 				putRow(data.outputRowMeta, outputRow);
 	            
 				if (log.isRowLevel()) logRowlevel(Messages.getString("DatabaseLookup.Log.WroteRowToNextStep")+getInputRowMeta().getString(r)); //$NON-NLS-1$
-	            if (checkFeedback(linesRead)) logBasic("linenr "+linesRead); //$NON-NLS-1$
+	            if (checkFeedback(getLinesRead())) logBasic("linenr "+getLinesRead()); //$NON-NLS-1$
             }
 		}
 		catch(KettleException e)
@@ -552,7 +552,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 	    			// Store the data...
 	    			//
 	    			storeRowInCache(keyMeta, keyData, valueData);
-	    			linesInput++;
+	    			incrementLinesInput();
 	    		}
 	    	}
 	    	else

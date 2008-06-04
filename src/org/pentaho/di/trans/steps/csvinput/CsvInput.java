@@ -122,9 +122,9 @@ public class CsvInput extends BaseStep implements StepInterface
 		else 
 		{
 			putRow(data.outputRowMeta, outputRowData);     // copy row to possible alternate rowset(s).
-	        if (checkFeedback(linesInput)) 
+	        if (checkFeedback(getLinesInput())) 
 	        {
-	        	if(log.isBasic()) logBasic(Messages.getString("CsvInput.Log.LineNumber", Long.toString(linesInput))); //$NON-NLS-1$
+	        	if(log.isBasic()) logBasic(Messages.getString("CsvInput.Log.LineNumber", Long.toString(getLinesInput()))); //$NON-NLS-1$
 	        }
 		}
 			
@@ -549,7 +549,7 @@ public class CsvInput extends BaseStep implements StepInterface
 				outputRowData[outputIndex++] = new Long(data.rowNumber++);
 			}
 		
-			linesInput++;
+			incrementLinesInput();
 			return outputRowData;
 		}
 		catch (Exception e)

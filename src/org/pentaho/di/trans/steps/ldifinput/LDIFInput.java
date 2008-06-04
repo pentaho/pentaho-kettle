@@ -187,7 +187,7 @@ public class LDIFInput extends BaseStep implements StepInterface
 				data.previousRow = irow==null?outputRowData:(Object[])irow.cloneRow(outputRowData); // copy it to make
 				// surely the next step doesn't change it in between...
 				
-				 linesInput++;
+				 incrementLinesInput();
 				 data.rownr++;
 			
 		 }

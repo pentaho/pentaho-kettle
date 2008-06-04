@@ -137,27 +137,42 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
 
     private Trans                        trans;
 
-    /**  nr of lines read from previous step(s) */
+    /**  nr of lines read from previous step(s)
+     * @deprecated please use the supplied getters, setters and increment/decrement methods 
+     */
     public long                          linesRead;
     
-    /** nr of lines written to next step(s) */
+    /** nr of lines written to next step(s)
+     * @deprecated please use the supplied getters, setters and increment/decrement methods 
+     */
     public long                          linesWritten;
     
-    /** nr of lines read from file or database */
+    /** nr of lines read from file or database
+     * @deprecated please use the supplied getters, setters and increment/decrement methods 
+     */
     public long                          linesInput;
     
-    /** nr of lines written to file or database */
+    /** nr of lines written to file or database
+     * @deprecated please use the supplied getters, setters and increment/decrement methods 
+     */
     public long                          linesOutput;
     
-    /** nr of updates in a database table or file */
+    /** nr of updates in a database table or file
+     * @deprecated please use the supplied getters, setters and increment/decrement methods 
+     */
     public long                          linesUpdated;
     
-    /** nr of lines skipped */
+    /** nr of lines skipped
+     * @deprecated please use the supplied getters, setters and increment/decrement methods 
+     */
     public long                          linesSkipped;
     
-    /** total sleep time in ns caused by an empty input buffer (previous step is slow) */
+    /** total sleep time in ns caused by an empty input buffer (previous step is slow)
+     * @deprecated please use the supplied getters, setters and increment/decrement methods 
+     */
     public long                          linesRejected;
 
+    
     private boolean                      distributed;
 
     private long                         errors;
@@ -336,10 +351,13 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
         paused = new AtomicBoolean(false);;
         init = false;
 
-        linesRead = 0L; // Keep some statistics!
-        linesWritten = 0L;
-        linesUpdated = 0L;
-        linesSkipped = 0L;
+        linesRead = 0L; // new AtomicLong(0L); // Keep some statistics!
+        linesWritten = 0L; // new AtomicLong(0L);
+        linesUpdated = 0L; // new AtomicLong(0L);
+        linesSkipped = 0L; // new AtomicLong(0L);
+        linesRejected = 0L; // new AtomicLong(0L);
+        linesInput = 0L; // new AtomicLong(0L);
+        linesOutput = 0L; //new AtomicLong(0L);
 
         inputRowSets = null;
         outputRowSets = null;
@@ -541,8 +559,8 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
         {
         	remoteInputSteps = new ArrayList<RemoteStep>();
         	
-        	if (stepMeta.isPartitioned() && getClusterSize()>1) {
-        		// If the step is partitioned and clustered, we only want to take one remote input step per copy.
+        	if ((stepMeta.isPartitioned()  && getClusterSize()>1) || stepMeta.getCopies() > 1) {
+        		// If the step is partitioned or has multiple copies and clustered, we only want to take one remote input step per copy.
         		// This is where we make that selection...
         		//
         		for (int i=0;i<stepMeta.getRemoteInputSteps().size();i++) {
@@ -588,8 +606,9 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
 
     public long getProcessed()
     {
-        return linesRead;
+        return getLinesRead();
     }
+    
 
     public void setCopy(int cop)
     {
@@ -614,45 +633,201 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
         errors = e;
     }
 
+
     /**
-     * @return Returns the linesInput.
+     * @return Returns the number of lines read from previous steps
      */
-    public long getLinesInput()
+    public synchronized long getLinesRead()
+    {
+        return linesRead;
+    }
+    
+    /**
+     * Increments the number of lines read from previous steps by one
+     * @return Returns the new value
+     */
+    public synchronized long incrementLinesRead()
+    {
+    	return ++linesRead;
+    }
+    
+    
+    /**
+     * Decrements the number of lines read from previous steps by one
+     * @return Returns the new value
+     */
+    public synchronized long decrementLinesRead()
+    {
+    	return --linesRead;
+    }
+    
+    /**
+     * @param newLinesReadValue the new number of lines read from previous steps
+     */
+    public synchronized void setLinesRead(long newLinesReadValue)
+    {
+    	linesRead = newLinesReadValue;
+    }
+    
+    /**
+     * @return Returns the number of lines read from an input source: database, file, socket, etc.
+     */
+    public synchronized long getLinesInput()
     {
         return linesInput;
     }
-
+    
     /**
-     * @return Returns the linesOutput.
+     * Increments the number of lines read from an input source: database, file, socket, etc.
+     * @return the new incremented value
      */
-    public long getLinesOutput()
+    public synchronized long incrementLinesInput()
     {
-        return linesOutput;
+    	return ++linesInput;
+    }
+    
+    /**
+     * @param newLinesInputValue the new number of lines read from an input source: database, file, socket, etc.
+     */
+    public synchronized void setLinesInput(long newLinesInputValue)
+    {
+    	linesInput = newLinesInputValue;
     }
 
     /**
-     * @return Returns the linesRead.
+     * @return Returns the number of lines written to an output target: database, file, socket, etc.
      */
-    public long getLinesRead()
+    public synchronized long getLinesOutput()
     {
-        return linesRead;
+        return linesOutput;
+    }
+    
+    /**
+     * Increments the number of lines written to an output target: database, file, socket, etc.
+     * @return the new incremented value
+     */
+    public synchronized long incrementLinesOutput()
+    {
+    	return ++linesOutput;
+    }
+    
+    /**
+     * @param newLinesOutputValue the new number of lines written to an output target: database, file, socket, etc.
+     */
+    public synchronized void setLinesOutput(long newLinesOutputValue)
+    {
+    	linesOutput = newLinesOutputValue;
     }
 
     /**
      * @return Returns the linesWritten.
      */
-    public long getLinesWritten()
+    public synchronized long getLinesWritten()
     {
         return linesWritten;
     }
+    
+    /**
+     * Increments the number of lines written to next steps by one
+     * @return Returns the new value
+     */
+    public synchronized long incrementLinesWritten()
+    {
+    	return ++linesWritten;
+    }
 
     /**
-     * @return Returns the linesUpdated.
+     * Decrements the number of lines written to next steps by one
+     * @return Returns the new value
      */
-    public long getLinesUpdated()
+    public synchronized long decrementLinesWritten()
+    {
+    	return --linesWritten;
+    }
+
+    /**
+     * @param newLinesWrittenValue the new number of lines written to next steps
+     */
+    public synchronized void setLinesWritten(long newLinesWrittenValue)
+    {
+    	linesWritten = newLinesWrittenValue;
+    }
+
+    /**
+     * @return Returns the number of lines updated in an output target: database, file, socket, etc.
+     */
+    public synchronized long getLinesUpdated()
     {
         return linesUpdated;
     }
+    
+    /**
+     * Increments the number of lines updated in an output target: database, file, socket, etc.
+     * @return the new incremented value
+     */
+    public synchronized long incrementLinesUpdated()
+    {
+    	return ++linesUpdated;
+    }
+    
+    /**
+     * @param newLinesOutputValue the new number of lines updated in an output target: database, file, socket, etc.
+     */
+    public synchronized void setLinesUpdated(long newLinesUpdatedValue)
+    {
+    	linesUpdated = newLinesUpdatedValue;
+    }
+
+    /**
+     * @return the number of lines rejected to an error handling step
+     */
+    public synchronized long getLinesRejected()
+    {
+        return linesRejected;
+    }
+    
+    /**
+     * Increments the number of lines rejected to an error handling step
+     * @return the new incremented value
+     */
+    public synchronized long incrementLinesRejected()
+    {
+    	return ++linesRejected;
+    }
+
+    /**
+     * @param newLinesRejectedValue lines number of lines rejected to an error handling step
+     */
+    public synchronized void setLinesRejected(long newLinesRejectedValue)
+    {
+        linesRejected = newLinesRejectedValue;
+    }
+
+    /**
+     * @return the number of lines skipped
+     */
+    public synchronized long getLinesSkipped()
+    {
+        return linesSkipped;
+    }
+    
+    /**
+     * Increments the number of lines skipped
+     * @return the new incremented value
+     */
+    public synchronized long incrementLinesSkipped()
+    {
+    	return ++linesSkipped;
+    }
+
+    /**
+     * @param newLinesSkippedValue lines number of lines skipped
+     */
+    public synchronized void setLinesSkipped(long newLinesSkippedValue)
+    {
+        linesSkipped = newLinesSkippedValue;
+    }
+
 
     public String getStepname()
     {
@@ -815,7 +990,7 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
 	        // No more output rowsets!
 	    	// Still update the nr of lines written.
 	    	//
-	    	linesWritten++;
+	    	incrementLinesWritten();
 	    	
 	        return; // we're done here!
 	    }
@@ -840,7 +1015,7 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
                 //
                 while (!rs.putRow(rowMeta, row) && !isStopped()) 
                 	;
-                linesWritten++;
+                incrementLinesWritten();
 
                 // Now determine the next output rowset!
                 // Only if we have more then one output...
@@ -866,7 +1041,7 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
                         //
                         while (!rs.putRow(rowMeta, rowMeta.cloneRow(row)) && !isStopped()) 
                         	;
-                        linesWritten++;
+                        incrementLinesWritten();
                     }
                     catch (KettleValueException e)
                     {
@@ -879,7 +1054,7 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
                 RowSet rs = outputRowSets.get(0);
                 while (!rs.putRow(rowMeta, row) && !isStopped()) 
                 	;
-                linesWritten++;
+                incrementLinesWritten();
             }
         }
         break;
@@ -977,7 +1152,7 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
                 
                 while (!selectedRowSet.putRow(rowMeta, row) && !isStopped()) 
                 	;
-                linesWritten++;
+                incrementLinesWritten();
                 
                 if (log.isRowLevel())
 					try {
@@ -1056,7 +1231,7 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
         //
         while (!rowSet.putRow(rowMeta, row) && !isStopped()) 
         	;
-        linesWritten++;
+        incrementLinesWritten();
     }
 
     public void putError(RowMetaInterface rowMeta, Object[] row, long nrErrors, String errorDescriptions, String fieldNames, String errorCodes) throws KettleStepException
@@ -1088,7 +1263,7 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
         {
         	while (!errorRowSet.putRow(errorRowMeta, errorRowData) && !isStopped()) 
         		;
-        	linesRejected++;
+        	incrementLinesRejected();
         }
 
         verifyRejectionRates();
@@ -1100,21 +1275,21 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
         if (stepErrorMeta==null) return; // nothing to verify.
 
         // Was this one error too much?
-        if (stepErrorMeta.getMaxErrors()>0 && linesRejected>stepErrorMeta.getMaxErrors())
+        if (stepErrorMeta.getMaxErrors()>0 && getLinesRejected()>stepErrorMeta.getMaxErrors())
         {
-            logError(Messages.getString("BaseStep.Log.TooManyRejectedRows", Long.toString(stepErrorMeta.getMaxErrors()), Long.toString(linesRejected)));
+            logError(Messages.getString("BaseStep.Log.TooManyRejectedRows", Long.toString(stepErrorMeta.getMaxErrors()), Long.toString(getLinesRejected())));
             setErrors(1L);
             stopAll();
         }
 
-        if ( stepErrorMeta.getMaxPercentErrors()>0 && linesRejected>0 &&
-            ( stepErrorMeta.getMinPercentRows()<=0 || linesRead>=stepErrorMeta.getMinPercentRows())
+        if ( stepErrorMeta.getMaxPercentErrors()>0 && getLinesRejected()>0 &&
+            ( stepErrorMeta.getMinPercentRows()<=0 || getLinesRead()>=stepErrorMeta.getMinPercentRows())
             )
         {
-            int pct = (int) (100 * linesRejected / linesRead );
+            int pct = (int) (100 * getLinesRejected() / getLinesRead() );
             if (pct>stepErrorMeta.getMaxPercentErrors())
             {
-                logError(Messages.getString("BaseStep.Log.MaxPercentageRejectedReached", Integer.toString(pct) ,Long.toString(linesRejected), Long.toString(linesRead)));
+                logError(Messages.getString("BaseStep.Log.MaxPercentageRejectedReached", Integer.toString(pct) ,Long.toString(getLinesRejected()), Long.toString(getLinesRead())));
                 setErrors(1L);
                 stopAll();
             }
@@ -1206,7 +1381,7 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
 	    		inputRowSet = currentInputStream();
 	    		row = inputRowSet.getRowImmediate();
     		}
-    		if (row!=null) linesRead++;
+    		if (row!=null) incrementLinesRead();
     	}
     	else {
     		// What's the current input stream?
@@ -1238,7 +1413,7 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
     		//
         	row = inputRowSet.getRowWait(1, TimeUnit.MILLISECONDS);
         	if (row!=null) {
-        		linesRead++;
+        		incrementLinesRead();
         		blockPointer++;
         	}
         	else {
@@ -1253,7 +1428,7 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
         				if (inputRowSets.isEmpty()) return null; // We're completely done.
         			}
         			else {
-        				linesRead++;
+        				incrementLinesRead();
         			}
         		}
         		nextInputStream();
@@ -1473,7 +1648,7 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
         	}
         }
 		
-        linesRead++;
+        incrementLinesRead();
 
         // call all rowlisteners...
         //
@@ -2040,7 +2215,7 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
 
     public void logSummary()
     {
-        logBasic(Messages.getString("BaseStep.Log.SummaryInfo", String.valueOf(linesInput), String.valueOf(linesOutput), String.valueOf(linesRead), String.valueOf(linesWritten), String.valueOf(linesUpdated), String.valueOf(errors+linesRejected))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+        logBasic(Messages.getString("BaseStep.Log.SummaryInfo", String.valueOf(linesInput), String.valueOf(linesOutput), String.valueOf(linesRead), String.valueOf(linesWritten), String.valueOf(linesUpdated), String.valueOf(errors+getLinesRejected()))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
     }
 
     public String getStepID()
@@ -2222,22 +2397,6 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
     {
         return getTransMeta().isFeedbackShown() && (lines > 0) && (getTransMeta().getFeedbackSize() > 0)
                 && (lines % getTransMeta().getFeedbackSize()) == 0;
-    }
-
-    /**
-     * @return the linesRejected
-     */
-    public long getLinesRejected()
-    {
-        return linesRejected;
-    }
-
-    /**
-     * @param linesRejected the linesRejected to set
-     */
-    public void setLinesRejected(long linesRejected)
-    {
-        this.linesRejected = linesRejected;
     }
 
     /**
@@ -2504,4 +2663,5 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
 	public boolean isMapping() {
 		return stepMeta.isMapping();
 	}
+	
 }

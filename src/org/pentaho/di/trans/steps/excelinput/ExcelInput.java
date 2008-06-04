@@ -276,7 +276,7 @@ public class ExcelInput extends BaseStep implements StepInterface
 		// Do we need to include the rownumber?
 		if (!Const.isEmpty(meta.getRowNumberField()))
 		{
-            r[rowIndex] = new Long(linesWritten + 1);
+            r[rowIndex] = new Long(getLinesWritten() + 1);
             rowIndex++;
 		}
 

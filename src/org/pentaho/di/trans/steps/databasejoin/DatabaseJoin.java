@@ -86,7 +86,7 @@ public class DatabaseJoin extends BaseStep implements StepInterface
 		Object[] add = data.db.getRow(rs);
 		RowMetaInterface addMeta = data.db.getReturnRowMeta();
 		
-		linesInput++;
+		incrementLinesInput();
 		
 		int counter = 0;
 		while (add!=null && (meta.getRowLimit()==0 || counter<meta.getRowLimit()))
@@ -107,7 +107,7 @@ public class DatabaseJoin extends BaseStep implements StepInterface
 			if (meta.getRowLimit()==0 || counter<meta.getRowLimit()) 
 			{
 				add = data.db.getRow(rs);
-				linesInput++;
+				incrementLinesInput();
 			}
 		}
 		
@@ -150,9 +150,9 @@ public class DatabaseJoin extends BaseStep implements StepInterface
 		{
 			lookupValues(getInputRowMeta(), r); // add new values to the row in rowset[0].
 			
-            if (checkFeedback(linesRead)) 
+            if (checkFeedback(getLinesRead())) 
             {
-            	if(log.isBasic()) logBasic(Messages.getString("DatabaseJoin.Log.LineNumber")+linesRead); //$NON-NLS-1$
+            	if(log.isBasic()) logBasic(Messages.getString("DatabaseJoin.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
             }
 		}
 		catch(KettleException e)

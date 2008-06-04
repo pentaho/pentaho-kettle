@@ -99,10 +99,10 @@ public class SocketWriter extends BaseStep implements StepInterface
                 first=false;
             }
             getInputRowMeta().writeData(data.outputStream, r);
-            linesOutput++;
+            incrementLinesOutput();
             
             // flush every X rows
-            if (linesOutput>0 && data.flushInterval>0 && (linesOutput%data.flushInterval)==0) data.outputStream.flush();
+            if (getLinesOutput()>0 && data.flushInterval>0 && (getLinesOutput()%data.flushInterval)==0) data.outputStream.flush();
 
         }
         catch (Exception e)
@@ -117,7 +117,7 @@ public class SocketWriter extends BaseStep implements StepInterface
             return false;
         }
 
-        if (checkFeedback(linesRead)) logBasic(Messages.getString("SocketWriter.Log.LineNumber")+linesRead); //$NON-NLS-1$
+        if (checkFeedback(getLinesRead())) logBasic(Messages.getString("SocketWriter.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
 			
 		return true;
 	}

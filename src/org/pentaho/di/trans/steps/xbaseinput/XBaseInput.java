@@ -127,7 +127,7 @@ public class XBaseInput extends BaseStep implements StepInterface
         }
         
         // OK, so we have read a line: increment the input counter
-		linesInput++;
+		incrementLinesInput();
 		int outputIndex = data.fields.size();
 
         // Possibly add a filename...
@@ -139,14 +139,14 @@ public class XBaseInput extends BaseStep implements StepInterface
         // Possibly add a row number...
         if (meta.isRowNrAdded())
         {
-            row[outputIndex++] = new Long(linesInput);
+            row[outputIndex++] = new Long(getLinesInput());
         }
 
 		putRow(data.outputRowMeta, row);        // fill the rowset(s). (wait for empty)
 
-        if (checkFeedback(linesInput)) logBasic(Messages.getString("XBaseInput.Log.LineNr")+linesInput); //$NON-NLS-1$
+        if (checkFeedback(getLinesInput())) logBasic(Messages.getString("XBaseInput.Log.LineNr")+getLinesInput()); //$NON-NLS-1$
 
-        if (meta.getRowLimit()>0 && linesInput>=meta.getRowLimit())  // limit has been reached: stop now.
+        if (meta.getRowLimit()>0 && getLinesInput()>=meta.getRowLimit())  // limit has been reached: stop now.
         {
             setOutputDone();
             return false;

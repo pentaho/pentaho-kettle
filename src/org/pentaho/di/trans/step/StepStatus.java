@@ -38,8 +38,8 @@ public class StepStatus
     public StepStatus(BaseStep baseStep)
     {
         // Proc: nr of lines processed: input + output!
-        long in_proc = Math.max(baseStep.linesInput, baseStep.linesRead);
-        long out_proc = Math.max(baseStep.linesOutput + baseStep.linesUpdated, baseStep.linesWritten + baseStep.linesRejected) ;
+        long in_proc = Math.max(baseStep.getLinesInput(), baseStep.getLinesRead());
+        long out_proc = Math.max(baseStep.getLinesOutput() + baseStep.getLinesUpdated(), baseStep.getLinesWritten() + baseStep.getLinesRejected()) ;
 
         float lapsed = ((float) baseStep.getRuntime()) / 1000;
         double in_speed = 0;

@@ -100,9 +100,9 @@ public class LDAPInput extends BaseStep implements StepInterface
 		    
 			if(log.isDebug()) log.logDebug(Messages.getString("LDAPInput.log.ReadRow"), outputRowData.toString());
 			
-		    if ((linesInput > 0) && (linesInput % Const.ROWS_UPDATE) == 0) 
+		    if (checkFeedback(getLinesInput()))
 		    {
-		    	if(log.isDetailed()) logDetailed(Messages.getString("LDAPInput.log.LineRow") + linesInput);
+		    	if(log.isDetailed()) logDetailed(Messages.getString("LDAPInput.log.LineRow") + getLinesInput());
 		    }
 		    
 		    return true; 
@@ -215,7 +215,7 @@ public class LDAPInput extends BaseStep implements StepInterface
 				// surely the next step doesn't change it in between...
 				data.rownr++;
 				
-				linesInput++;
+				incrementLinesInput();
              }         
 			
 		 }
@@ -339,8 +339,6 @@ public class LDAPInput extends BaseStep implements StepInterface
 		
 		if (super.init(smi, sdi))
 		{
-			
-			linesInput=0;
 			data.rownr = 1L;
 			
 			return true;

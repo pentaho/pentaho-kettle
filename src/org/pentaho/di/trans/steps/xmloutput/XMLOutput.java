@@ -84,7 +84,7 @@ public class XMLOutput extends BaseStep implements StepInterface
 		}
 		
 		
-		if ((r != null && linesOutput > 0 && meta.getSplitEvery() > 0 && (linesOutput % meta.getSplitEvery()) == 0))
+		if ((r != null && getLinesOutput() > 0 && meta.getSplitEvery() > 0 && (getLinesOutput() % meta.getSplitEvery()) == 0))
 		{
 			// Done with this part or with everything.
 			closeFile();
@@ -113,7 +113,7 @@ public class XMLOutput extends BaseStep implements StepInterface
 		meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
 		putRow(data.outputRowMeta, r); // in case we want it to go further...
 
-		if (checkFeedback(linesOutput)) logBasic("linenr " + linesOutput);
+		if (checkFeedback(getLinesOutput())) logBasic("linenr " + getLinesOutput());
 
 		return result;
 	}
@@ -208,7 +208,7 @@ public class XMLOutput extends BaseStep implements StepInterface
 			throw new KettleException("Error writing XML row :" + e.toString() + Const.CR + "Row: " + getInputRowMeta().getString(r), e);
 		}
 
-		linesOutput++;
+		incrementLinesOutput();
 	}
 
 	private void writeField(ValueMetaInterface valueMeta, Object valueData, String element) throws KettleStepException

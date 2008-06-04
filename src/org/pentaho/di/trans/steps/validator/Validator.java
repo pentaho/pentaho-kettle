@@ -95,7 +95,7 @@ public class Validator extends BaseStep implements StepInterface
             }
         }
 
-        if (log.isRowLevel()) log.logRowlevel(toString(), "Read row #"+linesRead+" : "+getInputRowMeta().getString(r));
+        if (log.isRowLevel()) log.logRowlevel(toString(), "Read row #"+getLinesRead()+" : "+getInputRowMeta().getString(r));
 
         try {
         	validateFields(getInputRowMeta(), r);		
@@ -110,8 +110,8 @@ public class Validator extends BaseStep implements StepInterface
         	}
         }
 
-        if (log.isRowLevel()) log.logRowlevel(toString(), "Wrote row #"+linesWritten+" : "+getInputRowMeta().getString(r));        
-        if (checkFeedback(linesRead)) logBasic("Linenr "+linesRead);
+        if (log.isRowLevel()) log.logRowlevel(toString(), "Wrote row #"+getLinesWritten()+" : "+getInputRowMeta().getString(r));        
+        if (checkFeedback(getLinesRead())) logBasic("Linenr "+getLinesRead());
 
 		return true;
 	}

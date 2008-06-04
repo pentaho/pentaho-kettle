@@ -121,9 +121,9 @@ public class SocketReader extends BaseStep implements StepInterface
             }
             r = data.rowMeta.readData(data.inputStream);
             
-            linesInput++;
+            incrementLinesInput();
             
-            if (checkFeedback(linesInput)) logBasic(Messages.getString("SocketReader.Log.LineNumber")+linesInput); //$NON-NLS-1$
+            if (checkFeedback(getLinesInput())) logBasic(Messages.getString("SocketReader.Log.LineNumber")+getLinesInput()); //$NON-NLS-1$
             
             putRow(data.rowMeta, r);
         }

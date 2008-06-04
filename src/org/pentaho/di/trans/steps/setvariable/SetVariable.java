@@ -62,7 +62,7 @@ public class SetVariable extends BaseStep implements StepInterface
 		        }
 			}
 		
-            logBasic("Finished after "+linesWritten+" rows.");
+            logBasic("Finished after "+getLinesWritten()+" rows.");
 			setOutputDone();
 			return false;
 		}
