@@ -585,21 +585,24 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 		{
 			public void widgetSelected(SelectionEvent e) 
 			{
-				JobEntryZipFile jobEntry = new JobEntryZipFile();
-				String filename[] = new String[1];
-				filename[0]=jobEntry.getFullFilename(wZipFilename.getText(),wAddDate.getSelection(),wAddTime.getSelection(), wSpecifyFormat.getSelection(),wDateTimeFormat.getText());
-				if (filename!=null && filename.length>0)
+				if(!Const.isEmpty(wZipFilename.getText()))
 				{
-					EnterSelectionDialog esd = new EnterSelectionDialog(shell, filename, Messages.getString("JobZipFiles.SelectOutputFiles.DialogTitle"), Messages.getString("JobZipFiles.SelectOutputFiles.DialogMessage"));
-					esd.setViewOnly();
-					esd.open();
-				}
-				else
-				{
-					MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-					mb.setMessage(Messages.getString("JobZipFiles.NoFilesFound.DialogMessage"));
-					mb.setText(Messages.getString("System.Dialog.Error.Title"));
-					mb.open(); 
+					JobEntryZipFile jobEntry = new JobEntryZipFile();
+					String filename[] = new String[1];
+					filename[0]=jobEntry.getFullFilename(wZipFilename.getText(),wAddDate.getSelection(),wAddTime.getSelection(), wSpecifyFormat.getSelection(),wDateTimeFormat.getText());
+					if (filename!=null && filename.length>0)
+					{
+						EnterSelectionDialog esd = new EnterSelectionDialog(shell, filename, Messages.getString("JobZipFiles.SelectOutputFiles.DialogTitle"), Messages.getString("JobZipFiles.SelectOutputFiles.DialogMessage"));
+						esd.setViewOnly();
+						esd.open();
+					}
+					else
+					{
+						MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
+						mb.setMessage(Messages.getString("JobZipFiles.NoFilesFound.DialogMessage"));
+						mb.setText(Messages.getString("System.Dialog.Error.Title"));
+						mb.open(); 
+					}
 				}
 			}
 		}
