@@ -748,7 +748,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 		if(Const.isEmpty(filename)) return null;
 		
 		// Replace possible environment variables...
-		String realfilename=StringUtil.environmentSubstitute(filename);
+		String realfilename=environmentSubstitute(filename);
 		int lenstring=realfilename.length();
 		int lastindexOfDot=realfilename.lastIndexOf('.');
 		if(lastindexOfDot==-1) lastindexOfDot=lenstring;
