@@ -28,7 +28,14 @@ public class WsdlOpParameterContainer implements WsdlParamContainer
             }
             else
             {
-                return new String[] {parameter.getItemXmlType().getLocalPart()};
+            	if (parameter.getItemXmlType()!=null) 
+            	{
+            		return new String[] { parameter.getItemXmlType().getLocalPart()};
+            	}
+            	else
+            	{
+            		return new String[] { parameter.getName().getLocalPart(), };
+            	}
             }
         }
         else
@@ -48,7 +55,14 @@ public class WsdlOpParameterContainer implements WsdlParamContainer
             }
             else
             {
-                return parameter.getItemXmlType().getLocalPart();
+            	if (parameter.getItemXmlType()!=null) 
+            	{
+            		return parameter.getItemXmlType().getLocalPart();
+            	}
+            	else
+            	{
+            		return null;
+            	}
             }
         }
         else if (paramName.equals(parameter.getName().getLocalPart()))
@@ -65,7 +79,7 @@ public class WsdlOpParameterContainer implements WsdlParamContainer
     {
         if (parameter.isArray())
         {
-            if (!WebServiceMeta.XSD_NS_URI.equals(parameter.getItemXmlType().getNamespaceURI()))
+            if (parameter.getItemXmlType()!=null && !WebServiceMeta.XSD_NS_URI.equals(parameter.getItemXmlType().getNamespaceURI()))
             {
                 return parameter.getItemXmlType().getLocalPart();
             }

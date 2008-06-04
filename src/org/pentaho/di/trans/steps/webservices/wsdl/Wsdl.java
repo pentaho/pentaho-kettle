@@ -32,10 +32,13 @@ import javax.wsdl.Port;
 import javax.wsdl.PortType;
 import javax.wsdl.Service;
 import javax.wsdl.WSDLException;
+import javax.wsdl.extensions.ExtensionRegistry;
 import javax.wsdl.factory.WSDLFactory;
 import javax.wsdl.xml.WSDLLocator;
 import javax.wsdl.xml.WSDLReader;
 import javax.xml.namespace.QName;
+
+import org.pentaho.di.core.logging.LogWriter;
 
 /**
  * Wsdl abstraction.
@@ -54,7 +57,6 @@ public final class Wsdl implements java.io.Serializable {
      * @param wsdlURI      URI of a WSDL file.
      * @param serviceQName Name of the service in the WSDL, if null default to first service in WSDL.
      * @param portName     The service port name, if null default to first port in service.
-     * @throws
      */
     public Wsdl(URI wsdlURI, QName serviceQName, String portName) {
 
@@ -150,10 +152,15 @@ public final class Wsdl implements java.io.Serializable {
         PortType pt = b.getPortType();
         Operation op = pt.getOperation(operationName, null, null);
         if (op != null) {
-            WsdlOperation wop = new WsdlOperation(b, op, _wsdlTypes);
-            // cache the operation
-            _operationCache.put(operationName, wop);
-            return wop;
+        	try {
+	            WsdlOperation wop = new WsdlOperation(b, op, _wsdlTypes);
+	            // cache the operation
+	            _operationCache.put(operationName, wop);
+	            return wop;
+        	}
+        	catch(Exception e) {
+        		LogWriter.getInstance().logError("WSDL", "Could retrieve WSDL Operator for operation name: "+operationName, e);
+        	}
         }
         return null;
     }
@@ -171,7 +178,10 @@ public final class Wsdl implements java.io.Serializable {
 
         List<Operation> operations = pt.getOperations();
         for (Iterator<Operation> itr = operations.iterator(); itr.hasNext();) {
-            opList.add(getOperation(((Operation) itr.next()).getName()));
+        	WsdlOperation operation = getOperation(((Operation) itr.next()).getName());
+        	if (operation!=null) {
+        		opList.add(operation);
+        	}
         }
         return opList;
     }
@@ -251,6 +261,8 @@ public final class Wsdl implements java.io.Serializable {
 
         WSDLFactory wsdlFactory = WSDLFactory.newInstance();
         WSDLReader wsdlReader = wsdlFactory.newWSDLReader();
+        ExtensionRegistry registry = wsdlFactory.newPopulatedExtensionRegistry();
+        wsdlReader.setExtensionRegistry(registry);
         wsdlReader.setFeature("javax.wsdl.verbose", true);
         wsdlReader.setFeature("javax.wsdl.importDocuments", true);
         return wsdlReader;

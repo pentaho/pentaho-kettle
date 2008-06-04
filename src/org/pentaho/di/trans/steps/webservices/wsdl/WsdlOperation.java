@@ -40,28 +40,25 @@ public final class WsdlOperation implements java.io.Serializable {
     /**
      * Parameter style enumeration.
      */
-    public static class SOAPParameterStyle {
-        public static final SOAPParameterStyle BARE = new SOAPParameterStyle();
-        public static final SOAPParameterStyle WRAPPED = new SOAPParameterStyle();
-        private SOAPParameterStyle() {}
+    public enum SOAPParameterStyle {
+        BARE, 
+        WRAPPED
     }
 
     /**
      * SOAP Binding style enumeration.
      */
-    public static class SOAPBindingStyle {
-        public static final SOAPBindingStyle DOCUMENT = new SOAPBindingStyle();
-        public static final SOAPBindingStyle RPC = new SOAPBindingStyle();
-        private SOAPBindingStyle() {}
+    public enum SOAPBindingStyle {
+        DOCUMENT, 
+        RPC
     }
 
     /**
      * SOAP Binding use enumeration.
      */
-    public static class SOAPBindingUse {
-        public static final SOAPBindingUse LITERAL = new SOAPBindingUse();
-        public static final SOAPBindingUse ENCODED = new SOAPBindingUse();
-        private SOAPBindingUse() {}
+    public enum SOAPBindingUse {
+        LITERAL, 
+        ENCODED
     }
 
     private final SOAPBindingStyle _bindingStyle;
@@ -175,10 +172,10 @@ public final class WsdlOperation implements java.io.Serializable {
      *
      * @return An ordered list of parameters, empty list if this operation has no parameters.
      */
-    public List<WsdlOpParameter> getParameters() {
+    public WsdlOpParameterList getParameters() {
         return _params;
     }
-
+    
     /**
      * Get the return type for this operation.
      *

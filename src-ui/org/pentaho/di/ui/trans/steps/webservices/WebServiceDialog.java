@@ -17,8 +17,6 @@ import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.MouseAdapter;
-import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -83,6 +81,15 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
     private Label wlStep;
     private Text wStep;
 
+    private Label wlPassInputData;
+    private Button wPassInputData;
+
+    private Label wlCompatible;
+    private Button wCompatible;
+
+    private Label wlRepeatingElement;
+    private TextVar wRepeatingElement;
+
     private Label wlHttpLogin;
     private TextVar wHttpLogin;
 
@@ -95,27 +102,31 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
     private Label wlProxyPort;
     private TextVar wProxyPort;
 
-    /** Sauvegarde des widgets permettant la saisie des champs en entrees */
+    /** The input fields */
     private TableView fieldInTableView;
 
-    /** Sauvegarde de la table permettant la saisie des champs en sortie*/
+    /** The output fields */
     private TableView fieldOutTableView;
 
-    /** Composiste contenant les informations relatives au web service */
+    /** Web service tab item */
     private CTabItem tabItemWebService;
 
-    /** Composite contenant les informations relatives aux champs en entrees */
+    /** input fields tab item */
     private CTabItem tabItemFieldIn;
 
-    /** Composite contenant les informations relatives aux champs en sortie */
+    /** output fields tab item*/
     private CTabItem tabItemFieldOut;
 
-    /** Liste des services disponible dans le WSDL*/
+    /** WSDL*/
     private Wsdl wsdl;
 
     private WsdlOperation wsdlOperation;
     private WsdlParamContainer inWsdlParamContainer;
     private WsdlParamContainer outWsdlParamContainer;
+    
+    private Button wAddInput;
+    private Button wAddOutput;
+    
     
     private ModifyListener lsMod = new ModifyListener()
     {
@@ -127,11 +138,12 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
 
     private void selectWSDLOperation(String anOperationName) throws KettleStepException
     {
-        //GESTION DES ONGLETS !
+        // Tab management
+    	// 
         loadOperation(anOperationName);
 
-        //On supprime tous les tabs, on est oblige de les reconstruire pour charge les bonnes donnees !
-
+        // We close all tabs and reconstruct it all to make sure we always show the correct data
+        // 
         if (inWsdlParamContainer != null)
         {
             wStep.setVisible(true);
@@ -174,7 +186,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
     {
         anURI = transMeta.environmentSubstitute(anURI);
 
-        // Parcours des services pour les mettres a jour
+        // 
         //
         try
         {
@@ -188,10 +200,11 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         }
         catch (Exception e)
         {
-            //TODO afficher un message d'erreur qui va bien
             wsdl = null;
             new ErrorDialog(shell,
-                            Messages.getString("WebServiceDialog.ERROR0009.UnreachableURI"), Messages.getString("WebServiceDialog.ErrorDialog.Title") + anURI, e); //$NON-NLS-1$ //$NON-NLS-2$
+                            Messages.getString("WebServiceDialog.ERROR0009.UnreachableURI"),//$NON-NLS-1$
+                            Messages.getString("WebServiceDialog.ErrorDialog.Title") + anURI, //$NON-NLS-1$ 
+                            e); 
 
             log.logError(Messages.getString("WebServiceDialog.ErrorDialog.Title") + anURI, e.getMessage()); //$NON-NLS-1$
             return;
@@ -218,7 +231,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
                 }
             }
         }
-        
+
     }
     
     private void loadOperation(String anOperationName) throws KettleStepException
@@ -261,7 +274,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
                                 }
                             }
                         }
-                        if (ParameterMode.IN.equals(param.getMode()))
+                        if (ParameterMode.IN.equals(param.getMode()) || ParameterMode.INOUT.equals(param.getMode()) || ParameterMode.UNDEFINED.equals(param.getMode()))
                         {
                             if (inWsdlParamContainer != null)
                             {
@@ -272,7 +285,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
                                 inWsdlParamContainer = new WsdlOpParameterContainer(param);
                             }
                         }
-                        else if (ParameterMode.OUT.equals(param.getMode()))
+                        else if (ParameterMode.OUT.equals(param.getMode()) || ParameterMode.INOUT.equals(param.getMode()) || ParameterMode.UNDEFINED.equals(param.getMode()))
                         {
                             if (outWsdlParamContainer != null)
                             {
@@ -287,7 +300,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
                 }
                 else
                 {
-                    if (ParameterMode.IN.equals(param.getMode()))
+                    if (ParameterMode.IN.equals(param.getMode()) || ParameterMode.INOUT.equals(param.getMode()) || ParameterMode.UNDEFINED.equals(param.getMode()))
                     {
                         if (inWsdlParamContainer != null && !(inWsdlParamContainer instanceof WsdlOperationContainer))
                         {
@@ -295,10 +308,10 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
                         }
                         else
                         {
-                            inWsdlParamContainer = new WsdlOperationContainer(wsdlOperation, ParameterMode.IN);
+                            inWsdlParamContainer = new WsdlOperationContainer(wsdlOperation, param.getMode());
                         }
                     }
-                    else if (ParameterMode.OUT.equals(param.getMode()))
+                    else if (ParameterMode.OUT.equals(param.getMode()) || ParameterMode.INOUT.equals(param.getMode()) || ParameterMode.UNDEFINED.equals(param.getMode()))
                     {
                         if (outWsdlParamContainer != null && !(outWsdlParamContainer instanceof WsdlOperationContainer))
                         {
@@ -306,8 +319,11 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
                         }
                         else
                         {
-                            outWsdlParamContainer = new WsdlOperationContainer(wsdlOperation, ParameterMode.OUT);
+                            outWsdlParamContainer = new WsdlOperationContainer(wsdlOperation, param.getMode());
                         }
+                    }
+                    else {
+                    	System.out.println("Parameter : "+param.getName().getLocalPart()+", mode="+param.getMode().toString()+", is not considered");
                     }
                 }
             }
@@ -337,9 +353,9 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         }
     }
     /**
-     * Initialisation de l'arbre : 
-     * 	- construction par rapport � l'URL du WS
-     *  - ajout du listener de s�lection sur l'arbre
+     * Initialization of the tree:
+     * - construction using the URL of the WS
+     * - add selection listeners to the tree
      * @throws KettleStepException 
      *
      */
@@ -361,7 +377,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
     {
         TableView oldTableView = fieldInTableView;
         int margin = Const.MARGIN;
-        //Initialisation de l'affichage
+        
         Composite vCompositeTabField = new Composite(wTabFolder, SWT.NONE);
         FormLayout formLayout = new FormLayout();
         formLayout.marginWidth = Const.FORM_MARGIN;
@@ -382,30 +398,27 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         ColumnInfo[] colinf = new ColumnInfo[] {
             new ColumnInfo(Messages.getString("WebServiceDialog.NameColumn.Column"), //$NON-NLS-1$
 		                   ColumnInfo.COLUMN_TYPE_TEXT,
-		                   false,
 		                   false),
             new ColumnInfo(Messages.getString("WebServiceDialog.WsNameColumn.Column"), //$NON-NLS-1$
                            ColumnInfo.COLUMN_TYPE_TEXT,
-                           false,
-                           true),
+                           false),
             new ColumnInfo(Messages.getString("WebServiceDialog.TypeColumn.Column"), //$NON-NLS-1$
                            ColumnInfo.COLUMN_TYPE_TEXT,
-                           false,
-                           true),
+                           false),
            };
-        fieldInTableView = new TableView(transMeta, vCompositeTabField, SWT.FULL_SELECTION | SWT.MULTI, colinf, 0,  lsMod, props);
-        fieldInTableView.setReadonly(true);
-        fieldInTableView.table.removeAll();
+        fieldInTableView = new TableView(transMeta, vCompositeTabField, SWT.FULL_SELECTION | SWT.MULTI, colinf, 1,  lsMod, props);
+        fieldInTableView.setReadonly(false);
+        fieldInTableView.clearAll(false);
         String containerName = inWsdlParamContainer == null ? meta.getInFieldContainerName() : inWsdlParamContainer.getContainerName();
         tabItemFieldIn.setText(containerName == null ? "in" : containerName);
         
 
         Button vButton = new Button(vCompositeTabField, SWT.NONE);
         vButton.setText(Messages.getString("System.Button.GetFields")); //$NON-NLS-1$
-        vButton.addMouseListener(new MouseAdapter()
+        vButton.addSelectionListener(new SelectionAdapter()
         {
-            public void mouseDown(MouseEvent arg0)
-            {
+        	@Override
+        	public void widgetSelected(SelectionEvent event) {
                 if (inWsdlParamContainer == null)
                 {
                     try
@@ -443,6 +456,8 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
                 }
             }
         });
+        
+        
         Button[] buttons = new Button[] {vButton};
         BaseStepDialog.positionBottomButtons(vCompositeTabField, buttons, Const.MARGIN, null);
 
@@ -471,8 +486,9 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
             {
                 String wsName = r.getValueMeta(i).getName();
                 TableItem vTableItem = new TableItem(fieldInTableView.table, SWT.NONE);
-                vTableItem.setText(2, wsName);
-                vTableItem.setText(3, inWsdlParamContainer.getParamType(wsName));
+                vTableItem.setText(2, Const.NVL(wsName, ""));
+            	vTableItem.setText(3, Const.NVL(inWsdlParamContainer.getParamType(wsName), ""));
+
                 if (oldTableView != null)
                 {
                     TableItem[] oldItems = oldTableView.table.getItems();
@@ -488,12 +504,15 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         {
             oldTableView.dispose();
         }
+        fieldInTableView.removeEmptyRows();
         fieldInTableView.setRowNums();
         fieldInTableView.optWidth(true);
     }
     
     private String getField(TableItem[] items, String wsName)
     {
+    	if (wsName==null) return null;
+    	
         String ret = null;
         for (int i = 0; i < items.length && ret == null; i++)
         {
@@ -509,7 +528,9 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
     {
         TableView oldTableView = fieldOutTableView;
         int margin = Const.MARGIN;
-        //Initialisation de l'affichage
+        
+        // Initialization of the output tab
+        //
         Composite vCompositeTabFieldOut = new Composite(wTabFolder, SWT.NONE);
         FormLayout formLayout = new FormLayout();
         formLayout.marginWidth = Const.FORM_MARGIN;
@@ -528,53 +549,50 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
                                false),
                 new ColumnInfo(Messages.getString("WebServiceDialog.WsNameColumn.Column"), //$NON-NLS-1$
                                ColumnInfo.COLUMN_TYPE_TEXT,
-                               false,
-                               true),
+                               false),
                 new ColumnInfo(Messages.getString("WebServiceDialog.TypeColumn.Column"), //$NON-NLS-1$
                                ColumnInfo.COLUMN_TYPE_TEXT,
-                               false,
-                               true)
+                               false)
         	};
-        fieldOutTableView = new TableView(transMeta, vCompositeTabFieldOut, SWT.FULL_SELECTION | SWT.MULTI, colinf, 0,  lsMod, props);
-        fieldOutTableView.table.removeAll();
+        fieldOutTableView = new TableView(transMeta, vCompositeTabFieldOut, SWT.FULL_SELECTION | SWT.MULTI, colinf, 1,  lsMod, props);
         String outContainerName = outWsdlParamContainer == null ? meta.getOutFieldContainerName() : outWsdlParamContainer.getContainerName();
         tabItemFieldOut.setText(outContainerName == null ? "out" : outContainerName);
-
+        fieldOutTableView.setReadonly(false);
+        
         Button vButton = new Button(vCompositeTabFieldOut, SWT.NONE);
         vButton.setText(Messages.getString("System.Button.GetFields")); //$NON-NLS-1$
-        vButton.addMouseListener(new MouseAdapter()
-        {
-            public void mouseDown(MouseEvent arg0)
-            {
-                if (outWsdlParamContainer == null)
-                {
-                    try
-                    {
-                        loadWebService(wURL.getText());
-                        loadOperation(wOperation.getText());
-                    }
-                    catch (KettleStepException e)
-                    {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
-                }
-                RowMetaInterface r = getOutWebServiceFields();
-                if (r != null)
-                {
-                    BaseStepDialog.getFieldsFromPrevious(r, fieldOutTableView, 2, new int[] { 1, 2 }, new int[] {}, -1, -1, null);
-                }
-                // Define type for new entries
-                if (outWsdlParamContainer != null)
-                {
-                    TableItem[] items = fieldOutTableView.table.getItems();
-                    for (int i = 0; i < items.length; i++)
-                    {
-                        items[i].setText(3, outWsdlParamContainer.getParamType(items[i].getText(2)));
-                    }
-                }
-            }
-        });
+        vButton.addSelectionListener(new SelectionAdapter()
+	        {
+	        	public void widgetSelected(SelectionEvent event) {
+	                if (outWsdlParamContainer == null)
+	                {
+	                    try
+	                    {
+	                        loadWebService(wURL.getText());
+	                        loadOperation(wOperation.getText());
+	                    }
+	                    catch (KettleStepException e)
+	                    {
+	                        // TODO Auto-generated catch block
+	                        e.printStackTrace();
+	                    }
+	                }
+	                RowMetaInterface r = getOutWebServiceFields();
+	                if (r != null)
+	                {
+	                    BaseStepDialog.getFieldsFromPrevious(r, fieldOutTableView, 2, new int[] { 1, 2 }, new int[] {}, -1, -1, null);
+	                }
+	                // Define type for new entries
+	                if (outWsdlParamContainer != null)
+	                {
+	                    TableItem[] items = fieldOutTableView.table.getItems();
+	                    for (int i = 0; i < items.length; i++)
+	                    {
+	                        items[i].setText(3, outWsdlParamContainer.getParamType(items[i].getText(2)));
+	                    }
+	                }
+	            }
+	        });
         Button[] buttons = new Button[] {vButton};
         BaseStepDialog.positionBottomButtons(vCompositeTabFieldOut, buttons, Const.MARGIN, null);
 
@@ -602,9 +620,11 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
             for (int i = 0; i < r.size(); ++i)
             {
                 String wsName = r.getValueMeta(i).getName();
+                String wsType = r.getValueMeta(i).getTypeDesc();
+                
                 TableItem vTableItem = new TableItem(fieldOutTableView.table, SWT.NONE);
                 vTableItem.setText(2, wsName);
-                vTableItem.setText(3, outWsdlParamContainer.getParamType(wsName));
+                vTableItem.setText(3, wsType);
                 if (oldTableView != null)
                 {
                     String previousField = getField(oldTableView.table.getItems(), wsName);
@@ -623,6 +643,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
                 }
             }
         }
+        fieldOutTableView.removeEmptyRows();
         fieldOutTableView.setRowNums();
         fieldOutTableView.optWidth(true);
     }
@@ -671,10 +692,9 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
     }
 
     /**
-     * Gestion du chargement des donnees a l'affichage de la fenetre
-     *
+     * Here we populate the dialog using the incoming web services meta data
      */
-    private void load()
+    private void getData()
     {
         wStepname.setText(stepname);
 
@@ -685,6 +705,10 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         wHttpPassword.setText(meta.getHttpPassword() == null ? "" : meta.getHttpPassword()); //$NON-NLS-1$
         DatabaseDialog.checkPasswordVisible(wHttpPassword.getTextWidget());
         wStep.setText(Integer.toString(meta.getCallStep()));
+        wPassInputData.setSelection(meta.isPassingInputData());
+        wCompatible.setSelection(meta.isCompatible());
+        wRepeatingElement.setText(Const.NVL(meta.getRepeatingElementName(), ""));
+        
         if (wURL.getText() != null && !"".equals(wURL.getText())) //$NON-NLS-1$
         {
             wOperation.setText(meta.getOperationName() == null ? "" : meta.getOperationName());
@@ -705,6 +729,8 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
                 vTableItem.setText(2, field.getWsName());
                 vTableItem.setText(3, field.getXsdType());
             }
+            
+            fieldInTableView.removeEmptyRows();
             fieldInTableView.setRowNums();
             fieldInTableView.optWidth(true);
         }
@@ -729,85 +755,84 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
                 vTableItem.setText(2, field.getWsName());
                 vTableItem.setText(3, field.getXsdType());
             }
+            fieldOutTableView.removeEmptyRows();
             fieldOutTableView.setRowNums();
             fieldOutTableView.optWidth(true);
         }
     }
 
     /**
-     * Gestion de la sauvegarde des donn�es � la fermeture de la fen�tre
+     * Save the data and close the dialog
      *
      */
-    private void save()
+    private void getInfo(WebServiceMeta webServiceMeta)
     {
-        //Sauvegarde du m�ta
-        meta.setUrl(wURL.getText());
-        meta.setProxyHost(wProxyHost.getText());
-        meta.setProxyPort(wProxyPort.getText());
-        meta.setHttpLogin(wHttpLogin.getText());
-        meta.setHttpPassword(wHttpPassword.getText());
-        meta.setCallStep(Const.toInt(wStep.getText(), WebServiceMeta.DEFAULT_STEP));
+    	webServiceMeta.setUrl(wURL.getText());
+    	webServiceMeta.setProxyHost(wProxyHost.getText());
+    	webServiceMeta.setProxyPort(wProxyPort.getText());
+    	webServiceMeta.setHttpLogin(wHttpLogin.getText());
+    	webServiceMeta.setHttpPassword(wHttpPassword.getText());
+    	webServiceMeta.setCallStep(Const.toInt(wStep.getText(), WebServiceMeta.DEFAULT_STEP));
+    	webServiceMeta.setPassingInputData(wPassInputData.getSelection());
+    	webServiceMeta.setCompatible(wCompatible.getSelection());
+    	webServiceMeta.setRepeatingElementName(wRepeatingElement.getText());
 
         if (wsdlOperation != null)
         {
-            meta.setOperationName(wsdlOperation.getOperationQName().getLocalPart());
-            meta.setOperationNamespace(wsdlOperation.getOperationQName().getNamespaceURI());
+        	webServiceMeta.setOperationName(wsdlOperation.getOperationQName().getLocalPart());
+        	webServiceMeta.setOperationNamespace(wsdlOperation.getOperationQName().getNamespaceURI());
         }
         else if (wsdl != null)
         {
-            meta.setOperationName(null);
-            meta.setOperationNamespace(null);
+        	webServiceMeta.setOperationName(null);
+        	webServiceMeta.setOperationNamespace(null);
         }
         if (inWsdlParamContainer != null)
         {
-            meta.setInFieldContainerName(inWsdlParamContainer.getContainerName());
-            meta.setInFieldArgumentName(inWsdlParamContainer.getItemName());
+        	webServiceMeta.setInFieldContainerName(inWsdlParamContainer.getContainerName());
+        	webServiceMeta.setInFieldArgumentName(inWsdlParamContainer.getItemName());
         }
         else if (wsdl != null)
         {
-            meta.setInFieldContainerName(null);
-            meta.setInFieldArgumentName(null);
+        	webServiceMeta.setInFieldContainerName(null);
+        	webServiceMeta.setInFieldArgumentName(null);
         }
         if (outWsdlParamContainer != null)
         {
-            meta.setOutFieldContainerName(outWsdlParamContainer.getContainerName());
-            meta.setOutFieldArgumentName(outWsdlParamContainer.getItemName());
+        	webServiceMeta.setOutFieldContainerName(outWsdlParamContainer.getContainerName());
+        	webServiceMeta.setOutFieldArgumentName(outWsdlParamContainer.getItemName());
         }
         else if (wsdl != null)
         {
-            meta.setOutFieldContainerName(null);
-            meta.setOutFieldArgumentName(null);
+        	webServiceMeta.setOutFieldContainerName(null);
+        	webServiceMeta.setOutFieldArgumentName(null);
         }
 
-        //Sauvegarde des fields in
-        meta.getFieldsIn().clear();
+        // Input fields...
+        //
+        webServiceMeta.getFieldsIn().clear();
         if (tabItemFieldIn != null)
         {
             int nbRow = fieldInTableView.nrNonEmpty();
             
-            //Utilisation des valeurs en entrees
-            //
             for (int i = 0; i < nbRow; ++i)
             {
                 TableItem vTableItem = fieldInTableView.getNonEmpty(i);
-                // If type is null we do not add the field because we cannot use it
-                if (!"".equals(vTableItem.getText(3)))
-                {
-                    WebServiceField field = new WebServiceField();
-                    field.setName(vTableItem.getText(1));
-                    field.setWsName(vTableItem.getText(2));
-                    field.setXsdType(vTableItem.getText(3));
-                    meta.addFieldIn(field);
-                }
+                WebServiceField field = new WebServiceField();
+                field.setName(vTableItem.getText(1));
+                field.setWsName(vTableItem.getText(2));
+                field.setXsdType(Const.NVL(vTableItem.getText(3), "String"));
+                webServiceMeta.addFieldIn(field);
             }
         }
 
-        //Sauvegarde des fields out : on ne fait rien c'est seulement de la consultation.
-        meta.getFieldsOut().clear();
+        // output fields...
+        //
+        webServiceMeta.getFieldsOut().clear();
         if (tabItemFieldOut != null)
         {
             int nbRow = fieldOutTableView.nrNonEmpty();
-            //Utilisation des valeurs en entr�es
+            
             for (int i = 0; i < nbRow; ++i)
             {
                 TableItem vTableItem = fieldOutTableView.getNonEmpty(i);
@@ -818,7 +843,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
                     field.setName(vTableItem.getText(1));
                     field.setWsName(vTableItem.getText(2));
                     field.setXsdType(vTableItem.getText(3));
-                    meta.addFieldOut(field);
+                    webServiceMeta.addFieldOut(field);
                 }
             }
         }
@@ -873,7 +898,8 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         wTabFolder = new CTabFolder(shell, SWT.BORDER);
         props.setLook(wTabFolder, Props.WIDGET_STYLE_TAB);
 
-        // Ajout du tab contenant les informations sur les web services
+        // Add a tab which contains information on the web service(s)
+        //
         tabItemWebService = new CTabItem(wTabFolder, SWT.NONE);
         tabItemWebService.setText(Messages.getString("WebServiceDialog.MainTab.TabTitle")); //$NON-NLS-1$
         Composite compositeTabWebService = new Composite(wTabFolder, SWT.NONE);
@@ -906,17 +932,20 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         {
             public void widgetSelected(SelectionEvent e)
             {
-                //Si l'url est renseign�, on essaye de toujours charger
-                if (wURL.getText() != null && !"".equals(wURL.getText())) //$NON-NLS-1$
+                // If the URL is specified, we always try to load
+            	//
+                if (!Const.isEmpty(wURL.getText()))
                 {
                     try
                     {
                         initTreeTabWebService(wURL.getText());
                     }
-                    catch (KettleStepException e1)
+                    catch (Throwable throwable)
                     {
-                        // TODO Auto-generated catch block
-                        e1.printStackTrace();
+                		new ErrorDialog(shell, 
+                				Messages.getString("WebServiceDialog.Exception.UnableToLoadWebService.Title"), // $NON-NLS-1$ 
+                				Messages.getString("WebServiceDialog.Exception.UnableToLoadWebService.Message"), // $NON-NLS-1$ 
+                				throwable);
                     }
                 }
             }
@@ -992,6 +1021,65 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         fdStep.right = new FormAttachment(100, 0);
         wStep.setLayoutData(fdStep);
 
+        // Option to pass all input data to output
+        //
+        wlPassInputData = new Label(compositeTabWebService, SWT.RIGHT);
+        wlPassInputData.setText(Messages.getString("WebServiceDialog.PassInputData.Label")); //$NON-NLS-1$
+        props.setLook(wlPassInputData);
+        FormData fdlPassInputData = new FormData();
+        fdlPassInputData.left = new FormAttachment(0, 0);
+        fdlPassInputData.top = new FormAttachment(wStep, margin);
+        fdlPassInputData.right = new FormAttachment(middle, -margin);
+        wlPassInputData.setLayoutData(fdlPassInputData);
+        wPassInputData = new Button(compositeTabWebService, SWT.CHECK);
+        wPassInputData.setToolTipText(Messages.getString("WebServiceDialog.PassInputData.Tooltip")); //$NON-NLS-1$
+        props.setLook(wPassInputData);
+        FormData fdPassInputData = new FormData();
+        fdPassInputData.top = new FormAttachment(wStep, margin);
+        fdPassInputData.left = new FormAttachment(middle, 0);
+        fdPassInputData.right = new FormAttachment(100, 0);
+        wPassInputData.setLayoutData(fdPassInputData);
+
+        // Option to use 2.5/3.0 compatible parsing logic
+        //
+        wlCompatible = new Label(compositeTabWebService, SWT.RIGHT);
+        wlCompatible.setText(Messages.getString("WebServiceDialog.Compatible.Label")); //$NON-NLS-1$
+        props.setLook(wlCompatible);
+        FormData fdlCompatible = new FormData();
+        fdlCompatible.left = new FormAttachment(0, 0);
+        fdlCompatible.top = new FormAttachment(wPassInputData, margin);
+        fdlCompatible.right = new FormAttachment(middle, -margin);
+        wlCompatible.setLayoutData(fdlCompatible);
+        wCompatible = new Button(compositeTabWebService, SWT.CHECK);
+        wCompatible.setToolTipText(Messages.getString("WebServiceDialog.Compatible.Tooltip")); //$NON-NLS-1$
+        props.setLook(wCompatible);
+        FormData fdCompatible = new FormData();
+        fdCompatible.top = new FormAttachment(wPassInputData, margin);
+        fdCompatible.left = new FormAttachment(middle, 0);
+        fdCompatible.right = new FormAttachment(100, 0);
+        wCompatible.setLayoutData(fdCompatible);
+        
+        // HTTP Login
+        wlRepeatingElement = new Label(compositeTabWebService, SWT.RIGHT);
+        wlRepeatingElement.setText(Messages.getString("WebServiceDialog.RepeatingElement.Label")); //$NON-NLS-1$
+        props.setLook(wlRepeatingElement);
+        FormData fdlRepeatingElement = new FormData();
+        fdlRepeatingElement.top = new FormAttachment(wCompatible, margin);
+        fdlRepeatingElement.left = new FormAttachment(0, 0);
+        fdlRepeatingElement.right = new FormAttachment(middle, -margin);
+        wlRepeatingElement.setLayoutData(fdlRepeatingElement);
+        wRepeatingElement = new TextVar(transMeta, compositeTabWebService, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wRepeatingElement.addModifyListener(lsMod);
+        wRepeatingElement.setToolTipText(Messages.getString("WebServiceDialog.RepeatingElement.Tooltip")); //$NON-NLS-1$
+        props.setLook(wRepeatingElement);
+        FormData fdRepeatingElement = new FormData();
+        fdRepeatingElement.top = new FormAttachment(wCompatible, margin);
+        fdRepeatingElement.left = new FormAttachment(middle, 0);
+        fdRepeatingElement.right = new FormAttachment(100, 0);
+        wRepeatingElement.setLayoutData(fdRepeatingElement);
+
+
+
         //////////////////////////
         // START HTTP AUTH GROUP
 
@@ -1045,7 +1133,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         FormData fdHttpAuth = new FormData();
         fdHttpAuth.left = new FormAttachment(0, 0);
         fdHttpAuth.right = new FormAttachment(100, 0);
-        fdHttpAuth.top = new FormAttachment(wStep, margin);
+        fdHttpAuth.top = new FormAttachment(wRepeatingElement, margin);
         gHttpAuth.setLayoutData(fdHttpAuth);
 
         // END HTTP AUTH GROUP
@@ -1132,7 +1220,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         {
             public void handleEvent(Event e)
             {
-                load();
+                getData();
             }
         });
 
@@ -1163,10 +1251,16 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         wOK = new Button(shell, SWT.PUSH);
         wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
 
+        wAddInput = new Button(shell, SWT.PUSH);
+        wAddInput.setText(Messages.getString("WebServiceDialog.Label.AddInputButton")); //$NON-NLS-1$
+
+        wAddOutput = new Button(shell, SWT.PUSH);
+        wAddOutput.setText(Messages.getString("WebServiceDialog.Label.AddOutputButton")); //$NON-NLS-1$
+
         wCancel = new Button(shell, SWT.PUSH);
         wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
 
-        setButtonPositions(new Button[] {wOK, wCancel}, margin, wTabFolder);
+        setButtonPositions(new Button[] {wOK, wAddInput, wAddOutput, wCancel}, margin, wTabFolder);
 
         // Detect X or ALT-F4 or something that kills this window...
         shell.addShellListener(new ShellAdapter()
@@ -1177,24 +1271,10 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
             }
         });
 
-        // Add listeners
-        lsOK = new Listener()
-        {
-            public void handleEvent(Event e)
-            {
-                ok();
-            }
-        };
-        lsCancel = new Listener()
-        {
-            public void handleEvent(Event e)
-            {
-                cancel();
-            }
-        };
-
-        wOK.addListener(SWT.Selection, lsOK);
-        wCancel.addListener(SWT.Selection, lsCancel);
+        wOK.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { ok(); } });
+        wAddInput.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { addTabFieldIn(); wTabFolder.setSelection(tabItemFieldIn); } });
+        wAddOutput.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { addTabFieldOut(); wTabFolder.setSelection(tabItemFieldOut);} });
+        wCancel.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { cancel(); } });
 
         lsDef = new SelectionAdapter()
         {
@@ -1204,7 +1284,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
             }
         };
 
-        load();
+        getData();
 
         setComboValues();
         // Set the shell size, based upon previous time...
@@ -1227,9 +1307,8 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
 
         stepname = wStepname.getText(); // return value
 
-        //getInfo(input);
-        save();
-
+        getInfo(meta);
+        
         dispose();
     }
 
