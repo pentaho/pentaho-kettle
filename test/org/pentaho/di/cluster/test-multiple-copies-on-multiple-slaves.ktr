@@ -472,7 +472,7 @@
     <type>Dummy</type>
     <description/>
     <distribute>Y</distribute>
-    <copies>3</copies>
+    <copies>2</copies>
          <partitioning>
            <method>none</method>
            <schema_name/>

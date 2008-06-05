@@ -10,6 +10,7 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.job.JobEntryLoader;
 import org.pentaho.di.trans.StepLoader;
+import org.pentaho.di.trans.TransExecutionConfiguration;
 
 public class BaseCluster extends TestCase {
 	
@@ -21,6 +22,21 @@ public class BaseCluster extends TestCase {
 		assertEqualsIgnoreWhitespacesAndCase("a, b, c", "A,B,C  ");
 	}
 	*/
+	
+	public static TransExecutionConfiguration createClusteredTransExecutionConfiguration() {
+		
+		TransExecutionConfiguration config = new TransExecutionConfiguration();
+		config.setExecutingClustered(true);
+		config.setExecutingLocally(false);
+		config.setExecutingRemotely(false);
+		config.setClusterPosting(true);
+		config.setClusterPreparing(true);
+		config.setClusterStarting(true);
+		config.setLogLevel(LogWriter.LOG_LEVEL_BASIC);
+		
+		return config;
+	}
+	
 	
 	protected void init() throws Exception {
         EnvUtil.environmentInit();

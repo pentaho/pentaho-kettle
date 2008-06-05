@@ -3,7 +3,6 @@ package org.pentaho.di.cluster;
 import java.util.Arrays;
 
 import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
@@ -36,14 +35,7 @@ public class MasterSlave extends BaseCluster {
 			clusterGenerator.launchSlaveServers();
 			
 			TransMeta transMeta = generateParallelFileReadOnMasterTransMeta(clusterGenerator);
-			TransExecutionConfiguration config = new TransExecutionConfiguration();
-			config.setExecutingClustered(true);
-			config.setExecutingLocally(false);
-			config.setExecutingRemotely(false);
-			config.setClusterPosting(true);
-			config.setClusterPreparing(true);
-			config.setClusterStarting(true);
-			config.setLogLevel(LogWriter.LOG_LEVEL_BASIC);
+			TransExecutionConfiguration config = createClusteredTransExecutionConfiguration();
 			TransSplitter transSplitter = Trans.executeClustered(transMeta, config);
 			long nrErrors = Trans.monitorClusteredTransformation("cluster unit test <testParallelFileReadOnMaster>", transSplitter, null, 1);
 			assertEquals(0L, nrErrors);
@@ -76,14 +68,7 @@ public class MasterSlave extends BaseCluster {
 			clusterGenerator.launchSlaveServers();
 			
 			TransMeta transMeta = generateParallelFileReadOnMasterWithCopiesTransMeta(clusterGenerator);
-			TransExecutionConfiguration config = new TransExecutionConfiguration();
-			config.setExecutingClustered(true);
-			config.setExecutingLocally(false);
-			config.setExecutingRemotely(false);
-			config.setClusterPosting(true);
-			config.setClusterPreparing(true);
-			config.setClusterStarting(true);
-			config.setLogLevel(LogWriter.LOG_LEVEL_BASIC);
+			TransExecutionConfiguration config = createClusteredTransExecutionConfiguration();
 			TransSplitter transSplitter = Trans.executeClustered(transMeta, config);
 			long nrErrors = Trans.monitorClusteredTransformation("cluster unit test <testParallelFileReadOnMasterWithCopies>", transSplitter, null, 1);
 			assertEquals(0L, nrErrors);
@@ -117,14 +102,7 @@ public class MasterSlave extends BaseCluster {
 			clusterGenerator.launchSlaveServers();
 			
 			TransMeta transMeta = generateParallelFileReadOnSlavesTransMeta(clusterGenerator);
-			TransExecutionConfiguration config = new TransExecutionConfiguration();
-			config.setExecutingClustered(true);
-			config.setExecutingLocally(false);
-			config.setExecutingRemotely(false);
-			config.setClusterPosting(true);
-			config.setClusterPreparing(true);
-			config.setClusterStarting(true);
-			config.setLogLevel(LogWriter.LOG_LEVEL_BASIC);
+			TransExecutionConfiguration config = createClusteredTransExecutionConfiguration();
 			TransSplitter transSplitter = Trans.executeClustered(transMeta, config);
 			long nrErrors = Trans.monitorClusteredTransformation("cluster unit test <testParallelFileReadOnSlaves>", transSplitter, null, 1);
 			assertEquals(0L, nrErrors);
@@ -157,14 +135,7 @@ public class MasterSlave extends BaseCluster {
 			clusterGenerator.launchSlaveServers();
 			
 			TransMeta transMeta = generateParallelFileReadOnSlavesWithPartitioningTransMeta(clusterGenerator);
-			TransExecutionConfiguration config = new TransExecutionConfiguration();
-			config.setExecutingClustered(true);
-			config.setExecutingLocally(false);
-			config.setExecutingRemotely(false);
-			config.setClusterPosting(true);
-			config.setClusterPreparing(true);
-			config.setClusterStarting(true);
-			config.setLogLevel(LogWriter.LOG_LEVEL_BASIC);
+			TransExecutionConfiguration config = createClusteredTransExecutionConfiguration();
 			TransSplitter transSplitter = Trans.executeClustered(transMeta, config);
 			long nrErrors = Trans.monitorClusteredTransformation("cluster unit test <testParallelFileReadOnSlavesWithPartitioning>", transSplitter, null, 1);
 			assertEquals(0L, nrErrors);
@@ -198,14 +169,7 @@ public class MasterSlave extends BaseCluster {
 			clusterGenerator.launchSlaveServers();
 			
 			TransMeta transMeta = generateParallelFileReadOnSlavesWithPartitioning2TransMeta(clusterGenerator);
-			TransExecutionConfiguration config = new TransExecutionConfiguration();
-			config.setExecutingClustered(true);
-			config.setExecutingLocally(false);
-			config.setExecutingRemotely(false);
-			config.setClusterPosting(true);
-			config.setClusterPreparing(true);
-			config.setClusterStarting(true);
-			config.setLogLevel(LogWriter.LOG_LEVEL_BASIC);
+			TransExecutionConfiguration config = createClusteredTransExecutionConfiguration();
 			TransSplitter transSplitter = Trans.executeClustered(transMeta, config);
 			long nrErrors = Trans.monitorClusteredTransformation("cluster unit test <testParallelFileReadOnSlavesWithPartitioning2>", transSplitter, null, 1);
 			assertEquals(0L, nrErrors);
@@ -237,14 +201,7 @@ public class MasterSlave extends BaseCluster {
 			clusterGenerator.launchSlaveServers();
 			
 			TransMeta transMeta = generateMultipleCopiesOnMultipleSlaves(clusterGenerator);
-			TransExecutionConfiguration config = new TransExecutionConfiguration();
-			config.setExecutingClustered(true);
-			config.setExecutingLocally(false);
-			config.setExecutingRemotely(false);
-			config.setClusterPosting(true);
-			config.setClusterPreparing(true);
-			config.setClusterStarting(true);
-			config.setLogLevel(LogWriter.LOG_LEVEL_BASIC);
+			TransExecutionConfiguration config = createClusteredTransExecutionConfiguration();
 			TransSplitter transSplitter = Trans.executeClustered(transMeta, config);
 			long nrErrors = Trans.monitorClusteredTransformation("cluster unit test <testMultipleCopiesOnMultipleSlaves>", transSplitter, null, 1);
 			assertEquals(0L, nrErrors);
