@@ -105,9 +105,9 @@ public class ValueBigNumberTest extends TestCase
 		vs.setString("unknown");
 		assertEquals(BigDecimal.ZERO, vs.getBigNumber());
 		vs.setString("-4.0");
-		assertEquals(new BigDecimal(-4), vs.getBigNumber());
+		assertEquals(BigDecimal.valueOf(-4.0D), vs.getBigNumber());
 		vs.setString("0.0");
-		assertEquals(BigDecimal.ZERO, vs.getBigNumber());
+		assertEquals(BigDecimal.valueOf(0.0D), vs.getBigNumber());
 		vs.setString("0");
 		assertEquals(BigDecimal.ZERO, vs.getBigNumber());
 		
@@ -132,10 +132,10 @@ public class ValueBigNumberTest extends TestCase
 		vs.setNumber(5.0D);
 		assertEquals(BigDecimal.valueOf(5.0D), vs.getBigNumber());
 		vs.setNumber(0.0D);
-		assertEquals(BigDecimal.ZERO, vs.getBigNumber());
+		assertEquals(BigDecimal.valueOf(0.0D), vs.getBigNumber());
 		
 		vs.setInteger(5L);
-		assertEquals(BigDecimal.valueOf(5.0D), vs.getBigNumber());
+		assertEquals(BigDecimal.valueOf(5L), vs.getBigNumber());
 		vs.setInteger(0L);
 		assertEquals(BigDecimal.ZERO, vs.getBigNumber());
 

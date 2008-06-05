@@ -83,6 +83,21 @@ public class CsvInput extends BaseStep implements StepInterface
 				valueMeta.setStorageType(ValueMetaInterface.STORAGE_TYPE_BINARY_STRING);
 			}
 			
+			// Calculate the indexes for the filename and row number fields
+			//
+			data.filenameFieldIndex = -1;
+			if (!Const.isEmpty(meta.getFilenameField()) && meta.isIncludingFilename()) {
+				data.filenameFieldIndex = meta.getInputFields().length;
+			}
+			
+			data.rownumFieldIndex = -1;
+			if (!Const.isEmpty(meta.getRowNumField())) {
+				data.rownumFieldIndex = meta.getInputFields().length;
+				if (data.filenameFieldIndex>=0) {
+					data.rownumFieldIndex++;
+				}
+			}
+			
 			// Now handle the parallel reading aspect: determine total of all the file sizes
 			// Then skip to the appropriate file and location in the file to start reading...
 			// Also skip to right after the first newline
@@ -283,6 +298,10 @@ public class CsvInput extends BaseStep implements StepInterface
 				addResultFile(resultFile);
 			}
 			
+			// Move to the next filename
+			//
+			data.filenr++;
+			
 			// See if we need to skip the header row...
 			//
 			if ((meta.isHeaderPresent() && !data.parallel) || // Standard flat file : skip header 
@@ -290,12 +309,8 @@ public class CsvInput extends BaseStep implements StepInterface
 				(data.parallel && data.filenr>data.startFilenr && data.bytesToSkipInFirstFile<=0)   // parallel processing : start of next file, nothing to skip
 				) {
 				readOneRow(false); // skip this row.
-				logBasic(Messages.getString("CsvInput.Log.HeaderRowSkipped", data.filenames[data.filenr]));
+				logBasic(Messages.getString("CsvInput.Log.HeaderRowSkipped", data.filenames[data.filenr-1]));
 			}
-			
-			// Move to the next filename
-			//
-			data.filenr++;
 			
 			// Reset the row number pointer...
 			//
@@ -313,6 +328,22 @@ public class CsvInput extends BaseStep implements StepInterface
 		}
 	}
 
+	private boolean checkBufferSize() throws IOException {
+		if (data.endBuffer>=data.bufferSize) {
+			// Oops, we need to read more data...
+			// Better resize this before we read other things in it...
+			//
+			data.resizeByteBuffer();
+			
+			// Also read another chunk of data, now that we have the space for it...
+			if (!data.readBufferFromFile()) {
+				// TODO handle EOF properly for EOF in the middle of the row, etc.
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	/** Read a single row of data from the file... 
 	 * 
 	 * @param doConversions if you want to do conversions, set to false for the header row.
@@ -337,21 +368,12 @@ public class CsvInput extends BaseStep implements StepInterface
 			//
 			// Let's start by looking where we left off reading.
 			//
-			while (!newLineFound && outputIndex<data.convertRowMeta.size()) {
+			while (!newLineFound && outputIndex<meta.getInputFields().length) {
 				
-				if (data.endBuffer>=data.bufferSize) {
-					// Oops, we need to read more data...
-					// Better resize this before we read other things in it...
-					//
-					data.resizeByteBuffer();
-					
-					// Also read another chunk of data, now that we have the space for it...
-					if (!data.readBufferFromFile()) {
-						// TODO handle EOF properly for EOF in the middle of the row, etc.
-						return null;
-					}
+				if (checkBufferSize()) {
+					return null; // nothing more to read, call it a day.
 				}
-
+				
 				// OK, at this point we should have data in the byteBuffer and we should be able to scan for the next 
 				// delimiter (;)
 				// So let's look for a delimiter.
@@ -455,24 +477,14 @@ public class CsvInput extends BaseStep implements StepInterface
 					}
 						
 					else {
+						
 						data.endBuffer++;
 						data.totalBytesRead++;
 
-						if (data.endBuffer>=data.bufferSize) {
-							// Oops, we need to read more data...
-							// Better resize this before we read other things in it...
-							//
-							data.resizeByteBuffer();
-							
-							// Also read another chunk of data, now that we have the space for it...
-							if (!data.readBufferFromFile()) {
-								// Break out of the loop if we don't have enough buffer space to continue...
-								//
-								if (data.endBuffer>=data.bufferSize)
-								{
-									newLineFound=true; // consider it a newline to break out of the upper while loop
-									break;
-								}
+						if (checkBufferSize()) {
+							if (data.endBuffer>data.bufferSize) {
+								newLineFound=true;
+								break;
 							}
 						}
 					}
@@ -534,19 +546,49 @@ public class CsvInput extends BaseStep implements StepInterface
 				data.startBuffer = data.endBuffer;
 			}
 			
+			// See if we reached the end of the line.
+			// If not, we need to skip the remaining items on the line until the next newline...
+			//
+			if (!newLineFound) 
+			{
+				System.out.println("Trailing content on line!!");
+				do {
+					if (checkBufferSize()) {
+						break; // nothing more to read.
+					}
+					data.endBuffer++;
+					data.totalBytesRead++;
+					
+					// TODO: if we're using quoting we might be dealing with a very dirty file with quoted newlines in trailing fields. (imagine that)
+					// In that particular case we want to use the same logic we use above (refactored a bit) to skip these fields.
+					
+				} while (data.byteBuffer[data.endBuffer]!='\n' && data.byteBuffer[data.endBuffer]!='\r');
+				
+				while (data.byteBuffer[data.endBuffer]=='\n' || data.byteBuffer[data.endBuffer]=='\r') {
+					if (checkBufferSize()) {
+						break; // nothing more to read.
+					}
+					data.endBuffer++;
+					data.totalBytesRead++;
+				}
+				
+				// Make sure we start at the right position the next time around.
+				data.startBuffer = data.endBuffer;
+			}
+			
 			// Optionally add the current filename to the mix as well...
 			//
 			if (meta.isIncludingFilename() && !Const.isEmpty(meta.getFilenameField())) {
 				if (meta.isLazyConversionActive()) {
-					outputRowData[outputIndex++] = data.binaryFilename;
+					outputRowData[data.filenameFieldIndex] = data.binaryFilename;
 				}
 				else {
-					outputRowData[outputIndex++] = data.filenames[data.filenr-1];
+					outputRowData[data.filenameFieldIndex] = data.filenames[data.filenr-1];
 				}
 			}
 			
 			if (data.isAddingRowNumber) {
-				outputRowData[outputIndex++] = new Long(data.rowNumber++);
+				outputRowData[data.rownumFieldIndex] = new Long(data.rowNumber++);
 			}
 		
 			incrementLinesInput();

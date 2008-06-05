@@ -65,6 +65,8 @@ public class CsvInputData extends BaseStepData implements StepDataInterface
 	public long totalBytesRead;
 	
 	public boolean parallel;
+	public int filenameFieldIndex;
+	public int rownumFieldIndex;
 	
 	/**
 	 * 

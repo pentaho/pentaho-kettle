@@ -87,7 +87,7 @@ public class ValueStringTest extends TestCase
 		assertNull(vs.getDate());   // will fail parsing
 		assertEquals(false, vs.getBoolean());
 		assertEquals(1000, vs.getInteger());
-		assertEquals(BigDecimal.valueOf(1000.0), vs.getBigNumber());
+		assertEquals(BigDecimal.valueOf(1000), vs.getBigNumber());
 	}
 
 	/**
