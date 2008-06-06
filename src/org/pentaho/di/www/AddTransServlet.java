@@ -83,11 +83,11 @@ public class AddTransServlet extends HttpServlet
         try
         {
             // First read the complete transformation in memory from the request
-            StringBuilder xml = new StringBuilder(request.getContentLength());
-            String line;
-            while ((line = in.readLine()) != null)
+        	StringBuilder xml = new StringBuilder(request.getContentLength());
+            int c;
+            while ( (c=in.read())!=-1)
             {
-                xml.append(line).append(Const.CR);
+                xml.append((char)c);
             }
             
             // Parse the XML, create a transformation configuration
