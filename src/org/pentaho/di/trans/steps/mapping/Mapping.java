@@ -295,7 +295,7 @@ public class Mapping extends BaseStep implements StepInterface
             {
             	// Pass the repository down to the metadata object...
             	//
-            	meta.setRepository(getTrans().getRepository());
+            	meta.setRepository(getTransMeta().getRepository());
             	
                 data.mappingTransMeta = MappingMeta.loadMappingMeta(meta.getFileName(), meta.getTransName(), meta.getDirectoryPath(), meta.getRepository(), this);
                 if (data.mappingTransMeta!=null) // Do we have a mapping at all?
