@@ -137,6 +137,7 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
 
     private Trans                        trans;
 
+    private Object statusCountersLock = new Object();
     /**  nr of lines read from previous step(s)
      * @deprecated please use the supplied getters, setters and increment/decrement methods 
      */
@@ -351,14 +352,16 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
         paused = new AtomicBoolean(false);;
         init = false;
 
-        linesRead = 0L; // new AtomicLong(0L); // Keep some statistics!
-        linesWritten = 0L; // new AtomicLong(0L);
-        linesUpdated = 0L; // new AtomicLong(0L);
-        linesSkipped = 0L; // new AtomicLong(0L);
-        linesRejected = 0L; // new AtomicLong(0L);
-        linesInput = 0L; // new AtomicLong(0L);
-        linesOutput = 0L; //new AtomicLong(0L);
-
+        synchronized (statusCountersLock) {
+            linesRead = 0L; // new AtomicLong(0L); // Keep some statistics!
+            linesWritten = 0L; // new AtomicLong(0L);
+            linesUpdated = 0L; // new AtomicLong(0L);
+            linesSkipped = 0L; // new AtomicLong(0L);
+            linesRejected = 0L; // new AtomicLong(0L);
+            linesInput = 0L; // new AtomicLong(0L);
+            linesOutput = 0L; //new AtomicLong(0L);
+        }
+        
         inputRowSets = null;
         outputRowSets = null;
         nextSteps = null;
@@ -637,18 +640,22 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
     /**
      * @return Returns the number of lines read from previous steps
      */
-    public synchronized long getLinesRead()
+    public long getLinesRead()
     {
-        return linesRead;
+        synchronized (statusCountersLock) {
+            return linesRead;
+        }
     }
     
     /**
      * Increments the number of lines read from previous steps by one
      * @return Returns the new value
      */
-    public synchronized long incrementLinesRead()
+    public long incrementLinesRead()
     {
-    	return ++linesRead;
+        synchronized (statusCountersLock) {
+            return ++linesRead;
+        }
     }
     
     
@@ -656,176 +663,218 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
      * Decrements the number of lines read from previous steps by one
      * @return Returns the new value
      */
-    public synchronized long decrementLinesRead()
+    public long decrementLinesRead()
     {
-    	return --linesRead;
+        synchronized (statusCountersLock) {
+            return --linesRead;
+        }
     }
     
     /**
      * @param newLinesReadValue the new number of lines read from previous steps
      */
-    public synchronized void setLinesRead(long newLinesReadValue)
+    public void setLinesRead(long newLinesReadValue)
     {
-    	linesRead = newLinesReadValue;
+        synchronized (statusCountersLock) {
+            linesRead = newLinesReadValue;
+        }
     }
     
     /**
      * @return Returns the number of lines read from an input source: database, file, socket, etc.
      */
-    public synchronized long getLinesInput()
+    public long getLinesInput()
     {
-        return linesInput;
+        synchronized (statusCountersLock) {
+            return linesInput;
+        }
     }
     
     /**
      * Increments the number of lines read from an input source: database, file, socket, etc.
      * @return the new incremented value
      */
-    public synchronized long incrementLinesInput()
+    public long incrementLinesInput()
     {
-    	return ++linesInput;
+        synchronized (statusCountersLock) {
+            return ++linesInput;
+        }
     }
     
     /**
      * @param newLinesInputValue the new number of lines read from an input source: database, file, socket, etc.
      */
-    public synchronized void setLinesInput(long newLinesInputValue)
+    public void setLinesInput(long newLinesInputValue)
     {
-    	linesInput = newLinesInputValue;
+        synchronized (statusCountersLock) {
+            linesInput = newLinesInputValue;
+        }
     }
 
     /**
      * @return Returns the number of lines written to an output target: database, file, socket, etc.
      */
-    public synchronized long getLinesOutput()
+    public long getLinesOutput()
     {
-        return linesOutput;
+        synchronized (statusCountersLock) {
+            return linesOutput;
+        }
     }
     
     /**
      * Increments the number of lines written to an output target: database, file, socket, etc.
      * @return the new incremented value
      */
-    public synchronized long incrementLinesOutput()
+    public long incrementLinesOutput()
     {
-    	return ++linesOutput;
+        synchronized (statusCountersLock) {
+            return ++linesOutput;
+        }
     }
     
     /**
      * @param newLinesOutputValue the new number of lines written to an output target: database, file, socket, etc.
      */
-    public synchronized void setLinesOutput(long newLinesOutputValue)
+    public void setLinesOutput(long newLinesOutputValue)
     {
-    	linesOutput = newLinesOutputValue;
+        synchronized (statusCountersLock) {
+            linesOutput = newLinesOutputValue;
+        }
     }
 
     /**
      * @return Returns the linesWritten.
      */
-    public synchronized long getLinesWritten()
+    public long getLinesWritten()
     {
-        return linesWritten;
+        synchronized (statusCountersLock) {
+            return linesWritten;
+        }
     }
     
     /**
      * Increments the number of lines written to next steps by one
      * @return Returns the new value
      */
-    public synchronized long incrementLinesWritten()
+    public long incrementLinesWritten()
     {
-    	return ++linesWritten;
+        synchronized (statusCountersLock) {
+            return ++linesWritten;
+        }
     }
 
     /**
      * Decrements the number of lines written to next steps by one
      * @return Returns the new value
      */
-    public synchronized long decrementLinesWritten()
+    public long decrementLinesWritten()
     {
-    	return --linesWritten;
+        synchronized (statusCountersLock) {
+            return --linesWritten;
+        }
     }
 
     /**
      * @param newLinesWrittenValue the new number of lines written to next steps
      */
-    public synchronized void setLinesWritten(long newLinesWrittenValue)
+    public void setLinesWritten(long newLinesWrittenValue)
     {
-    	linesWritten = newLinesWrittenValue;
+        synchronized (statusCountersLock) {
+            linesWritten = newLinesWrittenValue;
+        }
     }
 
     /**
      * @return Returns the number of lines updated in an output target: database, file, socket, etc.
      */
-    public synchronized long getLinesUpdated()
+    public long getLinesUpdated()
     {
-        return linesUpdated;
+        synchronized (statusCountersLock) {
+            return linesUpdated;
+        }
     }
     
     /**
      * Increments the number of lines updated in an output target: database, file, socket, etc.
      * @return the new incremented value
      */
-    public synchronized long incrementLinesUpdated()
+    public long incrementLinesUpdated()
     {
-    	return ++linesUpdated;
+        synchronized (statusCountersLock) {
+            return ++linesUpdated;
+        }
     }
     
     /**
      * @param newLinesOutputValue the new number of lines updated in an output target: database, file, socket, etc.
      */
-    public synchronized void setLinesUpdated(long newLinesUpdatedValue)
+    public void setLinesUpdated(long newLinesUpdatedValue)
     {
-    	linesUpdated = newLinesUpdatedValue;
+        synchronized (statusCountersLock) {
+            linesUpdated = newLinesUpdatedValue;
+        }
     }
 
     /**
      * @return the number of lines rejected to an error handling step
      */
-    public synchronized long getLinesRejected()
+    public long getLinesRejected()
     {
-        return linesRejected;
+        synchronized (statusCountersLock) {
+            return linesRejected;
+        }
     }
     
     /**
      * Increments the number of lines rejected to an error handling step
      * @return the new incremented value
      */
-    public synchronized long incrementLinesRejected()
+    public long incrementLinesRejected()
     {
-    	return ++linesRejected;
+        synchronized (statusCountersLock) {
+            return ++linesRejected;
+        }
     }
 
     /**
      * @param newLinesRejectedValue lines number of lines rejected to an error handling step
      */
-    public synchronized void setLinesRejected(long newLinesRejectedValue)
+    public void setLinesRejected(long newLinesRejectedValue)
     {
-        linesRejected = newLinesRejectedValue;
+        synchronized (statusCountersLock) {
+            linesRejected = newLinesRejectedValue;
+        }
     }
 
     /**
      * @return the number of lines skipped
      */
-    public synchronized long getLinesSkipped()
+    public long getLinesSkipped()
     {
-        return linesSkipped;
+        synchronized (statusCountersLock) {
+            return linesSkipped;
+        }
     }
     
     /**
      * Increments the number of lines skipped
      * @return the new incremented value
      */
-    public synchronized long incrementLinesSkipped()
+    public long incrementLinesSkipped()
     {
-    	return ++linesSkipped;
+        synchronized (statusCountersLock) {
+            return ++linesSkipped;
+        }
     }
 
     /**
      * @param newLinesSkippedValue lines number of lines skipped
      */
-    public synchronized void setLinesSkipped(long newLinesSkippedValue)
+    public void setLinesSkipped(long newLinesSkippedValue)
     {
-        linesSkipped = newLinesSkippedValue;
+        synchronized (statusCountersLock) {
+            linesSkipped = newLinesSkippedValue;
+        }
     }
 
 
@@ -2215,7 +2264,9 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
 
     public void logSummary()
     {
-        logBasic(Messages.getString("BaseStep.Log.SummaryInfo", String.valueOf(linesInput), String.valueOf(linesOutput), String.valueOf(linesRead), String.valueOf(linesWritten), String.valueOf(linesUpdated), String.valueOf(errors+getLinesRejected()))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+        synchronized (statusCountersLock) {
+            logBasic(Messages.getString("BaseStep.Log.SummaryInfo", String.valueOf(getLinesInput()), String.valueOf(getLinesOutput()), String.valueOf(getLinesRead()), String.valueOf(getLinesWritten()), String.valueOf(getLinesUpdated()), String.valueOf(errors+getLinesRejected()))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+        }
     }
 
     public String getStepID()
