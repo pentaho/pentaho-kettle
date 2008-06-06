@@ -2322,6 +2322,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     public TransMeta(Repository rep, String transname, RepositoryDirectory repdir, ProgressMonitorListener monitor, boolean setInternalVariables) throws KettleException
     {
         this();
+        this.repository = rep;
         
         try
         {

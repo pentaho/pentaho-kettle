@@ -839,6 +839,7 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 		int debugAnswer = TransDebugDialog.DEBUG_CONFIG;
 		
 		if (debug || preview) {
+			transDebugMeta.getTransMeta().setRepository(spoon.rep); // pass repository for mappings
 			TransDebugDialog transDebugDialog = new TransDebugDialog(spoon.getShell(), transDebugMeta);
 			debugAnswer = transDebugDialog.open();
 			if (debugAnswer!=TransDebugDialog.DEBUG_CANCEL) {
