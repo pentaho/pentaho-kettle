@@ -28,6 +28,8 @@ import org.pentaho.di.trans.steps.append.AppendTest;
 import org.pentaho.di.trans.steps.blockingstep.BlockingStepTest;
 import org.pentaho.di.trans.steps.combinationlookup.CombinationLookupTest;
 import org.pentaho.di.trans.steps.constant.ConstantTest;
+import org.pentaho.di.trans.steps.csvinput.CsvInput1Test;
+import org.pentaho.di.trans.steps.csvinput.CsvInput2Test;
 import org.pentaho.di.trans.steps.databaselookup.DatabaseLookupTest;
 import org.pentaho.di.trans.steps.getxmldata.GetXMLDataTest;
 import org.pentaho.di.trans.steps.injector.InjectorTest;
@@ -99,6 +101,8 @@ public class AllRegressionTests
         suite.addTestSuite(JavaScriptStringTest.class);
         suite.addTestSuite(JavaScriptSpecialTest.class);
         suite.addTestSuite(GetXMLDataTest.class);
+        suite.addTestSuite(CsvInput1Test.class);
+        suite.addTestSuite(CsvInput2Test.class);
 
         // Temporarily disable this test, it never worked on Windows or Unix so
         // it doesn't make sense executing it for the moment.
