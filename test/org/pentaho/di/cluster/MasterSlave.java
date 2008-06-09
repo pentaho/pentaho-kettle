@@ -191,6 +191,39 @@ public class MasterSlave extends BaseCluster {
 	}
 	
 	/**
+     * This test reads a CSV file and sends the data to 3 copies on 3 slave servers.<br>
+     */
+    public void testMultipleCopiesOnMultipleSlaves2() throws Exception {
+    	init();
+    	
+    	ClusterGenerator clusterGenerator = new ClusterGenerator();
+    	try {
+    		clusterGenerator.launchSlaveServers();
+    		
+    		TransMeta transMeta = generateMultipleCopiesOnMultipleSlaves2(clusterGenerator);
+    		TransExecutionConfiguration config = createClusteredTransExecutionConfiguration();
+    		TransSplitter transSplitter = Trans.executeClustered(transMeta, config);
+    		long nrErrors = Trans.monitorClusteredTransformation("cluster unit test <testMultipleCopiesOnMultipleSlaves2>", transSplitter, null, 1);
+    		assertEquals(0L, nrErrors);
+    		String result = loadFileContent(transMeta, "${java.io.tmpdir}/test-multiple-copies-on-multiple-slaves2.txt");
+    		assertEqualsIgnoreWhitespacesAndCase("90000", result);
+    		
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    		fail(e.toString());
+    	}
+    	finally {
+    		try {
+    			clusterGenerator.stopSlaveServers();
+    		} catch (Exception e) {
+    			e.printStackTrace();
+    			fail(e.toString());
+    		}
+    	}
+    }
+
+
+    /**
 	 * This test reads a CSV file and sends the data to 3 copies on 3 slave servers.<br>
 	 */
 	public void testMultipleCopiesOnMultipleSlaves() throws Exception {
@@ -336,8 +369,8 @@ public class MasterSlave extends BaseCluster {
 		return transMeta;
 	}
 	
-	private TransMeta generateMultipleCopiesOnMultipleSlaves(ClusterGenerator clusterGenerator) throws KettleXMLException {
-		TransMeta transMeta = new TransMeta("test/org/pentaho/di/cluster/test-multiple-copies-on-multiple-slaves.ktr");
+	private TransMeta generateMultipleCopiesOnMultipleSlaves2(ClusterGenerator clusterGenerator) throws KettleXMLException {
+		TransMeta transMeta = new TransMeta("test/org/pentaho/di/cluster/test-hops-between-multiple-copies-steps-on-cluster.ktr");
 		
 		// Add the slave servers
 		//
@@ -354,4 +387,24 @@ public class MasterSlave extends BaseCluster {
 
 		return transMeta;
 	}
+
+
+    private TransMeta generateMultipleCopiesOnMultipleSlaves(ClusterGenerator clusterGenerator) throws KettleXMLException {
+    	TransMeta transMeta = new TransMeta("test/org/pentaho/di/cluster/test-multiple-copies-on-multiple-slaves.ktr");
+    	
+    	// Add the slave servers
+    	//
+    	for (SlaveServer slaveServer : ClusterGenerator.LOCAL_TEST_SLAVES) {
+    		transMeta.getSlaveServers().add(slaveServer);
+    	}
+    	
+    	// Replace the slave servers in the specified cluster schema...
+    	//
+    	ClusterSchema clusterSchema = transMeta.findClusterSchema(ClusterGenerator.TEST_CLUSTER_NAME);
+    	assertNotNull("Cluster schema '"+ClusterGenerator.TEST_CLUSTER_NAME+"' couldn't be found", clusterSchema);
+    	clusterSchema.getSlaveServers().clear();
+    	clusterSchema.getSlaveServers().addAll(Arrays.asList(ClusterGenerator.LOCAL_TEST_SLAVES));
+    
+    	return transMeta;
+    }
 }

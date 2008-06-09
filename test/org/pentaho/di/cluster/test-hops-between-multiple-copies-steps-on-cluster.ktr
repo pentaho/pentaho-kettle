@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <transformation>
   <info>
-    <name>local_cluster</name>
+    <name>test-hops-between-multiple-copies-steps-on-cluster</name>
     <description/>
     <extended_description/>
     <trans_version/>
+    <trans_status>0</trans_status>
     <directory>&#47;</directory>
     <log>
       <read/>
@@ -33,7 +34,7 @@
     <feedback_shown>Y</feedback_shown>
     <feedback_size>50000</feedback_size>
     <using_thread_priorities>Y</using_thread_priorities>
-    <shared_objects_file/>
+    <shared_objects_file>none</shared_objects_file>
     <capture_step_performance>N</capture_step_performance>
     <step_performance_capturing_delay>1000</step_performance_capturing_delay>
     <dependencies>
@@ -41,36 +42,25 @@
     <partitionschemas>
     </partitionschemas>
     <slaveservers>
-         <slaveserver><name>cm-metricsdb01</name><hostname>cm-metricsdb01</hostname><port>40000</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
-         <slaveserver><name>cm-metricsapp01</name><hostname>cm-metricsapp01</hostname><port>40000</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>Y</master></slaveserver>
-         <slaveserver><name>cm-metricsdb02</name><hostname>cm-metricsdb02</hostname><port>40000</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
-         <slaveserver><name>a</name><hostname>localhost</hostname><port>40000</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>Y</master></slaveserver>
-         <slaveserver><name>b</name><hostname>localhost</hostname><port>40001</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
-         <slaveserver><name>c</name><hostname>localhost</hostname><port>40002</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>localhost:8084</name><hostname>localhost</hostname><port>8084</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>localhost:8083</name><hostname>localhost</hostname><port>8083</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>localhost:8080 master</name><hostname>localhost</hostname><port>8080</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>Y</master></slaveserver>
+         <slaveserver><name>localhost:8082</name><hostname>localhost</hostname><port>8082</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>localhost:8081</name><hostname>localhost</hostname><port>8081</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>localhost:8080</name><hostname>localhost</hostname><port>8080</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
     </slaveservers>
     <clusterschemas>
         <clusterschema>
-          <name>3 node</name>
-          <base_port>40010</base_port>
-          <sockets_buffer_size>262144</sockets_buffer_size>
-          <sockets_flush_interval>2000</sockets_flush_interval>
-          <sockets_compressed>N</sockets_compressed>
-          <slaveservers>
-            <name>cm-metricsapp01</name>
-            <name>cm-metricsdb01</name>
-            <name>cm-metricsdb02</name>
-          </slaveservers>
-        </clusterschema>
-        <clusterschema>
-          <name>abc</name>
-          <base_port>40010</base_port>
+          <name>test-cluster</name>
+          <base_port>40000</base_port>
           <sockets_buffer_size>2000</sockets_buffer_size>
           <sockets_flush_interval>5000</sockets_flush_interval>
           <sockets_compressed>Y</sockets_compressed>
           <slaveservers>
-            <name>a</name>
-            <name>b</name>
-            <name>c</name>
+            <name>localhost:8082</name>
+            <name>localhost:8080 master</name>
+            <name>localhost:8081</name>
+            <name>localhost:8080</name>
           </slaveservers>
         </clusterschema>
     </clusterschemas>
@@ -80,13 +70,13 @@
   <notepads>
   </notepads>
   <order>
-  <hop> <from>Generate Rows</from><to>Add sequence</to><enabled>Y</enabled> </hop>  <hop> <from>Add sequence</from><to>Dummy (do nothing)</to><enabled>Y</enabled> </hop>  <hop> <from>Group by</from><to>Modified Java Script Value</to><enabled>Y</enabled> </hop>  <hop> <from>Dummy (do nothing)</from><to>Dummy (do nothing) 2</to><enabled>Y</enabled> </hop>  <hop> <from>Dummy (do nothing) 2</from><to>Dummy (do nothing) 3</to><enabled>Y</enabled> </hop>  <hop> <from>Dummy (do nothing) 3</from><to>Dummy (do nothing) 4</to><enabled>Y</enabled> </hop>  <hop> <from>Dummy (do nothing) 4</from><to>Dummy (do nothing) 5</to><enabled>Y</enabled> </hop>  <hop> <from>Dummy (do nothing) 5</from><to>Group by</to><enabled>Y</enabled> </hop>  </order>
+  <hop> <from>Generate Rows</from><to>Add sequence</to><enabled>Y</enabled> </hop>  <hop> <from>Add sequence</from><to>Dummy (do nothing)</to><enabled>Y</enabled> </hop>  <hop> <from>Group by</from><to>Log total rows received</to><enabled>Y</enabled> </hop>  <hop> <from>Dummy (do nothing)</from><to>Dummy (do nothing) 2</to><enabled>Y</enabled> </hop>  <hop> <from>Dummy (do nothing) 2</from><to>Dummy (do nothing) 3</to><enabled>Y</enabled> </hop>  <hop> <from>Dummy (do nothing) 3</from><to>Dummy (do nothing) 4</to><enabled>Y</enabled> </hop>  <hop> <from>Dummy (do nothing) 4</from><to>Dummy (do nothing) 5</to><enabled>Y</enabled> </hop>  <hop> <from>Dummy (do nothing) 5</from><to>Group by</to><enabled>Y</enabled> </hop>  <hop> <from>Log total rows received</from><to>Text file output</to><enabled>Y</enabled> </hop>  </order>
   <step>
     <name>Add sequence</name>
     <type>Sequence</type>
     <description/>
     <distribute>Y</distribute>
-    <copies>6</copies>
+    <copies>9</copies>
          <partitioning>
            <method>none</method>
            <schema_name/>
@@ -114,7 +104,7 @@
     <type>Dummy</type>
     <description/>
     <distribute>Y</distribute>
-    <copies>6</copies>
+    <copies>9</copies>
          <partitioning>
            <method>none</method>
            <schema_name/>
@@ -137,7 +127,7 @@
            <method>none</method>
            <schema_name/>
            </partitioning>
-     <cluster_schema>abc</cluster_schema>
+     <cluster_schema>test-cluster</cluster_schema>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>150</xloc>
       <yloc>50</yloc>
@@ -155,7 +145,7 @@
            <method>none</method>
            <schema_name/>
            </partitioning>
-     <cluster_schema>abc</cluster_schema>
+     <cluster_schema>test-cluster</cluster_schema>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>150</xloc>
       <yloc>150</yloc>
@@ -182,6 +172,24 @@
     </step>
 
   <step>
+    <name>Dummy (do nothing) 5</name>
+    <type>Dummy</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>3</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+     <cluster_schema>test-cluster</cluster_schema>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>250</xloc>
+      <yloc>50</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
     <name>Generate Rows</name>
     <type>RowGenerator</type>
     <description/>
@@ -193,8 +201,8 @@
            </partitioning>
     <fields>
     </fields>
-    <limit>100000</limit>
-     <cluster_schema>abc</cluster_schema>
+    <limit>10000</limit>
+     <cluster_schema>test-cluster</cluster_schema>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>50</xloc>
       <yloc>50</yloc>
@@ -239,7 +247,7 @@
     </step>
 
   <step>
-    <name>Modified Java Script Value</name>
+    <name>Log total rows received</name>
     <type>ScriptValueMod</type>
     <description/>
     <distribute>Y</distribute>
@@ -261,19 +269,61 @@
     </step>
 
   <step>
-    <name>Dummy (do nothing) 5</name>
-    <type>Dummy</type>
+    <name>Text file output</name>
+    <type>TextFileOutput</type>
     <description/>
     <distribute>Y</distribute>
-    <copies>3</copies>
+    <copies>1</copies>
          <partitioning>
            <method>none</method>
            <schema_name/>
            </partitioning>
-     <cluster_schema>abc</cluster_schema>
+    <separator>;</separator>
+    <enclosure>&quot;</enclosure>
+    <enclosure_forced>N</enclosure_forced>
+    <header>N</header>
+    <footer>N</footer>
+    <format>DOS</format>
+    <compression>None</compression>
+    <encoding/>
+    <endedLine/>
+    <fileNameInField>N</fileNameInField>
+    <fileNameField/>
+    <file>
+      <name>${java.io.tmpdir}&#47;test-multiple-copies-on-multiple-slaves2</name>
+      <is_command>N</is_command>
+      <do_not_open_new_file_init>N</do_not_open_new_file_init>
+      <extention>txt</extention>
+      <append>N</append>
+      <split>N</split>
+      <haspartno>N</haspartno>
+      <add_date>N</add_date>
+      <add_time>N</add_time>
+      <SpecifyFormat>N</SpecifyFormat>
+      <date_time_format/>
+      <add_to_result_filenames>Y</add_to_result_filenames>
+      <pad>N</pad>
+      <fast_dump>N</fast_dump>
+      <splitevery>0</splitevery>
+    </file>
+    <fields>
+      <field>
+        <name>total</name>
+        <type>Integer</type>
+        <format>#</format>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif/>
+        <trim_type>none</trim_type>
+        <length>-1</length>
+        <precision>-1</precision>
+      </field>
+    </fields>
+     <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>250</xloc>
-      <yloc>50</yloc>
+      <xloc>350</xloc>
+      <yloc>250</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
