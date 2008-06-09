@@ -1954,7 +1954,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			
       // Add History Items...
       TreeItem item = new TreeItem(coreObjectsTree, SWT.NONE);
-      item.setText("History");
+      item.setText(Messages.getString("Spoon.History"));
       item.setImage(GUIResource.getInstance().getImageArrow());
 
       List<ObjectUsageCount> pluginHistory = props.getPluginHistory();
