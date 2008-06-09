@@ -634,33 +634,35 @@ public class Trans implements VariableSpace
             StepListener stepListener = new StepListener() 
 	            {
 					public void stepFinished(Trans trans, StepMeta stepMeta, StepInterface step) {
-						nrOfFinishedSteps++;
-						
-						if (nrOfFinishedSteps>=steps.size()) {
-							// Set the finished flag
-							//
-							finished.set(true);
+						synchronized (Trans.this) {
+							nrOfFinishedSteps++;
 							
-							// Grab the performance statistics one last time (if enabled)
-							//
-							addStepPerformanceSnapShot();
-							
-							// Fire the listeners (if any are registered)
-							//
-							for (TransListener transListener : transListeners)
-							{
-								transListener.transFinished(self);
+							if (nrOfFinishedSteps>=steps.size()) {
+								// Set the finished flag
+								//
+								finished.set(true);
+								
+								// Grab the performance statistics one last time (if enabled)
+								//
+								addStepPerformanceSnapShot();
+								
+								// Fire the listeners (if any are registered)
+								//
+								for (TransListener transListener : transListeners)
+								{
+									transListener.transFinished(self);
+								}
 							}
-						}
-						
-						// If a step fails with an error, we want to kill/stop the others too...
-						//
-						if (step.getErrors()>0) {
-
-							log.logMinimal(getName(), Messages.getString("Trans.Log.TransformationDetectedErrors")); //$NON-NLS-1$ //$NON-NLS-2$
-							log.logMinimal(getName(), Messages.getString("Trans.Log.TransformationIsKillingTheOtherSteps")); //$NON-NLS-1$
-
-							killAllNoWait();
+							
+							// If a step fails with an error, we want to kill/stop the others too...
+							//
+							if (step.getErrors()>0) {
+	
+								log.logMinimal(getName(), Messages.getString("Trans.Log.TransformationDetectedErrors")); //$NON-NLS-1$ //$NON-NLS-2$
+								log.logMinimal(getName(), Messages.getString("Trans.Log.TransformationIsKillingTheOtherSteps")); //$NON-NLS-1$
+	
+								killAllNoWait();
+							}
 						}
 					}
 				};
