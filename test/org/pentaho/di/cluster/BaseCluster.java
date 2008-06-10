@@ -1,9 +1,11 @@
 package org.pentaho.di.cluster;
 
 import java.nio.charset.Charset;
+import java.util.Arrays;
 
 import junit.framework.TestCase;
 
+import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -11,6 +13,7 @@ import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.job.JobEntryLoader;
 import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.TransExecutionConfiguration;
+import org.pentaho.di.trans.TransMeta;
 
 public class BaseCluster extends TestCase {
 	
@@ -36,6 +39,29 @@ public class BaseCluster extends TestCase {
 		
 		return config;
 	}
+	
+	
+	
+	public TransMeta loadAndModifyTestTransformation(ClusterGenerator clusterGenerator, String filename) throws KettleXMLException {
+		TransMeta transMeta = new TransMeta(filename);
+		
+		// Add the slave servers
+		//
+		for (SlaveServer slaveServer : ClusterGenerator.LOCAL_TEST_SLAVES) {
+			transMeta.getSlaveServers().add(slaveServer);
+		}
+		
+		// Replace the slave servers in the specified cluster schema...
+		//
+		ClusterSchema clusterSchema = transMeta.findClusterSchema(ClusterGenerator.TEST_CLUSTER_NAME);
+		assertNotNull("Cluster schema '"+ClusterGenerator.TEST_CLUSTER_NAME+"' couldn't be found", clusterSchema);
+		clusterSchema.getSlaveServers().clear();
+		clusterSchema.getSlaveServers().addAll(Arrays.asList(ClusterGenerator.LOCAL_TEST_SLAVES));
+
+		return transMeta;
+	}
+	
+	
 	
 	
 	protected void init() throws Exception {
