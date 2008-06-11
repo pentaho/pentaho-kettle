@@ -191,7 +191,7 @@ public class JobEntryFilesExist extends JobEntryBase implements Cloneable, JobEn
 		
 		if (arguments != null) 
 		{
-		      for (int i = 0; i < arguments.length; i++) 
+		      for (int i = 0; i < arguments.length && !parentJob.isStopped(); i++) 
 		      {
 		    	  FileObject file =null;
 		      

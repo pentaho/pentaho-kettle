@@ -223,7 +223,7 @@ public class JobEntryAddResultFilenames extends JobEntryBase implements Cloneabl
 
     if (argFromPrevious && rows != null) // Copy the input row to the (command line) arguments
     {   	        
-      for (int iteration = 0; iteration < rows.size(); iteration++) {
+      for (int iteration = 0; iteration < rows.size() && !parentJob.isStopped(); iteration++) {
     	  resultRow = rows.get(iteration);
 
     	 // Get values from previous result 
@@ -240,15 +240,13 @@ public class JobEntryAddResultFilenames extends JobEntryBase implements Cloneabl
       }
     } else if (arguments != null) {
 
-      for (int i = 0; i < arguments.length; i++) {
+      for (int i = 0; i < arguments.length  && !parentJob.isStopped(); i++) {
         
           // ok we can process this file/folder
     	  if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryAddResultFilenames.ProcessingArg", arguments[i], filemasks[i])); //$NON-NLS-1$
           if (!ProcessFile(arguments[i], filemasks[i],parentJob,result)) {
         	  NrErrFiles = NrErrFiles++;
           }
-        
-
       }
     }
    
@@ -295,13 +293,12 @@ public class JobEntryAddResultFilenames extends JobEntryBase implements Cloneabl
 	    {
 	 	    FileObject list[] = filefolder.findFiles(new TextFileSelector (filefolder.toString(),realwilcard));  
 	
-	    	for ( int i=0; i < list.length; i++ ) 
+	    	for ( int i=0; i < list.length  && !parentJob.isStopped(); i++ ) 
 			{
 				// Add filename to Resultfilenames ...
 	    		if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("JobEntryAddResultFilenames.AddingFileToResult",list[i].toString()));
 	        	ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(list[i].toString()), parentJob.getName(), toString());
 	            result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
-				
 	        }
 	    }
 

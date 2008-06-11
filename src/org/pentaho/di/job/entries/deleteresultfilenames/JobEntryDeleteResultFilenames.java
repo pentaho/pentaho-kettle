@@ -236,7 +236,7 @@ public class JobEntryDeleteResultFilenames extends JobEntryBase implements Clone
 					 List <ResultFile> resultFiles = result.getResultFilesList();
 			        if (resultFiles != null && resultFiles.size() > 0)
 			        {
-			        	for (Iterator <ResultFile>  it = resultFiles.iterator(); it.hasNext();)
+			        	for (Iterator <ResultFile>  it = resultFiles.iterator(); it.hasNext() && !parentJob.isStopped();)
 			            {
 			        	  ResultFile resultFile = (ResultFile) it.next();
 			              FileObject file = resultFile.getFile();

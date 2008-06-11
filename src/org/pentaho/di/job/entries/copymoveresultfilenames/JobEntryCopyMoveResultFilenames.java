@@ -474,9 +474,8 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 				List <ResultFile> resultFiles = result.getResultFilesList();
 			    if (resultFiles != null && resultFiles.size() > 0)
 			    {
-			      	for (Iterator <ResultFile>  it = resultFiles.iterator() ; it.hasNext();)
+			      	for (Iterator <ResultFile>  it = resultFiles.iterator() ; it.hasNext() && !parentJob.isStopped();)
 			        {
-			      		
 			      		if(successConditionBroken)
 						{
 							log.logError(toString(), Messages.getString("JobEntryCopyMoveResultFilenames.Error.SuccessConditionbroken",""+NrErrors));
@@ -508,7 +507,6 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 			           }
 			         }// end for
 			     }     
-				
 			}
 			catch(Exception e)
 			{

@@ -206,7 +206,7 @@ public class JobEntryDeleteFolders extends JobEntryBase implements Cloneable, Jo
     }
 
     if (argFromPrevious && rows != null){
-      for (int iteration = 0; iteration < rows.size(); iteration++) {
+      for (int iteration = 0; iteration < rows.size() && !parentJob.isStopped(); iteration++) {
 		if(successConditionBroken){
 			log.logError(toString(), Messages.getString("JobEntryDeleteFolders.Error.SuccessConditionbroken",""+NrErrors));
 			result.setNrErrors(NrErrors);
@@ -227,7 +227,7 @@ public class JobEntryDeleteFolders extends JobEntryBase implements Cloneable, Jo
         }
       }
     } else if (arguments != null) {
-      for (int i = 0; i < arguments.length; i++) {
+      for (int i = 0; i < arguments.length && !parentJob.isStopped(); i++) {
   		if(successConditionBroken)
 		{
 			log.logError(toString(), Messages.getString("JobEntryDeleteFolders.Error.SuccessConditionbroken",""+NrErrors));

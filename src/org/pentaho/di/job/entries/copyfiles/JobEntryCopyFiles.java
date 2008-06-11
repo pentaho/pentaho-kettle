@@ -270,33 +270,28 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 		String vdestinationfilefolder[] = destination_filefolder;
 		String vwildcard[] = wildcard;
 		
-		result.setResult( true );
+		result.setResult( false );
+		result.setNrErrors(1);
 		
-			
 		if (arg_from_previous)
 		{
 			if(log.isDetailed())	
 				log.logDetailed(toString(), Messages.getString("JobCopyFiles.Log.ArgFromPrevious.Found",(rows!=null?rows.size():0)+ ""));
-			
 		}
 
 		if (arg_from_previous && rows!=null) // Copy the input row to the (command line) arguments
 		{
-			for (int iteration=0;iteration<rows.size();iteration++) 
+			for (int iteration=0;iteration<rows.size() && !parentJob.isStopped();iteration++) 
 			{
-				
 				resultRow = rows.get(iteration);
 				
 				// Get source and destination file names, also wildcard
 				String vsourcefilefolder_previous = resultRow.getString(0,null);
 				String vdestinationfilefolder_previous = resultRow.getString(1,null);
 				String vwildcard_previous = resultRow.getString(2,null);
-	
-
 				
 				if(!Const.isEmpty(vsourcefilefolder_previous) &&  !Const.isEmpty(vdestinationfilefolder_previous))
 				{
-				
 					if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobCopyFiles.Log.ProcessingRow",vsourcefilefolder_previous, vdestinationfilefolder_previous, vwildcard_previous));
 
 					if(! ProcessFileFolder(vsourcefilefolder_previous,vdestinationfilefolder_previous,vwildcard_previous,parentJob,result))
@@ -304,19 +299,17 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 						// The copy process fail
 						NbrFail=NbrFail++;
 					}
-
 				}
 				else
 				{
 					 if(log.isDetailed())
 						 log.logDetailed(toString(), Messages.getString("JobCopyFiles.Log.IgnoringRow",vsourcefilefolder[iteration],vdestinationfilefolder[iteration],vwildcard[iteration]));
-				
 				}
 			}
 		}
 		else if (vsourcefilefolder!=null && vdestinationfilefolder!=null)
 		{
-			for (int i=0;i<vsourcefilefolder.length;i++)
+			for (int i=0;i<vsourcefilefolder.length  && !parentJob.isStopped();i++)
 			{
 				if(!Const.isEmpty(vsourcefilefolder[i]) && !Const.isEmpty(vdestinationfilefolder[i]))
 				{
@@ -330,22 +323,23 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 						// The copy process fail
 						NbrFail=NbrFail++;
 					}
-		
 				}
 				else
 				{
 					if(log.isDetailed())			
 						log.logDetailed(toString(), Messages.getString("JobCopyFiles.Log.IgnoringRow",vsourcefilefolder[i],vdestinationfilefolder[i],vwildcard[i]));
-				
 				}
 			}
 		}		
 		
 		// Check if all files was process with success
-		if (NbrFail>0)
+		if (NbrFail==0)
 		{
-			result.setResult( false );
-			result.setNrErrors(NbrFail);	
+			result.setResult( true );
+			result.setNrErrors(0);	
+		}else
+		{
+			result.setNrErrors(NbrFail);
 		}
 
 		
@@ -434,15 +428,13 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 								log.logDetailed(toString(),Messages.getString("JobCopyFiles.Log.FetchFolder",sourcefilefolder.toString()));
 								
 							}
-							destinationfilefolder.copyFrom(sourcefilefolder,new TextFileSelector(sourcefilefolder.toString(),destinationfilefolder.toString(),realWildcard) );
-	
+							destinationfilefolder.copyFrom(sourcefilefolder,new TextFileSelector(sourcefilefolder.toString(),destinationfilefolder.toString(),realWildcard,parentJob) );
 						}
 						
 						// Remove Files if needed
 						if (remove_source_files && !list_files_remove.isEmpty())
 						{
-	
-							 for (Iterator<String> iter = list_files_remove.iterator(); iter.hasNext();)
+							 for (Iterator<String> iter = list_files_remove.iterator(); iter.hasNext() && !parentJob.isStopped();)
 					        {
 					            String fileremoventry = (String) iter.next();
 					            // Remove ONLY Files
@@ -452,10 +444,8 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 						            log.logBasic(""," ------ ");
 						            if (!deletefile)
 									{
-						            	
 										log.logError("      " + Messages.getString("JobCopyFiles.Log.Error"), 
 												Messages.getString("JobCopyFiles.Error.Exception.CanRemoveFileFolder",fileremoventry));
-	
 									}
 						            else
 						            {
@@ -464,24 +454,19 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 						            			Messages.getString("JobCopyFiles.Log.FileFolderRemoved", fileremoventry));
 						            }
 					            }
-					        }
-							
-							
+					        }	
 						}
 						
 						
 						// Add files to result files name
 						if (add_result_filesname && !list_add_result.isEmpty())
 						{
-	
 							 for (Iterator<String> iter = list_add_result.iterator(); iter.hasNext();)
 					        {
 					            String fileaddentry = (String) iter.next();
 					            // Add ONLY Files
 					            if (KettleVFS.getFileObject(fileaddentry).getType() == FileType.FILE)
-					            {
-				
-				                    
+					            { 
 				                	ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(fileaddentry), parentJob.getName(), toString());
 				                    result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
 				                    if(log.isDetailed())
@@ -489,39 +474,27 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 				                    	log.logDetailed(""," ------ ");
 				                    	log.logDetailed("      " + Messages.getString("JobCopyFiles.Log.ResultFilesName"),
 						            		Messages.getString("JobCopyFiles.Log.FileAddedToResultFilesName",fileaddentry));
-					           
 				                    }
 					            }
-					        }
-							
-							
+					        }	
 						}
-						
-	
 					}
 					entrystatus = true ;
 				}	
 				else
 				{
 					// Destination Folder or Parent folder is missing
-					log.logError(toString(), Messages.getString("JobCopyFiles.Error.DestinationFolderNotFound",realDestinationFilefoldername));					
-					
+					log.logError(toString(), Messages.getString("JobCopyFiles.Error.DestinationFolderNotFound",realDestinationFilefoldername));						
 				}
-				
 			}
 			else
 			{
-				
 				log.logError(toString(), Messages.getString("JobCopyFiles.Error.SourceFileNotExists",realSourceFilefoldername));					
 				
 			}
-			
-		
 		}
-	
 		catch (IOException e) 
 		{
-
 			log.logError("Error", Messages.getString("JobCopyFiles.Error.Exception.CopyProcess",realSourceFilefoldername.toString(),destinationfilefolder.toString(), e.getMessage()));					
 		}
 		finally 
@@ -544,8 +517,6 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 				}
 				catch ( IOException ex ) {};
 			}
-			
-			
 		}
 
 		return entrystatus;
@@ -573,7 +544,6 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 			
 			try
 			{
-
 					// check if the destination file exists
 					
 					if (destfile.exists())
@@ -587,8 +557,7 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 								log.logDetailed("      " + Messages.getString("JobCopyFiles.Log.FileOverwriteInfos"),Messages.getString("JobCopyFiles.Log.FileOverwrite",destfile.toString()));
 						
 							resultat=true;
-						}
-						
+						}	
 					}
 					else
 					{
@@ -681,8 +650,9 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 	{
 		LogWriter log = LogWriter.getInstance();
 		String file_wildcard=null,source_folder=null,destination_folder=null;
+		Job parentjob;
 		
-		public TextFileSelector(String sourcefolderin,String destinationfolderin,String filewildcard) 
+		public TextFileSelector(String sourcefolderin,String destinationfolderin,String filewildcard, Job parentJob) 
 		 {
 			
 			 if ( !Const.isEmpty(sourcefolderin))
@@ -697,6 +667,7 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 			 {
 				 file_wildcard=filewildcard;
 			 }
+			 parentjob=parentJob;
 		 }
 		 
 		public boolean includeFile(FileSelectInfo info) 
@@ -706,7 +677,7 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 			try
 			{
 				
-				if (!info.getFile().toString().equals(source_folder))
+				if (!info.getFile().toString().equals(source_folder) && !parentjob.isStopped())
 				{
 					// Pass over the Base folder itself
 					

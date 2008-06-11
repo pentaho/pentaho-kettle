@@ -399,7 +399,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 			{
 				if (rows!=null) // Copy the input row to the (command line) arguments
 				{
-					for (int iteration=0;iteration<rows.size();iteration++) 
+					for (int iteration=0;iteration<rows.size() && !parentJob.isStopped();iteration++) 
 					{
 						if(successConditionBroken){
 							if(!successConditionBrokenExit){
@@ -514,7 +514,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 				// Folder..let's see wildcard
 				File[] children = new File(sourceFilename).listFiles();
 				
-				for (int i=0; i<children.length; i++) 
+				for (int i=0; i<children.length && !parentJob.isStopped(); i++) 
 				{
 					if(successConditionBroken){
 						if(!successConditionBrokenExit){

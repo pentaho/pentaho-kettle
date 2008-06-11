@@ -680,7 +680,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 		if (isfromprevious && rows!=null)
 		{
 			try{
-				for (int iteration=0;iteration<rows.size();iteration++) 
+				for (int iteration=0;iteration<rows.size() && !parentJob.isStopped();iteration++) 
 				{
 	
 					// get arguments from previous job entry

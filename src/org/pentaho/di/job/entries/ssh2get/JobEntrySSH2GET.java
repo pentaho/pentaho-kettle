@@ -893,10 +893,10 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 						if(includeSubFolders)
 						{
 							if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("JobSSH2GET.Log.RecursiveModeOn"));
-							copyRecursive( realftpDirectory ,realLocalDirectory, client,realwildcard);
+							copyRecursive( realftpDirectory ,realLocalDirectory, client,realwildcard,parentJob);
 						}else{
 							if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("JobSSH2GET.Log.RecursiveModeOff"));
-							GetFiles(realftpDirectory, realLocalDirectory,client,realwildcard);
+							GetFiles(realftpDirectory, realLocalDirectory,client,realwildcard,parentJob);
 						}
 						
 						/********************************RESULT ********************/
@@ -1122,7 +1122,7 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 	 */
 	@SuppressWarnings("unchecked")
 	private void GetFiles(String sourceLocation, String targetLocation,
-		SFTPv3Client sftpClient,String wildcardin) throws Exception 
+		SFTPv3Client sftpClient,String wildcardin,Job parentJob) throws Exception 
 	{
 
 		String sourceFolder=".";
@@ -1137,7 +1137,7 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 		{
 			Iterator<SFTPv3DirectoryEntry> iterator = filelist.iterator();
 	
-			while (iterator.hasNext()) 
+			while (iterator.hasNext() && !parentJob.isStopped()) 
 			{
 				SFTPv3DirectoryEntry dirEntry = iterator.next();
 	
@@ -1168,7 +1168,7 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 	 */
 	@SuppressWarnings("unchecked")
 	private void copyRecursive(String sourceLocation, String targetLocation,
-		SFTPv3Client sftpClient,String wildcardin) throws Exception 
+		SFTPv3Client sftpClient,String wildcardin,Job parentJob) throws Exception 
 	{
 		String sourceFolder="";
 		if (sourceLocation!=null) sourceFolder=sourceLocation + "/";
@@ -1180,7 +1180,7 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
       
 			Iterator<SFTPv3DirectoryEntry> iterator = filelist.iterator();
 
-			while (iterator.hasNext()) 
+			while (iterator.hasNext() && !parentJob.isStopped()) 
 			{
 				
 				SFTPv3DirectoryEntry dirEntry = iterator.next();
@@ -1189,7 +1189,7 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 				
 				if (dirEntry.filename.equals(".")|| dirEntry.filename.equals(".."))	continue;
 				
-					copyRecursive(sourceFolder + dirEntry.filename, targetLocation + "/" + dirEntry.filename, sftpClient,wildcardin);
+					copyRecursive(sourceFolder + dirEntry.filename, targetLocation + "/" + dirEntry.filename, sftpClient,wildcardin,parentJob);
 
 			} 
 

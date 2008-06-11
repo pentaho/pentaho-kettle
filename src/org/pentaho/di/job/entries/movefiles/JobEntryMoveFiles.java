@@ -420,7 +420,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 				log.logDetailed(toString(), Messages.getString("JobMoveFiles.Log.ArgFromPrevious.Found",(rows!=null?rows.size():0)+ ""));
 		}
 		if (arg_from_previous && rows!=null){
-			for (int iteration=0;iteration<rows.size();iteration++) {			
+			for (int iteration=0;iteration<rows.size() && !parentJob.isStopped();iteration++) {			
 				// Success condition broken?
 				if(successConditionBroken){
 					if(!successConditionBrokenExit){
@@ -457,7 +457,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 			}
 		}
 		else if (vsourcefilefolder!=null && vdestinationfilefolder!=null){
-			for (int i=0;i<vsourcefilefolder.length;i++){
+			for (int i=0;i<vsourcefilefolder.length && !parentJob.isStopped();i++){
 				// Success condition broken?
 				if(successConditionBroken){
 					if(!successConditionBrokenExit)	{
@@ -640,7 +640,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 	                            );
 							
 							if (fileObjects != null)  {
-	                            for (int j = 0; j < fileObjects.length; j++)
+	                            for (int j = 0; j < fileObjects.length && !parentJob.isStopped(); j++)
 	                            {
 	                            	// Success condition broken?
 	                            	if(successConditionBroken){
