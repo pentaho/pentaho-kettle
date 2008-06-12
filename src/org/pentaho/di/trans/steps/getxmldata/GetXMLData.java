@@ -451,7 +451,6 @@ public class GetXMLData extends BaseStep implements StepInterface
 		{
 			data.nodenr++; 
 			if(row!=null) outputRowData = row.clone();
-			Object extraData[] = new Object[data.nrInputFields];
 			// Read fields...
 			for (int i=0;i<data.nrInputFields;i++)
 			{	
@@ -488,7 +487,6 @@ public class GetXMLData extends BaseStep implements StepInterface
 								}
 							}
 						}	
-						
 					}
 				}
 				
@@ -519,9 +517,7 @@ public class GetXMLData extends BaseStep implements StepInterface
 				if(meta.getIsInFields())
 				{
 					// Add result field to input stream
-					extraData[i]=nodevalue;
-	                outputRowData = RowDataUtil.addRowData(outputRowData,data.totalpreviousfields, extraData);
-	                
+	                outputRowData = RowDataUtil.addValueData(outputRowData,data.totalpreviousfields+i, nodevalue);
 				}
 				// Do conversions
 				//
