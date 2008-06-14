@@ -1122,7 +1122,6 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
     			TableItem item  = wFields.table.getItem(i);
     			String name     = field.getName();
     			String column	= field.getColumnDesc();
-    			log.logBasic("------------------------", column);
     			String type     = field.getTypeDesc();
     			String format   = field.getFormat();
     			String length   = ""+field.getLength();
