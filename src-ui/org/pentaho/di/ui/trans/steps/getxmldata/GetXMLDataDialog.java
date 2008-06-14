@@ -1268,7 +1268,7 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		wLimit.setEnabled(!wXMLStreamField.getSelection());	
 		wPreview.setEnabled(!wXMLStreamField.getSelection());
 		wGet.setEnabled(!wXMLStreamField.getSelection());
-		
+		wbbLoopPathList.setEnabled(!wXMLStreamField.getSelection());
 	}
 	private void getLoopPathList()
 	{
