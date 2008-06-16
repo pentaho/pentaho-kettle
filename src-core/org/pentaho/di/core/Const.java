@@ -1565,8 +1565,8 @@ public class Const
 
             new_word = false;
     
-            if ( !(ch>='A' && ch<='Z') && 
-                 !(ch>='0' && ch<='9') &&
+            // Cast to (int) is required for extended characters (SB)
+            if ( !Character.isLetterOrDigit((int)ch) && 
                  ch!='_'
                ) new_word = true;
         }

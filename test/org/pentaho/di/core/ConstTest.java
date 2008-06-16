@@ -36,6 +36,24 @@ public class ConstTest extends TestCase
 
 	    return true;
 	}
+	
+	/**
+	 * Test initCap. Regressiontest for PDI-1338: "javascript initcap() can't deal correctly 
+	 * with special non-ASCII chars".
+	 */
+	public void testInitCap()
+	{
+	    assertEquals("Sven", Const.initCap("Sven"));	    
+	    assertEquals("Matt", Const.initCap("MATT"));
+	    assertEquals("Sven Boden", Const.initCap("sven boden"));
+	    assertEquals("Sven  Boden ", Const.initCap("sven  boden "));
+	    assertEquals("Sven Boden Was Here", Const.initCap("sven boden was here"));
+	    
+	    // Here the original code failed as it saw the "o umlaut" as non-ASCII, and would
+	    // assume it needed to start a new word here.
+	    assertEquals("Können", Const.initCap("können"));
+	}	
+
 
 	/**
 	 * Test sortString().
@@ -101,7 +119,7 @@ public class ConstTest extends TestCase
 	}
 
 	public void testNrSpacesAfter()
-	{
+	{	
 		try  
 		{
 			Const.nrSpacesAfter(null);
