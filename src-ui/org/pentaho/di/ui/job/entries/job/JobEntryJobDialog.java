@@ -87,7 +87,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 	private FormData fdlJobname, fdbJobname, fdJobname;
 
 	private Label wlDirectory;
-	private Text wDirectory;
+	private TextVar wDirectory;
 	private FormData fdlDirectory, fdDirectory;
 
 	private Label wlFilename;
@@ -253,7 +253,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 		fdlDirectory.right = new FormAttachment(middle, -margin);
 		wlDirectory.setLayoutData(fdlDirectory);
 
-		wDirectory = new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wDirectory = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wDirectory);
 		wDirectory.setToolTipText(Messages.getString("JobJob.Repository.Tooltip"));
 		wDirectory.addModifyListener(lsMod);
@@ -262,7 +262,6 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 		fdDirectory.left = new FormAttachment(middle, 0);
 		fdDirectory.right = new FormAttachment(100, 0);
 		wDirectory.setLayoutData(fdDirectory);
-		wDirectory.setEditable(false);
 
 		// Filename line
 		wlFilename = new Label(shell, SWT.RIGHT);
@@ -736,7 +735,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 	public void getData()
 	{
 		if (jobEntry.getDirectory() != null)
-			wDirectory.setText(jobEntry.getDirectory().getPath());
+			wDirectory.setText(jobEntry.getDirectory());
 		if (jobEntry.getName() != null)
 			wName.setText(jobEntry.getName());
 		if (jobEntry.getJobName() != null)
@@ -786,7 +785,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 		jobEntry.setFileName(wFilename.getText());
 		jobEntry.setName(wName.getText());
 		if (rep != null)
-			jobEntry.setDirectory(rep.getDirectoryTree().findDirectory(wDirectory.getText()));
+			jobEntry.setDirectory(wDirectory.getText());
 
 		int nritems = wFields.nrNonEmpty();
 		int nr = 0;

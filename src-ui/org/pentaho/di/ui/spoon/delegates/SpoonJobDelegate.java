@@ -754,7 +754,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 					jetrans.setTransname(transMeta.getName());
 					if (spoon.getRepository() != null)
 					{
-						jetrans.setDirectory(transMeta.getDirectory());
+						jetrans.setDirectory(transMeta.getDirectory().getPath());
 					} 
 					else
 					{

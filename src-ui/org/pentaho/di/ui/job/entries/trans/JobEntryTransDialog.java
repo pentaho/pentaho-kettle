@@ -85,7 +85,7 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 	private FormData fdlTransname, fdbTransname, fdTransname;
 
 	private Label wlDirectory;
-	private Text wDirectory;
+	private TextVar wDirectory;
 	private FormData fdlDirectory, fdDirectory;
 
 	private Label wlFilename;
@@ -262,7 +262,7 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 		fdlDirectory.right = new FormAttachment(middle, -margin);
 		wlDirectory.setLayoutData(fdlDirectory);
 
-		wDirectory = new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wDirectory = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wDirectory);
 		wDirectory.addModifyListener(lsMod);
 		fdDirectory = new FormData();
@@ -270,7 +270,6 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 		fdDirectory.left = new FormAttachment(middle, 0);
 		fdDirectory.right = new FormAttachment(100, 0);
 		wDirectory.setLayoutData(fdDirectory);
-		wDirectory.setEditable(false);
 
 		// Filename line
 		wlFilename = new Label(shell, SWT.RIGHT);
@@ -789,7 +788,7 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 	{
 		if (jobEntry.getDirectory() != null)
 		{
-			wDirectory.setText(jobEntry.getDirectory().getPath());
+			wDirectory.setText(jobEntry.getDirectory());
 		} else
 		{
 			if (jobEntry.getDirectoryPath() != null)
@@ -847,8 +846,7 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 		jobEntry.setTransname(wTransname.getText());
 		jobEntry.setFileName(wFilename.getText());
 		jobEntry.setName(wName.getText());
-		if (rep != null)
-			jobEntry.setDirectory(rep.getDirectoryTree().findDirectory(wDirectory.getText()));
+		jobEntry.setDirectory(wDirectory.getText());
 
 		int nritems = wFields.nrNonEmpty();
 		int nr = 0;

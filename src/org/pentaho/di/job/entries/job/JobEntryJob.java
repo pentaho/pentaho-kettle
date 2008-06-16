@@ -70,7 +70,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 
 	private String              jobname;
 	private String              filename;
-	private RepositoryDirectory directory;
+	private String directory;
 
 	public  String  arguments[];
 	public  boolean argFromPrevious;
@@ -144,12 +144,12 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 		return jobname;
 	}
 
-	public RepositoryDirectory getDirectory()
+	public String getDirectory()
 	{
 		return directory;
 	}
 
-	public void setDirectory(RepositoryDirectory directory)
+	public void setDirectory(String directory)
 	{
 		this.directory = directory;
 	}
@@ -187,17 +187,17 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 
 		retval.append("      ").append(XMLHandler.addTagValue("filename",          filename));
 		retval.append("      ").append(XMLHandler.addTagValue("jobname",           jobname));
-        if (directory!=null)
-        {
-            retval.append("      ").append(XMLHandler.addTagValue("directory",         directory.getPath()));
-        }
-        else
-        if (directoryPath!=null)
-        {
-            retval.append("      ").append(XMLHandler.addTagValue("directory",         directoryPath)); // don't loose this info (backup/recovery)
-        }
+    if (directory!=null)
+    {
+        retval.append("      ").append(XMLHandler.addTagValue("directory",         directory));
+    }
+    else
+    if (directoryPath!=null)
+    {
+        retval.append("      ").append(XMLHandler.addTagValue("directory",         directoryPath)); // don't loose this info (backup/recovery)
+    }
 		retval.append("      ").append(XMLHandler.addTagValue("arg_from_previous", argFromPrevious));
-        retval.append("      ").append(XMLHandler.addTagValue("exec_per_row",      execPerRow));
+    retval.append("      ").append(XMLHandler.addTagValue("exec_per_row",      execPerRow));
 		retval.append("      ").append(XMLHandler.addTagValue("set_logfile",       setLogfile));
 		retval.append("      ").append(XMLHandler.addTagValue("logfile",           logfile));
 		retval.append("      ").append(XMLHandler.addTagValue("logext",            logext));
@@ -224,8 +224,8 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 			setFileName( XMLHandler.getTagValue(entrynode, "filename") );
 			setJobName( XMLHandler.getTagValue(entrynode, "jobname") );
 			argFromPrevious = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "arg_from_previous") );
-            execPerRow = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "exec_per_row") );
-            setLogfile = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "set_logfile") );
+      execPerRow = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "exec_per_row") );
+      setLogfile = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "set_logfile") );
 			addDate = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "add_date") );
 			addTime = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "add_time") );
 			logfile = XMLHandler.getTagValue(entrynode, "logfile");
@@ -234,13 +234,8 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 			setAppendLogfile = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "set_append_logfile") );
 			String remoteSlaveServerName = XMLHandler.getTagValue(entrynode, "slave_server_name");
 			remoteSlaveServer = SlaveServer.findSlaveServer(slaveServers, remoteSlaveServerName);
-
-            directoryPath = XMLHandler.getTagValue(entrynode, "directory");
-            if (rep!=null) // import from XML into a repository for example... (or copy/paste)
-            {
-            	directory = rep.getDirectoryTree().findDirectory(directoryPath);
-            }
-
+      directory = XMLHandler.getTagValue(entrynode, "directory");
+      
 			// How many arguments?
 			int argnr = 0;
 			while ( XMLHandler.getTagValue(entrynode, "argument"+argnr)!=null) argnr++;
@@ -264,14 +259,11 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 		{
 			super.loadRep(rep, id_jobentry, databases, slaveServers);
 
-            jobname = rep.getJobEntryAttributeString(id_jobentry, "name");
-            String dirPath = rep.getJobEntryAttributeString(id_jobentry, "dir_path");
-            directory = rep.getDirectoryTree().findDirectory(dirPath);
-
+      jobname = rep.getJobEntryAttributeString(id_jobentry, "name");
+      directory = rep.getJobEntryAttributeString(id_jobentry, "dir_path");
 			filename          = rep.getJobEntryAttributeString(id_jobentry, "file_name");
 			argFromPrevious   = rep.getJobEntryAttributeBoolean(id_jobentry, "arg_from_previous");
-            execPerRow        = rep.getJobEntryAttributeBoolean(id_jobentry, "exec_per_row");
-
+      execPerRow        = rep.getJobEntryAttributeBoolean(id_jobentry, "exec_per_row");
 			setLogfile       = rep.getJobEntryAttributeBoolean(id_jobentry, "set_logfile");
 			addDate          = rep.getJobEntryAttributeBoolean(id_jobentry, "add_date");
 			addTime          = rep.getJobEntryAttributeBoolean(id_jobentry, "add_time");
@@ -307,21 +299,21 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 			super.saveRep(rep, id_job);
 
 			if (rep.getImportBaseDirectory()!=null && !rep.getImportBaseDirectory().isRoot()) {
-				directoryPath = rep.getImportBaseDirectory().getPath()+directoryPath;
-				directory = rep.getDirectoryTree().findDirectory(  directoryPath);
+				directory = rep.getImportBaseDirectory().getPath() + directoryPath;
 			}
 			
 			if (directory==null) {
-				throw new KettleException("No valid directory found for directory path: "+directoryPath);
+				throw new KettleException("The value of directory may not be null");
 			}
 
-			long id_job_attr = rep.getJobID(jobname, directory.getID());
-			rep.saveJobEntryAttribute(id_job, getID(), "id_job", id_job_attr);
-            rep.saveJobEntryAttribute(id_job, getID(), "name", getJobName());
-            rep.saveJobEntryAttribute(id_job, getID(), "dir_path", getDirectory()!=null?getDirectory().getPath():"");
-            rep.saveJobEntryAttribute(id_job, getID(), "file_name", filename);
+      // Removed id_job as we do not know what it is if we are using variables in the path
+			//long id_job_attr = rep.getJobID(jobname, directory.getID());
+			//rep.saveJobEntryAttribute(id_job, getID(), "id_job", id_job_attr);
+      rep.saveJobEntryAttribute(id_job, getID(), "name", getJobName());
+      rep.saveJobEntryAttribute(id_job, getID(), "dir_path", getDirectory()!=null?getDirectory():"");
+      rep.saveJobEntryAttribute(id_job, getID(), "file_name", filename);
 			rep.saveJobEntryAttribute(id_job, getID(), "arg_from_previous", argFromPrevious);
-            rep.saveJobEntryAttribute(id_job, getID(), "exec_per_row", execPerRow);
+      rep.saveJobEntryAttribute(id_job, getID(), "exec_per_row", execPerRow);
 			rep.saveJobEntryAttribute(id_job, getID(), "set_logfile", setLogfile);
 			rep.saveJobEntryAttribute(id_job, getID(), "add_date", addDate);
 			rep.saveJobEntryAttribute(id_job, getID(), "add_time", addTime);
@@ -391,7 +383,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
             if (fromRepository) // load from the repository...
             {
                 if(log.isDetailed()) log.logDetailed(toString(), "Loading job from repository : ["+directory+" : "+environmentSubstitute(jobname)+"]");
-                jobMeta = new JobMeta(logwriter, rep, environmentSubstitute(jobname), directory);
+                jobMeta = new JobMeta(logwriter, rep, environmentSubstitute(jobname), rep.getDirectoryTree().findDirectory(environmentSubstitute(directory)));
                 jobMeta.setParentVariableSpace(parentJob);
             }
             else // Get it from the XML file
@@ -723,7 +715,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 
 		jobname=null;
 		filename=null;
-		directory = new RepositoryDirectory();
+		directory = null;
 		arguments=null;
 		argFromPrevious=false;
 		addDate=false;
@@ -766,7 +758,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 	            return new JobMeta(LogWriter.getInstance(), 
 	            		           rep, 
 	            		           (space != null ? space.environmentSubstitute(getJobName()): getJobName()), 
-	            		           getDirectory());
+                             rep.getDirectoryTree().findDirectory(environmentSubstitute(getDirectory())));
 	        }
 	        else
 	        {

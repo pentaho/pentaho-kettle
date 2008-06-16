@@ -46,7 +46,6 @@ import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceNamingInterface;
@@ -79,7 +78,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 {
 	private String              transname;
 	private String              filename;
-	private RepositoryDirectory directory;
+	private String              directory;
 
 	public  String  arguments[];
 	public  boolean argFromPrevious;
@@ -157,12 +156,12 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 		return transname;
 	}
 
-	public RepositoryDirectory getDirectory()
+	public String getDirectory()
 	{
 		return directory;
 	}
 
-	public void setDirectory(RepositoryDirectory directory)
+	public void setDirectory(String directory)
 	{
 		this.directory = directory;
 	}
@@ -202,7 +201,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 		retval.append("      ").append(XMLHandler.addTagValue("transname",         transname));
         if (directory!=null)
         {
-            retval.append("      ").append(XMLHandler.addTagValue("directory",         directory.getPath()));
+            retval.append("      ").append(XMLHandler.addTagValue("directory",         directory));
         }
         else
         if (directoryPath!=null)
@@ -240,11 +239,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 			filename = XMLHandler.getTagValue(entrynode, "filename") ;
 			transname = XMLHandler.getTagValue(entrynode, "transname") ;
 
-            directoryPath = XMLHandler.getTagValue(entrynode, "directory");
-            if (rep!=null) // import from XML into a repository for example... (or copy/paste)
-            {
-            	directory = rep.getDirectoryTree().findDirectory(directoryPath);
-            }
+            directory = XMLHandler.getTagValue(entrynode, "directory");
 
             argFromPrevious = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "arg_from_previous") );
             execPerRow = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "exec_per_row") );
@@ -283,22 +278,20 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 		{
 			super.loadRep(rep, id_jobentry, databases, slaveServers);
 
-	        transname = rep.getJobEntryAttributeString(id_jobentry, "name");
-            String dirPath = rep.getJobEntryAttributeString(id_jobentry, "dir_path");
-            directory = rep.getDirectoryTree().findDirectory(dirPath);
-
-			filename         = rep.getJobEntryAttributeString(id_jobentry, "file_name");
-			argFromPrevious  = rep.getJobEntryAttributeBoolean(id_jobentry, "arg_from_previous");
-            execPerRow       = rep.getJobEntryAttributeBoolean(id_jobentry, "exec_per_row");
-            clearResultRows  = rep.getJobEntryAttributeBoolean(id_jobentry, "clear_rows", true);
-            clearResultFiles = rep.getJobEntryAttributeBoolean(id_jobentry, "clear_files", true);
-			setLogfile       = rep.getJobEntryAttributeBoolean(id_jobentry, "set_logfile");
-			addDate          = rep.getJobEntryAttributeBoolean(id_jobentry, "add_date");
-			addTime          = rep.getJobEntryAttributeBoolean(id_jobentry, "add_time");
-			logfile          = rep.getJobEntryAttributeString(id_jobentry, "logfile");
-			logext           = rep.getJobEntryAttributeString(id_jobentry, "logext");
-			loglevel         = LogWriter.getLogLevel( rep.getJobEntryAttributeString(id_jobentry, "loglevel") );
-            clustering       = rep.getJobEntryAttributeBoolean(id_jobentry, "cluster");
+      transname        = rep.getJobEntryAttributeString(id_jobentry, "name");
+      directory        = rep.getJobEntryAttributeString(id_jobentry, "dir_path");
+      filename         = rep.getJobEntryAttributeString(id_jobentry, "file_name");
+      argFromPrevious  = rep.getJobEntryAttributeBoolean(id_jobentry, "arg_from_previous");
+      execPerRow       = rep.getJobEntryAttributeBoolean(id_jobentry, "exec_per_row");
+      clearResultRows  = rep.getJobEntryAttributeBoolean(id_jobentry, "clear_rows", true);
+      clearResultFiles = rep.getJobEntryAttributeBoolean(id_jobentry, "clear_files", true);
+      setLogfile       = rep.getJobEntryAttributeBoolean(id_jobentry, "set_logfile");
+      addDate          = rep.getJobEntryAttributeBoolean(id_jobentry, "add_date");
+      addTime          = rep.getJobEntryAttributeBoolean(id_jobentry, "add_time");
+      logfile          = rep.getJobEntryAttributeString(id_jobentry, "logfile");
+      logext           = rep.getJobEntryAttributeString(id_jobentry, "logext");
+      loglevel         = LogWriter.getLogLevel( rep.getJobEntryAttributeString(id_jobentry, "loglevel") );
+      clustering       = rep.getJobEntryAttributeBoolean(id_jobentry, "cluster");
 
 			String remoteSlaveServerName = rep.getJobEntryAttributeString(id_jobentry, "slave_server_name");
 			remoteSlaveServer = SlaveServer.findSlaveServer(slaveServers, remoteSlaveServerName);
@@ -328,34 +321,31 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 		{
 			super.saveRep(rep, id_job);
 			
-			if (rep.getImportBaseDirectory()!=null && !rep.getImportBaseDirectory().isRoot()) {
-				directoryPath = rep.getImportBaseDirectory().getPath()+directoryPath;
-				directory = rep.getDirectoryTree().findDirectory(  directoryPath);
-			}
-			
 			if (directory==null) {
-				throw new KettleException("No valid directory found for directory path: "+directoryPath);
+				throw new KettleException("The value of directory may not be null");
 			}
 
-			long id_transformation = rep.getTransformationID(transname, directory.getID());
-			rep.saveJobEntryAttribute(id_job, getID(), "id_transformation", id_transformation);
-            rep.saveJobEntryAttribute(id_job, getID(), "name", getTransname());
-            rep.saveJobEntryAttribute(id_job, getID(), "dir_path", getDirectory()!=null?getDirectory().getPath():"");
+      //Removed id_transformation as we do not know what it is if we are using variables in the path
+			// long id_transformation = rep.getTransformationID(transname, directory.getID());
+			// rep.saveJobEntryAttribute(id_job, getID(), "id_transformation", id_transformation);
+      rep.saveJobEntryAttribute(id_job, getID(), "name", getTransname());
+      rep.saveJobEntryAttribute(id_job, getID(), "dir_path", getDirectory()!=null?getDirectory():"");
 			rep.saveJobEntryAttribute(id_job, getID(), "file_name", filename);
 			rep.saveJobEntryAttribute(id_job, getID(), "arg_from_previous", argFromPrevious);
-            rep.saveJobEntryAttribute(id_job, getID(), "exec_per_row", execPerRow);
-            rep.saveJobEntryAttribute(id_job, getID(), "clear_rows", clearResultRows);
-            rep.saveJobEntryAttribute(id_job, getID(), "clear_files", clearResultFiles);
+      rep.saveJobEntryAttribute(id_job, getID(), "exec_per_row", execPerRow);
+      rep.saveJobEntryAttribute(id_job, getID(), "clear_rows", clearResultRows);
+      rep.saveJobEntryAttribute(id_job, getID(), "clear_files", clearResultFiles);
 			rep.saveJobEntryAttribute(id_job, getID(), "set_logfile", setLogfile);
 			rep.saveJobEntryAttribute(id_job, getID(), "add_date", addDate);
 			rep.saveJobEntryAttribute(id_job, getID(), "add_time", addTime);
 			rep.saveJobEntryAttribute(id_job, getID(), "logfile", logfile);
 			rep.saveJobEntryAttribute(id_job, getID(), "logext", logext);
 			rep.saveJobEntryAttribute(id_job, getID(), "loglevel", LogWriter.getLogLevelDesc(loglevel));
-            rep.saveJobEntryAttribute(id_job, getID(), "cluster", clustering);
+      rep.saveJobEntryAttribute(id_job, getID(), "cluster", clustering);
 			rep.saveJobEntryAttribute(id_job, getID(), "slave_server_name", remoteSlaveServer!=null ? remoteSlaveServer.getName() : null);
 			rep.saveJobEntryAttribute(id_job, getID(), "set_append_logfile", setAppendLogfile);
-			// save the arguments...
+			
+      // save the arguments...
 			if (arguments!=null)
 			{
 				for (int i=0;i<arguments.length;i++)
@@ -376,7 +366,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 
 		transname=null;
 		filename=null;
-		directory = new RepositoryDirectory();
+		directory = null;
 		arguments=null;
 		argFromPrevious=false;
         execPerRow=false;
@@ -439,7 +429,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
         }
         else
         {
-        	log.logBasic(toString(), Messages.getString("JobTrans.Log.OpeningTransInDirec",environmentSubstitute(getFilename()),directory.getPath()));
+        	log.logBasic(toString(), Messages.getString("JobTrans.Log.OpeningTransInDirec",environmentSubstitute(getFilename()),environmentSubstitute(directory)));
         }
 
         // Load the transformation only once for the complete loop!
@@ -776,7 +766,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 	            	//
 	            	// It only makes sense to try to load from the repository when the repository is also filled in.
 	            	//
-	                transMeta = new TransMeta(rep, filename, getDirectory());
+	                transMeta = new TransMeta(rep, filename, rep.getDirectoryTree().findDirectory(environmentSubstitute(getDirectory())));
 		            transMeta.copyVariablesFrom(this);
 	            }
 	            else
