@@ -28,6 +28,7 @@ public class JobEntryCategory
 	public static final JobEntryCategory SCRIPTING       = new JobEntryCategory(Messages.getString("JobCategory.Category.Scripting"));
 	public static final JobEntryCategory BULK_LOADING    = new JobEntryCategory(Messages.getString("JobCategory.Category.BulkLoading"));
 	public static final JobEntryCategory XML             = new JobEntryCategory(Messages.getString("JobCategory.Category.XML"));
+	public static final JobEntryCategory REPOSITORY      = new JobEntryCategory(Messages.getString("JobCategory.Category.Repository"));
 	
 	public static final int CATEGORY_USER_DEFINED    = -1;
 	public static final int CATEGORY_GENERAL         =  0;
@@ -37,9 +38,10 @@ public class JobEntryCategory
 	public static final int CATEGORY_SCRIPTING       =  4;
 	public static final int CATEGORY_BULK_LOADING    =  5;
 	public static final int CATEGORY_XML             =  6;
+	public static final int CATEGORY_REPOSITORY      =  7;
 	
 	public static final JobEntryCategory[] STANDARD_CATEGORIES = new JobEntryCategory[] { 
-			GENERAL, MAIL, FILE_MANAGEMENT, CONDITIONS, SCRIPTING, BULK_LOADING, XML, 
+			GENERAL, MAIL, FILE_MANAGEMENT, CONDITIONS, SCRIPTING, BULK_LOADING, XML, REPOSITORY,
 		};
 
 	private String name;

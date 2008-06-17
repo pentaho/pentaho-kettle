@@ -64,7 +64,7 @@ public class RepositoryExportProgressDialog
             {
                 try
                 {
-                    rep.exportAllObjects(new ProgressMonitorAdapter(monitor), filename, dir);
+                    rep.exportAllObjects(new ProgressMonitorAdapter(monitor), filename, dir,"all");
                 }
                 catch (KettleException e)
                 {

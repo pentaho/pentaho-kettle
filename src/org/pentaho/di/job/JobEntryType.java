@@ -72,7 +72,8 @@ public enum JobEntryType
 	SSH2_PUT(Messages.getString("JobEntry.SSH2PUT.TypeDesc")),
 	FTP_DELETE(Messages.getString("JobEntry.FTPDELETE.TypeDesc")),
 	DELETE_FOLDERS(Messages.getString("JobEntry.DeleteFolders.TypeDesc")),
-	COLUMNS_EXIST(Messages.getString("JobEntry.ColumnsExist.TypeDesc")),;
+	COLUMNS_EXIST(Messages.getString("JobEntry.ColumnsExist.TypeDesc")),
+	EXPORT_REPOSITORY(Messages.getString("JobEntry.ExportRepository.TypeDesc")),;
 
 	private String description;
 	

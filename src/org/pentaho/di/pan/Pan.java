@@ -274,7 +274,7 @@ public class Pan
                                         {
                                             System.out.println(Messages.getString("Pan.Log.ExportingObjectsRepToFile",""+optionExprep));
                                             
-                                            rep.exportAllObjects(null, optionExprep.toString(), directory);
+                                            rep.exportAllObjects(null, optionExprep.toString(), directory,"all");
                                             System.out.println(Messages.getString("Pan.Log.FinishedExportObjectsRepToFile",""+optionExprep));
                                         }
 										else

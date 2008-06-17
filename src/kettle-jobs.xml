@@ -692,4 +692,17 @@
 		</tooltip>
 		<image-uri>ui/images/CEX.png</image-uri>
 	</job>
+	<job id="EXPORT_REPOSITORY">
+		<type>
+			ognl:@org.pentaho.di.job.JobEntryType@EXPORT_REPOSITORY
+		</type>
+		<class-name>
+			org.pentaho.di.job.entries.exportrepository.JobEntryExportRepository
+		</class-name>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@REPOSITORY.getName()</category>
+		<tooltip>
+			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.ExportRepository.Tooltip")
+		</tooltip>
+		<image-uri>ui/images/EREP.png</image-uri>
+	</job>
 </jobs>
