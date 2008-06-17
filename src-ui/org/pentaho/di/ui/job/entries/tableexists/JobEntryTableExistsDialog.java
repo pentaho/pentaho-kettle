@@ -70,6 +70,12 @@ public class JobEntryTableExistsDialog extends JobEntryDialog implements JobEntr
     private TextVar wTablename;
 
     private FormData fdlTablename, fdTablename;
+    
+    private Label wlSchemaname;
+
+    private TextVar wSchemaname;
+
+    private FormData fdlSchemaname, fdSchemaname;
 
     private Button wOK, wCancel;
 
@@ -125,7 +131,7 @@ public class JobEntryTableExistsDialog extends JobEntryDialog implements JobEntr
         props.setLook(wlName);
         fdlName = new FormData();
         fdlName.left = new FormAttachment(0, 0);
-        fdlName.right = new FormAttachment(middle, 0);
+        fdlName.right = new FormAttachment(middle, -margin);
         fdlName.top = new FormAttachment(0, margin);
         wlName.setLayoutData(fdlName);
         wName = new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
@@ -143,15 +149,33 @@ public class JobEntryTableExistsDialog extends JobEntryDialog implements JobEntr
 		wConnection.addModifyListener(lsMod);
         
        
+        // Schema name line
+        wlSchemaname = new Label(shell, SWT.RIGHT);
+        wlSchemaname.setText(Messages.getString("JobTableExists.Schemaname.Label"));
+        props.setLook(wlSchemaname);
+        fdlSchemaname = new FormData();
+        fdlSchemaname.left = new FormAttachment(0, 0);
+        fdlSchemaname.right = new FormAttachment(middle, -margin);
+        fdlSchemaname.top = new FormAttachment(wConnection, margin);
+        wlSchemaname.setLayoutData(fdlSchemaname);
 
+        wSchemaname = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wSchemaname);
+        wSchemaname.addModifyListener(lsMod);
+        fdSchemaname = new FormData();
+        fdSchemaname.left = new FormAttachment(middle, 0);
+        fdSchemaname.top = new FormAttachment(wConnection, margin);
+        fdSchemaname.right = new FormAttachment(100, 0);
+        wSchemaname.setLayoutData(fdSchemaname);
+		
         // Table name line
         wlTablename = new Label(shell, SWT.RIGHT);
         wlTablename.setText(Messages.getString("JobTableExists.Tablename.Label"));
         props.setLook(wlTablename);
         fdlTablename = new FormData();
         fdlTablename.left = new FormAttachment(0, 0);
-        fdlTablename.right = new FormAttachment(middle, 0);
-        fdlTablename.top = new FormAttachment(wConnection, margin);
+        fdlTablename.right = new FormAttachment(middle, -margin);
+        fdlTablename.top = new FormAttachment(wSchemaname, margin);
         wlTablename.setLayoutData(fdlTablename);
 
         wTablename = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
@@ -159,7 +183,7 @@ public class JobEntryTableExistsDialog extends JobEntryDialog implements JobEntr
         wTablename.addModifyListener(lsMod);
         fdTablename = new FormData();
         fdTablename.left = new FormAttachment(middle, 0);
-        fdTablename.top = new FormAttachment(wConnection, margin);
+        fdTablename.top = new FormAttachment(wSchemaname, margin);
         fdTablename.right = new FormAttachment(100, 0);
         wTablename.setLayoutData(fdTablename);
 
@@ -250,6 +274,8 @@ public class JobEntryTableExistsDialog extends JobEntryDialog implements JobEntr
             wName.setText(jobEntry.getName());
         if (jobEntry.getTablename() != null)
             wTablename.setText(jobEntry.getTablename());
+        if (jobEntry.getSchemaname() != null)
+            wSchemaname.setText(jobEntry.getSchemaname());
         if (jobEntry.getDatabase() != null)
         {
             wConnection.setText(jobEntry.getDatabase().getName());
@@ -269,6 +295,8 @@ public class JobEntryTableExistsDialog extends JobEntryDialog implements JobEntr
         jobEntry.setName(wName.getText());
         jobEntry.setDatabase(jobMeta.findDatabase(wConnection.getText()));
         jobEntry.setTablename(wTablename.getText());
+        jobEntry.setSchemaname(wSchemaname.getText());
+        
         dispose();
     }
 

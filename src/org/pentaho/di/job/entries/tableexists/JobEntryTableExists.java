@@ -20,6 +20,7 @@ import java.util.List;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Result;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -42,7 +43,7 @@ import org.w3c.dom.Node;
 
 
 /**
- * This defines an SQL job entry.
+ * This defines a table exists job entry.
  *
  * @author Matt
  * @since 05-11-2003
@@ -51,11 +52,13 @@ import org.w3c.dom.Node;
 public class JobEntryTableExists extends JobEntryBase implements Cloneable, JobEntryInterface
 {
 	private String tablename;
+	private String schemaname;
 	private DatabaseMeta connection;
 
 	public JobEntryTableExists(String n)
 	{
 	    super(n, "");
+	    schemaname=null;
 		tablename=null;
 		connection=null;
 		setID(-1L);
@@ -85,6 +88,7 @@ public class JobEntryTableExists extends JobEntryBase implements Cloneable, JobE
 		retval.append(super.getXML());
 
 		retval.append("      ").append(XMLHandler.addTagValue("tablename",  tablename));
+		retval.append("      ").append(XMLHandler.addTagValue("schemaname",  schemaname));
 		retval.append("      ").append(XMLHandler.addTagValue("connection", connection==null?null:connection.getName()));
 
 		return retval.toString();
@@ -97,12 +101,13 @@ public class JobEntryTableExists extends JobEntryBase implements Cloneable, JobE
 			super.loadXML(entrynode, databases, slaveServers);
 
 			tablename     = XMLHandler.getTagValue(entrynode, "tablename");
+			schemaname     = XMLHandler.getTagValue(entrynode, "schemaname");
 			String dbname = XMLHandler.getTagValue(entrynode, "connection");
 			connection    = DatabaseMeta.findDatabase(databases, dbname);
 		}
 		catch(KettleException e)
 		{
-			throw new KettleXMLException("Unable to load job entry of type 'table exists' from XML node", e);
+			throw new KettleXMLException(Messages.getString("TableExists.Meta.UnableLoadXml"), e);
 		}
 	}
 
@@ -114,6 +119,8 @@ public class JobEntryTableExists extends JobEntryBase implements Cloneable, JobE
 			super.loadRep(rep, id_jobentry, databases, slaveServers);
 
 			tablename  = rep.getJobEntryAttributeString(id_jobentry, "tablename");
+			schemaname  = rep.getJobEntryAttributeString(id_jobentry, "schemaname");
+			
 			long id_db = rep.getJobEntryAttributeInteger(id_jobentry, "id_database");
 			if (id_db>0)
 			{
@@ -128,7 +135,7 @@ public class JobEntryTableExists extends JobEntryBase implements Cloneable, JobE
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException("Unable to load job entry of type 'table exists' from the repository for id_jobentry="+id_jobentry, dbe);
+			throw new KettleException(Messages.getString("TableExists.Meta.UnableLoadRep",""+id_jobentry), dbe);
 		}
 	}
 
@@ -140,11 +147,13 @@ public class JobEntryTableExists extends JobEntryBase implements Cloneable, JobE
 			super.saveRep(rep, id_job);
 
 			rep.saveJobEntryAttribute(id_job, getID(), "tablename", tablename);
+			rep.saveJobEntryAttribute(id_job, getID(), "schemaname", schemaname);
+			
 			if (connection!=null) rep.saveJobEntryAttribute(id_job, getID(), "connection", connection.getName());
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException("Unable to load job entry of type 'table exists' to the repository for id_job="+id_job, dbe);
+			throw new KettleException(Messages.getString("TableExists.Meta.UnableSaveRep",""+id_job), dbe);
 		}
 	}
 
@@ -157,6 +166,15 @@ public class JobEntryTableExists extends JobEntryBase implements Cloneable, JobE
 	public String getTablename()
 	{
 		return tablename;
+	}
+
+	public String getSchemaname()
+	{
+		return schemaname;
+	}
+	public void setSchemaname(String schemaname)
+	{
+		this.schemaname = schemaname;
 	}
 
 	public void setDatabase(DatabaseMeta database)
@@ -194,27 +212,37 @@ public class JobEntryTableExists extends JobEntryBase implements Cloneable, JobE
 			{
 				db.connect();
                 String realTablename = environmentSubstitute(tablename);
+                String realSchemaname = environmentSubstitute(schemaname);
+                if(!Const.isEmpty(realSchemaname))
+                {
+                	realTablename = db.getDatabaseMeta().getQuotedSchemaTableCombination(realSchemaname, realTablename);
+                    if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("TableExists.Log.SchemaTable",realTablename));
+                }
+                
 				if (db.checkTableExists(realTablename))
 				{
-					if(log.isDetailed()) log.logDetailed(toString(), "Table ["+realTablename+"] exists.");
+					if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("TableExists.Log.TableExists",realTablename));
 					result.setResult(true);
 				}
 				else
 				{
-					if(log.isDetailed()) log.logDetailed(toString(), "Table ["+realTablename+"] doesn't exist!");
+					if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("TableExists.Log.TableNotExists",realTablename));
 				}
-				db.disconnect();
 			}
 			catch(KettleDatabaseException dbe)
 			{
 				result.setNrErrors(1);
-				log.logError(toString(), "An error occurred executing this step: "+dbe.getMessage());
+				log.logError(toString(), Messages.getString("TableExists.Error.RunningJobEntry",dbe.getMessage()));
+			}
+			finally
+			{
+				if(db!=null) try{db.disconnect();} catch(Exception e){};
 			}
 		}
 		else
 		{
 			result.setNrErrors(1);
-			log.logError(toString(), "No database connection is defined.");
+			log.logError(toString(), Messages.getString("TableExists.Error.NoConnectionDefined"));
 		}
 
 		return result;
