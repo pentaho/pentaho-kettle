@@ -235,7 +235,7 @@ public class RepositoryExplorerDialog extends Dialog
     		Display display = parent.getDisplay();
     		shell = new Shell(display, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
     		props.setLook(shell);
-			shell.setImage(GUIResource.getInstance().getImageConnection());
+			shell.setImage(GUIResource.getInstance().getImageFolderConnections());
     		shell.setText(Messages.getString("RepositoryExplorerDialog.Title")+rep.getName()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
     		
     		FormLayout formLayout = new FormLayout ();
@@ -2829,7 +2829,7 @@ public class RepositoryExplorerDialog extends Dialog
 		if (dialog.open()!=null)
 		{
 			String filename = dialog.getFilterPath() + Const.FILE_SEPARATOR + dialog.getFileName();
-			log.logBasic("Exporting All", "Export objects to file ["+filename+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			if(log.isBasic()) log.logBasic("Exporting All", "Export objects to file ["+filename+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			
 			RepositoryExportProgressDialog repd = new RepositoryExportProgressDialog(shell, rep, dir, filename);
 			repd.open();
