@@ -148,7 +148,7 @@ public class Database implements VariableSpace
 		
 		written=0;
 				
-		log.logDetailed(toString(), "New database connection defined");
+		if(log.isDetailed()) log.logDetailed(toString(), "New database connection defined");
 	}
     
     public boolean equals(Object obj)
@@ -296,7 +296,7 @@ public class Database implements VariableSpace
             else
             {
     			connectUsingClass(databaseMeta.getDriverClass(), partitionId );
-    			log.logDetailed(toString(), "Connected to database.");
+    			if(log.isDetailed()) log.logDetailed(toString(), "Connected to database.");
                 
                 // See if we need to execute extra SQL statemtent...
                 String sql = environmentSubstitute( databaseMeta.getConnectSQL() ); 
@@ -305,7 +305,7 @@ public class Database implements VariableSpace
                 if (!Const.isEmpty(sql) && !Const.onlySpaces(sql))
                 {
                     execStatements(sql);
-                    log.logDetailed(toString(), "Executed connect time SQL statements:"+Const.CR+sql);
+                    if(log.isDetailed()) log.logDetailed(toString(), "Executed connect time SQL statements:"+Const.CR+sql);
                 }
             }
 		}
@@ -523,7 +523,7 @@ public class Database implements VariableSpace
 				}
 			} 
 			
-			log.logDetailed(toString(), "Connection to database closed!");
+			if(log.isDetailed()) log.logDetailed(toString(), "Connection to database closed!");
 		}
 		catch(SQLException e) {
 			throw new KettleDatabaseException("Error disconnecting from database '"+toString()+"'", e);
@@ -553,7 +553,7 @@ public class Database implements VariableSpace
             { 
                 statement.cancel(); 
             } 
-            log.logDetailed(toString(), "Statement canceled!");
+            if(log.isDebug()) log.logDebug(toString(), "Statement canceled!");
         }
         catch(SQLException ex) 
         {
@@ -572,7 +572,7 @@ public class Database implements VariableSpace
         try
         {
             connection.setAutoCommit(commitsize<=0);
-            log.logDetailed(toString(), "Auto commit "+onOff);
+            if(log.isDetailed()) log.logDetailed(toString(), "Auto commit "+onOff);
         }
         catch(Exception e)
         {
@@ -622,7 +622,7 @@ public class Database implements VariableSpace
 			}
 			else
 			{
-			    log.logDetailed(toString(), "No commit possible on database connection ["+toString()+"]");
+				if(log.isDetailed()) log.logDetailed(toString(), "No commit possible on database connection ["+toString()+"]");
 			}
 		}
 		catch(Exception e)
@@ -654,7 +654,7 @@ public class Database implements VariableSpace
             }
             else
             {
-                log.logDetailed(toString(), "No rollback possible on database connection ["+toString()+"]");
+            	if(log.isDetailed()) log.logDetailed(toString(), "No rollback possible on database connection ["+toString()+"]");
             }
 			
 		}
@@ -691,7 +691,7 @@ public class Database implements VariableSpace
 		
 		String ins = getInsertStatement(schemaName, tableName, rowMeta);
 				
-		log.logDetailed(toString(),"Preparing statement: "+Const.CR+ins);
+		if(log.isDetailed()) log.logDetailed(toString(),"Preparing statement: "+Const.CR+ins);
 		prepStatementInsert=prepareSQL(ins);
 	}
 
@@ -1617,7 +1617,7 @@ public class Database implements VariableSpace
 					if (sql.toUpperCase().startsWith("SELECT"))
 					{
 						// A Query
-						log.logDetailed(toString(), "launch SELECT statement: "+Const.CR+sql);
+						if(log.isDetailed()) log.logDetailed(toString(), "launch SELECT statement: "+Const.CR+sql);
 						
 						nrstats++;
 						ResultSet rs = null;
@@ -1656,7 +1656,7 @@ public class Database implements VariableSpace
 					}
                     else // any kind of statement
                     {
-                        log.logDetailed(toString(), "launch DDL statement: "+Const.CR+sql);
+                    	if(log.isDetailed()) log.logDetailed(toString(), "launch DDL statement: "+Const.CR+sql);
 
                         // A DDL statement
                         nrstats++;
@@ -1673,7 +1673,7 @@ public class Database implements VariableSpace
 			}
 		}
 		
-		log.logDetailed(toString(), nrstats+" statement"+(nrstats==1?"":"s")+" executed");
+		if(log.isDetailed()) log.logDetailed(toString(), nrstats+" statement"+(nrstats==1?"":"s")+" executed");
         
         return result;
 	}
@@ -1869,10 +1869,10 @@ public class Database implements VariableSpace
 	{
 		try
 		{
-			log.logDebug(toString(), "Checking if table ["+tablename+"] exists!");
+			if(log.isDebug()) log.logDebug(toString(), "Checking if table ["+tablename+"] exists!");
 			
             // Just try to read from the table.
-            String sql = databaseMeta.getSQLTableExists(tablename);
+            String sql = databaseMeta.getSQLTableExists(databaseMeta.quoteField(tablename));
             try
             {
                 getOneRow(sql);
@@ -1922,7 +1922,36 @@ public class Database implements VariableSpace
 			throw new KettleDatabaseException("Unable to check if table ["+tablename+"] exists on connection ["+databaseMeta.getName()+"]", e);
 		}
 	}
+	/**
+	 * See if the column specified exists by reading
+	 * @param columnname The name of the column to check.
+	 * @param tablename The name of the table to check.
+	 * @return true if the table exists, false if it doesn't.
+	 */
+	public boolean checkColumnExists(String columnname, String tablename) throws KettleDatabaseException
+	{
+		try
+		{
+			if(log.isDebug()) log.logDebug(toString(), "Checking if column [" + columnname + "] exists in table ["+tablename+"] !");
 
+            // Just try to read from the table.
+            String sql = databaseMeta.getSQLColumnExists(databaseMeta.quoteField(columnname),databaseMeta.quoteField(tablename));
+        
+            try
+            {
+                getOneRow(sql);
+                return true;
+            }
+            catch(KettleDatabaseException e)
+            {
+                return false;
+            }
+		}
+		catch(Exception e)
+		{
+			throw new KettleDatabaseException("Unable to check if column [" + columnname + "] exists in table ["+tablename+"] on connection ["+databaseMeta.getName()+"]", e);
+		}
+	}
     /**
      * Check whether the sequence exists, Oracle only! 
      * @param sequenceName The name of the sequence
@@ -1992,7 +2021,7 @@ public class Database implements VariableSpace
         String tablename = databaseMeta.getQuotedSchemaTableCombination(schemaName, tableName);
 		if (!checkTableExists(tablename)) return false;
 		
-		log.logDebug(toString(), "CheckIndexExists() tablename = "+tablename+" type = "+databaseMeta.getDatabaseTypeDesc());
+		if(log.isDebug()) log.logDebug(toString(), "CheckIndexExists() tablename = "+tablename+" type = "+databaseMeta.getDatabaseTypeDesc());
 		
 		boolean exists[] = new boolean[idx_fields.length];
 		for (int i=0;i<exists.length;i++) exists[i]=false;
@@ -2886,7 +2915,7 @@ public class Database implements VariableSpace
 
 		try
 		{
-			log.logDetailed(toString(), "Setting preparedStatement to ["+sql+"]");
+			if(log.isDetailed()) log.logDetailed(toString(), "Setting preparedStatement to ["+sql+"]");
 			prepStatementLookup=connection.prepareStatement(databaseMeta.stripCR(sql));
 			if (!checkForMultipleResults && databaseMeta.supportsSetMaxRows())
 			{
@@ -2944,7 +2973,7 @@ public class Database implements VariableSpace
 		try
 		{
 			String s = sql.toString();
-			log.logDetailed(toString(), "Setting update preparedStatement to ["+s+"]");
+			if(log.isDetailed()) log.logDetailed(toString(), "Setting update preparedStatement to ["+s+"]");
 			prepStatementUpdate=connection.prepareStatement(databaseMeta.stripCR(s));
 		}
 		catch(SQLException ex) 
@@ -3006,7 +3035,7 @@ public class Database implements VariableSpace
 
         try
         {
-            log.logDetailed(toString(), "Setting update preparedStatement to ["+sql+"]");
+        	if(log.isDetailed()) log.logDetailed(toString(), "Setting update preparedStatement to ["+sql+"]");
             prepStatementUpdate=connection.prepareStatement(databaseMeta.stripCR(sql));
         }
         catch(SQLException ex) 
@@ -3045,7 +3074,7 @@ public class Database implements VariableSpace
 		
 		try
 		{
-			log.logDetailed(toString(), "DBA setting callableStatement to ["+sql+"]");
+			if(log.isDetailed()) log.logDetailed(toString(), "DBA setting callableStatement to ["+sql+"]");
 			cstmt=connection.prepareCall(sql);
 			pos=1;
 			if (!Const.isEmpty(returnvalue))
@@ -4065,7 +4094,7 @@ public class Database implements VariableSpace
 			}
 		}
 
-		log.logDetailed(toString(), "read :"+names.size()+" table names from db meta-data.");
+		if(log.isDetailed()) log.logDetailed(toString(), "read :"+names.size()+" table names from db meta-data.");
 
 		return names.toArray(new String[names.size()]);
 	}
@@ -4117,7 +4146,7 @@ public class Database implements VariableSpace
 			}
 		}
 
-		log.logDetailed(toString(), "read :"+names.size()+" views from db meta-data.");
+		if(log.isDetailed()) log.logDetailed(toString(), "read :"+names.size()+" views from db meta-data.");
 
 		return names.toArray(new String[names.size()]);
 	}
@@ -4169,7 +4198,7 @@ public class Database implements VariableSpace
 			}
 		}
 	
-		log.logDetailed(toString(), "read :"+names.size()+" views from db meta-data.");
+		if(log.isDetailed()) log.logDetailed(toString(), "read :"+names.size()+" views from db meta-data.");
 	
 		return names.toArray(new String[names.size()]);
 	}
