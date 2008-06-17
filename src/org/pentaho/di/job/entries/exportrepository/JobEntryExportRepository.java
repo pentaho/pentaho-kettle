@@ -552,8 +552,14 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
 					if(!file.getParent().exists())
 					{
 						if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobExportRepository.Log.FolderNotExists",""+file.getParent().toString()));
-						file.getParent().createFolder();
-						if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobExportRepository.Log.FolderCreated",file.getParent().toString()));
+						if(createfolder)
+						{
+							file.getParent().createFolder();
+							if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobExportRepository.Log.FolderCreated",file.getParent().toString()));
+						}else
+						{
+							return result;
+						}
 					}
 				}
 			}
