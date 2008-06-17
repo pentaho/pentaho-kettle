@@ -1142,7 +1142,10 @@ public abstract class BaseDatabaseMeta implements Cloneable
     {
         return "SELECT * FROM "+tablename;
     }
-    
+    public String getSQLColumnExists(String columnname, String tablename)
+    {
+        return "SELECT " + columnname + " FROM "+tablename;
+    }
     public boolean needsToLockAllTables()
     {
         return true;

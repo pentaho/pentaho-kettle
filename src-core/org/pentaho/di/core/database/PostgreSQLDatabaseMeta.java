@@ -161,6 +161,17 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
         return getSQLQueryFields(tablename);
     }
     
+    public String getSQLColumnExists(String columnname, String tablename)
+    {
+        return  getSQLQueryColumnFields(columnname, tablename);
+    }
+    public String getSQLQueryColumnFields(String columnname, String tableName)
+    {
+        return "SELECT " + columnname + " FROM "+tableName+getLimitClause(1);
+    }
+
+
+    
     public boolean needsToLockAllTables()
     {
         return false;

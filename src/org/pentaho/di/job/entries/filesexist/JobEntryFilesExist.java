@@ -187,7 +187,6 @@ public class JobEntryFilesExist extends JobEntryBase implements Cloneable, JobEn
 		Result result = previousResult;
 		result.setResult( false );
 		int missingfiles=0;
-
 		
 		if (arguments != null) 
 		{

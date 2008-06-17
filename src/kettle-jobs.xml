@@ -679,4 +679,17 @@
 		</tooltip>
 		<image-uri>ui/images/DSF.png</image-uri>
 	</job>
+	<job id="COLUMNS_EXIST">
+		<type>
+			ognl:@org.pentaho.di.job.JobEntryType@COLUMNS_EXIST
+		</type>
+		<class-name>
+			org.pentaho.di.job.entries.columnsexist.JobEntryColumnsExist
+		</class-name>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@CONDITIONS.getName()</category>
+		<tooltip>
+			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.ColumnsExist.Tooltip")
+		</tooltip>
+		<image-uri>ui/images/CEX.png</image-uri>
+	</job>
 </jobs>

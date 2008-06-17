@@ -105,6 +105,17 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
         return getSQLQueryFields(tablename);
     }
     
+    public String getSQLColumnExists(String columnname, String tablename)
+    {
+        return  getSQLQueryColumnFields(columnname, tablename);
+    }
+    public String getSQLQueryColumnFields(String columnname, String tableName)
+    {
+        return "SELECT /*+FIRST_ROWS*/ " + columnname + " FROM "+tableName +" WHERE ROWNUM < 1";
+    }
+
+
+    
     public boolean needsToLockAllTables()
     {
         return false;

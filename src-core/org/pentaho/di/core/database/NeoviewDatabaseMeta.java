@@ -106,6 +106,15 @@ public class NeoviewDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
         return getSQLQueryFields(tablename);
     }
     
+    public String getSQLColumnExists(String columnname, String tablename)
+    {
+        return  getSQLQueryColumnFields(columnname, tablename);
+    }
+    public String getSQLQueryColumnFields(String columnname, String tableName)
+    {
+        return "SELECT [FIRST 1] " + columnname + " FROM "+tableName;
+    }
+    
     public boolean needsToLockAllTables()
     {
         return false;

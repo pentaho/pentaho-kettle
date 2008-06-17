@@ -83,6 +83,15 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
         return getSQLQueryFields(tablename);
     }
     
+    public String getSQLColumnExists(String columnname, String tablename)
+    {
+        return  getSQLQueryColumnFields(columnname, tablename);
+    }
+    public String getSQLQueryColumnFields(String columnname, String tableName)
+    {
+        return "SELECT " + columnname + " FROM "+tableName +" LIMIT 1";
+    }
+    
 	/**
 	 * @see org.pentaho.di.core.database.DatabaseInterface#getNotFoundTK(boolean)
 	 */
