@@ -593,7 +593,7 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		usetoken=false;
 		IsIgnoreEmptyFile=false;
-		doNotFailIfNoFile=false;
+		doNotFailIfNoFile=true;
 		includeFilename = false;
 		filenameField = "";
 		includeRowNumber = false;
