@@ -90,8 +90,7 @@ import org.pentaho.di.core.vfs.KettleVFS;
 
 public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterface
 {
-	private static final String[] YES_NO_COMBO = new String[] { Messages.getString("System.Combo.No"), Messages.getString("System.Combo.Yes") };
-	
+
 	private CTabFolder   wTabFolder;
 	private FormData     fdTabFolder;
 	
@@ -184,6 +183,12 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 	private Label        wlIgnoreEmptyFile;
 	private Button       wIgnoreEmptyFile;
 	private FormData     fdlIgnoreEmptyFile, fdIgnoreEmptyFile;
+	
+
+	 // do not fail if no files?
+	private Label        wldoNotFailIfNoFile;
+	private Button       wdoNotFailIfNoFile;
+	private FormData     fdldoNotFailIfNoFile, fddoNotFailIfNoFile;
 
 	private GetXMLDataMeta input;
 	
@@ -495,7 +500,7 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		colinfo[0].setUsingVariables(true);
 		colinfo[1].setUsingVariables(true);
 		colinfo[1].setToolTip(Messages.getString("GetXMLDataDialog.Files.Wildcard.Tooltip"));
-		colinfo[2]=new ColumnInfo(Messages.getString("GetXMLDataDialog.Required.Column"),ColumnInfo.COLUMN_TYPE_CCOMBO,  YES_NO_COMBO );
+		colinfo[2]=new ColumnInfo(Messages.getString("GetXMLDataDialog.Required.Column"),ColumnInfo.COLUMN_TYPE_CCOMBO,  GetXMLDataMeta.RequiredFilesDesc);
 		colinfo[2].setToolTip(Messages.getString("GetXMLDataDialog.Required.Tooltip"));		
 		
 		wFilenameList = new TableView(transMeta,wFileComp, 
@@ -691,12 +696,30 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		fdIgnoreEmptyFile.top  = new FormAttachment(wuseToken, margin);
 		wIgnoreEmptyFile.setLayoutData(fdIgnoreEmptyFile);
 		
+
+		 // do not fail if no files?
+		wldoNotFailIfNoFile=new Label(wXmlConf, SWT.RIGHT);
+		wldoNotFailIfNoFile.setText(Messages.getString("GetXMLDataDialog.doNotFailIfNoFile.Label"));
+ 		props.setLook(wldoNotFailIfNoFile);
+		fdldoNotFailIfNoFile=new FormData();
+		fdldoNotFailIfNoFile.left = new FormAttachment(0, 0);
+		fdldoNotFailIfNoFile.top  = new FormAttachment(wIgnoreEmptyFile, margin);
+		fdldoNotFailIfNoFile.right= new FormAttachment(middle, -margin);
+		wldoNotFailIfNoFile.setLayoutData(fdldoNotFailIfNoFile);
+		wdoNotFailIfNoFile=new Button(wXmlConf, SWT.CHECK );
+ 		props.setLook(wdoNotFailIfNoFile);
+		wdoNotFailIfNoFile.setToolTipText(Messages.getString("GetXMLDataDialog.doNotFailIfNoFile.Tooltip"));
+		fddoNotFailIfNoFile=new FormData();
+		fddoNotFailIfNoFile.left = new FormAttachment(middle, 0);
+		fddoNotFailIfNoFile.top  = new FormAttachment(wIgnoreEmptyFile, margin);
+		wdoNotFailIfNoFile.setLayoutData(fddoNotFailIfNoFile);
+
 		wlLimit=new Label(wXmlConf, SWT.RIGHT);
 		wlLimit.setText(Messages.getString("GetXMLDataDialog.Limit.Label"));
  		props.setLook(wlLimit);
 		fdlLimit=new FormData();
 		fdlLimit.left = new FormAttachment(0, 0);
-		fdlLimit.top  = new FormAttachment(wIgnoreEmptyFile, margin);
+		fdlLimit.top  = new FormAttachment(wdoNotFailIfNoFile, margin);
 		fdlLimit.right= new FormAttachment(middle, -margin);
 		wlLimit.setLayoutData(fdlLimit);
 		wLimit=new Text(wXmlConf, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
@@ -704,7 +727,7 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		wLimit.addModifyListener(lsMod);
 		fdLimit=new FormData();
 		fdLimit.left = new FormAttachment(middle, 0);
-		fdLimit.top  = new FormAttachment(wIgnoreEmptyFile, margin);
+		fdLimit.top  = new FormAttachment(wdoNotFailIfNoFile, margin);
 		fdLimit.right= new FormAttachment(100, 0);
 		wLimit.setLayoutData(fdLimit);
 		
@@ -1661,7 +1684,7 @@ private boolean IsDate(String str)
 			wFilenameList.removeAll();
 			for (int i=0;i<in.getFileName().length;i++) 
 			{
-				wFilenameList.add(new String[] { in.getFileName()[i], in.getFileMask()[i],in.getFileRequired()[i] } );
+				wFilenameList.add(new String[] { in.getFileName()[i], in.getFileMask()[i],in.getRequiredFilesDesc(in.getFileRequired()[i]) } );
 			}
 			
 			
@@ -1676,6 +1699,8 @@ private boolean IsDate(String str)
 		wValidating.setSelection(in.isValidating());
 		wuseToken.setSelection(in.isuseToken());
 		wIgnoreEmptyFile.setSelection(in.isIgnoreEmptyFile());
+		wdoNotFailIfNoFile.setSelection(in.isdoNotFailIfNoFile());
+		
 		wXMLStreamField.setSelection(in.getIsInFields());
 		wXMLIsAFile.setSelection(in.getIsAFile());
 		
@@ -1775,6 +1800,8 @@ private boolean IsDate(String str)
 		in.setValidating( wValidating.getSelection() );
 		in.setuseToken(wuseToken.getSelection() );
 		in.setIgnoreEmptyFile(wIgnoreEmptyFile.getSelection() );
+		in.setdoNotFailIfNoFile(wdoNotFailIfNoFile.getSelection());
+		
 		in.setIsInFields(wXMLStreamField.getSelection());
 		in.setIsAFile(wXMLIsAFile.getSelection());
 		in.setXMLField(wXMLField.getText());
@@ -1786,7 +1813,7 @@ private boolean IsDate(String str)
 
 		in.setFileName( wFilenameList.getItems(0) );
 		in.setFileMask( wFilenameList.getItems(1) );
-		in.setFileRequired( wFilenameList.getItems(2) );
+		in.setFileRequired(wFilenameList.getItems(2));
 
 		for (int i=0;i<nrFields;i++)
 		{

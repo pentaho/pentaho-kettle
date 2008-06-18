@@ -151,6 +151,7 @@ public class FileInputList
         {
             final String onefile = realfile[i];
             final String onemask = realmask[i];
+
             final boolean onerequired = YES.equalsIgnoreCase(fileRequired[i]);
             final boolean subdirs = includeSubdirs[i];
             final FileTypeFilter filter = (

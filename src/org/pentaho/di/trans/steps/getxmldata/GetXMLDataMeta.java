@@ -47,8 +47,8 @@ import org.pentaho.di.core.fileinput.FileInputList;
  */
 public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 {	
-	private static final String NO = "N";
-	private static final String YES = "Y";
+	public static final String[] RequiredFilesDesc = new String[] { Messages.getString("System.Combo.No"), Messages.getString("System.Combo.Yes") };
+	public static final String[] RequiredFilesCode = new String[] {"N", "Y"};
 	
 	/** Array of filenames */
 	private  String  fileName[]; 
@@ -106,6 +106,9 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 	
 	/** Flag : do we ignore empty files */
 	private boolean IsIgnoreEmptyFile;
+	
+	/** Flag : do not fail if no file */
+	private boolean doNotFailIfNoFile;
 	
     	
 	public GetXMLDataMeta()
@@ -213,8 +216,11 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 		return fileRequired;
 	}
     
-	public void setFileRequired(String[] fileRequired) {
-		this.fileRequired = fileRequired;
+	public void setFileRequired(String[] fileRequiredin) {
+		for (int i=0;i<fileRequiredin.length;i++)
+		{
+			this.fileRequired[i] = getRequiredFilesCode(fileRequiredin[i]);
+		}
 	}
 
 	
@@ -347,6 +353,22 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 	}
 	
 	
+	/** 
+	 * @return the doNotFailIfNoFile flag
+	 */
+	public boolean isdoNotFailIfNoFile()
+	{
+		return doNotFailIfNoFile;
+	}
+	
+	
+	/** 
+	 * @param doNotFailIfNoFile the doNotFailIfNoFile to set
+	 */
+	public void setdoNotFailIfNoFile(boolean doNotFailIfNoFile)
+	{
+		this.doNotFailIfNoFile= doNotFailIfNoFile;
+	}
 	
 	/** 
 	 * @param nameSpaceAware the name space aware flag to set
@@ -452,8 +474,8 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface
         retval.append("    ").append(XMLHandler.addTagValue("validating",      validating));
         retval.append("    "+XMLHandler.addTagValue("usetoken",   usetoken));
         retval.append("    "+XMLHandler.addTagValue("IsIgnoreEmptyFile",   IsIgnoreEmptyFile));
-        
-        
+        retval.append("    "+XMLHandler.addTagValue("doNotFailIfNoFile",   doNotFailIfNoFile));
+         
         retval.append("    ").append(XMLHandler.addTagValue("rownum_field",    rowNumberField));
         retval.append("    ").append(XMLHandler.addTagValue("encoding",        encoding));
         
@@ -463,6 +485,7 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface
             retval.append("      ").append(XMLHandler.addTagValue("name",     fileName[i]));
             retval.append("      ").append(XMLHandler.addTagValue("filemask", fileMask[i]));
             retval.append("      ").append(XMLHandler.addTagValue("file_required", fileRequired[i]));
+               
         }
         retval.append("    </file>").append(Const.CR);
         
@@ -484,7 +507,21 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 
         return retval.toString();
     }
-
+     public String getRequiredFilesDesc(String tt)
+     {
+ 		if(tt.equalsIgnoreCase(RequiredFilesCode[1]))
+			return RequiredFilesDesc[1];
+		else
+			return RequiredFilesDesc[0]; 
+     }
+     public String getRequiredFilesCode(String tt)
+     {
+    	if(tt==null) return RequiredFilesCode[0]; 
+ 		if(tt.equals(RequiredFilesDesc[1]))
+			return RequiredFilesCode[1];
+		else
+			return RequiredFilesCode[0]; 
+     }
 	private void readData(Node stepnode) throws KettleXMLException
 	{
 		try
@@ -497,6 +534,7 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 			validating        = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "validating"));
 			usetoken  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "usetoken"));
 			IsIgnoreEmptyFile  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "IsIgnoreEmptyFile"));
+			doNotFailIfNoFile  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "doNotFailIfNoFile"));
 			
 			includeRowNumber  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "rownum"));
 			rowNumberField    = XMLHandler.getTagValue(stepnode, "rownum_field");
@@ -555,6 +593,7 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		usetoken=false;
 		IsIgnoreEmptyFile=false;
+		doNotFailIfNoFile=false;
 		includeFilename = false;
 		filenameField = "";
 		includeRowNumber = false;
@@ -574,7 +613,7 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			fileName[i] = "filename"+(i+1);
 			fileMask[i] = "";
-			fileRequired[i] = NO;
+			fileRequired[i] = RequiredFilesCode[0];
 		}
 		
 		for (int i=0;i<nrFields;i++)
@@ -640,7 +679,8 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 			validating        =   rep.getStepAttributeBoolean(id_step, "validating");
 			usetoken  =      rep.getStepAttributeBoolean(id_step, "usetoken");
 			IsIgnoreEmptyFile  =      rep.getStepAttributeBoolean(id_step, "IsIgnoreEmptyFile");
-			
+			doNotFailIfNoFile  =      rep.getStepAttributeBoolean(id_step, "doNotFailIfNoFile");
+
 			includeRowNumber  =   rep.getStepAttributeBoolean(id_step, "rownum");
 			rowNumberField    =   rep.getStepAttributeString (id_step, "rownum_field");
 			rowLimit          =   rep.getStepAttributeInteger(id_step, "limit");
@@ -656,8 +696,7 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 			{
 				fileName[i] =      rep.getStepAttributeString (id_step, i, "file_name"    );
 				fileMask[i] =      rep.getStepAttributeString (id_step, i, "file_mask"    );
-				fileRequired[i] = rep.getStepAttributeString(id_step, i, "file_required");
-                if(!YES.equalsIgnoreCase(fileRequired[i]))    	fileRequired[i] = NO;
+				fileRequired[i] =  rep.getStepAttributeString(id_step, i, "file_required");
 			}
 
 			for (int i=0;i<nrFields;i++)
@@ -702,6 +741,7 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "validating",   validating);
 			rep.saveStepAttribute(id_transformation, id_step, "usetoken",   usetoken);
 			rep.saveStepAttribute(id_transformation, id_step, "IsIgnoreEmptyFile",   IsIgnoreEmptyFile);
+			rep.saveStepAttribute(id_transformation, id_step, "doNotFailIfNoFile",   doNotFailIfNoFile);
 			
 			rep.saveStepAttribute(id_transformation, id_step, "rownum",          includeRowNumber);
 			rep.saveStepAttribute(id_transformation, id_step, "rownum_field",    rowNumberField);
@@ -745,14 +785,21 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 
-	public FileInputList getFiles(VariableSpace space)
+	/*public FileInputList getFiles(VariableSpace space)
 	{
         String required[] = new String[fileName.length];
         boolean subdirs[] = new boolean[fileName.length]; // boolean arrays are defaulted to false.
         for (int i=0;i<required.length; required[i]="Y", i++); //$NON-NLS-1$
         return FileInputList.createFileList(space, fileName, fileMask, required, subdirs);
         
-	}
+	}*/
+	
+	  public FileInputList getFiles(VariableSpace space)
+	  {
+	    return FileInputList.createFileList(space, fileName, fileMask, fileRequired);
+	  }
+		
+	
 	
 	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
 	{

@@ -105,22 +105,21 @@ public class GetXMLData extends BaseStep implements StepInterface
 	private void handleMissingFiles() throws KettleException
 	{
 		List<FileObject> nonExistantFiles = data.files.getNonExistantFiles();
-	
 		if (nonExistantFiles.size() != 0)
 		{
 			String message = FileInputList.getRequiredFilesDescription(nonExistantFiles);
-			if(log.isBasic()) log.logBasic("Required files", "WARNING: Missing " + message);
+			log.logError(Messages.getString("GetXMLData.Log.RequiredFilesTitle"), Messages.getString("GetXMLData.Log.RequiredFiles", message));
 
-			throw new KettleException("Following required files are missing " +message);
+			throw new KettleException(Messages.getString("GetXMLData.Log.RequiredFilesMissing",message));
 		}
 
 		List<FileObject> nonAccessibleFiles = data.files.getNonAccessibleFiles();
 		if (nonAccessibleFiles.size() != 0)
 		{
 			String message = FileInputList.getRequiredFilesDescription(nonAccessibleFiles);
-			if(log.isBasic()) log.logBasic("Required files", "WARNING: Not accessible " + message);
+			log.logError(Messages.getString("GetXMLData.Log.RequiredFilesTitle"), Messages.getString("GetXMLData.Log.RequiredNotAccessibleFiles",message));
 
-				throw new KettleException("Following required files are not accessible " +message);
+				throw new KettleException(Messages.getString("GetXMLData.Log.RequiredNotAccessibleFilesMissing",message));
 		}
 	}
    private boolean ReadNextString()
@@ -177,7 +176,7 @@ public class GetXMLData extends BaseStep implements StepInterface
 							throw new KettleException(Messages.getString("GetXMLData.Exception.CouldnotFindField",meta.getXMLField())); //$NON-NLS-1$ //$NON-NLS-2$
 						}
 					}
-				}	
+				}
 			}
 		   
 		   
@@ -231,12 +230,9 @@ public class GetXMLData extends BaseStep implements StepInterface
 					{
 						throw new KettleException (Messages.getString("GetXMLData.Log.UnableApplyXPath"));
 					}
-					if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("GetXMLData.Log.LoopFileOccurences",""+data.nodesize));
-						
+					if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("GetXMLData.Log.LoopFileOccurences",""+data.nodesize));		
 				}
-
 		   }
-		
 	   }
 		catch(Exception e)
 		{
@@ -340,6 +336,34 @@ public class GetXMLData extends BaseStep implements StepInterface
 	
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{
+		if(first && !meta.getIsInFields())
+		{
+			data.files = meta.getFiles(this);
+			
+		
+			if(!meta.isdoNotFailIfNoFile() && data.files.nrOfFiles()==0)
+			{
+				throw new KettleException(Messages.getString("GetXMLData.Log.NoFiles"));
+			}
+
+			handleMissingFiles();
+			
+			// Create the output row meta-data
+            data.outputRowMeta = new RowMeta();
+
+			meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
+			
+			// Create convert meta-data objects that will contain Date & Number formatters
+            data.convertRowMeta = data.outputRowMeta.clone();
+            for (int i=0;i<data.convertRowMeta.size();i++) data.convertRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);
+  
+            // For String to <type> conversions, we allocate a conversion meta data row as well...
+			//
+			data.convertRowMeta = data.outputRowMeta.clone();
+			for (int i=0;i<data.convertRowMeta.size();i++) {
+				data.convertRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);            
+			}
+		}
 		 // Grab a row
 		 Object[] r=getXMLRow();
 		 if (r==null)
@@ -414,20 +438,17 @@ public class GetXMLData extends BaseStep implements StepInterface
 					r= processPutRow(data.readrow,(AbstractNode)data.an.get(data.nodenr));
 				else
 					r= processPutRow(null,(AbstractNode)data.an.get(data.nodenr));
-				
-			
 		 }
 		 catch (Exception e)
 		 {
 			 
 			 if (getStepMeta().isDoingErrorHandling())
 				{
-			          sendToErrorRow = true;
-			          errorMessage = e.toString();
+			         sendToErrorRow = true;
+			         errorMessage = e.toString();
 				}
 				else
 				{
-
 					throw new KettleException("Unable to read row from XML file", e);
 				}
 				if (sendToErrorRow)
@@ -533,7 +554,6 @@ public class GetXMLData extends BaseStep implements StepInterface
 						outputRowData[i] = data.previousRow[i];
 					}
 				}
-				
 			}// End of loop over fields...	
 			
 			int rowIndex = data.nrInputFields;
@@ -572,44 +592,6 @@ public class GetXMLData extends BaseStep implements StepInterface
 		
 		if (super.init(smi, sdi))
 		{
-			if(!meta.getIsInFields())
-			{
-				// We process given file list
-				data.files = meta.getFiles(this);
-				if (data.files.nrOfFiles() == 0 && data.files.nrOfMissingFiles() == 0)
-				{
-					logError(Messages.getString("GetXMLData.Log.NoFiles"));
-					return false;
-				}
-				try{
-					handleMissingFiles();
-					
-					// Create the output row meta-data
-		            data.outputRowMeta = new RowMeta();
-	
-					meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
-					
-					// Create convert meta-data objects that will contain Date & Number formatters
-		            data.convertRowMeta = data.outputRowMeta.clone();
-		            for (int i=0;i<data.convertRowMeta.size();i++) data.convertRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);
-		  
-		            // For String to <type> conversions, we allocate a conversion meta data row as well...
-					//
-					data.convertRowMeta = data.outputRowMeta.clone();
-					for (int i=0;i<data.convertRowMeta.size();i++) {
-						data.convertRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);            
-					}
-					
-				}
-				catch(Exception e)
-				{
-					logError("Error initializing step: "+e.toString());
-					logError(Const.getStackTracker(e));
-					return false;
-				}
-			}	
-			
-			
 			data.rownr = 1L;
 			data.nrInputFields=meta.getInputFields().length;
 			data.PathValue=environmentSubstitute(meta.getLoopXPath());
