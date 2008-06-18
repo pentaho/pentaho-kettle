@@ -72,6 +72,7 @@ import com.enterprisedt.net.ftp.FTPClient;
  * @author Matt
  * @since 19-06-2003
  */
+
 public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogInterface
 {
     private LabelText wName;
@@ -1384,7 +1385,8 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
 		        } 
 		        else 
 		        {
-		            ftpclient.setRemoteAddr(InetAddress.getByName(realServername));             
+		            ftpclient.setRemoteAddr(InetAddress.getByName(realServername));
+		                           
 		        }
 	
 		        // login to ftp host ...
@@ -1398,7 +1400,6 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
 		                              (!Const.isEmpty(wProxyPassword.getText()) ? " " + jobMeta.environmentSubstitute(wProxyPassword.getText()) : "" );
 		        // login now ...
 		        ftpclient.login(realUsername, realPassword);
-		        
 		        pwdFolder=ftpclient.pwd();
 			}  
 			
@@ -1417,15 +1418,14 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
 	        if(checkmoveToFolder)
 	        {	   
 	        	if(pwdFolder!=null) ftpclient.chdir(pwdFolder);
+	        	
 	        	// move to folder ...
+	        	
 				if (!Const.isEmpty(wMoveToDirectory.getText()))
 				{
 	                String realMoveDirectory = jobMeta.environmentSubstitute(wMoveToDirectory.getText());
-	                if(!Const.isEmpty(realFtpDirectory))
-	                {
-	                	realMoveDirectory=realFtpDirectory+"/"+realMoveDirectory;
-	                	ftpclient.chdir(realMoveDirectory);
-	                }
+	                realMoveDirectory=realFtpDirectory+"/"+realMoveDirectory;
+	                ftpclient.chdir(realMoveDirectory);
 				}	
 	        }
 

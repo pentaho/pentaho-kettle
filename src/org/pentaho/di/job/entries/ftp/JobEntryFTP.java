@@ -56,7 +56,6 @@ import com.enterprisedt.net.ftp.FTPConnectMode;
 import com.enterprisedt.net.ftp.FTPException;
 import com.enterprisedt.net.ftp.FTPTransferType;
 import com.enterprisedt.net.ftp.FTPFile;
-
 /**
  * This defines an FTP job entry.
  *
@@ -64,6 +63,7 @@ import com.enterprisedt.net.ftp.FTPFile;
  * @since 05-11-2003
  *
  */
+
 public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInterface
 {
 	private static Logger log4j = Logger.getLogger(JobEntryFTP.class);
@@ -292,6 +292,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 			throw new KettleXMLException("Unable to load job entry of type 'ftp' from XML node", xe);
 		}
 	}
+
 
 	  public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
 	  {
@@ -805,6 +806,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 		NrErrors = 0;
 		NrfilesRetrieved=0;
 		successConditionBroken=false;
+		boolean exitjobentry=false;
 		limitFiles=Const.toInt(environmentSubstitute(getLimit()),10);
 
 		
@@ -919,122 +921,125 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 						if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryFTP.MoveToFolderCreated",realMoveToFolder));
 					}else{
 						log.logError(toString(),Messages.getString("JobEntryFTP.MoveToFolderNotExist"));
-						result.setNrErrors(1);
-						return result;
+						exitjobentry=true;
+						NrErrors++;
 					}
 				}
 			}
 			
-			// Get all the files in the current directory...
-			String[] filelist = ftpclient.dir();
-		    if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryFTP.FoundNFiles", String.valueOf(filelist.length))); //$NON-NLS-1$
-		    
-			// set transfertype ...
-			if (binaryMode) 
+			if(!exitjobentry)
 			{
-				ftpclient.setType(FTPTransferType.BINARY);
-		        if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryFTP.SetBinary")); //$NON-NLS-1$
-			}
-			else
-			{
-				ftpclient.setType(FTPTransferType.ASCII);
-		        if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryFTP.SetAscii")); //$NON-NLS-1$
-			}
-
-			// Some FTP servers return a message saying no files found as a string in the filenlist
-			// e.g. Solaris 8
-			// CHECK THIS !!!
-			
-			if (filelist.length == 1)
-			{
-				String translatedWildcard = environmentSubstitute(wildcard);
-				if(!Const.isEmpty(translatedWildcard)){
-				  if (filelist[0].startsWith(translatedWildcard))
-				  {
-				    throw new FTPException(filelist[0]);
-				  }
-				}
-			}
-
-			
-			Pattern pattern = null;
-			if (!Const.isEmpty(wildcard)) 
-			{
-                String realWildcard = environmentSubstitute(wildcard);
-                pattern = Pattern.compile(realWildcard);
-			}
-			
-			if(!getSuccessCondition().equals(SUCCESS_IF_NO_ERRORS))
-				limitFiles=Const.toInt(environmentSubstitute(getLimit()),10);
-			
-			// Get the files in the list...
-			for (int i=0;i<filelist.length && !parentJob.isStopped();i++)
-			{
-				if(successConditionBroken){
-					log.logError(toString(), Messages.getString("JobEntryFTP.Error.SuccessConditionbroken",""+NrErrors));
-					displayResults(log);
-					throw new Exception(Messages.getString("JobEntryFTP.SuccesConditionBroken",""+NrErrors));
-				}
-			
-				boolean getIt = true;
-				
-				if(log.isDebug()) log.logDebug(toString(), Messages.getString("JobEntryFTP.AnalysingFile",filelist[i]));
-				
-				try
+				// Get all the files in the current directory...
+				String[] filelist = ftpclient.dir();
+			    if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryFTP.FoundNFiles", String.valueOf(filelist.length))); //$NON-NLS-1$
+			    
+				// set transfertype ...
+				if (binaryMode) 
 				{
-					// First see if the file matches the regular expression!
-					if (pattern!=null){
-						Matcher matcher = pattern.matcher(filelist[i]);
-						getIt = matcher.matches();
-					}
-					//The idea here is to take only files (exclude folders)
-					// also exclude fetching sub folders !
-					// Please do not use fileDetails(
-					// because this method use command called MLST. 
-					// which is a recent feature not supported by all FTP servers
-					FTPFile[] finfo = ftpclient.dirDetails(filelist[i]); 
-					if(finfo[0].isDir() || !filelist[i].equals(finfo[0].getName())) getIt=false;
-					
-					if (getIt)
-					{
-						targetFilename = getTargetFilename(filelist[i]);
-
-	                    if ((!onlyGettingNewFiles) ||
-	                    	(onlyGettingNewFiles && needsDownload(targetFilename)))
-	                    {
-	                    	if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryFTP.GettingFile", filelist[i], environmentSubstitute(targetDirectory)));  //$NON-NLS-1$
-	    					ftpclient.get(targetFilename, filelist[i]);
-									
-	    					 // Update retrieved files
-	    					updateRetrievedFiles();
-    			            if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryFTP.GotFile", filelist[i])); //$NON-NLS-1$
-	    					
-    			            // Add filename to result filenames
-    			            addFilenameToResultFilenames(log, result, parentJob, targetFilename);
-
-							// Delete the file if this is needed!
-							if (remove) {
-								ftpclient.delete(filelist[i]);
-								if(log.isDetailed()) 
-						            if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryFTP.DeletedFile", filelist[i])); //$NON-NLS-1$
-							}else
-							{
-								if(movefiles){
-									// Try to move file to destination folder ...
-									ftpclient.rename(filelist[i], realMoveToFolder+'/'+filelist[i]);
-									
-									if(log.isDetailed()) 
-										log.logDetailed(toString(), Messages.getString("JobEntryFTP.MovedFile",filelist[i],realMoveToFolder));
-								}
-							}
-	                    }
-					}
-				}catch (Exception e){
-					// Update errors number
-					updateErrors();
-					log.logError(toString(),Messages.getString("JobFTP.UnexpectedError",e.getMessage()));
+					ftpclient.setType(FTPTransferType.BINARY);
+			        if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryFTP.SetBinary")); //$NON-NLS-1$
 				}
-			} // end for
+				else
+				{
+					ftpclient.setType(FTPTransferType.ASCII);
+			        if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryFTP.SetAscii")); //$NON-NLS-1$
+				}
+	
+				// Some FTP servers return a message saying no files found as a string in the filenlist
+				// e.g. Solaris 8
+				// CHECK THIS !!!
+				
+				if (filelist.length == 1)
+				{
+					String translatedWildcard = environmentSubstitute(wildcard);
+					if(!Const.isEmpty(translatedWildcard)){
+					  if (filelist[0].startsWith(translatedWildcard))
+					  {
+					    throw new FTPException(filelist[0]);
+					  }
+					}
+				}
+	
+				
+				Pattern pattern = null;
+				if (!Const.isEmpty(wildcard)) 
+				{
+	                String realWildcard = environmentSubstitute(wildcard);
+	                pattern = Pattern.compile(realWildcard);
+				}
+				
+				if(!getSuccessCondition().equals(SUCCESS_IF_NO_ERRORS))
+					limitFiles=Const.toInt(environmentSubstitute(getLimit()),10);
+				
+				// Get the files in the list...
+				for (int i=0;i<filelist.length && !parentJob.isStopped();i++)
+				{
+					if(successConditionBroken){
+						log.logError(toString(), Messages.getString("JobEntryFTP.Error.SuccessConditionbroken",""+NrErrors));
+						displayResults(log);
+						throw new Exception(Messages.getString("JobEntryFTP.SuccesConditionBroken",""+NrErrors));
+					}
+				
+					boolean getIt = true;
+					
+					if(log.isDebug()) log.logDebug(toString(), Messages.getString("JobEntryFTP.AnalysingFile",filelist[i]));
+					
+					try
+					{
+						// First see if the file matches the regular expression!
+						if (pattern!=null){
+							Matcher matcher = pattern.matcher(filelist[i]);
+							getIt = matcher.matches();
+						}
+						//The idea here is to take only files (exclude folders)
+						// also exclude fetching sub folders !
+						// Please do not use fileDetails(
+						// because this method use command called MLST. 
+						// which is a recent feature not supported by all FTP servers
+						FTPFile[] finfo = ftpclient.dirDetails(filelist[i]); 
+						if(finfo[0].isDir() || !filelist[i].equals(finfo[0].getName())) getIt=false;
+						
+						if (getIt)
+						{
+							targetFilename = getTargetFilename(filelist[i]);
+	
+		                    if ((!onlyGettingNewFiles) ||
+		                    	(onlyGettingNewFiles && needsDownload(targetFilename)))
+		                    {
+		                    	if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryFTP.GettingFile", filelist[i], environmentSubstitute(targetDirectory)));  //$NON-NLS-1$
+		    					ftpclient.get(targetFilename, filelist[i]);
+										
+		    					 // Update retrieved files
+		    					updateRetrievedFiles();
+	    			            if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryFTP.GotFile", filelist[i])); //$NON-NLS-1$
+		    					
+	    			            // Add filename to result filenames
+	    			            addFilenameToResultFilenames(log, result, parentJob, targetFilename);
+	
+								// Delete the file if this is needed!
+								if (remove) {
+									ftpclient.delete(filelist[i]);
+									if(log.isDetailed()) 
+							            if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryFTP.DeletedFile", filelist[i])); //$NON-NLS-1$
+								}else
+								{
+									if(movefiles){
+										// Try to move file to destination folder ...
+										ftpclient.rename(filelist[i], realMoveToFolder+'/'+filelist[i]);
+										
+										if(log.isDetailed()) 
+											log.logDetailed(toString(), Messages.getString("JobEntryFTP.MovedFile",filelist[i],realMoveToFolder));
+									}
+								}
+		                    }
+						}
+					}catch (Exception e){
+						// Update errors number
+						updateErrors();
+						log.logError(toString(),Messages.getString("JobFTP.UnexpectedError",e.getMessage()));
+					}
+				} // end for
+			}
 		}
 		catch(Exception e){
 			updateErrors();
@@ -1056,6 +1061,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 		result.setNrErrors(NrErrors);
 		result.setNrFilesRetrieved(NrfilesRetrieved);
 		if(getSuccessStatus())	result.setResult(true);
+		if(exitjobentry) result.setResult(false);
 		displayResults(log);
 		return result;
 	}
@@ -1251,26 +1257,26 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
     }
 
 
-  public void check(List<CheckResultInterface> remarks, JobMeta jobMeta)
-  {
-    andValidator().validate(this, "serverName", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
-    andValidator()
-        .validate(this, "targetDirectory", remarks, putValidators(notBlankValidator(), fileExistsValidator())); //$NON-NLS-1$
-    andValidator().validate(this, "userName", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
-    andValidator().validate(this, "password", remarks, putValidators(notNullValidator())); //$NON-NLS-1$
-  }
-
-  public List<ResourceReference> getResourceDependencies(JobMeta jobMeta)
-  {
-    List<ResourceReference> references = super.getResourceDependencies(jobMeta);
-    if (!Const.isEmpty(serverName)) 
+    public void check(List<CheckResultInterface> remarks, JobMeta jobMeta)
     {
-      String realServername = jobMeta.environmentSubstitute(serverName);
-      ResourceReference reference = new ResourceReference(this);
-      reference.getEntries().add(new ResourceEntry(realServername, ResourceType.SERVER));
-      references.add(reference);
+      andValidator().validate(this, "serverName", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
+      andValidator()
+          .validate(this, "targetDirectory", remarks, putValidators(notBlankValidator(), fileExistsValidator())); //$NON-NLS-1$
+      andValidator().validate(this, "userName", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
+      andValidator().validate(this, "password", remarks, putValidators(notNullValidator())); //$NON-NLS-1$
     }
-    return references;
-  }
+
+    public List<ResourceReference> getResourceDependencies(JobMeta jobMeta)
+    {
+      List<ResourceReference> references = super.getResourceDependencies(jobMeta);
+      if (!Const.isEmpty(serverName)) 
+      {
+        String realServername = jobMeta.environmentSubstitute(serverName);
+        ResourceReference reference = new ResourceReference(this);
+        reference.getEntries().add(new ResourceEntry(realServername, ResourceType.SERVER));
+        references.add(reference);
+      }
+      return references;
+    }
 
 }
