@@ -16,7 +16,6 @@ import static org.pentaho.di.job.entry.validator.AbstractFileValidator.putVariab
 import static org.pentaho.di.job.entry.validator.AndValidator.putValidators;
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.andValidator;
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.fileExistsValidator;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.integerValidator;
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlankValidator;
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notNullValidator;
 
@@ -811,16 +810,15 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
 	  @Override
 	  public void check(List<CheckResultInterface> remarks, JobMeta jobMeta)
 	  {
-	    andValidator().validate(this, "serverName", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
+	    andValidator().validate(this, "repositoryname", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
 
 	    ValidatorContext ctx = new ValidatorContext();
 	    putVariableSpace(ctx, getVariables());
 	    putValidators(ctx, notBlankValidator(), fileExistsValidator());
-	    andValidator().validate(this, "targetDirectory", remarks, ctx);//$NON-NLS-1$
+	    andValidator().validate(this, "targetfilename", remarks, ctx);//$NON-NLS-1$
 
-	    andValidator().validate(this, "userName", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
+	    andValidator().validate(this, "username", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
 	    andValidator().validate(this, "password", remarks, putValidators(notNullValidator())); //$NON-NLS-1$
-	    andValidator().validate(this, "serverPort", remarks, putValidators(integerValidator())); //$NON-NLS-1$
 	  }
 
 	  public static void main(String[] args) {

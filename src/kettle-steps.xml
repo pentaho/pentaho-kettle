@@ -942,5 +942,25 @@
 		</tooltip>
 		<image-uri>ui/images/STMD.png</image-uri>
 	</step>
+		<step id="TableExists">
+		<description>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.TableExists")
+		</description>
+		<class-name>org.pentaho.di.trans.steps.tableexists.TableExistsMeta</class-name>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@LOOKUP.getName()</category>
+		<tooltip>ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.TableExists")
+		</tooltip>
+		<image-uri>ui/images/TEX.png</image-uri>
+	</step>
+		<step id="ColumnExists">
+		<description>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.ColumnExists")
+		</description>
+		<class-name>org.pentaho.di.trans.steps.columnexists.ColumnExistsMeta</class-name>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@LOOKUP.getName()</category>
+		<tooltip>ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.ColumnExists")
+		</tooltip>
+		<image-uri>ui/images/CEX.png</image-uri>
+	</step>
 
 </steps>
