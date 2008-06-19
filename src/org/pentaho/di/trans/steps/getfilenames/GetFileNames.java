@@ -146,7 +146,7 @@ public class GetFileNames extends BaseStep implements StepInterface
     		    {
     				// Get value of dynamic filename field ...
     	    		String filename=getInputRowMeta().getString(data.readrow,data.indexOfFilenameField);
-    	    		String wildcard=".*";
+    	    		String wildcard="";
     	    		if(data.indexOfWildcardField>=0)
     	    			wildcard=getInputRowMeta().getString(data.readrow,data.indexOfWildcardField);
     	    		

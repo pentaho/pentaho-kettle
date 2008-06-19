@@ -57,7 +57,28 @@ public class PropertyInput extends BaseStep implements StepInterface
 	
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{
-	
+		if(first && meta.isFileField())
+		{
+			data.files = meta.getFiles(this);
+			
+			  // Create the output row meta-data
+            data.outputRowMeta = new RowMeta();
+            meta.getFields(data.outputRowMeta, getStepname(), null, null, this); // get the metadata populated
+            
+            // Create convert meta-data objects that will contain Date & Number formatters
+            //
+            data.convertRowMeta = data.outputRowMeta.clone();
+            for (int i=0;i<data.convertRowMeta.size();i++) data.convertRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);
+
+
+            // For String to <type> conversions, we allocate a conversion meta data row as well...
+			//
+			data.convertRowMeta = data.outputRowMeta.clone();
+			for (int i=0;i<data.convertRowMeta.size();i++) {
+				data.convertRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);           
+			}
+			
+		}
 		Object[] r=null;
 		
 		boolean sendToErrorRow=false;
@@ -354,7 +375,7 @@ public class PropertyInput extends BaseStep implements StepInterface
 		{
 			if(!meta.isFileField())
 			{
-				data.files = meta.getFiles(this);
+				/*data.files = meta.getFiles(this);
 				if (data.files==null || data.files.nrOfFiles()==0)
 				{
 					logError(Messages.getString("PropertyInput.Log.NoFiles"));
@@ -383,7 +404,7 @@ public class PropertyInput extends BaseStep implements StepInterface
 					logError("Error initializing step: "+e.toString());
 					logError(Const.getStackTracker(e));
 					return false;
-				}
+				}*/
 			} 
 			data.rownr = 1L;
 			data.totalpreviousfields=0;
