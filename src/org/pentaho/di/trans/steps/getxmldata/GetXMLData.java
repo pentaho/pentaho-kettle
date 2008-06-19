@@ -251,7 +251,7 @@ public class GetXMLData extends BaseStep implements StepInterface
        {
 			// Add this to the result file names...
 			ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, file, getTransMeta().getName(), getStepname());
-			resultFile.setComment("File was read by an get XML Data step");
+			resultFile.setComment(Messages.getString("GetXMLData.Log.FileAddedResult"));
 			addResultFile(resultFile);
        }
    }

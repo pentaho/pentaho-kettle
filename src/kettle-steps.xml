@@ -962,5 +962,15 @@
 		</tooltip>
 		<image-uri>ui/images/CEX.png</image-uri>
 	</step>
+		<step id="FileExists">
+		<description>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.FileExists")
+		</description>
+		<class-name>org.pentaho.di.trans.steps.fileexists.FileExistsMeta</class-name>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@LOOKUP.getName()</category>
+		<tooltip>ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.FileExists")
+		</tooltip>
+		<image-uri>ui/images/FEX.png</image-uri>
+	</step>
 
 </steps>

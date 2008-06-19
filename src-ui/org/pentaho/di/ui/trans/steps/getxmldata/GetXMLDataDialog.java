@@ -1207,7 +1207,6 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		ActiveXmlStreamField();
 		setIncludeFilename();
 		setIncludeRownum();
-		setIncludeFilename();
 		input.setChanged(changed);
 		wFields.optWidth(true);
 		

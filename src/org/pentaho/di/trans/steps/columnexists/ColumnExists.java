@@ -225,30 +225,12 @@ public class ColumnExists extends BaseStep implements StepInterface
     }
 
     //
-    // Run is were the action happens!
-    public void run()
-    {
-    	if(log.isBasic()) logBasic(Messages.getString("ColumnExists.Log.StartingToRun")); //$NON-NLS-1$
-        
-        try
-        {
-            while (processRow(meta, data) && !isStopped());
-        }
-        catch(Exception e)
-        {
-            logError(Messages.getString("ColumnExists.Log.UnexpectedError")+" : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
-            logError(Const.getStackTracker(e));
-            setErrors(1);
-            stopAll();
-        }
-        finally
-        {
-            dispose(meta, data);
-            logSummary();
-            markStop();
-        }
-    }
-    
+	//
+	// Run is were the action happens!
+	public void run()
+	{
+    	BaseStep.runStepThread(this, meta, data);
+	}
     public String toString()
     {
         return this.getClass().getName();
