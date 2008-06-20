@@ -912,8 +912,11 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
                         //
                         if (databaseInterface.getDatabaseTypeDesc().equals(typeCode))
                         {
-                            if (first) url.append(optionIndicator);
-                            else url.append(optionSeparator);
+                            if (first && url.indexOf(valueSeparator) == -1) { 
+                              url.append(optionIndicator);
+                            } else {
+                              url.append(optionSeparator);
+                            }
 
                             url.append(parameter);
                             if (!Const.isEmpty(value) && !value.equals(EMPTY_OPTIONS_STRING))
@@ -931,6 +934,8 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
             // We need to put all these options in a Properties file later (Oracle & Co.)
             // This happens at connect time...
         }
+        
+        System.out.println("URL: "+url.toString());
         
         return url.toString();
 	}

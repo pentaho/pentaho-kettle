@@ -13,6 +13,7 @@
 
 package org.pentaho.di.core.database;
 
+import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
@@ -89,7 +90,16 @@ public class TeradataDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
     {
         if (getAccessType()==DatabaseMeta.TYPE_ACCESS_NATIVE)
         {
-            return "jdbc:teradata://"+hostname;
+            
+            String url = "jdbc:teradata://"+hostname;
+            if(!StringUtils.isEmpty(port)){
+              url += ":"+port;
+            }
+            if(!StringUtils.isEmpty(databaseName)){
+              url += "/DATABASE="+databaseName;
+            }
+            return url;
+            
         }
         else
         {
