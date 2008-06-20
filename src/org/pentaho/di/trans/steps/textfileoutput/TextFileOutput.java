@@ -696,13 +696,13 @@ public class TextFileOutput extends BaseStep implements StepInterface
 			else
 			{
 				if(log.isDebug()) logDebug("Closing normal file ...");
-				if (meta.getFileCompression() == "Zip")
+				if (FILE_COMPRESSION_TYPE_ZIP.equals(meta.getFileCompression()))
 				{
 					data.zip.closeEntry();
 					data.zip.finish();
 					data.zip.close();
 				}
-				if (meta.getFileCompression() == "GZip")
+				else if (FILE_COMPRESSION_TYPE_GZIP.equals(meta.getFileCompression()))
 				{
 					data.gzip.finish();
 				}
