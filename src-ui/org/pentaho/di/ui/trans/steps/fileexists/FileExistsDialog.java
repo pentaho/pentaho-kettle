@@ -53,9 +53,9 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
 public class FileExistsDialog extends BaseStepDialog implements StepDialogInterface
 {
 
-	private Label        wlTableName;
-	private CCombo       wTableName;
-	private FormData     fdlTableName, fdTableName;
+	private Label        wlFileName;
+	private CCombo       wFileName;
+	private FormData     fdlFileName, fdFileName;
 
 	private Label        wlResult,wlFileType;
 	private TextVar         wResult,wFileType;
@@ -129,25 +129,25 @@ public class FileExistsDialog extends BaseStepDialog implements StepDialogInterf
 		wStepname.setLayoutData(fdStepname);
 
 		// filename field
-		wlTableName=new Label(shell, SWT.RIGHT);
-		wlTableName.setText(Messages.getString("FileExistsDialog.FileName.Label")); //$NON-NLS-1$
- 		props.setLook(wlTableName);
-		fdlTableName=new FormData();
-		fdlTableName.left = new FormAttachment(0, 0);
-		fdlTableName.right= new FormAttachment(middle, -margin);
-		fdlTableName.top  = new FormAttachment(wStepname, margin);
-		wlTableName.setLayoutData(fdlTableName);
+		wlFileName=new Label(shell, SWT.RIGHT);
+		wlFileName.setText(Messages.getString("FileExistsDialog.FileName.Label")); //$NON-NLS-1$
+ 		props.setLook(wlFileName);
+		fdlFileName=new FormData();
+		fdlFileName.left = new FormAttachment(0, 0);
+		fdlFileName.right= new FormAttachment(middle, -margin);
+		fdlFileName.top  = new FormAttachment(wStepname, margin);
+		wlFileName.setLayoutData(fdlFileName);
 		
 		
-		wTableName=new CCombo(shell, SWT.BORDER | SWT.READ_ONLY);
- 		props.setLook(wTableName);
-		wTableName.addModifyListener(lsMod);
-		fdTableName=new FormData();
-		fdTableName.left = new FormAttachment(middle, 0);
-		fdTableName.top  = new FormAttachment(wStepname, margin);
-		fdTableName.right= new FormAttachment(100, -margin);
-		wTableName.setLayoutData(fdTableName);
-		wTableName.addFocusListener(new FocusListener()
+		wFileName=new CCombo(shell, SWT.BORDER | SWT.READ_ONLY);
+ 		props.setLook(wFileName);
+		wFileName.addModifyListener(lsMod);
+		fdFileName=new FormData();
+		fdFileName.left = new FormAttachment(middle, 0);
+		fdFileName.top  = new FormAttachment(wStepname, margin);
+		fdFileName.right= new FormAttachment(100, -margin);
+		wFileName.setLayoutData(fdFileName);
+		wFileName.addFocusListener(new FocusListener()
         {
             public void focusLost(org.eclipse.swt.events.FocusEvent e)
             {
@@ -171,7 +171,7 @@ public class FileExistsDialog extends BaseStepDialog implements StepDialogInterf
 		fdlResult=new FormData();
 		fdlResult.left = new FormAttachment(0, 0);
 		fdlResult.right= new FormAttachment(middle, -margin);
-		fdlResult.top  = new FormAttachment(wTableName, margin*2);
+		fdlResult.top  = new FormAttachment(wFileName, margin*2);
 		wlResult.setLayoutData(fdlResult);
 
 		wResult=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
@@ -180,7 +180,7 @@ public class FileExistsDialog extends BaseStepDialog implements StepDialogInterf
 		wResult.addModifyListener(lsMod);
 		fdResult=new FormData();
 		fdResult.left = new FormAttachment(middle, 0);
-		fdResult.top  = new FormAttachment(wTableName, margin*2);
+		fdResult.top  = new FormAttachment(wFileName, margin*2);
 		fdResult.right= new FormAttachment(100, 0);
 		wResult.setLayoutData(fdResult);
 		
@@ -319,7 +319,7 @@ public class FileExistsDialog extends BaseStepDialog implements StepDialogInterf
 	{
 		if(log.isDebug()) log.logDebug(toString(), Messages.getString("FileExistsDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 
-		if (input.getDynamicFilenameField() !=null)   wTableName.setText(input.getDynamicFilenameField());
+		if (input.getDynamicFilenameField() !=null)   wFileName.setText(input.getDynamicFilenameField());
 		if (input.getResultFieldName()!=null)   wResult.setText(input.getResultFieldName());
 		wInclFileType.setSelection(input.includeFileType());
 		if (input.getFileTypeFieldName()!=null)   wFileType.setText(input.getFileTypeFieldName());
@@ -338,7 +338,7 @@ public class FileExistsDialog extends BaseStepDialog implements StepDialogInterf
 	private void ok()
 	{
 		if (Const.isEmpty(wStepname.getText())) return;
-		input.setDynamicFilenameField(wTableName.getText() );
+		input.setDynamicFilenameField(wFileName.getText() );
 		input.setResultFieldName(wResult.getText() );
 		input.setincludeFileType(wInclFileType.getSelection());
 		input.setFileTypeFieldName(wFileType.getText() );
@@ -351,7 +351,7 @@ public class FileExistsDialog extends BaseStepDialog implements StepDialogInterf
 	 {
 		 try{
 	           
-			    wTableName.removeAll();
+			    wFileName.removeAll();
 				RowMetaInterface r = transMeta.getPrevStepFields(stepname);
 				if (r!=null)
 				{
@@ -359,7 +359,7 @@ public class FileExistsDialog extends BaseStepDialog implements StepDialogInterf
 		             
 		             for (int i=0;i<r.getFieldNames().length;i++)
 					{	
-						wTableName.add(r.getFieldNames()[i]);							
+						wFileName.add(r.getFieldNames()[i]);							
 					}
 				}
 		 }catch(KettleException ke){
