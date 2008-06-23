@@ -716,6 +716,6 @@
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.ConnectedToRepository.Tooltip")
 		</tooltip>
-		<image-uri>ui/images/GenericJob.png</image-uri>
+		<image-uri>ui/images/CREP.png</image-uri>
 	</job>
 </jobs>
