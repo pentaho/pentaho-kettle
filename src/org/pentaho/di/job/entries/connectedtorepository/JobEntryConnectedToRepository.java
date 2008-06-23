@@ -253,7 +253,4 @@ public class JobEntryConnectedToRepository extends JobEntryBase implements Clone
   {
 
   }
-
-
-
 }
