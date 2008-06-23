@@ -89,7 +89,7 @@
 		<class-name>
 			org.pentaho.di.job.entries.ftp.JobEntryFTP
 		</class-name>
-		<category>ognl:@org.pentaho.di.job.JobEntryCategory@FILE_MANAGEMENT.getName()</category>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@FILE_TRANSFERT.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.FTP.Tooltip")
 		</tooltip>
@@ -159,7 +159,7 @@
 		<class-name>
 			org.pentaho.di.job.entries.sftp.JobEntrySFTP
 		</class-name>
-		<category>ognl:@org.pentaho.di.job.JobEntryCategory@FILE_MANAGEMENT.getName()</category>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@FILE_TRANSFERT.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.SFTP.Tooltip")
 		</tooltip>
@@ -229,7 +229,7 @@
 		<class-name>
 			org.pentaho.di.job.entries.sftpput.JobEntrySFTPPUT
 		</class-name>
-		<category>ognl:@org.pentaho.di.job.JobEntryCategory@FILE_MANAGEMENT.getName()</category>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@FILE_TRANSFERT.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.SFTPPut.Tooltip")
 		</tooltip>
@@ -467,7 +467,7 @@
 		<class-name>
 			org.pentaho.di.job.entries.ftpput.JobEntryFTPPUT
 		</class-name>
-		<category>ognl:@org.pentaho.di.job.JobEntryCategory@FILE_MANAGEMENT.getName()</category>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@FILE_TRANSFERT.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.FTPPUT.Tooltip")
 		</tooltip>
@@ -633,7 +633,7 @@
 		<class-name>
 			org.pentaho.di.job.entries.ssh2get.JobEntrySSH2GET
 		</class-name>
-		<category>ognl:@org.pentaho.di.job.JobEntryCategory@FILE_MANAGEMENT.getName()</category>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@FILE_TRANSFERT.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.SSH2GET.Tooltip")
 		</tooltip>
@@ -646,7 +646,7 @@
 		<class-name>
 			org.pentaho.di.job.entries.ssh2put.JobEntrySSH2PUT
 		</class-name>
-		<category>ognl:@org.pentaho.di.job.JobEntryCategory@FILE_MANAGEMENT.getName()</category>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@FILE_TRANSFERT.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.SSH2PUT.Tooltip")
 		</tooltip>
@@ -659,7 +659,7 @@
 		<class-name>
 			org.pentaho.di.job.entries.ftpdelete.JobEntryFTPDelete
 		</class-name>
-		<category>ognl:@org.pentaho.di.job.JobEntryCategory@FILE_MANAGEMENT.getName()</category>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@FILE_TRANSFERT.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.FTPDELETE.Tooltip")
 		</tooltip>
@@ -704,5 +704,18 @@
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.ExportRepository.Tooltip")
 		</tooltip>
 		<image-uri>ui/images/EREP.png</image-uri>
+	</job>
+		<job id="CONNECTED_TO_REPOSITORY">
+		<type>
+			ognl:@org.pentaho.di.job.JobEntryType@CONNECTED_TO_REPOSITORY
+		</type>
+		<class-name>
+			org.pentaho.di.job.entries.connectedtorepository.JobEntryConnectedToRepository
+		</class-name>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@REPOSITORY.getName()</category>
+		<tooltip>
+			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.ConnectedToRepository.Tooltip")
+		</tooltip>
+		<image-uri>ui/images/GenericJob.png</image-uri>
 	</job>
 </jobs>

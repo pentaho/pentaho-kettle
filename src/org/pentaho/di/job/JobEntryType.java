@@ -73,7 +73,9 @@ public enum JobEntryType
 	FTP_DELETE(Messages.getString("JobEntry.FTPDELETE.TypeDesc")),
 	DELETE_FOLDERS(Messages.getString("JobEntry.DeleteFolders.TypeDesc")),
 	COLUMNS_EXIST(Messages.getString("JobEntry.ColumnsExist.TypeDesc")),
-	EXPORT_REPOSITORY(Messages.getString("JobEntry.ExportRepository.TypeDesc")),;
+	EXPORT_REPOSITORY(Messages.getString("JobEntry.ExportRepository.TypeDesc")),
+	CONNECTED_TO_REPOSITORY(Messages.getString("JobEntry.ConnectedToRepository.TypeDesc")),
+	;
 
 	private String description;
 	
