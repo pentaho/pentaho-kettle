@@ -52,10 +52,10 @@ import org.pentaho.di.job.entries.connectedtorepository.JobEntryConnectedToRepos
 import org.pentaho.di.job.entries.connectedtorepository.Messages;
 
 /**
- * This dialog allows you to edit a JobEntry Success object.
+ * This dialog allows you to edit a JobEntry Connected to repository object.
  * 
  * @author Samatar
- * @since 10-03-2007
+ * @since 23-06-2008
  */
 public class JobEntryConnectedToRepositoryDialog extends JobEntryDialog implements JobEntryDialogInterface
 {
@@ -402,13 +402,13 @@ public class JobEntryConnectedToRepositoryDialog extends JobEntryDialog implemen
 			reps_info = new RepositoriesMeta(log);
 			if (!reps_info.readData())
 			{
-				displayMsg(Messages.getString("JobExportRepository.Error.NoRepsDefined"),Messages.getString("JobExportRepository.Error.NoRepsDefinedMsg"),true);
+				displayMsg(Messages.getString("JobEntryConnectedToRepositoryDialog.Error.NoRepsDefined"),Messages.getString("JobEntryConnectedToRepositoryDialog.Error.NoRepsDefinedMsg"),true);
 			}else
 			{
 				int nrRepositories=reps_info.nrRepositories();
 				if(nrRepositories==0)
 				{
-					displayMsg(Messages.getString("System.Dialog.Error.Title"), Messages.getString("JobExportRepository.Error.NoRep.DialogMessage"), true);
+					displayMsg(Messages.getString("System.Dialog.Error.Title"), Messages.getString("JobEntryConnectedToRepositoryDialog.Error.NoRep.DialogMessage"), true);
 				}else
 				{
 					String available[] = new String[nrRepositories];

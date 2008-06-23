@@ -33,10 +33,10 @@ import org.w3c.dom.Node;
 
 
 /**
- * Job entry type to success a job.
+ * Job entry connected to repositoryb.
  *
  * @author Samatar
- * @since 12-02-2007
+ * @since 23-06-2008
  */
 public class JobEntryConnectedToRepository extends JobEntryBase implements Cloneable, JobEntryInterface
 {
