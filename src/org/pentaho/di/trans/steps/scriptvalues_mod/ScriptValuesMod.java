@@ -454,6 +454,9 @@ public class ScriptValuesMod extends BaseStep implements StepInterface, ScriptVa
                 return new Long((new Long((String) result)).longValue());
               } else if (classType.equalsIgnoreCase("org.mozilla.javascript.Undefined")) {
                 return null;
+              } else if (classType.equalsIgnoreCase("org.mozilla.javascript.NativeNumber")) {
+                Number nb = Context.toNumber(result);
+                return new Long(nb.longValue());
               } else if (classType.equalsIgnoreCase("org.mozilla.javascript.NativeJavaObject")) {
                 // Is it a Value?
                 //
@@ -534,6 +537,9 @@ public class ScriptValuesMod extends BaseStep implements StepInterface, ScriptVa
             case ValueMetaInterface.TYPE_BIGNUMBER:
               if (classType.equalsIgnoreCase("org.mozilla.javascript.Undefined")) {
                 return null;
+              } else if (classType.equalsIgnoreCase("org.mozilla.javascript.NativeNumber")) {
+                Number nb = Context.toNumber(result);
+                return new BigDecimal(nb.longValue());
               } else if (classType.equalsIgnoreCase("org.mozilla.javascript.NativeJavaObject")) {
                 // Is it a BigDecimal class ?
                 try {
