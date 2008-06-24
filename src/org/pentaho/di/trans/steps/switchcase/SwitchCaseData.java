@@ -37,6 +37,7 @@ public class SwitchCaseData extends BaseStepData implements StepDataInterface
 	public int fieldIndex;
 	public ValueMetaInterface inputValueMeta;
 	public RowSet defaultRowSet;
+	public ValueMetaInterface stringValueMeta;
 
     /**
 	 * 

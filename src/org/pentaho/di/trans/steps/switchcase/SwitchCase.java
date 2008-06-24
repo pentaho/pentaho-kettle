@@ -17,6 +17,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -123,6 +124,9 @@ public class SwitchCase extends BaseStep implements StepInterface
         	data.valueMeta.setGroupingSymbol(meta.getCaseValueGroup());
         	data.valueMeta.setDecimalSymbol(meta.getCaseValueDecimal());
         	
+        	data.stringValueMeta = data.valueMeta.clone();
+        	data.stringValueMeta.setType(ValueMetaInterface.TYPE_STRING);
+        	
         	boolean ok=true;
         	for (int i=0;i<meta.getCaseTargetSteps().length;i++) {
         		if (meta.getCaseTargetSteps()[i]==null) {
@@ -132,7 +136,7 @@ public class SwitchCase extends BaseStep implements StepInterface
         			RowSet rowSet = findOutputRowSet(meta.getCaseTargetSteps()[i].getName());
         			if (rowSet!=null) {
 	            		try {
-	            			Object value = data.valueMeta.convertDataFromString(meta.getCaseValues()[i], data.valueMeta, null, null, ValueMeta.TRIM_TYPE_NONE);
+	            			Object value = data.valueMeta.convertDataFromString(meta.getCaseValues()[i], data.stringValueMeta, null, null, ValueMeta.TRIM_TYPE_NONE);
 	            			
 	            			// If we have a value and a rowset, we can store the combination in the map
 	            			//
