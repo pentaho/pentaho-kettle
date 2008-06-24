@@ -217,6 +217,9 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     /** The repository to reference in the one-off case that it is needed */
     private Repository repository;
     
+    private Map<String, RowMetaInterface> stepsFieldsCache;
+    private Map<String, Boolean> loopCache;
+
     // //////////////////////////////////////////////////////////////////////////
 
     public static final int     TYPE_UNDO_CHANGE   = 1;
@@ -445,6 +448,10 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         // - re-enabling in version 3.0.1 to prevent excessive locking (PDI-491)
         //
         usingThreadPriorityManagment = true; 
+
+        stepsFieldsCache = new HashMap<String, RowMetaInterface>();
+        loopCache = new HashMap<String, Boolean>();
+
     }
 
     public void clearUndo()
@@ -1494,6 +1501,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      */
     public RowMetaInterface getStepFields(StepMeta stepMeta, ProgressMonitorListener monitor) throws KettleStepException
     {
+    	clearStepFieldsCachce();
         return getStepFields(stepMeta, null, monitor);
     }
     
@@ -1511,6 +1519,12 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
         if (stepMeta == null) return row;
 
+        String fromToCacheEntry = stepMeta.getName()+ ( targetStep!=null ? ("-"+targetStep.getName()) : "" );
+        RowMetaInterface rowMeta = stepsFieldsCache.get(fromToCacheEntry);
+        if (rowMeta!=null) {
+        	return rowMeta;
+        }
+
         // See if the step is sending ERROR rows to the specified target step.
         //
         if (targetStep!=null && stepMeta.isSendingErrorRowsToStep(targetStep))
@@ -1523,6 +1537,11 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
             // Add to this the error fields...
             StepErrorMeta stepErrorMeta = stepMeta.getStepErrorMeta();
             row.addRowMeta(stepErrorMeta.getErrorFields());
+            
+            // Store this row in the cache
+            //
+            stepsFieldsCache.put(fromToCacheEntry, row);
+            
             return row;
         }
         
@@ -1560,7 +1579,13 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
             }
         }
         // Finally, see if we need to add/modify/delete fields with this step "name"
-        return getThisStepFields(stepMeta, targetStep, row, monitor);
+        rowMeta = getThisStepFields(stepMeta, targetStep, row, monitor);
+        
+        // Store this row in the cache
+        //
+        stepsFieldsCache.put(fromToCacheEntry, rowMeta);
+
+        return rowMeta;
     }
 
     /**
@@ -1571,6 +1596,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      */
     public RowMetaInterface getPrevStepFields(String stepname) throws KettleStepException
     {
+    	clearStepFieldsCachce();
         return getPrevStepFields(findStep(stepname));
     }
 
@@ -1582,6 +1608,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      */
     public RowMetaInterface getPrevStepFields(StepMeta stepMeta) throws KettleStepException
     {
+    	clearStepFieldsCachce();
         return getPrevStepFields(stepMeta, null);
     }
 
@@ -1594,6 +1621,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      */
     public RowMetaInterface getPrevStepFields(StepMeta stepMeta, ProgressMonitorListener monitor) throws KettleStepException
     {
+    	clearStepFieldsCachce();
+
         RowMetaInterface row = new RowMeta();
 
         if (stepMeta == null) { return null; }
@@ -3537,12 +3566,13 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      */
     public boolean hasLoop(StepMeta stepMeta)
     {
+    	clearLoopCachce();
         return hasLoop(stepMeta, null, true) || hasLoop(stepMeta, null, false);
     }
 
     /**
      * See if there are any loops in the transformation, starting at the indicated step. This works by looking at all
-     * the previous steps. If you keep going backward and find the orginal step again, there is a loop.
+     * the previous steps. If you keep going backward and find the original step again, there is a loop.
      *
      * @param stepMeta The step position to start looking
      * @param lookup The original step when wandering around the transformation.
@@ -3550,20 +3580,37 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      *
      * @return True if a loop has been found, false if no loop is found.
      */
-    public boolean hasLoop(StepMeta stepMeta, StepMeta lookup, boolean info)
+    private boolean hasLoop(StepMeta stepMeta, StepMeta lookup, boolean info)
     {
+    	String cacheKey = stepMeta.getName() + " - " + (lookup!=null?lookup.getName():"") + " - " + (info?"true":"false");
+    	Boolean loop = loopCache.get(cacheKey);
+    	if (loop!=null) {
+    		return loop.booleanValue();
+    	}
+    	
+    	boolean hasLoop=false;
+    	
         int nr = findNrPrevSteps(stepMeta, info);
-        for (int i = 0; i < nr; i++)
+        for (int i = 0; i < nr && !hasLoop; i++)
         {
             StepMeta prevStepMeta = findPrevStep(stepMeta, i, info);
             if (prevStepMeta != null)
             {
-                if (prevStepMeta.equals(stepMeta)) return true;
-                if (prevStepMeta.equals(lookup)) return true;
-                if (hasLoop(prevStepMeta, lookup == null ? stepMeta : lookup, info)) return true;
+                if (prevStepMeta.equals(stepMeta)) {
+                	hasLoop = true;
+                } else if (prevStepMeta.equals(lookup)) {
+                	hasLoop = true;
+                } else if (hasLoop(prevStepMeta, lookup == null ? stepMeta : lookup, info)) {
+                	hasLoop = true;
             }
         }
-        return false;
+        }
+        
+        // Store in the cache...
+        //
+        loopCache.put(cacheKey, Boolean.valueOf(hasLoop));
+        
+        return hasLoop;
     }
 
     /**
@@ -5944,4 +5991,13 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 	public void setRepository(Repository repository) {
 		this.repository = repository;
 	}
+
+	private void clearStepFieldsCachce() {
+		stepsFieldsCache.clear();
+	}
+
+	private void clearLoopCachce() {
+		loopCache.clear();
+	}
+
 }
