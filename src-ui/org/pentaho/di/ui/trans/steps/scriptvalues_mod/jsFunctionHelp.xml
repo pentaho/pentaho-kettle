@@ -431,16 +431,28 @@ println(str);</sample>
       <sample>// Resolves the DNS-Name of the given IP
 //
 // Usage:
-// resolveIP(var);
+// resolveIP(var, var);
 // 1: String - The String with the IP
+// 2: String - Either "IP" or "NAME"
 //
 // 2006-11-15
 //
 var ip1 = "The IP to resolve.";
-Alert(resolveIP(ip1));</sample>
+
+//
+// When the second argument is "IP", the return code will be the hostname
+// of ip1 (when its name can be resolved). If the second argument 
+// is anything else then "IP" (e.g. "NAME") a hostname in ip1 will be 
+// converted to a numeric IP address (x.x.x.x) that is returned as String.
+//
+// resolveIP("127.0.0.1", "IP"); will on most systems return "localhost".
+// resolveIP("localhost", "NAME"); will on most systems return "127.0.0.1".
+//
+Alert(resolveIP(ip1, "IP"));</sample>
        <type>4</type>
       <Arguments>
          <argument id="1">var</argument>
+         <argument id="2">var</argument>
       </Arguments>
    </jsFunction>
    
