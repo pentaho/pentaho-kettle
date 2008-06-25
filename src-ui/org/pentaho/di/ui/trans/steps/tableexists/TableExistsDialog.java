@@ -248,9 +248,7 @@ public class TableExistsDialog extends BaseStepDialog implements StepDialogInter
 	 */ 
 	public void getData()
 	{
-		int i;
 		if(log.isDebug()) log.logDebug(toString(), Messages.getString("TableExistsDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
-
 		
 		if (input.getDatabase()!=null)   wConnection.setText(input.getDatabase().getName());
 		else if (transMeta.nrDatabases()==1)

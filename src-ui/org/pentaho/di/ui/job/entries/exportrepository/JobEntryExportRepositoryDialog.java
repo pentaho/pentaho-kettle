@@ -146,8 +146,6 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 
 	private boolean changed;
 	
-	private RepositoryDirectory newDirectory;
-	
 	private Label        wlAddDate;
 	private Button       wAddDate;
 	private FormData     fdlAddDate, fdAddDate;
@@ -1315,7 +1313,6 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 			RepositoryDirectory rd = sdd.open();
 			if (rd!=null)
 			{
-	            newDirectory = rd;
 	            wFoldername.setText(rd.getPath());
 			}
 	
