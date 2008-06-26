@@ -13,6 +13,10 @@
 
 package org.pentaho.di.core.database;
 
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -92,9 +96,9 @@ public class TeradataDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
         {
             
             String url = "jdbc:teradata://"+hostname;
-            if(!StringUtils.isEmpty(port)){
-              url += ":"+port;
-            }
+
+            // port is not appended here; instead it is appended via the DBS_PORT extra option
+            
             if(!StringUtils.isEmpty(databaseName)){
               url += "/DATABASE="+databaseName;
             }
@@ -297,5 +301,25 @@ public class TeradataDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
     public String[] getUsedLibraries()
     {
         return new String[] { "terajdbc4.jar", "tdgssjava.jar" };
+    }
+    
+	public int getDefaultDatabasePort()
+	{
+		return 1025;
+	}
+	
+	/**
+	 * Overrides parent behavior to allow <code>getDatabasePortNumberString</code> value to override value of 
+	 * <code>DBS_PORT</code> extra option.
+	 */
+    public Map<String, String> getExtraOptions()
+    {
+        Map<String,String> map = super.getExtraOptions();
+        
+    	if (!Const.isEmpty(getDatabasePortNumberString())) {
+    		map.put(getDatabaseTypeDesc() + ".DBS_PORT", getDatabasePortNumberString());
+    	}
+        
+        return map;
     }
 }
