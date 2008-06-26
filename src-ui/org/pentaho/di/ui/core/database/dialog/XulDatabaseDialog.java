@@ -161,7 +161,7 @@ public class XulDatabaseDialog {
       dialog.open();
 
       databaseMeta = (DatabaseMeta) dataHandler.getData();
-      databaseName = Const.isEmpty(databaseMeta.getDatabaseName()) ? null : databaseMeta.getDatabaseName();
+      databaseName = Const.isEmpty(databaseMeta.getName()) ? null : databaseMeta.getName();
       
       // HACK for PDI-1256; remove when dialog converted to XulDialog instead of XulWindow
       //databaseName = dialog.isClosed() ? null : databaseName;
