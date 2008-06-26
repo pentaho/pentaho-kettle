@@ -468,6 +468,11 @@ public class TransPainter
 	        	gc.drawLine(point.x+textExtent.x, point.y+textExtent.y/2, screen.x-iconsize/2, point.y+textExtent.y/2);
 	         	gc.drawLine(screen.x-iconsize/2, point.y+textExtent.y/2, screen.x+iconsize/3, screen.y);
 	         	
+	         	// Also draw the name of the partition schema below the box
+	         	//
+	         	gc.setForeground(gray);
+	         	gc.drawText(partitionSchema.getName(), point.x, point.y+textExtent.y+3, true);
+	         	
 	            // Add to the list of areas...
 	         	//
 	            if (!shadow) {

@@ -762,9 +762,9 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 		wAddDate.setSelection(jobEntry.addDate);
 		wAddTime.setSelection(jobEntry.addTime);
 		
-		if (jobEntry.getRemoteSlaveServer()!=null)
+		if (jobEntry.getRemoteSlaveServerName()!=null)
 		{
-			wSlaveServer.setText(jobEntry.getRemoteSlaveServer().getName());
+			wSlaveServer.setText(jobEntry.getRemoteSlaveServerName());
 		}
 
 		wLoglevel.select(jobEntry.loglevel);
@@ -816,7 +816,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 		jobEntry.argFromPrevious = wPrevious.getSelection();
 		jobEntry.execPerRow = wEveryRow.getSelection();
 		
-		jobEntry.setRemoteSlaveServer( SlaveServer.findSlaveServer(jobMeta.getSlaveServers(), wSlaveServer.getText()) );
+		jobEntry.setRemoteSlaveServerName( wSlaveServer.getText() );
 		jobEntry.setAppendLogfile = wAppendLogfile.getSelection();
 		dispose();
 	}

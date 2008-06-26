@@ -84,7 +84,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     private String directoryPath;
     public boolean setAppendLogfile;
     
-    private SlaveServer remoteSlaveServer;
+    private String remoteSlaveServerName;
 
     public JobEntryJob(String name)
 	{
@@ -203,7 +203,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 		retval.append("      ").append(XMLHandler.addTagValue("add_date",          addDate));
 		retval.append("      ").append(XMLHandler.addTagValue("add_time",          addTime));
 		retval.append("      ").append(XMLHandler.addTagValue("loglevel",          LogWriter.getLogLevelDesc(loglevel)));
-		retval.append("      ").append(XMLHandler.addTagValue("slave_server_name", remoteSlaveServer!=null ? remoteSlaveServer.getName() : null));
+		retval.append("      ").append(XMLHandler.addTagValue("slave_server_name", remoteSlaveServerName));
 
 		if (arguments!=null)
 		for (int i=0;i<arguments.length;i++)
@@ -214,78 +214,69 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 		return retval.toString();
 	}
 
-	public void loadXML(Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep) throws KettleXMLException
-	{
-		try
-		{
+	public void loadXML(Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep) throws KettleXMLException {
+		try {
 			super.loadXML(entrynode, databases, slaveServers);
 
-			setFileName( XMLHandler.getTagValue(entrynode, "filename") );
-			setJobName( XMLHandler.getTagValue(entrynode, "jobname") );
-			argFromPrevious = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "arg_from_previous") );
-      execPerRow = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "exec_per_row") );
-      setLogfile = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "set_logfile") );
-			addDate = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "add_date") );
-			addTime = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "add_time") );
+			setFileName(XMLHandler.getTagValue(entrynode, "filename"));
+			setJobName(XMLHandler.getTagValue(entrynode, "jobname"));
+			argFromPrevious = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "arg_from_previous"));
+			execPerRow = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "exec_per_row"));
+			setLogfile = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "set_logfile"));
+			addDate = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "add_date"));
+			addTime = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "add_time"));
 			logfile = XMLHandler.getTagValue(entrynode, "logfile");
 			logext = XMLHandler.getTagValue(entrynode, "logext");
-			loglevel = LogWriter.getLogLevel( XMLHandler.getTagValue(entrynode, "loglevel"));
-			setAppendLogfile = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "set_append_logfile") );
-			String remoteSlaveServerName = XMLHandler.getTagValue(entrynode, "slave_server_name");
-			remoteSlaveServer = SlaveServer.findSlaveServer(slaveServers, remoteSlaveServerName);
-      directory = XMLHandler.getTagValue(entrynode, "directory");
-      
+			loglevel = LogWriter.getLogLevel(XMLHandler.getTagValue(entrynode, "loglevel"));
+			setAppendLogfile = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "set_append_logfile"));
+			remoteSlaveServerName = XMLHandler.getTagValue(entrynode, "slave_server_name");
+			directory = XMLHandler.getTagValue(entrynode, "directory");
+
 			// How many arguments?
 			int argnr = 0;
-			while ( XMLHandler.getTagValue(entrynode, "argument"+argnr)!=null) argnr++;
+			while (XMLHandler.getTagValue(entrynode, "argument" + argnr) != null)
+				argnr++;
 			arguments = new String[argnr];
 
 			// Read them all...
-			for (int a=0;a<argnr;a++) arguments[a]=XMLHandler.getTagValue(entrynode, "argument"+a);
-		}
-		catch(KettleXMLException xe)
-		{
+			for (int a = 0; a < argnr; a++)
+				arguments[a] = XMLHandler.getTagValue(entrynode, "argument" + a);
+		} catch (KettleXMLException xe) {
 			throw new KettleXMLException("Unable to load 'job' job entry from XML node", xe);
 		}
 	}
 
-	/*
+	/**
 	 * Load the jobentry from repository
 	 */
-	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
-	{
-		try
-		{
+	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException {
+		try {
 			super.loadRep(rep, id_jobentry, databases, slaveServers);
 
-      jobname = rep.getJobEntryAttributeString(id_jobentry, "name");
-      directory = rep.getJobEntryAttributeString(id_jobentry, "dir_path");
-			filename          = rep.getJobEntryAttributeString(id_jobentry, "file_name");
-			argFromPrevious   = rep.getJobEntryAttributeBoolean(id_jobentry, "arg_from_previous");
-      execPerRow        = rep.getJobEntryAttributeBoolean(id_jobentry, "exec_per_row");
-			setLogfile       = rep.getJobEntryAttributeBoolean(id_jobentry, "set_logfile");
-			addDate          = rep.getJobEntryAttributeBoolean(id_jobentry, "add_date");
-			addTime          = rep.getJobEntryAttributeBoolean(id_jobentry, "add_time");
-			logfile          = rep.getJobEntryAttributeString(id_jobentry, "logfile");
-			logext           = rep.getJobEntryAttributeString(id_jobentry, "logext");
-			loglevel         = LogWriter.getLogLevel( rep.getJobEntryAttributeString(id_jobentry, "loglevel") );
-			setAppendLogfile       = rep.getJobEntryAttributeBoolean(id_jobentry, "set_append_logfile");
-			String remoteSlaveServerName = rep.getJobEntryAttributeString(id_jobentry, "slave_server_name");
-			remoteSlaveServer = SlaveServer.findSlaveServer(slaveServers, remoteSlaveServerName);
+			jobname = rep.getJobEntryAttributeString(id_jobentry, "name");
+			directory = rep.getJobEntryAttributeString(id_jobentry, "dir_path");
+			filename = rep.getJobEntryAttributeString(id_jobentry, "file_name");
+			argFromPrevious = rep.getJobEntryAttributeBoolean(id_jobentry, "arg_from_previous");
+			execPerRow = rep.getJobEntryAttributeBoolean(id_jobentry, "exec_per_row");
+			setLogfile = rep.getJobEntryAttributeBoolean(id_jobentry, "set_logfile");
+			addDate = rep.getJobEntryAttributeBoolean(id_jobentry, "add_date");
+			addTime = rep.getJobEntryAttributeBoolean(id_jobentry, "add_time");
+			logfile = rep.getJobEntryAttributeString(id_jobentry, "logfile");
+			logext = rep.getJobEntryAttributeString(id_jobentry, "logext");
+			loglevel = LogWriter.getLogLevel(rep.getJobEntryAttributeString(id_jobentry, "loglevel"));
+			setAppendLogfile = rep.getJobEntryAttributeBoolean(id_jobentry, "set_append_logfile");
+			remoteSlaveServerName = rep.getJobEntryAttributeString(id_jobentry, "slave_server_name");
 
 			// How many arguments?
 			int argnr = rep.countNrJobEntryAttributes(id_jobentry, "argument");
 			arguments = new String[argnr];
 
 			// Read them all...
-			for (int a=0;a<argnr;a++)
-			{
-				arguments[a]= rep.getJobEntryAttributeString(id_jobentry, a, "argument");
+			for (int a = 0; a < argnr; a++) {
+				arguments[a] = rep.getJobEntryAttributeString(id_jobentry, a, "argument");
 			}
-		}
-		catch(KettleDatabaseException dbe)
-		{
-			throw new KettleException("Unable to load job entry of type 'job' from the repository with id_jobentry="+id_jobentry, dbe);
+		} catch (KettleDatabaseException dbe) {
+			throw new KettleException("Unable to load job entry of type 'job' from the repository with id_jobentry=" + id_jobentry, dbe);
 		}
 	}
 
@@ -320,7 +311,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 			rep.saveJobEntryAttribute(id_job, getID(), "logext", logext);
 			rep.saveJobEntryAttribute(id_job, getID(), "set_append_logfile", setAppendLogfile);
 			rep.saveJobEntryAttribute(id_job, getID(), "loglevel", LogWriter.getLogLevelDesc(loglevel));
-			rep.saveJobEntryAttribute(id_job, getID(), "slave_server_name", remoteSlaveServer!=null ? remoteSlaveServer.getName() : null);
+			rep.saveJobEntryAttribute(id_job, getID(), "slave_server_name", remoteSlaveServerName);
 
 			// save the arguments...
 			if (arguments!=null)
@@ -365,6 +356,16 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
             logwriter = LogWriter.getInstance(environmentSubstitute(getLogFilename()), true, loglevel);
         }
 
+        // Figure out the remote slave server...
+        //
+        SlaveServer remoteSlaveServer = null;
+        if (!Const.isEmpty(remoteSlaveServerName)) {
+        	String realRemoteSlaveServerName = environmentSubstitute(remoteSlaveServerName);
+        	remoteSlaveServer = parentJob.getJobMeta().findSlaveServer(realRemoteSlaveServerName);
+        	if (remoteSlaveServer==null) {
+        		throw new KettleException(Messages.getString("JobJob.Exception.UnableToFindRemoteSlaveServer",realRemoteSlaveServerName));
+        	}
+        }
         try
         {
             // First load the job, outside of the loop...
@@ -871,16 +872,16 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     }
 
 	/**
-	 * @return the remoteSlaveServer
+	 * @return the remote slave server name
 	 */
-	public SlaveServer getRemoteSlaveServer() {
-		return remoteSlaveServer;
+	public String getRemoteSlaveServerName() {
+		return remoteSlaveServerName;
 	}
 
 	/**
-	 * @param remoteSlaveServer the remoteSlaveServer to set
+	 * @param remoteSlaveServerName the remoteSlaveServer to set
 	 */
-	public void setRemoteSlaveServer(SlaveServer remoteSlaveServer) {
-		this.remoteSlaveServer = remoteSlaveServer;
+	public void setRemoteSlaveServerName(String remoteSlaveServerName) {
+		this.remoteSlaveServerName = remoteSlaveServerName;
 	}
 }

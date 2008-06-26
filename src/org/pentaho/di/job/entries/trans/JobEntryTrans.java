@@ -97,7 +97,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 
     private boolean clustering;
     
-    private SlaveServer remoteSlaveServer;
+    private String      remoteSlaveServerName;
 
 	public JobEntryTrans(String name)
 	{
@@ -219,7 +219,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 		retval.append("      ").append(XMLHandler.addTagValue("add_time",          addTime));
         retval.append("      ").append(XMLHandler.addTagValue("loglevel",          LogWriter.getLogLevelDesc(loglevel)));
         retval.append("      ").append(XMLHandler.addTagValue("cluster",           clustering));
-		retval.append("      ").append(XMLHandler.addTagValue("slave_server_name", remoteSlaveServer!=null ? remoteSlaveServer.getName() : null));
+		retval.append("      ").append(XMLHandler.addTagValue("slave_server_name", remoteSlaveServerName));
 		retval.append("      ").append(XMLHandler.addTagValue("set_append_logfile",     setAppendLogfile));
 		if (arguments!=null)
 		for (int i=0;i<arguments.length;i++)
@@ -253,8 +253,8 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 			loglevel = LogWriter.getLogLevel( XMLHandler.getTagValue(entrynode, "loglevel"));
             clustering = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "cluster") );
 
-			String remoteSlaveServerName = XMLHandler.getTagValue(entrynode, "slave_server_name");
-			remoteSlaveServer = SlaveServer.findSlaveServer(slaveServers, remoteSlaveServerName);
+			remoteSlaveServerName = XMLHandler.getTagValue(entrynode, "slave_server_name");
+			
 			setAppendLogfile = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "set_append_logfile") );
 
 			// How many arguments?
@@ -272,91 +272,79 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 	}
 
 	// Load the jobentry from repository
-	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
-	{
-		try
-		{
+	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException {
+		try {
 			super.loadRep(rep, id_jobentry, databases, slaveServers);
 
-      transname        = rep.getJobEntryAttributeString(id_jobentry, "name");
-      directory        = rep.getJobEntryAttributeString(id_jobentry, "dir_path");
-      filename         = rep.getJobEntryAttributeString(id_jobentry, "file_name");
-      argFromPrevious  = rep.getJobEntryAttributeBoolean(id_jobentry, "arg_from_previous");
-      execPerRow       = rep.getJobEntryAttributeBoolean(id_jobentry, "exec_per_row");
-      clearResultRows  = rep.getJobEntryAttributeBoolean(id_jobentry, "clear_rows", true);
-      clearResultFiles = rep.getJobEntryAttributeBoolean(id_jobentry, "clear_files", true);
-      setLogfile       = rep.getJobEntryAttributeBoolean(id_jobentry, "set_logfile");
-      addDate          = rep.getJobEntryAttributeBoolean(id_jobentry, "add_date");
-      addTime          = rep.getJobEntryAttributeBoolean(id_jobentry, "add_time");
-      logfile          = rep.getJobEntryAttributeString(id_jobentry, "logfile");
-      logext           = rep.getJobEntryAttributeString(id_jobentry, "logext");
-      loglevel         = LogWriter.getLogLevel( rep.getJobEntryAttributeString(id_jobentry, "loglevel") );
-      clustering       = rep.getJobEntryAttributeBoolean(id_jobentry, "cluster");
+			transname = rep.getJobEntryAttributeString(id_jobentry, "name");
+			directory = rep.getJobEntryAttributeString(id_jobentry, "dir_path");
+			filename = rep.getJobEntryAttributeString(id_jobentry, "file_name");
+			argFromPrevious = rep.getJobEntryAttributeBoolean(id_jobentry, "arg_from_previous");
+			execPerRow = rep.getJobEntryAttributeBoolean(id_jobentry, "exec_per_row");
+			clearResultRows = rep.getJobEntryAttributeBoolean(id_jobentry, "clear_rows", true);
+			clearResultFiles = rep.getJobEntryAttributeBoolean(id_jobentry, "clear_files", true);
+			setLogfile = rep.getJobEntryAttributeBoolean(id_jobentry, "set_logfile");
+			addDate = rep.getJobEntryAttributeBoolean(id_jobentry, "add_date");
+			addTime = rep.getJobEntryAttributeBoolean(id_jobentry, "add_time");
+			logfile = rep.getJobEntryAttributeString(id_jobentry, "logfile");
+			logext = rep.getJobEntryAttributeString(id_jobentry, "logext");
+			loglevel = LogWriter.getLogLevel(rep.getJobEntryAttributeString(id_jobentry, "loglevel"));
+			clustering = rep.getJobEntryAttributeBoolean(id_jobentry, "cluster");
 
-			String remoteSlaveServerName = rep.getJobEntryAttributeString(id_jobentry, "slave_server_name");
-			remoteSlaveServer = SlaveServer.findSlaveServer(slaveServers, remoteSlaveServerName);
-			setAppendLogfile       = rep.getJobEntryAttributeBoolean(id_jobentry, "set_append_logfile");
+			remoteSlaveServerName = rep.getJobEntryAttributeString(id_jobentry, "slave_server_name");
+			setAppendLogfile = rep.getJobEntryAttributeBoolean(id_jobentry, "set_append_logfile");
 
 			// How many arguments?
 			int argnr = rep.countNrJobEntryAttributes(id_jobentry, "argument");
 			arguments = new String[argnr];
 
 			// Read them all...
-			for (int a=0;a<argnr;a++)
-			{
-				arguments[a]= rep.getJobEntryAttributeString(id_jobentry, a, "argument");
+			for (int a = 0; a < argnr; a++) {
+				arguments[a] = rep.getJobEntryAttributeString(id_jobentry, a, "argument");
 			}
-		}
-		catch(KettleDatabaseException dbe)
-		{
-			throw new KettleException("Unable to load job entry of type 'trans' from the repository for id_jobentry="+id_jobentry, dbe);
+		} catch (KettleDatabaseException dbe) {
+			throw new KettleException("Unable to load job entry of type 'trans' from the repository for id_jobentry=" + id_jobentry, dbe);
 		}
 	}
 
 	// Save the attributes of this job entry
 	//
-	public void saveRep(Repository rep, long id_job) throws KettleException
-	{
-		try
-		{
+	public void saveRep(Repository rep, long id_job) throws KettleException {
+		try {
 			super.saveRep(rep, id_job);
-			
-			if (directory==null) {
+
+			if (directory == null) {
 				throw new KettleException("The value of directory may not be null");
 			}
 
-      //Removed id_transformation as we do not know what it is if we are using variables in the path
+			// Removed id_transformation as we do not know what it is if we are using variables in the path
 			// long id_transformation = rep.getTransformationID(transname, directory.getID());
 			// rep.saveJobEntryAttribute(id_job, getID(), "id_transformation", id_transformation);
-      rep.saveJobEntryAttribute(id_job, getID(), "name", getTransname());
-      rep.saveJobEntryAttribute(id_job, getID(), "dir_path", getDirectory()!=null?getDirectory():"");
+			rep.saveJobEntryAttribute(id_job, getID(), "name", getTransname());
+			rep.saveJobEntryAttribute(id_job, getID(), "dir_path", getDirectory() != null ? getDirectory() : "");
 			rep.saveJobEntryAttribute(id_job, getID(), "file_name", filename);
 			rep.saveJobEntryAttribute(id_job, getID(), "arg_from_previous", argFromPrevious);
-      rep.saveJobEntryAttribute(id_job, getID(), "exec_per_row", execPerRow);
-      rep.saveJobEntryAttribute(id_job, getID(), "clear_rows", clearResultRows);
-      rep.saveJobEntryAttribute(id_job, getID(), "clear_files", clearResultFiles);
+			rep.saveJobEntryAttribute(id_job, getID(), "exec_per_row", execPerRow);
+			rep.saveJobEntryAttribute(id_job, getID(), "clear_rows", clearResultRows);
+			rep.saveJobEntryAttribute(id_job, getID(), "clear_files", clearResultFiles);
 			rep.saveJobEntryAttribute(id_job, getID(), "set_logfile", setLogfile);
 			rep.saveJobEntryAttribute(id_job, getID(), "add_date", addDate);
 			rep.saveJobEntryAttribute(id_job, getID(), "add_time", addTime);
 			rep.saveJobEntryAttribute(id_job, getID(), "logfile", logfile);
 			rep.saveJobEntryAttribute(id_job, getID(), "logext", logext);
 			rep.saveJobEntryAttribute(id_job, getID(), "loglevel", LogWriter.getLogLevelDesc(loglevel));
-      rep.saveJobEntryAttribute(id_job, getID(), "cluster", clustering);
-			rep.saveJobEntryAttribute(id_job, getID(), "slave_server_name", remoteSlaveServer!=null ? remoteSlaveServer.getName() : null);
+			rep.saveJobEntryAttribute(id_job, getID(), "cluster", clustering);
+			rep.saveJobEntryAttribute(id_job, getID(), "slave_server_name", remoteSlaveServerName);
 			rep.saveJobEntryAttribute(id_job, getID(), "set_append_logfile", setAppendLogfile);
-			
-      // save the arguments...
-			if (arguments!=null)
-			{
-				for (int i=0;i<arguments.length;i++)
-				{
+
+			// save the arguments...
+			if (arguments != null) {
+				for (int i = 0; i < arguments.length; i++) {
 					rep.saveJobEntryAttribute(id_job, getID(), i, "argument", arguments[i]);
 				}
 			}
-		}
-		catch(KettleDatabaseException dbe)
-		{
-			throw new KettleException("Unable to save job entry of type 'trans' to the repository for id_job="+id_job, dbe);
+		} catch (KettleDatabaseException dbe) {
+			throw new KettleException("Unable to save job entry of type 'trans' to the repository for id_job=" + id_job, dbe);
 		}
 	}
 
@@ -377,7 +365,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 		setLogfile=false;
 		clearResultRows=false;
 		clearResultFiles=false;
-		remoteSlaveServer=null;
+		remoteSlaveServerName=null;
 		setAppendLogfile=false;
 	}
 
@@ -417,12 +405,21 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
             log.setLogLevel(loglevel);
         }
 
+        // Figure out the remote slave server...
+        //
+        SlaveServer remoteSlaveServer = null;
+        if (!Const.isEmpty(remoteSlaveServerName)) {
+        	String realRemoteSlaveServerName = environmentSubstitute(remoteSlaveServerName);
+        	remoteSlaveServer = parentJob.getJobMeta().findSlaveServer(realRemoteSlaveServerName);
+        	if (remoteSlaveServer==null) {
+        		throw new KettleException(Messages.getString("JobTrans.Exception.UnableToFindRemoteSlaveServer",realRemoteSlaveServerName));
+        	}
+        }
+        
 		// Open the transformation...
 		// Default directory for now...
-
+        // 
         log.logBasic(toString(), Messages.getString("JobTrans.Log.OpeningFile",environmentSubstitute(getFilename())));
-        
-     
         if (!Const.isEmpty(getFilename()))
         {
             log.logBasic(toString(), Messages.getString("JobTrans.Log.OpeningTrans",environmentSubstitute(getFilename())));
@@ -922,18 +919,20 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     return logfile;
   }
 
-/**
- * @return the remoteSlaveServer
- */
-public SlaveServer getRemoteSlaveServer() {
-	return remoteSlaveServer;
-}
 
-/**
- * @param remoteSlaveServer the remoteSlaveServer to set
- */
-public void setRemoteSlaveServer(SlaveServer remoteSlaveServer) {
-	this.remoteSlaveServer = remoteSlaveServer;
-}
+
+	/**
+	 * @return the remote slave server name
+	 */
+	public String getRemoteSlaveServerName() {
+		return remoteSlaveServerName;
+	}
+
+	/**
+	 * @param remoteSlaveServerName the remote slave server name to set
+	 */
+	public void setRemoteSlaveServerName(String remoteSlaveServerName) {
+		this.remoteSlaveServerName = remoteSlaveServerName;
+	}
 
 }

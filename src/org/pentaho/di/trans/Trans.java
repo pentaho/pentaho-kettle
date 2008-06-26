@@ -621,7 +621,6 @@ public class Trans implements VariableSpace
         // Now prepare to start all the threads...
     	// 
     	nrOfFinishedSteps=0;
-    	final Trans self = this;
     	
         for (int i=0;i<steps.size();i++)
         {
@@ -650,7 +649,7 @@ public class Trans implements VariableSpace
 								//
 								for (TransListener transListener : transListeners)
 								{
-									transListener.transFinished(self);
+									transListener.transFinished(Trans.this);
 								}
 							}
 							

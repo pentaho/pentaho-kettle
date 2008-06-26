@@ -54,6 +54,7 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
+import org.pentaho.di.ui.core.widget.ComboVar;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.job.dialog.JobDialog;
@@ -145,7 +146,7 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 	private FormData fdlFields, fdFields;
 
 	private Label wlSlaveServer;
-	private CCombo wSlaveServer;
+	private ComboVar wSlaveServer;
 	private FormData fdlSlaveServer, fdSlaveServer;
 
 	
@@ -569,7 +570,7 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 		fdlSlaveServer.right = new FormAttachment(middle, -margin);
 		fdlSlaveServer.top = new FormAttachment(wCluster, margin);
 		wlSlaveServer.setLayoutData(fdlSlaveServer);
-		wSlaveServer = new CCombo(shell, SWT.SINGLE | SWT.BORDER);
+		wSlaveServer = new ComboVar(jobMeta, shell, SWT.SINGLE | SWT.BORDER);
 		wSlaveServer.setItems(SlaveServer.getSlaveServerNames(jobMeta.getSlaveServers()));
 		wSlaveServer.setToolTipText(Messages.getString("JobTrans.SlaveServer.ToolTip"));
 		props.setLook(wSlaveServer);
@@ -825,9 +826,9 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 		wClearFiles.setSelection(jobEntry.clearResultFiles);
 		wCluster.setSelection(jobEntry.isClustering());
 		
-		if (jobEntry.getRemoteSlaveServer()!=null)
+		if (jobEntry.getRemoteSlaveServerName()!=null)
 		{
-			wSlaveServer.setText(jobEntry.getRemoteSlaveServer().getName());
+			wSlaveServer.setText(jobEntry.getRemoteSlaveServerName());
 		}
 		wAppendLogfile.setSelection(jobEntry.setAppendLogfile);
 		wLoglevel.select(jobEntry.loglevel);
@@ -880,7 +881,7 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 		jobEntry.clearResultFiles = wClearFiles.getSelection();
 		jobEntry.setClustering(wCluster.getSelection());
 
-		jobEntry.setRemoteSlaveServer( SlaveServer.findSlaveServer(jobMeta.getSlaveServers(), wSlaveServer.getText()) );
+		jobEntry.setRemoteSlaveServerName( wSlaveServer.getText() );
 		jobEntry.setAppendLogfile = wAppendLogfile.getSelection();
 		jobEntry.setChanged();
 

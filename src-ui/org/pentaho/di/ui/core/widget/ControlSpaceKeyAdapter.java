@@ -5,6 +5,7 @@ import java.util.Arrays;
 import org.eclipse.jface.window.DefaultToolTip;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.KeyAdapter;
@@ -14,6 +15,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
@@ -32,17 +34,28 @@ public class ControlSpaceKeyAdapter extends KeyAdapter {
 
   private VariableSpace variables;
 
-  private Text textField;
+  private Control control;
 
-  public ControlSpaceKeyAdapter(final VariableSpace space, final Text textField) {
-    this(space, textField, null, null);
+  /**
+   * @param space
+   * @param control a Text or CCombo box object
+   */
+  public ControlSpaceKeyAdapter(final VariableSpace space, final Control control) {
+    this(space, control, null, null);
   }
 
-  public ControlSpaceKeyAdapter(VariableSpace space, final Text textField,
+  /**
+   * 
+   * @param space
+   * @param control a Text or CCombo box object
+   * @param getCaretPositionInterface
+   * @param insertTextInterface
+   */
+  public ControlSpaceKeyAdapter(VariableSpace space, final Control control,
       final GetCaretPositionInterface getCaretPositionInterface, final InsertTextInterface insertTextInterface) {
     
     this.variables = space;
-    this.textField = textField;
+    this.control = control;
     this.getCaretPositionInterface = getCaretPositionInterface;
     this.insertTextInterface = insertTextInterface;
     
@@ -71,7 +84,7 @@ public class ControlSpaceKeyAdapter extends KeyAdapter {
       // textField.setData(TRUE) indicates we have transitioned from the textbox to list mode...
       // This will be set to false when the list selection has been processed
       // and the list is being disposed of. 
-      textField.setData(Boolean.TRUE);
+      control.setData(Boolean.TRUE);
       
       final int position;
       if (getCaretPositionInterface != null)
@@ -81,10 +94,10 @@ public class ControlSpaceKeyAdapter extends KeyAdapter {
 
       // Drop down a list of variables...
       //
-      Rectangle bounds = textField.getBounds();
-      Point location = GUIResource.calculateControlPosition(textField);
+      Rectangle bounds = control.getBounds();
+      Point location = GUIResource.calculateControlPosition(control);
 
-      final Shell shell = new Shell(textField.getShell(), SWT.NONE);
+      final Shell shell = new Shell(control.getShell(), SWT.NONE);
       shell.setSize(bounds.width, 200);
       shell.setLocation(location.x, location.y + bounds.height);
       shell.setLayout(new FillLayout());
@@ -102,7 +115,7 @@ public class ControlSpaceKeyAdapter extends KeyAdapter {
         // Enter or double-click: picks the variable
         //
         public synchronized void widgetDefaultSelected(SelectionEvent e) {
-          applyChanges(shell, list, textField, position, insertTextInterface);
+          applyChanges(shell, list, control, position, insertTextInterface);
         }
 
         // Select a variable name: display the value in a tool tip
@@ -126,7 +139,7 @@ public class ControlSpaceKeyAdapter extends KeyAdapter {
 
         public synchronized void keyPressed(KeyEvent e) {
           if (e.keyCode == SWT.CR && ((e.keyCode & SWT.CONTROL) == 0) && ((e.keyCode & SWT.SHIFT) == 0)) {
-            applyChanges(shell, list, textField, position, insertTextInterface);
+            applyChanges(shell, list, control, position, insertTextInterface);
           }
         }
 
@@ -135,7 +148,7 @@ public class ControlSpaceKeyAdapter extends KeyAdapter {
       list.addFocusListener(new FocusAdapter() {
         public void focusLost(FocusEvent event) {
           shell.dispose();
-          if (!textField.isDisposed()) textField.setData(Boolean.FALSE);
+          if (!control.isDisposed()) control.setData(Boolean.FALSE);
         }
       });
       
@@ -144,22 +157,27 @@ public class ControlSpaceKeyAdapter extends KeyAdapter {
     ;
   }
 
-  private static final void applyChanges(Shell shell, List list, Text textField, int position,
+  private static final void applyChanges(Shell shell, List list, Control control, int position,
       InsertTextInterface insertTextInterface) {
     String extra = "${" + list.getSelection()[0] + "}";
     if (insertTextInterface != null) {
       insertTextInterface.insertText(extra, position);
     } else {
-      if (textField.isDisposed())
+      if (control.isDisposed())
         return;
 
       if (list.getSelectionCount() <= 0)
         return;
-      textField.insert(extra);
+      if (control instanceof Text) {
+    	  ((Text)control).insert(extra);
+      } else if (control instanceof CCombo) {
+    	  CCombo combo = (CCombo)control;
+    	  combo.setText(extra); // We can't know the location of the cursor yet. All we can do is overwrite.
+      } 
     }
     if (!shell.isDisposed())
       shell.dispose();
-    if (!textField.isDisposed()) textField.setData(Boolean.FALSE);
+    if (!control.isDisposed()) control.setData(Boolean.FALSE);
   }
 
   public static final String[] getVariableNames(VariableSpace space) {

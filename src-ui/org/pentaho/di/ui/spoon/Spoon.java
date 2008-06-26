@@ -353,9 +353,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	//private Button coreButton;
 	// private Label historyButton;
 	
-	private boolean treeSelected;
+	private boolean viewSelected;
 	// private boolean sharedSelected;
-	private boolean coreSelected;
+	private boolean designSelected;
 	// private boolean historySelected;
 	
 	private Composite variableComposite;
@@ -1479,37 +1479,32 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     
     expandAll.addSelectionListener(new SelectionAdapter() {
       public void widgetSelected(SelectionEvent event) {
-        if (coreSelected){
+        if (designSelected){
           tidyBranches(coreObjectsTree.getItems(), true);
         }
-        if (treeSelected){
+        if (viewSelected){
           tidyBranches(selectionTree.getItems(), true);
         }
       }});
 
     collapseAll.addSelectionListener(new SelectionAdapter() {
       public void widgetSelected(SelectionEvent event) {
-        if (coreSelected){
+        if (designSelected){
           tidyBranches(coreObjectsTree.getItems(), false);
         }
-        if (treeSelected){
+        if (viewSelected){
           tidyBranches(selectionTree.getItems(), false);
         }
       }});
 
     view.addSelectionListener(new SelectionAdapter() {
       public void widgetSelected(SelectionEvent event) {
-        
-        if (treeSelected) return;
-        disposeVariableComposite(true, false, false, false);
-        refreshTree();  
+        setViewMode();
       }});
 
     design.addSelectionListener(new SelectionAdapter() {
       public void widgetSelected(SelectionEvent event) {
-        if (coreSelected) return;
-        disposeVariableComposite(false, false, true, false);
-        refreshCoreObjects(); 
+    	  setDesignMode();
       }});
     
     
@@ -1539,6 +1534,21 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		coreJobToolTipMap = new Hashtable<String,String>();
 		
 	}
+	
+	public boolean setViewMode() {
+        if (viewSelected) return true;
+        disposeVariableComposite(true, false, false, false);
+        refreshTree();  
+        return false;
+	}
+	
+	public boolean setDesignMode() {
+        if (designSelected) return true;
+        disposeVariableComposite(false, false, true, false);
+        refreshCoreObjects(); 
+        return false;
+	}
+	
 	
 	private void tidyBranches(TreeItem[] items, boolean expand){
 
@@ -1662,10 +1672,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 	public void disposeVariableComposite(boolean tree, boolean shared, boolean core, boolean history) {
 		
-		treeSelected = tree;
-		view.setSelection(treeSelected);
-		coreSelected = core;
-		design.setSelection(coreSelected);
+		viewSelected = tree;
+		view.setSelection(viewSelected);
+		designSelected = core;
+		design.setSelection(designSelected);
 
 		//historySelected = history;
     //sharedSelected = shared;
@@ -1863,7 +1873,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	public void refreshCoreObjects()
 	{
 		if (shell.isDisposed()) return;
-		if (!coreSelected) return;
+		if (!designSelected) return;
 		
 		if (coreObjectsTree==null || coreObjectsTree.isDisposed()) {
 			addCoreObjectsTree();
@@ -3691,7 +3701,13 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		}
 		addTransGraph(transMeta);
 		applyVariables();
-		refreshTree();
+		
+		// switch to design mode...
+		//
+		if (setDesignMode()) {
+			// No refresh done yet, do so
+			refreshTree();
+		}
 	}
 
 	public void newJobFile()
@@ -3727,7 +3743,13 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 			delegates.jobs.addJobGraph(jobMeta);
 			applyVariables();
-			refreshTree();
+			
+			// switch to design mode...
+			//
+			if (setDesignMode()) {
+				// No refresh done yet, do so
+				refreshTree();
+			}
         }
         catch(Exception e)
 		{
@@ -4527,7 +4549,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	{
         if (shell.isDisposed()) return;
         
-        if (!treeSelected) return; // Nothing to see here, move along...
+        if (!viewSelected) return; // Nothing to see here, move along...
 
         if (selectionTree==null || selectionTree.isDisposed()) 
         {
