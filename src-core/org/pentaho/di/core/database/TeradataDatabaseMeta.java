@@ -13,8 +13,6 @@
 
 package org.pentaho.di.core.database;
 
-import java.util.Enumeration;
-import java.util.Hashtable;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
