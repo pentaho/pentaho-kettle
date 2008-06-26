@@ -55,6 +55,7 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
+import org.pentaho.di.ui.core.widget.ComboVar;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.job.dialog.JobDialog;
@@ -135,7 +136,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 	private FormData fdlFields, fdFields;
 
 	private Label wlSlaveServer;
-	private CCombo wSlaveServer;
+	private ComboVar wSlaveServer;
 	private FormData fdlSlaveServer, fdSlaveServer;
 	
 	private Button wOK, wCancel;
@@ -515,7 +516,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 		fdlSlaveServer.right = new FormAttachment(middle, -margin);
 		fdlSlaveServer.top = new FormAttachment(wEveryRow, margin);
 		wlSlaveServer.setLayoutData(fdlSlaveServer);
-		wSlaveServer = new CCombo(shell, SWT.SINGLE | SWT.BORDER);
+		wSlaveServer = new ComboVar(jobMeta, shell, SWT.SINGLE | SWT.BORDER);
 		wSlaveServer.setItems(SlaveServer.getSlaveServerNames(jobMeta.getSlaveServers()));
 		wSlaveServer.setToolTipText(Messages.getString("JobJob.SlaveServer.ToolTip"));
 		props.setLook(wSlaveServer);
