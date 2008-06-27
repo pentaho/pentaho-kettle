@@ -17,7 +17,11 @@ package org.pentaho.di.ui.trans.steps.getxmldata;
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.List;
 
+import org.dom4j.Element;
+import org.dom4j.Attribute;
+import org.dom4j.io.SAXReader;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
@@ -46,19 +50,12 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+
 import java.util.HashSet;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import org.w3c.dom.Document;
-import javax.xml.xpath.XPath;
-import org.xml.sax.InputSource;
-import java.io.InputStreamReader;
+import org.dom4j.Document;
+import org.dom4j.Node;
 import java.io.FileInputStream;
-import javax.xml.xpath.XPathFactory;
-import javax.xml.xpath.XPathConstants;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
@@ -79,7 +76,6 @@ import org.pentaho.di.trans.steps.getxmldata.GetXMLDataMeta;
 import org.pentaho.di.trans.steps.getxmldata.GetXMLDataField;
 import org.pentaho.di.trans.steps.getxmldata.Messages;
 import org.pentaho.di.ui.core.widget.TextVar;
-import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
@@ -139,6 +135,14 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 	private Button       wNameSpaceAware;
 	private FormData     fdlNameSpaceAware, fdNameSpaceAware;
 	
+	private Label        wlreadUrl;
+	private Button       wreadUrl;
+	private FormData     fdlreadUrl, fdreadUrl;
+	
+	private Label        wlIgnoreComment;
+	private Button       wIgnoreComment;
+	private FormData     fdlIgnoreComment, fdIgnoreComment;
+	
 	private Label        wlValidating;
 	private Button       wValidating;
 	private FormData     fdlValidating, fdValidating;
@@ -195,8 +199,6 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 	private boolean  gotEncodings = false;
 	
 	private     HashSet<String> list = new HashSet<String> ();
-	
-	private String parentNodeName;
 	
 	public static final int dateLengths[] = new int[]
 		{
@@ -298,9 +300,9 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		wlXmlStreamField.setText(Messages.getString("GetXMLDataDialog.wlXmlStreamField.Label"));
 		props.setLook(wlXmlStreamField);
 		fdlXMLStreamField = new FormData();
-		fdlXMLStreamField.left = new FormAttachment(0, 0);
+		fdlXMLStreamField.left = new FormAttachment(0, -margin);
 		fdlXMLStreamField.top = new FormAttachment(0, margin);
-		fdlXMLStreamField.right = new FormAttachment(middle, -margin);
+		fdlXMLStreamField.right = new FormAttachment(middle, -2*margin);
 		wlXmlStreamField.setLayoutData(fdlXMLStreamField);
 		
 		
@@ -308,7 +310,7 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		props.setLook(wXMLStreamField);
 		wXMLStreamField.setToolTipText(Messages.getString("GetXMLDataDialog.wXmlStreamField.Tooltip"));
 		fdXSDFileField = new FormData();
-		fdXSDFileField.left = new FormAttachment(middle, margin);
+		fdXSDFileField.left = new FormAttachment(middle, -margin);
 		fdXSDFileField.top = new FormAttachment(0, margin);
 		wXMLStreamField.setLayoutData(fdXSDFileField);		
 		SelectionAdapter lsxmlstream = new SelectionAdapter()
@@ -328,40 +330,64 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		wlXMLIsAFile.setText(Messages.getString("GetXMLDataDialog.XMLIsAFile.Label"));
 		props.setLook(wlXMLIsAFile);
 		fdlXMLIsAFile = new FormData();
-		fdlXMLIsAFile.left = new FormAttachment(0, 0);
+		fdlXMLIsAFile.left = new FormAttachment(0, -margin);
 		fdlXMLIsAFile.top = new FormAttachment(wXMLStreamField, margin);
-		fdlXMLIsAFile.right = new FormAttachment(middle, -margin);
+		fdlXMLIsAFile.right = new FormAttachment(middle, -2*margin);
 		wlXMLIsAFile.setLayoutData(fdlXMLIsAFile);
-		
 		
 		wXMLIsAFile = new Button(wOutputField, SWT.CHECK);
 		props.setLook(wXMLIsAFile);
 		wXMLIsAFile.setToolTipText(Messages.getString("GetXMLDataDialog.XMLIsAFile.Tooltip"));
 		fdXMLIsAFile = new FormData();
-		fdXMLIsAFile.left = new FormAttachment(middle, margin);
+		fdXMLIsAFile.left = new FormAttachment(middle, -margin);
 		fdXMLIsAFile.top = new FormAttachment(wXMLStreamField, margin);
 		wXMLIsAFile.setLayoutData(fdXMLIsAFile);
 		SelectionAdapter lsxmlisafile = new SelectionAdapter()
         {
             public void widgetSelected(SelectionEvent arg0)
             {
-            	ActiveXmlStreamField();
+        		if(wXMLIsAFile.getSelection())
+        			wreadUrl.setSelection(false);
             	input.setChanged();
             }
         };
         wXMLIsAFile.addSelectionListener(lsxmlisafile);
         
-        
-        
+        // read url as source ?
+		wlreadUrl=new Label(wOutputField, SWT.RIGHT);
+		wlreadUrl.setText(Messages.getString("GetXMLDataDialog.readUrl.Label"));
+ 		props.setLook(wlreadUrl);
+		fdlreadUrl=new FormData();
+		fdlreadUrl.left = new FormAttachment(0, -margin);
+		fdlreadUrl.top  = new FormAttachment(wXMLIsAFile, margin);
+		fdlreadUrl.right= new FormAttachment(middle, -2*margin);
+		wlreadUrl.setLayoutData(fdlreadUrl);
+		wreadUrl=new Button(wOutputField, SWT.CHECK );
+ 		props.setLook(wreadUrl);
+		wreadUrl.setToolTipText(Messages.getString("GetXMLDataDialog.readUrl.Tooltip"));
+		fdreadUrl=new FormData();
+		fdreadUrl.left = new FormAttachment(middle, -margin);
+		fdreadUrl.top  = new FormAttachment(wXMLIsAFile, margin);
+		wreadUrl.setLayoutData(fdreadUrl);
+		SelectionAdapter lsreadurl = new SelectionAdapter()
+        {
+            public void widgetSelected(SelectionEvent arg0)
+            {
+        		if(wreadUrl.getSelection())
+        			wXMLIsAFile.setSelection(false);
+            	input.setChanged();
+            }
+        };
+        wreadUrl.addSelectionListener(lsreadurl);
         
 		// If XML string defined in a Field
 		wlXMLField=new Label(wOutputField, SWT.RIGHT);
         wlXMLField.setText(Messages.getString("GetXMLDataDialog.wlXMLField.Label"));
         props.setLook(wlXMLField);
         fdlXMLField=new FormData();
-        fdlXMLField.left = new FormAttachment(0, 0);
-        fdlXMLField.top  = new FormAttachment(wXMLIsAFile, margin);
-        fdlXMLField.right= new FormAttachment(middle, -margin);
+        fdlXMLField.left = new FormAttachment(0, -margin);
+        fdlXMLField.top  = new FormAttachment(wreadUrl, margin);
+        fdlXMLField.right= new FormAttachment(middle, -2*margin);
         wlXMLField.setLayoutData(fdlXMLField);
         
         
@@ -370,8 +396,8 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
         props.setLook(wXMLField);
         wXMLField.addModifyListener(lsMod);
         fdXMLField=new FormData();
-        fdXMLField.left = new FormAttachment(middle, margin);
-        fdXMLField.top  = new FormAttachment(wXMLIsAFile, margin);
+        fdXMLField.left = new FormAttachment(middle, -margin);
+        fdXMLField.top  = new FormAttachment(wreadUrl, margin);
         fdXMLField.right= new FormAttachment(100, -margin);
         wXMLField.setLayoutData(fdXMLField);
         wXMLField.addFocusListener(new FocusListener()
@@ -627,7 +653,7 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
                 }
             }
         );
-        
+
         // Set Namespace aware ?
 		wlNameSpaceAware=new Label(wXmlConf, SWT.RIGHT);
 		wlNameSpaceAware.setText(Messages.getString("GetXMLDataDialog.NameSpaceAware.Label"));
@@ -645,13 +671,31 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		fdNameSpaceAware.top  = new FormAttachment(wEncoding, margin);
 		wNameSpaceAware.setLayoutData(fdNameSpaceAware);
 		
+        // Ignore comments ?
+		wlIgnoreComment=new Label(wXmlConf, SWT.RIGHT);
+		wlIgnoreComment.setText(Messages.getString("GetXMLDataDialog.IgnoreComment.Label"));
+ 		props.setLook(wlIgnoreComment);
+		fdlIgnoreComment=new FormData();
+		fdlIgnoreComment.left = new FormAttachment(0, 0);
+		fdlIgnoreComment.top  = new FormAttachment(wNameSpaceAware, margin);
+		fdlIgnoreComment.right= new FormAttachment(middle, -margin);
+		wlIgnoreComment.setLayoutData(fdlIgnoreComment);
+		wIgnoreComment=new Button(wXmlConf, SWT.CHECK );
+ 		props.setLook(wIgnoreComment);
+		wIgnoreComment.setToolTipText(Messages.getString("GetXMLDataDialog.IgnoreComment.Tooltip"));
+		fdIgnoreComment=new FormData();
+		fdIgnoreComment.left = new FormAttachment(middle, 0);
+		fdIgnoreComment.top  = new FormAttachment(wNameSpaceAware, margin);
+		wIgnoreComment.setLayoutData(fdIgnoreComment);
+		
+		
 		// Validate XML?
 		wlValidating=new Label(wXmlConf, SWT.RIGHT);
 		wlValidating.setText(Messages.getString("GetXMLDataDialog.Validating.Label"));
  		props.setLook(wlValidating);
 		fdlValidating=new FormData();
 		fdlValidating.left = new FormAttachment(0, 0);
-		fdlValidating.top  = new FormAttachment(wNameSpaceAware, margin);
+		fdlValidating.top  = new FormAttachment(wIgnoreComment, margin);
 		fdlValidating.right= new FormAttachment(middle, -margin);
 		wlValidating.setLayoutData(fdlValidating);
 		wValidating=new Button(wXmlConf, SWT.CHECK );
@@ -659,7 +703,7 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		wValidating.setToolTipText(Messages.getString("GetXMLDataDialog.Validating.Tooltip"));
 		fdValidating=new FormData();
 		fdValidating.left = new FormAttachment(middle, 0);
-		fdValidating.top  = new FormAttachment(wNameSpaceAware, margin);
+		fdValidating.top  = new FormAttachment(wIgnoreComment, margin);
 		wValidating.setLayoutData(fdValidating);
 		
 		 // use Token ?
@@ -1217,6 +1261,7 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		}
 		return stepname;
 	}
+
 	 private void setXMLStreamField()
 	 {
 		 try{
@@ -1234,8 +1279,6 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 							
 						}
 				}
-			 
-			
 		 }catch(KettleException ke){
 				new ErrorDialog(shell, Messages.getString("GetXMLDataDialog.FailedToGetFields.DialogTitle"), Messages.getString("GetXMLDataDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 			}
@@ -1247,7 +1290,8 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		wXMLField.setEnabled(wXMLStreamField.getSelection());
 		wlXMLIsAFile.setEnabled(wXMLStreamField.getSelection());
 		wXMLIsAFile.setEnabled(wXMLStreamField.getSelection());
-		
+		wlreadUrl.setEnabled(wXMLStreamField.getSelection());
+		wreadUrl.setEnabled(wXMLStreamField.getSelection());
 			
 		wlFilename.setEnabled(!wXMLStreamField.getSelection());
 		wbbFilename.setEnabled(!wXMLStreamField.getSelection());
@@ -1294,7 +1338,6 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 	}
 	private void getLoopPathList()
 	{
-
 		try
 		{	
 			GetXMLDataMeta meta = new GetXMLDataMeta ();
@@ -1304,49 +1347,32 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 	    	 if (fileinputList.nrOfFiles()>0)
             { 
 				// Check the first file
+	    		 
 				if (fileinputList.getFile(0).exists()) 
 				{
-
+					listpath.clear();
            			// get encoding. By default UTF-8
-   					String encodage="UTF-8";
-   					if (!Const.isEmpty(meta.getEncoding())) encodage=meta.getEncoding();
-   						
-   					// Get Fields from the first file 
-   					DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-   						Document document = builder.parse(new InputSource(new InputStreamReader(new FileInputStream(KettleVFS.getFilename(fileinputList.getFile(0))), encodage)));        
-   	    
-					
-   					listpath.clear();
-					parentNodeName="/";
-   					listpath.add(parentNodeName);
-   					
-   					NodeList nodesr = document.getChildNodes();
-   					HashSet<String> listr = new HashSet<String> ();
-   				
-   					for (int n = 0; n < nodesr.getLength(); n++) 
-   					{
-   				   	 Node node=nodesr.item(n);
-   				   	 String nodename=node.getNodeName();
-   				   	 if(!listr.contains(nodename))
-   				     {
-   				   		 listpath.add("/"+nodename);
-   				    	 if(node.getChildNodes().getLength()>0) getLoopNodes(node);
-   				    	 listr.add(nodename);
-   				     }
-   			  	 	 
+   					String encoding="UTF-8";
+   					if (!Const.isEmpty(meta.getEncoding())) encoding=meta.getEncoding();
+   					SAXReader reader = new SAXReader();
+   	    			Document document  = reader.read(new FileInputStream(KettleVFS.getFilename(fileinputList.getFile(0))),encoding);	
+   	    			List<Node> nodes = document.selectNodes(document.getRootElement().getName());
 
-   			  	
+   	    			 for (Node node : nodes) 
+   	    			 {
+   	    				 if(!listpath.contains(node.getPath()))
+   	    				 {
+   	    					 listpath.add(node.getPath());
+   	    					 addLoopXPath(node);
+   	    				 }
+   	    			 }
 					String[] list_xpath = (String[]) listpath.toArray(new String[listpath.size()]);
 
 					EnterSelectionDialog dialog = new EnterSelectionDialog(shell, list_xpath, Messages.getString("GetXMLDataDialog.Dialog.SelectALoopPath.Title"), Messages.getString("GetXMLDataDialog.Dialog.SelectALoopPath.Message"));
 					String listxpaths = dialog.open();
-					if (listxpaths != null) {
-						wLoopXPath.setText(listxpaths);
-					}
+					
+					if (listxpaths != null) wLoopXPath.setText(listxpaths);
 
-
-   				
-   					}
 				} else {
 					// The file not exists !
 					throw new KettleException(Messages.getString("GetXMLDataDialog.Exception.FileDoesNotExist", KettleVFS
@@ -1364,7 +1390,7 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 			}
 
 		}
-		catch(Throwable e)
+		catch(Exception e)
 	    {
 	        new ErrorDialog(shell, Messages.getString("GetXMLDataDialog.UnableToGetListOfPaths.Title"), Messages.getString("GetXMLDataDialog.UnableToGetListOfPaths.Message"), e);
 	    }
@@ -1390,191 +1416,141 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
                 
             	wFields.removeAll();
             	// get encoding. By default UTF-8
-    			String encodage="UTF-8";
+    			String encoding="UTF-8";
     			if (!Const.isEmpty(meta.getEncoding()))
     			{
-    				encodage=meta.getEncoding();
+    				encoding=meta.getEncoding();
     			}
-    			// Get Fields from the first file 
-    			DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-    			Document document = builder.parse(new InputSource(new InputStreamReader(new FileInputStream(KettleVFS.getFilename(inputList.getFile(0))), encodage)));        
-    	    	
-    			XPath xpath =XPathFactory.newInstance().newXPath();
-
-    			NodeList widgetNodes = (NodeList) xpath.evaluate(meta.getLoopXPath(), document,XPathConstants.NODESET);
-    	        
-    			if (widgetNodes.getLength() >0)
-    			{
-    				
-    				for (int n = 0; n < widgetNodes.getLength(); n++) 
-    				{
-    					// Let's take current node
-	    				Node widgetNode = widgetNodes.item(n);
-    					setAttribute(widgetNode,widgetNode.getNodeName(),0,true);
-    					setNodes(widgetNode,widgetNode.getNodeName(),0);
-    				} // end loop Nodes
-    			}
+    			
+    			SAXReader reader = new SAXReader();
+    			Document document  = reader.read(new FileInputStream(KettleVFS.getFilename(inputList.getFile(0))),encoding);	
+    			List<Node> nodes = document.selectNodes(meta.getLoopXPath());
+    			 //System.out.print("-----------------------"+an.size());
+    			 for (Node node : nodes) 
+    			 {
+				      /*List<Attribute> list = e.attributes();
+				      for (Attribute attribute : list)
+				      {
+				         String name = attribute.getName();
+				         //System.out.println( "attribute Name : " + name +"\n");
+				      }
+    				 */
+				      ChildNode(node);
+    			 }
+    			 
                 wFields.removeEmptyRows();
                 wFields.setRowNums();
                 wFields.optWidth(true);
             }
-            
-
         }     
         catch(Exception e)
         {
             new ErrorDialog(shell, Messages.getString("GetXMLDataDialog.ErrorParsingData.DialogTitle"), Messages.getString("GetXMLDataDialog.ErrorParsingData.DialogMessage"), e);
         }
 	}
-	private void getLoopNodes(Node node)
+	private void ChildNode(Node node)
 	{
-		HashSet<String> listn = new HashSet<String> ();
-		String NodeName=node.getNodeName();
-		
-
-		if(NodeName!=null)
-		{
-			if(!node.getParentNode().getNodeName().equals(precNodeName))
-			{
-				if(parentNodeName.equals("/")) 
-					parentNodeName="/"+NodeName;
-				else
-					parentNodeName=parentNodeName+"/"+NodeName;
-				
-				precNodeName=node.getParentNode().getNodeName();
-			}
-			
-			
-			NodeList childNodes = node.getChildNodes();
-			
-			
-			for (int c = 0; c < childNodes.getLength(); c++) 
-			{
-				Node child=childNodes.item(c);
-				String childNodeName=child.getNodeName();
-				
-				if(childNodeName!=null && !childNodeName.equals("#text") && !listn.contains(childNodeName) 
-						&& child.getChildNodes().getLength()> 0)
-				{
-					listn.add(childNodeName);
-
-					//log.logBasic("current Node....", childNodeName);
-
-					String completeNodeName=parentNodeName+"/"+childNodeName;
-					// Add path to the list
-					listpath.add(completeNodeName);
-					getLoopNodes(child);
-				}
-			}
-			
-		}
+		 Element ce = (Element) node;
+		 
+		 // List child 
+		 for(int j=0;j<ce.nodeCount();j++)
+		 {
+			 Node cnode=ce.node(j);
+			 if(!Const.isEmpty(cnode.getName()))
+			 {
+				 Element cce = (Element) cnode;
+				 if(cce.nodeCount()>1)
+				 {
+					 // let's get child nodes
+				 	 ChildNode(cnode);
+				 }else
+				 {
+					 setNodeField(cnode); 
+				 }
+			 } 
+		 } 
 	}
-	private void setNodes(Node widgetNode,String NodeStart, int round)
+	private void addLoopXPath(Node node)
 	{
-		int nn=0;
-		nn=widgetNode.getChildNodes().getLength();
-
-		if(nn>1)
-		{
-			// Fetch file to get the child nodes ...
-			for (int i = 0; i < nn; i++) 
-			{
-				// Get node
-				Node node=widgetNode.getChildNodes().item(i);
-				// Get Node Name
-				String nodename=node.getNodeName();
-				
-				// Put attribute
-				setAttribute(node,NodeStart,round,false);
-			
-				// Check if we have child nodes ...
-				int nbe=0;
-				nbe=node.getChildNodes().getLength();
-				if(nbe>1) 
-				{
-					for (int j = 0; j < nbe; j++) 
-					{
-						setNodes(node.getChildNodes().item(j),nodename,1);
-					}
-				}else{
-					
-					// so let's put the node name
-					setNode(node,NodeStart, round);
-					
-				} // end if		
-			}// end for
-		}else
-		{
-			// Put attributes
-			setAttribute(widgetNode,NodeStart,round,false);
-			// Put nodes
-			setNode(widgetNode,NodeStart, round);
-		} // end if
+		 Element ce = (Element) node;
+		 
+		 // List child 
+		 for(int j=0;j<ce.nodeCount();j++)
+		 {
+			 Node cnode=ce.node(j);
+			 if(!Const.isEmpty(cnode.getName()))
+			 {
+				 Element cce = (Element) cnode;
+				 if(cce.nodeCount()>1)
+				 {
+					 if(!listpath.contains(cnode.getPath()))
+						 listpath.add(cnode.getPath());
+					 // let's get child nodes
+					 addLoopXPath(cnode);
+				 }
+			 }
+		 } 
 	}
 
-	private void setAttribute(Node node,String NodeStart,int round,boolean start)
+	private void setAttributeField(Attribute attribute)
 	{
-		// How many attribute can we find here...
-		String nodename=node.getNodeName();
-		int nbattribute=0;
-		if(node.getAttributes()!=null) 	nbattribute=node.getAttributes().getLength();
-		
-		if(nbattribute>0)
+		// Get Attribute Name
+		String attributname=attribute.getName();
+		String attributnametxt=cleanString(attribute.getPath());//.
+			//replace(attributname, "@"+attributname);
+		if(!list.contains(attribute.getPath()))
 		{
-			// We find at least one attribute
-			for (int a = 0; a < node.getAttributes().getLength(); a++) 
-			{
-				Node childnode=node.getAttributes().item(a);
-				// Get Attribute Name
-				String attributname=childnode.getNodeName();
-				String attributnametxt=null;
-				
-				if(start) attributnametxt="@" + attributname;
-				else
-				{
-					attributnametxt=nodename +"/@" + attributname;
-					if(round>0) attributnametxt = NodeStart+ '/' + nodename +"/@" + attributname;
-				}
-
-				if(!list.contains(attributnametxt))
-				{
-		            TableItem item = new TableItem(wFields.table, SWT.NONE);
-		            item.setText(1, attributname);
-		            item.setText(2, attributnametxt);
-		            item.setText(3, GetXMLDataField.ElementTypeDesc[0]);
-		            
-		            // Get attribute value
-		            String valueNode =childnode.getNodeValue();
-		            
-		            // Try to get the Type
-		            if(IsDate(valueNode))
-		            {
-            			item.setText(4, "Date");
-            			item.setText(5, "yyyy/MM/dd");
-            			
-		            }
-		            else if(IsInteger(valueNode))
-            			item.setText(4, "Integer");
-		            else if(IsNumber(valueNode))
-            			item.setText(4, "Number");	    		          
-		            else
-		            	item.setText(4, "String");	    		            	
-		            list.add(attributnametxt);
-				}// end if
-				
-			}// end loop attribute
+            TableItem item = new TableItem(wFields.table, SWT.NONE);
+            item.setText(1, attributname);
+            item.setText(2, attributnametxt);
+            item.setText(3, GetXMLDataField.ElementTypeDesc[0]);
+            
+            // Get attribute value
+            String valueAttr =attribute.getText();
+            
+            // Try to get the Type
+            if(IsDate(valueAttr))
+            {
+    			item.setText(4, "Date");
+    			item.setText(5, "yyyy/MM/dd");
+    			
+            }
+            else if(IsInteger(valueAttr))
+    			item.setText(4, "Integer");
+            else if(IsNumber(valueAttr))
+    			item.setText(4, "Number");	    		          
+            else
+            	item.setText(4, "String");	    		            	
+            list.add(attribute.getPath());
+		}// end if
 	            
-		} // end if attribute
 	}
-	
-	private void setNode(Node node,String NodeStart, int round)
+	private String cleanString(String inputstring)
 	{
-		// Get Node Name
-		String nodename=node.getNodeName();
-		String nodenametxt=nodename;
-		if(round>0) nodenametxt  = NodeStart+ '/' + nodename;
+		String retval=inputstring;
+		retval=retval.replace(wLoopXPath.getText(), "");
+		while(retval.startsWith("/"))
+		{
+			retval=retval.substring(1, retval.length());
+		}
 		
-		if(!list.contains(nodenametxt) && !nodename.equals("#text"))
+		return retval;
+	}
+	private void setNodeField(Node node)
+	{
+		Element e = (Element) node; 
+		// get all atributes
+		List<Attribute> lista = e.attributes(); 
+		for(int i=0;i<lista.size();i++)
+		{
+			 setAttributeField(lista.get(i));
+		}
+
+		// Get Node Name
+		String nodename=node.getName();
+		String nodenametxt=cleanString(node.getPath());
+		
+		if(!list.contains(nodenametxt))
 		{	
             TableItem item = new TableItem(wFields.table, SWT.NONE);
             item.setText(1, nodename);
@@ -1582,9 +1558,8 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
             item.setText(3, GetXMLDataField.ElementTypeDesc[0]);
 
             // Get Node value
-            String valueNode=null;
-            valueNode=XMLHandler.getNodeValue( node); 
-
+            String valueNode=node.getText();
+            
 			// Try to get the Type
             if(IsDate(valueNode))
             {
@@ -1602,40 +1577,39 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
            
 		}// end if
 	}
-private boolean IsInteger(String str)
-{
-	  try 
-	  {
-	     Integer.parseInt(str);
-	  }
-	  catch(NumberFormatException e)   {return false; }
-	  return true;
-}
-
-private boolean IsNumber(String str)
-{
-	  try 
-	  {
-	     Float.parseFloat(str);
-	  }
-	  catch(Exception e)   {return false; }
-	  return true;
-}
-
-
 	
-private boolean IsDate(String str)
-{
-	  // TODO: What about other dates? Maybe something for a CRQ
-	  try 
-	  {
-	        SimpleDateFormat fdate = new SimpleDateFormat("yyyy/MM/dd");
-	        fdate.setLenient(false);
-	        fdate.parse(str);
-	  }
-	  catch(Exception e)   {return false; }
-	  return true;
-}
+	private boolean IsInteger(String str)
+	{
+		  try 
+		  {
+		     Integer.parseInt(str);
+		  }
+		  catch(NumberFormatException e)   {return false; }
+		  return true;
+	}
+
+	private boolean IsNumber(String str)
+	{
+		  try 
+		  {
+		     Float.parseFloat(str);
+		  }
+		  catch(Exception e)   {return false; }
+		  return true;
+	}
+
+	private boolean IsDate(String str)
+	{
+		  // TODO: What about other dates? Maybe something for a CRQ
+		  try 
+		  {
+		        SimpleDateFormat fdate = new SimpleDateFormat("yyyy/MM/dd");
+		        fdate.setLenient(false);
+		        fdate.parse(str);
+		  }
+		  catch(Exception e)   {return false; }
+		  return true;
+	}
 
 	private void setEncodings()
     {
@@ -1695,11 +1669,12 @@ private boolean IsDate(String str)
 		wInclRownum.setSelection(in.includeRowNumber());
 		wAddResult.setSelection(in.addResultFile());
 		wNameSpaceAware.setSelection(in.isNamespaceAware());
+		wreadUrl.setSelection(in.isReadUrl());
+		wIgnoreComment.setSelection(in.isIgnoreComments());
 		wValidating.setSelection(in.isValidating());
 		wuseToken.setSelection(in.isuseToken());
 		wIgnoreEmptyFile.setSelection(in.isIgnoreEmptyFile());
 		wdoNotFailIfNoFile.setSelection(in.isdoNotFailIfNoFile());
-		
 		wXMLStreamField.setSelection(in.getIsInFields());
 		wXMLIsAFile.setSelection(in.getIsAFile());
 		
@@ -1790,12 +1765,12 @@ private boolean IsDate(String str)
         in.setEncoding(wEncoding.getText());
 		in.setFilenameField( wInclFilenameField.getText() );
 		in.setRowNumberField( wInclRownumField.getText() );
-		in.setAddResultFile( wAddResult.getSelection() );
-				
+		in.setAddResultFile( wAddResult.getSelection() );	
 		in.setIncludeFilename( wInclFilename.getSelection() );
 		in.setIncludeRowNumber( wInclRownum.getSelection() );
-		
 		in.setNamespaceAware( wNameSpaceAware.getSelection() );
+		in.setReadUrl(wreadUrl.getSelection() );
+		in.setIgnoreComments(wIgnoreComment.getSelection() );
 		in.setValidating( wValidating.getSelection() );
 		in.setuseToken(wuseToken.getSelection() );
 		in.setIgnoreEmptyFile(wIgnoreEmptyFile.getSelection() );
@@ -1807,9 +1782,8 @@ private boolean IsDate(String str)
 		
 		int nrFiles     = wFilenameList.getItemCount();
 		int nrFields    = wFields.nrNonEmpty();
-         
+        
 		in.allocate(nrFiles, nrFields);
-
 		in.setFileName( wFilenameList.getItems(0) );
 		in.setFileMask( wFilenameList.getItems(1) );
 		in.setFileRequired(wFilenameList.getItems(2));
@@ -1835,7 +1809,6 @@ private boolean IsDate(String str)
             
 			in.getInputFields()[i] = field;
 		}		
- 
 	}
 	
 	// check if the loop xpath is given
@@ -1887,13 +1860,11 @@ private boolean IsDate(String str)
                     			Messages.getString("System.Dialog.PreviewError.Message"), loggingText, true );
                     	etd.setReadOnly();
                     	etd.open();
-                    }
-                             
+                    }      
                     PreviewRowsDialog prd = new PreviewRowsDialog(shell, transMeta, SWT.NONE, wStepname.getText(),
 							progressDialog.getPreviewRowsMeta(wStepname.getText()), progressDialog
 									.getPreviewRows(wStepname.getText()), loggingText);
 					prd.open();
-                    
                 }
             }
         }

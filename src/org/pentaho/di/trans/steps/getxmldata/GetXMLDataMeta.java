@@ -110,6 +110,12 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 	/** Flag : do not fail if no file */
 	private boolean doNotFailIfNoFile;
 	
+	/** Flag : ignore comments */
+	private boolean ignorecomments;
+	
+	/** Flag : read url as source */
+	private boolean readurl;
+	
     	
 	public GetXMLDataMeta()
 	{
@@ -140,6 +146,21 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 	public void setValidating(boolean validating)
 	{
 		this.validating= validating;
+	}
+	/** 
+	 * @return the readurl flag
+	 */
+	public boolean isReadUrl()
+	{
+		return readurl;
+	}
+	
+	/** 
+	 * @param readurl the readurl flag to set
+	 */
+	public void setReadUrl(boolean readurl)
+	{
+		this.readurl= readurl;
 	}
 	
 	
@@ -361,7 +382,6 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 		return doNotFailIfNoFile;
 	}
 	
-	
 	/** 
 	 * @param doNotFailIfNoFile the doNotFailIfNoFile to set
 	 */
@@ -371,14 +391,27 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 	}
 	
 	/** 
+	 * @return the ignorecomments flag
+	 */
+	public boolean isIgnoreComments()
+	{
+		return ignorecomments;
+	}
+	
+	/** 
+	 * @param ignorecomments the ignorecomments to set
+	 */
+	public void setIgnoreComments(boolean ignorecomments)
+	{
+		this.ignorecomments= ignorecomments;
+	}
+	/** 
 	 * @param nameSpaceAware the name space aware flag to set
 	 */
 	public void setNamespaceAware(boolean nameSpaceAware)
 	{
 		this.nameSpaceAware= nameSpaceAware;
 	}
-	
-
 	
 	/** 
 	 * @return the name space aware flag
@@ -471,6 +504,8 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface
         retval.append("    ").append(XMLHandler.addTagValue("rownum",          includeRowNumber));
         retval.append("    ").append(XMLHandler.addTagValue("addresultfile",   addResultFile));
         retval.append("    ").append(XMLHandler.addTagValue("namespaceaware",  nameSpaceAware));
+        retval.append("    ").append(XMLHandler.addTagValue("ignorecomments",  ignorecomments));
+        retval.append("    ").append(XMLHandler.addTagValue("readurl",  readurl));
         retval.append("    ").append(XMLHandler.addTagValue("validating",      validating));
         retval.append("    "+XMLHandler.addTagValue("usetoken",   usetoken));
         retval.append("    "+XMLHandler.addTagValue("IsIgnoreEmptyFile",   IsIgnoreEmptyFile));
@@ -532,6 +567,9 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 			
 			addResultFile     = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "addresultfile"));
 			nameSpaceAware    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "namespaceaware"));
+			ignorecomments    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "ignorecomments"));
+			
+			readurl    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "readurl"));
 			validating        = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "validating"));
 			usetoken  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "usetoken"));
 			IsIgnoreEmptyFile  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "IsIgnoreEmptyFile"));
@@ -602,6 +640,8 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 		IsAFile = false;
 		addResultFile = false;
 		nameSpaceAware = false;
+		ignorecomments=false;
+		readurl=false;
 		validating = false;
 		
 		int nrFiles=0;
@@ -677,6 +717,9 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 			
 			addResultFile     =   rep.getStepAttributeBoolean(id_step, "addresultfile");
 			nameSpaceAware    =   rep.getStepAttributeBoolean(id_step, "namespaceaware");
+			ignorecomments    =   rep.getStepAttributeBoolean(id_step, "ignorecomments");
+			readurl    =   rep.getStepAttributeBoolean(id_step, "readurl");
+			
 			validating        =   rep.getStepAttributeBoolean(id_step, "validating");
 			usetoken  =      rep.getStepAttributeBoolean(id_step, "usetoken");
 			IsIgnoreEmptyFile  =      rep.getStepAttributeBoolean(id_step, "IsIgnoreEmptyFile");
@@ -739,6 +782,9 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "include_field",   filenameField);
 			rep.saveStepAttribute(id_transformation, id_step, "addresultfile",   addResultFile);
 			rep.saveStepAttribute(id_transformation, id_step, "namespaceaware",   nameSpaceAware);
+			rep.saveStepAttribute(id_transformation, id_step, "ignorecomments",   ignorecomments);
+			rep.saveStepAttribute(id_transformation, id_step, "readurl",   readurl);
+			
 			rep.saveStepAttribute(id_transformation, id_step, "validating",   validating);
 			rep.saveStepAttribute(id_transformation, id_step, "usetoken",   usetoken);
 			rep.saveStepAttribute(id_transformation, id_step, "IsIgnoreEmptyFile",   IsIgnoreEmptyFile);

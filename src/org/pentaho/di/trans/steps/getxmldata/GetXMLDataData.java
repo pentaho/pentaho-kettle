@@ -22,6 +22,9 @@ import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.ArrayList;
 
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.fileinput.FileInputList;
@@ -60,6 +63,8 @@ public class GetXMLDataData extends BaseStepData implements StepDataInterface
     public List<AbstractNode> an;
     public Object[] readrow;
     public int totalpreviousfields;
+    public Map<String, String> NAMESPACE = new HashMap<String, String>();
+	public List<String> NSPath = new ArrayList<String>();
     
     
 	/**
@@ -115,5 +120,4 @@ public class GetXMLDataData extends BaseStepData implements StepDataInterface
 		readrow=null;
 		totalpreviousfields=0;
 	}
-
 }
