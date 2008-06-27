@@ -15,6 +15,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.mortbay.jetty.security.Password;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.StringUtil;
 
@@ -152,4 +153,56 @@ public class Encr
         }
         return password;
     }
+    
+    /**
+     * Create an encrypted password
+     * 
+     * @param args the password to encrypt
+     */
+    public static void main(String[] args) {
+		if (args.length!=2) {
+			printOptions();
+			System.exit(9);
+		}
+
+		String option = args[0];
+		String password = args[1];
+
+		if (Const.trim(option).equalsIgnoreCase("-kettle")) {
+			// Kettle password obfuscation
+			//
+			String obfuscated = Encr.encryptPassword(password);
+			System.out.println(PASSWORD_ENCRYPTED_PREFIX+obfuscated);
+			System.exit(0);
+			
+		} else if (Const.trim(option).equalsIgnoreCase("-carte")) {
+			// Jetty password obfuscation
+			//
+			String obfuscated = Password.obfuscate(password);
+			System.out.println(obfuscated);
+			System.exit(0);
+			
+		} else {
+			// Unknown option, print usage
+			//
+			System.err.println("Unknown option '"+option+"'\n");
+			printOptions();
+			System.exit(1);
+		}
+
+		
+		
+	}
+
+	private static void printOptions() {
+		System.err.println("encr usage:");
+		System.err.println("  encr <-kettle|-carte> <password>");
+		System.err.println("  Options:");
+		System.err.println("    -kettle: generate an obfuscated password to include in Kettle XML files");
+		System.err.println("    -carte: generate an obfuscated password to include in the carte password file 'pwd/kettle.pwd'");
+		System.err.println("\nThis command line tool obfuscates a plain text password for use in XML and password files.");
+		System.err.println("Make sure to also copy the '"+PASSWORD_ENCRYPTED_PREFIX+"' prefix to indicate the obfuscated nature of the password.");
+		System.err.println("Kettle will then be able to make the distinction between regular plain text passwords and obfuscated ones.");
+		System.err.println();
+	}
 }
