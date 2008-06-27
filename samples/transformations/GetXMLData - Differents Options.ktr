@@ -73,8 +73,8 @@
 			&lt;birthdate&gt;20&#47;09&#47;2007&lt;&#47;birthdate&gt;
 		&lt;&#47;person&gt;
 	&lt;&#47;persons&gt;</note>
-      <xloc>36</xloc>
-      <yloc>563</yloc>
+      <xloc>32</xloc>
+      <yloc>800</yloc>
       <width>298</width>
       <heigth>296</heigth>
     </notepad>
@@ -84,8 +84,8 @@ the selected fields.
 You can use it to read RSS like this :
 
 Generate 1 row --&gt; Call HTTP --&gt; Parse</note>
-      <xloc>376</xloc>
-      <yloc>560</yloc>
+      <xloc>352</xloc>
+      <yloc>800</yloc>
       <width>333</width>
       <heigth>75</heigth>
     </notepad>
@@ -99,15 +99,15 @@ Use of token</note>
       <heigth>47</heigth>
     </notepad>
     <notepad>
-      <note>3 - Parse the contain of a field
+      <note>4 - Parse the contain of a field
 ----------------------------------------------------------------------------
 Image you want to extract all person (id, first name, name, birth date) for the XML field.
 In fact, you will get nb returned rows=nb persons.
 This kind of result can be from Web service  or HTTP service.</note>
-      <xloc>23</xloc>
-      <yloc>387</yloc>
+      <xloc>32</xloc>
+      <yloc>608</yloc>
       <width>436</width>
-      <heigth>75</heigth>
+      <heigth>72</heigth>
     </notepad>
     <notepad>
       <note>Please notice &apos;kind of variable&apos; use : @_User- mean current User
@@ -128,7 +128,7 @@ Same than 1. but filename is passed by previous step</note>
       <xloc>32</xloc>
       <yloc>224</yloc>
       <width>270</width>
-      <heigth>49</heigth>
+      <heigth>47</heigth>
     </notepad>
     <notepad>
       <note>Autor : Samatar Hassan
@@ -139,9 +139,163 @@ Version : 1.0</note>
       <width>133</width>
       <heigth>47</heigth>
     </notepad>
+    <notepad>
+      <note>3- Read Url (ex:http:&#47;&#47;forums.pentaho.org&#47;external.php?type=xml)
+------------------------------------------------------
+You can also read the Url thanks to Http step and after parse string (see 4)</note>
+      <xloc>32</xloc>
+      <yloc>416</yloc>
+      <width>371</width>
+      <heigth>47</heigth>
+    </notepad>
   </notepads>
   <order>
-  <hop> <from>Read XML file</from><to>Preview</to><enabled>Y</enabled> </hop>  <hop> <from>Read XML</from><to>Preview3</to><enabled>Y</enabled> </hop>  <hop> <from>parse file from filename</from><to>Preview2</to><enabled>Y</enabled> </hop>  <hop> <from>get filename</from><to>parse file from filename</to><enabled>Y</enabled> </hop>  <hop> <from>generate XML</from><to>Read XML</to><enabled>Y</enabled> </hop>  </order>
+  <hop> <from>Read XML file</from><to>Preview</to><enabled>Y</enabled> </hop>  <hop> <from>Read XML</from><to>Preview4</to><enabled>Y</enabled> </hop>  <hop> <from>parse file from filename</from><to>Preview2</to><enabled>Y</enabled> </hop>  <hop> <from>get filename</from><to>parse file from filename</to><enabled>Y</enabled> </hop>  <hop> <from>generate XML</from><to>Read XML</to><enabled>Y</enabled> </hop>  <hop> <from>Pass URl</from><to>Read Url</to><enabled>Y</enabled> </hop>  <hop> <from>Read Url</from><to>Preview3</to><enabled>Y</enabled> </hop>  </order>
+  <step>
+    <name>Read Url</name>
+    <type>getXMLData</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+    <include>N</include>
+    <include_field/>
+    <rownum>N</rownum>
+    <addresultfile>N</addresultfile>
+    <namespaceaware>N</namespaceaware>
+    <ignorecomments>N</ignorecomments>
+    <readurl>Y</readurl>
+    <validating>N</validating>
+    <usetoken>N</usetoken>
+    <IsIgnoreEmptyFile>N</IsIgnoreEmptyFile>
+    <doNotFailIfNoFile>N</doNotFailIfNoFile>
+    <rownum_field/>
+    <encoding>UTF-8</encoding>
+    <file>
+      <name/>
+      <filemask/>
+      <file_required>N</file_required>
+    </file>
+    <fields>
+      <field>
+        <name>id</name>
+        <xpath>id</xpath>
+        <element_type>attribut</element_type>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
+        <name>title</name>
+        <xpath>title</xpath>
+        <element_type>node</element_type>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
+        <name>author</name>
+        <xpath>author</xpath>
+        <element_type>node</element_type>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
+        <name>date</name>
+        <xpath>date</xpath>
+        <element_type>node</element_type>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
+        <name>time</name>
+        <xpath>time</xpath>
+        <element_type>node</element_type>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+    </fields>
+    <limit>0</limit>
+    <loopxpath>source&#47;thread</loopxpath>
+    <IsInFields>Y</IsInFields>
+    <IsAFile>N</IsAFile>
+    <XmlField>xmlUrl</XmlField>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>224</xloc>
+      <yloc>512</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Pass URl</name>
+    <type>RowGenerator</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+    <fields>
+      <field>
+        <name>xmlUrl</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>http:&#47;&#47;forums.pentaho.org&#47;external.php?type=xml</nullif>
+        <length>-1</length>
+        <precision>-1</precision>
+      </field>
+    </fields>
+    <limit>1</limit>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>64</xloc>
+      <yloc>512</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
   <step>
     <name>Preview</name>
     <type>Dummy</type>
@@ -179,7 +333,7 @@ Version : 1.0</note>
     </step>
 
   <step>
-    <name>Preview3</name>
+    <name>Preview4</name>
     <type>Dummy</type>
     <description/>
     <distribute>Y</distribute>
@@ -191,7 +345,7 @@ Version : 1.0</note>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>576</xloc>
-      <yloc>493</yloc>
+      <yloc>736</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -289,8 +443,8 @@ Version : 1.0</note>
     <XmlField>xmlstring</XmlField>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>376</xloc>
-      <yloc>493</yloc>
+      <xloc>352</xloc>
+      <yloc>736</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -448,8 +602,8 @@ Version : 1.0</note>
     <limit>1</limit>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>42</xloc>
-      <yloc>493</yloc>
+      <xloc>32</xloc>
+      <yloc>736</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -573,6 +727,24 @@ Version : 1.0</note>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>202</xloc>
       <yloc>320</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Preview3</name>
+    <type>Dummy</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>352</xloc>
+      <yloc>512</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
