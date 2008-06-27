@@ -240,17 +240,16 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 		wlFileField.setText(Messages.getString("PropertyInputDialog.FileField.Label"));
 		props.setLook(wlFileField);
 		fdlFileField = new FormData();
-		fdlFileField.left = new FormAttachment(0, 0);
+		fdlFileField.left = new FormAttachment(0, -margin);
 		fdlFileField.top = new FormAttachment(0, margin);
-		fdlFileField.right = new FormAttachment(middle, -margin);
+		fdlFileField.right = new FormAttachment(middle, -2*margin);
 		wlFileField.setLayoutData(fdlFileField);
-		
 		
 		wFileField = new Button(wOriginFiles, SWT.CHECK);
 		props.setLook(wFileField);
 		wFileField.setToolTipText(Messages.getString("PropertyInputDialog.FileField.Tooltip"));
 		fdFileField = new FormData();
-		fdFileField.left = new FormAttachment(middle, margin);
+		fdFileField.left = new FormAttachment(middle, -margin);
 		fdFileField.top = new FormAttachment(0, margin);
 		wFileField.setLayoutData(fdFileField);		
 		SelectionAdapter lfilefield = new SelectionAdapter()
@@ -268,9 +267,9 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
         wlFilenameField.setText(Messages.getString("PropertyInputDialog.wlFilenameField.Label"));
         props.setLook(wlFilenameField);
         fdlFilenameField=new FormData();
-        fdlFilenameField.left = new FormAttachment(0, 0);
+        fdlFilenameField.left = new FormAttachment(0, -margin);
         fdlFilenameField.top  = new FormAttachment(wFileField, margin);
-        fdlFilenameField.right= new FormAttachment(middle, -margin);
+        fdlFilenameField.right= new FormAttachment(middle, -2*margin);
         wlFilenameField.setLayoutData(fdlFilenameField);
         
         
@@ -279,7 +278,7 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
         props.setLook(wFilenameField);
         wFilenameField.addModifyListener(lsMod);
         fdFilenameField=new FormData();
-        fdFilenameField.left = new FormAttachment(middle, margin);
+        fdFilenameField.left = new FormAttachment(middle, -margin);
         fdFilenameField.top  = new FormAttachment(wFileField, margin);
         fdFilenameField.right= new FormAttachment(100, -margin);
         wFilenameField.setLayoutData(fdFilenameField);

@@ -257,9 +257,9 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 		wlFileField.setText(Messages.getString("GetFileNamesDialog.FileField.Label"));
 		props.setLook(wlFileField);
 		fdlFileField = new FormData();
-		fdlFileField.left = new FormAttachment(0, 0);
+		fdlFileField.left = new FormAttachment(0, -margin);
 		fdlFileField.top = new FormAttachment(0, margin);
-		fdlFileField.right = new FormAttachment(middle, -margin);
+		fdlFileField.right = new FormAttachment(middle, -2*margin);
 		wlFileField.setLayoutData(fdlFileField);
 		
 		
@@ -267,7 +267,7 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 		props.setLook(wFileField);
 		wFileField.setToolTipText(Messages.getString("GetFileNamesDialog.FileField.Tooltip"));
 		fdFileField = new FormData();
-		fdFileField.left = new FormAttachment(middle, 0);
+		fdFileField.left = new FormAttachment(middle, -margin);
 		fdFileField.top = new FormAttachment(0, margin);
 		wFileField.setLayoutData(fdFileField);		
 		SelectionAdapter lfilefield = new SelectionAdapter()
@@ -287,9 +287,9 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
         wlFilenameField.setText(Messages.getString("GetFileNamesDialog.wlFilenameField.Label"));
         props.setLook(wlFilenameField);
         fdlFilenameField=new FormData();
-        fdlFilenameField.left = new FormAttachment(0, 0);
+        fdlFilenameField.left = new FormAttachment(0, -margin);
         fdlFilenameField.top  = new FormAttachment(wFileField, margin);
-        fdlFilenameField.right= new FormAttachment(middle, -margin);
+        fdlFilenameField.right= new FormAttachment(middle, -2*margin);
         wlFilenameField.setLayoutData(fdlFilenameField);
         
         
@@ -298,7 +298,7 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
         props.setLook(wFilenameField);
         wFilenameField.addModifyListener(lsMod);
         fdFilenameField=new FormData();
-        fdFilenameField.left = new FormAttachment(middle, 0);
+        fdFilenameField.left = new FormAttachment(middle, -margin);
         fdFilenameField.top  = new FormAttachment(wFileField, margin);
         fdFilenameField.right= new FormAttachment(100, -margin);
         wFilenameField.setLayoutData(fdFilenameField);   	
@@ -309,9 +309,9 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
          wlWildcardField.setText(Messages.getString("GetFileNamesDialog.wlWildcardField.Label"));
          props.setLook(wlWildcardField);
          fdlWildcardField=new FormData();
-         fdlWildcardField.left = new FormAttachment(0, 0);
+         fdlWildcardField.left = new FormAttachment(0, -margin);
          fdlWildcardField.top  = new FormAttachment(wFilenameField, margin);
-         fdlWildcardField.right= new FormAttachment(middle, -margin);
+         fdlWildcardField.right= new FormAttachment(middle, -2*margin);
          wlWildcardField.setLayoutData(fdlWildcardField);
          
          
@@ -320,7 +320,7 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
          props.setLook(wWildcardField);
          wWildcardField.addModifyListener(lsMod);
          fdWildcardField=new FormData();
-         fdWildcardField.left = new FormAttachment(middle, 0);
+         fdWildcardField.left = new FormAttachment(middle, -margin);
          fdWildcardField.top  = new FormAttachment(wFilenameField, margin);
          fdWildcardField.right= new FormAttachment(100, -margin);
          wWildcardField.setLayoutData(fdWildcardField);
