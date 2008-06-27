@@ -3563,7 +3563,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 				message = e.getCause().getMessage();
 			}
 			MessageBox messageDialog = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-			messageDialog.setText("Error");
+			messageDialog.setText(Messages.getString("Spoon.Error"));
 			messageDialog.setMessage(message);
 			messageDialog.open();
 
