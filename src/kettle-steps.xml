@@ -972,5 +972,15 @@
 		</tooltip>
 		<image-uri>ui/images/FEX.png</image-uri>
 	</step>
-
+	<step id="CloneRow">
+		<description>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.CloneRow")
+		</description>
+		<class-name>org.pentaho.di.trans.steps.clonerow.CloneRowMeta</class-name>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@TRANSFORM.getName()</category>
+		<tooltip>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.CloneRow")
+		</tooltip>
+		<image-uri>ui/images/GenericTransform.png</image-uri>
+	</step>
 </steps>

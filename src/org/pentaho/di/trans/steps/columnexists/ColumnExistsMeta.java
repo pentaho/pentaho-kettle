@@ -212,17 +212,12 @@ public class ColumnExistsMeta extends BaseStepMeta implements StepMetaInterface
     public String getXML()
     {
         StringBuffer retval = new StringBuffer();
-
         retval.append("    " + XMLHandler.addTagValue("connection", database == null ? "" : database.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        
         retval.append("    " + XMLHandler.addTagValue("tablename", tablename));
         retval.append("    " + XMLHandler.addTagValue("schemaname", schemaname));
-        
-        retval.append("    "+XMLHandler.addTagValue("istablenameInfield",   istablenameInfield));
+        retval.append("    " + XMLHandler.addTagValue("istablenameInfield",   istablenameInfield));
         retval.append("    " + XMLHandler.addTagValue("tablenamefield", tablenamefield)); //$NON-NLS-1$ //$NON-NLS-2$
         retval.append("    " + XMLHandler.addTagValue("columnnamefield", columnnamefield)); //$NON-NLS-1$ //$NON-NLS-2$
-        
-        
         retval.append("      " + XMLHandler.addTagValue("resultfieldname", resultfieldname)); //$NON-NLS-1$ //$NON-NLS-2$
         return retval.toString();
     }
@@ -234,16 +229,11 @@ public class ColumnExistsMeta extends BaseStepMeta implements StepMetaInterface
 	{
             String con = XMLHandler.getTagValue(stepnode, "connection"); //$NON-NLS-1$
             database = DatabaseMeta.findDatabase(databases, con);
-            
             tablename = XMLHandler.getTagValue(stepnode, "tablename");
             schemaname = XMLHandler.getTagValue(stepnode, "schemaname");
-            
             istablenameInfield = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "istablenameInfield"));
-
             tablenamefield = XMLHandler.getTagValue(stepnode, "tablenamefield"); //$NON-NLS-1$
             columnnamefield = XMLHandler.getTagValue(stepnode, "columnnamefield"); //$NON-NLS-1$
-            
-            
             resultfieldname = XMLHandler.getTagValue(stepnode, "resultfieldname"); // Optional, can be null //$NON-NLS-1$
         }
         catch (Exception e)
@@ -259,15 +249,11 @@ public class ColumnExistsMeta extends BaseStepMeta implements StepMetaInterface
 	{
             long id_connection = rep.getStepAttributeInteger(id_step, "id_connection"); //$NON-NLS-1$
             database = DatabaseMeta.findDatabase(databases, id_connection);
-            
             tablename = rep.getStepAttributeString(id_step, "tablename");
             schemaname = rep.getStepAttributeString(id_step, "schemaname");
-            
             istablenameInfield =  rep.getStepAttributeBoolean(id_step, "istablenameInfield");
             tablenamefield = rep.getStepAttributeString(id_step, "tablenamefield"); //$NON-NLS-1$
             columnnamefield = rep.getStepAttributeString(id_step, "columnnamefield"); //$NON-NLS-1$
-
-            
             resultfieldname = rep.getStepAttributeString(id_step, "resultfieldname"); //$NON-NLS-1$
         }
         catch (Exception e)
@@ -281,15 +267,11 @@ public class ColumnExistsMeta extends BaseStepMeta implements StepMetaInterface
         try
         {
             rep.saveStepAttribute(id_transformation, id_step, "id_connection", database == null ? -1 : database.getID()); //$NON-NLS-1$
-            
             rep.saveStepAttribute(id_transformation, id_step, "tablename", tablename);
             rep.saveStepAttribute(id_transformation, id_step, "schemaname", schemaname);
-            
             rep.saveStepAttribute(id_transformation, id_step, "istablenameInfield",    istablenameInfield);
             rep.saveStepAttribute(id_transformation, id_step, "tablenamefield", tablenamefield); //$NON-NLS-1$
             rep.saveStepAttribute(id_transformation, id_step, "columnnamefield", columnnamefield); //$NON-NLS-1$
-
-            
             rep.saveStepAttribute(id_transformation, id_step, "resultfieldname", resultfieldname); //$NON-NLS-1$
 
             // Also, save the step-database relationship!
