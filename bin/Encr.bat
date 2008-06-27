@@ -55,4 +55,5 @@ REM ***************
 REM ** Run...    **
 REM ***************
 
-java %OPT% org.pentaho.di.core.encryption.Encr %_cmdline%
+java %OPT% org.pentaho.di.core.encryption.Encr %*
+
