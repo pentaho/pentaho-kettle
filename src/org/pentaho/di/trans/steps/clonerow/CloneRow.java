@@ -23,7 +23,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.core.Const;
 
 /**
- * Do nothing.  Pass all input data to the next steps.
+ * Clone input row.
  * 
  * @author Samatar
  * @since 27-06-2008
