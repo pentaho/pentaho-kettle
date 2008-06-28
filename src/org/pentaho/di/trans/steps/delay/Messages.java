@@ -10,7 +10,7 @@
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or  implied. Please refer to 
  * the license for the specific language governing your rights and limitations.
 */
-package org.pentaho.di.trans.steps.ldapinput;
+package org.pentaho.di.trans.steps.delay;
 
 import org.pentaho.di.i18n.BaseMessages;
 

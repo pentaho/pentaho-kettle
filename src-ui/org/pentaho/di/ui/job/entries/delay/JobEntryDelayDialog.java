@@ -63,9 +63,8 @@ public class JobEntryDelayDialog extends JobEntryDialog implements JobEntryDialo
 	private Text         wName;
 	private FormData     fdlName, fdName;
 
-	private Label    wlScaleTime;
 	private CCombo   wScaleTime;
-	private FormData fdlScaleTime, fdScaleTime;
+	private FormData fdScaleTime;
 
 	private LabelTextVar wMaximumTimeout;
 	private FormData     fdMaximumTimeout;
@@ -121,7 +120,7 @@ public class JobEntryDelayDialog extends JobEntryDialog implements JobEntryDialo
 		wlName.setText(Messages.getString("JobEntryDelay.Name.Label"));
 		props.setLook(wlName);
 		fdlName=new FormData();
-		fdlName.left = new FormAttachment(0, 0);
+		fdlName.left = new FormAttachment(0, -margin);
 		fdlName.right= new FormAttachment(middle, 0);
 		fdlName.top  = new FormAttachment(0, margin);
 		wlName.setLayoutData(fdlName);
@@ -139,7 +138,7 @@ public class JobEntryDelayDialog extends JobEntryDialog implements JobEntryDialo
 		props.setLook(wMaximumTimeout);
 		wMaximumTimeout.addModifyListener(lsMod);
 		fdMaximumTimeout = new FormData();
-		fdMaximumTimeout.left = new FormAttachment(0, 0);
+		fdMaximumTimeout.left = new FormAttachment(0, -margin);
 		fdMaximumTimeout.top = new FormAttachment(wName, margin);
 		fdMaximumTimeout.right = new FormAttachment(100, 0);
 		wMaximumTimeout.setLayoutData(fdMaximumTimeout);
@@ -155,14 +154,7 @@ public class JobEntryDelayDialog extends JobEntryDialog implements JobEntryDialo
 		);
 
 		// Scale time
-		wlScaleTime = new Label(shell, SWT.RIGHT);
-		wlScaleTime.setText("");
-		props.setLook(wlScaleTime);
-		fdlScaleTime = new FormData();
-		fdlScaleTime.left = new FormAttachment(0, 0);
-		fdlScaleTime.right = new FormAttachment(middle, 0);
-		fdlScaleTime.top = new FormAttachment(wMaximumTimeout, margin);
-		wlScaleTime.setLayoutData(fdlScaleTime);
+	
 		wScaleTime = new CCombo(shell, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
 		wScaleTime.add(Messages.getString("JobEntryDelay.SScaleTime.Label"));
 		wScaleTime.add(Messages.getString("JobEntryDelay.MnScaleTime.Label"));
@@ -172,12 +164,6 @@ public class JobEntryDelayDialog extends JobEntryDialog implements JobEntryDialo
 		props.setLook(wScaleTime);
 		fdScaleTime= new FormData();
 		fdScaleTime.left = new FormAttachment(middle, 0);
-		fdScaleTime.top = new FormAttachment(wMaximumTimeout, margin);
-		fdScaleTime.right = new FormAttachment(100, 0);
-		wScaleTime.setLayoutData(fdScaleTime);
-
-		fdScaleTime = new FormData();
-		fdScaleTime.left = new FormAttachment(middle, margin);
 		fdScaleTime.top = new FormAttachment(wMaximumTimeout, margin);
 		fdScaleTime.right = new FormAttachment(100, 0);
 		wScaleTime.setLayoutData(fdScaleTime);

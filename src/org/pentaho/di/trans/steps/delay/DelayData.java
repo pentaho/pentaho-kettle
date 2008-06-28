@@ -10,9 +10,8 @@
  * the license for the specific language governing your rights and limitations.*/
  
 
-package org.pentaho.di.trans.steps.clonerow;
+package org.pentaho.di.trans.steps.delay;
 
-import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
 
@@ -22,16 +21,16 @@ import org.pentaho.di.trans.step.StepDataInterface;
  * @since 27-06-2008
  *
  */
-public class CloneRowData extends BaseStepData implements StepDataInterface
+public class DelayData extends BaseStepData implements StepDataInterface
 {
-
-	public int nrclones;
-	public RowMetaInterface outputRowMeta;
+	public int Multiple;
+	public int timeout;
 	
-	public CloneRowData()
+	public DelayData()
 	{
 		super();
-		nrclones=0;
+		Multiple=1000;
+		timeout=0;
 	}
 
 }

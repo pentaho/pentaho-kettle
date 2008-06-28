@@ -983,4 +983,15 @@
 		</tooltip>
 		<image-uri>ui/images/GenericTransform.png</image-uri>
 	</step>
+		<step id="Delay">
+		<description>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.Delay")
+		</description>
+		<class-name>org.pentaho.di.trans.steps.delay.DelayMeta</class-name>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@TRANSFORM.getName()</category>
+		<tooltip>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.Delay")
+		</tooltip>
+		<image-uri>ui/images/DLT.png</image-uri>
+	</step>
 </steps>
