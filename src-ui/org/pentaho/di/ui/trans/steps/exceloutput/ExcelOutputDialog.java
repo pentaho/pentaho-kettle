@@ -36,6 +36,7 @@ import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FormAttachment;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
@@ -173,6 +174,13 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
   	private Label        wlDateTimeFormat;
 	private CCombo       wDateTimeFormat;
 	private FormData     fdlDateTimeFormat, fdDateTimeFormat; 
+	
+	private Label        wlAutoSize;
+	private Button       wAutoSize;
+	private FormData     fdlAutoSize, fdAutoSize;
+	
+	private Group wTemplateGroup;
+	private FormData fdTemplateGroup;
     
 	public ExcelOutputDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
@@ -729,20 +737,60 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		fdPassword.right= new FormAttachment(100, 0);
 		wPassword.setLayoutData(fdPassword);
 
+		// auto size columns?
+		wlAutoSize=new Label(wContentComp, SWT.RIGHT);
+		wlAutoSize.setText(Messages.getString("ExcelOutputDialog.AutoSize.Label"));
+		props.setLook(wlAutoSize);
+		fdlAutoSize=new FormData();
+		fdlAutoSize.left = new FormAttachment(0, 0);
+		fdlAutoSize.top  = new FormAttachment(wPassword, margin);
+		fdlAutoSize.right= new FormAttachment(middle, -margin);
+		wlAutoSize.setLayoutData(fdlAutoSize);
+		wAutoSize=new Button(wContentComp, SWT.CHECK);
+		props.setLook(wAutoSize);
+		wAutoSize.setToolTipText(Messages.getString("ExcelOutputDialog.AutoSize.Tooltip"));
+	    fdAutoSize=new FormData();
+		fdAutoSize.left = new FormAttachment(middle, 0);
+		fdAutoSize.top  = new FormAttachment(wPassword, margin);
+		fdAutoSize.right= new FormAttachment(100, 0);
+		wAutoSize.setLayoutData(fdAutoSize);
+		wAutoSize.addSelectionListener(new SelectionAdapter() 
+		{
+			public void widgetSelected(SelectionEvent e) 
+			{
+				EnableAutoSize();
+			}
+		}
+	);
+		
+		
+		// ///////////////////////////////
+		// START OF Template Group GROUP //
+		///////////////////////////////// 
 
-		wlTemplate=new Label(wContentComp, SWT.RIGHT);
+		wTemplateGroup= new Group(wContentComp, SWT.SHADOW_NONE);
+		props.setLook(wTemplateGroup);
+		wTemplateGroup.setText(Messages.getString("ExcelOutputDialog.TemplateGroup.Label"));
+		
+		FormLayout TemplateGroupgroupLayout = new FormLayout();
+		TemplateGroupgroupLayout.marginWidth = 10;
+		TemplateGroupgroupLayout.marginHeight = 10;
+		wTemplateGroup.setLayout(TemplateGroupgroupLayout);
+		
+		// Use template
+		wlTemplate=new Label(wTemplateGroup, SWT.RIGHT);
 		wlTemplate.setText(Messages.getString("ExcelOutputDialog.Template.Label"));
  		props.setLook(wlTemplate);
 		fdlTemplate=new FormData();
 		fdlTemplate.left = new FormAttachment(0, 0);
-		fdlTemplate.top  = new FormAttachment(wPassword, margin);
+		fdlTemplate.top  = new FormAttachment(wAutoSize, margin);
 		fdlTemplate.right= new FormAttachment(middle, -margin);
 		wlTemplate.setLayoutData(fdlTemplate);
-		wTemplate=new Button(wContentComp, SWT.CHECK );
+		wTemplate=new Button(wTemplateGroup, SWT.CHECK );
  		props.setLook(wTemplate);
 		fdTemplate=new FormData();
 		fdTemplate.left = new FormAttachment(middle, 0);
-		fdTemplate.top  = new FormAttachment(wPassword, margin);
+		fdTemplate.top  = new FormAttachment(wAutoSize, margin);
 		fdTemplate.right= new FormAttachment(100, 0);
 		wTemplate.setLayoutData(fdTemplate);
 		wTemplate.addSelectionListener(new SelectionAdapter() 
@@ -755,7 +803,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		);
 
 		// TemplateFilename line
-		wlTemplateFilename=new Label(wContentComp, SWT.RIGHT);
+		wlTemplateFilename=new Label(wTemplateGroup, SWT.RIGHT);
 		wlTemplateFilename.setText(Messages.getString("ExcelOutputDialog.TemplateFilename.Label"));
  		props.setLook(wlTemplateFilename);
 		fdlTemplateFilename=new FormData();
@@ -764,7 +812,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		fdlTemplateFilename.right= new FormAttachment(middle, -margin);
 		wlTemplateFilename.setLayoutData(fdlTemplateFilename);
 
-		wbTemplateFilename=new Button(wContentComp, SWT.PUSH| SWT.CENTER);
+		wbTemplateFilename=new Button(wTemplateGroup, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbTemplateFilename);
 		wbTemplateFilename.setText(Messages.getString("System.Button.Browse"));
 		fdbTemplateFilename=new FormData();
@@ -772,7 +820,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		fdbTemplateFilename.top  = new FormAttachment(wTemplate, 0);
 		wbTemplateFilename.setLayoutData(fdbTemplateFilename);
 
-		wTemplateFilename=new TextVar(transMeta, wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wTemplateFilename=new TextVar(transMeta, wTemplateGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wTemplateFilename);
 		wTemplateFilename.addModifyListener(lsMod);
 		fdTemplateFilename=new FormData();
@@ -782,7 +830,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		wTemplateFilename.setLayoutData(fdTemplateFilename);
 
 		// Template Append
-		wlTemplateAppend=new Label(wContentComp, SWT.RIGHT);
+		wlTemplateAppend=new Label(wTemplateGroup, SWT.RIGHT);
 		wlTemplateAppend.setText(Messages.getString("ExcelOutputDialog.TemplateAppend.Label"));
  		props.setLook(wlTemplateAppend);
 		fdlTemplateAppend=new FormData();
@@ -790,7 +838,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		fdlTemplateAppend.top  = new FormAttachment(wTemplateFilename, margin);
 		fdlTemplateAppend.right= new FormAttachment(middle, -margin);
 		wlTemplateAppend.setLayoutData(fdlTemplateAppend);
-		wTemplateAppend=new Button(wContentComp, SWT.CHECK );
+		wTemplateAppend=new Button(wTemplateGroup, SWT.CHECK );
  		props.setLook(wTemplateAppend);
 		fdTemplateAppend=new FormData();
 		fdTemplateAppend.left = new FormAttachment(middle, 0);
@@ -806,12 +854,17 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 			}
 		);
 
-
-
-	
-
-
+		fdTemplateGroup= new FormData();
+		fdTemplateGroup.left = new FormAttachment(0, margin);
+		fdTemplateGroup.top = new FormAttachment(wAutoSize, margin);
+		fdTemplateGroup.right = new FormAttachment(100, -margin);
+		wTemplateGroup.setLayoutData(fdTemplateGroup);
 		
+		// ///////////////////////////////////////////////////////////
+		// / END OF Template Group GROUP
+		// ///////////////////////////////////////////////////////////		
+
+
 		fdContentComp = new FormData();
 		fdContentComp.left  = new FormAttachment(0, 0);
 		fdContentComp.top   = new FormAttachment(0, 0);
@@ -1043,6 +1096,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		
 		getData();
 		setDateTimeFormat();
+		EnableAutoSize();
 		input.setChanged(changed);
 		
 		shell.open();
@@ -1051,6 +1105,10 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 				if (!display.readAndDispatch()) display.sleep();
 		}
 		return stepname;
+	}
+	private void EnableAutoSize()
+	{
+		wMinWidth.setEnabled(!wAutoSize.getSelection());
 	}
 	private void setDateTimeFormat()
 	{
@@ -1114,7 +1172,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		
 		
 		wAddToResult.setSelection(input.isAddToResultFiles());
-		
+		wAutoSize.setSelection(input.isAutoSizeColums());
 
 		wAddStepnr.setSelection(input.isStepNrInFilename());
 		wTemplate.setSelection(input.isTemplateEnabled());
@@ -1175,6 +1233,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		
 		tfoi.setDateTimeFormat(wDateTimeFormat.getText());
 		tfoi.setSpecifyFormat(wSpecifyFormat.getSelection());
+		tfoi.setAutoSizeColums(wAutoSize.getSelection());
 		
 		tfoi.setAddToResultFiles( wAddToResult.getSelection() );
 		

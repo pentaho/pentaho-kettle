@@ -62,6 +62,11 @@ public class ExcelOutputData extends BaseStepData implements StepDataInterface
 	public boolean oneFileOpened;
 	
 	public String realSheetname;
+	
+	int[] fieldsWidth;
+	
+	public boolean headerWrote;
+	
 
 	/**
 	 * 
@@ -74,6 +79,7 @@ public class ExcelOutputData extends BaseStepData implements StepDataInterface
         oneFileOpened=false;
         file=null;
         realSheetname=null;
+        headerWrote=false;
 	}
 
 }

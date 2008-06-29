@@ -114,6 +114,9 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
     private boolean SpecifyFormat;
     
     private String date_time_format;
+    
+	/** Flag : auto size columns? */
+    private  boolean autosizecolums;
 
 	public ExcelOutputMeta()
 	{
@@ -215,6 +218,22 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
     {
         this.footerEnabled = footer;
     }
+    /**
+     * @return Returns the autosizecolums.
+     */
+    public boolean isAutoSizeColums()
+    {
+        return autosizecolums;
+    }  
+    
+    /**
+     * @param autosizecolums The autosizecolums to set.
+     */
+    public void setAutoSizeColums(boolean autosizecolums)
+    {
+        this.autosizecolums = autosizecolums;
+    }
+    
 
     /**
      * @return Returns the header.
@@ -505,7 +524,7 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 			SpecifyFormat       = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "SpecifyFormat"));
 			date_time_format         = XMLHandler.getTagValue(stepnode, "file","date_time_format");
 			
-			
+			autosizecolums = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "autosizecolums"));
 			protectsheet = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "protect_sheet"));
 			password     = Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue(stepnode, "file", "password") );
 			splitEvery   = Const.toInt(XMLHandler.getTagValue(stepnode, "file", "splitevery"), 0);
@@ -558,6 +577,7 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 
 	public void setDefault()
 	{
+		autosizecolums=false;
 		headerEnabled    = true;
 		footerEnabled    = false;
 		fileName         = "file";
@@ -700,8 +720,8 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 		retval.append("      ").append(XMLHandler.addTagValue("add_time",   timeInFilename));
 		retval.append("      ").append(XMLHandler.addTagValue("SpecifyFormat",   SpecifyFormat));
 		retval.append("      ").append(XMLHandler.addTagValue("date_time_format",  date_time_format));
-		
 		retval.append("      ").append(XMLHandler.addTagValue("sheetname", sheetname));
+		retval.append("      ").append(XMLHandler.addTagValue("autosizecolums",   autosizecolums));
 		retval.append("      ").append(XMLHandler.addTagValue("protect_sheet",   protectsheet));
 		retval.append("      ").append(XMLHandler.addTagValue("password",  Encr.encryptPasswordIfNotUsingVariables(password)));
 		retval.append("      ").append(XMLHandler.addTagValue("splitevery", splitEvery));
@@ -761,6 +781,7 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 			SpecifyFormat   =      rep.getStepAttributeBoolean(id_step, "SpecifyFormat");
 			date_time_format  =      rep.getStepAttributeString (id_step, "date_time_format");  
 			
+			autosizecolums          = rep.getStepAttributeBoolean(id_step, "autosizecolums");
 			protectsheet          = rep.getStepAttributeBoolean(id_step, "protect_sheet");
 			password              = Encr.decryptPasswordOptionallyEncrypted( rep.getStepAttributeString (id_step, "password") );
 
@@ -809,6 +830,7 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "SpecifyFormat",    SpecifyFormat);
 			rep.saveStepAttribute(id_transformation, id_step, "date_time_format",   date_time_format);
 			
+			rep.saveStepAttribute(id_transformation, id_step, "autosizecolums",    autosizecolums);
 			rep.saveStepAttribute(id_transformation, id_step, "protect_sheet",    protectsheet);
 			rep.saveStepAttribute(id_transformation, id_step, "password",  Encr.encryptPasswordIfNotUsingVariables(password) );
 			rep.saveStepAttribute(id_transformation, id_step, "template_enabled",  templateEnabled);

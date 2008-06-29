@@ -50,7 +50,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
 {
 	private ExcelOutputMeta meta;
 	private ExcelOutputData data;
-	 
+
 	public ExcelOutput(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans)
 	{
 		super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
@@ -76,9 +76,23 @@ public class ExcelOutput extends BaseStep implements StepInterface
 					 logError("Couldn't open file "+meta.getFileName());
 					 return false;
 				 }
-		         
+		          // If we need to write a header, do so...
+		          //
+		         if(meta.isHeaderEnabled() && !data.headerWrote)
+				 {
+		        	 writeHeader();
+		        	 data.headerWrote=true;
+				 }
+			}else
+			{
+				  // If we need to write a header, do so...
+		          //
+		         if(meta.isHeaderEnabled() && !data.headerWrote)
+				 {
+		        	 writeHeader();
+		        	 data.headerWrote=true;
+				 }
 			}
-
 		}
 		
 		// If we split the data stream in small XLS files, we need to do this here...
@@ -95,6 +109,13 @@ public class ExcelOutput extends BaseStep implements StepInterface
 					setErrors(1);
 					return false;
 				}
+		          // If we need to write a header, do so...
+		          //
+		         if(meta.isHeaderEnabled() && !data.headerWrote)
+				 {
+		        	 writeHeader();
+		        	 data.headerWrote=true;
+				 }
 			}
 		}
 		
@@ -147,7 +168,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
 			}
 
 			if (meta.getOutputFields()==null || meta.getOutputFields().length==0)
-			{
+			{	
 				/*
 				 * Write all values in stream to text file.
 				 */
@@ -160,6 +181,8 @@ public class ExcelOutput extends BaseStep implements StepInterface
                 // go to the next line
                 data.positionX = 0;
                 data.positionY++;
+                
+                
 			}
 			else
 			{
@@ -234,6 +257,14 @@ public class ExcelOutput extends BaseStep implements StepInterface
 				} catch (RuntimeException e) {
 					//ignore if the column is not found, format as usual
 				}
+            }
+            if(meta.isAutoSizeColums())
+            {
+	            // prepare auto size colums
+	            int vlen=vMeta.getName().length();
+	            if(!isHeader) vlen=v.toString().trim().length();
+	        	if(vlen>0 && vlen>data.fieldsWidth[column]) data.fieldsWidth[column]=vlen+1;
+	        	
             }
             
             switch(vMeta.getType())
@@ -339,6 +370,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
 			// If we have fields specified: list them in this order!
 			if (meta.getOutputFields()!=null && meta.getOutputFields().length>0)
 			{
+				if(meta.isAutoSizeColums()) data.fieldsWidth = new int[meta.getOutputFields().length];
 				for (int i=0;i<meta.getOutputFields().length;i++)
 				{
                     String fieldName = meta.getOutputFields()[i].getName();
@@ -349,6 +381,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
 			else
 			if (data.previousMeta!=null)  // Just put all field names in the header/footer
 			{
+				if(meta.isAutoSizeColums()) data.fieldsWidth = new int[data.previousMeta.size()];
 				for (int i=0;i<data.previousMeta.size();i++)
 				{
 					String fieldName = data.previousMeta.getFieldNames()[i];
@@ -502,10 +535,11 @@ public class ExcelOutput extends BaseStep implements StepInterface
             
             // If we need to write a header, do so...
             //
-            if (meta.isHeaderEnabled()) {
+           /* if (meta.isHeaderEnabled()) {
             	writeHeader();
-            }
-
+            }*/
+            data.headerWrote=false;
+            
             if(log.isDebug()) log.logDebug(toString(),Messages.getString("ExcelOutput.Log.FileOpened",filename));
 			retval=true;
 		}
@@ -534,8 +568,17 @@ public class ExcelOutput extends BaseStep implements StepInterface
 
 			if ( data.workbook != null )
 			{
+				if(meta.isAutoSizeColums())
+				{
+					// auto resize columns
+					int nrfields=data.fieldsWidth.length;
+					for(int i=0;i<nrfields;i++)
+					{
+						data.sheet.setColumnView(i,data.fieldsWidth[i]);
+					}
+				}
+				data.fieldsWidth=null;
 				System.gc();
-				
 			    data.workbook.write();
                 data.workbook.close();
                 data.workbook = null;
