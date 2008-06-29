@@ -692,6 +692,7 @@ public class BaseStepDialog extends Dialog {
           MessageDialog.WARNING, new String[] { Messages.getString("BaseStepDialog.AddNew"), //$NON-NLS-1$
               Messages.getString("BaseStepDialog.Add"), Messages.getString("BaseStepDialog.ClearAndAdd"), //$NON-NLS-1$  //$NON-NLS-2$
               Messages.getString("BaseStepDialog.Cancel"), }, 0); //$NON-NLS-1$
+      MessageDialog.setDefaultImage(GUIResource.getInstance().getImageSpoon());
       int idx = md.open();
       choice = idx & 0xFF;
     }
