@@ -1388,7 +1388,6 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		            mb.setText(Messages.getString("System.Dialog.Error.Title"));
 		            mb.open(); 
 			}
-
 		}
 		catch(Exception e)
 	    {
@@ -1407,13 +1406,9 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
     		if (!checkLoopXPath(meta)) return;    	       
             
     		FileInputList inputList = meta.getFiles(transMeta);
-            if(meta.getIsInFields())
-            {
- 			
-            }           
-            else if (inputList.getFiles().size()>0)
-            {
-                
+    		
+    		if (inputList.getFiles().size()>0)
+            {    
             	wFields.removeAll();
             	// get encoding. By default UTF-8
     			String encoding="UTF-8";
@@ -1425,17 +1420,10 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
     			SAXReader reader = new SAXReader();
     			Document document  = reader.read(new FileInputStream(KettleVFS.getFilename(inputList.getFile(0))),encoding);	
     			List<Node> nodes = document.selectNodes(meta.getLoopXPath());
-    			 //System.out.print("-----------------------"+an.size());
     			 for (Node node : nodes) 
     			 {
-				      /*List<Attribute> list = e.attributes();
-				      for (Attribute attribute : list)
-				      {
-				         String name = attribute.getName();
-				         //System.out.println( "attribute Name : " + name +"\n");
-				      }
-    				 */
-				      ChildNode(node);
+    				 setNodeField(node); 
+				     ChildNode(node);
     			 }
     			 
                 wFields.removeEmptyRows();
@@ -1496,9 +1484,8 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 	{
 		// Get Attribute Name
 		String attributname=attribute.getName();
-		String attributnametxt=cleanString(attribute.getPath());//.
-			//replace(attributname, "@"+attributname);
-		if(!list.contains(attribute.getPath()))
+		String attributnametxt=cleanString(attribute.getPath());
+		if(!Const.isEmpty(attributnametxt) && !list.contains(attribute.getPath()))
 		{
             TableItem item = new TableItem(wFields.table, SWT.NONE);
             item.setText(1, attributname);
@@ -1539,7 +1526,7 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 	private void setNodeField(Node node)
 	{
 		Element e = (Element) node; 
-		// get all atributes
+		// get all attributes
 		List<Attribute> lista = e.attributes(); 
 		for(int i=0;i<lista.size();i++)
 		{
@@ -1550,7 +1537,7 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		String nodename=node.getName();
 		String nodenametxt=cleanString(node.getPath());
 		
-		if(!list.contains(nodenametxt))
+		if(!Const.isEmpty(nodenametxt) && !list.contains(nodenametxt))
 		{	
             TableItem item = new TableItem(wFields.table, SWT.NONE);
             item.setText(1, nodename);
