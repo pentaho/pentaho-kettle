@@ -168,14 +168,14 @@ public class Encr
 		String option = args[0];
 		String password = args[1];
 
-		if (Const.trim(option).equalsIgnoreCase("-kettle")) {
+		if (Const.trim(option).substring(1).equalsIgnoreCase("kettle")) {
 			// Kettle password obfuscation
 			//
 			String obfuscated = Encr.encryptPassword(password);
 			System.out.println(PASSWORD_ENCRYPTED_PREFIX+obfuscated);
 			System.exit(0);
 			
-		} else if (Const.trim(option).equalsIgnoreCase("-carte")) {
+		} else if (Const.trim(option).substring(1).equalsIgnoreCase("-carte")) {
 			// Jetty password obfuscation
 			//
 			String obfuscated = Password.obfuscate(password);
@@ -195,7 +195,7 @@ public class Encr
 	}
 
 	private static void printOptions() {
-		System.err.println("encr usage:");
+		System.err.println("encr usage:\n");
 		System.err.println("  encr <-kettle|-carte> <password>");
 		System.err.println("  Options:");
 		System.err.println("    -kettle: generate an obfuscated password to include in Kettle XML files");
