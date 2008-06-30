@@ -981,7 +981,7 @@
 		<tooltip>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.CloneRow")
 		</tooltip>
-		<image-uri>ui/images/GenericTransform.png</image-uri>
+		<image-uri>ui/images/CLR.png</image-uri>
 	</step>
 		<step id="Delay">
 		<description>
