@@ -9,7 +9,7 @@ public class StepMetastructureData extends BaseStepData implements StepDataInter
 	public RowMetaInterface outputRowMeta;   
 	public RowMetaInterface inputRowMeta; 
 	
-	
+	public int rowCount;
 	
 	/**
 	 * Default constructor.
@@ -18,10 +18,4 @@ public class StepMetastructureData extends BaseStepData implements StepDataInter
 	{
 		super();
 	}
-	
-	
-    
-	
-
-	
 }

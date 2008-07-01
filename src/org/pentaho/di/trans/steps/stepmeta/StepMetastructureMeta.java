@@ -157,7 +157,8 @@ public class StepMetastructureMeta extends BaseStepMeta implements StepMetaInter
         ValueMetaInterface originFieldValue = new ValueMeta(originName, ValueMetaInterface.TYPE_STRING);
         originFieldValue.setOrigin(name);
         r.addValueMeta(originFieldValue);
-        if(isOutputRowcount()){
+        
+        if (isOutputRowcount()) {
 	        //RowCount
 	        ValueMetaInterface v=new ValueMeta(this.getRowcountField(), ValueMetaInterface.TYPE_INTEGER);
 	        v.setOrigin(name);
