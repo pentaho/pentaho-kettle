@@ -23,6 +23,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -222,6 +223,13 @@ public class TableInput extends BaseStep implements StepInterface
         {
             // Keep the metadata
             data.rowMeta = data.db.getReturnRowMeta();
+            
+            // 	Set the origin on the row metadata...
+            if (data.rowMeta!=null) {
+            	for (ValueMetaInterface valueMeta : data.rowMeta.getValueMetaList()) {
+            		valueMeta.setOrigin(getStepname());
+            	}
+            }
             
             // Get the first row...
             data.thisrow = data.db.getRow(data.rs);
