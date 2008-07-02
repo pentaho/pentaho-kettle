@@ -162,6 +162,7 @@ public class CloneRowMeta extends BaseStepMeta implements StepMetaInterface
 			 if (!Const.isEmpty(cloneflagfield))
 		     {
 				 ValueMetaInterface v = new ValueMeta(space.environmentSubstitute(cloneflagfield), ValueMeta.TYPE_BOOLEAN);
+				 v.setOrigin(origin);
 				 rowMeta.addValueMeta(v);
 		     }
 		}

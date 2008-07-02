@@ -161,12 +161,14 @@ public class FileExistsMeta extends BaseStepMeta implements StepMetaInterface
 		 if (!Const.isEmpty(resultfieldname))
 	     {
 			 ValueMetaInterface v = new ValueMeta(space.environmentSubstitute(resultfieldname), ValueMeta.TYPE_BOOLEAN);
+			 v.setOrigin(name);
 			 inputRowMeta.addValueMeta(v);
 	     }
 		 
 		 if (includefiletype &&  !Const.isEmpty(filetypefieldname))
 	     {
 			 ValueMetaInterface v = new ValueMeta(space.environmentSubstitute(filetypefieldname), ValueMeta.TYPE_STRING);
+			 v.setOrigin(name);
 			 inputRowMeta.addValueMeta(v);
 	     }
     }

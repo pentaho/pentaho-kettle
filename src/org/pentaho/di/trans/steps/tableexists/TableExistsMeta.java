@@ -151,9 +151,9 @@ public class TableExistsMeta extends BaseStepMeta implements StepMetaInterface
 		 if (!Const.isEmpty(resultfieldname))
 	     {
 			 ValueMetaInterface v = new ValueMeta(space.environmentSubstitute(resultfieldname), ValueMeta.TYPE_BOOLEAN);
+			 v.setOrigin(name);
 			 inputRowMeta.addValueMeta(v);
 	     }
-
     }
 
     public String getXML()
