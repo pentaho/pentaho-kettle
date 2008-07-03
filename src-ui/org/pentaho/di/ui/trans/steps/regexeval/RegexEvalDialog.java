@@ -259,7 +259,7 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
         wAllowCaptureGroups.setToolTipText(Messages.getString("RegexEvalDialog.AllowCaptureGroups.Tooltip"));
         props.setLook(wAllowCaptureGroups);
         fdAllowCaptureGroups=new FormData();
-        fdAllowCaptureGroups.left  = new FormAttachment(middle, 0);
+        fdAllowCaptureGroups.left  = new FormAttachment(middle, margin);
         fdAllowCaptureGroups.top   = new FormAttachment(wResultField, margin);
         fdAllowCaptureGroups.right = new FormAttachment(100,0);
         wAllowCaptureGroups.setLayoutData(fdAllowCaptureGroups);
