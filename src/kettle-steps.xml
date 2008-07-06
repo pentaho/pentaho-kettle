@@ -994,4 +994,15 @@
 		</tooltip>
 		<image-uri>ui/images/DLT.png</image-uri>
 	</step>
+		<step id="CheckSum">
+		<description>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.CheckSum")
+		</description>
+		<class-name>org.pentaho.di.trans.steps.checksum.CheckSumMeta</class-name>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@TRANSFORM.getName()</category>
+		<tooltip>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.CheckSum")
+		</tooltip>
+		<image-uri>ui/images/CSM.png</image-uri>
+	</step>
 </steps>

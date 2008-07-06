@@ -12,10 +12,18 @@
 */
 package org.pentaho.di.core.row;
 
+import java.io.FileInputStream;
 import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.zip.CheckedInputStream;
+import java.util.zip.Adler32;
+import java.util.zip.CRC32;
 
+import org.pentaho.di.core.vfs.KettleVFS;
+
+import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.provider.local.LocalFile;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleValueException;
 
@@ -59,8 +67,54 @@ public class ValueDataUtil
     {
         return Const.trim(string);
     }
-    
-    
+    public static Long ChecksumCRC32(ValueMetaInterface metaA, Object dataA)
+    {
+        long checksum =0;
+        FileObject file=null;
+        try {
+        	file=KettleVFS.getFileObject(dataA.toString());
+            CheckedInputStream cis = null;
+            
+            // Computer CRC32 checksum
+            cis = new CheckedInputStream( (FileInputStream)((LocalFile)file).getInputStream(), new CRC32());
+            byte[] buf = new byte[128];
+            while(cis.read(buf) >= 0) {
+            }
+
+            checksum = cis.getChecksum().getValue();
+
+        } catch (Exception e) {
+	    }finally
+	    {
+	    	if(file!=null) try{file.close();}catch(Exception e){};
+	    }
+        return checksum;
+    }
+    public static Long ChecksumAdler32(ValueMetaInterface metaA, Object dataA)
+    {
+    long checksum =0;
+    FileObject file=null;
+    try {
+    	file=KettleVFS.getFileObject(dataA.toString());
+        CheckedInputStream cis = null;
+   
+        // Computer Adler-32 checksum
+        cis = new CheckedInputStream( (FileInputStream)((LocalFile)file).getInputStream(), new Adler32());
+        
+        byte[] buf = new byte[128];
+        while(cis.read(buf) >= 0) {
+        }
+	    checksum = cis.getChecksum().getValue();
+
+	    } catch (Exception e) {
+	    	//throw new Exception(e);
+	    }finally
+	    {
+	    	if(file!=null) try{file.close();}catch(Exception e){};
+	    }
+    return checksum;
+}
+   
     public static Object plus(ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB) throws KettleValueException
     {
         if (dataA==null || dataB==null) return null;

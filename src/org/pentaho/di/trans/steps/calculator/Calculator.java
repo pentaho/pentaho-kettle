@@ -402,7 +402,19 @@ public class Calculator extends BaseStep implements StepInterface
                         calcData[index] = ValueDataUtil.hexToCharDecode(metaA, dataA);
                         resultType=ValueMetaInterface.TYPE_STRING;
                     }
-                    break;                    
+                    break;    
+                case CalculatorMetaFunction.CRC32   : // CRC32
+	                {
+	                    calcData[index] = ValueDataUtil.ChecksumCRC32(metaA, dataA);
+	                    resultType=ValueMetaInterface.TYPE_INTEGER;
+	                }
+                break;  
+                case CalculatorMetaFunction.ADLER32   : // ADLER32
+                {
+                    calcData[index] = ValueDataUtil.ChecksumAdler32(metaA, dataA);
+                    resultType=ValueMetaInterface.TYPE_INTEGER;
+                }
+                break;
                 default:
                     throw new KettleValueException("Unknown calculation type #"+fn.getCalcType());
                 }
