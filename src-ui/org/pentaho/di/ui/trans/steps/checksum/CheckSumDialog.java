@@ -133,8 +133,10 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
         fdlType.top = new FormAttachment(wStepname, margin);
         wlType.setLayoutData(fdlType);
         wType = new CCombo(shell, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
-        wType.add("CRC 32");
-        wType.add("Adler 32");
+        wType.add(Messages.getString("CheckSumDialog.Type.CRC32"));
+        wType.add(Messages.getString("CheckSumDialog.Type.ADLER32"));
+        wType.add(Messages.getString("CheckSumDialog.Type.MD5"));
+        wType.add(Messages.getString("CheckSumDialog.Type.SHA1"));
         wType.select(0); 
         props.setLook(wType);
         fdType = new FormData();

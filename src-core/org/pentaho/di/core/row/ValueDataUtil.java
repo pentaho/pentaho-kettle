@@ -19,6 +19,8 @@ import java.util.Locale;
 import java.util.zip.CheckedInputStream;
 import java.util.zip.Adler32;
 import java.util.zip.CRC32;
+import java.security.MessageDigest;
+
 
 import org.pentaho.di.core.vfs.KettleVFS;
 
@@ -67,6 +69,32 @@ public class ValueDataUtil
     {
         return Const.trim(string);
     }
+
+    public static String createChecksum(ValueMetaInterface metaA, Object dataA, String type)
+    {
+    	String md5Hash = null;
+    	FileInputStream in=null;
+    	try {
+    		in = new FileInputStream(dataA.toString());
+    		int bytes = in.available();
+    		byte[] buffer = new byte[bytes];
+    		in.read(buffer);
+    		
+    		StringBuffer md5HashBuff = new StringBuffer(32);
+    		byte[] b = MessageDigest.getInstance(type).digest(buffer);
+    		int len = b.length;
+    		for (int x=0; x<len; x++) {
+    			md5HashBuff.append(String.format("%02x",b[x]));
+    		}
+    		
+    		md5Hash=md5HashBuff.toString();
+    		
+        }catch (Exception e){}
+        finally{try{if(in!=null) in.close();}catch(Exception e){};}
+        
+    	return md5Hash;
+    }
+
     public static Long ChecksumCRC32(ValueMetaInterface metaA, Object dataA)
     {
         long checksum =0;

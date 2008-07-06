@@ -53,11 +53,7 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface
     
     private String resultfieldName;
 	
-    public static String checksumtypeCodes[] = 
-	{			
-		"crc32",
-		"adler32"
-	};
+    public static String checksumtypeCodes[] = {"CRC32","ADLER32","MD5","SHA-1"};
     
     private String checksumtype;
     
@@ -77,6 +73,10 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface
 		int retval;
 		if(checksumtype.equals(checksumtypeCodes[1]))
 			retval=1;
+		else if(checksumtype.equals(checksumtypeCodes[2]))
+			retval=2;
+		else if(checksumtype.equals(checksumtypeCodes[3]))
+			retval=3;
 		else
 			retval=0;
 		return retval;
@@ -241,9 +241,14 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface
 	        // Output field (String)
 			 if (!Const.isEmpty(resultfieldName))
 		     {
-				 ValueMetaInterface v = new ValueMeta(space.environmentSubstitute(resultfieldName), ValueMeta.TYPE_INTEGER);
+				 ValueMetaInterface v=null;
+				 if(checksumtype.equals("CRC32") || checksumtype.equals("ADLER32"))
+					 v = new ValueMeta(space.environmentSubstitute(resultfieldName), ValueMeta.TYPE_INTEGER);
+				 else
+					 v = new ValueMeta(space.environmentSubstitute(resultfieldName), ValueMeta.TYPE_STRING);
 				 v.setOrigin(name);
 				 inputRowMeta.addValueMeta(v);
+				 
 		     }
 	    }
 	

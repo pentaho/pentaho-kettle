@@ -12,6 +12,7 @@
 */
 package org.pentaho.di.trans.steps.checksum;
 
+import java.security.MessageDigest;
 import java.util.zip.CRC32;
 import java.util.zip.Adler32;
 
@@ -90,11 +91,20 @@ public class CheckSum extends BaseStep implements StepInterface
 		
         boolean sendToErrorRow=false;
         String errorMessage = null;
+        Object[] outputRowData=null;
+        
 		try{
-			// get checksum 
-			Long checksum=calculCheckSum(r);
-		
-			Object[] outputRowData =RowDataUtil.addValueData(r, getInputRowMeta().size(),checksum);
+			if(meta.getCheckSumType().equals("ADLER32") || meta.getCheckSumType().equals("CRC32"))
+			{
+				// get checksum 
+				Long checksum=calculCheckSum(r);
+				outputRowData =RowDataUtil.addValueData(r, getInputRowMeta().size(),checksum);
+			}else
+			{
+				// get checksum 
+				String checkSum=createCheckSum(r);
+				outputRowData =RowDataUtil.addValueData(r, getInputRowMeta().size(),checkSum);
+			}
 			
 			 //	add new values to the row.
 			putRow(data.outputRowMeta, outputRowData);  // copy row to output rowset(s);
@@ -122,6 +132,37 @@ public class CheckSum extends BaseStep implements StepInterface
         }
 		return true;
 	}
+	private String createCheckSum(Object[] r) throws Exception
+	{
+		String retval=null;
+		StringBuffer Buff = new StringBuffer();
+    	
+    	// Loop through fields
+		for(int i=0;i<data.fieldnr;i++)
+		{	
+			String fieldvalue=getInputRowMeta().getString(r,data.fieldnrs[i]);
+			Buff.append(fieldvalue);
+		}
+
+		MessageDigest digest = MessageDigest.getInstance("MD5");
+		digest.update(Buff.toString().getBytes());
+		byte[] hash = digest.digest();
+
+		retval= getString(hash);
+	
+		return retval;
+	}
+	private static String getString( byte[] bytes ) {
+        StringBuffer sb = new StringBuffer();
+        for( int i=0; i<bytes.length; i++ ) {
+            byte b = bytes[ i ];
+            sb.append( ( int )( 0x00FF & b ) );
+            if( i+1 <bytes.length ) {
+                sb.append( "-" );
+            }
+        }
+        return sb.toString();
+    }
 	private Long calculCheckSum(Object[] r) throws Exception
 	{
 		Long retval;
@@ -133,13 +174,13 @@ public class CheckSum extends BaseStep implements StepInterface
 			String fieldvalue=getInputRowMeta().getString(r,data.fieldnrs[i]);
 			Buff.append(fieldvalue);
 		}
-		
-    	if(meta.getCheckSumType().equals("crc32"))
+
+		if(meta.getCheckSumType().equals("CRC32"))
     	{
     		CRC32 crc32= new CRC32();
     		crc32.update(Buff.toString().getBytes());
     		retval =new Long(crc32.getValue()); 
-    	}else
+		}else
     	{
     		Adler32 adler32= new java.util.zip.Adler32();
     		adler32.update(Buff.toString().getBytes());

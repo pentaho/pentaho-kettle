@@ -54,8 +54,10 @@ public class CalculatorMetaFunction implements Cloneable
     public static final int CALC_HEX_TO_BYTE_DECODE   = 27;
     public static final int CALC_CHAR_TO_HEX_ENCODE   = 28;
     public static final int CALC_HEX_TO_CHAR_DECODE   = 29;
-    public static final int CRC32   = 30;
-    public static final int ADLER32   = 31;
+    public static final int CALC_CRC32   = 30;
+    public static final int CALC_ADLER32   = 31;
+    public static final int CALC_MD5   = 32;
+    public static final int CALC_SHA1   = 33;
 
     public static final String calc_desc[] = 
         { 
@@ -90,7 +92,9 @@ public class CalculatorMetaFunction implements Cloneable
             "CHAR_TO_HEX_ENCODE",
             "HEX_TO_CHAR_DECODE",
             "CRC32",
-            "ADLER32"  
+            "ADLER32",
+            "MD5",
+            "SHA1" 
         };
     
     public static final String calcLongDesc[] = 
@@ -126,7 +130,9 @@ public class CalculatorMetaFunction implements Cloneable
             Messages.getString("CalculatorMetaFunction.CalcFunctions.CharToHexEncode"),
             Messages.getString("CalculatorMetaFunction.CalcFunctions.HexToCharDecode"),
             Messages.getString("CalculatorMetaFunction.CalcFunctions.CRC32"),
-            Messages.getString("CalculatorMetaFunction.CalcFunctions.Adler32")
+            Messages.getString("CalculatorMetaFunction.CalcFunctions.Adler32"),
+            Messages.getString("CalculatorMetaFunction.CalcFunctions.MD5"),
+            Messages.getString("CalculatorMetaFunction.CalcFunctions.SHA1")
         };
    
     private String fieldName;

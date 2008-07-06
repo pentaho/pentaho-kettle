@@ -403,16 +403,28 @@ public class Calculator extends BaseStep implements StepInterface
                         resultType=ValueMetaInterface.TYPE_STRING;
                     }
                     break;    
-                case CalculatorMetaFunction.CRC32   : // CRC32
+                case CalculatorMetaFunction.CALC_CRC32   : // CRC32
 	                {
 	                    calcData[index] = ValueDataUtil.ChecksumCRC32(metaA, dataA);
 	                    resultType=ValueMetaInterface.TYPE_INTEGER;
 	                }
                 break;  
-                case CalculatorMetaFunction.ADLER32   : // ADLER32
+                case CalculatorMetaFunction.CALC_ADLER32   : // ADLER32
                 {
                     calcData[index] = ValueDataUtil.ChecksumAdler32(metaA, dataA);
                     resultType=ValueMetaInterface.TYPE_INTEGER;
+                }
+                break;
+                case CalculatorMetaFunction.CALC_MD5   : // MD5
+                {
+                    calcData[index] = ValueDataUtil.createChecksum(metaA, dataA,"MD5");
+                    resultType=ValueMetaInterface.TYPE_STRING;
+                }
+                break;
+                case CalculatorMetaFunction.CALC_SHA1   : // SHA-1
+                {
+                    calcData[index] = ValueDataUtil.createChecksum(metaA, dataA,"SHA-1");
+                    resultType=ValueMetaInterface.TYPE_STRING;
                 }
                 break;
                 default:

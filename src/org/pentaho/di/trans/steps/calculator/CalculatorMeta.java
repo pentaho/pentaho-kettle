@@ -266,7 +266,19 @@ public class CalculatorMeta extends BaseStepMeta implements StepMetaInterface
                 break;
             case CalculatorMetaFunction.CALC_HEX_TO_CHAR_DECODE   : // Hex to Char decode string field A
                 defaultResultType=ValueMetaInterface.TYPE_STRING;
-                break;                    
+                break;   
+            case CalculatorMetaFunction.CALC_CRC32   : //CRC32 of a file A
+                defaultResultType=ValueMetaInterface.TYPE_INTEGER;
+                break;    
+            case CalculatorMetaFunction.CALC_ADLER32   : //ADLER32 of a file A
+                defaultResultType=ValueMetaInterface.TYPE_INTEGER;
+                break;   
+            case CalculatorMetaFunction.CALC_MD5   : //MD5 of a file A
+                defaultResultType=ValueMetaInterface.TYPE_INTEGER;
+                break;  
+            case CalculatorMetaFunction.CALC_SHA1   : //SHA1 of a file A
+                defaultResultType=ValueMetaInterface.TYPE_INTEGER;
+                break;  
             default:
                 break;
             }
