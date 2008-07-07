@@ -42,16 +42,15 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 /*
  * Created on 30-06-2008
  * 
+ * @author Samatar Hassan
  */
-
 public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
 	/** by which fields to display? */
 	private String fieldName[];
 
 	private String resultfieldName;
 
-	public static String checksumtypeCodes[] = { "CRC32", "ADLER32", "MD5",
-			"SHA-1" };
+	public static String checksumtypeCodes[] = { "CRC32", "ADLER32", "MD5",	"SHA-1" };
 
 	private String checksumtype;
 
@@ -155,20 +154,17 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
 	}
 
 	public String getXML() {
-		StringBuffer retval = new StringBuffer();
-		retval.append("      "
-				+ XMLHandler.addTagValue("checksumtype", checksumtype));
-		retval.append("      "
-				+ XMLHandler.addTagValue("resultfieldName", resultfieldName));
+		StringBuffer retval = new StringBuffer(200);
+		retval.append("      ").append(XMLHandler.addTagValue("checksumtype", checksumtype));
+		retval.append("      ").append(XMLHandler.addTagValue("resultfieldName", resultfieldName));
 
-		retval.append("    <fields>" + Const.CR);
+		retval.append("    <fields>").append(Const.CR);
 		for (int i = 0; i < fieldName.length; i++) {
-			retval.append("      <field>" + Const.CR);
-			retval.append("        "
-					+ XMLHandler.addTagValue("name", fieldName[i]));
-			retval.append("        </field>" + Const.CR);
+			retval.append("      <field>").append(Const.CR);
+			retval.append("        ").append(XMLHandler.addTagValue("name", fieldName[i]));
+			retval.append("      </field>").append(Const.CR);
 		}
-		retval.append("      </fields>" + Const.CR);
+		retval.append("    </fields>").append(Const.CR);
 
 		return retval.toString();
 	}

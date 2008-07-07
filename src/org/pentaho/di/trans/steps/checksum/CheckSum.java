@@ -31,10 +31,9 @@ import org.pentaho.di.trans.steps.clonerow.Messages;
 /**
  * Caculate a checksum for each row.
  * 
- * @author Samatar
+ * @author Samatar Hassan
  * @since 30-06-2008
  */
-
 public class CheckSum extends BaseStep implements StepInterface {
 	private CheckSumMeta meta;
 
@@ -101,9 +100,9 @@ public class CheckSum extends BaseStep implements StepInterface {
 						.size(), checksum);
 			} else {
 				// get checksum
-				String checkSum = createCheckSum(r);
+				String checksumCode = createCheckSum(r);
 				outputRowData = RowDataUtil.addValueData(r, getInputRowMeta()
-						.size(), checkSum);
+						.size(), checksumCode);
 			}
 
 			if (checkFeedback(getLinesRead())) {

@@ -17,9 +17,10 @@ import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
 
 /**
- * @author Samatar
- * @since 16-06-2008
+ * Data class for the Cheksum class
  * 
+ * @author Samatar Hassan
+ * @since 16-06-2008
  */
 public class CheckSumData extends BaseStepData implements StepDataInterface {
 
