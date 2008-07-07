@@ -614,6 +614,12 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 								Result remoteResult = transStatus.getResult(); 
 			                    result.clear();
 			                    result.add(remoteResult);
+			                    
+			                    // In case you manually stop the remote trans (browser etc), make sure it's marked as an error
+			                    //
+			                    if (remoteResult.isStopped()) {
+			                    	result.setNrErrors(result.getNrErrors()+1); //
+			                    }
 								break;
 							}
 						} 

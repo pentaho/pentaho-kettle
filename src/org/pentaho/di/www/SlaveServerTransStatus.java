@@ -105,7 +105,8 @@ public class SlaveServerTransStatus
         for (int i=0;i<nr;i++)
         {
             Node stepStatusNode = XMLHandler.getSubNodeByNr(statusListNode, StepStatus.XML_TAG, i);
-            stepStatusList.add(new StepStatus(stepStatusNode));
+            StepStatus stepStatus = new StepStatus(stepStatusNode);
+            stepStatusList.add(stepStatus);
         }
         
         String loggingString64 = XMLHandler.getTagValue(transStatusNode, "logging_string");
@@ -253,7 +254,7 @@ public class SlaveServerTransStatus
     	
     	for (StepStatus stepStatus : stepStatusList) {
     		
-			result.setNrErrors(result.getNrErrors()+stepStatus.getErrors());
+			result.setNrErrors(result.getNrErrors()+stepStatus.getErrors()+(result.isStopped()?1:0)); // If the remote trans is stopped, count as an error
 			
 			if (transMeta.getReadStep()    !=null && stepStatus.getStepname().equals(transMeta.getReadStep().getName())) {
 				result.setNrLinesRead(result.getNrLinesRead()+ stepStatus.getLinesRead());
@@ -272,6 +273,11 @@ public class SlaveServerTransStatus
 			}
             if (transMeta.getRejectedStep()!=null && stepStatus.getStepname().equals(transMeta.getRejectedStep().getName())) {
             	result.setNrLinesRejected(result.getNrLinesRejected()+stepStatus.getLinesRejected());
+            }
+            
+            if (stepStatus.isStopped()) {
+            	result.setStopped(true);
+            	result.setResult(false);
             }
     	}
     	

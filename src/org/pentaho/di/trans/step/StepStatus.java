@@ -34,6 +34,7 @@ public class StepStatus
     private double seconds;
     private String speed;
     private String priority;
+    private boolean stopped;
     
     public StepStatus(BaseStep baseStep)
     {
@@ -64,6 +65,7 @@ public class StepStatus
         this.seconds = Math.floor((lapsed * 10) + 0.5) / 10;
         this.speed = lapsed == 0 ? "-" : "" + (in_speed > out_speed ? in_speed : out_speed); //$NON-NLS-1$ //$NON-NLS-2$
         this.priority = baseStep.isAlive() ? "" + baseStep.rowsetInputSize() + "/" + baseStep.rowsetOutputSize() : "-"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+        this.stopped = baseStep.isStopped();
     }
     
     public String getHTMLTableRow()
@@ -101,6 +103,7 @@ public class StepStatus
                     XMLHandler.addTagValue("seconds", seconds, false) +
                     XMLHandler.addTagValue("speed", speed, false) +
                     XMLHandler.addTagValue("priority", priority, false) +
+                    XMLHandler.addTagValue("stopped", stopped, false) +
                 "</"+XML_TAG+">";
     }
     
@@ -367,5 +370,19 @@ public class StepStatus
     {
         this.linesRejected = linesRejected;
     }
+
+	/**
+	 * @return the stopped
+	 */
+	public boolean isStopped() {
+		return stopped;
+	}
+
+	/**
+	 * @param stopped the stopped to set
+	 */
+	public void setStopped(boolean stopped) {
+		this.stopped = stopped;
+	}
 
 }
