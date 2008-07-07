@@ -426,6 +426,11 @@ public class Calculator extends BaseStep implements StepInterface
                     calcData[index] = ValueDataUtil.createChecksum(metaA, dataA,"SHA-1");
                     resultType=ValueMetaInterface.TYPE_STRING;
                 }
+                case CalculatorMetaFunction.CALC_LEVENSHTEIN_DISTANCE  : // LEVENSHTEIN DISTANCE 
+                {
+                    calcData[index] = ValueDataUtil.getLevenshtein_Distance(metaA, dataA,metaB, dataB);
+                    resultType=ValueMetaInterface.TYPE_INTEGER;
+                }
                 break;
                 default:
                     throw new KettleValueException(Messages.getString("Calculator.Log.UnknownCalculationType")+fn.getCalcType());

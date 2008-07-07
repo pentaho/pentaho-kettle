@@ -58,6 +58,7 @@ public class CalculatorMetaFunction implements Cloneable
     public static final int CALC_ADLER32   = 31;
     public static final int CALC_MD5   = 32;
     public static final int CALC_SHA1   = 33;
+    public static final int CALC_LEVENSHTEIN_DISTANCE  = 34;
 
     public static final String calc_desc[] = 
         { 
@@ -94,7 +95,8 @@ public class CalculatorMetaFunction implements Cloneable
             "CRC32",
             "ADLER32",
             "MD5",
-            "SHA1" 
+            "SHA1",
+            "LEVENSHTEIN_DISTANCE"
         };
     
     public static final String calcLongDesc[] = 
@@ -132,7 +134,8 @@ public class CalculatorMetaFunction implements Cloneable
             Messages.getString("CalculatorMetaFunction.CalcFunctions.CRC32"),
             Messages.getString("CalculatorMetaFunction.CalcFunctions.Adler32"),
             Messages.getString("CalculatorMetaFunction.CalcFunctions.MD5"),
-            Messages.getString("CalculatorMetaFunction.CalcFunctions.SHA1")
+            Messages.getString("CalculatorMetaFunction.CalcFunctions.SHA1"),
+            Messages.getString("CalculatorMetaFunction.CalcFunctions.LevenshteinDistance")
         };
    
     private String fieldName;

@@ -20,6 +20,7 @@ import java.util.zip.CheckedInputStream;
 import java.util.zip.Adler32;
 import java.util.zip.CRC32;
 import java.security.MessageDigest;
+import org.apache.commons.lang.StringUtils;
 
 
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -68,6 +69,15 @@ public class ValueDataUtil
     public static final String trim(String string)
     {
         return Const.trim(string);
+    }
+    
+    /**Levenshtein distance (LD) is a measure of the similarity between two strings, 
+     * which we will refer to as the source string (s) and the target string (t). 
+     * The distance is the number of deletions, insertions, or substitutions required to transform s into t. 
+     */
+    public static Long getLevenshtein_Distance(ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB)
+    {
+    	return new Long(StringUtils.getLevenshteinDistance(dataA.toString(),dataB.toString()));
     }
 
     public static String createChecksum(ValueMetaInterface metaA, Object dataA, String type)
