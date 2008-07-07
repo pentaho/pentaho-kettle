@@ -344,7 +344,7 @@ public class Denormaliser extends BaseStep implements StepInterface
                             break;
                         case DenormaliserTargetField.TYPE_AGGR_NONE:
                         default:
-                            prevTargetData = sourceData; // Overwrite the previous
+                            prevTargetData = targetData; // Overwrite the previous
                             break;
                         }
                         
