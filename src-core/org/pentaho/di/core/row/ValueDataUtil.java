@@ -21,7 +21,8 @@ import java.util.zip.Adler32;
 import java.util.zip.CRC32;
 import java.security.MessageDigest;
 import org.apache.commons.lang.StringUtils;
-
+import org.apache.commons.codec.language.Metaphone;
+import org.apache.commons.codec.language.DoubleMetaphone;
 
 import org.pentaho.di.core.vfs.KettleVFS;
 
@@ -77,9 +78,21 @@ public class ValueDataUtil
      */
     public static Long getLevenshtein_Distance(ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB)
     {
+    	if(dataA==null || dataB==null) return null;
     	return new Long(StringUtils.getLevenshteinDistance(dataA.toString(),dataB.toString()));
     }
-
+    
+    public static String get_Metaphore(ValueMetaInterface metaA, Object dataA)
+    {
+    	if(dataA==null) return null;
+    	return (new Metaphone()).metaphone(dataA.toString());
+    }
+    public static String get_Double_Metaphore(ValueMetaInterface metaA, Object dataA)
+    {
+    	if(dataA==null) return null;
+    	return (new DoubleMetaphone()).doubleMetaphone(dataA.toString());
+    }
+    
     public static String createChecksum(ValueMetaInterface metaA, Object dataA, String type)
     {
     	String md5Hash = null;

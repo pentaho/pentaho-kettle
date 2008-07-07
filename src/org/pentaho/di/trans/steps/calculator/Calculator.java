@@ -432,6 +432,18 @@ public class Calculator extends BaseStep implements StepInterface
                     resultType=ValueMetaInterface.TYPE_INTEGER;
                 }
                 break;
+                case CalculatorMetaFunction.CALC_METAPHORE  : // METAPHORE 
+                {
+                    calcData[index] = ValueDataUtil.get_Metaphore(metaA, dataA);
+                    resultType=ValueMetaInterface.TYPE_STRING;
+                }
+                break;
+                case CalculatorMetaFunction.CALC_DOUBLE_METAPHORE  : // Double METAPHORE 
+                {
+                    calcData[index] = ValueDataUtil.get_Double_Metaphore(metaA, dataA);
+                    resultType=ValueMetaInterface.TYPE_STRING;
+                }
+                break;
                 default:
                     throw new KettleValueException(Messages.getString("Calculator.Log.UnknownCalculationType")+fn.getCalcType());
                 }
