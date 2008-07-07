@@ -286,8 +286,7 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
 				}
 			}
 			if (error_found) {
-				error_message = Messages.getString(
-						"CheckSumMeta.CheckResult.FieldsFound", error_message);
+				error_message = Messages.getString("CheckSumMeta.CheckResult.FieldsFound", error_message);
 
 				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR,
 						error_message, stepMeta);

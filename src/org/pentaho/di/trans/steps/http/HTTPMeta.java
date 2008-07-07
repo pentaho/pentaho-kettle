@@ -56,6 +56,11 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface
 
     /** function result: new value name */
     private String  fieldName;
+    
+    private boolean urlInField;
+    
+    private String urlField;
+    
 
     public HTTPMeta()
     {
@@ -125,7 +130,32 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface
     {
         this.fieldName = resultName;
     }
-
+    /**
+     * @return Is the url coded in a field?
+     */
+	public boolean isUrlInField() {
+		return urlInField;
+	}
+	
+	/**
+     * @param urlInField Is the url coded in a field?
+     */
+	public void setUrlInField(boolean urlInField) {
+		this.urlInField = urlInField;
+	}
+	/**
+     * @return The field name that contains the url.
+     */
+	public String getUrlField() {
+		return urlField;
+	}
+	
+	/**
+     * @param urlField name of the field that contains the url
+     */
+	public void setUrlField(String urlField) {
+		this.urlField = urlField;
+	}
     public void loadXML(Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleXMLException
     {
         readData(stepnode, databases);
@@ -185,6 +215,8 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface
         StringBuffer retval = new StringBuffer(300);
 
         retval.append("    ").append(XMLHandler.addTagValue("url", url)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("    "+XMLHandler.addTagValue("urlInField",  urlInField));
+        retval.append("    "+XMLHandler.addTagValue("urlField",  urlField));
         retval.append("    <lookup>").append(Const.CR); //$NON-NLS-1$
 
         for (int i = 0; i < argumentField.length; i++)
@@ -211,7 +243,9 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface
             int nrargs;
 
             url = XMLHandler.getTagValue(stepnode, "url"); //$NON-NLS-1$
-
+            urlInField="Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "urlInField"));
+            urlField       = XMLHandler.getTagValue(stepnode, "urlField");
+			
             Node lookup = XMLHandler.getSubNode(stepnode, "lookup"); //$NON-NLS-1$
             nrargs = XMLHandler.countNodes(lookup, "arg"); //$NON-NLS-1$
 
@@ -238,7 +272,9 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface
         try
         {
             url = rep.getStepAttributeString(id_step, "url"); //$NON-NLS-1$
-
+            urlInField =      rep.getStepAttributeBoolean (id_step, "urlInField");
+            urlField	=	   rep.getStepAttributeString (id_step, "urlField");
+			
             int nrargs = rep.countNrStepAttributes(id_step, "arg_name"); //$NON-NLS-1$
             allocate(nrargs);
 
@@ -261,7 +297,9 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface
         try
         {
             rep.saveStepAttribute(id_transformation, id_step, "url", url); //$NON-NLS-1$
-
+			rep.saveStepAttribute(id_transformation, id_step, "urlInField",   urlInField);
+			rep.saveStepAttribute(id_transformation, id_step, "urlField",   urlField);
+			
             for (int i = 0; i < argumentField.length; i++)
             {
                 rep.saveStepAttribute(id_transformation, id_step, i, "arg_name", argumentField[i]); //$NON-NLS-1$
@@ -291,7 +329,22 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface
             cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("HTTPMeta.CheckResult.NoInpuReceived"), stepMeta); //$NON-NLS-1$
             remarks.add(cr);
         }
-
+        // check Url
+        if(urlInField)
+        {
+        	if(Const.isEmpty(urlField))
+        		cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("HTTPMeta.CheckResult.UrlfieldMissing"), stepMeta);	
+        	else
+        		cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("HTTPMeta.CheckResult.UrlfieldOk"), stepMeta);	
+        	
+        }else
+        {
+        	if(Const.isEmpty(url))
+        		cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("HTTPMeta.CheckResult.UrlMissing"), stepMeta);
+        	else
+        		cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("HTTPMeta.CheckResult.UrlOk"), stepMeta);
+        }
+        remarks.add(cr);
     }
 
     public StepInterface getStep(StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta, Trans trans)

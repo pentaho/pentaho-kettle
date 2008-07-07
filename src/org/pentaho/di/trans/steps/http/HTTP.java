@@ -13,6 +13,7 @@ package org.pentaho.di.trans.steps.http;
 
 import java.io.InputStream;
 
+import org.pentaho.di.core.Const;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
@@ -73,12 +74,12 @@ public class HTTP extends BaseStep implements StepInterface
         String url = determineUrl(rowMeta, rowData);
         try
         {
-            if(log.isDetailed()) logDetailed("Connecting to : ["+url+"]");
+            if(log.isDetailed()) logDetailed(Messages.getString("HTTP.Log.Connecting",url));
             
             // Prepare HTTP get
             // 
             HttpClient httpclient = new HttpClient();
-            HttpMethod method = new GetMethod(url);
+            HttpMethod method = new GetMethod(environmentSubstitute(url));
 
             // Execute request
             // 
@@ -87,7 +88,7 @@ public class HTTP extends BaseStep implements StepInterface
                 int result = httpclient.executeMethod(method);
                 
                 // The status code
-                if (log.isDebug()) log.logDebug(toString(), "Response status code: " + result);
+                if (log.isDebug()) log.logDebug(toString(), Messages.getString("HTTP.Log.ResponseStatusCode", ""+result));
                 
                 // the response
                 InputStream inputStream = method.getResponseBodyAsStream();
@@ -109,7 +110,7 @@ public class HTTP extends BaseStep implements StepInterface
         }
         catch(Exception e)
         {
-            throw new KettleException("Unable to get result from specified URL :"+url, e);
+            throw new KettleException(Messages.getString("HTTP.Log.UnableGetResult",url), e);
         }
     }
 
@@ -117,7 +118,12 @@ public class HTTP extends BaseStep implements StepInterface
     {
     	try
     	{
-	        StringBuffer url = new StringBuffer(environmentSubstitute(meta.getUrl())); // the base URL with variable substitution
+    		if(meta.isUrlInField())
+  	        {
+    			// get dynamic url
+  	        	data.realUrl=outputRowMeta.getString(row,data.indexOfUrlField);
+  	        }
+	        StringBuffer url = new StringBuffer(data.realUrl); // the base URL with variable substitution
 	        
 	        for (int i=0;i<data.argnrs.length;i++)
 	        {
@@ -142,7 +148,7 @@ public class HTTP extends BaseStep implements StepInterface
 	    }
 	    catch(Exception e)
 	    {
-	        throw new KettleException("Unable to create URL.", e);
+	        throw new KettleException(Messages.getString("HTTP.Log.UnableCreateUrl"), e);
 	    }
     }
 
@@ -165,6 +171,31 @@ public class HTTP extends BaseStep implements StepInterface
 		{
 			data.outputRowMeta = getInputRowMeta().clone();
 			meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
+			
+			if(meta.isUrlInField())
+			{
+				if(Const.isEmpty(meta.getUrlField()))
+				{
+					logError(Messages.getString("HTTP.Log.NoField"));
+					throw new KettleException(Messages.getString("HTTP.Log.NoField"));
+				}
+				
+				// cache the position of the field			
+				if (data.indexOfUrlField<0)
+				{	
+					String realUrlfieldName=environmentSubstitute(meta.getUrlField());
+					data.indexOfUrlField =getInputRowMeta().indexOfValue(realUrlfieldName);
+					if (data.indexOfUrlField<0)
+					{
+						// The field is unreachable !
+						logError(Messages.getString("HTTP.Log.ErrorFindingField",realUrlfieldName)); 
+						throw new KettleException(Messages.getString("HTTP.Exception.ErrorFindingField",realUrlfieldName)); 
+					}
+				}
+			}else
+			{
+				data.realUrl=environmentSubstitute(meta.getUrl());
+			}
 		}
 		    
 		try
@@ -174,7 +205,7 @@ public class HTTP extends BaseStep implements StepInterface
 				
             if (checkFeedback(getLinesRead())) 
             {
-            	if(log.isBasic()) logBasic(Messages.getString("HTTP.LineNumber")+getLinesRead()); //$NON-NLS-1$
+            	if(log.isDetailed()) logDetailed(Messages.getString("HTTP.LineNumber")+getLinesRead()); //$NON-NLS-1$
             }
 		}
 		catch(KettleException e)

@@ -36,6 +36,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
+import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -48,7 +49,6 @@ import org.pentaho.di.trans.steps.http.Messages;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
-import org.pentaho.di.ui.core.widget.TextVar;
 
 public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
 {
@@ -63,6 +63,14 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
 	private Label        wlFields;
 	private TableView    wFields;
 	private FormData     fdlFields, fdFields;
+	
+	private Label        wlUrlInField;
+    private Button       wUrlInField;
+    private FormData     fdlUrlInField, fdUrlInField;
+	
+	private Label        wlUrlField;
+	private TextVar      wUrlField;
+	private FormData     fdlUrlField, fdUrlField;
 
 	private Button wGet;
 	private Listener lsGet;
@@ -131,7 +139,7 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
 		fdlUrl.right= new FormAttachment(middle, -margin);
 		fdlUrl.top  = new FormAttachment(wStepname, margin*2);
 		wlUrl.setLayoutData(fdlUrl);
-		
+
 		wUrl=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wUrl);
 		wUrl.addModifyListener(lsMod);
@@ -140,7 +148,55 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
 		fdUrl.top  = new FormAttachment(wStepname, margin*2);
 		fdUrl.right= new FormAttachment(100, 0);
 		wUrl.setLayoutData(fdUrl);
+		
+		// UrlInField line
+        wlUrlInField=new Label(shell, SWT.RIGHT);
+        wlUrlInField.setText(Messages.getString("HTTPDialog.UrlInField.Label"));
+        props.setLook(wlUrlInField);
+        fdlUrlInField=new FormData();
+        fdlUrlInField.left = new FormAttachment(0, 0);
+        fdlUrlInField.top  = new FormAttachment(wUrl, margin);
+        fdlUrlInField.right= new FormAttachment(middle, -margin);
+        wlUrlInField.setLayoutData(fdlUrlInField);
+        wUrlInField=new Button(shell, SWT.CHECK );
+        props.setLook(wUrlInField);
+        fdUrlInField=new FormData();
+        fdUrlInField.left = new FormAttachment(middle, 0);
+        fdUrlInField.top  = new FormAttachment(wUrl, margin);
+        fdUrlInField.right= new FormAttachment(100, 0);
+        wUrlInField.setLayoutData(fdUrlInField);
+        wUrlInField.addSelectionListener(new SelectionAdapter() 
+            {
+                public void widgetSelected(SelectionEvent e) 
+                {
+                	input.setChanged();
+                	activeUrlInfield();
+                }
+            }
+        );
 
+		// UrlField Line
+		wlUrlField=new Label(shell, SWT.RIGHT);
+		wlUrlField.setText(Messages.getString("HTTPDialog.UrlField.Label")); //$NON-NLS-1$
+ 		props.setLook(wlUrlField);
+		fdlUrlField=new FormData();
+		fdlUrlField.left = new FormAttachment(0, 0);
+		fdlUrlField.right= new FormAttachment(middle, -margin);
+		fdlUrlField.top  = new FormAttachment(wUrlInField, margin);
+		wlUrlField.setLayoutData(fdlUrlField);
+
+    	wUrlField=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+    	wUrlField.setToolTipText(Messages.getString("HTTPDialog.UrlField.Tooltip"));
+		props.setLook(wUrlField);
+		wUrlField.addModifyListener(lsMod);
+		fdUrlField=new FormData();
+		fdUrlField.left = new FormAttachment(middle, 0);
+		fdUrlField.top  = new FormAttachment(wUrlInField, margin);
+		fdUrlField.right= new FormAttachment(100, 0);
+		wUrlField.setLayoutData(fdUrlField);
+		wUrlField.setEnabled(false);
+		
+		
 		// Result line...
 		wlResult=new Label(shell, SWT.RIGHT);
 		wlResult.setText(Messages.getString("HTTPDialog.Result.Label")); //$NON-NLS-1$
@@ -148,14 +204,14 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
 		fdlResult=new FormData();
 		fdlResult.left = new FormAttachment(0, 0);
 		fdlResult.right= new FormAttachment(middle, -margin);
-		fdlResult.top  = new FormAttachment(wUrl, margin*2);
+		fdlResult.top  = new FormAttachment(wUrlField, margin*2);
 		wlResult.setLayoutData(fdlResult);
 		wResult=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wResult);
 		wResult.addModifyListener(lsMod);
 		fdResult=new FormData();
 		fdResult.left = new FormAttachment(middle, 0);
-		fdResult.top  = new FormAttachment(wUrl, margin*2);
+		fdResult.top  = new FormAttachment(wUrlField, margin*2);
 		fdResult.right= new FormAttachment(100, 0);
 		wResult.setLayoutData(fdResult);
 
@@ -234,6 +290,7 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
 		setSize();
 		
 		getData();
+		activeUrlInfield();
 		input.setChanged(changed);
 
 		shell.open();
@@ -243,7 +300,19 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
 		}
 		return stepname;
 	}
-
+	private void activeUrlInfield()
+	{
+		if(wUrlInField.getSelection()){
+    		wUrlField.setEnabled(true);
+    		wlUrl.setEnabled(false);
+    		wUrl.setEnabled(false);
+    	}
+    	else{
+    		wUrlField.setEnabled(false);
+    		wlUrl.setEnabled(true);
+    		wUrl.setEnabled(true);
+    	}       
+	}
 	/**
 	 * Copy information from the meta-data input to the dialog fields.
 	 */ 
@@ -261,6 +330,9 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
 		}
 		
 		if (input.getUrl() !=null)      wUrl.setText(input.getUrl());
+        wUrlInField.setSelection(input.isUrlInField());
+        if (input.getUrlField() !=null) wUrlField.setText(input.getUrlField());
+        
 		if (input.getFieldName()!=null) wResult.setText(input.getFieldName());
 
 		wFields.setRowNums();
@@ -292,6 +364,8 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
 		}
 
 		input.setUrl( wUrl.getText() );
+		input.setUrlField(wUrlField.getText() );
+		input.setUrlInField(wUrlInField.getSelection() );
 		input.setFieldName( wResult.getText() );
 
 		stepname = wStepname.getText(); // return value

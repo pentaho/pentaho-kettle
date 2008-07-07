@@ -69,12 +69,8 @@ public class CheckSum extends BaseStep implements StepInterface {
 					data.fieldnrs[i] = getInputRowMeta().indexOfValue(
 							meta.getFieldName()[i]);
 					if (data.fieldnrs[i] < 0) {
-						logError(Messages.getString(
-								"CheckSum.Log.CanNotFindField", meta
-										.getFieldName()[i]));
-						throw new KettleException(Messages.getString(
-								"CheckSum.Log.CanNotFindField", meta
-										.getFieldName()[i]));
+						logError(Messages.getString("CheckSum.Log.CanNotFindField", meta.getFieldName()[i]));
+						throw new KettleException(Messages.getString("CheckSum.Log.CanNotFindField", meta.getFieldName()[i]));
 					}
 				}
 			} else {
@@ -107,8 +103,7 @@ public class CheckSum extends BaseStep implements StepInterface {
 
 			if (checkFeedback(getLinesRead())) {
 				if (log.isDetailed())
-					logDetailed(Messages.getString(
-							"CheckSum.Log.LineNumber", "" + getLinesRead())); //$NON-NLS-1$
+					logDetailed(Messages.getString("CheckSum.Log.LineNumber", "" + getLinesRead())); //$NON-NLS-1$
 			}
 
 			// add new values to the row.
