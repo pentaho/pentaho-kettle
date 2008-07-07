@@ -29,7 +29,7 @@ public class JobEntryCategory
 	public static final JobEntryCategory BULK_LOADING    = new JobEntryCategory(Messages.getString("JobCategory.Category.BulkLoading"));
 	public static final JobEntryCategory XML             = new JobEntryCategory(Messages.getString("JobCategory.Category.XML"));
 	public static final JobEntryCategory REPOSITORY      = new JobEntryCategory(Messages.getString("JobCategory.Category.Repository"));
-	public static final JobEntryCategory FILE_TRANSFER  = new JobEntryCategory(Messages.getString("JobCategory.Category.FileTransfer"));
+	public static final JobEntryCategory FILE_TRANSFER   = new JobEntryCategory(Messages.getString("JobCategory.Category.FileTransfer"));
 	
 	public static final int CATEGORY_USER_DEFINED    = -1;
 	public static final int CATEGORY_GENERAL         =  0;

@@ -77,6 +77,8 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
       JobEntryCategory.SCRIPTING.getName(),
       JobEntryCategory.BULK_LOADING.getName(),
       JobEntryCategory.XML.getName(),
+      JobEntryCategory.FILE_TRANSFER.getName(),
+      JobEntryCategory.REPOSITORY.getName(),
   };
 
 

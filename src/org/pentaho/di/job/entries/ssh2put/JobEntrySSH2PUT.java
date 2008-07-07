@@ -21,15 +21,15 @@ import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlank
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notNullValidator;
 
 import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.pentaho.di.core.vfs.KettleVFS;
 import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.FileType;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -39,6 +39,7 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobEntryType;
@@ -52,11 +53,11 @@ import org.pentaho.di.resource.ResourceEntry.ResourceType;
 import org.w3c.dom.Node;
 
 import com.trilead.ssh2.Connection;
-import com.trilead.ssh2.SFTPv3Client;
-import com.trilead.ssh2.KnownHosts;
-import com.trilead.ssh2.SFTPv3FileHandle;
-import com.trilead.ssh2.SFTPv3FileAttributes;
 import com.trilead.ssh2.HTTPProxyData;
+import com.trilead.ssh2.KnownHosts;
+import com.trilead.ssh2.SFTPv3Client;
+import com.trilead.ssh2.SFTPv3FileAttributes;
+import com.trilead.ssh2.SFTPv3FileHandle;
 
 
 
@@ -680,230 +681,240 @@ public class JobEntrySSH2PUT extends JobEntryBase implements Cloneable, JobEntry
 		Result result = previousResult;
 		result.setResult( false );
 		
-		// Get real variable value
-		String realServerName=environmentSubstitute(serverName);
-		int realServerPort=Const.toInt(environmentSubstitute(serverPort),22);
-		String realUserName=environmentSubstitute(userName);
-		String realServerPassword=environmentSubstitute(password);
-		// Proxy Host
-		String realProxyHost=environmentSubstitute(httpproxyhost);
-		int realProxyPort=Const.toInt(environmentSubstitute(httpproxyport),22);
-		String realproxyUserName=environmentSubstitute(httpproxyusername);
-		String realProxyPassword=environmentSubstitute(httpProxyPassword);
-		// Key file
-		String realKeyFilename=environmentSubstitute(keyFilename);
-		String relKeyFilepass=environmentSubstitute(keyFilePass);
-		// Source files
-		String realLocalDirectory=environmentSubstitute(localDirectory);
-		String realwildcard=environmentSubstitute(wildcard);
-		// Remote destination
-		String realftpDirectory=environmentSubstitute(ftpDirectory);
-		// Destination folder (Move to)
-		String realDestinationFolder=environmentSubstitute(destinationfolder);
-
-		// Check for mandatory fields
-		boolean mandatoryok=true;
-		if(Const.isEmpty(realServerName))
-		{
-			mandatoryok=false;
-			log.logError(toString(),Messages.getString("JobSSH2PUT.Log.ServernameMissing"));
-		}
-		if(usehttpproxy)
-		{
-			if(Const.isEmpty(realProxyHost))
+		try {
+			
+			// Get real variable value
+			String realServerName=environmentSubstitute(serverName);
+			int realServerPort=Const.toInt(environmentSubstitute(serverPort),22);
+			String realUserName=environmentSubstitute(userName);
+			String realServerPassword=environmentSubstitute(password);
+			// Proxy Host
+			String realProxyHost=environmentSubstitute(httpproxyhost);
+			int realProxyPort=Const.toInt(environmentSubstitute(httpproxyport),22);
+			String realproxyUserName=environmentSubstitute(httpproxyusername);
+			String realProxyPassword=environmentSubstitute(httpProxyPassword);
+			// Key file
+			String realKeyFilename=environmentSubstitute(keyFilename);
+			String relKeyFilepass=environmentSubstitute(keyFilePass);
+			// Source files
+			String realLocalDirectory=environmentSubstitute(localDirectory);
+			String realwildcard=environmentSubstitute(wildcard);
+			// Remote destination
+			String realftpDirectory=environmentSubstitute(ftpDirectory);
+			// Destination folder (Move to)
+			String realDestinationFolder=environmentSubstitute(destinationfolder);
+	
+			// Check for mandatory fields
+			boolean mandatoryok=true;
+			if(Const.isEmpty(realServerName))
 			{
 				mandatoryok=false;
-				log.logError(toString(),Messages.getString("JobSSH2PUT.Log.HttpProxyhostMissing"));
+				log.logError(toString(),Messages.getString("JobSSH2PUT.Log.ServernameMissing"));
 			}
-		}
-		if(publicpublickey)
-		{
-			if(Const.isEmpty(realKeyFilename))
+			if(usehttpproxy)
 			{
-				mandatoryok=false;
-				log.logError(toString(),Messages.getString("JobSSH2PUT.Log.KeyFileMissing"));
-			}else
-			{
-				// Let's check if folder exists...
-				if(!new File(realKeyFilename).exists())
+				if(Const.isEmpty(realProxyHost))
 				{
 					mandatoryok=false;
-					log.logError(toString(),Messages.getString("JobSSH2PUT.Log.KeyFileNotExist"));
+					log.logError(toString(),Messages.getString("JobSSH2PUT.Log.HttpProxyhostMissing"));
 				}
 			}
-		}
-	
-		if(Const.isEmpty(realLocalDirectory))
-		{
-			mandatoryok=false;
-			log.logError(toString(),Messages.getString("JobSSH2PUT.Log.LocalFolderMissing"));
-		}
-		if(afterFtpPut.equals("move_file"))
-		{
-			if(Const.isEmpty(realDestinationFolder))
+			if(publicpublickey)
 			{
-				mandatoryok=false;
-				log.logError(toString(),Messages.getString("JobSSH2PUT.Log.DestinatFolderMissing"));
-			}else{
-				// Let's check if folder exists...
-				if(!new File(realDestinationFolder).exists())
+				if(Const.isEmpty(realKeyFilename))
 				{
 					mandatoryok=false;
-					log.logError(toString(),Messages.getString("JobSSH2PUT.Log.DestinatFolderNotExist",realDestinationFolder));
-				}
-			}
-		}
-		
-		if(mandatoryok)
-		{
-		
-			Connection conn = null;
-			SFTPv3Client client = null;
-	        boolean good=true;
-	        
-	        int nbfilestoput=0;
-	        int nbput=0;
-	        int nbrerror=0;
-	
-	
-			try
-			{
-				// Create a connection instance 
-				conn = getConnection(realServerName,realServerPort,realProxyHost,realProxyPort,realproxyUserName,realProxyPassword);
-				
-				if(timeout>0)
-				{
-					// Use timeout
-					// Cache Host Key
-					if(cachehostkey) conn.connect(new SimpleVerifier(database),0,timeout*1000);	
-					else conn.connect(null,0,timeout*1000);	
-					
+					log.logError(toString(),Messages.getString("JobSSH2PUT.Log.KeyFileMissing"));
 				}else
 				{
-					// Cache Host Key
-					if(cachehostkey) conn.connect(new SimpleVerifier(database));	
-					else conn.connect();
-				}
-				
-				// Authenticate
-	
-				boolean isAuthenticated = false;
-				if(publicpublickey)
-				{
-					isAuthenticated=conn.authenticateWithPublicKey(realUserName, new File(realKeyFilename), relKeyFilepass);
-				}else
-				{
-					isAuthenticated=conn.authenticateWithPassword(realUserName, realServerPassword);
-				}
-	
-				// LET'S CHECK AUTHENTICATION ...
-				if (isAuthenticated == false)
-					log.logError(toString(),Messages.getString("JobSSH2PUT.Log.AuthenticationFailed"));
-				else
-				{
-					log.logBasic(toString(),Messages.getString("JobSSH2PUT.Log.Connected",serverName,userName));
-					
-					client = new SFTPv3Client(conn);
-					
-					if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobSSH2PUT.Log.ProtocolVersion",""+client.getProtocolVersion()));
-					
-					
-					// Check if remote directory exists
-					if(realftpDirectory!=null)
+					// Let's check if folder exists...
+					if(!KettleVFS.fileExists(realKeyFilename))
 					{
-						if (!sshDirectoryExists(client, realftpDirectory)) 
+						mandatoryok=false;
+						log.logError(toString(),Messages.getString("JobSSH2PUT.Log.KeyFileNotExist"));
+					}
+				}
+			}
+		
+			if(Const.isEmpty(realLocalDirectory))
+			{
+				mandatoryok=false;
+				log.logError(toString(),Messages.getString("JobSSH2PUT.Log.LocalFolderMissing"));
+			}
+			if(afterFtpPut.equals("move_file"))
+			{
+				if(Const.isEmpty(realDestinationFolder))
+				{
+					mandatoryok=false;
+					log.logError(toString(),Messages.getString("JobSSH2PUT.Log.DestinatFolderMissing"));
+				}else{
+					// Let's check if folder exists...
+					if(!KettleVFS.fileExists(realDestinationFolder))
+					{
+						mandatoryok=false;
+						log.logError(toString(),Messages.getString("JobSSH2PUT.Log.DestinatFolderNotExist",realDestinationFolder));
+					}
+				}
+			}
+			
+			if(mandatoryok)
+			{
+			
+				Connection conn = null;
+				SFTPv3Client client = null;
+		        boolean good=true;
+		        
+		        int nbfilestoput=0;
+		        int nbput=0;
+		        int nbrerror=0;
+		
+		
+				try
+				{
+					// Create a connection instance 
+					conn = getConnection(realServerName,realServerPort,realProxyHost,realProxyPort,realproxyUserName,realProxyPassword);
+					
+					if(timeout>0)
+					{
+						// Use timeout
+						// Cache Host Key
+						if(cachehostkey) conn.connect(new SimpleVerifier(database),0,timeout*1000);	
+						else conn.connect(null,0,timeout*1000);	
+						
+					}else
+					{
+						// Cache Host Key
+						if(cachehostkey) conn.connect(new SimpleVerifier(database));	
+						else conn.connect();
+					}
+					
+					// Authenticate
+		
+					boolean isAuthenticated = false;
+					if(publicpublickey)
+					{
+						String keyContent = KettleVFS.getTextFileContent(realKeyFilename, Const.XML_ENCODING);
+						isAuthenticated=conn.authenticateWithPublicKey(realUserName, keyContent.toCharArray(), relKeyFilepass);
+					}else
+					{
+						isAuthenticated=conn.authenticateWithPassword(realUserName, realServerPassword);
+					}
+		
+					// LET'S CHECK AUTHENTICATION ...
+					if (isAuthenticated == false)
+						log.logError(toString(),Messages.getString("JobSSH2PUT.Log.AuthenticationFailed"));
+					else
+					{
+						log.logBasic(toString(),Messages.getString("JobSSH2PUT.Log.Connected",serverName,userName));
+						
+						client = new SFTPv3Client(conn);
+						
+						if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobSSH2PUT.Log.ProtocolVersion",""+client.getProtocolVersion()));
+						
+						
+						// Check if remote directory exists
+						if(realftpDirectory!=null)
 						{
-							good=false;
-							if(createRemoteFolder)
+							if (!sshDirectoryExists(client, realftpDirectory)) 
 							{
-								good=CreateRemoteFolder(client,realftpDirectory);
-								if(good) log.logBasic(toString(),Messages.getString("JobSSH2PUT.Log.RemoteDirectoryCreated"));
-								
+								good=false;
+								if(createRemoteFolder)
+								{
+									good=CreateRemoteFolder(client,realftpDirectory);
+									if(good) log.logBasic(toString(),Messages.getString("JobSSH2PUT.Log.RemoteDirectoryCreated"));
+									
+								}
+								else
+									log.logError(toString(),Messages.getString("JobSSH2PUT.Log.RemoteDirectoryNotExist",realftpDirectory));
 							}
 							else
-								log.logError(toString(),Messages.getString("JobSSH2PUT.Log.RemoteDirectoryNotExist",realftpDirectory));
+								if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("JobSSH2PUT.Log.RemoteDirectoryExist",realftpDirectory));	
 						}
-						else
-							if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("JobSSH2PUT.Log.RemoteDirectoryExist",realftpDirectory));	
-					}
-					
-					if(good)
-					{
-						// Get files list from local folder (source)
-						String[] filelist = getFiles(realLocalDirectory);
 						
-						// Prepare Pattern for wildcard
-						Pattern pattern = null;
-						if (!Const.isEmpty(realwildcard)) pattern = Pattern.compile(realwildcard);
-
-		
-						// Let's put files now ...
-						// Get the files in the list
-						for (int i=0;i<filelist.length && !parentJob.isStopped();i++)
+						if (good)
 						{
-							boolean getIt = true;
-							// First see if the file matches the regular expression!
-							if (pattern!=null)
+							// Get files list from local folder (source)
+							List<FileObject> myFileList = getFiles(realLocalDirectory);
+							
+							// Prepare Pattern for wildcard
+							Pattern pattern = null;
+							if (!Const.isEmpty(realwildcard)) pattern = Pattern.compile(realwildcard);
+	
+							// Let's put files now ...
+							// Get the files in the list
+							for (int i=0;i<myFileList.size() && !parentJob.isStopped();i++)
 							{
-								Matcher matcher = pattern.matcher(filelist[i]);
-								getIt = matcher.matches();
-							}
-							if(getIt)
-							{
-								nbfilestoput++;
-								String FullFilename=filelist[i];
+								FileObject myFile = myFileList.get(i);
+								String localFilename = myFile.toString();
+								String remoteFilename = myFile.getName().getBaseName();
 								
-								if(realftpDirectory!=null)	FullFilename=realftpDirectory+Const.FILE_SEPARATOR+filelist[i];
-								String FullLocalFilename=realLocalDirectory+Const.FILE_SEPARATOR+filelist[i];
+								boolean getIt = true;
 								
-								boolean putok=true;
+								// First see if the file matches the regular expression!
+								if (pattern!=null)
+								{
+									Matcher matcher = pattern.matcher(remoteFilename);
+									getIt = matcher.matches();
+								}
 								
-							    if ( (onlyGettingNewFiles == false) ||
-					                   (onlyGettingNewFiles == true) && !sshFileExists(client, FullFilename))
-							       {
-										putok=putFile(FullLocalFilename,FullFilename,client);
-										if(!putok) 
-										{
-											nbrerror++;
-											log.logError(toString(),Messages.getString("JobSSH2PUT.Log.Error.CanNotPutFile",filelist[i]));
-										}else
-										{
-											nbput++;
-											
+								if(getIt)
+								{
+									nbfilestoput++;
+									
+									boolean putok=true;
+									
+								    if ( (onlyGettingNewFiles == false) ||
+						                   (onlyGettingNewFiles == true) && !sshFileExists(client, localFilename))
+								       {
+											putok=putFile(myFile, remoteFilename, client);
+											if(!putok) 
+											{
+												nbrerror++;
+												log.logError(toString(),Messages.getString("JobSSH2PUT.Log.Error.CanNotPutFile",localFilename));
+											}else
+											{
+												nbput++;
+												
+											}
+									   }
+								       if(putok && !afterFtpPut.equals("do_nothing"))
+								       {
+											deleteOrMoveFiles(myFile,realDestinationFolder);
 										}
-								   }
-							       if(putok && !afterFtpPut.equals("do_nothing"))
-							       {
-										deleteOrMoveFiles(FullFilename,realDestinationFolder);
-									}
+								}
 							}
+							/********************************RESULT ********************/
+							if(log.isDetailed())
+							{
+								log.logDetailed(toString(), Messages.getString("JobSSH2PUT.Log.Result.JobEntryEnd1"));
+								log.logDetailed(toString(), Messages.getString("JobSSH2PUT.Log.Result.TotalFiles",""+nbfilestoput));
+								log.logDetailed(toString(), Messages.getString("JobSSH2PUT.Log.Result.TotalFilesPut",""+nbput));
+								log.logDetailed(toString(), Messages.getString("JobSSH2PUT.Log.Result.TotalFilesError",""+nbrerror));
+								log.logDetailed(toString(), Messages.getString("JobSSH2PUT.Log.Result.JobEntryEnd2"));
+							}
+							if(nbrerror==0) result.setResult(true);
+							/********************************RESULT ********************/
 						}
-						/********************************RESULT ********************/
-						if(log.isDetailed())
-						{
-							log.logDetailed(toString(), Messages.getString("JobSSH2PUT.Log.Result.JobEntryEnd1"));
-							log.logDetailed(toString(), Messages.getString("JobSSH2PUT.Log.Result.TotalFiles",""+nbfilestoput));
-							log.logDetailed(toString(), Messages.getString("JobSSH2PUT.Log.Result.TotalFilesPut",""+nbput));
-							log.logDetailed(toString(), Messages.getString("JobSSH2PUT.Log.Result.TotalFilesError",""+nbrerror));
-							log.logDetailed(toString(), Messages.getString("JobSSH2PUT.Log.Result.JobEntryEnd2"));
-						}
-						if(nbrerror==0) result.setResult(true);
-						/********************************RESULT ********************/
+			
 					}
 		
 				}
-	
+				catch (Exception e)
+				{
+					result.setNrErrors(nbrerror);
+					log.logError(toString(), Messages.getString("JobSSH2PUT.Log.Error.ErrorFTP",e.getMessage()));
+				}
+				 finally 
+				 {
+					 if (conn!=null)  conn.close();
+					 if(client!=null) client.close();
+				}
 			}
-			catch (Exception e)
-			{
-				result.setNrErrors(nbrerror);
-				log.logError(toString(), Messages.getString("JobSSH2PUT.Log.Error.ErrorFTP",e.getMessage()));
-			}
-			 finally 
-			 {
-				 if (conn!=null)  conn.close();
-				 if(client!=null) client.close();
-			}
+		}
+		catch(Exception e) {
+			result.setResult(false);
+			result.setNrErrors(1L);
+			log.logError(toString(), Messages.getString("JobSSH2PUT.Log.Error.UnexpectedError"), e);
 		}
 		
 		return result;
@@ -932,80 +943,74 @@ public class JobEntrySSH2PUT extends JobEntryBase implements Cloneable, JobEntry
 		return connnect;
 	}
 	
-	private boolean putFile(String localfilename,String remotefilename,SFTPv3Client sftpClient)
-	{
+	private boolean putFile(FileObject localFile, String remotefilename, SFTPv3Client sftpClient) {
 		LogWriter log = LogWriter.getInstance();
-		long filesize=-1;
-		FileInputStream in=null;
+		long filesize = -1;
+		InputStream in = null;
 		BufferedInputStream inBuf = null;
-		SFTPv3FileHandle sftpFileHandle=null;
-		boolean retval=false;
-		try
-		{
+		SFTPv3FileHandle sftpFileHandle = null;
+		boolean retval = false;
+		try {
 			// Put file in the default folder
-			sftpFileHandle=sftpClient.createFileTruncate(remotefilename);
-			
+			sftpFileHandle = sftpClient.createFileTruncate(remotefilename);
+
 			// Associate a file input stream for the current local file
-			in = new FileInputStream(localfilename);
+			in = KettleVFS.getInputStream(localFile);
 			inBuf = new BufferedInputStream(in);
 			long bytesWritten = 0;
 			byte[] buf = new byte[2048];
-			long length = new File(localfilename).length();
+			long length = localFile.getContent().getSize();
+
 			// Write to remote file
-			while (bytesWritten != length) 
-			{
+			while (bytesWritten != length) {
 				int len = inBuf.read(buf, 0, buf.length);
 				sftpClient.write(sftpFileHandle, bytesWritten, buf, 0, len);
 				bytesWritten += len;
 			}
-			
+
 			// Get File size
-			filesize=getFileSize(sftpClient, remotefilename) ;
-			
-			if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("JobSSH2PUT.Log.FileOnRemoteHost",remotefilename,""+filesize));
-			
-			retval= true;
-		  } catch(Exception e)  
-		  {
-			  // We failed to put files
-			  log.logError(toString(),Messages.getString("JobSSH2PUT.Log.ErrorCopyingFile",localfilename));
-		  }
-			finally 
-			{
-				if (in != null)
-					try 
-					{
-						in.close();
-						in = null;
-					} 
-					catch (Exception ex) {} 
-					
-					if(inBuf!=null)
-					try 
-					{
-						inBuf.close();
-						inBuf = null;
-					} 
-					catch (Exception ex) {}
-					if(sftpFileHandle!=null) 
-					try 
-					{
-						sftpClient.closeFile(sftpFileHandle);
-						sftpFileHandle=null;
-					} catch (Exception ex) {}
-			}
+			filesize = getFileSize(sftpClient, remotefilename);
+
+			if (log.isDetailed())
+				log.logDetailed(toString(), Messages.getString("JobSSH2PUT.Log.FileOnRemoteHost", remotefilename, "" + filesize));
+
+			retval = true;
+		} catch (Exception e) {
+			// We failed to put files
+			log.logError(toString(), Messages.getString("JobSSH2PUT.Log.ErrorCopyingFile", localFile.toString()));
+		} finally {
+			if (in != null)
+				try {
+					in.close();
+					in = null;
+				} catch (Exception ex) {
+				}
+
+			if (inBuf != null)
+				try {
+					inBuf.close();
+					inBuf = null;
+				} catch (Exception ex) {
+				}
+			if (sftpFileHandle != null)
+				try {
+					sftpClient.closeFile(sftpFileHandle);
+					sftpFileHandle = null;
+				} catch (Exception ex) {
+				}
+		}
 		return retval;
 	}
 
 
 	/**
-     * Check existence of a file
-     * 
-     * @param sftpClient
-     * @param filename
-     * @return true, if file exists
-     * @throws Exception
-     */
+	 * Check existence of a file
+	 * 
+	 * @param sftpClient
+	 * @param filename
+	 * @return true, if file exists
+	 * @throws Exception
+	 */
     public boolean sshFileExists(SFTPv3Client sftpClient, String filename) {
         
         try {
@@ -1083,72 +1088,75 @@ public class JobEntrySSH2PUT extends JobEntryBase implements Cloneable, JobEntry
 	{
 		return sftpClient.stat(filename).size.longValue();
 	}  
-    private String[] getFiles(String localfolder)
+	
+    private List<FileObject> getFiles(String localfolder) throws IOException
     {
-		ArrayList<String> myFileList = new ArrayList<String>();
+		List<FileObject> myFileList = new ArrayList<FileObject>();
 		
 		// Get all the files in the local directory...
 		
-		File localFiles = new File(localfolder);
-		File[] children = localFiles.listFiles();
-		for (int i=0; i<children.length; i++) 
+		FileObject localFiles = KettleVFS.getFileObject(localfolder);
+		FileObject[] children = localFiles.getChildren();
+		if (children!=null) 
 		{
-            // Get filename of file or directory
-			if (!children[i].isDirectory()) 
+			for (int i=0; i<children.length; i++) 
 			{
-				//myFileList.add(children[i].getAbsolutePath());
-				myFileList.add(children[i].getName());
-				
-			}
-        } // end for
-		
-		String[] filelist = new String[myFileList.size()];
-
-		myFileList.toArray(filelist);
-		
-		return filelist;
-    }
-    private boolean deleteOrMoveFiles(String filename,String destinationFolder)
-    {
-    	boolean retval=false;
-    	
-    	String LocalFullFilename=localDirectory+Const.FILE_SEPARATOR+filename;
-    	
-    	// Delete the file if this is needed!
-		if (afterFtpPut.equals("delete_file")) 
-		{
-			new File(LocalFullFilename).delete();
-			retval=true;
-			if (log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobSSH2PUT.Log.DeletedFile",filename));
-		}
-		else if (afterFtpPut.equals("move_file"))
-		{
-			// Move File	
-			FileObject destination=null;
-			FileObject source=null;
-			try
-			{
-				destination = KettleVFS.getFileObject(destinationFolder + Const.FILE_SEPARATOR+filename);
-				source= KettleVFS.getFileObject(LocalFullFilename);
-				source.moveTo(destination);
-				retval=true;
-			}
-			catch (Exception e) 
-			{
-				log.logError(toString(), Messages.getString("JobSSH2PUT.Cant_Move_File.Label",filename,destinationFolder,e.getMessage()));
-			}
-			finally 
-			{
-				if ( destination != null ) 
-				{try {destination.close();}catch (Exception ex ) {};}
-				if ( source != null ) 
-				{try  {source.close();}
-					catch (Exception ex ) {};
+	            // Get filename of file or directory
+				if (children[i].getType().equals(FileType.FILE)) 
+				{
+					myFileList.add(children[i]);
+					
 				}
-			}
-			if (log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobSSH2PUT.Log.MovedFile",filename,ftpDirectory));
+	        } // end for
 		}
-		return retval;
+		
+		return myFileList;
+    }
+    
+    private boolean deleteOrMoveFiles(FileObject file, String destinationFolder) throws KettleException
+    {
+    	try {
+	    	boolean retval=false;
+	    	
+	    	// Delete the file if this is needed!
+	    	//
+			if (afterFtpPut.equals("delete_file")) 
+			{
+				file.delete();
+				retval=true;
+				if (log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobSSH2PUT.Log.DeletedFile",file.toString()));
+			}
+			else if (afterFtpPut.equals("move_file"))
+			{
+				// Move File	
+				FileObject destination=null;
+				FileObject source=null;
+				try
+				{
+					destination = KettleVFS.getFileObject(destinationFolder + "/" + file.getName().getBaseName());
+					file.moveTo(destination);
+					retval=true;
+				}
+				catch (Exception e) 
+				{
+					log.logError(toString(), Messages.getString("JobSSH2PUT.Cant_Move_File.Label",file.toString(),destinationFolder,e.getMessage()));
+				}
+				finally 
+				{
+					if ( destination != null ) 
+					{try {destination.close();}catch (Exception ex ) {};}
+					if ( source != null ) 
+					{try  {source.close();}
+						catch (Exception ex ) {};
+					}
+				}
+				if (log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobSSH2PUT.Log.MovedFile",file.toString(),ftpDirectory));
+			}
+			return retval;
+    	}
+    	catch(Exception e) {
+    		throw new KettleException(e);
+    	}
     }
     public boolean evaluates()
 	{
