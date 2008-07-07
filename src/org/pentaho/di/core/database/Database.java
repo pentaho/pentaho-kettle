@@ -2391,6 +2391,7 @@ public class Database implements VariableSpace
         boolean isClob = false;
 
         int type = rm.getColumnType(index);
+        boolean signed = rm.isSigned(index);
         switch(type)
         {
         case java.sql.Types.CHAR:
@@ -2407,9 +2408,20 @@ public class Database implements VariableSpace
             break;
 
         case java.sql.Types.BIGINT:
-            valtype=ValueMetaInterface.TYPE_INTEGER;
-            precision=0;   // Max 9.223.372.036.854.775.807
-            length=15;
+        	// verify Unsigned BIGINT overflow!
+        	//
+        	if (signed) 
+        	{
+	            valtype=ValueMetaInterface.TYPE_INTEGER;
+	            precision=0;   // Max 9.223.372.036.854.775.807
+	            length=15;
+        	} 
+        	else 
+        	{
+	            valtype=ValueMetaInterface.TYPE_BIGNUMBER;
+	            precision=0;   // Max 18.446.744.073.709.551.615
+	            length=16;
+        	}
             break;
             
         case java.sql.Types.INTEGER:
