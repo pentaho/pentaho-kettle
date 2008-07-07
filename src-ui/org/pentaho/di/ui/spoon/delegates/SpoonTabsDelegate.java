@@ -397,14 +397,8 @@ public class SpoonTabsDelegate extends SpoonDelegate
 			
 			if (item.equals(entry.getTabItem()))
 			{
-				// TabItemInterface itemInterface = entry.getObject();
+				spoon.enableMainEntries(true, false);
 
-				//
-				// Another way to implement this may be to keep track of the
-				// state of the core object tree in method
-				// addCoreObjectsToTree()
-				//
-				
 				if (isTrans || entry.getObject() instanceof JobGraph)
 				{
 					EngineMetaInterface meta = entry.getObject().getMeta();
@@ -418,11 +412,11 @@ public class SpoonTabsDelegate extends SpoonDelegate
 					}
 				}
 				
-				// setEnabled("trans-preview",isTrans);
-				// setEnabled("trans-verify",isTrans);
-				// setEnabled("trans-impact",isTrans);
-				
-				spoon.enableMainEntries(true, false);
+				if (entry.getObject() instanceof JobGraph) {
+					((JobGraph)entry.getObject()).setFocus();
+				} else if (entry.getObject() instanceof TransGraph) {
+					((TransGraph)entry.getObject()).setFocus();
+				}
 				
 				break;
 			}
