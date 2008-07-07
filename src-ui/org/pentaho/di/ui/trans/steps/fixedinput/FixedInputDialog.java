@@ -66,6 +66,7 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.ComboValuesSelectionListener;
+import org.pentaho.di.ui.core.widget.ComboVar;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
@@ -83,7 +84,7 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
 	private TextVar      wBufferSize;
 	private Button       wLazyConversion;
 	private Button       wHeaderPresent;
-    private CCombo       wEncoding;
+    private ComboVar     wEncoding;
 	private TableView    wFields;
 
 	private Button wRunningInParallel;
@@ -333,7 +334,7 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
         fdlEncoding.top  = new FormAttachment(lastControl, margin);
         fdlEncoding.right= new FormAttachment(middle, -margin);
         wlEncoding.setLayoutData(fdlEncoding);
-        wEncoding=new CCombo(shell, SWT.BORDER | SWT.READ_ONLY);
+        wEncoding=new ComboVar(transMeta, shell, SWT.BORDER | SWT.READ_ONLY);
         wEncoding.setEditable(true);
         props.setLook(wEncoding);
         wEncoding.addModifyListener(lsMod);

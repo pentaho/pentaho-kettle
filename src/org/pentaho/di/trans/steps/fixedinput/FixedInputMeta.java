@@ -277,7 +277,7 @@ public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface
 			valueMeta.setDecimalSymbol(field.getDecimal());
 			valueMeta.setGroupingSymbol(field.getGrouping());
 			valueMeta.setCurrencySymbol(field.getCurrency());
-			valueMeta.setStringEncoding(encoding);
+			valueMeta.setStringEncoding(space.environmentSubstitute(encoding));
 			if (lazyConversionActive) valueMeta.setStorageType(ValueMetaInterface.STORAGE_TYPE_BINARY_STRING);
 			
 			// In case we want to convert Strings...

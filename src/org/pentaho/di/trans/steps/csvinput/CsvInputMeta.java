@@ -295,7 +295,7 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
 			valueMeta.setCurrencySymbol( field.getCurrencySymbol() );
 			valueMeta.setTrimType( field.getTrimType() );
 			if (lazyConversionActive) valueMeta.setStorageType(ValueMetaInterface.STORAGE_TYPE_BINARY_STRING);
-			valueMeta.setStringEncoding(encoding);
+			valueMeta.setStringEncoding(space.environmentSubstitute(encoding));
 			
 			// In case we want to convert Strings...
 			// Using a copy of the valueMeta object means that the inner and outer representation format is the same.
