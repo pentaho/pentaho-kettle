@@ -9,7 +9,7 @@
  * Software distributed under the GNU Lesser Public License is distributed on an "AS IS" 
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or  implied. Please refer to 
  * the license for the specific language governing your rights and limitations.
-*/
+ */
 package org.pentaho.di.trans.steps.checksum;
 
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -19,20 +19,20 @@ import org.pentaho.di.trans.step.StepDataInterface;
 /**
  * @author Samatar
  * @since 16-06-2008
- *
+ * 
  */
-public class CheckSumData extends BaseStepData implements StepDataInterface
-{
+public class CheckSumData extends BaseStepData implements StepDataInterface {
 
 	/**
 	 * 
 	 */
-	public int     fieldnrs[]; 
-	public int     fieldnr;
+	public int fieldnrs[];
+
+	public int fieldnr;
+
 	public RowMetaInterface outputRowMeta;
-	
-	public CheckSumData()
-	{
+
+	public CheckSumData() {
 		super();
 	}
 
