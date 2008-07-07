@@ -887,6 +887,10 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		} 
 		else
 		{
+			if (mappingTransMeta==null) {
+				throw new KettleException(Messages.getString("MappingDialog.Exception.NoMappingSpecified"));
+			}
+
 			if (Const.isEmpty(stepname))
 			{
 				// If we don't have a specified stepname we select the one and
@@ -1172,7 +1176,6 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 			{
 				try
 				{
-					loadTransformation();
 					RowMetaInterface sourceRowMeta = getFieldsFromStep(wInputStep.getText(), true, input);
 					RowMetaInterface targetRowMeta = getFieldsFromStep(wOutputStep.getText(), false, input);
 					String sourceFields[] = sourceRowMeta.getFieldNames();
