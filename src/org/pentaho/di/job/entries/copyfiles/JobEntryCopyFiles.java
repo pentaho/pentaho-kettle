@@ -361,7 +361,7 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 		list_add_result.clear();
 		
 		
-		// Get real source, destination file and wilcard
+		// Get real source, destination file and wildcard
 		String realSourceFilefoldername = environmentSubstitute(sourcefilefoldername);
 		String realDestinationFilefoldername = environmentSubstitute(destinationfilefoldername);
 		String realWildcard=environmentSubstitute(wildcard);

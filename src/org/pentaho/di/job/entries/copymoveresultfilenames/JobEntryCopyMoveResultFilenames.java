@@ -66,7 +66,7 @@ import org.pentaho.di.repository.Repository;
 public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Cloneable, JobEntryInterface
 {
 	private String foldername;
-	private boolean specifywilcard;
+	private boolean specifywildcard;
 	private String wildcard;
 	private String wildcardexclude;
 	private String destination_folder;
@@ -105,7 +105,7 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 		foldername=null;
 		wildcardexclude=null;
 		wildcard=null;
-		specifywilcard=false;
+		specifywildcard=false;
 		
 		OverwriteFile=false;
 		add_date=false;
@@ -148,7 +148,7 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 		
 		retval.append(super.getXML());		
 		retval.append("      ").append(XMLHandler.addTagValue("foldername",   foldername));
-		retval.append("      ").append(XMLHandler.addTagValue("specify_wilcard", specifywilcard));
+		retval.append("      ").append(XMLHandler.addTagValue("specify_wilcard", specifywildcard));
 		retval.append("      ").append(XMLHandler.addTagValue("wildcard",   wildcard));
 		retval.append("      ").append(XMLHandler.addTagValue("wildcardexclude",   wildcardexclude));
 		retval.append("      ").append(XMLHandler.addTagValue("destination_folder",   destination_folder));
@@ -176,7 +176,7 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 	    {
 	      super.loadXML(entrynode, databases, slaveServers);
 			foldername = XMLHandler.getTagValue(entrynode, "foldername");
-			specifywilcard = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "specify_wilcard"));
+			specifywildcard = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "specify_wilcard"));
 			wildcard = XMLHandler.getTagValue(entrynode, "wildcard");
 			wildcardexclude = XMLHandler.getTagValue(entrynode, "wildcardexclude");	
 			destination_folder = XMLHandler.getTagValue(entrynode, "destination_folder");
@@ -211,7 +211,7 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 	    {
 	        super.loadRep(rep, id_jobentry, databases, slaveServers);
 			foldername = rep.getJobEntryAttributeString(id_jobentry, "foldername");
-			specifywilcard = rep.getJobEntryAttributeBoolean(id_jobentry, "specify_wilcard");  
+			specifywildcard = rep.getJobEntryAttributeBoolean(id_jobentry, "specify_wilcard");  
 			wildcard = rep.getJobEntryAttributeString(id_jobentry, "wildcard");
 			wildcardexclude = rep.getJobEntryAttributeString(id_jobentry, "wildcardexclude");
 			destination_folder = rep.getJobEntryAttributeString(id_jobentry, "destination_folder");
@@ -246,7 +246,7 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 		{
 			super.saveRep(rep, id_job);
 			rep.saveJobEntryAttribute(id_job, getID(), "foldername", foldername);
-			rep.saveJobEntryAttribute(id_job, getID(), "specify_wilcard", specifywilcard);
+			rep.saveJobEntryAttribute(id_job, getID(), "specify_wilcard", specifywildcard);
 			rep.saveJobEntryAttribute(id_job, getID(), "wildcard", wildcard);
 			rep.saveJobEntryAttribute(id_job, getID(), "wildcardexclude", wildcardexclude);
 
@@ -276,12 +276,12 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 	
 	public void setSpecifyWilcard(boolean specifywilcard)
 	{
-		this.specifywilcard=specifywilcard;
+		this.specifywildcard=specifywilcard;
 	}
 
 	public boolean isSpecifyWilcard()
 	{
-		return specifywilcard;
+		return specifywildcard;
 	}
 	public void setFoldername(String foldername)
 	{
@@ -486,10 +486,10 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 			          file = resultFile.getFile();
 			          if (file != null && file.exists())
 			          {
-			           	if(!specifywilcard || 
+			           	if(!specifywildcard || 
 			           			(CheckFileWildcard(file.getName().getBaseName(), environmentSubstitute(wildcard),true) 
 			           			&& !CheckFileWildcard(file.getName().getBaseName(),  environmentSubstitute(wildcardexclude),false)
-			           			&&specifywilcard))
+			           			&&specifywildcard))
 			  			{
 			        		// Copy or Move file
 							if(!ProcessFile(file,realdestinationFolder,log,result,parentJob))

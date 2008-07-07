@@ -267,7 +267,7 @@ public class JobEntryAddResultFilenames extends JobEntryBase implements Cloneabl
     boolean rcode = false;
     FileObject filefolder = null;
     String realFilefoldername = environmentSubstitute(filename);
-    String realwilcard = environmentSubstitute(wildcard);
+    String realwildcard = environmentSubstitute(wildcard);
 
     try {
       filefolder = KettleVFS.getFileObject(realFilefoldername);
@@ -291,7 +291,7 @@ public class JobEntryAddResultFilenames extends JobEntryBase implements Cloneabl
 	    }
 	    else
 	    {
-	 	    FileObject list[] = filefolder.findFiles(new TextFileSelector (filefolder.toString(),realwilcard));  
+	 	    FileObject list[] = filefolder.findFiles(new TextFileSelector (filefolder.toString(),realwildcard));  
 	
 	    	for ( int i=0; i < list.length  && !parentJob.isStopped(); i++ ) 
 			{
