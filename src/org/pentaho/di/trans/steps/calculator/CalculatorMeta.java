@@ -282,10 +282,10 @@ public class CalculatorMeta extends BaseStepMeta implements StepMetaInterface
             case CalculatorMetaFunction.CALC_LEVENSHTEIN_DISTANCE : //LEVENSHTEIN_DISTANCE of string A and string B
                 defaultResultType=ValueMetaInterface.TYPE_INTEGER;
                 break; 
-            case CalculatorMetaFunction.CALC_METAPHORE : //METAPHORE of string A
+            case CalculatorMetaFunction.CALC_METAPHONE : //METAPHONE of string A
                 defaultResultType=ValueMetaInterface.TYPE_STRING;
                 break; 
-            case CalculatorMetaFunction.CALC_DOUBLE_METAPHORE : //Double METAPHORE of string A
+            case CalculatorMetaFunction.CALC_DOUBLE_METAPHONE : //Double METAPHONE of string A
                 defaultResultType=ValueMetaInterface.TYPE_STRING;
                 break; 
             default:

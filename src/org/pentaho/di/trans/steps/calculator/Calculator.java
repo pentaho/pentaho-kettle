@@ -432,15 +432,15 @@ public class Calculator extends BaseStep implements StepInterface
                     resultType=ValueMetaInterface.TYPE_INTEGER;
                 }
                 break;
-                case CalculatorMetaFunction.CALC_METAPHORE  : // METAPHORE 
+                case CalculatorMetaFunction.CALC_METAPHONE  : // METAPHONE 
                 {
-                    calcData[index] = ValueDataUtil.get_Metaphore(metaA, dataA);
+                    calcData[index] = ValueDataUtil.get_Metaphone(metaA, dataA);
                     resultType=ValueMetaInterface.TYPE_STRING;
                 }
                 break;
-                case CalculatorMetaFunction.CALC_DOUBLE_METAPHORE  : // Double METAPHORE 
+                case CalculatorMetaFunction.CALC_DOUBLE_METAPHONE  : // Double METAPHONE 
                 {
-                    calcData[index] = ValueDataUtil.get_Double_Metaphore(metaA, dataA);
+                    calcData[index] = ValueDataUtil.get_Double_Metaphone(metaA, dataA);
                     resultType=ValueMetaInterface.TYPE_STRING;
                 }
                 break;

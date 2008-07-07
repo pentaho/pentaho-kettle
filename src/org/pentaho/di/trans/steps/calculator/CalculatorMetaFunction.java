@@ -59,8 +59,8 @@ public class CalculatorMetaFunction implements Cloneable
     public static final int CALC_MD5   = 32;
     public static final int CALC_SHA1   = 33;
     public static final int CALC_LEVENSHTEIN_DISTANCE  = 34;
-    public static final int CALC_METAPHORE  = 35;
-    public static final int CALC_DOUBLE_METAPHORE  = 36;
+    public static final int CALC_METAPHONE  = 35;
+    public static final int CALC_DOUBLE_METAPHONE  = 36;
 
     public static final String calc_desc[] = 
         { 
@@ -99,8 +99,8 @@ public class CalculatorMetaFunction implements Cloneable
             "MD5",
             "SHA1",
             "LEVENSHTEIN_DISTANCE",
-            "METAPHORE",
-            "DOUBLE_METAPHORE"
+            "METAPHONE",
+            "DOUBLE_METAPHONE"
         };
     
     public static final String calcLongDesc[] = 
@@ -140,8 +140,8 @@ public class CalculatorMetaFunction implements Cloneable
             Messages.getString("CalculatorMetaFunction.CalcFunctions.MD5"),
             Messages.getString("CalculatorMetaFunction.CalcFunctions.SHA1"),
             Messages.getString("CalculatorMetaFunction.CalcFunctions.LevenshteinDistance"),
-            Messages.getString("CalculatorMetaFunction.CalcFunctions.Metaphore"),
-            Messages.getString("CalculatorMetaFunction.CalcFunctions.DoubleMetaphore")
+            Messages.getString("CalculatorMetaFunction.CalcFunctions.Metaphone"),
+            Messages.getString("CalculatorMetaFunction.CalcFunctions.DoubleMetaphone")
         };
    
     private String fieldName;

@@ -82,12 +82,13 @@ public class ValueDataUtil
     	return new Long(StringUtils.getLevenshteinDistance(dataA.toString(),dataB.toString()));
     }
     
-    public static String get_Metaphore(ValueMetaInterface metaA, Object dataA)
+    public static String get_Metaphone(ValueMetaInterface metaA, Object dataA)
     {
     	if(dataA==null) return null;
     	return (new Metaphone()).metaphone(dataA.toString());
     }
-    public static String get_Double_Metaphore(ValueMetaInterface metaA, Object dataA)
+    
+    public static String get_Double_Metaphone(ValueMetaInterface metaA, Object dataA)
     {
     	if(dataA==null) return null;
     	return (new DoubleMetaphone()).doubleMetaphone(dataA.toString());
