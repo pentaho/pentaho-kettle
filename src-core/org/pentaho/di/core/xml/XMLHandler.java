@@ -19,6 +19,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringReader;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -462,22 +464,33 @@ public class XMLHandler
             // thus we need to give the BaseURI (systemID) below to have a chance to get it
             // or return empty dummy documents for all external entities (sources)
             if (ignoreEntities) db.setEntityResolver(new DTDIgnoringEntityResolver()); 
+            InputStream inputStream=null;
             try
             {
             	if (Const.isEmpty(systemID)) {
-            		doc  = db.parse(KettleVFS.getInputStream(fileObject));
+            		// Normal parsing
+            		//
+            		inputStream = KettleVFS.getInputStream(fileObject);
+            		doc  = db.parse(inputStream);
             	} else {
+            		// Do extra verifications
+            		//
             		String systemIDwithEndingSlash=systemID.trim();
             		//make sure we have an ending slash, otherwise the last part will be ignored
             		if (!systemIDwithEndingSlash.endsWith("/") && !systemIDwithEndingSlash.endsWith("\\")) {
             			systemIDwithEndingSlash=systemIDwithEndingSlash.concat("/");
             		}
-            		doc  = db.parse(KettleVFS.getInputStream(fileObject),systemIDwithEndingSlash);
+            		inputStream = KettleVFS.getInputStream(fileObject);
+            		doc  = db.parse(inputStream,systemIDwithEndingSlash);
             	}
             }
             catch(FileNotFoundException ef)
             {
                 throw new KettleXMLException(ef);
+            }
+            finally
+            {
+            	if (inputStream!=null) inputStream.close();
             }
                 
             return doc;
@@ -516,13 +529,18 @@ public class XMLHandler
 			// Check and open XML document
 			dbf  = DocumentBuilderFactory.newInstance();
 			db   = dbf.newDocumentBuilder();
+			InputStream inputStream = resource.openStream();
 			try
 			{
-				doc  = db.parse(resource.openStream());
+				doc  = db.parse(inputStream);
 			}
 			catch(IOException ef)
 			{
 				throw new KettleXMLException(ef);
+			}
+			finally
+			{
+				inputStream.close();
 			}
 				
 			return doc;
@@ -549,13 +567,19 @@ public class XMLHandler
 			// Check and open XML document
 			dbf  = DocumentBuilderFactory.newInstance();
 			db   = dbf.newDocumentBuilder();
+			StringReader stringReader = new java.io.StringReader(string);
+			InputSource inputSource = new InputSource(stringReader);
 			try
 			{
-				doc  = db.parse(new InputSource(new java.io.StringReader(string)));
+				doc  = db.parse(inputSource);
 			}
 			catch(IOException ef)
 			{
 				throw new KettleXMLException("Error parsing XML", ef);
+			}
+			finally
+			{
+				stringReader.close();
 			}
 				
 			return doc;
