@@ -450,7 +450,22 @@ public class ValueDataUtil
         default: throw new KettleValueException("The 'round' function only works on numeric data" );
         }
     }
-    
+    public static Object abs(ValueMetaInterface metaA, Object dataA) throws KettleValueException
+    {
+        if (dataA==null) return null;
+
+        switch(metaA.getType())
+        {
+        case ValueMetaInterface.TYPE_NUMBER    : 
+            return new Double( Math.abs(metaA.getNumber(dataA).doubleValue()) );
+        case ValueMetaInterface.TYPE_INTEGER   : 
+            return metaA.getInteger(dataA);
+        case ValueMetaInterface.TYPE_BIGNUMBER : 
+            return new BigDecimal( Math.abs( metaA.getNumber(dataA).doubleValue()) );
+            
+        default: throw new KettleValueException("The 'abs' function only works on numeric data" );
+        }
+    }
     
     public static Object round(ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB) throws KettleValueException
     {

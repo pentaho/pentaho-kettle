@@ -444,6 +444,11 @@ public class Calculator extends BaseStep implements StepInterface
                     resultType=ValueMetaInterface.TYPE_STRING;
                 }
                 break;
+                case CalculatorMetaFunction.CALC_ABS            :  // ABS( A )
+                {
+                    calcData[index] = ValueDataUtil.abs(metaA, dataA);
+                }
+                break;
                 default:
                     throw new KettleValueException(Messages.getString("Calculator.Log.UnknownCalculationType")+fn.getCalcType());
                 }

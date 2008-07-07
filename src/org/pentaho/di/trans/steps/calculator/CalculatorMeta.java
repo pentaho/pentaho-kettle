@@ -288,6 +288,9 @@ public class CalculatorMeta extends BaseStepMeta implements StepMetaInterface
             case CalculatorMetaFunction.CALC_DOUBLE_METAPHONE : //Double METAPHONE of string A
                 defaultResultType=ValueMetaInterface.TYPE_STRING;
                 break; 
+            case CalculatorMetaFunction.CALC_ABS           :  // ABS( A )
+                defaultResultType = ValueMetaInterface.TYPE_INTEGER;
+                break;
             default:
                 break;
             }
