@@ -12,6 +12,7 @@
  
 
 package org.pentaho.di.ui.core.gui;
+import org.eclipse.jface.util.Geometry;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Shell;
@@ -66,6 +67,21 @@ public class WindowProperty
 		setShell(shell, false, minWidth, minHeight);
 	}
 
+	/**
+     * Performs calculations to size and position a dialog If the size passed in
+     * is too large for the primary monitor client area, it is shrunk to fit. If
+     * the positioning leaves part of the dialog outside the client area, it is
+     * centered instead Note that currently, many of the defaults in
+     * org.pentaho.di.ui.core/default.properties have crazy values. This causes
+     * the failsafe code in here to fire a lot more than is really necessary.
+     * 
+     * @param shell
+     *            The dialog to position and size
+     * @param onlyPosition
+     *            Avoid resizing if true
+     * @param minWidth
+     * @param minHeight
+     */
 	public void setShell(Shell shell, boolean onlyPosition, int minWidth, int minHeight)
 	{
 		boolean sized=false;
@@ -77,8 +93,17 @@ public class WindowProperty
 		Rectangle r = rectangle;
 		if (r!=null && r.x>=0 && r.y>=0 && r.width>=0 && r.height>=0)
 		{
-			if (r.x>0 && r.y>0) if (!onlyPosition) shell.setSize(r.width, r.height);
-			if (r.width>0 && r.height>0) shell.setLocation(r.x, r.y);
+			if (r.width > 0 && r.height > 0)
+			{
+			    if (!onlyPosition)
+			    {
+			        shell.setSize(r.width, r.height);
+			    }
+			}
+			if (r.x > 0 && r.y > 0)
+			{
+			    shell.setLocation(r.x, r.y);
+			}
 			
 			sized=true;
 		}
@@ -94,69 +119,50 @@ public class WindowProperty
 		
 		// System.out.println("Shell ["+shell.getText()+"] size : "+shell.getBounds());
         
+        if (minWidth > 0 || minHeight > 0)
+        {
+            Rectangle bounds = shell.getBounds();
+            if (bounds.width < minWidth) bounds.width = minWidth;
+            if (bounds.height < minHeight) bounds.height = minHeight;
+            shell.setSize(bounds.width, bounds.height);
+        }
         // Sometimes the size of the shell is WAY too great!
         // What's the maximum size for this window?
         // Let's say the size of the Display...
-        
-        Point     shLoc  = shell.getLocation();
+
         Rectangle shRect = shell.getBounds();
-        Rectangle diRect = shell.getDisplay().getPrimaryMonitor().getBounds();
+        Point shSize = Geometry.getSize(shRect);
+        Rectangle diRect = shell.getDisplay().getPrimaryMonitor().getClientArea();
+        Point diSize = Geometry.getSize(diRect);
         
-        boolean resizex=false;
-        boolean resizey=false;
-        if (shRect.width>diRect.width)
+        Rectangle resizedRect = Geometry.copy(shRect);
+        Point oversize = Geometry.subtract(shSize, diSize);
+        if (oversize.x > 0)
         {
-            shRect.width = diRect.width;
-            resizex=true;
+            resizedRect.width = shSize.x - oversize.x;
+        }
+        if (oversize.y > 0)
+        {
+            resizedRect.height = shSize.y - oversize.y;
         }
         
-        if (shRect.height > diRect.height)
-        {
-            shRect.height = diRect.height;
-            resizey=true;
-        }
-        
-        if (resizex || resizey)
+        if (shRect.width != resizedRect.width || shRect.height != resizedRect.height)
         {
             // Make the shell smaller
         	if (!onlyPosition)
         	{
-        		shell.setSize(shRect.width, shRect.height);
+        		shell.setSize(resizedRect.width, resizedRect.height);
         	}
-            
-            // re-set the position
-            if (resizex) shLoc.x=0;
-            if (resizey) shLoc.y=0;
-            shell.setLocation(shLoc.x, shLoc.y);
-        }
-
-        // Sometimes it happens that Windows places part of a Window outside the viewing area.
-        // Perhaps we can correct this too?
-        boolean moveLeft=false;
-        boolean moveUp  =false;
-        if (shLoc.x + shRect.width > diRect.x + diRect.width)
-        {
-            shLoc.x = diRect.width - shRect.width - 50; // Move left...
-            if (shLoc.x<0) shLoc.x = 0;
-            moveLeft=true;
-        }
-        if (shLoc.y + shRect.height > diRect.y + diRect.height)
-        {
-            shLoc.y = diRect.height- shRect.height - 50; // Move up...
-            if (shLoc.y<0) shLoc.y = 0;
-            moveUp=true;
-        }
-        if (moveLeft||moveUp)
-        {
-            shell.setLocation(shLoc.x, shLoc.y);
         }
         
-        if (minWidth>0 || minHeight>0)
+        // Detect if the dialog was positioned outside the current client area
+        Geometry.moveInside(resizedRect, diRect);
+        if (shRect.x != resizedRect.x || shRect.y != resizedRect.y)
         {
-    		Rectangle bounds = shell.getBounds();
-    		if (bounds.width<minWidth) bounds.width = 640;
-    		if (bounds.height<minHeight) bounds.height = 480;
-    		shell.setSize(bounds.width, bounds.height);
+            int middleX = diRect.x + (diRect.width - resizedRect.width) / 2;
+            int middleY = diRect.y + (diRect.height - resizedRect.height) / 2;
+
+            shell.setLocation(middleX, middleY);
         }
 	}
 
