@@ -884,7 +884,8 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 				return transMeta.getStepFields(stepMeta);
 			}
 
-		} else
+		} 
+		else
 		{
 			if (Const.isEmpty(stepname))
 			{
@@ -901,7 +902,8 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 					throw new KettleException(Messages.getString("MappingDialog.Exception.OneMappingInputStepRequired", "" + stepnames.length));
 				}
 				return mappingTransMeta.getStepFields(stepnames[0]);
-			} else
+			} 
+			else
 			{
 				// OK, a fieldname is specified...
 				// See if we can find it...
@@ -1170,6 +1172,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 			{
 				try
 				{
+					loadTransformation();
 					RowMetaInterface sourceRowMeta = getFieldsFromStep(wInputStep.getText(), true, input);
 					RowMetaInterface targetRowMeta = getFieldsFromStep(wOutputStep.getText(), false, input);
 					String sourceFields[] = sourceRowMeta.getFieldNames();
