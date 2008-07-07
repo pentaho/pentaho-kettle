@@ -19,18 +19,23 @@ package org.pentaho.di.ui.trans.steps.csvinput;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.provider.local.LocalFile;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -68,6 +73,7 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.ComboValuesSelectionListener;
+import org.pentaho.di.ui.core.widget.ComboVar;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
@@ -96,6 +102,9 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
     private Button wAddResult;
 	private boolean isReceivingInput;
 	private Button wRunningInParallel;
+	private ComboVar     wEncoding;
+
+	private boolean gotEncodings = false;
 
 	public CsvInputDialog(Shell parent, Object in, TransMeta tr, String sname)
 	{
@@ -400,6 +409,43 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
 		fdRunningInParallel.left = new FormAttachment(middle, 0);
 		wRunningInParallel.setLayoutData(fdRunningInParallel);
 		lastControl=wRunningInParallel;
+		
+		// Encoding
+		Label wlEncoding = new Label(shell, SWT.RIGHT);
+		wlEncoding.setText(Messages.getString("CsvInputDialog.Encoding.Label")); //$NON-NLS-1$
+ 		props.setLook(wlEncoding);
+		FormData fdlEncoding = new FormData();
+		fdlEncoding.top  = new FormAttachment(lastControl, margin);
+		fdlEncoding.left = new FormAttachment(0, 0);
+		fdlEncoding.right= new FormAttachment(middle, -margin);
+		wlEncoding.setLayoutData(fdlEncoding);
+		wEncoding=new ComboVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+ 		props.setLook(wEncoding);
+		wEncoding.addModifyListener(lsMod);
+		FormData fdEncoding = new FormData();
+		fdEncoding.top  = new FormAttachment(lastControl, margin);
+		fdEncoding.left = new FormAttachment(middle, 0);
+		fdEncoding.right= new FormAttachment(100, 0);
+		wEncoding.setLayoutData(fdEncoding);
+		lastControl = wEncoding;
+
+        wEncoding.addFocusListener(new FocusListener()
+	        {
+	            public void focusLost(org.eclipse.swt.events.FocusEvent e)
+	            {
+	            }
+	        
+	            public void focusGained(org.eclipse.swt.events.FocusEvent e)
+	            {
+	                Cursor busy = new Cursor(shell.getDisplay(), SWT.CURSOR_WAIT);
+	                shell.setCursor(busy);
+	                setEncodings();
+	                shell.setCursor(null);
+	                busy.dispose();
+	            }
+	        }
+	    );
+
 
 		// Some buttons first, so that the dialog scales nicely...
 		//
@@ -543,6 +589,28 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
 		return stepname;
 	}
 	
+	private void setEncodings()
+    {
+        // Encoding of the text file:
+        if (!gotEncodings)
+        {
+            gotEncodings  = true;
+            
+            wEncoding.removeAll();
+            List<Charset> values = new ArrayList<Charset>(Charset.availableCharsets().values());
+            for (int i=0;i<values.size();i++)
+            {
+                Charset charSet = (Charset)values.get(i);
+                wEncoding.add( charSet.displayName() );
+            }
+            
+            // Now select the default!
+            String defEncoding = Const.getEnvironmentVariable("file.encoding", "UTF-8");
+            int idx = Const.indexOfString(defEncoding, wEncoding.getItems() );
+            if (idx>=0) wEncoding.select( idx );
+        }
+    }
+	
 	public void getData()
 	{
 		getData(inputMeta);
@@ -567,6 +635,7 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
 		wRunningInParallel.setSelection(inputMeta.isRunningInParallel());
 		wRowNumField.setText(Const.NVL(inputMeta.getRowNumField(), ""));
 		wAddResult.setSelection(inputMeta.isAddResultFile());
+		wEncoding.setText(Const.NVL(inputMeta.getEncoding(), ""));
 		
 		for (int i=0;i<inputMeta.getInputFields().length;i++) {
 			TextFileInputField field = inputMeta.getInputFields()[i];
@@ -614,7 +683,8 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
 		inputMeta.setRowNumField(wRowNumField.getText());
 		inputMeta.setAddResultFile( wAddResult.getSelection() );
 		inputMeta.setRunningInParallel(wRunningInParallel.getSelection());
-
+		inputMeta.setEncoding(wEncoding.getText());
+		
     	int nrNonEmptyFields = wFields.nrNonEmpty(); 
     	inputMeta.allocate(nrNonEmptyFields);
 

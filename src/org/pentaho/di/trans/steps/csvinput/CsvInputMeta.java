@@ -80,6 +80,8 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
 	
 	private boolean runningInParallel;
 	
+	private String encoding;
+	
 	public CsvInputMeta()
 	{
 		super(); // allocate BaseStepMeta
@@ -122,7 +124,8 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
 			lazyConversionActive= "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "lazy_conversion"));
 			isaddresult= "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "add_filename_result"));
 			runningInParallel = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "parallel"));
-
+			encoding = XMLHandler.getTagValue(stepnode, "encoding");
+			
 			Node fields = XMLHandler.getSubNode(stepnode, "fields");
 			int nrfields = XMLHandler.countNodes(fields, "field");
 			
@@ -170,6 +173,7 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
 		retval.append("    ").append(XMLHandler.addTagValue("lazy_conversion", lazyConversionActive));
 		retval.append("    ").append(XMLHandler.addTagValue("add_filename_result", isaddresult));
 		retval.append("    ").append(XMLHandler.addTagValue("parallel", runningInParallel));
+		retval.append("    ").append(XMLHandler.addTagValue("encoding", encoding));
 
 		retval.append("    <fields>").append(Const.CR);
 		for (int i = 0; i < inputFields.length; i++)
@@ -209,6 +213,7 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
 			lazyConversionActive = rep.getStepAttributeBoolean(id_step, "lazy_conversion");
 			isaddresult = rep.getStepAttributeBoolean(id_step, "add_filename_result");
 			runningInParallel = rep.getStepAttributeBoolean(id_step, "parallel");
+			encoding = rep.getStepAttributeString(id_step, "encoding");
 			
 			int nrfields = rep.countNrStepAttributes(id_step, "field_name");
 
@@ -250,7 +255,7 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
 			rep.saveStepAttribute(id_transformation, id_step, "lazy_conversion", lazyConversionActive);
 			rep.saveStepAttribute(id_transformation, id_step, "add_filename_result", isaddresult);
 			rep.saveStepAttribute(id_transformation, id_step, "parallel", runningInParallel);
-
+			rep.saveStepAttribute(id_transformation, id_step, "encoding", encoding);
 
 			for (int i = 0; i < inputFields.length; i++)
 			{
@@ -290,6 +295,7 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
 			valueMeta.setCurrencySymbol( field.getCurrencySymbol() );
 			valueMeta.setTrimType( field.getTrimType() );
 			if (lazyConversionActive) valueMeta.setStorageType(ValueMetaInterface.STORAGE_TYPE_BINARY_STRING);
+			valueMeta.setStringEncoding(encoding);
 			
 			// In case we want to convert Strings...
 			// Using a copy of the valueMeta object means that the inner and outer representation format is the same.
@@ -604,6 +610,20 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
 	 */
 	public void setRunningInParallel(boolean runningInParallel) {
 		this.runningInParallel = runningInParallel;
+	}
+
+	/**
+	 * @return the encoding
+	 */
+	public String getEncoding() {
+		return encoding;
+	}
+
+	/**
+	 * @param encoding the encoding to set
+	 */
+	public void setEncoding(String encoding) {
+		this.encoding = encoding;
 	}
 	
 }

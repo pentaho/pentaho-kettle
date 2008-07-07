@@ -245,4 +245,8 @@ public class ComboVar extends Composite {
   public void remove(int index) {
 	  wCombo.remove(index);
   }
+  
+  public void select(int index) {
+	  wCombo.select(index);
+  }
 }
