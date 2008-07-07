@@ -47,10 +47,17 @@ public class DBCacheEntry
 
 	public boolean sameDB(String otherDb)
 	{
+		// ESCA-JAVA0071:
 		if (dbname == otherDb)
 		{
+			// String comparison is actually ok here!!! This will check whether the strings
+			// are really the same string object. If they're not the same String object, but they
+			// contain the same value this will be catched later on in this method.
+			//
+			// This is supposed to be an optimization (not by me). Sven Boden
+			
 			return true; // short-circuit object equivalence, treat nulls as
-                            // equal
+                         // equal
 		}
 		if (null != dbname)
 		{
