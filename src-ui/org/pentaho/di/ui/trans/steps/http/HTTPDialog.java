@@ -48,11 +48,12 @@ import org.pentaho.di.trans.steps.http.Messages;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
+import org.pentaho.di.ui.core.widget.TextVar;
 
 public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
 {
 	private Label        wlUrl;
-	private Text         wUrl;
+	private TextVar      wUrl;
 	private FormData     fdlUrl, fdUrl;
 
 	private Label        wlResult;
@@ -131,7 +132,7 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
 		fdlUrl.top  = new FormAttachment(wStepname, margin*2);
 		wlUrl.setLayoutData(fdlUrl);
 		
-		wUrl=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wUrl=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wUrl);
 		wUrl.addModifyListener(lsMod);
 		fdUrl=new FormData();
