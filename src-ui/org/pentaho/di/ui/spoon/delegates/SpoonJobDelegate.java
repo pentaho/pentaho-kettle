@@ -951,8 +951,17 @@ public class SpoonJobDelegate extends SpoonDelegate
 	public void closeJob(JobMeta jobMeta)
 	{
 		String tabName = spoon.delegates.tabs.makeJobGraphTabName(jobMeta);
-		jobMap.remove(tabName);
 
+		// Also remove it from the item from the jobMap
+		// Otherwise it keeps showing up in the objects tree
+		// Look for the job, not the key (name might have changed)
+		//
+		for (String key : jobMap.keySet()) {
+			if (jobMap.get(key).equals(jobMeta)) {
+				jobMap.remove(key);
+			}
+		}
+		
 		// Close the associated tabs...
 		TabItem graphTab = spoon.delegates.tabs.findTabItem(tabName, TabMapEntry.OBJECT_TYPE_JOB_GRAPH);
 		if (graphTab != null)
