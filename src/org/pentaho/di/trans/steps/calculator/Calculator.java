@@ -428,7 +428,7 @@ public class Calculator extends BaseStep implements StepInterface
                 }
                 break;
                 default:
-                    throw new KettleValueException("Unknown calculation type #"+fn.getCalcType());
+                    throw new KettleValueException(Messages.getString("Calculator.Log.UnknownCalculationType")+fn.getCalcType());
                 }
                 
                 // If we don't have a target data type, throw an error.
@@ -436,7 +436,7 @@ public class Calculator extends BaseStep implements StepInterface
                 //
                 if (targetMeta.getType()==ValueMetaInterface.TYPE_NONE)
                 {
-                    throw new KettleValueException("No datatype is specified for calculation #"+(i+1)+" : "+fn.getFieldName()+" = "+fn.getCalcTypeDesc()+" / "+fn.getCalcTypeLongDesc());
+                    throw new KettleValueException(Messages.getString("Calculator.Log.NoType")+(i+1)+" : "+fn.getFieldName()+" = "+fn.getCalcTypeDesc()+" / "+fn.getCalcTypeLongDesc());
                 }
                 
                 // Convert the data to the correct target data type.

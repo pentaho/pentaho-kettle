@@ -274,10 +274,10 @@ public class CalculatorMeta extends BaseStepMeta implements StepMetaInterface
                 defaultResultType=ValueMetaInterface.TYPE_INTEGER;
                 break;   
             case CalculatorMetaFunction.CALC_MD5   : //MD5 of a file A
-                defaultResultType=ValueMetaInterface.TYPE_INTEGER;
+                defaultResultType=ValueMetaInterface.TYPE_STRING;
                 break;  
             case CalculatorMetaFunction.CALC_SHA1   : //SHA1 of a file A
-                defaultResultType=ValueMetaInterface.TYPE_INTEGER;
+                defaultResultType=ValueMetaInterface.TYPE_STRING;
                 break;  
             default:
                 break;

@@ -26,6 +26,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.steps.clonerow.Messages;
 
 
 /**
@@ -106,6 +107,12 @@ public class CheckSum extends BaseStep implements StepInterface
 				outputRowData =RowDataUtil.addValueData(r, getInputRowMeta().size(),checkSum);
 			}
 			
+					
+			if (checkFeedback(getLinesRead())) 
+		     {
+		        if(log.isDetailed()) logDetailed(Messages.getString("CheckSum.Log.LineNumber",""+getLinesRead())); //$NON-NLS-1$
+		     }
+					
 			 //	add new values to the row.
 			putRow(data.outputRowMeta, outputRowData);  // copy row to output rowset(s);
 		}

@@ -123,7 +123,7 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
 		fdStepname.right= new FormAttachment(100, 0);
 		wStepname.setLayoutData(fdStepname);
 		
-		 // Log Level
+		 // Type
         wlType = new Label(shell, SWT.RIGHT);
         wlType.setText(Messages.getString("CheckSumDialog.Type.Label"));
         props.setLook(wlType);
