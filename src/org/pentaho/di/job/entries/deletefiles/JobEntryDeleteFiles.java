@@ -243,7 +243,7 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
     boolean rcode = false;
     FileObject filefolder = null;
     String realFilefoldername = environmentSubstitute(filename);
-    String realwilcard = environmentSubstitute(wildcard);
+    String realwildcard = environmentSubstitute(wildcard);
 
     try {
       filefolder = KettleVFS.getFileObject(realFilefoldername);
@@ -264,7 +264,7 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
             log.logDetailed(toString(), Messages.getString("JobEntryDeleteFiles.ProcessingFolder", realFilefoldername)); //$NON-NLS-1$
           // Delete Files
           
-          int Nr = filefolder.delete(new TextFileSelector(filefolder.toString(),realwilcard,parentJob));
+          int Nr = filefolder.delete(new TextFileSelector(filefolder.toString(),realwildcard,parentJob));
 
           if (log.isDetailed())
             log.logDetailed(toString(), Messages.getString("JobEntryDeleteFiles.TotalDeleted", String.valueOf(Nr))); //$NON-NLS-1$

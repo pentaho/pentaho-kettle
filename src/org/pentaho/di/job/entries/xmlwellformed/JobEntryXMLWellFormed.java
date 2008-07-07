@@ -412,7 +412,7 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
 		FileObject sourcefilefolder = null;
 		FileObject CurrentFile = null;
 		
-		// Get real source file and wilcard
+		// Get real source file and wildcard
 		String realSourceFilefoldername = environmentSubstitute(sourcefilefoldername);
 		if(Const.isEmpty(realSourceFilefoldername))
 		{

@@ -526,7 +526,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 		FileObject movetofolderfolder = null;
 		FileObject Currentfile =null;
 		
-		// Get real source, destination file and wilcard
+		// Get real source, destination file and wildcard
 		String realSourceFilefoldername = environmentSubstitute(sourcefilefoldername);
 		String realDestinationFilefoldername = environmentSubstitute(destinationfilefoldername);
 		String realWildcard=environmentSubstitute(wildcard);

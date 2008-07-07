@@ -1,12 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <job>
-  <name/>
-  <directory>/</directory>
+  <name>Set arguments on a transformation</name>
+    <description/>
+    <extended_description/>
+    <job_version/>
+  <directory>&#47;</directory>
+  <created_user/>
+  <created_date>2008&#47;03&#47;22 13:17:01.836</created_date>
+  <modified_user/>
+  <modified_date>2008&#47;03&#47;22 13:17:01.836</modified_date>
+    <slaveservers>
+    </slaveservers>
   <logconnection/>
   <logtable/>
    <use_batchid>N</use_batchid>
    <pass_batchid>N</pass_batchid>
    <use_logfield>N</use_logfield>
+   <shared_objects_file/>
   <entries>
     <entry>
       <name>START</name>
@@ -16,7 +26,8 @@
       <dummy>N</dummy>
       <repeat>N</repeat>
       <schedulerType>0</schedulerType>
-      <interval>60</interval>
+      <intervalSeconds>0</intervalSeconds>
+      <intervalMinutes>0</intervalMinutes>
       <hour>12</hour>
       <minutes>0</minutes>
       <weekDay>1</weekDay>
@@ -35,7 +46,8 @@
       <dummy>Y</dummy>
       <repeat>N</repeat>
       <schedulerType>0</schedulerType>
-      <interval>60</interval>
+      <intervalSeconds>0</intervalSeconds>
+      <intervalMinutes>0</intervalMinutes>
       <hour>12</hour>
       <minutes>0</minutes>
       <weekDay>1</weekDay>
@@ -72,9 +84,9 @@
       <name>Run transformation.ktr</name>
       <description/>
       <type>TRANS</type>
-      <filename>${Internal.Job.Filename.Directory}/Run transformation.ktr</filename>
+      <filename>${Internal.Job.Filename.Directory}&#47;Run transformation.ktr</filename>
       <transname/>
-      <directory>/</directory>
+      <directory>&#47;</directory>
       <arg_from_previous>N</arg_from_previous>
       <exec_per_row>N</exec_per_row>
       <clear_rows>N</clear_rows>
@@ -85,16 +97,16 @@
       <add_date>N</add_date>
       <add_time>N</add_time>
       <loglevel>Error</loglevel>
-      <argument0>ArgOne</argument0>
-      <argument1>ArgTwo</argument1>
-      <argument2>ArgThree</argument2>
+      <cluster>N</cluster>
+      <slave_server_name/>
+      <set_append_logfile>N</set_append_logfile>
       <parallel>N</parallel>
       <draw>Y</draw>
       <nr>0</nr>
       <xloc>347</xloc>
       <yloc>129</yloc>
       </entry>
-    </entries>
+  </entries>
   <hops>
     <hop>
       <from>START</from>
@@ -104,8 +116,8 @@
       <enabled>Y</enabled>
       <evaluation>Y</evaluation>
       <unconditional>Y</unconditional>
-      </hop>
-    </hops>
+    </hop>
+  </hops>
   <notepads>
-    </notepads>
-  </job>
+  </notepads>
+</job>

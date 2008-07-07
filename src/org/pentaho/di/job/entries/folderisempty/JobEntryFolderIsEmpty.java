@@ -63,7 +63,7 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
 	private int filescount;
 	private int folderscount;
 	private boolean includeSubfolders;
-	private boolean specifywilcard;
+	private boolean specifywildcard;
 	private String wildcard;
 	
 	public JobEntryFolderIsEmpty(String n)
@@ -72,7 +72,7 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
 		foldername=null;
 		wildcard=null;
 		includeSubfolders=false;
-		specifywilcard=false;
+		specifywildcard=false;
 		setID(-1L);
 		setJobEntryType(JobEntryType.FOLDER_IS_EMPTY);
 	}
@@ -100,7 +100,7 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
 		retval.append(super.getXML());		
 		retval.append("      ").append(XMLHandler.addTagValue("foldername",   foldername));
 		retval.append("      ").append(XMLHandler.addTagValue("include_subfolders", includeSubfolders));
-		retval.append("      ").append(XMLHandler.addTagValue("specify_wilcard", specifywilcard));
+		retval.append("      ").append(XMLHandler.addTagValue("specify_wildcard", specifywildcard));
 		retval.append("      ").append(XMLHandler.addTagValue("wildcard",   wildcard));
 		
 		
@@ -114,7 +114,7 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
 			super.loadXML(entrynode, databases, slaveServers);
 			foldername = XMLHandler.getTagValue(entrynode, "foldername");
 			includeSubfolders = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "include_subfolders"));
-			specifywilcard = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "specify_wilcard"));
+			specifywildcard = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "specify_wildcard"));
 			wildcard = XMLHandler.getTagValue(entrynode, "wildcard");
 			
 			
@@ -133,7 +133,7 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
 			super.loadRep(rep, id_jobentry, databases, slaveServers);
 			foldername = rep.getJobEntryAttributeString(id_jobentry, "foldername");
 			includeSubfolders = rep.getJobEntryAttributeBoolean(id_jobentry, "include_subfolders"); 
-			specifywilcard = rep.getJobEntryAttributeBoolean(id_jobentry, "specify_wilcard");  
+			specifywildcard = rep.getJobEntryAttributeBoolean(id_jobentry, "specify_wildcard");  
 			wildcard = rep.getJobEntryAttributeString(id_jobentry, "wildcard");
 			
 			
@@ -154,7 +154,7 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
 			
 			rep.saveJobEntryAttribute(id_job, getID(), "foldername", foldername);
 			rep.saveJobEntryAttribute(id_job, getID(), "include_subfolders", includeSubfolders);
-			rep.saveJobEntryAttribute(id_job, getID(), "specify_wilcard", specifywilcard);
+			rep.saveJobEntryAttribute(id_job, getID(), "specify_wildcard", specifywildcard);
 			rep.saveJobEntryAttribute(id_job, getID(), "wildcard", wildcard);
 			
 	
@@ -165,14 +165,14 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
 		}
 	}
 	
-	public void setSpecifyWilcard(boolean specifywilcard)
+	public void setSpecifyWilcard(boolean specifywildcard)
 	{
-		this.specifywilcard=specifywilcard;
+		this.specifywildcard=specifywildcard;
 	}
 
 	public boolean isSpecifyWilcard()
 	{
-		return specifywilcard;
+		return specifywildcard;
 	}
 	public void setFoldername(String foldername)
 	{

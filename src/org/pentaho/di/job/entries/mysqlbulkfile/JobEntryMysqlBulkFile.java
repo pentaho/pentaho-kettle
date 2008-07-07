@@ -331,7 +331,7 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
 					}
 					else
 					{
-						// did not find wilcard
+						// did not find wildcard
 						realFilename=realFilename + "_" + StringUtil.getFormattedDateTimeNow(true);
 					}
 

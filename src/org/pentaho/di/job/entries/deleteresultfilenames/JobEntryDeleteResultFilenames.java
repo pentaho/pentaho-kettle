@@ -62,7 +62,7 @@ import org.pentaho.di.repository.Repository;
 public class JobEntryDeleteResultFilenames extends JobEntryBase implements Cloneable, JobEntryInterface
 {
 	private String foldername;
-	private boolean specifywilcard;
+	private boolean specifywildcard;
 	private String wildcard;
 	private String wildcardexclude;
 	
@@ -72,7 +72,7 @@ public class JobEntryDeleteResultFilenames extends JobEntryBase implements Clone
 		foldername=null;
 		wildcardexclude=null;
 		wildcard=null;
-		specifywilcard=false;
+		specifywildcard=false;
 		setID(-1L);
 		setJobEntryType(JobEntryType.DELETE_RESULT_FILENAMES);
 	}
@@ -101,7 +101,7 @@ public class JobEntryDeleteResultFilenames extends JobEntryBase implements Clone
 		
 		retval.append(super.getXML());		
 		retval.append("      ").append(XMLHandler.addTagValue("foldername",   foldername));
-		retval.append("      ").append(XMLHandler.addTagValue("specify_wilcard", specifywilcard));
+		retval.append("      ").append(XMLHandler.addTagValue("specify_wildcard", specifywildcard));
 		retval.append("      ").append(XMLHandler.addTagValue("wildcard",   wildcard));
 		retval.append("      ").append(XMLHandler.addTagValue("wildcardexclude",   wildcardexclude));
 		
@@ -115,7 +115,7 @@ public class JobEntryDeleteResultFilenames extends JobEntryBase implements Clone
 	    {
 	      super.loadXML(entrynode, databases, slaveServers);
 			foldername = XMLHandler.getTagValue(entrynode, "foldername");
-			specifywilcard = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "specify_wilcard"));
+			specifywildcard = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "specify_wildcard"));
 			wildcard = XMLHandler.getTagValue(entrynode, "wildcard");
 			wildcardexclude = XMLHandler.getTagValue(entrynode, "wildcardexclude");
 			
@@ -134,7 +134,7 @@ public class JobEntryDeleteResultFilenames extends JobEntryBase implements Clone
 	    {
 	      super.loadRep(rep, id_jobentry, databases, slaveServers);
 			foldername = rep.getJobEntryAttributeString(id_jobentry, "foldername");
-			specifywilcard = rep.getJobEntryAttributeBoolean(id_jobentry, "specify_wilcard");  
+			specifywildcard = rep.getJobEntryAttributeBoolean(id_jobentry, "specify_wildcard");  
 			wildcard = rep.getJobEntryAttributeString(id_jobentry, "wildcard");
 			wildcardexclude = rep.getJobEntryAttributeString(id_jobentry, "wildcardexclude");
 			
@@ -155,7 +155,7 @@ public class JobEntryDeleteResultFilenames extends JobEntryBase implements Clone
 			super.saveRep(rep, id_job);
 			
 			rep.saveJobEntryAttribute(id_job, getID(), "foldername", foldername);
-			rep.saveJobEntryAttribute(id_job, getID(), "specify_wilcard", specifywilcard);
+			rep.saveJobEntryAttribute(id_job, getID(), "specify_wildcard", specifywildcard);
 			rep.saveJobEntryAttribute(id_job, getID(), "wildcard", wildcard);
 			rep.saveJobEntryAttribute(id_job, getID(), "wildcardexclude", wildcardexclude);
 			
@@ -169,12 +169,12 @@ public class JobEntryDeleteResultFilenames extends JobEntryBase implements Clone
 	
 	public void setSpecifyWilcard(boolean specifywilcard)
 	{
-		this.specifywilcard=specifywilcard;
+		this.specifywildcard=specifywilcard;
 	}
 
 	public boolean isSpecifyWilcard()
 	{
-		return specifywilcard;
+		return specifywildcard;
 	}
 	public void setFoldername(String foldername)
 	{
@@ -224,7 +224,7 @@ public class JobEntryDeleteResultFilenames extends JobEntryBase implements Clone
 				int size=previousResult.getResultFiles().size();
 				if(log.isBasic())
 					log.logBasic(toString(),Messages.getString("JobEntryDeleteResultFilenames.log.FilesFound",""+size));
-				if(!specifywilcard)
+				if(!specifywildcard)
 				{
 					// Delete all files
 					previousResult.getResultFiles().clear();
