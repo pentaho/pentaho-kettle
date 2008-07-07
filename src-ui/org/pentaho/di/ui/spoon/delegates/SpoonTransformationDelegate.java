@@ -147,7 +147,6 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 	public void closeTransformation(TransMeta transMeta)
 	{
 		String tabName = spoon.delegates.tabs.makeTransGraphTabName(transMeta);
-		transformationMap.remove(tabName);
 
 		// Close the associated tabs...
 		TabItem graphTab = spoon.delegates.tabs.findTabItem(tabName,
@@ -156,25 +155,17 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 		{
 			spoon.delegates.tabs.removeTab(graphTab);
 		}
-
-		// Logging
-		String logTabName = spoon.delegates.tabs.makeLogTabName(transMeta);
-		TabItem logTab = spoon.delegates.tabs.findTabItem(logTabName,
-				TabMapEntry.OBJECT_TYPE_TRANSFORMATION_LOG);
-		if (logTab != null)
-		{
-			spoon.delegates.tabs.removeTab(logTab);
+		
+		// Also remove it from the item from the transformationMap
+		// Otherwise it keeps showing up in the objects tree
+		// Look for the transformation, not the key (name might have changed)
+		//
+		for (String key : transformationMap.keySet()) {
+			if (transformationMap.get(key).equals(transMeta)) {
+				transformationMap.remove(key);
+			}
 		}
-
-		// History
-		String historyTabName = spoon.delegates.tabs.makeHistoryTabName(transMeta);
-		TabItem historyTab = spoon.delegates.tabs.findTabItem(historyTabName,
-				TabMapEntry.OBJECT_TYPE_TRANSFORMATION_HISTORY);
-		if (historyTab != null)
-		{
-			spoon.delegates.tabs.removeTab(historyTab);
-		}
-
+		
 		spoon.refreshTree();
 	}
 

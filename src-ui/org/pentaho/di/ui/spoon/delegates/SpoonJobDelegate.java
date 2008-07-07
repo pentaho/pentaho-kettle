@@ -929,7 +929,6 @@ public class SpoonJobDelegate extends SpoonDelegate
 	public void closeJob(JobMeta jobMeta)
 	{
 		String tabName = spoon.delegates.tabs.makeJobGraphTabName(jobMeta);
-		jobMap.remove(tabName);
 
 		// Close the associated tabs...
 		TabItem graphTab = spoon.delegates.tabs.findTabItem(tabName, TabMapEntry.OBJECT_TYPE_JOB_GRAPH);
@@ -938,22 +937,16 @@ public class SpoonJobDelegate extends SpoonDelegate
 			spoon.delegates.tabs.removeTab(graphTab);
 		}
 
-		// Logging
-		String logTabName = spoon.delegates.tabs.makeJobLogTabName(jobMeta);
-		TabItem logTab = spoon.delegates.tabs.findTabItem(logTabName, TabMapEntry.OBJECT_TYPE_JOB_LOG);
-		if (logTab != null)
-		{
-			spoon.delegates.tabs.removeTab(logTab);
+		// Also remove it from the item from the jobMap
+		// Otherwise it keeps showing up in the objects tree
+		// Look for the job, not the key (name might have changed)
+		//
+		for (String key : jobMap.keySet()) {
+			if (jobMap.get(key).equals(jobMeta)) {
+				jobMap.remove(key);
+			}
 		}
-
-		// History
-		String historyTabName = spoon.delegates.tabs.makeJobHistoryTabName(jobMeta);
-		TabItem historyTab = spoon.delegates.tabs.findTabItem(historyTabName, TabMapEntry.OBJECT_TYPE_JOB_HISTORY);
-		if (historyTab != null)
-		{
-			spoon.delegates.tabs.removeTab(historyTab);
-		}
-
+		
 		spoon.refreshTree();
 	}
 
