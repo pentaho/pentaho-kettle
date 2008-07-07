@@ -413,6 +413,8 @@ public class RepositoriesDialog
         {
         	shell.setSize(bounds.width + 20, dialogBounds.height+50);
         }
+        
+        shell.setTabList(new Control[] { wUsername, wPassword, wOK, wCancel, wNorep, wRepository, });
 
         // MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION);
         // mb.setText("Warning");
