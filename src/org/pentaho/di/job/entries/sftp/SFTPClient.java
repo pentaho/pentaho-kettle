@@ -12,9 +12,12 @@
 */
 package org.pentaho.di.job.entries.sftp;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetAddress;
 
 import org.pentaho.di.core.exception.KettleJobException;
+import org.pentaho.di.core.vfs.KettleVFS;
 
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelSftp;
@@ -24,6 +27,8 @@ import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
 import com.jcraft.jsch.ChannelSftp.LsEntry;
 import com.jcraft.jsch.SftpATTRS;
+
+import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileType;
 
 public class SFTPClient {
@@ -146,12 +151,23 @@ public class SFTPClient {
 			throw new KettleJobException(e);
 		}
 	}
-	public void put (String localFilePath, String remoteFile) throws KettleJobException {
+	
+	public void put(FileObject fileObject, String remoteFile) throws KettleJobException {
 		int mode=ChannelSftp.OVERWRITE;
+		InputStream inputStream = null;
 		try {
-			c.put(localFilePath, remoteFile, null, mode);
-		} catch (SftpException e) {
+			inputStream = KettleVFS.getInputStream(fileObject);
+			c.put(inputStream, remoteFile, null, mode);
+		} catch(Exception e) {
 			throw new KettleJobException(e);
+		} finally {
+			if (inputStream!=null) {
+				try {
+					inputStream.close();
+				} catch (IOException e) {
+					throw new KettleJobException(e);
+				}
+			}
 		}
 	}
 	

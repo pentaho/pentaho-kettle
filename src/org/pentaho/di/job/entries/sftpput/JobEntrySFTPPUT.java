@@ -18,17 +18,19 @@ import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.integerV
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlankValidator;
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notNullValidator;
 
-import java.io.File;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.FileType;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
+import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.encryption.Encr;
@@ -48,7 +50,6 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
-import org.pentaho.di.core.ResultFile;
 import org.w3c.dom.Node;
 
 /**
@@ -339,7 +340,7 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 	}
 
 
-	public Result execute(Result previousResult, int nr, Repository rep, Job parentJob)
+	public Result execute(Result previousResult, int nr, Repository rep, Job parentJob) throws KettleException
 	{
 		LogWriter log = LogWriter.getInstance();
 
@@ -348,7 +349,7 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 		result.setResult( false );
 
 		if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobSFTPPUT.Log.StartJobEntry"));
-		ArrayList<String> myFileList = new ArrayList<String>();
+		ArrayList<FileObject> myFileList = new ArrayList<FileObject>();
 		
 		if(copyprevious)
 		{
@@ -370,12 +371,12 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 					String file_previous = resultRow.getString(0,null);
 					if(!Const.isEmpty(file_previous))
 					{
-						File file=new File(file_previous);
+						FileObject file=KettleVFS.getFileObject(file_previous);
 						if(!file.exists())
 							log.logError(toString(),Messages.getString("JobSFTPPUT.Log.FilefromPreviousNotFound",file_previous));
 						else
 						{
-							myFileList.add(file_previous);
+							myFileList.add(file);
 							if(log.isDebug()) log.logDebug(toString(), Messages.getString("JobSFTPPUT.Log.FilenameFromResult",file_previous));
 						}
 					}
@@ -419,82 +420,75 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 			if(!copyprevious)
 			{
 				// Get all the files in the local directory...
-				myFileList = new ArrayList<String>();
+				myFileList = new ArrayList<FileObject>();
 	
-				File localFiles = new File(realLocalDirectory);
-				File[] children = localFiles.listFiles();
-				for (int i=0; i<children.length; i++) {
-		            // Get filename of file or directory
-					if (!children[i].isDirectory()) {
-						// myFileList.add(children[i].getAbsolutePath());
-						myFileList.add(children[i].getName());
-					}
-		        } // end for
-	
-				// Joerg:  ..that's for Java5
-				// String[] filelist = myFileList.toArray(new String[myFileList.size()]);
+				FileObject localFiles = KettleVFS.getFileObject(realLocalDirectory);
+				FileObject[] children = localFiles.getChildren();
+				if (children!=null) {
+					for (int i=0; i<children.length; i++) {
+			            // Get filename of file or directory
+						if (children[i].getType().equals(FileType.FILE)) {
+							// myFileList.add(children[i].getAbsolutePath());
+							myFileList.add(children[i]);
+						}
+			        } // end for
+				}
 			}
-			if(myFileList==null)
+			
+			if(myFileList==null || myFileList.size()==0)
 			{
 				log.logError(toString(), Messages.getString("JobSFTPPUT.Error.NoFileToSend"));
 				result.setNrErrors(1);
 				return result;
 			}
-			String[] filelist = new String[myFileList.size()];
-			myFileList.toArray(filelist);
 
-			if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobSFTPPUT.Log.RowsFromPreviousResult",""+filelist.length));
+			if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobSFTPPUT.Log.RowsFromPreviousResult",""+myFileList.size()));
 
 			Pattern pattern = null;
 			if(!copyprevious)
 			{
-				if (!Const.isEmpty(realWildcard))	pattern = Pattern.compile(realWildcard);
+				if (!Const.isEmpty(realWildcard)) {
+					pattern = Pattern.compile(realWildcard);
+				}
 			}
 
 			// Get the files in the list and execute sftp.put() for each file
-			for (int i=0;i<filelist.length && !parentJob.isStopped();i++)
+			for (int i=0;i<myFileList.size() && !parentJob.isStopped();i++)
 			{
+				FileObject myFile = myFileList.get(i);
+				String localFilename = myFile.toString();
+				String destinationFilename=myFile.getName().getBaseName();
 				boolean getIt = true;
 
 				// First see if the file matches the regular expression!
 				if (pattern!=null)
 				{
-					Matcher matcher = pattern.matcher(filelist[i]);
+					Matcher matcher = pattern.matcher(destinationFilename);
 					getIt = matcher.matches();
 				}
 
 				if (getIt)
 				{
-					String localFilename = realLocalDirectory+Const.FILE_SEPARATOR+filelist[i];
-					String destinationFilename=filelist[i];
-					
-					if(copyprevious) 
-					{
-						localFilename=filelist[i];
-						File file = new File(localFilename);
-						destinationFilename=file.getName();
-					}
-					
 					if(log.isDebug()) log.logDebug(toString(), Messages.getString("JobSFTPPUT.Log.PuttingFile",localFilename,realSftpDirString));
 
-					sftpclient.put(localFilename, destinationFilename);
-
+					sftpclient.put(myFile, destinationFilename);
 					
 					if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobSFTPPUT.Log.TransferedFile",localFilename));
 					
 					// Delete the file if this is needed!
 					if (remove)
 					{
-						new File(localFilename).delete();
+						myFile.delete();
 						if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobSFTPPUT.Log.DeletedFile",localFilename));
-					}else
+					}
+					else
 					{
 						if(addFilenameResut)
 						{
 							// Add to the result files...
-							ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(localFilename), parentJob.getJobname(), toString());
+							ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, myFile, parentJob.getJobname(), toString());
 							result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
-							if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobSFTPPUT.Log.FilenameAddedToResultFilenames",filelist[i]));
+							if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobSFTPPUT.Log.FilenameAddedToResultFilenames", localFilename));
 						}
 					}
 				}
