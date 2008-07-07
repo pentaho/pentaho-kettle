@@ -33,6 +33,8 @@ import org.pentaho.di.ui.spoon.TabItemInterface;
 import org.pentaho.di.ui.spoon.TabMapEntry;
 import org.pentaho.di.ui.spoon.job.JobGraph;
 import org.pentaho.di.ui.spoon.trans.TransGraph;
+import org.pentaho.ui.util.Launch;
+import org.pentaho.ui.util.Launch.Status;
 import org.pentaho.xul.swt.tab.TabItem;
 import org.pentaho.xul.swt.tab.TabSet;
 
@@ -244,10 +246,24 @@ public class SpoonTabsDelegate extends SpoonDelegate
 			// keep the focus on the graph
 			tabfolder.setSelected(idx);
 			return true;
-		} catch (Throwable e)
+		} 
+		catch (Throwable e)
 		{
-			LogWriter.getInstance().logError(spoon.toString(), "Unable to open browser tab", e);
-			return false;
+			boolean ok = false;
+			if (isURL) {
+				// Retry to show the welcome page in an external browser.
+				//
+				Status status = Launch.openURL(urlString);
+				ok = status.equals(Status.Success);
+			}
+			if (!ok) {
+				// Log an error
+				//
+				LogWriter.getInstance().logError(spoon.toString(), "Unable to open browser tab", e);
+				return false;
+			} else {
+				return true;
+			}
 		}
 	}
 
