@@ -2885,6 +2885,7 @@ public class Database
         int valtype=Value.VALUE_TYPE_NONE;
 
         int type = rm.getColumnType(i);
+        boolean signed = rm.isSigned(i);
         switch(type)
         {
         case java.sql.Types.CHAR:
@@ -2903,10 +2904,21 @@ public class Database
             break;
 
         case java.sql.Types.BIGINT:
-            valtype=Value.VALUE_TYPE_INTEGER;
-            precision=0;   // Max 9.223.372.036.854.775.807
-            length=15;
-            break;
+        	// verify Unsigned BIGINT overflow!
+        	//
+        	if (signed) 
+        	{
+	            valtype=Value.VALUE_TYPE_INTEGER;
+	            precision=0;   // Max 9.223.372.036.854.775.807
+	            length=15;
+        	} 
+        	else 
+        	{
+	            valtype=Value.VALUE_TYPE_BIGNUMBER;
+	            precision=0;   // Max 18.446.744.073.709.551.615
+	            length=16;
+        	}
+        	break;
 
         case java.sql.Types.INTEGER:
             valtype=Value.VALUE_TYPE_INTEGER;
