@@ -149,7 +149,16 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 	public void closeTransformation(TransMeta transMeta)
 	{
 		String tabName = spoon.delegates.tabs.makeTransGraphTabName(transMeta);
-		transformationMap.remove(tabName);
+
+		// Also remove it from the item from the transformationMap
+		// Otherwise it keeps showing up in the objects tree
+		// Look for the transformation, not the key (name might have changed)
+		//
+		for (String key : transformationMap.keySet()) {
+			if (transformationMap.get(key).equals(transMeta)) {
+				transformationMap.remove(key);
+			}
+		}
 
 		// Close the associated tabs...
 		TabItem graphTab = spoon.delegates.tabs.findTabItem(tabName,
