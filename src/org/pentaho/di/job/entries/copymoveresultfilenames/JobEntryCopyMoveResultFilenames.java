@@ -148,7 +148,7 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 		
 		retval.append(super.getXML());		
 		retval.append("      ").append(XMLHandler.addTagValue("foldername",   foldername));
-		retval.append("      ").append(XMLHandler.addTagValue("specify_wilcard", specifywildcard));
+		retval.append("      ").append(XMLHandler.addTagValue("specify_wildcard", specifywildcard));
 		retval.append("      ").append(XMLHandler.addTagValue("wildcard",   wildcard));
 		retval.append("      ").append(XMLHandler.addTagValue("wildcardexclude",   wildcardexclude));
 		retval.append("      ").append(XMLHandler.addTagValue("destination_folder",   destination_folder));
@@ -176,7 +176,7 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 	    {
 	      super.loadXML(entrynode, databases, slaveServers);
 			foldername = XMLHandler.getTagValue(entrynode, "foldername");
-			specifywildcard = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "specify_wilcard"));
+			specifywildcard = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "specify_wildcard"));
 			wildcard = XMLHandler.getTagValue(entrynode, "wildcard");
 			wildcardexclude = XMLHandler.getTagValue(entrynode, "wildcardexclude");	
 			destination_folder = XMLHandler.getTagValue(entrynode, "destination_folder");
@@ -211,7 +211,7 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 	    {
 	        super.loadRep(rep, id_jobentry, databases, slaveServers);
 			foldername = rep.getJobEntryAttributeString(id_jobentry, "foldername");
-			specifywildcard = rep.getJobEntryAttributeBoolean(id_jobentry, "specify_wilcard");  
+			specifywildcard = rep.getJobEntryAttributeBoolean(id_jobentry, "specify_wildcard");  
 			wildcard = rep.getJobEntryAttributeString(id_jobentry, "wildcard");
 			wildcardexclude = rep.getJobEntryAttributeString(id_jobentry, "wildcardexclude");
 			destination_folder = rep.getJobEntryAttributeString(id_jobentry, "destination_folder");
@@ -246,7 +246,7 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 		{
 			super.saveRep(rep, id_job);
 			rep.saveJobEntryAttribute(id_job, getID(), "foldername", foldername);
-			rep.saveJobEntryAttribute(id_job, getID(), "specify_wilcard", specifywildcard);
+			rep.saveJobEntryAttribute(id_job, getID(), "specify_wildcard", specifywildcard);
 			rep.saveJobEntryAttribute(id_job, getID(), "wildcard", wildcard);
 			rep.saveJobEntryAttribute(id_job, getID(), "wildcardexclude", wildcardexclude);
 
