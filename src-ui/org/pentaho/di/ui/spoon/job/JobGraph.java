@@ -143,7 +143,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 	
 	protected int shadowsize;
 
-    protected static Map<String,org.pentaho.xul.swt.menu.Menu> menuMap = new HashMap<String,org.pentaho.xul.swt.menu.Menu>();
+    protected Map<String,org.pentaho.xul.swt.menu.Menu> menuMap = new HashMap<String,org.pentaho.xul.swt.menu.Menu>();
 	protected int currentMouseX = 0;
 	protected int currentMouseY = 0;
 	protected JobEntryCopy jobEntry;
