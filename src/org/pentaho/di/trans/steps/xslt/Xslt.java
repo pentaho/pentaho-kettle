@@ -208,11 +208,8 @@ public class Xslt extends BaseStep implements StepInterface
             }
 			else
 			{
-				logError(Messages.getString("Xslt.ErrorProcesing")+e.getMessage()); //$NON-NLS-1$
-				setErrors(1);
-				stopAll();
-				setOutputDone();  // signal end to receiver(s)
-				return false;
+	            logError(Messages.getString("Xslt.ErrorProcesing" + " : "+ e.getMessage()));
+	            throw new KettleStepException(Messages.getString("Xslt.ErrorProcesing"), e);
 			}
 		}
    

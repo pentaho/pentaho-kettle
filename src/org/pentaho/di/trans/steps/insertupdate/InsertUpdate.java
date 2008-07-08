@@ -288,7 +288,6 @@ public class InsertUpdate extends BaseStep implements StepInterface
 	        }
 	        else
 	        {
-			
 				throw new KettleStepException(Messages.getString("InsertUpdate.Log.ErrorInStep"), e); //$NON-NLS-1$
 	        }
 			 

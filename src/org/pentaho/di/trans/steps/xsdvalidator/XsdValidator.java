@@ -309,11 +309,8 @@ public class XsdValidator extends BaseStep implements StepInterface
             }
 			else
 			{
-				logError(Messages.getString("XsdValidator.ErrorProcesing")+e.getMessage()); //$NON-NLS-1$
-				setErrors(1);
-				stopAll();
-				setOutputDone();  // signal end to receiver(s)
-				return false;
+	            logError(Messages.getString("XsdValidator.ErrorProcesing" + " : "+ e.getMessage()));
+	            throw new KettleStepException(Messages.getString("XsdValidator.ErrorProcesing"), e);
 			}
 		}
 		
