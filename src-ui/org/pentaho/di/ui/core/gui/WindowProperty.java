@@ -15,6 +15,7 @@ package org.pentaho.di.ui.core.gui;
 import org.eclipse.jface.util.Geometry;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Monitor;
 import org.eclipse.swt.widgets.Shell;
 
@@ -109,7 +110,7 @@ public class WindowProperty
          * Relocate the shell into either the parent monitor or if
          * there is no parent, the primary monitor then center it.
          */
-        if (!resizedRect.equals(shRect))
+        if (!resizedRect.equals(shRect) || isClippedByUnalignedMonitors(resizedRect, shell.getDisplay()))
         {
             Monitor monitor = shell.getDisplay().getPrimaryMonitor();
             if (shell.getParent() != null)
@@ -145,6 +146,41 @@ public class WindowProperty
         }
         // Detect if the dialog was positioned outside the container
         Geometry.moveInside(constrainee, container);
+    }
+    
+    /**
+     * This method is needed in the case where the display has multiple monitors, but
+     * they do not form a uniform rectangle.  In this case, it is possible for Geometry.moveInside()
+     * to not detect that the window is partially or completely clipped.
+     * We check to make sure at least the upper left portion of the rectangle is visible to give the
+     * user the ability to reposition the dialog in this rare case. 
+     * @param constrainee
+     * @param display
+     * @return
+     */
+    private boolean isClippedByUnalignedMonitors(Rectangle constrainee, Display display)
+    {
+        boolean isClipped;
+        Monitor[] monitors = display.getMonitors();
+        if (monitors.length > 0)
+        {
+            // Loop searches for a monitor proving false
+            isClipped = true;
+            for (Monitor monitor : monitors)
+            {
+                if (monitor.getClientArea().contains(constrainee.x + 50, constrainee.y + 50))
+                {
+                    isClipped = false;
+                    break;
+                }
+            }
+        }
+        else
+        {
+            isClipped = false;
+        }
+        
+        return isClipped;
     }
 
 	public String getName()
