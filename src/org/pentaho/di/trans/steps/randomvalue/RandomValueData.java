@@ -1,4 +1,4 @@
- /* Copyright (c) 2007 Pentaho Corporation.  All rights reserved. 
+/* Copyright (c) 2007 Pentaho Corporation.  All rights reserved. 
  * This software was developed by Pentaho Corporation and is provided under the terms 
  * of the GNU Lesser General Public License, Version 2.1. You may not use 
  * this file except in compliance with the license. If you need a copy of the license, 
@@ -7,8 +7,8 @@
  *
  * Software distributed under the GNU Lesser Public License is distributed on an "AS IS" 
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or  implied. Please refer to 
- * the license for the specific language governing your rights and limitations.*/
- 
+ * the license for the specific language governing your rights and limitations.
+ */
 
 package org.pentaho.di.trans.steps.randomvalue;
 
@@ -16,22 +16,19 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
 
-
-
 /**
  * @author Samatar Hassan
  * @since 24-jan-2005
  */
-public class RandomValueData extends BaseStepData implements StepDataInterface
-{
+public class RandomValueData extends BaseStepData implements StepDataInterface {
 	public boolean readsRows;
-    public RowMetaInterface outputRowMeta;
+
+	public RowMetaInterface outputRowMeta;
 
 	/**
 	 * 
 	 */
-	public RandomValueData()
-	{
+	public RandomValueData() {
 		super();
 	}
 }
