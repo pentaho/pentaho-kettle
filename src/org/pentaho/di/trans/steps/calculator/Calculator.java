@@ -94,12 +94,12 @@ public class Calculator extends BaseStep implements StepInterface
                     if (data.fieldIndexes[i].indexName<0)
                     {
                         // Nope: throw an exception
-                        throw new KettleStepException("Unable to find the specified fieldname '"+function.getFieldName()+"' for calculation #"+(i+1));
+                        throw new KettleStepException(Messages.getString("Calculator.Error.UnableFindField",function.getFieldName(),""+(i+1)));
                     }
                 }
                 else
                 {
-                    throw new KettleStepException("There is no name specified for calculated field #"+(i+1));
+                    throw new KettleStepException(Messages.getString("Calculator.Error.NoNameField",""+(i+1)));
                 }
 
                 if (!Const.isEmpty(function.getFieldA())) 
@@ -157,17 +157,38 @@ public class Calculator extends BaseStep implements StepInterface
             }
         }
 
-        if (log.isRowLevel()) log.logRowlevel(toString(), "Read row #"+getLinesRead()+" : "+getInputRowMeta().getString(r));
-
-        Object[] row = calcFields(getInputRowMeta(), r);		
-		putRow(data.outputRowMeta, row);     // copy row to possible alternate rowset(s).
-
-        if (log.isRowLevel()) log.logRowlevel(toString(), "Wrote row #"+getLinesWritten()+" : "+getInputRowMeta().getString(r));
-        if (checkFeedback(getLinesRead())) 
-        {
-        	if(log.isBasic()) logBasic("Linenr "+getLinesRead());
+        if (log.isRowLevel()) log.logRowlevel(toString(), Messages.getString("Calculator.Log.ReadRow")+getLinesRead()+" : "+getInputRowMeta().getString(r));
+        boolean sendToErrorRow=false;
+        String errorMessage = null;
+        
+        try{        
+	        Object[] row = calcFields(getInputRowMeta(), r);		
+			putRow(data.outputRowMeta, row);     // copy row to possible alternate rowset(s).
+	
+	        if (log.isRowLevel()) log.logRowlevel(toString(), "Wrote row #"+getLinesWritten()+" : "+getInputRowMeta().getString(r));
+	        if (checkFeedback(getLinesRead())) 
+	        {
+	        	if(log.isBasic()) logBasic(Messages.getString("Calculator.Log.Linenr",""+getLinesRead()));
+	        }
         }
-
+        catch(KettleException e)
+        {
+        	if (getStepMeta().isDoingErrorHandling())
+        	{
+                  sendToErrorRow = true;
+                  errorMessage = e.toString();
+        	}
+        	else
+        	{
+	            logError(Messages.getString("Calculator.ErrorInStepRunning" + " : "+ e.getMessage()));
+	            throw new KettleStepException(Messages.getString("Calculator.ErrorInStepRunning"), e);
+        	}
+        	if (sendToErrorRow)
+        	{
+        	   // Simply add this row to the error row
+        	   putError(getInputRowMeta(), r, 1, errorMessage, null, "CALC001");
+        	}
+        }
 		return true;
 	}
 

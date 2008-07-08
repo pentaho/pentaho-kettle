@@ -459,7 +459,7 @@ public class ValueDataUtil
         case ValueMetaInterface.TYPE_NUMBER    : 
             return new Double( Math.abs(metaA.getNumber(dataA).doubleValue()) );
         case ValueMetaInterface.TYPE_INTEGER   : 
-            return metaA.getInteger(dataA);
+            return metaA.getInteger(Math.abs(metaA.getNumber(dataA).longValue()) );
         case ValueMetaInterface.TYPE_BIGNUMBER : 
             return new BigDecimal( Math.abs( metaA.getNumber(dataA).doubleValue()) );
             

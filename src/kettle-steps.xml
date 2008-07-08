@@ -1005,4 +1005,15 @@
 		</tooltip>
 		<image-uri>ui/images/CSM.png</image-uri>
 	</step>
+		<step id="RandomValue">
+		<description>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.RandomValue")
+		</description>
+		<class-name>org.pentaho.di.trans.steps.randomvalue.RandomValueMeta</class-name>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@INPUT.getName()</category>
+		<tooltip>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.RandomValue")
+		</tooltip>
+		<image-uri>ui/images/RVA.png</image-uri>
+	</step>
 </steps>
