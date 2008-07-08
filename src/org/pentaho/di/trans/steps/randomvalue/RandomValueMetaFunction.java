@@ -78,6 +78,4 @@ public class RandomValueMetaFunction
     {
         this.type = type;
     }
-    
-    
 }

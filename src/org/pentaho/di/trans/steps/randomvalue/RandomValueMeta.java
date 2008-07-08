@@ -38,29 +38,25 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.w3c.dom.Node;
 
 
-
-/*
+/**
  * Created on 08-07-2008
- *
  */
-
 public class RandomValueMeta extends BaseStepMeta implements StepMetaInterface
 {
-    public final static int TYPE_SYSTEM_INFO_NONE          =  0;
-    public final static int TYPE_RANDOM_NUMBER             =  1;
-    public final static int TYPE_RANDOM_INTEGER            =  2;
-    public final static int TYPE_RANDOM_STRING            =  3;
+    public final static int TYPE_SYSTEM_INFO_NONE       =  0;
+    public final static int TYPE_RANDOM_NUMBER          =  1;
+    public final static int TYPE_RANDOM_INTEGER         =  2;
+    public final static int TYPE_RANDOM_STRING          =  3;
     public final static int TYPE_RANDOM_UUID            =  4;
 
- 
 
     public static final RandomValueMetaFunction functions[] = new RandomValueMetaFunction[] {
             null,
-            new RandomValueMetaFunction(TYPE_RANDOM_NUMBER      , "random number", Messages.getString("RandomValueMeta.TypeDesc.RandomNumber")),
-            new RandomValueMetaFunction(TYPE_RANDOM_INTEGER      , "random integer", Messages.getString("RandomValueMeta.TypeDesc.RandomInteger")),
-            new RandomValueMetaFunction(TYPE_RANDOM_STRING      , "random string", Messages.getString("RandomValueMeta.TypeDesc.RandomString")),
-            new RandomValueMetaFunction(TYPE_RANDOM_UUID      , "random string", Messages.getString("RandomValueMeta.TypeDesc.RandomUUID")),
-};
+            new RandomValueMetaFunction(TYPE_RANDOM_NUMBER  , "random number",  Messages.getString("RandomValueMeta.TypeDesc.RandomNumber")),
+            new RandomValueMetaFunction(TYPE_RANDOM_INTEGER , "random integer", Messages.getString("RandomValueMeta.TypeDesc.RandomInteger")),
+            new RandomValueMetaFunction(TYPE_RANDOM_STRING  , "random string",  Messages.getString("RandomValueMeta.TypeDesc.RandomString")),
+            new RandomValueMetaFunction(TYPE_RANDOM_UUID    , "random string",  Messages.getString("RandomValueMeta.TypeDesc.RandomUUID")),
+    };
     
 	private String fieldName[];
 	private int    fieldType[];
@@ -222,18 +218,18 @@ public class RandomValueMeta extends BaseStepMeta implements StepMetaInterface
 
 	public String getXML()
 	{
-        StringBuffer retval = new StringBuffer();
+        StringBuffer retval = new StringBuffer(200);
 
-		retval.append("    <fields>"+Const.CR);
+		retval.append("    <fields>").append(Const.CR);
 		
 		for (int i=0;i<fieldName.length;i++)
 		{
-			retval.append("      <field>"+Const.CR);
-			retval.append("        "+XMLHandler.addTagValue("name", fieldName[i]));
-			retval.append("        "+XMLHandler.addTagValue("type", functions[fieldType[i]]!=null ? functions[fieldType[i]].getCode() : "") );
-			retval.append("        </field>"+Const.CR);
+			retval.append("      <field>").append(Const.CR);
+			retval.append("        ").append(XMLHandler.addTagValue("name", fieldName[i]));
+			retval.append("        ").append(XMLHandler.addTagValue("type", functions[fieldType[i]]!=null ? functions[fieldType[i]].getCode() : "") );
+			retval.append("      </field>").append(Const.CR);
 		}
-		retval.append("      </fields>"+Const.CR);
+		retval.append("    </fields>"+Const.CR);
 
 		return retval.toString();
 	}
@@ -303,5 +299,4 @@ public class RandomValueMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		return new RandomValueData();
 	}
-
 }

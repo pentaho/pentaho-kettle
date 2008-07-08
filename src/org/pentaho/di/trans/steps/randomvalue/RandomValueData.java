@@ -19,7 +19,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 
 
 /**
- * @author Samatar
+ * @author Samatar Hassan
  * @since 24-jan-2005
  */
 public class RandomValueData extends BaseStepData implements StepDataInterface
@@ -34,5 +34,4 @@ public class RandomValueData extends BaseStepData implements StepDataInterface
 	{
 		super();
 	}
-
 }
