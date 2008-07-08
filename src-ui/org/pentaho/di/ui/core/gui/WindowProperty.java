@@ -15,6 +15,7 @@ package org.pentaho.di.ui.core.gui;
 import org.eclipse.jface.util.Geometry;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Monitor;
 import org.eclipse.swt.widgets.Shell;
 
 /**
@@ -78,46 +79,15 @@ public class WindowProperty
      * @param shell
      *            The dialog to position and size
      * @param onlyPosition
-     *            Avoid resizing if true
+     *            Unused argument.  If the window is outside the viewable client are,
+     *            it must be resized to prevent inaccessibility.
      * @param minWidth
      * @param minHeight
      */
 	public void setShell(Shell shell, boolean onlyPosition, int minWidth, int minHeight)
 	{
-		boolean sized=false;
-		
-		if (!onlyPosition)
-		{
-			shell.setMaximized(maximized);
-		}
-		Rectangle r = rectangle;
-		if (r!=null && r.x>=0 && r.y>=0 && r.width>=0 && r.height>=0)
-		{
-			if (r.width > 0 && r.height > 0)
-			{
-			    if (!onlyPosition)
-			    {
-			        shell.setSize(r.width, r.height);
-			    }
-			}
-			if (r.x > 0 && r.y > 0)
-			{
-			    shell.setLocation(r.x, r.y);
-			}
-			
-			sized=true;
-		}
-		
-		if (!onlyPosition)
-		{
-			if (!sized)
-			{
-				// shell.pack();
-				shell.layout();
-			}
-		}
-		
-		// System.out.println("Shell ["+shell.getText()+"] size : "+shell.getBounds());
+		shell.setMaximized(maximized);
+		shell.setBounds(rectangle);
         
         if (minWidth > 0 || minHeight > 0)
         {
@@ -126,45 +96,56 @@ public class WindowProperty
             if (bounds.height < minHeight) bounds.height = minHeight;
             shell.setSize(bounds.width, bounds.height);
         }
-        // Sometimes the size of the shell is WAY too great!
-        // What's the maximum size for this window?
-        // Let's say the size of the Display...
 
         Rectangle shRect = shell.getBounds();
-        Point shSize = Geometry.getSize(shRect);
-        Rectangle diRect = shell.getDisplay().getPrimaryMonitor().getClientArea();
-        Point diSize = Geometry.getSize(diRect);
-        
+
+        Rectangle entireClientArea = shell.getDisplay().getClientArea();
         Rectangle resizedRect = Geometry.copy(shRect);
-        Point oversize = Geometry.subtract(shSize, diSize);
+        constrainRectangleToContainer(resizedRect, entireClientArea);
+        
+        /* If the persisted size/location doesn't perfectly fit
+         * into the entire client area, the persisted settings
+         * likely were not meant for this configuration of monitors.
+         * Relocate the shell into either the parent monitor or if
+         * there is no parent, the primary monitor then center it.
+         */
+        if (!resizedRect.equals(shRect))
+        {
+            Monitor monitor = shell.getDisplay().getPrimaryMonitor();
+            if (shell.getParent() != null)
+            {
+                monitor = shell.getParent().getMonitor();
+            }
+            Rectangle monitorClientArea = monitor.getClientArea();
+            constrainRectangleToContainer(resizedRect, monitorClientArea);
+            
+            resizedRect.x = monitorClientArea.x + (monitorClientArea.width - resizedRect.width) / 2;
+            resizedRect.y = monitorClientArea.y + (monitorClientArea.height - resizedRect.height) / 2;
+
+            shell.setBounds(resizedRect);
+        }
+	}
+
+    /**
+     * @param constrainee
+     * @param container
+     */
+    private void constrainRectangleToContainer(Rectangle constrainee, Rectangle container)
+    {
+        Point originalSize = Geometry.getSize(constrainee);
+        Point containerSize = Geometry.getSize(container);
+        Point oversize = Geometry.subtract(originalSize, containerSize);
         if (oversize.x > 0)
         {
-            resizedRect.width = shSize.x - oversize.x;
+            constrainee.width = originalSize.x - oversize.x;
         }
         if (oversize.y > 0)
         {
-            resizedRect.height = shSize.y - oversize.y;
+            constrainee.height = originalSize.y - oversize.y;
         }
-        
-        if (shRect.width != resizedRect.width || shRect.height != resizedRect.height)
-        {
-            // Make the shell smaller
-        	if (!onlyPosition)
-        	{
-        		shell.setSize(resizedRect.width, resizedRect.height);
-        	}
-        }
-        
-        // Detect if the dialog was positioned outside the current client area
-        Geometry.moveInside(resizedRect, diRect);
-        if (shRect.x != resizedRect.x || shRect.y != resizedRect.y)
-        {
-            int middleX = diRect.x + (diRect.width - resizedRect.width) / 2;
-            int middleY = diRect.y + (diRect.height - resizedRect.height) / 2;
-
-            shell.setLocation(middleX, middleY);
-        }
-	}
+        // Detect if the dialog was positioned outside the container
+        Geometry.moveInside(constrainee, container);
+    }
 
 	public String getName()
 	{
