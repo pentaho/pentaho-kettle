@@ -51,7 +51,7 @@ public class Const
 	/**
 	 *  Version number
 	 */
-	public static final String VERSION = "3.1.0-M3";
+	public static final String VERSION = "3.1.0-RC1";
 
 	/**
 	 * Sleep time waiting when buffer is empty
