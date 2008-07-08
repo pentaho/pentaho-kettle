@@ -154,9 +154,11 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 		// Otherwise it keeps showing up in the objects tree
 		// Look for the transformation, not the key (name might have changed)
 		//
-		for (String key : transformationMap.keySet()) {
-			if (transformationMap.get(key).equals(transMeta)) {
-				transformationMap.remove(key);
+		synchronized(transformationMap) {
+			for (String key : transformationMap.keySet()) {
+				if (transformationMap.get(key).equals(transMeta)) {
+					transformationMap.remove(key);
+				}
 			}
 		}
 
