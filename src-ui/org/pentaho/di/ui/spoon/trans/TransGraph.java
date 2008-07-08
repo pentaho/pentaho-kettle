@@ -229,7 +229,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 
   private TransDebugMeta lastTransDebugMeta;
 
-  protected static Map<String, org.pentaho.xul.swt.menu.Menu> menuMap = new HashMap<String, org.pentaho.xul.swt.menu.Menu>();
+  protected Map<String, org.pentaho.xul.swt.menu.Menu> menuMap = new HashMap<String, org.pentaho.xul.swt.menu.Menu>();
 
   protected int currentMouseX = 0;
 
