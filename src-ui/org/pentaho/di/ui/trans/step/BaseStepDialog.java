@@ -37,6 +37,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Monitor;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
@@ -577,10 +578,15 @@ public class BaseStepDialog extends Dialog {
 
       // Now, as this is the first time it gets opened, try to put it in the middle of the screen...
       Rectangle shellBounds = shell.getBounds();
-      Rectangle dispBounds = shell.getParent().getMonitor().getClientArea();
+      Monitor monitor = shell.getDisplay().getPrimaryMonitor();
+      if (shell.getParent() != null)
+      {
+          monitor = shell.getParent().getMonitor();
+      }
+      Rectangle monitorClientArea = monitor.getClientArea();
 
-      int middleX = dispBounds.x + (dispBounds.width - shellBounds.width) / 2;
-      int middleY = dispBounds.y + (dispBounds.height - shellBounds.height) / 2;
+      int middleX = monitorClientArea.x + (monitorClientArea.width - shellBounds.width) / 2;
+      int middleY = monitorClientArea.y + (monitorClientArea.height - shellBounds.height) / 2;
 
       shell.setLocation(middleX, middleY);
     }
