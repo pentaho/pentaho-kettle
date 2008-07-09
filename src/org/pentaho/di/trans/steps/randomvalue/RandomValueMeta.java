@@ -288,17 +288,14 @@ public class RandomValueMeta extends BaseStepMeta implements StepMetaInterface {
 			if (fieldType[i] <= TYPE_SYSTEM_INFO_NONE) {
 				CheckResult cr = new CheckResult(
 						CheckResultInterface.TYPE_RESULT_ERROR,
-						Messages.getString(
-								"RandomValueMeta.CheckResult.FieldHasNoType",
-								fieldName[i]), stepMeta);
+						Messages.getString("RandomValueMeta.CheckResult.FieldHasNoType",fieldName[i]), stepMeta);
 				remarks.add(cr);
 			}
 		}
 		if (remarks.size() == nrRemarks) {
 			CheckResult cr = new CheckResult(
 					CheckResultInterface.TYPE_RESULT_OK,
-					Messages
-							.getString("RandomValueMeta.CheckResult.AllTypesSpecified"),
+					Messages.getString("RandomValueMeta.CheckResult.AllTypesSpecified"),
 					stepMeta);
 			remarks.add(cr);
 		}
