@@ -302,16 +302,10 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
 	}
 	private void activeUrlInfield()
 	{
-		if(wUrlInField.getSelection()){
-    		wUrlField.setEnabled(true);
-    		wlUrl.setEnabled(false);
-    		wUrl.setEnabled(false);
-    	}
-    	else{
-    		wUrlField.setEnabled(false);
-    		wlUrl.setEnabled(true);
-    		wUrl.setEnabled(true);
-    	}       
+		wlUrlField.setEnabled(wUrlInField.getSelection());
+		wUrlField.setEnabled(wUrlInField.getSelection());
+		wlUrl.setEnabled(!wUrlInField.getSelection());
+		wUrl.setEnabled(!wUrlInField.getSelection());    
 	}
 	/**
 	 * Copy information from the meta-data input to the dialog fields.
