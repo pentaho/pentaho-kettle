@@ -59,8 +59,7 @@ public class RandomValueMeta extends BaseStepMeta implements StepMetaInterface {
 			new RandomValueMetaFunction(
 					TYPE_RANDOM_INTEGER,
 					"random integer",
-					Messages
-							.getString("RandomValueMeta.TypeDesc.RandomInteger")),
+					Messages.getString("RandomValueMeta.TypeDesc.RandomInteger")),
 			new RandomValueMetaFunction(TYPE_RANDOM_STRING, "random string",
 					Messages.getString("RandomValueMeta.TypeDesc.RandomString")),
 			new RandomValueMetaFunction(TYPE_RANDOM_UUID, "random string",
