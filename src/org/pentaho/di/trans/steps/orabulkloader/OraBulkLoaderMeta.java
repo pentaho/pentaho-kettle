@@ -105,6 +105,9 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 	
 	/** Encoding to use */
 	private String encoding;
+	
+	/** Character set name used for Oracle */
+	private String characterSetName;
 
     /** Direct Path? */
 	private boolean directPath;
@@ -114,6 +117,12 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 	
 	/** Database name override */
 	private String dbNameOverride;
+	
+	/** Fails when sqlldr returns a warning **/
+	private boolean failOnWarning;
+	
+	/** Fails when sqlldr returns anything else than a warning or OK **/
+	private boolean failOnError;
 	
 	/*
 	 * Do not translate following values!!! They are will end up in the job export.
@@ -126,7 +135,7 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 	/*
 	 * Do not translate following values!!! They are will end up in the job export.
 	 */
-	// final static public String METHOD_AUTO_CONCURRENT = "AUTO_CONCURRENT";
+	final static public String METHOD_AUTO_CONCURRENT = "AUTO_CONCURRENT";
 	final static public String METHOD_AUTO_END        = "AUTO_END";
 	final static public String METHOD_MANUAL          = "MANUAL";
 	
@@ -236,6 +245,30 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 	public void setDateMask(String[] dateMask) {
 		this.dateMask = dateMask;
 	}
+	
+	public boolean isFailOnWarning() {
+		return failOnWarning;
+	}
+
+	public void setFailOnWarning(boolean failOnWarning) {
+		this.failOnWarning = failOnWarning;
+	}
+
+	public boolean isFailOnError() {
+		return failOnError;
+	}
+
+	public void setFailOnError(boolean failOnError) {
+		this.failOnError = failOnError;
+	}
+
+	public String getCharacterSetName() {
+		return characterSetName;
+	}
+
+	public void setCharacterSetName(String characterSetName) {
+		this.characterSetName = characterSetName;
+	}
 
 	public void loadXML(Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters)
 		throws KettleXMLException
@@ -300,7 +333,11 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 			directPath     = "Y".equalsIgnoreCase( XMLHandler.getTagValue(stepnode, "direct_path")); //$NON-NLS-1$
 			eraseFiles     = "Y".equalsIgnoreCase( XMLHandler.getTagValue(stepnode, "erase_files")); //$NON-NLS-1$
 			encoding       = XMLHandler.getTagValue(stepnode, "encoding");         //$NON-NLS-1$
-			dbNameOverride = XMLHandler.getTagValue(stepnode, "dbname_override");  //$NON-NLS-1$
+			dbNameOverride = XMLHandler.getTagValue(stepnode, "dbname_override");  //$NON-NLS-1$#
+			
+			characterSetName = XMLHandler.getTagValue(stepnode, "character_set");                     //$NON-NLS-1$
+			failOnWarning    = "Y".equalsIgnoreCase( XMLHandler.getTagValue(stepnode, "fail_on_warning")); //$NON-NLS-1$
+			failOnError      = "Y".equalsIgnoreCase( XMLHandler.getTagValue(stepnode, "fail_on_error"));   //$NON-NLS-1$
 
 			nrvalues       = XMLHandler.countNodes(stepnode, "mapping");      //$NON-NLS-1$
 			allocate(nrvalues);
@@ -358,6 +395,10 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 			
 		directPath   = false;
 		eraseFiles   = true;
+		
+		characterSetName   = ""; //$NON-NLS-1$
+		failOnWarning      = false;
+		failOnError        = false;
 
 		int nrvalues = 0;
 		allocate(nrvalues);
@@ -387,6 +428,10 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 		retval.append("    ").append(XMLHandler.addTagValue("erase_files",  eraseFiles));    //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("    ").append(XMLHandler.addTagValue("encoding",     encoding));      //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("    ").append(XMLHandler.addTagValue("dbname_override", dbNameOverride));      //$NON-NLS-1$ //$NON-NLS-2$
+		
+		retval.append("    ").append(XMLHandler.addTagValue("character_set", characterSetName));   //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    ").append(XMLHandler.addTagValue("fail_on_warning", failOnWarning));   //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    ").append(XMLHandler.addTagValue("fail_on_error", failOnError));       //$NON-NLS-1$ //$NON-NLS-2$
 		
 		for (int i=0;i<fieldTable.length;i++)
 		{
@@ -426,7 +471,11 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 			directPath     =      rep.getStepAttributeBoolean(id_step, "direct_path");    //$NON-NLS-1$
 			eraseFiles     =      rep.getStepAttributeBoolean(id_step, "erase_files");    //$NON-NLS-1$
 			encoding       =      rep.getStepAttributeString(id_step,  "encoding");       //$NON-NLS-1$
-			dbNameOverride =      rep.getStepAttributeString(id_step,  "dbname_override");//$NON-NLS-1$			
+			dbNameOverride =      rep.getStepAttributeString(id_step,  "dbname_override");//$NON-NLS-1$
+			
+			characterSetName =    rep.getStepAttributeString(id_step,  "character_set"); //$NON-NLS-1$
+			failOnWarning    = 	  rep.getStepAttributeBoolean(id_step, "fail_on_warning");    //$NON-NLS-1$
+			failOnError      =    rep.getStepAttributeBoolean(id_step, "fail_on_error");      //$NON-NLS-1$
 			
 			int nrvalues = rep.countNrStepAttributes(id_step, "stream_name");             //$NON-NLS-1$
 
@@ -471,6 +520,10 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "erase_files",     eraseFiles);    //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "encoding",        encoding);      //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "dbname_override", dbNameOverride);//$NON-NLS-1$
+			
+			rep.saveStepAttribute(id_transformation, id_step, "character_set", characterSetName);  //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "fail_on_warning",    failOnWarning);     //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "fail_on_error",      failOnError);       //$NON-NLS-1$			
 
 			for (int i=0;i<fieldTable.length;i++)
 			{
