@@ -54,7 +54,11 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  * @since  20-feb-2007
  */
 public class OraBulkLoader extends BaseStep implements StepInterface
-{
+{	
+	public final static int EX_SUCC = 0;
+	
+	public final static int EX_WARN = 2;
+	
 	Process sqlldrProcess = null;
 	
 	private OraBulkLoaderMeta meta;
@@ -122,13 +126,6 @@ public class OraBulkLoader extends BaseStep implements StepInterface
 		DatabaseMeta dm = meta.getDatabaseMeta();
 		String inputName = "'" + environmentSubstitute(meta.getDataFile()) + "'";
 		
-		//if ( OraBulkLoaderMeta.METHOD_AUTO_CONCURRENT.equals(meta.getLoadMethod()) )
-		//{
-		//	// if loading is concurrent, the filename has to be a * as sqlldr will
-		//	// read from stdin.		
-		//	inputName = "*";
-		//}
-		
 		String loadAction = meta.getLoadAction();
 
 		StringBuffer contents = new StringBuffer(500); 
@@ -155,9 +152,15 @@ public class OraBulkLoader extends BaseStep implements StepInterface
 	
  	    contents.append(")").append(Const.CR);
 		 	    
-		contents.append("LOAD DATA").append(Const.CR).append(
-		                "INFILE ").append(inputName).append(Const.CR).append(
-		                "INTO TABLE ").append(dm.getQuotedSchemaTableCombination(environmentSubstitute(meta.getSchemaName()),
+		contents.append("LOAD DATA").append(Const.CR);
+		if ( !Const.isEmpty(meta.getCharacterSetName()) ) {
+			contents.append("CHARACTERSET ").append(meta.getCharacterSetName()).append(Const.CR);
+		}
+		if ( !OraBulkLoaderMeta.METHOD_AUTO_CONCURRENT.equals(meta.getLoadMethod()) ) {
+			// For concurrent input, data command line argument must be specified
+			contents.append("INFILE ").append(inputName).append(Const.CR);
+		}
+		contents.append("INTO TABLE ").append(dm.getQuotedSchemaTableCombination(environmentSubstitute(meta.getSchemaName()),
 		            		                                                     environmentSubstitute(meta.getTableName()))).append(
 		                Const.CR).append(loadAction).append(Const.CR).append(		                    
                         "FIELDS TERMINATED BY ',' ENCLOSED BY '\"'").append(Const.CR).append(
@@ -220,12 +223,7 @@ public class OraBulkLoader extends BaseStep implements StepInterface
 			    	break;
 			}
 		}
-		contents.append(")");
-		
-		//if ( OraBulkLoaderMeta.METHOD_AUTO_CONCURRENT.equals(meta.getLoadMethod()) )
-		//{
-		//	contents.append(Const.CR).append("BEGINDATA").append(Const.CR);
-		//}
+		contents.append(")");		
 		
 		return contents.toString();
 	}
@@ -313,6 +311,10 @@ public class OraBulkLoader extends BaseStep implements StepInterface
 	   else
 	   {
 		   throw new KettleException("No control file specified");
+	   }
+	   
+	   if ( OraBulkLoaderMeta.METHOD_AUTO_CONCURRENT.equals(meta.getLoadMethod()) ) {
+		   sb.append(" data=\'-\'");
 	   }
 	   	   
 	   if ( meta.getLogFile() != null )
@@ -404,6 +406,20 @@ public class OraBulkLoader extends BaseStep implements StepInterface
 	   return sb.toString(); 
 	}
 	
+	public void checkExitVal(int exitVal) throws KettleException {
+		if (exitVal == EX_SUCC) {
+			return;
+		}
+		
+		if (meta.isFailOnWarning() && (exitVal == EX_WARN)) {
+			throw new KettleException("sqlldr returned warning");			
+		} else if (meta.isFailOnError() && (exitVal != EX_WARN)) {
+			throw new KettleException(
+					"sqlldr returned an error (exit code " + 
+					exitVal + ")");
+		}
+	}
+	
 	public boolean execute(OraBulkLoaderMeta meta, boolean wait) throws KettleException
 	{
         Runtime rt = Runtime.getRuntime();
@@ -426,8 +442,10 @@ public class OraBulkLoader extends BaseStep implements StepInterface
             if ( wait ) 
             {
                 // any error???
-            	int exitVal = sqlldrProcess.waitFor();
+            	int exitVal = sqlldrProcess.waitFor();            
+            	sqlldrProcess = null;            	
 				logBasic(Messages.getString("OraBulkLoader.Log.ExitValueSqlldr", "" + exitVal)); //$NON-NLS-1$
+				checkExitVal(exitVal);
             }
         }
         catch ( Exception ex )
@@ -470,27 +488,34 @@ public class OraBulkLoader extends BaseStep implements StepInterface
 					String loadMethod = meta.getLoadMethod();
 					if ( OraBulkLoaderMeta.METHOD_AUTO_END.equals(loadMethod))
 					{
-						execute(meta, true);
+						// if this is the first line, we do not need to execute loader
+						// control file may not exists
+						if ( ! first ) {
+							execute(meta, true);							
+							sqlldrProcess = null;							
+						}
 					}
-				//	else if ( OraBulkLoaderMeta.METHOD_AUTO_CONCURRENT.equals(meta.getLoadMethod()) )
-				//	{
-				//		try 
-				//		{
-				//			if ( sqlldrProcess != null )
-				//			{
-				//				int exitVal = sqlldrProcess.waitFor();
-				//				logBasic(Messages.getString("OraBulkLoader.Log.ExitValueSqlldr", "" + exitVal)); //$NON-NLS-1$
-				//			}
-				//			else
-				//			{
-				//				throw new KettleException("Internal error: no sqlldr process running");
-				//			}
-				//		}
-				//		catch ( Exception ex )
-				//		{
-				//			throw new KettleException("Error while executing sqlldr", ex);
-				//		}
-				//	}
+					else if ( OraBulkLoaderMeta.METHOD_AUTO_CONCURRENT.equals(meta.getLoadMethod()) )
+					{
+						try 
+						{
+							if ( sqlldrProcess != null )
+							{
+								int exitVal = sqlldrProcess.waitFor();								
+								sqlldrProcess = null;																
+								logBasic(Messages.getString("OraBulkLoader.Log.ExitValueSqlldr", "" + exitVal)); //$NON-NLS-1$
+								checkExitVal(exitVal);
+							}
+							else if ( ! first )
+							{
+								throw new KettleException("Internal error: no sqlldr process running");
+							}
+						}
+						catch ( Exception ex )
+						{
+							throw new KettleException("Error while executing sqlldr", ex);
+						}
+					}
 				}			
 				return false;
 			}
@@ -503,13 +528,13 @@ public class OraBulkLoader extends BaseStep implements StepInterface
 					createControlFile(environmentSubstitute(meta.getControlFile()), r, meta);
 					output = new OraBulkDataOutput(meta);			
 
-				//	if ( OraBulkLoaderMeta.METHOD_AUTO_CONCURRENT.equals(meta.getLoadMethod()) )
-				//	{
-				//		execute(meta, false);
-				//	}
+					if ( OraBulkLoaderMeta.METHOD_AUTO_CONCURRENT.equals(meta.getLoadMethod()) )
+					{
+						execute(meta, false);
+					}
 					output.open(this, sqlldrProcess);
 				}
-				output.writeLine(getInputRowMeta(), r);
+				output.writeLine(getInputRowMeta(), r);				
 			}
 			putRow(getInputRowMeta(), r);
 			incrementLinesOutput();
@@ -548,6 +573,35 @@ public class OraBulkLoader extends BaseStep implements StepInterface
 	    data = (OraBulkLoaderData)sdi;
 
 	    super.dispose(smi, sdi);
+	    
+	    // close output stream (may terminate running sqlldr)	    
+	    if ( output != null )
+		{
+			// Close the output
+			try  {
+				output.close();
+			}
+			catch ( IOException e )
+			{
+				logError("Error while closing output", e); 
+			}
+
+			output = null;
+		}
+	    // running sqlldr process must be terminated	    
+	    if ( sqlldrProcess != null ) {
+	    	try {
+	    		int exitVal = sqlldrProcess.waitFor();								
+	    		sqlldrProcess = null;																
+	    		logBasic(Messages.getString("OraBulkLoader.Log.ExitValueSqlldr", "" + exitVal)); //$NON-NLS-1$
+	    	} catch(InterruptedException e) {
+	    		/* process should be destroyed */
+	    		e.printStackTrace();
+	    		if (sqlldrProcess != null) {
+	    			sqlldrProcess.destroy();
+	    		}
+	    	}
+	    }
 	    
 	    if ( !preview && meta.isEraseFiles() )
 	    {
@@ -597,17 +651,6 @@ public class OraBulkLoader extends BaseStep implements StepInterface
 	       {
 	           logBasic("Deletion of files is not compatible with \'manual load method\'");	   
 	       }
-	       
-	       if (sqlldrProcess != null) {
-				// close the streams
-				// otherwise you get "Too many open files, java.io.IOException" after a lot of iterations
-	    	   try {
-	    		   sqlldrProcess.getErrorStream().close();
-				   sqlldrProcess.getInputStream().close();
-	    	   } catch (IOException e) {
-	    		   logDetailed("Warning: Error closing streams: " + e.getMessage());
-	    	   }
-	       }
 	    }
 	}
 
@@ -620,6 +663,24 @@ public class OraBulkLoader extends BaseStep implements StepInterface
 	// Run is were the action happens!
 	public void run()
 	{
-    	BaseStep.runStepThread(this, meta, data);
+		try
+		{
+			logBasic(Messages.getString("System.Log.StartingToRun")); //$NON-NLS-1$
+			
+			while (processRow(meta, data) && !isStopped());
+		}
+		catch(Throwable t)
+		{
+			logError(Messages.getString("System.Log.UnexpectedError")+" : "); //$NON-NLS-1$ //$NON-NLS-2$
+            logError(Const.getStackTracker(t));
+            setErrors(1);
+			stopAll();
+		}
+		finally
+		{
+			dispose(meta, data);
+			logSummary();
+			markStop();
+		}
 	}
 }

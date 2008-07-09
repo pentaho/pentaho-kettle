@@ -16,7 +16,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
+import java.io.Writer;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -38,7 +38,8 @@ import org.pentaho.di.core.variables.VariableSpace;
 public class OraBulkDataOutput 
 {
 	private OraBulkLoaderMeta meta;
-	private PrintWriter       output = null;
+	private Writer       	  output = null;
+	private StringBuilder     outbuf = null;
 	private boolean           first = true;
 	private int               fieldNumbers[] = null;
 	private String            enclosure = null;
@@ -52,41 +53,36 @@ public class OraBulkDataOutput
 	
 	public void open(VariableSpace space, Process sqlldrProcess) throws KettleException
 	{
-		// String loadMethod = meta.getLoadMethod();
+		String loadMethod = meta.getLoadMethod();
 		try 
 		{
 			OutputStream os = null;
 
-		//	if ( OraBulkLoaderMeta.METHOD_AUTO_CONCURRENT.equals(loadMethod))
-		//	{
-		//		String dataFile = meta.getControlFile();
-		//		dataFile = StringUtil.environmentSubstitute(dataFile);
-				
-        //      os = new FileOutputStream(dataFile, true);
-		//	}
-		//	else
-		//	{
+			if ( OraBulkLoaderMeta.METHOD_AUTO_CONCURRENT.equals(loadMethod))
+			{
+				os = sqlldrProcess.getOutputStream();
+			}
+			else
+			{
 				// Else open the data file filled in.
 				String dataFile = meta.getDataFile();
 				dataFile = space.environmentSubstitute(dataFile);
 				
                 os = new FileOutputStream(dataFile, false);
-		//	}	
+			}	
 			
             String encoding = meta.getEncoding();
             if ( Const.isEmpty(encoding) )
             {
             	// Use the default encoding.
-			    output = new PrintWriter(
-  	                      	     new BufferedWriter(
-							      new OutputStreamWriter(os)));
+			    output = new BufferedWriter(
+							      new OutputStreamWriter(os));
             }
             else
             {
             	// Use the specified encoding
-			    output = new PrintWriter(
-  	                      	     new BufferedWriter(
-							      new OutputStreamWriter(os, encoding)));
+			    output = new BufferedWriter(
+							      new OutputStreamWriter(os, encoding));
             }
 		}
 		catch ( IOException e )
@@ -103,10 +99,10 @@ public class OraBulkDataOutput
 		}
 	}
 	
-	PrintWriter getOutput()
+	Writer getOutput()
 	{
 	    return output;
-	}
+	}	
 	
 	private String createEscapedString(String orig, String enclosure)
 	{
@@ -139,21 +135,24 @@ public class OraBulkDataOutput
 			
 			sdfDate = new SimpleDateFormat("yyyy-MM-dd");
 			sdfDateTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+			
+			outbuf = new StringBuilder();
         }
+        outbuf.setLength(0);        
         
         // Write the data to the output
         ValueMetaInterface v = null;
         int number = 0;
 		for (int i=0;i<fieldNumbers.length;i++) 
 		{
-			if ( i!=0 ) output.print(",");
+			if ( i!=0 ) outbuf.append(",");
 			v = mi.getValueMeta(i);
 			number = fieldNumbers[i];
 			if ( row[number] == null)
 			{
 				// TODO (SB): special check for null in case of Strings.
-				output.print(enclosure);
-				output.print(enclosure);
+				outbuf.append(enclosure);
+				outbuf.append(enclosure);
 			}
 			else
 			{
@@ -163,64 +162,71 @@ public class OraBulkDataOutput
 					String s = mi.getString(row, number);
 					if ( s.indexOf(enclosure) >= 0 )
 						s = createEscapedString(s, enclosure);
-					output.print(enclosure);
-					output.print(s);
-					output.print(enclosure);
+					outbuf.append(enclosure);
+					outbuf.append(s);
+					outbuf.append(enclosure);
 					break;
 				case ValueMetaInterface.TYPE_INTEGER:
 					Long l = mi.getInteger(row, number);
-					output.print(enclosure);
-					output.print(l);
-					output.print(enclosure);
+					outbuf.append(enclosure);
+					outbuf.append(l);
+					outbuf.append(enclosure);
 					break;
 				case ValueMetaInterface.TYPE_NUMBER:
 					Double d = mi.getNumber(row, number);
-					output.print(enclosure);
-					output.print(d);
-					output.print(enclosure);
+					outbuf.append(enclosure);
+					outbuf.append(d);
+					outbuf.append(enclosure);
 					break;
 				case ValueMetaInterface.TYPE_BIGNUMBER:
 					BigDecimal bd = mi.getBigNumber(row, number);
-					output.print(enclosure);
-					output.print(bd);
-					output.print(enclosure);
+					outbuf.append(enclosure);
+					outbuf.append(bd);
+					outbuf.append(enclosure);
 					break;
 				case ValueMetaInterface.TYPE_DATE:
 					Date dt = mi.getDate(row, number);
-					output.print(enclosure);
+					outbuf.append(enclosure);
 					String mask = meta.getDateMask()[i];
 					if ( OraBulkLoaderMeta.DATE_MASK_DATETIME.equals(mask))
 					{
-						output.print(sdfDateTime.format(dt));	
+						outbuf.append(sdfDateTime.format(dt));	
 					}
 					else
 					{
 						// Default is date format
-						output.print(sdfDate.format(dt));
+						outbuf.append(sdfDate.format(dt));
 					}					   
-					output.print(enclosure);
+					outbuf.append(enclosure);
 					break;
 				case ValueMetaInterface.TYPE_BOOLEAN:
 					Boolean b = mi.getBoolean(row, number);
-					output.print(enclosure);
+					outbuf.append(enclosure);
 					if ( b.booleanValue() )
-						output.print("Y");
+						outbuf.append("Y");
 					else
-						output.print("N");
-					output.print(enclosure);
+						outbuf.append("N");
+					outbuf.append(enclosure);
 					break;			    	
 				case ValueMetaInterface.TYPE_BINARY:
 					byte byt[] = mi.getBinary(row, number);
-					output.print("<startlob>");
-					output.print(byt);
-					output.print("<endlob>");
+					outbuf.append("<startlob>");
+					outbuf.append(byt);
+					outbuf.append("<endlob>");
 					break;			    
 				default:
 					throw new KettleException("Unsupported type");
 				}
 			}
 		}
-		output.print(Const.CR);
+		outbuf.append(Const.CR);
+		try {
+			output.append(outbuf);
+		}
+		catch ( IOException e )
+		{
+			throw new KettleException("IO exception occured: "  + e.getMessage(), e);
+		}
 	}
 	
 	public String toString()

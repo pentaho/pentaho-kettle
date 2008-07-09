@@ -139,6 +139,10 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
     private Label               wlEncoding;
     private Combo               wEncoding;
     private FormData            fdlEncoding, fdEncoding;
+    
+    private Label               wlCharacterSetName;
+    private Combo               wCharacterSetName;
+    private FormData            fdlCharacterSetName, fdCharacterSetName;
 	
 	private Label				wlDirectPath;
 	private Button				wDirectPath;
@@ -147,6 +151,14 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 	private Label				wlEraseFiles;
 	private Button				wEraseFiles;
 	private FormData			fdlEraseFiles, fdEraseFiles;		
+	
+	private Label				wlFailOnWarning;
+	private Button				wFailOnWarning;
+	private FormData			fdlFailOnWarning, fdFailOnWarning;
+	
+	private Label				wlFailOnError;
+	private Button				wFailOnError;
+	private FormData			fdlFailOnError, fdFailOnError;
 	
 	private Button				wGetLU;
 	private FormData			fdGetLU;
@@ -163,6 +175,11 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
     	                                  "UTF-16BE",        //$NON-NLS-1$
     	                                  "UTF-16LE",        //$NON-NLS-1$
     	                                  "UTF-16" };        //$NON-NLS-1$
+    
+    private static String[] characterSetNames = { "",              //$NON-NLS-1$
+        					                      "US7ASCII",      //$NON-NLS-1$
+        					                      "WE8ISO8859P1",  //$NON-NLS-1$
+        					                      "UTF8", };       //$NON-NLS-1$
 
     private static final String[] ALL_FILETYPES = new String[] {
         	Messages.getString("OraBulkLoaderDialog.Filetype.All") };
@@ -307,9 +324,9 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 		fdlLoadMethod.top = new FormAttachment(wSqlldr, margin);
 		wlLoadMethod.setLayoutData(fdlLoadMethod);
 		wLoadMethod = new CCombo(shell, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
-		//wLoadMethod.add(Messages.getString("OraBulkLoaderDialog.AutoConcLoadMethod.Label"));
 		wLoadMethod.add(Messages.getString("OraBulkLoaderDialog.AutoEndLoadMethod.Label"));
 		wLoadMethod.add(Messages.getString("OraBulkLoaderDialog.ManualLoadMethod.Label"));
+		wLoadMethod.add(Messages.getString("OraBulkLoaderDialog.AutoConcLoadMethod.Label"));
 		wLoadMethod.select(0); // +1: starts at -1
 		wLoadMethod.addModifyListener(lsMod);
 		
@@ -596,6 +613,26 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
         fdEncoding.right= new FormAttachment(100, 0);        
         wEncoding.setLayoutData(fdEncoding);
         wEncoding.addModifyListener(lsMod);
+               
+        // Oracle character set name line
+        wlCharacterSetName=new Label(shell, SWT.RIGHT);
+        wlCharacterSetName.setText(Messages.getString("OraBulkLoaderDialog.CharacterSetName.Label"));
+        props.setLook(wlCharacterSetName);
+        fdlCharacterSetName=new FormData();
+        fdlCharacterSetName.left  = new FormAttachment(0, 0);
+        fdlCharacterSetName.top   = new FormAttachment(wEncoding, margin);
+        fdlCharacterSetName.right = new FormAttachment(middle, -margin);
+        wlCharacterSetName.setLayoutData(fdlCharacterSetName);
+        wCharacterSetName=new Combo(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wCharacterSetName.setToolTipText(Messages.getString("OraBulkLoaderDialog.CharacterSetName.Tooltip"));
+        wCharacterSetName.setItems(characterSetNames);
+        props.setLook(wCharacterSetName);
+        fdCharacterSetName=new FormData();
+        fdCharacterSetName.left = new FormAttachment(middle, 0);
+        fdCharacterSetName.top  = new FormAttachment(wEncoding, margin);
+        fdCharacterSetName.right= new FormAttachment(100, 0);        
+        wCharacterSetName.setLayoutData(fdCharacterSetName);
+        wCharacterSetName.addModifyListener(lsMod);
 				
 		// DirectPath line
 		wlDirectPath = new Label(shell, SWT.RIGHT);
@@ -603,14 +640,14 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
  		props.setLook(wlDirectPath);
 		fdlDirectPath = new FormData();
 		fdlDirectPath.left = new FormAttachment(0, 0);
-		fdlDirectPath.top = new FormAttachment(wEncoding, margin);
+		fdlDirectPath.top = new FormAttachment(wCharacterSetName, margin);
 		fdlDirectPath.right = new FormAttachment(middle, -margin);
 		wlDirectPath.setLayoutData(fdlDirectPath);
 		wDirectPath = new Button(shell, SWT.CHECK);
  		props.setLook(wDirectPath);
 		fdDirectPath = new FormData();
 		fdDirectPath.left = new FormAttachment(middle, 0);
-		fdDirectPath.top = new FormAttachment(wEncoding, margin);
+		fdDirectPath.top = new FormAttachment(wCharacterSetName, margin);
 		fdDirectPath.right = new FormAttachment(100, 0);
 		wDirectPath.setLayoutData(fdDirectPath);	
 		wDirectPath.addSelectionListener(new SelectionAdapter() 
@@ -647,6 +684,56 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 	        }
         );
 		
+		// Fail on warning line
+		wlFailOnWarning = new Label(shell, SWT.RIGHT);
+		wlFailOnWarning.setText(Messages.getString("OraBulkLoaderDialog.FailOnWarning.Label")); //$NON-NLS-1$
+ 		props.setLook(wlFailOnWarning);
+		fdlFailOnWarning = new FormData();
+		fdlFailOnWarning.left = new FormAttachment(0, 0);
+		fdlFailOnWarning.top = new FormAttachment(wEraseFiles, margin);
+		fdlFailOnWarning.right = new FormAttachment(middle, -margin);
+		wlFailOnWarning.setLayoutData(fdlFailOnWarning);
+		wFailOnWarning = new Button(shell, SWT.CHECK);
+ 		props.setLook(wFailOnWarning);
+		fdFailOnWarning = new FormData();
+		fdFailOnWarning.left = new FormAttachment(middle, 0);
+		fdFailOnWarning.top = new FormAttachment(wEraseFiles, margin);
+		fdFailOnWarning.right = new FormAttachment(100, 0);
+		wFailOnWarning.setLayoutData(fdFailOnWarning);				
+		wFailOnWarning.addSelectionListener(new SelectionAdapter() 
+    	    {
+		        public void widgetSelected(SelectionEvent e) 
+		        {
+				    input.setChanged();
+		    	}
+	        }
+        );
+		
+		// Fail on error line
+		wlFailOnError = new Label(shell, SWT.RIGHT);
+		wlFailOnError.setText(Messages.getString("OraBulkLoaderDialog.FailOnError.Label")); //$NON-NLS-1$
+ 		props.setLook(wlFailOnError);
+		fdlFailOnError = new FormData();
+		fdlFailOnError.left = new FormAttachment(0, 0);
+		fdlFailOnError.top = new FormAttachment(wFailOnWarning, margin);
+		fdlFailOnError.right = new FormAttachment(middle, -margin);
+		wlFailOnError.setLayoutData(fdlFailOnError);
+		wFailOnError = new Button(shell, SWT.CHECK);
+ 		props.setLook(wFailOnError);
+		fdFailOnError = new FormData();
+		fdFailOnError.left = new FormAttachment(middle, 0);
+		fdFailOnError.top = new FormAttachment(wFailOnWarning, margin);
+		fdFailOnError.right = new FormAttachment(100, 0);
+		wFailOnError.setLayoutData(fdFailOnError);				
+		wFailOnError.addSelectionListener(new SelectionAdapter() 
+    	    {
+		        public void widgetSelected(SelectionEvent e) 
+		        {
+				    input.setChanged();
+		    	}
+	        }
+        );
+		
 		// THE BUTTONS
 		wOK = new Button(shell, SWT.PUSH);
 		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
@@ -663,7 +750,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
  		props.setLook(wlReturn);
 		fdlReturn = new FormData();
 		fdlReturn.left = new FormAttachment(0, 0);
-		fdlReturn.top = new FormAttachment(wEraseFiles, margin);
+		fdlReturn.top = new FormAttachment(wFailOnError, margin);
 		wlReturn.setLayoutData(fdlReturn);
 
 		int UpInsCols = 3;
@@ -951,15 +1038,14 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 		if (input.getBadFile() != null) wBadFile.setText(input.getBadFile());
 		if (input.getDiscardFile() != null) wDiscardFile.setText(input.getDiscardFile());	
 		if (input.getEncoding() != null) wEncoding.setText(input.getEncoding());
+		if (input.getCharacterSetName() != null) wCharacterSetName.setText(input.getCharacterSetName());
 		if (input.getDbNameOverride() != null ) wDbNameOverride.setText(input.getDbNameOverride());
 		wDirectPath.setSelection(input.isDirectPath());
 		wEraseFiles.setSelection(input.isEraseFiles());
+		wFailOnError.setSelection(input.isFailOnError());
+		wFailOnWarning.setSelection(input.isFailOnWarning());
 		
-		String method = input.getLoadMethod();
-		//if ( OraBulkLoaderMeta.METHOD_AUTO_CONCURRENT.equals(method) ) 
-		//{
-		//	wLoadMethod.select(0);
-		//}
+		String method = input.getLoadMethod();		
 		if ( OraBulkLoaderMeta.METHOD_AUTO_END.equals(method) ) 
 		{
 			wLoadMethod.select(0);
@@ -967,6 +1053,10 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 		else if ( OraBulkLoaderMeta.METHOD_MANUAL.equals(method) ) 
 		{
 			wLoadMethod.select(1);
+		}
+		else if ( OraBulkLoaderMeta.METHOD_AUTO_CONCURRENT.equals(method) ) 
+		{
+			wLoadMethod.select(2);
 		}
 		else  
 		{
@@ -1045,18 +1135,21 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 		inf.setBadFile( wBadFile.getText() );
 		inf.setDiscardFile( wDiscardFile.getText() );
 		inf.setEncoding( wEncoding.getText() );
+		inf.setCharacterSetName( wCharacterSetName.getText() );
 		inf.setDirectPath( wDirectPath.getSelection() );
 		inf.setEraseFiles( wEraseFiles.getSelection() );
+		inf.setFailOnError( wFailOnError.getSelection() );
+		inf.setFailOnWarning( wFailOnWarning.getSelection() );
 
 		/*
 		 * Set the loadmethod
 		 */
 		String method = wLoadMethod.getText();
-		//if ( Messages.getString("OraBulkLoaderDialog.AutoConcLoadMethod.Label").equals(method) ) 
-		//{
-		//	inf.setLoadMethod(OraBulkLoaderMeta.METHOD_AUTO_CONCURRENT);
-		//}
-		if ( Messages.getString("OraBulkLoaderDialog.AutoEndLoadMethod.Label").equals(method) ) 
+		if ( Messages.getString("OraBulkLoaderDialog.AutoConcLoadMethod.Label").equals(method) ) 
+		{
+			inf.setLoadMethod(OraBulkLoaderMeta.METHOD_AUTO_CONCURRENT);
+		}
+		else if ( Messages.getString("OraBulkLoaderDialog.AutoEndLoadMethod.Label").equals(method) ) 
 		{
 			inf.setLoadMethod(OraBulkLoaderMeta.METHOD_AUTO_END);
 		}
