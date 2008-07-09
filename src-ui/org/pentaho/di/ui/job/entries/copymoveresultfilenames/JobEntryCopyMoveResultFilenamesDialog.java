@@ -203,8 +203,8 @@ public class JobEntryCopyMoveResultFilenamesDialog extends JobEntryDialog implem
 	  	wlAction.setText(Messages.getString("JobEntryCopyMoveResultFilenames.Action.Label"));
 	  	props.setLook(wlAction);
 	  	fdlAction = new FormData();
-	  	fdlAction.left = new FormAttachment(0, 0);
-	  	fdlAction.right = new FormAttachment(middle, 0);
+	  	fdlAction.left = new FormAttachment(0,0);
+	  	fdlAction.right = new FormAttachment(middle, -margin);
 	  	fdlAction.top = new FormAttachment(wName, 2*margin);
 	  	wlAction.setLayoutData(fdlAction);
 	  	wAction = new CCombo(shell, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);

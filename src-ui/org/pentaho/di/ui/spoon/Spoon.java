@@ -874,6 +874,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         esd.setTitle(Messages.getString("Spoon.Dialog.ShowArguments.Title"));
         esd.setMessage(Messages.getString("Spoon.Dialog.ShowArguments.Message"));
         esd.setReadOnly(true); 
+        esd.setShellImage(GUIResource.getInstance().getImageLogoSmall());
         esd.open();
     }
     
@@ -983,6 +984,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		esd.setTitle(Messages.getString("Spoon.Dialog.ShowVariables.Title"));
 		esd.setMessage(Messages.getString("Spoon.Dialog.ShowVariables.Message"));
 		esd.setReadOnly(true);
+		esd.setShellImage(GUIResource.getInstance().getImageVariable());
 		esd.open();
 	}
 
