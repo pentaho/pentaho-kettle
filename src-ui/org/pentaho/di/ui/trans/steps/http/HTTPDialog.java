@@ -18,12 +18,14 @@
 package org.pentaho.di.ui.trans.steps.http;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
@@ -37,6 +39,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.ui.core.widget.TextVar;
+import org.pentaho.di.ui.core.widget.ComboVar;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -69,7 +72,7 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
     private FormData     fdlUrlInField, fdUrlInField;
 	
 	private Label        wlUrlField;
-	private TextVar      wUrlField;
+	private ComboVar     wUrlField;
 	private FormData     fdlUrlField, fdUrlField;
 
 	private Button wGet;
@@ -185,7 +188,7 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
 		fdlUrlField.top  = new FormAttachment(wUrlInField, margin);
 		wlUrlField.setLayoutData(fdlUrlField);
 
-    	wUrlField=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+    	wUrlField=new ComboVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
     	wUrlField.setToolTipText(Messages.getString("HTTPDialog.UrlField.Tooltip"));
 		props.setLook(wUrlField);
 		wUrlField.addModifyListener(lsMod);
@@ -195,6 +198,21 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
 		fdUrlField.right= new FormAttachment(100, 0);
 		wUrlField.setLayoutData(fdUrlField);
 		wUrlField.setEnabled(false);
+		wUrlField.addFocusListener(new FocusListener()
+         {
+            public void focusLost(org.eclipse.swt.events.FocusEvent e)
+             {
+             }
+             public void focusGained(org.eclipse.swt.events.FocusEvent e)
+             {
+                 Cursor busy = new Cursor(shell.getDisplay(), SWT.CURSOR_WAIT);
+                 shell.setCursor(busy);
+                 BaseStepDialog.getFieldsFromPrevious(wUrlField, transMeta, stepMeta);
+                 shell.setCursor(null);
+                 busy.dispose();
+             }
+         }
+     );        
 		
 		
 		// Result line...
@@ -300,6 +318,7 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
 		}
 		return stepname;
 	}
+
 	private void activeUrlInfield()
 	{
 		wlUrlField.setEnabled(wUrlInField.getSelection());
@@ -381,7 +400,6 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
 		{
 			new ErrorDialog(shell, Messages.getString("HTTPDialog.FailedToGetFields.DialogTitle"), Messages.getString("HTTPDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
-
 	}
 
 	public String toString()

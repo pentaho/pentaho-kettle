@@ -63,6 +63,7 @@ import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.ui.core.widget.ComboVar;
 import org.pentaho.di.ui.core.widget.TableView;
 
 public class BaseStepDialog extends Dialog {
@@ -753,4 +754,36 @@ public class BaseStepDialog extends Dialog {
     tableView.setRowNums();
     tableView.optWidth(true);
   }
+  
+  /**
+   * Gets fields from previous steps and populate a ComboVar.
+   * @param comboVar the comboVar to populate
+   * @param TransMeta the source transformation
+   * @param StepMeta the source step 
+   */
+  public static final void getFieldsFromPrevious(ComboVar comboVar,TransMeta transMeta,StepMeta stepMeta)
+	 {
+		 String selectedField=null;
+		 int indexField=-1;
+		 try{         
+			 selectedField=comboVar.getText();
+			 comboVar.removeAll();
+				
+			 RowMetaInterface r = transMeta.getPrevStepFields(stepMeta);
+			 if (r!=null && !r.isEmpty()) {
+	             r.getFieldNames();
+	             for (int i=0;i<r.getFieldNames().length;i++){	
+	            	 comboVar.add(r.getFieldNames()[i]);	
+		             if(selectedField!=null){
+		            	 if(r.getFieldNames()[i].equals(selectedField)) indexField=i;
+		             }
+				}
+			 }
+			 // Select value if possible...
+			 if(indexField>-1) comboVar.select(indexField);
+		 }catch(KettleException ke){
+				new ErrorDialog(comboVar.getShell(),Messages.getString("BaseStepDialog.FailedToGetFieldsPrevious.DialogTitle"),
+						Messages.getString("BaseStepDialog.FailedToGetFieldsPrevious.DialogMessage"),ke);
+			}
+	 }
 }
