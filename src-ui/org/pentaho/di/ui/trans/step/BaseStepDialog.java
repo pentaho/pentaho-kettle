@@ -765,22 +765,18 @@ public class BaseStepDialog extends Dialog {
 	 {
 		 String selectedField=null;
 		 int indexField=-1;
-		 try{         
+		 try{   
+			 RowMetaInterface r = transMeta.getPrevStepFields(stepMeta);
 			 selectedField=comboVar.getText();
 			 comboVar.removeAll();
 				
-			 RowMetaInterface r = transMeta.getPrevStepFields(stepMeta);
 			 if (r!=null && !r.isEmpty()) {
 	             r.getFieldNames();
-	             for (int i=0;i<r.getFieldNames().length;i++){	
-	            	 comboVar.add(r.getFieldNames()[i]);	
-		             if(selectedField!=null){
-		            	 if(r.getFieldNames()[i].equals(selectedField)) indexField=i;
-		             }
-				}
+	             comboVar.setItems(r.getFieldNames());
+	             indexField=r.indexOfValue(selectedField);
 			 }
 			 // Select value if possible...
-			 if(indexField>-1) comboVar.select(indexField);
+			 if(indexField>-1) comboVar.select(indexField); else { if(selectedField!=null) comboVar.setText(selectedField);};
 		 }catch(KettleException ke){
 				new ErrorDialog(comboVar.getShell(),Messages.getString("BaseStepDialog.FailedToGetFieldsPrevious.DialogTitle"),
 						Messages.getString("BaseStepDialog.FailedToGetFieldsPrevious.DialogMessage"),ke);
