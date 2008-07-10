@@ -168,21 +168,44 @@ public class ExecSQL extends BaseStep implements StepInterface
 			sql = data.sql;
 		}
 		if (log.isRowLevel()) logRowlevel(Messages.getString("ExecSQL.Log.ExecutingSQLScript") + Const.CR + data.sql); //$NON-NLS-1$
-		data.result = data.db.execStatements(sql);
-
-		RowMetaAndData add = getResultRow(data.result, meta.getUpdateField(), meta.getInsertField(), meta.getDeleteField(), meta.getReadField());
 		
-		row = RowDataUtil.addRowData(row, getInputRowMeta().size(), add.getData());
-
-		if (!data.db.isAutoCommit()) {
-			data.db.commit();
-		}
-		
-		putRow(data.outputRowMeta,row); // send it out!
-
-		if (checkFeedback(getLinesWritten()))
+		boolean sendToErrorRow=false;
+		String errorMessage = null;
+		try{
+			
+			data.result = data.db.execStatements(sql);
+	
+			RowMetaAndData add = getResultRow(data.result, meta.getUpdateField(), meta.getInsertField(), meta.getDeleteField(), meta.getReadField());
+			
+			row = RowDataUtil.addRowData(row, getInputRowMeta().size(), add.getData());
+	
+			if (!data.db.isAutoCommit()) {
+				data.db.commit();
+			}
+			
+			putRow(data.outputRowMeta,row); // send it out!
+	
+			if (checkFeedback(getLinesWritten()))
+			{
+				if(log.isBasic()) logBasic(Messages.getString("ExecSQL.Log.LineNumber") + getLinesWritten()); //$NON-NLS-1$
+			}
+		}catch(KettleException e)
 		{
-			if(log.isBasic()) logBasic(Messages.getString("ExecSQL.Log.LineNumber") + getLinesWritten()); //$NON-NLS-1$
+			if (getStepMeta().isDoingErrorHandling())
+	        {
+                sendToErrorRow = true;
+                errorMessage = e.toString();
+	        }
+	        else
+	        {
+				throw new KettleStepException(Messages.getString("ExecSQL.Log.ErrorInStep"), e); //$NON-NLS-1$
+	        }
+			 
+			 if (sendToErrorRow)
+	         {
+				 // Simply add this row to the error row
+	             putError(getInputRowMeta(), row, 1, errorMessage, null, "ExecSQL001");
+	         }
 		}
 		return true;
 	}

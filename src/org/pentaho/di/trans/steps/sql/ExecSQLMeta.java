@@ -477,4 +477,8 @@ public class ExecSQLMeta extends BaseStepMeta implements StepMetaInterface
     {
         this.replaceVariables = variableReplacementActive;
     }
+    public boolean supportsErrorHandling()
+    {
+        return true;
+    }
 }
