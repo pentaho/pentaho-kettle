@@ -1042,7 +1042,7 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 	private void ActiveFileField()
 	{
 		wlFilenameField.setEnabled(wFileField.getSelection());
-		wlFilenameField.setEnabled(wFileField.getSelection());
+		wFilenameField.setEnabled(wFileField.getSelection());
 			
 		wlFilename.setEnabled(!wFileField.getSelection());
 		wbbFilename.setEnabled(!wFileField.getSelection());

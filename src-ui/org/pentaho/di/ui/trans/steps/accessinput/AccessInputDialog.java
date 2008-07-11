@@ -1173,7 +1173,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 	private void ActiveFileField()
 	{
 		wlFilenameField.setEnabled(wFileField.getSelection());
-		wlFilenameField.setEnabled(wFileField.getSelection());
+		wFilenameField.setEnabled(wFileField.getSelection());
 			
 		wlFilename.setEnabled(!wFileField.getSelection());
 		wbbFilename.setEnabled(!wFileField.getSelection());

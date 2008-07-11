@@ -870,6 +870,7 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
 		// Set the shell size, based upon previous time...
 		setSize();
 		getData(input);
+		ActiveFileField();
 		ActiveRowSeparator();
 		input.setChanged(changed);
 		
@@ -883,18 +884,8 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
 
 	private void ActiveRowSeparator()
 	{
-		if (wRowSeparatorFormat.getSelectionIndex()==3)
-		{
-			wRowSeparator.setEnabled(true);
-			wlRowSeparator.setEnabled(true);
-		}
-		else
-		{
-			wRowSeparator.setEnabled(false);
-			wlRowSeparator.setEnabled(false);
-		}
-		
-		
+		wRowSeparator.setEnabled(wRowSeparatorFormat.getSelectionIndex()==3);
+		wlRowSeparator.setEnabled(wRowSeparatorFormat.getSelectionIndex()==3);	
 	}
 	
 	public void setIncludeRownum()
