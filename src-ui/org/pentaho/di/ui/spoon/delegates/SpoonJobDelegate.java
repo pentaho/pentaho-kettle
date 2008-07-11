@@ -941,11 +941,10 @@ public class SpoonJobDelegate extends SpoonDelegate
 		// Otherwise it keeps showing up in the objects tree
 		// Look for the job, not the key (name might have changed)
 		//
-		synchronized(jobMap) {
-			for (String key : jobMap.keySet()) {
-				if (jobMap.get(key).equals(jobMeta)) {
-					jobMap.remove(key);
-				}
+		List<String> keys = new ArrayList<String>(jobMap.keySet());
+		for (String key : keys) {
+			if (jobMap.get(key).equals(jobMeta)) {
+				jobMap.remove(key);
 			}
 		}
 		

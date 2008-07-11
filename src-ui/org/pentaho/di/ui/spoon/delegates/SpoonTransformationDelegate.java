@@ -144,7 +144,7 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 	 *            the transformation to close, make sure it's ok to dispose of
 	 *            it BEFORE you call this.
 	 */
-	public void closeTransformation(TransMeta transMeta)
+	public synchronized void closeTransformation(TransMeta transMeta)
 	{
 		String tabName = spoon.delegates.tabs.makeTransGraphTabName(transMeta);
 
@@ -160,11 +160,10 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 		// Otherwise it keeps showing up in the objects tree
 		// Look for the transformation, not the key (name might have changed)
 		//
-		synchronized(transformationMap) {
-			for (String key : transformationMap.keySet()) {
-				if (transformationMap.get(key).equals(transMeta)) {
-					transformationMap.remove(key);
-				}
+		List<String> keys = new ArrayList<String>(transformationMap.keySet());
+		for (String key : keys) {
+			if (transformationMap.get(key).equals(transMeta)) {
+				transformationMap.remove(key);
 			}
 		}
 		
