@@ -3598,10 +3598,13 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
             {
                 if (prevStepMeta.equals(stepMeta)) {
                 	hasLoop = true;
+                	break; //no need to check more but caching this one below
                 } else if (prevStepMeta.equals(lookup)) {
                 	hasLoop = true;
+                	break; //no need to check more but caching this one below
                 } else if (hasLoop(prevStepMeta, lookup == null ? stepMeta : lookup, info)) {
                 	hasLoop = true;
+                	break; //no need to check more but caching this one below
             }
         }
         }
