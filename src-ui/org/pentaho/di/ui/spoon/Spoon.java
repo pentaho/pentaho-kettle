@@ -3174,20 +3174,22 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			ok = false;
 		}
 
-		try
-		{
-			if (!newHop.getToStep().getStepMetaInterface().excludeFromRowLayoutVerification())
+		if (ok) { //only do the following checks, e.g. checkRowMixingStatically when not looping, otherwise we get a loop with StackOverflow there ;-)
+			try
 			{
-				transMeta.checkRowMixingStatically(newHop.getToStep(), null);
+				if (!newHop.getToStep().getStepMetaInterface().excludeFromRowLayoutVerification())
+				{
+					transMeta.checkRowMixingStatically(newHop.getToStep(), null);
+				}
+	        }
+	        catch(KettleRowException re)
+			{
+				// Show warning about mixing rows with conflicting layouts...
+	            new ErrorDialog(shell, Messages.getString("TransGraph.Dialog.HopCausesRowMixing.Title"), Messages.getString("TransGraph.Dialog.HopCausesRowMixing.Message"), re);
 			}
-        }
-        catch(KettleRowException re)
-		{
-			// Show warning about mixing rows with conflicting layouts...
-            new ErrorDialog(shell, Messages.getString("TransGraph.Dialog.HopCausesRowMixing.Title"), Messages.getString("TransGraph.Dialog.HopCausesRowMixing.Message"), re);
+	
+			verifyCopyDistribute(transMeta, newHop.getFromStep());
 		}
-
-		verifyCopyDistribute(transMeta, newHop.getFromStep());
 
 		return ok;
 	}
