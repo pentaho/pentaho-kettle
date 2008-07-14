@@ -555,10 +555,6 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 	    			incrementLinesInput();
 	    		}
 	    	}
-	    	else
-	    	{
-	    		throw new KettleException("Unable to find rows in the specified lookup table");
-	    	}
     	}
     	catch(Exception e) {
     		throw new KettleException(e);
