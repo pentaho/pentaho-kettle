@@ -72,15 +72,6 @@ import org.w3c.dom.Node;
 public class Translator2
 {
     public static final String APP_NAME = Messages.getString("i18nDialog.ApplicationName");
-    // public static final String[] ROOT = new String[] { "src-core", "src", "src-ui", };
-    // public static final String REFERENCE_LOCALE = "en_US";
-    /*public static final String[] FILES_TO_AVOID = new String[] { 
-			"MessagesSourceCrawler.java", "KeyOccurence.java", "TransLator.java", 
-			"MenuHelper.java", "Messages.java", "XulMessages.java", 
-			"AnnotatedStepsConfigManager.java", "AnnotatedJobConfigManager.java", 
-			"JobEntryValidatorUtils.java", "Const.java", "XulHelper.java", 
-		  };
-    */
     
     private Display display;
     private Shell shell;
@@ -194,19 +185,33 @@ public class Translator2
         			}
         		}
         	}
+        	String[] locales = localeList.toArray(new String[localeList.size()]);
+        	for (int i=0;i<locales.length;i++) {
+        		for (int j=0;j<locales.length-1;j++) {
+        			if (keyCounts[j]<keyCounts[j+1]) {
+        				int c = keyCounts[j];
+        				keyCounts[j] = keyCounts[j+1];
+        				keyCounts[j+1] = c;
+        				
+        				String l = locales[j];
+        				locales[j] = locales[j+1];
+        				locales[j+1] = l;
+        			}
+        		}
+        	}
         	
-        	DecimalFormat df = new DecimalFormat("##0.00");
         	
-        	double donePct[] = new double[localeList.size()];
+        	DecimalFormat pctFormat = new DecimalFormat("#00.00");
+        	DecimalFormat nrFormat = new DecimalFormat("00");
+        	
         	System.out.println(Messages.getString("i18n.Log.NumberOfKeysFound",""+nrKeys));
-        	for (int i=0;i<localeList.size();i++) {
-        	    donePct[i] = 100 * (double)keyCounts[i] / (double)nrKeys;
+        	for (int i=0;i<locales.length;i++) {
+        	    double donePct = 100 * (double)keyCounts[i] / (double)nrKeys;
         	    int missingKeys = nrKeys - keyCounts[i];
-        	    String statusKeys = localeList.get(i)+" : "+df.format(donePct[i])+"% complete  ("+keyCounts[i]+")" +
+        	    String statusKeys = "# "+nrFormat.format(i+1)+" : "+locales[i]+" : "+pctFormat.format(donePct)+"% complete  ("+keyCounts[i]+")" +
         	    	(missingKeys!=0 ? ("...missing " + missingKeys) : "");
         	    System.out.println(statusKeys);
         	}
-
         }
         catch(Exception e)
         {
