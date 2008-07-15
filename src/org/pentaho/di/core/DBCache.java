@@ -12,11 +12,19 @@
  
 
 package org.pentaho.di.core;
+import java.io.BufferedOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
+import org.pentaho.di.core.exception.KettleEOFException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 
 /**
@@ -129,10 +137,9 @@ public class DBCache
 			
 			clear(null);
 			
-            // TODO: add serialization support for the DB cache
-            
-            /*
-			LogWriter log = LogWriter.getInstance();
+            // Serialization support for the DB cache
+            //
+            LogWriter log = LogWriter.getInstance();
             
             String filename = getFilename();
 			File file = new File(filename);
@@ -140,31 +147,39 @@ public class DBCache
 			{
 				log.logDetailed("DBCache", "Loading database cache from file: ["+filename+"]");
 				
-				FileInputStream fis = new FileInputStream(file);
-				DataInputStream dis = new DataInputStream(fis);
+				FileInputStream fis = null;
+				DataInputStream dis = null;
 				
-				int counter = 0;
-                try
-				{
-					while (true)
+				try {
+					fis = new FileInputStream(file);
+					dis = new DataInputStream(fis);
+					int counter = 0;
+	                try
 					{
-						DBCacheEntry entry = new DBCacheEntry(dis);
-                        RowMetaInterface row = new Row(dis);
-						cache.put(entry, row);
-						counter++;
+						while (true)
+						{
+							DBCacheEntry entry = new DBCacheEntry(dis);
+	                        RowMetaInterface row = new RowMeta(dis);
+							cache.put(entry, row);
+							counter++;
+						}
+					}
+					catch(KettleEOFException eof)
+					{
+						log.logDetailed("DBCache", "We read "+counter+" cached rows from the database cache!");
 					}
 				}
-				catch(KettleEOFException eof)
-				{
-					// System.out.println("We read "+counter+" cached rows from the database cache!");
-					log.logDetailed("DBCache", "We read "+counter+" cached rows from the database cache!");
+				catch(Exception e) {
+					throw new Exception(e);
+				}
+				finally {
+					if (dis!=null) dis.close();
 				}
 			}
 			else
 			{
 				log.logDetailed("DBCache", "The database cache doesn't exist yet.");
 			}
-            */
 		}
 		catch(Exception e)
 		{
@@ -172,59 +187,58 @@ public class DBCache
 		}
 	}
 	
-	public void saveCache(LogWriter log) throws KettleFileException
-	{
-		try
-		{
-            // TODO: add serialization support for the DB cache
-            /*
+	public void saveCache(LogWriter log) throws KettleFileException {
+		try {
+			// Serialization support for the DB cache
+			//
 			String filename = getFilename();
 			File file = new File(filename);
-			if (!file.exists() || file.canWrite())
-			{
-				FileOutputStream fos = new FileOutputStream(file);
-				DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(fos, 100000));
-				
-				int counter = 0;
-				boolean ok = true;
+			if (!file.exists() || file.canWrite()) {
+				FileOutputStream fos = null;
+				DataOutputStream dos = null;
 
-				Enumeration keys = cache.keys();
-				while (ok && keys.hasMoreElements())
-				{
-					// Save the database cache entry
-					DBCacheEntry entry = (DBCacheEntry)keys.nextElement();
-					entry.write(dos);
+				try {
+					fos = new FileOutputStream(file);
+					dos = new DataOutputStream(new BufferedOutputStream(fos, 10000));
 
-					// Save the corresponding row as well.
-					Row row = get(entry);
-					if (row!=null)
-					{
-						row.write(dos);
-						counter++;
+					int counter = 0;
+					boolean ok = true;
+
+					Enumeration<DBCacheEntry> keys = cache.keys();
+					while (ok && keys.hasMoreElements()) {
+						// Save the database cache entry
+						DBCacheEntry entry = keys.nextElement();
+						entry.write(dos);
+
+						// Save the corresponding row as well.
+						RowMetaInterface rowMeta = get(entry);
+						if (rowMeta != null) {
+							rowMeta.writeMeta(dos);
+							counter++;
+						} else {
+							throw new KettleFileException("The database cache contains an empty row. We can't save this!");
+						}
 					}
-					else
-					{
-						throw new KettleFileException("The database cache contains an empty row. We can't save this!");
+
+					log.logDetailed("DBCache", "We wrote " + counter + " cached rows to the database cache!");
+				} catch (Exception e) {
+					throw new Exception(e);
+				} finally {
+					if (dos != null) {
+						dos.close();
 					}
 				}
-
-				// System.out.println("We read "+counter+" cached rows from the database cache!");
-				log.logDetailed("DBCache", "We wrote "+counter+" cached rows to the database cache!");
+			} else {
+				throw new KettleFileException("We can't write to the cache file: " + filename);
 			}
-			else
-			{
-				throw new KettleFileException("We can't write to the cache file: "+filename);
-			}
-            */
-		}
-		catch(Exception e)
-		{
+		} catch (Exception e) {
 			throw new KettleFileException("Couldn't write to the database cache", e);
 		}
 	}
 	
 	/**
 	 * Create the database cache instance by loading it from disk
+	 * 
 	 * @return the database cache instance.
 	 * @throws KettleFileException
 	 */
