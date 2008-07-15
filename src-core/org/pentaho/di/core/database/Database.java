@@ -4066,10 +4066,11 @@ public class Database implements VariableSpace
 	{
 		return getTablenames(false);
 	}
+	
 	public String[] getTablenames(boolean includeSchema) throws KettleDatabaseException
 	{
 		String schemaname = null;
-		if (databaseMeta.useSchemaNameForTableList()) schemaname = databaseMeta.getUsername().toUpperCase();
+		if (databaseMeta.useSchemaNameForTableList()) schemaname = environmentSubstitute(databaseMeta.getUsername()).toUpperCase();
 
 		List<String> names = new ArrayList<String>();
 		ResultSet alltables=null;
@@ -4121,7 +4122,7 @@ public class Database implements VariableSpace
 		if (!databaseMeta.supportsViews()) return new String[] {};
 
 		String schemaname = null;
-		if (databaseMeta.useSchemaNameForTableList()) schemaname=databaseMeta.getUsername().toUpperCase();
+		if (databaseMeta.useSchemaNameForTableList()) schemaname = environmentSubstitute(databaseMeta.getUsername()).toUpperCase();
 
 		ArrayList<String> names = new ArrayList<String>();
 		ResultSet alltables=null;
@@ -4173,7 +4174,7 @@ public class Database implements VariableSpace
 		if (!databaseMeta.supportsSynonyms()) return new String[] {};
 		
 		String schemaname = null;
-		if (databaseMeta.useSchemaNameForTableList()) schemaname=databaseMeta.getUsername().toUpperCase();
+		if (databaseMeta.useSchemaNameForTableList()) schemaname = environmentSubstitute(databaseMeta.getUsername()).toUpperCase();
 	
 		ArrayList<String> names = new ArrayList<String>();
 		ResultSet alltables=null;
