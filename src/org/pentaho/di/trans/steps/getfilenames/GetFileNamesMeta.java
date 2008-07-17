@@ -282,6 +282,13 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
 		int nrfiles = fileName.length;
 
 		retval.allocate(nrfiles);
+		
+        for (int i = 0; i < nrfiles; i++)
+        {
+            retval.fileName[i] = fileName[i];
+            retval.fileMask[i] = fileMask[i];
+            retval.fileRequired[i] = fileRequired[i];
+        }
 
 		return retval;
 	}
