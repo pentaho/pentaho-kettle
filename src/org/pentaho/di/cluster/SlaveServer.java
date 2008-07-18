@@ -447,8 +447,8 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     {
         client.getState().setCredentials
               (
-                new AuthScope(hostname, Const.toInt(environmentSubstitute(port), 80), "Kettle"), //$NON-NLS-1$
-                new UsernamePasswordCredentials(username, password)
+                new AuthScope(environmentSubstitute(hostname), Const.toInt(environmentSubstitute(port), 80), "Kettle"), //$NON-NLS-1$
+                new UsernamePasswordCredentials(environmentSubstitute(username), environmentSubstitute(password))
               );
     }
 
@@ -541,9 +541,9 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
 
                 if (proxyHostname!=null) 
                 {
-                    System.setProperty("http.proxyHost", proxyHostname); //$NON-NLS-1$
-                    System.setProperty("http.proxyPort", proxyPort); //$NON-NLS-1$
-                    if (nonProxyHosts!=null) System.setProperty("http.nonProxyHosts", nonProxyHosts); //$NON-NLS-1$
+                    System.setProperty("http.proxyHost", environmentSubstitute(proxyHostname)); //$NON-NLS-1$
+                    System.setProperty("http.proxyPort", environmentSubstitute(proxyPort)); //$NON-NLS-1$
+                    if (nonProxyHosts!=null) System.setProperty("http.nonProxyHosts", environmentSubstitute(nonProxyHosts)); //$NON-NLS-1$
                 }
                 
                 if (username!=null && username.length()>0)
@@ -552,7 +552,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
                         {
                             protected PasswordAuthentication getPasswordAuthentication()
                             {
-                                return new PasswordAuthentication(username, password!=null ? password.toCharArray() : new char[] {} );
+                                return new PasswordAuthentication(environmentSubstitute(username), password!=null ? environmentSubstitute(password).toCharArray() : new char[] {} );
                             }
                         }
                     );
