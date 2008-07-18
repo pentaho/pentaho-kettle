@@ -1016,4 +1016,15 @@
 		</tooltip>
 		<image-uri>ui/images/RVA.png</image-uri>
 	</step>
+		<step id="GetSubFolders">
+		<description>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.GetSubFolders")
+		</description>
+		<class-name>org.pentaho.di.trans.steps.getsubfolders.GetSubFoldersMeta</class-name>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<tooltip>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.GetSubFolders")
+		</tooltip>
+		<image-uri>ui/images/LSF.png</image-uri>
+	</step>
 </steps>

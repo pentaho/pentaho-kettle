@@ -275,7 +275,87 @@ public class FileInputList
 
         return fileInputList;
     }
-        
+    public static FileInputList createFolderList(VariableSpace space, String[] folderName, String[] folderRequired)
+    {
+        FileInputList fileInputList = new FileInputList();
+
+        // Replace possible environment variables...
+        final String realfolder[] = space.environmentSubstitute(folderName);
+
+        for (int i = 0; i < realfolder.length; i++)
+        {
+            final String onefile = realfolder[i];
+            final boolean onerequired = YES.equalsIgnoreCase(folderRequired[i]);
+            final boolean subdirs = true;
+            final FileTypeFilter filter = FileTypeFilter.ONLY_FOLDERS;
+            
+            if (Const.isEmpty(onefile)) continue;
+            FileObject directoryFileObject=null;
+ 
+	        try
+	        {
+	            // Find all folder names  in this directory
+	            //
+	            directoryFileObject = KettleVFS.getFileObject(onefile);
+	            if (directoryFileObject != null && directoryFileObject.getType() == FileType.FOLDER) // it's a directory
+	            {
+	            	
+	                FileObject[] fileObjects = directoryFileObject.findFiles(
+	                        new AllFileSelector()
+	                        {
+	                            public boolean traverseDescendents(FileSelectInfo info)
+	                            {
+	                                return info.getDepth()==0 || subdirs;
+	                            }
+	                            
+	                            public boolean includeFile(FileSelectInfo info)
+	                            {
+	                                // Never return the parent directory of a file list.
+	                                if (info.getDepth() == 0) {
+	                                    return false;
+	                                }
+	                                
+	                            	FileObject fileObject = info.getFile();
+	                            	try {
+	                            	    if ( fileObject != null && filter.isFileTypeAllowed(fileObject.getType())){
+	                                        return true;
+	                            	    }
+	                            	    return false;
+	                            	}
+	                            	catch ( FileSystemException ex ){
+	                            		// Upon error don't process the file.
+	                            		return false;
+	                            	}
+	                            }
+	                        }
+	                    );
+	                if (fileObjects != null) {
+	                    for (int j = 0; j < fileObjects.length; j++)
+	                    {
+	                        if (fileObjects[j].exists()) fileInputList.addFile(fileObjects[j]);
+	                    }
+	                }
+	                if (Const.isEmpty(fileObjects))
+	                {
+	                    if (onerequired) fileInputList.addNonAccessibleFile(directoryFileObject);
+	                }
+	                
+	                // Sort the list: quicksort, only for regular files
+	                fileInputList.sortFiles();
+	            }else{
+	            	if(onerequired && !directoryFileObject.exists()) fileInputList.addNonExistantFile(directoryFileObject);
+	            }
+	        }
+	        catch (Exception e)
+	        {
+	            LogWriter.getInstance().logError("FileInputList", Const.getStackTracker(e));
+	        }finally{
+	        	try{if(directoryFileObject!=null) directoryFileObject.close();directoryFileObject=null;}catch(Exception e){};
+	        }
+	    }
+
+        return fileInputList;
+    }  
     public List<FileObject> getFiles()
     {
         return files;

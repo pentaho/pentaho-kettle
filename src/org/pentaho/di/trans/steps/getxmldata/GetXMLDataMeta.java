@@ -832,15 +832,6 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 
-	/*public FileInputList getFiles(VariableSpace space)
-	{
-        String required[] = new String[fileName.length];
-        boolean subdirs[] = new boolean[fileName.length]; // boolean arrays are defaulted to false.
-        for (int i=0;i<required.length; required[i]="Y", i++); //$NON-NLS-1$
-        return FileInputList.createFileList(space, fileName, fileMask, required, subdirs);
-        
-	}*/
-	
 	  public FileInputList getFiles(VariableSpace space)
 	  {
 	    return FileInputList.createFileList(space, fileName, fileMask, fileRequired);
