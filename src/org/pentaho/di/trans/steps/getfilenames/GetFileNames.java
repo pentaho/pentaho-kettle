@@ -112,7 +112,7 @@ public class GetFileNames extends BaseStep implements StepInterface
 					if (data.indexOfFilenameField<0)
 					{
 						// The field is unreachable !
-						logError(Messages.getString("GetFileNames.Log.ErrorFindingField")+ "[" + meta.getDynamicFilenameField()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+						logError(Messages.getString("GetFileNames.Log.ErrorFindingField",meta.getDynamicFilenameField())); //$NON-NLS-1$ //$NON-NLS-2$
 						throw new KettleException(Messages.getString("GetFileNames.Exception.CouldnotFindField",meta.getDynamicFilenameField())); //$NON-NLS-1$ //$NON-NLS-2$
 					}
 				}  

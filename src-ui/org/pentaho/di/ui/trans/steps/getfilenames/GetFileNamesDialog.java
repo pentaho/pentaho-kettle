@@ -4,26 +4,12 @@
  * of the GNU Lesser General Public License, Version 2.1. You may not use 
  * this file except in compliance with the license. If you need a copy of the license, 
  * please go to http://www.gnu.org/licenses/lgpl-2.1.txt. The Original Code is Pentaho 
- * Data Integration.  The Initial Developer is Pentaho Corporation.
+ * Data Integration.  The Initial Developer is Samatarn.
  *
  * Software distributed under the GNU Lesser Public License is distributed on an "AS IS" 
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or  implied. Please refer to 
  * the license for the specific language governing your rights and limitations.
 */
-/**********************************************************************
- **                                                                   **
- **               This code belongs to the KETTLE project.            **
- **                                                                   **
- ** It belongs to, is maintained by and is copyright 1999-2005 by     **
- **                                                                   **
- **      i-Bridge bvba                                                **
- **      Fonteinstraat 70                                             **
- **      9400 OKEGEM                                                  **
- **      Belgium                                                      **
- **      http://www.kettle.be                                         **
- **      info@kettle.be                                               **
- **                                                                   **
- **********************************************************************/
 
 /*
  * Created on 18-mei-2003

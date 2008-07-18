@@ -574,26 +574,35 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
 		CheckResult cr;
 
 		// See if we get input...
-		if (input.length > 0)
+		if(filefield)
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("GetFileNamesMeta.CheckResult.NoInputError"), stepinfo);
+			if (input.length > 0)
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("GetFileNamesMeta.CheckResult.InputOk"), stepinfo);
+			else
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("GetFileNamesMeta.CheckResult.InputErrorKo"), stepinfo);
 			remarks.add(cr);
-		}
-		else
-		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("GetFileNamesMeta.CheckResult.NoInputOk"), stepinfo);
+			
+			if(Const.isEmpty(dynamicFilenameField))
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("GetFileNamesMeta.CheckResult.FolderFieldnameMissing"), stepinfo);
+			else
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("GetFileNamesMeta.CheckResult.FolderFieldnameOk"), stepinfo);
 			remarks.add(cr);
-		}
+			
+		}else{
 
-		FileInputList fileList = getFileList(transMeta);
-		if (fileList.nrOfFiles() == 0)
-		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("GetFileNamesMeta.CheckResult.ExpectedFilesError"), stepinfo);
+			if (input.length > 0)
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("GetFileNamesMeta.CheckResult.NoInputError"), stepinfo);
+			else
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("GetFileNamesMeta.CheckResult.NoInputOk"), stepinfo);
+					
 			remarks.add(cr);
-		}
-		else
-		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("GetFileNamesMeta.CheckResult.ExpectedFilesOk", ""+fileList.nrOfFiles()), stepinfo);
+			
+			// check specified file names
+			FileInputList fileList = getFileList(transMeta);
+			if (fileList.nrOfFiles() == 0)
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("GetFileNamesMeta.CheckResult.ExpectedFilesError"), stepinfo);
+			else
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("GetFileNamesMeta.CheckResult.ExpectedFilesOk", ""+fileList.nrOfFiles()), stepinfo);	
 			remarks.add(cr);
 		}
 	}
