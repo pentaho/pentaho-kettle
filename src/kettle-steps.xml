@@ -174,7 +174,7 @@
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.OraBulkLoader")
 		</description>
 		<class-name>org.pentaho.di.trans.steps.orabulkloader.OraBulkLoaderMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@BULK.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.OraBulkLoader")
 		</tooltip>
@@ -825,7 +825,7 @@
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.Validator")
 		</description>
 		<class-name>org.pentaho.di.trans.steps.validator.ValidatorMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@TRANSFORM.getName()</category>
 		<tooltip>ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.Validator")
 		</tooltip>
 		<image-uri>ui/images/VLD.png</image-uri>
@@ -869,7 +869,7 @@
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.GPBulkLoader")
 		</description>
 		<class-name>org.pentaho.di.trans.steps.gpbulkloader.GPBulkLoaderMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@BULK.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.GPBulkLoader")
 		</tooltip>
@@ -881,7 +881,7 @@
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.PGBulkLoader")
 		</description>
 		<class-name>org.pentaho.di.trans.steps.pgbulkloader.PGBulkLoaderMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@BULK.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.PGBulkLoader")
 		</tooltip>
