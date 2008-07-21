@@ -52,6 +52,7 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
+import org.pentaho.di.job.entries.ssh2get.FTPUtils;
 
 import com.trilead.ssh2.SFTPv3DirectoryEntry;
 import com.trilead.ssh2.Connection;
@@ -104,8 +105,6 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
     int nbfilestoget=0;
     int nbgot=0;
     int nbrerror=0;
-
-    static String FILE_SEPARATOR="/";
    
 	
 	public JobEntrySSH2GET(String n)
@@ -743,9 +742,9 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 		
 		try{
 			// Remote source 
-			realftpDirectory=normalizePath(realftpDirectory);
+			realftpDirectory=FTPUtils.normalizePath(realftpDirectory);
 			// Destination folder (Move to)
-			realDestinationFolder=normalizePath(realDestinationFolder);
+			realDestinationFolder=FTPUtils.normalizePath(realDestinationFolder);
 		}catch(Exception e){
 			log.logError(toString(),Messages.getString("JobSSH2GET.Log.CanNotNormalizePath",e.getMessage()));
 			result.setNrErrors(1);
@@ -940,22 +939,7 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 		
 		return result;
 	}
-	   /**
-     * normalize / to \ and remove trailing slashes from a path
-     * 
-     * @param path
-     * @return normalized path
-     * @throws Exception
-     */
-    public String normalizePath(String path) throws Exception {
-        if (path==null) return path;
-        String normalizedPath = path.replaceAll("\\\\", FILE_SEPARATOR);
-        while (normalizedPath.endsWith("\\") || normalizedPath.endsWith(FILE_SEPARATOR)) {
-            normalizedPath = normalizedPath.substring(0, normalizedPath.length()-1);
-        }
-        
-        return normalizedPath;
-    }
+
 	private Connection getConnection(String servername,int serverport,
 			String proxyhost,int proxyport,String proxyusername,String proxypassword)
 	{
@@ -1152,9 +1136,9 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 
 		String sourceFolder=".";
 		if (!Const.isEmpty(sourceLocation)) 
-			sourceFolder=sourceLocation + FILE_SEPARATOR;
+			sourceFolder=sourceLocation + FTPUtils.FILE_SEPARATOR;
 		else
-			sourceFolder+=FILE_SEPARATOR;
+			sourceFolder+=FTPUtils.FILE_SEPARATOR;
 		
 		Vector<SFTPv3DirectoryEntry> filelist = sftpClient.ls(sourceFolder);
 		
@@ -1175,7 +1159,7 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 				if(GetFileWildcard(dirEntry.filename,wildcardin))
 				{
 					// Copy file from remote host
-					copyFile(sourceFolder + dirEntry.filename, targetLocation + FILE_SEPARATOR + dirEntry.filename, sftpClient);
+					copyFile(sourceFolder + dirEntry.filename, targetLocation + FTPUtils.FILE_SEPARATOR + dirEntry.filename, sftpClient);
 				}
 				
 			} 
@@ -1196,7 +1180,7 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 		SFTPv3Client sftpClient,String wildcardin,Job parentJob) throws Exception 
 	{
 		String sourceFolder="";
-		if (sourceLocation!=null) sourceFolder=sourceLocation + FILE_SEPARATOR;
+		if (sourceLocation!=null) sourceFolder=sourceLocation + FTPUtils.FILE_SEPARATOR;
 
 		if (this.isDirectory(sftpClient, sourceFolder)) 
 		{
@@ -1214,7 +1198,7 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 				
 				if (dirEntry.filename.equals(".")|| dirEntry.filename.equals(".."))	continue;
 				
-					copyRecursive(sourceFolder + dirEntry.filename, targetLocation + FILE_SEPARATOR + dirEntry.filename, sftpClient,wildcardin,parentJob);
+					copyRecursive(sourceFolder + dirEntry.filename, targetLocation + FTPUtils.FILE_SEPARATOR + dirEntry.filename, sftpClient,wildcardin,parentJob);
 
 			} 
 

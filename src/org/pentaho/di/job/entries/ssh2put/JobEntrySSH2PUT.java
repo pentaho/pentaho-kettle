@@ -44,6 +44,7 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.job.entries.ssh2get.FTPUtils;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
@@ -99,9 +100,7 @@ public class JobEntrySSH2PUT extends JobEntryBase implements Cloneable, JobEntry
     private int     timeout;
    
     static KnownHosts database = new KnownHosts();
-    static String FILE_SEPARATOR="/";
-   
-	
+
 	public JobEntrySSH2PUT(String n)
 	{
 		super(n, "");
@@ -708,9 +707,9 @@ public class JobEntrySSH2PUT extends JobEntryBase implements Cloneable, JobEntry
 			
 			try{
 				// Remote source 
-				realftpDirectory=normalizePath(realftpDirectory);
+				realftpDirectory=FTPUtils.normalizePath(realftpDirectory);
 				// Destination folder (Move to)
-				realDestinationFolder=normalizePath(realDestinationFolder);
+				realDestinationFolder=FTPUtils.normalizePath(realDestinationFolder);
 			}catch(Exception e){
 				log.logError(toString(),Messages.getString("JobSSH2PUT.Log.CanNotNormalizePath",e.getMessage()));
 				result.setNrErrors(1);
@@ -859,7 +858,7 @@ public class JobEntrySSH2PUT extends JobEntryBase implements Cloneable, JobEntry
 								String remoteFilename = myFile.getName().getBaseName();
 								
 								// do we have a target directory?
-								if(!Const.isEmpty(realftpDirectory)) remoteFilename=realftpDirectory + FILE_SEPARATOR +remoteFilename;
+								if(!Const.isEmpty(realftpDirectory)) remoteFilename=realftpDirectory + FTPUtils.FILE_SEPARATOR +remoteFilename;
 								
 								boolean getIt = true;
 								
@@ -927,22 +926,7 @@ public class JobEntrySSH2PUT extends JobEntryBase implements Cloneable, JobEntry
 		
 		return result;
 	}
-	   /**
-     * normalize / to \ and remove trailing slashes from a path
-     * 
-     * @param path
-     * @return normalized path
-     * @throws Exception
-     */
-    public String normalizePath(String path) throws Exception {
-        if(path==null) return path;
-        String normalizedPath = path.replaceAll("\\\\", FILE_SEPARATOR);
-        while (normalizedPath.endsWith("\\") || normalizedPath.endsWith(FILE_SEPARATOR)) {
-            normalizedPath = normalizedPath.substring(0, normalizedPath.length()-1);
-        }
-        
-        return normalizedPath;
-    }
+
 	private Connection getConnection(String servername,int serverpassword,
 			String proxyhost,int proxyport,String proxyusername,String proxypassword)
 	{
