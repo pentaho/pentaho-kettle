@@ -2685,7 +2685,15 @@ public class RepositoryExplorerDialog extends Dialog
 				{
 					RepositoryDirectory repdir = rep.getDirectoryTree().findDirectory(dirids[d]);				
 					String trans[] = rep.getTransformationNames(dirids[d]);
-				
+
+					// See if the directory exists...
+					File dir = new File(directory+repdir.getPath());
+					if (!dir.exists()) 
+					{
+						dir.mkdir();
+						log.logBasic("Exporting transformation", "Created directory ["+dir.getName()+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+					}
+
 					for (int i=0;i<trans.length;i++)
 					{
 						TransMeta ti = new TransMeta(rep, trans[i], repdir);
@@ -2693,14 +2701,6 @@ public class RepositoryExplorerDialog extends Dialog
 
 						String xml = XMLHandler.getXMLHeader() + ti.getXML();
 							
-						// See if the directory exists...
-						File dir = new File(directory+repdir.getPath());
-						if (!dir.exists()) 
-						{
-							dir.mkdir();
-							log.logBasic("Exporting transformation", "Created directory ["+dir.getName()+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-						}
-						
 						String filename = directory+repdir.getPath()+Const.FILE_SEPARATOR+fixFileName(trans[i])+".ktr"; //$NON-NLS-1$						
 						File f = new File(filename);
 						try
@@ -2711,13 +2711,13 @@ public class RepositoryExplorerDialog extends Dialog
 						}
 						catch(IOException e)
 						{
-							log.logError("Exporting transformation", "Couldn't create file ["+filename+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$							
+							throw new RuntimeException("Exporting transformation: Couldn't create file ["+filename+"]",e); //$NON-NLS-1$ //$NON-NLS-2$
 						}
 					}
 				}
 			}
 		}
-		catch(KettleException e)
+		catch(Exception e)
 		{
 			new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.ExportTrans.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.ExportTrans.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
 		}
@@ -2747,6 +2747,14 @@ public class RepositoryExplorerDialog extends Dialog
 				{
 					RepositoryDirectory repdir = rep.getDirectoryTree().findDirectory(dirids[d]);				
 					String jobs[] = rep.getJobNames(dirids[d]);
+
+					// See if the directory exists...
+					File dir = new File(directory+repdir.getPath());
+					if (!dir.exists()) 
+					{
+						dir.mkdir();
+						log.logBasic("Exporting Jobs", "Created directory ["+dir.getName()+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$							
+					}
 				
 					for (int i=0;i<jobs.length;i++)
 					{
@@ -2754,14 +2762,6 @@ public class RepositoryExplorerDialog extends Dialog
 						log.logBasic("Exporting Jobs", "["+jobs[i]+"] in directory ["+repdir.getPath()+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 
 						String xml = XMLHandler.getXMLHeader() + ji.getXML();
-						
-						// See if the directory exists...
-						File dir = new File(directory+repdir.getPath());
-						if (!dir.exists()) 
-						{
-							dir.mkdir();
-							log.logBasic("Exporting Jobs", "Created directory ["+dir.getName()+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$							
-						}
 						
 						String filename = directory+repdir.getPath()+Const.FILE_SEPARATOR+fixFileName(jobs[i])+".kjb"; //$NON-NLS-1$
 						File f = new File(filename);
@@ -2773,13 +2773,13 @@ public class RepositoryExplorerDialog extends Dialog
 						}
 						catch(IOException e)
 						{
-							log.logError("Exporting Jobs", "Couldn't create file ["+filename+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$							
+							throw new RuntimeException("Exporting jobs: Couldn't create file ["+filename+"]",e); //$NON-NLS-1$ //$NON-NLS-2$
 						}
 					}
 				}
 			}
 		}
-		catch(KettleException e)
+		catch(Exception e)
 		{
 			new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.ExportJobs.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.ExportJobs.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
 		}
