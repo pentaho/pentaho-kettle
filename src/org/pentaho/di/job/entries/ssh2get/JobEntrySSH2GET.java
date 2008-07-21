@@ -105,6 +105,7 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
     int nbgot=0;
     int nbrerror=0;
 
+    static String FILE_SEPARATOR="/";
    
 	
 	public JobEntrySSH2GET(String n)
@@ -739,6 +740,17 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 		String realftpDirectory=environmentSubstitute(ftpDirectory);
 		// Destination folder (Move to)
 		String realDestinationFolder=environmentSubstitute(destinationfolder);
+		
+		try{
+			// Remote source 
+			realftpDirectory=normalizePath(realftpDirectory);
+			// Destination folder (Move to)
+			realDestinationFolder=normalizePath(realDestinationFolder);
+		}catch(Exception e){
+			log.logError(toString(),Messages.getString("JobSSH2GET.Log.CanNotNormalizePath",e.getMessage()));
+			result.setNrErrors(1);
+			return result;
+		}
 
 		// Check for mandatory fields
 		if(log.isRowLevel()) log.logRowlevel(toString(), Messages.getString("JobSSH2GET.Log.CheckingMandatoryFields"));
@@ -852,15 +864,14 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 					log.logError(toString(),Messages.getString("JobSSH2GET.Log.AuthenticationFailed"));
 				else
 				{
-					log.logBasic(toString(),Messages.getString("JobSSH2GET.Log.Connected",serverName,userName));
+					if(log.isBasic()) log.logBasic(toString(),Messages.getString("JobSSH2GET.Log.Connected",serverName,userName));
 					
 					client = new SFTPv3Client(conn);
 					
 					if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobSSH2GET.Log.ProtocolVersion",""+client.getProtocolVersion()));
 					
-					
 					// Check if ftp (source) directory exists
-					if(realftpDirectory!=null)
+					if(!Const.isEmpty(realftpDirectory))
 					{
 						if (!sshDirectoryExists(client, realftpDirectory)) 
 						{
@@ -929,7 +940,22 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 		
 		return result;
 	}
-	
+	   /**
+     * normalize / to \ and remove trailing slashes from a path
+     * 
+     * @param path
+     * @return normalized path
+     * @throws Exception
+     */
+    public String normalizePath(String path) throws Exception {
+        if (path==null) return path;
+        String normalizedPath = path.replaceAll("\\\\", FILE_SEPARATOR);
+        while (normalizedPath.endsWith("\\") || normalizedPath.endsWith(FILE_SEPARATOR)) {
+            normalizedPath = normalizedPath.substring(0, normalizedPath.length()-1);
+        }
+        
+        return normalizedPath;
+    }
 	private Connection getConnection(String servername,int serverport,
 			String proxyhost,int proxyport,String proxyusername,String proxypassword)
 	{
@@ -1010,8 +1036,7 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 	 */
 	public boolean isDirectory(SFTPv3Client sftpClient, String filename)  
 	{
-		try 
-		{
+		try {
 			return sftpClient.stat(filename).isDirectory();
 		} 
 		catch(Exception e)  {}
@@ -1126,10 +1151,10 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 	{
 
 		String sourceFolder=".";
-		if (sourceLocation!=null) 
-			sourceFolder=sourceLocation + "/";
+		if (!Const.isEmpty(sourceLocation)) 
+			sourceFolder=sourceLocation + FILE_SEPARATOR;
 		else
-			sourceFolder="./";
+			sourceFolder+=FILE_SEPARATOR;
 		
 		Vector<SFTPv3DirectoryEntry> filelist = sftpClient.ls(sourceFolder);
 		
@@ -1150,7 +1175,7 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 				if(GetFileWildcard(dirEntry.filename,wildcardin))
 				{
 					// Copy file from remote host
-					copyFile(sourceFolder + dirEntry.filename, targetLocation + "/" + dirEntry.filename, sftpClient);
+					copyFile(sourceFolder + dirEntry.filename, targetLocation + FILE_SEPARATOR + dirEntry.filename, sftpClient);
 				}
 				
 			} 
@@ -1171,7 +1196,7 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 		SFTPv3Client sftpClient,String wildcardin,Job parentJob) throws Exception 
 	{
 		String sourceFolder="";
-		if (sourceLocation!=null) sourceFolder=sourceLocation + "/";
+		if (sourceLocation!=null) sourceFolder=sourceLocation + FILE_SEPARATOR;
 
 		if (this.isDirectory(sftpClient, sourceFolder)) 
 		{
@@ -1189,7 +1214,7 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 				
 				if (dirEntry.filename.equals(".")|| dirEntry.filename.equals(".."))	continue;
 				
-					copyRecursive(sourceFolder + dirEntry.filename, targetLocation + "/" + dirEntry.filename, sftpClient,wildcardin,parentJob);
+					copyRecursive(sourceFolder + dirEntry.filename, targetLocation + FILE_SEPARATOR + dirEntry.filename, sftpClient,wildcardin,parentJob);
 
 			} 
 

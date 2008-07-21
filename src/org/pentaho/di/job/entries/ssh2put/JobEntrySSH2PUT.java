@@ -50,6 +50,7 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
+
 import org.w3c.dom.Node;
 
 import com.trilead.ssh2.Connection;
@@ -98,6 +99,7 @@ public class JobEntrySSH2PUT extends JobEntryBase implements Cloneable, JobEntry
     private int     timeout;
    
     static KnownHosts database = new KnownHosts();
+    static String FILE_SEPARATOR="/";
    
 	
 	public JobEntrySSH2PUT(String n)
@@ -703,6 +705,18 @@ public class JobEntrySSH2PUT extends JobEntryBase implements Cloneable, JobEntry
 			String realftpDirectory=environmentSubstitute(ftpDirectory);
 			// Destination folder (Move to)
 			String realDestinationFolder=environmentSubstitute(destinationfolder);
+			
+			try{
+				// Remote source 
+				realftpDirectory=normalizePath(realftpDirectory);
+				// Destination folder (Move to)
+				realDestinationFolder=normalizePath(realDestinationFolder);
+			}catch(Exception e){
+				log.logError(toString(),Messages.getString("JobSSH2PUT.Log.CanNotNormalizePath",e.getMessage()));
+				result.setNrErrors(1);
+				return result;
+			}
+		
 	
 			// Check for mandatory fields
 			boolean mandatoryok=true;
@@ -774,15 +788,13 @@ public class JobEntrySSH2PUT extends JobEntryBase implements Cloneable, JobEntry
 					// Create a connection instance 
 					conn = getConnection(realServerName,realServerPort,realProxyHost,realProxyPort,realproxyUserName,realProxyPassword);
 					
-					if(timeout>0)
-					{
+					if(timeout>0){
 						// Use timeout
 						// Cache Host Key
 						if(cachehostkey) conn.connect(new SimpleVerifier(database),0,timeout*1000);	
 						else conn.connect(null,0,timeout*1000);	
 						
-					}else
-					{
+					}else{
 						// Cache Host Key
 						if(cachehostkey) conn.connect(new SimpleVerifier(database));	
 						else conn.connect();
@@ -791,12 +803,10 @@ public class JobEntrySSH2PUT extends JobEntryBase implements Cloneable, JobEntry
 					// Authenticate
 		
 					boolean isAuthenticated = false;
-					if(publicpublickey)
-					{
+					if(publicpublickey){
 						String keyContent = KettleVFS.getTextFileContent(realKeyFilename, Const.XML_ENCODING);
 						isAuthenticated=conn.authenticateWithPublicKey(realUserName, keyContent.toCharArray(), relKeyFilepass);
-					}else
-					{
+					}else{
 						isAuthenticated=conn.authenticateWithPassword(realUserName, realServerPassword);
 					}
 		
@@ -805,7 +815,7 @@ public class JobEntrySSH2PUT extends JobEntryBase implements Cloneable, JobEntry
 						log.logError(toString(),Messages.getString("JobSSH2PUT.Log.AuthenticationFailed"));
 					else
 					{
-						log.logBasic(toString(),Messages.getString("JobSSH2PUT.Log.Connected",serverName,userName));
+						if(log.isBasic()) log.logBasic(toString(),Messages.getString("JobSSH2PUT.Log.Connected",serverName,userName));
 						
 						client = new SFTPv3Client(conn);
 						
@@ -813,7 +823,7 @@ public class JobEntrySSH2PUT extends JobEntryBase implements Cloneable, JobEntry
 						
 						
 						// Check if remote directory exists
-						if(realftpDirectory!=null)
+						if(!Const.isEmpty(realftpDirectory))
 						{
 							if (!sshDirectoryExists(client, realftpDirectory)) 
 							{
@@ -848,11 +858,13 @@ public class JobEntrySSH2PUT extends JobEntryBase implements Cloneable, JobEntry
 								String localFilename = myFile.toString();
 								String remoteFilename = myFile.getName().getBaseName();
 								
+								// do we have a target directory?
+								if(!Const.isEmpty(realftpDirectory)) remoteFilename=realftpDirectory + FILE_SEPARATOR +remoteFilename;
+								
 								boolean getIt = true;
 								
 								// First see if the file matches the regular expression!
-								if (pattern!=null)
-								{
+								if (pattern!=null){
 									Matcher matcher = pattern.matcher(remoteFilename);
 									getIt = matcher.matches();
 								}
@@ -864,21 +876,17 @@ public class JobEntrySSH2PUT extends JobEntryBase implements Cloneable, JobEntry
 									boolean putok=true;
 									
 								    if ( (onlyGettingNewFiles == false) ||
-						                   (onlyGettingNewFiles == true) && !sshFileExists(client, localFilename))
+						                   (onlyGettingNewFiles == true) && !sshFileExists(client, remoteFilename))
 								       {
 											putok=putFile(myFile, remoteFilename, client);
-											if(!putok) 
-											{
+											if(!putok) {
 												nbrerror++;
 												log.logError(toString(),Messages.getString("JobSSH2PUT.Log.Error.CanNotPutFile",localFilename));
-											}else
-											{
-												nbput++;
-												
+											}else{
+												nbput++;	
 											}
 									   }
-								       if(putok && !afterFtpPut.equals("do_nothing"))
-								       {
+								       if(putok && !afterFtpPut.equals("do_nothing")){
 											deleteOrMoveFiles(myFile,realDestinationFolder);
 										}
 								}
@@ -919,7 +927,22 @@ public class JobEntrySSH2PUT extends JobEntryBase implements Cloneable, JobEntry
 		
 		return result;
 	}
-	
+	   /**
+     * normalize / to \ and remove trailing slashes from a path
+     * 
+     * @param path
+     * @return normalized path
+     * @throws Exception
+     */
+    public String normalizePath(String path) throws Exception {
+        if(path==null) return path;
+        String normalizedPath = path.replaceAll("\\\\", FILE_SEPARATOR);
+        while (normalizedPath.endsWith("\\") || normalizedPath.endsWith(FILE_SEPARATOR)) {
+            normalizedPath = normalizedPath.substring(0, normalizedPath.length()-1);
+        }
+        
+        return normalizedPath;
+    }
 	private Connection getConnection(String servername,int serverpassword,
 			String proxyhost,int proxyport,String proxyusername,String proxypassword)
 	{
@@ -1133,7 +1156,7 @@ public class JobEntrySSH2PUT extends JobEntryBase implements Cloneable, JobEntry
 				FileObject source=null;
 				try
 				{
-					destination = KettleVFS.getFileObject(destinationFolder + "/" + file.getName().getBaseName());
+					destination = KettleVFS.getFileObject(destinationFolder + Const.FILE_SEPARATOR + file.getName().getBaseName());
 					file.moveTo(destination);
 					retval=true;
 				}
