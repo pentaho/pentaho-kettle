@@ -57,19 +57,20 @@ public class PropertyInput extends BaseStep implements StepInterface
 	
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{
-		if(first && meta.isFileField())
+		if(first && !meta.isFileField())
 		{
 			data.files = meta.getFiles(this);
-			
+			if (data.files==null || data.files.nrOfFiles()==0)
+					throw new KettleException(Messages.getString("PropertyInput.Log.NoFiles"));
+	
 			  // Create the output row meta-data
             data.outputRowMeta = new RowMeta();
             meta.getFields(data.outputRowMeta, getStepname(), null, null, this); // get the metadata populated
-            
+			   
             // Create convert meta-data objects that will contain Date & Number formatters
             //
             data.convertRowMeta = data.outputRowMeta.clone();
             for (int i=0;i<data.convertRowMeta.size();i++) data.convertRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);
-
 
             // For String to <type> conversions, we allocate a conversion meta data row as well...
 			//
@@ -299,9 +300,7 @@ public class PropertyInput extends BaseStep implements StepInterface
 							logError(Messages.getString("PropertyInput.Log.ErrorFindingField")+ "[" + meta.getDynamicFilenameField()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
 							throw new KettleException(Messages.getString("PropertyInput.Exception.CouldnotFindField",meta.getDynamicFilenameField())); //$NON-NLS-1$ //$NON-NLS-2$
 						}
-					}
-	            	
-		            
+					} 
 		        }  // End if first
 				
 				
@@ -331,15 +330,13 @@ public class PropertyInput extends BaseStep implements StepInterface
 			 FileInputStream in = new FileInputStream(f);
 	         data.pro.load(in);
 	         
-	         if (log.isDetailed()) logDetailed(Messages.getString("PropertyInput.Log.FileOpened", data.file.toString()));
+	         if (log.isDetailed()) 
+	         {
+	        	 logDetailed(Messages.getString("PropertyInput.Log.FileOpened", data.file.toString()));
+	        	 logDetailed(Messages.getString("PropertyInput.log.TotalKey", ""+data.pro.keySet().size(),KettleVFS.getFilename(data.file)));
+	         } 
 
-	        
-	         if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("PropertyInput.log.TotalKey", ""+data.pro.keySet().size(),KettleVFS.getFilename(data.file)));
-	         
-	        
 	         data.it = data.pro.keySet().iterator();
-			
-
 		}
 		catch(Exception e)
 		{
@@ -373,39 +370,6 @@ public class PropertyInput extends BaseStep implements StepInterface
 		
 		if (super.init(smi, sdi))
 		{
-			if(!meta.isFileField())
-			{
-				/*data.files = meta.getFiles(this);
-				if (data.files==null || data.files.nrOfFiles()==0)
-				{
-					logError(Messages.getString("PropertyInput.Log.NoFiles"));
-					return false;
-				}
-				try{
-					  // Create the output row meta-data
-		            data.outputRowMeta = new RowMeta();
-		            meta.getFields(data.outputRowMeta, getStepname(), null, null, this); // get the metadata populated
-		            
-		            // Create convert meta-data objects that will contain Date & Number formatters
-		            //
-		            data.convertRowMeta = data.outputRowMeta.clone();
-		            for (int i=0;i<data.convertRowMeta.size();i++) data.convertRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);
-		
-		
-		            // For String to <type> conversions, we allocate a conversion meta data row as well...
-					//
-					data.convertRowMeta = data.outputRowMeta.clone();
-					for (int i=0;i<data.convertRowMeta.size();i++) {
-						data.convertRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);           
-					}
-				}
-				catch(Exception e)
-				{
-					logError("Error initializing step: "+e.toString());
-					logError(Const.getStackTracker(e));
-					return false;
-				}*/
-			} 
 			data.rownr = 1L;
 			data.totalpreviousfields=0;
 			
