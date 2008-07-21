@@ -138,7 +138,8 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 	
 	String targetFilename =null;
 	
-
+	static String FILE_SEPARATOR="/";
+	
 	public JobEntryFTP(String n)
 	{
 		super(n, "");
@@ -899,6 +900,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 			if (!Const.isEmpty(ftpDirectory))
 			{
                 String realFtpDirectory = environmentSubstitute(ftpDirectory);
+                realFtpDirectory=normalizePath(realFtpDirectory);
                 ftpclient.chdir(realFtpDirectory);
                 if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryFTP.ChangedDir", realFtpDirectory)); //$NON-NLS-1$
 			}	
@@ -906,6 +908,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 			//Create move to folder if necessary
 			if(movefiles && !Const.isEmpty(movetodirectory)){
 				realMoveToFolder=environmentSubstitute(movetodirectory);
+				realMoveToFolder=normalizePath(realMoveToFolder);
 				// Folder exists?
 				boolean folderExist=true;
 				try{
@@ -1025,7 +1028,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 								{
 									if(movefiles){
 										// Try to move file to destination folder ...
-										ftpclient.rename(filelist[i], realMoveToFolder+'/'+filelist[i]);
+										ftpclient.rename(filelist[i], realMoveToFolder+FILE_SEPARATOR+filelist[i]);
 										
 										if(log.isDetailed()) 
 											log.logDetailed(toString(), Messages.getString("JobEntryFTP.MovedFile",filelist[i],realMoveToFolder));
@@ -1065,6 +1068,22 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 		displayResults(log);
 		return result;
 	}
+	   /**
+     * normalize / to \ and remove trailing slashes from a path
+     * 
+     * @param path
+     * @return normalized path
+     * @throws Exception
+     */
+    public String normalizePath(String path) throws Exception {
+        
+        String normalizedPath = path.replaceAll("\\\\", FILE_SEPARATOR);
+        while (normalizedPath.endsWith("\\") || normalizedPath.endsWith(FILE_SEPARATOR)) {
+            normalizedPath = normalizedPath.substring(0, normalizedPath.length()-1);
+        }
+        
+        return normalizedPath;
+    }
 	private void addFilenameToResultFilenames(LogWriter log, Result result, Job parentJob, String filename ) throws  KettleException
 	{
 		if(isaddresult){
