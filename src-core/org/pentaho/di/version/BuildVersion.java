@@ -125,8 +125,7 @@ public class BuildVersion
         }
         catch(Exception e)
         {
-            System.out.println("Unable to load revision number from file : ["+filename+"] : "+e.toString());
-            System.out.println(Const.getStackTracker(e));
+            System.out.println("Unable to load revision number from file : ["+filename+"]");
             
             version = 1;
             buildDate = new Date();
