@@ -125,12 +125,14 @@ public class BuildVersion
         }
         catch(FileNotFoundException e){
           System.out.println("Unable to load revision number from file : ["+filename+"]");
+          
+          version = 1;
+          buildDate = new Date();
         }
         catch(Exception e){
           System.out.println("Unable to load revision number from file : ["+filename+"]" + e.getMessage());
-          e.printStackTrace();            
-        }
-        finally{
+          e.printStackTrace();  
+          
           version = 1;
           buildDate = new Date();
         }
