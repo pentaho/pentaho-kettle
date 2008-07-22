@@ -45,6 +45,9 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.core.fileinput.FileInputList;
 
+import org.apache.commons.vfs.FileName;
+import org.apache.commons.vfs.FileObject;
+
 public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface
 {	
 	/** Array of filenames */
@@ -751,7 +754,19 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		
 	}
-	
+    public static String getFilename(FileObject fileObject)
+    {
+        FileName fileName = fileObject.getName();
+        String root = fileName.getRootURI();
+        if(!root.startsWith("file:")) return fileName.getURI();
+        if(root.endsWith(":/"))
+            root = root.substring(8, 10);
+        else
+            root = root.substring(7, root.length() - 1);
+        String fileString = root + fileName.getPath();
+        if(!"/".equals(Const.FILE_SEPARATOR)) fileString = Const.replace(fileString, "/", Const.FILE_SEPARATOR);
+        return fileString;
+    }
 	public StepInterface getStep(StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr, Trans trans)
 	{
 		return new AccessInput(stepMeta, stepDataInterface, cnr, tr, trans);

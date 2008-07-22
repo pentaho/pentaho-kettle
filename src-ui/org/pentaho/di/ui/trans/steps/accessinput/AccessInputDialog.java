@@ -1093,7 +1093,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
             {
                 // Open the file (only first file)...
 
-            	Database d = Database.open(new File(KettleVFS.getFilename(inputList.getFile(0))));			
+            	Database d = Database.open(new File(AccessInputMeta.getFilename(inputList.getFile(0))));			
     			Table t=d.getTable(meta.getTableName());
     			
     			// Get the list of columns
@@ -1460,7 +1460,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 			     if (fileInputList.getFile(0).exists()) {
 					// Open the file (only first file) in readOnly ...
 					//
-					accessDatabase = Database.open(new File(KettleVFS.getFilename(fileInputList.getFile(0))));
+					accessDatabase = Database.open(new File(AccessInputMeta.getFilename(fileInputList.getFile(0))));
 
 					// Get user tables
 					//

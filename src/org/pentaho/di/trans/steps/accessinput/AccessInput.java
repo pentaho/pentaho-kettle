@@ -174,7 +174,7 @@ public class AccessInput extends BaseStep implements StepInterface
 				
 				// See if we need to add the filename to the row...
 				if ( meta.includeFilename() && !Const.isEmpty(meta.getFilenameField()) ) {
-					r[data.totalpreviousfields+rowIndex++] = KettleVFS.getFilename(data.file);
+					r[data.totalpreviousfields+rowIndex++] = AccessInputMeta.getFilename(data.file);
 				}
 				
 				// See if we need to add the table name to the row...
@@ -302,7 +302,7 @@ public class AccessInput extends BaseStep implements StepInterface
 			}
 			
 			// Read mdb file
-        	data.d = Database.open(new File(KettleVFS.getFilename(data.file)));	
+        	data.d = Database.open(new File(AccessInputMeta.getFilename(data.file)));	
 
         	// Get table
 			data.t=data.d.getTable(environmentSubstitute(meta.getTableName()));
