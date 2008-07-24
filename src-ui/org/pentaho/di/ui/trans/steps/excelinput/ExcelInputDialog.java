@@ -1912,6 +1912,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 			mb.setText(Messages.getString("ExcelInputDialog.UnableToFindFields.DialogTitle"));
 			mb.open(); 
 		}
+		checkAlerts();
 	}
     
     
@@ -1988,13 +1989,13 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
     	// Assign the highest-priority action message.
     	if ( ! fieldsOk ) {
     		//TODO: NLS
-    		msgText = ("Add Field(s)");
+    		msgText = (Messages.getString("ExcelInputDialog.AddFields"));
     	} else if ( ! sheetsOk ) {
     		//TODO: NLS
-    		msgText = ("Add sheet(s)");
+    		msgText = (Messages.getString("ExcelInputDialog.AddSheets"));
     	} else if ( !filesOk ) {
     		//TODO: NLS
-    		msgText = ("Add filename(s)");
+    		msgText = (Messages.getString("ExcelInputDialog.AddFilenames"));
     	}
     	tagTab(!fieldsOk, wFieldsTab,
     		Messages.getString("ExcelInputDialog.FieldsTab.TabTitle"));
