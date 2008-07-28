@@ -399,7 +399,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
         			for (int i=0;i<enclosures.size();i++)
         			{
         				int position = enclosures.get(i);
-        				data.writer.write(str, from, position + data.binaryEnclosure.length);
+        				data.writer.write(str, from, position + data.binaryEnclosure.length - from);
         				data.writer.write(data.binaryEnclosure); // write enclosure a second time
         				from=position+data.binaryEnclosure.length;
         			}
@@ -425,7 +425,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 		List<Integer> positions = null;
 		if (data.binaryEnclosure!=null && data.binaryEnclosure.length>0)
 		{
-			for (int i=0;i<str.length - data.binaryEnclosure.length;i++)
+			for (int i=0;i<str.length - data.binaryEnclosure.length +1;i++)  //+1 because otherwise we will not find it at the end
 			{
 				// verify if on position i there is an enclosure
 				// 
