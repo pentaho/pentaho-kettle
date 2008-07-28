@@ -1307,12 +1307,12 @@ public class Database implements VariableSpace
 		catch(SQLException ex) 
 		{
 		    // log.logError(toString(), Const.getStackTracker(ex));
-			throw new KettleDatabaseException("Error inserting row", ex);
+			throw new KettleDatabaseException("Error inserting/updating row", ex);
 		}
 		catch(Exception e)
 		{
 		    // System.out.println("Unexpected exception in ["+debug+"] : "+e.getMessage());
-			throw new KettleDatabaseException("Unexpected error inserting row in part ["+debug+"]", e);
+			throw new KettleDatabaseException("Unexpected error inserting/updating row in part ["+debug+"]", e);
 		}
 	}
 	
