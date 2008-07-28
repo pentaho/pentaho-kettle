@@ -115,7 +115,7 @@ public class BuildVersion
             	if (lastModifiedJar!=0L) {
             		buildDate = new Date(lastModifiedJar);
             	} else {
-                	System.out.println("Unable to find kettle engine jar file to set build date. (ingored)");
+                	System.out.println("Unable to find kettle engine jar file to set build date. (ignored)");
             	}
             }
             catch(Exception e) {
