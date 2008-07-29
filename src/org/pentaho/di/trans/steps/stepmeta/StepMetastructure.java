@@ -56,6 +56,12 @@ public class StepMetastructure extends BaseStep implements StepInterface
 		if (first)
 		{
 			first = false;
+
+			// handle empty input 
+			if (r==null) {
+		    	setOutputDone();
+		    	return false;
+			}
 			
 			// Create the row metadata for the output rows
 			// 
