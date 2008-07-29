@@ -69,17 +69,24 @@ public class ExcelInput extends BaseStep implements StepInterface
 	{
 		super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
 	}
+	/**
+	 * Build an empty row based on the meta-data...
+	 * 
+	 * @return
+	 */
+
 
 	private Object[] fillRow(int startcolumn, ExcelInputRow excelInputRow) throws KettleException
 	{
-		Object[] r = new Object[data.outputRowMeta.size()];
-
+		Object[] r = new Object[data.outputRowMeta.size()];  
+		   
 		// Keep track whether or not we handled an error for this line yet.
 		boolean errorHandled = false;
 
 		// Set values in the row...
 		Cell cell = null;
-		for (int i = startcolumn; i < excelInputRow.cells.length && i - startcolumn < r.length; i++)
+
+		for (int i = startcolumn; i < excelInputRow.cells.length && i - startcolumn < meta.getField().length; i++)
 		{
 			cell = excelInputRow.cells[i];
 
@@ -176,7 +183,7 @@ public class ExcelInput extends BaseStep implements StepInterface
 			}
 			
 			ExcelInputField field = meta.getField()[rowcolumn];
-
+		
 			// Change to the appropriate type if needed...
 			//
 			try
@@ -249,9 +256,9 @@ public class ExcelInput extends BaseStep implements StepInterface
 				}
 			}
 		}
-
+		
         int rowIndex = meta.getField().length;
-
+       
 		// Do we need to include the filename?
 		if (!Const.isEmpty(meta.getFileField()))
 		{
