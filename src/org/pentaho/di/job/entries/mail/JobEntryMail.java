@@ -88,6 +88,8 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
   private String destinationBCc;
 
   private String replyAddress;
+  
+  private String replyName;
 
   private String subject;
 
@@ -169,6 +171,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
     retval.append("      ").append(XMLHandler.addTagValue("destinationCc", destinationCc));
     retval.append("      ").append(XMLHandler.addTagValue("destinationBCc", destinationBCc));
     retval.append("      ").append(XMLHandler.addTagValue("replyto", replyAddress));
+    retval.append("      ").append(XMLHandler.addTagValue("replytoname", replyName));
     retval.append("      ").append(XMLHandler.addTagValue("subject", subject));
     retval.append("      ").append(XMLHandler.addTagValue("include_date", includeDate));
     retval.append("      ").append(XMLHandler.addTagValue("contact_person", contactPerson));
@@ -223,10 +226,11 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
       setDestinationCc(XMLHandler.getTagValue(entrynode, "destinationCc"));
       setDestinationBCc(XMLHandler.getTagValue(entrynode, "destinationBCc"));
       setReplyAddress(XMLHandler.getTagValue(entrynode, "replyto"));
+      setReplyName(XMLHandler.getTagValue(entrynode, "replytoname"));
       setSubject(XMLHandler.getTagValue(entrynode, "subject"));
       setIncludeDate("Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "include_date")));
-      setContactPerson(XMLHandler.getTagValue(entrynode, "concact_person"));
-      setContactPhone(XMLHandler.getTagValue(entrynode, "concact_phone"));
+      setContactPerson(XMLHandler.getTagValue(entrynode, "contact_person"));
+      setContactPhone(XMLHandler.getTagValue(entrynode, "contact_phone"));
       setComment(XMLHandler.getTagValue(entrynode, "comment"));
       setIncludingFiles("Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "include_files")));
 
@@ -279,6 +283,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
       destinationCc = rep.getJobEntryAttributeString(id_jobentry, "destinationCc");
       destinationBCc = rep.getJobEntryAttributeString(id_jobentry, "destinationBCc");
       replyAddress = rep.getJobEntryAttributeString(id_jobentry, "replyto");
+      replyName = rep.getJobEntryAttributeString(id_jobentry, "replytoname");
       subject = rep.getJobEntryAttributeString(id_jobentry, "subject");
       includeDate = rep.getJobEntryAttributeBoolean(id_jobentry, "include_date");
       contactPerson = rep.getJobEntryAttributeString(id_jobentry, "contact_person");
@@ -333,6 +338,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
       rep.saveJobEntryAttribute(id_job, getID(), "destinationCc", destinationCc);
       rep.saveJobEntryAttribute(id_job, getID(), "destinationBCc", destinationBCc);
       rep.saveJobEntryAttribute(id_job, getID(), "replyto", replyAddress);
+      rep.saveJobEntryAttribute(id_job, getID(), "replytoname", replyName);
       rep.saveJobEntryAttribute(id_job, getID(), "subject", subject);
       rep.saveJobEntryAttribute(id_job, getID(), "include_date", includeDate);
       rep.saveJobEntryAttribute(id_job, getID(), "contact_person", contactPerson);
@@ -419,10 +425,18 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
   {
     replyAddress = reply;
   }
-
   public String getReplyAddress()
   {
     return replyAddress;
+  }
+
+  public void setReplyName(String replyname)
+  {
+    this.replyName = replyname;
+  }
+  public String getReplyName()
+  {
+    return replyName;
   }
 
   public void setSubject(String subj)
@@ -798,6 +812,9 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
       String email_address = environmentSubstitute(replyAddress);
       if (!Const.isEmpty(email_address))
       {
+    	// get replay to name
+      	String replay_to_name = environmentSubstitute(replyName);
+      	if(!Const.isEmpty(replay_to_name)) email_address=replay_to_name+'<'+email_address+'>';	 	 
         msg.setFrom(new InternetAddress(email_address));
       } else
       {
