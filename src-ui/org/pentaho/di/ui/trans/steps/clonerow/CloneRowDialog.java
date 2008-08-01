@@ -219,6 +219,7 @@ public class CloneRowDialog extends BaseStepDialog implements StepDialogInterfac
 	}
 	private void activeaddCloneFlag()
 	{
+		wlcloneFlagField.setEnabled(waddCloneFlag.getSelection());
 		wcloneFlagField.setEnabled(waddCloneFlag.getSelection());
 	}
 	/**
