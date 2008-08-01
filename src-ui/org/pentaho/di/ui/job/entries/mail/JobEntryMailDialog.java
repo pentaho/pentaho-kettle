@@ -205,9 +205,9 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
 	private FormData	 fdGeneralComp,fdContentComp,fdAttachedComp,fdMessageComp;
 	private FormData     fdTabFolder;
 	
-	private Group wDestinationGroup,wReplayGroup,wServerGroup,
+	private Group wDestinationGroup,wReplyGroup,wServerGroup,
 		wAuthentificationGroup,wMessageSettingsGroup,wMessageGroup,wResultFilesGroup;
-	private FormData fdDestinationGroup,fdReplayGroup,fdServerGroup,
+	private FormData fdDestinationGroup,fdReplyGroup,fdServerGroup,
 		fdAuthentificationGroup,fdMessageSettingsGroup,fdMessageGroup,fdResultFilesGroup;
     
     public JobEntryMailDialog(Shell parent, JobEntryInterface jobEntryInt, Repository rep, JobMeta jobMeta)
@@ -332,20 +332,20 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
 
 		
 		// ////////////////////////
-		// START OF Replay Settings GROUP
+		// START OF Reply Settings GROUP
 		// ////////////////////////
 
-		wReplayGroup = new Group(wGeneralComp, SWT.SHADOW_NONE);
-		props.setLook(wReplayGroup);
-		wReplayGroup.setText(Messages.getString("JobMail.Group.Replay.Label"));
+		wReplyGroup = new Group(wGeneralComp, SWT.SHADOW_NONE);
+		props.setLook(wReplyGroup);
+		wReplyGroup.setText(Messages.getString("JobMail.Group.Reply.Label"));
 		
-		FormLayout replaygroupLayout = new FormLayout();
-		replaygroupLayout.marginWidth = 10;
-		replaygroupLayout.marginHeight = 10;
-		wReplayGroup.setLayout(replaygroupLayout);
+		FormLayout replygroupLayout = new FormLayout();
+		replygroupLayout.marginWidth = 10;
+		replygroupLayout.marginHeight = 10;
+		wReplyGroup.setLayout(replygroupLayout);
 
 	       // Reply name
-        wReplyName = new LabelTextVar(jobMeta, wReplayGroup, Messages.getString("JobMail.ReplyName.Label"), 
+        wReplyName = new LabelTextVar(jobMeta, wReplyGroup, Messages.getString("JobMail.ReplyName.Label"), 
         		Messages.getString("JobMail.ReplyName.Tooltip"));
         wReplyName.addModifyListener(lsMod);
         fdReplyName = new FormData();
@@ -355,7 +355,7 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
         wReplyName.setLayoutData(fdReplyName);
         
         // Reply line
-        wReply = new LabelTextVar(jobMeta, wReplayGroup, Messages.getString("JobMail.ReplyAddress.Label"), 
+        wReply = new LabelTextVar(jobMeta, wReplyGroup, Messages.getString("JobMail.ReplyAddress.Label"), 
         		Messages.getString("JobMail.ReplyAddress.Tooltip"));
         wReply.addModifyListener(lsMod);
         fdReply = new FormData();
@@ -365,11 +365,11 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
         wReply.setLayoutData(fdReply);
 
 
-    	fdReplayGroup = new FormData();
-    	fdReplayGroup.left = new FormAttachment(0, margin);
-    	fdReplayGroup.top = new FormAttachment(wDestinationGroup, margin);
-    	fdReplayGroup.right = new FormAttachment(100, -margin);
-		wReplayGroup.setLayoutData(fdReplayGroup);
+    	fdReplyGroup = new FormData();
+    	fdReplyGroup.left = new FormAttachment(0, margin);
+    	fdReplyGroup.top = new FormAttachment(wDestinationGroup, margin);
+    	fdReplyGroup.right = new FormAttachment(100, -margin);
+		wReplyGroup.setLayoutData(fdReplyGroup);
 		
 		// ///////////////////////////////////////////////////////////
 		// / END OF Replay  GROUP
@@ -381,7 +381,7 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
         wPerson.addModifyListener(lsMod);
         fdPerson = new FormData();
         fdPerson.left = new FormAttachment(0, 0);
-        fdPerson.top = new FormAttachment(wReplayGroup, 2*margin);
+        fdPerson.top = new FormAttachment(wReplyGroup, 2*margin);
         fdPerson.right = new FormAttachment(100, 0);
         wPerson.setLayoutData(fdPerson);
 

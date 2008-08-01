@@ -812,9 +812,9 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
       String email_address = environmentSubstitute(replyAddress);
       if (!Const.isEmpty(email_address))
       {
-    	// get replay to name
-      	String replay_to_name = environmentSubstitute(replyName);
-      	if(!Const.isEmpty(replay_to_name)) email_address=replay_to_name+'<'+email_address+'>';	 	 
+    	// get reply to name
+      	String reply_to_name = environmentSubstitute(replyName);
+      	if(!Const.isEmpty(reply_to_name)) email_address=reply_to_name+'<'+email_address+'>';	 	 
         msg.setFrom(new InternetAddress(email_address));
       } else
       {
