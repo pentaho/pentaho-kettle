@@ -862,13 +862,11 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
             
             
 			// set activeConnection connectmode ...
-            if (activeConnection)
-            {
+            if (activeConnection){
                 ftpclient.setConnectMode(FTPConnectMode.ACTIVE);
                 if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryFTP.SetActive")); //$NON-NLS-1$
             }
-            else
-            {
+            else{
                 ftpclient.setConnectMode(FTPConnectMode.PASV);
                 if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryFTP.SetPassive")); //$NON-NLS-1$
             }
@@ -897,8 +895,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 			if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryFTP.LoggedIn", realUsername)); //$NON-NLS-1$
 
 			// move to spool dir ...
-			if (!Const.isEmpty(ftpDirectory))
-			{
+			if (!Const.isEmpty(ftpDirectory)) {
                 String realFtpDirectory = environmentSubstitute(ftpDirectory);
                 realFtpDirectory=normalizePath(realFtpDirectory);
                 ftpclient.chdir(realFtpDirectory);
@@ -906,7 +903,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 			}	
 
 			//Create move to folder if necessary
-			if(movefiles && !Const.isEmpty(movetodirectory)){
+			if(movefiles && !Const.isEmpty(movetodirectory)) {
 				realMoveToFolder=environmentSubstitute(movetodirectory);
 				realMoveToFolder=normalizePath(realMoveToFolder);
 				// Folder exists?
@@ -933,8 +930,10 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 			if(!exitjobentry)
 			{
 				// Get all the files in the current directory...
-				String[] filelist = ftpclient.dir();
-			    if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryFTP.FoundNFiles", String.valueOf(filelist.length))); //$NON-NLS-1$
+				FTPFile[] ftpFiles = ftpclient.dirDetails(".");
+				
+			    //if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryFTP.FoundNFiles", String.valueOf(filelist.length))); //$NON-NLS-1$
+				if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryFTP.FoundNFiles", String.valueOf(ftpFiles.length))); //$NON-NLS-1$
 			    
 				// set transfertype ...
 				if (binaryMode) 
@@ -952,21 +951,19 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 				// e.g. Solaris 8
 				// CHECK THIS !!!
 				
-				if (filelist.length == 1)
+				if (ftpFiles.length == 1)
 				{
 					String translatedWildcard = environmentSubstitute(wildcard);
 					if(!Const.isEmpty(translatedWildcard)){
-					  if (filelist[0].startsWith(translatedWildcard))
+					  if (ftpFiles[0].getName().startsWith(translatedWildcard))
 					  {
-					    throw new FTPException(filelist[0]);
+					    throw new FTPException(ftpFiles[0].getName());
 					  }
 					}
 				}
 	
-				
 				Pattern pattern = null;
-				if (!Const.isEmpty(wildcard)) 
-				{
+				if (!Const.isEmpty(wildcard)) {
 	                String realWildcard = environmentSubstitute(wildcard);
 	                pattern = Pattern.compile(realWildcard);
 				}
@@ -975,67 +972,38 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 					limitFiles=Const.toInt(environmentSubstitute(getLimit()),10);
 				
 				// Get the files in the list...
-				for (int i=0;i<filelist.length && !parentJob.isStopped();i++)
+				for (FTPFile ftpFile : ftpFiles) 
 				{
+					
+					if(parentJob.isStopped()){
+						exitjobentry=true;
+						throw new Exception(Messages.getString("JobEntryFTP.JobStopped"));
+					}
+					
 					if(successConditionBroken){
-						log.logError(toString(), Messages.getString("JobEntryFTP.Error.SuccessConditionbroken",""+NrErrors));
-						displayResults(log);
 						throw new Exception(Messages.getString("JobEntryFTP.SuccesConditionBroken",""+NrErrors));
 					}
 				
 					boolean getIt = true;
 					
-					if(log.isDebug()) log.logDebug(toString(), Messages.getString("JobEntryFTP.AnalysingFile",filelist[i]));
+					String filename=ftpFile.getName();
+					if(log.isDebug()) log.logDebug(toString(), Messages.getString("JobEntryFTP.AnalysingFile",filename));
 					
+					// We get only files
+					if(ftpFile.isDir() || ftpFile.isLink()) getIt=false;
+
 					try
 					{
-						// First see if the file matches the regular expression!
-						if (pattern!=null){
-							Matcher matcher = pattern.matcher(filelist[i]);
-							getIt = matcher.matches();
+						// See if the file matches the regular expression!
+						if(getIt){
+							if (pattern!=null){
+								Matcher matcher = pattern.matcher(filename);
+								getIt = matcher.matches();
+							}
 						}
-						//The idea here is to take only files (exclude folders)
-						// also exclude fetching sub folders !
-						// Please do not use fileDetails(
-						// because this method use command called MLST. 
-						// which is a recent feature not supported by all FTP servers
-						FTPFile[] finfo = ftpclient.dirDetails(filelist[i]); 
-						if(finfo[0].isDir() || !filelist[i].equals(finfo[0].getName())) getIt=false;
 						
-						if (getIt)
-						{
-							targetFilename = getTargetFilename(filelist[i]);
-	
-		                    if ((!onlyGettingNewFiles) ||
-		                    	(onlyGettingNewFiles && needsDownload(targetFilename)))
-		                    {
-		                    	if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryFTP.GettingFile", filelist[i], environmentSubstitute(targetDirectory)));  //$NON-NLS-1$
-		    					ftpclient.get(targetFilename, filelist[i]);
-										
-		    					 // Update retrieved files
-		    					updateRetrievedFiles();
-	    			            if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryFTP.GotFile", filelist[i])); //$NON-NLS-1$
-		    					
-	    			            // Add filename to result filenames
-	    			            addFilenameToResultFilenames(log, result, parentJob, targetFilename);
-	
-								// Delete the file if this is needed!
-								if (remove) {
-									ftpclient.delete(filelist[i]);
-									if(log.isDetailed()) 
-							            if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryFTP.DeletedFile", filelist[i])); //$NON-NLS-1$
-								}else
-								{
-									if(movefiles){
-										// Try to move file to destination folder ...
-										ftpclient.rename(filelist[i], realMoveToFolder+FILE_SEPARATOR+filelist[i]);
-										
-										if(log.isDetailed()) 
-											log.logDetailed(toString(), Messages.getString("JobEntryFTP.MovedFile",filelist[i],realMoveToFolder));
-									}
-								}
-		                    }
-						}
+						if (getIt)	downloadFile(ftpclient,filename,realMoveToFolder,log, parentJob ,result) ;
+						
 					}catch (Exception e){
 						// Update errors number
 						updateErrors();
@@ -1045,12 +1013,11 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 			}
 		}
 		catch(Exception e){
-			updateErrors();
+			if(!successConditionBroken && !exitjobentry) updateErrors();
 			log.logError(toString(), Messages.getString("JobEntryFTP.ErrorGetting", e.getMessage())); //$NON-NLS-1$
-            log.logError(toString(), Const.getStackTracker(e));
 		}
         finally{
-            if (ftpclient!=null && ftpclient.connected()) {
+            if (ftpclient!=null) {
                 try {
                     ftpclient.quit();
                 }
@@ -1059,14 +1026,49 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
                 }
             }
         }
-		
-		
+
 		result.setNrErrors(NrErrors);
 		result.setNrFilesRetrieved(NrfilesRetrieved);
 		if(getSuccessStatus())	result.setResult(true);
 		if(exitjobentry) result.setResult(false);
 		displayResults(log);
 		return result;
+	}
+	private void downloadFile(FTPClient ftpclient,String filename,String realMoveToFolder,
+			LogWriter log, Job parentJob,Result result) throws Exception
+	{
+		String localFilename=filename;
+		targetFilename = getTargetFilename(localFilename);
+		
+        if ((!onlyGettingNewFiles) ||
+        	(onlyGettingNewFiles && needsDownload(targetFilename)))
+        {
+        	if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryFTP.GettingFile",filename, environmentSubstitute(targetDirectory)));  //$NON-NLS-1$
+			ftpclient.get(targetFilename, filename);
+					
+			// Update retrieved files
+			updateRetrievedFiles();
+            if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryFTP.GotFile", filename)); //$NON-NLS-1$
+			
+            // Add filename to result filenames
+            addFilenameToResultFilenames(log, result, parentJob, targetFilename);
+
+			// Delete the file if this is needed!
+			if (remove) {
+				ftpclient.delete(filename);
+				if(log.isDetailed()) 
+		            if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryFTP.DeletedFile", filename)); //$NON-NLS-1$
+			}else
+			{
+				if(movefiles){
+					// Try to move file to destination folder ...
+					ftpclient.rename(filename, realMoveToFolder+FILE_SEPARATOR+filename);
+					
+					if(log.isDetailed()) 
+						log.logDetailed(toString(), Messages.getString("JobEntryFTP.MovedFile",filename,realMoveToFolder));
+				}
+			}
+        }
 	}
 	   /**
      * normalize / to \ and remove trailing slashes from a path
@@ -1160,20 +1162,20 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
      * 
      * @return the calculated target filename
      */
-	protected String getTargetFilename(String filename)
+	private String getTargetFilename(String filename)
     {
-		
-        String retval="";
+        String retval=null;
 		// Replace possible environment variables...
 		if(filename!=null) retval=filename;
+		else return null;
 		
 		int lenstring=retval.length();
-		int lastindexOfDot=retval.lastIndexOf('.');
+		int lastindexOfDot=retval.lastIndexOf(".");
 		if(lastindexOfDot==-1) lastindexOfDot=lenstring;
 		
 		if(isAddDateBeforeExtension())	retval=retval.substring(0, lastindexOfDot);
 		
-		SimpleDateFormat daf     = new SimpleDateFormat();
+		SimpleDateFormat daf   = new SimpleDateFormat();
 		Date now = new Date();
 		
 		if(SpecifyFormat && !Const.isEmpty(date_time_format))
@@ -1183,7 +1185,6 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 			retval+=dt;
 		}else
 		{
-		
 			if (adddate)
 			{
 				daf.applyPattern("yyyyMMdd");
@@ -1204,8 +1205,6 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 		// Add foldername to filename		
 		retval= environmentSubstitute(targetDirectory)+Const.FILE_SEPARATOR+retval;
 		return retval;
-
-        
     }
 
     public boolean evaluates()
@@ -1234,7 +1233,6 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
         	return true;
         }else
         {
-	
         	// Local file exists!
         	if(ifFileExists==ifFileExistsCreateUniq)
         	{
