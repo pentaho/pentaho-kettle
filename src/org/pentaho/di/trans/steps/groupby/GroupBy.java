@@ -114,7 +114,7 @@ public class GroupBy extends BaseStep implements StepInterface
 					
 					// The position of the target in the output row is the input row size + i
 					//
-					data.cumulativeSumTargetIndexes.add(getInputRowMeta().size()+i);
+					data.cumulativeSumTargetIndexes.add(data.inputRowMeta.size()+i);
 				}
 				if (meta.getAggregateType()[i]==GroupByMeta.TYPE_GROUP_CUMULATIVE_AVERAGE)
 				{
@@ -122,7 +122,7 @@ public class GroupBy extends BaseStep implements StepInterface
 
 					// The position of the target in the output row is the input row size + i
 					//
-					data.cumulativeAvgTargetIndexes.add(getInputRowMeta().size()+i);
+					data.cumulativeAvgTargetIndexes.add(data.inputRowMeta.size()+i);
 				}
 				
 			}
@@ -315,7 +315,7 @@ public class GroupBy extends BaseStep implements StepInterface
         	
         	int targetIndex = data.cumulativeSumTargetIndexes.get(i);
         	
-        	ValueMetaInterface sourceMeta = getInputRowMeta().getValueMeta(sourceIndex);
+        	ValueMetaInterface sourceMeta = data.inputRowMeta.getValueMeta(sourceIndex);
     		ValueMetaInterface targetMeta = data.outputRowMeta.getValueMeta(targetIndex);
 
     		// If the first values where null, or this is the first time around, just take the source value...
@@ -354,7 +354,7 @@ public class GroupBy extends BaseStep implements StepInterface
         	
         	int targetIndex = data.cumulativeAvgTargetIndexes.get(i);
         	
-        	ValueMetaInterface sourceMeta = getInputRowMeta().getValueMeta(sourceIndex);
+        	ValueMetaInterface sourceMeta = data.inputRowMeta.getValueMeta(sourceIndex);
     		ValueMetaInterface targetMeta = data.outputRowMeta.getValueMeta(targetIndex);
 
     		// If the first values where null, or this is the first time around, just take the source value...
