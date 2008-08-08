@@ -2250,7 +2250,17 @@ public class Database implements VariableSpace
 			cr_seq += "CREATE SEQUENCE "+schemaSequence+" "+Const.CR;  // Works for both Oracle and PostgreSQL :-)
 			cr_seq += "START WITH "+start_at+" "+Const.CR;
 			cr_seq += "INCREMENT BY "+increment_by+" "+Const.CR;
-			if (max_value != null) cr_seq += "MAXVALUE "+max_value+Const.CR;
+			if (max_value != null) {
+				//"-1" means there is no maxvalue, must be handles different by DB2 / AS400
+				if ((databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_DB2 ||
+						databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_AS400 ) &&
+						max_value.trim().equals("-1")) {
+					cr_seq += "NOMAXVALUE"+Const.CR;
+				} else {
+					// set the max value
+					cr_seq += "MAXVALUE "+max_value+Const.CR;
+				}
+			}
 			
 			if (semi_colon) cr_seq+=";"+Const.CR;
 		}
@@ -4559,7 +4569,7 @@ public class Database implements VariableSpace
 	/**
 	 * Return SQL TRUNCATE statement for a Table
 	 * @param schema The schema
-	 * @param tableName The table to create
+	 * @param tableNameWithSchema The table to create
 	 * @throws KettleDatabaseException
 	 */
 	public String getDDLTruncateTable(String schema, String tablename) throws KettleDatabaseException

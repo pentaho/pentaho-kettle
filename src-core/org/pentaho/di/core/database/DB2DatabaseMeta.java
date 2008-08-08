@@ -378,5 +378,45 @@ public class DB2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfa
     {
         return new String[] { "db2jcc.jar" , "db2jcc_license_cu.jar" };
     }
+    
+	/**
+	 * @return true if the database supports sequences
+	 */
+	public boolean supportsSequences()
+	{
+		return true;
+	}
+
+    /**
+     * Check if a sequence exists.
+     * @param sequenceName The sequence to check
+     * @return The SQL to get the name of the sequence back from the databases data dictionary
+     */
+    public String getSQLSequenceExists(String sequenceName)
+    {
+        return "SELECT * FROM SYSCAT.SEQUENCES WHERE SEQNAME = '"+sequenceName.toUpperCase()+"'";
+    }
+    
+    /**
+     * Get the current value of a database sequence
+     * @param sequenceName The sequence to check
+     * @return The current value of a database sequence
+     */
+    public String getSQLCurrentSequenceValue(String sequenceName)
+    {
+        return "SELECT PREVIOUS VALUE FOR "+sequenceName+" FROM SYSIBM.SYSDUMMY1";
+    }
+
+    /**
+     * Get the SQL to get the next value of a sequence. (Oracle only) 
+     * @param sequenceName The sequence name
+     * @return the SQL to get the next value of a sequence. (Oracle only)
+     */
+    public String getSQLNextSequenceValue(String sequenceName)
+    {
+    	return "SELECT NEXT VALUE FOR "+sequenceName+" FROM SYSIBM.SYSDUMMY1";
+    }
+
+    
 }
 
