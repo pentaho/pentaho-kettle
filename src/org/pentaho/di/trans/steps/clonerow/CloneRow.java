@@ -54,7 +54,9 @@ public class CloneRow extends BaseStep implements StepInterface
 		if(first)
 		{
 			first=false;
-			if(meta.isAddCloneFlag())
+            data.outputRowMeta = getInputRowMeta().clone();
+
+            if(meta.isAddCloneFlag())
 			{
 				String realflagfield=environmentSubstitute(meta.getCloneFlagField());
 				if(Const.isEmpty(realflagfield))
@@ -63,7 +65,6 @@ public class CloneRow extends BaseStep implements StepInterface
 					throw new KettleException(Messages.getString("CloneRow.Error.CloneFlagFieldMissing"));
 				}
 				
-				data.outputRowMeta = getInputRowMeta().clone();
 				meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
 			}
 			
@@ -71,22 +72,27 @@ public class CloneRow extends BaseStep implements StepInterface
 			data.nrclones=Const.toInt(nrclonesString, 0);
 			if(log.isDebug()) log.logDebug(toString(), Messages.getString("CloneRow.Log.NrClones",""+data.nrclones));
 		}
-		boolean isclonerow=false;
 		
-		for(int i=0; i<=data.nrclones;i++)
+		if (meta.isAddCloneFlag())
 		{
-			if(meta.isAddCloneFlag())
+		    Object[] outputRowData = RowDataUtil.addValueData(r, getInputRowMeta().size(), false);
+            putRow(data.outputRowMeta, outputRowData);  // copy row to output rowset(s);
+		}
+		else
+		{
+            putRow(data.outputRowMeta, r);
+		}
+		
+		for (int i = 0; i < data.nrclones; i++)
+		{
+		    Object[] outputRowData = RowDataUtil.createResizedCopy(r, data.outputRowMeta.size());
+		    
+			if (meta.isAddCloneFlag())
 			{
-				if(i==0) 
-					isclonerow=false;
-				else
-					isclonerow=true;
-				Object[] outputRowData =RowDataUtil.addValueData(r, getInputRowMeta().size(),isclonerow);
-				//	add new values to the row.
-				putRow(data.outputRowMeta, outputRowData);  // copy row to output rowset(s);
+				outputRowData = RowDataUtil.addValueData(outputRowData, getInputRowMeta().size(), true);
 				
-			}else
-				putRow(getInputRowMeta(), r);     // copy row to possible alternate rowset(s).
+			}
+            putRow(data.outputRowMeta, outputRowData);
 		}
 
         if (checkFeedback(getLinesRead())) 
