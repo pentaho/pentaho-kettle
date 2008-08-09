@@ -851,10 +851,10 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 
         msg.setRecipients(Message.RecipientType.BCC, addressBCc);
       }
-
-      if (!Const.isEmpty(environmentSubstitute(subject)))
+      String realSubject=environmentSubstitute(subject);
+      if (!Const.isEmpty(realSubject))
       {
-        msg.setSubject(environmentSubstitute(subject));
+        msg.setSubject(realSubject);
       }
 
       msg.setSentDate(new Date());
@@ -926,7 +926,6 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 
       if (useHTML)
       {
-
         if (!Const.isEmpty(getEncoding()))
         {
           part1.setContent(messageText.toString(), "text/html; " + "charset=" + getEncoding());
