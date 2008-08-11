@@ -37,6 +37,10 @@
       <priority value="INFO"/>
    </category>
 
+   <category name="org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient.auth">
+      <priority value="WARN"/>
+   </category>
+
    <root>
       <priority value="INFO"/>
       <appender-ref ref="CONSOLE"/>
