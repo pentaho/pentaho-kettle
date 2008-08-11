@@ -404,11 +404,15 @@ public class StreamLookup extends BaseStep implements StepInterface
 			// At this point, all the values in the cache are of normal storage data type...
 			// We should reflect this in the metadata...
 			//
-			for (ValueMetaInterface valueMeta : data.keyMeta.getValueMetaList()) {
-				valueMeta.setStorageType(ValueMetaInterface.STORAGE_TYPE_NORMAL);
+			if(data.keyMeta!=null) { //null when no rows coming from lookup stream
+				for (ValueMetaInterface valueMeta : data.keyMeta.getValueMetaList()) {
+					valueMeta.setStorageType(ValueMetaInterface.STORAGE_TYPE_NORMAL);
+				}
 			}
-			for (ValueMetaInterface valueMeta : data.valueMeta.getValueMetaList()) {
-				valueMeta.setStorageType(ValueMetaInterface.STORAGE_TYPE_NORMAL);
+			if(data.valueMeta!=null) { //null when no rows coming from lookup stream
+				for (ValueMetaInterface valueMeta : data.valueMeta.getValueMetaList()) {
+					valueMeta.setStorageType(ValueMetaInterface.STORAGE_TYPE_NORMAL);
+				}
 			}
 	    }
 	    
