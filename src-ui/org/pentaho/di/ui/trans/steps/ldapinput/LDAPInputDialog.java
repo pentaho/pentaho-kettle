@@ -670,7 +670,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 			 new ColumnInfo(
          Messages.getString("LDAPInputDialog.FieldsTable.TrimType.Column"),
          ColumnInfo.COLUMN_TYPE_CCOMBO,
-         formats,//LDAPInputField.trimTypeDesc,
+         LDAPInputField.trimTypeDesc,
          true ),
 			 new ColumnInfo(
          Messages.getString("LDAPInputDialog.FieldsTable.Repeat.Column"),
