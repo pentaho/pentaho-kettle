@@ -168,7 +168,7 @@ public class WindowProperty
             isClipped = true;
             for (Monitor monitor : monitors)
             {
-                if (monitor.getClientArea().contains(constrainee.x + 50, constrainee.y + 50))
+                if (monitor.getClientArea().contains(constrainee.x + 10, constrainee.y + 10))
                 {
                     isClipped = false;
                     break;
