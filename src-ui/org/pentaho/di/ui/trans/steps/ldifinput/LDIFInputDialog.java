@@ -721,15 +721,6 @@ public class LDIFInputDialog extends BaseStepDialog implements
 
 		final int FieldsRows = input.getInputFields().length;
 
-		// Prepare a list of possible formats...
-		String dats[] = Const.getDateFormats();
-		String nums[] = Const.getNumberFormats();
-		int totsize = dats.length + nums.length;
-		String formats[] = new String[totsize];
-		for (int x = 0; x < dats.length; x++)
-			formats[x] = dats[x];
-		for (int x = 0; x < nums.length; x++)
-			formats[dats.length + x] = nums[x];
 
 		ColumnInfo[] colinf = new ColumnInfo[] {
 				new ColumnInfo(Messages
@@ -745,7 +736,7 @@ public class LDIFInputDialog extends BaseStepDialog implements
 				new ColumnInfo(
 						Messages
 								.getString("LDIFInputDialog.FieldsTable.Format.Column"),
-						ColumnInfo.COLUMN_TYPE_CCOMBO, formats),
+						ColumnInfo.COLUMN_TYPE_CCOMBO, Const.getConversionFormats()),
 				new ColumnInfo(
 						Messages
 								.getString("LDIFInputDialog.FieldsTable.Length.Column"),

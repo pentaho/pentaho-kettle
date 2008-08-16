@@ -747,25 +747,12 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 		
 		final int FieldsRows=input.getInputFields().length;
 		
-		// Prepare a list of possible formats...
-		String dats[] = Const.getDateFormats();
-		String nums[] = Const.getNumberFormats();
-		int totsize = dats.length + nums.length;
-		String formats[] = new String[totsize];
-		for (int x=0;x<dats.length;x++) formats[x] = dats[x];
-		for (int x=0;x<nums.length;x++) formats[dats.length+x] = nums[x];
-		
-		
 		ColumnInfo[] colinf=new ColumnInfo[]
             {
-			 new ColumnInfo(
-         Messages.getString("AccessInputDialog.FieldsTable.Name.Column"),
-         ColumnInfo.COLUMN_TYPE_TEXT,
-         false),
+			 new ColumnInfo(Messages.getString("AccessInputDialog.FieldsTable.Name.Column"), ColumnInfo.COLUMN_TYPE_TEXT, false),
          new ColumnInfo(Messages.getString("AccessInputDialog.FieldsTable.Attribut.Column"),ColumnInfo.COLUMN_TYPE_TEXT,false),
 		 new ColumnInfo(Messages.getString("AccessInputDialog.FieldsTable.Type.Column"),ColumnInfo.COLUMN_TYPE_CCOMBO,ValueMeta.getTypes(),true ),
-		 new ColumnInfo(Messages.getString("AccessInputDialog.FieldsTable.Format.Column"),
-         ColumnInfo.COLUMN_TYPE_CCOMBO,formats),
+		 new ColumnInfo(Messages.getString("AccessInputDialog.FieldsTable.Format.Column"),  ColumnInfo.COLUMN_TYPE_CCOMBO,Const.getConversionFormats()),
          new ColumnInfo(
          Messages.getString("AccessInputDialog.FieldsTable.Length.Column"),
          ColumnInfo.COLUMN_TYPE_TEXT,
@@ -789,7 +776,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 			 new ColumnInfo(
          Messages.getString("AccessInputDialog.FieldsTable.TrimType.Column"),
          ColumnInfo.COLUMN_TYPE_CCOMBO,
-         formats,//AccessInputField.trimTypeDesc,
+         AccessInputField.trimTypeDesc,
          true ),
 			 new ColumnInfo(
          Messages.getString("AccessInputDialog.FieldsTable.Repeat.Column"),

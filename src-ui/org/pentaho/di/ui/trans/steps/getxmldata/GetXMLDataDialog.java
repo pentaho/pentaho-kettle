@@ -954,16 +954,6 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 
 		final int FieldsRows=input.getInputFields().length;
 		
-		// Prepare a list of possible formats...
-		String dats[] = Const.getDateFormats();
-		String nums[] = Const.getNumberFormats();
-		int totsize = dats.length + nums.length;
-		String formats[] = new String[totsize];
-		for (int x=0;x<dats.length;x++) formats[x] = dats[x];
-		for (int x=0;x<nums.length;x++) formats[dats.length+x] = nums[x];
-
-		
-		
 		ColumnInfo[] colinf=new ColumnInfo[]
             {
 			 new ColumnInfo(
@@ -987,7 +977,7 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 			 new ColumnInfo(
          Messages.getString("GetXMLDataDialog.FieldsTable.Format.Column"),
          ColumnInfo.COLUMN_TYPE_CCOMBO,
-         formats),
+         Const.getConversionFormats()),
 			 new ColumnInfo(
          Messages.getString("GetXMLDataDialog.FieldsTable.Length.Column"),
          ColumnInfo.COLUMN_TYPE_TEXT,

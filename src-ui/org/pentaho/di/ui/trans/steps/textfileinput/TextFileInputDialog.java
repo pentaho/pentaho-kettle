@@ -1934,14 +1934,12 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
         final int FieldsRows=input.getInputFields().length;
         
-        // Prepare a list of possible formats...
-        String formats[] = Const.getConversionFormats();
         
         ColumnInfo[] colinf=new ColumnInfo[]
             {
              new ColumnInfo(Messages.getString("TextFileInputDialog.NameColumn.Column"),       ColumnInfo.COLUMN_TYPE_TEXT,    false),
              new ColumnInfo(Messages.getString("TextFileInputDialog.TypeColumn.Column"),       ColumnInfo.COLUMN_TYPE_CCOMBO,  ValueMeta.getTypes(), true ),
-             new ColumnInfo(Messages.getString("TextFileInputDialog.FormatColumn.Column"),     ColumnInfo.COLUMN_TYPE_CCOMBO,  formats),
+             new ColumnInfo(Messages.getString("TextFileInputDialog.FormatColumn.Column"),     ColumnInfo.COLUMN_TYPE_CCOMBO,  Const.getConversionFormats()),
              new ColumnInfo(Messages.getString("TextFileInputDialog.PositionColumn.Column"),   ColumnInfo.COLUMN_TYPE_TEXT,    false),
              new ColumnInfo(Messages.getString("TextFileInputDialog.LengthColumn.Column"),     ColumnInfo.COLUMN_TYPE_TEXT,    false),
              new ColumnInfo(Messages.getString("TextFileInputDialog.PrecisionColumn.Column"),  ColumnInfo.COLUMN_TYPE_TEXT,    false),

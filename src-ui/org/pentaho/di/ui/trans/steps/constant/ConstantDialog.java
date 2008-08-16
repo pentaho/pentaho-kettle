@@ -123,7 +123,7 @@ public class ConstantDialog extends BaseStepDialog implements StepDialogInterfac
 		ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
 		colinf[0]=new ColumnInfo(Messages.getString("ConstantDialog.Name.Column"),       ColumnInfo.COLUMN_TYPE_TEXT,   false);
 		colinf[1]=new ColumnInfo(Messages.getString("ConstantDialog.Type.Column"),       ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() );
-		colinf[2]=new ColumnInfo(Messages.getString("ConstantDialog.Format.Column"),     ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		colinf[2]=new ColumnInfo(Messages.getString("ConstantDialog.Format.Column"),     ColumnInfo.COLUMN_TYPE_CCOMBO,Const.getConversionFormats());
 		colinf[3]=new ColumnInfo(Messages.getString("ConstantDialog.Length.Column"),     ColumnInfo.COLUMN_TYPE_TEXT,   false);
 		colinf[4]=new ColumnInfo(Messages.getString("ConstantDialog.Precision.Column"),  ColumnInfo.COLUMN_TYPE_TEXT,   false);
 		colinf[5]=new ColumnInfo(Messages.getString("ConstantDialog.Currency.Column"),   ColumnInfo.COLUMN_TYPE_TEXT,   false);

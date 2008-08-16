@@ -896,14 +896,6 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		int FieldsWidth =600;
 		int FieldsHeight=150;
 		
-		// Prepare a list of possible formats...
-		String dats[] = Const.getDateFormats();
-		String nums[] = Const.getNumberFormats();
-		int totsize = dats.length + nums.length;
-		String formats[] = new String[totsize];
-		for (int x=0;x<dats.length;x++) formats[x] = dats[x];
-		for (int x=0;x<nums.length;x++) formats[dats.length+x] = nums[x];
-		
 		
 		ColumnInfo[] colinf=new ColumnInfo[] { 
 		    new ColumnInfo(Messages.getString("ExcelInputDialog.Name.Column"),       ColumnInfo.COLUMN_TYPE_TEXT,    false),
