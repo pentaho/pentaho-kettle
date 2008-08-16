@@ -665,28 +665,17 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 		
 		final int FieldsRows=input.getInputFields().length;
 		
-		// Prepare a list of possible formats...
-		String dats[] = Const.getDateFormats();
-		String nums[] = Const.getNumberFormats();
-		int totsize = dats.length + nums.length;
-		String formats[] = new String[totsize];
-		for (int x=0;x<dats.length;x++) formats[x] = dats[x];
-		for (int x=0;x<nums.length;x++) formats[dats.length+x] = nums[x];
-		
-		
 		ColumnInfo[] colinf=new ColumnInfo[]
             {
 			 new ColumnInfo(
          Messages.getString("PropertyInputDialog.FieldsTable.Name.Column"),
          ColumnInfo.COLUMN_TYPE_TEXT,
          false),
-         //new ColumnInfo(Messages.getString("PropertyInputDialog.FieldsTable.Attribut.Column"),ColumnInfo.COLUMN_TYPE_TEXT,false),
-         
          new ColumnInfo(Messages.getString("PropertyInputDialog.FieldsTable.Attribut.Column"),ColumnInfo.COLUMN_TYPE_CCOMBO,PropertyInputField.ColumnDesc, false),
          
 		 new ColumnInfo(Messages.getString("PropertyInputDialog.FieldsTable.Type.Column"),ColumnInfo.COLUMN_TYPE_CCOMBO,ValueMeta.getTypes(),true ),
 		 new ColumnInfo(Messages.getString("PropertyInputDialog.FieldsTable.Format.Column"),
-         ColumnInfo.COLUMN_TYPE_CCOMBO,formats),
+         ColumnInfo.COLUMN_TYPE_CCOMBO,Const.getConversionFormats()),
          new ColumnInfo(
          Messages.getString("PropertyInputDialog.FieldsTable.Length.Column"),
          ColumnInfo.COLUMN_TYPE_TEXT,
@@ -710,7 +699,7 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 			 new ColumnInfo(
          Messages.getString("PropertyInputDialog.FieldsTable.TrimType.Column"),
          ColumnInfo.COLUMN_TYPE_CCOMBO,
-         formats,//PropertyInputField.trimTypeDesc,
+         PropertyInputField.trimTypeDesc,
          true ),
 			 new ColumnInfo(
          Messages.getString("PropertyInputDialog.FieldsTable.Repeat.Column"),
