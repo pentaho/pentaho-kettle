@@ -262,9 +262,8 @@ public class ExcelOutput extends BaseStep implements StepInterface
             {
 	            // prepare auto size colums
 	            int vlen=vMeta.getName().length();
-	            if(!isHeader) vlen=v.toString().trim().length();
+	            if(!isHeader && v!=null) vlen=v.toString().trim().length();
 	        	if(vlen>0 && vlen>data.fieldsWidth[column]) data.fieldsWidth[column]=vlen+1;
-	        	
             }
             
             switch(vMeta.getType())
