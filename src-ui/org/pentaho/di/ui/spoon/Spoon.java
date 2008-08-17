@@ -6203,6 +6203,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			}
             boolean retryAfterError=false; //Enable the user to retry and continue after fatal error
             do {
+                retryAfterError=false; //reset to false after error otherwise it will loop forever after closing Spoon
 				try
 				{
 					while (!isDisposed())
