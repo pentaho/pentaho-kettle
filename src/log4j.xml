@@ -25,7 +25,14 @@
          <!--
          <param name="ConversionPattern" value="%d{ABSOLUTE} %-5p [%c{1}] %m%n"/>
          -->
+         <!--
+         NOTE: %F:%M:%L (File:Method:Line) is useless because of the way Kettle logs messages.
+         They always show up as coming from the LogWriter class.  Also, it is expensive to
+         generate the location information (although since there is only ever one location
+         I imagine it gets cached and reused throughout the life of the application). 
          <param name="ConversionPattern" value="%-5p %d{dd-MM HH:mm:ss,SSS} (%F:%M:%L)  -%m%n"/>
+         -->
+         <param name="ConversionPattern" value="%-5p %d{dd-MM HH:mm:ss,SSS} - %m%n"/>
       </layout>
    </appender>
 
