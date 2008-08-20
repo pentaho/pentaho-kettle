@@ -850,7 +850,7 @@ public class Database implements VariableSpace
 			switch(v.getType())
 			{
 			case ValueMetaInterface.TYPE_NUMBER :
-                if (object!=null) 
+                if (!v.isNull(object)) 
                 {
                     debug="Number, not null, getting number from value";
                     double num = v.getNumber(object).doubleValue();
@@ -869,7 +869,7 @@ public class Database implements VariableSpace
 				break;
 			case ValueMetaInterface.TYPE_INTEGER:
 				debug="Integer";
-				if (object!=null) 
+				if (!v.isNull(object)) 
 				{
 					if (databaseMeta.supportsSetLong())
 					{
@@ -897,7 +897,7 @@ public class Database implements VariableSpace
 				debug="String";
 				if (v.getLength()<DatabaseMeta.CLOB_LENGTH)
 				{
-					if (object!=null) 
+					if (!v.isNull(object)) 
 					{
 						ps.setString(pos, v.getString(object));
 					}
@@ -908,7 +908,7 @@ public class Database implements VariableSpace
 				}
 				else
 				{
-					if (object!=null)
+					if (!v.isNull(object))
 					{
                         String string = v.getString(object);
                         
@@ -940,7 +940,7 @@ public class Database implements VariableSpace
 				break;
 			case ValueMetaInterface.TYPE_DATE   : 
 				debug="Date";
-				if (object!=null) 
+				if (!v.isNull(object)) 
 				{
 					long dat = v.getInteger(object).longValue(); // converts using Date.getTime()
                     
@@ -972,7 +972,7 @@ public class Database implements VariableSpace
 				debug="Boolean";
                 if (databaseMeta.supportsBooleanDataType())
                 {
-                    if (object!=null)
+                    if (!v.isNull(object))
                     {
                         ps.setBoolean(pos, v.getBoolean(object).booleanValue());
                     }
@@ -983,7 +983,7 @@ public class Database implements VariableSpace
                 }
                 else
                 {
-    				if (object!=null)
+    				if (!v.isNull(object))
                     {
                         ps.setString(pos, v.getBoolean(object).booleanValue()?"Y":"N");
                     }
@@ -995,7 +995,7 @@ public class Database implements VariableSpace
 				break;
             case ValueMetaInterface.TYPE_BIGNUMBER:
                 debug="BigNumber";
-                if (object!=null) 
+                if (!v.isNull(object)) 
                 {
                     ps.setBigDecimal(pos, v.getBigNumber(object));
                 }
@@ -1006,7 +1006,7 @@ public class Database implements VariableSpace
                 break;
 			case ValueMetaInterface.TYPE_BINARY:
 				debug="Binary";
-				if (object!=null) 
+				if (!v.isNull(object)) 
 				{
                     ps.setBytes(pos, v.getBinary(object));
 				}
