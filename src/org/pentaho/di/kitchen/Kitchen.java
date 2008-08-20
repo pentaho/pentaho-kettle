@@ -82,7 +82,7 @@ public class Kitchen
 		if (args.size()==0 ) 
 		{
 		    CommandLineOption.printUsage(options);
-		    System.exit(9);
+		    exitJVM(9);
 		}
         
         LogWriter log = LogWriter.getInstance(LogWriter.LOG_LEVEL_BASIC);
@@ -125,7 +125,7 @@ public class Kitchen
         {
             BuildVersion buildVersion = BuildVersion.getInstance();
             log.logBasic("Pan", "Kettle version "+Const.VERSION+", build "+buildVersion.getVersion()+", build date : "+buildVersion.getBuildDate());
-            if (a.length==1) System.exit(6);
+            if (a.length==1) exitJVM(6);
         }
         
         // Start the action...
@@ -141,7 +141,7 @@ public class Kitchen
 		catch(KettleException e)
 		{
 			log.logError(STRING_KITCHEN, "Error loading steps... halting Kitchen!", e);
-			System.exit(8);
+			exitJVM(8);
 		}
 		StepLoader stepLoader = StepLoader.getInstance();
         
@@ -307,7 +307,7 @@ public class Kitchen
 				System.out.println("ERROR: Kitchen can't continue because the job couldn't be loaded.");			    
 			}
 
-            System.exit(7);
+			exitJVM(7);
 		}
 		
 		Result result = null;
@@ -370,7 +370,15 @@ public class Kitchen
 		long millis=stop.getTime()-start.getTime();
 		log.logMinimal(STRING_KITCHEN, "Processing ended after "+(millis/1000)+" seconds.");
         
-        System.exit(returnCode);
+        exitJVM(returnCode);
 
+	}
+	
+	private static final void exitJVM(int status) {
+		// Close the open appenders...
+		//
+		LogWriter.getInstance().close();
+		
+		System.exit(status);
 	}
 }

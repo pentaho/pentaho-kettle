@@ -88,7 +88,7 @@ public class Pan
 		if (args.size()==0 ) 
 		{
 			CommandLineOption.printUsage(options);
-            System.exit(9);
+			exitJVM(9);
 		}
 
         LogWriter log;
@@ -99,7 +99,7 @@ public class Pan
 		// Parse the options...
 		if( !CommandLineOption.parseArguments(args, options, log) ) {
             log.logError("Pan", "Command line option not understood");
-            System.exit(8);
+            exitJVM(8);
 		}
 		
 		String kettleRepname  = Const.getEnvironmentVariable("KETTLE_REPOSITORY", null);
@@ -133,7 +133,7 @@ public class Pan
         {
             BuildVersion buildVersion = BuildVersion.getInstance();
             log.logBasic("Pan", "Kettle version "+Const.VERSION+", build "+buildVersion.getVersion()+", build date : "+buildVersion.getBuildDate());
-            if (a.length==1) System.exit(6);
+            if (a.length==1) exitJVM(6);
         }
         
         /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -162,7 +162,7 @@ public class Pan
 		catch(KettleException e)
 		{
 			log.logError("Pan", "Error loading steps... halting Pan!");
-            System.exit(8);
+			exitJVM(8);
 		}
 		
         /* Load the plugins etc.*/
@@ -173,7 +173,7 @@ public class Pan
 		catch(KettleException e)
         {
             log.logError("Pan", "Error loading job entries & plugins... halting Pan!", e);
-            System.exit(8);
+            exitJVM(8);
         }
         
 		Date start, stop;
@@ -356,7 +356,7 @@ public class Pan
 			transMeta=null;
 			System.out.println("Processing has stopped because of an error: "+e.getMessage());
 			e.printStackTrace();
-			System.exit(1);
+			exitJVM(1);
 		}
 
 		if (trans==null)
@@ -368,11 +368,11 @@ public class Pan
                )
             {
                 System.out.println("ERROR: Pan can't continue because the transformation couldn't be loaded.");
-                System.exit(7);
+                exitJVM(7);
             }
 			else
 			{
-				System.exit(0);
+				exitJVM(0);
 			}
             
 		}
@@ -394,7 +394,7 @@ public class Pan
 			}
 			catch(KettleException e) {
                 System.out.println("Unable to prepare and initialize this transformation");
-                System.exit(3);
+                exitJVM(3);
 			}
 
 			trans.waitUntilFinished();
@@ -413,19 +413,28 @@ public class Pan
 			if (trans.getResult().getNrErrors()==0) 
 			{
 				trans.printStats((int)millis/1000);
-                System.exit(0);
+				exitJVM(0);
 			}
 			else
 			{
-                System.exit(1);
+				exitJVM(1);
 			}
 		}
 		catch(KettleException ke)
 		{
 			System.out.println("ERROR occurred: "+ke.getMessage());
             log.logError("Pan", "Unexpected error occurred: "+ke.getMessage());
-            System.exit(2);
+            exitJVM(2);
 		}
 
 	}
+	
+	private static final void exitJVM(int status) {
+		// Close the open appenders...
+		//
+		LogWriter.getInstance().close();
+		
+		System.exit(status);
+	}
+
 }
