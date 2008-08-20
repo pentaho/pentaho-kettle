@@ -2658,7 +2658,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
   /**
    * This gets called at the very end, when everything is done.
    */
-  private synchronized void jobFinished() {
+  private void jobFinished() {
     // Do a final check to see if it all ended...
     //
     if (running && job != null && job.isInitialized() && job.isFinished()) {
