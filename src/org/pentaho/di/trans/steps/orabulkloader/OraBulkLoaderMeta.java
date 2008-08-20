@@ -124,6 +124,9 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 	/** Fails when sqlldr returns anything else than a warning or OK **/
 	private boolean failOnError;
 	
+	/** If not empty, use this record terminator instead of default one **/
+	private String altRecordTerm;
+	
 	/*
 	 * Do not translate following values!!! They are will end up in the job export.
 	 */
@@ -270,6 +273,14 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 		this.characterSetName = characterSetName;
 	}
 
+	public String getAltRecordTerm() {
+		return altRecordTerm;
+	}
+
+	public void setAltRecordTerm(String altRecordTerm) {
+		this.altRecordTerm = altRecordTerm;
+	}
+
 	public void loadXML(Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters)
 		throws KettleXMLException
 	{
@@ -338,6 +349,7 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 			characterSetName = XMLHandler.getTagValue(stepnode, "character_set");                     //$NON-NLS-1$
 			failOnWarning    = "Y".equalsIgnoreCase( XMLHandler.getTagValue(stepnode, "fail_on_warning")); //$NON-NLS-1$
 			failOnError      = "Y".equalsIgnoreCase( XMLHandler.getTagValue(stepnode, "fail_on_error"));   //$NON-NLS-1$
+			altRecordTerm    = XMLHandler.getTagValue(stepnode, "alt_rec_term");                           //$NON-NLS-1$
 
 			nrvalues       = XMLHandler.countNodes(stepnode, "mapping");      //$NON-NLS-1$
 			allocate(nrvalues);
@@ -399,6 +411,7 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 		characterSetName   = ""; //$NON-NLS-1$
 		failOnWarning      = false;
 		failOnError        = false;
+		altRecordTerm      = ""; //$NON-NLS-1$
 
 		int nrvalues = 0;
 		allocate(nrvalues);
@@ -432,6 +445,7 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 		retval.append("    ").append(XMLHandler.addTagValue("character_set", characterSetName));   //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("    ").append(XMLHandler.addTagValue("fail_on_warning", failOnWarning));   //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("    ").append(XMLHandler.addTagValue("fail_on_error", failOnError));       //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    ").append(XMLHandler.addTagValue("alt_rec_term", altRecordTerm));      //$NON-NLS-1$ //$NON-NLS-2$
 		
 		for (int i=0;i<fieldTable.length;i++)
 		{
@@ -476,6 +490,7 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 			characterSetName =    rep.getStepAttributeString(id_step,  "character_set"); //$NON-NLS-1$
 			failOnWarning    = 	  rep.getStepAttributeBoolean(id_step, "fail_on_warning");    //$NON-NLS-1$
 			failOnError      =    rep.getStepAttributeBoolean(id_step, "fail_on_error");      //$NON-NLS-1$
+			altRecordTerm    =    rep.getStepAttributeString(id_step,  "alt_rec_term");       //$NON-NLS-1$
 			
 			int nrvalues = rep.countNrStepAttributes(id_step, "stream_name");             //$NON-NLS-1$
 
@@ -524,6 +539,7 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "character_set", characterSetName);  //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "fail_on_warning",    failOnWarning);     //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "fail_on_error",      failOnError);       //$NON-NLS-1$			
+			rep.saveStepAttribute(id_transformation, id_step, "alt_rec_term",       altRecordTerm);     //$NON-NLS-1$
 
 			for (int i=0;i<fieldTable.length;i++)
 			{

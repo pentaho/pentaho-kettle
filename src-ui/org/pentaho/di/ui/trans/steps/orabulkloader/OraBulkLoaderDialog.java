@@ -160,6 +160,10 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 	private Button				wFailOnError;
 	private FormData			fdlFailOnError, fdFailOnError;
 	
+	private Label				wlAltRecordTerm;
+	private TextVar				wAltRecordTerm;
+	private FormData			fdlAltRecordTerm, fdAltRecordTerm;
+	
 	private Button				wGetLU;
 	private FormData			fdGetLU;
 	private Listener			lsGetLU;
@@ -633,6 +637,24 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
         fdCharacterSetName.right= new FormAttachment(100, 0);        
         wCharacterSetName.setLayoutData(fdCharacterSetName);
         wCharacterSetName.addModifyListener(lsMod);
+        
+        // Alternate Record Terminator
+		wlAltRecordTerm = new Label(shell, SWT.RIGHT);
+		wlAltRecordTerm.setText(Messages.getString("OraBulkLoaderDialog.AltRecordTerm.Label")); //$NON-NLS-1$
+ 		props.setLook(wlAltRecordTerm);
+		fdlAltRecordTerm = new FormData();
+		fdlAltRecordTerm.left = new FormAttachment(0, 0);
+		fdlAltRecordTerm.top = new FormAttachment(wCharacterSetName, margin);
+		fdlAltRecordTerm.right = new FormAttachment(middle, -margin);
+		wlAltRecordTerm.setLayoutData(fdlAltRecordTerm);
+		wAltRecordTerm = new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+ 		props.setLook(wAltRecordTerm);
+		fdAltRecordTerm = new FormData();
+		fdAltRecordTerm.left = new FormAttachment(middle, 0);
+		fdAltRecordTerm.top = new FormAttachment(wCharacterSetName, margin);
+		fdAltRecordTerm.right = new FormAttachment(100, 0);
+		wAltRecordTerm.setLayoutData(fdAltRecordTerm);
+		wAltRecordTerm.addModifyListener(lsMod);		
 				
 		// DirectPath line
 		wlDirectPath = new Label(shell, SWT.RIGHT);
@@ -640,14 +662,14 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
  		props.setLook(wlDirectPath);
 		fdlDirectPath = new FormData();
 		fdlDirectPath.left = new FormAttachment(0, 0);
-		fdlDirectPath.top = new FormAttachment(wCharacterSetName, margin);
+		fdlDirectPath.top = new FormAttachment(wAltRecordTerm, margin);
 		fdlDirectPath.right = new FormAttachment(middle, -margin);
 		wlDirectPath.setLayoutData(fdlDirectPath);
 		wDirectPath = new Button(shell, SWT.CHECK);
  		props.setLook(wDirectPath);
 		fdDirectPath = new FormData();
 		fdDirectPath.left = new FormAttachment(middle, 0);
-		fdDirectPath.top = new FormAttachment(wCharacterSetName, margin);
+		fdDirectPath.top = new FormAttachment(wAltRecordTerm, margin);
 		fdDirectPath.right = new FormAttachment(100, 0);
 		wDirectPath.setLayoutData(fdDirectPath);	
 		wDirectPath.addSelectionListener(new SelectionAdapter() 
@@ -945,6 +967,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
         wLogFile.addSelectionListener(lsDef);
         wBadFile.addSelectionListener(lsDef);
         wDiscardFile.addSelectionListener(lsDef);
+        wAltRecordTerm.addSelectionListener(lsDef);
 
 		// Detect X or ALT-F4 or something that kills this window...
 		shell.addShellListener(new ShellAdapter()
@@ -1040,6 +1063,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 		if (input.getEncoding() != null) wEncoding.setText(input.getEncoding());
 		if (input.getCharacterSetName() != null) wCharacterSetName.setText(input.getCharacterSetName());
 		if (input.getDbNameOverride() != null ) wDbNameOverride.setText(input.getDbNameOverride());
+		if (input.getAltRecordTerm() != null ) wAltRecordTerm.setText(input.getAltRecordTerm());
 		wDirectPath.setSelection(input.isDirectPath());
 		wEraseFiles.setSelection(input.isEraseFiles());
 		wFailOnError.setSelection(input.isFailOnError());
@@ -1136,6 +1160,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 		inf.setDiscardFile( wDiscardFile.getText() );
 		inf.setEncoding( wEncoding.getText() );
 		inf.setCharacterSetName( wCharacterSetName.getText() );
+		inf.setAltRecordTerm( wAltRecordTerm.getText() );
 		inf.setDirectPath( wDirectPath.getSelection() );
 		inf.setEraseFiles( wEraseFiles.getSelection() );
 		inf.setFailOnError( wFailOnError.getSelection() );
