@@ -124,11 +124,10 @@ public class FixedInput extends BaseStep implements StepInterface
 				return null;
 			}
 			
-			for (int i=0;i<meta.getFieldDefinition().length;i++) {
+			FixedFileInputField[] fieldDefinitions = meta.getFieldDefinition();
+            for (int i=0;i<fieldDefinitions.length;i++) {
 				
-				FixedFileInputField fieldDefinition = meta.getFieldDefinition()[i];
-				
-				int fieldWidth = fieldDefinition.getWidth();
+				int fieldWidth = fieldDefinitions[i].getWidth();
 				data.endBuffer = data.startBuffer+fieldWidth; 
 				if (data.endBuffer>data.bufferSize) {
 					// Oops, we need to read more data...
@@ -147,10 +146,21 @@ public class FixedInput extends BaseStep implements StepInterface
 				if (data.endBuffer>data.bufferSize) {
 					// still a problem?
 					// We hit an EOF and are trying to read beyond the EOF...
-					// Just take what's left for the current field.
-					//
-					fieldWidth=data.endBuffer-data.bufferSize;
-					if (fieldWidth<0) fieldWidth=0;
+					
+				    // If we are on the first field and there
+				    // is nothing left in the buffer, don't return
+				    // a row because we're done.
+				    if ((0 == i) && data.bufferSize <= 0)
+				    {
+				        return null;
+				    }
+				    
+				    
+				    // This is the last record of data in the file.
+			        data.stopReading = true;
+
+	                // Just take what's left for the current field.
+				    fieldWidth=data.bufferSize;
 				}
 				byte[] field = new byte[fieldWidth];
 				System.arraycopy(data.byteBuffer, data.startBuffer, field, 0, fieldWidth);
