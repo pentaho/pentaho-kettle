@@ -85,7 +85,7 @@ public class MondrianHelper {
     		connectString+="JdbcPasssword="+databaseMeta.getPassword()+";";
     	}
         
-    	connection = DriverManager.getConnection(connectString, null, true);
+    	connection = DriverManager.getConnection(connectString, null);
         query = connection.parseQuery(queryString);
         result = connection.execute(query);
     }
