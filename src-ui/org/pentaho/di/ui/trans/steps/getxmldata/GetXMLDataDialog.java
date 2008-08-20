@@ -1513,6 +1513,8 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		
 		return retval;
 	}
+	
+	@SuppressWarnings("unchecked")
 	private void setNodeField(Node node)
 	{
 		Element e = (Element) node; 
