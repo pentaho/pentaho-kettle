@@ -82,7 +82,7 @@ public class Kitchen
 		if (args.size()==0 ) 
 		{
 		    CommandLineOption.printUsage(options);
-		    System.exit(9);
+		    exitJVM(9);
 		}
         
         LogWriter log = LogWriter.getInstance(LogWriter.LOG_LEVEL_BASIC);
@@ -125,7 +125,7 @@ public class Kitchen
         {
             BuildVersion buildVersion = BuildVersion.getInstance();
             log.logBasic("Kitchen", Messages.getString("Kitchen.Log.KettleVersion",Const.VERSION,""+buildVersion.getVersion(),""+buildVersion.getBuildDate()));
-            if (a.length==1) System.exit(6);
+            if (a.length==1) exitJVM(6);
         }
         
         // Start the action...
@@ -146,7 +146,7 @@ public class Kitchen
 		{
 			log.logError(STRING_KITCHEN, Messages.getString("Kitchen.Error.LoadingSteps"), e);
 			
-			System.exit(8);
+			exitJVM(8);
 		}
 		StepLoader stepLoader = StepLoader.getInstance();
         
@@ -329,7 +329,7 @@ public class Kitchen
 				System.out.println(Messages.getString("Kitchen.Error.canNotLoadJob"));			    
 			}
 
-            System.exit(7);
+			exitJVM(7);
 		}
 		
 		Result result = null;
@@ -394,9 +394,16 @@ public class Kitchen
 		
 		long millis=stop.getTime()-start.getTime();
 		log.logMinimal(STRING_KITCHEN,  Messages.getString("Kitchen.Log.ProcessEndAfter",""+(millis/1000)));
-		
-        
-        System.exit(returnCode);
+		        
+        exitJVM(returnCode);
 
+	}
+	
+	private static final void exitJVM(int status) {
+		// Close the open appenders...
+		//
+		LogWriter.getInstance().close();
+
+		System.exit(status);
 	}
 }

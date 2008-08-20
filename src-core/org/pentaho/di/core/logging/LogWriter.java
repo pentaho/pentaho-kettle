@@ -189,6 +189,16 @@ public class LogWriter
 		return logWriter;
 	}
 	
+	/**
+	 * Closes the file appender opened by the getInstance(filename, exact, level) method
+	 */
+	public static final void closeAndRemoveFileAppender() {
+		if (logWriter.fileAppender!=null) {
+			logWriter.fileAppender.close();
+			logWriter.rootLogger.removeAppender(logWriter.fileAppender);
+		}
+	}
+	
 	private LogWriter(String filename, boolean exact, int level)
 	{
         this();
