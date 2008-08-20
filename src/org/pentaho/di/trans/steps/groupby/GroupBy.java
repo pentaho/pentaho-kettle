@@ -67,7 +67,7 @@ public class GroupBy extends BaseStep implements StepInterface
         Object[] r=getRow();    // get row!
         
 		
-        if (first)
+        if (first && r != null)
 		{
         	// What is the output looking like?
         	// 

@@ -254,14 +254,15 @@ public class MappingInputMeta extends BaseStepMeta implements StepMetaInterface
     		if (selectingAndSortingUnspecifiedFields) {
     			
     			// First rename any fields...
-    			//
-                for (MappingValueRename valueRename : valueRenames) {
-                	ValueMetaInterface valueMeta = inputRowMeta.searchValueMeta(valueRename.getSourceValueName());
-                	if (valueMeta==null) {
-                		throw new KettleStepException(Messages.getString("MappingInput.Exception.UnableToFindMappedValue", valueRename.getSourceValueName()));
-                	}
-                	valueMeta.setName(valueRename.getTargetValueName());
-                }
+    			if (valueRenames != null) {
+                    for (MappingValueRename valueRename : valueRenames) {
+                    	ValueMetaInterface valueMeta = inputRowMeta.searchValueMeta(valueRename.getSourceValueName());
+                    	if (valueMeta==null) {
+                    		throw new KettleStepException(Messages.getString("MappingInput.Exception.UnableToFindMappedValue", valueRename.getSourceValueName()));
+                    	}
+                    	valueMeta.setName(valueRename.getTargetValueName());
+                    }
+    			}
     			
     			// Select the specified fields from the input, re-order everything and put the other fields at the back, sorted...
     			// 
