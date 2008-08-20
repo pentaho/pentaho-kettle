@@ -372,6 +372,8 @@ public class SwitchCaseDialog extends BaseStepDialog implements StepDialogInterf
 		
 		input.setDefaultTargetStep( transMeta.findStep(wDefaultTarget.getText()));
 		
+		stepname = wStepname.getText(); // return value
+		
 		dispose();
 	}
 }

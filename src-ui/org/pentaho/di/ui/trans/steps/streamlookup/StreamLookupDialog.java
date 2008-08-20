@@ -411,7 +411,7 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 			input.getKeylookup()[i] = item.getText(2);
 		}
 		
-		log.logDebug(toString(), Messages.getString("StreamLookupDialog.Log.FoundFields",nrvalues+"")); //$NON-NLS-1$ //$NON-NLS-2$
+		if(log.isDebug()) log.logDebug(toString(), Messages.getString("StreamLookupDialog.Log.FoundFields",nrvalues+"")); //$NON-NLS-1$ //$NON-NLS-2$
 		for (int i=0;i<nrvalues;i++)
 		{
 			TableItem item        = wReturn.getNonEmpty(i);
