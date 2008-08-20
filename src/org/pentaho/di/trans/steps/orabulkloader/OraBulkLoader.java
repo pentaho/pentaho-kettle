@@ -30,6 +30,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
@@ -113,11 +114,76 @@ public class OraBulkLoader extends BaseStep implements StepInterface
 	{
 		super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
 	}
+	
+	private String substituteRecordTerminator(String terminator) {
+		final StringBuilder in = new StringBuilder();
+		int length = 0;
+		boolean escaped = false;
+
+		terminator = environmentSubstitute(terminator);
+		length = terminator.length();
+		for (int i = 0; i < length; i++) {
+			final char c = terminator.charAt(i);
+
+			if (escaped) {
+				switch (c) {
+				case 'n':
+					in.append('\n');
+					break;
+				case 'r':
+					in.append('\r');
+					break;
+				default:
+					in.append(c);
+					break;
+				}
+				escaped = false;
+			} else if (c == '\\') {
+				escaped = true;
+			} else {
+				in.append(c);
+			}
+		}
+
+		return in.toString();
+	}
+	
+	private String encodeRecordTerminator(String terminator, String encoding)
+			throws KettleException {
+		final String in = substituteRecordTerminator(terminator);
+		final StringBuilder out = new StringBuilder();		
+		byte[] bytes = null;
+		
+		try {
+			// use terminator in hex representation due to character set
+			// terminator in hex representation must be in character set
+			// of data file
+			if (Const.isEmpty(encoding)) {
+				bytes = in.toString().getBytes();
+			} else {
+				bytes = in.toString().getBytes(encoding);
+			}
+			for (int i = 0; i < bytes.length; i++) {
+				final String hex = Integer.toHexString(bytes[i]);
+
+				if (hex.length() == 1) {
+					out.append('0');
+				}
+				out.append(hex);
+			}
+		} catch (UnsupportedEncodingException e) {
+			throw new KettleException("Unsupported character encoding: " 
+					+ encoding, e);
+		}
+
+		return out.toString();
+	}
 
 	/**
 	 * Get the contents of the control file as specified in the meta object
 	 * 
-	 * @param meta the meta object to model the control file after
+	 * @param meta
+	 *            the meta object to model the control file after
 	 * 
 	 * @return a string containing the control file contents
 	 */
@@ -156,9 +222,22 @@ public class OraBulkLoader extends BaseStep implements StepInterface
 		if ( !Const.isEmpty(meta.getCharacterSetName()) ) {
 			contents.append("CHARACTERSET ").append(meta.getCharacterSetName()).append(Const.CR);
 		}
-		if ( !OraBulkLoaderMeta.METHOD_AUTO_CONCURRENT.equals(meta.getLoadMethod()) ) {
+		if ( !OraBulkLoaderMeta.METHOD_AUTO_CONCURRENT.equals(meta.getLoadMethod()) ||
+				!Const.isEmpty(meta.getAltRecordTerm()) ) {
+			String infile = inputName;
+			
+			if (OraBulkLoaderMeta.METHOD_AUTO_CONCURRENT.equals(meta.getLoadMethod())) {
+				infile = "''";
+			}
+			
 			// For concurrent input, data command line argument must be specified
-			contents.append("INFILE ").append(inputName).append(Const.CR);
+			contents.append("INFILE ").append(infile);
+			if (!Const.isEmpty(meta.getAltRecordTerm())) {
+				contents.append(" \"STR x'").append(
+						encodeRecordTerminator(meta.getAltRecordTerm(), 
+								meta.getEncoding())).append("'\"");				
+			}
+			contents.append(Const.CR);
 		}
 		contents.append("INTO TABLE ").append(dm.getQuotedSchemaTableCombination(environmentSubstitute(meta.getSchemaName()),
 		            		                                                     environmentSubstitute(meta.getTableName()))).append(
@@ -523,10 +602,16 @@ public class OraBulkLoader extends BaseStep implements StepInterface
 			if ( ! preview )
 			{
 				if (first)
-				{
+				{					
 					first=false;
+					
+					String recTerm = Const.CR;
+					if (!Const.isEmpty(meta.getAltRecordTerm())) {
+						recTerm = substituteRecordTerminator(meta.getAltRecordTerm());
+					}
+					
 					createControlFile(environmentSubstitute(meta.getControlFile()), r, meta);
-					output = new OraBulkDataOutput(meta);			
+					output = new OraBulkDataOutput(meta, recTerm);			
 
 					if ( OraBulkLoaderMeta.METHOD_AUTO_CONCURRENT.equals(meta.getLoadMethod()) )
 					{

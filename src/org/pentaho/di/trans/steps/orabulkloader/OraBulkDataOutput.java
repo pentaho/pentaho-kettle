@@ -45,10 +45,12 @@ public class OraBulkDataOutput
 	private String            enclosure = null;
 	private SimpleDateFormat  sdfDate = null;
 	private SimpleDateFormat  sdfDateTime = null;
+	private String            recTerm = null;
 
-	public OraBulkDataOutput(OraBulkLoaderMeta meta)
+	public OraBulkDataOutput(OraBulkLoaderMeta meta, String recTerm)
 	{
 		this.meta = meta;
+		this.recTerm = recTerm;		
 	}
 	
 	public void open(VariableSpace space, Process sqlldrProcess) throws KettleException
@@ -219,7 +221,7 @@ public class OraBulkDataOutput
 				}
 			}
 		}
-		outbuf.append(Const.CR);
+		outbuf.append(recTerm);
 		try {
 			output.append(outbuf);
 		}
