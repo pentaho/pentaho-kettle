@@ -114,11 +114,13 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 
 		if (add==null)
 		{
-			if (log.isRowLevel()) logRowlevel(Messages.getString("DatabaseLookup.Log.AddedValuesToLookupRow1")+meta.getStreamKeyField1().length+Messages.getString("DatabaseLookup.Log.AddedValuesToLookupRow2")+data.lookupMeta.getString(lookupRow)); //$NON-NLS-1$ //$NON-NLS-2$
+			if (!meta.isLoadingAllDataInCache() || data.hasDBCondition) { // do not go to the database when all rows are in (exception LIKE operator)
+				if (log.isRowLevel()) logRowlevel(Messages.getString("DatabaseLookup.Log.AddedValuesToLookupRow1")+meta.getStreamKeyField1().length+Messages.getString("DatabaseLookup.Log.AddedValuesToLookupRow2")+data.lookupMeta.getString(lookupRow)); //$NON-NLS-1$ //$NON-NLS-2$
 
-			data.db.setValuesLookup(data.lookupMeta, lookupRow);
-			add = data.db.getLookup(meta.isFailingOnMultipleResults());
-			cache_now=true;
+				data.db.setValuesLookup(data.lookupMeta, lookupRow);
+				add = data.db.getLookup(meta.isFailingOnMultipleResults());
+				cache_now=true;
+			}
 		}
 
 		if (add==null) // nothing was found, unknown code: add default values
@@ -239,75 +241,77 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 	}
 
 	private Object[] getRowFromCache(RowMetaInterface lookupMeta, Object[] lookupRow) throws KettleException {
-        TimedRow timedRow = (TimedRow) data.look.get(new RowMetaAndData(data.lookupMeta, lookupRow));
-        if (timedRow!=null)
+		if (data.allEquals) {
+			// only do the hashtable lookup when all equals otherwise conditions >, <, <> will give wrong results
+	        TimedRow timedRow = (TimedRow) data.look.get(new RowMetaAndData(data.lookupMeta, lookupRow));
+	        if (timedRow!=null)
+	        {
+	            return timedRow.getRow();
+	        }
+		}
+        else // special handling of conditions <,>, <> etc.
         {
-            return timedRow.getRow();
-        }
-        else
-        {
-        	if (meta.isLoadingAllDataInCache())
-        	{
-        		// OK, all data is loaded in memory and we still don't have a cache hit.
-        		// 
-        		if (!data.allEquals && !data.hasDBCondition)
-        		{
-        			// TODO: find an alternative way to look up the data based on the condition.
-        			// Not all conditions are "=" so we are going to have to evaluate row by row
-        			// A sorted list or index might be a good solution here...
-        			// 
-        			Enumeration<RowMetaAndData> keys = data.look.keys();
-        			while (keys.hasMoreElements()) {
-        				RowMetaAndData key = keys.nextElement();
-        				// Now verify that the key is matching our conditions...
-        				//
-        				boolean match = true;
-        				int lookupIndex=0;
-    					for (int i=0;i<data.conditions.length && match;i++) {
-        					ValueMetaInterface cmpMeta = lookupMeta.getValueMeta(lookupIndex);
-        					Object cmpData = lookupRow[lookupIndex];
-        					ValueMetaInterface keyMeta = key.getValueMeta(i);
-        					Object keyData = key.getData()[i];
-        					
-        					switch(data.conditions[i]) {
-        					case DatabaseLookupMeta.CONDITION_EQ : match = (cmpMeta.compare(cmpData, keyMeta, keyData)==0); break;
-        					case DatabaseLookupMeta.CONDITION_NE : match = (cmpMeta.compare(cmpData, keyMeta, keyData)!=0); break;
-        					case DatabaseLookupMeta.CONDITION_LT : match = (cmpMeta.compare(cmpData, keyMeta, keyData)>0); break;
-        					case DatabaseLookupMeta.CONDITION_LE : match = (cmpMeta.compare(cmpData, keyMeta, keyData)>=0); break;
-        					case DatabaseLookupMeta.CONDITION_GT : match = (cmpMeta.compare(cmpData, keyMeta, keyData)<0); break;
-        					case DatabaseLookupMeta.CONDITION_GE : match = (cmpMeta.compare(cmpData, keyMeta, keyData)<=0); break;
-        					case DatabaseLookupMeta.CONDITION_IS_NULL: match = keyMeta.isNull(keyData); break;
-        					case DatabaseLookupMeta.CONDITION_IS_NOT_NULL: match = !keyMeta.isNull(keyData); break;
-        					case DatabaseLookupMeta.CONDITION_BETWEEN :
-        						// Between key >= cmp && key <= cmp2
-        						ValueMetaInterface cmpMeta2 = lookupMeta.getValueMeta(lookupIndex+1);
-        						Object cmpData2 = lookupRow[lookupIndex+1];
-        						match = (keyMeta.compare(keyData, cmpMeta, cmpData)>=0);
-        						if (match) {
-        							match = (keyMeta.compare(keyData, cmpMeta2, cmpData2)<=0);
-        						}
-        						lookupIndex++;
-        						break;
-        					default: match=false; break; 
-        					// TODO: add LIKE operator
-        					}
-        					lookupIndex++;
-        				}
-    					if (match) {
-    						timedRow = data.look.get(key);
-    				        if (timedRow!=null)
-    				        {
-    				            return timedRow.getRow();
-    				        }
-    				        else
-    				        {
-    				        	// This should never occur
-    				        }
+    		if (!data.hasDBCondition)  //e.g. LIKE not handled by this routine, yet
+    		{
+    			// TODO: find an alternative way to look up the data based on the condition.
+    			// Not all conditions are "=" so we are going to have to evaluate row by row
+    			// A sorted list or index might be a good solution here...
+    			// 
+    			Enumeration<RowMetaAndData> keys = data.look.keys();
+    			while (keys.hasMoreElements()) {
+    				RowMetaAndData key = keys.nextElement();
+    				// Now verify that the key is matching our conditions...
+    				//
+    				boolean match = true;
+    				int lookupIndex=0;
+					for (int i=0;i<data.conditions.length && match;i++) {
+    					ValueMetaInterface cmpMeta = lookupMeta.getValueMeta(lookupIndex);
+    					Object cmpData = lookupRow[lookupIndex];
+    					ValueMetaInterface keyMeta = key.getValueMeta(i);
+    					Object keyData = key.getData()[i];
+    					
+    					switch(data.conditions[i]) {
+    					case DatabaseLookupMeta.CONDITION_EQ : match = (cmpMeta.compare(cmpData, keyMeta, keyData)==0); break;
+    					case DatabaseLookupMeta.CONDITION_NE : match = (cmpMeta.compare(cmpData, keyMeta, keyData)!=0); break;
+    					case DatabaseLookupMeta.CONDITION_LT : match = (cmpMeta.compare(cmpData, keyMeta, keyData)>0); break;
+    					case DatabaseLookupMeta.CONDITION_LE : match = (cmpMeta.compare(cmpData, keyMeta, keyData)>=0); break;
+    					case DatabaseLookupMeta.CONDITION_GT : match = (cmpMeta.compare(cmpData, keyMeta, keyData)<0); break;
+    					case DatabaseLookupMeta.CONDITION_GE : match = (cmpMeta.compare(cmpData, keyMeta, keyData)<=0); break;
+    					case DatabaseLookupMeta.CONDITION_IS_NULL: match = keyMeta.isNull(keyData); break;
+    					case DatabaseLookupMeta.CONDITION_IS_NOT_NULL: match = !keyMeta.isNull(keyData); break;
+    					case DatabaseLookupMeta.CONDITION_BETWEEN :
+    						// Between key >= cmp && key <= cmp2
+    						ValueMetaInterface cmpMeta2 = lookupMeta.getValueMeta(lookupIndex+1);
+    						Object cmpData2 = lookupRow[lookupIndex+1];
+    						match = (keyMeta.compare(keyData, cmpMeta, cmpData)>=0);
+    						if (match) {
+    							match = (keyMeta.compare(keyData, cmpMeta2, cmpData2)<=0);
+    						}
+    						lookupIndex++;
+    						break;
+    					// TODO: add LIKE operator (think of changing the hasDBCondition logic then)
+    					default: 
+    						match=false;
+    						data.hasDBCondition=true; // avoid looping in here the next time, also safety when a new condition will be introduced
+    					    break; 
+    					
     					}
-        			}
-        		}
-        	}
-        }
+    					lookupIndex++;
+    				}
+					if (match) {
+						TimedRow timedRow = data.look.get(key);
+				        if (timedRow!=null)
+				        {
+				            return timedRow.getRow();
+				        }
+				        else
+				        {
+				        	// This should never occur
+				        }
+					}
+    			}
+    		}
+       	}
         return null;
 	}
 
@@ -527,6 +531,12 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 	    	// The schema/table
 	    	//
 	    	sql+=" FROM "+dbMeta.getQuotedSchemaTableCombination(meta.getSchemaName(), meta.getTablename());
+	    	
+	    	// order by?
+			if (meta.getOrderByClause()!=null && meta.getOrderByClause().length()!=0)
+			{
+				sql += " ORDER BY "+meta.getOrderByClause();
+			}
 	    	
 	    	// Now that we have the SQL constructed, let's store the rows...
 	    	//

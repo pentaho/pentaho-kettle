@@ -376,6 +376,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 		fdOrderBy.bottom = new FormAttachment(wOK, -2*margin);
 		fdOrderBy.right  = new FormAttachment(100, 0);
 		wOrderBy.setLayoutData(fdOrderBy);
+		wOrderBy.addModifyListener(lsMod);
 
         // FailMultiple?
         wlFailMultiple=new Label(shell, SWT.RIGHT);
@@ -396,6 +397,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
             {
                 public void widgetSelected(SelectionEvent e)
                 {
+                	input.setChanged();
                     enableFields();
                 }
             }
@@ -420,6 +422,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
             {
                 public void widgetSelected(SelectionEvent e)
                 {
+                	input.setChanged();
                     enableFields();
                 }
             }
@@ -583,6 +586,8 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 		wlCachesize.setEnabled(wCache.getSelection() && !wCacheLoadAll.getSelection());
 		wCacheLoadAll.setEnabled(wCache.getSelection());
 		wlCacheLoadAll.setEnabled(wCache.getSelection());
+		wFailMultiple.setEnabled(!wCache.getSelection());
+		wlFailMultiple.setEnabled(!wCache.getSelection());
     }
 
     /**
