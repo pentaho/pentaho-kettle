@@ -298,7 +298,7 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
         props.setLook(wlEncoding);
         fdlEncoding=new FormData();
         fdlEncoding.left  = new FormAttachment(0, 0);
-        fdlEncoding.top   = new FormAttachment(wLogFile, margin);
+        fdlEncoding.top   = new FormAttachment(wLogFile, 3*margin);
         fdlEncoding.right = new FormAttachment(middle, -margin);
         wlEncoding.setLayoutData(fdlEncoding);
         wEncoding=new Combo(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
@@ -307,7 +307,7 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
         props.setLook(wEncoding);
         fdEncoding=new FormData();
         fdEncoding.left = new FormAttachment(middle, 0);
-        fdEncoding.top  = new FormAttachment(wlLogFile, margin);
+        fdEncoding.top  = new FormAttachment(wlLogFile, 3*margin);
         fdEncoding.right= new FormAttachment(100, 0);        
         wEncoding.setLayoutData(fdEncoding);
         wEncoding.addModifyListener(lsMod);
