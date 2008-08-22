@@ -942,7 +942,8 @@
 		</tooltip>
 		<image-uri>ui/images/STMD.png</image-uri>
 	</step>
-		<step id="TableExists">
+	
+	<step id="TableExists">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.TableExists")
 		</description>
@@ -952,7 +953,8 @@
 		</tooltip>
 		<image-uri>ui/images/TEX.png</image-uri>
 	</step>
-		<step id="ColumnExists">
+		
+	<step id="ColumnExists">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.ColumnExists")
 		</description>
@@ -962,7 +964,8 @@
 		</tooltip>
 		<image-uri>ui/images/CEX.png</image-uri>
 	</step>
-		<step id="FileExists">
+	
+	<step id="FileExists">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.FileExists")
 		</description>
@@ -972,6 +975,7 @@
 		</tooltip>
 		<image-uri>ui/images/FEX.png</image-uri>
 	</step>
+	
 	<step id="CloneRow">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.CloneRow")
@@ -983,7 +987,8 @@
 		</tooltip>
 		<image-uri>ui/images/CLR.png</image-uri>
 	</step>
-		<step id="Delay">
+	
+	<step id="Delay">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.Delay")
 		</description>
@@ -994,7 +999,8 @@
 		</tooltip>
 		<image-uri>ui/images/DLT.png</image-uri>
 	</step>
-		<step id="CheckSum">
+	
+	<step id="CheckSum">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.CheckSum")
 		</description>
@@ -1005,7 +1011,8 @@
 		</tooltip>
 		<image-uri>ui/images/CSM.png</image-uri>
 	</step>
-		<step id="RandomValue">
+	
+	<step id="RandomValue">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.RandomValue")
 		</description>
@@ -1016,7 +1023,8 @@
 		</tooltip>
 		<image-uri>ui/images/RVA.png</image-uri>
 	</step>
-		<step id="GetSubFolders">
+	
+	<step id="GetSubFolders">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.GetSubFolders")
 		</description>
@@ -1027,4 +1035,17 @@
 		</tooltip>
 		<image-uri>ui/images/LSF.png</image-uri>
 	</step>
+	
+	<step id="MonetDBBulkLoader">
+		<description>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.MonetDBBulkLoader")
+		</description>
+		<class-name>org.pentaho.di.trans.steps.monetdbbulkloader.MonetDBBulkLoaderMeta</class-name>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<tooltip>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.MonetDBBulkLoader")
+		</tooltip>
+		<image-uri>ui/images/OBL.png</image-uri>
+	</step>
+	
 </steps>
