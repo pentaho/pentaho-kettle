@@ -53,6 +53,7 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
 public class FileExistsDialog extends BaseStepDialog implements StepDialogInterface
 {
 
+	private boolean gotPreviousFields=false;
 	private Label        wlFileName;
 	private CCombo       wFileName;
 	private FormData     fdlFileName, fdFileName;
@@ -317,8 +318,6 @@ public class FileExistsDialog extends BaseStepDialog implements StepDialogInterf
 	 */ 
 	public void getData()
 	{
-		if(log.isDebug()) log.logDebug(toString(), Messages.getString("FileExistsDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
-
 		if (input.getDynamicFilenameField() !=null)   wFileName.setText(input.getDynamicFilenameField());
 		if (input.getResultFieldName()!=null)   wResult.setText(input.getResultFieldName());
 		wInclFileType.setSelection(input.includeFileType());
@@ -349,22 +348,21 @@ public class FileExistsDialog extends BaseStepDialog implements StepDialogInterf
 	}
 	 private void get()
 	 {
+		 if(!gotPreviousFields) {
 		 try{
-	           
+	            String fieldvalue=wFileName.getText();
 			    wFileName.removeAll();
 				RowMetaInterface r = transMeta.getPrevStepFields(stepname);
 				if (r!=null)
 				{
-		             r.getFieldNames();
-		             
-		             for (int i=0;i<r.getFieldNames().length;i++)
-					{	
-						wFileName.add(r.getFieldNames()[i]);							
-					}
+					wFileName.setItems(r.getFieldNames());
 				}
+				if(fieldvalue!=null) wFileName.setText(fieldvalue);
+				gotPreviousFields=true;
 		 }catch(KettleException ke){
 				new ErrorDialog(shell, Messages.getString("FileExistsDialog.FailedToGetFields.DialogTitle"), Messages.getString("FileExistsDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 			}
+		 }
 	 }
 	public String toString()
 	{

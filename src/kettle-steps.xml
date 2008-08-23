@@ -1047,5 +1047,16 @@
 		</tooltip>
 		<image-uri>ui/images/OBL.png</image-uri>
 	</step>
+		<step id="MailValidator">
+		<description>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.MailValidator")
+		</description>
+		<class-name>org.pentaho.di.trans.steps.mailvalidator.MailValidatorMeta</class-name>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<tooltip>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.MailValidator")
+		</tooltip>
+		<image-uri>ui/images/MAV.png</image-uri>
+	</step>
 	
 </steps>
