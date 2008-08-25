@@ -144,18 +144,6 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 				    int addend = 0;
 				    boolean timesTwo = false;
 					String argstring =  Context.toString(ArgList[0]);
-			
-					// remove non digit
-					StringBuffer digitsOnly = new StringBuffer ();
-				    char c;
-				    for (int i = 0; i < argstring.length (); i++) {
-				      c = argstring.charAt (i);
-				      if (Character.isDigit (c)) {
-				        digitsOnly.append (c);
-				      }
-				    }
-				    argstring=digitsOnly.toString();
-				    if(argstring.length()!=16)return false;
 					
 				    for (int i = argstring.length () - 1; i >= 0; i--) 
 				    {
