@@ -119,6 +119,10 @@ public class GetTransStatusServlet extends HttpServlet
                 //
                 transStatus.setResult( trans.getResult() );
                 
+                // Is the transformation paused?
+                //
+                transStatus.setPaused( trans.isPaused() );
+                
                 // Send the result back as XML
                 //
                 out.println(transStatus.getXML());
@@ -160,6 +164,7 @@ public class GetTransStatusServlet extends HttpServlet
                     else
                     if (trans.isRunning())
                     {
+                        out.print("<a href=\"/kettle/pauseTrans?name="+URLEncoder.encode(transName, "UTF-8")+"\">" + Messages.getString("PauseStatusServlet.PauseResumeTrans")  + "</a><br>");
                         out.print("<a href=\"/kettle/stopTrans?name="+URLEncoder.encode(transName, "UTF-8")+"\">" + Messages.getString("TransStatusServlet.StopTrans")  + "</a>");
                         out.print("<p>");
                     }

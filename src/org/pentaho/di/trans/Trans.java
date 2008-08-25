@@ -158,6 +158,7 @@ public class Trans implements VariableSpace
     private boolean initializing;
     private boolean running;
     private AtomicBoolean finished;
+    private AtomicBoolean paused;
 
     private boolean readyToStart;    
     
@@ -186,6 +187,7 @@ public class Trans implements VariableSpace
         transListeners = new ArrayList<TransListener>();
         
         finished = new AtomicBoolean(false);
+        paused = new AtomicBoolean(false);
 	}
 
 	public String getName()
@@ -228,6 +230,7 @@ public class Trans implements VariableSpace
 		
 		transListeners = new ArrayList<TransListener>();
 		finished = new AtomicBoolean(false);
+		paused = new AtomicBoolean(false);
 	}
 
     /**
@@ -693,6 +696,7 @@ public class Trans implements VariableSpace
         // Now start a thread to monitor the running transformation...
         //
         finished.set(false);
+        paused.set(false);
         
 		TransListener transListener = new TransListener() {
 				public void transFinished(Trans trans) {
@@ -1029,6 +1033,7 @@ public class Trans implements VariableSpace
 			StepMetaDataCombi sid = steps.get(i);
 			BaseStep rt=(BaseStep)sid.step;
 			rt.setStopped(true);
+			rt.setPaused(false);
 
 			// Cancel queries etc. by force...
 			StepInterface si = (StepInterface)rt;
@@ -2628,6 +2633,7 @@ public class Trans implements VariableSpace
 	 * Pause the transformation (pause all steps)
 	 */
 	public void pauseRunning() {
+		paused.set(true);
 		for (StepMetaDataCombi combi : steps) {
 			combi.step.pauseRunning();
 		}
@@ -2640,6 +2646,7 @@ public class Trans implements VariableSpace
 		for (StepMetaDataCombi combi : steps) {
 			combi.step.resumeRunning();
 		}
+		paused.set(false);
 	}
 
 	/**
@@ -2700,5 +2707,9 @@ public class Trans implements VariableSpace
 	
 	public void addTransListener(TransListener transListener) {
 		transListeners.add(transListener);
+	}
+	
+	public boolean isPaused() {
+		return paused.get();
 	}
 }

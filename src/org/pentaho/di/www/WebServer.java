@@ -128,6 +128,11 @@ public class WebServer
         Context startTrans = new Context(contexts, StartTransServlet.CONTEXT_PATH, Context.SESSIONS);
         startTrans.addServlet(new ServletHolder(new StartTransServlet(transformationMap)), "/*");
 
+        // Pause/Resume transformation
+        //
+        Context pauseTrans = new Context(contexts, PauseTransServlet.CONTEXT_PATH, Context.SESSIONS);
+        pauseTrans.addServlet(new ServletHolder(new PauseTransServlet(transformationMap)), "/*");
+
         // Stop transformation
         //
         Context stopTrans = new Context(contexts, StopTransServlet.CONTEXT_PATH, Context.SESSIONS);

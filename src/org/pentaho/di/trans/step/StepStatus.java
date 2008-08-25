@@ -35,6 +35,7 @@ public class StepStatus
     private String speed;
     private String priority;
     private boolean stopped;
+    private boolean paused;
     
     public StepStatus(BaseStep baseStep)
     {
@@ -66,6 +67,7 @@ public class StepStatus
         this.speed = lapsed == 0 ? "-" : "" + (in_speed > out_speed ? in_speed : out_speed); //$NON-NLS-1$ //$NON-NLS-2$
         this.priority = baseStep.isAlive() ? "" + baseStep.rowsetInputSize() + "/" + baseStep.rowsetOutputSize() : "-"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
         this.stopped = baseStep.isStopped();
+        this.paused = baseStep.isPaused();
     }
     
     public String getHTMLTableRow()
@@ -104,6 +106,7 @@ public class StepStatus
                     XMLHandler.addTagValue("speed", speed, false) +
                     XMLHandler.addTagValue("priority", priority, false) +
                     XMLHandler.addTagValue("stopped", stopped, false) +
+                    XMLHandler.addTagValue("paused", paused, false) +
                 "</"+XML_TAG+">";
     }
     
@@ -122,6 +125,8 @@ public class StepStatus
         seconds = Double.parseDouble( XMLHandler.getTagValue(node, "seconds") );
         speed = XMLHandler.getTagValue(node, "speed");
         priority = XMLHandler.getTagValue(node, "priority");
+        stopped = "Y".equalsIgnoreCase(XMLHandler.getTagValue(node, "stopped"));
+        paused = "Y".equalsIgnoreCase(XMLHandler.getTagValue(node, "paused"));
     }
     
     public StepStatus fromXML(String xml) throws KettleXMLException
@@ -383,6 +388,20 @@ public class StepStatus
 	 */
 	public void setStopped(boolean stopped) {
 		this.stopped = stopped;
+	}
+
+	/**
+	 * @return the paused
+	 */
+	public boolean isPaused() {
+		return paused;
+	}
+
+	/**
+	 * @param paused the paused to set
+	 */
+	public void setPaused(boolean paused) {
+		this.paused = paused;
 	}
 
 }

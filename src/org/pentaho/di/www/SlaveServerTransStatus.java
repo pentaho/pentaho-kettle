@@ -43,6 +43,8 @@ public class SlaveServerTransStatus
     
     private Result result;
     
+    private boolean paused;
+    
     public SlaveServerTransStatus()
     {
         stepStatusList = new ArrayList<StepStatus>();
@@ -67,6 +69,7 @@ public class SlaveServerTransStatus
         xml.append(XMLHandler.addTagValue("transname", transName));                
         xml.append(XMLHandler.addTagValue("status_desc", statusDescription));                
         xml.append(XMLHandler.addTagValue("error_desc", errorDescription));          
+        xml.append(XMLHandler.addTagValue("paused", paused));          
         
         xml.append("  <stepstatuslist>").append(Const.CR);
         for (int i = 0; i < stepStatusList.size(); i++)
@@ -99,6 +102,7 @@ public class SlaveServerTransStatus
         transName = XMLHandler.getTagValue(transStatusNode, "transname");
         statusDescription = XMLHandler.getTagValue(transStatusNode, "status_desc");
         errorDescription = XMLHandler.getTagValue(transStatusNode, "error_desc");
+        paused = "Y".equalsIgnoreCase(XMLHandler.getTagValue(transStatusNode, "paused"));
         
         Node statusListNode = XMLHandler.getSubNode(transStatusNode, "stepstatuslist");
         int nr = XMLHandler.countNodes(statusListNode, StepStatus.XML_TAG);
@@ -296,5 +300,19 @@ public class SlaveServerTransStatus
 	 */
 	public void setResult(Result result) {
 		this.result = result;
+	}
+
+	/**
+	 * @return the paused
+	 */
+	public boolean isPaused() {
+		return paused;
+	}
+
+	/**
+	 * @param paused the paused to set
+	 */
+	public void setPaused(boolean paused) {
+		this.paused = paused;
 	}
 }
