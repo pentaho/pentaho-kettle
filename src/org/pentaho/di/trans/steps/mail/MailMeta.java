@@ -18,7 +18,6 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.swt.widgets.Shell;
 import org.w3c.dom.Node;
 
 import org.pentaho.di.core.CheckResult;
