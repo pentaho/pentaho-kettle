@@ -718,4 +718,43 @@
 		</tooltip>
 		<image-uri>ui/images/CREP.png</image-uri>
 	</job>
+		<job id="TRUNCATE_TABLES">
+		<type>
+			ognl:@org.pentaho.di.job.JobEntryType@TRUNCATE_TABLES
+		</type>
+		<class-name>
+			org.pentaho.di.job.entries.truncatetables.JobEntryTruncateTables
+		</class-name>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@EXPERIMENTAL.getName()</category>
+		<tooltip>
+			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.TruncateTables.Tooltip")
+		</tooltip>
+		<image-uri>ui/images/TRT.png</image-uri>
+	</job>
+		<job id="SET_VARIABLES">
+		<type>
+			ognl:@org.pentaho.di.job.JobEntryType@SET_VARIABLES
+		</type>
+		<class-name>
+			org.pentaho.di.job.entries.setvariables.JobEntrySetVariables
+		</class-name>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@EXPERIMENTAL.getName()</category>
+		<tooltip>
+			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.SetVariables.Tooltip")
+		</tooltip>
+		<image-uri>ui/images/SVA.png</image-uri>
+	</job>
+		<job id="MS_ACCESS_BULK_LOAD">
+		<type>
+			ognl:@org.pentaho.di.job.JobEntryType@MS_ACCESS_BULK_LOAD
+		</type>
+		<class-name>
+			org.pentaho.di.job.entries.msaccessbulkload.JobEntryMSAccessBulkLoad
+		</class-name>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@EXPERIMENTAL.getName()</category>
+		<tooltip>
+			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.MSAccessBulkLoad.Tooltip")
+		</tooltip>
+		<image-uri>ui/images/MBL.png</image-uri>
+	</job>
 </jobs>

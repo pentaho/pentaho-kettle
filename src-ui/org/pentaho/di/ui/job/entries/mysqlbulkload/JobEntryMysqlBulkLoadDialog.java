@@ -657,7 +657,6 @@ public class JobEntryMysqlBulkLoadDialog extends JobEntryDialog implements JobEn
 		});
 	
 		getData();
-
 		BaseStepDialog.setSize(shell);
 
 		shell.open();

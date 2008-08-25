@@ -75,6 +75,9 @@ public enum JobEntryType
 	COLUMNS_EXIST(Messages.getString("JobEntry.ColumnsExist.TypeDesc")),
 	EXPORT_REPOSITORY(Messages.getString("JobEntry.ExportRepository.TypeDesc")),
 	CONNECTED_TO_REPOSITORY(Messages.getString("JobEntry.ConnectedToRepository.TypeDesc")),
+	TRUNCATE_TABLES(Messages.getString("JobEntry.TruncateTables.TypeDesc")),
+	SET_VARIABLES(Messages.getString("JobEntry.SetVariables.TypeDesc")),
+	MS_ACCESS_BULK_LOAD(Messages.getString("JobEntry.MSAccessBulkLoad.TypeDesc")),
 	;
 
 	private String description;

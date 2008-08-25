@@ -30,6 +30,7 @@ public class JobEntryCategory
 	public static final JobEntryCategory XML             = new JobEntryCategory(Messages.getString("JobCategory.Category.XML"));
 	public static final JobEntryCategory REPOSITORY      = new JobEntryCategory(Messages.getString("JobCategory.Category.Repository"));
 	public static final JobEntryCategory FILE_TRANSFER   = new JobEntryCategory(Messages.getString("JobCategory.Category.FileTransfer"));
+	public static final JobEntryCategory EXPERIMENTAL   = new JobEntryCategory(Messages.getString("JobCategory.Category.Experimental"));
 	
 	public static final int CATEGORY_USER_DEFINED    = -1;
 	public static final int CATEGORY_GENERAL         =  0;
@@ -41,9 +42,11 @@ public class JobEntryCategory
 	public static final int CATEGORY_XML             =  6;
 	public static final int CATEGORY_REPOSITORY      =  7;
 	public static final int CATEGORY_FILE_TRANSFER   =  8;
+	public static final int CATEGORY_EXPERIMENTAL    =  9;
 	
 	public static final JobEntryCategory[] STANDARD_CATEGORIES = new JobEntryCategory[] { 
 			GENERAL, MAIL, FILE_MANAGEMENT, CONDITIONS, SCRIPTING, BULK_LOADING, XML, REPOSITORY,FILE_TRANSFER,
+			EXPERIMENTAL,
 		};
 
 	private String name;

@@ -53,7 +53,6 @@ import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
-
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.ui.job.dialog.JobDialog;

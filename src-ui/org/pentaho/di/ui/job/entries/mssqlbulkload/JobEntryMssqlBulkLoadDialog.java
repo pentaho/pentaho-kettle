@@ -320,7 +320,7 @@ public class JobEntryMssqlBulkLoadDialog extends JobEntryDialog implements JobEn
 	    ConnectionGroupLayout .marginWidth = 10;
 	    ConnectionGroupLayout .marginHeight = 10;
 
-	    wConnectionGroup.setLayout(ConnectionGroupLayout );;
+	    wConnectionGroup.setLayout(ConnectionGroupLayout );
 			
 		// Connection line
 		wConnection = addConnectionLine(wConnectionGroup, wName, middle, margin);
@@ -1232,8 +1232,6 @@ public class JobEntryMssqlBulkLoadDialog extends JobEntryDialog implements JobEn
 	 */
 	public void getData()
 	{
-		// System.out.println("evaluates: "+jobentry.evaluates());
-
 		if (jobEntry.getName() != null)
 			wName.setText(jobEntry.getName());
 		if (jobEntry.getDatabase() != null)

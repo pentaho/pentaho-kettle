@@ -780,9 +780,6 @@ public class JobEntryCopyFilesDialog extends JobEntryDialog implements JobEntryD
 				wFields.setRowNums();
 			}
 		});
-		
-		
-		
 
 		fdGeneralComp=new FormData();
 		fdGeneralComp.left  = new FormAttachment(0, 0);
@@ -795,8 +792,6 @@ public class JobEntryCopyFilesDialog extends JobEntryDialog implements JobEntryD
 		wGeneralTab.setControl(wGeneralComp);
  		props.setLook(wGeneralComp);
  		
- 		
- 		
 		/////////////////////////////////////////////////////////////
 		/// END OF GENERAL TAB
 		/////////////////////////////////////////////////////////////
@@ -806,9 +801,7 @@ public class JobEntryCopyFilesDialog extends JobEntryDialog implements JobEntryD
  		//////////////////////////////////////
 		// START OF RESULT FILES  TAB   ///
 		/////////////////////////////////////
-		
-		
-		
+
 		wResultfilesTab=new CTabItem(wTabFolder, SWT.NONE);
 		wResultfilesTab.setText(Messages.getString("JobCopyFiles.Tab.AddResultFilesName.Label"));
 
@@ -870,12 +863,9 @@ public class JobEntryCopyFilesDialog extends JobEntryDialog implements JobEntryD
 	     // ///////////////////////////////////////////////////////////
 	     // / END OF FilesRsult GROUP
 	     // ///////////////////////////////////////////////////////////
-
-		
  		
  		
- 		
-	     fdResultfilesComp = new FormData();
+	    fdResultfilesComp = new FormData();
 		fdResultfilesComp.left  = new FormAttachment(0, 0);
  		fdResultfilesComp.top   = new FormAttachment(0, 0);
  		fdResultfilesComp.right = new FormAttachment(100, 0);

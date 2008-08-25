@@ -273,7 +273,7 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 
 	public boolean isUnconditional()
 	{
-		return false;
+		return true;
 	}
 
 	public Result execute(Result previousResult, int nr, Repository rep, Job parentJob)
