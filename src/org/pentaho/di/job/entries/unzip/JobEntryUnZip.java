@@ -222,6 +222,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 			nr_limit = XMLHandler.getTagValue(entrynode, "nr_limit");
 			wildcardSource = XMLHandler.getTagValue(entrynode, "wildcardSource");
 			success_condition          = XMLHandler.getTagValue(entrynode, "success_condition");
+			if(Const.isEmpty(success_condition)) success_condition=SUCCESS_IF_NO_ERRORS;
 			iffileexist   = getIfFileExistsInt(XMLHandler.getTagValue(entrynode, "iffileexists"));	
 			
 		}
@@ -254,6 +255,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 			nr_limit=rep.getJobEntryAttributeString(id_jobentry, "nr_limit");
 			wildcardSource=rep.getJobEntryAttributeString(id_jobentry, "wildcardSource");
 			success_condition  = rep.getJobEntryAttributeString(id_jobentry, "success_condition");
+			if(Const.isEmpty(success_condition)) success_condition=SUCCESS_IF_NO_ERRORS;
 			iffileexist    = getIfFileExistsInt(rep.getStepAttributeString(id_jobentry,"iffileexists") );
 		}
 
