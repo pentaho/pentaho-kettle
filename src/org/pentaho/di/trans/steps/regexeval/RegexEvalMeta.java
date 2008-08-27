@@ -568,6 +568,7 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface
             rep.saveStepAttribute(id_transformation, id_step, "multiline", multiline);
             rep.saveStepAttribute(id_transformation, id_step, "unicode", unicode);
             rep.saveStepAttribute(id_transformation, id_step, "unix", unix);
+            rep.saveStepAttribute(id_transformation, id_step, "matcher", matcher);
 
         }
         catch (Exception e)
