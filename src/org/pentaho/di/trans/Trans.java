@@ -1049,6 +1049,9 @@ public class Trans implements VariableSpace
             
             sid.data.setStatus(StepDataInterface.STATUS_STOPPED);
 		}
+		
+		//if it is stopped it is not paused
+		paused.set(false);
 	}
 
 	public int nrSteps()
