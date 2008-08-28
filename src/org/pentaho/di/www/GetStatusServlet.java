@@ -85,8 +85,10 @@ public class GetStatusServlet extends HttpServlet
                 String name   = transNames[i]; 
                 Trans  trans  = transformationMap.getTransformation(name);
                 String status = trans.getStatus();
-                
-                serverStatus.getTransStatusList().add( new SlaveServerTransStatus(name, status) );
+               
+                SlaveServerTransStatus sstatus = new SlaveServerTransStatus(name, status);
+                sstatus.setPaused(trans.isPaused());
+                serverStatus.getTransStatusList().add(sstatus);
             }
 
             for (int i=0;i<jobNames.length;i++)
