@@ -197,7 +197,7 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 
         // Prefix of temporary file
 		wlPrefix=new Label(shell, SWT.RIGHT);
-		wlPrefix.setText("TMP-file prefix ");
+		wlPrefix.setText(Messages.getString("SortRowsDialog.Prefix.Label"));
  		props.setLook(wlPrefix);
 		fdlPrefix=new FormData();
 		fdlPrefix.left = new FormAttachment(0, 0);
@@ -232,7 +232,7 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
         fdSortSize.right = new FormAttachment(100, 0);
         wSortSize.setLayoutData(fdSortSize);
 
-        // Maximum number of lines to keep in memory before using temporary files
+        // Free Memory to keep
         wlFreeMemory=new Label(shell, SWT.RIGHT);
         wlFreeMemory.setText(Messages.getString("SortRowsDialog.FreeMemory.Label"));
         wlFreeMemory.setToolTipText(Messages.getString("SortRowsDialog.FreeMemory.ToolTip"));
