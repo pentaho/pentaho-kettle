@@ -282,8 +282,9 @@ public class TransHistory extends Composite implements TabItemInterface
                         database.connect();
                         
                         RowMetaAndData params = new RowMetaAndData();
-                        params.addValue(new ValueMeta("transname", ValueMetaInterface.TYPE_STRING), transMeta.getName()+"%"); //$NON-NLS-1$
-                        ResultSet resultSet = database.openQuery("SELECT * FROM "+transMeta.getLogTable()+" WHERE TRANSNAME LIKE ? ORDER BY ID_BATCH desc", params.getRowMeta(), params.getData()); //$NON-NLS-1$ //$NON-NLS-2$
+                        params.addValue(new ValueMeta("transname_literal", ValueMetaInterface.TYPE_STRING), transMeta.getName()); //$NON-NLS-1$
+                        params.addValue(new ValueMeta("transname_cluster", ValueMetaInterface.TYPE_STRING), transMeta.getName() + " (slave %"); //$NON-NLS-1$ //$NON-NLS-2$
+                        ResultSet resultSet = database.openQuery("SELECT * FROM "+transMeta.getLogTable()+" WHERE TRANSNAME LIKE ? OR TRANSNAME LIKE ? ORDER BY ID_BATCH desc", params.getRowMeta(), params.getData()); //$NON-NLS-1$ //$NON-NLS-2$
                         
                         rowList = new ArrayList<RowMetaAndData>();
                         Object[] rowData = database.getRow(resultSet);
