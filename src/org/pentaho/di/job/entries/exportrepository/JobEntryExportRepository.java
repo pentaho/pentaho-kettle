@@ -171,10 +171,6 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
 		retval.append("      ").append(XMLHandler.addTagValue("nr_errors_less_than", nr_errors_less_than));
 		retval.append("      ").append(XMLHandler.addTagValue("success_condition", success_condition));
 		
-		
-		
-		
-		
 		return retval.toString();
 	}
 	
@@ -216,6 +212,7 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
 			repositoryname = rep.getJobEntryAttributeString(id_jobentry, "repositoryname");
 			username = rep.getJobEntryAttributeString(id_jobentry, "username");
 			password        = Encr.decryptPasswordOptionallyEncrypted(rep.getJobEntryAttributeString(id_jobentry, "password"));
+			targetfilename = rep.getJobEntryAttributeString(id_jobentry, "targetfilename");
 			iffileexists = rep.getJobEntryAttributeString(id_jobentry, "iffileexists");  
 			export_type = rep.getJobEntryAttributeString(id_jobentry, "export_type");
 			directoryPath = rep.getJobEntryAttributeString(id_jobentry, "directoryPath");
@@ -259,9 +256,7 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
 			rep.saveJobEntryAttribute(id_job, getID(), "newfolder", newfolder);
 			rep.saveJobEntryAttribute(id_job, getID(), "add_result_filesname", add_result_filesname);
 			rep.saveJobEntryAttribute(id_job, getID(), "nr_errors_less_than", nr_errors_less_than);
-			rep.saveJobEntryAttribute(id_job, getID(), "success_condition", success_condition);
-			
-			
+			rep.saveJobEntryAttribute(id_job, getID(), "success_condition", success_condition);	
 			
 		}
 		catch(KettleDatabaseException dbe)
