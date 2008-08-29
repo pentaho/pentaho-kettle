@@ -1500,9 +1500,9 @@ public class ValueMeta implements ValueMetaInterface
         case TYPE_INTEGER:
             switch(storageType)
             {
-            case STORAGE_TYPE_NORMAL:         return BigDecimal.valueOf( ((Long)object).doubleValue() );
+            case STORAGE_TYPE_NORMAL:         return BigDecimal.valueOf( ((Long)object).longValue() );
             case STORAGE_TYPE_BINARY_STRING:  return BigDecimal.valueOf( ((Long)convertBinaryStringToNativeType((byte[])object)).longValue() );
-            case STORAGE_TYPE_INDEXED:        return BigDecimal.valueOf( ((Long)index[((Integer)object).intValue()]).doubleValue() );
+            case STORAGE_TYPE_INDEXED:        return BigDecimal.valueOf( ((Long)index[((Integer)object).intValue()]).longValue() );
             default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
             }
         case TYPE_NUMBER:
