@@ -1096,7 +1096,6 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
     				// Get column name
     				fieldname=c.getName();
     				
-    				
 		            // Get column type and Map with PDI values    				
     				
     				if(DataType.INT.equals(c.getType()))

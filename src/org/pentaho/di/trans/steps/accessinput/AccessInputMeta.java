@@ -701,13 +701,10 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface
 
 	public FileInputList  getFiles(VariableSpace space)
 	{
-        
-        
         String required[] = new String[fileName.length];
         boolean subdirs[] = new boolean[fileName.length]; // boolean arrays are defaulted to false.
         for (int i=0;i<required.length; required[i]="Y", i++); //$NON-NLS-1$
-        return FileInputList.createFileList(space, fileName, fileMask, required, subdirs);
-        
+        return FileInputList.createFileList(space, fileName, fileMask, required, subdirs);   
 	}
 	
 	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)

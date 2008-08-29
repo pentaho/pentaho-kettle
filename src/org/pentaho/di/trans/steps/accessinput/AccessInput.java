@@ -13,7 +13,7 @@
 package org.pentaho.di.trans.steps.accessinput;
 
 import java.io.File;
-
+import java.util.Date;
 import com.healthmarketscience.jackcess.Database;
 
 import org.apache.commons.vfs.FileObject;
@@ -113,8 +113,6 @@ public class AccessInput extends BaseStep implements StepInterface
 			        if (!openNextFile()) return null;
 				}
 			}
-			
-			
 		} catch (Exception IO)
 		{
 			return null;
@@ -131,37 +129,44 @@ public class AccessInput extends BaseStep implements StepInterface
 				// Execute for each Input field...
 				for (int i=0;i<meta.getInputFields().length;i++)
 				{
+					// get field
+					AccessInputField field= meta.getInputFields()[i];
 
 					// Get field value
-					Object obj = data.rw.get(meta.getInputFields()[i].getColumn());	
+					Object obj = data.rw.get(field.getColumn());	
 					String value=String.valueOf(obj);
 					
-
-					// DO Trimming!
-					switch (meta.getInputFields()[i].getTrimType())
+					if(obj instanceof Date && field.getType()==ValueMetaInterface.TYPE_DATE)	
 					{
-					case AccessInputField.TYPE_TRIM_LEFT:
-						value = Const.ltrim(value);
-						break;
-					case AccessInputField.TYPE_TRIM_RIGHT:
-						value = Const.rtrim(value);
-						break;
-					case AccessInputField.TYPE_TRIM_BOTH:
-						value = Const.trim(value);
-						break;
-					default:
-						break;
+						r[data.totalpreviousfields+i]=obj;
 					}
-						      
+					else 
+					{
+						// DO Trimming!
+						switch (field.getTrimType())
+						{
+						case AccessInputField.TYPE_TRIM_LEFT:
+							value = Const.ltrim(value);
+							break;
+						case AccessInputField.TYPE_TRIM_RIGHT:
+							value = Const.rtrim(value);
+							break;
+						case AccessInputField.TYPE_TRIM_BOTH:
+							value = Const.trim(value);
+							break;
+						default:
+							break;
+						}
 					
-					// DO CONVERSIONS...
-					//
-					ValueMetaInterface targetValueMeta = data.outputRowMeta.getValueMeta(data.totalpreviousfields+i);
-					ValueMetaInterface sourceValueMeta = data.convertRowMeta.getValueMeta(data.totalpreviousfields+i);
-					r[data.totalpreviousfields+i] = targetValueMeta.convertData(sourceValueMeta, value);
-					
+						// DO CONVERSIONS...
+						//
+						ValueMetaInterface targetValueMeta = data.outputRowMeta.getValueMeta(data.totalpreviousfields+i);
+						ValueMetaInterface sourceValueMeta = data.convertRowMeta.getValueMeta(data.totalpreviousfields+i);
+						r[data.totalpreviousfields+i] = targetValueMeta.convertData(sourceValueMeta, value);
+					}
+						
 					// Do we need to repeat this field if it is null?
-					if (meta.getInputFields()[i].isRepeated())
+					if (field.isRepeated())
 					{
 						if (data.previousRow!=null && Const.isEmpty(value))
 						{
@@ -173,12 +178,14 @@ public class AccessInput extends BaseStep implements StepInterface
 				int rowIndex = meta.getInputFields().length;
 				
 				// See if we need to add the filename to the row...
-				if ( meta.includeFilename() && !Const.isEmpty(meta.getFilenameField()) ) {
+				if ( meta.includeFilename() && !Const.isEmpty(meta.getFilenameField()) ) 
+				{
 					r[data.totalpreviousfields+rowIndex++] = AccessInputMeta.getFilename(data.file);
 				}
 				
 				// See if we need to add the table name to the row...
-				if ( meta.includeTablename() && !Const.isEmpty(meta.getTableName()) ) {
+				if ( meta.includeTablename() && !Const.isEmpty(meta.getTableName()) ) 
+				{
 					r[data.totalpreviousfields+rowIndex++] = environmentSubstitute(meta.getTableName());
 				}
 				
@@ -199,10 +206,8 @@ public class AccessInput extends BaseStep implements StepInterface
 			
 		 }
 		 catch (Exception e)
-		 {
-			 
-			throw new KettleException("Unable to read row from Access file", e);
-			
+		 { 
+			throw new KettleException(Messages.getString("AccessInput.Error.ErrorReadingFile"), e);
 		 }
 		 
 		return r;
@@ -392,27 +397,19 @@ public class AccessInput extends BaseStep implements StepInterface
 		if(data.t!=null) data.t=null;
 		if(data.rw!=null) data.rw=null;
 		if(data.readrow!=null) data.readrow=null;
-		if(data.d!=null) 
+		try
 		{
-			try
+			if(data.d!=null) 
 			{
 				data.d.close();
 				data.d=null;
-			}catch  (Exception e)
-			{
 			}
-		}
-		if(data.file!=null) 
-		{
-			try
+			if(data.file!=null) 
 			{
 				data.file.close();
 				data.file=null;
-			}catch  (Exception e)
-			{
 			}
-		}
-		
+		} catch  (Exception e){} // ignore this
 		super.dispose(smi, sdi);
 	}
 	

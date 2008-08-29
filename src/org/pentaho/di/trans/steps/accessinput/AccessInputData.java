@@ -14,10 +14,6 @@ package org.pentaho.di.trans.steps.accessinput;
 
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
-import java.text.DateFormatSymbols;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Map;
 
@@ -41,11 +37,7 @@ public class AccessInputData extends BaseStepData implements StepDataInterface
 	public Object[] previousRow;
 	public int    nr_repeats;
 	
-	public NumberFormat         nf;
-	public DecimalFormat        df;
-	public DecimalFormatSymbols dfs;
 	public SimpleDateFormat     daf;
-	public DateFormatSymbols    dafs;
 	
 	public FileInputList        files;
 	public boolean              last_file;
@@ -71,11 +63,11 @@ public class AccessInputData extends BaseStepData implements StepDataInterface
 		super();
 		previousRow = null;
 		thisline=null;
-		nf = NumberFormat.getInstance();
-		df = (DecimalFormat)nf;
-		dfs=new DecimalFormatSymbols();
+		//nf = NumberFormat.getInstance();
+		//df = (DecimalFormat)nf;
+		//dfs=new DecimalFormatSymbols();
 		daf = new SimpleDateFormat();
-		dafs= new DateFormatSymbols();
+		//dafs= new DateFormatSymbols();
 
 		nr_repeats=0;
 		previousRow=null;
