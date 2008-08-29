@@ -52,7 +52,7 @@ public class UniqueRows extends BaseStep implements StepInterface
 			// Don't forget the last set of rows...
 			if (data.previous!=null) 
 			{
-				Object[] outputRow = addCounter(getInputRowMeta(), data.previous, data.counter);
+				Object[] outputRow = addCounter(data.outputRowMeta, data.previous, data.counter);
 				putRow(data.outputRowMeta, outputRow);
 			} 
 			setOutputDone();
@@ -66,7 +66,7 @@ public class UniqueRows extends BaseStep implements StepInterface
             data.outputRowMeta = getInputRowMeta().clone();
             meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
             
-			data.previous=getInputRowMeta().cloneRow(r); // copy the row
+			data.previous=data.outputRowMeta.cloneRow(r); // copy the row
 			
 			// Cache lookup of fields
 			data.fieldnrs=new int[meta.getCompareFields().length];
@@ -93,17 +93,17 @@ public class UniqueRows extends BaseStep implements StepInterface
 		if (meta.getCompareFields()==null || meta.getCompareFields().length==0)
 		{
 		    // Compare the complete row...
-		    isEqual = getInputRowMeta().compare(r, data.previous)==0;
+		    isEqual = data.outputRowMeta.compare(r, data.previous)==0;
 		}
 		else
 		{
-		    isEqual = getInputRowMeta().compare(r, data.previous, data.fieldnrs)==0;
+		    isEqual = data.outputRowMeta.compare(r, data.previous, data.fieldnrs)==0;
 		}
 		if (!isEqual)
 		{
-			Object[] outputRow = addCounter(getInputRowMeta(), data.previous, data.counter);
+			Object[] outputRow = addCounter(data.outputRowMeta, data.previous, data.counter);
 			putRow(data.outputRowMeta, outputRow); // copy row to possible alternate rowset(s).
-			data.previous=getInputRowMeta().cloneRow(r);
+			data.previous=data.outputRowMeta.cloneRow(r);
 			data.counter=1;
 		}
 		else
