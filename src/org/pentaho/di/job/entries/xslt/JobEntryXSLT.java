@@ -63,6 +63,10 @@ import org.w3c.dom.Node;
  */
 public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInterface
 {
+	public static String FACTORY_JAXP="JAXP";
+	public static String FACTORY_SAXON="SAXON";
+	
+	
 	private String xmlfilename;
 	private String xslfilename;
 	private String outputfilename;
@@ -79,7 +83,7 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 		outputfilename=null;
 		iffileexists=1;
 		addfiletoresult = false;
-		xsltfactory="JAXP";
+		xsltfactory=FACTORY_JAXP;
 		setID(-1L);
 		setJobEntryType(JobEntryType.XSLT);
 	}
@@ -112,8 +116,6 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 		retval.append("      ").append(XMLHandler.addTagValue("addfiletoresult",  addfiletoresult));
 		retval.append("      ").append(XMLHandler.addTagValue("xsltfactory", xsltfactory));
 		
-
-
 		return retval.toString();
 	}
 
@@ -128,7 +130,7 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 			iffileexists = Const.toInt(XMLHandler.getTagValue(entrynode, "iffileexists"), -1);
 			addfiletoresult = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "addfiletoresult"));
 			xsltfactory = XMLHandler.getTagValue(entrynode, "xsltfactory");
-			
+			if(xsltfactory==null) xsltfactory=FACTORY_JAXP;
 
 		}
 		catch(KettleXMLException xe)
@@ -149,7 +151,7 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 			iffileexists=(int) rep.getJobEntryAttributeInteger(id_jobentry, "iffileexists");
 			addfiletoresult=rep.getJobEntryAttributeBoolean(id_jobentry, "addfiletoresult");
 			xsltfactory = rep.getJobEntryAttributeString(id_jobentry, "xsltfactory");
-			
+			if(xsltfactory==null) xsltfactory=FACTORY_JAXP;
 		}
 		catch(KettleException dbe)
 		{
@@ -213,8 +215,7 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 		String realxmlfilename = getRealxmlfilename();
 		String realxslfilename = getRealxslfilename();
 		String realoutputfilename = getRealoutputfilename();
-
-
+		
 		FileObject xmlfile = null;
 		FileObject xslfile = null;
 		FileObject outputfile = null;
@@ -239,21 +240,17 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 										+ realoutputfilename + Messages.getString("JobEntryXSLT.OuputFileExists2.Label"));
 						result.setResult( false );
 						result.setNrErrors(1);
-
-
 					}
 
 					else if (outputfile.exists() && iffileexists==1)
 					{
 						// Do nothing
-						log.logDebug(toString(), Messages.getString("JobEntryXSLT.OuputFileExists1.Label")
+						if(log.isDebug()) log.logDebug(toString(), Messages.getString("JobEntryXSLT.OuputFileExists1.Label")
 								+ realoutputfilename + Messages.getString("JobEntryXSLT.OuputFileExists2.Label"));
 						result.setResult( true );
 					}
 					else
 					{
-
-
 						 if (outputfile.exists() && iffileexists==0)
 							{
 								// the output file exists and user want to create new one with unique name
@@ -272,23 +269,20 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 									// did not find wildcard
 									realoutputfilename=realoutputfilename + "_" + StringUtil.getFormattedDateTimeNow(true);
 								}
-							    log.logDebug(toString(),  Messages.getString("JobEntryXSLT.OuputFileExists1.Label") +
+							    if(log.isDebug()) log.logDebug(toString(),  Messages.getString("JobEntryXSLT.OuputFileExists1.Label") +
 										realoutputfilename +  Messages.getString("JobEntryXSLT.OuputFileExists2.Label"));
 								log.logDebug(toString(), Messages.getString("JobEntryXSLT.OuputFileNameChange1.Label") + realoutputfilename +
 								Messages.getString("JobEntryXSLT.OuputFileNameChange2.Label"));
-
-
 							}
 
 						
 						// Create transformer factory
 						TransformerFactory factory = TransformerFactory.newInstance();	
 						
-						if (xsltfactory.equals("SAXON"))
+						if (xsltfactory.equals(FACTORY_SAXON))
 						{
 							// Set the TransformerFactory to the SAXON implementation.
 							factory = new net.sf.saxon.TransformerFactoryImpl(); 
-							
 						}
 						
 						if (log.isDetailed()) log.logDetailed(Messages.getString("JobEntryXSL.Log.TransformerFactoryInfos"),Messages.getString("JobEntryXSL.Log.TransformerFactory",factory.getClass().getName()));
@@ -346,15 +340,9 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 				result.setResult( false );
 				result.setNrErrors(1);
 			}
-
-
-
 		}
-
-
 		catch ( Exception e )
 		{
-
 			log.logError(toString(), Messages.getString("JobEntryXSLT.ErrorXLST.Label") +
 				Messages.getString("JobEntryXSLT.ErrorXLSTXML1.Label") + realxmlfilename +
 				Messages.getString("JobEntryXSLT.ErrorXLSTXML2.Label") +
@@ -379,12 +367,9 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 				// be deleted anymore. This is a known problem in the JVM.
 
 				System.gc();
-				
-
 		    }
 			catch ( IOException e ) { }
 		}
-
 
 		return result;
 	}
