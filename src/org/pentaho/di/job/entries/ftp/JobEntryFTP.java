@@ -834,10 +834,11 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
             String realServername = environmentSubstitute(serverName);
             String realServerPort = environmentSubstitute(port);
             ftpclient.setRemoteAddr(InetAddress.getByName(realServername));
-            if(Const.isEmpty(realServerPort))
+            if(!Const.isEmpty(realServerPort))
             {
             	 ftpclient.setRemotePort(Const.toInt(realServerPort, 21));
             }
+
             if (!Const.isEmpty(proxyHost)) 
             {
           	  String realProxy_host = environmentSubstitute(proxyHost);

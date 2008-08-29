@@ -637,7 +637,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 			{
 				// establish the connection
 				 FTPConnect(log,realservername,realUsername, realPassword,
-						 realserverport,realFtpDirectory, realproxyhost,realproxyusername, realproxypassword,
+						 realserverport,realFtpDirectory, realproxyhost,realproxyusername, realproxypassword,realproxyport,
 							timeout);
 				
 				filelist = ftpclient.dir();
@@ -942,15 +942,16 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 
 	}
 	private void FTPConnect(LogWriter log,String realServername,String realusername, String realpassword,
-			int realport,String realFtpDirectory, String realProxyhost,String realproxyusername, String realproxypassword,
+			int realport,String realFtpDirectory, String realProxyhost,String realproxyusername, 
+			String realproxypassword,int realproxyport,
 			int realtimeout) throws Exception
 	{
         
 	
 		// Create ftp client to host:port ...
 		ftpclient = new FTPClient();
-
         ftpclient.setRemoteAddr(InetAddress.getByName(realServername));
+        if(realport!=0) ftpclient.setRemotePort(realport);
         
         if (!Const.isEmpty(realProxyhost)) 
         {
@@ -959,9 +960,9 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
       	      log.logDetailed(toString(), Messages.getString("JobEntryFTPDelete.OpenedProxyConnectionOn",realProxyhost));
 
       	  // FIXME: Proper default port for proxy    	  
-      	  if (realport != 0) 
+      	  if (realproxyport != 0) 
       	  {
-      	     ftpclient.setRemotePort(realport);
+      	     ftpclient.setRemotePort(realproxyport);
       	  }
         } 
         else 

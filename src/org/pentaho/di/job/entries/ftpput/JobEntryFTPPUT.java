@@ -550,7 +550,7 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
 			// Create ftp client to host:port ...
 			ftpclient = new FTPClient();
             ftpclient.setRemoteAddr(InetAddress.getByName(realServerName));
-            if(Const.isEmpty(realServerPort))
+            if(!Const.isEmpty(realServerPort))
             {
             	 ftpclient.setRemotePort(Const.toInt(realServerPort, 21));
             }
