@@ -1081,7 +1081,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
                 // Open the file (only first file)...
 
             	Database d = Database.open(new File(AccessInputMeta.getFilename(inputList.getFile(0))));			
-    			Table t=d.getTable(meta.getTableName());
+    			Table t=d.getTable(transMeta.environmentSubstitute(meta.getTableName()));
     			
     			// Get the list of columns
     			List<Column> col = t.getColumns();    			

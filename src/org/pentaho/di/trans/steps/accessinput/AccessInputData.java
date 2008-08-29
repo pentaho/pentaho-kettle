@@ -63,12 +63,7 @@ public class AccessInputData extends BaseStepData implements StepDataInterface
 		super();
 		previousRow = null;
 		thisline=null;
-		//nf = NumberFormat.getInstance();
-		//df = (DecimalFormat)nf;
-		//dfs=new DecimalFormatSymbols();
 		daf = new SimpleDateFormat();
-		//dafs= new DateFormatSymbols();
-
 		nr_repeats=0;
 		previousRow=null;
 		filenr = 0;

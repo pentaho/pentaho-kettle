@@ -184,9 +184,9 @@ public class AccessInput extends BaseStep implements StepInterface
 				}
 				
 				// See if we need to add the table name to the row...
-				if ( meta.includeTablename() && !Const.isEmpty(meta.getTableName()) ) 
+				if ( meta.includeTablename() && !Const.isEmpty(data.t.getName()) ) 
 				{
-					r[data.totalpreviousfields+rowIndex++] = environmentSubstitute(meta.getTableName());
+					r[data.totalpreviousfields+rowIndex++] = data.t.getName();
 				}
 				
 		        // See if we need to add the row number to the row...  
@@ -278,9 +278,7 @@ public class AccessInput extends BaseStep implements StepInterface
 							logError(Messages.getString("AccessInput.Log.ErrorFindingField")+ "[" + meta.getDynamicFilenameField()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
 							throw new KettleException(Messages.getString("AccessInput.Exception.CouldnotFindField",meta.getDynamicFilenameField())); //$NON-NLS-1$ //$NON-NLS-2$
 						}
-					}
-	            	
-		            
+					}    
 		        }  // End if first
 				
 				

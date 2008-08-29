@@ -16,7 +16,7 @@ import org.pentaho.di.core.row.ValueMeta;
 
 
 /**
- * Describes an LDIF field
+ * Describes an AccessInput field
  * 
  * @author Samatar Hassan
  * @since 24-05-2007
