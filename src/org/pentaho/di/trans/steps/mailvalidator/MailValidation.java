@@ -197,13 +197,17 @@ public class MailValidation {
 		         BufferedWriter wtr=null;
 		         Socket skt =null;
 		         try {
-		        	 if(log.isDebug()) log.logDebug(className(), Messages.getString("MailValidator.TryingExchanger",(String) mxList.get( mx )));
+		        	 String exhanger=(String) mxList.get( mx );
+		        	 if(log.isDebug()) log.logDebug(className(), Messages.getString("MailValidator.TryingExchanger",exhanger));
 
 		             int res;
 		             
-		             skt = new Socket( (String) mxList.get( mx ), 25 );
+		             skt = new Socket(exhanger, 25 );
 		             // set timeout (milliseconds)
 		             if(timeout>0) skt.setSoTimeout(timeout); 
+		             
+		             if(log.isDebug()) log.logDebug(className(), Messages.getString("MailValidator.ConnectingTo",
+		            		 exhanger,"25", skt.isConnected()+""));
 		             
 		             rdr = new BufferedReader ( new InputStreamReader( skt.getInputStream() ) );
 		             wtr = new BufferedWriter ( new OutputStreamWriter( skt.getOutputStream() ) );
