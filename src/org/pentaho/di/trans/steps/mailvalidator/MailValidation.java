@@ -38,9 +38,9 @@ import org.pentaho.di.trans.step.BaseStep;
 
 public class MailValidation {
 
-    private LogWriter log = LogWriter.getInstance();
+    private static LogWriter log = LogWriter.getInstance();
 	
-	public boolean isRegExValid(String emailAdress) {
+	public  static boolean isRegExValid(String emailAdress) {
       //Set the email pattern string
       Pattern p = Pattern.compile(".+@.+\\.[a-z]+");
 
@@ -95,7 +95,7 @@ public class MailValidation {
 
 	     return;
 	     }
-		 private static ArrayList getMX( String hostName )     throws NamingException {
+		 private  static ArrayList getMX( String hostName )     throws NamingException {
 			 // Perform a DNS lookup for MX records in the domain
 			 Hashtable env = new Hashtable();
 			 env.put("java.naming.factory.initial", "com.sun.jndi.dns.DnsContextFactory");
@@ -126,7 +126,7 @@ public class MailValidation {
 			 }
 			 return res;
 			 }
-		 /** Valid an email address
+		 /** Validate an email address
 		  * This code is from : http://www.rgagnon.com/javadetails/java-0452.html
 		  * @param email address
 		  * @param sender email address
@@ -135,7 +135,7 @@ public class MailValidation {
 		  * @param deepCheck (if we want to perform a SMTP check
 		  * @return true or false
 		  */
-		 public MailValidationResult isAddressValid( String address, String senderAddress, 
+		 public static MailValidationResult isAddressValid( String address, String senderAddress, 
 				 String defaultSMTPServer, int timeout, boolean deepCheck, BaseStep basestep ) {
 
 			 MailValidationResult result=new MailValidationResult();
@@ -229,7 +229,7 @@ public class MailValidation {
 		             if(log.isDebug()) log.logDebug(className(), Messages.getString("MailValidator.CheckReceiver", address));
 		 	         say( wtr, "RCPT TO: <" + address + ">" );   
 		 	         res = hear( rdr );
-		             
+
 		             // be polite
 		             say( wtr, "RSET" ); hear( rdr );
 		             say( wtr, "QUIT" ); hear( rdr );
@@ -248,14 +248,18 @@ public class MailValidation {
 		             if(rdr!=null) try{rdr.close();} catch(Exception e){};// ignore this
 		             if(wtr!=null) try{wtr.close();} catch(Exception e){};// ignore this
 		             if(skt!=null) try{skt.close();} catch(Exception e){}; // ignore this
-		           if ( valid ) {
-		        	   result.setValide(true);
-		        	   result.setErrorMessage(null);
-		        	   return result;
-		           }
+		           
+		             if ( valid )   
+		             {
+			             result.setValide(true);
+		            	 result.setErrorMessage(null);
+		            	 if(log.isDebug()) log.logDebug(className(), "=============================================");
+		            	 return result;
+		             }
 		         }
 		     }
 		     if(log.isDebug()) log.logDebug(className(), "=============================================");
+		   
 		     return result;
 		     }
 

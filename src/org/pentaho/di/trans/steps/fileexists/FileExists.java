@@ -95,7 +95,6 @@ public class FileExists extends BaseStep implements StepInterface
         	}// End If first 
         	
         	Object[] outputRow = RowDataUtil.allocateRowData(data.outputRowMeta.size());
-        	
     		for (int i = 0; i < data.NrPrevFields; i++)
     		{
     			outputRow[i] = r[i];
@@ -126,10 +125,12 @@ public class FileExists extends BaseStep implements StepInterface
         	}
         	
         	// Add result field to input stream
-    		outputRow[data.NrPrevFields++]= fileexists;
+    		outputRow[data.NrPrevFields]= fileexists;
+    		int rowIndex=data.NrPrevFields;
+    		rowIndex++;
         	
             if(meta.includeFileType() && !Const.isEmpty(meta.getFileTypeFieldName())) 
-            	outputRow[data.NrPrevFields++]=filetype;
+            	outputRow[rowIndex]=filetype;
 
 			 //	add new values to the row.
 	        putRow(data.outputRowMeta, outputRow);  // copy row to output rowset(s);

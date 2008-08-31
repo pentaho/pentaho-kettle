@@ -23,19 +23,19 @@ public class MailValidationResult {
     
     public MailValidationResult()
     {
-    	isvalide=false;
-    	errMsg=null;
+    	this.isvalide=false;
+    	this.errMsg=null;
     }
     
     public boolean isValide() {
-        return isvalide;
+        return this.isvalide;
     }
     
     public void setValide(boolean valid) {
         this.isvalide=valid;
     }
     public String getErrorMessage() {
-        return errMsg;
+        return this.errMsg;
     }
 
     public void setErrorMessage(String errMsg) {
