@@ -360,7 +360,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
                 
 				// What's the key?  The first value of the return row
 				technicalKey = data.returnRowMeta.getInteger(returnRow, 0);
-				valueVersion = data.returnRowMeta.getInteger(returnRow, 1); 
+				valueVersion = data.returnRowMeta.getInteger(returnRow, 1);
                 
 				// Date range: ]-oo,+oo[ 
 				valueDateFrom = meta.getMinDate();
@@ -436,6 +436,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
 				{
 					if (log.isRowLevel()) logRowlevel(Messages.getString("DimensionLookup.Log.InsertNewVersion")+technicalKey.toString()); //$NON-NLS-1$
 					
+	                Long valueNewVersion = valueVersion + 1;
 					valueDateFrom = data.valueDateNow;
 					valueDateTo   = data.max_date; //$NON-NLS-1$
 
@@ -459,13 +460,13 @@ public class DimensionLookup extends BaseStep implements StepInterface
 					}
 
 					// update our technicalKey with the return of the insert
-					technicalKey = dimInsert( rowMeta, row, technicalKey, false, valueVersion, valueDateFrom, valueDateTo ); 
+					technicalKey = dimInsert( rowMeta, row, technicalKey, false, valueNewVersion, valueDateFrom, valueDateTo ); 
 					incrementLinesOutput();
                     
                     // We need to capture this change in the cache as well...
                     if (meta.getCacheSize()>=0)
                     {
-                        Object[] values = getCacheValues(rowMeta, row, technicalKey, valueVersion, valueDateFrom, valueDateTo);
+                        Object[] values = getCacheValues(rowMeta, row, technicalKey, valueNewVersion, valueDateFrom, valueDateTo);
                         addToCache(lookupRow, values);
                     }
 				}
@@ -746,16 +747,11 @@ public class DimensionLookup extends BaseStep implements StepInterface
             insertRow[insertIndex] = technicalKey;
             insertIndex++;
         }
-        if (!newEntry)
-        {
-            insertRow[insertIndex] = new Long( versionNr.longValue() + 1 );
-            insertIndex++;
-        }
-        else
-        {
-            insertRow[insertIndex] = versionNr;
-            insertIndex++;
-        }
+
+        // Caller is responsible for setting proper version number depending
+        // on if newEntry == true
+        insertRow[insertIndex] = versionNr;
+        insertIndex++;
         
         insertRow[insertIndex] = dateFrom;
         insertIndex++;
