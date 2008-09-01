@@ -14,19 +14,16 @@
 
 package org.pentaho.di.trans.steps.getxmldata;
 
-import java.io.FileInputStream;
 import java.io.StringReader;
-import java.util.List;
 import java.net.URL;
-
-
-import org.dom4j.io.SAXReader;
-import org.dom4j.tree.AbstractNode;
-import org.dom4j.Namespace;
-import org.dom4j.Element;
-import org.dom4j.XPath;
+import java.util.List;
 
 import org.apache.commons.vfs.FileObject;
+import org.dom4j.Element;
+import org.dom4j.Namespace;
+import org.dom4j.XPath;
+import org.dom4j.io.SAXReader;
+import org.dom4j.tree.AbstractNode;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
@@ -94,7 +91,7 @@ public class GetXMLData extends BaseStep implements StepInterface
 				// get encoding. By default UTF-8
 				String encoding="UTF-8";
 				if (!Const.isEmpty(meta.getEncoding())) encoding=meta.getEncoding();
-				data.document = reader.read(new FileInputStream(KettleVFS.getFilename(file)),encoding);		
+				data.document = reader.read( KettleVFS.getInputStream(file),encoding);		
 			}
 
 			if(meta.isNamespaceAware())	prepareNSMap(data.document.getRootElement());	    	    

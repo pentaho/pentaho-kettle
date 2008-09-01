@@ -56,6 +56,8 @@ import java.util.HashSet;
 import org.dom4j.Document;
 import org.dom4j.Node;
 import java.io.FileInputStream;
+import java.io.FileReader;
+
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
@@ -1345,7 +1347,7 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
    					String encoding="UTF-8";
    					if (!Const.isEmpty(meta.getEncoding())) encoding=meta.getEncoding();
    					SAXReader reader = new SAXReader();
-   	    			Document document  = reader.read(new FileInputStream(KettleVFS.getFilename(fileinputList.getFile(0))),encoding);	
+   	    			Document document  = reader.read( KettleVFS.getInputStream(fileinputList.getFile(0)), encoding);	
    	    			List<Node> nodes = document.selectNodes(document.getRootElement().getName());
 
    	    			 for (Node node : nodes) 
@@ -1408,7 +1410,7 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
     			}
     			
     			SAXReader reader = new SAXReader();
-    			Document document  = reader.read(new FileInputStream(KettleVFS.getFilename(inputList.getFile(0))),encoding);	
+    			Document document  = reader.read( KettleVFS.getInputStream(inputList.getFile(0)),encoding );	
     			List<Node> nodes = document.selectNodes(meta.getLoopXPath());
     			 for (Node node : nodes) 
     			 {
