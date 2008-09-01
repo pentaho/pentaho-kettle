@@ -86,7 +86,7 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
 
 	   // Add standard options to the mclient command:
 	   //
-	   sb.append(" -lsql --time --echo");
+	   sb.append(" -lsql");
 	   
 	   // See if the encoding is set...
 	   //

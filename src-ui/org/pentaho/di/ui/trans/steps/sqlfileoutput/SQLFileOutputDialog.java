@@ -522,12 +522,135 @@ public class SQLFileOutputDialog extends BaseStepDialog implements StepDialogInt
 		fdExtension.right= new FormAttachment(100, -margin);
 		wExtension.setLayoutData(fdExtension);
 		
+		// Create multi-part file?
+		wlAddStepnr=new Label(wFileName, SWT.RIGHT);
+		wlAddStepnr.setText(Messages.getString("SQLFileOutputDialog.AddStepnr.Label"));
+ 		props.setLook(wlAddStepnr);
+		fdlAddStepnr=new FormData();
+		fdlAddStepnr.left = new FormAttachment(0, 0);
+		fdlAddStepnr.top  = new FormAttachment(wExtension, 2*margin);
+		fdlAddStepnr.right= new FormAttachment(middle, -margin);
+		wlAddStepnr.setLayoutData(fdlAddStepnr);
+		wAddStepnr=new Button(wFileName, SWT.CHECK);
+ 		props.setLook(wAddStepnr);
+		fdAddStepnr=new FormData();
+		fdAddStepnr.left = new FormAttachment(middle, 0);
+		fdAddStepnr.top  = new FormAttachment(wExtension, 2*margin);
+		fdAddStepnr.right= new FormAttachment(100, 0);
+		wAddStepnr.setLayoutData(fdAddStepnr);
+		wAddStepnr.addSelectionListener(new SelectionAdapter() 
+			{
+				public void widgetSelected(SelectionEvent e) 
+				{
+					input.setChanged();
+				}
+			}
+		);
+
+	
+		// Create multi-part file?
+		wlAddDate=new Label(wFileName, SWT.RIGHT);
+		wlAddDate.setText(Messages.getString("SQLFileOutputDialog.AddDate.Label"));
+ 		props.setLook(wlAddDate);
+		fdlAddDate=new FormData();
+		fdlAddDate.left = new FormAttachment(0, 0);
+		fdlAddDate.top  = new FormAttachment(wAddStepnr, margin);
+		fdlAddDate.right= new FormAttachment(middle, -margin);
+		wlAddDate.setLayoutData(fdlAddDate);
+		wAddDate=new Button(wFileName, SWT.CHECK);
+ 		props.setLook(wAddDate);
+		fdAddDate=new FormData();
+		fdAddDate.left = new FormAttachment(middle, 0);
+		fdAddDate.top  = new FormAttachment(wAddStepnr, margin);
+		fdAddDate.right= new FormAttachment(100, 0);
+		wAddDate.setLayoutData(fdAddDate);
+		wAddDate.addSelectionListener(new SelectionAdapter() 
+			{
+				public void widgetSelected(SelectionEvent e) 
+				{
+					input.setChanged();
+				}
+			}
+		);
+		// Create multi-part file?
+		wlAddTime=new Label(wFileName, SWT.RIGHT);
+		wlAddTime.setText(Messages.getString("SQLFileOutputDialog.AddTime.Label"));
+ 		props.setLook(wlAddTime);
+		fdlAddTime=new FormData();
+		fdlAddTime.left = new FormAttachment(0, 0);
+		fdlAddTime.top  = new FormAttachment(wAddDate, margin);
+		fdlAddTime.right= new FormAttachment(middle, -margin);
+		wlAddTime.setLayoutData(fdlAddTime);
+		wAddTime=new Button(wFileName, SWT.CHECK);
+ 		props.setLook(wAddTime);
+		fdAddTime=new FormData();
+		fdAddTime.left = new FormAttachment(middle, 0);
+		fdAddTime.top  = new FormAttachment(wAddDate, margin);
+		fdAddTime.right= new FormAttachment(100, 0);
+		wAddTime.setLayoutData(fdAddTime);
+		wAddTime.addSelectionListener(new SelectionAdapter() 
+			{
+				public void widgetSelected(SelectionEvent e) 
+				{
+					input.setChanged();
+				}
+			}
+		);
+		
+		
+		// Append to end of file?
+		wlAppend=new Label(wFileName, SWT.RIGHT);
+		wlAppend.setText(Messages.getString("SQLFileOutputDialog.Append.Label"));
+ 		props.setLook(wlAppend);
+		fdlAppend=new FormData();
+		fdlAppend.left = new FormAttachment(0, 0);
+		fdlAppend.top  = new FormAttachment(wAddTime, margin);
+		fdlAppend.right= new FormAttachment(middle, -margin);
+		wlAppend.setLayoutData(fdlAppend);
+		wAppend=new Button(wFileName, SWT.CHECK);
+		wAppend.setToolTipText(Messages.getString("SQLFileOutputDialog.Append.Tooltip"));
+ 		props.setLook(wAppend);
+		fdAppend=new FormData();
+		fdAppend.left = new FormAttachment(middle, 0);
+		fdAppend.top  = new FormAttachment(wAddTime, margin);
+		fdAppend.right= new FormAttachment(100, 0);
+		wAppend.setLayoutData(fdAppend);
+		wAppend.addSelectionListener(new SelectionAdapter() 
+			{
+				public void widgetSelected(SelectionEvent e) 
+				{
+					input.setChanged();
+				}
+			}
+		);
+		
+		
+		
+		
+		wlSplitEvery=new Label(wFileName, SWT.RIGHT);
+		wlSplitEvery.setText(Messages.getString("SQLFileOutputDialog.SplitEvery.Label"));
+ 		props.setLook(wlSplitEvery);
+		fdlSplitEvery=new FormData();
+		fdlSplitEvery.left = new FormAttachment(0, 0);
+		fdlSplitEvery.top  = new FormAttachment(wAppend, margin);
+		fdlSplitEvery.right= new FormAttachment(middle, -margin);
+		wlSplitEvery.setLayoutData(fdlSplitEvery);
+		
+		wSplitEvery=new Text(wFileName, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+ 		props.setLook(wSplitEvery);
+		wSplitEvery.addModifyListener(lsMod);
+		fdSplitEvery=new FormData();
+		fdSplitEvery.left = new FormAttachment(middle, 0);
+		fdSplitEvery.top  = new FormAttachment(wAppend, margin);
+		fdSplitEvery.right= new FormAttachment(100, 0);
+		wSplitEvery.setLayoutData(fdSplitEvery);
+
 		wbShowFiles=new Button(wFileName, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbShowFiles);
 		wbShowFiles.setText(Messages.getString("SQLFileOutputDialog.ShowFiles.Button"));
 		fdbShowFiles=new FormData();
 		fdbShowFiles.left = new FormAttachment(middle, 0);
-		fdbShowFiles.top  = new FormAttachment(wExtension, margin*2);
+		fdbShowFiles.top  = new FormAttachment(wSplitEvery, margin*2);
 		wbShowFiles.setLayoutData(fdbShowFiles);
 		wbShowFiles.addSelectionListener(new SelectionAdapter() 
 			{
@@ -552,6 +675,39 @@ public class SQLFileOutputDialog extends BaseStepDialog implements StepDialogInt
 				}
 			}
 		);
+		
+
+		
+		// Add File to the result files name
+		wlAddToResult=new Label(wFileName, SWT.RIGHT);
+		wlAddToResult.setText(Messages.getString("SQLFileOutputDialog.AddFileToResult.Label"));
+		props.setLook(wlAddToResult);
+		fdlAddToResult=new FormData();
+		fdlAddToResult.left  = new FormAttachment(0, 0);
+		fdlAddToResult.top   = new FormAttachment(wbShowFiles, margin);
+		fdlAddToResult.right = new FormAttachment(middle, -margin);
+		wlAddToResult.setLayoutData(fdlAddToResult);
+		wAddToResult=new Button(wFileName, SWT.CHECK);
+		wAddToResult.setToolTipText(Messages.getString("SQLFileOutputDialog.AddFileToResult.Tooltip"));
+ 		props.setLook(wAddToResult);
+		fdAddToResult=new FormData();
+		fdAddToResult.left  = new FormAttachment(middle, 0);
+		fdAddToResult.top   = new FormAttachment(wbShowFiles, margin);
+		fdAddToResult.right = new FormAttachment(100, 0);
+		wAddToResult.setLayoutData(fdAddToResult);
+		SelectionAdapter lsSelR = new SelectionAdapter()
+        {
+            public void widgetSelected(SelectionEvent arg0)
+            {
+                input.setChanged();
+            }
+        };
+		wAddToResult.addSelectionListener(lsSelR);
+
+	
+		
+ 		
+ 		
 
 		
 		
@@ -662,164 +818,6 @@ public class SQLFileOutputDialog extends BaseStepDialog implements StepDialogInt
                 }
             }
         );
-
- 		
-
-
-		// Create multi-part file?
-		wlAddStepnr=new Label(wContentComp, SWT.RIGHT);
-		wlAddStepnr.setText(Messages.getString("SQLFileOutputDialog.AddStepnr.Label"));
- 		props.setLook(wlAddStepnr);
-		fdlAddStepnr=new FormData();
-		fdlAddStepnr.left = new FormAttachment(0, 0);
-		fdlAddStepnr.top  = new FormAttachment(wEncoding, 2*margin);
-		fdlAddStepnr.right= new FormAttachment(middle, -margin);
-		wlAddStepnr.setLayoutData(fdlAddStepnr);
-		wAddStepnr=new Button(wContentComp, SWT.CHECK);
- 		props.setLook(wAddStepnr);
-		fdAddStepnr=new FormData();
-		fdAddStepnr.left = new FormAttachment(middle, 0);
-		fdAddStepnr.top  = new FormAttachment(wEncoding, 2*margin);
-		fdAddStepnr.right= new FormAttachment(100, 0);
-		wAddStepnr.setLayoutData(fdAddStepnr);
-		wAddStepnr.addSelectionListener(new SelectionAdapter() 
-			{
-				public void widgetSelected(SelectionEvent e) 
-				{
-					input.setChanged();
-				}
-			}
-		);
-
-	
-		// Create multi-part file?
-		wlAddDate=new Label(wContentComp, SWT.RIGHT);
-		wlAddDate.setText(Messages.getString("SQLFileOutputDialog.AddDate.Label"));
- 		props.setLook(wlAddDate);
-		fdlAddDate=new FormData();
-		fdlAddDate.left = new FormAttachment(0, 0);
-		fdlAddDate.top  = new FormAttachment(wAddStepnr, margin);
-		fdlAddDate.right= new FormAttachment(middle, -margin);
-		wlAddDate.setLayoutData(fdlAddDate);
-		wAddDate=new Button(wContentComp, SWT.CHECK);
- 		props.setLook(wAddDate);
-		fdAddDate=new FormData();
-		fdAddDate.left = new FormAttachment(middle, 0);
-		fdAddDate.top  = new FormAttachment(wAddStepnr, margin);
-		fdAddDate.right= new FormAttachment(100, 0);
-		wAddDate.setLayoutData(fdAddDate);
-		wAddDate.addSelectionListener(new SelectionAdapter() 
-			{
-				public void widgetSelected(SelectionEvent e) 
-				{
-					input.setChanged();
-				}
-			}
-		);
-		// Create multi-part file?
-		wlAddTime=new Label(wContentComp, SWT.RIGHT);
-		wlAddTime.setText(Messages.getString("SQLFileOutputDialog.AddTime.Label"));
- 		props.setLook(wlAddTime);
-		fdlAddTime=new FormData();
-		fdlAddTime.left = new FormAttachment(0, 0);
-		fdlAddTime.top  = new FormAttachment(wAddDate, margin);
-		fdlAddTime.right= new FormAttachment(middle, -margin);
-		wlAddTime.setLayoutData(fdlAddTime);
-		wAddTime=new Button(wContentComp, SWT.CHECK);
- 		props.setLook(wAddTime);
-		fdAddTime=new FormData();
-		fdAddTime.left = new FormAttachment(middle, 0);
-		fdAddTime.top  = new FormAttachment(wAddDate, margin);
-		fdAddTime.right= new FormAttachment(100, 0);
-		wAddTime.setLayoutData(fdAddTime);
-		wAddTime.addSelectionListener(new SelectionAdapter() 
-			{
-				public void widgetSelected(SelectionEvent e) 
-				{
-					input.setChanged();
-				}
-			}
-		);
-		
-		
-		// Append to end of file?
-		wlAppend=new Label(wContentComp, SWT.RIGHT);
-		wlAppend.setText(Messages.getString("SQLFileOutputDialog.Append.Label"));
- 		props.setLook(wlAppend);
-		fdlAppend=new FormData();
-		fdlAppend.left = new FormAttachment(0, 0);
-		fdlAppend.top  = new FormAttachment(wAddTime, margin);
-		fdlAppend.right= new FormAttachment(middle, -margin);
-		wlAppend.setLayoutData(fdlAppend);
-		wAppend=new Button(wContentComp, SWT.CHECK);
-		wAppend.setToolTipText(Messages.getString("SQLFileOutputDialog.Append.Tooltip"));
- 		props.setLook(wAppend);
-		fdAppend=new FormData();
-		fdAppend.left = new FormAttachment(middle, 0);
-		fdAppend.top  = new FormAttachment(wAddTime, margin);
-		fdAppend.right= new FormAttachment(100, 0);
-		wAppend.setLayoutData(fdAppend);
-		wAppend.addSelectionListener(new SelectionAdapter() 
-			{
-				public void widgetSelected(SelectionEvent e) 
-				{
-					input.setChanged();
-				}
-			}
-		);
-		
-		
-		
-		
-		wlSplitEvery=new Label(wContentComp, SWT.RIGHT);
-		wlSplitEvery.setText(Messages.getString("SQLFileOutputDialog.SplitEvery.Label"));
- 		props.setLook(wlSplitEvery);
-		fdlSplitEvery=new FormData();
-		fdlSplitEvery.left = new FormAttachment(0, 0);
-		fdlSplitEvery.top  = new FormAttachment(wAppend, margin);
-		fdlSplitEvery.right= new FormAttachment(middle, -margin);
-		wlSplitEvery.setLayoutData(fdlSplitEvery);
-		
-		wSplitEvery=new Text(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
- 		props.setLook(wSplitEvery);
-		wSplitEvery.addModifyListener(lsMod);
-		fdSplitEvery=new FormData();
-		fdSplitEvery.left = new FormAttachment(middle, 0);
-		fdSplitEvery.top  = new FormAttachment(wAppend, margin);
-		fdSplitEvery.right= new FormAttachment(100, 0);
-		wSplitEvery.setLayoutData(fdSplitEvery);
-
-		
-		// Add File to the result files name
-		wlAddToResult=new Label(wContentComp, SWT.RIGHT);
-		wlAddToResult.setText(Messages.getString("SQLFileOutputDialog.AddFileToResult.Label"));
-		props.setLook(wlAddToResult);
-		fdlAddToResult=new FormData();
-		fdlAddToResult.left  = new FormAttachment(0, 0);
-		fdlAddToResult.top   = new FormAttachment(wSplitEvery, margin);
-		fdlAddToResult.right = new FormAttachment(middle, -margin);
-		wlAddToResult.setLayoutData(fdlAddToResult);
-		wAddToResult=new Button(wContentComp, SWT.CHECK);
-		wAddToResult.setToolTipText(Messages.getString("SQLFileOutputDialog.AddFileToResult.Tooltip"));
- 		props.setLook(wAddToResult);
-		fdAddToResult=new FormData();
-		fdAddToResult.left  = new FormAttachment(middle, 0);
-		fdAddToResult.top   = new FormAttachment(wSplitEvery, margin);
-		fdAddToResult.right = new FormAttachment(100, 0);
-		wAddToResult.setLayoutData(fdAddToResult);
-		SelectionAdapter lsSelR = new SelectionAdapter()
-        {
-            public void widgetSelected(SelectionEvent arg0)
-            {
-                input.setChanged();
-            }
-        };
-		wAddToResult.addSelectionListener(lsSelR);
-
-	
-		
- 		
- 		
 		
  		
  		

@@ -17,10 +17,13 @@ package org.pentaho.di.ui.trans.steps.getxmldata;
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
-import org.dom4j.Element;
 import org.dom4j.Attribute;
+import org.dom4j.Document;
+import org.dom4j.Element;
+import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
@@ -50,39 +53,31 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
-
-import java.util.HashSet;
-
-import org.dom4j.Document;
-import org.dom4j.Node;
-import java.io.FileInputStream;
-import java.io.FileReader;
-
-import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
-import org.pentaho.di.core.Const;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransPreviewFactory;
-import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
-import org.pentaho.di.ui.core.widget.ColumnInfo;
-import org.pentaho.di.ui.core.widget.TableView;
-import org.pentaho.di.trans.steps.getxmldata.GetXMLDataMeta;
 import org.pentaho.di.trans.steps.getxmldata.GetXMLDataField;
+import org.pentaho.di.trans.steps.getxmldata.GetXMLDataMeta;
 import org.pentaho.di.trans.steps.getxmldata.Messages;
-import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
+import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
-import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.ui.core.widget.ColumnInfo;
+import org.pentaho.di.ui.core.widget.TableView;
+import org.pentaho.di.ui.core.widget.TextVar;
+import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 
 
@@ -1328,6 +1323,7 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		wGet.setEnabled(!wXMLStreamField.getSelection());
 		wbbLoopPathList.setEnabled(!wXMLStreamField.getSelection());
 	}
+	@SuppressWarnings("unchecked")
 	private void getLoopPathList()
 	{
 		try
@@ -1386,6 +1382,8 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 	        new ErrorDialog(shell, Messages.getString("GetXMLDataDialog.UnableToGetListOfPaths.Title"), Messages.getString("GetXMLDataDialog.UnableToGetListOfPaths.Message"), e);
 	    }
 	}
+	
+	@SuppressWarnings("unchecked")
 	private void get()
 	{
         try

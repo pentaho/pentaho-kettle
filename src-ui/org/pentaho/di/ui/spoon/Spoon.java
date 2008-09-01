@@ -1551,126 +1551,12 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         return false;
 	}
 	
-	
-	private void tidyBranches(TreeItem[] items, boolean expand){
-
-	  for (TreeItem item : items) { 
-	    item.setExpanded(expand);
-	    tidyBranches(item.getItems(), expand);
-    }
-	}
-
-	/*
-	protected void refreshSharedObjects() {
-        if (shell.isDisposed()) return;
-        
-        if (!sharedSelected) return; // Nothing to see here, move along...
-
-        if (sharedTree==null || sharedTree.isDisposed()) 
-        {
-			// //////////////////////////////////////////////////////////////////////////////////////////////////
-			//
-			// A tree do display all the shared objects by category...
-			//
-        	sharedTree = new Tree(variableComposite, SWT.SINGLE | SWT.V_SCROLL | SWT.H_SCROLL);
-			props.setLook(sharedTree);
-			sharedTree.setLayout(new FillLayout());
-			
-			sharedTree.addMouseListener(new MouseAdapter() {
-					public void mouseDown(MouseEvent event) {
-						if (event.button==3)
-						{
-							setMenu(sharedTree); // TODO: implement menu
-						}
-					}
-				}
-			);
-			// TODO!!!
-			//
-	        sharedTree.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { showSelection(); } });
-	        sharedTree.addSelectionListener(new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e){ doubleClickedInTree(sharedTree); } });
-	
-			// Keyboard shortcuts!
-			sharedTree.addKeyListener(defKeys);
-			
-			// Set a listener on the tree
-			// addDragSourceToTree(sharedTree);
+	private void tidyBranches(TreeItem[] items, boolean expand) {
+		for (TreeItem item : items) {
+			item.setExpanded(expand);
+			tidyBranches(item.getItems(), expand);
 		}
-        
-        // Display the shared objects files.
-        // These are present in the shared objects map
-        //
-        for (SharedObjects sharedObjects : sharedObjectsFileMap.values())
-        {
-			TreeItem tiSharedFile = new TreeItem(sharedTree, SWT.NONE);
-			tiSharedFile.setText(sharedObjects.getFilename());
-			tiSharedFile.setImage(GUIResource.getInstance().getImageArrow());
-			
-			TreeItem databasesItem = new TreeItem(tiSharedFile, SWT.NONE);
-			databasesItem.setText(STRING_CONNECTIONS);
-			databasesItem.setImage(GUIResource.getInstance().getImageConnection());
-
-			TreeItem slavesItem = new TreeItem(tiSharedFile, SWT.NONE);
-			slavesItem.setText(STRING_SLAVES);
-			slavesItem.setImage(GUIResource.getInstance().getImageBol());
-
-            TreeItem stepsItem = new TreeItem(tiSharedFile, SWT.NONE);
-			stepsItem.setText(STRING_STEPS);
-			stepsItem.setImage(GUIResource.getInstance().getImageBol());
-
-			TreeItem partsItem = new TreeItem(tiSharedFile, SWT.NONE);
-			partsItem.setText(STRING_PARTITIONS);
-			partsItem.setImage(GUIResource.getInstance().getImageBol());
-
-			TreeItem clustersItem = new TreeItem(tiSharedFile, SWT.NONE);
-			clustersItem.setText(STRING_CLUSTERS);
-			clustersItem.setImage(GUIResource.getInstance().getImageBol());
-
-			// Shared connections?
-			//
-	        for (SharedObjectInterface object : sharedObjects.getObjectsMap().values())
-	        {
-	            if (object instanceof DatabaseMeta)
-	            {
-	                DatabaseMeta databaseMeta = (DatabaseMeta) object;
-	                TreeItem databaseItem = new TreeItem(databasesItem, SWT.NONE);
-	    			databaseItem.setText(databaseMeta.getName());
-	    			databaseItem.setImage(GUIResource.getInstance().getImageConnection());
-	            }
-	            else if (object instanceof SlaveServer)
-	            {
-	                SlaveServer slaveServer = (SlaveServer) object;
-	                TreeItem slaveItem = new TreeItem(slavesItem, SWT.NONE);
-	    			slaveItem.setText(slaveServer.getName());
-	    			slaveItem.setImage(GUIResource.getInstance().getImageBol());
-	            }
-	            else if (object instanceof StepMeta)
-	            {
-	                StepMeta stepMeta = (StepMeta) object;
-	                TreeItem stepItem = new TreeItem(stepsItem, SWT.NONE);
-	    			stepItem.setText(stepMeta.getName());
-	    			stepItem.setImage(GUIResource.getInstance().getImageBol());
-	            }
-	            else if (object instanceof PartitionSchema)
-	            {
-	                PartitionSchema partitionSchema = (PartitionSchema) object;
-	                TreeItem partItem = new TreeItem(partsItem, SWT.NONE);
-	    			partItem.setText(partitionSchema.getName());
-	    			partItem.setImage(GUIResource.getInstance().getImageBol());
-	            }
-	            else if (object instanceof ClusterSchema)
-	            {
-	                ClusterSchema clusterSchema = (ClusterSchema) object;
-	                TreeItem clusterItem = new TreeItem(clustersItem, SWT.NONE);
-	    			clusterItem.setText(clusterSchema.getName());
-	    			clusterItem.setImage(GUIResource.getInstance().getImageBol());
-	            }
-	        }
-        }
-        
-		variableComposite.layout(true,true);
 	}
-*/
 
 	public void disposeVariableComposite(boolean tree, boolean shared, boolean core, boolean history) {
 		
@@ -1709,37 +1595,43 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		props.setLook(coreObjectsTree);
 		
 		coreObjectsTree.addSelectionListener(new SelectionAdapter() {
-		
+
 			public void widgetSelected(SelectionEvent event) {
 				// expand the selected tree item, collapse the rest
 				//
-			  if (props.getAutoCollapseCoreObjectsTree()){
-	        TreeItem[] selection = coreObjectsTree.getSelection();
-	        if (selection.length==1) {
-	          // expand if clicked on the the top level entry only...
-	          //
-	          TreeItem top = selection[0];
-	          while (top.getParentItem()!=null) top=top.getParentItem();
-	          if (top==selection[0]) {
-	            boolean expanded = top.getExpanded();
-	            for (TreeItem item : coreObjectsTree.getItems()) { item.setExpanded(false); }
-	            top.setExpanded(!expanded);
-	          }
-	        }
-	      }
+				if (props.getAutoCollapseCoreObjectsTree()) {
+					TreeItem[] selection = coreObjectsTree.getSelection();
+					if (selection.length == 1) {
+						// expand if clicked on the the top level entry only...
+						//
+						TreeItem top = selection[0];
+						while (top.getParentItem() != null) {
+							top = top.getParentItem();
+						}
+						if (top == selection[0]) {
+							boolean expanded = top.getExpanded();
+							for (TreeItem item : coreObjectsTree.getItems()) {
+								item.setExpanded(false);
+							}
+							top.setExpanded(!expanded);
+						}
+					}
+				}
 			}
 		});
 		
 		coreObjectsTree.addTreeListener(new TreeAdapter() {
 			public void treeExpanded(TreeEvent treeEvent) {
-        if (props.getAutoCollapseCoreObjectsTree()){
-  				TreeItem treeItem = (TreeItem) treeEvent.item;
-  				
-  				// expand the selected tree item, collapse the rest
-  				//
-  				for (TreeItem item : coreObjectsTree.getItems()) { item.setExpanded(false); }
-  				treeItem.setExpanded(true);
-        }
+				if (props.getAutoCollapseCoreObjectsTree()) {
+					TreeItem treeItem = (TreeItem) treeEvent.item;
+
+					// expand the selected tree item, collapse the rest
+					//
+					for (TreeItem item : coreObjectsTree.getItems()) {
+						if (item!=treeItem) item.setExpanded(false);
+						else treeItem.setExpanded(true); 
+					}
+				}
 			}
 		});
 	

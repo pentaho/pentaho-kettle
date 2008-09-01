@@ -101,6 +101,8 @@ public class GetXMLData extends BaseStep implements StepInterface
 	   }
 	   return true;        
    }
+   
+   @SuppressWarnings("unchecked")
    public void prepareNSMap(Element l) 
    {
 		for (Namespace ns : (List<Namespace>) l.declaredNamespaces()) 

@@ -76,7 +76,9 @@ public class XulDatabaseDialog {
   /**
    * Opens the XUL database dialog
   * @return databaseName (or NULL on error or cancel)
+  * TODO: Fix deprecation warning in v3.2 by using the new dialog 
   */
+  @SuppressWarnings("deprecation")
   public String open() {
 
     XulDomContainer container = null;
