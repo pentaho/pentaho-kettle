@@ -9,7 +9,8 @@ import org.pentaho.di.trans.step.StepDataInterface;
 
 public class WebServiceData extends BaseStepData implements StepDataInterface 
 {
-
+	public String realUrl;
+	
 	public RowMetaInterface outputRowMeta;
 	
 	public Map<String,Integer> indexMap;

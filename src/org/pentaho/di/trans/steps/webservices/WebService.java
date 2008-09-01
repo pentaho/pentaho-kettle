@@ -275,7 +275,7 @@ public class WebService extends BaseStep implements StepInterface
     {
         Wsdl wsdl;
         try{
-         wsdl = new Wsdl(new java.net.URI(meta.getUrl()), null, null);
+         wsdl = new Wsdl(new java.net.URI(data.realUrl), null, null);
         }
         catch(Exception e){
          throw new KettleStepException(Messages.getString("WebServices.ERROR0013.ExceptionLoadingWSDL"), e);
@@ -360,7 +360,7 @@ public class WebService extends BaseStep implements StepInterface
         data = (WebServiceData) sdi;
         
         data.indexMap = new Hashtable<String,Integer>();
-
+        data.realUrl=environmentSubstitute(meta.getUrl());
         return super.init(smi, sdi);
     }
 
