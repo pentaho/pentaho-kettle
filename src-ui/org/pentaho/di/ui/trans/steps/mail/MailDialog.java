@@ -683,7 +683,7 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface
 		
 		
 		wContentTab=new CTabItem(wTabFolder, SWT.NONE);
-		wContentTab.setText("Server");
+		wContentTab.setText(Messages.getString("MailDialog.Server.Label"));
 
 		FormLayout contentLayout = new FormLayout ();
 		contentLayout.marginWidth  = 3;

@@ -418,7 +418,7 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
 		
 		
 		wContentTab=new CTabItem(wTabFolder, SWT.NONE);
-		wContentTab.setText("Server");
+		wContentTab.setText(Messages.getString("JobMailDialog.Server.Label"));
 
 		FormLayout contentLayout = new FormLayout ();
 		contentLayout.marginWidth  = 3;
