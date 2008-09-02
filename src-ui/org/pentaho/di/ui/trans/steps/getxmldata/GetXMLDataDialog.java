@@ -1429,10 +1429,11 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 	private void ChildNode(Node node)
 	{
 		 Element ce = (Element) node;
-		 
+	
 		 // List child 
 		 for(int j=0;j<ce.nodeCount();j++)
 		 {
+			 
 			 Node cnode=ce.node(j);
 			 if(!Const.isEmpty(cnode.getName()))
 			 {
@@ -1451,21 +1452,18 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 	private void addLoopXPath(Node node)
 	{
 		 Element ce = (Element) node;
-		 
+
 		 // List child 
 		 for(int j=0;j<ce.nodeCount();j++)
 		 {
 			 Node cnode=ce.node(j);
+
 			 if(!Const.isEmpty(cnode.getName()))
 			 {
 				 Element cce = (Element) cnode;
-				 if(cce.nodeCount()>1)
-				 {
-					 if(!listpath.contains(cnode.getPath()))
-						 listpath.add(cnode.getPath());
-					 // let's get child nodes
-					 addLoopXPath(cnode);
-				 }
+				 if(!listpath.contains(cnode.getPath())) listpath.add(cnode.getPath());
+				 // let's get child nodes
+				 if(cce.nodeCount()>1) addLoopXPath(cnode);
 			 }
 		 } 
 	}
