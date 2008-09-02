@@ -3735,6 +3735,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
                     Messages.getString("Spoon.Message.Warning.NotShowWarning"),//"Please, don't show this warning anymore."
                     !props.showExitWarning()
               );
+            MessageDialogWithToggle.setDefaultImage(GUIResource.getInstance().getImageSpoon());
 			int idx = md.open();
 			props.setExitWarningShown(!md.getToggleState());
 			props.saveProps();
@@ -3962,6 +3963,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
                                      Messages.getString("Spoon.Message.Warning.NotShowThisMessage"),//"Don't show this message again."
                                      props.getSaveConfirmation()
                                      );
+                                MessageDialogWithToggle.setDefaultImage(GUIResource.getInstance().getImageSpoon());
 								md.open();
 								props.setSaveConfirmation(md.getToggleState());
 							}
@@ -4071,6 +4073,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 										Messages.getString("Spoon.Dialog.JobWasStoredInTheRepository.Toggle"), //$NON-NLS-1$
                                      props.getSaveConfirmation()
                                      );
+                                MessageDialogWithToggle.setDefaultImage(GUIResource.getInstance().getImageSpoon());
 								md.open();
 								props.setSaveConfirmation(md.getToggleState());
 							}
