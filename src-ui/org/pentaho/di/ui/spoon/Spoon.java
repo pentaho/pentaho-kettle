@@ -1624,7 +1624,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			public void treeExpanded(TreeEvent treeEvent) {
 				if (props.getAutoCollapseCoreObjectsTree()) {
 					TreeItem treeItem = (TreeItem) treeEvent.item;
-
+					/*	Trick for WSWT on Windows systems: a SelectionEvent is called after the TreeEvent if setSelection() is not used here.
+						Otherwise the first item in the list is selected as default and collapsed again but wrong, see PDI-1480
+					 */
+					coreObjectsTree.setSelection(treeItem);
 					// expand the selected tree item, collapse the rest
 					//
 					for (TreeItem item : coreObjectsTree.getItems()) {
