@@ -197,13 +197,13 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface
 
     private CCombo wPerson;
     
-	private Label        wlWilcard;
+	private Label        wlWildcard;
 	
-	private TextVar wWilcard;
+	private TextVar wWildcard;
 	
-	private FormData  fdlWilcard; 
+	private FormData  fdlWildcard; 
 	
-	private FormData fdWilcard;
+	private FormData fdWildcard;
     
     private Label wlPerson,wlPhone;
     
@@ -1577,30 +1577,30 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface
 		});
 
 		// Wildcard
-		wlWilcard=new Label(wOriginFiles, SWT.RIGHT);
-		wlWilcard.setText(Messages.getString("MailDialog.Wilcard.Label"));
- 		props.setLook(wlWilcard);
-		fdlWilcard=new FormData();
-		fdlWilcard.left = new FormAttachment(0, 0);
-		fdlWilcard.top  = new FormAttachment(wincludeSubFolders, margin);
-		fdlWilcard.right= new FormAttachment(middle, -margin);
-		wlWilcard.setLayoutData(fdlWilcard);
-		wWilcard=new TextVar(transMeta,wOriginFiles, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
- 		props.setLook(wWilcard);
- 		wWilcard.setToolTipText(Messages.getString("MailDialog.Wilcard.Tooltip"));
-		wWilcard.addModifyListener(lsMod);
-		fdWilcard=new FormData();
-		fdWilcard.left = new FormAttachment(middle, 0);
-		fdWilcard.top  = new FormAttachment(wincludeSubFolders, margin);
-		fdWilcard.right= new FormAttachment(wbFileFoldername, -margin);
-		wWilcard.setLayoutData(fdWilcard);
+		wlWildcard=new Label(wOriginFiles, SWT.RIGHT);
+		wlWildcard.setText(Messages.getString("MailDialog.Wildcard.Label"));
+ 		props.setLook(wlWildcard);
+		fdlWildcard=new FormData();
+		fdlWildcard.left = new FormAttachment(0, 0);
+		fdlWildcard.top  = new FormAttachment(wincludeSubFolders, margin);
+		fdlWildcard.right= new FormAttachment(middle, -margin);
+		wlWildcard.setLayoutData(fdlWildcard);
+		wWildcard=new TextVar(transMeta,wOriginFiles, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+ 		props.setLook(wWildcard);
+ 		wWildcard.setToolTipText(Messages.getString("MailDialog.Wildcard.Tooltip"));
+		wWildcard.addModifyListener(lsMod);
+		fdWildcard=new FormData();
+		fdWildcard.left = new FormAttachment(middle, 0);
+		fdWildcard.top  = new FormAttachment(wincludeSubFolders, margin);
+		fdWildcard.right= new FormAttachment(wbFileFoldername, -margin);
+		wWildcard.setLayoutData(fdWildcard);
 
 		// Whenever something changes, set the tooltip to the expanded version:
-		wWilcard.addModifyListener(new ModifyListener()
+		wWildcard.addModifyListener(new ModifyListener()
 			{
 				public void modifyText(ModifyEvent e)
 				{
-					wWilcard.setToolTipText(transMeta.environmentSubstitute( wWilcard.getText() ) );
+					wWildcard.setToolTipText(transMeta.environmentSubstitute( wWildcard.getText() ) );
 				}
 			}
 		);
@@ -1833,8 +1833,8 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface
 		wDynamicFilenameField.setEnabled(wisFileDynamic.getSelection());
 		wlDynamicWildcardField.setEnabled(wisFileDynamic.getSelection());
 		wDynamicWildcardField.setEnabled(wisFileDynamic.getSelection());
-		wWilcard.setEnabled(!wisFileDynamic.getSelection());
-		wlWilcard.setEnabled(!wisFileDynamic.getSelection());
+		wWildcard.setEnabled(!wisFileDynamic.getSelection());
+		wlWildcard.setEnabled(!wisFileDynamic.getSelection());
 		wSourceFileFoldername.setEnabled(!wisFileDynamic.getSelection());
 		wlSourceFileFoldername.setEnabled(!wisFileDynamic.getSelection());
 		wbFileFoldername.setEnabled(!wisFileDynamic.getSelection());
@@ -2058,7 +2058,7 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface
 	        	wSourceFileFoldername.setText(input.getSourceFileFoldername());
 	        
 	        if(input.getSourceWildcard()!=null)
-	        	wWilcard.setText(input.getSourceWildcard());
+	        	wWildcard.setText(input.getSourceWildcard());
 	        
 	        wincludeSubFolders.setSelection(input.isIncludeSubFolders());
 	        
@@ -2162,7 +2162,7 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface
     		input.setDynamicZipFilenameField(wDynamicZipFileField.getText());
 	        
 	        input.setSourceFileFoldername(wSourceFileFoldername.getText());
-	        input.setSourceWildcard(wWilcard.getText());
+	        input.setSourceWildcard(wWildcard.getText());
 	        
 	        input.setZipLimitSize(wZipSizeCondition.getText());
 

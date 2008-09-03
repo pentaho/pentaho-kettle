@@ -167,12 +167,12 @@ public class JobEntryDeleteResultFilenames extends JobEntryBase implements Clone
 		}
 	}
 	
-	public void setSpecifyWilcard(boolean specifywilcard)
+	public void setSpecifyWildcard(boolean specifywildcard)
 	{
-		this.specifywildcard=specifywilcard;
+		this.specifywildcard=specifywildcard;
 	}
 
-	public boolean isSpecifyWilcard()
+	public boolean isSpecifyWildcard()
 	{
 		return specifywildcard;
 	}

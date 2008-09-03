@@ -64,9 +64,9 @@ public class JobEntryFolderIsEmptyDialog extends JobEntryDialog implements JobEn
     private Button       wIncludeSubFolders;
     private FormData     fdlIncludeSubFolders, fdIncludeSubFolders;
 	
-    private Label        wlSpecifyWilcard;
-    private Button       wSpecifyWilcard;
-    private FormData     fdlSpecifyWilcard, fdSpecifyWilcard;
+    private Label        wlSpecifyWildcard;
+    private Button       wSpecifyWildcard;
+    private FormData     fdlSpecifyWildcard, fdSpecifyWildcard;
     
 	private Label        wlWildcard;
 	private TextVar      wWildcard;
@@ -190,24 +190,24 @@ public class JobEntryFolderIsEmptyDialog extends JobEntryDialog implements JobEn
             }
         });
 	
-        // Specify wilcard?
-        wlSpecifyWilcard = new Label(shell, SWT.RIGHT);
-        wlSpecifyWilcard.setText(Messages.getString("JobFolderIsEmpty.SpecifyWilcard.Label"));
-        props.setLook(wlSpecifyWilcard);
-        fdlSpecifyWilcard = new FormData();
-        fdlSpecifyWilcard.left = new FormAttachment(0, 0);
-        fdlSpecifyWilcard.top = new FormAttachment(wIncludeSubFolders, margin);
-        fdlSpecifyWilcard.right = new FormAttachment(middle, -margin);
-        wlSpecifyWilcard.setLayoutData(fdlSpecifyWilcard);
-        wSpecifyWilcard = new Button(shell, SWT.CHECK);
-        props.setLook(wSpecifyWilcard);
-        wSpecifyWilcard.setToolTipText(Messages.getString("JobFolderIsEmpty.SpecifyWilcard.Tooltip"));
-        fdSpecifyWilcard = new FormData();
-        fdSpecifyWilcard.left = new FormAttachment(middle, 0);
-        fdSpecifyWilcard.top = new FormAttachment(wIncludeSubFolders, margin);
-        fdSpecifyWilcard.right = new FormAttachment(100, 0);
-        wSpecifyWilcard.setLayoutData(fdSpecifyWilcard);
-        wSpecifyWilcard.addSelectionListener(new SelectionAdapter()
+        // Specify wildcard?
+        wlSpecifyWildcard = new Label(shell, SWT.RIGHT);
+        wlSpecifyWildcard.setText(Messages.getString("JobFolderIsEmpty.SpecifyWildcard.Label"));
+        props.setLook(wlSpecifyWildcard);
+        fdlSpecifyWildcard = new FormData();
+        fdlSpecifyWildcard.left = new FormAttachment(0, 0);
+        fdlSpecifyWildcard.top = new FormAttachment(wIncludeSubFolders, margin);
+        fdlSpecifyWildcard.right = new FormAttachment(middle, -margin);
+        wlSpecifyWildcard.setLayoutData(fdlSpecifyWildcard);
+        wSpecifyWildcard = new Button(shell, SWT.CHECK);
+        props.setLook(wSpecifyWildcard);
+        wSpecifyWildcard.setToolTipText(Messages.getString("JobFolderIsEmpty.SpecifyWildcard.Tooltip"));
+        fdSpecifyWildcard = new FormData();
+        fdSpecifyWildcard.left = new FormAttachment(middle, 0);
+        fdSpecifyWildcard.top = new FormAttachment(wIncludeSubFolders, margin);
+        fdSpecifyWildcard.right = new FormAttachment(100, 0);
+        wSpecifyWildcard.setLayoutData(fdSpecifyWildcard);
+        wSpecifyWildcard.addSelectionListener(new SelectionAdapter()
         {
             public void widgetSelected(SelectionEvent e)
             {
@@ -218,13 +218,13 @@ public class JobEntryFolderIsEmptyDialog extends JobEntryDialog implements JobEn
         
 
         
-		// Wilcard line
+		// Wildcard line
 		wlWildcard=new Label(shell, SWT.RIGHT);
 		wlWildcard.setText(Messages.getString("JobFolderIsEmpty.Wildcard.Label"));
  		props.setLook(wlWildcard);
 		fdlWildcard=new FormData();
 		fdlWildcard.left = new FormAttachment(0, 0);
-		fdlWildcard.top  = new FormAttachment(wSpecifyWilcard, margin);
+		fdlWildcard.top  = new FormAttachment(wSpecifyWildcard, margin);
 		fdlWildcard.right= new FormAttachment(middle, -margin);
 		wlWildcard.setLayoutData(fdlWildcard);
 		wWildcard=new TextVar(jobMeta,shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
@@ -232,7 +232,7 @@ public class JobEntryFolderIsEmptyDialog extends JobEntryDialog implements JobEn
 		wWildcard.addModifyListener(lsMod);
 		fdWildcard=new FormData();
 		fdWildcard.left = new FormAttachment(middle, 0);
-		fdWildcard.top  = new FormAttachment(wSpecifyWilcard, margin);
+		fdWildcard.top  = new FormAttachment(wSpecifyWildcard, margin);
 		fdWildcard.right= new FormAttachment(100, -margin);
 		wWildcard.setLayoutData(fdWildcard);
 		
@@ -321,8 +321,8 @@ public class JobEntryFolderIsEmptyDialog extends JobEntryDialog implements JobEn
 	}
 	private void CheckLimitSearch()
 	{
-		wlWildcard.setEnabled(wSpecifyWilcard.getSelection());
-		wWildcard.setEnabled(wSpecifyWilcard.getSelection());
+		wlWildcard.setEnabled(wSpecifyWildcard.getSelection());
+		wWildcard.setEnabled(wSpecifyWildcard.getSelection());
 	}
 
 	/**
@@ -334,7 +334,7 @@ public class JobEntryFolderIsEmptyDialog extends JobEntryDialog implements JobEn
 		wName.selectAll();
 		if (jobEntry.getFoldername()!= null) wFoldername.setText( jobEntry.getFoldername() );
 		wIncludeSubFolders.setSelection(jobEntry.isIncludeSubFolders());
-		wSpecifyWilcard.setSelection(jobEntry.isSpecifyWilcard());
+		wSpecifyWildcard.setSelection(jobEntry.isSpecifyWildcard());
 		if (jobEntry.getWildcard()!= null) wWildcard.setText( jobEntry.getWildcard() );
 		
 		
@@ -352,7 +352,7 @@ public class JobEntryFolderIsEmptyDialog extends JobEntryDialog implements JobEn
 		jobEntry.setName(wName.getText());
 		jobEntry.setFoldername(wFoldername.getText());
 		jobEntry.setIncludeSubFolders(wIncludeSubFolders.getSelection());
-		jobEntry.setSpecifyWilcard(wSpecifyWilcard.getSelection());
+		jobEntry.setSpecifyWildcard(wSpecifyWildcard.getSelection());
 		jobEntry.setWildcard(wWildcard.getText());
 		
 		dispose();

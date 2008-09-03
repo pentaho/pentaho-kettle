@@ -165,12 +165,12 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
 		}
 	}
 	
-	public void setSpecifyWilcard(boolean specifywildcard)
+	public void setSpecifyWildcard(boolean specifywildcard)
 	{
 		this.specifywildcard=specifywildcard;
 	}
 
-	public boolean isSpecifyWilcard()
+	public boolean isSpecifyWildcard()
 	{
 		return specifywildcard;
 	}
@@ -308,7 +308,7 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
 						if (info.getFile().getParent().equals(info.getBaseFolder()))
 						 {
 							// We are in the Base folder
-							if((isSpecifyWilcard() && GetFileWildcard(info.getFile().toString()) || !isSpecifyWilcard()))
+							if((isSpecifyWildcard() && GetFileWildcard(info.getFile().toString()) || !isSpecifyWildcard()))
 							{
 								if(log.isDetailed()) log.logDetailed("Found files", "We found file : " + info.getFile().toString());
 								filescount++; 
@@ -318,7 +318,7 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
 						{
 							// We are not in the base Folder...ONLY if Use sub folders
 							// We are in the Base folder
-							if((isSpecifyWilcard() && GetFileWildcard(info.getFile().toString()) || !isSpecifyWilcard())
+							if((isSpecifyWildcard() && GetFileWildcard(info.getFile().toString()) || !isSpecifyWildcard())
 									&& (isIncludeSubFolders()))
 							{
 								if(log.isDetailed()) log.logDetailed("Found files", "We found file : " + info.getFile().toString());

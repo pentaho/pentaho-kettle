@@ -85,10 +85,10 @@ public class JobEntryMSAccessBulkLoadDialog extends JobEntryDialog implements Jo
 	private FormData  fdlTablename; 
 	private FormData fdTablename;
 
-	private Label        wlWilcard;
-	private TextVar wWilcard;
-	private FormData  fdlWilcard; 
-	private FormData fdWilcard;
+	private Label        wlWildcard;
+	private TextVar wWildcard;
+	private FormData  fdlWildcard; 
+	private FormData fdWildcard;
 	
 	private Label        wlDelimiter;
 	private TextVar wDelimiter;
@@ -386,30 +386,30 @@ public class JobEntryMSAccessBulkLoadDialog extends JobEntryDialog implements Jo
 		});
 
 		// Wildcard
-		wlWilcard=new Label(wSourceGroup, SWT.RIGHT);
-		wlWilcard.setText(Messages.getString("JobEntryMSAccessBulkLoad.Wilcard.Label"));
- 		props.setLook(wlWilcard);
-		fdlWilcard=new FormData();
-		fdlWilcard.left = new FormAttachment(0, 0);
-		fdlWilcard.top  = new FormAttachment(wincludeSubFolders, margin);
-		fdlWilcard.right= new FormAttachment(middle, -margin);
-		wlWilcard.setLayoutData(fdlWilcard);
-		wWilcard=new TextVar(jobMeta,wSourceGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
- 		props.setLook(wWilcard);
- 		wWilcard.setToolTipText(Messages.getString("JobEntryMSAccessBulkLoad.Wilcard.Tooltip"));
-		wWilcard.addModifyListener(lsMod);
-		fdWilcard=new FormData();
-		fdWilcard.left = new FormAttachment(middle, 0);
-		fdWilcard.top  = new FormAttachment(wincludeSubFolders, margin);
-		fdWilcard.right= new FormAttachment(wbFileFoldername, -margin);
-		wWilcard.setLayoutData(fdWilcard);
+		wlWildcard=new Label(wSourceGroup, SWT.RIGHT);
+		wlWildcard.setText(Messages.getString("JobEntryMSAccessBulkLoad.Wildcard.Label"));
+ 		props.setLook(wlWildcard);
+		fdlWildcard=new FormData();
+		fdlWildcard.left = new FormAttachment(0, 0);
+		fdlWildcard.top  = new FormAttachment(wincludeSubFolders, margin);
+		fdlWildcard.right= new FormAttachment(middle, -margin);
+		wlWildcard.setLayoutData(fdlWildcard);
+		wWildcard=new TextVar(jobMeta,wSourceGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+ 		props.setLook(wWildcard);
+ 		wWildcard.setToolTipText(Messages.getString("JobEntryMSAccessBulkLoad.Wildcard.Tooltip"));
+		wWildcard.addModifyListener(lsMod);
+		fdWildcard=new FormData();
+		fdWildcard.left = new FormAttachment(middle, 0);
+		fdWildcard.top  = new FormAttachment(wincludeSubFolders, margin);
+		fdWildcard.right= new FormAttachment(wbFileFoldername, -margin);
+		wWildcard.setLayoutData(fdWildcard);
 
 		// Whenever something changes, set the tooltip to the expanded version:
-		wWilcard.addModifyListener(new ModifyListener()
+		wWildcard.addModifyListener(new ModifyListener()
 			{
 				public void modifyText(ModifyEvent e)
 				{
-					wWilcard.setToolTipText(jobMeta.environmentSubstitute( wWilcard.getText() ) );
+					wWildcard.setToolTipText(jobMeta.environmentSubstitute( wWildcard.getText() ) );
 				}
 			}
 		);
@@ -420,7 +420,7 @@ public class JobEntryMSAccessBulkLoadDialog extends JobEntryDialog implements Jo
  		props.setLook(wlDelimiter);
 		fdlDelimiter=new FormData();
 		fdlDelimiter.left = new FormAttachment(0, 0);
-		fdlDelimiter.top  = new FormAttachment(wWilcard, margin);
+		fdlDelimiter.top  = new FormAttachment(wWildcard, margin);
 		fdlDelimiter.right= new FormAttachment(middle, -margin);
 		wlDelimiter.setLayoutData(fdlDelimiter);
 		wDelimiter=new TextVar(jobMeta,wSourceGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
@@ -429,7 +429,7 @@ public class JobEntryMSAccessBulkLoadDialog extends JobEntryDialog implements Jo
 		wDelimiter.addModifyListener(lsMod);
 		fdDelimiter=new FormData();
 		fdDelimiter.left = new FormAttachment(middle, 0);
-		fdDelimiter.top  = new FormAttachment(wWilcard, margin);
+		fdDelimiter.top  = new FormAttachment(wWildcard, margin);
 		fdDelimiter.right= new FormAttachment(wbFileFoldername, -margin);
 		wDelimiter.setLayoutData(fdDelimiter);
 
@@ -821,9 +821,9 @@ public class JobEntryMSAccessBulkLoadDialog extends JobEntryDialog implements Jo
 		{
 			public void widgetSelected(SelectionEvent arg0)
 			{
-				wFields.add(new String[] { wSourceFileFoldername.getText(), wWilcard.getText(), wDelimiter.getText(), wTargetDbname.getText(),wTablename.getText() } );
+				wFields.add(new String[] { wSourceFileFoldername.getText(), wWildcard.getText(), wDelimiter.getText(), wTargetDbname.getText(),wTablename.getText() } );
 				wSourceFileFoldername.setText("");
-				wWilcard.setText("");
+				wWildcard.setText("");
 				wDelimiter.setText("");
 				wTargetDbname.setText("");
 				wTablename.setText("");
@@ -857,7 +857,7 @@ public class JobEntryMSAccessBulkLoadDialog extends JobEntryDialog implements Jo
 				{
 					String string[] = wFields.getItem(idx);
 					wSourceFileFoldername.setText(string[0]);
-					wWilcard.setText(string[1]);
+					wWildcard.setText(string[1]);
 					wDelimiter.setText(string[2]);
 					wTargetDbname.setText(string[3]);
 					wTablename.setText(string[4]);
@@ -924,8 +924,8 @@ public class JobEntryMSAccessBulkLoadDialog extends JobEntryDialog implements Jo
 		wbDelete.setEnabled(!wPrevious.getSelection());
 		wbaEntry.setEnabled(!wPrevious.getSelection());
 		wbFileFoldername.setEnabled(!wPrevious.getSelection());
-		wlWilcard.setEnabled(!wPrevious.getSelection());
-		wWilcard.setEnabled(!wPrevious.getSelection());
+		wlWildcard.setEnabled(!wPrevious.getSelection());
+		wWildcard.setEnabled(!wPrevious.getSelection());
 		wlDelimiter.setEnabled(!wPrevious.getSelection());
 		wDelimiter.setEnabled(!wPrevious.getSelection());
 		WSourceFileFoldername.setEnabled(!wPrevious.getSelection());
