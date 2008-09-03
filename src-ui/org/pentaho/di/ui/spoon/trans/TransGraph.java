@@ -1909,7 +1909,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
             + stepPlugin.getTooltip(LanguageChoice.getInstance().getDefaultLocale().toString());
         tipImage = GUIResource.getInstance().getImagesSteps().get(stepPlugin.getID()[0]);
       } else {
-        System.out.println("WTF!!");
+        //System.out.println("WTF!!");
       }
 
       // Add the partitioning info
