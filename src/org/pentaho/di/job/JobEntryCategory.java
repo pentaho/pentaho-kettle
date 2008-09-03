@@ -21,6 +21,8 @@ package org.pentaho.di.job;
  */
 public class JobEntryCategory
 {
+	// Note: also set the Spoon category order in JobEntryBase.category_order...
+	
 	public static final JobEntryCategory GENERAL         = new JobEntryCategory(Messages.getString("JobCategory.Category.General"));
 	public static final JobEntryCategory MAIL            = new JobEntryCategory(Messages.getString("JobCategory.Category.Mail"));
 	public static final JobEntryCategory FILE_MANAGEMENT = new JobEntryCategory(Messages.getString("JobCategory.Category.FileManagement"));

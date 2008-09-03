@@ -32,32 +32,25 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
-import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.mappingoutput.MappingOutputMeta;
 import org.pentaho.di.trans.steps.mappingoutput.Messages;
-import org.pentaho.di.ui.core.dialog.ErrorDialog;
-import org.pentaho.di.ui.core.widget.ColumnInfo;
-import org.pentaho.di.ui.core.widget.TableView;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class MappingOutputDialog extends BaseStepDialog implements StepDialogInterface
 {
+	/*
     private Label             wlFields;
 
     private TableView         wFields;
 
     private FormData          fdlFields, fdFields;
-
+	*/
+	
     private MappingOutputMeta input;
 
     public MappingOutputDialog(Shell parent, Object in, TransMeta tr, String sname)
@@ -113,6 +106,7 @@ public class MappingOutputDialog extends BaseStepDialog implements StepDialogInt
         fdStepname.right = new FormAttachment(100, 0);
         wStepname.setLayoutData(fdStepname);
 
+        /* NO LONGER NEEDED IN VERSION 3.x
         
         wlFields = new Label(shell, SWT.NONE);
         wlFields.setText(Messages.getString("MappingOutputDialog.Fields.Label")); //$NON-NLS-1$
@@ -141,16 +135,19 @@ public class MappingOutputDialog extends BaseStepDialog implements StepDialogInt
         fdFields.right = new FormAttachment(100, 0);
         fdFields.bottom = new FormAttachment(100, -50);
         wFields.setLayoutData(fdFields);
-
+		*/
+        
         // Some buttons
         wOK = new Button(shell, SWT.PUSH);
         wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
-        wGet = new Button(shell, SWT.PUSH);
-        wGet.setText(Messages.getString("MappingOutputDialog.GetFields.Button")); //$NON-NLS-1$
+        
+        //wGet = new Button(shell, SWT.PUSH);
+        //wGet.setText(Messages.getString("MappingOutputDialog.GetFields.Button")); //$NON-NLS-1$
+        
         wCancel = new Button(shell, SWT.PUSH);
         wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
 
-        setButtonPositions(new Button[] { wOK, wCancel , wGet }, margin, wFields);
+        setButtonPositions(new Button[] { wOK, wCancel, }, margin, wStepname);
 
         // Add listeners
         lsCancel = new Listener()
@@ -167,6 +164,7 @@ public class MappingOutputDialog extends BaseStepDialog implements StepDialogInt
                 ok();
             }
         };
+        /*
         lsGet = new Listener()
         {
             public void handleEvent(Event e)
@@ -174,9 +172,10 @@ public class MappingOutputDialog extends BaseStepDialog implements StepDialogInt
                 get();
             }
         };
+        */
 
         wCancel.addListener(SWT.Selection, lsCancel);
-        wGet.addListener(SWT.Selection, lsGet);
+        /*wGet.addListener(SWT.Selection, lsGet);*/
         wOK.addListener(SWT.Selection, lsOK);
 
         lsDef = new SelectionAdapter()
@@ -217,6 +216,7 @@ public class MappingOutputDialog extends BaseStepDialog implements StepDialogInt
      */
     public void getData()
     {
+    	/*
         for (int i=0;i<input.getFieldName().length;i++)
         {
             if (input.getFieldName()[i]!=null)
@@ -235,7 +235,8 @@ public class MappingOutputDialog extends BaseStepDialog implements StepDialogInt
         
         wFields.setRowNums();
         wFields.optWidth(true);
-        
+        */
+    	
         wStepname.selectAll();
     }
 
@@ -252,6 +253,7 @@ public class MappingOutputDialog extends BaseStepDialog implements StepDialogInt
 
         stepname = wStepname.getText(); // return value
         
+        /*
         int nrfields = wFields.nrNonEmpty();
 
         input.allocate(nrfields);
@@ -269,10 +271,12 @@ public class MappingOutputDialog extends BaseStepDialog implements StepDialogInt
             
             input.getFieldAdded()[i] = "Y".equalsIgnoreCase(item.getText(5)); //$NON-NLS-1$
         }
-
+		*/
+        
         dispose();
     }
     
+    /*
     private void get()
     {
         try
@@ -295,4 +299,7 @@ public class MappingOutputDialog extends BaseStepDialog implements StepDialogInt
         {
             new ErrorDialog(shell, Messages.getString("MappingOutputDialog.FailedToGetFields.DiaogTitle"), Messages.getString("MappingOutputDialog.FailedToGetFields.DiaogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
         }
-    }}
+    }
+    */
+    
+}

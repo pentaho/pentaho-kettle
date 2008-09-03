@@ -19,6 +19,8 @@ package org.pentaho.di.trans.step;
  */
 public class StepCategory
 {
+	// Modify also: BaseStep.category_order to fix the order of appearance in Spoon 
+	
 	public static final StepCategory INPUT          = new StepCategory(Messages.getString("BaseStep.Category.Input"));
 	public static final StepCategory OUTPUT         = new StepCategory(Messages.getString("BaseStep.Category.Output"));
 	public static final StepCategory TRANSFORM      = new StepCategory(Messages.getString("BaseStep.Category.Transform"));
@@ -31,7 +33,7 @@ public class StepCategory
 	public static final StepCategory INLINE         = new StepCategory(Messages.getString("BaseStep.Category.Inline"));
 	public static final StepCategory EXPERIMENTAL   = new StepCategory(Messages.getString("BaseStep.Category.Experimental"));
 	public static final StepCategory DEPRECATED     = new StepCategory(Messages.getString("BaseStep.Category.Deprecated"));
-	public static final StepCategory BULK     = new StepCategory(Messages.getString("BaseStep.Category.Bulk"));
+	public static final StepCategory BULK           = new StepCategory(Messages.getString("BaseStep.Category.Bulk"));
 
 	
 	public static final int CATEGORY_USER_DEFINED   = -1;

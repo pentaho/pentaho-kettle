@@ -144,7 +144,7 @@ public class JobEntryWriteToLogDialog extends JobEntryDialog implements JobEntry
 
         // Filename line
         wlName = new Label(shell, SWT.RIGHT);
-        wlName.setText(Messages.getString("WriteToLog.Label"));
+        wlName.setText(Messages.getString("WriteToLog.Jobname.Label"));
         props.setLook(wlName);
         fdlName = new FormData();
         fdlName.left = new FormAttachment(0, 0);

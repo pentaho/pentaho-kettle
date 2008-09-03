@@ -78,7 +78,7 @@ public class JobEntrySuccessDialog extends JobEntryDialog implements JobEntryDia
         super(parent, jobEntryInt, rep, jobMeta);
         jobEntry = (JobEntrySuccess) jobEntryInt;
         if (this.jobEntry.getName() == null)
-            this.jobEntry.setName(Messages.getString("JobEntrySuccessDialog.Jobname.Label"));
+            this.jobEntry.setName(Messages.getString("JobEntrySuccessDialog.Name.Default"));
     }
 
     public JobEntryInterface open()
@@ -111,7 +111,7 @@ public class JobEntrySuccessDialog extends JobEntryDialog implements JobEntryDia
         
         // Filename line
         wlName = new Label(shell, SWT.RIGHT);
-        wlName.setText(Messages.getString("JobEntrySuccessDialog.Label"));
+        wlName.setText(Messages.getString("JobEntrySuccessDialog.Jobname.Label"));
         props.setLook(wlName);
         fdlName = new FormData();
         fdlName.left = new FormAttachment(0, 0);

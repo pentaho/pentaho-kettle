@@ -17,18 +17,14 @@ import java.util.Map;
 
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
-import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -50,6 +46,7 @@ import org.w3c.dom.Node;
 
 public class MappingOutputMeta extends BaseStepMeta implements StepMetaInterface
 {
+	/*
     private String  fieldName[];
 
     private int     fieldType[];
@@ -59,10 +56,11 @@ public class MappingOutputMeta extends BaseStepMeta implements StepMetaInterface
     private int     fieldPrecision[];
     
     private boolean fieldAdded[];
-    
+    */
+	
     private volatile List<MappingValueRename> inputValueRenames;
     private volatile List<MappingValueRename> outputValueRenames;
-
+	
     public MappingOutputMeta()
     {
         super(); // allocate BaseStepMeta
@@ -70,70 +68,72 @@ public class MappingOutputMeta extends BaseStepMeta implements StepMetaInterface
         inputValueRenames = new ArrayList<MappingValueRename>();
     }
 
-    /**
+    /*
      * @return Returns the fieldLength.
-     */
+     *
     public int[] getFieldLength()
     {
         return fieldLength;
     }
+    */
 
-    /**
+    /*
      * @param fieldLength The fieldLength to set.
-     */
     public void setFieldLength(int[] fieldLength)
     {
         this.fieldLength = fieldLength;
     }
-
-    /**
-     * @return Returns the fieldName.
      */
+
+    /*
+     * @return Returns the fieldName.
     public String[] getFieldName()
     {
         return fieldName;
     }
-
-    /**
-     * @param fieldName The fieldName to set.
      */
+
+    /*
+     * @param fieldName The fieldName to set.
     public void setFieldName(String[] fieldName)
     {
         this.fieldName = fieldName;
     }
-
-    /**
-     * @return Returns the fieldPrecision.
      */
+
+    /*
+     * @return Returns the fieldPrecision.
     public int[] getFieldPrecision()
     {
         return fieldPrecision;
     }
-
-    /**
-     * @param fieldPrecision The fieldPrecision to set.
      */
+
+    /*
+     * @param fieldPrecision The fieldPrecision to set.
     public void setFieldPrecision(int[] fieldPrecision)
     {
         this.fieldPrecision = fieldPrecision;
     }
-
-    /**
-     * @return Returns the fieldType.
      */
+
+    /*
+     * @return Returns the fieldType.
     public int[] getFieldType()
     {
         return fieldType;
     }
-
-    /**
-     * @param fieldType The fieldType to set.
      */
+
+    /*
+     * @param fieldType The fieldType to set.
     public void setFieldType(int[] fieldType)
     {
         this.fieldType = fieldType;
     }
-    
+     */
+
+    /*
     public boolean[] getFieldAdded()
     {
         return fieldAdded;
@@ -143,6 +143,7 @@ public class MappingOutputMeta extends BaseStepMeta implements StepMetaInterface
     {
         this.fieldAdded = fieldAdded;
     }
+    */
 
     public void loadXML(Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleXMLException
     {
@@ -153,6 +154,7 @@ public class MappingOutputMeta extends BaseStepMeta implements StepMetaInterface
     {
         MappingOutputMeta retval = (MappingOutputMeta) super.clone();
 
+        /*
         int nrfields = fieldName.length;
 
         retval.allocate(nrfields);
@@ -165,23 +167,27 @@ public class MappingOutputMeta extends BaseStepMeta implements StepMetaInterface
             retval.fieldPrecision[i] = fieldPrecision[i];
             retval.fieldAdded[i] = fieldAdded[i];
         }
-
+		*/
+        
         return retval;
     }
 
     public void allocate(int nrfields)
     {
+    	/*
         fieldName      = new String[nrfields];
         fieldType      = new int[nrfields];
         fieldLength    = new int[nrfields];
         fieldPrecision = new int[nrfields];
         fieldAdded     = new boolean[nrfields];
+        */
     }
 
     private void readData(Node stepnode) throws KettleXMLException
     {
         try
         {
+        	/*
             Node fields = XMLHandler.getSubNode(stepnode, "fields"); //$NON-NLS-1$
             int nrfields = XMLHandler.countNodes(fields, "field"); //$NON-NLS-1$
 
@@ -200,7 +206,9 @@ public class MappingOutputMeta extends BaseStepMeta implements StepMetaInterface
                 fieldPrecision[i] = Const.toInt(sprecision, -1);
 
                 fieldAdded[i] = "Y".equalsIgnoreCase( XMLHandler.getTagValue(fnode, "added") ); //$NON-NLS-1$ //$NON-NLS-2$
-}
+			}
+		
+			*/
         }
         catch (Exception e)
         {
@@ -212,6 +220,7 @@ public class MappingOutputMeta extends BaseStepMeta implements StepMetaInterface
     {
         StringBuffer retval = new StringBuffer(300);
 
+        /*
         retval.append("    <fields>").append(Const.CR); //$NON-NLS-1$
         for (int i = 0; i < fieldName.length; i++)
         {
@@ -227,17 +236,19 @@ public class MappingOutputMeta extends BaseStepMeta implements StepMetaInterface
             }
         }
         retval.append("    </fields>").append(Const.CR); //$NON-NLS-1$
-
+		*/
+        
         return retval.toString();
     }
 
     public void setDefault()
     {
-        int i, nrfields = 0;
+        int nrfields = 0;
 
         allocate(nrfields);
 
-        for (i = 0; i < nrfields; i++)
+        /*
+        for (int i = 0; i < nrfields; i++)
         {
             fieldName[i] = "field" + i; //$NON-NLS-1$
             fieldType[i] = ValueMeta.TYPE_STRING;
@@ -245,6 +256,7 @@ public class MappingOutputMeta extends BaseStepMeta implements StepMetaInterface
             fieldPrecision[i] = -1;
             fieldAdded[i] = true;
         }
+        */
     }
 
     public void getFields(RowMetaInterface r, String name, RowMetaInterface info[], StepMeta nextStep, VariableSpace space) throws KettleStepException {
@@ -276,6 +288,7 @@ public class MappingOutputMeta extends BaseStepMeta implements StepMetaInterface
     public void readRep(Repository rep, long id_step, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleException {
         try
         {
+        	/*
             int nrfields = rep.countNrStepAttributes(id_step, "field_name"); //$NON-NLS-1$
 
             allocate(nrfields);
@@ -288,6 +301,7 @@ public class MappingOutputMeta extends BaseStepMeta implements StepMetaInterface
                 fieldPrecision[i] = (int) rep.getStepAttributeInteger(id_step, i, "field_precision"); //$NON-NLS-1$
                 fieldAdded[i] = rep.getStepAttributeBoolean(id_step, i, "field_added"); //$NON-NLS-1$
             }
+            */
         }
         catch (Exception e)
         {
@@ -299,6 +313,7 @@ public class MappingOutputMeta extends BaseStepMeta implements StepMetaInterface
     {
         try
         {
+        	/*
             for (int i = 0; i < fieldName.length; i++)
             {
                 if (fieldName[i] != null && fieldName[i].length() != 0)
@@ -310,6 +325,7 @@ public class MappingOutputMeta extends BaseStepMeta implements StepMetaInterface
                     rep.saveStepAttribute(id_transformation, id_step, i, "field_added", fieldAdded[i]); //$NON-NLS-1$
                 }
             }
+            */
         }
         catch (Exception e)
         {
@@ -354,18 +370,6 @@ public class MappingOutputMeta extends BaseStepMeta implements StepMetaInterface
         return new MappingOutputData();
     }
     
-    public RowMetaInterface getRequiredFields() throws KettleException {
-    	RowMetaInterface row = new RowMeta();
-		for (int i = 0; i < fieldName.length; i++) 
-        {
-            ValueMetaInterface valueMeta = new ValueMeta(fieldName[i], fieldType[i]);
-            valueMeta.setLength(fieldLength[i]);
-            valueMeta.setPrecision(fieldPrecision[i]);
-			row.addValueMeta(valueMeta);
-		}
-		return row;
-    }
-
 	/**
 	 * @return the inputValueRenames
 	 */
@@ -393,5 +397,4 @@ public class MappingOutputMeta extends BaseStepMeta implements StepMetaInterface
 	public void setOutputValueRenames(List<MappingValueRename> outputValueRenames) {
 		this.outputValueRenames = outputValueRenames;
 	}
-
 }

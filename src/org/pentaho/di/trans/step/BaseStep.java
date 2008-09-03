@@ -113,6 +113,7 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
         StepCategory.INLINE.getName(),
         StepCategory.EXPERIMENTAL.getName(),
         StepCategory.DEPRECATED.getName(),
+        StepCategory.BULK.getName(),
     };
 
     public static final String[] statusDesc = { 
