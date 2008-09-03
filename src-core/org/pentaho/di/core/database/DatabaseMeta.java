@@ -935,8 +935,6 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
             // This happens at connect time...
         }
         
-        System.out.println("URL: "+url.toString());
-        
         return url.toString();
 	}
     
