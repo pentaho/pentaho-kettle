@@ -158,13 +158,20 @@ public class StreamLookup extends BaseStep implements StepInterface
                     }
                     data.keyMeta.addValueMeta( rowSet.getRowMeta().getValueMeta( keyNrs[i] ));
                 }
-            
                 // Save the data types of the keys to optionally convert input rows later on...
                 if (data.keyTypes==null)
                 {
                     data.keyTypes=data.keyMeta.clone();
                 }
-			
+    			// set the meta data for the keys also to STORAGE_TYPE_NORMAL, otherwise it will conflict later on
+                // for the data is is already set to STORAGE_TYPE_NORMAL in StreamLookupMeta.getFields()
+    			// all values in the cache are of this storage type (see convertToNormalStorageType below)
+    			// position here after keyTypes are stored (needed below for correct convertToNormalStorageType)
+                for (int i=0;i<keyNrs.length;i++)
+                {
+                	data.keyMeta.getValueMeta(i).setStorageType(ValueMetaInterface.STORAGE_TYPE_NORMAL);
+                }                
+            			
     			for (int v=0;v<meta.getValue().length;v++)
     			{
     			    valueNrs[v] = rowSet.getRowMeta().indexOfValue( meta.getValue()[v] );
@@ -179,8 +186,9 @@ public class StreamLookup extends BaseStep implements StepInterface
             Object[] keyData = new Object[keyNrs.length];
             for (int i=0;i<keyNrs.length;i++)
             {
-            	ValueMetaInterface keyMeta = data.keyMeta.getValueMeta(i);
+            	ValueMetaInterface keyMeta = data.keyTypes.getValueMeta(i);
                 keyData[i] = keyMeta.convertToNormalStorageType( rowData[ keyNrs[i] ] ); // Make sure only normal storage goes in
+                keyMeta.setStorageType(ValueMetaInterface.STORAGE_TYPE_NORMAL); // now we need to change keyMeta/keyTypes also to normal
             }
 
             Object[] valueData = new Object[valueNrs.length];
