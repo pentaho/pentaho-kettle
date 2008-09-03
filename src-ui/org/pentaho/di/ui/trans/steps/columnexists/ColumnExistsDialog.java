@@ -412,29 +412,31 @@ public class ColumnExistsDialog extends BaseStepDialog implements StepDialogInte
 		
 		dispose();
 	}
-	 private void get()
-	 {
-		 try{
-	           
-				wColumnName.removeAll();
-				wTableName.removeAll();
-				RowMetaInterface r = transMeta.getPrevStepFields(stepname);
-				if (r!=null)
-				{
-		             r.getFieldNames();
-		             
-		             for (int i=0;i<r.getFieldNames().length;i++)
-					{	
-						wTableName.add(r.getFieldNames()[i]);
-						wColumnName.add(r.getFieldNames()[i]);
-					}
+	
+	private void get() {
+		try {
+			String columnName = wColumnName.getText();
+			String tableName = wTableName.getText();
+			
+			wColumnName.removeAll();
+			wTableName.removeAll();
+			RowMetaInterface r = transMeta.getPrevStepFields(stepname);
+			if (r != null) {
+				r.getFieldNames();
+
+				for (int i = 0; i < r.getFieldNames().length; i++) {
+					wTableName.add(r.getFieldNames()[i]);
+					wColumnName.add(r.getFieldNames()[i]);
 				}
-
-		 }catch(KettleException ke){
-				new ErrorDialog(shell, Messages.getString("ColumnExistsDialog.FailedToGetFields.DialogTitle"), Messages.getString("ColumnExistsDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 			}
+			wColumnName.setText(columnName);
+			wTableName.setText(tableName);
+		} catch (KettleException ke) {
+			new ErrorDialog(shell, Messages.getString("ColumnExistsDialog.FailedToGetFields.DialogTitle"), Messages.getString("ColumnExistsDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+		}
 
-	 }
+	}
+	
 	 private void getTableName()
 		{
 			// New class: SelectTableDialog
