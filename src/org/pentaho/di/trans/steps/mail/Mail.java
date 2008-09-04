@@ -26,7 +26,7 @@ import javax.activation.DataHandler;
 import javax.activation.URLDataSource;
 import javax.mail.Message;
 import javax.mail.MessagingException;
-import javax.mail.Multipart;
+
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
@@ -104,7 +104,7 @@ public class Mail extends BaseStep implements StepInterface
 			
 			
 			// Check Attached filenames when dynamic
-			if (meta.isDynamicAttachedFilenames() && Const.isEmpty(meta.getDynamicFieldname()))
+			if (meta.isDynamicFilename() && Const.isEmpty(meta.getDynamicFieldname()))
 				throw new KettleException(Messages.getString("Mail.Log.DynamicFilenameFielddEmpty"));
 			
 			
@@ -264,11 +264,13 @@ public class Mail extends BaseStep implements StepInterface
 			
 			if(!meta.isZipFilenameDynamic()) data.ZipFilename=environmentSubstitute(meta.getZipFilename());
 			 
+			data.parts = new MimeMultipart(); 
+			
 			// Attached files
-			if(meta.isDynamicAttachedFilenames()){
+			if(meta.isDynamicFilename()){
 				// cache the position of the attached source filename field			
 				if (data.indexOfSourceFilename<0){	
-					String realSourceattachedFilename=environmentSubstitute(meta.getSourceFileFoldername());
+					String realSourceattachedFilename=environmentSubstitute(meta.getDynamicFieldname());
 					data.indexOfSourceFilename =data.previousRowMeta.indexOfValue(realSourceattachedFilename);
 					if (data.indexOfSourceFilename<0)
 						throw new KettleException(Messages.getString("Mail.Exception.CouldnotSourceAttachedFilenameField",realSourceattachedFilename)); //$NON-NLS-1$ //$NON-NLS-2$
@@ -277,17 +279,13 @@ public class Mail extends BaseStep implements StepInterface
 				// cache the position of the attached wildcard field		
 				if(!Const.isEmpty(meta.getSourceWildcard())){
 					if (data.indexOfSourceWildcard<0){	
-						String realSourceattachedWildcard=environmentSubstitute(meta.getSourceWildcard());
+						String realSourceattachedWildcard=environmentSubstitute(meta.getDynamicWildcard());
 						data.indexOfSourceWildcard =data.previousRowMeta.indexOfValue(realSourceattachedWildcard);
 						if (data.indexOfSourceWildcard<0)
 							throw new KettleException(Messages.getString("Mail.Exception.CouldnotSourceAttachedWildcard",realSourceattachedWildcard)); //$NON-NLS-1$ //$NON-NLS-2$
 					}  
 				}		
-			}else{
-				try{
-				setAttachedFilesList(r,log);
-				}catch(Exception e){}
-			}	
+			}
 		} // end if first
 		
 		boolean sendToErrorRow=false;
@@ -469,8 +467,7 @@ public class Mail extends BaseStep implements StepInterface
 	        messageText.append(Messages.getString("Mail.Log.Comment.Tel") + "  : ").append(environmentSubstitute(contactPhone)).append(Const.CR);
 	        messageText.append(Const.CR);
 	      }
-	
-	  	  Multipart parts = new MimeMultipart();
+	 	  
 	      MimeBodyPart part1 = new MimeBodyPart(); // put the text in the
 	      // 1st part
 	
@@ -482,13 +479,13 @@ public class Mail extends BaseStep implements StepInterface
 	      } else
 	        part1.setText(messageText.toString());
 	
-	      parts.addBodyPart(part1);
+	      data.parts.addBodyPart(part1);
 	      
 	      // attached files
-	      if(meta.isDynamicAttachedFilenames()) setAttachedFilesList(r,log);
-          // add the part with the file in the BodyPart();
-	      if(data.files.getSize()>0)  parts.addBodyPart(data.files);
-	      msg.setContent(parts);
+	      if(meta.isDynamicFilename()) setAttachedFilesList(r,log);
+	      else setAttachedFilesList(null,log);
+  
+	      msg.setContent(data.parts);
 	      
 	      Transport transport = null;
 	      try {
@@ -514,7 +511,6 @@ public class Mail extends BaseStep implements StepInterface
 	  }
 	  private void setAttachedFilesList(Object[] r,LogWriter log) throws Exception
 	  {
-		  
 		  String realSourceFileFoldername=null;
 		  String realSourceWildcard=null;
 		  FileObject sourcefile=null;
@@ -522,13 +518,12 @@ public class Mail extends BaseStep implements StepInterface
 		  
 		  ZipOutputStream zipOutputStream = null;
 		  File masterZipfile = null;
-		  
+
 		  if(meta.isZipFilenameDynamic())  data.ZipFilename=data.previousRowMeta.getString(r,data.indexOfDynamicZipFilename);
 
-		 
 		  try{
 
-			  if(meta.isDynamicAttachedFilenames()) {
+			  if(meta.isDynamicFilename()) {
 				 // dynamic attached filenames
 				  if(data.indexOfSourceFilename>-1)
 					  realSourceFileFoldername= data.previousRowMeta.getString(r,data.indexOfSourceFilename);
@@ -547,8 +542,14 @@ public class Mail extends BaseStep implements StepInterface
 					sourcefile=KettleVFS.getFileObject(realSourceFileFoldername);
 					if(sourcefile.exists()){
 						long FileSize=0;
-						FileObject list[] = sourcefile.findFiles(new TextFileSelector (sourcefile.toString(),realSourceWildcard));  
-						log.logBasic(toString(), "--------LEN-------------"+list.length);
+						FileObject list[]=null;
+						if(sourcefile.getType()==FileType.FILE) 
+						{
+							list = new FileObject[1];
+							list[0]=sourcefile; 
+						}
+						else
+							list = sourcefile.findFiles(new TextFileSelector (sourcefile.toString(),realSourceWildcard));  
 						if(list.length>0){
 
 							 boolean zipFiles=meta.isZipFiles();
@@ -582,11 +583,13 @@ public class Mail extends BaseStep implements StepInterface
 						    		  }else
 						    			  FileSize+=file.getContent().getSize();
 						    	  }else
-						    		  addAttachedFilePart(file); 	  
-					        }
+						    	  {
+						    		  addAttachedFilePart(file);
+						    	  }
+					        } // end for
 						 	if(zipFiles) {	
-						 		log.logBasic(toString() ,"FILES SIZE = " + FileSize+ "\n");
-						 		log.logBasic(toString() ,"LIMIT SIZE = " + data.zipFileLimit+ "\n");
+						 		if(log.isDebug()) log.logDebug(toString() ,Messages.getString("Mail.Log.FileSize",""+FileSize));
+						 		if(log.isDebug()) log.logDebug(toString() ,Messages.getString("Mail.Log.LimitSize",""+data.zipFileLimit));
 						 		
 						 		if(data.zipFileLimit>0 && FileSize>data.zipFileLimit){
 							
@@ -648,16 +651,19 @@ public class Mail extends BaseStep implements StepInterface
 	  }
 	  private void addAttachedFilePart(FileObject file) throws Exception
 	  {
+		  // create a data source
+		  
+		  MimeBodyPart files = new MimeBodyPart();
 	      // create a data source
-          data.files = new MimeBodyPart();
           URLDataSource fds = new URLDataSource(file.getURL());
- 		
           // get a data Handler to manipulate this file type;
-          data.files.setDataHandler(new DataHandler(fds));
+          files.setDataHandler(new DataHandler(fds));
           // include the file in the data source
-          data.files.setFileName(file.getName().getBaseName());
-          
+          files.setFileName(file.getName().getBaseName());
+          // add the part with the file in the BodyPart();
+          data.parts.addBodyPart(files);
           if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("Mail.Log.AttachedFile",fds.getName()));
+          
 	  }
 	  private class TextFileSelector implements FileSelector 
 		{

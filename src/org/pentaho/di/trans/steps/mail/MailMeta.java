@@ -118,8 +118,6 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface
 	  
 	  private String secureconnectiontype;
 	  
-	  private boolean isDynamicAttachedFilenames;
-	  
 
 	  /** The encoding to use for reading: null or empty string means system default encoding */
 	  private String encoding;
@@ -167,7 +165,6 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface
       setContactPhone(XMLHandler.getTagValue(stepnode, "contact_phone"));
       setComment(XMLHandler.getTagValue(stepnode, "comment"));
       setIncludingFiles("Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "include_files")));
-      setDynamicAttachedFilenames("Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "dynamicAttachedFiles")));
       setUsingAuthentication("Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "use_auth")));
       setUsingSecureAuthentication("Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "use_secure_auth")));
       setAuthenticationUser(XMLHandler.getTagValue(stepnode, "auth_user"));
@@ -458,15 +455,6 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface
 	  public void setIncludingFiles(boolean includeFiles)
 	  {
 	    this.includingFiles = includeFiles;
-	  }
-
-	  public void setDynamicAttachedFilenames(boolean isdynamic)
-	  {
-	    this.isDynamicAttachedFilenames = isdynamic;
-	  }
-	  public boolean isDynamicAttachedFilenames()
-	  {
-	    return this.isDynamicAttachedFilenames;
 	  }
 	  
 	  /**
@@ -923,7 +911,7 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface
 			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("MailMeta.CheckResult.CommentEmpty"), stepinfo);
 		remarks.add(cr);
 		
-		if(isDynamicAttachedFilenames)
+		if(isFilenameDynamic)
 		{
 			// Dynamic Filename field
 			if(Const.isEmpty(dynamicFieldname))
@@ -944,7 +932,7 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface
 		
 		if(isZipFiles())
 		{
-			if(isDynamicAttachedFilenames)
+			if(isFilenameDynamic)
 			{
 				// dynamic zipfilename
 				if(Const.isEmpty(getDynamicZipFilenameField()))

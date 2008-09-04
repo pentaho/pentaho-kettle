@@ -15,7 +15,9 @@ package org.pentaho.di.trans.steps.mail;
 
 import java.util.Properties;
 
+import javax.mail.Multipart;
 import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMultipart;
 
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
@@ -57,8 +59,8 @@ public class MailData extends BaseStepData implements StepDataInterface
 	public String ZipFilename;
 
     Properties props;
-    
-	public MimeBodyPart files;
+	
+	public Multipart parts;
 	
 	public RowMetaInterface previousRowMeta;
 	
@@ -86,7 +88,6 @@ public class MailData extends BaseStepData implements StepDataInterface
 		zipFileLimit=0;
 		indexOfDynamicZipFilename=-1;
 		props= new Properties();
-		files = new MimeBodyPart();
 		
 	}
 
