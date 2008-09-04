@@ -12,6 +12,8 @@
 */
 package org.pentaho.di.www;
 
+import java.io.File;
+
 import org.mortbay.jetty.Connector;
 import org.mortbay.jetty.Handler;
 import org.mortbay.jetty.Server;
@@ -23,6 +25,7 @@ import org.mortbay.jetty.security.HashUserRealm;
 import org.mortbay.jetty.security.SecurityHandler;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.LogWriter;
 
 
@@ -80,6 +83,16 @@ public class WebServer
         constraintMapping.setPathSpec("/*");
 
         SecurityHandler securityHandler = new SecurityHandler();
+
+        // See if there is a kettle.pwd file in the KETTLE_HOME directory:
+    	//
+    	File homePwdFile = new File(Const.getKettleCartePasswordFile());
+    	if (homePwdFile.exists()) {
+    		securityHandler.setUserRealm(new HashUserRealm("Kettle", Const.getKettleCartePasswordFile()));
+    	} else {
+    		securityHandler.setUserRealm(new HashUserRealm("Kettle", Const.getKettleLocalCartePasswordFile()));
+    	}
+
         securityHandler.setUserRealm(new HashUserRealm("Kettle", "pwd/kettle.pwd"));
         securityHandler.setConstraintMappings(new ConstraintMapping[]{constraintMapping});
                
