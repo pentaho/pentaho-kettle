@@ -175,7 +175,7 @@ public class Encr
 			System.out.println(PASSWORD_ENCRYPTED_PREFIX+obfuscated);
 			System.exit(0);
 			
-		} else if (Const.trim(option).substring(1).equalsIgnoreCase("-carte")) {
+		} else if (Const.trim(option).substring(1).equalsIgnoreCase("carte")) {
 			// Jetty password obfuscation
 			//
 			String obfuscated = Password.obfuscate(password);

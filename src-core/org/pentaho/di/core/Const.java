@@ -1036,7 +1036,28 @@ public class Const
 	{
 		return getKettleDirectory() + FILE_SEPARATOR + getKettleLocalRepositoriesFile();
 	}
-   
+
+	/**
+	 * Returns the path to the Kettle local (current directory) Carte password file:<p>
+	 * ./pwd/kettle.pwd<br>
+	 * 
+	 * @return The local Carte password file.
+	 */
+	public static final String getKettleLocalCartePasswordFile()
+	{
+		return "pwd/kettle.pwd";
+	}
+
+	/**
+	 * Returns the path to the Kettle Carte password file in the home directory:<p>
+	 * $KETTLE_HOME/.kettle/kettle.pwd<br>
+	 * 
+	 * @return The Carte password file in the home directory.
+	 */
+	public static final String getKettleCartePasswordFile()
+	{
+		return getKettleDirectory() + FILE_SEPARATOR + "kettle.pwd";
+	}
 
 	/**
 	 * Select the SAP R/3 databases in the List of databases.
