@@ -11,6 +11,7 @@
  
 package org.pentaho.di.trans.steps.validator;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -191,4 +192,37 @@ public class ValidatorMeta extends BaseStepMeta implements StepMetaInterface
 		this.validations = validations;
 	}
 
+    public boolean excludeFromRowLayoutVerification()
+    {
+        return true;
+    }
+
+	/**
+	 * @param steps optionally search the info step in a list of steps
+	 */
+	public void searchInfoAndTargetSteps(List<StepMeta> steps)
+	{
+		for (Validation validation : validations) {
+			validation.setSourcingStep( StepMeta.findStep(steps, validation.getSourcingStepName()) );
+		}
+	}
+	
+	/**
+	 * @return the informational source steps, if any. Null is the default: none.
+	 */
+	public String[] getInfoSteps()
+	{
+		List<String> infoSteps =new ArrayList<String>();
+		for (Validation validation : validations) {
+			if (validation.getSourcingStep()!=null) {
+				String stepname = validation.getSourcingStep().getName();
+				if (!infoSteps.contains(stepname)) {
+					infoSteps.add( stepname );
+				}
+			}
+		}
+		if (infoSteps.isEmpty()) return null;
+		
+	    return infoSteps.toArray(new String[infoSteps.size()]);
+	}
 }

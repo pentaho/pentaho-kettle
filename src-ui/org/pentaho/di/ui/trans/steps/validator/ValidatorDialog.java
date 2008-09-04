@@ -21,12 +21,14 @@ import java.util.ArrayList;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
@@ -45,6 +47,7 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
@@ -105,11 +108,17 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 	private Text wMinValue;
 	private Label wlAllowedValues;
 	private List wAllowedValues;
-	
+	private Label wlSourceValues;
+	private Button wSourceValues;
+	private Label wlSourceStep;
+	private Combo wSourceStep;
+	private Label wlSourceField;
+	private Combo wSourceField;
 	
 	
 	private Button wbAddAllowed;
 	private Button wbRemoveAllowed;
+	
 	private Button wClear;
 	private Button wNew;
 	
@@ -745,7 +754,74 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
  		fdAllowedValues.top    = new FormAttachment(wRegExpDisallowed, margin);
  		fdAllowedValues.bottom = new FormAttachment(wRegExpDisallowed, 150);
  		wAllowedValues.setLayoutData(fdAllowedValues);
+ 		
+ 		// Source allowed values from another step? 
+		//
+		wlSourceValues=new Label(wgData, SWT.RIGHT);
+		wlSourceValues.setText(Messages.getString("ValidatorDialog.SourceValues.Label")); //$NON-NLS-1$
+ 		props.setLook(wlSourceValues);
+		FormData fdlSourceValues = new FormData();
+		fdlSourceValues.left = new FormAttachment(0, 0);
+		fdlSourceValues.right= new FormAttachment(middle, -margin);
+		fdlSourceValues.top  = new FormAttachment(wAllowedValues, margin);
+		wlSourceValues.setLayoutData(fdlSourceValues);
+		wSourceValues=new Button(wgData, SWT.CHECK);
+ 		props.setLook(wSourceValues);
+		FormData fdSourceValues = new FormData();
+		fdSourceValues.left = new FormAttachment(middle, margin);
+		fdSourceValues.right= new FormAttachment(100, 0);
+		fdSourceValues.top  = new FormAttachment(wAllowedValues, margin);
+		wSourceValues.setLayoutData(fdSourceValues);
+		wSourceValues.addSelectionListener(new SelectionAdapter() {
 		
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				enableFields();
+			}
+		});
+
+		// Source allowed values : source step
+		//
+		wlSourceStep=new Label(wgData, SWT.RIGHT);
+		wlSourceStep.setText(Messages.getString("ValidatorDialog.SourceStep.Label")); //$NON-NLS-1$
+ 		props.setLook(wlSourceStep);
+		FormData fdlSourceStep = new FormData();
+		fdlSourceStep.left = new FormAttachment(0, margin);
+		fdlSourceStep.right= new FormAttachment(middle, -margin);
+		fdlSourceStep.top  = new FormAttachment(wSourceValues, margin);
+		wlSourceStep.setLayoutData(fdlSourceStep);
+		wSourceStep=new Combo(wgData, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		props.setLook(wSourceStep);
+		FormData fdSourceStep = new FormData();
+		fdSourceStep.left = new FormAttachment(middle, margin);
+		fdSourceStep.right= new FormAttachment(100, 0);
+		fdSourceStep.top  = new FormAttachment(wSourceValues, margin);
+		wSourceStep.setLayoutData(fdSourceStep);
+		wSourceStep.addFocusListener(new FocusAdapter() { public void focusGained(org.eclipse.swt.events.FocusEvent e) { getSteps(); } } );
+		wSourceStep.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent arg0) { getSteps(); } } );
+		
+		// Source allowed values : source step
+		//
+		wlSourceField=new Label(wgData, SWT.RIGHT);
+		wlSourceField.setText(Messages.getString("ValidatorDialog.SourceField.Label")); //$NON-NLS-1$
+ 		props.setLook(wlSourceField);
+		FormData fdlSourceField = new FormData();
+		fdlSourceField.left = new FormAttachment(0, margin);
+		fdlSourceField.right= new FormAttachment(middle, -margin);
+		fdlSourceField.top  = new FormAttachment(wSourceStep, margin);
+		wlSourceField.setLayoutData(fdlSourceField);
+		wSourceField=new Combo(wgData, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		props.setLook(wSourceField);
+		FormData fdSourceField = new FormData();
+		fdSourceField.left = new FormAttachment(middle, margin);
+		fdSourceField.right= new FormAttachment(100, 0);
+		fdSourceField.top  = new FormAttachment(wSourceStep, margin);
+		wSourceField.setLayoutData(fdSourceField);
+		wSourceField.addFocusListener(new FocusAdapter() { public void focusGained(org.eclipse.swt.events.FocusEvent e) { getFields(); } } );
+		wSourceField.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent arg0) { getFields(); } } );
+
+		
+ 		wComp.layout();
         wComp.pack();
         Rectangle bounds = wComp.getBounds();
 		
@@ -890,6 +966,9 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 			}
 		}
 		
+		wSourceValues.setSelection(field.isSourcingValues());
+		wSourceStep.setText( field.getSourcingStep()!=null ? field.getSourcingStep().getName() : "" );
+		wSourceField.setText(Const.NVL(field.getSourcingField(), ""));
 	}
 	
 	private void enableFields() {
@@ -906,6 +985,15 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 		wErrorCode.setVisible(visible);
 		wlErrorDescription.setVisible(visible);
 		wErrorDescription.setVisible(visible);
+		
+		wlSourceStep.setEnabled(wSourceValues.getSelection());
+		wSourceStep.setEnabled(wSourceValues.getSelection());
+		wlSourceField.setEnabled(wSourceValues.getSelection());
+		wSourceField.setEnabled(wSourceValues.getSelection());
+		wlAllowedValues.setEnabled(!wSourceValues.getSelection());
+		wAllowedValues.setEnabled(!wSourceValues.getSelection());
+		wbAddAllowed.setEnabled(!wSourceValues.getSelection());
+		wbRemoveAllowed.setEnabled(!wSourceValues.getSelection());
 	}
 
 	private void showSelectedValidatorField(String selection) {
@@ -964,6 +1052,10 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 			selectedField.setRegularExpressionNotAllowed(wRegExpDisallowed.getText());
 
 			selectedField.setAllowedValues(wAllowedValues.getItems());
+			
+			selectedField.setSourcingValues(wSourceValues.getSelection());
+			selectedField.setSourcingStep( transMeta.findStep(wSourceStep.getText()) );
+			selectedField.setSourcingField(wSourceField.getText());
 
 			// Save the old info in the map
 			// 
@@ -1022,5 +1114,43 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 		input.setValidations(fields);
 		
 		dispose();
+	}
+
+	private void getSteps() {
+        Cursor busy = new Cursor(shell.getDisplay(), SWT.CURSOR_WAIT);
+        shell.setCursor(busy);
+
+		String fieldStep = wSourceStep.getText();
+		
+		wSourceStep.removeAll();
+		wSourceStep.setItems(transMeta.getPrevStepNames(stepMeta));
+
+		wSourceStep.setText(fieldStep);
+		
+        shell.setCursor(null);
+        busy.dispose();
+	}
+
+	private void getFields() {
+        Cursor busy = new Cursor(shell.getDisplay(), SWT.CURSOR_WAIT);
+        shell.setCursor(busy);
+
+		try {
+			String sourceStepName = wSourceStep.getText();
+			if (!Const.isEmpty(sourceStepName)) {
+				String fieldName = wSourceField.getText();
+				RowMetaInterface r = transMeta.getStepFields(sourceStepName);
+				if (r != null) {
+					wSourceField.setItems(r.getFieldNames());
+				}
+				wSourceField.setText(fieldName);
+			}
+	        shell.setCursor(null);
+	        busy.dispose();
+		} catch (KettleException ke) {
+            shell.setCursor(null);
+            busy.dispose();
+			new ErrorDialog(shell, Messages.getString("ValidatorDialog.FailedToGetFields.DialogTitle"), Messages.getString("ValidatorDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+		}
 	}
 }

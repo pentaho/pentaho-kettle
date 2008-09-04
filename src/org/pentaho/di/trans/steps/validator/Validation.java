@@ -9,6 +9,7 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.trans.step.StepMeta;
 import org.w3c.dom.Node;
 
 public class Validation implements Cloneable {
@@ -34,6 +35,10 @@ public class Validation implements Cloneable {
 	private String   minimumValue;
 	private String   maximumValue;
 	private String[] allowedValues;
+	private boolean  sourcingValues;
+	private String   sourcingStepName;
+	private StepMeta sourcingStep;
+	private String   sourcingField;
 	
 	private String   startString;
 	private String   startStringNotAllowed;
@@ -107,6 +112,10 @@ public class Validation implements Cloneable {
 		xml.append(XMLHandler.addTagValue("error_code", errorCode));
 		xml.append(XMLHandler.addTagValue("error_description", errorDescription));
 
+		xml.append(XMLHandler.addTagValue("is_sourcing_values", sourcingValues));
+		xml.append(XMLHandler.addTagValue("sourcing_step", sourcingStep!=null ? sourcingStep.getName() : null));
+		xml.append(XMLHandler.addTagValue("sourcing_field", sourcingField));
+
 		xml.append(XMLHandler.openTag(XML_TAG_ALLOWED));
 		if (allowedValues!=null) {
 				
@@ -154,7 +163,11 @@ public class Validation implements Cloneable {
 
 		errorCode = XMLHandler.getTagValue(calcnode, "error_code");
 		errorDescription = XMLHandler.getTagValue(calcnode, "error_description");
-
+		
+		sourcingValues = "Y".equalsIgnoreCase( XMLHandler.getTagValue(calcnode, "is_sourcing_values"));
+		sourcingStepName = XMLHandler.getTagValue(calcnode, "sourcing_step");
+		sourcingField = XMLHandler.getTagValue(calcnode, "sourcing_field");
+		
 		Node allowedValuesNode = XMLHandler.getSubNode(calcnode, XML_TAG_ALLOWED);
 		int nrValues = XMLHandler.countNodes(allowedValuesNode, "value");
 		allowedValues = new String[nrValues];
@@ -196,6 +209,10 @@ public class Validation implements Cloneable {
 		errorCode = rep.getStepAttributeString(id_step, i, "validator_field_error_code");
 		errorDescription = rep.getStepAttributeString(id_step, i, "validator_field_error_description");
 
+		sourcingValues = rep.getStepAttributeBoolean(id_step, i, "validator_field_is_sourcing_values");
+		sourcingStepName = rep.getStepAttributeString(id_step, i, "validator_field_sourcing_step");
+		sourcingField = rep.getStepAttributeString(id_step, i, "validator_field_sourcing_field");
+		
 		List<String> allowed = new ArrayList<String>();
 		
 		int nr = 1;
@@ -238,7 +255,11 @@ public class Validation implements Cloneable {
 
 		rep.saveStepAttribute(id_transformation, id_step, i, "validator_field_error_code", errorCode);
 		rep.saveStepAttribute(id_transformation, id_step, i, "validator_field_error_description", errorDescription);
-
+		
+		rep.saveStepAttribute(id_transformation, id_step, i, "validator_field_is_sourcing_values", sourcingValues);
+		rep.saveStepAttribute(id_transformation, id_step, i, "validator_field_sourcing_step", sourcingStep!=null ? sourcingStep.getName() : null);
+		rep.saveStepAttribute(id_transformation, id_step, i, "validator_field_sourcing_field", sourcingField);
+		
 		if (allowedValues!=null) {
 			for (int nr=1;nr<=allowedValues.length;nr++) {
 				rep.saveStepAttribute(id_transformation, id_step, i, "validator_field_value_"+nr, allowedValues[nr-1]);
@@ -579,5 +600,61 @@ public class Validation implements Cloneable {
 	 */
 	public void setOnlyNullAllowed(boolean onlyNullAllowed) {
 		this.onlyNullAllowed = onlyNullAllowed;
+	}
+
+	/**
+	 * @return the sourcingValues
+	 */
+	public boolean isSourcingValues() {
+		return sourcingValues;
+	}
+
+	/**
+	 * @param sourcingValues the sourcingValues to set
+	 */
+	public void setSourcingValues(boolean sourcingValues) {
+		this.sourcingValues = sourcingValues;
+	}
+
+	/**
+	 * @return the sourcingStep
+	 */
+	public StepMeta getSourcingStep() {
+		return sourcingStep;
+	}
+
+	/**
+	 * @param sourcingStep the sourcingStep to set
+	 */
+	public void setSourcingStep(StepMeta sourcingStep) {
+		this.sourcingStep = sourcingStep;
+	}
+
+	/**
+	 * @return the sourcingField
+	 */
+	public String getSourcingField() {
+		return sourcingField;
+	}
+
+	/**
+	 * @param sourcingField the sourcingField to set
+	 */
+	public void setSourcingField(String sourcingField) {
+		this.sourcingField = sourcingField;
+	}
+
+	/**
+	 * @return the sourcingStepName
+	 */
+	public String getSourcingStepName() {
+		return sourcingStepName;
+	}
+
+	/**
+	 * @param sourcingStepName the sourcingStepName to set
+	 */
+	public void setSourcingStepName(String sourcingStepName) {
+		this.sourcingStepName = sourcingStepName;
 	}
 }

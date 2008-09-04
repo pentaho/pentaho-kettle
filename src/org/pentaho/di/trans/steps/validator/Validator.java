@@ -11,10 +11,13 @@
  
 package org.pentaho.di.trans.steps.validator;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleValueException;
@@ -59,20 +62,27 @@ public class Validator extends BaseStep implements StepInterface
 		meta=(ValidatorMeta)smi;
 		data=(ValidatorData)sdi;
 
-		Object[] r=getRow();    // get row, set busy!
-		if (r==null)  // no more input to be expected...
-		{
-			setOutputDone();
-			return false;
-		}
-        
+		Object[] r;
+		
         if (first)
         {
             first=false;
             
-            data.fieldIndexes = new int[meta.getValidations().length];
+            readSourceValuesFromInfoSteps();
             
-            // Calculate the indexes of the values and arguments in the target data or temporary data
+	        // Read the row AFTER the info rows
+	        // That way the info-rowsets are out of the way
+	        //
+			r=getRow();    // get row, set busy!
+			if (r==null)  // no more input to be expected...
+			{
+				setOutputDone();
+				return false;
+			}
+
+			data.fieldIndexes = new int[meta.getValidations().length];
+
+			// Calculate the indexes of the values and arguments in the target data or temporary data
             // We do this in advance to save time later on.
             //
             for (int i=0;i<meta.getValidations().length;i++)
@@ -94,6 +104,18 @@ public class Validator extends BaseStep implements StepInterface
                 }
             }
         }
+        else
+        {
+	        // Read the row AFTER the info rows
+	        // That way the info-rowsets are out of the way
+	        //
+			r=getRow();    // get row, set busy!
+			if (r==null)  // no more input to be expected...
+			{
+				setOutputDone();
+				return false;
+			}
+        }
 
         if (log.isRowLevel()) log.logRowlevel(toString(), "Read row #"+getLinesRead()+" : "+getInputRowMeta().getString(r));
 
@@ -114,6 +136,52 @@ public class Validator extends BaseStep implements StepInterface
         if (checkFeedback(getLinesRead())) logBasic("Linenr "+getLinesRead());
 
 		return true;
+	}
+
+	private void readSourceValuesFromInfoSteps() throws KettleStepException {
+        for (int i=0;i<meta.getValidations().length;i++)
+        {
+            Validation field = meta.getValidations()[i];
+            // If we need to source the allowed values data from a different step, we do this here as well
+            //
+            if (field.isSourcingValues()) {
+            	if (field.getSourcingStep()==null) {
+            		throw new KettleStepException("There is no valid source step specified for the allowed values of validation ["+field.getName()+"]");
+            	}
+            	if (Const.isEmpty(field.getSourcingField())) {
+            		throw new KettleStepException("There is no valid source field specified for the allowed values of validation ["+field.getName()+"]");
+            	}
+            	
+            	// Still here : OK, read the data from the specified step...
+            	// The data is stored in data.listValues[i] and data.constantsMeta
+            	//
+            	RowSet allowedRowSet = findInputRowSet(field.getSourcingStep().getName()); 
+            	int fieldIndex=-1;
+            	List<Object> allowedValues = new ArrayList<Object>();
+            	Object[] allowedRowData = getRowFrom(allowedRowSet);
+            	while (allowedRowData!=null) {
+            		RowMetaInterface allowedRowMeta = allowedRowSet.getRowMeta();
+            		if (fieldIndex<0) {
+            			fieldIndex=allowedRowMeta.indexOfValue(field.getSourcingField());
+            			if (fieldIndex<0) {
+            				throw new KettleStepException("Source field ["+field.getSourcingField()+"] is not found in the source row data");
+            			}
+            			data.constantsMeta[i] = allowedRowMeta.getValueMeta(fieldIndex);
+            		}
+            		Object allowedValue = allowedRowData[fieldIndex];
+            		if (allowedValue!=null) {
+            			allowedValues.add(allowedValue);
+            		}
+
+            		// Grab another row too...
+            		//
+                	allowedRowData = getRowFrom(allowedRowSet);
+            	}
+            	// Set the list values in the data block...
+            	//
+            	data.listValues[i] = allowedValues.toArray(new Object[allowedValues.size()]);
+            }
+        }
 	}
 
 	/**
