@@ -1862,7 +1862,8 @@ public class Database implements VariableSpace
     
 	/**
 	 * See if the table specified exists by reading
-	 * @param tablename The name of the table to check.
+	 * @param tablename The name of the table to check.<br>
+	 *        This is supposed to be the properly quoted name of the table or the complete schema-tablename combination.
 	 * @return true if the table exists, false if it doesn't.
 	 */
 	public boolean checkTableExists(String tablename) throws KettleDatabaseException
@@ -1872,7 +1873,7 @@ public class Database implements VariableSpace
 			if(log.isDebug()) log.logDebug(toString(), "Checking if table ["+tablename+"] exists!");
 			
             // Just try to read from the table.
-            String sql = databaseMeta.getSQLTableExists(databaseMeta.quoteField(tablename));
+            String sql = databaseMeta.getSQLTableExists(tablename);
             try
             {
                 getOneRow(sql);
