@@ -264,7 +264,6 @@ public class Mail extends BaseStep implements StepInterface
 			
 			if(!meta.isZipFilenameDynamic()) data.ZipFilename=environmentSubstitute(meta.getZipFilename());
 			 
-			data.parts = new MimeMultipart(); 
 			
 			// Attached files
 			if(meta.isDynamicFilename()){
@@ -467,7 +466,8 @@ public class Mail extends BaseStep implements StepInterface
 	        messageText.append(Messages.getString("Mail.Log.Comment.Tel") + "  : ").append(environmentSubstitute(contactPhone)).append(Const.CR);
 	        messageText.append(Const.CR);
 	      }
-	 	  
+	      data.parts = new MimeMultipart(); 
+	      
 	      MimeBodyPart part1 = new MimeBodyPart(); // put the text in the
 	      // 1st part
 	

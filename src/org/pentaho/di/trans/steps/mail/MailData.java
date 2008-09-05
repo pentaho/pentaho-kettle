@@ -14,10 +14,7 @@
 package org.pentaho.di.trans.steps.mail;
 
 import java.util.Properties;
-
 import javax.mail.Multipart;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMultipart;
 
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
