@@ -217,7 +217,8 @@ public class JobEntryTableExists extends JobEntryBase implements Cloneable, JobE
                 {
                 	realTablename = db.getDatabaseMeta().getQuotedSchemaTableCombination(realSchemaname, realTablename);
                     if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("TableExists.Log.SchemaTable",realTablename));
-                }
+                }else
+                	realTablename = db.getDatabaseMeta().quoteField(realTablename);
                 
 				if (db.checkTableExists(realTablename))
 				{

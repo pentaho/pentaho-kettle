@@ -1936,7 +1936,7 @@ public class Database implements VariableSpace
 			if(log.isDebug()) log.logDebug(toString(), "Checking if column [" + columnname + "] exists in table ["+tablename+"] !");
 
             // Just try to read from the table.
-            String sql = databaseMeta.getSQLColumnExists(databaseMeta.quoteField(columnname),databaseMeta.quoteField(tablename));
+            String sql = databaseMeta.getSQLColumnExists(columnname,tablename);
         
             try
             {

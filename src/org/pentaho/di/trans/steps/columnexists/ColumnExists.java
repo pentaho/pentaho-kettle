@@ -99,10 +99,11 @@ public class ColumnExists extends BaseStep implements StepInterface
 				}
 			}else
 			{
-				if(!Const.isEmpty(meta.getSchemaname()))
+				if(!Const.isEmpty(data.schemaname))
         		{
-        			data.tablename=data.db.getDatabaseMeta().getQuotedSchemaTableCombination(environmentSubstitute(meta.getSchemaname()), data.tablename);
-        		}
+        			data.tablename=data.db.getDatabaseMeta().getQuotedSchemaTableCombination(data.schemaname, data.tablename);
+        		}else
+        			data.tablename=data.db.getDatabaseMeta().quoteField(data.tablename);
 			}
 			
 			// cache the position of the column field			
@@ -125,13 +126,15 @@ public class ColumnExists extends BaseStep implements StepInterface
         	if(meta.isTablenameInField())
         	{
         		data.tablename= getInputRowMeta().getString(r,data.indexOfTablename);	
-        		if(!Const.isEmpty(meta.getSchemaname()))
+        		if(!Const.isEmpty(data.schemaname))
         		{
-        			data.tablename=data.db.getDatabaseMeta().getQuotedSchemaTableCombination(environmentSubstitute(meta.getSchemaname()), data.tablename);
-        		}
+        			data.tablename=data.db.getDatabaseMeta().getQuotedSchemaTableCombination(data.schemaname, data.tablename);
+        		}else
+        			data.tablename=data.db.getDatabaseMeta().quoteField(data.tablename);
         	}
         	// get columnname
-        	String columnname=getInputRowMeta().getString(r,data.indexOfColumnname);	
+        	String columnname=getInputRowMeta().getString(r,data.indexOfColumnname);
+        	columnname=data.db.getDatabaseMeta().quoteField(columnname);
         	
         	// Check if table exists on the specified connection
         	columnexists=data.db.checkColumnExists(columnname,data.tablename);
@@ -182,6 +185,9 @@ public class ColumnExists extends BaseStep implements StepInterface
         		}
         		data.tablename=environmentSubstitute(meta.getTablename());
         	}
+        	data.schemaname=meta.getSchemaname();
+        	if(!Const.isEmpty(data.schemaname))
+        		data.schemaname=environmentSubstitute(data.schemaname);
         	
         	if(Const.isEmpty(meta.getResultFieldName()))
         	{

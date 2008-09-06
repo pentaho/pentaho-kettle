@@ -93,7 +93,9 @@ public class TableExists extends BaseStep implements StepInterface
         	
         	if(data.realSchemaname!=null)
         		tablename = data.db.getDatabaseMeta().getQuotedSchemaTableCombination(data.realSchemaname, tablename);
-             
+        	else
+        		tablename = data.db.getDatabaseMeta().quoteField(tablename);
+        		
         	// Check if table exists on the specified connection
         	tablexists=data.db.checkTableExists(tablename);
         	

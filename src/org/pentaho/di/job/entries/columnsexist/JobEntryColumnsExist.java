@@ -271,7 +271,9 @@ public class JobEntryColumnsExist extends JobEntryBase implements Cloneable, Job
                 
                 if(!Const.isEmpty(realSchemaname))
                 	realTablename = db.getDatabaseMeta().getQuotedSchemaTableCombination(realSchemaname, realTablename);
-
+                else
+                	realTablename = db.getDatabaseMeta().quoteField(realTablename);
+                
 				db.connect();
 
 				if (db.checkTableExists(realTablename))
@@ -281,6 +283,7 @@ public class JobEntryColumnsExist extends JobEntryBase implements Cloneable, Job
 					for (int i = 0; i < arguments.length && !parentJob.isStopped(); i++) 
 				     {
 						 String realColumnname = environmentSubstitute(arguments[i]);
+						 realColumnname=db.getDatabaseMeta().quoteField(realColumnname);
 						 
 						 if (db.checkColumnExists(realColumnname,realTablename))
 						 {
