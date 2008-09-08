@@ -608,6 +608,14 @@ public class Trans implements VariableSpace
                 }
             }
             
+            // Just for safety, fire the trans finished listeners...
+            //
+            fireTransFinishedListeners();
+            
+            // Flag the transformation as finished
+            //
+            finished.set(true);
+            
             throw new KettleException(Messages.getString("Trans.Log.FailToInitializeAtLeastOneStep")); //$NON-NLS-1
 		}
         
@@ -648,12 +656,7 @@ public class Trans implements VariableSpace
 								//
 								addStepPerformanceSnapShot();
 								
-								// Fire the listeners (if any are registered)
-								//
-								for (TransListener transListener : transListeners)
-								{
-									transListener.transFinished(Trans.this);
-								}
+								fireTransFinishedListeners();
 							}
 							
 							// If a step fails with an error, we want to kill/stop the others too...
@@ -718,7 +721,20 @@ public class Trans implements VariableSpace
         if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("Trans.Log.TransformationHasAllocated",String.valueOf(steps.size()),String.valueOf(rowsets.size()))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
     
-    protected void addStepPerformanceSnapShot() {
+    /**
+     * 	Fire the listeners (if any are registered)
+	 *	
+     */
+    protected void fireTransFinishedListeners() {
+    	
+		for (TransListener transListener : transListeners)
+		{
+			transListener.transFinished(this);
+		}
+
+	}
+
+	protected void addStepPerformanceSnapShot() {
     	if (transMeta.isCapturingStepPerformanceSnapShots())
     	{
 	        // get the statistics from the steps and keep them...
