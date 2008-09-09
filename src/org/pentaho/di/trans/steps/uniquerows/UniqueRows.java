@@ -63,10 +63,11 @@ public class UniqueRows extends BaseStep implements StepInterface
 		{
             first=false;
             
+            data.inputRowMeta = getInputRowMeta().clone();
             data.outputRowMeta = getInputRowMeta().clone();
             meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
             
-			data.previous=data.outputRowMeta.cloneRow(r); // copy the row
+			data.previous=data.inputRowMeta.cloneRow(r); // copy the row
 			
 			// Cache lookup of fields
 			data.fieldnrs=new int[meta.getCompareFields().length];
@@ -93,17 +94,17 @@ public class UniqueRows extends BaseStep implements StepInterface
 		if (meta.getCompareFields()==null || meta.getCompareFields().length==0)
 		{
 		    // Compare the complete row...
-		    isEqual = data.outputRowMeta.compare(r, data.previous)==0;
+		    isEqual = data.inputRowMeta.compare(r, data.previous)==0;
 		}
 		else
 		{
-		    isEqual = data.outputRowMeta.compare(r, data.previous, data.fieldnrs)==0;
+		    isEqual = data.inputRowMeta.compare(r, data.previous, data.fieldnrs)==0;
 		}
 		if (!isEqual)
 		{
 			Object[] outputRow = addCounter(data.outputRowMeta, data.previous, data.counter);
 			putRow(data.outputRowMeta, outputRow); // copy row to possible alternate rowset(s).
-			data.previous=data.outputRowMeta.cloneRow(r);
+			data.previous=data.inputRowMeta.cloneRow(r);
 			data.counter=1;
 		}
 		else
@@ -119,11 +120,11 @@ public class UniqueRows extends BaseStep implements StepInterface
 		return true;
 	}
 	
-	private Object[] addCounter(RowMetaInterface inputRowMeta, Object[] r, long count)
+	private Object[] addCounter(RowMetaInterface outputRowMeta, Object[] r, long count)
 	{
 		if (meta.isCountRows())
 		{
-            Object[] outputRow = RowDataUtil.addValueData(r, inputRowMeta.size(), new Long(count));
+            Object[] outputRow = RowDataUtil.addValueData(r, outputRowMeta.size()-1, new Long(count));
             
             return outputRow;
 		}
