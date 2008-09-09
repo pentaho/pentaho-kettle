@@ -6113,12 +6113,16 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 				{
 	                log.logError(toString(), Messages.getString("Spoon.Log.UnexpectedErrorOccurred")+Const.CR+e.getMessage());//"An unexpected error occurred in Spoon: probable cause: please close all windows before stopping Spoon! "
 					log.logError(toString(), Const.getStackTracker(e));
-					new ErrorDialog(shell, Messages.getString("Spoon.Log.UnexpectedErrorOccurred"), Messages.getString("Spoon.Log.UnexpectedErrorOccurred")+Const.CR+e.getMessage(), e);
-					// Retry dialog
-			        MessageBox mb = new MessageBox(shell, SWT.ICON_QUESTION | SWT.NO | SWT.YES);
-			        mb.setText(Messages.getString("Spoon.Log.UnexpectedErrorRetry.Titel"));
-			        mb.setMessage(Messages.getString("Spoon.Log.UnexpectedErrorRetry.Message"));
-			        if (mb.open()==SWT.YES) retryAfterError=true;
+					try {
+						new ErrorDialog(shell, Messages.getString("Spoon.Log.UnexpectedErrorOccurred"), Messages.getString("Spoon.Log.UnexpectedErrorOccurred")+Const.CR+e.getMessage(), e);
+						// Retry dialog
+						MessageBox mb = new MessageBox(shell, SWT.ICON_QUESTION | SWT.NO | SWT.YES);
+						mb.setText(Messages.getString("Spoon.Log.UnexpectedErrorRetry.Titel"));
+						mb.setMessage(Messages.getString("Spoon.Log.UnexpectedErrorRetry.Message"));
+						if (mb.open()==SWT.YES) retryAfterError=true;
+					} catch (Throwable e1) {
+						// When the opening of a dialog crashed, we can not do anyting more here
+					}
 				}
             } while (retryAfterError); 
 			dispose();
