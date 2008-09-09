@@ -43,6 +43,7 @@ import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.Props;
+import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.BufferChangedListener;
 import org.pentaho.di.core.logging.Log4jStringAppender;
@@ -472,7 +473,7 @@ public class TransLog extends Composite implements TabItemInterface
                 
                 try
                 {
-                    trans.endProcessing("end"); //$NON-NLS-1$
+                    trans.endProcessing(Database.LOG_STATUS_END); //$NON-NLS-1$
                     if (spoonHistoryRefresher!=null) spoonHistoryRefresher.markRefreshNeeded();
                 }
                 catch (KettleException e)

@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.util.EnvUtil;
@@ -398,7 +399,7 @@ public class Pan
 			}
 
 			trans.waitUntilFinished();
-			trans.endProcessing("end");
+			trans.endProcessing(Database.LOG_STATUS_END);
 
 			log.logMinimal("Pan", "Finished!");
 			

@@ -70,7 +70,7 @@ import org.pentaho.di.www.WebResult;
  *
  */
 public class Trans implements VariableSpace
-{
+{    
     public static final String REPLAY_DATE_FORMAT = "yyyy/MM/dd HH:mm:ss"; //$NON-NLS-1$
 
 	private static LogWriter log = LogWriter.getInstance();
@@ -1164,7 +1164,7 @@ public class Trans implements VariableSpace
                                getBatchId(),
                                false,
                                transMeta.getName(),
-                               "start",  //$NON-NLS-1$
+                               Database.LOG_STATUS_START,  //$NON-NLS-1$
                                0L, 0L, 0L, 0L, 0L, 0L,
                                startDate, endDate, logDate, depDate,currentDate,
                                null
@@ -2433,4 +2433,71 @@ public class Trans implements VariableSpace
 	public void setRepository(Repository repository) {
 		this.repository = repository;
 	} 
+	
+	public static void monitorRemoteTransformation(String transName, SlaveServer remoteSlaveServer) {
+		monitorRemoteTransformation(transName, remoteSlaveServer, 5);
+	}
+	
+	public static void monitorRemoteTransformation(String transName, SlaveServer remoteSlaveServer, int sleepTimeSeconds) {
+		long errors=0;
+        boolean allFinished = false;
+        while (!allFinished && errors==0 )
+        {
+            allFinished = true;
+            errors=0L;
+
+            // Check the remote server
+            if (allFinished && errors==0)
+            {
+                try
+                {
+                    SlaveServerTransStatus transStatus = remoteSlaveServer.getTransStatus(transName);
+                    if (transStatus.isRunning()) {
+                    	if(log.isDetailed()) log.logDetailed(transName, "Remote transformation is still running.");
+                    	allFinished = false;
+                    }
+                    else {
+                    	if(log.isDetailed()) log.logDetailed(transName, "Remote transformation has finished.");
+                    }
+                    Result result = transStatus.getResult();
+                    errors+=result.getNrErrors();
+                }
+                catch(Exception e)
+                {
+                    errors+=1;
+                    log.logError(transName, "Unable to contact remote slave server '"+remoteSlaveServer.getName()+"' to check transformation status : "+e.toString());
+                }
+            }
+
+            //
+            // Keep waiting until all transformations have finished
+            // If needed, we stop them again and again until they yield.
+            //
+            if (!allFinished)
+            {
+                // Not finished or error: wait a bit longer
+            	if(log.isDetailed()) log.logDetailed(transName, "The remote transformation is still running, waiting a few seconds...");
+                try { Thread.sleep(sleepTimeSeconds*1000); } catch(Exception e) {} // Check all slaves every x seconds. 
+            }
+        }
+        
+        log.logMinimal(transName, "The remote transformation has finished.");
+        
+        // Clean up the remote transformation
+        //
+        try
+        {
+            WebResult webResult = remoteSlaveServer.cleanupTransformation(transName);
+            if (!WebResult.STRING_OK.equals(webResult.getResult()))
+            {
+                log.logError(transName, "Unable to run clean-up on remote transformation '"+transName+"' : "+webResult.getMessage());
+                errors+=1;
+            }
+        }
+        catch(Exception e)
+        {
+            errors+=1;
+            log.logError(transName, "Unable to contact slave server '"+remoteSlaveServer.getName()+"' to clean up transformation : "+e.toString());
+        }
+	}
 }

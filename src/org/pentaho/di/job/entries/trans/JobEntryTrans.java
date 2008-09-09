@@ -29,6 +29,7 @@ import org.pentaho.di.core.Result;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.SQLStatement;
+import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
@@ -612,6 +613,17 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 								Result remoteResult = transStatus.getResult(); 
 			                    result.clear();
 			                    result.add(remoteResult);
+			                    
+			                    // In case you manually stop the remote trans (browser etc), make sure it's marked as an error
+			                    //
+			                    if (remoteResult.isStopped()) {
+			                    	result.setNrErrors(result.getNrErrors()+1); //
+			                    }
+			                    
+			                    // Make sure to clean up : write a log record etc, close any left-over sockets etc.
+			                    //
+			                    remoteSlaveServer.cleanupTransformation(transMeta.getName());
+			                    
 								break;
 							}
 						} 
@@ -672,7 +684,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
         				}
         				else
         				{
-        					trans.endProcessing("end");
+        					trans.endProcessing(Database.LOG_STATUS_END);
         				}
         				Result newResult = trans.getResult();
 

@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.trans.Trans;
@@ -79,7 +80,7 @@ public class CleanupTransServlet extends HttpServlet
             if (trans!=null)
             {
                 trans.cleanup();
-                trans.endProcessing("end");
+                trans.endProcessing(Database.LOG_STATUS_END);
 
                 String message = "Transformation '"+transName+"' was cleaned up.";
                 if (useXML)

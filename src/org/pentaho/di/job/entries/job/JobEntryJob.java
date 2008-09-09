@@ -29,6 +29,7 @@ import org.pentaho.di.core.Result;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.SQLStatement;
+import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
@@ -568,7 +569,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 	        			}
 	        			else
 	        			{
-	        				job.endProcessing("end", runner.getResult()); // the result of the execution to be stored in the log file.
+	        				job.endProcessing(Database.LOG_STATUS_END, runner.getResult()); // the result of the execution to be stored in the log file.
 	        			}
 	                }
 	        		catch(KettleException je)

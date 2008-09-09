@@ -17,6 +17,7 @@ import java.util.List;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowSet;
+import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -339,7 +340,7 @@ public class Mapping extends BaseStep implements StepInterface
             // store some logging, close shop.
             try
             {
-                data.mappingTrans.endProcessing("end"); //$NON-NLS-1$
+                data.mappingTrans.endProcessing(Database.LOG_STATUS_END); //$NON-NLS-1$
             }
             catch(KettleException e)
             {

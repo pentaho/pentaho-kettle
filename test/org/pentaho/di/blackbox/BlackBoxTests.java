@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Locale;
 
 import org.pentaho.di.core.CheckResultInterface;
+import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.Log4jStringAppender;
 import org.pentaho.di.core.logging.LogWriter;
@@ -456,7 +457,7 @@ public class BlackBoxTests extends TestCase {
                 return false;
             }
 			trans.waitUntilFinished();
-			trans.endProcessing("end");
+			trans.endProcessing(Database.LOG_STATUS_END);
 
 			
 			return true;
