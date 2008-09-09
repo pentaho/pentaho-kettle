@@ -85,9 +85,9 @@ public class XulDatabaseDialog {
     try {
       DatabaseConnectionDialog dcDialog = new DatabaseConnectionDialog();
       dcDialog.registerClass(EXTENDED_WIDGET_ID, EXTENDED_WIDGET_CLASSNAME);
-      container = dcDialog.getSwtInstance();
+      container = dcDialog.getSwtInstance(shell);
 
-      container.addEventHandler(EVENT_ID, DataOverrideHandler.class.getName());
+      // container.addEventHandler(EVENT_ID, DataOverrideHandler.class.getName());
 
       dataHandler = (DataOverrideHandler)container.getEventHandler(EVENT_ID);
       if (databaseMeta != null) {

@@ -83,6 +83,10 @@ import org.pentaho.di.core.variables.Variables;
  */
 public class Database implements VariableSpace
 {
+    public static final String LOG_STATUS_START = "start"; //$NON-NLS-1$
+    public static final String LOG_STATUS_END = "end"; //$NON-NLS-1$
+    public static final String LOG_STATUS_STOP = "stop"; //$NON-NLS-1$
+
 	private DatabaseMeta databaseMeta;
 	
 	private int    rowlimit;
@@ -1863,7 +1867,7 @@ public class Database implements VariableSpace
 	/**
 	 * See if the table specified exists by reading
 	 * @param tablename The name of the table to check.<br>
-	 *        This is supposed to be the properly quoted name of the table or the complete schema-tablename combination.
+	 *        This is supposed to be the properly quoted name of the table or the complete schema-table name combination.
 	 * @return true if the table exists, false if it doesn't.
 	 */
 	public boolean checkTableExists(String tablename) throws KettleDatabaseException
@@ -1926,7 +1930,8 @@ public class Database implements VariableSpace
 	/**
 	 * See if the column specified exists by reading
 	 * @param columnname The name of the column to check.
-	 * @param tablename The name of the table to check.
+	 * @param tablename The name of the table to check.<br>
+	 *        This is supposed to be the properly quoted name of the table or the complete schema-table name combination.
 	 * @return true if the table exists, false if it doesn't.
 	 */
 	public boolean checkColumnExists(String columnname, String tablename) throws KettleDatabaseException
@@ -3154,17 +3159,13 @@ public class Database implements VariableSpace
 
 	public Object[] getLookup(PreparedStatement ps, boolean failOnMultipleResults) throws KettleDatabaseException
 	{
-		String debug = "start";
         ResultSet res = null;
 		try
 		{
-			debug = "pstmt.executeQuery()";
 			res = ps.executeQuery();
 			
-			debug = "getRowInfo()";
 			rowMeta = getRowInfo(res.getMetaData(), false, false);
 			
-			debug = "getRow(res)";
 			Object[] ret = getRow(res);
 			
             if (failOnMultipleResults)
@@ -3180,13 +3181,12 @@ public class Database implements VariableSpace
 		}
 		catch(SQLException ex) 
 		{
-			throw new KettleDatabaseException("Error looking up row in database ("+debug+")", ex);
+			throw new KettleDatabaseException("Error looking up row in database", ex);
 		}
         finally
         {
             try
             {
-            	debug = "res.close()";
                 if (res!=null) res.close(); // close resultset!
             }
             catch(SQLException e)
@@ -3700,7 +3700,7 @@ public class Database implements VariableSpace
 	}
 	
 	public void writeLogRecord(String logtable, boolean use_id, long id, boolean job, String name, String status, long read, long written, long updated, long input, long output, long errors, java.util.Date startdate, java.util.Date enddate, java.util.Date logdate, java.util.Date depdate, java.util.Date replayDate, String log_string) throws KettleDatabaseException {
-		boolean update = use_id && log_string != null && !status.equalsIgnoreCase("start");
+		boolean update = use_id && log_string != null && !status.equalsIgnoreCase(LOG_STATUS_START);
 
 		RowMetaInterface rowMeta;
 		if (job) {

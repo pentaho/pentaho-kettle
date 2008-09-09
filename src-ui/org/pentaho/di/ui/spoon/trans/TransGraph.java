@@ -74,6 +74,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.Props;
+import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.dnd.DragAndDropContainer;
 import org.pentaho.di.core.dnd.XMLTransfer;
 import org.pentaho.di.core.exception.KettleException;
@@ -3121,7 +3122,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         halting = false;
 
         try {
-          trans.endProcessing("end"); //$NON-NLS-1$
+          trans.endProcessing(Database.LOG_STATUS_END); //$NON-NLS-1$
           if (spoonHistoryRefresher != null)
             spoonHistoryRefresher.markRefreshNeeded();
         } catch (KettleException e) {

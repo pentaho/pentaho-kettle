@@ -2612,8 +2612,8 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
             // Attach a listener to notify us that the transformation has finished.
             job.addJobListener(new JobListener() {
 
-              public void JobFinished(Job job) {
-                jobFinished();
+              public void jobFinished(Job job) {
+                JobGraph.this.jobFinished();
               }
 
             });
@@ -2658,7 +2658,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
   /**
    * This gets called at the very end, when everything is done.
    */
-  private void jobFinished() {
+  protected void jobFinished() {
     // Do a final check to see if it all ended...
     //
     if (running && job != null && job.isInitialized() && job.isFinished()) {

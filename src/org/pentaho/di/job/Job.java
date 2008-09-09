@@ -57,7 +57,7 @@ import org.pentaho.di.www.WebResult;
  * 
  */
 public class Job extends Thread implements VariableSpace
-{
+{   
 	private LogWriter log;
 	private JobMeta jobMeta;
 	private Repository rep;
@@ -239,7 +239,7 @@ public class Job extends Thread implements VariableSpace
 			//
 			try 
 			{
-				endProcessing("end", result);  // $NON-NLS-1$
+				endProcessing(Database.LOG_STATUS_END, result);  // $NON-NLS-1$
 			} 
 			catch (KettleJobException e) 
 			{
@@ -351,12 +351,12 @@ public class Job extends Thread implements VariableSpace
 	 * Sets the finished flag.<b>
 	 * Then launch all the job listeners and call the jobFinished method for each.<br>
 	 * 
-	 * @see JobListener#JobFinished(Job)
+	 * @see JobListener#jobFinished(Job)
 	 */
 	private void fireJobListeners() {
 		finished=true;
 		for (JobListener jobListener : jobListeners) {
-			jobListener.JobFinished(this);
+			jobListener.jobFinished(this);
 		}
 	}
 	
@@ -692,7 +692,7 @@ public class Job extends Thread implements VariableSpace
                     }
                 }
 			    
-				Object[] lastr = ldb.getLastLogDate(jobMeta.getLogTable(), jobMeta.getName(), true, "end"); // $NON-NLS-1$
+				Object[] lastr = ldb.getLastLogDate(jobMeta.getLogTable(), jobMeta.getName(), true, Database.LOG_STATUS_END); // $NON-NLS-1$
 				if (!Const.isEmpty(lastr))
 				{
                     Date last;
@@ -712,7 +712,7 @@ public class Job extends Thread implements VariableSpace
 
 				depDate = currentDate;
 
-				ldb.writeLogRecord(jobMeta.getLogTable(), jobMeta.isBatchIdUsed(), getBatchId(), true, jobMeta.getName(), "start",  // $NON-NLS-1$ 
+				ldb.writeLogRecord(jobMeta.getLogTable(), jobMeta.isBatchIdUsed(), getBatchId(), true, jobMeta.getName(), Database.LOG_STATUS_START,  // $NON-NLS-1$ 
 				                   0L, 0L, 0L, 0L, 0L, 0L, 
 				                   startDate, endDate, logDate, depDate, currentDate,
 								   null

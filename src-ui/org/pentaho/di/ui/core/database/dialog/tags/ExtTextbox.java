@@ -8,6 +8,7 @@ import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.containers.XulTree;
+import org.pentaho.ui.xul.dom.Element;
 import org.pentaho.ui.xul.impl.AbstractXulComponent;
 import org.pentaho.ui.xul.swt.tags.SwtTextbox;
 
@@ -19,8 +20,8 @@ public class ExtTextbox extends SwtTextbox {
 
   private int style = SWT.NONE;
   
-  public ExtTextbox(XulComponent parent, XulDomContainer container, String tagName) {
-    super(parent, container, tagName);
+  public ExtTextbox(Element self, XulComponent parent, XulDomContainer container, String tagName) {
+    super(self, parent, container, tagName);
     xulParent = parent;
 
     if ((xulParent != null) && (xulParent instanceof XulTree)){

@@ -39,9 +39,7 @@ public class DataOverrideHandler extends DataHandler {
         mb.open();
       }
     } catch (Exception e) {
-      new ErrorDialog(
-          parent,
-          Messages.getString("DatabaseDialog.ErrorParameters.title"), Messages.getString("DatabaseDialog.ErrorParameters.description"), e); //$NON-NLS-1$ //$NON-NLS-2$
+      new ErrorDialog( parent, Messages.getString("DatabaseDialog.ErrorParameters.title"), Messages.getString("DatabaseDialog.ErrorParameters.description"), e); //$NON-NLS-1$ //$NON-NLS-2$
     }
   }
 
@@ -60,15 +58,11 @@ public class DataOverrideHandler extends DataHandler {
           rowData.add(row.getData());
 
         PreviewRowsDialog prd = new PreviewRowsDialog(parent, dbinfo, SWT.NONE, null, rowMeta, rowData); 
-        prd
-            .setTitleMessage(
-                Messages.getString("DatabaseDialog.FeatureList.title"), Messages.getString("DatabaseDialog.FeatureList.title")); //$NON-NLS-1$ //$NON-NLS-2$
+        prd.setTitleMessage(Messages.getString("DatabaseDialog.FeatureList.title"), Messages.getString("DatabaseDialog.FeatureList.title")); //$NON-NLS-1$ //$NON-NLS-2$
         prd.open();
       }
     } catch (Exception e) {
-      new ErrorDialog(
-          parent,
-          Messages.getString("DatabaseDialog.FeatureListError.title"), Messages.getString("DatabaseDialog.FeatureListError.description"), e); //$NON-NLS-1$ //$NON-NLS-2$
+      new ErrorDialog( parent, Messages.getString("DatabaseDialog.FeatureListError.title"), Messages.getString("DatabaseDialog.FeatureListError.description"), e); //$NON-NLS-1$ //$NON-NLS-2$
     }
   }
   

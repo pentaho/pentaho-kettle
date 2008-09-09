@@ -128,17 +128,12 @@ public class JobEntryEval extends JobEntryBase implements Cloneable, JobEntryInt
     LogWriter log = LogWriter.getInstance();
     Context cx;
     Scriptable scope;
-    String debug = "start"; //$NON-NLS-1$
 
     cx = Context.enter();
 	
-    // cx = Context.enter();
-
-    debug = "try"; //$NON-NLS-1$
     try {
       scope = cx.initStandardObjects(null);
 
-      debug = "Long"; //$NON-NLS-1$
       Long errors = new Long(result.getNrErrors());
       Long lines_input = new Long(result.getNrLinesInput());
       Long lines_output = new Long(result.getNrLinesOutput());
@@ -150,7 +145,6 @@ public class JobEntryEval extends JobEntryBase implements Cloneable, JobEntryInt
       Long files_retrieved = new Long(result.getNrFilesRetrieved());
       Long nr = new Long(result.getEntryNr());
 
-      debug = "scope.put"; //$NON-NLS-1$
       scope.put("errors", scope, errors); //$NON-NLS-1$
       scope.put("lines_input", scope, lines_input); //$NON-NLS-1$
       scope.put("lines_output", scope, lines_output); //$NON-NLS-1$
@@ -173,9 +167,7 @@ public class JobEntryEval extends JobEntryBase implements Cloneable, JobEntryInt
       scope.put("previous_result", scope, prev_result); //$NON-NLS-1$
 
       try {
-        debug = "cx.evaluateString()"; //$NON-NLS-1$
         Object res = cx.evaluateString(scope, this.script, "<cmd>", 1, null); //$NON-NLS-1$
-        debug = "toBoolean"; //$NON-NLS-1$
         boolean retval = Context.toBoolean(res);
         // System.out.println(result.toString()+" + ["+this.script+"] --> "+retval);
         result.setNrErrors(0);
@@ -188,7 +180,7 @@ public class JobEntryEval extends JobEntryBase implements Cloneable, JobEntryInt
       }
     } catch (Exception e) {
       result.setNrErrors(1);
-      log.logError(toString(), Messages.getString("JobEntryEval.ErrorEvaluating", debug, e.toString())); //$NON-NLS-1$
+      log.logError(toString(), Messages.getString("JobEntryEval.ErrorEvaluating", e.toString())); //$NON-NLS-1$
       return false;
     } finally {
       Context.exit();

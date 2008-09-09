@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
+import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleJobException;
 import org.pentaho.di.core.logging.LogWriter;
@@ -351,7 +352,7 @@ public class Kitchen
             job.getJobMeta().setInternalKettleVariables(job);
             
 			result = job.execute(); // Execute the selected job.		
-			job.endProcessing("end", result);  // The bookkeeping...
+			job.endProcessing(Database.LOG_STATUS_END, result);  // The bookkeeping...
 		}
 		catch(KettleJobException je)
 		{

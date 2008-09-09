@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Appender;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
@@ -139,12 +140,24 @@ public class AddJobServlet extends HttpServlet
             // 
             if (repository!=null) {
 	            job.addJobListener(new JobListener() {
-						public void JobFinished(Job job) {
+						public void jobFinished(Job job) {
 							repository.disconnect();
 						}
 					}
 	            );
             }
+
+            // Add a listener at the end of the job for the logging!
+            //
+        	job.addJobListener(new JobListener() {
+				public void jobFinished(Job job) {
+					try {
+						job.endProcessing(Database.LOG_STATUS_END, job.getResult());
+					} catch(Exception e) {
+						log.logError(toString(), "There was an error while logging the job result to the logging table", e);
+					}
+				}
+			});
 
             String message;
             if (oldOne!=null)

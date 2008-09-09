@@ -922,7 +922,9 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 			} else if (executionConfiguration.isExecutingRemotely()) {
 				if (executionConfiguration.getRemoteServer() != null) {
 					Trans.sendXMLToSlaveServer(transMeta, executionConfiguration);
+					monitorRemoteTrans(transMeta, executionConfiguration.getRemoteServer());
 					spoon.delegates.slaves.addSpoonSlave(executionConfiguration.getRemoteServer());
+					
 				} else {
 					MessageBox mb = new MessageBox(spoon.getShell(), SWT.OK | SWT.ICON_INFORMATION);
 					mb.setMessage(Messages.getString("Spoon.Dialog.NoRemoteServerSpecified.Message"));
@@ -938,6 +940,18 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 		}
 	}
   
+  private void monitorRemoteTrans(final TransMeta transMeta, final SlaveServer remoteSlaveServer) {
+      // There is a transformation running in the background.  When it finishes, clean it up and log the result on the console.
+      // Launch in a separate thread to prevent GUI blocking...
+      //
+      new Thread(new Runnable() {
+				public void run() {
+					Trans.monitorRemoteTransformation(transMeta.toString(), remoteSlaveServer);
+				}
+			}).start();
+	
+    } 
+
   protected void splitTrans(final TransMeta transMeta, final TransExecutionConfiguration executionConfiguration) throws KettleException {
     try
     {
