@@ -816,8 +816,8 @@ public class DimensionLookup extends BaseStep implements StepInterface
                 updateRow[updateIndex] = row[data.keynrs[i] ];
                 updateIndex++;
             }
-            
-            updateRow[updateIndex] = versionNr;
+
+            updateRow[updateIndex] = versionNr - 1;
             updateIndex++;
             
             if (log.isRowLevel()) log.logRowlevel(toString(), "UPDATE using rupd="+data.updateRowMeta.getString(updateRow));
