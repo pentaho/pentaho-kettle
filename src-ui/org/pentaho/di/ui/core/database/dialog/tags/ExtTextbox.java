@@ -20,8 +20,8 @@ public class ExtTextbox extends SwtTextbox {
 
   private int style = SWT.NONE;
   
-  public ExtTextbox(Element self, XulComponent parent, XulDomContainer container, String tagName) {
-    super(self, parent, container, tagName);
+  public ExtTextbox(XulComponent parent, XulDomContainer container, String tagName) {
+    super(parent, container, tagName);
     xulParent = parent;
 
     if ((xulParent != null) && (xulParent instanceof XulTree)){
