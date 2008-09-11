@@ -29,7 +29,7 @@ import org.pentaho.ui.database.DatabaseConnectionDialog;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
-import org.pentaho.ui.xul.containers.XulWindow;
+import org.pentaho.ui.xul.containers.XulDialog;
 
 public class XulDatabaseDialog {
 
@@ -85,7 +85,7 @@ public class XulDatabaseDialog {
     try {
       DatabaseConnectionDialog dcDialog = new DatabaseConnectionDialog();
       dcDialog.registerClass(EXTENDED_WIDGET_ID, EXTENDED_WIDGET_CLASSNAME);
-      container = dcDialog.getSwtInstance();
+      container = dcDialog.getSwtInstance(shell);
 
       container.addEventHandler(EVENT_ID, DataOverrideHandler.class.getName());
 
@@ -147,27 +147,22 @@ public class XulDatabaseDialog {
     }
 
     try {
-      final XulWindow dialog = (XulWindow) container.getDocumentRoot().getRootElement();
-      shell = (Shell) dialog.getManagedObject();
-      shell.setParent(parentShell);
-      // props.setLook(shell);
-      shell.setImage(GUIResource.getInstance().getImageConnection());
+      final XulDialog dialog = (XulDialog) container.getDocumentRoot().getRootElement();
+      ((Shell)dialog.getRootObject()).setImage(GUIResource.getInstance().getImageConnection());
+      
       parentShell.addDisposeListener(new DisposeListener(){
 
         public void widgetDisposed(DisposeEvent arg0) {
-          dialog.close();
+          dialog.hide();
         }
         
       });
       
-      dialog.open();
+      dialog.show();
 
       databaseMeta = (DatabaseMeta) dataHandler.getData();
       databaseName = Const.isEmpty(databaseMeta.getName()) ? null : databaseMeta.getName();
       
-      // HACK for PDI-1256; remove when dialog converted to XulDialog instead of XulWindow
-      //databaseName = dialog.isClosed() ? null : databaseName;
-
     } catch (Exception e) {
       new ErrorDialog(parentShell, Messages.getString("XulDatabaseDialog.Error.Titel"), Messages  //$NON-NLS-1$
           .getString("XulDatabaseDialog.Error.Dialog"), e); //$NON-NLS-1$
