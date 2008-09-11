@@ -459,7 +459,7 @@ public class DatabaseExplorerDialog extends Dialog
 			if (catalogs!=null)
 			{
 				TreeItem tiCat = new TreeItem(tiTree, SWT.NONE); 
-				tiCat.setImage(GUIResource.getInstance().getImageConnection());
+				tiCat.setImage(GUIResource.getInstance().getImageBol());
 				tiCat.setText(STRING_CATALOG);
 				
 				for (int i=0;i<catalogs.length;i++)
@@ -484,7 +484,7 @@ public class DatabaseExplorerDialog extends Dialog
 			if (schemas!=null)
 			{
 				TreeItem tiSch = new TreeItem(tiTree, SWT.NONE); 
-				tiSch.setImage(GUIResource.getInstance().getImageSchema());
+				tiSch.setImage(GUIResource.getInstance().getImageBol());
 				tiSch.setText(STRING_SCHEMAS);
 	
 				for (int i=0;i<schemas.length;i++)
@@ -498,7 +498,7 @@ public class DatabaseExplorerDialog extends Dialog
 						String tableName = schemas[i].getItems()[j];
 	
 						TreeItem ti = new TreeItem(newSch, SWT.NONE);
-						ti.setImage(GUIResource.getInstance().getImageSchema());
+						ti.setImage(GUIResource.getInstance().getImageTable());
 						ti.setText(tableName);
 					}
 				}
@@ -510,7 +510,7 @@ public class DatabaseExplorerDialog extends Dialog
 			if (tabnames!=null)
 			{
 				tiTab = new TreeItem(tiTree, SWT.NONE); 
-				tiTab.setImage(GUIResource.getInstance().getImageTable());
+				tiTab.setImage(GUIResource.getInstance().getImageBol());
 				tiTab.setText(STRING_TABLES);
 				tiTab.setExpanded(true);
 				
@@ -528,7 +528,7 @@ public class DatabaseExplorerDialog extends Dialog
 			if (views!=null)
 			{
 				tiView = new TreeItem(tiTree, SWT.NONE); 
-				tiView.setImage(GUIResource.getInstance().getImageView());
+				tiView.setImage(GUIResource.getInstance().getImageBol());
 				tiView.setText(STRING_VIEWS);
 				for (int i = 0; i < views.length; i++)
 				{
@@ -545,7 +545,7 @@ public class DatabaseExplorerDialog extends Dialog
 			if (syn!=null)
 			{
 				tiSyn = new TreeItem(tiTree, SWT.NONE); 
-				tiSyn.setImage(GUIResource.getInstance().getImageSynonym());
+				tiSyn.setImage(GUIResource.getInstance().getImageBol());
 				tiSyn.setText(STRING_SYNONYMS);
 				for (int i = 0; i < syn.length; i++)
 				{

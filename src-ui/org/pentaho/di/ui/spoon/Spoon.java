@@ -4552,7 +4552,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 					//
 					TreeItem tiDbTitle = new TreeItem(tiTransName, SWT.NONE);
 					tiDbTitle.setText(STRING_CONNECTIONS);
-					tiDbTitle.setImage(guiResource.getImageConnection());
+					tiDbTitle.setImage(guiResource.getImageBol());
 
 					// Draw the connections themselves below it.
 					for (int i = 0; i < transMeta.nrDatabases(); i++)
@@ -4592,7 +4592,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 					//
 					TreeItem tiHopTitle = new TreeItem(tiTransName, SWT.NONE);
 					tiHopTitle.setText(STRING_HOPS);
-					tiHopTitle.setImage(guiResource.getImageHop());
+					tiHopTitle.setImage(guiResource.getImageBol());
 
 					// Put the steps below it.
 					for (int i = 0; i < transMeta.nrTransHops(); i++)
@@ -4609,7 +4609,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 					//
 					TreeItem tiPartitionTitle = new TreeItem(tiTransName, SWT.NONE);
 					tiPartitionTitle.setText(STRING_PARTITIONS);
-					tiPartitionTitle.setImage(guiResource.getImageFolderConnections());
+					tiPartitionTitle.setImage(guiResource.getImageBol());
 
 					// Put the steps below it.
 					for (int i = 0; i < transMeta.getPartitionSchemas().size(); i++)
@@ -4627,7 +4627,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 					//
 					TreeItem tiSlaveTitle = new TreeItem(tiTransName, SWT.NONE);
 					tiSlaveTitle.setText(STRING_SLAVES);
-					tiSlaveTitle.setImage(guiResource.getImageSlave());
+					tiSlaveTitle.setImage(guiResource.getImageBol());
 
 					// Put the slaves below it.
 					//
@@ -4646,7 +4646,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 					//
 					TreeItem tiClusterTitle = new TreeItem(tiTransName, SWT.NONE);
 					tiClusterTitle.setText(STRING_CLUSTERS);
-					tiClusterTitle.setImage(guiResource.getImageCluster());
+					tiClusterTitle.setImage(guiResource.getImageBol());
 
 					// Put the steps below it.
 					for (int i = 0; i < transMeta.getClusterSchemas().size(); i++)
