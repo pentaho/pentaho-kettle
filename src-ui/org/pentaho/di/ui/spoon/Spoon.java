@@ -4702,7 +4702,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 					//
 					TreeItem tiDbTitle = new TreeItem(tiJobName, SWT.NONE);
 					tiDbTitle.setText(STRING_CONNECTIONS);
-					tiDbTitle.setImage(guiResource.getImageConnection());
+					tiDbTitle.setImage(guiResource.getImageBol());
 
 					// Draw the connections themselves below it.
 					for (int i = 0; i < jobMeta.nrDatabases(); i++)
