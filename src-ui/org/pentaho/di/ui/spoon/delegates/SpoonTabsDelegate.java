@@ -331,13 +331,13 @@ public class SpoonTabsDelegate extends SpoonDelegate
 				// Also change the transformation map
 				if (entry.getObject() instanceof TransGraph)
 				{
-					spoon.delegates.trans.removeTransformation(before.getText());
+					spoon.delegates.trans.removeTransformation(beforeText);
 					spoon.delegates.trans.addTransformation(after, (TransMeta) entry.getObject().getManagedObject());
 				}
 				// Also change the job map
 				if (entry.getObject() instanceof JobGraph)
 				{
-					spoon.delegates.jobs.removeJob(before.getText());
+					spoon.delegates.jobs.removeJob(beforeText);
 					spoon.delegates.jobs.addJob(after, (JobMeta) entry.getObject().getManagedObject());
 				}
 			}
