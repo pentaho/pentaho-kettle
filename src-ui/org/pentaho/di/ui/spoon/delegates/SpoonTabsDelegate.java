@@ -291,6 +291,8 @@ public class SpoonTabsDelegate extends SpoonDelegate
 			}
 
 			TabItem before = entry.getTabItem();
+			// PDI-1683: need to get the String here, otherwise using only the "before" instance below, the reference gets changed and result is always the same
+			String beforeText=before.getText();
 			Object managedObject = entry.getObject().getManagedObject();
 			if (managedObject != null)
 			{
@@ -330,7 +332,7 @@ public class SpoonTabsDelegate extends SpoonDelegate
 
 			String after = entry.getTabItem().getText();
 
-			if (!before.getText().equals(after))
+			if (!beforeText.equals(after))
 			{
 				entry.setObjectName(after);
 
