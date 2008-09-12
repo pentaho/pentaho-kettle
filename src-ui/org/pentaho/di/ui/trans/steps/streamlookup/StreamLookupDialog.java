@@ -427,7 +427,11 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 		if (input.getLookupFromStep()==null)
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage(Messages.getString("StreamLookupDialog.StepCanNotFound.DialogMessage",wStep.getText())); //$NON-NLS-1$ //$NON-NLS-2$
+			if(Const.isEmpty(wStep.getText()))
+				mb.setMessage(Messages.getString("StreamLookupDialog.NotStepSpecified.DialogMessage",wStep.getText())); 
+			else
+				mb.setMessage(Messages.getString("StreamLookupDialog.StepCanNotFound.DialogMessage",wStep.getText())); //$NON-NLS-1$ //$NON-NLS-2$
+				
 			mb.setText(Messages.getString("StreamLookupDialog.StepCanNotFound.DialogTitle")); //$NON-NLS-1$
 			mb.open(); 
 		}
