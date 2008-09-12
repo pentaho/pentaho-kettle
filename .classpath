@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry combineaccessrules="false" kind="src" path="/pentaho-database"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" output="classes-ui" path="src-ui"/>
 	<classpathentry kind="src" path="test"/>
@@ -90,7 +91,7 @@
 	<classpathentry kind="lib" path="libext/trilead-ssh2-build213.jar"/>
 	<classpathentry kind="lib" path="libext/web/activation.jar"/>
 	<classpathentry kind="lib" path="libext/jsch-0.1.38.jar"/>
-	<classpathentry kind="lib" path="libext/pentaho/pentaho-xul-database-1.7.0-32190.jar"/>
-	<classpathentry kind="lib" path="libext/pentaho/pentaho-xul-framework-1.7.0-32189.jar"/>
+	<classpathentry kind="lib" path="libext/pentaho/pentaho-xul-database-1.7.1-32216.jar"/>
+	<classpathentry kind="lib" path="libext/pentaho/pentaho-xul-framework-1.7.1-32194.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
