@@ -25,8 +25,9 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
@@ -1483,24 +1484,24 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 	};
 	
 	// Evaluates the given ScriptFile
-	private static void checkAndLoadJSFile(Context actualContext, Scriptable eval_scope, String FileName) {
-	    FileReader InStream = null;
+	private static void checkAndLoadJSFile(Context actualContext, Scriptable eval_scope, String fileName) {
+	    Reader inStream = null;
 	    try {
-	      InStream = new FileReader(FileName);
-	      actualContext.evaluateReader(eval_scope, InStream, FileName, 1, null);
+	      inStream = new InputStreamReader(KettleVFS.getInputStream(fileName));
+	      actualContext.evaluateReader(eval_scope, inStream, fileName, 1, null);
 	    } catch (FileNotFoundException Signal) {
-	    	Context.reportError("Unable to open file \"" + FileName + "\" (reason: \"" + Signal.getMessage() + "\")");
+	    	Context.reportError("Unable to open file \"" + fileName + "\" (reason: \"" + Signal.getMessage() + "\")");
 	    } catch (WrappedException Signal) {
-	    	Context.reportError("WrappedException while evaluating file \"" + FileName + "\" (reason: \"" + Signal.getMessage() + "\")");
+	    	Context.reportError("WrappedException while evaluating file \"" + fileName + "\" (reason: \"" + Signal.getMessage() + "\")");
 	    } catch (EvaluatorException Signal) {
-	    	Context.reportError("EvaluatorException while evaluating file \"" + FileName + "\" (reason: \"" + Signal.getMessage() + "\")");
+	    	Context.reportError("EvaluatorException while evaluating file \"" + fileName + "\" (reason: \"" + Signal.getMessage() + "\")");
 	    } catch (JavaScriptException Signal) {
-	    	Context.reportError("JavaScriptException while evaluating file \"" + FileName + "\" (reason: \"" + Signal.getMessage() + "\")");
+	    	Context.reportError("JavaScriptException while evaluating file \"" + fileName + "\" (reason: \"" + Signal.getMessage() + "\")");
 	    } catch (IOException Signal) {
-	    	Context.reportError("Error while reading file \"" + FileName + "\" (reason: \"" + Signal.getMessage() + "\")"	      );
+	    	Context.reportError("Error while reading file \"" + fileName + "\" (reason: \"" + Signal.getMessage() + "\")"	      );
 	    } finally {
 	      try {
-	        if (InStream != null) InStream.close();
+	        if (inStream != null) inStream.close();
 	      } catch (Exception Signal) {
 	        /* nop */
 	      };
