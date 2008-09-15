@@ -297,7 +297,7 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 					if(! ProcessFileFolder(vsourcefilefolder_previous,vdestinationfilefolder_previous,vwildcard_previous,parentJob,result))
 					{
 						// The copy process fail
-						NbrFail=NbrFail++;
+						NbrFail++;
 					}
 				}
 				else
@@ -321,7 +321,7 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 					if(!ProcessFileFolder(vsourcefilefolder[i],vdestinationfilefolder[i],vwildcard[i],parentJob,result))
 					{
 						// The copy process fail
-						NbrFail=NbrFail++;
+						NbrFail++;
 					}
 				}
 				else

@@ -206,7 +206,7 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
         	  log.logDetailed(toString(), Messages.getString("JobEntryDeleteFiles.ProcessingRow", args_previous, fmasks_previous)); //$NON-NLS-1$
 
           if (!ProcessFile(args_previous, fmasks_previous,parentJob)) {
-        	  NrErrFiles = NrErrFiles++;
+        	  NrErrFiles++;
           }
       }
     } else if (arguments != null) {
@@ -217,7 +217,7 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
     	  if(log.isDetailed())	
             log.logDetailed(toString(), Messages.getString("JobEntryDeleteFiles.ProcessingArg", arguments[i], filemasks[i])); //$NON-NLS-1$
           if (!ProcessFile(arguments[i], filemasks[i],parentJob)) {
-        	  NrErrFiles = NrErrFiles++;
+        	  NrErrFiles++;
           }
       }
     }
