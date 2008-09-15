@@ -25,16 +25,7 @@ public class DataOverrideHandler extends DataHandler {
 
   public void explore() {
     
-    Object obj = document.getRootElement().getManagedObject();
-    Shell parent;
-    if(obj instanceof Shell){
-      parent = (Shell) obj;
-    } else {
-      parent = ((Composite) obj).getShell();
-    }
-    if( parent == null){
-      throw new IllegalStateException("Could not get Shell reference from Xul Dialog Tree.");
-    }
+    Shell parent = getShell();
     
     DatabaseMeta dbinfo = new DatabaseMeta();
     getInfo(dbinfo);
@@ -54,9 +45,25 @@ public class DataOverrideHandler extends DataHandler {
     }
   }
 
+  private Shell getShell(){
+    Object obj = document.getRootElement().getManagedObject();
+    Shell parent;
+    if(obj instanceof Shell){
+      parent = (Shell) obj;
+    } else {
+      parent = ((Composite) obj).getShell();
+    }
+    if( parent == null){
+      throw new IllegalStateException("Could not get Shell reference from Xul Dialog Tree.");
+    }
+    return parent;
+  }
+  
   public void showFeatureList() {
 
-    Shell parent = (Shell)document.getRootElement().getManagedObject();
+    Shell parent = getShell();
+    
+    
     DatabaseMeta dbinfo = new DatabaseMeta();
     getInfo(dbinfo);
 
