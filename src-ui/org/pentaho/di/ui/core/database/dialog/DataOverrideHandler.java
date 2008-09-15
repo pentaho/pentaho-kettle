@@ -3,6 +3,7 @@ package org.pentaho.di.ui.core.database.dialog;
 import java.util.ArrayList;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.RowMetaAndData;
@@ -24,7 +25,17 @@ public class DataOverrideHandler extends DataHandler {
 
   public void explore() {
     
-    Shell parent = (Shell)document.getRootElement().getManagedObject();
+    Object obj = document.getRootElement().getManagedObject();
+    Shell parent;
+    if(obj instanceof Shell){
+      parent = (Shell) obj;
+    } else {
+      parent = ((Composite) obj).getShell();
+    }
+    if( parent == null){
+      throw new IllegalStateException("Could not get Shell reference from Xul Dialog Tree.");
+    }
+    
     DatabaseMeta dbinfo = new DatabaseMeta();
     getInfo(dbinfo);
 
