@@ -1297,7 +1297,7 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
         }
         
         Object[] errorRowData = RowDataUtil.allocateRowData(errorRowMeta.size());
-        System.arraycopy(row, 0, errorRowData, 0, rowMeta.size());
+        if (row!=null) System.arraycopy(row, 0, errorRowData, 0, rowMeta.size());
         
         // Also add the error fields...
         stepErrorMeta.addErrorRowData(errorRowData, rowMeta.size(), nrErrors, errorDescriptions, fieldNames, errorCodes);
