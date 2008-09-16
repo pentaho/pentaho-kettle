@@ -18,6 +18,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
@@ -769,6 +771,18 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
     setBackground(GUIResource.getInstance().getColorBackground());
 
     setControlStates();
+    
+    // Add a timer to set correct the state of the run/stop buttons every 2 seconds...
+    //
+    Timer timer = new Timer();
+    TimerTask timerTask = new TimerTask() {
+		
+			public void run() {
+				setControlStates();
+			}
+		};
+	timer.schedule(timerTask, 2000, 1000);
+
   }
 
   private void addToolBar() {

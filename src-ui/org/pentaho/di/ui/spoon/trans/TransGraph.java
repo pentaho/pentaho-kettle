@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -1005,6 +1007,17 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     // filenameLabel.addKeyListener(spoon.defKeys);
 
     setBackground(GUIResource.getInstance().getColorBackground());
+    
+    // Add a timer to set correct the state of the run/stop buttons every 2 seconds...
+    //
+    Timer timer = new Timer();
+    TimerTask timerTask = new TimerTask() {
+		
+			public void run() {
+				setControlStates();
+			}
+		};
+	timer.schedule(timerTask, 2000, 1000);
   }
 
   private void addToolBar() {
@@ -3004,7 +3017,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     }
   }
 
-  private void setControlStates() {
+  private synchronized void setControlStates() {
     getDisplay().asyncExec(new Runnable() {
 
       public void run() {
