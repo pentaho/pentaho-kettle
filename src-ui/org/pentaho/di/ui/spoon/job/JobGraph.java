@@ -31,6 +31,8 @@ import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.DropTargetListener;
 import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.KeyAdapter;
@@ -774,14 +776,21 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
     
     // Add a timer to set correct the state of the run/stop buttons every 2 seconds...
     //
-    Timer timer = new Timer();
+    final Timer timer = new Timer();
     TimerTask timerTask = new TimerTask() {
-		
 			public void run() {
 				setControlStates();
 			}
 		};
 	timer.schedule(timerTask, 2000, 1000);
+
+	// Make sure the timer stops when we close the tab...
+	//
+	addDisposeListener(new DisposeListener() {
+		public void widgetDisposed(DisposeEvent arg0) {
+			timer.cancel();
+		}
+	});
 
   }
 
