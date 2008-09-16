@@ -116,6 +116,8 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 	/** Flag : read url as source */
 	private boolean readurl;
 	
+	// Given this path activates the streaming algorithm to process large files
+	private String prunePath;
     	
 	public GetXMLDataMeta()
 	{
@@ -462,7 +464,21 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface
     {
     	this.IsAFile = IsAFile;
     }
-    
+
+	/**
+	 * @return the prunePath
+	 */
+	public String getPrunePath() {
+		return prunePath;
+	}
+
+	/**
+	 * @param prunePath the prunePath to set
+	 */
+	public void setPrunePath(String prunePath) {
+		this.prunePath = prunePath;
+	}
+	
     public void loadXML(Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters)
   	    throws KettleXMLException
 	{
@@ -539,7 +555,8 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface
         retval.append("    ").append(XMLHandler.addTagValue("IsAFile", IsAFile));
         
         retval.append("    ").append(XMLHandler.addTagValue("XmlField", XmlField));
-
+        retval.append("    ").append(XMLHandler.addTagValue("prunePath", prunePath));
+        
         return retval.toString();
     }
      public String getRequiredFilesDesc(String tt)
@@ -612,7 +629,7 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 			IsAFile = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "IsAFile"));
 			
 			XmlField = XMLHandler.getTagValue(stepnode, "XmlField");
-			
+			prunePath = XMLHandler.getTagValue(stepnode, "prunePath");
 		}
 		catch(Exception e)
 		{
@@ -666,6 +683,7 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 		
 		IsInFields = false;
 		XmlField = "";
+		prunePath = "";
 	}
 	
 	public void getFields(RowMetaInterface r, String name, RowMetaInterface info[], StepMeta nextStep, VariableSpace space) throws KettleStepException
@@ -766,6 +784,7 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 			IsAFile    = rep.getStepAttributeBoolean (id_step, "IsAFile");
 			
 			XmlField   = rep.getStepAttributeString (id_step, "XmlField");
+			prunePath   = rep.getStepAttributeString (id_step, "prunePath");
 		}
 		catch(Exception e)
 		{
@@ -824,6 +843,7 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "IsAFile",       IsAFile);
 			
             rep.saveStepAttribute(id_transformation, id_step, "XmlField",        XmlField);
+            rep.saveStepAttribute(id_transformation, id_step, "prunePath",        prunePath);
 			
 		}
 		catch(Exception e)
@@ -910,5 +930,7 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface
     public boolean supportsErrorHandling()
     {
         return true;
-    } 
+    }
+
+
 }

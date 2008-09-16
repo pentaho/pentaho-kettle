@@ -19,7 +19,10 @@ import java.net.URL;
 import java.util.List;
 
 import org.apache.commons.vfs.FileObject;
+import org.dom4j.Document;
 import org.dom4j.Element;
+import org.dom4j.ElementHandler;
+import org.dom4j.ElementPath;
 import org.dom4j.Namespace;
 import org.dom4j.XPath;
 import org.dom4j.io.SAXReader;
@@ -65,6 +68,7 @@ public class GetXMLData extends BaseStep implements StepInterface
 	   
 	   try{
 			SAXReader reader = new SAXReader();
+			data.stopPruning=false;
 	
 			// Validate XML against specified schema?
 			if(meta.isValidating())
@@ -75,6 +79,45 @@ public class GetXMLData extends BaseStep implements StepInterface
 			
 			// Ignore comments?
 			if(meta.isIgnoreComments())	reader.setIgnoreComments(true);
+
+			if(data.prunePath!=null) { 
+				// when pruning is on: reader.read() below will wait until all is processed in the handler
+				if (log.isDetailed()) logDetailed(Messages.getString("GetXMLData.Log.StreamingMode.Activated"));
+				reader.addHandler( data.prunePath, 
+				    new ElementHandler() {
+				        public void onStart(ElementPath path) {
+				            // do nothing here...    
+				        }
+				        public void onEnd(ElementPath path) {
+				        	if(isStopped()) {
+				        		// when a large file is processed and it should be stopped it is still reading the hole thing
+				        		// the only solution I see is to prune / detach the document and this will lead into a 
+				        		// NPE or other errors depending on the parsing location - this will be treated in the catch part below
+				        		// any better idea is welcome
+				        		if (log.isBasic()) logBasic(Messages.getString("GetXMLData.Log.StreamingMode.Stopped"));
+				        		data.stopPruning=true;
+				        		data.document.detach();
+				        		path.getCurrent().getDocument().detach();  // trick to stop reader
+				        		return;
+				        	}
+				    		
+				            // process a ROW element
+				        	if (log.isDebug()) logDebug(Messages.getString("GetXMLData.Log.StreamingMode.StartProcessing"));
+				            Element row = path.getCurrent();
+				            try {
+				            	processStreaming(row.getDocument());
+				            }
+				            catch (Exception e ) {
+				            	// catch the KettleException or others and forward to caller, e.g. when applyXPath() has a problem
+				            	throw new RuntimeException(e);
+				            }
+				            // prune the tree
+				            row.detach();
+				            if (log.isDebug()) logDebug(Messages.getString("GetXMLData.Log.StreamingMode.EndProcessing"));
+				        }
+				    }
+				);
+			}
 			
 			if (IsInXMLField)
 			{
@@ -94,12 +137,47 @@ public class GetXMLData extends BaseStep implements StepInterface
 				data.document = reader.read( KettleVFS.getInputStream(file),encoding);		
 			}
 
-			if(meta.isNamespaceAware())	prepareNSMap(data.document.getRootElement());	    	    
+			if(meta.isNamespaceAware())	prepareNSMap(data.document.getRootElement());	    
 	   }catch (Exception e)
 	   {
-		   throw new KettleException(e);
+		   if (data.stopPruning) {
+			   // ignore error when pruning
+			   return false;
+		   } else {
+			   throw new KettleException(e);
+		   }
 	   }
 	   return true;        
+   }
+   
+	/**
+	 * Process chunk of data in streaming mode.
+	 * Called only by the handler when pruning is true.
+	 * Not allowed in combination with meta.getIsInFields(), but could be redesigned later on.
+	 * 
+	 */
+   private void processStreaming(Document document) throws KettleException  {
+	   	data.document = document;
+		if(meta.isNamespaceAware())	prepareNSMap(data.document.getRootElement());
+	   	if (log.isDebug()) logDebug(Messages.getString("GetXMLData.Log.StreamingMode.ApplyXPath"));
+		if(!applyXPath())
+		{
+			throw new KettleException (Messages.getString("GetXMLData.Log.UnableApplyXPath"));
+		}
+		// main loop through the data until limit is reached or transformation is stopped
+		// similar functionality like in BaseStep.runStepThread
+		if (log.isDebug()) logDebug(Messages.getString("GetXMLData.Log.StreamingMode.ProcessingRows"));
+		boolean cont=true;
+		while (data.nodenr<data.nodesize && cont && !isStopped())
+		{
+			Object[] r=getXMLRowPutRowWithErrorhandling();
+			cont=putRowOut(r);  //false when limit is reached, functionality is there but we can not stop reading the hole file (slow but works)
+		} 		
+		if (log.isDebug()) logDebug(Messages.getString("GetXMLData.Log.StreamingMode.FreeMemory"));
+		// free allocated memory
+		data.an.clear();
+		data.nodesize=data.an.size();
+		data.nodenr=0;
    }
    
    @SuppressWarnings("unchecked")
@@ -242,12 +320,11 @@ public class GetXMLData extends BaseStep implements StepInterface
 							throw new KettleException (Messages.getString("GetXMLData.Log.UnableCreateDocument"));
 						}
 						
-						// Apply XPath and set node list
 						if(!applyXPath())
 						{
 							throw new KettleException (Messages.getString("GetXMLData.Log.UnableApplyXPath"));
 						}
-						
+
 						addFileToResultFilesname(file);
 			            
 			            if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("GetXMLData.Log.LoopFileOccurences",""+data.nodesize,file.getName().getBaseName()));
@@ -412,7 +489,8 @@ public class GetXMLData extends BaseStep implements StepInterface
             
 			if(meta.isIgnoreEmptyFile() && fileSize==0)
 			{
-				log.logError(toString(),Messages.getString("GetXMLData.Error.FileSizeZero", ""+data.file.getName()));
+				// log only basic as a warning (was before logError)
+				log.logBasic(toString(),Messages.getString("GetXMLData.Error.FileSizeZero", ""+data.file.getName()));
 				openNextFile();
 				
 			}else
@@ -422,13 +500,16 @@ public class GetXMLData extends BaseStep implements StepInterface
 				//Open the XML document
 				if(!setDocument(null,data.file,false,false)) 
 				{
+					if(data.stopPruning) return false; // ignore error when stopped while pruning
 					throw new KettleException (Messages.getString("GetXMLData.Log.UnableCreateDocument"));
 				}
-				
+
 				// Apply XPath and set node list
-				if(!applyXPath())
-				{
-					throw new KettleException (Messages.getString("GetXMLData.Log.UnableApplyXPath"));
+				if(data.prunePath==null) { // this was already done in processStreaming()
+					if(!applyXPath())
+					{
+						throw new KettleException (Messages.getString("GetXMLData.Log.UnableApplyXPath"));
+					}
 				}
 				
 				addFileToResultFilesname(data.file);
@@ -495,11 +576,12 @@ public class GetXMLData extends BaseStep implements StepInterface
 	
 	private boolean putRowOut(Object[] r) throws KettleException
 	{
-		 if (r==null)
-	     {
-	        setOutputDone();  // signal end to receiver(s)
-	        return false; // end of data or error.
-	     }
+		// this is already done by the caller:
+//		 if (r==null)
+//	     {
+//	        setOutputDone();  // signal end to receiver(s)
+//	        return false; // end of data or error.
+//	     }
 		 
 		 if (log.isRowLevel()) logRowlevel(Messages.getString("GetXMLData.Log.ReadRow", r.toString()));
 		 incrementLinesInput();
@@ -529,7 +611,11 @@ public class GetXMLData extends BaseStep implements StepInterface
 		        }
 			} 
 		}
+		return getXMLRowPutRowWithErrorhandling();
+	}
 
+	private Object[] getXMLRowPutRowWithErrorhandling()  throws KettleException
+	{
 		 // Build an empty row based on the meta-data		  
 		 Object[] r=null;
 		 boolean sendToErrorRow=false;
@@ -551,10 +637,10 @@ public class GetXMLData extends BaseStep implements StepInterface
 				}
 			 }
 			 	
-				if(meta.getIsInFields())
-					r= processPutRow(data.readrow,(AbstractNode)data.an.get(data.nodenr));
-				else
-					r= processPutRow(null,(AbstractNode)data.an.get(data.nodenr));
+			if(meta.getIsInFields())
+				r= processPutRow(data.readrow,(AbstractNode)data.an.get(data.nodenr));
+			else
+				r= processPutRow(null,(AbstractNode)data.an.get(data.nodenr));
 		 }
 		 catch (Exception e)
 		 {
@@ -571,13 +657,13 @@ public class GetXMLData extends BaseStep implements StepInterface
 			 if (sendToErrorRow)
 			 {
 			   // Simply add this row to the error row
-			   putError(getInputRowMeta(), r, 1, errorMessage, null, "GetXMLData001");
+			   putError(data.outputRowMeta, r, 1, errorMessage, null, "GetXMLData001");
 			 }
 		 }
 		 
 		return r;
 	}
-	 
+
 		
 	private Object[] processPutRow(Object[] row,AbstractNode node) throws KettleException
 	{
@@ -625,7 +711,7 @@ public class GetXMLData extends BaseStep implements StepInterface
 				
 				// Get node value
 				String nodevalue =null;
-				if (!Element_Type.equals("node")) XPathValue='@'+XPathValue;
+				if (!Element_Type.equals("node")) XPathValue='@'+XPathValue;  //TODO only put @ to the last element in path, not in front at all
 				
 				if(meta.isNamespaceAware())
 				{
@@ -714,6 +800,18 @@ public class GetXMLData extends BaseStep implements StepInterface
 			data.PathValue=environmentSubstitute(meta.getLoopXPath());
 			if(!data.PathValue.substring(0,1).equals("/")) data.PathValue="/" + data.PathValue;
 			if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("GetXMLData.Log.LoopXPath",data.PathValue));
+			
+			data.prunePath=environmentSubstitute(meta.getPrunePath());
+			if(data.prunePath!=null) {
+				if(Const.isEmpty(data.prunePath.trim())) {
+					data.prunePath=null; 
+				} else {
+					// ensure a leading slash
+					if(!data.prunePath.startsWith("/")) data.prunePath="/"+data.prunePath;
+					// check if other conditions apply that do not allow pruning
+					if(meta.getIsInFields()) data.prunePath=null; // not possible by design, could be changed later on
+				}
+			}
 				
 			return true;
 		}
