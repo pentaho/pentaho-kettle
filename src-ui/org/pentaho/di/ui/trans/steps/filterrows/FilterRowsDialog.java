@@ -281,7 +281,9 @@ public class FilterRowsDialog extends BaseStepDialog implements StepDialogInterf
 		}
 		else
 		{
+            input.setSendTrueStepname(wTrueTo.getText());
 			input.setSendTrueStep( transMeta.findStep( wTrueTo.getText() ) );
+            input.setSendFalseStepname(wFalseTo.getText());
 			input.setSendFalseStep( transMeta.findStep( wFalseTo.getText() ) );
 			stepname = wStepname.getText(); // return value
 			input.setCondition( condition );
