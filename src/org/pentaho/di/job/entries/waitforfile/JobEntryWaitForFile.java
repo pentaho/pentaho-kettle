@@ -197,9 +197,9 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
     		{
     			fileObject = KettleVFS.getFileObject(realFilename);
 
-    			long iMaximumTimeout = Const.toInt(getMaximumTimeout(),
+    			long iMaximumTimeout = Const.toInt(getRealMaximumTimeout(),
     					Const.toInt(DEFAULT_MAXIMUM_TIMEOUT, 0));
-    			long iCycleTime = Const.toInt(getCheckCycleTime(),
+    			long iCycleTime = Const.toInt(getRealCheckCycleTime(),
     					Const.toInt(DEFAULT_CHECK_CYCLE_TIME, 0));
 
     			//
@@ -379,7 +379,9 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
 	public String getCheckCycleTime() {
 		return checkCycleTime;
 	}
-
+	public String getRealCheckCycleTime() {
+		return environmentSubstitute(getCheckCycleTime());
+	}
 	public void setCheckCycleTime(String checkCycleTime) {
 		this.checkCycleTime = checkCycleTime;
 	}
@@ -387,7 +389,9 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
 	public String getMaximumTimeout() {
 		return maximumTimeout;
 	}
-
+	public String getRealMaximumTimeout() {
+		return environmentSubstitute(getMaximumTimeout());
+	}
 	public void setMaximumTimeout(String maximumTimeout) {
 		this.maximumTimeout = maximumTimeout;
 	}
