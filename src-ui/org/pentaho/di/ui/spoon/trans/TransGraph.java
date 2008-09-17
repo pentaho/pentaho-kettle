@@ -3028,6 +3028,8 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
   }
 
   private synchronized void setControlStates() {
+	if (getDisplay().isDisposed()) return;
+	
     getDisplay().asyncExec(new Runnable() {
 
       public void run() {
