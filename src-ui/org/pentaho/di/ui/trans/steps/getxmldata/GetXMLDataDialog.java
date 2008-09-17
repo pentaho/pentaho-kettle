@@ -163,6 +163,10 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
     private Label        wlLoopXPath;
     private TextVar      wLoopXPath;
     private FormData     fdlLoopXPath, fdLoopXPath;
+ 
+    private Label        wlPrunePath;
+    private TextVar      wPrunePath;
+    private FormData     fdlPrunePath, fdPrunePath;
     
     private Label        wlEncoding;
     private CCombo       wEncoding;
@@ -772,7 +776,24 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		fdLimit.right= new FormAttachment(100, 0);
 		wLimit.setLayoutData(fdLimit);
 		
-		
+		// Prune path to handle large files (streaming mode)
+		wlPrunePath=new Label(wXmlConf, SWT.RIGHT);
+		wlPrunePath.setText(Messages.getString("GetXMLDataDialog.StreamingMode.Label"));
+ 		props.setLook(wlPrunePath);
+		fdlPrunePath=new FormData();
+		fdlPrunePath.left = new FormAttachment(0, 0);
+		fdlPrunePath.top  = new FormAttachment(wLimit, margin);
+		fdlPrunePath.right= new FormAttachment(middle, -margin);
+		wlPrunePath.setLayoutData(fdlPrunePath);
+		wPrunePath=new TextVar(transMeta,wXmlConf, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wPrunePath.setToolTipText(Messages.getString("GetXMLDataDialog.StreamingMode.Tooltip"));
+ 		props.setLook(wPrunePath);
+		wPrunePath.addModifyListener(lsMod);
+		fdPrunePath=new FormData();
+		fdPrunePath.left = new FormAttachment(middle, 0);
+		fdPrunePath.top  = new FormAttachment(wLimit, margin);
+		fdPrunePath.right= new FormAttachment(100, 0);
+		wPrunePath.setLayoutData(fdPrunePath);		
 		
 		fdXmlConf = new FormData();
 		fdXmlConf.left = new FormAttachment(0, margin);
@@ -1319,9 +1340,12 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		wAddResult.setEnabled(!wXMLStreamField.getSelection());
 		wlAddResult.setEnabled(!wXMLStreamField.getSelection());
 		wLimit.setEnabled(!wXMLStreamField.getSelection());	
+		wlLimit.setEnabled(!wXMLStreamField.getSelection());
 		wPreview.setEnabled(!wXMLStreamField.getSelection());
 		wGet.setEnabled(!wXMLStreamField.getSelection());
 		wbbLoopPathList.setEnabled(!wXMLStreamField.getSelection());
+		wPrunePath.setEnabled(!wXMLStreamField.getSelection());
+		wlPrunePath.setEnabled(!wXMLStreamField.getSelection());
 	}
 	@SuppressWarnings("unchecked")
 	private void getLoopPathList()
@@ -1660,6 +1684,7 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		if (in.getFilenameField()!=null) wInclFilenameField.setText(in.getFilenameField());
 		if (in.getRowNumberField()!=null) wInclRownumField.setText(in.getRowNumberField());
 		wLimit.setText(""+in.getRowLimit());
+		if (in.getPrunePath()!=null) wPrunePath.setText(in.getPrunePath());
         if(in.getLoopXPath()!=null) wLoopXPath.setText(in.getLoopXPath());
         if (in.getEncoding()!=null) 
         {
@@ -1738,6 +1763,7 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 
 		// copy info to TextFileInputMeta class (input)
 		in.setRowLimit( Const.toLong(wLimit.getText(), 0L) );
+		in.setPrunePath(wPrunePath.getText());
         in.setLoopXPath(wLoopXPath.getText());
         in.setEncoding(wEncoding.getText());
 		in.setFilenameField( wInclFilenameField.getText() );
