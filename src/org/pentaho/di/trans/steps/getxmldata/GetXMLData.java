@@ -96,7 +96,6 @@ public class GetXMLData extends BaseStep implements StepInterface
 				        		// any better idea is welcome
 				        		if (log.isBasic()) logBasic(Messages.getString("GetXMLData.Log.StreamingMode.Stopped"));
 				        		data.stopPruning=true;
-				        		data.document.detach();
 				        		path.getCurrent().getDocument().detach();  // trick to stop reader
 				        		return;
 				        	}
