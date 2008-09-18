@@ -685,7 +685,6 @@ public class ValueMeta implements ValueMetaInterface
         {
         	// This may not become static as the class is not thread-safe!
             dateFormat = new SimpleDateFormat();
-            dateFormat.setLenient(dateFormatLenient);
             
             String mask;
             if (Const.isEmpty(conversionMask))
@@ -705,6 +704,10 @@ public class ValueMeta implements ValueMetaInterface
             {
                 dateFormat = new SimpleDateFormat(mask, dateFormatLocale);
             }
+            
+            // Set the conversion leniency as well
+            //
+            dateFormat.setLenient(dateFormatLenient);
             
             dateFormatChanged=false;
         }
