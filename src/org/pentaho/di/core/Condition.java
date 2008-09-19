@@ -464,6 +464,7 @@ public class Condition implements Cloneable, XMLInterface
 							String searchString = fieldMeta.getCompatibleString(field);
 							int inIndex = Arrays.binarySearch(inList, searchString);
 							retval = Boolean.valueOf(inIndex>=0); 
+							break;
 					case FUNC_CONTAINS      : 
                         retval = fieldMeta.getCompatibleString(field)!=null?fieldMeta.getCompatibleString(field).indexOf(fieldMeta2.getCompatibleString(field2))>=0:false; 
                         break;
