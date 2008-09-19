@@ -19,11 +19,8 @@ package org.pentaho.di.trans.steps.pgbulkloader;
 //
 // 
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.math.BigDecimal;
 
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
@@ -53,14 +50,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 public class PGBulkLoader extends BaseStep implements StepInterface
 {
 	private PGBulkLoaderMeta meta;
-	private PGBulkLoaderData data;
-		
-	/*
-	 * Local copy of the transformation "preview" property. We only forward
-	 * the rows upon previewing, we don't do any of the real stuff.
-	 */
-	private boolean preview = false;
-	
+	private PGBulkLoaderData data;	
 	
 	public PGBulkLoader(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans)
 	{
@@ -74,17 +64,9 @@ public class PGBulkLoader extends BaseStep implements StepInterface
 	 * 
 	 * @return a string containing the control file contents
 	 */
-	public String getControlFileContents(PGBulkLoaderMeta meta, RowMetaInterface rm, Object[] r) throws KettleException
+	public String getCopyCommand(RowMetaInterface rm, Object[] r) throws KettleException
 	{
 		DatabaseMeta dm = meta.getDatabaseMeta();
-		// String inputName = "'" + environmentSubstitute(meta.getDataFile()) + "'";
-
-		//if ( GPBulkLoaderMeta.METHOD_AUTO_CONCURRENT.equals(meta.getLoadMethod()) )
-		//{
-		//	// if loading is concurrent, the filename has to be a * as sqlldr will
-		//	// read from stdin.
-		//	inputName = "*";
-		//}
 
 		String loadAction = meta.getLoadAction();
 
@@ -93,14 +75,19 @@ public class PGBulkLoader extends BaseStep implements StepInterface
         String tableName = dm.getQuotedSchemaTableCombination(
             environmentSubstitute(meta.getSchemaName()),
             environmentSubstitute(meta.getTableName()));
+        
+        // Set the date style...
+        //
+        // contents.append("SET DATESTYLE ISO;"); // This is the default but we set it anyway...
+        // contents.append(Const.CR);
 
         // Create a Postgres / Greenplum COPY string for use with a psql client
         if (loadAction.equalsIgnoreCase("truncate")) {
-            contents.append(loadAction + " ");
+            contents.append("TRUNCATE TABLE ");
             contents.append(tableName + ";");
             contents.append(Const.CR);
         }
-        contents.append("\\COPY ");
+        contents.append("COPY ");
         // Table name
 
         contents.append(tableName);
@@ -126,47 +113,15 @@ public class PGBulkLoader extends BaseStep implements StepInterface
         contents.append(" ) ");
 
         // The "FROM" filename
-        contents.append(" FROM /tmp/load0.dat"); // FIFO file
+        contents.append(" FROM STDIN"); // FIFO file
 
         // The "FORMAT" clause
-        contents.append(" WITH CSV DELIMITER AS ';' QUOTE AS '\"'");
+        contents.append(" WITH CSV DELIMITER AS '").append(meta.getDelimiter()).append("' QUOTE AS '").append(meta.getEnclosure()).append("'");
+        contents.append(";").append(Const.CR);
 
 		return contents.toString();
 	}
-	
-	/**
-	 * Create a control file.
-	 * 
-	 * @param filename
-	 * @param meta
-	 * @throws KettleException
-	 */
-	public void createControlFile(String filename, Object[] row, PGBulkLoaderMeta meta) throws KettleException
-	{
-		File controlFile = new File(filename);
-		FileWriter fw = null;
 		
-		try
-		{
-			controlFile.createNewFile();
-			fw = new FileWriter(controlFile);
- 	        fw.write(getControlFileContents(meta, getInputRowMeta(), row));	  
- 	        fw.write(Const.CR);
-		}
-		catch ( IOException ex )
-		{
-		    throw new KettleException(ex.getMessage(), ex);
-		}
-		finally
-		{
-			try  {
-			    if ( fw != null )
-				    fw.close();
-			}
-			catch ( Exception ex ) {}
-		}
-	}
-	
 	/**
 	 * Create the command line for a psql process depending on the meta
 	 * information supplied.
@@ -200,70 +155,31 @@ public class PGBulkLoader extends BaseStep implements StepInterface
 		   throw new KettleException("No psql application specified");
 	   }
 
-	   if ( meta.getControlFile() != null )
-	   {
-		   try
-		   {
-	           FileObject fileObject = KettleVFS.getFileObject(environmentSubstitute(meta.getControlFile()));   
-		   
-	           sb.append(" -f ");
-	           sb.append(KettleVFS.getFilename(fileObject));
-  	       }
-	       catch ( IOException ex )
-	       {
-	           throw new KettleException("Error retrieving controlfile string", ex);
-	       }		   
-	   }
-	   else
-	   {
-		   throw new KettleException("No control file specified");
-	   }
-	   
-	   /*
-	   if ( meta.getLogFile() != null )
-	   {
-		   try 
-		   {
-		       FileObject fileObject = KettleVFS.getFileObject(environmentSubstitute(meta.getLogFile()));   
-	   
-		       sb.append(" -o ");
-		       sb.append('\'').append(KettleVFS.getFilename(fileObject)).append('\'');
-		   }
-		   catch ( IOException ex )
-		   {
-		       throw new KettleException("Error retrieving logfile string", ex);
-		   }
-	   }
-	   */
-
        DatabaseMeta dm = meta.getDatabaseMeta();
        if ( dm != null )
        {
-           String user = Const.NVL(dm.getUsername(), "");
 
-		   // Passwords will not work for now because we can't get them to the command line without assuming UNIX and using
-		   // an environment variable
-           
+		   // Note: Passwords are not supported directly, try configuring your connection for trusted access using pg_hba.conf
+           //
+
+           // The username
+           // 
+    	   // String user = Const.NVL(dm.getUsername(), "");
+           // sb.append(" -U ").append(environmentSubstitute(user));
+
+           // Hostname and portname
+           //
            /*
-           String pass = Const.NVL(dm.getPassword(), "");
-           if (password && ! pass.equalsIgnoreCase("") ) {
-               throw new KettleException("Passwords are not supported directly, try configuring your connection for trusted access using pg_hba.conf");
-           }
-           */
-
-           sb.append(" -U ").append(environmentSubstitute(user));
-
-           /*
-           //Hostname and portname
            String hostname  = Const.NVL(dm.getHostname(), "");
            String portnum  = Const.NVL(dm.getDatabasePortNumberString(), "");
            sb.append(" -h ");
            sb.append(hostname);
            sb.append(" -p ");
            sb.append(portnum);
-		*/
+		   */
            
            // Database Name
+           // 
            String dns  = Const.NVL(dm.getDatabaseName(), "");
            sb.append(" -d ");
            String overrideName = meta.getDbNameOverride();
@@ -302,17 +218,16 @@ public class PGBulkLoader extends BaseStep implements StepInterface
             // any output?
             data.outputLogger = new StreamLogger(data.psqlProcess.getInputStream(), "OUTPUT");
             
-            // Where do we send the data to?
+            // Where do we send the data to? --> To STDIN of the psql process
             //
-            data.pgOutputStream = new BufferedOutputStream(new FileOutputStream(new File("/tmp/load0.dat")), 5000000); // FIFO file
+            data.pgOutputStream = data.psqlProcess.getOutputStream();
             
             // kick them off
             new Thread(data.errorLogger).start();
             new Thread(data.outputLogger).start();                              
 
-            // OK, now we need to feed the data into the pgOutputStream
+            // OK, from here on, we need to feed in the COPY command followed by the data into the pgOutputStream
             //
-            
         }
         catch ( Exception ex )
         {
@@ -351,7 +266,6 @@ public class PGBulkLoader extends BaseStep implements StepInterface
 			if (first)
 			{
 				first=false;
-				createControlFile(environmentSubstitute(meta.getControlFile()), r, meta);
 				
 				// Cache field indexes.
 				//
@@ -363,6 +277,13 @@ public class PGBulkLoader extends BaseStep implements StepInterface
 				// execute the psql statement...
 				//
 				execute(meta, true);
+				
+				String copyCmd = getCopyCommand(getInputRowMeta(), r);
+				logBasic("Launching command: "+copyCmd);
+				data.pgOutputStream.write(copyCmd.getBytes());
+
+				// Write rows of data hereafter...
+				//
 			}
 			
 			writeRowToPostgres(getInputRowMeta(), r);
@@ -423,8 +344,45 @@ public class PGBulkLoader extends BaseStep implements StepInterface
 		    			}
 		    			break;
 		    		case ValueMetaInterface.TYPE_DATE:
+		    			// Format the date in the right format.
+		    			// 
+		    			switch(data.dateFormatChoices[i]) {
+		    			// Pass the data along in the format chosen by the user OR in binary format...
+		    			//
+		    			case PGBulkLoaderMeta.NR_DATE_MASK_PASS_THROUGH:
+			    			{
+				    			if (valueMeta.isStorageBinaryString()) {
+				    				data.pgOutputStream.write((byte[])valueData);
+				    			} else {
+				    				String dateString = valueMeta.getString(valueData);
+				    				if (dateString!=null) {
+				    					data.pgOutputStream.write(dateString.getBytes());
+				    				}
+				    			}
+			    			}
+			    			break;
+			    		// Convert to a "YYYY/MM/DD" format
+			    	    //
+		    			case PGBulkLoaderMeta.NR_DATE_MASK_DATE:
+			    			{
+			    				String dateString = data.dateMeta.getString(valueMeta.getDate(valueData));
+			    				if (dateString!=null) {
+			    					data.pgOutputStream.write(dateString.getBytes());
+			    				}
+			    			}
 		    			break;
-		    			// TODO
+			    		// Convert to a "YYYY/MM/DD HH:MM:SS" (ISO) format
+			    	    //
+		    			case PGBulkLoaderMeta.NR_DATE_MASK_DATETIME:
+			    			{
+			    				String dateTimeString = data.dateTimeMeta.getString(valueMeta.getDate(valueData));
+			    				if (dateTimeString!=null) {
+			    					data.pgOutputStream.write(dateTimeString.getBytes());
+			    				}
+			    			}
+		    			break;
+		    			}
+		    			break;
 		    		case ValueMetaInterface.TYPE_BOOLEAN:
 		    			if (valueMeta.isStorageBinaryString()) {
 		    				data.pgOutputStream.write((byte[])valueData);
@@ -437,6 +395,16 @@ public class PGBulkLoader extends BaseStep implements StepInterface
 		    				data.pgOutputStream.write((byte[])valueData);
 		    			} else {
 		    				data.pgOutputStream.write(Double.toString(valueMeta.getNumber(valueData)).getBytes());
+		    			}
+		    			break;
+		    		case ValueMetaInterface.TYPE_BIGNUMBER:
+		    			if (valueMeta.isStorageBinaryString()) {
+		    				data.pgOutputStream.write((byte[])valueData);
+		    			} else {
+		    				BigDecimal big = valueMeta.getBigNumber(valueData);
+		    				if (big!=null) {
+		    					data.pgOutputStream.write(big.toString().getBytes());
+		    				}
 		    			}
 		    			break;
 		    		}
@@ -459,76 +427,28 @@ public class PGBulkLoader extends BaseStep implements StepInterface
 		meta=(PGBulkLoaderMeta)smi;
 		data=(PGBulkLoaderData)sdi;
 		
-		Trans trans = getTrans();
-		preview = trans.isPreview();
-		
 		if (super.init(smi, sdi))
 		{			
-			data.quote = "\"".getBytes();
-			data.separator = ";".getBytes();
+			if (meta.getEnclosure()!=null) data.quote = meta.getEnclosure().getBytes(); else data.quote = new byte[] {}; 
+			if (meta.getDelimiter()!=null) data.separator = meta.getDelimiter().getBytes(); else data.separator = new byte[] {};
 			data.newline = Const.CR.getBytes();
 
+			data.dateFormatChoices = new int[meta.getFieldStream().length];
+			for (int i=0;i<data.dateFormatChoices.length;i++) {
+				if (meta.getDateMask()[i].equalsIgnoreCase(PGBulkLoaderMeta.DATE_MASK_DATE)) {
+					data.dateFormatChoices[i] = PGBulkLoaderMeta.NR_DATE_MASK_DATE;
+				}
+				else if (meta.getDateMask()[i].equalsIgnoreCase(PGBulkLoaderMeta.DATE_MASK_DATETIME)) {
+					data.dateFormatChoices[i] = PGBulkLoaderMeta.NR_DATE_MASK_DATETIME;
+				} 				
+				else { // The default : just pass it along...
+					data.dateFormatChoices[i] = PGBulkLoaderMeta.NR_DATE_MASK_PASS_THROUGH;
+				}
+
+			}
 			return true;
 		}
 		return false;
-	}
-
-	public void dispose(StepMetaInterface smi, StepDataInterface sdi)
-	{
-	    meta = (PGBulkLoaderMeta)smi;
-	    data = (PGBulkLoaderData)sdi;
-
-	    super.dispose(smi, sdi);
-	    
-	    if ( !preview && meta.isEraseFiles() )
-	    {
-	       // Erase the created cfg/dat files if requested. We don't erase
-	       // the rest of the files because it would be "stupid" to erase them
-	       // right after creation. If you don't want them, don't fill them in.
-	       FileObject fileObject = null;
-	       
-	       String method = meta.getLoadMethod();
-	       if (  // GPBulkLoaderMeta.METHOD_AUTO_CONCURRENT.equals(method) ||
-	    		 PGBulkLoaderMeta.METHOD_AUTO_END.equals(method))
-	       {
-	 	       if ( meta.getControlFile() != null )
-		       {
-			       try
-			       {
-		               fileObject = KettleVFS.getFileObject(environmentSubstitute(meta.getControlFile()));			   
-		               fileObject.delete();
-		               fileObject.close();
-	  	           }
-		           catch ( IOException ex )
-		           {
-		               logError("Error deleting control file \'" + KettleVFS.getFilename(fileObject) + "\': " + ex.getMessage());
-		           }
-		       }
-		   }
-
-	       if (  PGBulkLoaderMeta.METHOD_AUTO_END.equals(method) )
-	       {
-	    	   // In concurrent mode the data is written to the control file.
-	 	       if ( meta.getDataFile() != null )
-		       {
-			       try
-			       {
-		               fileObject = KettleVFS.getFileObject(environmentSubstitute(meta.getDataFile()));			   
-		               fileObject.delete();
-		               fileObject.close();
-	  	           }
-		           catch ( IOException ex )
-		           {
-		               logError("Error deleting data file \'" + KettleVFS.getFilename(fileObject) + "\': " + ex.getMessage());
-		           }
-		       }
-	       }	       
-	       
-	       if (  PGBulkLoaderMeta.METHOD_MANUAL.equals(method) )
-	       {
-	           logBasic("Deletion of files is not compatible with \'manual load method\'");	   
-	       }
-	    }
 	}
 	
 	//

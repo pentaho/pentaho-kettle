@@ -14,6 +14,8 @@ package org.pentaho.di.trans.steps.pgbulkloader;
 import java.io.OutputStream;
 
 import org.pentaho.di.core.database.Database;
+import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.StreamLogger;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
@@ -45,6 +47,12 @@ public class PGBulkLoaderData extends BaseStepData implements StepDataInterface
 
 	public PGConnection pgdb;
 	
+	public int dateFormatChoices[];
+	
+	public ValueMetaInterface dateMeta;
+	public ValueMetaInterface dateTimeMeta;
+	
+	
 	/**
 	 *  Default constructor.
 	 */
@@ -53,5 +61,11 @@ public class PGBulkLoaderData extends BaseStepData implements StepDataInterface
 		super();
 
 		db=null;
+		
+		dateMeta = new ValueMeta("date", ValueMetaInterface.TYPE_DATE);
+		dateMeta.setConversionMask("yyyy/MM/dd");
+		
+		dateTimeMeta = new ValueMeta("date", ValueMetaInterface.TYPE_DATE);
+		dateTimeMeta.setConversionMask("yyyy/MM/dd HH:mm:ss");
 	}
 }
