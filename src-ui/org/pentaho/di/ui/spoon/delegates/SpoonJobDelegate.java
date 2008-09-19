@@ -549,6 +549,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 		wizard.addPage(page3);
 
 		WizardDialog wd = new WizardDialog(spoon.getShell(), wizard);
+		WizardDialog.setDefaultImage(GUIResource.getInstance().getImageWizard());
 		wd.setMinimumPageSize(700, 400);
     wd.updateSize();
 		wd.open();

@@ -110,6 +110,7 @@ import org.pentaho.di.ui.core.widget.ComboValuesSelectionListener;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
+import org.pentaho.di.ui.core.gui.GUIResource;
 
 
 public class TextFileInputDialog extends BaseStepDialog implements StepDialogInterface
@@ -2892,6 +2893,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     		wizard.addPage(page2);
     				
     		WizardDialog wd = new WizardDialog(shell, wizard);
+    		WizardDialog.setDefaultImage(GUIResource.getInstance().getImageWizard());
     		wd.setMinimumPageSize(700,375);
         wd.updateSize();
     		wd.open();

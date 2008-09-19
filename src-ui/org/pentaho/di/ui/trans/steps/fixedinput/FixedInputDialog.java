@@ -48,6 +48,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
@@ -745,6 +746,7 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
     		wizard.addPage(page2);
     				
     		WizardDialog wd = new WizardDialog(shell, wizard);
+    		WizardDialog.setDefaultImage(GUIResource.getInstance().getImageWizard());
     		wd.setMinimumPageSize(700,375);
         wd.updateSize();
     		wd.open();

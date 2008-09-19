@@ -157,6 +157,8 @@ public class GUIResource
 	private Image imageSlave;
 
 	private Image imageArrow;
+	
+	private Image imageWizard;
 
 	private Image imageCredits;
 
@@ -358,6 +360,7 @@ public class GUIResource
 			imageCluster.dispose();
 			imageSlave.dispose();
 			imageArrow.dispose();
+			imageWizard.dispose();
 			imageCredits.dispose();
 			imageStart.dispose();
 			imageDummy.dispose();
@@ -597,6 +600,9 @@ public class GUIResource
 		imageArrow = ImageUtil.makeImageTransparent(display, ImageUtil.getImageAsResource(display, 
 				BasePropertyHandler.getProperty("ArrowIcon_image")), // , "ui/images/arrow.png"
 				new RGB(255, 255, 255));
+		
+		imageWizard = ImageUtil.getImageAsResource(display, 
+				BasePropertyHandler.getProperty("Wizard_image")); // , "ui/images/wizard.png"
 		imageBanner = ImageUtil.makeImageTransparent(display, ImageUtil.getImageAsResource(display, 
 				BasePropertyHandler.getProperty("Banner_bg_image")), // , "ui/images/bg_banner.png"
 				new RGB(255, 255, 255));
@@ -1217,7 +1223,16 @@ public class GUIResource
 	{
 		return imageBanner;
 	}
+	/**
+	 * @return the imageWizard
+	 */
+	public Image getImageWizard()
+	{
+		return imageWizard;
+	}
 
+	
+	
 	/**
 	 * @param imageBanner
 	 *            the imageBanner to set

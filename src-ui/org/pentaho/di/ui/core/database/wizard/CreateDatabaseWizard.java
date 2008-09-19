@@ -26,6 +26,7 @@ import org.pentaho.di.ui.core.database.wizard.CreateDatabaseWizardPageOCI;
 import org.pentaho.di.ui.core.database.wizard.CreateDatabaseWizardPageODBC;
 import org.pentaho.di.ui.core.database.wizard.CreateDatabaseWizardPageOracle;
 import org.pentaho.di.ui.core.database.wizard.CreateDatabaseWizardPageSAPR3;
+import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.PropsUI;
 
 
@@ -114,6 +115,7 @@ public class CreateDatabaseWizard {
         wizard.addPage(page2);
                 
         WizardDialog wd = new WizardDialog(shell, wizard);
+        WizardDialog.setDefaultImage(GUIResource.getInstance().getImageWizard());
         wd.setMinimumPageSize(700,400);
         wd.updateSize();
         wd.open();
