@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.mozilla.javascript.Context;
+import org.mozilla.javascript.ContextFactory;
 import org.mozilla.javascript.JavaScriptException;
 import org.mozilla.javascript.Script;
 import org.mozilla.javascript.Scriptable;
@@ -445,7 +446,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 		Scriptable jsscope;
 		Script jsscript;
 
-		jscx = Context.enter();
+		jscx = ContextFactory.getGlobal().enterContext();
 		jsscope = jscx.initStandardObjects(null, false);
 		jscx.setOptimizationLevel(-1);
 			

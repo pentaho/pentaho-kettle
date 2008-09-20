@@ -27,6 +27,7 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import org.mozilla.javascript.Context;
+import org.mozilla.javascript.ContextFactory;
 import org.mozilla.javascript.EvaluatorException;
 import org.mozilla.javascript.Script;
 import org.mozilla.javascript.Scriptable;
@@ -146,7 +147,7 @@ public class ScriptValuesMod extends BaseStep implements StepInterface, ScriptVa
       //
       determineUsedFields(rowMeta);
 
-      data.cx = Context.enter();
+      data.cx = ContextFactory.getGlobal().enterContext();
       data.cx.setOptimizationLevel(9);
       data.scope = data.cx.initStandardObjects(null, false);
 

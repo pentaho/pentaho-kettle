@@ -91,9 +91,11 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.mozilla.javascript.CompilerEnvirons;
 import org.mozilla.javascript.Context;
+import org.mozilla.javascript.ContextFactory;
 import org.mozilla.javascript.ErrorReporter;
 import org.mozilla.javascript.EvaluatorException;
 import org.mozilla.javascript.JavaScriptException;
+import org.mozilla.javascript.NodeTransformer;
 import org.mozilla.javascript.Parser;
 import org.mozilla.javascript.Script;
 import org.mozilla.javascript.ScriptOrFnNode;
@@ -910,7 +912,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		// Making Refresh to get Active Script State
 		refreshScripts();
 		
-		jscx = Context.enter();
+		jscx = ContextFactory.getGlobal().enterContext();
 		jscx.setOptimizationLevel(-1);
 		jsscope = jscx.initStandardObjects(null, false);
 				
@@ -1655,13 +1657,14 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 	public static ScriptOrFnNode parseVariables(Context cx, Scriptable scope, String source, String sourceName, int lineno, Object securityDomain){
     	// Interpreter compiler = new Interpreter();
     	CompilerEnvirons evn = new CompilerEnvirons();
-    	evn.setLanguageVersion(Context.VERSION_1_5);
+    	//evn.setLanguageVersion(Context.VERSION_1_5);
     	evn.setOptimizationLevel(-1);
     	evn.setGeneratingSource(true);
     	evn.setGenerateDebugInfo(true);
     	ErrorReporter errorReporter = new ToolErrorReporter(false);
     	Parser p = new Parser(evn, errorReporter);
     	ScriptOrFnNode tree = p.parse(source, "",0); // IOException
+        new NodeTransformer().transform(tree);
     	//Script result = (Script)compiler.compile(scope, evn, tree, p.getEncodedSource(),false, null);
     	return tree;
 	}

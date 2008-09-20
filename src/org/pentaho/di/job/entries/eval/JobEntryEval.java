@@ -18,6 +18,7 @@ import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlank
 import java.util.List;
 
 import org.mozilla.javascript.Context;
+import org.mozilla.javascript.ContextFactory;
 import org.mozilla.javascript.Scriptable;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
@@ -129,7 +130,7 @@ public class JobEntryEval extends JobEntryBase implements Cloneable, JobEntryInt
     Context cx;
     Scriptable scope;
 
-    cx = Context.enter();
+    cx = ContextFactory.getGlobal().enterContext();
 	
     try {
       scope = cx.initStandardObjects(null);
