@@ -169,14 +169,12 @@ public class PGBulkLoader extends BaseStep implements StepInterface
 
            // Hostname and portname
            //
-           /*
            String hostname  = Const.NVL(dm.getHostname(), "");
            String portnum  = Const.NVL(dm.getDatabasePortNumberString(), "");
            sb.append(" -h ");
            sb.append(hostname);
            sb.append(" -p ");
            sb.append(portnum);
-		   */
            
            // Database Name
            // 
