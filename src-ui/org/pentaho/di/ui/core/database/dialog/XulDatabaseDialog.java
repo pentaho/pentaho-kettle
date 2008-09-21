@@ -85,7 +85,7 @@ public class XulDatabaseDialog {
     try {
       DatabaseConnectionDialog dcDialog = new DatabaseConnectionDialog();
       dcDialog.registerClass(EXTENDED_WIDGET_ID, EXTENDED_WIDGET_CLASSNAME);
-      container = dcDialog.getSwtInstance(shell);
+      container = dcDialog.getSwtInstance(shell);  //Attention: onload: loadConnectionData() is called here the first time, see below for second time
 
       container.addEventHandler(EVENT_ID, DataOverrideHandler.class.getName());
 
@@ -158,7 +158,8 @@ public class XulDatabaseDialog {
         
       });
       
-      dialog.show();
+      dialog.show();  	//Attention: onload: loadConnectionData() is called here the second time, see above for first time
+      					// caught with a HACK in DataHandler.loadConnectionData()
 
       databaseMeta = (DatabaseMeta) dataHandler.getData();
       databaseName = Const.isEmpty(databaseMeta.getName()) ? null : databaseMeta.getName();
