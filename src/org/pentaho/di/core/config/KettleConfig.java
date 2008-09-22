@@ -25,6 +25,7 @@ import org.apache.commons.digester.Digester;
 import org.apache.commons.digester.SetNextRule;
 import org.apache.commons.digester.SetPropertiesRule;
 import org.pentaho.di.core.annotations.Inject;
+import org.pentaho.di.core.exception.KettleConfigException;
 import org.xml.sax.Attributes;
 
 /**
@@ -104,7 +105,6 @@ public class KettleConfig
 		digester.addRule(KETTLE_CONFIG_PROPERTY, new SetPropertiesRule()
 		{
 			@Override
-			@SuppressWarnings("deprecation")
 			public void begin(Attributes attrs) throws Exception
 			{
 				((TempConfig) digester.peek()).parms.put(attrs.getValue("name"), attrs.getValue("value"));
@@ -161,6 +161,22 @@ public class KettleConfig
 				}
 			}
 		}
+	}
+	
+	/**
+	 * Adds a new manager programatically
+	 * @param name - the name of the new manager.  Must not already exist
+	 * @param mgr - The mgr implementation
+	 * @throws KettleConfigException If the manager already exists in this config instance
+	 */
+	public void addConfig(String name,ConfigManager<?> mgr) throws KettleConfigException
+	{
+		ConfigManager<?> cmgr = configs.get(name);
+		if (cmgr!=null)
+			throw new KettleConfigException(name + " is already registered as a manager");
+		
+		
+		configs.put(name, mgr);
 	}
 
 	public static class TempConfig
