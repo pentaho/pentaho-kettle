@@ -66,7 +66,6 @@ public class ColumnExists extends BaseStep implements StepInterface
     	{
     		first=false;
     		
-    		first=false;
 			data.outputRowMeta = getInputRowMeta().clone();
 			meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
 			

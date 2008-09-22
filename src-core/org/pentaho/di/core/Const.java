@@ -1886,4 +1886,22 @@ public class Const
 		
 		return percentage;
 	}
+	/**
+	 * Return digits only.
+	 * 
+	 * @return digits in a string.
+	 */
+	public static String getDigitsOnly(String input)
+	{
+		if(Const.isEmpty(input)) return null;
+	    StringBuffer digitsOnly = new StringBuffer ();
+	    char c;
+	    for (int i = 0; i < input.length (); i++) {
+	      c = input.charAt (i);
+	      if (Character.isDigit (c)) {
+	        digitsOnly.append (c);
+	      }
+	    }
+	    return digitsOnly.toString ();
+	}
 }

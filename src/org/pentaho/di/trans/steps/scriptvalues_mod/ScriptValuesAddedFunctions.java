@@ -114,15 +114,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 	  {
 		if(ArgList.length==1)
 		{
-		    StringBuffer digitsOnly = new StringBuffer ();
-		    char c;
-		    for (int i = 0; i < Context.toString(ArgList[0]).length (); i++) {
-		      c = Context.toString(ArgList[0]).charAt (i);
-		      if (Character.isDigit (c)) {
-		        digitsOnly.append (c);
-		      }
-		    }
-		    return digitsOnly.toString ();
+			return Const.getDigitsOnly(Context.toString(ArgList[0]));
 		}
 		else
 		{

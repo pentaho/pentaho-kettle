@@ -1069,5 +1069,16 @@
 		</tooltip>
 		<image-uri>ui/images/MAIL.png</image-uri>
 	</step>
+		<step id="CreditCardValidator">
+		<description>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.CreditCardValidator")
+		</description>
+		<class-name>org.pentaho.di.trans.steps.creditcardvalidator.CreditCardValidatorMeta</class-name>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<tooltip>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.CreditCardValidator")
+		</tooltip>
+		<image-uri>ui/images/CCV.png</image-uri>
+	</step>
 	
 </steps>
