@@ -23,7 +23,6 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.di.trans.steps.columnexists.Messages;
 
 
 /**
@@ -78,7 +77,7 @@ public class CreditCardValidator extends BaseStep implements StepInterface
     		// Check if field is provided
 			if (Const.isEmpty(meta.getDynamicField())) {
 				logError(Messages.getString("CreditCardValidator.Error.CardFieldMissing"));
-				throw new KettleException(Messages.getString("CreditCardValidator.Error.FilenameFieldMissing"));
+				throw new KettleException(Messages.getString("CreditCardValidator.Error.CardFieldMissing"));
 			}
 			
 			// cache the position of the field			
