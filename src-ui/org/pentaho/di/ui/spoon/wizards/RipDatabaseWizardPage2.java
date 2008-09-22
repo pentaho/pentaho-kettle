@@ -382,7 +382,7 @@ public class RipDatabaseWizardPage2 extends WizardPage
 		try
 		{
 			sourceDb.connect();
-			input = sourceDb.getTablenames(true); // Include the schema
+			input = sourceDb.getTablenames(false); // Don't include the schema since it can cause invalid syntax
 		}
 		catch(KettleDatabaseException dbe)
 		{
