@@ -194,7 +194,7 @@ public class CreditCardVerifier
 	    
 	  public static boolean isNumber(String n) {
 	    try  {
-	      double d = Double.valueOf(n).doubleValue();
+	      Double.valueOf(n).doubleValue();
 	      return true;
 	      }
 	    catch (NumberFormatException e) { // ignore this exception
