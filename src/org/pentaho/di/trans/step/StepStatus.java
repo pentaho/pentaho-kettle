@@ -64,8 +64,8 @@ public class StepStatus
         this.errors = baseStep.getErrors();
         this.statusDescription = baseStep.getStatusDescription();
         this.seconds = Math.floor((lapsed * 10) + 0.5) / 10;
-        this.speed = lapsed == 0 ? "-" : "" + (in_speed > out_speed ? in_speed : out_speed); //$NON-NLS-1$ //$NON-NLS-2$
-        this.priority = baseStep.isAlive() ? "" + baseStep.rowsetInputSize() + "/" + baseStep.rowsetOutputSize() : "-"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+        this.speed = lapsed == 0 ? "-" : "   " + (in_speed > out_speed ? in_speed : out_speed); //$NON-NLS-1$ //$NON-NLS-2$
+        this.priority = baseStep.isAlive() ? "   " + baseStep.rowsetInputSize() + "/" + baseStep.rowsetOutputSize() : "-"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
         this.stopped = baseStep.isStopped();
         this.paused = baseStep.isPaused();
     }
