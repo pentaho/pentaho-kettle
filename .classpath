@@ -80,7 +80,6 @@
 	<classpathentry kind="lib" path="libswt/win32/swt.jar" sourcepath="libext-src/swt-src.zip"/>
 	<classpathentry kind="lib" path="libext/JDBC/kingbasejdbc.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/monetdb-1.7-jdbc.jar"/>
-	<classpathentry kind="lib" path="libext/JDBC/vertica_2.1_jdk_5.jar"/>
 	<classpathentry kind="lib" path="libext/jxl.jar"/>
 	<classpathentry kind="lib" path="libext/web/jetty-6.1.9.jar"/>
 	<classpathentry kind="lib" path="libext/web/jetty-plus-6.1.9.jar"/>
@@ -90,7 +89,8 @@
 	<classpathentry kind="lib" path="libext/trilead-ssh2-build213.jar"/>
 	<classpathentry kind="lib" path="libext/web/activation.jar"/>
 	<classpathentry kind="lib" path="libext/jsch-0.1.38.jar"/>
-	<classpathentry kind="lib" path="libext/pentaho/pentaho-xul-database-1.7.1-32216.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/pentaho-xul-framework-1.7.1-32194.jar"/>
+	<classpathentry kind="lib" path="libext/pentaho/pentaho-xul-database-1.7.1-32560.jar"/>
+	<classpathentry kind="lib" path="libext/JDBC/vertica_2.5_jdk_5.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
