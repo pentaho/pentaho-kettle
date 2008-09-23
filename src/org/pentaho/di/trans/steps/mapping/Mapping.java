@@ -25,6 +25,7 @@ import org.pentaho.di.trans.step.BaseStep;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaDataCombi;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.mappinginput.MappingInput;
 import org.pentaho.di.trans.steps.mappingoutput.MappingOutput;
@@ -324,6 +325,7 @@ public class Mapping extends BaseStep implements StepInterface
             		//
             		prepareMappingExecution();
             		
+            		lookupStatusStepNumbers();
                 	// That's all for now...
                     return true;
                 }
@@ -395,4 +397,105 @@ public class Mapping extends BaseStep implements StepInterface
 	{
     	BaseStep.runStepThread(this, meta, data);
 	}
+
+	private void lookupStatusStepNumbers()
+	{
+	    if (data.mappingTrans != null)
+	    {
+	        List<StepMetaDataCombi> steps = data.mappingTrans.getSteps();
+	        for (int i=0;i<steps.size();i++)
+	        {
+	            StepMetaDataCombi sid = steps.get(i);
+	            BaseStep rt = (BaseStep)sid.step;
+	            if (data.mappingTransMeta.getReadStep()    !=null && rt.getStepname().equals(data.mappingTransMeta.getReadStep().getName()))     data.linesReadStepNr = i;
+	            if (data.mappingTransMeta.getInputStep()   !=null && rt.getStepname().equals(data.mappingTransMeta.getInputStep().getName()))    data.linesInputStepNr = i;
+	            if (data.mappingTransMeta.getWriteStep()   !=null && rt.getStepname().equals(data.mappingTransMeta.getWriteStep().getName()))    data.linesWrittenStepNr = i;
+	            if (data.mappingTransMeta.getOutputStep()  !=null && rt.getStepname().equals(data.mappingTransMeta.getOutputStep().getName()))   data.linesOutputStepNr = i;
+	            if (data.mappingTransMeta.getUpdateStep()  !=null && rt.getStepname().equals(data.mappingTransMeta.getUpdateStep().getName()))   data.linesUpdatedStepNr = i;
+	            if (data.mappingTransMeta.getRejectedStep()!=null && rt.getStepname().equals(data.mappingTransMeta.getRejectedStep().getName())) data.linesRejectedStepNr = i;
+	        }
+	    }
+	}
+
+	@Override
+    public long getLinesInput()
+    {
+        if (data.linesInputStepNr != -1)
+            return data.mappingTrans.getSteps().get(data.linesInputStepNr).step.getLinesInput();
+        else
+            return 0;
+    }
+
+    @Override
+    public long getLinesOutput()
+    {
+        if (data.linesOutputStepNr != -1)
+            return data.mappingTrans.getSteps().get(data.linesOutputStepNr).step.getLinesOutput();
+        else
+            return 0;
+    }
+
+    @Override
+    public long getLinesRead()
+    {
+        if (data.linesReadStepNr != -1)
+            return data.mappingTrans.getSteps().get(data.linesReadStepNr).step.getLinesRead();
+        else
+            return 0;
+    }
+
+    @Override
+    public long getLinesRejected()
+    {
+        if (data.linesRejectedStepNr != -1)
+            return data.mappingTrans.getSteps().get(data.linesRejectedStepNr).step.getLinesRejected();
+        else
+            return 0;
+    }
+
+    @Override
+    public long getLinesUpdated()
+    {
+        if (data.linesUpdatedStepNr != -1)
+            return data.mappingTrans.getSteps().get(data.linesUpdatedStepNr).step.getLinesUpdated();
+        else
+            return 0;
+    }
+
+    @Override
+    public long getLinesWritten()
+    {
+        if (data.linesWrittenStepNr != -1)
+            return data.mappingTrans.getSteps().get(data.linesWrittenStepNr).step.getLinesWritten();
+        else
+            return 0;
+    }
+
+    @Override
+    public int rowsetInputSize()
+    {
+        int size = 0;
+        for (MappingInput input : data.mappingTrans.findMappingInput())
+        {
+            for (RowSet rowSet : input.getInputRowSets())
+            {
+                size += rowSet.size();
+            }
+        }
+        return size;
+    }
+
+    @Override
+    public int rowsetOutputSize()
+    {
+        int size = 0;
+        for (MappingOutput output : data.mappingTrans.findMappingOutput())
+        {
+            for (RowSet rowSet : output.getOutputRowSets())
+            {
+                size += rowSet.size();
+            }
+        }
+        return size;
+    }
 }

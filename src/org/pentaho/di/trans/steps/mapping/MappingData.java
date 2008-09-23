@@ -41,6 +41,12 @@ public class MappingData extends BaseStepData implements StepDataInterface
     public TransMeta mappingTransMeta;
     public RowMetaInterface outputRowMeta;
 	public List<MappingValueRename> inputRenameList;
+    protected int linesReadStepNr = -1;
+    protected int linesInputStepNr = -1;
+    protected int linesWrittenStepNr = -1;
+    protected int linesOutputStepNr = -1;
+    protected int linesUpdatedStepNr = -1;
+    protected int linesRejectedStepNr = -1;
     
 	/**
 	 * 
