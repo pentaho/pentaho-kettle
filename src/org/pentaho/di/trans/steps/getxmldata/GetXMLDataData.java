@@ -58,6 +58,7 @@ public class GetXMLDataData extends BaseStepData implements StepDataInterface
     public String PathValue;
     public String prunePath; // identical to meta.getPrunePath() with some conditions set at init(), null when no pruning
     public boolean stopPruning; // used for a trick to stop the reader in pruning mode
+    public boolean errorInRowButContinue; //true when actual row has an error and error handling is active: means continue (error handling in this step should be redesigned)
     public String tokenStart;
     public String tokenEnd;
     public int nodenr;
@@ -123,5 +124,6 @@ public class GetXMLDataData extends BaseStepData implements StepDataInterface
 		totalpreviousfields=0;
 		prunePath="";
 		stopPruning=false;
+		errorInRowButContinue=false;
 	}
 }

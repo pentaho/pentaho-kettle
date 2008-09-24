@@ -170,6 +170,7 @@ public class GetXMLData extends BaseStep implements StepInterface
 		while (data.nodenr<data.nodesize && cont && !isStopped())
 		{
 			Object[] r=getXMLRowPutRowWithErrorhandling();
+			if (data.errorInRowButContinue) continue; // do not put out the row but continue
 			cont=putRowOut(r);  //false when limit is reached, functionality is there but we can not stop reading the hole file (slow but works)
 		} 		
 		if (log.isDebug()) logDebug(Messages.getString("GetXMLData.Log.StreamingMode.FreeMemory"));
@@ -562,14 +563,15 @@ public class GetXMLData extends BaseStep implements StepInterface
 			}
 		}
 		 // Grab a row
-		 Object[] r=getXMLRow();
-		 if (r==null)
-	     {
-	        setOutputDone();  // signal end to receiver(s)
-	        return false; // end of data or error.
-	     }
+		Object[] r=getXMLRow();
+		if (data.errorInRowButContinue) return true; //continue without putting the row out
+		if (r==null)
+	    {
+			setOutputDone();  // signal end to receiver(s)
+			return false; // end of data or error.
+	    }
 		 
-		 return putRowOut(r);
+		return putRowOut(r);
 		
 	}
 	
@@ -606,6 +608,7 @@ public class GetXMLData extends BaseStep implements StepInterface
 			{
 		        if (!openNextFile())
 		        {
+		        	data.errorInRowButContinue=false; //stop in all cases
 		            return null;
 		        }
 			} 
@@ -617,7 +620,7 @@ public class GetXMLData extends BaseStep implements StepInterface
 	{
 		 // Build an empty row based on the meta-data		  
 		 Object[] r=null;
-		 boolean sendToErrorRow=false;
+		 data.errorInRowButContinue=false;
 		 String errorMessage = null;
 		 try{	
 			 if(meta.getIsInFields())
@@ -643,24 +646,10 @@ public class GetXMLData extends BaseStep implements StepInterface
 		 }
 		 catch (Exception e)
 		 {
-			 
-			 if (getStepMeta().isDoingErrorHandling())
-			 {
-		         sendToErrorRow = true;
-		         errorMessage = e.toString();
-			 }
-			 else
-			 {
-				throw new KettleException(Messages.getString("GetXMLData.Error.UnableReadFile"), e);
-			 }
-			 if (sendToErrorRow)
-			 {
-			   // Simply add this row to the error row
-			   putError(data.outputRowMeta, r, 1, errorMessage, null, "GetXMLData001");
-			 }
+			throw new KettleException(Messages.getString("GetXMLData.Error.UnableReadFile"), e);
 		 }
 		 
-		return r;
+		 return r;
 	}
 
 		
@@ -779,11 +768,18 @@ public class GetXMLData extends BaseStep implements StepInterface
 		}
 		catch(Exception e)
 		{
-			log.logError(toString(), e.toString());
-			throw new KettleException(e.toString());
+			 if (getStepMeta().isDoingErrorHandling())
+			 {
+				 //Simply add this row to the error row
+				 putError(data.outputRowMeta, outputRowData, 1, e.toString(), null, "GetXMLData001");
+				 data.errorInRowButContinue = true;				 
+				 return null;
+			 } else {
+				log.logError(toString(), e.toString());
+				throw new KettleException(e.toString());
+			 }
 		} 
-		
-			return outputRowData;
+		return outputRowData;
 	}
 
 
