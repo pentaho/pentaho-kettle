@@ -621,7 +621,6 @@ public class GetXMLData extends BaseStep implements StepInterface
 		 // Build an empty row based on the meta-data		  
 		 Object[] r=null;
 		 data.errorInRowButContinue=false;
-		 String errorMessage = null;
 		 try{	
 			 if(meta.getIsInFields())
 			 {
