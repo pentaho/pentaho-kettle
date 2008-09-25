@@ -91,5 +91,6 @@
 	<classpathentry kind="lib" path="libext/jsch-0.1.38.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/vertica_2.5_jdk_5.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/pentaho-xul-database-1.7.1-32560.jar"/>
+	<classpathentry kind="lib" path="libext/pentaho/pentaho-xul-framework-1.7.1-32194.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
