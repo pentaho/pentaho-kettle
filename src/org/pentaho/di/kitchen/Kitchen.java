@@ -393,8 +393,33 @@ public class Kitchen
 
 		log.logMinimal(STRING_KITCHEN, Messages.getString("Kitchen.Log.StartStop",begin,end));
 		
-		long millis=stop.getTime()-start.getTime();
-		log.logMinimal(STRING_KITCHEN,  Messages.getString("Kitchen.Log.ProcessEndAfter",""+(millis/1000)));
+		long seconds = (stop.getTime() - start.getTime()) / 1000;
+		if (seconds <= 60) {
+		    log.logMinimal(STRING_KITCHEN,  Messages.getString("Kitchen.Log.ProcessEndAfter", String.valueOf(seconds)));
+		}
+		else if (seconds <= 60 * 60) {
+		    int min = (int)(seconds / 60);
+		    int rem = (int)(seconds % 60);
+            log.logMinimal(STRING_KITCHEN,  Messages.getString("Kitchen.Log.ProcessEndAfterLong", String.valueOf(min), String.valueOf(rem), String.valueOf(seconds)));
+		}
+		else if (seconds <= 60 * 60 * 24) {
+		    int rem;
+            int hour = (int)(seconds / (60 * 60));
+            rem = (int)(seconds % (60 * 60)); 
+            int min = rem / 60;
+            rem = rem % 60;
+            log.logMinimal(STRING_KITCHEN,  Messages.getString("Kitchen.Log.ProcessEndAfterLonger", String.valueOf(hour), String.valueOf(min), String.valueOf(rem), String.valueOf(seconds)));
+		}
+		else {
+            int rem;
+            int days = (int)(seconds / (60 * 60 * 24));
+            rem = (int)(seconds % (60 * 60 * 24));
+            int hour = rem / (60 * 60);
+            rem = rem % (60 * 60); 
+            int min = rem / 60;
+            rem = rem % 60;
+            log.logMinimal(STRING_KITCHEN,  Messages.getString("Kitchen.Log.ProcessEndAfterLongest", String.valueOf(days), String.valueOf(hour), String.valueOf(min), String.valueOf(rem), String.valueOf(seconds)));
+		}
 		        
         exitJVM(returnCode);
 

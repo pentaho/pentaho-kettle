@@ -607,7 +607,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface
                 
                 data.db.setCommit(100); // we never get a commit, but it just turns off auto-commit.
                                 
-                logBasic(Messages.getString("DatabaseLookup.Log.ConnectedToDatabase")); //$NON-NLS-1$
+                if (log.isDetailed()) logDetailed(Messages.getString("DatabaseLookup.Log.ConnectedToDatabase")); //$NON-NLS-1$
                 
                 // See if all the lookup conditions are "equal"
                 // This might speed up things in the case when we load all data in the cache

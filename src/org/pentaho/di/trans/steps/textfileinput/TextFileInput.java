@@ -657,7 +657,7 @@ public class TextFileInput extends BaseStep implements StepInterface
                         
                         if (info.isErrorIgnored())
                         {
-                            LogWriter.getInstance().logBasic(fname, Messages.getString("TextFileInput.Log.Warning")+": "  + message+" : " + e.getMessage());
+                            log.logDetailed(fname, Messages.getString("TextFileInput.Log.Warning")+": "  + message+" : " + e.getMessage());
 
                             value = null;
 
@@ -815,7 +815,7 @@ public class TextFileInput extends BaseStep implements StepInterface
                 
                 if (data.files.nrOfFiles()==0)
                 {
-                    if(log.isBasic()) logBasic(Messages.getString("TextFileInput.Log.Error.NoFilesSpecified"));
+                    if (log.isDetailed()) logDetailed(Messages.getString("TextFileInput.Log.Error.NoFilesSpecified"));
                     setOutputDone();
                     return false;
                 }
@@ -1221,7 +1221,7 @@ public class TextFileInput extends BaseStep implements StepInterface
             String sFileCompression = meta.getFileCompression();
 			if (sFileCompression != null && sFileCompression.equals("Zip"))
 			{
-				if(log.isBasic()) logBasic("This is a zipped file");
+			    if (log.isDetailed()) logDetailed("This is a zipped file");
 				data.zi = new ZipInputStream(data.fr);
 				data.zi.getNextEntry();
 
@@ -1236,7 +1236,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 			}
 			else if (sFileCompression != null && sFileCompression.equals("GZip"))
 			{
-				if(log.isBasic()) logBasic("This is a gzipped file");
+			    if (log.isDetailed()) logDetailed("This is a gzipped file");
 				data.gzi = new GZIPInputStream(data.fr);
 
 				if (meta.getEncoding() != null && meta.getEncoding().length() > 0)
@@ -1368,11 +1368,12 @@ public class TextFileInput extends BaseStep implements StepInterface
 				return false;
 			}
             
-            String nr = getVariable(Const.INTERNAL_VARIABLE_SLAVE_SERVER_NUMBER);
-            if (!Const.isEmpty(nr))
+			String clusterSize = getVariable(Const.INTERNAL_VARIABLE_CLUSTER_SIZE);
+            if (!Const.isEmpty(clusterSize) && Integer.valueOf(clusterSize) > 1)
             {
                 // TODO: add metadata to configure this.
-            	if(log.isBasic()) logBasic("Running on slave server #"+nr+" : assuming that each slave reads a dedicated part of the same file(s)."); 
+                String nr = getVariable(Const.INTERNAL_VARIABLE_SLAVE_SERVER_NUMBER);
+                if (log.isDetailed()) logDetailed("Running on slave server #"+nr+" : assuming that each slave reads a dedicated part of the same file(s)."); 
             }
             
             // If no nullif field is supplied, take the default.

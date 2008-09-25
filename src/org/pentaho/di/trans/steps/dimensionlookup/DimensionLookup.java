@@ -1216,7 +1216,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
                     data.db.connect(getPartitionID());
                 }
 				
-                if(log.isBasic()) logBasic(Messages.getString("DimensionLookup.Log.ConnectedToDB")); //$NON-NLS-1$
+                if (log.isDetailed()) logDetailed(Messages.getString("DimensionLookup.Log.ConnectedToDB")); //$NON-NLS-1$
 				data.db.setCommit(meta.getCommitSize());
 				
 				return true;

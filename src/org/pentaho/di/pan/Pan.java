@@ -439,7 +439,33 @@ public class Pan
 			log.logMinimal("Pan", Messages.getString("Pan.Log.StartStop",begin,end));
 			
 			long millis=stop.getTime()-start.getTime();
-			log.logMinimal("Pan", Messages.getString("Pan.Log.ProcessingEndAfter",""+(millis/1000)));
+	        long seconds = millis / 1000;
+	        if (seconds <= 60) {
+	            log.logMinimal("Pan",  Messages.getString("Pan.Log.ProcessingEndAfter", String.valueOf(seconds)));
+	        }
+	        else if (seconds <= 60 * 60) {
+	            int min = (int)(seconds / 60);
+	            int rem = (int)(seconds % 60);
+	            log.logMinimal("Pan",  Messages.getString("Pan.Log.ProcessingEndAfterLong", String.valueOf(min), String.valueOf(rem), String.valueOf(seconds)));
+	        }
+	        else if (seconds <= 60 * 60 * 24) {
+	            int rem;
+	            int hour = (int)(seconds / (60 * 60));
+	            rem = (int)(seconds % (60 * 60)); 
+	            int min = rem / 60;
+	            rem = rem % 60;
+	            log.logMinimal("Pan",  Messages.getString("Pan.Log.ProcessingEndAfterLonger", String.valueOf(hour), String.valueOf(min), String.valueOf(rem), String.valueOf(seconds)));
+	        }
+	        else {
+	            int rem;
+	            int days = (int)(seconds / (60 * 60 * 24));
+	            rem = (int)(seconds % (60 * 60 * 24));
+	            int hour = rem / (60 * 60);
+	            rem = rem % (60 * 60); 
+	            int min = rem / 60;
+	            rem = rem % 60;
+	            log.logMinimal("Pan",  Messages.getString("Pan.Log.ProcessingEndAfterLongest", String.valueOf(days), String.valueOf(hour), String.valueOf(min), String.valueOf(rem), String.valueOf(seconds)));
+	        }
 			
 			if (trans.getResult().getNrErrors()==0) 
 			{

@@ -2266,7 +2266,16 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
     public void logSummary()
     {
         synchronized (statusCountersLock) {
-            logBasic(Messages.getString("BaseStep.Log.SummaryInfo", String.valueOf(getLinesInput()), String.valueOf(getLinesOutput()), String.valueOf(getLinesRead()), String.valueOf(getLinesWritten()), String.valueOf(getLinesUpdated()), String.valueOf(errors+getLinesRejected()))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+            long li = getLinesInput();
+            long lo = getLinesOutput();
+            long lr = getLinesRead();
+            long lw = getLinesWritten();
+            long lu = getLinesUpdated();
+            long lj = getLinesRejected();
+            if (li > 0 || lo > 0 || lr > 0 || lw > 0 || lu > 0 || lj > 0 || errors > 0)
+                logBasic(Messages.getString("BaseStep.Log.SummaryInfo", String.valueOf(li), String.valueOf(lo), String.valueOf(lr), String.valueOf(lw), String.valueOf(lw), String.valueOf(errors+lj)));
+            else
+                logDetailed(Messages.getString("BaseStep.Log.SummaryInfo", String.valueOf(li), String.valueOf(lo), String.valueOf(lr), String.valueOf(lw), String.valueOf(lw), String.valueOf(errors+lj)));
         }
     }
 
@@ -2650,37 +2659,50 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
 		LogWriter log = LogWriter.getInstance();
 		try
 		{
-			log.logBasic(stepInterface.toString(), Messages.getString("System.Log.StartingToRun")); //$NON-NLS-1$
+			if (log.isDetailed()) log.logDetailed(stepInterface.toString(), Messages.getString("System.Log.StartingToRun")); //$NON-NLS-1$
 
 			while (stepInterface.processRow(meta, data) && !stepInterface.isStopped());
 		}
 		catch(Throwable t)
 		{
-			//check for OOME
-			if(t.toString().startsWith("java.lang.OutOfMemoryError")) { //$NON-NLS-1$
-				// Handle this different with as less overhead as possible to get an error message in the log.
-				// Otherwise it crashes likely with another OOME in Me$$ages.getString() and does not log
-				// nor call the setErrors() and stopAll() below.
-				log.logError(stepInterface.toString(), "UnexpectedError: " + t.toString()); //$NON-NLS-1$
-			} else {
-				log.logError(stepInterface.toString(), Messages.getString("System.Log.UnexpectedError")+" : "); //$NON-NLS-1$ //$NON-NLS-2$
-			}
-			log.logError(stepInterface.toString(), Const.getStackTracker(t));
-            stepInterface.setErrors(1);
-			stepInterface.stopAll();
+		    try
+		    {
+		        //check for OOME
+		        if(t instanceof OutOfMemoryError) {
+		            // Handle this different with as less overhead as possible to get an error message in the log.
+		            // Otherwise it crashes likely with another OOME in Me$$ages.getString() and does not log
+		            // nor call the setErrors() and stopAll() below.
+		            log.logError(stepInterface.toString(), "UnexpectedError: " + t.toString()); //$NON-NLS-1$
+		        } else {
+		            log.logError(stepInterface.toString(), Messages.getString("System.Log.UnexpectedError")+" : "); //$NON-NLS-1$ //$NON-NLS-2$
+		        }
+		        log.logError(stepInterface.toString(), Const.getStackTracker(t));
+		    }
+		    catch(OutOfMemoryError e)
+		    {
+		        e.printStackTrace();
+		    }
+		    finally
+		    {
+		        stepInterface.setErrors(1);
+		        stepInterface.stopAll();
+		    }
 		}
 		finally
 		{
 			stepInterface.dispose(meta, data);
 			try {
-		        log.logBasic(stepInterface.toString(), 
-		        		Messages.getString("BaseStep.Log.SummaryInfo", //$NON-NLS-1$
-		        		String.valueOf(stepInterface.getLinesInput()), 
-		        		String.valueOf(stepInterface.getLinesOutput()), 
-		        		String.valueOf(stepInterface.getLinesRead()), 
-		        		String.valueOf(stepInterface.getLinesWritten()), 
-		        		String.valueOf(stepInterface.getLinesUpdated()), 
-		        		String.valueOf(stepInterface.getErrors()+stepInterface.getLinesRejected())));
+	            long li = stepInterface.getLinesInput();
+	            long lo = stepInterface.getLinesOutput();
+	            long lr = stepInterface.getLinesRead();
+	            long lw = stepInterface.getLinesWritten();
+	            long lu = stepInterface.getLinesUpdated();
+	            long lj = stepInterface.getLinesRejected();
+	            long e = stepInterface.getErrors();
+	            if (li > 0 || lo > 0 || lr > 0 || lw > 0 || lu > 0 || lj > 0 || e > 0)
+	                log.logBasic(stepInterface.toString(), Messages.getString("BaseStep.Log.SummaryInfo", String.valueOf(li), String.valueOf(lo), String.valueOf(lr), String.valueOf(lw), String.valueOf(lw), String.valueOf(e+lj)));
+	            else
+	                log.logDetailed(stepInterface.toString(), Messages.getString("BaseStep.Log.SummaryInfo", String.valueOf(li), String.valueOf(lo), String.valueOf(lr), String.valueOf(lw), String.valueOf(lw), String.valueOf(e+lj)));
 			} catch(Throwable t) {
 				// it's likely an OOME, thus no overhead by Me$$ages.getString(), see above
 				log.logError(stepInterface.toString(), "UnexpectedError: " + t.toString()); //$NON-NLS-1$

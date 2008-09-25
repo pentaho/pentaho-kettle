@@ -572,7 +572,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
                         cmdstr = "cmd.exe /C " + cmdstr;
                     }
                 }
-            	if(log.isDebug()) logDetailed("Starting: " + cmdstr);
+            	if(log.isDetailed()) logDetailed("Starting: " + cmdstr);
             	Runtime r = Runtime.getRuntime();
             	data.cmdProc = r.exec(cmdstr, EnvUtil.getEnvironmentVariablesForRuntimeExec());
             	data.writer = data.cmdProc.getOutputStream();
@@ -637,12 +637,12 @@ public class TextFileOutput extends BaseStep implements StepInterface
                 
 	            if (!Const.isEmpty(meta.getEncoding()))
 	            {
-	            	if(log.isBasic()) log.logBasic(toString(), "Opening output stream in encoding: "+meta.getEncoding());
+	                if(log.isDetailed()) log.logDetailed(toString(), "Opening output stream in encoding: "+meta.getEncoding());
 	                data.writer = new BufferedOutputStream(outputStream, 5000);
 	            }
 	            else
 	            {
-	            	if(log.isBasic()) log.logBasic(toString(), "Opening output stream in default encoding");
+	                if(log.isDetailed()) log.logDetailed(toString(), "Opening output stream in default encoding");
 	                data.writer = new BufferedOutputStream(outputStream, 5000);
 	            }
 	
@@ -691,7 +691,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 					if(log.isDetailed()) logDetailed("Warning: Error closing streams: " + e.getMessage());
 				}				
 				data.cmdProc = null;
-				if(log.isBasic()) logBasic("Command exit status: " + procStatus);
+				if(log.isBasic() && procStatus != 0) logBasic("Command exit status: " + procStatus);
 			}
 			else
 			{

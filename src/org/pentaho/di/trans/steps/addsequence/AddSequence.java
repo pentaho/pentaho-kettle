@@ -148,7 +148,7 @@ public class AddSequence extends BaseStep implements StepInterface
 				try
 				{
 					data.getDb().connect(getPartitionID());
-					if(log.isBasic()) logBasic(Messages.getString("AddSequence.Log.ConnectedDB")); //$NON-NLS-1$
+					if (log.isDetailed()) logDetailed(Messages.getString("AddSequence.Log.ConnectedDB")); //$NON-NLS-1$
 					return true;
 				}
 				catch(KettleDatabaseException dbe)

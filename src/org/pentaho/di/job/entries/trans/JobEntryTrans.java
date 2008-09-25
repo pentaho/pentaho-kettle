@@ -419,15 +419,15 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
         
 		// Open the transformation...
 		// Default directory for now...
-        // 
-        log.logBasic(toString(), Messages.getString("JobTrans.Log.OpeningFile",environmentSubstitute(getFilename())));
+        // XXX: This seems a bit odd here.  These three log messages all work off of getFilename().  Why are there three?
+        if (log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobTrans.Log.OpeningFile",environmentSubstitute(getFilename())));
         if (!Const.isEmpty(getFilename()))
         {
-            log.logBasic(toString(), Messages.getString("JobTrans.Log.OpeningTrans",environmentSubstitute(getFilename())));
+            if (log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobTrans.Log.OpeningTrans",environmentSubstitute(getFilename())));
         }
         else
         {
-        	log.logBasic(toString(), Messages.getString("JobTrans.Log.OpeningTransInDirec",environmentSubstitute(getFilename()),environmentSubstitute(directory)));
+            if (log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobTrans.Log.OpeningTransInDirec",environmentSubstitute(getFilename()),environmentSubstitute(directory)));
         }
 
         // Load the transformation only once for the complete loop!

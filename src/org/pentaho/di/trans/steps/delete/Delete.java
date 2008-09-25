@@ -232,7 +232,7 @@ public class Delete extends BaseStep implements StepInterface
                     data.db.connect(getPartitionID());
                 }
 				
-				if(log.isBasic()) logBasic(Messages.getString("Delete.Log.ConnectedToDB")); //$NON-NLS-1$
+                if (log.isDetailed()) logDetailed(Messages.getString("Delete.Log.ConnectedToDB")); //$NON-NLS-1$
 				
 				data.db.setCommit(meta.getCommitSize());
 

@@ -407,7 +407,7 @@ public class Update extends BaseStep implements StepInterface
                     data.db.connect(getPartitionID());
                 }
                 
-				logBasic(Messages.getString("Update.Log.ConnectedToDB")); //$NON-NLS-1$
+                if (log.isDetailed()) logDetailed(Messages.getString("Update.Log.ConnectedToDB")); //$NON-NLS-1$
 				
 				data.db.setCommit(meta.getCommitSize());
 

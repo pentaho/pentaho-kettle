@@ -207,10 +207,10 @@ public class DBProc extends BaseStep implements StepInterface
 
                 if (!meta.isAutoCommit())
                 {
-                    if(log.isBasic()) logBasic(Messages.getString("DBProc.Log.AutoCommit")); //$NON-NLS-1$
+                    if (log.isDetailed()) logDetailed(Messages.getString("DBProc.Log.AutoCommit")); //$NON-NLS-1$
                     data.db.setCommit(9999);
                 }
-                if(log.isBasic()) logBasic(Messages.getString("DBProc.Log.ConnectedToDB")); //$NON-NLS-1$
+                if (log.isDetailed()) logDetailed(Messages.getString("DBProc.Log.ConnectedToDB")); //$NON-NLS-1$
 				
 				return true;
 			}

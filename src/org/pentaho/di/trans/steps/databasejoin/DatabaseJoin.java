@@ -218,7 +218,7 @@ public class DatabaseJoin extends BaseStep implements StepInterface
                     data.db.connect(getPartitionID());
                 }
 				
-				logBasic(Messages.getString("DatabaseJoin.Log.ConnectedToDB")); //$NON-NLS-1$
+                if (log.isDetailed()) logDetailed(Messages.getString("DatabaseJoin.Log.ConnectedToDB")); //$NON-NLS-1$
 	
 				// Prepare the SQL statement
 				data.pstmt = data.db.prepareSQL(meta.getSql());

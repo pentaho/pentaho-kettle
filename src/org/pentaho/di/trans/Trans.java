@@ -274,12 +274,12 @@ public class Trans implements VariableSpace
 
 		if (transMeta.getArguments()!=null)
 		{
-			log.logBasic(toString(), Messages.getString("Trans.Log.NumberOfArgumentsDetected", String.valueOf(transMeta.getArguments().length) )); //$NON-NLS-1$
+		    if (log.isDetailed()) log.logDetailed(toString(), Messages.getString("Trans.Log.NumberOfArgumentsDetected", String.valueOf(transMeta.getArguments().length) )); //$NON-NLS-1$
 		}
 
 		if (isSafeModeEnabled())
 		{
-			log.logBasic(toString(), Messages.getString("Trans.Log.SafeModeIsEnabled",transMeta.getName())); //$NON-NLS-1$ //$NON-NLS-2$
+		    if (log.isDetailed()) log.logDetailed(toString(), Messages.getString("Trans.Log.SafeModeIsEnabled",transMeta.getName())); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 
 		if (getReplayDate() != null) {
@@ -287,7 +287,7 @@ public class Trans implements VariableSpace
 			log.logBasic(toString(), Messages.getString("Trans.Log.ThisIsAReplayTransformation") //$NON-NLS-1$
 					+ df.format(getReplayDate()));
 		} else {
-			log.logBasic(toString(), Messages.getString("Trans.Log.ThisIsNotAReplayTransformation")); //$NON-NLS-1$
+		    if (log.isDetailed()) log.logDetailed(toString(), Messages.getString("Trans.Log.ThisIsNotAReplayTransformation")); //$NON-NLS-1$
 		}
 
 		// setInternalKettleVariables(this);  --> Let's not do this, when running without file, for example remote, it spoils the fun
@@ -536,7 +536,7 @@ public class Trans implements VariableSpace
         preparing=false;
         initializing = true;
 
-        log.logBasic(toString(), Messages.getString("Trans.Log.InitialisingSteps", String.valueOf(steps.size()))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        if (log.isDetailed()) log.logDetailed(toString(), Messages.getString("Trans.Log.InitialisingSteps", String.valueOf(steps.size()))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
         StepInitThread initThreads[] = new StepInitThread[steps.size()];
         Thread[] threads = new Thread[steps.size()];
