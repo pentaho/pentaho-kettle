@@ -274,7 +274,7 @@ public class CombinationLookup extends BaseStep implements StepInterface
 				val_key = combiInsert( rowMeta, row, val_key, val_hash );
 				incrementLinesOutput();
 
-                if (log.isRowLevel()) log.logRowlevel(toString(), Messages.getString("CombinationLookup.Log.AddedDimensionEntry")+val_key); //$NON-NLS-1$
+                if (log.isRowLevel()) logRowlevel(Messages.getString("CombinationLookup.Log.AddedDimensionEntry")+val_key); //$NON-NLS-1$
 
 				// Also store it in our Hashtable...
 				addToCache(data.hashRowMeta, hashRow, val_key);
@@ -481,7 +481,7 @@ public class CombinationLookup extends BaseStep implements StepInterface
         
         try
         {
-            if (log.isDebug()) log.logDebug(toString(), "preparing combi-lookup statement:"+Const.CR+sql);
+            if (log.isDebug()) logDebug("preparing combi-lookup statement:"+Const.CR+sql);
             data.prepStatementLookup=data.db.getConnection().prepareStatement(databaseMeta.stripCR(sql));
             if (databaseMeta.supportsSetMaxRows())
             {
@@ -581,12 +581,12 @@ public class CombinationLookup extends BaseStep implements StepInterface
                     debug="First: prepare statement";
                     if (isAutoIncrement())
                     {
-                        log.logDetailed(toString(), "SQL with return keys: "+sqlStatement);
+                        logDetailed("SQL with return keys: "+sqlStatement);
                         data.prepStatementInsert=data.db.getConnection().prepareStatement(databaseMeta.stripCR(sqlStatement), Statement.RETURN_GENERATED_KEYS);
                     }
                     else
                     {
-                        log.logDetailed(toString(), "SQL without return keys: "+sqlStatement);
+                        logDetailed("SQL without return keys: "+sqlStatement);
                         data.prepStatementInsert=data.db.getConnection().prepareStatement(databaseMeta.stripCR(sqlStatement));
                     }
                 }
@@ -620,7 +620,7 @@ public class CombinationLookup extends BaseStep implements StepInterface
                 insertIndex++;
             }
             
-            if (log.isRowLevel()) log.logRowlevel(toString(), "rins="+data.insertRowMeta.getString(insertRow));
+            if (log.isRowLevel()) logRowlevel("rins="+data.insertRowMeta.getString(insertRow));
             
             debug="Set values on insert";
             // INSERT NEW VALUE!
@@ -661,7 +661,7 @@ public class CombinationLookup extends BaseStep implements StepInterface
         }
         catch(Exception e)
         {
-            log.logError(toString(), Const.getStackTracker(e));
+            logError(Const.getStackTracker(e));
             throw new KettleDatabaseException("Unexpected error in combination insert in part ["+debug+"] : "+e.toString(), e);
         }
         
