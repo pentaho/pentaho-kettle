@@ -1206,141 +1206,144 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 			throws KettleException {
 		this.log = log;
 
-		try {
-			// Clear everything...
-			clear();
-
-			directory = repdir;
-
-			// Get the transformation id
-			setID(rep.getJobID(jobname, repdir.getID()));
-
-			// If no valid id is available in the database, then give error...
-			if (getID() > 0) {
-				// Load the notes...
-				long noteids[] = rep.getJobNoteIDs(getID());
-				long jecids[] = rep.getJobEntryCopyIDs(getID());
-				long hopid[] = rep.getJobHopIDs(getID());
-
-				int nrWork = 2 + noteids.length + jecids.length + hopid.length;
-				if (monitor != null)
-					monitor.beginTask(Messages.getString("JobMeta.Monitor.LoadingJob") + repdir + Const.FILE_SEPARATOR + jobname, nrWork); //$NON-NLS-1$
-
-				//
-				// get job info:
-				//
-				if (monitor != null)
-					monitor.subTask(Messages.getString("JobMeta.Monitor.ReadingJobInformation")); //$NON-NLS-1$
-				RowMetaAndData jobRow = rep.getJob(getID());
-
-				setName( jobRow.getString("NAME", null) ); //$NON-NLS-1$
-				description = jobRow.getString("DESCRIPTION", null); //$NON-NLS-1$
-				extendedDescription = jobRow.getString("EXTENDED_DESCRIPTION", null); //$NON-NLS-1$
-				jobVersion = jobRow.getString("JOB_VERSION", null); //$NON-NLS-1$
-				jobStatus = Const.toInt(jobRow.getString("JOB_STATUS", null), -1); //$NON-NLS-1$
-				logTable = jobRow.getString("TABLE_NAME_LOG", null); //$NON-NLS-1$
-
-				created_user = jobRow.getString("CREATED_USER", null); //$NON-NLS-1$
-				created_date = jobRow.getDate("CREATED_DATE", new Date()); //$NON-NLS-1$
-
-				modifiedUser = jobRow.getString("MODIFIED_USER", null); //$NON-NLS-1$
-				modifiedDate = jobRow.getDate("MODIFIED_DATE", new Date()); //$NON-NLS-1$
-
-				long id_logdb = jobRow.getInteger("ID_DATABASE_LOG", 0); //$NON-NLS-1$
-				if (id_logdb > 0) {
-					// Get the logconnection
-					logConnection = RepositoryUtil.loadDatabaseMeta(rep, id_logdb);
-					logConnection.shareVariablesWith(this);
-				}
-				useBatchId = jobRow.getBoolean("USE_BATCH_ID", false); //$NON-NLS-1$
-				batchIdPassed = jobRow.getBoolean("PASS_BATCH_ID", false); //$NON-NLS-1$
-				logfieldUsed = jobRow.getBoolean("USE_LOGFIELD", false); //$NON-NLS-1$
-
-				if (monitor != null)
-					monitor.worked(1);
-				// 
-				// Load the common database connections
-				//
-				if (monitor != null)
-					monitor.subTask(Messages.getString("JobMeta.Monitor.ReadingAvailableDatabasesFromRepository")); //$NON-NLS-1$
-				// Read objects from the shared XML file & the repository
-				try {
-					sharedObjectsFile = jobRow.getString("SHARED_FILE", null);
-					sharedObjects = readSharedObjects(rep);
-				} catch (Exception e) {
-					LogWriter.getInstance().logError(toString(),
-							Messages.getString("JobMeta.ErrorReadingSharedObjects.Message", e.toString())); // $NON-NLS-1$
-																											// //$NON-NLS-1$
-					LogWriter.getInstance().logError(toString(), Const.getStackTracker(e));
-				}
-				if (monitor != null)
-					monitor.worked(1);
-
-				if(log.isDetailed()) log.logDetailed(toString(), "Loading " + noteids.length + " notes"); //$NON-NLS-1$ //$NON-NLS-2$
-				for (int i = 0; i < noteids.length; i++) {
+		synchronized(rep)
+		{
+			try {
+				// Clear everything...
+				clear();
+	
+				directory = repdir;
+	
+				// Get the transformation id
+				setID(rep.getJobID(jobname, repdir.getID()));
+	
+				// If no valid id is available in the database, then give error...
+				if (getID() > 0) {
+					// Load the notes...
+					long noteids[] = rep.getJobNoteIDs(getID());
+					long jecids[] = rep.getJobEntryCopyIDs(getID());
+					long hopid[] = rep.getJobHopIDs(getID());
+	
+					int nrWork = 2 + noteids.length + jecids.length + hopid.length;
 					if (monitor != null)
-						monitor.subTask(Messages.getString("JobMeta.Monitor.ReadingNoteNr") + (i + 1) + "/" + noteids.length); //$NON-NLS-1$ //$NON-NLS-2$
-					NotePadMeta ni = new NotePadMeta(log, rep, noteids[i]);
-					if (indexOfNote(ni) < 0)
-						addNote(ni);
-					if (monitor != null)
-						monitor.worked(1);
-				}
-
-				// Load the job entries...
-				if(log.isDetailed()) log.logDetailed(toString(), "Loading " + jecids.length + " job entries"); //$NON-NLS-1$ //$NON-NLS-2$
-				for (int i = 0; i < jecids.length; i++) {
-					if (monitor != null)
-						monitor.subTask(Messages.getString("JobMeta.Monitor.ReadingJobEntryNr") + (i + 1) + "/" + (jecids.length)); //$NON-NLS-1$ //$NON-NLS-2$
-
-					JobEntryCopy jec = new JobEntryCopy(log, rep, getID(), jecids[i], jobentries, databases, slaveServers);
-					// Also set the copy number...
-					// We count the number of job entry copies that use the job
-					// entry
+						monitor.beginTask(Messages.getString("JobMeta.Monitor.LoadingJob") + repdir + Const.FILE_SEPARATOR + jobname, nrWork); //$NON-NLS-1$
+	
 					//
-					int copyNr = 0;
-					for (JobEntryCopy copy : jobcopies) {
-						if (jec.getEntry() == copy.getEntry()) {
-							copyNr++;
+					// get job info:
+					//
+					if (monitor != null)
+						monitor.subTask(Messages.getString("JobMeta.Monitor.ReadingJobInformation")); //$NON-NLS-1$
+					RowMetaAndData jobRow = rep.getJob(getID());
+	
+					setName( jobRow.getString("NAME", null) ); //$NON-NLS-1$
+					description = jobRow.getString("DESCRIPTION", null); //$NON-NLS-1$
+					extendedDescription = jobRow.getString("EXTENDED_DESCRIPTION", null); //$NON-NLS-1$
+					jobVersion = jobRow.getString("JOB_VERSION", null); //$NON-NLS-1$
+					jobStatus = Const.toInt(jobRow.getString("JOB_STATUS", null), -1); //$NON-NLS-1$
+					logTable = jobRow.getString("TABLE_NAME_LOG", null); //$NON-NLS-1$
+	
+					created_user = jobRow.getString("CREATED_USER", null); //$NON-NLS-1$
+					created_date = jobRow.getDate("CREATED_DATE", new Date()); //$NON-NLS-1$
+	
+					modifiedUser = jobRow.getString("MODIFIED_USER", null); //$NON-NLS-1$
+					modifiedDate = jobRow.getDate("MODIFIED_DATE", new Date()); //$NON-NLS-1$
+	
+					long id_logdb = jobRow.getInteger("ID_DATABASE_LOG", 0); //$NON-NLS-1$
+					if (id_logdb > 0) {
+						// Get the logconnection
+						logConnection = RepositoryUtil.loadDatabaseMeta(rep, id_logdb);
+						logConnection.shareVariablesWith(this);
+					}
+					useBatchId = jobRow.getBoolean("USE_BATCH_ID", false); //$NON-NLS-1$
+					batchIdPassed = jobRow.getBoolean("PASS_BATCH_ID", false); //$NON-NLS-1$
+					logfieldUsed = jobRow.getBoolean("USE_LOGFIELD", false); //$NON-NLS-1$
+	
+					if (monitor != null)
+						monitor.worked(1);
+					// 
+					// Load the common database connections
+					//
+					if (monitor != null)
+						monitor.subTask(Messages.getString("JobMeta.Monitor.ReadingAvailableDatabasesFromRepository")); //$NON-NLS-1$
+					// Read objects from the shared XML file & the repository
+					try {
+						sharedObjectsFile = jobRow.getString("SHARED_FILE", null);
+						sharedObjects = readSharedObjects(rep);
+					} catch (Exception e) {
+						LogWriter.getInstance().logError(toString(),
+								Messages.getString("JobMeta.ErrorReadingSharedObjects.Message", e.toString())); // $NON-NLS-1$
+																												// //$NON-NLS-1$
+						LogWriter.getInstance().logError(toString(), Const.getStackTracker(e));
+					}
+					if (monitor != null)
+						monitor.worked(1);
+	
+					if(log.isDetailed()) log.logDetailed(toString(), "Loading " + noteids.length + " notes"); //$NON-NLS-1$ //$NON-NLS-2$
+					for (int i = 0; i < noteids.length; i++) {
+						if (monitor != null)
+							monitor.subTask(Messages.getString("JobMeta.Monitor.ReadingNoteNr") + (i + 1) + "/" + noteids.length); //$NON-NLS-1$ //$NON-NLS-2$
+						NotePadMeta ni = new NotePadMeta(log, rep, noteids[i]);
+						if (indexOfNote(ni) < 0)
+							addNote(ni);
+						if (monitor != null)
+							monitor.worked(1);
+					}
+	
+					// Load the job entries...
+					if(log.isDetailed()) log.logDetailed(toString(), "Loading " + jecids.length + " job entries"); //$NON-NLS-1$ //$NON-NLS-2$
+					for (int i = 0; i < jecids.length; i++) {
+						if (monitor != null)
+							monitor.subTask(Messages.getString("JobMeta.Monitor.ReadingJobEntryNr") + (i + 1) + "/" + (jecids.length)); //$NON-NLS-1$ //$NON-NLS-2$
+	
+						JobEntryCopy jec = new JobEntryCopy(log, rep, getID(), jecids[i], jobentries, databases, slaveServers);
+						// Also set the copy number...
+						// We count the number of job entry copies that use the job
+						// entry
+						//
+						int copyNr = 0;
+						for (JobEntryCopy copy : jobcopies) {
+							if (jec.getEntry() == copy.getEntry()) {
+								copyNr++;
+							}
 						}
+						jec.setNr(copyNr);
+	
+						int idx = indexOfJobEntry(jec);
+						if (idx < 0) {
+							if (jec.getName() != null && jec.getName().length() > 0)
+								addJobEntry(jec);
+						} else {
+							setJobEntry(idx, jec); // replace it!
+						}
+						if (monitor != null)
+							monitor.worked(1);
 					}
-					jec.setNr(copyNr);
-
-					int idx = indexOfJobEntry(jec);
-					if (idx < 0) {
-						if (jec.getName() != null && jec.getName().length() > 0)
-							addJobEntry(jec);
-					} else {
-						setJobEntry(idx, jec); // replace it!
+	
+					// Load the hops...
+					if(log.isDetailed()) log.logDetailed(toString(), "Loading " + hopid.length + " job hops"); //$NON-NLS-1$ //$NON-NLS-2$
+					for (int i = 0; i < hopid.length; i++) {
+						if (monitor != null)
+							monitor.subTask(Messages.getString("JobMeta.Monitor.ReadingJobHopNr") + (i + 1) + "/" + (jecids.length)); //$NON-NLS-1$ //$NON-NLS-2$
+						JobHopMeta hi = new JobHopMeta(rep, hopid[i], this, jobcopies);
+						jobhops.add(hi);
+						if (monitor != null)
+							monitor.worked(1);
 					}
+	
+					// Finally, clear the changed flags...
+					clearChanged();
 					if (monitor != null)
-						monitor.worked(1);
+						monitor.subTask(Messages.getString("JobMeta.Monitor.FinishedLoadOfJob")); //$NON-NLS-1$
+					if (monitor != null)
+						monitor.done();
+				} else {
+					throw new KettleException(Messages.getString("JobMeta.Exception.CanNotFindJob") + jobname); //$NON-NLS-1$
 				}
-
-				// Load the hops...
-				if(log.isDetailed()) log.logDetailed(toString(), "Loading " + hopid.length + " job hops"); //$NON-NLS-1$ //$NON-NLS-2$
-				for (int i = 0; i < hopid.length; i++) {
-					if (monitor != null)
-						monitor.subTask(Messages.getString("JobMeta.Monitor.ReadingJobHopNr") + (i + 1) + "/" + (jecids.length)); //$NON-NLS-1$ //$NON-NLS-2$
-					JobHopMeta hi = new JobHopMeta(rep, hopid[i], this, jobcopies);
-					jobhops.add(hi);
-					if (monitor != null)
-						monitor.worked(1);
-				}
-
-				// Finally, clear the changed flags...
-				clearChanged();
-				if (monitor != null)
-					monitor.subTask(Messages.getString("JobMeta.Monitor.FinishedLoadOfJob")); //$NON-NLS-1$
-				if (monitor != null)
-					monitor.done();
-			} else {
-				throw new KettleException(Messages.getString("JobMeta.Exception.CanNotFindJob") + jobname); //$NON-NLS-1$
+			} catch (KettleException dbe) {
+				throw new KettleException(Messages.getString("JobMeta.Exception.AnErrorOccuredReadingJob", jobname), dbe);
+			} finally {
+				setInternalKettleVariables();
 			}
-		} catch (KettleException dbe) {
-			throw new KettleException(Messages.getString("JobMeta.Exception.AnErrorOccuredReadingJob", jobname), dbe);
-		} finally {
-			setInternalKettleVariables();
 		}
 	}
 

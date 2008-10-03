@@ -2323,162 +2323,165 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     {
         this();
         this.repository = rep;
-        
-        try
+     
+        synchronized(rep) 
         {
-            String pathAndName = repdir.isRoot() ? repdir + transname : repdir + RepositoryDirectory.DIRECTORY_SEPARATOR + transname;
-
-            setName(transname);
-            directory = repdir;
-            directoryTree = directory.findRoot();
-
-            // Get the transformation id
-            if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("TransMeta.Log.LookingForTransformation", transname ,directory.getPath() )); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-
-            if (monitor != null) monitor.subTask(Messages.getString("TransMeta.Monitor.ReadingTransformationInfoTask.Title")); //$NON-NLS-1$
-            setID(rep.getTransformationID(transname, directory.getID()));
-            if (monitor != null) monitor.worked(1);
-
-            // If no valid id is available in the database, then give error...
-            if (getID() > 0)
-            {
-                long noteids[] = rep.getTransNoteIDs(getID());
-                long stepids[] = rep.getStepIDs(getID());
-                long hopids[] = rep.getTransHopIDs(getID());
-
-                int nrWork = 3 + noteids.length + stepids.length + hopids.length;
-
-                if (monitor != null) monitor.beginTask(Messages.getString("TransMeta.Monitor.LoadingTransformationTask.Title") + pathAndName, nrWork); //$NON-NLS-1$
-
-                if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("TransMeta.Log.LoadingTransformation", getName() )); //$NON-NLS-1$ //$NON-NLS-2$
-
-                // Load the common database connections
-                if (monitor != null) monitor.subTask(Messages.getString("TransMeta.Monitor.ReadingTheAvailableSharedObjectsTask.Title")); //$NON-NLS-1$
-                try
-                {
-                    sharedObjects = readSharedObjects(rep);
-                }
-                catch(Exception e)
-                {
-                    LogWriter.getInstance().logError(toString(), Messages.getString("TransMeta.ErrorReadingSharedObjects.Message", e.toString()));
-                    LogWriter.getInstance().logError(toString(), Const.getStackTracker(e));
-                }
-
-                if (monitor != null) monitor.worked(1);
-
-                // Load the notes...
-                if (monitor != null) monitor.subTask(Messages.getString("TransMeta.Monitor.ReadingNoteTask.Title")); //$NON-NLS-1$
-                for (int i = 0; i < noteids.length; i++)
-                {
-                    NotePadMeta ni = new NotePadMeta(log, rep, noteids[i]);
-                    if (indexOfNote(ni) < 0) addNote(ni);
-                    if (monitor != null) monitor.worked(1);
-                }
-
-                if (monitor != null) monitor.subTask(Messages.getString("TransMeta.Monitor.ReadingStepsTask.Title")); //$NON-NLS-1$
-                rep.fillStepAttributesBuffer(getID()); // read all the attributes on one go!
-                for (int i = 0; i < stepids.length; i++)
-                {
-                	if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("TransMeta.Log.LoadingStepWithID") + stepids[i]); //$NON-NLS-1$
-                    if (monitor != null) monitor.subTask(Messages.getString("TransMeta.Monitor.ReadingStepTask.Title") + (i + 1) + "/" + (stepids.length)); //$NON-NLS-1$ //$NON-NLS-2$
-                    StepMeta stepMeta = new StepMeta(rep, stepids[i], databases, counters, partitionSchemas);
-                    // In this case, we just add or replace the shared steps.
-                    // The repository is considered "more central"
-                    addOrReplaceStep(stepMeta);
-                    
-                    if (monitor != null) monitor.worked(1);
-                }
-                if (monitor != null) monitor.worked(1);
-                rep.setStepAttributesBuffer(null); // clear the buffer (should be empty anyway)
-
-                // Have all StreamValueLookups, etc. reference the correct source steps...
-                for (int i = 0; i < nrSteps(); i++)
-                {
-                    StepMetaInterface sii = getStep(i).getStepMetaInterface();
-                    sii.searchInfoAndTargetSteps(steps);
-                }
-
-                if (monitor != null) monitor.subTask(Messages.getString("TransMeta.Monitor.LoadingTransformationDetailsTask.Title")); //$NON-NLS-1$
-                loadRepTrans(rep);
-                if (monitor != null) monitor.worked(1);
-                                                
-                if (monitor != null) monitor.subTask(Messages.getString("TransMeta.Monitor.ReadingHopTask.Title")); //$NON-NLS-1$
-                for (int i = 0; i < hopids.length; i++)
-                {
-                    TransHopMeta hi = new TransHopMeta(rep, hopids[i], steps);
-                    addTransHop(hi);
-                    if (monitor != null) monitor.worked(1);
-                }
-                
-                // Have all step partitioning meta-data reference the correct schemas that we just loaded
-                // 
-                for (int i = 0; i < nrSteps(); i++)
-                {
-                    StepPartitioningMeta stepPartitioningMeta = getStep(i).getStepPartitioningMeta();
-                    if (stepPartitioningMeta!=null)
-                    {
-                        stepPartitioningMeta.setPartitionSchemaAfterLoading(partitionSchemas);
-                    }
-                }
-                
-                // Have all step clustering schema meta-data reference the correct cluster schemas that we just loaded
-                // 
-                for (int i = 0; i < nrSteps(); i++)
-                {
-                    getStep(i).setClusterSchemaAfterLoading(clusterSchemas);
-                }                
-                
-                if (monitor != null) monitor.subTask(Messages.getString("TransMeta.Monitor.ReadingTheDependenciesTask.Title")); //$NON-NLS-1$
-                long depids[] = rep.getTransDependencyIDs(getID());
-                for (int i = 0; i < depids.length; i++)
-                {
-                    TransDependency td = new TransDependency(rep, depids[i], databases);
-                    addDependency(td);
-                }
-                if (monitor != null) monitor.worked(1);
-
-                // Also load the step error handling metadata
-                //
-                for (int i=0;i<nrSteps();i++)
-                {
-                    StepMeta stepMeta = getStep(i);
-                    String sourceStep = rep.getStepAttributeString(stepMeta.getID(), "step_error_handling_source_step");
-                    if (sourceStep!=null)
-                    {
-                        StepErrorMeta stepErrorMeta = new StepErrorMeta(this, rep, stepMeta, steps);
-                        stepErrorMeta.getSourceStep().setStepErrorMeta(stepErrorMeta); // a bit of a trick, I know.                        
-                    }
-                }
-                
-                if (monitor != null) monitor.subTask(Messages.getString("TransMeta.Monitor.SortingStepsTask.Title")); //$NON-NLS-1$
-                sortSteps();
-                if (monitor != null) monitor.worked(1);
-                if (monitor != null) monitor.done();
-            }
-            else
-            {
-                throw new KettleException(Messages.getString("TransMeta.Exception.TransformationDoesNotExist") + name); //$NON-NLS-1$
-            }
-            if(log.isDetailed()) 
-            {
-            	log.logDetailed(toString(), Messages.getString("TransMeta.Log.LoadedTransformation2", transname , String.valueOf(directory == null))); //$NON-NLS-1$ //$NON-NLS-2$
-            	log.logDetailed(toString(), Messages.getString("TransMeta.Log.LoadedTransformation", transname , directory.getPath() )); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-            }
-        }
-        catch (KettleDatabaseException e)
-        {
-            log.logError(toString(), Messages.getString("TransMeta.Log.DatabaseErrorOccuredReadingTransformation") + Const.CR + e); //$NON-NLS-1$
-            throw new KettleException(Messages.getString("TransMeta.Exception.DatabaseErrorOccuredReadingTransformation"), e); //$NON-NLS-1$
-        }
-        catch (Exception e)
-        {
-            log.logError(toString(), Messages.getString("TransMeta.Log.DatabaseErrorOccuredReadingTransformation") + Const.CR + e); //$NON-NLS-1$
-            throw new KettleException(Messages.getString("TransMeta.Exception.DatabaseErrorOccuredReadingTransformation2"), e); //$NON-NLS-1$
-        }
-        finally
-        {
-        	initializeVariablesFrom(null);
-        	if (setInternalVariables) setInternalKettleVariables();
+	        try
+	        {
+	            String pathAndName = repdir.isRoot() ? repdir + transname : repdir + RepositoryDirectory.DIRECTORY_SEPARATOR + transname;
+	
+	            setName(transname);
+	            directory = repdir;
+	            directoryTree = directory.findRoot();
+	
+	            // Get the transformation id
+	            if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("TransMeta.Log.LookingForTransformation", transname ,directory.getPath() )); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	
+	            if (monitor != null) monitor.subTask(Messages.getString("TransMeta.Monitor.ReadingTransformationInfoTask.Title")); //$NON-NLS-1$
+	            setID(rep.getTransformationID(transname, directory.getID()));
+	            if (monitor != null) monitor.worked(1);
+	
+	            // If no valid id is available in the database, then give error...
+	            if (getID() > 0)
+	            {
+	                long noteids[] = rep.getTransNoteIDs(getID());
+	                long stepids[] = rep.getStepIDs(getID());
+	                long hopids[] = rep.getTransHopIDs(getID());
+	
+	                int nrWork = 3 + noteids.length + stepids.length + hopids.length;
+	
+	                if (monitor != null) monitor.beginTask(Messages.getString("TransMeta.Monitor.LoadingTransformationTask.Title") + pathAndName, nrWork); //$NON-NLS-1$
+	
+	                if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("TransMeta.Log.LoadingTransformation", getName() )); //$NON-NLS-1$ //$NON-NLS-2$
+	
+	                // Load the common database connections
+	                if (monitor != null) monitor.subTask(Messages.getString("TransMeta.Monitor.ReadingTheAvailableSharedObjectsTask.Title")); //$NON-NLS-1$
+	                try
+	                {
+	                    sharedObjects = readSharedObjects(rep);
+	                }
+	                catch(Exception e)
+	                {
+	                    LogWriter.getInstance().logError(toString(), Messages.getString("TransMeta.ErrorReadingSharedObjects.Message", e.toString()));
+	                    LogWriter.getInstance().logError(toString(), Const.getStackTracker(e));
+	                }
+	
+	                if (monitor != null) monitor.worked(1);
+	
+	                // Load the notes...
+	                if (monitor != null) monitor.subTask(Messages.getString("TransMeta.Monitor.ReadingNoteTask.Title")); //$NON-NLS-1$
+	                for (int i = 0; i < noteids.length; i++)
+	                {
+	                    NotePadMeta ni = new NotePadMeta(log, rep, noteids[i]);
+	                    if (indexOfNote(ni) < 0) addNote(ni);
+	                    if (monitor != null) monitor.worked(1);
+	                }
+	
+	                if (monitor != null) monitor.subTask(Messages.getString("TransMeta.Monitor.ReadingStepsTask.Title")); //$NON-NLS-1$
+	                rep.fillStepAttributesBuffer(getID()); // read all the attributes on one go!
+	                for (int i = 0; i < stepids.length; i++)
+	                {
+	                	if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("TransMeta.Log.LoadingStepWithID") + stepids[i]); //$NON-NLS-1$
+	                    if (monitor != null) monitor.subTask(Messages.getString("TransMeta.Monitor.ReadingStepTask.Title") + (i + 1) + "/" + (stepids.length)); //$NON-NLS-1$ //$NON-NLS-2$
+	                    StepMeta stepMeta = new StepMeta(rep, stepids[i], databases, counters, partitionSchemas);
+	                    // In this case, we just add or replace the shared steps.
+	                    // The repository is considered "more central"
+	                    addOrReplaceStep(stepMeta);
+	                    
+	                    if (monitor != null) monitor.worked(1);
+	                }
+	                if (monitor != null) monitor.worked(1);
+	                rep.setStepAttributesBuffer(null); // clear the buffer (should be empty anyway)
+	
+	                // Have all StreamValueLookups, etc. reference the correct source steps...
+	                for (int i = 0; i < nrSteps(); i++)
+	                {
+	                    StepMetaInterface sii = getStep(i).getStepMetaInterface();
+	                    sii.searchInfoAndTargetSteps(steps);
+	                }
+	
+	                if (monitor != null) monitor.subTask(Messages.getString("TransMeta.Monitor.LoadingTransformationDetailsTask.Title")); //$NON-NLS-1$
+	                loadRepTrans(rep);
+	                if (monitor != null) monitor.worked(1);
+	                                                
+	                if (monitor != null) monitor.subTask(Messages.getString("TransMeta.Monitor.ReadingHopTask.Title")); //$NON-NLS-1$
+	                for (int i = 0; i < hopids.length; i++)
+	                {
+	                    TransHopMeta hi = new TransHopMeta(rep, hopids[i], steps);
+	                    addTransHop(hi);
+	                    if (monitor != null) monitor.worked(1);
+	                }
+	                
+	                // Have all step partitioning meta-data reference the correct schemas that we just loaded
+	                // 
+	                for (int i = 0; i < nrSteps(); i++)
+	                {
+	                    StepPartitioningMeta stepPartitioningMeta = getStep(i).getStepPartitioningMeta();
+	                    if (stepPartitioningMeta!=null)
+	                    {
+	                        stepPartitioningMeta.setPartitionSchemaAfterLoading(partitionSchemas);
+	                    }
+	                }
+	                
+	                // Have all step clustering schema meta-data reference the correct cluster schemas that we just loaded
+	                // 
+	                for (int i = 0; i < nrSteps(); i++)
+	                {
+	                    getStep(i).setClusterSchemaAfterLoading(clusterSchemas);
+	                }                
+	                
+	                if (monitor != null) monitor.subTask(Messages.getString("TransMeta.Monitor.ReadingTheDependenciesTask.Title")); //$NON-NLS-1$
+	                long depids[] = rep.getTransDependencyIDs(getID());
+	                for (int i = 0; i < depids.length; i++)
+	                {
+	                    TransDependency td = new TransDependency(rep, depids[i], databases);
+	                    addDependency(td);
+	                }
+	                if (monitor != null) monitor.worked(1);
+	
+	                // Also load the step error handling metadata
+	                //
+	                for (int i=0;i<nrSteps();i++)
+	                {
+	                    StepMeta stepMeta = getStep(i);
+	                    String sourceStep = rep.getStepAttributeString(stepMeta.getID(), "step_error_handling_source_step");
+	                    if (sourceStep!=null)
+	                    {
+	                        StepErrorMeta stepErrorMeta = new StepErrorMeta(this, rep, stepMeta, steps);
+	                        stepErrorMeta.getSourceStep().setStepErrorMeta(stepErrorMeta); // a bit of a trick, I know.                        
+	                    }
+	                }
+	                
+	                if (monitor != null) monitor.subTask(Messages.getString("TransMeta.Monitor.SortingStepsTask.Title")); //$NON-NLS-1$
+	                sortSteps();
+	                if (monitor != null) monitor.worked(1);
+	                if (monitor != null) monitor.done();
+	            }
+	            else
+	            {
+	                throw new KettleException(Messages.getString("TransMeta.Exception.TransformationDoesNotExist") + name); //$NON-NLS-1$
+	            }
+	            if(log.isDetailed()) 
+	            {
+	            	log.logDetailed(toString(), Messages.getString("TransMeta.Log.LoadedTransformation2", transname , String.valueOf(directory == null))); //$NON-NLS-1$ //$NON-NLS-2$
+	            	log.logDetailed(toString(), Messages.getString("TransMeta.Log.LoadedTransformation", transname , directory.getPath() )); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	            }
+	        }
+	        catch (KettleDatabaseException e)
+	        {
+	            log.logError(toString(), Messages.getString("TransMeta.Log.DatabaseErrorOccuredReadingTransformation") + Const.CR + e); //$NON-NLS-1$
+	            throw new KettleException(Messages.getString("TransMeta.Exception.DatabaseErrorOccuredReadingTransformation"), e); //$NON-NLS-1$
+	        }
+	        catch (Exception e)
+	        {
+	            log.logError(toString(), Messages.getString("TransMeta.Log.DatabaseErrorOccuredReadingTransformation") + Const.CR + e); //$NON-NLS-1$
+	            throw new KettleException(Messages.getString("TransMeta.Exception.DatabaseErrorOccuredReadingTransformation2"), e); //$NON-NLS-1$
+	        }
+	        finally
+	        {
+	        	initializeVariablesFrom(null);
+	        	if (setInternalVariables) setInternalKettleVariables();
+	        }
         }
     }
 
