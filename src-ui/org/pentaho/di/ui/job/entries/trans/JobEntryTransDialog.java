@@ -149,6 +149,13 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 	private ComboVar wSlaveServer;
 	private FormData fdlSlaveServer, fdSlaveServer;
 
+	private Label wlWaitingToFinish;
+	private Button wWaitingToFinish;
+	private FormData fdlWaitingToFinish, fdWaitingToFinish;
+
+	private Label wlFollowingAbortRemotely;
+	private Button wFollowingAbortRemotely;
+	private FormData fdlFollowingAbortRemotely, fdFollowingAbortRemotely;
 	
 	private Button wOK, wCancel;
 
@@ -579,13 +586,51 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 		fdSlaveServer.top = new FormAttachment(wCluster, margin);
 		fdSlaveServer.right = new FormAttachment(100, 0);
 		wSlaveServer.setLayoutData(fdSlaveServer);
+		wSlaveServer.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { setActive(); } });
 
+		// Wait for the remote transformation to finish?
+		//
+		wlWaitingToFinish = new Label(shell, SWT.RIGHT);
+		wlWaitingToFinish.setText(Messages.getString("JobTrans.WaitToFinish.Label"));
+		props.setLook(wlWaitingToFinish);
+		fdlWaitingToFinish = new FormData();
+		fdlWaitingToFinish.left = new FormAttachment(0, 0);
+		fdlWaitingToFinish.top = new FormAttachment(wSlaveServer, margin);
+		fdlWaitingToFinish.right = new FormAttachment(middle, -margin);
+		wlWaitingToFinish.setLayoutData(fdlWaitingToFinish);
+		wWaitingToFinish = new Button(shell, SWT.CHECK);
+		props.setLook(wWaitingToFinish);
+		fdWaitingToFinish = new FormData();
+		fdWaitingToFinish.left = new FormAttachment(middle, 0);
+		fdWaitingToFinish.top = new FormAttachment(wSlaveServer, margin);
+		fdWaitingToFinish.right = new FormAttachment(100, 0);
+		wWaitingToFinish.setLayoutData(fdWaitingToFinish);
+		wWaitingToFinish.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { setActive(); } });
+
+		// Follow a local abort remotely?
+		//
+		wlFollowingAbortRemotely = new Label(shell, SWT.RIGHT);
+		wlFollowingAbortRemotely.setText(Messages.getString("JobTrans.AbortRemote.Label"));
+		props.setLook(wlFollowingAbortRemotely);
+		fdlFollowingAbortRemotely = new FormData();
+		fdlFollowingAbortRemotely.left = new FormAttachment(0, 0);
+		fdlFollowingAbortRemotely.top = new FormAttachment(wWaitingToFinish, margin);
+		fdlFollowingAbortRemotely.right = new FormAttachment(middle, -margin);
+		wlFollowingAbortRemotely.setLayoutData(fdlFollowingAbortRemotely);
+		wFollowingAbortRemotely = new Button(shell, SWT.CHECK);
+		props.setLook(wFollowingAbortRemotely);
+		fdFollowingAbortRemotely = new FormData();
+		fdFollowingAbortRemotely.left = new FormAttachment(middle, 0);
+		fdFollowingAbortRemotely.top = new FormAttachment(wWaitingToFinish, margin);
+		fdFollowingAbortRemotely.right = new FormAttachment(100, 0);
+		wFollowingAbortRemotely.setLayoutData(fdFollowingAbortRemotely);
+		
 		wlFields = new Label(shell, SWT.NONE);
 		wlFields.setText(Messages.getString("JobTrans.Fields.Label"));
 		props.setLook(wlFields);
 		fdlFields = new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
-		fdlFields.top = new FormAttachment(wSlaveServer, margin);
+		fdlFields.top = new FormAttachment(wFollowingAbortRemotely, margin);
 		wlFields.setLayoutData(fdlFields);
 
 		final int FieldsCols = 1;
@@ -709,10 +754,11 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 					wFilename.setText(lroot != null ? selected : Const.EMPTY_STRING);
 
 					TransMeta transMeta = new TransMeta(wFilename.getText());
-					if (transMeta.getName() != null)
+					if (transMeta.getName() != null) {
 						wName.setText(transMeta.getName());
-					else
+					} else {
 						wName.setText(selected);
+					}
 					
 				} catch (Exception ke)
 				{
@@ -781,8 +827,11 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 		wSlaveServer.setEnabled(!wCluster.getSelection());
 		wlSlaveServer.setEnabled(!wCluster.getSelection());
 
-		
-		
+		wlWaitingToFinish.setEnabled( !wCluster.getSelection() && !Const.isEmpty(wSlaveServer.getText()));
+		wWaitingToFinish.setEnabled( !wCluster.getSelection() && !Const.isEmpty(wSlaveServer.getText()));
+
+		wlFollowingAbortRemotely.setEnabled( !wCluster.getSelection() && wWaitingToFinish.getSelection() && !Const.isEmpty(wSlaveServer.getText()));
+		wFollowingAbortRemotely.setEnabled( !wCluster.getSelection() && wWaitingToFinish.getSelection() && !Const.isEmpty(wSlaveServer.getText()));
 	}
 
 	public void getData()
@@ -825,11 +874,12 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 		wClearRows.setSelection(jobEntry.clearResultRows);
 		wClearFiles.setSelection(jobEntry.clearResultFiles);
 		wCluster.setSelection(jobEntry.isClustering());
-		
 		if (jobEntry.getRemoteSlaveServerName()!=null)
 		{
 			wSlaveServer.setText(jobEntry.getRemoteSlaveServerName());
 		}
+		wWaitingToFinish.setSelection(jobEntry.isWaitingToFinish());
+		wFollowingAbortRemotely.setSelection(jobEntry.isFollowingAbortRemotely());
 		wAppendLogfile.setSelection(jobEntry.setAppendLogfile);
 		wLoglevel.select(jobEntry.loglevel);
 	}
@@ -883,6 +933,9 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 
 		jobEntry.setRemoteSlaveServerName( wSlaveServer.getText() );
 		jobEntry.setAppendLogfile = wAppendLogfile.getSelection();
+		jobEntry.setWaitingToFinish( wWaitingToFinish.getSelection() );
+		jobEntry.setFollowingAbortRemotely( wFollowingAbortRemotely.getSelection() );
+
 		jobEntry.setChanged();
 
 		dispose();

@@ -159,6 +159,7 @@ public class Trans implements VariableSpace
     private boolean running;
     private AtomicBoolean finished;
     private AtomicBoolean paused;
+    private AtomicBoolean stopped;
 
     private boolean readyToStart;    
     
@@ -188,6 +189,7 @@ public class Trans implements VariableSpace
         
         finished = new AtomicBoolean(false);
         paused = new AtomicBoolean(false);
+        stopped = new AtomicBoolean(false);
 	}
 
 	public String getName()
@@ -231,6 +233,7 @@ public class Trans implements VariableSpace
 		transListeners = new ArrayList<TransListener>();
 		finished = new AtomicBoolean(false);
 		paused = new AtomicBoolean(false);
+		stopped = new AtomicBoolean(false);
 	}
 
     /**
@@ -700,6 +703,7 @@ public class Trans implements VariableSpace
         //
         finished.set(false);
         paused.set(false);
+        stopped.set(false);
         
 		TransListener transListener = new TransListener() {
 				public void transFinished(Trans trans) {
@@ -1068,6 +1072,7 @@ public class Trans implements VariableSpace
 		
 		//if it is stopped it is not paused
 		paused.set(false);
+		stopped.set(true);
 	}
 
 	public int nrSteps()
@@ -1417,6 +1422,7 @@ public class Trans implements VariableSpace
 		}
 
 		result.setRows( transMeta.getResultRows() );
+		result.setStopped( isStopped() );
 
 		return result;
 	}
@@ -2730,6 +2736,10 @@ public class Trans implements VariableSpace
 	
 	public boolean isPaused() {
 		return paused.get();
+	}
+
+	public boolean isStopped() {
+		return stopped.get();
 	}
 
 	public static void monitorRemoteTransformation(String transName, SlaveServer remoteSlaveServer) {

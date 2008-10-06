@@ -85,6 +85,9 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     private String directoryPath;
     public boolean setAppendLogfile;
     
+	public  boolean waitingToFinish=true;
+    public  boolean followingAbortRemotely;
+    
     private String remoteSlaveServerName;
 
     public JobEntryJob(String name)
@@ -205,6 +208,8 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 		retval.append("      ").append(XMLHandler.addTagValue("add_time",          addTime));
 		retval.append("      ").append(XMLHandler.addTagValue("loglevel",          LogWriter.getLogLevelDesc(loglevel)));
 		retval.append("      ").append(XMLHandler.addTagValue("slave_server_name", remoteSlaveServerName));
+		retval.append("      ").append(XMLHandler.addTagValue("wait_until_finished",     waitingToFinish));
+		retval.append("      ").append(XMLHandler.addTagValue("follow_abort_remote",     followingAbortRemotely));
 
 		if (arguments!=null)
 		for (int i=0;i<arguments.length;i++)
@@ -232,6 +237,12 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 			setAppendLogfile = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "set_append_logfile"));
 			remoteSlaveServerName = XMLHandler.getTagValue(entrynode, "slave_server_name");
 			directory = XMLHandler.getTagValue(entrynode, "directory");
+			
+			String wait = XMLHandler.getTagValue(entrynode, "wait_until_finished");
+			if (Const.isEmpty(wait)) waitingToFinish=true;
+			else waitingToFinish = "Y".equalsIgnoreCase( wait );
+
+			followingAbortRemotely = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "follow_abort_remote"));
 
 			// How many arguments?
 			int argnr = 0;
@@ -267,6 +278,8 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 			loglevel = LogWriter.getLogLevel(rep.getJobEntryAttributeString(id_jobentry, "loglevel"));
 			setAppendLogfile = rep.getJobEntryAttributeBoolean(id_jobentry, "set_append_logfile");
 			remoteSlaveServerName = rep.getJobEntryAttributeString(id_jobentry, "slave_server_name");
+			waitingToFinish = rep.getJobEntryAttributeBoolean(id_jobentry, "wait_until_finished", true);
+			followingAbortRemotely = rep.getJobEntryAttributeBoolean(id_jobentry, "follow_abort_remote", true);
 
 			// How many arguments?
 			int argnr = rep.countNrJobEntryAttributes(id_jobentry, "argument");
@@ -297,14 +310,15 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 				throw new KettleException("The value of directory may not be null");
 			}
 
-      // Removed id_job as we do not know what it is if we are using variables in the path
-			//long id_job_attr = rep.getJobID(jobname, directory.getID());
-			//rep.saveJobEntryAttribute(id_job, getID(), "id_job", id_job_attr);
-      rep.saveJobEntryAttribute(id_job, getID(), "name", getJobName());
-      rep.saveJobEntryAttribute(id_job, getID(), "dir_path", getDirectory()!=null?getDirectory():"");
-      rep.saveJobEntryAttribute(id_job, getID(), "file_name", filename);
+			// Removed id_job as we do not know what it is if we are using variables in the path
+			//	long id_job_attr = rep.getJobID(jobname, directory.getID());
+			// rep.saveJobEntryAttribute(id_job, getID(), "id_job", id_job_attr);
+			
+			rep.saveJobEntryAttribute(id_job, getID(), "name", getJobName());
+      		rep.saveJobEntryAttribute(id_job, getID(), "dir_path", getDirectory()!=null?getDirectory():"");
+      		rep.saveJobEntryAttribute(id_job, getID(), "file_name", filename);
 			rep.saveJobEntryAttribute(id_job, getID(), "arg_from_previous", argFromPrevious);
-      rep.saveJobEntryAttribute(id_job, getID(), "exec_per_row", execPerRow);
+			rep.saveJobEntryAttribute(id_job, getID(), "exec_per_row", execPerRow);
 			rep.saveJobEntryAttribute(id_job, getID(), "set_logfile", setLogfile);
 			rep.saveJobEntryAttribute(id_job, getID(), "add_date", addDate);
 			rep.saveJobEntryAttribute(id_job, getID(), "add_time", addTime);
@@ -313,6 +327,8 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 			rep.saveJobEntryAttribute(id_job, getID(), "set_append_logfile", setAppendLogfile);
 			rep.saveJobEntryAttribute(id_job, getID(), "loglevel", LogWriter.getLogLevelDesc(loglevel));
 			rep.saveJobEntryAttribute(id_job, getID(), "slave_server_name", remoteSlaveServerName);
+			rep.saveJobEntryAttribute(id_job, getID(), "wait_until_finished", waitingToFinish);
+			rep.saveJobEntryAttribute(id_job, getID(), "follow_abort_remote", followingAbortRemotely);
 
 			// save the arguments...
 			if (arguments!=null)
@@ -593,11 +609,12 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
                 	
                 	// Now start the monitoring...
                 	//
-                	while (!parentJob.isStopped())
+                	SlaveServerJobStatus jobStatus=null;
+                	while (!parentJob.isStopped() && waitingToFinish)
                 	{
                 		try 
                 		{
-							SlaveServerJobStatus jobStatus = remoteSlaveServer.getJobStatus(jobMeta.getName());
+							jobStatus = remoteSlaveServer.getJobStatus(jobMeta.getName());
 							if (jobStatus.getResult()!=null)
 							{
 								// The job is finished, get the result...
@@ -614,8 +631,26 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
                 		
                 		try { Thread.sleep(10000); } catch(InterruptedException e) {} ; // sleep for 10 seconds
                 	}
-                }
+                	
+                	if (parentJob.isStopped()) {
+                		try 
+                		{
+	                		// See if we have a status and if we need to stop the remote execution here...
+	                		// 
+	                		if (jobStatus==null || jobStatus.isRunning()) {
+	                			// Try a remote abort ...
+	                			//
+	                			remoteSlaveServer.stopJob(jobMeta.getName());
+	                		}
+                		}
+                		catch (Exception e1) {
+							log.logError(toString(), "Unable to contact slave server ["+remoteSlaveServer+"] to stop job ["+jobMeta.getName()+"]");
+							oneResult.setNrErrors(1L);
+							break; // Stop looking too, chances are too low the server will come back on-line
+						}
+                	}
 
+                }
                 
                 if (iteration==0)
                 {
@@ -885,4 +920,34 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 	public void setRemoteSlaveServerName(String remoteSlaveServerName) {
 		this.remoteSlaveServerName = remoteSlaveServerName;
 	}
+
+	/**
+	 * @return the waitingToFinish
+	 */
+	public boolean isWaitingToFinish() {
+		return waitingToFinish;
+	}
+
+	/**
+	 * @param waitingToFinish the waitingToFinish to set
+	 */
+	public void setWaitingToFinish(boolean waitingToFinish) {
+		this.waitingToFinish = waitingToFinish;
+	}
+
+	/**
+	 * @return the followingAbortRemotely
+	 */
+	public boolean isFollowingAbortRemotely() {
+		return followingAbortRemotely;
+	}
+
+	/**
+	 * @param followingAbortRemotely the followingAbortRemotely to set
+	 */
+	public void setFollowingAbortRemotely(boolean followingAbortRemotely) {
+		this.followingAbortRemotely = followingAbortRemotely;
+	}
+
+
 }

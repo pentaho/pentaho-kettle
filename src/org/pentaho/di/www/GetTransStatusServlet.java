@@ -122,7 +122,7 @@ public class GetTransStatusServlet extends HttpServlet
                 // Is the transformation paused?
                 //
                 transStatus.setPaused( trans.isPaused() );
-                
+                                
                 // Send the result back as XML
                 //
                 out.println(transStatus.getXML());
