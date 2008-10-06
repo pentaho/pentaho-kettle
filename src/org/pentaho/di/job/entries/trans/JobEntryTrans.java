@@ -93,11 +93,14 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 	public  String  logfile, logext;
 	public  boolean addDate, addTime;
 	public  int     loglevel;
-
+	
     private String  directoryPath;
 
     private boolean clustering;
     
+    public  boolean waitingToFinish=true;
+    public  boolean followingAbortRemotely;
+
     private String      remoteSlaveServerName;
 
 	public JobEntryTrans(String name)
@@ -222,6 +225,9 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
         retval.append("      ").append(XMLHandler.addTagValue("cluster",           clustering));
 		retval.append("      ").append(XMLHandler.addTagValue("slave_server_name", remoteSlaveServerName));
 		retval.append("      ").append(XMLHandler.addTagValue("set_append_logfile",     setAppendLogfile));
+		retval.append("      ").append(XMLHandler.addTagValue("wait_until_finished",     waitingToFinish));
+		retval.append("      ").append(XMLHandler.addTagValue("follow_abort_remote",     followingAbortRemotely));
+
 		if (arguments!=null)
 		for (int i=0;i<arguments.length;i++)
 		{
@@ -257,6 +263,11 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 			remoteSlaveServerName = XMLHandler.getTagValue(entrynode, "slave_server_name");
 			
 			setAppendLogfile = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "set_append_logfile") );
+			String wait = XMLHandler.getTagValue(entrynode, "wait_until_finished");
+			if (Const.isEmpty(wait)) waitingToFinish=true;
+			else waitingToFinish = "Y".equalsIgnoreCase( wait );
+
+			followingAbortRemotely = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "follow_abort_remote"));
 
 			// How many arguments?
 			int argnr = 0;
@@ -294,6 +305,8 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 
 			remoteSlaveServerName = rep.getJobEntryAttributeString(id_jobentry, "slave_server_name");
 			setAppendLogfile = rep.getJobEntryAttributeBoolean(id_jobentry, "set_append_logfile");
+			waitingToFinish = rep.getJobEntryAttributeBoolean(id_jobentry, "wait_until_finished", true);
+			followingAbortRemotely = rep.getJobEntryAttributeBoolean(id_jobentry, "follow_abort_remote");
 
 			// How many arguments?
 			int argnr = rep.countNrJobEntryAttributes(id_jobentry, "argument");
@@ -337,6 +350,8 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 			rep.saveJobEntryAttribute(id_job, getID(), "cluster", clustering);
 			rep.saveJobEntryAttribute(id_job, getID(), "slave_server_name", remoteSlaveServerName);
 			rep.saveJobEntryAttribute(id_job, getID(), "set_append_logfile", setAppendLogfile);
+			rep.saveJobEntryAttribute(id_job, getID(), "wait_until_finished", waitingToFinish);
+			rep.saveJobEntryAttribute(id_job, getID(), "follow_abort_remote", followingAbortRemotely);
 
 			// save the arguments...
 			if (arguments != null) {
@@ -368,6 +383,8 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 		clearResultFiles=false;
 		remoteSlaveServerName=null;
 		setAppendLogfile=false;
+		waitingToFinish=true;
+		followingAbortRemotely=false; // backward compatibility reasons
 	}
 
 
@@ -603,11 +620,12 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
                 	
                 	// Now start the monitoring...
                 	//
-                	while (!parentJob.isStopped())
+                	SlaveServerTransStatus transStatus=null;
+                	while (!parentJob.isStopped() && waitingToFinish)
                 	{
                 		try 
                 		{
-							SlaveServerTransStatus transStatus = remoteSlaveServer.getTransStatus(transMeta.getName());
+							transStatus = remoteSlaveServer.getTransStatus(transMeta.getName());
 							if (!transStatus.isRunning())
 							{
 								// The transformation is finished, get the result...
@@ -637,6 +655,24 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 						}
                 		
                 		try { Thread.sleep(2000); } catch(InterruptedException e) {} ; // sleep for 2 seconds
+                	}
+                	
+                	if (parentJob.isStopped()) {
+                		// See if we have a status and if we need to stop the remote execution here...
+                		// 
+                		if (transStatus==null || transStatus.isRunning()) {
+                			// Try a remote abort ...
+                			//
+                			remoteSlaveServer.stopTransformation(transMeta.getName());
+                			
+                			// And a cleanup...
+                			//
+                			remoteSlaveServer.cleanupTransformation(transMeta.getName());
+                			
+                			// Set an error state!
+                			//
+							result.setNrErrors(result.getNrErrors()+1L);
+                		}
                 	}
                 }
                 // Execute this transformation on the local machine
@@ -945,6 +981,34 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 	 */
 	public void setRemoteSlaveServerName(String remoteSlaveServerName) {
 		this.remoteSlaveServerName = remoteSlaveServerName;
+	}
+
+	/**
+	 * @return the waitingToFinish
+	 */
+	public boolean isWaitingToFinish() {
+		return waitingToFinish;
+	}
+
+	/**
+	 * @param waitingToFinish the waitingToFinish to set
+	 */
+	public void setWaitingToFinish(boolean waitingToFinish) {
+		this.waitingToFinish = waitingToFinish;
+	}
+
+	/**
+	 * @return the followingAbortRemotely
+	 */
+	public boolean isFollowingAbortRemotely() {
+		return followingAbortRemotely;
+	}
+
+	/**
+	 * @param followingAbortRemotely the followingAbortRemotely to set
+	 */
+	public void setFollowingAbortRemotely(boolean followingAbortRemotely) {
+		this.followingAbortRemotely = followingAbortRemotely;
 	}
 
 }
