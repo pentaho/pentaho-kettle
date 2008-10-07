@@ -73,7 +73,7 @@ public abstract class AbstractFileErrorHandler implements FileErrorHandler {
     {
 		String name = null;
 		String sourceAdding = ""; //$NON-NLS-1$
-		if (source != NO_PARTS) {
+		if (! NO_PARTS.equals(source)) {
 			sourceAdding = "_" + source.toString();
 		}
 		if (extension == null || extension.length() == 0)
