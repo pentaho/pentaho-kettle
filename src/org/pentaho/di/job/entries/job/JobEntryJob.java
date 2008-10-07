@@ -631,6 +631,13 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
                 		
                 		try { Thread.sleep(10000); } catch(InterruptedException e) {} ; // sleep for 10 seconds
                 	}
+                	
+                	if (!waitingToFinish) {
+                		// Since the job was posted successfully, the result is true...
+                		//
+                		oneResult = new Result();
+                		oneResult.setResult(true);
+                	}
                 	                	
                 	if (parentJob.isStopped()) {
                 		try 
