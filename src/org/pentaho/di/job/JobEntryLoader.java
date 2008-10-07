@@ -423,7 +423,7 @@ public class JobEntryLoader implements LoaderInputStreamProvider
 		for (int i = 0; i < nrJobEntriesWithType(JobPlugin.TYPE_ALL); i++)
 		{
 			JobPlugin sp = getJobEntryWithType(JobPlugin.TYPE_ALL, i);
-			if (sp.getClassname() == jei.getClass().getName())
+			if (jei.getClass().getName().equals(sp.getClassname()))
 				return sp.getID();
 		}
 		return null;
