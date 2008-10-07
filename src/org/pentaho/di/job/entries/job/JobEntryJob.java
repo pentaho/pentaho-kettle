@@ -631,7 +631,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
                 		
                 		try { Thread.sleep(10000); } catch(InterruptedException e) {} ; // sleep for 10 seconds
                 	}
-                	
+                	                	
                 	if (parentJob.isStopped()) {
                 		try 
                 		{
@@ -642,6 +642,8 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 	                			//
 	                			remoteSlaveServer.stopJob(jobMeta.getName());
 	                		}
+	                		oneResult.setResult(false);
+							oneResult.setNrErrors(1L); // because we aborted
                 		}
                 		catch (Exception e1) {
 							log.logError(toString(), "Unable to contact slave server ["+remoteSlaveServer+"] to stop job ["+jobMeta.getName()+"]");
