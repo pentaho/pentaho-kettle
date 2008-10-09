@@ -307,7 +307,7 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 						if (isAddFileToResult())
 						{
 							// Add output filename to output files
-		                	ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(realoutputfilename), parentJob.getName(), toString());
+		                	ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(realoutputfilename), parentJob.getJobname(), toString());
 		                    result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
 						}
 						

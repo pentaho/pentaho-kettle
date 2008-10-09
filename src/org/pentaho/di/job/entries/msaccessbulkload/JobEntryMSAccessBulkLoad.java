@@ -272,7 +272,7 @@ public class JobEntryMSAccessBulkLoad extends JobEntryBase implements Cloneable,
 	private void addFileToResultFilenames(String fileaddentry,LogWriter log,Result result,Job parentJob)
 	{	
 		try{
-			ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(fileaddentry), parentJob.getName(), toString());
+			ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(fileaddentry), parentJob.getJobname(), toString());
 			result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
 	    
 			if(log.isDebug()){

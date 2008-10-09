@@ -334,7 +334,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 					if (addfiletoresult)
 					{
 						// Add file to result files name
-	                	ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL , KettleVFS.getFileObject(realZipfilename), parentJob.getName(), toString());
+	                	ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL , KettleVFS.getFileObject(realZipfilename), parentJob.getJobname(), toString());
 	                    result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
 					}					
 					resultat = true;
@@ -627,7 +627,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 						if (addfiletoresult)
 						{
 							// Add file to result files name
-		                	ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL , KettleVFS.getFileObject(realZipfilename), parentJob.getName(), toString());
+		                	ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL , KettleVFS.getFileObject(realZipfilename), parentJob.getJobname(), toString());
 		                    result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
 						}
 						

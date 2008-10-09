@@ -783,7 +783,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 		if (addfiletoresult)
 	 	{
 			// Add file to result files name
-			ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL , KettleVFS.getFileObject(newfile), parentJob.getName(), toString());
+			ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL , KettleVFS.getFileObject(newfile), parentJob.getJobname(), toString());
 			result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
 	 	}
 	}

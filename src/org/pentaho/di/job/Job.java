@@ -576,6 +576,12 @@ public class Job extends Thread implements VariableSpace
 			res.add(threadResult);
 		}
 		
+		// If there have been errors, logically, we need to set the result to "false"...
+		//
+		if (res.getNrErrors()>0) {
+			res.setResult(false);
+		}
+		
 		return res;
 	}
 	

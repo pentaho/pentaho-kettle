@@ -642,7 +642,7 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 				if(isAddDestinationFilename())
 				{
 					// Add destination filename to Resultfilenames ...
-					ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(destinationfile.toString()), parentJob.getName(), toString());
+					ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(destinationfile.toString()), parentJob.getJobname(), toString());
 					result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
 					if(log.isDetailed())
 						log.logDetailed(toString(),Messages.getString("JobEntryCopyMoveResultFilenames.AddedFileToResult",destinationfile.toString()));
