@@ -243,7 +243,7 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
     					
     					//add filename to result filenames
     					if(addFilenameToResult && fileObject.getType()==FileType.FILE){
-    						ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL , fileObject, parentJob.getName(), toString());
+    						ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL , fileObject, parentJob.getJobname(), toString());
     						resultFile.setComment(Messages.getString("JobWaitForFile.FilenameAdded"));
     						result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
     					 	}

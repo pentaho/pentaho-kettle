@@ -112,17 +112,17 @@ public class AddJobServlet extends HttpServlet
             //
             final Job job = new Job(LogWriter.getInstance(), StepLoader.getInstance(), repository, jobMeta);
             
-            Job oldOne = jobMap.getJob(job.getName());
+            Job oldOne = jobMap.getJob(job.getJobname());
             if ( oldOne!=null)
             {
-            	if (oldOne.isActive()) {
+            	if (oldOne.isActive() || (oldOne.isInitialized() && !oldOne.isFinished())) {
             		throw new Exception("A job with the same name exists and is not idle."+Const.CR+"Please stop this job first.");
             	}
             }
 
         	// Remove the old log appender to avoid memory leaks!
         	//
-        	Appender appender = jobMap.getAppender(job.getName());
+        	Appender appender = jobMap.getAppender(job.getJobname());
         	if (appender!=null) {
         		log.removeAppender(appender);
         		appender.close();
@@ -162,11 +162,11 @@ public class AddJobServlet extends HttpServlet
             String message;
             if (oldOne!=null)
             {
-                message = "Job '"+job.getName()+"' was replaced in the list.";
+                message = "Job '"+job.getJobname()+"' was replaced in the list.";
             }
             else
             {
-                message = "Job '"+job.getName()+"' was added to the list.";
+                message = "Job '"+job.getJobname()+"' was added to the list.";
             }
             // message+=" (session id = "+request.getSession(true).getId()+")";
             
@@ -177,7 +177,7 @@ public class AddJobServlet extends HttpServlet
             else
             {
                 out.println("<H1>"+message+"</H1>");
-                out.println("<p><a href=\"/kettle/jobStatus?name="+job.getName()+"\">Go to the job status page</a><p>");
+                out.println("<p><a href=\"/kettle/jobStatus?name="+job.getJobname()+"\">Go to the job status page</a><p>");
             }
         }
         catch (Exception ex)

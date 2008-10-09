@@ -448,6 +448,9 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
         }
 
         // Load the transformation only once for the complete loop!
+    	// Throws an exception if it was not possible to load the transformation.  For example, the XML file doesn't exist or the repository is down.
+    	// Log the stack trace and return an error condition from this
+        //
         TransMeta transMeta = getTransMeta(rep);
 
         int iteration = 0;
@@ -735,7 +738,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 
                         if (setLogfile)
                         {
-                        	ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_LOG, KettleVFS.getFileObject(getLogFilename()), parentJob.getName(), toString());
+                        	ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_LOG, KettleVFS.getFileObject(getLogFilename()), parentJob.getJobname(), toString());
                             result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
         				}
                     }

@@ -789,7 +789,7 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
 	{	
 		try
 		{
-			ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(fileaddentry), parentJob.getName(), toString());
+			ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(fileaddentry), parentJob.getJobname(), toString());
 			result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
 			if(log.isDebug()) log.logDebug(toString(),Messages.getString("JobExportRepository.Log.FileAddedToResultFilesName",fileaddentry));
 		}catch (Exception e)

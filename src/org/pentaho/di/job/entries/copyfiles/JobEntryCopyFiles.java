@@ -467,7 +467,7 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 					            // Add ONLY Files
 					            if (KettleVFS.getFileObject(fileaddentry).getType() == FileType.FILE)
 					            { 
-				                	ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(fileaddentry), parentJob.getName(), toString());
+				                	ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(fileaddentry), parentJob.getJobname(), toString());
 				                    result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
 				                    if(log.isDetailed())
 				                    {

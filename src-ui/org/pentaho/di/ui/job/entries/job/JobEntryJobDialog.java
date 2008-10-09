@@ -705,9 +705,9 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 
 						wFilename.setText(lroot != null ? selected : Const.EMPTY_STRING);
 
-						JobMeta job = new JobMeta(log, wFilename.getText(), rep, SpoonFactory.getInstance());
-						if (job.getName() != null) {
-							wName.setText(job.getName());
+						JobMeta jobMeta = new JobMeta(log, wFilename.getText(), rep, SpoonFactory.getInstance());
+						if (jobMeta.getName() != null) {
+							wName.setText(jobMeta.getName());
 						} else {
 							wName.setText(selected);
 						}

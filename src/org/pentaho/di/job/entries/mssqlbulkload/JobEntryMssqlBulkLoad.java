@@ -568,7 +568,7 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 									if (isAddFileToResult())
 									{
 										// Add filename to output files
-					                	ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(realFilename), parentJob.getName(), toString());
+					                	ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(realFilename), parentJob.getJobname(), toString());
 					                    result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
 									}
 									

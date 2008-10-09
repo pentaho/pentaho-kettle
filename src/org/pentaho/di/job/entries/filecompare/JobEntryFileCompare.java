@@ -228,10 +228,10 @@ public class JobEntryFileCompare extends JobEntryBase implements Cloneable, JobE
 					//add filename to result filenames
 					if(addFilenameToResult && file1.getType()==FileType.FILE && file2.getType()==FileType.FILE)
 					{
-						ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL , file1, parentJob.getName(), toString());
+						ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL , file1, parentJob.getJobname(), toString());
 						resultFile.setComment(Messages.getString("JobWaitForFile.FilenameAdded"));
 						result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
-						resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL , file2, parentJob.getName(), toString());
+						resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL , file2, parentJob.getJobname(), toString());
 						resultFile.setComment(Messages.getString("JobWaitForFile.FilenameAdded"));
 						result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
 					 }
