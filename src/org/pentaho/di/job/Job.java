@@ -232,6 +232,9 @@ public class Job extends Thread implements VariableSpace
             result.setNrErrors(1L);
             result.setResult(false);
             addErrors(1);  // This can be before actual execution
+            active=false;
+            finished=true;
+            stopped=true;
 		}
 		finally
 		{
