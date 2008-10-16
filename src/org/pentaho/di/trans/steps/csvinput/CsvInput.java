@@ -559,7 +559,6 @@ public class CsvInput extends BaseStep implements StepInterface
 			//
 			if (!newLineFound) 
 			{
-				System.out.println("Trailing content on line!!");
 				do {
 					if (checkBufferSize()) {
 						break; // nothing more to read.
