@@ -103,6 +103,17 @@ public class CsvInputData extends BaseStepData implements StepDataInterface
 	}
 
 	public boolean readBufferFromFile() throws IOException {
+		// See if the line is not longer than the buffer.
+		// In that case we need to increase the size of the byte buffer.
+		// Since this method doesn't get called every other character, I'm sure we can spend a bit of time here without major performance loss.
+		//
+		if (endBuffer>=bb.capacity()) {
+			ByteBuffer newBuffer = ByteBuffer.allocateDirect( (int)(bb.capacity()*1.5) ); // Increase by 50%
+			newBuffer.position(0);
+			newBuffer.put(bb);
+			bb=newBuffer;
+		}
+				
 		bb.position(endBuffer);
 		int n = fc.read( bb );
 		if( n == -1) {
