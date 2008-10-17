@@ -81,7 +81,7 @@ public class CsvInputData extends BaseStepData implements StepDataInterface
 	}
 
 	// Resize
-	public void resizeByteBuffer() {
+	public void resizeByteBufferArray() {
 		// What's the new size?
 		// It's (endBuffer-startBuffer)+size !!
 		// That way we can at least read one full block of data using NIO
@@ -108,12 +108,9 @@ public class CsvInputData extends BaseStepData implements StepDataInterface
 		// Since this method doesn't get called every other character, I'm sure we can spend a bit of time here without major performance loss.
 		//
 		if (endBuffer>=bb.capacity()) {
-			ByteBuffer newBuffer = ByteBuffer.allocateDirect( (int)(bb.capacity()*1.5) ); // Increase by 50%
-			newBuffer.position(0);
-			newBuffer.put(bb);
-			bb=newBuffer;
+			resizeByteBuffer((int)(bb.capacity()*1.5));
 		}
-				
+		
 		bb.position(endBuffer);
 		int n = fc.read( bb );
 		if( n == -1) {
@@ -124,6 +121,14 @@ public class CsvInputData extends BaseStepData implements StepDataInterface
 			//
 			bufferSize = endBuffer+n; 
 			
+			// Make sure we have room in the target byte buffer array
+			//
+			if (byteBuffer.length < bufferSize) {
+				byte[] newByteBuffer = new byte[bufferSize];
+				System.arraycopy(byteBuffer, 0, newByteBuffer, 0, byteBuffer.length);
+				byteBuffer=newByteBuffer;
+			}
+			
 			// Store the data in our byte array
 			//
 			bb.position(endBuffer);
@@ -131,6 +136,13 @@ public class CsvInputData extends BaseStepData implements StepDataInterface
 
 			return true;
 		} 
+	}
+
+	private void resizeByteBuffer(int newSize) {
+		ByteBuffer newBuffer = ByteBuffer.allocateDirect( newSize ); // Increase by 50%
+		newBuffer.position(0);
+		newBuffer.put(bb);
+		bb=newBuffer;
 	}
 
 	/**
@@ -147,7 +159,7 @@ public class CsvInputData extends BaseStepData implements StepDataInterface
 			// Oops, we need to read more data...
 			// Better resize this before we read other things in it...
 			//
-			resizeByteBuffer();
+			resizeByteBufferArray();
 			
 			// Also read another chunk of data, now that we have the space for it...
 			if (!readBufferFromFile()) {

@@ -333,7 +333,7 @@ public class CsvInput extends BaseStep implements StepInterface
 			// Oops, we need to read more data...
 			// Better resize this before we read other things in it...
 			//
-			data.resizeByteBuffer();
+			data.resizeByteBufferArray();
 			
 			// Also read another chunk of data, now that we have the space for it...
 			if (!data.readBufferFromFile()) {
@@ -371,13 +371,15 @@ public class CsvInput extends BaseStep implements StepInterface
 			while (!newLineFound && outputIndex<meta.getInputFields().length) {
 				
 				if (checkBufferSize()) {
-          //Last row was being discarded if the last item is null and there is no end of line delimiter
-          if(outputRowData != null){
-            //Make certain that at least one record exists before filling the rest of them with null
-            if(outputIndex > 0){
-              return(outputRowData);
-            }
-          }
+					// Last row was being discarded if the last item is null and
+					// there is no end of line delimiter
+					if (outputRowData != null) {
+						// Make certain that at least one record exists before
+						// filling the rest of them with null
+						if (outputIndex > 0) {
+							return (outputRowData);
+						}
+					}
            
 					return null; // nothing more to read, call it a day.
 				}
@@ -411,7 +413,7 @@ public class CsvInput extends BaseStep implements StepInterface
 							// Oops, we need to read more data...
 							// Better resize this before we read other things in it...
 							//
-							data.resizeByteBuffer();
+							data.resizeByteBufferArray();
 							
 							// Also read another chunk of data, now that we have the space for it...
 							// Ignore EOF, there might be other stuff in the buffer.
@@ -428,7 +430,7 @@ public class CsvInput extends BaseStep implements StepInterface
 								// Oops, we need to read more data...
 								// Better resize this before we read other things in it...
 								//
-								data.resizeByteBuffer();
+								data.resizeByteBufferArray();
 								
 								// Also read another chunk of data, now that we have the space for it...
 								// Ignore EOF, there might be other stuff in the buffer.
