@@ -48,7 +48,7 @@ public class DelayMeta extends BaseStepMeta implements StepMetaInterface
 	private String scaletime;
 	public static String DEFAULT_SCALE_TIME="0";
 	
-	public String[] ScaleTimeCode= {"millisecond","second","minute","hour"};
+	public String[] ScaleTimeCode= {"second","minute","hour"};
 	
 	public DelayMeta()
 	{
@@ -83,7 +83,7 @@ public class DelayMeta extends BaseStepMeta implements StepMetaInterface
 		 case 1 :
 			 scaletime=ScaleTimeCode[1]; // minute
 		 	break;
-		 case 3 :
+		 case 2 :
 			 scaletime=ScaleTimeCode[2]; // Hour
 		 	break;
 		 default: 
