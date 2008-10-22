@@ -131,9 +131,12 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 
 		private MappingParameters parameters;
 
-		public MappingParametersTab(TableView wMappingParameters, MappingParameters parameters)
+		private Button wInheritAll;
+
+		public MappingParametersTab(TableView wMappingParameters, Button wInheritAll, MappingParameters parameters)
 		{
 			this.wMappingParameters = wMappingParameters;
+			this.wInheritAll = wInheritAll;
 			this.parameters = parameters;
 		}
 
@@ -151,6 +154,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 				parameters.getVariable()[i] = item.getText(1);
 				parameters.getInputField()[i] = item.getText(2);
 			}
+			parameters.setInheritingAllVariables(wInheritAll.getSelection());
 		}
 	}
 
@@ -764,6 +768,18 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		parameterTabLayout.marginHeight = Const.FORM_MARGIN;
 		wParametersComposite.setLayout(parameterTabLayout);
 
+		// Add a checkbox: inherit all variables...
+		//
+		Button wInheritAll = new Button(wParametersComposite, SWT.CHECK);
+		wInheritAll.setText(Messages.getString("MappingDialog.Parameters.InheritAll"));
+		props.setLook(wInheritAll);
+		FormData fdInheritAll = new FormData();
+		fdInheritAll.bottom = new FormAttachment(100,0);
+		fdInheritAll.left = new FormAttachment(0,0);
+		fdInheritAll.right = new FormAttachment(100,-30);
+		wInheritAll.setLayoutData(fdInheritAll);
+		wInheritAll.setSelection(parameters.isInheritingAllVariables());
+		
 		// Now add a tableview with the 2 columns to specify: input and output
 		// fields for the source and target steps.
 		//
@@ -783,7 +799,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		fdMappings.left = new FormAttachment(0, 0);
 		fdMappings.right = new FormAttachment(100, 0);
 		fdMappings.top = new FormAttachment(0, 0);
-		fdMappings.bottom = new FormAttachment(100, -30);
+		fdMappings.bottom = new FormAttachment(wInheritAll, -margin*2);
 		wMappingParameters.setLayoutData(fdMappings);
 
 		for (int i = 0; i < parameters.getVariable().length; i++)
@@ -805,7 +821,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		wParametersComposite.layout();
 		wParametersTab.setControl(wParametersComposite);
 
-		changeList.add(new MappingParametersTab(wMappingParameters, parameters));
+		changeList.add(new MappingParametersTab(wMappingParameters, wInheritAll, parameters));
 	}
 
 	protected String selectTransformationStepname(boolean getTransformationStep, boolean mappingInput)
