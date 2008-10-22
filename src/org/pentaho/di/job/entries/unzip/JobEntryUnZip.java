@@ -745,19 +745,30 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 			  }
 			  else if(afterunzip == 2)
 			  {
-					// Move File	
+				   FileObject destFile=null;
+				   // Move File	
 					try
 					{
-						fileObject.moveTo(movetodir);
-						if(log.isDebug()) log.logDebug(toString(),Messages.getString("JobUnZip.Log.FileMovedTo",fileObject.toString(),movetodir.toString()));
+						String destinationFilename=movetodir+Const.FILE_SEPARATOR+ fileObject.getName().getBaseName();
+						destFile=KettleVFS.getFileObject(destinationFilename);
+						
+						fileObject.moveTo(destFile);
+
+						// File moved
+						if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobUnZip.Log.FileMovedTo",sourceFilename,realMovetodirectory));
 					}
 					catch (Exception e) 
 					{
 						updateErrors();
 						log.logError(toString(), Messages.getString("JobUnZip.Cant_Move_File.Label",sourceFilename,realMovetodirectory,e.getMessage()));
+					}finally
+					{
+						if ( destFile != null ){
+							try{
+								destFile.close();
+							}catch ( IOException ex ) {};
+						}
 					}
-					// File moved
-					if(log.isDebug()) log.logDebug(toString(), Messages.getString("JobUnZip.File_Moved.Label",sourceFilename,realMovetodirectory));
 			 }
 			  
 			 retval=true;
