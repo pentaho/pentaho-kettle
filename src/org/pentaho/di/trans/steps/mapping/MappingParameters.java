@@ -40,11 +40,16 @@ public class MappingParameters implements Cloneable {
 	/** This is a simple String with optionally variables in them **/
 	private String input[];
 	
+	/** This flag causes the sub-transformation to inherit all variables from the parent */
+	private boolean inheritingAllVariables;
+	
 	public MappingParameters() {
 		super();
 		
 		variable = new String[] {};
 		input = new String[] {};
+		
+		inheritingAllVariables = true;
 	}
 	
 	@Override
@@ -69,6 +74,8 @@ public class MappingParameters implements Cloneable {
 			variable[i] = XMLHandler.getTagValue(variableMappingNode, "variable");
 			input[i]    = XMLHandler.getTagValue(variableMappingNode, "input");
 		}
+		
+		inheritingAllVariables = "Y".equalsIgnoreCase(XMLHandler.getTagValue(paramNode, "inherit_all_vars"));
 	}
 	
 	public String getXML() {
@@ -83,7 +90,7 @@ public class MappingParameters implements Cloneable {
 			xml.append(XMLHandler.addTagValue("input", input[i], false));  //$NON-NLS-1$
 			xml.append(XMLHandler.closeTag(XML_VARIABLES_TAG)).append(Const.CR);
 		}
-		
+		xml.append("    ").append(XMLHandler.addTagValue("inherit_all_vars", inheritingAllVariables));
 		xml.append("    ").append(XMLHandler.closeTag(XML_TAG));  //$NON-NLS-1$
 		
 		return xml.toString();
@@ -95,6 +102,7 @@ public class MappingParameters implements Cloneable {
 			rep.saveStepAttribute(id_transformation, id_step, i, "mapping_parameter_variable", variable[i]);  //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, i, "mapping_parameter_input", input[i]);  //$NON-NLS-1$
 		}
+		rep.saveStepAttribute(id_transformation, id_step, "mapping_parameter_inherit_all_vars", inheritingAllVariables);
 	}
 
 	public MappingParameters(Repository rep, long id_step) throws KettleException {
@@ -108,6 +116,7 @@ public class MappingParameters implements Cloneable {
 			variable[i] = rep.getStepAttributeString(id_step, i, "mapping_parameter_variable");  //$NON-NLS-1$
 			input[i]    = rep.getStepAttributeString(id_step, i, "mapping_parameter_input");  //$NON-NLS-1$
 		}
+		inheritingAllVariables = rep.getStepAttributeBoolean(id_step, "mapping_parameter_inherit_all_vars");
 	}
 
 
@@ -139,6 +148,20 @@ public class MappingParameters implements Cloneable {
 	 */
 	public void setVariable(String[] variable) {
 		this.variable = variable;
+	}
+
+	/**
+	 * @return the inheritingAllVariables
+	 */
+	public boolean isInheritingAllVariables() {
+		return inheritingAllVariables;
+	}
+
+	/**
+	 * @param inheritingAllVariables the inheritingAllVariables to set
+	 */
+	public void setInheritingAllVariables(boolean inheritingAllVariables) {
+		this.inheritingAllVariables = inheritingAllVariables;
 	}
 
 

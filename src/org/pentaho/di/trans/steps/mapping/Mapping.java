@@ -119,6 +119,13 @@ public class Mapping extends BaseStep implements StepInterface
 	private void setMappingParameters() throws KettleException {
 		MappingParameters mappingParameters = meta.getMappingParameters();
 		if (mappingParameters!=null) {
+			
+			// See if we need to pass all variables from the parent or not...
+			//
+			if (mappingParameters.isInheritingAllVariables()) {
+				data.mappingTransMeta.copyVariablesFrom(getTransMeta());
+			}
+			
 			// Just set the variables in the transformation statically.
 			// This just means: set a number of variables:
 			//
