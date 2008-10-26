@@ -23,6 +23,7 @@ package org.pentaho.di.ui.job.entries.xmlwellformed;
 
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.MessageBox; 
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.ModifyEvent;
@@ -898,6 +899,14 @@ public class JobEntryXMLWellFormedDialog extends JobEntryDialog implements JobEn
 
 	private void ok()
 	{
+	   if(Const.isEmpty(wName.getText())) 
+         {
+			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
+			mb.setText(Messages.getString("System.StepJobEntryNameMissing.Title"));
+			mb.setMessage(Messages.getString("System.JobEntryNameMissing.Msg"));
+			mb.open(); 
+			return;
+         }
 		jobEntry.setName(wName.getText());
 	
 		jobEntry.setIncludeSubfolders(wIncludeSubfolders.getSelection());

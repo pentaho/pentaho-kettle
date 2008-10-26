@@ -10,6 +10,7 @@
 package org.pentaho.di.ui.job.entries.folderscompare;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.MessageBox; 
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.events.ModifyEvent;
@@ -595,11 +596,18 @@ public class JobEntryFoldersCompareDialog extends JobEntryDialog implements JobE
 
 	private void ok()
 	{
+ 	   if(Const.isEmpty(wName.getText())) 
+       {
+			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
+			mb.setText(Messages.getString("System.StepJobEntryNameMissing.Title"));
+			mb.setMessage(Messages.getString("System.JobEntryNameMissing.Msg"));
+			mb.open(); 
+			return;
+       }
 		jobEntry.setIncludeSubfolders(wIncludeSubfolders.getSelection());
 		jobEntry.setCompareFileContent(wCompareFileContent.getSelection());
 		jobEntry.setCompareFileSize(wCompareFileSize.getSelection());
-		
-		
+
 		
 		if(wCompareOnly.getSelectionIndex()==1)
 			jobEntry.setCompareOnly("only_files");

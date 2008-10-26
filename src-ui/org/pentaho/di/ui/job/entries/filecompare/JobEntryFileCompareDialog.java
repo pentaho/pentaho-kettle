@@ -21,6 +21,7 @@
 package org.pentaho.di.ui.job.entries.filecompare;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.MessageBox; 
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -342,6 +343,14 @@ public class JobEntryFileCompareDialog extends JobEntryDialog implements JobEntr
 
 	private void ok()
 	{
+ 	   if(Const.isEmpty(wName.getText())) 
+       {
+			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
+			mb.setText(Messages.getString("System.StepJobEntryNameMissing.Title"));
+			mb.setMessage(Messages.getString("System.JobEntryNameMissing.Msg"));
+			mb.open(); 
+			return;
+       }
 		jobEntry.setName(wName.getText());
 		jobEntry.setFilename1(wFilename1.getText());
 		jobEntry.setFilename2(wFilename2.getText());

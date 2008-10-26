@@ -12,6 +12,7 @@ package org.pentaho.di.ui.job.entries.copymoveresultfilenames;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.widgets.MessageBox; 
 
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -849,6 +850,14 @@ public class JobEntryCopyMoveResultFilenamesDialog extends JobEntryDialog implem
 
 	private void ok()
 	{
+		if(Const.isEmpty(wName.getText())) 
+        {
+			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
+			mb.setText(Messages.getString("System.StepJobEntryNameMissing.Title"));
+			mb.setMessage(Messages.getString("System.JobEntryNameMissing.Msg"));
+			mb.open(); 
+			return;
+        }
 		jobEntry.setName(wName.getText());
 		jobEntry.setSpecifyWildcard(wSpecifyWildcard.getSelection());
 		jobEntry.setWildcard(wWildcard.getText());

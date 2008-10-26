@@ -1384,6 +1384,14 @@ public class JobEntrySSH2PUTDialog extends JobEntryDialog implements JobEntryDia
 
     private void ok()
     {
+ 	   if(Const.isEmpty(wName.getText())) 
+       {
+			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
+			mb.setText(Messages.getString("System.StepJobEntryNameMissing.Title"));
+			mb.setMessage(Messages.getString("System.JobEntryNameMissing.Msg"));
+			mb.open(); 
+			return;
+       }
         jobEntry.setName(wName.getText());
         jobEntry.setServerName(wServerName.getText());
         jobEntry.setUserName(wUserName.getText());

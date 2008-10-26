@@ -46,6 +46,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.MessageBox; 
 
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.core.gui.WindowProperty;
@@ -1843,6 +1844,14 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 
 	private void ok()
 	{
+	   if(Const.isEmpty(wName.getText())) 
+         {
+			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
+			mb.setText(Messages.getString("System.StepJobEntryNameMissing.Title"));
+			mb.setMessage(Messages.getString("System.JobEntryNameMissing.Msg"));
+			mb.open(); 
+			return;
+         }
 		jobEntry.setName(wName.getText());
 		jobEntry.setMoveEmptyFolders(wMoveEmptyFolders.getSelection());
 		jobEntry.setIncludeSubfolders(wIncludeSubfolders.getSelection());

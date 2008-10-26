@@ -22,6 +22,7 @@
 package org.pentaho.di.ui.job.entries.copyfiles;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.MessageBox; 
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.ModifyEvent;
@@ -1009,6 +1010,15 @@ public class JobEntryCopyFilesDialog extends JobEntryDialog implements JobEntryD
 
 	private void ok()
 	{
+ 	   if(Const.isEmpty(wName.getText())) 
+        {
+			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
+			mb.setText(Messages.getString("System.StepJobEntryNameMissing.Title"));
+			mb.setMessage(Messages.getString("System.JobEntryNameMissing.Msg"));
+			mb.open(); 
+			return;
+        }
+ 	   
 		jobEntry.setName(wName.getText());
 		jobEntry.setCopyEmptyFolders(wCopyEmptyFolders.getSelection());
 		jobEntry.setoverwrite_files(wOverwriteFiles.getSelection());
@@ -1018,10 +1028,6 @@ public class JobEntryCopyFilesDialog extends JobEntryDialog implements JobEntryD
 		jobEntry.setAddresultfilesname(wAddFileToResult.getSelection());
 		jobEntry.setDestinationIsAFile(wDestinationIsAFile.getSelection());
 		jobEntry.setCreateDestinationFolder(wCreateDestinationFolder.getSelection());
-		
-		
-		
-		
 
 		int nritems = wFields.nrNonEmpty();
 		int nr = 0;

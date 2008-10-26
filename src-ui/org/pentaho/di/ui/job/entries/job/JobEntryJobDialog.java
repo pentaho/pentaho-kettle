@@ -835,6 +835,14 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 
 	private void ok()
 	{
+	   if(Const.isEmpty(wName.getText())) 
+         {
+			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
+			mb.setText(Messages.getString("System.StepJobEntryNameMissing.Title"));
+			mb.setMessage(Messages.getString("System.JobEntryNameMissing.Msg"));
+			mb.open(); 
+			return;
+         }
 		jobEntry.setJobName(wJobname.getText());
 		jobEntry.setFileName(wFilename.getText());
 		jobEntry.setName(wName.getText());
