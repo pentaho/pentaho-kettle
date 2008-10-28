@@ -40,6 +40,9 @@ public class StringUtil
 	public static final String WINDOWS_OPEN = "%%";
 
 	public static final String WINDOWS_CLOSE = "%%";
+	
+	public static final String HEX_OPEN = "$[";
+	public static final String HEX_CLOSE = "]";
   
     public static final String CRLF = "\r\n"; //$NON-NLS-1$
 
@@ -197,6 +200,60 @@ public class StringUtil
 	}
 
 	/**
+	 * Substitutes hex values in <code>aString</code> and convert them to operating system char equivalents in the return string.
+	 * Format is $[01] or $[6F,FF,00,1F] 
+	 * Example: "This is a hex encoded six digits number 123456 in this string: $[31,32,33,34,35,36]"
+	 * 
+	 * @param aString
+	 *            the string on which to apply the substitution.
+	 * @return the string with the substitution applied.
+	 */
+	public static String substituteHex(String aString)
+	{
+		if (aString == null)
+			return null;
+
+		StringBuffer buffer = new StringBuffer();
+
+		String rest = aString;
+
+		// search for opening string
+		int i = rest.indexOf(HEX_OPEN);
+		while (i > -1)
+		{
+			int j = rest.indexOf(HEX_CLOSE, i + HEX_OPEN.length());
+			// search for closing string
+			if (j > -1)
+			{
+				buffer.append(rest.substring(0, i));
+				String hexString = rest.substring(i + HEX_OPEN.length(), j);
+				String[] hexStringArray=hexString.split(",");
+				int hexInt;
+				byte[] hexByte=new byte[1];
+				for (int pos = 0; pos < hexStringArray.length; pos++) {
+					try {
+						hexInt = Integer.parseInt(hexStringArray[pos],16);
+					} catch (NumberFormatException e) {
+						hexInt=0; // in case we get an invalid hex value, ignore: we can not log here
+					}
+					hexByte[0]=(byte)hexInt;
+					buffer.append(new String(hexByte));
+				}
+				rest = rest.substring(j + HEX_CLOSE.length());
+			} else
+			{
+				// no closing tag found; end the search
+				buffer.append(rest);
+				rest = "";
+			}
+			// keep searching
+			i = rest.indexOf(HEX_OPEN);
+		}
+		buffer.append(rest);
+		return buffer.toString();
+	}
+
+	/**
 	 * Substitutes variables in <code>aString</code> with the environment
 	 * values in the system properties
 	 * 
@@ -213,6 +270,7 @@ public class StringUtil
 		
 		aString = substituteWindows(aString, sysMap);
 		aString = substituteUnix(aString, sysMap);
+		aString = substituteHex(aString);
 		return aString;
 	}
 
