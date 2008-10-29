@@ -712,13 +712,15 @@ public class ScriptValuesMod extends BaseStep implements StepInterface, ScriptVa
         {
 			//Modification for Additional End Function
 			try{
-				// Checking for EndScript
-				if(strEndScript != null && strEndScript.length()>0){
-					Script endScript = data.cx.compileString(strEndScript, "trans_End", 1, null);
-					endScript.exec(data.cx, data.scope);
-					if (log.isDetailed()) logDetailed(("End Script found!"));
-				}else{
-					if (log.isDetailed()) logDetailed(("No end Script found!"));
+				if (data.cx != null) {
+					// Checking for EndScript
+					if(strEndScript != null && strEndScript.length()>0){
+						Script endScript = data.cx.compileString(strEndScript, "trans_End", 1, null);
+						endScript.exec(data.cx, data.scope);
+						if (log.isDetailed()) logDetailed(("End Script found!"));
+					}else{
+						if (log.isDetailed()) logDetailed(("No end Script found!"));
+					}
 				}
 			}catch(Exception e){
 				logError(Messages.getString("ScriptValuesMod.Log.UnexpectedeError")+" : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$				
