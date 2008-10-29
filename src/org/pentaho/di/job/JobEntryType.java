@@ -78,6 +78,8 @@ public enum JobEntryType
 	TRUNCATE_TABLES(Messages.getString("JobEntry.TruncateTables.TypeDesc")),
 	SET_VARIABLES(Messages.getString("JobEntry.SetVariables.TypeDesc")),
 	MS_ACCESS_BULK_LOAD(Messages.getString("JobEntry.MSAccessBulkLoad.TypeDesc")),
+	WAIT_FOR_SQL(Messages.getString("JobEntry.WaitForSQL.TypeDesc")),
+	EVAL_TABLE_CONTENT(Messages.getString("JobEntry.EvalTableContent.TypeDesc")),
 	;
 
 	private String description;

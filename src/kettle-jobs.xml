@@ -757,4 +757,30 @@
 		</tooltip>
 		<image-uri>ui/images/MBL.png</image-uri>
 	</job>
+	<job id="WAIT_FOR_SQL">
+		<type>
+			ognl:@org.pentaho.di.job.JobEntryType@WAIT_FOR_SQL
+		</type>
+		<class-name>
+			org.pentaho.di.job.entries.waitforsql.JobEntryWaitForSQL
+		</class-name>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@EXPERIMENTAL.getName()</category>
+		<tooltip>
+			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.WaitForSQL.Tooltip")
+		</tooltip>
+		<image-uri>ui/images/WSQL.png</image-uri>
+	</job>
+		<job id="EVAL_TABLE_CONTENT">
+		<type>
+			ognl:@org.pentaho.di.job.JobEntryType@EVAL_TABLE_CONTENT
+		</type>
+		<class-name>
+			org.pentaho.di.job.entries.evaluatetablecontent.JobEntryEvalTableContent
+		</class-name>
+		<category>ognl:@org.pentaho.di.job.JobEntryCategory@EXPERIMENTAL.getName()</category>
+		<tooltip>
+			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.EvalTableContent.Tooltip")
+		</tooltip>
+		<image-uri>ui/images/ETC.png</image-uri>
+	</job>
 </jobs>
