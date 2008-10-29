@@ -143,7 +143,7 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
     	JobEntryWaitForSQL je = (JobEntryWaitForSQL) super.clone();
         return je;
     }
-    public int getSuccessCobdition() {
+    public int getSuccessCondition() {
 		return successCondition;
 	}
 	public static int getSuccessConditionByDesc(String tt) {
