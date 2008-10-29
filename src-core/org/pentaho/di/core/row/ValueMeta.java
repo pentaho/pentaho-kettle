@@ -654,7 +654,7 @@ public class ValueMeta implements ValueMetaInterface
         
         try
         {
-            return getDecimalFormat().format(number);
+            return getDecimalFormat(false).format(number);
         }
         catch(Exception e)
         {
@@ -676,7 +676,7 @@ public class ValueMeta implements ValueMetaInterface
 
         try
         {
-            return new Double( getDecimalFormat().parse(string).doubleValue() );
+            return new Double( getDecimalFormat(false).parse(string).doubleValue() );
         }
         catch(Exception e)
         {
@@ -730,13 +730,18 @@ public class ValueMeta implements ValueMetaInterface
 
     public synchronized DecimalFormat getDecimalFormat()
     {
+        return getDecimalFormat(false);
+    }
+
+    public synchronized DecimalFormat getDecimalFormat(boolean useBigDecimal)
+    {
     	// If we have an Integer that is represented as a String
     	// In that case we can set the format of the original Integer on the String value metadata in the form of a conversion metadata object.
     	// That way, we can always convert from Integer to String and back without a problem, no matter how complex the format was.
     	// As such, we should return the decimal format of the conversion metadata.
     	//
     	if (conversionMetadata!=null ) {
-    		return conversionMetadata.getDecimalFormat();
+    		return conversionMetadata.getDecimalFormat(useBigDecimal);
     	}
     	
     	// Calculate the decimal format as few times as possible.
@@ -745,6 +750,7 @@ public class ValueMeta implements ValueMetaInterface
         if (decimalFormat==null || decimalFormatChanged)
         {
             decimalFormat        = (DecimalFormat)NumberFormat.getInstance();
+            decimalFormat.setParseBigDecimal(useBigDecimal);
             DecimalFormatSymbols decimalFormatSymbols = decimalFormat.getDecimalFormatSymbols();
         
             if (!Const.isEmpty(currencySymbol)) decimalFormatSymbols.setCurrencySymbol( currencySymbol );
@@ -753,7 +759,6 @@ public class ValueMeta implements ValueMetaInterface
             decimalFormat.setDecimalFormatSymbols(decimalFormatSymbols);
             
             // Apply the conversion mask if we have one...
-            //
             if (!Const.isEmpty(conversionMask)) {
             	decimalFormat.applyPattern(conversionMask);
             }
@@ -781,6 +786,7 @@ public class ValueMeta implements ValueMetaInterface
 		            	}
 	            	}
 	            	break;
+            	case TYPE_BIGNUMBER:
             	case TYPE_NUMBER:
 	            	{
 	            		if (length<1) {
@@ -852,7 +858,7 @@ public class ValueMeta implements ValueMetaInterface
 
         try
         {
-            return getDecimalFormat().format(integer);
+            return getDecimalFormat(false).format(integer);
         }
         catch(Exception e)
         {
@@ -874,7 +880,7 @@ public class ValueMeta implements ValueMetaInterface
         
         try
         {
-        	return new Long( getDecimalFormat().parse(string).longValue() );
+        	return new Long( getDecimalFormat(false).parse(string).longValue() );
         }
         catch(Exception e)
         {
@@ -886,9 +892,14 @@ public class ValueMeta implements ValueMetaInterface
     {
         if (number==null) return null;
 
-        String string = number.toString();
-
-        return string;
+        try
+        {
+            return getDecimalFormat(true).format(number);
+        }
+        catch(Exception e)
+        {
+            throw new KettleValueException(toString()+" : couldn't convert BigNumber to String ", e);
+        }
     }
     
     private synchronized BigDecimal convertStringToBigNumber(String string) throws KettleValueException
@@ -896,23 +907,16 @@ public class ValueMeta implements ValueMetaInterface
         string = Const.trimToType(string, getTrimType()); // see if  trimming needs to be performed before conversion
 
         if (Const.isEmpty(string)) return null;
-        
-        /*
-        if (!".".equalsIgnoreCase(decimalSymbol))
-        {
-            string = Const.replace(string, decimalSymbol.substring(0, 1), ".");
-        }
-        */
-        
+
         try
         {
-        	return new BigDecimal( string );
+            return (BigDecimal)getDecimalFormat(true).parse(string);
         }
-        catch(NumberFormatException e)
+        catch(Exception e)
         {
-        	throw new KettleValueException(toString()+" : couldn't convert string value '" + string + "' to a number.");
+            throw new KettleValueException(toString()+" : couldn't convert String to number ", e);
         }
-    }
+}
 
     // BOOLEAN + STRING
     
@@ -3367,8 +3371,8 @@ public class ValueMeta implements ValueMetaInterface
 						   ) {
 							if ( (getGroupingSymbol()!=null && getGroupingSymbol().equals(storageMetadata.getGroupingSymbol())) || 
 									(getConversionMask()==null && storageMetadata.getConversionMask()==null) ) {
-								if ( (getDecimalFormat()!=null && getDecimalFormat().equals(storageMetadata.getDecimalFormat())) || 
-										(getDecimalFormat()==null && storageMetadata.getDecimalFormat()==null) ) {
+								if ( (getDecimalFormat(false)!=null && getDecimalFormat(false).equals(storageMetadata.getDecimalFormat(false))) || 
+										(getDecimalFormat(false)==null && storageMetadata.getDecimalFormat(false)==null) ) {
 									identicalFormat = true;
 								}
 								else {

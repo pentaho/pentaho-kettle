@@ -149,6 +149,7 @@ public interface ValueMetaInterface extends Cloneable
     
     public SimpleDateFormat getDateFormat();
     public DecimalFormat getDecimalFormat();
+    public DecimalFormat getDecimalFormat(boolean useBigDecimal);
 
     public String   getStringEncoding();
     public void     setStringEncoding(String stringEncoding);
