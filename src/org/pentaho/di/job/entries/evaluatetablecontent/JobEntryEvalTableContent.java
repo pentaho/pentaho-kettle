@@ -207,7 +207,7 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
 		}
 		catch(KettleException e)
 		{
-			throw new KettleXMLException(Messages.getString("JobEntryEvalTableContentTables.UnableLoadXML"),e);
+			throw new KettleXMLException(Messages.getString("JobEntryEvalTableContent.UnableLoadXML"),e);
 		}
 	}
 
@@ -243,7 +243,7 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException(Messages.getString("JobEntryEvalTableContentTables.UnableLoadRep",""+id_jobentry), dbe);
+			throw new KettleException(Messages.getString("JobEntryEvalTableContent.UnableLoadRep",""+id_jobentry), dbe);
 		}
 	}
 	private static int getSuccessConditionByCode(String tt) {
@@ -281,7 +281,7 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException(Messages.getString("JobEntryEvalTableContentTables.UnableSaveRep",""+id_job), dbe);
+			throw new KettleException(Messages.getString("JobEntryEvalTableContent.UnableSaveRep",""+id_job), dbe);
 		}
 	}
 	
@@ -426,7 +426,7 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
 		}
 		else
 		{
-			log.logError(toString(),Messages.getString("JobEntryEvalTableContentTables.NoDbConnection"));
+			log.logError(toString(),Messages.getString("JobEntryEvalTableContent.NoDbConnection"));
 		}
 
 		if(successOK)

@@ -243,7 +243,7 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
 		}
 		catch(KettleException e)
 		{
-			throw new KettleXMLException(Messages.getString("JobEntryWaitForSQLTables.UnableLoadXML"),e);
+			throw new KettleXMLException(Messages.getString("JobEntryWaitForSQL.UnableLoadXML"),e);
 		}
 	}
 
@@ -280,7 +280,7 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException(Messages.getString("JobEntryWaitForSQLTables.UnableLoadRep",""+id_jobentry), dbe);
+			throw new KettleException(Messages.getString("JobEntryWaitForSQL.UnableLoadRep",""+id_jobentry), dbe);
 		}
 	}
 	private static int getSuccessConditionByCode(String tt) {
@@ -319,7 +319,7 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException(Messages.getString("JobEntryWaitForSQLTables.UnableSaveRep",""+id_job), dbe);
+			throw new KettleException(Messages.getString("JobEntryWaitForSQL.UnableSaveRep",""+id_job), dbe);
 		}
 	}
 	
@@ -355,7 +355,7 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
 		
 		if (connection==null)
 		{
-			log.logError(toString(),Messages.getString("JobEntryWaitForSQLTables.NoDbConnection"));
+			log.logError(toString(),Messages.getString("JobEntryWaitForSQL.NoDbConnection"));
 			return result;
 		}
 		

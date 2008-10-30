@@ -285,7 +285,7 @@ public class GUIResource
 		colorMagenta = new ManagedColor(display, 255, 0, 255);
 		colorOrange = new ManagedColor(display, 255, 165, 0);
 		
-		colorBlueCustomGrid=  new ManagedColor(display,224, 238, 238);
+		colorBlueCustomGrid=  new ManagedColor(display,240, 248, 255);
 
 		colorWhite = new ManagedColor(display, 255, 255, 255);
 		colorDemoGray = new ManagedColor(display, 240, 240, 240);
