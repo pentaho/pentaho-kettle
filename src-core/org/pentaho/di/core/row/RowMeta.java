@@ -858,7 +858,6 @@ public class RowMeta implements RowMetaInterface
 
 	/**
 	 * Convert an XML node into binary data using the row metadata supplied. 
-	 * @param rowMeta The row metadata to reference
 	 * @param node The data row node 
 	 * @throws IOException Thrown in case there is an (Base64/GZip) decoding problem
 	 * @return a row of data, converted from XML
