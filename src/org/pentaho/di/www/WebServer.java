@@ -13,6 +13,10 @@
 package org.pentaho.di.www;
 
 import java.io.File;
+import java.util.Date;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.mortbay.jetty.Connector;
 import org.mortbay.jetty.Handler;
@@ -26,6 +30,7 @@ import org.mortbay.jetty.security.HashUserRealm;
 import org.mortbay.jetty.security.SecurityHandler;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
+import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.LogWriter;
 
@@ -41,28 +46,33 @@ public class WebServer
     
     private TransformationMap  transformationMap;
 	private JobMap             jobMap;
-
+	private List<SlaveServerDetection>  detections;
+	
     private String hostname;
     private int port;
 
-    public WebServer(TransformationMap transformationMap, JobMap jobMap, String hostname, int port, boolean join) throws Exception
+    public WebServer(TransformationMap transformationMap, JobMap jobMap, List<SlaveServerDetection> detections, String hostname, int port, boolean join) throws Exception
     {
         this.transformationMap = transformationMap;
         this.jobMap = jobMap;
+        this.detections = detections;
         this.hostname = hostname;
         this.port = port;
 
         startServer();
+        
+        // Start the monitoring of the registered slave servers...
+        //
+        startSlaveMonitoring();
         
         if (join) {
             server.join();
         }
     }
 
-    
-    public WebServer(TransformationMap transformationMap, JobMap jobMap, String hostname, int port) throws Exception
+	public WebServer(TransformationMap transformationMap, JobMap jobMap, List<SlaveServerDetection> slaveServers, String hostname, int port) throws Exception
     {
-      this(transformationMap, jobMap, hostname, port, true);
+      this(transformationMap, jobMap, slaveServers, hostname, port, true);
     }
 
     public Server getServer()
@@ -190,6 +200,21 @@ public class WebServer
         addJob.addServlet(new ServletHolder(new AddJobServlet(jobMap)), "/*");
 
         
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////
+        //
+        /// Cluster management
+        //
+        
+        // Register a new slave on the master
+        //
+        Context registerSlave= new Context(contexts, RegisterSlaveServlet.CONTEXT_PATH, Context.SESSIONS);
+        registerSlave.addServlet(new ServletHolder(new RegisterSlaveServlet(detections)), "/*");
+
+        // Get list of registered slave servers
+        //
+        Context getSlaves= new Context(contexts, GetSlavesServlet.CONTEXT_PATH, Context.SESSIONS);
+        getSlaves.addServlet(new ServletHolder(new GetSlavesServlet(detections)), "/*");
+
         
         server.setHandlers(new Handler[] { securityHandler, contexts });
 
@@ -236,5 +261,42 @@ public class WebServer
         this.hostname = hostname;
     }
 
+	/**
+	 * @return the slave server detections
+	 */
+	public List<SlaveServerDetection> getDetections() {
+		return detections;
+	}
+
+	/**
+	 * This method registers a timer to check up on all the registered slave servers every X seconds.<br>
+	 */
+    private void startSlaveMonitoring() {
+		Timer timer = new Timer();
+		TimerTask timerTask = new TimerTask() {
+		
+			public void run() {
+				for (SlaveServerDetection slaveServerDetection : detections) {
+					SlaveServer slaveServer = slaveServerDetection.getSlaveServer();
+					
+					// See if we can get a status...
+					//
+					try {
+						// TODO: consider making this lighter or retaining more information...
+						slaveServer.getStatus(); // throws the exception
+						slaveServerDetection.setActive(true);
+						slaveServerDetection.setLastActiveDate(new Date());
+					} catch(Exception e) {
+						slaveServerDetection.setActive(false);
+						slaveServerDetection.setLastInactiveDate(new Date());
+						
+						// TODO: kick it out after a configurable period of time...
+					}
+				}
+			}
+		};
+		timer.schedule(timerTask, 20000, 20000);
+		
+	}
 }
 

@@ -5,7 +5,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.www.Carte;
+import org.pentaho.di.www.SlaveServerConfig;
 import org.pentaho.di.www.WebServer;
 
 public class ClusterGenerator {
@@ -25,7 +27,7 @@ public class ClusterGenerator {
 	private ClusterSchema clusterSchema;
 	private List<Carte> carteList;
 	
-	public ClusterGenerator() {
+	public ClusterGenerator() throws KettleException {
 		this.clusterSchema = new ClusterSchema();
 		this.clusterSchema.setName(TEST_CLUSTER_NAME);
 		this.clusterSchema.getSlaveServers().addAll(Arrays.asList(LOCAL_TEST_SLAVES));
@@ -50,7 +52,8 @@ public class ClusterGenerator {
 		}
 		public void run() {
 			try {
-				carte = new Carte(hostname, port, false);
+				SlaveServerConfig config = new SlaveServerConfig(hostname, port, false);
+				carte = new Carte(config);
 			} catch (Exception e) {
 				this.exception = e;
 				failure=true;

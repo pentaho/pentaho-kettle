@@ -35,17 +35,15 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
-import org.pentaho.di.ui.cluster.dialog.Messages;
-import org.pentaho.di.ui.cluster.dialog.SlaveServerDialog;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.ui.core.gui.GUIResource;
-import org.pentaho.di.ui.core.gui.WindowProperty;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
+import org.pentaho.di.ui.core.gui.GUIResource;
+import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * 
@@ -59,6 +57,8 @@ import org.pentaho.di.ui.core.widget.TextVar;
 
 public class ClusterSchemaDialog extends Dialog 
 {
+	// private static LogWriter log = LogWriter.getInstance();
+	
 	private ClusterSchema clusterSchema;
 	
 	private Shell     shell;
@@ -90,6 +90,8 @@ public class ClusterSchemaDialog extends Dialog
     private TextVar wFlushInterval;
 
     private Button wCompressed;
+
+    private Button wDynamic;
 
     private List<SlaveServer> slaveServers;
     
@@ -238,6 +240,25 @@ public class ClusterSchemaDialog extends Dialog
         fdCompressed.right= new FormAttachment(95, 0);
         wCompressed.setLayoutData(fdCompressed);
 
+        // What are the sockets buffer sizes??
+        Label wlDynamic = new Label(shell, SWT.RIGHT); 
+        wlDynamic.setToolTipText(Messages.getString("ClusterSchemaDialog.DynamicCluster.Tooltip")); //$NON-NLS-1$
+        props.setLook(wlDynamic);
+        wlDynamic.setText(Messages.getString("ClusterSchemaDialog.DynamicCluster.Label")); //$NON-NLS-1$
+        FormData fdlDynamic = new FormData();
+        fdlDynamic.top   = new FormAttachment(wCompressed, margin);
+        fdlDynamic.left  = new FormAttachment(0, 0);  // First one in the left top corner
+        fdlDynamic.right = new FormAttachment(middle, 0);
+        wlDynamic.setLayoutData(fdlDynamic);
+
+        wDynamic = new Button(shell, SWT.CHECK );
+        wDynamic.setToolTipText(Messages.getString("ClusterSchemaDialog.DynamicCluster.Tooltip")); //$NON-NLS-1$
+        props.setLook(wDynamic);
+        FormData fdDynamic = new FormData();
+        fdDynamic.top  = new FormAttachment(wCompressed, margin);
+        fdDynamic.left = new FormAttachment(middle, margin); // To the right of the label
+        fdDynamic.right= new FormAttachment(95, 0);
+        wDynamic.setLayoutData(fdDynamic);
         
         // Schema servers:
         Label wlServers = new Label(shell, SWT.RIGHT);
@@ -246,7 +267,7 @@ public class ClusterSchemaDialog extends Dialog
         FormData fdlServers=new FormData();
         fdlServers.left = new FormAttachment(0, 0);
         fdlServers.right = new FormAttachment(middle, 0);
-        fdlServers.top  = new FormAttachment(wCompressed, margin);
+        fdlServers.top  = new FormAttachment(wDynamic, margin);
         wlServers.setLayoutData(fdlServers);
         
         // Some buttons to manage...
@@ -270,7 +291,7 @@ public class ClusterSchemaDialog extends Dialog
         FormData fdServers = new FormData();
         fdServers.left = new FormAttachment(middle, margin );
         fdServers.right = new FormAttachment(wSelect, -2*margin);
-        fdServers.top = new FormAttachment(wCompressed, margin);
+        fdServers.top = new FormAttachment(wDynamic, margin);
         fdServers.bottom = new FormAttachment(wOK, -margin * 2);
         wServers.setLayoutData(fdServers);
         wServers.table.addSelectionListener(new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { editSlaveServer(); }});
@@ -328,12 +349,12 @@ public class ClusterSchemaDialog extends Dialog
         dialog.setMulti(true);
         if (dialog.open()!=null)
         {
-            clusterSchema.getSlaveServers().clear();
+            clusterSchema.getSlaveServerList().clear();
             int[] indeces = dialog.getSelectionIndeces();
             for (int i=0;i<indeces.length;i++)
             {
                 SlaveServer slaveServer = SlaveServer.findSlaveServer(slaveServers, names[indeces[i]]);
-                clusterSchema.getSlaveServers().add(slaveServer);
+                clusterSchema.getSlaveServerList().add(slaveServer);
             }
             
             refreshSlaveServers();
@@ -353,6 +374,7 @@ public class ClusterSchemaDialog extends Dialog
         wBufferSize.setText( Const.NVL(clusterSchema.getSocketsBufferSize(), "")); //$NON-NLS-1$
         wFlushInterval.setText( Const.NVL(clusterSchema.getSocketsFlushInterval(), "")); //$NON-NLS-1$
         wCompressed.setSelection( clusterSchema.isSocketsCompressed());
+        wDynamic.setSelection( clusterSchema.isDynamic());
         
         refreshSlaveServers();
         
@@ -362,7 +384,7 @@ public class ClusterSchemaDialog extends Dialog
 	private void refreshSlaveServers()
     {
         wServers.clearAll(false);
-        List<SlaveServer> slServers = clusterSchema.getSlaveServers();
+        List<SlaveServer> slServers = clusterSchema.getSlaveServerList();
         for (int i=0;i<slServers.size();i++)
         {
             TableItem item = new TableItem(wServers.table, SWT.NONE);
@@ -390,11 +412,37 @@ public class ClusterSchemaDialog extends Dialog
         originalSchema.setSocketsBufferSize(clusterSchema.getSocketsBufferSize());
         originalSchema.setSocketsFlushInterval(clusterSchema.getSocketsFlushInterval());
         originalSchema.setSocketsCompressed(clusterSchema.isSocketsCompressed());
-
-        originalSchema.setSlaveServers(clusterSchema.getSlaveServers());
+        originalSchema.setDynamic(clusterSchema.isDynamic());
+        originalSchema.setSlaveServers(clusterSchema.getSlaveServerList());
         originalSchema.setChanged();
 
         ok=true;
+        
+        // Debug: dynamic lis names/urls of slaves on the console
+        //
+        /*
+        if (originalSchema.isDynamic()) {
+			// Find a master that is available
+    		//
+    		List<SlaveServer> dynamicSlaves = null;
+    		for (SlaveServer slave : originalSchema.getSlaveServers()) {
+    			if (slave.isMaster() && dynamicSlaves==null) {
+    				try {
+						List<SlaveServerDetection> detections = slave.getSlaveServerDetections();
+						dynamicSlaves = new ArrayList<SlaveServer>();
+						for (SlaveServerDetection detection : detections) {
+							if (detection.isActive()) {
+								dynamicSlaves.add(detection.getSlaveServer());
+								log.logBasic(toString(), "Found dynamic slave : "+detection.getSlaveServer().getName()+" --> "+detection.getSlaveServer().getServerAndPort());
+							}
+						}
+					} catch (Exception e) {
+						log.logError(toString(), "Unable to contact master : "+slave.getName()+" --> "+slave.getServerAndPort(), e);
+					}
+    			}
+    		}
+        }
+        */
         
         dispose();
 	}
@@ -406,16 +454,22 @@ public class ClusterSchemaDialog extends Dialog
         clusterSchema.setSocketsBufferSize(wBufferSize.getText());
         clusterSchema.setSocketsFlushInterval(wFlushInterval.getText());
         clusterSchema.setSocketsCompressed(wCompressed.getSelection());
+        clusterSchema.setDynamic(wDynamic.getSelection());
 
         String[] names = SlaveServer.getSlaveServerNames(slaveServers);
         int idx[] = Const.indexsOfFoundStrings(wServers.getItems(0), names);
         
-        clusterSchema.getSlaveServers().clear();
+        clusterSchema.getSlaveServerList().clear();
         for (int i=0;i<idx.length;i++)
         {
             SlaveServer slaveServer = SlaveServer.findSlaveServer(slaveServers, names[idx[i]]);
-            clusterSchema.getSlaveServers().add(slaveServer);
+            clusterSchema.getSlaveServerList().add(slaveServer);
         }
             
     }
+	
+	@Override
+	public String toString() {
+		return getClass().getSimpleName();
+	}
 }

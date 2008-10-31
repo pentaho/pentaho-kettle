@@ -5,7 +5,7 @@ import java.util.Arrays;
 
 import junit.framework.TestCase;
 
-import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -42,7 +42,7 @@ public class BaseCluster extends TestCase {
 	
 	
 	
-	public TransMeta loadAndModifyTestTransformation(ClusterGenerator clusterGenerator, String filename) throws KettleXMLException {
+	public TransMeta loadAndModifyTestTransformation(ClusterGenerator clusterGenerator, String filename) throws KettleException {
 		TransMeta transMeta = new TransMeta(filename);
 		
 		// Add the slave servers

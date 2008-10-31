@@ -136,14 +136,14 @@ public class GetJobStatusServlet extends HttpServlet
                     
                    
                     
-                    if (job.isActive())
+                    if (job.isFinished())
                     {
-                        out.print("<a href=\"/kettle/stopJob?name="+URLEncoder.encode(jobName, "UTF-8")+"\">" + Messages.getString("GetJobStatusServlet.StopJob") + "</a>");
+                        out.print("<a href=\"/kettle/startJob?name="+URLEncoder.encode(jobName, "UTF-8")+"\">" +  Messages.getString("GetJobStatusServlet.StartJob") + "</a>");
                         out.print("<p>");
                     }
                     else
                     {
-                        out.print("<a href=\"/kettle/startJob?name="+URLEncoder.encode(jobName, "UTF-8")+"\">" +  Messages.getString("GetJobStatusServlet.StartJob") + "</a>");
+                        out.print("<a href=\"/kettle/stopJob?name="+URLEncoder.encode(jobName, "UTF-8")+"\">" + Messages.getString("GetJobStatusServlet.StopJob") + "</a>");
                         out.print("<p>");
                     }
                     

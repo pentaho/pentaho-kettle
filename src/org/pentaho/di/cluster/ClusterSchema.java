@@ -26,6 +26,7 @@ import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.shared.SharedObjectInterface;
+import org.pentaho.di.www.SlaveServerDetection;
 import org.w3c.dom.Node;
 
 /**
@@ -60,6 +61,11 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
     /** flag to compress data over the sockets or not */
     private boolean socketsCompressed;
     
+    /** Flag to indicate that this cluster schema is dynamic.<br>
+     *  This means that the slave server configuration is taken from one of the defined master servers.<br>
+     */
+    private boolean dynamic;
+    
     private VariableSpace variables = new Variables();
     
     private long id;
@@ -72,6 +78,7 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
         socketsFlushInterval = "5000"; //$NON-NLS-1$
         socketsCompressed = true;
         basePort = "40000"; //$NON-NLS-1$
+        dynamic = false;
     }
     
     /**
@@ -99,6 +106,7 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
         this.socketsBufferSize = clusterSchema.socketsBufferSize;
         this.socketsCompressed = clusterSchema.socketsCompressed;
         this.socketsFlushInterval = clusterSchema.socketsFlushInterval;
+        this.dynamic = clusterSchema.dynamic;
         
         this.slaveServers.clear();
         this.slaveServers.addAll(clusterSchema.slaveServers); // no clone() of the slave server please!
@@ -136,6 +144,7 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
         xml.append("          ").append(XMLHandler.addTagValue("sockets_buffer_size", socketsBufferSize)); //$NON-NLS-1$ //$NON-NLS-2$
         xml.append("          ").append(XMLHandler.addTagValue("sockets_flush_interval", socketsFlushInterval)); //$NON-NLS-1$ //$NON-NLS-2$
         xml.append("          ").append(XMLHandler.addTagValue("sockets_compressed", socketsCompressed)); //$NON-NLS-1$ //$NON-NLS-2$
+        xml.append("          ").append(XMLHandler.addTagValue("dynamic", dynamic)); //$NON-NLS-1$ //$NON-NLS-2$
         
         xml.append("          <slaveservers>").append(Const.CR); //$NON-NLS-1$
         for (int i=0;i<slaveServers.size();i++)
@@ -157,6 +166,7 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
         socketsBufferSize = XMLHandler.getTagValue(clusterSchemaNode, "sockets_buffer_size"); //$NON-NLS-1$
         socketsFlushInterval = XMLHandler.getTagValue(clusterSchemaNode, "sockets_flush_interval"); //$NON-NLS-1$
         socketsCompressed = "Y".equalsIgnoreCase(  XMLHandler.getTagValue(clusterSchemaNode, "sockets_compressed") ); //$NON-NLS-1$ //$NON-NLS-2$
+        dynamic = "Y".equalsIgnoreCase(  XMLHandler.getTagValue(clusterSchemaNode, "dynamic") ); //$NON-NLS-1$ //$NON-NLS-2$
         
         Node slavesNode = XMLHandler.getSubNode(clusterSchemaNode, "slaveservers"); //$NON-NLS-1$
         int nrSlaves = XMLHandler.countNodes(slavesNode, "name"); //$NON-NLS-1$
@@ -217,11 +227,12 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
         
         RowMetaAndData row = rep.getClusterSchema(id_cluster_schema);
         
-        name = row.getString("NAME", null); //$NON-NLS-1$
-        basePort = row.getString("BASE_PORT", null); //$NON-NLS-1$
-        socketsBufferSize = row.getString("SOCKETS_BUFFER_SIZE", null); //$NON-NLS-1$
-        socketsFlushInterval = row.getString("SOCKETS_FLUSH_INTERVAL", null); //$NON-NLS-1$
-        socketsCompressed = row.getBoolean("SOCKETS_COMPRESSED", true); //$NON-NLS-1$
+        name = row.getString(Repository.FIELD_CLUSTER_NAME, null); //$NON-NLS-1$
+        basePort = row.getString(Repository.FIELD_CLUSTER_BASE_PORT, null); //$NON-NLS-1$
+        socketsBufferSize = row.getString(Repository.FIELD_CLUSTER_SOCKETS_BUFFER_SIZE, null); //$NON-NLS-1$
+        socketsFlushInterval = row.getString(Repository.FIELD_CLUSTER_SOCKETS_FLUSH_INTERVAL, null); //$NON-NLS-1$
+        socketsCompressed = row.getBoolean(Repository.FIELD_CLUSTER_SOCKETS_COMPRESSED, true); //$NON-NLS-1$
+        dynamic = row.getBoolean(Repository.FIELD_CLUSTER_DYNAMIC, true); //$NON-NLS-1$
         
         long[] pids = rep.getSlaveIDs(id_cluster_schema);
         for (int i=0;i<pids.length;i++)
@@ -253,9 +264,9 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
     }
 
     /**
-     * @return the slaveServers
+     * @return the internal (static) list of slave servers
      */
-    public List<SlaveServer> getSlaveServers()
+    public List<SlaveServer> getSlaveServerList()
     {
         return slaveServers;
     }
@@ -479,5 +490,55 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
 	public void injectVariables(Map<String,String> prop) 
 	{
 		variables.injectVariables(prop);		
-	}    
+	}
+
+	/**
+	 * @return the dynamic
+	 */
+	public boolean isDynamic() {
+		return dynamic;
+	}
+
+	/**
+	 * @param dynamic the dynamic to set
+	 */
+	public void setDynamic(boolean dynamic) {
+		this.dynamic = dynamic;
+	}
+	
+	/**
+	 * @return A list of dynamic slave servers, retrieved from the first master server that was available.
+	 * @throws KettleException when none of the masters can be contacted.
+	 */
+	public List<SlaveServer> getSlaveServers() throws KettleException {
+        if (isDynamic()) {
+			// Find a master that is available
+    		//
+    		List<SlaveServer> dynamicSlaves = null;
+    		Exception exception = null;
+    		for (SlaveServer slave : getSlaveServerList()) {
+    			if (slave.isMaster() && dynamicSlaves==null) {
+    				try {
+						List<SlaveServerDetection> detections = slave.getSlaveServerDetections();
+						dynamicSlaves = new ArrayList<SlaveServer>();
+						for (SlaveServerDetection detection : detections) {
+							if (detection.isActive()) {
+								dynamicSlaves.add(detection.getSlaveServer());
+								// log.logBasic(toString(), "Found dynamic slave : "+detection.getSlaveServer().getName()+" --> "+detection.getSlaveServer().getServerAndPort());
+							}
+						}
+					} catch (Exception e) {
+						exception = e; // Remember the last exception
+					}
+    			}
+    		}
+    		if (dynamicSlaves==null && exception!=null) {
+    			throw new KettleException(exception);
+    		}
+    		return dynamicSlaves;
+        } else {
+        	return slaveServers;
+        }
+	
+	}
 }

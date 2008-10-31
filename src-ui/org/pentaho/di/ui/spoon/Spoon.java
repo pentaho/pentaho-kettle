@@ -2490,7 +2490,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		delClusterSchema(transMeta, clusterSchema);
 	}
 
-    public void monitorClusterSchema() {
+    public void monitorClusterSchema() throws KettleException {
 		final ClusterSchema clusterSchema = (ClusterSchema) selectionObject;
 		monitorClusterSchema(clusterSchema);
 	}
@@ -2665,7 +2665,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		}
 	}
 
-	protected void monitorClusterSchema(ClusterSchema clusterSchema)
+	protected void monitorClusterSchema(ClusterSchema clusterSchema) throws KettleException
 	{
 		for (int i = 0; i < clusterSchema.getSlaveServers().size(); i++)
 		{

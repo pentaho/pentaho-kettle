@@ -360,7 +360,7 @@
 	  		<mkdir dir="${distrib}/pwd"/>
 	  		<copy todir="${distrib}/pwd">
 	  			<fileset dir="${pwd}" 
-	  				     includes="**/*.pwd"
+	  				     includes="**/*.pwd **/*.xml"
 	  			         excludes="**/*.vpn" />
 	  			</copy>
 

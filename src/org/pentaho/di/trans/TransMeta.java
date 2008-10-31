@@ -247,11 +247,11 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
     private static final String XML_TAG_INFO                = "info";
     private static final String XML_TAG_ORDER               = "order";
-    private static final String XML_TAG_NOTEPADS            = "notepads";
+    public  static final String XML_TAG_NOTEPADS            = "notepads";
     private static final String XML_TAG_DEPENDENCIES        = "dependencies";
-    private static final String XML_TAG_PARTITIONSCHEMAS    = "partitionschemas";
-    private static final String XML_TAG_SLAVESERVERS        = "slaveservers";
-    private static final String XML_TAG_CLUSTERSCHEMAS      = "clusterschemas";
+    public  static final String XML_TAG_PARTITIONSCHEMAS    = "partitionschemas";
+    public  static final String XML_TAG_SLAVESERVERS        = "slaveservers";
+    public  static final String XML_TAG_CLUSTERSCHEMAS      = "clusterschemas";
     private static final String XML_TAG_STEP_ERROR_HANDLING = "step_error_handling";
 
     
@@ -2021,7 +2021,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         return false;
     }
     
-    public boolean isUsingSlaveServer(SlaveServer slaveServer)
+    public boolean isUsingSlaveServer(SlaveServer slaveServer) throws KettleException
     {
         // Loop over all steps and see if the slave server is used.
         for (int i=0;i<nrSteps();i++)

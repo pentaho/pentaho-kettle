@@ -2,7 +2,7 @@ package org.pentaho.di.cluster;
 
 import java.util.Arrays;
 
-import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
@@ -10,7 +10,7 @@ import org.pentaho.di.trans.cluster.TransSplitter;
 
 public class MasterSlave extends BaseCluster {
 
-	public void testStartStopSlaveServers() {
+	public void testStartStopSlaveServers() throws KettleException {
 		ClusterGenerator clusterGenerator = new ClusterGenerator();
 		try {
 			clusterGenerator.launchSlaveServers();
@@ -269,7 +269,7 @@ public class MasterSlave extends BaseCluster {
 	
 	
 
-	private TransMeta generateParallelFileReadOnMasterTransMeta(ClusterGenerator clusterGenerator) throws KettleXMLException {
+	private TransMeta generateParallelFileReadOnMasterTransMeta(ClusterGenerator clusterGenerator) throws KettleException {
 		TransMeta transMeta = new TransMeta("test/org/pentaho/di/cluster/test-parallel-file-read-on-master.ktr");
 		
 		// Add the slave servers
@@ -288,7 +288,7 @@ public class MasterSlave extends BaseCluster {
 		return transMeta;
 	}
 
-	private TransMeta generateParallelFileReadOnMasterWithCopiesTransMeta(ClusterGenerator clusterGenerator) throws KettleXMLException {
+	private TransMeta generateParallelFileReadOnMasterWithCopiesTransMeta(ClusterGenerator clusterGenerator) throws KettleException {
 		TransMeta transMeta = new TransMeta("test/org/pentaho/di/cluster/test-parallel-file-read-on-master-with-copies.ktr");
 		
 		// Add the slave servers
@@ -308,7 +308,7 @@ public class MasterSlave extends BaseCluster {
 	}
 	
 
-	private TransMeta generateParallelFileReadOnSlavesTransMeta(ClusterGenerator clusterGenerator) throws KettleXMLException {
+	private TransMeta generateParallelFileReadOnSlavesTransMeta(ClusterGenerator clusterGenerator) throws KettleException {
 		TransMeta transMeta = new TransMeta("test/org/pentaho/di/cluster/test-parallel-file-read-on-slaves.ktr");
 		
 		// Add the slave servers
@@ -329,7 +329,7 @@ public class MasterSlave extends BaseCluster {
 	
 	
 
-	private TransMeta generateParallelFileReadOnSlavesWithPartitioningTransMeta(ClusterGenerator clusterGenerator) throws KettleXMLException {
+	private TransMeta generateParallelFileReadOnSlavesWithPartitioningTransMeta(ClusterGenerator clusterGenerator) throws KettleException {
 		TransMeta transMeta = new TransMeta("test/org/pentaho/di/cluster/test-parallel-file-read-on-slaves-with-partitioning.ktr");
 		
 		// Add the slave servers
@@ -350,7 +350,7 @@ public class MasterSlave extends BaseCluster {
 	
 	
 
-	private TransMeta generateParallelFileReadOnSlavesWithPartitioning2TransMeta(ClusterGenerator clusterGenerator) throws KettleXMLException {
+	private TransMeta generateParallelFileReadOnSlavesWithPartitioning2TransMeta(ClusterGenerator clusterGenerator) throws KettleException {
 		TransMeta transMeta = new TransMeta("test/org/pentaho/di/cluster/test-parallel-file-read-on-slaves-with-partitioning2.ktr");
 		
 		// Add the slave servers
@@ -369,7 +369,7 @@ public class MasterSlave extends BaseCluster {
 		return transMeta;
 	}
 	
-	private TransMeta generateMultipleCopiesOnMultipleSlaves2(ClusterGenerator clusterGenerator) throws KettleXMLException {
+	private TransMeta generateMultipleCopiesOnMultipleSlaves2(ClusterGenerator clusterGenerator) throws KettleException {
 		TransMeta transMeta = new TransMeta("test/org/pentaho/di/cluster/test-hops-between-multiple-copies-steps-on-cluster.ktr");
 		
 		// Add the slave servers
@@ -389,7 +389,7 @@ public class MasterSlave extends BaseCluster {
 	}
 
 
-    private TransMeta generateMultipleCopiesOnMultipleSlaves(ClusterGenerator clusterGenerator) throws KettleXMLException {
+    private TransMeta generateMultipleCopiesOnMultipleSlaves(ClusterGenerator clusterGenerator) throws KettleException {
     	TransMeta transMeta = new TransMeta("test/org/pentaho/di/cluster/test-multiple-copies-on-multiple-slaves.ktr");
     	
     	// Add the slave servers

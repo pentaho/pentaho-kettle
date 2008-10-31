@@ -24,6 +24,7 @@ import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -51,8 +52,10 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.www.CleanupTransServlet;
 import org.pentaho.di.www.GetJobStatusServlet;
+import org.pentaho.di.www.GetSlavesServlet;
 import org.pentaho.di.www.GetStatusServlet;
 import org.pentaho.di.www.GetTransStatusServlet;
+import org.pentaho.di.www.SlaveServerDetection;
 import org.pentaho.di.www.SlaveServerJobStatus;
 import org.pentaho.di.www.SlaveServerStatus;
 import org.pentaho.di.www.SlaveServerTransStatus;
@@ -61,6 +64,7 @@ import org.pentaho.di.www.StartTransServlet;
 import org.pentaho.di.www.StopJobServlet;
 import org.pentaho.di.www.StopTransServlet;
 import org.pentaho.di.www.WebResult;
+import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectInterface, VariableSpace
@@ -629,6 +633,22 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     {
         String xml = execService(GetStatusServlet.CONTEXT_PATH+"/?xml=Y"); //$NON-NLS-1$
         return SlaveServerStatus.fromXML(xml);
+    }
+    
+    public List<SlaveServerDetection> getSlaveServerDetections() throws Exception
+    {
+        String xml = execService(GetSlavesServlet.CONTEXT_PATH+"/"); //$NON-NLS-1$
+        Document document = XMLHandler.loadXMLString(xml);
+        Node detectionsNode = XMLHandler.getSubNode(document, GetSlavesServlet.XML_TAG_SLAVESERVER_DETECTIONS);
+        int nrDetections = XMLHandler.countNodes(detectionsNode, SlaveServerDetection.XML_TAG);
+        
+        List<SlaveServerDetection> detections = new ArrayList<SlaveServerDetection>();
+        for (int i=0;i<nrDetections;i++) {
+        	Node detectionNode = XMLHandler.getSubNodeByNr(detectionsNode, SlaveServerDetection.XML_TAG, i);
+        	SlaveServerDetection detection = new SlaveServerDetection(detectionNode);
+        	detections.add(detection);
+        }
+        return detections;
     }
 
     public SlaveServerTransStatus getTransStatus(String transName) throws Exception

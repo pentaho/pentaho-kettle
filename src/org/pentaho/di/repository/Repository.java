@@ -363,6 +363,7 @@ public class Repository
 	public static final String FIELD_CLUSTER_SOCKETS_BUFFER_SIZE = "SOCKETS_BUFFER_SIZE";
 	public static final String FIELD_CLUSTER_SOCKETS_FLUSH_INTERVAL = "SOCKETS_FLUSH_INTERVAL";
 	public static final String FIELD_CLUSTER_SOCKETS_COMPRESSED = "SOCKETS_COMPRESSED";
+	public static final String FIELD_CLUSTER_DYNAMIC = "DYNAMIC_CLUSTER";
 
 	public static final String TABLE_R_SLAVE                  = "R_SLAVE";
 	public static final String FIELD_SLAVE_ID_SLAVE = "ID_SLAVE";
@@ -1914,6 +1915,7 @@ public class Repository
         table.addValue(new ValueMeta(FIELD_CLUSTER_SOCKETS_BUFFER_SIZE, ValueMetaInterface.TYPE_STRING), clusterSchema.getSocketsBufferSize());
         table.addValue(new ValueMeta(FIELD_CLUSTER_SOCKETS_FLUSH_INTERVAL, ValueMetaInterface.TYPE_STRING), clusterSchema.getSocketsFlushInterval());
         table.addValue(new ValueMeta(FIELD_CLUSTER_SOCKETS_COMPRESSED, ValueMetaInterface.TYPE_BOOLEAN), Boolean.valueOf(clusterSchema.isSocketsCompressed()));
+        table.addValue(new ValueMeta(FIELD_CLUSTER_DYNAMIC, ValueMetaInterface.TYPE_BOOLEAN), Boolean.valueOf(clusterSchema.isDynamic()));
 
         database.prepareInsert(table.getRowMeta(), TABLE_R_CLUSTER);
         database.setValuesInsert(table);
@@ -4620,6 +4622,7 @@ public class Repository
         table.addValueMeta(new ValueMeta(FIELD_CLUSTER_SOCKETS_BUFFER_SIZE, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
         table.addValueMeta(new ValueMeta(FIELD_CLUSTER_SOCKETS_FLUSH_INTERVAL, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
         table.addValueMeta(new ValueMeta(FIELD_CLUSTER_SOCKETS_COMPRESSED, ValueMetaInterface.TYPE_BOOLEAN, 0, 0));
+        table.addValueMeta(new ValueMeta(FIELD_CLUSTER_DYNAMIC, ValueMetaInterface.TYPE_BOOLEAN, 0, 0));
         sql = database.getDDL(tablename, table, null, false, FIELD_CLUSTER_ID_CLUSTER, false);
 
         if (sql != null && sql.length() > 0)

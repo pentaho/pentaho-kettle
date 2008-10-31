@@ -1247,7 +1247,7 @@ public class TransSplitter
         }
     }
     
-    private int getSlaveServerNumber(ClusterSchema clusterSchema, SlaveServer slaveServer) {
+    private int getSlaveServerNumber(ClusterSchema clusterSchema, SlaveServer slaveServer) throws KettleException {
     	int index = 0;
     	for (SlaveServer check : clusterSchema.getSlaveServers()) {
     		if (!check.isMaster()) {

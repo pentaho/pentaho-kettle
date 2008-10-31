@@ -1229,6 +1229,9 @@ public class Job extends Thread implements VariableSpace
 	 */
 	public void setFinished(boolean finished) {
 		this.finished = finished;
+		if (finished) {
+			System.out.println("--------------------- Finished ---------------------------");
+		}
 	}
 
 }
