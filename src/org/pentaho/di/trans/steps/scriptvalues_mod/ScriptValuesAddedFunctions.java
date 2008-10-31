@@ -856,6 +856,10 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 	
 	public static Object str2date(Context actualContext, Scriptable actualObject, Object[] ArgList, Function FunctionContext){
 		Object oRC=new Object();
+		String sArg1="";
+		String sArg2="";
+		String sArg3="";
+		String sArg4="";
 		switch(ArgList.length){
 			case 0:
 				throw  Context.reportRuntimeError("Please provide a valid string to the function call str2date.");
@@ -863,56 +867,56 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 				try{
 					if(isNull(ArgList[0])) return null;
 		    		else if(isUndefined(ArgList[0])) return Context.getUndefinedValue();
-					String sArg1 = Context.toString(ArgList[0]);
+					sArg1 = Context.toString(ArgList[0]);
 					Format dfFormatter = new SimpleDateFormat();
 					oRC = dfFormatter.parseObject(sArg1);
 					//if(Double.isNaN(sArg1))	throw Context.reportRuntimeError("The first Argument must be a Number.");
 					//DecimalFormat formatter = new DecimalFormat();
 					//sRC= formatter.format(sArg1); 
 				}catch(Exception e){
-					throw Context.reportRuntimeError("Could not apply local format : " + e.getMessage());
+					throw Context.reportRuntimeError("Could not apply local format for "+sArg1+" : " + e.getMessage());
 				}
 				break;
 			case 2:
 				try{
 					if(isNull(ArgList,new int[]{0,1})) return null;
 		    		else if(isUndefined(ArgList,new int[]{0,1})) return Context.getUndefinedValue();
-					String sArg1 = Context.toString(ArgList[0]);
-					String sArg2 = Context.toString(ArgList[1]);
+					sArg1 = Context.toString(ArgList[0]);
+					sArg2 = Context.toString(ArgList[1]);
 					Format dfFormatter = new SimpleDateFormat(sArg2);
 					oRC = dfFormatter.parseObject(sArg1);
 				}catch(Exception e){
-					throw Context.reportRuntimeError("Could not apply the given format on the string : " + e.getMessage());
+					throw Context.reportRuntimeError("Could not apply the given format "+sArg2+" on the string for "+sArg1+" : " + e.getMessage());
 				}
 				break;
 			case 3:
 				try{
 					if(isNull(ArgList,new int[]{0,1,2})) return null;
 		    		else if(isUndefined(ArgList,new int[]{0,1,2})) return Context.getUndefinedValue();
-					String sArg1 = Context.toString(ArgList[0]);
+					sArg1 = Context.toString(ArgList[0]);
 					Format dfFormatter;
-					String sArg2 = Context.toString(ArgList[1]);
-					String sArg3 = Context.toString(ArgList[2]);
+					sArg2 = Context.toString(ArgList[1]);
+					sArg3 = Context.toString(ArgList[2]);
 					if(sArg3.length() == 2){
 						Locale dfLocale = new Locale(sArg3);
 						dfFormatter = new SimpleDateFormat(sArg2, dfLocale);
 						oRC = dfFormatter.parseObject(sArg1);
 					}else{
-						throw Context.reportRuntimeError("Locale is not 2 characters long.");
+						throw Context.reportRuntimeError("Locale "+sArg3+" is not 2 characters long.");
 					}
 				}catch(Exception e){
-					throw Context.reportRuntimeError("Could not apply the local format : " + e.getMessage());
+					throw Context.reportRuntimeError("Could not apply the local format for locale "+sArg3+" with the given format "+sArg2+" on the string for "+sArg1+" : " + e.getMessage());
 				}
 				break;
 			case 4:
 				try{
 					if(isNull(ArgList,new int[]{0,1,2,3})) return null;
 		    		else if(isUndefined(ArgList,new int[]{0,1,2,3})) return Context.getUndefinedValue();
-					String sArg1 = Context.toString(ArgList[0]);
+					sArg1 = Context.toString(ArgList[0]);
 					DateFormat dfFormatter;
-					String sArg2 = Context.toString(ArgList[1]);
-					String sArg3 = Context.toString(ArgList[2]);
-					String sArg4 = Context.toString(ArgList[3]);
+					sArg2 = Context.toString(ArgList[1]);
+					sArg3 = Context.toString(ArgList[2]);
+					sArg4 = Context.toString(ArgList[3]);
 					
 					// If the timezone is not recognized, java will automatically
 					// take GMT.
@@ -924,10 +928,10 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 						dfFormatter.setTimeZone(tz);
 						oRC = dfFormatter.parseObject(sArg1);
 					}else{
-						throw Context.reportRuntimeError("Locale is not 2 characters long.");
+						throw Context.reportRuntimeError("Locale "+sArg3+" is not 2 characters long.");
 					}
 				}catch(Exception e){
-					throw Context.reportRuntimeError("Could not apply the local format : " + e.getMessage());
+					throw Context.reportRuntimeError("Could not apply the local format for locale "+sArg3+" with the given format "+sArg2+" on the string for "+sArg1+" : " + e.getMessage());
 				}
 				break;								
 			default:
