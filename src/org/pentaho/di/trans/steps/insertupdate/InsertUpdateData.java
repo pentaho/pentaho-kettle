@@ -46,6 +46,8 @@ public class InsertUpdateData extends BaseStepData implements StepDataInterface
     public RowMetaInterface  lookupReturnRowMeta;
     public RowMetaInterface  insertRowMeta;
 
+	public boolean firstLookup;
+
 	
 	/**
 	 *  Default constructor.
@@ -55,5 +57,7 @@ public class InsertUpdateData extends BaseStepData implements StepDataInterface
 		super();
 
 		db=null;
+		
+		firstLookup=true;
 	}
 }

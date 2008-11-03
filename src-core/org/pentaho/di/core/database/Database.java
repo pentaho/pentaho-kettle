@@ -3159,12 +3159,17 @@ public class Database implements VariableSpace
 
 	public Object[] getLookup(PreparedStatement ps, boolean failOnMultipleResults) throws KettleDatabaseException
 	{
+		return getLookup(ps, failOnMultipleResults, true);
+	}
+	
+	public Object[] getLookup(PreparedStatement ps, boolean failOnMultipleResults, boolean calcRowMeta) throws KettleDatabaseException
+	{
         ResultSet res = null;
 		try
 		{
 			res = ps.executeQuery();
 			
-			rowMeta = getRowInfo(res.getMetaData(), false, false);
+			if (calcRowMeta) rowMeta = getRowInfo(res.getMetaData(), false, false);
 			
 			Object[] ret = getRow(res);
 			

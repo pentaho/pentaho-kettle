@@ -46,6 +46,7 @@ public class CombinationLookupData extends BaseStepData implements StepDataInter
     public PreparedStatement prepStatementLookup;
     public PreparedStatement prepStatementInsert;
     public long smallestCacheKey;
+	public boolean firstLookup;
 
 	/**
 	 *  Default Constructor
@@ -54,5 +55,6 @@ public class CombinationLookupData extends BaseStepData implements StepDataInter
 	{
 		super();
 		db=null;
+		firstLookup=true;
 	}
 }
