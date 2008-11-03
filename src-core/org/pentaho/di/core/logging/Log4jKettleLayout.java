@@ -28,6 +28,8 @@ public class Log4jKettleLayout extends Layout implements Log4JLayoutInterface
 			return new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
      	}
     };
+
+	public static final String ERROR_STRING = "ERROR";
     
     private boolean timeAdded;
     
@@ -40,7 +42,7 @@ public class Log4jKettleLayout extends Layout implements Log4JLayoutInterface
     {
         // OK, perhaps the logging information has multiple lines of data.
         // We need to split this up into different lines and all format these lines...
-        String line="";
+        StringBuffer line=new StringBuffer();
         
         String dateTimeString = "";
         if (timeAdded)
@@ -57,34 +59,42 @@ public class Log4jKettleLayout extends Layout implements Log4JLayoutInterface
             for (int i=0;i<parts.length;i++)
             {
                 // Start every line of the output with a dateTimeString
-                line+=dateTimeString;
+                line.append(dateTimeString);
                 
                 // Include the subject too on every line...
                 if (message.getSubject()!=null)
                 {
-                    line+=message.getSubject()+" - ";
+                    line.append(message.getSubject()).append(" - ");
                 }
                 
                 if (message.isError())  
                 {
                     BuildVersion buildVersion = BuildVersion.getInstance();
-                    line+="ERROR (version "+Const.VERSION+
-                    ", build "+buildVersion.getVersion()+
-                    " from "+((SimpleDateFormat)LOCAL_SIMPLE_DATE_PARSER.get()).format(buildVersion.getBuildDate())+
-                    (Const.isEmpty(buildVersion.getHostname())?"":" @ "+buildVersion.getHostname())+
-                    ") : ";                
+                    line.append(ERROR_STRING);
+                    line.append(" (version ");
+                    line.append(Const.VERSION);
+                    line.append(", build ");
+                    line.append(buildVersion.getVersion());
+                    line.append(" from ");
+                    line.append( ((SimpleDateFormat)LOCAL_SIMPLE_DATE_PARSER.get()).format(buildVersion.getBuildDate()) );
+                    if (!Const.isEmpty(buildVersion.getHostname())) {
+                    	line.append(" @ ");
+                    	line.append(buildVersion.getHostname());
+                    }
+                    line.append(") : ");                
                  }
                 
-                line+=parts[i];
-                if (i<parts.length-1) line+=Const.CR; // put the CR's back in there!
+                line.append(parts[i]);
+                if (i<parts.length-1) line.append(Const.CR); // put the CR's back in there!
             }
         }
         else
         {
-            line+=dateTimeString + (object!=null?object.toString():"<null>");
+            line.append(dateTimeString);
+            line.append((object!=null?object.toString():"<null>"));
         }
         
-        return line;
+        return line.toString();
     }
 
     public boolean ignoresThrowable()

@@ -2,6 +2,7 @@ package org.pentaho.di.ui.spoon.trans;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.Properties;
 
 import org.eclipse.swt.SWT;
@@ -213,7 +214,14 @@ public class TransLogDelegate extends SpoonDelegate {
     
 	public void clearLog()
 	{
-		if (transLogText!=null && !transLogText.isDisposed()) transLogText.setText(""); //$NON-NLS-1$
+		if (transLogText!=null && !transLogText.isDisposed()) {
+			transLogText.setText(""); //$NON-NLS-1$
+		}
+		Map<StepMeta, String> stepLogMap = transGraph.getStepLogMap();
+		if (stepLogMap!=null) {
+			stepLogMap.clear();
+			transGraph.getDisplay().asyncExec(new Runnable() {  public void run() { transGraph.redraw(); }}); 
+		}
 	}
 
 	public void showErrors()
@@ -285,6 +293,14 @@ public class TransLogDelegate extends SpoonDelegate {
 	 */
 	public CTabItem getTransLogTab() {
 		return transLogTab;
-	}
+	}	
 	
+	public String getLoggingText() {
+		if (transLogText!=null && !transLogText.isDisposed()) {
+			return transLogText.getText();
+		} else {
+			return null;
+		}
+
+	}
 }

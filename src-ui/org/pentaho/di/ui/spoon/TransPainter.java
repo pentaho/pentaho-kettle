@@ -46,6 +46,7 @@ public class TransPainter
     public static final String STRING_PARTITIONING_CURRENT_NEXT = "PartitioningNextStep";    // $NON-NLS-1$
 	public static final String STRING_REMOTE_INPUT_STEPS        = "RemoteInputSteps";        // $NON-NLS-1$
 	public static final String STRING_REMOTE_OUTPUT_STEPS       = "RemoteOutputSteps";       // $NON-NLS-1$
+	public static final String STRING_STEP_ERROR_LOG            = "StepErrorLog";            // $NON-NLS-1$
     
 	public static final String[] magnificationDescriptions = 
 		new String[] { "  100% ", "  75% ", "  50% ", "  25% "};
@@ -94,6 +95,8 @@ public class TransPainter
     private float           translationX;
     private float           translationY;
 	private boolean shadow;
+	
+	private Map<StepMeta, String> stepLogMap;
 
     public TransPainter(TransMeta transMeta)
     {
@@ -143,6 +146,8 @@ public class TransPainter
         linewidth = props.getLineWidth();
         
         magnification = 1.0f;
+        
+        stepLogMap = null;
     }
 
     public Image getTransformationImage(Device device)
@@ -366,6 +371,14 @@ public class TransPainter
         }
 
         Point screen = real2screen(x, y, offset);
+        
+        boolean stepError = false;
+        if (stepLogMap!=null && !stepLogMap.isEmpty()) {
+        	String log = stepLogMap.get(stepMeta);
+	        	if (!Const.isEmpty(log)) {
+	        		stepError=true;
+	        	}
+        	}
 
         // REMOTE STEPS
         
@@ -480,7 +493,7 @@ public class TransPainter
 	            }
             }
         }
-        
+                
         String name = stepMeta.getName();
 
         if (stepMeta.isSelected())
@@ -501,7 +514,11 @@ public class TransPainter
             gc.drawImage(im, 0, 0, bounds.width, bounds.height, screen.x, screen.y, iconsize, iconsize);
         }
         gc.setBackground(background);
-        gc.setForeground(black);
+        if (stepError) {
+        	gc.setForeground(red);
+        } else {
+        	gc.setForeground(black);
+        }
         gc.drawRectangle(screen.x - 1, screen.y - 1, iconsize + 1, iconsize + 1);
 
         Point namePosition = getNamePosition(gc, name, screen, iconsize );
@@ -533,6 +550,20 @@ public class TransPainter
             gc.drawText("x" + stepMeta.getCopies(), screen.x - 5, screen.y - 5);
         }
         
+        // If there was an error during the run, the map "stepLogMap" is not empty and not null.  
+        //
+        if (stepError) {
+        	String log = stepLogMap.get(stepMeta);
+    		// Show an error lines icon in the lower right corner of the step...
+    		//
+    		int xError = stepMeta.getLocation().x + iconsize - 5;
+    		int yError = stepMeta.getLocation().y + iconsize - 5;
+    		Image image = GUIResource.getInstance().getImageStepError();
+    		gc.drawImage(image, xError, yError);
+    		if (!shadow) {
+    			areaOwners.add(new AreaOwner(xError, yError, image.getBounds().width, image.getBounds().height, log, STRING_STEP_ERROR_LOG));
+    		}
+        }
     }
 
     public static final Point getNamePosition(GC gc, String string, Point screen, int iconsize)
@@ -803,6 +834,20 @@ public class TransPainter
 	 */
 	public void setTranslationY(float translationY) {
 		this.translationY = translationY;
+	}
+
+	/**
+	 * @return the stepLogMap
+	 */
+	public Map<StepMeta, String> getStepLogMap() {
+		return stepLogMap;
+	}
+
+	/**
+	 * @param stepLogMap the stepLogMap to set
+	 */
+	public void setStepLogMap(Map<StepMeta, String> stepLogMap) {
+		this.stepLogMap = stepLogMap;
 	}
 
 }

@@ -222,7 +222,9 @@ public class GUIResource
     private Image imageExpandAll;
   
     private Image imageCollapseAll;
-    
+
+    private Image imageStepError;
+
     private Map<String,Image> imageMap;
 
 	private ManagedFont fontBold;
@@ -378,6 +380,7 @@ public class GUIResource
 		    imageShowResults.dispose();
 		    imageHideResults.dispose();
 		    imageCollapseAll.dispose();
+		    imageStepError.dispose();
 		    imageExpandAll.dispose();
 		    imageViewPanel.dispose();
 		    imageDesignPanel.dispose();
@@ -578,6 +581,7 @@ public class GUIResource
     
     imageExpandAll = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("ExpandAll_image")); // , "ui/images/ExpandAll.png;
     imageCollapseAll = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("CollapseAll_image")); // , "ui/images/CollapseAll.png;
+    imageStepError = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("StepErrorLines_image")); // , "ui/images/show-error-lines.png;
 
    imageStartSmall = new Image(display, 16, 16);
 		GC gc = new GC(imageStartSmall);
@@ -1498,7 +1502,11 @@ public class GUIResource
   public Image getImageCollapseAll(){
     return imageCollapseAll;
   }
-  
+
+  public Image getImageStepError(){
+	    return imageStepError;
+  }
+
   /**
    * Loads an image from a location once.  The second time, the image comes from a cache.
    * Because of this, it's important to never dispose of the image you get from here. (easy!)

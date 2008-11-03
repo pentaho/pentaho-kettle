@@ -88,6 +88,7 @@ import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.gui.Redrawable;
 import org.pentaho.di.core.gui.SnapAllignDistribute;
 import org.pentaho.di.core.gui.SpoonInterface;
+import org.pentaho.di.core.logging.Log4jKettleLayout;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.i18n.LanguageChoice;
@@ -279,6 +280,9 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
   public TransPerfDelegate transPerfDelegate;
 
   private Combo zoomLabel;
+  
+  /** A map that keeps track of which log line was written by which step */
+  private Map<StepMeta, String> stepLogMap;
 
   public void setCurrentNote(NotePadMeta ni) {
     this.ni = ni;
@@ -2000,6 +2004,13 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
               tip.append("Target partitioning:").append(Const.CR).append("-----------------------").append(Const.CR);
               tip.append(step.getStepPartitioningMeta().toString()).append(Const.CR);
             }
+            if (areaOwner.getParent() instanceof String // Logging
+                && areaOwner.getOwner().equals(TransPainter.STRING_STEP_ERROR_LOG)) {
+              String log = (String)areaOwner.getParent();
+              tip.append(log);
+              tipImage = GUIResource.getInstance().getImageStepError();
+            }
+
           }
         }
         if (tip.length() == 0) {
@@ -2151,6 +2162,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     TransPainter transPainter = new TransPainter(transMeta, new Point(x, y), hori, vert, candidate, drop_candidate,
         selrect, areaOwners);
     transPainter.setMagnification(magnificationFactor);
+    transPainter.setStepLogMap(stepLogMap);
     Image img = transPainter.getTransformationImage(device, PropsUI.getInstance().isBrandingActive());
 
     return img;
@@ -2779,9 +2791,8 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
             if (executionConfiguration.isClearingLog()) {
             	transLogDelegate.clearLog();
             }
-
-            trans = new Trans(transMeta, spoon.rep, transMeta.getName(), transMeta.getDirectory().getPath(), transMeta
-                .getFilename());
+            
+            trans = new Trans(transMeta, spoon.rep, transMeta.getName(), transMeta.getDirectory().getPath(), transMeta.getFilename());
             trans.setReplayDate(executionConfiguration.getReplayDate());
             trans.setRepository(executionConfiguration.getRepository());
             trans.setMonitored(true);
@@ -2890,7 +2901,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         if (executionConfiguration.isClearingLog()) {
         	transLogDelegate.clearLog();
         }
-
+        
         // Create a new transformation to execution
         //
         trans = new Trans(transMeta);
@@ -3141,6 +3152,8 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
       }
     });
   }
+  
+  private String lastLog;
 
   private void checkTransEnded() {
     if (trans != null) {
@@ -3172,6 +3185,48 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
           showLastPreviewResults();
         }
         debug = false;
+        
+        if (trans.getErrors()>0) {
+        	// Get the logging text and filter it out.  Store it in the stepLogMap...
+        	//
+            stepLogMap = new HashMap<StepMeta, String>();
+            lastLog = null;
+            shell.getDisplay().syncExec(new Runnable() {
+			
+				public void run() {
+					lastLog = transLogDelegate.getLoggingText();
+				}
+			});
+            
+            if (!Const.isEmpty(lastLog)) {
+            	String lines[] = lastLog.split(Const.CR);
+            	for (int i=0;i<lines.length && i<30;i++) {
+            		if (lines[i].indexOf(Log4jKettleLayout.ERROR_STRING)>=0) {
+            			// This is an error line, log it!
+            			// Determine to which step it belongs!
+            			//
+            			for (StepMeta stepMeta : transMeta.getSteps()) {
+            				if (lines[i].indexOf(stepMeta.getName())>=0) {
+            					
+            					String line = lines[i];
+            					int index = lines[i].indexOf(") : "); // $NON-NLS-1$   TODO: define this as a more generic marker / constant value
+            					if (index>0) line=lines[i].substring(index+3);
+            					
+            					String str = stepLogMap.get(stepMeta);
+            					if (str==null) {
+            						stepLogMap.put(stepMeta, line);
+            					} else {
+            						stepLogMap.put(stepMeta, str+Const.CR+line);
+            					}
+            				}
+            			}
+            		}
+            	}
+            }
+        } else {
+        	stepLogMap = null;
+        }
+        shell.getDisplay().asyncExec(new Runnable() { public void run() { redraw(); } });
       }
     }
   }
@@ -3236,5 +3291,19 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
   public void setHalting(boolean halting) {
     this.halting = halting;
   }
+
+/**
+ * @return the stepLogMap
+ */
+public Map<StepMeta, String> getStepLogMap() {
+	return stepLogMap;
+}
+
+/**
+ * @param stepLogMap the stepLogMap to set
+ */
+public void setStepLogMap(Map<StepMeta, String> stepLogMap) {
+	this.stepLogMap = stepLogMap;
+}
 
 }

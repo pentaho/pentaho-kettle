@@ -21,6 +21,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.ui.core.gui.GUIResource;
 
 public class CheckBoxToolTip extends ToolTip {
@@ -35,6 +36,8 @@ public class CheckBoxToolTip extends ToolTip {
 	private Display display;
 	protected Rectangle checkBoxBounds;
 	
+	private boolean showingScrollBars;
+	
 	public CheckBoxToolTip(Control control) {
 		super(control, ToolTip.RECREATE, true);
 		image = control.getDisplay().getSystemImage(SWT.ICON_INFORMATION);
@@ -47,7 +50,6 @@ public class CheckBoxToolTip extends ToolTip {
         super.setHideDelay(50000);
         super.setPopupDelay(0);
         super.setHideOnMouseDown(false);
-
 	}
 
 	protected Composite createToolTipContentArea(Event event, Composite parent) {
@@ -84,12 +86,16 @@ public class CheckBoxToolTip extends ToolTip {
 		fdLine.top = new FormAttachment(titleLabel, 5);
 		line.setLayoutData(fdLine);
 
-		Label messageLabel = new Label(composite, SWT.LEFT);
+		Text messageLabel = new Text(composite, SWT.LEFT | ( showingScrollBars ? SWT.H_SCROLL | SWT.V_SCROLL : SWT.NONE ) );
 		messageLabel.setText(message);
 		messageLabel.setBackground(display.getSystemColor(SWT.COLOR_INFO_BACKGROUND));
 		FormData fdMessageLabel = new FormData();
 		fdMessageLabel.left = new FormAttachment(imageLabel, 20);
 		fdMessageLabel.top = new FormAttachment(line, 5);
+		if (showingScrollBars) {
+			fdMessageLabel.right = new FormAttachment(imageLabel, 500);
+			fdMessageLabel.bottom= new FormAttachment(line, 400);
+		}
 		messageLabel.setLayoutData(fdMessageLabel);
 		
 		final Button disable = new Button(composite, SWT.CHECK);
@@ -226,5 +232,19 @@ public class CheckBoxToolTip extends ToolTip {
 	 */
 	public void setCheckBoxBounds(Rectangle checkBoxBounds) {
 		this.checkBoxBounds = checkBoxBounds;
+	}
+
+	/**
+	 * @return the showingScrollBars
+	 */
+	public boolean isShowingScrollBars() {
+		return showingScrollBars;
+	}
+
+	/**
+	 * @param showingScrollBars the showingScrollBars to set
+	 */
+	public void setShowingScrollBars(boolean showingScrollBars) {
+		this.showingScrollBars = showingScrollBars;
 	}
 }
