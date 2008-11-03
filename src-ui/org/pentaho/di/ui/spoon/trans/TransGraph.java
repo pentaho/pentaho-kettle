@@ -1490,7 +1490,12 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
   }
 
   public void clustering() {
-    spoon.editClustering(transMeta, getCurrentStep());
+	StepMeta[] selected = transMeta.getSelectedSteps();
+	if (selected!=null && selected.length>0) {
+		spoon.editClustering(transMeta, transMeta.getSelectedSteps());
+	} else {
+		spoon.editClustering(transMeta, getCurrentStep());
+	}
   }
 
   public void errorHandling() {
