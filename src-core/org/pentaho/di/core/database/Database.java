@@ -111,6 +111,8 @@ public class Database implements VariableSpace
 	
 	private LogWriter log;
 	
+	public Hashtable<String, ValueMetaInterface> valueMetaCache=new Hashtable<String, ValueMetaInterface>(); //###
+	
 	/*
 	 * Counts the number of rows written to a batch for a certain PreparedStatement.
 	 *
@@ -2472,6 +2474,14 @@ public class Database implements VariableSpace
 
 	private ValueMetaInterface getValueFromSQLType(String name, ResultSetMetaData rm, int index, boolean ignoreLength, boolean lazyConversion) throws SQLException
     {
+
+		String nameCache=rm.getCatalogName(index)+"."+rm.getSchemaName(index)+"."+rm.getTableName(index)+"."+name+"/"+ignoreLength+"/"+lazyConversion;
+        ValueMetaInterface valueMeta = (ValueMetaInterface) valueMetaCache.get(nameCache);
+        if (valueMeta!=null)
+        {
+            return valueMeta.clone();  // ensure only to work with the clone
+        }
+
         int length=-1; 
         int precision=-1;
         int valtype=ValueMetaInterface.TYPE_NONE;
@@ -2687,7 +2697,8 @@ public class Database implements VariableSpace
         	v.setStorageMetadata(storageMetaData);
         }
 
-
+		valueMetaCache.put(nameCache, v.clone()); //###
+		
         return v;
     }
 
