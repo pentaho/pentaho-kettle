@@ -447,29 +447,45 @@ public class WebService extends BaseStep implements StepInterface
 	    		
 	    	} else {
 	    		
-	    		// We just grab the list of nodes from the children of the body
-	    		// Look for the first element node (first real child) and take that one.
-	    		// For that child-element, we consider all the children below
-	    		//
-		    	NodeList responseChildren = bodyNode.getChildNodes();
-		    	for (int i=0;i<responseChildren.getLength();i++) {
-		    		Node responseChild = responseChildren.item(i);
-		    		if (responseChild.getNodeType()==Node.ELEMENT_NODE) {
-		    			responseNode = responseChild;
-		    			break;
-		    		}
-		    	}
-		    	if (responseNode!=null) {
-		    		nodeList = responseNode.getChildNodes();
-		    	}
-		    	
+	    		if (meta.isReturningBodyAsString()) {
+	    			
+	    			// Just return the body node as an XML string...
+	    			//
+	    			StringWriter nodeXML = new StringWriter();
+	    			transformer.transform(new DOMSource(bodyNode), new StreamResult(nodeXML));
+	    			String xml = nodeXML.toString();
+	    			Object[] outputRowData = createNewRow(rowData);
+	    			int index = rowData==null ? 0 : getInputRowMeta().size();
+	    			outputRowData[index++] = xml;
+	    			putRow(data.outputRowMeta, outputRowData);
+	    			
+	    		} else {
+	    			
+		    		// We just grab the list of nodes from the children of the body
+		    		// Look for the first element node (first real child) and take that one.
+		    		// For that child-element, we consider all the children below
+		    		//
+			    	NodeList responseChildren = bodyNode.getChildNodes();
+			    	for (int i=0;i<responseChildren.getLength();i++) {
+			    		Node responseChild = responseChildren.item(i);
+			    		if (responseChild.getNodeType()==Node.ELEMENT_NODE) {
+			    			responseNode = responseChild;
+			    			break;
+			    		}
+			    	}
+			    	if (responseNode!=null) {
+			    		nodeList = responseNode.getChildNodes();
+			    	}
+	    		}
 	    	}
 	    	
+	    	// The section below is just for repeating nodes.  If we don't have those it ends here.
+	    	//
 	    	if (nodeList==null) return;
 
             // Allocate a result row in case we are dealing with a single result row
             //
-            Object[] outputRowData = rowData==null ? RowDataUtil.allocateRowData(data.outputRowMeta.size()) : RowDataUtil.createResizedCopy(rowData, data.outputRowMeta.size());
+            Object[] outputRowData = createNewRow(rowData);
             
 	    	// Now loop over the node list found above...
 	    	//
@@ -478,66 +494,81 @@ public class WebService extends BaseStep implements StepInterface
 	    	for (int i=0;i<nodeList.getLength();i++) {
 	    		Node node = nodeList.item(i);
 	    		
-    			// This node either contains the data for a single row or it contains the first element of a single result response
-    			// If we find the node name in out output result fields list, we are going to consider it a single row result.
-    			//
-    			WebServiceField field = meta.getFieldOutFromWsName(node.getNodeName());
-    			if (field!=null) {
-    				if (getNodeValue(outputRowData, node, field, transformer, true)) {
-    					// We found a match.
-    					// This means that we are dealing with a single row
-    					// It also means that we need to update the output index pointer
-    					//
-    					singleRow=true;
-    					fieldsFound++;
-    				}
-    			} else {
-    				// If we didn't already get data in the previous block we'll assume multiple rows coming back.
-    				//
-    				if (!singleRow) {
-	    				// Sticking with the multiple-results scenario...
-	    				//
-	    				
-	    				// TODO: remove next 2 lines, added for debug reasons.
-	    				//
-	    				if (log.isDetailed()) {
-			    			StringWriter nodeXML = new StringWriter();
-			    			transformer.transform(new DOMSource(node), new StreamResult(nodeXML));
-			    			logDetailed(Messages.getString("WebServices.Log.ResultRowDataFound", nodeXML.toString()));
+	    		if (meta.isReturningBodyAsString()) {
+	    			
+	    			// Just return the body node as an XML string...
+	    			//
+	    			StringWriter nodeXML = new StringWriter();
+	    			transformer.transform(new DOMSource(bodyNode), new StreamResult(nodeXML));
+	    			String xml = nodeXML.toString();
+	    			outputRowData = createNewRow(rowData);
+	    			int index = rowData==null ? 0 : getInputRowMeta().size();
+	    			outputRowData[index++] = xml;
+	    			putRow(data.outputRowMeta, outputRowData);
+	    			
+	    		} else {
+	    		
+	    			// This node either contains the data for a single row or it contains the first element of a single result response
+	    			// If we find the node name in out output result fields list, we are going to consider it a single row result.
+	    			//
+	    			WebServiceField field = meta.getFieldOutFromWsName(node.getNodeName());
+	    			if (field!=null) {
+	    				if (getNodeValue(outputRowData, node, field, transformer, true)) {
+	    					// We found a match.
+	    					// This means that we are dealing with a single row
+	    					// It also means that we need to update the output index pointer
+	    					//
+	    					singleRow=true;
+	    					fieldsFound++;
 	    				}
-		    			
-			    		// Allocate a new row...
-		    			//
-		    			outputRowData = rowData==null ? RowDataUtil.allocateRowData(data.outputRowMeta.size()) : RowDataUtil.createResizedCopy(rowData, data.outputRowMeta.size());
-			            
-			            // Let's see what's in there...
-			            //
-			    		NodeList childNodes = node.getChildNodes();
-			    		for (int j=0;j<childNodes.getLength();j++) {
-			    			Node childNode = childNodes.item(j);
+	    			} else {
+	    				// If we didn't already get data in the previous block we'll assume multiple rows coming back.
+	    				//
+	    				if (!singleRow) {
+		    				// Sticking with the multiple-results scenario...
+		    				//
+		    				
+		    				// TODO: remove next 2 lines, added for debug reasons.
+		    				//
+		    				if (log.isDetailed()) {
+				    			StringWriter nodeXML = new StringWriter();
+				    			transformer.transform(new DOMSource(node), new StreamResult(nodeXML));
+				    			logDetailed(Messages.getString("WebServices.Log.ResultRowDataFound", nodeXML.toString()));
+		    				}
 			    			
-			    			field = meta.getFieldOutFromWsName(childNode.getNodeName());
-			    			if (field!=null) {
-			    			
-				    			if (getNodeValue(outputRowData, childNode, field, transformer, false)) {
-			    					// We found a match.
-			    					// This means that we are dealing with a single row
-			    					// It also means that we need to update the output index pointer
-			    					//
-			    					fieldsFound++;
-			    				}
-			    			}
-			    		}
-			    		
-			    		// Prevent empty rows from being sent out.
-			    		//
-			    		if (fieldsFound>0) {
-			    			// Send a row in a series of rows on its way.
+				    		// Allocate a new row...
 			    			//
-			    			putRow(data.outputRowMeta, outputRowData);
-			    		}
-    				}
-    			}
+			    			outputRowData = createNewRow(rowData);
+				            
+				            // Let's see what's in there...
+				            //
+				    		NodeList childNodes = node.getChildNodes();
+				    		for (int j=0;j<childNodes.getLength();j++) {
+				    			Node childNode = childNodes.item(j);
+				    			
+				    			field = meta.getFieldOutFromWsName(childNode.getNodeName());
+				    			if (field!=null) {
+				    			
+					    			if (getNodeValue(outputRowData, childNode, field, transformer, false)) {
+				    					// We found a match.
+				    					// This means that we are dealing with a single row
+				    					// It also means that we need to update the output index pointer
+				    					//
+				    					fieldsFound++;
+				    				}
+				    			}
+				    		}
+				    		
+				    		// Prevent empty rows from being sent out.
+				    		//
+				    		if (fieldsFound>0) {
+				    			// Send a row in a series of rows on its way.
+				    			//
+				    			putRow(data.outputRowMeta, outputRowData);
+				    		}
+	    				}
+	    			}
+	    		}
     		}
 
     		if (singleRow && fieldsFound>0) {
@@ -552,7 +583,11 @@ public class WebService extends BaseStep implements StepInterface
         }
     }
     
-    private void compatibleProcessRows(InputStream anXml, Object[] rowData, RowMetaInterface rowMeta) throws KettleException {
+    private Object[] createNewRow(Object[] inputRowData) {
+    	return inputRowData==null ? RowDataUtil.allocateRowData(data.outputRowMeta.size()) : RowDataUtil.createResizedCopy(inputRowData, data.outputRowMeta.size());
+	}
+
+	private void compatibleProcessRows(InputStream anXml, Object[] rowData, RowMetaInterface rowMeta) throws KettleException {
 
 		// First we should get the complete string
 		// The problem is that the string can contain XML or any other format such as HTML saying the service is no longer available.

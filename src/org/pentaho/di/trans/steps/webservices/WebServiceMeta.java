@@ -85,7 +85,10 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface
     
     /** The name of the repeating element name.  Empty = a single row return */
     private String repeatingElementName;
-
+    
+    /** Is this step giving back the soap body as an XML string? */
+    private boolean returningBodyAsString;
+    
     public WebServiceMeta()
     {
         super();
@@ -202,7 +205,8 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface
         retval.append("    " + XMLHandler.addTagValue("passingInputData", isPassingInputData()));
         retval.append("    " + XMLHandler.addTagValue("compatible", isCompatible()));
         retval.append("    " + XMLHandler.addTagValue("repeating_element", getRepeatingElementName()));
-
+        retval.append("    " + XMLHandler.addTagValue("body_as_string", isReturningBodyAsString()));
+        
         // Store the field parameters
         //
 
@@ -260,6 +264,7 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface
         String compat = XMLHandler.getTagValue(stepnode, "compatible");
         setCompatible( Const.isEmpty(compat) || "Y".equalsIgnoreCase(compat) );
         setRepeatingElementName(XMLHandler.getTagValue(stepnode, "repeating_element"));
+        setReturningBodyAsString( "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "body_as_string")) );
         
         // Load the input fields mapping
         //
@@ -321,6 +326,7 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface
         setPassingInputData(rep.getStepAttributeBoolean(id_step, "passingInputData"));
         setCompatible(rep.getStepAttributeBoolean(id_step, 0, "compatible", true)); // Default to true for backward compatibility
         setRepeatingElementName(rep.getStepAttributeString(id_step, "repeating_element"));
+        setReturningBodyAsString(rep.getStepAttributeBoolean(id_step, 0, "body_as_string"));
 
         // Load the input fields mapping
         //
@@ -372,6 +378,7 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface
         rep.saveStepAttribute(id_transformation, id_step, "passingInputData", isPassingInputData());
         rep.saveStepAttribute(id_transformation, id_step, "compatible", isCompatible());
         rep.saveStepAttribute(id_transformation, id_step, "repeating_element", getRepeatingElementName());
+        rep.saveStepAttribute(id_transformation, id_step, "body_as_string", isReturningBodyAsString());
 
         // Load the input fields mapping
         //
@@ -619,5 +626,19 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface
 	 */
 	public void setRepeatingElementName(String repeatingElementName) {
 		this.repeatingElementName = repeatingElementName;
+	}
+
+	/**
+	 * @return the returningBodyAsString
+	 */
+	public boolean isReturningBodyAsString() {
+		return returningBodyAsString;
+	}
+
+	/**
+	 * @param returningBodyAsString the returningBodyAsString to set
+	 */
+	public void setReturningBodyAsString(boolean returningBodyAsString) {
+		this.returningBodyAsString = returningBodyAsString;
 	}
 }

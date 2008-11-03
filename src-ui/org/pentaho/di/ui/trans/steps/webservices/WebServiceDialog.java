@@ -93,6 +93,9 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
     private Label wlRepeatingElement;
     private TextVar wRepeatingElement;
 
+    private Label wlBodyAsString;
+    private Button wBodyAsString;
+
     private Label wlHttpLogin;
     private TextVar wHttpLogin;
 
@@ -711,6 +714,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         wPassInputData.setSelection(meta.isPassingInputData());
         wCompatible.setSelection(meta.isCompatible());
         wRepeatingElement.setText(Const.NVL(meta.getRepeatingElementName(), ""));
+        wBodyAsString.setSelection(meta.isReturningBodyAsString());
         
         if (wURL.getText() != null && !"".equals(wURL.getText())) //$NON-NLS-1$
         {
@@ -779,6 +783,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
     	webServiceMeta.setPassingInputData(wPassInputData.getSelection());
     	webServiceMeta.setCompatible(wCompatible.getSelection());
     	webServiceMeta.setRepeatingElementName(wRepeatingElement.getText());
+    	webServiceMeta.setReturningBodyAsString(wBodyAsString.getSelection());
 
         if (wsdlOperation != null)
         {
@@ -1117,6 +1122,24 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         fdRepeatingElement.right = new FormAttachment(100, 0);
         wRepeatingElement.setLayoutData(fdRepeatingElement);
 
+        // Return the SOAP body as a String or not?
+        //
+        wlBodyAsString = new Label(compositeTabWebService, SWT.RIGHT);
+        wlBodyAsString.setText(Messages.getString("WebServiceDialog.BodyAsString.Label")); //$NON-NLS-1$
+        props.setLook(wlBodyAsString);
+        FormData fdlBodyAsString = new FormData();
+        fdlBodyAsString.left = new FormAttachment(0, 0);
+        fdlBodyAsString.top = new FormAttachment(wRepeatingElement, margin);
+        fdlBodyAsString.right = new FormAttachment(middle, -margin);
+        wlBodyAsString.setLayoutData(fdlBodyAsString);
+        wBodyAsString = new Button(compositeTabWebService, SWT.CHECK);
+        wBodyAsString.setToolTipText(Messages.getString("WebServiceDialog.BodyAsString.Tooltip")); //$NON-NLS-1$
+        props.setLook(wBodyAsString);
+        FormData fdBodyAsString = new FormData();
+        fdBodyAsString.top = new FormAttachment(wRepeatingElement, margin);
+        fdBodyAsString.left = new FormAttachment(middle, 0);
+        fdBodyAsString.right = new FormAttachment(100, 0);
+        wBodyAsString.setLayoutData(fdBodyAsString);
 
 
         //////////////////////////
@@ -1172,7 +1195,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         FormData fdHttpAuth = new FormData();
         fdHttpAuth.left = new FormAttachment(0, 0);
         fdHttpAuth.right = new FormAttachment(100, 0);
-        fdHttpAuth.top = new FormAttachment(wRepeatingElement, margin);
+        fdHttpAuth.top = new FormAttachment(wBodyAsString, margin);
         gHttpAuth.setLayoutData(fdHttpAuth);
 
         // END HTTP AUTH GROUP
