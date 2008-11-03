@@ -80,6 +80,7 @@ public class JobExecutionConfigurationDialog extends Dialog
     private Label wlLogLevel;
     private CCombo wLogLevel;
     private Button wSafeMode;
+    private Button wClearLog;
 
     private Label wlReplayDate;
     private Text wReplayDate;
@@ -217,6 +218,17 @@ public class JobExecutionConfigurationDialog extends Dialog
         wSafeMode.setLayoutData(fdSafeMode);
         wSafeMode.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { enableFields(); }});
 
+        wClearLog = new Button(gDetails, SWT.CHECK);
+        wClearLog.setText(Messages.getString("JobExecutionConfigurationDialog.ClearLog.Label")); //$NON-NLS-1$
+        wClearLog.setToolTipText(Messages.getString("JobExecutionConfigurationDialog.ClearLog.Tooltip")); //$NON-NLS-1$ //$NON-NLS-2$
+        props.setLook(wClearLog);
+        FormData fdClearLog = new FormData();
+        fdClearLog.left  = new FormAttachment( 50, margin);
+        fdClearLog.right = new FormAttachment(100, 0);
+        fdClearLog.top   = new FormAttachment(wSafeMode, margin);
+        wClearLog.setLayoutData(fdClearLog);
+        wClearLog.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { enableFields(); }});
+
         wlLogLevel = new Label(gDetails, SWT.LEFT);
         props.setLook(wlLogLevel);
         wlLogLevel.setText(Messages.getString("JobExecutionConfigurationDialog.LogLevel.Label")); //$NON-NLS-1$
@@ -224,7 +236,7 @@ public class JobExecutionConfigurationDialog extends Dialog
         FormData fdlLogLevel = new FormData();
         fdlLogLevel.left  = new FormAttachment(0, 0);
         fdlLogLevel.right = new FormAttachment(50, 0);
-        fdlLogLevel.top   = new FormAttachment(wSafeMode, margin);
+        fdlLogLevel.top   = new FormAttachment(wClearLog, margin);
         wlLogLevel.setLayoutData(fdlLogLevel);
 
         wLogLevel = new CCombo(gDetails, SWT.READ_ONLY | SWT.BORDER);
@@ -233,7 +245,7 @@ public class JobExecutionConfigurationDialog extends Dialog
         FormData fdLogLevel = new FormData();
         fdLogLevel.left  = new FormAttachment(50, margin);
         fdLogLevel.right = new FormAttachment(100, 0);
-        fdLogLevel.top   = new FormAttachment(wSafeMode, margin);
+        fdLogLevel.top   = new FormAttachment(wClearLog, margin);
         wLogLevel.setLayoutData(fdLogLevel);
         wLogLevel.setItems( LogWriter.log_level_desc_long );
 
@@ -396,6 +408,7 @@ public class JobExecutionConfigurationDialog extends Dialog
         wExecLocal.setSelection(configuration.isExecutingLocally());
         wExecRemote.setSelection(configuration.isExecutingRemotely());
         wSafeMode.setSelection(configuration.isSafeModeEnabled());
+        wClearLog.setSelection(configuration.isClearingLog());
         wRemoteHost.setText( configuration.getRemoteServer()==null ? "" : configuration.getRemoteServer().toString() );
         int logIndex = wLogLevel.indexOf(LogWriter.getInstance().getLogLevelLongDesc());
         if (logIndex>=0) wLogLevel.select( logIndex );
@@ -434,6 +447,7 @@ public class JobExecutionConfigurationDialog extends Dialog
                 configuration.setReplayDate(null);
             }
             configuration.setSafeModeEnabled(wSafeMode.getSelection() );
+            configuration.setClearingLog(wClearLog.getSelection());
             configuration.setLogLevel( LogWriter.getLogLevel(wLogLevel.getText()) );
             
             // The lower part of the dialog...

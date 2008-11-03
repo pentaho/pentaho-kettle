@@ -190,7 +190,7 @@ public class JobLogDelegate extends SpoonDelegate {
 
 	public void clearLog()
 	{
-		jobLogText.setText(""); //$NON-NLS-1$
+		if (jobLogText!=null && !jobLogText.isDisposed()) jobLogText.setText(""); //$NON-NLS-1$
 	}
 	
 	public void showLogSettings() {

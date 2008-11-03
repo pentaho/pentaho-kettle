@@ -68,6 +68,7 @@ public class TransExecutionConfigurationDialog extends Dialog
     private Button wExecRemote;
     private Button wExecCluster;
     private Button wSafeMode;
+    private Button wClearLog;
     private Button wPrepareExecution;
     private Button wPostTransformation;
     private Button wStartExecution;
@@ -258,7 +259,6 @@ public class TransExecutionConfigurationDialog extends Dialog
         gDetails.setBackground(shell.getBackground()); // the default looks ugly
         gDetails.setLayoutData(fdDetails);
 
-
         wSafeMode = new Button(gDetails, SWT.CHECK);
         wSafeMode.setText(Messages.getString("TransExecutionConfigurationDialog.SafeMode.Label")); //$NON-NLS-1$
         wSafeMode.setToolTipText(Messages.getString("TransExecutionConfigurationDialog.SafeMode.Tooltip")); //$NON-NLS-1$ //$NON-NLS-2$
@@ -270,6 +270,17 @@ public class TransExecutionConfigurationDialog extends Dialog
         wSafeMode.setLayoutData(fdSafeMode);
         wSafeMode.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { enableFields(); }});
 
+        wClearLog = new Button(gDetails, SWT.CHECK);
+        wClearLog.setText(Messages.getString("TransExecutionConfigurationDialog.ClearLog.Label")); //$NON-NLS-1$
+        wClearLog.setToolTipText(Messages.getString("TransExecutionConfigurationDialog.ClearLog.Tooltip")); //$NON-NLS-1$ //$NON-NLS-2$
+        props.setLook(wClearLog);
+        FormData fdClearLog = new FormData();
+        fdClearLog.left  = new FormAttachment( 50, margin);
+        fdClearLog.right = new FormAttachment(100, 0);
+        fdClearLog.top   = new FormAttachment(wSafeMode, margin);
+        wClearLog.setLayoutData(fdClearLog);
+        wClearLog.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { enableFields(); }});
+
         wlLogLevel = new Label(gDetails, SWT.LEFT);
         props.setLook(wlLogLevel);
         wlLogLevel.setText(Messages.getString("TransExecutionConfigurationDialog.LogLevel.Label")); //$NON-NLS-1$
@@ -277,7 +288,7 @@ public class TransExecutionConfigurationDialog extends Dialog
         FormData fdlLogLevel = new FormData();
         fdlLogLevel.left  = new FormAttachment(0, 0);
         fdlLogLevel.right = new FormAttachment(50, 0);
-        fdlLogLevel.top   = new FormAttachment(wSafeMode, margin);
+        fdlLogLevel.top   = new FormAttachment(wClearLog, margin);
         wlLogLevel.setLayoutData(fdlLogLevel);
 
         wLogLevel = new CCombo(gDetails, SWT.READ_ONLY | SWT.BORDER);
@@ -286,7 +297,7 @@ public class TransExecutionConfigurationDialog extends Dialog
         FormData fdLogLevel = new FormData();
         fdLogLevel.left  = new FormAttachment(50, margin);
         fdLogLevel.right = new FormAttachment(100, 0);
-        fdLogLevel.top   = new FormAttachment(wSafeMode, margin);
+        fdLogLevel.top   = new FormAttachment(wClearLog, margin);
         wLogLevel.setLayoutData(fdLogLevel);
         wLogLevel.setItems( LogWriter.log_level_desc_long );
 
@@ -450,6 +461,7 @@ public class TransExecutionConfigurationDialog extends Dialog
         wExecRemote.setSelection(configuration.isExecutingRemotely());
         wExecCluster.setSelection(configuration.isExecutingClustered());
         wSafeMode.setSelection(configuration.isSafeModeEnabled());
+        wClearLog.setSelection(configuration.isClearingLog());
         wPrepareExecution.setSelection(configuration.isClusterPreparing());
         wPostTransformation.setSelection(configuration.isClusterPosting());
         wStartExecution.setSelection(configuration.isClusterStarting());
@@ -498,6 +510,7 @@ public class TransExecutionConfigurationDialog extends Dialog
             configuration.setClusterShowingTransformation(wShowTransformations.getSelection());
             
             configuration.setSafeModeEnabled(wSafeMode.getSelection() );
+            configuration.setClearingLog(wClearLog.getSelection());
             configuration.setLogLevel( LogWriter.getLogLevel(wLogLevel.getText()) );
             
             // The lower part of the dialog...

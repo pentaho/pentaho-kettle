@@ -1438,7 +1438,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 				jobMeta.setArguments(executionConfiguration.getArgumentStrings());
 				
 				
-				jobGraph.startJob(executionConfiguration.getReplayDate());
+				jobGraph.startJob(executionConfiguration);
 			}
 				
 			// Are we executing remotely?

@@ -31,6 +31,7 @@ import org.eclipse.jface.window.DefaultToolTip;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTarget;
@@ -2772,6 +2773,12 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
             log.setLogLevel(executionConfiguration.getLogLevel());
 
             transMeta.injectVariables(executionConfiguration.getVariables());
+            
+            // Do we need to clear the log before running?
+            //
+            if (executionConfiguration.isClearingLog()) {
+            	transLogDelegate.clearLog();
+            }
 
             trans = new Trans(transMeta, spoon.rep, transMeta.getName(), transMeta.getDirectory().getPath(), transMeta
                 .getFilename());
@@ -2842,12 +2849,21 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 
   public void addAllTabs() {
 
+	CTabItem tabItemSelection = null;
+	if (extraViewTabFolder!=null && !extraViewTabFolder.isDisposed()) {
+		tabItemSelection = extraViewTabFolder.getSelection();
+	}
 
     transHistoryDelegate.addTransHistory();
     transLogDelegate.addTransLog();
     transGridDelegate.addTransGrid();
     transPerfDelegate.addTransPerf();
-    extraViewTabFolder.setSelection(transGridDelegate.getTransGridTab()); // TODO: remember last selected?
+    
+    if (tabItemSelection!=null) {
+    	extraViewTabFolder.setSelection(tabItemSelection);
+    } else {
+    	extraViewTabFolder.setSelection(transGridDelegate.getTransGridTab());
+    }
     
     XulToolbarButton button = toolbar.getButtonById("trans-show-results");
     button.setImage(GUIResource.getInstance().getImageHideResults());
@@ -2868,6 +2884,12 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
           args = convertArguments(arguments);
         }
         transMeta.injectVariables(executionConfiguration.getVariables());
+
+        // Do we need to clear the log before running?
+        //
+        if (executionConfiguration.isClearingLog()) {
+        	transLogDelegate.clearLog();
+        }
 
         // Create a new transformation to execution
         //

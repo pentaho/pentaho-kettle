@@ -213,7 +213,7 @@ public class TransLogDelegate extends SpoonDelegate {
     
 	public void clearLog()
 	{
-		transLogText.setText(""); //$NON-NLS-1$
+		if (transLogText!=null && !transLogText.isDisposed()) transLogText.setText(""); //$NON-NLS-1$
 	}
 
 	public void showErrors()

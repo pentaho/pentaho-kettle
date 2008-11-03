@@ -13,7 +13,6 @@ package org.pentaho.di.ui.spoon.job;
 
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +24,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTarget;
@@ -88,6 +88,7 @@ import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobEntryType;
+import org.pentaho.di.job.JobExecutionConfiguration;
 import org.pentaho.di.job.JobHopMeta;
 import org.pentaho.di.job.JobListener;
 import org.pentaho.di.job.JobMeta;
@@ -105,7 +106,6 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.XulHelper;
 import org.pentaho.di.ui.job.dialog.JobDialog;
-import org.pentaho.di.ui.spoon.job.Messages;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.TabItemInterface;
 import org.pentaho.di.ui.spoon.TabMapEntry;
@@ -2538,10 +2538,21 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
   }
 
   public void addAllTabs() {
+	  
+	CTabItem tabItemSelection = null;
+	if (extraViewTabFolder!=null && !extraViewTabFolder.isDisposed()) {
+		tabItemSelection = extraViewTabFolder.getSelection();
+	}
+
     jobHistoryDelegate.addJobHistory();
     jobLogDelegate.addJobLog();
     jobGridDelegate.addJobGrid();
-    extraViewTabFolder.setSelection(jobGridDelegate.getJobGridTab()); // TODO: remember last selected?
+    
+    if (tabItemSelection!=null) {
+    	extraViewTabFolder.setSelection(tabItemSelection);
+    } else {
+    	extraViewTabFolder.setSelection(jobGridDelegate.getJobGridTab());
+    }
     
     XulToolbarButton button = toolbar.getButtonById("job-show-results");
     button.setImage(GUIResource.getInstance().getImageHideResults());
@@ -2585,7 +2596,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
     spoon.exploreDatabase();
   }
 
-  public synchronized void startJob(Date replayDate) {
+  public synchronized void startJob(JobExecutionConfiguration executionConfiguration) {
     if (job == null) // Not running, start the transformation...
     {
       // Auto save feature...
@@ -2619,8 +2630,13 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
       ) {
         if (job == null || (job != null && !job.isActive())) {
           try {
-            // TODO: clean up this awful mess...
-            //
+        	  
+        	// Make sure we clear the log before executing again...
+        	//
+            if (executionConfiguration.isClearingLog()) {
+            	jobLogDelegate.clearLog();
+            }
+        	  
             job = new Job(log, jobMeta.getName(), jobMeta.getFilename(), null);
             job.open(spoon.rep, jobMeta.getFilename(), jobMeta.getName(), jobMeta.getDirectory().getPath(), spoon);
             job.getJobMeta().setArguments(jobMeta.getArguments());

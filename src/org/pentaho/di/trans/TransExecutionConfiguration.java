@@ -61,6 +61,7 @@ public class TransExecutionConfiguration implements Cloneable
     private Date     replayDate;
     private boolean  safeModeEnabled;
     private int      logLevel;
+    private boolean  clearingLog;
     
     private TransDebugMeta transDebugMeta;
     
@@ -82,6 +83,8 @@ public class TransExecutionConfiguration implements Cloneable
         transDebugMeta = null;
         
         logLevel = LogWriter.LOG_LEVEL_BASIC;
+        
+        clearingLog = true;
     }
     
     public Object clone()
@@ -479,6 +482,7 @@ public class TransExecutionConfiguration implements Cloneable
         xml.append("    ").append(XMLHandler.addTagValue("replay_date", replayDate));
         xml.append("    ").append(XMLHandler.addTagValue("safe_mode", safeModeEnabled));
         xml.append("    ").append(XMLHandler.addTagValue("log_level", LogWriter.getLogLevelDesc(logLevel)));
+        xml.append("    ").append(XMLHandler.addTagValue("clear_log", clearingLog));
         
         // The source rows...
         //
@@ -553,6 +557,7 @@ public class TransExecutionConfiguration implements Cloneable
         replayDate = XMLHandler.stringToDate( XMLHandler.getTagValue(trecNode, "replay_date") );
         safeModeEnabled = "Y".equalsIgnoreCase(XMLHandler.getTagValue(trecNode, "safe_mode"));
         logLevel = LogWriter.getLogLevel( XMLHandler.getTagValue(trecNode, "log_level") );
+        clearingLog = "Y".equalsIgnoreCase(XMLHandler.getTagValue(trecNode, "clear_log"));
         
         Node resultNode = XMLHandler.getSubNode(trecNode, Result.XML_TAG);
         if (resultNode!=null)
@@ -657,5 +662,19 @@ public class TransExecutionConfiguration implements Cloneable
 	 */
 	public void setRepository(Repository repository) {
 		this.repository = repository;
+	}
+
+	/**
+	 * @return the clearingLog
+	 */
+	public boolean isClearingLog() {
+		return clearingLog;
+	}
+
+	/**
+	 * @param clearingLog the clearingLog to set
+	 */
+	public void setClearingLog(boolean clearingLog) {
+		this.clearingLog = clearingLog;
 	}
 }
