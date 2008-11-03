@@ -111,7 +111,8 @@ public class Database implements VariableSpace
 	
 	private LogWriter log;
 	
-	public Hashtable<String, ValueMetaInterface> valueMetaCache=new Hashtable<String, ValueMetaInterface>(); //###
+	// Cache all used ValueMeta references (sometimes getting this from the JDBC driver is slow, see for instance PDI-1788)
+	public Hashtable<String, ValueMetaInterface> valueMetaCache=new Hashtable<String, ValueMetaInterface>();
 	
 	/*
 	 * Counts the number of rows written to a batch for a certain PreparedStatement.
@@ -449,6 +450,7 @@ public class Database implements VariableSpace
 	{	
 		try
 		{
+			valueMetaCache.clear(); // free the cache
 			if (connection==null)
             {
                 return ; // Nothing to do...
@@ -2475,6 +2477,8 @@ public class Database implements VariableSpace
 	private ValueMetaInterface getValueFromSQLType(String name, ResultSetMetaData rm, int index, boolean ignoreLength, boolean lazyConversion) throws SQLException
     {
 
+		// Cache all used ValueMeta references (sometimes getting this from the JDBC driver is slow, see for instance PDI-1788)
+		// use "Catalog.Schema.Table.Fieldname/ignoreLength/lazyConversion" as the key for unique and fast access
 		String nameCache=rm.getCatalogName(index)+"."+rm.getSchemaName(index)+"."+rm.getTableName(index)+"."+name+"/"+ignoreLength+"/"+lazyConversion;
         ValueMetaInterface valueMeta = (ValueMetaInterface) valueMetaCache.get(nameCache);
         if (valueMeta!=null)
@@ -2697,7 +2701,8 @@ public class Database implements VariableSpace
         	v.setStorageMetadata(storageMetaData);
         }
 
-		valueMetaCache.put(nameCache, v.clone()); //###
+        // Cache all used ValueMeta references (sometimes getting this from the JDBC driver is slow, see for instance PDI-1788)
+		valueMetaCache.put(nameCache, v.clone()); //ensure to cache the clone
 		
         return v;
     }
