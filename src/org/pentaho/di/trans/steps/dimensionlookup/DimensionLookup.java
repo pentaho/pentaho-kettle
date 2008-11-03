@@ -254,7 +254,12 @@ public class DimensionLookup extends BaseStep implements StepInterface
         if (returnRow==null)
         {
             data.db.setValues(data.lookupRowMeta, lookupRow, data.prepStatementLookup);
-            returnRow=data.db.getLookup(data.prepStatementLookup);
+            if (data.firstLookup) {
+            	returnRow=data.db.getLookup(data.prepStatementLookup, false, true);
+            	data.firstLookup=false;
+            } else {
+            	returnRow=data.db.getLookup(data.prepStatementLookup, false, false);
+            }
             data.returnRowMeta = data.db.getReturnRowMeta();
             
             incrementLinesInput();

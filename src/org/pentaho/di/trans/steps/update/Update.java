@@ -81,7 +81,14 @@ public class Update extends BaseStep implements StepInterface
 		data.db.setValues(data.lookupParameterRowMeta, lookupRow, data.prepStatementLookup);
 		
 		if (log.isDebug()) logDebug(Messages.getString("Update.Log.ValuesSetForLookup", data.lookupParameterRowMeta.getString(lookupRow), rowMeta.getString(row))); //$NON-NLS-1$ //$NON-NLS-2$
-		Object[] add = data.db.getLookup(data.prepStatementLookup);  // Got back the complete row!
+		Object[] add = null;
+		if (data.firstLookup) {
+			add = data.db.getLookup(data.prepStatementLookup, false, true);
+			data.firstLookup=false;
+		} else {
+			add = data.db.getLookup(data.prepStatementLookup, false, false);
+		}
+
 		RowMetaInterface returnRowMeta = data.db.getReturnRowMeta();
 		incrementLinesInput();
 		

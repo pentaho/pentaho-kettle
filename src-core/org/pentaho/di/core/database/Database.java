@@ -110,10 +110,7 @@ public class Database implements VariableSpace
 	private int written;
 	
 	private LogWriter log;
-	
-	// Cache all used ValueMeta references (sometimes getting this from the JDBC driver is slow, see for instance PDI-1788)
-	public Hashtable<String, ValueMetaInterface> valueMetaCache=new Hashtable<String, ValueMetaInterface>();
-	
+		
 	/*
 	 * Counts the number of rows written to a batch for a certain PreparedStatement.
 	 *
@@ -450,7 +447,6 @@ public class Database implements VariableSpace
 	{	
 		try
 		{
-			valueMetaCache.clear(); // free the cache
 			if (connection==null)
             {
                 return ; // Nothing to do...
@@ -2479,12 +2475,12 @@ public class Database implements VariableSpace
 
 		// Cache all used ValueMeta references (sometimes getting this from the JDBC driver is slow, see for instance PDI-1788)
 		// use "Catalog.Schema.Table.Fieldname/ignoreLength/lazyConversion" as the key for unique and fast access
-		String nameCache=rm.getCatalogName(index)+"."+rm.getSchemaName(index)+"."+rm.getTableName(index)+"."+name+"/"+ignoreLength+"/"+lazyConversion;
-        ValueMetaInterface valueMeta = (ValueMetaInterface) valueMetaCache.get(nameCache);
-        if (valueMeta!=null)
-        {
-            return valueMeta.clone();  // ensure only to work with the clone
-        }
+		// String nameCache=rm.getCatalogName(index)+"."+rm.getSchemaName(index)+"."+rm.getTableName(index)+"."+name+"/"+ignoreLength+"/"+lazyConversion;
+        // ValueMetaInterface valueMeta = (ValueMetaInterface) valueMetaCache.get(nameCache);
+        // if (valueMeta!=null)
+        // {
+        //     return valueMeta.clone();  // ensure only to work with the clone
+        // }
 
         int length=-1; 
         int precision=-1;
@@ -2701,9 +2697,6 @@ public class Database implements VariableSpace
         	v.setStorageMetadata(storageMetaData);
         }
 
-        // Cache all used ValueMeta references (sometimes getting this from the JDBC driver is slow, see for instance PDI-1788)
-		valueMetaCache.put(nameCache, v.clone()); //ensure to cache the clone
-		
         return v;
     }
 
@@ -3175,12 +3168,17 @@ public class Database implements VariableSpace
 
 	public Object[] getLookup(PreparedStatement ps, boolean failOnMultipleResults) throws KettleDatabaseException
 	{
+		return getLookup(ps, failOnMultipleResults, true);
+	}
+	
+	public Object[] getLookup(PreparedStatement ps, boolean failOnMultipleResults, boolean calcRowMeta) throws KettleDatabaseException
+	{
         ResultSet res = null;
 		try
 		{
 			res = ps.executeQuery();
 			
-			rowMeta = getRowInfo(res.getMetaData(), false, false);
+			if (calcRowMeta) rowMeta = getRowInfo(res.getMetaData(), false, false);
 			
 			Object[] ret = getRow(res);
 			
