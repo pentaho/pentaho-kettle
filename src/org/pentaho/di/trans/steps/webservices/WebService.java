@@ -416,7 +416,9 @@ public class WebService extends BaseStep implements StepInterface
 	    	//
 	    	Document doc = XMLHandler.loadXMLString(response);
 	    	Node enveloppeNode = XMLHandler.getSubNode(doc, "soapenv:Envelope");
+	    	if (enveloppeNode==null) enveloppeNode = XMLHandler.getSubNode(doc, "soap:Envelope"); // retry
 	    	Node bodyNode = XMLHandler.getSubNode(enveloppeNode, "soapenv:body");
+	    	if (bodyNode==null) bodyNode = XMLHandler.getSubNode(enveloppeNode, "soap:body");// retry
 	    	
 	    	// Create a few objects to help do the layout of XML snippets we find along the way
 	    	// 
@@ -532,7 +534,7 @@ public class WebService extends BaseStep implements StepInterface
 		    			putRow(data.outputRowMeta, outputRowData);
 		    		}
     			}
-	    		
+    			if (singleRow) break;
     		}
 
     		if (singleRow && fieldsFound>0) {
