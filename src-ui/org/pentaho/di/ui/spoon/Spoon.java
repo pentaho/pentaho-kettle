@@ -6458,6 +6458,17 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	 */
 	public void editClustering(TransMeta transMeta, StepMeta stepMeta)
 	{
+		editClustering(transMeta, new StepMeta[] { stepMeta, });
+	}
+	
+	/**
+	 * Select a clustering schema for this step.
+	 * 
+     * @param stepMeta The steps (at least one!) to set the clustering schema for.
+	 */
+	public void editClustering(TransMeta transMeta, StepMeta[] stepMetas)
+	{
+		StepMeta stepMeta = stepMetas[0];
 		int idx = -1;
 		if (stepMeta.getClusterSchema() != null)
 		{
@@ -6468,12 +6479,16 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		String schemaName = dialog.open(idx);
 		if (schemaName == null)
 		{
-			stepMeta.setClusterSchema(null);
+			for (StepMeta step : stepMetas) {
+				step.setClusterSchema(null);
+			}
         }
         else
 		{
 			ClusterSchema clusterSchema = transMeta.findClusterSchema(schemaName);
-			stepMeta.setClusterSchema(clusterSchema);
+			for (StepMeta step : stepMetas) {
+				step.setClusterSchema(clusterSchema);
+			}
 		}
 
 		refreshTree();

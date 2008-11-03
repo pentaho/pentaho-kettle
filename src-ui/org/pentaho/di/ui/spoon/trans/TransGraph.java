@@ -1792,7 +1792,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
           menu.addMenuListener("trans-graph-entry-partitioning", this, "partitioning"); //$NON-NLS-1$ //$NON-NLS-2$
           menu.addMenuListener("trans-graph-entry-clustering", this, "clustering"); //$NON-NLS-1$ //$NON-NLS-2$
           menu.addMenuListener("trans-graph-entry-errors", this, "errorHandling"); //$NON-NLS-1$ //$NON-NLS-2$
-
+          menu.addMenuListener("trans-graph-entry-preview", this, "preview"); //$NON-NLS-1$ //$NON-NLS-2$
           ConstUI.displayMenu((Menu)menu.getNativeObject(), canvas);
         }
       } else {
@@ -2374,28 +2374,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 
   // Preview the selected steps...
   public void preview() {
-    // Create a new transformation
-    TransMeta preview = new TransMeta();
-
-    // Copy the selected steps into it...
-    for (int i = 0; i < transMeta.nrSteps(); i++) {
-      StepMeta stepMeta = transMeta.getStep(i);
-      if (stepMeta.isSelected()) {
-        preview.addStep(stepMeta);
-      }
-    }
-
-    // Copy the relevant TransHops into it...
-    for (int i = 0; i < transMeta.nrTransHops(); i++) {
-      TransHopMeta hi = transMeta.getTransHop(i);
-      if (hi.isEnabled()) {
-        StepMeta fr = hi.getFromStep();
-        StepMeta to = hi.getToStep();
-        if (fr.isSelected() && to.isSelected()) {
-          preview.addTransHop(hi);
-        }
-      }
-    }
+    spoon.previewTransformation();
   }
 
   public void newProps() {

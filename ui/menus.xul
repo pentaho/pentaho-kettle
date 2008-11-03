@@ -138,6 +138,8 @@
     <menuitem value="trans-graph-entry-partitioning" label="%TransGraph.PopupMenu.Partitioning"/>
     <menuitem value="trans-graph-entry-clustering" label="%TransGraph.PopupMenu.Clustering"/>
     <menuitem value="trans-graph-entry-errors" label="%TransGraph.PopupMenu.Error"/>
+	<menuseparator/>
+    <menuitem value="trans-graph-entry-preview" label="%TransGraph.PopupMenu.Preview"/>
   </menupopup>
 
   <menupopup id="trans-graph-hop">
