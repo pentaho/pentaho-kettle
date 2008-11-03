@@ -492,49 +492,52 @@ public class WebService extends BaseStep implements StepInterface
     					fieldsFound++;
     				}
     			} else {
-    				// Sticking with the multiple-results scenario...
+    				// If we didn't already get data in the previous block we'll assume multiple rows coming back.
     				//
-    				
-    				// TODO: remove next 2 lines, added for debug reasons.
-    				//
-    				if (log.isDetailed()) {
-		    			StringWriter nodeXML = new StringWriter();
-		    			transformer.transform(new DOMSource(node), new StreamResult(nodeXML));
-		    			logDetailed(Messages.getString("WebServices.Log.ResultRowDataFound", nodeXML.toString()));
-    				}
-	    			
-		    		// Allocate a new row...
-	    			//
-	    			outputRowData = rowData==null ? RowDataUtil.allocateRowData(data.outputRowMeta.size()) : RowDataUtil.createResizedCopy(rowData, data.outputRowMeta.size());
-		            
-		            // Let's see what's in there...
-		            //
-		    		NodeList childNodes = node.getChildNodes();
-		    		for (int j=0;j<childNodes.getLength();j++) {
-		    			Node childNode = childNodes.item(j);
+    				if (!singleRow) {
+	    				// Sticking with the multiple-results scenario...
+	    				//
+	    				
+	    				// TODO: remove next 2 lines, added for debug reasons.
+	    				//
+	    				if (log.isDetailed()) {
+			    			StringWriter nodeXML = new StringWriter();
+			    			transformer.transform(new DOMSource(node), new StreamResult(nodeXML));
+			    			logDetailed(Messages.getString("WebServices.Log.ResultRowDataFound", nodeXML.toString()));
+	    				}
 		    			
-		    			field = meta.getFieldOutFromWsName(childNode.getNodeName());
-		    			if (field!=null) {
-		    			
-			    			if (getNodeValue(outputRowData, childNode, field, transformer, false)) {
-		    					// We found a match.
-		    					// This means that we are dealing with a single row
-		    					// It also means that we need to update the output index pointer
-		    					//
-		    					fieldsFound++;
-		    				}
-		    			}
-		    		}
-		    		
-		    		// Prevent empty rows from being sent out.
-		    		//
-		    		if (fieldsFound>0) {
-		    			// Send a row in a series of rows on its way.
+			    		// Allocate a new row...
 		    			//
-		    			putRow(data.outputRowMeta, outputRowData);
-		    		}
+		    			outputRowData = rowData==null ? RowDataUtil.allocateRowData(data.outputRowMeta.size()) : RowDataUtil.createResizedCopy(rowData, data.outputRowMeta.size());
+			            
+			            // Let's see what's in there...
+			            //
+			    		NodeList childNodes = node.getChildNodes();
+			    		for (int j=0;j<childNodes.getLength();j++) {
+			    			Node childNode = childNodes.item(j);
+			    			
+			    			field = meta.getFieldOutFromWsName(childNode.getNodeName());
+			    			if (field!=null) {
+			    			
+				    			if (getNodeValue(outputRowData, childNode, field, transformer, false)) {
+			    					// We found a match.
+			    					// This means that we are dealing with a single row
+			    					// It also means that we need to update the output index pointer
+			    					//
+			    					fieldsFound++;
+			    				}
+			    			}
+			    		}
+			    		
+			    		// Prevent empty rows from being sent out.
+			    		//
+			    		if (fieldsFound>0) {
+			    			// Send a row in a series of rows on its way.
+			    			//
+			    			putRow(data.outputRowMeta, outputRowData);
+			    		}
+    				}
     			}
-    			if (singleRow) break;
     		}
 
     		if (singleRow && fieldsFound>0) {

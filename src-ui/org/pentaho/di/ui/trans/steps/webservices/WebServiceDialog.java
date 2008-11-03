@@ -1,5 +1,6 @@
 package org.pentaho.di.ui.trans.steps.webservices;
 
+import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,6 +30,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
@@ -73,6 +75,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
 
     private Label wlURL;
     private Button wbURL;
+    private Button wbFile;
     private TextVar wURL;
 
     private Label wlOperation;
@@ -948,6 +951,42 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
                 				throwable);
                     }
                 }
+            }
+        });
+
+        wbFile = new Button(compositeTabWebService, SWT.PUSH | SWT.CENTER);
+        props.setLook(wbFile);
+        wbFile.setText(Messages.getString("WebServiceDialog.File.Load")); //$NON-NLS-1$
+        FormData fdbFile = new FormData();
+        fdbFile.right = new FormAttachment(wbURL, 0);
+        fdbFile.top = new FormAttachment(0, 0);
+        wbFile.setLayoutData(fdbFile);
+
+        wbFile.addSelectionListener(new SelectionAdapter()
+        {
+            public void widgetSelected(SelectionEvent e)
+            {
+            	// We will load the WSDL from a file so we can at least try to debug the metadata extraction phase from the support side.
+            	//
+				FileDialog dialog = new FileDialog(shell, SWT.OPEN);
+				dialog.setFilterExtensions(new String[] {"*.wsdl;*.WSDL", "*.*"});
+				dialog.setFilterNames(new String[] {Messages.getString("WebServiceDialog.FileType.WsdlFiles"), Messages.getString("System.FileType.CSVFiles"), Messages.getString("System.FileType.TextFiles"), Messages.getString("System.FileType.AllFiles")});
+				
+				if (dialog.open()!=null)
+				{
+					String filename = dialog.getFilterPath()+System.getProperty("file.separator")+dialog.getFileName();
+                    try
+                    {
+                        initTreeTabWebService(new File(filename).toURI().toASCIIString());
+                    }
+                    catch (Throwable throwable)
+                    {
+                		new ErrorDialog(shell, 
+                				Messages.getString("WebServiceDialog.Exception.UnableToLoadWebService.Title"), // $NON-NLS-1$ 
+                				Messages.getString("WebServiceDialog.Exception.UnableToLoadWebService.Message"), // $NON-NLS-1$ 
+                				throwable);
+                    }
+				}
             }
         });
 
