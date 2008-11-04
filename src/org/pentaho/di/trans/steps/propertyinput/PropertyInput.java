@@ -129,14 +129,14 @@ public class PropertyInput extends BaseStep implements StepInterface
 		try{
 			if(meta.isFileField())
 			{
-				 while ((data.readrow==null) || (!data.it.hasNext()))//data.pro.keySet().iterator().hasNext()))//!data.pro.keys().hasMoreElements()))
+				 while ((data.readrow==null) || (!data.it.hasNext()))
 				 { 
 					if (!openNextFile()) return null;
 				 }	
 			}
 			else
 			{
-				while ((data.file==null) || (!data.it.hasNext()))//(!data.pro.keys().hasMoreElements()))
+				while ((data.file==null) || (!data.it.hasNext()))
 				{
 			        if (!openNextFile()) return null;
 				}
@@ -159,7 +159,6 @@ public class PropertyInput extends BaseStep implements StepInterface
 				// Execute for each Input field...
 				for (int i=0;i<meta.getInputFields().length;i++)
 				{
-
 					// Get field value
 					String value=null;
 					
@@ -167,7 +166,6 @@ public class PropertyInput extends BaseStep implements StepInterface
 						value=key;
 					else
 						value= data.pro.getProperty(key) ;
-				
 
 					// DO Trimming!
 					switch (meta.getInputFields()[i].getTrimType())
@@ -184,7 +182,12 @@ public class PropertyInput extends BaseStep implements StepInterface
 					default:
 						break;
 					}
-						      
+					
+					if(meta.isFileField())
+					{
+						// Add result field to input stream
+		                r = RowDataUtil.addValueData(r,data.totalpreviousfields+i, value);
+					}
 					
 					// DO CONVERSIONS...
 					//
@@ -199,7 +202,8 @@ public class PropertyInput extends BaseStep implements StepInterface
 						{
 							r[data.totalpreviousfields+i] = data.previousRow[data.totalpreviousfields+i];
 						}
-					}	
+					}
+					
 				}    // End of loop over fields...
 		    
 				int rowIndex = meta.getInputFields().length;
@@ -209,28 +213,23 @@ public class PropertyInput extends BaseStep implements StepInterface
 					r[data.totalpreviousfields+rowIndex++] = KettleVFS.getFilename(data.file);
 				}
 				
-				
 		        // See if we need to add the row number to the row...  
 		        if (meta.includeRowNumber() && !Const.isEmpty(meta.getRowNumberField()))
 		        {
 		            r[data.totalpreviousfields+rowIndex++] = new Long(data.rownr);
 		        }
 		        
-				
 				RowMetaInterface irow = getInputRowMeta();
 				
 				data.previousRow = irow==null?r:(Object[])irow.cloneRow(r); // copy it to make
 				// surely the next step doesn't change it in between...
 				
-				 incrementLinesInput();
-				 data.rownr++;
-			
+				incrementLinesInput();
+				data.rownr++;
 		 }
 		 catch (Exception e)
 		 {
-			 
-			throw new KettleException("Unable to read row from property  file", e);
-			
+			throw new KettleException(Messages.getString("PropertyInput.Error.CanNotReadFromFile",data.file.toString()), e);
 		 }
 		 
 		return r;

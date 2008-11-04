@@ -953,9 +953,8 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 	 private void setFileField()
 	 {
 		 try{
-	           
+	         String value=  wFilenameField.getText();
 			 wFilenameField.removeAll();
-				
 			 RowMetaInterface r = transMeta.getPrevStepFields(stepname);
 				if (r!=null)
 				{
@@ -967,7 +966,7 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 							
 						}
 				}
-			 
+				if(value!=null) wFilenameField.setText(value);
 			
 		 }catch(KettleException ke){
 				new ErrorDialog(shell, Messages.getString("PropertyInputDialog.FailedToGetFields.DialogTitle"), Messages.getString("PropertyInputDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
