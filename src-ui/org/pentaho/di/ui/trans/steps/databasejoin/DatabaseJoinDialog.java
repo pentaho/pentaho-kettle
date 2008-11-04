@@ -83,6 +83,10 @@ public class DatabaseJoinDialog extends BaseStepDialog implements StepDialogInte
 	private Label        wlParam;
 	private TableView    wParam;
 	private FormData     fdlParam, fdParam;
+	
+	private Label        wluseVars;
+	private Button       wuseVars;
+	private FormData     fdluseVars, fduseVars;
 
 	private Button wGet;
 	private Listener lsGet;
@@ -256,6 +260,33 @@ public class DatabaseJoinDialog extends BaseStepDialog implements StepDialogInte
 			}
 		);
 
+		// useVars ?
+		wluseVars=new Label(shell, SWT.RIGHT);
+		wluseVars.setText(Messages.getString("DatabaseJoinDialog.useVarsjoin.Label")); //$NON-NLS-1$
+		wluseVars.setToolTipText(Messages.getString("DatabaseJoinDialog.useVarsjoin.Tooltip")); //$NON-NLS-1$
+			props.setLook(wluseVars);
+		fdluseVars=new FormData();
+		fdluseVars.left = new FormAttachment(0, 0);
+		fdluseVars.right= new FormAttachment(middle, -margin);
+		fdluseVars.top  = new FormAttachment(wOuter, margin);
+		wluseVars.setLayoutData(fdluseVars);
+		wuseVars=new Button(shell, SWT.CHECK);
+			props.setLook(wuseVars);
+		wuseVars.setToolTipText(wluseVars.getToolTipText());
+		fduseVars=new FormData();
+		fduseVars.left = new FormAttachment(middle, 0);
+		fduseVars.top  = new FormAttachment(wOuter, margin);
+		wuseVars.setLayoutData(fduseVars);
+		wuseVars.addSelectionListener(new SelectionAdapter() 
+			{
+				public void widgetSelected(SelectionEvent e) 
+				{
+					input.setChanged();
+				}
+			}
+		);
+
+		
 		// THE BUTTONS
 		wOK=new Button(shell, SWT.PUSH);
 		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
@@ -272,7 +303,7 @@ public class DatabaseJoinDialog extends BaseStepDialog implements StepDialogInte
  		props.setLook(wlParam);
 		fdlParam=new FormData();
 		fdlParam.left  = new FormAttachment(0, 0);
-		fdlParam.top   = new FormAttachment(wOuter, margin);
+		fdlParam.top   = new FormAttachment(wuseVars, margin);
 		wlParam.setLayoutData(fdlParam);
 
 		int nrKeyCols=2;
@@ -356,7 +387,7 @@ public class DatabaseJoinDialog extends BaseStepDialog implements StepDialogInte
 		wSQL.setText( Const.NVL(input.getSql(), ""));
 		wLimit.setText(""+input.getRowLimit()); //$NON-NLS-1$
 		wOuter.setSelection(input.isOuterJoin());
-		
+		wuseVars.setSelection(input.isVariableReplace());
 		if (input.getParameterField()!=null)
 		for (i=0;i<input.getParameterField().length;i++)
 		{
@@ -395,7 +426,7 @@ public class DatabaseJoinDialog extends BaseStepDialog implements StepDialogInte
 		input.setSql( wSQL.getText() );
 		
 		input.setOuterJoin( wOuter.getSelection() );
-		
+		input.setVariableReplace(wuseVars.getSelection() );
 		log.logDebug(toString(), Messages.getString("DatabaseJoinDialog.Log.ParametersFound")+nrparam+" parameters"); //$NON-NLS-1$ //$NON-NLS-2$
 		for (int i=0;i<nrparam;i++)
 		{

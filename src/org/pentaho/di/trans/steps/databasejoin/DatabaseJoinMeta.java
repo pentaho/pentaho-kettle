@@ -66,6 +66,10 @@ public class DatabaseJoinMeta extends BaseStepMeta implements StepMetaInterface
 	
 	/** Type of the paramenters */
 	private int    parameterType[];      
+	
+	/** false: don't replave variable in scrip
+    true: replace variable in script */
+	private boolean replacevars;
 
 	
 	public DatabaseJoinMeta()
@@ -104,7 +108,21 @@ public class DatabaseJoinMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		this.outerJoin = outerJoin;
 	}
+	/**
+	 * @return Returns the replacevars.
+	 */
+	public boolean isVariableReplace()
+	{
+		return replacevars;
+	}
 	
+	/**
+	 * @param replacevars The replacevars to set.
+	 */
+	public void setVariableReplace(boolean replacevars)
+	{
+		this.replacevars = replacevars;
+	}
 	/**
 	 * @return Returns the parameterField.
 	 */
@@ -174,7 +192,7 @@ public class DatabaseJoinMeta extends BaseStepMeta implements StepMetaInterface
 		parameterField=null;
 		parameterType =null;
 		outerJoin=false;
-		
+		replacevars=false;
 		readData(stepnode, databases);
 	}
 
@@ -210,7 +228,7 @@ public class DatabaseJoinMeta extends BaseStepMeta implements StepMetaInterface
 			databaseMeta = DatabaseMeta.findDatabase(databases, con);
 			sql        = XMLHandler.getTagValue(stepnode, "sql"); //$NON-NLS-1$
 			outerJoin = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "outer_join")); //$NON-NLS-1$ //$NON-NLS-2$
-			
+			replacevars = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "replace_vars"));
 			rowLimit   = Const.toInt(XMLHandler.getTagValue(stepnode, "rowlimit"), 0); //$NON-NLS-1$
 			
 			Node param = XMLHandler.getSubNode(stepnode, "parameter"); //$NON-NLS-1$
@@ -241,6 +259,7 @@ public class DatabaseJoinMeta extends BaseStepMeta implements StepMetaInterface
 		parameterField=null;
 		parameterType=null;
 		outerJoin=false;
+		replacevars=false;
 		
 		int nrparam  = 0;
 		
@@ -333,7 +352,7 @@ public class DatabaseJoinMeta extends BaseStepMeta implements StepMetaInterface
 		retval.append("    ").append(XMLHandler.addTagValue("rowlimit", rowLimit)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("    ").append(XMLHandler.addTagValue("sql", sql)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("    ").append(XMLHandler.addTagValue("outer_join", outerJoin)); //$NON-NLS-1$ //$NON-NLS-2$
-
+		retval.append("    ").append(XMLHandler.addTagValue("replace_vars", replacevars)); 
 		retval.append("    <parameter>").append(Const.CR); //$NON-NLS-1$
 		for (int i=0;i<parameterField.length;i++)
 		{
@@ -355,7 +374,8 @@ public class DatabaseJoinMeta extends BaseStepMeta implements StepMetaInterface
 			rowLimit         = (int)rep.getStepAttributeInteger(id_step, "rowlimit"); //$NON-NLS-1$
 			sql              =      rep.getStepAttributeString (id_step, "sql");  //$NON-NLS-1$
 			outerJoin       =      rep.getStepAttributeBoolean(id_step, "outer_join");  //$NON-NLS-1$
-	
+			replacevars       =      rep.getStepAttributeBoolean(id_step, "replace_vars"); 
+			
 			int nrparam = rep.countNrStepAttributes(id_step, "parameter_field"); //$NON-NLS-1$
 			
 			allocate(nrparam);
@@ -383,6 +403,7 @@ public class DatabaseJoinMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "rowlimit",        rowLimit); //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "sql",             sql); //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "outer_join",      outerJoin); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "replace_vars",      replacevars);
 			
 			for (int i=0;i<parameterField.length;i++)
 			{

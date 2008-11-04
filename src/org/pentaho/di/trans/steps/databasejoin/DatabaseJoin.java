@@ -220,8 +220,11 @@ public class DatabaseJoin extends BaseStep implements StepInterface
 				
                 if (log.isDetailed()) logDetailed(Messages.getString("DatabaseJoin.Log.ConnectedToDB")); //$NON-NLS-1$
 	
+                String sql=meta.getSql();
+                if(meta.isVariableReplace()) sql=environmentSubstitute(sql);
 				// Prepare the SQL statement
-				data.pstmt = data.db.prepareSQL(meta.getSql());
+				data.pstmt = data.db.prepareSQL(sql);
+				if(log.isDebug()) log.logDebug(toString(), Messages.getString("DatabaseJoin.Log.SQLStatement",sql));
 				data.db.setQueryLimit(meta.getRowLimit());
 				
 				return true;
