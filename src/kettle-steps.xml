@@ -1080,5 +1080,16 @@
 		</tooltip>
 		<image-uri>ui/images/CCV.png</image-uri>
 	</step>
+		<step id="ProcessFiles">
+		<description>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.ProcessFiles")
+		</description>
+		<class-name>org.pentaho.di.trans.steps.processfiles.ProcessFilesMeta</class-name>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<tooltip>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.ProcessFiles")
+		</tooltip>
+		<image-uri>ui/images/PPF.png</image-uri>
+	</step>
 	
 </steps>

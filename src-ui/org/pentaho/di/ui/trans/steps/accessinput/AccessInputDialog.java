@@ -1041,7 +1041,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 	 private void setFileField()
 	 {
 		 try{
-	           
+	         String field=  wFilenameField.getText();
 			 wFilenameField.removeAll();
 				
 			 RowMetaInterface r = transMeta.getPrevStepFields(stepname);
@@ -1055,7 +1055,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 							
 						}
 				}
-			 
+			 if(field!=null) wFilenameField.setText(field);
 			
 		 }catch(KettleException ke){
 				new ErrorDialog(shell, Messages.getString("AccessInputDialog.FailedToGetFields.DialogTitle"), Messages.getString("AccessInputDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
