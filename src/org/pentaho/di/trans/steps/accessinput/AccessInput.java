@@ -135,7 +135,7 @@ public class AccessInput extends BaseStep implements StepInterface
 					// Get field value
 					Object obj = data.rw.get(field.getColumn());	
 					String value;
-					if (obj!=null) {
+					if (obj==null) {
 						value=null;
 					} else {
 						value=String.valueOf(obj);
