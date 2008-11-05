@@ -162,7 +162,12 @@ public class AccessInput extends BaseStep implements StepInterface
 
 					// Get field value
 					Object obj = rw.get(meta.getInputFields()[i].getColumn());	
-					String value=String.valueOf(obj);
+					String value;
+					if (obj!=null) {
+						value=null;
+					} else {
+						value=String.valueOf(obj);
+					}
 					
 					// DO Trimming!
 					switch (meta.getInputFields()[i].getTrimType())
