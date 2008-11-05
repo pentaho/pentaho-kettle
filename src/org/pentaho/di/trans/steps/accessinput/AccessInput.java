@@ -134,7 +134,12 @@ public class AccessInput extends BaseStep implements StepInterface
 
 					// Get field value
 					Object obj = data.rw.get(field.getColumn());	
-					String value=String.valueOf(obj);
+					String value;
+					if (obj!=null) {
+						value=null;
+					} else {
+						value=String.valueOf(obj);
+					}
 					
 					if(obj instanceof Date && field.getType()==ValueMetaInterface.TYPE_DATE)	
 					{
