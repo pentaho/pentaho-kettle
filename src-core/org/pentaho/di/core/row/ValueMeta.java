@@ -914,7 +914,7 @@ public class ValueMeta implements ValueMetaInterface
         }
         catch(Exception e)
         {
-        	// We added this workaround for version 3.2
+        	// We added this workaround for PDI-1824
         	// 
         	try
             {
@@ -922,7 +922,7 @@ public class ValueMeta implements ValueMetaInterface
             }
             catch(NumberFormatException ex)
             {
-            	throw new KettleValueException(toString()+" : couldn't convert string value '" + string + "' to a number.", ex);
+            	throw new KettleValueException(toString()+" : couldn't convert string value '" + string + "' to a big number.", ex);
             }
         }
 }
