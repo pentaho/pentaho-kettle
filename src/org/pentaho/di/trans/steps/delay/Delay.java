@@ -54,20 +54,24 @@ public class Delay extends BaseStep implements StepInterface
 		{
 			first=false;
 			
-			String msgScale=Messages.getString("DelayDialog.SScaleTime.Label");
-			data.Multiple = 1000; // seconde
-			
-			if(meta.getScaleTime().equals(meta.ScaleTimeCode[2]))
+			String msgScale;
+			switch (meta.getScaleTimeCode())
 			{
-			      // Minute
-			      data.Multiple = 60000;
-				  msgScale = Messages.getString("DelayDialog.MnScaleTime.Label"); 
-			}
-			else if(meta.getScaleTime().equals(meta.ScaleTimeCode[3]))
-			{
-			      // Hour
-			      data.Multiple = 3600000;
-				  msgScale = Messages.getString("DelayDialog.HrScaleTime.Label");
+			    case 0:
+			        msgScale = Messages.getString("DelayDialog.SScaleTime.Label");
+			        data.Multiple = 1000;
+			        break;
+                case 1:
+                    msgScale = Messages.getString("DelayDialog.MnScaleTime.Label");
+                    data.Multiple = 60000;
+                    break;
+                case 2:
+                    msgScale = Messages.getString("DelayDialog.HrScaleTime.Label");
+                    data.Multiple = 3600000;
+                    break;
+                default:
+                    msgScale = "Unknown Scale";
+                    data.Multiple = 1;
 			}
 			
 			String timeOut=environmentSubstitute(meta.getTimeOut());
