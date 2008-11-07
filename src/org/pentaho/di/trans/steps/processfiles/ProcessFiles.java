@@ -278,31 +278,12 @@ public class ProcessFiles extends BaseStep implements StepInterface
         }
         super.dispose(smi, sdi);
     }
-	  //
+    //
     // Run is were the action happens!
     public void run()
     {
-    	if(log.isBasic()) logBasic(Messages.getString("ProcessFiles.Log.StartingToRun")); //$NON-NLS-1$
-        
-        try
-        {
-            while (processRow(meta, data) && !isStopped());
-        }
-        catch(Exception e)
-        {
-            logError(Messages.getString("ProcessFiles.Log.UnexpectedError")+" : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
-            logError(Const.getStackTracker(e));
-            setErrors(1);
-            stopAll();
-        }
-        finally
-        {
-            dispose(meta, data);
-            logSummary();
-            markStop();
-        }
-    }
-    
+    	BaseStep.runStepThread(this, meta, data);
+    }	
     public String toString()
     {
         return this.getClass().getName();

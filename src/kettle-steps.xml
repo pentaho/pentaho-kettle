@@ -1091,5 +1091,16 @@
 		</tooltip>
 		<image-uri>ui/images/PPF.png</image-uri>
 	</step>
+			<step id="DetectLastRow">
+		<description>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.DetectLastRow")
+		</description>
+		<class-name>org.pentaho.di.trans.steps.detectlastrow.DetectLastRowMeta</class-name>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<tooltip>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.DetectLastRow")
+		</tooltip>
+		<image-uri>ui/images/DLR.png</image-uri>
+	</step>
 	
 </steps>
