@@ -250,13 +250,7 @@ public class CombinationLookup extends BaseStep implements StepInterface
 		if (val_key==null)
 		{
 			data.db.setValues(data.lookupRowMeta, lookupRow, data.prepStatementLookup);
-			Object[] add = null;
-			if (data.firstLookup) {
-				add = data.db.getLookup(data.prepStatementLookup, false, true);
-				data.firstLookup=false;
-			} else {
-				add = data.db.getLookup(data.prepStatementLookup, false, false);
-			}
+			Object[] add = data.db.getLookup(data.prepStatementLookup);
             incrementLinesInput();
 
 			if (add==null) // The dimension entry was not found, we need to add it!

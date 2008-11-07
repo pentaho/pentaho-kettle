@@ -110,7 +110,7 @@ public class Database implements VariableSpace
 	private int written;
 	
 	private LogWriter log;
-		
+	
 	/*
 	 * Counts the number of rows written to a batch for a certain PreparedStatement.
 	 *
@@ -2472,16 +2472,6 @@ public class Database implements VariableSpace
 
 	private ValueMetaInterface getValueFromSQLType(String name, ResultSetMetaData rm, int index, boolean ignoreLength, boolean lazyConversion) throws SQLException
     {
-
-		// Cache all used ValueMeta references (sometimes getting this from the JDBC driver is slow, see for instance PDI-1788)
-		// use "Catalog.Schema.Table.Fieldname/ignoreLength/lazyConversion" as the key for unique and fast access
-		// String nameCache=rm.getCatalogName(index)+"."+rm.getSchemaName(index)+"."+rm.getTableName(index)+"."+name+"/"+ignoreLength+"/"+lazyConversion;
-        // ValueMetaInterface valueMeta = (ValueMetaInterface) valueMetaCache.get(nameCache);
-        // if (valueMeta!=null)
-        // {
-        //     return valueMeta.clone();  // ensure only to work with the clone
-        // }
-
         int length=-1; 
         int precision=-1;
         int valtype=ValueMetaInterface.TYPE_NONE;
@@ -2666,8 +2656,8 @@ public class Database implements VariableSpace
         int originalPrecision=-1;
         if (!ignoreLength) rm.getPrecision(index); // Throws exception on MySQL
         int originalScale=rm.getScale(index);
-        boolean originalAutoIncrement=rm.isAutoIncrement(index);
-        int originalNullable=rm.isNullable(index);
+        // boolean originalAutoIncrement=rm.isAutoIncrement(index);  DISABLED FOR PERFORMANCE REASONS : PDI-1788
+        // int originalNullable=rm.isNullable(index);                DISABLED FOR PERFORMANCE REASONS : PDI-1788
         boolean originalSigned=rm.isSigned(index);
 
         ValueMetaInterface v=new ValueMeta(name, valtype);
@@ -2679,8 +2669,8 @@ public class Database implements VariableSpace
         v.setOriginalColumnTypeName(originalColumnTypeName);
         v.setOriginalPrecision(originalPrecision);
         v.setOriginalScale(originalScale);
-        v.setOriginalAutoIncrement(originalAutoIncrement);
-        v.setOriginalNullable(originalNullable);
+        // v.setOriginalAutoIncrement(originalAutoIncrement);  DISABLED FOR PERFORMANCE REASONS : PDI-1788
+        // v.setOriginalNullable(originalNullable);            DISABLED FOR PERFORMANCE REASONS : PDI-1788
         v.setOriginalSigned(originalSigned);
 
         // See if we need to enable lazy conversion...
@@ -2696,6 +2686,7 @@ public class Database implements VariableSpace
         	storageMetaData.setStorageType(ValueMetaInterface.STORAGE_TYPE_NORMAL);
         	v.setStorageMetadata(storageMetaData);
         }
+
 
         return v;
     }
@@ -3168,17 +3159,12 @@ public class Database implements VariableSpace
 
 	public Object[] getLookup(PreparedStatement ps, boolean failOnMultipleResults) throws KettleDatabaseException
 	{
-		return getLookup(ps, failOnMultipleResults, true);
-	}
-	
-	public Object[] getLookup(PreparedStatement ps, boolean failOnMultipleResults, boolean calcRowMeta) throws KettleDatabaseException
-	{
         ResultSet res = null;
 		try
 		{
 			res = ps.executeQuery();
 			
-			if (calcRowMeta) rowMeta = getRowInfo(res.getMetaData(), false, false);
+			rowMeta = getRowInfo(res.getMetaData(), false, false);
 			
 			Object[] ret = getRow(res);
 			
