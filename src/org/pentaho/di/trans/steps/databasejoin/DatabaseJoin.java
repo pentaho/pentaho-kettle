@@ -232,7 +232,9 @@ public class DatabaseJoin extends BaseStep implements StepInterface
 			catch(KettleException e)
 			{
 				logError(Messages.getString("DatabaseJoin.Log.DatabaseError")+e.getMessage()); //$NON-NLS-1$
-				data.db.disconnect();
+				if (data.db!=null) {
+                	data.db.disconnect();
+				}
 			}
 		}
 		
@@ -244,7 +246,9 @@ public class DatabaseJoin extends BaseStep implements StepInterface
 	    meta = (DatabaseJoinMeta)smi;
 	    data = (DatabaseJoinData)sdi;
 	    
-	    data.db.disconnect();
+	    if (data.db!=null) {
+        	data.db.disconnect();
+	    }
 	    
 	    super.dispose(smi, sdi);
 	}

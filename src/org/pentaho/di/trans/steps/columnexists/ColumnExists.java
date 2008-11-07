@@ -212,7 +212,9 @@ public class ColumnExists extends BaseStep implements StepInterface
             catch(KettleException e)
             {
                 logError(Messages.getString("ColumnExists.Log.DBException")+e.getMessage()); //$NON-NLS-1$
-                data.db.disconnect();
+                if (data.db!=null) {
+                	data.db.disconnect();
+                }
             }
         }
         return false;
@@ -222,8 +224,9 @@ public class ColumnExists extends BaseStep implements StepInterface
     {
         meta = (ColumnExistsMeta)smi;
         data = (ColumnExistsData)sdi;
-        if(data.db!=null)
+        if(data.db!=null) {
         	data.db.disconnect();
+        }
         super.dispose(smi, sdi);
     }
 

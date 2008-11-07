@@ -218,7 +218,9 @@ public class ExecSQL extends BaseStep implements StepInterface
 
 		if(log.isBasic()) logBasic(Messages.getString("ExecSQL.Log.FinishingReadingQuery")); //$NON-NLS-1$
 
-		data.db.disconnect();
+		if (data.db!=null) {
+        	data.db.disconnect();
+		}
 
 		super.dispose(smi, sdi);
 	}

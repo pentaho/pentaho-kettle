@@ -630,7 +630,9 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 			catch(Exception e)
 			{
 				logError(Messages.getString("DatabaseLookup.ERROR0004.UnexpectedErrorDuringInit")+e.toString()); //$NON-NLS-1$
-				data.db.disconnect();
+				if (data.db!=null) {
+                	data.db.disconnect();
+				}
 			}
 		}
 		return false;
@@ -641,7 +643,9 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 	    meta = (DatabaseLookupMeta)smi;
 	    data = (DatabaseLookupData)sdi;
 
-	    data.db.disconnect();
+	    if (data.db!=null) {
+        	data.db.disconnect();
+	    }
 
 	    super.dispose(smi, sdi);
 	}

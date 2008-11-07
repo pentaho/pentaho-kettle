@@ -163,7 +163,9 @@ public class TableExists extends BaseStep implements StepInterface
             catch(KettleException e)
             {
                 logError(Messages.getString("TableExists.Log.DBException")+e.getMessage()); //$NON-NLS-1$
-                data.db.disconnect();
+                if (data.db!=null) {
+                	data.db.disconnect();
+                }
             }
         }
         return false;
@@ -173,8 +175,9 @@ public class TableExists extends BaseStep implements StepInterface
     {
         meta = (TableExistsMeta)smi;
         data = (TableExistsData)sdi;
-        if(data.db!=null)
+        if(data.db!=null) {
         	data.db.disconnect();
+        }
         super.dispose(smi, sdi);
     }
 
