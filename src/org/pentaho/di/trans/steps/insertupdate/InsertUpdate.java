@@ -75,13 +75,7 @@ public class InsertUpdate extends BaseStep implements StepInterface
         data.db.setValues(data.lookupParameterRowMeta, lookupRow, data.prepStatementLookup);
 		
 		if (log.isDebug()) logDebug(Messages.getString("InsertUpdate.Log.ValuesSetForLookup")+data.lookupParameterRowMeta.getString(lookupRow)); //$NON-NLS-1$
-		Object[] add = null;
-		if (data.firstLookup) {
-			add = data.db.getLookup(data.prepStatementLookup, false, true);
-			data.firstLookup=false;
-		} else {
-			add = data.db.getLookup(data.prepStatementLookup, false, false);
-		}
+		Object[] add = data.db.getLookup(data.prepStatementLookup);
         incrementLinesInput();
 		
 		if (add==null) 

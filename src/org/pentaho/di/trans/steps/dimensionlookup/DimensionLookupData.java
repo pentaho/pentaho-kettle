@@ -65,8 +65,6 @@ public class DimensionLookupData extends BaseStepData implements StepDataInterfa
 
     public String schemaTable;
 
-	public boolean firstLookup;
-
 	/**
 	 * 
 	 */
@@ -77,7 +75,6 @@ public class DimensionLookupData extends BaseStepData implements StepDataInterfa
 		db=null;
 		valueDateNow=null;
         smallestCacheKey=-1;
-        firstLookup=true;
 	}
 
 }

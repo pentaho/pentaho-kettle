@@ -49,8 +49,6 @@ public class UpdateData extends BaseStepData implements StepDataInterface
     public RowMetaInterface lookupParameterRowMeta;
     public RowMetaInterface lookupReturnRowMeta;
     public RowMetaInterface updateParameterRowMeta;
-
-	public boolean firstLookup;
 	
 	/**
 	 * 
@@ -60,8 +58,6 @@ public class UpdateData extends BaseStepData implements StepDataInterface
 		super();
 
 		db=null;
-		
-		firstLookup = true;
 	}
 
 }
