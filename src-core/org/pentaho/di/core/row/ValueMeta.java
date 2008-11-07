@@ -914,7 +914,16 @@ public class ValueMeta implements ValueMetaInterface
         }
         catch(Exception e)
         {
-            throw new KettleValueException(toString()+" : couldn't convert String to number ", e);
+        	// We added this workaround for version 3.2
+        	// 
+        	try
+            {
+            	return new BigDecimal( string );
+            }
+            catch(NumberFormatException ex)
+            {
+            	throw new KettleValueException(toString()+" : couldn't convert string value '" + string + "' to a number.", ex);
+            }
         }
 }
 
