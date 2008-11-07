@@ -1091,7 +1091,7 @@
 		</tooltip>
 		<image-uri>ui/images/PPF.png</image-uri>
 	</step>
-			<step id="DetectLastRow">
+		<step id="DetectLastRow">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.DetectLastRow")
 		</description>
@@ -1102,5 +1102,15 @@
 		</tooltip>
 		<image-uri>ui/images/DLR.png</image-uri>
 	</step>
-	
+		<step id="DetectEmptyStream">
+		<description>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.DetectEmptyStream")
+		</description>
+		<class-name>org.pentaho.di.trans.steps.detectemptystream.DetectEmptyStreamMeta</class-name>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<tooltip>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.DetectEmptyStream")
+		</tooltip>
+		<image-uri>ui/images/EMS.png</image-uri>
+	</step>
 </steps>

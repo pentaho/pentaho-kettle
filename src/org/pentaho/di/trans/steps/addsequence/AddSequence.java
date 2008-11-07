@@ -256,7 +256,7 @@ public class AddSequence extends BaseStep implements StepInterface
 	    
 	    if (meta.isDatabaseUsed())
 	    {
-	        data.getDb().disconnect();
+	        if(data.getDb()!=null) data.getDb().disconnect();
 	    }
 	    
 	    super.dispose(smi, sdi);
