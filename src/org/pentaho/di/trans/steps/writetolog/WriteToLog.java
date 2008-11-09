@@ -71,7 +71,6 @@ public class WriteToLog extends BaseStep implements StepInterface
 			}else
 			{
 				data.fieldnrs=new int[getInputRowMeta().size()];
-				System.out.println("***********************************"+getInputRowMeta().size());
 				for(int i=0;i<data.fieldnrs.length;i++)
 				{
 					data.fieldnrs[i]=i;
