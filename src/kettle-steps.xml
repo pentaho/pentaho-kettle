@@ -1113,4 +1113,15 @@
 		</tooltip>
 		<image-uri>ui/images/EMS.png</image-uri>
 	</step>
+		<step id="WriteToLog">
+		<description>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.WriteToLog")
+		</description>
+		<class-name>org.pentaho.di.trans.steps.writetolog.WriteToLogMeta</class-name>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<tooltip>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.WriteToLog")
+		</tooltip>
+		<image-uri>ui/images/WTL.png</image-uri>
+	</step>
 </steps>
