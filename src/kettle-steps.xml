@@ -1124,4 +1124,15 @@
 		</tooltip>
 		<image-uri>ui/images/WTL.png</image-uri>
 	</step>
+		<step id="SampleRows">
+		<description>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.SampleRows")
+		</description>
+		<class-name>org.pentaho.di.trans.steps.samplerows.SampleRowsMeta</class-name>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<tooltip>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.SampleRows")
+		</tooltip>
+		<image-uri>ui/images/SR.png</image-uri>
+	</step>
 </steps>
