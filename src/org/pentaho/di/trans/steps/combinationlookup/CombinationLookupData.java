@@ -39,6 +39,10 @@ public class CombinationLookupData extends BaseStepData implements StepDataInter
     public RowMetaInterface insertRowMeta;
     public RowMetaInterface hashRowMeta;
     
+    public String realTableName;
+    public String realSchemaName;
+    
+    
     public boolean[] removeField;
     
     public String schemaTable;
@@ -54,5 +58,7 @@ public class CombinationLookupData extends BaseStepData implements StepDataInter
 	{
 		super();
 		db=null;
+		realTableName=null;
+		realSchemaName=null;
 	}
 }

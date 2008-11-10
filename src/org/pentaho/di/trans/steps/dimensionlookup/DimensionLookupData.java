@@ -64,6 +64,9 @@ public class DimensionLookupData extends BaseStepData implements StepDataInterfa
     public RowMetaInterface cacheValueRowMeta;
 
     public String schemaTable;
+    
+    public String realSchemaName;
+    public String realTableName;
 
 	/**
 	 * 
@@ -75,6 +78,9 @@ public class DimensionLookupData extends BaseStepData implements StepDataInterfa
 		db=null;
 		valueDateNow=null;
         smallestCacheKey=-1;
+        realSchemaName=null;
+        realTableName=null;
+        
 	}
 
 }

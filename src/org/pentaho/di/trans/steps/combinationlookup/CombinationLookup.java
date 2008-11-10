@@ -260,13 +260,13 @@ public class CombinationLookup extends BaseStep implements StepInterface
 				{
 				    case CREATION_METHOD_TABLEMAX:
 				    	//  Use our own counter: what's the next value for the technical key?
-				        val_key = data.db.getNextValue(getTransMeta().getCounters(), meta.getSchemaName(), meta.getTablename(), meta.getTechnicalKeyField());
+				        val_key = data.db.getNextValue(getTransMeta().getCounters(), data.realSchemaName, data.realTableName, meta.getTechnicalKeyField());
                         break;
 				    case CREATION_METHOD_AUTOINC:
 						val_key=new Long(0); // value to accept new key...
 						break;
 				    case CREATION_METHOD_SEQUENCE:
-						val_key=data.db.getNextSequenceValue(meta.getSchemaName(), meta.getSequenceFrom(), meta.getTechnicalKeyField());
+						val_key=data.db.getNextSequenceValue(data.realSchemaName, meta.getSequenceFrom(), meta.getTechnicalKeyField());
 						if (val_key!=null && log.isRowLevel()) logRowlevel(Messages.getString("CombinationLookup.Log.FoundNextSequenceValue")+val_key.toString()); //$NON-NLS-1$
 						break;
 				}
@@ -334,7 +334,7 @@ public class CombinationLookup extends BaseStep implements StepInterface
             data.outputRowMeta = getInputRowMeta().clone();
             meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
             
-            data.schemaTable = meta.getDatabaseMeta().getQuotedSchemaTableCombination(meta.getSchemaName(), meta.getTablename());
+            data.schemaTable = meta.getDatabaseMeta().getQuotedSchemaTableCombination(data.realSchemaName, data.realTableName);
             
             determineTechKeyCreation();
 
@@ -673,6 +673,9 @@ public class CombinationLookup extends BaseStep implements StepInterface
 	{
 		if (super.init(sii, sdi))
 		{
+			data.realSchemaName=environmentSubstitute(meta.getSchemaName());
+			data.realTableName=environmentSubstitute(meta.getTablename());
+			
 			if (meta.getCacheSize()>0)
 			{
 				data.cache=new HashMap<RowMetaAndData, Long>((int)(meta.getCacheSize()*1.5));
@@ -697,7 +700,7 @@ public class CombinationLookup extends BaseStep implements StepInterface
 
 				if (log.isDetailed()) logDetailed(Messages.getString("CombinationLookup.Log.ConnectedToDB")); //$NON-NLS-1$
 				data.db.setCommit(meta.getCommitSize());
-
+				
 				return true;
 			}
 			catch(KettleDatabaseException dbe)

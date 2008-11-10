@@ -65,7 +65,7 @@ import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.trans.steps.dimensionlookup.DimensionLookupMeta;
 import org.pentaho.di.trans.steps.dimensionlookup.Messages;
-
+import org.pentaho.di.ui.core.widget.TextVar;
 
 
 
@@ -84,11 +84,11 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 	private CCombo       wConnection;
 
     private Label        wlSchema;
-    private Text         wSchema;
+    private TextVar      wSchema;
 
 	private Label        wlTable;
 	private Button       wbTable;
-	private Text         wTable;
+	private TextVar      wTable;
 
 	private Label        wlCommit;
 	private Text         wCommit;
@@ -263,7 +263,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
         fdlSchema.top  = new FormAttachment(wConnection, margin);
         wlSchema.setLayoutData(fdlSchema);
 
-        wSchema=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wSchema=new TextVar(transMeta,shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wSchema);
         wSchema.addModifyListener(lsMod);
         FormData fdSchema = new FormData();
@@ -291,7 +291,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		fdbTable.top  = new FormAttachment(wSchema, margin);
 		wbTable.setLayoutData(fdbTable);
 
-		wTable=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wTable=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wTable);
 		wTable.addModifyListener(lsMod);
 		FormData fdTable=new FormData();
