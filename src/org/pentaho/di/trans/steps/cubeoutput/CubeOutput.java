@@ -59,18 +59,21 @@ public class CubeOutput extends BaseStep implements StepInterface
 			setOutputDone();
             return false;
 		}
-		if(meta.isDoNotOpenNewFileInit())
+		if(first)
 		{
-			try
+			if(meta.isDoNotOpenNewFileInit())
 			{
-				PrepareFile();
-				data.oneFileOpened=true;
-			}
-			catch(IOException ioe)
-			{
-				logError(Messages.getString("CubeOutput.Log.ErrorOpeningCubeOutputFile")+ioe.toString()); //$NON-NLS-1$
-				setErrors(1);
-				return false;
+				try
+				{
+					PrepareFile();
+					data.oneFileOpened=true;
+				}
+				catch(IOException ioe)
+				{
+					logError(Messages.getString("CubeOutput.Log.ErrorOpeningCubeOutputFile")+ioe.toString()); //$NON-NLS-1$
+					setErrors(1);
+					return false;
+				}
 			}
 		}
 		result=writeRowToFile(r);
