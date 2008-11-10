@@ -713,59 +713,60 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface
 
 		      // First load the common parts like name & description, then the attributes...
 		      //
-			 this.server = rep.getJobEntryAttributeString(id_step, "server");
-			 this.port = rep.getJobEntryAttributeString(id_step, "port");
-			 this.destination = rep.getJobEntryAttributeString(id_step, "destination");
-			 this.destinationCc = rep.getJobEntryAttributeString(id_step, "destinationCc");
-			 this.destinationBCc = rep.getJobEntryAttributeString(id_step, "destinationBCc");
-			 this.replyAddress = rep.getJobEntryAttributeString(id_step, "replyto");
-			 this.replyName = rep.getJobEntryAttributeString(id_step, "replytoname");
+			 
+			 this.server = rep.getStepAttributeString(id_step, "server");
+			 this.port = rep.getStepAttributeString(id_step, "port");
+			 this.destination = rep.getStepAttributeString(id_step, "destination");
+			 this.destinationCc = rep.getStepAttributeString(id_step, "destinationCc");
+			 this.destinationBCc = rep.getStepAttributeString(id_step, "destinationBCc");
+			 this.replyAddress = rep.getStepAttributeString(id_step, "replyto");
+			 this.replyName = rep.getStepAttributeString(id_step, "replytoname");
 		      
-			 this.subject = rep.getJobEntryAttributeString(id_step, "subject");
-			 this.includeDate = rep.getJobEntryAttributeBoolean(id_step, "include_date");
-			 this.includeSubFolders = rep.getJobEntryAttributeBoolean(id_step, "include_subfolders");
-			 this.zipFilenameDynamic = rep.getJobEntryAttributeBoolean(id_step, "zipFilenameDynamic");
+			 this.subject = rep.getStepAttributeString(id_step, "subject");
+			 this.includeDate = rep.getStepAttributeBoolean(id_step, "include_date");
+			 this.includeSubFolders = rep.getStepAttributeBoolean(id_step, "include_subfolders");
+			 this.zipFilenameDynamic = rep.getStepAttributeBoolean(id_step, "zipFilenameDynamic");
 		      
 		      
-			 this.isFilenameDynamic = rep.getJobEntryAttributeBoolean(id_step, "isFilenameDynamic");
-			 this.dynamicFieldname = rep.getJobEntryAttributeString(id_step, "dynamicFieldname");
-		     this.dynamicWildcard = rep.getJobEntryAttributeString(id_step, "dynamicWildcard");
-		     this.dynamicZipFilename = rep.getJobEntryAttributeString(id_step, "dynamicZipFilename");
+			 this.isFilenameDynamic = rep.getStepAttributeBoolean(id_step, "isFilenameDynamic");
+			 this.dynamicFieldname = rep.getStepAttributeString(id_step, "dynamicFieldname");
+		     this.dynamicWildcard = rep.getStepAttributeString(id_step, "dynamicWildcard");
+		     this.dynamicZipFilename = rep.getStepAttributeString(id_step, "dynamicZipFilename");
 		      
-		     this.sourcefilefoldername = rep.getJobEntryAttributeString(id_step, "sourcefilefoldername");
-		     this.sourcewildcard = rep.getJobEntryAttributeString(id_step, "sourcewildcard");
+		     this.sourcefilefoldername = rep.getStepAttributeString(id_step, "sourcefilefoldername");
+		     this.sourcewildcard = rep.getStepAttributeString(id_step, "sourcewildcard");
 
-		     this.contactPerson = rep.getJobEntryAttributeString(id_step, "contact_person");
-		     this.contactPhone = rep.getJobEntryAttributeString(id_step, "contact_phone");
-		     this.comment = rep.getJobEntryAttributeString(id_step, "comment");
-		     this.encoding = rep.getJobEntryAttributeString(id_step, "encoding");
-		     this.priority = rep.getJobEntryAttributeString(id_step, "priority");
-		     this.importance = rep.getJobEntryAttributeString(id_step, "importance");
+		     this.contactPerson = rep.getStepAttributeString(id_step, "contact_person");
+		     this.contactPhone = rep.getStepAttributeString(id_step, "contact_phone");
+		     this.comment = rep.getStepAttributeString(id_step, "comment");
+		     this.encoding = rep.getStepAttributeString(id_step, "encoding");
+		     this.priority = rep.getStepAttributeString(id_step, "priority");
+		     this.importance = rep.getStepAttributeString(id_step, "importance");
 
-		     this.includingFiles = rep.getJobEntryAttributeBoolean(id_step, "include_files");
+		     this.includingFiles = rep.getStepAttributeBoolean(id_step, "include_files");
 
-		     this.usingAuthentication = rep.getJobEntryAttributeBoolean(id_step, "use_auth");
-		     this.usingSecureAuthentication = rep.getJobEntryAttributeBoolean(id_step, "use_secure_auth");
-		     this.authenticationUser = rep.getJobEntryAttributeString(id_step, "auth_user");
-		     this.authenticationPassword = Encr.decryptPasswordOptionallyEncrypted(rep.getJobEntryAttributeString(id_step, "auth_password"));
+		     this.usingAuthentication = rep.getStepAttributeBoolean(id_step, "use_auth");
+		     this.usingSecureAuthentication = rep.getStepAttributeBoolean(id_step, "use_secure_auth");
+		     this.authenticationUser = rep.getStepAttributeString(id_step, "auth_user");
+		     this.authenticationPassword = Encr.decryptPasswordOptionallyEncrypted(rep.getStepAttributeString(id_step, "auth_password"));
 
-		     this.onlySendComment = rep.getJobEntryAttributeBoolean(id_step, "only_comment");
-		     this.useHTML = rep.getJobEntryAttributeBoolean(id_step, "use_HTML");
-		     this.usePriority = rep.getJobEntryAttributeBoolean(id_step, "use_Priority");
-		     this.secureconnectiontype = rep.getJobEntryAttributeString(id_step, "secureconnectiontype");
+		     this.onlySendComment = rep.getStepAttributeBoolean(id_step, "only_comment");
+		     this.useHTML = rep.getStepAttributeBoolean(id_step, "use_HTML");
+		     this.usePriority = rep.getStepAttributeBoolean(id_step, "use_Priority");
+		     this.secureconnectiontype = rep.getStepAttributeString(id_step, "secureconnectiontype");
 
 		      
 		      int nrTypes = rep.countNrJobEntryAttributes(id_step, "file_type");
 		      allocate(nrTypes);
 
 		      for (int i = 0; i < nrTypes; i++) {
-		        String typeCode = rep.getJobEntryAttributeString(id_step, i, "file_type");
+		        String typeCode = rep.getStepAttributeString(id_step, i, "file_type");
 		        this.fileType[i] = ResultFile.getType(typeCode);
 		      }
 
-		      this.zipFiles = rep.getJobEntryAttributeBoolean(id_step, "zip_files");
-		      this.zipFilename = rep.getJobEntryAttributeString(id_step, "zip_name");
-		      this.ziplimitsize = rep.getJobEntryAttributeString(id_step, "zip_limit_size");
+		      this.zipFiles = rep.getStepAttributeBoolean(id_step, "zip_files");
+		      this.zipFilename = rep.getStepAttributeString(id_step, "zip_name");
+		      this.ziplimitsize = rep.getStepAttributeString(id_step, "zip_limit_size");
 		      
 		    } catch (KettleDatabaseException dbe)
 		    {
@@ -780,46 +781,45 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 	    {
-
-	      rep.saveJobEntryAttribute(id_step, getID(), "server", this.server);
-	      rep.saveJobEntryAttribute(id_step, getID(), "port", this.port);
-	      rep.saveJobEntryAttribute(id_step, getID(), "destination", this.destination);
-	      rep.saveJobEntryAttribute(id_step, getID(), "destinationCc", this.destinationCc);
-	      rep.saveJobEntryAttribute(id_step, getID(), "destinationBCc", this.destinationBCc);
-	      rep.saveJobEntryAttribute(id_step, getID(), "replyto", this.replyAddress);
-	      rep.saveJobEntryAttribute(id_step, getID(), "replytoname", this.replyName);
+	      rep.saveStepAttribute(id_transformation, id_step, "server", this.server);
+	      rep.saveStepAttribute(id_transformation, id_step, "port", this.port);
+	      rep.saveStepAttribute(id_transformation, id_step, "destination", this.destination);
+	      rep.saveStepAttribute(id_transformation, id_step, "destinationCc", this.destinationCc);
+	      rep.saveStepAttribute(id_transformation, id_step, "destinationBCc", this.destinationBCc);
+	      rep.saveStepAttribute(id_transformation, id_step, "replyto", this.replyAddress);
+	      rep.saveStepAttribute(id_transformation, id_step, "replytoname", this.replyName);
 	      
-	      rep.saveJobEntryAttribute(id_step, getID(), "subject", this.subject);
-	      rep.saveJobEntryAttribute(id_step, getID(), "include_date", this.includeDate);
-	      rep.saveJobEntryAttribute(id_step, getID(), "include_subfolders", this.includeSubFolders);
-	      rep.saveJobEntryAttribute(id_step, getID(), "zipFilenameDynamic", this.zipFilenameDynamic);
+	      rep.saveStepAttribute(id_transformation, id_step, "subject", this.subject);
+	      rep.saveStepAttribute(id_transformation, id_step, "include_date", this.includeDate);
+	      rep.saveStepAttribute(id_transformation, id_step, "include_subfolders", this.includeSubFolders);
+	      rep.saveStepAttribute(id_transformation, id_step, "zipFilenameDynamic", this.zipFilenameDynamic);
 
-	      rep.saveJobEntryAttribute(id_step, getID(), "isFilenameDynamic", isFilenameDynamic);
-	      rep.saveJobEntryAttribute(id_step, getID(), "dynamicFieldname", dynamicFieldname);
-	      rep.saveJobEntryAttribute(id_step, getID(), "dynamicWildcard", dynamicWildcard);
-	      rep.saveJobEntryAttribute(id_step, getID(), "dynamicZipFilename", dynamicZipFilename);
+	      rep.saveStepAttribute(id_transformation, id_step, "isFilenameDynamic", isFilenameDynamic);
+	      rep.saveStepAttribute(id_transformation, id_step, "dynamicFieldname", dynamicFieldname);
+	      rep.saveStepAttribute(id_transformation, id_step, "dynamicWildcard", dynamicWildcard);
+	      rep.saveStepAttribute(id_transformation, id_step, "dynamicZipFilename", dynamicZipFilename);
 	      
-	      rep.saveJobEntryAttribute(id_step, getID(), "sourcefilefoldername", sourcefilefoldername);
-	      rep.saveJobEntryAttribute(id_step, getID(), "sourcewildcard", sourcewildcard);
+	      rep.saveStepAttribute(id_transformation, id_step, "sourcefilefoldername", sourcefilefoldername);
+	      rep.saveStepAttribute(id_transformation, id_step, "sourcewildcard", sourcewildcard);
 	
-	      rep.saveJobEntryAttribute(id_step, getID(), "contact_person", contactPerson);
-	      rep.saveJobEntryAttribute(id_step, getID(), "contact_phone", contactPhone);
-	      rep.saveJobEntryAttribute(id_step, getID(), "comment", comment);
-	      rep.saveJobEntryAttribute(id_step, getID(), "encoding", encoding);
-	      rep.saveJobEntryAttribute(id_step, getID(), "priority", priority);
-	      rep.saveJobEntryAttribute(id_step, getID(), "importance", importance);
+	      rep.saveStepAttribute(id_transformation, id_step, "contact_person", contactPerson);
+	      rep.saveStepAttribute(id_transformation, id_step, "contact_phone", contactPhone);
+	      rep.saveStepAttribute(id_transformation, id_step, "comment", comment);
+	      rep.saveStepAttribute(id_transformation, id_step, "encoding", encoding);
+	      rep.saveStepAttribute(id_transformation, id_step, "priority", priority);
+	      rep.saveStepAttribute(id_transformation, id_step, "importance", importance);
 	      
 	      
-	      rep.saveJobEntryAttribute(id_step, getID(), "include_files", includingFiles);
-	      rep.saveJobEntryAttribute(id_step, getID(), "use_auth", usingAuthentication);
-	      rep.saveJobEntryAttribute(id_step, getID(), "use_secure_auth", usingSecureAuthentication);
-	      rep.saveJobEntryAttribute(id_step, getID(), "auth_user", authenticationUser);
-	      rep.saveJobEntryAttribute(id_step, getID(), "auth_password", Encr.encryptPasswordIfNotUsingVariables(authenticationPassword));
+	      rep.saveStepAttribute(id_transformation, id_step, "include_files", includingFiles);
+	      rep.saveStepAttribute(id_transformation, id_step, "use_auth", usingAuthentication);
+	      rep.saveStepAttribute(id_transformation, id_step, "use_secure_auth", usingSecureAuthentication);
+	      rep.saveStepAttribute(id_transformation, id_step, "auth_user", authenticationUser);
+	      rep.saveStepAttribute(id_transformation, id_step, "auth_password", Encr.encryptPasswordIfNotUsingVariables(authenticationPassword));
 
-	      rep.saveJobEntryAttribute(id_step, getID(), "only_comment", onlySendComment);
-	      rep.saveJobEntryAttribute(id_step, getID(), "use_HTML", useHTML);
-	      rep.saveJobEntryAttribute(id_step, getID(), "use_Priority", usePriority);
-	      rep.saveJobEntryAttribute(id_step, getID(), "secureconnectiontype", secureconnectiontype);
+	      rep.saveStepAttribute(id_transformation, id_step, "only_comment", onlySendComment);
+	      rep.saveStepAttribute(id_transformation, id_step, "use_HTML", useHTML);
+	      rep.saveStepAttribute(id_transformation, id_step, "use_Priority", usePriority);
+	      rep.saveStepAttribute(id_transformation, id_step, "secureconnectiontype", secureconnectiontype);
 	      
 	      
 
@@ -827,13 +827,13 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface
 	      {
 	        for (int i = 0; i < fileType.length; i++)
 	        {
-	          rep.saveJobEntryAttribute(id_step, getID(), i, "file_type", ResultFile.getTypeCode(fileType[i]));
+	          rep.saveStepAttribute(id_transformation, id_step, i, "file_type", ResultFile.getTypeCode(fileType[i]));
 	        }
 	      }
 
-	      rep.saveJobEntryAttribute(id_step, getID(), "zip_files", zipFiles);
-	      rep.saveJobEntryAttribute(id_step, getID(), "zip_name", zipFilename);
-	      rep.saveJobEntryAttribute(id_step, getID(), "zip_limit_size", ziplimitsize);
+	      rep.saveStepAttribute(id_transformation, id_step, "zip_files", zipFiles);
+	      rep.saveStepAttribute(id_transformation, id_step, "zip_name", zipFilename);
+	      rep.saveStepAttribute(id_transformation, id_step, "zip_limit_size", ziplimitsize);
 	      
 
 	    } catch (KettleDatabaseException dbe)

@@ -2141,77 +2141,77 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface
 		if (Const.isEmpty(wStepname.getText())) return;
 
 		stepname = wStepname.getText(); // return value
-		 input.setDestination(wDestination.getText());
-			input.setDestinationCc(wDestinationCc.getText());
-			input.setDestinationBCc(wDestinationBCc.getText());
-	        input.setServer(wServer.getText());
-	        input.setPort(wPort.getText());
-	        input.setReplyAddress(wReply.getText());
-	        input.setReplyName(wReplyName.getText());
-	        input.setSubject(wSubject.getText());
-	        input.setContactPerson(wPerson.getText());
-	        input.setContactPhone(wPhone.getText());
-	        input.setComment(wComment.getText());
-	        
-	        input.setIncludeSubFolders(wincludeSubFolders.getSelection());
-	        input.setIncludeDate(wAddDate.getSelection());
-	        input.setisDynamicFilename(wisFileDynamic.getSelection());
-	        input.setDynamicFieldname(wDynamicFilenameField.getText());
-	        input.setDynamicWildcard(wDynamicWildcardField.getText());
-	        
-    		input.setDynamicZipFilenameField(wDynamicZipFileField.getText());
-	        
-	        input.setSourceFileFoldername(wSourceFileFoldername.getText());
-	        input.setSourceWildcard(wWildcard.getText());
-	        
-	        input.setZipLimitSize(wZipSizeCondition.getText());
+		input.setDestination(wDestination.getText());
+		input.setDestinationCc(wDestinationCc.getText());
+		input.setDestinationBCc(wDestinationBCc.getText());
+        input.setServer(wServer.getText());
+        input.setPort(wPort.getText());
+        input.setReplyAddress(wReply.getText());
+        input.setReplyName(wReplyName.getText());
+        input.setSubject(wSubject.getText());
+        input.setContactPerson(wPerson.getText());
+        input.setContactPhone(wPhone.getText());
+        input.setComment(wComment.getText());
+        
+        input.setIncludeSubFolders(wincludeSubFolders.getSelection());
+        input.setIncludeDate(wAddDate.getSelection());
+        input.setisDynamicFilename(wisFileDynamic.getSelection());
+        input.setDynamicFieldname(wDynamicFilenameField.getText());
+        input.setDynamicWildcard(wDynamicWildcardField.getText());
+        
+		input.setDynamicZipFilenameField(wDynamicZipFileField.getText());
+        
+        input.setSourceFileFoldername(wSourceFileFoldername.getText());
+        input.setSourceWildcard(wWildcard.getText());
+        
+        input.setZipLimitSize(wZipSizeCondition.getText());
 
-	        input.setZipFilenameDynamic(wisZipFileDynamic.getSelection());
-	        
-	        input.setZipFilename(wZipFilename.getText());
-	        input.setZipFiles(wZipFiles.getSelection());
-	        input.setAuthenticationUser(wAuthUser.getText());
-	        input.setAuthenticationPassword(wAuthPass.getText());
-	        input.setUsingAuthentication(wUseAuth.getSelection());
-	        input.setUsingSecureAuthentication(wUseSecAuth.getSelection());
-	        input.setOnlySendComment(wOnlyComment.getSelection());
-	        input.setUseHTML(wUseHTML.getSelection());
-	        input.setUsePriority(wUsePriority.getSelection());
-	        
-	        input.setEncoding(wEncoding.getText());
-	        input.setPriority(wPriority.getText());
-	        
-	        // Priority
-	        if (wPriority.getSelectionIndex()==0)
-	        {
-	        	input.setPriority("low");
-	        }
-	        else if (wPriority.getSelectionIndex()==1)
-	        {
-	        	input.setPriority("normal");
-	        }
-	        else
-	        {
-	        	input.setPriority("high");
-	        }
-	            
-	        // Importance
-	        if (wImportance.getSelectionIndex()==0)
-	        {
-	        	input.setImportance("low");
-	        }
-	        else if (wImportance.getSelectionIndex()==1)
-	        {
-	        	input.setImportance("normal");
-	        }
-	        else
-	        {
-	        	input.setImportance("high");
-	        }
-	                  
-	        // Secure Connection type
-	        input.setSecureConnectionType(wSecureConnectionType.getText());
-	      
+        input.setZipFilenameDynamic(wisZipFileDynamic.getSelection());
+        
+        input.setZipFilename(wZipFilename.getText());
+        input.setZipFiles(wZipFiles.getSelection());
+        input.setAuthenticationUser(wAuthUser.getText());
+        input.setAuthenticationPassword(wAuthPass.getText());
+        input.setUsingAuthentication(wUseAuth.getSelection());
+        input.setUsingSecureAuthentication(wUseSecAuth.getSelection());
+        input.setOnlySendComment(wOnlyComment.getSelection());
+        input.setUseHTML(wUseHTML.getSelection());
+        input.setUsePriority(wUsePriority.getSelection());
+        
+        input.setEncoding(wEncoding.getText());
+        input.setPriority(wPriority.getText());
+        
+        // Priority
+        if (wPriority.getSelectionIndex()==0)
+        {
+        	input.setPriority("low");
+        }
+        else if (wPriority.getSelectionIndex()==1)
+        {
+        	input.setPriority("normal");
+        }
+        else
+        {
+        	input.setPriority("high");
+        }
+            
+        // Importance
+        if (wImportance.getSelectionIndex()==0)
+        {
+        	input.setImportance("low");
+        }
+        else if (wImportance.getSelectionIndex()==1)
+        {
+        	input.setImportance("normal");
+        }
+        else
+        {
+        	input.setImportance("high");
+        }
+                  
+        // Secure Connection type
+        input.setSecureConnectionType(wSecureConnectionType.getText());
+      
 		dispose();
 	}
 }
