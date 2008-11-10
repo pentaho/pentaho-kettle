@@ -1146,4 +1146,15 @@
 		</tooltip>
 		<image-uri>ui/images/PRV.png</image-uri>
 	</step>
+		<step id="ExecSQLRow">
+		<description>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.ExecSQLRow")
+		</description>
+		<class-name>org.pentaho.di.trans.steps.execsqlrow.ExecSQLRowMeta</class-name>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<tooltip>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.ExecSQLRow")
+		</tooltip>
+		<image-uri>ui/images/SQLR.png</image-uri>
+	</step>
 </steps>

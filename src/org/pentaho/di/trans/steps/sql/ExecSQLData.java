@@ -46,7 +46,4 @@ public class ExecSQLData extends BaseStepData implements StepDataInterface
         argumentIndexes = null;
         markerPositions = null;
 	}
-
-
-	
 }

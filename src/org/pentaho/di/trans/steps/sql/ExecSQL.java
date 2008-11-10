@@ -265,20 +265,20 @@ public class ExecSQL extends BaseStep implements StepInterface
 				if (log.isDetailed())
 					logDetailed(Messages.getString("ExecSQL.Log.ConnectedToDB")); //$NON-NLS-1$
 
-        if (meta.isReplaceVariables()) 
-        {
-        	data.sql = environmentSubstitute(meta.getSql());
-        }
-        else
-        {
-        	data.sql = meta.getSql();
-        }
+		        if (meta.isReplaceVariables()) 
+		        {
+		        	data.sql = environmentSubstitute(meta.getSql());
+		        }
+		        else
+		        {
+		        	data.sql = meta.getSql();
+		        }
 				// If the SQL needs to be executed once, this is a starting step
 				// somewhere.
 				if (!meta.isExecutedEachInputRow())
 				{
 					data.result = data.db.execStatements(data.sql);
-          if (!data.db.isAutoCommit()) data.db.commit();
+					if (!data.db.isAutoCommit()) data.db.commit();
 				}
 				return true;
 			} catch (KettleException e)
