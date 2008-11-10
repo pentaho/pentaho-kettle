@@ -317,8 +317,7 @@ public class GetPreviousRowFieldDialog extends BaseStepDialog implements StepDia
 
 		inf.allocate(nrkeys);
 
-		log.logDebug(toString(), Messages.getString(
-				"GetPreviousRowFieldDialog.Log.FoundFields", String.valueOf(nrkeys))); //$NON-NLS-1$ //$NON-NLS-2$
+		if(log.isDebug()) log.logDebug(toString(), Messages.getString("GetPreviousRowFieldDialog.Log.FoundFields", String.valueOf(nrkeys))); //$NON-NLS-1$ //$NON-NLS-2$
 		for (int i = 0; i < nrkeys; i++) {
 			TableItem item = wFields.getNonEmpty(i);
 			inf.getFieldInStream()[i] = item.getText(1);
