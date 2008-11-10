@@ -59,7 +59,7 @@ import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.trans.steps.combinationlookup.CombinationLookupMeta;
 import org.pentaho.di.trans.steps.combinationlookup.Messages;
-
+import org.pentaho.di.ui.core.widget.TextVar;
 
 
 
@@ -68,11 +68,11 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 	private CCombo       wConnection;
 
     private Label        wlSchema;
-    private Text         wSchema;
+    private TextVar       wSchema;
 
 	private Label        wlTable;
 	private Button       wbTable;
-	private Text         wTable;
+	private TextVar      wTable;
 
 	private Label        wlCommit;
 	private Text         wCommit;
@@ -197,7 +197,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
         fdlSchema.top  = new FormAttachment(wConnection, margin);
         wlSchema.setLayoutData(fdlSchema);
 
-        wSchema=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wSchema=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wSchema);
         wSchema.addModifyListener(lsMod);
         FormData fdSchema = new FormData();
@@ -225,7 +225,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 		fdbTable.top = new FormAttachment(wSchema, margin);
 		wbTable.setLayoutData(fdbTable);
 
-		wTable = new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wTable = new TextVar(transMeta,shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wTable);
 		wTable.addModifyListener(lsMod);
 		FormData fdTable = new FormData();

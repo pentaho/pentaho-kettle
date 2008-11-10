@@ -106,7 +106,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
         {
             first=false;
             
-            data.schemaTable = meta.getDatabaseMeta().getQuotedSchemaTableCombination(meta.getSchemaName(), meta.getTableName());
+            data.schemaTable = meta.getDatabaseMeta().getQuotedSchemaTableCombination(data.realSchemaName, data.realTableName);
             
             data.outputRowMeta = getInputRowMeta().clone();
             meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
@@ -307,13 +307,13 @@ public class DimensionLookup extends BaseStep implements StepInterface
 				{
 				    case CREATION_METHOD_TABLEMAX:
 						// What's the next value for the technical key?
-						technicalKey=data.db.getNextValue(getTransMeta().getCounters(), meta.getSchemaName(), meta.getTableName(), meta.getKeyField());
+						technicalKey=data.db.getNextValue(getTransMeta().getCounters(), data.realSchemaName, data.realTableName, meta.getKeyField());
                         break;
 				    case CREATION_METHOD_AUTOINC:
 						technicalKey=null; // Set to null to flag auto-increment usage
 						break;
 				    case CREATION_METHOD_SEQUENCE:						
-						technicalKey=data.db.getNextSequenceValue(meta.getSchemaName(), meta.getSequenceName(), meta.getKeyField());
+						technicalKey=data.db.getNextSequenceValue(data.realSchemaName, meta.getSequenceName(), meta.getKeyField());
 						if (technicalKey!=null && log.isRowLevel()) logRowlevel(Messages.getString("DimensionLookup.Log.FoundNextSequence")+technicalKey.toString()); //$NON-NLS-1$
 						break;					
 				}	               
@@ -449,14 +449,14 @@ public class DimensionLookup extends BaseStep implements StepInterface
 					// Try to get the value by looking at a SEQUENCE (oracle mostly)
 					if (meta.getDatabaseMeta().supportsSequences() && meta.getSequenceName()!=null && meta.getSequenceName().length()>0)
 					{
-						technicalKey=data.db.getNextSequenceValue(meta.getSchemaName(), meta.getSequenceName(), meta.getKeyField());
+						technicalKey=data.db.getNextSequenceValue(data.realSchemaName, meta.getSequenceName(), meta.getKeyField());
 						if (technicalKey!=null && log.isRowLevel()) logRowlevel(Messages.getString("DimensionLookup.Log.FoundNextSequence2")+technicalKey.toString()); //$NON-NLS-1$
 					}
 					else
 					// Use our own sequence here...
 					{
 						// What's the next value for the technical key?
-                        technicalKey = data.db.getNextValue(getTransMeta().getCounters(), meta.getSchemaName(), meta.getTableName(), meta.getKeyField());
+                        technicalKey = data.db.getNextValue(getTransMeta().getCounters(), data.realSchemaName,data.realTableName, meta.getKeyField());
 					}
 
 					// update our technicalKey with the return of the insert
@@ -1203,6 +1203,9 @@ public class DimensionLookup extends BaseStep implements StepInterface
 			data.min_date = meta.getMinDate(); //$NON-NLS-1$
 			data.max_date = meta.getMaxDate(); //$NON-NLS-1$
 
+			data.realSchemaName=environmentSubstitute(meta.getSchemaName());
+			data.realTableName=environmentSubstitute(meta.getTableName());
+			
 			data.db=new Database(meta.getDatabaseMeta());
 			data.db.shareVariablesWith(this);
 			try
