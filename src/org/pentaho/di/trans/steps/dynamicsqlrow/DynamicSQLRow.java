@@ -60,7 +60,7 @@ public class DynamicSQLRow extends BaseStep implements StepInterface
 			loadFromBuffer=false;
 		}
 		
-		if (log.isDetailed()) logDetailed(Messages.getString("DatabaseJoin.Log.CheckingRow")+rowMeta.getString(rowData)); //$NON-NLS-1$
+		if (log.isDetailed()) logDetailed(Messages.getString("DynamicSQLRow.Log.CheckingRow")+rowMeta.getString(rowData)); //$NON-NLS-1$
 		
 		
 		// get dynamic SQL statement

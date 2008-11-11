@@ -467,7 +467,7 @@ public class DynamicSQLRowMeta extends BaseStepMeta implements StepMetaInterface
 						outvalue.getName(),
 						stepMeta.getName(),
 						sql,
-						Messages.getString("DatabaseJoinMeta.DatabaseImpact.Title") //$NON-NLS-1$
+						Messages.getString("DynamicSQLRowMeta.DatabaseImpact.Title") //$NON-NLS-1$
 						);
 				impact.add(di);
 
