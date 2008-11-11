@@ -1157,4 +1157,15 @@
 		</tooltip>
 		<image-uri>ui/images/SQLR.png</image-uri>
 	</step>
+		<step id="DynamicSQLRow">
+		<description>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.DynamicSQLRow")
+		</description>
+		<class-name>org.pentaho.di.trans.steps.dynamicsqlrow.DynamicSQLRowMeta</class-name>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<tooltip>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.DynamicSQLRow")
+		</tooltip>
+		<image-uri>ui/images/DSR.png</image-uri>
+	</step>
 </steps>
