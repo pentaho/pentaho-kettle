@@ -603,7 +603,9 @@ public class TransPainter
 
                 if (fs.isSendingErrorRowsToStep(ts))
                 {
-                    col = black;
+                    col = red;
+                    linestyle = SWT.LINE_DOT;
+                    activeLinewidth = linewidth+1;
                 }
                 else
                 {
