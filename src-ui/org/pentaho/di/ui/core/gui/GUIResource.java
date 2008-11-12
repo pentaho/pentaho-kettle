@@ -225,6 +225,12 @@ public class GUIResource
 
     private Image imageStepError;
 
+    private Image imageCopyHop;
+
+    private Image imageErrorHop;
+
+    private Image imageInfoHop;
+
     private Map<String,Image> imageMap;
 
 	private ManagedFont fontBold;
@@ -381,6 +387,9 @@ public class GUIResource
 		    imageHideResults.dispose();
 		    imageCollapseAll.dispose();
 		    imageStepError.dispose();
+		    imageCopyHop.dispose();
+		    imageErrorHop.dispose();
+		    imageInfoHop.dispose();
 		    imageExpandAll.dispose();
 		    imageViewPanel.dispose();
 		    imageDesignPanel.dispose();
@@ -582,6 +591,9 @@ public class GUIResource
     imageExpandAll = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("ExpandAll_image")); // , "ui/images/ExpandAll.png;
     imageCollapseAll = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("CollapseAll_image")); // , "ui/images/CollapseAll.png;
     imageStepError = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("StepErrorLines_image")); // , "ui/images/show-error-lines.png;
+    imageCopyHop = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("CopyHop_image")); // , "ui/images/copy-hop.png;
+    imageErrorHop = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("ErrorHop_image")); // , "ui/images/error-hop.png;
+    imageInfoHop = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("InfoHop_image")); // , "ui/images/info-hop.png;
 
    imageStartSmall = new Image(display, 16, 16);
 		GC gc = new GC(imageStartSmall);
@@ -1507,6 +1519,17 @@ public class GUIResource
 	    return imageStepError;
   }
 
+  public Image getImageCopyHop(){
+	    return imageCopyHop;
+  }
+
+  public Image getImageErrorHop(){
+	    return imageErrorHop;
+  }
+
+  public Image getImageInfoHop(){
+	    return imageInfoHop;
+  }
   /**
    * Loads an image from a location once.  The second time, the image comes from a cache.
    * Because of this, it's important to never dispose of the image you get from here. (easy!)

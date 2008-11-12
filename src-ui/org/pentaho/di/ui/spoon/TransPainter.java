@@ -47,6 +47,9 @@ public class TransPainter
 	public static final String STRING_REMOTE_INPUT_STEPS        = "RemoteInputSteps";        // $NON-NLS-1$
 	public static final String STRING_REMOTE_OUTPUT_STEPS       = "RemoteOutputSteps";       // $NON-NLS-1$
 	public static final String STRING_STEP_ERROR_LOG            = "StepErrorLog";            // $NON-NLS-1$
+	public static final String STRING_HOP_TYPE_COPY             = "HopTypeCopy";             // $NON-NLS-1$
+	public static final String STRING_HOP_TYPE_INFO             = "HopTypeInfo";             // $NON-NLS-1$
+	public static final String STRING_HOP_TYPE_ERROR            = "HopTypeError";            // $NON-NLS-1$
     
 	public static final String[] magnificationDescriptions = 
 		new String[] { "  100% ", "  75% ", "  50% ", "  25% "};
@@ -70,10 +73,10 @@ public class TransPainter
     private Color        black;
     private Color        red;
     private Color        yellow;
-    private Color        orange;
-    private Color        green;
+    // private Color        orange;
+    // private Color        green;
     private Color        blue;
-    private Color        magenta;
+    // private Color        magenta;
     private Color        gray;
     // private Color        lightGray;
     private Color        darkGray;
@@ -121,10 +124,10 @@ public class TransPainter
         this.black          = GUIResource.getInstance().getColorBlack();
         this.red            = GUIResource.getInstance().getColorRed();
         this.yellow         = GUIResource.getInstance().getColorYellow();
-        this.orange         = GUIResource.getInstance().getColorOrange();
-        this.green          = GUIResource.getInstance().getColorGreen();
+        // this.orange         = GUIResource.getInstance().getColorOrange();
+        // this.green          = GUIResource.getInstance().getColorGreen();
         this.blue           = GUIResource.getInstance().getColorBlue();
-        this.magenta        = GUIResource.getInstance().getColorMagenta();
+        // this.magenta        = GUIResource.getInstance().getColorMagenta();
         this.gray           = GUIResource.getInstance().getColorGray();
         // this.lightGray      = GUIResource.getInstance().getColorLightGray();
         this.darkGray       = GUIResource.getInstance().getColorDarkGray();
@@ -600,9 +603,7 @@ public class TransPainter
 
                 if (fs.isSendingErrorRowsToStep(ts))
                 {
-                    col = red;
-                    linestyle = SWT.LINE_DOT;
-                    activeLinewidth = linewidth+2;
+                    col = black;
                 }
                 else
                 {
@@ -616,16 +617,13 @@ public class TransPainter
                         if (Const.indexOfString(fs.getName(), infoSteps) >= 0)
                         {
                             if (distributes)
-                                col = yellow;
+                                col = black;
                             else
-                                col = magenta;
+                                col = black;
                         }
                         else
                         {
-                            if (distributes)
-                                col = green;
-                            else
-                                col = red;
+                            col = black;
                         }
                     }
                     else
@@ -638,7 +636,7 @@ public class TransPainter
                         else
                         {
                             linestyle = SWT.LINE_DOT;
-                            col = orange;
+                            col = red;
                         }
                     }
                 }
@@ -654,7 +652,7 @@ public class TransPainter
         gc.setLineStyle(linestyle);
         gc.setLineWidth(activeLinewidth);
         
-        drawArrow(gc, line, null, ts);
+        drawArrow(gc, line, fs, ts);
         
         if (hi.split) gc.setLineWidth(linewidth);
 
@@ -735,7 +733,7 @@ public class TransPainter
     private void drawArrow(GC gc, int line[], Object startObject, Object endObject)
     {
     	double theta = Math.toRadians(10); // arrowhead sharpness
-        int size = 30 + (linewidth - 1) * 5; // arrowhead length
+        int size = 19 + (linewidth - 1) * 5; // arrowhead length
 
         Point screen_from = real2screen(line[0], line[1], offset);
         Point screen_to = real2screen(line[2], line[3], offset);
@@ -745,7 +743,6 @@ public class TransPainter
 
     private void drawArrow(GC gc, int x1, int y1, int x2, int y2, double theta, int size, double factor, Object startObject, Object endObject)
     {
-        
         int mx, my;
         int x3;
         int y3;
@@ -777,7 +774,7 @@ public class TransPainter
         // in between 2 points
         mx = (int) (x1 + factor * (x2 - x1) / 2);
         my = (int) (y1 + factor * (y2 - y1) / 2);
-
+        
         // calculate points for arrowhead
         angle = Math.atan2(y2 - y1, x2 - x1) + Math.PI;
 
@@ -792,6 +789,45 @@ public class TransPainter
         gc.setBackground(fore);
         gc.fillPolygon(new int[] { mx, my, x3, y3, x4, y4 });
         gc.setBackground(back);
+        
+        if ( startObject instanceof StepMeta && endObject instanceof StepMeta) {
+        	factor = 0.8;
+
+        	StepMeta fs = (StepMeta)startObject;
+        	StepMeta ts = (StepMeta)endObject;
+        	
+	        // in between 2 points
+	        mx = (int) (x1 + factor * (x2 - x1) / 2) - 8;
+	        my = (int) (y1 + factor * (y2 - y1) / 2) - 8;
+
+	        if (!fs.isDistributes() && !ts.getStepPartitioningMeta().isMethodMirror()) {
+		        
+	        	Image copyHopsIcon = GUIResource.getInstance().getImageCopyHop();
+	        	gc.drawImage(copyHopsIcon, mx, my);
+	        	
+	        	if (!shadow) {
+	    			areaOwners.add(new AreaOwner(mx, my, copyHopsIcon.getBounds().width, copyHopsIcon.getBounds().height, fs, STRING_HOP_TYPE_COPY));
+	    		}
+		        mx+=16;
+	        } else if (fs.isSendingErrorRowsToStep(ts)) {
+	        	Image copyHopsIcon = GUIResource.getInstance().getImageErrorHop();
+		        gc.drawImage(copyHopsIcon, mx, my);
+	        	if (!shadow) {
+	    			areaOwners.add(new AreaOwner(mx, my, copyHopsIcon.getBounds().width, copyHopsIcon.getBounds().height, new StepMeta[] { fs, ts, }, STRING_HOP_TYPE_ERROR));
+	    		}
+		        mx+=16;
+            }
+	        
+	        if (Const.indexOfString(fs.getName(), ts.getStepMetaInterface().getInfoSteps()) >= 0) {
+	        	Image copyHopsIcon = GUIResource.getInstance().getImageInfoHop();
+	        	gc.drawImage(copyHopsIcon, mx, my);
+	        	if (!shadow) {
+	    			areaOwners.add(new AreaOwner(mx, my, copyHopsIcon.getBounds().width, copyHopsIcon.getBounds().height, new StepMeta[] { fs, ts, }, STRING_HOP_TYPE_INFO));
+	    		}
+		        mx+=16;
+	        }
+        }
+
     }
 
 	/**

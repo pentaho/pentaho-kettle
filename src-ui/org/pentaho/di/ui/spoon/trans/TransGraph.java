@@ -1959,20 +1959,13 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
             + stepMeta.getTargetStepPartitioningMeta().toString();
       }
     } else {
-      final TransHopMeta hi = findHop(x, y);
-      if (hi != null) // We clicked on a HOP!
-      {
-        // Set the tooltip for the hop:
-        newTip = hi.toString();
-        tipImage = GUIResource.getInstance().getImageHop();
-      } else {
+        final TransHopMeta hi = findHop(x, y);
         // check the area owner list...
         //
         StringBuffer tip = new StringBuffer();
         for (AreaOwner areaOwner : areaOwners) {
           if (areaOwner.contains(x, y)) {
-            if (areaOwner.getParent() instanceof StepMeta
-                && areaOwner.getOwner().equals(TransPainter.STRING_REMOTE_INPUT_STEPS)) {
+            if (areaOwner.getParent() instanceof StepMeta && areaOwner.getOwner().equals(TransPainter.STRING_REMOTE_INPUT_STEPS)) {
               StepMeta step = (StepMeta) areaOwner.getParent();
               tip.append("Remote input steps:").append(Const.CR).append("-----------------------").append(Const.CR);
               for (RemoteStep remoteStep : step.getRemoteInputSteps()) {
@@ -1980,16 +1973,14 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
               }
 
             }
-            if (areaOwner.getParent() instanceof StepMeta
-                && areaOwner.getOwner().equals(TransPainter.STRING_REMOTE_OUTPUT_STEPS)) {
+            if (areaOwner.getParent() instanceof StepMeta && areaOwner.getOwner().equals(TransPainter.STRING_REMOTE_OUTPUT_STEPS)) {
               StepMeta step = (StepMeta) areaOwner.getParent();
               tip.append("Remote output steps:").append(Const.CR).append("-----------------------").append(Const.CR);
               for (RemoteStep remoteStep : step.getRemoteOutputSteps()) {
                 tip.append(remoteStep.toString()).append(Const.CR);
               }
             }
-            if (areaOwner.getParent() instanceof StepMeta
-                && areaOwner.getOwner().equals(TransPainter.STRING_PARTITIONING_CURRENT_STEP)) {
+            if (areaOwner.getParent() instanceof StepMeta && areaOwner.getOwner().equals(TransPainter.STRING_PARTITIONING_CURRENT_STEP)) {
               StepMeta step = (StepMeta) areaOwner.getParent();
               tip.append("Step partitioning:").append(Const.CR).append("-----------------------").append(Const.CR);
               tip.append(step.getStepPartitioningMeta().toString()).append(Const.CR);
@@ -1998,19 +1989,43 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
                     "TARGET: " + step.getTargetStepPartitioningMeta().toString()).append(Const.CR);
               }
             }
-            if (areaOwner.getParent() instanceof StepMeta
-                && areaOwner.getOwner().equals(TransPainter.STRING_PARTITIONING_CURRENT_NEXT)) {
+            if (areaOwner.getParent() instanceof StepMeta && areaOwner.getOwner().equals(TransPainter.STRING_PARTITIONING_CURRENT_NEXT)) {
               StepMeta step = (StepMeta) areaOwner.getParent();
               tip.append("Target partitioning:").append(Const.CR).append("-----------------------").append(Const.CR);
               tip.append(step.getStepPartitioningMeta().toString()).append(Const.CR);
             }
-            if (areaOwner.getParent() instanceof String // Logging
-                && areaOwner.getOwner().equals(TransPainter.STRING_STEP_ERROR_LOG)) {
+            if (areaOwner.getParent() instanceof String && areaOwner.getOwner().equals(TransPainter.STRING_STEP_ERROR_LOG)) {
               String log = (String)areaOwner.getParent();
               tip.append(log);
               tipImage = GUIResource.getInstance().getImageStepError();
             }
-
+            if (areaOwner.getParent() instanceof StepMeta && areaOwner.getOwner().equals(TransPainter.STRING_HOP_TYPE_COPY)) {
+                  StepMeta step = (StepMeta) areaOwner.getParent();
+                  tip.append("The origin step ["+step.getName()+"] is copying all output rows to all target steps").append(Const.CR);
+                  tip.append("Please note that this is different from the default behavior where rows are distributed ovthe target steps in a round robin fashion").append(Const.CR);
+                  tipImage = GUIResource.getInstance().getImageCopyHop();
+            }
+            if (areaOwner.getParent() instanceof StepMeta[] && areaOwner.getOwner().equals(TransPainter.STRING_HOP_TYPE_INFO)) {
+                  StepMeta from = ((StepMeta[])(areaOwner.getParent()))[0];
+                  StepMeta to   = ((StepMeta[])(areaOwner.getParent()))[1];
+                  tip.append("Rows are being sent to step ["+to.getName()+"] so that they can be used as additional information.").append(Const.CR);
+                  tip.append("That target step specifically reads from step ["+from.getName()+"] and it is treated as a special case.").append(Const.CR);
+                  tip.append("That means that for this source step the normal row reading rules don't apply.").append(Const.CR);
+                  tip.append("Normally a step reads information from all source steps in a round robin fashion.").append(Const.CR);
+                  tipImage = GUIResource.getInstance().getImageInfoHop();
+            }
+            if (areaOwner.getParent() instanceof StepMeta[] && areaOwner.getOwner().equals(TransPainter.STRING_HOP_TYPE_ERROR)) {
+                StepMeta from = ((StepMeta[])(areaOwner.getParent()))[0];
+                StepMeta to   = ((StepMeta[])(areaOwner.getParent()))[1];
+                tip.append("Each row that was considered to be a cause for an error by step ["+from.getName()+"] is sent to step ["+to.getName()+"].").append(Const.CR);
+                tip.append("This is done as part of the error handling configuration of the source step.").append(Const.CR);
+                tipImage = GUIResource.getInstance().getImageErrorHop();
+            }
+            if (hi != null) // We clicked on a HOP!
+            {
+              // Set the tooltip for the hop:
+              tip.append(Const.CR).append("Hop information: ").append(newTip = hi.toString()).append(Const.CR);
+            }
           }
         }
         if (tip.length() == 0) {
@@ -2018,8 +2033,8 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         } else {
           newTip = tip.toString();
         }
-      }
     }
+    
 
     if (newTip == null) {
       toolTip.hide();
