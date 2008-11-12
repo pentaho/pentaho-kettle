@@ -75,13 +75,13 @@ public class AddSequenceDialog extends BaseStepDialog implements StepDialogInter
     private Text         wCounterName;
 
 	private Label        wlStartAt;
-	private Text         wStartAt;
+	private TextVar      wStartAt;
 
 	private Label        wlIncrBy;
-	private Text         wIncrBy;
+	private TextVar      wIncrBy;
 
 	private Label        wlMaxVal;
-	private Text         wMaxVal;
+	private TextVar      wMaxVal;
 
 	private AddSequenceMeta input;
 	
@@ -309,7 +309,7 @@ public class AddSequenceDialog extends BaseStepDialog implements StepDialogInter
 		fdlStartAt.right= new FormAttachment(middle, -margin);
 		fdlStartAt.top  = new FormAttachment(wCounterName, margin);
 		wlStartAt.setLayoutData(fdlStartAt);
-		wStartAt=new Text(gCounter, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wStartAt=new TextVar(transMeta, gCounter, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		wStartAt.setText(""); //$NON-NLS-1$
  		props.setLook(wStartAt);
 		wStartAt.addModifyListener(lsMod);
@@ -328,7 +328,7 @@ public class AddSequenceDialog extends BaseStepDialog implements StepDialogInter
 		fdlIncrBy.right= new FormAttachment(middle, -margin);
 		fdlIncrBy.top  = new FormAttachment(wStartAt, margin);
 		wlIncrBy.setLayoutData(fdlIncrBy);
-		wIncrBy=new Text(gCounter, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wIncrBy=new TextVar(transMeta, gCounter, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		wIncrBy.setText(""); //$NON-NLS-1$
  		props.setLook(wIncrBy);
 		wIncrBy.addModifyListener(lsMod);
@@ -347,7 +347,7 @@ public class AddSequenceDialog extends BaseStepDialog implements StepDialogInter
 		fdlMaxVal.right= new FormAttachment(middle, -margin);
 		fdlMaxVal.top  = new FormAttachment(wIncrBy, margin);
 		wlMaxVal.setLayoutData(fdlMaxVal);
-		wMaxVal=new Text(gCounter, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wMaxVal=new TextVar(transMeta, gCounter, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		wMaxVal.setText(""); //$NON-NLS-1$
  		props.setLook(wMaxVal);
 		wMaxVal.addModifyListener(lsMod);

@@ -238,7 +238,7 @@ public class TableOutput extends BaseStep implements StepInterface
 			
 			// Perform a commit if needed
 			//
-			if (commitCounter>0 && (commitCounter%meta.getCommitSize())==0) 
+			if (commitCounter>0 && (commitCounter%data.commitSize)==0) 
 			{
 				if (data.batchMode)
 				{
@@ -489,7 +489,9 @@ public class TableOutput extends BaseStep implements StepInterface
 			{
 				data.databaseMeta = meta.getDatabaseMeta();
 				
-                data.batchMode = meta.getCommitSize()>0 && meta.useBatchUpdate();
+				data.commitSize = Integer.parseInt(environmentSubstitute(meta.getCommitSize()));
+				
+                data.batchMode = data.commitSize>0 && meta.useBatchUpdate();
                 
                 // Batch updates are not supported on PostgreSQL (and look-a-likes) together with error handling (PDI-366)
                 //
@@ -516,7 +518,7 @@ public class TableOutput extends BaseStep implements StepInterface
                 }
                 
                 if(log.isBasic()) logBasic("Connected to database ["+meta.getDatabaseMeta()+"] (commit="+meta.getCommitSize()+")");
-				data.db.setCommit(meta.getCommitSize());
+				data.db.setCommit(data.commitSize);
 				
                 if (!meta.isPartitioningEnabled() && !meta.isTableNameInField())
                 {    

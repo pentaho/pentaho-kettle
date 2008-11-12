@@ -69,7 +69,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 	private FormData     fdlTable, fdbTable, fdTable;
 
 	private Label        wlCommit;
-	private Text         wCommit;
+	private TextVar      wCommit;
 	private FormData     fdlCommit, fdCommit;
 
 	private Label        wlTruncate;
@@ -236,7 +236,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 		fdlCommit.right= new FormAttachment(middle, -margin);
 		fdlCommit.top  = new FormAttachment(wbTable, margin);
 		wlCommit.setLayoutData(fdlCommit);
-		wCommit=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wCommit=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wCommit);
 		wCommit.addModifyListener(lsMod);
 		fdCommit=new FormData();
@@ -693,7 +693,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
         wIgnore.setSelection(input.ignoreErrors());
 		wBatch.setSelection(input.useBatchUpdate());
 
-        wCommit.setText(""+(int)input.getCommitSize());
+        wCommit.setText(input.getCommitSize());
 
         wUsePart.setSelection(input.isPartitioningEnabled());
         wPartDaily.setSelection(input.isPartitioningDaily());
@@ -724,7 +724,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
         info.setSchemaName( wSchema.getText() );
 		info.setTablename( wTable.getText() );
 		info.setDatabaseMeta(  transMeta.findDatabase(wConnection.getText()) );
-		info.setCommitSize( Const.toInt( wCommit.getText(), 0 ) );
+		info.setCommitSize( wCommit.getText() );
 		info.setTruncateTable( wTruncate.getSelection() );
 		info.setIgnoreErrors( wIgnore.getSelection() );
 		info.setUseBatchUpdate( wBatch.getSelection() );

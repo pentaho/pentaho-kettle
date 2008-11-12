@@ -54,7 +54,7 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
 	private DatabaseMeta databaseMeta;
     private String       schemaName;
 	private String       tablename;
-	private int          commitSize;
+	private String       commitSize;
 	private boolean      truncateTable;
 	private boolean      ignoreErrors;
 	private boolean      useBatchUpdate;
@@ -217,7 +217,7 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		super(); // allocate BaseStepMeta
 		useBatchUpdate=true;
-		commitSize=100;
+		commitSize="1000";
 	}
 	
 	public void loadXML(Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters)
@@ -248,22 +248,26 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
         this.databaseMeta = database;
     }
     
-    /**
-     * @return Returns the commitSize.
-     */
-    public int getCommitSize()
-    {
-        return commitSize;
+    public String getCommitSize() {
+    	return commitSize;
     }
     
     /**
      * @param commitSize The commitSize to set.
      */
-    public void setCommitSize(int commitSize)
+    public void setCommitSize(String commitSize)
     {
         this.commitSize = commitSize;
     }
-    
+
+    /**
+     * @param commitSize The commitSize to set.
+     */
+    public void setCommitSize(int commitSizeInt)
+    {
+        this.commitSize = Integer.toString(commitSizeInt);
+    }
+
     /**
      * @return Returns the tablename.
      */
@@ -333,14 +337,11 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			String commit;
-		
 			String con = XMLHandler.getTagValue(stepnode, "connection");
 			databaseMeta      = DatabaseMeta.findDatabase(databases, con);
             schemaName    = XMLHandler.getTagValue(stepnode, "schema");
 			tablename     = XMLHandler.getTagValue(stepnode, "table");
-			commit        = XMLHandler.getTagValue(stepnode, "commit");
-			commitSize    = Const.toInt(commit, 0);
+			commitSize    = XMLHandler.getTagValue(stepnode, "commit");
 			truncateTable = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "truncate"));
 			ignoreErrors  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "ignore_errors"));
 			useBatchUpdate= "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "use_batch"));
@@ -367,7 +368,7 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		databaseMeta = null;
 		tablename      = "";
-		commitSize = 100;
+		commitSize = "1000";
         
         partitioningEnabled = false;
         partitioningMonthly = true;
@@ -412,7 +413,11 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
 			databaseMeta = DatabaseMeta.findDatabase( databases, id_connection);
             schemaName       =      rep.getStepAttributeString (id_step, "schema");
 			tablename        =      rep.getStepAttributeString (id_step, "table");
-			commitSize       = (int)rep.getStepAttributeInteger(id_step, "commit");
+			long commitSizeInt =  rep.getStepAttributeInteger(id_step, "commit");
+			commitSize = rep.getStepAttributeString(id_step, "commit");
+			if (Const.isEmpty(commitSize)) {
+				commitSize=Long.toString(commitSizeInt);
+			}
 			truncateTable    =      rep.getStepAttributeBoolean(id_step, "truncate"); 
 			ignoreErrors     =      rep.getStepAttributeBoolean(id_step, "ignore_errors"); 
 			useBatchUpdate   =      rep.getStepAttributeBoolean(id_step, "use_batch"); 
