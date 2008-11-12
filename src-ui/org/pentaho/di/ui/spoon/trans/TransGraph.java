@@ -1881,6 +1881,9 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
                 }
 
               }
+              
+              menu.addMenuListener("trans-graph-background-select-all", this, "selectAll"); //$NON-NLS-1$ //$NON-NLS-2$
+              menu.addMenuListener("trans-graph-background-clear-selection", this, "clearSelection"); //$NON-NLS-1$ //$NON-NLS-2$
 
               ConstUI.displayMenu((Menu)menu.getNativeObject(), canvas);
             }
@@ -1892,6 +1895,14 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
       // TODO: fix this: log somehow, is IGNORED for now.
       t.printStackTrace();
     }
+  }
+  
+  public void selectAll() {
+	  spoon.editSelectAll();
+  }
+  
+  public void clearSelection() {
+	  spoon.editUnselectAll();
   }
 
   private boolean checkNumberOfCopies(TransMeta transMeta, StepMeta stepMeta) {

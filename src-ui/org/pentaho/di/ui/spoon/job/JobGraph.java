@@ -1446,6 +1446,8 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
 
             menu.addMenuListener("job-graph-note-new", this, "newNote"); //$NON-NLS-1$ //$NON-NLS-2$
             menu.addMenuListener("job-graph-note-paste", this, "pasteNote"); //$NON-NLS-1$ //$NON-NLS-2$
+            menu.addMenuListener("job-graph-background-select-all", this, "selectAll"); //$NON-NLS-1$ //$NON-NLS-2$
+            menu.addMenuListener("job-graph-background-clear-selection", this, "clearSelection"); //$NON-NLS-1$ //$NON-NLS-2$
             menu.addMenuListener("job-graph-background-settings", this, "editJobProperties"); //$NON-NLS-1$ //$NON-NLS-2$
 
             final String clipcontent = spoon.fromClipboard();
@@ -1459,6 +1461,14 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
         }
       }
     }
+  }  
+  
+  public void selectAll() {
+	  spoon.editSelectAll();
+  }
+  
+  public void clearSelection() {
+	  spoon.editUnselectAll();
   }
 
   public void editJobProperties() {

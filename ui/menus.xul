@@ -164,6 +164,10 @@
 	</menu>
 	
     <menuitem value="trans-graph-background-paste" label="%TransGraph.PopupMenu.PasteStepFromClipboard"/>
+	<menuseparator/>
+	<menuitem value="trans-graph-background-select-all" label="%TransGraph.PopupMenu.SelectAll"/>
+	<menuitem value="trans-graph-background-clear-selection" label="%TransGraph.PopupMenu.ClearSelection"/>
+	<menuseparator/>
     <menuitem value="trans-graph-background-settings" label="%TransGraph.PopupMenu.Settings"/>
 	
   </menupopup>
@@ -217,6 +221,10 @@
   <menupopup id="job-graph-background">
     <menuitem value="job-graph-note-new" label="%JobGraph.PopupMenu.Note.New"/>
     <menuitem value="job-graph-note-paste" label="%JobGraph.PopupMenu.PasteStepFromClipboard"/>
+	<menuseparator/>
+	<menuitem value="job-graph-background-select-all" label="%JobGraph.PopupMenu.SelectAll"/>
+	<menuitem value="job-graph-background-clear-selection" label="%JobGraph.PopupMenu.ClearSelection"/>
+	<menuseparator/>
     <menuitem value="job-graph-background-settings" label="%JobGraph.PopupMenu.Settings"/>
   </menupopup>
 
