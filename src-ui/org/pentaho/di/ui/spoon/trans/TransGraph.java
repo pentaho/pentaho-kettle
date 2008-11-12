@@ -2002,7 +2002,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
             if (areaOwner.getParent() instanceof StepMeta && areaOwner.getOwner().equals(TransPainter.STRING_HOP_TYPE_COPY)) {
                   StepMeta step = (StepMeta) areaOwner.getParent();
                   tip.append("The origin step ["+step.getName()+"] is copying all output rows to all target steps").append(Const.CR);
-                  tip.append("Please note that this is different from the default behavior where rows are distributed ovthe target steps in a round robin fashion").append(Const.CR);
+                  tip.append("Please note that this is different from the default behavior where rows are distributed over the target steps in a round robin fashion").append(Const.CR);
                   tipImage = GUIResource.getInstance().getImageCopyHop();
             }
             if (areaOwner.getParent() instanceof StepMeta[] && areaOwner.getOwner().equals(TransPainter.STRING_HOP_TYPE_INFO)) {
