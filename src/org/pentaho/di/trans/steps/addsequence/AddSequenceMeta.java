@@ -140,7 +140,7 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 	public void setStartAt(long startAt)
 	{
 		this.startAt = Long.toString(startAt);
-	}	
+	}
 	
 	/**
 	 * @param incrementBy The incrementBy to set.

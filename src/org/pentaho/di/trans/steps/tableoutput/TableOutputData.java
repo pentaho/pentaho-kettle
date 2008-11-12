@@ -65,6 +65,8 @@ public class TableOutputData extends BaseStepData implements StepDataInterface
 	
 	public Map<String, Integer> commitCounterMap;
     
+	public int commitSize;
+	
 	public TableOutputData()
 	{
 		super();
