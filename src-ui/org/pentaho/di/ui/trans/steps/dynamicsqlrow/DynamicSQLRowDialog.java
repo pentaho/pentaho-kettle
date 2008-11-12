@@ -75,10 +75,6 @@ public class DynamicSQLRowDialog extends BaseStepDialog implements StepDialogInt
 	private Button       wOuter;
 	private FormData     fdlOuter, fdOuter;
 	
-	private Label        wlTemplateScript;
-	private Button       wTemplateScript;
-	private FormData     fdlTemplateScript, fdTemplateScript;
-	
 	private Label        wluseVars;
 	private Button       wuseVars;
 	private FormData     fdluseVars, fduseVars;
@@ -243,34 +239,6 @@ public class DynamicSQLRowDialog extends BaseStepDialog implements StepDialogInt
 				}
 			}
 		);
-		
-		// TemplateScript ?
-		wlTemplateScript=new Label(shell, SWT.RIGHT);
-		wlTemplateScript.setText(Messages.getString("DynamicSQLRowDialog.TemplateScript.Label")); //$NON-NLS-1$
-		wlTemplateScript.setToolTipText(Messages.getString("DynamicSQLRowDialog.TemplateScript.Tooltip")); //$NON-NLS-1$
- 		props.setLook(wlTemplateScript);
-		fdlTemplateScript=new FormData();
-		fdlTemplateScript.left = new FormAttachment(0, 0);
-		fdlTemplateScript.right= new FormAttachment(middle, -margin);
-		fdlTemplateScript.top  = new FormAttachment(wOuter, 3*margin);
-		wlTemplateScript.setLayoutData(fdlTemplateScript);
-		wTemplateScript=new Button(shell, SWT.CHECK);
- 		props.setLook(wTemplateScript);
-		wTemplateScript.setToolTipText(wlTemplateScript.getToolTipText());
-		fdTemplateScript=new FormData();
-		fdTemplateScript.left = new FormAttachment(middle, 0);
-		fdTemplateScript.top  = new FormAttachment(wOuter, 3*margin);
-		wTemplateScript.setLayoutData(fdTemplateScript);
-		wTemplateScript.addSelectionListener(new SelectionAdapter() 
-			{
-				public void widgetSelected(SelectionEvent e) 
-				{
-					input.setChanged();
-					setTemplateScript();
-				}
-			}
-		);
-		
 		// useVars ?
 		wluseVars=new Label(shell, SWT.RIGHT);
 		wluseVars.setText(Messages.getString("DynamicSQLRowDialog.useVarsjoin.Label")); //$NON-NLS-1$
@@ -279,14 +247,14 @@ public class DynamicSQLRowDialog extends BaseStepDialog implements StepDialogInt
 		fdluseVars=new FormData();
 		fdluseVars.left = new FormAttachment(0, 0);
 		fdluseVars.right= new FormAttachment(middle, -margin);
-		fdluseVars.top  = new FormAttachment(wTemplateScript, margin);
+		fdluseVars.top  = new FormAttachment(wOuter, margin);
 		wluseVars.setLayoutData(fdluseVars);
 		wuseVars=new Button(shell, SWT.CHECK);
  		props.setLook(wuseVars);
 		wuseVars.setToolTipText(wluseVars.getToolTipText());
 		fduseVars=new FormData();
 		fduseVars.left = new FormAttachment(middle, 0);
-		fduseVars.top  = new FormAttachment(wTemplateScript, margin);
+		fduseVars.top  = new FormAttachment(wOuter, margin);
 		wuseVars.setLayoutData(fduseVars);
 		wuseVars.addSelectionListener(new SelectionAdapter() 
 			{
@@ -410,23 +378,16 @@ public class DynamicSQLRowDialog extends BaseStepDialog implements StepDialogInt
 		setSize();
 				
 		getData();
-		setTemplateScript();
 		input.setChanged(backupChanged);
 
 		shell.open();
 		while (!shell.isDisposed())
 		{
-				if (!display.readAndDispatch()) display.sleep();
+			if (!display.readAndDispatch()) display.sleep();
 		}
 		return stepname;
 	}
-	private void setTemplateScript()
-	{
-		wlSQL.setEnabled(wTemplateScript.getSelection());
-		wSQL.setEnabled(wTemplateScript.getSelection());
-		wuseVars.setEnabled(wTemplateScript.getSelection());
-		wluseVars.setEnabled(wTemplateScript.getSelection());
-	}
+	
 	public void setPosition(){
 		
 		String scr = wSQL.getText();
@@ -455,7 +416,6 @@ public class DynamicSQLRowDialog extends BaseStepDialog implements StepDialogInt
 		wLimit.setText(""+input.getRowLimit()); //$NON-NLS-1$
 		wOuter.setSelection(input.isOuterJoin());
 		wuseVars.setSelection(input.isVariableReplace());
-		wTemplateScript.setSelection(input.isTemplateScript());
 		if(input.getSQLFieldName()!=null) wSQLFieldName.setText(input.getSQLFieldName());
 		wqueryOnlyOnChange.setSelection(input.isQueryOnlyOnChange());
 		if (input.getDatabaseMeta()!=null)   wConnection.setText(input.getDatabaseMeta().getName());
@@ -484,7 +444,6 @@ public class DynamicSQLRowDialog extends BaseStepDialog implements StepDialogInt
 		input.setSQLFieldName(wSQLFieldName.getText());
 		input.setOuterJoin( wOuter.getSelection() );
 		input.setVariableReplace(wuseVars.getSelection() );
-		input.setTemplateScript(wTemplateScript.getSelection() );
 		input.setQueryOnlyOnChange(wqueryOnlyOnChange.getSelection() );
 		input.setDatabaseMeta( transMeta.findDatabase(wConnection.getText()) );
 

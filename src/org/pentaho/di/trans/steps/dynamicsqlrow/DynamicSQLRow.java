@@ -187,6 +187,9 @@ public class DynamicSQLRow extends BaseStep implements StepInterface
 		{
 			if(Const.isEmpty(meta.getSQLFieldName()))
 				throw new KettleException(Messages.getString("DynamicSQLRow.Exception.SQLFieldNameEmpty"));
+			
+			if(Const.isEmpty(meta.getSql()))
+				throw new KettleException(Messages.getString("DynamicSQLRow.Exception.SQLEmpty"));
 
 			// cache the position of the field			
 			if (data.indexOfSQLField<0)

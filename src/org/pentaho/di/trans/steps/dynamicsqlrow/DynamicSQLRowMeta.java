@@ -62,8 +62,6 @@ public class DynamicSQLRowMeta extends BaseStepMeta implements StepMetaInterface
 	
 	private boolean replacevars;
 	
-	private boolean templacescript;
-	
 	public boolean queryonlyonchange;
 	
 	public DynamicSQLRowMeta()
@@ -116,22 +114,6 @@ public class DynamicSQLRowMeta extends BaseStepMeta implements StepMetaInterface
 	public void setVariableReplace(boolean replacevars)
 	{
 		this.replacevars = replacevars;
-	}
-
-	/**
-	 * @return Returns the templacescript.
-	 */
-	public boolean isTemplateScript()
-	{
-		return templacescript;
-	}
-	
-	/**
-	 * @param templacescript The templacescript to set.
-	 */
-	public void setTemplateScript(boolean templacescript)
-	{
-		this.templacescript = templacescript;
 	}
 	/**
 	 * @return Returns the queryonlyonchange.
@@ -218,8 +200,6 @@ public class DynamicSQLRowMeta extends BaseStepMeta implements StepMetaInterface
 			replacevars = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "replace_vars"));
 			queryonlyonchange = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "query_only_on_change"));
 			
-			templacescript = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "template_script"));
-			
 			rowLimit   = Const.toInt(XMLHandler.getTagValue(stepnode, "rowlimit"), 0); //$NON-NLS-1$
 			sqlfieldname        = XMLHandler.getTagValue(stepnode, "sql_fieldname"); //$NON-NLS-1$
 			
@@ -237,7 +217,6 @@ public class DynamicSQLRowMeta extends BaseStepMeta implements StepMetaInterface
 		rowLimit   = 0;
 		sql = ""; //$NON-NLS-1$
 		outerJoin=false;
-		templacescript=false;
 		replacevars=false;
 		sqlfieldname=null;
 		queryonlyonchange=false;
@@ -246,8 +225,6 @@ public class DynamicSQLRowMeta extends BaseStepMeta implements StepMetaInterface
 	
 
 	public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException {
-
-		if (!templacescript) return;
 		
 		if (databaseMeta==null) return;
 		
@@ -307,7 +284,6 @@ public class DynamicSQLRowMeta extends BaseStepMeta implements StepMetaInterface
 		retval.append("    "+XMLHandler.addTagValue("sql", sql)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("    "+XMLHandler.addTagValue("outer_join", outerJoin)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("    "+XMLHandler.addTagValue("replace_vars", replacevars)); 
-		retval.append("    "+XMLHandler.addTagValue("template_script", templacescript)); 
 		retval.append("    "+XMLHandler.addTagValue("sql_fieldname", sqlfieldname)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("    "+XMLHandler.addTagValue("query_only_on_change", queryonlyonchange)); //$NON-NLS-1$ //$NON-NLS-2$
 		
@@ -324,7 +300,6 @@ public class DynamicSQLRowMeta extends BaseStepMeta implements StepMetaInterface
 			sql              =      rep.getStepAttributeString (id_step, "sql");  //$NON-NLS-1$
 			outerJoin       =      rep.getStepAttributeBoolean(id_step, "outer_join");  //$NON-NLS-1$
 			replacevars       =      rep.getStepAttributeBoolean(id_step, "replace_vars"); 
-			templacescript       =      rep.getStepAttributeBoolean(id_step, "template_script"); 
 			sqlfieldname         =      rep.getStepAttributeString (id_step, "sql_fieldname");  //$NON-NLS-1$
 			queryonlyonchange    =      rep.getStepAttributeBoolean (id_step, "query_only_on_change");  //$NON-NLS-1$	
 		}
@@ -345,7 +320,6 @@ public class DynamicSQLRowMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "sql",             sql); //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "outer_join",      outerJoin); //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "replace_vars",      replacevars);
-			rep.saveStepAttribute(id_transformation, id_step, "template_script",      templacescript);
 			rep.saveStepAttribute(id_transformation, id_step, "sql_fieldname",             sqlfieldname); //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "query_only_on_change",      queryonlyonchange);
 			
@@ -388,8 +362,6 @@ public class DynamicSQLRowMeta extends BaseStepMeta implements StepMetaInterface
 				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("DynamicSQLRowMeta.CheckResult.SQLFieldFound",sqlfieldname,vfield.getOrigin()), stepinfo);
 			remarks.add(cr);
 		}
-		
-		if(!templacescript) return;
 		
 		if (databaseMeta!=null)
 		{
