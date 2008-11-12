@@ -208,7 +208,7 @@ public class DynamicSQLRow extends BaseStep implements StepInterface
  
             if (checkFeedback(getLinesRead())) 
             {
-            	if(log.isBasic()) logBasic(Messages.getString("DynamicSQLRow.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
+            	if(log.isDetailed()) logDetailed(Messages.getString("DynamicSQLRow.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
             }
 		}
 		catch(KettleException e)

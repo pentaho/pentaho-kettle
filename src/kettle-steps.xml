@@ -1168,4 +1168,15 @@
 		</tooltip>
 		<image-uri>ui/images/DSR.png</image-uri>
 	</step>
+		<step id="NumberRange">
+		<description>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.NumberRange")
+		</description>
+		<class-name>org.pentaho.di.trans.steps.numberrange.NumberRangeMeta</class-name>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<tooltip>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.NumberRange")
+		</tooltip>
+		<image-uri>ui/images/NRI.png</image-uri>
+	</step>
 </steps>
