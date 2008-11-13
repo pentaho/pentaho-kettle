@@ -71,50 +71,6 @@
       <heigth>23</heigth>
       </notepad>
     </notepads>
-  <connection>
-    <name>10.0.0.112</name>
-    <server>10.0.0.14</server>
-    <type>ORACLE</type>
-    <access>Native</access>
-    <database>fashy</database>
-    <port>1521</port>
-    <username>prisma</username>
-    <password>Encrypted 2be98afc86aa7f2e4cb10ba71c897bdd5</password>
-    <servername/>
-    <data_tablespace/>
-    <index_tablespace/>
-    <attributes>
-      <attribute><code>EXTRA_OPTION_MYSQL.defaultFetchSize</code><attribute>500</attribute></attribute>
-      <attribute><code>EXTRA_OPTION_MYSQL.useCursorFetch</code><attribute>true</attribute></attribute>
-      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
-      <attribute><code>MAXIMUM_POOL_SIZE</code><attribute>10</attribute></attribute>
-      <attribute><code>PORT_NUMBER</code><attribute>1521</attribute></attribute>
-      <attribute><code>STREAM_RESULTS</code><attribute>Y</attribute></attribute>
-      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
-    </attributes>
-  </connection>
-  <connection>
-    <name>prisma</name>
-    <server>10.0.0.10</server>
-    <type>ORACLE</type>
-    <access>Native</access>
-    <database>prisma</database>
-    <port>1521</port>
-    <username>prisma</username>
-    <password>Encrypted 2be98afc86aa7f2e4cb10ba71c897bdd5</password>
-    <servername/>
-    <data_tablespace/>
-    <index_tablespace/>
-    <attributes>
-      <attribute><code>EXTRA_OPTION_MYSQL.defaultFetchSize</code><attribute>500</attribute></attribute>
-      <attribute><code>EXTRA_OPTION_MYSQL.useCursorFetch</code><attribute>true</attribute></attribute>
-      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
-      <attribute><code>MAXIMUM_POOL_SIZE</code><attribute>10</attribute></attribute>
-      <attribute><code>PORT_NUMBER</code><attribute>1521</attribute></attribute>
-      <attribute><code>STREAM_RESULTS</code><attribute>Y</attribute></attribute>
-      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
-    </attributes>
-  </connection>
   <order>
   <hop> <from>Sort rows</from><to>Group by</to><enabled>Y</enabled> </hop>  <hop> <from>Placeholder 3x</from><to>xmlOrderLines</to><enabled>Y</enabled> </hop>  <hop> <from>OrderLines</from><to>Placeholder 3x</to><enabled>Y</enabled> </hop>  <hop> <from>Dummy for aggregation</from><to>Group by 2</to><enabled>Y</enabled> </hop>  <hop> <from>OrderList</from><to>Placeholder</to><enabled>Y</enabled> </hop>  <hop> <from>Placeholder</from><to>xmlOrderList</to><enabled>Y</enabled> </hop>  <hop> <from>xmlOrderList</from><to>Join Rows (cartesian product)</to><enabled>Y</enabled> </hop>  <hop> <from>Join Rows (cartesian product)</from><to>Fill the placeholder 2</to><enabled>Y</enabled> </hop>  <hop> <from>Group by 2</from><to>Join Rows (cartesian product)</to><enabled>Y</enabled> </hop>  <hop> <from>Group by</from><to>Stream lookup 2</to><enabled>Y</enabled> </hop>  <hop> <from>OrderHeaders</from><to>Placeholder 2</to><enabled>Y</enabled> </hop>  <hop> <from>Placeholder 2</from><to>xmlOrderHeaders</to><enabled>Y</enabled> </hop>  <hop> <from>Stream lookup 2</from><to>Fill the placeholder</to><enabled>Y</enabled> </hop>  <hop> <from>Fill the placeholder</from><to>Dummy for aggregation</to><enabled>Y</enabled> </hop>  <hop> <from>Fill the placeholder 2</from><to>Replace separators</to><enabled>Y</enabled> </hop>  <hop> <from>Replace separators</from><to>XML File output</to><enabled>Y</enabled> </hop>  <hop> <from>Sort rows 2</from><to>Group by 3</to><enabled>Y</enabled> </hop>  <hop> <from>xmlOrderSubLines</from><to>Sort rows 2</to><enabled>Y</enabled> </hop>  <hop> <from>OrderSubLines</from><to>xmlOrderSubLines</to><enabled>Y</enabled> </hop>  <hop> <from>Fill the placeholder 3</from><to>Sort rows</to><enabled>Y</enabled> </hop>  <hop> <from>Stream lookup</from><to>Fill the placeholder 3</to><enabled>Y</enabled> </hop>  <hop> <from>Group by 3</from><to>Stream lookup</to><enabled>Y</enabled> </hop>  <hop> <from>Sort rows 2 2</from><to>Group by 3 2</to><enabled>Y</enabled> </hop>  <hop> <from>xmlOrderHeaderComments</from><to>Sort rows 2 2</to><enabled>Y</enabled> </hop>  <hop> <from>OrderHeaderComments</from><to>xmlOrderHeaderComments</to><enabled>Y</enabled> </hop>  <hop> <from>xmlOrderHeaders</from><to>Stream lookup 2 2</to><enabled>Y</enabled> </hop>  <hop> <from>Stream lookup 2 2</from><to>Stream lookup 2</to><enabled>Y</enabled> </hop>  <hop> <from>Group by 3 2</from><to>Stream lookup 2 2</to><enabled>Y</enabled> </hop>  <hop> <from>OrderLineComments</from><to>xmlOrderLineComments</to><enabled>Y</enabled> </hop>  <hop> <from>Sort rows 2 2 2</from><to>Group by 3 2 2</to><enabled>Y</enabled> </hop>  <hop> <from>xmlOrderLineComments</from><to>Sort rows 2 2 2</to><enabled>Y</enabled> </hop>  <hop> <from>xmlOrderLines</from><to>Stream lookup 3</to><enabled>Y</enabled> </hop>  <hop> <from>Stream lookup 3</from><to>Stream lookup</to><enabled>Y</enabled> </hop>  <hop> <from>Group by 3 2 2</from><to>Stream lookup 3</to><enabled>Y</enabled> </hop>  </order>
 

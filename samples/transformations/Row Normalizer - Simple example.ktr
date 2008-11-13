@@ -41,48 +41,8 @@
     <partitionschemas>
     </partitionschemas>
     <slaveservers>
-         <slaveserver><name>local5</name><hostname>localhost</hostname><port>40005</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
-         <slaveserver><name>local4</name><hostname>localhost</hostname><port>40004</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
-         <slaveserver><name>local3</name><hostname>localhost</hostname><port>40003</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
-         <slaveserver><name>tmp04</name><hostname>cm-metricstmp04</hostname><port>40000</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
-         <slaveserver><name>tmp03</name><hostname>cm-metricstmp03</hostname><port>40000</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
-         <slaveserver><name>tmp02</name><hostname>cm-metricstmp02</hostname><port>40000</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
-         <slaveserver><name>tmp01</name><hostname>cm-metricstmp01</hostname><port>40000</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
-         <slaveserver><name>etl01</name><hostname>cm-metricsetl01</hostname><port>40000</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>Y</master></slaveserver>
-         <slaveserver><name>local2</name><hostname>localhost</hostname><port>40002</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
-         <slaveserver><name>local1</name><hostname>localhost</hostname><port>40001</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>Y</master></slaveserver>
     </slaveservers>
     <clusterschemas>
-        <clusterschema>
-          <name>tmp</name>
-          <base_port>40010</base_port>
-          <sockets_buffer_size>2000</sockets_buffer_size>
-          <sockets_flush_interval>5000</sockets_flush_interval>
-          <sockets_compressed>Y</sockets_compressed>
-          <dynamic>N</dynamic>
-          <slaveservers>
-            <name>etl01</name>
-            <name>tmp01</name>
-            <name>tmp02</name>
-            <name>tmp03</name>
-            <name>tmp04</name>
-          </slaveservers>
-        </clusterschema>
-        <clusterschema>
-          <name>local</name>
-          <base_port>40010</base_port>
-          <sockets_buffer_size>2000</sockets_buffer_size>
-          <sockets_flush_interval>5000</sockets_flush_interval>
-          <sockets_compressed>Y</sockets_compressed>
-          <dynamic>N</dynamic>
-          <slaveservers>
-            <name>local1</name>
-            <name>local2</name>
-            <name>local3</name>
-            <name>local4</name>
-            <name>local5</name>
-          </slaveservers>
-        </clusterschema>
     </clusterschemas>
   <modified_user>-</modified_user>
   <modified_date>2008&#47;11&#47;13 13:26:53.999</modified_date>

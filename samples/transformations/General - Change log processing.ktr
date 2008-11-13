@@ -31,26 +31,6 @@
     </info>
   <notepads>
     </notepads>
-  <connection>
-    <name>H2</name>
-    <server>localhost</server>
-    <type>H2</type>
-    <access>Native</access>
-    <database>samples</database>
-    <port>-1</port>
-    <username>sa</username>
-    <password>Encrypted </password>
-    <servername/>
-    <data_tablespace/>
-    <index_tablespace/>
-    <attributes>
-      <attribute><code>EXTRA_OPTION_MYSQL.defaultFetchSize</code><attribute>500</attribute></attribute>
-      <attribute><code>EXTRA_OPTION_MYSQL.useCursorFetch</code><attribute>true</attribute></attribute>
-      <attribute><code>MAXIMUM_POOL_SIZE</code><attribute>10</attribute></attribute>
-      <attribute><code>PORT_NUMBER</code><attribute>-1</attribute></attribute>
-      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
-    </attributes>
-  </connection>
   <order>
   <hop> <from>changelog.txt</from><to>Copy rows to result</to><enabled>Y</enabled> </hop>  </order>
 

@@ -50,24 +50,6 @@ Then save them in a single XML column</note>
       <heigth>76</heigth>
       </notepad>
     </notepads>
-  <connection>
-    <name>dz</name>
-    <server>optdev2</server>
-    <type>ORACLE</type>
-    <access>Native</access>
-    <database>DEV_DZ1</database>
-    <port>1523</port>
-    <username>dzverina</username>
-    <password>Encrypted 2be98afc86aa7f2e4af03b875cc9ba1db</password>
-    <servername/>
-    <data_tablespace/>
-    <index_tablespace/>
-    <attributes>
-      <attribute><code>EXTRA_OPTION_MYSQL.defaultFetchSize</code><attribute>500</attribute></attribute>
-      <attribute><code>EXTRA_OPTION_MYSQL.useCursorFetch</code><attribute>true</attribute></attribute>
-      <attribute><code>PORT_NUMBER</code><attribute>1523</attribute></attribute>
-    </attributes>
-  </connection>
   <order>
   <hop> <from>Generate Rows</from><to>Add sequence</to><enabled>Y</enabled> </hop>  <hop> <from>Add sequence</from><to>Create random shape classes</to><enabled>Y</enabled> </hop>  <hop> <from>Add radius to circles</from><to>Convert circle to XML class</to><enabled>Y</enabled> </hop>  <hop> <from>Convert circle to XML class</from><to>Remove fluff from circles</to><enabled>Y</enabled> </hop>  <hop> <from>Add dimensions to rectangles</from><to>Convert rectangle to XML</to><enabled>Y</enabled> </hop>  <hop> <from>Convert rectangle to XML</from><to>Remove fluff from rectangles</to><enabled>Y</enabled> </hop>  <hop> <from>Create random shape classes</from><to>Split rectangles and circles</to><enabled>Y</enabled> </hop>  <hop> <from>Split rectangles and circles</from><to>Add radius to circles</to><enabled>Y</enabled> </hop>  <hop> <from>Split rectangles and circles</from><to>Add dimensions to rectangles</to><enabled>Y</enabled> </hop>  <hop> <from>Remove fluff from circles</from><to>Dummy (do nothing)</to><enabled>Y</enabled> </hop>  <hop> <from>Remove fluff from rectangles</from><to>Dummy (do nothing)</to><enabled>Y</enabled> </hop>  </order>
 
@@ -142,7 +124,7 @@ Then save them in a single XML column</note>
     <copies>1</copies>
       <valuename>id</valuename>
       <use_database>N</use_database>
-      <connection>dz</connection>
+      <connection/>
       <seqname>SEQ_</seqname>
       <use_counter>Y</use_counter>
       <start_at>1</start_at>

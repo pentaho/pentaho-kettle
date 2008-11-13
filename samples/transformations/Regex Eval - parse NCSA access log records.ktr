@@ -41,7 +41,6 @@
     <partitionschemas>
     </partitionschemas>
     <slaveservers>
-         <slaveserver><name>cm-metricsapp01</name><hostname>cm-metricsapp01</hostname><port>40000</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>Y</master></slaveserver>
     </slaveservers>
     <clusterschemas>
     </clusterschemas>
