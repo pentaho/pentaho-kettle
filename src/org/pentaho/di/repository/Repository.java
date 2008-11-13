@@ -2053,6 +2053,9 @@ public class Repository
 			case ValueMetaInterface.TYPE_INTEGER:
 				valueMeta.setConversionMask(ValueMetaAndData.VALUE_REPOSITORY_INTEGER_CONVERSION_MASK);
 				break;
+			case ValueMetaInterface.TYPE_DATE:
+				valueMeta.setConversionMask(ValueMetaAndData.VALUE_REPOSITORY_DATE_CONVERSION_MASK);
+				break;
 			default:
 				break;
 			}
