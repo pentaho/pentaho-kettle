@@ -441,7 +441,7 @@ public class Repository
     private final static int[] KEY_POSITIONS = new int[] {0, 1, 2};
 
     public static final int REQUIRED_MAJOR_VERSION = 3;
-    public static final int REQUIRED_MINOR_VERSION = 0;
+    public static final int REQUIRED_MINOR_VERSION = 2;
     
 	private RepositoryMeta		repinfo;
 	public  UserInfo			userinfo;
@@ -2054,6 +2054,9 @@ public class Repository
 				break;
 			case ValueMetaInterface.TYPE_INTEGER:
 				valueMeta.setConversionMask(ValueMetaAndData.VALUE_REPOSITORY_INTEGER_CONVERSION_MASK);
+				break;
+			case ValueMetaInterface.TYPE_DATE:
+				valueMeta.setConversionMask(ValueMetaAndData.VALUE_REPOSITORY_DATE_CONVERSION_MASK);
 				break;
 			default:
 				break;
