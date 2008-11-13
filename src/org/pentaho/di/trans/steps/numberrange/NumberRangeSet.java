@@ -69,7 +69,7 @@ public class NumberRangeSet
 	 	/**
 	 * Returns separator that is added if a value matches multiple ranges.
 	 */
-	 	protected String getMultiValueSeparator() 
+	 	public static String getMultiValueSeparator() 
 		{
 			return ",";
 		}
