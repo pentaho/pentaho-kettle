@@ -178,18 +178,16 @@ public class XMLJoinMeta extends BaseStepMeta  implements StepMetaInterface
     {
         try
         {
-            rep.saveStepAttribute(id_transformation, id_step, "encoding",           valueXMLfield);
-            rep.saveStepAttribute(id_transformation, id_step, "encoding",           targetXMLstep);
-            rep.saveStepAttribute(id_transformation, id_step, "encoding",           targetXMLfield);
-            rep.saveStepAttribute(id_transformation, id_step, "encoding",           sourceXMLstep);
-            rep.saveStepAttribute(id_transformation, id_step, "encoding",           sourceXMLfield);
-            rep.saveStepAttribute(id_transformation, id_step, "encoding",           complexJoin);            
-            rep.saveStepAttribute(id_transformation, id_step, "encoding",           targetXPath);
-            rep.saveStepAttribute(id_transformation, id_step, "encoding",           joinCompareField);
-            rep.saveStepAttribute(id_transformation, id_step, "encoding",           encoding);
-            rep.saveStepAttribute(id_transformation, id_step, "encoding",           omitXMLHeader);   
-            
-            
+            rep.saveStepAttribute(id_transformation, id_step, "valueXMLfield", valueXMLfield);
+            rep.saveStepAttribute(id_transformation, id_step, "targetXMLstep", targetXMLstep);
+            rep.saveStepAttribute(id_transformation, id_step, "targetXMLfield", targetXMLfield);
+            rep.saveStepAttribute(id_transformation, id_step, "sourceXMLstep", sourceXMLstep);
+            rep.saveStepAttribute(id_transformation, id_step, "sourceXMLfield", sourceXMLfield);
+            rep.saveStepAttribute(id_transformation, id_step, "complexJoin", complexJoin);            
+            rep.saveStepAttribute(id_transformation, id_step, "targetXPath", targetXPath);
+            rep.saveStepAttribute(id_transformation, id_step, "joinCompareField", joinCompareField);
+            rep.saveStepAttribute(id_transformation, id_step, "encoding", encoding);
+            rep.saveStepAttribute(id_transformation, id_step, "omitXMLHeader", omitXMLHeader);   
         }
         catch(Exception e)
         {
