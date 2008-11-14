@@ -1191,6 +1191,17 @@
 		</tooltip>
 		<image-uri>ui/images/NRI.png</image-uri>
 	</step>
+		<step id="SynchronizeAfterMerge">
+		<description>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.SynchronizeAfterMerge")
+		</description>
+		<class-name>org.pentaho.di.trans.steps.synchronizeaftermerge.SynchronizeAfterMergeMeta</class-name>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<tooltip>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.SynchronizeAfterMerge")
+		</tooltip>
+		<image-uri>ui/images/SAM.png</image-uri>
+	</step>
 	
 	<step id="LucidDBBulkLoader">
 		<description>
