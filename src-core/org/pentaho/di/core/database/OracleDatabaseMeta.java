@@ -433,7 +433,7 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
      */
     public String getExtraOptionsHelpText()
     {
-        return  "http://www.oracle.com/technology/tech/java/sqlj_jdbc/htdocs/jdbc_faq.htm#05_00";
+        return  "http://download.oracle.com/docs/cd/B19306_01/java.102/b14355/urls.htm#i1006362";
     }
 
     public String[] getUsedLibraries()

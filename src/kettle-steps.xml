@@ -1047,7 +1047,8 @@
 		</tooltip>
 		<image-uri>ui/images/OBL.png</image-uri>
 	</step>
-		<step id="MailValidator">
+	
+	<step id="MailValidator">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.MailValidator")
 		</description>
@@ -1058,7 +1059,8 @@
 		</tooltip>
 		<image-uri>ui/images/MAV.png</image-uri>
 	</step>
-		<step id="Mail">
+	
+	<step id="Mail">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.Mail")
 		</description>
@@ -1069,7 +1071,8 @@
 		</tooltip>
 		<image-uri>ui/images/MAIL.png</image-uri>
 	</step>
-		<step id="CreditCardValidator">
+	
+	<step id="CreditCardValidator">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.CreditCardValidator")
 		</description>
@@ -1080,7 +1083,8 @@
 		</tooltip>
 		<image-uri>ui/images/CCV.png</image-uri>
 	</step>
-		<step id="ProcessFiles">
+	
+	<step id="ProcessFiles">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.ProcessFiles")
 		</description>
@@ -1091,7 +1095,8 @@
 		</tooltip>
 		<image-uri>ui/images/PPF.png</image-uri>
 	</step>
-		<step id="DetectLastRow">
+	
+	<step id="DetectLastRow">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.DetectLastRow")
 		</description>
@@ -1102,7 +1107,8 @@
 		</tooltip>
 		<image-uri>ui/images/DLR.png</image-uri>
 	</step>
-		<step id="DetectEmptyStream">
+	
+	<step id="DetectEmptyStream">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.DetectEmptyStream")
 		</description>
@@ -1113,7 +1119,8 @@
 		</tooltip>
 		<image-uri>ui/images/EMS.png</image-uri>
 	</step>
-		<step id="WriteToLog">
+	
+	<step id="WriteToLog">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.WriteToLog")
 		</description>
@@ -1124,7 +1131,8 @@
 		</tooltip>
 		<image-uri>ui/images/WTL.png</image-uri>
 	</step>
-		<step id="SampleRows">
+	
+	<step id="SampleRows">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.SampleRows")
 		</description>
@@ -1135,7 +1143,8 @@
 		</tooltip>
 		<image-uri>ui/images/SR.png</image-uri>
 	</step>
-		<step id="GetPreviousRowField">
+	
+	<step id="GetPreviousRowField">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.GetPreviousRowField")
 		</description>
@@ -1146,7 +1155,8 @@
 		</tooltip>
 		<image-uri>ui/images/PRV.png</image-uri>
 	</step>
-		<step id="ExecSQLRow">
+	
+	<step id="ExecSQLRow">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.ExecSQLRow")
 		</description>
@@ -1157,7 +1167,8 @@
 		</tooltip>
 		<image-uri>ui/images/SQLR.png</image-uri>
 	</step>
-		<step id="DynamicSQLRow">
+	
+	<step id="DynamicSQLRow">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.DynamicSQLRow")
 		</description>
@@ -1168,7 +1179,8 @@
 		</tooltip>
 		<image-uri>ui/images/DSR.png</image-uri>
 	</step>
-		<step id="NumberRange">
+	
+	<step id="NumberRange">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.NumberRange")
 		</description>
@@ -1179,4 +1191,17 @@
 		</tooltip>
 		<image-uri>ui/images/NRI.png</image-uri>
 	</step>
+	
+	<step id="LucidDBBulkLoader">
+		<description>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.LucidDBBulkLoader")
+		</description>
+		<class-name>org.pentaho.di.trans.steps.luciddbbulkloader.LucidDBBulkLoaderMeta</class-name>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<tooltip>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.LucidDBBulkLoader")
+		</tooltip>
+		<image-uri>ui/images/OBL.png</image-uri>
+	</step>
+	
 </steps>
