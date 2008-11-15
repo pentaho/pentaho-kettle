@@ -134,6 +134,21 @@ public class RegexEval extends BaseStep implements StepInterface
 			if (fieldValue == null)
 			{
 				outputRow[data.indexOfMatchResultField] = false;
+                for (int i = 0; i < data.nrExtraFields; i++)
+                {
+                    ValueMetaInterface valueMeta = data.outputRowMeta.getValueMeta(data.indexOfFirstCaptureGroupField+i); 
+                    ValueMetaInterface conversionValueMeta = data.conversionRowMeta.getValueMeta(data.indexOfFirstCaptureGroupField+i);
+                    Object convertedValue = valueMeta.convertDataFromString
+                    (
+                            null,
+                            conversionValueMeta,
+                            meta.getFieldNullIf()[i],
+                            meta.getFieldIfNull()[i],
+                            meta.getFieldTrimType()[i]
+                    );
+    
+                    outputRow[data.indexOfFirstCaptureGroupField+i] = convertedValue;
+                }
 			}
 			else
 			{
