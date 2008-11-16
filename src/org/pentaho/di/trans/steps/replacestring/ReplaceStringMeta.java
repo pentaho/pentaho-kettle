@@ -306,7 +306,7 @@ public class ReplaceStringMeta extends BaseStepMeta implements StepMetaInterface
 		boolean error_found = false;
 
 		if (prev == null) {
-			error_message += Messages.getString("TrimMeta.CheckResult.NoInputReceived") + Const.CR; //$NON-NLS-1$
+			error_message += Messages.getString("ReplaceStringMeta.CheckResult.NoInputReceived") + Const.CR; //$NON-NLS-1$
 			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR,
 					error_message, stepinfo);
 			remarks.add(cr);

@@ -31,7 +31,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  * Search and replace in string.
  * 
  * @author Samatar Hassan
- * @since 28 September 2007
+ * @since 28 September 2008
  */
 public class ReplaceString extends BaseStep implements StepInterface {
 	private ReplaceStringMeta meta;

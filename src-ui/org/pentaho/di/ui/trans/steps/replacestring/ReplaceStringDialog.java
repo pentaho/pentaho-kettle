@@ -314,8 +314,7 @@ public class ReplaceStringDialog extends BaseStepDialog implements StepDialogInt
 
 		inf.allocate(nrkeys);
 		if(log.isDebug())
-			log.logDebug(toString(), Messages.getString(
-				"ReplaceStringDialog.Log.FoundFields", String.valueOf(nrkeys))); //$NON-NLS-1$ //$NON-NLS-2$
+			log.logDebug(toString(), Messages.getString("ReplaceStringDialog.Log.FoundFields", String.valueOf(nrkeys))); //$NON-NLS-1$ //$NON-NLS-2$
 		for (int i = 0; i < nrkeys; i++) {
 			TableItem item = wFields.getNonEmpty(i);
 			inf.getFieldInStream()[i] = item.getText(1);
