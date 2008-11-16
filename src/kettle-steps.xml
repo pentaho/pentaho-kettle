@@ -1214,5 +1214,16 @@
 		</tooltip>
 		<image-uri>ui/images/OBL.png</image-uri>
 	</step>
+		<step id="ReplaceString">
+		<description>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.ReplaceString")
+		</description>
+		<class-name>org.pentaho.di.trans.steps.replacestring.ReplaceStringMeta</class-name>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<tooltip>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.ReplaceString")
+		</tooltip>
+		<image-uri>ui/images/RST.png</image-uri>
+	</step>
 	
 </steps>

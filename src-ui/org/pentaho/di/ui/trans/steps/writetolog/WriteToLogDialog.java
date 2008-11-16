@@ -293,20 +293,6 @@ public class WriteToLogDialog extends BaseStepDialog implements StepDialogInterf
         // Add the currentMeta fields...
         fields.putAll(inputFields);
         
-        shell.getDisplay().syncExec(new Runnable()
-            {
-                public void run()
-                {
-                    // Add the newly create fields.
-                    //
-                    int nrNonEmptyFields = wFields.nrNonEmpty();
-                    for (int i=0;i<nrNonEmptyFields;i++)
-                    {
-                        TableItem item = wFields.getNonEmpty(i);
-                    }
-                }
-            }
-        );
         Set<String> keySet = fields.keySet();
         List<String> entries = new ArrayList<String>(keySet);
 
