@@ -1225,5 +1225,16 @@
 		</tooltip>
 		<image-uri>ui/images/RST.png</image-uri>
 	</step>
+		<step id="StringCut">
+		<description>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.StringCut")
+		</description>
+		<class-name>org.pentaho.di.trans.steps.stringcut.StringCutMeta</class-name>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<tooltip>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.StringCut")
+		</tooltip>
+		<image-uri>ui/images/SRC.png</image-uri>
+	</step>
 	
 </steps>
