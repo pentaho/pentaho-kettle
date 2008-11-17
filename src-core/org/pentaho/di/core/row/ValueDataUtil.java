@@ -110,6 +110,17 @@ public class ValueDataUtil
     	if(dataA==null) return null;
     	return dataA.toString().toLowerCase();
     }
+    public static String maskXML(ValueMetaInterface metaA, Object dataA)
+    {
+    	if(dataA==null) return null;
+    	return Const.maskXML(dataA.toString());
+    }
+    public static String useCDATA(ValueMetaInterface metaA, Object dataA)
+    {
+    	if(dataA==null) return null;
+    	return "<![CDATA["+dataA.toString()+"]]>";
+    	
+    }
     public static String createChecksum(ValueMetaInterface metaA, Object dataA, String type)
     {
     	String md5Hash = null;

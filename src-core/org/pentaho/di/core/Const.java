@@ -1931,4 +1931,31 @@ public class Const
 	    // Return the date again.
 	    return calendar.getTime();
 	}
+	 /**
+	 * 	Mask XML content.
+	 *  i.e. replace characters with &values;
+	 * 	@param content content
+	 * 	@return masked content
+	 */
+	public static String maskXML (String content)
+	{
+		if (isEmpty(content))	return content;
+		
+		StringBuffer out = new StringBuffer();
+		char[] chars = content.toCharArray();
+		for (int i = 0; i < chars.length; i++)
+		{
+			char c = chars[i];
+			switch (c)
+			{
+				case '<':	out.append("&lt;");			break;
+				case '>':	out.append("&gt;");			break;
+				case '&':	out.append("&amp;");		break;
+				case '"':	out.append("&quot;");		break;
+				case '\'':	out.append("&apos;");		break;
+				default:	out.append(c);   			break;
+			}
+		}
+		return out.toString();
+	}	
 }

@@ -68,6 +68,8 @@ public class CalculatorMetaFunction implements Cloneable
     public static final int CALC_INITCAP                =  41;
     public static final int CALC_UPPER_CASE             =  42;
     public static final int CALC_LOWER_CASE             =  43;
+    public static final int CALC_MASK_XML             =  44;
+    public static final int CALC_USE_CDATA            =  45;
     
 
     public static final String calc_desc[] = 
@@ -115,7 +117,9 @@ public class CalculatorMetaFunction implements Cloneable
             "ADD3",
             "INIT_CAP",
             "UPPER_CASE",
-            "LOWER_CASE"
+            "LOWER_CASE",
+            "MASK_XML",
+            "USE_CDATA"
         };
     
     public static final String calcLongDesc[] = 
@@ -163,7 +167,9 @@ public class CalculatorMetaFunction implements Cloneable
             "A + B + C",
             Messages.getString("CalculatorMetaFunction.CalcFunctions.InitCap"),
             Messages.getString("CalculatorMetaFunction.CalcFunctions.UpperCase"),
-            Messages.getString("CalculatorMetaFunction.CalcFunctions.LowerCase")
+            Messages.getString("CalculatorMetaFunction.CalcFunctions.LowerCase"),
+            Messages.getString("CalculatorMetaFunction.CalcFunctions.MaskXML"),
+            Messages.getString("CalculatorMetaFunction.CalcFunctions.UseCDATA")
         };
    
     private String fieldName;

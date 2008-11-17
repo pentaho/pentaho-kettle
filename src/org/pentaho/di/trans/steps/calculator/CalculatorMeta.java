@@ -310,6 +310,12 @@ public class CalculatorMeta extends BaseStepMeta implements StepMetaInterface
             case CalculatorMetaFunction.CALC_LOWER_CASE           :   // LowerCase(A)
                 defaultResultType = ValueMetaInterface.TYPE_STRING;
                 break;
+            case CalculatorMetaFunction.CALC_MASK_XML           :   // MaskXML(A)
+                defaultResultType = ValueMetaInterface.TYPE_STRING;
+                break;
+            case CalculatorMetaFunction.CALC_USE_CDATA           :   // CDATA(A)
+                defaultResultType = ValueMetaInterface.TYPE_STRING;
+                break;
             default:
                 break;
             }

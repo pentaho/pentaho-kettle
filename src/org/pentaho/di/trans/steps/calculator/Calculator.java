@@ -505,6 +505,18 @@ public class Calculator extends BaseStep implements StepInterface
                     resultType=ValueMetaInterface.TYPE_STRING; 
                 }
                 break;
+                case CalculatorMetaFunction.CALC_MASK_XML            :  // MaskXML( A )
+                {
+                    calcData[index] = ValueDataUtil.maskXML(metaA, dataA);
+                    resultType=ValueMetaInterface.TYPE_STRING; 
+                }
+                break;
+                case CalculatorMetaFunction.CALC_USE_CDATA            :  // CDATA( A )
+                {
+                    calcData[index] = ValueDataUtil.useCDATA(metaA, dataA);
+                    resultType=ValueMetaInterface.TYPE_STRING; 
+                }
+                break;
                 default:
                     throw new KettleValueException(Messages.getString("Calculator.Log.UnknownCalculationType")+fn.getCalcType());
                 }
