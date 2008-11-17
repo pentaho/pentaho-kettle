@@ -12,6 +12,7 @@
 
 package org.pentaho.di.trans.steps.exceloutput;
 
+import java.io.File;
 import java.util.Locale;
 
 import jxl.Workbook;
@@ -422,10 +423,10 @@ public class ExcelOutput extends BaseStep implements StepInterface
             {
                 ws.setEncoding(meta.getEncoding());
             }
-            String filename=buildFilename();
-            if(log.isDebug()) log.logDebug(toString(),Messages.getString("ExcelOutput.Log.OpeningFile",filename));
-            data.file = KettleVFS.getFileObject(filename);
-
+            String buildFilename=buildFilename();
+            data.file = KettleVFS.getFileObject(buildFilename);
+            if(log.isDebug()) log.logDebug(toString(),Messages.getString("ExcelOutput.Log.OpeningFile",buildFilename));
+            
             if(meta.isAddToResultFiles())
             {
 				// Add this to the result file names...
@@ -434,7 +435,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
 	            addResultFile(resultFile);
             }
 
-            // Create the workboook
+            // Create the workbook
             if (!meta.isTemplateEnabled())
             {				
             	/*if (file.exists())
@@ -444,43 +445,32 @@ public class ExcelOutput extends BaseStep implements StepInterface
             		//
             		file.delete();
             	}*/
-            	
-            	
-               	if(meta.isAppend() && data.file.exists())
-            	{
-               		boolean find=false;
-                    int position=0;
-                    
-            		// Update Workbook
-            		data.workbook = Workbook.createWorkbook(KettleVFS.getOutputStream(data.file,false) ,Workbook.getWorkbook(KettleVFS.getInputStream(data.file)));
-            		
-            		// get available sheets
-            		String listSheets[]=data.workbook.getSheetNames();
-            		
-            		// Let's see if this sheet already exist...
-            		for (int i=0;i<listSheets.length;i++)
-            		{
-            			if(listSheets[i].equals(data.realSheetname))
-            			{
-            				// We find the sheet
-            				find=true;
-            				position=i;
-            			}
-            			
-            		}
-    				
-            		if(find)
-            		{
-            			// let's delete sheet
-            			data.workbook.removeSheet(position);
-            		}
-            		
-                	// and now .. we create the new sheet
-                	data.sheet = data.workbook.createSheet(data.realSheetname,data.workbook.getNumberOfSheets()+1);
 
-				
+            	File fle = new File(KettleVFS.getFilename(data.file));
+               	if(meta.isAppend() && fle.exists())
+            	{ 
+            		Workbook workbook = Workbook.getWorkbook(fle);
+                    data.workbook =Workbook.createWorkbook(fle,workbook);
+                    if(workbook!=null) workbook.close();
+                    
+                    if(data.workbook.getSheet(data.realSheetname)!=null) 
+                    {    
+	            		// get available sheets
+	            		String listSheets[]=data.workbook.getSheetNames();
+	            
+	            		// Let's see if this sheet already exist...
+	            		for (int i=0;i<listSheets.length;i++) 
+	            		{
+	            			if(listSheets[i].equals(data.realSheetname))
+	            			{
+	                			// let's remove sheet
+	                			data.workbook.removeSheet(i);
+	            			}	
+	            		}
+                    }
+                	// and now .. we create the sheet
+                	data.sheet = data.workbook.createSheet(data.realSheetname,data.workbook.getNumberOfSheets());
             	}else{
-                
             		// Create a new Workbook
     				data.workbook = Workbook.createWorkbook(KettleVFS.getOutputStream(data.file, false), ws);
     				
@@ -492,7 +482,6 @@ public class ExcelOutput extends BaseStep implements StepInterface
                 		data.sheet = data.workbook.createSheet(sheetname, 0);
                 	} 
             	}
-            	
             } else {
 
             	FileObject fo = KettleVFS.getFileObject(environmentSubstitute(meta.getTemplateFileName()));
@@ -504,12 +493,12 @@ public class ExcelOutput extends BaseStep implements StepInterface
             	tmpWorkbook.close();
             	// use only the first sheet as template
             	data.sheet = data.workbook.getSheet(0);
-            	// save inital number of columns
+            	// save initial number of columns
             	data.templateColumns = data.sheet.getColumns();
             }
 			
             // Rename Sheet
-			if (!Const.isEmpty(environmentSubstitute(meta.getSheetname()))) 
+			if (!Const.isEmpty(data.realSheetname)) 
 			{
 				data.sheet.setName(data.realSheetname); 
 			}
@@ -539,7 +528,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
             }*/
             data.headerWrote=false;
             
-            if(log.isDebug()) log.logDebug(toString(),Messages.getString("ExcelOutput.Log.FileOpened",filename));
+            if(log.isDebug()) log.logDebug(toString(),Messages.getString("ExcelOutput.Log.FileOpened",buildFilename));
 			retval=true;
 		}
 		catch(Exception e)
