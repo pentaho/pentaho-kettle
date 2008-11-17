@@ -511,7 +511,7 @@ public class Calculator extends BaseStep implements StepInterface
                     resultType=ValueMetaInterface.TYPE_STRING; 
                 }
                 break;
-                case CalculatorMetaFunction.CALC_USE_CDATA            :  // CDATA( A )
+                case CalculatorMetaFunction.CALC_USE_CDATA           :  // CDATA( A )
                 {
                     calcData[index] = ValueDataUtil.useCDATA(metaA, dataA);
                     resultType=ValueMetaInterface.TYPE_STRING; 
