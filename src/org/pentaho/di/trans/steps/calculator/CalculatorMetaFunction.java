@@ -62,6 +62,11 @@ public class CalculatorMetaFunction implements Cloneable
     public static final int CALC_METAPHONE  = 35;
     public static final int CALC_DOUBLE_METAPHONE  = 36;
     public static final int CALC_ABS  = 37;
+    public static final int CALC_REMOVE_TIME_FROM_DATE  = 38;
+    public static final int CALC_DATE_DIFF              =  39;
+    public static final int CALC_ADD3                  =  40;
+
+    
 
     public static final String calc_desc[] = 
         { 
@@ -102,7 +107,10 @@ public class CalculatorMetaFunction implements Cloneable
             "LEVENSHTEIN_DISTANCE",
             "METAPHONE",
             "DOUBLE_METAPHONE",
-            "ABS"
+            "ABS",
+            "REMOVE_TIME_FROM_DATE",
+            "DATE_DIFF",
+            "ADD3"
         };
     
     public static final String calcLongDesc[] = 
@@ -144,7 +152,10 @@ public class CalculatorMetaFunction implements Cloneable
             Messages.getString("CalculatorMetaFunction.CalcFunctions.LevenshteinDistance"),
             Messages.getString("CalculatorMetaFunction.CalcFunctions.Metaphone"),
             Messages.getString("CalculatorMetaFunction.CalcFunctions.DoubleMetaphone"),
-            Messages.getString("CalculatorMetaFunction.CalcFunctions.Abs")
+            Messages.getString("CalculatorMetaFunction.CalcFunctions.Abs"),
+            Messages.getString("CalculatorMetaFunction.CalcFunctions.RemoveTimeFromDate"),
+            Messages.getString("CalculatorMetaFunction.CalcFunctions.DateDiff"),
+            "A + B + C"
         };
    
     private String fieldName;

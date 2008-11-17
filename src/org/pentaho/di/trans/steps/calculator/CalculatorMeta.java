@@ -183,7 +183,8 @@ public class CalculatorMeta extends BaseStepMeta implements StepMetaInterface
             
             switch(fn.getCalcType())
             {
-            case CalculatorMetaFunction.CALC_NONE:  break;
+            case CalculatorMetaFunction.CALC_NONE:  
+            	break;
             case CalculatorMetaFunction.CALC_ADD                :  // A + B
                 defaultResultType = ValueMetaInterface.TYPE_NUMBER;
                 break;
@@ -290,6 +291,15 @@ public class CalculatorMeta extends BaseStepMeta implements StepMetaInterface
                 break; 
             case CalculatorMetaFunction.CALC_ABS           :  // ABS( A )
                 defaultResultType = ValueMetaInterface.TYPE_INTEGER;
+                break;
+            case CalculatorMetaFunction.CALC_REMOVE_TIME_FROM_DATE : // Remove time from field A
+                defaultResultType = ValueMetaInterface.TYPE_DATE;
+                break;
+            case CalculatorMetaFunction.CALC_DATE_DIFF : // DateA - DateB
+                defaultResultType = ValueMetaInterface.TYPE_INTEGER;
+                break;
+            case CalculatorMetaFunction.CALC_ADD3           :   // A + B +C
+                defaultResultType = ValueMetaInterface.TYPE_NUMBER;
                 break;
             default:
                 break;

@@ -15,6 +15,7 @@ package org.pentaho.di.core.row;
 import java.io.FileInputStream;
 import java.math.BigDecimal;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 import java.util.zip.CheckedInputStream;
 import java.util.zip.Adler32;
@@ -30,6 +31,7 @@ import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.provider.local.LocalFile;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleValueException;
+
 
 public class ValueDataUtil
 {
@@ -187,7 +189,26 @@ public class ValueDataUtil
         default: throw new KettleValueException("The 'plus' function only works on numeric data and Strings." );
         }
     }
-    
+    public static Object plus3(ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB, ValueMetaInterface metaC, Object dataC) throws KettleValueException
+    {
+        if (dataA==null || dataB==null || dataC==null) return null;
+        
+        switch(metaA.getType())
+        {
+        case ValueMetaInterface.TYPE_STRING    : 
+            return metaA.getString(dataA)+metaB.getString(dataB)+metaC.getString(dataC);
+        case ValueMetaInterface.TYPE_NUMBER    : 
+            return new Double( metaA.getNumber(dataA).doubleValue()+metaB.getNumber(dataB).doubleValue()+metaC.getNumber(dataC).doubleValue());
+        case ValueMetaInterface.TYPE_INTEGER   : 
+            return new Long( metaA.getInteger(dataA).longValue()+metaB.getInteger(dataB).longValue()+metaC.getInteger(dataC).longValue());
+        case ValueMetaInterface.TYPE_BOOLEAN   : 
+            return Boolean.valueOf( metaA.getBoolean(dataA).booleanValue() || metaB.getBoolean(dataB).booleanValue() || metaB.getBoolean(dataC).booleanValue());
+        case ValueMetaInterface.TYPE_BIGNUMBER : 
+            return metaA.getBigNumber(dataA).add( metaB.getBigNumber(dataB).add( metaC.getBigNumber(dataC)));
+            
+        default: throw new KettleValueException("The 'plus' function only works on numeric data and Strings." );
+        }
+    }
     public static Object sum(ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB) throws KettleValueException
     {
         if (dataA==null && dataB==null) return null;
@@ -515,7 +536,22 @@ public class ValueDataUtil
         default: throw new KettleValueException("The 'nvl' function doesn't know how to handle data type "+metaA.getType() );
         }
     }
-    
+    public static Object removeTimeFromDate(ValueMetaInterface metaA, Object dataA) throws KettleValueException
+    {
+        if (metaA.isDate())
+        {
+            Calendar cal = Calendar.getInstance();
+            Date date = metaA.getDate(dataA);
+            if (date!=null)
+            {
+                cal.setTime(date);
+                return Const.removeTimeFromDate(date);
+            }else
+            	return null;
+        }
+
+        throw new KettleValueException("The 'removeTimeFromDate' function only works with a date");
+    }
     public static Object addDays(ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB) throws KettleValueException
     {
         if (metaA.isDate() && metaB.isInteger())
@@ -529,7 +565,21 @@ public class ValueDataUtil
 
         throw new KettleValueException("The 'addDays' function only works with a date and an integer");
     }
-    
+    public static Object DateDiff(ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB) throws KettleValueException
+    {
+        if (metaA.isDate() && metaB.isDate())
+        {
+        	 if (dataA!=null && dataB!=null)
+             {
+                 // Get msec from each, and subtract.
+                 long diff = metaA.getDate(dataA).getTime() - metaB.getDate(dataB).getTime();
+                 return new Long(diff / (1000 * 60 * 60 * 24));  
+             }else
+            	 return null;
+        }
+
+        throw new KettleValueException("The 'DateDiff' function only works with dates");
+    }
     public static Object yearOfDate(ValueMetaInterface metaA, Object dataA) throws KettleValueException
     {
         if (dataA==null) return null;

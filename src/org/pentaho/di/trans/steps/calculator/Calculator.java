@@ -470,6 +470,23 @@ public class Calculator extends BaseStep implements StepInterface
                     calcData[index] = ValueDataUtil.abs(metaA, dataA);
                 }
                 break;
+                case CalculatorMetaFunction.CALC_REMOVE_TIME_FROM_DATE           : // Remove Time from field A
+                {
+                    calcData[index] = ValueDataUtil.removeTimeFromDate(metaA, dataA);
+                }
+                break;
+                case CalculatorMetaFunction.CALC_DATE_DIFF                :  // DateA - DateB
+                {
+                    calcData[index] = ValueDataUtil.DateDiff(metaA, dataA, metaB, dataB);
+                    resultType=ValueMetaInterface.TYPE_INTEGER;
+                }
+                break;
+                case CalculatorMetaFunction.CALC_ADD3                :  // A + B + C
+                {
+                    calcData[index] = ValueDataUtil.plus3(metaA, dataA, metaB, dataB, metaC, dataC);
+                    if (metaA.isString() || metaB.isString()|| metaC.isString()) resultType=ValueMetaInterface.TYPE_STRING;  
+                }
+                break;
                 default:
                     throw new KettleValueException(Messages.getString("Calculator.Log.UnknownCalculationType")+fn.getCalcType());
                 }

@@ -28,6 +28,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
@@ -1903,5 +1904,31 @@ public class Const
 	      }
 	    }
 	    return digitsOnly.toString ();
+	}
+	/**
+	 * Remove time from a date.
+	 * 
+	 * @return a date without hour.
+	 */
+	public static Date removeTimeFromDate(Date input)
+	{
+		if(input==null) return null;
+	    // Get an instance of the Calendar.
+	    Calendar calendar = Calendar.getInstance();
+
+	    // Make sure the calendar will not perform automatic correction.
+	    calendar.setLenient(false);
+
+	    // Set the time of the calendar to the given date.
+	    calendar.setTime(input);
+
+	    // Remove the hours, minutes, seconds and milliseconds.
+	    calendar.set(Calendar.HOUR_OF_DAY, 0);
+	    calendar.set(Calendar.MINUTE, 0);
+	    calendar.set(Calendar.SECOND, 0);
+	    calendar.set(Calendar.MILLISECOND, 0);
+
+	    // Return the date again.
+	    return calendar.getTime();
 	}
 }
