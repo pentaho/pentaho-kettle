@@ -65,7 +65,9 @@ public class CalculatorMetaFunction implements Cloneable
     public static final int CALC_REMOVE_TIME_FROM_DATE  = 38;
     public static final int CALC_DATE_DIFF              =  39;
     public static final int CALC_ADD3                  =  40;
-
+    public static final int CALC_INITCAP                =  41;
+    public static final int CALC_UPPER_CASE             =  42;
+    public static final int CALC_LOWER_CASE             =  43;
     
 
     public static final String calc_desc[] = 
@@ -110,7 +112,10 @@ public class CalculatorMetaFunction implements Cloneable
             "ABS",
             "REMOVE_TIME_FROM_DATE",
             "DATE_DIFF",
-            "ADD3"
+            "ADD3",
+            "INIT_CAP",
+            "UPPER_CASE",
+            "LOWER_CASE"
         };
     
     public static final String calcLongDesc[] = 
@@ -155,7 +160,10 @@ public class CalculatorMetaFunction implements Cloneable
             Messages.getString("CalculatorMetaFunction.CalcFunctions.Abs"),
             Messages.getString("CalculatorMetaFunction.CalcFunctions.RemoveTimeFromDate"),
             Messages.getString("CalculatorMetaFunction.CalcFunctions.DateDiff"),
-            "A + B + C"
+            "A + B + C",
+            Messages.getString("CalculatorMetaFunction.CalcFunctions.InitCap"),
+            Messages.getString("CalculatorMetaFunction.CalcFunctions.UpperCase"),
+            Messages.getString("CalculatorMetaFunction.CalcFunctions.LowerCase")
         };
    
     private String fieldName;

@@ -277,7 +277,7 @@ public class CalculatorMeta extends BaseStepMeta implements StepMetaInterface
             case CalculatorMetaFunction.CALC_MD5   : //MD5 of a file A
                 defaultResultType=ValueMetaInterface.TYPE_STRING;
                 break;  
-            case CalculatorMetaFunction.CALC_SHA1   : //SHA1 of a file A
+            case CalculatorMetaFunction.CALC_SHA1   : //SHA1 of a file Al
                 defaultResultType=ValueMetaInterface.TYPE_STRING;
                 break;  
             case CalculatorMetaFunction.CALC_LEVENSHTEIN_DISTANCE : //LEVENSHTEIN_DISTANCE of string A and string B
@@ -300,6 +300,15 @@ public class CalculatorMeta extends BaseStepMeta implements StepMetaInterface
                 break;
             case CalculatorMetaFunction.CALC_ADD3           :   // A + B +C
                 defaultResultType = ValueMetaInterface.TYPE_NUMBER;
+                break;
+            case CalculatorMetaFunction.CALC_INITCAP           :   // InitCap(A)
+                defaultResultType = ValueMetaInterface.TYPE_STRING;
+                break;
+            case CalculatorMetaFunction.CALC_UPPER_CASE           :   // UpperCase(A)
+                defaultResultType = ValueMetaInterface.TYPE_STRING;
+                break;
+            case CalculatorMetaFunction.CALC_LOWER_CASE           :   // LowerCase(A)
+                defaultResultType = ValueMetaInterface.TYPE_STRING;
                 break;
             default:
                 break;

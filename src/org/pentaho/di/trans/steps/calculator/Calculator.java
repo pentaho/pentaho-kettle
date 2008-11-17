@@ -487,6 +487,24 @@ public class Calculator extends BaseStep implements StepInterface
                     if (metaA.isString() || metaB.isString()|| metaC.isString()) resultType=ValueMetaInterface.TYPE_STRING;  
                 }
                 break;
+                case CalculatorMetaFunction.CALC_INITCAP            :  // InitCap( A )
+                {
+                    calcData[index] = ValueDataUtil.initCap(metaA, dataA);
+                    resultType=ValueMetaInterface.TYPE_STRING; 
+                }
+                break;
+                case CalculatorMetaFunction.CALC_UPPER_CASE            :  // UpperCase( A )
+                {
+                    calcData[index] = ValueDataUtil.upperCase(metaA, dataA);
+                    resultType=ValueMetaInterface.TYPE_STRING; 
+                }
+                break;
+                case CalculatorMetaFunction.CALC_LOWER_CASE            :  // UpperCase( A )
+                {
+                    calcData[index] = ValueDataUtil.lowerCase(metaA, dataA);
+                    resultType=ValueMetaInterface.TYPE_STRING; 
+                }
+                break;
                 default:
                     throw new KettleValueException(Messages.getString("Calculator.Log.UnknownCalculationType")+fn.getCalcType());
                 }

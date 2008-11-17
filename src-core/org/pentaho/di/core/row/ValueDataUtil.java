@@ -95,7 +95,21 @@ public class ValueDataUtil
     	if(dataA==null) return null;
     	return (new DoubleMetaphone()).doubleMetaphone(dataA.toString());
     }
-    
+    public static String initCap(ValueMetaInterface metaA, Object dataA)
+    {
+    	if(dataA==null) return null;
+    	return Const.initCap(dataA.toString());
+    }
+    public static String upperCase(ValueMetaInterface metaA, Object dataA)
+    {
+    	if(dataA==null) return null;
+    	return dataA.toString().toUpperCase();
+    }
+    public static String lowerCase(ValueMetaInterface metaA, Object dataA)
+    {
+    	if(dataA==null) return null;
+    	return dataA.toString().toLowerCase();
+    }
     public static String createChecksum(ValueMetaInterface metaA, Object dataA, String type)
     {
     	String md5Hash = null;
