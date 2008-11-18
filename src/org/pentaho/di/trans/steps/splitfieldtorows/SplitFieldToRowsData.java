@@ -11,9 +11,14 @@ public class SplitFieldToRowsData extends BaseStepData implements StepDataInterf
 	public int fieldnr;
 	public RowMetaInterface outputRowMeta;
 	public ValueMetaInterface splitMeta;
+	public String realDelimiter;
+    public long      rownr;
+    
+    
 	public SplitFieldToRowsData()
 	{
 		super();
+		realDelimiter=null;
 	}
 
 }

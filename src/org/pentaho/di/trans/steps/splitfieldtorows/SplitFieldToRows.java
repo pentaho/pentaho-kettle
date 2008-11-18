@@ -33,7 +33,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 			data.outputRowMeta = getInputRowMeta().clone();
 			meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
 			
-			data.fieldnr = rowMeta.indexOfValue(meta.getSplitField());
+			String realSplitFieldName=environmentSubstitute(meta.getSplitField());
+			data.fieldnr = rowMeta.indexOfValue(realSplitFieldName);
 			
 			int numErrors = 0;
 			if (Const.isEmpty(meta.getNewFieldname()))
@@ -44,16 +45,26 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 			if (data.fieldnr < 0)
 			{
-				logError(Messages.getString("SplitFieldToRows.Log.CouldNotFindFieldToSplit", meta.getSplitField())); //$NON-NLS-1$
+				logError(Messages.getString("SplitFieldToRows.Log.CouldNotFindFieldToSplit", realSplitFieldName)); //$NON-NLS-1$
 				numErrors++;
 			}
 			
 			if (!rowMeta.getValueMeta(data.fieldnr).isString())
 			{
-				logError(Messages.getString("SplitFieldToRows.Log.SplitFieldNotValid",meta.getSplitField())); //$NON-NLS-1$
+				logError(Messages.getString("SplitFieldToRows.Log.SplitFieldNotValid",realSplitFieldName)); //$NON-NLS-1$
 				numErrors++;
 			}
 
+			if(meta.includeRowNumber())	
+			{
+				String realRowNumberField=environmentSubstitute(meta.getRowNumberField());
+				if(Const.isEmpty(realRowNumberField))
+				{
+					log.logError(toString(), Messages.getString("SplitFieldToRows.Exception.RownrFieldMissing"));
+					numErrors++;
+				}
+			}
+			
 			if (numErrors > 0)
 			{
 				setErrors(numErrors);
@@ -62,6 +73,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 			}
 			
 			data.splitMeta = rowMeta.getValueMeta(data.fieldnr);
+			data.realDelimiter=environmentSubstitute(meta.getDelimiter());
 		}
 		
 		String originalString = data.splitMeta.getString(rowData[data.fieldnr]);
@@ -69,11 +81,19 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 			originalString = "";
 		}
 		
-		SimpleTokenizer tokenizer = new SimpleTokenizer(originalString, meta.getDelimiter());
+		if(meta.includeRowNumber() && meta.resetRowNumber()) data.rownr=1L;
+		
+		SimpleTokenizer tokenizer = new SimpleTokenizer(originalString, data.realDelimiter);
 		while (tokenizer.hasMoreTokens()) {
 			Object[] outputRow = RowDataUtil.createResizedCopy(rowData, data.outputRowMeta.size());
 			outputRow[rowMeta.size()] = tokenizer.nextToken();
+			// Include row number in output?
+			if(meta.includeRowNumber())
+			{
+				outputRow[rowMeta.size()+1]=data.rownr;
+			}
 			putRow(data.outputRowMeta, outputRow);
+			data.rownr ++;
 		}
 		
 		return true;
@@ -99,9 +119,9 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 		}
 					
         if (checkFeedback(getLinesRead())) {
-			if(log.isBasic()) 
+			if(log.isDetailed()) 
 			{
-				if(log.isBasic()) logBasic(Messages.getString("SplitFieldToRows.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
+				if(log.isDetailed()) logBasic(Messages.getString("SplitFieldToRows.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
 			}
 		}
 			
@@ -115,6 +135,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 		
 		if (super.init(smi, sdi))
 		{
+			data.rownr = 1L;
 		    return true;
 		}
 		return false;

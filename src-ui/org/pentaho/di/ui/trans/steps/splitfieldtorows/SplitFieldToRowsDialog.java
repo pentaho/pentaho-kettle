@@ -2,18 +2,21 @@ package org.pentaho.di.ui.trans.steps.splitfieldtorows;
 
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
@@ -25,22 +28,40 @@ import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.splitfieldtorows.Messages;
 import org.pentaho.di.trans.steps.splitfieldtorows.SplitFieldToRowsMeta;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.core.widget.ComboVar;
+import org.pentaho.di.ui.core.widget.TextVar;
+
 
 
 
 public class SplitFieldToRowsDialog extends BaseStepDialog implements StepDialogInterface
 {
 	private Label        wlSplitfield;
-	private Text         wSplitfield;
+	private ComboVar     wSplitfield;
 	private FormData     fdlSplitfield, fdSplitfield;
 
 	private Label        wlDelimiter;
-	private Text         wDelimiter;
+	private TextVar         wDelimiter;
 	private FormData     fdlDelimiter, fdDelimiter;
 
 	private Label        wlValName;
-	private Text         wValName;
+	private TextVar         wValName;
 	private FormData     fdlValName, fdValName;
+	
+	private Label        wlInclRownum;
+	private Button       wInclRownum;
+	private FormData     fdlInclRownum, fdRownum;
+
+	private Label        wlInclRownumField;
+	private TextVar      wInclRownumField;
+	private FormData     fdlInclRownumField, fdInclRownumField;
+	
+	private Label        wlResetRownum;
+	private Button       wResetRownum;
+	private FormData     fdlResetRownum;
+	
+	private Group wAdditionalFields;
+	private FormData fdAdditionalFields;
 
     private SplitFieldToRowsMeta  input;
 
@@ -106,17 +127,33 @@ public class SplitFieldToRowsDialog extends BaseStepDialog implements StepDialog
 		fdlSplitfield.right= new FormAttachment(middle, -margin);
 		fdlSplitfield.top  = new FormAttachment(wStepname, margin);
 		wlSplitfield.setLayoutData(fdlSplitfield);
-		wSplitfield=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		wSplitfield.setText(""); //$NON-NLS-1$
- 		props.setLook(wSplitfield);
+		
+		wSplitfield=new ComboVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wSplitfield.setToolTipText(Messages.getString("HTTPDialog.UrlField.Tooltip"));
+		props.setLook(wSplitfield);
 		wSplitfield.addModifyListener(lsMod);
 		fdSplitfield=new FormData();
 		fdSplitfield.left = new FormAttachment(middle, 0);
 		fdSplitfield.top  = new FormAttachment(wStepname, margin);
 		fdSplitfield.right= new FormAttachment(100, 0);
 		wSplitfield.setLayoutData(fdSplitfield);
+		wSplitfield.addFocusListener(new FocusListener()
+         {
+            public void focusLost(org.eclipse.swt.events.FocusEvent e)
+             {
+             }
+             public void focusGained(org.eclipse.swt.events.FocusEvent e)
+             {
+                 Cursor busy = new Cursor(shell.getDisplay(), SWT.CURSOR_WAIT);
+                 shell.setCursor(busy);
+                 BaseStepDialog.getFieldsFromPrevious(wSplitfield, transMeta, stepMeta);
+                 shell.setCursor(null);
+                 busy.dispose();
+             }
+         }
+     );
 
-		// Typefield line
+		// Delimiter line
 		wlDelimiter=new Label(shell, SWT.RIGHT);
 		wlDelimiter.setText(Messages.getString("SplitFieldToRowsDialog.Delimiter.Label")); //$NON-NLS-1$
  		props.setLook(wlDelimiter);
@@ -125,7 +162,7 @@ public class SplitFieldToRowsDialog extends BaseStepDialog implements StepDialog
 		fdlDelimiter.right= new FormAttachment(middle, -margin);
 		fdlDelimiter.top  = new FormAttachment(wSplitfield, margin);
 		wlDelimiter.setLayoutData(fdlDelimiter);
-		wDelimiter=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wDelimiter=new TextVar(transMeta,shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		wDelimiter.setText(""); //$NON-NLS-1$
  		props.setLook(wDelimiter);
 		wDelimiter.addModifyListener(lsMod);
@@ -144,7 +181,7 @@ public class SplitFieldToRowsDialog extends BaseStepDialog implements StepDialog
 		fdlValName.right= new FormAttachment(middle, -margin);
 		fdlValName.top  = new FormAttachment(wDelimiter, margin);
 		wlValName.setLayoutData(fdlValName);
-		wValName=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wValName=new TextVar(transMeta,shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		wValName.setText(""); //$NON-NLS-1$
         props.setLook( wValName );
 		wValName.addModifyListener(lsMod);
@@ -154,12 +191,93 @@ public class SplitFieldToRowsDialog extends BaseStepDialog implements StepDialog
 		fdValName.top  = new FormAttachment(wDelimiter, margin);
 		wValName.setLayoutData(fdValName);
 
+		///////////////////////////////// 
+		// START OF Additional Fields GROUP  //
+		///////////////////////////////// 
+
+		wAdditionalFields = new Group(shell, SWT.SHADOW_NONE);
+		props.setLook(wAdditionalFields);
+		wAdditionalFields.setText(Messages.getString("SplitFieldToRowsDialog.wAdditionalFields.Label"));
+		
+		FormLayout AdditionalFieldsgroupLayout = new FormLayout();
+		AdditionalFieldsgroupLayout.marginWidth = 10;
+		AdditionalFieldsgroupLayout.marginHeight = 10;
+		wAdditionalFields.setLayout(AdditionalFieldsgroupLayout);
+		
+		wlInclRownum=new Label(wAdditionalFields, SWT.RIGHT);
+		wlInclRownum.setText(Messages.getString("SplitFieldToRowsDialog.InclRownum.Label"));
+ 		props.setLook(wlInclRownum);
+		fdlInclRownum=new FormData();
+		fdlInclRownum.left = new FormAttachment(0, 0);
+		fdlInclRownum.top  = new FormAttachment(wValName, margin);
+		fdlInclRownum.right= new FormAttachment(middle, -margin);
+		wlInclRownum.setLayoutData(fdlInclRownum);
+		wInclRownum=new Button(wAdditionalFields, SWT.CHECK );
+ 		props.setLook(wInclRownum);
+		wInclRownum.setToolTipText(Messages.getString("SplitFieldToRowsDialog.InclRownum.Tooltip"));
+		fdRownum=new FormData();
+		fdRownum.left = new FormAttachment(middle, 0);
+		fdRownum.top  = new FormAttachment(wValName, margin);
+		wInclRownum.setLayoutData(fdRownum);
+		wInclRownum.addSelectionListener(new SelectionAdapter() 
+		{
+			public void widgetSelected(SelectionEvent e) 
+			{
+				setIncludeRownum();
+			}
+		}
+	);
+
+		wlInclRownumField=new Label(wAdditionalFields, SWT.RIGHT);
+		wlInclRownumField.setText(Messages.getString("SplitFieldToRowsDialog.InclRownumField.Label"));
+ 		props.setLook(wlInclRownumField);
+		fdlInclRownumField=new FormData();
+		fdlInclRownumField.left = new FormAttachment(wInclRownum, margin);
+		fdlInclRownumField.top  = new FormAttachment(wValName, margin);
+		wlInclRownumField.setLayoutData(fdlInclRownumField);
+		wInclRownumField=new TextVar(transMeta,wAdditionalFields, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+ 		props.setLook(wInclRownumField);
+		wInclRownumField.addModifyListener(lsMod);
+		fdInclRownumField=new FormData();
+		fdInclRownumField.left = new FormAttachment(wlInclRownumField, margin);
+		fdInclRownumField.top  = new FormAttachment(wValName, margin);
+		fdInclRownumField.right= new FormAttachment(100, 0);
+		wInclRownumField.setLayoutData(fdInclRownumField);
+		
+		
+		wlResetRownum=new Label(wAdditionalFields, SWT.RIGHT);
+		wlResetRownum.setText(Messages.getString("SplitFieldToRowsDialog.ResetRownum.Label"));
+ 		props.setLook(wlResetRownum);
+		fdlResetRownum=new FormData();
+		fdlResetRownum.left = new FormAttachment(wInclRownum, margin);
+		fdlResetRownum.top  = new FormAttachment(wInclRownumField, margin);
+		wlResetRownum.setLayoutData(fdlResetRownum);
+		wResetRownum=new Button(wAdditionalFields, SWT.CHECK );
+ 		props.setLook(wResetRownum);
+		wResetRownum.setToolTipText(Messages.getString("SplitFieldToRowsDialog.ResetRownum.Tooltip"));
+		fdRownum=new FormData();
+		fdRownum.left = new FormAttachment(wlResetRownum, margin);
+		fdRownum.top  = new FormAttachment(wInclRownumField, margin);	
+		wResetRownum.setLayoutData(fdRownum);
+		
+		
+		fdAdditionalFields = new FormData();
+		fdAdditionalFields.left = new FormAttachment(0, margin);
+		fdAdditionalFields.top = new FormAttachment(wValName, margin);
+		fdAdditionalFields.right = new FormAttachment(100, -margin);
+		wAdditionalFields.setLayoutData(fdAdditionalFields);
+		
+		///////////////////////////////// 
+		// END OF Additional Fields GROUP  //
+		///////////////////////////////// 
+		
+		
         wOK=new Button(shell, SWT.PUSH);
 		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
 
-        BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel}, margin, wValName);
+        BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel}, margin, wAdditionalFields);
         
 		// Add listeners
 		lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
@@ -191,7 +309,13 @@ public class SplitFieldToRowsDialog extends BaseStepDialog implements StepDialog
 		}
 		return stepname;
 	}
-	
+	public void setIncludeRownum()
+	{
+		wlInclRownumField.setEnabled(wInclRownum.getSelection());
+		wInclRownumField.setEnabled(wInclRownum.getSelection());
+		wlResetRownum.setEnabled(wInclRownum.getSelection());
+		wResetRownum.setEnabled(wInclRownum.getSelection());
+	}
 	public void getData()
 	{	
 		wStepname.selectAll();
@@ -199,6 +323,9 @@ public class SplitFieldToRowsDialog extends BaseStepDialog implements StepDialog
 		wSplitfield.setText(Const.NVL(input.getSplitField(), ""));
 		wDelimiter.setText(Const.NVL(input.getDelimiter(), ""));
 		wValName.setText(Const.NVL(input.getNewFieldname(), ""));
+		wInclRownum.setSelection(input.includeRowNumber());
+		if (input.getRowNumberField()!=null) wInclRownumField.setText(input.getRowNumberField());
+		wResetRownum.setSelection(input.resetRowNumber());
 	}
 
 	private void cancel()
@@ -210,10 +337,15 @@ public class SplitFieldToRowsDialog extends BaseStepDialog implements StepDialog
 	
 	private void ok()
 	{
+		if (Const.isEmpty(wStepname.getText())) return;
+		
 		stepname = wStepname.getText(); // return value
 		input.setSplitField( wSplitfield.getText() );
 		input.setDelimiter( wDelimiter.getText() );
 		input.setNewFieldname(wValName.getText());
+		input.setIncludeRowNumber( wInclRownum.getSelection() );
+		input.setRowNumberField( wInclRownumField.getText() );
+		input.setResetRowNumber( wResetRownum.getSelection() );
 		dispose();
 	}
 }

@@ -39,6 +39,15 @@ public class SplitFieldToRowsMeta extends BaseStepMeta implements StepMetaInterf
     /** New name of the split field */
 	private String newFieldname;
 	
+	/** Flag indicating that a row number field should be included in the output */
+	private  boolean includeRowNumber;
+	
+	/** The name of the field in the output containing the row number*/
+	private  String  rowNumberField;
+	
+	/** Flag indicating that we should reset RowNum for each file */
+	private boolean resetRowNumber;
+	
 	public SplitFieldToRowsMeta()
 	{
 		super(); // allocate BaseStepMeta
@@ -88,6 +97,9 @@ public class SplitFieldToRowsMeta extends BaseStepMeta implements StepMetaInterf
 			splitField = XMLHandler.getTagValue(stepnode, "splitfield"); //$NON-NLS-1$
 			delimiter  = XMLHandler.getTagValue(stepnode, "delimiter"); //$NON-NLS-1$
 			newFieldname = XMLHandler.getTagValue(stepnode, "newfield"); //$NON-NLS-1$
+			includeRowNumber  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "rownum"));
+			resetRowNumber  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "resetrownumber"));
+			rowNumberField    = XMLHandler.getTagValue(stepnode, "rownum_field");
 		}
 		catch(Exception e)
 		{
@@ -100,14 +112,25 @@ public class SplitFieldToRowsMeta extends BaseStepMeta implements StepMetaInterf
 		splitField = ""; //$NON-NLS-1$
 		delimiter  = ";"; //$NON-NLS-1$
 		newFieldname = "";
+		includeRowNumber = false;
+		rowNumberField   = "";
+		resetRowNumber=true;
 	}
 	
 	public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException {
 		
 		ValueMetaInterface v = new ValueMeta(newFieldname, ValueMetaInterface.TYPE_STRING);
 		v.setOrigin(name);
-		
 		row.addValueMeta( v );
+		
+		// include row number
+		if (includeRowNumber)
+		{
+			v = new ValueMeta(space.environmentSubstitute(rowNumberField), ValueMeta.TYPE_INTEGER);
+			v.setLength(ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0);
+			v.setOrigin(name);
+			row.addValueMeta(v);
+		}
 	}
 
 	public String getXML()
@@ -117,6 +140,9 @@ public class SplitFieldToRowsMeta extends BaseStepMeta implements StepMetaInterf
 		retval.append("   "+XMLHandler.addTagValue("splitfield", splitField)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("   "+XMLHandler.addTagValue("delimiter", delimiter)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("   "+XMLHandler.addTagValue("newfield", newFieldname)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("   "+XMLHandler.addTagValue("rownum",          includeRowNumber));
+        retval.append("   "+XMLHandler.addTagValue("rownum_field",    rowNumberField));
+        retval.append("   "+XMLHandler.addTagValue("resetrownumber",  resetRowNumber));
 		
 		return retval.toString();
 	}
@@ -127,6 +153,9 @@ public class SplitFieldToRowsMeta extends BaseStepMeta implements StepMetaInterf
 			splitField  = rep.getStepAttributeString(id_step, "splitfield"); //$NON-NLS-1$
 			delimiter   = rep.getStepAttributeString(id_step, "delimiter"); //$NON-NLS-1$
 			newFieldname  = rep.getStepAttributeString(id_step, "newfield"); //$NON-NLS-1$
+			includeRowNumber  = rep.getStepAttributeBoolean(id_step, "rownum");
+			rowNumberField    = rep.getStepAttributeString (id_step, "rownum_field");
+			resetRowNumber     = rep.getStepAttributeBoolean (id_step, "reset_rownumber");
 		}
 		catch(Exception e)
 		{
@@ -141,6 +170,9 @@ public class SplitFieldToRowsMeta extends BaseStepMeta implements StepMetaInterf
 			rep.saveStepAttribute(id_transformation, id_step, "splitfield", splitField); //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "delimiter",  delimiter); //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "newfield",  newFieldname); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "rownum",          includeRowNumber);
+			rep.saveStepAttribute(id_transformation, id_step, "reset_rownumber",  resetRowNumber);
+			rep.saveStepAttribute(id_transformation, id_step, "rownum_field",    rowNumberField);
 		}
 		catch(Exception e)
 		{
@@ -197,6 +229,14 @@ public class SplitFieldToRowsMeta extends BaseStepMeta implements StepMetaInterf
 			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("SplitFieldToRowsMeta.CheckResult.NewFieldNameIsNull"), stepMeta);
 			remarks.add(cr);
 		}
+		if(includeRowNumber)
+		{
+			if(Const.isEmpty(transMeta.environmentSubstitute(rowNumberField)))
+				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("SplitFieldToRowsMeta.CheckResult.RowNumberFieldMissing"), stepMeta);
+			else
+				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("SplitFieldToRowsMeta.CheckResult.RowNumberFieldOk"), stepMeta);
+			remarks.add(cr);
+		}
 	}
 
 	public StepInterface getStep(StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta, Trans trans)
@@ -222,5 +262,50 @@ public class SplitFieldToRowsMeta extends BaseStepMeta implements StepMetaInterf
 	public void setNewFieldname(String newFieldname) {
 		this.newFieldname = newFieldname;
 	}
-
+    /**
+     * @return Returns the rowNumberField.
+     */
+    public String getRowNumberField()
+    {
+        return rowNumberField;
+    }
+    
+    
+    /**
+     * @param rowNumberField The rowNumberField to set.
+     */
+    public void setRowNumberField(String rowNumberField)
+    {
+        this.rowNumberField = rowNumberField;
+    }
+    /**
+     * @return Returns the resetRowNumber.
+     */
+    public boolean resetRowNumber()
+    {
+        return resetRowNumber;
+    }
+    /**
+     * @param resetRowNumber The resetRowNumber to set.
+     */
+    public void setResetRowNumber(boolean resetRowNumber)
+    {
+        this.resetRowNumber = resetRowNumber;
+    }
+    
+    /**
+     * @param includeRowNumber The includeRowNumber to set.
+     */
+    public void setIncludeRowNumber(boolean includeRowNumber)
+    {
+        this.includeRowNumber = includeRowNumber;
+    }
+    
+    /**
+     * @return Returns the includeRowNumber.
+     */
+    public boolean includeRowNumber()
+    {
+        return includeRowNumber;
+    }
 }
