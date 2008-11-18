@@ -1888,6 +1888,25 @@ public class Const
 		return percentage;
 	}
 	/**
+	 * Return non digits only.
+	 * 
+	 * @return non digits in a string.
+	 */
+
+	public static String removeDigits(String input)
+	{
+		if(Const.isEmpty(input)) return null;
+	    StringBuffer digitsOnly = new StringBuffer ();
+	    char c;
+	    for (int i = 0; i < input.length (); i++) {
+	      c = input.charAt (i);
+	      if (!Character.isDigit (c)) {
+	        digitsOnly.append (c);
+	      }
+	    }
+	    return digitsOnly.toString ();
+	}
+	/**
 	 * Return digits only.
 	 * 
 	 * @return digits in a string.
@@ -1957,5 +1976,83 @@ public class Const
 			}
 		}
 		return out.toString();
+	}
+	/**
+	 * 	Remove CR / LF from String
+	 * 	@param in input
+	 * 	@return cleaned string
+	 */
+	public static String removeCRLF (String in)
+	{
+		char[] inArray = in.toCharArray();
+		StringBuffer out = new StringBuffer (inArray.length);
+		for (int i = 0; i < inArray.length; i++)
+		{
+			char c = inArray[i];
+			if (c == '\n' || c == '\r')
+				;
+			else
+				out.append(c);
+		}
+		return out.toString();
+	}	//	removeCRLF
+
+	/**
+	 * 	Remove CR / LF from String
+	 * 	@param in input
+	 * 	@return cleaned string
+	 */
+	public static String removeCR (String in)
+	{
+		char[] inArray = in.toCharArray();
+		StringBuffer out = new StringBuffer (inArray.length);
+		for (int i = 0; i < inArray.length; i++)
+		{
+			char c = inArray[i];
+			if (c == '\n')
+				;
+			else
+				out.append(c);
+		}
+		return out.toString();
+	}	//	removeCR
+	/**
+	 * 	Remove CR / LF from String
+	 * 	@param in input
+	 * 	@return cleaned string
+	 */
+	public static String removeLF (String in)
+	{
+		char[] inArray = in.toCharArray();
+		StringBuffer out = new StringBuffer (inArray.length);
+		for (int i = 0; i < inArray.length; i++)
+		{
+			char c = inArray[i];
+			if (c == '\r')
+				;
+			else
+				out.append(c);
+		}
+		return out.toString();
+	}	//	removeCRLF
+	/**
+	 * 	Remove Horizontan Tab from String
+	 * 	@param in input
+	 * 	@return cleaned string
+	 */
+	public static String removeTAB (String in)
+	{
+		char[] inArray = in.toCharArray();
+		StringBuffer out = new StringBuffer (inArray.length);
+		for (int i = 0; i < inArray.length; i++)
+		{
+			char c = inArray[i];
+			if (c == '\t')
+				;
+			else
+				out.append(c);
+		}
+		return out.toString();
 	}	
+
 }

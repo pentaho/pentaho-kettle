@@ -145,6 +145,7 @@ public class StringCutDialog extends BaseStepDialog implements StepDialogInterfa
 		
 		
 		ciKey[2].setUsingVariables(true);
+		ciKey[1].setToolTip(Messages.getString("StringCutDialog.ColumnInfo.OutStreamField.Tooltip"));
 		ciKey[3].setUsingVariables(true);
 
 		

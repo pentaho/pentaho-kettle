@@ -70,8 +70,14 @@ public class CalculatorMetaFunction implements Cloneable
     public static final int CALC_LOWER_CASE             =  43;
     public static final int CALC_MASK_XML             =  44;
     public static final int CALC_USE_CDATA            =  45;
+    public static final int CALC_REMOVE_CR          =  46;
+    public static final int CALC_REMOVE_LF           =  47;
+    public static final int CALC_REMOVE_CRLF           =  48;
+    public static final int CALC_REMOVE_TAB           =  49;
+    public static final int CALC_GET_ONLY_DIGITS           =  50;
+    public static final int CALC_REMOVE_DIGITS           =  51;
+    public static final int CALC_STRING_LEN           =  52;
     
-
     public static final String calc_desc[] = 
         { 
             "-", 
@@ -119,7 +125,14 @@ public class CalculatorMetaFunction implements Cloneable
             "UPPER_CASE",
             "LOWER_CASE",
             "MASK_XML",
-            "USE_CDATA"
+            "USE_CDATA",
+            "REMOVE_CR",
+            "REMOVE_LF",
+            "REMOVE_CRLF",
+            "REMOVE_TAB",
+            "GET_ONLY_DIGITS",
+            "REMOVE_DIGITS",
+            "STRING_LEN"
         };
     
     public static final String calcLongDesc[] = 
@@ -169,7 +182,14 @@ public class CalculatorMetaFunction implements Cloneable
             Messages.getString("CalculatorMetaFunction.CalcFunctions.UpperCase"),
             Messages.getString("CalculatorMetaFunction.CalcFunctions.LowerCase"),
             Messages.getString("CalculatorMetaFunction.CalcFunctions.MaskXML"),
-            Messages.getString("CalculatorMetaFunction.CalcFunctions.UseCDATA")
+            Messages.getString("CalculatorMetaFunction.CalcFunctions.UseCDATA"),
+            Messages.getString("CalculatorMetaFunction.CalcFunctions.RemoveCR"),
+            Messages.getString("CalculatorMetaFunction.CalcFunctions.RemoveLF"),
+            Messages.getString("CalculatorMetaFunction.CalcFunctions.RemoveCRLF"),
+            Messages.getString("CalculatorMetaFunction.CalcFunctions.RemoveTAB"),
+            Messages.getString("CalculatorMetaFunction.CalcFunctions.GetOnlyDigits"),
+            Messages.getString("CalculatorMetaFunction.CalcFunctions.RemoveDigits"),
+            Messages.getString("CalculatorMetaFunction.CalcFunctions.StringLen")
         };
    
     private String fieldName;

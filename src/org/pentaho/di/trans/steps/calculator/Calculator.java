@@ -517,6 +517,48 @@ public class Calculator extends BaseStep implements StepInterface
                     resultType=ValueMetaInterface.TYPE_STRING; 
                 }
                 break;
+                case CalculatorMetaFunction.CALC_REMOVE_CR           :  // REMOVE CR FROM A 
+                {
+                    calcData[index] = ValueDataUtil.removeCR(metaA, dataA);
+                    resultType=ValueMetaInterface.TYPE_STRING; 
+                }
+                break;
+                case CalculatorMetaFunction.CALC_REMOVE_LF          :  // REMOVE LF FROM A 
+                {
+                    calcData[index] = ValueDataUtil.removeLF(metaA, dataA);
+                    resultType=ValueMetaInterface.TYPE_STRING; 
+                }
+                break;
+                case CalculatorMetaFunction.CALC_REMOVE_CRLF          :  // REMOVE CRLF FROM A 
+                {
+                    calcData[index] = ValueDataUtil.removeCRLF(metaA, dataA);
+                    resultType=ValueMetaInterface.TYPE_STRING; 
+                }
+                break;
+                case CalculatorMetaFunction.CALC_REMOVE_TAB          :  // REMOVE TAB FROM A 
+                {
+                    calcData[index] = ValueDataUtil.removeTAB(metaA, dataA);
+                    resultType=ValueMetaInterface.TYPE_STRING; 
+                }
+                break;
+                case CalculatorMetaFunction.CALC_GET_ONLY_DIGITS          :  // GET ONLY DIGITS FROM A 
+                {
+                    calcData[index] = ValueDataUtil.getDigits(metaA, dataA);
+                    resultType=ValueMetaInterface.TYPE_STRING; 
+                }
+                break;
+                case CalculatorMetaFunction.CALC_REMOVE_DIGITS          :  // REMOVE DIGITS FROM A 
+                {
+                    calcData[index] = ValueDataUtil.removeDigits(metaA, dataA);
+                    resultType=ValueMetaInterface.TYPE_STRING; 
+                }
+                break;
+                case CalculatorMetaFunction.CALC_STRING_LEN          :  // RETURN THE LENGTH OF A 
+                {
+                    calcData[index] = ValueDataUtil.stringLen(metaA, dataA);
+                    resultType=ValueMetaInterface.TYPE_INTEGER; 
+                }
+                break;
                 default:
                     throw new KettleValueException(Messages.getString("Calculator.Log.UnknownCalculationType")+fn.getCalcType());
                 }

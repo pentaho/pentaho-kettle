@@ -121,6 +121,41 @@ public class ValueDataUtil
     	return "<![CDATA["+dataA.toString()+"]]>";
     	
     }
+    public static String removeCR(ValueMetaInterface metaA, Object dataA)
+    {
+    	if(dataA==null) return null;
+    	return Const.removeCR(dataA.toString());
+    }
+    public static String removeLF(ValueMetaInterface metaA, Object dataA)
+    {
+    	if(dataA==null) return null;
+    	return Const.removeLF(dataA.toString());
+    }
+    public static String removeCRLF(ValueMetaInterface metaA, Object dataA)
+    {
+    	if(dataA==null) return null;
+    	return Const.removeCRLF(dataA.toString());
+    }
+    public static String removeTAB(ValueMetaInterface metaA, Object dataA)
+    {
+    	if(dataA==null) return null;
+    	return Const.removeTAB(dataA.toString());
+    }
+    public static String getDigits(ValueMetaInterface metaA, Object dataA)
+    {
+    	if(dataA==null) return null;
+    	return Const.getDigitsOnly(dataA.toString());
+    }
+    public static String removeDigits(ValueMetaInterface metaA, Object dataA)
+    {
+    	if(dataA==null) return null;
+    	return Const.removeDigits(dataA.toString());
+    }
+    public static long stringLen(ValueMetaInterface metaA, Object dataA)
+    {
+    	if(dataA==null) return 0;
+    	return dataA.toString().length();
+    }
     public static String createChecksum(ValueMetaInterface metaA, Object dataA, String type)
     {
     	String md5Hash = null;

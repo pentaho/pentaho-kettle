@@ -316,6 +316,27 @@ public class CalculatorMeta extends BaseStepMeta implements StepMetaInterface
             case CalculatorMetaFunction.CALC_USE_CDATA           :   // CDATA(A)
                 defaultResultType = ValueMetaInterface.TYPE_STRING;
                 break;
+            case CalculatorMetaFunction.CALC_REMOVE_CR           :   // REMOVE CR FROM string A
+                defaultResultType = ValueMetaInterface.TYPE_STRING;
+                break;
+            case CalculatorMetaFunction.CALC_REMOVE_LF           :   // REMOVE LF FROM string A
+                defaultResultType = ValueMetaInterface.TYPE_STRING;
+                break;
+            case CalculatorMetaFunction.CALC_REMOVE_CRLF           :   // REMOVE CRLF FROM string A
+                defaultResultType = ValueMetaInterface.TYPE_STRING;
+                break;
+            case CalculatorMetaFunction.CALC_REMOVE_TAB         :   // REMOVE TAB FROM string A
+                defaultResultType = ValueMetaInterface.TYPE_STRING;
+                break;
+            case CalculatorMetaFunction.CALC_GET_ONLY_DIGITS         :   // GET ONLY DIGITS FROM string A
+                defaultResultType = ValueMetaInterface.TYPE_INTEGER;
+                break;
+            case CalculatorMetaFunction.CALC_REMOVE_DIGITS         :   // REMOVE DIGITS FROM string A
+                defaultResultType = ValueMetaInterface.TYPE_STRING;
+                break;
+            case CalculatorMetaFunction.CALC_STRING_LEN         :   // LENGTH OF string A
+                defaultResultType = ValueMetaInterface.TYPE_INTEGER;
+                break;
             default:
                 break;
             }
