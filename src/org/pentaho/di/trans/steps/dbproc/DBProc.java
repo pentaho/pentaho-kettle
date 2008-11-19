@@ -11,6 +11,8 @@
  
 package org.pentaho.di.trans.steps.dbproc;
 
+import java.util.List;
+
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.Database;
@@ -187,8 +189,8 @@ public class DBProc extends BaseStep implements StepInterface
 		if (super.init(smi, sdi))
 		{
 			data.readsRows = false;
-			StepMeta previous[] = getTransMeta().getPrevSteps(getStepMeta()); 
-			if (previous!=null && previous.length>0)
+	        List<StepMeta> previous = getTransMeta().findPreviousSteps(getStepMeta());
+			if (previous!=null && previous.size()>0)
 			{
 				data.readsRows = true;
 			}

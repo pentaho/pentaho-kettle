@@ -24,7 +24,9 @@ import org.pentaho.di.core.exception.KettleException;
 public class NumberRangeSet 
  {
 	 
-	 	/**
+	 public static final String MULTI_VALUE_SEPARATOR = ",";
+
+		/**
 	 * List of all rules that have to be considered
 	 */
 	 	private List<NumberRangeRule> rules;
@@ -71,7 +73,7 @@ public class NumberRangeSet
 	 */
 	 	public static String getMultiValueSeparator() 
 		{
-			return ",";
+			return MULTI_VALUE_SEPARATOR;
 		}
 	 
 	 	/**

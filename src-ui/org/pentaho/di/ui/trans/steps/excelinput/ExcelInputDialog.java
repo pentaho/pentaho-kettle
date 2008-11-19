@@ -499,10 +499,10 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
         wAccField.setLayoutData(fdAccField);
                 
         // Fill in the source steps...
-        StepMeta[] prevSteps = transMeta.getPrevSteps(transMeta.findStep(stepname));
-        for (int i=0;i<prevSteps.length;i++)
+        List<StepMeta> prevSteps = transMeta.findPreviousSteps(transMeta.findStep(stepname));
+        for (StepMeta prevStep : prevSteps)
         {
-            wAccStep.add(prevSteps[i].getName());
+            wAccStep.add(prevStep.getName());
         }
         
         fdAccepting=new FormData();

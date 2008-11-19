@@ -182,15 +182,15 @@ public class Mapping extends BaseStep implements StepInterface
         		// We have no defined source step.
         		// That means that we're reading from all input steps that this mapping step has.
         		//
-        		StepMeta[] prevSteps = getTransMeta().getPrevSteps(getStepMeta());
+    	        List<StepMeta> prevSteps = getTransMeta().findPreviousSteps(getStepMeta());
         		
     			// Let's read data from all the previous steps we find...
     			// The origin is the previous step
     			// The target is the Mapping Input step.
     			//
-    			sourceSteps=new StepInterface[prevSteps.length];
+    			sourceSteps=new StepInterface[prevSteps.size()];
     			for (int s=0;s<sourceSteps.length;s++) {
-    				sourceSteps[s] = (StepInterface) getTrans().findRunThread(prevSteps[s].getName());
+    				sourceSteps[s] = (StepInterface) getTrans().findRunThread(prevSteps.get(s).getName());
     			}
         	}
         	

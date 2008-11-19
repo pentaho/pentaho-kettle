@@ -303,10 +303,9 @@ public class Trans implements VariableSpace
 		//
 		// Sort the steps & hops for visual pleasure...
 		//
-		if (isMonitored() && transMeta.nrSteps()<10)
+		if (isMonitored())
 		{
 			transMeta.sortStepsNatural();
-			transMeta.sortHopsNatural();
 		}
 
 		List<StepMeta> hopsteps=transMeta.getTransHopSteps(false);

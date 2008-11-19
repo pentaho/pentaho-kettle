@@ -31,6 +31,7 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.lineage.FieldnameLineage;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -747,5 +748,57 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
 	 */
 	public void setMeta(SelectMetadataChange[] meta) {
 		this.meta = meta;
+	}
+	
+	/**
+	 * We will describe in which way the field names change between input and output in this step.
+	 * 
+	 * @return The list of field name lineage objects
+	 */
+	public List<FieldnameLineage> getFieldnameLineage() {
+		List<FieldnameLineage> lineages = new ArrayList<FieldnameLineage>();
+		
+		// Select values...
+		//
+		for (int i=0;i<getSelectName().length;i++) {
+			String input = getSelectName()[i];
+			String output = getSelectRename()[i];
+			
+			// See if the select tab renames a column!
+			//
+			if (!Const.isEmpty(output) && !input.equalsIgnoreCase(output)) {
+				// Yes, add it to the list
+				//
+				lineages.add(new FieldnameLineage(input, output));
+			}
+		}
+		
+		// Metadata
+		//
+		for (int i=0;i<getMeta().length;i++) {
+			String input = getMeta()[i].getName();
+			String output = getMeta()[i].getRename();
+
+			// See if the select tab renames a column!
+			//
+			if (!Const.isEmpty(output) && !input.equalsIgnoreCase(output)) {
+				// See if the input is not the output of a row in the Select tab
+				//
+				int idx = Const.indexOfString(input, getSelectRename());
+				
+				if (idx<0) {
+					// nothing special, add it to the list
+					//
+					lineages.add(new FieldnameLineage(input, output));
+				} else {
+					// Modify the existing field name lineage entry
+					//
+					FieldnameLineage lineage = FieldnameLineage.findFieldnameLineageWithInput(lineages, input);
+					lineage.setOutputFieldname(output);
+				}
+			}
+		}
+		
+		return lineages;
 	}
 }

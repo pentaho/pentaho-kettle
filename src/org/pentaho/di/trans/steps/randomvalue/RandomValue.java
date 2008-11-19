@@ -12,6 +12,7 @@
 
 package org.pentaho.di.trans.steps.randomvalue;
 
+import java.util.List;
 import java.util.Random;
 
 import org.pentaho.di.core.util.UUIDUtil;
@@ -143,8 +144,8 @@ public class RandomValue extends BaseStep implements StepInterface {
 		if (super.init(smi, sdi)) {
 			// Add init code here.
 			data.readsRows = false;
-			StepMeta previous[] = getTransMeta().getPrevSteps(getStepMeta());
-			if (previous != null && previous.length > 0) {
+	        List<StepMeta> previous = getTransMeta().findPreviousSteps(getStepMeta());
+			if (previous != null && previous.size() > 0) {
 				data.readsRows = true;
 			}
 

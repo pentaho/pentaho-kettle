@@ -1149,6 +1149,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      * @param stepMeta The name of the step
      * @param info true if we only want the informational steps.
      * @return The number of preceding steps
+     * @deprecated please use method findPreviousSteps
      */
     public int findNrPrevSteps(StepMeta stepMeta, boolean info)
     {
@@ -1170,6 +1171,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         }
         return count;
     }
+    
 
     /**
      * Find the previous step on a certain location taking into account the steps being informational or not.
@@ -1178,6 +1180,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      * @param nr The location
      * @param info true if we only want the informational steps.
      * @return The preceding step information
+     * @deprecated please use method findPreviousSteps
      */
     public StepMeta findPrevStep(StepMeta stepMeta, int nr, boolean info)
     {
@@ -1197,6 +1200,44 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
             }
         }
         return null;
+    }
+    
+    /**
+     * Get the list of previous steps for a certain reference step.  This includes the info steps.
+     *
+     * @param stepMeta The reference step
+     * @return The list of the preceding steps, including the info steps.
+     */
+    public List<StepMeta> findPreviousSteps(StepMeta stepMeta)
+    {
+    	return findPreviousSteps(stepMeta, true);
+    }
+    
+    /**
+     * Get the previous steps on a certain location taking into account the steps being informational or
+     * not.
+     *
+     * @param stepMeta The name of the step
+     * @param info true if we only want the informational steps.
+     * @return The list of the preceding steps
+     */
+    public List<StepMeta> findPreviousSteps(StepMeta stepMeta, boolean info)
+    {
+    	List<StepMeta> previousSteps = new ArrayList<StepMeta>();
+    	
+    	for (TransHopMeta hi : hops)
+        {
+            if (hi.getToStep() != null && hi.isEnabled() && hi.getToStep().equals(stepMeta))
+            {
+                // Check if this previous step isn't informative (StreamValueLookup)
+                // We don't want fields from this stream to show up!
+                if (info || !isStepInformative(stepMeta, hi.getFromStep()))
+                {
+                    previousSteps.add(hi.getFromStep());
+                }
+            }
+        }
+        return previousSteps;
     }
 
     /**
@@ -1331,10 +1372,11 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     }
 
     /**
-     * Retrieve an array of preceding steps for a certain destination step.
+     * Retrieve an array of preceding steps for a certain destination step. This includes the info steps.
      *
      * @param stepMeta The destination step
      * @return An array containing the preceding steps.
+     * @deprecated please use method findPreviousSteps
      */
     public StepMeta[] getPrevSteps(StepMeta stepMeta)
     {
@@ -4189,30 +4231,113 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     {
         Collections.sort(hops);
     }
+    
+    private long prevCount;
 
     /**
      * Put the steps in a more natural order: from start to finish. For the moment, we ignore splits and joins. Splits
      * and joins can't be listed sequentially in any case!
      *
      */
-    public void sortStepsNatural()
+    public Map<StepMeta, Map<StepMeta, Boolean>> sortStepsNatural()
     {
-        // Loop over the steps...
-        for (int j = 0; j < nrSteps(); j++)
-        {
-            // Buble sort: we need to do this several times...
-            for (int i = 0; i < nrSteps() - 1; i++)
-            {
-                StepMeta one = getStep(i);
-                StepMeta two = getStep(i + 1);
+    	long startTime = System.currentTimeMillis();
+    	
+    	prevCount = 0;
+    	
+    	// First create a map where all the previous steps of another step are kept...
+    	// 
+    	final Map<StepMeta, Map<StepMeta, Boolean>> stepMap = new HashMap<StepMeta, Map<StepMeta, Boolean>>();
+    	
+    	// Also cache the previous steps 
+    	//
+    	final Map<StepMeta, List<StepMeta>> previousCache = new HashMap<StepMeta, List<StepMeta>>();
+    	
+    	for (StepMeta stepMeta : steps) {
+    		// What are the previous steps? (cached version for performance)
+    		//
+    		List<StepMeta> prevSteps = previousCache.get(stepMeta);
+    		if (prevSteps==null) {
+    			prevSteps = findPreviousSteps(stepMeta);
+    			prevCount++;
+    			previousCache.put(stepMeta, prevSteps);
+    		}
+    		
+    		// Now get the previous steps recursively, store them in the step map
+    		//
+    		for (StepMeta prev : prevSteps) {
+    			updateFillStepMap(stepMap, previousCache, stepMeta, prev);
+    		}
+    	}
+    	
+    	Collections.sort(steps, new Comparator<StepMeta>() {
+		
+			public int compare(StepMeta o1, StepMeta o2) {
 
-                if (!findPrevious(two, one))
-                {
-                    setStep(i + 1, one);
-                    setStep(i, two);
-                }
-            }
-        }
+				Map<StepMeta, Boolean> beforeMap = stepMap.get(o1);
+				if (beforeMap!=null) {
+					if (beforeMap.get(o2)==null) {
+						return -1;
+					} else {
+						return 1;
+					}
+				} else {
+					return o1.getName().compareToIgnoreCase(o2.getName());
+				}
+			}
+		});
+    	
+    	long endTime = System.currentTimeMillis();
+    	log.logBasic(toString(), "Natural sort of steps executed in "+(endTime-startTime)+"ms ("+prevCount+" time previous steps calculated)");
+
+        return stepMap;
+    }
+    
+    /**
+     * Fill the 
+     * @param stepMap
+     * @param previousCache 
+     * @param originStepMeta
+     * @param previousStepMeta
+     */
+    private void updateFillStepMap(Map<StepMeta, Map<StepMeta, Boolean>> stepMap, Map<StepMeta, List<StepMeta>> previousCache, StepMeta originStepMeta, StepMeta previousStepMeta) {
+    	
+    	// See if we have a hash map to store step occurrence (located before the step)
+    	//
+    	Map<StepMeta, Boolean> beforeMap = stepMap.get(originStepMeta);
+		if (beforeMap==null) {
+			beforeMap = new HashMap<StepMeta, Boolean>();
+		} else {
+			return; // Nothing left to do here!
+		}
+		
+		beforeMap.put(previousStepMeta, Boolean.TRUE);
+	
+		List<StepMeta> prevSteps = previousCache.get(previousStepMeta);
+		if (prevSteps==null) {
+			prevSteps = findPreviousSteps(previousStepMeta);
+			prevCount++;
+			previousCache.put(previousStepMeta, prevSteps);
+		}
+				
+		// Now, get the previous steps for stepMeta recursively...
+		// We only do this when the beforeMap is not known yet...
+		//
+		for (StepMeta prev : prevSteps) {
+			Map<StepMeta, Boolean> beforePrevMap = stepMap.get(prev);
+			if (beforePrevMap!=null) {
+				// OK, so we add the steps in the map to the beforeMap and we're done.
+				//
+				beforeMap.putAll(beforePrevMap);
+			}
+			updateFillStepMap(stepMap, previousCache, originStepMeta, prev);
+		}
+		
+		// Make sure we keep the beforeMap AFTER we did the work
+		// That way the "return" construct at the top works.
+		// We need to be certain that all is done in here for this step.
+		//
+		stepMap.put(originStepMeta, beforeMap);
     }
 
     /**
@@ -6162,5 +6287,4 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 			}
 		}
 	}
-
 }

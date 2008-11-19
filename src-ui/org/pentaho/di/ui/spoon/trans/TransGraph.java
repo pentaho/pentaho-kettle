@@ -1907,12 +1907,12 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 
   private boolean checkNumberOfCopies(TransMeta transMeta, StepMeta stepMeta) {
     boolean enabled = true;
-    StepMeta[] prevSteps = transMeta.getPrevSteps(stepMeta);
-    for (int i = 0; i < prevSteps.length && enabled; i++) {
+    List<StepMeta> prevSteps = transMeta.findPreviousSteps(stepMeta);
+    for (StepMeta prevStep : prevSteps) {
       // See what the target steps are.  
       // If one of the target steps is our original step, we can't start multiple copies
       // 
-      String[] targetSteps = prevSteps[i].getStepMetaInterface().getTargetSteps();
+      String[] targetSteps = prevStep.getStepMetaInterface().getTargetSteps();
       if (targetSteps != null) {
         for (int t = 0; t < targetSteps.length && enabled; t++) {
           if (targetSteps[t].equalsIgnoreCase(stepMeta.getName()))

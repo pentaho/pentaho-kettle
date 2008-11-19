@@ -559,12 +559,12 @@ public class TransPainter
         	String log = stepLogMap.get(stepMeta);
     		// Show an error lines icon in the lower right corner of the step...
     		//
-    		int xError = stepMeta.getLocation().x + iconsize - 5;
-    		int yError = stepMeta.getLocation().y + iconsize - 5;
+    		int xError = screen.x + iconsize - 5;
+    		int yError = screen.y + iconsize - 5;
     		Image image = GUIResource.getInstance().getImageStepError();
     		gc.drawImage(image, xError, yError);
     		if (!shadow) {
-    			areaOwners.add(new AreaOwner(xError, yError, image.getBounds().width, image.getBounds().height, log, STRING_STEP_ERROR_LOG));
+    			areaOwners.add(new AreaOwner(pt.x + iconsize-5, pt.y + iconsize-5, image.getBounds().width, image.getBounds().height, log, STRING_STEP_ERROR_LOG));
     		}
         }
     }

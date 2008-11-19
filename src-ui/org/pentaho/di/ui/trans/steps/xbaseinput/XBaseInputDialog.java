@@ -17,6 +17,8 @@
 
 package org.pentaho.di.ui.trans.steps.xbaseinput;
 
+import java.util.List;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.ModifyEvent;
@@ -266,10 +268,10 @@ public class XBaseInputDialog extends BaseStepDialog implements StepDialogInterf
         wAccField.setLayoutData(fdAccField);
                 
         // Fill in the source steps...
-        StepMeta[] prevSteps = transMeta.getPrevSteps(transMeta.findStep(stepname));
-        for (int i=0;i<prevSteps.length;i++)
+        List<StepMeta> prevSteps = transMeta.findPreviousSteps(transMeta.findStep(stepname));
+        for (StepMeta prevStep : prevSteps)
         {
-            wAccStep.add(prevSteps[i].getName());
+            wAccStep.add(prevStep.getName());
         }
         
         fdAccepting=new FormData();

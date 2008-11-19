@@ -11,6 +11,8 @@
  
 package org.pentaho.di.trans.steps.getvariable;
 
+import java.util.List;
+
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
@@ -114,8 +116,8 @@ public class GetVariable extends BaseStep implements StepInterface
 		{
 		    // Add init code here.
 			data.readsRows = false;
-			StepMeta previous[] = getTransMeta().getPrevSteps(getStepMeta()); 
-			if (previous!=null && previous.length>0)
+	        List<StepMeta> previous = getTransMeta().findPreviousSteps(getStepMeta());
+			if (previous!=null && previous.size()>0)
 			{
 				data.readsRows = true;
 			}

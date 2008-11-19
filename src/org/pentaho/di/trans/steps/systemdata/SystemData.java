@@ -13,6 +13,7 @@ package org.pentaho.di.trans.steps.systemdata;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 
 import java.lang.management.ManagementFactory;
@@ -325,8 +326,8 @@ public class SystemData extends BaseStep implements StepInterface
 		{
 		    // Add init code here.
 			data.readsRows = false;
-			StepMeta previous[] = getTransMeta().getPrevSteps(getStepMeta()); 
-			if (previous!=null && previous.length>0)
+	        List<StepMeta> previous = getTransMeta().findPreviousSteps(getStepMeta());
+			if (previous!=null && previous.size()>0)
 			{
 				data.readsRows = true;
 			}

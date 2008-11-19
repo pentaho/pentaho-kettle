@@ -1773,7 +1773,8 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
 
         // How many next steps are there? 0, 1 or more??
         // How many steps do we send output to?
-        int nrInput = transMeta.findNrPrevSteps(stepMeta, true);
+        List<StepMeta> previousSteps = transMeta.findPreviousSteps(stepMeta, true);
+        int nrInput = previousSteps.size();
         int nrOutput = transMeta.findNrNextSteps(stepMeta);
 
         inputRowSets = new ArrayList<RowSet>();
@@ -1786,9 +1787,9 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
 
         if (log.isDetailed()) logDetailed(Messages.getString("BaseStep.Log.StepInfo", String.valueOf(nrInput), String.valueOf(nrOutput))); //$NON-NLS-1$ //$NON-NLS-2$
 
-        for (int i = 0; i < nrInput; i++)
+        for (int i = 0; i < previousSteps.size(); i++)
         {
-            prevSteps[i] = transMeta.findPrevStep(stepMeta, i, true); // sir.getHopFromWithTo(stepname, i);
+            prevSteps[i] = previousSteps.get(i);
             if (log.isDetailed()) logDetailed(Messages.getString("BaseStep.Log.GotPreviousStep", stepname, String.valueOf(i), prevSteps[i].getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
             // Looking at the previous step, you can have either 1 rowset to look at or more then one.
