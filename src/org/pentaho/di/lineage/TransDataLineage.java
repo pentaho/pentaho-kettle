@@ -1,6 +1,9 @@
+
 package org.pentaho.di.lineage;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -62,6 +65,46 @@ public class TransDataLineage {
 	 *                             This is usually caused by unavailable data sources etc.
 	 */
 	public void calculateLineage() throws KettleStepException {
+		
+		// After sorting the steps we get a map of all the previous steps of a certain step.
+		//
+		final Map<StepMeta, Map<StepMeta, Boolean>> stepMap = transMeta.sortStepsNatural();
+		
+		// However, the we need a sorted list of previous steps per step, not a map.
+		// So lets sort the maps, turn them into lists...
+		//
+		Map<StepMeta, List<StepMeta>> previousStepListMap = new HashMap<StepMeta, List<StepMeta>>();
+		for (StepMeta stepMeta : stepMap.keySet()) {
+			List<StepMeta> previousSteps = new ArrayList<StepMeta>();
+			previousStepListMap.put(stepMeta, previousSteps);
+			
+			previousSteps.addAll(stepMap.get(stepMeta).keySet());
+			
+			// Sort this list...
+			//
+	    	Collections.sort(previousSteps, new Comparator<StepMeta>() {
+	    		
+				public int compare(StepMeta o1, StepMeta o2) {
+
+					Map<StepMeta, Boolean> beforeMap = stepMap.get(o1);
+					if (beforeMap!=null) {
+						if (beforeMap.get(o2)==null) {
+							return -1;
+						} else {
+							return 1;
+						}
+					} else {
+						return o1.getName().compareToIgnoreCase(o2.getName());
+					}
+				}
+			});
+	    	
+	    	System.out.println("Step considered: "+stepMeta.getName());
+	    	for (StepMeta prev : previousSteps) {
+		    	System.out.println("      --> previous step: "+prev.getName());
+	    	}
+		}
+		
 		fieldStepsMap = new HashMap<ValueMetaInterface, List<StepMeta>>();
 		
 		int nrUsedSteps = transMeta.nrUsedSteps();

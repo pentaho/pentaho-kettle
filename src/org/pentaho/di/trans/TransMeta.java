@@ -4237,6 +4237,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     /**
      * Put the steps in a more natural order: from start to finish. For the moment, we ignore splits and joins. Splits
      * and joins can't be listed sequentially in any case!
+     * 
+     * @return a map containing all the previous steps per step
      *
      */
     public Map<StepMeta, Map<StepMeta, Boolean>> sortStepsNatural()
