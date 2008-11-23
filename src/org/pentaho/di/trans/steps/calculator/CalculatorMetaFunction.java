@@ -77,6 +77,7 @@ public class CalculatorMetaFunction implements Cloneable
     public static final int CALC_GET_ONLY_DIGITS           =  50;
     public static final int CALC_REMOVE_DIGITS           =  51;
     public static final int CALC_STRING_LEN           =  52;
+    public static final int CALC_LOAD_FILE_CONTENT_BINARY   =  53;
     
     public static final String calc_desc[] = 
         { 
@@ -132,7 +133,8 @@ public class CalculatorMetaFunction implements Cloneable
             "REMOVE_TAB",
             "GET_ONLY_DIGITS",
             "REMOVE_DIGITS",
-            "STRING_LEN"
+            "STRING_LEN",
+            "LOAD_FILE_CONTENT_BINARY"
         };
     
     public static final String calcLongDesc[] = 
@@ -189,7 +191,8 @@ public class CalculatorMetaFunction implements Cloneable
             Messages.getString("CalculatorMetaFunction.CalcFunctions.RemoveTAB"),
             Messages.getString("CalculatorMetaFunction.CalcFunctions.GetOnlyDigits"),
             Messages.getString("CalculatorMetaFunction.CalcFunctions.RemoveDigits"),
-            Messages.getString("CalculatorMetaFunction.CalcFunctions.StringLen")
+            Messages.getString("CalculatorMetaFunction.CalcFunctions.StringLen"),
+            Messages.getString("CalculatorMetaFunction.CalcFunctions.LoadFileContentInBinary")
         };
    
     private String fieldName;

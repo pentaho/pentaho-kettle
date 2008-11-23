@@ -559,6 +559,12 @@ public class Calculator extends BaseStep implements StepInterface
                     resultType=ValueMetaInterface.TYPE_INTEGER; 
                 }
                 break;
+                case CalculatorMetaFunction.CALC_LOAD_FILE_CONTENT_BINARY   :  // LOAD CONTENT OF A FILE A IN A BLOB 
+                {
+                    calcData[index] = ValueDataUtil.loadFileContentInBinary(metaA, dataA);
+                    resultType=ValueMetaInterface.TYPE_BINARY; 
+                }
+                break;
                 default:
                     throw new KettleValueException(Messages.getString("Calculator.Log.UnknownCalculationType")+fn.getCalcType());
                 }

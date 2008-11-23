@@ -277,7 +277,31 @@ public class ValueDataUtil
         
         return plus(metaA, dataA, metaB, dataB);
     }
-    
+    public static Object loadFileContentInBinary(ValueMetaInterface metaA, Object dataA) throws KettleValueException
+    {
+        if (dataA==null) return null;
+        
+        FileObject file=null;
+        FileInputStream fis=null;
+        try {
+        	file=KettleVFS.getFileObject(dataA.toString());
+        	fis=(FileInputStream)((LocalFile)file).getInputStream();
+        	int fileSize=(int)file.getContent().getSize();
+        	byte[] content=Const.createByteArray(fileSize);
+			fis.read(content, 0,fileSize);
+			return content;
+        } catch (Exception e) 
+        {
+        	throw new KettleValueException(e);	
+        }
+        finally
+	    {
+	    	try{
+	    		if(file!=null) file.close();
+	    		if(fis!=null) fis.close();
+	    	}catch(Exception e){};
+	    }
+    }
     public static Object minus(ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB) throws KettleValueException
     {
         if (dataA==null || dataB==null) return null;

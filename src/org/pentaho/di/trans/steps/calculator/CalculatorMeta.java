@@ -337,6 +337,9 @@ public class CalculatorMeta extends BaseStepMeta implements StepMetaInterface
             case CalculatorMetaFunction.CALC_STRING_LEN         :   // LENGTH OF string A
                 defaultResultType = ValueMetaInterface.TYPE_INTEGER;
                 break;
+            case CalculatorMetaFunction.CALC_LOAD_FILE_CONTENT_BINARY   :   // LOAD FILE CONTENT IN BLOB
+                defaultResultType = ValueMetaInterface.TYPE_BINARY;
+                break;
             default:
                 break;
             }
