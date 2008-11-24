@@ -84,13 +84,9 @@ public class XMLInputSaxDataRetriever extends DefaultHandler
 	 * 
 	 * @param sourceFile
 	 *            The XML file containing data.
-	 * @param pathToRootElement
-	 *            Array of ordered XMLvInputFieldPosition objects. Define the
-	 *            path to the root element.
-	 * @param fieldsDefinition
-	 *            list of fields to be retreived from the Root element, with
-	 *            their definition .
-	 * @param definingAttribute
+	 *            
+	 * @param meta The metadata to use
+	 * @param data the (temporary) data to reference
 	 * 
 	 */
 	public XMLInputSaxDataRetriever(String sourceFile, XMLInputSaxMeta meta, XMLInputSaxData data)
@@ -285,8 +281,7 @@ public class XMLInputSaxDataRetriever extends DefaultHandler
 									int p = fields.indexOf(tempF);
 									if (p >= 0)
 									{
-										ValueMetaAndData v = (ValueMetaAndData) row[p];
-										v.setValueData(attributes.getValue(i));
+										setValueToRow(attributes.getValue(i), p);
 									}
 									i++;
 								}
@@ -312,8 +307,7 @@ public class XMLInputSaxDataRetriever extends DefaultHandler
 	    			    	int attributeID=meta.getDefiningAttributeNormalID(attributes.getQName(i));
 	    			    	if(attributeID>=0)
 	    			    	{
-								ValueMetaAndData v = (ValueMetaAndData) row[attributeID];
-								v.setValueData(attributes.getValue(i));
+	    			    		setValueToRow(attributes.getValue(i), attributeID);
 	    			    	}
 	                        i++;
 	                    }
@@ -348,7 +342,7 @@ public class XMLInputSaxDataRetriever extends DefaultHandler
 			}
 		} catch (KettleValueException e)
 		{
-			LogWriter.getInstance().logError(toString(), Const.getStackTracker(e));
+			throw new RuntimeException(e);  //signal error to the transformation don't ignore it
 		}
 	}
 
@@ -372,47 +366,51 @@ public class XMLInputSaxDataRetriever extends DefaultHandler
 				{
 					tempVal = "";
 				}
-
-				XMLInputSaxField xmlInputField = (XMLInputSaxField) fields.get(fieldToFill);
-
-				switch (xmlInputField.getTrimType())
-				{
-				case XMLInputSaxField.TYPE_TRIM_LEFT:
-					tempVal = Const.ltrim(tempVal);
-					break;
-				case XMLInputSaxField.TYPE_TRIM_RIGHT:
-					tempVal = Const.rtrim(tempVal);
-					break;
-				case XMLInputSaxField.TYPE_TRIM_BOTH:
-					tempVal = Const.trim(tempVal);
-					break;
-				default:
-					break;
-				}
-
-				// DO CONVERSIONS...
-				ValueMetaInterface targetValueMeta = data.outputRowMeta.getValueMeta(fieldToFill);
-				ValueMetaInterface sourceValueMeta = data.convertRowMeta.getValueMeta(fieldToFill);
-				row[fieldToFill] = targetValueMeta.convertData(sourceValueMeta, tempVal);
-
-				// Do we need to repeat this field if it is null?
-				if (xmlInputField.isRepeated())
-				{
-					if (row[fieldToFill]==null && data.previousRow != null)
-					{
-						Object previous = data.previousRow[fieldToFill];
-						row[fieldToFill] = previous;
-					}
-				}
+				setValueToRow(tempVal, fieldToFill); 
 			}
 			fieldToFill = -1;
 		} catch (KettleValueException e)
 		{
-			LogWriter.getInstance().logError(toString(), Const.getStackTracker(e));
+			throw new RuntimeException(e); //signal error to the transformation don't ignore it
 		}
 
 		position[_counter + 1] = -1;
 		counterDown();
+	}
+
+	private void setValueToRow(String value, int fieldnr) throws KettleValueException {
+		
+		XMLInputSaxField xmlInputField = (XMLInputSaxField) fields.get(fieldnr);
+
+		switch (xmlInputField.getTrimType())
+		{
+		case XMLInputSaxField.TYPE_TRIM_LEFT:
+			value = Const.ltrim(value);
+			break;
+		case XMLInputSaxField.TYPE_TRIM_RIGHT:
+			value = Const.rtrim(value);
+			break;
+		case XMLInputSaxField.TYPE_TRIM_BOTH:
+			value = Const.trim(value);
+			break;
+		default:
+			break;
+		}
+
+		// DO CONVERSIONS...
+		ValueMetaInterface targetValueMeta = data.outputRowMeta.getValueMeta(fieldnr);
+		ValueMetaInterface sourceValueMeta = data.convertRowMeta.getValueMeta(fieldnr);
+		row[fieldnr] = targetValueMeta.convertData(sourceValueMeta, value);
+
+		// Do we need to repeat this field if it is null?
+		if (xmlInputField.isRepeated())
+		{
+			if (row[fieldnr]==null && data.previousRow != null)
+			{
+				Object previous = data.previousRow[fieldnr];
+				row[fieldnr] = previous;
+			}
+		}
 	}
 
 	public boolean hasNext()
