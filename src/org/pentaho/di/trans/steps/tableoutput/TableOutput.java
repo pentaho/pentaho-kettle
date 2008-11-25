@@ -517,7 +517,7 @@ public class TableOutput extends BaseStep implements StepInterface
                     data.db.connect(getPartitionID());
                 }
                 
-                if(log.isBasic()) logBasic("Connected to database ["+meta.getDatabaseMeta()+"] (commit="+meta.getCommitSize()+")");
+                if(log.isBasic()) logBasic("Connected to database ["+meta.getDatabaseMeta()+"] (commit="+data.commitSize+")");
 				data.db.setCommit(data.commitSize);
 				
                 if (!meta.isPartitioningEnabled() && !meta.isTableNameInField())
