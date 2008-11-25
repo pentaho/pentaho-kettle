@@ -257,8 +257,7 @@ public class AccessInput extends BaseStep implements StepInterface
 
 					// Create convert meta-data objects that will contain Date & Number formatters
 		            data.convertRowMeta = data.outputRowMeta.clone();
-		            for (int i=0;i<data.convertRowMeta.size();i++) data.convertRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);
-		  
+		            
 		            // For String to <type> conversions, we allocate a conversion meta data row as well...
 					//
 					data.convertRowMeta = data.outputRowMeta.clone();
@@ -365,10 +364,6 @@ public class AccessInput extends BaseStep implements StepInterface
 		            meta.getFields(data.outputRowMeta, getStepname(), null, null, this); // get the metadata populated
 		            
 		            // Create convert meta-data objects that will contain Date & Number formatters
-		            //
-		            data.convertRowMeta = data.outputRowMeta.clone();
-		            for (int i=0;i<data.convertRowMeta.size();i++) data.convertRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);
-		
 		
 		            // For String to <type> conversions, we allocate a conversion meta data row as well...
 					//

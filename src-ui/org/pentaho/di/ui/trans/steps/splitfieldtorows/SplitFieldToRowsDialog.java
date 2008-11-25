@@ -129,7 +129,7 @@ public class SplitFieldToRowsDialog extends BaseStepDialog implements StepDialog
 		wlSplitfield.setLayoutData(fdlSplitfield);
 		
 		wSplitfield=new ComboVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		wSplitfield.setToolTipText(Messages.getString("HTTPDialog.UrlField.Tooltip"));
+		wSplitfield.setToolTipText(Messages.getString("SplitFieldToRowsDialog.UrlField.Tooltip"));
 		props.setLook(wSplitfield);
 		wSplitfield.addModifyListener(lsMod);
 		fdSplitfield=new FormData();
