@@ -111,12 +111,6 @@ public class Database implements VariableSpace
 	
 	private LogWriter log;
 	
-	/*
-	 * Counts the number of rows written to a batch for a certain PreparedStatement.
-	 *
-	private Map<PreparedStatement, Integer> batchCounterMap;
-	*/
-	
     /**
      * Number of times a connection was opened using this object.
      * Only used in the context of a database connection map
@@ -1226,7 +1220,7 @@ public class Database implements VariableSpace
 	{
 		insertRow(ps, false);
 	}
-	
+
     /**
      * Insert a row into the database using a prepared statement that has all values set.
      * @param ps The prepared statement
@@ -1235,6 +1229,18 @@ public class Database implements VariableSpace
      * @throws KettleDatabaseException
      */
 	public boolean insertRow(PreparedStatement ps, boolean batch) throws KettleDatabaseException
+	{
+		return insertRow(ps, false, true);
+	}
+    /**
+     * Insert a row into the database using a prepared statement that has all values set.
+     * @param ps The prepared statement
+     * @param batch True if you want to use batch inserts (size = commit size)
+     * @param handleCommit True if you want to handle the commit here after the commit size (False e.g. in case the step handles this, see TableOutput)
+     * @return true if the rows are safe: if batch of rows was sent to the database OR if a commit was done.
+     * @throws KettleDatabaseException
+     */
+	public boolean insertRow(PreparedStatement ps, boolean batch, boolean handleCommit) throws KettleDatabaseException
 	{
 	    String debug="insertRow start";
         boolean rowsAreSafe=false;
@@ -1269,26 +1275,25 @@ public class Database implements VariableSpace
 
 			written++;
 			
-			/*
-			if (!isAutoCommit() && (written%commitsize)==0)
-			{
-				if (useBatchInsert)
+			if (handleCommit) { // some steps handle the commit themselves (see e.g. TableOutput step)
+				if (!isAutoCommit() && (written%commitsize)==0)
 				{
-					debug="insertRow executeBatch commit";
-                    ps.executeBatch();
-					commit();
-                    ps.clearBatch();
-
-                    batchCounterMap.put(ps, Integer.valueOf(0));
+					if (useBatchInsert)
+					{
+						debug="insertRow executeBatch commit";
+	                    ps.executeBatch();
+						commit();
+	                    ps.clearBatch();
+					}
+					else
+					{
+					    debug="insertRow normal commit";
+	                    commit();
+					}
+	                rowsAreSafe=true;
 				}
-				else
-				{
-				    debug="insertRow normal commit";
-                    commit();
-				}
-                rowsAreSafe=true;
 			}
-			*/
+			
             return rowsAreSafe;
 		}
 		catch(BatchUpdateException ex)
