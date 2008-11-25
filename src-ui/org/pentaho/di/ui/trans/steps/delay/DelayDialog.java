@@ -127,6 +127,7 @@ public class DelayDialog extends BaseStepDialog implements StepDialogInterface
 		);
 		
 		wScaleTime = new CCombo(shell, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
+		wScaleTime.add(Messages.getString("DelayDialog.MSScaleTime.Label"));
 		wScaleTime.add(Messages.getString("DelayDialog.SScaleTime.Label"));
 		wScaleTime.add(Messages.getString("DelayDialog.MnScaleTime.Label"));
 		wScaleTime.add(Messages.getString("DelayDialog.HrScaleTime.Label"));
@@ -137,6 +138,7 @@ public class DelayDialog extends BaseStepDialog implements StepDialogInterface
 		fdScaleTime.top = new FormAttachment(wTimeout, margin);
 		fdScaleTime.right = new FormAttachment(100, 0);
 		wScaleTime.setLayoutData(fdScaleTime);
+		wScaleTime.addModifyListener(lsMod);
 		
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
