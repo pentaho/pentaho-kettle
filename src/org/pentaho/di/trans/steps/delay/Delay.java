@@ -58,14 +58,18 @@ public class Delay extends BaseStep implements StepInterface
 			switch (meta.getScaleTimeCode())
 			{
 			    case 0:
+			        msgScale = Messages.getString("DelayDialog.MSScaleTime.Label");
+			        data.Multiple = 1;
+			        break;			
+			    case 1:
 			        msgScale = Messages.getString("DelayDialog.SScaleTime.Label");
 			        data.Multiple = 1000;
 			        break;
-                case 1:
+                case 2:
                     msgScale = Messages.getString("DelayDialog.MnScaleTime.Label");
                     data.Multiple = 60000;
                     break;
-                case 2:
+                case 3:
                     msgScale = Messages.getString("DelayDialog.HrScaleTime.Label");
                     data.Multiple = 3600000;
                     break;
@@ -80,40 +84,45 @@ public class Delay extends BaseStep implements StepInterface
 			if(log.isDebug()) log.logDebug(toString(), Messages.getString("Delay.Log.TimeOut",""+data.timeout,msgScale));
 		}
 
-		
-	     // starttime (in seconds ,Minutes or Hours)
-	     long timeStart = System.currentTimeMillis() / data.Multiple;
-	      
-	     boolean continueLoop = true;
-	     
-	      while (continueLoop)
-	      {
-	        // Update Time value
-	        long now = System.currentTimeMillis() / data.Multiple;
+		if ((data.Multiple<1000) && (data.timeout>0)) {
+			// handle the milliseconds delays here
+			try {
+				Thread.sleep(data.timeout);
+			} catch (Exception e) {
+				// nothing
+			}
+		} else {
+			 // starttime (in seconds ,Minutes or Hours)
+			long timeStart = System.currentTimeMillis();
 
-	        // Let's check the limit time
-	        if (now >= (timeStart + data.timeout))
-	        {
-	          // We have reached the time limit
-	          if (log.isDebug()) log.logDebug(toString(), Messages.getString("Delay.WaitTimeIsElapsed.Label"));
-	          continueLoop = false;
-	        }
-	        else
-	        {
-	        	try {
-					Thread.sleep(1000);
-				} catch (Exception e) {
-					// handling this exception would be kind of silly.
+			boolean continueLoop = true;
+
+			while (continueLoop && !isStopped()) {
+				// Update Time value
+				long now = System.currentTimeMillis();
+
+				// Let's check the limit time
+				if (now >= (timeStart + (data.timeout * data.Multiple))) {
+					// We have reached the time limit
+					continueLoop = false;
+				} else {
+					try {
+						Thread.sleep(1000);
+					} catch (Exception e) {
+						// handling this exception would be kind of silly.
+					}
 				}
-	        }
-	      }
+			}
+		}
+		if (log.isDebug()) log.logDebug(toString(), Messages.getString("Delay.WaitTimeIsElapsed.Label"));
 	     
-          putRow(getInputRowMeta(), r);     // copy row to possible alternate rowset(s).
-          
-          if (checkFeedback(getLinesRead())) 
-          {
-          	if(log.isDetailed()) logDetailed(Messages.getString("Delay.Log.LineNumber",""+getLinesRead())); //$NON-NLS-1$
-          }	
+		putRow(getInputRowMeta(), r);     // copy row to possible alternate rowset(s).
+		  
+		if (checkFeedback(getLinesRead())) 
+		{
+			if(log.isDetailed()) logDetailed(Messages.getString("Delay.Log.LineNumber",""+getLinesRead())); //$NON-NLS-1$
+		}
+		
 		return true;
 	}
 

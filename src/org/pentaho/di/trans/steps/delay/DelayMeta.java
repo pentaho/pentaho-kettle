@@ -46,9 +46,9 @@ public class DelayMeta extends BaseStepMeta implements StepMetaInterface
 {
 	private String timeout;
 	private String scaletime;
-	public static String DEFAULT_SCALE_TIME="0";
+	public static String DEFAULT_SCALE_TIME="seconds";
 	
-	public String[] ScaleTimeCode= {"second","minute","hour"};
+	public String[] ScaleTimeCode= {"milliseconds","seconds","minutes","hours"}; // before 3.1.1 it was "millisecond","second","minute","hour"--> keep compatibilty see PDI-1850, PDI-1532
 	
 	public DelayMeta()
 	{
@@ -80,20 +80,26 @@ public class DelayMeta extends BaseStepMeta implements StepMetaInterface
 	 public void setScaleTimeCode(int ScaleTimeIndex)
 	 {
 		 switch (ScaleTimeIndex) {
+		 case 0 :
+			 scaletime=ScaleTimeCode[0]; // milliseconds
+		 	break;
 		 case 1 :
-			 scaletime=ScaleTimeCode[1]; // minute
+			 scaletime=ScaleTimeCode[1]; // second
 		 	break;
 		 case 2 :
-			 scaletime=ScaleTimeCode[2]; // Hour
+			 scaletime=ScaleTimeCode[2]; // minutes
 		 	break;
+		 case 3 :
+			 scaletime=ScaleTimeCode[3]; // hours
+		 	break;		 	
 		 default: 
-			 scaletime=ScaleTimeCode[0]; // second
+			 scaletime=ScaleTimeCode[1]; // seconds
 		 	break;
 		 }
 	 }
 	 public int getScaleTimeCode()
 	 {
-		 int retval=1;
+		 int retval=1; // DEFAULT: seconds
 		 if(scaletime==null) return retval;
 		 if(scaletime.equals(ScaleTimeCode[0]))
 			 retval=0;
@@ -101,6 +107,8 @@ public class DelayMeta extends BaseStepMeta implements StepMetaInterface
 			 retval=1;
 		 else if(scaletime.equals(ScaleTimeCode[2]))
 			 retval=2;
+		 else if(scaletime.equals(ScaleTimeCode[3]))
+			 retval=3;
 		 
 		 return retval;
 	 }
@@ -110,6 +118,8 @@ public class DelayMeta extends BaseStepMeta implements StepMetaInterface
 		try{
 			timeout = XMLHandler.getTagValue(stepnode, "timeout");
 			scaletime = XMLHandler.getTagValue(stepnode, "scaletime");
+			// set all unknown values to seconds
+			setScaleTimeCode(getScaleTimeCode()); // compatibility reasons for transformations before 3.1.1, see PDI-1850, PDI-1532
 			
 		}
 	    catch (Exception e)
@@ -120,7 +130,8 @@ public class DelayMeta extends BaseStepMeta implements StepMetaInterface
 
 	public void setDefault()
 	{
-		timeout=DEFAULT_SCALE_TIME;
+		timeout="1"; //default one second
+		scaletime=DEFAULT_SCALE_TIME; // defaults to "seconds"
 	}
 	public String getTimeOut()
 	{
@@ -136,7 +147,8 @@ public class DelayMeta extends BaseStepMeta implements StepMetaInterface
 		try{
 			timeout = rep.getStepAttributeString(id_step, "timeout");
 			scaletime = rep.getStepAttributeString(id_step, "scaletime");
-			
+			// set all unknown values to seconds
+			setScaleTimeCode(getScaleTimeCode()); // compatibility reasons for transformations before 3.1.1, see PDI-1850, PDI-1532
 		}
 		 catch (Exception e)
 	     {
