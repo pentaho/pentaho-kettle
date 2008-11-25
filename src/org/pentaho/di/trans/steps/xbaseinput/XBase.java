@@ -187,7 +187,7 @@ public class XBase
 					}
 			    	catch(NumberFormatException e)
 					{
-			    		r[i] = null; // NULL TODO: change this behavior: throw an exception here too
+			    		throw new KettleException("Error parsing field #"+(i+1)+" : "+reader.getField(i).getName(), e);
 					}
 					break;
 			    case DBFField.FIELD_TYPE_F: // Float
@@ -200,7 +200,7 @@ public class XBase
 					}
 			    	catch(NumberFormatException e)
 					{
-			    		r[i] = null; // NULL TODO: change this behavior: throw an exception here too
+			    		throw new KettleException("Error parsing field #"+(i+1)+" : "+reader.getField(i).getName(), e);
 					}
 					break;
 				case DBFField.FIELD_TYPE_L:  // Logical
