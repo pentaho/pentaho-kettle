@@ -15,7 +15,6 @@ package org.pentaho.di.trans.steps.xbaseinput;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.RandomAccessFile;
 import java.util.Date;
 
 import org.pentaho.di.core.Const;
@@ -264,11 +263,14 @@ public class XBase
     	else 				return getClass().getName();
     }
     
+    /*
     public String getVersionInfo()
     {
     	return reader.getHeader().getSignatureDesc();
     }
+    */
     
+    /*
     public boolean setMemo(String memo_file)
     {
     	try
@@ -287,6 +289,7 @@ public class XBase
     		return false;
 		}
     }
+    */
 
     /**
      * @return the dbfFile
