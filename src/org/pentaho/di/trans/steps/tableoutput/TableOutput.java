@@ -219,7 +219,7 @@ public class TableOutput extends BaseStep implements StepInterface
 				data.savepoint = data.db.setSavepoint();
 			}
 			data.db.setValues(data.insertRowMeta, insertRowData, insertStatement);
-			data.db.insertRow(insertStatement, data.batchMode);
+			data.db.insertRow(insertStatement, data.batchMode, false); //false: no commit, it is handled in this step different
 			if (log.isRowLevel()) {
 				logRowlevel("Written row: "+data.insertRowMeta.getString(insertRowData));
 			}
@@ -517,7 +517,7 @@ public class TableOutput extends BaseStep implements StepInterface
                     data.db.connect(getPartitionID());
                 }
                 
-                if(log.isBasic()) logBasic("Connected to database ["+meta.getDatabaseMeta()+"] (commit="+meta.getCommitSize()+")");
+                if(log.isBasic()) logBasic("Connected to database ["+meta.getDatabaseMeta()+"] (commit="+data.commitSize+")");
 				data.db.setCommit(data.commitSize);
 				
                 if (!meta.isPartitioningEnabled() && !meta.isTableNameInField())
@@ -620,7 +620,9 @@ public class TableOutput extends BaseStep implements StepInterface
                 }
             }
             
-		    data.db.disconnect();
+		    if (data.db!=null) {
+		    	data.db.disconnect();
+		    }
             super.dispose(smi, sdi);
         }        
 	}
