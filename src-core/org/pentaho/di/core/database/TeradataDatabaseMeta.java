@@ -79,7 +79,7 @@ public class TeradataDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 	{
         if (getAccessType()==DatabaseMeta.TYPE_ACCESS_NATIVE)
         {
-            return "com.ncr.teradata.TeraDriver";
+            return "com.teradata.jdbc.TeraDriver";
         }
         else
         {
