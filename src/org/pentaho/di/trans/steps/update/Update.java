@@ -121,8 +121,8 @@ public class Update extends BaseStep implements StepInterface
             }
 		}
 		else
-		{
-			if (log.isRowLevel()) logRowlevel(Messages.getString("Update.Log.FoundRow")+add.toString()); //$NON-NLS-1$
+		{			
+			if (log.isRowLevel()) logRowlevel(Messages.getString("Update.Log.FoundRow")+data.lookupReturnRowMeta.getString(add)); //$NON-NLS-1$
 			/* Row was found:
 			 *  
 			 * UPDATE row or do nothing?
