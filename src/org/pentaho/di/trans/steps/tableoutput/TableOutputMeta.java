@@ -42,13 +42,12 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.w3c.dom.Node;
 
-
-
-/*
- * Created on 2-jun-2003
- *
+/**
+ * Table Output meta data.
+ * 
+ * @author Matt Casters
+ * @since  2-jun-2003
  */
- 
 public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
 {
 	private DatabaseMeta databaseMeta;
@@ -70,6 +69,15 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
     
     private boolean      returningGeneratedKeys;
     private String       generatedKeyField;
+    
+    /** Do we explicitly select the fields to update in the database */
+    private boolean      specifyFields;
+    
+    /** Fields containing the values in the input stream to insert */
+    private String[]     fieldStream;
+
+    /** Fields in the table to insert */
+    private String[]     fieldDatabase;
 
     /**
 	 * @return Returns the generatedKeyField.
@@ -218,7 +226,16 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
 		super(); // allocate BaseStepMeta
 		useBatchUpdate=true;
 		commitSize="1000";
+		
+		fieldStream   = new String[0];
+		fieldDatabase = new String[0];
 	}
+    
+	public void allocate(int nrRows)
+	{
+		fieldStream   = new String[nrRows];
+		fieldDatabase = new String[nrRows];
+	}    
 	
 	public void loadXML(Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters)
 		throws KettleXMLException
@@ -229,6 +246,23 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
 	public Object clone()
 	{
 		TableOutputMeta retval = (TableOutputMeta)super.clone();
+		
+		int nrStream   = fieldStream.length;
+		int nrDatabase = fieldDatabase.length;
+
+		retval.fieldStream   = new String[nrStream];
+		retval.fieldDatabase = new String[nrDatabase];
+
+		for (int i = 0; i < nrStream; i++)
+		{
+			retval.fieldStream[i] = fieldStream[i];
+		}
+		
+		for (int i = 0; i < nrDatabase; i++)
+		{
+			retval.fieldDatabase[i] = fieldDatabase[i];
+		}	
+		
 		return retval;
 	}
 	
@@ -319,6 +353,22 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
     {
         return ignoreErrors;
     }
+    
+    /**
+     * @param specifyFields The specify fields flag to set.
+     */
+    public void setSpecifyFields(boolean specifyFields)
+    {
+        this.specifyFields = specifyFields;
+    }
+    
+    /**
+     * @return Returns the specify fields flag.
+     */
+    public boolean specifyFields()
+    {
+        return specifyFields;
+    }
 	
     /**
      * @param useBatchUpdate The useBatchUpdate flag to set.
@@ -341,26 +391,42 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			String con = XMLHandler.getTagValue(stepnode, "connection");
-			databaseMeta      = DatabaseMeta.findDatabase(databases, con);
-            schemaName    = XMLHandler.getTagValue(stepnode, "schema");
-			tablename     = XMLHandler.getTagValue(stepnode, "table");
-			commitSize    = XMLHandler.getTagValue(stepnode, "commit");
-			truncateTable = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "truncate"));
-			ignoreErrors  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "ignore_errors"));
-			useBatchUpdate= "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "use_batch"));
+			String con     = XMLHandler.getTagValue(stepnode, "connection");
+			databaseMeta   = DatabaseMeta.findDatabase(databases, con);
+            schemaName     = XMLHandler.getTagValue(stepnode, "schema");
+			tablename      = XMLHandler.getTagValue(stepnode, "table");
+			commitSize     = XMLHandler.getTagValue(stepnode, "commit");
+			truncateTable  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "truncate"));
+			ignoreErrors   = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "ignore_errors"));
+			useBatchUpdate = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "use_batch"));
+			
+			// If not present it will be false to be compatible with pre-v3.2
+			specifyFields  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "specify_fields"));
 
             partitioningEnabled  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "partitioning_enabled"));
             partitioningField    = XMLHandler.getTagValue(stepnode, "partitioning_field");
             partitioningDaily    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "partitioning_daily"));
             partitioningMonthly  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "partitioning_monthly"));
             
-            tableNameInField = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "tablename_in_field"));
-            tableNameField   = XMLHandler.getTagValue(stepnode, "tablename_field");
-            tableNameInTable = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "tablename_in_table"));
+            tableNameInField     = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "tablename_in_field"));
+            tableNameField       = XMLHandler.getTagValue(stepnode, "tablename_field");
+            tableNameInTable     = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "tablename_in_table"));
             
             returningGeneratedKeys = "Y".equalsIgnoreCase( XMLHandler.getTagValue(stepnode, "return_keys"));
-            generatedKeyField   = XMLHandler.getTagValue(stepnode, "return_field");
+            generatedKeyField      = XMLHandler.getTagValue(stepnode, "return_field");
+            
+			Node fields = XMLHandler.getSubNode(stepnode, "fields");   //$NON-NLS-1$
+			int nrRows  = XMLHandler.countNodes(fields, "field");      //$NON-NLS-1$
+			
+			allocate(nrRows);
+			
+			for (int i=0;i<nrRows;i++)
+			{
+				Node knode = XMLHandler.getSubNodeByNr(fields, "field", i);         //$NON-NLS-1$
+				
+				fieldDatabase   [i] = XMLHandler.getTagValue(knode, "column_name");  //$NON-NLS-1$
+				fieldStream     [i] = XMLHandler.getTagValue(knode, "stream_name"); //$NON-NLS-1$
+			}
         }
 		catch(Exception e)
 		{
@@ -380,19 +446,22 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
         tableNameInTable    = true;
         tableNameField      = "";
         
+        // To be compatible with pre-v3.2 (SB)
+        specifyFields       = false;        
 	}
 
 	public String getXML()
 	{
-		StringBuffer retval=new StringBuffer();
+		StringBuilder retval=new StringBuilder();
 		
-		retval.append("    "+XMLHandler.addTagValue("connection",    databaseMeta==null?"":databaseMeta.getName()));
-        retval.append("    "+XMLHandler.addTagValue("schema",        schemaName));
-		retval.append("    "+XMLHandler.addTagValue("table",         tablename));
-		retval.append("    "+XMLHandler.addTagValue("commit",        commitSize));
-		retval.append("    "+XMLHandler.addTagValue("truncate",      truncateTable));
-		retval.append("    "+XMLHandler.addTagValue("ignore_errors", ignoreErrors));
-		retval.append("    "+XMLHandler.addTagValue("use_batch",     useBatchUpdate));
+		retval.append("    "+XMLHandler.addTagValue("connection",     databaseMeta==null?"":databaseMeta.getName()));
+        retval.append("    "+XMLHandler.addTagValue("schema",         schemaName));
+		retval.append("    "+XMLHandler.addTagValue("table",          tablename));
+		retval.append("    "+XMLHandler.addTagValue("commit",         commitSize));
+		retval.append("    "+XMLHandler.addTagValue("truncate",       truncateTable));
+		retval.append("    "+XMLHandler.addTagValue("ignore_errors",  ignoreErrors));
+		retval.append("    "+XMLHandler.addTagValue("use_batch",      useBatchUpdate));
+		retval.append("    "+XMLHandler.addTagValue("specify_fields", specifyFields));
 
         retval.append("    "+XMLHandler.addTagValue("partitioning_enabled",   partitioningEnabled));
         retval.append("    "+XMLHandler.addTagValue("partitioning_field",     partitioningField));
@@ -405,6 +474,17 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
 
 		retval.append("    "+XMLHandler.addTagValue("return_keys", returningGeneratedKeys));
         retval.append("    "+XMLHandler.addTagValue("return_field", generatedKeyField));
+        
+		retval.append("    <fields>").append(Const.CR); //$NON-NLS-1$
+
+		for (int i=0;i<fieldDatabase.length;i++)
+		{
+			retval.append("        <field>").append(Const.CR); //$NON-NLS-1$
+			retval.append("          ").append(XMLHandler.addTagValue("column_name", fieldDatabase[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("          ").append(XMLHandler.addTagValue("stream_name", fieldStream[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        </field>").append(Const.CR); //$NON-NLS-1$
+		}
+		retval.append("    </fields>").append(Const.CR); //$NON-NLS-1$
 
 		return retval.toString();
 	}
@@ -414,17 +494,18 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
 		try
 		{
 			long id_connection =   rep.getStepAttributeInteger(id_step, "id_connection"); 
-			databaseMeta = DatabaseMeta.findDatabase( databases, id_connection);
-            schemaName       =      rep.getStepAttributeString (id_step, "schema");
-			tablename        =      rep.getStepAttributeString (id_step, "table");
-			long commitSizeInt =  rep.getStepAttributeInteger(id_step, "commit");
-			commitSize = rep.getStepAttributeString(id_step, "commit");
+			databaseMeta       = DatabaseMeta.findDatabase( databases, id_connection);
+            schemaName         =   rep.getStepAttributeString (id_step, "schema");
+			tablename          =   rep.getStepAttributeString (id_step, "table");
+			long commitSizeInt =   rep.getStepAttributeInteger(id_step, "commit");
+			commitSize         =   rep.getStepAttributeString(id_step, "commit");
 			if (Const.isEmpty(commitSize)) {
 				commitSize=Long.toString(commitSizeInt);
 			}
 			truncateTable    =      rep.getStepAttributeBoolean(id_step, "truncate"); 
 			ignoreErrors     =      rep.getStepAttributeBoolean(id_step, "ignore_errors"); 
 			useBatchUpdate   =      rep.getStepAttributeBoolean(id_step, "use_batch"); 
+			specifyFields    =      rep.getStepAttributeBoolean(id_step, "specify_fields");
             
             partitioningEnabled   = rep.getStepAttributeBoolean(id_step, "partitioning_enabled"); 
             partitioningField     = rep.getStepAttributeString (id_step, "partitioning_field"); 
@@ -437,6 +518,20 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
             
             returningGeneratedKeys= rep.getStepAttributeBoolean(id_step, "return_keys");
             generatedKeyField     = rep.getStepAttributeString (id_step, "return_field");
+            
+			int nrCols    = rep.countNrStepAttributes(id_step, "column_name"); //$NON-NLS-1$
+			int nrStreams = rep.countNrStepAttributes(id_step, "stream_name"); //$NON-NLS-1$
+			
+			int nrRows = (nrCols < nrStreams ? nrStreams : nrCols);
+			allocate(nrRows);
+			
+			for (int idx=0; idx < nrRows; idx++)
+			{
+				fieldDatabase[idx] = Const.NVL(rep.getStepAttributeString(id_step, 
+						                                                  idx, "column_name"), ""); //$NON-NLS-1$ //$NON-NLS-2$
+				fieldStream[idx]   = Const.NVL(rep.getStepAttributeString(id_step, 
+						                                                  idx, "stream_name"), ""); //$NON-NLS-1$ //$NON-NLS-2$
+			}
 		}
 		catch(Exception e)
 		{
@@ -455,6 +550,7 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "truncate",        truncateTable);
 			rep.saveStepAttribute(id_transformation, id_step, "ignore_errors",   ignoreErrors);
 			rep.saveStepAttribute(id_transformation, id_step, "use_batch",       useBatchUpdate);
+			rep.saveStepAttribute(id_transformation, id_step, "specify_fields",  specifyFields);
 			
             rep.saveStepAttribute(id_transformation, id_step, "partitioning_enabled", partitioningEnabled);
             rep.saveStepAttribute(id_transformation, id_step, "partitioning_field",   partitioningField);
@@ -468,9 +564,20 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
             rep.saveStepAttribute(id_transformation, id_step, "return_keys", returningGeneratedKeys);
             rep.saveStepAttribute(id_transformation, id_step, "return_field", generatedKeyField);
             
+        	int nrRows = (fieldDatabase.length < fieldStream.length ? fieldStream.length :
+        		                                                      fieldDatabase.length);
+			for (int idx=0; idx < nrRows; idx++)
+			{
+				String columnName = (idx < fieldDatabase.length ? fieldDatabase[idx] : "");
+				String streamName = (idx < fieldStream.length   ? fieldStream[idx] : "");
+				rep.saveStepAttribute(id_transformation, id_step, idx, "column_name", columnName); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, idx, "stream_name", streamName); //$NON-NLS-1$
+			}
+            
 			// Also, save the step-database relationship!
-			if (databaseMeta!=null) rep.insertStepDatabase(id_transformation, id_step, databaseMeta.getID());
-			
+			if (databaseMeta!=null)  { 
+				rep.insertStepDatabase(id_transformation, id_step, databaseMeta.getID());			
+			}
 		}
 		catch(Exception e)
 		{
@@ -529,53 +636,106 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
 								cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("TableOutputMeta.CheckResult.FieldsReceived", ""+prev.size()), stepMeta);
 								remarks.add(cr);
 	
-								// Starting from prev...
-								for (int i=0;i<prev.size();i++)
-								{
-									ValueMetaInterface pv = prev.getValueMeta(i);
-									int idx = r.indexOfValue(pv.getName());
-									if (idx<0) 
+								if ( ! specifyFields() )  {
+									// Starting from prev...
+									for (int i=0;i<prev.size();i++)
 									{
-										error_message+="\t\t"+pv.getName()+" ("+pv.getTypeDesc()+")"+Const.CR;
-										error_found=true;
-									} 
-								}
-								if (error_found) 
-								{
-									error_message=Messages.getString("TableOutputMeta.CheckResult.FieldsNotFoundInOutput", error_message);
-	
-									cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
-									remarks.add(cr);
-								}
-								else
-								{
-									cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("TableOutputMeta.CheckResult.AllFieldsFoundInOutput"), stepMeta);
-									remarks.add(cr);
-								}
-	
-								// Starting from table fields in r...
-								for (int i=0;i<r.size();i++)
-								{
-									ValueMetaInterface rv = r.getValueMeta(i);
-									int idx = prev.indexOfValue(rv.getName());
-									if (idx<0) 
+										ValueMetaInterface pv = prev.getValueMeta(i);
+										int idx = r.indexOfValue(pv.getName());
+										if (idx<0) 
+										{
+											error_message+="\t\t"+pv.getName()+" ("+pv.getTypeDesc()+")"+Const.CR;
+											error_found=true;
+										} 
+									}
+									if (error_found) 
 									{
-										error_message+="\t\t"+rv.getName()+" ("+rv.getTypeDesc()+")"+Const.CR;
-										error_found=true;
-									} 
+										error_message=Messages.getString("TableOutputMeta.CheckResult.FieldsNotFoundInOutput", error_message);
+
+										cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
+										remarks.add(cr);
+									}
+									else
+									{
+										cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("TableOutputMeta.CheckResult.AllFieldsFoundInOutput"), stepMeta);
+										remarks.add(cr);
+									}
 								}
-								if (error_found) 
-								{
-									error_message=Messages.getString("TableOutputMeta.CheckResult.FieldsNotFound", error_message);
+								else  {
+									// Specifying the column names explicitly
+									for (int i=0;i<getFieldDatabase().length;i++)
+									{
+										int idx = r.indexOfValue(getFieldDatabase()[i]);
+										if (idx<0) 
+										{
+											error_message+="\t\t"+ getFieldDatabase()[i] + Const.CR;
+											error_found=true;
+										} 
+									}
+									if (error_found) 
+									{
+										error_message=Messages.getString("TableOutputMeta.CheckResult.FieldsSpecifiedNotInTable", error_message);
+
+										cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
+										remarks.add(cr);
+									}
+									else
+									{
+										cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("TableOutputMeta.CheckResult.AllFieldsFoundInOutput"), stepMeta);
+										remarks.add(cr);
+									}
+								}
 	
-									cr = new CheckResult(CheckResultInterface.TYPE_RESULT_WARNING, error_message, stepMeta);
-									remarks.add(cr);
+								error_message="";
+								if ( ! specifyFields() )  {
+									// Starting from table fields in r...
+									for (int i=0;i<getFieldDatabase().length;i++)
+									{
+										ValueMetaInterface rv = r.getValueMeta(i);
+										int idx = prev.indexOfValue(rv.getName());
+										if (idx<0) 
+										{
+											error_message+="\t\t"+rv.getName()+" ("+rv.getTypeDesc()+")"+Const.CR;
+											error_found=true;
+										} 
+									}
+									if (error_found) 
+									{
+										error_message=Messages.getString("TableOutputMeta.CheckResult.FieldsNotFound", error_message);
+
+										cr = new CheckResult(CheckResultInterface.TYPE_RESULT_WARNING, error_message, stepMeta);
+										remarks.add(cr);
+									}
+									else
+									{
+										cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("TableOutputMeta.CheckResult.AllFieldsFound"), stepMeta);
+										remarks.add(cr);
+									}
 								}
-								else
-								{
-									cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("TableOutputMeta.CheckResult.AllFieldsFound"), stepMeta);
-									remarks.add(cr);
-								}
+								else  {
+									// Specifying the column names explicitly									
+									for (int i=0;i<getFieldStream().length;i++)
+									{
+										int idx = prev.indexOfValue(getFieldStream()[i]);
+										if (idx<0) 
+										{
+											error_message+="\t\t"+getFieldStream()[i]+Const.CR;
+											error_found=true;
+										} 
+									}
+									if (error_found) 
+									{
+										error_message=Messages.getString("TableOutputMeta.CheckResult.FieldsSpecifiedNotFound", error_message);
+
+										cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
+										remarks.add(cr);
+									}
+									else
+									{
+										cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("TableOutputMeta.CheckResult.AllFieldsFound"), stepMeta);
+										remarks.add(cr);
+									}									
+								}							
 							}
 							else
 							{
@@ -786,6 +946,38 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
             return super.getUsedDatabaseConnections();
         }
     }
+    
+    /**
+     * @return Fields containing the values in the input stream to insert.
+     */
+    public String[] getFieldStream()
+    {
+        return fieldStream;
+    }
+    
+    /**
+     * @param fieldStream The fields containing the values in the input stream to insert in the table.
+     */
+    public void setFieldStream(String[] fieldStream)
+    {
+        this.fieldStream = fieldStream;
+    }
+
+    /**
+     * @return Fields containing the fieldnames in the database insert.
+     */
+    public String[] getFieldDatabase()
+    {
+        return fieldDatabase;
+    }
+    
+    /**
+     * @param fieldDatabase The fields containing the names of the fields to insert.
+     */
+    public void setFieldDatabase(String[] fieldDatabase)
+    {
+        this.fieldDatabase = fieldDatabase;
+    }    
 
     /**
      * @return the schemaName
@@ -806,5 +998,5 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
     public boolean supportsErrorHandling()
     {
         return true;
-    }
+    }      
 }

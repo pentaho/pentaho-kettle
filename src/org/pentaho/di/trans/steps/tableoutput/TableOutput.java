@@ -28,6 +28,7 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
+import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.Trans;
@@ -41,7 +42,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 /**
  * Writes rows to a database table.
  * 
- * @author Matt
+ * @author Matt Casters
  * @since 6-apr-2003
  */
 public class TableOutput extends BaseStep implements StepInterface
@@ -70,7 +71,43 @@ public class TableOutput extends BaseStep implements StepInterface
             first=false;
             data.outputRowMeta = getInputRowMeta().clone();
             meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
-            data.insertRowMeta = getInputRowMeta().clone();
+              
+            if ( ! meta.specifyFields() )  {
+            	// Just take the input row
+            	data.insertRowMeta = getInputRowMeta().clone();
+            }
+            else  {
+            	
+            	data.insertRowMeta = new RowMeta();
+            	
+            	// 
+            	// Cache the position of the compare fields in Row row
+            	//
+            	data.valuenrs = new int[meta.getFieldDatabase().length];
+            	for (int i=0;i<meta.getFieldDatabase().length;i++)
+            	{
+            		data.valuenrs[i]=getInputRowMeta().indexOfValue(meta.getFieldStream()[i]);
+            		if (data.valuenrs[i]<0)
+            		{
+            			throw new KettleStepException(Messages.getString("TableOutput.Exception.FieldRequired",meta.getFieldStream()[i])); //$NON-NLS-1$
+            		}
+            	}
+
+        	    for (int i=0;i<meta.getFieldDatabase().length;i++) 
+        	    {
+        	 	    ValueMetaInterface insValue = getInputRowMeta().searchValueMeta( meta.getFieldStream()[i]); 
+        		    if ( insValue != null )
+        		    {
+        			    ValueMetaInterface insertValue = insValue.clone();
+        			    insertValue.setName(meta.getFieldDatabase()[i]);
+        			    data.insertRowMeta.addValueMeta( insertValue );
+        		    }
+        		    else  {
+        			    throw new KettleStepException(Messages.getString(
+        			    		"TableOutput.Exception.FailedToFindField", meta.getFieldStream()[i])); //$NON-NLS-1$ 
+        			}
+        	    }            	
+            }
         }
         
 		try
@@ -84,7 +121,7 @@ public class TableOutput extends BaseStep implements StepInterface
             
             if (checkFeedback(getLinesRead())) 
             {
-            	if(log.isBasic()) logBasic("linenr "+getLinesRead());
+            	if(log.isBasic()) logBasic("linenr "+getLinesRead()); //$NON-NLS-1$
             }
 		}
 		catch(KettleException e)
@@ -134,13 +171,13 @@ public class TableOutput extends BaseStep implements StepInterface
                     log.logError(toString(), message);
                     throw new KettleStepException(message);
                 }
-                if (!meta.isTableNameInTable())
+                if (!meta.isTableNameInTable() && !meta.specifyFields())
                 {
                     data.insertRowMeta.removeValueMeta(data.indexOfTableNameField);
                 }
             }
             tableName = rowMeta.getString(r, data.indexOfTableNameField);
-            if ( !meta.isTableNameInTable() ) {
+            if ( !meta.isTableNameInTable() && !meta.specifyFields() ) {
             	// If the name of the table should not be inserted itself, remove the table name
             	// from the input row data as well.  This forcibly creates a copy of r
             	//
@@ -190,6 +227,17 @@ public class TableOutput extends BaseStep implements StepInterface
         {
             tableName  = data.tableName;
             insertRowData = r;
+        }
+        
+        if ( meta.specifyFields() )  {
+        	//
+			// The values to insert are those in the fields sections
+            //
+            insertRowData = new Object[data.valuenrs.length];
+            for (int idx=0;idx<data.valuenrs.length;idx++)
+            {
+                insertRowData[idx] = r[ data.valuenrs[idx] ];
+            }           
         }
         
         if (Const.isEmpty(tableName))
@@ -265,12 +313,10 @@ public class TableOutput extends BaseStep implements StepInterface
 					}
 					catch(SQLException ex) 
 					{
-					    // log.logError(toString(), Const.getStackTracker(ex));
 						throw new KettleDatabaseException("Error inserting row", ex);
 					}
 					catch(Exception ex)
 					{
-					    // System.out.println("Unexpected exception in ["+debug+"] : "+e.getMessage());
 						throw new KettleDatabaseException("Unexpected error inserting row", ex);
 					}
 				}
@@ -531,7 +577,7 @@ public class TableOutput extends BaseStep implements StepInterface
     					data.db.truncateTable(environmentSubstitute(meta.getSchemaName()), environmentSubstitute(meta.getTablename()));
     				}
                 }
-                
+                                
 				return true;
 			}
 			catch(KettleException e)

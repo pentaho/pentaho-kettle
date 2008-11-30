@@ -9,7 +9,6 @@
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or  implied. Please refer to 
  * the license for the specific language governing your rights and limitations.*/
  
-
 package org.pentaho.di.trans.steps.tableoutput;
 
 import java.sql.PreparedStatement;
@@ -27,9 +26,9 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
 
-
-
 /**
+ * Storage class for table output step.
+ * 
  * @author Matt
  * @since 24-jan-2005
  */
@@ -37,7 +36,8 @@ public class TableOutputData extends BaseStepData implements StepDataInterface
 {
 	public  Database db;
 	public  int      warnings;
-	public  String tableName;
+	public  String   tableName;
+	public  int      valuenrs[];    // Stream valuename nrs to prevent searches.
     
     /**
      * Mapping between the SQL and the actual prepared statement.
