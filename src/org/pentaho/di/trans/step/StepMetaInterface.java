@@ -63,8 +63,9 @@ public interface StepMetaInterface
 	/**
 	 * Get the XML that represents the values in this step
 	 * @return the XML that represents the metadata in this step
+	 * @throws KettleException in case there is a conversion or XML encoding error
 	 */
-	public String getXML();
+	public String getXML() throws KettleException;
 
 	/**
 	 * Load the values for this step from an XML Node

@@ -117,8 +117,9 @@ public class ValueMetaAndData
     /**
      * Produce the XML representation of this value.
      * @return a String containing the XML to represent this Value.
+     * @throws KettleValueException in case there is a data conversion error, only throws in case of lazy conversion
      */
-    public String getXML()
+    public String getXML() throws KettleValueException
     {
         ValueMetaInterface meta = valueMeta.clone();
         meta.setDecimalSymbol(".");

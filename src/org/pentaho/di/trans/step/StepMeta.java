@@ -145,7 +145,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 		this((String)null, (String)null, (StepMetaInterface)null);
 	}
 
-	public String getXML()
+	public String getXML() throws KettleException
 	{
 		StringBuffer retval=new StringBuffer(200); //$NON-NLS-1$
 		

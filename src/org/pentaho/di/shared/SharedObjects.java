@@ -26,6 +26,7 @@ import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.variables.Variables;
@@ -222,7 +223,7 @@ public class SharedObjects
         objectsMap.put(key, sharedObject);
     }
 
-    public void saveToFile() throws IOException
+    public void saveToFile() throws IOException, KettleException
     {
         OutputStream outputStream = KettleVFS.getOutputStream(filename, false);
         

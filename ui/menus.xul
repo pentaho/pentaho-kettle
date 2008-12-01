@@ -118,6 +118,7 @@
 	<menuseparator/>
     <menuitem value="trans-graph-entry-inputs" label="%TransGraph.PopupMenu.ShowInputFields"/>
     <menuitem value="trans-graph-entry-outputs" label="%TransGraph.PopupMenu.ShowOutputFields"/>
+    <menuitem value="trans-graph-entry-lineage" label="%TransGraph.PopupMenu.ShowDataLineage"/>
 	<menuseparator/>
     <menu value="trans-graph-entry-align" label="%TransGraph.PopupMenu.AllignDistribute">
 		<menupopup>

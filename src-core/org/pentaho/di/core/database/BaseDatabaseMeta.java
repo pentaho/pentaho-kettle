@@ -128,6 +128,12 @@ public abstract class BaseDatabaseMeta implements Cloneable
      * A flag to determine if we should force all identifiers to UPPER CASE
      */
     public static final String ATTRIBUTE_FORCE_IDENTIFIERS_TO_UPPERCASE = "FORCE_IDENTIFIERS_TO_UPPERCASE";
+    
+    /**
+     * The preferred schema to use if no other has been specified.
+     */
+    public static final String ATTRIBUTE_PREFERRED_SCHEMA_NAME = "PREFERRED_SCHEMA_NAME";
+    
 
     
     public static final DatabaseConnectionPoolParameter[] poolingParameters = new DatabaseConnectionPoolParameter[]
@@ -170,7 +176,7 @@ public abstract class BaseDatabaseMeta implements Cloneable
 	
 	private boolean changed;
     
-  private Properties attributes;
+    private Properties attributes;
 	
 	private long id;
 
@@ -1255,4 +1261,20 @@ public abstract class BaseDatabaseMeta implements Cloneable
 	{
 		return DatabaseFactory.class.getName();
 	}
+	
+    /**
+     * @return The preferred schema name of this database connection.
+     */
+    public String getPreferredSchemaName()
+    {
+        return attributes.getProperty(ATTRIBUTE_PREFERRED_SCHEMA_NAME);
+    }
+    
+    /**
+     * @param preferredSchemaName The preferred schema name of this database connection.
+     */
+    public void setPreferredSchemaName(String preferredSchemaName)
+    {
+        attributes.setProperty(ATTRIBUTE_PREFERRED_SCHEMA_NAME, preferredSchemaName);
+    }
 }

@@ -164,8 +164,9 @@ public interface ValueMetaInterface extends Cloneable
      * This is the case if data==null or if it's an empty string.
      * @param data the object to test
      * @return true if the object is considered null.
+     * @throws KettleValueException in case there is a conversion error (only thrown in case of lazy conversion)
      */
-    public boolean isNull(Object data);
+    public boolean isNull(Object data) throws KettleValueException;
     
     /**
      * @return the caseInsensitive

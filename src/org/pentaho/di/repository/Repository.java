@@ -649,9 +649,10 @@ public class Repository
     private void verifyVersion() throws KettleException
     {
         RowMetaAndData lastUpgrade = null;
+    	String versionTable = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_VERSION);
         try
         {
-            lastUpgrade = database.getOneRow("SELECT "+quote(FIELD_VERSION_MAJOR_VERSION)+", "+quote(FIELD_VERSION_MINOR_VERSION)+", "+quote(FIELD_VERSION_UPGRADE_DATE)+" FROM "+quote(TABLE_R_VERSION)+" ORDER BY "+quote(FIELD_VERSION_UPGRADE_DATE)+" DESC");
+            lastUpgrade = database.getOneRow("SELECT "+quote(FIELD_VERSION_MAJOR_VERSION)+", "+quote(FIELD_VERSION_MINOR_VERSION)+", "+quote(FIELD_VERSION_UPGRADE_DATE)+" FROM "+versionTable+" ORDER BY "+quote(FIELD_VERSION_UPGRADE_DATE)+" DESC");
         }
         catch(Exception e)
         {
@@ -659,7 +660,8 @@ public class Repository
         	{
 	        	// See if the repository exists at all.  For this we verify table R_USER.
 	        	//
-	        	database.getOneRow("SELECT * FROM "+quote(TABLE_R_USER));
+            	String userTable = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_USER);
+	        	database.getOneRow("SELECT * FROM "+userTable);
 	        	
 	        	// Still here?  That means we have a repository...
 	        	//
@@ -669,7 +671,7 @@ public class Repository
 	            //
 	            if(log.isBasic()) 
 	            {
-	            	log.logBasic(toString(), Messages.getString("Repository.Error.GettingInfoVersionTable",quote(TABLE_R_VERSION)));
+	            	log.logBasic(toString(), Messages.getString("Repository.Error.GettingInfoVersionTable",versionTable));
 	            	log.logBasic(toString(), Messages.getString("Repository.Error.NewTable"));
 	            	log.logBasic(toString(), "Stack trace: "+Const.getStackTracker(e));
 	            }
@@ -701,7 +703,7 @@ public class Repository
         	// Another upgrade to 3.0.1 or later will fix that.
         	// However, since we don't have point versions in here, we'll have to look at the column in question...
         	//
-        	String tableName = TABLE_R_TRANS_PARTITION_SCHEMA;
+        	String tableName = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_PARTITION_SCHEMA);
         	String errorColumn = "TRANSFORMATION";
     		RowMetaInterface tableFields = database.getTableFields(tableName);
     		if (tableFields.indexOfValue(errorColumn)>=0)
@@ -807,7 +809,7 @@ public class Repository
 	public synchronized void fillStepAttributesBuffer(long id_transformation) throws KettleException
 	{
 	    String sql = "SELECT "+quote(FIELD_STEP_ATTRIBUTE_ID_STEP)+", "+quote(FIELD_STEP_ATTRIBUTE_CODE)+", "+quote(FIELD_STEP_ATTRIBUTE_NR)+", "+quote(FIELD_STEP_ATTRIBUTE_VALUE_NUM)+", "+quote(FIELD_STEP_ATTRIBUTE_VALUE_STR)+" "+
-	                 "FROM "+quote(TABLE_R_STEP_ATTRIBUTE) +" "+
+	                 "FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_STEP_ATTRIBUTE) +" "+
 	                 "WHERE "+quote(FIELD_STEP_ATTRIBUTE_ID_TRANSFORMATION)+" = "+id_transformation+" "+
 	                 "ORDER BY "+quote(FIELD_STEP_ATTRIBUTE_ID_STEP)+", "+quote(FIELD_STEP_ATTRIBUTE_CODE)+", "+quote(FIELD_STEP_ATTRIBUTE_NR)
 	                 ;
@@ -926,82 +928,82 @@ public class Repository
 
 	public synchronized long getJobID(String name, long id_directory) throws KettleException
 	{
-		return getIDWithValue(quote(TABLE_R_JOB), quote(FIELD_JOB_ID_JOB), quote(FIELD_JOB_NAME), name, quote(FIELD_JOB_ID_DIRECTORY), id_directory);
+		return getIDWithValue(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOB), quote(FIELD_JOB_ID_JOB), quote(FIELD_JOB_NAME), name, quote(FIELD_JOB_ID_DIRECTORY), id_directory);
 	}
 
 	public synchronized long getTransformationID(String name, long id_directory) throws KettleException
 	{
-		return getIDWithValue(quote(TABLE_R_TRANSFORMATION), quote(FIELD_TRANSFORMATION_ID_TRANSFORMATION), quote(FIELD_TRANSFORMATION_NAME), name, quote(FIELD_TRANSFORMATION_ID_DIRECTORY), id_directory);
+		return getIDWithValue(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANSFORMATION), quote(FIELD_TRANSFORMATION_ID_TRANSFORMATION), quote(FIELD_TRANSFORMATION_NAME), name, quote(FIELD_TRANSFORMATION_ID_DIRECTORY), id_directory);
 	}
 
 	public synchronized long getNoteID(String note) throws KettleException
 	{
-		return getIDWithValue(quote(TABLE_R_NOTE), quote(FIELD_NOTE_ID_NOTE), quote(FIELD_NOTE_VALUE_STR), note);
+		return getIDWithValue(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_NOTE), quote(FIELD_NOTE_ID_NOTE), quote(FIELD_NOTE_VALUE_STR), note);
 	}
 
 	public synchronized long getDatabaseID(String name) throws KettleException
 	{
-		return getIDWithValue(quote(TABLE_R_DATABASE), quote(FIELD_DATABASE_ID_DATABASE), quote(FIELD_DATABASE_NAME), name);
+		return getIDWithValue(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DATABASE), quote(FIELD_DATABASE_ID_DATABASE), quote(FIELD_DATABASE_NAME), name);
 	}
     
     public synchronized long getPartitionSchemaID(String name) throws KettleException
     {
-        return getIDWithValue(quote(TABLE_R_PARTITION_SCHEMA), quote(FIELD_PARTITION_SCHEMA_ID_PARTITION_SCHEMA), quote(FIELD_PARTITION_SCHEMA_NAME), name);
+        return getIDWithValue(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_PARTITION_SCHEMA), quote(FIELD_PARTITION_SCHEMA_ID_PARTITION_SCHEMA), quote(FIELD_PARTITION_SCHEMA_NAME), name);
     }
 
     public synchronized long getSlaveID(String name) throws KettleException
     {
-        return getIDWithValue(quote(TABLE_R_SLAVE), quote(FIELD_SLAVE_ID_SLAVE), quote(FIELD_SLAVE_NAME), name);
+        return getIDWithValue(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_SLAVE), quote(FIELD_SLAVE_ID_SLAVE), quote(FIELD_SLAVE_NAME), name);
     }
 
     public synchronized long getClusterID(String name) throws KettleException
     {
-        return getIDWithValue(quote(TABLE_R_CLUSTER), quote(FIELD_CLUSTER_ID_CLUSTER), quote(FIELD_CLUSTER_NAME), name);
+        return getIDWithValue(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_CLUSTER), quote(FIELD_CLUSTER_ID_CLUSTER), quote(FIELD_CLUSTER_NAME), name);
     }
 
 	public synchronized long getDatabaseTypeID(String code) throws KettleException
 	{
-		return getIDWithValue(quote(TABLE_R_DATABASE_TYPE), quote(FIELD_DATABASE_TYPE_ID_DATABASE_TYPE), quote(FIELD_DATABASE_TYPE_CODE), code);
+		return getIDWithValue(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DATABASE_TYPE), quote(FIELD_DATABASE_TYPE_ID_DATABASE_TYPE), quote(FIELD_DATABASE_TYPE_CODE), code);
 	}
 
 	public synchronized long getDatabaseConTypeID(String code) throws KettleException
 	{
-		return getIDWithValue(quote(TABLE_R_DATABASE_CONTYPE), quote(FIELD_DATABASE_CONTYPE_ID_DATABASE_CONTYPE), quote(FIELD_DATABASE_CONTYPE_CODE), code);
+		return getIDWithValue(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DATABASE_CONTYPE), quote(FIELD_DATABASE_CONTYPE_ID_DATABASE_CONTYPE), quote(FIELD_DATABASE_CONTYPE_CODE), code);
 	}
 
 	public synchronized long getStepTypeID(String code) throws KettleException
 	{
-		return getIDWithValue(quote(TABLE_R_STEP_TYPE), quote(FIELD_STEP_TYPE_ID_STEP_TYPE), quote(FIELD_STEP_TYPE_CODE), code);
+		return getIDWithValue(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_STEP_TYPE), quote(FIELD_STEP_TYPE_ID_STEP_TYPE), quote(FIELD_STEP_TYPE_CODE), code);
 	}
 
 	public synchronized long getJobEntryID(String name, long id_job) throws KettleException
 	{
-		return getIDWithValue(quote(TABLE_R_JOBENTRY), quote(FIELD_JOBENTRY_ID_JOBENTRY), quote(FIELD_JOBENTRY_NAME), name, quote(FIELD_JOBENTRY_ID_JOB), id_job);
+		return getIDWithValue(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOBENTRY), quote(FIELD_JOBENTRY_ID_JOBENTRY), quote(FIELD_JOBENTRY_NAME), name, quote(FIELD_JOBENTRY_ID_JOB), id_job);
 	}
 
 	public synchronized long getJobEntryTypeID(String code) throws KettleException
 	{
-		return getIDWithValue(quote(TABLE_R_JOBENTRY_TYPE), quote(FIELD_JOBENTRY_TYPE_ID_JOBENTRY_TYPE), quote(FIELD_JOBENTRY_TYPE_CODE), code);
+		return getIDWithValue(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOBENTRY_TYPE), quote(FIELD_JOBENTRY_TYPE_ID_JOBENTRY_TYPE), quote(FIELD_JOBENTRY_TYPE_CODE), code);
 	}
 
 	public synchronized long getStepID(String name, long id_transformation) throws KettleException
 	{
-		return getIDWithValue(quote(TABLE_R_STEP), quote(FIELD_STEP_ID_STEP), quote(FIELD_STEP_NAME), name, quote(FIELD_STEP_ID_TRANSFORMATION), id_transformation);
+		return getIDWithValue(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_STEP), quote(FIELD_STEP_ID_STEP), quote(FIELD_STEP_NAME), name, quote(FIELD_STEP_ID_TRANSFORMATION), id_transformation);
 	}
 
 	public synchronized long getUserID(String login) throws KettleException
 	{
-		return getIDWithValue(quote(TABLE_R_USER), quote(FIELD_USER_ID_USER), quote(FIELD_USER_LOGIN), login);
+		return getIDWithValue(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_USER), quote(FIELD_USER_ID_USER), quote(FIELD_USER_LOGIN), login);
 	}
 
 	public synchronized long getProfileID(String profilename) throws KettleException
 	{
-		return getIDWithValue(quote(TABLE_R_PROFILE), quote(FIELD_PROFILE_ID_PROFILE), quote(FIELD_PROFILE_NAME), profilename);
+		return getIDWithValue(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_PROFILE), quote(FIELD_PROFILE_ID_PROFILE), quote(FIELD_PROFILE_NAME), profilename);
 	}
 
 	public synchronized long getPermissionID(String code) throws KettleException
 	{
-		return getIDWithValue(quote(TABLE_R_PERMISSION), quote(FIELD_PERMISSION_ID_PERMISSION), quote(FIELD_PERMISSION_CODE), code);
+		return getIDWithValue(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_PERMISSION), quote(FIELD_PERMISSION_ID_PERMISSION), quote(FIELD_PERMISSION_CODE), code);
 	}
 
 	public synchronized long getTransHopID(long id_transformation, long id_step_from, long id_step_to) throws KettleException
@@ -1009,7 +1011,7 @@ public class Repository
 		String lookupkey[] = new String[] { quote(FIELD_TRANS_HOP_ID_TRANSFORMATION), quote(FIELD_TRANS_HOP_ID_STEP_FROM), quote(FIELD_TRANS_HOP_ID_STEP_TO), };
 		long key[] = new long[] { id_transformation, id_step_from, id_step_to };
 
-		return getIDWithValue(quote(TABLE_R_TRANS_HOP), quote(FIELD_TRANS_HOP_ID_TRANS_HOP), lookupkey, key);
+		return getIDWithValue(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_HOP), quote(FIELD_TRANS_HOP_ID_TRANS_HOP), lookupkey, key);
 	}
 
 	public synchronized long getJobHopID(long id_job, long id_jobentry_copy_from, long id_jobentry_copy_to)
@@ -1018,7 +1020,7 @@ public class Repository
 		String lookupkey[] = new String[] { quote(FIELD_JOB_HOP_ID_JOB), quote(FIELD_JOB_HOP_ID_JOBENTRY_COPY_FROM), quote(FIELD_JOB_HOP_ID_JOBENTRY_COPY_TO), };
 		long key[] = new long[] { id_job, id_jobentry_copy_from, id_jobentry_copy_to };
 
-		return getIDWithValue(quote(TABLE_R_JOB_HOP), quote(FIELD_JOB_HOP_ID_JOB_HOP), lookupkey, key);
+		return getIDWithValue(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOB_HOP), quote(FIELD_JOB_HOP_ID_JOB_HOP), lookupkey, key);
 	}
 
 	public synchronized long getDependencyID(long id_transformation, long id_database, String tablename) throws KettleException
@@ -1026,12 +1028,12 @@ public class Repository
 		String lookupkey[] = new String[] { quote(FIELD_DEPENDENCY_ID_TRANSFORMATION), quote(FIELD_DEPENDENCY_ID_DATABASE), };
 		long key[] = new long[] { id_transformation, id_database };
 
-		return getIDWithValue(quote(TABLE_R_DEPENDENCY), quote(FIELD_DEPENDENCY_ID_DEPENDENCY), quote(FIELD_DEPENDENCY_TABLE_NAME), tablename, lookupkey, key);
+		return getIDWithValue(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DEPENDENCY), quote(FIELD_DEPENDENCY_ID_DEPENDENCY), quote(FIELD_DEPENDENCY_TABLE_NAME), tablename, lookupkey, key);
 	}
 
 	public synchronized long getRootDirectoryID() throws KettleException
 	{
-		RowMetaAndData result = database.getOneRow("SELECT "+quote(FIELD_DIRECTORY_ID_DIRECTORY)+" FROM "+quote(TABLE_R_DIRECTORY)+" WHERE "+quote(FIELD_DIRECTORY_ID_DIRECTORY_PARENT)+" = 0");
+		RowMetaAndData result = database.getOneRow("SELECT "+quote(FIELD_DIRECTORY_ID_DIRECTORY)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DIRECTORY)+" WHERE "+quote(FIELD_DIRECTORY_ID_DIRECTORY_PARENT)+" = 0");
 		if (result != null && result.isNumeric(0))
 			return result.getInteger(0, -1);
 		return -1;
@@ -1041,7 +1043,7 @@ public class Repository
 	{
 		int retval = 0;
 
-		String sql = "SELECT COUNT(*) FROM "+quote(TABLE_R_DIRECTORY)+" WHERE "+quote(FIELD_DIRECTORY_ID_DIRECTORY_PARENT)+" = " + id_directory;
+		String sql = "SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DIRECTORY)+" WHERE "+quote(FIELD_DIRECTORY_ID_DIRECTORY_PARENT)+" = " + id_directory;
 		RowMetaAndData r = database.getOneRow(sql);
 		if (r != null)
 		{
@@ -1053,7 +1055,7 @@ public class Repository
 
 	public synchronized long[] getSubDirectoryIDs(long id_directory) throws KettleException
 	{
-		return getIDs("SELECT "+quote(FIELD_DIRECTORY_ID_DIRECTORY)+" FROM "+quote(TABLE_R_DIRECTORY)+" WHERE "+quote(FIELD_DIRECTORY_ID_DIRECTORY_PARENT)+" = " + id_directory+" ORDER BY "+quote(FIELD_DIRECTORY_DIRECTORY_NAME));
+		return getIDs("SELECT "+quote(FIELD_DIRECTORY_ID_DIRECTORY)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DIRECTORY)+" WHERE "+quote(FIELD_DIRECTORY_ID_DIRECTORY_PARENT)+" = " + id_directory+" ORDER BY "+quote(FIELD_DIRECTORY_DIRECTORY_NAME));
 	}
 
 	private synchronized long getIDWithValue(String tablename, String idfield, String lookupfield, String value) throws KettleException
@@ -1121,17 +1123,17 @@ public class Repository
 
 	public synchronized String getDatabaseTypeCode(long id_database_type) throws KettleException
 	{
-		return getStringWithID(quote(TABLE_R_DATABASE_TYPE), quote(FIELD_DATABASE_TYPE_ID_DATABASE_TYPE), id_database_type, quote(FIELD_DATABASE_TYPE_CODE));
+		return getStringWithID(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DATABASE_TYPE), quote(FIELD_DATABASE_TYPE_ID_DATABASE_TYPE), id_database_type, quote(FIELD_DATABASE_TYPE_CODE));
 	}
 
 	public synchronized String getDatabaseConTypeCode(long id_database_contype) throws KettleException
 	{
-		return getStringWithID(quote(TABLE_R_DATABASE_CONTYPE), quote(FIELD_DATABASE_CONTYPE_ID_DATABASE_CONTYPE), id_database_contype, quote(FIELD_DATABASE_CONTYPE_CODE));
+		return getStringWithID(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DATABASE_CONTYPE), quote(FIELD_DATABASE_CONTYPE_ID_DATABASE_CONTYPE), id_database_contype, quote(FIELD_DATABASE_CONTYPE_CODE));
 	}
 
 	public synchronized String getStepTypeCode(long id_database_type) throws KettleException
 	{
-		return getStringWithID(quote(TABLE_R_STEP_TYPE), quote(FIELD_STEP_TYPE_ID_STEP_TYPE), id_database_type, quote(FIELD_STEP_TYPE_CODE));
+		return getStringWithID(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_STEP_TYPE), quote(FIELD_STEP_TYPE_ID_STEP_TYPE), id_database_type, quote(FIELD_STEP_TYPE_CODE));
 	}
 
 	private synchronized String getStringWithID(String tablename, String keyfield, long id, String fieldname) throws KettleException
@@ -1154,7 +1156,7 @@ public class Repository
 	public synchronized void moveTransformation(String transname, long id_directory_from, long id_directory_to) throws KettleException
 	{
         String nameField = quote(FIELD_TRANSFORMATION_NAME);
-		String sql = "UPDATE "+quote(TABLE_R_TRANSFORMATION)+" SET "+quote(FIELD_TRANSFORMATION_ID_DIRECTORY)+" = ? WHERE "+nameField+" = ? AND "+quote(FIELD_TRANSFORMATION_ID_DIRECTORY)+" = ?";
+		String sql = "UPDATE "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANSFORMATION)+" SET "+quote(FIELD_TRANSFORMATION_ID_DIRECTORY)+" = ? WHERE "+nameField+" = ? AND "+quote(FIELD_TRANSFORMATION_ID_DIRECTORY)+" = ?";
 
 		RowMetaAndData par = new RowMetaAndData();
 		par.addValue(new ValueMeta(FIELD_TRANSFORMATION_ID_DIRECTORY, ValueMetaInterface.TYPE_INTEGER), new Long(id_directory_to));
@@ -1166,7 +1168,7 @@ public class Repository
 
 	public synchronized void moveJob(String jobname, long id_directory_from, long id_directory_to) throws KettleException
 	{
-		String sql = "UPDATE "+quote(TABLE_R_JOB)+" SET "+quote(FIELD_JOB_ID_DIRECTORY)+" = ? WHERE "+quote(FIELD_JOB_NAME)+" = ? AND "+quote(FIELD_JOB_ID_DIRECTORY)+" = ?";
+		String sql = "UPDATE "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOB)+" SET "+quote(FIELD_JOB_ID_DIRECTORY)+" = ? WHERE "+quote(FIELD_JOB_NAME)+" = ? AND "+quote(FIELD_JOB_ID_DIRECTORY)+" = ?";
 
 		RowMetaAndData par = new RowMetaAndData();
 		par.addValue(new ValueMeta(FIELD_JOB_ID_DIRECTORY, ValueMetaInterface.TYPE_INTEGER), new Long(id_directory_to));
@@ -1182,162 +1184,162 @@ public class Repository
 
 	public synchronized long getNextTransformationID() throws KettleException
 	{
-		return getNextID(quote(TABLE_R_TRANSFORMATION), quote(FIELD_TRANSFORMATION_ID_TRANSFORMATION));
+		return getNextID(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANSFORMATION), quote(FIELD_TRANSFORMATION_ID_TRANSFORMATION));
 	}
 
 	public synchronized long getNextJobID() throws KettleException
 	{
-		return getNextID(quote(TABLE_R_JOB), quote(FIELD_JOB_ID_JOB));
+		return getNextID(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOB), quote(FIELD_JOB_ID_JOB));
 	}
 
 	public synchronized long getNextNoteID() throws KettleException
 	{
-		return getNextID(quote(TABLE_R_NOTE), quote(FIELD_NOTE_ID_NOTE));
+		return getNextID(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_NOTE), quote(FIELD_NOTE_ID_NOTE));
 	}
     
     public synchronized long getNextLogID() throws KettleException
     {
-        return getNextID(quote(TABLE_R_REPOSITORY_LOG), quote(FIELD_REPOSITORY_LOG_ID_REPOSITORY_LOG));
+        return getNextID(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_REPOSITORY_LOG), quote(FIELD_REPOSITORY_LOG_ID_REPOSITORY_LOG));
     }
 
 	public synchronized long getNextDatabaseID() throws KettleException
 	{
-		return getNextID(quote(TABLE_R_DATABASE), quote(FIELD_DATABASE_ID_DATABASE));
+		return getNextID(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DATABASE), quote(FIELD_DATABASE_ID_DATABASE));
 	}
 
 	public synchronized long getNextDatabaseTypeID() throws KettleException
 	{
-		return getNextID(quote(TABLE_R_DATABASE_TYPE), quote(FIELD_DATABASE_TYPE_ID_DATABASE_TYPE));
+		return getNextID(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DATABASE_TYPE), quote(FIELD_DATABASE_TYPE_ID_DATABASE_TYPE));
 	}
 
 	public synchronized long getNextDatabaseConnectionTypeID() throws KettleException
 	{
-		return getNextID(quote(TABLE_R_DATABASE_CONTYPE), quote(FIELD_DATABASE_CONTYPE_ID_DATABASE_CONTYPE));
+		return getNextID(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DATABASE_CONTYPE), quote(FIELD_DATABASE_CONTYPE_ID_DATABASE_CONTYPE));
 	}
 
 	public synchronized long getNextLoglevelID() throws KettleException
 	{
-		return getNextID(quote(TABLE_R_LOGLEVEL), quote(FIELD_LOGLEVEL_ID_LOGLEVEL));
+		return getNextID(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_LOGLEVEL), quote(FIELD_LOGLEVEL_ID_LOGLEVEL));
 	}
 
 	public synchronized long getNextStepTypeID() throws KettleException
 	{
-		return getNextID(quote(TABLE_R_STEP_TYPE), quote(FIELD_STEP_TYPE_ID_STEP_TYPE));
+		return getNextID(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_STEP_TYPE), quote(FIELD_STEP_TYPE_ID_STEP_TYPE));
 	}
 
 	public synchronized long getNextStepID() throws KettleException
 	{
-		return getNextID(quote(TABLE_R_STEP), quote(FIELD_STEP_ID_STEP));
+		return getNextID(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_STEP), quote(FIELD_STEP_ID_STEP));
 	}
 
 	public synchronized long getNextJobEntryID() throws KettleException
 	{
-		return getNextID(quote(TABLE_R_JOBENTRY), quote(FIELD_JOBENTRY_ID_JOBENTRY));
+		return getNextID(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOBENTRY), quote(FIELD_JOBENTRY_ID_JOBENTRY));
 	}
 
 	public synchronized long getNextJobEntryTypeID() throws KettleException
 	{
-		return getNextID(quote(TABLE_R_JOBENTRY_TYPE), quote(FIELD_JOBENTRY_TYPE_ID_JOBENTRY_TYPE));
+		return getNextID(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOBENTRY_TYPE), quote(FIELD_JOBENTRY_TYPE_ID_JOBENTRY_TYPE));
 	}
 
 	public synchronized long getNextJobEntryCopyID() throws KettleException
 	{
-		return getNextID(quote(TABLE_R_JOBENTRY_COPY), quote(FIELD_JOBENTRY_COPY_ID_JOBENTRY_COPY));
+		return getNextID(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOBENTRY_COPY), quote(FIELD_JOBENTRY_COPY_ID_JOBENTRY_COPY));
 	}
 
 	public synchronized long getNextStepAttributeID() throws KettleException
 	{
-		return getNextID(quote(TABLE_R_STEP_ATTRIBUTE), quote(FIELD_STEP_ATTRIBUTE_ID_STEP_ATTRIBUTE));
+		return getNextID(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_STEP_ATTRIBUTE), quote(FIELD_STEP_ATTRIBUTE_ID_STEP_ATTRIBUTE));
 	}
 
     public synchronized long getNextTransAttributeID() throws KettleException
     {
-        return getNextID(quote(TABLE_R_TRANS_ATTRIBUTE), quote(FIELD_TRANS_ATTRIBUTE_ID_TRANS_ATTRIBUTE));
+        return getNextID(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_ATTRIBUTE), quote(FIELD_TRANS_ATTRIBUTE_ID_TRANS_ATTRIBUTE));
     }
     
     public synchronized long getNextDatabaseAttributeID() throws KettleException
     {
-        return getNextID(quote(TABLE_R_DATABASE_ATTRIBUTE), quote(FIELD_DATABASE_ATTRIBUTE_ID_DATABASE_ATTRIBUTE));
+        return getNextID(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DATABASE_ATTRIBUTE), quote(FIELD_DATABASE_ATTRIBUTE_ID_DATABASE_ATTRIBUTE));
     }
 
 	public synchronized long getNextTransHopID() throws KettleException
 	{
-		return getNextID(quote(TABLE_R_TRANS_HOP), quote(FIELD_TRANS_HOP_ID_TRANS_HOP));
+		return getNextID(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_HOP), quote(FIELD_TRANS_HOP_ID_TRANS_HOP));
 	}
 
 	public synchronized long getNextJobHopID() throws KettleException
 	{
-		return getNextID(quote(TABLE_R_JOB_HOP), quote(FIELD_JOB_HOP_ID_JOB_HOP));
+		return getNextID(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOB_HOP), quote(FIELD_JOB_HOP_ID_JOB_HOP));
 	}
 
 	public synchronized long getNextDepencencyID() throws KettleException
 	{
-		return getNextID(quote(TABLE_R_DEPENDENCY), quote(FIELD_DEPENDENCY_ID_DEPENDENCY));
+		return getNextID(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DEPENDENCY), quote(FIELD_DEPENDENCY_ID_DEPENDENCY));
 	}
     
     public synchronized long getNextPartitionSchemaID() throws KettleException
     {
-        return getNextID(quote(TABLE_R_PARTITION_SCHEMA), quote(FIELD_PARTITION_SCHEMA_ID_PARTITION_SCHEMA));
+        return getNextID(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_PARTITION_SCHEMA), quote(FIELD_PARTITION_SCHEMA_ID_PARTITION_SCHEMA));
     }
 
     public synchronized long getNextPartitionID() throws KettleException
     {
-        return getNextID(quote(TABLE_R_PARTITION), quote(FIELD_PARTITION_ID_PARTITION));
+        return getNextID(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_PARTITION), quote(FIELD_PARTITION_ID_PARTITION));
     }
 
     public synchronized long getNextTransformationPartitionSchemaID() throws KettleException
     {
-        return getNextID(quote(TABLE_R_TRANS_PARTITION_SCHEMA), quote(FIELD_TRANS_PARTITION_SCHEMA_ID_TRANS_PARTITION_SCHEMA));
+        return getNextID(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_PARTITION_SCHEMA), quote(FIELD_TRANS_PARTITION_SCHEMA_ID_TRANS_PARTITION_SCHEMA));
     }
     
     public synchronized long getNextClusterID() throws KettleException
     {
-        return getNextID(quote(TABLE_R_CLUSTER), quote(FIELD_CLUSTER_ID_CLUSTER));
+        return getNextID(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_CLUSTER), quote(FIELD_CLUSTER_ID_CLUSTER));
     }
 
     public synchronized long getNextSlaveServerID() throws KettleException
     {
-        return getNextID(quote(TABLE_R_SLAVE), quote(FIELD_SLAVE_ID_SLAVE));
+        return getNextID(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_SLAVE), quote(FIELD_SLAVE_ID_SLAVE));
     }
     
     public synchronized long getNextClusterSlaveID() throws KettleException
     {
-        return getNextID(quote(TABLE_R_CLUSTER_SLAVE), quote(FIELD_CLUSTER_SLAVE_ID_CLUSTER_SLAVE));
+        return getNextID(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_CLUSTER_SLAVE), quote(FIELD_CLUSTER_SLAVE_ID_CLUSTER_SLAVE));
     }
     
     public synchronized long getNextTransformationSlaveID() throws KettleException
     {
-        return getNextID(quote(TABLE_R_TRANS_SLAVE), quote(FIELD_TRANS_SLAVE_ID_TRANS_SLAVE));
+        return getNextID(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_SLAVE), quote(FIELD_TRANS_SLAVE_ID_TRANS_SLAVE));
     }
     
     public synchronized long getNextTransformationClusterID() throws KettleException
     {
-        return getNextID(quote(TABLE_R_TRANS_CLUSTER), quote(FIELD_TRANS_CLUSTER_ID_TRANS_CLUSTER));
+        return getNextID(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_CLUSTER), quote(FIELD_TRANS_CLUSTER_ID_TRANS_CLUSTER));
     }
     
 	public synchronized long getNextConditionID() throws KettleException
 	{
-		return getNextID(quote(TABLE_R_CONDITION), quote(FIELD_CONDITION_ID_CONDITION));
+		return getNextID(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_CONDITION), quote(FIELD_CONDITION_ID_CONDITION));
 	}
 
 	public synchronized long getNextValueID() throws KettleException
 	{
-		return getNextID(quote(TABLE_R_VALUE), quote(FIELD_VALUE_ID_VALUE));
+		return getNextID(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_VALUE), quote(FIELD_VALUE_ID_VALUE));
 	}
 
 	public synchronized long getNextUserID() throws KettleException
 	{
-		return getNextID(quote(TABLE_R_USER), quote(FIELD_USER_ID_USER));
+		return getNextID(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_USER), quote(FIELD_USER_ID_USER));
 	}
 
 	public synchronized long getNextProfileID() throws KettleException
 	{
-		return getNextID(quote(TABLE_R_PROFILE), quote(FIELD_PROFILE_ID_PROFILE));
+		return getNextID(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_PROFILE), quote(FIELD_PROFILE_ID_PROFILE));
 	}
 
 	public synchronized long getNextPermissionID() throws KettleException
 	{
-		return getNextID(quote(TABLE_R_PERMISSION), quote(FIELD_PERMISSION_ID_PERMISSION));
+		return getNextID(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_PERMISSION), quote(FIELD_PERMISSION_ID_PERMISSION));
 	}
 
 	public synchronized long getNextJobEntryAttributeID() throws KettleException
@@ -1369,7 +1371,7 @@ public class Repository
 
 	public synchronized long getNextDirectoryID() throws KettleException
 	{
-		return getNextID(quote(TABLE_R_DIRECTORY), quote(FIELD_DIRECTORY_ID_DIRECTORY));
+		return getNextID(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DIRECTORY), quote(FIELD_DIRECTORY_ID_DIRECTORY));
 	}
 
 	private synchronized long getNextTableID(String tablename, String idfield) throws KettleException
@@ -1489,7 +1491,7 @@ public class Repository
 		database.prepareInsert(table.getRowMeta(), TABLE_R_JOB);
 		database.setValuesInsert(table);
 		database.insertRow();
-        if (log.isDebug()) log.logDebug(toString(), "Inserted new record into table "+quote(TABLE_R_JOB)+" with data : " + table);
+        if (log.isDebug()) log.logDebug(toString(), "Inserted new record into table "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOB)+" with data : " + table);
 		database.closeInsert();
 	}
 
@@ -2113,7 +2115,7 @@ public class Repository
 
 	public synchronized void deleteDirectory(long id_directory) throws KettleException
 	{
-		String sql = "DELETE FROM "+quote(TABLE_R_DIRECTORY)+" WHERE "+quote(FIELD_DIRECTORY_ID_DIRECTORY)+" = " + id_directory;
+		String sql = "DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DIRECTORY)+" WHERE "+quote(FIELD_DIRECTORY_ID_DIRECTORY)+" = " + id_directory;
 		database.execStatement(sql);
 	}
 
@@ -2122,7 +2124,7 @@ public class Repository
 		RowMetaAndData r = new RowMetaAndData();
 		r.addValue(new ValueMeta(FIELD_DIRECTORY_DIRECTORY_NAME, ValueMetaInterface.TYPE_STRING), name);
 
-		String sql = "UPDATE "+quote(TABLE_R_DIRECTORY)+" SET "+quote(FIELD_DIRECTORY_DIRECTORY_NAME)+" = ? WHERE "+quote(FIELD_DIRECTORY_ID_DIRECTORY)+" = " + id_directory;
+		String sql = "UPDATE "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DIRECTORY)+" SET "+quote(FIELD_DIRECTORY_DIRECTORY_NAME)+" = ? WHERE "+quote(FIELD_DIRECTORY_ID_DIRECTORY)+" = " + id_directory;
 
 		log.logBasic(toString(), "sql = [" + sql + "]");
 		log.logBasic(toString(), "row = [" + r + "]");
@@ -2138,7 +2140,7 @@ public class Repository
 		table.addValue(new ValueMeta(FIELD_VALUE_VALUE_STR, ValueMetaInterface.TYPE_STRING), value_str);
 		table.addValue(new ValueMeta(FIELD_VALUE_IS_NULL, ValueMetaInterface.TYPE_BOOLEAN), Boolean.valueOf(isnull));
 
-		String sql = "SELECT " + quote(FIELD_VALUE_ID_VALUE) + " FROM " + quote(TABLE_R_VALUE) + " ";
+		String sql = "SELECT " + quote(FIELD_VALUE_ID_VALUE) + " FROM " + databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_VALUE) + " ";
 		sql += "WHERE " + quote(FIELD_VALUE_NAME) + "       = ? ";
 		sql += "AND   " + quote(FIELD_VALUE_VALUE_TYPE) + " = ? ";
 		sql += "AND   " + quote(FIELD_VALUE_VALUE_STR) + "  = ? ";
@@ -2306,7 +2308,7 @@ public class Repository
 	{
 		int retval = 0;
 
-		String sql = "SELECT COUNT(*) FROM "+quote(TABLE_R_JOB);
+		String sql = "SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOB);
 		RowMetaAndData r = database.getOneRow(sql);
 		if (r != null)
 		{
@@ -2320,7 +2322,7 @@ public class Repository
 	{
 		int retval = 0;
 
-		String sql = "SELECT COUNT(*) FROM "+quote(TABLE_R_TRANSFORMATION)+" WHERE "+quote(FIELD_TRANSFORMATION_ID_DIRECTORY)+" = " + id_directory;
+		String sql = "SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANSFORMATION)+" WHERE "+quote(FIELD_TRANSFORMATION_ID_DIRECTORY)+" = " + id_directory;
 		RowMetaAndData r = database.getOneRow(sql);
 		if (r != null)
 		{
@@ -2334,7 +2336,7 @@ public class Repository
 	{
 		int retval = 0;
 
-		String sql = "SELECT COUNT(*) FROM "+quote(TABLE_R_JOB)+" WHERE "+quote(FIELD_JOB_ID_DIRECTORY)+" = " + id_directory;
+		String sql = "SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOB)+" WHERE "+quote(FIELD_JOB_ID_DIRECTORY)+" = " + id_directory;
 		RowMetaAndData r = database.getOneRow(sql);
 		if (r != null)
 		{
@@ -2348,7 +2350,7 @@ public class Repository
 	{
 		int retval = 0;
 
-		String sql = "SELECT COUNT(*) FROM "+quote(TABLE_R_DIRECTORY)+" WHERE "+quote(FIELD_DIRECTORY_ID_DIRECTORY_PARENT)+" = " + id_directory;
+		String sql = "SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DIRECTORY)+" WHERE "+quote(FIELD_DIRECTORY_ID_DIRECTORY_PARENT)+" = " + id_directory;
 		RowMetaAndData r = database.getOneRow(sql);
 		if (r != null)
 		{
@@ -2362,7 +2364,7 @@ public class Repository
 	{
 		int retval = 0;
 
-		String sql = "SELECT COUNT(*) FROM "+quote(TABLE_R_TRANS_STEP_CONDITION)+" WHERE "+quote(FIELD_TRANS_STEP_CONDITION_ID_TRANSFORMATION)+" = " + id_transforamtion;
+		String sql = "SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_STEP_CONDITION)+" WHERE "+quote(FIELD_TRANS_STEP_CONDITION_ID_TRANSFORMATION)+" = " + id_transforamtion;
 		RowMetaAndData r = database.getOneRow(sql);
 		if (r != null)
 		{
@@ -2376,7 +2378,7 @@ public class Repository
 	{
 		int retval = 0;
 
-		String sql = "SELECT COUNT(*) FROM "+quote(TABLE_R_STEP_DATABASE)+" WHERE "+quote(FIELD_STEP_DATABASE_ID_TRANSFORMATION)+" = " + id_transforamtion;
+		String sql = "SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_STEP_DATABASE)+" WHERE "+quote(FIELD_STEP_DATABASE_ID_TRANSFORMATION)+" = " + id_transforamtion;
 		RowMetaAndData r = database.getOneRow(sql);
 		if (r != null)
 		{
@@ -2390,7 +2392,7 @@ public class Repository
 	{
 		int retval = 0;
 
-		String sql = "SELECT COUNT(*) FROM "+quote(TABLE_R_CONDITION)+" WHERE "+quote(FIELD_CONDITION_ID_CONDITION_PARENT)+" = " + id_condition;
+		String sql = "SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_CONDITION)+" WHERE "+quote(FIELD_CONDITION_ID_CONDITION_PARENT)+" = " + id_condition;
 		RowMetaAndData r = database.getOneRow(sql);
 		if (r != null)
 		{
@@ -2404,7 +2406,7 @@ public class Repository
 	{
 		int retval = 0;
 
-		String sql = "SELECT COUNT(*) FROM "+quote(TABLE_R_TRANS_NOTE)+" WHERE "+quote(FIELD_TRANS_NOTE_ID_TRANSFORMATION)+" = " + id_transformation;
+		String sql = "SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_NOTE)+" WHERE "+quote(FIELD_TRANS_NOTE_ID_TRANSFORMATION)+" = " + id_transformation;
 		RowMetaAndData r = database.getOneRow(sql);
 		if (r != null)
 		{
@@ -2418,7 +2420,7 @@ public class Repository
 	{
 		int retval = 0;
 
-		String sql = "SELECT COUNT(*) FROM "+quote(TABLE_R_JOB_NOTE)+" WHERE "+quote(FIELD_JOB_ID_JOB)+" = " + id_job;
+		String sql = "SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOB_NOTE)+" WHERE "+quote(FIELD_JOB_ID_JOB)+" = " + id_job;
 		RowMetaAndData r = database.getOneRow(sql);
 		if (r != null)
 		{
@@ -2432,7 +2434,7 @@ public class Repository
 	{
 		int retval = 0;
 
-		String sql = "SELECT COUNT(*) FROM "+quote(TABLE_R_DATABASE);
+		String sql = "SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DATABASE);
 		RowMetaAndData r = database.getOneRow(sql);
 		if (r != null)
 		{
@@ -2446,7 +2448,7 @@ public class Repository
     {
         int retval = 0;
 
-        String sql = "SELECT COUNT(*) FROM "+quote(TABLE_R_DATABASE_ATTRIBUTE)+" WHERE "+quote(FIELD_DATABASE_ATTRIBUTE_ID_DATABASE)+" = "+id_database;
+        String sql = "SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DATABASE_ATTRIBUTE)+" WHERE "+quote(FIELD_DATABASE_ATTRIBUTE_ID_DATABASE)+" = "+id_database;
         RowMetaAndData r = database.getOneRow(sql);
         if (r != null)
         {
@@ -2460,7 +2462,7 @@ public class Repository
 	{
 		int retval = 0;
 
-		String sql = "SELECT COUNT(*) FROM "+quote(TABLE_R_STEP)+" WHERE "+quote(FIELD_STEP_ID_TRANSFORMATION)+" = " + id_transformation;
+		String sql = "SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_STEP)+" WHERE "+quote(FIELD_STEP_ID_TRANSFORMATION)+" = " + id_transformation;
 		RowMetaAndData r = database.getOneRow(sql);
 		if (r != null)
 		{
@@ -2474,7 +2476,7 @@ public class Repository
 	{
 		int retval = 0;
 
-		String sql = "SELECT COUNT(*) FROM "+quote(TABLE_R_STEP_DATABASE)+" WHERE "+quote(FIELD_STEP_DATABASE_ID_DATABASE)+" = " + id_database;
+		String sql = "SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_STEP_DATABASE)+" WHERE "+quote(FIELD_STEP_DATABASE_ID_DATABASE)+" = " + id_database;
 		RowMetaAndData r = database.getOneRow(sql);
 		if (r != null)
 		{
@@ -2488,7 +2490,7 @@ public class Repository
 	{
 		int retval = 0;
 
-		String sql = "SELECT COUNT(*) FROM "+quote(TABLE_R_STEP_ATTRIBUTE)+" WHERE "+quote(FIELD_STEP_ATTRIBUTE_ID_STEP)+" = " + id_step;
+		String sql = "SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_STEP_ATTRIBUTE)+" WHERE "+quote(FIELD_STEP_ATTRIBUTE_ID_STEP)+" = " + id_step;
 		RowMetaAndData r = database.getOneRow(sql);
 		if (r != null)
 		{
@@ -2502,7 +2504,7 @@ public class Repository
 	{
 		int retval = 0;
 
-		String sql = "SELECT COUNT(*) FROM "+quote(TABLE_R_TRANS_HOP)+" WHERE "+quote(FIELD_TRANS_HOP_ID_TRANSFORMATION)+" = " + id_transformation;
+		String sql = "SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_HOP)+" WHERE "+quote(FIELD_TRANS_HOP_ID_TRANSFORMATION)+" = " + id_transformation;
 		RowMetaAndData r = database.getOneRow(sql);
 		if (r != null)
 		{
@@ -2516,7 +2518,7 @@ public class Repository
 	{
 		int retval = 0;
 
-		String sql = "SELECT COUNT(*) FROM "+quote(TABLE_R_JOB_HOP)+" WHERE "+quote(FIELD_JOB_HOP_ID_JOB)+" = " + id_job;
+		String sql = "SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOB_HOP)+" WHERE "+quote(FIELD_JOB_HOP_ID_JOB)+" = " + id_job;
 		RowMetaAndData r = database.getOneRow(sql);
 		if (r != null)
 		{
@@ -2530,7 +2532,7 @@ public class Repository
 	{
 		int retval = 0;
 
-		String sql = "SELECT COUNT(*) FROM "+quote(TABLE_R_DEPENDENCY)+" WHERE "+quote(FIELD_DEPENDENCY_ID_TRANSFORMATION)+" = " + id_transformation;
+		String sql = "SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DEPENDENCY)+" WHERE "+quote(FIELD_DEPENDENCY_ID_TRANSFORMATION)+" = " + id_transformation;
 		RowMetaAndData r = database.getOneRow(sql);
 		if (r != null)
 		{
@@ -2544,7 +2546,7 @@ public class Repository
 	{
 		int retval = 0;
 
-		String sql = "SELECT COUNT(*) FROM "+quote(TABLE_R_JOBENTRY)+" WHERE "+quote(FIELD_JOBENTRY_ID_JOB)+" = " + id_job;
+		String sql = "SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOBENTRY)+" WHERE "+quote(FIELD_JOBENTRY_ID_JOB)+" = " + id_job;
 		RowMetaAndData r = database.getOneRow(sql);
 		if (r != null)
 		{
@@ -2558,7 +2560,7 @@ public class Repository
 	{
 		int retval = 0;
 
-		String sql = "SELECT COUNT(*) FROM "+quote(TABLE_R_JOBENTRY_COPY)+" WHERE "+quote(FIELD_JOBENTRY_COPY_ID_JOB)+" = " + id_job + " AND "+quote(FIELD_JOBENTRY_COPY_ID_JOBENTRY)+" = "
+		String sql = "SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOBENTRY_COPY)+" WHERE "+quote(FIELD_JOBENTRY_COPY_ID_JOB)+" = " + id_job + " AND "+quote(FIELD_JOBENTRY_COPY_ID_JOBENTRY)+" = "
 						+ id_jobentry;
 		RowMetaAndData r = database.getOneRow(sql);
 		if (r != null)
@@ -2573,7 +2575,7 @@ public class Repository
 	{
 		int retval = 0;
 
-		String sql = "SELECT COUNT(*) FROM "+quote(TABLE_R_JOBENTRY_COPY)+" WHERE "+quote(FIELD_JOBENTRY_COPY_ID_JOB)+" = " + id_job;
+		String sql = "SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOBENTRY_COPY)+" WHERE "+quote(FIELD_JOBENTRY_COPY_ID_JOB)+" = " + id_job;
 		RowMetaAndData r = database.getOneRow(sql);
 		if (r != null)
 		{
@@ -2587,7 +2589,7 @@ public class Repository
 	{
 		int retval = 0;
 
-		String sql = "SELECT COUNT(*) FROM "+quote(TABLE_R_USER);
+		String sql = "SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_USER);
 		RowMetaAndData r = database.getOneRow(sql);
 		if (r != null)
 		{
@@ -2601,7 +2603,7 @@ public class Repository
 	{
 		int retval = 0;
 
-		String sql = "SELECT COUNT(*) FROM "+quote(TABLE_R_PROFILE_PERMISSION)+" WHERE "+quote(FIELD_PROFILE_PERMISSION_ID_PROFILE)+" = " + id_profile;
+		String sql = "SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_PROFILE_PERMISSION)+" WHERE "+quote(FIELD_PROFILE_PERMISSION_ID_PROFILE)+" = " + id_profile;
 		RowMetaAndData r = database.getOneRow(sql);
 		if (r != null)
 		{
@@ -2615,7 +2617,7 @@ public class Repository
 	{
 		int retval = 0;
 
-		String sql = "SELECT COUNT(*) FROM "+quote(TABLE_R_PROFILE);
+		String sql = "SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_PROFILE);
 		RowMetaAndData r = database.getOneRow(sql);
 		if (r != null)
 		{
@@ -2627,17 +2629,17 @@ public class Repository
 
 	public synchronized String[] getTransformationNames(long id_directory) throws KettleException
 	{
-		return getStrings("SELECT "+quote(FIELD_TRANSFORMATION_NAME)+" FROM "+quote(TABLE_R_TRANSFORMATION)+" WHERE "+quote(FIELD_TRANSFORMATION_ID_DIRECTORY)+" = " + id_directory + " ORDER BY "+quote(FIELD_TRANSFORMATION_NAME));
+		return getStrings("SELECT "+quote(FIELD_TRANSFORMATION_NAME)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANSFORMATION)+" WHERE "+quote(FIELD_TRANSFORMATION_ID_DIRECTORY)+" = " + id_directory + " ORDER BY "+quote(FIELD_TRANSFORMATION_NAME));
 	}
     
     public List<RepositoryObject> getJobObjects(long id_directory) throws KettleException
     {
-        return getRepositoryObjects(quote(TABLE_R_JOB), RepositoryObject.STRING_OBJECT_TYPE_JOB, id_directory);
+        return getRepositoryObjects(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOB), RepositoryObject.STRING_OBJECT_TYPE_JOB, id_directory);
     }
 
     public List<RepositoryObject> getTransformationObjects(long id_directory) throws KettleException
     {
-        return getRepositoryObjects(quote(TABLE_R_TRANSFORMATION), RepositoryObject.STRING_OBJECT_TYPE_TRANSFORMATION, id_directory);
+        return getRepositoryObjects(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANSFORMATION), RepositoryObject.STRING_OBJECT_TYPE_TRANSFORMATION, id_directory);
     }
 
     /**
@@ -2684,87 +2686,87 @@ public class Repository
 
 	public synchronized String[] getJobNames(long id_directory) throws KettleException
 	{
-        return getStrings("SELECT "+quote(FIELD_JOB_NAME)+" FROM "+quote(TABLE_R_JOB)+" WHERE "+quote(FIELD_JOB_ID_DIRECTORY)+" = " + id_directory + " ORDER BY "+quote(FIELD_JOB_NAME));
+        return getStrings("SELECT "+quote(FIELD_JOB_NAME)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOB)+" WHERE "+quote(FIELD_JOB_ID_DIRECTORY)+" = " + id_directory + " ORDER BY "+quote(FIELD_JOB_NAME));
 	}
 
 	public synchronized String[] getDirectoryNames(long id_directory) throws KettleException
 	{
-        return getStrings("SELECT "+quote(FIELD_DIRECTORY_DIRECTORY_NAME)+" FROM "+quote(TABLE_R_DIRECTORY)+" WHERE "+quote(FIELD_DIRECTORY_ID_DIRECTORY_PARENT)+" = " + id_directory + " ORDER BY "+quote(FIELD_DIRECTORY_DIRECTORY_NAME));
+        return getStrings("SELECT "+quote(FIELD_DIRECTORY_DIRECTORY_NAME)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DIRECTORY)+" WHERE "+quote(FIELD_DIRECTORY_ID_DIRECTORY_PARENT)+" = " + id_directory + " ORDER BY "+quote(FIELD_DIRECTORY_DIRECTORY_NAME));
 	}
 
 	public synchronized String[] getJobNames() throws KettleException
 	{
-        return getStrings("SELECT "+quote(FIELD_JOB_NAME)+" FROM "+quote(TABLE_R_JOB)+" ORDER BY "+quote(FIELD_JOB_NAME));
+        return getStrings("SELECT "+quote(FIELD_JOB_NAME)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOB)+" ORDER BY "+quote(FIELD_JOB_NAME));
 	}
 
 	public long[] getSubConditionIDs(long id_condition) throws KettleException
 	{
-        return getIDs("SELECT "+quote(FIELD_CONDITION_ID_CONDITION)+" FROM "+quote(TABLE_R_CONDITION)+" WHERE "+quote(FIELD_CONDITION_ID_CONDITION_PARENT)+" = " + id_condition);
+        return getIDs("SELECT "+quote(FIELD_CONDITION_ID_CONDITION)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_CONDITION)+" WHERE "+quote(FIELD_CONDITION_ID_CONDITION_PARENT)+" = " + id_condition);
 	}
 
 	public long[] getTransNoteIDs(long id_transformation) throws KettleException
 	{
-        return getIDs("SELECT "+quote(FIELD_TRANS_NOTE_ID_NOTE)+" FROM "+quote(TABLE_R_TRANS_NOTE)+" WHERE "+quote(FIELD_TRANS_NOTE_ID_TRANSFORMATION)+" = " + id_transformation);
+        return getIDs("SELECT "+quote(FIELD_TRANS_NOTE_ID_NOTE)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_NOTE)+" WHERE "+quote(FIELD_TRANS_NOTE_ID_TRANSFORMATION)+" = " + id_transformation);
 	}
 
 	public long[] getConditionIDs(long id_transformation) throws KettleException
 	{
-        return getIDs("SELECT "+quote(FIELD_TRANS_STEP_CONDITION_ID_CONDITION)+" FROM "+quote(TABLE_R_TRANS_STEP_CONDITION)+" WHERE "+quote(FIELD_TRANS_STEP_CONDITION_ID_TRANSFORMATION)+" = " + id_transformation);
+        return getIDs("SELECT "+quote(FIELD_TRANS_STEP_CONDITION_ID_CONDITION)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_STEP_CONDITION)+" WHERE "+quote(FIELD_TRANS_STEP_CONDITION_ID_TRANSFORMATION)+" = " + id_transformation);
 	}
 
 	public long[] getDatabaseIDs(long id_transformation) throws KettleException
 	{
-        return getIDs("SELECT "+quote(FIELD_STEP_DATABASE_ID_DATABASE)+" FROM "+quote(TABLE_R_STEP_DATABASE)+" WHERE "+quote(FIELD_STEP_DATABASE_ID_TRANSFORMATION)+" = " + id_transformation);
+        return getIDs("SELECT "+quote(FIELD_STEP_DATABASE_ID_DATABASE)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_STEP_DATABASE)+" WHERE "+quote(FIELD_STEP_DATABASE_ID_TRANSFORMATION)+" = " + id_transformation);
 	}
 
 	public long[] getJobNoteIDs(long id_job) throws KettleException
 	{
-        return getIDs("SELECT "+quote(FIELD_JOB_NOTE_ID_NOTE)+" FROM "+quote(TABLE_R_JOB_NOTE)+" WHERE "+quote(FIELD_JOB_NOTE_ID_JOB)+" = " + id_job);
+        return getIDs("SELECT "+quote(FIELD_JOB_NOTE_ID_NOTE)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOB_NOTE)+" WHERE "+quote(FIELD_JOB_NOTE_ID_JOB)+" = " + id_job);
 	}
 
 	public long[] getDatabaseIDs() throws KettleException
 	{
-        return getIDs("SELECT "+quote(FIELD_DATABASE_ID_DATABASE)+" FROM "+quote(TABLE_R_DATABASE)+" ORDER BY "+quote(FIELD_DATABASE_ID_DATABASE));
+        return getIDs("SELECT "+quote(FIELD_DATABASE_ID_DATABASE)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DATABASE)+" ORDER BY "+quote(FIELD_DATABASE_ID_DATABASE));
 	}
     
     public long[] getDatabaseAttributeIDs(long id_database) throws KettleException
     {
-        return getIDs("SELECT "+quote(FIELD_DATABASE_ATTRIBUTE_ID_DATABASE_ATTRIBUTE)+" FROM "+quote(TABLE_R_DATABASE_ATTRIBUTE)+" WHERE "+quote(FIELD_DATABASE_ATTRIBUTE_ID_DATABASE)+" = "+id_database);
+        return getIDs("SELECT "+quote(FIELD_DATABASE_ATTRIBUTE_ID_DATABASE_ATTRIBUTE)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DATABASE_ATTRIBUTE)+" WHERE "+quote(FIELD_DATABASE_ATTRIBUTE_ID_DATABASE)+" = "+id_database);
     }
     
     public long[] getPartitionSchemaIDs() throws KettleException
     {
-        return getIDs("SELECT "+quote(FIELD_PARTITION_SCHEMA_ID_PARTITION_SCHEMA)+" FROM "+quote(TABLE_R_PARTITION_SCHEMA)+" ORDER BY "+quote(FIELD_PARTITION_SCHEMA_NAME));
+        return getIDs("SELECT "+quote(FIELD_PARTITION_SCHEMA_ID_PARTITION_SCHEMA)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_PARTITION_SCHEMA)+" ORDER BY "+quote(FIELD_PARTITION_SCHEMA_NAME));
     }
     
     public long[] getPartitionIDs(long id_partition_schema) throws KettleException
     {
-        return getIDs("SELECT "+quote(FIELD_PARTITION_ID_PARTITION)+" FROM "+quote(TABLE_R_PARTITION)+" WHERE "+quote(FIELD_PARTITION_ID_PARTITION_SCHEMA)+" = " + id_partition_schema);
+        return getIDs("SELECT "+quote(FIELD_PARTITION_ID_PARTITION)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_PARTITION)+" WHERE "+quote(FIELD_PARTITION_ID_PARTITION_SCHEMA)+" = " + id_partition_schema);
     }
 
     public long[] getTransformationPartitionSchemaIDs(long id_transformation) throws KettleException
     {
-        return getIDs("SELECT "+quote(FIELD_TRANS_PARTITION_SCHEMA_ID_TRANS_PARTITION_SCHEMA)+" FROM "+quote(TABLE_R_TRANS_PARTITION_SCHEMA)+" WHERE "+quote(FIELD_TRANS_PARTITION_SCHEMA_ID_TRANSFORMATION)+" = "+id_transformation);
+        return getIDs("SELECT "+quote(FIELD_TRANS_PARTITION_SCHEMA_ID_TRANS_PARTITION_SCHEMA)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_PARTITION_SCHEMA)+" WHERE "+quote(FIELD_TRANS_PARTITION_SCHEMA_ID_TRANSFORMATION)+" = "+id_transformation);
     }
     
     public long[] getTransformationClusterSchemaIDs(long id_transformation) throws KettleException
     {
-        return getIDs("SELECT ID_TRANS_CLUSTER FROM "+quote(TABLE_R_TRANS_CLUSTER)+" WHERE ID_TRANSFORMATION = " + id_transformation);
+        return getIDs("SELECT ID_TRANS_CLUSTER FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_CLUSTER)+" WHERE ID_TRANSFORMATION = " + id_transformation);
     }
     
     public long[] getClusterIDs() throws KettleException
     {
-        return getIDs("SELECT "+quote(FIELD_CLUSTER_ID_CLUSTER)+" FROM "+quote(TABLE_R_CLUSTER)+" ORDER BY "+quote(FIELD_CLUSTER_NAME)); 
+        return getIDs("SELECT "+quote(FIELD_CLUSTER_ID_CLUSTER)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_CLUSTER)+" ORDER BY "+quote(FIELD_CLUSTER_NAME)); 
     }
 
     public long[] getSlaveIDs() throws KettleException
     {
-        return getIDs("SELECT "+quote(FIELD_SLAVE_ID_SLAVE)+" FROM "+quote(TABLE_R_SLAVE));
+        return getIDs("SELECT "+quote(FIELD_SLAVE_ID_SLAVE)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_SLAVE));
     }
 
     public long[] getSlaveIDs(long id_cluster_schema) throws KettleException
     {
-        return getIDs("SELECT "+quote(FIELD_CLUSTER_SLAVE_ID_SLAVE)+" FROM "+quote(TABLE_R_CLUSTER_SLAVE)+" WHERE "+quote(FIELD_CLUSTER_SLAVE_ID_CLUSTER)+" = " + id_cluster_schema);
+        return getIDs("SELECT "+quote(FIELD_CLUSTER_SLAVE_ID_SLAVE)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_CLUSTER_SLAVE)+" WHERE "+quote(FIELD_CLUSTER_SLAVE_ID_CLUSTER)+" = " + id_cluster_schema);
     }
     
     private long[] getIDs(String sql) throws KettleException
@@ -2832,41 +2834,41 @@ public class Repository
 	public synchronized String[] getDatabaseNames() throws KettleException
 	{
 		String nameField = quote(FIELD_DATABASE_NAME);
-		return getStrings("SELECT "+nameField+" FROM "+quote(TABLE_R_DATABASE)+" ORDER BY "+nameField);
+		return getStrings("SELECT "+nameField+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DATABASE)+" ORDER BY "+nameField);
 	}
     
     public synchronized String[] getPartitionSchemaNames() throws KettleException
     {
         String nameField = quote(FIELD_PARTITION_SCHEMA_NAME);
-        return getStrings("SELECT "+nameField+" FROM "+quote(TABLE_R_PARTITION_SCHEMA)+" ORDER BY "+nameField);
+        return getStrings("SELECT "+nameField+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_PARTITION_SCHEMA)+" ORDER BY "+nameField);
     }
     
     public synchronized String[] getSlaveNames() throws KettleException
     {
         String nameField = quote(FIELD_SLAVE_NAME);
-        return getStrings("SELECT "+nameField+" FROM "+quote(TABLE_R_SLAVE)+" ORDER BY "+nameField);
+        return getStrings("SELECT "+nameField+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_SLAVE)+" ORDER BY "+nameField);
     }
     
     public synchronized String[] getClusterNames() throws KettleException
     {
         String nameField = quote(FIELD_CLUSTER_NAME);
-        return getStrings("SELECT "+nameField+" FROM "+quote(TABLE_R_CLUSTER)+" ORDER BY "+nameField);
+        return getStrings("SELECT "+nameField+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_CLUSTER)+" ORDER BY "+nameField);
     }
 
 	public long[] getStepIDs(long id_transformation) throws KettleException
 	{
-		return getIDs("SELECT "+quote(FIELD_STEP_ID_STEP)+" FROM "+quote(TABLE_R_STEP)+" WHERE "+quote(FIELD_STEP_ID_TRANSFORMATION)+" = " + id_transformation);
+		return getIDs("SELECT "+quote(FIELD_STEP_ID_STEP)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_STEP)+" WHERE "+quote(FIELD_STEP_ID_TRANSFORMATION)+" = " + id_transformation);
 	}
 
 	public synchronized String[] getTransformationsUsingDatabase(long id_database) throws KettleException
 	{
-		String sql = "SELECT DISTINCT "+quote(FIELD_STEP_DATABASE_ID_TRANSFORMATION)+" FROM "+quote(TABLE_R_STEP_DATABASE)+" WHERE "+quote(FIELD_STEP_DATABASE_ID_DATABASE)+" = " + id_database;
+		String sql = "SELECT DISTINCT "+quote(FIELD_STEP_DATABASE_ID_TRANSFORMATION)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_STEP_DATABASE)+" WHERE "+quote(FIELD_STEP_DATABASE_ID_DATABASE)+" = " + id_database;
         return getTransformationsWithIDList( database.getRows(sql, 100), database.getReturnRowMeta() );
 	}
     
     public synchronized String[] getClustersUsingSlave(long id_slave) throws KettleException
     {
-        String sql = "SELECT DISTINCT "+quote(FIELD_CLUSTER_SLAVE_ID_CLUSTER)+" FROM "+quote(TABLE_R_CLUSTER_SLAVE)+" WHERE "+quote(FIELD_CLUSTER_SLAVE_ID_SLAVE)+" = " + id_slave;
+        String sql = "SELECT DISTINCT "+quote(FIELD_CLUSTER_SLAVE_ID_CLUSTER)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_CLUSTER_SLAVE)+" WHERE "+quote(FIELD_CLUSTER_SLAVE_ID_SLAVE)+" = " + id_slave;
 
         List<Object[]> list = database.getRows(sql, 100);
         RowMetaInterface rowMeta = database.getReturnRowMeta();
@@ -2891,20 +2893,20 @@ public class Repository
 
     public synchronized String[] getTransformationsUsingSlave(long id_slave) throws KettleException
     {
-        String sql = "SELECT DISTINCT "+quote(FIELD_TRANS_SLAVE_ID_TRANSFORMATION)+" FROM "+quote(TABLE_R_TRANS_SLAVE)+" WHERE "+quote(FIELD_TRANS_SLAVE_ID_SLAVE)+" = " + id_slave;
+        String sql = "SELECT DISTINCT "+quote(FIELD_TRANS_SLAVE_ID_TRANSFORMATION)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_SLAVE)+" WHERE "+quote(FIELD_TRANS_SLAVE_ID_SLAVE)+" = " + id_slave;
         return getTransformationsWithIDList( database.getRows(sql, 100), database.getReturnRowMeta() );
     }
     
     public synchronized String[] getTransformationsUsingPartitionSchema(long id_partition_schema) throws KettleException
     {
         String sql = "SELECT DISTINCT "+quote(FIELD_TRANS_PARTITION_SCHEMA_ID_TRANSFORMATION)+
-                     " FROM "+quote(TABLE_R_TRANS_PARTITION_SCHEMA)+" WHERE "+quote(FIELD_TRANS_PARTITION_SCHEMA_ID_PARTITION_SCHEMA)+" = " + id_partition_schema;
+                     " FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_PARTITION_SCHEMA)+" WHERE "+quote(FIELD_TRANS_PARTITION_SCHEMA_ID_PARTITION_SCHEMA)+" = " + id_partition_schema;
         return getTransformationsWithIDList( database.getRows(sql, 100), database.getReturnRowMeta() );
     }
     
     public synchronized String[] getTransformationsUsingCluster(long id_cluster) throws KettleException
     {
-        String sql = "SELECT DISTINCT "+quote(FIELD_TRANS_CLUSTER_ID_TRANSFORMATION)+" FROM "+quote(TABLE_R_TRANS_CLUSTER)+" WHERE "+quote(FIELD_TRANS_CLUSTER_ID_CLUSTER)+" = " + id_cluster;
+        String sql = "SELECT DISTINCT "+quote(FIELD_TRANS_CLUSTER_ID_TRANSFORMATION)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_CLUSTER)+" WHERE "+quote(FIELD_TRANS_CLUSTER_ID_CLUSTER)+" = " + id_cluster;
         return getTransformationsWithIDList( database.getRows(sql, 100), database.getReturnRowMeta() );
     }
 
@@ -2933,76 +2935,76 @@ public class Repository
 
     public long[] getTransHopIDs(long id_transformation) throws KettleException
 	{
-		return getIDs("SELECT "+quote(FIELD_TRANS_HOP_ID_TRANS_HOP)+" FROM "+quote(TABLE_R_TRANS_HOP)+" WHERE "+quote(FIELD_TRANS_HOP_ID_TRANSFORMATION)+" = " + id_transformation);
+		return getIDs("SELECT "+quote(FIELD_TRANS_HOP_ID_TRANS_HOP)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_HOP)+" WHERE "+quote(FIELD_TRANS_HOP_ID_TRANSFORMATION)+" = " + id_transformation);
 	}
 
 	public long[] getJobHopIDs(long id_job) throws KettleException
 	{
-		return getIDs("SELECT "+quote(FIELD_JOB_HOP_ID_JOB_HOP)+" FROM "+quote(TABLE_R_JOB_HOP)+" WHERE "+quote(FIELD_JOB_HOP_ID_JOB)+" = " + id_job);
+		return getIDs("SELECT "+quote(FIELD_JOB_HOP_ID_JOB_HOP)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOB_HOP)+" WHERE "+quote(FIELD_JOB_HOP_ID_JOB)+" = " + id_job);
 	}
 
 	public long[] getTransDependencyIDs(long id_transformation) throws KettleException
 	{
-		return getIDs("SELECT "+quote(FIELD_DEPENDENCY_ID_DEPENDENCY)+" FROM "+quote(TABLE_R_DEPENDENCY)+" WHERE "+quote(FIELD_DEPENDENCY_ID_TRANSFORMATION)+" = " + id_transformation);
+		return getIDs("SELECT "+quote(FIELD_DEPENDENCY_ID_DEPENDENCY)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DEPENDENCY)+" WHERE "+quote(FIELD_DEPENDENCY_ID_TRANSFORMATION)+" = " + id_transformation);
 	}
 
 	public long[] getUserIDs() throws KettleException
 	{
-		return getIDs("SELECT "+quote(FIELD_USER_ID_USER)+" FROM "+quote(TABLE_R_USER));
+		return getIDs("SELECT "+quote(FIELD_USER_ID_USER)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_USER));
 	}
 
 	public synchronized String[] getUserLogins() throws KettleException
 	{
 		String loginField = quote(FIELD_USER_LOGIN);
-		return getStrings("SELECT "+loginField+" FROM "+quote(TABLE_R_USER)+" ORDER BY "+loginField);
+		return getStrings("SELECT "+loginField+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_USER)+" ORDER BY "+loginField);
 	}
 
 	public long[] getPermissionIDs(long id_profile) throws KettleException
 	{
-		return getIDs("SELECT "+quote(FIELD_PROFILE_PERMISSION_ID_PERMISSION)+" FROM "+quote(TABLE_R_PROFILE_PERMISSION)+" WHERE "+quote(FIELD_PROFILE_PERMISSION_ID_PROFILE)+" = " + id_profile);
+		return getIDs("SELECT "+quote(FIELD_PROFILE_PERMISSION_ID_PERMISSION)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_PROFILE_PERMISSION)+" WHERE "+quote(FIELD_PROFILE_PERMISSION_ID_PROFILE)+" = " + id_profile);
 	}
 
 	public long[] getJobEntryIDs(long id_job) throws KettleException
 	{
-		return getIDs("SELECT "+quote(FIELD_JOBENTRY_ID_JOBENTRY)+" FROM "+quote(TABLE_R_JOBENTRY)+" WHERE "+quote(FIELD_JOBENTRY_ID_JOB)+" = " + id_job);
+		return getIDs("SELECT "+quote(FIELD_JOBENTRY_ID_JOBENTRY)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOBENTRY)+" WHERE "+quote(FIELD_JOBENTRY_ID_JOB)+" = " + id_job);
 	}
 
 	public long[] getJobEntryCopyIDs(long id_job) throws KettleException
 	{
-		return getIDs("SELECT "+quote(FIELD_JOBENTRY_COPY_ID_JOBENTRY_COPY)+" FROM "+quote(TABLE_R_JOBENTRY_COPY)+" WHERE "+quote(FIELD_JOBENTRY_COPY_ID_JOB)+" = " + id_job);
+		return getIDs("SELECT "+quote(FIELD_JOBENTRY_COPY_ID_JOBENTRY_COPY)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOBENTRY_COPY)+" WHERE "+quote(FIELD_JOBENTRY_COPY_ID_JOB)+" = " + id_job);
 	}
 
 	public long[] getJobEntryCopyIDs(long id_job, long id_jobentry) throws KettleException
 	{
 		return getIDs("SELECT "+quote(FIELD_JOBENTRY_COPY_ID_JOBENTRY_COPY)+
-				" FROM "+quote(TABLE_R_JOBENTRY_COPY)+" WHERE "+quote(FIELD_JOBENTRY_COPY_ID_JOB)+" = " + id_job + " AND "+quote(FIELD_JOBENTRY_COPY_ID_JOBENTRY)+" = " + id_jobentry);
+				" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOBENTRY_COPY)+" WHERE "+quote(FIELD_JOBENTRY_COPY_ID_JOB)+" = " + id_job + " AND "+quote(FIELD_JOBENTRY_COPY_ID_JOBENTRY)+" = " + id_jobentry);
 	}
 
 	public synchronized String[] getProfiles() throws KettleException
 	{
 		String nameField = quote(FIELD_PROFILE_NAME);
-		return getStrings("SELECT "+nameField+" FROM "+quote(TABLE_R_PROFILE)+" ORDER BY "+nameField);
+		return getStrings("SELECT "+nameField+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_PROFILE)+" ORDER BY "+nameField);
 	}
 
 	public RowMetaAndData getNote(long id_note) throws KettleException
 	{
-		return getOneRow(quote(TABLE_R_NOTE), quote(FIELD_NOTE_ID_NOTE), id_note);
+		return getOneRow(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_NOTE), quote(FIELD_NOTE_ID_NOTE), id_note);
 	}
 
 	public RowMetaAndData getDatabase(long id_database) throws KettleException
 	{
-		return getOneRow(quote(TABLE_R_DATABASE), quote(FIELD_DATABASE_ID_DATABASE), id_database);
+		return getOneRow(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DATABASE), quote(FIELD_DATABASE_ID_DATABASE), id_database);
 	}
 
     public RowMetaAndData getDatabaseAttribute(long id_database_attribute) throws KettleException
     {
-        return getOneRow(quote(TABLE_R_DATABASE_ATTRIBUTE), quote(FIELD_DATABASE_ATTRIBUTE_ID_DATABASE_ATTRIBUTE), id_database_attribute);
+        return getOneRow(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DATABASE_ATTRIBUTE), quote(FIELD_DATABASE_ATTRIBUTE_ID_DATABASE_ATTRIBUTE), id_database_attribute);
     }
 
     public Collection<RowMetaAndData> getDatabaseAttributes() throws KettleDatabaseException, KettleValueException
     {
     	List<RowMetaAndData> attrs = new ArrayList<RowMetaAndData>();
-    	List<Object[]> rows = database.getRows("SELECT * FROM " + quote(TABLE_R_DATABASE_ATTRIBUTE),0);
+    	List<Object[]> rows = database.getRows("SELECT * FROM " + databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DATABASE_ATTRIBUTE),0);
     	for (Object[] row : rows) 
     	{
     		RowMetaAndData rowWithMeta = new RowMetaAndData(database.getReturnRowMeta(), row);
@@ -3017,7 +3019,7 @@ public class Repository
     public Collection<RowMetaAndData> getDatabaseAttributes(long id_database) throws KettleDatabaseException, KettleValueException
     {
     	List<RowMetaAndData> attrs = new ArrayList<RowMetaAndData>();
-    	List<Object[]> rows = database.getRows("SELECT * FROM " + quote(TABLE_R_DATABASE_ATTRIBUTE) + " WHERE "+quote(FIELD_DATABASE_ID_DATABASE) +" = "+id_database, 0);
+    	List<Object[]> rows = database.getRows("SELECT * FROM " + databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DATABASE_ATTRIBUTE) + " WHERE "+quote(FIELD_DATABASE_ID_DATABASE) +" = "+id_database, 0);
     	for (Object[] row : rows) 
     	{
     		RowMetaAndData rowWithMeta = new RowMetaAndData(database.getReturnRowMeta(), row);
@@ -3031,112 +3033,112 @@ public class Repository
     
 	public RowMetaAndData getCondition(long id_condition) throws KettleException
 	{
-		return getOneRow(quote(TABLE_R_CONDITION), quote(FIELD_CONDITION_ID_CONDITION), id_condition);
+		return getOneRow(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_CONDITION), quote(FIELD_CONDITION_ID_CONDITION), id_condition);
 	}
 
 	public RowMetaAndData getValue(long id_value) throws KettleException
 	{
-		return getOneRow(quote(TABLE_R_VALUE), quote(FIELD_VALUE_ID_VALUE), id_value);
+		return getOneRow(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_VALUE), quote(FIELD_VALUE_ID_VALUE), id_value);
 	}
 
 	public RowMetaAndData getStep(long id_step) throws KettleException
 	{
-		return getOneRow(quote(TABLE_R_STEP), quote(FIELD_STEP_ID_STEP), id_step);
+		return getOneRow(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_STEP), quote(FIELD_STEP_ID_STEP), id_step);
 	}
 
 	public RowMetaAndData getStepType(long id_step_type) throws KettleException
 	{
-		return getOneRow(quote(TABLE_R_STEP_TYPE), quote(FIELD_STEP_TYPE_ID_STEP_TYPE), id_step_type);
+		return getOneRow(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_STEP_TYPE), quote(FIELD_STEP_TYPE_ID_STEP_TYPE), id_step_type);
 	}
 
 	public RowMetaAndData getStepAttribute(long id_step_attribute) throws KettleException
 	{
-		return getOneRow(quote(TABLE_R_STEP_ATTRIBUTE), quote(FIELD_STEP_ATTRIBUTE_ID_STEP_ATTRIBUTE), id_step_attribute);
+		return getOneRow(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_STEP_ATTRIBUTE), quote(FIELD_STEP_ATTRIBUTE_ID_STEP_ATTRIBUTE), id_step_attribute);
 	}
 
 	public RowMetaAndData getStepDatabase(long id_step) throws KettleException
 	{
-		return getOneRow(quote(TABLE_R_STEP_DATABASE), quote(FIELD_STEP_DATABASE_ID_STEP), id_step);
+		return getOneRow(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_STEP_DATABASE), quote(FIELD_STEP_DATABASE_ID_STEP), id_step);
 	}
 
 	public RowMetaAndData getTransHop(long id_trans_hop) throws KettleException
 	{
-		return getOneRow(quote(TABLE_R_TRANS_HOP), quote(FIELD_TRANS_HOP_ID_TRANS_HOP), id_trans_hop);
+		return getOneRow(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_HOP), quote(FIELD_TRANS_HOP_ID_TRANS_HOP), id_trans_hop);
 	}
 
 	public RowMetaAndData getJobHop(long id_job_hop) throws KettleException
 	{
-		return getOneRow(quote(TABLE_R_JOB_HOP), quote(FIELD_JOB_HOP_ID_JOB_HOP), id_job_hop);
+		return getOneRow(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOB_HOP), quote(FIELD_JOB_HOP_ID_JOB_HOP), id_job_hop);
 	}
 
 	public RowMetaAndData getTransDependency(long id_dependency) throws KettleException
 	{
-		return getOneRow(quote(TABLE_R_DEPENDENCY), quote(FIELD_DEPENDENCY_ID_DEPENDENCY), id_dependency);
+		return getOneRow(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DEPENDENCY), quote(FIELD_DEPENDENCY_ID_DEPENDENCY), id_dependency);
 	}
 
 	public RowMetaAndData getTransformation(long id_transformation) throws KettleException
 	{
-		return getOneRow(quote(TABLE_R_TRANSFORMATION), quote(FIELD_TRANSFORMATION_ID_TRANSFORMATION), id_transformation);
+		return getOneRow(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANSFORMATION), quote(FIELD_TRANSFORMATION_ID_TRANSFORMATION), id_transformation);
 	}
 
 	public RowMetaAndData getUser(long id_user) throws KettleException
 	{
-		return getOneRow(quote(TABLE_R_USER), quote(FIELD_USER_ID_USER), id_user);
+		return getOneRow(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_USER), quote(FIELD_USER_ID_USER), id_user);
 	}
 
 	public RowMetaAndData getProfile(long id_profile) throws KettleException
 	{
-		return getOneRow(quote(TABLE_R_PROFILE), quote(FIELD_PROFILE_ID_PROFILE), id_profile);
+		return getOneRow(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_PROFILE), quote(FIELD_PROFILE_ID_PROFILE), id_profile);
 	}
 
 	public RowMetaAndData getPermission(long id_permission) throws KettleException
 	{
-		return getOneRow(quote(TABLE_R_PERMISSION), quote(FIELD_PERMISSION_ID_PERMISSION), id_permission);
+		return getOneRow(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_PERMISSION), quote(FIELD_PERMISSION_ID_PERMISSION), id_permission);
 	}
 
 	public RowMetaAndData getJob(long id_job) throws KettleException
 	{
-		return getOneRow(quote(TABLE_R_JOB), quote(FIELD_JOB_ID_JOB), id_job);
+		return getOneRow(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOB), quote(FIELD_JOB_ID_JOB), id_job);
 	}
 
 	public RowMetaAndData getJobEntry(long id_jobentry) throws KettleException
 	{
-		return getOneRow(quote(TABLE_R_JOBENTRY), quote(FIELD_JOBENTRY_ID_JOBENTRY), id_jobentry);
+		return getOneRow(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOBENTRY), quote(FIELD_JOBENTRY_ID_JOBENTRY), id_jobentry);
 	}
 
 	public RowMetaAndData getJobEntryCopy(long id_jobentry_copy) throws KettleException
 	{
-		return getOneRow(quote(TABLE_R_JOBENTRY_COPY), quote(FIELD_JOBENTRY_COPY_ID_JOBENTRY_COPY), id_jobentry_copy);
+		return getOneRow(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOBENTRY_COPY), quote(FIELD_JOBENTRY_COPY_ID_JOBENTRY_COPY), id_jobentry_copy);
 	}
 
 	public RowMetaAndData getJobEntryType(long id_jobentry_type) throws KettleException
 	{
-		return getOneRow(quote(TABLE_R_JOBENTRY_TYPE), quote(FIELD_JOBENTRY_ID_JOBENTRY_TYPE), id_jobentry_type);
+		return getOneRow(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOBENTRY_TYPE), quote(FIELD_JOBENTRY_ID_JOBENTRY_TYPE), id_jobentry_type);
 	}
 
 	public RowMetaAndData getDirectory(long id_directory) throws KettleException
 	{
-		return getOneRow(quote(TABLE_R_DIRECTORY), quote(FIELD_DIRECTORY_ID_DIRECTORY), id_directory);
+		return getOneRow(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DIRECTORY), quote(FIELD_DIRECTORY_ID_DIRECTORY), id_directory);
 	}
 	
     public RowMetaAndData getPartitionSchema(long id_partition_schema) throws KettleException
     {
-        return getOneRow(quote(TABLE_R_PARTITION_SCHEMA), quote(FIELD_PARTITION_SCHEMA_ID_PARTITION_SCHEMA), id_partition_schema);
+        return getOneRow(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_PARTITION_SCHEMA), quote(FIELD_PARTITION_SCHEMA_ID_PARTITION_SCHEMA), id_partition_schema);
     }
     
     public RowMetaAndData getPartition(long id_partition) throws KettleException
     {
-        return getOneRow(quote(TABLE_R_PARTITION), quote(FIELD_PARTITION_ID_PARTITION), id_partition);
+        return getOneRow(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_PARTITION), quote(FIELD_PARTITION_ID_PARTITION), id_partition);
     }
 
     public RowMetaAndData getClusterSchema(long id_cluster_schema) throws KettleException
     {
-        return getOneRow(quote(TABLE_R_CLUSTER), quote(FIELD_CLUSTER_ID_CLUSTER), id_cluster_schema);
+        return getOneRow(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_CLUSTER), quote(FIELD_CLUSTER_ID_CLUSTER), id_cluster_schema);
     }
 
     public RowMetaAndData getSlaveServer(long id_slave) throws KettleException
     {
-        return getOneRow(quote(TABLE_R_SLAVE), quote(FIELD_SLAVE_ID_SLAVE), id_slave);
+        return getOneRow(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_SLAVE), quote(FIELD_SLAVE_ID_SLAVE), id_slave);
     }
 
 	private RowMetaAndData getOneRow(String tablename, String keyfield, long id) throws KettleException
@@ -3216,7 +3218,7 @@ public class Repository
 	public synchronized void setLookupStepAttribute() throws KettleException
 	{
 		String sql = "SELECT "+quote(FIELD_STEP_ATTRIBUTE_VALUE_STR)+", "+quote(FIELD_STEP_ATTRIBUTE_VALUE_NUM)+
-			" FROM "+quote(TABLE_R_STEP_ATTRIBUTE)+
+			" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_STEP_ATTRIBUTE)+
 			" WHERE "+quote(FIELD_STEP_ATTRIBUTE_ID_STEP)+" = ?  AND "+quote(FIELD_STEP_ATTRIBUTE_CODE)+" = ?  AND "+quote(FIELD_STEP_ATTRIBUTE_NR)+" = ? ";
 
 		psStepAttributesLookup = database.prepareSQL(sql);
@@ -3225,7 +3227,7 @@ public class Repository
     public synchronized void setLookupTransAttribute() throws KettleException
     {
         String sql = "SELECT "+quote(FIELD_TRANS_ATTRIBUTE_VALUE_STR)+", "+quote(FIELD_TRANS_ATTRIBUTE_VALUE_NUM)+
-        	" FROM "+quote(TABLE_R_TRANS_ATTRIBUTE)+" WHERE "+quote(FIELD_TRANS_ATTRIBUTE_ID_TRANSFORMATION)+" = ?  AND "+quote(FIELD_TRANS_ATTRIBUTE_CODE)+" = ? AND "+FIELD_TRANS_ATTRIBUTE_NR+" = ? ";
+        	" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_ATTRIBUTE)+" WHERE "+quote(FIELD_TRANS_ATTRIBUTE_ID_TRANSFORMATION)+" = ?  AND "+quote(FIELD_TRANS_ATTRIBUTE_CODE)+" = ? AND "+FIELD_TRANS_ATTRIBUTE_NR+" = ? ";
 
         psTransAttributesLookup = database.prepareSQL(sql);
     }
@@ -3363,7 +3365,7 @@ public class Repository
 	    }
 	    else
 	    {
-			String sql = "SELECT COUNT(*) FROM "+quote(TABLE_R_STEP_ATTRIBUTE)+" WHERE "+quote(FIELD_STEP_ATTRIBUTE_ID_STEP)+" = ? AND "+quote(FIELD_STEP_ATTRIBUTE_CODE)+" = ?";
+			String sql = "SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_STEP_ATTRIBUTE)+" WHERE "+quote(FIELD_STEP_ATTRIBUTE_ID_STEP)+" = ? AND "+quote(FIELD_STEP_ATTRIBUTE_CODE)+" = ?";
 			RowMetaAndData table = new RowMetaAndData();
 			table.addValue(new ValueMeta(FIELD_STEP_ATTRIBUTE_ID_STEP, ValueMetaInterface.TYPE_INTEGER), new Long(id_step));
 			table.addValue(new ValueMeta(FIELD_STEP_ATTRIBUTE_CODE, ValueMetaInterface.TYPE_STRING), code);
@@ -3413,7 +3415,7 @@ public class Repository
     
     public synchronized int countNrTransAttributes(long id_transformation, String code) throws KettleException
     {
-        String sql = "SELECT COUNT(*) FROM "+quote(TABLE_R_TRANS_ATTRIBUTE)+" WHERE "+quote(FIELD_TRANS_ATTRIBUTE_ID_TRANSFORMATION)+" = ? AND "+quote(FIELD_TRANS_ATTRIBUTE_CODE)+" = ?";
+        String sql = "SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_ATTRIBUTE)+" WHERE "+quote(FIELD_TRANS_ATTRIBUTE_ID_TRANSFORMATION)+" = ? AND "+quote(FIELD_TRANS_ATTRIBUTE_CODE)+" = ?";
         RowMetaAndData table = new RowMetaAndData();
         table.addValue(new ValueMeta(FIELD_TRANS_ATTRIBUTE_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER), new Long(id_transformation));
         table.addValue(new ValueMeta(FIELD_TRANS_ATTRIBUTE_CODE, ValueMetaInterface.TYPE_STRING), code);
@@ -3427,7 +3429,7 @@ public class Repository
     public synchronized List<Object[]> getTransAttributes(long id_transformation, String code, long nr) throws KettleException
     {
         String sql = "SELECT *"+
-        	" FROM "+quote(TABLE_R_TRANS_ATTRIBUTE)+
+        	" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_ATTRIBUTE)+
         	" WHERE "+quote(FIELD_TRANS_ATTRIBUTE_ID_TRANSFORMATION)+" = ? AND "+quote(FIELD_TRANS_ATTRIBUTE_CODE)+" = ? AND "+quote(FIELD_TRANS_ATTRIBUTE_NR)+" = ?"+
         	" ORDER BY "+quote(FIELD_TRANS_ATTRIBUTE_VALUE_NUM);
         
@@ -3490,7 +3492,7 @@ public class Repository
 	public synchronized void setLookupJobEntryAttribute() throws KettleException
 	{
 		String sql = "SELECT "+quote(FIELD_JOBENTRY_ATTRIBUTE_VALUE_STR)+", "+quote(FIELD_JOBENTRY_ATTRIBUTE_VALUE_NUM)+
-		" FROM "+quote(TABLE_R_JOBENTRY_ATTRIBUTE)+
+		" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOBENTRY_ATTRIBUTE)+
 		" WHERE "+quote(FIELD_JOBENTRY_ATTRIBUTE_ID_JOBENTRY)+" = ? AND "+quote(FIELD_JOBENTRY_ATTRIBUTE_CODE)+" = ?  AND "+quote(FIELD_JOBENTRY_ATTRIBUTE_NR)+" = ? ";
 
 		pstmt_entry_attributes = database.prepareSQL(sql);
@@ -3579,7 +3581,7 @@ public class Repository
 
 	public synchronized int countNrJobEntryAttributes(long id_jobentry, String code) throws KettleException
 	{
-		String sql = "SELECT COUNT(*) FROM "+quote(TABLE_R_JOBENTRY_ATTRIBUTE)+" WHERE "+quote(FIELD_JOBENTRY_ATTRIBUTE_ID_JOBENTRY)+" = ? AND "+quote(FIELD_JOBENTRY_ATTRIBUTE_CODE)+" = ?";
+		String sql = "SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOBENTRY_ATTRIBUTE)+" WHERE "+quote(FIELD_JOBENTRY_ATTRIBUTE_ID_JOBENTRY)+" = ? AND "+quote(FIELD_JOBENTRY_ATTRIBUTE_CODE)+" = ?";
 		RowMetaAndData table = new RowMetaAndData();
 		table.addValue(new ValueMeta(FIELD_JOBENTRY_ATTRIBUTE_ID_JOBENTRY, ValueMetaInterface.TYPE_INTEGER), new Long(id_jobentry));
 		table.addValue(new ValueMeta(FIELD_JOBENTRY_ATTRIBUTE_CODE, ValueMetaInterface.TYPE_STRING), code);
@@ -3594,7 +3596,7 @@ public class Repository
 
 	public synchronized void delSteps(long id_transformation) throws KettleException
 	{
-		String sql = "DELETE FROM "+quote(TABLE_R_STEP)+" WHERE "+quote(FIELD_STEP_ID_TRANSFORMATION)+" = " + id_transformation;
+		String sql = "DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_STEP)+" WHERE "+quote(FIELD_STEP_ID_TRANSFORMATION)+" = " + id_transformation;
 		database.execStatement(sql);
 	}
 
@@ -3615,7 +3617,7 @@ public class Repository
 		}
 		else
 		{
-			String sql = "DELETE FROM "+quote(TABLE_R_CONDITION)+" WHERE "+quote(FIELD_CONDITION_ID_CONDITION)+" = " + id_condition;
+			String sql = "DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_CONDITION)+" WHERE "+quote(FIELD_CONDITION_ID_CONDITION)+" = " + id_condition;
 			database.execStatement(sql);
 		}
 	}
@@ -3627,7 +3629,7 @@ public class Repository
 		{
 			delCondition(ids[i]);
 		}
-		String sql = "DELETE FROM "+quote(TABLE_R_TRANS_STEP_CONDITION)+" WHERE "+quote(FIELD_TRANS_STEP_CONDITION_ID_TRANSFORMATION)+" = " + id_transformation;
+		String sql = "DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_STEP_CONDITION)+" WHERE "+quote(FIELD_TRANS_STEP_CONDITION_ID_TRANSFORMATION)+" = " + id_transformation;
 		database.execStatement(sql);
 	}
 
@@ -3638,43 +3640,43 @@ public class Repository
 	 */
 	public synchronized void delStepDatabases(long id_transformation) throws KettleException
 	{
-		String sql = "DELETE FROM "+quote(TABLE_R_STEP_DATABASE)+" WHERE "+quote(FIELD_STEP_DATABASE_ID_TRANSFORMATION)+" = " + id_transformation;
+		String sql = "DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_STEP_DATABASE)+" WHERE "+quote(FIELD_STEP_DATABASE_ID_TRANSFORMATION)+" = " + id_transformation;
 		database.execStatement(sql);
 	}
 
 	public synchronized void delJobEntries(long id_job) throws KettleException
 	{
-		String sql = "DELETE FROM "+quote(TABLE_R_JOBENTRY)+" WHERE "+quote(FIELD_JOBENTRY_ID_JOB)+" = " + id_job;
+		String sql = "DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOBENTRY)+" WHERE "+quote(FIELD_JOBENTRY_ID_JOB)+" = " + id_job;
 		database.execStatement(sql);
 	}
 
 	public synchronized void delJobEntryCopies(long id_job) throws KettleException
 	{
-		String sql = "DELETE FROM "+quote(TABLE_R_JOBENTRY_COPY)+" WHERE "+quote(FIELD_JOBENTRY_COPY_ID_JOB)+" = " + id_job;
+		String sql = "DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOBENTRY_COPY)+" WHERE "+quote(FIELD_JOBENTRY_COPY_ID_JOB)+" = " + id_job;
 		database.execStatement(sql);
 	}
 
 	public synchronized void delDependencies(long id_transformation) throws KettleException
 	{
-		String sql = "DELETE FROM "+quote(TABLE_R_DEPENDENCY)+" WHERE "+quote(FIELD_DEPENDENCY_ID_TRANSFORMATION)+" = " + id_transformation;
+		String sql = "DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DEPENDENCY)+" WHERE "+quote(FIELD_DEPENDENCY_ID_TRANSFORMATION)+" = " + id_transformation;
 		database.execStatement(sql);
 	}
 
 	public synchronized void delStepAttributes(long id_transformation) throws KettleException
 	{
-		String sql = "DELETE FROM "+quote(TABLE_R_STEP_ATTRIBUTE)+" WHERE "+quote(FIELD_STEP_ATTRIBUTE_ID_TRANSFORMATION)+" = " + id_transformation;
+		String sql = "DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_STEP_ATTRIBUTE)+" WHERE "+quote(FIELD_STEP_ATTRIBUTE_ID_TRANSFORMATION)+" = " + id_transformation;
 		database.execStatement(sql);
 	}
 
     public synchronized void delTransAttributes(long id_transformation) throws KettleException
     {
-        String sql = "DELETE FROM "+quote(TABLE_R_TRANS_ATTRIBUTE)+" WHERE "+quote(FIELD_TRANS_ATTRIBUTE_ID_TRANSFORMATION)+" = " + id_transformation;
+        String sql = "DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_ATTRIBUTE)+" WHERE "+quote(FIELD_TRANS_ATTRIBUTE_ID_TRANSFORMATION)+" = " + id_transformation;
         database.execStatement(sql);
     }
     
     public synchronized void delPartitionSchemas(long id_transformation) throws KettleException
     {
-        String sql = "DELETE FROM "+quote(TABLE_R_TRANS_PARTITION_SCHEMA)+" WHERE "+quote(FIELD_TRANS_PARTITION_SCHEMA_ID_TRANSFORMATION)+" = " + id_transformation;
+        String sql = "DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_PARTITION_SCHEMA)+" WHERE "+quote(FIELD_TRANS_PARTITION_SCHEMA_ID_TRANSFORMATION)+" = " + id_transformation;
         database.execStatement(sql);
     }
 
@@ -3682,43 +3684,43 @@ public class Repository
     {
         // First see if the partition is used by a step, transformation etc.
         // 
-        database.execStatement("DELETE FROM "+quote(TABLE_R_PARTITION)+" WHERE "+quote(FIELD_PARTITION_ID_PARTITION_SCHEMA)+" = " + id_partition_schema);
+        database.execStatement("DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_PARTITION)+" WHERE "+quote(FIELD_PARTITION_ID_PARTITION_SCHEMA)+" = " + id_partition_schema);
     }
     
     public synchronized void delClusterSlaves(long id_cluster) throws KettleException
     {
-        String sql = "DELETE FROM "+quote(TABLE_R_CLUSTER_SLAVE)+" WHERE "+quote(FIELD_CLUSTER_SLAVE_ID_CLUSTER)+" = " + id_cluster;
+        String sql = "DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_CLUSTER_SLAVE)+" WHERE "+quote(FIELD_CLUSTER_SLAVE_ID_CLUSTER)+" = " + id_cluster;
         database.execStatement(sql);
     }
     
     public synchronized void delTransformationClusters(long id_transformation) throws KettleException
     {
-        String sql = "DELETE FROM "+quote(TABLE_R_TRANS_CLUSTER)+" WHERE "+quote(FIELD_TRANS_CLUSTER_ID_TRANSFORMATION)+" = " + id_transformation;
+        String sql = "DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_CLUSTER)+" WHERE "+quote(FIELD_TRANS_CLUSTER_ID_TRANSFORMATION)+" = " + id_transformation;
         database.execStatement(sql);
     }
 
     public synchronized void delTransformationSlaves(long id_transformation) throws KettleException
     {
-        String sql = "DELETE FROM "+quote(TABLE_R_TRANS_SLAVE)+" WHERE "+quote(FIELD_TRANS_SLAVE_ID_TRANSFORMATION)+" = " + id_transformation;
+        String sql = "DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_SLAVE)+" WHERE "+quote(FIELD_TRANS_SLAVE_ID_TRANSFORMATION)+" = " + id_transformation;
         database.execStatement(sql);
     }
 
 
 	public synchronized void delJobEntryAttributes(long id_job) throws KettleException
 	{
-		String sql = "DELETE FROM "+quote(TABLE_R_JOBENTRY_ATTRIBUTE)+" WHERE "+quote(FIELD_JOBENTRY_ATTRIBUTE_ID_JOB)+" = " + id_job;
+		String sql = "DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOBENTRY_ATTRIBUTE)+" WHERE "+quote(FIELD_JOBENTRY_ATTRIBUTE_ID_JOB)+" = " + id_job;
 		database.execStatement(sql);
 	}
 
 	public synchronized void delTransHops(long id_transformation) throws KettleException
 	{
-		String sql = "DELETE FROM "+quote(TABLE_R_TRANS_HOP)+" WHERE "+quote(FIELD_TRANS_HOP_ID_TRANSFORMATION)+" = " + id_transformation;
+		String sql = "DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_HOP)+" WHERE "+quote(FIELD_TRANS_HOP_ID_TRANSFORMATION)+" = " + id_transformation;
 		database.execStatement(sql);
 	}
 
 	public synchronized void delJobHops(long id_job) throws KettleException
 	{
-		String sql = "DELETE FROM "+quote(TABLE_R_JOB_HOP)+" WHERE "+quote(FIELD_JOB_HOP_ID_JOB)+" = " + id_job;
+		String sql = "DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOB_HOP)+" WHERE "+quote(FIELD_JOB_HOP_ID_JOB)+" = " + id_job;
 		database.execStatement(sql);
 	}
 
@@ -3728,11 +3730,11 @@ public class Repository
 
 		for (int i = 0; i < ids.length; i++)
 		{
-			String sql = "DELETE FROM "+quote(TABLE_R_NOTE)+" WHERE "+quote(FIELD_NOTE_ID_NOTE)+" = " + ids[i];
+			String sql = "DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_NOTE)+" WHERE "+quote(FIELD_NOTE_ID_NOTE)+" = " + ids[i];
 			database.execStatement(sql);
 		}
 
-		String sql = "DELETE FROM "+quote(TABLE_R_TRANS_NOTE)+" WHERE "+quote(FIELD_TRANS_NOTE_ID_TRANSFORMATION)+" = " + id_transformation;
+		String sql = "DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_NOTE)+" WHERE "+quote(FIELD_TRANS_NOTE_ID_TRANSFORMATION)+" = " + id_transformation;
 		database.execStatement(sql);
 	}
 
@@ -3742,23 +3744,23 @@ public class Repository
 
 		for (int i = 0; i < ids.length; i++)
 		{
-			String sql = "DELETE FROM "+quote(TABLE_R_NOTE)+" WHERE "+quote(FIELD_NOTE_ID_NOTE)+" = " + ids[i];
+			String sql = "DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_NOTE)+" WHERE "+quote(FIELD_NOTE_ID_NOTE)+" = " + ids[i];
 			database.execStatement(sql);
 		}
 
-		String sql = "DELETE FROM "+quote(TABLE_R_JOB_NOTE)+" WHERE "+quote(FIELD_JOB_NOTE_ID_JOB)+" = " + id_job;
+		String sql = "DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOB_NOTE)+" WHERE "+quote(FIELD_JOB_NOTE_ID_JOB)+" = " + id_job;
 		database.execStatement(sql);
 	}
 
 	public synchronized void delTrans(long id_transformation) throws KettleException
 	{
-		String sql = "DELETE FROM "+quote(TABLE_R_TRANSFORMATION)+" WHERE "+quote(FIELD_TRANSFORMATION_ID_TRANSFORMATION)+" = " + id_transformation;
+		String sql = "DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANSFORMATION)+" WHERE "+quote(FIELD_TRANSFORMATION_ID_TRANSFORMATION)+" = " + id_transformation;
 		database.execStatement(sql);
 	}
 
 	public synchronized void delJob(long id_job) throws KettleException
 	{
-		String sql = "DELETE FROM "+quote(TABLE_R_JOB)+" WHERE "+quote(FIELD_JOB_ID_JOB)+" = " + id_job;
+		String sql = "DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOB)+" WHERE "+quote(FIELD_JOB_ID_JOB)+" = " + id_job;
 		database.execStatement(sql);
 	}
 
@@ -3775,7 +3777,7 @@ public class Repository
 		
 		if (transList.length==0)
 		{
-			String sql = "DELETE FROM "+quote(TABLE_R_DATABASE)+" WHERE "+quote(FIELD_DATABASE_ID_DATABASE)+" = " + id_database;
+			String sql = "DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DATABASE)+" WHERE "+quote(FIELD_DATABASE_ID_DATABASE)+" = " + id_database;
 			database.execStatement(sql);
 		}
 		else
@@ -3793,37 +3795,37 @@ public class Repository
     
     public synchronized void delDatabaseAttributes(long id_database) throws KettleException
     {
-        String sql = "DELETE FROM "+quote(TABLE_R_DATABASE_ATTRIBUTE)+" WHERE "+quote(FIELD_DATABASE_ATTRIBUTE_ID_DATABASE)+" = " + id_database;
+        String sql = "DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DATABASE_ATTRIBUTE)+" WHERE "+quote(FIELD_DATABASE_ATTRIBUTE_ID_DATABASE)+" = " + id_database;
         database.execStatement(sql);
     }
 
 	public synchronized void delTransStepCondition(long id_transformation) throws KettleException
 	{
-		String sql = "DELETE FROM "+quote(TABLE_R_TRANS_STEP_CONDITION)+" WHERE "+quote(FIELD_TRANS_STEP_CONDITION_ID_TRANSFORMATION)+" = " + id_transformation;
+		String sql = "DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_STEP_CONDITION)+" WHERE "+quote(FIELD_TRANS_STEP_CONDITION_ID_TRANSFORMATION)+" = " + id_transformation;
 		database.execStatement(sql);
 	}
 
 	public synchronized void delValue(long id_value) throws KettleException
 	{
-		String sql = "DELETE FROM "+quote(TABLE_R_VALUE)+" WHERE "+quote(FIELD_VALUE_ID_VALUE)+" = " + id_value;
+		String sql = "DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_VALUE)+" WHERE "+quote(FIELD_VALUE_ID_VALUE)+" = " + id_value;
 		database.execStatement(sql);
 	}
 
 	public synchronized void delUser(long id_user) throws KettleException
 	{
-		String sql = "DELETE FROM "+quote(TABLE_R_USER)+" WHERE "+quote(FIELD_USER_ID_USER)+" = " + id_user;
+		String sql = "DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_USER)+" WHERE "+quote(FIELD_USER_ID_USER)+" = " + id_user;
 		database.execStatement(sql);
 	}
 
 	public synchronized void delProfile(long id_profile) throws KettleException
 	{
-		String sql = "DELETE FROM "+quote(TABLE_R_PROFILE)+" WHERE "+quote(FIELD_PROFILE_ID_PROFILE)+" = " + id_profile;
+		String sql = "DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_PROFILE)+" WHERE "+quote(FIELD_PROFILE_ID_PROFILE)+" = " + id_profile;
 		database.execStatement(sql);
 	}
 
 	public synchronized void delProfilePermissions(long id_profile) throws KettleException
 	{
-		String sql = "DELETE FROM "+quote(TABLE_R_PROFILE_PERMISSION)+" WHERE "+quote(FIELD_PROFILE_PERMISSION_ID_PROFILE)+" = " + id_profile;
+		String sql = "DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_PROFILE_PERMISSION)+" WHERE "+quote(FIELD_PROFILE_PERMISSION_ID_PROFILE)+" = " + id_profile;
 		database.execStatement(sql);
 	}
     
@@ -3839,8 +3841,8 @@ public class Repository
 
         if (transList.length==0 && clustList.length==0)
         {
-            database.execStatement("DELETE FROM "+quote(TABLE_R_SLAVE)+" WHERE "+quote(FIELD_SLAVE_ID_SLAVE)+" = " + id_slave);
-            database.execStatement("DELETE FROM "+quote(TABLE_R_TRANS_SLAVE)+" WHERE "+quote(FIELD_TRANS_SLAVE_ID_SLAVE)+" = " + id_slave);
+            database.execStatement("DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_SLAVE)+" WHERE "+quote(FIELD_SLAVE_ID_SLAVE)+" = " + id_slave);
+            database.execStatement("DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_SLAVE)+" WHERE "+quote(FIELD_TRANS_SLAVE_ID_SLAVE)+" = " + id_slave);
         }
         else
         {
@@ -3879,8 +3881,8 @@ public class Repository
 
         if (transList.length==0)
         {
-            database.execStatement("DELETE FROM "+quote(TABLE_R_PARTITION)+" WHERE "+quote(FIELD_PARTITION_ID_PARTITION_SCHEMA)+" = " + id_partition_schema);
-            database.execStatement("DELETE FROM "+quote(TABLE_R_PARTITION_SCHEMA)+" WHERE "+quote(FIELD_PARTITION_SCHEMA_ID_PARTITION_SCHEMA)+" = " + id_partition_schema);
+            database.execStatement("DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_PARTITION)+" WHERE "+quote(FIELD_PARTITION_ID_PARTITION_SCHEMA)+" = " + id_partition_schema);
+            database.execStatement("DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_PARTITION_SCHEMA)+" WHERE "+quote(FIELD_PARTITION_SCHEMA_ID_PARTITION_SCHEMA)+" = " + id_partition_schema);
         }
         else
         {
@@ -3908,7 +3910,7 @@ public class Repository
 
         if (transList.length==0)
         {
-            database.execStatement("DELETE FROM "+quote(TABLE_R_CLUSTER)+" WHERE "+quote(FIELD_CLUSTER_ID_CLUSTER)+" = " + id_cluster);
+            database.execStatement("DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_CLUSTER)+" WHERE "+quote(FIELD_CLUSTER_ID_CLUSTER)+" = " + id_cluster);
         }
         else
         {
@@ -3945,7 +3947,7 @@ public class Repository
 
 	public synchronized void renameTransformation(long id_transformation, String newname) throws KettleException
 	{
-		String sql = "UPDATE "+quote(TABLE_R_TRANSFORMATION)+" SET "+quote(FIELD_TRANSFORMATION_NAME)+" = ? WHERE "+quote(FIELD_TRANSFORMATION_ID_TRANSFORMATION)+" = ?";
+		String sql = "UPDATE "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANSFORMATION)+" SET "+quote(FIELD_TRANSFORMATION_NAME)+" = ? WHERE "+quote(FIELD_TRANSFORMATION_ID_TRANSFORMATION)+" = ?";
 
 		RowMetaAndData table = new RowMetaAndData();
 		table.addValue(new ValueMeta(FIELD_TRANSFORMATION_NAME,  ValueMetaInterface.TYPE_STRING), newname);
@@ -3956,7 +3958,7 @@ public class Repository
 
 	public synchronized void renameUser(long id_user, String newname) throws KettleException
 	{
-		String sql = "UPDATE "+quote(TABLE_R_USER)+" SET "+quote(FIELD_USER_NAME)+" = ? WHERE "+quote(FIELD_USER_ID_USER)+" = ?";
+		String sql = "UPDATE "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_USER)+" SET "+quote(FIELD_USER_NAME)+" = ? WHERE "+quote(FIELD_USER_ID_USER)+" = ?";
 
 		RowMetaAndData table = new RowMetaAndData();
 		table.addValue(new ValueMeta(FIELD_USER_NAME, ValueMetaInterface.TYPE_STRING), newname);
@@ -3967,7 +3969,7 @@ public class Repository
 
 	public synchronized void renameProfile(long id_profile, String newname) throws KettleException
 	{
-		String sql = "UPDATE "+quote(TABLE_R_PROFILE)+" SET "+quote(FIELD_PROFILE_NAME)+" = ? WHERE "+quote(FIELD_PROFILE_ID_PROFILE)+" = ?";
+		String sql = "UPDATE "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_PROFILE)+" SET "+quote(FIELD_PROFILE_NAME)+" = ? WHERE "+quote(FIELD_PROFILE_ID_PROFILE)+" = ?";
 
 		RowMetaAndData table = new RowMetaAndData();
 		table.addValue(new ValueMeta(FIELD_PROFILE_NAME, ValueMetaInterface.TYPE_STRING), newname);
@@ -3978,7 +3980,7 @@ public class Repository
 
 	public synchronized void renameDatabase(long id_database, String newname) throws KettleException
 	{
-		String sql = "UPDATE "+quote(TABLE_R_DATABASE)+" SET "+quote(FIELD_DATABASE_NAME)+" = ? WHERE "+quote(FIELD_DATABASE_ID_DATABASE)+" = ?";
+		String sql = "UPDATE "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DATABASE)+" SET "+quote(FIELD_DATABASE_NAME)+" = ? WHERE "+quote(FIELD_DATABASE_ID_DATABASE)+" = ?";
 
 		RowMetaAndData table = new RowMetaAndData();
 		table.addValue(new ValueMeta(FIELD_DATABASE_NAME, ValueMetaInterface.TYPE_STRING), newname);
@@ -4003,7 +4005,7 @@ public class Repository
 
 	public synchronized void renameJob(long id_job, String newname) throws KettleException
 	{
-		String sql = "UPDATE "+quote(TABLE_R_JOB)+" SET "+quote(FIELD_JOB_NAME)+" = ? WHERE "+quote(FIELD_JOB_ID_JOB)+" = ?";
+		String sql = "UPDATE "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOB)+" SET "+quote(FIELD_JOB_NAME)+" = ? WHERE "+quote(FIELD_JOB_ID_JOB)+" = ?";
 
 		RowMetaAndData table = new RowMetaAndData();
 		table.addValue(new ValueMeta(FIELD_JOB_NAME, ValueMetaInterface.TYPE_STRING), newname);
@@ -4042,7 +4044,7 @@ public class Repository
         // Log the operations we do in the repository.
         //
         table = new RowMeta();
-        tablename = quote(TABLE_R_REPOSITORY_LOG);
+        tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_REPOSITORY_LOG);
         if (monitor!=null) monitor.subTask("Checking table "+tablename);
         table.addValueMeta(new ValueMeta(FIELD_REPOSITORY_LOG_ID_REPOSITORY_LOG, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
         table.addValueMeta(new ValueMeta(FIELD_REPOSITORY_LOG_REP_VERSION,    ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
@@ -4078,7 +4080,7 @@ public class Repository
         // Let's start with the version table
         //
         table = new RowMeta();
-        tablename = quote(TABLE_R_VERSION);
+        tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_VERSION);
         if (monitor!=null) monitor.subTask("Checking table "+tablename);
         table.addValueMeta(new ValueMeta(FIELD_VERSION_ID_VERSION,       ValueMetaInterface.TYPE_INTEGER, KEY, 0));
         table.addValueMeta(new ValueMeta(FIELD_VERSION_MAJOR_VERSION,    ValueMetaInterface.TYPE_INTEGER, 3, 0));
@@ -4116,7 +4118,7 @@ public class Repository
                     new Date(),
                     Boolean.valueOf(upgrade),
                 };
-            database.execStatement("INSERT INTO "+quote(TABLE_R_VERSION)+" VALUES(?, ?, ?, ?, ?)", table, data);
+            database.execStatement("INSERT INTO "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_VERSION)+" VALUES(?, ?, ?, ?, ?)", table, data);
         }
         catch(KettleException e)
         {
@@ -4130,7 +4132,7 @@ public class Repository
 		//
 		boolean ok_database_type = true;
 		table = new RowMeta();
-		tablename = quote(TABLE_R_DATABASE_TYPE);
+		tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DATABASE_TYPE);
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
 		table.addValueMeta(new ValueMeta(FIELD_DATABASE_TYPE_ID_DATABASE_TYPE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_DATABASE_TYPE_CODE,             ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
@@ -4200,7 +4202,7 @@ public class Repository
 		// 
 		boolean ok_database_contype = true;
 		table = new RowMeta();
-		tablename = quote(TABLE_R_DATABASE_CONTYPE);
+		tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DATABASE_CONTYPE);
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
 		table.addValueMeta(new ValueMeta(FIELD_DATABASE_CONTYPE_ID_DATABASE_CONTYPE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_DATABASE_CONTYPE_CODE, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
@@ -4265,7 +4267,7 @@ public class Repository
 		//
 		// Create table...
 		table = new RowMeta();
-		tablename = quote(TABLE_R_NOTE);
+		tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_NOTE);
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
 		table.addValueMeta(new ValueMeta(FIELD_NOTE_ID_NOTE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_NOTE_VALUE_STR, ValueMetaInterface.TYPE_STRING, REP_STRING_LENGTH, 0));
@@ -4293,7 +4295,7 @@ public class Repository
 		//
 		// Create table...
 		table = new RowMeta();
-		tablename = quote(TABLE_R_DATABASE);
+		tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DATABASE);
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
 		table.addValueMeta(new ValueMeta(FIELD_DATABASE_ID_DATABASE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_DATABASE_NAME, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
@@ -4327,7 +4329,7 @@ public class Repository
         //
         // Create table...
         table = new RowMeta();
-        tablename = quote(TABLE_R_DATABASE_ATTRIBUTE);
+        tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DATABASE_ATTRIBUTE);
         if (monitor!=null) monitor.subTask("Checking table "+tablename);
         table.addValueMeta(new ValueMeta(FIELD_DATABASE_ATTRIBUTE_ID_DATABASE_ATTRIBUTE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
         table.addValueMeta(new ValueMeta(FIELD_DATABASE_ATTRIBUTE_ID_DATABASE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
@@ -4371,7 +4373,7 @@ public class Repository
 		//
 		// Create table...
 		table = new RowMeta();
-		tablename = quote(TABLE_R_DIRECTORY);
+		tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DIRECTORY);
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
 		table.addValueMeta(new ValueMeta(FIELD_DIRECTORY_ID_DIRECTORY,        ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_DIRECTORY_ID_DIRECTORY_PARENT, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
@@ -4414,7 +4416,7 @@ public class Repository
 		//
 		// Create table...
 		table = new RowMeta();
-		tablename = quote(TABLE_R_TRANSFORMATION);
+		tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANSFORMATION);
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
 		table.addValueMeta(new ValueMeta(FIELD_TRANSFORMATION_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_TRANSFORMATION_ID_DIRECTORY, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
@@ -4466,7 +4468,7 @@ public class Repository
 		//
 		// Create table...
 		table = new RowMeta();
-		tablename = quote(TABLE_R_TRANS_ATTRIBUTE);
+		tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_ATTRIBUTE);
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
 		table.addValueMeta(new ValueMeta(FIELD_TRANS_ATTRIBUTE_ID_TRANS_ATTRIBUTE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_TRANS_ATTRIBUTE_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
@@ -4513,7 +4515,7 @@ public class Repository
 		//
 		// Create table...
 		table = new RowMeta();
-		tablename = quote(TABLE_R_DEPENDENCY);
+		tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DEPENDENCY);
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
 		table.addValueMeta(new ValueMeta(FIELD_DEPENDENCY_ID_DEPENDENCY, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_DEPENDENCY_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
@@ -4540,7 +4542,7 @@ public class Repository
         //
         // Create table...
         table = new RowMeta();
-        tablename = quote(TABLE_R_PARTITION_SCHEMA);
+        tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_PARTITION_SCHEMA);
         if (monitor!=null) monitor.subTask("Checking table "+tablename);
         table.addValueMeta(new ValueMeta(FIELD_PARTITION_SCHEMA_ID_PARTITION_SCHEMA, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
         table.addValueMeta(new ValueMeta(FIELD_PARTITION_SCHEMA_NAME, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
@@ -4566,7 +4568,7 @@ public class Repository
         //
         // Create table...
         table = new RowMeta();
-        tablename = quote(TABLE_R_PARTITION);
+        tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_PARTITION);
         if (monitor!=null) monitor.subTask("Checking table "+tablename);
         table.addValueMeta(new ValueMeta(FIELD_PARTITION_ID_PARTITION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
         table.addValueMeta(new ValueMeta(FIELD_PARTITION_ID_PARTITION_SCHEMA, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
@@ -4591,7 +4593,7 @@ public class Repository
         //
         // Create table...
         table = new RowMeta();
-        tablename = quote(TABLE_R_TRANS_PARTITION_SCHEMA);
+        tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_PARTITION_SCHEMA);
         if (monitor!=null) monitor.subTask("Checking table "+tablename);
         table.addValueMeta(new ValueMeta(FIELD_TRANS_PARTITION_SCHEMA_ID_TRANS_PARTITION_SCHEMA, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
         table.addValueMeta(new ValueMeta(FIELD_TRANS_PARTITION_SCHEMA_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
@@ -4617,7 +4619,7 @@ public class Repository
         //
         // Create table...
         table = new RowMeta();
-        tablename = quote(TABLE_R_CLUSTER);
+        tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_CLUSTER);
         if (monitor!=null) monitor.subTask("Checking table "+tablename);
         table.addValueMeta(new ValueMeta(FIELD_CLUSTER_ID_CLUSTER, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
         table.addValueMeta(new ValueMeta(FIELD_CLUSTER_NAME, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
@@ -4646,7 +4648,7 @@ public class Repository
         //
         // Create table...
         table = new RowMeta();
-        tablename = quote(TABLE_R_SLAVE);
+        tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_SLAVE);
         if (monitor!=null) monitor.subTask("Checking table "+tablename);
         table.addValueMeta(new ValueMeta(FIELD_SLAVE_ID_SLAVE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
         table.addValueMeta(new ValueMeta(FIELD_SLAVE_NAME, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
@@ -4678,7 +4680,7 @@ public class Repository
         //
         // Create table...
         table = new RowMeta();
-        tablename = quote(TABLE_R_CLUSTER_SLAVE);
+        tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_CLUSTER_SLAVE);
         if (monitor!=null) monitor.subTask("Checking table "+tablename);
         table.addValueMeta(new ValueMeta(FIELD_CLUSTER_SLAVE_ID_CLUSTER_SLAVE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
         table.addValueMeta(new ValueMeta(FIELD_CLUSTER_SLAVE_ID_CLUSTER, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
@@ -4703,7 +4705,7 @@ public class Repository
         //
         // Create table...
         table = new RowMeta();
-        tablename = quote(TABLE_R_TRANS_SLAVE);
+        tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_SLAVE);
         if (monitor!=null) monitor.subTask("Checking table "+tablename);
         table.addValueMeta(new ValueMeta(FIELD_TRANS_SLAVE_ID_TRANS_SLAVE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
         table.addValueMeta(new ValueMeta(FIELD_TRANS_SLAVE_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
@@ -4729,7 +4731,7 @@ public class Repository
         //
         // Create table...
         table = new RowMeta();
-        tablename = quote(TABLE_R_TRANS_CLUSTER);
+        tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_CLUSTER);
         if (monitor!=null) monitor.subTask("Checking table "+tablename);
         table.addValueMeta(new ValueMeta(FIELD_TRANS_CLUSTER_ID_TRANS_CLUSTER, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
         table.addValueMeta(new ValueMeta(FIELD_TRANS_CLUSTER_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
@@ -4754,7 +4756,7 @@ public class Repository
         //
         // Create table...
         table = new RowMeta();
-        tablename = quote(TABLE_R_TRANS_SLAVE);
+        tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_SLAVE);
         if (monitor!=null) monitor.subTask("Checking table "+tablename);
         table.addValueMeta(new ValueMeta(FIELD_TRANS_SLAVE_ID_TRANS_SLAVE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
         table.addValueMeta(new ValueMeta(FIELD_TRANS_SLAVE_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
@@ -4778,7 +4780,7 @@ public class Repository
 		//
 		// Create table...
 		table = new RowMeta();
-		tablename = quote(TABLE_R_TRANS_HOP);
+		tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_HOP);
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
 		table.addValueMeta(new ValueMeta(FIELD_TRANS_HOP_ID_TRANS_HOP, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_TRANS_HOP_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
@@ -4803,7 +4805,7 @@ public class Repository
 		// R_TRANS_STEP_CONDITION
 		//
 		table = new RowMeta();
-		tablename = quote(TABLE_R_TRANS_STEP_CONDITION);
+		tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_STEP_CONDITION);
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
 		table.addValueMeta(new ValueMeta(FIELD_TRANS_STEP_CONDITION_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_TRANS_STEP_CONDITION_ID_STEP, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
@@ -4826,7 +4828,7 @@ public class Repository
 		// R_CONDITION
 		//
 		table = new RowMeta();
-		tablename = quote(TABLE_R_CONDITION);
+		tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_CONDITION);
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
 		table.addValueMeta(new ValueMeta(FIELD_CONDITION_ID_CONDITION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_CONDITION_ID_CONDITION_PARENT, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
@@ -4853,7 +4855,7 @@ public class Repository
 		///////////////////////////////////////////////////////////////////////////////
 		// R_VALUE
 		//
-		tablename = quote(TABLE_R_VALUE);
+		tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_VALUE);
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
 		table = new RowMeta();
 		table.addValueMeta(new ValueMeta(FIELD_VALUE_ID_VALUE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
@@ -4882,7 +4884,7 @@ public class Repository
 		// Create table...
 		boolean ok_step_type = true;
 		table = new RowMeta();
-		tablename = quote(TABLE_R_STEP_TYPE);
+		tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_STEP_TYPE);
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
 		table.addValueMeta(new ValueMeta(FIELD_STEP_TYPE_ID_STEP_TYPE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_STEP_TYPE_CODE, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
@@ -4914,7 +4916,7 @@ public class Repository
 		//
 		// Create table
 		table = new RowMeta();
-		tablename = quote(TABLE_R_STEP);
+		tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_STEP);
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
 		table.addValueMeta(new ValueMeta(FIELD_STEP_ID_STEP, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_STEP_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
@@ -4945,7 +4947,7 @@ public class Repository
 		// R_STEP_ATTRIBUTE
 		//
 		// Create table...
-		tablename = quote(TABLE_R_STEP_ATTRIBUTE);
+		tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_STEP_ATTRIBUTE);
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
 		table = new RowMeta();
 		table.addValueMeta(new ValueMeta(FIELD_STEP_ATTRIBUTE_ID_STEP_ATTRIBUTE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
@@ -4994,7 +4996,7 @@ public class Repository
 		// That way investigating dependencies becomes easier to program.
 		//
 		// Create table...
-		tablename = quote(TABLE_R_STEP_DATABASE);
+		tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_STEP_DATABASE);
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
 		table = new RowMeta();
 		table.addValueMeta(new ValueMeta(FIELD_STEP_DATABASE_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
@@ -5054,7 +5056,7 @@ public class Repository
 		//
 		// Create table...
 		table = new RowMeta();
-		tablename = quote(TABLE_R_TRANS_NOTE);
+		tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_NOTE);
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
 		table.addValueMeta(new ValueMeta(FIELD_TRANS_NOTE_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_TRANS_NOTE_ID_NOTE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
@@ -5078,7 +5080,7 @@ public class Repository
 		//
 		// Create table...
 		boolean ok_loglevel = true;
-		tablename = quote(TABLE_R_LOGLEVEL);
+		tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_LOGLEVEL);
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
 		table = new RowMeta();
 		table.addValueMeta(new ValueMeta(FIELD_LOGLEVEL_ID_LOGLEVEL, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
@@ -5144,7 +5146,7 @@ public class Repository
 		//
 		// Create table...
 		table = new RowMeta();
-		tablename = quote(TABLE_R_LOG);
+		tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_LOG);
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
 		table.addValueMeta(new ValueMeta(FIELD_LOG_ID_LOG, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_LOG_NAME, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
@@ -5176,7 +5178,7 @@ public class Repository
 		//
 		// Create table...
 		table = new RowMeta();
-		tablename = quote(TABLE_R_JOB);
+		tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOB);
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
 		table.addValueMeta(new ValueMeta(FIELD_JOB_ID_JOB, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_JOB_ID_DIRECTORY, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
@@ -5216,7 +5218,7 @@ public class Repository
 		// Create table...
 		boolean ok_jobentry_type = true;
 		table = new RowMeta();
-		tablename = quote(TABLE_R_JOBENTRY_TYPE);
+		tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOBENTRY_TYPE);
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
 		table.addValueMeta(new ValueMeta(FIELD_JOBENTRY_TYPE_ID_JOBENTRY_TYPE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_JOBENTRY_TYPE_CODE, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
@@ -5250,7 +5252,7 @@ public class Repository
 		//
 		// Create table...
 		table = new RowMeta();
-		tablename = quote(TABLE_R_JOBENTRY);
+		tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOBENTRY);
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
 		table.addValueMeta(new ValueMeta(FIELD_JOBENTRY_ID_JOBENTRY, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_JOBENTRY_ID_JOB, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
@@ -5277,7 +5279,7 @@ public class Repository
 		//
 		// Create table...
 		table = new RowMeta();
-		tablename = quote(TABLE_R_JOBENTRY_COPY);
+		tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOBENTRY_COPY);
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
 		table.addValueMeta(new ValueMeta(FIELD_JOBENTRY_COPY_ID_JOBENTRY_COPY, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_JOBENTRY_COPY_ID_JOBENTRY, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
@@ -5308,7 +5310,7 @@ public class Repository
 		//
 		// Create table...
 		table = new RowMeta();
-		tablename = quote(TABLE_R_JOBENTRY_ATTRIBUTE);
+		tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOBENTRY_ATTRIBUTE);
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
 		table.addValueMeta(new ValueMeta(FIELD_JOBENTRY_ATTRIBUTE_ID_JOBENTRY_ATTRIBUTE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_JOBENTRY_ATTRIBUTE_ID_JOB, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
@@ -5356,7 +5358,7 @@ public class Repository
 		//
 		// Create table...
 		table = new RowMeta();
-		tablename = quote(TABLE_R_JOB_HOP);
+		tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOB_HOP);
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
 		table.addValueMeta(new ValueMeta(FIELD_JOB_HOP_ID_JOB_HOP, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_JOB_HOP_ID_JOB, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
@@ -5385,7 +5387,7 @@ public class Repository
 		//
 		// Create table...
 		table = new RowMeta();
-		tablename = quote(TABLE_R_JOB_NOTE);
+		tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOB_NOTE);
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
 		table.addValueMeta(new ValueMeta(FIELD_JOB_NOTE_ID_JOB, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_JOB_NOTE_ID_NOTE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
@@ -5417,7 +5419,7 @@ public class Repository
         Map<String, Long> profiles = new Hashtable<String, Long>();
         
 		boolean ok_profile = true;
-		tablename = quote(TABLE_R_PROFILE);
+		tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_PROFILE);
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
 		table = new RowMeta();
 		table.addValueMeta(new ValueMeta(FIELD_PROFILE_ID_PROFILE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
@@ -5487,7 +5489,7 @@ public class Repository
         Map<String, Long> users = new Hashtable<String, Long>();
 		boolean ok_user = true;
 		table = new RowMeta();
-		tablename = quote(TABLE_R_USER);
+		tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_USER);
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
 		table.addValueMeta(new ValueMeta(FIELD_USER_ID_USER, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_USER_ID_PROFILE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
@@ -5571,7 +5573,7 @@ public class Repository
         Map<String, Long> permissions = new Hashtable<String, Long>();
 		boolean ok_permission = true;
 		table = new RowMeta();
-		tablename = quote(TABLE_R_PERMISSION);
+		tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_PERMISSION);
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
 		table.addValueMeta(new ValueMeta(FIELD_PERMISSION_ID_PERMISSION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_PERMISSION_CODE, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
@@ -5639,7 +5641,7 @@ public class Repository
 		// Create table...
 		boolean ok_profile_permission = true;
 		table = new RowMeta();
-		tablename = quote(TABLE_R_PROFILE_PERMISSION);
+		tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_PROFILE_PERMISSION);
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
 		table.addValueMeta(new ValueMeta(FIELD_PROFILE_PERMISSION_ID_PROFILE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_PROFILE_PERMISSION_ID_PERMISSION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));

@@ -1396,8 +1396,15 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
      */
 	public String getSchemaTableCombination(String schemaName, String tableName)
 	{
-        if (Const.isEmpty(schemaName)) return tableName; // no need to look further
-		return databaseInterface.getSchemaTableCombination(schemaName, tableName);
+		if (Const.isEmpty(schemaName)) {
+			if (Const.isEmpty(getPreferredSchemaName())) {
+				return tableName; // no need to look further
+			} else {
+				return databaseInterface.getSchemaTableCombination(getPreferredSchemaName(), tableName);
+			}
+		} else {
+			return databaseInterface.getSchemaTableCombination(schemaName, tableName);
+		}
 	}
 	
 	public boolean isClob(ValueMetaInterface v)
@@ -2117,7 +2124,11 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
     public String getQuotedSchemaTableCombination(String schemaName, String tableName)
     {
-        return getSchemaTableCombination(quoteField(schemaName), quoteField(tableName));
+    	if (Const.isEmpty(schemaName)) {
+    		return getSchemaTableCombination(quoteField(getPreferredSchemaName()), quoteField(tableName));
+    	} else {
+    		return getSchemaTableCombination(quoteField(schemaName), quoteField(tableName));
+    	}
     }
 
     /**
@@ -2390,5 +2401,13 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 	{
 		Class<?> clazz = Class.forName(databaseInterface.getDatabaseFactoryName());
 		return (DatabaseFactoryInterface)clazz.newInstance();
+	}
+	
+	public String getPreferredSchemaName() {
+		return databaseInterface.getPreferredSchemaName();
+	}
+	
+	public void setPreferredSchemaName(String preferredSchemaName) {
+		databaseInterface.setPreferredSchemaName(preferredSchemaName);
 	}
 }

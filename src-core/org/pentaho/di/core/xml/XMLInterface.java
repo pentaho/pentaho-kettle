@@ -11,6 +11,8 @@
  
 package org.pentaho.di.core.xml;
 
+import org.pentaho.di.core.exception.KettleException;
+
 /**
  * Implementing classes of this interface know how to express themselves using XML
  * They also can construct themselves using XML.
@@ -20,5 +22,5 @@ package org.pentaho.di.core.xml;
  */
 public interface XMLInterface
 {
-	String getXML();
+	String getXML() throws KettleException;
 }

@@ -28,7 +28,7 @@ public interface EngineMetaInterface {
 	
 	public void clearChanged();
 	
-	public String getXML();
+	public String getXML() throws KettleException;
 	
 	public String getFileType();
 	

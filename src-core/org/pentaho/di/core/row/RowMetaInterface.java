@@ -168,8 +168,9 @@ public interface RowMetaInterface extends Cloneable
      * @param dataRow The row of data 
      * @param index the index to reference
      * @return true if the value on the index is null.
+     * @throws KettleValueException in case there is a conversion error (only thrown in case of lazy conversion)
      */
-    public boolean isNull(Object[] dataRow, int index);
+    public boolean isNull(Object[] dataRow, int index) throws KettleValueException;
     
     /**
      * @return a copy of this RowMetaInterface object

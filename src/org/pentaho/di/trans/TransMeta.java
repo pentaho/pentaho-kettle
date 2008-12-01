@@ -2584,7 +2584,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     	return Const.STRING_TRANS_DEFAULT_EXT;
     }
 
-    public String getXML()
+    public String getXML() throws KettleException
     {
         Props props = null;
         if (Props.isInitialized()) props=Props.getInstance();
@@ -4255,6 +4255,10 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     	//
     	final Map<StepMeta, List<StepMeta>> previousCache = new HashMap<StepMeta, List<StepMeta>>();
     	
+    	// Cache calculation of steps before another
+    	//
+    	Map<StepMeta, Map<StepMeta, Boolean>> beforeCache = new HashMap<StepMeta, Map<StepMeta, Boolean>>();
+    	
     	for (StepMeta stepMeta : steps) {
     		// What are the previous steps? (cached version for performance)
     		//
@@ -4268,7 +4272,12 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     		// Now get the previous steps recursively, store them in the step map
     		//
     		for (StepMeta prev : prevSteps) {
-    			updateFillStepMap(stepMap, previousCache, stepMeta, prev);
+    			Map<StepMeta, Boolean> beforePrevMap = updateFillStepMap(previousCache, beforeCache, stepMeta, prev);
+    			stepMap.put(stepMeta, beforePrevMap);
+    			
+    			// Store it also in the beforeCache...
+    			//
+    			beforeCache.put(prev, beforePrevMap);
     		}
     	}
     	
@@ -4299,47 +4308,50 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      * Fill the 
      * @param stepMap
      * @param previousCache 
+     * @param beforeCache 
      * @param originStepMeta
      * @param previousStepMeta
      */
-    private void updateFillStepMap(Map<StepMeta, Map<StepMeta, Boolean>> stepMap, Map<StepMeta, List<StepMeta>> previousCache, StepMeta originStepMeta, StepMeta previousStepMeta) {
+    private Map<StepMeta, Boolean> updateFillStepMap(Map<StepMeta, List<StepMeta>> previousCache, Map<StepMeta, Map<StepMeta, Boolean>> beforeCache, StepMeta originStepMeta, StepMeta previousStepMeta) {
     	
     	// See if we have a hash map to store step occurrence (located before the step)
     	//
-    	Map<StepMeta, Boolean> beforeMap = stepMap.get(originStepMeta);
+    	Map<StepMeta, Boolean> beforeMap = beforeCache.get(previousStepMeta);
 		if (beforeMap==null) {
 			beforeMap = new HashMap<StepMeta, Boolean>();
 		} else {
-			return; // Nothing left to do here!
+			return beforeMap; // Nothing left to do here!
 		}
 		
+		// Store the current previous step in the map
+    	//
 		beforeMap.put(previousStepMeta, Boolean.TRUE);
-	
+		
+		// Figure out all the previous steps as well, they all need to go in there...
+		// 
 		List<StepMeta> prevSteps = previousCache.get(previousStepMeta);
 		if (prevSteps==null) {
 			prevSteps = findPreviousSteps(previousStepMeta);
 			prevCount++;
 			previousCache.put(previousStepMeta, prevSteps);
 		}
-				
+		
 		// Now, get the previous steps for stepMeta recursively...
 		// We only do this when the beforeMap is not known yet...
 		//
 		for (StepMeta prev : prevSteps) {
-			Map<StepMeta, Boolean> beforePrevMap = stepMap.get(prev);
-			if (beforePrevMap!=null) {
-				// OK, so we add the steps in the map to the beforeMap and we're done.
-				//
-				beforeMap.putAll(beforePrevMap);
-			}
-			updateFillStepMap(stepMap, previousCache, originStepMeta, prev);
+			Map<StepMeta, Boolean> beforePrevMap = updateFillStepMap(previousCache, beforeCache, originStepMeta, prev);
+			
+			// Keep a copy in the cache...
+			//
+			beforeCache.put(prev, beforePrevMap);
+			
+			// Also add it to the new map for this step...
+			//
+			beforeMap.putAll(beforePrevMap);
 		}
 		
-		// Make sure we keep the beforeMap AFTER we did the work
-		// That way the "return" construct at the top works.
-		// We need to be certain that all is done in here for this step.
-		//
-		stepMap.put(originStepMeta, beforeMap);
+		return beforeMap;
     }
 
     /**

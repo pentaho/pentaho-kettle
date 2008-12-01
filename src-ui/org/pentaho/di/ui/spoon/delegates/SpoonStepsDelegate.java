@@ -101,8 +101,12 @@ public class SpoonStepsDelegate extends SpoonDelegate
 
 	public void clipStep(StepMeta stepMeta)
 	{
-		String xml = stepMeta.getXML();
-		GUIResource.getInstance().toClipboard(xml);
+		try {
+			String xml = stepMeta.getXML();
+			GUIResource.getInstance().toClipboard(xml);
+		} catch(Exception ex) {
+			new ErrorDialog(spoon.getShell(), "Error", "Error encoding to XML", ex);
+		}
 	}
 
 	public String editStep(TransMeta transMeta, StepMeta stepMeta)

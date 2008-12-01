@@ -18,6 +18,7 @@ import java.util.Hashtable;
 import java.util.regex.Pattern;
 
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaAndData;
@@ -700,12 +701,12 @@ public class Condition implements Cloneable, XMLInterface
 		return retval;
 	}
 	
-	public String getXML()
+	public String getXML() throws KettleValueException
 	{
 		return getXML(0);
 	}
 	
-	public String getXML(int level)
+	public String getXML(int level) throws KettleValueException
 	{
 		String retval="";
 		String indent1 = Const.rightPad(" ", level);

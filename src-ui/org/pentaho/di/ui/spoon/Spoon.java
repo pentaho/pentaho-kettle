@@ -2914,49 +2914,53 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         if (stepMeta==null || stepMeta.length==0) return;
 
 		String xml = XMLHandler.getXMLHeader();
-		xml += XMLHandler.openTag(Spoon.XML_TAG_TRANSFORMATION_STEPS) + Const.CR;
-		xml += " <steps>" + Const.CR;
-
-		for (int i = 0; i < stepMeta.length; i++)
-		{
-			xml += stepMeta[i].getXML();
-		}
-
-		xml += "    </steps>" + Const.CR;
-
-		// 
-		// Also check for the hops in between the selected steps...
-		//
-
-		xml += "<order>" + Const.CR;
-		if (stepMeta != null)
+        try {
+			xml += XMLHandler.openTag(Spoon.XML_TAG_TRANSFORMATION_STEPS) + Const.CR;
+			xml += " <steps>" + Const.CR;
+	
 			for (int i = 0; i < stepMeta.length; i++)
 			{
-				for (int j = 0; j < stepMeta.length; j++)
+				xml += stepMeta[i].getXML();
+			}
+	
+			xml += "    </steps>" + Const.CR;
+	
+			// 
+			// Also check for the hops in between the selected steps...
+			//
+	
+			xml += "<order>" + Const.CR;
+			if (stepMeta != null)
+				for (int i = 0; i < stepMeta.length; i++)
 				{
-					if (i != j)
+					for (int j = 0; j < stepMeta.length; j++)
 					{
-						TransHopMeta hop = transMeta.findTransHop(stepMeta[i], stepMeta[j], true);
-						if (hop != null) // Ok, we found one...
+						if (i != j)
 						{
-							xml += hop.getXML() + Const.CR;
+							TransHopMeta hop = transMeta.findTransHop(stepMeta[i], stepMeta[j], true);
+							if (hop != null) // Ok, we found one...
+							{
+								xml += hop.getXML() + Const.CR;
+							}
 						}
 					}
 				}
-			}
-		xml += "  </order>" + Const.CR;
+			xml += "  </order>" + Const.CR;
+	
+			xml += "  <notepads>" + Const.CR;
+			if (notePadMeta != null)
+				for (int i = 0; i < notePadMeta.length; i++)
+				{
+					xml += notePadMeta[i].getXML();
+				}
+			xml += "   </notepads>" + Const.CR;
+	
+			xml += " " + XMLHandler.closeTag(Spoon.XML_TAG_TRANSFORMATION_STEPS) + Const.CR;
 
-		xml += "  <notepads>" + Const.CR;
-		if (notePadMeta != null)
-			for (int i = 0; i < notePadMeta.length; i++)
-			{
-				xml += notePadMeta[i].getXML();
-			}
-		xml += "   </notepads>" + Const.CR;
-
-		xml += " " + XMLHandler.closeTag(Spoon.XML_TAG_TRANSFORMATION_STEPS) + Const.CR;
-
-		toClipboard(xml);
+			toClipboard(xml);
+        } catch(Exception ex) {
+        	new ErrorDialog(getShell(), "Error", "Error encoding to XML", ex);
+        }
 	}
 
 	public void editHop(TransMeta transMeta, TransHopMeta transHopMeta)
@@ -4328,9 +4332,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		}
 
 		boolean saved = false;
-		String xml = XMLHandler.getXMLHeader() + meta.getXML();
 		try
 		{
+			String xml = XMLHandler.getXMLHeader() + meta.getXML();
+			
 			DataOutputStream dos = new DataOutputStream(KettleVFS.getOutputStream(fname, false));
 			dos.write(xml.getBytes(Const.XML_ENCODING));
 			dos.close();
@@ -5716,7 +5721,11 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	public void copyTransformation(TransMeta transMeta)
 	{
         if (transMeta==null) return;
-		toClipboard(XMLHandler.getXMLHeader() + transMeta.getXML());
+        try {
+        	toClipboard(XMLHandler.getXMLHeader() + transMeta.getXML());
+        } catch(Exception ex) {
+			new ErrorDialog(getShell(), "Error", "Error encoding to XML", ex);
+		}
 	}
 
 	public void copyJob(JobMeta jobMeta)

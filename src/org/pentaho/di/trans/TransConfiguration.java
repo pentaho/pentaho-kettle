@@ -37,7 +37,7 @@ public class TransConfiguration
         this.transExecutionConfiguration = transExecutionConfiguration;
     }
     
-    public String getXML() throws IOException
+    public String getXML() throws IOException, KettleException
     {
         StringBuilder xml = new StringBuilder(200);
         

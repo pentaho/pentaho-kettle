@@ -92,6 +92,7 @@ import org.pentaho.di.core.logging.Log4jKettleLayout;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.i18n.LanguageChoice;
+import org.pentaho.di.lineage.TransDataLineage;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.DatabaseImpact;
@@ -416,14 +417,16 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     canvas.addMouseWheelListener(new MouseWheelListener() {
 
       public void mouseScrolled(MouseEvent e) {
-        if (e.count == 3) {
-          // scroll up
-          zoomIn();
-        } else if (e.count == -3) {
-          // scroll down 
-          zoomOut();
-        }
-
+    	boolean control = (e.stateMask & SWT.CONTROL) != 0;
+    	if (control) {
+	        if (e.count == 3) {
+	          // scroll up
+	          zoomIn();
+	        } else if (e.count == -3) {
+	          // scroll down 
+	          zoomOut();
+	        }
+    	}
       }
     });
 
@@ -1021,7 +1024,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     TimerTask timerTask = new TimerTask() {
 		
 			public void run() {
-				setControlStates();
+				// setControlStates();
 			}
 		};
 	timer.schedule(timerTask, 2000, 1000);
@@ -1597,6 +1600,16 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     selected_steps = null;
     inputOutputFields(getCurrentStep(), false);
   }
+  
+  public void fieldsLineage() {
+	  TransDataLineage tdl = new TransDataLineage(transMeta);
+	  try {
+		  tdl.calculateLineage();
+	  }
+	  catch(Exception e) {
+		  new ErrorDialog(shell, "Lineage error", "Unexpected lineage calculation error", e);
+	  }
+  }
 
   public void editHop() {
     selrect = null;
@@ -1792,6 +1805,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
           menu.addMenuListener("trans-graph-entry-detach", this, "detachStep"); //$NON-NLS-1$ //$NON-NLS-2$
           menu.addMenuListener("trans-graph-entry-inputs", this, "fieldsBefore"); //$NON-NLS-1$ //$NON-NLS-2$
           menu.addMenuListener("trans-graph-entry-outputs", this, "fieldsAfter"); //$NON-NLS-1$ //$NON-NLS-2$
+          menu.addMenuListener("trans-graph-entry-lineage", this, "fieldsLineage"); //$NON-NLS-1$ //$NON-NLS-2$
           menu.addMenuListener("trans-graph-entry-verify", this, "checkSelectedSteps"); //$NON-NLS-1$ //$NON-NLS-2$
           menu.addMenuListener("trans-graph-entry-mapping", this, "generateMappingToThisStep"); //$NON-NLS-1$ //$NON-NLS-2$
           menu.addMenuListener("trans-graph-entry-partitioning", this, "partitioning"); //$NON-NLS-1$ //$NON-NLS-2$

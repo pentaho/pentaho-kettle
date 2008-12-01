@@ -12,11 +12,13 @@
 */
 package org.pentaho.di.shared;
 
+import org.pentaho.di.core.exception.KettleException;
+
 public interface SharedObjectInterface
 {
     public void setShared(boolean shared);
     public boolean isShared();
     
     public String getName();
-    public String getXML();
+    public String getXML() throws KettleException;
 }

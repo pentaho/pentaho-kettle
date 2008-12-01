@@ -2793,16 +2793,22 @@ public class ValueMeta implements ValueMetaInterface
      * This is the case if data==null or if it's an empty string.
      * @param data the object to test
      * @return true if the object is considered null.
+     * @throws KettleValueException in case there is a conversion error (only thrown in case of lazy conversion)
      */
-    public boolean isNull(Object data)
+    public boolean isNull(Object data) throws KettleValueException
     {
 		try{
-	        if (data==null) return true;
+	        Object value = data;
+	        
+	        if (isStorageBinaryString()) {
+	        	if (((byte[])data).length==0) return true; // null as well!
+	        	value = convertBinaryStringToNativeType((byte[])data);
+	        }
+
+	        if (value==null) return true;
+
 	        if (isString()) {
-	        	if (isStorageNormal() && ((String)data).length()==0) return true;
-	        	if (isStorageBinaryString()) {
-	        			if ( ((byte[])data).length==0 ) return true;
-	        	}
+	        	if (((String)value).length()==0) return true;
 	        }
 	        return false;
 		}

@@ -572,9 +572,14 @@ public class ConditionEditor extends Composite
 					public void widgetSelected(SelectionEvent e)
 					{
 					    Condition c = active_condition.getCondition(cond_nr);
-					    String xml = c.getXML();
-                        GUIResource.getInstance().toClipboard(xml);
-						widget.redraw();
+					    try {
+						    String xml = c.getXML();
+	                        GUIResource.getInstance().toClipboard(xml);
+							widget.redraw();
+					    }
+					    catch(Exception ex) {
+					    	new ErrorDialog(shell, "Error", "Error encoding to XML", ex);
+					    }
 
 					}
 				});

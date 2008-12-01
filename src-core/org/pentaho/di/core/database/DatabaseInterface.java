@@ -759,4 +759,14 @@ public interface DatabaseInterface extends Cloneable
 	 * @return the name of the database test factory to use.
 	 */
 	public String getDatabaseFactoryName();
+
+	/**
+     * @return The preferred schema name of this database connection.
+     */
+    public String getPreferredSchemaName();
+    
+    /**
+     * @param preferredSchemaName The preferred schema name of this database connection.
+     */
+    public void setPreferredSchemaName(String preferredSchemaName);
 }

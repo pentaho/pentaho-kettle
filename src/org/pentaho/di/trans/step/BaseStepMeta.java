@@ -21,6 +21,7 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -139,8 +140,9 @@ public class BaseStepMeta implements Cloneable
 	 * Produces the XML string that describes this step's information.
 	 * 
 	 * @return String containing the XML describing this step.
+	 * @throws KettleValueException in case there is an XML conversion or encoding error
 	 */
-	public String getXML()
+	public String getXML() throws KettleException
 	{
 		String retval="";
 
