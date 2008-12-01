@@ -103,8 +103,7 @@ public class TableOutput extends BaseStep implements StepInterface
         			    data.insertRowMeta.addValueMeta( insertValue );
         		    }
         		    else  {
-        			    throw new KettleStepException(Messages.getString(
-        			    		"TableOutput.Exception.FailedToFindField", meta.getFieldStream()[i])); //$NON-NLS-1$ 
+        			    throw new KettleStepException(Messages.getString("TableOutput.Exception.FailedToFindField", meta.getFieldStream()[i])); //$NON-NLS-1$ 
         			}
         	    }            	
             }

@@ -1042,8 +1042,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
         			    prevNew.addValueMeta( insertValue );
         		    }
         		    else  {
-        			    throw new KettleStepException(Messages.getString(
-        			    			"TableOutputDialog.FailedToFindField.Message", info.getFieldStream()[i]));  //$NON-NLS-1$
+        			    throw new KettleStepException(Messages.getString("TableOutputDialog.FailedToFindField.Message", info.getFieldStream()[i]));  //$NON-NLS-1$
         			}
         	    }
         	    prev = prevNew;

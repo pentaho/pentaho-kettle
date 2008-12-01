@@ -84,10 +84,19 @@ public class DynamicSQLRow extends BaseStep implements StepInterface
 
 			if(!data.skipPreviousRow)
 			{
+				Object[] newRow = RowDataUtil.resizeArray(rowData, data.outputRowMeta.size());
+				int newIndex = rowMeta.size();
+				RowMetaInterface addMeta = data.db.getReturnRowMeta();
+
 				// read from Buffer
 				for (int p=0;p<data.previousrowbuffer.size();p++)
 				{
-					putRow(data.outputRowMeta,(Object[])data.previousrowbuffer.get(p));
+					Object[] getBufferRow=(Object[])data.previousrowbuffer.get(p);
+					for (int i=0;i<addMeta.size();i++) 
+					{
+						newRow[newIndex++] = getBufferRow[i];
+					}
+					putRow(data.outputRowMeta,data.outputRowMeta.cloneRow(newRow));
 				}
 			}
 		}else
@@ -119,7 +128,7 @@ public class DynamicSQLRow extends BaseStep implements StepInterface
 				if(meta.isQueryOnlyOnChange())
 				{
 					// add row to the previous rows buffer
-					data.previousrowbuffer.add(newRow);
+					data.previousrowbuffer.add(add);
 					data.skipPreviousRow=false;
 				}
 				
@@ -151,7 +160,7 @@ public class DynamicSQLRow extends BaseStep implements StepInterface
 				if(meta.isQueryOnlyOnChange())
 				{
 					// add row to the previous rows buffer
-					data.previousrowbuffer.add(newRow);
+					data.previousrowbuffer.add(data.notfound);
 					data.skipPreviousRow=false;
 				}
 			} else
