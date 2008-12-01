@@ -2801,15 +2801,23 @@ public class ValueMeta implements ValueMetaInterface
 	        Object value = data;
 	        
 	        if (isStorageBinaryString()) {
-	        	if (((byte[])data).length==0) return true; // null as well!
+	        	if (value==null || ((byte[])value).length==0) return true; // shortcut
 	        	value = convertBinaryStringToNativeType((byte[])data);
 	        }
 
+	        // Re-check for null, even for lazy conversion.
+	        // A value (5 spaces for example) can be null after trim and conversion
+	        //
 	        if (value==null) return true;
 
+	        // If it's a string and the string is empty, it's a null value as well
+	        //
 	        if (isString()) {
 	        	if (((String)value).length()==0) return true;
 	        }
+	        
+	        // We tried everything else so we assume this value is not null.
+	        //
 	        return false;
 		}
 		catch(ClassCastException e)
