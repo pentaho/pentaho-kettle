@@ -14,6 +14,7 @@ package org.pentaho.di.trans.steps.textfileinput;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipInputStream;
@@ -44,6 +45,12 @@ public class TextFileInputData extends BaseStepData implements
 	public int nrLinesOnPage;
 
 	public FileInputList files;
+	
+	public HashMap<FileObject, Object[]> passThruFields;
+	
+	public Object[] currentPassThruFieldsRow;
+	
+	public int nrPassThruFields;
 
 	public boolean isLastFile;
 

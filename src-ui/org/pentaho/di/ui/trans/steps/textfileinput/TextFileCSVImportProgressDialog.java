@@ -273,7 +273,7 @@ public class TextFileCSVImportProgressDialog
             	valueMeta.setStorageType(ValueMetaInterface.STORAGE_TYPE_NORMAL);
             }
             
-            Object[] r = TextFileInput.convertLineToRow(new TextFileLine(line, fileLineNumber, null), strinfo, outputRowMeta, convertRowMeta, meta.getFilePaths(transMeta)[0], rownumber, null);
+            Object[] r = TextFileInput.convertLineToRow(new TextFileLine(line, fileLineNumber, null), strinfo, null, 0, outputRowMeta, convertRowMeta, meta.getFilePaths(transMeta)[0], rownumber, null);
 
             if(r == null )
             {

@@ -149,6 +149,10 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     private Button       wAccFilenames;
     private FormData     fdlAccFilenames, fdAccFilenames;
     
+    private Label        wlPassThruFields;
+    private Button       wPassThruFields;
+    private FormData     fdlPassThruFields, fdPassThruFields;
+    
     private Label        wlAccField;
     private Text         wAccField;
     private FormData     fdlAccField, fdAccField;
@@ -828,12 +832,31 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         fdAccFilenames.right= new FormAttachment(100, 0);
         wAccFilenames.setLayoutData(fdAccFilenames);
 
+        // Accept filenames from previous steps?
+        //
+        wlPassThruFields=new Label(gAccepting, SWT.RIGHT);
+        wlPassThruFields.setText(Messages.getString("TextFileInputDialog.PassThruFields.Label"));
+        props.setLook(wlPassThruFields);
+        fdlPassThruFields=new FormData();
+        fdlPassThruFields.top  = new FormAttachment(wAccFilenames, margin);
+        fdlPassThruFields.left = new FormAttachment(0, 0);
+        fdlPassThruFields.right= new FormAttachment(middle, -margin);
+        wlPassThruFields.setLayoutData(fdlPassThruFields);
+        wPassThruFields=new Button(gAccepting, SWT.CHECK);
+        wPassThruFields.setToolTipText(Messages.getString("TextFileInputDialog.PassThruFields.Tooltip"));
+        props.setLook(wPassThruFields);
+        fdPassThruFields=new FormData();
+        fdPassThruFields.top  = new FormAttachment(wAccFilenames, margin);
+        fdPassThruFields.left = new FormAttachment(middle, 0);
+        fdPassThruFields.right= new FormAttachment(100, 0);
+        wPassThruFields.setLayoutData(fdPassThruFields);
+
         // Which step to read from?
         wlAccStep=new Label(gAccepting, SWT.RIGHT);
         wlAccStep.setText(Messages.getString("TextFileInputDialog.AcceptStep.Label"));
         props.setLook(wlAccStep);
         fdlAccStep=new FormData();
-        fdlAccStep.top  = new FormAttachment(wAccFilenames, margin);
+        fdlAccStep.top  = new FormAttachment(wPassThruFields, margin);
         fdlAccStep.left = new FormAttachment(0, 0);
         fdlAccStep.right= new FormAttachment(middle, -margin);
         wlAccStep.setLayoutData(fdlAccStep);
@@ -841,7 +864,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         wAccStep.setToolTipText(Messages.getString("TextFileInputDialog.AcceptStep.Tooltip"));
         props.setLook(wAccStep);
         fdAccStep=new FormData();
-        fdAccStep.top  = new FormAttachment(wAccFilenames, margin);
+        fdAccStep.top  = new FormAttachment(wPassThruFields, margin);
         fdAccStep.left = new FormAttachment(middle, 0);
         fdAccStep.right= new FormAttachment(100, 0);
         wAccStep.setLayoutData(fdAccStep);
@@ -2000,6 +2023,8 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     public void setFlags()
 	{
     	boolean accept = wAccFilenames.getSelection();
+    	wlPassThruFields.setEnabled(accept);
+    	wPassThruFields.setEnabled(accept);
     	wlAccField.setEnabled(accept);
     	wAccField.setEnabled(accept);
     	wlAccStep.setEnabled(accept);
@@ -2085,9 +2110,10 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 	{
         final TextFileInputMeta in = meta;
         
-        wAccFilenames.setSelection(meta.isAcceptingFilenames());
-        if (meta.getAcceptingField()!=null) wAccField.setText(meta.getAcceptingField());
-        if (meta.getAcceptingStep()!=null) wAccStep.setText(meta.getAcceptingStep().getName());
+        wAccFilenames.setSelection(in.isAcceptingFilenames());
+        wPassThruFields.setSelection(in.isPassingThruFields());
+        if (in.getAcceptingField()!=null) wAccField.setText(in.getAcceptingField());
+        if (in.getAcceptingStep()!=null) wAccStep.setText(in.getAcceptingStep().getName());
         
 		if (in.getFileName() !=null) 
 		{
@@ -2104,7 +2130,6 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		if (in.getSeparator()!=null) wSeparator.setText(in.getSeparator());
 		if (in.getEnclosure()!=null) wEnclosure.setText(in.getEnclosure());
         if (in.getEscapeCharacter()!=null) wEscape.setText(in.getEscapeCharacter());
-        wAccFilenames.setSelection(in.isAcceptingFilenames());
 		wHeader.setSelection(in.hasHeader());
         wNrHeader.setText( ""+in.getNrHeaderLines() );
 		wFooter.setSelection(in.hasFooter());
@@ -2265,7 +2290,9 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
 		// copy info to TextFileInputMeta class (input)
         meta.setAcceptingFilenames( wAccFilenames.getSelection() );
+        meta.setPassingThruFields( wPassThruFields.getSelection() );
         meta.setAcceptingField( wAccField.getText() );
+        meta.setAcceptingStepName( wAccStep.getText() );
         meta.setAcceptingStep( transMeta.findStep( wAccStep.getText() ) );
         
 		meta.setFileType( wFiletype.getText() );

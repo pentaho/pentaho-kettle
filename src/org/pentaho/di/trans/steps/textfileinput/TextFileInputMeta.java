@@ -194,6 +194,9 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 	/** Are we accepting filenames in input rows?  */
 	private boolean acceptingFilenames;
 	
+	/** If receiving input rows, should we pass through existing fields? */
+	private boolean passingThruFields;
+	
 	/** The field in which the filename is placed */
 	private String  acceptingField;
 
@@ -655,6 +658,19 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 
 	public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException
 	{
+        if (info!=null && isPassingThruFields())
+        {
+            boolean found=false;
+            for (int i=0;i<info.length && !found;i++) 
+            {
+                if (info[i]!=null)
+                {
+                    row.mergeRowMeta(info[i]);
+                    found=true;
+                }
+            }
+        }
+
 		for (int i = 0; i < inputFields.length; i++)
 		{
 			TextFileInputField field = inputFields[i];
@@ -719,6 +735,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 		StringBuffer retval = new StringBuffer(1500);
 
 		retval.append("    ").append(XMLHandler.addTagValue("accept_filenames", acceptingFilenames));
+        retval.append("    ").append(XMLHandler.addTagValue("passing_through_fields", passingThruFields));
 		retval.append("    ").append(XMLHandler.addTagValue("accept_field", acceptingField));
 		retval.append("    ").append(XMLHandler.addTagValue("accept_stepname", (acceptingStep!=null?acceptingStep.getName():"") ));
 		
@@ -826,6 +843,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 		try
 		{
 			acceptingFilenames = YES.equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "accept_filenames"));
+            passingThruFields = YES.equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "passing_through_fields"));
 			acceptingField = XMLHandler.getTagValue(stepnode, "accept_field");
 			acceptingStepName = XMLHandler.getTagValue(stepnode, "accept_stepname");
 			
@@ -1007,6 +1025,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 		try
 		{
 			acceptingFilenames = rep.getStepAttributeBoolean(id_step, "accept_filenames");
+			passingThruFields = rep.getStepAttributeBoolean(id_step, "passing_through_fields");
 			acceptingField     = rep.getStepAttributeString (id_step, "accept_field");
 			acceptingStepName  = rep.getStepAttributeString (id_step, "accept_stepname");
 
@@ -1128,6 +1147,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 		try
 		{
 			rep.saveStepAttribute(id_transformation, id_step, "accept_filenames", acceptingFilenames);
+            rep.saveStepAttribute(id_transformation, id_step, "passing_through_fields", passingThruFields);
 			rep.saveStepAttribute(id_transformation, id_step, "accept_field", acceptingField);
 			rep.saveStepAttribute(id_transformation, id_step, "accept_stepname", (acceptingStep!=null?acceptingStep.getName():"") );
 			
@@ -1567,6 +1587,16 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		this.acceptingFilenames = getFileFromJob;
 	}
+
+    public boolean isPassingThruFields()
+    {
+        return passingThruFields;
+    }
+
+    public void setPassingThruFields(boolean passingThruFields)
+    {
+        this.passingThruFields = passingThruFields;
+    }
 
 	/**
 	 * @return Returns the fileNameField.

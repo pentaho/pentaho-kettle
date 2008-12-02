@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipInputStream;
@@ -602,9 +603,19 @@ public class TextFileInput extends BaseStep implements StepInterface
 		return strings;
 	}
     
+    /**
+     * @deprecated Use {@link #convertLineToRow(TextFileLine,InputFileMetaInterface,Object[],int,RowMetaInterface,RowMetaInterface,String,long, FileErrorHandler)} instead
+     */
     public static final Object[] convertLineToRow(TextFileLine textFileLine, InputFileMetaInterface info, RowMetaInterface outputRowMeta, RowMetaInterface convertRowMeta, String fname, long rowNr, FileErrorHandler errorHandler) throws KettleException
     {
+        return convertLineToRow(textFileLine, info, null, 0, outputRowMeta, convertRowMeta, fname,
+                rowNr, errorHandler);
+    }
+
+    public static final Object[] convertLineToRow(TextFileLine textFileLine, InputFileMetaInterface info, Object[] passThruFields, int nrPassThruFields, RowMetaInterface outputRowMeta, RowMetaInterface convertRowMeta, String fname, long rowNr, FileErrorHandler errorHandler) throws KettleException
+    {
       if (textFileLine == null || textFileLine.line == null /*|| textFileLine.line.length() == 0*/) return null;
+
         Object[] r = RowDataUtil.allocateRowData(outputRowMeta.size()); // over-allocate a bit in the row producing steps...
         
         int nrfields = info.getInputFields().length;
@@ -752,7 +763,10 @@ public class TextFileInput extends BaseStep implements StepInterface
             throw new KettleException(Messages.getString("TextFileInput.Log.Error.ErrorConvertingLineText"), e);
         }
 
-        return r;
+        if (passThruFields != null)
+            return RowDataUtil.addRowData(passThruFields, nrPassThruFields, r);
+        else
+            return r;
 
     }
                     
@@ -766,16 +780,9 @@ public class TextFileInput extends BaseStep implements StepInterface
 		{
             first = false;
             
-            // Create the output row meta-data
-            //
             data.outputRowMeta = new RowMeta();
-            meta.getFields(data.outputRowMeta, getStepname(), null, null, this); // get the metadata populated.  Simple and easy.
+            RowMetaInterface[] infoStep = null;
             
-            // Create convert meta-data objects that will contain Date & Number formatters
-            //
-            data.convertRowMeta = data.outputRowMeta.clone();
-            for (int i=0;i<data.convertRowMeta.size();i++) data.convertRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);
-
             if (meta.isAcceptingFilenames())
             {
                 // Read the files from the specified input stream...
@@ -784,12 +791,31 @@ public class TextFileInput extends BaseStep implements StepInterface
                 
                 int idx = -1;
                 data.rowSet = findInputRowSet(meta.getAcceptingStepName());
+                RowMetaInterface passThruRowMeta = data.rowSet.getRowMeta();
+                if (passThruRowMeta == null) {
+                    /* XXX: This is for a bug in RowSet.getRowMeta().
+                     * The rowMeta might not be set yet if this method
+                     * starts before the first row is put into the RowSet.
+                     */
+                    try { Thread.sleep(1000); }
+                    catch (InterruptedException e)
+                    { e.printStackTrace(); }
+                    passThruRowMeta = data.rowSet.getRowMeta();
+                }
+                
+                if (meta.isPassingThruFields())
+                {
+                    data.passThruFields = new HashMap<FileObject, Object[]>();
+                    infoStep = new RowMetaInterface[] { passThruRowMeta };
+                    data.nrPassThruFields = passThruRowMeta.size();
+                }
+                
                 Object[] fileRow = getRowFrom(data.rowSet);
                 while (fileRow!=null)
                 {
                     if (idx<0)
                     {
-                        idx = data.rowSet.getRowMeta().indexOfValue(meta.getAcceptingField());
+                        idx = passThruRowMeta.indexOfValue(meta.getAcceptingField());
                         if (idx<0)
                         {
                             logError(Messages.getString("TextFileInput.Log.Error.UnableToFindFilenameField", meta.getAcceptingField()));
@@ -798,11 +824,13 @@ public class TextFileInput extends BaseStep implements StepInterface
                             return false;
                         }
                     }
-                    String fileValue = data.rowSet.getRowMeta().getString(fileRow, idx);
+                    String fileValue = passThruRowMeta.getString(fileRow, idx);
                     try
                     {
                         FileObject fileObject = KettleVFS.getFileObject(fileValue);
                         data.files.addFile(fileObject);
+                        if (meta.isPassingThruFields())
+                            data.passThruFields.put(fileObject, fileRow);
                     }
                     catch(IOException e)
                     {
@@ -820,6 +848,14 @@ public class TextFileInput extends BaseStep implements StepInterface
                     return false;
                 }
             }
+
+            meta.getFields(data.outputRowMeta, getStepname(), infoStep, null, this); // get the metadata populated.  Simple and easy.
+            // Create convert meta-data objects that will contain Date & Number formatters
+            //
+            data.convertRowMeta = data.outputRowMeta.clone();
+            for (int i=0;i<data.convertRowMeta.size();i++) data.convertRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);
+
+            
             handleMissingFiles();
             
 			// Open the first file & read the required rows in the buffer, stop
@@ -938,7 +974,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 					data.pageLinesRead++;
 					data.lineInFile ++;
 					long useNumber = meta.isRowNumberByFile() ? data.lineInFile : getLinesWritten() + 1;
-					r = convertLineToRow(textLine, meta, data.outputRowMeta, data.convertRowMeta, data.filename, useNumber, data.dataErrorLineHandler);
+					r = convertLineToRow(textLine, meta, data.currentPassThruFieldsRow, data.nrPassThruFields, data.outputRowMeta, data.convertRowMeta, data.filename, useNumber, data.dataErrorLineHandler);
 					if (r != null) putrow = true;
 					
 					// Possible fix for bug PDI-1121 - paged layout header and line count off by 1 
@@ -1022,7 +1058,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 					{
 						data.lineInFile ++;
 						long useNumber = meta.isRowNumberByFile() ? data.lineInFile : getLinesWritten() + 1;
-						r = convertLineToRow(textLine, meta, data.outputRowMeta, data.convertRowMeta, data.filename, useNumber, data.dataErrorLineHandler);
+						r = convertLineToRow(textLine, meta, data.currentPassThruFieldsRow, data.nrPassThruFields, data.outputRowMeta, data.convertRowMeta, data.filename, useNumber, data.dataErrorLineHandler);
 						if (r != null)
 						{
 							if (log.isRowLevel()) logRowlevel("Found data row: "+data.outputRowMeta.getString(r));
@@ -1204,6 +1240,8 @@ public class TextFileInput extends BaseStep implements StepInterface
 			data.file = data.files.getFile(data.filenr);
 			data.filename = KettleVFS.getFilename( data.file );
 			data.lineInFile = 0;
+            if (meta.isPassingThruFields())
+                data.currentPassThruFieldsRow = data.passThruFields.get(data.file);
 			
             // Add this files to the result of this transformation.
             //
