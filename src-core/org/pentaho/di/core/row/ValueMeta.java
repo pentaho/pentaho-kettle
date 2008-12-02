@@ -2797,13 +2797,30 @@ public class ValueMeta implements ValueMetaInterface
     public boolean isNull(Object data)
     {
 		try{
-	        if (data==null) return true;
-	        if (isString()) {
-	        	if (isStorageNormal() && ((String)data).length()==0) return true;
-	        	if (isStorageBinaryString()) {
-	        			if ( ((byte[])data).length==0 ) return true;
-	        	}
+	        Object value = data;
+	        
+	        if (isStorageBinaryString()) {
+	        	if (value==null || ((byte[])value).length==0) return true; // shortcut
+	        	try {
+					value = convertBinaryStringToNativeType((byte[])data);
+				} catch (KettleValueException e) {  // avoid API changes
+					throw new RuntimeException(e);  // circumvention for the 3.1.x code line due to PDI-1899
+				}
 	        }
+
+	        // Re-check for null, even for lazy conversion.
+	        // A value (5 spaces for example) can be null after trim and conversion
+	        //
+	        if (value==null) return true;
+
+	        // If it's a string and the string is empty, it's a null value as well
+	        //
+	        if (isString()) {
+	        	if (((String)value).length()==0) return true;
+	        }
+	        
+	        // We tried everything else so we assume this value is not null.
+	        //
 	        return false;
 		}
 		catch(ClassCastException e)
