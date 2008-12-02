@@ -135,5 +135,23 @@ public class ValueBooleanTest extends TestCase
 		assertEquals(false, vs.getBoolean());
 				
 		// setSerializable is ignored ???
-	}	
+	}
+
+	/**
+	 * Test clone()
+	 */
+	public void testClone()
+	{
+		ValueBoolean vs1 = new ValueBoolean(true);
+		
+		ValueBoolean cloneVs1 = (ValueBoolean)vs1.clone();
+		assertTrue(cloneVs1.getBoolean() == vs1.getBoolean()); 
+		assertFalse(cloneVs1 == vs1);
+		
+		ValueBoolean vs2 = new ValueBoolean(false);
+		
+		ValueBoolean cloneVs2 = (ValueBoolean)vs2.clone();
+		assertTrue(cloneVs2.getBoolean() == vs2.getBoolean()); 
+		assertFalse(cloneVs2 == vs2);		
+	}
 }
