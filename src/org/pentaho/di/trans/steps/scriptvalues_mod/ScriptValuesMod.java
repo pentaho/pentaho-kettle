@@ -73,11 +73,11 @@ public class ScriptValuesMod extends BaseStep implements StepInterface, ScriptVa
 
   public final static int CONTINUE_TRANSFORMATION = 0;
 
-  private static boolean bWithTransStat = false;
+  private boolean bWithTransStat = false;
 
-  private static boolean bRC = false;
+  private boolean bRC = false;
 
-  private static int iTranStat = CONTINUE_TRANSFORMATION;
+  private int iTranStat = CONTINUE_TRANSFORMATION;
 
   private boolean bFirstRun = false;
 
