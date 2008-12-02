@@ -182,6 +182,10 @@ public class StyledTextComp extends Composite{
 		styledText.addMouseListener(mouseAdapter);
 	}
 
+	public int getSelectionCount(){
+		return styledText.getSelectionCount();
+	}
+	
 	public void setSelection(int arg0){
 		styledText.setSelection(arg0);
 	}

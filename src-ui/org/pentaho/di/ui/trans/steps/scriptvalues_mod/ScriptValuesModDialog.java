@@ -1306,6 +1306,9 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
         		setActiveCtab(item.getText());
         	}else if(!item.getData().equals("Function")){
         		int iStart = wScript.getCaretOffset();
+        		int selCount = wScript.getSelectionCount();  // this selection will be replaced by wScript.insert
+        		iStart=iStart-selCount; //when a selection is already there we need to subtract the position
+        		if (iStart<0) iStart=0; // just safety
             	String strInsert =(String)item.getData();
             	if(strInsert.equals("jsFunction")) strInsert = (String)item.getText();
             	wScript.insert(strInsert);
