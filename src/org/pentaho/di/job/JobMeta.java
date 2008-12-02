@@ -425,7 +425,39 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	 *            The databases to set.
 	 */
 	public void setDatabases(List<DatabaseMeta> databases) {
-		this.databases = databases;
+	  if(databases == null)
+    {
+      this.databases = null;
+      return;
+    }
+    
+    // Sort databases by name
+    ArrayList<DatabaseMeta> connections = new ArrayList<DatabaseMeta>(databases.size()); 
+    for (int i = 0; i < databases.size(); i++)
+    {
+      DatabaseMeta currentConnection = databases.get(i);
+      
+      forEachSortedConnection:
+      for(int n = 0; n <= connections.size(); n++)
+      {
+        if(n == connections.size())
+        {//End of the list, append the connection
+          connections.add(currentConnection);
+          break forEachSortedConnection;
+        }
+        
+        
+        int compareResult = currentConnection.getName().compareToIgnoreCase(connections.get(n).getName());
+         
+        if (compareResult < 0)
+        {
+          connections.add(n, currentConnection);
+          break forEachSortedConnection;
+        }
+      }
+    }
+    
+    this.databases = connections;
 	}
 
 	public void setChanged(boolean ch) {
@@ -1412,7 +1444,29 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	}
 
 	public void addDatabase(DatabaseMeta ci) {
-		databases.add(ci);
+	  if(this.databases == null)
+    {
+      this.databases = new ArrayList<DatabaseMeta>();
+    }
+    
+    // Sort databases by name
+    forEachSortedConnection:
+    for(int i = 0; i <= databases.size(); i++)
+    {
+      if(i == databases.size())
+      {//End of the list, append the connection
+        databases.add(ci);
+        break forEachSortedConnection;
+      }
+      
+      int compareResult = ci.getName().compareToIgnoreCase(databases.get(i).getName());
+       
+      if (compareResult < 0)
+      {
+        databases.add(i, ci);
+        break forEachSortedConnection;
+      }
+    }
 		changedDatabases = true;
 	}
 
@@ -1444,7 +1498,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	public void addOrReplaceDatabase(DatabaseMeta databaseMeta) {
 		int index = databases.indexOf(databaseMeta);
 		if (index < 0) {
-			databases.add(databaseMeta);
+			addDatabase(databaseMeta);
 		} else {
 			DatabaseMeta previous = getDatabase(index);
 			previous.replaceMeta(databaseMeta);

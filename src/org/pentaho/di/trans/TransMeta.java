@@ -493,7 +493,39 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      */
     public void setDatabases(List<DatabaseMeta> databases)
     {
-        this.databases = databases;
+      if(databases == null)
+      {
+        this.databases = null;
+        return;
+      }
+      
+      // Sort databases by name
+      ArrayList<DatabaseMeta> connections = new ArrayList<DatabaseMeta>(databases.size()); 
+      for (int i = 0; i < databases.size(); i++)
+      {
+        DatabaseMeta currentConnection = databases.get(i);
+        
+        forEachSortedConnection:
+        for(int n = 0; n <= connections.size(); n++)
+        {
+          if(n == connections.size())
+          {//End of the list, append the connection
+            connections.add(currentConnection);
+            break forEachSortedConnection;
+          }
+          
+          
+          int compareResult = currentConnection.getName().compareToIgnoreCase(connections.get(n).getName());
+           
+          if (compareResult < 0)
+          {
+            connections.add(n, currentConnection);
+            break forEachSortedConnection;
+          }
+        }
+      }
+      
+      this.databases = connections;
     }
 
     /* (non-Javadoc)
@@ -501,7 +533,29 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      */
     public void addDatabase(DatabaseMeta databaseMeta)
     {
-        databases.add(databaseMeta);
+      if(this.databases == null)
+      {
+        this.databases = new ArrayList<DatabaseMeta>();
+      }
+      
+      // Sort databases by name
+      forEachSortedConnection:
+      for(int i = 0; i <= databases.size(); i++)
+      {
+        if(i == databases.size())
+        {//End of the list, append the connection
+          databases.add(databaseMeta);
+          break forEachSortedConnection;
+        }
+        
+        int compareResult = databaseMeta.getName().compareToIgnoreCase(databases.get(i).getName());
+         
+        if (compareResult < 0)
+        {
+          databases.add(i, databaseMeta);
+          break forEachSortedConnection;
+        }
+      }
     }
     
     /* (non-Javadoc)
@@ -512,7 +566,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         int index = databases.indexOf(databaseMeta);
         if (index<0)
         {
-            databases.add(databaseMeta); 
+            addDatabase(databaseMeta); 
         }
         else
         {
