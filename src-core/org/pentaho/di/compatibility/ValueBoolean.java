@@ -19,9 +19,8 @@ import java.util.Date;
 /**
  * This class contains a Value of type Boolean.
  * 
- * @author Matt
+ * @author Matt Casters
  * @since 15-10-2004
- *
  */
 public class ValueBoolean implements ValueInterface, Cloneable
 {
@@ -29,12 +28,12 @@ public class ValueBoolean implements ValueInterface, Cloneable
 
 	public ValueBoolean()
 	{
-		this.bool     = false;
+		this.bool = false;
 	}
 	
 	public ValueBoolean(boolean bool)
 	{
-		this.bool      = bool;
+		this.bool = bool;
 	}
 
 	public int getType()
@@ -61,7 +60,6 @@ public class ValueBoolean implements ValueInterface, Cloneable
 	{
 		return null;
 	}
-
     
 	public boolean getBoolean()
 	{
@@ -73,19 +71,19 @@ public class ValueBoolean implements ValueInterface, Cloneable
 		return bool?1L:0L;
 	}
 	
-	public void    setString(String string)
+	public void setString(String string)
 	{
 		this.bool = "Y".equalsIgnoreCase(string) || 
 		            "TRUE".equalsIgnoreCase(string) ||
 					"YES".equalsIgnoreCase(string);
 	}
 	
-	public void    setNumber(double number)
+	public void setNumber(double number)
 	{
-		this.bool = number==0.0?false:true;
+		this.bool = (number == 0.0)?false:true;
 	}
 	
-	public void    setDate(Date date)
+	public void setDate(Date date)
 	{
 		this.bool = false;
 	}
@@ -94,17 +92,15 @@ public class ValueBoolean implements ValueInterface, Cloneable
         
     }
     
-	public void    setBoolean(boolean bool)
+	public void setBoolean(boolean bool)
 	{
 		this.bool = bool;
 	}
 	
-	public void    setInteger(long number)
+	public void setInteger(long number)
 	{
-		this.bool = number==0?false:true;
+		this.bool = (number == 0)?false:true;
 	}
-
-	
 	
 	public int getLength()
 	{
