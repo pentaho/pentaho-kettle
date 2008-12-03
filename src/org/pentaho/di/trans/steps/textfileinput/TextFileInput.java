@@ -791,23 +791,12 @@ public class TextFileInput extends BaseStep implements StepInterface
                 
                 int idx = -1;
                 data.rowSet = findInputRowSet(meta.getAcceptingStepName());
-                RowMetaInterface passThruRowMeta = data.rowSet.getRowMeta();
-                if (passThruRowMeta == null) {
-                    /* XXX: This is for a bug in RowSet.getRowMeta().
-                     * The rowMeta might not be set yet if this method
-                     * starts before the first row is put into the RowSet.
-                     */
-                    try { Thread.sleep(1000); }
-                    catch (InterruptedException e)
-                    { e.printStackTrace(); }
-                    passThruRowMeta = data.rowSet.getRowMeta();
-                }
-                
+                RowMetaInterface prevInfoFields = getTransMeta().getPrevInfoFields(getStepMeta());
                 if (meta.isPassingThruFields())
                 {
                     data.passThruFields = new HashMap<FileObject, Object[]>();
-                    infoStep = new RowMetaInterface[] { passThruRowMeta };
-                    data.nrPassThruFields = passThruRowMeta.size();
+                    infoStep = new RowMetaInterface[] { prevInfoFields };
+                    data.nrPassThruFields = prevInfoFields.size();
                 }
                 
                 Object[] fileRow = getRowFrom(data.rowSet);
@@ -815,7 +804,7 @@ public class TextFileInput extends BaseStep implements StepInterface
                 {
                     if (idx<0)
                     {
-                        idx = passThruRowMeta.indexOfValue(meta.getAcceptingField());
+                        idx = prevInfoFields.indexOfValue(meta.getAcceptingField());
                         if (idx<0)
                         {
                             logError(Messages.getString("TextFileInput.Log.Error.UnableToFindFilenameField", meta.getAcceptingField()));
@@ -824,7 +813,7 @@ public class TextFileInput extends BaseStep implements StepInterface
                             return false;
                         }
                     }
-                    String fileValue = passThruRowMeta.getString(fileRow, idx);
+                    String fileValue = prevInfoFields.getString(fileRow, idx);
                     try
                     {
                         FileObject fileObject = KettleVFS.getFileObject(fileValue);
