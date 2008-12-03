@@ -13,6 +13,7 @@ package org.pentaho.di.job;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -425,39 +426,8 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	 *            The databases to set.
 	 */
 	public void setDatabases(List<DatabaseMeta> databases) {
-	  if(databases == null)
-    {
-      this.databases = null;
-      return;
-    }
-    
-    // Sort databases by name
-    ArrayList<DatabaseMeta> connections = new ArrayList<DatabaseMeta>(databases.size()); 
-    for (int i = 0; i < databases.size(); i++)
-    {
-      DatabaseMeta currentConnection = databases.get(i);
-      
-      forEachSortedConnection:
-      for(int n = 0; n <= connections.size(); n++)
-      {
-        if(n == connections.size())
-        {//End of the list, append the connection
-          connections.add(currentConnection);
-          break forEachSortedConnection;
-        }
-        
-        
-        int compareResult = currentConnection.getName().compareToIgnoreCase(connections.get(n).getName());
-         
-        if (compareResult < 0)
-        {
-          connections.add(n, currentConnection);
-          break forEachSortedConnection;
-        }
-      }
-    }
-    
-    this.databases = connections;
+	  Collections.sort(databases, DatabaseMeta.comparator);
+    this.databases = databases;
 	}
 
 	public void setChanged(boolean ch) {
@@ -1444,29 +1414,8 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	}
 
 	public void addDatabase(DatabaseMeta ci) {
-	  if(this.databases == null)
-    {
-      this.databases = new ArrayList<DatabaseMeta>();
-    }
-    
-    // Sort databases by name
-    forEachSortedConnection:
-    for(int i = 0; i <= databases.size(); i++)
-    {
-      if(i == databases.size())
-      {//End of the list, append the connection
-        databases.add(ci);
-        break forEachSortedConnection;
-      }
-      
-      int compareResult = ci.getName().compareToIgnoreCase(databases.get(i).getName());
-       
-      if (compareResult < 0)
-      {
-        databases.add(i, ci);
-        break forEachSortedConnection;
-      }
-    }
+	  databases.add(ci);
+	  Collections.sort(databases, DatabaseMeta.comparator);
 		changedDatabases = true;
 	}
 

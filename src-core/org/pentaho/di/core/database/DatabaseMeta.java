@@ -15,6 +15,7 @@ package org.pentaho.di.core.database;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
@@ -48,12 +49,18 @@ import org.w3c.dom.Node;
  */
 public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInterface, SharedObjectInterface, VariableSpace
 {
-    public static final String XML_TAG = "connection";
+  public static final String XML_TAG = "connection";
     
-	private DatabaseInterface databaseInterface;
-	private static DatabaseInterface[] allDatabaseInterfaces;
+  // Comparator for sorting databases alphabetically by name
+  public static final Comparator<DatabaseMeta> comparator = new Comparator<DatabaseMeta>(){
+    public int compare(DatabaseMeta dbm1, DatabaseMeta dbm2) {
+      return dbm1.getName().compareToIgnoreCase(dbm2.getName());
+    }};
+    
+  private DatabaseInterface databaseInterface;
+  private static DatabaseInterface[] allDatabaseInterfaces;
 	
-    private VariableSpace variables = new Variables();
+  private VariableSpace variables = new Variables();
 
 	/**
 	 * Indicates that the connections doesn't point to a type of database yet.
