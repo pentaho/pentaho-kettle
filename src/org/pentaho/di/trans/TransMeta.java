@@ -1373,9 +1373,11 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
             TransHopMeta hi = getTransHop(i);
             if (hi.isEnabled() && hi.getToStep().equals(stepMeta))
             {
-                if (isStepInformative(stepMeta, hi.getFromStep()))
+                StepMeta infoStep = hi.getFromStep();
+                if (isStepInformative(stepMeta, infoStep))
                 {
-                    getThisStepFields(stepMeta, null, row);
+                    row = getPrevStepFields(infoStep);
+                    getThisStepFields(infoStep, stepMeta, row);
                     return row;
                 }
             }
