@@ -898,7 +898,7 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable
 	 */
 	public String getXML()
 	{
-		StringBuffer xml= new StringBuffer();
+		StringBuilder xml= new StringBuilder();
 		
         xml.append("<").append(XML_TAG).append(">"); //$NON-NLS-1$ //$NON-NLS-2$
         
