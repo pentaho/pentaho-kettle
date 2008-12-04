@@ -54,9 +54,9 @@ public class CalculatorMetaFunction implements Cloneable
     public static final int CALC_HEX_TO_BYTE_DECODE   = 27;
     public static final int CALC_CHAR_TO_HEX_ENCODE   = 28;
     public static final int CALC_HEX_TO_CHAR_DECODE   = 29;
-    public static final int CALC_CRC32   = 30;
-    public static final int CALC_ADLER32   = 31;
-    public static final int CALC_MD5   = 32;
+    public static final int CALC_CRC32   			  = 30;
+    public static final int CALC_ADLER32  			  = 31;
+    public static final int CALC_MD5   				  = 32;
     public static final int CALC_SHA1   = 33;
     public static final int CALC_LEVENSHTEIN_DISTANCE  = 34;
     public static final int CALC_METAPHONE  = 35;
@@ -78,6 +78,7 @@ public class CalculatorMetaFunction implements Cloneable
     public static final int CALC_REMOVE_DIGITS           =  51;
     public static final int CALC_STRING_LEN           =  52;
     public static final int CALC_LOAD_FILE_CONTENT_BINARY   =  53;
+    public static final int CALC_ADD_TIME_TO_DATE       =  54;
     
     public static final String calc_desc[] = 
         { 
@@ -134,7 +135,8 @@ public class CalculatorMetaFunction implements Cloneable
             "GET_ONLY_DIGITS",
             "REMOVE_DIGITS",
             "STRING_LEN",
-            "LOAD_FILE_CONTENT_BINARY"
+            "LOAD_FILE_CONTENT_BINARY",
+            "ADD_TIME_TO_DATE"
         };
     
     public static final String calcLongDesc[] = 
@@ -192,7 +194,8 @@ public class CalculatorMetaFunction implements Cloneable
             Messages.getString("CalculatorMetaFunction.CalcFunctions.GetOnlyDigits"),
             Messages.getString("CalculatorMetaFunction.CalcFunctions.RemoveDigits"),
             Messages.getString("CalculatorMetaFunction.CalcFunctions.StringLen"),
-            Messages.getString("CalculatorMetaFunction.CalcFunctions.LoadFileContentInBinary")
+            Messages.getString("CalculatorMetaFunction.CalcFunctions.LoadFileContentInBinary"),
+            Messages.getString("CalculatorMetaFunction.CalcFunctions.AddTimeToDate"),
         };
    
     private String fieldName;

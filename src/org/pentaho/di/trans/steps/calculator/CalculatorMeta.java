@@ -340,6 +340,9 @@ public class CalculatorMeta extends BaseStepMeta implements StepMetaInterface
             case CalculatorMetaFunction.CALC_LOAD_FILE_CONTENT_BINARY   :   // LOAD FILE CONTENT IN BLOB
                 defaultResultType = ValueMetaInterface.TYPE_BINARY;
                 break;
+            case CalculatorMetaFunction.CALC_ADD_TIME_TO_DATE   :   // ADD TIME TO A DATE
+                defaultResultType = ValueMetaInterface.TYPE_DATE;
+                break;
             default:
                 break;
             }

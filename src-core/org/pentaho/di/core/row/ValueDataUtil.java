@@ -636,6 +636,22 @@ public class ValueDataUtil
 
         throw new KettleValueException("The 'removeTimeFromDate' function only works with a date");
     }
+    public static Object addTimeToDate(ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB,ValueMetaInterface metaC, Object dataC) 
+    throws KettleValueException
+    {
+    	if(dataA==null) return null;
+        if (metaA.isDate())
+        {
+        	try{
+        		if(dataC==null)
+        			return Const.addTimeToDate(metaA.getDate(dataA), metaB.getString(dataB), null);
+        		else
+        			return Const.addTimeToDate(metaA.getDate(dataA), metaB.getString(dataB), metaC.getString(dataC));
+        	}catch(Exception e) {throw new KettleValueException(e);}
+        }
+
+        throw new KettleValueException("The 'addTimeToDate' function only works with a date");
+    }
     public static Object addDays(ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB) throws KettleValueException
     {
         if (metaA.isDate() && metaB.isInteger())

@@ -132,7 +132,7 @@ public class Calculator extends BaseStep implements StepInterface
                         throw new KettleStepException("Unable to find the second argument field '"+function.getFieldName()+" for calculation #"+(i+1));
                     }
                 }
-                
+                data.fieldIndexes[i].indexC=-1;
                 if (!Const.isEmpty(function.getFieldC())) 
                 {
                     data.fieldIndexes[i].indexC = data.calcRowMeta.indexOfValue(function.getFieldC());
@@ -447,6 +447,7 @@ public class Calculator extends BaseStep implements StepInterface
                     calcData[index] = ValueDataUtil.createChecksum(metaA, dataA,"SHA-1");
                     resultType=ValueMetaInterface.TYPE_STRING;
                 }
+                break;
                 case CalculatorMetaFunction.CALC_LEVENSHTEIN_DISTANCE  : // LEVENSHTEIN DISTANCE 
                 {
                     calcData[index] = ValueDataUtil.getLevenshtein_Distance(metaA, dataA,metaB, dataB);
@@ -563,6 +564,12 @@ public class Calculator extends BaseStep implements StepInterface
                 {
                     calcData[index] = ValueDataUtil.loadFileContentInBinary(metaA, dataA);
                     resultType=ValueMetaInterface.TYPE_BINARY; 
+                }
+                break;
+                case CalculatorMetaFunction.CALC_ADD_TIME_TO_DATE          : // Add time B to a date A
+                {
+                    calcData[index] = ValueDataUtil.addTimeToDate(metaA, dataA,metaB, dataB,metaC, dataC);
+                    resultType=ValueMetaInterface.TYPE_DATE; 
                 }
                 break;
                 default:

@@ -25,6 +25,7 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,6 +34,7 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -2054,5 +2056,32 @@ public class Const
 		}
 		return out.toString();
 	}	
-
+	 /**
+     * Add time to an input date
+     * @param input the date
+     * @param time the time to add (in string)
+     * @param DateFormat the time format
+     * @return date = input + time
+     */
+	public static Date addTimeToDate(Date input, String time,String DateFormat) throws Exception 
+	{
+		if(isEmpty(time)) return input;
+		if(input==null) return null;
+		String dateformatString=NVL(DateFormat,"HH:mm:ss");
+	    int t = decodeTime(time,dateformatString);
+	    Date d = new Date(input.getTime()+t);
+	    return d;
+	}
+	// Decodes a time value in specified date format and returns it as milliseconds since midnight.
+	public static int decodeTime (String s,String DateFormat) throws Exception 
+	{
+	   SimpleDateFormat f = new SimpleDateFormat(DateFormat);
+	   TimeZone utcTimeZone = TimeZone.getTimeZone("UTC");
+	   f.setTimeZone (utcTimeZone);
+	   f.setLenient (false);
+	   ParsePosition p = new ParsePosition(0);
+	   Date d = f.parse(s,p);
+	   if (d == null)  throw new Exception("Invalid time value " + DateFormat +": \"" + s + "\".");
+	   return (int)d.getTime(); 
+	 }
 }

@@ -407,8 +407,10 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
 		                	break;
 		                case JobEntryEvalTableContent.SUCCESS_CONDITION_ROWS_COUNT_SMALLER_EQUAL:
 		                	successOK=(rowsCount<=nrRowsLimit);
+		                	break;
 		                case JobEntryEvalTableContent.SUCCESS_CONDITION_ROWS_COUNT_GREATER:
 		                	successOK=(rowsCount>nrRowsLimit);
+		                	break;
 		                case JobEntryEvalTableContent.SUCCESS_CONDITION_ROWS_COUNT_GREATER_EQUAL:
 		                	successOK=(rowsCount>=nrRowsLimit);
 		                	break;
