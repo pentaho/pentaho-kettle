@@ -1344,7 +1344,7 @@ public class Repository
 
 	public synchronized long getNextJobEntryAttributeID() throws KettleException
 	{
-	    return getNextID(TABLE_R_JOBENTRY_ATTRIBUTE, quote(FIELD_JOBENTRY_ATTRIBUTE_ID_JOBENTRY_ATTRIBUTE));
+	    return getNextID(databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOBENTRY_ATTRIBUTE), quote(FIELD_JOBENTRY_ATTRIBUTE_ID_JOBENTRY_ATTRIBUTE));
 	}
 	
 	public synchronized long getNextID(String tableName, String fieldName) throws KettleException
@@ -4026,6 +4026,7 @@ public class Repository
 		RowMetaInterface table;
 		String sql;
 		String tablename;
+		String schemaTable;
 		String indexname;
 		String keyfield[];
 		String user[], pass[], code[], desc[], prof[];
@@ -4044,14 +4045,15 @@ public class Repository
         // Log the operations we do in the repository.
         //
         table = new RowMeta();
-        tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_REPOSITORY_LOG);
-        if (monitor!=null) monitor.subTask("Checking table "+tablename);
+        tablename = TABLE_R_REPOSITORY_LOG;
+        schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
+        if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
         table.addValueMeta(new ValueMeta(FIELD_REPOSITORY_LOG_ID_REPOSITORY_LOG, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
         table.addValueMeta(new ValueMeta(FIELD_REPOSITORY_LOG_REP_VERSION,    ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
         table.addValueMeta(new ValueMeta(FIELD_REPOSITORY_LOG_LOG_DATE,       ValueMetaInterface.TYPE_DATE));
         table.addValueMeta(new ValueMeta(FIELD_REPOSITORY_LOG_LOG_USER,       ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
         table.addValueMeta(new ValueMeta(FIELD_REPOSITORY_LOG_OPERATION_DESC, ValueMetaInterface.TYPE_STRING, REP_STRING_LENGTH, 0));
-        sql = database.getDDL(tablename, table, null, false, FIELD_REPOSITORY_LOG_ID_REPOSITORY_LOG, false);
+        sql = database.getDDL(schemaTable, table, null, false, FIELD_REPOSITORY_LOG_ID_REPOSITORY_LOG, false);
         
         if (sql != null && sql.length() > 0)
         {
@@ -4059,16 +4061,16 @@ public class Repository
             {
                 if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
                 database.execStatements(sql);
-                if (log.isDetailed()) log.logDetailed(toString(), "Created/altered table " + tablename);
+                if (log.isDetailed()) log.logDetailed(toString(), "Created/altered table " + schemaTable);
             }
             catch (KettleException dbe)
             {
-                throw new KettleException("Unable to create or modify table " + tablename, dbe);
+                throw new KettleException("Unable to create or modify table " + schemaTable, dbe);
             }
         }
         else
         {
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
         }
 
         
@@ -4080,14 +4082,15 @@ public class Repository
         // Let's start with the version table
         //
         table = new RowMeta();
-        tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_VERSION);
-        if (monitor!=null) monitor.subTask("Checking table "+tablename);
+        tablename = TABLE_R_VERSION;
+        schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
+        if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
         table.addValueMeta(new ValueMeta(FIELD_VERSION_ID_VERSION,       ValueMetaInterface.TYPE_INTEGER, KEY, 0));
         table.addValueMeta(new ValueMeta(FIELD_VERSION_MAJOR_VERSION,    ValueMetaInterface.TYPE_INTEGER, 3, 0));
         table.addValueMeta(new ValueMeta(FIELD_VERSION_MINOR_VERSION,    ValueMetaInterface.TYPE_INTEGER, 3, 0));
         table.addValueMeta(new ValueMeta(FIELD_VERSION_UPGRADE_DATE,     ValueMetaInterface.TYPE_DATE, 0, 0));
         table.addValueMeta(new ValueMeta(FIELD_VERSION_IS_UPGRADE,       ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
-        sql = database.getDDL(tablename, table, null, false, FIELD_VERSION_ID_VERSION, false);
+        sql = database.getDDL(schemaTable, table, null, false, FIELD_VERSION_ID_VERSION, false);
 
         if (sql != null && sql.length() > 0)
         {
@@ -4095,16 +4098,16 @@ public class Repository
             {
                 if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
                 database.execStatements(sql);
-                if (log.isDetailed()) log.logDetailed(toString(), "Created/altered table " + tablename);
+                if (log.isDetailed()) log.logDetailed(toString(), "Created/altered table " + schemaTable);
             }
             catch (KettleException dbe)
             {
-                throw new KettleException("Unable to create or modify table " + tablename, dbe);
+                throw new KettleException("Unable to create or modify table " + schemaTable, dbe);
             }
         }
         else
         {
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
         }
 
         // Insert an extra record in R_VERSION every time we pass here...
@@ -4112,7 +4115,7 @@ public class Repository
         try
         {
             Object[] data = new Object[] {
-                    Long.valueOf(getNextID(tablename, FIELD_VERSION_ID_VERSION)),
+                    Long.valueOf(getNextID(schemaTable, FIELD_VERSION_ID_VERSION)),
                     Long.valueOf(REQUIRED_MAJOR_VERSION),
                     Long.valueOf(REQUIRED_MINOR_VERSION),
                     new Date(),
@@ -4122,7 +4125,7 @@ public class Repository
         }
         catch(KettleException e)
         {
-            throw new KettleException("Unable to insert new version log record into "+tablename, e);
+            throw new KettleException("Unable to insert new version log record into "+schemaTable, e);
         }
         
 		//////////////////////////////////////////////////////////////////////////////////
@@ -4132,12 +4135,13 @@ public class Repository
 		//
 		boolean ok_database_type = true;
 		table = new RowMeta();
-		tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DATABASE_TYPE);
-		if (monitor!=null) monitor.subTask("Checking table "+tablename);
+		tablename = TABLE_R_DATABASE_TYPE;
+		schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
+		if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
 		table.addValueMeta(new ValueMeta(FIELD_DATABASE_TYPE_ID_DATABASE_TYPE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_DATABASE_TYPE_CODE,             ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
 		table.addValueMeta(new ValueMeta(FIELD_DATABASE_TYPE_DESCRIPTION,      ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-		sql = database.getDDL(tablename, table, null, false, FIELD_DATABASE_TYPE_ID_DATABASE_TYPE, false);
+		sql = database.getDDL(schemaTable, table, null, false, FIELD_DATABASE_TYPE_ID_DATABASE_TYPE, false);
 
 		if (sql != null && sql.length() > 0)
 		{
@@ -4145,16 +4149,16 @@ public class Repository
 			{
                 if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 				database.execStatements(sql);
-                if (log.isDetailed()) log.logDetailed(toString(), "Created/altered table " + tablename);
+                if (log.isDetailed()) log.logDetailed(toString(), "Created/altered table " + schemaTable);
 			}
 			catch (KettleException dbe)
 			{
-				throw new KettleException("Unable to create or modify table " + tablename, dbe);
+				throw new KettleException("Unable to create or modify table " + schemaTable, dbe);
 			}
 		}
 		else
 		{
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
 		}
 
 		if (ok_database_type)
@@ -4165,13 +4169,12 @@ public class Repository
 			code = DatabaseMeta.getDBTypeDescList();
 			desc = DatabaseMeta.getDBTypeDescLongList();
 
-			database.prepareInsert(table, tablename);
+			database.prepareInsert(table, null, tablename);
 
 			for (int i = 1; i < code.length; i++)
 			{
 				RowMetaAndData lookup = null;
-                if (upgrade) lookup = database.getOneRow("SELECT "+quote(FIELD_DATABASE_TYPE_ID_DATABASE_TYPE)+" FROM " + tablename + " WHERE " 
-                		+ quote(FIELD_DATABASE_TYPE_CODE) +" = '" + code[i] + "'");
+                if (upgrade) lookup = database.getOneRow("SELECT "+quote(FIELD_DATABASE_TYPE_ID_DATABASE_TYPE)+" FROM " + schemaTable + " WHERE " + quote(FIELD_DATABASE_TYPE_CODE) +" = '" + code[i] + "'");
 				if (lookup == null)
 				{
 					long nextid = getNextDatabaseTypeID();
@@ -4185,11 +4188,11 @@ public class Repository
 			try
 			{
 				database.closeInsert();
-                if (log.isDetailed()) log.logDetailed(toString(), "Populated table " + tablename);
+                if (log.isDetailed()) log.logDetailed(toString(), "Populated table " + schemaTable);
 			}
 			catch (KettleException dbe)
 			{
-                throw new KettleException("Unable to close insert after populating table " + tablename, dbe);
+                throw new KettleException("Unable to close insert after populating table " + schemaTable, dbe);
 			}
 		}
 		if (monitor!=null) monitor.worked(1);
@@ -4202,22 +4205,23 @@ public class Repository
 		// 
 		boolean ok_database_contype = true;
 		table = new RowMeta();
-		tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DATABASE_CONTYPE);
-		if (monitor!=null) monitor.subTask("Checking table "+tablename);
+		tablename = TABLE_R_DATABASE_CONTYPE;
+		schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
+		if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
 		table.addValueMeta(new ValueMeta(FIELD_DATABASE_CONTYPE_ID_DATABASE_CONTYPE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_DATABASE_CONTYPE_CODE, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
 		table.addValueMeta(new ValueMeta(FIELD_DATABASE_CONTYPE_DESCRIPTION, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-		sql = database.getDDL(tablename, table, null, false, FIELD_DATABASE_CONTYPE_ID_DATABASE_CONTYPE, false);
+		sql = database.getDDL(schemaTable, table, null, false, FIELD_DATABASE_CONTYPE_ID_DATABASE_CONTYPE, false);
 
 		if (sql != null && sql.length() > 0)
 		{
             if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
-            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
 		}
 		else
 		{
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
 		}
 
 		if (ok_database_contype)
@@ -4228,12 +4232,12 @@ public class Repository
 			code = DatabaseMeta.dbAccessTypeCode;
 			desc = DatabaseMeta.dbAccessTypeDesc;
 
-			database.prepareInsert(table, tablename);
+			database.prepareInsert(table, null, tablename);
 
 			for (int i = 0; i < code.length; i++)
 			{
                 RowMetaAndData lookup = null;
-                if (upgrade) lookup = database.getOneRow("SELECT "+quote(FIELD_DATABASE_CONTYPE_ID_DATABASE_CONTYPE)+" FROM " + tablename + " WHERE " 
+                if (upgrade) lookup = database.getOneRow("SELECT "+quote(FIELD_DATABASE_CONTYPE_ID_DATABASE_CONTYPE)+" FROM " + schemaTable + " WHERE " 
                 		+ quote(FIELD_DATABASE_CONTYPE_CODE) + " = '" + code[i] + "'");
 				if (lookup == null)
 				{
@@ -4252,11 +4256,11 @@ public class Repository
             try
             {
                 database.closeInsert();
-                if (log.isDetailed()) log.logDetailed(toString(), "Populated table " + tablename);
+                if (log.isDetailed()) log.logDetailed(toString(), "Populated table " + schemaTable);
             }
             catch(KettleException dbe)
             {
-                throw new KettleException("Unable to close insert after populating table " + tablename, dbe);
+                throw new KettleException("Unable to close insert after populating table " + schemaTable, dbe);
             }
 		}
 		if (monitor!=null) monitor.worked(1);
@@ -4267,25 +4271,26 @@ public class Repository
 		//
 		// Create table...
 		table = new RowMeta();
-		tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_NOTE);
-		if (monitor!=null) monitor.subTask("Checking table "+tablename);
+		tablename = TABLE_R_NOTE;
+		schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
+		if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
 		table.addValueMeta(new ValueMeta(FIELD_NOTE_ID_NOTE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_NOTE_VALUE_STR, ValueMetaInterface.TYPE_STRING, REP_STRING_LENGTH, 0));
 		table.addValueMeta(new ValueMeta(FIELD_NOTE_GUI_LOCATION_X, ValueMetaInterface.TYPE_INTEGER, 6, 0));
 		table.addValueMeta(new ValueMeta(FIELD_NOTE_GUI_LOCATION_Y, ValueMetaInterface.TYPE_INTEGER, 6, 0));
 		table.addValueMeta(new ValueMeta(FIELD_NOTE_GUI_LOCATION_WIDTH, ValueMetaInterface.TYPE_INTEGER, 6, 0));
 		table.addValueMeta(new ValueMeta(FIELD_NOTE_GUI_LOCATION_HEIGHT, ValueMetaInterface.TYPE_INTEGER, 6, 0));
-		sql = database.getDDL(tablename, table, null, false, FIELD_NOTE_ID_NOTE, false);
+		sql = database.getDDL(schemaTable, table, null, false, FIELD_NOTE_ID_NOTE, false);
         
 		if (sql != null && sql.length() > 0)
 		{
             if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
-            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
 		}
 		else
 		{
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
 		}
 		if (monitor!=null) monitor.worked(1);
 
@@ -4295,8 +4300,9 @@ public class Repository
 		//
 		// Create table...
 		table = new RowMeta();
-		tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DATABASE);
-		if (monitor!=null) monitor.subTask("Checking table "+tablename);
+		tablename = TABLE_R_DATABASE;
+		schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
+		if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
 		table.addValueMeta(new ValueMeta(FIELD_DATABASE_ID_DATABASE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_DATABASE_NAME, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
 		table.addValueMeta(new ValueMeta(FIELD_DATABASE_ID_DATABASE_TYPE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
@@ -4309,17 +4315,17 @@ public class Repository
 		table.addValueMeta(new ValueMeta(FIELD_DATABASE_SERVERNAME, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
 		table.addValueMeta(new ValueMeta(FIELD_DATABASE_DATA_TBS, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
 		table.addValueMeta(new ValueMeta(FIELD_DATABASE_INDEX_TBS, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-		sql = database.getDDL(tablename, table, null, false, FIELD_DATABASE_ID_DATABASE, false);
+		sql = database.getDDL(schemaTable, table, null, false, FIELD_DATABASE_ID_DATABASE, false);
         
 		if (sql != null && sql.length() > 0)
 		{
             if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
-            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
 		}
 		else
 		{
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
 		}
 		if (monitor!=null) monitor.worked(1);
 
@@ -4329,30 +4335,31 @@ public class Repository
         //
         // Create table...
         table = new RowMeta();
-        tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DATABASE_ATTRIBUTE);
-        if (monitor!=null) monitor.subTask("Checking table "+tablename);
+        tablename = TABLE_R_DATABASE_ATTRIBUTE;
+        schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
+        if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
         table.addValueMeta(new ValueMeta(FIELD_DATABASE_ATTRIBUTE_ID_DATABASE_ATTRIBUTE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
         table.addValueMeta(new ValueMeta(FIELD_DATABASE_ATTRIBUTE_ID_DATABASE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
         table.addValueMeta(new ValueMeta(FIELD_DATABASE_ATTRIBUTE_CODE, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
         table.addValueMeta(new ValueMeta(FIELD_DATABASE_ATTRIBUTE_VALUE_STR, ValueMetaInterface.TYPE_STRING, REP_STRING_LENGTH, 0));
-        sql = database.getDDL(tablename, table, null, false, FIELD_DATABASE_ATTRIBUTE_ID_DATABASE_ATTRIBUTE, false);
+        sql = database.getDDL(schemaTable, table, null, false, FIELD_DATABASE_ATTRIBUTE_ID_DATABASE_ATTRIBUTE, false);
         
         if (sql != null && sql.length() > 0)
         {
             if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
             database.execStatements(sql);
-            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
             
             try
             {
-                indexname = "IDX_" + tablename.substring(2) + "_AK";
+                indexname = "IDX_" + schemaTable.substring(2) + "_AK";
                 keyfield = new String[] { FIELD_DATABASE_ATTRIBUTE_ID_DATABASE, FIELD_DATABASE_ATTRIBUTE_CODE, };
-                if (!database.checkIndexExists(tablename, keyfield))
+                if (!database.checkIndexExists(schemaTable, keyfield))
                 {
-                    sql = database.getCreateIndexStatement(tablename, indexname, keyfield, false, true, false, false);
+                    sql = database.getCreateIndexStatement(schemaTable, indexname, keyfield, false, true, false, false);
                     if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
                     database.execStatements(sql);
-                    if (log.isDetailed()) log.logDetailed(toString(), "Created lookup index " + indexname + " on " + tablename);
+                    if (log.isDetailed()) log.logDetailed(toString(), "Created lookup index " + indexname + " on " + schemaTable);
                 }
             }
             catch(KettleException kdbe)
@@ -4363,7 +4370,7 @@ public class Repository
         }
         else
         {
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
         }
         if (monitor!=null) monitor.worked(1);
 
@@ -4373,29 +4380,30 @@ public class Repository
 		//
 		// Create table...
 		table = new RowMeta();
-		tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DIRECTORY);
-		if (monitor!=null) monitor.subTask("Checking table "+tablename);
+		tablename = TABLE_R_DIRECTORY;
+		schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
+		if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
 		table.addValueMeta(new ValueMeta(FIELD_DIRECTORY_ID_DIRECTORY,        ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_DIRECTORY_ID_DIRECTORY_PARENT, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_DIRECTORY_DIRECTORY_NAME,      ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-		sql = database.getDDL(tablename, table, null, false, FIELD_DIRECTORY_ID_DIRECTORY, false);
+		sql = database.getDDL(schemaTable, table, null, false, FIELD_DIRECTORY_ID_DIRECTORY, false);
 
 		if (sql != null && sql.length() > 0)
 		{
             if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
-            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
 			
 			try
 			{
-				indexname = "IDX_" + tablename.substring(2) + "_AK";
+				indexname = "IDX_" + schemaTable.substring(2) + "_AK";
 				keyfield = new String[] { FIELD_DIRECTORY_ID_DIRECTORY_PARENT, FIELD_DIRECTORY_DIRECTORY_NAME };
-				if (!database.checkIndexExists(tablename, keyfield))
+				if (!database.checkIndexExists(schemaTable, keyfield))
 				{
-					sql = database.getCreateIndexStatement(tablename, indexname, keyfield, false, true, false, false);
+					sql = database.getCreateIndexStatement(schemaTable, indexname, keyfield, false, true, false, false);
                     if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 					database.execStatements(sql);
-                    if (log.isDetailed()) log.logDetailed(toString(), "Created lookup index " + indexname + " on " + tablename);
+                    if (log.isDetailed()) log.logDetailed(toString(), "Created lookup index " + indexname + " on " + schemaTable);
 				}
 			}
 			catch(KettleException kdbe)
@@ -4406,7 +4414,7 @@ public class Repository
 		}
 		else
 		{
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
 		}
 		if (monitor!=null) monitor.worked(1);
 
@@ -4416,8 +4424,9 @@ public class Repository
 		//
 		// Create table...
 		table = new RowMeta();
-		tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANSFORMATION);
-		if (monitor!=null) monitor.subTask("Checking table "+tablename);
+		tablename = TABLE_R_TRANSFORMATION;
+		schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
+		if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
 		table.addValueMeta(new ValueMeta(FIELD_TRANSFORMATION_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_TRANSFORMATION_ID_DIRECTORY, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_TRANSFORMATION_NAME, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
@@ -4444,21 +4453,21 @@ public class Repository
 		table.addValueMeta(new ValueMeta(FIELD_TRANSFORMATION_MODIFIED_USER, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
 		table.addValueMeta(new ValueMeta(FIELD_TRANSFORMATION_MODIFIED_DATE, ValueMetaInterface.TYPE_DATE, 20, 0));
 		table.addValueMeta(new ValueMeta(FIELD_TRANSFORMATION_SIZE_ROWSET, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		sql = database.getDDL(tablename, table, null, false, FIELD_TRANSFORMATION_ID_TRANSFORMATION, false);
+		sql = database.getDDL(schemaTable, table, null, false, FIELD_TRANSFORMATION_ID_TRANSFORMATION, false);
 
         if (sql != null && sql.length() > 0)
 		{
             if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
-            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
 		}
 		else
 		{
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
 		}
 
 		// In case of an update, the added column R_TRANSFORMATION.ID_DIRECTORY == NULL!!!
-		database.execStatement("UPDATE " + tablename + " SET "+quote(FIELD_TRANSFORMATION_ID_DIRECTORY)+"=0 WHERE "+quote(FIELD_TRANSFORMATION_ID_DIRECTORY)+" IS NULL");
+		database.execStatement("UPDATE " + schemaTable + " SET "+quote(FIELD_TRANSFORMATION_ID_DIRECTORY)+"=0 WHERE "+quote(FIELD_TRANSFORMATION_ID_DIRECTORY)+" IS NULL");
 
 		if (monitor!=null) monitor.worked(1);
 
@@ -4468,34 +4477,35 @@ public class Repository
 		//
 		// Create table...
 		table = new RowMeta();
-		tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_ATTRIBUTE);
-		if (monitor!=null) monitor.subTask("Checking table "+tablename);
+		tablename = TABLE_R_TRANS_ATTRIBUTE;
+		schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
+		if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
 		table.addValueMeta(new ValueMeta(FIELD_TRANS_ATTRIBUTE_ID_TRANS_ATTRIBUTE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_TRANS_ATTRIBUTE_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_TRANS_ATTRIBUTE_NR, ValueMetaInterface.TYPE_INTEGER, 6, 0));
 		table.addValueMeta(new ValueMeta(FIELD_TRANS_ATTRIBUTE_CODE, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
 		table.addValueMeta(new ValueMeta(FIELD_TRANS_ATTRIBUTE_VALUE_NUM, ValueMetaInterface.TYPE_INTEGER, 18, 0));
 		table.addValueMeta(new ValueMeta(FIELD_TRANS_ATTRIBUTE_VALUE_STR, ValueMetaInterface.TYPE_STRING, REP_STRING_LENGTH, 0));
-		sql = database.getDDL(tablename, table, null, false, FIELD_TRANS_ATTRIBUTE_ID_TRANS_ATTRIBUTE, false);
+		sql = database.getDDL(schemaTable, table, null, false, FIELD_TRANS_ATTRIBUTE_ID_TRANS_ATTRIBUTE, false);
 
 		if (sql != null && sql.length() > 0)
 		{
             if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
-            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
 
 			try
 			{
 				indexname = "IDX_TRANS_ATTRIBUTE_LOOKUP";
 				keyfield = new String[] { FIELD_TRANS_ATTRIBUTE_ID_TRANSFORMATION, FIELD_TRANS_ATTRIBUTE_CODE, FIELD_TRANS_ATTRIBUTE_NR };
 
-				if (!database.checkIndexExists(tablename, keyfield))
+				if (!database.checkIndexExists(schemaTable, keyfield))
 				{
-					sql = database.getCreateIndexStatement(tablename, indexname, keyfield, false, true, false, false);
+					sql = database.getCreateIndexStatement(schemaTable, indexname, keyfield, false, true, false, false);
 	
                     if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 					database.execStatements(sql);
-                    if (log.isDetailed()) log.logDetailed(toString(), "Created lookup index " + indexname + " on " + tablename);
+                    if (log.isDetailed()) log.logDetailed(toString(), "Created lookup index " + indexname + " on " + schemaTable);
 				}
 			}
 			catch(KettleException kdbe)
@@ -4505,7 +4515,7 @@ public class Repository
 		}
 		else
 		{
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
 		}
 		if (monitor!=null) monitor.worked(1);
 
@@ -4515,24 +4525,25 @@ public class Repository
 		//
 		// Create table...
 		table = new RowMeta();
-		tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DEPENDENCY);
-		if (monitor!=null) monitor.subTask("Checking table "+tablename);
+		tablename = TABLE_R_DEPENDENCY;
+		schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
+		if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
 		table.addValueMeta(new ValueMeta(FIELD_DEPENDENCY_ID_DEPENDENCY, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_DEPENDENCY_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_DEPENDENCY_ID_DATABASE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_DEPENDENCY_TABLE_NAME, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
 		table.addValueMeta(new ValueMeta(FIELD_DEPENDENCY_FIELD_NAME, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-		sql = database.getDDL(tablename, table, null, false, FIELD_DEPENDENCY_ID_DEPENDENCY, false);
+		sql = database.getDDL(schemaTable, table, null, false, FIELD_DEPENDENCY_ID_DEPENDENCY, false);
 
 		if (sql != null && sql.length() > 0)
 		{
             if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
-            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
 		}
 		else
 		{
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
 		}
 		if (monitor!=null) monitor.worked(1);
 
@@ -4542,23 +4553,24 @@ public class Repository
         //
         // Create table...
         table = new RowMeta();
-        tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_PARTITION_SCHEMA);
-        if (monitor!=null) monitor.subTask("Checking table "+tablename);
+        tablename = TABLE_R_PARTITION_SCHEMA;
+        schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
+        if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
         table.addValueMeta(new ValueMeta(FIELD_PARTITION_SCHEMA_ID_PARTITION_SCHEMA, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
         table.addValueMeta(new ValueMeta(FIELD_PARTITION_SCHEMA_NAME, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
         table.addValueMeta(new ValueMeta(FIELD_PARTITION_SCHEMA_DYNAMIC_DEFINITION, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
         table.addValueMeta(new ValueMeta(FIELD_PARTITION_SCHEMA_PARTITIONS_PER_SLAVE, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-        sql = database.getDDL(tablename, table, null, false, FIELD_PARTITION_SCHEMA_ID_PARTITION_SCHEMA, false);
+        sql = database.getDDL(schemaTable, table, null, false, FIELD_PARTITION_SCHEMA_ID_PARTITION_SCHEMA, false);
 
         if (sql != null && sql.length() > 0)
         {
             if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
             database.execStatements(sql);
-            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
         }
         else
         {
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
         }
         if (monitor!=null) monitor.worked(1);
         
@@ -4568,22 +4580,23 @@ public class Repository
         //
         // Create table...
         table = new RowMeta();
-        tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_PARTITION);
-        if (monitor!=null) monitor.subTask("Checking table "+tablename);
+        tablename = TABLE_R_PARTITION;
+        schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
+        if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
         table.addValueMeta(new ValueMeta(FIELD_PARTITION_ID_PARTITION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
         table.addValueMeta(new ValueMeta(FIELD_PARTITION_ID_PARTITION_SCHEMA, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
         table.addValueMeta(new ValueMeta(FIELD_PARTITION_PARTITION_ID, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-        sql = database.getDDL(tablename, table, null, false, FIELD_PARTITION_ID_PARTITION, false);
+        sql = database.getDDL(schemaTable, table, null, false, FIELD_PARTITION_ID_PARTITION, false);
 
         if (sql != null && sql.length() > 0)
         {
             if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
             database.execStatements(sql);
-            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
         }
         else
         {
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
         }
         if (monitor!=null) monitor.worked(1);
 
@@ -4593,22 +4606,23 @@ public class Repository
         //
         // Create table...
         table = new RowMeta();
-        tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_PARTITION_SCHEMA);
-        if (monitor!=null) monitor.subTask("Checking table "+tablename);
+        tablename = TABLE_R_TRANS_PARTITION_SCHEMA;
+        schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
+        if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
         table.addValueMeta(new ValueMeta(FIELD_TRANS_PARTITION_SCHEMA_ID_TRANS_PARTITION_SCHEMA, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
         table.addValueMeta(new ValueMeta(FIELD_TRANS_PARTITION_SCHEMA_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
         table.addValueMeta(new ValueMeta(FIELD_TRANS_PARTITION_SCHEMA_ID_PARTITION_SCHEMA, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-        sql = database.getDDL(tablename, table, null, false, FIELD_TRANS_PARTITION_SCHEMA_ID_TRANS_PARTITION_SCHEMA, false);
+        sql = database.getDDL(schemaTable, table, null, false, FIELD_TRANS_PARTITION_SCHEMA_ID_TRANS_PARTITION_SCHEMA, false);
 
         if (sql != null && sql.length() > 0)
         {
             if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
             database.execStatements(sql);
-            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
         }
         else
         {
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
         }
         if (monitor!=null) monitor.worked(1);
 
@@ -4619,8 +4633,9 @@ public class Repository
         //
         // Create table...
         table = new RowMeta();
-        tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_CLUSTER);
-        if (monitor!=null) monitor.subTask("Checking table "+tablename);
+        tablename = TABLE_R_CLUSTER;
+        schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
+        if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
         table.addValueMeta(new ValueMeta(FIELD_CLUSTER_ID_CLUSTER, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
         table.addValueMeta(new ValueMeta(FIELD_CLUSTER_NAME, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
         table.addValueMeta(new ValueMeta(FIELD_CLUSTER_BASE_PORT, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
@@ -4628,17 +4643,17 @@ public class Repository
         table.addValueMeta(new ValueMeta(FIELD_CLUSTER_SOCKETS_FLUSH_INTERVAL, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
         table.addValueMeta(new ValueMeta(FIELD_CLUSTER_SOCKETS_COMPRESSED, ValueMetaInterface.TYPE_BOOLEAN, 0, 0));
         table.addValueMeta(new ValueMeta(FIELD_CLUSTER_DYNAMIC, ValueMetaInterface.TYPE_BOOLEAN, 0, 0));
-        sql = database.getDDL(tablename, table, null, false, FIELD_CLUSTER_ID_CLUSTER, false);
+        sql = database.getDDL(schemaTable, table, null, false, FIELD_CLUSTER_ID_CLUSTER, false);
 
         if (sql != null && sql.length() > 0)
         {
             if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
             database.execStatements(sql);
-            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
         }
         else
         {
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
         }
         if (monitor!=null) monitor.worked(1);
         
@@ -4648,8 +4663,9 @@ public class Repository
         //
         // Create table...
         table = new RowMeta();
-        tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_SLAVE);
-        if (monitor!=null) monitor.subTask("Checking table "+tablename);
+        tablename = TABLE_R_SLAVE;
+        schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
+        if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
         table.addValueMeta(new ValueMeta(FIELD_SLAVE_ID_SLAVE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
         table.addValueMeta(new ValueMeta(FIELD_SLAVE_NAME, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
         table.addValueMeta(new ValueMeta(FIELD_SLAVE_HOST_NAME, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
@@ -4660,17 +4676,17 @@ public class Repository
         table.addValueMeta(new ValueMeta(FIELD_SLAVE_PROXY_PORT, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
         table.addValueMeta(new ValueMeta(FIELD_SLAVE_NON_PROXY_HOSTS, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
         table.addValueMeta(new ValueMeta(FIELD_SLAVE_MASTER, ValueMetaInterface.TYPE_BOOLEAN));
-        sql = database.getDDL(tablename, table, null, false, FIELD_SLAVE_ID_SLAVE, false);
+        sql = database.getDDL(schemaTable, table, null, false, FIELD_SLAVE_ID_SLAVE, false);
 
         if (sql != null && sql.length() > 0)
         {
             if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
             database.execStatements(sql);
-            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
         }
         else
         {
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
         }
         if (monitor!=null) monitor.worked(1);
 
@@ -4680,22 +4696,23 @@ public class Repository
         //
         // Create table...
         table = new RowMeta();
-        tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_CLUSTER_SLAVE);
-        if (monitor!=null) monitor.subTask("Checking table "+tablename);
+        tablename = TABLE_R_CLUSTER_SLAVE;
+        schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
+        if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
         table.addValueMeta(new ValueMeta(FIELD_CLUSTER_SLAVE_ID_CLUSTER_SLAVE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
         table.addValueMeta(new ValueMeta(FIELD_CLUSTER_SLAVE_ID_CLUSTER, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
         table.addValueMeta(new ValueMeta(FIELD_CLUSTER_SLAVE_ID_SLAVE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-        sql = database.getDDL(tablename, table, null, false, FIELD_CLUSTER_SLAVE_ID_CLUSTER_SLAVE, false);
+        sql = database.getDDL(schemaTable, table, null, false, FIELD_CLUSTER_SLAVE_ID_CLUSTER_SLAVE, false);
 
         if (sql != null && sql.length() > 0)
         {
             if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
             database.execStatements(sql);
-            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
         }
         else
         {
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
         }
         if (monitor!=null) monitor.worked(1);
 
@@ -4705,22 +4722,23 @@ public class Repository
         //
         // Create table...
         table = new RowMeta();
-        tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_SLAVE);
-        if (monitor!=null) monitor.subTask("Checking table "+tablename);
+        tablename = TABLE_R_TRANS_SLAVE;
+        schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
+        if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
         table.addValueMeta(new ValueMeta(FIELD_TRANS_SLAVE_ID_TRANS_SLAVE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
         table.addValueMeta(new ValueMeta(FIELD_TRANS_SLAVE_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
         table.addValueMeta(new ValueMeta(FIELD_TRANS_SLAVE_ID_SLAVE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-        sql = database.getDDL(tablename, table, null, false, FIELD_TRANS_SLAVE_ID_TRANS_SLAVE, false);
+        sql = database.getDDL(schemaTable, table, null, false, FIELD_TRANS_SLAVE_ID_TRANS_SLAVE, false);
 
         if (sql != null && sql.length() > 0)
         {
             if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
             database.execStatements(sql);
-            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
         }
         else
         {
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
         }
         if (monitor!=null) monitor.worked(1);
 
@@ -4731,22 +4749,23 @@ public class Repository
         //
         // Create table...
         table = new RowMeta();
-        tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_CLUSTER);
-        if (monitor!=null) monitor.subTask("Checking table "+tablename);
+        tablename = TABLE_R_TRANS_CLUSTER;
+        schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
+        if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
         table.addValueMeta(new ValueMeta(FIELD_TRANS_CLUSTER_ID_TRANS_CLUSTER, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
         table.addValueMeta(new ValueMeta(FIELD_TRANS_CLUSTER_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
         table.addValueMeta(new ValueMeta(FIELD_TRANS_CLUSTER_ID_CLUSTER, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-        sql = database.getDDL(tablename, table, null, false, FIELD_TRANS_CLUSTER_ID_TRANS_CLUSTER, false);
+        sql = database.getDDL(schemaTable, table, null, false, FIELD_TRANS_CLUSTER_ID_TRANS_CLUSTER, false);
 
         if (sql != null && sql.length() > 0)
         {
             if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
             database.execStatements(sql);
-            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
         }
         else
         {
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
         }
         if (monitor!=null) monitor.worked(1);
         
@@ -4756,22 +4775,23 @@ public class Repository
         //
         // Create table...
         table = new RowMeta();
-        tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_SLAVE);
-        if (monitor!=null) monitor.subTask("Checking table "+tablename);
+        tablename = TABLE_R_TRANS_SLAVE;
+        schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
+        if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
         table.addValueMeta(new ValueMeta(FIELD_TRANS_SLAVE_ID_TRANS_SLAVE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
         table.addValueMeta(new ValueMeta(FIELD_TRANS_SLAVE_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
         table.addValueMeta(new ValueMeta(FIELD_TRANS_SLAVE_ID_SLAVE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-        sql = database.getDDL(tablename, table, null, false, FIELD_TRANS_SLAVE_ID_TRANS_SLAVE, false);
+        sql = database.getDDL(schemaTable, table, null, false, FIELD_TRANS_SLAVE_ID_TRANS_SLAVE, false);
 
         if (sql != null && sql.length() > 0)
         {
             if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
             database.execStatements(sql);
-            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
         }
         else
         {
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
         }
         if (monitor!=null) monitor.worked(1);
 
@@ -4780,24 +4800,25 @@ public class Repository
 		//
 		// Create table...
 		table = new RowMeta();
-		tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_HOP);
-		if (monitor!=null) monitor.subTask("Checking table "+tablename);
+		tablename = TABLE_R_TRANS_HOP;
+		schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
+		if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
 		table.addValueMeta(new ValueMeta(FIELD_TRANS_HOP_ID_TRANS_HOP, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_TRANS_HOP_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_TRANS_HOP_ID_STEP_FROM, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_TRANS_HOP_ID_STEP_TO, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_TRANS_HOP_ENABLED, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
-		sql = database.getDDL(tablename, table, null, false, FIELD_TRANS_HOP_ID_TRANS_HOP, false);
+		sql = database.getDDL(schemaTable, table, null, false, FIELD_TRANS_HOP_ID_TRANS_HOP, false);
 
 		if (sql != null && sql.length() > 0)
 		{
             if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
-            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
 		}
 		else
 		{
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
 		}
 		if (monitor!=null) monitor.worked(1);
 
@@ -4805,22 +4826,23 @@ public class Repository
 		// R_TRANS_STEP_CONDITION
 		//
 		table = new RowMeta();
-		tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_STEP_CONDITION);
-		if (monitor!=null) monitor.subTask("Checking table "+tablename);
+		tablename = TABLE_R_TRANS_STEP_CONDITION;
+		schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
+		if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
 		table.addValueMeta(new ValueMeta(FIELD_TRANS_STEP_CONDITION_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_TRANS_STEP_CONDITION_ID_STEP, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_TRANS_STEP_CONDITION_ID_CONDITION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		sql = database.getDDL(tablename, table, null, false, null, false);
+		sql = database.getDDL(schemaTable, table, null, false, null, false);
 
 		if (sql != null && sql.length() > 0) // Doesn't exists: create the table...
 		{
             if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
-            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
 		}
 		else
 		{
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
 		}
 		if (monitor!=null) monitor.worked(1);
 
@@ -4828,8 +4850,9 @@ public class Repository
 		// R_CONDITION
 		//
 		table = new RowMeta();
-		tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_CONDITION);
-		if (monitor!=null) monitor.subTask("Checking table "+tablename);
+		tablename = TABLE_R_CONDITION;
+		schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
+		if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
 		table.addValueMeta(new ValueMeta(FIELD_CONDITION_ID_CONDITION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_CONDITION_ID_CONDITION_PARENT, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_CONDITION_NEGATED, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
@@ -4838,42 +4861,43 @@ public class Repository
 		table.addValueMeta(new ValueMeta(FIELD_CONDITION_CONDITION_FUNCTION, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
 		table.addValueMeta(new ValueMeta(FIELD_CONDITION_RIGHT_NAME, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
 		table.addValueMeta(new ValueMeta(FIELD_CONDITION_ID_VALUE_RIGHT, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		sql = database.getDDL(tablename, table, null, false, FIELD_CONDITION_ID_CONDITION, false);
+		sql = database.getDDL(schemaTable, table, null, false, FIELD_CONDITION_ID_CONDITION, false);
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
 		{
             if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
-            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
 		}
 		else
 		{
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
 		}
 		if (monitor!=null) monitor.worked(1);
 
 		///////////////////////////////////////////////////////////////////////////////
 		// R_VALUE
 		//
-		tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_VALUE);
-		if (monitor!=null) monitor.subTask("Checking table "+tablename);
+		tablename = TABLE_R_VALUE;
+		schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
+		if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
 		table = new RowMeta();
 		table.addValueMeta(new ValueMeta(FIELD_VALUE_ID_VALUE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_VALUE_NAME, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
 		table.addValueMeta(new ValueMeta(FIELD_VALUE_VALUE_TYPE, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
 		table.addValueMeta(new ValueMeta(FIELD_VALUE_VALUE_STR, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
 		table.addValueMeta(new ValueMeta(FIELD_VALUE_IS_NULL, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
-		sql = database.getDDL(tablename, table, null, false, FIELD_VALUE_ID_VALUE, false);
+		sql = database.getDDL(schemaTable, table, null, false, FIELD_VALUE_ID_VALUE, false);
 
 		if (sql != null && sql.length() > 0) // Doesn't exists: create the table...
 		{
             if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
-            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
 		}
 		else
 		{
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
 		}
 		if (monitor!=null) monitor.worked(1);
 
@@ -4884,29 +4908,30 @@ public class Repository
 		// Create table...
 		boolean ok_step_type = true;
 		table = new RowMeta();
-		tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_STEP_TYPE);
-		if (monitor!=null) monitor.subTask("Checking table "+tablename);
+		tablename = TABLE_R_STEP_TYPE;
+		schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
+		if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
 		table.addValueMeta(new ValueMeta(FIELD_STEP_TYPE_ID_STEP_TYPE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_STEP_TYPE_CODE, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
 		table.addValueMeta(new ValueMeta(FIELD_STEP_TYPE_DESCRIPTION, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
 		table.addValueMeta(new ValueMeta(FIELD_STEP_TYPE_HELPTEXT, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-		sql = database.getDDL(tablename, table, null, false, "ID_STEP_TYPE", false);
+		sql = database.getDDL(schemaTable, table, null, false, "ID_STEP_TYPE", false);
 
 		if (sql != null && sql.length() > 0) // Doesn't exists: create the table...
 		{
             if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
-            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
 		}
 		else
 		{
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
 		}
 
 		if (ok_step_type)
 		{
 			updateStepTypes();
-            if (log.isDetailed()) log.logDetailed(toString(), "Populated table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Populated table " + schemaTable);
 		}
 		if (monitor!=null) monitor.worked(1);
 
@@ -4916,8 +4941,9 @@ public class Repository
 		//
 		// Create table
 		table = new RowMeta();
-		tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_STEP);
-		if (monitor!=null) monitor.subTask("Checking table "+tablename);
+		tablename = TABLE_R_STEP;
+		schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
+		if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
 		table.addValueMeta(new ValueMeta(FIELD_STEP_ID_STEP, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_STEP_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_STEP_NAME, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
@@ -4928,17 +4954,17 @@ public class Repository
 		table.addValueMeta(new ValueMeta(FIELD_STEP_GUI_LOCATION_X, ValueMetaInterface.TYPE_INTEGER, 6, 0));
 		table.addValueMeta(new ValueMeta(FIELD_STEP_GUI_LOCATION_Y, ValueMetaInterface.TYPE_INTEGER, 6, 0));
 		table.addValueMeta(new ValueMeta(FIELD_STEP_GUI_DRAW, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
-		sql = database.getDDL(tablename, table, null, false, FIELD_STEP_ID_STEP, false);
+		sql = database.getDDL(schemaTable, table, null, false, FIELD_STEP_ID_STEP, false);
 
 		if (sql != null && sql.length() > 0) // Doesn't exists: create the table...
 		{
             if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
-            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
 		}
 		else
 		{
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
 		}
 		if (monitor!=null) monitor.worked(1);
 
@@ -4947,8 +4973,9 @@ public class Repository
 		// R_STEP_ATTRIBUTE
 		//
 		// Create table...
-		tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_STEP_ATTRIBUTE);
-		if (monitor!=null) monitor.subTask("Checking table "+tablename);
+		tablename = TABLE_R_STEP_ATTRIBUTE;
+		schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
+		if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
 		table = new RowMeta();
 		table.addValueMeta(new ValueMeta(FIELD_STEP_ATTRIBUTE_ID_STEP_ATTRIBUTE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_STEP_ATTRIBUTE_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
@@ -4957,24 +4984,24 @@ public class Repository
 		table.addValueMeta(new ValueMeta(FIELD_STEP_ATTRIBUTE_CODE, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
 		table.addValueMeta(new ValueMeta(FIELD_STEP_ATTRIBUTE_VALUE_NUM, ValueMetaInterface.TYPE_INTEGER, 18, 0));
 		table.addValueMeta(new ValueMeta(FIELD_STEP_ATTRIBUTE_VALUE_STR, ValueMetaInterface.TYPE_STRING, REP_STRING_LENGTH, 0));
-        sql = database.getDDL(tablename, table, null, false, FIELD_STEP_ATTRIBUTE_ID_STEP_ATTRIBUTE, false);
+        sql = database.getDDL(schemaTable, table, null, false, FIELD_STEP_ATTRIBUTE_ID_STEP_ATTRIBUTE, false);
         
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
 		{
             if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
-            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
 
 			try
 			{
-				indexname = "IDX_" + tablename.substring(2) + "_LOOKUP";
+				indexname = "IDX_" + schemaTable.substring(2) + "_LOOKUP";
 				keyfield = new String[] { FIELD_STEP_ATTRIBUTE_ID_STEP, FIELD_STEP_ATTRIBUTE_CODE, FIELD_STEP_ATTRIBUTE_NR, };
-				if (!database.checkIndexExists(tablename, keyfield))
+				if (!database.checkIndexExists(schemaTable, keyfield))
 				{
-					sql = database.getCreateIndexStatement(tablename, indexname, keyfield, false, true, false, false);
+					sql = database.getCreateIndexStatement(schemaTable, indexname, keyfield, false, true, false, false);
                     if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 					database.execStatements(sql);
-                    if (log.isDetailed()) log.logDetailed(toString(), "Created lookup index " + indexname + " on " + tablename);
+                    if (log.isDetailed()) log.logDetailed(toString(), "Created lookup index " + indexname + " on " + schemaTable);
 				}
 			}
 			catch(KettleException kdbe)
@@ -4984,7 +5011,7 @@ public class Repository
 		}
 		else
 		{
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
 		}
 		if (monitor!=null) monitor.worked(1);
 
@@ -4996,30 +5023,31 @@ public class Repository
 		// That way investigating dependencies becomes easier to program.
 		//
 		// Create table...
-		tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_STEP_DATABASE);
-		if (monitor!=null) monitor.subTask("Checking table "+tablename);
+		tablename = TABLE_R_STEP_DATABASE;
+		schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
+		if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
 		table = new RowMeta();
 		table.addValueMeta(new ValueMeta(FIELD_STEP_DATABASE_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_STEP_DATABASE_ID_STEP, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_STEP_DATABASE_ID_DATABASE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		sql = database.getDDL(tablename, table, null, false, null, false);
+		sql = database.getDDL(schemaTable, table, null, false, null, false);
         
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
 		{
             if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
-            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
 
 			try
 			{
-				indexname = "IDX_" + tablename.substring(2) + "_LU1";
+				indexname = "IDX_" + schemaTable.substring(2) + "_LU1";
 				keyfield = new String[] { FIELD_STEP_DATABASE_ID_TRANSFORMATION, };
-				if (!database.checkIndexExists(tablename, keyfield))
+				if (!database.checkIndexExists(schemaTable, keyfield))
 				{
-					sql = database.getCreateIndexStatement(tablename, indexname, keyfield, false, false, false, false);
+					sql = database.getCreateIndexStatement(schemaTable, indexname, keyfield, false, false, false, false);
                     if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 					database.execStatements(sql);
-                    if (log.isDetailed()) log.logDetailed(toString(), "Created lookup index " + indexname + " on " + tablename);
+                    if (log.isDetailed()) log.logDetailed(toString(), "Created lookup index " + indexname + " on " + schemaTable);
 				}
 			}
 			catch(KettleException kdbe)
@@ -5029,14 +5057,14 @@ public class Repository
 
 			try
 			{
-				indexname = "IDX_" + tablename.substring(2) + "_LU2";
+				indexname = "IDX_" + schemaTable.substring(2) + "_LU2";
 				keyfield = new String[] { FIELD_STEP_DATABASE_ID_DATABASE, };
-				if (!database.checkIndexExists(tablename, keyfield))
+				if (!database.checkIndexExists(schemaTable, keyfield))
 				{
-					sql = database.getCreateIndexStatement(tablename, indexname, keyfield, false, false, false, false);
+					sql = database.getCreateIndexStatement(schemaTable, indexname, keyfield, false, false, false, false);
                     if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 					database.execStatements(sql);
-                    if (log.isDetailed()) log.logDetailed(toString(), "Created lookup index " + indexname + " on " + tablename);
+                    if (log.isDetailed()) log.logDetailed(toString(), "Created lookup index " + indexname + " on " + schemaTable);
 				}
 			}
 			catch(KettleException kdbe)
@@ -5046,7 +5074,7 @@ public class Repository
 		}
 		else
 		{
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
 		}
 		if (monitor!=null) monitor.worked(1);
 
@@ -5056,21 +5084,22 @@ public class Repository
 		//
 		// Create table...
 		table = new RowMeta();
-		tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_NOTE);
-		if (monitor!=null) monitor.subTask("Checking table "+tablename);
+		tablename = TABLE_R_TRANS_NOTE;
+		schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
+		if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
 		table.addValueMeta(new ValueMeta(FIELD_TRANS_NOTE_ID_TRANSFORMATION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_TRANS_NOTE_ID_NOTE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		sql = database.getDDL(tablename, table, null, false, null, false);
+		sql = database.getDDL(schemaTable, table, null, false, null, false);
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
 		{
             if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
-            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
 		}
 		else
 		{
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
 		}
 		if (monitor!=null) monitor.worked(1);
 
@@ -5080,23 +5109,24 @@ public class Repository
 		//
 		// Create table...
 		boolean ok_loglevel = true;
-		tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_LOGLEVEL);
-		if (monitor!=null) monitor.subTask("Checking table "+tablename);
+		tablename = TABLE_R_LOGLEVEL;
+		schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
+		if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
 		table = new RowMeta();
 		table.addValueMeta(new ValueMeta(FIELD_LOGLEVEL_ID_LOGLEVEL, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_LOGLEVEL_CODE, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
 		table.addValueMeta(new ValueMeta(FIELD_LOGLEVEL_DESCRIPTION, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-		sql = database.getDDL(tablename, table, null, false, FIELD_LOGLEVEL_ID_LOGLEVEL, false);
+		sql = database.getDDL(schemaTable, table, null, false, FIELD_LOGLEVEL_ID_LOGLEVEL, false);
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
 		{
             if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
-            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
 		}
 		else
 		{
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
 		}
 
 		if (ok_loglevel)
@@ -5107,12 +5137,12 @@ public class Repository
 			code = LogWriter.logLevelDescription;
 			desc = LogWriter.log_level_desc_long;
 
-			database.prepareInsert(table, tablename);
+			database.prepareInsert(table, null, tablename);
 
 			for (int i = 1; i < code.length; i++)
 			{
                 RowMetaAndData lookup = null;
-                if (upgrade) lookup = database.getOneRow("SELECT "+quote(FIELD_LOGLEVEL_ID_LOGLEVEL)+" FROM " + tablename + " WHERE " 
+                if (upgrade) lookup = database.getOneRow("SELECT "+quote(FIELD_LOGLEVEL_ID_LOGLEVEL)+" FROM " + schemaTable + " WHERE " 
                 		+ database.getDatabaseMeta().quoteField("CODE") + " = '" + code[i] + "'");
 				if (lookup == null)
 				{
@@ -5131,11 +5161,11 @@ public class Repository
             try
             {
                 database.closeInsert();
-                if (log.isDetailed()) log.logDetailed(toString(), "Populated table " + tablename);
+                if (log.isDetailed()) log.logDetailed(toString(), "Populated table " + schemaTable);
             }
             catch(KettleException dbe)
             {
-                throw new KettleException("Unable to close insert after populating table " + tablename, dbe);
+                throw new KettleException("Unable to close insert after populating table " + schemaTable, dbe);
             }
 		}
 		if (monitor!=null) monitor.worked(1);
@@ -5146,8 +5176,9 @@ public class Repository
 		//
 		// Create table...
 		table = new RowMeta();
-		tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_LOG);
-		if (monitor!=null) monitor.subTask("Checking table "+tablename);
+		tablename = TABLE_R_LOG;
+		schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
+		if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
 		table.addValueMeta(new ValueMeta(FIELD_LOG_ID_LOG, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_LOG_NAME, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
 		table.addValueMeta(new ValueMeta(FIELD_LOG_ID_LOGLEVEL, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
@@ -5158,17 +5189,17 @@ public class Repository
 		table.addValueMeta(new ValueMeta(FIELD_LOG_ADD_TIME, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
 		table.addValueMeta(new ValueMeta(FIELD_LOG_ID_DATABASE_LOG, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_LOG_TABLE_NAME_LOG, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-		sql = database.getDDL(tablename, table, null, false, FIELD_LOG_ID_LOG, false);
+		sql = database.getDDL(schemaTable, table, null, false, FIELD_LOG_ID_LOG, false);
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
 		{
             if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
-            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
 		}
 		else
 		{
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
 		}
 		if (monitor!=null) monitor.worked(1);
 
@@ -5178,8 +5209,9 @@ public class Repository
 		//
 		// Create table...
 		table = new RowMeta();
-		tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOB);
-		if (monitor!=null) monitor.subTask("Checking table "+tablename);
+		tablename = TABLE_R_JOB;
+		schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
+		if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
 		table.addValueMeta(new ValueMeta(FIELD_JOB_ID_JOB, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_JOB_ID_DIRECTORY, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_JOB_NAME, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
@@ -5197,17 +5229,17 @@ public class Repository
         table.addValueMeta(new ValueMeta(FIELD_JOB_PASS_BATCH_ID, ValueMetaInterface.TYPE_BOOLEAN, 0, 0));
         table.addValueMeta(new ValueMeta(FIELD_JOB_USE_LOGFIELD, ValueMetaInterface.TYPE_BOOLEAN, 0, 0));
         table.addValueMeta(new ValueMeta(FIELD_JOB_SHARED_FILE, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0)); // 255 max length for now.
-		sql = database.getDDL(tablename, table, null, false, FIELD_JOB_ID_JOB, false);
+		sql = database.getDDL(schemaTable, table, null, false, FIELD_JOB_ID_JOB, false);
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
 		{
             if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
-            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
 		}
 		else
 		{
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
 		}
 		if (monitor!=null) monitor.worked(1);
 
@@ -5218,22 +5250,23 @@ public class Repository
 		// Create table...
 		boolean ok_jobentry_type = true;
 		table = new RowMeta();
-		tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOBENTRY_TYPE);
-		if (monitor!=null) monitor.subTask("Checking table "+tablename);
+		tablename = TABLE_R_JOBENTRY_TYPE;
+		schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
+		if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
 		table.addValueMeta(new ValueMeta(FIELD_JOBENTRY_TYPE_ID_JOBENTRY_TYPE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_JOBENTRY_TYPE_CODE, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
 		table.addValueMeta(new ValueMeta(FIELD_JOBENTRY_TYPE_DESCRIPTION, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-		sql = database.getDDL(tablename, table, null, false, FIELD_JOBENTRY_TYPE_ID_JOBENTRY_TYPE, false);
+		sql = database.getDDL(schemaTable, table, null, false, FIELD_JOBENTRY_TYPE_ID_JOBENTRY_TYPE, false);
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
 		{
             if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
-            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
 		}
 		else
 		{
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
 		}
 
 		if (ok_jobentry_type)
@@ -5242,7 +5275,7 @@ public class Repository
 			// Populate with data...
 			//
 			updateJobEntryTypes();
-            if (log.isDetailed()) log.logDetailed(toString(), "Populated table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Populated table " + schemaTable);
 		}
 		if (monitor!=null) monitor.worked(1);
 
@@ -5252,24 +5285,25 @@ public class Repository
 		//
 		// Create table...
 		table = new RowMeta();
-		tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOBENTRY);
-		if (monitor!=null) monitor.subTask("Checking table "+tablename);
+		tablename = TABLE_R_JOBENTRY;
+		schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
+		if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
 		table.addValueMeta(new ValueMeta(FIELD_JOBENTRY_ID_JOBENTRY, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_JOBENTRY_ID_JOB, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_JOBENTRY_ID_JOBENTRY_TYPE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_JOBENTRY_NAME, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
 		table.addValueMeta(new ValueMeta(FIELD_JOBENTRY_DESCRIPTION, ValueMetaInterface.TYPE_STRING, REP_STRING_LENGTH, 0));
-		sql = database.getDDL(tablename, table, null, false, FIELD_JOBENTRY_ID_JOBENTRY, false);
+		sql = database.getDDL(schemaTable, table, null, false, FIELD_JOBENTRY_ID_JOBENTRY, false);
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
 		{
             if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
-            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
 		}
 		else
 		{
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
 		}
 		if (monitor!=null) monitor.worked(1);
 
@@ -5279,8 +5313,9 @@ public class Repository
 		//
 		// Create table...
 		table = new RowMeta();
-		tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOBENTRY_COPY);
-		if (monitor!=null) monitor.subTask("Checking table "+tablename);
+		tablename = TABLE_R_JOBENTRY_COPY;
+		schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
+		if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
 		table.addValueMeta(new ValueMeta(FIELD_JOBENTRY_COPY_ID_JOBENTRY_COPY, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_JOBENTRY_COPY_ID_JOBENTRY, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_JOBENTRY_COPY_ID_JOB, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
@@ -5290,17 +5325,17 @@ public class Repository
 		table.addValueMeta(new ValueMeta(FIELD_JOBENTRY_COPY_GUI_LOCATION_Y, ValueMetaInterface.TYPE_INTEGER, 6, 0));
 		table.addValueMeta(new ValueMeta(FIELD_JOBENTRY_COPY_GUI_DRAW, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
 		table.addValueMeta(new ValueMeta(FIELD_JOBENTRY_COPY_PARALLEL, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
-		sql = database.getDDL(tablename, table, null, false, FIELD_JOBENTRY_COPY_ID_JOBENTRY_COPY, false);
+		sql = database.getDDL(schemaTable, table, null, false, FIELD_JOBENTRY_COPY_ID_JOBENTRY_COPY, false);
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
 		{
             if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
-            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
 		}
 		else
 		{
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
 		}
 		if (monitor!=null) monitor.worked(1);
 
@@ -5310,8 +5345,9 @@ public class Repository
 		//
 		// Create table...
 		table = new RowMeta();
-		tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOBENTRY_ATTRIBUTE);
-		if (monitor!=null) monitor.subTask("Checking table "+tablename);
+		tablename = TABLE_R_JOBENTRY_ATTRIBUTE;
+		schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
+		if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
 		table.addValueMeta(new ValueMeta(FIELD_JOBENTRY_ATTRIBUTE_ID_JOBENTRY_ATTRIBUTE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_JOBENTRY_ATTRIBUTE_ID_JOB, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_JOBENTRY_ATTRIBUTE_ID_JOBENTRY, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
@@ -5319,26 +5355,26 @@ public class Repository
 		table.addValueMeta(new ValueMeta(FIELD_JOBENTRY_ATTRIBUTE_CODE, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
 		table.addValueMeta(new ValueMeta(FIELD_JOBENTRY_ATTRIBUTE_VALUE_NUM, ValueMetaInterface.TYPE_NUMBER, 13, 2));
 		table.addValueMeta(new ValueMeta(FIELD_JOBENTRY_ATTRIBUTE_VALUE_STR, ValueMetaInterface.TYPE_STRING, REP_STRING_LENGTH, 0));
-		sql = database.getDDL(tablename, table, null, false, FIELD_JOBENTRY_ATTRIBUTE_ID_JOBENTRY_ATTRIBUTE, false);
+		sql = database.getDDL(schemaTable, table, null, false, FIELD_JOBENTRY_ATTRIBUTE_ID_JOBENTRY_ATTRIBUTE, false);
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
 		{
             if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
-            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
 
 			try
 			{
-				indexname = "IDX_" + tablename.substring(2) + "_LOOKUP";
+				indexname = "IDX_" + schemaTable.substring(2) + "_LOOKUP";
 				keyfield = new String[] { FIELD_JOBENTRY_ATTRIBUTE_ID_JOBENTRY_ATTRIBUTE, FIELD_JOBENTRY_ATTRIBUTE_CODE, FIELD_JOBENTRY_ATTRIBUTE_NR, };
 	
-				if (!database.checkIndexExists(tablename, keyfield))
+				if (!database.checkIndexExists(schemaTable, keyfield))
 				{
-					sql = database.getCreateIndexStatement(tablename, indexname, keyfield, false, true, false, false);
+					sql = database.getCreateIndexStatement(schemaTable, indexname, keyfield, false, true, false, false);
 	
                     if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 					database.execStatements(sql);
-                    if (log.isDetailed()) log.logDetailed(toString(), "Created lookup index " + indexname + " on " + tablename);
+                    if (log.isDetailed()) log.logDetailed(toString(), "Created lookup index " + indexname + " on " + schemaTable);
 				}
 			}
 			catch(KettleException kdbe)
@@ -5348,7 +5384,7 @@ public class Repository
 		}
 		else
 		{
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
 		}
 		if (monitor!=null) monitor.worked(1);
 
@@ -5358,8 +5394,9 @@ public class Repository
 		//
 		// Create table...
 		table = new RowMeta();
-		tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOB_HOP);
-		if (monitor!=null) monitor.subTask("Checking table "+tablename);
+		tablename = TABLE_R_JOB_HOP;
+		schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
+		if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
 		table.addValueMeta(new ValueMeta(FIELD_JOB_HOP_ID_JOB_HOP, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_JOB_HOP_ID_JOB, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_JOB_HOP_ID_JOBENTRY_COPY_FROM, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
@@ -5367,17 +5404,17 @@ public class Repository
 		table.addValueMeta(new ValueMeta(FIELD_JOB_HOP_ENABLED, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
 		table.addValueMeta(new ValueMeta(FIELD_JOB_HOP_EVALUATION, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
 		table.addValueMeta(new ValueMeta(FIELD_JOB_HOP_UNCONDITIONAL, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
-		sql = database.getDDL(tablename, table, null, false, FIELD_JOB_HOP_ID_JOB_HOP, false);
+		sql = database.getDDL(schemaTable, table, null, false, FIELD_JOB_HOP_ID_JOB_HOP, false);
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
 		{
             if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
-            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
 		}
 		else
 		{
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
 		}
 		if (monitor!=null) monitor.worked(1);
 
@@ -5387,21 +5424,22 @@ public class Repository
 		//
 		// Create table...
 		table = new RowMeta();
-		tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOB_NOTE);
-		if (monitor!=null) monitor.subTask("Checking table "+tablename);
+		tablename = TABLE_R_JOB_NOTE;
+		schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
+		if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
 		table.addValueMeta(new ValueMeta(FIELD_JOB_NOTE_ID_JOB, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_JOB_NOTE_ID_NOTE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		sql = database.getDDL(tablename, table, null, false, null, false);
+		sql = database.getDDL(schemaTable, table, null, false, null, false);
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
 		{
             if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
-            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
 		}
 		else
 		{
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
 		}
 		if (monitor!=null) monitor.worked(1);
 
@@ -5419,23 +5457,24 @@ public class Repository
         Map<String, Long> profiles = new Hashtable<String, Long>();
         
 		boolean ok_profile = true;
-		tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_PROFILE);
-		if (monitor!=null) monitor.subTask("Checking table "+tablename);
+		tablename = TABLE_R_PROFILE;
+		schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
+		if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
 		table = new RowMeta();
 		table.addValueMeta(new ValueMeta(FIELD_PROFILE_ID_PROFILE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_PROFILE_NAME, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
 		table.addValueMeta(new ValueMeta(FIELD_PROFILE_DESCRIPTION, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-		sql = database.getDDL(tablename, table, null, false, FIELD_PROFILE_ID_PROFILE, false);
+		sql = database.getDDL(schemaTable, table, null, false, FIELD_PROFILE_ID_PROFILE, false);
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
 		{
             if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
-            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
 		}
 		else
 		{
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
 		}
 
 		if (ok_profile)
@@ -5446,12 +5485,12 @@ public class Repository
 			code = new String[] { "Administrator", "User", "Read-only" };
 			desc = new String[] { "Administrator profile, manage users", "Normal user, all tools", "Read-only users" };
 
-			database.prepareInsert(table, tablename);
+			database.prepareInsert(table, null, tablename);
 
 			for (int i = 0; i < code.length; i++)
 			{
                 RowMetaAndData lookup = null;
-                if (upgrade) lookup = database.getOneRow("SELECT "+quote(FIELD_PROFILE_ID_PROFILE)+" FROM " + tablename + " WHERE "
+                if (upgrade) lookup = database.getOneRow("SELECT "+quote(FIELD_PROFILE_ID_PROFILE)+" FROM " + schemaTable + " WHERE "
                 		+ quote(FIELD_PROFILE_NAME) + " = '" + code[i] + "'");
 				if (lookup == null)
 				{
@@ -5464,7 +5503,7 @@ public class Repository
 
 					database.setValuesInsert(tableData);
 					database.insertRow();
-                    if (log.isDetailed()) log.logDetailed(toString(), "Inserted new row into table "+tablename+" : "+table);
+                    if (log.isDetailed()) log.logDetailed(toString(), "Inserted new row into table "+schemaTable+" : "+table);
                     profiles.put(code[i], new Long(nextid));
 				}
 			}
@@ -5472,11 +5511,11 @@ public class Repository
             try
             {
                 database.closeInsert();
-                if (log.isDetailed()) log.logDetailed(toString(), "Populated table " + tablename);
+                if (log.isDetailed()) log.logDetailed(toString(), "Populated table " + schemaTable);
             }
             catch(KettleException dbe)
             {
-                throw new KettleException("Unable to close insert after populating table " + tablename, dbe);
+                throw new KettleException("Unable to close insert after populating table " + schemaTable, dbe);
             }
 		}
 		if (monitor!=null) monitor.worked(1);
@@ -5489,8 +5528,9 @@ public class Repository
         Map<String, Long> users = new Hashtable<String, Long>();
 		boolean ok_user = true;
 		table = new RowMeta();
-		tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_USER);
-		if (monitor!=null) monitor.subTask("Checking table "+tablename);
+		tablename = TABLE_R_USER;
+		schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
+		if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
 		table.addValueMeta(new ValueMeta(FIELD_USER_ID_USER, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_USER_ID_PROFILE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_USER_LOGIN, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
@@ -5498,17 +5538,17 @@ public class Repository
 		table.addValueMeta(new ValueMeta(FIELD_USER_NAME, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
 		table.addValueMeta(new ValueMeta(FIELD_USER_DESCRIPTION, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
 		table.addValueMeta(new ValueMeta(FIELD_USER_ENABLED, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
-		sql = database.getDDL(tablename, table, null, false, FIELD_USER_ID_USER, false);
+		sql = database.getDDL(schemaTable, table, null, false, FIELD_USER_ID_USER, false);
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
 		{
             if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
-            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
 		}
 		else
 		{
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
 		}
 
 		if (ok_user)
@@ -5522,12 +5562,12 @@ public class Repository
 			desc = new String[] { "User manager", "Read-only guest account" };
 			prof = new String[] { "Administrator", "Read-only" };
 
-			database.prepareInsert(table, tablename);
+			database.prepareInsert(table, null, tablename);
 
 			for (int i = 0; i < user.length; i++)
 			{
                 RowMetaAndData lookup = null;
-                if (upgrade) lookup = database.getOneRow("SELECT "+quote(FIELD_USER_ID_USER)+" FROM " + tablename + " WHERE "
+                if (upgrade) lookup = database.getOneRow("SELECT "+quote(FIELD_USER_ID_USER)+" FROM " + schemaTable + " WHERE "
                 		+ quote(FIELD_USER_LOGIN) + " = '" + user[i] + "'");
 				if (lookup == null)
 				{
@@ -5556,11 +5596,11 @@ public class Repository
             try
             {
                 database.closeInsert();
-                if (log.isDetailed()) log.logDetailed(toString(), "Populated table " + tablename);
+                if (log.isDetailed()) log.logDetailed(toString(), "Populated table " + schemaTable);
             }
             catch(KettleException dbe)
             {
-                throw new KettleException("Unable to close insert after populating table " + tablename, dbe);
+                throw new KettleException("Unable to close insert after populating table " + schemaTable, dbe);
             }
 		}
 		if (monitor!=null) monitor.worked(1);
@@ -5573,22 +5613,23 @@ public class Repository
         Map<String, Long> permissions = new Hashtable<String, Long>();
 		boolean ok_permission = true;
 		table = new RowMeta();
-		tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_PERMISSION);
-		if (monitor!=null) monitor.subTask("Checking table "+tablename);
+		tablename = TABLE_R_PERMISSION;
+		schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
+		if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
 		table.addValueMeta(new ValueMeta(FIELD_PERMISSION_ID_PERMISSION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_PERMISSION_CODE, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
 		table.addValueMeta(new ValueMeta(FIELD_PERMISSION_DESCRIPTION, ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-		sql = database.getDDL(tablename, table, null, false, FIELD_PERMISSION_ID_PERMISSION, false);
+		sql = database.getDDL(schemaTable, table, null, false, FIELD_PERMISSION_ID_PERMISSION, false);
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
 		{
             if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
-            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
 		}
 		else
 		{
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
 		}
 
 		if (ok_permission)
@@ -5599,12 +5640,12 @@ public class Repository
 			code = PermissionMeta.permissionTypeCode;
 			desc = PermissionMeta.permissionTypeDesc;
 
-			database.prepareInsert(table, tablename);
+			database.prepareInsert(table, null, tablename);
 
 			for (int i = 1; i < code.length; i++)
 			{
                 RowMetaAndData lookup = null;
-                if (upgrade) lookup = database.getOneRow("SELECT "+quote(FIELD_PERMISSION_ID_PERMISSION)+" FROM " + tablename + " WHERE " 
+                if (upgrade) lookup = database.getOneRow("SELECT "+quote(FIELD_PERMISSION_ID_PERMISSION)+" FROM " + schemaTable + " WHERE " 
                 		+ quote(FIELD_PERMISSION_CODE) + " = '" + code[i] + "'");
 				if (lookup == null)
 				{
@@ -5617,7 +5658,7 @@ public class Repository
 
 					database.setValuesInsert(tableData);
 					database.insertRow();
-                    if (log.isDetailed()) log.logDetailed(toString(), "Inserted new row into table "+tablename+" : "+table);
+                    if (log.isDetailed()) log.logDetailed(toString(), "Inserted new row into table "+schemaTable+" : "+table);
                     permissions.put(code[i], new Long(nextid));
 				}
 			}
@@ -5625,11 +5666,11 @@ public class Repository
             try
             {
                 database.closeInsert();
-                if (log.isDetailed()) log.logDetailed(toString(), "Populated table " + tablename);
+                if (log.isDetailed()) log.logDetailed(toString(), "Populated table " + schemaTable);
             }
             catch(KettleException dbe)
             {
-                throw new KettleException("Unable to close insert after populating table " + tablename, dbe);
+                throw new KettleException("Unable to close insert after populating table " + schemaTable, dbe);
             }
 		}
 		if (monitor!=null) monitor.worked(1);
@@ -5641,29 +5682,30 @@ public class Repository
 		// Create table...
 		boolean ok_profile_permission = true;
 		table = new RowMeta();
-		tablename = databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_PROFILE_PERMISSION);
-		if (monitor!=null) monitor.subTask("Checking table "+tablename);
+		tablename = TABLE_R_PROFILE_PERMISSION;
+		schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
+		if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
 		table.addValueMeta(new ValueMeta(FIELD_PROFILE_PERMISSION_ID_PROFILE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(FIELD_PROFILE_PERMISSION_ID_PERMISSION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		sql = database.getDDL(tablename, table, null, false, null, false);
+		sql = database.getDDL(schemaTable, table, null, false, null, false);
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
 		{
             if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
-            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + schemaTable);
 
 			try
 			{
-				indexname = "IDX_" + tablename.substring(2) + "_PK";
+				indexname = "IDX_" + schemaTable.substring(2) + "_PK";
 				keyfield = new String[] { FIELD_PROFILE_PERMISSION_ID_PROFILE, FIELD_PROFILE_PERMISSION_ID_PERMISSION, };
-				if (!database.checkIndexExists(tablename, keyfield))
+				if (!database.checkIndexExists(schemaTable, keyfield))
 				{
-					sql = database.getCreateIndexStatement(tablename, indexname, keyfield, false, true, false, false);
+					sql = database.getCreateIndexStatement(schemaTable, indexname, keyfield, false, true, false, false);
 	
                     if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 					database.execStatements(sql);
-                    if (log.isDetailed()) log.logDetailed(toString(), "Created lookup index " + indexname + " on " + tablename);
+                    if (log.isDetailed()) log.logDetailed(toString(), "Created lookup index " + indexname + " on " + schemaTable);
 				}
 			}
 			catch(KettleException kdbe)
@@ -5673,12 +5715,12 @@ public class Repository
 		}
 		else
 		{
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + schemaTable + " is OK.");
 		}
 
 		if (ok_profile_permission)
 		{
-			database.prepareInsert(table, tablename);
+			database.prepareInsert(table, null, tablename);
 
 			// Administrator default:
             Long profileID = (Long)profiles.get( "Administrator");
@@ -5706,14 +5748,14 @@ public class Repository
                 if (upgrade) 
                 {
                     String lookupSQL = "SELECT "+quote(FIELD_PROFILE_PERMISSION_ID_PROFILE)+
-                                   " FROM " + tablename + 
+                                   " FROM " + schemaTable + 
                                    " WHERE "+quote(FIELD_PROFILE_PERMISSION_ID_PROFILE)+"=" + id_profile + " AND +"+quote(FIELD_PROFILE_PERMISSION_ID_PERMISSION)+"=" + id_permission;
                     if (log.isDetailed()) log.logDetailed(toString(), "Executing SQL: "+lookupSQL);
                     lookup = database.getOneRow(lookupSQL);
                 }
 				if (lookup == null) // if the combination is not yet there, insert...
 				{
-                    String insertSQL="INSERT INTO "+tablename+"("+quote(FIELD_PROFILE_PERMISSION_ID_PROFILE)+", "+quote(FIELD_PROFILE_PERMISSION_ID_PERMISSION)+")"
+                    String insertSQL="INSERT INTO "+schemaTable+"("+quote(FIELD_PROFILE_PERMISSION_ID_PROFILE)+", "+quote(FIELD_PROFILE_PERMISSION_ID_PERMISSION)+")"
                     			+" VALUES("+id_profile+","+id_permission+")";
 					database.execStatement(insertSQL);
                     if (log.isDetailed()) log.logDetailed(toString(), "insertSQL = ["+insertSQL+"]");
@@ -5745,7 +5787,7 @@ public class Repository
 
                 RowMetaAndData lookup = null;
                 if (upgrade) lookup = database.getOneRow("SELECT "+quote(FIELD_PROFILE_PERMISSION_ID_PROFILE)+
-                			" FROM " + tablename + 
+                			" FROM " + schemaTable + 
                 			" WHERE "+quote(FIELD_PROFILE_PERMISSION_ID_PROFILE)+"=" + id_profile + " AND "+quote(FIELD_PROFILE_PERMISSION_ID_PERMISSION)+"=" + id_permission);
 				if (lookup == null) // if the combination is not yet there, insert...
 				{
@@ -5761,11 +5803,11 @@ public class Repository
             try
             {
                 database.closeInsert();
-                if (log.isDetailed()) log.logDetailed(toString(), "Populated table " + tablename);
+                if (log.isDetailed()) log.logDetailed(toString(), "Populated table " + schemaTable);
             }
             catch(KettleException dbe)
             {
-                throw new KettleException("Unable to close insert after populating table " + tablename, dbe);
+                throw new KettleException("Unable to close insert after populating table " + schemaTable, dbe);
             }
 		}
         
@@ -5788,7 +5830,7 @@ public class Repository
 		{
 			try
 			{
-				database.execStatement("DROP TABLE " + repositoryTableNames[i]);
+				database.execStatement("DROP TABLE " + databaseMeta.getQuotedSchemaTableCombination(null, repositoryTableNames[i]));
                 if (log.isDetailed()) log.logDetailed(toString(), "dropped table "+repositoryTableNames[i]);
 			}
 			catch (KettleException dbe)
@@ -5827,7 +5869,7 @@ public class Repository
 				table.addValue(new ValueMeta(FIELD_STEP_TYPE_DESCRIPTION, ValueMetaInterface.TYPE_STRING), sp.getDescription());
 				table.addValue(new ValueMeta(FIELD_STEP_TYPE_HELPTEXT, ValueMetaInterface.TYPE_STRING), sp.getTooltip());
 
-				database.prepareInsert(table.getRowMeta(), TABLE_R_STEP_TYPE);
+				database.prepareInsert(table.getRowMeta(), null, TABLE_R_STEP_TYPE);
 
 				database.setValuesInsert(table);
 				database.insertRow();
@@ -5863,7 +5905,7 @@ public class Repository
                 table.addValue(new ValueMeta(FIELD_JOBENTRY_TYPE_CODE, ValueMetaInterface.TYPE_STRING), type_desc);
                 table.addValue(new ValueMeta(FIELD_JOBENTRY_TYPE_DESCRIPTION, ValueMetaInterface.TYPE_STRING), type_desc_long);
 
-                database.prepareInsert(table.getRowMeta(), TABLE_R_JOBENTRY_TYPE);
+                database.prepareInsert(table.getRowMeta(), null, TABLE_R_JOBENTRY_TYPE);
 
                 database.setValuesInsert(table);
                 database.insertRow();
@@ -5921,7 +5963,7 @@ public class Repository
         }
         else
         {
-            database.lockTables( new String[] { TABLE_R_REPOSITORY_LOG } );
+            database.lockTables( new String[] { TABLE_R_REPOSITORY_LOG, } );
         }
     }
     
@@ -5933,7 +5975,7 @@ public class Repository
         }
         else
         {
-            database.unlockTables(new String[] { TABLE_R_REPOSITORY_LOG });
+            database.unlockTables( new String[] { TABLE_R_REPOSITORY_LOG, } );
         }
     }
     

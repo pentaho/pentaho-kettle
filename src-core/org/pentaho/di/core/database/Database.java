@@ -4309,7 +4309,7 @@ public class Database implements VariableSpace
     	// Quote table names too...
     	//
     	String[] quotedTableNames = new String[tableNames.length];
-    	for (int i=0;i<tableNames.length;i++) quotedTableNames[i] = databaseMeta.quoteField(tableNames[i]);
+    	for (int i=0;i<tableNames.length;i++) quotedTableNames[i] = databaseMeta.getQuotedSchemaTableCombination(null, tableNames[i]);
     	
     	// Get the SQL to lock the (quoted) tables
     	//
@@ -4332,7 +4332,7 @@ public class Database implements VariableSpace
     	// Quote table names too...
     	//
     	String[] quotedTableNames = new String[tableNames.length];
-    	for (int i=0;i<tableNames.length;i++) quotedTableNames[i] = databaseMeta.quoteField(tableNames[i]);
+    	for (int i=0;i<tableNames.length;i++) quotedTableNames[i] = databaseMeta.getQuotedSchemaTableCombination(null, tableNames[i]);
     	
     	// Get the SQL to unlock the (quoted) tables
     	//
