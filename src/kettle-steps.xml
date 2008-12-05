@@ -1247,4 +1247,26 @@
 		</tooltip>
 		<image-uri>ui/images/IFN.png</image-uri>
 	</step>
+	<step id="RssOutput">
+		<description>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.RssOutput")
+		</description>
+		<class-name>org.pentaho.di.trans.steps.rssoutput.RssOutputMeta</class-name>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<tooltip>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.RssOutput")
+		</tooltip>
+		<image-uri>ui/images/RRO.png</image-uri>
+	</step>
+		<step id="RssInput">
+		<description>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.RssInput")
+		</description>
+		<class-name>org.pentaho.di.trans.steps.rssinput.RssInputMeta</class-name>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<tooltip>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.RssInput")
+		</tooltip>
+		<image-uri>ui/images/RIN.png</image-uri>
+	</step>
 </steps>

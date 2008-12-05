@@ -92,5 +92,12 @@
 	<classpathentry kind="lib" path="libext/JDBC/vertica_2.5_jdk_5.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/pentaho-xul-framework-1.7.1-32194.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/pentaho-xul-database-1.7.1-32701.jar"/>
+	<classpathentry kind="lib" path="libext/feeds/georss-rome-0.9.8.jar"/>
+	<classpathentry kind="lib" path="libext/feeds/jdom.jar"/>
+	<classpathentry kind="lib" path="libext/feeds/rome-0.9.jar"/>
+	<classpathentry kind="lib" path="libext/feeds/feed4j.jar"/>
+	<classpathentry kind="lib" path="libext/feeds/nekohtml.jar"/>
+	<classpathentry kind="lib" path="libext/feeds/xercesImpl.jar"/>
+	<classpathentry kind="lib" path="libext/feeds/xml-apis.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
