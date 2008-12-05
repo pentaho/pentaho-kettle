@@ -1269,4 +1269,15 @@
 		</tooltip>
 		<image-uri>ui/images/RIN.png</image-uri>
 	</step>
+			<step id="SalesforceInput">
+		<description>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.SalesforceInput")
+		</description>
+		<class-name>org.pentaho.di.trans.steps.salesforceinput.SalesforceInputMeta</class-name>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<tooltip>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.SalesforceInput")
+		</tooltip>
+		<image-uri>ui/images/SFI.png</image-uri>
+	</step>
 </steps>
