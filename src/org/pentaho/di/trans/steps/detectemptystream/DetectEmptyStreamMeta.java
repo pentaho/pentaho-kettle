@@ -15,8 +15,6 @@ package org.pentaho.di.trans.steps.detectemptystream;
 import java.util.List;
 import java.util.Map;
 
-import org.w3c.dom.Node;
-
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Counter;
@@ -32,12 +30,12 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.w3c.dom.Node;
 
-
-/*
-* @author Samatar
-* @since 30-08-2008
-*/
+/**
+ * @author Samatar
+ * @since 30-08-2008
+ */
 public class DetectEmptyStreamMeta extends BaseStepMeta implements StepMetaInterface
 {
 	public DetectEmptyStreamMeta()
@@ -45,10 +43,11 @@ public class DetectEmptyStreamMeta extends BaseStepMeta implements StepMetaInter
 		super(); // allocate BaseStepMeta
 	}
 
-	  public void loadXML(Node stepnode, List<DatabaseMeta> databases, Map<String,Counter> counters) throws KettleXMLException
-	    {
-	        readData(stepnode);
-	    }
+    public void loadXML(Node stepnode, List<DatabaseMeta> databases, Map<String,Counter> counters) throws KettleXMLException
+	{
+	    readData(stepnode);
+	}
+    
 	public Object clone()
 	{
 		Object retval = super.clone();
@@ -58,13 +57,15 @@ public class DetectEmptyStreamMeta extends BaseStepMeta implements StepMetaInter
 	private void readData(Node stepnode)
 	{
 	}
+	
     public void setDefault()
-    {
-	   
+    {   
     }
+    
     public void readRep(Repository rep, long id_step, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleException
 	{
 	}
+    
     public void saveRep(Repository rep, long id_transformation, long id_step) throws KettleException
     {
     }
@@ -104,6 +105,4 @@ public class DetectEmptyStreamMeta extends BaseStepMeta implements StepMetaInter
 	{
 		return new DetectEmptyStreamData();
 	}
-
-
 }

@@ -13,6 +13,8 @@
 package org.pentaho.di.trans.steps.detectemptystream;
 
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -20,9 +22,6 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.di.core.exception.KettleStepException;
-import org.pentaho.di.core.row.RowDataUtil;
-
 
 /**
  * Detect empty stream.  Pass one row data to the next steps.
@@ -30,7 +29,6 @@ import org.pentaho.di.core.row.RowDataUtil;
  * @author Samatar
  * @since 30-08-2008
  */
-
 public class DetectEmptyStream extends BaseStep implements StepInterface
 {
 	private DetectEmptyStreamMeta meta;
@@ -40,23 +38,25 @@ public class DetectEmptyStream extends BaseStep implements StepInterface
 	{
 		super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
 	}
+	
 	/**
 	 * Build an empty row based on the meta-data.
 	 * 
 	 * @return
 	 */
-   private Object[] buildOneRow() throws KettleStepException
-   {
+    private Object[] buildOneRow() throws KettleStepException
+    {
        // return previous fields name
        Object[] outputRowData = RowDataUtil.allocateRowData(data.outputRowMeta.size());
        return outputRowData;
-   }
+    }
+    
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{
 		meta=(DetectEmptyStreamMeta)smi;
 		data=(DetectEmptyStreamData)sdi;
 
-		Object[] r=getRow();    // get row, set busy!
+		Object[] r = getRow();    // get row, set busy!
 		if (r==null)  // no more input to be expected...
 		{
 			if(first)
@@ -67,12 +67,15 @@ public class DetectEmptyStream extends BaseStep implements StepInterface
 
 		        if (checkFeedback(getLinesRead())) 
 		        {
-		        	if(log.isBasic()) logBasic(Messages.getString("DetectEmptyStream.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
+		        	if (log.isBasic()) {
+		        		logBasic(Messages.getString("DetectEmptyStream.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
+		        	}
 		        }   
 			}
 			setOutputDone();
 			return false;
 		}
+		
 		if(first)
 		{
 			first=false;
@@ -80,7 +83,6 @@ public class DetectEmptyStream extends BaseStep implements StepInterface
 			
 		return true;
 	}
-
 
 	public boolean init(StepMetaInterface smi, StepDataInterface sdi)
 	{
