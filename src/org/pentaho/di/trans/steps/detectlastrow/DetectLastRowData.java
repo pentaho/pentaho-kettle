@@ -12,32 +12,35 @@
 */
 package org.pentaho.di.trans.steps.detectlastrow;
 
-import java.util.ArrayList;
-
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
 
-
-
 /**
  * @author Samatar
- * @since 03-Juin-2008
- *
+ * @since 03June2008
  */
 public class DetectLastRowData extends BaseStepData implements StepDataInterface
 {
-	public ArrayList<Object[]> previousrowbuffer;
 	public RowMetaInterface outputRowMeta;
 	public int NrPrevFields;
 	public RowMetaInterface previousRowMeta;
+	
+	final private Object[] trueArray = new Object[] { Boolean.TRUE };
+	
+	final private Object[] falseArray = new Object[] { Boolean.FALSE };
+	
 	/**
-	 * 
+	 * Return a array with a constant True.
 	 */
-	public DetectLastRowData()
-	{
-		super();
-		previousrowbuffer=new ArrayList<Object[]>();
+	public Object[] getTrueArray()  {
+		return trueArray;
 	}
 
+	/**
+	 * Return a array with a constant False.
+	 */	
+	public Object[] getFalseArray()  {
+		return falseArray;
+	}
 }

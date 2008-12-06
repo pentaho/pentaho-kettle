@@ -12,7 +12,6 @@
 */
 package org.pentaho.di.trans.steps.detectlastrow;
 
-
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
@@ -24,15 +23,12 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
-
 /**
  * Detect last row in a stream
- *  *  
+ *  
  * @author Samatar
- * @since 03-Juin-2008
- *
+ * @since 03June2008
  */
-
 public class DetectLastRow extends BaseStep implements StepInterface
 {
     private DetectLastRowMeta meta;
@@ -43,89 +39,66 @@ public class DetectLastRow extends BaseStep implements StepInterface
     {
         super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
     }
-    
-   
+       
     public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
     {
         meta=(DetectLastRowMeta)smi;
         data=(DetectLastRowData)sdi;
         
-        Object[] r = getRow();      // Get row from input rowset & set row busy!
-        
+        Object[] r = getRow();      // Get row from input rowset & set row busy!        
         
         if(first)
         {
-        	if(getInputRowMeta()==null) return false;
+        	if (getInputRowMeta() == null)  {
+        		return false;
+        	}
+        	
 			// get the RowMeta
 			data.previousRowMeta = getInputRowMeta().clone();
-			data.NrPrevFields=data.previousRowMeta.size();
+			data.NrPrevFields = data.previousRowMeta.size();
 			data.outputRowMeta = data.previousRowMeta;
 			meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
         }
 		Object[] outputRow=null;
 		
-        try
-        {
-            if (r==null)  // no more input to be expected...
-        	{
-        		if(previousRow != null) 
-        		{
-        	        outputRow = RowDataUtil.allocateRowData(data.outputRowMeta.size());
-        			for (int i = 0; i < data.NrPrevFields; i++)
-        			{
-        				outputRow[i] = previousRow[i];
-        			}
-        			outputRow[data.NrPrevFields]= true;
-        			putRow(data.outputRowMeta, outputRow);  // copy row to output rowset(s);
-        			 
-                    if (log.isRowLevel()) 
-                    	log.logRowlevel(toString(), Messages.getString("DetectLastRow.LineNumber",getLinesRead()+" : "+getInputRowMeta().getString(r)));
-        		}
-        		setOutputDone();
-        		return false;
-        	}
+		if (r==null)  // no more input to be expected...
+		{
+			if(previousRow != null) 
+			{
+				//
+				// Output the last row with last row indicator set to true.
+				//
+		        outputRow = RowDataUtil.addRowData(r, getInputRowMeta().size(), data.getTrueArray());
+				putRow(data.outputRowMeta, outputRow);  // copy row to output rowset(s);
 
-    		if(!first)
-            {
-    	        outputRow = RowDataUtil.allocateRowData(data.outputRowMeta.size());
-    			for (int i = 0; i < data.NrPrevFields; i++)
-    			{
-    				outputRow[i] = r[i];
-    			}
-        		
-    			outputRow[data.NrPrevFields]= false;
-    			putRow(data.outputRowMeta, outputRow);  // copy row to output rowset(s);
-    			if (log.isRowLevel()) 
-                  	log.logRowlevel(toString(), Messages.getString("DetectLastRow.LineNumber",getLinesRead()+" : "+getInputRowMeta().getString(r)));
-            }
-            // keep track of the current row
-            previousRow = r;
-            if(first)  	first=false;
-        }
-        catch(KettleException e)
-        {
-            boolean sendToErrorRow=false;
-            String errorMessage = null;
-            
-        	if (getStepMeta().isDoingErrorHandling())
-        	{
-                 sendToErrorRow = true;
-                 errorMessage = e.toString();
-        	}
-        	else
-        	{
-	            logError(Messages.getString("DetectLastRow.ErrorInStepRunning")+e.getMessage()); //$NON-NLS-1$
-	            setErrors(1);
-	            stopAll();
-	            setOutputDone();  // signal end to receiver(s)
-	            return false;
-        	}
-        	if (sendToErrorRow)
-        	{
-        	   // Simply add this row to the error row
-        	   putError(getInputRowMeta(), r, 1, errorMessage, meta.getResultFieldName(), "DetectLastRow001");
-        	}
-        }
+				if (log.isRowLevel()) {
+					logRowlevel(Messages.getString("DetectLastRow.Log.WroteRowToNextStep")+data.outputRowMeta.getString(outputRow)); //$NON-NLS-1$
+				}
+
+		        if (checkFeedback(getLinesRead())) {
+		        	logBasic(Messages.getString("DetectLastRow.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
+		        }				
+			}
+			setOutputDone();
+			return false;
+		}
+
+		if(!first)
+		{
+	        outputRow = RowDataUtil.addRowData(r, getInputRowMeta().size(), data.getFalseArray());
+			putRow(data.outputRowMeta, outputRow);  // copy row to output rowset(s);
+
+			if (log.isRowLevel()) {
+				logRowlevel(Messages.getString("DetectLastRow.Log.WroteRowToNextStep")+data.outputRowMeta.getString(outputRow)); //$NON-NLS-1$
+			}
+
+	        if (checkFeedback(getLinesRead())) {
+	        	logBasic(Messages.getString("DetectLastRow.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
+	        }		
+		}
+		// keep track of the current row
+		previousRow = r;
+		if (first) first = false;
             
         return true;
     }
@@ -155,15 +128,11 @@ public class DetectLastRow extends BaseStep implements StepInterface
      
         super.dispose(smi, sdi);
     }
+    
     //
     // Run is were the action happens!
     public void run()
     {
     	BaseStep.runStepThread(this, meta, data);
-    }	
-    
-    public String toString()
-    {
-        return this.getClass().getName();
-    }
+    }	    
 }

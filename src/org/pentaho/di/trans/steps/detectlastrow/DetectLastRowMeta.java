@@ -12,7 +12,6 @@
 */
 package org.pentaho.di.trans.steps.detectlastrow;
 
-import org.w3c.dom.Node;
 import java.util.List;
 import java.util.Map;
 
@@ -37,23 +36,17 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-/*
- * Created on 03-Juin-2008
- * 
- */
+import org.w3c.dom.Node;
 
+/**
+ * @author Samatar
+ * @since 03June2008 
+ */
 public class DetectLastRowMeta extends BaseStepMeta implements StepMetaInterface
-{
-    
+{    
     /** function result: new value name */
     private String       resultfieldname;
-    
-    public DetectLastRowMeta()
-    {
-        super(); // allocate BaseStepMeta
-    }
-
-
+        
     /**
      * @return Returns the resultName.
      */
@@ -75,7 +68,6 @@ public class DetectLastRowMeta extends BaseStepMeta implements StepMetaInterface
         readData(stepnode);
     }
  
-
     public Object clone()
     {
         DetectLastRowMeta retval = (DetectLastRowMeta) super.clone();
@@ -87,6 +79,7 @@ public class DetectLastRowMeta extends BaseStepMeta implements StepMetaInterface
     {
         resultfieldname = "result"; //$NON-NLS-1$
     }
+    
     public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException {
 
         if (!Const.isEmpty(resultfieldname))
@@ -97,10 +90,9 @@ public class DetectLastRowMeta extends BaseStepMeta implements StepMetaInterface
         }
     }
 	
-
     public String getXML()
     {
-        StringBuffer retval = new StringBuffer();
+        StringBuilder retval = new StringBuilder();
         retval.append("    " + XMLHandler.addTagValue("resultfieldname", resultfieldname)); //$NON-NLS-1$ //$NON-NLS-2$
         return retval.toString();
     }
@@ -144,7 +136,6 @@ public class DetectLastRowMeta extends BaseStepMeta implements StepMetaInterface
     public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info) {
         CheckResult cr;
         String error_message = ""; //$NON-NLS-1$
-
       
         if (Const.isEmpty(resultfieldname))
         {
@@ -170,7 +161,6 @@ public class DetectLastRowMeta extends BaseStepMeta implements StepMetaInterface
             cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("DetectLastRowMeta.CheckResult.NoInpuReceived"), stepMeta); //$NON-NLS-1$
             remarks.add(cr);
         }
-
     }
 
     public StepInterface getStep(StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta, Trans trans)
@@ -181,10 +171,5 @@ public class DetectLastRowMeta extends BaseStepMeta implements StepMetaInterface
     public StepDataInterface getStepData()
     {
         return new DetectLastRowData();
-    }
-
-    public boolean supportsErrorHandling()
-    {
-        return true;
     }
 }
