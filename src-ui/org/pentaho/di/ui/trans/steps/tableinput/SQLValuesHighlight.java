@@ -291,8 +291,8 @@ public class SQLValuesHighlight implements LineStyleListener {
 					"this","then","throw", "true","false","try",
 					"return",
 					"with", "while",
-					"start","connect","optimize","first","only","rows","sequence","blob","image","binary",
-					"column","decimal","distinct"
+					"start","connect","optimize","first","only","rows","sequence","blob","clob","image","binary",
+					"column","decimal","distinct","primary","key"
 			};
 
 		public JavaScanner() {
