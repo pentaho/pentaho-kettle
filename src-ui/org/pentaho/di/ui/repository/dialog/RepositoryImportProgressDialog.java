@@ -587,6 +587,5 @@ public class RepositoryImportProgressDialog extends Dialog
 			new ErrorDialog(shell, Messages.getString("RepositoryImportDialog.ErrorGeneral.Title"), Messages
 					.getString("RepositoryImportDialog.ErrorGeneral.Message"), e);
 		}
-		wLabel.setText(Messages.getString("RepositoryImportDialog.ImportFinished.Log"));
 	}
 }
