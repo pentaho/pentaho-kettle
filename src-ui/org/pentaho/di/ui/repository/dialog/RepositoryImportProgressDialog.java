@@ -349,8 +349,9 @@ public class RepositoryImportProgressDialog extends Dialog
                     1,
                     Messages.getString("RepositoryImportDialog.DontAskAgain.Label"),
                     !askDirectory);
+                MessageDialogWithToggle.setDefaultImage(GUIResource.getInstance().getImageSpoon());
                 int answer = mb.open();
-                makeDirectory = answer == 0;
+                makeDirectory = ((answer & 0xFF) == 0);
                 askDirectory = !mb.getToggleState();
 
                 // Cancel?
@@ -384,6 +385,7 @@ public class RepositoryImportProgressDialog extends Dialog
                 1,
                 Messages.getString("RepositoryImportDialog.DontAskAgain.Label"),
                 !askOverwrite);
+            MessageDialogWithToggle.setDefaultImage(GUIResource.getInstance().getImageSpoon());
             int answer = md.open();
             overwrite = (answer & 0xFF) == 0;
             askOverwrite = !md.getToggleState();
