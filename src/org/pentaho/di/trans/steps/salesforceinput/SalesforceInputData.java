@@ -16,13 +16,6 @@
 
 package org.pentaho.di.trans.steps.salesforceinput;
 
-
-import java.text.DateFormatSymbols;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
-
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
@@ -36,13 +29,6 @@ import com.sforce.soap.partner.QueryResult;
 public class SalesforceInputData extends BaseStepData implements StepDataInterface 
 {
 	public int    nr_repeats;
-	
-	public NumberFormat         nf;
-	public DecimalFormat        df;
-	public DecimalFormatSymbols dfs;
-	public SimpleDateFormat     daf;
-	public DateFormatSymbols    dafs;
-
     public long                rownr;
 	public Object[] previousRow;
 	public RowMetaInterface inputRowMeta;
@@ -64,12 +50,6 @@ public class SalesforceInputData extends BaseStepData implements StepDataInterfa
 	public SalesforceInputData()
 	{
 		super();
-
-		nf = NumberFormat.getInstance();
-		df = (DecimalFormat)nf;
-		dfs=new DecimalFormatSymbols();
-		daf = new SimpleDateFormat();
-		dafs= new DateFormatSymbols();
 
 		nr_repeats=0;
 		qr=null;

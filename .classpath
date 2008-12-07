@@ -100,5 +100,10 @@
 	<classpathentry kind="lib" path="libext/feeds/xml-apis.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/LucidDbClient.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/pentaho-database-2.0.2-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="libext/salesforce/axis.jar"/>
+	<classpathentry kind="lib" path="libext/salesforce/commons-discovery-0.2.jar"/>
+	<classpathentry kind="lib" path="libext/salesforce/jaxrpc.jar"/>
+	<classpathentry kind="lib" path="libext/salesforce/saaj.jar"/>
+	<classpathentry kind="lib" path="libext/salesforce/salesforce.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
