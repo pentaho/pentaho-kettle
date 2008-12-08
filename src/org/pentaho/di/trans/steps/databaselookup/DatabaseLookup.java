@@ -160,6 +160,8 @@ public class DatabaseLookup extends BaseStep implements StepInterface
         	// In that case, we already know the data type is OK.
         	if (!cacheHit)
         	{
+                incrementLinesInput();
+
 	        	int types[] = meta.getReturnValueDefaultType();
 	
 	        	// The assumption here is that the types are in the same order
