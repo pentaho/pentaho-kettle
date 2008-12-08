@@ -38,7 +38,6 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.w3c.dom.Node;
 
 
-
 /*
  * Created on 27-06-2008
  *
@@ -57,6 +56,10 @@ public class CloneRowMeta extends BaseStepMeta implements StepMetaInterface
 	/** clone flag field*/
 	private String cloneflagfield;
 	
+	private boolean nrcloneinfield;
+	
+	private String nrclonefield;
+	
 	public CloneRowMeta()
 	{
 		super(); // allocate BaseStepMeta
@@ -67,6 +70,8 @@ public class CloneRowMeta extends BaseStepMeta implements StepMetaInterface
         retval.append("    " + XMLHandler.addTagValue("nrclones", nrclones));
         retval.append("    " + XMLHandler.addTagValue("addcloneflag",   addcloneflag));
         retval.append("    " + XMLHandler.addTagValue("cloneflagfield", cloneflagfield));
+        retval.append("    " + XMLHandler.addTagValue("nrcloneinfield",   nrcloneinfield));
+        retval.append("    " + XMLHandler.addTagValue("nrclonefield", nrclonefield));
         return retval.toString();
     }
 	public void loadXML(Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters)
@@ -98,6 +103,24 @@ public class CloneRowMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		this.addcloneflag=addcloneflag;
 	}
+
+	
+	public boolean isNrCloneInField()
+	{
+		return nrcloneinfield;
+	}
+	public void setNrCloneInField(boolean nrcloneinfield)
+	{
+		this.nrcloneinfield=nrcloneinfield;
+	}
+	public String getNrCloneField()
+	{
+		return nrclonefield;
+	}
+	public void setNrCloneField(String nrclonefield)
+	{
+		this.nrclonefield=nrclonefield;
+	}
 	public String getCloneFlagField()
 	{
 		return cloneflagfield;
@@ -106,12 +129,15 @@ public class CloneRowMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		this.cloneflagfield=cloneflagfield;
 	}
+	
 	private void readData(Node stepnode) throws KettleXMLException
 	{
 		try{
 			nrclones = XMLHandler.getTagValue(stepnode, "nrclones");
 			addcloneflag = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "addcloneflag"));
 			cloneflagfield = XMLHandler.getTagValue(stepnode, "cloneflagfield");
+			nrcloneinfield = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "nrcloneinfield"));
+			nrclonefield = XMLHandler.getTagValue(stepnode, "nrclonefield");
 		}
 	    catch (Exception e)
         {
@@ -123,6 +149,9 @@ public class CloneRowMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		nrclones="0";
 		cloneflagfield=null;
+		nrclonefield=null;
+		nrcloneinfield=false;
+		addcloneflag=false;
 	}
 
 	public void readRep(Repository rep, long id_step, List<DatabaseMeta> databases, Map<String, Counter> counters)
@@ -132,6 +161,8 @@ public class CloneRowMeta extends BaseStepMeta implements StepMetaInterface
 			nrclones = rep.getStepAttributeString(id_step, "nrclones");
 			addcloneflag =  rep.getStepAttributeBoolean(id_step, "addcloneflag");
 			cloneflagfield = rep.getStepAttributeString(id_step, "cloneflagfield");
+			nrcloneinfield =  rep.getStepAttributeBoolean(id_step, "nrcloneinfield");
+			nrclonefield = rep.getStepAttributeString(id_step, "nrclonefield");
 		}
 		 catch (Exception e)
 	     {
@@ -147,6 +178,8 @@ public class CloneRowMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "nrclones", nrclones);
 			rep.saveStepAttribute(id_transformation, id_step, "addcloneflag",    addcloneflag);
 			rep.saveStepAttribute(id_transformation, id_step, "cloneflagfield", cloneflagfield);	
+			rep.saveStepAttribute(id_transformation, id_step, "nrcloneinfield",    nrcloneinfield);
+			rep.saveStepAttribute(id_transformation, id_step, "nrclonefield", nrclonefield);
 		}
 		catch (Exception e)
         {
@@ -199,7 +232,20 @@ public class CloneRowMeta extends BaseStepMeta implements StepMetaInterface
 	        }
 			remarks.add(cr);
 		}
-		
+		if(nrcloneinfield)
+		{
+			if (Const.isEmpty(nrclonefield))
+	        {
+	            error_message = Messages.getString("CloneRowMeta.CheckResult.NrCloneFieldMissing"); //$NON-NLS-1$
+	            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepinfo);
+	        }
+	        else
+	        {
+	            error_message = Messages.getString("CloneRowMeta.CheckResult.NrCloneFieldOk"); //$NON-NLS-1$
+	            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, error_message, stepinfo);
+	        }
+			remarks.add(cr);
+		}
 	
 		if (prev==null || prev.size()==0)
 		{

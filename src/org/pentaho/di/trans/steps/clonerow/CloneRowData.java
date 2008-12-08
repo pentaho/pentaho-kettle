@@ -25,13 +25,15 @@ import org.pentaho.di.trans.step.StepDataInterface;
 public class CloneRowData extends BaseStepData implements StepDataInterface
 {
 
-	public int nrclones;
+	public long nrclones;
 	public RowMetaInterface outputRowMeta;
+	public int indexOfNrCloneField;
 	
 	public CloneRowData()
 	{
 		super();
 		nrclones=0;
+		indexOfNrCloneField=-1;
 	}
 
 }

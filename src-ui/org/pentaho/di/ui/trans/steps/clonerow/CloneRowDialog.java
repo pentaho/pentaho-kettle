@@ -17,12 +17,15 @@
 package org.pentaho.di.ui.trans.steps.clonerow;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -40,7 +43,10 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.steps.clonerow.CloneRowMeta;
+import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.trans.steps.clonerow.Messages;
 
 public class CloneRowDialog extends BaseStepDialog implements StepDialogInterface
@@ -59,6 +65,15 @@ public class CloneRowDialog extends BaseStepDialog implements StepDialogInterfac
 	private Label        wladdCloneFlag;
 	private Button       waddCloneFlag;
 	private FormData     fdladdCloneFlag, fdaddCloneFlag;
+	
+    private Label wlisNrCloneInField,wlNrCloneField;
+    private CCombo wNrCloneField;
+    private FormData fdlisNrCloneInField,fdisNrCloneInField;
+	private FormData fdlNrCloneField,fdNrCloneField;
+	
+	private Button wisNrCloneInField;
+	
+    private boolean gotPreviousFields=false;
 	
 	public CloneRowDialog(Shell parent, Object in, TransMeta tr, String sname)
 	{
@@ -133,13 +148,79 @@ public class CloneRowDialog extends BaseStepDialog implements StepDialogInterfac
 		fdnrClone.right = new FormAttachment(100, 0);
 		wnrClone.setLayoutData(fdnrClone);
 		
+		//Is Nr clones defined in a Field		
+		wlisNrCloneInField = new Label(shell, SWT.RIGHT);
+		wlisNrCloneInField.setText(Messages.getString("CloneRowDialog.isNrCloneInField.Label"));
+		props.setLook(wlisNrCloneInField);
+		fdlisNrCloneInField = new FormData();
+		fdlisNrCloneInField.left = new FormAttachment(0, 0);
+		fdlisNrCloneInField.top = new FormAttachment(wnrClone, margin);
+		fdlisNrCloneInField.right = new FormAttachment(middle, -margin);
+		wlisNrCloneInField.setLayoutData(fdlisNrCloneInField);
+		
+		
+		wisNrCloneInField = new Button(shell, SWT.CHECK);
+		props.setLook(wisNrCloneInField);
+		wisNrCloneInField.setToolTipText(Messages.getString("CloneRowDialog.isNrCloneInField.Tooltip"));
+		fdisNrCloneInField = new FormData();
+		fdisNrCloneInField.left = new FormAttachment(middle, 0);
+		fdisNrCloneInField.top = new FormAttachment(wnrClone, margin);
+		wisNrCloneInField.setLayoutData(fdisNrCloneInField);		
+		SelectionAdapter lisNrCloneInField = new SelectionAdapter()
+        {
+            public void widgetSelected(SelectionEvent arg0)
+            {
+            	ActiveisNrCloneInField();
+            	input.setChanged();
+            }
+        };
+        wisNrCloneInField.addSelectionListener(lisNrCloneInField);
+        
+		// Filename field
+		wlNrCloneField=new Label(shell, SWT.RIGHT);
+        wlNrCloneField.setText(Messages.getString("CloneRowDialog.wlNrCloneField.Label"));
+        props.setLook(wlNrCloneField);
+        fdlNrCloneField=new FormData();
+        fdlNrCloneField.left = new FormAttachment(0, 0);
+        fdlNrCloneField.top  = new FormAttachment(wisNrCloneInField, margin);
+        fdlNrCloneField.right= new FormAttachment(middle, -margin);
+        wlNrCloneField.setLayoutData(fdlNrCloneField);
+        
+        
+        wNrCloneField=new CCombo(shell, SWT.BORDER | SWT.READ_ONLY);
+        wNrCloneField.setEditable(true);
+        props.setLook(wNrCloneField);
+        wNrCloneField.addModifyListener(lsMod);
+        fdNrCloneField=new FormData();
+        fdNrCloneField.left = new FormAttachment(middle, 0);
+        fdNrCloneField.top  = new FormAttachment(wisNrCloneInField, margin);
+        fdNrCloneField.right= new FormAttachment(100, 0);
+        wNrCloneField.setLayoutData(fdNrCloneField);
+        wNrCloneField.addFocusListener(new FocusListener()
+            {
+                public void focusLost(org.eclipse.swt.events.FocusEvent e)
+                {
+                }
+            
+                public void focusGained(org.eclipse.swt.events.FocusEvent e)
+                {
+                    Cursor busy = new Cursor(shell.getDisplay(), SWT.CURSOR_WAIT);
+                    shell.setCursor(busy);
+                    setisNrCloneInField();
+                    shell.setCursor(null);
+                    busy.dispose();
+                }
+            }
+        );   
+		
+		
 		// add clone flag?
 		wladdCloneFlag=new Label(shell, SWT.RIGHT);
 		wladdCloneFlag.setText(Messages.getString("CloneRowDialog.addCloneFlag.Label"));
 		props.setLook(wladdCloneFlag);
 		fdladdCloneFlag=new FormData();
 		fdladdCloneFlag.left  = new FormAttachment(0, 0);
-		fdladdCloneFlag.top   = new FormAttachment(wnrClone, margin);
+		fdladdCloneFlag.top   = new FormAttachment(wNrCloneField, margin);
 		fdladdCloneFlag.right = new FormAttachment(middle, -margin);
 		wladdCloneFlag.setLayoutData(fdladdCloneFlag);
 		waddCloneFlag=new Button(shell, SWT.CHECK);
@@ -147,7 +228,7 @@ public class CloneRowDialog extends BaseStepDialog implements StepDialogInterfac
  		props.setLook(waddCloneFlag);
 		fdaddCloneFlag=new FormData();
 		fdaddCloneFlag.left  = new FormAttachment(middle, 0);
-		fdaddCloneFlag.top   = new FormAttachment(wnrClone, margin);
+		fdaddCloneFlag.top   = new FormAttachment(wNrCloneField, margin);
 		fdaddCloneFlag.right = new FormAttachment(100, 0);
 		waddCloneFlag.setLayoutData(fdaddCloneFlag);
 		SelectionAdapter lsSelR = new SelectionAdapter()
@@ -208,6 +289,7 @@ public class CloneRowDialog extends BaseStepDialog implements StepDialogInterfac
 		
 		getData();
 		activeaddCloneFlag();
+		ActiveisNrCloneInField();
 		input.setChanged(changed);
 	
 		shell.open();
@@ -216,6 +298,29 @@ public class CloneRowDialog extends BaseStepDialog implements StepDialogInterfac
 				if (!display.readAndDispatch()) display.sleep();
 		}
 		return stepname;
+	}
+	private void setisNrCloneInField()
+	 {
+		 if(!gotPreviousFields)
+		 {
+		 try{
+	         String  field=wNrCloneField.getText(); 
+	         wNrCloneField.removeAll();
+			 RowMetaInterface r = transMeta.getPrevStepFields(stepname);
+			 if(r!=null) wNrCloneField.setItems(r.getFieldNames());
+			 if(field!=null) wNrCloneField.setText(field);	
+		 }catch(KettleException ke){
+				new ErrorDialog(shell, Messages.getString("CloneRowDialog.FailedToGetFields.DialogTitle"), Messages.getString("CloneRowDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+			}
+		 gotPreviousFields=true;
+		 }
+	 }
+	private void ActiveisNrCloneInField()
+	{
+		wlNrCloneField.setEnabled(wisNrCloneInField.getSelection());
+		wNrCloneField.setEnabled(wisNrCloneInField.getSelection());
+		wlnrClone.setEnabled(!wisNrCloneInField.getSelection());
+		wnrClone.setEnabled(!wisNrCloneInField.getSelection());
 	}
 	private void activeaddCloneFlag()
 	{
@@ -231,6 +336,8 @@ public class CloneRowDialog extends BaseStepDialog implements StepDialogInterfac
 		if (input.getNrClones() !=null)   wnrClone.setText(input.getNrClones());
 		waddCloneFlag.setSelection(input.isAddCloneFlag());
 		if (input.getCloneFlagField() !=null)   wcloneFlagField.setText(input.getCloneFlagField());
+		wisNrCloneInField.setSelection(input.isNrCloneInField());
+		if (input.getNrCloneField() !=null)   wNrCloneField.setText(input.getNrCloneField());
 	}
 	
 	private void cancel()
@@ -248,6 +355,8 @@ public class CloneRowDialog extends BaseStepDialog implements StepDialogInterfac
 		input.setNrClones(Const.toInt(wnrClone.getText(), 0)+"" );
 		input.setAddCloneFlag(waddCloneFlag.getSelection());
 		input.setCloneFlagField(wcloneFlagField.getText());
+		input.setNrCloneInField(wisNrCloneInField.getSelection());
+		input.setNrCloneField(wNrCloneField.getText());
 		dispose();
 	}
 }

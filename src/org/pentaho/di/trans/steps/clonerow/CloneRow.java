@@ -68,9 +68,31 @@ public class CloneRow extends BaseStep implements StepInterface
 				meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
 			}
 			
-			String nrclonesString=environmentSubstitute(meta.getNrClones());
-			data.nrclones=Const.toInt(nrclonesString, 0);
-			if(log.isDebug()) log.logDebug(toString(), Messages.getString("CloneRow.Log.NrClones",""+data.nrclones));
+            if(meta.isNrCloneInField())
+			{
+				String cloneinfieldname=meta.getNrCloneField();
+				if(Const.isEmpty(cloneinfieldname))
+				{
+					logError(Messages.getString("CloneRow.Error.NrCloneInFieldMissing"));
+					throw new KettleException(Messages.getString("CloneRow.Error.NrCloneInFieldMissing"));
+				}
+				// cache the position of the field			
+				if (data.indexOfNrCloneField<0)
+				{	
+					data.indexOfNrCloneField =getInputRowMeta().indexOfValue(cloneinfieldname);
+					if (data.indexOfNrCloneField<0)
+					{
+						// The field is unreachable !
+						logError(Messages.getString("CloneRow.Log.ErrorFindingField")+ "[" + cloneinfieldname+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+						throw new KettleException(Messages.getString("CloneRow.Exception.CouldnotFindField",cloneinfieldname)); //$NON-NLS-1$ //$NON-NLS-2$
+					}
+				}
+			}else
+			{
+				String nrclonesString=environmentSubstitute(meta.getNrClones());
+				data.nrclones=Const.toInt(nrclonesString, 0);
+				if(log.isDebug()) log.logDebug(toString(), Messages.getString("CloneRow.Log.NrClones",""+data.nrclones));
+			}
 		}
 		
 		if (meta.isAddCloneFlag())
@@ -83,6 +105,11 @@ public class CloneRow extends BaseStep implements StepInterface
             putRow(data.outputRowMeta, r);
 		}
 		
+		if(meta.isNrCloneInField())
+		{
+			data.nrclones=getInputRowMeta().getInteger(r,data.indexOfNrCloneField);
+			if(log.isDebug()) log.logDebug(toString(), Messages.getString("CloneRow.Log.NrClones",""+data.nrclones));
+		}
 		for (int i = 0; i < data.nrclones; i++)
 		{
 		    Object[] outputRowData = RowDataUtil.createResizedCopy(r, data.outputRowMeta.size());
@@ -90,7 +117,6 @@ public class CloneRow extends BaseStep implements StepInterface
 			if (meta.isAddCloneFlag())
 			{
 				outputRowData = RowDataUtil.addValueData(outputRowData, getInputRowMeta().size(), true);
-				
 			}
             putRow(data.outputRowMeta, outputRowData);
 		}
