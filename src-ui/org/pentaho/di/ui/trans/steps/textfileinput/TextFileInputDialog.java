@@ -2414,7 +2414,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		ZipInputStream   zipInputStream = null ;
 		GZIPInputStream  gzipInputStream = null ;
 		InputStream      inputStream  = null;
-        StringBuffer     lineStringBuffer = new StringBuffer(256);
+        StringBuilder     lineStringBuilder = new StringBuilder(256);
         int              fileFormatType = meta.getFileFormatTypeNr();
         
 		if (textFileList.nrOfFiles()>0)
@@ -2470,7 +2470,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
                     String line = null;
                     if (meta.hasHeader() || meta.getInputFields().length == 0)
                     {
-                        line = TextFileInput.getLine(log, reader, fileFormatType, lineStringBuffer);
+                        line = TextFileInput.getLine(log, reader, fileFormatType, lineStringBuilder);
                         if (line != null)
                         { 
                         	// Estimate the number of input fields...
@@ -2746,7 +2746,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		ZipInputStream  zi = null ;
 		GZIPInputStream gzi = null ;
 		InputStream     f  = null;
-        StringBuffer    lineStringBuffer = new StringBuffer(256);
+        StringBuilder    lineStringBuilder = new StringBuilder(256);
         int             fileFormatType = meta.getFileFormatTypeNr();
 		
 		List<String> retval = new ArrayList<String>();
@@ -2795,11 +2795,11 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
                     if (meta.isLayoutPaged() && meta.getNrLinesDocHeader()>0)
                     {
                         int skipped = 0;
-                        String line = TextFileInput.getLine(log, reader, fileFormatType, lineStringBuffer);
+                        String line = TextFileInput.getLine(log, reader, fileFormatType, lineStringBuilder);
                         while (line!=null && skipped<meta.getNrLinesDocHeader()-1)
                         {
                             skipped++;
-                            line = TextFileInput.getLine(log, reader, fileFormatType, lineStringBuffer);
+                            line = TextFileInput.getLine(log, reader, fileFormatType, lineStringBuilder);
                         }
                     }
                     
@@ -2807,22 +2807,22 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
                     if (meta.hasHeader() && meta.getNrHeaderLines()>0)
                     {
                         int skipped = 0;
-                        String line = TextFileInput.getLine(log, reader, fileFormatType, lineStringBuffer);
+                        String line = TextFileInput.getLine(log, reader, fileFormatType, lineStringBuilder);
                         while (line!=null && skipped<meta.getNrHeaderLines()-1)
                         {
                             skipped++;
-                            line = TextFileInput.getLine(log, reader, fileFormatType, lineStringBuffer);
+                            line = TextFileInput.getLine(log, reader, fileFormatType, lineStringBuilder);
                         }
                     }
                 }
                 
-				String line = TextFileInput.getLine(log, reader, fileFormatType, lineStringBuffer);
+				String line = TextFileInput.getLine(log, reader, fileFormatType, lineStringBuilder);
 				while(line!=null && (linenr<maxnr || nrlines==0))
 				{
 					retval.add(line);
 					firstlines+=line+Const.CR;
 					linenr++;
-					line = TextFileInput.getLine(log, reader, fileFormatType, lineStringBuffer);
+					line = TextFileInput.getLine(log, reader, fileFormatType, lineStringBuilder);
 				}
 			}
 			catch(Exception e)

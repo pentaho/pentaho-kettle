@@ -230,7 +230,7 @@ public class TextFileCSVImportProgressDialog
         // Sample <samples> rows...
         debug = "get first line";
 
-        StringBuffer lineBuffer = new StringBuffer(256);
+        StringBuilder lineBuffer = new StringBuilder(256);
         int fileFormatType = meta.getFileFormatTypeNr();
         
         // If the file has a header we overwrite the first line

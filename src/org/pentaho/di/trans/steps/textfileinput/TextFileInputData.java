@@ -88,7 +88,7 @@ public class TextFileInputData extends BaseStepData implements
 
     public RowMetaInterface outputRowMeta;
 
-    public StringBuffer lineStringBuffer;
+    public StringBuilder lineStringBuilder;
 
     public int fileFormatType;
 
@@ -117,6 +117,6 @@ public class TextFileInputData extends BaseStepData implements
 		
 		filterProcessor = null;
         
-         lineStringBuffer = new StringBuffer(256);
+         lineStringBuilder = new StringBuilder(256);
 	}
 }

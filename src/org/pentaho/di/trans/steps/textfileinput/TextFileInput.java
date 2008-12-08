@@ -76,7 +76,7 @@ public class TextFileInput extends BaseStep implements StepInterface
         this.transmeta = transMeta;
 	}
 
-	public static final String getLine(LogWriter log, InputStreamReader reader, int formatNr, StringBuffer line) throws KettleFileException
+	public static final String getLine(LogWriter log, InputStreamReader reader, int formatNr, StringBuilder line) throws KettleFileException
 	{
 		int c = 0;
 		line.setLength(0);
@@ -299,7 +299,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 
 					if (dencl)
 					{
-						StringBuffer sbpol = new StringBuffer(pol);
+						StringBuilder sbpol = new StringBuilder(pol);
 						int idx = sbpol.indexOf(inf.getEnclosure() + inf.getEnclosure());
 						while (idx >= 0)
 						{
@@ -516,7 +516,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 
 					if (dencl && Const.isEmpty(inf.getEscapeCharacter()))
 					{
-						StringBuffer sbpol = new StringBuffer(pol);
+						StringBuilder sbpol = new StringBuilder(pol);
 						int idx = sbpol.indexOf(inf.getEnclosure() + inf.getEnclosure());
 						while (idx >= 0)
 						{
@@ -678,14 +678,14 @@ public class TextFileInput extends BaseStep implements StepInterface
                             }
                             if (errorFields != null)
                             {
-                                StringBuffer sb = new StringBuffer(errorFields);
+                                StringBuilder sb = new StringBuilder(errorFields);
                                 if (sb.length() > 0) sb.append("\t"); // TODO document this change
                                 sb.append(valueMeta.getName());
                                 errorFields = sb.toString();
                             }
                             if (errorText != null)
                             {
-                                StringBuffer sb = new StringBuffer(errorText);
+                                StringBuilder sb = new StringBuilder(errorText);
                                 if (sb.length() > 0) sb.append(Const.CR);
                                 sb.append(message);
                                 errorText=sb.toString();
@@ -872,7 +872,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 				// Read a number of lines...
 				for (int i = 0; i < repeats && !data.doneReading; i++)
 				{
-					String line = getLine(log, data.isr, data.fileFormatType, data.lineStringBuffer); // Get one line of data;
+					String line = getLine(log, data.isr, data.fileFormatType, data.lineStringBuilder); // Get one line of data;
 					if (line != null)
 					{
 						// Filter row?
@@ -1313,7 +1313,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 				for (int i = 0; i < meta.getNrLinesDocHeader(); i++)
 				{
 					// Just skip these...
-					getLine(log, data.isr, data.fileFormatType, data.lineStringBuffer); // header and footer: not wrapped
+					getLine(log, data.isr, data.fileFormatType, data.lineStringBuilder); // header and footer: not wrapped
 					lineNumberInFile++;
 				}
 			}
@@ -1321,7 +1321,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 			String line;
 			for (int i = 0; i < bufferSize && !data.doneReading; i++)
 			{
-				line = getLine(log, data.isr, data.fileFormatType, data.lineStringBuffer);
+				line = getLine(log, data.isr, data.fileFormatType, data.lineStringBuilder);
 				if (line != null)
 				{
 					// when there is no header, check the filter for the first line
@@ -1409,7 +1409,7 @@ public class TextFileInput extends BaseStep implements StepInterface
             // {
             // //     value="";
             // }
-            // String null_cmp = Const.rightPad(new StringBuffer(null_value), pol.length());
+            // String null_cmp = Const.rightPad(new StringBuilder(null_value), pol.length());
 
             // calculate the file format type in advance so we can use a switch
             data.fileFormatType = meta.getFileFormatTypeNr();
