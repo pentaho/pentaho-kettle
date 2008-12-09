@@ -791,19 +791,19 @@ public class TextFileInput extends BaseStep implements StepInterface
                 
                 int idx = -1;
                 data.rowSet = findInputRowSet(meta.getAcceptingStepName());
-                RowMetaInterface prevInfoFields = getTransMeta().getPrevInfoFields(getStepMeta());
-                if (meta.isPassingThruFields())
-                {
-                    data.passThruFields = new HashMap<FileObject, Object[]>();
-                    infoStep = new RowMetaInterface[] { prevInfoFields };
-                    data.nrPassThruFields = prevInfoFields.size();
-                }
                 
                 Object[] fileRow = getRowFrom(data.rowSet);
                 while (fileRow!=null)
                 {
+                    RowMetaInterface prevInfoFields = data.rowSet.getRowMeta();
                     if (idx<0)
                     {
+                        if (meta.isPassingThruFields())
+                        {
+                            data.passThruFields = new HashMap<FileObject, Object[]>();
+                            infoStep = new RowMetaInterface[] { prevInfoFields };
+                            data.nrPassThruFields = prevInfoFields.size();
+                        }
                         idx = prevInfoFields.indexOfValue(meta.getAcceptingField());
                         if (idx<0)
                         {
