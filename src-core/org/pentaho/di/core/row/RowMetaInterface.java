@@ -338,13 +338,47 @@ public interface RowMetaInterface extends Cloneable
     public int compare(Object[] rowData1, Object[] rowData2) throws KettleValueException;
  
     /**
-     * Calculate a hashcode based on the content (not the index) of the data specified
-     * @param rowData The data to calculate a hashcode with
-     * @return the calculated hashcode
+     * Calculate a hashCode of the content (not the index) of the data specified
+     * NOTE: This method uses a simple XOR of the individual hashCodes which can
+     * result in a lot of collisions for similar types of data (e.g. [A,B] == [B,A] 
+     * and is not suitable for normal use.  It is kept to provide backward
+     * compatibility with CombinationLookup.lookupValues()
+     * @param rowData The data to calculate a hashCode with
+     * @return the calculated hashCode
+     * @throws KettleValueException in case there is a data conversion error
+     * @deprecated
+     */
+    public int oldXORHashCode(Object[] rowData) throws KettleValueException;
+    
+    /**
+     * Calculates a simple hashCode of all the native data objects in
+     * the supplied row.  This method will return a better distribution
+     * of values for rows of numbers or rows with the same values in
+     * different positions.
+     * NOTE: This method performs against the native values, not the values
+     * returned by ValueMeta.  This means that if you have two rows with
+     * different primitive values ['2008-01-01:12:30'] and ['2008-01-01:00:00']
+     * that use a format object to change the value (as Date yyyy-MM-dd), the
+     * hashCodes will be different resulting in the two rows not being considered
+     * equal via the hashCode even though compare() or equals() might consider them to be.
+     * @param rowData The data to calculate a hashCode with
+     * @return the calculated hashCode
      * @throws KettleValueException in case there is a data conversion error
      */
     public int hashCode(Object[] rowData) throws KettleValueException;
 
+    /**
+     * Calculates a hashcode of the converted value of all objects in the supplied
+     * row.  This method returns distinct values for nulls of different data types
+     * and will return the same hashCode for different native values that have a
+     * ValueMeta converting them into the same value 
+     * (e.g. ['2008-01-01:12:30'] and ['2008-01-01:00:00'] as Date yyyy-MM-dd)
+     * @param rowData The data to calculate a hashCode with
+     * @return the calculated hashCode
+     * @throws KettleValueException in case there is a data conversion error
+     */
+    public int convertedValuesHashCode(Object[] rowData) throws KettleValueException;
+    
     /**
      * @return a string with a description of all the metadata values of the complete row of metadata
      */

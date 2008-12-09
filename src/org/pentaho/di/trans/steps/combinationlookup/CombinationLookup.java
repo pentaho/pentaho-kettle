@@ -210,7 +210,8 @@ public class CombinationLookup extends BaseStep implements StepInterface
         return techKeyCreation == CREATION_METHOD_AUTOINC;
     }
 
-	private Object[] lookupValues(RowMetaInterface rowMeta, Object[] row) throws KettleException
+	@SuppressWarnings("deprecation")
+    private Object[] lookupValues(RowMetaInterface rowMeta, Object[] row) throws KettleException
 	{
 		Long val_key  = null;
         Long val_hash = null;
@@ -230,7 +231,7 @@ public class CombinationLookup extends BaseStep implements StepInterface
 			
             if (meta.useHash())
             {
-                val_hash = new Long( data.hashRowMeta.hashCode(hashRow) );
+                val_hash = new Long( data.hashRowMeta.oldXORHashCode(hashRow) );
                 lookupRow[lookupIndex] = val_hash;
                 lookupIndex++;
             }
