@@ -1018,15 +1018,19 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 			else
 				folder=filefolder;
 			
-    		if(!folder.exists())	
+			if(!folder.exists())	
     		{
-    			log.logError(toString(),Messages.getString("JobMoveFiles.Log.FolderNotExist",folder.getName().toString()));
     			if(create_destination_folder)
+    			{
+    				if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("JobMoveFiles.Log.FolderNotExist",folder.getName().toString()));
     				folder.createFolder();
+        			if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobMoveFiles.Log.FolderWasCreated", folder.getName().toString()));
+    			}
     			else
+    			{
+    				log.logError(toString(),Messages.getString("JobMoveFiles.Log.FolderNotExist",folder.getName().toString()));
     				return false;
-    			if(log.isDetailed())
-    				log.logDetailed(toString(), Messages.getString("JobMoveFiles.Log.FolderWasCreated", folder.getName().toString()));
+    			}
     		}
     		return true;
 		}

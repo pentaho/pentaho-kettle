@@ -620,13 +620,16 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 			
     		if(!folder.exists())	
     		{
-    			if(log.isDetailed())
-    				log.logDetailed("Folder", "Folder  " + folder.getName() + " does not exist !");
     			if(create_destination_folder)
-    				folder.createFolder();
-    			else
+    			{
+        			if(log.isDetailed()) log.logDetailed("Folder", "Folder  " + folder.getName() + " does not exist !");
+        			folder.createFolder();
+        			if(log.isDetailed()) log.logDetailed("Folder", "Folder parent was created.");
+    			}else
+    			{
+    				log.logError("Folder", "Folder  " + folder.getName() + " does not exist !");
     				return false;
-    			if(log.isDetailed()) log.logDetailed("Folder", "Folder parent was created.");
+    			}
     		}
     		return true;
 		}
