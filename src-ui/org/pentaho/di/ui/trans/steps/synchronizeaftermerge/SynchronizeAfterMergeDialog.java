@@ -507,7 +507,7 @@ public class SynchronizeAfterMergeDialog extends BaseStepDialog implements StepD
                     }
                     catch(KettleException e)
                     {
-                        log.logError(toString(), "Impossible de récupérer les champs depuis l'étape précédente");
+                        log.logError(toString(), "It was not possible to get the fields from the previous step(s).");
 
                     }
                 }

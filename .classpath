@@ -104,6 +104,6 @@
 	<classpathentry kind="lib" path="libext/salesforce/commons-discovery-0.2.jar"/>
 	<classpathentry kind="lib" path="libext/salesforce/jaxrpc.jar"/>
 	<classpathentry kind="lib" path="libext/salesforce/saaj.jar"/>
-	<classpathentry kind="lib" path="libext/salesforce/salesforce.jar"/>
+	<classpathentry kind="lib" path="libext/salesforce/salesforce-1.0.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

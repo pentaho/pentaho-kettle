@@ -827,19 +827,19 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
 							{
 								if(!vs.getTypeDesc().equalsIgnoreCase(vt.getTypeDesc()))
 								{
-									errorMsgDiffField+=Const.CR+ "Champ [" + vs.getName() + "] (flux: Type=" 
+									errorMsgDiffField+=Const.CR+ "The input field [" + vs.getName() + "] ( Type=" 
 									+ vs.getTypeDesc()
-									+"), (table: Type="+vt.getTypeDesc()+")"+Const.CR;
+									+") is not the same as the type in the target table (Type="+vt.getTypeDesc()+")"+Const.CR;
 									errorDiffField=true;
 								}else
 								{
 									// check Length
 									if((vt.getLength()<vs.getLength() || vs.getLength()==-1) && vt.getLength()!=-1)
 									{
-										errorMsgDiffLenField+=Const.CR+ "Le champ [" + vs.getName() + "] " 
+										errorMsgDiffLenField+=Const.CR+ "The input field [" + vs.getName() + "] " 
 										+ "(" + vs.getTypeDesc()+ ")" + 
-										" du flux a une longueur ("+vs.getLength() +")"+
-										" supérieure à celui de la table ("+vt.getLength()+")."+Const.CR;
+										" has a length ("+vs.getLength() +")"+
+										" that is higher than that in the target table ("+vt.getLength()+")."+Const.CR;
 										errorDiffLenField=true;
 									}
 								}

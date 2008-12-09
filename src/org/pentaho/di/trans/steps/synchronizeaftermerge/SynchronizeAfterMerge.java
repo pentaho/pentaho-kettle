@@ -78,7 +78,7 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface
 			{
 				// get dynamic table name
 				data.realTableName = data.inputRowMeta.getString(row,data.indexOfTableNameField);	
-		       if (Const.isEmpty(data.realTableName))  throw new KettleStepException("Le nom de la table n'a pas été renseigné!");
+		       if (Const.isEmpty(data.realTableName))  throw new KettleStepException("The name of the table is not specified!");
 				data.realSchemaTable = data.db.getDatabaseMeta().getQuotedSchemaTableCombination(data.realSchemaName, data.realTableName);
 			}
 			
@@ -110,7 +110,7 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface
 		            {
 		                String sql = data.db.getInsertStatement(data.realSchemaName,data.realTableName, data.insertRowMeta);
 		                
-		                if(log.isDebug()) logDebug("Préparation instruction Insert SQL : "+sql);
+		                if(log.isDebug()) logDebug("Preparation of the insert SQL statement: "+sql);
 		
 		                data.insertStatement = data.db.prepareSQL(sql);
 		                data.preparedStatements.put(data.realSchemaTable+"insert", data.insertStatement);
@@ -163,7 +163,7 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface
 			            {
 			                String sql = getLookupStatement(data.inputRowMeta);
 			                
-			                if(log.isDebug()) logDebug("Préparation instruction Insertion SQL : "+sql);
+			                if(log.isDebug()) logDebug("Prï¿½paration instruction Insertion SQL : "+sql);
 			
 			                data.lookupStatement = data.db.prepareSQL(sql);
 			                data.preparedStatements.put(data.realSchemaTable+"lookup", data.lookupStatement);
@@ -231,7 +231,7 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface
 				            	
 				            	data.updateStatement= data.db.prepareSQL(sql);
 				            	data.preparedStatements.put(data.realSchemaTable+"update", data.updateStatement);
-				                if(log.isDebug()) logDebug("Préparation instruction Update SQL : "+sql);
+				                if(log.isDebug()) logDebug("Preparation of the Update SQL statement : "+sql);
 				            }
 					    }
 			            
@@ -283,7 +283,7 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface
 				        	String sql =getDeleteStatement(data.inputRowMeta);
 			        		data.deleteStatement= data.db.prepareSQL(sql);
 			        		data.preparedStatements.put(data.realSchemaTable+"delete", data.deleteStatement);
-			        		if(log.isDebug()) logDebug("Préparation instruction SQL : "+sql);
+			        		if(log.isDebug()) logDebug("Preparation of the Delete SQL statement : "+sql);
 				        }
 					}
 					
@@ -702,7 +702,7 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface
 	                data.indexOfTableNameField = data.inputRowMeta.indexOfValue(meta.gettablenameField());
 	                if (data.indexOfTableNameField<0)
 	                {
-	                    String message = "Impossible de trouver dans le flux d'entrée, le champ contenant le nom de la table ["+meta.gettablenameField()+"]";
+	                    String message = "It was not possible to find table ["+meta.gettablenameField()+"] in the input fields.";
 	                    log.logError(toString(), message);
 	                    throw new KettleStepException(message);
 	                }
@@ -710,7 +710,7 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface
 			}else
 			{
 				data.realTableName = environmentSubstitute(meta.getTableName());
-			    if (Const.isEmpty(data.realTableName))  throw new KettleStepException("Le nom de la table n'a pas été renseigné!");
+			    if (Const.isEmpty(data.realTableName))  throw new KettleStepException("The table name is not specified (or the input field is empty)");
 				data.realSchemaTable = data.db.getDatabaseMeta().getQuotedSchemaTableCombination(data.realSchemaName, data.realTableName);	
 			}
 
@@ -720,7 +720,7 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface
                 data.indexOfOperationOrderField = data.inputRowMeta.indexOfValue(meta.getOperationOrderField());
                 if (data.indexOfOperationOrderField<0)
                 {
-                    String message = "Impossible de trouver dans le flux d'entrée, le champ ["+meta.getOperationOrderField()+"] contenant l'opération à effectuer!";
+                    String message = "It was not possible to find operation field ["+meta.getOperationOrderField()+"] in the input stream!";
                     log.logError(toString(), message);
                     throw new KettleStepException(message);
                 }
@@ -777,8 +777,6 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface
                  }
             }
             
-			
-			
 			// Cache the position of the compare fields in Row row
 			//
 			data.valuenrs = new int[meta.getUpdateLookup().length];
@@ -801,7 +799,7 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface
 		            if (data.lookupStatement==null)
 		            {
 		                String sql = getLookupStatement(data.inputRowMeta);
-		                if(log.isDebug()) logDebug("Préparation instruction Recherche SQL : "+sql);
+		                if(log.isDebug()) logDebug("Preparation of the lookup SQL statement : "+sql);
 		
 		                data.lookupStatement = data.db.prepareSQL(sql);
 		                data.preparedStatements.put(data.realSchemaTable+"lookup", data.lookupStatement);
@@ -815,7 +813,7 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface
 	            {
 	                String sql = data.db.getInsertStatement(data.realSchemaName,data.realTableName, data.insertRowMeta);
 	                
-	                if(log.isDebug()) logDebug("Préparation instruction Insertion SQL : "+sql);
+	                if(log.isDebug()) logDebug("Preparation of the Insert SQL statement : "+sql);
 	
 	                data.insertStatement = data.db.prepareSQL(sql);
 	                data.preparedStatements.put(data.realSchemaTable+"insert", data.insertStatement);
@@ -830,7 +828,7 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface
 	            	
 	            	data.updateStatement= data.db.prepareSQL(sql);
 	            	data.preparedStatements.put(data.realSchemaTable+"update", data.updateStatement);
-	                if(log.isDebug()) logDebug("Préparation instruction Mise à jour  SQL : "+sql);
+	                if(log.isDebug()) logDebug("Preparation of the Update SQL statement : "+sql);
 	            }
 				
 				// Prepare delete statement
@@ -841,7 +839,7 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface
 	
 	        		data.deleteStatement= data.db.prepareSQL(sql);
 	        		data.preparedStatements.put(data.realSchemaTable+"delete", data.deleteStatement);
-	        		if(log.isDebug()) logDebug("Préparation instruction Suppression SQL : "+sql);	
+	        		if(log.isDebug()) logDebug("Preparation of the Delete SQL statement : "+sql);	
 		        }
 			}
 			

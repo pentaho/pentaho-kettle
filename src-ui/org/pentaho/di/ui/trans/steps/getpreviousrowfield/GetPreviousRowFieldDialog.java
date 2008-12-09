@@ -182,7 +182,7 @@ public class GetPreviousRowFieldDialog extends BaseStepDialog implements StepDia
                     }
                     catch(KettleException e)
                     {
-                    	log.logError(toString(), "Impossible de récupérer les champs depuis l'étape précédente");
+                    	log.logError(toString(), "It was not possible to get the fields from the previous step(s).");
                     }
                 }
             }
@@ -268,24 +268,16 @@ public class GetPreviousRowFieldDialog extends BaseStepDialog implements StepDia
             {
                 public void run()
                 {
-                    // Add the newly create fields.
-                    //
-                    int nrNonEmptyFields = wFields.nrNonEmpty();
-                    for (int i=0;i<nrNonEmptyFields;i++)
-                    {
-                        TableItem item = wFields.getNonEmpty(i);
-                    }
+                    Set<String> keySet = fields.keySet();
+                    List<String> entries = new ArrayList<String>(keySet);
+                    
+                    String fieldNames[] = (String[]) entries.toArray(new String[entries.size()]);
+
+                    Const.sortStrings(fieldNames);
+                    ciKey[0].setComboValues(fieldNames);
                 }
             }
         );
-        
-        Set<String> keySet = fields.keySet();
-        List<String> entries = new ArrayList<String>(keySet);
-        
-        String fieldNames[] = (String[]) entries.toArray(new String[entries.size()]);
-
-        Const.sortStrings(fieldNames);
-        ciKey[0].setComboValues(fieldNames);
     }
 	/**
 	 * Copy information from the meta-data input to the dialog fields.

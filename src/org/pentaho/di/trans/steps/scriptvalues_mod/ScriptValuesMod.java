@@ -91,7 +91,7 @@ public class ScriptValuesMod extends BaseStep implements StepInterface, ScriptVa
 
   // public static Row insertRow;
 
-  public static Script script;
+  public Script script;
 
   public ScriptValuesMod(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
       Trans trans) {

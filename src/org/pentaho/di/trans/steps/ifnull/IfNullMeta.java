@@ -273,7 +273,7 @@ public class IfNullMeta extends BaseStepMeta implements StepMetaInterface
 	    }
       catch (Exception e)
       {
-          throw new KettleXMLException("Impossible de charger les informations de l'étape depuis le fichier XML", e);
+          throw new KettleXMLException("It was not possibke to load the IfNull metadata from XML", e);
       }
 	}
    public String getXML()

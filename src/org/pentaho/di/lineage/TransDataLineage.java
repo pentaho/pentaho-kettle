@@ -129,7 +129,7 @@ public class TransDataLineage {
 			
 			StepMeta originStepMeta = transMeta.findStep(valueMeta.getOrigin(), stepMeta);
 			if (originStepMeta!=null) {
-				List<StepMeta> list = fieldStepsMap.get(originStepMeta);
+				/*List<StepMeta> list = */ fieldStepsMap.get(originStepMeta);
 			}
 		}
 	}
