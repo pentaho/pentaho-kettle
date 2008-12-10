@@ -68,7 +68,7 @@ public class DetectLastRow extends BaseStep implements StepInterface
 				//
 				// Output the last row with last row indicator set to true.
 				//
-		        outputRow = RowDataUtil.addRowData(r, getInputRowMeta().size(), data.getTrueArray());
+		        outputRow = RowDataUtil.addRowData(previousRow, getInputRowMeta().size(), data.getTrueArray());
 				putRow(data.outputRowMeta, outputRow);  // copy row to output rowset(s);
 
 				if (log.isRowLevel()) {
@@ -85,7 +85,7 @@ public class DetectLastRow extends BaseStep implements StepInterface
 
 		if(!first)
 		{
-	        outputRow = RowDataUtil.addRowData(r, getInputRowMeta().size(), data.getFalseArray());
+	        outputRow = RowDataUtil.addRowData(previousRow, getInputRowMeta().size(), data.getFalseArray());
 			putRow(data.outputRowMeta, outputRow);  // copy row to output rowset(s);
 
 			if (log.isRowLevel()) {
