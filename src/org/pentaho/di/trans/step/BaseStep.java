@@ -1668,12 +1668,25 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
 			}
     	}
     	
+	    // To reduce stress on the locking system we are going to allow
+	    // The buffer to grow beyond "a few" entries.
+	    // We'll only do that if the previous step has not ended...
+	    //
+        if (isUsingThreadPriorityManagment() && !rowSet.isDone() && rowSet.size()<= ( transMeta.getSizeRowset()>>6 ) && !isStopped())
+        {
+        	try { Thread.sleep(0,1); } catch (InterruptedException e) { }
+        }
+    	    	
+        // Grab a row...  If nothing received after a timeout, try again.
+        //
         Object[] rowData = rowSet.getRow();
         while (rowData==null && !rowSet.isDone() && !stopped.get())
         {
         	rowData=rowSet.getRow();
         }
         
+        // Still nothing: no more rows to be had?
+        //
         if (rowData==null && rowSet.isDone()) {
         	// Try one more time to get a row to make sure we don't get a race-condition between the get and the isDone()
         	//
