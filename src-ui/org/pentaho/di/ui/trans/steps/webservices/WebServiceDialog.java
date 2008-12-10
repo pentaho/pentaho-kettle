@@ -93,8 +93,8 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
     private Label wlRepeatingElement;
     private TextVar wRepeatingElement;
 
-    private Label wlBodyAsString;
-    private Button wBodyAsString;
+    private Label wlReplyAsString;
+    private Button wReplyAsString;
 
     private Label wlHttpLogin;
     private TextVar wHttpLogin;
@@ -714,7 +714,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         wPassInputData.setSelection(meta.isPassingInputData());
         wCompatible.setSelection(meta.isCompatible());
         wRepeatingElement.setText(Const.NVL(meta.getRepeatingElementName(), ""));
-        wBodyAsString.setSelection(meta.isReturningBodyAsString());
+        wReplyAsString.setSelection(meta.isReturningReplyAsString());
         
         if (wURL.getText() != null && !"".equals(wURL.getText())) //$NON-NLS-1$
         {
@@ -783,7 +783,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
     	webServiceMeta.setPassingInputData(wPassInputData.getSelection());
     	webServiceMeta.setCompatible(wCompatible.getSelection());
     	webServiceMeta.setRepeatingElementName(wRepeatingElement.getText());
-    	webServiceMeta.setReturningBodyAsString(wBodyAsString.getSelection());
+    	webServiceMeta.setReturningReplyAsString(wReplyAsString.getSelection());
 
         if (wsdlOperation != null)
         {
@@ -1001,7 +1001,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         FormData fdURL = new FormData();
         fdURL.left = new FormAttachment(middle, 0);
         fdURL.top = new FormAttachment(0, margin);
-        fdURL.right = new FormAttachment(wbURL, -margin);
+        fdURL.right = new FormAttachment(wbFile, -margin);
         wURL.setLayoutData(fdURL);
 
         // Operation
@@ -1124,22 +1124,22 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
 
         // Return the SOAP body as a String or not?
         //
-        wlBodyAsString = new Label(compositeTabWebService, SWT.RIGHT);
-        wlBodyAsString.setText(Messages.getString("WebServiceDialog.BodyAsString.Label")); //$NON-NLS-1$
-        props.setLook(wlBodyAsString);
+        wlReplyAsString = new Label(compositeTabWebService, SWT.RIGHT);
+        wlReplyAsString.setText(Messages.getString("WebServiceDialog.ReplyAsString.Label")); //$NON-NLS-1$
+        props.setLook(wlReplyAsString);
         FormData fdlBodyAsString = new FormData();
         fdlBodyAsString.left = new FormAttachment(0, 0);
         fdlBodyAsString.top = new FormAttachment(wRepeatingElement, margin);
         fdlBodyAsString.right = new FormAttachment(middle, -margin);
-        wlBodyAsString.setLayoutData(fdlBodyAsString);
-        wBodyAsString = new Button(compositeTabWebService, SWT.CHECK);
-        wBodyAsString.setToolTipText(Messages.getString("WebServiceDialog.BodyAsString.Tooltip")); //$NON-NLS-1$
-        props.setLook(wBodyAsString);
+        wlReplyAsString.setLayoutData(fdlBodyAsString);
+        wReplyAsString = new Button(compositeTabWebService, SWT.CHECK);
+        wReplyAsString.setToolTipText(Messages.getString("WebServiceDialog.ReplyAsString.Tooltip")); //$NON-NLS-1$
+        props.setLook(wReplyAsString);
         FormData fdBodyAsString = new FormData();
         fdBodyAsString.top = new FormAttachment(wRepeatingElement, margin);
         fdBodyAsString.left = new FormAttachment(middle, 0);
         fdBodyAsString.right = new FormAttachment(100, 0);
-        wBodyAsString.setLayoutData(fdBodyAsString);
+        wReplyAsString.setLayoutData(fdBodyAsString);
 
 
         //////////////////////////
@@ -1195,7 +1195,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         FormData fdHttpAuth = new FormData();
         fdHttpAuth.left = new FormAttachment(0, 0);
         fdHttpAuth.right = new FormAttachment(100, 0);
-        fdHttpAuth.top = new FormAttachment(wBodyAsString, margin);
+        fdHttpAuth.top = new FormAttachment(wReplyAsString, margin);
         gHttpAuth.setLayoutData(fdHttpAuth);
 
         // END HTTP AUTH GROUP

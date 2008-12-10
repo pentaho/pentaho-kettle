@@ -86,8 +86,8 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface
     /** The name of the repeating element name.  Empty = a single row return */
     private String repeatingElementName;
     
-    /** Is this step giving back the soap body as an XML string? */
-    private boolean returningBodyAsString;
+    /** Is this step giving back the complete reply from the service as an XML string? */
+    private boolean returningReplyAsString;
     
     public WebServiceMeta()
     {
@@ -205,7 +205,7 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface
         retval.append("    " + XMLHandler.addTagValue("passingInputData", isPassingInputData()));
         retval.append("    " + XMLHandler.addTagValue("compatible", isCompatible()));
         retval.append("    " + XMLHandler.addTagValue("repeating_element", getRepeatingElementName()));
-        retval.append("    " + XMLHandler.addTagValue("body_as_string", isReturningBodyAsString()));
+        retval.append("    " + XMLHandler.addTagValue("reply_as_string", isReturningReplyAsString()));
         
         // Store the field parameters
         //
@@ -264,7 +264,7 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface
         String compat = XMLHandler.getTagValue(stepnode, "compatible");
         setCompatible( Const.isEmpty(compat) || "Y".equalsIgnoreCase(compat) );
         setRepeatingElementName(XMLHandler.getTagValue(stepnode, "repeating_element"));
-        setReturningBodyAsString( "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "body_as_string")) );
+        setReturningReplyAsString( "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "reply_as_string")) );
         
         // Load the input fields mapping
         //
@@ -326,7 +326,7 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface
         setPassingInputData(rep.getStepAttributeBoolean(id_step, "passingInputData"));
         setCompatible(rep.getStepAttributeBoolean(id_step, 0, "compatible", true)); // Default to true for backward compatibility
         setRepeatingElementName(rep.getStepAttributeString(id_step, "repeating_element"));
-        setReturningBodyAsString(rep.getStepAttributeBoolean(id_step, 0, "body_as_string"));
+        setReturningReplyAsString(rep.getStepAttributeBoolean(id_step, 0, "reply_as_string"));
 
         // Load the input fields mapping
         //
@@ -378,7 +378,7 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface
         rep.saveStepAttribute(id_transformation, id_step, "passingInputData", isPassingInputData());
         rep.saveStepAttribute(id_transformation, id_step, "compatible", isCompatible());
         rep.saveStepAttribute(id_transformation, id_step, "repeating_element", getRepeatingElementName());
-        rep.saveStepAttribute(id_transformation, id_step, "body_as_string", isReturningBodyAsString());
+        rep.saveStepAttribute(id_transformation, id_step, "reply_as_string", isReturningReplyAsString());
 
         // Load the input fields mapping
         //
@@ -629,16 +629,16 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface
 	}
 
 	/**
-	 * @return the returningBodyAsString
+	 * @return true if the reply from the service is simply passed on as a String, mostly in XML
 	 */
-	public boolean isReturningBodyAsString() {
-		return returningBodyAsString;
+	public boolean isReturningReplyAsString() {
+		return returningReplyAsString;
 	}
 
 	/**
-	 * @param returningBodyAsString the returningBodyAsString to set
+	 * @param returningReplyAsString true if the reply from the service is simply passed on as a String, mostly in XML
 	 */
-	public void setReturningBodyAsString(boolean returningBodyAsString) {
-		this.returningBodyAsString = returningBodyAsString;
+	public void setReturningReplyAsString(boolean returningReplyAsString) {
+		this.returningReplyAsString = returningReplyAsString;
 	}
 }

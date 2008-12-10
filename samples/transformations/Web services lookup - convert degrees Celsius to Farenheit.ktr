@@ -16,6 +16,7 @@
       <rejected/>
       <connection/>
       <table/>
+      <step_performance_table/>
       <use_batchid>Y</use_batchid>
       <use_logfield>N</use_logfield>
     </log>
@@ -34,11 +35,19 @@
     <feedback_size>50000</feedback_size>
     <using_thread_priorities>N</using_thread_priorities>
     <shared_objects_file/>
+    <capture_step_performance>N</capture_step_performance>
+    <step_performance_capturing_delay>1000</step_performance_capturing_delay>
     <dependencies>
     </dependencies>
     <partitionschemas>
     </partitionschemas>
     <slaveservers>
+         <slaveserver><name>localhost:8084</name><hostname>localhost</hostname><port>8084</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>localhost:8083</name><hostname>localhost</hostname><port>8083</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>localhost:8080 master</name><hostname>localhost</hostname><port>8080</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>Y</master></slaveserver>
+         <slaveserver><name>localhost:8082</name><hostname>localhost</hostname><port>8082</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>localhost:8081</name><hostname>localhost</hostname><port>8081</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>localhost:8080</name><hostname>localhost</hostname><port>8080</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
     </slaveservers>
     <clusterschemas>
     </clusterschemas>
@@ -91,9 +100,9 @@
            <method>none</method>
            <schema_name/>
            </partitioning>
-    <wsURL>http:&#47;&#47;webservices.daelab.net&#47;temperatureconversions&#47;TemperatureConversions.wso?WSDL</wsURL>
+    <wsURL>http:&#47;&#47;webservices.daehosting.com&#47;services&#47;TemperatureConversions.wso?WSDL</wsURL>
     <wsOperation>CelciusToFahrenheit</wsOperation>
-    <wsOperationNamespace>http:&#47;&#47;webservices.daelab.net&#47;temperature</wsOperationNamespace>
+    <wsOperationNamespace>http:&#47;&#47;webservices.daehosting.com&#47;temperature</wsOperationNamespace>
     <wsInFieldContainer/>
     <wsInFieldArgument/>
     <wsOutFieldContainer>CelciusToFahrenheitResult</wsOutFieldContainer>
@@ -104,6 +113,9 @@
     <httpPassword/>
     <callStep>1</callStep>
     <passingInputData>Y</passingInputData>
+    <compatible>N</compatible>
+    <repeating_element/>
+    <reply_as_string>N</reply_as_string>
     <fieldsIn>
     <field>
         <name>degreesCelcius</name>
@@ -113,9 +125,9 @@
       </fieldsIn>
     <fieldsOut>
     <field>
-        <name>degreesFarenheit</name>
-        <wsName>CelciusToFahrenheitResult</wsName>
-        <xsdType>decimal</xsdType>
+        <name>CelciusToFahrenheitResult</name>
+        <wsName>m:CelciusToFahrenheitResult</wsName>
+        <xsdType>String</xsdType>
     </field>
       </fieldsOut>
      <cluster_schema/>

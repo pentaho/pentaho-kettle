@@ -42,6 +42,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowDataUtil;
+import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -109,18 +110,32 @@ public class WebService extends BaseStep implements StepInterface
 
         Object[] vCurrentRow = getRow();
 
+    	if (first)
+    	{
+    		first=false;
+    	
+    		if (getInputRowMeta()!=null) {
+    			data.outputRowMeta = getInputRowMeta().clone();
+    		} else {
+    			data.outputRowMeta = new RowMeta();
+    		}
+    		meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
+    		
+    		defineIndexList(getInputRowMeta(), vCurrentRow);
+    		startXML();
+    	}
+    	else
+    	{
+    		// Input from previous steps, no longer getting any rows, call it a day...
+    		//
+    		if (vCurrentRow==null) {
+    			setOutputDone();
+    			return false;
+    		}
+    	}
+    	
         if (vCurrentRow != null)
         {
-        	if (first)
-        	{
-        		first=false;
-        		
-        		data.outputRowMeta = getInputRowMeta().clone();
-        		meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
-        		
-        		defineIndexList(getInputRowMeta(), vCurrentRow);
-        		startXML();
-        	}
             parseRow(getInputRowMeta(), vCurrentRow);
 
             nbRowProcess++;
@@ -135,6 +150,8 @@ public class WebService extends BaseStep implements StepInterface
             startXML();
         }
 
+        // No input received, this one lookup execution is all we're going to do.
+        //
         if (vCurrentRow == null)
         {
             setOutputDone();
@@ -262,6 +279,8 @@ public class WebService extends BaseStep implements StepInterface
 
     private void endXML()
     {
+    	if (xml==null) startXML();
+    	
         if (meta.getInFieldContainerName() != null)
         {
             xml.append("      </" + NS_PREFIX + ":" + meta.getInFieldContainerName() + ">\n");
@@ -447,13 +466,13 @@ public class WebService extends BaseStep implements StepInterface
 	    		
 	    	} else {
 	    		
-	    		if (meta.isReturningBodyAsString()) {
+	    		if (meta.isReturningReplyAsString()) {
 	    			
 	    			// Just return the body node as an XML string...
 	    			//
 	    			StringWriter nodeXML = new StringWriter();
 	    			transformer.transform(new DOMSource(bodyNode), new StreamResult(nodeXML));
-	    			String xml = nodeXML.toString();
+	    			String xml = response; // nodeXML.toString();
 	    			Object[] outputRowData = createNewRow(rowData);
 	    			int index = rowData==null ? 0 : getInputRowMeta().size();
 	    			outputRowData[index++] = xml;
@@ -481,7 +500,7 @@ public class WebService extends BaseStep implements StepInterface
 	    	
 	    	// The section below is just for repeating nodes.  If we don't have those it ends here.
 	    	//
-	    	if (nodeList==null) return;
+	    	if (nodeList==null || meta.isReturningReplyAsString()) return;
 
             // Allocate a result row in case we are dealing with a single result row
             //
@@ -494,7 +513,7 @@ public class WebService extends BaseStep implements StepInterface
 	    	for (int i=0;i<nodeList.getLength();i++) {
 	    		Node node = nodeList.item(i);
 	    		
-	    		if (meta.isReturningBodyAsString()) {
+	    		if (meta.isReturningReplyAsString()) {
 	    			
 	    			// Just return the body node as an XML string...
 	    			//
