@@ -42,7 +42,7 @@ import org.w3c.dom.Node;
  * Created on 08-07-2008
  */
 public class RandomValueMeta extends BaseStepMeta implements StepMetaInterface {
-	public final static int TYPE_SYSTEM_INFO_NONE = 0;
+	public final static int TYPE_RANDOM_NONE = 0;
 
 	public final static int TYPE_RANDOM_NUMBER = 1;
 
@@ -56,13 +56,11 @@ public class RandomValueMeta extends BaseStepMeta implements StepMetaInterface {
 			null,
 			new RandomValueMetaFunction(TYPE_RANDOM_NUMBER, "random number",
 					Messages.getString("RandomValueMeta.TypeDesc.RandomNumber")),
-			new RandomValueMetaFunction(
-					TYPE_RANDOM_INTEGER,
-					"random integer",
+			new RandomValueMetaFunction(TYPE_RANDOM_INTEGER,"random integer",
 					Messages.getString("RandomValueMeta.TypeDesc.RandomInteger")),
 			new RandomValueMetaFunction(TYPE_RANDOM_STRING, "random string",
 					Messages.getString("RandomValueMeta.TypeDesc.RandomString")),
-			new RandomValueMetaFunction(TYPE_RANDOM_UUID, "random string",
+			new RandomValueMetaFunction(TYPE_RANDOM_UUID, "random uuid",
 					Messages.getString("RandomValueMeta.TypeDesc.RandomUUID")), };
 
 	private String fieldName[];
@@ -285,7 +283,7 @@ public class RandomValueMeta extends BaseStepMeta implements StepMetaInterface {
 		// See if we have input streams leading to this step!
 		int nrRemarks = remarks.size();
 		for (int i = 0; i < fieldName.length; i++) {
-			if (fieldType[i] <= TYPE_SYSTEM_INFO_NONE) {
+			if (fieldType[i] <= TYPE_RANDOM_NONE) {
 				CheckResult cr = new CheckResult(
 						CheckResultInterface.TYPE_RESULT_ERROR,
 						Messages.getString("RandomValueMeta.CheckResult.FieldHasNoType",fieldName[i]), stepMeta);
