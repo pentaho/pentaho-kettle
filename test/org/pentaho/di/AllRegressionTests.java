@@ -31,6 +31,7 @@ import org.pentaho.di.trans.steps.constant.ConstantTest;
 import org.pentaho.di.trans.steps.csvinput.CsvInput1Test;
 import org.pentaho.di.trans.steps.csvinput.CsvInput2Test;
 import org.pentaho.di.trans.steps.databaselookup.DatabaseLookupTest;
+import org.pentaho.di.trans.steps.detectlastrow.DetectLastRowStepTest;
 import org.pentaho.di.trans.steps.getxmldata.GetXMLDataTest;
 import org.pentaho.di.trans.steps.injector.InjectorTest;
 import org.pentaho.di.trans.steps.nullif.NullIfTest;
@@ -87,7 +88,8 @@ public class AllRegressionTests
         suite.addTestSuite(InjectorTest.class);
         suite.addTestSuite(RowGeneratorTest.class);
         suite.addTestSuite(ConstantTest.class);
-        suite.addTestSuite(AppendTest.class);        
+        suite.addTestSuite(AppendTest.class);   
+        suite.addTestSuite(DetectLastRowStepTest.class);        
         suite.addTestSuite(BlockingStepTest.class);
         suite.addTestSuite(SortRowsTest.class);
         suite.addTestSuite(ValueMapperTest.class);
