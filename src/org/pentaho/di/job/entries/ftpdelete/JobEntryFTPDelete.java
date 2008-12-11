@@ -685,6 +685,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 				int i=0;
 				if(vfilelist!=null)
 				{
+					filelist = new String[vfilelist.size()];
 					Iterator<SFTPv3DirectoryEntry> iterator = vfilelist.iterator();
 					
 					while (iterator.hasNext()) 
@@ -694,21 +695,19 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 						if (dirEntry != null && !dirEntry.filename.equals(".") && !dirEntry.filename.equals("..") 
 								&& !isDirectory(sshclient, sourceFolder+dirEntry.filename))
 						{
-							filelist[i]=dirEntry.filename;
+							filelist[i++]=dirEntry.filename;
 						}
-								
-						
 					}
 				}
 			}
 
 			if(log.isDetailed()) log.logDetailed(toString(), "JobEntryFTPDelete.FoundNFiles",""+filelist.length);
-			if(filelist.length==0)
+			int found = filelist == null ? 0 : filelist.length;
+			if(found==0)
 			{
 				result.setResult(true);
 				return result;
-			}
-			
+			}			
 			
 			Pattern pattern = null;
 			if (copyprevious ) 
