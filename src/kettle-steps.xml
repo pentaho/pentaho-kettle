@@ -1269,7 +1269,8 @@
 		</tooltip>
 		<image-uri>ui/images/RIN.png</image-uri>
 	</step>
-			<step id="SalesforceInput">
+	
+	<step id="SalesforceInput">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.SalesforceInput")
 		</description>
@@ -1280,4 +1281,17 @@
 		</tooltip>
 		<image-uri>ui/images/SFI.png</image-uri>
 	</step>
+	
+	<step id="Formula">
+		<description>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.Formula")
+		</description>
+		<class-name>org.pentaho.di.trans.steps.formula.FormulaMeta</class-name>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<tooltip>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.Formula")
+		</tooltip>
+		<image-uri>ui/images/FRM.png</image-uri>
+	</step>
+	
 </steps>
