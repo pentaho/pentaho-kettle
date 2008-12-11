@@ -157,7 +157,7 @@ public class Trans implements VariableSpace
     private boolean preparing;
     private boolean initializing;
     private boolean running;
-    private AtomicBoolean finished;
+    private final AtomicBoolean finished;
     private AtomicBoolean paused;
 
     private boolean readyToStart;    
@@ -688,15 +688,8 @@ public class Trans implements VariableSpace
 			};
     		stepPerformanceSnapShotTimer.schedule(timerTask, 100, transMeta.getStepPerformanceCapturingDelay());
     	}
-    	
-        // Now start all the threads...
-    	//
-        for (int i=0;i<steps.size();i++)
-        {
-            steps.get(i).step.start();
-        }
-        
-        // Now start a thread to monitor the running transformation...
+
+    	// Now start a thread to monitor the running transformation...
         //
         finished.set(false);
         paused.set(false);
@@ -718,6 +711,13 @@ public class Trans implements VariableSpace
 		
         running=true;
         
+        // Now start all the threads...
+    	//
+        for (int i=0;i<steps.size();i++)
+        {
+            steps.get(i).step.start();
+        }
+
         if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("Trans.Log.TransformationHasAllocated",String.valueOf(steps.size()),String.valueOf(rowsets.size()))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
     
