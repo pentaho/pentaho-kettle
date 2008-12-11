@@ -200,7 +200,7 @@ public class JobEntryAddResultFilenames extends JobEntryBase implements Cloneabl
     List<RowMetaAndData> rows = result.getRows();
     RowMetaAndData resultRow = null;
 
-    int NrErrFiles = 0;
+    int nrErrFiles = 0;
     result.setResult(true);
 
 
@@ -234,7 +234,7 @@ public class JobEntryAddResultFilenames extends JobEntryBase implements Cloneabl
         if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryAddResultFilenames.ProcessingRow", filefolder_previous, fmasks_previous)); //$NON-NLS-1$
 
           if (!ProcessFile(filefolder_previous, fmasks_previous,parentJob,result)) {
-        	  NrErrFiles = NrErrFiles++;
+        	  nrErrFiles++;
           }
        
       }
@@ -245,16 +245,16 @@ public class JobEntryAddResultFilenames extends JobEntryBase implements Cloneabl
           // ok we can process this file/folder
     	  if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("JobEntryAddResultFilenames.ProcessingArg", arguments[i], filemasks[i])); //$NON-NLS-1$
           if (!ProcessFile(arguments[i], filemasks[i],parentJob,result)) {
-        	  NrErrFiles = NrErrFiles++;
+        	  nrErrFiles++;
           }
       }
     }
    
  
-    if (NrErrFiles>0)
+    if (nrErrFiles>0)
     {
     	result.setResult(false);
-    	result.setNrErrors(NrErrFiles);
+    	result.setNrErrors(nrErrFiles);
     }
     
 
