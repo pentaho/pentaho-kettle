@@ -588,7 +588,7 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
 				rep.saveStepAttribute(id_transformation, id_step, i, "aggregate_name",    aggregateField[i]); //$NON-NLS-1$
 				rep.saveStepAttribute(id_transformation, id_step, i, "aggregate_subject", subjectField[i]); //$NON-NLS-1$
 				rep.saveStepAttribute(id_transformation, id_step, i, "aggregate_type",    getTypeDesc(aggregateType[i])); //$NON-NLS-1$
-				rep.saveStepAttribute(id_transformation, id_step, i, "value_field", valueField[i]); 
+				rep.saveStepAttribute(id_transformation, id_step, i, "aggregate_value_field", valueField[i]); 
 			}
 		}
 		catch(Exception e)
