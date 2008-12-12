@@ -152,29 +152,32 @@ public class FormulaMeta extends BaseStepMeta implements StepMetaInterface
 	
 	@Override
 	public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException {
-        
-		getAllFields(row, name, info, nextStep, space, false);
-        
-    }
-	
-	public void getAllFields(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space, boolean all) throws KettleStepException {
-        
         for (int i=0;i<formula.length;i++)
         {
             FormulaMetaFunction fn = formula[i];
-            if (!fn.isRemovedFromResult() || all)
-            {
-                if (fn.getFieldName()!=null && fn.getFieldName().length()>0) // It's a new field!
-                {
-                    ValueMetaInterface v = new ValueMeta(fn.getFieldName(), fn.getValueType());
-                    v.setLength(fn.getValueLength(), fn.getValuePrecision());
-                    v.setOrigin(name);
-                    row.addValueMeta(v);
-                }
+            if (Const.isEmpty(fn.getReplaceField())) { // Not replacing a field.
+		        if (!Const.isEmpty(fn.getFieldName())) // It's a new field!
+		        {
+		            ValueMetaInterface v = new ValueMeta(fn.getFieldName(), fn.getValueType());
+		            v.setLength(fn.getValueLength(), fn.getValuePrecision());
+		            v.setOrigin(name);
+		            row.addValueMeta(v);
+		        }
+            } else { // Replacing a field
+            	int index = row.indexOfValue(fn.getReplaceField());
+            	if (index<0) {
+            		throw new KettleStepException("Unknown field specified to replace with a formula result: ["+fn.getReplaceField()+"]");
+            	}
+            	// Change the data type etc.
+            	//
+            	ValueMetaInterface v = row.getValueMeta(index).clone();
+	            v.setLength(fn.getValueLength(), fn.getValuePrecision());
+	            v.setOrigin(name);
+	            row.setValueMeta(index, v); // replace it
             }
         }
     }
-    
+	    
 	/**
 	 * Checks the settings of this step and puts the findings in a remarks List.
 	 * @param remarks The list to put the remarks in @see org.pentaho.di.core.CheckResult

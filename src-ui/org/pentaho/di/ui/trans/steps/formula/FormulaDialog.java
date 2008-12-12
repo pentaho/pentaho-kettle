@@ -150,7 +150,7 @@ public class FormulaDialog extends BaseStepDialog implements StepDialogInterface
                     new ColumnInfo(Messages.getString("FormulaDialog.ValueType.Column"),    ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() ),
                     new ColumnInfo(Messages.getString("FormulaDialog.Length.Column"),       ColumnInfo.COLUMN_TYPE_TEXT,   false),
                     new ColumnInfo(Messages.getString("FormulaDialog.Precision.Column"),    ColumnInfo.COLUMN_TYPE_TEXT,   false),
-                    new ColumnInfo(Messages.getString("FormulaDialog.Remove.Column"),       ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { Messages.getString("System.Combo.No"), Messages.getString("System.Combo.Yes") } )
+                    new ColumnInfo(Messages.getString("FormulaDialog.Replace.Column"),      ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {  } ),
                };   
         
         wFields=new TableView(transMeta, shell, 
@@ -269,22 +269,27 @@ public class FormulaDialog extends BaseStepDialog implements StepDialogInterface
                 {
                     // Add the newly create fields.
                     //
+                	/*
                     int nrNonEmptyFields = wFields.nrNonEmpty();
                     for (int i=0;i<nrNonEmptyFields;i++)
                     {
                         TableItem item = wFields.getNonEmpty(i);
                         fields.put(item.getText(1), new Integer(1000000+i));  // The number is just to debug the origin of the fieldname
                     }
+                    */
+                    
+                    Set<String> keySet = fields.keySet();
+                    List<String> entries = new ArrayList<String>(keySet);
+                    
+                    String fieldNames[] = entries.toArray(new String[entries.size()]);
+
+                    Const.sortStrings(fieldNames);
+                    
+                    colinf[5].setComboValues(fieldNames);
                 }
             }
         );
         
-        Set<String> keySet = fields.keySet();
-        List<String> entries = new ArrayList<String>(keySet);
-        
-        String fieldNames[] = entries.toArray(new String[entries.size()]);
-
-        Const.sortStrings(fieldNames);
     }
 
     /**
@@ -304,7 +309,7 @@ public class FormulaDialog extends BaseStepDialog implements StepDialogInterface
             item.setText(3, Const.NVL(ValueMeta.getTypeDesc(fn.getValueType()), ""));
             if (fn.getValueLength()>=0) item.setText(4, ""+fn.getValueLength());
             if (fn.getValuePrecision()>=0) item.setText(5, ""+fn.getValuePrecision());
-            item.setText(6, fn.isRemovedFromResult()?Messages.getString("System.Combo.Yes"):Messages.getString("System.Combo.No"));
+            item.setText(6, Const.NVL(fn.getReplaceField(), ""));
         }
         
         wFields.setRowNums();
@@ -336,9 +341,9 @@ public class FormulaDialog extends BaseStepDialog implements StepDialogInterface
             int    valueType       = ValueMeta.getType( item.getText(3) );
             int    valueLength     = Const.toInt( item.getText(4), -1 );
             int    valuePrecision  = Const.toInt( item.getText(5), -1 );
-            boolean removed        = Messages.getString("System.Combo.Yes").equalsIgnoreCase( item.getText(6) );
+            String replaceField    = item.getText(6);
                         
-            currentMeta.getFormula()[i] = new FormulaMetaFunction(fieldName, formula, valueType, valueLength, valuePrecision, removed);
+            currentMeta.getFormula()[i] = new FormulaMetaFunction(fieldName, formula, valueType, valueLength, valuePrecision, replaceField);
         }
         
         if ( ! originalMeta.equals(currentMeta) )

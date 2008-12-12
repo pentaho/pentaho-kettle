@@ -20,7 +20,7 @@ public class FormulaMetaFunction implements Cloneable
     private int    valueLength;
     private int    valuePrecision;
     
-    private boolean removedFromResult;
+    private String replaceField;
     
     /**
      * @param fieldName
@@ -32,14 +32,14 @@ public class FormulaMetaFunction implements Cloneable
      * @param valueLength
      * @param valuePrecision
      */
-    public FormulaMetaFunction(String fieldName, String formula, int valueType, int valueLength, int valuePrecision, boolean removedFromResult)
+    public FormulaMetaFunction(String fieldName, String formula, int valueType, int valueLength, int valuePrecision, String replaceField)
     {
         this.fieldName = fieldName;
         this.formula = formula;
         this.valueType = valueType;
         this.valueLength = valueLength;
         this.valuePrecision = valuePrecision;
-        this.removedFromResult = removedFromResult;
+        this.replaceField = replaceField;
     }
 
     public boolean equals(Object obj)
@@ -77,7 +77,8 @@ public class FormulaMetaFunction implements Cloneable
         xml+=XMLHandler.addTagValue("value_type",      ValueMeta.getTypeDesc(valueType));
         xml+=XMLHandler.addTagValue("value_length",    valueLength);
         xml+=XMLHandler.addTagValue("value_precision", valuePrecision);
-        xml+=XMLHandler.addTagValue("remove",          removedFromResult);
+        xml+=XMLHandler.addTagValue("replace_field",   replaceField);
+        
         
         xml+="</"+XML_TAG+">";
      
@@ -91,7 +92,7 @@ public class FormulaMetaFunction implements Cloneable
         valueType      = ValueMeta.getType( XMLHandler.getTagValue(calcnode, "value_type") );
         valueLength    = Const.toInt( XMLHandler.getTagValue(calcnode, "value_length"), -1 );
         valuePrecision = Const.toInt( XMLHandler.getTagValue(calcnode, "value_precision"), -1 );
-        removedFromResult = "Y".equalsIgnoreCase(XMLHandler.getTagValue(calcnode, "remove"));
+        replaceField   = XMLHandler.getTagValue(calcnode, "replace_field");
     }
     
     public void saveRep(Repository rep, long id_transformation, long id_step, int nr) throws KettleException
@@ -101,7 +102,7 @@ public class FormulaMetaFunction implements Cloneable
         rep.saveStepAttribute(id_transformation, id_step, nr, "value_type",          ValueMeta.getTypeDesc(valueType));
         rep.saveStepAttribute(id_transformation, id_step, nr, "value_length",        valueLength);
         rep.saveStepAttribute(id_transformation, id_step, nr, "value_precision",     valuePrecision);
-        rep.saveStepAttribute(id_transformation, id_step, nr, "remove",              removedFromResult);
+        rep.saveStepAttribute(id_transformation, id_step, nr, "replace_field",       replaceField);
     }
 
     public FormulaMetaFunction(Repository rep, long id_step, int nr) throws KettleException
@@ -111,7 +112,7 @@ public class FormulaMetaFunction implements Cloneable
         valueType      = ValueMeta.getType( rep.getStepAttributeString(id_step, nr, "value_type") );
         valueLength    = (int)rep.getStepAttributeInteger(id_step, nr,  "value_length");
         valuePrecision = (int)rep.getStepAttributeInteger(id_step, nr, "value_precision");
-        removedFromResult = rep.getStepAttributeBoolean(id_step, nr, "remove");
+        replaceField   = rep.getStepAttributeString(id_step, nr, "replace_field");
     }
     
     /**
@@ -179,22 +180,6 @@ public class FormulaMetaFunction implements Cloneable
     }
 
     /**
-     * @return Returns the removedFromResult.
-     */
-    public boolean isRemovedFromResult()
-    {
-        return removedFromResult;
-    }
-
-    /**
-     * @param removedFromResult The removedFromResult to set.
-     */
-    public void setRemovedFromResult(boolean removedFromResult)
-    {
-        this.removedFromResult = removedFromResult;
-    }
-
-    /**
      * @return the formula
      */
     public String getFormula()
@@ -209,4 +194,18 @@ public class FormulaMetaFunction implements Cloneable
     {
         this.formula = formula;
     }
+
+	/**
+	 * @return the replaceField
+	 */
+	public String getReplaceField() {
+		return replaceField;
+	}
+
+	/**
+	 * @param replaceField the replaceField to set
+	 */
+	public void setReplaceField(String replaceField) {
+		this.replaceField = replaceField;
+	}
 }
