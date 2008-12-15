@@ -1293,5 +1293,17 @@
 		</tooltip>
 		<image-uri>ui/images/FRM.png</image-uri>
 	</step>
+
+	<step id="Janino">
+		<description>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.Janino")
+		</description>
+		<class-name>org.pentaho.di.trans.steps.janino.JaninoMeta</class-name>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<tooltip>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.Janino")
+		</tooltip>
+		<image-uri>ui/images/GenericTransform.png</image-uri>
+	</step>
 	
 </steps>
