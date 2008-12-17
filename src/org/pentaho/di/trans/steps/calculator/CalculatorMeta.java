@@ -37,24 +37,16 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.w3c.dom.Node;
 
-
-
 /**
  * Contains the meta-data for the Calculator step: calculates predefined formula's
  * 
- * Created on 08-sep-2005
+ * @since 08 september 2005
  */
-
 public class CalculatorMeta extends BaseStepMeta implements StepMetaInterface
 {
     /** The calculations to be performed */
     private CalculatorMetaFunction[] calculation;
     
-    public CalculatorMeta()
-	{
-		super(); // allocate BaseStepMeta
-	}
-
     public CalculatorMetaFunction[] getCalculation()
     {
         return calculation;
@@ -84,12 +76,13 @@ public class CalculatorMeta extends BaseStepMeta implements StepMetaInterface
     
     public String getXML()
     {
-        StringBuffer retval = new StringBuffer(300);
+        StringBuilder retval = new StringBuilder(300);
        
-        if (calculation!=null)
-        for (int i=0;i<calculation.length;i++)
-        {
-            retval.append("       ").append(calculation[i].getXML()).append(Const.CR);
+        if (calculation!=null)  {
+        	for (int i=0;i<calculation.length;i++)
+        	{
+        		retval.append("       ").append(calculation[i].getXML()).append(Const.CR);
+        	}
         }
         
         return retval.toString();
@@ -112,7 +105,9 @@ public class CalculatorMeta extends BaseStepMeta implements StepMetaInterface
         if (calculation!=null)
         {
             retval.allocate(calculation.length);
-            for (int i=0;i<calculation.length;i++) retval.getCalculation()[i] = (CalculatorMetaFunction) calculation[i].clone();
+            for (int i=0;i<calculation.length;i++)  {
+            	retval.getCalculation()[i] = (CalculatorMetaFunction) calculation[i].clone();
+            }
         }
         else
         {
@@ -146,7 +141,8 @@ public class CalculatorMeta extends BaseStepMeta implements StepMetaInterface
         }
 	}
 	
-    public void getFields(RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException
+    public void getFields(RowMetaInterface row, String origin, RowMetaInterface[] info, 
+    		              StepMeta nextStep, VariableSpace space) throws KettleStepException
     {
         for (int i=0;i<calculation.length;i++)
         {
@@ -369,29 +365,35 @@ public class CalculatorMeta extends BaseStepMeta implements StepMetaInterface
         return rowMeta;
     }
     
-    public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+    public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, 
+    		          RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
 	{
-		CheckResult cr;
-		if (prev==null || prev.size()==0)
-		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_WARNING, Messages.getString("CalculatorMeta.CheckResult.ExpectedInputError"), stepMeta);
-			remarks.add(cr);
-		}
-		else
-		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("CalculatorMeta.CheckResult.FieldsReceived", ""+prev.size()), stepMeta);
-			remarks.add(cr);
-		}
-		
+		CheckResult cr = null;
+				
 		// See if we have input streams leading to this step!
 		if (input.length>0)
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("CalculatorMeta.CheckResult.ExpectedInputOk"), stepMeta);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, 
+					             Messages.getString("CalculatorMeta.CheckResult.ExpectedInputOk"), stepMeta);
 			remarks.add(cr);
+			
+			if (prev==null || prev.size()==0)
+			{
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_WARNING, 
+						             Messages.getString("CalculatorMeta.CheckResult.ExpectedInputError"), stepMeta);
+				remarks.add(cr);
+			}
+			else
+			{
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, 
+						             Messages.getString("CalculatorMeta.CheckResult.FieldsReceived", ""+prev.size()), stepMeta);
+				remarks.add(cr);
+			}
 		}
 		else
 		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("CalculatorMeta.CheckResult.ExpectedInputError"), stepMeta);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, 
+					             Messages.getString("CalculatorMeta.CheckResult.ExpectedInputError"), stepMeta);
 			remarks.add(cr);
 		}
 	}
@@ -405,6 +407,4 @@ public class CalculatorMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		return new CalculatorData();
 	}
-
-
 }
