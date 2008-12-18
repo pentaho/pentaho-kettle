@@ -458,6 +458,7 @@ public class XMLHandler
         {           
             // Check and open XML document
             dbf  = DocumentBuilderFactory.newInstance();
+            dbf.setIgnoringComments(true);
             dbf.setNamespaceAware(namespaceAware);
             db   = dbf.newDocumentBuilder();
             // even dbf.setValidating(false) will the parser NOT prevent from checking the existance of the DTD

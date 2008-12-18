@@ -3510,7 +3510,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			}
 			// otherwise try by looking at the root node
 			Document document = XMLHandler.loadXMLFile(fname);
-			Node root = document.getFirstChild();
+			Node root = document.getDocumentElement();
         	if( listener == null ) {
 				listener = fileNodeMap.get(root.getNodeName());
 			}
