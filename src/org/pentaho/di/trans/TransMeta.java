@@ -24,6 +24,7 @@ import java.util.Map;
 import org.apache.commons.vfs.FileName;
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemException;
+import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResult;
@@ -84,6 +85,7 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.step.StepPartitioningMeta;
 import org.pentaho.di.trans.steps.mapping.MappingMeta;
+import org.pentaho.di.ui.core.gui.GUIResource;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -2945,15 +2947,16 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
                         boolean overwrite = Props.isInitialized() ? props.replaceExistingDatabaseConnections() : true;
                         if (askOverwrite)
                         {
+                    		MessageDialogWithToggle.setDefaultImage(GUIResource.getInstance().getImageSpoon());
                         	if( SpoonFactory.getInstance() != null ) {
-                        		Object res[] = SpoonFactory.getInstance().messageDialogWithToggle("Warning",  
+                        		Object res[] = SpoonFactory.getInstance().messageDialogWithToggle(Messages.getString("TransMeta.Message.Warning"),  
                         						null,
-                        						"Connection ["+dbcon.getName()+"] already exists, do you want to overwrite this database connection?",
+                        						Messages.getString("TransMeta.Message.OverwriteConnectionYN",dbcon.getName()),
                         						Const.WARNING,
                         						new String[] { Messages.getString("System.Button.Yes"), //$NON-NLS-1$ 
                              						   Messages.getString("System.Button.No") },//$NON-NLS-1$
                         						1,
-                        						"Please, don't show this warning anymore.",
+                        						Messages.getString("TransMeta.Message.DoNotShowWarning"),
                         						!props.askAboutReplacingDatabaseConnections() );
                         		int idx = ((Integer)res[0]).intValue();
                         		boolean toggleState = ((Boolean)res[1]).booleanValue();
