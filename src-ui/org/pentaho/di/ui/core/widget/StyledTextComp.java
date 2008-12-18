@@ -408,4 +408,8 @@ public class StyledTextComp extends Composite{
 			undoStack.add(0, rro);
 		}
 	}
+	
+	public StyledText getStyledText() {
+		return styledText;
+	}
 }
