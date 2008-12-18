@@ -1306,4 +1306,15 @@
 		<image-uri>ui/images/GenericTransform.png</image-uri>
 	</step>
 	
+	<step id="ReservoirSampling">
+		<description>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.ReservoirSampling")
+		</description>
+		<class-name>org.pentaho.di.trans.steps.reservoirsampling.ReservoirSamplingMeta</class-name>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@EXPERIMENTAL.getName()</category>
+		<tooltip>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.ReservoirSampling")
+		</tooltip>
+		<image-uri>ui/images/RS.png</image-uri>
+	</step>
 </steps>

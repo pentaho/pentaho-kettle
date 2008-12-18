@@ -1,0 +1,11 @@
+sepallength,sepalwidth,petallength,petalwidth,class
+0006.40,0002.80,0005.60,0002.20,Iris-virginica 
+0004.90,0003.00,0001.40,0000.20,Iris-setosa    
+0006.30,0002.50,0004.90,0001.50,Iris-versicolor
+0006.40,0003.20,0004.50,0001.50,Iris-versicolor
+0006.30,0002.80,0005.10,0001.50,Iris-virginica 
+0005.10,0003.30,0001.70,0000.50,Iris-setosa    
+0006.00,0002.20,0005.00,0001.50,Iris-virginica 
+0006.50,0003.00,0005.20,0002.00,Iris-virginica 
+0004.30,0003.00,0001.10,0000.10,Iris-setosa    
+0006.30,0002.30,0004.40,0001.30,Iris-versicolor
