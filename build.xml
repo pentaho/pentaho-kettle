@@ -48,14 +48,14 @@
 	
 	  <target name="compile-core" depends="init" description="compile the core source code " >
 	  	<echo>Compiling Kettle CORE...</echo>
-	    <javac 
-	    	   destdir="${classes-core}"
-	    	   target="5"
-	    	   source="5"
-	           deprecation="true"
-	    	   debug="${debug}"
-             optimize="${optimize}"
-	    	>
+        <javac fork="true"
+            destdir="${classes-core}"
+            target="5"
+            source="5"
+            deprecation="true"
+            debug="${debug}"
+            optimize="${optimize}"
+            memorymaximumsize="256m">
 	    	<src path="${src-core}"/>
 	    	
 	    	<classpath id="cp-kettle-core">
@@ -67,22 +67,22 @@
 
 	  <target name="compile" depends="compile-core" description="compile the source " >
 	  	<echo>Compiling Kettle...</echo>
-	    <javac 
-	    	   destdir="${classes}"
-	    	   target="5"
-	    	   source="5"
-	           deprecation="true"
-	    	   debug="${debug}"
-               optimize="${optimize}"
-	    	>
-	    	<src path="${src}"/>
-	    	
-	    	<classpath id="cp-kettle">
-				<pathelement path="${classes-core}"/>
-				<fileset dir="${libext}" 		includes="*.jar *.zip"/>
-				<fileset dir="${libext}/"	    includes="**/*.jar *.zip"/>
-		  		</classpath>
-	    </javac>
+        <javac fork="true"
+            destdir="${classes}"
+            target="5"
+            source="5"
+            deprecation="true"
+            debug="${debug}"
+            optimize="${optimize}"
+            memorymaximumsize="256m">
+            <src path="${src}"/>
+
+            <classpath id="cp-kettle">
+                <pathelement path="${classes-core}"/>
+                <fileset dir="${libext}" 		includes="*.jar *.zip"/>
+                <fileset dir="${libext}/"	    includes="**/*.jar *.zip"/>
+            </classpath>
+        </javac>
 	  </target>
 	  
 	  <target name="compile-ui" depends="kettle-core, kettle" description="compile the UI source " >
