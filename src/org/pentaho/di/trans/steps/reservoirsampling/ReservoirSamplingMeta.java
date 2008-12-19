@@ -22,7 +22,8 @@
 
 package org.pentaho.di.trans.steps.reservoirsampling;
 
-import org.eclipse.swt.widgets.Shell;
+import java.util.List;
+import java.util.Map;
 
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
@@ -40,14 +41,9 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
-import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.di.ui.trans.steps.reservoirsampling.ReservoirSamplingDialog;
 import org.w3c.dom.Node;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * Contains the meta data for the ReservoirSampling step.
@@ -299,30 +295,7 @@ public class ReservoirSamplingMeta
     }
   }
 
-  /**
-   * Get the UI for this step.
-   *
-   * @param shell a <code>Shell</code> value
-   * @param meta a <code>StepMetaInterface</code> value
-   * @param transMeta a <code>TransMeta</code> value
-   * @param name a <code>String</code> value
-   * @return a <code>StepDialogInterface</code> value
-   */
-  public StepDialogInterface getDialog(Shell shell, 
-                                       StepMetaInterface meta,
-                                       TransMeta transMeta, 
-                                       String name) {
-
-    // Not sure how this works in Kettle. Guessing that
-    // reflection is used to look for this method (as it
-    // is not defined in BaseStepMeta or StepMetaInterface. If
-    // this method is ommitted, Kettle seems to look for a UI
-    // class in org.pentaho.di.ui.
-
-    return new ReservoirSamplingDialog(shell, meta, transMeta, name);
-  }
-
-  /**
+   /**
    * Get the executing step, needed by Trans to launch a step.
    *
    * @param stepMeta the step info
