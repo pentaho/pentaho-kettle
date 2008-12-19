@@ -24,7 +24,6 @@ import java.util.Map;
 import org.apache.commons.vfs.FileName;
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemException;
-import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResult;
@@ -51,7 +50,6 @@ import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.gui.GUIPositionInterface;
 import org.pentaho.di.core.gui.Point;
-import org.pentaho.di.core.gui.SpoonFactory;
 import org.pentaho.di.core.gui.UndoInterface;
 import org.pentaho.di.core.listeners.FilenameChangedListener;
 import org.pentaho.di.core.listeners.NameChangedListener;
@@ -85,7 +83,6 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.step.StepPartitioningMeta;
 import org.pentaho.di.trans.steps.mapping.MappingMeta;
-import org.pentaho.di.ui.core.gui.GUIResource;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -2947,6 +2944,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
                         boolean overwrite = Props.isInitialized() ? props.replaceExistingDatabaseConnections() : true;
                         if (askOverwrite)
                         {
+                        	// TODO: fix with a listener in the core/engine library that gets optionally injected by Spoon/UI
+                        	/*
                     		MessageDialogWithToggle.setDefaultImage(GUIResource.getInstance().getImageSpoon());
                         	if( SpoonFactory.getInstance() != null ) {
                         		Object res[] = SpoonFactory.getInstance().messageDialogWithToggle(Messages.getString("TransMeta.Message.Warning"),  
@@ -2963,6 +2962,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
                                 props.setAskAboutReplacingDatabaseConnections(!toggleState);
                                 overwrite = ((idx&0xFF)==0); // Yes means: overwrite
                             }
+                            */
                         }
     
                         if (overwrite)
