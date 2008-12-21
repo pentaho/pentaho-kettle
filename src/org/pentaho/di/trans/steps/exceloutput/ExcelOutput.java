@@ -68,6 +68,15 @@ public class ExcelOutput extends BaseStep implements StepInterface
 			data.previousMeta = getInputRowMeta().clone();
 			//do not set first=false, below is another part that uses first
 			
+			if (meta.isAutoSizeColums())
+			{
+				if(meta.getOutputFields()!=null && meta.getOutputFields().length>0)
+					data.fieldsWidth = new int[meta.getOutputFields().length];
+				else
+					data.fieldsWidth = new int[data.previousMeta.size()];
+			}
+			
+			
 			if(meta.isDoNotOpenNewFileInit())
 			{
 				data.oneFileOpened=true;
@@ -370,7 +379,6 @@ public class ExcelOutput extends BaseStep implements StepInterface
 			// If we have fields specified: list them in this order!
 			if (meta.getOutputFields()!=null && meta.getOutputFields().length>0)
 			{
-				if(meta.isAutoSizeColums()) data.fieldsWidth = new int[meta.getOutputFields().length];
 				for (int i=0;i<meta.getOutputFields().length;i++)
 				{
                     String fieldName = meta.getOutputFields()[i].getName();
@@ -381,7 +389,6 @@ public class ExcelOutput extends BaseStep implements StepInterface
 			else
 			if (data.previousMeta!=null)  // Just put all field names in the header/footer
 			{
-				if(meta.isAutoSizeColums()) data.fieldsWidth = new int[data.previousMeta.size()];
 				for (int i=0;i<data.previousMeta.size();i++)
 				{
 					String fieldName = data.previousMeta.getFieldNames()[i];
