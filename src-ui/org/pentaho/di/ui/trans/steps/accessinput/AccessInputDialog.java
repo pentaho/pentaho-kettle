@@ -18,6 +18,7 @@ package org.pentaho.di.ui.trans.steps.accessinput;
 
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.swt.SWT;
@@ -487,8 +488,8 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 		
 		wbbTablename=new Button(wContentComp, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbbTablename);
- 		wbbTablename.setText(Messages.getString("AccessInputDialog.FilenameBrowse.Button"));
- 		wbbTablename.setToolTipText(Messages.getString("System.Tooltip.BrowseForFileOrDirAndAdd"));
+ 		wbbTablename.setText(Messages.getString("AccessInputDialog.TableBrowse.Button"));
+ 		wbbTablename.setToolTipText(Messages.getString("AccessInputDialog.TableBrowse.Tooltip"));
 		fdbTablename=new FormData();
 		fdbTablename.right= new FormAttachment(100, 0);
 		fdbTablename.top  = new FormAttachment(0, 0);
@@ -1081,7 +1082,14 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
                 // Open the file (only first file)...
 
             	Database d = Database.open(new File(AccessInputMeta.getFilename(inputList.getFile(0))));			
-    			Table t=d.getTable(transMeta.environmentSubstitute(meta.getTableName()));
+    			String realTableName=transMeta.environmentSubstitute(meta.getTableName());
+    			
+    			Table t=null;
+    			if(realTableName.startsWith(AccessInputMeta.PREFIX_SYSTEM))
+    				t=d.getSystemTable(realTableName);
+    			else
+    				t=d.getTable(realTableName);
+
     			
     			// Get the list of columns
     			List<Column> col = t.getColumns();    			
@@ -1451,10 +1459,17 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 					// Get user tables
 					//
 					Set<String> settables = accessDatabase.getTableNames();
-
+					
 					// Get system tables
-					//
-					// Table systablenames= accessDatabase.getSystemCatalog();
+					
+					 Table SystTable= accessDatabase.getSystemCatalog();
+					 Map<String,Object>   rw; 
+					 while (((rw = SystTable.getNextRow())!=null))
+					 {
+					     String name = (String) rw.get("Name");	
+						 if (name.startsWith(AccessInputMeta.PREFIX_SYSTEM))   settables.add(name);
+					 }
+					
 
 					String[] tablenames = (String[]) settables.toArray(new String[settables.size()]);
 

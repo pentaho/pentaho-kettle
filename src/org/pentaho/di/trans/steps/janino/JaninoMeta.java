@@ -192,24 +192,24 @@ public class JaninoMeta extends BaseStepMeta implements StepMetaInterface
 		CheckResult cr;
 		if (prev==null || prev.size()==0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, Messages.getString("FormulaMeta.CheckResult.ExpectedInputError"), stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, Messages.getString("JaninoMeta.CheckResult.ExpectedInputError"), stepinfo);
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("FormulaMeta.CheckResult.FieldsReceived", ""+prev.size()), stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("JaninoMeta.CheckResult.FieldsReceived", ""+prev.size()), stepinfo);
 			remarks.add(cr);
 		}
 		
 		// See if we have input streams leading to this step!
 		if (input.length>0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("FormulaMeta.CheckResult.ExpectedInputOk"), stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("JaninoMeta.CheckResult.ExpectedInputOk"), stepinfo);
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("FormulaMeta.CheckResult.ExpectedInputError"), stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("JaninoMeta.CheckResult.ExpectedInputError"), stepinfo);
 			remarks.add(cr);
 		}
 	}

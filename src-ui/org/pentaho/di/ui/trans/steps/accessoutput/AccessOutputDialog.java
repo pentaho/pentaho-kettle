@@ -329,7 +329,7 @@ public class AccessOutputDialog extends BaseStepDialog implements StepDialogInte
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(Messages.getString("System.Button.Cancel"));
 		
-		setButtonPositions(new Button[] { wOK, wCancel }, margin, null);
+		setButtonPositions(new Button[] { wOK, wCancel }, margin, wAddToResult);
 
 		// Add listeners
 		lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };

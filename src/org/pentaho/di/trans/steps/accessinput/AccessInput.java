@@ -312,7 +312,11 @@ public class AccessInput extends BaseStep implements StepInterface
         	data.d = Database.open(new File(AccessInputMeta.getFilename(data.file)));	
 
         	// Get table
-			data.t=data.d.getTable(environmentSubstitute(meta.getTableName()));
+        	String realTableName=environmentSubstitute(meta.getTableName());
+        	if(realTableName.startsWith(AccessInputMeta.PREFIX_SYSTEM))
+        		data.t=data.d.getSystemTable(realTableName);
+        	else
+        		data.t=data.d.getTable(realTableName);
 
 			if (log.isDetailed()) logDetailed(Messages.getString("AccessInput.Log.FileOpened", data.file.toString()));
 

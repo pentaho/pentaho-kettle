@@ -97,6 +97,9 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface
 	
     public final static String type_trim_code[] = { "none", "left", "right", "both" };
     
+    /** Prefix that flags system tables */
+    public static final String PREFIX_SYSTEM = "MSys";
+    
 	public AccessInputMeta()
 	{
 		super(); // allocate BaseStepMeta
