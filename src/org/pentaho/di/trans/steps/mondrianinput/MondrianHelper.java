@@ -82,7 +82,7 @@ public class MondrianHelper {
     		connectString+="JdbcUser="+databaseMeta.getUsername()+";";
     	}
     	if (!Const.isEmpty(databaseMeta.getPassword())) {
-    		connectString+="JdbcPasssword="+databaseMeta.getPassword()+";";
+    		connectString+="JdbcPassword="+databaseMeta.getPassword()+";";
     	}
         
     	connection = DriverManager.getConnection(connectString, null);
