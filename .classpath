@@ -75,7 +75,6 @@
 	<classpathentry kind="lib" path="libext/dom4j-1.6.1.jar"/>
 	<classpathentry kind="lib" path="libext/jaxen-1.1.1.jar"/>
 	<classpathentry kind="lib" path="libext/jfree/jfreechart-1.0.1.jar"/>
-	<classpathentry kind="lib" path="libext/jackcess-1.1.13.jar"/>
 	<classpathentry kind="lib" path="libswt/win32/swt.jar" sourcepath="libext-src/swt-src.zip"/>
 	<classpathentry kind="lib" path="libext/JDBC/kingbasejdbc.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/monetdb-1.7-jdbc.jar"/>
@@ -107,5 +106,6 @@
 	<classpathentry kind="lib" path="libext/pentaho/libformula-0.1.18.2.jar"/>
 	<classpathentry kind="lib" path="libext/jfree/jcommon-1.0.14.jar"/>
 	<classpathentry kind="lib" path="libext/janino.jar"/>
+	<classpathentry kind="lib" path="libext/jackcess-1.1.18.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
