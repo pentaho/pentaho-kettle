@@ -87,8 +87,10 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 
   private String destinationBCc;
 
+  /** Caution : It's sender address and NOT reply address **/ 
   private String replyAddress;
   
+  /** Caution : It's sender name name and NOT reply name **/ 
   private String replyName;
 
   private String subject;
@@ -133,6 +135,9 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 
   /** The encoding to use for reading: null or empty string means system default encoding */
   private String encoding;
+  
+  /** The reply to addresses */
+  private String replyToAddresses;
 
   public JobEntryMail(String n)
   {
@@ -195,9 +200,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
     retval.append("      ").append(XMLHandler.addTagValue("importance", importance));
     
     retval.append("      ").append(XMLHandler.addTagValue("secureconnectiontype", secureConnectionType));
-    
-    
-    
+    retval.append("      ").append(XMLHandler.addTagValue("replyToAddresses", replyToAddresses));
 
     retval.append("      <filetypes>");
     if (fileType != null)
@@ -262,6 +265,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 
       setZipFiles("Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "zip_files")));
       setZipFilename(XMLHandler.getTagValue(entrynode, "zip_name"));
+      setReplyToAddresses(XMLHandler.getTagValue(entrynode, "replyToAddresses"));
 
     } catch (KettleException xe)
     {
@@ -292,15 +296,11 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
       encoding = rep.getJobEntryAttributeString(id_jobentry, "encoding");
       priority = rep.getJobEntryAttributeString(id_jobentry, "priority");
       importance = rep.getJobEntryAttributeString(id_jobentry, "importance");
-      
-      
       includingFiles = rep.getJobEntryAttributeBoolean(id_jobentry, "include_files");
-
       usingAuthentication = rep.getJobEntryAttributeBoolean(id_jobentry, "use_auth");
       usingSecureAuthentication = rep.getJobEntryAttributeBoolean(id_jobentry, "use_secure_auth");
       authenticationUser = rep.getJobEntryAttributeString(id_jobentry, "auth_user");
       authenticationPassword = Encr.decryptPasswordOptionallyEncrypted(rep.getJobEntryAttributeString(id_jobentry, "auth_password"));
-
       onlySendComment = rep.getJobEntryAttributeBoolean(id_jobentry, "only_comment");
       useHTML = rep.getJobEntryAttributeBoolean(id_jobentry, "use_HTML");
       usePriority = rep.getJobEntryAttributeBoolean(id_jobentry, "use_Priority");
@@ -318,6 +318,8 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 
       zipFiles = rep.getJobEntryAttributeBoolean(id_jobentry, "zip_files");
       zipFilename = rep.getJobEntryAttributeString(id_jobentry, "zip_name");
+      replyToAddresses = rep.getJobEntryAttributeString(id_jobentry, "replyToAddresses");
+      
     } catch (KettleDatabaseException dbe)
     {
       throw new KettleException("Unable to load job entry of type 'mail' from the repository with id_jobentry="
@@ -359,8 +361,6 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
       rep.saveJobEntryAttribute(id_job, getID(), "use_HTML", useHTML);
       rep.saveJobEntryAttribute(id_job, getID(), "use_Priority", usePriority);
       rep.saveJobEntryAttribute(id_job, getID(), "secureconnectiontype", secureConnectionType);
-      
-      
 
       if (fileType != null)
       {
@@ -372,6 +372,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 
       rep.saveJobEntryAttribute(id_job, getID(), "zip_files", zipFiles);
       rep.saveJobEntryAttribute(id_job, getID(), "zip_name", zipFilename);
+      rep.saveJobEntryAttribute(id_job, getID(), "replyToAddresses", replyToAddresses);
 
     } catch (KettleDatabaseException dbe)
     {
@@ -490,7 +491,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
   }
 
   /**
-   * @return the result file types to select for attachement </b>
+   * @return the result file types to select for attachment </b>
    * @see ResultFile
    */
   public int[] getFileType()
@@ -499,7 +500,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
   }
 
   /**
-   * @param fileType the result file types to select for attachement
+   * @param fileType the result file types to select for attachment
    * @see ResultFile
    */
   public void setFileType(int[] fileType)
@@ -664,6 +665,21 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
   }
 
   
+  /**
+   * @param secureconnectiontype the replayToAddresses to set
+   */
+  public void setReplyToAddresses(String replyToAddresses)
+  {
+    this.replyToAddresses=replyToAddresses;
+  }
+  
+  /**
+   * @return replayToAddresses
+   */
+  public String getReplyToAddresses()
+  {
+    return this.replyToAddresses;
+  }
   
   
   /**
@@ -729,7 +745,6 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
     if (Const.isEmpty(server))
     {
       log.logError(toString(), Messages.getString("JobMail.Error.HostNotSpecified"));    
-      
       
       result.setNrErrors(1L);
       result.setResult(false);
@@ -809,25 +824,36 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 		 //where it returns a string of high /normal /low.
       }
 
-      String email_address = environmentSubstitute(replyAddress);
-      if (!Const.isEmpty(email_address))
+      // Set Mail sender (From) 
+      String sender_address = environmentSubstitute(replyAddress);
+      if (!Const.isEmpty(sender_address))
       {
-    	// get reply to name
-      	String reply_to_name = environmentSubstitute(replyName);
-      	if(!Const.isEmpty(reply_to_name)) email_address=reply_to_name+'<'+email_address+'>';	 	 
-        msg.setFrom(new InternetAddress(email_address));
+      	String sender_name = environmentSubstitute(replyName);
+      	if(!Const.isEmpty(sender_name)) sender_address=sender_name+'<'+sender_address+'>';	 	 
+        msg.setFrom(new InternetAddress(sender_address));
       } else
       {
-    	    
         throw new MessagingException(Messages.getString("JobMail.Error.ReplyEmailNotFilled"));
       }
+
+      // set Reply to addresses
+      String reply_to_address = environmentSubstitute(replyToAddresses); 
+      if (!Const.isEmpty(reply_to_address))
+      { 
+    	  // Split the mail-address: space separated
+	      String[] reply_Address_List = environmentSubstitute(reply_to_address).split(" "); 
+	      InternetAddress[] address = new InternetAddress[reply_Address_List.length]; 
+	      for (int i = 0; i < reply_Address_List.length; i++) 
+	    	  address[i] = new InternetAddress(reply_Address_List[i]); 
+	      msg.setReplyTo(address); 
+      } 
+       
 
       // Split the mail-address: space separated
       String destinations[] = environmentSubstitute(destination).split(" ");
       InternetAddress[] address = new InternetAddress[destinations.length];
       for (int i = 0; i < destinations.length; i++)
         address[i] = new InternetAddress(destinations[i]);
-
       msg.setRecipients(Message.RecipientType.TO, address);
 
       if (!Const.isEmpty(destinationCc))

@@ -56,8 +56,10 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface
 
 	  private String destinationBCc;
 
+	  /** Caution : this is not the reply to addresses but the mail sender name */
 	  private String replyAddress;
 	  
+	  /** Caution : this is not the reply to addresses but the mail sender*/
 	  private String replyName;
 
 	  private String subject;
@@ -122,6 +124,9 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface
 	  /** The encoding to use for reading: null or empty string means system default encoding */
 	  private String encoding;
 	  
+	  /** The reply to addresses */
+	  private String replyToAddresses;
+	  
 	public MailMeta()
 	{
 		super(); // allocate BaseStepMeta
@@ -149,6 +154,7 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface
       setDestination(XMLHandler.getTagValue(stepnode, "destination"));
       setDestinationCc(XMLHandler.getTagValue(stepnode, "destinationCc"));
       setDestinationBCc(XMLHandler.getTagValue(stepnode, "destinationBCc"));
+      setReplyToAddresses(XMLHandler.getTagValue(stepnode, "replyToAddresses"));
       setReplyAddress(XMLHandler.getTagValue(stepnode, "replyto"));
       setReplyName(XMLHandler.getTagValue(stepnode, "replytoname"));
       setSubject(XMLHandler.getTagValue(stepnode, "subject"));
@@ -202,6 +208,7 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface
 	    retval.append("      ").append(XMLHandler.addTagValue("destination", this.destination));
 	    retval.append("      ").append(XMLHandler.addTagValue("destinationCc", this.destinationCc));
 	    retval.append("      ").append(XMLHandler.addTagValue("destinationBCc", this.destinationBCc));
+	    retval.append("      ").append(XMLHandler.addTagValue("replyToAddresses", this.replyToAddresses));
 	    retval.append("      ").append(XMLHandler.addTagValue("replyto", this.replyAddress));
 	    retval.append("      ").append(XMLHandler.addTagValue("replytoname", this.replyName));
 	    retval.append("      ").append(XMLHandler.addTagValue("subject", this.subject));
@@ -611,8 +618,20 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface
 	  {
 	    this.secureconnectiontype=secureconnectiontypein;
 	  }
-	  
-
+	  /**
+	   * @param replyToAddresses the replyToAddresses to set
+	   */
+	  public void setReplyToAddresses(String replytoaddresses)
+	  {
+		  this.replyToAddresses = replytoaddresses;
+	  }
+	  /**
+	   * @return the secure replyToAddresses
+	   */
+	  public String getReplyToAddresses()
+	  {
+	    return this.replyToAddresses;
+	  }
 	  /**
 	   * @param encoding the encoding to set
 	   */
@@ -719,6 +738,7 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface
 			 this.destination = rep.getStepAttributeString(id_step, "destination");
 			 this.destinationCc = rep.getStepAttributeString(id_step, "destinationCc");
 			 this.destinationBCc = rep.getStepAttributeString(id_step, "destinationBCc");
+			 this.replyToAddresses = rep.getStepAttributeString(id_step, "replyToAddresses");
 			 this.replyAddress = rep.getStepAttributeString(id_step, "replyto");
 			 this.replyName = rep.getStepAttributeString(id_step, "replytoname");
 		      
@@ -786,6 +806,7 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface
 	      rep.saveStepAttribute(id_transformation, id_step, "destination", this.destination);
 	      rep.saveStepAttribute(id_transformation, id_step, "destinationCc", this.destinationCc);
 	      rep.saveStepAttribute(id_transformation, id_step, "destinationBCc", this.destinationBCc);
+	      rep.saveStepAttribute(id_transformation, id_step, "replyToAddresses", this.replyToAddresses);
 	      rep.saveStepAttribute(id_transformation, id_step, "replyto", this.replyAddress);
 	      rep.saveStepAttribute(id_transformation, id_step, "replytoname", this.replyName);
 	      

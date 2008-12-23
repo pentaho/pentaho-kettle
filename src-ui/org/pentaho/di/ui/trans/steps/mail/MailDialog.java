@@ -103,6 +103,10 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface
 	
 	private Label wlisZipFileDynamic ;
 	
+    private Label wlReplyToAddresses;
+    private FormData fdReplyToAddresses;
+    private CCombo wReplyToAddresses;
+    private FormData fdlReplyToAddresses;
 	
 	private Group wDestinationGroup,wReplyGroup,wServerGroup,wAuthentificationGroup,wMessageSettingsGroup,
 			wMessageGroup;
@@ -585,14 +589,51 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface
 		// / END OF Reply  GROUP
 		// ///////////////////////////////////////////////////////////
 
-
+		// Reply to addresses
+		wlReplyToAddresses=new Label(wGeneralComp, SWT.RIGHT);
+        wlReplyToAddresses.setText(Messages.getString("MailDialog.ReplyToAddresses.Label"));
+        props.setLook(wlReplyToAddresses);
+        fdlReplyToAddresses=new FormData();
+        fdlReplyToAddresses.left = new FormAttachment(0, -margin);
+        fdlReplyToAddresses.top  = new FormAttachment(wReplyGroup, 2*margin);
+        fdlReplyToAddresses.right= new FormAttachment(middle, -2*margin);
+        wlReplyToAddresses.setLayoutData(fdlReplyToAddresses);
+		
+        wReplyToAddresses=new CCombo(wGeneralComp, SWT.BORDER | SWT.READ_ONLY);
+        wReplyToAddresses.setEditable(true);
+        props.setLook(wReplyToAddresses);
+        wReplyToAddresses.addModifyListener(lsMod);
+        fdReplyToAddresses=new FormData();
+        fdReplyToAddresses.left = new FormAttachment(middle, -margin);
+        fdReplyToAddresses.top  = new FormAttachment(wReplyGroup, 2*margin);
+        fdReplyToAddresses.right= new FormAttachment(100, -margin);
+        wReplyToAddresses.setLayoutData(fdReplyToAddresses);         
+        wReplyToAddresses.addFocusListener(new FocusListener()
+            {
+                public void focusLost(org.eclipse.swt.events.FocusEvent e)
+                {
+                }
+            
+                public void focusGained(org.eclipse.swt.events.FocusEvent e)
+                {
+                    Cursor busy = new Cursor(shell.getDisplay(), SWT.CURSOR_WAIT);
+                    shell.setCursor(busy);
+                    getPreviousFields();
+                    shell.setCursor(null);
+                    busy.dispose();
+                }
+            }
+        );  
+        
+		
+		
 		// Person
 		wlPerson=new Label(wGeneralComp, SWT.RIGHT);
         wlPerson.setText(Messages.getString("Mail.Contact.Label"));
         props.setLook(wlPerson);
         fdlPerson=new FormData();
         fdlPerson.left = new FormAttachment(0, -margin);
-        fdlPerson.top  = new FormAttachment(wReplyGroup, 2*margin);
+        fdlPerson.top  = new FormAttachment(wReplyToAddresses, 2*margin);
         fdlPerson.right= new FormAttachment(middle, -2*margin);
         wlPerson.setLayoutData(fdlPerson);
         
@@ -602,7 +643,7 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface
         wPerson.addModifyListener(lsMod);
         fdPerson=new FormData();
         fdPerson.left = new FormAttachment(middle, -margin);
-        fdPerson.top  = new FormAttachment(wReplyGroup, 2*margin);
+        fdPerson.top  = new FormAttachment(wReplyToAddresses, 2*margin);
         fdPerson.right= new FormAttachment(100, -margin);
         wPerson.setLayoutData(fdPerson);         
         wPerson.addFocusListener(new FocusListener()
@@ -1858,6 +1899,10 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface
 	        	 if(wDestinationBCc!=null) destinationbcc=wDestinationBCc.getText();
 				 wDestinationBCc.removeAll();
 				 
+	        	 String replyToaddress=null;
+	        	 if(wReplyToAddresses!=null) replyToaddress=wReplyToAddresses.getText();
+	        	 wReplyToAddresses.removeAll();
+				 
 	        	 String replyname=null;
 	        	 if(wReplyName!=null) replyname=wReplyName.getText();
 	        	 wReplyName.removeAll();
@@ -1934,6 +1979,7 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface
 		             wDynamicFilenameField.setItems(fieldnames);
 		             wDynamicWildcardField.setItems(fieldnames);
 		             wDynamicZipFileField.setItems(fieldnames);
+		             wReplyToAddresses.setItems(fieldnames);
 		             
 				 }
 				 if(destination!=null) wDestination.setText(destination);
@@ -1952,6 +1998,7 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface
 				 if(dynamFile!=null) wDynamicFilenameField.setText(dynamFile);
 				 if(dynamWildcard!=null) wDynamicWildcardField.setText(dynamWildcard);
 				 if(dynamZipFile!=null) wDynamicZipFileField.setText(dynamZipFile);
+				 if(replyToaddress!=null) wReplyToAddresses.setText(replyToaddress);
 	         }
 			 
 			
@@ -2126,6 +2173,8 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface
 	        else
 	        	wImportance.select(3);  // Default High
 
+	        if (input.getReplyToAddresses() != null)
+	            wReplyToAddresses.setText(input.getReplyToAddresses());
 		wStepname.selectAll();
 	}
 	
@@ -2211,7 +2260,8 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface
                   
         // Secure Connection type
         input.setSecureConnectionType(wSecureConnectionType.getText());
-      
+        input.setReplyToAddresses(wReplyToAddresses.getText());
+        
 		dispose();
 	}
 }

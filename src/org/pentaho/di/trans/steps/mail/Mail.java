@@ -128,7 +128,7 @@ public class Mail extends BaseStep implements StepInterface
 			
 			// cache the position of the destination field			
 			if (data.indexOfDestination<0) {	
-				String realDestinationFieldname=environmentSubstitute(meta.getDestination());
+				String realDestinationFieldname=meta.getDestination();
 				data.indexOfDestination =data.previousRowMeta.indexOfValue(realDestinationFieldname);
 				if (data.indexOfDestination<0)
 					throw new KettleException(Messages.getString("Mail.Exception.CouldnotFindDestinationField",realDestinationFieldname)); //$NON-NLS-1$ //$NON-NLS-2$
@@ -136,9 +136,9 @@ public class Mail extends BaseStep implements StepInterface
 			
 			// Cc
 			if (!Const.isEmpty(meta.getDestinationCc())) {
-				// cache the position of the destination field			
+				// cache the position of the Cc field			
 				if (data.indexOfDestinationCc<0) {	
-					String realDestinationCcFieldname=environmentSubstitute(meta.getDestinationCc());
+					String realDestinationCcFieldname=meta.getDestinationCc();
 					data.indexOfDestinationCc =data.previousRowMeta.indexOfValue(realDestinationCcFieldname);
 					if (data.indexOfDestinationCc<0)
 						throw new KettleException(Messages.getString("Mail.Exception.CouldnotFindDestinationCcField",realDestinationCcFieldname)); //$NON-NLS-1$ //$NON-NLS-2$
@@ -146,38 +146,49 @@ public class Mail extends BaseStep implements StepInterface
 			}
 			// BCc
 			if (!Const.isEmpty(meta.getDestinationCc())) {
-				// cache the position of the destination field			
+				// cache the position of the BCc field			
 				if (data.indexOfDestinationBCc<0) {	
-					String realDestinationBCcFieldname=environmentSubstitute(meta.getDestinationBCc());
+					String realDestinationBCcFieldname=meta.getDestinationBCc();
 					data.indexOfDestinationBCc =data.previousRowMeta.indexOfValue(realDestinationBCcFieldname);
 					if (data.indexOfDestinationBCc<0)
 						throw new KettleException(Messages.getString("Mail.Exception.CouldnotFindDestinationBCcField",realDestinationBCcFieldname)); //$NON-NLS-1$ //$NON-NLS-2$
 				}  
 			}
-			// Reply
+			// Sender Name
 			if (!Const.isEmpty(meta.getReplyName())){
-				// cache the position of the destination field			
-				if (data.indexOfReplyName<0){	
-					String realReplyName=environmentSubstitute(meta.getReplyName());
-					data.indexOfReplyName =data.previousRowMeta.indexOfValue(realReplyName);
-					if (data.indexOfReplyName<0)
-						throw new KettleException(Messages.getString("Mail.Exception.CouldnotFindReplyNameField",realReplyName)); //$NON-NLS-1$ //$NON-NLS-2$
+				// cache the position of the sender field			
+				if (data.indexOfSenderName<0){	
+					String realSenderName=meta.getReplyName();
+					data.indexOfSenderName =data.previousRowMeta.indexOfValue(realSenderName);
+					if (data.indexOfSenderName<0)
+						throw new KettleException(Messages.getString("Mail.Exception.CouldnotFindReplyNameField",realSenderName)); //$NON-NLS-1$ //$NON-NLS-2$
 				}  
 			}
-			// Reply address
-			// cache the position of the destination field			
-			if (data.indexOfReplyAddress<0) {	
-				String realReplyAddress=environmentSubstitute(meta.getReplyAddress());
-				data.indexOfReplyAddress =data.previousRowMeta.indexOfValue(realReplyAddress);
-				if (data.indexOfReplyAddress<0)
-					throw new KettleException(Messages.getString("Mail.Exception.CouldnotFindReplyAddressField",realReplyAddress)); //$NON-NLS-1$ //$NON-NLS-2$
+			// Sender address
+			// cache the position of the sender field			
+			if (data.indexOfSenderAddress<0) {	
+				String realSenderAddress=meta.getReplyAddress();
+				data.indexOfSenderAddress =data.previousRowMeta.indexOfValue(realSenderAddress);
+				if (data.indexOfSenderAddress<0)
+					throw new KettleException(Messages.getString("Mail.Exception.CouldnotFindReplyAddressField",realSenderAddress)); //$NON-NLS-1$ //$NON-NLS-2$
 			}  
+			
+			// Reply to
+			if (!Const.isEmpty(meta.getReplyToAddresses())){
+				// cache the position of the reply to field			
+				if (data.indexOfReplyToAddresses<0){	
+					String realReplyToAddresses=meta.getReplyToAddresses();
+					data.indexOfReplyToAddresses =data.previousRowMeta.indexOfValue(realReplyToAddresses);
+					if (data.indexOfReplyToAddresses<0)
+						throw new KettleException(Messages.getString("Mail.Exception.CouldnotFindReplyToAddressesField",realReplyToAddresses)); //$NON-NLS-1$ //$NON-NLS-2$
+				}  
+			}
 			
 			// Contact Person
 			if (!Const.isEmpty(meta.getContactPerson())) {
 				// cache the position of the destination field			
 				if (data.indexOfContactPerson<0) {	
-					String realContactPerson=environmentSubstitute(meta.getContactPerson());
+					String realContactPerson=meta.getContactPerson();
 					data.indexOfContactPerson =data.previousRowMeta.indexOfValue(realContactPerson);
 					if (data.indexOfContactPerson<0)
 						throw new KettleException(Messages.getString("Mail.Exception.CouldnotFindContactPersonField",realContactPerson)); //$NON-NLS-1$ //$NON-NLS-2$
@@ -187,7 +198,7 @@ public class Mail extends BaseStep implements StepInterface
 			if (!Const.isEmpty(meta.getContactPhone())){
 				// cache the position of the destination field			
 				if (data.indexOfContactPhone<0){	
-					String realContactPhone=environmentSubstitute(meta.getContactPhone());
+					String realContactPhone=meta.getContactPhone();
 					data.indexOfContactPhone =data.previousRowMeta.indexOfValue(realContactPhone);
 					if (data.indexOfContactPhone<0)
 						throw new KettleException(Messages.getString("Mail.Exception.CouldnotFindContactPhoneField",realContactPhone)); //$NON-NLS-1$ //$NON-NLS-2$
@@ -195,7 +206,7 @@ public class Mail extends BaseStep implements StepInterface
 			}
 			// cache the position of the Server field			
 			if (data.indexOfServer<0){	
-				String realServer=environmentSubstitute(meta.getServer());
+				String realServer=meta.getServer();
 				data.indexOfServer =data.previousRowMeta.indexOfValue(realServer);
 				if (data.indexOfServer<0)
 					throw new KettleException(Messages.getString("Mail.Exception.CouldnotFindServerField",realServer)); //$NON-NLS-1$ //$NON-NLS-2$
@@ -204,7 +215,7 @@ public class Mail extends BaseStep implements StepInterface
 			if (!Const.isEmpty(meta.getPort())){
 				// cache the position of the port field			
 				if (data.indexOfPort<0){	
-					String realPort=environmentSubstitute(meta.getPort());
+					String realPort=meta.getPort();
 					data.indexOfPort =data.previousRowMeta.indexOfValue(realPort);
 					if (data.indexOfPort<0)
 						throw new KettleException(Messages.getString("Mail.Exception.CouldnotFindPortField",realPort)); //$NON-NLS-1$ //$NON-NLS-2$
@@ -214,7 +225,7 @@ public class Mail extends BaseStep implements StepInterface
 			if(meta.isUsingAuthentication()){
 				// cache the position of the Authentication user field			
 				if (data.indexOfAuthenticationUser<0){	
-					String realAuthenticationUser=environmentSubstitute(meta.getAuthenticationUser());
+					String realAuthenticationUser=meta.getAuthenticationUser();
 					data.indexOfAuthenticationUser =data.previousRowMeta.indexOfValue(realAuthenticationUser);
 					if (data.indexOfAuthenticationUser<0)
 						throw new KettleException(Messages.getString("Mail.Exception.CouldnotFindAuthenticationUserField",realAuthenticationUser)); //$NON-NLS-1$ //$NON-NLS-2$
@@ -222,7 +233,7 @@ public class Mail extends BaseStep implements StepInterface
 				
 				// cache the position of the Authentication password field			
 				if (data.indexOfAuthenticationPass<0){	
-					String realAuthenticationPassword=environmentSubstitute(meta.getAuthenticationPassword());
+					String realAuthenticationPassword=meta.getAuthenticationPassword();
 					data.indexOfAuthenticationPass =data.previousRowMeta.indexOfValue(realAuthenticationPassword);
 					if (data.indexOfAuthenticationPass<0)
 						throw new KettleException(Messages.getString("Mail.Exception.CouldnotFindAuthenticationPassField",realAuthenticationPassword)); //$NON-NLS-1$ //$NON-NLS-2$
@@ -232,7 +243,7 @@ public class Mail extends BaseStep implements StepInterface
 			if (!Const.isEmpty(meta.getSubject())){
 				// cache the position of the subject field			
 				if (data.indexOfSubject<0){	
-					String realSubject=environmentSubstitute(meta.getSubject());
+					String realSubject=meta.getSubject();
 					data.indexOfSubject =data.previousRowMeta.indexOfValue(realSubject);
 					if (data.indexOfSubject<0)
 						throw new KettleException(Messages.getString("Mail.Exception.CouldnotFindSubjectField",realSubject)); //$NON-NLS-1$ //$NON-NLS-2$
@@ -242,7 +253,7 @@ public class Mail extends BaseStep implements StepInterface
 			if (!Const.isEmpty(meta.getComment())){
 				// cache the position of the comment field			
 				if (data.indexOfComment<0){	
-					String realComment=environmentSubstitute(meta.getComment());
+					String realComment=meta.getComment();
 					data.indexOfComment =data.previousRowMeta.indexOfValue(realComment);
 					if (data.indexOfComment<0)
 						throw new KettleException(Messages.getString("Mail.Exception.CouldnotFindCommentField",realComment)); //$NON-NLS-1$ //$NON-NLS-2$
@@ -253,7 +264,7 @@ public class Mail extends BaseStep implements StepInterface
 			if (meta.isZipFilenameDynamic()){
 				// cache the position of the attached source filename field			
 				if (data.indexOfDynamicZipFilename<0){	
-					String realZipFilename=environmentSubstitute(meta.getDynamicZipFilenameField());
+					String realZipFilename=meta.getDynamicZipFilenameField();
 					data.indexOfDynamicZipFilename =data.previousRowMeta.indexOfValue(realZipFilename);
 					if (data.indexOfDynamicZipFilename<0)
 						throw new KettleException(Messages.getString("Mail.Exception.CouldnotSourceAttachedZipFilenameField",realZipFilename)); //$NON-NLS-1$ //$NON-NLS-2$
@@ -269,7 +280,7 @@ public class Mail extends BaseStep implements StepInterface
 			if(meta.isDynamicFilename()){
 				// cache the position of the attached source filename field			
 				if (data.indexOfSourceFilename<0){	
-					String realSourceattachedFilename=environmentSubstitute(meta.getDynamicFieldname());
+					String realSourceattachedFilename=meta.getDynamicFieldname();
 					data.indexOfSourceFilename =data.previousRowMeta.indexOfValue(realSourceattachedFilename);
 					if (data.indexOfSourceFilename<0)
 						throw new KettleException(Messages.getString("Mail.Exception.CouldnotSourceAttachedFilenameField",realSourceattachedFilename)); //$NON-NLS-1$ //$NON-NLS-2$
@@ -278,12 +289,17 @@ public class Mail extends BaseStep implements StepInterface
 				// cache the position of the attached wildcard field		
 				if(!Const.isEmpty(meta.getSourceWildcard())){
 					if (data.indexOfSourceWildcard<0){	
-						String realSourceattachedWildcard=environmentSubstitute(meta.getDynamicWildcard());
+						String realSourceattachedWildcard=meta.getDynamicWildcard();
 						data.indexOfSourceWildcard =data.previousRowMeta.indexOfValue(realSourceattachedWildcard);
 						if (data.indexOfSourceWildcard<0)
 							throw new KettleException(Messages.getString("Mail.Exception.CouldnotSourceAttachedWildcard",realSourceattachedWildcard)); //$NON-NLS-1$ //$NON-NLS-2$
 					}  
 				}		
+			}else
+			{
+				// static attached filenames
+				data.realSourceFileFoldername=environmentSubstitute(meta.getSourceFileFoldername()) ; 
+				data.realSourceWildcard=environmentSubstitute(meta.getSourceWildcard()) ; 
 			}
 		} // end if first
 		
@@ -298,9 +314,13 @@ public class Mail extends BaseStep implements StepInterface
 			String maildestinationBCc= null;
 			if(data.indexOfDestinationBCc>-1) maildestinationBCc=data.previousRowMeta.getString(r,data.indexOfDestinationBCc);
 			
-			String mailreplyname= null;
-			if(data.indexOfReplyName>-1) mailreplyname=data.previousRowMeta.getString(r,data.indexOfReplyName);
-			String mailreplyaddress=data.previousRowMeta.getString(r,data.indexOfReplyAddress);
+			String mailsendername= null;
+			if(data.indexOfSenderName>-1) mailsendername=data.previousRowMeta.getString(r,data.indexOfSenderName);
+			String mailsenderaddress=data.previousRowMeta.getString(r,data.indexOfSenderAddress);
+			
+			// reply addresses
+			String mailreplyToAddresses= null;
+			if(data.indexOfReplyToAddresses>-1) mailreplyToAddresses=data.previousRowMeta.getString(r,data.indexOfReplyToAddresses);
 			
 			String contactperson= null;
 			if(data.indexOfContactPerson>-1) contactperson=data.previousRowMeta.getString(r,data.indexOfContactPerson);
@@ -323,9 +343,9 @@ public class Mail extends BaseStep implements StepInterface
 			if(data.indexOfComment>-1) comment=data.previousRowMeta.getString(r,data.indexOfComment);
 			
 			// send email...
-			sendMail(r,servername, port,mailreplyaddress,mailreplyname,maildestination,
+			sendMail(r,servername, port,mailsenderaddress,mailsendername,maildestination,
 					maildestinationCc,maildestinationBCc,contactperson,contactphone,
-					authuser,authpass,subject,comment);
+					authuser,authpass,subject,comment,mailreplyToAddresses);
 			
 			putRow(getInputRowMeta(), r);     // copy row to possible alternate rowset(s).);  // copy row to output rowset(s);
 
@@ -351,11 +371,11 @@ public class Mail extends BaseStep implements StepInterface
 
 
 	  public  void sendMail(Object[] r,String server, String port,
-			  String replyAddress,String replyName,String destination,String destinationCc,
+			  String senderAddress,String senderName,String destination,String destinationCc,
 			  String destinationBCc,
 			  String contactPerson, String contactPhone,
 			  String authenticationUser,String authenticationPassword,
-			  String mailsubject, String comment) throws Exception
+			  String mailsubject, String comment, String replyToAddresses) throws Exception
 	  {
 
 	      // Send an e-mail...
@@ -375,9 +395,9 @@ public class Mail extends BaseStep implements StepInterface
 	    	      data.props.put("mail.smtps.quitwait", "false");
 	    	}
 	      }
-	      data.props.put("mail." + protocol + ".host", environmentSubstitute(server));
+	      data.props.put("mail." + protocol + ".host", server);
 	      if (!Const.isEmpty(port))
-	        data.props.put("mail." + protocol + ".port", environmentSubstitute(port));
+	        data.props.put("mail." + protocol + ".port", port);
 	      boolean debug = log.getLogLevel() >= LogWriter.LOG_LEVEL_DEBUG;
 
 	      if (debug) data.props.put("mail.debug", "true");
@@ -402,25 +422,40 @@ public class Mail extends BaseStep implements StepInterface
 			 //where it returns a string of high /normal /low.
 	      }
 	
-	      String email_address = environmentSubstitute(replyAddress);
+	      // set Email sender
+	      String email_address = senderAddress;
 	      if (!Const.isEmpty(email_address)){
-	    	// get replay to name
-	    	String replay_to_name = environmentSubstitute(replyName);
-	    	if(!Const.isEmpty(replay_to_name)) email_address=replay_to_name+'<'+email_address+'>';	 	 
+	    	// get sender name
+	    	if(!Const.isEmpty(senderName)) email_address=senderName+'<'+email_address+'>';	 	 
 	        msg.setFrom(new InternetAddress(email_address));
 	      } else {
 	        throw new MessagingException(Messages.getString("Mail.Error.ReplyEmailNotFilled"));
 	      }
 	
+	      // Set reply to 
+	      if (!Const.isEmpty(replyToAddresses))
+	      { 
+		      // get replay to
+	    	  // Split the mail-address: space separated
+		      String[] reply_Address_List =replyToAddresses.split(" "); 
+		      InternetAddress[] address = new InternetAddress[reply_Address_List.length]; 
+		      
+		      for (int i = 0; i < reply_Address_List.length; i++) 
+		    	  address[i] = new InternetAddress(reply_Address_List[i]); 
+		      
+		      // To add the real reply-to 
+		      msg.setReplyTo(address); 
+	      }
+	      
 	      // Split the mail-address: space separated
-	      String destinations[] = environmentSubstitute(destination).split(" ");
+	      String destinations[] = destination.split(" ");
 	      InternetAddress[] address = new InternetAddress[destinations.length];
 	      for (int i = 0; i < destinations.length; i++)
 	        address[i] = new InternetAddress(destinations[i]);
 	
 	      msg.setRecipients(Message.RecipientType.TO, address);
 	
-	      String realdestinationCc=environmentSubstitute(destinationCc);
+	      String realdestinationCc=destinationCc;
 	      if (!Const.isEmpty(realdestinationCc))
 	      {
 	        // Split the mail-address Cc: space separated
@@ -432,7 +467,7 @@ public class Mail extends BaseStep implements StepInterface
 	        msg.setRecipients(Message.RecipientType.CC, addressCc);
 	      }
 	
-	      String realdestinationBCc=environmentSubstitute(destinationBCc);
+	      String realdestinationBCc=destinationBCc;
 	      if (!Const.isEmpty(realdestinationBCc))
 	      {
 	        // Split the mail-address BCc: space separated
@@ -458,12 +493,11 @@ public class Mail extends BaseStep implements StepInterface
 	
 	
 	      if (!meta.isOnlySendComment()
-	          && (!Const.isEmpty(environmentSubstitute(contactPerson)) || !Const
-	              .isEmpty(environmentSubstitute(contactPhone)))){
+	          && (!Const.isEmpty(contactPerson) || !Const.isEmpty(contactPhone))){
 	        messageText.append(Messages.getString("Mail.Log.Comment.ContactInfo") + " :").append(Const.CR);
 	        messageText.append("---------------------").append(Const.CR);
-	        messageText.append(Messages.getString("Mail.Log.Comment.PersonToContact")+" : ").append(environmentSubstitute(contactPerson)).append(Const.CR);
-	        messageText.append(Messages.getString("Mail.Log.Comment.Tel") + "  : ").append(environmentSubstitute(contactPhone)).append(Const.CR);
+	        messageText.append(Messages.getString("Mail.Log.Comment.PersonToContact")+" : ").append(contactPerson).append(Const.CR);
+	        messageText.append(Messages.getString("Mail.Log.Comment.Tel") + "  : ").append(contactPhone).append(Const.CR);
 	        messageText.append(Const.CR);
 	      }
 	      data.parts = new MimeMultipart(); 
@@ -492,12 +526,12 @@ public class Mail extends BaseStep implements StepInterface
 	        transport = session.getTransport(protocol);
 	        if (meta.isUsingAuthentication()) {
 	          if (!Const.isEmpty(port)){
-	            transport.connect(environmentSubstitute(Const.NVL(server, "")), Integer
-	                .parseInt(environmentSubstitute(Const.NVL(port, ""))), environmentSubstitute(Const.NVL(
-	                authenticationUser, "")), environmentSubstitute(Const.NVL(authenticationPassword, "")));
+	            transport.connect(Const.NVL(server, ""), Integer
+	                .parseInt(Const.NVL(port, "")), Const.NVL(
+	                authenticationUser, ""), Const.NVL(authenticationPassword, ""));
 	          }else {
-	            transport.connect(environmentSubstitute(Const.NVL(server, "")), environmentSubstitute(Const.NVL(
-	                authenticationUser, "")), environmentSubstitute(Const.NVL(authenticationPassword, "")));
+	            transport.connect(Const.NVL(server, ""), Const.NVL(
+	                authenticationUser, ""), Const.NVL(authenticationPassword, ""));
 	          }
 	        } else {
 	          transport.connect();
@@ -533,8 +567,8 @@ public class Mail extends BaseStep implements StepInterface
 				  
 			  }else {
 				// static attached filenames
-				realSourceFileFoldername=environmentSubstitute(meta.getSourceFileFoldername()) ; 
-				realSourceWildcard=environmentSubstitute(meta.getSourceWildcard()) ; 
+				realSourceFileFoldername=data.realSourceFileFoldername ; 
+				realSourceWildcard=data.realSourceWildcard; 
 			  }
 			  
 			
@@ -555,7 +589,7 @@ public class Mail extends BaseStep implements StepInterface
 							 boolean zipFiles=meta.isZipFiles();
 							if(zipFiles && data.zipFileLimit==0){
 					            masterZipfile = new File(System.getProperty("java.io.tmpdir") + Const.FILE_SEPARATOR
-					                    + environmentSubstitute(data.ZipFilename));
+					                    + data.ZipFilename);
 					                
 					            zipOutputStream = new ZipOutputStream(new FileOutputStream(masterZipfile));
 							}
@@ -594,7 +628,7 @@ public class Mail extends BaseStep implements StepInterface
 						 		if(data.zipFileLimit>0 && FileSize>data.zipFileLimit){
 							
 							            masterZipfile = new File(System.getProperty("java.io.tmpdir") + Const.FILE_SEPARATOR
-							                    + environmentSubstitute(data.ZipFilename));
+							                    + data.ZipFilename);
 							                
 							            zipOutputStream = new ZipOutputStream(new FileOutputStream(masterZipfile));
 							
@@ -696,7 +730,7 @@ public class Mail extends BaseStep implements StepInterface
 							(info.getFile().getType() == FileType.FILE && file_wildcard!=null && GetFileWildcard(short_filename,file_wildcard)))
 								returncode=true;
 						 }	
-					}
+					}	
 				}
 				catch (Exception e) 
 				{

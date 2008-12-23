@@ -32,8 +32,8 @@ public class MailData extends BaseStepData implements StepDataInterface
 	public int indexOfDestinationCc;
 	public int indexOfDestinationBCc;
 	
-	public int indexOfReplyName;
-	public int indexOfReplyAddress;
+	public int indexOfSenderName;
+	public int indexOfSenderAddress;
 	
 	public int indexOfContactPerson;
 	public int indexOfContactPhone;
@@ -61,6 +61,12 @@ public class MailData extends BaseStepData implements StepDataInterface
 	
 	public RowMetaInterface previousRowMeta;
 	
+	public int indexOfReplyToAddresses;
+	
+	public String realSourceFileFoldername;
+	
+	public String realSourceWildcard;
+	
 	/**
 	 * 
 	 */
@@ -70,8 +76,8 @@ public class MailData extends BaseStepData implements StepDataInterface
 		indexOfDestination=-1;
 		indexOfDestinationCc=-1;
 		indexOfDestinationBCc=-1;
-		indexOfReplyName=-1;
-		indexOfReplyAddress=-1;
+		indexOfSenderName=-1;
+		indexOfSenderAddress=-1;
 		indexOfContactPerson=-1;
 		indexOfContactPhone=-1;
 		indexOfServer=-1;
@@ -85,6 +91,7 @@ public class MailData extends BaseStepData implements StepDataInterface
 		zipFileLimit=0;
 		indexOfDynamicZipFilename=-1;
 		props= new Properties();
+		indexOfReplyToAddresses=-1;
 		
 	}
 

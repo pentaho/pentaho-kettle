@@ -200,6 +200,10 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
         
     private boolean  gotEncodings = false;
     
+    private LabelTextVar wReplyToAddress;
+
+    private FormData fdReplyToAddress;
+    
 	private CTabFolder   wTabFolder;
 	private Composite    wGeneralComp,wContentComp,wAttachedComp,wMessageComp;	
 	private CTabItem     wGeneralTab,wContentTab,wAttachedTab,wMessageTab;
@@ -376,13 +380,23 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
 		// / END OF Replay  GROUP
 		// ///////////////////////////////////////////////////////////
 
+		
+        // Reply to
+        wReplyToAddress = new LabelTextVar(jobMeta, wGeneralComp, Messages.getString("JobMail.ReplyToAddress.Label"),
+            Messages.getString("JobMail.ReplyToAddress.Tooltip"));
+        wReplyToAddress.addModifyListener(lsMod);
+        fdReplyToAddress = new FormData();
+        fdReplyToAddress.left = new FormAttachment(0, 0);
+        fdReplyToAddress.top = new FormAttachment(wReplyGroup, 2*margin);
+        fdReplyToAddress.right = new FormAttachment(100, 0);
+        wReplyToAddress.setLayoutData(fdReplyToAddress);
         
         // Contact line
         wPerson = new LabelTextVar(jobMeta, wGeneralComp, Messages.getString("JobMail.ContactPerson.Label"), Messages.getString("JobMail.ContactPerson.Tooltip"));
         wPerson.addModifyListener(lsMod);
         fdPerson = new FormData();
         fdPerson.left = new FormAttachment(0, 0);
-        fdPerson.top = new FormAttachment(wReplyGroup, 2*margin);
+        fdPerson.top = new FormAttachment(wReplyToAddress, 2*margin);
         fdPerson.right = new FormAttachment(100, 0);
         wPerson.setLayoutData(fdPerson);
 
@@ -1309,7 +1323,8 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
         	wImportance.select(3);  // Default High
         }
         
-        
+        if (jobEntry.getReplyToAddresses() != null)
+            wReplyToAddress.setText(jobEntry.getReplyToAddresses());
     }
 
     private void cancel()
@@ -1390,7 +1405,9 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
                   
         // Secure Connection type
         jobEntry.setSecureConnectionType(wSecureConnectionType.getText());
-      
+        
+        jobEntry.setReplyToAddresses(wReplyToAddress.getText());
+        
         dispose();
     }
     
