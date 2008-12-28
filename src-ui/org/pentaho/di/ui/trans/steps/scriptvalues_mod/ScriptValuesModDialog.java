@@ -553,13 +553,13 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		
 		// Display waiting message for input
 		itemWaitFieldsIn = new TreeItem(iteminput, SWT.NULL);
-		itemWaitFieldsIn.setText("Récupération des champs en cours ...");
+		itemWaitFieldsIn.setText(Messages.getString("ScriptValuesDialogMod.GettingFields.Label"));
 		itemWaitFieldsIn.setForeground(guiresource.getColorDirectory());
         iteminput.setExpanded(true);
 		   
 		// Display waiting message for output
         itemWaitFieldsOut = new TreeItem(itemoutput, SWT.NULL);
-        itemWaitFieldsOut.setText("Récupération des champs en cours ...");
+        itemWaitFieldsOut.setText(Messages.getString("ScriptValuesDialogMod.GettingFields.Label"));
         itemWaitFieldsOut.setForeground(guiresource.getColorDirectory());
         itemoutput.setExpanded(true);
 		
